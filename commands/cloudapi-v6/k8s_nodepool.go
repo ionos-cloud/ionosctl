@@ -11,6 +11,9 @@ import (
 	"go.uber.org/multierr"
 
 	"github.com/fatih/structs"
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
+
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/waiter"
@@ -22,8 +25,6 @@ import (
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 func K8sNodePoolCmd() *core.Command {
@@ -169,6 +170,8 @@ Required values to run a command (for Private Kubernetes Cluster):
 	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgStorageSize, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"10GB", "20GB", "50GB", "100GB", "1TB"}, cobra.ShellCompDirectiveNoFileComp
 	})
+	create.AddStringToStringFlag(cloudapiv6.ArgLabels, cloudapiv6.ArgLabelsShort, map[string]string{}, "Labels to set on a NodePool. It will overwrite the existing labels, if there are any. Use the following format: --labels KEY=VALUE,KEY=VALUE")
+	create.AddStringToStringFlag(cloudapiv6.ArgAnnotations, cloudapiv6.ArgAnnotationsShort, map[string]string{}, "Annotations to set on a NodePool. It will overwrite the existing annotations, if there are any. Use the following format: --annotations KEY=VALUE,KEY=VALUE")
 	create.AddBoolFlag(config.ArgWaitForState, config.ArgWaitForStateShort, config.DefaultWait, "Wait for the new NodePool to be in ACTIVE state")
 	create.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, cloudapiv6.K8sTimeoutSeconds, "Timeout option for waiting for NodePool to be in ACTIVE state[seconds]")
 
@@ -206,16 +209,18 @@ Required values to run command:
 	update.AddIntFlag(cloudapiv6.ArgK8sNodeCount, "", 1, "The number of worker Nodes that the NodePool should contain")
 	update.AddIntFlag(cloudapiv6.ArgK8sMinNodeCount, "", 1, "The minimum number of worker Nodes that the managed NodePool can scale in. Should be set together with --max-node-count")
 	update.AddIntFlag(cloudapiv6.ArgK8sMaxNodeCount, "", 1, "The maximum number of worker Nodes that the managed NodePool can scale out. Should be set together with --min-node-count")
-	update.AddStringFlag(cloudapiv6.ArgLabelKey, "", "", "Label key. Must be set together with --label-value")
-	update.AddStringFlag(cloudapiv6.ArgLabelValue, "", "", "Label value. Must be set together with --label-key")
-	update.AddStringFlag(cloudapiv6.ArgK8sAnnotationKey, "", "", "Annotation key. Must be set together with --annotation-value")
-	update.AddStringFlag(cloudapiv6.ArgK8sAnnotationValue, "", "", "Annotation value. Must be set together with --annotation-key")
+	update.AddStringToStringFlag(cloudapiv6.ArgLabels, cloudapiv6.ArgLabelsShort, map[string]string{}, "Labels to set on a NodePool. It will overwrite the existing labels, if there are any. Use the following format: --labels KEY=VALUE,KEY=VALUE")
+	update.AddStringToStringFlag(cloudapiv6.ArgAnnotations, cloudapiv6.ArgAnnotationsShort, map[string]string{}, "Annotations to set on a NodePool. It will overwrite the existing annotations, if there are any. Use the following format: --annotations KEY=VALUE,KEY=VALUE")
+	update.AddStringFlag(cloudapiv6.ArgLabelKey, "", "", "Label key. Must be set together with --label-value", core.DeprecatedFlagOption())
+	update.AddStringFlag(cloudapiv6.ArgLabelValue, "", "", "Label value. Must be set together with --label-key", core.DeprecatedFlagOption())
+	update.AddStringFlag(cloudapiv6.ArgK8sAnnotationKey, "", "", "Annotation key. Must be set together with --annotation-value", core.DeprecatedFlagOption())
+	update.AddStringFlag(cloudapiv6.ArgK8sAnnotationValue, "", "", "Annotation value. Must be set together with --annotation-key", core.DeprecatedFlagOption())
 	update.AddStringFlag(cloudapiv6.ArgK8sMaintenanceDay, "", "", "The day of the week for Maintenance Window has the English day format as following: Monday or Saturday")
 	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgK8sMaintenanceDay, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddStringFlag(cloudapiv6.ArgK8sMaintenanceTime, "", "", "The time for Maintenance Window has the HH:mm:ss format as following: 08:00:00")
-	update.AddStringSliceFlag(cloudapiv6.ArgPublicIps, "", []string{""}, "Reserved public IP address to be used by the Nodes. IPs must be from same location as the Data Center used for the Node Pool. Usage: --public-ips IP1,IP2")
+	update.AddStringSliceFlag(cloudapiv6.ArgPublicIps, "", []string{}, "Reserved public IP address to be used by the Nodes. IPs must be from same location as the Data Center used for the Node Pool. Usage: --public-ips IP1,IP2")
 	update.AddIntSliceFlag(cloudapiv6.ArgLanIds, "", []int{}, "Collection of LAN Ids of existing LANs to be attached to worker Nodes. It will be added to the existing LANs attached")
 	update.AddBoolFlag(cloudapiv6.ArgDhcp, "", true, "Indicates if the Kubernetes Node Pool LANs will reserve an IP using DHCP. E.g.: --dhcp=true, --dhcp=false")
 	update.AddStringFlag(cloudapiv6.ArgK8sClusterId, "", "", cloudapiv6.K8sClusterId, core.RequiredFlagOption())
@@ -378,6 +383,7 @@ func RunK8sNodePoolCreate(c *core.CommandConfig) error {
 }
 
 func RunK8sNodePoolUpdate(c *core.CommandConfig) error {
+	_ = c.Printer.Print("WARNING: The following flags are deprecated:" + c.Command.GetAnnotationsByKey(core.DeprecatedFlagsAnnotation) + ". Use --labels, --annotations options instead!")
 	oldNodePool, _, err := c.CloudApiV6Services.K8s().GetNodePool(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sClusterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sNodePoolId)))
 	if err != nil {
@@ -478,6 +484,16 @@ func getNewK8sNodePool(c *core.CommandConfig) (*resources.K8sNodePoolForPost, er
 		nodePoolProperties.SetGatewayIp(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGatewayIp)))
 		c.Printer.Verbose("Property GatewayIP set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGatewayIp)))
 	}
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgLabels)) {
+		keyValueMapLabels := viper.GetStringMapString(core.GetFlagName(c.NS, cloudapiv6.ArgLabels))
+		nodePoolProperties.SetLabels(keyValueMapLabels)
+		c.Printer.Verbose("Property Labels set: %v", keyValueMapLabels)
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgAnnotations)) {
+		keyValueMapAnnotations := viper.GetStringMapString(core.GetFlagName(c.NS, cloudapiv6.ArgAnnotations))
+		nodePoolProperties.SetAnnotations(keyValueMapAnnotations)
+		c.Printer.Verbose("Property Annotations set: %v", keyValueMapAnnotations)
+	}
 	// Add LANs
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgLanIds)) {
 		newLans := make([]ionoscloud.KubernetesNodePoolLan, 0)
@@ -573,6 +589,16 @@ func getNewK8sNodePoolUpdated(oldUser *resources.K8sNodePool, c *core.CommandCon
 				key: value,
 			})
 			c.Printer.Verbose("Property Labels set: key: %v, value: %v", key, value)
+		}
+		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgLabels)) {
+			keyValueMapLabels := viper.GetStringMapString(core.GetFlagName(c.NS, cloudapiv6.ArgLabels))
+			propertiesUpdated.SetLabels(keyValueMapLabels)
+			c.Printer.Verbose("Property Labels set: %v", keyValueMapLabels)
+		}
+		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgAnnotations)) {
+			keyValueMapAnnotations := viper.GetStringMapString(core.GetFlagName(c.NS, cloudapiv6.ArgAnnotations))
+			propertiesUpdated.SetAnnotations(keyValueMapAnnotations)
+			c.Printer.Verbose("Property Annotations set: %v", keyValueMapAnnotations)
 		}
 		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgLanIds)) {
 			newLans := make([]ionoscloud.KubernetesNodePoolLan, 0)
@@ -672,27 +698,30 @@ func DeleteAllK8sNodepools(c *core.CommandConfig) error {
 var defaultK8sNodePoolCols = []string{"NodePoolId", "Name", "K8sVersion", "NodeCount", "DatacenterId", "State"}
 
 var allK8sNodePoolCols = []string{"NodePoolId", "Name", "K8sVersion", "DatacenterId", "NodeCount", "CpuFamily", "StorageType", "State", "LanIds",
-	"CoresCount", "RamSize", "AvailabilityZone", "StorageSize", "MaintenanceWindow", "AutoScaling", "PublicIps", "AvailableUpgradeVersions", "GatewayIp"}
+	"CoresCount", "RamSize", "AvailabilityZone", "StorageSize", "MaintenanceWindow", "AutoScaling", "PublicIps", "AvailableUpgradeVersions", "GatewayIp",
+	"Annotations", "Labels"}
 
 type K8sNodePoolPrint struct {
-	NodePoolId               string   `json:"NodePoolId,omitempty"`
-	Name                     string   `json:"Name,omitempty"`
-	K8sVersion               string   `json:"K8sVersion,omitempty"`
-	DatacenterId             string   `json:"DatacenterId,omitempty"`
-	NodeCount                int32    `json:"NodeCount,omitempty"`
-	CpuFamily                string   `json:"CpuFamily,omitempty"`
-	StorageType              string   `json:"StorageType,omitempty"`
-	State                    string   `json:"State,omitempty"`
-	LanIds                   []int32  `json:"LanIds,omitempty"`
-	CoresCount               int32    `json:"CoresCount,omitempty"`
-	RamSize                  int32    `json:"RamSize,omitempty"`
-	AvailabilityZone         string   `json:"AvailabilityZone,omitempty"`
-	StorageSize              int32    `json:"StorageSize,omitempty"`
-	MaintenanceWindow        string   `json:"MaintenanceWindow,omitempty"`
-	AutoScaling              string   `json:"AutoScaling,omitempty"`
-	PublicIps                []string `json:"PublicIps,omitempty"`
-	AvailableUpgradeVersions []string `json:"AvailableUpgradeVersions,omitempty"`
-	GatewayIP                string   `json:"GatewayIp,omitempty"`
+	NodePoolId               string            `json:"NodePoolId,omitempty"`
+	Name                     string            `json:"Name,omitempty"`
+	K8sVersion               string            `json:"K8sVersion,omitempty"`
+	DatacenterId             string            `json:"DatacenterId,omitempty"`
+	NodeCount                int32             `json:"NodeCount,omitempty"`
+	CpuFamily                string            `json:"CpuFamily,omitempty"`
+	StorageType              string            `json:"StorageType,omitempty"`
+	State                    string            `json:"State,omitempty"`
+	LanIds                   []int32           `json:"LanIds,omitempty"`
+	CoresCount               int32             `json:"CoresCount,omitempty"`
+	RamSize                  int32             `json:"RamSize,omitempty"`
+	AvailabilityZone         string            `json:"AvailabilityZone,omitempty"`
+	StorageSize              int32             `json:"StorageSize,omitempty"`
+	MaintenanceWindow        string            `json:"MaintenanceWindow,omitempty"`
+	AutoScaling              string            `json:"AutoScaling,omitempty"`
+	PublicIps                []string          `json:"PublicIps,omitempty"`
+	AvailableUpgradeVersions []string          `json:"AvailableUpgradeVersions,omitempty"`
+	GatewayIP                string            `json:"GatewayIp,omitempty"`
+	Annotations              map[string]string `json:"Annotations,omitempty"`
+	Labels                   map[string]string `json:"Labels,omitempty"`
 }
 
 func getK8sNodePoolPrint(c *core.CommandConfig, k8ss []resources.K8sNodePool) printer.Result {
@@ -729,6 +758,8 @@ func getK8sNodePoolCols(flagName string, outErr io.Writer) []string {
 			"PublicIps":                "PublicIps",
 			"AvailableUpgradeVersions": "AvailableUpgradeVersions",
 			"GatewayIp":                "GatewayIp",
+			"Annotations":              "Annotations",
+			"Labels":                   "Labels",
 		}
 		for _, k := range viper.GetStringSlice(flagName) {
 			col := columnsMap[k]
@@ -808,6 +839,12 @@ func getK8sNodePoolsKVMaps(us []resources.K8sNodePool) []map[string]interface{} 
 			}
 			if gatewayIpOk, ok := properties.GetGatewayIpOk(); ok && gatewayIpOk != nil {
 				uPrint.GatewayIP = *gatewayIpOk
+			}
+			if annotationsOk, ok := properties.GetAnnotationsOk(); ok && annotationsOk != nil {
+				uPrint.Annotations = *annotationsOk
+			}
+			if labelsOk, ok := properties.GetLabelsOk(); ok && labelsOk != nil {
+				uPrint.Labels = *labelsOk
 			}
 			if maintenanceWindowOk, ok := properties.GetMaintenanceWindowOk(); ok && maintenanceWindowOk != nil {
 				if dayOfTheWeekOk, ok := maintenanceWindowOk.GetDayOfTheWeekOk(); ok && dayOfTheWeekOk != nil {

@@ -68,6 +68,21 @@ func (c *Command) AddStringFlag(name, shorthand, defaultValue, desc string, opti
 	}
 }
 
+func (c *Command) AddStringToStringFlag(name, shorthand string, defaultValue map[string]string, desc string, optionFunc ...FlagOptionFunc) {
+	flags := c.Command.Flags()
+	if shorthand != "" {
+		flags.StringToStringP(name, shorthand, defaultValue, desc)
+	} else {
+		flags.StringToString(name, defaultValue, desc)
+	}
+	viper.BindPFlag(GetFlagName(c.NS, name), c.Command.Flags().Lookup(name))
+
+	// Add Option to Flag
+	for _, option := range optionFunc {
+		option(c, name)
+	}
+}
+
 func (c *Command) SetFlagAnnotation(name, key string, values ...string) {
 	flags := c.Command.Flags()
 	flags.SetAnnotation(name, key, values)

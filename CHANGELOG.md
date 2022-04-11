@@ -1,5 +1,15 @@
 # Changelog
 
+## [6.1.5] (upcoming release)
+
+### Fixes
+- added `--labels`,`--annotations` options for `ionosctl k8s nodepool create` command to set one or multiple labels, annotations
+- added `--labels`,`--annotations` options for `ionosctl k8s nodepool update` command to set one or multiple labels, annotations (fixes [164](https://github.com/ionos-cloud/ionosctl/issues/164))
+- added `Annotations,Labels` values for `--cols` option for `ionosctl k8s nodepool` commands 
+
+### Deprecated
+- marked as deprecated the following options: `--label-key`,`--label-value`,`--annotation-key`,`--annotation-value` for `ionosctl k8s nodepool update` command (use `--labels`,`--annotations` options instead).
+
 ## [6.1.4] (April 2022)
 
 - enhancement: added `--backup-location` option for `ionosctl dbaas postgres cluster create` command
