@@ -1,6 +1,6 @@
 # Changelog
 
-## [6.1.5] (upcoming release)
+## [6.1.5] (April 2022)
 
 ### Fixes
 - added `--labels`,`--annotations` options for `ionosctl k8s nodepool create` command to set one or multiple labels, annotations
