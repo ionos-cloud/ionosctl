@@ -2,9 +2,9 @@
 
 ## \[6.1.5\] (upcoming release)
 
-### Enhancements
+### Fixes
 * added `--labels`,`--annotations` options for `ionosctl k8s nodepool create` command to set one or multiple labels, annotations
-* added `--labels`,`--annotations` options for `ionosctl k8s nodepool update` command to set one or multiple labels, annotations
+* added `--labels`,`--annotations` options for `ionosctl k8s nodepool update` command to set one or multiple labels, annotations (fixes [164](https://github.com/ionos-cloud/ionosctl/issues/164))
 * added `Annotations,Labels` values for `--cols` option for `ionosctl k8s nodepool` commands
 
 ### Deprecated
