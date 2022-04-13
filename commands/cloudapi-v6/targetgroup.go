@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"go.uber.org/multierr"
 	"io"
 	"os"
 
@@ -93,33 +94,32 @@ You can wait for the Request to be executed using ` + "`" + `--wait-for-request`
 		CmdRun:     RunTargetGroupCreate,
 		InitClient: true,
 	})
-	create.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "Unnamed Target Group", "Name of the Target Group")
-	create.AddStringFlag(cloudapiv6.ArgAlgorithm, "", "ROUND_ROBIN", "Algorithm for the balancing")
+	create.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "Unnamed Target Group", "The name of the target group.")
+	create.AddStringFlag(cloudapiv6.ArgAlgorithm, "", "ROUND_ROBIN", "Balancing algorithm.")
 	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgAlgorithm, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"ROUND_ROBIN", "LEAST_CONNECTION", "RANDOM", "SOURCE_IP"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(cloudapiv6.ArgProtocol, cloudapiv6.ArgProtocolShort, "HTTP", "Protocol of the balancing")
+	create.AddStringFlag(cloudapiv6.ArgProtocol, cloudapiv6.ArgProtocolShort, "HTTP", "Balancing protocol")
 	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgProtocol, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"HTTP"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddIntFlag(cloudapiv6.ArgCheckTimeout, "", 2000, "[Health Check] It specifies the time (in milliseconds) for a target VM in this pool to answer the check. If a target VM has CheckInterval set and CheckTimeout is set too, then the smaller value of the two is used after the TCP connection is established")
-	create.AddIntFlag(cloudapiv6.ArgConnectionTimeout, "", 5000, "[Health Check] It specifies the maximum time (in milliseconds) to wait for a connection attempt to a target VM to succeed")
-	create.AddIntFlag(cloudapiv6.ArgTargetTimeout, "", 50000, "[Health Check] The maximum inactivity time (in milliseconds) on the target VM side")
-	create.AddIntFlag(cloudapiv6.ArgRetries, "", 3, "[Health Check] The number of retries to perform on a target VM after a connection failure. (valid range: [0, 65535])")
-	create.AddStringFlag(cloudapiv6.ArgPath, "", "/.", "[HTTP Health Check] The path for the HTTP health check")
-	create.AddStringFlag(cloudapiv6.ArgMethod, "", "GET", "[HTTP Health Check] The method for the HTTP health check")
+	create.AddIntFlag(cloudapiv6.ArgCheckTimeout, "", 2000, "[Health Check] The maximum time in milliseconds to wait for a target to respond to a check. For target VMs with 'Check Interval' set, the lesser of the two  values is used once the TCP connection is established.")
+	create.AddIntFlag(cloudapiv6.ArgCheckInterval, "", 2000, "[Health Check] The interval in milliseconds between consecutive health checks; default is 2000.")
+	create.AddIntFlag(cloudapiv6.ArgRetries, "", 3, "[Health Check] The maximum number of attempts to reconnect to a target after a connection failure. Valid range is 0 to 65535, and default is three reconnection attempts.")
+	create.AddStringFlag(cloudapiv6.ArgPath, "", "/.", "[HTTP Health Check] The path (destination URL) for the HTTP health check request; the default is /.")
+	create.AddStringFlag(cloudapiv6.ArgMethod, "", "GET", "[HTTP Health Check] The method for the HTTP health check.")
 	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgMethod, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"HEAD", "PUT", "POST", "GET", "TRACE", "PATCH", "OPTIONS"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(cloudapiv6.ArgMatchType, "", "STATUS_CODE", "[HTTP Health Check] Match Type for the HTTP health check")
+	create.AddStringFlag(cloudapiv6.ArgMatchType, "", "STATUS_CODE", "[HTTP Health Check] Match Type for the HTTP health check.")
 	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgMethod, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"STATUS_CODE", "RESPONSE_BODY"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(cloudapiv6.ArgResponse, "", "200", "[HTTP Health Check] The response returned by the request")
-	create.AddBoolFlag(cloudapiv6.ArgRegex, "", false, "[HTTP Health Check] Regex for the HTTP health check")
-	create.AddBoolFlag(cloudapiv6.ArgNegate, "", false, "[HTTP Health Check] Negate for the HTTP health check")
-	create.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Target Group creation to be executed")
-	create.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Target Group creation [seconds]")
+	create.AddStringFlag(cloudapiv6.ArgResponse, "", "200", "[HTTP Health Check] The response returned by the request, depending on the match type.")
+	create.AddBoolFlag(cloudapiv6.ArgRegex, "", false, "[HTTP Health Check] Regex for the HTTP health check.")
+	create.AddBoolFlag(cloudapiv6.ArgNegate, "", false, "[HTTP Health Check] Negate for the HTTP health check.")
+	create.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Target Group creation to be executed.")
+	create.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Target Group creation [seconds].")
 
 	/*
 		Update Command
@@ -146,33 +146,32 @@ Required values to run command:
 	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgTargetGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.TargetGroupIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "Updated Target Group", "Name of the Target Group")
-	update.AddStringFlag(cloudapiv6.ArgAlgorithm, "", "ROUND_ROBIN", "Algorithm for the balancing")
+	update.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "Updated Target Group", "The name of the target group.")
+	update.AddStringFlag(cloudapiv6.ArgAlgorithm, "", "ROUND_ROBIN", "Balancing algorithm.")
 	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgAlgorithm, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"ROUND_ROBIN", "LEAST_CONNECTION", "RANDOM", "SOURCE_IP"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddStringFlag(cloudapiv6.ArgProtocol, cloudapiv6.ArgProtocolShort, "HTTP", "Protocol of the balancing")
+	update.AddStringFlag(cloudapiv6.ArgProtocol, cloudapiv6.ArgProtocolShort, "HTTP", "Balancing protocol")
 	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgProtocol, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"HTTP"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddIntFlag(cloudapiv6.ArgCheckTimeout, "", 2000, "[Health Check] It specifies the time (in milliseconds) for a target VM in this pool to answer the check. If a target VM has CheckInterval set and CheckTimeout is set too, then the smaller value of the two is used after the TCP connection is established")
-	update.AddIntFlag(cloudapiv6.ArgConnectionTimeout, "", 5000, "[Health Check] It specifies the maximum time (in milliseconds) to wait for a connection attempt to a target VM to succeed")
-	update.AddIntFlag(cloudapiv6.ArgTargetTimeout, "", 50000, "[Health Check] The maximum inactivity time (in milliseconds) on the target VM side")
-	update.AddIntFlag(cloudapiv6.ArgRetries, "", 3, "[Health Check] The number of retries to perform on a target VM after a connection failure. (valid range: [0, 65535])")
-	update.AddStringFlag(cloudapiv6.ArgPath, "", "/.", "[HTTP Health Check] The path for the HTTP health check")
-	update.AddStringFlag(cloudapiv6.ArgMethod, "", "GET", "[HTTP Health Check] The method for the HTTP health check")
+	update.AddIntFlag(cloudapiv6.ArgCheckTimeout, "", 2000, "[Health Check] The maximum time in milliseconds to wait for a target to respond to a check. For target VMs with 'Check Interval' set, the lesser of the two  values is used once the TCP connection is established.")
+	update.AddIntFlag(cloudapiv6.ArgCheckInterval, "", 2000, "[Health Check] The interval in milliseconds between consecutive health checks; default is 2000.")
+	update.AddIntFlag(cloudapiv6.ArgRetries, "", 3, "[Health Check] The maximum number of attempts to reconnect to a target after a connection failure. Valid range is 0 to 65535, and default is three reconnection attempts.")
+	update.AddStringFlag(cloudapiv6.ArgPath, "", "/.", "[HTTP Health Check] The path (destination URL) for the HTTP health check request; the default is /.")
+	update.AddStringFlag(cloudapiv6.ArgMethod, "", "GET", "[HTTP Health Check] The method for the HTTP health check.")
 	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgMethod, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"HEAD", "PUT", "POST", "GET", "TRACE", "PATCH", "OPTIONS"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddStringFlag(cloudapiv6.ArgMatchType, "", "STATUS_CODE", "[HTTP Health Check] Match Type for the HTTP health check")
+	update.AddStringFlag(cloudapiv6.ArgMatchType, "", "STATUS_CODE", "[HTTP Health Check] Match Type for the HTTP health check.")
 	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgMethod, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"STATUS_CODE", "RESPONSE_BODY"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddStringFlag(cloudapiv6.ArgResponse, "", "200", "[HTTP Health Check] The response returned by the request")
-	update.AddBoolFlag(cloudapiv6.ArgRegex, "", false, "[HTTP Health Check] Regex for the HTTP health check")
-	update.AddBoolFlag(cloudapiv6.ArgNegate, "", false, "[HTTP Health Check] Negate for the HTTP health check")
-	update.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Target Group update to be executed")
-	update.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Target Group update [seconds]")
+	update.AddStringFlag(cloudapiv6.ArgResponse, "", "200", "[HTTP Health Check] The response returned by the request, depending on the match type.")
+	update.AddBoolFlag(cloudapiv6.ArgRegex, "", false, "[HTTP Health Check] Regex for the HTTP health check.")
+	update.AddBoolFlag(cloudapiv6.ArgNegate, "", false, "[HTTP Health Check] Negate for the HTTP health check.")
+	update.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Target Group update to be executed.")
+	update.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Target Group update [seconds].")
 
 	/*
 		Delete Command
@@ -276,7 +275,7 @@ func RunTargetGroupDelete(c *core.CommandConfig) error {
 	)
 	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
 		c.Printer.Verbose("TargetGroup ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)))
-		resp, err = DeleteAllTargetGroup(c)
+		err = DeleteAllTargetGroup(c)
 		if err != nil {
 			return err
 		}
@@ -300,45 +299,60 @@ func RunTargetGroupDelete(c *core.CommandConfig) error {
 	return c.Printer.Print(getTargetGroupPrint(resp, c, nil))
 }
 
-func DeleteAllTargetGroup(c *core.CommandConfig) (*resources.Response, error) {
-	_ = c.Printer.Print("Target Groups to be deleted:")
+func DeleteAllTargetGroup(c *core.CommandConfig) error {
+	_ = c.Printer.Print("Getting Target Groups...")
 	targetGroups, resp, err := c.CloudApiV6Services.TargetGroups().List()
 	if err != nil {
-		return nil, err
+		return err
 	}
-	if itemsOk, ok := targetGroups.GetItemsOk(); ok && itemsOk != nil {
-		for _, alb := range *itemsOk {
-			if idOk, ok := alb.GetIdOk(); ok && idOk != nil {
-				_ = c.Printer.Print("Target Group Id: " + *idOk)
+	if targetGroupItems, ok := targetGroups.GetItemsOk(); ok && targetGroupItems != nil {
+		if len(*targetGroupItems) > 0 {
+			for _, tg := range *targetGroupItems {
+				toPrint := ""
+				if id, ok := tg.GetIdOk(); ok && id != nil {
+					toPrint += "Target Group Id: " + *id
+				}
+				if properties, ok := tg.GetPropertiesOk(); ok && properties != nil {
+					if name, ok := properties.GetNameOk(); ok && name != nil {
+						toPrint += "Target Group Name: " + *name
+					}
+				}
+				_ = c.Printer.Print(toPrint)
 			}
-			if propertiesOk, ok := alb.GetPropertiesOk(); ok && propertiesOk != nil {
-				if name, ok := propertiesOk.GetNameOk(); ok && name != nil {
-					_ = c.Printer.Print("Target Group Name: " + *name)
+			if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Target Groups"); err != nil {
+				return err
+			}
+			c.Printer.Verbose("Deleting all the Target Groups...")
+			var multiErr error
+			for _, tg := range *targetGroupItems {
+				if id, ok := tg.GetIdOk(); ok && id != nil {
+					c.Printer.Verbose("Starting deleting Target Group with id: %v...", *id)
+					resp, err = c.CloudApiV6Services.TargetGroups().Delete(*id)
+					if resp != nil && printer.GetId(resp) != "" {
+						c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
+					}
+					if err != nil {
+						multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *id, err))
+						continue
+					} else {
+						_ = c.Printer.Print(fmt.Sprintf(config.StatusDeletingAll, c.Resource, *id))
+					}
+					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+						multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *id, err))
+						continue
+					}
 				}
 			}
-		}
-		if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Target Groups"); err != nil {
-			return nil, err
-		}
-		c.Printer.Verbose("Deleting all the Target Groups...")
-		for _, itemOk := range *itemsOk {
-			if idOk, ok := itemOk.GetIdOk(); ok && idOk != nil {
-				c.Printer.Verbose("Starting deleting Target Group with id: %v...", *idOk)
-				resp, err = c.CloudApiV6Services.TargetGroups().Delete(*idOk)
-				if resp != nil {
-					c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
-					c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
-				}
-				if err != nil {
-					return nil, err
-				}
-				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-					return nil, err
-				}
+			if multiErr != nil {
+				return multiErr
 			}
+			return nil
+		} else {
+			return errors.New("no Target Groups found")
 		}
+	} else {
+		return errors.New("could not get items of Target Groups")
 	}
-	return resp, err
 }
 
 func getTargetGroupNew(c *core.CommandConfig) resources.TargetGroup {
@@ -355,10 +369,8 @@ func getTargetGroupNew(c *core.CommandConfig) resources.TargetGroup {
 	// Set Properties for Health Check for Target Group
 	inputHealthCheck.SetCheckTimeout(viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgCheckTimeout)))
 	c.Printer.Verbose("Property CheckTimeout for HealthCheck set: %v", viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgCheckTimeout)))
-	//inputHealthCheck.SetConnectTimeout(viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgConnectionTimeout)))
-	//c.Printer.Verbose("Property ConnectTimeout for HealthCheck set: %v", viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgConnectionTimeout)))
-	//inputHealthCheck.SetTargetTimeout(viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgTargetTimeout)))
-	//c.Printer.Verbose("Property TargetTimeout for HealthCheck set: %v", viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgTargetTimeout)))
+	inputHealthCheck.SetCheckInterval(viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgCheckInterval)))
+	c.Printer.Verbose("Property CheckInterval for HealthCheck set: %v", viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgCheckInterval)))
 	inputHealthCheck.SetRetries(viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgRetries)))
 	c.Printer.Verbose("Property Retries for HealthCheck set: %v", viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgRetries)))
 	// Set Health Check for Target Group
@@ -406,22 +418,17 @@ func getTargetGroupPropertiesSet(c *core.CommandConfig) *resources.TargetGroupPr
 		c.Printer.Verbose("Property Protocol set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgProtocol)))
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgCheckTimeout)) || viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgConnectionTimeout)) ||
-		viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgTargetTimeout)) || viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgRetries)) {
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgCheckTimeout)) || viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgCheckInterval)) || viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgRetries)) {
 		inputHealthCheck := resources.TargetGroupHealthCheck{}
 		// Set new values for Health Check Properties
 		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgCheckTimeout)) {
 			inputHealthCheck.SetCheckTimeout(viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgCheckTimeout)))
 			c.Printer.Verbose("Property CheckTimeout for HealthCheck set: %v", viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgCheckTimeout)))
 		}
-		//if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgConnectionTimeout)) {
-		//	inputHealthCheck.SetConnectTimeout(viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgConnectionTimeout)))
-		//	c.Printer.Verbose("Property ConnectTimeout for HealthCheck set: %v", viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgConnectionTimeout)))
-		//}
-		//if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgTargetTimeout)) {
-		//	inputHealthCheck.SetTargetTimeout(viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgTargetTimeout)))
-		//	c.Printer.Verbose("Property TargetTimeout for HealthCheck set: %v", viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgTargetTimeout)))
-		//}
+		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgCheckInterval)) {
+			inputHealthCheck.SetCheckInterval(viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgCheckInterval)))
+			c.Printer.Verbose("Property CheckInterval for HealthCheck set: %v", viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgCheckInterval)))
+		}
 		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgRetries)) {
 			inputHealthCheck.SetRetries(viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgRetries)))
 			c.Printer.Verbose("Property Retries for HealthCheck set: %v", viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgRetries)))
@@ -469,27 +476,26 @@ func getTargetGroupPropertiesSet(c *core.CommandConfig) *resources.TargetGroupPr
 // Output Printing
 
 var (
-	defaultTargetGroupCols = []string{"TargetGroupId", "Name", "Algorithm", "Protocol", "CheckTimeout", "ConnectTimeout", "TargetTimeout", "State"}
-	allTargetGroupCols     = []string{"TargetGroupId", "Name", "Algorithm", "Protocol", "CheckTimeout", "ConnectTimeout", "TargetTimeout", "Retries",
+	defaultTargetGroupCols = []string{"TargetGroupId", "Name", "Algorithm", "Protocol", "CheckTimeout", "CheckInterval", "State"}
+	allTargetGroupCols     = []string{"TargetGroupId", "Name", "Algorithm", "Protocol", "CheckTimeout", "CheckInterval", "Retries",
 		"Path", "Method", "MatchType", "Response", "Regex", "Negate", "State"}
 )
 
 type TargetGroupPrint struct {
-	TargetGroupId  string `json:"TargetGroupId,omitempty"`
-	Name           string `json:"Name,omitempty"`
-	Algorithm      string `json:"Algorithm,omitempty"`
-	Protocol       string `json:"Protocol,omitempty"`
-	CheckTimeout   string `json:"CheckTimeout,omitempty"`
-	ConnectTimeout string `json:"ConnectTimeout,omitempty"`
-	TargetTimeout  string `json:"TargetTimeout,omitempty"`
-	Retries        int32  `json:"Retries,omitempty"`
-	Path           string `json:"Path,omitempty"`
-	Method         string `json:"Method,omitempty"`
-	MatchType      string `json:"MatchType,omitempty"`
-	Response       string `json:"Response,omitempty"`
-	Regex          bool   `json:"Regex,omitempty"`
-	Negate         bool   `json:"Negate,omitempty"`
-	State          string `json:"State,omitempty"`
+	TargetGroupId string `json:"TargetGroupId,omitempty"`
+	Name          string `json:"Name,omitempty"`
+	Algorithm     string `json:"Algorithm,omitempty"`
+	Protocol      string `json:"Protocol,omitempty"`
+	CheckTimeout  string `json:"CheckTimeout,omitempty"`
+	CheckInterval string `json:"CheckInterval,omitempty"`
+	Retries       int32  `json:"Retries,omitempty"`
+	Path          string `json:"Path,omitempty"`
+	Method        string `json:"Method,omitempty"`
+	MatchType     string `json:"MatchType,omitempty"`
+	Response      string `json:"Response,omitempty"`
+	Regex         bool   `json:"Regex,omitempty"`
+	Negate        bool   `json:"Negate,omitempty"`
+	State         string `json:"State,omitempty"`
 }
 
 func getTargetGroupPrint(resp *resources.Response, c *core.CommandConfig, s []resources.TargetGroup) printer.Result {
@@ -518,21 +524,20 @@ func getTargetGroupCols(flagName string, outErr io.Writer) []string {
 		return defaultTargetGroupCols
 	}
 	columnsMap := map[string]string{
-		"TargetGroupId":  "TargetGroupId",
-		"Name":           "Name",
-		"Algorithm":      "Algorithm",
-		"Protocol":       "Protocol",
-		"CheckTimeout":   "CheckTimeout",
-		"ConnectTimeout": "ConnectTimeout",
-		"TargetTimeout":  "TargetTimeout",
-		"Retries":        "Retries",
-		"Path":           "Path",
-		"Method":         "Method",
-		"MatchType":      "MatchType",
-		"Response":       "Response",
-		"Regex":          "Regex",
-		"Negate":         "Negate",
-		"State":          "State",
+		"TargetGroupId": "TargetGroupId",
+		"Name":          "Name",
+		"Algorithm":     "Algorithm",
+		"Protocol":      "Protocol",
+		"CheckTimeout":  "CheckTimeout",
+		"CheckInterval": "CheckInterval",
+		"Retries":       "Retries",
+		"Path":          "Path",
+		"Method":        "Method",
+		"MatchType":     "MatchType",
+		"Response":      "Response",
+		"Regex":         "Regex",
+		"Negate":        "Negate",
+		"State":         "State",
 	}
 	var datacenterCols []string
 	for _, k := range cols {
@@ -592,12 +597,9 @@ func getTargetGroupKVMap(s resources.TargetGroup) map[string]interface{} {
 			if checkTimeoutOk, ok := healthCheckOk.GetCheckTimeoutOk(); ok && checkTimeoutOk != nil {
 				targetGroupPrint.CheckTimeout = fmt.Sprintf("%dms", *checkTimeoutOk)
 			}
-			//if connectTimeoutOk, ok := healthCheckOk.GetConnectTimeoutOk(); ok && connectTimeoutOk != nil {
-			//	targetGroupPrint.ConnectTimeout = fmt.Sprintf("%dms", *connectTimeoutOk)
-			//}
-			//if targetTimeoutOk, ok := healthCheckOk.GetTargetTimeoutOk(); ok && targetTimeoutOk != nil {
-			//	targetGroupPrint.TargetTimeout = fmt.Sprintf("%dms", *targetTimeoutOk)
-			//}
+			if checkIntervalOk, ok := healthCheckOk.GetCheckIntervalOk(); ok && checkIntervalOk != nil {
+				targetGroupPrint.CheckInterval = fmt.Sprintf("%dms", *checkIntervalOk)
+			}
 			if retriesOk, ok := healthCheckOk.GetRetriesOk(); ok && retriesOk != nil {
 				targetGroupPrint.Retries = *retriesOk
 			}

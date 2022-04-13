@@ -2,7 +2,7 @@
 
 # Regenerate mocks
 
-pushd "internal/printer" >/dev/null || exit
+pushd "pkg/printer" >/dev/null || exit
 
 GO111MODULE=off go get -d github.com/golang/mock/mockgen
 

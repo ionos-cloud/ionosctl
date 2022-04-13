@@ -87,12 +87,11 @@ Required values to run command:
 	_ = add.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgTargetGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.TargetGroupIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	add.AddStringFlag(cloudapiv6.ArgIp, "", "", "IP of a balanced target VM", core.RequiredFlagOption())
-	add.AddIntFlag(cloudapiv6.ArgPort, cloudapiv6.ArgPortShort, 8080, "Port of the balanced target service. (range: 1 to 65535)", core.RequiredFlagOption())
-	add.AddIntFlag(cloudapiv6.ArgWeight, cloudapiv6.ArgWeightShort, 1, "Weight parameter is used to adjust the target VM's weight relative to other target VMs. The default weight is 1, and the maximal value is 256. A value of 0 means the target VM will not participate in load-balancing but will still accept persistent connections")
-	add.AddBoolFlag(cloudapiv6.ArgCheck, "", true, "[Health Check] Check specifies whether the target VM's health is checked")
-	add.AddIntFlag(cloudapiv6.ArgCheckInterval, "", 2000, "[Health Check] CheckInterval determines the duration (in milliseconds) between consecutive health checks")
-	add.AddBoolFlag(cloudapiv6.ArgMaintenance, cloudapiv6.ArgMaintenanceShort, false, "[HTTP Health Check] Maintenance specifies if a target VM should be marked as down, even if it is not")
+	add.AddStringFlag(cloudapiv6.ArgIp, "", "", "The IP of the balanced target VM.", core.RequiredFlagOption())
+	add.AddIntFlag(cloudapiv6.ArgPort, cloudapiv6.ArgPortShort, 8080, "The port of the balanced target service; valid range is 1 to 65535.", core.RequiredFlagOption())
+	add.AddIntFlag(cloudapiv6.ArgWeight, cloudapiv6.ArgWeightShort, 1, "Traffic is distributed in proportion to target weight, relative to the combined weight of all targets. A target with higher weight receives a greater share of traffic. Valid range is 0 to 256 and default is 1; targets with weight of 0 do not participate in load balancing but still accept persistent connections. It is best use values in the middle of the range to leave room for later adjustments.")
+	add.AddBoolFlag(cloudapiv6.ArgHealthCheckEnabled, "", true, "Makes the target available only if it accepts periodic health check TCP connection attempts; when turned off, the target is considered always available. The health check only consists of a connection attempt to the address and port of the target. Default is True.")
+	add.AddBoolFlag(cloudapiv6.ArgMaintenanceEnabled, cloudapiv6.ArgMaintenanceShort, true, "Maintenance mode prevents the target from receiving balanced traffic.")
 	add.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Target Group Target addition to be executed")
 	add.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Target Group Target addition [seconds]")
 	add.AddStringSliceFlag(config.ArgCols, "", defaultTargetGroupTargetCols, printer.ColsMessage(defaultTargetGroupTargetCols))
@@ -308,15 +307,10 @@ func getTargetGroupTargetInfo(c *core.CommandConfig) resources.TargetGroupTarget
 	c.Printer.Verbose("Property Port for Target set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgPort)))
 	target.SetWeight(viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgWeight)))
 	c.Printer.Verbose("Property Weight for Target set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgWeight)))
-	//targetHealth := resources.TargetGroupTargetHealthCheck{}
-	//targetHealth.SetMaintenance(viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgMaintenance)))
-	//c.Printer.Verbose("Property Maintenance for TargetHealthCheck set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgMaintenance)))
-	//targetHealth.SetCheck(viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgCheck)))
-	//c.Printer.Verbose("Property Check for TargetHealthCheck set: %v", viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgCheck)))
-	//targetHealth.SetCheckInterval(viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgCheckInterval)))
-	//c.Printer.Verbose("Property CheckInterval for TargetHealthCheck set: %v", viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgCheckInterval)))
-	//target.SetHealthCheck(targetHealth.TargetGroupTargetHealthCheck)
-	//c.Printer.Verbose("Setting HealthCheck for Target")
+	target.SetMaintenanceEnabled(viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgMaintenanceEnabled)))
+	c.Printer.Verbose("Property MaintenanceEnabled for Target set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgMaintenanceEnabled)))
+	target.SetHealthCheckEnabled(viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgHealthCheckEnabled)))
+	c.Printer.Verbose("Property HealthCheckEnabled for Target set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgHealthCheckEnabled)))
 	return target
 }
 
@@ -361,15 +355,14 @@ func getTargetGroupTargetsRemove(c *core.CommandConfig, targetsOld *[]ionoscloud
 
 // Output Printing
 
-var defaultTargetGroupTargetCols = []string{"TargetIp", "TargetPort", "Weight", "Check", "CheckInterval", "Maintenance"}
+var defaultTargetGroupTargetCols = []string{"TargetIp", "TargetPort", "Weight", "HealthCheckEnabled", "MaintenanceEnabled"}
 
 type TargetGroupTargetPrint struct {
-	TargetIp      string `json:"TargetIp,omitempty"`
-	TargetPort    int32  `json:"TargetPort,omitempty"`
-	Weight        int32  `json:"Weight,omitempty"`
-	Check         bool   `json:"Check,omitempty"`
-	CheckInterval string `json:"CheckInterval,omitempty"`
-	Maintenance   bool   `json:"Maintenance,omitempty"`
+	TargetIp           string `json:"TargetIp,omitempty"`
+	TargetPort         int32  `json:"TargetPort,omitempty"`
+	Weight             int32  `json:"Weight,omitempty"`
+	HealthCheckEnabled bool   `json:"HealthCheckEnabled,omitempty"`
+	MaintenanceEnabled bool   `json:"MaintenanceEnabled,omitempty"`
 }
 
 func getTargetGroupTargetPrint(resp *resources.Response, c *core.CommandConfig, s []resources.TargetGroupTarget) printer.Result {
@@ -398,12 +391,11 @@ func getTargetGroupTargetCols(flagName string, outErr io.Writer) []string {
 		return defaultTargetGroupTargetCols
 	}
 	columnsMap := map[string]string{
-		"TargetIp":      "TargetIp",
-		"TargetPort":    "TargetPort",
-		"Weight":        "Weight",
-		"Check":         "Check",
-		"CheckInterval": "CheckInterval",
-		"Maintenance":   "Maintenance",
+		"TargetIp":           "TargetIp",
+		"TargetPort":         "TargetPort",
+		"Weight":             "Weight",
+		"HealthCheckEnabled": "HealthCheckEnabled",
+		"MaintenanceEnabled": "MaintenanceEnabled",
 	}
 	var targetCols []string
 	for _, k := range cols {
@@ -447,16 +439,11 @@ func getTargetGroupTargetKVMap(target resources.TargetGroupTarget) map[string]in
 	if weight, ok := target.GetWeightOk(); ok && weight != nil {
 		targetPrint.Weight = *weight
 	}
-	//if health, ok := target.GetHealthCheckOk(); ok && health != nil {
-	//	if check, ok := health.GetCheckOk(); ok && check != nil {
-	//		targetPrint.Check = *check
-	//	}
-	//	if checkInterval, ok := health.GetCheckIntervalOk(); ok && checkInterval != nil {
-	//		targetPrint.CheckInterval = fmt.Sprintf("%vms", *checkInterval)
-	//	}
-	//	if maintenance, ok := health.GetMaintenanceOk(); ok && maintenance != nil {
-	//		targetPrint.Maintenance = *maintenance
-	//	}
-	//}
+	if healthCheckEnabled, ok := target.GetHealthCheckEnabledOk(); ok && healthCheckEnabled != nil {
+		targetPrint.HealthCheckEnabled = *healthCheckEnabled
+	}
+	if maintenanceEnabled, ok := target.GetMaintenanceEnabledOk(); ok && maintenanceEnabled != nil {
+		targetPrint.MaintenanceEnabled = *maintenanceEnabled
+	}
 	return structs.Map(targetPrint)
 }

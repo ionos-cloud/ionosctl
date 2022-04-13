@@ -65,6 +65,8 @@ const (
 	ArgTargetTimeout         = "target-timeout"
 	ArgCheck                 = "check"
 	ArgCheckInterval         = "check-interval"
+	ArgHealthCheckEnabled    = "health-check-enabled"
+	ArgMaintenanceEnabled    = "maintenance-enabled"
 	ArgMaintenance           = "maintenance"
 	ArgMaintenanceShort      = "m"
 	ArgFirewallActive        = "firewall-active"

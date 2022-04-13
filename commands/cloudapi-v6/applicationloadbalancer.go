@@ -3,6 +3,8 @@ package commands
 import (
 	"context"
 	"errors"
+	"fmt"
+	"go.uber.org/multierr"
 	"io"
 	"os"
 
@@ -303,7 +305,7 @@ func RunApplicationLoadBalancerDelete(c *core.CommandConfig) error {
 	)
 	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
 		c.Printer.Verbose("Datacenter ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
-		resp, err = DeleteAllApplicationLoadBalancer(c)
+		err = DeleteAllApplicationLoadBalancer(c)
 		if err != nil {
 			return err
 		}
@@ -329,45 +331,60 @@ func RunApplicationLoadBalancerDelete(c *core.CommandConfig) error {
 	return c.Printer.Print(getApplicationLoadBalancerPrint(resp, c, nil))
 }
 
-func DeleteAllApplicationLoadBalancer(c *core.CommandConfig) (*resources.Response, error) {
-	_ = c.Printer.Print("Application Load Balancers to be deleted:")
+func DeleteAllApplicationLoadBalancer(c *core.CommandConfig) error {
+	_ = c.Printer.Print("Getting Application Load Balancers...")
 	applicationLoadBalancers, resp, err := c.CloudApiV6Services.ApplicationLoadBalancers().List(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
 	if err != nil {
-		return nil, err
+		return err
 	}
-	if itemsOk, ok := applicationLoadBalancers.GetItemsOk(); ok && itemsOk != nil {
-		for _, alb := range *itemsOk {
-			if idOk, ok := alb.GetIdOk(); ok && idOk != nil {
-				_ = c.Printer.Print("Application Load Balancer Id: " + *idOk)
+	if albItems, ok := applicationLoadBalancers.GetItemsOk(); ok && albItems != nil {
+		if len(*albItems) > 0 {
+			for _, alb := range *albItems {
+				toPrint := ""
+				if id, ok := alb.GetIdOk(); ok && id != nil {
+					toPrint += "Application Load Balancer Id: " + *id
+				}
+				if propertiesOk, ok := alb.GetPropertiesOk(); ok && propertiesOk != nil {
+					if name, ok := propertiesOk.GetNameOk(); ok && name != nil {
+						toPrint += "Application Load Balancer Name: " + *name
+					}
+				}
+				_ = c.Printer.Print(toPrint)
 			}
-			if propertiesOk, ok := alb.GetPropertiesOk(); ok && propertiesOk != nil {
-				if name, ok := propertiesOk.GetNameOk(); ok && name != nil {
-					_ = c.Printer.Print("Application Load Balancer Name: " + *name)
+			if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Application Load Balancers"); err != nil {
+				return err
+			}
+			c.Printer.Verbose("Deleting all the Application Load Balancers...")
+			var multiErr error
+			for _, alb := range *albItems {
+				if id, ok := alb.GetIdOk(); ok && id != nil {
+					c.Printer.Verbose("Starting deleting Application Load Balancer with id: %v...", *id)
+					resp, err = c.CloudApiV6Services.ApplicationLoadBalancers().Delete(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)), *id)
+					if resp != nil && printer.GetId(resp) != "" {
+						c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
+					}
+					if err != nil {
+						multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *id, err))
+						continue
+					} else {
+						_ = c.Printer.Print(fmt.Sprintf(config.StatusDeletingAll, c.Resource, *id))
+					}
+					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+						multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *id, err))
+						continue
+					}
 				}
 			}
-		}
-		if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Application Load Balancers"); err != nil {
-			return nil, err
-		}
-		c.Printer.Verbose("Deleting all the Application Load Balancers...")
-		for _, itemOk := range *itemsOk {
-			if idOk, ok := itemOk.GetIdOk(); ok && idOk != nil {
-				c.Printer.Verbose("Starting deleting Application Load Balancer with id: %v...", *idOk)
-				resp, err = c.CloudApiV6Services.ApplicationLoadBalancers().Delete(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)), *idOk)
-				if resp != nil {
-					c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
-					c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
-				}
-				if err != nil {
-					return nil, err
-				}
-				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-					return nil, err
-				}
+			if multiErr != nil {
+				return multiErr
 			}
+			return nil
+		} else {
+			return errors.New("no Application Load Balancers found")
 		}
+	} else {
+		return errors.New("could not get items of Application Load Balancers")
 	}
-	return resp, err
 }
 
 func getNewApplicationLoadBalancerInfo(c *core.CommandConfig) *resources.ApplicationLoadBalancerProperties {

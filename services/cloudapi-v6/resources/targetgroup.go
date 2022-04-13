@@ -14,10 +14,6 @@ type TargetGroupTarget struct {
 	ionoscloud.TargetGroupTarget
 }
 
-//type TargetGroupTargetHealthCheck struct {
-//	ionoscloud.TargetGroupTargetHealthCheck
-//}
-
 type TargetGroupProperties struct {
 	ionoscloud.TargetGroupProperties
 }

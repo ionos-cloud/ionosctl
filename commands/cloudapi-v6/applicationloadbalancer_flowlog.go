@@ -2,6 +2,9 @@ package commands
 
 import (
 	"context"
+	"errors"
+	"fmt"
+	"go.uber.org/multierr"
 	"os"
 
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
@@ -354,7 +357,7 @@ func RunApplicationLoadBalancerFlowLogDelete(c *core.CommandConfig) error {
 	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
 		c.Printer.Verbose("Datacenter ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
 		c.Printer.Verbose("ApplicationLoadBalancer ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)))
-		resp, err = DeleteAllApplicationLoadBalancerFlowLog(c)
+		err = DeleteAllApplicationLoadBalancerFlowLog(c)
 		if err != nil {
 			return err
 		}
@@ -384,48 +387,63 @@ func RunApplicationLoadBalancerFlowLogDelete(c *core.CommandConfig) error {
 	return c.Printer.Print(getFlowLogPrint(resp, c, nil))
 }
 
-func DeleteAllApplicationLoadBalancerFlowLog(c *core.CommandConfig) (*resources.Response, error) {
-	_ = c.Printer.Print("Application Load Balancer FlowLogs to be deleted:")
+func DeleteAllApplicationLoadBalancerFlowLog(c *core.CommandConfig) error {
+	_ = c.Printer.Print("Getting Application Load Balancer FlowLogs...")
 	applicationLoadBalancerFlowlogs, resp, err := c.CloudApiV6Services.ApplicationLoadBalancers().ListFlowLogs(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
 	)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	if itemsOk, ok := applicationLoadBalancerFlowlogs.GetItemsOk(); ok && itemsOk != nil {
-		for _, alb := range *itemsOk {
-			if idOk, ok := alb.GetIdOk(); ok && idOk != nil {
-				_ = c.Printer.Print("Application Load Balancer FlowLog Id: " + *idOk)
+	if albFlowLogItems, ok := applicationLoadBalancerFlowlogs.GetItemsOk(); ok && albFlowLogItems != nil {
+		if len(*albFlowLogItems) > 0 {
+			for _, fl := range *albFlowLogItems {
+				toPrint := ""
+				if id, ok := fl.GetIdOk(); ok && id != nil {
+					toPrint += "Application Load Balancer FlowLog Id: " + *id
+				}
+				if properties, ok := fl.GetPropertiesOk(); ok && properties != nil {
+					if name, ok := properties.GetNameOk(); ok && name != nil {
+						toPrint += "Application Load Balancer FlowLog Name: " + *name
+					}
+				}
+				_ = c.Printer.Print(toPrint)
 			}
-			if propertiesOk, ok := alb.GetPropertiesOk(); ok && propertiesOk != nil {
-				if name, ok := propertiesOk.GetNameOk(); ok && name != nil {
-					_ = c.Printer.Print("Application Load Balancer FlowLog Name: " + *name)
+			if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Application Load Balancer FlowLogs"); err != nil {
+				return err
+			}
+			c.Printer.Verbose("Deleting all the Application Load Balancer FlowLogs...")
+			var multiErr error
+			for _, fl := range *albFlowLogItems {
+				if id, ok := fl.GetIdOk(); ok && id != nil {
+					c.Printer.Verbose("Starting deleting Application Load Balancer FlowLog with id: %v...", *id)
+					resp, err = c.CloudApiV6Services.ApplicationLoadBalancers().DeleteFlowLog(
+						viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
+						viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)), *id)
+					if resp != nil && printer.GetId(resp) != "" {
+						c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
+					}
+					if err != nil {
+						multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *id, err))
+						continue
+					} else {
+						_ = c.Printer.Print(fmt.Sprintf(config.StatusDeletingAll, c.Resource, *id))
+					}
+					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+						multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *id, err))
+						continue
+					}
 				}
 			}
-		}
-		if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Application Load Balancer FlowLogs"); err != nil {
-			return nil, err
-		}
-		c.Printer.Verbose("Deleting all the Application Load Balancer FlowLogs...")
-		for _, itemOk := range *itemsOk {
-			if idOk, ok := itemOk.GetIdOk(); ok && idOk != nil {
-				c.Printer.Verbose("Starting deleting Application Load Balancer FlowLog with id: %v...", *idOk)
-				resp, err = c.CloudApiV6Services.ApplicationLoadBalancers().DeleteFlowLog(
-					viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-					viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)), *idOk)
-				if resp != nil {
-					c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
-					c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
-				}
-				if err != nil {
-					return nil, err
-				}
-				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-					return nil, err
-				}
+			if multiErr != nil {
+				return multiErr
 			}
+			return nil
+		} else {
+			return errors.New("no Application Load Balancer Flow Logs found")
 		}
+	} else {
+		return errors.New("could not get items of Application Load Balancer Flow Logs")
 	}
-	return resp, err
 }
