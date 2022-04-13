@@ -27,10 +27,9 @@ var (
 				Algorithm: &testTargetGroupVar,
 				Protocol:  &testTargetGroupVar,
 				HealthCheck: &ionoscloud.TargetGroupHealthCheck{
-					CheckTimeout: &testTargetGroupTimeout,
-					//ConnectTimeout: &testTargetGroupTimeout,
-					//TargetTimeout:  &testTargetGroupTimeout,
-					Retries: &testTargetGroupRetries,
+					CheckTimeout:  &testTargetGroupTimeout,
+					CheckInterval: &testTargetGroupTimeout,
+					Retries:       &testTargetGroupRetries,
 				},
 				HttpHealthCheck: &ionoscloud.TargetGroupHttpHealthCheck{
 					Path:      &testTargetGroupVar,
@@ -53,10 +52,9 @@ var (
 				Algorithm: &testTargetGroupVar,
 				Protocol:  &testTargetGroupVar,
 				HealthCheck: &ionoscloud.TargetGroupHealthCheck{
-					CheckTimeout: &testTargetGroupTimeout,
-					//ConnectTimeout: &testTargetGroupTimeout,
-					//TargetTimeout:  &testTargetGroupTimeout,
-					Retries: &testTargetGroupRetries,
+					CheckTimeout:  &testTargetGroupTimeout,
+					CheckInterval: &testTargetGroupTimeout,
+					Retries:       &testTargetGroupRetries,
 				},
 				HttpHealthCheck: &ionoscloud.TargetGroupHttpHealthCheck{
 					Path:      &testTargetGroupVar,
@@ -81,10 +79,9 @@ var (
 			Algorithm: &testTargetGroupNewVar,
 			Protocol:  &testTargetGroupNewVar,
 			HealthCheck: &ionoscloud.TargetGroupHealthCheck{
-				CheckTimeout: &testTargetGroupNewTimeout,
-				//ConnectTimeout: &testTargetGroupNewTimeout,
-				//TargetTimeout:  &testTargetGroupNewTimeout,
-				Retries: &testTargetGroupNewRetries,
+				CheckTimeout:  &testTargetGroupNewTimeout,
+				CheckInterval: &testTargetGroupNewTimeout,
+				Retries:       &testTargetGroupNewRetries,
 			},
 			HttpHealthCheck: &ionoscloud.TargetGroupHttpHealthCheck{
 				Path:      &testTargetGroupNewVar,
@@ -281,8 +278,7 @@ func TestRunTargetGroupCreate(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAlgorithm), testTargetGroupVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgProtocol), testTargetGroupVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgCheckTimeout), testTargetGroupTimeout)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgConnectionTimeout), testTargetGroupTimeout)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgTargetTimeout), testTargetGroupTimeout)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgCheckInterval), testTargetGroupTimeout)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRetries), testTargetGroupRetries)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPath), testTargetGroupVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgMethod), testTargetGroupVar)
@@ -308,8 +304,7 @@ func TestRunTargetGroupCreateResponse(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAlgorithm), testTargetGroupVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgProtocol), testTargetGroupVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgCheckTimeout), testTargetGroupTimeout)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgConnectionTimeout), testTargetGroupTimeout)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgTargetTimeout), testTargetGroupTimeout)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgCheckInterval), testTargetGroupTimeout)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRetries), testTargetGroupRetries)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPath), testTargetGroupVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgMethod), testTargetGroupVar)
@@ -336,8 +331,7 @@ func TestRunTargetGroupUpdate(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAlgorithm), testTargetGroupNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgProtocol), testTargetGroupNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgCheckTimeout), testTargetGroupNewTimeout)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgConnectionTimeout), testTargetGroupNewTimeout)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgTargetTimeout), testTargetGroupNewTimeout)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgCheckInterval), testTargetGroupNewTimeout)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRetries), testTargetGroupNewRetries)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPath), testTargetGroupNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgMethod), testTargetGroupNewVar)
@@ -365,8 +359,7 @@ func TestRunTargetGroupUpdateErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAlgorithm), testTargetGroupNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgProtocol), testTargetGroupNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgCheckTimeout), testTargetGroupNewTimeout)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgConnectionTimeout), testTargetGroupNewTimeout)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgTargetTimeout), testTargetGroupNewTimeout)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgCheckInterval), testTargetGroupNewTimeout)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRetries), testTargetGroupNewRetries)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPath), testTargetGroupNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgMethod), testTargetGroupNewVar)

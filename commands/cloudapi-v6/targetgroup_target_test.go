@@ -23,14 +23,11 @@ var (
 		TargetGroupProperties: ionoscloud.TargetGroupProperties{
 			Targets: &[]ionoscloud.TargetGroupTarget{
 				{
-					Ip:     &testTargetGroupTargetVar,
-					Port:   &testTargetGroupTargetIntVar,
-					Weight: &testTargetGroupTargetIntVar,
-					//HealthCheck: &ionoscloud.TargetGroupTargetHealthCheck{
-					//	Check:         &testTargetGroupTargetBoolVar,
-					//	CheckInterval: &testTargetGroupTargetIntVar,
-					//	Maintenance:   &testTargetGroupTargetBoolVar,
-					//},
+					Ip:                 &testTargetGroupTargetVar,
+					Port:               &testTargetGroupTargetIntVar,
+					Weight:             &testTargetGroupTargetIntVar,
+					HealthCheckEnabled: &testTargetGroupTargetBoolVar,
+					MaintenanceEnabled: &testTargetGroupTargetBoolVar,
 				},
 			},
 		},
@@ -213,9 +210,8 @@ func TestRunTargetGroupTargetAdd(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIp), testTargetGroupTargetVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPort), testTargetGroupTargetIntVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgWeight), testTargetGroupTargetIntVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgCheckInterval), testTargetGroupTargetIntVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgCheck), testTargetGroupTargetBoolVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgMaintenance), testTargetGroupTargetBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgMaintenanceEnabled), testTargetGroupTargetBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgHealthCheckEnabled), testTargetGroupTargetBoolVar)
 		rm.CloudApiV6Mocks.TargetGroup.EXPECT().Get(testTargetGroupTargetVar).Return(&testTargetGroupTargetGet, nil, nil)
 		rm.CloudApiV6Mocks.TargetGroup.EXPECT().Update(testTargetGroupTargetVar, &testTargetGroupTargetProperties).Return(&testTargetGroupTargetGetUpdated, nil, nil)
 		err := RunTargetGroupTargetAdd(cfg)
@@ -234,9 +230,8 @@ func TestRunTargetGroupTargetAddResponse(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIp), testTargetGroupTargetVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPort), testTargetGroupTargetIntVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgWeight), testTargetGroupTargetIntVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgCheckInterval), testTargetGroupTargetIntVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgCheck), testTargetGroupTargetBoolVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgMaintenance), testTargetGroupTargetBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgMaintenanceEnabled), testTargetGroupTargetBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgHealthCheckEnabled), testTargetGroupTargetBoolVar)
 		rm.CloudApiV6Mocks.TargetGroup.EXPECT().Get(testTargetGroupTargetVar).Return(&testTargetGroupTargetGet, nil, nil)
 		rm.CloudApiV6Mocks.TargetGroup.EXPECT().Update(testTargetGroupTargetVar, &testTargetGroupTargetProperties).Return(&testTargetGroupTargetGetUpdated, &testResponse, nil)
 		err := RunTargetGroupTargetAdd(cfg)
@@ -255,9 +250,8 @@ func TestRunTargetGroupTargetAddErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIp), testTargetGroupTargetVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPort), testTargetGroupTargetIntVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgWeight), testTargetGroupTargetIntVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgCheckInterval), testTargetGroupTargetIntVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgCheck), testTargetGroupTargetBoolVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgMaintenance), testTargetGroupTargetBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgMaintenanceEnabled), testTargetGroupTargetBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgHealthCheckEnabled), testTargetGroupTargetBoolVar)
 		rm.CloudApiV6Mocks.TargetGroup.EXPECT().Get(testTargetGroupTargetVar).Return(&testTargetGroupTargetGet, nil, nil)
 		rm.CloudApiV6Mocks.TargetGroup.EXPECT().Update(testTargetGroupTargetVar, &testTargetGroupTargetProperties).Return(&testTargetGroupTargetGetUpdated, nil, testTargetGroupTargetErr)
 		err := RunTargetGroupTargetAdd(cfg)
@@ -276,9 +270,8 @@ func TestRunTargetGroupTargetAddGetErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIp), testTargetGroupTargetVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPort), testTargetGroupTargetIntVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgWeight), testTargetGroupTargetIntVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgCheckInterval), testTargetGroupTargetIntVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgCheck), testTargetGroupTargetBoolVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgMaintenance), testTargetGroupTargetBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgMaintenanceEnabled), testTargetGroupTargetBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgHealthCheckEnabled), testTargetGroupTargetBoolVar)
 		rm.CloudApiV6Mocks.TargetGroup.EXPECT().Get(testTargetGroupTargetVar).Return(&testTargetGroupTargetGet, nil, testTargetGroupTargetErr)
 		err := RunTargetGroupTargetAdd(cfg)
 		assert.Error(t, err)
@@ -297,9 +290,8 @@ func TestRunTargetGroupTargetAddWaitErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIp), testTargetGroupTargetVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPort), testTargetGroupTargetIntVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgWeight), testTargetGroupTargetIntVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgCheckInterval), testTargetGroupTargetIntVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgCheck), testTargetGroupTargetBoolVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgMaintenance), testTargetGroupTargetBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgMaintenanceEnabled), testTargetGroupTargetBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgHealthCheckEnabled), testTargetGroupTargetBoolVar)
 		rm.CloudApiV6Mocks.TargetGroup.EXPECT().Get(testTargetGroupTargetVar).Return(&testTargetGroupTargetGet, nil, nil)
 		rm.CloudApiV6Mocks.TargetGroup.EXPECT().Update(testTargetGroupTargetVar, &testTargetGroupTargetProperties).Return(&testTargetGroupTargetGetUpdated, &testResponse, nil)
 		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testRequestIdVar).Return(&testRequestStatus, nil, testRequestErr)

@@ -63,6 +63,13 @@ mv -f docs/subcommands/tmp/resource-* ${DOCS_OUT_USER}
 mv -f docs/subcommands/tmp/share-* ${DOCS_OUT_USER}
 mv -f docs/subcommands/tmp/contract-* ${DOCS_OUT_USER}
 
+## application-load-balancer
+DOCS_OUT_ALB=${DOCS_OUT_ALB:-${DOCS_OUT}/application-load-balancer/}
+echo "Move Application Load Balancer documentation in ${DOCS_OUT_ALB}"
+mkdir -p ${DOCS_OUT_ALB}
+mv -f docs/subcommands/tmp/applicationloadbalancer-* ${DOCS_OUT_ALB}
+mv -f docs/subcommands/tmp/targetgroup-* ${DOCS_OUT_ALB}
+
 ## compute-engine
 DOCS_OUT_COMPUTE_ENGINE=${DOCS_OUT_COMPUTE_ENGINE:-${DOCS_OUT}/compute-engine/}
 echo "Move Compute Engine documentation in ${DOCS_OUT_COMPUTE_ENGINE}"
