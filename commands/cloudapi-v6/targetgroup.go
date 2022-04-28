@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/query"
 	"go.uber.org/multierr"
 	"io"
 	"os"
@@ -44,7 +45,7 @@ func TargetGroupCmd() *core.Command {
 	/*
 		List Command
 	*/
-	core.NewCommand(ctx, targetGroupCmd, core.CommandBuilder{
+	list := core.NewCommand(ctx, targetGroupCmd, core.CommandBuilder{
 		Namespace:  "targetgroup",
 		Resource:   "targetgroup",
 		Verb:       "list",
@@ -55,6 +56,15 @@ func TargetGroupCmd() *core.Command {
 		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunTargetGroupList,
 		InitClient: true,
+	})
+	list.AddIntFlag(cloudapiv6.ArgMaxResults, cloudapiv6.ArgMaxResultsShort, 0, "The maximum number of elements to return")
+	list.AddStringFlag(cloudapiv6.ArgOrderBy, "", "", "Limits results to those containing a matching value for a specific property")
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgOrderBy, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.BackupUnitsFilters(), cobra.ShellCompDirectiveNoFileComp
+	})
+	list.AddStringSliceFlag(cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, "Limits results to those containing a matching value for a specific property. Use the following format to set filters: --filters KEY1=VALUE1,KEY2=VALUE2")
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgFilters, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.BackupUnitsFilters(), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -213,8 +223,17 @@ func PreRunTargetGroupDelete(c *core.PreCommandConfig) error {
 }
 
 func RunTargetGroupList(c *core.CommandConfig) error {
+	// Add Query Parameters for GET Requests
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	if !structs.IsZero(listQueryParams) {
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams))
+	}
+
 	c.Printer.Verbose("Getting TargetGroups")
-	ss, resp, err := c.CloudApiV6Services.TargetGroups().List()
+	ss, resp, err := c.CloudApiV6Services.TargetGroups().List(listQueryParams)
 	if resp != nil {
 		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
@@ -301,7 +320,7 @@ func RunTargetGroupDelete(c *core.CommandConfig) error {
 
 func DeleteAllTargetGroup(c *core.CommandConfig) error {
 	_ = c.Printer.Print("Getting Target Groups...")
-	targetGroups, resp, err := c.CloudApiV6Services.TargetGroups().List()
+	targetGroups, resp, err := c.CloudApiV6Services.TargetGroups().List(resources.ListQueryParams{})
 	if err != nil {
 		return err
 	}

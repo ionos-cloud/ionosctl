@@ -28,7 +28,7 @@ func TestRunLocationCpuList(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgVerbose, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLocationId), testLocationCpuVar)
 		testIds := strings.Split(testLocationCpuVar, "/")
 		rm.CloudApiV6Mocks.Location.EXPECT().GetByRegionAndLocationId(testIds[0], testIds[1]).Return(&loc, &testResponse, nil)

@@ -673,7 +673,7 @@ func ApplicationLoadBalancersIds(outErr io.Writer, datacenterId string) []string
 	client, err := getClient()
 	clierror.CheckError(err, outErr)
 	applicationloadbalancerSvc := resources.NewApplicationLoadBalancerService(client, context.TODO())
-	applicationloadbalancers, _, err := applicationloadbalancerSvc.List(datacenterId)
+	applicationloadbalancers, _, err := applicationloadbalancerSvc.List(datacenterId, resources.ListQueryParams{})
 	clierror.CheckError(err, outErr)
 	albIds := make([]string, 0)
 	if items, ok := applicationloadbalancers.ApplicationLoadBalancers.GetItemsOk(); ok && items != nil {
@@ -692,7 +692,7 @@ func ApplicationLoadBalancerFlowLogsIds(outErr io.Writer, datacenterId, applicat
 	client, err := getClient()
 	clierror.CheckError(err, outErr)
 	applicationloadbalancerSvc := resources.NewApplicationLoadBalancerService(client, context.TODO())
-	natFlowLogs, _, err := applicationloadbalancerSvc.ListFlowLogs(datacenterId, applicationloadbalancerId)
+	natFlowLogs, _, err := applicationloadbalancerSvc.ListFlowLogs(datacenterId, applicationloadbalancerId, resources.ListQueryParams{})
 	clierror.CheckError(err, outErr)
 	ssIds := make([]string, 0)
 	if items, ok := natFlowLogs.FlowLogs.GetItemsOk(); ok && items != nil {
@@ -711,7 +711,7 @@ func AlbForwardingRulesIds(outErr io.Writer, datacenterId, albId string) []strin
 	client, err := getClient()
 	clierror.CheckError(err, outErr)
 	albSvc := resources.NewApplicationLoadBalancerService(client, context.TODO())
-	natForwardingRules, _, err := albSvc.ListForwardingRules(datacenterId, albId)
+	natForwardingRules, _, err := albSvc.ListForwardingRules(datacenterId, albId, resources.ListQueryParams{})
 	clierror.CheckError(err, outErr)
 	ssIds := make([]string, 0)
 	if items, ok := natForwardingRules.ApplicationLoadBalancerForwardingRules.GetItemsOk(); ok && items != nil {
@@ -730,7 +730,7 @@ func TargetGroupIds(outErr io.Writer) []string {
 	client, err := getClient()
 	clierror.CheckError(err, outErr)
 	targetGroupSvc := resources.NewTargetGroupService(client, context.TODO())
-	targetGroups, _, err := targetGroupSvc.List()
+	targetGroups, _, err := targetGroupSvc.List(resources.ListQueryParams{})
 	clierror.CheckError(err, outErr)
 	ssIds := make([]string, 0)
 	if items, ok := targetGroups.TargetGroups.GetItemsOk(); ok && items != nil {

@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
+	"fmt"
 	"os"
 	"regexp"
 	"testing"
@@ -185,7 +186,25 @@ func TestRunApplicationLoadBalancerForwardingRuleList(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testAlbForwardingRuleVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgApplicationLoadBalancerId), testAlbForwardingRuleVar)
-		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().ListForwardingRules(testAlbForwardingRuleVar, testAlbForwardingRuleVar).Return(testAlbForwardingRules, nil, nil)
+		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().ListForwardingRules(testAlbForwardingRuleVar, testAlbForwardingRuleVar, resources.ListQueryParams{}).Return(testAlbForwardingRules, &testResponse, nil)
+		err := RunApplicationLoadBalancerForwardingRuleList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunApplicationLoadBalancerForwardingRuleListQueryParams(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testAlbForwardingRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgApplicationLoadBalancerId), testAlbForwardingRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgFilters), []string{fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar)})
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgOrderBy), testQueryParamVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgMaxResults), testMaxResultsVar)
+		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().ListForwardingRules(testAlbForwardingRuleVar, testAlbForwardingRuleVar, testListQueryParam).Return(testAlbForwardingRules, nil, nil)
 		err := RunApplicationLoadBalancerForwardingRuleList(cfg)
 		assert.NoError(t, err)
 	})
@@ -198,10 +217,10 @@ func TestRunApplicationLoadBalancerForwardingRuleListResponse(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgVerbose, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testAlbForwardingRuleVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgApplicationLoadBalancerId), testAlbForwardingRuleVar)
-		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().ListForwardingRules(testAlbForwardingRuleVar, testAlbForwardingRuleVar).Return(testAlbForwardingRules, &testResponse, nil)
+		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().ListForwardingRules(testAlbForwardingRuleVar, testAlbForwardingRuleVar, resources.ListQueryParams{}).Return(testAlbForwardingRules, &testResponse, nil)
 		err := RunApplicationLoadBalancerForwardingRuleList(cfg)
 		assert.NoError(t, err)
 	})
@@ -216,7 +235,7 @@ func TestRunApplicationLoadBalancerForwardingRuleListErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testAlbForwardingRuleVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgApplicationLoadBalancerId), testAlbForwardingRuleVar)
-		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().ListForwardingRules(testAlbForwardingRuleVar, testAlbForwardingRuleVar).Return(testAlbForwardingRules, nil, testApplicationLoadBalancerForwardingRuleErr)
+		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().ListForwardingRules(testAlbForwardingRuleVar, testAlbForwardingRuleVar, resources.ListQueryParams{}).Return(testAlbForwardingRules, nil, testApplicationLoadBalancerForwardingRuleErr)
 		err := RunApplicationLoadBalancerForwardingRuleList(cfg)
 		assert.Error(t, err)
 	})
@@ -433,7 +452,7 @@ func TestRunApplicationLoadBalancerForwardingRuleDeleteAll(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testAlbForwardingRuleVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgApplicationLoadBalancerId), testAlbForwardingRuleVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
-		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().ListForwardingRules(testAlbForwardingRuleVar, testAlbForwardingRuleVar).Return(testAlbForwardingRules, nil, nil)
+		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().ListForwardingRules(testAlbForwardingRuleVar, testAlbForwardingRuleVar, resources.ListQueryParams{}).Return(testAlbForwardingRules, nil, nil)
 		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().DeleteForwardingRule(testAlbForwardingRuleVar, testAlbForwardingRuleVar, testAlbForwardingRuleVar).Return(nil, nil)
 		err := RunApplicationLoadBalancerForwardingRuleDelete(cfg)
 		assert.NoError(t, err)
@@ -451,7 +470,7 @@ func TestRunApplicationLoadBalancerForwardingRuleDeleteAllErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testAlbForwardingRuleVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgApplicationLoadBalancerId), testAlbForwardingRuleVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
-		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().ListForwardingRules(testAlbForwardingRuleVar, testAlbForwardingRuleVar).Return(testAlbForwardingRules, nil, nil)
+		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().ListForwardingRules(testAlbForwardingRuleVar, testAlbForwardingRuleVar, resources.ListQueryParams{}).Return(testAlbForwardingRules, nil, nil)
 		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().DeleteForwardingRule(testAlbForwardingRuleVar, testAlbForwardingRuleVar, testAlbForwardingRuleVar).Return(&testResponse, testApplicationLoadBalancerForwardingRuleErr)
 		err := RunApplicationLoadBalancerForwardingRuleDelete(cfg)
 		assert.Error(t, err)
@@ -469,7 +488,7 @@ func TestRunApplicationLoadBalancerForwardingRuleDeleteAllListErr(t *testing.T) 
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testAlbForwardingRuleVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgApplicationLoadBalancerId), testAlbForwardingRuleVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
-		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().ListForwardingRules(testAlbForwardingRuleVar, testAlbForwardingRuleVar).Return(testAlbForwardingRules, nil, testApplicationLoadBalancerForwardingRuleErr)
+		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().ListForwardingRules(testAlbForwardingRuleVar, testAlbForwardingRuleVar, resources.ListQueryParams{}).Return(testAlbForwardingRules, nil, testApplicationLoadBalancerForwardingRuleErr)
 		err := RunApplicationLoadBalancerForwardingRuleDelete(cfg)
 		assert.Error(t, err)
 	})

@@ -175,7 +175,7 @@ func TestRunSnapshotList(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgVerbose, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		rm.CloudApiV6Mocks.Snapshot.EXPECT().List(resources.ListQueryParams{}).Return(snapshots, &testResponse, nil)
 		err := RunSnapshotList(cfg)
@@ -189,7 +189,7 @@ func TestRunSnapshotListQueryParams(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgVerbose, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgFilters), []string{fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar)})
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgOrderBy), testQueryParamVar)
@@ -233,7 +233,7 @@ func TestRunSnapshotGet(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgVerbose, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgSnapshotId), testSnapshotVar)
 		rm.CloudApiV6Mocks.Snapshot.EXPECT().Get(testSnapshotVar).Return(&snapshotTest, &testResponse, nil)
@@ -262,7 +262,7 @@ func TestRunSnapshotCreate(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgVerbose, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgName), testSnapshotVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testSnapshotVar)
@@ -305,7 +305,7 @@ func TestRunSnapshotUpdate(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgVerbose, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgSnapshotId), testSnapshotVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDescription), testSnapshotNewVar)
@@ -366,7 +366,7 @@ func TestRunSnapshotRestore(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgForce, true)
-		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgVerbose, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgSnapshotId), testSnapshotVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgVolumeId), testSnapshotVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testSnapshotVar)
@@ -422,7 +422,7 @@ func TestRunSnapshotDelete(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgForce, true)
-		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgVerbose, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgSnapshotId), testSnapshotVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		rm.CloudApiV6Mocks.Snapshot.EXPECT().Delete(testSnapshotVar).Return(&testResponse, nil)
@@ -437,7 +437,7 @@ func TestRunSnapshotDeleteAll(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgVerbose, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgForce, true)
@@ -457,7 +457,7 @@ func TestRunSnapshotDeleteAllListErr(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgVerbose, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgForce, true)
@@ -475,7 +475,7 @@ func TestRunSnapshotDeleteAllItemsErr(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgVerbose, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgForce, true)
@@ -494,7 +494,7 @@ func TestRunSnapshotDeleteAllLenErr(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgVerbose, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgForce, true)
@@ -513,7 +513,7 @@ func TestRunSnapshotDeleteAllErr(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgVerbose, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgForce, true)

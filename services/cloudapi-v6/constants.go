@@ -252,6 +252,7 @@ const (
 	DefaultTimeoutSeconds  = int(60)
 	NlbTimeoutSeconds      = int(300)
 	LbTimeoutSeconds       = int(300)
+	AlbTimeoutSeconds      = int(10000)
 	K8sTimeoutSeconds      = int(600)
 	DefaultServerCores     = 2
 	DefaultVolumeSize      = 10

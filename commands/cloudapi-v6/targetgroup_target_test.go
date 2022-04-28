@@ -470,7 +470,7 @@ func TestRunTargetGroupTargetRemoveAll(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgForce, true)
-		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgVerbose, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgTargetGroupId), testTargetGroupTargetVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
 		rm.CloudApiV6Mocks.TargetGroup.EXPECT().Get(testTargetGroupTargetVar).Return(&testTargetGroupTargetGetUpdated, nil, nil)

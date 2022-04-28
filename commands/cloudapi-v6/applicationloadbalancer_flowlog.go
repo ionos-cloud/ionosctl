@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/fatih/structs"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/query"
 	"go.uber.org/multierr"
 	"os"
 
@@ -58,6 +60,15 @@ func ApplicationLoadBalancerFlowLogCmd() *core.Command {
 	list.AddStringSliceFlag(config.ArgCols, "", defaultFlowLogCols, printer.ColsMessage(defaultFlowLogCols))
 	_ = list.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultFlowLogCols, cobra.ShellCompDirectiveNoFileComp
+	})
+	list.AddIntFlag(cloudapiv6.ArgMaxResults, cloudapiv6.ArgMaxResultsShort, 0, "The maximum number of elements to return")
+	list.AddStringFlag(cloudapiv6.ArgOrderBy, "", "", "Limits results to those containing a matching value for a specific property")
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgOrderBy, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.BackupUnitsFilters(), cobra.ShellCompDirectiveNoFileComp
+	})
+	list.AddStringSliceFlag(cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, "Limits results to those containing a matching value for a specific property. Use the following format to set filters: --filters KEY1=VALUE1,KEY2=VALUE2")
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgFilters, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.BackupUnitsFilters(), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -255,10 +266,19 @@ func PreRunDcApplicationLoadBalancerFlowLogIds(c *core.PreCommandConfig) error {
 func RunApplicationLoadBalancerFlowLogList(c *core.CommandConfig) error {
 	c.Printer.Verbose("Datacenter ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
 	c.Printer.Verbose("ApplicationLoadBalancer ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)))
+	// Add Query Parameters for GET Requests
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	if !structs.IsZero(listQueryParams) {
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams))
+	}
 	c.Printer.Verbose("Getting FlowLogs")
 	applicationloadbalancerFlowLogs, resp, err := c.CloudApiV6Services.ApplicationLoadBalancers().ListFlowLogs(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
+		listQueryParams,
 	)
 	if resp != nil {
 		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
@@ -392,6 +412,7 @@ func DeleteAllApplicationLoadBalancerFlowLog(c *core.CommandConfig) error {
 	applicationLoadBalancerFlowlogs, resp, err := c.CloudApiV6Services.ApplicationLoadBalancers().ListFlowLogs(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
+		resources.ListQueryParams{},
 	)
 	if err != nil {
 		return err

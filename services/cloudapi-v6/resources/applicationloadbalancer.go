@@ -2,6 +2,7 @@ package resources
 
 import (
 	"context"
+	"github.com/fatih/structs"
 
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
@@ -44,17 +45,17 @@ type ApplicationLoadBalancerForwardingRules struct {
 
 // ApplicationLoadBalancersService is a wrapper around ionoscloud.ApplicationLoadBalancer
 type ApplicationLoadBalancersService interface {
-	List(datacenterId string) (ApplicationLoadBalancers, *Response, error)
+	List(datacenterId string, params ListQueryParams) (ApplicationLoadBalancers, *Response, error)
 	Get(datacenterId, applicationLoadBalancerId string) (*ApplicationLoadBalancer, *Response, error)
 	Create(datacenterId string, input ApplicationLoadBalancer) (*ApplicationLoadBalancer, *Response, error)
 	Update(datacenterId, applicationLoadBalancerId string, input ApplicationLoadBalancerProperties) (*ApplicationLoadBalancer, *Response, error)
 	Delete(datacenterId, applicationLoadBalancerId string) (*Response, error)
-	ListForwardingRules(datacenterId, applicationLoadBalancerId string) (ApplicationLoadBalancerForwardingRules, *Response, error)
+	ListForwardingRules(datacenterId, applicationLoadBalancerId string, params ListQueryParams) (ApplicationLoadBalancerForwardingRules, *Response, error)
 	GetForwardingRule(datacenterId, applicationLoadBalancerId, forwardingRuleId string) (*ApplicationLoadBalancerForwardingRule, *Response, error)
 	CreateForwardingRule(datacenterId, applicationLoadBalancerId string, input ApplicationLoadBalancerForwardingRule) (*ApplicationLoadBalancerForwardingRule, *Response, error)
 	UpdateForwardingRule(datacenterId, applicationLoadBalancerId, forwardingRuleId string, input *ApplicationLoadBalancerForwardingRuleProperties) (*ApplicationLoadBalancerForwardingRule, *Response, error)
 	DeleteForwardingRule(datacenterId, applicationLoadBalancerId, forwardingRuleId string) (*Response, error)
-	ListFlowLogs(datacenterId, applicationLoadBalancerId string) (FlowLogs, *Response, error)
+	ListFlowLogs(datacenterId, applicationLoadBalancerId string, params ListQueryParams) (FlowLogs, *Response, error)
 	GetFlowLog(datacenterId, applicationLoadBalancerId, flowLogId string) (*FlowLog, *Response, error)
 	CreateFlowLog(datacenterId, applicationLoadBalancerId string, input FlowLog) (*FlowLog, *Response, error)
 	UpdateFlowLog(datacenterId, applicationLoadBalancerId, flowLogId string, input *FlowLogProperties) (*FlowLog, *Response, error)
@@ -75,8 +76,21 @@ func NewApplicationLoadBalancerService(client *Client, ctx context.Context) Appl
 	}
 }
 
-func (svc *applicationLoadBalancersService) List(datacenterId string) (ApplicationLoadBalancers, *Response, error) {
+func (svc *applicationLoadBalancersService) List(datacenterId string, params ListQueryParams) (ApplicationLoadBalancers, *Response, error) {
 	req := svc.client.ApplicationLoadBalancersApi.DatacentersApplicationloadbalancersGet(svc.context, datacenterId)
+	if !structs.IsZero(params) {
+		if params.Filters != nil {
+			for k, v := range *params.Filters {
+				req = req.Filter(k, v)
+			}
+		}
+		if params.OrderBy != nil {
+			req = req.OrderBy(*params.OrderBy)
+		}
+		if params.MaxResults != nil {
+			req = req.MaxResults(*params.MaxResults)
+		}
+	}
 	applicationLoadBalancers, resp, err := svc.client.ApplicationLoadBalancersApi.DatacentersApplicationloadbalancersGetExecute(req)
 	return ApplicationLoadBalancers{applicationLoadBalancers}, &Response{*resp}, err
 }
@@ -105,8 +119,21 @@ func (svc *applicationLoadBalancersService) Delete(datacenterId, applicationLoad
 	return &Response{*resp}, err
 }
 
-func (svc *applicationLoadBalancersService) ListForwardingRules(datacenterId, applicationLoadBalancerId string) (ApplicationLoadBalancerForwardingRules, *Response, error) {
+func (svc *applicationLoadBalancersService) ListForwardingRules(datacenterId, applicationLoadBalancerId string, params ListQueryParams) (ApplicationLoadBalancerForwardingRules, *Response, error) {
 	req := svc.client.ApplicationLoadBalancersApi.DatacentersApplicationloadbalancersForwardingrulesGet(svc.context, datacenterId, applicationLoadBalancerId)
+	if !structs.IsZero(params) {
+		if params.Filters != nil {
+			for k, v := range *params.Filters {
+				req = req.Filter(k, v)
+			}
+		}
+		if params.OrderBy != nil {
+			req = req.OrderBy(*params.OrderBy)
+		}
+		if params.MaxResults != nil {
+			req = req.MaxResults(*params.MaxResults)
+		}
+	}
 	applicationLoadBalancerRules, resp, err := svc.client.ApplicationLoadBalancersApi.DatacentersApplicationloadbalancersForwardingrulesGetExecute(req)
 	return ApplicationLoadBalancerForwardingRules{applicationLoadBalancerRules}, &Response{*resp}, err
 }
@@ -135,8 +162,21 @@ func (svc *applicationLoadBalancersService) DeleteForwardingRule(datacenterId, a
 	return &Response{*resp}, err
 }
 
-func (svc *applicationLoadBalancersService) ListFlowLogs(datacenterId, applicationLoadBalancerId string) (FlowLogs, *Response, error) {
+func (svc *applicationLoadBalancersService) ListFlowLogs(datacenterId, applicationLoadBalancerId string, params ListQueryParams) (FlowLogs, *Response, error) {
 	req := svc.client.ApplicationLoadBalancersApi.DatacentersApplicationloadbalancersFlowlogsGet(svc.context, datacenterId, applicationLoadBalancerId)
+	if !structs.IsZero(params) {
+		if params.Filters != nil {
+			for k, v := range *params.Filters {
+				req = req.Filter(k, v)
+			}
+		}
+		if params.OrderBy != nil {
+			req = req.OrderBy(*params.OrderBy)
+		}
+		if params.MaxResults != nil {
+			req = req.MaxResults(*params.MaxResults)
+		}
+	}
 	flowLogs, resp, err := svc.client.ApplicationLoadBalancersApi.DatacentersApplicationloadbalancersFlowlogsGetExecute(req)
 	return FlowLogs{flowLogs}, &Response{*resp}, err
 }

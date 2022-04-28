@@ -14,7 +14,13 @@ func TestNewTargetGroupService(t *testing.T) {
 	t.Run("list_targetgroups_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		targetgroupSvc := NewTargetGroupService(svc.Get(), ctx)
-		_, _, err := targetgroupSvc.List()
+		_, _, err := targetgroupSvc.List(ListQueryParams{})
+		assert.Error(t, err)
+	})
+	t.Run("list_targetgroups_filters_error", func(t *testing.T) {
+		svc := getTestClient(t)
+		targetgroupSvc := NewTargetGroupService(svc.Get(), ctx)
+		_, _, err := targetgroupSvc.List(testListQueryParam)
 		assert.Error(t, err)
 	})
 	t.Run("get_targetgroup_error", func(t *testing.T) {

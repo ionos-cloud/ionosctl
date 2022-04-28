@@ -215,7 +215,7 @@ func TestRunGroupList(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgVerbose, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		rm.CloudApiV6Mocks.Group.EXPECT().List(resources.ListQueryParams{}).Return(groups, &testResponse, nil)
 		err := RunGroupList(cfg)
@@ -229,7 +229,7 @@ func TestRunGroupListQueryParams(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgVerbose, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgFilters), []string{fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar)})
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgOrderBy), testQueryParamVar)
@@ -259,7 +259,7 @@ func TestRunGroupGet(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgVerbose, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgGroupId), testGroupVar)
 		rm.CloudApiV6Mocks.Group.EXPECT().Get(testGroupVar).Return(&groupTestGet, &testResponse, nil)
@@ -302,7 +302,7 @@ func TestRunGroupCreate(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgVerbose, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgName), testGroupVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgCreateNic), testGroupBoolVar)
@@ -409,7 +409,7 @@ func TestRunGroupUpdate(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgVerbose, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgGroupId), testGroupVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgName), testGroupNewVar)
@@ -501,7 +501,7 @@ func TestRunGroupDelete(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgForce, true)
-		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgVerbose, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgGroupId), testGroupVar)
 		rm.CloudApiV6Mocks.Group.EXPECT().Delete(testGroupVar).Return(&testResponse, nil)
 		err := RunGroupDelete(cfg)

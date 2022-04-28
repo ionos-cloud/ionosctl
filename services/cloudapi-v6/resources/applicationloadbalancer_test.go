@@ -14,7 +14,13 @@ func TestNewApplicationLoadBalancerService(t *testing.T) {
 	t.Run("list_applicationloadbalancers_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		applicationloadbalancerSvc := NewApplicationLoadBalancerService(svc.Get(), ctx)
-		_, _, err := applicationloadbalancerSvc.List(testApplicationLoadBalancerResourceVar)
+		_, _, err := applicationloadbalancerSvc.List(testApplicationLoadBalancerResourceVar, ListQueryParams{})
+		assert.Error(t, err)
+	})
+	t.Run("list_applicationloadbalancers_filters_error", func(t *testing.T) {
+		svc := getTestClient(t)
+		applicationloadbalancerSvc := NewApplicationLoadBalancerService(svc.Get(), ctx)
+		_, _, err := applicationloadbalancerSvc.List(testApplicationLoadBalancerResourceVar, testListQueryParam)
 		assert.Error(t, err)
 	})
 	t.Run("get_applicationloadbalancer_error", func(t *testing.T) {
@@ -44,7 +50,13 @@ func TestNewApplicationLoadBalancerService(t *testing.T) {
 	t.Run("listrules_applicationloadbalancer_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		applicationloadbalancerSvc := NewApplicationLoadBalancerService(svc.Get(), ctx)
-		_, _, err := applicationloadbalancerSvc.ListForwardingRules(testApplicationLoadBalancerResourceVar, testApplicationLoadBalancerResourceVar)
+		_, _, err := applicationloadbalancerSvc.ListForwardingRules(testApplicationLoadBalancerResourceVar, testApplicationLoadBalancerResourceVar, ListQueryParams{})
+		assert.Error(t, err)
+	})
+	t.Run("listrules_applicationloadbalancer_filters_error", func(t *testing.T) {
+		svc := getTestClient(t)
+		applicationloadbalancerSvc := NewApplicationLoadBalancerService(svc.Get(), ctx)
+		_, _, err := applicationloadbalancerSvc.ListForwardingRules(testApplicationLoadBalancerResourceVar, testApplicationLoadBalancerResourceVar, testListQueryParam)
 		assert.Error(t, err)
 	})
 	t.Run("getrule_applicationloadbalancer_error", func(t *testing.T) {
@@ -76,7 +88,13 @@ func TestNewApplicationLoadBalancerService(t *testing.T) {
 	t.Run("listflowlogs_applicationloadbalancer_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		applicationloadbalancerSvc := NewApplicationLoadBalancerService(svc.Get(), ctx)
-		_, _, err := applicationloadbalancerSvc.ListFlowLogs(testApplicationLoadBalancerResourceVar, testApplicationLoadBalancerResourceVar)
+		_, _, err := applicationloadbalancerSvc.ListFlowLogs(testApplicationLoadBalancerResourceVar, testApplicationLoadBalancerResourceVar, ListQueryParams{})
+		assert.Error(t, err)
+	})
+	t.Run("listflowlogs_applicationloadbalancer_filters_error", func(t *testing.T) {
+		svc := getTestClient(t)
+		applicationloadbalancerSvc := NewApplicationLoadBalancerService(svc.Get(), ctx)
+		_, _, err := applicationloadbalancerSvc.ListFlowLogs(testApplicationLoadBalancerResourceVar, testApplicationLoadBalancerResourceVar, testListQueryParam)
 		assert.Error(t, err)
 	})
 	t.Run("getflowlog_applicationloadbalancer_error", func(t *testing.T) {

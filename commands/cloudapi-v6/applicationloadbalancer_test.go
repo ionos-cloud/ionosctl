@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
+	"fmt"
 	"os"
 	"regexp"
 	"testing"
@@ -133,9 +134,27 @@ func TestRunApplicationLoadBalancerList(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgVerbose, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testApplicationLoadBalancerVar)
-		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().List(testApplicationLoadBalancerVar).Return(applicationloadbalancers, &testResponse, nil)
+		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().List(testApplicationLoadBalancerVar, resources.ListQueryParams{}).Return(applicationloadbalancers, &testResponse, nil)
+		err := RunApplicationLoadBalancerList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunApplicationLoadBalancerListQueryParams(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgVerbose, false)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testApplicationLoadBalancerVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgFilters), []string{fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar)})
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgOrderBy), testQueryParamVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgMaxResults), testMaxResultsVar)
+		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().List(testApplicationLoadBalancerVar, testListQueryParam).Return(applicationloadbalancers, &testResponse, nil)
 		err := RunApplicationLoadBalancerList(cfg)
 		assert.NoError(t, err)
 	})
@@ -149,7 +168,7 @@ func TestRunApplicationLoadBalancerListErr(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testApplicationLoadBalancerVar)
-		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().List(testApplicationLoadBalancerVar).Return(applicationloadbalancers, nil, testApplicationLoadBalancerErr)
+		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().List(testApplicationLoadBalancerVar, resources.ListQueryParams{}).Return(applicationloadbalancers, nil, testApplicationLoadBalancerErr)
 		err := RunApplicationLoadBalancerList(cfg)
 		assert.Error(t, err)
 	})
@@ -177,7 +196,7 @@ func TestRunApplicationLoadBalancerGetResponse(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgVerbose, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testApplicationLoadBalancerVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgApplicationLoadBalancerId), testApplicationLoadBalancerVar)
 		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().Get(testApplicationLoadBalancerVar, testApplicationLoadBalancerVar).Return(&applicationloadbalancerTestGet, &testResponse, nil)
@@ -400,7 +419,7 @@ func TestRunApplicationLoadBalancerDeleteAll(t *testing.T) {
 		viper.Set(config.ArgForce, true)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testApplicationLoadBalancerVar)
-		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().List(testApplicationLoadBalancerVar).Return(applicationloadbalancers, &testResponse, nil)
+		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().List(testApplicationLoadBalancerVar, resources.ListQueryParams{}).Return(applicationloadbalancers, &testResponse, nil)
 		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().Delete(testApplicationLoadBalancerVar, testApplicationLoadBalancerVar).Return(nil, nil)
 		err := RunApplicationLoadBalancerDelete(cfg)
 		assert.NoError(t, err)
@@ -415,10 +434,10 @@ func TestRunApplicationLoadBalancerDeleteAllResponse(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgForce, true)
-		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgVerbose, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testApplicationLoadBalancerVar)
-		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().List(testApplicationLoadBalancerVar).Return(applicationloadbalancers, &testResponse, nil)
+		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().List(testApplicationLoadBalancerVar, resources.ListQueryParams{}).Return(applicationloadbalancers, &testResponse, nil)
 		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().Delete(testApplicationLoadBalancerVar, testApplicationLoadBalancerVar).Return(&testResponse, nil)
 		err := RunApplicationLoadBalancerDelete(cfg)
 		assert.NoError(t, err)
@@ -435,7 +454,7 @@ func TestRunApplicationLoadBalancerDeleteAllErr(t *testing.T) {
 		viper.Set(config.ArgForce, true)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testApplicationLoadBalancerVar)
-		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().List(testApplicationLoadBalancerVar).Return(applicationloadbalancers, &testResponse, testApplicationLoadBalancerErr)
+		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().List(testApplicationLoadBalancerVar, resources.ListQueryParams{}).Return(applicationloadbalancers, &testResponse, testApplicationLoadBalancerErr)
 		err := RunApplicationLoadBalancerDelete(cfg)
 		assert.Error(t, err)
 	})
@@ -452,7 +471,7 @@ func TestRunApplicationLoadBalancerDeleteAllAskForConfirmErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testApplicationLoadBalancerVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
 		cfg.Stdin = os.Stdin
-		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().List(testApplicationLoadBalancerVar).Return(applicationloadbalancers, &testResponse, nil)
+		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().List(testApplicationLoadBalancerVar, resources.ListQueryParams{}).Return(applicationloadbalancers, &testResponse, nil)
 		err := RunApplicationLoadBalancerDelete(cfg)
 		assert.Error(t, err)
 	})

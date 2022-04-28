@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
+	"fmt"
 	"os"
 	"regexp"
 	"testing"
@@ -178,7 +179,23 @@ func TestRunTargetGroupList(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		rm.CloudApiV6Mocks.TargetGroup.EXPECT().List().Return(targetGroups, nil, nil)
+		rm.CloudApiV6Mocks.TargetGroup.EXPECT().List(resources.ListQueryParams{}).Return(targetGroups, nil, nil)
+		err := RunTargetGroupList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunTargetGroupListQueryParams(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgFilters), []string{fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar)})
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgOrderBy), testQueryParamVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgMaxResults), testMaxResultsVar)
+		rm.CloudApiV6Mocks.TargetGroup.EXPECT().List(testListQueryParam).Return(targetGroups, nil, nil)
 		err := RunTargetGroupList(cfg)
 		assert.NoError(t, err)
 	})
@@ -191,8 +208,8 @@ func TestRunTargetGroupListResponse(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgVerbose, true)
-		rm.CloudApiV6Mocks.TargetGroup.EXPECT().List().Return(targetGroups, &testResponse, nil)
+		viper.Set(config.ArgVerbose, false)
+		rm.CloudApiV6Mocks.TargetGroup.EXPECT().List(resources.ListQueryParams{}).Return(targetGroups, &testResponse, nil)
 		err := RunTargetGroupList(cfg)
 		assert.NoError(t, err)
 	})
@@ -205,7 +222,7 @@ func TestRunTargetGroupListErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		rm.CloudApiV6Mocks.TargetGroup.EXPECT().List().Return(targetGroups, nil, testTargetGroupErr)
+		rm.CloudApiV6Mocks.TargetGroup.EXPECT().List(resources.ListQueryParams{}).Return(targetGroups, nil, testTargetGroupErr)
 		err := RunTargetGroupList(cfg)
 		assert.Error(t, err)
 	})
@@ -219,7 +236,7 @@ func TestRunTargetGroupListSort(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLicenceType), testTargetGroupVar)
-		rm.CloudApiV6Mocks.TargetGroup.EXPECT().List().Return(targetGroups, nil, nil)
+		rm.CloudApiV6Mocks.TargetGroup.EXPECT().List(resources.ListQueryParams{}).Return(targetGroups, nil, nil)
 		err := RunTargetGroupList(cfg)
 		assert.NoError(t, err)
 	})
@@ -353,7 +370,7 @@ func TestRunTargetGroupUpdateErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgVerbose, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgTargetGroupId), testTargetGroupVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgName), testTargetGroupNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAlgorithm), testTargetGroupNewVar)
@@ -401,7 +418,7 @@ func TestRunTargetGroupDeleteAll(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgTargetGroupId), testTargetGroupVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
-		rm.CloudApiV6Mocks.TargetGroup.EXPECT().List().Return(targetGroups, nil, nil)
+		rm.CloudApiV6Mocks.TargetGroup.EXPECT().List(resources.ListQueryParams{}).Return(targetGroups, nil, nil)
 		rm.CloudApiV6Mocks.TargetGroup.EXPECT().Delete(testTargetGroupVar).Return(nil, nil)
 		err := RunTargetGroupDelete(cfg)
 		assert.NoError(t, err)
@@ -419,7 +436,7 @@ func TestRunTargetGroupDeleteAllErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgTargetGroupId), testTargetGroupVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
-		rm.CloudApiV6Mocks.TargetGroup.EXPECT().List().Return(targetGroups, nil, nil)
+		rm.CloudApiV6Mocks.TargetGroup.EXPECT().List(resources.ListQueryParams{}).Return(targetGroups, nil, nil)
 		rm.CloudApiV6Mocks.TargetGroup.EXPECT().Delete(testTargetGroupVar).Return(nil, testTargetGroupTargetErr)
 		err := RunTargetGroupDelete(cfg)
 		assert.Error(t, err)
@@ -437,7 +454,7 @@ func TestRunTargetGroupDeleteAllListErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgTargetGroupId), testTargetGroupVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
-		rm.CloudApiV6Mocks.TargetGroup.EXPECT().List().Return(targetGroups, nil, testTargetGroupTargetErr)
+		rm.CloudApiV6Mocks.TargetGroup.EXPECT().List(resources.ListQueryParams{}).Return(targetGroups, nil, testTargetGroupTargetErr)
 		err := RunTargetGroupDelete(cfg)
 		assert.Error(t, err)
 	})
@@ -451,7 +468,7 @@ func TestRunTargetGroupDeleteErr(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgForce, true)
-		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgVerbose, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgTargetGroupId), testTargetGroupVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		rm.CloudApiV6Mocks.TargetGroup.EXPECT().Delete(testTargetGroupVar).Return(&testResponse, testTargetGroupErr)

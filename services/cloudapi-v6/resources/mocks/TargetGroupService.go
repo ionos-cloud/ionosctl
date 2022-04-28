@@ -82,9 +82,9 @@ func (mr *MockTargetGroupsServiceMockRecorder) Get(targetGroupId interface{}) *g
 }
 
 // List mocks base method.
-func (m *MockTargetGroupsService) List() (resources.TargetGroups, *resources.Response, error) {
+func (m *MockTargetGroupsService) List(params resources.ListQueryParams) (resources.TargetGroups, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "List")
+	ret := m.ctrl.Call(m, "List", params)
 	ret0, _ := ret[0].(resources.TargetGroups)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -92,9 +92,9 @@ func (m *MockTargetGroupsService) List() (resources.TargetGroups, *resources.Res
 }
 
 // List indicates an expected call of List.
-func (mr *MockTargetGroupsServiceMockRecorder) List() *gomock.Call {
+func (mr *MockTargetGroupsServiceMockRecorder) List(params interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockTargetGroupsService)(nil).List))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockTargetGroupsService)(nil).List), params)
 }
 
 // Update mocks base method.

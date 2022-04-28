@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/query"
 	"go.uber.org/multierr"
 	"io"
 	"os"
@@ -59,6 +60,15 @@ func ApplicationLoadBalancerCmd() *core.Command {
 	list.AddStringFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
 	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+	})
+	list.AddIntFlag(cloudapiv6.ArgMaxResults, cloudapiv6.ArgMaxResultsShort, 0, "The maximum number of elements to return")
+	list.AddStringFlag(cloudapiv6.ArgOrderBy, "", "", "Limits results to those containing a matching value for a specific property")
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgOrderBy, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.BackupUnitsFilters(), cobra.ShellCompDirectiveNoFileComp
+	})
+	list.AddStringSliceFlag(cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, "Limits results to those containing a matching value for a specific property. Use the following format to set filters: --filters KEY1=VALUE1,KEY2=VALUE2")
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgFilters, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.BackupUnitsFilters(), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -118,7 +128,7 @@ Required values to run command:
 	create.AddStringSliceFlag(cloudapiv6.ArgIps, "", []string{""}, "Collection of the Application Load Balancer IP addresses. (Inbound and outbound) IPs of the listenerLan are customer-reserved public IPs for the public Load Balancers, and private IPs for the private Load Balancers.")
 	create.AddStringSliceFlag(cloudapiv6.ArgPrivateIps, "", []string{""}, "Collection of private IP addresses with the subnet mask of the Application Load Balancer. IPs must contain valid a subnet mask. If no IP is provided, the system will generate an IP with /24 subnet.")
 	create.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Application Load Balancer creation to be executed")
-	create.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, cloudapiv6.LbTimeoutSeconds, "Timeout option for Request for Application Load Balancer creation [seconds]")
+	create.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, cloudapiv6.AlbTimeoutSeconds, "Timeout option for Request for Application Load Balancer creation [seconds]")
 
 	/*
 		Update Command
@@ -210,8 +220,16 @@ func PreRunApplicationLoadBalancerDelete(c *core.PreCommandConfig) error {
 }
 
 func RunApplicationLoadBalancerList(c *core.CommandConfig) error {
+	// Add Query Parameters for GET Requests
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	if !structs.IsZero(listQueryParams) {
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams))
+	}
 	c.Printer.Verbose("Getting ApplicationLoadBalancers from Datacenter with ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
-	applicationloadbalancers, resp, err := c.CloudApiV6Services.ApplicationLoadBalancers().List(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
+	applicationloadbalancers, resp, err := c.CloudApiV6Services.ApplicationLoadBalancers().List(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)), listQueryParams)
 	if resp != nil {
 		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
@@ -333,7 +351,7 @@ func RunApplicationLoadBalancerDelete(c *core.CommandConfig) error {
 
 func DeleteAllApplicationLoadBalancer(c *core.CommandConfig) error {
 	_ = c.Printer.Print("Getting Application Load Balancers...")
-	applicationLoadBalancers, resp, err := c.CloudApiV6Services.ApplicationLoadBalancers().List(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
+	applicationLoadBalancers, resp, err := c.CloudApiV6Services.ApplicationLoadBalancers().List(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)), resources.ListQueryParams{})
 	if err != nil {
 		return err
 	}
