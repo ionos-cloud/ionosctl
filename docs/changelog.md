@@ -1,5 +1,16 @@
 # Changelog
 
+## \[6.1.6\] (May 2022) (upcoming release)
+
+### Features
+* added new values for `--storage-type` option for `ionosctl dbaas postgres cluster create` command: **SSD_PREMIUM**, **SSD_STANDARD**.
+  * Note: Value **SSD** is deprecated. Use the equivalent **SSD_PREMIUM** instead.
+* added option to do certificate pinning by using `IONOS_PINNED_CERT` environment variable for the `ionosctl dbaas postgres` commands. 
+  * Note: Set the `IONOS_PINNED_CERT` environment variable to be the public sha256 fingerprint of the certificate to be pinned.
+
+### Dependency-update
+* updated SDK-Go-DBaaS Postgres version from [v1.0.2](https://github.com/ionos-cloud/sdk-go-dbaas-postgres/releases/tag/v1.0.2) to [v1.0.3](https://github.com/ionos-cloud/sdk-go-dbaas-postgres/releases/tag/v1.0.3)
+
 ## \[6.1.5\] (April 2022)
 
 ### Fixes

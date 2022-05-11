@@ -177,8 +177,8 @@ github.com/inconshreveable/mousetrap v1.0.0 h1:Z8tu5sraLXCXIcARxBp/8cbvlwVa7Z1NH
 github.com/inconshreveable/mousetrap v1.0.0/go.mod h1:PxqpIevigyE2G7u3NXJIT2ANytuPF1OarO4DADm73n8=
 github.com/ionos-cloud/sdk-go-auth v1.0.3 h1:LMdgeziE/amluoA7aO5Jac7hwVwUgbXG8Pck2PBgVIk=
 github.com/ionos-cloud/sdk-go-auth v1.0.3/go.mod h1:YVinbTXBg0Kz4mNJ9BUxv9W7swXfKbquGEsyTpxXCIk=
-github.com/ionos-cloud/sdk-go-dbaas-postgres v1.0.2 h1:ujTk8jkK6t1XCrbpCwAaTjbBk3RS87U7sgJ6wXarX/E=
-github.com/ionos-cloud/sdk-go-dbaas-postgres v1.0.2/go.mod h1:87cFAQViqjorhuafmYIDCmCTr5GiaqDB7qr09K1gdOU=
+github.com/ionos-cloud/sdk-go-dbaas-postgres v1.0.3 h1:ahzztBNJ1IcQL+hdzhek6234P4ednkqdOgTsfB0nEfE=
+github.com/ionos-cloud/sdk-go-dbaas-postgres v1.0.3/go.mod h1:87cFAQViqjorhuafmYIDCmCTr5GiaqDB7qr09K1gdOU=
 github.com/ionos-cloud/sdk-go/v6 v6.0.2 h1:uXuP/PB4pWY1Hm9XUkjekQcNFQxJumLkUOOZ/lkATNc=
 github.com/ionos-cloud/sdk-go/v6 v6.0.2/go.mod h1:UE3V/2DjnqD5doOqtjYqzJRMpI1RiwrvuuSEPX1pdnk=
 github.com/json-iterator/go v1.1.11/go.mod h1:KdQUCv79m/52Kvf8AW2vK1V8akMuk1QjK/uOdHXbAo4=
