@@ -93,6 +93,41 @@ var (
 			},
 		},
 	}
+	testCreateClusterRequestSSDStandard = resources.CreateClusterRequest{
+		CreateClusterRequest: sdkgo.CreateClusterRequest{
+			Properties: &sdkgo.CreateClusterProperties{
+				DisplayName:         &testClusterVar,
+				PostgresVersion:     &testClusterVar,
+				Location:            &testClusterVar,
+				BackupLocation:      &testClusterBackupLocation,
+				Instances:           &testClusterIntVar,
+				Ram:                 &testClusterIntVar,
+				Cores:               &testClusterIntVar,
+				StorageSize:         &testClusterIntVar,
+				SynchronizationMode: &testSyncModeVar,
+				StorageType:         &testClusterStorageTypeSSDStandardVar,
+				Connections: &[]sdkgo.Connection{
+					{
+						DatacenterId: &testClusterVar,
+						LanId:        &testClusterVar,
+						Cidr:         &testClusterVar,
+					},
+				},
+				MaintenanceWindow: &sdkgo.MaintenanceWindow{
+					Time:         &testClusterVar,
+					DayOfTheWeek: (*sdkgo.DayOfTheWeek)(&testClusterVar),
+				},
+				Credentials: &sdkgo.DBUser{
+					Username: &testClusterVar,
+					Password: &testClusterVar,
+				},
+				FromBackup: &sdkgo.CreateRestoreRequest{
+					BackupId:           &testClusterVar,
+					RecoveryTargetTime: &testIonosTime,
+				},
+			},
+		},
+	}
 	testPatchClusterRequest = resources.PatchClusterRequest{
 		PatchClusterRequest: sdkgo.PatchClusterRequest{
 			Properties: &sdkgo.PatchClusterProperties{
@@ -215,6 +250,37 @@ var (
 			},
 		},
 	}
+	testClusterGetSSDStandard = resources.ClusterResponse{
+		ClusterResponse: sdkgo.ClusterResponse{
+			Id: &testClusterVar,
+			Properties: &sdkgo.ClusterProperties{
+				DisplayName:         &testClusterVar,
+				PostgresVersion:     &testClusterVar,
+				Location:            &testClusterVar,
+				BackupLocation:      &testClusterBackupLocation,
+				SynchronizationMode: &testSyncModeVar,
+				Instances:           &testClusterIntVar,
+				Ram:                 &testClusterIntVar,
+				Cores:               &testClusterIntVar,
+				StorageSize:         &testClusterIntVar,
+				StorageType:         &testClusterStorageTypeSSDStandardVar,
+				Connections: &[]sdkgo.Connection{
+					{
+						DatacenterId: &testClusterVar,
+						LanId:        &testClusterVar,
+						Cidr:         &testClusterVar,
+					},
+				},
+				MaintenanceWindow: &sdkgo.MaintenanceWindow{
+					Time:         &testClusterVar,
+					DayOfTheWeek: (*sdkgo.DayOfTheWeek)(&testClusterVar),
+				},
+			},
+			Metadata: &sdkgo.Metadata{
+				State: (*sdkgo.State)(&testClusterStateVar),
+			},
+		},
+	}
 	testClusterGetNoConnection = resources.ClusterResponse{
 		ClusterResponse: sdkgo.ClusterResponse{
 			Id: &testClusterVar,
@@ -285,20 +351,21 @@ var (
 	testIonosTime = sdkgo.IonosTime{
 		Time: time.Date(2021, 1, 1, 0, 0, 0, 0, time.UTC),
 	}
-	testSyncModeVar                     = sdkgo.SynchronizationMode(strings.ToUpper(testClusterVar))
-	testTimeArgVar                      = "2021-01-01T00:00:00Z"
-	testClusterBoolVar                  = true
-	testClusterStateFailedVar           = "FAILED"
-	testClusterStateVar                 = "AVAILABLE"
-	testClusterMbVar                    = "1MB"
-	testClusterBackupLocation           = "de"
-	testClusterIntVar                   = int32(1)
-	testClusterIntNewVar                = int32(2)
-	testClusterStorageTypeVar           = sdkgo.HDD
-	testClusterStorageTypeSSDPremiumVar = sdkgo.SSD_PREMIUM
-	testClusterVar                      = "test-cluster"
-	testClusterNewVar                   = "test-cluster-new"
-	testClusterErr                      = errors.New("test cluster error")
+	testSyncModeVar                      = sdkgo.SynchronizationMode(strings.ToUpper(testClusterVar))
+	testTimeArgVar                       = "2021-01-01T00:00:00Z"
+	testClusterBoolVar                   = true
+	testClusterStateFailedVar            = "FAILED"
+	testClusterStateVar                  = "AVAILABLE"
+	testClusterMbVar                     = "1MB"
+	testClusterBackupLocation            = "de"
+	testClusterIntVar                    = int32(1)
+	testClusterIntNewVar                 = int32(2)
+	testClusterStorageTypeVar            = sdkgo.HDD
+	testClusterStorageTypeSSDPremiumVar  = sdkgo.SSD_PREMIUM
+	testClusterStorageTypeSSDStandardVar = sdkgo.SSD_STANDARD
+	testClusterVar                       = "test-cluster"
+	testClusterNewVar                    = "test-cluster-new"
+	testClusterErr                       = errors.New("test cluster error")
 )
 
 func TestClusterCmd(t *testing.T) {
@@ -659,6 +726,40 @@ func TestRunClusterCreateSSDPremium(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgRecoveryTime), testTimeArgVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgBackupLocation), testClusterBackupLocation)
 		rm.CloudApiDbaasPgsqlMocks.Cluster.EXPECT().Create(testCreateClusterRequestSSDPremium).Return(&testClusterGetSSDPremium, nil, nil)
+		err := RunClusterCreate(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunClusterCreateSSDStandard(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgDatacenterId), testClusterVar)
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgLanId), testClusterVar)
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgCidr), testClusterVar)
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgVersion), testClusterVar)
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgLocation), testClusterVar)
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgInstances), testClusterIntVar)
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgRam), testClusterMbVar)
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgSyncMode), strings.ToUpper(testClusterVar))
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgCores), testClusterIntVar)
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgStorageSize), testClusterMbVar)
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgStorageType), "SSD_standard")
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgMaintenanceDay), testClusterVar)
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgMaintenanceTime), testClusterVar)
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgName), testClusterVar)
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgDbUsername), testClusterVar)
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgDbPassword), testClusterVar)
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgBackupId), testClusterVar)
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgRecoveryTime), testTimeArgVar)
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgBackupLocation), testClusterBackupLocation)
+		rm.CloudApiDbaasPgsqlMocks.Cluster.EXPECT().Create(testCreateClusterRequestSSDStandard).Return(&testClusterGetSSDStandard, nil, nil)
 		err := RunClusterCreate(cfg)
 		assert.NoError(t, err)
 	})
