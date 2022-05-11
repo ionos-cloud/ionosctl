@@ -1,6 +1,6 @@
 # Changelog
 
-## \[6.1.6\] (May 2022) (upcoming release)
+## \[6.1.6\] (May 2022)
 
 ### Features
 * added new values for `--storage-type` option for `ionosctl dbaas postgres cluster create` command: **SSD_PREMIUM**, **SSD_STANDARD**.
