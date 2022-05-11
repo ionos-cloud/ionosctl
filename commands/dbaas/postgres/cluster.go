@@ -132,9 +132,9 @@ Required values to run command:
 	_ = create.Command.RegisterFlagCompletionFunc(dbaaspg.ArgStorageSize, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"2048MB", "10GB", "20GB", "50GB"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(dbaaspg.ArgStorageType, "", "HDD", "The storage type used in your cluster")
+	create.AddStringFlag(dbaaspg.ArgStorageType, "", "HDD", "The storage type used in your cluster (Value \"SSD\" is deprecated. Use the equivalent \"SSD Premium\" instead)")
 	_ = create.Command.RegisterFlagCompletionFunc(dbaaspg.ArgStorageType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return []string{"HDD", "SSD"}, cobra.ShellCompDirectiveNoFileComp
+		return []string{"HDD", "SSD", "SSD_PREMIUM", "SSD_STANDARD"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddStringFlag(dbaaspg.ArgLocation, "", "", "The physical location where the cluster will be created. It cannot be modified after datacenter creation. If not set, it will be used Datacenter's location")
 	_ = create.Command.RegisterFlagCompletionFunc(dbaaspg.ArgLocation, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -556,17 +556,23 @@ func getCreateClusterRequest(c *core.CommandConfig) (*resources.CreateClusterReq
 	}
 	input.SetStorageSize(int32(storageSize))
 	c.Printer.Verbose("StorageSize: %v[MB]", int32(storageSize))
-	storageType := sdkgo.StorageType(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgStorageType)))
+	storageType := strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgStorageType)))
+	if storageType == "SSD_PREMIUM" || storageType == "SSD PREMIUM" {
+		storageType = string(sdkgo.SSD_PREMIUM)
+	}
+	if storageType == "SSD_STANDARD" || storageType == "SSD STANDARD" {
+		storageType = string(sdkgo.SSD_STANDARD)
+	}
 	c.Printer.Verbose("StorageType: %v", storageType)
-	input.SetStorageType(storageType)
+	input.SetStorageType(sdkgo.StorageType(storageType))
 	if viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgBackupLocation)) != "" {
 		c.Printer.Verbose("Backup Location: %v", viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgBackupLocation)))
-		input.SetBackupLocation(sdkgo.BackupLocation(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgBackupLocation))))
+		input.SetBackupLocation(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgBackupLocation)))
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgLocation)) {
 		location := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgLocation))
 		c.Printer.Verbose("Location: %v", location)
-		input.SetLocation(sdkgo.Location(location))
+		input.SetLocation(location)
 	} else {
 		c.Printer.Verbose("Getting Location from VDC...")
 		vdc, _, err := c.CloudApiV6Services.DataCenters().Get(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgDatacenterId)))
@@ -576,7 +582,7 @@ func getCreateClusterRequest(c *core.CommandConfig) (*resources.CreateClusterReq
 		if properties, ok := vdc.GetPropertiesOk(); ok && properties != nil {
 			if location, ok := properties.GetLocationOk(); ok && location != nil {
 				c.Printer.Verbose("Location: %v", *location)
-				input.SetLocation(sdkgo.Location(*location))
+				input.SetLocation(*location)
 			}
 		}
 	}
