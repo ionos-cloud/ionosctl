@@ -68,7 +68,7 @@ Required values to run command:
       --ram string                The amount of memory per instance. Size must be specified in multiples of 1024. The default unit is MB. Minimum: 2048. e.g. --ram 2048, --ram 2048MB, --ram 2GB (default "3GB")
   -R, --recovery-time string      If this value is supplied as ISO 8601 timestamp, the backup will be replayed up until the given timestamp. If empty, the backup will be applied completely
       --storage-size string       The amount of storage per instance. The default unit is MB. e.g.: --size 20480 or --size 20480MB or --size 20GB (default "20GB")
-      --storage-type string       The storage type used in your cluster (Value "SSD" is deprecated. Use the equivalent "SSD_PREMIUM" instead) (default "HDD")
+      --storage-type string       The storage type used in your cluster: HDD, SSD, SSD_PREMIUM, SSD_STANDARD. (Value "SSD" is deprecated. Use the equivalent "SSD_PREMIUM" instead) (default "HDD")
   -S, --sync string               Synchronization Mode. Represents different modes of replication (default "ASYNCHRONOUS")
   -t, --timeout int               Timeout option for Cluster to be in AVAILABLE state[seconds] (default 1200)
   -v, --verbose                   Print step-by-step process when running command
