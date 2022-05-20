@@ -1,5 +1,11 @@
 # Changelog
 
+## [6.1.7] (May 2022) 
+
+### Features 
+- removed `--public` option from `ionosctl k8s cluster create` command
+- removed `--gateway-ip` option from `ionosctl k8s nodepool create` command
+
 ## [6.1.6] (May 2022)
 
 ### Features
