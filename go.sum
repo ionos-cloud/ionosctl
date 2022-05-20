@@ -179,8 +179,8 @@ github.com/ionos-cloud/sdk-go-auth v1.0.3 h1:LMdgeziE/amluoA7aO5Jac7hwVwUgbXG8Pc
 github.com/ionos-cloud/sdk-go-auth v1.0.3/go.mod h1:YVinbTXBg0Kz4mNJ9BUxv9W7swXfKbquGEsyTpxXCIk=
 github.com/ionos-cloud/sdk-go-dbaas-postgres v1.0.3 h1:ahzztBNJ1IcQL+hdzhek6234P4ednkqdOgTsfB0nEfE=
 github.com/ionos-cloud/sdk-go-dbaas-postgres v1.0.3/go.mod h1:87cFAQViqjorhuafmYIDCmCTr5GiaqDB7qr09K1gdOU=
-github.com/ionos-cloud/sdk-go/v6 v6.0.2 h1:uXuP/PB4pWY1Hm9XUkjekQcNFQxJumLkUOOZ/lkATNc=
-github.com/ionos-cloud/sdk-go/v6 v6.0.2/go.mod h1:UE3V/2DjnqD5doOqtjYqzJRMpI1RiwrvuuSEPX1pdnk=
+github.com/ionos-cloud/sdk-go/v6 v6.0.4 h1:4LoWeM7WtcDqYDjlntqQ3fD6XaENlCw2YqiVWkHQbNA=
+github.com/ionos-cloud/sdk-go/v6 v6.0.4/go.mod h1:UE3V/2DjnqD5doOqtjYqzJRMpI1RiwrvuuSEPX1pdnk=
 github.com/json-iterator/go v1.1.11/go.mod h1:KdQUCv79m/52Kvf8AW2vK1V8akMuk1QjK/uOdHXbAo4=
 github.com/jstemmer/go-junit-report v0.0.0-20190106144839-af01ea7f8024/go.mod h1:6v2b51hI/fHJwM22ozAgKL4VKDeJcHhJFhtBdhmNjmU=
 github.com/jstemmer/go-junit-report v0.9.1/go.mod h1:Brl9GWCQeLvo8nXZwPNNblvFj/XSXhF0NWZEnDohbsk=

@@ -175,21 +175,6 @@ func (mr *MockK8sServiceMockRecorder) GetVersion() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetVersion", reflect.TypeOf((*MockK8sService)(nil).GetVersion))
 }
 
-// IsPublicCluster mocks base method.
-func (m *MockK8sService) IsPublicCluster(clusterId string) (bool, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "IsPublicCluster", clusterId)
-	ret0, _ := ret[0].(bool)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// IsPublicCluster indicates an expected call of IsPublicCluster.
-func (mr *MockK8sServiceMockRecorder) IsPublicCluster(clusterId interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "IsPublicCluster", reflect.TypeOf((*MockK8sService)(nil).IsPublicCluster), clusterId)
-}
-
 // ListClusters mocks base method.
 func (m *MockK8sService) ListClusters(params resources.ListQueryParams) (resources.K8sClusters, *resources.Response, error) {
 	m.ctrl.T.Helper()

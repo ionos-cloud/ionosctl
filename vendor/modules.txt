@@ -44,7 +44,7 @@ github.com/ionos-cloud/sdk-go-auth
 # github.com/ionos-cloud/sdk-go-dbaas-postgres v1.0.3
 ## explicit; go 1.17
 github.com/ionos-cloud/sdk-go-dbaas-postgres
-# github.com/ionos-cloud/sdk-go/v6 v6.0.2
+# github.com/ionos-cloud/sdk-go/v6 v6.0.4
 ## explicit; go 1.17
 github.com/ionos-cloud/sdk-go/v6
 # github.com/magiconair/properties v1.8.5
