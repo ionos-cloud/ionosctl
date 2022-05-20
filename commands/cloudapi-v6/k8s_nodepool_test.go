@@ -96,8 +96,7 @@ var (
 				StorageSize:      &testNodepoolIntVar,
 				StorageType:      &testNodepoolVar,
 				K8sVersion:       &testNodepoolVar,
-				//GatewayIp:        &testNodepoolVar,
-				CoresCount: &testNodepoolIntVar,
+				CoresCount:       &testNodepoolIntVar,
 			},
 		},
 	}

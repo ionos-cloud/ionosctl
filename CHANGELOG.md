@@ -5,6 +5,11 @@
 ### Features 
 - removed `--public` option from `ionosctl k8s cluster create` command
 - removed `--gateway-ip` option from `ionosctl k8s nodepool create` command
+- added option to do certificate pinning by using `IONOS_PINNED_CERT` environment variable for commands.
+  - Note: Set the `IONOS_PINNED_CERT` environment variable to be the public sha256 fingerprint of the certificate to be pinned.
+
+### Dependency-update
+- updated SDK-Go version from [6.0.2](https://github.com/ionos-cloud/sdk-go/releases/tag/v6.0.2) to [v6.0.4](https://github.com/ionos-cloud/sdk-go/releases/tag/v6.0.4)
 
 ## [6.1.6] (May 2022)
 
