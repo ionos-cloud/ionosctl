@@ -12,6 +12,7 @@
 ### Dependency-update
 - updated SDK-Go-Auth version from [1.0.3](https://github.com/ionos-cloud/sdk-go-auth/releases/tag/v1.0.3) to [v1.0.4](https://github.com/ionos-cloud/sdk-go-auth/releases/tag/v1.0.4)
 - updated SDK-Go version from [6.0.2](https://github.com/ionos-cloud/sdk-go/releases/tag/v6.0.2) to [v6.0.4](https://github.com/ionos-cloud/sdk-go/releases/tag/v6.0.4)
+- updated github.com/spf13/cobra version from [v1.2.1](https://github.com/spf13/cobra/releases/tag/v1.2.1) to [v1.3.0](https://github.com/spf13/cobra/releases/tag/v1.3.0)
 
 ## [6.1.6] (May 2022)
 
