@@ -1,5 +1,13 @@
 # Changelog
 
+## [6.1.7] (May 2022) (upcoming release)
+
+### Features
+- updated `ionosctl version` command to print SDKs versions
+
+### Dependency-update
+- updated SDK-Go-Auth version from [1.0.3](https://github.com/ionos-cloud/sdk-go-auth/releases/tag/v1.0.3) to [v1.0.4](https://github.com/ionos-cloud/sdk-go-auth/releases/tag/v1.0.4)
+
 ## [6.1.6] (May 2022)
 
 ### Features
