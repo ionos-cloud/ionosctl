@@ -121,8 +121,6 @@ func K8sClusterCmd() *core.Command {
 		ShortDesc: "Create a Kubernetes Cluster",
 		LongDesc: `Use this command to create a new Managed Kubernetes Cluster. Regarding the name for the Kubernetes Cluster, the limit is 63 characters following the rule to begin and end with an alphanumeric character with dashes, underscores, dots, and alphanumerics between. Regarding the Kubernetes Version for the Cluster, if not set via flag, it will be used the default one: ` + "`" + `ionosctl k8s version get` + "`" + `.
 
-You can create public or private Kubernetes Clusters, just be aware that setting the ` + "`" + `--public=false` + "`" + ` is currently in beta phase. If you create a private Kubernetes Cluster, when creating a Node Pool, it will be required to set ` + "`" + `--gateway-ip` + "`" + ` option.
-
 You can wait for the Cluster to be in "ACTIVE" state using ` + "`" + `--wait-for-state` + "`" + ` flag together with ` + "`" + `--timeout` + "`" + ` option.`,
 		Example:    createK8sClusterExample,
 		PreCmdRun:  core.NoPreRun,
@@ -130,7 +128,6 @@ You can wait for the Cluster to be in "ACTIVE" state using ` + "`" + `--wait-for
 		InitClient: true,
 	})
 	create.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "UnnamedCluster", "The name for the K8s Cluster")
-	create.AddBoolFlag(cloudapiv6.ArgPublic, cloudapiv6.ArgPublicShort, true, "The indicator if the cluster is public or private. Immutable property. Be aware that setting it to false is currently in beta phase. E.g.: --public=true, --public=false")
 	create.AddStringFlag(cloudapiv6.ArgK8sVersion, "", "", "The K8s version for the Cluster. If not set, the default one will be used")
 	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgK8sVersion, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.K8sVersionsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
@@ -357,8 +354,6 @@ func getNewK8sCluster(c *core.CommandConfig) (*resources.K8sClusterForPost, erro
 	proper := resources.K8sClusterPropertiesForPost{}
 	proper.SetName(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName)))
 	c.Printer.Verbose("Property Name set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName)))
-	proper.SetPublic(viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgPublic)))
-	c.Printer.Verbose("Property Public set: %v", viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgPublic)))
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgK8sVersion)) {
 		k8sversion = viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sVersion))
 		c.Printer.Verbose("Property K8sVersion set: %v", k8sversion)
@@ -507,9 +502,9 @@ func DeleteAllK8sClusters(c *core.CommandConfig) error {
 
 // Output Printing
 
-var defaultK8sClusterCols = []string{"ClusterId", "Name", "K8sVersion", "State", "Public", "MaintenanceWindow"}
+var defaultK8sClusterCols = []string{"ClusterId", "Name", "K8sVersion", "State", "MaintenanceWindow"}
 
-var allK8sClusterCols = []string{"ClusterId", "Name", "K8sVersion", "State", "MaintenanceWindow", "AvailableUpgradeVersions", "ViableNodePoolVersions", "S3Bucket", "ApiSubnetAllowList", "Public"}
+var allK8sClusterCols = []string{"ClusterId", "Name", "K8sVersion", "State", "MaintenanceWindow", "AvailableUpgradeVersions", "ViableNodePoolVersions", "S3Bucket", "ApiSubnetAllowList"}
 
 type K8sClusterPrint struct {
 	ClusterId                string   `json:"ClusterId,omitempty"`
@@ -521,7 +516,6 @@ type K8sClusterPrint struct {
 	State                    string   `json:"State,omitempty"`
 	S3Bucket                 []string `json:"S3Bucket,omitempty"`
 	ApiSubnetAllowList       []string `json:"ApiSubnetAllowList,omitempty"`
-	Public                   bool     `json:"Public,omitempty"`
 }
 
 func getK8sClusterPrint(resp *resources.Response, c *core.CommandConfig, k8ss []resources.K8sCluster) printer.Result {
@@ -556,7 +550,6 @@ func getK8sClusterCols(flagName string, outErr io.Writer) []string {
 			"State":                    "State",
 			"S3Bucket":                 "S3Bucket",
 			"ApiSubnetAllowList":       "ApiSubnetAllowList",
-			"Public":                   "Public",
 		}
 		for _, k := range viper.GetStringSlice(flagName) {
 			col := columnsMap[k]
@@ -609,9 +602,6 @@ func getK8sClustersKVMaps(us []resources.K8sCluster) []map[string]interface{} {
 			}
 			if v, ok := properties.GetViableNodePoolVersionsOk(); ok && v != nil {
 				uPrint.ViableNodePoolVersions = *v
-			}
-			if publicOk, ok := properties.GetPublicOk(); ok && publicOk != nil {
-				uPrint.Public = *publicOk
 			}
 			if maintenance, ok := properties.GetMaintenanceWindowOk(); ok && maintenance != nil {
 				if day, ok := maintenance.GetDayOfTheWeekOk(); ok && day != nil {

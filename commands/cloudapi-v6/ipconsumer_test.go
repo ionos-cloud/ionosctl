@@ -65,7 +65,7 @@ func TestRunIpConsumersList(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgVerbose, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIpBlockId), testIpConsumerVar)
 		rm.CloudApiV6Mocks.IpBlocks.EXPECT().Get(testIpConsumerVar).Return(&resources.IpBlock{IpBlock: testIpConsumer}, &testResponse, nil)
 		err := RunIpConsumersList(cfg)
