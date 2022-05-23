@@ -1,6 +1,6 @@
 # Changelog
 
-## [6.1.7] (May 2022) (upcoming release)
+## [6.1.7] (May 2022)
 
 ### Features
 - updated `ionosctl version` command to print SDKs versions
