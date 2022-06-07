@@ -14,17 +14,25 @@ import (
 	"github.com/spf13/viper"
 )
 
-func GetUserData() map[string]string {
-	if viper.GetString(Token) != "" {
-		return map[string]string{
+type UserData struct {
+	Username string `mapstructure:"name,omitempty"`
+	Password string `mapstructure:"password,omitempty"`
+	Token string `mapstructure:"token,omitempty"`
+	ServerUrl string `mapstructure:"api-url"`
+}
+
+type Config struct {
+	Data UserData `mapstructure:"userdata"`
+}
+
+func GetUserData() Config {
+	return Config {
+		Data: UserData {
+			Username:  viper.GetString(Username),
+			Password:  viper.GetString(Password),
 			Token:     viper.GetString(Token),
 			ServerUrl: viper.GetString(ServerUrl),
-		}
-	}
-	return map[string]string{
-		Username:  viper.GetString(Username),
-		Password:  viper.GetString(Password),
-		ServerUrl: viper.GetString(ServerUrl),
+		},
 	}
 }
 
