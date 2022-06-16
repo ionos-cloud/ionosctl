@@ -8,9 +8,11 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/ionos-cloud/ionosctl/pkg/config"
-	"github.com/ionos-cloud/ionosctl/pkg/core"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	"github.com/ionos-cloud/ionosctl/internal/config"
+	"github.com/ionos-cloud/ionosctl/internal/core"
+	sdkgoauth "github.com/ionos-cloud/sdk-go-auth"
+	sdkgodbaaspostgres "github.com/ionos-cloud/sdk-go-dbaas-postgres"
+	sdkgo "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
 )
 
@@ -42,7 +44,15 @@ func RunVersion(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	err = c.Printer.Print("SDK GO version: " + ionoscloud.Version)
+	err = c.Printer.Print("SDK GO version: " + sdkgo.Version)
+	if err != nil {
+		return err
+	}
+	err = c.Printer.Print("SDK GO DBaaS Postgres version: " + sdkgodbaaspostgres.Version)
+	if err != nil {
+		return err
+	}
+	err = c.Printer.Print("SDK GO Auth version: " + sdkgoauth.Version)
 	if err != nil {
 		return err
 	}

@@ -125,8 +125,7 @@ Required values to run a command (for Public Kubernetes Cluster):
 Required values to run a command (for Private Kubernetes Cluster):
 
 * K8s Cluster Id
-* Datacenter Id
-* Gateway IP`,
+* Datacenter Id`,
 		Example:    createK8sNodePoolExample,
 		PreCmdRun:  PreRunK8sClusterDcIds,
 		CmdRun:     RunK8sNodePoolCreate,
@@ -149,7 +148,6 @@ Required values to run a command (for Private Kubernetes Cluster):
 	create.AddBoolFlag(cloudapiv6.ArgDhcp, "", true, "Indicates if the Kubernetes Node Pool LANs will reserve an IP using DHCP. E.g.: --dhcp=true, --dhcp=false")
 	create.AddIntFlag(cloudapiv6.ArgK8sNodeCount, "", 1, "The number of worker Nodes that the Node Pool should contain. Min 1, Max: Determined by the resource availability")
 	create.AddIntFlag(cloudapiv6.ArgCores, "", 2, "The total number of cores for the Node")
-	create.AddStringFlag(cloudapiv6.ArgGatewayIp, "", "", "Public IP address for the gateway performing source NAT for the node pool's nodes belonging to a private cluster. Required only if the node pool belongs to a private cluster.", core.RequiredFlagOption())
 	create.AddStringFlag(cloudapiv6.ArgRam, "", strconv.Itoa(2048), "RAM size for node, minimum size is 2048MB. Ram size must be set to multiple of 1024MB. e.g. --ram 2048 or --ram 2048MB")
 	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgRam, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"2048MB", "3GB", "4GB", "5GB", "10GB", "50GB", "100GB"}, cobra.ShellCompDirectiveNoFileComp
@@ -293,7 +291,7 @@ func PreRunK8sClusterNodePoolDelete(c *core.PreCommandConfig) error {
 func PreRunK8sClusterDcIds(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlagsSets(c.Command, c.NS,
 		[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgK8sClusterId},
-		[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgK8sClusterId, cloudapiv6.ArgGatewayIp})
+		[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgK8sClusterId})
 }
 
 func RunK8sNodePoolList(c *core.CommandConfig) error {
@@ -345,16 +343,6 @@ func RunK8sNodePoolGet(c *core.CommandConfig) error {
 }
 
 func RunK8sNodePoolCreate(c *core.CommandConfig) error {
-	// check if the Kubernetes Cluster is private and Gateway IP is set
-	c.Printer.Verbose("Checking if K8s Cluster: %v is public", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sClusterId)))
-	public, err := c.CloudApiV6Services.K8s().IsPublicCluster(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sClusterId)))
-	if err != nil {
-		return err
-	}
-	c.Printer.Verbose("Kubernetes Cluster public: %v", public)
-	if !public && !viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgGatewayIp)) {
-		return errors.New("required option --gateway-ip for private Kubernetes Clusters is not set")
-	}
 	newNodePool, err := getNewK8sNodePool(c)
 	if err != nil {
 		return err
@@ -480,10 +468,6 @@ func getNewK8sNodePool(c *core.CommandConfig) (*resources.K8sNodePoolForPost, er
 	c.Printer.Verbose("Property Storage Size set: %vGB", int32(storageSize))
 	nodePoolProperties.SetStorageType(storageType)
 	c.Printer.Verbose("Property Storage Type set: %v", storageType)
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgGatewayIp)) {
-		nodePoolProperties.SetGatewayIp(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGatewayIp)))
-		c.Printer.Verbose("Property GatewayIP set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGatewayIp)))
-	}
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgLabels)) {
 		keyValueMapLabels := viper.GetStringMapString(core.GetFlagName(c.NS, cloudapiv6.ArgLabels))
 		nodePoolProperties.SetLabels(keyValueMapLabels)
@@ -698,7 +682,7 @@ func DeleteAllK8sNodepools(c *core.CommandConfig) error {
 var defaultK8sNodePoolCols = []string{"NodePoolId", "Name", "K8sVersion", "NodeCount", "DatacenterId", "State"}
 
 var allK8sNodePoolCols = []string{"NodePoolId", "Name", "K8sVersion", "DatacenterId", "NodeCount", "CpuFamily", "StorageType", "State", "LanIds",
-	"CoresCount", "RamSize", "AvailabilityZone", "StorageSize", "MaintenanceWindow", "AutoScaling", "PublicIps", "AvailableUpgradeVersions", "GatewayIp",
+	"CoresCount", "RamSize", "AvailabilityZone", "StorageSize", "MaintenanceWindow", "AutoScaling", "PublicIps", "AvailableUpgradeVersions",
 	"Annotations", "Labels"}
 
 type K8sNodePoolPrint struct {
@@ -719,7 +703,6 @@ type K8sNodePoolPrint struct {
 	AutoScaling              string            `json:"AutoScaling,omitempty"`
 	PublicIps                []string          `json:"PublicIps,omitempty"`
 	AvailableUpgradeVersions []string          `json:"AvailableUpgradeVersions,omitempty"`
-	GatewayIP                string            `json:"GatewayIp,omitempty"`
 	Annotations              map[string]string `json:"Annotations,omitempty"`
 	Labels                   map[string]string `json:"Labels,omitempty"`
 }
@@ -757,7 +740,6 @@ func getK8sNodePoolCols(flagName string, outErr io.Writer) []string {
 			"AutoScaling":              "AutoScaling",
 			"PublicIps":                "PublicIps",
 			"AvailableUpgradeVersions": "AvailableUpgradeVersions",
-			"GatewayIp":                "GatewayIp",
 			"Annotations":              "Annotations",
 			"Labels":                   "Labels",
 		}
@@ -836,9 +818,6 @@ func getK8sNodePoolsKVMaps(us []resources.K8sNodePool) []map[string]interface{} 
 			}
 			if availabilityZoneOk, ok := properties.GetAvailabilityZoneOk(); ok && availabilityZoneOk != nil {
 				uPrint.AvailabilityZone = *availabilityZoneOk
-			}
-			if gatewayIpOk, ok := properties.GetGatewayIpOk(); ok && gatewayIpOk != nil {
-				uPrint.GatewayIP = *gatewayIpOk
 			}
 			if annotationsOk, ok := properties.GetAnnotationsOk(); ok && annotationsOk != nil {
 				uPrint.Annotations = *annotationsOk

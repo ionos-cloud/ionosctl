@@ -56,7 +56,6 @@ var (
 				StorageSize:      &testNodepoolIntVar,
 				StorageType:      &testNodepoolVar,
 				CoresCount:       &testNodepoolIntVar,
-				GatewayIp:        &testNodepoolVar,
 				K8sVersion:       &testNodepoolVar,
 			},
 		},
@@ -97,7 +96,6 @@ var (
 				StorageSize:      &testNodepoolIntVar,
 				StorageType:      &testNodepoolVar,
 				K8sVersion:       &testNodepoolVar,
-				GatewayIp:        &testNodepoolVar,
 				CoresCount:       &testNodepoolIntVar,
 			},
 		},
@@ -578,7 +576,6 @@ func TestRunK8sNodePoolCreate(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDhcp), testK8sNodePoolLanBoolVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLabels), testNodepoolKVMap)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAnnotations), testNodepoolKVMap)
-		rm.CloudApiV6Mocks.K8s.EXPECT().IsPublicCluster(testNodepoolVar).Return(true, nil)
 		rm.CloudApiV6Mocks.K8s.EXPECT().CreateNodePool(testNodepoolVar, nodepoolTestPost).Return(&nodepoolTest, &testResponse, nil)
 		err := RunK8sNodePoolCreate(cfg)
 		assert.NoError(t, err)
@@ -604,31 +601,10 @@ func TestRunK8sNodePoolPrivateCreate(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgCores), testNodepoolIntVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sClusterId), testNodepoolVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNodepoolVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgGatewayIp), testNodepoolVar)
-		rm.CloudApiV6Mocks.K8s.EXPECT().IsPublicCluster(testNodepoolVar).Return(false, nil)
 		rm.CloudApiV6Mocks.K8s.EXPECT().GetVersion().Return(testNodepoolVar, &testResponse, nil)
 		rm.CloudApiV6Mocks.K8s.EXPECT().CreateNodePool(testNodepoolVar, nodepoolTestPrivatePost).Return(&nodepoolTestPrivate, &testResponse, nil)
 		err := RunK8sNodePoolCreate(cfg)
 		assert.NoError(t, err)
-	})
-}
-
-func TestRunK8sNodePoolPrivateCreateErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
-		viper.Reset()
-		viper.Set(config.ArgQuiet, false)
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgVerbose, false)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForState), false)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgName), testNodepoolVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sClusterId), testNodepoolVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNodepoolVar)
-		rm.CloudApiV6Mocks.K8s.EXPECT().IsPublicCluster(testNodepoolVar).Return(false, nil)
-		// returns error for no gateway-ip set for private k8s cluster
-		err := RunK8sNodePoolCreate(cfg)
-		assert.Error(t, err)
 	})
 }
 
@@ -652,7 +628,6 @@ func TestRunK8sNodePoolCreateGetK8sVersionErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNodepoolVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLanIds), []int{int(testNodepoolIntVar)})
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDhcp), testK8sNodePoolLanBoolVar)
-		rm.CloudApiV6Mocks.K8s.EXPECT().IsPublicCluster(testNodepoolVar).Return(true, nil)
 		rm.CloudApiV6Mocks.K8s.EXPECT().GetVersion().Return(testNodepoolVar, nil, testNodepoolErr)
 		err := RunK8sNodePoolCreate(cfg)
 		assert.Error(t, err)
@@ -682,7 +657,6 @@ func TestRunK8sNodePoolCreateWait(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDhcp), testK8sNodePoolLanBoolVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLabels), testNodepoolKVMap)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAnnotations), testNodepoolKVMap)
-		rm.CloudApiV6Mocks.K8s.EXPECT().IsPublicCluster(testNodepoolVar).Return(true, nil)
 		rm.CloudApiV6Mocks.K8s.EXPECT().CreateNodePool(testNodepoolVar, nodepoolTestPost).Return(&nodepoolTestId, nil, nil)
 		rm.CloudApiV6Mocks.K8s.EXPECT().GetNodePool(testNodepoolVar, testNodepoolVar).Return(&nodepoolTestId, nil, nil)
 		rm.CloudApiV6Mocks.K8s.EXPECT().GetNodePool(testNodepoolVar, testNodepoolVar).Return(&nodepoolTestId, nil, nil)
@@ -714,7 +688,6 @@ func TestRunK8sNodePoolCreateWaitErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDhcp), testK8sNodePoolLanBoolVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLabels), testNodepoolKVMap)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAnnotations), testNodepoolKVMap)
-		rm.CloudApiV6Mocks.K8s.EXPECT().IsPublicCluster(testNodepoolVar).Return(true, nil)
 		rm.CloudApiV6Mocks.K8s.EXPECT().CreateNodePool(testNodepoolVar, nodepoolTestPost).Return(&nodepoolTestId, nil, nil)
 		rm.CloudApiV6Mocks.K8s.EXPECT().GetNodePool(testNodepoolVar, testNodepoolVar).Return(&nodepoolTestId, nil, nil)
 		rm.CloudApiV6Mocks.K8s.EXPECT().GetNodePool(testNodepoolVar, testNodepoolVar).Return(&nodepoolTestId, nil, testNodepoolErr)
@@ -746,7 +719,6 @@ func TestRunK8sNodePoolCreateWaitStateErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDhcp), testK8sNodePoolLanBoolVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLabels), testNodepoolKVMap)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAnnotations), testNodepoolKVMap)
-		rm.CloudApiV6Mocks.K8s.EXPECT().IsPublicCluster(testNodepoolVar).Return(true, nil)
 		rm.CloudApiV6Mocks.K8s.EXPECT().CreateNodePool(testNodepoolVar, nodepoolTestPost).Return(&nodepoolTestId, nil, nil)
 		rm.CloudApiV6Mocks.K8s.EXPECT().GetNodePool(testNodepoolVar, testNodepoolVar).Return(&nodepoolTestId, nil, testNodepoolErr)
 		err := RunK8sNodePoolCreate(cfg)
@@ -777,7 +749,6 @@ func TestRunK8sNodePoolCreateErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDhcp), testK8sNodePoolLanBoolVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLabels), testNodepoolKVMap)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAnnotations), testNodepoolKVMap)
-		rm.CloudApiV6Mocks.K8s.EXPECT().IsPublicCluster(testNodepoolVar).Return(true, nil)
 		rm.CloudApiV6Mocks.K8s.EXPECT().CreateNodePool(testNodepoolVar, nodepoolTestPost).Return(&nodepoolTest, nil, testNodepoolErr)
 		err := RunK8sNodePoolCreate(cfg)
 		assert.Error(t, err)

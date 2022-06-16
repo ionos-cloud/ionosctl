@@ -1,5 +1,30 @@
 # Changelog
 
+## [6.1.7] (May 2022)
+
+### Features
+- updated `ionosctl version` command to print SDKs versions
+- removed `--public` option from `ionosctl k8s cluster create` command
+- removed `--gateway-ip` option from `ionosctl k8s nodepool create` command
+- added option to do certificate pinning by using `IONOS_PINNED_CERT` environment variable for commands.
+  - Note: Set the `IONOS_PINNED_CERT` environment variable to be the public sha256 fingerprint of the certificate to be pinned.
+
+### Dependency-update
+- updated SDK-Go-Auth version from [1.0.3](https://github.com/ionos-cloud/sdk-go-auth/releases/tag/v1.0.3) to [v1.0.4](https://github.com/ionos-cloud/sdk-go-auth/releases/tag/v1.0.4)
+- updated SDK-Go version from [6.0.2](https://github.com/ionos-cloud/sdk-go/releases/tag/v6.0.2) to [v6.0.4](https://github.com/ionos-cloud/sdk-go/releases/tag/v6.0.4)
+- updated github.com/spf13/cobra version from [v1.2.1](https://github.com/spf13/cobra/releases/tag/v1.2.1) to [v1.3.0](https://github.com/spf13/cobra/releases/tag/v1.3.0)
+
+## [6.1.6] (May 2022)
+
+### Features
+- added new values for `--storage-type` option for `ionosctl dbaas postgres cluster create` command: **SSD_PREMIUM**, **SSD_STANDARD**.
+  - Note: Value **SSD** is deprecated. Use the equivalent **SSD_PREMIUM** instead.
+- added option to do certificate pinning by using `IONOS_PINNED_CERT` environment variable for the `ionosctl dbaas postgres` commands.
+  - Note: Set the `IONOS_PINNED_CERT` environment variable to be the public sha256 fingerprint of the certificate to be pinned.
+
+### Dependency-update
+- updated SDK-Go-DBaaS Postgres version from [v1.0.2](https://github.com/ionos-cloud/sdk-go-dbaas-postgres/releases/tag/v1.0.2) to [v1.0.3](https://github.com/ionos-cloud/sdk-go-dbaas-postgres/releases/tag/v1.0.3)
+
 ## [6.1.5] (April 2022)
 
 ### Fixes

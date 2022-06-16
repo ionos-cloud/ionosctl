@@ -2,8 +2,6 @@ package resources
 
 import (
 	"context"
-	"errors"
-
 	"github.com/fatih/structs"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
@@ -88,7 +86,7 @@ type K8sMaintenanceWindow struct {
 type K8sService interface {
 	ListClusters(params ListQueryParams) (K8sClusters, *Response, error)
 	GetCluster(clusterId string) (*K8sCluster, *Response, error)
-	IsPublicCluster(clusterId string) (bool, error)
+	//IsPublicCluster(clusterId string) (bool, error)
 	CreateCluster(u K8sClusterForPost) (*K8sCluster, *Response, error)
 	UpdateCluster(clusterId string, input K8sClusterForPut) (*K8sCluster, *Response, error)
 	DeleteCluster(clusterId string) (*Response, error)
@@ -143,20 +141,6 @@ func (s *k8sService) GetCluster(clusterId string) (*K8sCluster, *Response, error
 	req := s.client.KubernetesApi.K8sFindByClusterId(s.context, clusterId)
 	k8sCluster, res, err := s.client.KubernetesApi.K8sFindByClusterIdExecute(req)
 	return &K8sCluster{k8sCluster}, &Response{*res}, err
-}
-
-func (s *k8sService) IsPublicCluster(clusterId string) (bool, error) {
-	req := s.client.KubernetesApi.K8sFindByClusterId(s.context, clusterId)
-	k8sCluster, _, err := s.client.KubernetesApi.K8sFindByClusterIdExecute(req)
-	if err != nil {
-		return false, err
-	}
-	if properties, ok := k8sCluster.GetPropertiesOk(); ok && properties != nil {
-		if public, ok := properties.GetPublicOk(); ok && public != nil {
-			return *public, nil
-		}
-	}
-	return false, errors.New("error getting kubernetes cluster properties")
 }
 
 func (s *k8sService) CreateCluster(u K8sClusterForPost) (*K8sCluster, *Response, error) {
