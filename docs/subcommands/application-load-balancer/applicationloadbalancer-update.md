@@ -47,12 +47,12 @@ Required values to run command:
   -f, --force                               Force command to execute without user input
   -h, --help                                Print usage
       --ips strings                         Collection of the Application Load Balancer IP addresses. (Inbound and outbound) IPs of the listenerLan are customer-reserved public IPs for the public Load Balancers, and private IPs for the private Load Balancers.
-      --listener-lan int                    ID of the listening (inbound) LAN. (default 2)
+      --listener-lan int                    ID of the listening (inbound) LAN.
   -n, --name string                         The name of the Application Load Balancer. (default "Application Load Balancer")
   -o, --output string                       Desired output format [text|json] (default "text")
       --private-ips strings                 Collection of private IP addresses with the subnet mask of the Application Load Balancer. IPs must contain valid a subnet mask. If no IP is provided, the system will generate an IP with /24 subnet.
   -q, --quiet                               Quiet output
-      --target-lan int                      ID of the balanced private target LAN (outbound). (default 1)
+      --target-lan int                      ID of the balanced private target LAN (outbound).
   -t, --timeout int                         Timeout option for Request for Application Load Balancer update [seconds] (default 300)
   -v, --verbose                             Print step-by-step process when running command
   -w, --wait-for-request                    Wait for the Request for Application Load Balancer update to be executed
