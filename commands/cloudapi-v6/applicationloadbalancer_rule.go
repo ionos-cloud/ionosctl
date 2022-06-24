@@ -143,7 +143,7 @@ Required values to run command:
 	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgProtocol, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"HTTP"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(cloudapiv6.ArgListenerIp, "", "", "Listening (inbound) IP.", core.RequiredFlagOption())
+	create.AddStringFlag(cloudapiv6.ArgListenerIp, "", "", "Listening (inbound) IP. It must be assigned to the listener NIC of Application Load Balancer.", core.RequiredFlagOption())
 	create.AddIntFlag(cloudapiv6.ArgListenerPort, "", 8080, "Listening (inbound) port number; valid range is 1 to 65535.", core.RequiredFlagOption())
 	create.AddIntFlag(cloudapiv6.ArgClientTimeout, "", 50, "The maximum time in milliseconds to wait for the client to acknowledge or send data; default is 50,000 (50 seconds).")
 	create.AddStringSliceFlag(cloudapiv6.ArgServerCertificates, "", []string{""}, "Server Certificates")

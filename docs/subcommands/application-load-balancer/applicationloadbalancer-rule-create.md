@@ -55,7 +55,7 @@ Required values to run command:
       --datacenter-id string                The unique Data Center Id (required)
   -f, --force                               Force command to execute without user input
   -h, --help                                Print usage
-      --listener-ip string                  Listening (inbound) IP. (required)
+      --listener-ip string                  Listening (inbound) IP. It must be assigned to the listener NIC of Application Load Balancer. (required)
       --listener-port int                   Listening (inbound) port number; valid range is 1 to 65535. (required) (default 8080)
   -n, --name string                         The name of the Application Load Balancer forwarding rule. (default "Unnamed Forwarding Rule")
   -o, --output string                       Desired output format [text|json] (default "text")
