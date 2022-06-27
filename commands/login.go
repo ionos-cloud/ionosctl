@@ -7,9 +7,9 @@ import (
 	"os"
 	"strings"
 
-	"github.com/ionos-cloud/ionosctl/internal/config"
-	"github.com/ionos-cloud/ionosctl/internal/core"
-	"github.com/ionos-cloud/ionosctl/internal/printer"
+	"github.com/ionos-cloud/ionosctl/pkg/config"
+	"github.com/ionos-cloud/ionosctl/pkg/core"
+	"github.com/ionos-cloud/ionosctl/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 	sdk "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"

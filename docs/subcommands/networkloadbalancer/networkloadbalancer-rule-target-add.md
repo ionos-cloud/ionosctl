@@ -58,17 +58,17 @@ Required values to run command:
       --datacenter-id string            The unique Data Center Id (required)
   -f, --force                           Force command to execute without user input
   -h, --help                            Print usage
+      --ip string                       IP of a balanced target VM (required)
       --maintenance                     [Health Check]  Maintenance specifies if a target VM should be marked as down, even if it is not
       --networkloadbalancer-id string   The unique NetworkLoadBalancer Id (required)
   -o, --output string                   Desired output format [text|json] (default "text")
+  -P, --port string                     Port of the balanced target service. Range: 1 to 65535 (required)
   -q, --quiet                           Quiet output
       --rule-id string                  The unique ForwardingRule Id (required)
-      --target-ip string                IP of a balanced target VM (required)
-      --target-port string              Port of the balanced target service. Range: 1 to 65535 (required)
   -t, --timeout int                     Timeout option for Request for Forwarding Rule Target creation [seconds] (default 300)
   -v, --verbose                         Print step-by-step process when running command
   -w, --wait-for-request                Wait for the Request for Forwarding Rule Target creation to be executed
-      --weight int                      Weight parameter is used to adjust the target VM's weight relative to other target VMs. Maximum: 256 (default 1)
+  -W, --weight int                      Weight parameter is used to adjust the target VM's weight relative to other target VMs. Maximum: 256 (default 1)
 ```
 
 ## Examples

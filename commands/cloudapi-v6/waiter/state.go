@@ -1,7 +1,7 @@
 package waiter
 
 import (
-	"github.com/ionos-cloud/ionosctl/internal/core"
+	"github.com/ionos-cloud/ionosctl/pkg/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"github.com/spf13/viper"
 )
@@ -74,6 +74,19 @@ func NatGatewayStateInterrogator(c *core.CommandConfig, objId string) (*string, 
 
 func NetworkLoadBalancerStateInterrogator(c *core.CommandConfig, objId string) (*string, error) {
 	obj, _, err := c.CloudApiV6Services.NetworkLoadBalancers().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)), objId)
+	if err != nil {
+		return nil, err
+	}
+	if metadata, ok := obj.GetMetadataOk(); ok && metadata != nil {
+		if state, ok := metadata.GetStateOk(); ok && state != nil {
+			return state, nil
+		}
+	}
+	return nil, nil
+}
+
+func ApplicationLoadBalancerStateInterrogator(c *core.CommandConfig, objId string) (*string, error) {
+	obj, _, err := c.CloudApiV6Services.ApplicationLoadBalancers().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)), objId)
 	if err != nil {
 		return nil, err
 	}

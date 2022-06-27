@@ -11,11 +11,11 @@ import (
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/waiter"
-	"github.com/ionos-cloud/ionosctl/internal/config"
-	"github.com/ionos-cloud/ionosctl/internal/core"
-	"github.com/ionos-cloud/ionosctl/internal/printer"
-	"github.com/ionos-cloud/ionosctl/internal/utils"
-	"github.com/ionos-cloud/ionosctl/internal/utils/clierror"
+	"github.com/ionos-cloud/ionosctl/pkg/config"
+	"github.com/ionos-cloud/ionosctl/pkg/core"
+	"github.com/ionos-cloud/ionosctl/pkg/printer"
+	"github.com/ionos-cloud/ionosctl/pkg/utils"
+	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
@@ -115,9 +115,9 @@ Required values to run command:
 			viper.GetString(core.GetFlagName(add.NS, cloudapiv6.ArgNetworkLoadBalancerId)),
 		), cobra.ShellCompDirectiveNoFileComp
 	})
-	add.AddStringFlag(cloudapiv6.ArgTargetIp, "", "", "IP of a balanced target VM", core.RequiredFlagOption())
-	add.AddStringFlag(cloudapiv6.ArgTargetPort, "", "", "Port of the balanced target service. Range: 1 to 65535", core.RequiredFlagOption())
-	add.AddIntFlag(cloudapiv6.ArgWeight, "", 1, "Weight parameter is used to adjust the target VM's weight relative to other target VMs. Maximum: 256")
+	add.AddStringFlag(cloudapiv6.ArgIp, "", "", "IP of a balanced target VM", core.RequiredFlagOption())
+	add.AddStringFlag(cloudapiv6.ArgPort, cloudapiv6.ArgPortShort, "", "Port of the balanced target service. Range: 1 to 65535", core.RequiredFlagOption())
+	add.AddIntFlag(cloudapiv6.ArgWeight, cloudapiv6.ArgWeightShort, 1, "Weight parameter is used to adjust the target VM's weight relative to other target VMs. Maximum: 256")
 	add.AddIntFlag(cloudapiv6.ArgCheckInterval, "", 2000, "[Health Check] CheckInterval determines the duration (in milliseconds) between consecutive health checks")
 	add.AddBoolFlag(cloudapiv6.ArgCheck, "", true, "[Health Check] Check specifies whether the target VM's health is checked")
 	add.AddBoolFlag(cloudapiv6.ArgMaintenance, "", false, "[Health Check]  Maintenance specifies if a target VM should be marked as down, even if it is not")
@@ -162,8 +162,8 @@ Required values to run command:
 		return completer.ForwardingRulesIds(os.Stderr, viper.GetString(core.GetFlagName(removeCmd.NS, cloudapiv6.ArgDataCenterId)),
 			viper.GetString(core.GetFlagName(removeCmd.NS, cloudapiv6.ArgNetworkLoadBalancerId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	removeCmd.AddStringFlag(cloudapiv6.ArgTargetIp, "", "", "IP of a balanced target VM", core.RequiredFlagOption())
-	removeCmd.AddStringFlag(cloudapiv6.ArgTargetPort, "", "", "Port of the balanced target service. Range: 1 to 65535", core.RequiredFlagOption())
+	removeCmd.AddStringFlag(cloudapiv6.ArgIp, "", "", "IP of a balanced target VM", core.RequiredFlagOption())
+	removeCmd.AddStringFlag(cloudapiv6.ArgPort, cloudapiv6.ArgPortShort, "", "Port of the balanced target service. Range: 1 to 65535", core.RequiredFlagOption())
 	removeCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Forwarding Rule Target deletion to be executed")
 	removeCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, cloudapiv6.NlbTimeoutSeconds, "Timeout option for Request for Forwarding Rule Target deletion [seconds]")
 	removeCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Remove all Forwarding Rule Targets.")
@@ -172,7 +172,7 @@ Required values to run command:
 }
 
 func PreRunNetworkLoadBalancerRuleTarget(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgDataCenterId, cloudapiv6.ArgNetworkLoadBalancerId, cloudapiv6.ArgRuleId, cloudapiv6.ArgTargetIp, cloudapiv6.ArgTargetPort)
+	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgDataCenterId, cloudapiv6.ArgNetworkLoadBalancerId, cloudapiv6.ArgRuleId, cloudapiv6.ArgIp, cloudapiv6.ArgPort)
 }
 
 func PreRunNetworkLoadBalancerRuleTargetRemove(c *core.PreCommandConfig) error {
@@ -347,8 +347,8 @@ func RemoveAllNlbRuleTarget(c *core.CommandConfig) error {
 }
 
 func getRuleTargetInfo(c *core.CommandConfig) resources.NetworkLoadBalancerForwardingRuleTarget {
-	targetIp := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetIp))
-	targetPort := viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgTargetPort))
+	targetIp := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgIp))
+	targetPort := viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgPort))
 	weight := viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgWeight))
 	target := resources.NetworkLoadBalancerForwardingRuleTarget{}
 	target.SetIp(targetIp)
@@ -380,13 +380,13 @@ func getRuleTargetsRemove(c *core.CommandConfig, frOld *resources.NetworkLoadBal
 				removeIp := false
 				removePort := false
 				if ip, ok := targetItem.GetIpOk(); ok && ip != nil {
-					if *ip == viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetIp)) {
+					if *ip == viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgIp)) {
 						removeIp = true
 						foundIp = true
 					}
 				}
 				if port, ok := targetItem.GetPortOk(); ok && port != nil {
-					if *port == viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgTargetPort)) {
+					if *port == viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgPort)) {
 						removePort = true
 						foundPort = true
 					}

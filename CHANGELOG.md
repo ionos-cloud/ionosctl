@@ -1,5 +1,34 @@
 # Changelog
 
+## [6.2.0] (June 2022) 
+
+### Features
+- new service: **Application Load Balancer (ALB)**
+  - added the CLI commands for Application Load Balancer under `applicationloadblanacer` and `targetgroup` namespaces (PR #155):
+    - `ionosctl applicationloadbalancer`
+    - `ionosctl applicationloadbalancer flowlog`
+    - `ionosctl applicationloadbalancer rule`
+    - `ionosctl applicationloadbalancer rule httprule`
+    - `ionosctl targetgroup `
+    - `ionosctl targetgroup target`
+    
+### Dependency update
+- updated SDK-Go version from [6.0.4](https://github.com/ionos-cloud/sdk-go/releases/tag/v6.0.4) to [v6.1.0](https://github.com/ionos-cloud/sdk-go/releases/tag/v6.1.0)
+
+## [6.1.7] (May 2022)
+
+### Features
+- updated `ionosctl version` command to print SDKs versions
+- removed `--public` option from `ionosctl k8s cluster create` command
+- removed `--gateway-ip` option from `ionosctl k8s nodepool create` command
+- added option to do certificate pinning by using `IONOS_PINNED_CERT` environment variable for commands.
+  - Note: Set the `IONOS_PINNED_CERT` environment variable to be the public sha256 fingerprint of the certificate to be pinned.
+
+### Dependency-update
+- updated SDK-Go-Auth version from [1.0.3](https://github.com/ionos-cloud/sdk-go-auth/releases/tag/v1.0.3) to [v1.0.4](https://github.com/ionos-cloud/sdk-go-auth/releases/tag/v1.0.4)
+- updated SDK-Go version from [6.0.2](https://github.com/ionos-cloud/sdk-go/releases/tag/v6.0.2) to [v6.0.4](https://github.com/ionos-cloud/sdk-go/releases/tag/v6.0.4)
+- updated github.com/spf13/cobra version from [v1.2.1](https://github.com/spf13/cobra/releases/tag/v1.2.1) to [v1.3.0](https://github.com/spf13/cobra/releases/tag/v1.3.0)
+
 ## [6.1.7] (May 2022)
 
 ### Features

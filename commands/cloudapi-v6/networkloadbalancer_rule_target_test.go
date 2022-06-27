@@ -8,9 +8,9 @@ import (
 	"regexp"
 	"testing"
 
-	"github.com/ionos-cloud/ionosctl/internal/config"
-	"github.com/ionos-cloud/ionosctl/internal/core"
-	"github.com/ionos-cloud/ionosctl/internal/utils/clierror"
+	"github.com/ionos-cloud/ionosctl/pkg/config"
+	"github.com/ionos-cloud/ionosctl/pkg/core"
+	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
@@ -83,8 +83,8 @@ func TestPreRunNetworkLoadBalancerRuleTarget(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNlbRuleTargetVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNetworkLoadBalancerId), testNlbRuleTargetVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRuleId), testNlbRuleTargetVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgTargetIp), testNlbRuleTargetVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgTargetPort), testNlbRuleTargetIntVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIp), testNlbRuleTargetVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPort), testNlbRuleTargetIntVar)
 		err := PreRunNetworkLoadBalancerRuleTarget(cfg)
 		assert.NoError(t, err)
 	})
@@ -179,8 +179,8 @@ func TestRunNlbRuleTargetAdd(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNlbRuleTargetVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNetworkLoadBalancerId), testNlbRuleTargetVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRuleId), testNlbRuleTargetVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgTargetIp), testNlbRuleTargetVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgTargetPort), testNlbRuleTargetIntVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIp), testNlbRuleTargetVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPort), testNlbRuleTargetIntVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgWeight), testNlbRuleTargetIntVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgCheckInterval), testNlbRuleTargetIntVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgCheck), testNlbRuleTargetBoolVar)
@@ -203,8 +203,8 @@ func TestRunNlbRuleTargetAddResponseErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNlbRuleTargetVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNetworkLoadBalancerId), testNlbRuleTargetVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRuleId), testNlbRuleTargetVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgTargetIp), testNlbRuleTargetVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgTargetPort), testNlbRuleTargetIntVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIp), testNlbRuleTargetVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPort), testNlbRuleTargetIntVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgWeight), testNlbRuleTargetIntVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgCheckInterval), testNlbRuleTargetIntVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgCheck), testNlbRuleTargetBoolVar)
@@ -226,8 +226,8 @@ func TestRunNlbRuleTargetAddErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNlbRuleTargetVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNetworkLoadBalancerId), testNlbRuleTargetVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRuleId), testNlbRuleTargetVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgTargetIp), testNlbRuleTargetVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgTargetPort), testNlbRuleTargetIntVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIp), testNlbRuleTargetVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPort), testNlbRuleTargetIntVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgWeight), testNlbRuleTargetIntVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgCheckInterval), testNlbRuleTargetIntVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgCheck), testNlbRuleTargetBoolVar)
@@ -249,8 +249,8 @@ func TestRunNlbRuleTargetAddGetErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNlbRuleTargetVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNetworkLoadBalancerId), testNlbRuleTargetVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRuleId), testNlbRuleTargetVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgTargetIp), testNlbRuleTargetVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgTargetPort), testNlbRuleTargetIntVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIp), testNlbRuleTargetVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPort), testNlbRuleTargetIntVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgWeight), testNlbRuleTargetIntVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgCheckInterval), testNlbRuleTargetIntVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgCheck), testNlbRuleTargetBoolVar)
@@ -272,8 +272,8 @@ func TestRunNlbRuleTargetAddWaitErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNlbRuleTargetVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNetworkLoadBalancerId), testNlbRuleTargetVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRuleId), testNlbRuleTargetVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgTargetIp), testNlbRuleTargetVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgTargetPort), testNlbRuleTargetIntVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIp), testNlbRuleTargetVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPort), testNlbRuleTargetIntVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgWeight), testNlbRuleTargetIntVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgCheckInterval), testNlbRuleTargetIntVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgCheck), testNlbRuleTargetBoolVar)
@@ -298,8 +298,8 @@ func TestRunNlbRuleTargetRemove(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNlbRuleTargetVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNetworkLoadBalancerId), testNlbRuleTargetVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRuleId), testNlbRuleTargetVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgTargetIp), testNlbRuleTargetVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgTargetPort), testNlbRuleTargetIntVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIp), testNlbRuleTargetVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPort), testNlbRuleTargetIntVar)
 		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().GetForwardingRule(testNlbRuleTargetVar, testNlbRuleTargetVar, testNlbRuleTargetVar).Return(&testNlbRuleTargetGetUpdated, nil, nil)
 		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().UpdateForwardingRule(testNlbRuleTargetVar, testNlbRuleTargetVar, testNlbRuleTargetVar,
 			&resources.NetworkLoadBalancerForwardingRuleProperties{
@@ -349,8 +349,8 @@ func TestRunNlbRuleTargetRemoveErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNlbRuleTargetVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNetworkLoadBalancerId), testNlbRuleTargetVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRuleId), testNlbRuleTargetVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgTargetIp), testNlbRuleTargetVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgTargetPort), testNlbRuleTargetIntVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIp), testNlbRuleTargetVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPort), testNlbRuleTargetIntVar)
 		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().GetForwardingRule(testNlbRuleTargetVar, testNlbRuleTargetVar, testNlbRuleTargetVar).Return(&testNlbRuleTargetGetUpdated, nil, nil)
 		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().UpdateForwardingRule(testNlbRuleTargetVar, testNlbRuleTargetVar, testNlbRuleTargetVar,
 			&resources.NetworkLoadBalancerForwardingRuleProperties{
@@ -374,8 +374,8 @@ func TestRunNlbRuleTargetRemoveGetErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNlbRuleTargetVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNetworkLoadBalancerId), testNlbRuleTargetVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRuleId), testNlbRuleTargetVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgTargetIp), testNlbRuleTargetVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgTargetPort), testNlbRuleTargetIntVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIp), testNlbRuleTargetVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPort), testNlbRuleTargetIntVar)
 		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().GetForwardingRule(testNlbRuleTargetVar, testNlbRuleTargetVar, testNlbRuleTargetVar).Return(&testNlbRuleTargetGetUpdated, nil, testNlbRuleTargetErr)
 		err := RunNlbRuleTargetRemove(cfg)
 		assert.Error(t, err)
@@ -393,8 +393,8 @@ func TestRunNlbRuleTargetRemoveIpErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNlbRuleTargetVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNetworkLoadBalancerId), testNlbRuleTargetVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRuleId), testNlbRuleTargetVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgTargetIp), "x.x.x.x")
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgTargetPort), testNlbRuleTargetIntVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIp), "x.x.x.x")
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPort), testNlbRuleTargetIntVar)
 		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().GetForwardingRule(testNlbRuleTargetVar, testNlbRuleTargetVar, testNlbRuleTargetVar).Return(&testNlbRuleTargetGetUpdated, nil, nil)
 		err := RunNlbRuleTargetRemove(cfg)
 		assert.Error(t, err)
@@ -412,8 +412,8 @@ func TestRunNlbRuleTargetRemovePortErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNlbRuleTargetVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNetworkLoadBalancerId), testNlbRuleTargetVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRuleId), testNlbRuleTargetVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgTargetIp), testNlbRuleTargetVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgTargetPort), int32(2))
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIp), testNlbRuleTargetVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPort), int32(2))
 		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().GetForwardingRule(testNlbRuleTargetVar, testNlbRuleTargetVar, testNlbRuleTargetVar).Return(&testNlbRuleTargetGetUpdated, nil, nil)
 		err := RunNlbRuleTargetRemove(cfg)
 		assert.Error(t, err)
@@ -431,8 +431,8 @@ func TestRunNlbRuleTargetRemoveWaitErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNlbRuleTargetVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNetworkLoadBalancerId), testNlbRuleTargetVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRuleId), testNlbRuleTargetVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgTargetIp), testNlbRuleTargetVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgTargetPort), testNlbRuleTargetIntVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIp), testNlbRuleTargetVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPort), testNlbRuleTargetIntVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), true)
 		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().GetForwardingRule(testNlbRuleTargetVar, testNlbRuleTargetVar, testNlbRuleTargetVar).Return(&testNlbRuleTargetGetUpdated, nil, nil)
 		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().UpdateForwardingRule(testNlbRuleTargetVar, testNlbRuleTargetVar, testNlbRuleTargetVar,
@@ -458,8 +458,8 @@ func TestRunNlbRuleTargetRemoveAskForConfirm(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNlbRuleTargetVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNetworkLoadBalancerId), testNlbRuleTargetVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRuleId), testNlbRuleTargetVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgTargetIp), testNlbRuleTargetVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgTargetPort), testNlbRuleTargetIntVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIp), testNlbRuleTargetVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPort), testNlbRuleTargetIntVar)
 		cfg.Stdin = bytes.NewReader([]byte("YES\n"))
 		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().GetForwardingRule(testNlbRuleTargetVar, testNlbRuleTargetVar, testNlbRuleTargetVar).Return(&testNlbRuleTargetGetUpdated, nil, nil)
 		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().UpdateForwardingRule(testNlbRuleTargetVar, testNlbRuleTargetVar, testNlbRuleTargetVar,
@@ -484,8 +484,8 @@ func TestRunNlbRuleTargetRemoveAskForConfirmErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNlbRuleTargetVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNetworkLoadBalancerId), testNlbRuleTargetVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRuleId), testNlbRuleTargetVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgTargetIp), testNlbRuleTargetVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgTargetPort), testNlbRuleTargetIntVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIp), testNlbRuleTargetVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPort), testNlbRuleTargetIntVar)
 		cfg.Stdin = os.Stdin
 		err := RunNlbRuleTargetRemove(cfg)
 		assert.Error(t, err)

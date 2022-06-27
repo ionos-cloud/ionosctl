@@ -3,7 +3,7 @@ package waiter
 import (
 	"errors"
 
-	"github.com/ionos-cloud/ionosctl/internal/core"
+	"github.com/ionos-cloud/ionosctl/pkg/core"
 )
 
 func RequestInterrogator(c *core.CommandConfig, requestId string) (status *string, message *string, err error) {

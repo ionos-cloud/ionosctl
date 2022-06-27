@@ -3,7 +3,7 @@ package resources
 import (
 	"testing"
 
-	"github.com/ionos-cloud/ionosctl/internal/config"
+	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/stretchr/testify/assert"
 )
 

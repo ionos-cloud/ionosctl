@@ -8,8 +8,8 @@ import (
 	authv1 "github.com/ionos-cloud/ionosctl/commands/auth-v1"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/commands/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/commands/dbaas"
-	"github.com/ionos-cloud/ionosctl/internal/config"
-	"github.com/ionos-cloud/ionosctl/internal/core"
+	"github.com/ionos-cloud/ionosctl/pkg/config"
+	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -173,6 +173,7 @@ func addCommands() {
 	rootCmd.AddCommand(cloudapiv6.VolumeCmd())
 	rootCmd.AddCommand(cloudapiv6.LanCmd())
 	rootCmd.AddCommand(cloudapiv6.NatgatewayCmd())
+	rootCmd.AddCommand(cloudapiv6.ApplicationLoadBalancerCmd())
 	rootCmd.AddCommand(cloudapiv6.NetworkloadbalancerCmd())
 	rootCmd.AddCommand(cloudapiv6.NicCmd())
 	rootCmd.AddCommand(cloudapiv6.LoadBalancerCmd())
@@ -193,6 +194,7 @@ func addCommands() {
 	rootCmd.AddCommand(cloudapiv6.PccCmd())
 	rootCmd.AddCommand(cloudapiv6.ShareCmd())
 	rootCmd.AddCommand(cloudapiv6.K8sCmd())
+	rootCmd.AddCommand(cloudapiv6.TargetGroupCmd())
 	rootCmd.AddCommand(cloudapiv6.TemplateCmd())
 	// Auth Command
 	rootCmd.AddCommand(authv1.TokenCmd())

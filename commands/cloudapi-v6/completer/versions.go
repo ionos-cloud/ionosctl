@@ -4,7 +4,7 @@ import (
 	"context"
 	"io"
 
-	"github.com/ionos-cloud/ionosctl/internal/utils/clierror"
+	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 )
 

@@ -1,7 +1,7 @@
 package postgres
 
 import (
-	"github.com/ionos-cloud/ionosctl/internal/core"
+	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/spf13/cobra"
 )
 

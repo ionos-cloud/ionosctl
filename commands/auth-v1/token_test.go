@@ -8,9 +8,9 @@ import (
 	"regexp"
 	"testing"
 
-	"github.com/ionos-cloud/ionosctl/internal/config"
-	"github.com/ionos-cloud/ionosctl/internal/core"
-	"github.com/ionos-cloud/ionosctl/internal/utils/clierror"
+	"github.com/ionos-cloud/ionosctl/pkg/config"
+	"github.com/ionos-cloud/ionosctl/pkg/core"
+	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	authv1 "github.com/ionos-cloud/ionosctl/services/auth-v1"
 	"github.com/ionos-cloud/ionosctl/services/auth-v1/resources"
 	sdkgoauth "github.com/ionos-cloud/sdk-go-auth"
@@ -140,7 +140,7 @@ func TestRunTokenList(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgVerbose, false)
 		viper.Set(core.GetFlagName(cfg.NS, authv1.ArgContractNo), testTokenContractNo)
 		rm.AuthV1Mocks.Token.EXPECT().List(testTokenContractNo).Return(testTokens, nil, nil)
 		err := RunTokenList(cfg)
@@ -155,7 +155,7 @@ func TestRunTokenListErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgVerbose, false)
 		rm.AuthV1Mocks.Token.EXPECT().List(int32(0)).Return(testTokens, nil, testTokenErr)
 		err := RunTokenList(cfg)
 		assert.Error(t, err)
@@ -169,7 +169,7 @@ func TestRunTokenGet(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgVerbose, false)
 		viper.Set(core.GetFlagName(cfg.NS, authv1.ArgTokenId), testTokenVar)
 		viper.Set(core.GetFlagName(cfg.NS, authv1.ArgContractNo), testTokenContractNo)
 		res := resources.Token{Token: testToken}
@@ -201,7 +201,7 @@ func TestRunTokenCreate(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgVerbose, false)
 		viper.Set(core.GetFlagName(cfg.NS, authv1.ArgContractNo), testTokenContractNo)
 		rm.AuthV1Mocks.Token.EXPECT().Create(testTokenContractNo).Return(&testJwt, nil, nil)
 		err := RunTokenCreate(cfg)
@@ -216,7 +216,7 @@ func TestRunTokenCreateNilErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgVerbose, false)
 		viper.Set(core.GetFlagName(cfg.NS, authv1.ArgContractNo), testTokenContractNo)
 		rm.AuthV1Mocks.Token.EXPECT().Create(testTokenContractNo).Return(nil, nil, nil)
 		err := RunTokenCreate(cfg)
@@ -231,7 +231,7 @@ func TestRunTokenCreateTokenErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgVerbose, false)
 		viper.Set(core.GetFlagName(cfg.NS, authv1.ArgContractNo), testTokenContractNo)
 		rm.AuthV1Mocks.Token.EXPECT().Create(testTokenContractNo).Return(&resources.Jwt{}, nil, nil)
 		err := RunTokenCreate(cfg)
@@ -261,7 +261,7 @@ func TestRunTokenDelete(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgForce, true)
-		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgVerbose, false)
 		err := RunTokenDelete(cfg)
 		assert.NoError(t, err)
 	})
@@ -275,7 +275,7 @@ func TestRunTokenDeleteTokenId(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgForce, true)
-		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgVerbose, false)
 		viper.Set(core.GetFlagName(cfg.NS, authv1.ArgTokenId), testTokenVar)
 		viper.Set(core.GetFlagName(cfg.NS, authv1.ArgContractNo), testTokenContractNo)
 		rm.AuthV1Mocks.Token.EXPECT().DeleteByID(testTokenVar, testTokenContractNo).Return(&testDeleteResponse, nil, nil)
@@ -292,7 +292,7 @@ func TestRunTokenDeleteCriteriaCurrent(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgForce, true)
-		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgVerbose, false)
 		viper.Set(core.GetFlagName(cfg.NS, authv1.ArgCurrent), true)
 		viper.Set(config.Token, testTokenVar)
 		rm.AuthV1Mocks.Token.EXPECT().DeleteByCriteria("CURRENT", int32(0)).Return(&testDeleteResponse, nil, nil)
@@ -309,7 +309,7 @@ func TestRunTokenDeleteCriteriaExpired(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgForce, true)
-		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgVerbose, false)
 		viper.Set(core.GetFlagName(cfg.NS, authv1.ArgExpired), true)
 		viper.Set(core.GetFlagName(cfg.NS, authv1.ArgContractNo), testTokenContractNo)
 		rm.AuthV1Mocks.Token.EXPECT().DeleteByCriteria("EXPIRED", testTokenContractNo).Return(&testDeleteResponse, nil, nil)
@@ -326,7 +326,7 @@ func TestRunTokenDeleteCriteriaAll(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgForce, true)
-		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgVerbose, false)
 		viper.Set(core.GetFlagName(cfg.NS, authv1.ArgAll), true)
 		viper.Set(core.GetFlagName(cfg.NS, authv1.ArgContractNo), testTokenContractNo)
 		rm.AuthV1Mocks.Token.EXPECT().DeleteByCriteria("ALL", testTokenContractNo).Return(&testDeleteResponse, nil, nil)
@@ -343,7 +343,7 @@ func TestRunTokenDeleteById(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgForce, true)
-		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgVerbose, false)
 		viper.Set(core.GetFlagName(cfg.NS, authv1.ArgTokenId), testTokenVar)
 		viper.Set(core.GetFlagName(cfg.NS, authv1.ArgContractNo), testTokenContractNo)
 		rm.AuthV1Mocks.Token.EXPECT().DeleteByID(testTokenVar, testTokenContractNo).Return(&testDeleteResponse, nil, nil)
@@ -360,7 +360,7 @@ func TestRunTokenDeleteByIdErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgForce, true)
-		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgVerbose, false)
 		viper.Set(core.GetFlagName(cfg.NS, authv1.ArgTokenId), testTokenVar)
 		viper.Set(core.GetFlagName(cfg.NS, authv1.ArgContractNo), testTokenContractNo)
 		rm.AuthV1Mocks.Token.EXPECT().DeleteByID(testTokenVar, testTokenContractNo).Return(&testDeleteResponse, nil, testTokenErr)
