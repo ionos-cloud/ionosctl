@@ -29,12 +29,3 @@ jobs:
           args: release --rm-dist
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Get the new version
-        id: new_version
-        run: echo ::set-output name=VERSION::$(git tag --list "v*" --sort=version:refname | tail -n 1)
-      - name: Get the old version
-        id: old_version
-        run: echo ::set-output name=VERSION::$(git tag --list "v*" --sort=version:refname | tail -n 2 | head -n 1)
-      - name: Check version
-        run: |
-          /usr/bin/bash ./tools/git-versioning.sh ${{ steps.new_version.outputs.VERSION }} ${{ steps.old_version.outputs.VERSION }}
