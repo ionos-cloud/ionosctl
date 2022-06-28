@@ -82,29 +82,27 @@ func LoadFile() error {
 	permNumber, _ := strconv.Atoi(strBase10)
 
 	system := runtime.GOOS
+<<<<<<< HEAD
+	if system == "windows" && permNumber != int(666) {
+		return errors.New("no permission for the config file, expected 666")
+	}	else if permNumber != int(600) {
+=======
 	if system == "windows" {
-		if permNumber == int(666) {
-			viper.SetConfigFile(viper.GetString(ArgConfig))
-			err := viper.ReadInConfig()
-			if err != nil {
-				return err
-			}
-			return nil
-		} else {
-			return errors.New("no permission for the config file, expected 600")
+		if permNumber != int(666) {
+			return errors.New("no permission for the config file, expected 666")
 		}
-	} else {
-		if permNumber == int(600) {
-			viper.SetConfigFile(viper.GetString(ArgConfig))
-			err := viper.ReadInConfig()
-			if err != nil {
-				return err
-			}
-			return nil
-		} else {
-			return errors.New("no permission for the config file, expected 600")
-		}
+	} else if permNumber != int(600) {
+>>>>>>> 6dd0729... fix: windows file perms
+		return errors.New("no permission for the config file, expected 600")
 	}
+
+
+	viper.SetConfigFile(viper.GetString(ArgConfig))
+	err := viper.ReadInConfig()
+	if err != nil {
+		return err
+	}
+	return nil
 
 }
 
