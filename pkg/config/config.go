@@ -15,9 +15,9 @@ import (
 )
 
 type UserData struct {
-	Username string `mapstructure:"name,omitempty"`
-	Password string `mapstructure:"password,omitempty"`
-	Token string `mapstructure:"token,omitempty"`
+	Username  string `mapstructure:"name,omitempty"`
+	Password  string `mapstructure:"password,omitempty"`
+	Token     string `mapstructure:"token,omitempty"`
 	ServerUrl string `mapstructure:"api-url"`
 }
 
@@ -26,8 +26,8 @@ type Config struct {
 }
 
 func GetUserData() Config {
-	return Config {
-		Data: UserData {
+	return Config{
+		Data: UserData{
 			Username:  viper.GetString(Username),
 			Password:  viper.GetString(Password),
 			Token:     viper.GetString(Token),
@@ -82,17 +82,11 @@ func LoadFile() error {
 	permNumber, _ := strconv.Atoi(strBase10)
 
 	system := runtime.GOOS
-<<<<<<< HEAD
-	if system == "windows" && permNumber != int(666) {
-		return errors.New("no permission for the config file, expected 666")
-	}	else if permNumber != int(600) {
-=======
 	if system == "windows" {
 		if permNumber != int(666) {
 			return errors.New("no permission for the config file, expected 666")
 		}
 	} else if permNumber != int(600) {
->>>>>>> 6dd0729... fix: windows file perms
 		return errors.New("no permission for the config file, expected 600")
 	}
 
@@ -101,19 +95,8 @@ func LoadFile() error {
 	if err != nil {
 		return err
 	}
-
-	var cfg Config
-	err = viper.Unmarshal(&cfg)
-	if err != nil {
-		return err
-	}
-
-	fmt.Printf("Config file is: %+v\n", cfg)
-
-	fmt.Printf("Viper Username: %s\n", viper.GetString("Data.Username"))
-	fmt.Printf("Viper Config.Username: %s\n", viper.GetString("userdata.name"))
-
 	return nil
+
 }
 
 // Load collects config data from the config file, using environment variables as fallback.
