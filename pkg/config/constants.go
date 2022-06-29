@@ -44,10 +44,10 @@ const (
 	DefaultWait           = false
 	DefaultTimeoutSeconds = int(60)
 
-	Username         = "name"
-	Password         = "password"
-	Token            = "token"
-	ServerUrl        = "api-url"
+	Username         = "userdata.name"
+	Password         = "userdata.password"
+	Token            = "userdata.token"
+	ServerUrl        = "userdata.api-url"
 
 	CLIHttpUserAgent = "cli-user-agent"
 )

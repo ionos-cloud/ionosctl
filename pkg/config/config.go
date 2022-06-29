@@ -96,14 +96,24 @@ func LoadFile() error {
 		return errors.New("no permission for the config file, expected 600")
 	}
 
-
 	viper.SetConfigFile(viper.GetString(ArgConfig))
 	err := viper.ReadInConfig()
 	if err != nil {
 		return err
 	}
-	return nil
 
+	var cfg Config
+	err = viper.Unmarshal(&cfg)
+	if err != nil {
+		return err
+	}
+
+	fmt.Printf("Config file is: %+v\n", cfg)
+
+	fmt.Printf("Viper Username: %s\n", viper.GetString("Data.Username"))
+	fmt.Printf("Viper Config.Username: %s\n", viper.GetString("userdata.name"))
+
+	return nil
 }
 
 // Load collects config data from the config file, using environment variables as fallback.
