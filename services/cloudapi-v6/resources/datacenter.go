@@ -2,7 +2,6 @@ package resources
 
 import (
 	"context"
-
 	"github.com/fatih/structs"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
@@ -26,10 +25,10 @@ type Response struct {
 // DatacentersService is a wrapper around ionoscloud.Datacenter
 type DatacentersService interface {
 	List(params ListQueryParams) (Datacenters, *Response, error)
-	Get(datacenterId string) (*Datacenter, *Response, error)
-	Create(name, description, region string) (*Datacenter, *Response, error)
-	Update(datacenterId string, input DatacenterProperties) (*Datacenter, *Response, error)
-	Delete(datacenterId string) (*Response, error)
+	Get(datacenterId string, queryParams QueryParams) (*Datacenter, *Response, error)
+	Create(name, description, region string, queryParams QueryParams) (*Datacenter, *Response, error)
+	Update(datacenterId string, input DatacenterProperties, queryParams QueryParams) (*Datacenter, *Response, error)
+	Delete(datacenterId string, queryParams QueryParams) (*Response, error)
 }
 
 type dataCentersService struct {
@@ -60,18 +59,36 @@ func (ds *dataCentersService) List(params ListQueryParams) (Datacenters, *Respon
 		if params.MaxResults != nil {
 			req = req.MaxResults(*params.MaxResults)
 		}
+		if !structs.IsZero(params.QueryParams) {
+			if params.QueryParams.Depth != nil {
+				req = req.Depth(*params.QueryParams.Depth)
+			}
+			if params.QueryParams.Pretty != nil {
+				// Currently not implemented
+				req = req.Pretty(*params.QueryParams.Pretty)
+			}
+		}
 	}
 	dcs, res, err := ds.client.DataCentersApi.DatacentersGetExecute(req)
 	return Datacenters{dcs}, &Response{*res}, err
 }
 
-func (ds *dataCentersService) Get(datacenterId string) (*Datacenter, *Response, error) {
+func (ds *dataCentersService) Get(datacenterId string, params QueryParams) (*Datacenter, *Response, error) {
 	req := ds.client.DataCentersApi.DatacentersFindById(ds.context, datacenterId)
+	if !structs.IsZero(params) {
+		if params.Depth != nil {
+			req = req.Depth(*params.Depth)
+		}
+		if params.Pretty != nil {
+			// Currently not implemented
+			req = req.Pretty(*params.Pretty)
+		}
+	}
 	datacenter, res, err := ds.client.DataCentersApi.DatacentersFindByIdExecute(req)
 	return &Datacenter{datacenter}, &Response{*res}, err
 }
 
-func (ds *dataCentersService) Create(name, description, region string) (*Datacenter, *Response, error) {
+func (ds *dataCentersService) Create(name, description, region string, params QueryParams) (*Datacenter, *Response, error) {
 	dc := ionoscloud.Datacenter{
 		Properties: &ionoscloud.DatacenterProperties{
 			Name:        &name,
@@ -80,18 +97,45 @@ func (ds *dataCentersService) Create(name, description, region string) (*Datacen
 		},
 	}
 	req := ds.client.DataCentersApi.DatacentersPost(ds.context).Datacenter(dc)
+	if !structs.IsZero(params) {
+		if params.Depth != nil {
+			req = req.Depth(*params.Depth)
+		}
+		if params.Pretty != nil {
+			// Currently not implemented
+			req = req.Pretty(*params.Pretty)
+		}
+	}
 	datacenter, res, err := ds.client.DataCentersApi.DatacentersPostExecute(req)
 	return &Datacenter{datacenter}, &Response{*res}, err
 }
 
-func (ds *dataCentersService) Update(datacenterId string, input DatacenterProperties) (*Datacenter, *Response, error) {
+func (ds *dataCentersService) Update(datacenterId string, input DatacenterProperties, params QueryParams) (*Datacenter, *Response, error) {
 	req := ds.client.DataCentersApi.DatacentersPatch(ds.context, datacenterId).Datacenter(input.DatacenterProperties)
+	if !structs.IsZero(params) {
+		if params.Depth != nil {
+			req = req.Depth(*params.Depth)
+		}
+		if params.Pretty != nil {
+			// Currently not implemented
+			req = req.Pretty(*params.Pretty)
+		}
+	}
 	datacenter, res, err := ds.client.DataCentersApi.DatacentersPatchExecute(req)
 	return &Datacenter{datacenter}, &Response{*res}, err
 }
 
-func (ds *dataCentersService) Delete(datacenterId string) (*Response, error) {
+func (ds *dataCentersService) Delete(datacenterId string, params QueryParams) (*Response, error) {
 	req := ds.client.DataCentersApi.DatacentersDelete(context.Background(), datacenterId)
+	if !structs.IsZero(params) {
+		if params.Depth != nil {
+			req = req.Depth(*params.Depth)
+		}
+		if params.Pretty != nil {
+			// Currently not implemented
+			req = req.Pretty(*params.Pretty)
+		}
+	}
 	res, err := ds.client.DataCentersApi.DatacentersDeleteExecute(req)
 	return &Response{*res}, err
 }

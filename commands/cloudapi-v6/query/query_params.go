@@ -47,26 +47,35 @@ func ValidateFilters(c *core.PreCommandConfig, availableFilters []string, usageF
 }
 
 func GetListQueryParams(c *core.CommandConfig) (resources.ListQueryParams, error) {
-	queryParams := resources.ListQueryParams{}
+	listQueryParams := resources.ListQueryParams{}
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
 		filters, err := getFilters(viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)), c.Command)
 		if err != nil {
-			return queryParams, err
+			return listQueryParams, err
 		}
 		if len(filters) > 0 {
-			queryParams = queryParams.SetFilters(filters)
+			listQueryParams = listQueryParams.SetFilters(filters)
 		}
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgOrderBy)) {
 		orderBy := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgOrderBy))
-		queryParams = queryParams.SetOrderBy(orderBy)
+		listQueryParams = listQueryParams.SetOrderBy(orderBy)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgMaxResults)) {
 		maxResults := viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgMaxResults))
-		queryParams = queryParams.SetMaxResults(maxResults)
+		listQueryParams = listQueryParams.SetMaxResults(maxResults)
 	}
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgDepth)) {
+		depth := viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgDepth))
+		listQueryParams = listQueryParams.SetDepth(depth)
+	}
+	// Uncomment this when support for Pretty param is added
+	//if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgPretty)) {
+	//	pretty := viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgPretty))
+	//	queryParams = queryParams.SetPretty(pretty)
+	//}
 
-	return queryParams, nil
+	return listQueryParams, nil
 }
 
 // getFilters should get the input from the user: --filters key=value,key=value
