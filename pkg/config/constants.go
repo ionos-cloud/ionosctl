@@ -16,6 +16,8 @@ const (
 	ArgQuietShort          = "q"
 	ArgVerbose             = "verbose"
 	ArgVerboseShort        = "v"
+	ArgDepth               = "depth"
+	ArgDepthShort          = "D"
 	ArgServerUrl           = "api-url"
 	ArgServerUrlShort      = "u"
 	ArgAll                 = "all"
@@ -43,6 +45,11 @@ const (
 	DefaultOutputFormat   = "text"
 	DefaultWait           = false
 	DefaultTimeoutSeconds = int(60)
+	DefaultListDepth      = int(1)
+	DefaultGetDepth       = int(0)
+	DefaultCreateDepth    = int(0)
+	DefaultUpdateDepth    = int(0)
+	DefaultDeleteDepth    = int(0)
 
 	Username         = "userdata.name"
 	Password         = "userdata.password"

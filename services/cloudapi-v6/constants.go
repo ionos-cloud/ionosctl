@@ -148,6 +148,8 @@ const (
 	ArgOrderBy               = "order-by"
 	ArgMaxResults            = "max-results"
 	ArgMaxResultsShort       = "M"
+	ArgDepth                 = "depth"
+	ArgDepthShort            = "D"
 	ArgCheckTimeout          = "check-timeout"
 	ArgPath                  = "path"
 	ArgMatchType             = "match-type"
