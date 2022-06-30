@@ -15,14 +15,14 @@ import (
 )
 
 type UserData struct {
-	Username  string `mapstructure:"name,omitempty"`
-	Password  string `mapstructure:"password,omitempty"`
-	Token     string `mapstructure:"token,omitempty"`
-	ServerUrl string `mapstructure:"api-url"`
+	Username  string `json:"name,omitempty"`
+	Password  string `json:"password,omitempty"`
+	Token     string `json:"token,omitempty"`
+	ServerUrl string `json:"api-url"`
 }
 
 type Config struct {
-	Data UserData `mapstructure:"userdata"`
+	Data UserData `json:"userdata"`
 }
 
 func GetUserData() Config {
@@ -123,11 +123,13 @@ func WriteFile() error {
 
 	defer f.Close()
 
+	// struct to JSON byte array
 	b, err := json.MarshalIndent(GetUserData(), "", "  ")
 	if err != nil {
 		return errors.New("unable to encode configuration to JSON format")
 	}
 
+	// byte array to file
 	_, err = f.Write(b)
 	if err != nil {
 		return errors.New("unable to write configuration")
