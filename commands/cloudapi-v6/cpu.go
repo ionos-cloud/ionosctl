@@ -58,6 +58,7 @@ func CpuCmd() *core.Command {
 		return completer.LocationIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	list.AddBoolFlag(config.ArgNoHeaders, "", false, "When using text output, don't print headers")
+	list.AddIntFlag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, config.DefaultListDepth, "Controls the detail depth of the response objects. Max depth is 10.")
 
 	return cpuCmd
 }

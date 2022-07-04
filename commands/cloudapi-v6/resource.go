@@ -52,6 +52,7 @@ func ResourceCmd() *core.Command {
 		InitClient: true,
 	})
 	list.AddBoolFlag(config.ArgNoHeaders, "", false, "When using text output, don't print headers")
+	list.AddIntFlag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, config.DefaultListDepth, "Controls the detail depth of the response objects. Max depth is 10.")
 
 	/*
 		Get Command

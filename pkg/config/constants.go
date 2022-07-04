@@ -50,7 +50,7 @@ const (
 	DefaultCreateDepth    = int(0)
 	DefaultUpdateDepth    = int(0)
 	DefaultDeleteDepth    = int(0)
-	DefaultMiscDepth      = int(0) // Attach, Detach (and similar);
+	DefaultMiscDepth      = int(0) // Attach, Detach (and similar); Server start/stop/suspend/etc.;
 
 	Username         = "userdata.name"
 	Password         = "userdata.password"

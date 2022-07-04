@@ -56,6 +56,7 @@ func IpconsumerCmd() *core.Command {
 		return completer.IpBlocksIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	listResources.AddBoolFlag(config.ArgNoHeaders, "", false, "When using text output, don't print headers")
+	listResources.AddIntFlag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, config.DefaultListDepth, "Controls the detail depth of the response objects. Max depth is 10.")
 
 	return resourceCmd
 }

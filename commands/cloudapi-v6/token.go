@@ -51,7 +51,7 @@ func ServerTokenCmd() *core.Command {
 		return completer.ServersIds(os.Stderr, viper.GetString(core.GetFlagName(get.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	get.AddBoolFlag(config.ArgNoHeaders, "", false, "When using text output, don't print headers")
-
+	get.AddIntFlag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, config.DefaultGetDepth, "Controls the detail depth of the response objects. Max depth is 10.")
 	return tokenCmd
 }
 

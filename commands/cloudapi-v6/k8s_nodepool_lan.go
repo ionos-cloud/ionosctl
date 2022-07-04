@@ -59,6 +59,7 @@ func K8sNodePoolLanCmd() *core.Command {
 		return defaultK8sNodePoolLanCols, cobra.ShellCompDirectiveNoFileComp
 	})
 	list.AddBoolFlag(config.ArgNoHeaders, "", false, "When using text output, don't print headers")
+	list.AddIntFlag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, config.DefaultListDepth, "Controls the detail depth of the response objects. Max depth is 10.")
 
 	/*
 		Add Command
@@ -99,6 +100,7 @@ Required values to run a command:
 	_ = add.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultK8sNodePoolLanCols, cobra.ShellCompDirectiveNoFileComp
 	})
+	add.AddIntFlag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, config.DefaultMiscDepth, "Controls the detail depth of the response objects. Max depth is 10.")
 
 	/*
 		Remove Command
@@ -131,6 +133,7 @@ Required values to run command:
 	})
 	removeCmd.AddIntFlag(cloudapiv6.ArgLanId, cloudapiv6.ArgIdShort, 0, "The unique LAN Id of existing LANs to be detached from worker Nodes", core.RequiredFlagOption())
 	removeCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Remove all FK8s Nodepool Lans.")
+	removeCmd.AddIntFlag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, config.DefaultDeleteDepth, "Controls the detail depth of the response objects. Max depth is 10.")
 
 	return k8sCmd
 }

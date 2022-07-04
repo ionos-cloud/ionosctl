@@ -56,7 +56,7 @@ func ContractCmd() *core.Command {
 		return []string{"CORES", "RAM", "HDD", "SSD", "DAS", "IPS", "K8S", "NLB", "NAT"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	get.AddBoolFlag(config.ArgNoHeaders, "", false, "When using text output, don't print headers")
-
+	get.AddIntFlag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, config.DefaultGetDepth, "Controls the detail depth of the response objects. Max depth is 10.")
 	return contractCmd
 }
 

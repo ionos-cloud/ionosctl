@@ -64,6 +64,7 @@ func RequestCmd() *core.Command {
 		return []string{"POST", "PUT", "DELETE", "PATCH", "CREATE", "UPDATE"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	list.AddIntFlag(cloudapiv6.ArgMaxResults, cloudapiv6.ArgMaxResultsShort, 0, "The maximum number of elements to return")
+	list.AddIntFlag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, config.DefaultListDepth, "Controls the detail depth of the response objects. Max depth is 10.")
 	list.AddStringFlag(cloudapiv6.ArgOrderBy, "", "", "Limits results to those containing a matching value for a specific property")
 	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgOrderBy, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.RequestsFilters(), cobra.ShellCompDirectiveNoFileComp
@@ -94,6 +95,7 @@ func RequestCmd() *core.Command {
 		return completer.RequestsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	get.AddBoolFlag(config.ArgNoHeaders, "", false, "When using text output, don't print headers")
+	get.AddIntFlag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, config.DefaultGetDepth, "Controls the detail depth of the response objects. Max depth is 10.")
 
 	/*
 		Wait Command
@@ -121,6 +123,7 @@ Required values to run command:
 		return completer.RequestsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	wait.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option waiting for Request [seconds]")
+	wait.AddIntFlag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, config.DefaultMiscDepth, "Controls the detail depth of the response objects. Max depth is 10.")
 
 	return reqCmd
 }

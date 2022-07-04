@@ -44,7 +44,7 @@ func K8sKubeconfigCmd() *core.Command {
 		return completer.K8sClustersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	get.AddBoolFlag(config.ArgNoHeaders, "", false, "When using text output, don't print headers")
-
+	get.AddIntFlag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, config.DefaultGetDepth, "Controls the detail depth of the response objects. Max depth is 10.")
 	return k8sCmd
 }
 

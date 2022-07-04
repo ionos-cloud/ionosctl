@@ -81,6 +81,7 @@ Required values to run command:
 	})
 	attachCdrom.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for CD-ROM attachment to be executed")
 	attachCdrom.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Cdrom attachment [seconds]")
+	attachCdrom.AddIntFlag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, config.DefaultMiscDepth, "Controls the detail depth of the response objects. Max depth is 10.")
 
 	/*
 		List Cdroms Command
@@ -115,6 +116,7 @@ Required values to run command:
 		return completer.ImagesFilters(), cobra.ShellCompDirectiveNoFileComp
 	})
 	listCdroms.AddBoolFlag(config.ArgNoHeaders, "", false, "When using text output, don't print headers")
+	listCdroms.AddIntFlag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, config.DefaultListDepth, "Controls the detail depth of the response objects. Max depth is 10.")
 
 	/*
 		Get Cdrom Command
@@ -144,6 +146,7 @@ Required values to run command:
 		return completer.AttachedCdromsIds(os.Stderr, viper.GetString(core.GetFlagName(getCdromCmd.NS, cloudapiv6.ArgDataCenterId)), viper.GetString(core.GetFlagName(getCdromCmd.NS, cloudapiv6.ArgServerId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	getCdromCmd.AddBoolFlag(config.ArgNoHeaders, "", false, "When using text output, don't print headers")
+	getCdromCmd.AddIntFlag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, config.DefaultGetDepth, "Controls the detail depth of the response objects. Max depth is 10.")
 
 	/*
 		Detach Cdrom Command
@@ -184,6 +187,7 @@ Required values to run command:
 	detachCdrom.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for CD-ROM detachment to be executed")
 	detachCdrom.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for CD-ROM detachment [seconds]")
 	detachCdrom.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Detach all CD-ROMS from a Server.")
+	detachCdrom.AddIntFlag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, config.DefaultMiscDepth, "Controls the detail depth of the response objects. Max depth is 10.")
 
 	return serverCdromCmd
 }
