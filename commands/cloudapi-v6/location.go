@@ -110,7 +110,10 @@ func RunLocationList(c *core.CommandConfig) error {
 		return err
 	}
 	if !structs.IsZero(listQueryParams) {
-		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams))
+		c.Printer.Verbose("List Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams))
+		if !structs.IsZero(listQueryParams.QueryParams) {
+			c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams.QueryParams))
+		}
 	}
 	locations, resp, err := c.CloudApiV6Services.Locations().List(listQueryParams)
 	if resp != nil {
@@ -127,6 +130,14 @@ func RunLocationList(c *core.CommandConfig) error {
 }
 
 func RunLocationGet(c *core.CommandConfig) error {
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	queryParams := listQueryParams.QueryParams
+	if !structs.IsZero(queryParams) {
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
+	}
 	locId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLocationId))
 	ids := strings.Split(locId, "/")
 	if len(ids) != 2 {

@@ -2,6 +2,8 @@ package commands
 
 import (
 	"context"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/query"
+	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	"os"
 
 	"github.com/fatih/structs"
@@ -56,6 +58,14 @@ func ServerTokenCmd() *core.Command {
 }
 
 func RunServerTokenGet(c *core.CommandConfig) error {
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	queryParams := listQueryParams.QueryParams
+	if !structs.IsZero(queryParams) {
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
+	}
 	c.Printer.Verbose("ServerToken with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)))
 	t, _, err := c.CloudApiV6Services.Servers().GetToken(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),

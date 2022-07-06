@@ -3,6 +3,8 @@ package commands
 import (
 	"context"
 	"errors"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/query"
+	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	"io"
 	"os"
 
@@ -98,6 +100,14 @@ func RunResourceList(c *core.CommandConfig) error {
 }
 
 func RunResourceGet(c *core.CommandConfig) error {
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	queryParams := listQueryParams.QueryParams
+	if !structs.IsZero(queryParams) {
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
+	}
 	c.Printer.Verbose("Resource with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceId)))
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgResourceId)) {
 		resourceListed, resp, err := c.CloudApiV6Services.Users().GetResourceByTypeAndId(

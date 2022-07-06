@@ -2,6 +2,8 @@ package commands
 
 import (
 	"context"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/query"
+	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	"os"
 
 	"github.com/fatih/structs"
@@ -288,6 +290,14 @@ func RunLabelList(c *core.CommandConfig) error {
 }
 
 func RunLabelGet(c *core.CommandConfig) error {
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	queryParams := listQueryParams.QueryParams
+	if !structs.IsZero(queryParams) {
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
+	}
 	resourceType := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceType))
 	labelKey := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelKey))
 	labelValue := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelValue))
@@ -309,6 +319,14 @@ func RunLabelGet(c *core.CommandConfig) error {
 }
 
 func RunLabelGetByUrn(c *core.CommandConfig) error {
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	queryParams := listQueryParams.QueryParams
+	if !structs.IsZero(queryParams) {
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
+	}
 	urn := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelUrn))
 	c.Printer.Verbose("Getting label with urn: %v", urn)
 	labelDc, _, err := c.CloudApiV6Services.Labels().GetByUrn(urn)
@@ -319,6 +337,14 @@ func RunLabelGetByUrn(c *core.CommandConfig) error {
 }
 
 func RunLabelAdd(c *core.CommandConfig) error {
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	queryParams := listQueryParams.QueryParams
+	if !structs.IsZero(queryParams) {
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
+	}
 	switch viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceType)) {
 	case cloudapiv6.DatacenterResource:
 		return RunDataCenterLabelAdd(c)
@@ -336,6 +362,14 @@ func RunLabelAdd(c *core.CommandConfig) error {
 }
 
 func RunLabelRemove(c *core.CommandConfig) error {
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	queryParams := listQueryParams.QueryParams
+	if !structs.IsZero(queryParams) {
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
+	}
 	resourceType := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceType))
 	c.Printer.Verbose("Label is removing from %v...", resourceType)
 	switch resourceType {
