@@ -205,7 +205,7 @@ func RunRequestGet(c *core.CommandConfig) error {
 		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
 	}
 	c.Printer.Verbose("Request with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRequestId)))
-	req, resp, err := c.CloudApiV6Services.Requests().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRequestId)))
+	req, resp, err := c.CloudApiV6Services.Requests().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRequestId)), queryParams)
 	if resp != nil {
 		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
@@ -224,7 +224,7 @@ func RunRequestWait(c *core.CommandConfig) error {
 	if !structs.IsZero(queryParams) {
 		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
 	}
-	req, _, err := c.CloudApiV6Services.Requests().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRequestId)))
+	req, _, err := c.CloudApiV6Services.Requests().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRequestId)), queryParams)
 	if err != nil {
 		return err
 	}

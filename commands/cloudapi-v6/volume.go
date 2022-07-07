@@ -339,6 +339,7 @@ func RunVolumeGet(c *core.CommandConfig) error {
 	vol, resp, err := c.CloudApiV6Services.Volumes().Get(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeId)),
+		queryParams,
 	)
 	if resp != nil {
 		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
@@ -362,7 +363,7 @@ func RunVolumeCreate(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	vol, resp, err := c.CloudApiV6Services.Volumes().Create(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)), *input)
+	vol, resp, err := c.CloudApiV6Services.Volumes().Create(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)), *input, queryParams)
 	if resp != nil && printer.GetId(resp) != "" {
 		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 	}
@@ -389,7 +390,7 @@ func RunVolumeUpdate(c *core.CommandConfig) error {
 		return err
 	}
 	vol, resp, err := c.CloudApiV6Services.Volumes().Update(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeId)), *input)
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeId)), *input, queryParams)
 	if resp != nil && printer.GetId(resp) != "" {
 		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 	}
@@ -423,7 +424,7 @@ func RunVolumeDelete(c *core.CommandConfig) error {
 			return err
 		}
 		c.Printer.Verbose("Starting deleting Volume with id: %v...", volumeId)
-		resp, err := c.CloudApiV6Services.Volumes().Delete(dcId, volumeId)
+		resp, err := c.CloudApiV6Services.Volumes().Delete(dcId, volumeId, queryParams)
 		if resp != nil && printer.GetId(resp) != "" {
 			c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 		}
@@ -633,7 +634,7 @@ func DeleteAllVolumes(c *core.CommandConfig) error {
 			for _, volume := range *volumesItems {
 				if id, ok := volume.GetIdOk(); ok && id != nil {
 					c.Printer.Verbose("Starting deleting Volume with id: %v is...", *id)
-					resp, err = c.CloudApiV6Services.Volumes().Delete(dcId, *id)
+					resp, err = c.CloudApiV6Services.Volumes().Delete(dcId, *id, queryParams)
 					if resp != nil && printer.GetId(resp) != "" {
 						c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 					}
@@ -869,7 +870,7 @@ func RunServerVolumeAttach(c *core.CommandConfig) error {
 	volumeId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeId))
 	c.Printer.Verbose("Datacenter ID: %v", dcId)
 	c.Printer.Verbose("Attaching Volume with ID: %v to Server with ID: %v...", volumeId, serverId)
-	attachedVol, resp, err := c.CloudApiV6Services.Servers().AttachVolume(dcId, serverId, volumeId)
+	attachedVol, resp, err := c.CloudApiV6Services.Servers().AttachVolume(dcId, serverId, volumeId, queryParams)
 	if resp != nil && printer.GetId(resp) != "" {
 		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 	}
@@ -931,7 +932,7 @@ func RunServerVolumeGet(c *core.CommandConfig) error {
 	volumeId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeId))
 	c.Printer.Verbose("Datacenter ID: %v", dcId)
 	c.Printer.Verbose("Getting attached Volume with ID: %v from Server with ID: %v...", volumeId, serverId)
-	attachedVol, resp, err := c.CloudApiV6Services.Servers().GetVolume(dcId, serverId, volumeId)
+	attachedVol, resp, err := c.CloudApiV6Services.Servers().GetVolume(dcId, serverId, volumeId, queryParams)
 	if resp != nil {
 		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
@@ -964,7 +965,7 @@ func RunServerVolumeDetach(c *core.CommandConfig) error {
 		volumeId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeId))
 		c.Printer.Verbose("Datacenter ID: %v", dcId)
 		c.Printer.Verbose("Detaching Volume with ID: %v from Server with ID: %v...", volumeId, serverId)
-		resp, err := c.CloudApiV6Services.Servers().DetachVolume(dcId, serverId, volumeId)
+		resp, err := c.CloudApiV6Services.Servers().DetachVolume(dcId, serverId, volumeId, queryParams)
 		if resp != nil && printer.GetId(resp) != "" {
 			c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 		}
@@ -1019,7 +1020,7 @@ func DetachAllServerVolumes(c *core.CommandConfig) error {
 			for _, volume := range *volumesItems {
 				if id, ok := volume.GetIdOk(); ok && id != nil {
 					c.Printer.Verbose("Starting detaching Volume with id: %v...", *id)
-					resp, err = c.CloudApiV6Services.Servers().DetachVolume(dcId, serverId, *id)
+					resp, err = c.CloudApiV6Services.Servers().DetachVolume(dcId, serverId, *id, queryParams)
 					if resp != nil && printer.GetId(resp) != "" {
 						c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 					}

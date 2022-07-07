@@ -253,7 +253,7 @@ func RunGroupGet(c *core.CommandConfig) error {
 		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
 	}
 	c.Printer.Verbose("Group with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)))
-	u, resp, err := c.CloudApiV6Services.Groups().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)))
+	u, resp, err := c.CloudApiV6Services.Groups().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)), queryParams)
 	if resp != nil {
 		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
@@ -278,7 +278,7 @@ func RunGroupCreate(c *core.CommandConfig) error {
 			Properties: &properties.GroupProperties,
 		},
 	}
-	u, resp, err := c.CloudApiV6Services.Groups().Create(newGroup)
+	u, resp, err := c.CloudApiV6Services.Groups().Create(newGroup, queryParams)
 	if resp != nil && printer.GetId(resp) != "" {
 		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 	}
@@ -300,7 +300,7 @@ func RunGroupUpdate(c *core.CommandConfig) error {
 	if !structs.IsZero(queryParams) {
 		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
 	}
-	u, resp, err := c.CloudApiV6Services.Groups().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)))
+	u, resp, err := c.CloudApiV6Services.Groups().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)), queryParams)
 	if err != nil {
 		return err
 	}
@@ -310,7 +310,7 @@ func RunGroupUpdate(c *core.CommandConfig) error {
 			Properties: &properties.GroupProperties,
 		},
 	}
-	groupUpd, resp, err := c.CloudApiV6Services.Groups().Update(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)), newGroup)
+	groupUpd, resp, err := c.CloudApiV6Services.Groups().Update(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)), newGroup, queryParams)
 	if resp != nil && printer.GetId(resp) != "" {
 		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 	}
@@ -343,7 +343,7 @@ func RunGroupDelete(c *core.CommandConfig) error {
 			return err
 		}
 		c.Printer.Verbose("Starting deleting Group with id: %v...", groupId)
-		resp, err := c.CloudApiV6Services.Groups().Delete(groupId)
+		resp, err := c.CloudApiV6Services.Groups().Delete(groupId, queryParams)
 		if resp != nil && printer.GetId(resp) != "" {
 			c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 		}
@@ -562,7 +562,7 @@ func DeleteAllGroups(c *core.CommandConfig) error {
 			for _, group := range *groupsItems {
 				if id, ok := group.GetIdOk(); ok && id != nil {
 					c.Printer.Verbose("Starting deleting Group with id: %v...", *id)
-					resp, err = c.CloudApiV6Services.Groups().Delete(*id)
+					resp, err = c.CloudApiV6Services.Groups().Delete(*id, queryParams)
 					if resp != nil && printer.GetId(resp) != "" {
 						c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 					}

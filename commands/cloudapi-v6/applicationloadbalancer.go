@@ -264,6 +264,7 @@ func RunApplicationLoadBalancerGet(c *core.CommandConfig) error {
 	ng, resp, err := c.CloudApiV6Services.ApplicationLoadBalancers().Get(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
+		queryParams,
 	)
 	if resp != nil {
 		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
@@ -305,6 +306,7 @@ func RunApplicationLoadBalancerCreate(c *core.CommandConfig) error {
 				Properties: &proper.ApplicationLoadBalancerProperties,
 			},
 		},
+		queryParams,
 	)
 	if resp != nil {
 		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
@@ -335,6 +337,7 @@ func RunApplicationLoadBalancerUpdate(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
 		*input,
+		queryParams,
 	)
 	if resp != nil {
 		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
@@ -374,7 +377,7 @@ func RunApplicationLoadBalancerDelete(c *core.CommandConfig) error {
 		}
 		c.Printer.Verbose("Starting deleting ApplicationLoadBalancer")
 		resp, err = c.CloudApiV6Services.ApplicationLoadBalancers().Delete(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)))
+			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)), queryParams)
 		if resp != nil {
 			c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 		}
@@ -424,7 +427,7 @@ func DeleteAllApplicationLoadBalancer(c *core.CommandConfig) error {
 			for _, alb := range *albItems {
 				if id, ok := alb.GetIdOk(); ok && id != nil {
 					c.Printer.Verbose("Starting deleting Application Load Balancer with id: %v...", *id)
-					resp, err = c.CloudApiV6Services.ApplicationLoadBalancers().Delete(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)), *id)
+					resp, err = c.CloudApiV6Services.ApplicationLoadBalancers().Delete(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)), *id, queryParams)
 					if resp != nil && printer.GetId(resp) != "" {
 						c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 					}

@@ -176,6 +176,7 @@ func RunNatGatewayLanList(c *core.CommandConfig) error {
 	ng, resp, err := c.CloudApiV6Services.NatGateways().Get(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNatGatewayId)),
+		resources.QueryParams{},
 	)
 	if resp != nil {
 		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
@@ -197,13 +198,13 @@ func RunNatGatewayLanAdd(c *core.CommandConfig) error {
 	}
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	natGatewayId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNatGatewayId))
-	ng, _, err := c.CloudApiV6Services.NatGateways().Get(dcId, natGatewayId)
+	ng, _, err := c.CloudApiV6Services.NatGateways().Get(dcId, natGatewayId, queryParams)
 	if err != nil {
 		return err
 	}
 	c.Printer.Verbose("Adding NatGateway with id %v to Datacenter with id: %v", natGatewayId, dcId)
 	input := getNewNatGatewayLanInfo(c, ng)
-	ng, resp, err := c.CloudApiV6Services.NatGateways().Update(dcId, natGatewayId, *input)
+	ng, resp, err := c.CloudApiV6Services.NatGateways().Update(dcId, natGatewayId, *input, queryParams)
 	if resp != nil && printer.GetId(resp) != "" {
 		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 	}
@@ -236,13 +237,13 @@ func RunNatGatewayLanRemove(c *core.CommandConfig) error {
 		}
 		dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 		natGatewayId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNatGatewayId))
-		ng, _, err := c.CloudApiV6Services.NatGateways().Get(dcId, natGatewayId)
+		ng, _, err := c.CloudApiV6Services.NatGateways().Get(dcId, natGatewayId, queryParams)
 		if err != nil {
 			return err
 		}
 		c.Printer.Verbose("Removing NatGateway with id %v to Datacenter with id: %v", natGatewayId, dcId)
 		input := removeNatGatewayLanInfo(c, ng)
-		ng, resp, err := c.CloudApiV6Services.NatGateways().Update(dcId, natGatewayId, *input)
+		ng, resp, err := c.CloudApiV6Services.NatGateways().Update(dcId, natGatewayId, *input, queryParams)
 		if resp != nil && printer.GetId(resp) != "" {
 			c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 		}
@@ -270,7 +271,7 @@ func RemoveAllNatGatewayLans(c *core.CommandConfig) error {
 	c.Printer.Verbose("Datacenter ID: %v", dcId)
 	c.Printer.Verbose("NatGateway ID: %v", natGatewayId)
 	c.Printer.Verbose("Getting NatGateway...")
-	natGateway, resp, err := c.CloudApiV6Services.NatGateways().Get(dcId, natGatewayId)
+	natGateway, resp, err := c.CloudApiV6Services.NatGateways().Get(dcId, natGatewayId, queryParams)
 	if err != nil {
 		return err
 	}
@@ -302,7 +303,7 @@ func RemoveAllNatGatewayLans(c *core.CommandConfig) error {
 					Lans: &proper,
 				},
 			}
-			natGateway, resp, err = c.CloudApiV6Services.NatGateways().Update(dcId, natGatewayId, *natGatewaysProps)
+			natGateway, resp, err = c.CloudApiV6Services.NatGateways().Update(dcId, natGatewayId, *natGatewaysProps, queryParams)
 			if resp != nil && printer.GetId(resp) != "" {
 				c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 			}

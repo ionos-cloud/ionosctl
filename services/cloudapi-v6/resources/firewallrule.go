@@ -22,10 +22,10 @@ type FirewallRules struct {
 // FirewallRulesService is a wrapper around ionoscloud.FirewallRule
 type FirewallRulesService interface {
 	List(datacenterId, serverId, nicId string, params ListQueryParams) (FirewallRules, *Response, error)
-	Get(datacenterId, serverId, nicId, firewallRuleId string) (*FirewallRule, *Response, error)
-	Create(datacenterId, serverId, nicId string, input FirewallRule) (*FirewallRule, *Response, error)
-	Update(datacenterId, serverId, nicId, firewallRuleId string, input FirewallRuleProperties) (*FirewallRule, *Response, error)
-	Delete(datacenterId, serverId, nicId, firewallRuleId string) (*Response, error)
+	Get(datacenterId, serverId, nicId, firewallRuleId string, params QueryParams) (*FirewallRule, *Response, error)
+	Create(datacenterId, serverId, nicId string, input FirewallRule, params QueryParams) (*FirewallRule, *Response, error)
+	Update(datacenterId, serverId, nicId, firewallRuleId string, input FirewallRuleProperties, params QueryParams) (*FirewallRule, *Response, error)
+	Delete(datacenterId, serverId, nicId, firewallRuleId string, params QueryParams) (*Response, error)
 }
 
 type firewallRulesService struct {
@@ -56,30 +56,66 @@ func (svc *firewallRulesService) List(datacenterId, serverId, nicId string, para
 		if params.MaxResults != nil {
 			req = req.MaxResults(*params.MaxResults)
 		}
+		if !structs.IsZero(params.QueryParams) {
+			if params.QueryParams.Depth != nil {
+				req = req.Depth(*params.QueryParams.Depth)
+			}
+			if params.QueryParams.Pretty != nil {
+				// Currently not implemented
+				req = req.Pretty(*params.QueryParams.Pretty)
+			}
+		}
 	}
 	rules, resp, err := svc.client.FirewallRulesApi.DatacentersServersNicsFirewallrulesGetExecute(req)
 	return FirewallRules{rules}, &Response{*resp}, err
 }
 
-func (svc *firewallRulesService) Get(datacenterId, serverId, nicId, firewallRuleId string) (*FirewallRule, *Response, error) {
+func (svc *firewallRulesService) Get(datacenterId, serverId, nicId, firewallRuleId string, params QueryParams) (*FirewallRule, *Response, error) {
 	req := svc.client.FirewallRulesApi.DatacentersServersNicsFirewallrulesFindById(svc.context, datacenterId, serverId, nicId, firewallRuleId)
+	if !structs.IsZero(params) {
+		if params.Depth != nil {
+			req = req.Depth(*params.Depth)
+		}
+		if params.Pretty != nil {
+			// Currently not implemented
+			req = req.Pretty(*params.Pretty)
+		}
+	}
 	rule, resp, err := svc.client.FirewallRulesApi.DatacentersServersNicsFirewallrulesFindByIdExecute(req)
 	return &FirewallRule{rule}, &Response{*resp}, err
 }
 
-func (svc *firewallRulesService) Create(datacenterId, serverId, nicId string, input FirewallRule) (*FirewallRule, *Response, error) {
+func (svc *firewallRulesService) Create(datacenterId, serverId, nicId string, input FirewallRule, params QueryParams) (*FirewallRule, *Response, error) {
 	req := svc.client.FirewallRulesApi.DatacentersServersNicsFirewallrulesPost(svc.context, datacenterId, serverId, nicId).Firewallrule(input.FirewallRule)
+	if !structs.IsZero(params) {
+		if params.Depth != nil {
+			req = req.Depth(*params.Depth)
+		}
+		if params.Pretty != nil {
+			// Currently not implemented
+			req = req.Pretty(*params.Pretty)
+		}
+	}
 	rule, resp, err := svc.client.FirewallRulesApi.DatacentersServersNicsFirewallrulesPostExecute(req)
 	return &FirewallRule{rule}, &Response{*resp}, err
 }
 
-func (svc *firewallRulesService) Update(datacenterId, serverId, nicId, firewallRuleId string, input FirewallRuleProperties) (*FirewallRule, *Response, error) {
+func (svc *firewallRulesService) Update(datacenterId, serverId, nicId, firewallRuleId string, input FirewallRuleProperties, params QueryParams) (*FirewallRule, *Response, error) {
 	req := svc.client.FirewallRulesApi.DatacentersServersNicsFirewallrulesPatch(svc.context, datacenterId, serverId, nicId, firewallRuleId).Firewallrule(input.FirewallruleProperties)
+	if !structs.IsZero(params) {
+		if params.Depth != nil {
+			req = req.Depth(*params.Depth)
+		}
+		if params.Pretty != nil {
+			// Currently not implemented
+			req = req.Pretty(*params.Pretty)
+		}
+	}
 	rule, resp, err := svc.client.FirewallRulesApi.DatacentersServersNicsFirewallrulesPatchExecute(req)
 	return &FirewallRule{rule}, &Response{*resp}, err
 }
 
-func (svc *firewallRulesService) Delete(datacenterId, serverId, nicId, firewallRuleId string) (*Response, error) {
+func (svc *firewallRulesService) Delete(datacenterId, serverId, nicId, firewallRuleId string, params QueryParams) (*Response, error) {
 	req := svc.client.FirewallRulesApi.DatacentersServersNicsFirewallrulesDelete(svc.context, datacenterId, serverId, nicId, firewallRuleId)
 	resp, err := svc.client.FirewallRulesApi.DatacentersServersNicsFirewallrulesDeleteExecute(req)
 	return &Response{*resp}, err

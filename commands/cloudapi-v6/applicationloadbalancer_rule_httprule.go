@@ -213,6 +213,7 @@ func RunAlbRuleHttpRuleList(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)),
+		resources.QueryParams{},
 	)
 	if resp != nil {
 		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
@@ -249,6 +250,7 @@ func RunAlbRuleHttpRuleAdd(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)),
+		queryParams,
 	)
 	if err != nil {
 		return err
@@ -271,6 +273,7 @@ func RunAlbRuleHttpRuleAdd(c *core.CommandConfig) error {
 				HttpRules: &httpRuleItems,
 			},
 		},
+		queryParams,
 	)
 	if resp != nil {
 		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
@@ -314,6 +317,7 @@ func RunAlbRuleHttpRuleRemove(c *core.CommandConfig) error {
 			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
 			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)),
+			queryParams,
 		)
 		if err != nil {
 			return err
@@ -329,6 +333,7 @@ func RunAlbRuleHttpRuleRemove(c *core.CommandConfig) error {
 			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
 			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)),
 			proper,
+			queryParams,
 		)
 		if resp != nil {
 			c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
@@ -349,6 +354,7 @@ func RemoveAllHTTPRules(c *core.CommandConfig) (*resources.Response, error) {
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)),
+		resources.QueryParams{},
 	)
 	if err != nil {
 		return nil, err
@@ -376,7 +382,9 @@ func RemoveAllHTTPRules(c *core.CommandConfig) (*resources.Response, error) {
 			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)),
 			&resources.ApplicationLoadBalancerForwardingRuleProperties{
 				ApplicationLoadBalancerForwardingRuleProperties: *propertiesOk,
-			})
+			},
+			resources.QueryParams{},
+		)
 		if resp != nil {
 			c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
 			c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)

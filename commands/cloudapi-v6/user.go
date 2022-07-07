@@ -238,7 +238,7 @@ func RunUserGet(c *core.CommandConfig) error {
 		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
 	}
 	c.Printer.Verbose("User with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserId)))
-	u, resp, err := c.CloudApiV6Services.Users().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserId)))
+	u, resp, err := c.CloudApiV6Services.Users().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserId)), queryParams)
 	if resp != nil {
 		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
@@ -278,7 +278,7 @@ func RunUserCreate(c *core.CommandConfig) error {
 	c.Printer.Verbose("Properties set for creating the user: Firstname: %v, Lastname: %v, Email: %v, ForceSecAuth: %v, Administrator: %v",
 		firstname, lastname, email, secureAuth, admin)
 	c.Printer.Verbose("Creating User...")
-	u, resp, err := c.CloudApiV6Services.Users().Create(newUser)
+	u, resp, err := c.CloudApiV6Services.Users().Create(newUser, queryParams)
 	if resp != nil && printer.GetId(resp) != "" {
 		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 	}
@@ -297,13 +297,13 @@ func RunUserUpdate(c *core.CommandConfig) error {
 	if !structs.IsZero(queryParams) {
 		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
 	}
-	oldUser, resp, err := c.CloudApiV6Services.Users().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserId)))
+	oldUser, resp, err := c.CloudApiV6Services.Users().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserId)), queryParams)
 	if err != nil {
 		return err
 	}
 	newUser := getUserInfo(oldUser, c)
 	c.Printer.Verbose("Updating User with ID: %v...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserId)))
-	userUpd, resp, err := c.CloudApiV6Services.Users().Update(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserId)), *newUser)
+	userUpd, resp, err := c.CloudApiV6Services.Users().Update(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserId)), *newUser, queryParams)
 	if resp != nil && printer.GetId(resp) != "" {
 		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 	}
@@ -333,7 +333,7 @@ func RunUserDelete(c *core.CommandConfig) error {
 			return err
 		}
 		c.Printer.Verbose("Starting deleting User with id: %v...", userId)
-		resp, err := c.CloudApiV6Services.Users().Delete(userId)
+		resp, err := c.CloudApiV6Services.Users().Delete(userId, queryParams)
 		if resp != nil && printer.GetId(resp) != "" {
 			c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 		}
@@ -445,7 +445,7 @@ func DeleteAllUsers(c *core.CommandConfig) error {
 			for _, user := range *usersItems {
 				if id, ok := user.GetIdOk(); ok && id != nil {
 					c.Printer.Verbose("Starting deleting User with id: %v...", *id)
-					resp, err = c.CloudApiV6Services.Users().Delete(*id)
+					resp, err = c.CloudApiV6Services.Users().Delete(*id, queryParams)
 					if err != nil {
 						multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *id, err))
 						continue
@@ -567,7 +567,18 @@ func GroupUserCmd() *core.Command {
 }
 
 func RunGroupUserList(c *core.CommandConfig) error {
-	users, resp, err := c.CloudApiV6Services.Groups().ListUsers(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)))
+	// Add Query Parameters for GET Requests
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	if !structs.IsZero(listQueryParams) {
+		c.Printer.Verbose("List Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams))
+		if !structs.IsZero(listQueryParams.QueryParams) {
+			c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams.QueryParams))
+		}
+	}
+	users, resp, err := c.CloudApiV6Services.Groups().ListUsers(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)), listQueryParams)
 	if resp != nil {
 		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
@@ -601,7 +612,7 @@ func RunGroupUserAdd(c *core.CommandConfig) error {
 			Id: &id,
 		},
 	}
-	userAdded, resp, err := c.CloudApiV6Services.Groups().AddUser(groupId, u)
+	userAdded, resp, err := c.CloudApiV6Services.Groups().AddUser(groupId, u, queryParams)
 	if resp != nil && printer.GetId(resp) != "" {
 		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 	}
@@ -632,7 +643,7 @@ func RunGroupUserRemove(c *core.CommandConfig) error {
 		userId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserId))
 		groupId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId))
 		c.Printer.Verbose("User with id: %v is adding to group with id: %v...", userId, groupId)
-		resp, err := c.CloudApiV6Services.Groups().RemoveUser(groupId, userId)
+		resp, err := c.CloudApiV6Services.Groups().RemoveUser(groupId, userId, queryParams)
 		if resp != nil && printer.GetId(resp) != "" {
 			c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 		}
@@ -655,7 +666,7 @@ func RemoveAllUsers(c *core.CommandConfig) error {
 	groupId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId))
 	c.Printer.Verbose("Group ID: %v", groupId)
 	c.Printer.Verbose("Getting Users...")
-	users, resp, err := c.CloudApiV6Services.Groups().ListUsers(groupId)
+	users, resp, err := c.CloudApiV6Services.Groups().ListUsers(groupId, listQueryParams)
 	if err != nil {
 		return err
 	}
@@ -685,7 +696,7 @@ func RemoveAllUsers(c *core.CommandConfig) error {
 			for _, user := range *usersItems {
 				if id, ok := user.GetIdOk(); ok && id != nil {
 					c.Printer.Verbose("Starting removing User with id: %v...", *id)
-					resp, err = c.CloudApiV6Services.Groups().RemoveUser(groupId, *id)
+					resp, err = c.CloudApiV6Services.Groups().RemoveUser(groupId, *id, queryParams)
 					if resp != nil && printer.GetId(resp) != "" {
 						c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 					}

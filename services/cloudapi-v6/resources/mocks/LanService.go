@@ -35,9 +35,9 @@ func (m *MockLansService) EXPECT() *MockLansServiceMockRecorder {
 }
 
 // Create mocks base method.
-func (m *MockLansService) Create(datacenterId string, input resources.LanPost) (*resources.LanPost, *resources.Response, error) {
+func (m *MockLansService) Create(datacenterId string, input resources.LanPost, params resources.QueryParams) (*resources.LanPost, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Create", datacenterId, input)
+	ret := m.ctrl.Call(m, "Create", datacenterId, input, params)
 	ret0, _ := ret[0].(*resources.LanPost)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -45,30 +45,30 @@ func (m *MockLansService) Create(datacenterId string, input resources.LanPost) (
 }
 
 // Create indicates an expected call of Create.
-func (mr *MockLansServiceMockRecorder) Create(datacenterId, input interface{}) *gomock.Call {
+func (mr *MockLansServiceMockRecorder) Create(datacenterId, input, params interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockLansService)(nil).Create), datacenterId, input)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockLansService)(nil).Create), datacenterId, input, params)
 }
 
 // Delete mocks base method.
-func (m *MockLansService) Delete(datacenterId, lanId string) (*resources.Response, error) {
+func (m *MockLansService) Delete(datacenterId, lanId string, params resources.QueryParams) (*resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Delete", datacenterId, lanId)
+	ret := m.ctrl.Call(m, "Delete", datacenterId, lanId, params)
 	ret0, _ := ret[0].(*resources.Response)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Delete indicates an expected call of Delete.
-func (mr *MockLansServiceMockRecorder) Delete(datacenterId, lanId interface{}) *gomock.Call {
+func (mr *MockLansServiceMockRecorder) Delete(datacenterId, lanId, params interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockLansService)(nil).Delete), datacenterId, lanId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockLansService)(nil).Delete), datacenterId, lanId, params)
 }
 
 // Get mocks base method.
-func (m *MockLansService) Get(datacenterId, lanId string) (*resources.Lan, *resources.Response, error) {
+func (m *MockLansService) Get(datacenterId, lanId string, params resources.QueryParams) (*resources.Lan, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Get", datacenterId, lanId)
+	ret := m.ctrl.Call(m, "Get", datacenterId, lanId, params)
 	ret0, _ := ret[0].(*resources.Lan)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -76,9 +76,9 @@ func (m *MockLansService) Get(datacenterId, lanId string) (*resources.Lan, *reso
 }
 
 // Get indicates an expected call of Get.
-func (mr *MockLansServiceMockRecorder) Get(datacenterId, lanId interface{}) *gomock.Call {
+func (mr *MockLansServiceMockRecorder) Get(datacenterId, lanId, params interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockLansService)(nil).Get), datacenterId, lanId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockLansService)(nil).Get), datacenterId, lanId, params)
 }
 
 // List mocks base method.
@@ -98,9 +98,9 @@ func (mr *MockLansServiceMockRecorder) List(datacenterId, params interface{}) *g
 }
 
 // Update mocks base method.
-func (m *MockLansService) Update(datacenterId, lanId string, input resources.LanProperties) (*resources.Lan, *resources.Response, error) {
+func (m *MockLansService) Update(datacenterId, lanId string, input resources.LanProperties, params resources.QueryParams) (*resources.Lan, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Update", datacenterId, lanId, input)
+	ret := m.ctrl.Call(m, "Update", datacenterId, lanId, input, params)
 	ret0, _ := ret[0].(*resources.Lan)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -108,7 +108,7 @@ func (m *MockLansService) Update(datacenterId, lanId string, input resources.Lan
 }
 
 // Update indicates an expected call of Update.
-func (mr *MockLansServiceMockRecorder) Update(datacenterId, lanId, input interface{}) *gomock.Call {
+func (mr *MockLansServiceMockRecorder) Update(datacenterId, lanId, input, params interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockLansService)(nil).Update), datacenterId, lanId, input)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockLansService)(nil).Update), datacenterId, lanId, input, params)
 }

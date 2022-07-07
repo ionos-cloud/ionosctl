@@ -270,7 +270,7 @@ func RunK8sClusterGet(c *core.CommandConfig) error {
 		return err
 	}
 	c.Printer.Verbose("K8s cluster with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sClusterId)))
-	u, resp, err := c.CloudApiV6Services.K8s().GetCluster(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sClusterId)))
+	u, resp, err := c.CloudApiV6Services.K8s().GetCluster(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sClusterId)), queryParams)
 	if resp != nil {
 		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
@@ -294,7 +294,7 @@ func RunK8sClusterCreate(c *core.CommandConfig) error {
 		return err
 	}
 	c.Printer.Verbose("Creating K8s Cluster...")
-	u, resp, err := c.CloudApiV6Services.K8s().CreateCluster(*newCluster)
+	u, resp, err := c.CloudApiV6Services.K8s().CreateCluster(*newCluster, queryParams)
 	if resp != nil && printer.GetId(resp) != "" {
 		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 	}
@@ -309,7 +309,7 @@ func RunK8sClusterCreate(c *core.CommandConfig) error {
 			if err = utils.WaitForState(c, waiter.K8sClusterStateInterrogator, *id); err != nil {
 				return err
 			}
-			if u, _, err = c.CloudApiV6Services.K8s().GetCluster(*id); err != nil {
+			if u, _, err = c.CloudApiV6Services.K8s().GetCluster(*id, queryParams); err != nil {
 				return err
 			}
 		} else {
@@ -328,13 +328,13 @@ func RunK8sClusterUpdate(c *core.CommandConfig) error {
 	if !structs.IsZero(queryParams) {
 		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
 	}
-	oldCluster, _, err := c.CloudApiV6Services.K8s().GetCluster(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sClusterId)))
+	oldCluster, _, err := c.CloudApiV6Services.K8s().GetCluster(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sClusterId)), queryParams)
 	if err != nil {
 		return err
 	}
 	newCluster := getK8sClusterInfo(oldCluster, c)
 	c.Printer.Verbose("Updating K8s cluster with ID: %v...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sClusterId)))
-	k8sUpd, resp, err := c.CloudApiV6Services.K8s().UpdateCluster(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sClusterId)), newCluster)
+	k8sUpd, resp, err := c.CloudApiV6Services.K8s().UpdateCluster(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sClusterId)), newCluster, queryParams)
 	if resp != nil && printer.GetId(resp) != "" {
 		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 	}
@@ -345,7 +345,7 @@ func RunK8sClusterUpdate(c *core.CommandConfig) error {
 		if err = utils.WaitForState(c, waiter.K8sClusterStateInterrogator, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sClusterId))); err != nil {
 			return err
 		}
-		if k8sUpd, _, err = c.CloudApiV6Services.K8s().GetCluster(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sClusterId))); err != nil {
+		if k8sUpd, _, err = c.CloudApiV6Services.K8s().GetCluster(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sClusterId)), queryParams); err != nil {
 			return err
 		}
 	}
@@ -372,7 +372,7 @@ func RunK8sClusterDelete(c *core.CommandConfig) error {
 			return err
 		}
 		c.Printer.Verbose("Starting deleting K8s cluster with id: %v...", k8sClusterId)
-		resp, err := c.CloudApiV6Services.K8s().DeleteCluster(k8sClusterId)
+		resp, err := c.CloudApiV6Services.K8s().DeleteCluster(k8sClusterId, queryParams)
 		if resp != nil && printer.GetId(resp) != "" {
 			c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 		}
@@ -520,7 +520,7 @@ func DeleteAllK8sClusters(c *core.CommandConfig) error {
 			for _, k8sCluster := range *k8sClustersItems {
 				if id, ok := k8sCluster.GetIdOk(); ok && id != nil {
 					c.Printer.Verbose("Starting deleting K8sCluster with id: %v...", *id)
-					resp, err = c.CloudApiV6Services.K8s().DeleteCluster(*id)
+					resp, err = c.CloudApiV6Services.K8s().DeleteCluster(*id, queryParams)
 					if resp != nil && printer.GetId(resp) != "" {
 						c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 					}

@@ -224,7 +224,7 @@ func RunPccGet(c *core.CommandConfig) error {
 		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
 	}
 	c.Printer.Verbose("Private cross connect with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgPccId)))
-	u, resp, err := c.CloudApiV6Services.Pccs().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgPccId)))
+	u, resp, err := c.CloudApiV6Services.Pccs().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgPccId)), queryParams)
 	if resp != nil {
 		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
@@ -254,7 +254,7 @@ func RunPccCreate(c *core.CommandConfig) error {
 		},
 	}
 	c.Printer.Verbose("Properties set for creating the private cross connect: Name: %v, Description: %v", name, description)
-	u, resp, err := c.CloudApiV6Services.Pccs().Create(newUser)
+	u, resp, err := c.CloudApiV6Services.Pccs().Create(newUser, queryParams)
 	if resp != nil && printer.GetId(resp) != "" {
 		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 	}
@@ -277,12 +277,12 @@ func RunPccUpdate(c *core.CommandConfig) error {
 	if !structs.IsZero(queryParams) {
 		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
 	}
-	oldPcc, resp, err := c.CloudApiV6Services.Pccs().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgPccId)))
+	oldPcc, resp, err := c.CloudApiV6Services.Pccs().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgPccId)), queryParams)
 	if err != nil {
 		return err
 	}
 	newProperties := getPccInfo(oldPcc, c)
-	pccUpd, resp, err := c.CloudApiV6Services.Pccs().Update(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgPccId)), *newProperties)
+	pccUpd, resp, err := c.CloudApiV6Services.Pccs().Update(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgPccId)), *newProperties, queryParams)
 	if resp != nil && printer.GetId(resp) != "" {
 		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 	}
@@ -315,7 +315,7 @@ func RunPccDelete(c *core.CommandConfig) error {
 			return err
 		}
 		c.Printer.Verbose("Starting deleting Private cross connect with id: %v...", pccId)
-		resp, err := c.CloudApiV6Services.Pccs().Delete(pccId)
+		resp, err := c.CloudApiV6Services.Pccs().Delete(pccId, queryParams)
 		if resp != nil && printer.GetId(resp) != "" {
 			c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 		}
@@ -394,7 +394,7 @@ func DeleteAllPccs(c *core.CommandConfig) error {
 			for _, pcc := range *pccsItems {
 				if id, ok := pcc.GetIdOk(); ok && id != nil {
 					c.Printer.Verbose("Starting deleting PrivateCrossConnect with id: %v...", *id)
-					resp, err = c.CloudApiV6Services.Pccs().Delete(*id)
+					resp, err = c.CloudApiV6Services.Pccs().Delete(*id, queryParams)
 					if resp != nil && printer.GetId(resp) != "" {
 						c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 					}

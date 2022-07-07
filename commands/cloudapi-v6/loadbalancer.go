@@ -264,6 +264,7 @@ func RunLoadBalancerGet(c *core.CommandConfig) error {
 	lb, resp, err := c.CloudApiV6Services.Loadbalancers().Get(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLoadBalancerId)),
+		queryParams,
 	)
 	if resp != nil {
 		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
@@ -287,7 +288,7 @@ func RunLoadBalancerCreate(c *core.CommandConfig) error {
 	name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
 	dhcp := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgDhcp))
 	c.Printer.Verbose("Properties set for creating the load balancer: Name: %v, Dhcp: %v", name, dhcp)
-	lb, resp, err := c.CloudApiV6Services.Loadbalancers().Create(dcId, name, dhcp)
+	lb, resp, err := c.CloudApiV6Services.Loadbalancers().Create(dcId, name, dhcp, queryParams)
 	if resp != nil && printer.GetId(resp) != "" {
 		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 	}
@@ -330,6 +331,7 @@ func RunLoadBalancerUpdate(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLoadBalancerId)),
 		input,
+		queryParams,
 	)
 	if resp != nil && printer.GetId(resp) != "" {
 		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
@@ -365,7 +367,7 @@ func RunLoadBalancerDelete(c *core.CommandConfig) error {
 			return err
 		}
 		c.Printer.Verbose("Starting deleting Load balancer with id: %v is deleting...", loadBalancerId)
-		resp, err := c.CloudApiV6Services.Loadbalancers().Delete(dcid, loadBalancerId)
+		resp, err := c.CloudApiV6Services.Loadbalancers().Delete(dcid, loadBalancerId, queryParams)
 		if resp != nil && printer.GetId(resp) != "" {
 			c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 		}
@@ -418,7 +420,7 @@ func DeleteAllLoadBalancers(c *core.CommandConfig) error {
 			for _, lb := range *loadBalancersItems {
 				if id, ok := lb.GetIdOk(); ok && id != nil {
 					c.Printer.Verbose("Starting deleting Load balancer with id: %v ...", *id)
-					resp, err = c.CloudApiV6Services.Loadbalancers().Delete(dcid, *id)
+					resp, err = c.CloudApiV6Services.Loadbalancers().Delete(dcid, *id, queryParams)
 					if resp != nil && printer.GetId(resp) != "" {
 						c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 					}

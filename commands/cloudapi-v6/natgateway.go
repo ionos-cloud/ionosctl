@@ -275,6 +275,7 @@ func RunNatGatewayGet(c *core.CommandConfig) error {
 	ng, resp, err := c.CloudApiV6Services.NatGateways().Get(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNatGatewayId)),
+		queryParams,
 	)
 	if resp != nil {
 		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
@@ -305,6 +306,7 @@ func RunNatGatewayCreate(c *core.CommandConfig) error {
 				Properties: &proper.NatGatewayProperties,
 			},
 		},
+		queryParams,
 	)
 	if resp != nil && printer.GetId(resp) != "" {
 		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
@@ -332,6 +334,7 @@ func RunNatGatewayUpdate(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNatGatewayId)),
 		*input,
+		queryParams,
 	)
 	if resp != nil && printer.GetId(resp) != "" {
 		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
@@ -366,7 +369,7 @@ func RunNatGatewayDelete(c *core.CommandConfig) error {
 			return err
 		}
 		c.Printer.Verbose("Starring deleting NatGateway with id: %v...", natGatewayId)
-		resp, err := c.CloudApiV6Services.NatGateways().Delete(dcId, natGatewayId)
+		resp, err := c.CloudApiV6Services.NatGateways().Delete(dcId, natGatewayId, queryParams)
 		if resp != nil && printer.GetId(resp) != "" {
 			c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 		}
@@ -436,7 +439,7 @@ func DeleteAllNatgateways(c *core.CommandConfig) error {
 			for _, natGateway := range *natGatewayItems {
 				if id, ok := natGateway.GetIdOk(); ok && id != nil {
 					c.Printer.Verbose("Starting deleting NatGateway with id: %v...", *id)
-					resp, err = c.CloudApiV6Services.NatGateways().Delete(dcId, *id)
+					resp, err = c.CloudApiV6Services.NatGateways().Delete(dcId, *id, queryParams)
 					if resp != nil && printer.GetId(resp) != "" {
 						c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 					}

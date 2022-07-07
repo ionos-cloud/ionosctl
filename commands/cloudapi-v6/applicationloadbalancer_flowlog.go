@@ -313,6 +313,7 @@ func RunApplicationLoadBalancerFlowLogGet(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFlowLogId)),
+		queryParams,
 	)
 	if resp != nil {
 		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
@@ -356,6 +357,7 @@ func RunApplicationLoadBalancerFlowLogCreate(c *core.CommandConfig) error {
 				Properties: &proper.FlowLogProperties,
 			},
 		},
+		queryParams,
 	)
 	if resp != nil {
 		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
@@ -388,6 +390,7 @@ func RunApplicationLoadBalancerFlowLogUpdate(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFlowLogId)),
 		&input,
+		queryParams,
 	)
 	if resp != nil {
 		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
@@ -432,6 +435,7 @@ func RunApplicationLoadBalancerFlowLogDelete(c *core.CommandConfig) error {
 			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
 			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFlowLogId)),
+			queryParams,
 		)
 		if resp != nil {
 			c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
@@ -488,7 +492,9 @@ func DeleteAllApplicationLoadBalancerFlowLog(c *core.CommandConfig) error {
 					c.Printer.Verbose("Starting deleting Application Load Balancer FlowLog with id: %v...", *id)
 					resp, err = c.CloudApiV6Services.ApplicationLoadBalancers().DeleteFlowLog(
 						viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-						viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)), *id)
+						viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)), *id,
+						queryParams,
+					)
 					if resp != nil && printer.GetId(resp) != "" {
 						c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 					}

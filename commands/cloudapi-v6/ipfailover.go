@@ -186,6 +186,7 @@ func RunIpFailoverList(c *core.CommandConfig) error {
 	obj, resp, err := c.CloudApiV6Services.Lans().Get(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLanId)),
+		resources.QueryParams{},
 	)
 	if resp != nil {
 		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
@@ -221,7 +222,7 @@ func RunIpFailoverAdd(c *core.CommandConfig) error {
 	lanId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLanId))
 	c.Printer.Verbose("Adding an IP Failover group to LAN with ID: %v from Datacenter with ID: %v...", lanId, dcId)
 	ipsFailovers := make([]resources.IpFailover, 0)
-	lanUpdated, resp, err := c.CloudApiV6Services.Lans().Update(dcId, lanId, getIpFailoverInfo(c))
+	lanUpdated, resp, err := c.CloudApiV6Services.Lans().Update(dcId, lanId, getIpFailoverInfo(c), queryParams)
 	if resp != nil && printer.GetId(resp) != "" {
 		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 	}
@@ -267,13 +268,13 @@ func RunIpFailoverRemove(c *core.CommandConfig) error {
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "remove ip failover group from lan"); err != nil {
 			return err
 		}
-		oldLan, _, err := c.CloudApiV6Services.Lans().Get(dcId, lanId)
+		oldLan, _, err := c.CloudApiV6Services.Lans().Get(dcId, lanId, queryParams)
 		if err != nil {
 			return err
 		}
 		if properties, ok := oldLan.GetPropertiesOk(); ok && properties != nil {
 			if ipfailovers, ok := properties.GetIpFailoverOk(); ok && ipfailovers != nil {
-				_, resp, err := c.CloudApiV6Services.Lans().Update(dcId, lanId, removeIpFailoverInfo(c, ipfailovers))
+				_, resp, err := c.CloudApiV6Services.Lans().Update(dcId, lanId, removeIpFailoverInfo(c, ipfailovers), queryParams)
 				if resp != nil && printer.GetId(resp) != "" {
 					c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 				}
@@ -336,14 +337,14 @@ func RemoveAllIpFailovers(c *core.CommandConfig) error {
 			if err := utils.AskForConfirm(c.Stdin, c.Printer, "remove all the IP Failovers"); err != nil {
 				return err
 			}
-			oldLan, _, err := c.CloudApiV6Services.Lans().Get(dcId, lanId)
+			oldLan, _, err := c.CloudApiV6Services.Lans().Get(dcId, lanId, queryParams)
 			if err != nil {
 				return err
 			}
 			c.Printer.Verbose("Removing all the IP Failovers...")
 			if properties, ok := oldLan.GetPropertiesOk(); ok && properties != nil {
 				if ipfailovers, ok := properties.GetIpFailoverOk(); ok && ipfailovers != nil {
-					_, resp, err = c.CloudApiV6Services.Lans().Update(dcId, lanId, lanProperties)
+					_, resp, err = c.CloudApiV6Services.Lans().Update(dcId, lanId, lanProperties, queryParams)
 					if resp != nil {
 						c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
 						c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)

@@ -26,10 +26,10 @@ type IpConsumer struct {
 // IpBlocksService is a wrapper around ionoscloud.IpBlock
 type IpBlocksService interface {
 	List(params ListQueryParams) (IpBlocks, *Response, error)
-	Get(IpBlockId string) (*IpBlock, *Response, error)
-	Create(name, location string, size int32) (*IpBlock, *Response, error)
-	Update(ipBlockId string, input IpBlockProperties) (*IpBlock, *Response, error)
-	Delete(ipBlockId string) (*Response, error)
+	Get(IpBlockId string, params QueryParams) (*IpBlock, *Response, error)
+	Create(name, location string, size int32, params QueryParams) (*IpBlock, *Response, error)
+	Update(ipBlockId string, input IpBlockProperties, params QueryParams) (*IpBlock, *Response, error)
+	Delete(ipBlockId string, params QueryParams) (*Response, error)
 }
 
 type ipBlocksService struct {
@@ -60,18 +60,27 @@ func (svc *ipBlocksService) List(params ListQueryParams) (IpBlocks, *Response, e
 		if params.MaxResults != nil {
 			req = req.MaxResults(*params.MaxResults)
 		}
+		if !structs.IsZero(params.QueryParams) {
+			if params.QueryParams.Depth != nil {
+				req = req.Depth(*params.QueryParams.Depth)
+			}
+			if params.QueryParams.Pretty != nil {
+				// Currently not implemented
+				req = req.Pretty(*params.QueryParams.Pretty)
+			}
+		}
 	}
 	s, res, err := svc.client.IPBlocksApi.IpblocksGetExecute(req)
 	return IpBlocks{s}, &Response{*res}, err
 }
 
-func (svc *ipBlocksService) Get(ipBlockId string) (*IpBlock, *Response, error) {
+func (svc *ipBlocksService) Get(ipBlockId string, params QueryParams) (*IpBlock, *Response, error) {
 	req := svc.client.IPBlocksApi.IpblocksFindById(svc.context, ipBlockId)
 	s, res, err := svc.client.IPBlocksApi.IpblocksFindByIdExecute(req)
 	return &IpBlock{s}, &Response{*res}, err
 }
 
-func (svc *ipBlocksService) Create(name, location string, size int32) (*IpBlock, *Response, error) {
+func (svc *ipBlocksService) Create(name, location string, size int32, params QueryParams) (*IpBlock, *Response, error) {
 	i := ionoscloud.IpBlock{
 		Properties: &ionoscloud.IpBlockProperties{
 			Location: &location,
@@ -86,13 +95,22 @@ func (svc *ipBlocksService) Create(name, location string, size int32) (*IpBlock,
 	return &IpBlock{ipBlock}, &Response{*res}, err
 }
 
-func (svc *ipBlocksService) Update(ipBlockId string, input IpBlockProperties) (*IpBlock, *Response, error) {
+func (svc *ipBlocksService) Update(ipBlockId string, input IpBlockProperties, params QueryParams) (*IpBlock, *Response, error) {
 	req := svc.client.IPBlocksApi.IpblocksPatch(svc.context, ipBlockId).Ipblock(input.IpBlockProperties)
+	if !structs.IsZero(params) {
+		if params.Depth != nil {
+			req = req.Depth(*params.Depth)
+		}
+		if params.Pretty != nil {
+			// Currently not implemented
+			req = req.Pretty(*params.Pretty)
+		}
+	}
 	ipBlock, resp, err := svc.client.IPBlocksApi.IpblocksPatchExecute(req)
 	return &IpBlock{ipBlock}, &Response{*resp}, err
 }
 
-func (svc *ipBlocksService) Delete(ipBlockId string) (*Response, error) {
+func (svc *ipBlocksService) Delete(ipBlockId string, params QueryParams) (*Response, error) {
 	req := svc.client.IPBlocksApi.IpblocksDelete(svc.context, ipBlockId)
 	res, err := svc.client.IPBlocksApi.IpblocksDeleteExecute(req)
 	return &Response{*res}, err

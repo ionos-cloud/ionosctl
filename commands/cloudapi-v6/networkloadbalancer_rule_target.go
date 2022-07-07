@@ -191,6 +191,7 @@ func RunNlbRuleTargetList(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNetworkLoadBalancerId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)),
+		resources.QueryParams{},
 	)
 	if resp != nil {
 		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
@@ -223,6 +224,7 @@ func RunNlbRuleTargetAdd(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNetworkLoadBalancerId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)),
+		queryParams,
 	)
 	if resp != nil && printer.GetId(resp) != "" {
 		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
@@ -246,7 +248,7 @@ func RunNlbRuleTargetAdd(c *core.CommandConfig) error {
 		},
 	}
 	c.Printer.Verbose("Adding NlbRuleTarget with id: %v to NetworkLoadBalancer with id: %v", ruleId, nlbId)
-	_, resp, err = c.CloudApiV6Services.NetworkLoadBalancers().UpdateForwardingRule(dcId, nlbId, ruleId, nlbForwardingRule)
+	_, resp, err = c.CloudApiV6Services.NetworkLoadBalancers().UpdateForwardingRule(dcId, nlbId, ruleId, nlbForwardingRule, queryParams)
 	if err != nil {
 		return err
 	}
@@ -279,6 +281,7 @@ func RunNlbRuleTargetRemove(c *core.CommandConfig) error {
 			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNetworkLoadBalancerId)),
 			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)),
+			queryParams,
 		)
 		if resp != nil && printer.GetId(resp) != "" {
 			c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
@@ -295,6 +298,7 @@ func RunNlbRuleTargetRemove(c *core.CommandConfig) error {
 			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNetworkLoadBalancerId)),
 			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)),
 			proper,
+			queryParams,
 		)
 		if err != nil {
 			return err
@@ -322,7 +326,7 @@ func RemoveAllNlbRuleTarget(c *core.CommandConfig) error {
 	c.Printer.Verbose("NetworkLoadBalancer ID: %v", nlbId)
 	c.Printer.Verbose("NetworkLoadBalancerForwardingRule ID: %v", ruleId)
 	c.Printer.Verbose("Getting NetworkLoadBalancerForwardingRule...")
-	forwardingRule, resp, err := c.CloudApiV6Services.NetworkLoadBalancers().GetForwardingRule(dcId, nlbId, ruleId)
+	forwardingRule, resp, err := c.CloudApiV6Services.NetworkLoadBalancers().GetForwardingRule(dcId, nlbId, ruleId, queryParams)
 	if err != nil {
 		return err
 	}
@@ -358,7 +362,7 @@ func RemoveAllNlbRuleTarget(c *core.CommandConfig) error {
 						Targets: &targetItems,
 					},
 				}
-				_, resp, err = c.CloudApiV6Services.NetworkLoadBalancers().UpdateForwardingRule(dcId, nlbId, ruleId, nlbFwRuleProp)
+				_, resp, err = c.CloudApiV6Services.NetworkLoadBalancers().UpdateForwardingRule(dcId, nlbId, ruleId, nlbFwRuleProp, queryParams)
 				if resp != nil && printer.GetId(resp) != "" {
 					c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 				}

@@ -275,6 +275,7 @@ func RunNetworkLoadBalancerGet(c *core.CommandConfig) error {
 	ng, resp, err := c.CloudApiV6Services.NetworkLoadBalancers().Get(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNetworkLoadBalancerId)),
+		queryParams,
 	)
 	if resp != nil {
 		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
@@ -311,6 +312,7 @@ func RunNetworkLoadBalancerCreate(c *core.CommandConfig) error {
 				Properties: &proper.NetworkLoadBalancerProperties,
 			},
 		},
+		queryParams,
 	)
 	if resp != nil && printer.GetId(resp) != "" {
 		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
@@ -338,6 +340,7 @@ func RunNetworkLoadBalancerUpdate(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNetworkLoadBalancerId)),
 		*input,
+		queryParams,
 	)
 	if resp != nil && printer.GetId(resp) != "" {
 		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
@@ -372,7 +375,7 @@ func RunNetworkLoadBalancerDelete(c *core.CommandConfig) error {
 			return err
 		}
 		c.Printer.Verbose("Starting deleting NetworkLoadBalancer with id: %v...", nlbId)
-		resp, err := c.CloudApiV6Services.NetworkLoadBalancers().Delete(dcId, nlbId)
+		resp, err := c.CloudApiV6Services.NetworkLoadBalancers().Delete(dcId, nlbId, queryParams)
 		if resp != nil && printer.GetId(resp) != "" {
 			c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 		}
@@ -458,7 +461,7 @@ func DeleteAllNetworkLoadBalancers(c *core.CommandConfig) error {
 			for _, networkLoadBalancer := range *nlbItems {
 				if id, ok := networkLoadBalancer.GetIdOk(); ok && id != nil {
 					c.Printer.Verbose("Starting deleting NetworkLoadBalancer with id: %v...", *id)
-					resp, err = c.CloudApiV6Services.NetworkLoadBalancers().Delete(dcId, *id)
+					resp, err = c.CloudApiV6Services.NetworkLoadBalancers().Delete(dcId, *id, queryParams)
 					if resp != nil && printer.GetId(resp) != "" {
 						c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 					}

@@ -68,6 +68,15 @@ func (ds *dataCentersService) List(params ListQueryParams) (Datacenters, *Respon
 				req = req.Pretty(*params.QueryParams.Pretty)
 			}
 		}
+		if !structs.IsZero(params.QueryParams) {
+			if params.QueryParams.Depth != nil {
+				req = req.Depth(*params.QueryParams.Depth)
+			}
+			if params.QueryParams.Pretty != nil {
+				// Currently not implemented
+				req = req.Pretty(*params.QueryParams.Pretty)
+			}
+		}
 	}
 	dcs, res, err := ds.client.DataCentersApi.DatacentersGetExecute(req)
 	return Datacenters{dcs}, &Response{*res}, err

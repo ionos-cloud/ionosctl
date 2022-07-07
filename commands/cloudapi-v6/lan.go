@@ -268,6 +268,7 @@ func RunLanGet(c *core.CommandConfig) error {
 	l, resp, err := c.CloudApiV6Services.Lans().Get(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLanId)),
+		queryParams,
 	)
 	if resp != nil {
 		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
@@ -305,7 +306,7 @@ func RunLanCreate(c *core.CommandConfig) error {
 		},
 	}
 	c.Printer.Verbose("Creating LAN in Datacenter with ID: %v...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
-	l, resp, err := c.CloudApiV6Services.Lans().Create(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)), input)
+	l, resp, err := c.CloudApiV6Services.Lans().Create(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)), input, queryParams)
 	if resp != nil && printer.GetId(resp) != "" {
 		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 	}
@@ -358,6 +359,7 @@ func RunLanUpdate(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLanId)),
 		input,
+		queryParams,
 	)
 	if resp != nil && printer.GetId(resp) != "" {
 		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
@@ -393,7 +395,7 @@ func RunLanDelete(c *core.CommandConfig) error {
 			return err
 		}
 		c.Printer.Verbose("Starting deleting LAN with ID: %v from Datacenter with ID: %v...", lanId, dcId)
-		resp, err := c.CloudApiV6Services.Lans().Delete(dcId, lanId)
+		resp, err := c.CloudApiV6Services.Lans().Delete(dcId, lanId, queryParams)
 		if resp != nil && printer.GetId(resp) != "" {
 			c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 		}
@@ -446,7 +448,7 @@ func DeleteAllLans(c *core.CommandConfig) error {
 			for _, lan := range *lansItems {
 				if id, ok := lan.GetIdOk(); ok && id != nil {
 					c.Printer.Verbose("Starting deleting Lan with id: %v...", *id)
-					resp, err = c.CloudApiV6Services.Lans().Delete(dcId, *id)
+					resp, err = c.CloudApiV6Services.Lans().Delete(dcId, *id, queryParams)
 					if resp != nil && printer.GetId(resp) != "" {
 						c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 					}

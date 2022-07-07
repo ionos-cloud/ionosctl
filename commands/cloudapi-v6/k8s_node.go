@@ -263,7 +263,9 @@ func RunK8sNodeGet(c *core.CommandConfig) error {
 	u, resp, err := c.CloudApiV6Services.K8s().GetNode(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sClusterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sNodePoolId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sNodeId)))
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sNodeId)),
+		queryParams,
+	)
 	if resp != nil {
 		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
@@ -291,7 +293,7 @@ func RunK8sNodeRecreate(c *core.CommandConfig) error {
 	c.Printer.Verbose("K8sClusterId: %v, K8sNodePoolId: %v, K8sNodeId: %v",
 		k8sClusterId, k8sNodePoolId, k8sNodeId)
 	c.Printer.Verbose("Recreating Node...")
-	resp, err := c.CloudApiV6Services.K8s().RecreateNode(k8sClusterId, k8sNodePoolId, k8sNodeId)
+	resp, err := c.CloudApiV6Services.K8s().RecreateNode(k8sClusterId, k8sNodePoolId, k8sNodeId, queryParams)
 	if resp != nil && printer.GetId(resp) != "" {
 		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 	}
@@ -323,7 +325,7 @@ func RunK8sNodeDelete(c *core.CommandConfig) error {
 			return err
 		}
 		c.Printer.Verbose("Starting deleting Node with ID: %v from K8s NodePool ID: %v from K8s Cluster ID: %v...", nodeId, nodepoolId, clusterId)
-		resp, err := c.CloudApiV6Services.K8s().DeleteNode(clusterId, nodepoolId, nodeId)
+		resp, err := c.CloudApiV6Services.K8s().DeleteNode(clusterId, nodepoolId, nodeId, queryParams)
 		if resp != nil && printer.GetId(resp) != "" {
 			c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 		}
@@ -376,7 +378,7 @@ func DeleteAllK8sNodes(c *core.CommandConfig) error {
 				if id, ok := dc.GetIdOk(); ok && id != nil {
 					c.Printer.Verbose("Staring deleting Node with ID: %v from K8s NodePool ID: %v from K8s Cluster ID: %v...",
 						*id, nodepoolId, clusterId)
-					resp, err = c.CloudApiV6Services.K8s().DeleteNode(clusterId, nodepoolId, *id)
+					resp, err = c.CloudApiV6Services.K8s().DeleteNode(clusterId, nodepoolId, *id, queryParams)
 					if resp != nil && printer.GetId(resp) != "" {
 						c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 					}

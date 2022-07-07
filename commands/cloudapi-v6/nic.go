@@ -311,6 +311,7 @@ func RunNicGet(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId)),
+		queryParams,
 	)
 	if resp != nil {
 		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
@@ -355,7 +356,7 @@ func RunNicCreate(c *core.CommandConfig) error {
 			Properties: &inputProper.NicProperties,
 		},
 	}
-	n, resp, err := c.CloudApiV6Services.Nics().Create(dcId, serverId, input)
+	n, resp, err := c.CloudApiV6Services.Nics().Create(dcId, serverId, input, queryParams)
 	if resp != nil && printer.GetId(resp) != "" {
 		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 	}
@@ -414,6 +415,7 @@ func RunNicUpdate(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId)),
 		input,
+		queryParams,
 	)
 	if resp != nil && printer.GetId(resp) != "" {
 		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
@@ -450,7 +452,7 @@ func RunNicDelete(c *core.CommandConfig) error {
 			return err
 		}
 		c.Printer.Verbose("Starting deleting Nic with id: %v...", nicId)
-		resp, err := c.CloudApiV6Services.Nics().Delete(dcId, serverId, nicId)
+		resp, err := c.CloudApiV6Services.Nics().Delete(dcId, serverId, nicId, queryParams)
 		if resp != nil && printer.GetId(resp) != "" {
 			c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 		}
@@ -505,7 +507,7 @@ func DeleteAllNics(c *core.CommandConfig) error {
 			for _, nic := range *nicsItems {
 				if id, ok := nic.GetIdOk(); ok && id != nil {
 					c.Printer.Verbose("Starting deleting Nic with id: %v...", *id)
-					resp, err = c.CloudApiV6Services.Nics().Delete(dcId, serverId, *id)
+					resp, err = c.CloudApiV6Services.Nics().Delete(dcId, serverId, *id, queryParams)
 					if resp != nil && printer.GetId(resp) != "" {
 						c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 					}
@@ -743,6 +745,7 @@ func RunLoadBalancerNicAttach(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLoadBalancerId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId)),
+		queryParams,
 	)
 	if err != nil {
 		return err
@@ -789,6 +792,7 @@ func RunLoadBalancerNicGet(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLoadBalancerId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId)),
+		queryParams,
 	)
 	if err != nil {
 		return err
@@ -818,6 +822,7 @@ func RunLoadBalancerNicDetach(c *core.CommandConfig) error {
 			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLoadBalancerId)),
 			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId)),
+			queryParams,
 		)
 		if err != nil {
 			return err
@@ -870,7 +875,7 @@ func DetachAllNics(c *core.CommandConfig) error {
 			for _, nic := range *nicsItems {
 				if id, ok := nic.GetIdOk(); ok && id != nil {
 					c.Printer.Verbose("Starting detaching Nic with id: %v...", *id)
-					resp, err = c.CloudApiV6Services.Loadbalancers().DetachNic(dcId, lbId, *id)
+					resp, err = c.CloudApiV6Services.Loadbalancers().DetachNic(dcId, lbId, *id, queryParams)
 					if resp != nil && printer.GetId(resp) != "" {
 						c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 					}
