@@ -38,13 +38,13 @@ func TestNewClustersService(t *testing.T) {
 	t.Run("update_cluster_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		clusterUnitSvc := NewClustersService(svc.Get(), ctx)
-		_, _, err := clusterUnitSvc.Update(testClusterResourceVar, PatchClusterRequest{})
+		_, _, err := clusterUnitSvc.Update(testClusterResourceVar, PatchClusterRequest{}, resources.QueryParams{})
 		assert.Error(t, err)
 	})
 	t.Run("delete_cluster_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		clusterUnitSvc := NewClustersService(svc.Get(), ctx)
-		_, err := clusterUnitSvc.Delete(testClusterResourceVar)
+		_, err := clusterUnitSvc.Delete(testClusterResourceVar, QueryParams{})
 		assert.Error(t, err)
 	})
 }

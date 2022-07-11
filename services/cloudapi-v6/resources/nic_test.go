@@ -28,25 +28,25 @@ func TestNewNicService(t *testing.T) {
 	t.Run("get_nic_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		nicSvc := NewNicService(svc.Get(), ctx)
-		_, _, err := nicSvc.Get(testNicResourceVar, testNicResourceVar, testNicResourceVar)
+		_, _, err := nicSvc.Get(testNicResourceVar, testNicResourceVar, testNicResourceVar, QueryParams{})
 		assert.Error(t, err)
 	})
 	t.Run("create_nic_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		nicSvc := NewNicService(svc.Get(), ctx)
-		_, _, err := nicSvc.Create(testNicResourceVar, testNicResourceVar, Nic{})
+		_, _, err := nicSvc.Create(testNicResourceVar, testNicResourceVar, Nic{}, QueryParams{})
 		assert.Error(t, err)
 	})
 	t.Run("update_nic_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		nicSvc := NewNicService(svc.Get(), ctx)
-		_, _, err := nicSvc.Update(testNicResourceVar, testNicResourceVar, testNicResourceVar, NicProperties{})
+		_, _, err := nicSvc.Update(testNicResourceVar, testNicResourceVar, testNicResourceVar, NicProperties{}, QueryParams{})
 		assert.Error(t, err)
 	})
 	t.Run("delete_nic_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		nicSvc := NewNicService(svc.Get(), ctx)
-		_, err := nicSvc.Delete(testNicResourceVar, testNicResourceVar, testNicResourceVar)
+		_, err := nicSvc.Delete(testNicResourceVar, testNicResourceVar, testNicResourceVar, QueryParams{})
 		assert.Error(t, err)
 	})
 }

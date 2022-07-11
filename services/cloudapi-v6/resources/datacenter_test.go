@@ -28,30 +28,30 @@ func TestNewDataCenterService(t *testing.T) {
 	t.Run("get_datacenter_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		datacenterSvc := NewDataCenterService(svc.Get(), ctx)
-		_, _, err := datacenterSvc.Get(QueryParams{}, testDatacenterResourceVar)
+		_, _, err := datacenterSvc.Get(testDatacenterResourceVar, QueryParams{})
 		assert.Error(t, err)
 	})
 	t.Run("create_datacenter_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		datacenterSvc := NewDataCenterService(svc.Get(), ctx)
 		_, _, err := datacenterSvc.Create(
+			testDatacenterResourceVar,
+			testDatacenterResourceVar,
+			testDatacenterResourceVar,
 			QueryParams{},
-			testDatacenterResourceVar,
-			testDatacenterResourceVar,
-			testDatacenterResourceVar,
 		)
 		assert.Error(t, err)
 	})
 	t.Run("update_datacenter_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		datacenterSvc := NewDataCenterService(svc.Get(), ctx)
-		_, _, err := datacenterSvc.Update(QueryParams{}, testDatacenterResourceVar, DatacenterProperties{})
+		_, _, err := datacenterSvc.Update(testDatacenterResourceVar, DatacenterProperties{}, QueryParams{})
 		assert.Error(t, err)
 	})
 	t.Run("delete_datacenter_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		datacenterSvc := NewDataCenterService(svc.Get(), ctx)
-		_, err := datacenterSvc.Delete(QueryParams{}, testDatacenterResourceVar)
+		_, err := datacenterSvc.Delete(testDatacenterResourceVar, QueryParams{})
 		assert.Error(t, err)
 	})
 }

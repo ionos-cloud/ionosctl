@@ -28,25 +28,25 @@ func TestNewVolumeService(t *testing.T) {
 	t.Run("get_volume_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		volumeSvc := NewVolumeService(svc.Get(), ctx)
-		_, _, err := volumeSvc.Get(testVolumeResourceVar, testVolumeResourceVar)
+		_, _, err := volumeSvc.Get(testVolumeResourceVar, testVolumeResourceVar, QueryParams{})
 		assert.Error(t, err)
 	})
 	t.Run("create_volume_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		volumeSvc := NewVolumeService(svc.Get(), ctx)
-		_, _, err := volumeSvc.Create(testVolumeResourceVar, Volume{})
+		_, _, err := volumeSvc.Create(testVolumeResourceVar, Volume{}, QueryParams{})
 		assert.Error(t, err)
 	})
 	t.Run("update_volume_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		volumeSvc := NewVolumeService(svc.Get(), ctx)
-		_, _, err := volumeSvc.Update(testVolumeResourceVar, testVolumeResourceVar, VolumeProperties{})
+		_, _, err := volumeSvc.Update(testVolumeResourceVar, testVolumeResourceVar, VolumeProperties{}, QueryParams{})
 		assert.Error(t, err)
 	})
 	t.Run("delete_volume_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		volumeSvc := NewVolumeService(svc.Get(), ctx)
-		_, err := volumeSvc.Delete(testVolumeResourceVar, testVolumeResourceVar)
+		_, err := volumeSvc.Delete(testVolumeResourceVar, testVolumeResourceVar, QueryParams{})
 		assert.Error(t, err)
 	})
 }

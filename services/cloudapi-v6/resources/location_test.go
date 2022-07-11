@@ -26,13 +26,13 @@ func TestNewLocationService(t *testing.T) {
 	t.Run("get_region_location_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		locationSvc := NewLocationService(svc.Get(), ctx)
-		_, _, err := locationSvc.GetByRegionAndLocationId(testLocationResourceVar, testLocationResourceVar)
+		_, _, err := locationSvc.GetByRegionAndLocationId(testLocationResourceVar, testLocationResourceVar, QueryParams{})
 		assert.Error(t, err)
 	})
 	t.Run("get_location_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		locationSvc := NewLocationService(svc.Get(), ctx)
-		_, _, err := locationSvc.GetByRegionId(testLocationResourceVar)
+		_, _, err := locationSvc.GetByRegionId(testLocationResourceVar, QueryParams{})
 		assert.Error(t, err)
 	})
 }

@@ -12,7 +12,7 @@ func TestNewContractService(t *testing.T) {
 	t.Run("get_contract_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		contractSvc := NewContractService(svc.Get(), ctx)
-		_, _, err := contractSvc.Get()
+		_, _, err := contractSvc.Get(QueryParams{})
 		assert.Error(t, err)
 	})
 }

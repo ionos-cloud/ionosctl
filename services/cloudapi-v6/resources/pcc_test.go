@@ -28,7 +28,7 @@ func TestNewPrivateCrossConnectService(t *testing.T) {
 	t.Run("get_pcc_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		pccSvc := NewPrivateCrossConnectService(svc.Get(), ctx)
-		_, _, err := pccSvc.Get(testPrivateCrossConnectResourceVar)
+		_, _, err := pccSvc.Get(testPrivateCrossConnectResourceVar, QueryParams{})
 		assert.Error(t, err)
 	})
 	t.Run("getpeers_pcc_error", func(t *testing.T) {
@@ -40,19 +40,19 @@ func TestNewPrivateCrossConnectService(t *testing.T) {
 	t.Run("create_pcc_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		pccSvc := NewPrivateCrossConnectService(svc.Get(), ctx)
-		_, _, err := pccSvc.Create(PrivateCrossConnect{})
+		_, _, err := pccSvc.Create(PrivateCrossConnect{}, QueryParams{})
 		assert.Error(t, err)
 	})
 	t.Run("update_pcc_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		pccSvc := NewPrivateCrossConnectService(svc.Get(), ctx)
-		_, _, err := pccSvc.Update(testPrivateCrossConnectResourceVar, PrivateCrossConnectProperties{})
+		_, _, err := pccSvc.Update(testPrivateCrossConnectResourceVar, PrivateCrossConnectProperties{}, QueryParams{})
 		assert.Error(t, err)
 	})
 	t.Run("delete_pcc_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		pccSvc := NewPrivateCrossConnectService(svc.Get(), ctx)
-		_, err := pccSvc.Delete(testPrivateCrossConnectResourceVar)
+		_, err := pccSvc.Delete(testPrivateCrossConnectResourceVar, QueryParams{})
 		assert.Error(t, err)
 	})
 }
