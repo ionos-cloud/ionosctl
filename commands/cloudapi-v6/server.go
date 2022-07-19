@@ -4,11 +4,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"go.uber.org/multierr"
 	"io"
 	"os"
 	"strconv"
-
-	"go.uber.org/multierr"
+	"time"
 
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
@@ -494,7 +494,10 @@ Required values to run command:
 }
 
 func PreRunServerList(c *core.PreCommandConfig) error {
-	if err := core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgDataCenterId); err != nil {
+	if err := core.CheckRequiredFlagsSets(c.Command, c.NS,
+		[]string{cloudapiv6.ArgDataCenterId},
+		[]string{cloudapiv6.ArgAll},
+	); err != nil {
 		return err
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
@@ -540,8 +543,52 @@ func PreRunDcServerDelete(c *core.PreCommandConfig) error {
 	)
 }
 
+func RunServerListAll(c *core.CommandConfig) error {
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	if !structs.IsZero(listQueryParams) {
+		if listQueryParams.Filters != nil {
+			filters := *listQueryParams.Filters
+			if val, ok := filters["ram"]; ok {
+				convertedSize, err := utils.ConvertSize(val, utils.MegaBytes)
+				if err != nil {
+					return err
+				}
+				filters["ram"] = strconv.Itoa(convertedSize)
+				listQueryParams.Filters = &filters
+			}
+		}
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams))
+	}
+	datacenters, _, err := c.CloudApiV6Services.DataCenters().List(listQueryParams)
+	if err != nil {
+		return err
+	}
+	allDcs := getDataCenters(datacenters)
+	var allServers []resources.Server
+	totalTime := time.Duration(0)
+	for _, dc := range allDcs {
+		servers, resp, err := c.CloudApiV6Services.Servers().List(*dc.GetId(), listQueryParams)
+		if err != nil {
+			return err
+		}
+		allServers = append(allServers, getServers(servers)...)
+		totalTime += resp.RequestTime
+	}
+
+	if totalTime != time.Duration(0) {
+		c.Printer.Verbose(config.RequestTimeMessage, totalTime)
+	}
+
+	return c.Printer.Print(getServerPrint(nil, c, allServers))
+}
+
 func RunServerList(c *core.CommandConfig) error {
-	// Add Query Parameters for GET Requests
+	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
+		return RunServerListAll(c)
+	}
 	listQueryParams, err := query.GetListQueryParams(c)
 	if err != nil {
 		return err
@@ -710,7 +757,6 @@ func RunServerDelete(c *core.CommandConfig) error {
 			return err
 		}
 		return c.Printer.Print(printer.Result{Resource: c.Resource, Verb: c.Verb})
-
 	} else {
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete server"); err != nil {
 			return err
