@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"time"
 
 	"go.uber.org/multierr"
 
@@ -240,8 +241,41 @@ func PreRunNatGatewayDelete(c *core.PreCommandConfig) error {
 	)
 }
 
+func RunNatGatewayListAll(c *core.CommandConfig) error {
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	if !structs.IsZero(listQueryParams) {
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams))
+	}
+	datacenters, _, err := c.CloudApiV6Services.DataCenters().List(listQueryParams)
+	if err != nil {
+		return err
+	}
+	allDcs := getDataCenters(datacenters)
+	var allNatGateways []resources.NatGateway
+	totalTime := time.Duration(0)
+	for _, dc := range allDcs {
+		natGateways, resp, err := c.CloudApiV6Services.NatGateways().List(*dc.GetId(), listQueryParams)
+		if err != nil {
+			return err
+		}
+		allNatGateways = append(allNatGateways, getNatGateways(natGateways)...)
+		totalTime += resp.RequestTime
+	}
+
+	if totalTime != time.Duration(0) {
+		c.Printer.Verbose(config.RequestTimeMessage, totalTime)
+	}
+
+	return c.Printer.Print(getNatGatewayPrint(nil, c, allNatGateways))
+}
+
 func RunNatGatewayList(c *core.CommandConfig) error {
-	// Add Query Parameters for GET Requests
+	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
+		return RunNatGatewayListAll(c)
+	}
 	listQueryParams, err := query.GetListQueryParams(c)
 	if err != nil {
 		return err

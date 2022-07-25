@@ -7,6 +7,7 @@ import (
 	"io"
 	"os"
 	"strconv"
+	"time"
 
 	"go.uber.org/multierr"
 
@@ -297,7 +298,41 @@ func PreRunVolumeCreate(c *core.PreCommandConfig) error {
 	return nil
 }
 
+func RunVolumeListAll(c *core.CommandConfig) error {
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	if !structs.IsZero(listQueryParams) {
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams))
+	}
+	datacenters, _, err := c.CloudApiV6Services.DataCenters().List(listQueryParams)
+	if err != nil {
+		return err
+	}
+	allDcs := getDataCenters(datacenters)
+	var allVolumes []resources.Volume
+	totalTime := time.Duration(0)
+	for _, dc := range allDcs {
+		volumes, resp, err := c.CloudApiV6Services.Volumes().List(*dc.GetId(), listQueryParams)
+		if err != nil {
+			return err
+		}
+		allVolumes = append(allVolumes, getVolumes(volumes)...)
+		totalTime += resp.RequestTime
+	}
+
+	if totalTime != time.Duration(0) {
+		c.Printer.Verbose(config.RequestTimeMessage, totalTime)
+	}
+
+	return c.Printer.Print(getVolumePrint(nil, c, allVolumes))
+}
+
 func RunVolumeList(c *core.CommandConfig) error {
+	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
+		return RunVolumeListAll(c)
+	}
 	c.Printer.Verbose("Listing Volumes from Datacenter with ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
 	// Add Query Parameters for GET Requests
 	listQueryParams, err := query.GetListQueryParams(c)

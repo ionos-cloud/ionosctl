@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"time"
 
 	"go.uber.org/multierr"
 
@@ -231,9 +232,42 @@ func PreRunDcLoadBalancerDelete(c *core.PreCommandConfig) error {
 	)
 }
 
+func RunLoadBalancerListAll(c *core.CommandConfig) error {
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	if !structs.IsZero(listQueryParams) {
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams))
+	}
+	datacenters, _, err := c.CloudApiV6Services.DataCenters().List(listQueryParams)
+	if err != nil {
+		return err
+	}
+	allDcs := getDataCenters(datacenters)
+	var allLoadbalancers []resources.Loadbalancer
+	totalTime := time.Duration(0)
+	for _, dc := range allDcs {
+		LoadBalancers, resp, err := c.CloudApiV6Services.Loadbalancers().List(*dc.GetId(), listQueryParams)
+		if err != nil {
+			return err
+		}
+		allLoadbalancers = append(allLoadbalancers, getLoadbalancers(LoadBalancers)...)
+		totalTime += resp.RequestTime
+	}
+
+	if totalTime != time.Duration(0) {
+		c.Printer.Verbose(config.RequestTimeMessage, totalTime)
+	}
+
+	return c.Printer.Print(getLoadbalancerPrint(nil, c, allLoadbalancers))
+}
+
 func RunLoadBalancerList(c *core.CommandConfig) error {
+	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
+		return RunLoadBalancerListAll(c)
+	}
 	c.Printer.Verbose("Getting LoadBalancers from Datacenter with ID: %v...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
-	// Add Query Parameters for GET Requests
 	listQueryParams, err := query.GetListQueryParams(c)
 	if err != nil {
 		return err
