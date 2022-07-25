@@ -217,7 +217,10 @@ Required values to run command:
 }
 
 func PreRunNetworkLoadBalancerList(c *core.PreCommandConfig) error {
-	if err := core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgDataCenterId); err != nil {
+	if err := core.CheckRequiredFlagsSets(c.Command, c.NS,
+		[]string{cloudapiv6.ArgDataCenterId},
+		[]string{cloudapiv6.ArgAll},
+	); err != nil {
 		return err
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
