@@ -53,7 +53,7 @@ func ApplicationLoadBalancerCmd() *core.Command {
 		ShortDesc:  "List Application Load Balancers",
 		LongDesc:   "Use this command to list Application Load Balancers from a specified Virtual Data Center.\n\nRequired values to run command:\n\n* Data Center Id",
 		Example:    listApplicationLoadBalancerExample,
-		PreCmdRun:  PreRunDataCenterId,
+		PreCmdRun:  PreRunApplicationLoadBalancerList,
 		CmdRun:     RunApplicationLoadBalancerList,
 		InitClient: true,
 	})
@@ -222,6 +222,19 @@ func PreRunApplicationLoadBalancerDelete(c *core.PreCommandConfig) error {
 		[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgApplicationLoadBalancerId},
 		[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgAll},
 	)
+}
+
+func PreRunApplicationLoadBalancerList(c *core.PreCommandConfig) error {
+	if err := core.CheckRequiredFlagsSets(c.Command, c.NS,
+		[]string{cloudapiv6.ArgDataCenterId},
+		[]string{cloudapiv6.ArgAll},
+	); err != nil {
+		return err
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
+		return query.ValidateFilters(c, completer.ApplicationLoadBalancersFilters(), completer.ApplicationLoadBalancersFiltersUsage())
+	}
+	return nil
 }
 
 func RunApplicationLoadBalancerList(c *core.CommandConfig) error {
