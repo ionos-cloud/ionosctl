@@ -7,6 +7,8 @@ import (
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/query"
 	"io"
 	"os"
+	"strconv"
+	"time"
 
 	"go.uber.org/multierr"
 
@@ -53,7 +55,7 @@ func ShareCmd() *core.Command {
 		ShortDesc:  "List Resources Shares through a Group",
 		LongDesc:   "Use this command to get a full list of all the Resources that are shared through a specified Group.\n\nRequired values to run command:\n\n* Group Id",
 		Example:    listSharesExample,
-		PreCmdRun:  PreRunGroupId,
+		PreCmdRun:  PreRunShareList,
 		CmdRun:     RunShareList,
 		InitClient: true,
 	})
@@ -207,6 +209,47 @@ func PreRunGroupResourceDelete(c *core.PreCommandConfig) error {
 	)
 }
 
+func RunShareListAll(c *core.CommandConfig) error {
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	if !structs.IsZero(listQueryParams) {
+		if listQueryParams.Filters != nil {
+			filters := *listQueryParams.Filters
+			if val, ok := filters["ram"]; ok {
+				convertedSize, err := utils.ConvertSize(val, utils.MegaBytes)
+				if err != nil {
+					return err
+				}
+				filters["ram"] = strconv.Itoa(convertedSize)
+				listQueryParams.Filters = &filters
+			}
+		}
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams))
+	}
+	groups, _, err := c.CloudApiV6Services.Groups().List(listQueryParams)
+	if err != nil {
+		return err
+	}
+	var allShares []resources.GroupShare
+	totalTime := time.Duration(0)
+	for _, group := range getGroups(groups) {
+		shares, resp, err := c.CloudApiV6Services.Groups().ListShares(*group.GetId(), listQueryParams)
+		if err != nil {
+			return err
+		}
+		allShares = append(allShares, getGroupShares(shares)...)
+		totalTime += resp.RequestTime
+	}
+
+	if totalTime != time.Duration(0) {
+		c.Printer.Verbose(config.RequestTimeMessage, totalTime)
+	}
+
+	return c.Printer.Print(getGroupSharePrint(nil, c, allShares))
+}
+
 func RunShareList(c *core.CommandConfig) error {
 	// Add Query Parameters for GET Requests
 	listQueryParams, err := query.GetListQueryParams(c)
@@ -227,6 +270,19 @@ func RunShareList(c *core.CommandConfig) error {
 		return err
 	}
 	return c.Printer.Print(getGroupSharePrint(nil, c, getGroupShares(shares)))
+}
+
+func PreRunShareList(c *core.PreCommandConfig) error {
+	if err := core.CheckRequiredFlagsSets(c.Command, c.NS,
+		[]string{cloudapiv6.ArgGroupId},
+		[]string{cloudapiv6.ArgAll},
+	); err != nil {
+		return err
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
+		return query.ValidateFilters(c, completer.ServersFilters(), completer.ServersFiltersUsage())
+	}
+	return nil
 }
 
 func RunShareGet(c *core.CommandConfig) error {
