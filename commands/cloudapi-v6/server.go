@@ -8,6 +8,7 @@ import (
 	"io"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/fatih/structs"
@@ -1162,6 +1163,7 @@ type ServerPrint struct {
 	BootCdromId      string `json:"BootCdromId,omitempty"`
 	TemplateId       string `json:"TemplateId,omitempty"`
 	Type             string `json:"Type,omitempty"`
+	DatacenterId     string `json:DatacenterId,omitempty`
 }
 
 func getServerPrint(resp *resources.Response, c *core.CommandConfig, ss []resources.Server) printer.Result {
@@ -1177,44 +1179,52 @@ func getServerPrint(resp *resources.Response, c *core.CommandConfig, ss []resour
 		if ss != nil {
 			r.OutputJSON = ss
 			r.KeyValue = getServersKVMaps(ss)
-			r.Columns = getServersCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr())
+			r.Columns = getServersCols(
+				core.GetGlobalFlagName(c.Resource, config.ArgCols),
+				core.GetGlobalFlagName(c.NS, config.ArgAll),
+				c.Printer.GetStderr(),
+			)
 		}
 	}
 	return r
 }
 
-func getServersCols(flagName string, outErr io.Writer) []string {
+func getServersCols(argCols string, argAll string, outErr io.Writer) []string {
 	var cols []string
-	if viper.IsSet(flagName) {
-		cols = viper.GetStringSlice(flagName)
+	if viper.IsSet(argCols) {
+		cols = viper.GetStringSlice(argCols)
+
+		columnsMap := map[string]string{
+			"ServerId":         "ServerId",
+			"Name":             "Name",
+			"AvailabilityZone": "AvailabilityZone",
+			"State":            "State",
+			"VmState":          "VmState",
+			"Cores":            "Cores",
+			"Ram":              "Ram",
+			"CpuFamily":        "CpuFamily",
+			"TemplateId":       "TemplateId",
+			"Type":             "Type",
+			"BootVolumeId":     "BootVolumeId",
+			"BootCdromId":      "BootCdromId",
+			"DatacenterId":     "DatacenterId",
+		}
+		var serverCols []string
+		for _, k := range cols {
+			col := columnsMap[k]
+			if col != "" {
+				serverCols = append(serverCols, col)
+			} else {
+				clierror.CheckError(errors.New("unknown column "+k), outErr)
+			}
+		}
+		return serverCols
+	} else if viper.IsSet(argAll) {
+		// Add column which specifies which parent resource this belongs to, if using -a/--all flag
+		return append(defaultServerCols, "DatacenterId")
 	} else {
 		return defaultServerCols
 	}
-
-	columnsMap := map[string]string{
-		"ServerId":         "ServerId",
-		"Name":             "Name",
-		"AvailabilityZone": "AvailabilityZone",
-		"State":            "State",
-		"VmState":          "VmState",
-		"Cores":            "Cores",
-		"Ram":              "Ram",
-		"CpuFamily":        "CpuFamily",
-		"TemplateId":       "TemplateId",
-		"Type":             "Type",
-		"BootVolumeId":     "BootVolumeId",
-		"BootCdromId":      "BootCdromId",
-	}
-	var serverCols []string
-	for _, k := range cols {
-		col := columnsMap[k]
-		if col != "" {
-			serverCols = append(serverCols, col)
-		} else {
-			clierror.CheckError(errors.New("unknown column "+k), outErr)
-		}
-	}
-	return serverCols
 }
 
 func getServers(servers resources.Servers) []resources.Server {
@@ -1274,6 +1284,10 @@ func getServersKVMaps(ss []resources.Server) []map[string]interface{} {
 			if stateOk, ok := metadataOk.GetStateOk(); ok && stateOk != nil {
 				serverPrint.State = *stateOk
 			}
+		}
+		if hrefOk, ok := s.GetHrefOk(); ok && hrefOk != nil {
+			// Get parent resource ID using HREF: `.../k8s/[PARENT_ID_WE_WANT]/nodepools/[NODEPOOL_ID]`
+			serverPrint.DatacenterId = strings.Split(strings.Split(*hrefOk, "datacenter")[1], "/")[1]
 		}
 		o := structs.Map(serverPrint)
 		out = append(out, o)
