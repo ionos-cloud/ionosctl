@@ -1181,7 +1181,7 @@ func getServerPrint(resp *resources.Response, c *core.CommandConfig, ss []resour
 			r.KeyValue = getServersKVMaps(ss)
 			r.Columns = getServersCols(
 				core.GetGlobalFlagName(c.Resource, config.ArgCols),
-				core.GetGlobalFlagName(c.NS, config.ArgAll),
+				core.GetFlagName(c.NS, cloudapiv6.ArgAll),
 				c.Printer.GetStderr(),
 			)
 		}

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strings"
 	"time"
 
 	"go.uber.org/multierr"
@@ -38,10 +39,10 @@ func LanCmd() *core.Command {
 		},
 	}
 	globalFlags := lanCmd.GlobalFlags()
-	globalFlags.StringSliceP(config.ArgCols, "", defaultLanCols, printer.ColsMessage(defaultLanCols))
+	globalFlags.StringSliceP(config.ArgCols, "", defaultLanCols, printer.ColsMessage(allLanCols))
 	_ = viper.BindPFlag(core.GetGlobalFlagName(lanCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 	_ = lanCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return defaultLanCols, cobra.ShellCompDirectiveNoFileComp
+		return allLanCols, cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -357,7 +358,7 @@ func RunLanCreate(c *core.CommandConfig) error {
 	return c.Printer.Print(printer.Result{
 		OutputJSON:     l,
 		KeyValue:       getLanPostsKVMaps([]resources.LanPost{*l}),
-		Columns:        getLansCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr()),
+		Columns:        getLansCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), core.GetFlagName(c.NS, cloudapiv6.ArgAll), c.Printer.GetStderr()),
 		ApiResponse:    resp,
 		Resource:       "lan",
 		Verb:           "create",
@@ -516,13 +517,15 @@ func DeleteAllLans(c *core.CommandConfig) error {
 // Output Printing
 
 var defaultLanCols = []string{"LanId", "Name", "Public", "PccId", "State"}
+var allLanCols = []string{"LanId", "Name", "Public", "PccId", "State", "DatacenterId"}
 
 type LanPrint struct {
-	LanId  string `json:"LanId,omitempty"`
-	Name   string `json:"Name,omitempty"`
-	Public bool   `json:"Public,omitempty"`
-	PccId  string `json:"PccId,omitempty"`
-	State  string `json:"State,omitempty"`
+	LanId        string `json:"LanId,omitempty"`
+	Name         string `json:"Name,omitempty"`
+	Public       bool   `json:"Public,omitempty"`
+	PccId        string `json:"PccId,omitempty"`
+	State        string `json:"State,omitempty"`
+	DatacenterId string `json:"DatacenterId,omitempty"`
 }
 
 func getLanPrint(resp *resources.Response, c *core.CommandConfig, lans []resources.Lan) printer.Result {
@@ -537,37 +540,43 @@ func getLanPrint(resp *resources.Response, c *core.CommandConfig, lans []resourc
 		if lans != nil {
 			r.OutputJSON = lans
 			r.KeyValue = getLansKVMaps(lans)
-			r.Columns = getLansCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr())
+			r.Columns = getLansCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), core.GetFlagName(
+				c.NS,
+				cloudapiv6.ArgAll,
+			), c.Printer.GetStderr())
 		}
 	}
 	return r
 }
 
-func getLansCols(flagName string, outErr io.Writer) []string {
+func getLansCols(argCols string, argAll string, outErr io.Writer) []string {
 	var cols []string
-	if viper.IsSet(flagName) {
-		cols = viper.GetStringSlice(flagName)
+	if viper.IsSet(argCols) {
+		cols = viper.GetStringSlice(argCols)
+
+		columnsMap := map[string]string{
+			"LanId":        "LanId",
+			"Name":         "Name",
+			"Public":       "Public",
+			"PccId":        "PccId",
+			"State":        "State",
+			"DatacenterId": "DatacenterId",
+		}
+		var lanCols []string
+		for _, k := range cols {
+			col := columnsMap[k]
+			if col != "" {
+				lanCols = append(lanCols, col)
+			} else {
+				clierror.CheckError(errors.New("unknown column "+k), outErr)
+			}
+		}
+		return lanCols
+	} else if viper.IsSet(argAll) {
+		return append(defaultLanCols, "DatacenterId")
 	} else {
 		return defaultLanCols
 	}
-
-	columnsMap := map[string]string{
-		"LanId":  "LanId",
-		"Name":   "Name",
-		"Public": "Public",
-		"PccId":  "PccId",
-		"State":  "State",
-	}
-	var lanCols []string
-	for _, k := range cols {
-		col := columnsMap[k]
-		if col != "" {
-			lanCols = append(lanCols, col)
-		} else {
-			clierror.CheckError(errors.New("unknown column "+k), outErr)
-		}
-	}
-	return lanCols
 }
 
 func getLans(lans resources.Lans) []resources.Lan {
@@ -602,6 +611,10 @@ func getLansKVMaps(ls []resources.Lan) []map[string]interface{} {
 			if state, ok := metadata.GetStateOk(); ok && state != nil {
 				lanprint.State = *state
 			}
+		}
+		if hrefOk, ok := l.GetHrefOk(); ok && hrefOk != nil {
+			// Get parent resource ID using HREF: `.../k8s/[PARENT_ID_WE_WANT]/nodepools/[NODEPOOL_ID]`
+			lanprint.DatacenterId = strings.Split(strings.Split(*hrefOk, "datacenter")[1], "/")[1]
 		}
 		o := structs.Map(lanprint)
 		out = append(out, o)
