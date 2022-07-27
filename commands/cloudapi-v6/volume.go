@@ -7,6 +7,7 @@ import (
 	"io"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 
 	"go.uber.org/multierr"
@@ -1091,7 +1092,7 @@ func DetachAllServerVolumes(c *core.CommandConfig) error {
 var (
 	defaultVolumeCols = []string{"VolumeId", "Name", "Size", "Type", "LicenceType", "State", "Image"}
 	allVolumeCols     = []string{"VolumeId", "Name", "Size", "Type", "LicenceType", "State", "Image", "Bus", "AvailabilityZone", "BackupunitId",
-		"DeviceNumber", "UserData", "BootServerId"}
+		"DeviceNumber", "UserData", "BootServerId", "DatacenterId"}
 )
 
 type VolumePrint struct {
@@ -1108,6 +1109,7 @@ type VolumePrint struct {
 	BackupunitId     string `json:"BackupunitId,omitempty"`
 	UserData         string `json:"UserData,omitempty"`
 	BootServerId     string `json:"BootServerId,omitempty"`
+	DatacenterId     string `json:"DatacenterId,omitempty"`
 }
 
 func getVolumePrint(resp *resources.Response, c *core.CommandConfig, vols []resources.Volume) printer.Result {
@@ -1123,49 +1125,52 @@ func getVolumePrint(resp *resources.Response, c *core.CommandConfig, vols []reso
 			r.OutputJSON = vols
 			r.KeyValue = getVolumesKVMaps(vols)
 			if c.Resource != c.Namespace {
-				r.Columns = getVolumesCols(core.GetFlagName(c.NS, config.ArgCols), c.Printer.GetStderr())
+				r.Columns = getVolumesCols(core.GetFlagName(c.NS, config.ArgCols), core.GetFlagName(c.NS, cloudapiv6.ArgAll), c.Printer.GetStderr())
 			} else {
-				r.Columns = getVolumesCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr())
+				r.Columns = getVolumesCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), core.GetFlagName(c.NS, cloudapiv6.ArgAll), c.Printer.GetStderr())
 			}
 		}
 	}
 	return r
 }
 
-func getVolumesCols(flagName string, outErr io.Writer) []string {
+func getVolumesCols(argCols string, argAll string, outErr io.Writer) []string {
 	var cols []string
-	if viper.IsSet(flagName) {
-		cols = viper.GetStringSlice(flagName)
+	if viper.IsSet(argCols) {
+		cols = viper.GetStringSlice(argCols)
+
+		columnsMap := map[string]string{
+			"VolumeId":         "VolumeId",
+			"Name":             "Name",
+			"Size":             "Size",
+			"Type":             "Type",
+			"LicenceType":      "LicenceType",
+			"Bus":              "Bus",
+			"AvailabilityZone": "AvailabilityZone",
+			"State":            "State",
+			"Image":            "Image",
+			"ImageAlias":       "ImageAlias",
+			"DeviceNumber":     "DeviceNumber",
+			"BackupunitId":     "BackupunitId",
+			"UserData":         "UserData",
+			"BootServerId":     "BootServerId",
+			"DatacenterId":     "DatacenterId",
+		}
+		var volumeCols []string
+		for _, k := range cols {
+			col := columnsMap[k]
+			if col != "" {
+				volumeCols = append(volumeCols, col)
+			} else {
+				clierror.CheckError(errors.New("unknown column "+k), outErr)
+			}
+		}
+		return volumeCols
+	} else if viper.GetBool(argAll) {
+		return append(defaultVolumeCols, "DatacenterId")
 	} else {
 		return defaultVolumeCols
 	}
-
-	columnsMap := map[string]string{
-		"VolumeId":         "VolumeId",
-		"Name":             "Name",
-		"Size":             "Size",
-		"Type":             "Type",
-		"LicenceType":      "LicenceType",
-		"Bus":              "Bus",
-		"AvailabilityZone": "AvailabilityZone",
-		"State":            "State",
-		"Image":            "Image",
-		"ImageAlias":       "ImageAlias",
-		"DeviceNumber":     "DeviceNumber",
-		"BackupunitId":     "BackupunitId",
-		"UserData":         "UserData",
-		"BootServerId":     "BootServerId",
-	}
-	var volumeCols []string
-	for _, k := range cols {
-		col := columnsMap[k]
-		if col != "" {
-			volumeCols = append(volumeCols, col)
-		} else {
-			clierror.CheckError(errors.New("unknown column "+k), outErr)
-		}
-	}
-	return volumeCols
 }
 
 func getVolumes(volumes resources.Volumes) []resources.Volume {
@@ -1240,6 +1245,9 @@ func getVolumesKVMaps(vs []resources.Volume) []map[string]interface{} {
 			if stateOk, ok := metadataOk.GetStateOk(); ok && stateOk != nil {
 				volumePrint.State = *stateOk
 			}
+		}
+		if hrefOk, ok := v.GetHrefOk(); ok && hrefOk != nil {
+			volumePrint.DatacenterId = strings.Split(strings.Split(*hrefOk, "datacenter")[1], "/")[1]
 		}
 		o := structs.Map(volumePrint)
 		out = append(out, o)
