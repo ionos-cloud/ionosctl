@@ -8,6 +8,7 @@ import (
 	"go.uber.org/multierr"
 	"io"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/fatih/structs"
@@ -542,6 +543,7 @@ type ApplicationLoadBalancerPrint struct {
 	TargetLan                 int32    `json:"TargetLan,omitempty"`
 	PrivateIps                []string `json:"PrivateIps,omitempty"`
 	State                     string   `json:"State,omitempty"`
+	DatacenterId              string   `json:"DatacenterId,omitempty"`
 }
 
 func getApplicationLoadBalancerPrint(resp *resources.Response, c *core.CommandConfig, ss []resources.ApplicationLoadBalancer) printer.Result {
@@ -557,39 +559,46 @@ func getApplicationLoadBalancerPrint(resp *resources.Response, c *core.CommandCo
 		if ss != nil {
 			r.OutputJSON = ss
 			r.KeyValue = getApplicationLoadBalancersKVMaps(ss)
-			r.Columns = getApplicationLoadBalancersCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr())
+			r.Columns = getApplicationLoadBalancersCols(
+				core.GetGlobalFlagName(c.Resource, config.ArgCols),
+				core.GetFlagName(c.NS, config.ArgAll),
+				c.Printer.GetStderr(),
+			)
 		}
 	}
 	return r
 }
 
-func getApplicationLoadBalancersCols(flagName string, outErr io.Writer) []string {
+func getApplicationLoadBalancersCols(argCols string, argAll string, outErr io.Writer) []string {
 	var cols []string
-	if viper.IsSet(flagName) {
-		cols = viper.GetStringSlice(flagName)
+	if viper.IsSet(argCols) {
+		cols = viper.GetStringSlice(argCols)
+
+		columnsMap := map[string]string{
+			"ApplicationLoadBalancerId": "ApplicationLoadBalancerId",
+			"Name":                      "Name",
+			"ListenerLan":               "ListenerLan",
+			"Ips":                       "Ips",
+			"TargetLan":                 "TargetLan",
+			"LbPrivateIps":              "LbPrivateIps",
+			"State":                     "State",
+			"DatacenterId":              "DatacenterId",
+		}
+		var applicationloadbalancerCols []string
+		for _, k := range cols {
+			col := columnsMap[k]
+			if col != "" {
+				applicationloadbalancerCols = append(applicationloadbalancerCols, col)
+			} else {
+				clierror.CheckError(errors.New("unknown column "+k), outErr)
+			}
+		}
+		return applicationloadbalancerCols
+	} else if viper.IsSet(argAll) {
+		return append(defaultApplicationLoadBalancerCols, "DatacenterId")
 	} else {
 		return defaultApplicationLoadBalancerCols
 	}
-
-	columnsMap := map[string]string{
-		"ApplicationLoadBalancerId": "ApplicationLoadBalancerId",
-		"Name":                      "Name",
-		"ListenerLan":               "ListenerLan",
-		"Ips":                       "Ips",
-		"TargetLan":                 "TargetLan",
-		"LbPrivateIps":              "LbPrivateIps",
-		"State":                     "State",
-	}
-	var applicationloadbalancerCols []string
-	for _, k := range cols {
-		col := columnsMap[k]
-		if col != "" {
-			applicationloadbalancerCols = append(applicationloadbalancerCols, col)
-		} else {
-			clierror.CheckError(errors.New("unknown column "+k), outErr)
-		}
-	}
-	return applicationloadbalancerCols
 }
 
 func getApplicationLoadBalancers(applicationloadbalancers resources.ApplicationLoadBalancers) []resources.ApplicationLoadBalancer {
@@ -628,6 +637,10 @@ func getApplicationLoadBalancersKVMaps(ss []resources.ApplicationLoadBalancer) [
 			if state, ok := metadata.GetStateOk(); ok && state != nil {
 				applicationloadbalancerPrint.State = *state
 			}
+		}
+		if hrefOk, ok := s.GetHrefOk(); ok && hrefOk != nil {
+			// Get parent resource ID using HREF: `.../datacenter/[PARENT_ID_WE_WANT]/alb/[ALB_ID]`
+			applicationloadbalancerPrint.DatacenterId = strings.Split(strings.Split(*hrefOk, "datacenter")[1], "/")[1]
 		}
 		o := structs.Map(applicationloadbalancerPrint)
 		out = append(out, o)

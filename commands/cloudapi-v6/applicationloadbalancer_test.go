@@ -550,7 +550,11 @@ func TestGetApplicationLoadBalancersCols(t *testing.T) {
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
 	viper.Set(core.GetGlobalFlagName("applicationloadbalancer", config.ArgCols), []string{"Name"})
-	getApplicationLoadBalancersCols(core.GetGlobalFlagName("applicationloadbalancer", config.ArgCols), w)
+	getApplicationLoadBalancersCols(
+		core.GetGlobalFlagName("applicationloadbalancer", config.ArgCols),
+		core.GetFlagName("applicationloadbalancer", cloudapiv6.ArgAll),
+		w,
+	)
 	err := w.Flush()
 	assert.NoError(t, err)
 }
@@ -561,7 +565,11 @@ func TestGetApplicationLoadBalancersColsErr(t *testing.T) {
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
 	viper.Set(core.GetGlobalFlagName("applicationloadbalancer", config.ArgCols), []string{"Unknown"})
-	getApplicationLoadBalancersCols(core.GetGlobalFlagName("applicationloadbalancer", config.ArgCols), w)
+	getApplicationLoadBalancersCols(
+		core.GetGlobalFlagName("applicationloadbalancer", config.ArgCols),
+		core.GetFlagName("applicationloadbalancer", cloudapiv6.ArgAll),
+		w,
+	)
 	err := w.Flush()
 	assert.NoError(t, err)
 	re := regexp.MustCompile(`unknown column Unknown`)
