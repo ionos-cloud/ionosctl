@@ -1163,7 +1163,7 @@ type ServerPrint struct {
 	BootCdromId      string `json:"BootCdromId,omitempty"`
 	TemplateId       string `json:"TemplateId,omitempty"`
 	Type             string `json:"Type,omitempty"`
-	DatacenterId     string `json:DatacenterId,omitempty`
+	DatacenterId     string `json:"DatacenterId,omitempty"`
 }
 
 func getServerPrint(resp *resources.Response, c *core.CommandConfig, ss []resources.Server) printer.Result {

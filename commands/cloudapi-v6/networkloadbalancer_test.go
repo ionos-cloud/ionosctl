@@ -596,7 +596,11 @@ func TestGetNetworkLoadBalancersCols(t *testing.T) {
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
 	viper.Set(core.GetGlobalFlagName("networkloadbalancer", config.ArgCols), []string{"Name"})
-	getNetworkLoadBalancersCols(core.GetGlobalFlagName("networkloadbalancer", config.ArgCols), w)
+	getNetworkLoadBalancersCols(
+		core.GetGlobalFlagName("networkloadbalancer", config.ArgCols),
+		core.GetFlagName("networkloadbalancer", cloudapiv6.ArgAll),
+		w,
+	)
 	err := w.Flush()
 	assert.NoError(t, err)
 }
@@ -607,7 +611,11 @@ func TestGetNetworkLoadBalancersColsErr(t *testing.T) {
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
 	viper.Set(core.GetGlobalFlagName("networkloadbalancer", config.ArgCols), []string{"Unknown"})
-	getNetworkLoadBalancersCols(core.GetGlobalFlagName("networkloadbalancer", config.ArgCols), w)
+	getNetworkLoadBalancersCols(
+		core.GetGlobalFlagName("networkloadbalancer", config.ArgCols),
+		core.GetFlagName("networkloadbalancer", cloudapiv6.ArgAll),
+		w,
+	)
 	err := w.Flush()
 	assert.NoError(t, err)
 	re := regexp.MustCompile(`unknown column Unknown`)

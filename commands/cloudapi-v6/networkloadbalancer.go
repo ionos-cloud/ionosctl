@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strings"
 	"time"
 
 	"go.uber.org/multierr"
@@ -286,7 +287,10 @@ func RunNetworkLoadBalancerList(c *core.CommandConfig) error {
 			c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams.QueryParams))
 		}
 	}
-	networkloadbalancers, resp, err := c.CloudApiV6Services.NetworkLoadBalancers().List(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)), listQueryParams)
+	networkloadbalancers, resp, err := c.CloudApiV6Services.NetworkLoadBalancers().List(
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
+		listQueryParams,
+	)
 	if resp != nil {
 		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
@@ -529,6 +533,7 @@ func DeleteAllNetworkLoadBalancers(c *core.CommandConfig) error {
 // Output Printing
 
 var defaultNetworkLoadBalancerCols = []string{"NetworkLoadBalancerId", "Name", "ListenerLan", "Ips", "TargetLan", "LbPrivateIps", "State"}
+var allNetworkLoadBalancerCols = []string{"NetworkLoadBalancerId", "Name", "ListenerLan", "Ips", "TargetLan", "LbPrivateIps", "State", "DatacenterId"}
 
 type NetworkLoadBalancerPrint struct {
 	NetworkLoadBalancerId string   `json:"NetworkLoadBalancerId,omitempty"`
@@ -538,6 +543,7 @@ type NetworkLoadBalancerPrint struct {
 	TargetLan             int32    `json:"TargetLan,omitempty"`
 	LbPrivateIps          []string `json:"LbPrivateIps,omitempty"`
 	State                 string   `json:"State,omitempty"`
+	DatacenterId          string   `json:"DatacenterId,omitempty"`
 }
 
 func getNetworkLoadBalancerPrint(resp *resources.Response, c *core.CommandConfig, ss []resources.NetworkLoadBalancer) printer.Result {
@@ -553,39 +559,46 @@ func getNetworkLoadBalancerPrint(resp *resources.Response, c *core.CommandConfig
 		if ss != nil {
 			r.OutputJSON = ss
 			r.KeyValue = getNetworkLoadBalancersKVMaps(ss)
-			r.Columns = getNetworkLoadBalancersCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr())
+			r.Columns = getNetworkLoadBalancersCols(
+				core.GetGlobalFlagName(c.Resource, config.ArgCols),
+				core.GetFlagName(c.NS, cloudapiv6.ArgAll),
+				c.Printer.GetStderr(),
+			)
 		}
 	}
 	return r
 }
 
-func getNetworkLoadBalancersCols(flagName string, outErr io.Writer) []string {
+func getNetworkLoadBalancersCols(argCols string, argAll string, outErr io.Writer) []string {
 	var cols []string
-	if viper.IsSet(flagName) {
-		cols = viper.GetStringSlice(flagName)
+	if viper.IsSet(argCols) {
+		cols = viper.GetStringSlice(argCols)
+
+		columnsMap := map[string]string{
+			"NetworkLoadBalancerId": "NetworkLoadBalancerId",
+			"Name":                  "Name",
+			"ListenerLan":           "ListenerLan",
+			"Ips":                   "Ips",
+			"TargetLan":             "TargetLan",
+			"LbPrivateIps":          "LbPrivateIps",
+			"State":                 "State",
+			"DatacenterId":          "DatacenterId",
+		}
+		var networkloadbalancerCols []string
+		for _, k := range cols {
+			col := columnsMap[k]
+			if col != "" {
+				networkloadbalancerCols = append(networkloadbalancerCols, col)
+			} else {
+				clierror.CheckError(errors.New("unknown column "+k), outErr)
+			}
+		}
+		return networkloadbalancerCols
+	} else if viper.IsSet(argAll) {
+		return append(defaultNetworkLoadBalancerCols, "DatacenterId")
 	} else {
 		return defaultNetworkLoadBalancerCols
 	}
-
-	columnsMap := map[string]string{
-		"NetworkLoadBalancerId": "NetworkLoadBalancerId",
-		"Name":                  "Name",
-		"ListenerLan":           "ListenerLan",
-		"Ips":                   "Ips",
-		"TargetLan":             "TargetLan",
-		"LbPrivateIps":          "LbPrivateIps",
-		"State":                 "State",
-	}
-	var networkloadbalancerCols []string
-	for _, k := range cols {
-		col := columnsMap[k]
-		if col != "" {
-			networkloadbalancerCols = append(networkloadbalancerCols, col)
-		} else {
-			clierror.CheckError(errors.New("unknown column "+k), outErr)
-		}
-	}
-	return networkloadbalancerCols
 }
 
 func getNetworkLoadBalancers(networkloadbalancers resources.NetworkLoadBalancers) []resources.NetworkLoadBalancer {
@@ -626,6 +639,10 @@ func getNetworkLoadBalancersKVMaps(ss []resources.NetworkLoadBalancer) []map[str
 			if state, ok := metadata.GetStateOk(); ok && state != nil {
 				networkloadbalancerPrint.State = *state
 			}
+		}
+		if hrefOk, ok := s.GetHrefOk(); ok && hrefOk != nil {
+			// Get parent resource ID based on HREF
+			networkloadbalancerPrint.DatacenterId = strings.Split(strings.Split(*hrefOk, "datacenter")[1], "/")[1]
 		}
 		o := structs.Map(networkloadbalancerPrint)
 		out = append(out, o)
