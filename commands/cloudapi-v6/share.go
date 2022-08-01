@@ -7,7 +7,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/query"
 	"io"
 	"os"
-	"strconv"
 	"strings"
 	"time"
 
@@ -216,17 +215,6 @@ func RunShareListAll(c *core.CommandConfig) error {
 		return err
 	}
 	if !structs.IsZero(listQueryParams) {
-		if listQueryParams.Filters != nil {
-			filters := *listQueryParams.Filters
-			if val, ok := filters["ram"]; ok {
-				convertedSize, err := utils.ConvertSize(val, utils.MegaBytes)
-				if err != nil {
-					return err
-				}
-				filters["ram"] = strconv.Itoa(convertedSize)
-				listQueryParams.Filters = &filters
-			}
-		}
 		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams))
 	}
 	groups, _, err := c.CloudApiV6Services.Groups().List(listQueryParams)

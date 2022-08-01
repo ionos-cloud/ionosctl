@@ -310,17 +310,6 @@ func RunK8sNodePoolListAll(c *core.CommandConfig) error {
 		return err
 	}
 	if !structs.IsZero(listQueryParams) {
-		if listQueryParams.Filters != nil {
-			filters := *listQueryParams.Filters
-			if val, ok := filters["ram"]; ok {
-				convertedSize, err := utils.ConvertSize(val, utils.MegaBytes)
-				if err != nil {
-					return err
-				}
-				filters["ram"] = strconv.Itoa(convertedSize)
-				listQueryParams.Filters = &filters
-			}
-		}
 		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams))
 	}
 	clusters, _, err := c.CloudApiV6Services.K8s().ListClusters(listQueryParams)
