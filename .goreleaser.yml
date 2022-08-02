@@ -27,6 +27,7 @@ builds:
       - goos: darwin
         goarch: '386'
     binary: '{{ .ProjectName }}'
+
 archives:
   - name_template: '{{ .ProjectName }}-{{ .Version }}-{{ .Os }}-{{ .Arch }}'
     format_overrides:
@@ -34,6 +35,18 @@ archives:
         format: zip
     files: [include-only-the-binary*]
     wrap_in_directory: false
+
+brews:
+  -
+    name: ionosctl
+    homepage: "https://github.com/ionos-cloud/ionosctl"
+    tap:
+      owner: ionos-cloud
+      name: homebrew-ionos-cloud
+    commit_author:
+      name: avirtopeanu-ionos
+      email: avirtopeanu-ionos@alexandru-claudius.virtopeanu@ionos.com
+
 checksum:
   name_template: '{{ .ProjectName }}-{{ .Version }}-SHA256SUMS'
   algorithm: sha256
