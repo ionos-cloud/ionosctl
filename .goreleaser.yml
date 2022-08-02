@@ -40,12 +40,17 @@ brews:
   -
     name: ionosctl
     homepage: "https://github.com/ionos-cloud/ionosctl"
+    license: "Apache-2.0"
+    folder: ionosctl
+    description: "The IONOS Cloud CLI (ionosctl) gives the ability to manage IONOS Cloud infrastructure directly from Command Line."
     tap:
       owner: ionos-cloud
       name: homebrew-ionos-cloud
     commit_author:
-      name: avirtopeanu-ionos
-      email: avirtopeanu-ionos@alexandru-claudius.virtopeanu@ionos.com
+      # name: avirtopeanu-ionos
+      # email: avirtopeanu-ionos@alexandru-claudius.virtopeanu@ionos.com
+      name: goreleaserbot
+      email: bot@goreleaser.com
 
 checksum:
   name_template: '{{ .ProjectName }}-{{ .Version }}-SHA256SUMS'
