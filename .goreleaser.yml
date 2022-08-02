@@ -43,7 +43,7 @@ brews:
       - ionosctl
     tap: 
       owner: ionos-cloud
-      name: homebrew-ionosctl-tap
+      name: homebrew-ionos-cloud
     folder: Formula
     goarm: "7"
     homepage: https://github.com/ionos-cloud/ionosctl
