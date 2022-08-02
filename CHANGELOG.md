@@ -1,5 +1,10 @@
 # Changelog
 
+## [6.2.0] (Upcoming release)
+
+### Features
+- add support and instructions to install ionosctl from `snap` package manager
+ 
 ## [6.2.0] (June 2022) 
 
 ### Features
