@@ -43,6 +43,7 @@ brews:
     license: "Apache-2.0"
     folder: ionosctl
     description: "The IONOS Cloud CLI (ionosctl) gives the ability to manage IONOS Cloud infrastructure directly from Command Line."
+    commit_msg_template: "Brew formula update for {{ .ProjectName }} version {{ .Tag }}"
     tap:
       owner: ionos-cloud
       name: homebrew-ionos-cloud
