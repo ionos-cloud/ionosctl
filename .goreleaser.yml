@@ -4,7 +4,9 @@ before:
   hooks:
     - go mod tidy
 builds:
-  - main: ./main.go
+  - 
+    id: ionosctl
+    main: ./main.go
     env:
       - CGO_ENABLED=0
       - GO111MODULE=on
@@ -34,6 +36,22 @@ archives:
         format: zip
     files: [include-only-the-binary*]
     wrap_in_directory: false
+brews:
+  -
+    name: ionosctl
+    ids:
+      - ionosctl
+    tap: 
+      owner: ionos-cloud
+      name: homebrew-ionosctl-tap
+    folder: Formula
+    goarm: "7"
+    homepage: https://github.com/ionos-cloud/ionosctl
+    dependencies:
+      - name: go
+        type: optional
+    install: |-
+      bin.install "ionosctl"
 checksum:
   name_template: '{{ .ProjectName }}-{{ .Version }}-SHA256SUMS'
   algorithm: sha256
