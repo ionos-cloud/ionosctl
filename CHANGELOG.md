@@ -4,6 +4,7 @@
 
 ### Features
 - add support and instructions to install ionosctl from `snap` package manager
+- add support and instructions to install ionosctl from `brew` package manager
  
 ## [6.2.0] (June 2022) 
 
