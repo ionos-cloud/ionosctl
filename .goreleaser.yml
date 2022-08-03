@@ -30,7 +30,9 @@ builds:
         goarch: '386'
     binary: '{{ .ProjectName }}'
 archives:
-  - name_template: '{{ .ProjectName }}-{{ .Version }}-{{ .Os }}-{{ .Arch }}'
+  - 
+    id: ionosctl
+    name_template: '{{ .ProjectName }}-{{ .Version }}-{{ .Os }}-{{ .Arch }}'
     format_overrides:
       - goos: windows
         format: zip
