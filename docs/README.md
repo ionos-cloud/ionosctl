@@ -28,7 +28,7 @@ snap install ionosctl
 You can install `ionosctl` using the [Homebrew](https://brew.sh) package manager:
 
 ```bash
-brew tap ionos-cloud/homebrew-ionosctl-tap
+brew tap ionos-cloud/homebrew-ionos-cloud
 brew install ionosctl
 ```
 
