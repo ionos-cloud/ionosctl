@@ -114,6 +114,21 @@ func TestPreRunShareIdErr(t *testing.T) {
 	})
 }
 
+func TestRunShareListAll(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
+		rm.CloudApiV6Mocks.Group.EXPECT().List(resources.ListQueryParams{}).Return(groupsList, &testResponse, nil)
+		rm.CloudApiV6Mocks.Group.EXPECT().ListShares(testGroupVar, resources.ListQueryParams{}).Return(sharesList, &testResponse, nil).Times(len(getGroups(groupsList)))
+		err := RunShareListAll(cfg)
+		assert.NoError(t, err)
+	})
+}
 func TestRunShareList(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
