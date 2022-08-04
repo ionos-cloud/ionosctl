@@ -2,6 +2,7 @@ package core
 
 import (
 	"context"
+	"github.com/ionos-cloud/ionosctl/services/dataplatform"
 	"io"
 	"testing"
 
@@ -57,6 +58,7 @@ type ResourcesMocksTest struct {
 	CloudApiV6Mocks         cloudapiv6.ResourcesMocks
 	CloudApiDbaasPgsqlMocks cloudapidbaaspgsql.ResourcesMocks
 	AuthV1Mocks             authv1.ResourcesMocks
+	DataPlatformMocks       dataplatform.ResourcesMocks
 }
 
 func CmdConfigTest(t *testing.T, writer io.Writer, runner CmdRunnerTest) {
@@ -93,6 +95,7 @@ func initMockResources(ctrl *gomock.Controller) *ResourcesMocksTest {
 		CloudApiV6Mocks:         *cloudapiv6.InitMocksResources(ctrl),
 		AuthV1Mocks:             *authv1.InitMocksResources(ctrl),
 		CloudApiDbaasPgsqlMocks: *cloudapidbaaspgsql.InitMocksResources(ctrl),
+		DataPlatformMocks:       *dataplatform.InitMocksResources(ctrl),
 	}
 }
 
@@ -101,5 +104,6 @@ func initMockServices(c *CommandConfig, tm *ResourcesMocksTest) *CommandConfig {
 	c.CloudApiV6Services = *cloudapiv6.InitMockServices(&c.CloudApiV6Services, &tm.CloudApiV6Mocks)
 	c.AuthV1Services = *authv1.InitMockServices(&c.AuthV1Services, &tm.AuthV1Mocks)
 	c.CloudApiDbaasPgsqlServices = *cloudapidbaaspgsql.InitMockServices(&c.CloudApiDbaasPgsqlServices, &tm.CloudApiDbaasPgsqlMocks)
+	c.DataPlatformServices = *dataplatform.InitMockServices(&c.DataPlatformServices, &tm.DataPlatformMocks)
 	return c
 }

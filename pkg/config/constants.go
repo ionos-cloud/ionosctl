@@ -37,6 +37,11 @@ const (
 	ArgPassword            = "password"
 	ArgPasswordShort       = "p"
 	ArgNoHeaders           = "no-headers"
+	ArgFilters             = "filters"
+	ArgFiltersShort        = "F"
+	ArgOrderBy             = "order-by"
+	ArgMaxResults          = "max-results"
+	ArgMaxResultsShort     = "M"
 
 	DefaultApiURL         = "https://api.ionos.com"
 	DefaultConfigFileName = "/config.json"

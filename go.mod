@@ -18,6 +18,7 @@ require (
 	go.uber.org/multierr v1.6.0
 	golang.org/x/crypto v0.0.0-20210817164053-32db794688a5
 	golang.org/x/term v0.0.0-20201126162022-7de9c90e9dd1
+
 )
 
 require (
@@ -50,3 +51,7 @@ require (
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
 )
+
+require github.com/ionos-cloud/sdk-go-autoscaling v1.0.0
+
+replace github.com/ionos-cloud/sdk-go-autoscaling => ../../../../../sdk/stackable

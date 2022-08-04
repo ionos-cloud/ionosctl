@@ -3,6 +3,7 @@ package core
 import (
 	"bytes"
 	"context"
+	"github.com/ionos-cloud/ionosctl/services/dataplatform"
 	"io"
 	"os"
 
@@ -137,6 +138,14 @@ func NewCommandCfg(ctx context.Context, in io.Reader, p printer.PrintService, in
 			if err = c.CloudApiDbaasPgsqlServices.InitServices(dbaasPgsqlClient); err != nil {
 				return err
 			}
+			//Data Platform Service Initialization
+			dataplatformClient, err := c.DataPlatformServices.InitClient()
+			if err != nil {
+				return err
+			}
+			if err = c.DataPlatformServices.InitServices(dataplatformClient); err != nil {
+				return err
+			}
 			return nil
 		},
 	}
@@ -173,6 +182,7 @@ type CommandConfig struct {
 	CloudApiV6Services         cloudapiv6.Services
 	AuthV1Services             authV1.Services
 	CloudApiDbaasPgsqlServices cloudapidbaaspgsql.Services
+	DataPlatformServices       dataplatform.Services
 
 	// Context
 	Context context.Context

@@ -70,6 +70,12 @@ mkdir -p ${DOCS_OUT_ALB}
 mv -f docs/subcommands/tmp/applicationloadbalancer-* ${DOCS_OUT_ALB}
 mv -f docs/subcommands/tmp/targetgroup-* ${DOCS_OUT_ALB}
 
+## dataplatform
+DOCS_OUT_DATAPLATFORM=${DOCS_OUT_DATAPLATFORM:-${DOCS_OUT}/dataplatform/}
+echo "Move Data Platform documentation in ${DOCS_OUT_DATAPLATFORM}"
+mkdir -p ${DOCS_OUT_DATAPLATFORM}
+mv -f docs/subcommands/tmp/dataplatform* ${DOCS_OUT_DATAPLATFORM}
+
 ## compute-engine
 DOCS_OUT_COMPUTE_ENGINE=${DOCS_OUT_COMPUTE_ENGINE:-${DOCS_OUT}/compute-engine/}
 echo "Move Compute Engine documentation in ${DOCS_OUT_COMPUTE_ENGINE}"

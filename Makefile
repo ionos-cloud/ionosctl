@@ -4,6 +4,7 @@
 include ./tools/cloudapi-v6/cloudapi_v6.mk
 include ./tools/dbaas-postgres/dbaas_postgres.mk
 include ./tools/auth-v1/auth_v1.mk
+include ./tools/dataplatform/dataplatform.mk
 
 export CGO_ENABLED = 0
 export GO111MODULE := on
@@ -22,10 +23,10 @@ test_unit:
 	@echo "DONE"
 
 .PHONY: test
-test: test_unit cloudapiv6_test auth_v1_test dbaas_postgres_test
+test: test_unit cloudapiv6_test auth_v1_test dbaas_postgres_test dataplatform_test
 
 .PHONY: mocks_update
-mocks_update: cloudapiv6_mocks_update auth_v1_mocks_update dbaas_postgres_mocks_update
+mocks_update: cloudapiv6_mocks_update auth_v1_mocks_update dbaas_postgres_mocks_update dataplatform_mocks_update
 	@echo "--- Update mocks ---"
 	@tools/regenerate_mocks.sh
 	@echo "DONE"

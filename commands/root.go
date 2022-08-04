@@ -2,6 +2,7 @@ package commands
 
 import (
 	"fmt"
+	"github.com/ionos-cloud/ionosctl/commands/dataplatform"
 	"os"
 	"strings"
 
@@ -200,6 +201,8 @@ func addCommands() {
 	rootCmd.AddCommand(authv1.TokenCmd())
 	// Add DBaaS Commands
 	rootCmd.AddCommand(dbaas.DataBaseServiceCmd())
+	// Add Data Platform Commands
+	rootCmd.AddCommand(dataplatform.DataPlatformServiceCmd())
 }
 
 const helpTemplate = `USAGE: {{if .Runnable}}
