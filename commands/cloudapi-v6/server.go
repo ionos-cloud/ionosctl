@@ -563,7 +563,8 @@ func RunServerListAll(c *core.CommandConfig) error {
 		}
 		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams))
 	}
-	datacenters, _, err := c.CloudApiV6Services.DataCenters().List(listQueryParams)
+	// Don't apply listQueryParams to parent resource, as it would have unexpected side effects on the results
+	datacenters, _, err := c.CloudApiV6Services.DataCenters().List(resources.ListQueryParams{})
 	if err != nil {
 		return err
 	}

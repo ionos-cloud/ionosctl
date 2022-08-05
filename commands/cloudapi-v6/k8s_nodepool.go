@@ -312,7 +312,7 @@ func RunK8sNodePoolListAll(c *core.CommandConfig) error {
 	if !structs.IsZero(listQueryParams) {
 		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams))
 	}
-	clusters, _, err := c.CloudApiV6Services.K8s().ListClusters(listQueryParams)
+	clusters, _, err := c.CloudApiV6Services.K8s().ListClusters(resources.ListQueryParams{})
 	if err != nil {
 		return err
 	}

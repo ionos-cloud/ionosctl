@@ -248,7 +248,7 @@ func RunApplicationLoadBalancerListAll(c *core.CommandConfig) error {
 	if !structs.IsZero(listQueryParams) {
 		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams))
 	}
-	datacenters, _, err := c.CloudApiV6Services.DataCenters().List(listQueryParams)
+	datacenters, _, err := c.CloudApiV6Services.DataCenters().List(resources.ListQueryParams{})
 	if err != nil {
 		return err
 	}

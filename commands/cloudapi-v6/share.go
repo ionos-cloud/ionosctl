@@ -217,7 +217,8 @@ func RunShareListAll(c *core.CommandConfig) error {
 	if !structs.IsZero(listQueryParams) {
 		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams))
 	}
-	groups, _, err := c.CloudApiV6Services.Groups().List(listQueryParams)
+	// Don't apply listQueryParams to parent resource, as it would have unexpected side effects on the results
+	groups, _, err := c.CloudApiV6Services.Groups().List(resources.ListQueryParams{})
 	if err != nil {
 		return err
 	}
