@@ -40,9 +40,10 @@ Required values to run command:
 ## Options
 
 ```text
+  -a, --all                    List all resources without the need of specifying parent ID name.
   -u, --api-url string         Override default host url (default "https://api.ionos.com")
       --cols strings           Set of columns to be printed on output 
-                               Available columns: [LoadBalancerId Name Dhcp State Ip] (default [LoadBalancerId,Name,Dhcp,State])
+                               Available columns: [LoadBalancerId Name Dhcp State Ip DatacenterId] (default [LoadBalancerId,Name,Dhcp,State])
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --datacenter-id string   The unique Data Center Id (required)
   -D, --depth int              Controls the detail depth of the response objects. Max depth is 10. (default 1)

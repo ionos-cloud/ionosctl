@@ -162,6 +162,22 @@ func TestPreRunDcNetworkLoadBalancerIdsErr(t *testing.T) {
 	})
 }
 
+func TestRunNetworkLoadBalancerListAll(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgVerbose, false)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
+		rm.CloudApiV6Mocks.Datacenter.EXPECT().List(resources.ListQueryParams{}).Return(dcs, &testResponse, nil)
+		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().List(testDatacenterVar, resources.ListQueryParams{}).Return(networkloadbalancersList, &testResponse, nil).Times(len(getDataCenters(dcs)))
+		err := RunNetworkLoadBalancerListAll(cfg)
+		assert.NoError(t, err)
+	})
+}
+
 func TestRunNetworkLoadBalancerList(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
@@ -596,7 +612,11 @@ func TestGetNetworkLoadBalancersCols(t *testing.T) {
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
 	viper.Set(core.GetGlobalFlagName("networkloadbalancer", config.ArgCols), []string{"Name"})
-	getNetworkLoadBalancersCols(core.GetGlobalFlagName("networkloadbalancer", config.ArgCols), w)
+	getNetworkLoadBalancersCols(
+		core.GetGlobalFlagName("networkloadbalancer", config.ArgCols),
+		core.GetFlagName("networkloadbalancer", cloudapiv6.ArgAll),
+		w,
+	)
 	err := w.Flush()
 	assert.NoError(t, err)
 }
@@ -607,7 +627,11 @@ func TestGetNetworkLoadBalancersColsErr(t *testing.T) {
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
 	viper.Set(core.GetGlobalFlagName("networkloadbalancer", config.ArgCols), []string{"Unknown"})
-	getNetworkLoadBalancersCols(core.GetGlobalFlagName("networkloadbalancer", config.ArgCols), w)
+	getNetworkLoadBalancersCols(
+		core.GetGlobalFlagName("networkloadbalancer", config.ArgCols),
+		core.GetFlagName("networkloadbalancer", cloudapiv6.ArgAll),
+		w,
+	)
 	err := w.Flush()
 	assert.NoError(t, err)
 	re := regexp.MustCompile(`unknown column Unknown`)

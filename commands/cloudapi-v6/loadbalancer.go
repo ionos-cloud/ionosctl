@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strings"
+	"time"
 
 	"go.uber.org/multierr"
 
@@ -72,6 +74,7 @@ func LoadBalancerCmd() *core.Command {
 		return completer.LoadBalancersFilters(), cobra.ShellCompDirectiveNoFileComp
 	})
 	list.AddBoolFlag(config.ArgNoHeaders, "", false, cloudapiv6.ArgNoHeadersDescription)
+	list.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, cloudapiv6.ArgListAllDescription)
 
 	/*
 		Get Command
@@ -208,7 +211,10 @@ Required values to run command:
 }
 
 func PreRunLoadBalancerList(c *core.PreCommandConfig) error {
-	if err := core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgDataCenterId); err != nil {
+	if err := core.CheckRequiredFlagsSets(c.Command, c.NS,
+		[]string{cloudapiv6.ArgDataCenterId},
+		[]string{cloudapiv6.ArgAll},
+	); err != nil {
 		return err
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
@@ -228,9 +234,42 @@ func PreRunDcLoadBalancerDelete(c *core.PreCommandConfig) error {
 	)
 }
 
+func RunLoadBalancerListAll(c *core.CommandConfig) error {
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	if !structs.IsZero(listQueryParams) {
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams))
+	}
+	datacenters, _, err := c.CloudApiV6Services.DataCenters().List(resources.ListQueryParams{})
+	if err != nil {
+		return err
+	}
+	allDcs := getDataCenters(datacenters)
+	var allLoadbalancers []resources.Loadbalancer
+	totalTime := time.Duration(0)
+	for _, dc := range allDcs {
+		LoadBalancers, resp, err := c.CloudApiV6Services.Loadbalancers().List(*dc.GetId(), listQueryParams)
+		if err != nil {
+			return err
+		}
+		allLoadbalancers = append(allLoadbalancers, getLoadbalancers(LoadBalancers)...)
+		totalTime += resp.RequestTime
+	}
+
+	if totalTime != time.Duration(0) {
+		c.Printer.Verbose(config.RequestTimeMessage, totalTime)
+	}
+
+	return c.Printer.Print(getLoadbalancerPrint(nil, c, allLoadbalancers))
+}
+
 func RunLoadBalancerList(c *core.CommandConfig) error {
+	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
+		return RunLoadBalancerListAll(c)
+	}
 	c.Printer.Verbose("Getting LoadBalancers from Datacenter with ID: %v...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
-	// Add Query Parameters for GET Requests
 	listQueryParams, err := query.GetListQueryParams(c)
 	if err != nil {
 		return err
@@ -452,7 +491,7 @@ func DeleteAllLoadBalancers(c *core.CommandConfig) error {
 
 var (
 	defaultLoadbalancerCols = []string{"LoadBalancerId", "Name", "Dhcp", "State"}
-	allLoadbalancerCols     = []string{"LoadBalancerId", "Name", "Dhcp", "State", "Ip"}
+	allLoadbalancerCols     = []string{"LoadBalancerId", "Name", "Dhcp", "State", "Ip", "DatacenterId"}
 )
 
 type LoadbalancerPrint struct {
@@ -461,6 +500,7 @@ type LoadbalancerPrint struct {
 	Dhcp           bool   `json:"Dhcp,omitempty"`
 	Ip             string `json:"Ip,omitempty"`
 	State          string `json:"State,omitempty"`
+	DatacenterId   string `json:"DatacenterId,omitempty"`
 }
 
 func getLoadbalancerPrint(resp *resources.Response, c *core.CommandConfig, lbs []resources.Loadbalancer) printer.Result {
@@ -475,37 +515,47 @@ func getLoadbalancerPrint(resp *resources.Response, c *core.CommandConfig, lbs [
 		if lbs != nil {
 			r.OutputJSON = lbs
 			r.KeyValue = getLoadbalancersKVMaps(lbs)
-			r.Columns = getLoadbalancersCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr())
+			r.Columns = getLoadbalancersCols(
+				core.GetGlobalFlagName(c.Resource, config.ArgCols),
+				core.GetFlagName(c.NS, cloudapiv6.ArgAll),
+				c.Printer.GetStderr(),
+			)
 		}
 	}
 	return r
 }
 
-func getLoadbalancersCols(flagName string, outErr io.Writer) []string {
+func getLoadbalancersCols(argCols string, argAll string, outErr io.Writer) []string {
 	var cols []string
-	if viper.IsSet(flagName) {
-		cols = viper.GetStringSlice(flagName)
+	if viper.IsSet(argCols) {
+		cols = viper.GetStringSlice(argCols)
+
+		columnsMap := map[string]string{
+			"LoadBalancerId": "LoadBalancerId",
+			"Name":           "Name",
+			"Dhcp":           "Dhcp",
+			"Ip":             "Ip",
+			"State":          "State",
+			"DatacenterId":   "DatacenterId",
+		}
+		var loadbalancerCols []string
+		for _, k := range cols {
+			col := columnsMap[k]
+			if col != "" {
+				loadbalancerCols = append(loadbalancerCols, col)
+			} else {
+				clierror.CheckError(errors.New("unknown column "+k), outErr)
+			}
+		}
+		return loadbalancerCols
+	} else if viper.IsSet(argAll) {
+		// Add column which specifies which parent resource this belongs to, if using -a/--all flag
+		cols = append(defaultLoadbalancerCols[:config.DefaultParentIndex+1], defaultLoadbalancerCols[config.DefaultParentIndex:]...)
+		cols[config.DefaultParentIndex] = "DatacenterId"
+		return cols
 	} else {
 		return defaultLoadbalancerCols
 	}
-
-	columnsMap := map[string]string{
-		"LoadBalancerId": "LoadBalancerId",
-		"Name":           "Name",
-		"Dhcp":           "Dhcp",
-		"Ip":             "Ip",
-		"State":          "State",
-	}
-	var loadbalancerCols []string
-	for _, k := range cols {
-		col := columnsMap[k]
-		if col != "" {
-			loadbalancerCols = append(loadbalancerCols, col)
-		} else {
-			clierror.CheckError(errors.New("unknown column "+k), outErr)
-		}
-	}
-	return loadbalancerCols
 }
 
 func getLoadbalancers(loadbalancers resources.Loadbalancers) []resources.Loadbalancer {
@@ -540,6 +590,10 @@ func getLoadbalancersKVMaps(vs []resources.Loadbalancer) []map[string]interface{
 			if state, ok := metadata.GetStateOk(); ok && state != nil {
 				loadbalancerPrint.State = *state
 			}
+		}
+		if hrefOk, ok := v.GetHrefOk(); ok && hrefOk != nil {
+			// Get parent resource ID using HREF: `.../datacenter/[PARENT_ID_WE_WANT]/loadbalancers/[LOADBALANCER_ID]`
+			loadbalancerPrint.DatacenterId = strings.Split(strings.Split(*hrefOk, "datacenter")[1], "/")[1]
 		}
 		o := structs.Map(loadbalancerPrint)
 		out = append(out, o)

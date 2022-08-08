@@ -4,11 +4,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"go.uber.org/multierr"
 	"io"
 	"os"
 	"strconv"
-
-	"go.uber.org/multierr"
+	"strings"
+	"time"
 
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
@@ -79,6 +80,7 @@ func ServerCmd() *core.Command {
 		return completer.ServersFilters(), cobra.ShellCompDirectiveNoFileComp
 	})
 	list.AddBoolFlag(config.ArgNoHeaders, "", false, cloudapiv6.ArgNoHeadersDescription)
+	list.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, cloudapiv6.ArgListAllDescription)
 
 	/*
 		Get Command
@@ -494,7 +496,10 @@ Required values to run command:
 }
 
 func PreRunServerList(c *core.PreCommandConfig) error {
-	if err := core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgDataCenterId); err != nil {
+	if err := core.CheckRequiredFlagsSets(c.Command, c.NS,
+		[]string{cloudapiv6.ArgDataCenterId},
+		[]string{cloudapiv6.ArgAll},
+	); err != nil {
 		return err
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
@@ -540,8 +545,53 @@ func PreRunDcServerDelete(c *core.PreCommandConfig) error {
 	)
 }
 
+func RunServerListAll(c *core.CommandConfig) error {
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	if !structs.IsZero(listQueryParams) {
+		if listQueryParams.Filters != nil {
+			filters := *listQueryParams.Filters
+			if val, ok := filters["ram"]; ok {
+				convertedSize, err := utils.ConvertSize(val, utils.MegaBytes)
+				if err != nil {
+					return err
+				}
+				filters["ram"] = strconv.Itoa(convertedSize)
+				listQueryParams.Filters = &filters
+			}
+		}
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams))
+	}
+	// Don't apply listQueryParams to parent resource, as it would have unexpected side effects on the results
+	datacenters, _, err := c.CloudApiV6Services.DataCenters().List(resources.ListQueryParams{})
+	if err != nil {
+		return err
+	}
+	allDcs := getDataCenters(datacenters)
+	var allServers []resources.Server
+	totalTime := time.Duration(0)
+	for _, dc := range allDcs {
+		servers, resp, err := c.CloudApiV6Services.Servers().List(*dc.GetId(), listQueryParams)
+		if err != nil {
+			return err
+		}
+		allServers = append(allServers, getServers(servers)...)
+		totalTime += resp.RequestTime
+	}
+
+	if totalTime != time.Duration(0) {
+		c.Printer.Verbose(config.RequestTimeMessage, totalTime)
+	}
+
+	return c.Printer.Print(getServerPrint(nil, c, allServers))
+}
+
 func RunServerList(c *core.CommandConfig) error {
-	// Add Query Parameters for GET Requests
+	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
+		return RunServerListAll(c)
+	}
 	listQueryParams, err := query.GetListQueryParams(c)
 	if err != nil {
 		return err
@@ -710,7 +760,6 @@ func RunServerDelete(c *core.CommandConfig) error {
 			return err
 		}
 		return c.Printer.Print(printer.Result{Resource: c.Resource, Verb: c.Verb})
-
 	} else {
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete server"); err != nil {
 			return err
@@ -1100,11 +1149,12 @@ func DeleteAllServers(c *core.CommandConfig) error {
 
 var (
 	defaultServerCols = []string{"ServerId", "Name", "Type", "AvailabilityZone", "Cores", "Ram", "CpuFamily", "VmState", "State"}
-	allServerCols     = []string{"ServerId", "Name", "AvailabilityZone", "Cores", "Ram", "CpuFamily", "VmState", "State", "TemplateId", "Type", "BootCdromId", "BootVolumeId"}
+	allServerCols     = []string{"ServerId", "DatacenterId", "Name", "AvailabilityZone", "Cores", "Ram", "CpuFamily", "VmState", "State", "TemplateId", "Type", "BootCdromId", "BootVolumeId"}
 )
 
 type ServerPrint struct {
 	ServerId         string `json:"ServerId,omitempty"`
+	DatacenterId     string `json:"DatacenterId,omitempty"`
 	Name             string `json:"Name,omitempty"`
 	AvailabilityZone string `json:"AvailabilityZone,omitempty"`
 	State            string `json:"State,omitempty"`
@@ -1131,44 +1181,54 @@ func getServerPrint(resp *resources.Response, c *core.CommandConfig, ss []resour
 		if ss != nil {
 			r.OutputJSON = ss
 			r.KeyValue = getServersKVMaps(ss)
-			r.Columns = getServersCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr())
+			r.Columns = getServersCols(
+				core.GetGlobalFlagName(c.Resource, config.ArgCols),
+				core.GetFlagName(c.NS, cloudapiv6.ArgAll),
+				c.Printer.GetStderr(),
+			)
 		}
 	}
 	return r
 }
 
-func getServersCols(flagName string, outErr io.Writer) []string {
+func getServersCols(argCols string, argAll string, outErr io.Writer) []string {
 	var cols []string
-	if viper.IsSet(flagName) {
-		cols = viper.GetStringSlice(flagName)
+	if viper.IsSet(argCols) {
+		cols = viper.GetStringSlice(argCols)
+
+		columnsMap := map[string]string{
+			"ServerId":         "ServerId",
+			"DatacenterId":     "DatacenterId",
+			"Name":             "Name",
+			"AvailabilityZone": "AvailabilityZone",
+			"State":            "State",
+			"VmState":          "VmState",
+			"Cores":            "Cores",
+			"Ram":              "Ram",
+			"CpuFamily":        "CpuFamily",
+			"TemplateId":       "TemplateId",
+			"Type":             "Type",
+			"BootVolumeId":     "BootVolumeId",
+			"BootCdromId":      "BootCdromId",
+		}
+		var serverCols []string
+		for _, k := range cols {
+			col := columnsMap[k]
+			if col != "" {
+				serverCols = append(serverCols, col)
+			} else {
+				clierror.CheckError(errors.New("unknown column "+k), outErr)
+			}
+		}
+		return serverCols
+	} else if viper.IsSet(argAll) {
+		// Add column which specifies which parent resource this belongs to, if using -a/--all flag
+		cols = append(defaultServerCols[:config.DefaultParentIndex+1], defaultServerCols[config.DefaultParentIndex:]...)
+		cols[config.DefaultParentIndex] = "DatacenterId"
+		return cols
 	} else {
 		return defaultServerCols
 	}
-
-	columnsMap := map[string]string{
-		"ServerId":         "ServerId",
-		"Name":             "Name",
-		"AvailabilityZone": "AvailabilityZone",
-		"State":            "State",
-		"VmState":          "VmState",
-		"Cores":            "Cores",
-		"Ram":              "Ram",
-		"CpuFamily":        "CpuFamily",
-		"TemplateId":       "TemplateId",
-		"Type":             "Type",
-		"BootVolumeId":     "BootVolumeId",
-		"BootCdromId":      "BootCdromId",
-	}
-	var serverCols []string
-	for _, k := range cols {
-		col := columnsMap[k]
-		if col != "" {
-			serverCols = append(serverCols, col)
-		} else {
-			clierror.CheckError(errors.New("unknown column "+k), outErr)
-		}
-	}
-	return serverCols
 }
 
 func getServers(servers resources.Servers) []resources.Server {
@@ -1228,6 +1288,10 @@ func getServersKVMaps(ss []resources.Server) []map[string]interface{} {
 			if stateOk, ok := metadataOk.GetStateOk(); ok && stateOk != nil {
 				serverPrint.State = *stateOk
 			}
+		}
+		if hrefOk, ok := s.GetHrefOk(); ok && hrefOk != nil {
+			// Get parent resource ID using HREF: `.../k8s/[PARENT_ID_WE_WANT]/nodepools/[NODEPOOL_ID]`
+			serverPrint.DatacenterId = strings.Split(strings.Split(*hrefOk, "datacenter")[1], "/")[1]
 		}
 		o := structs.Map(serverPrint)
 		out = append(out, o)

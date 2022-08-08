@@ -8,6 +8,8 @@ import (
 	"go.uber.org/multierr"
 	"io"
 	"os"
+	"strings"
+	"time"
 
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
@@ -53,7 +55,7 @@ func ApplicationLoadBalancerCmd() *core.Command {
 		ShortDesc:  "List Application Load Balancers",
 		LongDesc:   "Use this command to list Application Load Balancers from a specified Virtual Data Center.\n\nRequired values to run command:\n\n* Data Center Id",
 		Example:    listApplicationLoadBalancerExample,
-		PreCmdRun:  PreRunDataCenterId,
+		PreCmdRun:  PreRunApplicationLoadBalancerList,
 		CmdRun:     RunApplicationLoadBalancerList,
 		InitClient: true,
 	})
@@ -71,6 +73,7 @@ func ApplicationLoadBalancerCmd() *core.Command {
 	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgFilters, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.BackupUnitsFilters(), cobra.ShellCompDirectiveNoFileComp
 	})
+	list.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, cloudapiv6.ArgListAllDescription)
 
 	/*
 		Get Command
@@ -224,8 +227,54 @@ func PreRunApplicationLoadBalancerDelete(c *core.PreCommandConfig) error {
 	)
 }
 
+func PreRunApplicationLoadBalancerList(c *core.PreCommandConfig) error {
+	if err := core.CheckRequiredFlagsSets(c.Command, c.NS,
+		[]string{cloudapiv6.ArgDataCenterId},
+		[]string{cloudapiv6.ArgAll},
+	); err != nil {
+		return err
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
+		return query.ValidateFilters(c, completer.ApplicationLoadBalancersFilters(), completer.ApplicationLoadBalancersFiltersUsage())
+	}
+	return nil
+}
+
+func RunApplicationLoadBalancerListAll(c *core.CommandConfig) error {
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	if !structs.IsZero(listQueryParams) {
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams))
+	}
+	datacenters, _, err := c.CloudApiV6Services.DataCenters().List(resources.ListQueryParams{})
+	if err != nil {
+		return err
+	}
+	allDcs := getDataCenters(datacenters)
+	var allApplicationLoadBalancers []resources.ApplicationLoadBalancer
+	totalTime := time.Duration(0)
+	for _, dc := range allDcs {
+		ApplicationLoadBalancers, resp, err := c.CloudApiV6Services.ApplicationLoadBalancers().List(*dc.GetId(), listQueryParams)
+		if err != nil {
+			return err
+		}
+		allApplicationLoadBalancers = append(allApplicationLoadBalancers, getApplicationLoadBalancers(ApplicationLoadBalancers)...)
+		totalTime += resp.RequestTime
+	}
+
+	if totalTime != time.Duration(0) {
+		c.Printer.Verbose(config.RequestTimeMessage, totalTime)
+	}
+
+	return c.Printer.Print(getApplicationLoadBalancerPrint(nil, c, allApplicationLoadBalancers))
+}
+
 func RunApplicationLoadBalancerList(c *core.CommandConfig) error {
-	// Add Query Parameters for GET Requests
+	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
+		return RunApplicationLoadBalancerListAll(c)
+	}
 	listQueryParams, err := query.GetListQueryParams(c)
 	if err != nil {
 		return err
@@ -494,6 +543,7 @@ type ApplicationLoadBalancerPrint struct {
 	TargetLan                 int32    `json:"TargetLan,omitempty"`
 	PrivateIps                []string `json:"PrivateIps,omitempty"`
 	State                     string   `json:"State,omitempty"`
+	DatacenterId              string   `json:"DatacenterId,omitempty"`
 }
 
 func getApplicationLoadBalancerPrint(resp *resources.Response, c *core.CommandConfig, ss []resources.ApplicationLoadBalancer) printer.Result {
@@ -509,39 +559,49 @@ func getApplicationLoadBalancerPrint(resp *resources.Response, c *core.CommandCo
 		if ss != nil {
 			r.OutputJSON = ss
 			r.KeyValue = getApplicationLoadBalancersKVMaps(ss)
-			r.Columns = getApplicationLoadBalancersCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr())
+			r.Columns = getApplicationLoadBalancersCols(
+				core.GetGlobalFlagName(c.Resource, config.ArgCols),
+				core.GetFlagName(c.NS, config.ArgAll),
+				c.Printer.GetStderr(),
+			)
 		}
 	}
 	return r
 }
 
-func getApplicationLoadBalancersCols(flagName string, outErr io.Writer) []string {
+func getApplicationLoadBalancersCols(argCols string, argAll string, outErr io.Writer) []string {
 	var cols []string
-	if viper.IsSet(flagName) {
-		cols = viper.GetStringSlice(flagName)
+	if viper.IsSet(argCols) {
+		cols = viper.GetStringSlice(argCols)
+
+		columnsMap := map[string]string{
+			"ApplicationLoadBalancerId": "ApplicationLoadBalancerId",
+			"Name":                      "Name",
+			"ListenerLan":               "ListenerLan",
+			"Ips":                       "Ips",
+			"TargetLan":                 "TargetLan",
+			"LbPrivateIps":              "LbPrivateIps",
+			"State":                     "State",
+			"DatacenterId":              "DatacenterId",
+		}
+		var applicationloadbalancerCols []string
+		for _, k := range cols {
+			col := columnsMap[k]
+			if col != "" {
+				applicationloadbalancerCols = append(applicationloadbalancerCols, col)
+			} else {
+				clierror.CheckError(errors.New("unknown column "+k), outErr)
+			}
+		}
+		return applicationloadbalancerCols
+	} else if viper.IsSet(argAll) {
+		// Add column which specifies which parent resource this belongs to, if using -a/--all flag
+		cols = append(defaultApplicationLoadBalancerCols[:config.DefaultParentIndex+1], defaultApplicationLoadBalancerCols[config.DefaultParentIndex:]...)
+		cols[config.DefaultParentIndex] = "DatacenterId"
+		return cols
 	} else {
 		return defaultApplicationLoadBalancerCols
 	}
-
-	columnsMap := map[string]string{
-		"ApplicationLoadBalancerId": "ApplicationLoadBalancerId",
-		"Name":                      "Name",
-		"ListenerLan":               "ListenerLan",
-		"Ips":                       "Ips",
-		"TargetLan":                 "TargetLan",
-		"LbPrivateIps":              "LbPrivateIps",
-		"State":                     "State",
-	}
-	var applicationloadbalancerCols []string
-	for _, k := range cols {
-		col := columnsMap[k]
-		if col != "" {
-			applicationloadbalancerCols = append(applicationloadbalancerCols, col)
-		} else {
-			clierror.CheckError(errors.New("unknown column "+k), outErr)
-		}
-	}
-	return applicationloadbalancerCols
 }
 
 func getApplicationLoadBalancers(applicationloadbalancers resources.ApplicationLoadBalancers) []resources.ApplicationLoadBalancer {
@@ -580,6 +640,10 @@ func getApplicationLoadBalancersKVMaps(ss []resources.ApplicationLoadBalancer) [
 			if state, ok := metadata.GetStateOk(); ok && state != nil {
 				applicationloadbalancerPrint.State = *state
 			}
+		}
+		if hrefOk, ok := s.GetHrefOk(); ok && hrefOk != nil {
+			// Get parent resource ID using HREF: `.../datacenter/[PARENT_ID_WE_WANT]/alb/[ALB_ID]`
+			applicationloadbalancerPrint.DatacenterId = strings.Split(strings.Split(*hrefOk, "datacenter")[1], "/")[1]
 		}
 		o := structs.Map(applicationloadbalancerPrint)
 		out = append(out, o)

@@ -140,6 +140,22 @@ func TestPreRunDcLoadBalancerListErr(t *testing.T) {
 	})
 }
 
+func TestRunLoadBalancerListAll(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgVerbose, false)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
+		rm.CloudApiV6Mocks.Datacenter.EXPECT().List(resources.ListQueryParams{}).Return(dcs, &testResponse, nil)
+		rm.CloudApiV6Mocks.Loadbalancer.EXPECT().List(testDatacenterVar, resources.ListQueryParams{}).Return(lbList, &testResponse, nil).Times(len(getDataCenters(dcs)))
+		err := RunLoadBalancerListAll(cfg)
+		assert.NoError(t, err)
+	})
+}
+
 func TestRunLoadBalancerList(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
@@ -540,7 +556,11 @@ func TestLoadbalancersCols(t *testing.T) {
 	clierror.ErrAction = func() { return }
 	w := bufio.NewWriter(&b)
 	viper.Set(core.GetGlobalFlagName("loadbalancer", config.ArgCols), []string{"Name"})
-	getLoadbalancersCols(core.GetGlobalFlagName("loadbalancer", config.ArgCols), w)
+	getLoadbalancersCols(
+		core.GetGlobalFlagName("loadbalancer", config.ArgCols),
+		core.GetFlagName("loadbalancer", cloudapiv6.ArgAll),
+		w,
+	)
 	err := w.Flush()
 	assert.NoError(t, err)
 }
@@ -551,7 +571,11 @@ func TestGetLoadbalancersColsErr(t *testing.T) {
 	clierror.ErrAction = func() { return }
 	w := bufio.NewWriter(&b)
 	viper.Set(core.GetGlobalFlagName("loadbalancer", config.ArgCols), []string{"Unknown"})
-	getLoadbalancersCols(core.GetGlobalFlagName("loadbalancer", config.ArgCols), w)
+	getLoadbalancersCols(
+		core.GetGlobalFlagName("loadbalancer", config.ArgCols),
+		core.GetFlagName("loadbalancer", cloudapiv6.ArgAll),
+		w,
+	)
 	err := w.Flush()
 	assert.NoError(t, err)
 	re := regexp.MustCompile(`unknown column Unknown`)

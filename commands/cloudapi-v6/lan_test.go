@@ -133,6 +133,22 @@ func TestPreRunLansListErr(t *testing.T) {
 	})
 }
 
+func TestRunLanListAll(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgVerbose, false)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
+		rm.CloudApiV6Mocks.Datacenter.EXPECT().List(resources.ListQueryParams{}).Return(dcs, &testResponse, nil)
+		rm.CloudApiV6Mocks.Lan.EXPECT().List(testDatacenterVar, resources.ListQueryParams{}).Return(lansList, &testResponse, nil).Times(len(getDataCenters(dcs)))
+		err := RunLanListAll(cfg)
+		assert.NoError(t, err)
+	})
+}
+
 func TestRunLanList(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
@@ -532,7 +548,7 @@ func TestGetLansCols(t *testing.T) {
 	clierror.ErrAction = func() { return }
 	w := bufio.NewWriter(&b)
 	viper.Set(core.GetGlobalFlagName("lan", config.ArgCols), []string{"Name"})
-	getLansCols(core.GetGlobalFlagName("lan", config.ArgCols), w)
+	getLansCols(core.GetGlobalFlagName("lan", config.ArgCols), core.GetFlagName("lan", cloudapiv6.ArgAll), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 }
@@ -543,7 +559,7 @@ func TestGetLansColsErr(t *testing.T) {
 	clierror.ErrAction = func() { return }
 	w := bufio.NewWriter(&b)
 	viper.Set(core.GetGlobalFlagName("lan", config.ArgCols), []string{"Unknown"})
-	getLansCols(core.GetGlobalFlagName("lan", config.ArgCols), w)
+	getLansCols(core.GetGlobalFlagName("lan", config.ArgCols), core.GetFlagName("lan", cloudapiv6.ArgAll), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 	re := regexp.MustCompile(`unknown column Unknown`)

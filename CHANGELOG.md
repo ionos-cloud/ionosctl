@@ -7,6 +7,9 @@
 
 
 ### Features
+- added `-a`/`-all` flag to list all contract-level resources of a specific type without the need of providing dependent resource ID
+  - supported resources: `k8s nodepool`, `share`, `server`, `lan`, `volume`, `loadbalancer`, `networkloadbalancer`, `applicationloadbalancer`
+  - example: `ionosctl server list --all -F "vmState"="RUNNING"`  
 - added flag `--depth` (short `-D`) to control depth response. Useful in combination with `-o json`.
  
     _**Note:** Short flag `-D` not yet available for `firewallrule` command (belongs to `--destination-ip` flag.)_ 

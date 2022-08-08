@@ -64,7 +64,7 @@ You can wait for the Request to be executed using `--wait-for-request` option. Y
   -z, --availability-zone string   Availability zone of the Server (default "AUTO")
       --bus string                 [CUBE Server] The bus type of the Direct Attached Storage (default "VIRTIO")
       --cols strings               Set of columns to be printed on output 
-                                   Available columns: [ServerId Name AvailabilityZone Cores Ram CpuFamily VmState State TemplateId Type BootCdromId BootVolumeId] (default [ServerId,Name,Type,AvailabilityZone,Cores,Ram,CpuFamily,VmState,State])
+                                   Available columns: [ServerId DatacenterId Name AvailabilityZone Cores Ram CpuFamily VmState State TemplateId Type BootCdromId BootVolumeId] (default [ServerId,Name,Type,AvailabilityZone,Cores,Ram,CpuFamily,VmState,State])
   -c, --config string              Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --cores int                  The total number of cores for the Server, e.g. 4. Maximum: depends on contract resource limits (required) (default 2)
       --cpu-family string          CPU Family for the Server. For CUBE Servers, the CPU Family is INTEL_SKYLAKE (default "AMD_OPTERON")

@@ -127,6 +127,22 @@ func TestPreRunApplicationLoadBalancerDeleteErr(t *testing.T) {
 	})
 }
 
+func TestRunApplicationLoadBalancerListAll(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgVerbose, false)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
+		rm.CloudApiV6Mocks.Datacenter.EXPECT().List(resources.ListQueryParams{}).Return(dcs, &testResponse, nil)
+		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().List(testDatacenterVar, resources.ListQueryParams{}).Return(applicationloadbalancers, &testResponse, nil).Times(len(getDataCenters(dcs)))
+		err := RunApplicationLoadBalancerListAll(cfg)
+		assert.NoError(t, err)
+	})
+}
+
 func TestRunApplicationLoadBalancerList(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
@@ -550,7 +566,11 @@ func TestGetApplicationLoadBalancersCols(t *testing.T) {
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
 	viper.Set(core.GetGlobalFlagName("applicationloadbalancer", config.ArgCols), []string{"Name"})
-	getApplicationLoadBalancersCols(core.GetGlobalFlagName("applicationloadbalancer", config.ArgCols), w)
+	getApplicationLoadBalancersCols(
+		core.GetGlobalFlagName("applicationloadbalancer", config.ArgCols),
+		core.GetFlagName("applicationloadbalancer", cloudapiv6.ArgAll),
+		w,
+	)
 	err := w.Flush()
 	assert.NoError(t, err)
 }
@@ -561,7 +581,11 @@ func TestGetApplicationLoadBalancersColsErr(t *testing.T) {
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
 	viper.Set(core.GetGlobalFlagName("applicationloadbalancer", config.ArgCols), []string{"Unknown"})
-	getApplicationLoadBalancersCols(core.GetGlobalFlagName("applicationloadbalancer", config.ArgCols), w)
+	getApplicationLoadBalancersCols(
+		core.GetGlobalFlagName("applicationloadbalancer", config.ArgCols),
+		core.GetFlagName("applicationloadbalancer", cloudapiv6.ArgAll),
+		w,
+	)
 	err := w.Flush()
 	assert.NoError(t, err)
 	re := regexp.MustCompile(`unknown column Unknown`)

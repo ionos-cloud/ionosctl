@@ -7,6 +7,8 @@ import (
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/query"
 	"io"
 	"os"
+	"strings"
+	"time"
 
 	"go.uber.org/multierr"
 
@@ -36,10 +38,10 @@ func ShareCmd() *core.Command {
 		},
 	}
 	globalFlags := shareCmd.GlobalFlags()
-	globalFlags.StringSliceP(config.ArgCols, "", defaultGroupShareCols, printer.ColsMessage(defaultGroupShareCols))
+	globalFlags.StringSliceP(config.ArgCols, "", defaultGroupShareCols, printer.ColsMessage(allGroupShareCols))
 	_ = viper.BindPFlag(core.GetGlobalFlagName(shareCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 	_ = shareCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return defaultGroupShareCols, cobra.ShellCompDirectiveNoFileComp
+		return allGroupShareCols, cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -53,7 +55,7 @@ func ShareCmd() *core.Command {
 		ShortDesc:  "List Resources Shares through a Group",
 		LongDesc:   "Use this command to get a full list of all the Resources that are shared through a specified Group.\n\nRequired values to run command:\n\n* Group Id",
 		Example:    listSharesExample,
-		PreCmdRun:  PreRunGroupId,
+		PreCmdRun:  PreRunShareList,
 		CmdRun:     RunShareList,
 		InitClient: true,
 	})
@@ -63,6 +65,7 @@ func ShareCmd() *core.Command {
 	})
 	list.AddBoolFlag(config.ArgNoHeaders, "", false, cloudapiv6.ArgNoHeadersDescription)
 	list.AddIntFlag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, config.DefaultListDepth, cloudapiv6.ArgDepthDescription)
+	list.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, cloudapiv6.ArgListAllDescription)
 
 	/*
 		Get Command
@@ -207,8 +210,41 @@ func PreRunGroupResourceDelete(c *core.PreCommandConfig) error {
 	)
 }
 
+func RunShareListAll(c *core.CommandConfig) error {
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	if !structs.IsZero(listQueryParams) {
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams))
+	}
+	// Don't apply listQueryParams to parent resource, as it would have unexpected side effects on the results
+	groups, _, err := c.CloudApiV6Services.Groups().List(resources.ListQueryParams{})
+	if err != nil {
+		return err
+	}
+	var allShares []resources.GroupShare
+	totalTime := time.Duration(0)
+	for _, group := range getGroups(groups) {
+		shares, resp, err := c.CloudApiV6Services.Groups().ListShares(*group.GetId(), listQueryParams)
+		if err != nil {
+			return err
+		}
+		allShares = append(allShares, getGroupShares(shares)...)
+		totalTime += resp.RequestTime
+	}
+
+	if totalTime != time.Duration(0) {
+		c.Printer.Verbose(config.RequestTimeMessage, totalTime)
+	}
+
+	return c.Printer.Print(getGroupSharePrint(nil, c, allShares))
+}
+
 func RunShareList(c *core.CommandConfig) error {
-	// Add Query Parameters for GET Requests
+	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
+		return RunShareListAll(c)
+	}
 	listQueryParams, err := query.GetListQueryParams(c)
 	if err != nil {
 		return err
@@ -227,6 +263,19 @@ func RunShareList(c *core.CommandConfig) error {
 		return err
 	}
 	return c.Printer.Print(getGroupSharePrint(nil, c, getGroupShares(shares)))
+}
+
+func PreRunShareList(c *core.PreCommandConfig) error {
+	if err := core.CheckRequiredFlagsSets(c.Command, c.NS,
+		[]string{cloudapiv6.ArgGroupId},
+		[]string{cloudapiv6.ArgAll},
+	); err != nil {
+		return err
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
+		return query.ValidateFilters(c, completer.ServersFilters(), completer.ServersFiltersUsage())
+	}
+	return nil
 }
 
 func RunShareGet(c *core.CommandConfig) error {
@@ -464,12 +513,14 @@ func DeleteAllShares(c *core.CommandConfig) error {
 // Output Printing
 
 var defaultGroupShareCols = []string{"ShareId", "EditPrivilege", "SharePrivilege", "Type"}
+var allGroupShareCols = []string{"ShareId", "EditPrivilege", "SharePrivilege", "Type", "GroupId"}
 
 type groupSharePrint struct {
 	ShareId        string `json:"ShareId,omitempty"`
 	EditPrivilege  bool   `json:"EditPrivilege,omitempty"`
 	SharePrivilege bool   `json:"SharePrivilege,omitempty"`
 	Type           string `json:"Type,omitempty"`
+	GroupId        string `json:"GroupId,omitempty"`
 }
 
 func getGroupSharePrint(resp *resources.Response, c *core.CommandConfig, groups []resources.GroupShare) printer.Result {
@@ -484,22 +535,23 @@ func getGroupSharePrint(resp *resources.Response, c *core.CommandConfig, groups 
 		if groups != nil {
 			r.OutputJSON = groups
 			r.KeyValue = getGroupSharesKVMaps(groups)
-			r.Columns = getGroupShareCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr())
+			r.Columns = getGroupShareCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), core.GetFlagName(c.NS, cloudapiv6.ArgAll), c.Printer.GetStderr())
 		}
 	}
 	return r
 }
 
-func getGroupShareCols(flagName string, outErr io.Writer) []string {
-	if viper.IsSet(flagName) {
+func getGroupShareCols(argCols string, argAll string, outErr io.Writer) []string {
+	if viper.IsSet(argCols) {
 		var groupCols []string
 		columnsMap := map[string]string{
 			"ShareId":        "ShareId",
 			"EditPrivilege":  "EditPrivilege",
 			"SharePrivilege": "SharePrivilege",
 			"Type":           "Type",
+			"GroupId":        "GroupId",
 		}
-		for _, k := range viper.GetStringSlice(flagName) {
+		for _, k := range viper.GetStringSlice(argCols) {
 			col := columnsMap[k]
 			if col != "" {
 				groupCols = append(groupCols, col)
@@ -508,6 +560,12 @@ func getGroupShareCols(flagName string, outErr io.Writer) []string {
 			}
 		}
 		return groupCols
+	} else if viper.GetBool(argAll) {
+		var cols []string
+		// Add column which specifies which parent resource this belongs to, if using -a/--all flag
+		cols = append(defaultGroupShareCols[:config.DefaultParentIndex+1], defaultGroupShareCols[config.DefaultParentIndex:]...)
+		cols[config.DefaultParentIndex] = "GroupId"
+		return cols
 	} else {
 		return defaultGroupShareCols
 	}
@@ -548,6 +606,10 @@ func getGroupSharesKVMaps(gs []resources.GroupShare) []map[string]interface{} {
 		}
 		if typeResource, ok := g.GetTypeOk(); ok && typeResource != nil {
 			gPrint.Type = string(*typeResource)
+		}
+		if hrefOk, ok := g.GetHrefOk(); ok && hrefOk != nil {
+			// Get parent resource ID using HREF: `.../um/groups/[PARENT_ID_WE_WANT]/shares/[SHARE_ID]`
+			gPrint.GroupId = strings.Split(strings.Split(*hrefOk, "groups")[1], "/")[1]
 		}
 		o := structs.Map(gPrint)
 		out = append(out, o)

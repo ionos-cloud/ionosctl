@@ -50,7 +50,7 @@ Required values to run a command (for Private Kubernetes Cluster):
   -z, --availability-zone string     The compute Availability Zone in which the Node should exist (default "AUTO")
       --cluster-id string            The unique K8s Cluster Id (required)
       --cols strings                 Set of columns to be printed on output 
-                                     Available columns: [NodePoolId Name K8sVersion DatacenterId NodeCount CpuFamily StorageType State LanIds CoresCount RamSize AvailabilityZone StorageSize MaintenanceWindow AutoScaling PublicIps AvailableUpgradeVersions Annotations Labels] (default [NodePoolId,Name,K8sVersion,NodeCount,DatacenterId,State])
+                                     Available columns: [NodePoolId Name K8sVersion DatacenterId NodeCount CpuFamily StorageType State LanIds CoresCount RamSize AvailabilityZone StorageSize MaintenanceWindow AutoScaling PublicIps AvailableUpgradeVersions Annotations Labels ClusterId] (default [NodePoolId,Name,K8sVersion,NodeCount,DatacenterId,State])
   -c, --config string                Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --cores int                    The total number of cores for the Node (default 2)
       --cpu-family string            CPU Type (default "AMD_OPTERON")
