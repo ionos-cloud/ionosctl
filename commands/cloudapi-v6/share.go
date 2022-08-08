@@ -65,6 +65,7 @@ func ShareCmd() *core.Command {
 	})
 	list.AddBoolFlag(config.ArgNoHeaders, "", false, cloudapiv6.ArgNoHeadersDescription)
 	list.AddIntFlag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, config.DefaultListDepth, cloudapiv6.ArgDepthDescription)
+	list.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, cloudapiv6.ArgListAllDescription)
 
 	/*
 		Get Command
@@ -241,7 +242,9 @@ func RunShareListAll(c *core.CommandConfig) error {
 }
 
 func RunShareList(c *core.CommandConfig) error {
-	// Add Query Parameters for GET Requests
+	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
+		return RunShareListAll(c)
+	}
 	listQueryParams, err := query.GetListQueryParams(c)
 	if err != nil {
 		return err

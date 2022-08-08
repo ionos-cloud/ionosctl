@@ -77,6 +77,7 @@ func K8sNodePoolCmd() *core.Command {
 		return completer.K8sNodePoolsFilters(), cobra.ShellCompDirectiveNoFileComp
 	})
 	list.AddBoolFlag(config.ArgNoHeaders, "", false, cloudapiv6.ArgNoHeadersDescription)
+	list.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, cloudapiv6.ArgListAllDescription)
 
 	/*
 		Get Command

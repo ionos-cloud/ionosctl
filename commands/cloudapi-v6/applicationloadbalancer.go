@@ -73,7 +73,7 @@ func ApplicationLoadBalancerCmd() *core.Command {
 	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgFilters, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.BackupUnitsFilters(), cobra.ShellCompDirectiveNoFileComp
 	})
-	list.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "List all Application Load Balancers within the user's account.")
+	list.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, cloudapiv6.ArgListAllDescription)
 
 	/*
 		Get Command
