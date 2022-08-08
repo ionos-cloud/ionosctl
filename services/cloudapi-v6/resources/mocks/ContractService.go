@@ -35,9 +35,9 @@ func (m *MockContractsService) EXPECT() *MockContractsServiceMockRecorder {
 }
 
 // Get mocks base method.
-func (m *MockContractsService) Get() (resources.Contracts, *resources.Response, error) {
+func (m *MockContractsService) Get(params resources.QueryParams) (resources.Contracts, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Get")
+	ret := m.ctrl.Call(m, "Get", params)
 	ret0, _ := ret[0].(resources.Contracts)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -45,7 +45,7 @@ func (m *MockContractsService) Get() (resources.Contracts, *resources.Response, 
 }
 
 // Get indicates an expected call of Get.
-func (mr *MockContractsServiceMockRecorder) Get() *gomock.Call {
+func (mr *MockContractsServiceMockRecorder) Get(params interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockContractsService)(nil).Get))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockContractsService)(nil).Get), params)
 }

@@ -13,7 +13,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
-	v6resources "github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
+	cloudapiv6resources "github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 	dbaaspg "github.com/ionos-cloud/ionosctl/services/dbaas-postgres"
 	"github.com/ionos-cloud/ionosctl/services/dbaas-postgres/resources"
 	sdkgo "github.com/ionos-cloud/sdk-go-dbaas-postgres"
@@ -340,7 +340,7 @@ var (
 			Items: &[]sdkgo.ClusterResponse{testClusterGet.ClusterResponse},
 		},
 	}
-	testVdcGet = v6resources.Datacenter{
+	testVdcGet = cloudapiv6resources.Datacenter{
 		Datacenter: ionoscloud.Datacenter{
 			Id: &testClusterVar,
 			Properties: &ionoscloud.DatacenterProperties{
@@ -859,7 +859,7 @@ func TestRunClusterCreateLocation(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgBackupId), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgBackupLocation), testClusterBackupLocation)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgRecoveryTime), testTimeArgVar)
-		rm.CloudApiV6Mocks.Datacenter.EXPECT().Get(testClusterVar).Return(&testVdcGet, nil, nil)
+		rm.CloudApiV6Mocks.Datacenter.EXPECT().Get(testClusterVar, cloudapiv6resources.QueryParams{}).Return(&testVdcGet, nil, nil)
 		rm.CloudApiDbaasPgsqlMocks.Cluster.EXPECT().Create(testCreateClusterRequest).Return(&testClusterGet, nil, nil)
 		err := RunClusterCreate(cfg)
 		assert.NoError(t, err)
@@ -893,7 +893,7 @@ func TestRunClusterCreateLocationErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgBackupId), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgRecoveryTime), testTimeArgVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgBackupLocation), testClusterBackupLocation)
-		rm.CloudApiV6Mocks.Datacenter.EXPECT().Get(testClusterVar).Return(&testVdcGet, nil, testClusterErr)
+		rm.CloudApiV6Mocks.Datacenter.EXPECT().Get(testClusterVar, cloudapiv6resources.QueryParams{}).Return(&testVdcGet, nil, testClusterErr)
 		err := RunClusterCreate(cfg)
 		assert.Error(t, err)
 	})

@@ -2,12 +2,13 @@ package waiter
 
 import (
 	"errors"
+	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 )
 
 func RequestInterrogator(c *core.CommandConfig, requestId string) (status *string, message *string, err error) {
-	reqStatus, _, err := c.CloudApiV6Services.Requests().GetStatus(requestId)
+	reqStatus, _, err := c.CloudApiV6Services.Requests().GetStatus(requestId, resources.QueryParams{})
 	if err != nil {
 		return nil, nil, err
 	}

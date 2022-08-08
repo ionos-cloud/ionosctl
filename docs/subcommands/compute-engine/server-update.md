@@ -56,6 +56,7 @@ Required values to run command:
       --cores int                  The total number of cores for the Server, e.g. 4. Maximum: depends on contract resource limits (default 2)
       --cpu-family string          CPU Family of the Server (default "AMD_OPTERON")
       --datacenter-id string       The unique Data Center Id (required)
+  -D, --depth int                  Controls the detail depth of the response objects. Max depth is 10.
   -f, --force                      Force command to execute without user input
   -h, --help                       Print usage
   -n, --name string                Name of the Server

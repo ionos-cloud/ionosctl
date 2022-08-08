@@ -22,8 +22,8 @@ type Locations struct {
 // LocationsService is a wrapper around ionoscloud.Location
 type LocationsService interface {
 	List(params ListQueryParams) (Locations, *Response, error)
-	GetByRegionAndLocationId(regionId, locationId string) (*Location, *Response, error)
-	GetByRegionId(regionId string) (Locations, *Response, error)
+	GetByRegionAndLocationId(regionId, locationId string, params QueryParams) (*Location, *Response, error)
+	GetByRegionId(regionId string, params QueryParams) (Locations, *Response, error)
 }
 
 type locationsService struct {
@@ -54,19 +54,46 @@ func (s *locationsService) List(params ListQueryParams) (Locations, *Response, e
 		if params.MaxResults != nil {
 			req = req.MaxResults(*params.MaxResults)
 		}
+		if !structs.IsZero(params.QueryParams) {
+			if params.QueryParams.Depth != nil {
+				req = req.Depth(*params.QueryParams.Depth)
+			}
+			if params.QueryParams.Pretty != nil {
+				// Currently not implemented
+				req = req.Pretty(*params.QueryParams.Pretty)
+			}
+		}
 	}
 	locations, resp, err := s.client.LocationsApi.LocationsGetExecute(req)
 	return Locations{locations}, &Response{*resp}, err
 }
 
-func (s *locationsService) GetByRegionAndLocationId(regionId, locationId string) (*Location, *Response, error) {
+func (s *locationsService) GetByRegionAndLocationId(regionId, locationId string, params QueryParams) (*Location, *Response, error) {
 	req := s.client.LocationsApi.LocationsFindByRegionIdAndId(s.context, regionId, locationId)
+	if !structs.IsZero(params) {
+		if params.Depth != nil {
+			req = req.Depth(*params.Depth)
+		}
+		if params.Pretty != nil {
+			// Currently not implemented
+			req = req.Pretty(*params.Pretty)
+		}
+	}
 	loc, resp, err := s.client.LocationsApi.LocationsFindByRegionIdAndIdExecute(req)
 	return &Location{loc}, &Response{*resp}, err
 }
 
-func (s *locationsService) GetByRegionId(regionId string) (Locations, *Response, error) {
+func (s *locationsService) GetByRegionId(regionId string, params QueryParams) (Locations, *Response, error) {
 	req := s.client.LocationsApi.LocationsFindByRegionId(s.context, regionId)
+	if !structs.IsZero(params) {
+		if params.Depth != nil {
+			req = req.Depth(*params.Depth)
+		}
+		if params.Pretty != nil {
+			// Currently not implemented
+			req = req.Pretty(*params.Pretty)
+		}
+	}
 	locs, resp, err := s.client.LocationsApi.LocationsFindByRegionIdExecute(req)
 	return Locations{locs}, &Response{*resp}, err
 }

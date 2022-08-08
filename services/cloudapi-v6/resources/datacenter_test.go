@@ -28,7 +28,7 @@ func TestNewDataCenterService(t *testing.T) {
 	t.Run("get_datacenter_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		datacenterSvc := NewDataCenterService(svc.Get(), ctx)
-		_, _, err := datacenterSvc.Get(testDatacenterResourceVar)
+		_, _, err := datacenterSvc.Get(testDatacenterResourceVar, QueryParams{})
 		assert.Error(t, err)
 	})
 	t.Run("create_datacenter_error", func(t *testing.T) {
@@ -38,19 +38,20 @@ func TestNewDataCenterService(t *testing.T) {
 			testDatacenterResourceVar,
 			testDatacenterResourceVar,
 			testDatacenterResourceVar,
+			QueryParams{},
 		)
 		assert.Error(t, err)
 	})
 	t.Run("update_datacenter_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		datacenterSvc := NewDataCenterService(svc.Get(), ctx)
-		_, _, err := datacenterSvc.Update(testDatacenterResourceVar, DatacenterProperties{})
+		_, _, err := datacenterSvc.Update(testDatacenterResourceVar, DatacenterProperties{}, QueryParams{})
 		assert.Error(t, err)
 	})
 	t.Run("delete_datacenter_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		datacenterSvc := NewDataCenterService(svc.Get(), ctx)
-		_, err := datacenterSvc.Delete(testDatacenterResourceVar)
+		_, err := datacenterSvc.Delete(testDatacenterResourceVar, QueryParams{})
 		assert.Error(t, err)
 	})
 }

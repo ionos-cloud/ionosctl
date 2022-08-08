@@ -26,25 +26,25 @@ func TestNewTargetGroupService(t *testing.T) {
 	t.Run("get_targetgroup_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		targetgroupSvc := NewTargetGroupService(svc.Get(), ctx)
-		_, _, err := targetgroupSvc.Get(testTargetGroupResourceVar)
+		_, _, err := targetgroupSvc.Get(testTargetGroupResourceVar, QueryParams{})
 		assert.Error(t, err)
 	})
 	t.Run("create_targetgroup_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		targetgroupSvc := NewTargetGroupService(svc.Get(), ctx)
-		_, _, err := targetgroupSvc.Create(TargetGroup{})
+		_, _, err := targetgroupSvc.Create(TargetGroup{}, QueryParams{})
 		assert.Error(t, err)
 	})
 	t.Run("update_targetgroup_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		targetgroupSvc := NewTargetGroupService(svc.Get(), ctx)
-		_, _, err := targetgroupSvc.Update(testTargetGroupResourceVar, &TargetGroupProperties{})
+		_, _, err := targetgroupSvc.Update(testTargetGroupResourceVar, &TargetGroupProperties{}, QueryParams{})
 		assert.Error(t, err)
 	})
 	t.Run("delete_targetgroup_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		targetgroupSvc := NewTargetGroupService(svc.Get(), ctx)
-		_, err := targetgroupSvc.Delete(testTargetGroupResourceVar)
+		_, err := targetgroupSvc.Delete(testTargetGroupResourceVar, QueryParams{})
 		assert.Error(t, err)
 	})
 }

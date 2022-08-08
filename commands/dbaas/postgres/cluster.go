@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	cloudapiv6resources "github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 	"io"
 	"os"
 	"strings"
@@ -575,7 +576,7 @@ func getCreateClusterRequest(c *core.CommandConfig) (*resources.CreateClusterReq
 		input.SetLocation(location)
 	} else {
 		c.Printer.Verbose("Getting Location from VDC...")
-		vdc, _, err := c.CloudApiV6Services.DataCenters().Get(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgDatacenterId)))
+		vdc, _, err := c.CloudApiV6Services.DataCenters().Get(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgDatacenterId)), cloudapiv6resources.QueryParams{})
 		if err != nil {
 			return nil, err
 		}

@@ -35,9 +35,9 @@ func (m *MockRequestsService) EXPECT() *MockRequestsServiceMockRecorder {
 }
 
 // Get mocks base method.
-func (m *MockRequestsService) Get(requestId string) (*resources.Request, *resources.Response, error) {
+func (m *MockRequestsService) Get(requestId string, params resources.QueryParams) (*resources.Request, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Get", requestId)
+	ret := m.ctrl.Call(m, "Get", requestId, params)
 	ret0, _ := ret[0].(*resources.Request)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -45,15 +45,15 @@ func (m *MockRequestsService) Get(requestId string) (*resources.Request, *resour
 }
 
 // Get indicates an expected call of Get.
-func (mr *MockRequestsServiceMockRecorder) Get(requestId interface{}) *gomock.Call {
+func (mr *MockRequestsServiceMockRecorder) Get(requestId, params interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockRequestsService)(nil).Get), requestId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockRequestsService)(nil).Get), requestId, params)
 }
 
 // GetStatus mocks base method.
-func (m *MockRequestsService) GetStatus(requestId string) (*resources.RequestStatus, *resources.Response, error) {
+func (m *MockRequestsService) GetStatus(requestId string, params resources.QueryParams) (*resources.RequestStatus, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetStatus", requestId)
+	ret := m.ctrl.Call(m, "GetStatus", requestId, params)
 	ret0, _ := ret[0].(*resources.RequestStatus)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -61,9 +61,9 @@ func (m *MockRequestsService) GetStatus(requestId string) (*resources.RequestSta
 }
 
 // GetStatus indicates an expected call of GetStatus.
-func (mr *MockRequestsServiceMockRecorder) GetStatus(requestId interface{}) *gomock.Call {
+func (mr *MockRequestsServiceMockRecorder) GetStatus(requestId, params interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetStatus", reflect.TypeOf((*MockRequestsService)(nil).GetStatus), requestId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetStatus", reflect.TypeOf((*MockRequestsService)(nil).GetStatus), requestId, params)
 }
 
 // List mocks base method.

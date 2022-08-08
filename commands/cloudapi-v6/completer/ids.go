@@ -502,7 +502,7 @@ func S3KeyIds(outErr io.Writer, userId string) []string {
 	client, err := getClient()
 	clierror.CheckError(err, outErr)
 	S3KeySvc := resources.NewS3KeyService(client, context.TODO())
-	S3Keys, _, err := S3KeySvc.List(userId)
+	S3Keys, _, err := S3KeySvc.List(userId, resources.ListQueryParams{})
 	clierror.CheckError(err, outErr)
 	ssIds := make([]string, 0)
 	if items, ok := S3Keys.S3Keys.GetItemsOk(); ok && items != nil {
@@ -540,7 +540,7 @@ func GroupResourcesIds(outErr io.Writer, groupId string) []string {
 	client, err := getClient()
 	clierror.CheckError(err, outErr)
 	groupSvc := resources.NewGroupService(client, context.TODO())
-	res, _, err := groupSvc.ListResources(groupId)
+	res, _, err := groupSvc.ListResources(groupId, resources.ListQueryParams{})
 	clierror.CheckError(err, outErr)
 	resIds := make([]string, 0)
 	if items, ok := res.ResourceGroups.GetItemsOk(); ok && items != nil {
@@ -616,7 +616,7 @@ func GroupUsersIds(outErr io.Writer, groupId string) []string {
 	client, err := getClient()
 	clierror.CheckError(err, outErr)
 	groupSvc := resources.NewGroupService(client, context.TODO())
-	users, _, err := groupSvc.ListUsers(groupId)
+	users, _, err := groupSvc.ListUsers(groupId, resources.ListQueryParams{})
 	clierror.CheckError(err, outErr)
 	usersIds := make([]string, 0)
 	if items, ok := users.GroupMembers.GetItemsOk(); ok && items != nil {

@@ -22,8 +22,8 @@ type Requests struct {
 // RequestsService is a wrapper around ionoscloud.Request
 type RequestsService interface {
 	List(params ListQueryParams) (Requests, *Response, error)
-	Get(requestId string) (*Request, *Response, error)
-	GetStatus(requestId string) (*RequestStatus, *Response, error)
+	Get(requestId string, params QueryParams) (*Request, *Response, error)
+	GetStatus(requestId string, params QueryParams) (*RequestStatus, *Response, error)
 	Wait(requestId string) (*Response, error)
 }
 
@@ -55,19 +55,46 @@ func (rs *requestsService) List(params ListQueryParams) (Requests, *Response, er
 		if params.MaxResults != nil {
 			req = req.MaxResults(*params.MaxResults)
 		}
+		if !structs.IsZero(params.QueryParams) {
+			if params.QueryParams.Depth != nil {
+				req = req.Depth(*params.QueryParams.Depth)
+			}
+			if params.QueryParams.Pretty != nil {
+				// Currently not implemented
+				req = req.Pretty(*params.QueryParams.Pretty)
+			}
+		}
 	}
 	reqs, res, err := rs.client.RequestsApi.RequestsGetExecute(req)
 	return Requests{reqs}, &Response{*res}, err
 }
 
-func (rs *requestsService) Get(requestId string) (*Request, *Response, error) {
+func (rs *requestsService) Get(requestId string, params QueryParams) (*Request, *Response, error) {
 	req := rs.client.RequestsApi.RequestsFindById(rs.context, requestId)
+	if !structs.IsZero(params) {
+		if params.Depth != nil {
+			req = req.Depth(*params.Depth)
+		}
+		if params.Pretty != nil {
+			// Currently not implemented
+			req = req.Pretty(*params.Pretty)
+		}
+	}
 	reqs, res, err := rs.client.RequestsApi.RequestsFindByIdExecute(req)
 	return &Request{reqs}, &Response{*res}, err
 }
 
-func (rs *requestsService) GetStatus(requestId string) (*RequestStatus, *Response, error) {
+func (rs *requestsService) GetStatus(requestId string, params QueryParams) (*RequestStatus, *Response, error) {
 	req := rs.client.RequestsApi.RequestsStatusGet(rs.context, requestId)
+	if !structs.IsZero(params) {
+		if params.Depth != nil {
+			req = req.Depth(*params.Depth)
+		}
+		if params.Pretty != nil {
+			// Currently not implemented
+			req = req.Pretty(*params.Pretty)
+		}
+	}
 	reqs, res, err := rs.client.RequestsApi.RequestsStatusGetExecute(req)
 	return &RequestStatus{reqs}, &Response{*res}, err
 }

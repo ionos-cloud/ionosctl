@@ -43,6 +43,7 @@ Required values to run command:
                                Available columns: [DatacenterId Name Location State Description Version Features CpuFamily SecAuthProtection] (default [DatacenterId,Name,Location,CpuFamily,State])
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -i, --datacenter-id string   The unique Data Center Id (required)
+  -D, --depth int              Controls the detail depth of the response objects. Max depth is 10.
   -f, --force                  Force command to execute without user input
   -h, --help                   Print usage
   -o, --output string          Desired output format [text|json] (default "text")

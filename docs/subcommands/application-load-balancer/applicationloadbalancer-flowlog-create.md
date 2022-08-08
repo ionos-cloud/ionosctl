@@ -52,6 +52,7 @@ Required values to run command:
                                             Available columns: [FlowLogId Name Action Direction Bucket State] (default [FlowLogId,Name,Action,Direction,Bucket,State])
   -c, --config string                       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --datacenter-id string                The unique Data Center Id (required)
+  -D, --depth int                           Controls the detail depth of the response objects. Max depth is 10.
   -d, --direction string                    Specifies the traffic direction pattern. (default "INGRESS")
   -f, --force                               Force command to execute without user input
   -h, --help                                Print usage

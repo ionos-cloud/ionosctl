@@ -69,6 +69,7 @@ You can wait for the Request to be executed using `--wait-for-request` option. Y
       --cores int                  The total number of cores for the Server, e.g. 4. Maximum: depends on contract resource limits (required) (default 2)
       --cpu-family string          CPU Family for the Server. For CUBE Servers, the CPU Family is INTEL_SKYLAKE (default "AMD_OPTERON")
       --datacenter-id string       The unique Data Center Id (required)
+  -D, --depth int                  Controls the detail depth of the response objects. Max depth is 10.
   -f, --force                      Force command to execute without user input
   -h, --help                       Print usage
   -a, --image-alias string         [CUBE Server] The Image Alias to use instead of Image Id for the Direct Attached Storage

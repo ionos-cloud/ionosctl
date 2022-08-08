@@ -35,9 +35,9 @@ func (m *MockPccsService) EXPECT() *MockPccsServiceMockRecorder {
 }
 
 // Create mocks base method.
-func (m *MockPccsService) Create(u resources.PrivateCrossConnect) (*resources.PrivateCrossConnect, *resources.Response, error) {
+func (m *MockPccsService) Create(u resources.PrivateCrossConnect, params resources.QueryParams) (*resources.PrivateCrossConnect, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Create", u)
+	ret := m.ctrl.Call(m, "Create", u, params)
 	ret0, _ := ret[0].(*resources.PrivateCrossConnect)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -45,30 +45,30 @@ func (m *MockPccsService) Create(u resources.PrivateCrossConnect) (*resources.Pr
 }
 
 // Create indicates an expected call of Create.
-func (mr *MockPccsServiceMockRecorder) Create(u interface{}) *gomock.Call {
+func (mr *MockPccsServiceMockRecorder) Create(u, params interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockPccsService)(nil).Create), u)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockPccsService)(nil).Create), u, params)
 }
 
 // Delete mocks base method.
-func (m *MockPccsService) Delete(pccId string) (*resources.Response, error) {
+func (m *MockPccsService) Delete(pccId string, params resources.QueryParams) (*resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Delete", pccId)
+	ret := m.ctrl.Call(m, "Delete", pccId, params)
 	ret0, _ := ret[0].(*resources.Response)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Delete indicates an expected call of Delete.
-func (mr *MockPccsServiceMockRecorder) Delete(pccId interface{}) *gomock.Call {
+func (mr *MockPccsServiceMockRecorder) Delete(pccId, params interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockPccsService)(nil).Delete), pccId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockPccsService)(nil).Delete), pccId, params)
 }
 
 // Get mocks base method.
-func (m *MockPccsService) Get(pccId string) (*resources.PrivateCrossConnect, *resources.Response, error) {
+func (m *MockPccsService) Get(pccId string, params resources.QueryParams) (*resources.PrivateCrossConnect, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Get", pccId)
+	ret := m.ctrl.Call(m, "Get", pccId, params)
 	ret0, _ := ret[0].(*resources.PrivateCrossConnect)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -76,9 +76,9 @@ func (m *MockPccsService) Get(pccId string) (*resources.PrivateCrossConnect, *re
 }
 
 // Get indicates an expected call of Get.
-func (mr *MockPccsServiceMockRecorder) Get(pccId interface{}) *gomock.Call {
+func (mr *MockPccsServiceMockRecorder) Get(pccId, params interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockPccsService)(nil).Get), pccId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockPccsService)(nil).Get), pccId, params)
 }
 
 // GetPeers mocks base method.
@@ -114,9 +114,9 @@ func (mr *MockPccsServiceMockRecorder) List(params interface{}) *gomock.Call {
 }
 
 // Update mocks base method.
-func (m *MockPccsService) Update(pccId string, input resources.PrivateCrossConnectProperties) (*resources.PrivateCrossConnect, *resources.Response, error) {
+func (m *MockPccsService) Update(pccId string, input resources.PrivateCrossConnectProperties, params resources.QueryParams) (*resources.PrivateCrossConnect, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Update", pccId, input)
+	ret := m.ctrl.Call(m, "Update", pccId, input, params)
 	ret0, _ := ret[0].(*resources.PrivateCrossConnect)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -124,7 +124,7 @@ func (m *MockPccsService) Update(pccId string, input resources.PrivateCrossConne
 }
 
 // Update indicates an expected call of Update.
-func (mr *MockPccsServiceMockRecorder) Update(pccId, input interface{}) *gomock.Call {
+func (mr *MockPccsServiceMockRecorder) Update(pccId, input, params interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockPccsService)(nil).Update), pccId, input)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockPccsService)(nil).Update), pccId, input, params)
 }

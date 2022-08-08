@@ -43,6 +43,7 @@ Required values to run command:
       --cols strings         Set of columns to be printed on output 
                              Available columns: [NodePoolId Name K8sVersion DatacenterId NodeCount CpuFamily StorageType State LanIds CoresCount RamSize AvailabilityZone StorageSize MaintenanceWindow AutoScaling PublicIps AvailableUpgradeVersions Annotations Labels] (default [NodePoolId,Name,K8sVersion,NodeCount,DatacenterId,State])
   -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+  -D, --depth int            Controls the detail depth of the response objects. Max depth is 10.
   -f, --force                Force command to execute without user input
   -h, --help                 Print usage
   -i, --lan-id int           The unique LAN Id of existing LANs to be detached from worker Nodes (required)

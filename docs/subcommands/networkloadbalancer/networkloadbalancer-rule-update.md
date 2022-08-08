@@ -53,6 +53,7 @@ Required values to run command:
   -c, --config string                   Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --connection-timeout int          [Health Check] It specifies the maximum time (in milliseconds) to wait for a connection attempt to a target VM to succeed (default 5000)
       --datacenter-id string            The unique Data Center Id (required)
+  -D, --depth int                       Controls the detail depth of the response objects. Max depth is 10.
   -f, --force                           Force command to execute without user input
   -h, --help                            Print usage
       --listener-ip string              Listening IP (required)

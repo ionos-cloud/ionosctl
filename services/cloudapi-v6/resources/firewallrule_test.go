@@ -43,6 +43,7 @@ func TestNewFirewallRuleService(t *testing.T) {
 			testFirewallRuleResourceVar,
 			testFirewallRuleResourceVar,
 			testFirewallRuleResourceVar,
+			QueryParams{},
 		)
 		assert.Error(t, err)
 	})
@@ -54,6 +55,7 @@ func TestNewFirewallRuleService(t *testing.T) {
 			testFirewallRuleResourceVar,
 			testFirewallRuleResourceVar,
 			FirewallRule{},
+			QueryParams{},
 		)
 		assert.Error(t, err)
 	})
@@ -66,6 +68,7 @@ func TestNewFirewallRuleService(t *testing.T) {
 			testFirewallRuleResourceVar,
 			testFirewallRuleResourceVar,
 			FirewallRuleProperties{},
+			QueryParams{},
 		)
 		assert.Error(t, err)
 	})
@@ -77,6 +80,7 @@ func TestNewFirewallRuleService(t *testing.T) {
 			testFirewallRuleResourceVar,
 			testFirewallRuleResourceVar,
 			testFirewallRuleResourceVar,
+			QueryParams{},
 		)
 		assert.Error(t, err)
 	})
