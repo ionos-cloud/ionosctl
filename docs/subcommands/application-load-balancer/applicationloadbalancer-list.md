@@ -35,6 +35,7 @@ Required values to run command:
 ## Options
 
 ```text
+  -a, --all                    List all resources without the need of specifying parent ID name.
   -u, --api-url string         Override default host url (default "https://api.ionos.com")
       --cols strings           Set of columns to be printed on output 
                                Available columns: [ApplicationLoadBalancerId Name ListenerLan Ips TargetLan PrivateIps State] (default [ApplicationLoadBalancerId,Name,ListenerLan,Ips,TargetLan,PrivateIps,State])
