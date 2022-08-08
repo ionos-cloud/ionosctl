@@ -842,8 +842,11 @@ func getK8sNodePoolCols(argCols string, argAll string, outErr io.Writer) []strin
 		}
 		return k8sCols
 	} else if viper.IsSet(argAll) {
+		var cols []string
 		// Add column which specifies which parent resource this belongs to, if using -a/--all flag
-		return append(defaultK8sNodePoolCols, "ClusterId")
+		cols = append(defaultK8sNodePoolCols[:config.DefaultParentIndex+1], defaultK8sNodePoolCols[config.DefaultParentIndex:]...)
+		cols[config.DefaultParentIndex] = "ClusterId"
+		return cols
 	} else {
 		return defaultK8sNodePoolCols
 	}

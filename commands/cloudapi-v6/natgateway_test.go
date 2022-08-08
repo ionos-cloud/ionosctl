@@ -607,7 +607,7 @@ func TestGetNatGatewaysCols(t *testing.T) {
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
 	viper.Set(core.GetGlobalFlagName("natgateway", config.ArgCols), []string{"Name"})
-	getNatGatewaysCols(core.GetGlobalFlagName("natgateway", config.ArgCols), w)
+	getNatGatewaysCols(core.GetGlobalFlagName("natgateway", config.ArgCols), core.GetFlagName("natgateway", cloudapiv6.ArgAll), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 }
@@ -618,7 +618,7 @@ func TestGetNatGatewaysColsErr(t *testing.T) {
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
 	viper.Set(core.GetGlobalFlagName("natgateway", config.ArgCols), []string{"Unknown"})
-	getNatGatewaysCols(core.GetGlobalFlagName("natgateway", config.ArgCols), w)
+	getNatGatewaysCols(core.GetGlobalFlagName("natgateway", config.ArgCols), core.GetFlagName("natgateway", cloudapiv6.ArgAll), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 	re := regexp.MustCompile(`unknown column Unknown`)

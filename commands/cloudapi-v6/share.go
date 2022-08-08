@@ -558,7 +558,11 @@ func getGroupShareCols(argCols string, argAll string, outErr io.Writer) []string
 		}
 		return groupCols
 	} else if viper.GetBool(argAll) {
-		return append(defaultGroupShareCols, "GroupId")
+		var cols []string
+		// Add column which specifies which parent resource this belongs to, if using -a/--all flag
+		cols = append(defaultGroupShareCols[:config.DefaultParentIndex+1], defaultGroupShareCols[config.DefaultParentIndex:]...)
+		cols[config.DefaultParentIndex] = "GroupId"
+		return cols
 	} else {
 		return defaultGroupShareCols
 	}

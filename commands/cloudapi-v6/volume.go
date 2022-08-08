@@ -1167,7 +1167,10 @@ func getVolumesCols(argCols string, argAll string, outErr io.Writer) []string {
 		}
 		return volumeCols
 	} else if viper.GetBool(argAll) {
-		return append(defaultVolumeCols, "DatacenterId")
+		// Add column which specifies which parent resource this belongs to, if using -a/--all flag
+		cols = append(defaultVolumeCols[:config.DefaultParentIndex+1], defaultVolumeCols[config.DefaultParentIndex:]...)
+		cols[config.DefaultParentIndex] = "DatacenterId"
+		return cols
 	} else {
 		return defaultVolumeCols
 	}

@@ -595,7 +595,10 @@ func getNetworkLoadBalancersCols(argCols string, argAll string, outErr io.Writer
 		}
 		return networkloadbalancerCols
 	} else if viper.IsSet(argAll) {
-		return append(defaultNetworkLoadBalancerCols, "DatacenterId")
+		// Add column which specifies which parent resource this belongs to, if using -a/--all flag
+		cols = append(defaultNetworkLoadBalancerCols[:config.DefaultParentIndex+1], defaultNetworkLoadBalancerCols[config.DefaultParentIndex:]...)
+		cols[config.DefaultParentIndex] = "DatacenterId"
+		return cols
 	} else {
 		return defaultNetworkLoadBalancerCols
 	}

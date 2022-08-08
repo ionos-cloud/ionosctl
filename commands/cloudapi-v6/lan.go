@@ -573,7 +573,10 @@ func getLansCols(argCols string, argAll string, outErr io.Writer) []string {
 		}
 		return lanCols
 	} else if viper.IsSet(argAll) {
-		return append(defaultLanCols, "DatacenterId")
+		// Add column which specifies which parent resource this belongs to, if using -a/--all flag
+		cols = append(defaultLanCols[:config.DefaultParentIndex+1], defaultLanCols[config.DefaultParentIndex:]...)
+		cols[config.DefaultParentIndex] = "DatacenterId"
+		return cols
 	} else {
 		return defaultLanCols
 	}

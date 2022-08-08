@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strings"
 	"time"
 
 	"go.uber.org/multierr"
@@ -507,12 +508,14 @@ func DeleteAllNatgateways(c *core.CommandConfig) error {
 // Output Printing
 
 var defaultNatGatewayCols = []string{"NatGatewayId", "Name", "PublicIps", "State"}
+var allNatGatewayCols = []string{"NatGatewayId", "Name", "PublicIps", "State", "DatacenterId"}
 
 type NatGatewayPrint struct {
 	NatGatewayId string   `json:"NatGatewayId,omitempty"`
 	Name         string   `json:"Name,omitempty"`
 	PublicIps    []string `json:"PublicIps,omitempty"`
 	State        string   `json:"State,omitempty"`
+	DatacenterId string   `json:"DatacenterId,omitempty"`
 }
 
 func getNatGatewayPrint(resp *resources.Response, c *core.CommandConfig, ss []resources.NatGateway) printer.Result {
@@ -528,35 +531,46 @@ func getNatGatewayPrint(resp *resources.Response, c *core.CommandConfig, ss []re
 		if ss != nil {
 			r.OutputJSON = ss
 			r.KeyValue = getNatGatewaysKVMaps(ss)
-			r.Columns = getNatGatewaysCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr())
+			r.Columns = getNatGatewaysCols(
+				core.GetGlobalFlagName(c.Resource, config.ArgCols),
+				core.GetFlagName(c.NS, cloudapiv6.ArgAll),
+				c.Printer.GetStderr(),
+			)
 		}
 	}
 	return r
 }
 
-func getNatGatewaysCols(flagName string, outErr io.Writer) []string {
+func getNatGatewaysCols(argCols string, argAll string, outErr io.Writer) []string {
 	var cols []string
-	if viper.IsSet(flagName) {
-		cols = viper.GetStringSlice(flagName)
+	if viper.IsSet(argCols) {
+		cols = viper.GetStringSlice(argCols)
+
+		columnsMap := map[string]string{
+			"NatGatewayId": "NatGatewayId",
+			"Name":         "Name",
+			"PublicIps":    "PublicIps",
+			"State":        "State",
+			"DatacenterId": "DatacenterId",
+		}
+		var natgatewayCols []string
+		for _, k := range cols {
+			col := columnsMap[k]
+			if col != "" {
+				natgatewayCols = append(natgatewayCols, col)
+			} else {
+				clierror.CheckError(errors.New("unknown column "+k), outErr)
+			}
+		}
+		return natgatewayCols
+	} else if viper.IsSet(argAll) {
+		// Add column which specifies which parent resource this belongs to, if using -a/--all flag
+		cols = append(defaultNatGatewayCols[:config.DefaultParentIndex+1], defaultNatGatewayCols[config.DefaultParentIndex:]...)
+		cols[config.DefaultParentIndex] = "DatacenterId"
+		return cols
 	} else {
 		return defaultNatGatewayCols
 	}
-	columnsMap := map[string]string{
-		"NatGatewayId": "NatGatewayId",
-		"Name":         "Name",
-		"PublicIps":    "PublicIps",
-		"State":        "State",
-	}
-	var natgatewayCols []string
-	for _, k := range cols {
-		col := columnsMap[k]
-		if col != "" {
-			natgatewayCols = append(natgatewayCols, col)
-		} else {
-			clierror.CheckError(errors.New("unknown column "+k), outErr)
-		}
-	}
-	return natgatewayCols
 }
 
 func getNatGateways(natgateways resources.NatGateways) []resources.NatGateway {
@@ -588,6 +602,10 @@ func getNatGatewaysKVMaps(ss []resources.NatGateway) []map[string]interface{} {
 			if state, ok := metadata.GetStateOk(); ok && state != nil {
 				natgatewayPrint.State = *state
 			}
+		}
+		if hrefOk, ok := s.GetHrefOk(); ok && hrefOk != nil {
+			// Get parent resource ID using HREF: `.../datacenter/[PARENT_ID_WE_WANT]/natgateways/[ID]`
+			natgatewayPrint.DatacenterId = strings.Split(strings.Split(*hrefOk, "datacenter")[1], "/")[1]
 		}
 		o := structs.Map(natgatewayPrint)
 		out = append(out, o)

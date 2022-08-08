@@ -548,7 +548,10 @@ func getLoadbalancersCols(argCols string, argAll string, outErr io.Writer) []str
 		}
 		return loadbalancerCols
 	} else if viper.IsSet(argAll) {
-		return append(defaultLoadbalancerCols, "DatacenterId")
+		// Add column which specifies which parent resource this belongs to, if using -a/--all flag
+		cols = append(defaultLoadbalancerCols[:config.DefaultParentIndex+1], defaultLoadbalancerCols[config.DefaultParentIndex:]...)
+		cols[config.DefaultParentIndex] = "DatacenterId"
+		return cols
 	} else {
 		return defaultLoadbalancerCols
 	}

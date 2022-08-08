@@ -1148,11 +1148,12 @@ func DeleteAllServers(c *core.CommandConfig) error {
 
 var (
 	defaultServerCols = []string{"ServerId", "Name", "Type", "AvailabilityZone", "Cores", "Ram", "CpuFamily", "VmState", "State"}
-	allServerCols     = []string{"ServerId", "Name", "AvailabilityZone", "Cores", "Ram", "CpuFamily", "VmState", "State", "TemplateId", "Type", "BootCdromId", "BootVolumeId"}
+	allServerCols     = []string{"ServerId", "DatacenterId", "Name", "AvailabilityZone", "Cores", "Ram", "CpuFamily", "VmState", "State", "TemplateId", "Type", "BootCdromId", "BootVolumeId"}
 )
 
 type ServerPrint struct {
 	ServerId         string `json:"ServerId,omitempty"`
+	DatacenterId     string `json:"DatacenterId,omitempty"`
 	Name             string `json:"Name,omitempty"`
 	AvailabilityZone string `json:"AvailabilityZone,omitempty"`
 	State            string `json:"State,omitempty"`
@@ -1164,7 +1165,6 @@ type ServerPrint struct {
 	BootCdromId      string `json:"BootCdromId,omitempty"`
 	TemplateId       string `json:"TemplateId,omitempty"`
 	Type             string `json:"Type,omitempty"`
-	DatacenterId     string `json:"DatacenterId,omitempty"`
 }
 
 func getServerPrint(resp *resources.Response, c *core.CommandConfig, ss []resources.Server) printer.Result {
@@ -1197,6 +1197,7 @@ func getServersCols(argCols string, argAll string, outErr io.Writer) []string {
 
 		columnsMap := map[string]string{
 			"ServerId":         "ServerId",
+			"DatacenterId":     "DatacenterId",
 			"Name":             "Name",
 			"AvailabilityZone": "AvailabilityZone",
 			"State":            "State",
@@ -1208,7 +1209,6 @@ func getServersCols(argCols string, argAll string, outErr io.Writer) []string {
 			"Type":             "Type",
 			"BootVolumeId":     "BootVolumeId",
 			"BootCdromId":      "BootCdromId",
-			"DatacenterId":     "DatacenterId",
 		}
 		var serverCols []string
 		for _, k := range cols {
@@ -1222,7 +1222,9 @@ func getServersCols(argCols string, argAll string, outErr io.Writer) []string {
 		return serverCols
 	} else if viper.IsSet(argAll) {
 		// Add column which specifies which parent resource this belongs to, if using -a/--all flag
-		return append(defaultServerCols, "DatacenterId")
+		cols = append(defaultServerCols[:config.DefaultParentIndex+1], defaultServerCols[config.DefaultParentIndex:]...)
+		cols[config.DefaultParentIndex] = "DatacenterId"
+		return cols
 	} else {
 		return defaultServerCols
 	}

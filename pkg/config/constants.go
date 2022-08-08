@@ -45,6 +45,7 @@ const (
 	DefaultOutputFormat   = "text"
 	DefaultWait           = false
 	DefaultTimeoutSeconds = int(60)
+	DefaultParentIndex    = int(1)
 	DefaultListDepth      = int(1)
 	DefaultGetDepth       = int(0)
 	DefaultCreateDepth    = int(0)
