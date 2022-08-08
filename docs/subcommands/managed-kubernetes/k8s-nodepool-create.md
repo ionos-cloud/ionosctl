@@ -55,6 +55,7 @@ Required values to run a command (for Private Kubernetes Cluster):
       --cores int                    The total number of cores for the Node (default 2)
       --cpu-family string            CPU Type (default "AMD_OPTERON")
       --datacenter-id string         The unique Data Center Id (required)
+  -D, --depth int                    Controls the detail depth of the response objects. Max depth is 10.
       --dhcp                         Indicates if the Kubernetes Node Pool LANs will reserve an IP using DHCP. E.g.: --dhcp=true, --dhcp=false (default true)
   -f, --force                        Force command to execute without user input
   -h, --help                         Print usage

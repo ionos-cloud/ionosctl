@@ -48,6 +48,7 @@ Required values to run a command:
       --cols strings       Set of columns to be printed on output 
                            Available columns: [BackupUnitId Name Email State] (default [BackupUnitId,Name,Email,State])
   -c, --config string      Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+  -D, --depth int          Controls the detail depth of the response objects. Max depth is 10.
   -e, --email string       The e-mail address you want to assign to the BackupUnit (required)
   -f, --force              Force command to execute without user input
   -h, --help               Print usage

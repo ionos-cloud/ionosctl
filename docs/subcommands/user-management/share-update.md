@@ -36,6 +36,7 @@ Required values to run command:
       --cols strings         Set of columns to be printed on output 
                              Available columns: [ShareId EditPrivilege SharePrivilege Type] (default [ShareId,EditPrivilege,SharePrivilege,Type])
   -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+  -D, --depth int            Controls the detail depth of the response objects. Max depth is 10.
       --edit-privilege       Update the group's permission to edit privileges on resource
   -f, --force                Force command to execute without user input
       --group-id string      The unique Group Id (required)

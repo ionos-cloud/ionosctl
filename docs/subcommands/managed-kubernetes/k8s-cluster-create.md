@@ -38,6 +38,7 @@ You can wait for the Cluster to be in "ACTIVE" state using `--wait-for-state` fl
       --cols strings          Set of columns to be printed on output 
                               Available columns: [ClusterId Name K8sVersion State MaintenanceWindow AvailableUpgradeVersions ViableNodePoolVersions S3Bucket ApiSubnetAllowList] (default [ClusterId,Name,K8sVersion,State,MaintenanceWindow])
   -c, --config string         Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+  -D, --depth int             Controls the detail depth of the response objects. Max depth is 10.
   -f, --force                 Force command to execute without user input
   -h, --help                  Print usage
       --k8s-version string    The K8s version for the Cluster. If not set, the default one will be used
