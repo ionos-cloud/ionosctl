@@ -164,7 +164,14 @@ func TestRunPccList(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgVerbose, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		rm.CloudApiV6Mocks.Pcc.EXPECT().List(testListQueryParam).Return(pccs, &testResponse, nil)
+		pccParams := resources.ListQueryParams{
+			OrderBy:    &testQueryParamVar,
+			MaxResults: &testMaxResultsVar,
+			QueryParams: resources.QueryParams{
+				Depth: &testDepthListVar,
+			},
+		}
+		rm.CloudApiV6Mocks.Pcc.EXPECT().List(pccParams).Return(pccs, &testResponse, nil)
 		err := RunPccList(cfg)
 		assert.NoError(t, err)
 	})

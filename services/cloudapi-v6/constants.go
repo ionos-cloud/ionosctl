@@ -270,12 +270,12 @@ const (
 	DefaultServerCores     = 2
 	DefaultVolumeSize      = 10
 	DefaultNicLanId        = 1
-	DefaultMaxResults      = 500
+	DefaultMaxResults      = int32(500)
 	DefaultServerCPUFamily = "AMD_OPTERON"
-	DefaultListDepth       = int(1)
-	DefaultGetDepth        = int(0)
-	DefaultCreateDepth     = int(0)
-	DefaultUpdateDepth     = int(0)
-	DefaultDeleteDepth     = int(0)
-	DefaultMiscDepth       = int(0) // Attach, Detach (and similar); Server start/stop/suspend/etc.;
+	DefaultListDepth       = int32(1)
+	DefaultGetDepth        = int32(0)
+	DefaultCreateDepth     = int32(0)
+	DefaultUpdateDepth     = int32(0)
+	DefaultDeleteDepth     = int32(0)
+	DefaultMiscDepth       = int32(0) // Attach, Detach (and similar); Server start/stop/suspend/etc.;
 )

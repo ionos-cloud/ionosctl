@@ -81,20 +81,31 @@ var (
 			},
 		},
 	}
-	testListQueryParam = resources.ListQueryParams{
+	testListQueryParamFilters = resources.ListQueryParams{
 		Filters: &map[string]string{
 			testQueryParamVar: testQueryParamVar,
 		},
-		OrderBy:     &testQueryParamVar,
-		MaxResults:  &testMaxResultsVar,
-		QueryParams: testQueryParamOther,
+		OrderBy:    &testQueryParamVar,
+		MaxResults: &testMaxResultsVar,
+		QueryParams: resources.QueryParams{
+			Depth: &testDepthListVar,
+		},
+	}
+	testListQueryParam = resources.ListQueryParams{
+		OrderBy:    &testQueryParamVar,
+		MaxResults: &testMaxResultsVar,
+		QueryParams: resources.QueryParams{
+			Depth: &testDepthListVar,
+		},
 	}
 	testQueryParamOther = resources.QueryParams{
 		Depth: &testDepthOtherVar,
 	}
+	testDepthListVar     = int32(1)
 	testDepthOtherVar    = int32(0)
 	testQueryParamVar    = "test-filter"
-	testMaxResultsVar    = int32(2)
+	testMaxResultsVar    = cloudapiv6.DefaultMaxResults
+	testOrderByVar       = "" // default orderBy. Add to cloudapi constants?
 	testBackupUnitVar    = "test-backup-unit"
 	testBackUnitId       = "87aa25ec-5f74-4927-bd95-c8e42db06fe2"
 	testBackupUnitNewVar = "test-new-backup-unit"
