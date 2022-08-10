@@ -3,6 +3,7 @@ package completer
 import (
 	"bufio"
 	"bytes"
+	"fmt"
 	"os"
 	"regexp"
 	"testing"
@@ -36,6 +37,7 @@ func TestImagesIdsCustomCdrom(t *testing.T) {
 	err = w.Flush()
 	assert.NoError(t, err)
 	re := regexp.MustCompile(`401 Unauthorized`)
+	fmt.Println(re, b.String())
 	assert.True(t, re.Match(b.Bytes()))
 }
 

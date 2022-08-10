@@ -2,9 +2,10 @@ package commands
 
 import (
 	"fmt"
-	"github.com/ionos-cloud/ionosctl/commands/dataplatform"
 	"os"
 	"strings"
+
+	"github.com/ionos-cloud/ionosctl/commands/dataplatform"
 
 	authv1 "github.com/ionos-cloud/ionosctl/commands/auth-v1"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/commands/cloudapi-v6"

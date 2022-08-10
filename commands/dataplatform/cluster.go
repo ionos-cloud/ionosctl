@@ -113,10 +113,9 @@ Required values to run command:
 	})
 	create.AddStringFlag(dp.ArgName, dp.ArgNameShort, "", "The name of your cluster. Must be 63 characters or less and must be empty or begin and end with an alphanumeric character ([a-z0-9A-Z]) with dashes (-), underscores (_), dots (.), and alphanumerics between.", core.RequiredFlagOption())
 	create.AddStringFlag(dp.ArgVersion, dp.ArgVersionShort, "1.1.0", "The Data Platform version of your Cluster")
-	// ToDo: add completer for version when version service is created
-	//_ = create.Command.RegisterFlagCompletionFunc(dp.ArgVersion, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-	//	return completer.PostgresVersions(os.Stderr), cobra.ShellCompDirectiveNoFileComp
-	//})
+	_ = create.Command.RegisterFlagCompletionFunc(dp.ArgVersion, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.DataPlatformVersions(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+	})
 	create.AddStringFlag(dp.ArgMaintenanceTime, dp.ArgMaintenanceTimeShort, "", "Time at which the maintenance should start. The MaintenanceWindow is starting time of a weekly 4 hour-long window, during which maintenance might occur in hh:mm:ss format")
 	create.AddStringFlag(dp.ArgMaintenanceDay, dp.ArgMaintenanceDayShort, "", "Day Of the Week for the MaintenanceWindows. The MaintenanceWindow is starting time of a weekly 4 hour-long window, during which maintenance might occur in hh:mm:ss format")
 	_ = create.Command.RegisterFlagCompletionFunc(dp.ArgMaintenanceDay, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -153,11 +152,10 @@ Required values to run command:
 		return completer.ClustersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddStringFlag(dp.ArgName, dp.ArgNameShort, "", "The name of your cluster. Must be 63 characters or less and must be empty or begin and end with an alphanumeric character ([a-z0-9A-Z]) with dashes (-), underscores (_), dots (.), and alphanumerics between.")
-	update.AddStringFlag(dp.ArgVersion, dp.ArgVersionShort, "", "The Data Platform version of your cluster") // ToDo: add completer for version when version service is created
-	// ToDo: add completer for version when version service is created
-	//_ = update.Command.RegisterFlagCompletionFunc(dp.ArgVersion, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-	//	return completer.PostgresVersions(os.Stderr), cobra.ShellCompDirectiveNoFileComp
-	//})
+	update.AddStringFlag(dp.ArgVersion, dp.ArgVersionShort, "", "The Data Platform version of your cluster")
+	_ = update.Command.RegisterFlagCompletionFunc(dp.ArgVersion, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.DataPlatformVersions(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+	})
 	update.AddStringFlag(dp.ArgMaintenanceTime, dp.ArgMaintenanceTimeShort, "", "Time at which the maintenance should start. The MaintenanceWindow is starting time of a weekly 4 hour-long window, during which maintenance might occur in hh:mm:ss format")
 	update.AddStringFlag(dp.ArgMaintenanceDay, dp.ArgMaintenanceDayShort, "", "Day Of the Week for the MaintenanceWindows. The MaintenanceWindow is starting time of a weekly 4 hour-long window, during which maintenance might occur in hh:mm:ss format")
 	_ = create.Command.RegisterFlagCompletionFunc(dp.ArgMaintenanceDay, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -229,8 +227,10 @@ func PreRunClusterCreate(c *core.PreCommandConfig) error {
 		return err
 	}
 	// Validate Flags
-	if len(viper.GetString(core.GetFlagName(c.NS, dp.ArgVersion))) > 32 {
-		return errors.New("version string has to have a maximum of 32 characters")
+	if viper.IsSet(core.GetFlagName(c.NS, dp.ArgVersion)) {
+		if len(viper.GetString(core.GetFlagName(c.NS, dp.ArgVersion))) > 32 {
+			return errors.New("version string has to have a maximum of 32 characters")
+		}
 	}
 	if len(viper.GetString(core.GetFlagName(c.NS, dp.ArgName))) > 63 {
 		return errors.New("name string has to have a maximum of 63 characters")

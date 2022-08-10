@@ -4,6 +4,10 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
+	"os"
+	"regexp"
+	"testing"
+
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
@@ -12,9 +16,6 @@ import (
 	sdkgo "github.com/ionos-cloud/sdk-go-autoscaling"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
-	"os"
-	"regexp"
-	"testing"
 )
 
 var (

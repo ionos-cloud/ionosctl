@@ -29,24 +29,43 @@ func ClustersIds(outErr io.Writer) []string {
 	return ids
 }
 
-//func DataPlatformVersions(outErr io.Writer) []string {
-//	client, err := getDataPlatformClient()
-//	clierror.CheckError(err, outErr)
-//	versionsService := resources.NewVersionsService(client, context.TODO())
-//	versionList, _, err := versionsService.List()
-//	clierror.CheckError(err, outErr)
-//	versions := make([]string, 0)
-//	if dataOk, ok := versionList.GetDataOk(); ok && dataOk != nil {
-//		for _, item := range *dataOk {
-//			if nameOk, ok := item.GetNameOk(); ok && nameOk != nil {
-//				versions = append(versions, *nameOk)
-//			}
-//		}
-//	} else {
-//		return nil
-//	}
-//	return versions
-//}
+func NodePoolsIds(outErr io.Writer, clusterId string) []string {
+	client, err := getDataPlatformClient()
+	clierror.CheckError(err, outErr)
+	nodePoolsService := resources.NewNodePoolsService(client, context.TODO())
+	nodePoolsList, _, err := nodePoolsService.List(clusterId)
+	clierror.CheckError(err, outErr)
+	ids := make([]string, 0)
+	if dataOk, ok := nodePoolsList.NodePoolListResponseData.GetItemsOk(); ok && dataOk != nil {
+		for _, item := range *dataOk {
+			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
+				ids = append(ids, *itemId)
+			}
+		}
+	} else {
+		return nil
+	}
+	return ids
+}
+
+func DataPlatformVersions(outErr io.Writer) []string {
+	client, err := getDataPlatformClient()
+	clierror.CheckError(err, outErr)
+	versionsService := resources.NewVersionsService(client, context.TODO())
+	versionsList, _, err := versionsService.List()
+	clierror.CheckError(err, outErr)
+	versions := make([]string, 0)
+	if len(versionsList) > 0 {
+		for _, item := range versionsList {
+
+			versions = append(versions, item)
+
+		}
+	} else {
+		return nil
+	}
+	return versions
+}
 
 // Get Client for Completion Functions
 func getDataPlatformClient() (*resources.Client, error) {

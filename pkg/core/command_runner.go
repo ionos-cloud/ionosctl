@@ -3,9 +3,10 @@ package core
 import (
 	"bytes"
 	"context"
-	"github.com/ionos-cloud/ionosctl/services/dataplatform"
 	"io"
 	"os"
+
+	"github.com/ionos-cloud/ionosctl/services/dataplatform"
 
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/printer"

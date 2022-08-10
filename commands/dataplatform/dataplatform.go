@@ -16,5 +16,8 @@ func DataPlatformServiceCmd() *core.Command {
 		},
 	}
 	dataPlatformCmd.AddCommand(ClusterCmd())
+	dataPlatformCmd.AddCommand(NodePoolCmd())
+	dataPlatformCmd.AddCommand(VersionsCmd())
+	dataPlatformCmd.AddCommand(KubeConfigCmd())
 	return dataPlatformCmd
 }

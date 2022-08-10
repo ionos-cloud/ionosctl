@@ -1,58 +1,54 @@
 package dataplatform
 
 const (
-	ArgIdShort              = "i"
-	ArgClusterId            = "cluster-id"
-	ArgStartTime            = "start-time"
-	ArgStartTimeShort       = "s"
-	ArgEndTime              = "end-time"
-	ArgEndTimeShort         = "e"
-	ArgSince                = "since"
-	ArgSinceShort           = "S"
-	ArgUntil                = "until"
-	ArgUntilShort           = "U"
-	ArgLimit                = "limit"
-	ArgLimitShort           = "l"
-	ArgDirection            = "direction"
-	ArgDirectionShort       = "D"
-	ArgVersion              = "version"
-	ArgVersionShort         = "V"
-	ArgBackupLocation       = "backup-location"
-	ArgBackupLocationShort  = "B"
-	ArgInstances            = "instances"
-	ArgInstancesShort       = "I"
-	ArgSyncMode             = "sync"
-	ArgSyncModeShort        = "S"
-	ArgCores                = "cores"
-	ArgRam                  = "ram"
-	ArgStorageSize          = "storage-size"
-	ArgStorageType          = "storage-type"
-	ArgDatacenterId         = "datacenter-id"
-	ArgDatacenterIdShort    = "D"
-	ArgBackupId             = "backup-id"
-	ArgBackupIdShort        = "b"
-	ArgRecoveryTime         = "recovery-time"
-	ArgRecoveryTimeShort    = "R"
-	ArgCidr                 = "cidr"
-	ArgCidrShort            = "C"
-	ArgLanId                = "lan-id"
-	ArgLanIdShort           = "L"
-	ArgLocation             = "location-id"
-	ArgName                 = "name"
-	ArgNameShort            = "n"
-	ArgDbUsername           = "db-username"
-	ArgDbUsernameShort      = "U"
-	ArgDbPassword           = "db-password"
-	ArgDbPasswordShort      = "P"
-	ArgMaintenanceTime      = "maintenance-time"
-	ArgMaintenanceTimeShort = "T"
-	ArgMaintenanceDay       = "maintenance-day"
-	ArgMaintenanceDayShort  = "d"
-	ArgRemoveConnection     = "remove-connection"
+	ArgIdShort               = "i"
+	ArgClusterId             = "cluster-id"
+	ArgNodePoolId            = "nodepool-id"
+	ArgCpuFamily             = "cpu-family"
+	ArgAvailabilityZone      = "availability-zone"
+	ArgAvailabilityZoneShort = "z"
+	ArgLabels                = "labels"
+	ArgLabelsShort           = "L"
+	ArgAnnotations           = "annotations"
+	ArgAnnotationsShort      = "A"
+	ArgVersion               = "version"
+	ArgVersionShort          = "V"
+	ArgCores                 = "cores"
+	ArgRam                   = "ram"
+	ArgStorageSize           = "storage-size"
+	ArgStorageType           = "storage-type"
+	ArgDatacenterId          = "datacenter-id"
+	ArgDatacenterIdShort     = "D"
+	ArgName                  = "name"
+	ArgNameShort             = "n"
+	ArgNodeCount             = "node-count"
+	ArgMaintenanceTime       = "maintenance-time"
+	ArgMaintenanceTimeShort  = "T"
+	ArgMaintenanceDay        = "maintenance-day"
+	ArgMaintenanceDayShort   = "d"
 )
 
 const (
 	ClusterId             = "The unique ID of the Cluster"
+	NodePoolId            = "The unique ID of the Node Pool"
 	BackupId              = "The unique ID of the Backup"
 	DefaultClusterTimeout = int(1200)
+)
+
+// Default values
+const (
+	DefaultOutputFormat    = "text"
+	DefaultWait            = false
+	DefaultPublic          = false
+	DefaultDhcp            = true
+	DefaultFirewallActive  = false
+	DefaultTimeoutSeconds  = int(60)
+	NlbTimeoutSeconds      = int(300)
+	LbTimeoutSeconds       = int(300)
+	AlbTimeoutSeconds      = int(10000)
+	TimeoutSeconds         = int(600)
+	DefaultServerCores     = 2
+	DefaultVolumeSize      = 10
+	DefaultNicLanId        = 1
+	DefaultServerCPUFamily = "AUTO"
 )

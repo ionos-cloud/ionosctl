@@ -4,10 +4,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"os"
+
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/query"
 	"go.uber.org/multierr"
-	"os"
 
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/waiter"

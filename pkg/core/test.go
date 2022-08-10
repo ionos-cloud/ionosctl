@@ -2,9 +2,10 @@ package core
 
 import (
 	"context"
-	"github.com/ionos-cloud/ionosctl/services/dataplatform"
 	"io"
 	"testing"
+
+	"github.com/ionos-cloud/ionosctl/services/dataplatform"
 
 	"github.com/golang/mock/gomock"
 	"github.com/ionos-cloud/ionosctl/pkg/config"

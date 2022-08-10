@@ -5,9 +5,10 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 	"os"
 	"testing"
+
+	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"

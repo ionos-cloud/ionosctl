@@ -10,7 +10,9 @@ import (
 
 type Services struct {
 	// Data Platform Resources Services
-	Clusters func() resources.ClustersService
+	Clusters  func() resources.ClustersService
+	NodePools func() resources.NodePoolsService
+	Versions  func() resources.VersionsService
 	// Context
 	Context context.Context
 }
@@ -32,5 +34,7 @@ func (c *Services) InitClient() (*resources.Client, error) {
 // InitServices for Commands
 func (c *Services) InitServices(client *resources.Client) error {
 	c.Clusters = func() resources.ClustersService { return resources.NewClustersService(client, c.Context) }
+	c.NodePools = func() resources.NodePoolsService { return resources.NewNodePoolsService(client, c.Context) }
+	c.Versions = func() resources.VersionsService { return resources.NewVersionsService(client, c.Context) }
 	return nil
 }

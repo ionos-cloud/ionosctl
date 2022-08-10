@@ -2,6 +2,7 @@ package resources
 
 import (
 	"context"
+
 	dp "github.com/ionos-cloud/sdk-go-autoscaling"
 )
 
