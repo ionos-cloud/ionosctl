@@ -56,7 +56,7 @@ func IpconsumerCmd() *core.Command {
 		return completer.IpBlocksIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	listResources.AddBoolFlag(config.ArgNoHeaders, "", false, cloudapiv6.ArgNoHeadersDescription)
-	listResources.AddIntFlag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, config.DefaultListDepth, cloudapiv6.ArgDepthDescription)
+	listResources.AddIntFlag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultListDepth, cloudapiv6.ArgDepthDescription)
 
 	return resourceCmd
 }
