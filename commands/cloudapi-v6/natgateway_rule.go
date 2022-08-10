@@ -466,7 +466,7 @@ func DeleteAllNatgatewayRules(c *core.CommandConfig) error {
 	c.Printer.Verbose("Datacenter ID: %v", dcId)
 	c.Printer.Verbose("NatGateway ID: %v", natGatewayId)
 	c.Printer.Verbose("Getting NatGateway Rules...")
-	natGatewayRules, resp, err := c.CloudApiV6Services.NatGateways().ListRules(dcId, natGatewayId, resources.ListQueryParams{})
+	natGatewayRules, resp, err := c.CloudApiV6Services.NatGateways().ListRules(dcId, natGatewayId, cloudapiv6.ParentResourceListQueryParams)
 	if err != nil {
 		return err
 	}

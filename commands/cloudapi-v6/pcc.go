@@ -346,7 +346,7 @@ func DeleteAllPccs(c *core.CommandConfig) error {
 	}
 	queryParams := listQueryParams.QueryParams
 	c.Printer.Verbose("Getting PrivateCrossConnects...")
-	pccs, resp, err := c.CloudApiV6Services.Pccs().List(resources.ListQueryParams{})
+	pccs, resp, err := c.CloudApiV6Services.Pccs().List(cloudapiv6.ParentResourceListQueryParams)
 	if err != nil {
 		return err
 	}

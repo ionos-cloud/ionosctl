@@ -483,7 +483,7 @@ func DeleteAllSnapshots(c *core.CommandConfig) error {
 	}
 	queryParams := listQueryParams.QueryParams
 	c.Printer.Verbose("Getting Snapshots...")
-	snapshots, resp, err := c.CloudApiV6Services.Snapshots().List(resources.ListQueryParams{})
+	snapshots, resp, err := c.CloudApiV6Services.Snapshots().List(cloudapiv6.ParentResourceListQueryParams)
 	if err != nil {
 		return err
 	}

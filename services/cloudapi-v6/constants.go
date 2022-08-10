@@ -1,5 +1,7 @@
 package cloudapi_v6
 
+import "github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
+
 // Resources
 const (
 	DatacenterResource = "datacenter"
@@ -278,4 +280,12 @@ const (
 	DefaultUpdateDepth     = int32(0)
 	DefaultDeleteDepth     = int32(0)
 	DefaultMiscDepth       = int32(0) // Attach, Detach (and similar); Server start/stop/suspend/etc.;
+)
+
+// Utils
+var (
+	// Specifies depth when listing on parent resource for ListAll, DetachAll, DeleteAll, etc.
+	ParentResourceListDepth       = int32(0)
+	ParentResourceQueryParams     = resources.QueryParams{Depth: &ParentResourceListDepth}
+	ParentResourceListQueryParams = resources.ListQueryParams{QueryParams: ParentResourceQueryParams}
 )

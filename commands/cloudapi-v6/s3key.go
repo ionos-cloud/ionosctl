@@ -331,7 +331,7 @@ func DeleteAllS3keys(c *core.CommandConfig) error {
 	userId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserId))
 	c.Printer.Verbose("User ID: %v", userId)
 	c.Printer.Verbose("Getting S3 Keys...")
-	s3Keys, resp, err := c.CloudApiV6Services.S3Keys().List(userId, listQueryParams)
+	s3Keys, resp, err := c.CloudApiV6Services.S3Keys().List(userId, cloudapiv6.ParentResourceListQueryParams)
 	if err != nil {
 		return err
 	}

@@ -317,7 +317,7 @@ func RemoveAllNlbRuleTarget(c *core.CommandConfig) error {
 	c.Printer.Verbose("NetworkLoadBalancer ID: %v", nlbId)
 	c.Printer.Verbose("NetworkLoadBalancerForwardingRule ID: %v", ruleId)
 	c.Printer.Verbose("Getting NetworkLoadBalancerForwardingRule...")
-	forwardingRule, resp, err := c.CloudApiV6Services.NetworkLoadBalancers().GetForwardingRule(dcId, nlbId, ruleId, queryParams)
+	forwardingRule, resp, err := c.CloudApiV6Services.NetworkLoadBalancers().GetForwardingRule(dcId, nlbId, ruleId, cloudapiv6.ParentResourceQueryParams)
 	if err != nil {
 		return err
 	}

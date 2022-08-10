@@ -564,7 +564,7 @@ func RunServerListAll(c *core.CommandConfig) error {
 		}
 	}
 	// Don't apply listQueryParams to parent resource, as it would have unexpected side effects on the results
-	datacenters, _, err := c.CloudApiV6Services.DataCenters().List(resources.ListQueryParams{})
+	datacenters, _, err := c.CloudApiV6Services.DataCenters().List(cloudapiv6.ParentResourceListQueryParams)
 	if err != nil {
 		return err
 	}
@@ -1058,7 +1058,7 @@ func DeleteAllServers(c *core.CommandConfig) error {
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	c.Printer.Verbose("Datacenter ID: %v", dcId)
 	c.Printer.Verbose("Getting Servers...")
-	servers, resp, err := c.CloudApiV6Services.Servers().List(dcId, resources.ListQueryParams{})
+	servers, resp, err := c.CloudApiV6Services.Servers().List(dcId, cloudapiv6.ParentResourceListQueryParams)
 	if err != nil {
 		return err
 	}

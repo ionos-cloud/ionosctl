@@ -514,7 +514,7 @@ func DeleteAllGroups(c *core.CommandConfig) error {
 	}
 	queryParams := listQueryParams.QueryParams
 	c.Printer.Verbose("Getting Groups...")
-	groups, resp, err := c.CloudApiV6Services.Groups().List(resources.ListQueryParams{})
+	groups, resp, err := c.CloudApiV6Services.Groups().List(cloudapiv6.ParentResourceListQueryParams)
 	if err != nil {
 		return err
 	}

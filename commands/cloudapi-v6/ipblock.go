@@ -318,7 +318,7 @@ func DeleteAllIpBlocks(c *core.CommandConfig) error {
 	}
 	queryParams := listQueryParams.QueryParams
 	c.Printer.Verbose("Getting all IpBlocks...")
-	ipBlocks, resp, err := c.CloudApiV6Services.IpBlocks().List(resources.ListQueryParams{})
+	ipBlocks, resp, err := c.CloudApiV6Services.IpBlocks().List(cloudapiv6.ParentResourceListQueryParams)
 	if err != nil {
 		return err
 	}

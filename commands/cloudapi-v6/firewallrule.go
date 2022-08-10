@@ -542,7 +542,7 @@ func DeleteAllFirewallRuses(c *core.CommandConfig) error {
 	c.Printer.Verbose("Server ID: %v", serverId)
 	c.Printer.Verbose("NIC with ID: %v", nicId)
 	c.Printer.Verbose("Getting Firewall Rules...")
-	firewallRules, resp, err := c.CloudApiV6Services.FirewallRules().List(datacenterId, serverId, nicId, resources.ListQueryParams{})
+	firewallRules, resp, err := c.CloudApiV6Services.FirewallRules().List(datacenterId, serverId, nicId, cloudapiv6.ParentResourceListQueryParams)
 	if err != nil {
 		return err
 	}

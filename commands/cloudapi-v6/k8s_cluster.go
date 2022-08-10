@@ -472,7 +472,7 @@ func DeleteAllK8sClusters(c *core.CommandConfig) error {
 	}
 	queryParams := listQueryParams.QueryParams
 	c.Printer.Verbose("Getting K8sClusters...")
-	k8Clusters, resp, err := c.CloudApiV6Services.K8s().ListClusters(resources.ListQueryParams{})
+	k8Clusters, resp, err := c.CloudApiV6Services.K8s().ListClusters(cloudapiv6.ParentResourceListQueryParams)
 	if err != nil {
 		return err
 	}

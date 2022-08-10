@@ -243,7 +243,7 @@ func RunLanListAll(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	datacenters, _, err := c.CloudApiV6Services.DataCenters().List(listQueryParams)
+	datacenters, _, err := c.CloudApiV6Services.DataCenters().List(cloudapiv6.ParentResourceListQueryParams)
 	if err != nil {
 		return err
 	}
@@ -436,7 +436,7 @@ func DeleteAllLans(c *core.CommandConfig) error {
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	c.Printer.Verbose("Datacenter ID: %v", dcId)
 	c.Printer.Verbose("Getting Lans...")
-	lans, resp, err := c.CloudApiV6Services.Lans().List(dcId, resources.ListQueryParams{})
+	lans, resp, err := c.CloudApiV6Services.Lans().List(dcId, cloudapiv6.ParentResourceListQueryParams)
 	if err != nil {
 		return err
 	}

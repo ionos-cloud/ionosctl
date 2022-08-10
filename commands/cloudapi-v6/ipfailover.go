@@ -306,7 +306,7 @@ func RemoveAllIpFailovers(c *core.CommandConfig) error {
 	c.Printer.Verbose("Datacenter ID: %v", dcId)
 	c.Printer.Verbose("Lan ID: %v", lanId)
 	c.Printer.Verbose("Removing IP Failovers...")
-	ipFailovers, resp, err := c.CloudApiV6Services.Lans().List(dcId, resources.ListQueryParams{})
+	ipFailovers, resp, err := c.CloudApiV6Services.Lans().List(dcId, cloudapiv6.ParentResourceListQueryParams)
 	if err != nil {
 		return err
 	}

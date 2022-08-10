@@ -245,7 +245,7 @@ func RunApplicationLoadBalancerListAll(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	datacenters, _, err := c.CloudApiV6Services.DataCenters().List(resources.ListQueryParams{})
+	datacenters, _, err := c.CloudApiV6Services.DataCenters().List(cloudapiv6.ParentResourceListQueryParams)
 	if err != nil {
 		return err
 	}
@@ -426,7 +426,7 @@ func DeleteAllApplicationLoadBalancer(c *core.CommandConfig) error {
 	}
 	queryParams := listQueryParams.QueryParams
 	_ = c.Printer.Print("Getting Application Load Balancers...")
-	applicationLoadBalancers, resp, err := c.CloudApiV6Services.ApplicationLoadBalancers().List(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)), resources.ListQueryParams{})
+	applicationLoadBalancers, resp, err := c.CloudApiV6Services.ApplicationLoadBalancers().List(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)), cloudapiv6.ParentResourceListQueryParams)
 	if err != nil {
 		return err
 	}

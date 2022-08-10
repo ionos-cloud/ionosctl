@@ -425,7 +425,7 @@ func DeleteAllNatGatewayFlowLogs(c *core.CommandConfig) error {
 	c.Printer.Verbose("Datacenter ID: %v", dcId)
 	c.Printer.Verbose("NatGateway ID: %v", natgatewayId)
 	c.Printer.Verbose("Getting NatGatewayFlowLogs...")
-	flowlogs, resp, err := c.CloudApiV6Services.NatGateways().ListFlowLogs(dcId, natgatewayId, resources.ListQueryParams{})
+	flowlogs, resp, err := c.CloudApiV6Services.NatGateways().ListFlowLogs(dcId, natgatewayId, cloudapiv6.ParentResourceListQueryParams)
 	if err != nil {
 		return err
 	}

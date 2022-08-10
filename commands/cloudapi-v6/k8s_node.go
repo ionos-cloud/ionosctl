@@ -332,7 +332,7 @@ func DeleteAllK8sNodes(c *core.CommandConfig) error {
 	c.Printer.Verbose("K8sCluster ID: %v", clusterId)
 	c.Printer.Verbose("K8sNodePool ID: %v", nodepoolId)
 	c.Printer.Verbose("Getting K8sNodes...")
-	k8sNodes, resp, err := c.CloudApiV6Services.K8s().ListNodes(clusterId, nodepoolId, resources.ListQueryParams{})
+	k8sNodes, resp, err := c.CloudApiV6Services.K8s().ListNodes(clusterId, nodepoolId, cloudapiv6.ParentResourceListQueryParams)
 	if err != nil {
 		return err
 	}

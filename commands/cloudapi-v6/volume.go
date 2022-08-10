@@ -305,7 +305,7 @@ func RunVolumeListAll(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	datacenters, _, err := c.CloudApiV6Services.DataCenters().List(resources.ListQueryParams{})
+	datacenters, _, err := c.CloudApiV6Services.DataCenters().List(cloudapiv6.ParentResourceListQueryParams)
 	if err != nil {
 		return err
 	}
@@ -630,7 +630,7 @@ func DeleteAllVolumes(c *core.CommandConfig) error {
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	c.Printer.Verbose("Datacenter ID: %v", dcId)
 	c.Printer.Verbose("Getting Volumes...")
-	volumes, resp, err := c.CloudApiV6Services.Volumes().List(dcId, resources.ListQueryParams{})
+	volumes, resp, err := c.CloudApiV6Services.Volumes().List(dcId, cloudapiv6.ParentResourceListQueryParams)
 	if err != nil {
 		return err
 	}
@@ -1004,7 +1004,7 @@ func DetachAllServerVolumes(c *core.CommandConfig) error {
 	c.Printer.Verbose("Datacenter ID: %v", dcId)
 	c.Printer.Verbose("Server ID: %v", serverId)
 	c.Printer.Verbose("Getting Volumes...")
-	volumes, resp, err := c.CloudApiV6Services.Servers().ListVolumes(dcId, serverId, resources.ListQueryParams{})
+	volumes, resp, err := c.CloudApiV6Services.Servers().ListVolumes(dcId, serverId, cloudapiv6.ParentResourceListQueryParams)
 	if err != nil {
 		return err
 	}

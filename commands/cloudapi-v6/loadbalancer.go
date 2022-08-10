@@ -239,7 +239,7 @@ func RunLoadBalancerListAll(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	datacenters, _, err := c.CloudApiV6Services.DataCenters().List(resources.ListQueryParams{})
+	datacenters, _, err := c.CloudApiV6Services.DataCenters().List(cloudapiv6.ParentResourceListQueryParams)
 	if err != nil {
 		return err
 	}
@@ -408,7 +408,7 @@ func DeleteAllLoadBalancers(c *core.CommandConfig) error {
 	dcid := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	c.Printer.Verbose("Datacenter ID: %v", dcid)
 	c.Printer.Verbose("Getting LoadBalancers...")
-	loadBalancers, resp, err := c.CloudApiV6Services.Loadbalancers().List(dcid, resources.ListQueryParams{})
+	loadBalancers, resp, err := c.CloudApiV6Services.Loadbalancers().List(dcid, cloudapiv6.ParentResourceListQueryParams)
 	if err != nil {
 		return err
 	}

@@ -418,7 +418,7 @@ func DeleteAllFlowlogs(c *core.CommandConfig) error {
 	c.Printer.Verbose("Server ID: %v", serverId)
 	c.Printer.Verbose("NIC ID: %v", nicId)
 	c.Printer.Verbose("Getting Flowlogs...")
-	flowlogs, resp, err := c.CloudApiV6Services.FlowLogs().List(dcId, serverId, nicId, resources.ListQueryParams{})
+	flowlogs, resp, err := c.CloudApiV6Services.FlowLogs().List(dcId, serverId, nicId, cloudapiv6.ParentResourceListQueryParams)
 	if err != nil {
 		return err
 	}

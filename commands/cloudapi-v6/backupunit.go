@@ -389,7 +389,7 @@ func DeleteAllBackupUnits(c *core.CommandConfig) error {
 	}
 	queryParams := listQueryParams.QueryParams
 	c.Printer.Verbose("Getting Backup Units...")
-	backupUnits, resp, err := c.CloudApiV6Services.BackupUnit().List(resources.ListQueryParams{})
+	backupUnits, resp, err := c.CloudApiV6Services.BackupUnit().List(cloudapiv6.ParentResourceListQueryParams)
 	if err != nil {
 		return err
 	}

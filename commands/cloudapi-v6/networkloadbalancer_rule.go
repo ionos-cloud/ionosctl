@@ -483,7 +483,7 @@ func DeleteAllNetworkLoadBalancerForwardingRules(c *core.CommandConfig) error {
 	c.Printer.Verbose("Datacenter ID: %v", dcId)
 	c.Printer.Verbose("NetworkLoadBalancer ID: %v", loadBalancerId)
 	c.Printer.Verbose("Getting NetworkLoadBalancerForwardingRules...")
-	nlbForwardingRules, resp, err := c.CloudApiV6Services.NetworkLoadBalancers().ListForwardingRules(dcId, loadBalancerId, resources.ListQueryParams{})
+	nlbForwardingRules, resp, err := c.CloudApiV6Services.NetworkLoadBalancers().ListForwardingRules(dcId, loadBalancerId, cloudapiv6.ParentResourceListQueryParams)
 	if err != nil {
 		return err
 	}

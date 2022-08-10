@@ -262,7 +262,7 @@ func RemoveAllNatGatewayLans(c *core.CommandConfig) error {
 	c.Printer.Verbose("Datacenter ID: %v", dcId)
 	c.Printer.Verbose("NatGateway ID: %v", natGatewayId)
 	c.Printer.Verbose("Getting NatGateway...")
-	natGateway, resp, err := c.CloudApiV6Services.NatGateways().Get(dcId, natGatewayId, queryParams)
+	natGateway, resp, err := c.CloudApiV6Services.NatGateways().Get(dcId, natGatewayId, cloudapiv6.ParentResourceQueryParams)
 	if err != nil {
 		return err
 	}

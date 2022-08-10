@@ -459,7 +459,7 @@ func DeleteAllNics(c *core.CommandConfig) error {
 	c.Printer.Verbose("Datacenter ID: %v", dcId)
 	c.Printer.Verbose("Server ID: %v", serverId)
 	c.Printer.Verbose("Getting NICs...")
-	nics, resp, err := c.CloudApiV6Services.Nics().List(dcId, serverId, resources.ListQueryParams{})
+	nics, resp, err := c.CloudApiV6Services.Nics().List(dcId, serverId, cloudapiv6.ParentResourceListQueryParams)
 	if err != nil {
 		return err
 	}
@@ -809,7 +809,7 @@ func DetachAllNics(c *core.CommandConfig) error {
 	c.Printer.Verbose("Datacenter ID: %v", dcId)
 	c.Printer.Verbose("LoadBalancer ID: %v", lbId)
 	c.Printer.Verbose("Getting NICs...")
-	nics, resp, err := c.CloudApiV6Services.Loadbalancers().ListNics(dcId, lbId, resources.ListQueryParams{})
+	nics, resp, err := c.CloudApiV6Services.Loadbalancers().ListNics(dcId, lbId, cloudapiv6.ParentResourceListQueryParams)
 	if err != nil {
 		return err
 	}

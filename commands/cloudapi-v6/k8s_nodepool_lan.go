@@ -247,7 +247,7 @@ func RemoveAllK8sNodePoolsLans(c *core.CommandConfig) error {
 	c.Printer.Verbose("K8sCluster ID: %v", clusterId)
 	c.Printer.Verbose("K8sNodePool ID: %v", nodePoolId)
 	c.Printer.Verbose("Getting K8sNodePool Lans...")
-	k8sNodepool, resp, err := c.CloudApiV6Services.K8s().GetNodePool(clusterId, nodePoolId, queryParams)
+	k8sNodepool, resp, err := c.CloudApiV6Services.K8s().GetNodePool(clusterId, nodePoolId, cloudapiv6.ParentResourceQueryParams)
 	if err != nil {
 		return err
 	}

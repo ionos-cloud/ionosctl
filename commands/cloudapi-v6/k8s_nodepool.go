@@ -310,7 +310,7 @@ func RunK8sNodePoolListAll(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	clusters, _, err := c.CloudApiV6Services.K8s().ListClusters(resources.ListQueryParams{})
+	clusters, _, err := c.CloudApiV6Services.K8s().ListClusters(cloudapiv6.ParentResourceListQueryParams)
 	if err != nil {
 		return err
 	}
@@ -687,7 +687,7 @@ func DeleteAllK8sNodepools(c *core.CommandConfig) error {
 	k8sClusterId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sClusterId))
 	c.Printer.Verbose("K8sCluster ID: %v", k8sClusterId)
 	c.Printer.Verbose("Getting K8sNodePools...")
-	k8sNodePools, resp, err := c.CloudApiV6Services.K8s().ListNodePools(k8sClusterId, resources.ListQueryParams{})
+	k8sNodePools, resp, err := c.CloudApiV6Services.K8s().ListNodePools(k8sClusterId, cloudapiv6.ParentResourceListQueryParams)
 	if err != nil {
 		return err
 	}

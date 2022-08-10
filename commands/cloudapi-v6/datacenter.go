@@ -329,7 +329,7 @@ func RunDataCenterDelete(c *core.CommandConfig) error {
 
 func DeleteAllDatacenters(c *core.CommandConfig) error {
 	c.Printer.Verbose("Getting Datacenters...")
-	datacenters, resp, err := c.CloudApiV6Services.DataCenters().List(resources.ListQueryParams{})
+	datacenters, resp, err := c.CloudApiV6Services.DataCenters().List(cloudapiv6.ParentResourceListQueryParams)
 	if err != nil {
 		return err
 	}

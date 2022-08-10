@@ -424,7 +424,7 @@ func DeleteAllNetworkLoadBalancerFlowLogs(c *core.CommandConfig) error {
 	c.Printer.Verbose("Datacenter ID: %v", dcId)
 	c.Printer.Verbose("NetworkLoadBalancer ID: %v", networkLoadBalancerId)
 	c.Printer.Verbose("Getting NetworkLoadBalancerFlowLogs...")
-	flowLogs, resp, err := c.CloudApiV6Services.NetworkLoadBalancers().ListFlowLogs(dcId, networkLoadBalancerId, resources.ListQueryParams{})
+	flowLogs, resp, err := c.CloudApiV6Services.NetworkLoadBalancers().ListFlowLogs(dcId, networkLoadBalancerId, cloudapiv6.ParentResourceListQueryParams)
 	if err != nil {
 		return err
 	}
