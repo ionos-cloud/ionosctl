@@ -45,7 +45,7 @@ Available Filters:
   -f, --force             Force command to execute without user input
   -h, --help              Print usage
       --latest int        Show latest N Requests. If it is not set, all Requests will be printed (deprecated)
-  -M, --max-results int   The maximum number of elements to return
+  -M, --max-results int   The maximum number of elements to return (default 500)
       --method string     Show only the Requests with this method. E.g CREATE, UPDATE, DELETE (deprecated)
       --no-headers        When using text output, don't print headers
       --order-by string   Limits results to those containing a matching value for a specific property
