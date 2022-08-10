@@ -1,0 +1,3 @@
+<component name="DependencyValidationManager">
+  <scope name="exclude-test-files" pattern="!file:*_test.go" />
+</component>

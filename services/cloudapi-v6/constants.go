@@ -270,5 +270,6 @@ const (
 	DefaultServerCores     = 2
 	DefaultVolumeSize      = 10
 	DefaultNicLanId        = 1
+	DefaultMaxResults      = 500
 	DefaultServerCPUFamily = "AMD_OPTERON"
 )

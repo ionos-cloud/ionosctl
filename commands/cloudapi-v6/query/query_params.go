@@ -59,23 +59,17 @@ func GetListQueryParams(c *core.CommandConfig) (resources.ListQueryParams, error
 			listQueryParams = listQueryParams.SetFilters(filters)
 		}
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgOrderBy)) {
-		orderBy := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgOrderBy))
-		listQueryParams = listQueryParams.SetOrderBy(orderBy)
-	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgMaxResults)) {
-		maxResults := viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgMaxResults))
-		listQueryParams = listQueryParams.SetMaxResults(maxResults)
-	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgDepth)) {
-		depth := viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgDepth))
-		listQueryParams = listQueryParams.SetDepth(depth)
-	}
+	orderBy := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgOrderBy))
+	listQueryParams = listQueryParams.SetOrderBy(orderBy)
+
+	maxResults := viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgMaxResults))
+	listQueryParams = listQueryParams.SetMaxResults(maxResults)
+
+	depth := viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgDepth))
+	listQueryParams = listQueryParams.SetDepth(depth)
 	// Uncomment this when support for Pretty param is added
-	//if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgPretty)) {
 	//	pretty := viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgPretty))
 	//	queryParams = queryParams.SetPretty(pretty)
-	//}
 
 	if !structs.IsZero(listQueryParams) || !structs.IsZero(listQueryParams.QueryParams) {
 		c.Printer.Verbose("Query Parameters set: %v, %v", utils.GetPropertiesKVSet(listQueryParams), utils.GetPropertiesKVSet(listQueryParams.QueryParams))
