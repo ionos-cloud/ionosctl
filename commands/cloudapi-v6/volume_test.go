@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/golang/mock/gomock"
+	"io"
 	"os"
 	"regexp"
 	"testing"
@@ -997,293 +998,290 @@ func TestRunServerVolumesListErr(t *testing.T) {
 	})
 }
 
-func TestRunServerVolumeGet(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
-		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgQuiet, false)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgVolumeId), testServerVar)
-		rm.CloudApiV6Mocks.Server.EXPECT().GetVolume(testServerVar, testServerVar, testServerVar, testQueryParamOther).Return(&resources.Volume{Volume: v}, nil, nil)
-		err := RunServerVolumeGet(cfg)
-		assert.NoError(t, err)
-	})
-}
-
-func TestRunServerVolumeGetErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
-		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgQuiet, false)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgVolumeId), testServerVar)
-		rm.CloudApiV6Mocks.Server.EXPECT().GetVolume(testServerVar, testServerVar, testServerVar, testQueryParamOther).Return(&resources.Volume{Volume: v}, nil, testVolumeErr)
-		err := RunServerVolumeGet(cfg)
-		assert.Error(t, err)
-	})
-}
-
-func TestRunServerVolumeDetach(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
-		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgQuiet, false)
-		viper.Set(config.ArgForce, true)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgVolumeId), testServerVar)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
-		rm.CloudApiV6Mocks.Server.EXPECT().DetachVolume(testServerVar, testServerVar, testServerVar, testQueryParamOther).Return(nil, nil)
-		err := RunServerVolumeDetach(cfg)
-		assert.NoError(t, err)
-	})
-}
-
-func TestRunServerVolumeDetachAll(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
-		viper.Reset()
-		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgQuiet, false)
-		viper.Set(config.ArgForce, true)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
-		rm.CloudApiV6Mocks.Server.EXPECT().ListVolumes(testServerVar, testServerVar, testListQueryParam).Return(vsAttachedList, nil, nil)
-		rm.CloudApiV6Mocks.Server.EXPECT().DetachVolume(testServerVar, testServerVar, testServerVar, testQueryParamOther).Return(&testResponse, nil)
-		rm.CloudApiV6Mocks.Server.EXPECT().DetachVolume(testServerVar, testServerVar, testServerVar, testQueryParamOther).Return(&testResponse, nil)
-		err := RunServerVolumeDetach(cfg)
-		assert.NoError(t, err)
-	})
-}
-
-func TestRunServerVolumeDetachAllListErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
-		viper.Reset()
-		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgQuiet, false)
-		viper.Set(config.ArgForce, true)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
-		rm.CloudApiV6Mocks.Server.EXPECT().ListVolumes(testServerVar, testServerVar, cloudapiv6.ParentResourceListQueryParams).Return(vsAttachedList, nil, testVolumeErr)
-		err := RunServerVolumeDetach(cfg)
-		assert.Error(t, err)
-	})
-}
-
-func TestRunServerVolumeDetachAllItemsErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
-		viper.Reset()
-		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgQuiet, false)
-		viper.Set(config.ArgForce, true)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
-		rm.CloudApiV6Mocks.Server.EXPECT().ListVolumes(testServerVar, testServerVar, cloudapiv6.ParentResourceListQueryParams).Return(resources.AttachedVolumes{}, nil, nil)
-		err := RunServerVolumeDetach(cfg)
-		assert.Error(t, err)
-	})
-}
-
-func TestRunServerVolumeDetachAllLenErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
-		viper.Reset()
-		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgQuiet, false)
-		viper.Set(config.ArgForce, true)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
-		rm.CloudApiV6Mocks.Server.EXPECT().ListVolumes(testServerVar, testServerVar, resources.ListQueryParams{}).Return(
-			resources.AttachedVolumes{AttachedVolumes: ionoscloud.AttachedVolumes{Items: &[]ionoscloud.Volume{}}}, nil, nil)
-		err := RunServerVolumeDetach(cfg)
-		assert.Error(t, err)
-	})
-}
-
 /// NEW TESTS
 
-func TestEverythingRunServerVolumeDetach(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
-		// ----> TODO: Integrate generally across all tests ---->
-		type Pair struct {
-			flag  string
-			value interface{}
-		}
-		// <---- TODO: Integrate generally across all tests <----
+type FlagValuePair struct {
+	flag  string
+	value interface{}
+}
 
-		var tt = []struct {
-			args              []Pair
-			expectedFuncCalls []*gomock.Call
-			expectedReturn    [][]interface{}
-			funcToCall        func(*core.CommandConfig) error
-			err               error
-		}{
-			{
-				args: []Pair{
-					{config.ArgServerUrl, config.DefaultApiURL},
-					{config.ArgOutput, config.DefaultOutputFormat},
-					{config.ArgQuiet, false},
-					{config.ArgForce, true},
-					{core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar},
-					{core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar},
-					{core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true},
-					{core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false},
-				},
-				expectedFuncCalls: []*gomock.Call{
-					rm.CloudApiV6Mocks.Server.EXPECT().ListVolumes(testServerVar, testServerVar, cloudapiv6.ParentResourceListQueryParams),
-					rm.CloudApiV6Mocks.Server.EXPECT().DetachVolume(testServerVar, testServerVar, testServerVar, testQueryParamOther),
-					rm.CloudApiV6Mocks.Server.EXPECT().DetachVolume(testServerVar, testServerVar, testServerVar, testQueryParamOther),
-				},
-				expectedReturn: [][]interface{}{
-					{vsAttachedList, nil, nil},
-					{&testResponse, testVolumeErr},
-					{&testResponse, nil},
-				},
-				funcToCall: RunServerVolumeDetach,
-				err:        assert.AnError,
-			},
-			{},
-		}
-		for _, tc := range tt {
+type testCase struct {
+	name      string
+	userInput io.Reader
+	args      []FlagValuePair
+	calls     func(...*gomock.Call)
+	err       bool // To be replaced by `error` type once it makes sense to do so (currently only one type of error is thrown)
+}
+
+func ExecuteTestCases(t *testing.T, funcToTest func(c *core.CommandConfig) error, testCases []testCase, cfg *core.CommandConfig) {
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
 			viper.Reset()
 			for _, argPair := range tc.args {
 				viper.Set(argPair.flag, argPair.value)
 			}
 
-			// TODO: Move to expectedCalls[] ---
-			rm.CloudApiV6Mocks.Server.EXPECT().ListVolumes(testServerVar, testServerVar, cloudapiv6.ParentResourceListQueryParams).Return(vsAttachedList, nil, nil)
-			rm.CloudApiV6Mocks.Server.EXPECT().DetachVolume(testServerVar, testServerVar, testServerVar, testQueryParamOther).Return(&testResponse, testVolumeErr)
-			rm.CloudApiV6Mocks.Server.EXPECT().DetachVolume(testServerVar, testServerVar, testServerVar, testQueryParamOther).Return(&testResponse, nil)
-			// TODO: Move to expectedCalls[] ---
+			if tc.userInput != nil {
+				cfg.Stdin = tc.userInput
+			}
 
-			err := tc.funcToCall(cfg)
-			assert.ErrorIs(t, err, tc.err)
+			// Expected gomock calls, call order, call counts and returned values
+			tc.calls()
+
+			err := funcToTest(cfg)
+
+			if tc.err {
+				assert.Error(t, err, fmt.Sprintf("Test case '%s' expected an error but got none", tc.name))
+			} else {
+				assert.NoError(t, err, fmt.Sprintf("Test case '%s' expected no error but got %s", tc.name, err))
+			}
+		})
+	}
+}
+
+func TestServerVolumeGet(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	var funcToTest = RunServerVolumeGet
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		var tests = []testCase{
+			{
+				name: "server volume get",
+				args: []FlagValuePair{
+					{core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar},
+					{core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar},
+					{core.GetFlagName(cfg.NS, cloudapiv6.ArgVolumeId), testServerVar},
+				},
+				calls: func(...*gomock.Call) {
+					gomock.InOrder(
+						rm.CloudApiV6Mocks.Server.EXPECT().GetVolume(testServerVar, testServerVar, testServerVar, testQueryParamOther).Return(&resources.Volume{Volume: v}, nil, nil),
+					)
+				},
+				err: false,
+			},
+			{
+				name: "server volume get error",
+				args: []FlagValuePair{
+					{core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar},
+					{core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar},
+					{core.GetFlagName(cfg.NS, cloudapiv6.ArgVolumeId), testServerVar},
+				},
+				calls: func(...*gomock.Call) {
+					gomock.InOrder(
+						rm.CloudApiV6Mocks.Server.EXPECT().GetVolume(testServerVar, testServerVar, testServerVar, testQueryParamOther).Return(&resources.Volume{Volume: v}, nil, testVolumeErr),
+					)
+				},
+				err: true,
+			},
 		}
+		ExecuteTestCases(t, funcToTest, tests, cfg)
+	})
+}
 
+func TestServerVolumeDetach(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	var funcToTest = RunServerVolumeDetach
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		var tests = []testCase{
+			{
+				name: "server volume detach",
+				args: []FlagValuePair{
+					{core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar},
+					{core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar},
+					{core.GetFlagName(cfg.NS, cloudapiv6.ArgVolumeId), testServerVar},
+					{core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false},
+					{config.ArgForce, true},
+				},
+				calls: func(...*gomock.Call) {
+					gomock.InOrder(
+						rm.CloudApiV6Mocks.Server.EXPECT().DetachVolume(testServerVar, testServerVar, testServerVar, testQueryParamOther).Return(nil, nil),
+					)
+				},
+				err: false,
+			},
+			{
+				name: "server volume detach error",
+				args: []FlagValuePair{
+					{core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar},
+					{core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar},
+					{core.GetFlagName(cfg.NS, cloudapiv6.ArgVolumeId), testServerVar},
+					{core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false},
+					{config.ArgForce, true},
+				},
+				calls: func(...*gomock.Call) {
+					gomock.InOrder(
+						rm.CloudApiV6Mocks.Server.EXPECT().DetachVolume(testServerVar, testServerVar, testServerVar, testQueryParamOther).Return(&testResponse, testVolumeErr),
+					)
+				},
+				err: true,
+			},
+			{
+				name: "server volume detach all",
+				args: []FlagValuePair{
+					{core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar},
+					{core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar},
+					{core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false},
+					{core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true},
+					{config.ArgForce, true},
+				},
+				calls: func(...*gomock.Call) {
+					gomock.InOrder(
+						rm.CloudApiV6Mocks.Server.EXPECT().ListVolumes(testServerVar, testServerVar, cloudapiv6.ParentResourceListQueryParams).Return(vsAttachedList, nil, nil),
+						rm.CloudApiV6Mocks.Server.EXPECT().DetachVolume(testServerVar, testServerVar, testServerVar, testQueryParamOther).Return(&testResponse, nil),
+						rm.CloudApiV6Mocks.Server.EXPECT().DetachVolume(testServerVar, testServerVar, testServerVar, testQueryParamOther).Return(&testResponse, nil),
+					)
+				},
+				err: false,
+			},
+			{
+				name: "server volume detach all (error)",
+				args: []FlagValuePair{
+					{core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar},
+					{core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar},
+					{core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false},
+					{core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true},
+					{config.ArgForce, true},
+				},
+				calls: func(...*gomock.Call) {
+					rm.CloudApiV6Mocks.Server.EXPECT().ListVolumes(testServerVar, testServerVar, cloudapiv6.ParentResourceListQueryParams).Return(vsAttachedList, nil, nil)
+					rm.CloudApiV6Mocks.Server.EXPECT().DetachVolume(testServerVar, testServerVar, testServerVar, testQueryParamOther).Return(&testResponse, testVolumeErr)
+					rm.CloudApiV6Mocks.Server.EXPECT().DetachVolume(testServerVar, testServerVar, testServerVar, testQueryParamOther).Return(&testResponse, nil)
+				},
+				err: true,
+			},
+			{
+				name: "server volume detach all (list error)",
+				args: []FlagValuePair{
+					{core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar},
+					{core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar},
+					{core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false},
+					{core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true},
+					{config.ArgForce, true},
+				},
+				calls: func(...*gomock.Call) {
+					gomock.InOrder(
+						rm.CloudApiV6Mocks.Server.EXPECT().ListVolumes(
+							testServerVar,
+							testServerVar,
+							cloudapiv6.ParentResourceListQueryParams,
+						).Return(
+							vsAttachedList,
+							nil,
+							testVolumeErr,
+						),
+					)
+				},
+				err: true,
+			},
+			{
+				name: "server volume detach all (wrong items error)",
+				args: []FlagValuePair{
+					{core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar},
+					{core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar},
+					{core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false},
+					{core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true},
+					{config.ArgForce, true},
+				},
+				calls: func(...*gomock.Call) {
+					gomock.InOrder(
+						rm.CloudApiV6Mocks.Server.EXPECT().ListVolumes(
+							testServerVar,
+							testServerVar,
+							cloudapiv6.ParentResourceListQueryParams,
+						).Return(
+							vsAttachedList,
+							nil,
+							testVolumeErr,
+						),
+					)
+				},
+				err: true,
+			},
+			{
+				name: "server volume detach all (length error)",
+				args: []FlagValuePair{
+					{core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar},
+					{core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar},
+					{core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false},
+					{core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true},
+					{config.ArgForce, true},
+				},
+				calls: func(...*gomock.Call) {
+					gomock.InOrder(
+						rm.CloudApiV6Mocks.Server.EXPECT().ListVolumes(
+							testServerVar,
+							testServerVar,
+							cloudapiv6.ParentResourceListQueryParams,
+						).Return(
+							resources.AttachedVolumes{AttachedVolumes: ionoscloud.AttachedVolumes{Items: &[]ionoscloud.Volume{}}},
+							nil,
+							nil,
+						),
+					)
+				},
+				err: true,
+			},
+			{
+				name: "server volume detach (user confirm)",
+				args: []FlagValuePair{
+					{core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar},
+					{core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar},
+					{core.GetFlagName(cfg.NS, cloudapiv6.ArgVolumeId), testServerVar},
+					{core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false},
+					{config.ArgForce, false},
+				},
+				calls: func(...*gomock.Call) {
+					gomock.InOrder(
+						rm.CloudApiV6Mocks.Server.EXPECT().DetachVolume(
+							testServerVar,
+							testServerVar,
+							testServerVar,
+							testQueryParamOther,
+						).Return(
+							nil,
+							nil,
+						),
+					)
+				},
+				userInput: bytes.NewReader([]byte("YES\n")),
+				err:       false,
+			},
+			{
+				name: "server volume detach (wait error)",
+				args: []FlagValuePair{
+					{core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar},
+					{core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar},
+					{core.GetFlagName(cfg.NS, cloudapiv6.ArgVolumeId), testServerVar},
+					{core.GetFlagName(cfg.NS, config.ArgWaitForRequest), true},
+					{config.ArgForce, true},
+				},
+				calls: func(...*gomock.Call) {
+					gomock.InOrder(
+						rm.CloudApiV6Mocks.Server.EXPECT().DetachVolume(testServerVar, testServerVar, testServerVar, testQueryParamOther).Return(&testResponse, nil),
+						rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testRequestIdVar, resources.QueryParams{}).Return(&testRequestStatus, nil, testRequestErr),
+					)
+				},
+				err: true,
+			},
+			{
+				name: "server volume detach (user confirm error)",
+				args: []FlagValuePair{
+					{core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar},
+					{core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar},
+					{core.GetFlagName(cfg.NS, cloudapiv6.ArgVolumeId), testServerVar},
+					{core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false},
+					{config.ArgForce, false},
+				},
+				calls: func(...*gomock.Call) {
+					gomock.InOrder()
+				},
+				userInput: os.Stdin,
+				err:       true,
+			},
+		}
+		ExecuteTestCases(t, funcToTest, tests, cfg)
 	})
 }
 
 // END NEW TESTS
-
-func TestRunServerVolumeDetachAllErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
-		viper.Reset()
-		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgQuiet, false)
-		viper.Set(config.ArgForce, true)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
-		rm.CloudApiV6Mocks.Server.EXPECT().ListVolumes(testServerVar, testServerVar, cloudapiv6.ParentResourceListQueryParams).Return(vsAttachedList, nil, nil)
-		rm.CloudApiV6Mocks.Server.EXPECT().DetachVolume(testServerVar, testServerVar, testServerVar, testQueryParamOther).Return(&testResponse, testVolumeErr)
-		rm.CloudApiV6Mocks.Server.EXPECT().DetachVolume(testServerVar, testServerVar, testServerVar, testQueryParamOther).Return(&testResponse, nil)
-		err := RunServerVolumeDetach(cfg)
-		assert.Error(t, err)
-	})
-}
-
-func TestRunServerVolumeDetachErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
-		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgQuiet, false)
-		viper.Set(config.ArgForce, true)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgVolumeId), testServerVar)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
-		rm.CloudApiV6Mocks.Server.EXPECT().DetachVolume(testServerVar, testServerVar, testServerVar, testQueryParamOther).Return(&testResponse, testVolumeErr)
-		err := RunServerVolumeDetach(cfg)
-		assert.Error(t, err)
-	})
-}
-
-func TestRunServerVolumeDetachWaitErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
-		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgQuiet, false)
-		viper.Set(config.ArgForce, true)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgVolumeId), testServerVar)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), true)
-		rm.CloudApiV6Mocks.Server.EXPECT().DetachVolume(testServerVar, testServerVar, testServerVar, testQueryParamOther).Return(&testResponse, nil)
-		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testRequestIdVar, resources.QueryParams{}).Return(&testRequestStatus, nil, testRequestErr)
-		err := RunServerVolumeDetach(cfg)
-		assert.Error(t, err)
-	})
-}
-
-func TestRunVolumeDetachAskForConfirm(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
-		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgQuiet, false)
-		viper.Set(config.ArgForce, false)
-		cfg.Stdin = bytes.NewReader([]byte("YES\n"))
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgVolumeId), testServerVar)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
-		rm.CloudApiV6Mocks.Server.EXPECT().DetachVolume(testServerVar, testServerVar, testServerVar, testQueryParamOther).Return(nil, nil)
-		err := RunServerVolumeDetach(cfg)
-		assert.NoError(t, err)
-	})
-}
-
-func TestRunServerVolumeDetachAskForConfirmErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
-		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgQuiet, false)
-		viper.Set(config.ArgForce, false)
-		cfg.Stdin = os.Stdin
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgVolumeId), testServerVar)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
-		err := RunServerVolumeDetach(cfg)
-		assert.Error(t, err)
-	})
-}
