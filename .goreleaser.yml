@@ -4,8 +4,7 @@ before:
   hooks:
     - go mod tidy
 builds:
-  - 
-    id: ionosctl
+  - id: ionosctl
     main: ./main.go
     env:
       - CGO_ENABLED=0
@@ -29,18 +28,30 @@ builds:
       - goos: darwin
         goarch: '386'
     binary: '{{ .ProjectName }}'
+
 archives:
-  - 
-    id: ionosctl
+  - id: ionosctl
     name_template: '{{ .ProjectName }}-{{ .Version }}-{{ .Os }}-{{ .Arch }}'
     format_overrides:
       - goos: windows
         format: zip
-    files: [include-only-the-binary*]
+    files:
+      - docs/*
+      - LICENSE
+      - README.md
     wrap_in_directory: false
+
+scoop:
+  folder: Scoops
+  bucket:
+    owner: ionosctl
+    name: scoop-bucket
+  homepage: https://github.com/ionos-cloud/ionosctl
+  description: IonosCTL is a tool to help you manage your Ionos Cloud resources directly from your terminal.
+  license: Apache-2.0
+
 brews:
-  -
-    name: ionosctl
+  - name: ionosctl
     ids:
       - ionosctl
     tap: 
@@ -49,16 +60,32 @@ brews:
     folder: Formula
     goarm: "7"
     homepage: https://github.com/ionos-cloud/ionosctl
+    description: IonosCTL is a tool to help you manage your Ionos Cloud resources directly from your terminal.
+    license: Apache-2.0
     dependencies:
       - name: go
         type: optional
     install: |-
       bin.install "ionosctl"
+
 checksum:
   name_template: '{{ .ProjectName }}-{{ .Version }}-SHA256SUMS'
   algorithm: sha256
+
 release:
+  prerelease: auto # Mark as not ready for production if rc tag (i.e. v1.0.0-rc.1)
+  mode: append
+  header: |
+    ## [{{ .Tag }}] ({{ .Date }})
+
 # If you want to manually examine the release before its live, uncomment this line:
 # draft: true
 changelog:
+  sort: asc
+  filters:
+    exclude:
+      - '^docs:'
+      - '^doc:'
+      - '^chore:'
+      - '^test:'
   skip: false
