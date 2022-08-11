@@ -35,24 +35,24 @@ func (m *MockImagesService) EXPECT() *MockImagesServiceMockRecorder {
 }
 
 // Delete mocks base method.
-func (m *MockImagesService) Delete(imageId string) (*resources.Response, error) {
+func (m *MockImagesService) Delete(imageId string, params resources.QueryParams) (*resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Delete", imageId)
+	ret := m.ctrl.Call(m, "Delete", imageId, params)
 	ret0, _ := ret[0].(*resources.Response)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Delete indicates an expected call of Delete.
-func (mr *MockImagesServiceMockRecorder) Delete(imageId interface{}) *gomock.Call {
+func (mr *MockImagesServiceMockRecorder) Delete(imageId, params interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockImagesService)(nil).Delete), imageId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockImagesService)(nil).Delete), imageId, params)
 }
 
 // Get mocks base method.
-func (m *MockImagesService) Get(imageId string) (*resources.Image, *resources.Response, error) {
+func (m *MockImagesService) Get(imageId string, params resources.QueryParams) (*resources.Image, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Get", imageId)
+	ret := m.ctrl.Call(m, "Get", imageId, params)
 	ret0, _ := ret[0].(*resources.Image)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -60,9 +60,9 @@ func (m *MockImagesService) Get(imageId string) (*resources.Image, *resources.Re
 }
 
 // Get indicates an expected call of Get.
-func (mr *MockImagesServiceMockRecorder) Get(imageId interface{}) *gomock.Call {
+func (mr *MockImagesServiceMockRecorder) Get(imageId, params interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockImagesService)(nil).Get), imageId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockImagesService)(nil).Get), imageId, params)
 }
 
 // List mocks base method.
@@ -82,9 +82,9 @@ func (mr *MockImagesServiceMockRecorder) List(params interface{}) *gomock.Call {
 }
 
 // Update mocks base method.
-func (m *MockImagesService) Update(imageId string, imgProp resources.ImageProperties) (*resources.Image, *resources.Response, error) {
+func (m *MockImagesService) Update(imageId string, imgProp resources.ImageProperties, params resources.QueryParams) (*resources.Image, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Update", imageId, imgProp)
+	ret := m.ctrl.Call(m, "Update", imageId, imgProp, params)
 	ret0, _ := ret[0].(*resources.Image)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -92,7 +92,7 @@ func (m *MockImagesService) Update(imageId string, imgProp resources.ImageProper
 }
 
 // Update indicates an expected call of Update.
-func (mr *MockImagesServiceMockRecorder) Update(imageId, imgProp interface{}) *gomock.Call {
+func (mr *MockImagesServiceMockRecorder) Update(imageId, imgProp, params interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockImagesService)(nil).Update), imageId, imgProp)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockImagesService)(nil).Update), imageId, imgProp, params)
 }

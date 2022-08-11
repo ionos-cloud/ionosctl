@@ -1,6 +1,6 @@
 /*
-	This is used for supporting completion in the CLI.
-	Option: --filters
+This is used for supporting completion in the CLI.
+Option: --filters
 */
 package completer
 
@@ -99,6 +99,14 @@ func FirewallRulesFilters() []string {
 
 func FirewallRulesFiltersUsage() string {
 	return getFilterUsage(getPropertiesName(ionoscloud.FirewallruleProperties{}), getPropertiesName(ionoscloud.DatacenterElementMetadata{}))
+}
+
+func ApplicationLoadBalancersFilters() []string {
+	return getPropertiesName(ionoscloud.ApplicationLoadBalancerProperties{}, ionoscloud.DatacenterElementMetadata{})
+}
+
+func ApplicationLoadBalancersFiltersUsage() string {
+	return getFilterUsage(getPropertiesName(ionoscloud.ApplicationLoadBalancerProperties{}), getPropertiesName(ionoscloud.DatacenterElementMetadata{}))
 }
 
 func LoadBalancersFilters() []string {

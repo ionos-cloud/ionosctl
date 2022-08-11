@@ -28,7 +28,7 @@ func TestNewIpBlockService(t *testing.T) {
 	t.Run("get_ipblock_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		ipblockSvc := NewIpBlockService(svc.Get(), ctx)
-		_, _, err := ipblockSvc.Get(testIpBlockResourceVar)
+		_, _, err := ipblockSvc.Get(testIpBlockResourceVar, QueryParams{})
 		assert.Error(t, err)
 	})
 	t.Run("create_ipblock_error", func(t *testing.T) {
@@ -38,19 +38,20 @@ func TestNewIpBlockService(t *testing.T) {
 			testIpBlockResourceVar,
 			testIpBlockResourceVar,
 			int32(1),
+			QueryParams{},
 		)
 		assert.Error(t, err)
 	})
 	t.Run("update_ipblock_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		ipblockSvc := NewIpBlockService(svc.Get(), ctx)
-		_, _, err := ipblockSvc.Update(testIpBlockResourceVar, IpBlockProperties{})
+		_, _, err := ipblockSvc.Update(testIpBlockResourceVar, IpBlockProperties{}, QueryParams{})
 		assert.Error(t, err)
 	})
 	t.Run("delete_ipblock_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		ipblockSvc := NewIpBlockService(svc.Get(), ctx)
-		_, err := ipblockSvc.Delete(testIpBlockResourceVar)
+		_, err := ipblockSvc.Delete(testIpBlockResourceVar, QueryParams{})
 		assert.Error(t, err)
 	})
 }

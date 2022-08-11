@@ -28,7 +28,7 @@ func TestNewImageService(t *testing.T) {
 	t.Run("get_image_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		imageSvc := NewImageService(svc.Get(), ctx)
-		_, _, err := imageSvc.Get(testImageResourceVar)
+		_, _, err := imageSvc.Get(testImageResourceVar, QueryParams{})
 		assert.Error(t, err)
 	})
 	t.Run("update_image_error", func(t *testing.T) {
@@ -37,13 +37,14 @@ func TestNewImageService(t *testing.T) {
 		_, _, err := imageSvc.Update(
 			testImageResourceVar,
 			ImageProperties{},
+			QueryParams{},
 		)
 		assert.Error(t, err)
 	})
 	t.Run("delete_image_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		imageSvc := NewImageService(svc.Get(), ctx)
-		_, err := imageSvc.Delete(testImageResourceVar)
+		_, err := imageSvc.Delete(testImageResourceVar, QueryParams{})
 		assert.Error(t, err)
 	})
 }

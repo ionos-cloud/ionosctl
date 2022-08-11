@@ -4,8 +4,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/query"
 	"io"
 	"os"
+	"strings"
+	"time"
 
 	"go.uber.org/multierr"
 
@@ -35,10 +38,10 @@ func ShareCmd() *core.Command {
 		},
 	}
 	globalFlags := shareCmd.GlobalFlags()
-	globalFlags.StringSliceP(config.ArgCols, "", defaultGroupShareCols, printer.ColsMessage(defaultGroupShareCols))
+	globalFlags.StringSliceP(config.ArgCols, "", defaultGroupShareCols, printer.ColsMessage(allGroupShareCols))
 	_ = viper.BindPFlag(core.GetGlobalFlagName(shareCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 	_ = shareCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return defaultGroupShareCols, cobra.ShellCompDirectiveNoFileComp
+		return allGroupShareCols, cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -52,7 +55,7 @@ func ShareCmd() *core.Command {
 		ShortDesc:  "List Resources Shares through a Group",
 		LongDesc:   "Use this command to get a full list of all the Resources that are shared through a specified Group.\n\nRequired values to run command:\n\n* Group Id",
 		Example:    listSharesExample,
-		PreCmdRun:  PreRunGroupId,
+		PreCmdRun:  PreRunShareList,
 		CmdRun:     RunShareList,
 		InitClient: true,
 	})
@@ -60,7 +63,9 @@ func ShareCmd() *core.Command {
 	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.GroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	list.AddBoolFlag(config.ArgNoHeaders, "", false, "When using text output, don't print headers")
+	list.AddBoolFlag(config.ArgNoHeaders, "", false, cloudapiv6.ArgNoHeadersDescription)
+	list.AddIntFlag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, config.DefaultListDepth, cloudapiv6.ArgDepthDescription)
+	list.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, cloudapiv6.ArgListAllDescription)
 
 	/*
 		Get Command
@@ -85,7 +90,8 @@ func ShareCmd() *core.Command {
 	_ = get.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgResourceId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.GroupResourcesIds(os.Stderr, viper.GetString(core.GetFlagName(get.NS, cloudapiv6.ArgGroupId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	get.AddBoolFlag(config.ArgNoHeaders, "", false, "When using text output, don't print headers")
+	get.AddBoolFlag(config.ArgNoHeaders, "", false, cloudapiv6.ArgNoHeadersDescription)
+	get.AddIntFlag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, config.DefaultGetDepth, cloudapiv6.ArgDepthDescription)
 
 	/*
 		Create Command
@@ -119,6 +125,7 @@ Required values to run a command:
 	create.AddBoolFlag(cloudapiv6.ArgSharePrivilege, "", false, "Set the group's permission to share resource")
 	create.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Resource share to executed")
 	create.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Resource to be shared through a Group [seconds]")
+	create.AddIntFlag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, config.DefaultCreateDepth, cloudapiv6.ArgDepthDescription)
 
 	/*
 		Update Command
@@ -154,6 +161,7 @@ Required values to run command:
 	update.AddBoolFlag(cloudapiv6.ArgSharePrivilege, "", false, "Update the group's permission to share resource")
 	update.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Resource Share update to be executed")
 	update.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Resource Share update [seconds]")
+	update.AddIntFlag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, config.DefaultUpdateDepth, cloudapiv6.ArgDepthDescription)
 
 	/*
 		Delete Command
@@ -186,6 +194,7 @@ Required values to run command:
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Resource Share deletion to be executed")
 	deleteCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete all the Resources Share from a specified Group.")
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Resource Share deletion [seconds]")
+	deleteCmd.AddIntFlag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, config.DefaultDeleteDepth, cloudapiv6.ArgDepthDescription)
 
 	return shareCmd
 }
@@ -201,8 +210,52 @@ func PreRunGroupResourceDelete(c *core.PreCommandConfig) error {
 	)
 }
 
+func RunShareListAll(c *core.CommandConfig) error {
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	if !structs.IsZero(listQueryParams) {
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams))
+	}
+	// Don't apply listQueryParams to parent resource, as it would have unexpected side effects on the results
+	groups, _, err := c.CloudApiV6Services.Groups().List(resources.ListQueryParams{})
+	if err != nil {
+		return err
+	}
+	var allShares []resources.GroupShare
+	totalTime := time.Duration(0)
+	for _, group := range getGroups(groups) {
+		shares, resp, err := c.CloudApiV6Services.Groups().ListShares(*group.GetId(), listQueryParams)
+		if err != nil {
+			return err
+		}
+		allShares = append(allShares, getGroupShares(shares)...)
+		totalTime += resp.RequestTime
+	}
+
+	if totalTime != time.Duration(0) {
+		c.Printer.Verbose(config.RequestTimeMessage, totalTime)
+	}
+
+	return c.Printer.Print(getGroupSharePrint(nil, c, allShares))
+}
+
 func RunShareList(c *core.CommandConfig) error {
-	shares, resp, err := c.CloudApiV6Services.Groups().ListShares(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)))
+	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
+		return RunShareListAll(c)
+	}
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	if !structs.IsZero(listQueryParams) {
+		c.Printer.Verbose("List Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams))
+		if !structs.IsZero(listQueryParams.QueryParams) {
+			c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams.QueryParams))
+		}
+	}
+	shares, resp, err := c.CloudApiV6Services.Groups().ListShares(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)), listQueryParams)
 	if resp != nil {
 		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
@@ -212,13 +265,35 @@ func RunShareList(c *core.CommandConfig) error {
 	return c.Printer.Print(getGroupSharePrint(nil, c, getGroupShares(shares)))
 }
 
+func PreRunShareList(c *core.PreCommandConfig) error {
+	if err := core.CheckRequiredFlagsSets(c.Command, c.NS,
+		[]string{cloudapiv6.ArgGroupId},
+		[]string{cloudapiv6.ArgAll},
+	); err != nil {
+		return err
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
+		return query.ValidateFilters(c, completer.ServersFilters(), completer.ServersFiltersUsage())
+	}
+	return nil
+}
+
 func RunShareGet(c *core.CommandConfig) error {
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	queryParams := listQueryParams.QueryParams
+	if !structs.IsZero(queryParams) {
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
+	}
 	c.Printer.Verbose("Getting Share with Resource ID: %v from Group with ID: %v...",
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)))
 	s, resp, err := c.CloudApiV6Services.Groups().GetShare(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceId)),
+		queryParams,
 	)
 	if resp != nil {
 		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
@@ -230,6 +305,14 @@ func RunShareGet(c *core.CommandConfig) error {
 }
 
 func RunShareCreate(c *core.CommandConfig) error {
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	queryParams := listQueryParams.QueryParams
+	if !structs.IsZero(queryParams) {
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
+	}
 	editPrivilege := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgEditPrivilege))
 	sharePrivilege := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgSharePrivilege))
 	input := resources.GroupShare{
@@ -248,6 +331,7 @@ func RunShareCreate(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceId)),
 		input,
+		queryParams,
 	)
 	if resp != nil && printer.GetId(resp) != "" {
 		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
@@ -262,7 +346,16 @@ func RunShareCreate(c *core.CommandConfig) error {
 }
 
 func RunShareUpdate(c *core.CommandConfig) error {
-	s, _, err := c.CloudApiV6Services.Groups().GetShare(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)), viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceId)))
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	queryParams := listQueryParams.QueryParams
+	if !structs.IsZero(queryParams) {
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
+	}
+	s, _, err := c.CloudApiV6Services.Groups().GetShare(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceId)), queryParams)
 	if err != nil {
 		return err
 	}
@@ -279,6 +372,7 @@ func RunShareUpdate(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceId)),
 		newShare,
+		queryParams,
 	)
 	if resp != nil && printer.GetId(resp) != "" {
 		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
@@ -293,6 +387,14 @@ func RunShareUpdate(c *core.CommandConfig) error {
 }
 
 func RunShareDelete(c *core.CommandConfig) error {
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	queryParams := listQueryParams.QueryParams
+	if !structs.IsZero(queryParams) {
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
+	}
 	shareId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceId))
 	groupId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId))
 	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
@@ -305,7 +407,7 @@ func RunShareDelete(c *core.CommandConfig) error {
 			return err
 		}
 		c.Printer.Verbose("Starting deleting Share with Resource ID: %v from Group with ID: %v...", shareId, groupId)
-		resp, err := c.CloudApiV6Services.Groups().RemoveShare(groupId, shareId)
+		resp, err := c.CloudApiV6Services.Groups().RemoveShare(groupId, shareId, queryParams)
 		if resp != nil && printer.GetId(resp) != "" {
 			c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 		}
@@ -348,10 +450,18 @@ func getShareUpdateInfo(oldShare *resources.GroupShare, c *core.CommandConfig) *
 }
 
 func DeleteAllShares(c *core.CommandConfig) error {
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	queryParams := listQueryParams.QueryParams
+	if !structs.IsZero(queryParams) {
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
+	}
 	groupId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId))
 	c.Printer.Verbose("Group ID: %v", groupId)
 	c.Printer.Verbose("Getting Group Shares...")
-	groupShares, resp, err := c.CloudApiV6Services.Groups().ListShares(groupId)
+	groupShares, resp, err := c.CloudApiV6Services.Groups().ListShares(groupId, listQueryParams)
 	if err != nil {
 		return err
 	}
@@ -372,7 +482,7 @@ func DeleteAllShares(c *core.CommandConfig) error {
 				if id, ok := share.GetIdOk(); ok && id != nil {
 					c.Printer.Verbose("Starting deleting Share with Resource ID: %v from Group with ID: %v...",
 						*id, groupId)
-					resp, err = c.CloudApiV6Services.Groups().RemoveShare(groupId, *id)
+					resp, err = c.CloudApiV6Services.Groups().RemoveShare(groupId, *id, queryParams)
 					if resp != nil && printer.GetId(resp) != "" {
 						c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 					}
@@ -403,12 +513,14 @@ func DeleteAllShares(c *core.CommandConfig) error {
 // Output Printing
 
 var defaultGroupShareCols = []string{"ShareId", "EditPrivilege", "SharePrivilege", "Type"}
+var allGroupShareCols = []string{"ShareId", "EditPrivilege", "SharePrivilege", "Type", "GroupId"}
 
 type groupSharePrint struct {
 	ShareId        string `json:"ShareId,omitempty"`
 	EditPrivilege  bool   `json:"EditPrivilege,omitempty"`
 	SharePrivilege bool   `json:"SharePrivilege,omitempty"`
 	Type           string `json:"Type,omitempty"`
+	GroupId        string `json:"GroupId,omitempty"`
 }
 
 func getGroupSharePrint(resp *resources.Response, c *core.CommandConfig, groups []resources.GroupShare) printer.Result {
@@ -423,22 +535,23 @@ func getGroupSharePrint(resp *resources.Response, c *core.CommandConfig, groups 
 		if groups != nil {
 			r.OutputJSON = groups
 			r.KeyValue = getGroupSharesKVMaps(groups)
-			r.Columns = getGroupShareCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr())
+			r.Columns = getGroupShareCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), core.GetFlagName(c.NS, cloudapiv6.ArgAll), c.Printer.GetStderr())
 		}
 	}
 	return r
 }
 
-func getGroupShareCols(flagName string, outErr io.Writer) []string {
-	if viper.IsSet(flagName) {
+func getGroupShareCols(argCols string, argAll string, outErr io.Writer) []string {
+	if viper.IsSet(argCols) {
 		var groupCols []string
 		columnsMap := map[string]string{
 			"ShareId":        "ShareId",
 			"EditPrivilege":  "EditPrivilege",
 			"SharePrivilege": "SharePrivilege",
 			"Type":           "Type",
+			"GroupId":        "GroupId",
 		}
-		for _, k := range viper.GetStringSlice(flagName) {
+		for _, k := range viper.GetStringSlice(argCols) {
 			col := columnsMap[k]
 			if col != "" {
 				groupCols = append(groupCols, col)
@@ -447,6 +560,12 @@ func getGroupShareCols(flagName string, outErr io.Writer) []string {
 			}
 		}
 		return groupCols
+	} else if viper.GetBool(argAll) {
+		var cols []string
+		// Add column which specifies which parent resource this belongs to, if using -a/--all flag
+		cols = append(defaultGroupShareCols[:config.DefaultParentIndex+1], defaultGroupShareCols[config.DefaultParentIndex:]...)
+		cols[config.DefaultParentIndex] = "GroupId"
+		return cols
 	} else {
 		return defaultGroupShareCols
 	}
@@ -487,6 +606,10 @@ func getGroupSharesKVMaps(gs []resources.GroupShare) []map[string]interface{} {
 		}
 		if typeResource, ok := g.GetTypeOk(); ok && typeResource != nil {
 			gPrint.Type = string(*typeResource)
+		}
+		if hrefOk, ok := g.GetHrefOk(); ok && hrefOk != nil {
+			// Get parent resource ID using HREF: `.../um/groups/[PARENT_ID_WE_WANT]/shares/[SHARE_ID]`
+			gPrint.GroupId = strings.Split(strings.Split(*hrefOk, "groups")[1], "/")[1]
 		}
 		o := structs.Map(gPrint)
 		out = append(out, o)

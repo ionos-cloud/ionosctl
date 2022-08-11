@@ -1,10 +1,26 @@
 # Changelog
 
-## [6.2.0] (Upcoming release)
+## [6.3.0] (August 2022)
+
+### Enhancements
+- reduced default depth for LIST operations to 1 and all other operations to 0
+
 
 ### Features
-- add support and instructions to install ionosctl from `snap` package manager
+- added `-a`/`-all` flag to list all contract-level resources of a specific type without the need of providing dependent resource ID
+  - supported resources: `k8s nodepool`, `share`, `server`, `lan`, `volume`, `loadbalancer`, `networkloadbalancer`, `applicationloadbalancer`
+  - example: `ionosctl server list --all -F "vmState"="RUNNING"`  
+- added flag `--depth` (short `-D`) to control depth response. Useful in combination with `-o json`.
  
+    _**Note:** Short flag `-D` not yet available for `firewallrule` command (belongs to `--destination-ip` flag.)_ 
+
+- added support and instructions to install ionosctl from `snap` package manager
+- added support and instructions to install ionosctl from `brew` package manager
+
+### Deprecation Notice
+
+- Short flag `-D` for `--destination-ip` for `firewallrule` is considered deprecated and will be replaced by `-D` for `--depth` pending the next major release.
+
 ## [6.2.0] (June 2022) 
 
 ### Features

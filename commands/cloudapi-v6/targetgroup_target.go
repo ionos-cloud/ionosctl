@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"errors"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/query"
 	"io"
 	"os"
 	"strconv"
@@ -145,7 +146,7 @@ func PreRunTargetGroupTargetRemove(c *core.PreCommandConfig) error {
 func RunTargetGroupTargetList(c *core.CommandConfig) error {
 	c.Printer.Verbose("TargetGroup ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)))
 	c.Printer.Verbose("Getting Targets from TargetGroup")
-	targetGroups, resp, err := c.CloudApiV6Services.TargetGroups().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)))
+	targetGroups, resp, err := c.CloudApiV6Services.TargetGroups().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)), resources.QueryParams{})
 	if resp != nil {
 		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
@@ -164,12 +165,20 @@ func RunTargetGroupTargetList(c *core.CommandConfig) error {
 }
 
 func RunTargetGroupTargetAdd(c *core.CommandConfig) error {
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	queryParams := listQueryParams.QueryParams
+	if !structs.IsZero(queryParams) {
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
+	}
 	var targetItems []ionoscloud.TargetGroupTarget
 
 	// Get existing Targets from the specified Target Group
 	c.Printer.Verbose("TargetGroup ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)))
 	c.Printer.Verbose("Getting TargetGroup")
-	targetGroupOld, resp, err := c.CloudApiV6Services.TargetGroups().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)))
+	targetGroupOld, resp, err := c.CloudApiV6Services.TargetGroups().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)), queryParams)
 	if err != nil {
 		return err
 	}
@@ -192,6 +201,7 @@ func RunTargetGroupTargetAdd(c *core.CommandConfig) error {
 				Targets: &targetItems,
 			},
 		},
+		queryParams,
 	)
 	if resp != nil {
 		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
@@ -206,9 +216,16 @@ func RunTargetGroupTargetAdd(c *core.CommandConfig) error {
 }
 
 func RunTargetGroupTargetRemove(c *core.CommandConfig) error {
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	queryParams := listQueryParams.QueryParams
+	if !structs.IsZero(queryParams) {
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
+	}
 	var (
 		resp *resources.Response
-		err  error
 	)
 	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
 		c.Printer.Verbose("TargetGroup ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)))
@@ -227,7 +244,7 @@ func RunTargetGroupTargetRemove(c *core.CommandConfig) error {
 
 		// Get existing Targets from the specified Target Group
 		c.Printer.Verbose("Getting TargetGroup")
-		targetGroupOld, _, err := c.CloudApiV6Services.TargetGroups().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)))
+		targetGroupOld, _, err := c.CloudApiV6Services.TargetGroups().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)), queryParams)
 		if err != nil {
 			return err
 		}
@@ -246,7 +263,7 @@ func RunTargetGroupTargetRemove(c *core.CommandConfig) error {
 
 		// Update Target Group with the new Targets
 		c.Printer.Verbose("Updating TargetGroup with the new Targets")
-		_, resp, err = c.CloudApiV6Services.TargetGroups().Update(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)), &propertiesUpdated)
+		_, resp, err = c.CloudApiV6Services.TargetGroups().Update(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)), &propertiesUpdated, queryParams)
 		if resp != nil {
 			c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 		}
@@ -262,7 +279,7 @@ func RunTargetGroupTargetRemove(c *core.CommandConfig) error {
 
 func RemoveAllTargetGroupTarget(c *core.CommandConfig) (*resources.Response, error) {
 	_ = c.Printer.Print("Target Group Targets to be deleted:")
-	applicationLoadBalancerRules, resp, err := c.CloudApiV6Services.TargetGroups().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)))
+	applicationLoadBalancerRules, resp, err := c.CloudApiV6Services.TargetGroups().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)), resources.QueryParams{})
 	if err != nil {
 		return nil, err
 	}
@@ -284,7 +301,9 @@ func RemoveAllTargetGroupTarget(c *core.CommandConfig) (*resources.Response, err
 		propertiesOk.SetTargets([]ionoscloud.TargetGroupTarget{})
 		_, resp, err = c.CloudApiV6Services.TargetGroups().Update(
 			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)),
-			&resources.TargetGroupProperties{TargetGroupProperties: *propertiesOk})
+			&resources.TargetGroupProperties{TargetGroupProperties: *propertiesOk},
+			resources.QueryParams{},
+		)
 		if resp != nil {
 			c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
 			c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)

@@ -31,7 +31,7 @@ func TestNewFlowLogService(t *testing.T) {
 			testFlowLogResourceVar,
 			testFlowLogResourceVar,
 			testFlowLogResourceVar,
-			testListQueryParam,
+			ListQueryParams{},
 		)
 		assert.Error(t, err)
 	})
@@ -43,6 +43,7 @@ func TestNewFlowLogService(t *testing.T) {
 			testFlowLogResourceVar,
 			testFlowLogResourceVar,
 			testFlowLogResourceVar,
+			QueryParams{},
 		)
 		assert.Error(t, err)
 	})
@@ -54,6 +55,7 @@ func TestNewFlowLogService(t *testing.T) {
 			testFlowLogResourceVar,
 			testFlowLogResourceVar,
 			FlowLog{},
+			QueryParams{},
 		)
 		assert.Error(t, err)
 	})
@@ -66,6 +68,7 @@ func TestNewFlowLogService(t *testing.T) {
 			testFlowLogResourceVar,
 			testFlowLogResourceVar,
 			FlowLogPut{},
+			QueryParams{},
 		)
 		assert.Error(t, err)
 	})
@@ -77,6 +80,7 @@ func TestNewFlowLogService(t *testing.T) {
 			testFlowLogResourceVar,
 			testFlowLogResourceVar,
 			testFlowLogResourceVar,
+			QueryParams{},
 		)
 		assert.Error(t, err)
 	})

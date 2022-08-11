@@ -4,11 +4,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"go.uber.org/multierr"
 	"io"
 	"os"
 	"strconv"
-
-	"go.uber.org/multierr"
+	"strings"
+	"time"
 
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
@@ -68,16 +69,18 @@ func ServerCmd() *core.Command {
 	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	list.AddIntFlag(cloudapiv6.ArgMaxResults, cloudapiv6.ArgMaxResultsShort, 0, "The maximum number of elements to return")
-	list.AddStringFlag(cloudapiv6.ArgOrderBy, "", "", "Limits results to those containing a matching value for a specific property")
+	list.AddIntFlag(cloudapiv6.ArgMaxResults, cloudapiv6.ArgMaxResultsShort, 0, cloudapiv6.ArgMaxResultsDescription)
+	list.AddIntFlag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, config.DefaultListDepth, cloudapiv6.ArgDepthDescription)
+	list.AddStringFlag(cloudapiv6.ArgOrderBy, "", "", cloudapiv6.ArgOrderByDescription)
 	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgOrderBy, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.ServersFilters(), cobra.ShellCompDirectiveNoFileComp
 	})
-	list.AddStringSliceFlag(cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, "Limits results to those containing a matching value for a specific property. Use the following format to set filters: --filters KEY1=VALUE1,KEY2=VALUE2")
+	list.AddStringSliceFlag(cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, cloudapiv6.ArgFiltersDescription)
 	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgFilters, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.ServersFilters(), cobra.ShellCompDirectiveNoFileComp
 	})
-	list.AddBoolFlag(config.ArgNoHeaders, "", false, "When using text output, don't print headers")
+	list.AddBoolFlag(config.ArgNoHeaders, "", false, cloudapiv6.ArgNoHeadersDescription)
+	list.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, cloudapiv6.ArgListAllDescription)
 
 	/*
 		Get Command
@@ -104,7 +107,8 @@ func ServerCmd() *core.Command {
 	})
 	get.AddBoolFlag(config.ArgWaitForState, config.ArgWaitForStateShort, config.DefaultWait, "Wait for specified Server to be in AVAILABLE state")
 	get.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for waiting for Server to be in AVAILABLE state [seconds]")
-	get.AddBoolFlag(config.ArgNoHeaders, "", false, "When using text output, don't print headers")
+	get.AddBoolFlag(config.ArgNoHeaders, "", false, cloudapiv6.ArgNoHeadersDescription)
+	get.AddIntFlag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, config.DefaultGetDepth, cloudapiv6.ArgDepthDescription)
 
 	/*
 		Create Command
@@ -197,6 +201,7 @@ You can wait for the Request to be executed using ` + "`" + `--wait-for-request`
 	create.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Server creation to be executed")
 	create.AddBoolFlag(config.ArgWaitForState, config.ArgWaitForStateShort, config.DefaultWait, "Wait for new Server to be in AVAILABLE state")
 	create.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Server creation/for Server to be in AVAILABLE state [seconds]")
+	create.AddIntFlag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, config.DefaultCreateDepth, cloudapiv6.ArgDepthDescription)
 
 	/*
 		Update Command
@@ -264,6 +269,7 @@ Required values to run command:
 	update.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Server update to be executed")
 	update.AddBoolFlag(config.ArgWaitForState, config.ArgWaitForStateShort, config.DefaultWait, "Wait for the updated Server to be in AVAILABLE state")
 	update.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Server update/for Server to be in AVAILABLE state [seconds]")
+	update.AddIntFlag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, config.DefaultUpdateDepth, cloudapiv6.ArgDepthDescription)
 
 	/*
 		Delete Command
@@ -300,6 +306,7 @@ Required values to run command:
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Server deletion to be executed")
 	deleteCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete all Servers form a virtual Datacenter.")
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Server deletion [seconds]")
+	deleteCmd.AddIntFlag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, config.DefaultDeleteDepth, cloudapiv6.ArgDepthDescription)
 
 	/*
 		Suspend Command
@@ -337,6 +344,7 @@ Required values to run command:
 	})
 	suspend.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Server suspend to be executed")
 	suspend.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Server suspend [seconds]")
+	suspend.AddIntFlag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, config.DefaultMiscDepth, cloudapiv6.ArgDepthDescription)
 
 	/*
 		Start Command
@@ -370,6 +378,7 @@ Required values to run command:
 	})
 	start.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Server start to be executed")
 	start.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Server start [seconds]")
+	start.AddIntFlag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, config.DefaultMiscDepth, cloudapiv6.ArgDepthDescription)
 
 	/*
 		Stop Command
@@ -403,6 +412,7 @@ Required values to run command:
 	})
 	stop.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Server stop to be executed")
 	stop.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Server stop [seconds]")
+	stop.AddIntFlag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, config.DefaultMiscDepth, cloudapiv6.ArgDepthDescription)
 
 	/*
 		Reboot Command
@@ -436,6 +446,7 @@ Required values to run command:
 	})
 	reboot.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Server reboot to be executed")
 	reboot.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Server reboot [seconds]")
+	reboot.AddIntFlag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, config.DefaultMiscDepth, cloudapiv6.ArgDepthDescription)
 
 	/*
 		Resume Command
@@ -474,6 +485,7 @@ Required values to run command:
 	})
 	resume.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Server resume to be executed")
 	resume.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Server resume [seconds]")
+	resume.AddIntFlag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, config.DefaultMiscDepth, cloudapiv6.ArgDepthDescription)
 
 	serverCmd.AddCommand(ServerTokenCmd())
 	serverCmd.AddCommand(ServerConsoleCmd())
@@ -484,7 +496,10 @@ Required values to run command:
 }
 
 func PreRunServerList(c *core.PreCommandConfig) error {
-	if err := core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgDataCenterId); err != nil {
+	if err := core.CheckRequiredFlagsSets(c.Command, c.NS,
+		[]string{cloudapiv6.ArgDataCenterId},
+		[]string{cloudapiv6.ArgAll},
+	); err != nil {
 		return err
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
@@ -530,8 +545,53 @@ func PreRunDcServerDelete(c *core.PreCommandConfig) error {
 	)
 }
 
+func RunServerListAll(c *core.CommandConfig) error {
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	if !structs.IsZero(listQueryParams) {
+		if listQueryParams.Filters != nil {
+			filters := *listQueryParams.Filters
+			if val, ok := filters["ram"]; ok {
+				convertedSize, err := utils.ConvertSize(val, utils.MegaBytes)
+				if err != nil {
+					return err
+				}
+				filters["ram"] = strconv.Itoa(convertedSize)
+				listQueryParams.Filters = &filters
+			}
+		}
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams))
+	}
+	// Don't apply listQueryParams to parent resource, as it would have unexpected side effects on the results
+	datacenters, _, err := c.CloudApiV6Services.DataCenters().List(resources.ListQueryParams{})
+	if err != nil {
+		return err
+	}
+	allDcs := getDataCenters(datacenters)
+	var allServers []resources.Server
+	totalTime := time.Duration(0)
+	for _, dc := range allDcs {
+		servers, resp, err := c.CloudApiV6Services.Servers().List(*dc.GetId(), listQueryParams)
+		if err != nil {
+			return err
+		}
+		allServers = append(allServers, getServers(servers)...)
+		totalTime += resp.RequestTime
+	}
+
+	if totalTime != time.Duration(0) {
+		c.Printer.Verbose(config.RequestTimeMessage, totalTime)
+	}
+
+	return c.Printer.Print(getServerPrint(nil, c, allServers))
+}
+
 func RunServerList(c *core.CommandConfig) error {
-	// Add Query Parameters for GET Requests
+	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
+		return RunServerListAll(c)
+	}
 	listQueryParams, err := query.GetListQueryParams(c)
 	if err != nil {
 		return err
@@ -561,6 +621,14 @@ func RunServerList(c *core.CommandConfig) error {
 }
 
 func RunServerGet(c *core.CommandConfig) error {
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	queryParams := listQueryParams.QueryParams
+	if !structs.IsZero(queryParams) {
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
+	}
 	c.Printer.Verbose("Server with id: %v is getting... ", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)))
 	if err := utils.WaitForState(c, waiter.ServerStateInterrogator, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))); err != nil {
 		return err
@@ -568,6 +636,7 @@ func RunServerGet(c *core.CommandConfig) error {
 	svr, resp, err := c.CloudApiV6Services.Servers().Get(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
+		queryParams,
 	)
 	if resp != nil {
 		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
@@ -579,6 +648,14 @@ func RunServerGet(c *core.CommandConfig) error {
 }
 
 func RunServerCreate(c *core.CommandConfig) error {
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	queryParams := listQueryParams.QueryParams
+	if !structs.IsZero(queryParams) {
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
+	}
 	input, err := getNewServer(c)
 	if err != nil {
 		return err
@@ -597,7 +674,7 @@ func RunServerCreate(c *core.CommandConfig) error {
 			},
 		})
 	}
-	svr, resp, err := c.CloudApiV6Services.Servers().Create(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)), *input)
+	svr, resp, err := c.CloudApiV6Services.Servers().Create(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)), *input, queryParams)
 	if resp != nil && printer.GetId(resp) != "" {
 		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 	}
@@ -614,7 +691,7 @@ func RunServerCreate(c *core.CommandConfig) error {
 				return err
 			}
 			if svr, _, err = c.CloudApiV6Services.Servers().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-				*id); err != nil {
+				*id, queryParams); err != nil {
 				return err
 			}
 		} else {
@@ -625,6 +702,14 @@ func RunServerCreate(c *core.CommandConfig) error {
 }
 
 func RunServerUpdate(c *core.CommandConfig) error {
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	queryParams := listQueryParams.QueryParams
+	if !structs.IsZero(queryParams) {
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
+	}
 	input, err := getUpdateServerInfo(c)
 	if err != nil {
 		return err
@@ -635,6 +720,7 @@ func RunServerUpdate(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
 		*input,
+		queryParams,
 	)
 	if resp != nil && printer.GetId(resp) != "" {
 		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
@@ -651,7 +737,7 @@ func RunServerUpdate(c *core.CommandConfig) error {
 			return err
 		}
 		if svr, _, err = c.CloudApiV6Services.Servers().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))); err != nil {
+			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)), queryParams); err != nil {
 			return err
 		}
 	}
@@ -659,6 +745,14 @@ func RunServerUpdate(c *core.CommandConfig) error {
 }
 
 func RunServerDelete(c *core.CommandConfig) error {
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	queryParams := listQueryParams.QueryParams
+	if !structs.IsZero(queryParams) {
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
+	}
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
 	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
@@ -666,13 +760,12 @@ func RunServerDelete(c *core.CommandConfig) error {
 			return err
 		}
 		return c.Printer.Print(printer.Result{Resource: c.Resource, Verb: c.Verb})
-
 	} else {
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete server"); err != nil {
 			return err
 		}
 		c.Printer.Verbose("Starting deleting Server with id: %v from datacenter with id: %v... ", serverId, dcId)
-		resp, err := c.CloudApiV6Services.Servers().Delete(dcId, serverId)
+		resp, err := c.CloudApiV6Services.Servers().Delete(dcId, serverId, queryParams)
 		if resp != nil && printer.GetId(resp) != "" {
 			c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 		}
@@ -687,6 +780,14 @@ func RunServerDelete(c *core.CommandConfig) error {
 }
 
 func RunServerStart(c *core.CommandConfig) error {
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	queryParams := listQueryParams.QueryParams
+	if !structs.IsZero(queryParams) {
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
+	}
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "start server"); err != nil {
 		return err
 	}
@@ -694,6 +795,7 @@ func RunServerStart(c *core.CommandConfig) error {
 	resp, err := c.CloudApiV6Services.Servers().Start(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
+		queryParams,
 	)
 	if resp != nil {
 		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
@@ -709,6 +811,14 @@ func RunServerStart(c *core.CommandConfig) error {
 }
 
 func RunServerStop(c *core.CommandConfig) error {
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	queryParams := listQueryParams.QueryParams
+	if !structs.IsZero(queryParams) {
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
+	}
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "stop server"); err != nil {
 		return err
 	}
@@ -716,6 +826,7 @@ func RunServerStop(c *core.CommandConfig) error {
 	resp, err := c.CloudApiV6Services.Servers().Stop(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
+		queryParams,
 	)
 	if resp != nil {
 		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
@@ -731,6 +842,14 @@ func RunServerStop(c *core.CommandConfig) error {
 }
 
 func RunServerSuspend(c *core.CommandConfig) error {
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	queryParams := listQueryParams.QueryParams
+	if !structs.IsZero(queryParams) {
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
+	}
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "suspend cube server"); err != nil {
 		return err
 	}
@@ -738,6 +857,7 @@ func RunServerSuspend(c *core.CommandConfig) error {
 	resp, err := c.CloudApiV6Services.Servers().Suspend(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
+		queryParams,
 	)
 	if resp != nil {
 		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
@@ -753,6 +873,14 @@ func RunServerSuspend(c *core.CommandConfig) error {
 }
 
 func RunServerReboot(c *core.CommandConfig) error {
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	queryParams := listQueryParams.QueryParams
+	if !structs.IsZero(queryParams) {
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
+	}
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "reboot server"); err != nil {
 		return err
 	}
@@ -760,6 +888,7 @@ func RunServerReboot(c *core.CommandConfig) error {
 	resp, err := c.CloudApiV6Services.Servers().Reboot(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
+		queryParams,
 	)
 	if resp != nil {
 		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
@@ -775,6 +904,14 @@ func RunServerReboot(c *core.CommandConfig) error {
 }
 
 func RunServerResume(c *core.CommandConfig) error {
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	queryParams := listQueryParams.QueryParams
+	if !structs.IsZero(queryParams) {
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
+	}
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "resume cube server"); err != nil {
 		return err
 	}
@@ -782,6 +919,7 @@ func RunServerResume(c *core.CommandConfig) error {
 	resp, err := c.CloudApiV6Services.Servers().Resume(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
+		queryParams,
 	)
 	if resp != nil {
 		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
@@ -941,6 +1079,14 @@ func getNewDAS(c *core.CommandConfig) (*resources.Volume, error) {
 }
 
 func DeleteAllServers(c *core.CommandConfig) error {
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	queryParams := listQueryParams.QueryParams
+	if !structs.IsZero(queryParams) {
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
+	}
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	c.Printer.Verbose("Datacenter ID: %v", dcId)
 	c.Printer.Verbose("Getting Servers...")
@@ -971,7 +1117,7 @@ func DeleteAllServers(c *core.CommandConfig) error {
 			for _, server := range *serversItems {
 				if id, ok := server.GetIdOk(); ok && id != nil {
 					c.Printer.Verbose("Starting deleting Server with id: %v from datacenter with id: %v... ", *id, dcId)
-					resp, err = c.CloudApiV6Services.Servers().Delete(dcId, *id)
+					resp, err = c.CloudApiV6Services.Servers().Delete(dcId, *id, queryParams)
 					if resp != nil && printer.GetId(resp) != "" {
 						c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 					}
@@ -1003,11 +1149,12 @@ func DeleteAllServers(c *core.CommandConfig) error {
 
 var (
 	defaultServerCols = []string{"ServerId", "Name", "Type", "AvailabilityZone", "Cores", "Ram", "CpuFamily", "VmState", "State"}
-	allServerCols     = []string{"ServerId", "Name", "AvailabilityZone", "Cores", "Ram", "CpuFamily", "VmState", "State", "TemplateId", "Type", "BootCdromId", "BootVolumeId"}
+	allServerCols     = []string{"ServerId", "DatacenterId", "Name", "AvailabilityZone", "Cores", "Ram", "CpuFamily", "VmState", "State", "TemplateId", "Type", "BootCdromId", "BootVolumeId"}
 )
 
 type ServerPrint struct {
 	ServerId         string `json:"ServerId,omitempty"`
+	DatacenterId     string `json:"DatacenterId,omitempty"`
 	Name             string `json:"Name,omitempty"`
 	AvailabilityZone string `json:"AvailabilityZone,omitempty"`
 	State            string `json:"State,omitempty"`
@@ -1034,44 +1181,54 @@ func getServerPrint(resp *resources.Response, c *core.CommandConfig, ss []resour
 		if ss != nil {
 			r.OutputJSON = ss
 			r.KeyValue = getServersKVMaps(ss)
-			r.Columns = getServersCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr())
+			r.Columns = getServersCols(
+				core.GetGlobalFlagName(c.Resource, config.ArgCols),
+				core.GetFlagName(c.NS, cloudapiv6.ArgAll),
+				c.Printer.GetStderr(),
+			)
 		}
 	}
 	return r
 }
 
-func getServersCols(flagName string, outErr io.Writer) []string {
+func getServersCols(argCols string, argAll string, outErr io.Writer) []string {
 	var cols []string
-	if viper.IsSet(flagName) {
-		cols = viper.GetStringSlice(flagName)
+	if viper.IsSet(argCols) {
+		cols = viper.GetStringSlice(argCols)
+
+		columnsMap := map[string]string{
+			"ServerId":         "ServerId",
+			"DatacenterId":     "DatacenterId",
+			"Name":             "Name",
+			"AvailabilityZone": "AvailabilityZone",
+			"State":            "State",
+			"VmState":          "VmState",
+			"Cores":            "Cores",
+			"Ram":              "Ram",
+			"CpuFamily":        "CpuFamily",
+			"TemplateId":       "TemplateId",
+			"Type":             "Type",
+			"BootVolumeId":     "BootVolumeId",
+			"BootCdromId":      "BootCdromId",
+		}
+		var serverCols []string
+		for _, k := range cols {
+			col := columnsMap[k]
+			if col != "" {
+				serverCols = append(serverCols, col)
+			} else {
+				clierror.CheckError(errors.New("unknown column "+k), outErr)
+			}
+		}
+		return serverCols
+	} else if viper.IsSet(argAll) {
+		// Add column which specifies which parent resource this belongs to, if using -a/--all flag
+		cols = append(defaultServerCols[:config.DefaultParentIndex+1], defaultServerCols[config.DefaultParentIndex:]...)
+		cols[config.DefaultParentIndex] = "DatacenterId"
+		return cols
 	} else {
 		return defaultServerCols
 	}
-
-	columnsMap := map[string]string{
-		"ServerId":         "ServerId",
-		"Name":             "Name",
-		"AvailabilityZone": "AvailabilityZone",
-		"State":            "State",
-		"VmState":          "VmState",
-		"Cores":            "Cores",
-		"Ram":              "Ram",
-		"CpuFamily":        "CpuFamily",
-		"TemplateId":       "TemplateId",
-		"Type":             "Type",
-		"BootVolumeId":     "BootVolumeId",
-		"BootCdromId":      "BootCdromId",
-	}
-	var serverCols []string
-	for _, k := range cols {
-		col := columnsMap[k]
-		if col != "" {
-			serverCols = append(serverCols, col)
-		} else {
-			clierror.CheckError(errors.New("unknown column "+k), outErr)
-		}
-	}
-	return serverCols
 }
 
 func getServers(servers resources.Servers) []resources.Server {
@@ -1131,6 +1288,10 @@ func getServersKVMaps(ss []resources.Server) []map[string]interface{} {
 			if stateOk, ok := metadataOk.GetStateOk(); ok && stateOk != nil {
 				serverPrint.State = *stateOk
 			}
+		}
+		if hrefOk, ok := s.GetHrefOk(); ok && hrefOk != nil {
+			// Get parent resource ID using HREF: `.../k8s/[PARENT_ID_WE_WANT]/nodepools/[NODEPOOL_ID]`
+			serverPrint.DatacenterId = strings.Split(strings.Split(*hrefOk, "datacenter")[1], "/")[1]
 		}
 		o := structs.Map(serverPrint)
 		out = append(out, o)

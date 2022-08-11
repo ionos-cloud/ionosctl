@@ -35,9 +35,9 @@ func (m *MockFlowLogsService) EXPECT() *MockFlowLogsServiceMockRecorder {
 }
 
 // Create mocks base method.
-func (m *MockFlowLogsService) Create(datacenterId, serverId, nicId string, input resources.FlowLog) (*resources.FlowLog, *resources.Response, error) {
+func (m *MockFlowLogsService) Create(datacenterId, serverId, nicId string, input resources.FlowLog, params resources.QueryParams) (*resources.FlowLog, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Create", datacenterId, serverId, nicId, input)
+	ret := m.ctrl.Call(m, "Create", datacenterId, serverId, nicId, input, params)
 	ret0, _ := ret[0].(*resources.FlowLog)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -45,30 +45,30 @@ func (m *MockFlowLogsService) Create(datacenterId, serverId, nicId string, input
 }
 
 // Create indicates an expected call of Create.
-func (mr *MockFlowLogsServiceMockRecorder) Create(datacenterId, serverId, nicId, input interface{}) *gomock.Call {
+func (mr *MockFlowLogsServiceMockRecorder) Create(datacenterId, serverId, nicId, input, params interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockFlowLogsService)(nil).Create), datacenterId, serverId, nicId, input)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockFlowLogsService)(nil).Create), datacenterId, serverId, nicId, input, params)
 }
 
 // Delete mocks base method.
-func (m *MockFlowLogsService) Delete(datacenterId, serverId, nicId, flowLogId string) (*resources.Response, error) {
+func (m *MockFlowLogsService) Delete(datacenterId, serverId, nicId, flowLogId string, params resources.QueryParams) (*resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Delete", datacenterId, serverId, nicId, flowLogId)
+	ret := m.ctrl.Call(m, "Delete", datacenterId, serverId, nicId, flowLogId, params)
 	ret0, _ := ret[0].(*resources.Response)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Delete indicates an expected call of Delete.
-func (mr *MockFlowLogsServiceMockRecorder) Delete(datacenterId, serverId, nicId, flowLogId interface{}) *gomock.Call {
+func (mr *MockFlowLogsServiceMockRecorder) Delete(datacenterId, serverId, nicId, flowLogId, params interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockFlowLogsService)(nil).Delete), datacenterId, serverId, nicId, flowLogId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockFlowLogsService)(nil).Delete), datacenterId, serverId, nicId, flowLogId, params)
 }
 
 // Get mocks base method.
-func (m *MockFlowLogsService) Get(datacenterId, serverId, nicId, flowLogId string) (*resources.FlowLog, *resources.Response, error) {
+func (m *MockFlowLogsService) Get(datacenterId, serverId, nicId, flowLogId string, params resources.QueryParams) (*resources.FlowLog, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Get", datacenterId, serverId, nicId, flowLogId)
+	ret := m.ctrl.Call(m, "Get", datacenterId, serverId, nicId, flowLogId, params)
 	ret0, _ := ret[0].(*resources.FlowLog)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -76,9 +76,9 @@ func (m *MockFlowLogsService) Get(datacenterId, serverId, nicId, flowLogId strin
 }
 
 // Get indicates an expected call of Get.
-func (mr *MockFlowLogsServiceMockRecorder) Get(datacenterId, serverId, nicId, flowLogId interface{}) *gomock.Call {
+func (mr *MockFlowLogsServiceMockRecorder) Get(datacenterId, serverId, nicId, flowLogId, params interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockFlowLogsService)(nil).Get), datacenterId, serverId, nicId, flowLogId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockFlowLogsService)(nil).Get), datacenterId, serverId, nicId, flowLogId, params)
 }
 
 // List mocks base method.
@@ -98,9 +98,9 @@ func (mr *MockFlowLogsServiceMockRecorder) List(datacenterId, serverId, nicId, p
 }
 
 // Update mocks base method.
-func (m *MockFlowLogsService) Update(datacenterId, serverId, nicId, flowlogId string, input resources.FlowLogPut) (*resources.FlowLog, *resources.Response, error) {
+func (m *MockFlowLogsService) Update(datacenterId, serverId, nicId, flowlogId string, input resources.FlowLogPut, params resources.QueryParams) (*resources.FlowLog, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Update", datacenterId, serverId, nicId, flowlogId, input)
+	ret := m.ctrl.Call(m, "Update", datacenterId, serverId, nicId, flowlogId, input, params)
 	ret0, _ := ret[0].(*resources.FlowLog)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -108,7 +108,7 @@ func (m *MockFlowLogsService) Update(datacenterId, serverId, nicId, flowlogId st
 }
 
 // Update indicates an expected call of Update.
-func (mr *MockFlowLogsServiceMockRecorder) Update(datacenterId, serverId, nicId, flowlogId, input interface{}) *gomock.Call {
+func (mr *MockFlowLogsServiceMockRecorder) Update(datacenterId, serverId, nicId, flowlogId, input, params interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockFlowLogsService)(nil).Update), datacenterId, serverId, nicId, flowlogId, input)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockFlowLogsService)(nil).Update), datacenterId, serverId, nicId, flowlogId, input, params)
 }

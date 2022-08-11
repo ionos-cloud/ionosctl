@@ -40,31 +40,31 @@ func TestNewBackupUnitService(t *testing.T) {
 	t.Run("get_backupunit_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		backupUnitSvc := NewBackupUnitService(svc.Get(), ctx)
-		_, _, err := backupUnitSvc.Get(testBackupUnitResourceVar)
+		_, _, err := backupUnitSvc.Get(testBackupUnitResourceVar, QueryParams{})
 		assert.Error(t, err)
 	})
 	t.Run("getssourl_backupunit_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		backupUnitSvc := NewBackupUnitService(svc.Get(), ctx)
-		_, _, err := backupUnitSvc.GetSsoUrl(testBackupUnitResourceVar)
+		_, _, err := backupUnitSvc.GetSsoUrl(testBackupUnitResourceVar, QueryParams{})
 		assert.Error(t, err)
 	})
 	t.Run("create_backupunit_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		backupUnitSvc := NewBackupUnitService(svc.Get(), ctx)
-		_, _, err := backupUnitSvc.Create(BackupUnit{})
+		_, _, err := backupUnitSvc.Create(BackupUnit{}, QueryParams{})
 		assert.Error(t, err)
 	})
 	t.Run("update_backupunit_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		backupUnitSvc := NewBackupUnitService(svc.Get(), ctx)
-		_, _, err := backupUnitSvc.Update(testBackupUnitResourceVar, BackupUnitProperties{})
+		_, _, err := backupUnitSvc.Update(testBackupUnitResourceVar, BackupUnitProperties{}, QueryParams{})
 		assert.Error(t, err)
 	})
 	t.Run("delete_backupunit_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		backupUnitSvc := NewBackupUnitService(svc.Get(), ctx)
-		_, err := backupUnitSvc.Delete(testBackupUnitResourceVar)
+		_, err := backupUnitSvc.Delete(testBackupUnitResourceVar, QueryParams{})
 		assert.Error(t, err)
 	})
 }

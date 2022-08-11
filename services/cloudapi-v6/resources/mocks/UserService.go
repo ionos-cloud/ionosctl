@@ -35,9 +35,9 @@ func (m *MockUsersService) EXPECT() *MockUsersServiceMockRecorder {
 }
 
 // Create mocks base method.
-func (m *MockUsersService) Create(u resources.UserPost) (*resources.User, *resources.Response, error) {
+func (m *MockUsersService) Create(u resources.UserPost, params resources.QueryParams) (*resources.User, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Create", u)
+	ret := m.ctrl.Call(m, "Create", u, params)
 	ret0, _ := ret[0].(*resources.User)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -45,30 +45,30 @@ func (m *MockUsersService) Create(u resources.UserPost) (*resources.User, *resou
 }
 
 // Create indicates an expected call of Create.
-func (mr *MockUsersServiceMockRecorder) Create(u interface{}) *gomock.Call {
+func (mr *MockUsersServiceMockRecorder) Create(u, params interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockUsersService)(nil).Create), u)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockUsersService)(nil).Create), u, params)
 }
 
 // Delete mocks base method.
-func (m *MockUsersService) Delete(userId string) (*resources.Response, error) {
+func (m *MockUsersService) Delete(userId string, params resources.QueryParams) (*resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Delete", userId)
+	ret := m.ctrl.Call(m, "Delete", userId, params)
 	ret0, _ := ret[0].(*resources.Response)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Delete indicates an expected call of Delete.
-func (mr *MockUsersServiceMockRecorder) Delete(userId interface{}) *gomock.Call {
+func (mr *MockUsersServiceMockRecorder) Delete(userId, params interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockUsersService)(nil).Delete), userId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockUsersService)(nil).Delete), userId, params)
 }
 
 // Get mocks base method.
-func (m *MockUsersService) Get(userId string) (*resources.User, *resources.Response, error) {
+func (m *MockUsersService) Get(userId string, params resources.QueryParams) (*resources.User, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Get", userId)
+	ret := m.ctrl.Call(m, "Get", userId, params)
 	ret0, _ := ret[0].(*resources.User)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -76,9 +76,9 @@ func (m *MockUsersService) Get(userId string) (*resources.User, *resources.Respo
 }
 
 // Get indicates an expected call of Get.
-func (mr *MockUsersServiceMockRecorder) Get(userId interface{}) *gomock.Call {
+func (mr *MockUsersServiceMockRecorder) Get(userId, params interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockUsersService)(nil).Get), userId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockUsersService)(nil).Get), userId, params)
 }
 
 // GetResourceByTypeAndId mocks base method.
@@ -146,9 +146,9 @@ func (mr *MockUsersServiceMockRecorder) ListResources() *gomock.Call {
 }
 
 // Update mocks base method.
-func (m *MockUsersService) Update(userId string, input resources.UserPut) (*resources.User, *resources.Response, error) {
+func (m *MockUsersService) Update(userId string, input resources.UserPut, params resources.QueryParams) (*resources.User, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Update", userId, input)
+	ret := m.ctrl.Call(m, "Update", userId, input, params)
 	ret0, _ := ret[0].(*resources.User)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -156,7 +156,7 @@ func (m *MockUsersService) Update(userId string, input resources.UserPut) (*reso
 }
 
 // Update indicates an expected call of Update.
-func (mr *MockUsersServiceMockRecorder) Update(userId, input interface{}) *gomock.Call {
+func (mr *MockUsersServiceMockRecorder) Update(userId, input, params interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockUsersService)(nil).Update), userId, input)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockUsersService)(nil).Update), userId, input, params)
 }

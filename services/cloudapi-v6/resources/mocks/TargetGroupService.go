@@ -35,9 +35,9 @@ func (m *MockTargetGroupsService) EXPECT() *MockTargetGroupsServiceMockRecorder 
 }
 
 // Create mocks base method.
-func (m *MockTargetGroupsService) Create(tg resources.TargetGroup) (*resources.TargetGroup, *resources.Response, error) {
+func (m *MockTargetGroupsService) Create(tg resources.TargetGroup, params resources.QueryParams) (*resources.TargetGroup, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Create", tg)
+	ret := m.ctrl.Call(m, "Create", tg, params)
 	ret0, _ := ret[0].(*resources.TargetGroup)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -45,30 +45,30 @@ func (m *MockTargetGroupsService) Create(tg resources.TargetGroup) (*resources.T
 }
 
 // Create indicates an expected call of Create.
-func (mr *MockTargetGroupsServiceMockRecorder) Create(tg interface{}) *gomock.Call {
+func (mr *MockTargetGroupsServiceMockRecorder) Create(tg, params interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockTargetGroupsService)(nil).Create), tg)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockTargetGroupsService)(nil).Create), tg, params)
 }
 
 // Delete mocks base method.
-func (m *MockTargetGroupsService) Delete(targetGroupId string) (*resources.Response, error) {
+func (m *MockTargetGroupsService) Delete(targetGroupId string, params resources.QueryParams) (*resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Delete", targetGroupId)
+	ret := m.ctrl.Call(m, "Delete", targetGroupId, params)
 	ret0, _ := ret[0].(*resources.Response)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Delete indicates an expected call of Delete.
-func (mr *MockTargetGroupsServiceMockRecorder) Delete(targetGroupId interface{}) *gomock.Call {
+func (mr *MockTargetGroupsServiceMockRecorder) Delete(targetGroupId, params interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockTargetGroupsService)(nil).Delete), targetGroupId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockTargetGroupsService)(nil).Delete), targetGroupId, params)
 }
 
 // Get mocks base method.
-func (m *MockTargetGroupsService) Get(targetGroupId string) (*resources.TargetGroup, *resources.Response, error) {
+func (m *MockTargetGroupsService) Get(targetGroupId string, params resources.QueryParams) (*resources.TargetGroup, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Get", targetGroupId)
+	ret := m.ctrl.Call(m, "Get", targetGroupId, params)
 	ret0, _ := ret[0].(*resources.TargetGroup)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -76,9 +76,9 @@ func (m *MockTargetGroupsService) Get(targetGroupId string) (*resources.TargetGr
 }
 
 // Get indicates an expected call of Get.
-func (mr *MockTargetGroupsServiceMockRecorder) Get(targetGroupId interface{}) *gomock.Call {
+func (mr *MockTargetGroupsServiceMockRecorder) Get(targetGroupId, params interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockTargetGroupsService)(nil).Get), targetGroupId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockTargetGroupsService)(nil).Get), targetGroupId, params)
 }
 
 // List mocks base method.
@@ -98,9 +98,9 @@ func (mr *MockTargetGroupsServiceMockRecorder) List(params interface{}) *gomock.
 }
 
 // Update mocks base method.
-func (m *MockTargetGroupsService) Update(targetGroupId string, input *resources.TargetGroupProperties) (*resources.TargetGroup, *resources.Response, error) {
+func (m *MockTargetGroupsService) Update(targetGroupId string, input *resources.TargetGroupProperties, params resources.QueryParams) (*resources.TargetGroup, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Update", targetGroupId, input)
+	ret := m.ctrl.Call(m, "Update", targetGroupId, input, params)
 	ret0, _ := ret[0].(*resources.TargetGroup)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -108,7 +108,7 @@ func (m *MockTargetGroupsService) Update(targetGroupId string, input *resources.
 }
 
 // Update indicates an expected call of Update.
-func (mr *MockTargetGroupsServiceMockRecorder) Update(targetGroupId, input interface{}) *gomock.Call {
+func (mr *MockTargetGroupsServiceMockRecorder) Update(targetGroupId, input, params interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockTargetGroupsService)(nil).Update), targetGroupId, input)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockTargetGroupsService)(nil).Update), targetGroupId, input, params)
 }

@@ -46,6 +46,7 @@ Required values to run command:
                                  Available columns: [FirewallRuleId Name Protocol SourceMac SourceIP DestinationIP PortRangeStart PortRangeEnd IcmpCode IcmpType Direction State] (default [FirewallRuleId,Name,Protocol,PortRangeStart,PortRangeEnd,Direction,State])
   -c, --config string            Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --datacenter-id string     The unique Data Center Id (required)
+      --depth int                Controls the detail depth of the response objects. Max depth is 10.
   -i, --firewallrule-id string   The unique FirewallRule Id (required)
   -f, --force                    Force command to execute without user input
   -h, --help                     Print usage

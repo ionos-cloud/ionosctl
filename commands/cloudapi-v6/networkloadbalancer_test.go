@@ -162,6 +162,22 @@ func TestPreRunDcNetworkLoadBalancerIdsErr(t *testing.T) {
 	})
 }
 
+func TestRunNetworkLoadBalancerListAll(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgVerbose, false)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
+		rm.CloudApiV6Mocks.Datacenter.EXPECT().List(resources.ListQueryParams{}).Return(dcs, &testResponse, nil)
+		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().List(testDatacenterVar, resources.ListQueryParams{}).Return(networkloadbalancersList, &testResponse, nil).Times(len(getDataCenters(dcs)))
+		err := RunNetworkLoadBalancerListAll(cfg)
+		assert.NoError(t, err)
+	})
+}
+
 func TestRunNetworkLoadBalancerList(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
@@ -219,7 +235,7 @@ func TestRunNetworkLoadBalancerGet(t *testing.T) {
 		viper.Set(config.ArgVerbose, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNetworkLoadBalancerVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNetworkLoadBalancerId), testNetworkLoadBalancerVar)
-		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().Get(testNetworkLoadBalancerVar, testNetworkLoadBalancerVar).Return(&networkloadbalancerTestGet, &testResponse, nil)
+		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().Get(testNetworkLoadBalancerVar, testNetworkLoadBalancerVar, resources.QueryParams{}).Return(&networkloadbalancerTestGet, &testResponse, nil)
 		err := RunNetworkLoadBalancerGet(cfg)
 		assert.NoError(t, err)
 	})
@@ -235,8 +251,8 @@ func TestRunNetworkLoadBalancerGetWait(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNetworkLoadBalancerVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNetworkLoadBalancerId), testNetworkLoadBalancerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForState), true)
-		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().Get(testNetworkLoadBalancerVar, testNetworkLoadBalancerVar).Return(&networkloadbalancerTestGet, nil, nil)
-		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().Get(testNetworkLoadBalancerVar, testNetworkLoadBalancerVar).Return(&networkloadbalancerTestGet, nil, nil)
+		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().Get(testNetworkLoadBalancerVar, testNetworkLoadBalancerVar, resources.QueryParams{}).Return(&networkloadbalancerTestGet, nil, nil)
+		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().Get(testNetworkLoadBalancerVar, testNetworkLoadBalancerVar, resources.QueryParams{}).Return(&networkloadbalancerTestGet, nil, nil)
 		err := RunNetworkLoadBalancerGet(cfg)
 		assert.NoError(t, err)
 	})
@@ -252,7 +268,7 @@ func TestRunNetworkLoadBalancerGetWaitErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNetworkLoadBalancerVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNetworkLoadBalancerId), testNetworkLoadBalancerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForState), true)
-		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().Get(testNetworkLoadBalancerVar, testNetworkLoadBalancerVar).Return(&networkloadbalancerTestGet, nil, testNetworkLoadBalancerErr)
+		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().Get(testNetworkLoadBalancerVar, testNetworkLoadBalancerVar, resources.QueryParams{}).Return(&networkloadbalancerTestGet, nil, testNetworkLoadBalancerErr)
 		err := RunNetworkLoadBalancerGet(cfg)
 		assert.Error(t, err)
 	})
@@ -267,7 +283,7 @@ func TestRunNetworkLoadBalancerGetErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNetworkLoadBalancerVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNetworkLoadBalancerId), testNetworkLoadBalancerVar)
-		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().Get(testNetworkLoadBalancerVar, testNetworkLoadBalancerVar).Return(&networkloadbalancerTestGet, nil, testNetworkLoadBalancerErr)
+		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().Get(testNetworkLoadBalancerVar, testNetworkLoadBalancerVar, resources.QueryParams{}).Return(&networkloadbalancerTestGet, nil, testNetworkLoadBalancerErr)
 		err := RunNetworkLoadBalancerGet(cfg)
 		assert.Error(t, err)
 	})
@@ -287,7 +303,7 @@ func TestRunNetworkLoadBalancerCreate(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPrivateIps), testNetworkLoadBalancerVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgTargetLan), testNetworkLoadBalancerIntVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgListenerLan), testNetworkLoadBalancerIntVar)
-		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().Create(testNetworkLoadBalancerVar, networkloadbalancerTest).Return(&networkloadbalancerTest, &testResponse, nil)
+		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().Create(testNetworkLoadBalancerVar, networkloadbalancerTest, resources.QueryParams{}).Return(&networkloadbalancerTest, &testResponse, nil)
 		err := RunNetworkLoadBalancerCreate(cfg)
 		assert.NoError(t, err)
 	})
@@ -306,7 +322,7 @@ func TestRunNetworkLoadBalancerCreateResponseErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPrivateIps), testNetworkLoadBalancerVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgTargetLan), testNetworkLoadBalancerIntVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgListenerLan), testNetworkLoadBalancerIntVar)
-		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().Create(testNetworkLoadBalancerVar, networkloadbalancerTest).Return(&networkloadbalancerTest, &testResponse, testNetworkLoadBalancerErr)
+		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().Create(testNetworkLoadBalancerVar, networkloadbalancerTest, resources.QueryParams{}).Return(&networkloadbalancerTest, &testResponse, testNetworkLoadBalancerErr)
 		err := RunNetworkLoadBalancerCreate(cfg)
 		assert.Error(t, err)
 	})
@@ -325,7 +341,7 @@ func TestRunNetworkLoadBalancerCreateErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPrivateIps), testNetworkLoadBalancerVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgTargetLan), testNetworkLoadBalancerIntVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgListenerLan), testNetworkLoadBalancerIntVar)
-		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().Create(testNetworkLoadBalancerVar, networkloadbalancerTest).Return(&networkloadbalancerTest, nil, testNetworkLoadBalancerErr)
+		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().Create(testNetworkLoadBalancerVar, networkloadbalancerTest, resources.QueryParams{}).Return(&networkloadbalancerTest, nil, testNetworkLoadBalancerErr)
 		err := RunNetworkLoadBalancerCreate(cfg)
 		assert.Error(t, err)
 	})
@@ -345,8 +361,8 @@ func TestRunNetworkLoadBalancerCreateWaitErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgTargetLan), testNetworkLoadBalancerIntVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgListenerLan), testNetworkLoadBalancerIntVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), true)
-		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().Create(testNetworkLoadBalancerVar, networkloadbalancerTest).Return(&networkloadbalancerTest, &testResponse, nil)
-		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testRequestIdVar).Return(&testRequestStatus, nil, testRequestErr)
+		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().Create(testNetworkLoadBalancerVar, networkloadbalancerTest, resources.QueryParams{}).Return(&networkloadbalancerTest, &testResponse, nil)
+		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testRequestIdVar, resources.QueryParams{}).Return(&testRequestStatus, nil, testRequestErr)
 		err := RunNetworkLoadBalancerCreate(cfg)
 		assert.Error(t, err)
 	})
@@ -367,7 +383,7 @@ func TestRunNetworkLoadBalancerUpdate(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPrivateIps), testNetworkLoadBalancerNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgTargetLan), testNetworkLoadBalancerNewIntVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgListenerLan), testNetworkLoadBalancerNewIntVar)
-		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().Update(testNetworkLoadBalancerVar, testNetworkLoadBalancerVar, networkloadbalancerProperties).
+		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().Update(testNetworkLoadBalancerVar, testNetworkLoadBalancerVar, networkloadbalancerProperties, resources.QueryParams{}).
 			Return(&networkloadbalancerNew, &testResponse, nil)
 		err := RunNetworkLoadBalancerUpdate(cfg)
 		assert.NoError(t, err)
@@ -388,7 +404,7 @@ func TestRunNetworkLoadBalancerUpdateErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPrivateIps), testNetworkLoadBalancerNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgTargetLan), testNetworkLoadBalancerNewIntVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgListenerLan), testNetworkLoadBalancerNewIntVar)
-		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().Update(testNetworkLoadBalancerVar, testNetworkLoadBalancerVar, networkloadbalancerProperties).Return(&networkloadbalancerNew, nil, testNetworkLoadBalancerErr)
+		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().Update(testNetworkLoadBalancerVar, testNetworkLoadBalancerVar, networkloadbalancerProperties, resources.QueryParams{}).Return(&networkloadbalancerNew, nil, testNetworkLoadBalancerErr)
 		err := RunNetworkLoadBalancerUpdate(cfg)
 		assert.Error(t, err)
 	})
@@ -409,8 +425,8 @@ func TestRunNetworkLoadBalancerUpdateWaitErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgTargetLan), testNetworkLoadBalancerNewIntVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgListenerLan), testNetworkLoadBalancerNewIntVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), true)
-		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().Update(testNetworkLoadBalancerVar, testNetworkLoadBalancerVar, networkloadbalancerProperties).Return(&networkloadbalancerNew, &testResponse, nil)
-		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testRequestIdVar).Return(&testRequestStatus, nil, testRequestErr)
+		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().Update(testNetworkLoadBalancerVar, testNetworkLoadBalancerVar, networkloadbalancerProperties, resources.QueryParams{}).Return(&networkloadbalancerNew, &testResponse, nil)
+		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testRequestIdVar, resources.QueryParams{}).Return(&testRequestStatus, nil, testRequestErr)
 		err := RunNetworkLoadBalancerUpdate(cfg)
 		assert.Error(t, err)
 	})
@@ -427,7 +443,7 @@ func TestRunNetworkLoadBalancerDelete(t *testing.T) {
 		viper.Set(config.ArgVerbose, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNetworkLoadBalancerVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNetworkLoadBalancerId), testNetworkLoadBalancerVar)
-		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().Delete(testNetworkLoadBalancerVar, testNetworkLoadBalancerVar).Return(&testResponse, nil)
+		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().Delete(testNetworkLoadBalancerVar, testNetworkLoadBalancerVar, resources.QueryParams{}).Return(&testResponse, nil)
 		err := RunNetworkLoadBalancerDelete(cfg)
 		assert.NoError(t, err)
 	})
@@ -445,8 +461,8 @@ func TestRunNetworkLoadBalancerDeleteAll(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNetworkLoadBalancerVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
 		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().List(testNetworkLoadBalancerVar, resources.ListQueryParams{}).Return(networkloadbalancersList, &testResponse, nil)
-		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().Delete(testNetworkLoadBalancerVar, testNetworkLoadBalancerVar).Return(&testResponse, nil)
-		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().Delete(testNetworkLoadBalancerVar, testNetworkLoadBalancerVar).Return(&testResponse, nil)
+		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().Delete(testNetworkLoadBalancerVar, testNetworkLoadBalancerVar, resources.QueryParams{}).Return(&testResponse, nil)
+		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().Delete(testNetworkLoadBalancerVar, testNetworkLoadBalancerVar, resources.QueryParams{}).Return(&testResponse, nil)
 		err := RunNetworkLoadBalancerDelete(cfg)
 		assert.NoError(t, err)
 	})
@@ -516,8 +532,8 @@ func TestRunNetworkLoadBalancerDeleteAllErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNetworkLoadBalancerVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
 		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().List(testNetworkLoadBalancerVar, resources.ListQueryParams{}).Return(networkloadbalancersList, &testResponse, nil)
-		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().Delete(testNetworkLoadBalancerVar, testNetworkLoadBalancerVar).Return(&testResponse, testNetworkLoadBalancerErr)
-		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().Delete(testNetworkLoadBalancerVar, testNetworkLoadBalancerVar).Return(&testResponse, nil)
+		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().Delete(testNetworkLoadBalancerVar, testNetworkLoadBalancerVar, resources.QueryParams{}).Return(&testResponse, testNetworkLoadBalancerErr)
+		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().Delete(testNetworkLoadBalancerVar, testNetworkLoadBalancerVar, resources.QueryParams{}).Return(&testResponse, nil)
 		err := RunNetworkLoadBalancerDelete(cfg)
 		assert.Error(t, err)
 	})
@@ -533,7 +549,7 @@ func TestRunNetworkLoadBalancerDeleteErr(t *testing.T) {
 		viper.Set(config.ArgForce, true)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNetworkLoadBalancerVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNetworkLoadBalancerId), testNetworkLoadBalancerVar)
-		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().Delete(testNetworkLoadBalancerVar, testNetworkLoadBalancerVar).Return(nil, testNetworkLoadBalancerErr)
+		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().Delete(testNetworkLoadBalancerVar, testNetworkLoadBalancerVar, resources.QueryParams{}).Return(nil, testNetworkLoadBalancerErr)
 		err := RunNetworkLoadBalancerDelete(cfg)
 		assert.Error(t, err)
 	})
@@ -550,8 +566,8 @@ func TestRunNetworkLoadBalancerDeleteWaitErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNetworkLoadBalancerVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNetworkLoadBalancerId), testNetworkLoadBalancerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), true)
-		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().Delete(testNetworkLoadBalancerVar, testNetworkLoadBalancerVar).Return(&testResponse, nil)
-		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testRequestIdVar).Return(&testRequestStatus, nil, testRequestErr)
+		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().Delete(testNetworkLoadBalancerVar, testNetworkLoadBalancerVar, resources.QueryParams{}).Return(&testResponse, nil)
+		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testRequestIdVar, resources.QueryParams{}).Return(&testRequestStatus, nil, testRequestErr)
 		err := RunNetworkLoadBalancerDelete(cfg)
 		assert.Error(t, err)
 	})
@@ -568,7 +584,7 @@ func TestRunNetworkLoadBalancerDeleteAskForConfirm(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNetworkLoadBalancerVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNetworkLoadBalancerId), testNetworkLoadBalancerVar)
 		cfg.Stdin = bytes.NewReader([]byte("YES\n"))
-		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().Delete(testNetworkLoadBalancerVar, testNetworkLoadBalancerVar).Return(nil, nil)
+		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().Delete(testNetworkLoadBalancerVar, testNetworkLoadBalancerVar, resources.QueryParams{}).Return(nil, nil)
 		err := RunNetworkLoadBalancerDelete(cfg)
 		assert.NoError(t, err)
 	})
@@ -596,7 +612,11 @@ func TestGetNetworkLoadBalancersCols(t *testing.T) {
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
 	viper.Set(core.GetGlobalFlagName("networkloadbalancer", config.ArgCols), []string{"Name"})
-	getNetworkLoadBalancersCols(core.GetGlobalFlagName("networkloadbalancer", config.ArgCols), w)
+	getNetworkLoadBalancersCols(
+		core.GetGlobalFlagName("networkloadbalancer", config.ArgCols),
+		core.GetFlagName("networkloadbalancer", cloudapiv6.ArgAll),
+		w,
+	)
 	err := w.Flush()
 	assert.NoError(t, err)
 }
@@ -607,7 +627,11 @@ func TestGetNetworkLoadBalancersColsErr(t *testing.T) {
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
 	viper.Set(core.GetGlobalFlagName("networkloadbalancer", config.ArgCols), []string{"Unknown"})
-	getNetworkLoadBalancersCols(core.GetGlobalFlagName("networkloadbalancer", config.ArgCols), w)
+	getNetworkLoadBalancersCols(
+		core.GetGlobalFlagName("networkloadbalancer", config.ArgCols),
+		core.GetFlagName("networkloadbalancer", cloudapiv6.ArgAll),
+		w,
+	)
 	err := w.Flush()
 	assert.NoError(t, err)
 	re := regexp.MustCompile(`unknown column Unknown`)

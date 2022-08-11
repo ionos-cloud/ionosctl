@@ -7,6 +7,8 @@ import (
 	"io"
 	"os"
 	"strconv"
+	"strings"
+	"time"
 
 	"go.uber.org/multierr"
 
@@ -64,16 +66,18 @@ func K8sNodePoolCmd() *core.Command {
 	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgK8sClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.K8sClustersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	list.AddIntFlag(cloudapiv6.ArgMaxResults, cloudapiv6.ArgMaxResultsShort, 0, "The maximum number of elements to return")
-	list.AddStringFlag(cloudapiv6.ArgOrderBy, "", "", "Limits results to those containing a matching value for a specific property")
+	list.AddIntFlag(cloudapiv6.ArgMaxResults, cloudapiv6.ArgMaxResultsShort, 0, cloudapiv6.ArgMaxResultsDescription)
+	list.AddIntFlag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, config.DefaultListDepth, cloudapiv6.ArgDepthDescription)
+	list.AddStringFlag(cloudapiv6.ArgOrderBy, "", "", cloudapiv6.ArgOrderByDescription)
 	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgOrderBy, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.K8sNodePoolsFilters(), cobra.ShellCompDirectiveNoFileComp
 	})
-	list.AddStringSliceFlag(cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, "Limits results to those containing a matching value for a specific property. Use the following format to set filters: --filters KEY1=VALUE1,KEY2=VALUE2")
+	list.AddStringSliceFlag(cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, cloudapiv6.ArgFiltersDescription)
 	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgFilters, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.K8sNodePoolsFilters(), cobra.ShellCompDirectiveNoFileComp
 	})
-	list.AddBoolFlag(config.ArgNoHeaders, "", false, "When using text output, don't print headers")
+	list.AddBoolFlag(config.ArgNoHeaders, "", false, cloudapiv6.ArgNoHeadersDescription)
+	list.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, cloudapiv6.ArgListAllDescription)
 
 	/*
 		Get Command
@@ -100,7 +104,8 @@ func K8sNodePoolCmd() *core.Command {
 	})
 	get.AddBoolFlag(config.ArgWaitForState, config.ArgWaitForStateShort, config.DefaultWait, "Wait for specified NodePool to be in ACTIVE state")
 	get.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, cloudapiv6.K8sTimeoutSeconds, "Timeout option for waiting for NodePool to be in ACTIVE state [seconds]")
-	get.AddBoolFlag(config.ArgNoHeaders, "", false, "When using text output, don't print headers")
+	get.AddBoolFlag(config.ArgNoHeaders, "", false, cloudapiv6.ArgNoHeadersDescription)
+	get.AddIntFlag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, config.DefaultGetDepth, cloudapiv6.ArgDepthDescription)
 
 	/*
 		Create Command
@@ -172,6 +177,7 @@ Required values to run a command (for Private Kubernetes Cluster):
 	create.AddStringToStringFlag(cloudapiv6.ArgAnnotations, cloudapiv6.ArgAnnotationsShort, map[string]string{}, "Annotations to set on a NodePool. It will overwrite the existing annotations, if there are any. Use the following format: --annotations KEY=VALUE,KEY=VALUE")
 	create.AddBoolFlag(config.ArgWaitForState, config.ArgWaitForStateShort, config.DefaultWait, "Wait for the new NodePool to be in ACTIVE state")
 	create.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, cloudapiv6.K8sTimeoutSeconds, "Timeout option for waiting for NodePool to be in ACTIVE state[seconds]")
+	create.AddIntFlag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, config.DefaultCreateDepth, cloudapiv6.ArgDepthDescription)
 
 	/*
 		Update Command
@@ -231,6 +237,7 @@ Required values to run command:
 	})
 	update.AddBoolFlag(config.ArgWaitForState, config.ArgWaitForStateShort, config.DefaultWait, "Wait for the new NodePool to be in ACTIVE state")
 	update.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, cloudapiv6.K8sTimeoutSeconds, "Timeout option for waiting for NodePool to be in ACTIVE state [seconds]")
+	update.AddIntFlag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, config.DefaultUpdateDepth, cloudapiv6.ArgDepthDescription)
 
 	/*
 		Delete Command
@@ -261,6 +268,7 @@ Required values to run command:
 		return completer.K8sNodePoolsIds(os.Stderr, viper.GetString(core.GetFlagName(deleteCmd.NS, cloudapiv6.ArgK8sClusterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete all the Kubernetes Node Pools within an existing Kubernetes Nodepools.")
+	deleteCmd.AddIntFlag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, config.DefaultDeleteDepth, cloudapiv6.ArgDepthDescription)
 
 	k8sCmd.AddCommand(K8sNodePoolLanCmd())
 
@@ -268,7 +276,10 @@ Required values to run command:
 }
 
 func PreRunK8sNodePoolsList(c *core.PreCommandConfig) error {
-	if err := core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgK8sClusterId); err != nil {
+	if err := core.CheckRequiredFlagsSets(c.Command, c.NS,
+		[]string{cloudapiv6.ArgK8sClusterId},
+		[]string{cloudapiv6.ArgAll},
+	); err != nil {
 		return err
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
@@ -294,7 +305,40 @@ func PreRunK8sClusterDcIds(c *core.PreCommandConfig) error {
 		[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgK8sClusterId})
 }
 
+func RunK8sNodePoolListAll(c *core.CommandConfig) error {
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	if !structs.IsZero(listQueryParams) {
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams))
+	}
+	clusters, _, err := c.CloudApiV6Services.K8s().ListClusters(resources.ListQueryParams{})
+	if err != nil {
+		return err
+	}
+	var allNodePools []resources.K8sNodePool
+	totalTime := time.Duration(0)
+	for _, cluster := range getK8sClusters(clusters) {
+		nodePools, resp, err := c.CloudApiV6Services.K8s().ListNodePools(*cluster.GetId(), listQueryParams)
+		if err != nil {
+			return err
+		}
+		allNodePools = append(allNodePools, getK8sNodePools(nodePools)...)
+		totalTime += resp.RequestTime
+	}
+
+	if totalTime != time.Duration(0) {
+		c.Printer.Verbose(config.RequestTimeMessage, totalTime)
+	}
+
+	return c.Printer.Print(getK8sNodePoolPrint(c, allNodePools))
+}
+
 func RunK8sNodePoolList(c *core.CommandConfig) error {
+	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
+		return RunK8sNodePoolListAll(c)
+	}
 	c.Printer.Verbose("Getting K8s NodePools from K8s Cluster with ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sClusterId)))
 	// Add Query Parameters for GET Requests
 	listQueryParams, err := query.GetListQueryParams(c)
@@ -326,13 +370,21 @@ func RunK8sNodePoolList(c *core.CommandConfig) error {
 }
 
 func RunK8sNodePoolGet(c *core.CommandConfig) error {
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	queryParams := listQueryParams.QueryParams
+	if !structs.IsZero(queryParams) {
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
+	}
 	k8sNodePoolId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sNodePoolId))
 	k8sClusterId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sClusterId))
 	if err := utils.WaitForState(c, waiter.K8sNodePoolStateInterrogator, k8sNodePoolId); err != nil {
 		return err
 	}
 	c.Printer.Verbose("K8s node pool with id: %v from K8s Cluster with id: %v is getting...", k8sNodePoolId, k8sClusterId)
-	u, resp, err := c.CloudApiV6Services.K8s().GetNodePool(k8sClusterId, k8sNodePoolId)
+	u, resp, err := c.CloudApiV6Services.K8s().GetNodePool(k8sClusterId, k8sNodePoolId, queryParams)
 	if resp != nil {
 		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
@@ -343,12 +395,20 @@ func RunK8sNodePoolGet(c *core.CommandConfig) error {
 }
 
 func RunK8sNodePoolCreate(c *core.CommandConfig) error {
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	queryParams := listQueryParams.QueryParams
+	if !structs.IsZero(queryParams) {
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
+	}
 	newNodePool, err := getNewK8sNodePool(c)
 	if err != nil {
 		return err
 	}
 	c.Printer.Verbose("Creating K8s NodePool in K8s Cluster with ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sClusterId)))
-	u, resp, err := c.CloudApiV6Services.K8s().CreateNodePool(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sClusterId)), *newNodePool)
+	u, resp, err := c.CloudApiV6Services.K8s().CreateNodePool(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sClusterId)), *newNodePool, queryParams)
 	if resp != nil && printer.GetId(resp) != "" {
 		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 	}
@@ -360,7 +420,7 @@ func RunK8sNodePoolCreate(c *core.CommandConfig) error {
 			if err = utils.WaitForState(c, waiter.K8sNodePoolStateInterrogator, *id); err != nil {
 				return err
 			}
-			if u, _, err = c.CloudApiV6Services.K8s().GetNodePool(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sClusterId)), *id); err != nil {
+			if u, _, err = c.CloudApiV6Services.K8s().GetNodePool(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sClusterId)), *id, queryParams); err != nil {
 				return err
 			}
 		} else {
@@ -371,15 +431,23 @@ func RunK8sNodePoolCreate(c *core.CommandConfig) error {
 }
 
 func RunK8sNodePoolUpdate(c *core.CommandConfig) error {
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	queryParams := listQueryParams.QueryParams
+	if !structs.IsZero(queryParams) {
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
+	}
 	_ = c.Printer.Print("WARNING: The following flags are deprecated:" + c.Command.GetAnnotationsByKey(core.DeprecatedFlagsAnnotation) + ". Use --labels, --annotations options instead!")
 	oldNodePool, _, err := c.CloudApiV6Services.K8s().GetNodePool(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sClusterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sNodePoolId)))
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sNodePoolId)), queryParams)
 	if err != nil {
 		return err
 	}
 	newNodePool := getNewK8sNodePoolUpdated(oldNodePool, c)
 	_, resp, err := c.CloudApiV6Services.K8s().UpdateNodePool(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sClusterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sNodePoolId)), newNodePool)
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sNodePoolId)), newNodePool, queryParams)
 	if resp != nil && printer.GetId(resp) != "" {
 		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 	}
@@ -390,11 +458,19 @@ func RunK8sNodePoolUpdate(c *core.CommandConfig) error {
 		return err
 	}
 	newNodePoolUpdated, _, err := c.CloudApiV6Services.K8s().GetNodePool(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sClusterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sNodePoolId)))
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sNodePoolId)), queryParams)
 	return c.Printer.Print(getK8sNodePoolPrint(c, getK8sNodePool(newNodePoolUpdated)))
 }
 
 func RunK8sNodePoolDelete(c *core.CommandConfig) error {
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	queryParams := listQueryParams.QueryParams
+	if !structs.IsZero(queryParams) {
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
+	}
 	k8sClusterId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sClusterId))
 	k8sNodePoolId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sNodePoolId))
 	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
@@ -408,7 +484,7 @@ func RunK8sNodePoolDelete(c *core.CommandConfig) error {
 			return err
 		}
 		c.Printer.Verbose("Starting deleting K8s node pool with id: %v from K8s Cluster with id: %v...", k8sNodePoolId, k8sClusterId)
-		resp, err := c.CloudApiV6Services.K8s().DeleteNodePool(k8sClusterId, k8sNodePoolId)
+		resp, err := c.CloudApiV6Services.K8s().DeleteNodePool(k8sClusterId, k8sNodePoolId, queryParams)
 		if resp != nil && printer.GetId(resp) != "" {
 			c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 		}
@@ -619,6 +695,14 @@ func getNewK8sNodePoolUpdated(oldUser *resources.K8sNodePool, c *core.CommandCon
 }
 
 func DeleteAllK8sNodepools(c *core.CommandConfig) error {
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	queryParams := listQueryParams.QueryParams
+	if !structs.IsZero(queryParams) {
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
+	}
 	k8sClusterId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sClusterId))
 	c.Printer.Verbose("K8sCluster ID: %v", k8sClusterId)
 	c.Printer.Verbose("Getting K8sNodePools...")
@@ -649,7 +733,7 @@ func DeleteAllK8sNodepools(c *core.CommandConfig) error {
 			for _, dc := range *k8sNodePoolsItems {
 				if id, ok := dc.GetIdOk(); ok && id != nil {
 					c.Printer.Verbose("Starting deleting K8sNodePool with id: %v...", *id)
-					resp, err = c.CloudApiV6Services.K8s().DeleteNodePool(k8sClusterId, *id)
+					resp, err = c.CloudApiV6Services.K8s().DeleteNodePool(k8sClusterId, *id, queryParams)
 					if resp != nil && printer.GetId(resp) != "" {
 						c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 					}
@@ -683,7 +767,7 @@ var defaultK8sNodePoolCols = []string{"NodePoolId", "Name", "K8sVersion", "NodeC
 
 var allK8sNodePoolCols = []string{"NodePoolId", "Name", "K8sVersion", "DatacenterId", "NodeCount", "CpuFamily", "StorageType", "State", "LanIds",
 	"CoresCount", "RamSize", "AvailabilityZone", "StorageSize", "MaintenanceWindow", "AutoScaling", "PublicIps", "AvailableUpgradeVersions",
-	"Annotations", "Labels"}
+	"Annotations", "Labels", "ClusterId"}
 
 type K8sNodePoolPrint struct {
 	NodePoolId               string            `json:"NodePoolId,omitempty"`
@@ -705,6 +789,7 @@ type K8sNodePoolPrint struct {
 	AvailableUpgradeVersions []string          `json:"AvailableUpgradeVersions,omitempty"`
 	Annotations              map[string]string `json:"Annotations,omitempty"`
 	Labels                   map[string]string `json:"Labels,omitempty"`
+	ClusterId                string            `json:"ClusterId,omitempty"`
 }
 
 func getK8sNodePoolPrint(c *core.CommandConfig, k8ss []resources.K8sNodePool) printer.Result {
@@ -713,14 +798,18 @@ func getK8sNodePoolPrint(c *core.CommandConfig, k8ss []resources.K8sNodePool) pr
 		if k8ss != nil {
 			r.OutputJSON = k8ss
 			r.KeyValue = getK8sNodePoolsKVMaps(k8ss)
-			r.Columns = getK8sNodePoolCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr())
+			r.Columns = getK8sNodePoolCols(
+				core.GetGlobalFlagName(c.Resource, config.ArgCols),
+				core.GetFlagName(c.NS, cloudapiv6.ArgAll),
+				c.Printer.GetStderr(),
+			)
 		}
 	}
 	return r
 }
 
-func getK8sNodePoolCols(flagName string, outErr io.Writer) []string {
-	if viper.IsSet(flagName) {
+func getK8sNodePoolCols(argCols string, argAll string, outErr io.Writer) []string {
+	if viper.IsSet(argCols) {
 		var k8sCols []string
 		columnsMap := map[string]string{
 			"NodePoolId":               "NodePoolId",
@@ -742,8 +831,9 @@ func getK8sNodePoolCols(flagName string, outErr io.Writer) []string {
 			"AvailableUpgradeVersions": "AvailableUpgradeVersions",
 			"Annotations":              "Annotations",
 			"Labels":                   "Labels",
+			"ClusterId":                "ClusterId",
 		}
-		for _, k := range viper.GetStringSlice(flagName) {
+		for _, k := range viper.GetStringSlice(argCols) {
 			col := columnsMap[k]
 			if col != "" {
 				k8sCols = append(k8sCols, col)
@@ -752,6 +842,12 @@ func getK8sNodePoolCols(flagName string, outErr io.Writer) []string {
 			}
 		}
 		return k8sCols
+	} else if viper.IsSet(argAll) {
+		var cols []string
+		// Add column which specifies which parent resource this belongs to, if using -a/--all flag
+		cols = append(defaultK8sNodePoolCols[:config.DefaultParentIndex+1], defaultK8sNodePoolCols[config.DefaultParentIndex:]...)
+		cols[config.DefaultParentIndex] = "ClusterId"
+		return cols
 	} else {
 		return defaultK8sNodePoolCols
 	}
@@ -855,6 +951,10 @@ func getK8sNodePoolsKVMaps(us []resources.K8sNodePool) []map[string]interface{} 
 			if stateOk, ok := metadataOk.GetStateOk(); ok && stateOk != nil {
 				uPrint.State = *stateOk
 			}
+		}
+		if hrefOk, ok := u.GetHrefOk(); ok && hrefOk != nil {
+			// Get parent resource ID using HREF: `.../k8s/[PARENT_ID_WE_WANT]/nodepools/[NODEPOOL_ID]`
+			uPrint.ClusterId = strings.Split(strings.Split(*hrefOk, "k8s")[1], "/")[1]
 		}
 		o := structs.Map(uPrint)
 		out = append(out, o)

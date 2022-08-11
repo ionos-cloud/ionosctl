@@ -33,8 +33,9 @@ Required values to run command:
   -a, --all                  Delete all the Resources Share from a specified Group.
   -u, --api-url string       Override default host url (default "https://api.ionos.com")
       --cols strings         Set of columns to be printed on output 
-                             Available columns: [ShareId EditPrivilege SharePrivilege Type] (default [ShareId,EditPrivilege,SharePrivilege,Type])
+                             Available columns: [ShareId EditPrivilege SharePrivilege Type GroupId] (default [ShareId,EditPrivilege,SharePrivilege,Type])
   -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+  -D, --depth int            Controls the detail depth of the response objects. Max depth is 10.
   -f, --force                Force command to execute without user input
       --group-id string      The unique Group Id (required)
   -h, --help                 Print usage

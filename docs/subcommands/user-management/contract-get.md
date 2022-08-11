@@ -35,6 +35,7 @@ Use this command to get information about the Contract Resources on your account
       --cols strings             Set of columns to be printed on output 
                                  Available columns: [ContractNumber Owner Status RegistrationDomain CoresPerServer CoresPerContract CoresProvisioned RamPerServer RamPerContract RamProvisioned HddLimitPerVolume HddLimitPerContract HddVolumeProvisioned SsdLimitPerVolume SsdLimitPerContract SsdVolumeProvisioned DasVolumeProvisioned ReservableIps ReservedIpsOnContract ReservedIpsInUse K8sClusterLimitTotal K8sClustersProvisioned NlbLimitTotal NlbProvisioned NatGatewayLimitTotal NatGatewayProvisioned] (default [ContractNumber,Owner,Status,RegistrationDomain])
   -c, --config string            Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+  -D, --depth int                Controls the detail depth of the response objects. Max depth is 10.
   -f, --force                    Force command to execute without user input
   -h, --help                     Print usage
       --no-headers               When using text output, don't print headers

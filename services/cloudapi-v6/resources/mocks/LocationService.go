@@ -35,9 +35,9 @@ func (m *MockLocationsService) EXPECT() *MockLocationsServiceMockRecorder {
 }
 
 // GetByRegionAndLocationId mocks base method.
-func (m *MockLocationsService) GetByRegionAndLocationId(regionId, locationId string) (*resources.Location, *resources.Response, error) {
+func (m *MockLocationsService) GetByRegionAndLocationId(regionId, locationId string, params resources.QueryParams) (*resources.Location, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetByRegionAndLocationId", regionId, locationId)
+	ret := m.ctrl.Call(m, "GetByRegionAndLocationId", regionId, locationId, params)
 	ret0, _ := ret[0].(*resources.Location)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -45,15 +45,15 @@ func (m *MockLocationsService) GetByRegionAndLocationId(regionId, locationId str
 }
 
 // GetByRegionAndLocationId indicates an expected call of GetByRegionAndLocationId.
-func (mr *MockLocationsServiceMockRecorder) GetByRegionAndLocationId(regionId, locationId interface{}) *gomock.Call {
+func (mr *MockLocationsServiceMockRecorder) GetByRegionAndLocationId(regionId, locationId, params interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByRegionAndLocationId", reflect.TypeOf((*MockLocationsService)(nil).GetByRegionAndLocationId), regionId, locationId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByRegionAndLocationId", reflect.TypeOf((*MockLocationsService)(nil).GetByRegionAndLocationId), regionId, locationId, params)
 }
 
 // GetByRegionId mocks base method.
-func (m *MockLocationsService) GetByRegionId(regionId string) (resources.Locations, *resources.Response, error) {
+func (m *MockLocationsService) GetByRegionId(regionId string, params resources.QueryParams) (resources.Locations, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetByRegionId", regionId)
+	ret := m.ctrl.Call(m, "GetByRegionId", regionId, params)
 	ret0, _ := ret[0].(resources.Locations)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -61,9 +61,9 @@ func (m *MockLocationsService) GetByRegionId(regionId string) (resources.Locatio
 }
 
 // GetByRegionId indicates an expected call of GetByRegionId.
-func (mr *MockLocationsServiceMockRecorder) GetByRegionId(regionId interface{}) *gomock.Call {
+func (mr *MockLocationsServiceMockRecorder) GetByRegionId(regionId, params interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByRegionId", reflect.TypeOf((*MockLocationsService)(nil).GetByRegionId), regionId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByRegionId", reflect.TypeOf((*MockLocationsService)(nil).GetByRegionId), regionId, params)
 }
 
 // List mocks base method.

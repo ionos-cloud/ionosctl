@@ -35,9 +35,9 @@ func (m *MockTemplatesService) EXPECT() *MockTemplatesServiceMockRecorder {
 }
 
 // Get mocks base method.
-func (m *MockTemplatesService) Get(templateId string) (*resources.Template, *resources.Response, error) {
+func (m *MockTemplatesService) Get(templateId string, params resources.QueryParams) (*resources.Template, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Get", templateId)
+	ret := m.ctrl.Call(m, "Get", templateId, params)
 	ret0, _ := ret[0].(*resources.Template)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -45,9 +45,9 @@ func (m *MockTemplatesService) Get(templateId string) (*resources.Template, *res
 }
 
 // Get indicates an expected call of Get.
-func (mr *MockTemplatesServiceMockRecorder) Get(templateId interface{}) *gomock.Call {
+func (mr *MockTemplatesServiceMockRecorder) Get(templateId, params interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockTemplatesService)(nil).Get), templateId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockTemplatesService)(nil).Get), templateId, params)
 }
 
 // List mocks base method.

@@ -23,6 +23,15 @@ You can install ionosctl using snap package manager:
 snap install ionosctl
 ```
 
+### Installing on macOS
+
+You can install `ionosctl` using the [Homebrew](https://brew.sh) package manager:
+
+```bash
+brew tap ionos-cloud/homebrew-ionos-cloud
+brew install ionosctl
+```
+
 #### Downloading a Release from GitHub
 
 Check the [Release Page](https://github.com/ionos-cloud/ionosctl/releases) and find the corresponding archive for your operating system and architecture. You can download the archive from your browser or you can follow the next steps if you are using a linux operating system:

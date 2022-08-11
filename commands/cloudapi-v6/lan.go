@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strings"
+	"time"
 
 	"go.uber.org/multierr"
 
@@ -37,10 +39,10 @@ func LanCmd() *core.Command {
 		},
 	}
 	globalFlags := lanCmd.GlobalFlags()
-	globalFlags.StringSliceP(config.ArgCols, "", defaultLanCols, printer.ColsMessage(defaultLanCols))
+	globalFlags.StringSliceP(config.ArgCols, "", defaultLanCols, printer.ColsMessage(allLanCols))
 	_ = viper.BindPFlag(core.GetGlobalFlagName(lanCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 	_ = lanCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return defaultLanCols, cobra.ShellCompDirectiveNoFileComp
+		return allLanCols, cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -62,16 +64,18 @@ func LanCmd() *core.Command {
 	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	list.AddIntFlag(cloudapiv6.ArgMaxResults, cloudapiv6.ArgMaxResultsShort, 0, "The maximum number of elements to return")
-	list.AddStringFlag(cloudapiv6.ArgOrderBy, "", "", "Limits results to those containing a matching value for a specific property")
+	list.AddIntFlag(cloudapiv6.ArgMaxResults, cloudapiv6.ArgMaxResultsShort, 0, cloudapiv6.ArgMaxResultsDescription)
+	list.AddIntFlag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, config.DefaultListDepth, cloudapiv6.ArgDepthDescription)
+	list.AddStringFlag(cloudapiv6.ArgOrderBy, "", "", cloudapiv6.ArgOrderByDescription)
 	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgOrderBy, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.LANsFilters(), cobra.ShellCompDirectiveNoFileComp
 	})
-	list.AddStringSliceFlag(cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, "Limits results to those containing a matching value for a specific property. Use the following format to set filters: --filters KEY1=VALUE1,KEY2=VALUE2")
+	list.AddStringSliceFlag(cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, cloudapiv6.ArgFiltersDescription)
 	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgFilters, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.LANsFilters(), cobra.ShellCompDirectiveNoFileComp
 	})
-	list.AddBoolFlag(config.ArgNoHeaders, "", false, "When using text output, don't print headers")
+	list.AddBoolFlag(config.ArgNoHeaders, "", false, cloudapiv6.ArgNoHeadersDescription)
+	list.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, cloudapiv6.ArgListAllDescription)
 
 	/*
 		Get Command
@@ -96,7 +100,8 @@ func LanCmd() *core.Command {
 	_ = get.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.LansIds(os.Stderr, viper.GetString(core.GetFlagName(get.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	get.AddBoolFlag(config.ArgNoHeaders, "", false, "When using text output, don't print headers")
+	get.AddBoolFlag(config.ArgNoHeaders, "", false, cloudapiv6.ArgNoHeadersDescription)
+	get.AddIntFlag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, config.DefaultGetDepth, cloudapiv6.ArgDepthDescription)
 
 	/*
 		Create Command
@@ -133,6 +138,7 @@ Required values to run command:
 	})
 	create.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for LAN creation to be executed")
 	create.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for LAN creation [seconds]")
+	create.AddIntFlag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, config.DefaultCreateDepth, cloudapiv6.ArgDepthDescription)
 
 	/*
 		Update Command
@@ -172,6 +178,7 @@ Required values to run command:
 	update.AddBoolFlag(cloudapiv6.ArgPublic, "", cloudapiv6.DefaultPublic, "Public option for LAN. E.g.: --public=true, --public=false")
 	update.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for LAN update to be executed")
 	update.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for LAN update [seconds]")
+	update.AddIntFlag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, config.DefaultUpdateDepth, cloudapiv6.ArgDepthDescription)
 
 	/*
 		Delete Command
@@ -206,12 +213,16 @@ Required values to run command:
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for Request for LAN deletion to be executed")
 	deleteCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete all Lans from a Virtual Data Center.")
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for LAN deletion [seconds]")
+	deleteCmd.AddIntFlag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, config.DefaultDeleteDepth, cloudapiv6.ArgDepthDescription)
 
 	return lanCmd
 }
 
 func PreRunLansList(c *core.PreCommandConfig) error {
-	if err := core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgDataCenterId); err != nil {
+	if err := core.CheckRequiredFlagsSets(c.Command, c.NS,
+		[]string{cloudapiv6.ArgDataCenterId},
+		[]string{cloudapiv6.ArgAll},
+	); err != nil {
 		return err
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
@@ -227,14 +238,50 @@ func PreRunLanDelete(c *core.PreCommandConfig) error {
 	)
 }
 
-func RunLanList(c *core.CommandConfig) error {
-	// Add Query Parameters for GET Requests
+func RunLanListAll(c *core.CommandConfig) error {
 	listQueryParams, err := query.GetListQueryParams(c)
 	if err != nil {
 		return err
 	}
 	if !structs.IsZero(listQueryParams) {
 		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams))
+	}
+	datacenters, _, err := c.CloudApiV6Services.DataCenters().List(listQueryParams)
+	if err != nil {
+		return err
+	}
+	allDcs := getDataCenters(datacenters)
+	var allLans []resources.Lan
+	totalTime := time.Duration(0)
+	for _, dc := range allDcs {
+		lans, resp, err := c.CloudApiV6Services.Lans().List(*dc.GetId(), listQueryParams)
+		if err != nil {
+			return err
+		}
+		allLans = append(allLans, getLans(lans)...)
+		totalTime += resp.RequestTime
+	}
+
+	if totalTime != time.Duration(0) {
+		c.Printer.Verbose(config.RequestTimeMessage, totalTime)
+	}
+
+	return c.Printer.Print(getLanPrint(nil, c, allLans))
+}
+
+func RunLanList(c *core.CommandConfig) error {
+	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
+		return RunLanListAll(c)
+	}
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	if !structs.IsZero(listQueryParams) {
+		c.Printer.Verbose("List Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams))
+		if !structs.IsZero(listQueryParams.QueryParams) {
+			c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams.QueryParams))
+		}
 	}
 	lans, resp, err := c.CloudApiV6Services.Lans().List(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)), listQueryParams)
 	if resp != nil {
@@ -247,11 +294,20 @@ func RunLanList(c *core.CommandConfig) error {
 }
 
 func RunLanGet(c *core.CommandConfig) error {
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	queryParams := listQueryParams.QueryParams
+	if !structs.IsZero(queryParams) {
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
+	}
 	c.Printer.Verbose("Lan with id: %v from Datacenter with id: %v is getting...",
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLanId)), viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
 	l, resp, err := c.CloudApiV6Services.Lans().Get(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLanId)),
+		queryParams,
 	)
 	if resp != nil {
 		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
@@ -263,6 +319,14 @@ func RunLanGet(c *core.CommandConfig) error {
 }
 
 func RunLanCreate(c *core.CommandConfig) error {
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	queryParams := listQueryParams.QueryParams
+	if !structs.IsZero(queryParams) {
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
+	}
 	name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
 	public := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgPublic))
 	properties := ionoscloud.LanPropertiesPost{
@@ -281,7 +345,7 @@ func RunLanCreate(c *core.CommandConfig) error {
 		},
 	}
 	c.Printer.Verbose("Creating LAN in Datacenter with ID: %v...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
-	l, resp, err := c.CloudApiV6Services.Lans().Create(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)), input)
+	l, resp, err := c.CloudApiV6Services.Lans().Create(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)), input, queryParams)
 	if resp != nil && printer.GetId(resp) != "" {
 		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 	}
@@ -295,7 +359,7 @@ func RunLanCreate(c *core.CommandConfig) error {
 	return c.Printer.Print(printer.Result{
 		OutputJSON:     l,
 		KeyValue:       getLanPostsKVMaps([]resources.LanPost{*l}),
-		Columns:        getLansCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr()),
+		Columns:        getLansCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), core.GetFlagName(c.NS, cloudapiv6.ArgAll), c.Printer.GetStderr()),
 		ApiResponse:    resp,
 		Resource:       "lan",
 		Verb:           "create",
@@ -304,6 +368,14 @@ func RunLanCreate(c *core.CommandConfig) error {
 }
 
 func RunLanUpdate(c *core.CommandConfig) error {
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	queryParams := listQueryParams.QueryParams
+	if !structs.IsZero(queryParams) {
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
+	}
 	input := resources.LanProperties{}
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgName)) {
 		name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
@@ -326,6 +398,7 @@ func RunLanUpdate(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLanId)),
 		input,
+		queryParams,
 	)
 	if resp != nil && printer.GetId(resp) != "" {
 		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
@@ -341,6 +414,14 @@ func RunLanUpdate(c *core.CommandConfig) error {
 }
 
 func RunLanDelete(c *core.CommandConfig) error {
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	queryParams := listQueryParams.QueryParams
+	if !structs.IsZero(queryParams) {
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
+	}
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	lanId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLanId))
 	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
@@ -353,7 +434,7 @@ func RunLanDelete(c *core.CommandConfig) error {
 			return err
 		}
 		c.Printer.Verbose("Starting deleting LAN with ID: %v from Datacenter with ID: %v...", lanId, dcId)
-		resp, err := c.CloudApiV6Services.Lans().Delete(dcId, lanId)
+		resp, err := c.CloudApiV6Services.Lans().Delete(dcId, lanId, queryParams)
 		if resp != nil && printer.GetId(resp) != "" {
 			c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 		}
@@ -368,6 +449,14 @@ func RunLanDelete(c *core.CommandConfig) error {
 }
 
 func DeleteAllLans(c *core.CommandConfig) error {
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	queryParams := listQueryParams.QueryParams
+	if !structs.IsZero(queryParams) {
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
+	}
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	c.Printer.Verbose("Datacenter ID: %v", dcId)
 	c.Printer.Verbose("Getting Lans...")
@@ -398,7 +487,7 @@ func DeleteAllLans(c *core.CommandConfig) error {
 			for _, lan := range *lansItems {
 				if id, ok := lan.GetIdOk(); ok && id != nil {
 					c.Printer.Verbose("Starting deleting Lan with id: %v...", *id)
-					resp, err = c.CloudApiV6Services.Lans().Delete(dcId, *id)
+					resp, err = c.CloudApiV6Services.Lans().Delete(dcId, *id, queryParams)
 					if resp != nil && printer.GetId(resp) != "" {
 						c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 					}
@@ -429,13 +518,15 @@ func DeleteAllLans(c *core.CommandConfig) error {
 // Output Printing
 
 var defaultLanCols = []string{"LanId", "Name", "Public", "PccId", "State"}
+var allLanCols = []string{"LanId", "Name", "Public", "PccId", "State", "DatacenterId"}
 
 type LanPrint struct {
-	LanId  string `json:"LanId,omitempty"`
-	Name   string `json:"Name,omitempty"`
-	Public bool   `json:"Public,omitempty"`
-	PccId  string `json:"PccId,omitempty"`
-	State  string `json:"State,omitempty"`
+	LanId        string `json:"LanId,omitempty"`
+	Name         string `json:"Name,omitempty"`
+	Public       bool   `json:"Public,omitempty"`
+	PccId        string `json:"PccId,omitempty"`
+	State        string `json:"State,omitempty"`
+	DatacenterId string `json:"DatacenterId,omitempty"`
 }
 
 func getLanPrint(resp *resources.Response, c *core.CommandConfig, lans []resources.Lan) printer.Result {
@@ -450,37 +541,46 @@ func getLanPrint(resp *resources.Response, c *core.CommandConfig, lans []resourc
 		if lans != nil {
 			r.OutputJSON = lans
 			r.KeyValue = getLansKVMaps(lans)
-			r.Columns = getLansCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr())
+			r.Columns = getLansCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), core.GetFlagName(
+				c.NS,
+				cloudapiv6.ArgAll,
+			), c.Printer.GetStderr())
 		}
 	}
 	return r
 }
 
-func getLansCols(flagName string, outErr io.Writer) []string {
+func getLansCols(argCols string, argAll string, outErr io.Writer) []string {
 	var cols []string
-	if viper.IsSet(flagName) {
-		cols = viper.GetStringSlice(flagName)
+	if viper.IsSet(argCols) {
+		cols = viper.GetStringSlice(argCols)
+
+		columnsMap := map[string]string{
+			"LanId":        "LanId",
+			"Name":         "Name",
+			"Public":       "Public",
+			"PccId":        "PccId",
+			"State":        "State",
+			"DatacenterId": "DatacenterId",
+		}
+		var lanCols []string
+		for _, k := range cols {
+			col := columnsMap[k]
+			if col != "" {
+				lanCols = append(lanCols, col)
+			} else {
+				clierror.CheckError(errors.New("unknown column "+k), outErr)
+			}
+		}
+		return lanCols
+	} else if viper.IsSet(argAll) {
+		// Add column which specifies which parent resource this belongs to, if using -a/--all flag
+		cols = append(defaultLanCols[:config.DefaultParentIndex+1], defaultLanCols[config.DefaultParentIndex:]...)
+		cols[config.DefaultParentIndex] = "DatacenterId"
+		return cols
 	} else {
 		return defaultLanCols
 	}
-
-	columnsMap := map[string]string{
-		"LanId":  "LanId",
-		"Name":   "Name",
-		"Public": "Public",
-		"PccId":  "PccId",
-		"State":  "State",
-	}
-	var lanCols []string
-	for _, k := range cols {
-		col := columnsMap[k]
-		if col != "" {
-			lanCols = append(lanCols, col)
-		} else {
-			clierror.CheckError(errors.New("unknown column "+k), outErr)
-		}
-	}
-	return lanCols
 }
 
 func getLans(lans resources.Lans) []resources.Lan {
@@ -515,6 +615,10 @@ func getLansKVMaps(ls []resources.Lan) []map[string]interface{} {
 			if state, ok := metadata.GetStateOk(); ok && state != nil {
 				lanprint.State = *state
 			}
+		}
+		if hrefOk, ok := l.GetHrefOk(); ok && hrefOk != nil {
+			// Get parent resource ID using HREF: `.../k8s/[PARENT_ID_WE_WANT]/nodepools/[NODEPOOL_ID]`
+			lanprint.DatacenterId = strings.Split(strings.Split(*hrefOk, "datacenter")[1], "/")[1]
 		}
 		o := structs.Map(lanprint)
 		out = append(out, o)

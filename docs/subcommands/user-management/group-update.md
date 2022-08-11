@@ -51,6 +51,7 @@ Required values to run command:
       --create-nic          The group will be allowed to create NICs. E.g.: --create-nic=true, --create-nic=false
       --create-pcc          The group will be allowed to create PCCs. E.g.: --create-pcc=true, --create-pcc=false
       --create-snapshot     The group will be allowed to create Snapshots. E.g.: --create-snapshot=true, --create-snapshot=false
+  -D, --depth int           Controls the detail depth of the response objects. Max depth is 10.
   -f, --force               Force command to execute without user input
   -i, --group-id string     The unique Group Id (required)
   -h, --help                Print usage

@@ -28,25 +28,25 @@ func TestNewUserService(t *testing.T) {
 	t.Run("get_user_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		userSvc := NewUserService(svc.Get(), ctx)
-		_, _, err := userSvc.Get(testResourceVar)
+		_, _, err := userSvc.Get(testResourceVar, QueryParams{})
 		assert.Error(t, err)
 	})
 	t.Run("create_user_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		userSvc := NewUserService(svc.Get(), ctx)
-		_, _, err := userSvc.Create(UserPost{})
+		_, _, err := userSvc.Create(UserPost{}, QueryParams{})
 		assert.Error(t, err)
 	})
 	t.Run("update_user_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		userSvc := NewUserService(svc.Get(), ctx)
-		_, _, err := userSvc.Update(testResourceVar, UserPut{})
+		_, _, err := userSvc.Update(testResourceVar, UserPut{}, QueryParams{})
 		assert.Error(t, err)
 	})
 	t.Run("delete_user_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		userSvc := NewUserService(svc.Get(), ctx)
-		_, err := userSvc.Delete(testResourceVar)
+		_, err := userSvc.Delete(testResourceVar, QueryParams{})
 		assert.Error(t, err)
 	})
 	t.Run("listresources_user_error", func(t *testing.T) {
