@@ -207,20 +207,6 @@ func PreRunClusterId(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.Command, c.NS, dp.ArgClusterId)
 }
 
-func PreRunClusterDelete(c *core.PreCommandConfig) error {
-	err := core.CheckRequiredFlagsSets(c.Command, c.NS, []string{dp.ArgClusterId}, []string{config.ArgAll})
-	if err != nil {
-		return err
-	}
-	// Validate Flags
-	if viper.IsSet(core.GetFlagName(c.NS, dp.ArgName)) {
-		if !viper.IsSet(core.GetFlagName(c.NS, config.ArgAll)) {
-			return errors.New("error: name flag can to be used with the --all flag")
-		}
-	}
-	return nil
-}
-
 func PreRunClusterCreate(c *core.PreCommandConfig) error {
 	err := core.CheckRequiredFlags(c.Command, c.NS, dp.ArgDatacenterId, dp.ArgName)
 	if err != nil {
@@ -238,6 +224,20 @@ func PreRunClusterCreate(c *core.PreCommandConfig) error {
 	return nil
 }
 
+func PreRunClusterDelete(c *core.PreCommandConfig) error {
+	err := core.CheckRequiredFlagsSets(c.Command, c.NS, []string{dp.ArgClusterId}, []string{config.ArgAll})
+	if err != nil {
+		return err
+	}
+	// Validate Flags
+	if viper.IsSet(core.GetFlagName(c.NS, dp.ArgName)) {
+		if !viper.IsSet(core.GetFlagName(c.NS, config.ArgAll)) {
+			return errors.New("error: name flag can to be used with the --all flag")
+		}
+	}
+	return nil
+}
+
 func RunClusterList(c *core.CommandConfig) error {
 	c.Printer.Verbose("Getting Clusters...")
 	if viper.IsSet(core.GetFlagName(c.NS, dp.ArgName)) {
@@ -251,12 +251,13 @@ func RunClusterList(c *core.CommandConfig) error {
 }
 
 func RunClusterGet(c *core.CommandConfig) error {
-	c.Printer.Verbose("Cluster ID: %v", viper.GetString(core.GetFlagName(c.NS, dp.ArgClusterId)))
+	clusterId := viper.GetString(core.GetFlagName(c.NS, dp.ArgClusterId))
+	c.Printer.Verbose("Cluster ID: %v", clusterId)
 	c.Printer.Verbose("Getting Cluster...")
-	if err := utils.WaitForState(c, waiter.ClusterStateInterrogator, viper.GetString(core.GetFlagName(c.NS, dp.ArgClusterId))); err != nil {
+	if err := utils.WaitForState(c, waiter.ClusterStateInterrogator, clusterId); err != nil {
 		return err
 	}
-	cluster, _, err := c.DataPlatformServices.Clusters().Get(viper.GetString(core.GetFlagName(c.NS, dp.ArgClusterId)))
+	cluster, _, err := c.DataPlatformServices.Clusters().Get(clusterId)
 	if err != nil {
 		return err
 	}
@@ -291,12 +292,9 @@ func RunClusterCreate(c *core.CommandConfig) error {
 func RunClusterUpdate(c *core.CommandConfig) error {
 	clusterId := viper.GetString(core.GetFlagName(c.NS, dp.ArgClusterId))
 	c.Printer.Verbose("Cluster ID: %v", clusterId)
-	input, err := getPatchClusterRequest(c)
-	if err != nil {
-		return err
-	}
+	newCluster := getPatchClusterRequest(c)
 	c.Printer.Verbose("Updating Cluster...")
-	item, resp, err := c.DataPlatformServices.Clusters().Update(clusterId, *input)
+	_, _, err := c.DataPlatformServices.Clusters().Update(clusterId, *newCluster)
 	if err != nil {
 		return err
 	}
@@ -304,11 +302,12 @@ func RunClusterUpdate(c *core.CommandConfig) error {
 		c.Printer.Verbose("Wait 10 seconds before checking state...")
 		// Sleeping 10 seconds to make sure the cluster is in BUSY state. This will be removed in future releases.
 		time.Sleep(10 * time.Second)
-		if err = utils.WaitForState(c, waiter.ClusterStateInterrogator, viper.GetString(core.GetFlagName(c.NS, dp.ArgClusterId))); err != nil {
+		if err = utils.WaitForState(c, waiter.ClusterStateInterrogator, clusterId); err != nil {
 			return err
 		}
 	}
-	return c.Printer.Print(getClusterPrint(resp, c, []resources.ClusterResponseData{item}))
+	clusterUpdated, resp, err := c.DataPlatformServices.Clusters().Get(clusterId)
+	return c.Printer.Print(getClusterPrint(resp, c, []resources.ClusterResponseData{clusterUpdated}))
 }
 
 func RunClusterDelete(c *core.CommandConfig) error {
@@ -328,7 +327,7 @@ func RunClusterDelete(c *core.CommandConfig) error {
 		if err != nil {
 			return err
 		}
-		if err = utils.WaitForDelete(c, waiter.ClusterDeleteInterrogator, viper.GetString(core.GetFlagName(c.NS, dp.ArgClusterId))); err != nil {
+		if err = utils.WaitForDelete(c, waiter.ClusterDeleteInterrogator, clusterId); err != nil {
 			return err
 		}
 		return c.Printer.Print(getClusterPrint(resp, c, nil))
@@ -431,7 +430,7 @@ func getCreateClusterRequest(c *core.CommandConfig) (*resources.CreateClusterReq
 	return &inputCluster, nil
 }
 
-func getPatchClusterRequest(c *core.CommandConfig) (*resources.PatchClusterRequest, error) {
+func getPatchClusterRequest(c *core.CommandConfig) *resources.PatchClusterRequest {
 	inputCluster := resources.PatchClusterRequest{}
 	input := sdkgo.PatchClusterProperties{}
 	if viper.IsSet(core.GetFlagName(c.NS, dp.ArgName)) {
@@ -460,7 +459,7 @@ func getPatchClusterRequest(c *core.CommandConfig) (*resources.PatchClusterReque
 		input.SetMaintenanceWindow(maintenanceWindow)
 	}
 	inputCluster.SetProperties(input)
-	return &inputCluster, nil
+	return &inputCluster
 }
 
 // Output Printing

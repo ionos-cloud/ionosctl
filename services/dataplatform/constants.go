@@ -31,24 +31,11 @@ const (
 const (
 	ClusterId             = "The unique ID of the Cluster"
 	NodePoolId            = "The unique ID of the Node Pool"
-	BackupId              = "The unique ID of the Backup"
 	DefaultClusterTimeout = int(1200)
 )
 
 // Default values
 const (
-	DefaultOutputFormat    = "text"
-	DefaultWait            = false
-	DefaultPublic          = false
-	DefaultDhcp            = true
-	DefaultFirewallActive  = false
-	DefaultTimeoutSeconds  = int(60)
-	NlbTimeoutSeconds      = int(300)
-	LbTimeoutSeconds       = int(300)
-	AlbTimeoutSeconds      = int(10000)
 	TimeoutSeconds         = int(600)
-	DefaultServerCores     = 2
-	DefaultVolumeSize      = 10
-	DefaultNicLanId        = 1
 	DefaultServerCPUFamily = "AUTO"
 )

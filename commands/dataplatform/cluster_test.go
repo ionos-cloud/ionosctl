@@ -44,6 +44,13 @@ var (
 			},
 		},
 	}
+	testPatchClusterRequestOld = resources.PatchClusterRequest{
+		PatchClusterRequest: sdkgo.PatchClusterRequest{
+			Properties: &sdkgo.PatchClusterProperties{
+				Name: &testClusterVar,
+			},
+		},
+	}
 	testClusterGetNew = resources.ClusterResponseData{
 		ClusterResponseData: sdkgo.ClusterResponseData{
 			Id: &testClusterVar,
@@ -117,7 +124,7 @@ func TestClusterCmd(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-func TestPreClusterId(t *testing.T) {
+func TestPreRunClusterId(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
@@ -130,7 +137,7 @@ func TestPreClusterId(t *testing.T) {
 	})
 }
 
-func TestPreClusterIdErr(t *testing.T) {
+func TestPreRunClusterIdErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
@@ -370,7 +377,7 @@ func TestRunClusterCreateWaitForState(t *testing.T) {
 	})
 }
 
-func TestRunClusterCreateWaitForStateResponse(t *testing.T) {
+func TestRunClusterCreateWaitForStateErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
@@ -385,10 +392,10 @@ func TestRunClusterCreateWaitForStateResponse(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, dp.ArgVersion), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, dp.ArgMaintenanceTime), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, dp.ArgMaintenanceDay), testClusterVar)
-		rm.DataPlatformMocks.Cluster.EXPECT().Create(testCreateClusterRequest).Return(testClusterGet, &resources.Response{}, nil)
-		rm.DataPlatformMocks.Cluster.EXPECT().Get(testClusterVar).Return(testClusterGet, nil, nil).Times(2)
+		rm.DataPlatformMocks.Cluster.EXPECT().Create(testCreateClusterRequest).Return(testClusterGet, nil, nil)
+		rm.DataPlatformMocks.Cluster.EXPECT().Get(testClusterVar).Return(testClusterGetFailed, nil, nil)
 		err := RunClusterCreate(cfg)
-		assert.NoError(t, err)
+		assert.Error(t, err)
 	})
 }
 
@@ -408,28 +415,6 @@ func TestRunClusterCreateWaitForStateIdErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, dp.ArgMaintenanceTime), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, dp.ArgMaintenanceDay), testClusterVar)
 		rm.DataPlatformMocks.Cluster.EXPECT().Create(testCreateClusterRequest).Return(resources.ClusterResponseData{}, nil, nil)
-		err := RunClusterCreate(cfg)
-		assert.Error(t, err)
-	})
-}
-
-func TestRunClusterCreateWaitForStateErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
-		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgQuiet, false)
-		viper.Set(config.ArgVerbose, false)
-		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForState), true)
-		viper.Set(core.GetFlagName(cfg.NS, dp.ArgDatacenterId), testClusterVar)
-		viper.Set(core.GetFlagName(cfg.NS, dp.ArgName), testClusterVar)
-		viper.Set(core.GetFlagName(cfg.NS, dp.ArgVersion), testClusterVar)
-		viper.Set(core.GetFlagName(cfg.NS, dp.ArgMaintenanceTime), testClusterVar)
-		viper.Set(core.GetFlagName(cfg.NS, dp.ArgMaintenanceDay), testClusterVar)
-		rm.DataPlatformMocks.Cluster.EXPECT().Create(testCreateClusterRequest).Return(testClusterGet, nil, nil)
-		rm.DataPlatformMocks.Cluster.EXPECT().Get(testClusterVar).Return(testClusterGetFailed, nil, nil)
 		err := RunClusterCreate(cfg)
 		assert.Error(t, err)
 	})
@@ -474,8 +459,95 @@ func TestRunClusterUpdate(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, dp.ArgMaintenanceTime), testClusterNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, dp.ArgMaintenanceDay), testClusterNewVar)
 		rm.DataPlatformMocks.Cluster.EXPECT().Update(testClusterVar, testPatchClusterRequest).Return(testClusterGetNew, nil, nil)
+		rm.DataPlatformMocks.Cluster.EXPECT().Get(testClusterVar).Return(testClusterGetNew, nil, nil)
 		err := RunClusterUpdate(cfg)
 		assert.NoError(t, err)
+	})
+}
+
+func TestRunClusterUpdateErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgClusterId), testClusterVar)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgDatacenterId), testClusterNewVar)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgName), testClusterNewVar)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgVersion), testClusterNewVar)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgMaintenanceTime), testClusterNewVar)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgMaintenanceDay), testClusterNewVar)
+		rm.DataPlatformMocks.Cluster.EXPECT().Update(testClusterVar, testPatchClusterRequest).Return(testClusterGetNew, nil, testClusterErr)
+		err := RunClusterUpdate(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestRunClusterUpdateOld(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgClusterId), testClusterVar)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgName), testClusterVar)
+		rm.DataPlatformMocks.Cluster.EXPECT().Update(testClusterVar, testPatchClusterRequestOld).Return(testClusterGetNew, nil, nil)
+		rm.DataPlatformMocks.Cluster.EXPECT().Get(testClusterVar).Return(testClusterGetNew, nil, nil)
+		err := RunClusterUpdate(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunClusterUpdateWaitForRequest(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForState), true)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgClusterId), testClusterVar)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgDatacenterId), testClusterNewVar)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgName), testClusterNewVar)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgVersion), testClusterNewVar)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgMaintenanceTime), testClusterNewVar)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgMaintenanceDay), testClusterNewVar)
+		rm.DataPlatformMocks.Cluster.EXPECT().Get(testClusterVar).Return(testClusterGetNew, nil, nil)
+		rm.DataPlatformMocks.Cluster.EXPECT().Update(testClusterVar, testPatchClusterRequest).Return(testClusterGetNew, nil, nil)
+		rm.DataPlatformMocks.Cluster.EXPECT().Get(testClusterVar).Return(testClusterGetNew, nil, nil)
+		err := RunClusterUpdate(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunClusterUpdateWaitForRequestErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForState), true)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgClusterId), testClusterVar)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgDatacenterId), testClusterNewVar)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgName), testClusterNewVar)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgVersion), testClusterNewVar)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgMaintenanceTime), testClusterNewVar)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgMaintenanceDay), testClusterNewVar)
+		rm.DataPlatformMocks.Cluster.EXPECT().Get(testClusterVar).Return(testClusterGetFailed, nil, nil)
+		rm.DataPlatformMocks.Cluster.EXPECT().Update(testClusterVar, testPatchClusterRequest).Return(testClusterGetFailed, nil, nil)
+		err := RunClusterUpdate(cfg)
+		assert.Error(t, err)
 	})
 }
 
@@ -635,27 +707,6 @@ func TestRunClusterDeleteAskConfirmErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, dp.ArgClusterId), testClusterVar)
 		cfg.Stdin = os.Stdin
 		err := RunClusterDelete(cfg)
-		assert.Error(t, err)
-	})
-}
-
-func TestRunClusterUpdateErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
-		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgQuiet, false)
-		viper.Set(config.ArgVerbose, false)
-		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
-		viper.Set(core.GetFlagName(cfg.NS, dp.ArgClusterId), testClusterVar)
-		viper.Set(core.GetFlagName(cfg.NS, dp.ArgDatacenterId), testClusterNewVar)
-		viper.Set(core.GetFlagName(cfg.NS, dp.ArgName), testClusterNewVar)
-		viper.Set(core.GetFlagName(cfg.NS, dp.ArgVersion), testClusterNewVar)
-		viper.Set(core.GetFlagName(cfg.NS, dp.ArgMaintenanceTime), testClusterNewVar)
-		viper.Set(core.GetFlagName(cfg.NS, dp.ArgMaintenanceDay), testClusterNewVar)
-		rm.DataPlatformMocks.Cluster.EXPECT().Update(testClusterVar, testPatchClusterRequest).Return(testClusterGetNew, nil, testClusterErr)
-		err := RunClusterUpdate(cfg)
 		assert.Error(t, err)
 	})
 }

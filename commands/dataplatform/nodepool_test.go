@@ -14,15 +14,15 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
-	ionoscloud "github.com/ionos-cloud/sdk-go-autoscaling"
+	sdkgo "github.com/ionos-cloud/sdk-go-autoscaling"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
 
 var (
 	testCreateNodePoolRequest = resources.CreateNodePoolRequest{
-		CreateNodePoolRequest: ionoscloud.CreateNodePoolRequest{
-			Properties: &ionoscloud.CreateNodePoolProperties{
+		CreateNodePoolRequest: sdkgo.CreateNodePoolRequest{
+			Properties: &sdkgo.CreateNodePoolProperties{
 				Name:             &testNodePoolVar,
 				NodeCount:        &testNodePoolIntVar,
 				CpuFamily:        &testNodePoolVar,
@@ -33,7 +33,7 @@ var (
 				CoresCount:       &testNodePoolIntVar,
 				Annotations:      &testNodePoolKVMap,
 				Labels:           &testNodePoolKVMap,
-				MaintenanceWindow: &ionoscloud.MaintenanceWindow{
+				MaintenanceWindow: &sdkgo.MaintenanceWindow{
 					Time:         &testNodePoolVar,
 					DayOfTheWeek: &testNodePoolVar,
 				},
@@ -41,10 +41,10 @@ var (
 		},
 	}
 	testPatchNodePoolRequest = resources.PatchNodePoolRequest{
-		PatchNodePoolRequest: ionoscloud.PatchNodePoolRequest{
-			Properties: &ionoscloud.PatchNodePoolProperties{
+		PatchNodePoolRequest: sdkgo.PatchNodePoolRequest{
+			Properties: &sdkgo.PatchNodePoolProperties{
 				NodeCount: &testNodePoolIntNewVar,
-				MaintenanceWindow: &ionoscloud.MaintenanceWindow{
+				MaintenanceWindow: &sdkgo.MaintenanceWindow{
 					DayOfTheWeek: &testNodePoolNewVar,
 					Time:         &testNodePoolNewVar,
 				},
@@ -54,40 +54,31 @@ var (
 		},
 	}
 	testPatchOldNodePoolRequest = resources.PatchNodePoolRequest{
-		PatchNodePoolRequest: ionoscloud.PatchNodePoolRequest{
-			Properties: &ionoscloud.PatchNodePoolProperties{
+		PatchNodePoolRequest: sdkgo.PatchNodePoolRequest{
+			Properties: &sdkgo.PatchNodePoolProperties{
 				NodeCount: &testNodePoolIntVar,
 			},
 		},
 	}
 	testNodePoolGetNew = resources.NodePoolResponseData{
-		NodePoolResponseData: ionoscloud.NodePoolResponseData{
+		NodePoolResponseData: sdkgo.NodePoolResponseData{
 			Id: &testNodePoolVar,
-			Properties: &ionoscloud.NodePool{
+			Properties: &sdkgo.NodePool{
 				Name:                &testNodePoolVar,
 				DataPlatformVersion: &testNodePoolNewVar,
 				NodeCount:           &testNodePoolIntNewVar,
 				Annotations:         &testNodePoolKVNewMap,
 				Labels:              &testNodePoolKVNewMap,
-				MaintenanceWindow: &ionoscloud.MaintenanceWindow{
+				MaintenanceWindow: &sdkgo.MaintenanceWindow{
 					DayOfTheWeek: &testNodePoolNewVar,
 					Time:         &testNodePoolNewVar,
 				}},
 		},
 	}
-	testNodePoolGetOld = resources.NodePoolResponseData{
-		NodePoolResponseData: ionoscloud.NodePoolResponseData{
-			Id: &testNodePoolVar,
-			Properties: &ionoscloud.NodePool{
-				Name:                &testNodePoolVar,
-				NodeCount:           &testNodePoolIntVar,
-				DataPlatformVersion: &testNodePoolVar,
-			},
-		},
-	}
 	testNodePoolGet = resources.NodePoolResponseData{
-		NodePoolResponseData: ionoscloud.NodePoolResponseData{
-			Properties: &ionoscloud.NodePool{
+		NodePoolResponseData: sdkgo.NodePoolResponseData{
+			Id: &testNodePoolVar,
+			Properties: &sdkgo.NodePool{
 				Name:                &testNodePoolVar,
 				NodeCount:           &testNodePoolIntVar,
 				DatacenterId:        &testNodePoolVar,
@@ -100,65 +91,20 @@ var (
 				CoresCount:          &testNodePoolIntVar,
 				Annotations:         &testNodePoolKVMap,
 				Labels:              &testNodePoolKVMap,
-				MaintenanceWindow: &ionoscloud.MaintenanceWindow{
+				MaintenanceWindow: &sdkgo.MaintenanceWindow{
 					Time:         &testNodePoolVar,
 					DayOfTheWeek: &testNodePoolVar,
 				},
 			},
-			Metadata: &ionoscloud.Metadata{
-				State: &testClusterStateVar,
-			},
-		},
-	}
-	nodePoolTestGet = resources.NodePoolResponseData{
-		NodePoolResponseData: ionoscloud.NodePoolResponseData{
-			Id: &testNodePoolVar,
-			Properties: &ionoscloud.NodePool{
-				Name:                &testNodePoolVar,
-				NodeCount:           &testNodePoolIntVar,
-				DatacenterId:        &testNodePoolVar,
-				CpuFamily:           &testNodePoolVar,
-				AvailabilityZone:    &testAvailabilityZone,
-				RamSize:             &testNodePoolIntVar,
-				StorageSize:         &testNodePoolIntVar,
-				StorageType:         &testStorageType,
-				DataPlatformVersion: &testNodePoolVar,
-				CoresCount:          &testNodePoolIntVar,
-				MaintenanceWindow: &ionoscloud.MaintenanceWindow{
-					Time:         &testNodePoolVar,
-					DayOfTheWeek: &testNodePoolVar,
-				},
-			},
-		},
-	}
-	nodePoolTestGetNew = resources.NodePoolResponseData{
-		NodePoolResponseData: ionoscloud.NodePoolResponseData{
-			Id: &testNodePoolVar,
-			Properties: &ionoscloud.NodePool{
-				Name:                &testNodePoolVar,
-				NodeCount:           &testNodePoolIntVar,
-				DatacenterId:        &testNodePoolVar,
-				CpuFamily:           &testNodePoolVar,
-				AvailabilityZone:    &testAvailabilityZone,
-				RamSize:             &testNodePoolIntVar,
-				StorageSize:         &testNodePoolIntVar,
-				StorageType:         &testStorageType,
-				DataPlatformVersion: &testNodePoolVar,
-				CoresCount:          &testNodePoolIntVar,
-				MaintenanceWindow: &ionoscloud.MaintenanceWindow{
-					DayOfTheWeek: &testNodePoolVar,
-					Time:         &testNodePoolVar,
-				},
-			},
-			Metadata: &ionoscloud.Metadata{
+			Metadata: &sdkgo.Metadata{
 				State: &testNodePoolStateVar,
 			},
 		},
 	}
-	nodePoolTestGetFailed = resources.NodePoolResponseData{
-		NodePoolResponseData: ionoscloud.NodePoolResponseData{
+	testNodePoolGetFailed = resources.NodePoolResponseData{
+		NodePoolResponseData: sdkgo.NodePoolResponseData{
 			Id: &testNodePoolVar,
-			Properties: &ionoscloud.NodePool{
+			Properties: &sdkgo.NodePool{
 				Name:                &testNodePoolVar,
 				NodeCount:           &testNodePoolIntVar,
 				DatacenterId:        &testNodePoolVar,
@@ -169,55 +115,20 @@ var (
 				StorageType:         &testStorageType,
 				DataPlatformVersion: &testNodePoolVar,
 				CoresCount:          &testNodePoolIntVar,
-				MaintenanceWindow: &ionoscloud.MaintenanceWindow{
+				MaintenanceWindow: &sdkgo.MaintenanceWindow{
 					DayOfTheWeek: &testNodePoolVar,
 					Time:         &testNodePoolVar,
 				},
 			},
-			Metadata: &ionoscloud.Metadata{
+			Metadata: &sdkgo.Metadata{
 				State: &testNodePoolStateFailedVar,
 			},
 		},
 	}
 
-	nodePoolsList = resources.NodePoolListResponseData{
-		NodePoolListResponseData: ionoscloud.NodePoolListResponseData{
-			Id: &testNodePoolVar,
-			Items: &[]ionoscloud.NodePoolResponseData{
-				nodePoolTestId.NodePoolResponseData,
-				nodePoolTestId.NodePoolResponseData,
-			},
-		},
-	}
-	nodePoolTestId = resources.NodePoolResponseData{
-		NodePoolResponseData: ionoscloud.NodePoolResponseData{
-			Id: &testNodePoolVar,
-			Properties: &ionoscloud.NodePool{
-				Name:                &testNodePoolVar,
-				NodeCount:           &testNodePoolIntVar,
-				DatacenterId:        &testNodePoolVar,
-				CpuFamily:           &testNodePoolVar,
-				AvailabilityZone:    &testAvailabilityZone,
-				RamSize:             &testNodePoolIntVar,
-				StorageSize:         &testNodePoolIntVar,
-				StorageType:         &testStorageType,
-				DataPlatformVersion: &testNodePoolVar,
-				CoresCount:          &testNodePoolIntVar,
-				MaintenanceWindow: &ionoscloud.MaintenanceWindow{
-					Time:         &testNodePoolVar,
-					DayOfTheWeek: &testNodePoolVar,
-				},
-			},
-			Metadata: &ionoscloud.Metadata{
-				State: &testClusterStateVar,
-			},
-		},
-	}
-
-	nodePools = resources.NodePoolListResponseData{
-		NodePoolListResponseData: ionoscloud.NodePoolListResponseData{
-			Id:    &testNodePoolVar,
-			Items: &[]ionoscloud.NodePoolResponseData{testNodePoolGet.NodePoolResponseData},
+	testNodePools = resources.NodePoolListResponseData{
+		NodePoolListResponseData: sdkgo.NodePoolListResponseData{
+			Items: &[]sdkgo.NodePoolResponseData{testNodePoolGet.NodePoolResponseData},
 		},
 	}
 
@@ -230,9 +141,18 @@ var (
 	testNodePoolStateFailedVar = "FAILED"
 	testNodePoolStateVar       = "AVAILABLE"
 	testNodePoolErr            = errors.New("nodepool test error")
-	testAvailabilityZone       = ionoscloud.AvailabilityZone(testNodePoolVar)
-	testStorageType            = ionoscloud.StorageType(testNodePoolVar)
+	testAvailabilityZone       = sdkgo.AvailabilityZone(testNodePoolVar)
+	testStorageType            = sdkgo.StorageType(testNodePoolVar)
 )
+
+func TestNodePoolCmd(t *testing.T) {
+	var err error
+	core.RootCmdTest.AddCommand(NodePoolCmd())
+	if ok := NodePoolCmd().IsAvailableCommand(); !ok {
+		err = errors.New("non-available cmd")
+	}
+	assert.NoError(t, err)
+}
 
 func TestPreRunClusterNodePoolIds(t *testing.T) {
 	var b bytes.Buffer
@@ -338,33 +258,6 @@ func TestPreRunNodePoolDeleteErr(t *testing.T) {
 	})
 }
 
-func TestPreRunNodePoolDeleteAll(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(config.ArgQuiet, false)
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(core.GetFlagName(cfg.NS, dp.ArgClusterId), testNodePoolVar)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgAll), true)
-		err := PreRunClusterNodePoolDelete(cfg)
-		assert.NoError(t, err)
-	})
-}
-
-func TestPreRunNodePoolDeleteAllErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(config.ArgQuiet, false)
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgAll), true)
-		err := PreRunClusterNodePoolDelete(cfg)
-		assert.Error(t, err)
-	})
-}
-
 func TestRunNodePoolList(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
@@ -374,7 +267,7 @@ func TestRunNodePoolList(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgVerbose, false)
 		viper.Set(core.GetFlagName(cfg.NS, dp.ArgClusterId), testNodePoolVar)
-		rm.DataPlatformMocks.NodePool.EXPECT().List(testNodePoolVar).Return(nodePools, nil, nil)
+		rm.DataPlatformMocks.NodePool.EXPECT().List(testNodePoolVar).Return(testNodePools, nil, nil)
 		err := RunNodePoolList(cfg)
 		assert.NoError(t, err)
 	})
@@ -388,7 +281,7 @@ func TestRunNodePoolListErr(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, dp.ArgClusterId), testNodePoolVar)
-		rm.DataPlatformMocks.NodePool.EXPECT().List(testNodePoolVar).Return(nodePools, nil, testNodePoolErr)
+		rm.DataPlatformMocks.NodePool.EXPECT().List(testNodePoolVar).Return(testNodePools, nil, testNodePoolErr)
 		err := RunNodePoolList(cfg)
 		assert.Error(t, err)
 	})
@@ -405,46 +298,9 @@ func TestRunNodePoolGet(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForState), false)
 		viper.Set(core.GetFlagName(cfg.NS, dp.ArgNodePoolId), testNodePoolVar)
 		viper.Set(core.GetFlagName(cfg.NS, dp.ArgClusterId), testNodePoolVar)
-		rm.DataPlatformMocks.NodePool.EXPECT().Get(testNodePoolVar, testNodePoolVar).Return(nodePoolTestGet, nil, nil)
+		rm.DataPlatformMocks.NodePool.EXPECT().Get(testNodePoolVar, testNodePoolVar).Return(testNodePoolGet, nil, nil)
 		err := RunNodePoolGet(cfg)
 		assert.NoError(t, err)
-	})
-}
-
-func TestRunNodePoolGetWait(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
-		viper.Reset()
-		viper.Set(config.ArgQuiet, false)
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgVerbose, false)
-		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForState), true)
-		viper.Set(core.GetFlagName(cfg.NS, dp.ArgNodePoolId), testNodePoolVar)
-		viper.Set(core.GetFlagName(cfg.NS, dp.ArgClusterId), testNodePoolVar)
-		rm.DataPlatformMocks.NodePool.EXPECT().Get(testNodePoolVar, testNodePoolVar).Return(nodePoolTestGet, nil, nil)
-		rm.DataPlatformMocks.NodePool.EXPECT().Get(testNodePoolVar, testNodePoolVar).Return(nodePoolTestGet, nil, nil)
-		err := RunNodePoolGet(cfg)
-		assert.NoError(t, err)
-	})
-}
-
-func TestRunNodePoolGetWaitErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
-		viper.Reset()
-		viper.Set(config.ArgQuiet, false)
-		viper.Set(config.ArgVerbose, false)
-		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForState), true)
-		viper.Set(core.GetFlagName(cfg.NS, dp.ArgNodePoolId), testNodePoolVar)
-		viper.Set(core.GetFlagName(cfg.NS, dp.ArgClusterId), testNodePoolVar)
-		rm.DataPlatformMocks.NodePool.EXPECT().Get(testNodePoolVar, testNodePoolVar).Return(nodePoolTestGetFailed, nil, testNodePoolErr)
-		err := RunNodePoolGet(cfg)
-		assert.Error(t, err)
 	})
 }
 
@@ -458,7 +314,44 @@ func TestRunNodePoolGetErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForState), false)
 		viper.Set(core.GetFlagName(cfg.NS, dp.ArgNodePoolId), testNodePoolVar)
 		viper.Set(core.GetFlagName(cfg.NS, dp.ArgClusterId), testNodePoolVar)
-		rm.DataPlatformMocks.NodePool.EXPECT().Get(testNodePoolVar, testNodePoolVar).Return(nodePoolTestGet, nil, testNodePoolErr)
+		rm.DataPlatformMocks.NodePool.EXPECT().Get(testNodePoolVar, testNodePoolVar).Return(testNodePoolGet, nil, testNodePoolErr)
+		err := RunNodePoolGet(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestRunNodePoolGetWaitForState(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgVerbose, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForState), true)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgNodePoolId), testNodePoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgClusterId), testNodePoolVar)
+		rm.DataPlatformMocks.NodePool.EXPECT().Get(testNodePoolVar, testNodePoolVar).Return(testNodePoolGet, &resources.Response{}, nil)
+		rm.DataPlatformMocks.NodePool.EXPECT().Get(testNodePoolVar, testNodePoolVar).Return(testNodePoolGet, &resources.Response{}, nil)
+		err := RunNodePoolGet(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunNodePoolGetWaitForStateErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForState), true)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgNodePoolId), testNodePoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgClusterId), testNodePoolVar)
+		rm.DataPlatformMocks.NodePool.EXPECT().Get(testNodePoolVar, testNodePoolVar).Return(testNodePoolGetFailed, nil, testNodePoolErr)
 		err := RunNodePoolGet(cfg)
 		assert.Error(t, err)
 	})
@@ -492,65 +385,6 @@ func TestRunNodePoolCreate(t *testing.T) {
 	})
 }
 
-func TestRunNodePoolCreateWait(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
-		viper.Reset()
-		viper.Set(config.ArgQuiet, false)
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForState), true)
-		viper.Set(core.GetFlagName(cfg.NS, dp.ArgName), testNodePoolVar)
-		viper.Set(core.GetFlagName(cfg.NS, dp.ArgNodeCount), testNodePoolIntVar)
-		viper.Set(core.GetFlagName(cfg.NS, dp.ArgCpuFamily), testNodePoolVar)
-		viper.Set(core.GetFlagName(cfg.NS, dp.ArgAvailabilityZone), testNodePoolVar)
-		viper.Set(core.GetFlagName(cfg.NS, dp.ArgRam), testNodePoolIntVar)
-		viper.Set(core.GetFlagName(cfg.NS, dp.ArgStorageType), testNodePoolVar)
-		viper.Set(core.GetFlagName(cfg.NS, dp.ArgStorageSize), testNodePoolIntVar)
-		viper.Set(core.GetFlagName(cfg.NS, dp.ArgCores), testNodePoolIntVar)
-		viper.Set(core.GetFlagName(cfg.NS, dp.ArgClusterId), testNodePoolVar)
-		viper.Set(core.GetFlagName(cfg.NS, dp.ArgVersion), testNodePoolVar)
-		viper.Set(core.GetFlagName(cfg.NS, dp.ArgLabels), testNodePoolKVMap)
-		viper.Set(core.GetFlagName(cfg.NS, dp.ArgAnnotations), testNodePoolKVMap)
-		viper.Set(core.GetFlagName(cfg.NS, dp.ArgMaintenanceTime), testNodePoolVar)
-		viper.Set(core.GetFlagName(cfg.NS, dp.ArgMaintenanceDay), testNodePoolVar)
-		rm.DataPlatformMocks.NodePool.EXPECT().Create(testNodePoolVar, testCreateNodePoolRequest).Return(nodePoolTestId, nil, nil)
-		rm.DataPlatformMocks.NodePool.EXPECT().Get(testNodePoolVar, testNodePoolVar).Return(nodePoolTestId, nil, nil)
-		rm.DataPlatformMocks.NodePool.EXPECT().Get(testNodePoolVar, testNodePoolVar).Return(nodePoolTestId, nil, nil)
-		err := RunNodePoolCreate(cfg)
-		assert.NoError(t, err)
-	})
-}
-
-func TestRunNodePoolCreateWaitErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
-		viper.Reset()
-		viper.Set(config.ArgQuiet, false)
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForState), true)
-		viper.Set(core.GetFlagName(cfg.NS, dp.ArgName), testNodePoolVar)
-		viper.Set(core.GetFlagName(cfg.NS, dp.ArgNodeCount), testNodePoolIntVar)
-		viper.Set(core.GetFlagName(cfg.NS, dp.ArgCpuFamily), testNodePoolVar)
-		viper.Set(core.GetFlagName(cfg.NS, dp.ArgAvailabilityZone), testNodePoolVar)
-		viper.Set(core.GetFlagName(cfg.NS, dp.ArgRam), testNodePoolIntVar)
-		viper.Set(core.GetFlagName(cfg.NS, dp.ArgStorageType), testNodePoolVar)
-		viper.Set(core.GetFlagName(cfg.NS, dp.ArgStorageSize), testNodePoolIntVar)
-		viper.Set(core.GetFlagName(cfg.NS, dp.ArgCores), testNodePoolIntVar)
-		viper.Set(core.GetFlagName(cfg.NS, dp.ArgClusterId), testNodePoolVar)
-		viper.Set(core.GetFlagName(cfg.NS, dp.ArgVersion), testNodePoolVar)
-		viper.Set(core.GetFlagName(cfg.NS, dp.ArgLabels), testNodePoolKVMap)
-		viper.Set(core.GetFlagName(cfg.NS, dp.ArgAnnotations), testNodePoolKVMap)
-		viper.Set(core.GetFlagName(cfg.NS, dp.ArgMaintenanceTime), testNodePoolVar)
-		viper.Set(core.GetFlagName(cfg.NS, dp.ArgMaintenanceDay), testNodePoolVar)
-		rm.DataPlatformMocks.NodePool.EXPECT().Create(testNodePoolVar, testCreateNodePoolRequest).Return(nodePoolTestGetFailed, nil, nil)
-		rm.DataPlatformMocks.NodePool.EXPECT().Get(testNodePoolVar, testNodePoolVar).Return(nodePoolTestGetFailed, nil, nil)
-		err := RunNodePoolCreate(cfg)
-		assert.Error(t, err)
-	})
-}
-
 func TestRunNodePoolCreateErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
@@ -579,6 +413,122 @@ func TestRunNodePoolCreateErr(t *testing.T) {
 	})
 }
 
+func TestRunNodePoolCreateWaitForState(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForState), true)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgName), testNodePoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgNodeCount), testNodePoolIntVar)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgCpuFamily), testNodePoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgAvailabilityZone), testNodePoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgRam), testNodePoolIntVar)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgStorageType), testNodePoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgStorageSize), testNodePoolIntVar)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgCores), testNodePoolIntVar)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgClusterId), testNodePoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgVersion), testNodePoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgLabels), testNodePoolKVMap)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgAnnotations), testNodePoolKVMap)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgMaintenanceTime), testNodePoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgMaintenanceDay), testNodePoolVar)
+		rm.DataPlatformMocks.NodePool.EXPECT().Create(testNodePoolVar, testCreateNodePoolRequest).Return(testNodePoolGet, &resources.Response{}, nil)
+		rm.DataPlatformMocks.NodePool.EXPECT().Get(testNodePoolVar, testNodePoolVar).Return(testNodePoolGet, &resources.Response{}, nil).Times(2)
+		err := RunNodePoolCreate(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunNodePoolCreateWaitForStateErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForState), true)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgName), testNodePoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgNodeCount), testNodePoolIntVar)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgCpuFamily), testNodePoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgAvailabilityZone), testNodePoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgRam), testNodePoolIntVar)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgStorageType), testNodePoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgStorageSize), testNodePoolIntVar)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgCores), testNodePoolIntVar)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgClusterId), testNodePoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgVersion), testNodePoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgLabels), testNodePoolKVMap)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgAnnotations), testNodePoolKVMap)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgMaintenanceTime), testNodePoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgMaintenanceDay), testNodePoolVar)
+		rm.DataPlatformMocks.NodePool.EXPECT().Create(testNodePoolVar, testCreateNodePoolRequest).Return(testNodePoolGetFailed, nil, nil)
+		rm.DataPlatformMocks.NodePool.EXPECT().Get(testNodePoolVar, testNodePoolVar).Return(testNodePoolGetFailed, nil, nil)
+		err := RunNodePoolCreate(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestRunNodePoolCreateWaitForStateIdErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForState), true)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgName), testNodePoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgNodeCount), testNodePoolIntVar)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgCpuFamily), testNodePoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgAvailabilityZone), testNodePoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgRam), testNodePoolIntVar)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgStorageType), testNodePoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgStorageSize), testNodePoolIntVar)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgCores), testNodePoolIntVar)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgClusterId), testNodePoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgVersion), testNodePoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgLabels), testNodePoolKVMap)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgAnnotations), testNodePoolKVMap)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgMaintenanceTime), testNodePoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgMaintenanceDay), testNodePoolVar)
+		rm.DataPlatformMocks.NodePool.EXPECT().Create(testNodePoolVar, testCreateNodePoolRequest).Return(resources.NodePoolResponseData{}, nil, nil)
+		err := RunNodePoolCreate(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestRunNodePoolCreateWaitForStateNewNodePoolErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForState), true)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgName), testNodePoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgNodeCount), testNodePoolIntVar)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgCpuFamily), testNodePoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgAvailabilityZone), testNodePoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgRam), testNodePoolIntVar)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgStorageType), testNodePoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgStorageSize), testNodePoolIntVar)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgCores), testNodePoolIntVar)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgClusterId), testNodePoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgVersion), testNodePoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgLabels), testNodePoolKVMap)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgAnnotations), testNodePoolKVMap)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgMaintenanceTime), testNodePoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgMaintenanceDay), testNodePoolVar)
+		rm.DataPlatformMocks.NodePool.EXPECT().Create(testNodePoolVar, testCreateNodePoolRequest).Return(testNodePoolGet, &resources.Response{}, nil)
+		rm.DataPlatformMocks.NodePool.EXPECT().Get(testNodePoolVar, testNodePoolVar).Return(testNodePoolGet, &resources.Response{}, nil)
+		rm.DataPlatformMocks.NodePool.EXPECT().Get(testNodePoolVar, testNodePoolVar).Return(testNodePoolGet, &resources.Response{}, testNodePoolErr)
+		err := RunNodePoolCreate(cfg)
+		assert.Error(t, err)
+	})
+}
+
 func TestRunNodePoolUpdate(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
@@ -596,76 +546,8 @@ func TestRunNodePoolUpdate(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, dp.ArgNodeCount), testNodePoolIntNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, dp.ArgClusterId), testNodePoolVar)
 		viper.Set(core.GetFlagName(cfg.NS, dp.ArgNodePoolId), testNodePoolVar)
-		rm.DataPlatformMocks.NodePool.EXPECT().Get(testNodePoolVar, testNodePoolVar).Return(nodePoolTestGet, nil, nil)
 		rm.DataPlatformMocks.NodePool.EXPECT().Update(testNodePoolVar, testNodePoolVar, testPatchNodePoolRequest).Return(testNodePoolGetNew, nil, nil)
-		rm.DataPlatformMocks.NodePool.EXPECT().Get(testNodePoolVar, testNodePoolVar).Return(nodePoolTestGetNew, nil, nil)
-		err := RunNodePoolUpdate(cfg)
-		assert.NoError(t, err)
-	})
-}
-
-func TestRunNodePoolUpdateWait(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
-		viper.Reset()
-		viper.Set(config.ArgQuiet, false)
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(core.GetFlagName(cfg.NS, dp.ArgVersion), testNodePoolNewVar)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForState), true)
-		viper.Set(core.GetFlagName(cfg.NS, dp.ArgMaintenanceDay), testNodePoolNewVar)
-		viper.Set(core.GetFlagName(cfg.NS, dp.ArgMaintenanceTime), testNodePoolNewVar)
-		viper.Set(core.GetFlagName(cfg.NS, dp.ArgAnnotations), testNodePoolKVNewMap)
-		viper.Set(core.GetFlagName(cfg.NS, dp.ArgLabels), testNodePoolKVNewMap)
-		viper.Set(core.GetFlagName(cfg.NS, dp.ArgNodeCount), testNodePoolIntNewVar)
-		viper.Set(core.GetFlagName(cfg.NS, dp.ArgClusterId), testNodePoolVar)
-		viper.Set(core.GetFlagName(cfg.NS, dp.ArgNodePoolId), testNodePoolVar)
-		rm.DataPlatformMocks.NodePool.EXPECT().Get(testNodePoolVar, testNodePoolVar).Return(nodePoolTestGet, nil, nil)
-		rm.DataPlatformMocks.NodePool.EXPECT().Get(testNodePoolVar, testNodePoolVar).Return(nodePoolTestGet, nil, nil)
-		rm.DataPlatformMocks.NodePool.EXPECT().Update(testNodePoolVar, testNodePoolVar, testPatchNodePoolRequest).Return(testNodePoolGetNew, nil, nil)
-		rm.DataPlatformMocks.NodePool.EXPECT().Get(testNodePoolVar, testNodePoolVar).Return(nodePoolTestGetNew, nil, nil)
-		err := RunNodePoolUpdate(cfg)
-		assert.NoError(t, err)
-	})
-}
-
-func TestRunNodePoolUpdateWaitErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
-		viper.Reset()
-		viper.Set(config.ArgQuiet, false)
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(core.GetFlagName(cfg.NS, dp.ArgVersion), testNodePoolNewVar)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForState), true)
-		viper.Set(core.GetFlagName(cfg.NS, dp.ArgMaintenanceDay), testNodePoolNewVar)
-		viper.Set(core.GetFlagName(cfg.NS, dp.ArgMaintenanceTime), testNodePoolNewVar)
-		viper.Set(core.GetFlagName(cfg.NS, dp.ArgAnnotations), testNodePoolKVNewMap)
-		viper.Set(core.GetFlagName(cfg.NS, dp.ArgLabels), testNodePoolKVNewMap)
-		viper.Set(core.GetFlagName(cfg.NS, dp.ArgNodeCount), testNodePoolIntNewVar)
-		viper.Set(core.GetFlagName(cfg.NS, dp.ArgClusterId), testNodePoolVar)
-		viper.Set(core.GetFlagName(cfg.NS, dp.ArgNodePoolId), testNodePoolVar)
-		rm.DataPlatformMocks.NodePool.EXPECT().Get(testNodePoolVar, testNodePoolVar).Return(nodePoolTestGet, nil, nil)
-		rm.DataPlatformMocks.NodePool.EXPECT().Update(testNodePoolVar, testNodePoolVar, testPatchNodePoolRequest).Return(testNodePoolGetNew, nil, nil)
-		rm.DataPlatformMocks.NodePool.EXPECT().Get(testNodePoolVar, testNodePoolVar).Return(nodePoolTestGetNew, nil, testNodePoolErr)
-		err := RunNodePoolUpdate(cfg)
-		assert.Error(t, err)
-	})
-}
-
-func TestRunNodePoolUpdateOld(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
-		viper.Reset()
-		viper.Set(config.ArgQuiet, false)
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForState), false)
-		viper.Set(core.GetFlagName(cfg.NS, dp.ArgClusterId), testNodePoolVar)
-		viper.Set(core.GetFlagName(cfg.NS, dp.ArgNodePoolId), testNodePoolVar)
-		rm.DataPlatformMocks.NodePool.EXPECT().Get(testNodePoolVar, testNodePoolVar).Return(nodePoolTestGet, nil, nil)
-		rm.DataPlatformMocks.NodePool.EXPECT().Update(testNodePoolVar, testNodePoolVar, testPatchOldNodePoolRequest).Return(testNodePoolGetOld, nil, nil)
-		rm.DataPlatformMocks.NodePool.EXPECT().Get(testNodePoolVar, testNodePoolVar).Return(nodePoolTestGet, nil, nil)
+		rm.DataPlatformMocks.NodePool.EXPECT().Get(testNodePoolVar, testNodePoolVar).Return(testNodePoolGet, nil, nil)
 		err := RunNodePoolUpdate(cfg)
 		assert.NoError(t, err)
 	})
@@ -686,14 +568,31 @@ func TestRunNodePoolUpdateErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, dp.ArgNodeCount), testNodePoolIntNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, dp.ArgClusterId), testNodePoolVar)
 		viper.Set(core.GetFlagName(cfg.NS, dp.ArgNodePoolId), testNodePoolVar)
-		rm.DataPlatformMocks.NodePool.EXPECT().Get(testNodePoolVar, testNodePoolVar).Return(nodePoolTestGet, nil, nil)
 		rm.DataPlatformMocks.NodePool.EXPECT().Update(testNodePoolVar, testNodePoolVar, testPatchNodePoolRequest).Return(testNodePoolGetNew, nil, testNodePoolErr)
 		err := RunNodePoolUpdate(cfg)
 		assert.Error(t, err)
 	})
 }
 
-func TestRunNodePoolUpdateGetErr(t *testing.T) {
+func TestRunNodePoolUpdateOld(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForState), false)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgClusterId), testNodePoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgNodePoolId), testNodePoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgNodeCount), testNodePoolIntVar)
+		rm.DataPlatformMocks.NodePool.EXPECT().Update(testNodePoolVar, testNodePoolVar, testPatchOldNodePoolRequest).Return(testNodePoolGet, nil, nil)
+		rm.DataPlatformMocks.NodePool.EXPECT().Get(testNodePoolVar, testNodePoolVar).Return(testNodePoolGet, nil, nil)
+		err := RunNodePoolUpdate(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunNodePoolUpdateWaitForRequest(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
@@ -701,7 +600,7 @@ func TestRunNodePoolUpdateGetErr(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, dp.ArgVersion), testNodePoolNewVar)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForState), false)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForState), true)
 		viper.Set(core.GetFlagName(cfg.NS, dp.ArgMaintenanceDay), testNodePoolNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, dp.ArgMaintenanceTime), testNodePoolNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, dp.ArgAnnotations), testNodePoolKVNewMap)
@@ -709,7 +608,32 @@ func TestRunNodePoolUpdateGetErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, dp.ArgNodeCount), testNodePoolIntNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, dp.ArgClusterId), testNodePoolVar)
 		viper.Set(core.GetFlagName(cfg.NS, dp.ArgNodePoolId), testNodePoolVar)
-		rm.DataPlatformMocks.NodePool.EXPECT().Get(testNodePoolVar, testNodePoolVar).Return(nodePoolTestGet, nil, testNodePoolErr)
+		rm.DataPlatformMocks.NodePool.EXPECT().Get(testNodePoolVar, testNodePoolVar).Return(testNodePoolGet, nil, nil)
+		rm.DataPlatformMocks.NodePool.EXPECT().Update(testNodePoolVar, testNodePoolVar, testPatchNodePoolRequest).Return(testNodePoolGetNew, nil, nil)
+		rm.DataPlatformMocks.NodePool.EXPECT().Get(testNodePoolVar, testNodePoolVar).Return(testNodePoolGet, nil, nil)
+		err := RunNodePoolUpdate(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunNodePoolUpdateWaitForRequestErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgVersion), testNodePoolNewVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForState), true)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgMaintenanceDay), testNodePoolNewVar)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgMaintenanceTime), testNodePoolNewVar)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgAnnotations), testNodePoolKVNewMap)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgLabels), testNodePoolKVNewMap)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgNodeCount), testNodePoolIntNewVar)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgClusterId), testNodePoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, dp.ArgNodePoolId), testNodePoolVar)
+		rm.DataPlatformMocks.NodePool.EXPECT().Get(testNodePoolVar, testNodePoolVar).Return(testNodePoolGetFailed, nil, testNodePoolErr)
+		rm.DataPlatformMocks.NodePool.EXPECT().Update(testNodePoolVar, testNodePoolVar, testPatchNodePoolRequest).Return(testNodePoolGetFailed, nil, nil)
 		err := RunNodePoolUpdate(cfg)
 		assert.Error(t, err)
 	})
@@ -742,8 +666,7 @@ func TestRunNodePoolDeleteAll(t *testing.T) {
 		viper.Set(config.ArgForce, true)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgAll), true)
 		viper.Set(core.GetFlagName(cfg.NS, dp.ArgClusterId), testNodePoolVar)
-		rm.DataPlatformMocks.NodePool.EXPECT().List(testNodePoolVar).Return(nodePoolsList, nil, nil)
-		rm.DataPlatformMocks.NodePool.EXPECT().Delete(testNodePoolVar, testNodePoolVar).Return(resources.NodePoolResponseData{}, nil, nil)
+		rm.DataPlatformMocks.NodePool.EXPECT().List(testNodePoolVar).Return(testNodePools, nil, nil)
 		rm.DataPlatformMocks.NodePool.EXPECT().Delete(testNodePoolVar, testNodePoolVar).Return(resources.NodePoolResponseData{}, nil, nil)
 		err := RunNodePoolDelete(cfg)
 		assert.NoError(t, err)
@@ -760,7 +683,7 @@ func TestRunNodePoolDeleteAllListErr(t *testing.T) {
 		viper.Set(config.ArgForce, true)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgAll), true)
 		viper.Set(core.GetFlagName(cfg.NS, dp.ArgClusterId), testNodePoolVar)
-		rm.DataPlatformMocks.NodePool.EXPECT().List(testNodePoolVar).Return(nodePoolsList, nil, testNodePoolErr)
+		rm.DataPlatformMocks.NodePool.EXPECT().List(testNodePoolVar).Return(testNodePools, nil, testNodePoolErr)
 		err := RunNodePoolDelete(cfg)
 		assert.Error(t, err)
 	})
@@ -793,7 +716,7 @@ func TestRunNodePoolDeleteAllLenErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgAll), true)
 		viper.Set(core.GetFlagName(cfg.NS, dp.ArgClusterId), testNodePoolVar)
 		rm.DataPlatformMocks.NodePool.EXPECT().List(testNodePoolVar).Return(
-			resources.NodePoolListResponseData{NodePoolListResponseData: ionoscloud.NodePoolListResponseData{Items: &[]ionoscloud.NodePoolResponseData{}}}, nil, nil)
+			resources.NodePoolListResponseData{NodePoolListResponseData: sdkgo.NodePoolListResponseData{Items: &[]sdkgo.NodePoolResponseData{}}}, nil, nil)
 		err := RunNodePoolDelete(cfg)
 		assert.Error(t, err)
 	})
@@ -809,9 +732,8 @@ func TestRunNodePoolDeleteAllErr(t *testing.T) {
 		viper.Set(config.ArgForce, true)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgAll), true)
 		viper.Set(core.GetFlagName(cfg.NS, dp.ArgClusterId), testNodePoolVar)
-		rm.DataPlatformMocks.NodePool.EXPECT().List(testNodePoolVar).Return(nodePoolsList, nil, nil)
+		rm.DataPlatformMocks.NodePool.EXPECT().List(testNodePoolVar).Return(testNodePools, nil, nil)
 		rm.DataPlatformMocks.NodePool.EXPECT().Delete(testNodePoolVar, testNodePoolVar).Return(resources.NodePoolResponseData{}, nil, testNodePoolErr)
-		rm.DataPlatformMocks.NodePool.EXPECT().Delete(testNodePoolVar, testNodePoolVar).Return(resources.NodePoolResponseData{}, nil, nil)
 		err := RunNodePoolDelete(cfg)
 		assert.Error(t, err)
 	})

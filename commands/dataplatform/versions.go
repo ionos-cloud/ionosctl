@@ -10,7 +10,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
-	"github.com/ionos-cloud/ionosctl/services/dataplatform/resources"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -57,7 +56,7 @@ func RunVersionsList(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getVersionsPrint(nil, c, getVersions(versions)))
+	return c.Printer.Print(getVersionsPrint(c, getVersions(versions)))
 }
 
 // Output Printing
@@ -71,7 +70,7 @@ type VersionsPrint struct {
 	DataPlatformVersion string `json:"DataPlatformVersion,omitempty"`
 }
 
-func getVersionsPrint(resp *resources.Response, c *core.CommandConfig, versionsList []string) printer.Result {
+func getVersionsPrint(c *core.CommandConfig, versionsList []string) printer.Result {
 	r := printer.Result{}
 	if c != nil {
 		if versionsList != nil {

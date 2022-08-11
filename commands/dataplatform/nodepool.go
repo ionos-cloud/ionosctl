@@ -63,7 +63,10 @@ func NodePoolCmd() *core.Command {
 		return completer.ClustersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	list.AddBoolFlag(config.ArgNoHeaders, "", false, "When using text output, don't print headers")
-
+	list.AddStringSliceFlag(config.ArgCols, "", defaultNodePoolCols, printer.ColsMessage(allClusterCols))
+	_ = list.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return allNodePoolCols, cobra.ShellCompDirectiveNoFileComp
+	})
 	/*
 		Get Command
 	*/
@@ -90,7 +93,10 @@ func NodePoolCmd() *core.Command {
 	get.AddBoolFlag(config.ArgWaitForState, config.ArgWaitForStateShort, config.DefaultWait, "Wait for specified NodePool to be in ACTIVE state")
 	get.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, dp.TimeoutSeconds, "Timeout option for waiting for NodePool to be in ACTIVE state [seconds]")
 	get.AddBoolFlag(config.ArgNoHeaders, "", false, "When using text output, don't print headers")
-
+	get.AddStringSliceFlag(config.ArgCols, "", defaultNodePoolCols, printer.ColsMessage(allClusterCols))
+	_ = list.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return allNodePoolCols, cobra.ShellCompDirectiveNoFileComp
+	})
 	/*
 		Create Command
 	*/
@@ -148,7 +154,10 @@ Required values to run a command:
 	create.AddStringToStringFlag(dp.ArgAnnotations, dp.ArgAnnotationsShort, map[string]string{}, "Key-value pairs attached to node pool resource as [Kubernetes annotations](https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/. Use the following format: --annotations KEY=VALUE,KEY=VALUE")
 	create.AddBoolFlag(config.ArgWaitForState, config.ArgWaitForStateShort, config.DefaultWait, "Wait for the new NodePool to be in ACTIVE state")
 	create.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, dp.TimeoutSeconds, "Timeout option for waiting for NodePool to be in ACTIVE state[seconds]")
-
+	create.AddStringSliceFlag(config.ArgCols, "", defaultNodePoolCols, printer.ColsMessage(allClusterCols))
+	_ = list.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return allNodePoolCols, cobra.ShellCompDirectiveNoFileComp
+	})
 	/*
 		Update Command
 	*/
@@ -188,6 +197,10 @@ Required values to run command:
 	update.AddStringToStringFlag(dp.ArgAnnotations, dp.ArgAnnotationsShort, map[string]string{}, "Key-value pairs attached to node pool resource as [Kubernetes annotations](https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/. Use the following format: --annotations KEY=VALUE,KEY=VALUE")
 	update.AddBoolFlag(config.ArgWaitForState, config.ArgWaitForStateShort, config.DefaultWait, "Wait for the new NodePool to be in ACTIVE state")
 	update.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, dp.TimeoutSeconds, "Timeout option for waiting for NodePool to be in ACTIVE state[seconds]")
+	update.AddStringSliceFlag(config.ArgCols, "", defaultNodePoolCols, printer.ColsMessage(allClusterCols))
+	_ = list.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return allNodePoolCols, cobra.ShellCompDirectiveNoFileComp
+	})
 
 	/*
 		Delete Command
@@ -218,7 +231,10 @@ Required values to run command:
 		return completer.NodePoolsIds(os.Stderr, viper.GetString(core.GetFlagName(deleteCmd.NS, dp.ArgClusterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgAll, config.ArgAllShort, false, "Delete all the Data Platform Node Pools within an existing Data Platform Cluster.")
-
+	deleteCmd.AddStringSliceFlag(config.ArgCols, "", defaultNodePoolCols, printer.ColsMessage(allClusterCols))
+	_ = list.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return allNodePoolCols, cobra.ShellCompDirectiveNoFileComp
+	})
 	return nodePoolCmd
 }
 
@@ -271,24 +287,27 @@ func PreRunClusterNodePoolDelete(c *core.PreCommandConfig) error {
 }
 
 func RunNodePoolList(c *core.CommandConfig) error {
-	c.Printer.Verbose("Getting  NodePools from  Cluster with ID: %v", viper.GetString(core.GetFlagName(c.NS, dp.ArgClusterId)))
-	nodepools, resp, err := c.DataPlatformServices.NodePools().List(viper.GetString(core.GetFlagName(c.NS, dp.ArgClusterId)))
+	clusterId := viper.GetString(core.GetFlagName(c.NS, dp.ArgClusterId))
+	c.Printer.Verbose("Cluster ID: %v", clusterId)
+	c.Printer.Verbose("Getting  NodePools from  Cluster with ID: %v", clusterId)
+	nodePools, resp, err := c.DataPlatformServices.NodePools().List(clusterId)
 
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getNodePoolPrint(resp, c, getNodePools(nodepools)))
+	return c.Printer.Print(getNodePoolPrint(resp, c, getNodePools(nodePools)))
 }
 
 func RunNodePoolGet(c *core.CommandConfig) error {
-	NodePoolId := viper.GetString(core.GetFlagName(c.NS, dp.ArgNodePoolId))
-	ClusterId := viper.GetString(core.GetFlagName(c.NS, dp.ArgClusterId))
-	if err := utils.WaitForState(c, waiter.NodePoolStateInterrogator, NodePoolId); err != nil {
+	clusterId := viper.GetString(core.GetFlagName(c.NS, dp.ArgClusterId))
+	c.Printer.Verbose("Cluster ID: %v", clusterId)
+	nodePoolId := viper.GetString(core.GetFlagName(c.NS, dp.ArgNodePoolId))
+	c.Printer.Verbose("Node Pool ID: %v", nodePoolId)
+	if err := utils.WaitForState(c, waiter.NodePoolStateInterrogator, nodePoolId); err != nil {
 		return err
 	}
-	c.Printer.Verbose(" node pool with id: %v from  Cluster with id: %v is getting...", NodePoolId, ClusterId)
-	nodePool, _, err := c.DataPlatformServices.NodePools().Get(ClusterId, NodePoolId)
-
+	c.Printer.Verbose(" node pool with id: %v from  Cluster with id: %v is getting...", nodePoolId, clusterId)
+	nodePool, _, err := c.DataPlatformServices.NodePools().Get(clusterId, nodePoolId)
 	if err != nil {
 		return err
 	}
@@ -296,12 +315,13 @@ func RunNodePoolGet(c *core.CommandConfig) error {
 }
 
 func RunNodePoolCreate(c *core.CommandConfig) error {
+	clusterId := viper.GetString(core.GetFlagName(c.NS, dp.ArgClusterId))
 	newNodePool, err := getNewNodePool(c)
 	if err != nil {
 		return err
 	}
-	c.Printer.Verbose("Creating  NodePool in  Cluster with ID: %v", viper.GetString(core.GetFlagName(c.NS, dp.ArgClusterId)))
-	nodePool, resp, err := c.DataPlatformServices.NodePools().Create(viper.GetString(core.GetFlagName(c.NS, dp.ArgClusterId)), *newNodePool)
+	c.Printer.Verbose("Creating  NodePool in  Cluster with ID: %v", clusterId)
+	nodePool, resp, err := c.DataPlatformServices.NodePools().Create(clusterId, *newNodePool)
 	if err != nil {
 		return err
 	}
@@ -310,7 +330,7 @@ func RunNodePoolCreate(c *core.CommandConfig) error {
 			if err = utils.WaitForState(c, waiter.NodePoolStateInterrogator, *id); err != nil {
 				return err
 			}
-			if nodePool, _, err = c.DataPlatformServices.NodePools().Get(viper.GetString(core.GetFlagName(c.NS, dp.ArgClusterId)), *id); err != nil {
+			if nodePool, _, err = c.DataPlatformServices.NodePools().Get(clusterId, *id); err != nil {
 				return err
 			}
 		} else {
@@ -321,31 +341,28 @@ func RunNodePoolCreate(c *core.CommandConfig) error {
 }
 
 func RunNodePoolUpdate(c *core.CommandConfig) error {
-	_ = c.Printer.Print("WARNING: The following flags are deprecated:" + c.Command.GetAnnotationsByKey(core.DeprecatedFlagsAnnotation) + ". Use --labels, --annotations options instead!")
-	oldNodePool, _, err := c.DataPlatformServices.NodePools().Get(viper.GetString(core.GetFlagName(c.NS, dp.ArgClusterId)),
-		viper.GetString(core.GetFlagName(c.NS, dp.ArgNodePoolId)))
+	clusterId := viper.GetString(core.GetFlagName(c.NS, dp.ArgClusterId))
+	c.Printer.Verbose("Cluster ID: %v", clusterId)
+	nodePoolId := viper.GetString(core.GetFlagName(c.NS, dp.ArgNodePoolId))
+	c.Printer.Verbose("Cluster ID: %v", nodePoolId)
+	newNodePool := getPatchNodePoolRequest(c)
+	_, _, err := c.DataPlatformServices.NodePools().Update(clusterId, nodePoolId, newNodePool)
 	if err != nil {
 		return err
 	}
-	newNodePool := getNewNodePoolUpdated(&oldNodePool, c)
-	_, resp, err := c.DataPlatformServices.NodePools().Update(viper.GetString(core.GetFlagName(c.NS, dp.ArgClusterId)),
-		viper.GetString(core.GetFlagName(c.NS, dp.ArgNodePoolId)), newNodePool)
-	if err != nil {
+	if err = utils.WaitForState(c, waiter.NodePoolStateInterrogator, nodePoolId); err != nil {
 		return err
 	}
-	if err = utils.WaitForState(c, waiter.NodePoolStateInterrogator, viper.GetString(core.GetFlagName(c.NS, dp.ArgNodePoolId))); err != nil {
-		return err
-	}
-	newNodePoolUpdated, _, err := c.DataPlatformServices.NodePools().Get(viper.GetString(core.GetFlagName(c.NS, dp.ArgClusterId)),
-		viper.GetString(core.GetFlagName(c.NS, dp.ArgNodePoolId)))
-	return c.Printer.Print(getNodePoolPrint(resp, c, getNodePool(&newNodePoolUpdated)))
+	nodePoolUpdated, resp, err := c.DataPlatformServices.NodePools().Get(clusterId,
+		nodePoolId)
+	return c.Printer.Print(getNodePoolPrint(resp, c, getNodePool(&nodePoolUpdated)))
 }
 
 func RunNodePoolDelete(c *core.CommandConfig) error {
-	ClusterId := viper.GetString(core.GetFlagName(c.NS, dp.ArgClusterId))
-	NodePoolId := viper.GetString(core.GetFlagName(c.NS, dp.ArgNodePoolId))
+	clusterId := viper.GetString(core.GetFlagName(c.NS, dp.ArgClusterId))
+	nodePoolId := viper.GetString(core.GetFlagName(c.NS, dp.ArgNodePoolId))
 	if viper.GetBool(core.GetFlagName(c.NS, config.ArgAll)) {
-		if err := DeleteAllNodepools(c); err != nil {
+		if err := NodePoolDeleteAll(c); err != nil {
 			return err
 		}
 		return c.Printer.Print(printer.Result{Resource: c.Resource, Verb: c.Verb})
@@ -354,12 +371,15 @@ func RunNodePoolDelete(c *core.CommandConfig) error {
 		if err != nil {
 			return err
 		}
-		c.Printer.Verbose("Starting deleting  node pool with id: %v from  Cluster with id: %v...", NodePoolId, ClusterId)
-		_, _, err = c.DataPlatformServices.NodePools().Delete(ClusterId, NodePoolId)
+		c.Printer.Verbose("Starting deleting  node pool with id: %v from  Cluster with id: %v...", nodePoolId, clusterId)
+		_, resp, err := c.DataPlatformServices.NodePools().Delete(clusterId, nodePoolId)
 		if err != nil {
 			return err
 		}
-		return c.Printer.Print(printer.Result{Resource: c.Resource, Verb: c.Verb})
+		if err = utils.WaitForDelete(c, waiter.NodePoolDeleteInterrogator, nodePoolId); err != nil {
+			return err
+		}
+		return c.Printer.Print(getNodePoolPrint(resp, c, nil))
 	}
 }
 
@@ -442,43 +462,37 @@ func getNewNodePool(c *core.CommandConfig) (*resources.CreateNodePoolRequest, er
 	}, nil
 }
 
-func getNewNodePoolUpdated(oldNodePool *resources.NodePoolResponseData, c *core.CommandConfig) resources.PatchNodePoolRequest {
+func getPatchNodePoolRequest(c *core.CommandConfig) resources.PatchNodePoolRequest {
 	propertiesUpdated := resources.PatchNodePoolProperties{}
-	if properties, ok := oldNodePool.GetPropertiesOk(); ok && properties != nil {
-		if viper.IsSet(core.GetFlagName(c.NS, dp.ArgNodeCount)) {
-			nodeCount := viper.GetInt32(core.GetFlagName(c.NS, dp.ArgNodeCount))
-			propertiesUpdated.SetNodeCount(nodeCount)
-			c.Printer.Verbose("Property NodeCount set: %v", nodeCount)
-		} else {
-			if n, ok := properties.GetNodeCountOk(); ok && n != nil {
-				propertiesUpdated.SetNodeCount(*n)
-			}
+	if viper.IsSet(core.GetFlagName(c.NS, dp.ArgNodeCount)) {
+		nodeCount := viper.GetInt32(core.GetFlagName(c.NS, dp.ArgNodeCount))
+		propertiesUpdated.SetNodeCount(nodeCount)
+		c.Printer.Verbose("Property NodeCount set: %v", nodeCount)
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, dp.ArgMaintenanceDay)) ||
+		viper.IsSet(core.GetFlagName(c.NS, dp.ArgMaintenanceTime)) {
+		newMaintenanceWindow := ionoscloud.MaintenanceWindow{}
+		if viper.IsSet(core.GetFlagName(c.NS, dp.ArgMaintenanceTime)) {
+			maintenanceTime := viper.GetString(core.GetFlagName(c.NS, dp.ArgMaintenanceTime))
+			c.Printer.Verbose("MaintenanceWindow - Time: %v", maintenanceTime)
+			newMaintenanceWindow.SetTime(maintenanceTime)
 		}
-		if viper.IsSet(core.GetFlagName(c.NS, dp.ArgMaintenanceDay)) ||
-			viper.IsSet(core.GetFlagName(c.NS, dp.ArgMaintenanceTime)) {
-			newMaintenanceWindow := ionoscloud.MaintenanceWindow{}
-			if viper.IsSet(core.GetFlagName(c.NS, dp.ArgMaintenanceTime)) {
-				maintenanceTime := viper.GetString(core.GetFlagName(c.NS, dp.ArgMaintenanceTime))
-				c.Printer.Verbose("MaintenanceWindow - Time: %v", maintenanceTime)
-				newMaintenanceWindow.SetTime(maintenanceTime)
-			}
-			if viper.IsSet(core.GetFlagName(c.NS, dp.ArgMaintenanceDay)) {
-				maintenanceDay := viper.GetString(core.GetFlagName(c.NS, dp.ArgMaintenanceDay))
-				c.Printer.Verbose("MaintenanceWindow - DayOfTheWeek: %v", maintenanceDay)
-				newMaintenanceWindow.SetDayOfTheWeek(maintenanceDay)
-			}
-			propertiesUpdated.SetMaintenanceWindow(newMaintenanceWindow)
+		if viper.IsSet(core.GetFlagName(c.NS, dp.ArgMaintenanceDay)) {
+			maintenanceDay := viper.GetString(core.GetFlagName(c.NS, dp.ArgMaintenanceDay))
+			c.Printer.Verbose("MaintenanceWindow - DayOfTheWeek: %v", maintenanceDay)
+			newMaintenanceWindow.SetDayOfTheWeek(maintenanceDay)
 		}
-		if viper.IsSet(core.GetFlagName(c.NS, dp.ArgLabels)) {
-			keyValueMapLabels := viper.GetStringMap(core.GetFlagName(c.NS, dp.ArgLabels))
-			propertiesUpdated.SetLabels(keyValueMapLabels)
-			c.Printer.Verbose("Property Labels set: %v", keyValueMapLabels)
-		}
-		if viper.IsSet(core.GetFlagName(c.NS, dp.ArgAnnotations)) {
-			keyValueMapAnnotations := viper.GetStringMap(core.GetFlagName(c.NS, dp.ArgAnnotations))
-			propertiesUpdated.SetAnnotations(keyValueMapAnnotations)
-			c.Printer.Verbose("Property Annotations set: %v", keyValueMapAnnotations)
-		}
+		propertiesUpdated.SetMaintenanceWindow(newMaintenanceWindow)
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, dp.ArgLabels)) {
+		keyValueMapLabels := viper.GetStringMap(core.GetFlagName(c.NS, dp.ArgLabels))
+		propertiesUpdated.SetLabels(keyValueMapLabels)
+		c.Printer.Verbose("Property Labels set: %v", keyValueMapLabels)
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, dp.ArgAnnotations)) {
+		keyValueMapAnnotations := viper.GetStringMap(core.GetFlagName(c.NS, dp.ArgAnnotations))
+		propertiesUpdated.SetAnnotations(keyValueMapAnnotations)
+		c.Printer.Verbose("Property Annotations set: %v", keyValueMapAnnotations)
 	}
 	return resources.PatchNodePoolRequest{
 		PatchNodePoolRequest: ionoscloud.PatchNodePoolRequest{
@@ -487,37 +501,37 @@ func getNewNodePoolUpdated(oldNodePool *resources.NodePoolResponseData, c *core.
 	}
 }
 
-func DeleteAllNodepools(c *core.CommandConfig) error {
+func NodePoolDeleteAll(c *core.CommandConfig) error {
 	ClusterId := viper.GetString(core.GetFlagName(c.NS, dp.ArgClusterId))
 	c.Printer.Verbose("Cluster ID: %v", ClusterId)
-	c.Printer.Verbose("Getting NodePools...")
-	NodePools, _, err := c.DataPlatformServices.NodePools().List(ClusterId)
+	c.Printer.Verbose("Getting Node Pools...")
+	nodePools, _, err := c.DataPlatformServices.NodePools().List(ClusterId)
 	if err != nil {
 		return err
 	}
-	if NodePoolsItems, ok := NodePools.GetItemsOk(); ok && NodePoolsItems != nil {
+	if NodePoolsItems, ok := nodePools.GetItemsOk(); ok && NodePoolsItems != nil {
 		if len(*NodePoolsItems) > 0 {
-			_ = c.Printer.Print("NodePools to be deleted:")
+			_ = c.Printer.Print("Node Pools to be deleted:")
 			for _, dc := range *NodePoolsItems {
 				toPrint := ""
 				if id, ok := dc.GetIdOk(); ok && id != nil {
-					toPrint += "NodePool Id: " + *id
+					toPrint += "Node Pool Id: " + *id
 				}
 				if properties, ok := dc.GetPropertiesOk(); ok && properties != nil {
 					if name, ok := properties.GetNameOk(); ok && name != nil {
-						toPrint += " NodePool Name: " + *name
+						toPrint += " Node Pool Name: " + *name
 					}
 				}
 				_ = c.Printer.Print(toPrint)
 			}
-			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the NodePools"); err != nil {
+			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Node Pools"); err != nil {
 				return err
 			}
-			c.Printer.Verbose("Deleting all the NodePools")
+			c.Printer.Verbose("Deleting all the Node Pools")
 			var multiErr error
 			for _, dc := range *NodePoolsItems {
 				if id, ok := dc.GetIdOk(); ok && id != nil {
-					c.Printer.Verbose("Starting deleting NodePool with id: %v...", *id)
+					c.Printer.Verbose("Starting deleting Node Pool with id: %v...", *id)
 					_, _, err = c.DataPlatformServices.NodePools().Delete(ClusterId, *id)
 					if err != nil {
 						multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *id, err))
@@ -536,10 +550,10 @@ func DeleteAllNodepools(c *core.CommandConfig) error {
 			}
 			return nil
 		} else {
-			return errors.New("no NodePools found")
+			return errors.New("no Node Pools found")
 		}
 	} else {
-		return errors.New("could not get items of NodePools")
+		return errors.New("could not get items of Node Pools")
 	}
 }
 
