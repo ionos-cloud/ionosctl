@@ -64,7 +64,5 @@ Required values to run command:
 
 ```text
 ionosctl dataplatform cluster create --datacenter-id DATACENTER_ID --name NAME --version DATA_PLATFORM_VERSION
-
-ionosctl dbaas postgres cluster create -D DATACENTER_ID -L LAN_ID -C CIDR -U DB_USERNAME -P DB_PASSWORD
 ```
 

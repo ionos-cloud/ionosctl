@@ -224,7 +224,14 @@
     * [ShareGet](subcommands/user-management/share-get.md)
     * [ShareList](subcommands/user-management/share-list.md)
     * [ShareUpdate](subcommands/user-management/share-update.md)
-
+* Application Load Balancer
+    * [ApplicationloadbalancerCreate](subcommands/application-load-balancer/applicationloadbalancer-create.md)
+    * [ApplicationloadbalancerDelete](subcommands/application-load-balancer/applicationloadbalancer-delete.md)
+    * [ApplicationloadbalancerGet](subcommands/application-load-balancer/applicationloadbalancer-get.md)
+    * [ApplicationloadbalancerList](subcommands/application-load-balancer/applicationloadbalancer-list.md)
+    * [ApplicationloadbalancerUpdate](subcommands/application-load-balancer/applicationloadbalancer-update.md)
+    * [ApplicationloadbalancerFlowlogCreate](subcommands/application-load-balancer/applicationloadbalancer-flowlog-create.md)
+    * [ApplicationloadbalancerFlowlogDelete](subcommands/application-load-balancer/applicationloadbalancer-flowlog-delete.md)
     * [ApplicationloadbalancerFlowlogGet](subcommands/application-load-balancer/applicationloadbalancer-flowlog-get.md)
     * [ApplicationloadbalancerFlowlogList](subcommands/application-load-balancer/applicationloadbalancer-flowlog-list.md)
     * [ApplicationloadbalancerFlowlogUpdate](subcommands/application-load-balancer/applicationloadbalancer-flowlog-update.md)
@@ -235,14 +242,7 @@
     * [ApplicationloadbalancerRuleUpdate](subcommands/application-load-balancer/applicationloadbalancer-rule-update.md)
     * [ApplicationloadbalancerRuleHttpruleAdd](subcommands/application-load-balancer/applicationloadbalancer-rule-httprule-add.md)
     * [ApplicationloadbalancerRuleHttpruleList](subcommands/application-load-balancer/applicationloadbalancer-rule-httprule-list.md)
-    * [Applicationlo* Application Load Balancer
-  * [ApplicationloadbalancerCreate](subcommands/application-load-balancer/applicationloadbalancer-create.md)
-  * [ApplicationloadbalancerDelete](subcommands/application-load-balancer/applicationloadbalancer-delete.md)
-  * [ApplicationloadbalancerGet](subcommands/application-load-balancer/applicationloadbalancer-get.md)
-  * [ApplicationloadbalancerList](subcommands/application-load-balancer/applicationloadbalancer-list.md)
-  * [ApplicationloadbalancerUpdate](subcommands/application-load-balancer/applicationloadbalancer-update.md)
-  * [ApplicationloadbalancerFlowlogCreate](subcommands/application-load-balancer/applicationloadbalancer-flowlog-create.md)
-  * [ApplicationloadbalancerFlowlogDelete](subcommands/application-load-balancer/applicationloadbalancer-flowlog-delete.md)adbalancerRuleHttpruleRemove](subcommands/application-load-balancer/applicationloadbalancer-rule-httprule-remove.md)
+    * [ApplicationloadbalancerRuleHttpruleRemove](subcommands/application-load-balancer/applicationloadbalancer-rule-httprule-remove.md)
     * [TargetGroupCreate](subcommands/application-load-balancer/targetgroup-create.md)
     * [TargetGroupDelete](subcommands/application-load-balancer/targetgroup-delete.md)
     * [TargetGroupGet](subcommands/application-load-balancer/targetgroup-get.md)
@@ -253,11 +253,19 @@
     * [TargetGroupTargetRemove](subcommands/application-load-balancer/targetgroup-target-remove.md)
 * Data Platform
   * [ClusterCreate](subcommands/dataplatform/dataplatform-cluster-create.md)
-  * [ClusterDelete](subcommands/dataplatform/dataplatform-cluster-delete.md)
   * [ClusterGet](subcommands/dataplatform/dataplatform-cluster-get.md)
   * [ClusterList](subcommands/dataplatform/dataplatform-cluster-list.md)
   * [ClusterUpdate](subcommands/dataplatform/dataplatform-cluster-update.md)
- 
+  * [ClusterDelete](subcommands/dataplatform/dataplatform-cluster-delete.md)
+  * [NodePoolCreate](subcommands/dataplatform/dataplatform-nodepool-create.md)
+  * [NodePoolGet](subcommands/dataplatform/dataplatform-nodepool-get.md)
+  * [NodePoolList](subcommands/dataplatform/dataplatform-nodepool-list.md)
+  * [NodePoolUpdate](subcommands/dataplatform/dataplatform-nodepool-update.md)
+  * [NodePoolDelete](subcommands/dataplatform/dataplatform-nodepool-delete.md) 
+  * [VersionsList](subcommands/dataplatform/dataplatform-versions-list.md)
+  * [KubeConfigGet](subcommands/dataplatform/dataplatform-kubeconfig-get.md)
+  
+
 
 ## Legal
 
