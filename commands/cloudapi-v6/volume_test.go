@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"github.com/golang/mock/gomock"
 	"os"
 	"regexp"
 	"testing"
@@ -1124,6 +1125,73 @@ func TestRunServerVolumeDetachAllLenErr(t *testing.T) {
 		assert.Error(t, err)
 	})
 }
+
+/// NEW TESTS
+
+func TestEverythingRunServerVolumeDetach(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		// ----> TODO: Integrate generally across all tests ---->
+		type Pair struct {
+			flag  string
+			value interface{}
+		}
+		// <---- TODO: Integrate generally across all tests <----
+
+		var tt = []struct {
+			args              []Pair
+			expectedFuncCalls []*gomock.Call
+			expectedReturn    [][]interface{}
+			funcToCall        func(*core.CommandConfig) error
+			err               error
+		}{
+			{
+				args: []Pair{
+					{config.ArgServerUrl, config.DefaultApiURL},
+					{config.ArgOutput, config.DefaultOutputFormat},
+					{config.ArgQuiet, false},
+					{config.ArgForce, true},
+					{core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar},
+					{core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar},
+					{core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true},
+					{core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false},
+				},
+				expectedFuncCalls: []*gomock.Call{
+					rm.CloudApiV6Mocks.Server.EXPECT().ListVolumes(testServerVar, testServerVar, cloudapiv6.ParentResourceListQueryParams),
+					rm.CloudApiV6Mocks.Server.EXPECT().DetachVolume(testServerVar, testServerVar, testServerVar, testQueryParamOther),
+					rm.CloudApiV6Mocks.Server.EXPECT().DetachVolume(testServerVar, testServerVar, testServerVar, testQueryParamOther),
+				},
+				expectedReturn: [][]interface{}{
+					{vsAttachedList, nil, nil},
+					{&testResponse, testVolumeErr},
+					{&testResponse, nil},
+				},
+				funcToCall: RunServerVolumeDetach,
+				err:        assert.AnError,
+			},
+			{},
+		}
+		for _, tc := range tt {
+			viper.Reset()
+			for _, argPair := range tc.args {
+				viper.Set(argPair.flag, argPair.value)
+			}
+
+			// TODO: Move to expectedCalls[] ---
+			rm.CloudApiV6Mocks.Server.EXPECT().ListVolumes(testServerVar, testServerVar, cloudapiv6.ParentResourceListQueryParams).Return(vsAttachedList, nil, nil)
+			rm.CloudApiV6Mocks.Server.EXPECT().DetachVolume(testServerVar, testServerVar, testServerVar, testQueryParamOther).Return(&testResponse, testVolumeErr)
+			rm.CloudApiV6Mocks.Server.EXPECT().DetachVolume(testServerVar, testServerVar, testServerVar, testQueryParamOther).Return(&testResponse, nil)
+			// TODO: Move to expectedCalls[] ---
+
+			err := tc.funcToCall(cfg)
+			assert.ErrorIs(t, err, tc.err)
+		}
+
+	})
+}
+
+// END NEW TESTS
 
 func TestRunServerVolumeDetachAllErr(t *testing.T) {
 	var b bytes.Buffer
