@@ -1,10 +1,10 @@
 package commands
 
 import (
-	"github.com/golang/mock/gomock"
 	"bufio"
 	"bytes"
 	"errors"
+	"github.com/golang/mock/gomock"
 	"os"
 	"regexp"
 	"testing"
@@ -483,14 +483,7 @@ func TestRunTargetGroupTargetRemoveAll(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgTargetGroupId), testTargetGroupTargetVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
 		rm.CloudApiV6Mocks.TargetGroup.EXPECT().Get(testTargetGroupTargetVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&testTargetGroupTargetGetUpdated, nil, nil)
-		rm.CloudApiV6Mocks.TargetGroup.EXPECT().Update(testTargetGroupTargetVar,
-			&resources.TargetGroupProperties{
-				TargetGroupProperties: ionoscloud.TargetGroupProperties{
-					Targets: &[]ionoscloud.TargetGroupTarget{},
-				},
-			},
-			testQueryParamOther,
-		).Return(&testTargetGroupTargetGet, &testResponse, nil)
+		rm.CloudApiV6Mocks.TargetGroup.EXPECT().Update(testTargetGroupTargetVar, gomock.AssignableToTypeOf(&testTargetGroupTargetProperties), gomock.AssignableToTypeOf(testQueryParamOther)).Return(&testTargetGroupTargetGet, &testResponse, nil)
 		err := RunTargetGroupTargetRemove(cfg)
 		assert.NoError(t, err)
 	})

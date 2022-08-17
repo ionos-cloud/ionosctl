@@ -982,7 +982,7 @@ func TestServerVolumeList(t *testing.T) {
 				},
 				Calls: func(...*gomock.Call) {
 					gomock.InOrder(
-						rm.CloudApiV6Mocks.Server.EXPECT().ListVolumes(gomock.AssignableToTypeOf(testResourceVar), gomock.AssignableToTypeOf(testResourceVar), gomock.AssignableToTypeOf(gomock.AssignableToTypeOf(testListQueryParam))).Return(vsAttached, nil, nil),
+						rm.CloudApiV6Mocks.Server.EXPECT().ListVolumes(gomock.AssignableToTypeOf(testResourceVar), gomock.AssignableToTypeOf(testResourceVar), gomock.AssignableToTypeOf(testListQueryParam)).Return(vsAttached, nil, nil),
 					)
 				},
 				ExpectedErr: false,
@@ -995,7 +995,7 @@ func TestServerVolumeList(t *testing.T) {
 				},
 				Calls: func(...*gomock.Call) {
 					gomock.InOrder(
-						rm.CloudApiV6Mocks.Server.EXPECT().ListVolumes(gomock.AssignableToTypeOf(testResourceVar), gomock.AssignableToTypeOf(testResourceVar), gomock.AssignableToTypeOf(gomock.AssignableToTypeOf(testListQueryParam))).Return(vsAttached, nil, testVolumeErr),
+						rm.CloudApiV6Mocks.Server.EXPECT().ListVolumes(gomock.AssignableToTypeOf(testResourceVar), gomock.AssignableToTypeOf(testResourceVar), gomock.AssignableToTypeOf(testListQueryParam)).Return(vsAttached, nil, testVolumeErr),
 					)
 				},
 				ExpectedErr: true,

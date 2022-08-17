@@ -1,11 +1,11 @@
 package commands
 
 import (
-	"github.com/golang/mock/gomock"
 	"bufio"
 	"bytes"
 	"errors"
 	"fmt"
+	"github.com/golang/mock/gomock"
 	"os"
 	"regexp"
 	"testing"
@@ -165,14 +165,7 @@ func TestRunPccList(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgVerbose, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		pccParams := resources.ListQueryParams{
-			OrderBy:    &testQueryParamVar,
-			MaxResults: &testMaxResultsVar,
-			QueryParams: resources.QueryParams{
-				Depth: &testDepthListVar,
-			},
-		}
-		rm.CloudApiV6Mocks.Pcc.EXPECT().List(pccParams).Return(pccs, &testResponse, nil)
+		rm.CloudApiV6Mocks.Pcc.EXPECT().List(gomock.AssignableToTypeOf(testListQueryParam)).Return(pccs, &testResponse, nil)
 		err := RunPccList(cfg)
 		assert.NoError(t, err)
 	})
