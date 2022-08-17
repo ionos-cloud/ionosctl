@@ -298,7 +298,7 @@ func TestRunRequestGet(t *testing.T) {
 		viper.Set(config.ArgVerbose, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRequestId), testRequestVar)
 		req := resources.Request{Request: rq}
-		rm.CloudApiV6Mocks.Request.EXPECT().Get(testRequestVar, testQueryParamOther).Return(&req, &testResponse, nil)
+		rm.CloudApiV6Mocks.Request.EXPECT().Get(testRequestVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&req, &testResponse, nil)
 		err := RunRequestGet(cfg)
 		assert.NoError(t, err)
 	})
@@ -313,7 +313,7 @@ func TestRunRequestGetErr(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRequestId), testRequestVar)
 		req := resources.Request{Request: rq}
-		rm.CloudApiV6Mocks.Request.EXPECT().Get(testRequestVar, testQueryParamOther).Return(&req, nil, testRequestErr)
+		rm.CloudApiV6Mocks.Request.EXPECT().Get(testRequestVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&req, nil, testRequestErr)
 		err := RunRequestGet(cfg)
 		assert.Error(t, err)
 		assert.True(t, err == testRequestErr)
@@ -329,7 +329,7 @@ func TestRunRequestWait(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRequestId), testRequestVar)
 		req := resources.Request{Request: rq}
-		rm.CloudApiV6Mocks.Request.EXPECT().Get(testRequestVar, testQueryParamOther).Return(&req, nil, nil)
+		rm.CloudApiV6Mocks.Request.EXPECT().Get(testRequestVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&req, nil, nil)
 		rm.CloudApiV6Mocks.Request.EXPECT().Wait(testRequestPathVar+"/status").Return(nil, nil)
 		err := RunRequestWait(cfg)
 		assert.NoError(t, err)
@@ -345,7 +345,7 @@ func TestRunRequestWaitErr(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRequestId), testRequestVar)
 		req := resources.Request{Request: rq}
-		rm.CloudApiV6Mocks.Request.EXPECT().Get(testRequestVar, testQueryParamOther).Return(&req, nil, nil)
+		rm.CloudApiV6Mocks.Request.EXPECT().Get(testRequestVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&req, nil, nil)
 		rm.CloudApiV6Mocks.Request.EXPECT().Wait(testRequestPathVar+"/status").Return(nil, testRequestErr)
 		err := RunRequestWait(cfg)
 		assert.Error(t, err)
