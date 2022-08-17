@@ -3,8 +3,6 @@ package commands
 import (
 	"errors"
 	"fmt"
-	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/query"
-
 	"go.uber.org/multierr"
 
 	"github.com/fatih/structs"
@@ -30,14 +28,6 @@ func RunDataCenterLabelsList(c *core.CommandConfig) error {
 }
 
 func RunDataCenterLabelGet(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-	queryParams := listQueryParams.QueryParams
-	if !structs.IsZero(queryParams) {
-		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
-	}
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	labelKey := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelKey))
 	c.Printer.Verbose("Getting label with key: %v for Datacenter with id: %v...", labelKey, dcId)
@@ -52,14 +42,6 @@ func RunDataCenterLabelGet(c *core.CommandConfig) error {
 }
 
 func RunDataCenterLabelAdd(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-	queryParams := listQueryParams.QueryParams
-	if !structs.IsZero(queryParams) {
-		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
-	}
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	labelKey := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelKey))
 	labelValue := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelValue))
@@ -75,14 +57,6 @@ func RunDataCenterLabelAdd(c *core.CommandConfig) error {
 }
 
 func RunDataCenterLabelRemove(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-	queryParams := listQueryParams.QueryParams
-	if !structs.IsZero(queryParams) {
-		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
-	}
 	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
 		if err := RemoveAllDatacenterLabels(c); err != nil {
 			return err
@@ -104,14 +78,6 @@ func RunDataCenterLabelRemove(c *core.CommandConfig) error {
 }
 
 func RemoveAllDatacenterLabels(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-	queryParams := listQueryParams.QueryParams
-	if !structs.IsZero(queryParams) {
-		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
-	}
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	c.Printer.Verbose("Datacenter ID: %v", dcId)
 	c.Printer.Verbose("Getting Labels from Datacenter...")
@@ -187,14 +153,6 @@ func RunServerLabelsList(c *core.CommandConfig) error {
 }
 
 func RunServerLabelGet(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-	queryParams := listQueryParams.QueryParams
-	if !structs.IsZero(queryParams) {
-		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
-	}
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
 	labelkey := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelKey))
@@ -210,14 +168,6 @@ func RunServerLabelGet(c *core.CommandConfig) error {
 }
 
 func RunServerLabelAdd(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-	queryParams := listQueryParams.QueryParams
-	if !structs.IsZero(queryParams) {
-		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
-	}
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
 	labelKey := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelKey))
@@ -234,14 +184,6 @@ func RunServerLabelAdd(c *core.CommandConfig) error {
 }
 
 func RunServerLabelRemove(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-	queryParams := listQueryParams.QueryParams
-	if !structs.IsZero(queryParams) {
-		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
-	}
 	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
 		if err := RemoveAllServerLabels(c); err != nil {
 			return err
@@ -264,14 +206,6 @@ func RunServerLabelRemove(c *core.CommandConfig) error {
 }
 
 func RemoveAllServerLabels(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-	queryParams := listQueryParams.QueryParams
-	if !structs.IsZero(queryParams) {
-		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
-	}
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
 	c.Printer.Verbose("Datacenter ID: %v", dcId)
@@ -349,14 +283,6 @@ func RunVolumeLabelsList(c *core.CommandConfig) error {
 }
 
 func RunVolumeLabelGet(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-	queryParams := listQueryParams.QueryParams
-	if !structs.IsZero(queryParams) {
-		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
-	}
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	volumeId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeId))
 	labelKey := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelKey))
@@ -372,14 +298,6 @@ func RunVolumeLabelGet(c *core.CommandConfig) error {
 }
 
 func RunVolumeLabelAdd(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-	queryParams := listQueryParams.QueryParams
-	if !structs.IsZero(queryParams) {
-		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
-	}
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	volumeId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeId))
 	labelKey := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelKey))
@@ -396,14 +314,6 @@ func RunVolumeLabelAdd(c *core.CommandConfig) error {
 }
 
 func RunVolumeLabelRemove(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-	queryParams := listQueryParams.QueryParams
-	if !structs.IsZero(queryParams) {
-		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
-	}
 	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
 		if err := RemoveAllVolumeLabels(c); err != nil {
 			return err
@@ -426,14 +336,6 @@ func RunVolumeLabelRemove(c *core.CommandConfig) error {
 }
 
 func RemoveAllVolumeLabels(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-	queryParams := listQueryParams.QueryParams
-	if !structs.IsZero(queryParams) {
-		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
-	}
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	volumeId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeId))
 	_ = c.Printer.Print("Labels to be removed from Volume with Id: " + volumeId)
@@ -506,14 +408,6 @@ func RunIpBlockLabelsList(c *core.CommandConfig) error {
 }
 
 func RunIpBlockLabelGet(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-	queryParams := listQueryParams.QueryParams
-	if !structs.IsZero(queryParams) {
-		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
-	}
 	ipBlockId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgIpBlockId))
 	labelKey := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelKey))
 	c.Printer.Verbose("Getting label with key: %v for IpBlock with id: %v...", labelKey, ipBlockId)
@@ -528,14 +422,6 @@ func RunIpBlockLabelGet(c *core.CommandConfig) error {
 }
 
 func RunIpBlockLabelAdd(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-	queryParams := listQueryParams.QueryParams
-	if !structs.IsZero(queryParams) {
-		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
-	}
 	ipBlockId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgIpBlockId))
 	labelKey := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelKey))
 	labelValue := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelValue))
@@ -551,14 +437,6 @@ func RunIpBlockLabelAdd(c *core.CommandConfig) error {
 }
 
 func RunIpBlockLabelRemove(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-	queryParams := listQueryParams.QueryParams
-	if !structs.IsZero(queryParams) {
-		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
-	}
 	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
 		if err := RemoveAllIpBlockLabels(c); err != nil {
 			return err
@@ -580,14 +458,6 @@ func RunIpBlockLabelRemove(c *core.CommandConfig) error {
 }
 
 func RemoveAllIpBlockLabels(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-	queryParams := listQueryParams.QueryParams
-	if !structs.IsZero(queryParams) {
-		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
-	}
 	ipBlockId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgIpBlockId))
 	c.Printer.Verbose("IpBlock ID: %v", ipBlockId)
 	c.Printer.Verbose("Getting Labels from IpBlock...")
@@ -660,14 +530,6 @@ func RunSnapshotLabelsList(c *core.CommandConfig) error {
 }
 
 func RunSnapshotLabelGet(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-	queryParams := listQueryParams.QueryParams
-	if !structs.IsZero(queryParams) {
-		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
-	}
 	snapshotId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSnapshotId))
 	labelKey := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelKey))
 	c.Printer.Verbose("Getting label with key: %v for Snapshot with id: %v...", labelKey, snapshotId)
@@ -682,14 +544,6 @@ func RunSnapshotLabelGet(c *core.CommandConfig) error {
 }
 
 func RunSnapshotLabelAdd(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-	queryParams := listQueryParams.QueryParams
-	if !structs.IsZero(queryParams) {
-		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
-	}
 	snapshotId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSnapshotId))
 	labelKey := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelKey))
 	labelValue := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelValue))
@@ -705,14 +559,6 @@ func RunSnapshotLabelAdd(c *core.CommandConfig) error {
 }
 
 func RunSnapshotLabelRemove(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-	queryParams := listQueryParams.QueryParams
-	if !structs.IsZero(queryParams) {
-		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
-	}
 	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
 		if err := RemoveAllSnapshotLabels(c); err != nil {
 			return err
@@ -734,14 +580,6 @@ func RunSnapshotLabelRemove(c *core.CommandConfig) error {
 }
 
 func RemoveAllSnapshotLabels(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-	queryParams := listQueryParams.QueryParams
-	if !structs.IsZero(queryParams) {
-		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
-	}
 	snapshotId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSnapshotId))
 	_ = c.Printer.Print("Labels to be removed from Snapshot with Id: " + snapshotId)
 	labels, resp, err := c.CloudApiV6Services.Labels().SnapshotList(snapshotId)

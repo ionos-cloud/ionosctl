@@ -241,12 +241,6 @@ func RunK8sClusterList(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	if !structs.IsZero(listQueryParams) {
-		c.Printer.Verbose("List Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams))
-		if !structs.IsZero(listQueryParams.QueryParams) {
-			c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams.QueryParams))
-		}
-	}
 	k8ss, resp, err := c.CloudApiV6Services.K8s().ListClusters(listQueryParams)
 	if resp != nil {
 		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
@@ -263,9 +257,6 @@ func RunK8sClusterGet(c *core.CommandConfig) error {
 		return err
 	}
 	queryParams := listQueryParams.QueryParams
-	if !structs.IsZero(queryParams) {
-		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
-	}
 	if err := utils.WaitForState(c, waiter.K8sClusterStateInterrogator, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sClusterId))); err != nil {
 		return err
 	}
@@ -286,9 +277,6 @@ func RunK8sClusterCreate(c *core.CommandConfig) error {
 		return err
 	}
 	queryParams := listQueryParams.QueryParams
-	if !structs.IsZero(queryParams) {
-		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
-	}
 	newCluster, err := getNewK8sCluster(c)
 	if err != nil {
 		return err
@@ -325,9 +313,6 @@ func RunK8sClusterUpdate(c *core.CommandConfig) error {
 		return err
 	}
 	queryParams := listQueryParams.QueryParams
-	if !structs.IsZero(queryParams) {
-		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
-	}
 	oldCluster, _, err := c.CloudApiV6Services.K8s().GetCluster(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sClusterId)), queryParams)
 	if err != nil {
 		return err
@@ -358,9 +343,6 @@ func RunK8sClusterDelete(c *core.CommandConfig) error {
 		return err
 	}
 	queryParams := listQueryParams.QueryParams
-	if !structs.IsZero(queryParams) {
-		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
-	}
 	k8sClusterId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sClusterId))
 	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
 		if err := DeleteAllK8sClusters(c); err != nil {
@@ -489,9 +471,6 @@ func DeleteAllK8sClusters(c *core.CommandConfig) error {
 		return err
 	}
 	queryParams := listQueryParams.QueryParams
-	if !structs.IsZero(queryParams) {
-		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
-	}
 	c.Printer.Verbose("Getting K8sClusters...")
 	k8Clusters, resp, err := c.CloudApiV6Services.K8s().ListClusters(resources.ListQueryParams{})
 	if err != nil {

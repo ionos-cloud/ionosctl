@@ -264,12 +264,6 @@ func RunSnapshotList(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	if !structs.IsZero(listQueryParams) {
-		c.Printer.Verbose("List Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams))
-		if !structs.IsZero(listQueryParams.QueryParams) {
-			c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams.QueryParams))
-		}
-	}
 	ss, resp, err := c.CloudApiV6Services.Snapshots().List(listQueryParams)
 	if resp != nil {
 		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
@@ -286,9 +280,6 @@ func RunSnapshotGet(c *core.CommandConfig) error {
 		return err
 	}
 	queryParams := listQueryParams.QueryParams
-	if !structs.IsZero(queryParams) {
-		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
-	}
 	c.Printer.Verbose("Snapshot with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSnapshotId)))
 	s, resp, err := c.CloudApiV6Services.Snapshots().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSnapshotId)), queryParams)
 	if resp != nil {
@@ -306,9 +297,6 @@ func RunSnapshotCreate(c *core.CommandConfig) error {
 		return err
 	}
 	queryParams := listQueryParams.QueryParams
-	if !structs.IsZero(queryParams) {
-		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
-	}
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	volumeId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeId))
 	name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
@@ -338,9 +326,6 @@ func RunSnapshotUpdate(c *core.CommandConfig) error {
 		return err
 	}
 	queryParams := listQueryParams.QueryParams
-	if !structs.IsZero(queryParams) {
-		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
-	}
 	c.Printer.Verbose("Updating Snapshot with id: %v...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSnapshotId)))
 	s, resp, err := c.CloudApiV6Services.Snapshots().Update(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSnapshotId)),
 		getSnapshotPropertiesSet(c), queryParams)
@@ -363,9 +348,6 @@ func RunSnapshotRestore(c *core.CommandConfig) error {
 		return err
 	}
 	queryParams := listQueryParams.QueryParams
-	if !structs.IsZero(queryParams) {
-		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
-	}
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "restore snapshot"); err != nil {
 		return err
 	}
@@ -394,9 +376,6 @@ func RunSnapshotDelete(c *core.CommandConfig) error {
 		return err
 	}
 	queryParams := listQueryParams.QueryParams
-	if !structs.IsZero(queryParams) {
-		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
-	}
 	snapshotId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSnapshotId))
 	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
 		if err := DeleteAllSnapshots(c); err != nil {
@@ -503,9 +482,6 @@ func DeleteAllSnapshots(c *core.CommandConfig) error {
 		return err
 	}
 	queryParams := listQueryParams.QueryParams
-	if !structs.IsZero(queryParams) {
-		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
-	}
 	c.Printer.Verbose("Getting Snapshots...")
 	snapshots, resp, err := c.CloudApiV6Services.Snapshots().List(resources.ListQueryParams{})
 	if err != nil {

@@ -243,9 +243,6 @@ func RunLanListAll(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	if !structs.IsZero(listQueryParams) {
-		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams))
-	}
 	datacenters, _, err := c.CloudApiV6Services.DataCenters().List(listQueryParams)
 	if err != nil {
 		return err
@@ -277,12 +274,6 @@ func RunLanList(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	if !structs.IsZero(listQueryParams) {
-		c.Printer.Verbose("List Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams))
-		if !structs.IsZero(listQueryParams.QueryParams) {
-			c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams.QueryParams))
-		}
-	}
 	lans, resp, err := c.CloudApiV6Services.Lans().List(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)), listQueryParams)
 	if resp != nil {
 		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
@@ -299,9 +290,6 @@ func RunLanGet(c *core.CommandConfig) error {
 		return err
 	}
 	queryParams := listQueryParams.QueryParams
-	if !structs.IsZero(queryParams) {
-		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
-	}
 	c.Printer.Verbose("Lan with id: %v from Datacenter with id: %v is getting...",
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLanId)), viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
 	l, resp, err := c.CloudApiV6Services.Lans().Get(
@@ -324,9 +312,6 @@ func RunLanCreate(c *core.CommandConfig) error {
 		return err
 	}
 	queryParams := listQueryParams.QueryParams
-	if !structs.IsZero(queryParams) {
-		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
-	}
 	name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
 	public := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgPublic))
 	properties := ionoscloud.LanPropertiesPost{
@@ -373,9 +358,6 @@ func RunLanUpdate(c *core.CommandConfig) error {
 		return err
 	}
 	queryParams := listQueryParams.QueryParams
-	if !structs.IsZero(queryParams) {
-		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
-	}
 	input := resources.LanProperties{}
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgName)) {
 		name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
@@ -419,9 +401,6 @@ func RunLanDelete(c *core.CommandConfig) error {
 		return err
 	}
 	queryParams := listQueryParams.QueryParams
-	if !structs.IsZero(queryParams) {
-		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
-	}
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	lanId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLanId))
 	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
@@ -454,9 +433,6 @@ func DeleteAllLans(c *core.CommandConfig) error {
 		return err
 	}
 	queryParams := listQueryParams.QueryParams
-	if !structs.IsZero(queryParams) {
-		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
-	}
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	c.Printer.Verbose("Datacenter ID: %v", dcId)
 	c.Printer.Verbose("Getting Lans...")

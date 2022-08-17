@@ -13,7 +13,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
-	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
@@ -107,12 +106,6 @@ func RunTemplateList(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	if !structs.IsZero(listQueryParams) {
-		c.Printer.Verbose("List Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams))
-		if !structs.IsZero(listQueryParams.QueryParams) {
-			c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams.QueryParams))
-		}
-	}
 	templates, resp, err := c.CloudApiV6Services.Templates().List(listQueryParams)
 	if resp != nil {
 		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
@@ -129,9 +122,6 @@ func RunTemplateGet(c *core.CommandConfig) error {
 		return err
 	}
 	queryParams := listQueryParams.QueryParams
-	if !structs.IsZero(queryParams) {
-		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
-	}
 	c.Printer.Verbose("Template with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTemplateId)))
 	tpl, resp, err := c.CloudApiV6Services.Templates().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTemplateId)), queryParams)
 	if resp != nil {

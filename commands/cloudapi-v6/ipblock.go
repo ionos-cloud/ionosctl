@@ -205,12 +205,6 @@ func RunIpBlockList(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	if !structs.IsZero(listQueryParams) {
-		c.Printer.Verbose("List Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams))
-		if !structs.IsZero(listQueryParams.QueryParams) {
-			c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams.QueryParams))
-		}
-	}
 	ipblocks, resp, err := c.CloudApiV6Services.IpBlocks().List(listQueryParams)
 	if resp != nil {
 		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
@@ -227,9 +221,6 @@ func RunIpBlockGet(c *core.CommandConfig) error {
 		return err
 	}
 	queryParams := listQueryParams.QueryParams
-	if !structs.IsZero(queryParams) {
-		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
-	}
 	c.Printer.Verbose("Ip block with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgIpBlockId)))
 	i, resp, err := c.CloudApiV6Services.IpBlocks().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgIpBlockId)), queryParams)
 	if resp != nil {
@@ -247,9 +238,6 @@ func RunIpBlockCreate(c *core.CommandConfig) error {
 		return err
 	}
 	queryParams := listQueryParams.QueryParams
-	if !structs.IsZero(queryParams) {
-		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
-	}
 	name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
 	loc := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLocation))
 	size := viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgSize))
@@ -273,9 +261,6 @@ func RunIpBlockUpdate(c *core.CommandConfig) error {
 		return err
 	}
 	queryParams := listQueryParams.QueryParams
-	if !structs.IsZero(queryParams) {
-		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
-	}
 	input := resources.IpBlockProperties{}
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgName)) {
 		name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
@@ -301,9 +286,6 @@ func RunIpBlockDelete(c *core.CommandConfig) error {
 		return err
 	}
 	queryParams := listQueryParams.QueryParams
-	if !structs.IsZero(queryParams) {
-		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
-	}
 	ipBlockId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgIpBlockId))
 	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
 		if err := DeleteAllIpBlocks(c); err != nil {
@@ -335,9 +317,6 @@ func DeleteAllIpBlocks(c *core.CommandConfig) error {
 		return err
 	}
 	queryParams := listQueryParams.QueryParams
-	if !structs.IsZero(queryParams) {
-		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
-	}
 	c.Printer.Verbose("Getting all IpBlocks...")
 	ipBlocks, resp, err := c.CloudApiV6Services.IpBlocks().List(resources.ListQueryParams{})
 	if err != nil {

@@ -211,12 +211,6 @@ func RunDataCenterList(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	if !structs.IsZero(listQueryParams) {
-		c.Printer.Verbose("List Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams))
-		if !structs.IsZero(listQueryParams.QueryParams) {
-			c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams.QueryParams))
-		}
-	}
 
 	datacenters, resp, err := c.CloudApiV6Services.DataCenters().List(listQueryParams)
 	if resp != nil {
@@ -234,9 +228,6 @@ func RunDataCenterGet(c *core.CommandConfig) error {
 		return err
 	}
 	queryParams := listQueryParams.QueryParams
-	if !structs.IsZero(queryParams) {
-		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
-	}
 	c.Printer.Verbose("Getting Datacenter with ID: %v...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
 	dc, resp, err := c.CloudApiV6Services.DataCenters().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)), queryParams)
 	if resp != nil {
@@ -254,9 +245,6 @@ func RunDataCenterCreate(c *core.CommandConfig) error {
 		return err
 	}
 	queryParams := listQueryParams.QueryParams
-	if !structs.IsZero(queryParams) {
-		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
-	}
 	name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
 	description := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDescription))
 	loc := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLocation))
@@ -280,9 +268,6 @@ func RunDataCenterUpdate(c *core.CommandConfig) error {
 		return err
 	}
 	queryParams := listQueryParams.QueryParams
-	if !structs.IsZero(queryParams) {
-		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
-	}
 	input := resources.DatacenterProperties{}
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgName)) {
 		name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
@@ -317,9 +302,6 @@ func RunDataCenterDelete(c *core.CommandConfig) error {
 		return err
 	}
 	queryParams := listQueryParams.QueryParams
-	if !structs.IsZero(queryParams) {
-		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
-	}
 	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
 		if err := DeleteAllDatacenters(c); err != nil {
 			return err
@@ -346,14 +328,6 @@ func RunDataCenterDelete(c *core.CommandConfig) error {
 }
 
 func DeleteAllDatacenters(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-	queryParams := listQueryParams.QueryParams
-	if !structs.IsZero(queryParams) {
-		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
-	}
 	c.Printer.Verbose("Getting Datacenters...")
 	datacenters, resp, err := c.CloudApiV6Services.DataCenters().List(resources.ListQueryParams{})
 	if err != nil {

@@ -2,9 +2,6 @@ package commands
 
 import (
 	"context"
-	"github.com/fatih/structs"
-	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/query"
-	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	"strings"
 
 	"github.com/ionos-cloud/ionosctl/pkg/config"
@@ -71,14 +68,6 @@ func RunK8sVersionList(c *core.CommandConfig) error {
 }
 
 func RunK8sVersionGet(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-	queryParams := listQueryParams.QueryParams
-	if !structs.IsZero(queryParams) {
-		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
-	}
 	u, err := getK8sVersion(c)
 	if err != nil {
 		return err

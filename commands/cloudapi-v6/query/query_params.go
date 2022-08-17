@@ -7,6 +7,8 @@ package query
 import (
 	"errors"
 	"fmt"
+	"github.com/fatih/structs"
+	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	"strings"
 
 	"github.com/ionos-cloud/ionosctl/pkg/core"
@@ -74,6 +76,10 @@ func GetListQueryParams(c *core.CommandConfig) (resources.ListQueryParams, error
 	//	pretty := viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgPretty))
 	//	queryParams = queryParams.SetPretty(pretty)
 	//}
+
+	if !structs.IsZero(listQueryParams) || !structs.IsZero(listQueryParams.QueryParams) {
+		c.Printer.Verbose("Query Parameters set: %v, %v", utils.GetPropertiesKVSet(listQueryParams), utils.GetPropertiesKVSet(listQueryParams.QueryParams))
+	}
 
 	return listQueryParams, nil
 }

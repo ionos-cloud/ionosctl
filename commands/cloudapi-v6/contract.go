@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/query"
-	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	"io"
 	"strings"
 
@@ -68,9 +67,6 @@ func RunContractGet(c *core.CommandConfig) error {
 		return err
 	}
 	queryParams := listQueryParams.QueryParams
-	if !structs.IsZero(queryParams) {
-		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
-	}
 	c.Printer.Verbose("Contract with resource limits: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceLimits)))
 	contractResource, resp, err := c.CloudApiV6Services.Contracts().Get(queryParams)
 	if resp != nil {
