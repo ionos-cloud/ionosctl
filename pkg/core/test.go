@@ -2,6 +2,7 @@ package core
 
 import (
 	"context"
+	"github.com/stretchr/testify/assert"
 	"io"
 	"testing"
 
@@ -57,6 +58,45 @@ type ResourcesMocksTest struct {
 	CloudApiV6Mocks         cloudapiv6.ResourcesMocks
 	CloudApiDbaasPgsqlMocks cloudapidbaaspgsql.ResourcesMocks
 	AuthV1Mocks             authv1.ResourcesMocks
+}
+
+type FlagValuePair struct {
+	Flag  string
+	Value interface{}
+}
+
+type TestCase struct {
+	Name        string
+	UserInput   io.Reader
+	Args        []FlagValuePair
+	Calls       func(...*gomock.Call)
+	ExpectedErr bool // To be replaced by `error` type once it makes sense to do so (currently only one type of error is thrown)
+}
+
+func ExecuteTestCases(t *testing.T, funcToTest func(c *CommandConfig) error, testCases []TestCase, cfg *CommandConfig) {
+	for _, tc := range testCases {
+		t.Run(tc.Name, func(t *testing.T) {
+			viper.Reset()
+			for _, argPair := range tc.Args {
+				viper.Set(argPair.Flag, argPair.Value)
+			}
+
+			if tc.UserInput != nil {
+				cfg.Stdin = tc.UserInput
+			}
+
+			// Expected gomock calls, call order, call counts and returned values
+			tc.Calls()
+
+			err := funcToTest(cfg)
+
+			if tc.ExpectedErr {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+			}
+		})
+	}
 }
 
 func CmdConfigTest(t *testing.T, writer io.Writer, runner CmdRunnerTest) {

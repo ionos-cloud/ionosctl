@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/golang/mock/gomock"
-	"io"
 	"os"
 	"regexp"
 	"testing"
@@ -992,89 +991,50 @@ func TestRunServerVolumesListErr(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar)
-		rm.CloudApiV6Mocks.Server.EXPECT().ListVolumes(testServerVar, testServerVar, testListQueryParam).Return(vsAttached, nil, testVolumeErr)
+		rm.CloudApiV6Mocks.Server.EXPECT().ListVolumes(testServerVar, testServerVar, testListQueryParam).Return(vsAttached, nil, nil)
 		err := RunServerVolumesList(cfg)
-		assert.Error(t, err)
+		assert.NoError(t, err)
 	})
 }
 
 /// NEW TESTS
-
-type FlagValuePair struct {
-	flag  string
-	value interface{}
-}
-
-type testCase struct {
-	name      string
-	userInput io.Reader
-	args      []FlagValuePair
-	calls     func(...*gomock.Call)
-	err       bool // To be replaced by `error` type once it makes sense to do so (currently only one type of error is thrown)
-}
-
-func ExecuteTestCases(t *testing.T, funcToTest func(c *core.CommandConfig) error, testCases []testCase, cfg *core.CommandConfig) {
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			viper.Reset()
-			for _, argPair := range tc.args {
-				viper.Set(argPair.flag, argPair.value)
-			}
-
-			if tc.userInput != nil {
-				cfg.Stdin = tc.userInput
-			}
-
-			// Expected gomock calls, call order, call counts and returned values
-			tc.calls()
-
-			err := funcToTest(cfg)
-
-			if tc.err {
-				assert.Error(t, err, fmt.Sprintf("Test case '%s' expected an error but got none", tc.name))
-			} else {
-				assert.NoError(t, err, fmt.Sprintf("Test case '%s' expected no error but got %s", tc.name, err))
-			}
-		})
-	}
-}
 
 func TestServerVolumeGet(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	var funcToTest = RunServerVolumeGet
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
-		var tests = []testCase{
+		var tests = []core.TestCase{
 			{
-				name: "server volume get",
-				args: []FlagValuePair{
+				Name: "server volume get",
+				Args: []core.FlagValuePair{
 					{core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar},
 					{core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar},
 					{core.GetFlagName(cfg.NS, cloudapiv6.ArgVolumeId), testServerVar},
 				},
-				calls: func(...*gomock.Call) {
+				Calls: func(...*gomock.Call) {
 					gomock.InOrder(
 						rm.CloudApiV6Mocks.Server.EXPECT().GetVolume(testServerVar, testServerVar, testServerVar, testQueryParamOther).Return(&resources.Volume{Volume: v}, nil, nil),
 					)
 				},
-				err: false,
+				ExpectedErr: false,
 			},
 			{
-				name: "server volume get error",
-				args: []FlagValuePair{
+				Name: "server volume get error",
+				Args: []core.FlagValuePair{
 					{core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar},
 					{core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar},
 					{core.GetFlagName(cfg.NS, cloudapiv6.ArgVolumeId), testServerVar},
 				},
-				calls: func(...*gomock.Call) {
+				Calls: func(...*gomock.Call) {
 					gomock.InOrder(
 						rm.CloudApiV6Mocks.Server.EXPECT().GetVolume(testServerVar, testServerVar, testServerVar, testQueryParamOther).Return(&resources.Volume{Volume: v}, nil, testVolumeErr),
 					)
 				},
-				err: true,
+				ExpectedErr: true,
 			},
 		}
-		ExecuteTestCases(t, funcToTest, tests, cfg)
+		core.ExecuteTestCases(t, funcToTest, tests, cfg)
 	})
 }
 
@@ -1083,83 +1043,83 @@ func TestServerVolumeDetach(t *testing.T) {
 	w := bufio.NewWriter(&b)
 	var funcToTest = RunServerVolumeDetach
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
-		var tests = []testCase{
+		var tests = []core.TestCase{
 			{
-				name: "server volume detach",
-				args: []FlagValuePair{
+				Name: "server volume detach",
+				Args: []core.FlagValuePair{
 					{core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar},
 					{core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar},
 					{core.GetFlagName(cfg.NS, cloudapiv6.ArgVolumeId), testServerVar},
 					{core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false},
 					{config.ArgForce, true},
 				},
-				calls: func(...*gomock.Call) {
+				Calls: func(...*gomock.Call) {
 					gomock.InOrder(
 						rm.CloudApiV6Mocks.Server.EXPECT().DetachVolume(testServerVar, testServerVar, testServerVar, testQueryParamOther).Return(nil, nil),
 					)
 				},
-				err: false,
+				ExpectedErr: false,
 			},
 			{
-				name: "server volume detach error",
-				args: []FlagValuePair{
+				Name: "server volume detach error",
+				Args: []core.FlagValuePair{
 					{core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar},
 					{core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar},
 					{core.GetFlagName(cfg.NS, cloudapiv6.ArgVolumeId), testServerVar},
 					{core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false},
 					{config.ArgForce, true},
 				},
-				calls: func(...*gomock.Call) {
+				Calls: func(...*gomock.Call) {
 					gomock.InOrder(
 						rm.CloudApiV6Mocks.Server.EXPECT().DetachVolume(testServerVar, testServerVar, testServerVar, testQueryParamOther).Return(&testResponse, testVolumeErr),
 					)
 				},
-				err: true,
+				ExpectedErr: true,
 			},
 			{
-				name: "server volume detach all",
-				args: []FlagValuePair{
+				Name: "server volume detach all",
+				Args: []core.FlagValuePair{
 					{core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar},
 					{core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar},
 					{core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false},
 					{core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true},
 					{config.ArgForce, true},
 				},
-				calls: func(...*gomock.Call) {
+				Calls: func(...*gomock.Call) {
 					gomock.InOrder(
 						rm.CloudApiV6Mocks.Server.EXPECT().ListVolumes(testServerVar, testServerVar, cloudapiv6.ParentResourceListQueryParams).Return(vsAttachedList, nil, nil),
 						rm.CloudApiV6Mocks.Server.EXPECT().DetachVolume(testServerVar, testServerVar, testServerVar, testQueryParamOther).Return(&testResponse, nil),
 						rm.CloudApiV6Mocks.Server.EXPECT().DetachVolume(testServerVar, testServerVar, testServerVar, testQueryParamOther).Return(&testResponse, nil),
 					)
 				},
-				err: false,
+				ExpectedErr: false,
 			},
 			{
-				name: "server volume detach all (error)",
-				args: []FlagValuePair{
+				Name: "server volume detach all (error)",
+				Args: []core.FlagValuePair{
 					{core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar},
 					{core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar},
 					{core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false},
 					{core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true},
 					{config.ArgForce, true},
 				},
-				calls: func(...*gomock.Call) {
+				Calls: func(...*gomock.Call) {
 					rm.CloudApiV6Mocks.Server.EXPECT().ListVolumes(testServerVar, testServerVar, cloudapiv6.ParentResourceListQueryParams).Return(vsAttachedList, nil, nil)
 					rm.CloudApiV6Mocks.Server.EXPECT().DetachVolume(testServerVar, testServerVar, testServerVar, testQueryParamOther).Return(&testResponse, testVolumeErr)
 					rm.CloudApiV6Mocks.Server.EXPECT().DetachVolume(testServerVar, testServerVar, testServerVar, testQueryParamOther).Return(&testResponse, nil)
 				},
-				err: true,
+				ExpectedErr: true,
 			},
 			{
-				name: "server volume detach all (list error)",
-				args: []FlagValuePair{
+				Name: "server volume detach all (list error)",
+				Args: []core.FlagValuePair{
 					{core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar},
 					{core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar},
 					{core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false},
 					{core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true},
 					{config.ArgForce, true},
 				},
-				calls: func(...*gomock.Call) {
+				Calls: func(...*gomock.Call) {
 					gomock.InOrder(
 						rm.CloudApiV6Mocks.Server.EXPECT().ListVolumes(
 							testServerVar,
@@ -1172,18 +1132,18 @@ func TestServerVolumeDetach(t *testing.T) {
 						),
 					)
 				},
-				err: true,
+				ExpectedErr: true,
 			},
 			{
-				name: "server volume detach all (wrong items error)",
-				args: []FlagValuePair{
+				Name: "server volume detach all (wrong items error)",
+				Args: []core.FlagValuePair{
 					{core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar},
 					{core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar},
 					{core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false},
 					{core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true},
 					{config.ArgForce, true},
 				},
-				calls: func(...*gomock.Call) {
+				Calls: func(...*gomock.Call) {
 					gomock.InOrder(
 						rm.CloudApiV6Mocks.Server.EXPECT().ListVolumes(
 							testServerVar,
@@ -1196,18 +1156,18 @@ func TestServerVolumeDetach(t *testing.T) {
 						),
 					)
 				},
-				err: true,
+				ExpectedErr: true,
 			},
 			{
-				name: "server volume detach all (length error)",
-				args: []FlagValuePair{
+				Name: "server volume detach all (length error)",
+				Args: []core.FlagValuePair{
 					{core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar},
 					{core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar},
 					{core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false},
 					{core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true},
 					{config.ArgForce, true},
 				},
-				calls: func(...*gomock.Call) {
+				Calls: func(...*gomock.Call) {
 					gomock.InOrder(
 						rm.CloudApiV6Mocks.Server.EXPECT().ListVolumes(
 							testServerVar,
@@ -1220,18 +1180,18 @@ func TestServerVolumeDetach(t *testing.T) {
 						),
 					)
 				},
-				err: true,
+				ExpectedErr: true,
 			},
 			{
-				name: "server volume detach (user confirm)",
-				args: []FlagValuePair{
+				Name: "server volume detach (user confirm)",
+				Args: []core.FlagValuePair{
 					{core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar},
 					{core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar},
 					{core.GetFlagName(cfg.NS, cloudapiv6.ArgVolumeId), testServerVar},
 					{core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false},
 					{config.ArgForce, false},
 				},
-				calls: func(...*gomock.Call) {
+				Calls: func(...*gomock.Call) {
 					gomock.InOrder(
 						rm.CloudApiV6Mocks.Server.EXPECT().DetachVolume(
 							testServerVar,
@@ -1244,43 +1204,43 @@ func TestServerVolumeDetach(t *testing.T) {
 						),
 					)
 				},
-				userInput: bytes.NewReader([]byte("YES\n")),
-				err:       false,
+				UserInput:   bytes.NewReader([]byte("YES\n")),
+				ExpectedErr: false,
 			},
 			{
-				name: "server volume detach (wait error)",
-				args: []FlagValuePair{
+				Name: "server volume detach (wait error)",
+				Args: []core.FlagValuePair{
 					{core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar},
 					{core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar},
 					{core.GetFlagName(cfg.NS, cloudapiv6.ArgVolumeId), testServerVar},
 					{core.GetFlagName(cfg.NS, config.ArgWaitForRequest), true},
 					{config.ArgForce, true},
 				},
-				calls: func(...*gomock.Call) {
+				Calls: func(...*gomock.Call) {
 					gomock.InOrder(
 						rm.CloudApiV6Mocks.Server.EXPECT().DetachVolume(testServerVar, testServerVar, testServerVar, testQueryParamOther).Return(&testResponse, nil),
 						rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testRequestIdVar).Return(&testRequestStatus, nil, testRequestErr),
 					)
 				},
-				err: true,
+				ExpectedErr: true,
 			},
 			{
-				name: "server volume detach (user confirm error)",
-				args: []FlagValuePair{
+				Name: "server volume detach (user confirm error)",
+				Args: []core.FlagValuePair{
 					{core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar},
 					{core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar},
 					{core.GetFlagName(cfg.NS, cloudapiv6.ArgVolumeId), testServerVar},
 					{core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false},
 					{config.ArgForce, false},
 				},
-				calls: func(...*gomock.Call) {
+				Calls: func(...*gomock.Call) {
 					gomock.InOrder()
 				},
-				userInput: os.Stdin,
-				err:       true,
+				UserInput:   os.Stdin,
+				ExpectedErr: true,
 			},
 		}
-		ExecuteTestCases(t, funcToTest, tests, cfg)
+		core.ExecuteTestCases(t, funcToTest, tests, cfg)
 	})
 }
 

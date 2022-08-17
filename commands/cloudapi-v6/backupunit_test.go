@@ -92,7 +92,7 @@ var (
 		},
 	}
 	testListQueryParam = resources.ListQueryParams{
-		OrderBy:    &testQueryParamVar,
+		OrderBy:    &testOrderByVar,
 		MaxResults: &testMaxResultsVar,
 		QueryParams: resources.QueryParams{
 			Depth: &testDepthListVar,

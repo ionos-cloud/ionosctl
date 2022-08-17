@@ -916,6 +916,10 @@ func RunServerVolumesList(c *core.CommandConfig) error {
 		return err
 	}
 	if !structs.IsZero(listQueryParams) {
+		c.Printer.Verbose("List Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams))
+		if !structs.IsZero(listQueryParams.QueryParams) {
+			c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams.QueryParams))
+		}
 		if listQueryParams.Filters != nil {
 			filters := *listQueryParams.Filters
 			if val, ok := filters["size"]; ok {
