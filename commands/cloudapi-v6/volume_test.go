@@ -311,8 +311,8 @@ func TestRunVolumeListAll(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgVerbose, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
-		rm.CloudApiV6Mocks.Datacenter.EXPECT().List(testListQueryParam).Return(dcs, &testResponse, nil)
-		rm.CloudApiV6Mocks.Volume.EXPECT().List(testDatacenterVar, testListQueryParam).Return(vsList, &testResponse, nil).Times(len(getDataCenters(dcs)))
+		rm.CloudApiV6Mocks.Datacenter.EXPECT().List(gomock.AssignableToTypeOf(testListQueryParam)).Return(dcs, &testResponse, nil)
+		rm.CloudApiV6Mocks.Volume.EXPECT().List(testDatacenterVar, gomock.AssignableToTypeOf(testListQueryParam)).Return(vsList, &testResponse, nil).Times(len(getDataCenters(dcs)))
 		err := RunVolumeListAll(cfg)
 		assert.NoError(t, err)
 	})
@@ -327,7 +327,7 @@ func TestRunVolumeList(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgVerbose, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testVolumeVar)
-		rm.CloudApiV6Mocks.Volume.EXPECT().List(testVolumeVar, testListQueryParam).Return(vs, &testResponse, nil)
+		rm.CloudApiV6Mocks.Volume.EXPECT().List(testVolumeVar, gomock.AssignableToTypeOf(testListQueryParam)).Return(vs, &testResponse, nil)
 		err := RunVolumeList(cfg)
 		assert.NoError(t, err)
 	})
@@ -345,7 +345,7 @@ func TestRunVolumeListQueryParams(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgFilters), []string{fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar)})
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgOrderBy), testQueryParamVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgMaxResults), testMaxResultsVar)
-		rm.CloudApiV6Mocks.Volume.EXPECT().List(testVolumeVar, testListQueryParam).Return(resources.Volumes{}, &testResponse, nil)
+		rm.CloudApiV6Mocks.Volume.EXPECT().List(testVolumeVar, gomock.AssignableToTypeOf(testListQueryParam)).Return(resources.Volumes{}, &testResponse, nil)
 		err := RunVolumeList(cfg)
 		assert.NoError(t, err)
 	})
@@ -359,7 +359,7 @@ func TestRunVolumeListErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testVolumeVar)
-		rm.CloudApiV6Mocks.Volume.EXPECT().List(testVolumeVar, testListQueryParam).Return(vs, nil, testVolumeErr)
+		rm.CloudApiV6Mocks.Volume.EXPECT().List(testVolumeVar, gomock.AssignableToTypeOf(testListQueryParam)).Return(vs, nil, testVolumeErr)
 		err := RunVolumeList(cfg)
 		assert.Error(t, err)
 	})
@@ -653,7 +653,7 @@ func TestRunVolumeDeleteAll(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testVolumeVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
-		rm.CloudApiV6Mocks.Volume.EXPECT().List(testVolumeVar, testListQueryParam).Return(vsList, &testResponse, nil)
+		rm.CloudApiV6Mocks.Volume.EXPECT().List(testVolumeVar, gomock.AssignableToTypeOf(testListQueryParam)).Return(vsList, &testResponse, nil)
 		rm.CloudApiV6Mocks.Volume.EXPECT().Delete(testVolumeVar, testVolumeVar, testQueryParamOther).Return(&testResponse, nil)
 		rm.CloudApiV6Mocks.Volume.EXPECT().Delete(testVolumeVar, testVolumeVar, testQueryParamOther).Return(&testResponse, nil)
 		err := RunVolumeDelete(cfg)
@@ -673,7 +673,7 @@ func TestRunVolumeDeleteAllListErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testVolumeVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
-		rm.CloudApiV6Mocks.Volume.EXPECT().List(testVolumeVar, testListQueryParam).Return(vsList, nil, testVolumeErr)
+		rm.CloudApiV6Mocks.Volume.EXPECT().List(testVolumeVar, gomock.AssignableToTypeOf(testListQueryParam)).Return(vsList, nil, testVolumeErr)
 		err := RunVolumeDelete(cfg)
 		assert.Error(t, err)
 	})
@@ -691,7 +691,7 @@ func TestRunVolumeDeleteAllItemsErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testVolumeVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
-		rm.CloudApiV6Mocks.Volume.EXPECT().List(testVolumeVar, testListQueryParam).Return(resources.Volumes{}, &testResponse, nil)
+		rm.CloudApiV6Mocks.Volume.EXPECT().List(testVolumeVar, gomock.AssignableToTypeOf(testListQueryParam)).Return(resources.Volumes{}, &testResponse, nil)
 		err := RunVolumeDelete(cfg)
 		assert.Error(t, err)
 	})
@@ -709,7 +709,7 @@ func TestRunVolumeDeleteAllLenErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testVolumeVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
-		rm.CloudApiV6Mocks.Volume.EXPECT().List(testVolumeVar, testListQueryParam).Return(
+		rm.CloudApiV6Mocks.Volume.EXPECT().List(testVolumeVar, gomock.AssignableToTypeOf(testListQueryParam)).Return(
 			resources.Volumes{Volumes: ionoscloud.Volumes{Items: &[]ionoscloud.Volume{}}}, &testResponse, nil)
 		err := RunVolumeDelete(cfg)
 		assert.Error(t, err)
@@ -728,7 +728,7 @@ func TestRunVolumeDeleteAllErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testVolumeVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
-		rm.CloudApiV6Mocks.Volume.EXPECT().List(testVolumeVar, testListQueryParam).Return(vsList, &testResponse, nil)
+		rm.CloudApiV6Mocks.Volume.EXPECT().List(testVolumeVar, gomock.AssignableToTypeOf(testListQueryParam)).Return(vsList, &testResponse, nil)
 		rm.CloudApiV6Mocks.Volume.EXPECT().Delete(testVolumeVar, testVolumeVar, testQueryParamOther).Return(&testResponse, testVolumeErr)
 		rm.CloudApiV6Mocks.Volume.EXPECT().Delete(testVolumeVar, testVolumeVar, testQueryParamOther).Return(&testResponse, nil)
 		err := RunVolumeDelete(cfg)
@@ -982,7 +982,7 @@ func TestServerVolumeList(t *testing.T) {
 				},
 				Calls: func(...*gomock.Call) {
 					gomock.InOrder(
-						rm.CloudApiV6Mocks.Server.EXPECT().ListVolumes(gomock.AssignableToTypeOf(testResourceVar), gomock.AssignableToTypeOf(testResourceVar), gomock.AssignableToTypeOf(testListQueryParam)).Return(vsAttached, nil, nil),
+						rm.CloudApiV6Mocks.Server.EXPECT().ListVolumes(gomock.AssignableToTypeOf(testResourceVar), gomock.AssignableToTypeOf(testResourceVar), gomock.AssignableToTypeOf(gomock.AssignableToTypeOf(testListQueryParam))).Return(vsAttached, nil, nil),
 					)
 				},
 				ExpectedErr: false,
@@ -995,7 +995,7 @@ func TestServerVolumeList(t *testing.T) {
 				},
 				Calls: func(...*gomock.Call) {
 					gomock.InOrder(
-						rm.CloudApiV6Mocks.Server.EXPECT().ListVolumes(gomock.AssignableToTypeOf(testResourceVar), gomock.AssignableToTypeOf(testResourceVar), gomock.AssignableToTypeOf(testListQueryParam)).Return(vsAttached, nil, testVolumeErr),
+						rm.CloudApiV6Mocks.Server.EXPECT().ListVolumes(gomock.AssignableToTypeOf(testResourceVar), gomock.AssignableToTypeOf(testResourceVar), gomock.AssignableToTypeOf(gomock.AssignableToTypeOf(testListQueryParam))).Return(vsAttached, nil, testVolumeErr),
 					)
 				},
 				ExpectedErr: true,

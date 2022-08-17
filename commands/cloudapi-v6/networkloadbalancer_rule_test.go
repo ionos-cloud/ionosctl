@@ -195,7 +195,7 @@ func TestRunNetworkLoadBalancerForwardingRuleList(t *testing.T) {
 		viper.Set(config.ArgVerbose, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNlbForwardingRuleVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNetworkLoadBalancerId), testNlbForwardingRuleVar)
-		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().ListForwardingRules(testNlbForwardingRuleVar, testNlbForwardingRuleVar, testListQueryParam).
+		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().ListForwardingRules(testNlbForwardingRuleVar, testNlbForwardingRuleVar, gomock.AssignableToTypeOf(testListQueryParam)).
 			Return(testNlbForwardingRules, &testResponse, nil)
 		err := RunNetworkLoadBalancerForwardingRuleList(cfg)
 		assert.NoError(t, err)
@@ -215,7 +215,7 @@ func TestRunNetworkLoadBalancerForwardingRuleListQueryParams(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgFilters), []string{fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar)})
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgOrderBy), testQueryParamVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgMaxResults), testMaxResultsVar)
-		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().ListForwardingRules(testNlbForwardingRuleVar, testNlbForwardingRuleVar, testListQueryParam).
+		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().ListForwardingRules(testNlbForwardingRuleVar, testNlbForwardingRuleVar, gomock.AssignableToTypeOf(testListQueryParam)).
 			Return(resources.NetworkLoadBalancerForwardingRules{}, &testResponse, nil)
 		err := RunNetworkLoadBalancerForwardingRuleList(cfg)
 		assert.NoError(t, err)
@@ -231,7 +231,7 @@ func TestRunNetworkLoadBalancerForwardingRuleListErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNlbForwardingRuleVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNetworkLoadBalancerId), testNlbForwardingRuleVar)
-		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().ListForwardingRules(testNlbForwardingRuleVar, testNlbForwardingRuleVar, testListQueryParam).Return(testNlbForwardingRules, nil, testNetworkLoadBalancerForwardingRuleErr)
+		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().ListForwardingRules(testNlbForwardingRuleVar, testNlbForwardingRuleVar, gomock.AssignableToTypeOf(testListQueryParam)).Return(testNlbForwardingRules, nil, testNetworkLoadBalancerForwardingRuleErr)
 		err := RunNetworkLoadBalancerForwardingRuleList(cfg)
 		assert.Error(t, err)
 	})
@@ -485,7 +485,7 @@ func TestRunNetworkLoadBalancerForwardingRuleDeleteAll(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNlbForwardingRuleVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNetworkLoadBalancerId), testNlbForwardingRuleVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
-		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().ListForwardingRules(testNlbForwardingRuleVar, testNlbForwardingRuleVar, testListQueryParam).
+		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().ListForwardingRules(testNlbForwardingRuleVar, testNlbForwardingRuleVar, gomock.AssignableToTypeOf(testListQueryParam)).
 			Return(testNlbForwardingRulesList, &testResponse, nil)
 		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().DeleteForwardingRule(testNlbForwardingRuleVar,
 			testNlbForwardingRuleVar, testNlbForwardingRuleVar, testQueryParamOther,
@@ -512,7 +512,7 @@ func TestRunNetworkLoadBalancerForwardingRuleDeleteAllListErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNlbForwardingRuleVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNetworkLoadBalancerId), testNlbForwardingRuleVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
-		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().ListForwardingRules(testNlbForwardingRuleVar, testNlbForwardingRuleVar, testListQueryParam).
+		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().ListForwardingRules(testNlbForwardingRuleVar, testNlbForwardingRuleVar, gomock.AssignableToTypeOf(testListQueryParam)).
 			Return(testNlbForwardingRulesList, nil, testNetworkLoadBalancerForwardingRuleErr)
 		err := RunNetworkLoadBalancerForwardingRuleDelete(cfg)
 		assert.Error(t, err)
@@ -531,7 +531,7 @@ func TestRunNetworkLoadBalancerForwardingRuleDeleteAllItemsErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNlbForwardingRuleVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNetworkLoadBalancerId), testNlbForwardingRuleVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
-		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().ListForwardingRules(testNlbForwardingRuleVar, testNlbForwardingRuleVar, testListQueryParam).
+		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().ListForwardingRules(testNlbForwardingRuleVar, testNlbForwardingRuleVar, gomock.AssignableToTypeOf(testListQueryParam)).
 			Return(resources.NetworkLoadBalancerForwardingRules{}, &testResponse, nil)
 		err := RunNetworkLoadBalancerForwardingRuleDelete(cfg)
 		assert.Error(t, err)
@@ -550,7 +550,7 @@ func TestRunNetworkLoadBalancerForwardingRuleDeleteAllLenErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNlbForwardingRuleVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNetworkLoadBalancerId), testNlbForwardingRuleVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
-		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().ListForwardingRules(testNlbForwardingRuleVar, testNlbForwardingRuleVar, testListQueryParam).
+		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().ListForwardingRules(testNlbForwardingRuleVar, testNlbForwardingRuleVar, gomock.AssignableToTypeOf(testListQueryParam)).
 			Return(resources.NetworkLoadBalancerForwardingRules{NetworkLoadBalancerForwardingRules: ionoscloud.NetworkLoadBalancerForwardingRules{Items: &[]ionoscloud.NetworkLoadBalancerForwardingRule{}}}, &testResponse, nil)
 		err := RunNetworkLoadBalancerForwardingRuleDelete(cfg)
 		assert.Error(t, err)
@@ -569,7 +569,7 @@ func TestRunNetworkLoadBalancerForwardingRuleDeleteAllErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNlbForwardingRuleVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNetworkLoadBalancerId), testNlbForwardingRuleVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
-		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().ListForwardingRules(testNlbForwardingRuleVar, testNlbForwardingRuleVar, testListQueryParam).
+		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().ListForwardingRules(testNlbForwardingRuleVar, testNlbForwardingRuleVar, gomock.AssignableToTypeOf(testListQueryParam)).
 			Return(testNlbForwardingRulesList, &testResponse, nil)
 		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().DeleteForwardingRule(testNlbForwardingRuleVar,
 			testNlbForwardingRuleVar, testNlbForwardingRuleVar, testQueryParamOther,
