@@ -280,7 +280,7 @@ func TestRunNlbRuleTargetAddWaitErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgMaintenance), testNlbRuleTargetBoolVar)
 		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().GetForwardingRule(testNlbRuleTargetVar, testNlbRuleTargetVar, testNlbRuleTargetVar, testQueryParamOther).Return(&testNlbRuleTargetGet, nil, nil)
 		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().UpdateForwardingRule(testNlbRuleTargetVar, testNlbRuleTargetVar, testNlbRuleTargetVar, &testRuleTargetProperties, testQueryParamOther).Return(&testNlbRuleTargetGetUpdated, &testResponse, nil)
-		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testRequestIdVar, resources.QueryParams{}).Return(&testRequestStatus, nil, testRequestErr)
+		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testRequestIdVar).Return(&testRequestStatus, nil, testRequestErr)
 		err := RunNlbRuleTargetAdd(cfg)
 		assert.Error(t, err)
 	})
@@ -449,7 +449,7 @@ func TestRunNlbRuleTargetRemoveWaitErr(t *testing.T) {
 			},
 			testQueryParamOther,
 		).Return(&testNlbRuleTargetGet, &testResponse, nil)
-		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testRequestIdVar, resources.QueryParams{}).Return(&testRequestStatus, nil, testRequestErr)
+		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testRequestIdVar).Return(&testRequestStatus, nil, testRequestErr)
 		err := RunNlbRuleTargetRemove(cfg)
 		assert.Error(t, err)
 	})

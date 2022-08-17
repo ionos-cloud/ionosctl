@@ -369,7 +369,7 @@ func TestRunNetworkLoadBalancerForwardingRuleCreateWaitErr(t *testing.T) {
 		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().CreateForwardingRule(testNlbForwardingRuleVar,
 			testNlbForwardingRuleVar, testInputForwardingRule, testQueryParamOther,
 		).Return(&testNlbForwardingRuleGet, &testResponse, nil)
-		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testRequestIdVar, resources.QueryParams{}).Return(&testRequestStatus, nil, testRequestErr)
+		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testRequestIdVar).Return(&testRequestStatus, nil, testRequestErr)
 		err := RunNetworkLoadBalancerForwardingRuleCreate(cfg)
 		assert.Error(t, err)
 	})
@@ -448,7 +448,7 @@ func TestRunNetworkLoadBalancerForwardingRuleUpdateWaitErr(t *testing.T) {
 		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().UpdateForwardingRule(testNlbForwardingRuleVar,
 			testNlbForwardingRuleVar, testNlbForwardingRuleVar, &testNlbForwardingRulePropertiesNew, testQueryParamOther,
 		).Return(&testNlbForwardingRuleUpdated, &testResponse, nil)
-		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testRequestIdVar, resources.QueryParams{}).Return(&testRequestStatus, nil, testRequestErr)
+		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testRequestIdVar).Return(&testRequestStatus, nil, testRequestErr)
 		err := RunNetworkLoadBalancerForwardingRuleUpdate(cfg)
 		assert.Error(t, err)
 	})
@@ -618,7 +618,7 @@ func TestRunNetworkLoadBalancerForwardingRuleDeleteWaitErr(t *testing.T) {
 		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().DeleteForwardingRule(testNlbForwardingRuleVar,
 			testNlbForwardingRuleVar, testNlbForwardingRuleVar, testQueryParamOther,
 		).Return(&testResponse, nil)
-		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testRequestIdVar, resources.QueryParams{}).Return(&testRequestStatus, nil, testRequestErr)
+		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testRequestIdVar).Return(&testRequestStatus, nil, testRequestErr)
 		err := RunNetworkLoadBalancerForwardingRuleDelete(cfg)
 		assert.Error(t, err)
 	})

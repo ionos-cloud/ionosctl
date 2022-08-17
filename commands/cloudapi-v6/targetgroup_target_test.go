@@ -294,7 +294,7 @@ func TestRunTargetGroupTargetAddWaitErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgHealthCheckEnabled), testTargetGroupTargetBoolVar)
 		rm.CloudApiV6Mocks.TargetGroup.EXPECT().Get(testTargetGroupTargetVar, testQueryParamOther).Return(&testTargetGroupTargetGet, nil, nil)
 		rm.CloudApiV6Mocks.TargetGroup.EXPECT().Update(testTargetGroupTargetVar, &testTargetGroupTargetProperties, testQueryParamOther).Return(&testTargetGroupTargetGetUpdated, &testResponse, nil)
-		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testRequestIdVar, resources.QueryParams{}).Return(&testRequestStatus, nil, testRequestErr)
+		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testRequestIdVar).Return(&testRequestStatus, nil, testRequestErr)
 		err := RunTargetGroupTargetAdd(cfg)
 		assert.Error(t, err)
 	})
@@ -438,7 +438,7 @@ func TestRunTargetGroupTargetRemoveWaitErr(t *testing.T) {
 			},
 			testQueryParamOther,
 		).Return(&testTargetGroupTargetGet, &testResponse, nil)
-		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testRequestIdVar, resources.QueryParams{}).Return(&testRequestStatus, nil, testRequestErr)
+		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testRequestIdVar).Return(&testRequestStatus, nil, testRequestErr)
 		err := RunTargetGroupTargetRemove(cfg)
 		assert.Error(t, err)
 	})

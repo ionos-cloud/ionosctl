@@ -23,7 +23,7 @@ type Requests struct {
 type RequestsService interface {
 	List(params ListQueryParams) (Requests, *Response, error)
 	Get(requestId string, params QueryParams) (*Request, *Response, error)
-	GetStatus(requestId string, params QueryParams) (*RequestStatus, *Response, error)
+	GetStatus(requestId string) (*RequestStatus, *Response, error)
 	Wait(requestId string) (*Response, error)
 }
 
@@ -84,17 +84,8 @@ func (rs *requestsService) Get(requestId string, params QueryParams) (*Request, 
 	return &Request{reqs}, &Response{*res}, err
 }
 
-func (rs *requestsService) GetStatus(requestId string, params QueryParams) (*RequestStatus, *Response, error) {
+func (rs *requestsService) GetStatus(requestId string) (*RequestStatus, *Response, error) {
 	req := rs.client.RequestsApi.RequestsStatusGet(rs.context, requestId)
-	if !structs.IsZero(params) {
-		if params.Depth != nil {
-			req = req.Depth(*params.Depth)
-		}
-		if params.Pretty != nil {
-			// Currently not implemented
-			req = req.Pretty(*params.Pretty)
-		}
-	}
 	reqs, res, err := rs.client.RequestsApi.RequestsStatusGetExecute(req)
 	return &RequestStatus{reqs}, &Response{*res}, err
 }

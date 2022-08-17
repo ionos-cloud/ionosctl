@@ -1,3 +1,3 @@
 <component name="DependencyValidationManager">
-  <scope name="exclude-test-files" pattern="!file:*_test.go" />
+  <scope name="exclude-test-files" pattern="!file:*_test.go&amp;&amp;!file[ionosctl]:services/cloudapi-v6/resources/mocks//*&amp;&amp;!file[ionosctl]:services/dbaas-postgres/resources/mocks//*&amp;&amp;!file[ionosctl]:services/auth-v1/resources/mocks//*" />
 </component>
