@@ -1,6 +1,9 @@
 package cloudapi_v6
 
-import "github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
+import (
+	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
+	"math"
+)
 
 // Resources
 const (
@@ -272,7 +275,7 @@ const (
 	DefaultServerCores     = 2
 	DefaultVolumeSize      = 10
 	DefaultNicLanId        = 1
-	DefaultMaxResults      = int32(500)
+	DefaultMaxResults      = int32(math.MaxInt32)
 	DefaultServerCPUFamily = "AMD_OPTERON"
 	DefaultListDepth       = int32(1)
 	DefaultGetDepth        = int32(0)
@@ -284,7 +287,7 @@ const (
 
 // Utils
 var (
-	// Specifies depth when listing on parent resource for ListAll, DetachAll, DeleteAll, etc.
+	// Parent resource depth for ListAll, DetachAll, DeleteAll, etc.
 	ParentResourceListDepth       = int32(0)
 	ParentResourceQueryParams     = resources.QueryParams{Depth: &ParentResourceListDepth}
 	ParentResourceListQueryParams = resources.ListQueryParams{QueryParams: ParentResourceQueryParams}
