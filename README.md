@@ -51,8 +51,8 @@ brew install ionosctl
 You can install `ionosctl` using the [Scoop](https://scoop.sh/) package manager:
 
 ```bash
-scoop bucket ionos-cloud/scoop-bucket
-scoop install ionosctl
+scoop bucket add ionos-cloud https://github.com/ionos-cloud/scoop-bucket.git
+scoop install ionos-cloud/ionosctl
 ```
 
 #### Downloading a Release from Github
