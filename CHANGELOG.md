@@ -4,9 +4,12 @@
 
 ### Fixes
 - Verbose messages for query parameters are now consistent
+- Flag defaults for depth, orderBy, maxResults now work correctly
+- List `--all`, Delete `--all`, Detach `--all` and similar commands now all use minimum depth (0) for the parent resource.
 
 ### New package manager support
 - Added support and instructions for installing via scoop for Windows https://scoop.sh/
+
 
 ## [6.3.0] (August 2022)
 

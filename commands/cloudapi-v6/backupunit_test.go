@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"github.com/golang/mock/gomock"
 	"os"
 	"regexp"
 	"testing"
@@ -81,15 +82,31 @@ var (
 			},
 		},
 	}
-	testListQueryParam = resources.ListQueryParams{
+	testListQueryParamFilters = resources.ListQueryParams{
 		Filters: &map[string]string{
 			testQueryParamVar: testQueryParamVar,
 		},
 		OrderBy:    &testQueryParamVar,
 		MaxResults: &testMaxResultsVar,
+		QueryParams: resources.QueryParams{
+			Depth: &testDepthListVar,
+		},
 	}
+	testListQueryParam = resources.ListQueryParams{
+		OrderBy:    &testOrderByVar,
+		MaxResults: &testMaxResultsVar,
+		QueryParams: resources.QueryParams{
+			Depth: &testDepthListVar,
+		},
+	}
+	testQueryParamOther = resources.QueryParams{
+		Depth: &testDepthOtherVar,
+	}
+	testDepthListVar     = int32(1)
+	testDepthOtherVar    = int32(0)
 	testQueryParamVar    = "test-filter"
-	testMaxResultsVar    = int32(2)
+	testMaxResultsVar    = cloudapiv6.DefaultMaxResults
+	testOrderByVar       = "" // default orderBy. Add to cloudapi constants?
 	testBackupUnitVar    = "test-backup-unit"
 	testBackUnitId       = "87aa25ec-5f74-4927-bd95-c8e42db06fe2"
 	testBackupUnitNewVar = "test-new-backup-unit"
@@ -216,7 +233,7 @@ func TestRunBackupUnitList(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgVerbose, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		rm.CloudApiV6Mocks.BackupUnit.EXPECT().List(resources.ListQueryParams{}).Return(backupUnits, nil, nil)
+		rm.CloudApiV6Mocks.BackupUnit.EXPECT().List(gomock.AssignableToTypeOf(testListQueryParam)).Return(backupUnits, nil, nil)
 		err := RunBackupUnitList(cfg)
 		assert.NoError(t, err)
 	})
@@ -233,7 +250,7 @@ func TestRunBackupUnitListQueryParams(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgFilters), []string{fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar)})
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgOrderBy), testQueryParamVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgMaxResults), testMaxResultsVar)
-		rm.CloudApiV6Mocks.BackupUnit.EXPECT().List(testListQueryParam).Return(resources.BackupUnits{}, nil, nil)
+		rm.CloudApiV6Mocks.BackupUnit.EXPECT().List(gomock.AssignableToTypeOf(testListQueryParam)).Return(resources.BackupUnits{}, nil, nil)
 		err := RunBackupUnitList(cfg)
 		assert.NoError(t, err)
 	})
@@ -246,7 +263,7 @@ func TestRunBackupUnitListErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		rm.CloudApiV6Mocks.BackupUnit.EXPECT().List(resources.ListQueryParams{}).Return(backupUnits, nil, testBackupUnitErr)
+		rm.CloudApiV6Mocks.BackupUnit.EXPECT().List(gomock.AssignableToTypeOf(testListQueryParam)).Return(backupUnits, nil, testBackupUnitErr)
 		err := RunBackupUnitList(cfg)
 		assert.Error(t, err)
 	})
@@ -261,7 +278,7 @@ func TestRunBackupUnitGet(t *testing.T) {
 		viper.Set(config.ArgVerbose, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgBackupUnitId), testBackupUnitVar)
-		rm.CloudApiV6Mocks.BackupUnit.EXPECT().Get(testBackupUnitVar, resources.QueryParams{}).Return(&backupUnitTestGet, &testResponse, nil)
+		rm.CloudApiV6Mocks.BackupUnit.EXPECT().Get(testBackupUnitVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&backupUnitTestGet, &testResponse, nil)
 		err := RunBackupUnitGet(cfg)
 		assert.NoError(t, err)
 	})
@@ -275,7 +292,7 @@ func TestRunBackupUnitGetErr(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgBackupUnitId), testBackupUnitVar)
-		rm.CloudApiV6Mocks.BackupUnit.EXPECT().Get(testBackupUnitVar, resources.QueryParams{}).Return(&backupUnitTestGet, nil, testBackupUnitErr)
+		rm.CloudApiV6Mocks.BackupUnit.EXPECT().Get(testBackupUnitVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&backupUnitTestGet, nil, testBackupUnitErr)
 		err := RunBackupUnitGet(cfg)
 		assert.Error(t, err)
 	})
@@ -290,7 +307,7 @@ func TestRunBackupUnitGetSsoUrl(t *testing.T) {
 		viper.Set(config.ArgVerbose, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgBackupUnitId), testBackupUnitVar)
-		rm.CloudApiV6Mocks.BackupUnit.EXPECT().GetSsoUrl(testBackupUnitVar, resources.QueryParams{}).Return(&backupUnitTestGetSSO, &testResponse, nil)
+		rm.CloudApiV6Mocks.BackupUnit.EXPECT().GetSsoUrl(testBackupUnitVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&backupUnitTestGetSSO, &testResponse, nil)
 		err := RunBackupUnitGetSsoUrl(cfg)
 		assert.NoError(t, err)
 	})
@@ -304,7 +321,7 @@ func TestRunBackupUnitGetSsoUrlErr(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgBackupUnitId), testBackupUnitVar)
-		rm.CloudApiV6Mocks.BackupUnit.EXPECT().GetSsoUrl(testBackupUnitVar, resources.QueryParams{}).Return(&backupUnitTestGetSSO, nil, testBackupUnitErr)
+		rm.CloudApiV6Mocks.BackupUnit.EXPECT().GetSsoUrl(testBackupUnitVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&backupUnitTestGetSSO, nil, testBackupUnitErr)
 		err := RunBackupUnitGetSsoUrl(cfg)
 		assert.Error(t, err)
 	})
@@ -321,7 +338,7 @@ func TestRunBackupUnitCreate(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgName), testBackupUnitVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgEmail), testBackupUnitVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgPassword), testBackupUnitVar)
-		rm.CloudApiV6Mocks.BackupUnit.EXPECT().Create(backupUnitTest, resources.QueryParams{}).Return(&backupUnitTest, &testResponse, nil)
+		rm.CloudApiV6Mocks.BackupUnit.EXPECT().Create(backupUnitTest, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&backupUnitTest, &testResponse, nil)
 		err := RunBackupUnitCreate(cfg)
 		assert.NoError(t, err)
 	})
@@ -337,7 +354,7 @@ func TestRunBackupUnitCreateResponseErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgName), testBackupUnitVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgEmail), testBackupUnitVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPassword), testBackupUnitVar)
-		rm.CloudApiV6Mocks.BackupUnit.EXPECT().Create(backupUnitTest, resources.QueryParams{}).Return(&backupUnitTest, &testResponseErr, testBackupUnitErr)
+		rm.CloudApiV6Mocks.BackupUnit.EXPECT().Create(backupUnitTest, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&backupUnitTest, &testResponseErr, testBackupUnitErr)
 		err := RunBackupUnitCreate(cfg)
 		assert.Error(t, err)
 	})
@@ -354,8 +371,8 @@ func TestRunBackupUnitCreateWaitErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgName), testBackupUnitVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgEmail), testBackupUnitVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPassword), testBackupUnitVar)
-		rm.CloudApiV6Mocks.BackupUnit.EXPECT().Create(backupUnitTest, resources.QueryParams{}).Return(&backupUnitTest, &testResponse, nil)
-		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testRequestIdVar, resources.QueryParams{}).Return(&testRequestStatus, nil, nil)
+		rm.CloudApiV6Mocks.BackupUnit.EXPECT().Create(backupUnitTest, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&backupUnitTest, &testResponse, nil)
+		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testRequestIdVar).Return(&testRequestStatus, nil, nil)
 		err := RunBackupUnitCreate(cfg)
 		assert.NoError(t, err)
 	})
@@ -371,7 +388,7 @@ func TestRunBackupUnitCreateErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgName), testBackupUnitVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgEmail), testBackupUnitVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgPassword), testBackupUnitVar)
-		rm.CloudApiV6Mocks.BackupUnit.EXPECT().Create(backupUnitTest, resources.QueryParams{}).Return(&backupUnitTest, nil, testBackupUnitErr)
+		rm.CloudApiV6Mocks.BackupUnit.EXPECT().Create(backupUnitTest, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&backupUnitTest, nil, testBackupUnitErr)
 		err := RunBackupUnitCreate(cfg)
 		assert.Error(t, err)
 	})
@@ -388,7 +405,7 @@ func TestRunBackupUnitUpdate(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgBackupUnitId), testBackupUnitVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgPassword), testBackupUnitNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgEmail), testBackupUnitNewVar)
-		rm.CloudApiV6Mocks.BackupUnit.EXPECT().Update(testBackupUnitVar, backupUnitProperties, resources.QueryParams{}).Return(&backupUnitNew, &testResponse, nil)
+		rm.CloudApiV6Mocks.BackupUnit.EXPECT().Update(testBackupUnitVar, backupUnitProperties, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&backupUnitNew, &testResponse, nil)
 		err := RunBackupUnitUpdate(cfg)
 		assert.NoError(t, err)
 	})
@@ -405,8 +422,8 @@ func TestRunBackupUnitUpdateWaitErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgBackupUnitId), testBackupUnitVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPassword), testBackupUnitNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgEmail), testBackupUnitNewVar)
-		rm.CloudApiV6Mocks.BackupUnit.EXPECT().Update(testBackupUnitVar, backupUnitProperties, resources.QueryParams{}).Return(&backupUnitNew, &testResponse, nil)
-		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testRequestIdVar, resources.QueryParams{}).Return(&testRequestStatus, nil, testRequestErr)
+		rm.CloudApiV6Mocks.BackupUnit.EXPECT().Update(testBackupUnitVar, backupUnitProperties, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&backupUnitNew, &testResponse, nil)
+		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testRequestIdVar).Return(&testRequestStatus, nil, testRequestErr)
 		err := RunBackupUnitUpdate(cfg)
 		assert.Error(t, err)
 	})
@@ -422,7 +439,7 @@ func TestRunBackupUnitUpdateErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgBackupUnitId), testBackupUnitVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPassword), testBackupUnitNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgEmail), testBackupUnitNewVar)
-		rm.CloudApiV6Mocks.BackupUnit.EXPECT().Update(testBackupUnitVar, backupUnitProperties, resources.QueryParams{}).Return(&backupUnitNew, nil, testBackupUnitErr)
+		rm.CloudApiV6Mocks.BackupUnit.EXPECT().Update(testBackupUnitVar, backupUnitProperties, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&backupUnitNew, nil, testBackupUnitErr)
 		err := RunBackupUnitUpdate(cfg)
 		assert.Error(t, err)
 	})
@@ -437,7 +454,7 @@ func TestRunBackupUnitDelete(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgForce, true)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgBackupUnitId), testBackupUnitVar)
-		rm.CloudApiV6Mocks.BackupUnit.EXPECT().Delete(testBackupUnitVar, resources.QueryParams{}).Return(&testResponse, nil)
+		rm.CloudApiV6Mocks.BackupUnit.EXPECT().Delete(testBackupUnitVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&testResponse, nil)
 		err := RunBackupUnitDelete(cfg)
 		assert.NoError(t, err)
 	})
@@ -452,9 +469,9 @@ func TestRunBackupUnitDeleteAll(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgForce, true)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
-		rm.CloudApiV6Mocks.BackupUnit.EXPECT().List(resources.ListQueryParams{}).Return(backupUnitsList, &testResponse, nil)
-		rm.CloudApiV6Mocks.BackupUnit.EXPECT().Delete(testBackUnitId, resources.QueryParams{}).Return(&testResponse, nil)
-		rm.CloudApiV6Mocks.BackupUnit.EXPECT().Delete(testBackUnitId, resources.QueryParams{}).Return(&testResponse, nil)
+		rm.CloudApiV6Mocks.BackupUnit.EXPECT().List(gomock.AssignableToTypeOf(testListQueryParam)).Return(backupUnitsList, &testResponse, nil)
+		rm.CloudApiV6Mocks.BackupUnit.EXPECT().Delete(testBackUnitId, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&testResponse, nil)
+		rm.CloudApiV6Mocks.BackupUnit.EXPECT().Delete(testBackUnitId, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&testResponse, nil)
 		err := RunBackupUnitDelete(cfg)
 		assert.NoError(t, err)
 	})
@@ -469,7 +486,7 @@ func TestRunBackupUnitDeleteAllListErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgForce, true)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
-		rm.CloudApiV6Mocks.BackupUnit.EXPECT().List(resources.ListQueryParams{}).Return(backupUnitsList, nil, testBackupUnitErr)
+		rm.CloudApiV6Mocks.BackupUnit.EXPECT().List(gomock.AssignableToTypeOf(testListQueryParam)).Return(backupUnitsList, nil, testBackupUnitErr)
 		err := RunBackupUnitDelete(cfg)
 		assert.Error(t, err)
 	})
@@ -484,7 +501,7 @@ func TestRunBackupUnitDeleteAllItemsErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgForce, true)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
-		rm.CloudApiV6Mocks.BackupUnit.EXPECT().List(resources.ListQueryParams{}).Return(resources.BackupUnits{}, &testResponse, nil)
+		rm.CloudApiV6Mocks.BackupUnit.EXPECT().List(gomock.AssignableToTypeOf(testListQueryParam)).Return(resources.BackupUnits{}, &testResponse, nil)
 		err := RunBackupUnitDelete(cfg)
 		assert.Error(t, err)
 	})
@@ -499,7 +516,7 @@ func TestRunBackupUnitDeleteAllLenErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgForce, true)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
-		rm.CloudApiV6Mocks.BackupUnit.EXPECT().List(resources.ListQueryParams{}).Return(
+		rm.CloudApiV6Mocks.BackupUnit.EXPECT().List(gomock.AssignableToTypeOf(testListQueryParam)).Return(
 			resources.BackupUnits{BackupUnits: ionoscloud.BackupUnits{Items: &[]ionoscloud.BackupUnit{}}}, &testResponse, nil)
 		err := RunBackupUnitDelete(cfg)
 		assert.Error(t, err)
@@ -515,9 +532,9 @@ func TestRunBackupUnitDeleteAllErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgForce, true)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
-		rm.CloudApiV6Mocks.BackupUnit.EXPECT().List(resources.ListQueryParams{}).Return(backupUnitsList, &testResponse, nil)
-		rm.CloudApiV6Mocks.BackupUnit.EXPECT().Delete(testBackUnitId, resources.QueryParams{}).Return(&testResponse, testBackupUnitErr)
-		rm.CloudApiV6Mocks.BackupUnit.EXPECT().Delete(testBackUnitId, resources.QueryParams{}).Return(&testResponse, nil)
+		rm.CloudApiV6Mocks.BackupUnit.EXPECT().List(gomock.AssignableToTypeOf(testListQueryParam)).Return(backupUnitsList, &testResponse, nil)
+		rm.CloudApiV6Mocks.BackupUnit.EXPECT().Delete(testBackUnitId, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&testResponse, testBackupUnitErr)
+		rm.CloudApiV6Mocks.BackupUnit.EXPECT().Delete(testBackUnitId, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&testResponse, nil)
 		err := RunBackupUnitDelete(cfg)
 		assert.Error(t, err)
 	})
@@ -532,7 +549,7 @@ func TestRunBackupUnitDeleteErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgForce, true)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgBackupUnitId), testBackupUnitVar)
-		rm.CloudApiV6Mocks.BackupUnit.EXPECT().Delete(testBackupUnitVar, resources.QueryParams{}).Return(nil, testBackupUnitErr)
+		rm.CloudApiV6Mocks.BackupUnit.EXPECT().Delete(testBackupUnitVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(nil, testBackupUnitErr)
 		err := RunBackupUnitDelete(cfg)
 		assert.Error(t, err)
 	})
@@ -548,8 +565,8 @@ func TestRunBackupUnitDeleteWaitErr(t *testing.T) {
 		viper.Set(config.ArgForce, true)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgBackupUnitId), testBackupUnitVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), true)
-		rm.CloudApiV6Mocks.BackupUnit.EXPECT().Delete(testBackupUnitVar, resources.QueryParams{}).Return(&testResponse, nil)
-		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testRequestIdVar, resources.QueryParams{}).Return(&testRequestStatus, nil, nil)
+		rm.CloudApiV6Mocks.BackupUnit.EXPECT().Delete(testBackupUnitVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&testResponse, nil)
+		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testRequestIdVar).Return(&testRequestStatus, nil, nil)
 		err := RunBackupUnitDelete(cfg)
 		assert.NoError(t, err)
 	})
@@ -565,7 +582,7 @@ func TestRunBackupUnitDeleteAskForConfirm(t *testing.T) {
 		viper.Set(config.ArgForce, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgBackupUnitId), testBackupUnitVar)
 		cfg.Stdin = bytes.NewReader([]byte("YES\n"))
-		rm.CloudApiV6Mocks.BackupUnit.EXPECT().Delete(testBackupUnitVar, resources.QueryParams{}).Return(nil, nil)
+		rm.CloudApiV6Mocks.BackupUnit.EXPECT().Delete(testBackupUnitVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(nil, nil)
 		err := RunBackupUnitDelete(cfg)
 		assert.NoError(t, err)
 	})

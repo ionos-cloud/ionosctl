@@ -72,7 +72,7 @@ func AlbRuleHttpRuleCmd() *core.Command {
 			viper.GetString(core.GetFlagName(list.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
 		), cobra.ShellCompDirectiveNoFileComp
 	})
-	list.AddIntFlag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, config.DefaultListDepth, cloudapiv6.ArgDepthDescription)
+	list.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultListDepth, cloudapiv6.ArgDepthDescription)
 
 	/*
 		Add Command
@@ -144,7 +144,7 @@ Required values to run command:
 	add.AddStringFlag(cloudapiv6.ArgConditionValue, cloudapiv6.ArgConditionValueShort, "Friday", "Mandatory for conditions CONTAINS, EQUALS, MATCHES, STARTS_WITH, ENDS_WITH; must be null when condition is EXISTS; should be a valid CIDR if provided and if type is SOURCE_IP.")
 	add.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Forwarding Rule Http Rule creation to be executed")
 	add.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, cloudapiv6.LbTimeoutSeconds, "Timeout option for Request for Forwarding Rule Http Rule creation [seconds]")
-	add.AddIntFlag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, config.DefaultMiscDepth, cloudapiv6.ArgDepthDescription)
+	add.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultMiscDepth, cloudapiv6.ArgDepthDescription)
 
 	/*
 		Remove Command
@@ -187,7 +187,7 @@ Required values to run command:
 	removeCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Remove all HTTP Rules")
 	removeCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Forwarding Rule Http Rule deletion to be executed")
 	removeCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, cloudapiv6.LbTimeoutSeconds, "Timeout option for Request for Forwarding Rule Http Rule deletion [seconds]")
-	removeCmd.AddIntFlag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, config.DefaultMiscDepth, cloudapiv6.ArgDepthDescription)
+	removeCmd.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultMiscDepth, cloudapiv6.ArgDepthDescription)
 
 	return albRuleHttpRuleCmd
 }
@@ -205,6 +205,11 @@ func PreRunApplicationLoadBalancerRuleHttpRuleDelete(c *core.PreCommandConfig) e
 }
 
 func RunAlbRuleHttpRuleList(c *core.CommandConfig) error {
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	queryParams := listQueryParams.QueryParams
 	c.Printer.Verbose("Datacenter ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
 	c.Printer.Verbose("ApplicationLoadBalancer ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)))
 	c.Printer.Verbose("ForwardingRule ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)))
@@ -213,7 +218,7 @@ func RunAlbRuleHttpRuleList(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)),
-		resources.QueryParams{},
+		queryParams,
 	)
 	if resp != nil {
 		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
@@ -343,12 +348,17 @@ func RunAlbRuleHttpRuleRemove(c *core.CommandConfig) error {
 }
 
 func RemoveAllHTTPRules(c *core.CommandConfig) (*resources.Response, error) {
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return nil, err
+	}
+	queryParams := listQueryParams.QueryParams
 	_ = c.Printer.Print("Forwarding Rule HTTP Rules to be deleted:")
 	applicationLoadBalancerRules, resp, err := c.CloudApiV6Services.ApplicationLoadBalancers().GetForwardingRule(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)),
-		resources.QueryParams{},
+		cloudapiv6.ParentResourceQueryParams,
 	)
 	if err != nil {
 		return nil, err
@@ -377,7 +387,7 @@ func RemoveAllHTTPRules(c *core.CommandConfig) (*resources.Response, error) {
 			&resources.ApplicationLoadBalancerForwardingRuleProperties{
 				ApplicationLoadBalancerForwardingRuleProperties: *propertiesOk,
 			},
-			resources.QueryParams{},
+			queryParams,
 		)
 		if resp != nil {
 			c.Printer.Verbose("Request Id: %v", printer.GetId(resp))

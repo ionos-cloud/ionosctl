@@ -42,7 +42,7 @@ Required values to run command:
       --cols strings        Set of columns to be printed on output 
                             Available columns: [IpBlockId Name Location Size Ips State] (default [IpBlockId,Name,Location,Size,Ips,State])
   -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
-  -D, --depth int           Controls the detail depth of the response objects. Max depth is 10.
+  -D, --depth int32         Controls the detail depth of the response objects. Max depth is 10.
   -f, --force               Force command to execute without user input
   -h, --help                Print usage
   -i, --ipblock-id string   The unique IpBlock Id (required)

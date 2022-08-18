@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
+	"github.com/golang/mock/gomock"
 	"regexp"
 	"testing"
 
@@ -80,7 +81,7 @@ func TestRunContractGet(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgVerbose, false)
-		rm.CloudApiV6Mocks.Contract.EXPECT().Get(resources.QueryParams{}).Return(testContracts, &testResponse, nil)
+		rm.CloudApiV6Mocks.Contract.EXPECT().Get(gomock.AssignableToTypeOf(testQueryParamOther)).Return(testContracts, &testResponse, nil)
 		err := RunContractGet(cfg)
 		assert.NoError(t, err)
 	})
@@ -93,7 +94,7 @@ func TestRunContractGetErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		rm.CloudApiV6Mocks.Contract.EXPECT().Get(resources.QueryParams{}).Return(testContracts, nil, testContractErr)
+		rm.CloudApiV6Mocks.Contract.EXPECT().Get(gomock.AssignableToTypeOf(testQueryParamOther)).Return(testContracts, nil, testContractErr)
 		err := RunContractGet(cfg)
 		assert.Error(t, err)
 	})

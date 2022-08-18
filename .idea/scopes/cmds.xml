@@ -1,0 +1,3 @@
+<component name="DependencyValidationManager">
+  <scope name="cmds" pattern="file[ionosctl]:commands//*" />
+</component>

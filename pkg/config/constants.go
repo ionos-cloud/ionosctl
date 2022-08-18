@@ -46,12 +46,6 @@ const (
 	DefaultWait           = false
 	DefaultTimeoutSeconds = int(60)
 	DefaultParentIndex    = int(1)
-	DefaultListDepth      = int(1)
-	DefaultGetDepth       = int(0)
-	DefaultCreateDepth    = int(0)
-	DefaultUpdateDepth    = int(0)
-	DefaultDeleteDepth    = int(0)
-	DefaultMiscDepth      = int(0) // Attach, Detach (and similar); Server start/stop/suspend/etc.;
 
 	Username         = "userdata.name"
 	Password         = "userdata.password"

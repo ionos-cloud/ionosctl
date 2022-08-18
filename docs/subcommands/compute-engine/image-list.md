@@ -40,7 +40,7 @@ Available Filters:
       --cols strings          Set of columns to be printed on output 
                               Available columns: [ImageId Name ImageAliases Location Size LicenceType ImageType Description Public CloudInit CreatedDate CreatedBy CreatedByUserId] (default [ImageId,Name,ImageAliases,Location,LicenceType,ImageType,CloudInit,CreatedDate])
   -c, --config string         Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
-  -D, --depth int             Controls the detail depth of the response objects. Max depth is 10. (default 1)
+  -D, --depth int32           Controls the detail depth of the response objects. Max depth is 10. (default 1)
   -F, --filters strings       Limits results to those containing a matching value for a specific property. Use the following format to set filters: --filters KEY1=VALUE1,KEY2=VALUE2
   -f, --force                 Force command to execute without user input
   -h, --help                  Print usage
@@ -48,7 +48,7 @@ Available Filters:
       --latest int            Show the latest N Images, based on creation date, starting from now in descending order. If it is not set, all Images will be printed (deprecated)
       --licence-type string   The licence type of the Image (deprecated)
   -l, --location string       The location of the Image (deprecated)
-  -M, --max-results int       The maximum number of elements to return
+  -M, --max-results int32     The maximum number of elements to return (default 2147483647)
       --no-headers            When using text output, don't print headers
       --order-by string       Limits results to those containing a matching value for a specific property
   -o, --output string         Desired output format [text|json] (default "text")

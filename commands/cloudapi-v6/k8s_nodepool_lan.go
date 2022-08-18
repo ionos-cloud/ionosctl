@@ -60,7 +60,7 @@ func K8sNodePoolLanCmd() *core.Command {
 		return defaultK8sNodePoolLanCols, cobra.ShellCompDirectiveNoFileComp
 	})
 	list.AddBoolFlag(config.ArgNoHeaders, "", false, cloudapiv6.ArgNoHeadersDescription)
-	list.AddIntFlag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, config.DefaultListDepth, cloudapiv6.ArgDepthDescription)
+	list.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultListDepth, cloudapiv6.ArgDepthDescription)
 
 	/*
 		Add Command
@@ -101,7 +101,7 @@ Required values to run a command:
 	_ = add.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultK8sNodePoolLanCols, cobra.ShellCompDirectiveNoFileComp
 	})
-	add.AddIntFlag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, config.DefaultMiscDepth, cloudapiv6.ArgDepthDescription)
+	add.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultMiscDepth, cloudapiv6.ArgDepthDescription)
 
 	/*
 		Remove Command
@@ -134,7 +134,7 @@ Required values to run command:
 	})
 	removeCmd.AddIntFlag(cloudapiv6.ArgLanId, cloudapiv6.ArgIdShort, 0, "The unique LAN Id of existing LANs to be detached from worker Nodes", core.RequiredFlagOption())
 	removeCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Remove all FK8s Nodepool Lans.")
-	removeCmd.AddIntFlag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, config.DefaultDeleteDepth, cloudapiv6.ArgDepthDescription)
+	removeCmd.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultDeleteDepth, cloudapiv6.ArgDepthDescription)
 
 	return k8sCmd
 }
@@ -247,7 +247,7 @@ func RemoveAllK8sNodePoolsLans(c *core.CommandConfig) error {
 	c.Printer.Verbose("K8sCluster ID: %v", clusterId)
 	c.Printer.Verbose("K8sNodePool ID: %v", nodePoolId)
 	c.Printer.Verbose("Getting K8sNodePool Lans...")
-	k8sNodepool, resp, err := c.CloudApiV6Services.K8s().GetNodePool(clusterId, nodePoolId, queryParams)
+	k8sNodepool, resp, err := c.CloudApiV6Services.K8s().GetNodePool(clusterId, nodePoolId, cloudapiv6.ParentResourceQueryParams)
 	if err != nil {
 		return err
 	}

@@ -1,5 +1,10 @@
 package cloudapi_v6
 
+import (
+	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
+	"math"
+)
+
 // Resources
 const (
 	DatacenterResource = "datacenter"
@@ -270,5 +275,20 @@ const (
 	DefaultServerCores     = 2
 	DefaultVolumeSize      = 10
 	DefaultNicLanId        = 1
+	DefaultMaxResults      = int32(math.MaxInt32)
 	DefaultServerCPUFamily = "AMD_OPTERON"
+	DefaultListDepth       = int32(1)
+	DefaultGetDepth        = int32(0)
+	DefaultCreateDepth     = int32(0)
+	DefaultUpdateDepth     = int32(0)
+	DefaultDeleteDepth     = int32(0)
+	DefaultMiscDepth       = int32(0) // Attach, Detach (and similar); Server start/stop/suspend/etc.;
+)
+
+// Utils
+var (
+	// Parent resource depth for ListAll, DetachAll, DeleteAll, etc.
+	ParentResourceListDepth       = int32(0)
+	ParentResourceQueryParams     = resources.QueryParams{Depth: &ParentResourceListDepth}
+	ParentResourceListQueryParams = resources.ListQueryParams{QueryParams: ParentResourceQueryParams}
 )

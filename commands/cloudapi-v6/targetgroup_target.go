@@ -273,7 +273,7 @@ func RunTargetGroupTargetRemove(c *core.CommandConfig) error {
 
 func RemoveAllTargetGroupTarget(c *core.CommandConfig) (*resources.Response, error) {
 	_ = c.Printer.Print("Target Group Targets to be deleted:")
-	applicationLoadBalancerRules, resp, err := c.CloudApiV6Services.TargetGroups().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)), resources.QueryParams{})
+	applicationLoadBalancerRules, resp, err := c.CloudApiV6Services.TargetGroups().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)), cloudapiv6.ParentResourceQueryParams)
 	if err != nil {
 		return nil, err
 	}
