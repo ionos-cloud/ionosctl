@@ -170,9 +170,6 @@ func RunTargetGroupTargetAdd(c *core.CommandConfig) error {
 		return err
 	}
 	queryParams := listQueryParams.QueryParams
-	if !structs.IsZero(queryParams) {
-		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
-	}
 	var targetItems []ionoscloud.TargetGroupTarget
 
 	// Get existing Targets from the specified Target Group
@@ -221,9 +218,6 @@ func RunTargetGroupTargetRemove(c *core.CommandConfig) error {
 		return err
 	}
 	queryParams := listQueryParams.QueryParams
-	if !structs.IsZero(queryParams) {
-		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(queryParams))
-	}
 	var (
 		resp *resources.Response
 	)
