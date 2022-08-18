@@ -1,11 +1,11 @@
 package commands
 
 import (
-	"github.com/golang/mock/gomock"
 	"bufio"
 	"bytes"
 	"errors"
 	"fmt"
+	"github.com/golang/mock/gomock"
 	"net/http"
 	"os"
 	"regexp"
