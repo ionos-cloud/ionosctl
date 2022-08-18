@@ -39,12 +39,13 @@ archives:
       - docs/*
       - LICENSE
       - README.md
+      - CHANGELOG.md
     wrap_in_directory: false
 
 scoop:
   folder: Scoops
   bucket:
-    owner: ionosctl
+    owner: ionos-cloud
     name: scoop-bucket
   homepage: https://github.com/ionos-cloud/ionosctl
   description: IonosCTL is a tool to help you manage your Ionos Cloud resources directly from your terminal.
