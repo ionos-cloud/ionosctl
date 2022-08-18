@@ -1,5 +1,10 @@
 # Changelog
 
+## [6.3.1] (August 2022)
+
+### New package manager support
+- Added support and instructions for installing via scoop for Windows https://scoop.sh/
+
 ## [6.3.0] (August 2022)
 
 ### Enhancements

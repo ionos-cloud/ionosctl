@@ -46,6 +46,15 @@ brew tap ionos-cloud/homebrew-ionos-cloud
 brew install ionosctl
 ```
 
+### Installing on Windows
+
+You can install `ionosctl` using the [Scoop](https://scoop.sh/) package manager:
+
+```bash
+scoop bucket ionos-cloud/scoop-bucket
+scoop install ionosctl
+```
+
 #### Downloading a Release from Github
 
 Check the [Release Page](https://github.com/ionos-cloud/ionosctl/releases) and find the corresponding archive for your operating system and architecture. You can download the archive from your browser or you can follow the next steps:
