@@ -51,7 +51,7 @@ Required values to run command:
   -f, --force                    Force command to execute without user input
   -h, --help                     Print usage
       --loadbalancer-id string   The unique Load Balancer Id (required)
-  -M, --max-results int          The maximum number of elements to return
+  -M, --max-results int32        The maximum number of elements to return (default 2147483647)
       --order-by string          Limits results to those containing a matching value for a specific property
   -o, --output string            Desired output format [text|json] (default "text")
   -q, --quiet                    Quiet output

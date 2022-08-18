@@ -44,7 +44,7 @@ Required values to run a command:
       --cols strings         Set of columns to be printed on output 
                              Available columns: [LanId Dhcp RoutesNetwork RoutesGatewayIp] (default [LanId,Dhcp,RoutesNetwork,RoutesGatewayIp])
   -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
-  -D, --depth int            Controls the detail depth of the response objects. Max depth is 10.
+  -D, --depth int32          Controls the detail depth of the response objects. Max depth is 10.
       --dhcp                 Indicates if the Kubernetes Node Pool LAN will reserve an IP using DHCP. E.g.: --dhcp=true, --dhcp=false (default true)
   -f, --force                Force command to execute without user input
       --gateway-ip string    IPv4 or IPv6 Gateway IP for the route. Must be set with --network flag

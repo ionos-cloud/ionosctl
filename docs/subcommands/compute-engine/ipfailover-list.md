@@ -41,7 +41,7 @@ Required values to run command:
                                Available columns: [NicId Ip] (default [NicId,Ip])
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --datacenter-id string   The unique Data Center Id (required)
-  -D, --depth int              Controls the detail depth of the response objects. Max depth is 10. (default 1)
+  -D, --depth int32            Controls the detail depth of the response objects. Max depth is 10. (default 1)
   -f, --force                  Force command to execute without user input
   -h, --help                   Print usage
       --lan-id string          The unique LAN Id (required)

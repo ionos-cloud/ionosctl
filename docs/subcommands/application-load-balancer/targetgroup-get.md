@@ -39,7 +39,7 @@ Required values to run command:
       --cols strings            Set of columns to be printed on output 
                                 Available columns: [TargetGroupId Name Algorithm Protocol CheckTimeout CheckInterval Retries Path Method MatchType Response Regex Negate State] (default [TargetGroupId,Name,Algorithm,Protocol,CheckTimeout,CheckInterval,State])
   -c, --config string           Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
-  -D, --depth int               Controls the detail depth of the response objects. Max depth is 10.
+  -D, --depth int32             Controls the detail depth of the response objects. Max depth is 10.
   -f, --force                   Force command to execute without user input
   -h, --help                    Print usage
   -o, --output string           Desired output format [text|json] (default "text")

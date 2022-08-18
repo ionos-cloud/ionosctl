@@ -58,7 +58,7 @@ Required values to run command:
   -c, --config string                       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --content-type string                 Valid only for STATIC actions. (default "application/json")
       --datacenter-id string                The unique Data Center Id (required)
-  -D, --depth int                           Controls the detail depth of the response objects. Max depth is 10.
+  -D, --depth int32                         Controls the detail depth of the response objects. Max depth is 10.
   -f, --force                               Force command to execute without user input
   -h, --help                                Print usage
   -l, --location string                     The location for redirecting; mandatory and valid only for REDIRECT actions. (default "www.ionos.com")
