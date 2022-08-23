@@ -179,6 +179,16 @@ After a successful authentication, you will no longer need to provide credential
 | `IONOS_PASSWORD`     | Specify the password used to login, to authenticate against the IONOS Cloud API                                                                                                                                                | 
 | `IONOS_TOKEN`        | Specify the token used to login, if a token is being used instead of username and password                                                                                                                                     |
 | `IONOS_API_URL`      | Specify the API URL. It will overwrite the API endpoint default value `api.ionos.com`. Note: the host URL does not contain the `/cloudapi/v5` path, so it should _not_ be included in the `IONOS_API_URL` environment variable | 
+| `IONOS_PINNED_CERT`  | Specify the SHA-256 public fingerprint here, enables certificate pinning                                                                                                                                                       |
+
+### Certificate pinning:
+
+You can enable certificate pinning if you want to bypass the normal certificate checking procedure,
+by doing the following:
+
+Set env variable IONOS_PINNED_CERT=<insert_sha256_public_fingerprint_here>
+
+You can get the sha256 fingerprint most easily from the browser by inspecting the certificate.
 
 ### Enabling Shell Auto-Completion
 
