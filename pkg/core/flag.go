@@ -3,9 +3,9 @@ package core
 import (
 	"errors"
 	"fmt"
-	"strings"
-
+	"github.com/google/uuid"
 	"github.com/spf13/viper"
+	"strings"
 )
 
 const (
@@ -146,3 +146,45 @@ func pluralize(word string, number int) string {
 	}
 	return word + "s"
 }
+
+////
+// --- CUSTOM FLAG TYPES ---
+// For custom validation and error handling within pflag's Set function
+// Use pflag's Var and VarP respectively in conjunction with the custom flag's constructor to add these custom types to a command.
+//
+
+/// -- START UUID FLAG TYPE --
+type uuidFlag struct {
+	Value string
+}
+
+// Instantiate an empty uuidFlag type. Use this in pflag's Var/VarP funcs first argument
+func newUuidFlag(defaultValue string) *uuidFlag {
+	return &uuidFlag{Value: defaultValue}
+}
+
+// PFlag calls this function when it finds an argument provided by the user of uuidFlag type.
+func (u *uuidFlag) Set(p string) error {
+	IsValidUUID := func(u string) bool {
+		_, err := uuid.Parse(u)
+		return err == nil
+	}
+
+	if !IsValidUUID(p) {
+		return fmt.Errorf("%s does not match UUID-4 format", p)
+	}
+
+	// Valid UUID if passed above check
+	u.Value = p
+	return nil
+}
+
+func (u *uuidFlag) Type() string {
+	return "string"
+}
+
+func (u uuidFlag) String() string {
+	return u.Value
+}
+
+/// -- END UUID FLAG TYPE --
