@@ -7,6 +7,7 @@ require (
 	github.com/fatih/color v1.13.0
 	github.com/fatih/structs v1.1.0
 	github.com/golang/mock v1.6.0
+	github.com/google/uuid v1.3.0
 	github.com/ionos-cloud/sdk-go-auth v1.0.4
 	github.com/ionos-cloud/sdk-go-dbaas-postgres v1.0.3
 	github.com/ionos-cloud/sdk-go/v6 v6.1.0
