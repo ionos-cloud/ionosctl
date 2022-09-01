@@ -50,7 +50,7 @@ func TargetGroupTargetCmd() *core.Command {
 		CmdRun:     RunTargetGroupTargetList,
 		InitClient: true,
 	})
-	list.AddStringFlag(cloudapiv6.ArgTargetGroupId, cloudapiv6.ArgIdShort, "", cloudapiv6.TargetGroupId, core.RequiredFlagOption())
+	list.AddUUIDFlag(cloudapiv6.ArgTargetGroupId, cloudapiv6.ArgIdShort, "", cloudapiv6.TargetGroupId, core.RequiredFlagOption())
 	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgTargetGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.TargetGroupIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -84,7 +84,7 @@ Required values to run command:
 		CmdRun:     RunTargetGroupTargetAdd,
 		InitClient: true,
 	})
-	add.AddStringFlag(cloudapiv6.ArgTargetGroupId, cloudapiv6.ArgIdShort, "", cloudapiv6.TargetGroupId, core.RequiredFlagOption())
+	add.AddUUIDFlag(cloudapiv6.ArgTargetGroupId, cloudapiv6.ArgIdShort, "", cloudapiv6.TargetGroupId, core.RequiredFlagOption())
 	_ = add.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgTargetGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.TargetGroupIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -115,7 +115,7 @@ Required values to run command:
 		CmdRun:     RunTargetGroupTargetRemove,
 		InitClient: true,
 	})
-	remove.AddStringFlag(cloudapiv6.ArgTargetGroupId, cloudapiv6.ArgIdShort, "", cloudapiv6.TargetGroupId, core.RequiredFlagOption())
+	remove.AddUUIDFlag(cloudapiv6.ArgTargetGroupId, cloudapiv6.ArgIdShort, "", cloudapiv6.TargetGroupId, core.RequiredFlagOption())
 	_ = remove.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgTargetGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.TargetGroupIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
