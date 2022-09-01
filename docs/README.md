@@ -9,21 +9,26 @@ description: >-
 
 ## Overview
 
-IonosCTL is a tool to help you manage your IONOS Cloud resources directly from your terminal.
+IonosCTL is a tool to help you manage your Ionos Cloud resources directly from your terminal.
+
+IonosCTL uses [Cobra](https://github.com/spf13/cobra) and [Viper](https://github.com/spf13/viper) libraries in order to manage commands and options.
+Cobra is both a library for creating powerful modern command-line interface (CLI) applications as well as a program to generate applications and command files and it is used in many Go projects together with Viper library.
 
 ## Getting started
 
-An IONOS account is required for access to the Cloud API; credentials from your registration are used to authenticate against the IONOS Cloud API.
+Before you begin you will need to have signed-up for a [Ionos Cloud](https://www.ionos.com/enterprise-cloud/signup) account. The credentials you establish during sign-up will be used to authenticate against the [Ionos Cloud API](https://dcd.ionos.com/latest/).
 
 ### Installing `ionosctl`
 
 #### Installing on Linux
+
 You can install ionosctl using snap package manager:
+
 ```
 snap install ionosctl
 ```
 
-### Installing on macOS
+#### Installing on macOS
 
 You can install `ionosctl` using the [Homebrew](https://brew.sh) package manager:
 
@@ -32,11 +37,20 @@ brew tap ionos-cloud/homebrew-ionos-cloud
 brew install ionosctl
 ```
 
-#### Downloading a Release from GitHub
+#### Installing on Windows
 
-Check the [Release Page](https://github.com/ionos-cloud/ionosctl/releases) and find the corresponding archive for your operating system and architecture. You can download the archive from your browser or you can follow the next steps if you are using a linux operating system:
+You can install `ionosctl` using the [Scoop](https://scoop.sh/) package manager:
 
-```text
+```bash
+scoop bucket add ionos-cloud https://github.com/ionos-cloud/scoop-bucket.git
+scoop install ionos-cloud/ionosctl
+```
+
+#### Downloading a Release from Github
+
+Check the [Release Page](https://github.com/ionos-cloud/ionosctl/releases) and find the corresponding archive for your operating system and architecture. You can download the archive from your browser or you can follow the next steps:
+
+```
 # Check if /usr/local/bin is part of your PATH
 echo $PATH
 
@@ -50,26 +64,24 @@ sudo mv ionosctl /usr/local/bin
 ionosctl help
 ```
 
-For Windows users, you can download the latest release available on [Release Page](https://github.com/ionos-cloud/ionosctl/releases), unzip it and follow this \[official guide\]\([https://msdn.microsoft.com/en-us/library/office/ee537574\(v=office.14\).aspx](https://msdn.microsoft.com/en-us/library/office/ee537574%28v=office.14%29.aspx)\) that explains how to add tools to your `PATH`. The path that you need to add is the path to the folder where you unzipped the ionosctl release.
+For Windows users, you can download the latest release available on [Release Page](https://github.com/ionos-cloud/ionosctl/releases), unzip it and follow this [official guide](https://msdn.microsoft.com/en-us/library/office/ee537574(v=office.14).aspx) that explains how to add tools to your `PATH`.
+The path that you need to add is the path to the folder where you unzipped the ionosctl release.
 
-#### Building a local version\(on a Linux machine\)
+#### Building a local version(on a Linux machine)
 
-If you have a Go environment \(e.g. Go 1.17\) configured, you can build and install the development version of `ionosctl` with:
+If you have a Go environment (e.g. Go 1.17) configured, you can build and install the development version of `ionosctl` with:
 
-```text
+```
 git clone https://github.com/ionos-cloud/ionosctl.git
 ```
 
 After cloning the repository, you can build `ionosctl` locally with:
-
-```text
+```
 make build
 ```
-
 To install `ionosctl` locally, you can use:
-
-```text
-make install
+```
+make install 
 ```
 
 Note that the development version is a work-in-progress of a future stable release and can include bugs. Officially released versions will generally be more stable. Check the latest releases in the [Release Page](https://github.com/ionos-cloud/ionosctl/releases).
@@ -77,16 +89,14 @@ Note that the development version is a work-in-progress of a future stable relea
 Dependencies: `ionosctl` uses [Go Modules](https://github.com/golang/go/wiki/Modules) with vendoring.
 
 On Windows, you just need to run the command
-
 ```text
 go install
 ```
-
 from the folder where you cloned the ionosctl git.
 
 ### Authenticating with Ionos Cloud
 
-Before using `ionosctl` to perform any operations, you will need to set your credentials for IONOS Cloud account. The authenticating mechanism is first checking the environment variables and if these are not set, it is checking if a configuration file exists and if the user has the right permissions for it.
+Before using `ionosctl` to perform any operations, you will need to set your credentials for IONOS Cloud account. The authentication mechanism is first checking the environment variables and if these are not set, it is checking if a configuration file exists and if the user has the right permissions for it.
 
 You can provide your credentials:
 
@@ -160,6 +170,16 @@ After a successful authentication, you will no longer need to provide credential
 | `IONOS_PASSWORD`     | Specify the password used to login, to authenticate against the IONOS Cloud API                                                                                                                                                | 
 | `IONOS_TOKEN`        | Specify the token used to login, if a token is being used instead of username and password                                                                                                                                     |
 | `IONOS_API_URL`      | Specify the API URL. It will overwrite the API endpoint default value `api.ionos.com`. Note: the host URL does not contain the `/cloudapi/v5` path, so it should _not_ be included in the `IONOS_API_URL` environment variable | 
+| `IONOS_PINNED_CERT`  | Specify the SHA-256 public fingerprint here, enables certificate pinning                                                                                                                                                       |
+
+### Certificate pinning:
+
+You can enable certificate pinning if you want to bypass the normal certificate checking procedure,
+by doing the following:
+
+Set env variable IONOS_PINNED_CERT=<insert_sha256_public_fingerprint_here>
+
+You can get the sha256 fingerprint most easily from the browser by inspecting the certificate.
 
 ### Enabling Shell Auto-Completion
 
@@ -172,20 +192,18 @@ To enable auto-completion, you need to use `ionosctl completion [shell]`, depend
 #### Enabling Bash Shell Auto-Completion
 
 To load completions for the current session, execute:
-
-```text
+```
 source <(ionosctl completion bash)
 ```
 
 To make these changes permanent, append the above line to your `.bashrc` file and use:
-
-```text
+```
 source ~/.bashrc
 ```
 
-By default, `TAB` key in Bash is bound to `complete` readline command. If you want to use `menu-complete` append the following line to `.bashrc` file:
-
-```text
+By default, `TAB` key in Bash is bound to `complete` readline command.
+If you want to use `menu-complete` append the following line to `.bashrc` file:
+```
 bind 'TAB':menu-complete
 ```
 
@@ -194,56 +212,53 @@ You will need to start a new shell for this setup to take effect.
 #### Enabling Fish Shell Auto-Completion
 
 To load completions into the current shell execute:
-
-```text
+```
 ionosctl completion fish | source
 ```
 
 In order to make the completions permanent execute once:
-
-```text
+```
 ionosctl completion fish > ~/.config/fish/completions/ionosctl.fish
 ```
 
 #### Enabling Zsh Shell Auto-Completion
 
-If shell completions are not already enabled for your environment, you need to enable them. Add the following line to your `~/.zshrc` file:
-
-```text
+If shell completions are not already enabled for your environment, you need to enable them.
+Add the following line to your `~/.zshrc` file:
+```
 autoload -Uz compinit; compinit
 ```
 
 To load completions for each session execute the following commands:
-
-```text
+```
 mkdir -p ~/.config/ionosctl/completion/zsh
 ionosctl completion zsh > ~/.config/ionosctl/completion/zsh/_ionosctl
 ```
 
-Finally add the following line to your `~/.zshrc`file, _before_ you call the `compinit` function:
-
-```text
+Finally add the following line to your `~/.zshrc`file, *before* you
+call the `compinit` function:
+```
 fpath+=(~/.config/ionosctl/completion/zsh)
 ```
 
 In the end your `~/.zshrc` file should contain the following two lines in the order given here:
-
-```text
+```
 fpath+=(~/.config/ionosctl/completion/zsh)
 #  ... anything else that needs to be done before compinit
 autoload -Uz compinit; compinit
 # ...
 ```
 
-You will need to start a new shell for this setup to take effect. Note: ZSH completions require zsh 5.2 or newer.
+You will need to start a new shell for this setup to take effect.
+Note: ZSH completions require zsh 5.2 or newer.
 
 #### Enabling PowerShell Auto-Completion
 
 PowerShell supports three different completion modes:
 
-* TabCompleteNext \(default Windows style - on each key press the next option is displayed\)
-* Complete \(works like Bash\)
-* MenuComplete \(works like Zsh\)
+- TabCompleteNext (default Windows style - on each key press the next option is displayed)
+- Complete (works like Bash)
+- MenuComplete (works like Zsh)
 
 You set the mode with `Set-PSReadLineKeyHandler -Key Tab -Function <mode>`
 
@@ -252,14 +267,12 @@ Descriptions will only be supported for Complete and MenuComplete.
 Follow the next steps to enable it:
 
 To load completions for the current session, execute:
-
-```text
+```
 PS> ionosctl completion powershell | Out-String | Invoke-Expression
 ```
 
 To load completions for every new session, run:
-
-```text
+```
 PS> ionosctl completion powershell > ionosctl.ps1
 ```
 
@@ -267,15 +280,16 @@ and source this file from your PowerShell profile or you can append the above li
 
 Regarding the PowerShell profile, you can follow the next steps:
 
-* You need to find the PowerShell Profile path using the command `$PROFILE` and verify it is created with `Test-Path $PROFILE`.
-* If the result of the previous command is false, the profile doesn’t exist you need to create one, so you can use the command `New-Item -Type File -Force $PROFILE`.
-* Now, you created the profile and you can oopen file with a text editor and add the following line: `. $PATH\ionosctl.ps1`, where $PATH is absolute path to ionosctl.ps1 \(for example . D:\ionoscloud\ionosctl.ps1\)
+* You need to find the PowerShell Profile path using the command ```$PROFILE``` and verify it is created with  ```Test-Path $PROFILE```.
 
-In case you want more details, the profile creating steps are detailed in this link: [https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about\_profiles?view=powershell-7.1](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_profiles?view=powershell-7.1)
+* If the result of the previous command is false, the profile doesn’t exist you need to create one, so you can use the command ```New-Item -Type File -Force $PROFILE```.
 
-* If you get the following error:"path\Microsoft.PowerShell\_profile.ps1" cannot be loaded because running scripts is disabled on this system, you can run the command `Set-ExecutionPolicy RemoteSigned` and restart the terminal.
+* Now, you created the profile and you can oopen file with a text editor and add the following line: ```. $PATH\ionosctl.ps1```, where $PATH is absolute path to ionosctl.ps1 (for example . D:\ionoscloud\ionosctl.ps1)
 
-  After you finish your work with ionosctl, you can run `Set-ExecutionPolicy Restricted` to disable running scripts.
+In case you want more details, the profile creating steps are detailed in this link: https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_profiles?view=powershell-7.1
+
+* If you get the following error:"path\Microsoft.PowerShell_profile.ps1" cannot be loaded because running scripts is disabled on this system, you can run the command ```Set-ExecutionPolicy RemoteSigned``` and restart the terminal.
+  After you finish your work with ionosctl, you can run ```Set-ExecutionPolicy Restricted``` to disable running scripts.
 
 You will need to start a new PowerShell for this setup to take effect.
 
@@ -285,7 +299,7 @@ Note: PowerShell completions require version 5.0 or above, which comes with Wind
 
 * Use the `--output` option
 
-You can control the output format with the `--output` or `-o` option. IonosCTL supports JSON format for all commands output by specifying `--output=json`. By default, the output is set to human-readable format.
+You can control the output format with the `--output` or `-o` option. IonosCTL supports JSON format for all commands output by specifying `--output=json`. By default, the output is set to `text`.
 
 * Use the `--quiet` option
 
@@ -327,7 +341,7 @@ This flag can be used with any command(in general create, read, update, delete, 
 
 * Use the `--filters` option
 
-You can use the filters option for the list commands, in order to filter the results based on properties or on metadata information. In order to set one or multiple filters, you must use the following format: `--filters KEY1=VALUE1,KEY2=VALUE2`. You can also use the `--max-results` or `--order-by` options.
+You can use the filters option for the majority of list commands, in order to filter the results based on properties or on metadata information. In order to set one or multiple filters, you must use the following format: `--filters KEY1=VALUE1,KEY2=VALUE2`. You can also use the `--max-results` or `--order-by` options.
 
 ### Help Information
 
@@ -361,32 +375,21 @@ make test
 
 ### Examples
 
-For each runnable command, use `ionosctl [command] --help`, `ionosctl [command] -h` or `ionosctl help [command]` or see the [full reference documentation](https://github.com/ionos-cloud/ionosctl/tree/decc11ee0cb1b00d1201dd3765219adec53cedc8/docs/subcommands/README.md) to see examples.
+For each runnable command, use `ionosctl [command] --help`, `ionosctl [command] -h`  or `ionosctl help [command]` or see the [full reference documentation](docs/subcommands) to see examples.
 
 ### Uninstalling `ionosctl`
 
 #### Local version
 
-To uninstall a local version built with the steps from [Installing Ionosctl](README.md#building-a-local-versionon-a-linux-machine), use:
-
+To uninstall a local version built with the steps from [Installing Ionosctl](#building-a-local-versionon-a-linux-machine), use:
 ```text
 make clean
-```
+``` 
 
-## Feature Reference
+## Contributing
 
-The IONOS Cloud CLI aims to offer access to all resources in the IONOS Cloud API and also offers some additional features that make the integration easier:
+Bugs & feature requests can be open on the repository issues: https://github.com/ionos-cloud/ionosctl/issues/new/choose
 
-* authentication for API calls
-* handling of asynchronous requests 
-
-## FAQ
-
-* How can I open a bug/feature request?
-
-Bugs & feature requests can be open on the repository issues: [https://github.com/ionos-cloud/ionosctl/issues/new/choose](https://github.com/ionos-cloud/ionosctl/issues/new/choose)
-
-* Can I contribute to the IONOS Cloud CLI?
+- Can I contribute to IonosCTL?
 
 Sure! Our repository is public, feel free to fork it and file a PR for one of the issues opened in the issues list. We will review it and work together to get it released.
-
