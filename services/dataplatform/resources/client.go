@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/pkg/config"
-	dp "github.com/ionos-cloud/sdk-go-autoscaling"
+	dp "github.com/ionos-cloud/sdk-go-dataplatform"
 	"github.com/spf13/viper"
 )
 

@@ -22,7 +22,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	dp "github.com/ionos-cloud/ionosctl/services/dataplatform"
 	"github.com/ionos-cloud/ionosctl/services/dataplatform/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go-autoscaling"
+	ionoscloud "github.com/ionos-cloud/sdk-go-dataplatform"
 )
 
 func NodePoolCmd() *core.Command {

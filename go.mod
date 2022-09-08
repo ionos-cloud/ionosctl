@@ -52,6 +52,6 @@ require (
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
 )
 
-require github.com/ionos-cloud/sdk-go-autoscaling v1.0.0
+require github.com/ionos-cloud/sdk-go-dataplatform v1.0.0-rc.1
 
-replace github.com/ionos-cloud/sdk-go-autoscaling => ../../../../../sdk/stackable
+replace github.com/ionos-cloud/sdk-go-dataplatform => ../../sdks/sdk-dp-go

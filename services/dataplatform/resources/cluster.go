@@ -3,7 +3,7 @@ package resources
 import (
 	"context"
 
-	dp "github.com/ionos-cloud/sdk-go-autoscaling"
+	dp "github.com/ionos-cloud/sdk-go-dataplatform"
 )
 
 type ClusterResponseData struct {

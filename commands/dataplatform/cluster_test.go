@@ -13,7 +13,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	dp "github.com/ionos-cloud/ionosctl/services/dataplatform"
 	"github.com/ionos-cloud/ionosctl/services/dataplatform/resources"
-	sdkgo "github.com/ionos-cloud/sdk-go-autoscaling"
+	sdkgo "github.com/ionos-cloud/sdk-go-dataplatform"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
