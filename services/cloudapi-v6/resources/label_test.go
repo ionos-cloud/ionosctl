@@ -17,7 +17,7 @@ func TestNewLabelResourceService(t *testing.T) {
 	t.Run("list_labels_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		labelSvc := NewLabelResourceService(svc.Get(), ctx)
-		_, _, err := labelSvc.List()
+		_, _, err := labelSvc.List(testListQueryParam)
 		assert.Error(t, err)
 	})
 	t.Run("get_label_error", func(t *testing.T) {
@@ -29,7 +29,7 @@ func TestNewLabelResourceService(t *testing.T) {
 	t.Run("datacenter_list_labels_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		labelSvc := NewLabelResourceService(svc.Get(), ctx)
-		_, _, err := labelSvc.DatacenterList(testLabelResourceVar)
+		_, _, err := labelSvc.DatacenterList(testListQueryParam, testLabelResourceVar)
 		assert.Error(t, err)
 	})
 	t.Run("datacenter_get_label_error", func(t *testing.T) {
@@ -53,7 +53,7 @@ func TestNewLabelResourceService(t *testing.T) {
 	t.Run("server_list_labels_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		labelSvc := NewLabelResourceService(svc.Get(), ctx)
-		_, _, err := labelSvc.ServerList(testLabelResourceVar, testLabelResourceVar)
+		_, _, err := labelSvc.ServerList(testListQueryParam, testLabelResourceVar, testLabelResourceVar)
 		assert.Error(t, err)
 	})
 	t.Run("server_get_label_error", func(t *testing.T) {
@@ -77,7 +77,7 @@ func TestNewLabelResourceService(t *testing.T) {
 	t.Run("volume_list_labels_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		labelSvc := NewLabelResourceService(svc.Get(), ctx)
-		_, _, err := labelSvc.VolumeList(testLabelResourceVar, testLabelResourceVar)
+		_, _, err := labelSvc.VolumeList(testListQueryParam, testLabelResourceVar, testLabelResourceVar)
 		assert.Error(t, err)
 	})
 	t.Run("volume_get_label_error", func(t *testing.T) {
@@ -101,7 +101,7 @@ func TestNewLabelResourceService(t *testing.T) {
 	t.Run("snapshot_list_labels_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		labelSvc := NewLabelResourceService(svc.Get(), ctx)
-		_, _, err := labelSvc.SnapshotList(testLabelResourceVar)
+		_, _, err := labelSvc.SnapshotList(testListQueryParam, testLabelResourceVar)
 		assert.Error(t, err)
 	})
 	t.Run("snapshot_get_label_error", func(t *testing.T) {
@@ -125,7 +125,7 @@ func TestNewLabelResourceService(t *testing.T) {
 	t.Run("ipblock_list_labels_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		labelSvc := NewLabelResourceService(svc.Get(), ctx)
-		_, _, err := labelSvc.IpBlockList(testLabelResourceVar)
+		_, _, err := labelSvc.IpBlockList(testListQueryParam, testLabelResourceVar)
 		assert.Error(t, err)
 	})
 	t.Run("ipblock_get_label_error", func(t *testing.T) {
