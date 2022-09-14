@@ -43,7 +43,7 @@ func LabelCmd() *core.Command {
 		ShortDesc:  "List Labels from Resources",
 		LongDesc:   "Use this command to list all Labels from all Resources under your account. If you want to list all Labels from a specific Resource, use `--resource-type` option together with the Resource Id: `--datacenter-id`, `--server-id`, `--volume-id`.",
 		Example:    listLabelsExample,
-		PreCmdRun:  core.NoPreRun,
+		PreCmdRun:  PreRunLabelList,
 		CmdRun:     RunLabelList,
 		InitClient: true,
 	})
@@ -262,6 +262,19 @@ func PreRunResourceTypeLabelKeyValue(c *core.PreCommandConfig) error {
 
 func PreRunLabelUrn(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgLabelUrn)
+}
+
+func PreRunLabelList(c *core.PreCommandConfig) error {
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgResourceType)) {
+		return core.CheckRequiredFlagsSets(c.Command, c.NS,
+			[]string{cloudapiv6.ArgResourceType, cloudapiv6.ArgDataCenterId},                         // --resource-type datacenter
+			[]string{cloudapiv6.ArgResourceType, cloudapiv6.ArgDataCenterId, cloudapiv6.ArgVolumeId}, // --resource-type volume
+			[]string{cloudapiv6.ArgResourceType, cloudapiv6.ArgDataCenterId, cloudapiv6.ArgServerId}, // --resource-type server
+			[]string{cloudapiv6.ArgResourceType, cloudapiv6.ArgSnapshotId},                           // --resource-type snapshot
+			[]string{cloudapiv6.ArgResourceType, cloudapiv6.ArgIpBlockId},                            // --resource-type ipblock
+		)
+	}
+	return core.NoPreRun(c)
 }
 
 func RunLabelList(c *core.CommandConfig) error {
