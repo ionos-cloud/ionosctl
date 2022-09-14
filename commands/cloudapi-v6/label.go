@@ -2,6 +2,7 @@ package commands
 
 import (
 	"context"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/query"
 	"os"
 
 	"github.com/fatih/structs"
@@ -41,7 +42,7 @@ func LabelCmd() *core.Command {
 		Verb:       "list",
 		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List Labels from Resources",
-		LongDesc:   "Use this command to list all Labels from all Resources under your account. If you want to list all Labels from a specific Resource, use `--resource-type` option together with the Resource Id: `--datacenter-id`, `--server-id`, `--volume-id`.",
+		LongDesc:   "Use this command to list all Labels from all Resources under your account. If you want to list all Labels from a specific Resource, use `--resource-type` option together with the Resource Id: `--datacenter-id`, `--server-id`, `--volume-id`.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.LabelsFiltersUsage(),
 		Example:    listLabelsExample,
 		PreCmdRun:  PreRunLabelList,
 		CmdRun:     RunLabelList,
@@ -72,8 +73,16 @@ func LabelCmd() *core.Command {
 		return []string{cloudapiv6.DatacenterResource, cloudapiv6.VolumeResource, cloudapiv6.ServerResource, cloudapiv6.SnapshotResource, cloudapiv6.IpBlockResource}, cobra.ShellCompDirectiveNoFileComp
 	})
 	list.AddBoolFlag(config.ArgNoHeaders, "", false, cloudapiv6.ArgNoHeadersDescription)
+	list.AddInt32Flag(cloudapiv6.ArgMaxResults, cloudapiv6.ArgMaxResultsShort, cloudapiv6.DefaultMaxResults, cloudapiv6.ArgMaxResultsDescription)
 	list.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultListDepth, cloudapiv6.ArgDepthDescription)
-
+	list.AddStringFlag(cloudapiv6.ArgOrderBy, "", "", cloudapiv6.ArgOrderByDescription)
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgOrderBy, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.LabelsFilters(), cobra.ShellCompDirectiveNoFileComp
+	})
+	list.AddStringSliceFlag(cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, cloudapiv6.ArgFiltersDescription)
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgFilters, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.LabelsFilters(), cobra.ShellCompDirectiveNoFileComp
+	})
 	/*
 		Get Command
 	*/
@@ -265,6 +274,12 @@ func PreRunLabelUrn(c *core.PreCommandConfig) error {
 }
 
 func PreRunLabelList(c *core.PreCommandConfig) error {
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
+		err := query.ValidateFilters(c, completer.LabelsFilters(), completer.LabelsFiltersUsage())
+		if err != nil {
+			return err
+		}
+	}
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgResourceType)) {
 		return core.CheckRequiredFlagsSets(c.Command, c.NS,
 			[]string{cloudapiv6.ArgResourceType, cloudapiv6.ArgDataCenterId},                         // --resource-type datacenter
@@ -278,6 +293,10 @@ func PreRunLabelList(c *core.PreCommandConfig) error {
 }
 
 func RunLabelList(c *core.CommandConfig) error {
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
 	switch viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceType)) {
 	case cloudapiv6.DatacenterResource:
 		return RunDataCenterLabelsList(c)
@@ -290,7 +309,7 @@ func RunLabelList(c *core.CommandConfig) error {
 	case cloudapiv6.SnapshotResource:
 		return RunSnapshotLabelsList(c)
 	default:
-		labelDcs, _, err := c.CloudApiV6Services.Labels().List()
+		labelDcs, _, err := c.CloudApiV6Services.Labels().List(listQueryParams)
 		if err != nil {
 			return err
 		}
