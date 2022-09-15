@@ -116,3 +116,17 @@ func (mr *MockPrintServiceMockRecorder) Verbose(format interface{}, a ...interfa
 	varargs := append([]interface{}{format}, a...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Verbose", reflect.TypeOf((*MockPrintService)(nil).Verbose), varargs...)
 }
+
+// Warn mocks base method.
+func (m *MockPrintService) Warn(arg0 interface{}) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Warn", arg0)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Warn indicates an expected call of Warn.
+func (mr *MockPrintServiceMockRecorder) Warn(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Warn", reflect.TypeOf((*MockPrintService)(nil).Warn), arg0)
+}
