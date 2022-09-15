@@ -38,7 +38,8 @@ var (
 	Version string
 	// Label - If label is not set, the version will be: DEV
 	// If label is set as `release`, it will show the version released
-	Label string
+	Label     string
+	GitCommit string
 
 	IonosctlVersion cliVersion
 )
@@ -144,6 +145,7 @@ func initVersion() {
 	}
 	if Label == "" {
 		IonosctlVersion.label = CLIVersionDev
+		IonosctlVersion.hash = GitCommit
 	} else {
 		IonosctlVersion.label = Label
 	}
@@ -152,11 +154,12 @@ func initVersion() {
 type cliVersion struct {
 	version string
 	label   string
+	hash    string
 }
 
 func (v cliVersion) GetVersion() string {
 	if v.label != "release" {
-		return fmt.Sprintf("%s", v.label)
+		return fmt.Sprintf("%s - %s", v.label, v.hash)
 	} else {
 		return fmt.Sprintf("%s", v.version)
 	}

@@ -6,9 +6,10 @@ DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../"
 OUT_D=${OUT_D:-${DIR}/builds}
 mkdir -p "${OUT_D}"
 
-version="$(git tag -l | sort --version-sort | tail -n1 | cut -c 2-)"
+VERSION="$(git tag -l | sort --version-sort | tail -n1 | cut -c 2-)"
+GIT_COMMIT="$(git rev-parse --short HEAD)"
 
-ldflags="-X github.com/ionos-cloud/ionosctl/commands.Version=${version}"
+ldflags="-X github.com/ionos-cloud/ionosctl/commands.Version=${VERSION} -X github.com/ionos-cloud/ionosctl/commands.GitCommit=${GIT_COMMIT}"
 
 (
     export GO111MODULE=on
