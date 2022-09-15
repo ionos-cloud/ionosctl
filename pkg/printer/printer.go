@@ -124,14 +124,9 @@ func (p *TextPrinter) Print(v interface{}) error {
 			return err
 		}
 	case string:
-		if strings.HasSuffix(v.(string), "\n") {
-			if _, err := fmt.Fprintf(p.Stdout, "%v", v); err != nil {
-				return err
-			}
-		} else {
-			if _, err := fmt.Fprintf(p.Stdout, "%v\n", v); err != nil {
-				return err
-			}
+		v = strings.TrimRight(v.(string), "\n")
+		if _, err := fmt.Fprintf(p.Stdout, "%v\n", v); err != nil {
+			return err
 		}
 	default:
 		_, err := fmt.Fprintf(p.Stdout, "%v\n", v)
