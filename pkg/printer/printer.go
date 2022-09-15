@@ -50,6 +50,7 @@ func NewPrinterRegistry(out, outErr io.Writer, noHeaders bool) (Registry, error)
 
 type PrintService interface {
 	Print(interface{}) error
+	Warn(interface{}) error
 	Verbose(format string, a ...interface{})
 
 	GetStdout() io.Writer
@@ -74,6 +75,25 @@ func (p *JSONPrinter) Print(v interface{}) error {
 		var msg DefaultMsgPrint
 		msg.Message = v
 		err := WriteJSON(&msg, p.Stdout)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// Same as Print, but in Stderr
+func (p *JSONPrinter) Warn(v interface{}) error {
+	switch v.(type) {
+	case Result:
+		result := v.(Result)
+		if err := result.PrintJSON(p.Stderr); err != nil {
+			return err
+		}
+	default:
+		var msg DefaultMsgPrint
+		msg.Message = v
+		err := WriteJSON(&msg, p.Stderr)
 		if err != nil {
 			return err
 		}
@@ -136,6 +156,10 @@ func (p *TextPrinter) Print(v interface{}) error {
 	}
 
 	return nil
+}
+
+func (p *TextPrinter) Warn(v interface{}) error {
+	return p.Print(v) // Only implemented for JsonPrinter
 }
 
 func (p *TextPrinter) Verbose(format string, a ...interface{}) {
