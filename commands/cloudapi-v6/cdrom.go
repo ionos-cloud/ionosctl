@@ -328,7 +328,7 @@ func DetachAllCdRoms(c *core.CommandConfig) error {
 	}
 	if cdRomsItems, ok := cdRoms.GetItemsOk(); ok && cdRomsItems != nil {
 		if len(*cdRomsItems) > 0 {
-			_ = c.Printer.Print("CD-ROMS to be detached:")
+			_ = c.Printer.Warn("CD-ROMS to be detached:")
 			toPrint := ""
 			for _, cdRom := range *cdRomsItems {
 				if id, ok := cdRom.GetIdOk(); ok && id != nil {

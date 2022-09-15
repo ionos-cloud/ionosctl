@@ -458,7 +458,7 @@ func DeleteAllNetworkLoadBalancers(c *core.CommandConfig) error {
 	}
 	if nlbItems, ok := networkLoadBalancers.GetItemsOk(); ok && nlbItems != nil {
 		if len(*nlbItems) > 0 {
-			_ = c.Printer.Print("NetworkLoadBalancers to be deleted:")
+			_ = c.Printer.Warn("NetworkLoadBalancers to be deleted:")
 			for _, networkLoadBalancer := range *nlbItems {
 				toPrint := ""
 				if id, ok := networkLoadBalancer.GetIdOk(); ok && id != nil {

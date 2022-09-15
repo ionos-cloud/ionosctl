@@ -1064,7 +1064,7 @@ func DeleteAllServers(c *core.CommandConfig) error {
 	}
 	if serversItems, ok := servers.GetItemsOk(); ok && serversItems != nil {
 		if len(*serversItems) > 0 {
-			_ = c.Printer.Print("Servers to be deleted:")
+			_ = c.Printer.Warn("Servers to be deleted:")
 			for _, server := range *serversItems {
 				toPrint := ""
 				if id, ok := server.GetIdOk(); ok && id != nil {

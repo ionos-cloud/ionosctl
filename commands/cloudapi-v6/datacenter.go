@@ -335,7 +335,7 @@ func DeleteAllDatacenters(c *core.CommandConfig) error {
 	}
 	if datacentersItems, ok := datacenters.GetItemsOk(); ok && datacentersItems != nil {
 		if len(*datacentersItems) > 0 {
-			_ = c.Printer.Print("Datacenters to be deleted:")
+			_ = c.Printer.Warn("Datacenters to be deleted:")
 			for _, dc := range *datacentersItems {
 				toPrint := ""
 				if id, ok := dc.GetIdOk(); ok && id != nil {

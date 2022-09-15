@@ -269,10 +269,10 @@ func RemoveAllNatGatewayLans(c *core.CommandConfig) error {
 	if natGatewayProperties, ok := natGateway.GetPropertiesOk(); ok && natGatewayProperties != nil {
 		if lansOk, ok := natGatewayProperties.GetLansOk(); ok && lansOk != nil {
 			if len(*lansOk) > 0 {
-				_ = c.Printer.Print("NAT Gateways Lan to be removed:")
+				_ = c.Printer.Warn("NAT Gateways Lan to be removed:")
 				for _, lan := range *lansOk {
 					if id, ok := lan.GetIdOk(); ok && id != nil {
-						_ = c.Printer.Print("NAT Gateways Lan Id: " + string(*id))
+						_ = c.Printer.Warn("NAT Gateways Lan Id: " + string(*id))
 					}
 				}
 			} else {

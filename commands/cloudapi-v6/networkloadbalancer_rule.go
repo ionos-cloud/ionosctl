@@ -489,7 +489,7 @@ func DeleteAllNetworkLoadBalancerForwardingRules(c *core.CommandConfig) error {
 	}
 	if nlbForwardingRulesItems, ok := nlbForwardingRules.GetItemsOk(); ok && nlbForwardingRulesItems != nil {
 		if len(*nlbForwardingRulesItems) > 0 {
-			_ = c.Printer.Print("NetworkLoadBalancerForwardingRules to be deleted:")
+			_ = c.Printer.Warn("NetworkLoadBalancerForwardingRules to be deleted:")
 			for _, nlbForwardingRule := range *nlbForwardingRulesItems {
 				toPrint := ""
 				if id, ok := nlbForwardingRule.GetIdOk(); ok && id != nil {

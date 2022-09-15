@@ -431,7 +431,7 @@ func DeleteAllNatGatewayFlowLogs(c *core.CommandConfig) error {
 	}
 	if natgatewaysItems, ok := flowlogs.GetItemsOk(); ok && natgatewaysItems != nil {
 		if len(*natgatewaysItems) > 0 {
-			_ = c.Printer.Print("NatGatewayFlowLog to be deleted:")
+			_ = c.Printer.Warn("NatGatewayFlowLog to be deleted:")
 			for _, natgateway := range *natgatewaysItems {
 				toPrint := ""
 				if id, ok := natgateway.GetIdOk(); ok && id != nil {

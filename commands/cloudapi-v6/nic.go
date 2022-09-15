@@ -465,7 +465,7 @@ func DeleteAllNics(c *core.CommandConfig) error {
 	}
 	if nicsItems, ok := nics.GetItemsOk(); ok && nicsItems != nil {
 		if len(*nicsItems) > 0 {
-			_ = c.Printer.Print("NICs to be deleted:")
+			_ = c.Printer.Warn("NICs to be deleted:")
 			for _, nic := range *nicsItems {
 				toPrint := ""
 				if id, ok := nic.GetIdOk(); ok && id != nil {
@@ -815,7 +815,7 @@ func DetachAllNics(c *core.CommandConfig) error {
 	}
 	if nicsItems, ok := nics.GetItemsOk(); ok && nicsItems != nil {
 		if len(*nicsItems) > 0 {
-			_ = c.Printer.Print("NICs to be detached:")
+			_ = c.Printer.Warn("NICs to be detached:")
 			for _, nic := range *nicsItems {
 				toPrint := ""
 				if id, ok := nic.GetIdOk(); ok && id != nil {

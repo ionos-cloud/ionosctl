@@ -433,7 +433,7 @@ func DeleteAllNatgateways(c *core.CommandConfig) error {
 	}
 	if natGatewayItems, ok := natGateways.GetItemsOk(); ok && natGatewayItems != nil {
 		if len(*natGatewayItems) > 0 {
-			_ = c.Printer.Print("NatGateway to be deleted:")
+			_ = c.Printer.Warn("NatGateway to be deleted:")
 			for _, natGateway := range *natGatewayItems {
 				toPrint := ""
 				if id, ok := natGateway.GetIdOk(); ok && id != nil {

@@ -395,7 +395,7 @@ func DeleteAllBackupUnits(c *core.CommandConfig) error {
 	}
 	if backupUnitsItems, ok := backupUnits.GetItemsOk(); ok && backupUnitsItems != nil {
 		if len(*backupUnitsItems) > 0 {
-			_ = c.Printer.Print("Backup Units to be deleted:")
+			_ = c.Printer.Warn("Backup Units to be deleted:")
 			for _, backupUnit := range *backupUnitsItems {
 				toPrint := ""
 				if id, ok := backupUnit.GetIdOk(); ok && id != nil {

@@ -324,7 +324,7 @@ func RemoveAllNlbRuleTarget(c *core.CommandConfig) error {
 	if forwardingRuleProperties, ok := forwardingRule.GetPropertiesOk(); ok && forwardingRuleProperties != nil {
 		if targets, ok := forwardingRuleProperties.GetTargetsOk(); ok && targets != nil {
 			if len(*targets) > 0 {
-				_ = c.Printer.Print("Forwarding Rule Targets to be removed:")
+				_ = c.Printer.Warn("Forwarding Rule Targets to be removed:")
 				for _, target := range *targets {
 					toPrint := ""
 					if ipOk, ok := target.GetIpOk(); ok && ipOk != nil {

@@ -442,7 +442,7 @@ func DeleteAllLans(c *core.CommandConfig) error {
 	}
 	if lansItems, ok := lans.GetItemsOk(); ok && lansItems != nil {
 		if len(*lansItems) > 0 {
-			_ = c.Printer.Print("Lans to be deleted:")
+			_ = c.Printer.Warn("Lans to be deleted:")
 			for _, lan := range *lansItems {
 				toPrint := ""
 				if id, ok := lan.GetIdOk(); ok && id != nil {

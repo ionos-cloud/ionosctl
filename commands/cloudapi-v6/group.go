@@ -520,7 +520,7 @@ func DeleteAllGroups(c *core.CommandConfig) error {
 	}
 	if groupsItems, ok := groups.GetItemsOk(); ok && groupsItems != nil {
 		if len(*groupsItems) > 0 {
-			_ = c.Printer.Print("Groups to be deleted:")
+			_ = c.Printer.Warn("Groups to be deleted:")
 			for _, group := range *groupsItems {
 				toPrint := ""
 				if id, ok := group.GetIdOk(); ok && id != nil {

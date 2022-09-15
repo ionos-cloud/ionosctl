@@ -430,7 +430,7 @@ func DeleteAllNetworkLoadBalancerFlowLogs(c *core.CommandConfig) error {
 	}
 	if flowLogsItems, ok := flowLogs.GetItemsOk(); ok && flowLogsItems != nil {
 		if len(*flowLogsItems) > 0 {
-			_ = c.Printer.Print("NetworkLoadBalancerFlowLogs to be deleted:")
+			_ = c.Printer.Warn("NetworkLoadBalancerFlowLogs to be deleted:")
 			for _, flowLog := range *flowLogsItems {
 				toPrint := ""
 				if id, ok := flowLog.GetIdOk(); ok && id != nil {

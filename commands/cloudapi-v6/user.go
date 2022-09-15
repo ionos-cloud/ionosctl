@@ -400,7 +400,7 @@ func DeleteAllUsers(c *core.CommandConfig) error {
 	}
 	if usersItems, ok := users.GetItemsOk(); ok && usersItems != nil {
 		if len(*usersItems) > 0 {
-			_ = c.Printer.Print("Users to be deleted:")
+			_ = c.Printer.Warn("Users to be deleted:")
 			for _, user := range *usersItems {
 				toPrint := ""
 				if id, ok := user.GetIdOk(); ok && id != nil {
@@ -636,7 +636,7 @@ func RemoveAllUsers(c *core.CommandConfig) error {
 	}
 	if usersItems, ok := users.GetItemsOk(); ok && usersItems != nil {
 		if len(*usersItems) > 0 {
-			_ = c.Printer.Print("Users to be removed:")
+			_ = c.Printer.Warn("Users to be removed:")
 			for _, user := range *usersItems {
 				toPrint := ""
 				if id, ok := user.GetIdOk(); ok && id != nil {

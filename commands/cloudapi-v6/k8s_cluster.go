@@ -478,7 +478,7 @@ func DeleteAllK8sClusters(c *core.CommandConfig) error {
 	}
 	if k8sClustersItems, ok := k8Clusters.GetItemsOk(); ok && k8sClustersItems != nil {
 		if len(*k8sClustersItems) > 0 {
-			_ = c.Printer.Print("K8sClusters to be deleted:")
+			_ = c.Printer.Warn("K8sClusters to be deleted:")
 			for _, k8sCluster := range *k8sClustersItems {
 				toPrint := ""
 				if id, ok := k8sCluster.GetIdOk(); ok && id != nil {

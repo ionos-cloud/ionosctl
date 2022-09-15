@@ -443,10 +443,10 @@ func DeleteAllShares(c *core.CommandConfig) error {
 	}
 	if groupSharesItems, ok := groupShares.GetItemsOk(); ok && groupSharesItems != nil {
 		if len(*groupSharesItems) > 0 {
-			_ = c.Printer.Print("GroupShares to be deleted:")
+			_ = c.Printer.Warn("GroupShares to be deleted:")
 			for _, share := range *groupSharesItems {
 				if id, ok := share.GetIdOk(); ok && id != nil {
-					_ = c.Printer.Print("GroupShare Id: " + *id)
+					_ = c.Printer.Warn("GroupShare Id: " + *id)
 				}
 			}
 			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the GroupShares"); err != nil {
