@@ -28,7 +28,7 @@ coverage.out
 go.work
 
 ### Go Patch ###
-/vendor/
+# /vendor/
 /Godeps/
 
 ### GoLand ###

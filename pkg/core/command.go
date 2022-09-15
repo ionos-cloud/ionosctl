@@ -53,6 +53,21 @@ func (c *Command) IsAvailableCommand() bool {
 	}
 }
 
+func (c *Command) AddUUIDFlag(name, shorthand, defaultValue, desc string, optionFunc ...FlagOptionFunc) {
+	flags := c.Command.Flags()
+	if shorthand != "" {
+		flags.VarP(newUuidFlag(defaultValue), name, shorthand, desc)
+	} else {
+		flags.Var(newUuidFlag(defaultValue), name, desc)
+	}
+	viper.BindPFlag(GetFlagName(c.NS, name), c.Command.Flags().Lookup(name))
+
+	// Add Option to Flag
+	for _, option := range optionFunc {
+		option(c, name)
+	}
+}
+
 func (c *Command) AddStringFlag(name, shorthand, defaultValue, desc string, optionFunc ...FlagOptionFunc) {
 	flags := c.Command.Flags()
 	if shorthand != "" {
