@@ -127,6 +127,34 @@ func CheckRequiredFlagsSets(cmd *Command, ns string, localFlagsNameSets ...[]str
 	}
 }
 
+type FlagNameSetWithPredicate struct {
+	FlagNameSet    []string
+	Predicate      func(interface{}) bool
+	PredicateParam interface{}
+}
+
+// If a flag being set to a certain value creates some extra flag dependencies, then use this function!
+func CheckRequiredFlagsSetsIfPredicate(cmd *Command, ns string, localFlagsNameSets ...FlagNameSetWithPredicate) error {
+	anyFlagSet := false
+	flagSetsValidPredicate := []string{}
+	for _, flagNameSet := range localFlagsNameSets {
+		if !flagNameSet.Predicate(flagNameSet.PredicateParam) {
+			continue
+		}
+		err := CheckRequiredFlags(cmd, ns, flagNameSet.FlagNameSet...)
+		flagSetsValidPredicate = append(flagSetsValidPredicate, flagNameSet.FlagNameSet...)
+		if err == nil {
+			anyFlagSet = true
+		}
+	}
+	// If none of the flags sets are set, return error message.
+	if !anyFlagSet {
+		return RequiresMultipleOptionsErr(cmd, flagSetsValidPredicate)
+	}
+
+	return nil
+}
+
 // minLen gets the minimum length of the arrays provided as input
 func minLen(sets ...[]string) int {
 	var min int
