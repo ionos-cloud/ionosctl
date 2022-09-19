@@ -1,5 +1,5 @@
-# Created by https://www.toptal.com/developers/gitignore/api/go,webstorm,goland,visualstudiocode
-# Edit at https://www.toptal.com/developers/gitignore?templates=go,webstorm,goland,visualstudiocode
+# Created by https://www.toptal.com/developers/gitignore/api/go,goland+iml,webstorm+iml,visualstudiocode
+# Edit at https://www.toptal.com/developers/gitignore?templates=go,goland+iml,webstorm+iml,visualstudiocode
 
 ### Go ###
 # If you prefer the allow list template instead of the deny list, see community template:
@@ -17,9 +17,6 @@
 
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
-builds/
-coverage.out
-.envrc
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
@@ -28,10 +25,10 @@ coverage.out
 go.work
 
 ### Go Patch ###
-# /vendor/
+/vendor/
 /Godeps/
 
-### GoLand ###
+### GoLand+iml ###
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio, WebStorm and Rider
 # Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
 
@@ -110,39 +107,13 @@ fabric.properties
 # Android studio 3.1+ serialized cache file
 .idea/caches/build_file_checksums.ser
 
-### GoLand Patch ###
-# Comment Reason: https://github.com/joeblau/gitignore.io/issues/186#issuecomment-215987721
+### GoLand+iml Patch ###
+# Reason: https://github.com/joeblau/gitignore.io/issues/186#issuecomment-249601023
 
-# *.iml
-# modules.xml
-# .idea/misc.xml
-# *.ipr
-
-# Sonarlint plugin
-# https://plugins.jetbrains.com/plugin/7973-sonarlint
-.idea/**/sonarlint/
-
-# SonarQube Plugin
-# https://plugins.jetbrains.com/plugin/7238-sonarqube-community-plugin
-.idea/**/sonarIssues.xml
-
-# Markdown Navigator plugin
-# https://plugins.jetbrains.com/plugin/7896-markdown-navigator-enhanced
-.idea/**/markdown-navigator.xml
-.idea/**/markdown-navigator-enh.xml
-.idea/**/markdown-navigator/
-
-# Cache file creation bug
-# See https://youtrack.jetbrains.com/issue/JBR-2257
-.idea/$CACHE_FILE$
-
-# CodeStream plugin
-# https://plugins.jetbrains.com/plugin/12206-codestream
-.idea/codestream.xml
-
-# Azure Toolkit for IntelliJ plugin
-# https://plugins.jetbrains.com/plugin/8053-azure-toolkit-for-intellij
-.idea/**/azureSettings.xml
+*.iml
+modules.xml
+.idea/misc.xml
+*.ipr
 
 ### VisualStudioCode ###
 .vscode/*
@@ -169,7 +140,7 @@ fabric.properties
 # Ignore code-workspaces
 *.code-workspace
 
-### WebStorm ###
+### WebStorm+iml ###
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio, WebStorm and Rider
 # Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
 
@@ -218,30 +189,8 @@ fabric.properties
 
 # Android studio 3.1+ serialized cache file
 
-### WebStorm Patch ###
-# Comment Reason: https://github.com/joeblau/gitignore.io/issues/186#issuecomment-215987721
+### WebStorm+iml Patch ###
+# Reason: https://github.com/joeblau/gitignore.io/issues/186#issuecomment-249601023
 
-# *.iml
-# modules.xml
-# .idea/misc.xml
-# *.ipr
 
-# Sonarlint plugin
-# https://plugins.jetbrains.com/plugin/7973-sonarlint
-
-# SonarQube Plugin
-# https://plugins.jetbrains.com/plugin/7238-sonarqube-community-plugin
-
-# Markdown Navigator plugin
-# https://plugins.jetbrains.com/plugin/7896-markdown-navigator-enhanced
-
-# Cache file creation bug
-# See https://youtrack.jetbrains.com/issue/JBR-2257
-
-# CodeStream plugin
-# https://plugins.jetbrains.com/plugin/12206-codestream
-
-# Azure Toolkit for IntelliJ plugin
-# https://plugins.jetbrains.com/plugin/8053-azure-toolkit-for-intellij
-
-# End of https://www.toptal.com/developers/gitignore/api/go,webstorm,goland,visualstudiocode
+# End of https://www.toptal.com/developers/gitignore/api/go,goland+iml,webstorm+iml,visualstudiocode
