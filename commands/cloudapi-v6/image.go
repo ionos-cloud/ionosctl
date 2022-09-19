@@ -10,6 +10,7 @@ import (
 	"go.uber.org/multierr"
 	"io"
 	"os"
+	"path/filepath"
 	"sort"
 	"strconv"
 	"strings"
@@ -27,6 +28,8 @@ import (
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"github.com/webguerilla/ftps"
+	"golang.org/x/exp/slices"
 )
 
 func ImageCmd() *core.Command {
@@ -174,6 +177,30 @@ func ImageCmd() *core.Command {
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Image update [seconds]")
 	deleteCmd.AddBoolFlag(config.ArgNoHeaders, "", false, cloudapiv6.ArgNoHeadersDescription)
 	deleteCmd.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultGetDepth, cloudapiv6.ArgDepthDescription)
+
+	/*
+		upload Command
+		Perform upload to given FTP server. All locations from `location list` + karlsruhe (fkb)
+		- ftp://ftp-fkb.ionos.com/hdd-images
+		- ftp://ftp-fkb.ionos.com/iso-images
+		https://docs.ionos.com/cloud/compute-engine/block-storage/block-storage-faq#how-do-i-upload-my-own-images-with-ftp
+	*/
+	upload := core.NewCommand(ctx, imageCmd, core.CommandBuilder{
+		Namespace:  "image",
+		Resource:   "image",
+		Verb:       "upload",
+		Aliases:    []string{"u"},
+		ShortDesc:  "Upload an image to FTP server",
+		LongDesc:   "Use this command to upload an HDD or ISO image.\n\nRequired values to run command:\n\n* Location\n",
+		Example:    "ionosctl img u -i kolibri.iso -l fkb,fra,vit",
+		PreCmdRun:  PreRunImageUpload,
+		CmdRun:     RunImageUpload,
+		InitClient: true,
+	})
+	validHddImageExtensions := []string{".vmdk", ".vhd", ".vhdx", ".cow", ".qcow", ".qcow2", ".raw", ".vpc", ".vdi"}
+	validLocations := []string{"fra, fkb, txl, lhr, las, ewr, vit"}
+	upload.AddStringSliceFlag(cloudapiv6.ArgLocation, cloudapiv6.ArgLocationShort, nil, fmt.Sprintf("Location to upload to. Must be an array containing only %s", strings.Join(validLocations, " ")), core.RequiredFlagOption())
+	upload.AddStringSliceFlag("image", "i", nil, fmt.Sprintf("Slice of paths to images, absolute path or relative to ionosctl binary.\nImage must have extensions: .iso, %s", strings.Join(validHddImageExtensions, " ")), core.RequiredFlagOption())
 
 	return imageCmd
 }
@@ -381,6 +408,82 @@ func RunImageUpdate(c *core.CommandConfig) error {
 		return err
 	}
 	return c.Printer.Print(getImagePrint(resp, c, []resources.Image{*img}))
+}
+
+func PreRunImageUpload(c *core.PreCommandConfig) error {
+	err := c.Command.Command.MarkFlagRequired("image")
+	if err != nil {
+		return err
+	}
+	err = c.Command.Command.MarkFlagRequired(cloudapiv6.ArgLocation)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func RunImageUpload(c *core.CommandConfig) error {
+	locations := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgLocation))
+	images := viper.GetStringSlice(core.GetFlagName(c.NS, "image"))
+	c.Printer.Verbose("loc: %v, img: %v", locations, images)
+	img := images[0]
+	loc := locations[0]
+
+	validHddImageExtensions := []string{".vmdk", ".vhd", ".vhdx", ".cow", ".qcow", ".qcow2", ".raw", ".vpc", ".vdi"}
+	// validLocations := []string{"fra, fkb, txl, lhr, las, ewr, vit"}
+
+	// TODO: Move to prerun
+	var imageFileExtension string
+	if filepath.Ext(img) == ".iso" {
+		imageFileExtension = "iso"
+	} else if slices.Contains(validHddImageExtensions, filepath.Ext(img)) {
+		imageFileExtension = "hdd"
+	} else {
+		return fmt.Errorf("%s does not have a valid extension. Valid image extensions are: .iso, %s", img, strings.Join(validHddImageExtensions, ", "))
+	}
+
+	url := fmt.Sprintf("ftp-%s.ionos.com", loc)
+	c.Printer.Verbose("Uploading %s to %s", img, url)
+
+	// TODO: Move to services / image upload
+	// FTP CONNECT - Move to Services/Cloudapi-v6/Images
+	conn := new(ftps.FTPS)
+
+	conn.TLSConfig.InsecureSkipVerify = true // often necessary in shared hosting environments
+	conn.Debug = false
+
+	err := conn.Connect(url, 21)
+	if err != nil {
+		return err
+	}
+
+	err = conn.Login(viper.GetString(config.Username), viper.GetString(config.Password))
+	if err != nil {
+		return err
+	}
+
+	err = conn.ChangeWorkingDirectory(fmt.Sprintf("%s-images/", imageFileExtension))
+	if err != nil {
+		return err
+	}
+
+	bytes, err := os.ReadFile(img)
+	if err != nil {
+		return err
+	}
+
+	err = conn.StoreFile(filepath.Base(img), bytes)
+	if err != nil {
+		return err
+	}
+
+	err = conn.Quit()
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func PreRunImageList(c *core.PreCommandConfig) error {
