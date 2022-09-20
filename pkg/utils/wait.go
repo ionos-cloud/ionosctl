@@ -57,13 +57,13 @@ func WaitForRequest(c *core2.CommandConfig, interrogator InterrogateRequestFunc,
 			}
 			progress.SetTemplateString(requestProgressCircleTpl + " " + done)
 		} else {
-			c.Printer.Print(waitingForRequestMsg)
+			c.Printer.Warn(waitingForRequestMsg)
 			_, errCh := WatchRequestProgress(ctxTimeout, c, interrogator, requestId)
 			if err := <-errCh; err != nil {
-				c.Printer.Print(failed)
+				c.Printer.Warn(failed)
 				return err
 			}
-			c.Printer.Print(done)
+			c.Printer.Warn(done)
 		}
 		return nil
 	}
@@ -99,13 +99,13 @@ func WaitForState(c *core2.CommandConfig, interrogator InterrogateStateFunc, res
 			}
 			progress.SetTemplateString(stateProgressCircleTpl + " " + done)
 		} else {
-			c.Printer.Print(waitingForStateMsg)
+			c.Printer.Warn(waitingForStateMsg)
 			_, errCh := WatchStateProgress(ctxTimeout, c, interrogator, resourceId)
 			if err := <-errCh; err != nil {
-				c.Printer.Print(failed)
+				c.Printer.Warn(failed)
 				return err
 			}
-			c.Printer.Print(done)
+			c.Printer.Warn(done)
 		}
 		return nil
 	}
@@ -142,13 +142,13 @@ func WaitForDelete(c *core2.CommandConfig, interrogator InterrogateDeletionFunc,
 			}
 			progress.SetTemplateString(deleteProgressCircleTpl + " " + done)
 		} else {
-			c.Printer.Print(waitingForStateMsg)
+			c.Printer.Warn(waitingForStateMsg)
 			_, errCh := WatchDeletionProgress(ctxTimeout, c, interrogator, resourceId)
 			if err := <-errCh; err != nil {
-				c.Printer.Print(failed)
+				c.Printer.Warn(failed)
 				return err
 			}
-			c.Printer.Print(done)
+			c.Printer.Warn(done)
 		}
 		return nil
 	}
