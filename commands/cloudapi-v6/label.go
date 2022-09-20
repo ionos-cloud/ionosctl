@@ -234,40 +234,53 @@ func LabelCmd() *core.Command {
 	return labelCmd
 }
 
+// Returns []core.FlagNameSetWithPredicate to be used as params to send to core.CheckRequiredFlagsSets funcs.
+// If --resource-type datacenter, --datacenter-id is also required
+// If --resource-type server,	  --datacenter-id and --server-id are also required
+func generateFlagSets(c *core.PreCommandConfig, extraFlags ...string) []core.FlagNameSetWithPredicate {
+	funcIsResourceTypeSet := func(resource interface{}) bool {
+		return viper.GetString(core.GetGlobalFlagName(c.NS, cloudapiv6.ArgResourceType)) == resource
+	}
+	return []core.FlagNameSetWithPredicate{
+		{
+			FlagNameSet:    append([]string{cloudapiv6.ArgResourceType, cloudapiv6.ArgDataCenterId}, extraFlags...),
+			Predicate:      funcIsResourceTypeSet,
+			PredicateParam: cloudapiv6.DatacenterResource,
+		}, {
+			FlagNameSet:    append([]string{cloudapiv6.ArgResourceType, cloudapiv6.ArgDataCenterId, cloudapiv6.VolumeId}, extraFlags...),
+			Predicate:      funcIsResourceTypeSet,
+			PredicateParam: cloudapiv6.VolumeResource,
+		}, {
+			FlagNameSet:    append([]string{cloudapiv6.ArgResourceType, cloudapiv6.ArgDataCenterId, cloudapiv6.ArgServerId}, extraFlags...),
+			Predicate:      funcIsResourceTypeSet,
+			PredicateParam: cloudapiv6.ServerResource,
+		}, {
+			FlagNameSet:    append([]string{cloudapiv6.ArgResourceType, cloudapiv6.ArgSnapshotId}, extraFlags...),
+			Predicate:      funcIsResourceTypeSet,
+			PredicateParam: cloudapiv6.SnapshotResource,
+		}, {
+			FlagNameSet:    append([]string{cloudapiv6.ArgResourceType, cloudapiv6.ArgIpBlockId}, extraFlags...),
+			Predicate:      funcIsResourceTypeSet,
+			PredicateParam: cloudapiv6.IpBlockResource,
+		},
+	}
+}
+
 func PreRunResourceTypeLabelKey(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlagsSets(c.Command, c.NS,
-		[]string{cloudapiv6.ArgResourceType, cloudapiv6.ArgDataCenterId, cloudapiv6.ArgLabelKey},
-		[]string{cloudapiv6.ArgResourceType, cloudapiv6.ArgDataCenterId, cloudapiv6.ArgVolumeId, cloudapiv6.ArgLabelKey},
-		[]string{cloudapiv6.ArgResourceType, cloudapiv6.ArgDataCenterId, cloudapiv6.ArgServerId, cloudapiv6.ArgLabelKey},
-		[]string{cloudapiv6.ArgResourceType, cloudapiv6.ArgSnapshotId, cloudapiv6.ArgLabelKey},
-		[]string{cloudapiv6.ArgResourceType, cloudapiv6.ArgIpBlockId, cloudapiv6.ArgLabelKey},
-	)
+	return core.CheckRequiredFlagsSetsIfPredicate(c.Command, c.NS, generateFlagSets(c, cloudapiv6.ArgLabelKey)...)
 }
 
 func PreRunResourceTypeLabelKeyRemove(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlagsSets(c.Command, c.NS,
-		[]string{cloudapiv6.ArgResourceType, cloudapiv6.ArgDataCenterId, cloudapiv6.ArgLabelKey},
-		[]string{cloudapiv6.ArgResourceType, cloudapiv6.ArgDataCenterId, cloudapiv6.ArgVolumeId, cloudapiv6.ArgLabelKey},
-		[]string{cloudapiv6.ArgResourceType, cloudapiv6.ArgDataCenterId, cloudapiv6.ArgServerId, cloudapiv6.ArgLabelKey},
-		[]string{cloudapiv6.ArgResourceType, cloudapiv6.ArgSnapshotId, cloudapiv6.ArgLabelKey},
-		[]string{cloudapiv6.ArgResourceType, cloudapiv6.ArgIpBlockId, cloudapiv6.ArgLabelKey},
-
-		[]string{cloudapiv6.ArgResourceType, cloudapiv6.ArgDataCenterId, cloudapiv6.ArgAll},
-		[]string{cloudapiv6.ArgResourceType, cloudapiv6.ArgDataCenterId, cloudapiv6.ArgVolumeId, cloudapiv6.ArgAll},
-		[]string{cloudapiv6.ArgResourceType, cloudapiv6.ArgDataCenterId, cloudapiv6.ArgServerId, cloudapiv6.ArgAll},
-		[]string{cloudapiv6.ArgResourceType, cloudapiv6.ArgSnapshotId, cloudapiv6.ArgAll},
-		[]string{cloudapiv6.ArgResourceType, cloudapiv6.ArgIpBlockId, cloudapiv6.ArgAll},
+	return core.CheckRequiredFlagsSetsIfPredicate(c.Command, c.NS,
+		append(
+			generateFlagSets(c, cloudapiv6.ArgLabelKey),
+			generateFlagSets(c, cloudapiv6.ArgAll)...,
+		)...,
 	)
 }
 
 func PreRunResourceTypeLabelKeyValue(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlagsSets(c.Command, c.NS,
-		[]string{cloudapiv6.ArgResourceType, cloudapiv6.ArgDataCenterId, cloudapiv6.ArgLabelKey, cloudapiv6.ArgLabelValue},
-		[]string{cloudapiv6.ArgResourceType, cloudapiv6.ArgDataCenterId, cloudapiv6.ArgVolumeId, cloudapiv6.ArgLabelKey, cloudapiv6.ArgLabelValue},
-		[]string{cloudapiv6.ArgResourceType, cloudapiv6.ArgDataCenterId, cloudapiv6.ArgServerId, cloudapiv6.ArgLabelKey, cloudapiv6.ArgLabelValue},
-		[]string{cloudapiv6.ArgResourceType, cloudapiv6.ArgSnapshotId, cloudapiv6.ArgLabelKey, cloudapiv6.ArgLabelValue},
-		[]string{cloudapiv6.ArgResourceType, cloudapiv6.ArgIpBlockId, cloudapiv6.ArgLabelKey, cloudapiv6.ArgLabelValue},
-	)
+	return core.CheckRequiredFlagsSetsIfPredicate(c.Command, c.NS, generateFlagSets(c, cloudapiv6.ArgLabelKey, cloudapiv6.ArgLabelValue)...)
 }
 
 func PreRunLabelUrn(c *core.PreCommandConfig) error {
@@ -275,9 +288,6 @@ func PreRunLabelUrn(c *core.PreCommandConfig) error {
 }
 
 func PreRunLabelList(c *core.PreCommandConfig) error {
-	funcIsResourceTypeSet := func(resource interface{}) bool {
-		return viper.GetString(core.GetGlobalFlagName(c.NS, cloudapiv6.ArgResourceType)) == resource
-	}
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
 		err := query.ValidateFilters(c, completer.LabelsFilters(), completer.LabelsFiltersUsage())
 		if err != nil {
@@ -285,27 +295,7 @@ func PreRunLabelList(c *core.PreCommandConfig) error {
 		}
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgResourceType)) {
-		return core.CheckRequiredFlagsSetsIfPredicate(c.Command, c.NS, core.FlagNameSetWithPredicate{
-			FlagNameSet:    []string{cloudapiv6.ArgResourceType, cloudapiv6.ArgDataCenterId},
-			Predicate:      funcIsResourceTypeSet,
-			PredicateParam: cloudapiv6.DatacenterResource,
-		}, core.FlagNameSetWithPredicate{
-			FlagNameSet:    []string{cloudapiv6.ArgResourceType, cloudapiv6.ArgDataCenterId, cloudapiv6.VolumeId},
-			Predicate:      funcIsResourceTypeSet,
-			PredicateParam: cloudapiv6.VolumeResource,
-		}, core.FlagNameSetWithPredicate{
-			FlagNameSet:    []string{cloudapiv6.ArgResourceType, cloudapiv6.ArgDataCenterId, cloudapiv6.ArgServerId},
-			Predicate:      funcIsResourceTypeSet,
-			PredicateParam: cloudapiv6.ServerResource,
-		}, core.FlagNameSetWithPredicate{
-			FlagNameSet:    []string{cloudapiv6.ArgResourceType, cloudapiv6.ArgSnapshotId},
-			Predicate:      funcIsResourceTypeSet,
-			PredicateParam: cloudapiv6.SnapshotResource,
-		}, core.FlagNameSetWithPredicate{
-			FlagNameSet:    []string{cloudapiv6.ArgResourceType, cloudapiv6.ArgIpBlockId},
-			Predicate:      funcIsResourceTypeSet,
-			PredicateParam: cloudapiv6.IpBlockResource,
-		})
+		return core.CheckRequiredFlagsSetsIfPredicate(c.Command, c.NS, generateFlagSets(c)...)
 	}
 	return core.NoPreRun(c)
 }

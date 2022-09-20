@@ -136,20 +136,20 @@ type FlagNameSetWithPredicate struct {
 // If a flag being set to a certain value creates some extra flag dependencies, then use this function!
 func CheckRequiredFlagsSetsIfPredicate(cmd *Command, ns string, localFlagsNameSets ...FlagNameSetWithPredicate) error {
 	anyFlagSet := false
-	flagSetsValidPredicate := []string{}
+	flagSetsValidPredicate := [][]string{}
 	for _, flagNameSet := range localFlagsNameSets {
 		if !flagNameSet.Predicate(flagNameSet.PredicateParam) {
 			continue
 		}
 		err := CheckRequiredFlags(cmd, ns, flagNameSet.FlagNameSet...)
-		flagSetsValidPredicate = append(flagSetsValidPredicate, flagNameSet.FlagNameSet...)
+		flagSetsValidPredicate = append(flagSetsValidPredicate, flagNameSet.FlagNameSet)
 		if err == nil {
 			anyFlagSet = true
 		}
 	}
 	// If none of the flags sets are set, return error message.
 	if !anyFlagSet {
-		return RequiresMultipleOptionsErr(cmd, flagSetsValidPredicate)
+		return RequiresMultipleOptionsErr(cmd, flagSetsValidPredicate...)
 	}
 
 	return nil
