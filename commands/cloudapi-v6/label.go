@@ -238,29 +238,30 @@ func LabelCmd() *core.Command {
 // If --resource-type datacenter, --datacenter-id is also required
 // If --resource-type server,	  --datacenter-id and --server-id are also required
 func generateFlagSets(c *core.PreCommandConfig, extraFlags ...string) []core.FlagNameSetWithPredicate {
-	funcIsResourceTypeSet := func(resource interface{}) bool {
-		return viper.GetString(core.GetGlobalFlagName(c.NS, cloudapiv6.ArgResourceType)) == resource
+	funcResourceTypeSetAndMatches := func(resource interface{}) bool {
+		argResourceType := core.GetGlobalFlagName(c.NS, cloudapiv6.ArgResourceType)
+		return !viper.IsSet(argResourceType) || viper.GetString(argResourceType) == resource
 	}
 	return []core.FlagNameSetWithPredicate{
 		{
 			FlagNameSet:    append([]string{cloudapiv6.ArgResourceType, cloudapiv6.ArgDataCenterId}, extraFlags...),
-			Predicate:      funcIsResourceTypeSet,
+			Predicate:      funcResourceTypeSetAndMatches,
 			PredicateParam: cloudapiv6.DatacenterResource,
 		}, {
-			FlagNameSet:    append([]string{cloudapiv6.ArgResourceType, cloudapiv6.ArgDataCenterId, cloudapiv6.VolumeId}, extraFlags...),
-			Predicate:      funcIsResourceTypeSet,
+			FlagNameSet:    append([]string{cloudapiv6.ArgResourceType, cloudapiv6.ArgDataCenterId, cloudapiv6.ArgVolumeId}, extraFlags...),
+			Predicate:      funcResourceTypeSetAndMatches,
 			PredicateParam: cloudapiv6.VolumeResource,
 		}, {
 			FlagNameSet:    append([]string{cloudapiv6.ArgResourceType, cloudapiv6.ArgDataCenterId, cloudapiv6.ArgServerId}, extraFlags...),
-			Predicate:      funcIsResourceTypeSet,
+			Predicate:      funcResourceTypeSetAndMatches,
 			PredicateParam: cloudapiv6.ServerResource,
 		}, {
 			FlagNameSet:    append([]string{cloudapiv6.ArgResourceType, cloudapiv6.ArgSnapshotId}, extraFlags...),
-			Predicate:      funcIsResourceTypeSet,
+			Predicate:      funcResourceTypeSetAndMatches,
 			PredicateParam: cloudapiv6.SnapshotResource,
 		}, {
 			FlagNameSet:    append([]string{cloudapiv6.ArgResourceType, cloudapiv6.ArgIpBlockId}, extraFlags...),
-			Predicate:      funcIsResourceTypeSet,
+			Predicate:      funcResourceTypeSetAndMatches,
 			PredicateParam: cloudapiv6.IpBlockResource,
 		},
 	}
