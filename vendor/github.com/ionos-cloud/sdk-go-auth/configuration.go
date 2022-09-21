@@ -25,6 +25,7 @@ const (
 	IonosPasswordEnvVar   = "IONOS_PASSWORD"
 	IonosTokenEnvVar      = "IONOS_TOKEN"
 	IonosApiUrlEnvVar     = "IONOS_API_URL"
+	IonosLogLevelEnvVar   = "IONOS_LOG_LEVEL"
 	DefaultIonosServerUrl = "https://api.ionos.com/auth/v1"
 	DefaultIonosBasePath  = "/auth/v1"
 	defaultMaxRetries     = 3
@@ -117,6 +118,8 @@ type Configuration struct {
 	MaxRetries         int           `json:"maxRetries,omitempty"`
 	WaitTime           time.Duration `json:"waitTime,omitempty"`
 	MaxWaitTime        time.Duration `json:"maxWaitTime,omitempty"`
+	LogLevel           LogLevel
+	Logger             Logger
 }
 
 // NewConfiguration returns a new Configuration object
@@ -124,7 +127,7 @@ func NewConfiguration(username, password, token, hostUrl string) *Configuration 
 	cfg := &Configuration{
 		DefaultHeader:      make(map[string]string),
 		DefaultQueryParams: url.Values{},
-		UserAgent:          "ionos-cloud-sdk-go-auth/v1.0.4",
+		UserAgent:          "ionos-cloud-sdk-go-auth/v1.0.5",
 		Debug:              false,
 		Username:           username,
 		Password:           password,

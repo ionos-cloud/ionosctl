@@ -89,4 +89,7 @@ changelog:
       - '^doc:'
       - '^chore:'
       - '^test:'
+      - '^dep:'
+      - '^deps:'
+      - '^dependencies:'
   skip: false
