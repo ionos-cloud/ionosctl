@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
+	"github.com/golang/mock/gomock"
 	"testing"
 
 	"github.com/ionos-cloud/ionosctl/pkg/config"
@@ -177,7 +178,7 @@ func TestRunLabelList(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		rm.CloudApiV6Mocks.Label.EXPECT().List().Return(testLabels, nil, nil)
+		rm.CloudApiV6Mocks.Label.EXPECT().List(gomock.AssignableToTypeOf(testListQueryParam)).Return(testLabels, nil, nil)
 		err := RunLabelList(cfg)
 		assert.NoError(t, err)
 	})
@@ -187,7 +188,7 @@ func TestRunLabelList(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgResourceType), cloudapiv6.DatacenterResource)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testLabelResourceVar)
-		rm.CloudApiV6Mocks.Label.EXPECT().DatacenterList(testLabelResourceVar).Return(testLabelResources, nil, nil)
+		rm.CloudApiV6Mocks.Label.EXPECT().DatacenterList(gomock.AssignableToTypeOf(testListQueryParam), testLabelResourceVar).Return(testLabelResources, nil, nil)
 		err := RunLabelList(cfg)
 		assert.NoError(t, err)
 	})
@@ -197,7 +198,7 @@ func TestRunLabelList(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgResourceType), cloudapiv6.IpBlockResource)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIpBlockId), testLabelResourceVar)
-		rm.CloudApiV6Mocks.Label.EXPECT().IpBlockList(testLabelResourceVar).Return(testLabelResources, nil, nil)
+		rm.CloudApiV6Mocks.Label.EXPECT().IpBlockList(gomock.AssignableToTypeOf(testListQueryParam), testLabelResourceVar).Return(testLabelResources, nil, nil)
 		err := RunLabelList(cfg)
 		assert.NoError(t, err)
 	})
@@ -207,7 +208,7 @@ func TestRunLabelList(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgResourceType), cloudapiv6.SnapshotResource)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgSnapshotId), testLabelResourceVar)
-		rm.CloudApiV6Mocks.Label.EXPECT().SnapshotList(testLabelResourceVar).Return(testLabelResources, nil, nil)
+		rm.CloudApiV6Mocks.Label.EXPECT().SnapshotList(gomock.AssignableToTypeOf(testListQueryParam), testLabelResourceVar).Return(testLabelResources, nil, nil)
 		err := RunLabelList(cfg)
 		assert.NoError(t, err)
 	})
@@ -218,7 +219,7 @@ func TestRunLabelList(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgResourceType), cloudapiv6.ServerResource)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testLabelResourceVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testLabelResourceVar)
-		rm.CloudApiV6Mocks.Label.EXPECT().ServerList(testLabelResourceVar, testLabelResourceVar).Return(testLabelResources, nil, nil)
+		rm.CloudApiV6Mocks.Label.EXPECT().ServerList(gomock.AssignableToTypeOf(testListQueryParam), testLabelResourceVar, testLabelResourceVar).Return(testLabelResources, nil, nil)
 		err := RunLabelList(cfg)
 		assert.NoError(t, err)
 	})
@@ -229,7 +230,7 @@ func TestRunLabelList(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgResourceType), cloudapiv6.VolumeResource)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testLabelResourceVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgVolumeId), testLabelResourceVar)
-		rm.CloudApiV6Mocks.Label.EXPECT().VolumeList(testLabelResourceVar, testLabelResourceVar).Return(testLabelResources, nil, nil)
+		rm.CloudApiV6Mocks.Label.EXPECT().VolumeList(gomock.AssignableToTypeOf(testListQueryParam), testLabelResourceVar, testLabelResourceVar).Return(testLabelResources, nil, nil)
 		err := RunLabelList(cfg)
 		assert.NoError(t, err)
 	})
@@ -242,7 +243,7 @@ func TestRunLabelListErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		rm.CloudApiV6Mocks.Label.EXPECT().List().Return(testLabels, nil, testLabelErr)
+		rm.CloudApiV6Mocks.Label.EXPECT().List(gomock.AssignableToTypeOf(testListQueryParam)).Return(testLabels, nil, testLabelErr)
 		err := RunLabelList(cfg)
 		assert.Error(t, err)
 		assert.True(t, err == testLabelErr)

@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/google/uuid"
+	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"github.com/spf13/viper"
 	"strings"
 )
@@ -126,6 +127,34 @@ func CheckRequiredFlagsSets(cmd *Command, ns string, localFlagsNameSets ...[]str
 	}
 }
 
+type FlagNameSetWithPredicate struct {
+	FlagNameSet    []string
+	Predicate      func(interface{}) bool
+	PredicateParam interface{}
+}
+
+// If a flag being set to a certain value creates some extra flag dependencies, then use this function!
+func CheckRequiredFlagsSetsIfPredicate(cmd *Command, ns string, localFlagsNameSets ...FlagNameSetWithPredicate) error {
+	anyFlagSet := false
+	flagSetsValidPredicate := [][]string{}
+	for _, flagNameSet := range localFlagsNameSets {
+		if !flagNameSet.Predicate(flagNameSet.PredicateParam) {
+			continue
+		}
+		err := CheckRequiredFlags(cmd, ns, flagNameSet.FlagNameSet...)
+		flagSetsValidPredicate = append(flagSetsValidPredicate, flagNameSet.FlagNameSet)
+		if err == nil {
+			anyFlagSet = true
+		}
+	}
+	// If none of the flags sets are set, return error message.
+	if !anyFlagSet {
+		return RequiresMultipleOptionsErr(cmd, flagSetsValidPredicate...)
+	}
+
+	return nil
+}
+
 // minLen gets the minimum length of the arrays provided as input
 func minLen(sets ...[]string) int {
 	var min int
@@ -188,3 +217,56 @@ func (u uuidFlag) String() string {
 }
 
 /// -- END UUID FLAG TYPE --
+
+// LabelResourceFlag /
+// Can only be a string for which there is a corresponding endpoint in cloudapi labels API
+// For example, https://api.ionos.com/cloudapi/v6/datacenters/{datacenterId}/servers/{serverId}/labels
+// As of Sep. 2022, the set of valid strings are "datacenter", "server", "volume", "ipblock", "snapshot".
+// NOTE: Track progress of https://github.com/spf13/pflag/issues/236 : Might be implemented in pflag
+type LabelResourceFlag struct {
+	Value   string
+	Allowed []string
+}
+
+func newLabelResourceFlag(defaultValue string) *LabelResourceFlag {
+	return &LabelResourceFlag{
+		Value: defaultValue,
+		Allowed: []string{
+			cloudapiv6.DatacenterResource,
+			cloudapiv6.ServerResource,
+			cloudapiv6.VolumeResource,
+			cloudapiv6.IpBlockResource,
+			cloudapiv6.SnapshotResource,
+		},
+	}
+}
+
+func (a *LabelResourceFlag) Set(p string) error {
+	isIncluded := func(opts []string, val string) bool {
+		for _, opt := range opts {
+			if val == opt {
+				return true
+			}
+		}
+		return false
+	}
+	if !isIncluded(a.Allowed, p) {
+		return fmt.Errorf(
+			"Resource %s does not have a specific Label API endpoint. Please use -%s/--%s instead, or one of these values: %s",
+			p,
+			cloudapiv6.ArgFiltersShort,
+			cloudapiv6.ArgFilters,
+			strings.Join(a.Allowed, ","),
+		)
+	}
+	a.Value = p
+	return nil
+}
+
+func (a *LabelResourceFlag) Type() string {
+	return "string"
+}
+
+func (a LabelResourceFlag) String() string {
+	return a.Value
+}

@@ -3,6 +3,7 @@ package commands
 import (
 	"errors"
 	"fmt"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/query"
 	"go.uber.org/multierr"
 
 	"github.com/fatih/structs"
@@ -17,7 +18,11 @@ import (
 )
 
 func RunDataCenterLabelsList(c *core.CommandConfig) error {
-	labelDcs, resp, err := c.CloudApiV6Services.Labels().DatacenterList(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	labelDcs, resp, err := c.CloudApiV6Services.Labels().DatacenterList(listQueryParams, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
 	if resp != nil {
 		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
@@ -81,7 +86,7 @@ func RemoveAllDatacenterLabels(c *core.CommandConfig) error {
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	c.Printer.Verbose("Datacenter ID: %v", dcId)
 	c.Printer.Verbose("Getting Labels from Datacenter...")
-	labels, resp, err := c.CloudApiV6Services.Labels().DatacenterList(dcId)
+	labels, resp, err := c.CloudApiV6Services.Labels().DatacenterList(resources.ListQueryParams{}, dcId)
 	if err != nil {
 		return err
 	}
@@ -139,7 +144,12 @@ func RemoveAllDatacenterLabels(c *core.CommandConfig) error {
 }
 
 func RunServerLabelsList(c *core.CommandConfig) error {
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
 	labelDcs, resp, err := c.CloudApiV6Services.Labels().ServerList(
+		listQueryParams,
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
 	)
@@ -206,12 +216,16 @@ func RunServerLabelRemove(c *core.CommandConfig) error {
 }
 
 func RemoveAllServerLabels(c *core.CommandConfig) error {
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
 	c.Printer.Verbose("Datacenter ID: %v", dcId)
 	c.Printer.Verbose("Server ID: %v", serverId)
 	c.Printer.Verbose("Getting Labels from Server...")
-	labels, resp, err := c.CloudApiV6Services.Labels().ServerList(dcId, serverId)
+	labels, resp, err := c.CloudApiV6Services.Labels().ServerList(listQueryParams, dcId, serverId)
 	if err != nil {
 		return err
 	}
@@ -269,7 +283,12 @@ func RemoveAllServerLabels(c *core.CommandConfig) error {
 }
 
 func RunVolumeLabelsList(c *core.CommandConfig) error {
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
 	labelDcs, resp, err := c.CloudApiV6Services.Labels().VolumeList(
+		listQueryParams,
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeId)),
 	)
@@ -339,7 +358,7 @@ func RemoveAllVolumeLabels(c *core.CommandConfig) error {
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	volumeId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeId))
 	_ = c.Printer.Print("Labels to be removed from Volume with Id: " + volumeId)
-	labels, resp, err := c.CloudApiV6Services.Labels().VolumeList(dcId, volumeId)
+	labels, resp, err := c.CloudApiV6Services.Labels().VolumeList(resources.ListQueryParams{}, dcId, volumeId)
 	if err != nil {
 		return err
 	}
@@ -397,7 +416,11 @@ func RemoveAllVolumeLabels(c *core.CommandConfig) error {
 }
 
 func RunIpBlockLabelsList(c *core.CommandConfig) error {
-	labelDcs, resp, err := c.CloudApiV6Services.Labels().IpBlockList(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgIpBlockId)))
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	labelDcs, resp, err := c.CloudApiV6Services.Labels().IpBlockList(listQueryParams, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgIpBlockId)))
 	if resp != nil {
 		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
@@ -461,7 +484,7 @@ func RemoveAllIpBlockLabels(c *core.CommandConfig) error {
 	ipBlockId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgIpBlockId))
 	c.Printer.Verbose("IpBlock ID: %v", ipBlockId)
 	c.Printer.Verbose("Getting Labels from IpBlock...")
-	labels, resp, err := c.CloudApiV6Services.Labels().IpBlockList(ipBlockId)
+	labels, resp, err := c.CloudApiV6Services.Labels().IpBlockList(resources.ListQueryParams{}, ipBlockId)
 	if err != nil {
 		return err
 	}
@@ -519,7 +542,11 @@ func RemoveAllIpBlockLabels(c *core.CommandConfig) error {
 }
 
 func RunSnapshotLabelsList(c *core.CommandConfig) error {
-	labelDcs, resp, err := c.CloudApiV6Services.Labels().SnapshotList(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSnapshotId)))
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	labelDcs, resp, err := c.CloudApiV6Services.Labels().SnapshotList(listQueryParams, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSnapshotId)))
 	if resp != nil {
 		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
@@ -582,7 +609,7 @@ func RunSnapshotLabelRemove(c *core.CommandConfig) error {
 func RemoveAllSnapshotLabels(c *core.CommandConfig) error {
 	snapshotId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSnapshotId))
 	_ = c.Printer.Print("Labels to be removed from Snapshot with Id: " + snapshotId)
-	labels, resp, err := c.CloudApiV6Services.Labels().SnapshotList(snapshotId)
+	labels, resp, err := c.CloudApiV6Services.Labels().SnapshotList(resources.ListQueryParams{}, snapshotId)
 	if err != nil {
 		return err
 	}
