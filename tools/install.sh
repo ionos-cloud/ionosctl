@@ -2,9 +2,11 @@
 
 set -euo pipefail
 
-version="$(git tag -l | sort --version-sort | tail -n1 | cut -c 2-)"
+VERSION="$(git tag -l | sort --version-sort | tail -n1 | cut -c 2-)"
+GIT_COMMIT="$(git rev-parse --short HEAD)"
+[[ -n $(git status -s) ]] && echo 'modified and/or untracked diff' && GIT_COMMIT="${GIT_COMMIT}.modified"
 
-ldflags="-X github.com/ionos-cloud/ionosctl/commands.Version=${version}"
+ldflags="-X github.com/ionos-cloud/ionosctl/commands.Version=${VERSION} -X github.com/ionos-cloud/ionosctl/commands.GitCommit=${GIT_COMMIT}"
 
 (
     export GO111MODULE=on

@@ -581,14 +581,14 @@ func (r ApiTokensGenerateRequest) Execute() (Jwt, *APIResponse, error) {
 }
 
 /*
- * TokensGenerate Create new tokens
- * Users can generate new tokens ([JWT](https://jwt.io/) or [JSON Web Token](https://tools.ietf.org/html/rfc7519)). By default, new tokens are linked to the user’s contract. Users with multiple contracts must provide the contract number, for which the token is generated, in the `X-Contract-Number` header; otherwise, an error response is returned.
+  - TokensGenerate Create new tokens
+  - Users can generate new tokens ([JWT](https://jwt.io/) or [JSON Web Token](https://tools.ietf.org/html/rfc7519)). By default, new tokens are linked to the user’s contract. Users with multiple contracts must provide the contract number, for which the token is generated, in the `X-Contract-Number` header; otherwise, an error response is returned.
 
 To access this endpoint, 'Basic Authentication' or 'Token Authentication' tokens with valid credentials must be encapsulated in the header, by users with one or with multiple contracts.
 
 The response will contain a newly-generated token for accessing any IONOS Cloud APIs (Auth API, Cloud API, Reseller API, Activity Log API, and others). The token can be used to access the APIs without providing the contract number in the `X-Contract-Number` header, by users with one or with multiple contracts. However, a valid contract number must be provided in the `X-Contract-Number` header to access the Auth API. By default, generated access tokens will expire after one year (subject to change).
- * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @return ApiTokensGenerateRequest
+  - @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+  - @return ApiTokensGenerateRequest
 */
 func (a *TokensApiService) TokensGenerate(ctx _context.Context) ApiTokensGenerateRequest {
 	return ApiTokensGenerateRequest{

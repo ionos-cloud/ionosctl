@@ -18,7 +18,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"log"
 	"mime/multipart"
 	"net/http"
 	"net/http/httputil"
@@ -40,16 +39,13 @@ var (
 	xmlCheck  = regexp.MustCompile(`(?i:(?:application|text)/xml)`)
 )
 
-const DepthParam = "depth"
-const DefaultDepth = "10"
-
 const (
 	RequestStatusQueued  = "QUEUED"
 	RequestStatusRunning = "RUNNING"
 	RequestStatusFailed  = "FAILED"
 	RequestStatusDone    = "DONE"
 
-	Version = "1.0.4"
+	Version = "1.0.5"
 )
 
 // Constants for APIs
@@ -192,13 +188,14 @@ func (c *APIClient) callAPI(request *http.Request) (*http.Response, error) {
 			}
 		}
 
-		if c.cfg.Debug {
+		if c.cfg.Debug || c.cfg.LogLevel.Satisfies(Trace) {
 			dump, err := httputil.DumpRequestOut(clonedRequest, true)
-			if err != nil {
-				return nil, err
+			if err == nil {
+				c.cfg.Logger.Printf(" DumpRequestOut : %s\n", string(dump))
+			} else {
+				c.cfg.Logger.Printf(" DumpRequestOut err: %+v", err)
 			}
-			log.Printf("\ntry no: %d\n", retryCount)
-			log.Printf("%s\n", string(dump))
+			c.cfg.Logger.Printf("\n try no: %d\n", retryCount)
 		}
 
 		clonedRequest.Close = true
@@ -207,12 +204,13 @@ func (c *APIClient) callAPI(request *http.Request) (*http.Response, error) {
 			return resp, err
 		}
 
-		if c.cfg.Debug {
+		if c.cfg.Debug || c.cfg.LogLevel.Satisfies(Trace) {
 			dump, err := httputil.DumpResponse(resp, true)
-			if err != nil {
-				return resp, err
+			if err == nil {
+				c.cfg.Logger.Printf("\n DumpResponse : %s\n", string(dump))
+			} else {
+				c.cfg.Logger.Printf(" DumpResponse err %+v", err)
 			}
-			log.Printf("\n%s\n", string(dump))
 		}
 
 		var backoffTime time.Duration
@@ -239,8 +237,8 @@ func (c *APIClient) callAPI(request *http.Request) (*http.Response, error) {
 		}
 
 		if retryCount >= c.GetConfig().MaxRetries {
-			if c.cfg.Debug {
-				log.Printf("number of maximum retries exceeded (%d retries)\n", c.cfg.MaxRetries)
+			if c.cfg.Debug || c.cfg.LogLevel.Satisfies(Debug) {
+				c.cfg.Logger.Printf(" Number of maximum retries exceeded (%d retries)\n", c.cfg.MaxRetries)
 			}
 			break
 		} else {
@@ -255,8 +253,8 @@ func (c *APIClient) backOff(t time.Duration) {
 	if t > c.GetConfig().MaxWaitTime {
 		t = c.GetConfig().MaxWaitTime
 	}
-	if c.cfg.Debug {
-		log.Printf("sleeping %s before retrying request\n", t.String())
+	if c.cfg.Debug || c.cfg.LogLevel.Satisfies(Debug) {
+		c.cfg.Logger.Printf(" Sleeping %s before retrying request\n", t.String())
 	}
 	time.Sleep(t)
 }
@@ -374,11 +372,6 @@ func (c *APIClient) prepareRequest(
 		for _, iv := range v {
 			query.Add(k, iv)
 		}
-	}
-
-	// Adding default depth if needed
-	if query.Get(DepthParam) == "" {
-		query.Add(DepthParam, DefaultDepth)
 	}
 
 	// Encode the parameters.
@@ -616,9 +609,24 @@ type GenericOpenAPIError struct {
 	model      interface{}
 }
 
+// NewGenericOpenAPIError - constructor for GenericOpenAPIError
+func NewGenericOpenAPIError(message string, body []byte, model interface{}, statusCode int) *GenericOpenAPIError {
+	return &GenericOpenAPIError{
+		statusCode: statusCode,
+		body:       body,
+		error:      message,
+		model:      model,
+	}
+}
+
 // Error returns non-empty string if there was an error.
 func (e GenericOpenAPIError) Error() string {
 	return e.error
+}
+
+// SetError sets the error string
+func (e *GenericOpenAPIError) SetError(error string) {
+	e.error = error
 }
 
 // Body returns the raw bytes of the response
@@ -626,11 +634,27 @@ func (e GenericOpenAPIError) Body() []byte {
 	return e.body
 }
 
+// SetBody sets the raw body of the error
+func (e *GenericOpenAPIError) SetBody(body []byte) {
+	e.body = body
+}
+
 // Model returns the unpacked model of the error
 func (e GenericOpenAPIError) Model() interface{} {
 	return e.model
 }
 
+// SetModel sets the model of the error
+func (e *GenericOpenAPIError) SetModel(model interface{}) {
+	e.model = model
+}
+
+// StatusCode returns the status code of the error
 func (e GenericOpenAPIError) StatusCode() int {
 	return e.statusCode
+}
+
+// SetStatusCode sets the status code of the error
+func (e *GenericOpenAPIError) SetStatusCode(statusCode int) {
+	e.statusCode = statusCode
 }

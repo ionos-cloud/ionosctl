@@ -69,6 +69,14 @@ func IpBlocksFiltersUsage() string {
 	return getFilterUsage(getPropertiesName(ionoscloud.IpBlockProperties{}), getPropertiesName(ionoscloud.DatacenterElementMetadata{}))
 }
 
+func LabelsFilters() []string {
+	return getPropertiesName(ionoscloud.LabelProperties{}, ionoscloud.DatacenterElementMetadata{})
+}
+
+func LabelsFiltersUsage() string {
+	return getFilterUsage(getPropertiesName(ionoscloud.LabelProperties{}), getPropertiesName(ionoscloud.DatacenterElementMetadata{}))
+}
+
 func LocationsFilters() []string {
 	return getPropertiesName(ionoscloud.LocationProperties{}, ionoscloud.DatacenterElementMetadata{})
 }
