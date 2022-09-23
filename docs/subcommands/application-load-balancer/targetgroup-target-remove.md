@@ -50,7 +50,7 @@ Required values to run command:
   -c, --config string           Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -f, --force                   Force command to execute without user input
   -h, --help                    Print usage
-      --ip string               IP of a balanced target VM (required)
+      --ip ip                   IP of a balanced target VM (required)
   -o, --output string           Desired output format [text|json] (default "text")
   -P, --port int                Port of the balanced target service. (range: 1 to 65535) (required) (default 8080)
   -q, --quiet                   Quiet output

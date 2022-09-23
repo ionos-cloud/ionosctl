@@ -55,7 +55,7 @@ Required values to run command:
   -D, --depth int32                         Controls the detail depth of the response objects. Max depth is 10.
   -f, --force                               Force command to execute without user input
   -h, --help                                Print usage
-      --listener-ip string                  Listening (inbound) IP.
+      --listener-ip ip                      Listening (inbound) IP.
       --listener-port int                   Listening (inbound) port number; valid range is 1 to 65535. (default 8080)
   -n, --name string                         The name of the Application Load Balancer forwarding rule.
   -o, --output string                       Desired output format [text|json] (default "text")
