@@ -29,6 +29,7 @@ import (
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"golang.org/x/sync/errgroup"
 )
 
 func ImageCmd() *core.Command {
@@ -423,38 +424,47 @@ func PreRunImageUpload(c *core.PreCommandConfig) error {
 }
 
 func RunImageUpload(c *core.CommandConfig) error {
-	locations := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgLocation))
 	images := viper.GetStringSlice(core.GetFlagName(c.NS, "image"))
-	img := images[0]
-	loc := locations[0]
+	locations := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgLocation))
 
-	url := fmt.Sprintf("ftp-%s.ionos.com", loc)
-	c.Printer.Verbose("Uploading %s to %s", img, url)
+	for _, img := range images {
+		for _, loc := range locations {
+			url := fmt.Sprintf("ftp-%s.ionos.com", loc)
+			c.Printer.Verbose("Uploading %s to %s", img, url)
 
-	validHddImageExtensions := []string{".vmdk", ".vhd", ".vhdx", ".cow", ".qcow", ".qcow2", ".raw", ".vpc", ".vdi"}
-	// TODO: Move to prerun?
-	var imageFileExtension string
-	if ext := filepath.Ext(img); ext == ".iso" {
-		imageFileExtension = "iso"
-	} else if slices.Contains(validHddImageExtensions, ext) {
-		imageFileExtension = "hdd"
-	} else {
-		return fmt.Errorf("%s is not a valid extension. Valid image extensions are: .iso, %s", ext, strings.Join(validHddImageExtensions, ", "))
+			validHddImageExtensions := []string{".vmdk", ".vhd", ".vhdx", ".cow", ".qcow", ".qcow2", ".raw", ".vpc", ".vdi"}
+			// TODO: Move to prerun?
+			var imageFileExtension string
+			if ext := filepath.Ext(img); ext == ".iso" {
+				imageFileExtension = "iso"
+			} else if slices.Contains(validHddImageExtensions, ext) {
+				imageFileExtension = "hdd"
+			} else {
+				return fmt.Errorf("%s is not a valid extension. Valid image extensions are: .iso, %s", ext, strings.Join(validHddImageExtensions, ", "))
+			}
+
+			serverFilePath := fmt.Sprintf("%s/%s-images/%s", url, imageFileExtension, filepath.Base(img))
+
+			bytes, err := os.ReadFile(img)
+			if err != nil {
+				return err
+			}
+
+			// Catching error from goroutines. https://stackoverflow.com/questions/62387307/how-to-catch-errors-from-goroutines
+			// Uploads each image to each location.
+			var eg errgroup.Group
+			eg.Go(func() error {
+				return c.CloudApiV6Services.Images().Upload(
+					resources.UploadProperties{
+						FTPServerProperties: resources.FTPServerProperties{Url: url, Port: 21},
+						ImageFileProperties: resources.ImageFileProperties{Path: serverFilePath, Data: bytes},
+					},
+				)
+			})
+		}
 	}
 
-	serverFilePath := fmt.Sprintf("%s/%s-images/%s", url, imageFileExtension, filepath.Base(img))
-
-	bytes, err := os.ReadFile(img)
-	if err != nil {
-		return err
-	}
-
-	return c.CloudApiV6Services.Images().Upload(
-		resources.UploadProperties{
-			FTPServerProperties: resources.FTPServerProperties{Url: url, Port: 21},
-			ImageFileProperties: resources.ImageFileProperties{Path: serverFilePath, Data: bytes},
-		},
-	)
+	return nil
 }
 
 func PreRunImageList(c *core.PreCommandConfig) error {
