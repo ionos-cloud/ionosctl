@@ -8,6 +8,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	"github.com/spf13/pflag"
 	"go.uber.org/multierr"
+	"golang.org/x/exp/slices"
 	"io"
 	"os"
 	"path/filepath"
@@ -28,8 +29,6 @@ import (
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/webguerilla/ftps"
-	"golang.org/x/exp/slices"
 )
 
 func ImageCmd() *core.Command {
@@ -426,64 +425,36 @@ func PreRunImageUpload(c *core.PreCommandConfig) error {
 func RunImageUpload(c *core.CommandConfig) error {
 	locations := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgLocation))
 	images := viper.GetStringSlice(core.GetFlagName(c.NS, "image"))
-	c.Printer.Verbose("loc: %v, img: %v", locations, images)
 	img := images[0]
 	loc := locations[0]
-
-	validHddImageExtensions := []string{".vmdk", ".vhd", ".vhdx", ".cow", ".qcow", ".qcow2", ".raw", ".vpc", ".vdi"}
-	// validLocations := []string{"fra, fkb, txl, lhr, las, ewr, vit"}
-
-	// TODO: Move to prerun
-	var imageFileExtension string
-	if filepath.Ext(img) == ".iso" {
-		imageFileExtension = "iso"
-	} else if slices.Contains(validHddImageExtensions, filepath.Ext(img)) {
-		imageFileExtension = "hdd"
-	} else {
-		return fmt.Errorf("%s does not have a valid extension. Valid image extensions are: .iso, %s", img, strings.Join(validHddImageExtensions, ", "))
-	}
 
 	url := fmt.Sprintf("ftp-%s.ionos.com", loc)
 	c.Printer.Verbose("Uploading %s to %s", img, url)
 
-	// TODO: Move to services / image upload
-	// FTP CONNECT - Move to Services/Cloudapi-v6/Images
-	conn := new(ftps.FTPS)
-
-	conn.TLSConfig.InsecureSkipVerify = true // often necessary in shared hosting environments
-	conn.Debug = false
-
-	err := conn.Connect(url, 21)
-	if err != nil {
-		return err
+	validHddImageExtensions := []string{".vmdk", ".vhd", ".vhdx", ".cow", ".qcow", ".qcow2", ".raw", ".vpc", ".vdi"}
+	// TODO: Move to prerun?
+	var imageFileExtension string
+	if ext := filepath.Ext(img); ext == ".iso" {
+		imageFileExtension = "iso"
+	} else if slices.Contains(validHddImageExtensions, ext) {
+		imageFileExtension = "hdd"
+	} else {
+		return fmt.Errorf("%s is not a valid extension. Valid image extensions are: .iso, %s", ext, strings.Join(validHddImageExtensions, ", "))
 	}
 
-	err = conn.Login(viper.GetString(config.Username), viper.GetString(config.Password))
-	if err != nil {
-		return err
-	}
-
-	err = conn.ChangeWorkingDirectory(fmt.Sprintf("%s-images/", imageFileExtension))
-	if err != nil {
-		return err
-	}
+	serverFilePath := fmt.Sprintf("%s/%s-images/%s", url, imageFileExtension, filepath.Base(img))
 
 	bytes, err := os.ReadFile(img)
 	if err != nil {
 		return err
 	}
 
-	err = conn.StoreFile(filepath.Base(img), bytes)
-	if err != nil {
-		return err
-	}
-
-	err = conn.Quit()
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return c.CloudApiV6Services.Images().Upload(
+		resources.UploadProperties{
+			FTPServerProperties: resources.FTPServerProperties{Url: url, Port: 21},
+			ImageFileProperties: resources.ImageFileProperties{Path: serverFilePath, Data: bytes},
+		},
+	)
 }
 
 func PreRunImageList(c *core.PreCommandConfig) error {

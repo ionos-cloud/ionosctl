@@ -2,9 +2,12 @@ package resources
 
 import (
 	"context"
-
 	"github.com/fatih/structs"
+	"github.com/ionos-cloud/ionosctl/pkg/config"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	"github.com/spf13/viper"
+	"github.com/webguerilla/ftps"
+	"path/filepath"
 )
 
 type Image struct {
@@ -19,8 +22,24 @@ type ImageProperties struct {
 	ionoscloud.ImageProperties
 }
 
+// UploadProperties contains info needed to initialize an FTP connection to IONOS server and upload an image.
+type UploadProperties struct {
+	ImageFileProperties
+	FTPServerProperties
+}
+
+type ImageFileProperties struct {
+	Path string // File name, server path (not local) and file extension included
+	Data []byte // Byte array used for writing the image file
+}
+type FTPServerProperties struct {
+	Url  string // Server URL without any directory path. Example: ftp-fkb.ionos.com
+	Port int
+}
+
 // ImagesService is a wrapper around ionoscloud.Image
 type ImagesService interface {
+	Upload(properties UploadProperties) error
 	List(params ListQueryParams) (Images, *Response, error)
 	Get(imageId string, params QueryParams) (*Image, *Response, error)
 	Update(imageId string, imgProp ImageProperties, params QueryParams) (*Image, *Response, error)
@@ -39,6 +58,40 @@ func NewImageService(client *Client, ctx context.Context) ImagesService {
 		client:  client,
 		context: ctx,
 	}
+}
+
+func (s *imagesService) Upload(p UploadProperties) error {
+	conn := new(ftps.FTPS)
+
+	conn.TLSConfig.InsecureSkipVerify = true // often necessary in shared hosting environments
+	conn.Debug = false
+
+	err := conn.Connect(p.Url, p.Port)
+	if err != nil {
+		return err
+	}
+
+	err = conn.Login(viper.GetString(config.Username), viper.GetString(config.Password))
+	if err != nil {
+		return err
+	}
+
+	err = conn.ChangeWorkingDirectory(filepath.Dir(p.Path))
+	if err != nil {
+		return err
+	}
+
+	// TODO: Large uploads fail. Try buffering data, or changing timeout somehow: StoreFile -> net.Write -> net.SetDeadline
+	err = conn.StoreFile(filepath.Base(p.Path), p.Data)
+	if err != nil {
+		return err
+	}
+
+	err = conn.Quit()
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (s *imagesService) List(params ListQueryParams) (Images, *Response, error) {
