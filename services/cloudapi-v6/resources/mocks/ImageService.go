@@ -96,3 +96,17 @@ func (mr *MockImagesServiceMockRecorder) Update(imageId, imgProp, params interfa
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockImagesService)(nil).Update), imageId, imgProp, params)
 }
+
+// Upload mocks base method.
+func (m *MockImagesService) Upload(properties resources.UploadProperties) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Upload", properties)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Upload indicates an expected call of Upload.
+func (mr *MockImagesServiceMockRecorder) Upload(properties interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upload", reflect.TypeOf((*MockImagesService)(nil).Upload), properties)
+}
