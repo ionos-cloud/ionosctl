@@ -2,6 +2,7 @@ package core
 
 import (
 	"fmt"
+	"net"
 
 	"github.com/spf13/cobra"
 	flag "github.com/spf13/pflag"
@@ -50,6 +51,36 @@ func (c *Command) IsAvailableCommand() bool {
 		return c.Command.IsAvailableCommand()
 	} else {
 		return false
+	}
+}
+
+func (c *Command) AddIpSliceFlag(name, shorthand string, defaultValue []net.IP, desc string, optionFunc ...FlagOptionFunc) {
+	flags := c.Command.Flags()
+	if shorthand != "" {
+		flags.IPSliceP(name, shorthand, defaultValue, desc)
+	} else {
+		flags.IPSlice(name, defaultValue, desc)
+	}
+	_ = viper.BindPFlag(GetFlagName(c.NS, name), c.Command.Flags().Lookup(name))
+
+	// Add Option to Flag
+	for _, option := range optionFunc {
+		option(c, name)
+	}
+}
+
+func (c *Command) AddIpFlag(name, shorthand string, defaultValue net.IP, desc string, optionFunc ...FlagOptionFunc) {
+	flags := c.Command.Flags()
+	if shorthand != "" {
+		flags.IPP(name, shorthand, defaultValue, desc)
+	} else {
+		flags.IP(name, defaultValue, desc)
+	}
+	_ = viper.BindPFlag(GetFlagName(c.NS, name), c.Command.Flags().Lookup(name))
+
+	// Add Option to Flag
+	for _, option := range optionFunc {
+		option(c, name)
 	}
 }
 
