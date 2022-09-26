@@ -480,7 +480,7 @@ func ClusterDeleteAll(c *core.CommandConfig) error {
 	}
 	if dataOk, ok := clusters.GetItemsOk(); ok && dataOk != nil {
 		if len(*dataOk) > 0 {
-			_ = c.Printer.Print("Clusters to be deleted:")
+			_ = c.Printer.Warn("Clusters to be deleted:")
 			for _, cluster := range *dataOk {
 				var log string
 				if propertiesOk, ok := cluster.GetPropertiesOk(); ok && propertiesOk != nil {

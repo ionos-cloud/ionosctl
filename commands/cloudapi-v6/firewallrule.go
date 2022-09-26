@@ -548,7 +548,7 @@ func DeleteAllFirewallRuses(c *core.CommandConfig) error {
 	}
 	if firewallRulesItems, ok := firewallRules.GetItemsOk(); ok && firewallRulesItems != nil {
 		if len(*firewallRulesItems) > 0 {
-			_ = c.Printer.Print("Firewall Rules to be deleted:")
+			_ = c.Printer.Warn("Firewall Rules to be deleted:")
 			for _, firewall := range *firewallRulesItems {
 				toPrint := ""
 				if id, ok := firewall.GetIdOk(); ok && id != nil {

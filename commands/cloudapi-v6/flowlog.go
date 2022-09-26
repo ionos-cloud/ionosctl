@@ -424,7 +424,7 @@ func DeleteAllFlowlogs(c *core.CommandConfig) error {
 	}
 	if flowlogsItems, ok := flowlogs.GetItemsOk(); ok && flowlogsItems != nil {
 		if len(*flowlogsItems) > 0 {
-			_ = c.Printer.Print("Flowlogs to be deleted:")
+			_ = c.Printer.Warn("Flowlogs to be deleted:")
 			for _, backupUnit := range *flowlogsItems {
 				toPrint := ""
 				if id, ok := backupUnit.GetIdOk(); ok && id != nil {

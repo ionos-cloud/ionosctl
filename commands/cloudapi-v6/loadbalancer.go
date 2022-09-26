@@ -414,7 +414,7 @@ func DeleteAllLoadBalancers(c *core.CommandConfig) error {
 	}
 	if loadBalancersItems, ok := loadBalancers.GetItemsOk(); ok && loadBalancersItems != nil {
 		if len(*loadBalancersItems) > 0 {
-			_ = c.Printer.Print("LoadBalancers to be deleted:")
+			_ = c.Printer.Warn("LoadBalancers to be deleted:")
 			for _, lb := range *loadBalancersItems {
 				toPrint := ""
 				if id, ok := lb.GetIdOk(); ok && id != nil {

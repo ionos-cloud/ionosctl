@@ -345,7 +345,7 @@ func DeleteAllTargetGroup(c *core.CommandConfig) error {
 		return err
 	}
 	queryParams := listQueryParams.QueryParams
-	_ = c.Printer.Print("Getting Target Groups...")
+	_ = c.Printer.Warn("Getting Target Groups...")
 	targetGroups, resp, err := c.CloudApiV6Services.TargetGroups().List(cloudapiv6.ParentResourceListQueryParams)
 	if err != nil {
 		return err

@@ -92,7 +92,7 @@ func RemoveAllDatacenterLabels(c *core.CommandConfig) error {
 	}
 	if labelsItems, ok := labels.GetItemsOk(); ok && labelsItems != nil {
 		if len(*labelsItems) > 0 {
-			_ = c.Printer.Print("Labels to be removed from Datacenter with ID: " + dcId)
+			_ = c.Printer.Warn("Labels to be removed from Datacenter with ID: " + dcId)
 			for _, label := range *labelsItems {
 				toPrint := ""
 				if properties, ok := label.GetPropertiesOk(); ok && properties != nil {
@@ -231,7 +231,7 @@ func RemoveAllServerLabels(c *core.CommandConfig) error {
 	}
 	if labelsItems, ok := labels.GetItemsOk(); ok && labelsItems != nil {
 		if len(*labelsItems) > 0 {
-			_ = c.Printer.Print("Labels to be removed from Server with Id: " + serverId)
+			_ = c.Printer.Warn("Labels to be removed from Server with Id: " + serverId)
 			for _, label := range *labelsItems {
 				toPrint := ""
 				if properties, ok := label.GetPropertiesOk(); ok && properties != nil {
@@ -357,14 +357,14 @@ func RunVolumeLabelRemove(c *core.CommandConfig) error {
 func RemoveAllVolumeLabels(c *core.CommandConfig) error {
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	volumeId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeId))
-	_ = c.Printer.Print("Labels to be removed from Volume with Id: " + volumeId)
+	_ = c.Printer.Warn("Labels to be removed from Volume with Id: " + volumeId)
 	labels, resp, err := c.CloudApiV6Services.Labels().VolumeList(resources.ListQueryParams{}, dcId, volumeId)
 	if err != nil {
 		return err
 	}
 	if labelsItems, ok := labels.GetItemsOk(); ok && labelsItems != nil {
 		if len(*labelsItems) > 0 {
-			_ = c.Printer.Print("Labels to be removed from Volume with Id: " + volumeId)
+			_ = c.Printer.Warn("Labels to be removed from Volume with Id: " + volumeId)
 			for _, label := range *labelsItems {
 				toPrint := ""
 				if properties, ok := label.GetPropertiesOk(); ok && properties != nil {
@@ -490,7 +490,7 @@ func RemoveAllIpBlockLabels(c *core.CommandConfig) error {
 	}
 	if labelsItems, ok := labels.GetItemsOk(); ok && labelsItems != nil {
 		if len(*labelsItems) > 0 {
-			_ = c.Printer.Print("Labels to be removed from IpBlock with Id: " + ipBlockId)
+			_ = c.Printer.Warn("Labels to be removed from IpBlock with Id: " + ipBlockId)
 			for _, label := range *labelsItems {
 				toPrint := ""
 				if properties, ok := label.GetPropertiesOk(); ok && properties != nil {
@@ -608,14 +608,14 @@ func RunSnapshotLabelRemove(c *core.CommandConfig) error {
 
 func RemoveAllSnapshotLabels(c *core.CommandConfig) error {
 	snapshotId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSnapshotId))
-	_ = c.Printer.Print("Labels to be removed from Snapshot with Id: " + snapshotId)
+	_ = c.Printer.Warn("Labels to be removed from Snapshot with Id: " + snapshotId)
 	labels, resp, err := c.CloudApiV6Services.Labels().SnapshotList(resources.ListQueryParams{}, snapshotId)
 	if err != nil {
 		return err
 	}
 	if labelsItems, ok := labels.GetItemsOk(); ok && labelsItems != nil {
 		if len(*labelsItems) > 0 {
-			_ = c.Printer.Print("Labels to be removed from Snapshot with Id: " + snapshotId)
+			_ = c.Printer.Warn("Labels to be removed from Snapshot with Id: " + snapshotId)
 			for _, label := range *labelsItems {
 				toPrint := ""
 				if properties, ok := label.GetPropertiesOk(); ok && properties != nil {

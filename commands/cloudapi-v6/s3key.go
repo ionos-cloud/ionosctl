@@ -337,10 +337,10 @@ func DeleteAllS3keys(c *core.CommandConfig) error {
 	}
 	if s3KeysItems, ok := s3Keys.GetItemsOk(); ok && s3KeysItems != nil {
 		if len(*s3KeysItems) > 0 {
-			_ = c.Printer.Print("S3 keys to be deleted:")
+			_ = c.Printer.Warn("S3 keys to be deleted:")
 			for _, s3Key := range *s3KeysItems {
 				if id, ok := s3Key.GetIdOk(); ok && id != nil {
-					_ = c.Printer.Print("S3 key Id: " + *id)
+					_ = c.Printer.Warn("S3 key Id: " + *id)
 				}
 			}
 			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the S3Keys"); err != nil {

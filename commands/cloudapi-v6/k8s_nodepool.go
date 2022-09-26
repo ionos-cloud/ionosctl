@@ -426,7 +426,7 @@ func RunK8sNodePoolUpdate(c *core.CommandConfig) error {
 		return err
 	}
 	queryParams := listQueryParams.QueryParams
-	_ = c.Printer.Print("WARNING: The following flags are deprecated:" + c.Command.GetAnnotationsByKey(core.DeprecatedFlagsAnnotation) + ". Use --labels, --annotations options instead!")
+	_ = c.Printer.Warn("WARNING: The following flags are deprecated:" + c.Command.GetAnnotationsByKey(core.DeprecatedFlagsAnnotation) + ". Use --labels, --annotations options instead!")
 	oldNodePool, _, err := c.CloudApiV6Services.K8s().GetNodePool(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sClusterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sNodePoolId)), queryParams)
 	if err != nil {
@@ -693,7 +693,7 @@ func DeleteAllK8sNodepools(c *core.CommandConfig) error {
 	}
 	if k8sNodePoolsItems, ok := k8sNodePools.GetItemsOk(); ok && k8sNodePoolsItems != nil {
 		if len(*k8sNodePoolsItems) > 0 {
-			_ = c.Printer.Print("K8sNodePools to be deleted:")
+			_ = c.Printer.Warn("K8sNodePools to be deleted:")
 			for _, dc := range *k8sNodePoolsItems {
 				toPrint := ""
 				if id, ok := dc.GetIdOk(); ok && id != nil {

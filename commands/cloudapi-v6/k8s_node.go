@@ -288,7 +288,7 @@ func RunK8sNodeRecreate(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print("Status: Command node recreate has been successfully executed")
+	return c.Printer.Warn("Status: Command node recreate has been successfully executed")
 }
 
 func RunK8sNodeDelete(c *core.CommandConfig) error {
@@ -338,7 +338,7 @@ func DeleteAllK8sNodes(c *core.CommandConfig) error {
 	}
 	if k8sNodesItems, ok := k8sNodes.GetItemsOk(); ok && k8sNodesItems != nil {
 		if len(*k8sNodesItems) > 0 {
-			_ = c.Printer.Print("K8sNodes to be deleted:")
+			_ = c.Printer.Warn("K8sNodes to be deleted:")
 			for _, dc := range *k8sNodesItems {
 				toPrint := ""
 				if id, ok := dc.GetIdOk(); ok && id != nil {

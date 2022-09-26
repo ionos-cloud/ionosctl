@@ -232,7 +232,7 @@ func RunK8sNodePoolLanRemove(c *core.CommandConfig) error {
 		if err != nil {
 			return err
 		}
-		return c.Printer.Print("Status: Command node pool lan remove has been successfully executed")
+		return c.Printer.Warn("Status: Command node pool lan remove has been successfully executed")
 	}
 }
 
@@ -254,10 +254,10 @@ func RemoveAllK8sNodePoolsLans(c *core.CommandConfig) error {
 	if nodePoolProperties, ok := k8sNodepool.GetPropertiesOk(); ok && nodePoolProperties != nil {
 		if lans, ok := nodePoolProperties.GetLansOk(); ok && lans != nil {
 			if len(*lans) > 0 {
-				_ = c.Printer.Print("K8s NodePool Lans to be removed:")
+				_ = c.Printer.Warn("K8s NodePool Lans to be removed:")
 				for _, lan := range *lans {
 					if id, ok := lan.GetIdOk(); ok && id != nil {
-						_ = c.Printer.Print("K8s NodePool Lan Id: " + string(*id))
+						_ = c.Printer.Warn("K8s NodePool Lan Id: " + string(*id))
 					}
 				}
 			} else {

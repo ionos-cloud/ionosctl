@@ -324,7 +324,7 @@ func DeleteAllIpBlocks(c *core.CommandConfig) error {
 	}
 	if ipBlocksItems, ok := ipBlocks.GetItemsOk(); ok && ipBlocksItems != nil {
 		if len(*ipBlocksItems) > 0 {
-			_ = c.Printer.Print("IpBlocks to be deleted:")
+			_ = c.Printer.Warn("IpBlocks to be deleted:")
 			for _, dc := range *ipBlocksItems {
 				toPrint := ""
 				if id, ok := dc.GetIdOk(); ok && id != nil {

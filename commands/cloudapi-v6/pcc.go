@@ -352,7 +352,7 @@ func DeleteAllPccs(c *core.CommandConfig) error {
 	}
 	if pccsItems, ok := pccs.GetItemsOk(); ok && pccsItems != nil {
 		if len(*pccsItems) > 0 {
-			_ = c.Printer.Print("PrivateCrossConnects to be deleted:")
+			_ = c.Printer.Warn("PrivateCrossConnects to be deleted:")
 			for _, pcc := range *pccsItems {
 				toPrint := ""
 				if id, ok := pcc.GetIdOk(); ok && id != nil {

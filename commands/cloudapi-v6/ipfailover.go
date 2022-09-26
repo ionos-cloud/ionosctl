@@ -312,7 +312,7 @@ func RemoveAllIpFailovers(c *core.CommandConfig) error {
 	}
 	if ipFailoversItems, ok := ipFailovers.GetItemsOk(); ok && ipFailoversItems != nil {
 		if len(*ipFailoversItems) > 0 {
-			_ = c.Printer.Print("IP Failovers to be removed:")
+			_ = c.Printer.Warn("IP Failovers to be removed:")
 			for _, ipFailover := range *ipFailoversItems {
 				toPrint := ""
 				if id, ok := ipFailover.GetIdOk(); ok && id != nil {

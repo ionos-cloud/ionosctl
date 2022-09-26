@@ -489,7 +489,7 @@ func DeleteAllSnapshots(c *core.CommandConfig) error {
 	}
 	if snapshotsItems, ok := snapshots.GetItemsOk(); ok && snapshotsItems != nil {
 		if len(*snapshotsItems) > 0 {
-			_ = c.Printer.Print("Snapshots to be deleted:")
+			_ = c.Printer.Warn("Snapshots to be deleted:")
 			for _, snapshot := range *snapshotsItems {
 				toPrint := ""
 				if id, ok := snapshot.GetIdOk(); ok && id != nil {

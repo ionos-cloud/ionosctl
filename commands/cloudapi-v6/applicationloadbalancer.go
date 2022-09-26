@@ -425,7 +425,7 @@ func DeleteAllApplicationLoadBalancer(c *core.CommandConfig) error {
 		return err
 	}
 	queryParams := listQueryParams.QueryParams
-	_ = c.Printer.Print("Getting Application Load Balancers...")
+	_ = c.Printer.Warn("Getting Application Load Balancers...")
 	applicationLoadBalancers, resp, err := c.CloudApiV6Services.ApplicationLoadBalancers().List(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)), cloudapiv6.ParentResourceListQueryParams)
 	if err != nil {
 		return err

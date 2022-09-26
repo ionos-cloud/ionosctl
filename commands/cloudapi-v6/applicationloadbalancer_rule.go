@@ -433,7 +433,7 @@ func DeleteAllApplicationLoadBalancerForwardingRule(c *core.CommandConfig) error
 		return err
 	}
 	queryParams := listQueryParams.QueryParams
-	_ = c.Printer.Print("Getting Application Load Balancer Forwarding Rules...")
+	_ = c.Printer.Warn("Getting Application Load Balancer Forwarding Rules...")
 	applicationLoadBalancerRules, resp, err := c.CloudApiV6Services.ApplicationLoadBalancers().ListForwardingRules(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
