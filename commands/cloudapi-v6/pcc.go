@@ -354,16 +354,16 @@ func DeleteAllPccs(c *core.CommandConfig) error {
 		if len(*pccsItems) > 0 {
 			_ = c.Printer.Warn("PrivateCrossConnects to be deleted:")
 			for _, pcc := range *pccsItems {
-				toPrint := ""
+				delIdAndName := ""
 				if id, ok := pcc.GetIdOk(); ok && id != nil {
-					toPrint += "PrivateCrossConnect Id: " + *id
+					delIdAndName += "PrivateCrossConnect Id: " + *id
 				}
 				if properties, ok := pcc.GetPropertiesOk(); ok && properties != nil {
 					if name, ok := properties.GetNameOk(); ok && name != nil {
-						toPrint += " PrivateCrossConnect Name: " + *name
+						delIdAndName += " PrivateCrossConnect Name: " + *name
 					}
 				}
-				_ = c.Printer.Print(toPrint)
+				_ = c.Printer.Warn(delIdAndName)
 			}
 			if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete all the private cross-connects"); err != nil {
 				return err
@@ -381,7 +381,7 @@ func DeleteAllPccs(c *core.CommandConfig) error {
 						multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *id, err))
 						continue
 					} else {
-						_ = c.Printer.Print(fmt.Sprintf(config.StatusDeletingAll, c.Resource, *id))
+						_ = c.Printer.Warn(fmt.Sprintf(config.StatusDeletingAll, c.Resource, *id))
 					}
 					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 						multiErr = multierr.Append(multiErr, fmt.Errorf(config.WaitDeleteAllAppendErr, c.Resource, *id, err))

@@ -1012,16 +1012,16 @@ func DetachAllServerVolumes(c *core.CommandConfig) error {
 		if len(*volumesItems) > 0 {
 			_ = c.Printer.Warn("Volumes to be detached:")
 			for _, volume := range *volumesItems {
-				toPrint := ""
+				delIdAndName := ""
 				if id, ok := volume.GetIdOk(); ok && id != nil {
-					toPrint += "Volume Id: " + *id
+					delIdAndName += "Volume Id: " + *id
 				}
 				if properties, ok := volume.GetPropertiesOk(); ok && properties != nil {
 					if name, ok := properties.GetNameOk(); ok && name != nil {
-						toPrint += " Volume Name: " + *name
+						delIdAndName += " Volume Name: " + *name
 					}
 				}
-				_ = c.Printer.Print(toPrint)
+				_ = c.Printer.Warn(delIdAndName)
 			}
 			if err := utils.AskForConfirm(c.Stdin, c.Printer, "detach all the Volumes"); err != nil {
 				return err

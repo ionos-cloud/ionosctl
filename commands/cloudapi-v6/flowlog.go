@@ -426,16 +426,16 @@ func DeleteAllFlowlogs(c *core.CommandConfig) error {
 		if len(*flowlogsItems) > 0 {
 			_ = c.Printer.Warn("Flowlogs to be deleted:")
 			for _, backupUnit := range *flowlogsItems {
-				toPrint := ""
+				delIdAndName := ""
 				if id, ok := backupUnit.GetIdOk(); ok && id != nil {
-					toPrint += "Flowlog Id: " + *id
+					delIdAndName += "Flowlog Id: " + *id
 				}
 				if properties, ok := backupUnit.GetPropertiesOk(); ok && properties != nil {
 					if name, ok := properties.GetNameOk(); ok && name != nil {
-						toPrint += " Flowlog Name: " + *name
+						delIdAndName += " Flowlog Name: " + *name
 					}
 				}
-				_ = c.Printer.Print(toPrint)
+				_ = c.Printer.Warn(delIdAndName)
 			}
 			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the flow logs"); err != nil {
 				return err
@@ -453,7 +453,7 @@ func DeleteAllFlowlogs(c *core.CommandConfig) error {
 						multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *id, err))
 						continue
 					} else {
-						_ = c.Printer.Print(fmt.Sprintf(config.StatusDeletingAll, c.Resource, *id))
+						_ = c.Printer.Warn(fmt.Sprintf(config.StatusDeletingAll, c.Resource, *id))
 					}
 					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 						multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *id, err))

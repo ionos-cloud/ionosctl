@@ -467,16 +467,16 @@ func DeleteAllNics(c *core.CommandConfig) error {
 		if len(*nicsItems) > 0 {
 			_ = c.Printer.Warn("NICs to be deleted:")
 			for _, nic := range *nicsItems {
-				toPrint := ""
+				delIdAndName := ""
 				if id, ok := nic.GetIdOk(); ok && id != nil {
-					toPrint += "Nic Id: " + *id
+					delIdAndName += "Nic Id: " + *id
 				}
 				if properties, ok := nic.GetPropertiesOk(); ok && properties != nil {
 					if name, ok := properties.GetNameOk(); ok && name != nil {
-						toPrint += " Nic Name: " + *name
+						delIdAndName += " Nic Name: " + *name
 					}
 				}
-				_ = c.Printer.Print(toPrint)
+				_ = c.Printer.Warn(delIdAndName)
 			}
 			if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Nics"); err != nil {
 				return err
@@ -494,7 +494,7 @@ func DeleteAllNics(c *core.CommandConfig) error {
 						multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *id, err))
 						continue
 					} else {
-						_ = c.Printer.Print(fmt.Sprintf(config.StatusDeletingAll, c.Resource, *id))
+						_ = c.Printer.Warn(fmt.Sprintf(config.StatusDeletingAll, c.Resource, *id))
 					}
 					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 						multiErr = multierr.Append(multiErr, fmt.Errorf(config.WaitDeleteAllAppendErr, c.Resource, *id, err))
@@ -817,16 +817,16 @@ func DetachAllNics(c *core.CommandConfig) error {
 		if len(*nicsItems) > 0 {
 			_ = c.Printer.Warn("NICs to be detached:")
 			for _, nic := range *nicsItems {
-				toPrint := ""
+				delIdAndName := ""
 				if id, ok := nic.GetIdOk(); ok && id != nil {
-					toPrint += "Nic Id: " + *id
+					delIdAndName += "Nic Id: " + *id
 				}
 				if properties, ok := nic.GetPropertiesOk(); ok && properties != nil {
 					if name, ok := properties.GetNameOk(); ok && name != nil {
-						toPrint += " Nic Name: " + *name
+						delIdAndName += " Nic Name: " + *name
 					}
 				}
-				_ = c.Printer.Print(toPrint)
+				_ = c.Printer.Warn(delIdAndName)
 			}
 			if err := utils.AskForConfirm(c.Stdin, c.Printer, "detach all the Nics"); err != nil {
 				return err

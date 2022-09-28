@@ -460,16 +460,16 @@ func DeleteAllNetworkLoadBalancers(c *core.CommandConfig) error {
 		if len(*nlbItems) > 0 {
 			_ = c.Printer.Warn("NetworkLoadBalancers to be deleted:")
 			for _, networkLoadBalancer := range *nlbItems {
-				toPrint := ""
+				delIdAndName := ""
 				if id, ok := networkLoadBalancer.GetIdOk(); ok && id != nil {
-					toPrint += "NetworkLoadBalancer Id: " + *id
+					delIdAndName += "NetworkLoadBalancer Id: " + *id
 				}
 				if properties, ok := networkLoadBalancer.GetPropertiesOk(); ok && properties != nil {
 					if name, ok := properties.GetNameOk(); ok && name != nil {
-						toPrint += " NetworkLoadBalancer Name: " + *name
+						delIdAndName += " NetworkLoadBalancer Name: " + *name
 					}
 				}
-				_ = c.Printer.Print(toPrint)
+				_ = c.Printer.Warn(delIdAndName)
 			}
 			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the NetworkLoadBalancers"); err != nil {
 				return err
@@ -487,7 +487,7 @@ func DeleteAllNetworkLoadBalancers(c *core.CommandConfig) error {
 						multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *id, err))
 						continue
 					} else {
-						_ = c.Printer.Print(fmt.Sprintf(config.StatusDeletingAll, c.Resource, *id))
+						_ = c.Printer.Warn(fmt.Sprintf(config.StatusDeletingAll, c.Resource, *id))
 					}
 					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 						multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *id, err))

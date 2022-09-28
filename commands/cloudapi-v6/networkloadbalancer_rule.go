@@ -491,16 +491,16 @@ func DeleteAllNetworkLoadBalancerForwardingRules(c *core.CommandConfig) error {
 		if len(*nlbForwardingRulesItems) > 0 {
 			_ = c.Printer.Warn("NetworkLoadBalancerForwardingRules to be deleted:")
 			for _, nlbForwardingRule := range *nlbForwardingRulesItems {
-				toPrint := ""
+				delIdAndName := ""
 				if id, ok := nlbForwardingRule.GetIdOk(); ok && id != nil {
-					toPrint += "NetworkLoadBalancerForwardingRule Id: " + *id
+					delIdAndName += "NetworkLoadBalancerForwardingRule Id: " + *id
 				}
 				if properties, ok := nlbForwardingRule.GetPropertiesOk(); ok && properties != nil {
 					if name, ok := properties.GetNameOk(); ok && name != nil {
-						toPrint += " NetworkLoadBalancerForwardingRule Name: " + *name
+						delIdAndName += " NetworkLoadBalancerForwardingRule Name: " + *name
 					}
 				}
-				_ = c.Printer.Print(toPrint)
+				_ = c.Printer.Warn(delIdAndName)
 			}
 			if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Backup Units"); err != nil {
 				return err
@@ -518,7 +518,7 @@ func DeleteAllNetworkLoadBalancerForwardingRules(c *core.CommandConfig) error {
 						multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *id, err))
 						continue
 					} else {
-						_ = c.Printer.Print(fmt.Sprintf(config.StatusDeletingAll, c.Resource, *id))
+						_ = c.Printer.Warn(fmt.Sprintf(config.StatusDeletingAll, c.Resource, *id))
 					}
 					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 						multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *id, err))
