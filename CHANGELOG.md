@@ -1,5 +1,26 @@
 # Changelog
 
+## [6.3.2] (September 2022)
+
+### Added
+
+- Added latest commit hash to `ionosctl version`, when ionosctl was built from source (`make build` or `make install`).
+- Added support for file descriptors when using `-o json`. Stdout will contain only the API response, while stderr will contain CLI messages. For example, you can use `2> /dev/null` in combination with `-o json` to get rid of CLI messages such as wait for state messages, verbose messages, and other status messages. (Default behaviour remains unchanged)
+- Added `UUID`, `IP`, `IPSlice` flag verifications, IonosCTL will throw more verbose errors now when parameter types are not matching a certain format. 
+
+### Fixed
+- Fixed various bugs with the label command (#194)
+    - Fixed conditional flag requirements for label --resource-type flag: now errors will be more verbose about what flags are required in conjunction with this flag. 
+    - Fixed filtering, maxResults, orderBy for label list
+
+### Dependency updates
+- Updated go version to 1.18
+- Updated cobra to 1.5.0
+- Updated viper to 1.13.0
+- Updated all Ionos GO SDKs to use latest versions
+- Bumped various other dependencies
+
+
 ## [6.3.1] (August 2022)
 
 ### Fixes
