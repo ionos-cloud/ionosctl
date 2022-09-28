@@ -550,16 +550,16 @@ func DeleteAllFirewallRuses(c *core.CommandConfig) error {
 		if len(*firewallRulesItems) > 0 {
 			_ = c.Printer.Warn("Firewall Rules to be deleted:")
 			for _, firewall := range *firewallRulesItems {
-				toPrint := ""
+				delIdAndName := ""
 				if id, ok := firewall.GetIdOk(); ok && id != nil {
-					toPrint += "Firewall Rule Id: " + *id
+					delIdAndName += "Firewall Rule Id: " + *id
 				}
 				if properties, ok := firewall.GetPropertiesOk(); ok && properties != nil {
 					if name, ok := properties.GetNameOk(); ok && name != nil {
-						toPrint += " Firewall Rule Name: " + *name
+						delIdAndName += " Firewall Rule Name: " + *name
 					}
 				}
-				_ = c.Printer.Print(toPrint)
+				_ = c.Printer.Warn(delIdAndName)
 			}
 			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Firewall Rules"); err != nil {
 				return err
@@ -577,7 +577,7 @@ func DeleteAllFirewallRuses(c *core.CommandConfig) error {
 						multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *id, err))
 						continue
 					} else {
-						_ = c.Printer.Print(fmt.Sprintf(config.StatusDeletingAll, c.Resource, *id))
+						_ = c.Printer.Warn(fmt.Sprintf(config.StatusDeletingAll, c.Resource, *id))
 					}
 					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 						multiErr = multierr.Append(multiErr, fmt.Errorf(config.WaitDeleteAllAppendErr, c.Resource, *id, err))

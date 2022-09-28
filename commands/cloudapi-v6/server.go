@@ -1066,16 +1066,16 @@ func DeleteAllServers(c *core.CommandConfig) error {
 		if len(*serversItems) > 0 {
 			_ = c.Printer.Warn("Servers to be deleted:")
 			for _, server := range *serversItems {
-				toPrint := ""
+				delIdAndName := ""
 				if id, ok := server.GetIdOk(); ok && id != nil {
-					toPrint += "Server Id: " + *id
+					delIdAndName += "Server Id: " + *id
 				}
 				if properties, ok := server.GetPropertiesOk(); ok && properties != nil {
 					if name, ok := properties.GetNameOk(); ok && name != nil {
-						toPrint += " Server Name: " + *name
+						delIdAndName += " Server Name: " + *name
 					}
 				}
-				_ = c.Printer.Print(toPrint)
+				_ = c.Printer.Warn(delIdAndName)
 			}
 			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Servers"); err != nil {
 				return err
@@ -1093,7 +1093,7 @@ func DeleteAllServers(c *core.CommandConfig) error {
 						multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *id, err))
 						continue
 					} else {
-						_ = c.Printer.Print(fmt.Sprintf(config.StatusDeletingAll, c.Resource, *id))
+						_ = c.Printer.Warn(fmt.Sprintf(config.StatusDeletingAll, c.Resource, *id))
 					}
 					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 						multiErr = multierr.Append(multiErr, fmt.Errorf(config.WaitDeleteAllAppendErr, c.Resource, *id, err))

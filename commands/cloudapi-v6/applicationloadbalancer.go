@@ -433,16 +433,16 @@ func DeleteAllApplicationLoadBalancer(c *core.CommandConfig) error {
 	if albItems, ok := applicationLoadBalancers.GetItemsOk(); ok && albItems != nil {
 		if len(*albItems) > 0 {
 			for _, alb := range *albItems {
-				toPrint := ""
+				delIdAndName := ""
 				if id, ok := alb.GetIdOk(); ok && id != nil {
-					toPrint += "Application Load Balancer Id: " + *id
+					delIdAndName += "Application Load Balancer Id: " + *id
 				}
 				if propertiesOk, ok := alb.GetPropertiesOk(); ok && propertiesOk != nil {
 					if name, ok := propertiesOk.GetNameOk(); ok && name != nil {
-						toPrint += "Application Load Balancer Name: " + *name
+						delIdAndName += "Application Load Balancer Name: " + *name
 					}
 				}
-				_ = c.Printer.Print(toPrint)
+				_ = c.Printer.Warn(delIdAndName)
 			}
 			if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Application Load Balancers"); err != nil {
 				return err
@@ -460,7 +460,7 @@ func DeleteAllApplicationLoadBalancer(c *core.CommandConfig) error {
 						multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *id, err))
 						continue
 					} else {
-						_ = c.Printer.Print(fmt.Sprintf(config.StatusDeletingAll, c.Resource, *id))
+						_ = c.Printer.Warn(fmt.Sprintf(config.StatusDeletingAll, c.Resource, *id))
 					}
 					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 						multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *id, err))

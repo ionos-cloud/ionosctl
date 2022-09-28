@@ -480,16 +480,16 @@ func DeleteAllK8sClusters(c *core.CommandConfig) error {
 		if len(*k8sClustersItems) > 0 {
 			_ = c.Printer.Warn("K8sClusters to be deleted:")
 			for _, k8sCluster := range *k8sClustersItems {
-				toPrint := ""
+				delIdAndName := ""
 				if id, ok := k8sCluster.GetIdOk(); ok && id != nil {
-					toPrint += "K8sCluster Id: " + *id
+					delIdAndName += "K8sCluster Id: " + *id
 				}
 				if properties, ok := k8sCluster.GetPropertiesOk(); ok && properties != nil {
 					if name, ok := properties.GetNameOk(); ok && name != nil {
-						toPrint += " K8sCluster Name: " + *name
+						delIdAndName += " K8sCluster Name: " + *name
 					}
 				}
-				_ = c.Printer.Print(toPrint)
+				_ = c.Printer.Warn(delIdAndName)
 			}
 			if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete all the K8sClusters"); err != nil {
 				return err
@@ -507,7 +507,7 @@ func DeleteAllK8sClusters(c *core.CommandConfig) error {
 						multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *id, err))
 						continue
 					} else {
-						_ = c.Printer.Print(fmt.Sprintf(config.StatusDeletingAll, c.Resource, *id))
+						_ = c.Printer.Warn(fmt.Sprintf(config.StatusDeletingAll, c.Resource, *id))
 					}
 					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 						multiErr = multierr.Append(multiErr, fmt.Errorf(config.WaitDeleteAllAppendErr, c.Resource, *id, err))

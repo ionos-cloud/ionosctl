@@ -326,14 +326,14 @@ func RemoveAllNlbRuleTarget(c *core.CommandConfig) error {
 			if len(*targets) > 0 {
 				_ = c.Printer.Warn("Forwarding Rule Targets to be removed:")
 				for _, target := range *targets {
-					toPrint := ""
+					delIdAndName := ""
 					if ipOk, ok := target.GetIpOk(); ok && ipOk != nil {
-						toPrint += " Forwarding Rule Target IP: " + *ipOk
+						delIdAndName += " Forwarding Rule Target IP: " + *ipOk
 					}
 					if portOk, ok := target.GetPortOk(); ok && portOk != nil {
-						toPrint += " Forwarding Rule Target Port: " + strconv.Itoa(int(*portOk))
+						delIdAndName += " Forwarding Rule Target Port: " + strconv.Itoa(int(*portOk))
 					}
-					_ = c.Printer.Print(toPrint)
+					_ = c.Printer.Warn(delIdAndName)
 				}
 			} else {
 				return errors.New("no Forwarding Rule Targets found")

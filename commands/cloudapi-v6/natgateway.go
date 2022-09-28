@@ -435,16 +435,16 @@ func DeleteAllNatgateways(c *core.CommandConfig) error {
 		if len(*natGatewayItems) > 0 {
 			_ = c.Printer.Warn("NatGateway to be deleted:")
 			for _, natGateway := range *natGatewayItems {
-				toPrint := ""
+				delIdAndName := ""
 				if id, ok := natGateway.GetIdOk(); ok && id != nil {
-					toPrint += "NatGateway Id: " + *id
+					delIdAndName += "NatGateway Id: " + *id
 				}
 				if properties, ok := natGateway.GetPropertiesOk(); ok && properties != nil {
 					if name, ok := properties.GetNameOk(); ok && name != nil {
-						toPrint += " NatGateway Name: " + *name
+						delIdAndName += " NatGateway Name: " + *name
 					}
 				}
-				_ = c.Printer.Print(toPrint)
+				_ = c.Printer.Warn(delIdAndName)
 			}
 			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the NatGateways"); err != nil {
 				return err
@@ -462,7 +462,7 @@ func DeleteAllNatgateways(c *core.CommandConfig) error {
 						multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *id, err))
 						continue
 					} else {
-						_ = c.Printer.Print(fmt.Sprintf(config.StatusDeletingAll, c.Resource, *id))
+						_ = c.Printer.Warn(fmt.Sprintf(config.StatusDeletingAll, c.Resource, *id))
 					}
 					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 						multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *id, err))
