@@ -41,7 +41,7 @@ parts:
       export GOPATH=$PWD
       env CGO_ENABLED=0 GOOS=linux \
       go build --ldflags "-s -w \
-        -X github.com/ionos-cloud/ionosctl/commands.Version=$(git describe --tags --abbrev=0)' \
+        -X 'github.com/ionos-cloud/ionosctl/commands.Version=$(git describe --tags --abbrev=0)' \
         -X 'github.com/ionos-cloud/ionosctl/commands.Label=release'" \
         -a -installsuffix cgo -o $SNAPCRAFT_PART_INSTALL/bin/ionosctl
     build-snaps:
