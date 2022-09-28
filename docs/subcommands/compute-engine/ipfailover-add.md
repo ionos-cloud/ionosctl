@@ -53,7 +53,7 @@ Required values to run command:
   -D, --depth int32            Controls the detail depth of the response objects. Max depth is 10.
   -f, --force                  Force command to execute without user input
   -h, --help                   Print usage
-      --ip string              IP address to be added to IP Failover Group (required)
+      --ip ip                  IP address to be added to IP Failover Group (required)
       --lan-id string          The unique LAN Id (required)
       --nic-id string          The unique NIC Id (required)
   -o, --output string          Desired output format [text|json] (default "text")

@@ -45,11 +45,11 @@ Required values to run command:
   -D, --depth int32            Controls the detail depth of the response objects. Max depth is 10.
   -f, --force                  Force command to execute without user input
   -h, --help                   Print usage
-      --ips strings            Collection of the Application Load Balancer IP addresses. (Inbound and outbound) IPs of the listenerLan are customer-reserved public IPs for the public Load Balancers, and private IPs for the private Load Balancers.
+      --ips ipSlice            Collection of the Application Load Balancer IP addresses. (Inbound and outbound) IPs of the listenerLan are customer-reserved public IPs for the public Load Balancers, and private IPs for the private Load Balancers. (default [])
       --listener-lan int       ID of the listening (inbound) LAN. (default 2)
   -n, --name string            The name of the Application Load Balancer. (default "Unnamed Application Load Balancer")
   -o, --output string          Desired output format [text|json] (default "text")
-      --private-ips strings    Collection of private IP addresses with the subnet mask of the Application Load Balancer. IPs must contain valid a subnet mask. If no IP is provided, the system will generate an IP with /24 subnet.
+      --private-ips ipSlice    Collection of private IP addresses with the subnet mask of the Application Load Balancer. IPs must contain valid a subnet mask. If no IP is provided, the system will generate an IP with /24 subnet. (default [])
   -q, --quiet                  Quiet output
       --target-lan int         ID of the balanced private target LAN (outbound). (default 1)
   -t, --timeout int            Timeout option for Request for Application Load Balancer creation [seconds] (default 10000)

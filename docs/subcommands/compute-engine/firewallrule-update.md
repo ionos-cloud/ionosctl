@@ -60,7 +60,7 @@ Required values to run command:
       --port-range-start int     Redefine the start range of the allowed port (from 1 to 65534) if protocol TCP or UDP is chosen. Not setting portRangeStart and portRangeEnd allows all ports (default 1)
   -q, --quiet                    Quiet output
       --server-id string         The unique Server Id (required)
-      --source-ip string         Only traffic originating from the respective IPv4 address is allowed. Not setting option allows all source IPs
+      --source-ip ip             Only traffic originating from the respective IPv4 address is allowed. Not setting option allows all source IPs
       --source-mac string        Only traffic originating from the respective MAC address is allowed. Valid format: aa:bb:cc:dd:ee:ff. Not setting option allows all source MAC addresses
   -t, --timeout int              Timeout option for Request for Firewall Rule update [seconds] (default 60)
   -v, --verbose                  Print step-by-step process when running command

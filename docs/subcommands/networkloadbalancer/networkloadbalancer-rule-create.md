@@ -57,7 +57,7 @@ Required values to run command:
   -D, --depth int32                     Controls the detail depth of the response objects. Max depth is 10.
   -f, --force                           Force command to execute without user input
   -h, --help                            Print usage
-      --listener-ip string              Listening IP (required)
+      --listener-ip ip                  Listening IP (required)
       --listener-port string            Listening port number. Range: 1 to 65535 (required)
   -n, --name string                     The name for the Forwarding Rule (default "Unnamed Forwarding Rule")
       --networkloadbalancer-id string   The unique NetworkLoadBalancer Id (required)

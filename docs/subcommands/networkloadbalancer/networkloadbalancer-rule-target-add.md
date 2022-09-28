@@ -59,7 +59,7 @@ Required values to run command:
   -D, --depth int32                     Controls the detail depth of the response objects. Max depth is 10.
   -f, --force                           Force command to execute without user input
   -h, --help                            Print usage
-      --ip string                       IP of a balanced target VM (required)
+      --ip ip                           IP of a balanced target VM (required)
       --maintenance                     [Health Check]  Maintenance specifies if a target VM should be marked as down, even if it is not
       --networkloadbalancer-id string   The unique NetworkLoadBalancer Id (required)
   -o, --output string                   Desired output format [text|json] (default "text")
