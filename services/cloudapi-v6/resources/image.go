@@ -1,17 +1,17 @@
 package resources
 
 import (
+	"bytes"
 	"context"
 	"crypto/tls"
 	"fmt"
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
-	"github.com/jlaffaye/ftp"
+	"github.com/kardianos/ftps"
 	"github.com/spf13/viper"
 	"io"
 	"path/filepath"
-	"time"
 )
 
 type Image struct {
@@ -65,74 +65,44 @@ func NewImageService(client *Client, ctx context.Context) ImagesService {
 }
 
 func (s *imagesService) Upload(p UploadProperties) error {
-	// Uncomment for FTPS lib
-	//conn := new(ftps.FTPS)
-	//
-	//conn.TLSConfig.InsecureSkipVerify = true // often necessary in shared hosting environments
-	//conn.Debug = false
-	//
-	//err := conn.Connect(p.Url, p.Port)
-	//if err != nil {
-	//	return err
-	//}
-	//
-	//err = conn.Login(viper.GetString(config.Username), viper.GetString(config.Password))
-	//if err != nil {
-	//	return err
-	//}
-	//
-	//err = conn.ChangeWorkingDirectory(filepath.Dir(p.Path))
-	//if err != nil {
-	//	return err
-	//}
-	//
-	//// TODO: Large uploads fail. Try buffering data, or changing timeout somehow: StoreFile -> net.Write -> net.SetDeadline
-	//err = conn.StoreFile(filepath.Base(p.Path), p.Data)
-	//if err != nil {
-	//	return err
-	//}
-	//
-	//err = conn.Quit()
-	//if err != nil {
-	//	return err
-	//}
-
 	tlsConfig := tls.Config{
 		InsecureSkipVerify: true, // TODO: INSECURE. Change this before prod! Client susceptible to "Man-in-the-middle" attacks.
 	}
 
-	c, err := ftp.Dial(fmt.Sprintf("%s:%d", p.Url, p.Port), ftp.DialWithTimeout(30*time.Second), ftp.DialWithExplicitTLS(&tlsConfig))
+	dialOptions := ftps.DialOptions{
+		Host:        p.Url,
+		Port:        p.Port,
+		Username:    viper.GetString(config.Username),
+		Passowrd:    viper.GetString(config.Password),
+		ExplicitTLS: true,
+		TLSConfig:   &tlsConfig,
+	}
+
+	//ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	//defer cancel()
+
+	c, err := ftps.Dial(context.TODO(), dialOptions)
 	if err != nil {
 		return err
 	}
 	fmt.Printf("Connected to %s\n", p.Url)
 
-	err = c.Login(viper.GetString(config.Username), viper.GetString(config.Password))
-	if err != nil {
-		return err
-	}
-	fmt.Printf("Logged in;\n")
-
 	// Do something with the FTP conn
-	err = c.ChangeDir(filepath.Dir(p.Path))
+	err = c.Chdir(filepath.Dir(p.Path))
 	if err != nil {
 		fmt.Printf("Failed to change to %s\n", filepath.Dir(p.Path))
 		return err
 	}
-	fmt.Printf("Dir changed to %s\n", filepath.Dir(p.Path))
 
-	err = c.Stor(filepath.Base(p.Path), p.DataIO)
+	data := bytes.NewBufferString("Hello World")
+	err = c.Upload(s.context, "test.iso", data)
 	if err != nil {
-		fmt.Printf("Failed uploading %s to %s!\n", p.Path, p.Url)
+		fmt.Printf("Failed uploading %s to %s!\n", filepath.Base(p.Path), p.Url)
 		return err
 	}
-	fmt.Printf("Uploaded %s to %s!\n", p.Path, p.Url)
+	fmt.Printf("Uploaded %s to %s!\n", filepath.Base(p.Path), p.Url)
 
-	if err := c.Quit(); err != nil {
-		return err
-	}
-
-	return nil
+	return c.Close()
 }
 
 func (s *imagesService) List(params ListQueryParams) (Images, *Response, error) {
