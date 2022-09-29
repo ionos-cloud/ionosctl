@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"fmt"
@@ -170,10 +171,12 @@ func RunImageUpload(c *core.CommandConfig) error {
 
 			serverFilePath := fmt.Sprintf("%s-images/%s", imageFileExtension, filepath.Base(img))
 
-			imageReader, err := os.Open(img)
+			file, err := os.ReadFile(img)
 			if err != nil {
 				return err
 			}
+
+			data := bytes.NewBuffer(file)
 
 			// Catching error from goroutines. https://stackoverflow.com/questions/62387307/how-to-catch-errors-from-goroutines
 			// Uploads each image to each location.
@@ -181,7 +184,7 @@ func RunImageUpload(c *core.CommandConfig) error {
 				return c.CloudApiV6Services.Images().Upload(
 					resources.UploadProperties{
 						FTPServerProperties: resources.FTPServerProperties{Url: url, Port: 21},
-						ImageFileProperties: resources.ImageFileProperties{Path: serverFilePath, DataIO: imageReader},
+						ImageFileProperties: resources.ImageFileProperties{Path: serverFilePath, DataIO: data},
 					},
 				)
 			})
