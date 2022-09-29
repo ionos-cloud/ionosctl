@@ -151,7 +151,7 @@ func PreRunImageUpload(c *core.PreCommandConfig) error {
 func RunImageUpload(c *core.CommandConfig) error {
 	images := viper.GetStringSlice(core.GetFlagName(c.NS, "image"))
 	locations := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgLocation))
-
+	var eg errgroup.Group
 	for _, img := range images {
 		for _, loc := range locations {
 			url := fmt.Sprintf("ftp-%s.ionos.com", loc)
@@ -168,25 +168,27 @@ func RunImageUpload(c *core.CommandConfig) error {
 				return fmt.Errorf("%s is not a valid extension. Valid image extensions are: .iso, %s", ext, strings.Join(validHddImageExtensions, ", "))
 			}
 
-			serverFilePath := fmt.Sprintf("%s/%s-images/%s", url, imageFileExtension, filepath.Base(img))
+			serverFilePath := fmt.Sprintf("%s-images/%s", imageFileExtension, filepath.Base(img))
 
-			bytes, err := os.ReadFile(img)
+			imageReader, err := os.Open(img)
 			if err != nil {
 				return err
 			}
 
 			// Catching error from goroutines. https://stackoverflow.com/questions/62387307/how-to-catch-errors-from-goroutines
 			// Uploads each image to each location.
-			var eg errgroup.Group
 			eg.Go(func() error {
 				return c.CloudApiV6Services.Images().Upload(
 					resources.UploadProperties{
 						FTPServerProperties: resources.FTPServerProperties{Url: url, Port: 21},
-						ImageFileProperties: resources.ImageFileProperties{Path: serverFilePath, Data: bytes},
+						ImageFileProperties: resources.ImageFileProperties{Path: serverFilePath, DataIO: imageReader},
 					},
 				)
 			})
 		}
+	}
+	if err := eg.Wait(); err != nil {
+		return err
 	}
 
 	return nil

@@ -11,12 +11,12 @@ require (
 	github.com/ionos-cloud/sdk-go-auth v1.0.5
 	github.com/ionos-cloud/sdk-go-dbaas-postgres v1.0.4
 	github.com/ionos-cloud/sdk-go/v6 v6.1.3
+	github.com/jlaffaye/ftp v0.1.0
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/spf13/cobra v1.5.0
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.13.0
 	github.com/stretchr/testify v1.8.0
-	github.com/webguerilla/ftps v0.0.0-20180713194618-60e520f5feed
 	go.uber.org/multierr v1.8.0
 	golang.org/x/crypto v0.0.0-20220919173607-35f4265a4bc0
 	golang.org/x/exp v0.0.0-20220921164117-439092de6870
@@ -29,6 +29,8 @@ require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/fsnotify/fsnotify v1.5.4 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
+	github.com/hashicorp/errwrap v1.0.0 // indirect
+	github.com/hashicorp/go-multierror v1.1.1 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/inconshreveable/mousetrap v1.0.1 // indirect
 	github.com/magiconair/properties v1.8.6 // indirect
