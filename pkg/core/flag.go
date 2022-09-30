@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/google/uuid"
-	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"github.com/spf13/viper"
 	"strings"
 )
@@ -260,19 +259,4 @@ func (a *SetFlag) Type() string {
 
 func (a SetFlag) String() string {
 	return a.Value
-}
-
-// -
-
-// Can only be a string for which there is a corresponding endpoint in cloudapi labels API
-// For example, https://api.ionos.com/cloudapi/v6/datacenters/{datacenterId}/servers/{serverId}/labels
-// As of Sep. 2022, the set of valid strings are "datacenter", "server", "volume", "ipblock", "snapshot".
-func newLabelResourceFlag(defaultValue string) *SetFlag {
-	return newSetFlag(defaultValue, []string{
-		cloudapiv6.DatacenterResource,
-		cloudapiv6.ServerResource,
-		cloudapiv6.VolumeResource,
-		cloudapiv6.IpBlockResource,
-		cloudapiv6.SnapshotResource,
-	})
 }
