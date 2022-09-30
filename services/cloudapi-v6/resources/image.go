@@ -10,8 +10,8 @@ import (
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/kardianos/ftps"
 	"github.com/spf13/viper"
-	"io"
 	"path/filepath"
+	"time"
 )
 
 type Image struct {
@@ -33,8 +33,8 @@ type UploadProperties struct {
 }
 
 type ImageFileProperties struct {
-	Path   string // File name, server path (not local) and file extension included
-	DataIO io.Reader
+	Path       string // File name, server path (not local) and file extension included
+	DataBuffer *bytes.Buffer
 }
 type FTPServerProperties struct {
 	Url  string // Server URL without any directory path. Example: ftp-fkb.ionos.com
@@ -78,24 +78,27 @@ func (s *imagesService) Upload(p UploadProperties) error {
 		TLSConfig:   &tlsConfig,
 	}
 
-	//ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
-	//defer cancel()
+	ctx := context.Background()
+	if s.context != nil {
+		ctx = s.context
+	}
+	ctx, cancel := context.WithTimeout(ctx, 600*time.Second)
+	//ctx, cancel := context.WithDeadline(ctx, time.Now().Add(600*time.Second)) // neither timeout nor duration seems to work for large files
+	defer cancel()
 
-	c, err := ftps.Dial(context.TODO(), dialOptions)
+	c, err := ftps.Dial(ctx, dialOptions)
 	if err != nil {
 		return err
 	}
 	fmt.Printf("Connected to %s\n", p.Url)
 
-	// Do something with the FTP conn
 	err = c.Chdir(filepath.Dir(p.Path))
 	if err != nil {
 		fmt.Printf("Failed to change to %s\n", filepath.Dir(p.Path))
 		return err
 	}
 
-	data := bytes.NewBufferString("Hello World")
-	err = c.Upload(s.context, "test.iso", data)
+	err = c.Upload(ctx, filepath.Base(p.Path), p.DataBuffer)
 	if err != nil {
 		fmt.Printf("Failed uploading %s to %s!\n", filepath.Base(p.Path), p.Url)
 		return err

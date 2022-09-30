@@ -459,7 +459,7 @@ func RunImageUpload(c *core.CommandConfig) error {
 				return c.CloudApiV6Services.Images().Upload(
 					resources.UploadProperties{
 						FTPServerProperties: resources.FTPServerProperties{Url: url, Port: 21},
-						ImageFileProperties: resources.ImageFileProperties{Path: serverFilePath, DataIO: data},
+						ImageFileProperties: resources.ImageFileProperties{Path: serverFilePath, DataBuffer: data},
 					},
 				)
 			})
