@@ -44,7 +44,7 @@ Required values to run command:
       --no-headers             When using text output, don't print headers
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output
-      --resource-type string   Type of the resource to get label from (required)
+      --resource-type string   Type of the resource to get labels from. Can be one of: datacenter, volume, server, snapshot, ipblock (required)
       --server-id string       The unique Server Id
       --snapshot-id string     The unique Snapshot Id
   -v, --verbose                Print step-by-step process when running command
