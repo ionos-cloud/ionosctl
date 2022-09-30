@@ -202,6 +202,7 @@ func ImageCmd() *core.Command {
 	validLocations := []string{"fra, fkb, txl, lhr, las, ewr, vit"}
 	upload.AddStringSliceFlag(cloudapiv6.ArgLocation, cloudapiv6.ArgLocationShort, nil, fmt.Sprintf("Location to upload to. Must be an array containing only %s", strings.Join(validLocations, " ")), core.RequiredFlagOption())
 	upload.AddStringSliceFlag("image", "i", nil, fmt.Sprintf("Slice of paths to images, absolute path or relative to ionosctl binary.\nImage must have extensions: .iso, %s", strings.Join(validHddImageExtensions, " ")), core.RequiredFlagOption())
+	upload.AddStringFlag("ftp-url", "", "ftp-%s.ionos.com", "URL of FTP server, with %s flag if location is embedded into url")
 
 	return imageCmd
 }
@@ -430,7 +431,7 @@ func RunImageUpload(c *core.CommandConfig) error {
 	var eg errgroup.Group
 	for _, img := range images {
 		for _, loc := range locations {
-			url := fmt.Sprintf("ftp-%s.ionos.com", loc)
+			url := fmt.Sprintf(viper.GetString(core.GetFlagName(c.NS, "ftp-url")), loc)
 			c.Printer.Verbose("Uploading %s to %s", img, url)
 
 			validHddImageExtensions := []string{".vmdk", ".vhd", ".vhdx", ".cow", ".qcow", ".qcow2", ".raw", ".vpc", ".vdi"}
@@ -452,7 +453,6 @@ func RunImageUpload(c *core.CommandConfig) error {
 			}
 
 			data := bytes.NewBuffer(file)
-
 			// Catching error from goroutines. https://stackoverflow.com/questions/62387307/how-to-catch-errors-from-goroutines
 			// Uploads each image to each location.
 			eg.Go(func() error {
