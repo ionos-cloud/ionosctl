@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/waiter"
+	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	"io"
 	"os"
 	"sort"
@@ -104,7 +106,60 @@ func ImageCmd() *core.Command {
 	})
 	get.AddBoolFlag(config.ArgNoHeaders, "", false, cloudapiv6.ArgNoHeadersDescription)
 	get.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultGetDepth, cloudapiv6.ArgDepthDescription)
+
+	update := core.NewCommand(ctx, imageCmd, core.CommandBuilder{
+		Namespace:  "image",
+		Resource:   "image",
+		Verb:       "update",
+		Aliases:    []string{"g"},
+		ShortDesc:  "Update a specified Image",
+		LongDesc:   "Use this command to get information about a specified Image.\n\nRequired values to run command:\n\n* Image Id",
+		Example:    "placeholder", // TODO
+		PreCmdRun:  PreRunImageId,
+		CmdRun:     RunImageUpdate,
+		InitClient: true,
+	})
+	update.AddUUIDFlag(cloudapiv6.ArgImageId, cloudapiv6.ArgIdShort, "", cloudapiv6.ImageId, core.RequiredFlagOption())
+	_ = get.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgImageId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.ImageIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+	})
+	get.AddBoolFlag(config.ArgNoHeaders, "", false, cloudapiv6.ArgNoHeadersDescription)
+	get.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultGetDepth, cloudapiv6.ArgDepthDescription)
 	return imageCmd
+}
+
+func RunImageUpdate(c *core.CommandConfig) error {
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	queryParams := listQueryParams.QueryParams
+	input := resources.ImageProperties{}
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgName)) {
+		name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
+		input.SetName(name)
+		c.Printer.Verbose("Property Name set: %v", name)
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgDescription)) {
+		description := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDescription))
+		input.SetDescription(description)
+		c.Printer.Verbose("Property Description set: %v", description)
+	}
+	img, resp, err := c.CloudApiV6Services.Images().Update(
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgImageId)),
+		input,
+		queryParams,
+	)
+	if resp != nil && printer.GetId(resp) != "" {
+		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
+	}
+	if err != nil {
+		return err
+	}
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+		return err
+	}
+	return c.Printer.Print(getImagePrint(resp, c, []resources.Image{*img}))
 }
 
 func PreRunImageList(c *core.PreCommandConfig) error {
@@ -115,6 +170,10 @@ func PreRunImageList(c *core.PreCommandConfig) error {
 }
 
 func PreRunImageId(c *core.PreCommandConfig) error {
+	if err := c.Command.Command.MarkFlagRequired(cloudapiv6.ArgImageId); err != nil {
+		return err
+	}
+
 	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgImageId)
 }
 
