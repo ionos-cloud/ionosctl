@@ -3,6 +3,7 @@ package core
 import (
 	"fmt"
 	"net"
+	"strings"
 
 	"github.com/spf13/cobra"
 	flag "github.com/spf13/pflag"
@@ -101,10 +102,11 @@ func (c *Command) AddUUIDFlag(name, shorthand, defaultValue, desc string, option
 
 func (c *Command) AddSetFlag(name, shorthand, defaultValue string, allowed []string, desc string, optionFunc ...FlagOptionFunc) {
 	flags := c.Command.Flags()
+	desc += fmt.Sprintf(". Can be one of: %s", strings.Join(allowed, ", "))
 	if shorthand != "" {
-		flags.VarP(newSetFlag(defaultValue, allowed), name, shorthand, desc)
+		flags.VarP(newSetFlag(name, defaultValue, allowed), name, shorthand, desc)
 	} else {
-		flags.Var(newSetFlag(defaultValue, allowed), name, desc)
+		flags.Var(newSetFlag(name, defaultValue, allowed), name, desc)
 	}
 	viper.BindPFlag(GetFlagName(c.NS, name), c.Command.Flags().Lookup(name))
 

@@ -44,6 +44,10 @@ func ImageCmd() *core.Command {
 		return allImageCols, cobra.ShellCompDirectiveNoFileComp
 	})
 
+	var (
+		validLocations = []string{"fra, fkb, txl, lhr, las, ewr, vit"}
+	)
+
 	/*
 		List Command
 	*/
@@ -141,10 +145,10 @@ func ImageCmd() *core.Command {
 	update.AddBoolFlag(cloudapiv6.ArgNicHotUnplug, "", false, "'Hot-Unplug' NIC")
 	update.AddBoolFlag(cloudapiv6.ArgDiscVirtioHotUnplug, "", false, "'Hot-Unplug' Virt-IO drive")
 	update.AddBoolFlag(cloudapiv6.ArgDiscScsiHotUnplug, "", false, "'Hot-Unplug' SCSI drive")
-	update.AddBoolFlag(cloudapiv6.ArgPublic, cloudapiv6.ArgPublicShort, false, "TBA")
+	update.AddBoolFlag(cloudapiv6.ArgPublic, cloudapiv6.ArgPublicShort, false, "Indicates whether the image is part of a public repository")
 	update.AddStringFlag("cloud-init", "", "V1", "Indicates whether the image is part of a public repository")
 	update.AddStringSliceFlag(cloudapiv6.ArgImageAlias, cloudapiv6.ArgImageAliasShort, nil, "List of image aliases mapped for this image")
-	update.AddStringFlag(cloudapiv6.ArgLocation, cloudapiv6.ArgLocationShort, nil, "Location of the image")
+	update.AddSetFlag(cloudapiv6.ArgLocation, cloudapiv6.ArgLocationShort, "", validLocations, "Location of the image")
 
 	return imageCmd
 }

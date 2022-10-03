@@ -221,12 +221,14 @@ func (u uuidFlag) String() string {
 // Values set for this flag must be part of allowed values
 // NOTE: Track progress of https://github.com/spf13/pflag/issues/236 : Might be implemented in pflag
 type SetFlag struct {
+	Name    string
 	Value   string
 	Allowed []string
 }
 
-func newSetFlag(defaultValue string, Allowed []string) *SetFlag {
+func newSetFlag(name, defaultValue string, Allowed []string) *SetFlag {
 	return &SetFlag{
+		Name:    name,
 		Value:   defaultValue,
 		Allowed: Allowed,
 	}
@@ -242,10 +244,9 @@ func (a *SetFlag) Set(p string) error {
 		return false
 	}
 	if !isIncluded(a.Allowed, p) {
+		// Error: invalid argument "las" for "-l, --location" flag: please pick one of these values: fra, fkb, txl, lhr, las, ewr, vit
 		return fmt.Errorf(
-			"value %s is incompatible with flag %s. Please pick one of these values: %s",
-			a.Value,
-			p,
+			"please pick one of these values: %s",
 			strings.Join(a.Allowed, ","),
 		)
 	}
