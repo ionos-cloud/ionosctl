@@ -115,7 +115,7 @@ func ImageCmd() *core.Command {
 		Verb:       "update",
 		Aliases:    []string{"g"},
 		ShortDesc:  "Update a specified Image",
-		LongDesc:   "Use this command to get information about a specified Image.\n\nRequired values to run command:\n\n* Image Id",
+		LongDesc:   "Use this command to update information about a specified Image.\n\nRequired values to run command:\n\n* Image Id",
 		Example:    "placeholder", // TODO
 		PreCmdRun:  PreRunImageId,
 		CmdRun:     RunImageUpdate,
@@ -148,7 +148,63 @@ func ImageCmd() *core.Command {
 	update.AddBoolFlag(cloudapiv6.ArgDiscVirtioHotUnplug, "", false, "'Hot-Unplug' Virt-IO drive")
 	update.AddBoolFlag(cloudapiv6.ArgDiscScsiHotUnplug, "", false, "'Hot-Unplug' SCSI drive")
 
+	/*
+		Delete Command
+	*/
+	delete := core.NewCommand(ctx, imageCmd, core.CommandBuilder{
+		Namespace:  "image",
+		Resource:   "image",
+		Verb:       "delete",
+		Aliases:    []string{"d"},
+		ShortDesc:  "Delete an image",
+		LongDesc:   "Use this command to delete a specified Image.\n\nRequired values to run command:\n\n* Image Id",
+		Example:    "placeholder", // TODO
+		PreCmdRun:  PreRunImageId,
+		CmdRun:     RunImageUpdate,
+		InitClient: true,
+	})
+	update.AddUUIDFlag(cloudapiv6.ArgImageId, cloudapiv6.ArgIdShort, "", cloudapiv6.ImageId, core.RequiredFlagOption())
+	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgImageId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.ImageIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+	})
+
+	update.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Image update to be executed")
+	update.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Image update [seconds]")
+	update.AddBoolFlag(config.ArgNoHeaders, "", false, cloudapiv6.ArgNoHeadersDescription)
+	update.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultGetDepth, cloudapiv6.ArgDepthDescription)
+
 	return imageCmd
+}
+
+func RunImageDelete(c *core.CommandConfig) error {
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	queryParams := listQueryParams.QueryParams
+	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
+		if err := DeleteAllDatacenters(c); err != nil {
+			return err
+		}
+		return c.Printer.Print(printer.Result{Resource: c.Resource, Verb: c.Verb})
+	} else {
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete data center"); err != nil {
+			return err
+		}
+		dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
+		c.Printer.Verbose("Starting deleting Datacenter with ID: %v...", dcId)
+		resp, err := c.CloudApiV6Services.DataCenters().Delete(dcId, queryParams)
+		if resp != nil && printer.GetId(resp) != "" {
+			c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
+		}
+		if err != nil {
+			return err
+		}
+		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+			return err
+		}
+		return c.Printer.Print(getDataCenterPrint(resp, c, nil))
+	}
 }
 
 func RunImageUpdate(c *core.CommandConfig) error {
