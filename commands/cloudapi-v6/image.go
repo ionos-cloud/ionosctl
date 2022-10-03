@@ -6,9 +6,11 @@ import (
 	"fmt"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
+	"github.com/spf13/pflag"
 	"io"
 	"os"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 
@@ -43,10 +45,6 @@ func ImageCmd() *core.Command {
 	_ = imageCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allImageCols, cobra.ShellCompDirectiveNoFileComp
 	})
-
-	var (
-		validLocations = []string{"fra, fkb, txl, lhr, las, ewr, vit"}
-	)
 
 	/*
 		List Command
@@ -124,9 +122,11 @@ func ImageCmd() *core.Command {
 		InitClient: true,
 	})
 	update.AddUUIDFlag(cloudapiv6.ArgImageId, cloudapiv6.ArgIdShort, "", cloudapiv6.ImageId, core.RequiredFlagOption())
-	_ = get.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgImageId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgImageId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.ImageIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
+
+	update.Command.Flags().SortFlags = false // Hot Plugs generate a lot of flags to scroll through, put them at the end
 
 	update.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Image update to be executed")
 	update.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Image update [seconds]")
@@ -135,6 +135,8 @@ func ImageCmd() *core.Command {
 
 	update.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "", "Name of the Image")
 	update.AddStringFlag(cloudapiv6.ArgDescription, cloudapiv6.ArgDescriptionShort, "", "Description of the Image")
+	update.AddSetFlag(cloudapiv6.ArgLicenceType, "", "UNKNOWN", []string{"UNKNOWN", "WINDOWS", "WINDOWS2016", "WINDOWS2022", "LINUX", "OTHER"}, "The OS type of this image")
+	update.AddSetFlag("cloud-init", "", "V1", []string{"V1", "NONE"}, "Cloud init compatibility")
 	update.AddBoolFlag(cloudapiv6.ArgCpuHotPlug, "", true, "'Hot-Plug' CPU. It is not possible to have a hot-unplug CPU which you previously did not hot-plug")
 	update.AddBoolFlag(cloudapiv6.ArgRamHotPlug, "", true, "'Hot-Plug' RAM")
 	update.AddBoolFlag(cloudapiv6.ArgNicHotPlug, "", true, "'Hot-Plug' NIC")
@@ -145,10 +147,6 @@ func ImageCmd() *core.Command {
 	update.AddBoolFlag(cloudapiv6.ArgNicHotUnplug, "", false, "'Hot-Unplug' NIC")
 	update.AddBoolFlag(cloudapiv6.ArgDiscVirtioHotUnplug, "", false, "'Hot-Unplug' Virt-IO drive")
 	update.AddBoolFlag(cloudapiv6.ArgDiscScsiHotUnplug, "", false, "'Hot-Unplug' SCSI drive")
-	update.AddBoolFlag(cloudapiv6.ArgPublic, cloudapiv6.ArgPublicShort, false, "Indicates whether the image is part of a public repository")
-	update.AddStringFlag("cloud-init", "", "V1", "Indicates whether the image is part of a public repository")
-	update.AddStringSliceFlag(cloudapiv6.ArgImageAlias, cloudapiv6.ArgImageAliasShort, nil, "List of image aliases mapped for this image")
-	update.AddSetFlag(cloudapiv6.ArgLocation, cloudapiv6.ArgLocationShort, "", validLocations, "Location of the image")
 
 	return imageCmd
 }
@@ -161,21 +159,58 @@ func RunImageUpdate(c *core.CommandConfig) error {
 	queryParams := listQueryParams.QueryParams
 
 	input := resources.ImageProperties{}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgName)) {
-		name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
-		input.SetName(name)
-		c.Printer.Verbose("Property Name set: %v", name)
-	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgDescription)) {
-		description := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDescription))
-		input.SetDescription(description)
-		c.Printer.Verbose("Property Description set: %v", description)
-	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgCpuHotPlug)) {
-		description := viper.GetString(core.GetFlagName(c.NS, "scale-cpu"))
-		input.SetDescription(description)
-		c.Printer.Verbose("Property Description set: %v", description)
-	}
+	c.Command.Command.Flags().Visit(func(flag *pflag.Flag) {
+		val := flag.Value.String()
+		boolval, _ := strconv.ParseBool(val)
+		switch flag.Name {
+		case cloudapiv6.ArgName:
+			input.SetName(val)
+			break
+		case cloudapiv6.ArgDescription:
+			input.SetDescription(val)
+			break
+		case "cloud-init":
+			input.SetCloudInit(val)
+			break
+		case cloudapiv6.ArgLicenceType:
+			input.SetLicenceType(val)
+			break
+		case cloudapiv6.ArgCpuHotPlug:
+			input.SetCpuHotPlug(boolval)
+			break
+		case cloudapiv6.ArgRamHotPlug:
+			input.SetRamHotPlug(boolval)
+			break
+		case cloudapiv6.ArgNicHotPlug:
+			input.SetNicHotPlug(boolval)
+			break
+		case cloudapiv6.ArgDiscVirtioHotPlug:
+			input.SetDiscVirtioHotPlug(boolval)
+			break
+		case cloudapiv6.ArgDiscScsiHotPlug:
+			input.SetDiscScsiHotPlug(boolval)
+			break
+		case cloudapiv6.ArgCpuHotUnplug:
+			input.SetCpuHotUnplug(boolval)
+			break
+		case cloudapiv6.ArgRamHotUnplug:
+			input.SetRamHotUnplug(boolval)
+			break
+		case cloudapiv6.ArgNicHotUnplug:
+			input.SetNicHotUnplug(boolval)
+			break
+		case cloudapiv6.ArgDiscVirtioHotUnplug:
+			input.SetDiscVirtioHotUnplug(boolval)
+			break
+		case cloudapiv6.ArgDiscScsiHotUnplug:
+			input.SetDiscScsiHotUnplug(boolval)
+			break
+		default:
+			// --image-id, verbose, filters, depth, etc
+			break
+		}
+		c.Printer.Verbose(fmt.Sprintf("Property %s set: %s", flag.Name, flag.Value))
+	})
 	img, resp, err := c.CloudApiV6Services.Images().Update(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgImageId)),
 		input,
