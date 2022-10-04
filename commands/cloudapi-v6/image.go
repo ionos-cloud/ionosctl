@@ -385,10 +385,6 @@ func PreRunImageList(c *core.PreCommandConfig) error {
 }
 
 func PreRunImageId(c *core.PreCommandConfig) error {
-	if err := c.Command.Command.MarkFlagRequired(cloudapiv6.ArgImageId); err != nil {
-		return err
-	}
-
 	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgImageId)
 }
 
