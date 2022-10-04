@@ -221,14 +221,12 @@ func (u uuidFlag) String() string {
 // Values set for this flag must be part of allowed values
 // NOTE: Track progress of https://github.com/spf13/pflag/issues/236 : Might be implemented in pflag
 type SetFlag struct {
-	Name    string
 	Value   string
 	Allowed []string
 }
 
-func newSetFlag(name, defaultValue string, Allowed []string) *SetFlag {
+func newSetFlag(defaultValue string, Allowed []string) *SetFlag {
 	return &SetFlag{
-		Name:    name,
 		Value:   defaultValue,
 		Allowed: Allowed,
 	}

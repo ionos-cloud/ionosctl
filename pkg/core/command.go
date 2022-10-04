@@ -104,9 +104,9 @@ func (c *Command) AddSetFlag(name, shorthand, defaultValue string, allowed []str
 	flags := c.Command.Flags()
 	desc += fmt.Sprintf(". Can be one of: %s", strings.Join(allowed, ", "))
 	if shorthand != "" {
-		flags.VarP(newSetFlag(name, defaultValue, allowed), name, shorthand, desc)
+		flags.VarP(newSetFlag(defaultValue, allowed), name, shorthand, desc)
 	} else {
-		flags.Var(newSetFlag(name, defaultValue, allowed), name, desc)
+		flags.Var(newSetFlag(defaultValue, allowed), name, desc)
 	}
 	viper.BindPFlag(GetFlagName(c.NS, name), c.Command.Flags().Lookup(name))
 
