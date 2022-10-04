@@ -31,7 +31,7 @@ Required values to run command:
 ## Options
 
 ```text
-  -a, --all                    Remove all Labels.
+  -a, --all                    Remove all Labels
   -u, --api-url string         Override default host url (default "https://api.ionos.com")
       --cols strings           Set of columns to be printed on output 
                                Available columns: [Key Value] (default [Key,Value])
@@ -44,7 +44,7 @@ Required values to run command:
       --label-key string       The unique Label Key (required)
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output
-      --resource-type string   Type of the resource to remove label from. Can be one of: datacenter, volume, server, snapshot, ipblock (required)
+      --resource-type string   Type of resource to remove labels from. Can be one of: datacenter, volume, server, snapshot, ipblock (required)
       --server-id string       The unique Server Id
       --snapshot-id string     The unique Snapshot Id
   -v, --verbose                Print step-by-step process when running command
