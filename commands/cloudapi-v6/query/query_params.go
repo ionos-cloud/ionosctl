@@ -59,13 +59,13 @@ func GetListQueryParams(c *core.CommandConfig) (resources.ListQueryParams, error
 			listQueryParams = listQueryParams.SetFilters(filters)
 		}
 	}
-	orderBy := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgOrderBy))
+	orderBy, _ := c.Command.Command.Flags().GetString(cloudapiv6.ArgOrderBy)
 	listQueryParams = listQueryParams.SetOrderBy(orderBy)
 
-	maxResults := viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgMaxResults))
+	maxResults, _ := c.Command.Command.Flags().GetInt32(cloudapiv6.ArgMaxResults)
 	listQueryParams = listQueryParams.SetMaxResults(maxResults)
 
-	depth := viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgDepth))
+	depth, _ := c.Command.Command.Flags().GetInt32(cloudapiv6.ArgDepth)
 	listQueryParams = listQueryParams.SetDepth(depth)
 	// Uncomment this when support for Pretty param is added
 	//	pretty := viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgPretty))
