@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/query"
 	"os"
-	"strings"
 
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
@@ -34,10 +33,6 @@ func LabelCmd() *core.Command {
 	_ = labelCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultLabelResourceCols, cobra.ShellCompDirectiveNoFileComp
 	})
-
-	var (
-		allowedValues = []string{cloudapiv6.DatacenterResource, cloudapiv6.VolumeResource, cloudapiv6.ServerResource, cloudapiv6.SnapshotResource, cloudapiv6.IpBlockResource}
-	)
 
 	/*
 		List Command
@@ -74,7 +69,10 @@ func LabelCmd() *core.Command {
 	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgSnapshotId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.SnapshotIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	list.AddSetFlag(cloudapiv6.ArgResourceType, "", "", allowedValues, fmt.Sprintf("Type of the resource to list labels from. Can be one of: %s", strings.Join(allowedValues, ", ")), core.RequiredFlagOption())
+	list.AddLabelResourceFlag(cloudapiv6.ArgResourceType, "", "", fmt.Sprintf("Type of the resource to list labels from. Can be one of: %s, %s, %s, %s, %s", cloudapiv6.DatacenterResource, cloudapiv6.VolumeResource, cloudapiv6.ServerResource, cloudapiv6.SnapshotResource, cloudapiv6.IpBlockResource))
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgResourceType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return []string{cloudapiv6.DatacenterResource, cloudapiv6.VolumeResource, cloudapiv6.ServerResource, cloudapiv6.SnapshotResource, cloudapiv6.IpBlockResource}, cobra.ShellCompDirectiveNoFileComp
+	})
 	list.AddBoolFlag(config.ArgNoHeaders, "", false, cloudapiv6.ArgNoHeadersDescription)
 	list.AddInt32Flag(cloudapiv6.ArgMaxResults, cloudapiv6.ArgMaxResultsShort, cloudapiv6.DefaultMaxResults, cloudapiv6.ArgMaxResultsDescription)
 	list.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultListDepth, cloudapiv6.ArgDepthDescription)
@@ -122,7 +120,10 @@ func LabelCmd() *core.Command {
 	_ = get.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgSnapshotId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.SnapshotIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	get.AddSetFlag(cloudapiv6.ArgResourceType, "", "", allowedValues, fmt.Sprintf("Type of the resource to get labels from. Can be one of: %s", strings.Join(allowedValues, ", ")), core.RequiredFlagOption())
+	get.AddLabelResourceFlag(cloudapiv6.ArgResourceType, "", "", "Type of the resource to get label from", core.RequiredFlagOption())
+	_ = get.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgResourceType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return []string{cloudapiv6.DatacenterResource, cloudapiv6.VolumeResource, cloudapiv6.ServerResource, cloudapiv6.SnapshotResource, cloudapiv6.IpBlockResource}, cobra.ShellCompDirectiveNoFileComp
+	})
 	get.AddBoolFlag(config.ArgNoHeaders, "", false, cloudapiv6.ArgNoHeadersDescription)
 	get.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultGetDepth, cloudapiv6.ArgDepthDescription)
 
@@ -181,7 +182,10 @@ func LabelCmd() *core.Command {
 	_ = addLabel.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgSnapshotId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.SnapshotIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	addLabel.AddSetFlag(cloudapiv6.ArgResourceType, "", "", allowedValues, fmt.Sprintf("Type of the resource to add label to. Can be one of: %s", strings.Join(allowedValues, ", ")), core.RequiredFlagOption())
+	addLabel.AddLabelResourceFlag(cloudapiv6.ArgResourceType, "", "", "Type of the resource to add label to", core.RequiredFlagOption())
+	_ = addLabel.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgResourceType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return []string{cloudapiv6.DatacenterResource, cloudapiv6.VolumeResource, cloudapiv6.ServerResource, cloudapiv6.SnapshotResource, cloudapiv6.IpBlockResource}, cobra.ShellCompDirectiveNoFileComp
+	})
 	addLabel.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultMiscDepth, cloudapiv6.ArgDepthDescription)
 
 	/*
@@ -220,7 +224,10 @@ func LabelCmd() *core.Command {
 	_ = removeLabel.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgSnapshotId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.SnapshotIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	removeLabel.AddSetFlag(cloudapiv6.ArgResourceType, "", "", allowedValues, fmt.Sprintf("Type of the resource to remove label from. Can be one of: %s", strings.Join(allowedValues, ", ")), core.RequiredFlagOption())
+	removeLabel.AddLabelResourceFlag(cloudapiv6.ArgResourceType, "", "", "Type of the resource to remove label for", core.RequiredFlagOption())
+	_ = removeLabel.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgResourceType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return []string{cloudapiv6.DatacenterResource, cloudapiv6.VolumeResource, cloudapiv6.ServerResource, cloudapiv6.SnapshotResource, cloudapiv6.IpBlockResource}, cobra.ShellCompDirectiveNoFileComp
+	})
 	removeLabel.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Remove all Labels.")
 	removeLabel.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultMiscDepth, cloudapiv6.ArgDepthDescription)
 

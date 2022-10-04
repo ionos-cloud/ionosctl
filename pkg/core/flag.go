@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/google/uuid"
+	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"github.com/spf13/viper"
 	"strings"
 )
@@ -217,22 +218,30 @@ func (u uuidFlag) String() string {
 
 /// -- END UUID FLAG TYPE --
 
-// SetFlag /
-// Values set for this flag must be part of allowed values
+// LabelResourceFlag /
+// Can only be a string for which there is a corresponding endpoint in cloudapi labels API
+// For example, https://api.ionos.com/cloudapi/v6/datacenters/{datacenterId}/servers/{serverId}/labels
+// As of Sep. 2022, the set of valid strings are "datacenter", "server", "volume", "ipblock", "snapshot".
 // NOTE: Track progress of https://github.com/spf13/pflag/issues/236 : Might be implemented in pflag
-type SetFlag struct {
+type LabelResourceFlag struct {
 	Value   string
 	Allowed []string
 }
 
-func newSetFlag(defaultValue string, Allowed []string) *SetFlag {
-	return &SetFlag{
-		Value:   defaultValue,
-		Allowed: Allowed,
+func newLabelResourceFlag(defaultValue string) *LabelResourceFlag {
+	return &LabelResourceFlag{
+		Value: defaultValue,
+		Allowed: []string{
+			cloudapiv6.DatacenterResource,
+			cloudapiv6.ServerResource,
+			cloudapiv6.VolumeResource,
+			cloudapiv6.IpBlockResource,
+			cloudapiv6.SnapshotResource,
+		},
 	}
 }
 
-func (a *SetFlag) Set(p string) error {
+func (a *LabelResourceFlag) Set(p string) error {
 	isIncluded := func(opts []string, val string) bool {
 		for _, opt := range opts {
 			if val == opt {
@@ -243,9 +252,10 @@ func (a *SetFlag) Set(p string) error {
 	}
 	if !isIncluded(a.Allowed, p) {
 		return fmt.Errorf(
-			"value %s is incompatible with flag %s. Please pick one of these values: %s",
-			a.Value,
+			"Resource %s does not have a specific Label API endpoint. Please use -%s/--%s instead, or one of these values: %s",
 			p,
+			cloudapiv6.ArgFiltersShort,
+			cloudapiv6.ArgFilters,
 			strings.Join(a.Allowed, ","),
 		)
 	}
@@ -253,10 +263,10 @@ func (a *SetFlag) Set(p string) error {
 	return nil
 }
 
-func (a *SetFlag) Type() string {
+func (a *LabelResourceFlag) Type() string {
 	return "string"
 }
 
-func (a SetFlag) String() string {
+func (a LabelResourceFlag) String() string {
 	return a.Value
 }

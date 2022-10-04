@@ -99,18 +99,14 @@ func (c *Command) AddUUIDFlag(name, shorthand, defaultValue, desc string, option
 	}
 }
 
-func (c *Command) AddSetFlag(name, shorthand, defaultValue string, allowed []string, desc string, optionFunc ...FlagOptionFunc) {
+func (c *Command) AddLabelResourceFlag(name, shorthand, defaultValue, desc string, optionFunc ...FlagOptionFunc) {
 	flags := c.Command.Flags()
 	if shorthand != "" {
-		flags.VarP(newSetFlag(defaultValue, allowed), name, shorthand, desc)
+		flags.VarP(newLabelResourceFlag(defaultValue), name, shorthand, desc)
 	} else {
-		flags.Var(newSetFlag(defaultValue, allowed), name, desc)
+		flags.Var(newLabelResourceFlag(defaultValue), name, desc)
 	}
 	viper.BindPFlag(GetFlagName(c.NS, name), c.Command.Flags().Lookup(name))
-
-	_ = c.Command.RegisterFlagCompletionFunc(name, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return allowed, cobra.ShellCompDirectiveNoFileComp
-	})
 
 	// Add Option to Flag
 	for _, option := range optionFunc {
