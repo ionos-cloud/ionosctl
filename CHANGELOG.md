@@ -1,5 +1,10 @@
 # Changelog
 
+## [6.3.3] (October 2022)
+
+### Fixed
+- Fixed viper sometimes not binding with pflag QueryParams defaults.
+
 ## [6.3.2] (September 2022)
 
 ### Added
