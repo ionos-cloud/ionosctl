@@ -213,24 +213,27 @@ func RunImageDelete(c *core.CommandConfig) error {
 	}
 }
 
+// Util func - Given a slice of public & non-public images, return only those images that are non-public.
+// If any image in the slice has null properties, or "Properties.Public" field is nil, an error is thrown.
 func _getNonPublicImages(imgs *[]ionoscloud.Image) (*[]ionoscloud.Image, error) {
-	var publicImgs []ionoscloud.Image
+	var nonPublicImgs []ionoscloud.Image
 	for _, i := range *imgs {
 		properties, ok := i.GetPropertiesOk()
 		if !ok {
-			return nil, fmt.Errorf("failed to get properties of image\n")
+			return nil, fmt.Errorf("properties of image %s are nil\n", *i.GetId())
 		}
 		isPublic, ok := properties.GetPublicOk()
 		if !ok {
-			return nil, fmt.Errorf("failed to get public value of image %s\n", *i.GetId())
+			return nil, fmt.Errorf("public field of image %s is nil\n", *i.GetId())
 		}
 		if !*isPublic {
-			publicImgs = append(publicImgs, i)
+			nonPublicImgs = append(nonPublicImgs, i)
 		}
 	}
-	return &publicImgs, nil
+	return &nonPublicImgs, nil
 }
 
+//  deletes non-public images, as deleting public images is forbidden by the API.
 func DeleteAllNonPublicImages(c *core.CommandConfig) error {
 	depth := int32(1)
 	images, resp, err := c.CloudApiV6Services.Images().List(
