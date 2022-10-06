@@ -83,7 +83,7 @@ func (s *imagesService) Upload(p UploadProperties) error {
 		ctx = s.context
 	}
 	ctx, cancel := context.WithTimeout(ctx, 600*time.Second)
-	//ctx, cancel := context.WithDeadline(ctx, time.Now().Add(600*time.Second)) // neither timeout nor duration seems to work for large files
+	ctx, cancel = context.WithDeadline(ctx, time.Now().Add(600*time.Second)) // neither timeout nor duration seems to work for large files
 	defer cancel()
 
 	c, err := ftps.Dial(ctx, dialOptions)
@@ -98,7 +98,21 @@ func (s *imagesService) Upload(p UploadProperties) error {
 		return err
 	}
 
-	err = c.Upload(ctx, filepath.Base(p.Path), p.DataBuffer)
+	files, err := c.List(ctx)
+	if err != nil {
+		fmt.Println("Failed to list")
+		return err
+	}
+
+	// Check if there already exists an image with the given name at the location
+	desiredFileName := filepath.Base(p.Path)
+	for _, f := range files {
+		if f.Name == desiredFileName {
+			return fmt.Errorf("%s already exists at %s", desiredFileName, p.Url)
+		}
+	}
+
+	err = c.Upload(ctx, desiredFileName, p.DataBuffer)
 	if err != nil {
 		fmt.Printf("Failed uploading %s to %s!\n", filepath.Base(p.Path), p.Url)
 		return err
