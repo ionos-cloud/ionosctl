@@ -1,7 +1,7 @@
 package resources
 
 import (
-	"bytes"
+	"bufio"
 	"context"
 	"crypto/tls"
 	"fmt"
@@ -34,7 +34,7 @@ type UploadProperties struct {
 
 type ImageFileProperties struct {
 	Path       string // File name, server path (not local) and file extension included
-	DataBuffer *bytes.Buffer
+	DataBuffer *bufio.Reader
 }
 type FTPServerProperties struct {
 	Url  string // Server URL without any directory path. Example: ftp-fkb.ionos.com
@@ -82,8 +82,8 @@ func (s *imagesService) Upload(p UploadProperties) error {
 	if s.context != nil {
 		ctx = s.context
 	}
-	ctx, cancel := context.WithTimeout(ctx, 600*time.Second)
-	ctx, cancel = context.WithDeadline(ctx, time.Now().Add(600*time.Second)) // neither timeout nor duration seems to work for large files
+	//ctx, cancel := context.WithTimeout(ctx, 600*time.Second)
+	ctx, cancel := context.WithDeadline(ctx, time.Now().Add(600*time.Second)) // neither timeout nor duration seems to work for large files
 	defer cancel()
 
 	c, err := ftps.Dial(ctx, dialOptions)

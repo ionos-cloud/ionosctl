@@ -1,7 +1,7 @@
 package commands
 
 import (
-	"bytes"
+	"bufio"
 	"context"
 	"errors"
 	"fmt"
@@ -447,12 +447,12 @@ func RunImageUpload(c *core.CommandConfig) error {
 
 			serverFilePath := fmt.Sprintf("%s-images/%s", imageFileExtension, filepath.Base(img))
 
-			file, err := os.ReadFile(img)
+			file, err := os.Open(img)
 			if err != nil {
 				return err
 			}
 
-			data := bytes.NewBuffer(file)
+			data := bufio.NewReader(file)
 			// Catching error from goroutines. https://stackoverflow.com/questions/62387307/how-to-catch-errors-from-goroutines
 			// Uploads each image to each location.
 			eg.Go(func() error {
