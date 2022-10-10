@@ -456,12 +456,16 @@ func RunImageUpload(c *core.CommandConfig) error {
 			// Catching error from goroutines. https://stackoverflow.com/questions/62387307/how-to-catch-errors-from-goroutines
 			// Uploads each image to each location.
 			eg.Go(func() error {
-				return c.CloudApiV6Services.Images().Upload(
+				err := c.CloudApiV6Services.Images().Upload(
 					resources.UploadProperties{
 						FTPServerProperties: resources.FTPServerProperties{Url: url, Port: 21},
 						ImageFileProperties: resources.ImageFileProperties{Path: serverFilePath, DataBuffer: data},
 					},
 				)
+				if err != nil {
+					return err
+				}
+				return file.Close()
 			})
 		}
 	}
