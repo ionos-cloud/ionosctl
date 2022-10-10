@@ -40,8 +40,6 @@ var (
 	// If label is set as `release`, it will show the version released
 	Label     string
 	GitCommit string
-
-	IonosctlVersion cliVersion
 )
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -77,13 +75,12 @@ func init() {
 	rootCmd.Command.SetHelpCommand(helpCommand)
 
 	// Init version
-	initVersion()
-	rootCmd.Command.Version = IonosctlVersion.GetVersion()
-	if rootCmd.Command.Version != CLIVersionDev {
-		viper.Set(config.CLIHttpUserAgent, fmt.Sprintf("ionosctl/v%v", IonosctlVersion.GetVersion()))
+	if Label == "release" {
+		rootCmd.Command.Version = "v" + strings.TrimLeft(Version, "v ")
 	} else {
-		viper.Set(config.CLIHttpUserAgent, fmt.Sprintf("ionosctl/%v", IonosctlVersion.GetVersion()))
+		rootCmd.Command.Version = fmt.Sprintf("%s-%s", CLIVersionDev, GitCommit)
 	}
+	viper.Set(config.CLIHttpUserAgent, fmt.Sprintf("ionosctl/%v", rootCmd.Command.Version))
 
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
@@ -137,32 +134,6 @@ func initConfig() {
 	// IONOS_USERNAME, IONOS_PASSWORD or IONOS_TOKEN
 	// The user can also overwrite the endpoint: IONOS_API_URL
 	viper.AutomaticEnv()
-}
-
-func initVersion() {
-	if Version != "" {
-		IonosctlVersion.version = Version
-	}
-	if Label == "" {
-		IonosctlVersion.label = CLIVersionDev
-		IonosctlVersion.hash = GitCommit
-	} else {
-		IonosctlVersion.label = Label
-	}
-}
-
-type cliVersion struct {
-	version string
-	label   string
-	hash    string
-}
-
-func (v cliVersion) GetVersion() string {
-	if v.label != "release" {
-		return fmt.Sprintf("%s - %s", v.label, v.hash)
-	} else {
-		return fmt.Sprintf("%s", v.version)
-	}
 }
 
 // AddCommands adds sub commands to the base command.
