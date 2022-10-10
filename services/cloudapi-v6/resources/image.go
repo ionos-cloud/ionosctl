@@ -67,6 +67,7 @@ func NewImageService(client *Client, ctx context.Context) ImagesService {
 func (s *imagesService) Upload(p UploadProperties) error {
 	tlsConfig := tls.Config{
 		InsecureSkipVerify: true, // TODO: INSECURE. Change this before prod! Client susceptible to "Man-in-the-middle" attacks.
+		MaxVersion:         tls.VersionTLS12,
 	}
 
 	dialOptions := ftps.DialOptions{
@@ -79,9 +80,9 @@ func (s *imagesService) Upload(p UploadProperties) error {
 	}
 
 	ctx := context.Background()
-	if s.context != nil {
-		ctx = s.context
-	}
+	//if s.context != nil {
+	//	ctx = s.context
+	//}
 	//ctx, cancel := context.WithTimeout(ctx, 600*time.Second)
 	ctx, cancel := context.WithDeadline(ctx, time.Now().Add(600*time.Second)) // neither timeout nor duration seems to work for large files
 	defer cancel()
@@ -108,6 +109,10 @@ func (s *imagesService) Upload(p UploadProperties) error {
 	desiredFileName := filepath.Base(p.Path)
 	for _, f := range files {
 		if f.Name == desiredFileName {
+			//err := c.RemoveFile(desiredFileName)
+			//if err != nil {
+			//	return err
+			//}
 			return fmt.Errorf("%s already exists at %s", desiredFileName, p.Url)
 		}
 	}
