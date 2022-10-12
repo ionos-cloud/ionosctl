@@ -215,9 +215,9 @@ func RunImageDelete(c *core.CommandConfig) error {
 
 // Util func - Given a slice of public & non-public images, return only those images that are non-public.
 // If any image in the slice has null properties, or "Properties.Public" field is nil, an error is thrown.
-func _getNonPublicImages(imgs *[]ionoscloud.Image) (*[]ionoscloud.Image, error) {
+func getNonPublicImages(imgs []ionoscloud.Image) ([]ionoscloud.Image, error) {
 	var nonPublicImgs []ionoscloud.Image
-	for _, i := range *imgs {
+	for _, i := range imgs {
 		properties, ok := i.GetPropertiesOk()
 		if !ok {
 			return nil, fmt.Errorf("properties of image %s are nil\n", *i.GetId())
@@ -230,7 +230,7 @@ func _getNonPublicImages(imgs *[]ionoscloud.Image) (*[]ionoscloud.Image, error) 
 			nonPublicImgs = append(nonPublicImgs, i)
 		}
 	}
-	return &nonPublicImgs, nil
+	return nonPublicImgs, nil
 }
 
 //  deletes non-public images, as deleting public images is forbidden by the API.
@@ -242,21 +242,22 @@ func DeleteAllNonPublicImages(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	items, ok := images.GetItemsOk()
-	if !(ok && len(*items) > 0 && items != nil) {
+	allItems, ok := images.GetItemsOk()
+	if !(ok && len(*allItems) > 0 && allItems != nil) {
 		return errors.New("could not retrieve images")
 	}
 
-	if items, err = _getNonPublicImages(items); err != nil {
+	items, err := getNonPublicImages(*allItems)
+	if err != nil {
 		return err
 	}
-	if len(*items) < 1 {
+	if len(items) < 1 {
 		return errors.New("no non-public images found")
 	}
 
 	_ = c.Printer.Warn("Images to be deleted:")
 	// TODO: this is duplicated across all resources - refactor this (across all resources)
-	for _, img := range *items {
+	for _, img := range items {
 		delIdAndName := ""
 		if id, ok := img.GetIdOk(); ok && id != nil {
 			delIdAndName += "ID: `" + *id
@@ -275,7 +276,7 @@ func DeleteAllNonPublicImages(c *core.CommandConfig) error {
 	c.Printer.Verbose("Deleting all the images...")
 
 	var multiErr error
-	for _, img := range *items {
+	for _, img := range items {
 		if id, ok := img.GetIdOk(); ok && id != nil {
 			c.Printer.Verbose("Starting deleting image with id: %v...", *id)
 			resp, err = c.CloudApiV6Services.Images().Delete(*id, resources.QueryParams{})
