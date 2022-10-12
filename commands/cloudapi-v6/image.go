@@ -3,6 +3,7 @@ package commands
 import (
 	"bufio"
 	"context"
+	"crypto/x509"
 	"errors"
 	"fmt"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/waiter"
@@ -203,6 +204,8 @@ func ImageCmd() *core.Command {
 	upload.AddStringSliceFlag(cloudapiv6.ArgLocation, cloudapiv6.ArgLocationShort, nil, fmt.Sprintf("Location to upload to. Must be an array containing only %s", strings.Join(validLocations, " ")), core.RequiredFlagOption())
 	upload.AddStringSliceFlag("image", "i", nil, fmt.Sprintf("Slice of paths to images, absolute path or relative to ionosctl binary.\nImage must have extensions: .iso, %s", strings.Join(validHddImageExtensions, " ")), core.RequiredFlagOption())
 	upload.AddStringFlag("ftp-url", "", "ftp-%s.ionos.com", "URL of FTP server, with %s flag if location is embedded into url")
+	upload.AddBoolFlag("skip-verify", "", false, "Skip verification of server certificate, useful if using a custom ftp-url. WARNING: You can be the target of a man-in-the-middle attack!")
+	upload.AddStringFlag("crt-path", "", "", "(Unneeded for IONOS FTP Servers) Path to file containing server certificate. If your FTP server is self-signed, you need to add the server certificate to the list of certificate authorities trusted by the client.")
 
 	return imageCmd
 }
@@ -425,9 +428,31 @@ func PreRunImageUpload(c *core.PreCommandConfig) error {
 	return nil
 }
 
+// Reads server certificate at given path.
+// If path unset, returns nil.
+// Otherwise, returns certificate pool containing server certificate
+func getCertificate(path string) (*x509.CertPool, error) {
+	if path == "" {
+		return nil, nil
+	}
+	caCert, err := os.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+	caCertPool := x509.NewCertPool()
+	caCertPool.AppendCertsFromPEM(caCert)
+	return caCertPool, nil
+}
+
 func RunImageUpload(c *core.CommandConfig) error {
+	certPool, err := getCertificate(viper.GetString(core.GetFlagName(c.NS, "crt-path")))
+	if err != nil {
+		return err
+	}
+
 	images := viper.GetStringSlice(core.GetFlagName(c.NS, "image"))
 	locations := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgLocation))
+	skipVerify := viper.GetBool(core.GetFlagName(c.NS, "skip-verify"))
 	var eg errgroup.Group
 	for _, img := range images {
 		for _, loc := range locations {
@@ -458,7 +483,7 @@ func RunImageUpload(c *core.CommandConfig) error {
 			eg.Go(func() error {
 				err := c.CloudApiV6Services.Images().Upload(
 					resources.UploadProperties{
-						FTPServerProperties: resources.FTPServerProperties{Url: url, Port: 21},
+						FTPServerProperties: resources.FTPServerProperties{Url: url, Port: 21, SkipVerify: skipVerify, ServerCertificate: certPool},
 						ImageFileProperties: resources.ImageFileProperties{Path: serverFilePath, DataBuffer: data},
 					},
 				)

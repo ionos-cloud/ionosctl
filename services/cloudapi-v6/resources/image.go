@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"context"
 	"crypto/tls"
+	"crypto/x509"
 	"fmt"
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
@@ -37,8 +38,10 @@ type ImageFileProperties struct {
 	DataBuffer *bufio.Reader
 }
 type FTPServerProperties struct {
-	Url  string // Server URL without any directory path. Example: ftp-fkb.ionos.com
-	Port int
+	Url               string // Server URL without any directory path. Example: ftp-fkb.ionos.com
+	Port              int
+	SkipVerify        bool           // Skip FTP server certificate verification. WARNING man-in-the-middle attack possible
+	ServerCertificate *x509.CertPool // If FTP server uses self signed certificates, put this in tlsConfig. IONOS FTP Servers in prod DON'T need this
 }
 
 // ImagesService is a wrapper around ionoscloud.Image
@@ -66,7 +69,9 @@ func NewImageService(client *Client, ctx context.Context) ImagesService {
 
 func (s *imagesService) Upload(p UploadProperties) error {
 	tlsConfig := tls.Config{
-		InsecureSkipVerify: true, // TODO: INSECURE. Change this before prod! Client susceptible to "Man-in-the-middle" attacks.
+		InsecureSkipVerify: p.SkipVerify,
+		ServerName:         p.Url,
+		RootCAs:            p.ServerCertificate,
 		MaxVersion:         tls.VersionTLS12,
 	}
 
