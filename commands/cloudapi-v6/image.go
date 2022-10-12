@@ -207,6 +207,7 @@ func ImageCmd() *core.Command {
 	upload.AddBoolFlag("skip-verify", "", false, "Skip verification of server certificate, useful if using a custom ftp-url. WARNING: You can be the target of a man-in-the-middle attack!")
 	upload.AddStringFlag("crt-path", "", "", "(Unneeded for IONOS FTP Servers) Path to file containing server certificate. If your FTP server is self-signed, you need to add the server certificate to the list of certificate authorities trusted by the client.")
 	upload.AddStringSliceFlag(cloudapiv6.ArgImageAlias, cloudapiv6.ArgImageAliasShort, nil, "Slice of image names on the FTP server without the extension. By default this is the base of the image path")
+	upload.AddIntFlag("timeout", "", 60, "(seconds) Context Deadline. FTP connection will time out after this many seconds")
 
 	return imageCmd
 }
@@ -455,6 +456,7 @@ func RunImageUpload(c *core.CommandConfig) error {
 	aliases := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgImageAlias))
 	locations := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgLocation))
 	skipVerify := viper.GetBool(core.GetFlagName(c.NS, "skip-verify"))
+	timeout := viper.GetInt(core.GetFlagName(c.NS, "timeout"))
 	var eg errgroup.Group
 	for imgIdx, img := range images {
 		for _, loc := range locations {
@@ -492,7 +494,7 @@ func RunImageUpload(c *core.CommandConfig) error {
 			eg.Go(func() error {
 				err := c.CloudApiV6Services.Images().Upload(
 					resources.UploadProperties{
-						FTPServerProperties: resources.FTPServerProperties{Url: url, Port: 21, SkipVerify: skipVerify, ServerCertificate: certPool},
+						FTPServerProperties: resources.FTPServerProperties{Url: url, Port: 21, SkipVerify: skipVerify, ServerCertificate: certPool, Timeout: timeout},
 						ImageFileProperties: resources.ImageFileProperties{Path: serverFilePath, DataBuffer: data},
 					},
 				)
