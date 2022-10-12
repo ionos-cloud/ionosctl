@@ -214,17 +214,19 @@ func RunImageDelete(c *core.CommandConfig) error {
 }
 
 // Util func - Given a slice of public & non-public images, return only those images that are non-public.
-// If any image in the slice has null properties, or "Properties.Public" field is nil, an error is thrown.
-func getNonPublicImages(imgs []ionoscloud.Image) ([]ionoscloud.Image, error) {
+// If any image in the slice has null properties, or "Properties.Public" field is nil, the image is skipped (and a verbose message is shown)
+func getNonPublicImages(imgs []ionoscloud.Image, printService printer.PrintService) ([]ionoscloud.Image, error) {
 	var nonPublicImgs []ionoscloud.Image
 	for _, i := range imgs {
 		properties, ok := i.GetPropertiesOk()
 		if !ok {
-			return nil, fmt.Errorf("properties of image %s are nil\n", *i.GetId())
+			printService.Verbose("skipping %s: properties are nil\n", *i.GetId())
+			continue
 		}
 		isPublic, ok := properties.GetPublicOk()
 		if !ok {
-			return nil, fmt.Errorf("public field of image %s is nil\n", *i.GetId())
+			printService.Verbose("skipping %s: field `public` is nil\n", *i.GetId())
+			continue
 		}
 		if !*isPublic {
 			nonPublicImgs = append(nonPublicImgs, i)
@@ -247,7 +249,7 @@ func DeleteAllNonPublicImages(c *core.CommandConfig) error {
 		return errors.New("could not retrieve images")
 	}
 
-	items, err := getNonPublicImages(*allItems)
+	items, err := getNonPublicImages(*allItems, c.Printer)
 	if err != nil {
 		return err
 	}
