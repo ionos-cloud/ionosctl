@@ -311,8 +311,11 @@ func RunImageUpdate(c *core.CommandConfig) error {
 	queryParams := listQueryParams.QueryParams
 
 	input := resources.ImageProperties{}
-	c.Command.Command.Flags().Visit(func(flag *pflag.Flag) {
+	c.Command.Command.Flags().VisitAll(func(flag *pflag.Flag) {
 		val := flag.Value.String()
+		if val == "" {
+			return
+		}
 		boolval, _ := strconv.ParseBool(val)
 		switch flag.Name {
 		case cloudapiv6.ArgName:
