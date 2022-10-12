@@ -42,6 +42,7 @@ type FTPServerProperties struct {
 	Port              int
 	SkipVerify        bool           // Skip FTP server certificate verification. WARNING man-in-the-middle attack possible
 	ServerCertificate *x509.CertPool // If FTP server uses self signed certificates, put this in tlsConfig. IONOS FTP Servers in prod DON'T need this
+	Timeout           int            // Timeout in seconds
 }
 
 // ImagesService is a wrapper around ionoscloud.Image
@@ -85,11 +86,10 @@ func (s *imagesService) Upload(p UploadProperties) error {
 	}
 
 	ctx := context.Background()
-	//if s.context != nil {
-	//	ctx = s.context
-	//}
-	//ctx, cancel := context.WithTimeout(ctx, 600*time.Second)
-	ctx, cancel := context.WithDeadline(ctx, time.Now().Add(600*time.Second)) // neither timeout nor duration seems to work for large files
+	if s.context != nil {
+		ctx = s.context
+	}
+	ctx, cancel := context.WithDeadline(ctx, time.Now().Add(time.Duration(p.Timeout)*time.Second))
 	defer cancel()
 
 	c, err := ftps.Dial(ctx, dialOptions)
