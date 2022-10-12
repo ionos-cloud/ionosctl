@@ -400,21 +400,21 @@ func DeleteAllUsers(c *core.CommandConfig) error {
 	}
 	if usersItems, ok := users.GetItemsOk(); ok && usersItems != nil {
 		if len(*usersItems) > 0 {
-			_ = c.Printer.Print("Users to be deleted:")
+			_ = c.Printer.Warn("Users to be deleted:")
 			for _, user := range *usersItems {
-				toPrint := ""
+				delIdAndName := ""
 				if id, ok := user.GetIdOk(); ok && id != nil {
-					toPrint += "User Id: " + *id
+					delIdAndName += "User Id: " + *id
 				}
 				if properties, ok := user.GetPropertiesOk(); ok && properties != nil {
 					if firstName, ok := properties.GetFirstnameOk(); ok && firstName != nil {
-						toPrint += " User First Name: " + *firstName
+						delIdAndName += " User First Name: " + *firstName
 					}
 					if lastName, ok := properties.GetLastnameOk(); ok && lastName != nil {
-						toPrint += " User Last Name: " + *lastName
+						delIdAndName += " User Last Name: " + *lastName
 					}
 				}
-				_ = c.Printer.Print(toPrint)
+				_ = c.Printer.Warn(delIdAndName)
 			}
 			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Users"); err != nil {
 				return err
@@ -429,7 +429,7 @@ func DeleteAllUsers(c *core.CommandConfig) error {
 						multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *id, err))
 						continue
 					} else {
-						_ = c.Printer.Print(fmt.Sprintf(config.StatusDeletingAll, c.Resource, *id))
+						_ = c.Printer.Warn(fmt.Sprintf(config.StatusDeletingAll, c.Resource, *id))
 					}
 					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 						multiErr = multierr.Append(multiErr, fmt.Errorf(config.WaitDeleteAllAppendErr, c.Resource, *id, err))
@@ -636,21 +636,21 @@ func RemoveAllUsers(c *core.CommandConfig) error {
 	}
 	if usersItems, ok := users.GetItemsOk(); ok && usersItems != nil {
 		if len(*usersItems) > 0 {
-			_ = c.Printer.Print("Users to be removed:")
+			_ = c.Printer.Warn("Users to be removed:")
 			for _, user := range *usersItems {
-				toPrint := ""
+				delIdAndName := ""
 				if id, ok := user.GetIdOk(); ok && id != nil {
-					toPrint += "User Id: " + *id
+					delIdAndName += "User Id: " + *id
 				}
 				if properties, ok := user.GetPropertiesOk(); ok && properties != nil {
 					if firstName, ok := properties.GetFirstnameOk(); ok && firstName != nil {
-						toPrint += " User First Name: " + *firstName
+						delIdAndName += " User First Name: " + *firstName
 					}
 					if lastName, ok := properties.GetLastnameOk(); ok && lastName != nil {
-						toPrint += " User Last Name: " + *lastName
+						delIdAndName += " User Last Name: " + *lastName
 					}
 				}
-				_ = c.Printer.Print(toPrint)
+				_ = c.Printer.Warn(delIdAndName)
 			}
 			if err := utils.AskForConfirm(c.Stdin, c.Printer, "removing all the Users"); err != nil {
 				return err
@@ -668,7 +668,7 @@ func RemoveAllUsers(c *core.CommandConfig) error {
 						multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *id, err))
 						continue
 					} else {
-						_ = c.Printer.Print(fmt.Sprintf(config.StatusDeletingAll, c.Resource, *id))
+						_ = c.Printer.Warn(fmt.Sprintf(config.StatusDeletingAll, c.Resource, *id))
 					}
 					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 						return err

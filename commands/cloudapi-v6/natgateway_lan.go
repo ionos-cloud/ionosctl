@@ -105,7 +105,7 @@ Required values to run command:
 	_ = add.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.LansIds(os.Stderr, viper.GetString(core.GetFlagName(add.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	add.AddStringSliceFlag(cloudapiv6.ArgIps, "", []string{""}, "Collection of Gateway IPs. If not set, it will automatically reserve public IPs")
+	add.AddIpSliceFlag(cloudapiv6.ArgIps, "", nil, "Collection of Gateway IPs. If not set, it will automatically reserve public IPs")
 	add.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for NAT Gateway Lan addition to be executed")
 	add.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for NAT Gateway Lan addition [seconds]")
 	add.AddStringSliceFlag(config.ArgCols, "", defaultNatGatewayLanCols, printer.ColsMessage(defaultNatGatewayLanCols))
@@ -269,10 +269,10 @@ func RemoveAllNatGatewayLans(c *core.CommandConfig) error {
 	if natGatewayProperties, ok := natGateway.GetPropertiesOk(); ok && natGatewayProperties != nil {
 		if lansOk, ok := natGatewayProperties.GetLansOk(); ok && lansOk != nil {
 			if len(*lansOk) > 0 {
-				_ = c.Printer.Print("NAT Gateways Lan to be removed:")
+				_ = c.Printer.Warn("NAT Gateways Lan to be removed:")
 				for _, lan := range *lansOk {
 					if id, ok := lan.GetIdOk(); ok && id != nil {
-						_ = c.Printer.Print("NAT Gateways Lan Id: " + string(*id))
+						_ = c.Printer.Warn("NAT Gateways Lan Id: " + string(*id))
 					}
 				}
 			} else {

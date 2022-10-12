@@ -443,10 +443,10 @@ func DeleteAllShares(c *core.CommandConfig) error {
 	}
 	if groupSharesItems, ok := groupShares.GetItemsOk(); ok && groupSharesItems != nil {
 		if len(*groupSharesItems) > 0 {
-			_ = c.Printer.Print("GroupShares to be deleted:")
+			_ = c.Printer.Warn("GroupShares to be deleted:")
 			for _, share := range *groupSharesItems {
 				if id, ok := share.GetIdOk(); ok && id != nil {
-					_ = c.Printer.Print("GroupShare Id: " + *id)
+					_ = c.Printer.Warn("GroupShare Id: " + *id)
 				}
 			}
 			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the GroupShares"); err != nil {
@@ -466,7 +466,7 @@ func DeleteAllShares(c *core.CommandConfig) error {
 						multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *id, err))
 						continue
 					} else {
-						_ = c.Printer.Print(fmt.Sprintf(config.StatusDeletingAll, c.Resource, *id))
+						_ = c.Printer.Warn(fmt.Sprintf(config.StatusDeletingAll, c.Resource, *id))
 					}
 					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 						multiErr = multierr.Append(multiErr, fmt.Errorf(config.WaitDeleteAllAppendErr, c.Resource, *id, err))

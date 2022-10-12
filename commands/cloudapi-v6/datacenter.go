@@ -30,6 +30,7 @@ func DatacenterCmd() *core.Command {
 		Command: &cobra.Command{
 			Use:              "datacenter",
 			Aliases:          []string{"d", "dc", "vdc"},
+			Args:             cobra.ExactValidArgs(1),
 			Short:            "Data Center Operations",
 			Long:             "The sub-commands of `ionosctl datacenter` allow you to create, list, get, update and delete Data Centers.",
 			TraverseChildren: true,
@@ -335,18 +336,18 @@ func DeleteAllDatacenters(c *core.CommandConfig) error {
 	}
 	if datacentersItems, ok := datacenters.GetItemsOk(); ok && datacentersItems != nil {
 		if len(*datacentersItems) > 0 {
-			_ = c.Printer.Print("Datacenters to be deleted:")
+			_ = c.Printer.Warn("Datacenters to be deleted:")
 			for _, dc := range *datacentersItems {
-				toPrint := ""
+				delIdAndName := ""
 				if id, ok := dc.GetIdOk(); ok && id != nil {
-					toPrint += "Datacenter Id: " + *id
+					delIdAndName += "Datacenter Id: " + *id
 				}
 				if properties, ok := dc.GetPropertiesOk(); ok && properties != nil {
 					if name, ok := properties.GetNameOk(); ok && name != nil {
-						toPrint += " Datacenter Name: " + *name
+						delIdAndName += " Datacenter Name: " + *name
 					}
 				}
-				_ = c.Printer.Print(toPrint)
+				_ = c.Printer.Warn(delIdAndName)
 			}
 			if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Datacenters"); err != nil {
 				return err
@@ -364,7 +365,7 @@ func DeleteAllDatacenters(c *core.CommandConfig) error {
 						multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *id, err))
 						continue
 					} else {
-						_ = c.Printer.Print(fmt.Sprintf(config.StatusDeletingAll, c.Resource, *id))
+						_ = c.Printer.Warn(fmt.Sprintf(config.StatusDeletingAll, c.Resource, *id))
 					}
 					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 						multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *id, err))

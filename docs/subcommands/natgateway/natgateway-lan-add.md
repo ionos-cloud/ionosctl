@@ -49,7 +49,7 @@ Required values to run command:
   -D, --depth int32            Controls the detail depth of the response objects. Max depth is 10.
   -f, --force                  Force command to execute without user input
   -h, --help                   Print usage
-      --ips strings            Collection of Gateway IPs. If not set, it will automatically reserve public IPs
+      --ips ipSlice            Collection of Gateway IPs. If not set, it will automatically reserve public IPs (default [])
   -i, --lan-id int             The unique LAN Id (required) (default 1)
       --natgateway-id string   The unique NatGateway Id (required)
   -o, --output string          Desired output format [text|json] (default "text")

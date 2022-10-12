@@ -437,7 +437,7 @@ func DeleteAllApplicationLoadBalancerFlowLog(c *core.CommandConfig) error {
 		return err
 	}
 	queryParams := listQueryParams.QueryParams
-	_ = c.Printer.Print("Getting Application Load Balancer FlowLogs...")
+	_ = c.Printer.Warn("Getting Application Load Balancer FlowLogs...")
 	applicationLoadBalancerFlowlogs, resp, err := c.CloudApiV6Services.ApplicationLoadBalancers().ListFlowLogs(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
@@ -449,16 +449,16 @@ func DeleteAllApplicationLoadBalancerFlowLog(c *core.CommandConfig) error {
 	if albFlowLogItems, ok := applicationLoadBalancerFlowlogs.GetItemsOk(); ok && albFlowLogItems != nil {
 		if len(*albFlowLogItems) > 0 {
 			for _, fl := range *albFlowLogItems {
-				toPrint := ""
+				delIdAndName := ""
 				if id, ok := fl.GetIdOk(); ok && id != nil {
-					toPrint += "Application Load Balancer FlowLog Id: " + *id
+					delIdAndName += "Application Load Balancer FlowLog Id: " + *id
 				}
 				if properties, ok := fl.GetPropertiesOk(); ok && properties != nil {
 					if name, ok := properties.GetNameOk(); ok && name != nil {
-						toPrint += "Application Load Balancer FlowLog Name: " + *name
+						delIdAndName += "Application Load Balancer FlowLog Name: " + *name
 					}
 				}
-				_ = c.Printer.Print(toPrint)
+				_ = c.Printer.Warn(delIdAndName)
 			}
 			if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Application Load Balancer FlowLogs"); err != nil {
 				return err
@@ -480,7 +480,7 @@ func DeleteAllApplicationLoadBalancerFlowLog(c *core.CommandConfig) error {
 						multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *id, err))
 						continue
 					} else {
-						_ = c.Printer.Print(fmt.Sprintf(config.StatusDeletingAll, c.Resource, *id))
+						_ = c.Printer.Warn(fmt.Sprintf(config.StatusDeletingAll, c.Resource, *id))
 					}
 					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 						multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *id, err))

@@ -324,18 +324,18 @@ func DeleteAllIpBlocks(c *core.CommandConfig) error {
 	}
 	if ipBlocksItems, ok := ipBlocks.GetItemsOk(); ok && ipBlocksItems != nil {
 		if len(*ipBlocksItems) > 0 {
-			_ = c.Printer.Print("IpBlocks to be deleted:")
+			_ = c.Printer.Warn("IpBlocks to be deleted:")
 			for _, dc := range *ipBlocksItems {
-				toPrint := ""
+				delIdAndName := ""
 				if id, ok := dc.GetIdOk(); ok && id != nil {
-					toPrint += "IpBlock Id: " + *id
+					delIdAndName += "IpBlock Id: " + *id
 				}
 				if properties, ok := dc.GetPropertiesOk(); ok && properties != nil {
 					if name, ok := properties.GetNameOk(); ok && name != nil {
-						toPrint += " IpBlock Name: " + *name
+						delIdAndName += " IpBlock Name: " + *name
 					}
 				}
-				_ = c.Printer.Print(toPrint)
+				_ = c.Printer.Warn(delIdAndName)
 			}
 			if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete all the IpBlocks"); err != nil {
 				return err
@@ -353,7 +353,7 @@ func DeleteAllIpBlocks(c *core.CommandConfig) error {
 						multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *id, err))
 						continue
 					} else {
-						_ = c.Printer.Print(fmt.Sprintf(config.StatusDeletingAll, c.Resource, *id))
+						_ = c.Printer.Warn(fmt.Sprintf(config.StatusDeletingAll, c.Resource, *id))
 					}
 					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 						multiErr = multierr.Append(multiErr, fmt.Errorf(config.WaitDeleteAllAppendErr, c.Resource, *id, err))

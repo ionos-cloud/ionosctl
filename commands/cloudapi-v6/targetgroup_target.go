@@ -88,7 +88,7 @@ Required values to run command:
 	_ = add.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgTargetGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.TargetGroupIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	add.AddStringFlag(cloudapiv6.ArgIp, "", "", "The IP of the balanced target VM.", core.RequiredFlagOption())
+	add.AddIpFlag(cloudapiv6.ArgIp, "", nil, "The IP of the balanced target VM.", core.RequiredFlagOption())
 	add.AddIntFlag(cloudapiv6.ArgPort, cloudapiv6.ArgPortShort, 8080, "The port of the balanced target service; valid range is 1 to 65535.", core.RequiredFlagOption())
 	add.AddIntFlag(cloudapiv6.ArgWeight, cloudapiv6.ArgWeightShort, 1, "Traffic is distributed in proportion to target weight, relative to the combined weight of all targets. A target with higher weight receives a greater share of traffic. Valid range is 0 to 256 and default is 1; targets with weight of 0 do not participate in load balancing but still accept persistent connections. It is best use values in the middle of the range to leave room for later adjustments.")
 	add.AddBoolFlag(cloudapiv6.ArgHealthCheckEnabled, "", true, "Makes the target available only if it accepts periodic health check TCP connection attempts; when turned off, the target is considered always available. The health check only consists of a connection attempt to the address and port of the target. Default is True.")
@@ -119,7 +119,7 @@ Required values to run command:
 	_ = remove.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgTargetGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.TargetGroupIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	remove.AddStringFlag(cloudapiv6.ArgIp, "", "", "IP of a balanced target VM", core.RequiredFlagOption())
+	remove.AddIpFlag(cloudapiv6.ArgIp, "", nil, "IP of a balanced target VM", core.RequiredFlagOption())
 	remove.AddIntFlag(cloudapiv6.ArgPort, cloudapiv6.ArgPortShort, 8080, "Port of the balanced target service. (range: 1 to 65535)", core.RequiredFlagOption())
 	remove.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete all Target Group Targets")
 	remove.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Target Group Target deletion to be executed")
@@ -272,7 +272,7 @@ func RunTargetGroupTargetRemove(c *core.CommandConfig) error {
 }
 
 func RemoveAllTargetGroupTarget(c *core.CommandConfig) (*resources.Response, error) {
-	_ = c.Printer.Print("Target Group Targets to be deleted:")
+	_ = c.Printer.Warn("Target Group Targets to be deleted:")
 	applicationLoadBalancerRules, resp, err := c.CloudApiV6Services.TargetGroups().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)), cloudapiv6.ParentResourceQueryParams)
 	if err != nil {
 		return nil, err
@@ -281,10 +281,10 @@ func RemoveAllTargetGroupTarget(c *core.CommandConfig) (*resources.Response, err
 		if httpRulesOk, ok := propertiesOk.GetTargetsOk(); ok && httpRulesOk != nil {
 			for _, httpRuleOk := range *httpRulesOk {
 				if nameOk, ok := httpRuleOk.GetIpOk(); ok && nameOk != nil {
-					_ = c.Printer.Print("Target IP: " + *nameOk)
+					_ = c.Printer.Warn("Target IP: " + *nameOk)
 				}
 				if typeOk, ok := httpRuleOk.GetPortOk(); ok && typeOk != nil {
-					_ = c.Printer.Print("Target Port: " + strconv.Itoa(int(*typeOk)))
+					_ = c.Printer.Warn("Target Port: " + strconv.Itoa(int(*typeOk)))
 				}
 			}
 		}

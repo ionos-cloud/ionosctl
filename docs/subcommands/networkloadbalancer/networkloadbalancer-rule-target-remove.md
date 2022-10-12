@@ -56,7 +56,7 @@ Required values to run command:
   -D, --depth int32                     Controls the detail depth of the response objects. Max depth is 10.
   -f, --force                           Force command to execute without user input
   -h, --help                            Print usage
-      --ip string                       IP of a balanced target VM (required)
+      --ip ip                           IP of a balanced target VM (required)
       --networkloadbalancer-id string   The unique NetworkLoadBalancer Id (required)
   -o, --output string                   Desired output format [text|json] (default "text")
   -P, --port string                     Port of the balanced target service. Range: 1 to 65535 (required)

@@ -636,14 +636,14 @@ func DeleteAllVolumes(c *core.CommandConfig) error {
 	}
 	if volumesItems, ok := volumes.GetItemsOk(); ok && volumesItems != nil {
 		if len(*volumesItems) > 0 {
-			_ = c.Printer.Print("Volumes to be deleted:")
+			_ = c.Printer.Warn("Volumes to be deleted:")
 			for _, volume := range *volumesItems {
 				if id, ok := volume.GetIdOk(); ok && id != nil {
-					_ = c.Printer.Print("Volume Id: " + *id)
+					_ = c.Printer.Warn("Volume Id: " + *id)
 				}
 				if properties, ok := volume.GetPropertiesOk(); ok && properties != nil {
 					if name, ok := properties.GetNameOk(); ok && name != nil {
-						_ = c.Printer.Print("Volume Name: " + *name)
+						_ = c.Printer.Warn("Volume Name: " + *name)
 					}
 				}
 			}
@@ -1010,18 +1010,18 @@ func DetachAllServerVolumes(c *core.CommandConfig) error {
 	}
 	if volumesItems, ok := volumes.GetItemsOk(); ok && volumesItems != nil {
 		if len(*volumesItems) > 0 {
-			_ = c.Printer.Print("Volumes to be detached:")
+			_ = c.Printer.Warn("Volumes to be detached:")
 			for _, volume := range *volumesItems {
-				toPrint := ""
+				delIdAndName := ""
 				if id, ok := volume.GetIdOk(); ok && id != nil {
-					toPrint += "Volume Id: " + *id
+					delIdAndName += "Volume Id: " + *id
 				}
 				if properties, ok := volume.GetPropertiesOk(); ok && properties != nil {
 					if name, ok := properties.GetNameOk(); ok && name != nil {
-						toPrint += " Volume Name: " + *name
+						delIdAndName += " Volume Name: " + *name
 					}
 				}
-				_ = c.Printer.Print(toPrint)
+				_ = c.Printer.Warn(delIdAndName)
 			}
 			if err := utils.AskForConfirm(c.Stdin, c.Printer, "detach all the Volumes"); err != nil {
 				return err

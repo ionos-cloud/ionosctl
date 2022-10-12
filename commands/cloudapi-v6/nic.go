@@ -140,7 +140,7 @@ Required values to run a command:
 		return completer.ServersIds(os.Stderr, viper.GetString(core.GetFlagName(create.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "Internet Access", "The name of the NIC")
-	create.AddStringSliceFlag(cloudapiv6.ArgIps, "", []string{""}, "IPs assigned to the NIC. This can be a collection")
+	create.AddIpSliceFlag(cloudapiv6.ArgIps, "", nil, "IPs assigned to the NIC. This can be a collection")
 	create.AddBoolFlag(cloudapiv6.ArgDhcp, "", cloudapiv6.DefaultDhcp, "Set to false if you wish to disable DHCP on the NIC. E.g.: --dhcp=true, --dhcp=false")
 	create.AddBoolFlag(cloudapiv6.ArgFirewallActive, "", cloudapiv6.DefaultFirewallActive, "Activate or deactivate the Firewall. E.g.: --firewall-active=true, --firewall-active=false")
 	create.AddStringFlag(cloudapiv6.ArgFirewallType, "", "INGRESS", "The type of Firewall Rules that will be allowed on the NIC")
@@ -207,7 +207,7 @@ Required values to run command:
 	update.AddBoolFlag(cloudapiv6.ArgDhcp, "", cloudapiv6.DefaultDhcp, "Boolean value that indicates if the NIC is using DHCP (true) or not (false). E.g.: --dhcp=true, --dhcp=false")
 	update.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for NIC update to be executed")
 	update.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for NIC update [seconds]")
-	update.AddStringSliceFlag(cloudapiv6.ArgIps, "", []string{""}, "IPs assigned to the NIC")
+	update.AddIpSliceFlag(cloudapiv6.ArgIps, "", nil, "IPs assigned to the NIC")
 	update.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultUpdateDepth, cloudapiv6.ArgDepthDescription)
 
 	/*
@@ -465,18 +465,18 @@ func DeleteAllNics(c *core.CommandConfig) error {
 	}
 	if nicsItems, ok := nics.GetItemsOk(); ok && nicsItems != nil {
 		if len(*nicsItems) > 0 {
-			_ = c.Printer.Print("NICs to be deleted:")
+			_ = c.Printer.Warn("NICs to be deleted:")
 			for _, nic := range *nicsItems {
-				toPrint := ""
+				delIdAndName := ""
 				if id, ok := nic.GetIdOk(); ok && id != nil {
-					toPrint += "Nic Id: " + *id
+					delIdAndName += "Nic Id: " + *id
 				}
 				if properties, ok := nic.GetPropertiesOk(); ok && properties != nil {
 					if name, ok := properties.GetNameOk(); ok && name != nil {
-						toPrint += " Nic Name: " + *name
+						delIdAndName += " Nic Name: " + *name
 					}
 				}
-				_ = c.Printer.Print(toPrint)
+				_ = c.Printer.Warn(delIdAndName)
 			}
 			if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Nics"); err != nil {
 				return err
@@ -494,7 +494,7 @@ func DeleteAllNics(c *core.CommandConfig) error {
 						multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *id, err))
 						continue
 					} else {
-						_ = c.Printer.Print(fmt.Sprintf(config.StatusDeletingAll, c.Resource, *id))
+						_ = c.Printer.Warn(fmt.Sprintf(config.StatusDeletingAll, c.Resource, *id))
 					}
 					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 						multiErr = multierr.Append(multiErr, fmt.Errorf(config.WaitDeleteAllAppendErr, c.Resource, *id, err))
@@ -815,18 +815,18 @@ func DetachAllNics(c *core.CommandConfig) error {
 	}
 	if nicsItems, ok := nics.GetItemsOk(); ok && nicsItems != nil {
 		if len(*nicsItems) > 0 {
-			_ = c.Printer.Print("NICs to be detached:")
+			_ = c.Printer.Warn("NICs to be detached:")
 			for _, nic := range *nicsItems {
-				toPrint := ""
+				delIdAndName := ""
 				if id, ok := nic.GetIdOk(); ok && id != nil {
-					toPrint += "Nic Id: " + *id
+					delIdAndName += "Nic Id: " + *id
 				}
 				if properties, ok := nic.GetPropertiesOk(); ok && properties != nil {
 					if name, ok := properties.GetNameOk(); ok && name != nil {
-						toPrint += " Nic Name: " + *name
+						delIdAndName += " Nic Name: " + *name
 					}
 				}
-				_ = c.Printer.Print(toPrint)
+				_ = c.Printer.Warn(delIdAndName)
 			}
 			if err := utils.AskForConfirm(c.Stdin, c.Printer, "detach all the Nics"); err != nil {
 				return err

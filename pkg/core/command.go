@@ -2,6 +2,8 @@ package core
 
 import (
 	"fmt"
+	"net"
+	"strings"
 
 	"github.com/spf13/cobra"
 	flag "github.com/spf13/pflag"
@@ -53,6 +55,36 @@ func (c *Command) IsAvailableCommand() bool {
 	}
 }
 
+func (c *Command) AddIpSliceFlag(name, shorthand string, defaultValue []net.IP, desc string, optionFunc ...FlagOptionFunc) {
+	flags := c.Command.Flags()
+	if shorthand != "" {
+		flags.IPSliceP(name, shorthand, defaultValue, desc)
+	} else {
+		flags.IPSlice(name, defaultValue, desc)
+	}
+	_ = viper.BindPFlag(GetFlagName(c.NS, name), c.Command.Flags().Lookup(name))
+
+	// Add Option to Flag
+	for _, option := range optionFunc {
+		option(c, name)
+	}
+}
+
+func (c *Command) AddIpFlag(name, shorthand string, defaultValue net.IP, desc string, optionFunc ...FlagOptionFunc) {
+	flags := c.Command.Flags()
+	if shorthand != "" {
+		flags.IPP(name, shorthand, defaultValue, desc)
+	} else {
+		flags.IP(name, defaultValue, desc)
+	}
+	_ = viper.BindPFlag(GetFlagName(c.NS, name), c.Command.Flags().Lookup(name))
+
+	// Add Option to Flag
+	for _, option := range optionFunc {
+		option(c, name)
+	}
+}
+
 func (c *Command) AddUUIDFlag(name, shorthand, defaultValue, desc string, optionFunc ...FlagOptionFunc) {
 	flags := c.Command.Flags()
 	if shorthand != "" {
@@ -68,14 +100,19 @@ func (c *Command) AddUUIDFlag(name, shorthand, defaultValue, desc string, option
 	}
 }
 
-func (c *Command) AddLabelResourceFlag(name, shorthand, defaultValue, desc string, optionFunc ...FlagOptionFunc) {
+func (c *Command) AddSetFlag(name, shorthand, defaultValue string, allowed []string, desc string, optionFunc ...FlagOptionFunc) {
 	flags := c.Command.Flags()
+	desc += fmt.Sprintf(". Can be one of: %s", strings.Join(allowed, ", "))
 	if shorthand != "" {
-		flags.VarP(newLabelResourceFlag(defaultValue), name, shorthand, desc)
+		flags.VarP(newSetFlag(defaultValue, allowed), name, shorthand, desc)
 	} else {
-		flags.Var(newLabelResourceFlag(defaultValue), name, desc)
+		flags.Var(newSetFlag(defaultValue, allowed), name, desc)
 	}
 	viper.BindPFlag(GetFlagName(c.NS, name), c.Command.Flags().Lookup(name))
+
+	_ = c.Command.RegisterFlagCompletionFunc(name, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return allowed, cobra.ShellCompDirectiveNoFileComp
+	})
 
 	// Add Option to Flag
 	for _, option := range optionFunc {

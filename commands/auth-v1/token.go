@@ -210,7 +210,7 @@ func RunTokenDeleteAll(c *core.CommandConfig) error {
 	if tokenResponse != nil {
 		if success, ok := tokenResponse.GetSuccessOk(); ok && success != nil {
 			if *success {
-				return c.Printer.Print("Status: all tokens have been successfully deleted")
+				return c.Printer.Warn("Status: all tokens have been successfully deleted")
 			}
 		}
 	}
@@ -229,7 +229,7 @@ func RunTokenDeleteExpired(c *core.CommandConfig) error {
 	if tokenResponse != nil {
 		if success, ok := tokenResponse.GetSuccessOk(); ok && success != nil {
 			if *success {
-				return c.Printer.Print("Status: expired tokens have been successfully deleted")
+				return c.Printer.Warn("Status: expired tokens have been successfully deleted")
 			}
 		}
 	}
@@ -253,7 +253,7 @@ func RunTokenDeleteCurrent(c *core.CommandConfig) error {
 	if tokenResponse != nil {
 		if success, ok := tokenResponse.GetSuccessOk(); ok && success != nil {
 			if *success {
-				return c.Printer.Print("Status: current token have been successfully deleted")
+				return c.Printer.Warn("Status: current token have been successfully deleted")
 			}
 		}
 	}
@@ -273,7 +273,7 @@ func RunTokenDeleteById(c *core.CommandConfig) error {
 	if tokenResponse != nil {
 		if success, ok := tokenResponse.GetSuccessOk(); ok && success != nil {
 			if *success {
-				return c.Printer.Print("Status: token has been successfully deleted")
+				return c.Printer.Warn("Status: token has been successfully deleted")
 			}
 		}
 	}

@@ -48,7 +48,7 @@ Required values to run command:
   -D, --depth int32            Controls the detail depth of the response objects. Max depth is 10.
   -f, --force                  Force command to execute without user input
   -h, --help                   Print usage
-      --ip string              Allocated IP (required)
+      --ip ip                  Allocated IP (required)
       --lan-id string          The unique LAN Id (required)
       --nic-id string          The unique NIC Id (required)
   -o, --output string          Desired output format [text|json] (default "text")

@@ -353,7 +353,7 @@ func RemoveAllHTTPRules(c *core.CommandConfig) (*resources.Response, error) {
 		return nil, err
 	}
 	queryParams := listQueryParams.QueryParams
-	_ = c.Printer.Print("Forwarding Rule HTTP Rules to be deleted:")
+	_ = c.Printer.Warn("Forwarding Rule HTTP Rules to be deleted:")
 	applicationLoadBalancerRules, resp, err := c.CloudApiV6Services.ApplicationLoadBalancers().GetForwardingRule(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
@@ -367,10 +367,10 @@ func RemoveAllHTTPRules(c *core.CommandConfig) (*resources.Response, error) {
 		if httpRulesOk, ok := propertiesOk.GetHttpRulesOk(); ok && httpRulesOk != nil {
 			for _, httpRuleOk := range *httpRulesOk {
 				if nameOk, ok := httpRuleOk.GetNameOk(); ok && nameOk != nil {
-					_ = c.Printer.Print("Forwarding Rule HTTP Rule Name: " + *nameOk)
+					_ = c.Printer.Warn("Forwarding Rule HTTP Rule Name: " + *nameOk)
 				}
 				if typeOk, ok := httpRuleOk.GetTypeOk(); ok && typeOk != nil {
-					_ = c.Printer.Print("Forwarding Rule HTTP Rule Type: " + *typeOk)
+					_ = c.Printer.Warn("Forwarding Rule HTTP Rule Type: " + *typeOk)
 				}
 			}
 

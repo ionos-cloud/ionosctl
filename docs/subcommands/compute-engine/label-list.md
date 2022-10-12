@@ -45,7 +45,7 @@ Available Filters:
       --order-by string        Limits results to those containing a matching value for a specific property
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output
-      --resource-type string   Type of the resource to list labels from. Can be one of: datacenter, volume, server, snapshot, ipblock
+      --resource-type string   Type of resource to list labels from. Can be one of: datacenter, volume, server, snapshot, ipblock (required)
       --server-id string       The unique Server Id
       --snapshot-id string     The unique Snapshot Id
   -v, --verbose                Print step-by-step process when running command

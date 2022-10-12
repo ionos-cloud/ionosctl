@@ -431,18 +431,18 @@ func DeleteAllNatGatewayFlowLogs(c *core.CommandConfig) error {
 	}
 	if natgatewaysItems, ok := flowlogs.GetItemsOk(); ok && natgatewaysItems != nil {
 		if len(*natgatewaysItems) > 0 {
-			_ = c.Printer.Print("NatGatewayFlowLog to be deleted:")
+			_ = c.Printer.Warn("NatGatewayFlowLog to be deleted:")
 			for _, natgateway := range *natgatewaysItems {
-				toPrint := ""
+				delIdAndName := ""
 				if id, ok := natgateway.GetIdOk(); ok && id != nil {
-					toPrint += "NatGatewayFlowLog Id: " + *id
+					delIdAndName += "NatGatewayFlowLog Id: " + *id
 				}
 				if properties, ok := natgateway.GetPropertiesOk(); ok && properties != nil {
 					if name, ok := properties.GetNameOk(); ok && name != nil {
-						toPrint += " NatGatewayFlowLog Name: " + *name
+						delIdAndName += " NatGatewayFlowLog Name: " + *name
 					}
 				}
-				_ = c.Printer.Print(toPrint)
+				_ = c.Printer.Warn(delIdAndName)
 			}
 			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the NatGatewayFlowLogs"); err != nil {
 				return err
@@ -460,7 +460,7 @@ func DeleteAllNatGatewayFlowLogs(c *core.CommandConfig) error {
 						multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *id, err))
 						continue
 					} else {
-						_ = c.Printer.Print(fmt.Sprintf(config.StatusDeletingAll, c.Resource, *id))
+						_ = c.Printer.Warn(fmt.Sprintf(config.StatusDeletingAll, c.Resource, *id))
 					}
 					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 						multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *id, err))

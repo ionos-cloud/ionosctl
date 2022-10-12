@@ -92,18 +92,18 @@ func RemoveAllDatacenterLabels(c *core.CommandConfig) error {
 	}
 	if labelsItems, ok := labels.GetItemsOk(); ok && labelsItems != nil {
 		if len(*labelsItems) > 0 {
-			_ = c.Printer.Print("Labels to be removed from Datacenter with ID: " + dcId)
+			_ = c.Printer.Warn("Labels to be removed from Datacenter with ID: " + dcId)
 			for _, label := range *labelsItems {
-				toPrint := ""
+				delIdAndName := ""
 				if properties, ok := label.GetPropertiesOk(); ok && properties != nil {
 					if key, ok := properties.GetKeyOk(); ok && key != nil {
-						toPrint += "Label Key: " + *key
+						delIdAndName += "Label Key: " + *key
 					}
 					if value, ok := properties.GetValueOk(); ok && value != nil {
-						toPrint += " Label Value: " + *value
+						delIdAndName += " Label Value: " + *value
 					}
 				}
-				_ = c.Printer.Print(toPrint)
+				_ = c.Printer.Warn(delIdAndName)
 			}
 			if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Labels from Datacenter with Id: "+dcId); err != nil {
 				return err
@@ -231,18 +231,18 @@ func RemoveAllServerLabels(c *core.CommandConfig) error {
 	}
 	if labelsItems, ok := labels.GetItemsOk(); ok && labelsItems != nil {
 		if len(*labelsItems) > 0 {
-			_ = c.Printer.Print("Labels to be removed from Server with Id: " + serverId)
+			_ = c.Printer.Warn("Labels to be removed from Server with Id: " + serverId)
 			for _, label := range *labelsItems {
-				toPrint := ""
+				delIdAndName := ""
 				if properties, ok := label.GetPropertiesOk(); ok && properties != nil {
 					if key, ok := properties.GetKeyOk(); ok && key != nil {
-						toPrint += "Label Key: " + *key
+						delIdAndName += "Label Key: " + *key
 					}
 					if value, ok := properties.GetValueOk(); ok && value != nil {
-						toPrint += " Label Value: " + *value
+						delIdAndName += " Label Value: " + *value
 					}
 				}
-				_ = c.Printer.Print(toPrint)
+				_ = c.Printer.Warn(delIdAndName)
 			}
 			if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Labels from Server with Id: "+serverId); err != nil {
 				return err
@@ -357,25 +357,25 @@ func RunVolumeLabelRemove(c *core.CommandConfig) error {
 func RemoveAllVolumeLabels(c *core.CommandConfig) error {
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	volumeId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeId))
-	_ = c.Printer.Print("Labels to be removed from Volume with Id: " + volumeId)
+	_ = c.Printer.Warn("Labels to be removed from Volume with Id: " + volumeId)
 	labels, resp, err := c.CloudApiV6Services.Labels().VolumeList(resources.ListQueryParams{}, dcId, volumeId)
 	if err != nil {
 		return err
 	}
 	if labelsItems, ok := labels.GetItemsOk(); ok && labelsItems != nil {
 		if len(*labelsItems) > 0 {
-			_ = c.Printer.Print("Labels to be removed from Volume with Id: " + volumeId)
+			_ = c.Printer.Warn("Labels to be removed from Volume with Id: " + volumeId)
 			for _, label := range *labelsItems {
-				toPrint := ""
+				delIdAndName := ""
 				if properties, ok := label.GetPropertiesOk(); ok && properties != nil {
 					if key, ok := properties.GetKeyOk(); ok && key != nil {
-						toPrint += "Label Key: " + *key
+						delIdAndName += "Label Key: " + *key
 					}
 					if value, ok := properties.GetValueOk(); ok && value != nil {
-						toPrint += " Label Value: " + *value
+						delIdAndName += " Label Value: " + *value
 					}
 				}
-				_ = c.Printer.Print(toPrint)
+				_ = c.Printer.Warn(delIdAndName)
 			}
 			if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Labels from Volume with Id: "+volumeId); err != nil {
 				return err
@@ -490,18 +490,18 @@ func RemoveAllIpBlockLabels(c *core.CommandConfig) error {
 	}
 	if labelsItems, ok := labels.GetItemsOk(); ok && labelsItems != nil {
 		if len(*labelsItems) > 0 {
-			_ = c.Printer.Print("Labels to be removed from IpBlock with Id: " + ipBlockId)
+			_ = c.Printer.Warn("Labels to be removed from IpBlock with Id: " + ipBlockId)
 			for _, label := range *labelsItems {
-				toPrint := ""
+				delIdAndName := ""
 				if properties, ok := label.GetPropertiesOk(); ok && properties != nil {
 					if key, ok := properties.GetKeyOk(); ok && key != nil {
-						toPrint += "Label Key: " + *key
+						delIdAndName += "Label Key: " + *key
 					}
 					if value, ok := properties.GetValueOk(); ok && value != nil {
-						toPrint += " Label Value: " + *value
+						delIdAndName += " Label Value: " + *value
 					}
 				}
-				_ = c.Printer.Print(toPrint)
+				_ = c.Printer.Warn(delIdAndName)
 			}
 			if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Labels from IpBlock with Id: "+ipBlockId); err != nil {
 				return err
@@ -608,25 +608,25 @@ func RunSnapshotLabelRemove(c *core.CommandConfig) error {
 
 func RemoveAllSnapshotLabels(c *core.CommandConfig) error {
 	snapshotId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSnapshotId))
-	_ = c.Printer.Print("Labels to be removed from Snapshot with Id: " + snapshotId)
+	_ = c.Printer.Warn("Labels to be removed from Snapshot with Id: " + snapshotId)
 	labels, resp, err := c.CloudApiV6Services.Labels().SnapshotList(resources.ListQueryParams{}, snapshotId)
 	if err != nil {
 		return err
 	}
 	if labelsItems, ok := labels.GetItemsOk(); ok && labelsItems != nil {
 		if len(*labelsItems) > 0 {
-			_ = c.Printer.Print("Labels to be removed from Snapshot with Id: " + snapshotId)
+			_ = c.Printer.Warn("Labels to be removed from Snapshot with Id: " + snapshotId)
 			for _, label := range *labelsItems {
-				toPrint := ""
+				delIdAndName := ""
 				if properties, ok := label.GetPropertiesOk(); ok && properties != nil {
 					if key, ok := properties.GetKeyOk(); ok && key != nil {
-						toPrint += "Label Key: " + *key
+						delIdAndName += "Label Key: " + *key
 					}
 					if value, ok := properties.GetValueOk(); ok && value != nil {
-						toPrint += " Label Value: " + *value
+						delIdAndName += " Label Value: " + *value
 					}
 				}
-				_ = c.Printer.Print(toPrint)
+				_ = c.Printer.Warn(delIdAndName)
 			}
 			if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Labels from Snapshot with Id: "+snapshotId); err != nil {
 				return err

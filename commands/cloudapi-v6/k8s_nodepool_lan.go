@@ -96,7 +96,7 @@ Required values to run a command:
 	add.AddIntFlag(cloudapiv6.ArgLanId, cloudapiv6.ArgIdShort, 0, "The unique LAN Id of existing LANs to be attached to worker Nodes", core.RequiredFlagOption())
 	add.AddBoolFlag(cloudapiv6.ArgDhcp, "", true, "Indicates if the Kubernetes Node Pool LAN will reserve an IP using DHCP. E.g.: --dhcp=true, --dhcp=false")
 	add.AddStringFlag(cloudapiv6.ArgNetwork, "", "", "IPv4 or IPv6 CIDR to be routed via the interface. Must be set with --gateway-ip flag")
-	add.AddStringFlag(cloudapiv6.ArgGatewayIp, "", "", "IPv4 or IPv6 Gateway IP for the route. Must be set with --network flag")
+	add.AddIpFlag(cloudapiv6.ArgGatewayIp, "", nil, "IPv4 or IPv6 Gateway IP for the route. Must be set with --network flag")
 	add.AddStringSliceFlag(cloudapiv6.ArgCols, "", defaultK8sNodePoolLanCols, printer.ColsMessage(defaultK8sNodePoolLanCols))
 	_ = add.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultK8sNodePoolLanCols, cobra.ShellCompDirectiveNoFileComp
@@ -232,7 +232,7 @@ func RunK8sNodePoolLanRemove(c *core.CommandConfig) error {
 		if err != nil {
 			return err
 		}
-		return c.Printer.Print("Status: Command node pool lan remove has been successfully executed")
+		return c.Printer.Warn("Status: Command node pool lan remove has been successfully executed")
 	}
 }
 
@@ -254,10 +254,10 @@ func RemoveAllK8sNodePoolsLans(c *core.CommandConfig) error {
 	if nodePoolProperties, ok := k8sNodepool.GetPropertiesOk(); ok && nodePoolProperties != nil {
 		if lans, ok := nodePoolProperties.GetLansOk(); ok && lans != nil {
 			if len(*lans) > 0 {
-				_ = c.Printer.Print("K8s NodePool Lans to be removed:")
+				_ = c.Printer.Warn("K8s NodePool Lans to be removed:")
 				for _, lan := range *lans {
 					if id, ok := lan.GetIdOk(); ok && id != nil {
-						_ = c.Printer.Print("K8s NodePool Lan Id: " + string(*id))
+						_ = c.Printer.Warn("K8s NodePool Lan Id: " + string(*id))
 					}
 				}
 			} else {
