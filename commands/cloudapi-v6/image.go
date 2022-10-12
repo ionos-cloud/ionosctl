@@ -206,6 +206,7 @@ func ImageCmd() *core.Command {
 	upload.AddStringFlag("ftp-url", "", "ftp-%s.ionos.com", "URL of FTP server, with %s flag if location is embedded into url")
 	upload.AddBoolFlag("skip-verify", "", false, "Skip verification of server certificate, useful if using a custom ftp-url. WARNING: You can be the target of a man-in-the-middle attack!")
 	upload.AddStringFlag("crt-path", "", "", "(Unneeded for IONOS FTP Servers) Path to file containing server certificate. If your FTP server is self-signed, you need to add the server certificate to the list of certificate authorities trusted by the client.")
+	upload.AddStringSliceFlag(cloudapiv6.ArgImageAlias, cloudapiv6.ArgImageAliasShort, nil, "Slice of image names on the FTP server without the extension. By default this is the base of the image path")
 
 	return imageCmd
 }
@@ -451,26 +452,34 @@ func RunImageUpload(c *core.CommandConfig) error {
 	}
 
 	images := viper.GetStringSlice(core.GetFlagName(c.NS, "image"))
+	aliases := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgImageAlias))
 	locations := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgLocation))
 	skipVerify := viper.GetBool(core.GetFlagName(c.NS, "skip-verify"))
 	var eg errgroup.Group
-	for _, img := range images {
+	for imgIdx, img := range images {
 		for _, loc := range locations {
 			url := fmt.Sprintf(viper.GetString(core.GetFlagName(c.NS, "ftp-url")), loc)
 			c.Printer.Verbose("Uploading %s to %s", img, url)
 
 			validHddImageExtensions := []string{".vmdk", ".vhd", ".vhdx", ".cow", ".qcow", ".qcow2", ".raw", ".vpc", ".vdi"}
 			// TODO: Move to prerun?
-			var imageFileExtension string
+			var isoOrHdd string
 			if ext := filepath.Ext(img); ext == ".iso" {
-				imageFileExtension = "iso"
+				isoOrHdd = "iso"
 			} else if slices.Contains(validHddImageExtensions, ext) {
-				imageFileExtension = "hdd"
+				isoOrHdd = "hdd"
 			} else {
 				return fmt.Errorf("%s is not a valid extension. Valid image extensions are: .iso, %s", ext, strings.Join(validHddImageExtensions, ", "))
 			}
 
-			serverFilePath := fmt.Sprintf("%s-images/%s", imageFileExtension, filepath.Base(img))
+			serverFilePath := fmt.Sprintf("%s-images/", isoOrHdd) // iso-images / hdd-images
+			if len(aliases) == 0 {
+				serverFilePath += filepath.Base(img) // If no custom alias, use the filename
+			} else if len(aliases) != len(images) {
+				return fmt.Errorf("slices of image files and image aliases are of different lengths. Uploading multiple images with the same alias is forbidden")
+			} else {
+				serverFilePath += aliases[imgIdx] + filepath.Ext(img) // Use custom alias
+			}
 
 			file, err := os.Open(img)
 			if err != nil {
