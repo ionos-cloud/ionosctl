@@ -15,15 +15,10 @@ import (
 )
 
 func GetUserData() map[string]string {
-	if viper.GetString(Token) != "" {
-		return map[string]string{
-			Token:     viper.GetString(Token),
-			ServerUrl: viper.GetString(ServerUrl),
-		}
-	}
 	return map[string]string{
 		Username:  viper.GetString(Username),
 		Password:  viper.GetString(Password),
+		Token:     viper.GetString(Token),
 		ServerUrl: viper.GetString(ServerUrl),
 	}
 }
@@ -107,10 +102,8 @@ func Load() (err error) {
 	_ = viper.BindEnv(Token, sdk.IonosTokenEnvVar)
 	_ = viper.BindEnv(ServerUrl, sdk.IonosApiUrlEnvVar)
 
-	if viper.GetString(Username) == "" && viper.GetString(Token) == "" {
-		if err = LoadFile(); err != nil {
-			return err
-		}
+	if err = LoadFile(); err != nil {
+		return err
 	}
 
 	return err
