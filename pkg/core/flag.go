@@ -242,10 +242,9 @@ func (a *SetFlag) Set(p string) error {
 		return false
 	}
 	if !isIncluded(a.Allowed, p) {
+		// Error: invalid argument "las" for "-l, --location" flag: please pick one of these values: fra, fkb, txl, lhr, las, ewr, vit
 		return fmt.Errorf(
-			"value %s is incompatible with flag %s. Please pick one of these values: %s",
-			a.Value,
-			p,
+			"please pick one of these values: %s",
 			strings.Join(a.Allowed, ","),
 		)
 	}

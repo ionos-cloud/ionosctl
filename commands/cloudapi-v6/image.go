@@ -4,9 +4,14 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/waiter"
+	"github.com/ionos-cloud/ionosctl/pkg/utils"
+	"github.com/spf13/pflag"
+	"go.uber.org/multierr"
 	"io"
 	"os"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 
@@ -104,7 +109,278 @@ func ImageCmd() *core.Command {
 	})
 	get.AddBoolFlag(config.ArgNoHeaders, "", false, cloudapiv6.ArgNoHeadersDescription)
 	get.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultGetDepth, cloudapiv6.ArgDepthDescription)
+
+	update := core.NewCommand(ctx, imageCmd, core.CommandBuilder{
+		Namespace:  "image",
+		Resource:   "image",
+		Verb:       "update",
+		Aliases:    []string{"g"},
+		ShortDesc:  "Update a specified Image",
+		LongDesc:   "Use this command to update information about a specified Image.\n\nRequired values to run command:\n\n* Image Id",
+		Example:    "placeholder", // TODO
+		PreCmdRun:  PreRunImageId,
+		CmdRun:     RunImageUpdate,
+		InitClient: true,
+	})
+	update.AddUUIDFlag(cloudapiv6.ArgImageId, cloudapiv6.ArgIdShort, "", cloudapiv6.ImageId, core.RequiredFlagOption())
+	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgImageId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.ImageIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+	})
+
+	update.Command.Flags().SortFlags = false // Hot Plugs generate a lot of flags to scroll through, put them at the end
+
+	update.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Image update to be executed")
+	update.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Image update [seconds]")
+	update.AddBoolFlag(config.ArgNoHeaders, "", false, cloudapiv6.ArgNoHeadersDescription)
+	update.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultGetDepth, cloudapiv6.ArgDepthDescription)
+
+	update.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "", "Name of the Image")
+	update.AddStringFlag(cloudapiv6.ArgDescription, cloudapiv6.ArgDescriptionShort, "", "Description of the Image")
+	update.AddSetFlag(cloudapiv6.ArgLicenceType, "", "UNKNOWN", []string{"UNKNOWN", "WINDOWS", "WINDOWS2016", "WINDOWS2022", "LINUX", "OTHER"}, "The OS type of this image")
+	update.AddSetFlag("cloud-init", "", "V1", []string{"V1", "NONE"}, "Cloud init compatibility")
+	update.AddBoolFlag(cloudapiv6.ArgCpuHotPlug, "", true, "'Hot-Plug' CPU. It is not possible to have a hot-unplug CPU which you previously did not hot-plug")
+	update.AddBoolFlag(cloudapiv6.ArgRamHotPlug, "", true, "'Hot-Plug' RAM")
+	update.AddBoolFlag(cloudapiv6.ArgNicHotPlug, "", true, "'Hot-Plug' NIC")
+	update.AddBoolFlag(cloudapiv6.ArgDiscVirtioHotPlug, "", true, "'Hot-Plug' Virt-IO drive")
+	update.AddBoolFlag(cloudapiv6.ArgDiscScsiHotPlug, "", true, "'Hot-Plug' SCSI drive")
+	update.AddBoolFlag(cloudapiv6.ArgCpuHotUnplug, "", false, "'Hot-Unplug' CPU. It is not possible to have a hot-unplug CPU which you previously did not hot-plug")
+	update.AddBoolFlag(cloudapiv6.ArgRamHotUnplug, "", false, "'Hot-Unplug' RAM")
+	update.AddBoolFlag(cloudapiv6.ArgNicHotUnplug, "", false, "'Hot-Unplug' NIC")
+	update.AddBoolFlag(cloudapiv6.ArgDiscVirtioHotUnplug, "", false, "'Hot-Unplug' Virt-IO drive")
+	update.AddBoolFlag(cloudapiv6.ArgDiscScsiHotUnplug, "", false, "'Hot-Unplug' SCSI drive")
+
+	/*
+		Delete Command
+	*/
+	deleteCmd := core.NewCommand(ctx, imageCmd, core.CommandBuilder{
+		Namespace:  "image",
+		Resource:   "image",
+		Verb:       "delete",
+		Aliases:    []string{"d"},
+		ShortDesc:  "Delete an image",
+		LongDesc:   "Use this command to delete a specified Image.\n\nRequired values to run command:\n\n* Image Id",
+		Example:    "placeholder", // TODO
+		PreCmdRun:  PreRunImageDelete,
+		CmdRun:     RunImageDelete,
+		InitClient: true,
+	})
+	deleteCmd.AddUUIDFlag(cloudapiv6.ArgImageId, cloudapiv6.ArgIdShort, "", cloudapiv6.ImageId, core.RequiredFlagOption())
+	_ = deleteCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgImageId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.ImageIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+	})
+	deleteCmd.AddBoolFlag(config.ArgAll, config.ArgAllShort, false, "Delete all non-public images")
+
+	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Image update to be executed")
+	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Image update [seconds]")
+	deleteCmd.AddBoolFlag(config.ArgNoHeaders, "", false, cloudapiv6.ArgNoHeadersDescription)
+	deleteCmd.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultGetDepth, cloudapiv6.ArgDepthDescription)
+
 	return imageCmd
+}
+
+func PreRunImageDelete(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlagsSets(c.Command, c.NS, []string{cloudapiv6.ArgImageId}, []string{cloudapiv6.ArgAll})
+}
+
+func RunImageDelete(c *core.CommandConfig) error {
+	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
+		if err := DeleteAllNonPublicImages(c); err != nil {
+			return err
+		}
+		return c.Printer.Print(printer.Result{Resource: c.Resource, Verb: c.Verb})
+	} else {
+		listQueryParams, err := query.GetListQueryParams(c)
+		if err != nil {
+			return err
+		}
+		queryParams := listQueryParams.QueryParams
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete image"); err != nil {
+			return err
+		}
+		imgId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgImageId))
+		c.Printer.Verbose("Starting deletion on image with ID: %v...", imgId)
+		resp, err := c.CloudApiV6Services.Images().Delete(imgId, queryParams)
+		if resp != nil && printer.GetId(resp) != "" {
+			c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
+		}
+		if err != nil {
+			return err
+		}
+		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+			return err
+		}
+		return c.Printer.Print(getImagePrint(resp, c, nil))
+	}
+}
+
+// Util func - Given a slice of public & non-public images, return only those images that are non-public.
+// If any image in the slice has null properties, or "Properties.Public" field is nil, the image is skipped (and a verbose message is shown)
+func getNonPublicImages(imgs []ionoscloud.Image, printService printer.PrintService) ([]ionoscloud.Image, error) {
+	var nonPublicImgs []ionoscloud.Image
+	for _, i := range imgs {
+		properties, ok := i.GetPropertiesOk()
+		if !ok {
+			printService.Verbose("skipping %s: properties are nil\n", *i.GetId())
+			continue
+		}
+		isPublic, ok := properties.GetPublicOk()
+		if !ok {
+			printService.Verbose("skipping %s: field `public` is nil\n", *i.GetId())
+			continue
+		}
+		if !*isPublic {
+			nonPublicImgs = append(nonPublicImgs, i)
+		}
+	}
+	return nonPublicImgs, nil
+}
+
+//  deletes non-public images, as deleting public images is forbidden by the API.
+func DeleteAllNonPublicImages(c *core.CommandConfig) error {
+	depth := int32(1)
+	images, resp, err := c.CloudApiV6Services.Images().List(
+		resources.ListQueryParams{QueryParams: resources.QueryParams{Depth: &depth}},
+	)
+	if err != nil {
+		return err
+	}
+	allItems, ok := images.GetItemsOk()
+	if !(ok && len(*allItems) > 0 && allItems != nil) {
+		return errors.New("could not retrieve images")
+	}
+
+	items, err := getNonPublicImages(*allItems, c.Printer)
+	if err != nil {
+		return err
+	}
+	if len(items) < 1 {
+		return errors.New("no non-public images found")
+	}
+
+	_ = c.Printer.Warn("Images to be deleted:")
+	// TODO: this is duplicated across all resources - refactor this (across all resources)
+	for _, img := range items {
+		delIdAndName := ""
+		if id, ok := img.GetIdOk(); ok && id != nil {
+			delIdAndName += "ID: `" + *id
+		}
+		if properties, ok := img.GetPropertiesOk(); ok && properties != nil {
+			if name, ok := properties.GetNameOk(); ok && name != nil {
+				delIdAndName += "`, Name: " + *name
+			}
+		}
+		_ = c.Printer.Warn(delIdAndName)
+	}
+
+	if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete all the images"); err != nil {
+		return err
+	}
+	c.Printer.Verbose("Deleting all the images...")
+
+	var multiErr error
+	for _, img := range items {
+		if id, ok := img.GetIdOk(); ok && id != nil {
+			c.Printer.Verbose("Starting deleting image with id: %v...", *id)
+			resp, err = c.CloudApiV6Services.Images().Delete(*id, resources.QueryParams{})
+			if resp != nil && printer.GetId(resp) != "" {
+				c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
+			}
+			if err != nil {
+				multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *id, err))
+				continue
+			} else {
+				_ = c.Printer.Warn(fmt.Sprintf(config.StatusDeletingAll, c.Resource, *id))
+			}
+			if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+				multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *id, err))
+				continue
+			}
+		}
+	}
+	if multiErr != nil {
+		return multiErr
+	}
+	return nil
+}
+
+func RunImageUpdate(c *core.CommandConfig) error {
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	queryParams := listQueryParams.QueryParams
+
+	input := resources.ImageProperties{}
+	c.Command.Command.Flags().VisitAll(func(flag *pflag.Flag) {
+		val := flag.Value.String()
+		if val == "" {
+			return
+		}
+		boolval, _ := strconv.ParseBool(val)
+		switch flag.Name {
+		case cloudapiv6.ArgName:
+			input.SetName(val)
+			break
+		case cloudapiv6.ArgDescription:
+			input.SetDescription(val)
+			break
+		case "cloud-init":
+			input.SetCloudInit(val)
+			break
+		case cloudapiv6.ArgLicenceType:
+			input.SetLicenceType(val)
+			break
+		case cloudapiv6.ArgCpuHotPlug:
+			input.SetCpuHotPlug(boolval)
+			break
+		case cloudapiv6.ArgRamHotPlug:
+			input.SetRamHotPlug(boolval)
+			break
+		case cloudapiv6.ArgNicHotPlug:
+			input.SetNicHotPlug(boolval)
+			break
+		case cloudapiv6.ArgDiscVirtioHotPlug:
+			input.SetDiscVirtioHotPlug(boolval)
+			break
+		case cloudapiv6.ArgDiscScsiHotPlug:
+			input.SetDiscScsiHotPlug(boolval)
+			break
+		case cloudapiv6.ArgCpuHotUnplug:
+			input.SetCpuHotUnplug(boolval)
+			break
+		case cloudapiv6.ArgRamHotUnplug:
+			input.SetRamHotUnplug(boolval)
+			break
+		case cloudapiv6.ArgNicHotUnplug:
+			input.SetNicHotUnplug(boolval)
+			break
+		case cloudapiv6.ArgDiscVirtioHotUnplug:
+			input.SetDiscVirtioHotUnplug(boolval)
+			break
+		case cloudapiv6.ArgDiscScsiHotUnplug:
+			input.SetDiscScsiHotUnplug(boolval)
+			break
+		default:
+			// --image-id, verbose, filters, depth, etc
+			break
+		}
+		c.Printer.Verbose(fmt.Sprintf("Property %s set: %s", flag.Name, flag.Value))
+	})
+	img, resp, err := c.CloudApiV6Services.Images().Update(
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgImageId)),
+		input,
+		queryParams,
+	)
+	if resp != nil && printer.GetId(resp) != "" {
+		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
+	}
+	if err != nil {
+		return err
+	}
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+		return err
+	}
+	return c.Printer.Print(getImagePrint(resp, c, []resources.Image{*img}))
 }
 
 func PreRunImageList(c *core.PreCommandConfig) error {
