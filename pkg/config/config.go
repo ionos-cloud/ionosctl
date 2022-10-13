@@ -78,7 +78,7 @@ func LoadFile() error {
 			}
 			return nil
 		} else {
-			return errors.New("no permission for the config file, expected 600")
+			return errors.New("no permission for the config file, expected 666")
 		}
 	} else {
 		if permNumber == int(600) {
@@ -102,8 +102,11 @@ func Load() (err error) {
 	_ = viper.BindEnv(Token, sdk.IonosTokenEnvVar)
 	_ = viper.BindEnv(ServerUrl, sdk.IonosApiUrlEnvVar)
 
-	if err = LoadFile(); err != nil {
-		return err
+
+	if viper.GetString(Username) == "" || viper.GetString(Token) == "" {
+		if err = LoadFile(); err != nil { 
+			return err
+		}
 	}
 
 	return err
