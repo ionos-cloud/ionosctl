@@ -207,7 +207,7 @@ func ImageCmd() *core.Command {
 	upload.AddBoolFlag("skip-verify", "", false, "Skip verification of server certificate, useful if using a custom ftp-url. WARNING: You can be the target of a man-in-the-middle attack!")
 	upload.AddStringFlag("crt-path", "", "", "(Unneeded for IONOS FTP Servers) Path to file containing server certificate. If your FTP server is self-signed, you need to add the server certificate to the list of certificate authorities trusted by the client.")
 	upload.AddStringSliceFlag(cloudapiv6.ArgImageAlias, cloudapiv6.ArgImageAliasShort, nil, "Slice of image names on the FTP server without the extension. By default this is the base of the image path")
-	upload.AddIntFlag("timeout", "", 60, "(seconds) Context Deadline. FTP connection will time out after this many seconds")
+	upload.AddIntFlag("timeout", "", 300, "(seconds) Context Deadline. FTP connection will time out after this many seconds")
 
 	return imageCmd
 }
