@@ -199,14 +199,12 @@ func ImageCmd() *core.Command {
 		CmdRun:     RunImageUpload,
 		InitClient: true,
 	})
-	validHddImageExtensions := []string{".vmdk", ".vhd", ".vhdx", ".cow", ".qcow", ".qcow2", ".raw", ".vpc", ".vdi"}
-	validLocations := []string{"fra, fkb, txl, lhr, las, ewr, vit"}
-	upload.AddStringSliceFlag(cloudapiv6.ArgLocation, cloudapiv6.ArgLocationShort, nil, fmt.Sprintf("Location to upload to. Must be an array containing only %s", strings.Join(validLocations, " ")), core.RequiredFlagOption())
-	upload.AddStringSliceFlag("image", "i", nil, fmt.Sprintf("Slice of paths to images, absolute path or relative to ionosctl binary.\nImage must have extensions: .iso, %s", strings.Join(validHddImageExtensions, " ")), core.RequiredFlagOption())
+	upload.AddStringSliceFlag(cloudapiv6.ArgLocation, cloudapiv6.ArgLocationShort, nil, "Location to upload to. Must be an array containing only fra, fkb, txl, lhr, las, ewr, vit", core.RequiredFlagOption())
+	upload.AddStringSliceFlag("image", "i", nil, "Slice of paths to images, absolute path or relative to ionosctl binary.", core.RequiredFlagOption())
 	upload.AddStringFlag("ftp-url", "", "ftp-%s.ionos.com", "URL of FTP server, with %s flag if location is embedded into url")
 	upload.AddBoolFlag("skip-verify", "", false, "Skip verification of server certificate, useful if using a custom ftp-url. WARNING: You can be the target of a man-in-the-middle attack!")
 	upload.AddStringFlag("crt-path", "", "", "(Unneeded for IONOS FTP Servers) Path to file containing server certificate. If your FTP server is self-signed, you need to add the server certificate to the list of certificate authorities trusted by the client.")
-	upload.AddStringSliceFlag(cloudapiv6.ArgImageAlias, cloudapiv6.ArgImageAliasShort, nil, "Slice of image names on the FTP server without the extension. By default this is the base of the image path")
+	upload.AddStringSliceFlag(cloudapiv6.ArgImageAlias, cloudapiv6.ArgImageAliasShort, nil, "Rename the uploaded images. These names should not contain any extension. By default, this is the base of the image path")
 	upload.AddIntFlag("timeout", "", 300, "(seconds) Context Deadline. FTP connection will time out after this many seconds")
 
 	return imageCmd
@@ -427,6 +425,33 @@ func PreRunImageUpload(c *core.PreCommandConfig) error {
 		return err
 	}
 
+	allSliceFlagValuesInSet := func(flagVals []string, set []string) error {
+		for _, val := range flagVals {
+			if !(slices.Contains(set, val)) {
+				return fmt.Errorf("%s is not one of: %s", val, strings.Join(set, ", "))
+			}
+		}
+		return nil
+	}
+
+	validImageExtensions := []string{".iso", ".img", ".vmdk", ".vhd", ".vhdx", ".cow", ".qcow", ".qcow2", ".raw", ".vpc", ".vdi"}
+	images := viper.GetStringSlice(core.GetFlagName(c.NS, "image"))
+	err = allSliceFlagValuesInSet(utils.Map(images, filepath.Ext), validImageExtensions)
+	if err != nil {
+		return err
+	}
+
+	validLocations := []string{"fra", "fkb", "txl", "lhr", "las", "ewr", "vit"}
+	err = allSliceFlagValuesInSet(viper.GetStringSlice(cloudapiv6.ArgLocation), validLocations)
+	if err != nil {
+		return err
+	}
+
+	aliases := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgImageAlias))
+	if len(aliases) != 0 && len(aliases) != len(images) {
+		return fmt.Errorf("slices of image files and image aliases are of different lengths. Uploading multiple images with the same alias is forbidden")
+	}
+
 	return nil
 }
 
@@ -458,27 +483,21 @@ func RunImageUpload(c *core.CommandConfig) error {
 	skipVerify := viper.GetBool(core.GetFlagName(c.NS, "skip-verify"))
 	timeout := viper.GetInt(core.GetFlagName(c.NS, "timeout"))
 	var eg errgroup.Group
-	for imgIdx, img := range images {
-		for _, loc := range locations {
+	for _, loc := range locations {
+		for imgIdx, img := range images {
 			url := fmt.Sprintf(viper.GetString(core.GetFlagName(c.NS, "ftp-url")), loc)
 			c.Printer.Verbose("Uploading %s to %s", img, url)
 
-			validHddImageExtensions := []string{".vmdk", ".vhd", ".vhdx", ".cow", ".qcow", ".qcow2", ".raw", ".vpc", ".vdi"}
-			// TODO: Move to prerun?
 			var isoOrHdd string
-			if ext := filepath.Ext(img); ext == ".iso" {
+			if ext := filepath.Ext(img); ext == ".iso" || ext == ".img" {
 				isoOrHdd = "iso"
-			} else if slices.Contains(validHddImageExtensions, ext) {
-				isoOrHdd = "hdd"
 			} else {
-				return fmt.Errorf("%s is not a valid extension. Valid image extensions are: .iso, %s", ext, strings.Join(validHddImageExtensions, ", "))
+				isoOrHdd = "hdd"
 			}
 
 			serverFilePath := fmt.Sprintf("%s-images/", isoOrHdd) // iso-images / hdd-images
 			if len(aliases) == 0 {
 				serverFilePath += filepath.Base(img) // If no custom alias, use the filename
-			} else if len(aliases) != len(images) {
-				return fmt.Errorf("slices of image files and image aliases are of different lengths. Uploading multiple images with the same alias is forbidden")
 			} else {
 				serverFilePath += aliases[imgIdx] + filepath.Ext(img) // Use custom alias
 			}
