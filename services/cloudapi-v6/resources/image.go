@@ -96,17 +96,14 @@ func (s *imagesService) Upload(p UploadProperties) error {
 	if err != nil {
 		return err
 	}
-	fmt.Printf("Connected to %s\n", p.Url)
 
 	err = c.Chdir(filepath.Dir(p.Path))
 	if err != nil {
-		fmt.Printf("Failed to change to %s\n", filepath.Dir(p.Path))
 		return err
 	}
 
 	files, err := c.List(ctx)
 	if err != nil {
-		fmt.Println("Failed to list")
 		return err
 	}
 
@@ -114,20 +111,14 @@ func (s *imagesService) Upload(p UploadProperties) error {
 	desiredFileName := filepath.Base(p.Path)
 	for _, f := range files {
 		if f.Name == desiredFileName {
-			//err := c.RemoveFile(desiredFileName)
-			//if err != nil {
-			//	return err
-			//}
 			return fmt.Errorf("%s already exists at %s", desiredFileName, p.Url)
 		}
 	}
 
 	err = c.Upload(ctx, desiredFileName, p.DataBuffer)
 	if err != nil {
-		fmt.Printf("Failed uploading %s to %s!\n", filepath.Base(p.Path), p.Url)
 		return err
 	}
-	fmt.Printf("Uploaded %s to %s!\n", filepath.Base(p.Path), p.Url)
 
 	return c.Close()
 }

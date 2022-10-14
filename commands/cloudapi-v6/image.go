@@ -528,6 +528,8 @@ func RunImageUpload(c *core.CommandConfig) error {
 		return err
 	}
 
+	_ = c.Printer.Print("Upload successful!")
+
 	return nil
 }
 
