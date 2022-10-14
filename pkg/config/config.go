@@ -102,11 +102,8 @@ func Load() (err error) {
 	_ = viper.BindEnv(Token, sdk.IonosTokenEnvVar)
 	_ = viper.BindEnv(ServerUrl, sdk.IonosApiUrlEnvVar)
 
-
-	if viper.GetString(Username) == "" || viper.GetString(Token) == "" {
-		if err = LoadFile(); err != nil { 
-			return err
-		}
+	if err = LoadFile(); err != nil {
+		return err
 	}
 
 	return err
