@@ -563,6 +563,9 @@ func RunImageUpload(c *core.CommandConfig) error {
 	}
 	c.Printer.Verbose("Will iterate over %+v\n", names)
 
+	// Wait for images uploaded to ftp server to register on `ionosctl image list`
+	const attempts = 6
+	const timeoutPerAttempt = 10
 	attempt := 0
 	var diffImgs []resources.Image
 	for {
@@ -584,7 +587,7 @@ func RunImageUpload(c *core.CommandConfig) error {
 			c.Printer.Verbose("Got images by listing: %+v\n", getImages(imgs))
 
 			if len(getImages(imgs)) < len(locations) {
-				break // should have one for each location. If less, just break here. Clearly we won't have enough. Wait
+				break // should have one for each location. If less, just break here. Clearly we won't have enough.
 			}
 			diffImgs = append(diffImgs, getImages(imgs)...)
 			c.Printer.Verbose("Total images: %+v\n", diffImgs)
@@ -607,14 +610,14 @@ func RunImageUpload(c *core.CommandConfig) error {
 			break
 		}
 
-		if attempt > 5 {
+		if attempt >= attempts {
 			return fmt.Errorf("failed retrieving all uploaded images: timeout 30s," +
 				" however the upload was successful. Please run `ionosctl image update` manually")
 		}
 
 		// New attempt...
 		c.Printer.Verbose("Attempt %d failed", attempt)
-		time.Sleep(5 * time.Second)
+		time.Sleep(timeoutPerAttempt * time.Second)
 		attempt += 1
 	}
 
