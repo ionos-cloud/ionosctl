@@ -21,7 +21,7 @@ For `image` command:
 For `update` command:
 
 ```text
-[g]
+[u up]
 ```
 
 ## Description
@@ -68,6 +68,6 @@ Required values to run command:
 ## Examples
 
 ```text
-placeholder
+ionosctl image update --image-id IMAGE_ID
 ```
 

@@ -119,10 +119,10 @@ func ImageCmd() *core.Command {
 		Namespace:  "image",
 		Resource:   "image",
 		Verb:       "update",
-		Aliases:    []string{"g"},
+		Aliases:    []string{"u", "up"},
 		ShortDesc:  "Update a specified Image",
 		LongDesc:   "Use this command to update information about a specified Image.\n\nRequired values to run command:\n\n* Image Id",
-		Example:    "placeholder", // TODO
+		Example:    "ionosctl image update --image-id IMAGE_ID",
 		PreCmdRun:  PreRunImageId,
 		CmdRun:     RunImageUpdate,
 		InitClient: true,
@@ -164,7 +164,7 @@ func ImageCmd() *core.Command {
 		Aliases:    []string{"d"},
 		ShortDesc:  "Delete an image",
 		LongDesc:   "Use this command to delete a specified Image.\n\nRequired values to run command:\n\n* Image Id",
-		Example:    "placeholder", // TODO
+		Example:    "ionosctl image delete --image-id IMAGE_ID", // TODO
 		PreCmdRun:  PreRunImageDelete,
 		CmdRun:     RunImageDelete,
 		InitClient: true,
@@ -191,7 +191,7 @@ func ImageCmd() *core.Command {
 		Namespace:  "image",
 		Resource:   "image",
 		Verb:       "upload",
-		Aliases:    []string{"u"},
+		Aliases:    []string{"ftp-upload", "ftp", "upl"},
 		ShortDesc:  "Upload an image to FTP server",
 		LongDesc:   "Use this command to upload an HDD or ISO image.\n\nRequired values to run command:\n\n* Location\n",
 		Example:    "ionosctl img u -i kolibri.iso -l fkb,fra,vit",
