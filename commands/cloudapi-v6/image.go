@@ -450,7 +450,17 @@ func PreRunImageUpload(c *core.PreCommandConfig) error {
 
 	validImageExtensions := []string{".iso", ".img", ".vmdk", ".vhd", ".vhdx", ".cow", ".qcow", ".qcow2", ".raw", ".vpc", ".vdi"}
 	images := viper.GetStringSlice(core.GetFlagName(c.NS, "image"))
-	err = allSliceFlagValuesInSet(utils.Map(images, filepath.Ext), validImageExtensions)
+	// All images in 'images' slice should have extensions in set of validImageExtensions
+	err = allSliceFlagValuesInSet(
+		utils.Map(
+			// Returns only the extensions that are in `images` slice
+			images,
+			func(_ int, s string) string {
+				return filepath.Ext(s)
+			},
+		),
+		validImageExtensions,
+	)
 	if err != nil {
 		return err
 	}
@@ -542,7 +552,82 @@ func RunImageUpload(c *core.CommandConfig) error {
 		return err
 	}
 
-	c.Printer.Verbose("Upload successful in ")
+	names := images
+	if len(aliases) != 0 {
+		// Returns a slice containing `alias[i] + filepath.Ext(images[i])`
+		// (i.e it gets the extensions from `images` flag, and appends them to each elem `image-alias`)
+		// Resulting slice is the full image names, as returned by `ionosctl image list` on the Name column
+		names = utils.Map(aliases, func(k int, v string) string {
+			return v + filepath.Ext(images[k])
+		})
+	}
+	c.Printer.Verbose("Will iterate over %+v\n", names)
+
+	attempt := 0
+	var diffImgs []resources.Image
+	for {
+		diffImgs = []resources.Image{} // throw away old iteration images
+
+		for _, n := range names { // TODO: See SDK-1163. This for-loop could be O(1) instead!
+			filters := map[string]string{
+				"name":   n,
+				"public": "false",
+			}
+			c.Printer.Verbose("Filtering by name %s\n", n)
+
+			depth := int32(1)
+			imgs, _, err := c.CloudApiV6Services.Images().List(resources.ListQueryParams{Filters: &filters, QueryParams: resources.QueryParams{Depth: &depth}})
+			if err != nil {
+				return fmt.Errorf("failed listing uploaded images: %e,"+
+					" however the upload was successful. Please run `ionosctl image update` manually", err)
+			}
+			c.Printer.Verbose("Got images by listing: %+v\n", getImages(imgs))
+
+			if len(getImages(imgs)) < len(locations) {
+				break // should have one for each location. If less, just break here. Clearly we won't have enough. Wait
+			}
+			diffImgs = append(diffImgs, getImages(imgs)...)
+			c.Printer.Verbose("Total images: %+v\n", diffImgs)
+
+		}
+
+		if len(diffImgs) > len(images)*len(locations) {
+			// User already had an image, with this exact alias, uploaded in some other location! (i.e. NOT in any location from locations flag)
+			// Panic! We don't know which images are new and which already exist!
+			// While we could do a filter by recent uploads via the "CreatedDate" filter,
+			// we'd much rather prefer having a filter for multiple values on location key!! TODO: SDK-1163
+			/// TODO: SDK-1163 would unblock this!
+			return fmt.Errorf("failed retrieving all uploaded images: An image with this exact alias is used " +
+				"in another location, however the upload was successful. Please run `ionosctl image update` manually")
+		}
+
+		if len(diffImgs) == len(images)*len(locations) {
+			c.Printer.Verbose("Success! found images %+v\n", diffImgs)
+			// Success!
+			break
+		}
+
+		if attempt > 5 {
+			return fmt.Errorf("failed retrieving all uploaded images: timeout 30s," +
+				" however the upload was successful. Please run `ionosctl image update` manually")
+		}
+
+		// New attempt...
+		c.Printer.Verbose("Attempt %d failed", attempt)
+		time.Sleep(5 * time.Second)
+		attempt += 1
+	}
+
+	input := getDesiredImageAfterPatch(c)
+	for _, diffImg := range diffImgs {
+		_, _, err := c.CloudApiV6Services.Images().Update(*diffImg.GetId(), input, cloudapiv6.ParentResourceQueryParams)
+		if err != nil {
+			return fmt.Errorf("failed updating uploaded images: %e,"+
+				" however the upload was successful. Please run `ionosctl image update` manually", err)
+		}
+	}
+
+	c.Printer.Verbose("Successfully uploaded and updated images")
 
 	return nil
 }
