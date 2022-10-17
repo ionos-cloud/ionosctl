@@ -209,7 +209,7 @@ func ImageCmd() *core.Command {
 	upload.AddBoolFlag("skip-verify", "", false, "Skip verification of server certificate, useful if using a custom ftp-url. WARNING: You can be the target of a man-in-the-middle attack!")
 	upload.AddStringFlag("crt-path", "", "", "(Unneeded for IONOS FTP Servers) Path to file containing server certificate. If your FTP server is self-signed, you need to add the server certificate to the list of certificate authorities trusted by the client.")
 	upload.AddStringSliceFlag(cloudapiv6.ArgImageAlias, cloudapiv6.ArgImageAliasShort, nil, "Rename the uploaded images. These names should not contain any extension. By default, this is the base of the image path")
-	upload.AddIntFlag("timeout", "", 300, "(seconds) Context Deadline. FTP connection will time out after this many seconds")
+	upload.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, 300, "(seconds) Context Deadline. FTP connection will time out after this many seconds")
 
 	addPropertiesFlags(upload)
 
@@ -495,7 +495,7 @@ func RunImageUpload(c *core.CommandConfig) error {
 	aliases := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgImageAlias))
 	locations := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgLocation))
 	skipVerify := viper.GetBool(core.GetFlagName(c.NS, "skip-verify"))
-	timeout := viper.GetInt(core.GetFlagName(c.NS, "timeout"))
+	timeout := viper.GetInt(core.GetFlagName(c.NS, config.ArgTimeout))
 	var eg errgroup.Group
 	for _, loc := range locations {
 		for imgIdx, img := range images {
@@ -542,7 +542,7 @@ func RunImageUpload(c *core.CommandConfig) error {
 		return err
 	}
 
-	_ = c.Printer.Print("Upload successful!")
+	c.Printer.Verbose("Upload successful in ")
 
 	return nil
 }
