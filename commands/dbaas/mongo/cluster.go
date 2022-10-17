@@ -9,6 +9,8 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
+	dbaaspg "github.com/ionos-cloud/ionosctl/services/dbaas-postgres"
+
 	//"github.com/ionos-cloud/ionosctl/services/dbaas-mongo"
 	"github.com/ionos-cloud/ionosctl/services/dbaas-mongo/resources"
 	"github.com/spf13/cobra"
@@ -32,19 +34,16 @@ func ClusterCmd() *core.Command {
 		List Command
 	*/
 	list := core.NewCommand(ctx, clusterCmd, core.CommandBuilder{
-		Namespace: "dbaas-postgres",
+		Namespace: "dbaas-mongo",
 		Resource:  "cluster",
 		Verb:      "list",
 		Aliases:   []string{"l", "ls"},
-		ShortDesc: "List PostgreSQL Clusters",
-		LongDesc:  "Use this command to retrieve a list of PostgreSQL Clusters provisioned under your account. You can filter the result based on Cluster Name using `--name` option.",
+		ShortDesc: "List Mongo Clusters",
+		LongDesc:  "Use this command to retrieve a list of Mongo Clusters provisioned under your account. You can filter the result based on Cluster Name using `--name` option.",
 		Example:   "ionosctl dbaas mongo cluster list",
 		PreCmdRun: core.NoPreRun,
 		CmdRun: func(c *core.CommandConfig) error {
 			c.Printer.Verbose("Getting Clusters...")
-			if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgName)) {
-				c.Printer.Verbose("Filtering after Cluster Name: %v", viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgName)))
-			}
 			clusters, _, err := c.CloudApiDbaasPgsqlServices.Clusters().List(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgName)))
 			if err != nil {
 				return err
