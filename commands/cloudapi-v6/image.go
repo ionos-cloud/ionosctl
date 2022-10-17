@@ -335,13 +335,8 @@ func DeleteAllNonPublicImages(c *core.CommandConfig) error {
 	return nil
 }
 
-func RunImageUpdate(c *core.CommandConfig) error {
-	listQueryParams, err := query.GetListQueryParams(c)
-	if err != nil {
-		return err
-	}
-	queryParams := listQueryParams.QueryParams
-
+// returns an ImageProperties object which reflects the currently set flags
+func getDesiredImageAfterPatch(c *core.CommandConfig) resources.ImageProperties {
 	input := resources.ImageProperties{}
 	c.Command.Command.Flags().VisitAll(func(flag *pflag.Flag) {
 		val := flag.Value.String()
@@ -398,6 +393,17 @@ func RunImageUpdate(c *core.CommandConfig) error {
 		}
 		c.Printer.Verbose(fmt.Sprintf("Property %s set: %s", flag.Name, flag.Value))
 	})
+	return input
+}
+
+func RunImageUpdate(c *core.CommandConfig) error {
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	queryParams := listQueryParams.QueryParams
+
+	input := getDesiredImageAfterPatch(c)
 	img, resp, err := c.CloudApiV6Services.Images().Update(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgImageId)),
 		input,
