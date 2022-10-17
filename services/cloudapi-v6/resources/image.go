@@ -7,10 +7,8 @@ import (
 	"crypto/x509"
 	"fmt"
 	"github.com/fatih/structs"
-	"github.com/ionos-cloud/ionosctl/pkg/config"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/kardianos/ftps"
-	"github.com/spf13/viper"
 	"path/filepath"
 	"time"
 )
@@ -79,8 +77,8 @@ func (s *imagesService) Upload(p UploadProperties) error {
 	dialOptions := ftps.DialOptions{
 		Host:        p.Url,
 		Port:        p.Port,
-		Username:    viper.GetString(config.Username),
-		Passowrd:    viper.GetString(config.Password),
+		Username:    s.client.GetConfig().Username,
+		Passowrd:    s.client.GetConfig().Password,
 		ExplicitTLS: true,
 		TLSConfig:   &tlsConfig,
 	}

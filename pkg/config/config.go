@@ -15,15 +15,10 @@ import (
 )
 
 func GetUserData() map[string]string {
-	if viper.GetString(Token) != "" {
-		return map[string]string{
-			Token:     viper.GetString(Token),
-			ServerUrl: viper.GetString(ServerUrl),
-		}
-	}
 	return map[string]string{
 		Username:  viper.GetString(Username),
 		Password:  viper.GetString(Password),
+		Token:     viper.GetString(Token),
 		ServerUrl: viper.GetString(ServerUrl),
 	}
 }
@@ -57,6 +52,14 @@ func getConfigHomeDir() string {
 	return filepath.Join(configPath, "ionosctl")
 }
 
+func getPermsByOS(os string) int {
+	if os == "windows" {
+		return 666
+	} else {
+		return 600
+	}
+}
+
 func LoadFile() error {
 	path := viper.GetString(ArgConfig)
 	if !filepath.IsAbs(path) {
@@ -64,8 +67,8 @@ func LoadFile() error {
 	}
 	fileInfo, statErr := os.Stat(path)
 	if statErr != nil {
-		return errors.New(fmt.Sprintf("error getting credentials: nor $%s, $%s, $%s set, nor config file: %s",
-			sdk.IonosUsernameEnvVar, sdk.IonosPasswordEnvVar, sdk.IonosTokenEnvVar, statErr.Error()))
+		return fmt.Errorf("error getting credentials: nor $%s, $%s, $%s set, nor config file: %s",
+			sdk.IonosUsernameEnvVar, sdk.IonosPasswordEnvVar, sdk.IonosTokenEnvVar, statErr.Error())
 	}
 
 	perm := fileInfo.Mode().Perm()
@@ -74,30 +77,18 @@ func LoadFile() error {
 	permNumber, _ := strconv.Atoi(strBase10)
 
 	system := runtime.GOOS
-	if system == "windows" {
-		if permNumber == int(666) {
-			viper.SetConfigFile(viper.GetString(ArgConfig))
-			err := viper.ReadInConfig()
-			if err != nil {
-				return err
-			}
-			return nil
-		} else {
-			return errors.New("no permission for the config file, expected 600")
-		}
-	} else {
-		if permNumber == int(600) {
-			viper.SetConfigFile(viper.GetString(ArgConfig))
-			err := viper.ReadInConfig()
-			if err != nil {
-				return err
-			}
-			return nil
-		} else {
-			return errors.New("no permission for the config file, expected 600")
-		}
+
+	permNumberExpected := getPermsByOS(system)
+	if permNumber != permNumberExpected {
+		return fmt.Errorf("config file %s has wrong permissions: %d, should be %d", path, permNumber, permNumberExpected)
 	}
 
+	viper.SetConfigFile(viper.GetString(ArgConfig))
+	err := viper.ReadInConfig()
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 // Load collects config data from the config file, using environment variables as fallback.
@@ -107,11 +98,7 @@ func Load() (err error) {
 	_ = viper.BindEnv(Token, sdk.IonosTokenEnvVar)
 	_ = viper.BindEnv(ServerUrl, sdk.IonosApiUrlEnvVar)
 
-	if viper.GetString(Username) == "" && viper.GetString(Token) == "" {
-		if err = LoadFile(); err != nil {
-			return err
-		}
-	}
+	err = LoadFile()
 
 	return err
 }

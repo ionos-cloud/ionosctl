@@ -57,6 +57,8 @@ func TestLoadEnvFallback(t *testing.T) {
 	os.Clearenv()
 	viper.Reset()
 
+	viper.SetConfigFile(filepath.Join("..", "testdata", "config.json"))
+	viper.Set(ArgConfig, filepath.Join("..", "testdata", "config.json"))
 	assert.NoError(t, os.Setenv(sdk.IonosUsernameEnvVar, "user"))
 	assert.NoError(t, os.Setenv(sdk.IonosPasswordEnvVar, "pass"))
 	assert.NoError(t, os.Setenv(sdk.IonosTokenEnvVar, "token"))
