@@ -81,13 +81,6 @@ snapcrafts:
 
     grade: stable
     confinement: strict
-    apps:
-      ionosctl:
-        command: bin/ionosctl
-        plugs:
-          - home
-          - network
-          - removable-media
 
     publish: true
 
