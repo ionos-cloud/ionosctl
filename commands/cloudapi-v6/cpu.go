@@ -53,7 +53,7 @@ func CpuCmd() *core.Command {
 		CmdRun:     RunLocationCpuList,
 		InitClient: true,
 	})
-	list.AddUUIDFlag(cloudapiv6.ArgLocationId, "", "", cloudapiv6.LocationId, core.RequiredFlagOption())
+	list.AddStringFlag(cloudapiv6.ArgLocationId, "", "", cloudapiv6.LocationId, core.RequiredFlagOption())
 	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgLocationId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.LocationIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
