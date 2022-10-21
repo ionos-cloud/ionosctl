@@ -563,47 +563,42 @@ func RunImageUpload(c *core.CommandConfig) error {
 	}
 	c.Printer.Verbose("Will iterate over %+v\n", names)
 
-	// Wait for images uploaded to ftp server to register on `ionosctl image list`
+	// Wait for images uploaded to ftp server to register on `ionosctl image list`.
+	// Currently "hacky" code, until SDK-1163 is fixed.
+	// TODO: Replace the nested for-loops when support for filtering by multiple values per key is added
 	const attempts = 6
 	const timeoutPerAttempt = 10
 	attempt := 0
+	time.Sleep(timeoutPerAttempt * time.Second)
 	var diffImgs []resources.Image
-	for {
+	for attempt < attempts {
 		diffImgs = []resources.Image{} // throw away old iteration images
 
-		for _, n := range names { // TODO: See SDK-1163. This for-loop could be O(1) instead!
-			filters := map[string]string{
-				"name":   n,
-				"public": "false",
-			}
-			c.Printer.Verbose("Filtering by name %s\n", n)
+		for _, n := range names { // TODO: See SDK-1163. These nested for-loops could be O(1) instead!
+			for _, l := range locations { // TODO: See SDK-1163. These nested for-loops could be O(1) instead!
+				filters := map[string]string{
+					"name":     n,
+					"public":   "false",
+					"location": l,
+				}
+				c.Printer.Verbose("Filtering by name %s and location %s\n", n, l)
 
-			depth := int32(1)
-			imgs, _, err := c.CloudApiV6Services.Images().List(resources.ListQueryParams{Filters: &filters, QueryParams: resources.QueryParams{Depth: &depth}})
-			if err != nil {
-				return fmt.Errorf("failed listing uploaded images: %e,"+
-					" however the upload was successful. Please run `ionosctl image update` manually", err)
-			}
-			c.Printer.Verbose("Got images by listing: %+v\n", getImages(imgs))
+				depth := int32(1)
+				imgs, _, err := c.CloudApiV6Services.Images().List(resources.ListQueryParams{Filters: &filters, QueryParams: resources.QueryParams{Depth: &depth}})
+				if err != nil {
+					return fmt.Errorf("failed listing uploaded images: %e,"+
+						" however the upload was successful. Please run `ionosctl image update` manually", err)
+				}
+				c.Printer.Verbose("Got images by listing: %+v\n", getImages(imgs))
 
-			if len(getImages(imgs)) < len(locations) {
-				break // should have one for each location. If less, just break here. Clearly we won't have enough.
-			}
-			diffImgs = append(diffImgs, getImages(imgs)...)
-			c.Printer.Verbose("Total images: %+v\n", diffImgs)
+				if len(getImages(imgs)) < 1 {
+					break // should have one for each location. If less, just break here. Clearly we won't have enough.
+				}
+				diffImgs = append(diffImgs, getImages(imgs)...)
+				c.Printer.Verbose("Total images: %+v\n", diffImgs)
 
+			}
 		}
-
-		if len(diffImgs) > len(images)*len(locations) {
-			// User already had an image, with this exact alias, uploaded in some other location! (i.e. NOT in any location from locations flag)
-			// Panic! We don't know which images are new and which already exist!
-			// While we could do a filter by recent uploads via the "CreatedDate" filter,
-			// we'd much rather prefer having a filter for multiple values on location key!! TODO: SDK-1163
-			/// TODO: SDK-1163 would unblock this!
-			return fmt.Errorf("failed retrieving all uploaded images: An image with this exact alias is used " +
-				"in another location, however the upload was successful. Please run `ionosctl image update` manually")
-		}
-
 		if len(diffImgs) == len(images)*len(locations) {
 			c.Printer.Verbose("Success! found images %+v\n", diffImgs)
 			// Success!
