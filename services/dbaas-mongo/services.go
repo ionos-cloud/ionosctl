@@ -2,6 +2,7 @@ package dbaas_mongo
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/services/dbaas-mongo/resources"
@@ -36,6 +37,7 @@ func (c *Services) InitClient() (*resources.Client, error) {
 
 // InitServices for Commands
 func (c *Services) InitServices(client *resources.Client) error {
+	fmt.Printf("Init services...")
 	c.Clusters = func() resources.ClustersService { return resources.NewClustersService(client, c.Context) }
 	//c.Backups = func() resources.BackupsService { return resources.NewBackupsService(client, c.Context) }
 	//c.Versions = func() resources.VersionsService { return resources.NewVersionsService(client, c.Context) }

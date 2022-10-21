@@ -829,6 +829,7 @@ func getClusterCols(flagName string, outErr io.Writer) []string {
 		return defaultClusterCols
 	}
 
+	// TODO: this binds a key to itself... not to mention, all the keys are just the ClusterPrint slice values?
 	columnsMap := map[string]string{
 		"ClusterId":           "ClusterId",
 		"DisplayName":         "DisplayName",
@@ -888,6 +889,7 @@ func getClustersKVMaps(clusters []resources.ClusterResponse) []map[string]interf
 			}
 			if vdcConnectionsOk, ok := propertiesOk.GetConnectionsOk(); ok && vdcConnectionsOk != nil {
 				for _, vdcConnection := range *vdcConnectionsOk {
+					// TODO: This seems to only get the last items in the connections slice?
 					if vdcIdOk, ok := vdcConnection.GetDatacenterIdOk(); ok && vdcIdOk != nil {
 						clusterPrint.DatacenterId = *vdcIdOk
 					}

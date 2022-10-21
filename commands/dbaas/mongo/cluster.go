@@ -2,20 +2,16 @@ package mongo
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
-	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
-	dbaaspg "github.com/ionos-cloud/ionosctl/services/dbaas-postgres"
-
-	//"github.com/ionos-cloud/ionosctl/services/dbaas-mongo"
 	"github.com/ionos-cloud/ionosctl/services/dbaas-mongo/resources"
+	dbaaspg "github.com/ionos-cloud/ionosctl/services/dbaas-postgres"
+	ionoscloud "github.com/ionos-cloud/sdk-go-dbaas-mongo"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"io"
 )
 
 func ClusterCmd() *core.Command {
@@ -44,75 +40,63 @@ func ClusterCmd() *core.Command {
 		PreCmdRun: core.NoPreRun,
 		CmdRun: func(c *core.CommandConfig) error {
 			c.Printer.Verbose("Getting Clusters...")
-			clusters, _, err := c.CloudApiDbaasPgsqlServices.Clusters().List(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgName)))
+			clusters, _, err := c.DbaasMongoServices.Clusters().List("")
 			if err != nil {
 				return err
 			}
-			return c.Printer.Print(getClusterPrint(nil, c, getClusters(clusters)))
+
+			return c.Printer.Print(getClusterPrint(nil, c, clusters.GetItems()))
+
 		},
 		InitClient: true,
 	})
-	//list.AddStringFlag(dbaaspg.ArgName, dbaaspg.ArgNameShort, "", "Response filter to list only the PostgreSQL Clusters that contain the specified name in the DisplayName field. The value is case insensitive")
+	// TODO: Move ArgName to DBAAS level constants
+	list.AddStringFlag(dbaaspg.ArgName, dbaaspg.ArgNameShort, "", "Response filter to list only the PostgreSQL Clusters that contain the specified name in the DisplayName field. The value is case insensitive")
 	list.AddBoolFlag(config.ArgNoHeaders, "", false, "When using text output, don't print headers")
-	list.AddStringSliceFlag(config.ArgCols, "", defaultClusterCols, printer.ColsMessage(allClusterCols))
+	list.AddStringSliceFlag(config.ArgCols, "", allCols[0:6], printer.ColsMessage(allCols))
 	_ = list.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return allClusterCols, cobra.ShellCompDirectiveNoFileComp
+		return allCols, cobra.ShellCompDirectiveNoFileComp
 	})
 
 	return clusterCmd
 }
 
-func getClusterCols(flagName string, outErr io.Writer) []string {
-	var cols []string
-	if viper.IsSet(flagName) {
-		cols = viper.GetStringSlice(flagName)
-	} else {
-		return defaultClusterCols
-	}
-
-	columnsMap := map[string]string{
-		"ClusterId":           "ClusterId",
-		"DisplayName":         "DisplayName",
-		"BackupLocation":      "BackupLocation",
-		"Location":            "Location",
-		"PostgresVersion":     "PostgresVersion",
-		"State":               "State",
-		"Ram":                 "Ram",
-		"Instances":           "Instances",
-		"Cores":               "Cores",
-		"StorageSize":         "StorageSize",
-		"StorageType":         "StorageType",
-		"DatacenterId":        "DatacenterId",
-		"LanId":               "LanId",
-		"Cidr":                "Cidr",
-		"MaintenanceWindow":   "MaintenanceWindow",
-		"SynchronizationMode": "SynchronizationMode",
-	}
-	var clusterCols []string
-	for _, k := range cols {
-		col := columnsMap[k]
-		if col != "" {
-			clusterCols = append(clusterCols, col)
-		} else {
-			clierror.CheckError(errors.New("unknown column "+k), outErr)
+// TODO: Why is this tightly coupled to resources.ClusterResponse? Should just take Headers and Columns as params
+// TODO: should also be moved to printer package, to reduce duplication
+func getClusterPrint(resp *resources.Response, c *core.CommandConfig, dcs *[]ionoscloud.ClusterResponse) printer.Result {
+	r := printer.Result{}
+	if c != nil {
+		if resp != nil {
+			r.Resource = c.Resource
+			r.Verb = c.Verb
+			r.WaitForState = viper.GetBool(core.GetFlagName(c.NS, config.ArgWaitForState)) // this boolean is duplicated everywhere just to do an append of `& wait` to a verbose message
+		}
+		if dcs != nil {
+			r.OutputJSON = dcs
+			r.KeyValue = getClusterRows(dcs)                                                            // map header -> rows
+			r.Columns = getClusterHeaders(viper.GetStringSlice(core.GetFlagName(c.NS, config.ArgCols))) // headers
 		}
 	}
-	return clusterCols
+	return r
 }
 
-func getClusters(clusters resources.ClusterList) []resources.ClusterResponse {
-	c := make([]resources.ClusterResponse, 0)
-	if data, ok := clusters.GetItemsOk(); ok && data != nil {
-		for _, d := range *data {
-			c = append(c, resources.ClusterResponse{ClusterResponse: d})
-		}
-	}
-	return c
+var allCols = structs.Names(ClusterPrint{})
+
+type ClusterPrint struct {
+	ClusterId         string `json:"ClusterId,omitempty"`
+	Location          string `json:"Location,omitempty"`
+	TemplateId        string `json:"TemplateId,omitempty"`
+	State             string `json:"State,omitempty"`
+	DisplayName       string `json:"DisplayName,omitempty"`
+	MongoVersion      string `json:"MongoVersion,omitempty"`
+	Instances         int32  `json:"Instances,omitempty"`
+	Connections       string `json:"Connections,omitempty"`
+	MaintenanceWindow string `json:"MaintenanceWindow,omitempty"`
 }
 
-func getClustersKVMaps(clusters []resources.ClusterResponse) []map[string]interface{} {
-	out := make([]map[string]interface{}, 0, len(clusters))
-	for _, cluster := range clusters {
+func getClusterRows(clusters *[]ionoscloud.ClusterResponse) []map[string]interface{} {
+	out := make([]map[string]interface{}, 0, len(*clusters))
+	for _, cluster := range *clusters {
 		var clusterPrint ClusterPrint
 		if idOk, ok := cluster.GetIdOk(); ok && idOk != nil {
 			clusterPrint.ClusterId = *idOk
@@ -124,39 +108,31 @@ func getClustersKVMaps(clusters []resources.ClusterResponse) []map[string]interf
 			if locationOk, ok := propertiesOk.GetLocationOk(); ok && locationOk != nil {
 				clusterPrint.Location = string(*locationOk)
 			}
-			if backupLocationOk, ok := propertiesOk.GetBackupLocationOk(); ok && backupLocationOk != nil {
-				clusterPrint.BackupLocation = string(*backupLocationOk)
+			if templateIdOk, ok := propertiesOk.GetTemplateIDOk(); ok && templateIdOk != nil {
+				clusterPrint.TemplateId = string(*templateIdOk)
 			}
-			if vdcConnectionsOk, ok := propertiesOk.GetConnectionsOk(); ok && vdcConnectionsOk != nil {
-				for _, vdcConnection := range *vdcConnectionsOk {
-					if vdcIdOk, ok := vdcConnection.GetDatacenterIdOk(); ok && vdcIdOk != nil {
-						clusterPrint.DatacenterId = *vdcIdOk
-					}
-					if lanIdOk, ok := vdcConnection.GetLanIdOk(); ok && lanIdOk != nil {
-						clusterPrint.LanId = *lanIdOk
-					}
-					if ipAddressOk, ok := vdcConnection.GetCidrOk(); ok && ipAddressOk != nil {
-						clusterPrint.Cidr = *ipAddressOk
-					}
-				}
+			if connectionsOk, ok := propertiesOk.GetConnectionStringOk(); ok && connectionsOk != nil {
+				clusterPrint.Connections = *connectionsOk
 			}
-			if postgresVersionOk, ok := propertiesOk.GetPostgresVersionOk(); ok && postgresVersionOk != nil {
-				clusterPrint.PostgresVersion = *postgresVersionOk
+			//if vdcConnectionsOk, ok := propertiesOk.GetConnectionsOk(); ok && vdcConnectionsOk != nil {
+			//	for _, vdcConnection := range *vdcConnectionsOk {
+			//		// TODO: This seems to only get the last items in the connections slice?
+			//		if vdcIdOk, ok := vdcConnection.GetDatacenterIdOk(); ok && vdcIdOk != nil {
+			//			clusterPrint.DatacenterId = *vdcIdOk
+			//		}
+			//		if lanIdOk, ok := vdcConnection.GetLanIdOk(); ok && lanIdOk != nil {
+			//			clusterPrint.LanId = *lanIdOk
+			//		}
+			//		if ipAddressOk, ok := vdcConnection.GetCidrOk(); ok && ipAddressOk != nil {
+			//			clusterPrint.Cidr = *ipAddressOk
+			//		}
+			//	}
+			//}
+			if versionOk, ok := propertiesOk.GetMongoDBVersionOk(); ok && versionOk != nil {
+				clusterPrint.MongoVersion = *versionOk
 			}
 			if replicasOk, ok := propertiesOk.GetInstancesOk(); ok && replicasOk != nil {
 				clusterPrint.Instances = *replicasOk
-			}
-			if ramSizeOk, ok := propertiesOk.GetRamOk(); ok && ramSizeOk != nil {
-				clusterPrint.Ram = fmt.Sprintf("%vMB", *ramSizeOk)
-			}
-			if cpuCoreCountOk, ok := propertiesOk.GetCoresOk(); ok && cpuCoreCountOk != nil {
-				clusterPrint.Cores = *cpuCoreCountOk
-			}
-			if storageSizeOk, ok := propertiesOk.GetStorageSizeOk(); ok && storageSizeOk != nil {
-				clusterPrint.StorageSize = fmt.Sprintf("%vGB", *storageSizeOk)
-			}
-			if storageTypeOk, ok := propertiesOk.GetStorageTypeOk(); ok && storageTypeOk != nil {
-				clusterPrint.StorageType = string(*storageTypeOk)
 			}
 			if maintenanceWindowOk, ok := propertiesOk.GetMaintenanceWindowOk(); ok && maintenanceWindowOk != nil {
 				var maintenanceWindow string
@@ -168,9 +144,6 @@ func getClustersKVMaps(clusters []resources.ClusterResponse) []map[string]interf
 				}
 				clusterPrint.MaintenanceWindow = maintenanceWindow
 			}
-			if synchronizationModeOk, ok := propertiesOk.GetSynchronizationModeOk(); ok && synchronizationModeOk != nil {
-				clusterPrint.SynchronizationMode = string(*synchronizationModeOk)
-			}
 		}
 		if metadataOk, ok := cluster.GetMetadataOk(); ok && metadataOk != nil {
 			if stateOk, ok := metadataOk.GetStateOk(); ok && stateOk != nil {
@@ -181,4 +154,14 @@ func getClustersKVMaps(clusters []resources.ClusterResponse) []map[string]interf
 		out = append(out, o)
 	}
 	return out
+}
+
+func getClusterHeaders(customColumns []string) []string {
+	if customColumns == nil {
+		return allCols[0:6]
+	}
+	//for _, c := customColumns {
+	//	if slices.Contains(allCols, c) {}
+	//}
+	return customColumns
 }

@@ -2,7 +2,7 @@ package resources
 
 import (
 	"context"
-
+	"fmt"
 	sdkgo "github.com/ionos-cloud/sdk-go-dbaas-mongo"
 )
 
@@ -36,7 +36,7 @@ type Response struct {
 
 // ClustersService is a wrapper around ionoscloud.Cluster
 type ClustersService interface {
-	List(filterName string) (ClusterList, *Response, error)
+	List(filterName string) (sdkgo.ClusterList, *sdkgo.APIResponse, error)
 	Get(clusterId string) (*ClusterResponse, *Response, error)
 	Create(input CreateClusterRequest) (*ClusterResponse, *Response, error)
 	//Update(clusterId string, input PatchClusterRequest) (*ClusterResponse, *Response, error)
@@ -57,13 +57,15 @@ func NewClustersService(client *Client, ctx context.Context) ClustersService {
 	}
 }
 
-func (svc *clustersService) List(filterName string) (ClusterList, *Response, error) {
+func (svc *clustersService) List(filterName string) (sdkgo.ClusterList, *sdkgo.APIResponse, error) {
 	req := svc.client.ClustersApi.ClustersGet(svc.context)
+	fmt.Printf("Building request...\n")
 	if filterName != "" {
 		req = req.FilterName(filterName)
 	}
 	clusterList, res, err := svc.client.ClustersApi.ClustersGetExecute(req)
-	return ClusterList{clusterList}, &Response{*res}, err
+	fmt.Printf("%+v\n", clusterList)
+	return clusterList, res, err
 }
 
 func (svc *clustersService) Get(clusterId string) (*ClusterResponse, *Response, error) {
