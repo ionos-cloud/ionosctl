@@ -495,6 +495,76 @@ func getCertificate(path string) (*x509.CertPool, error) {
 	return caCertPool, nil
 }
 
+func updateImagesAfterUpload(c *core.CommandConfig, diffImgs []resources.Image, properties resources.ImageProperties) ([]resources.Image, error) {
+	// do a patch on the uploaded images
+	var imgs []resources.Image
+	for _, diffImg := range diffImgs {
+		img, _, err := c.CloudApiV6Services.Images().Update(*diffImg.GetId(), properties, cloudapiv6.ParentResourceQueryParams)
+		imgs = append(imgs, *img)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return imgs, nil
+}
+
+func getDiffUploadedImages(c *core.CommandConfig, names, locations []string) ([]resources.Image, error) {
+	// Wait for images uploaded to ftp server to register on `ionosctl image list`.
+	// Currently "hacky" code, until SDK-1163 is fixed.
+	// TODO: Replace the nested for-loops when support for filtering by multiple values per key is added
+	const attempts = 6
+	const timeoutPerAttempt = 10
+	attempt := 0
+	time.Sleep(timeoutPerAttempt * time.Second)
+	var diffImgs []resources.Image
+
+	c.Printer.Verbose("Will iterate over %+v\n", names)
+	for attempt < attempts {
+		diffImgs = []resources.Image{} // throw away old iteration images
+
+		for _, n := range names { // TODO: See SDK-1163. These nested for-loops could be O(1) instead!
+			for _, l := range locations { // TODO: See SDK-1163. These nested for-loops could be O(1) instead!
+				filters := map[string]string{
+					"name":     n,
+					"public":   "false",
+					"location": l,
+				}
+				c.Printer.Verbose("Filtering by name %s and location %s\n", n, l)
+
+				depth := int32(1)
+				imgs, _, err := c.CloudApiV6Services.Images().List(resources.ListQueryParams{Filters: &filters, QueryParams: resources.QueryParams{Depth: &depth}})
+				if err != nil {
+					return nil, fmt.Errorf("failed listing uploaded images")
+				}
+				c.Printer.Verbose("Got images by listing: %+v\n", getImages(imgs))
+
+				if len(getImages(imgs)) < 1 {
+					break // should have one for each location. If less, just break here. Clearly we won't have enough.
+				}
+				diffImgs = append(diffImgs, getImages(imgs)...)
+				c.Printer.Verbose("Total images: %+v\n", diffImgs)
+
+			}
+		}
+		if len(diffImgs) == len(names)*len(locations) {
+			c.Printer.Verbose("Success! found images %+v\n", diffImgs)
+			// Success!
+			break
+		}
+
+		if attempt >= attempts {
+			return nil, fmt.Errorf("failed retrieving all uploaded images: timeout %ds", timeoutPerAttempt*attempts)
+		}
+
+		// New attempt...
+		c.Printer.Verbose("Attempt %d failed", attempt)
+		time.Sleep(timeoutPerAttempt * time.Second)
+		attempt += 1
+	}
+
+	return diffImgs, nil
+}
+
 func RunImageUpload(c *core.CommandConfig) error {
 	certPool, err := getCertificate(viper.GetString(core.GetFlagName(c.NS, "crt-path")))
 	if err != nil {
@@ -561,74 +631,18 @@ func RunImageUpload(c *core.CommandConfig) error {
 			return v + filepath.Ext(images[k])
 		})
 	}
-	c.Printer.Verbose("Will iterate over %+v\n", names)
-
-	// Wait for images uploaded to ftp server to register on `ionosctl image list`.
-	// Currently "hacky" code, until SDK-1163 is fixed.
-	// TODO: Replace the nested for-loops when support for filtering by multiple values per key is added
-	const attempts = 6
-	const timeoutPerAttempt = 10
-	attempt := 0
-	time.Sleep(timeoutPerAttempt * time.Second)
-	var diffImgs []resources.Image
-	for attempt < attempts {
-		diffImgs = []resources.Image{} // throw away old iteration images
-
-		for _, n := range names { // TODO: See SDK-1163. These nested for-loops could be O(1) instead!
-			for _, l := range locations { // TODO: See SDK-1163. These nested for-loops could be O(1) instead!
-				filters := map[string]string{
-					"name":     n,
-					"public":   "false",
-					"location": l,
-				}
-				c.Printer.Verbose("Filtering by name %s and location %s\n", n, l)
-
-				depth := int32(1)
-				imgs, _, err := c.CloudApiV6Services.Images().List(resources.ListQueryParams{Filters: &filters, QueryParams: resources.QueryParams{Depth: &depth}})
-				if err != nil {
-					return fmt.Errorf("failed listing uploaded images: %e,"+
-						" however the upload was successful. Please run `ionosctl image update` manually", err)
-				}
-				c.Printer.Verbose("Got images by listing: %+v\n", getImages(imgs))
-
-				if len(getImages(imgs)) < 1 {
-					break // should have one for each location. If less, just break here. Clearly we won't have enough.
-				}
-				diffImgs = append(diffImgs, getImages(imgs)...)
-				c.Printer.Verbose("Total images: %+v\n", diffImgs)
-
-			}
-		}
-		if len(diffImgs) == len(images)*len(locations) {
-			c.Printer.Verbose("Success! found images %+v\n", diffImgs)
-			// Success!
-			break
-		}
-
-		if attempt >= attempts {
-			return fmt.Errorf("failed retrieving all uploaded images: timeout %ds,"+
-				" however the upload was successful. Please run `ionosctl image update` manually", timeoutPerAttempt*attempts)
-		}
-
-		// New attempt...
-		c.Printer.Verbose("Attempt %d failed", attempt)
-		time.Sleep(timeoutPerAttempt * time.Second)
-		attempt += 1
+	diffImgs, err := getDiffUploadedImages(c, names, locations) // Get UUIDs of uploaded images
+	if err != nil {
+		return fmt.Errorf("%e, however the upload was successful. Please run `ionosctl image update` manually", err)
 	}
 
-	input := getDesiredImageAfterPatch(c)
-	var imgs []resources.Image
-	for _, diffImg := range diffImgs {
-		img, _, err := c.CloudApiV6Services.Images().Update(*diffImg.GetId(), input, cloudapiv6.ParentResourceQueryParams)
-		imgs = append(imgs, *img)
-		if err != nil {
-			return fmt.Errorf("failed updating uploaded images: %e,"+
-				" however the upload was successful. Please run `ionosctl image update` manually", err)
-		}
+	properties := getDesiredImageAfterPatch(c)
+	imgs, err := updateImagesAfterUpload(c, diffImgs, properties)
+	if err != nil {
+		return fmt.Errorf("%e, however the upload was successful. Please run `ionosctl image update` manually", err)
 	}
 
 	c.Printer.Verbose("Successfully uploaded and updated images")
-
 	return c.Printer.Print(getImagePrint(nil, c, imgs))
 }
 
