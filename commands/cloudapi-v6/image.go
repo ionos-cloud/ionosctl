@@ -466,7 +466,7 @@ func PreRunImageUpload(c *core.PreCommandConfig) error {
 	}
 
 	validLocations := []string{"fra", "fkb", "txl", "lhr", "las", "ewr", "vit"}
-	err = allSliceFlagValuesInSet(viper.GetStringSlice(cloudapiv6.ArgLocation), validLocations)
+	err = allSliceFlagValuesInSet(viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgLocation)), validLocations)
 	if err != nil {
 		return err
 	}
@@ -611,8 +611,8 @@ func RunImageUpload(c *core.CommandConfig) error {
 		}
 
 		if attempt >= attempts {
-			return fmt.Errorf("failed retrieving all uploaded images: timeout 30s," +
-				" however the upload was successful. Please run `ionosctl image update` manually")
+			return fmt.Errorf("failed retrieving all uploaded images: timeout %ds,"+
+				" however the upload was successful. Please run `ionosctl image update` manually", timeoutPerAttempt*attempts)
 		}
 
 		// New attempt...
@@ -622,8 +622,10 @@ func RunImageUpload(c *core.CommandConfig) error {
 	}
 
 	input := getDesiredImageAfterPatch(c)
+	var imgs []resources.Image
 	for _, diffImg := range diffImgs {
-		_, _, err := c.CloudApiV6Services.Images().Update(*diffImg.GetId(), input, cloudapiv6.ParentResourceQueryParams)
+		img, _, err := c.CloudApiV6Services.Images().Update(*diffImg.GetId(), input, cloudapiv6.ParentResourceQueryParams)
+		imgs = append(imgs, *img)
 		if err != nil {
 			return fmt.Errorf("failed updating uploaded images: %e,"+
 				" however the upload was successful. Please run `ionosctl image update` manually", err)
@@ -632,7 +634,7 @@ func RunImageUpload(c *core.CommandConfig) error {
 
 	c.Printer.Verbose("Successfully uploaded and updated images")
 
-	return nil
+	return c.Printer.Print(getImagePrint(nil, c, imgs))
 }
 
 func PreRunImageList(c *core.PreCommandConfig) error {
