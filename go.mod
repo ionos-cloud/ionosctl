@@ -4,7 +4,8 @@ go 1.19
 
 require (
 	github.com/cheggaaa/pb/v3 v3.1.0
-	github.com/fatih/color v1.14.1
+	github.com/cjrd/allocate v0.0.0-20220510215731-986f24f0fb18
+	github.com/fatih/color v1.13.0
 	github.com/fatih/structs v1.1.0
 	github.com/golang/mock v1.6.0
 	github.com/google/uuid v1.3.0

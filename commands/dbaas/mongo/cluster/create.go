@@ -2,49 +2,111 @@ package cluster
 
 import (
 	"context"
+	"github.com/cjrd/allocate"
+	cloudapiv6completer "github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
-	dbaaspg "github.com/ionos-cloud/ionosctl/services/dbaas-postgres"
 	ionoscloud "github.com/ionos-cloud/sdk-go-dbaas-mongo"
 	"github.com/spf13/cobra"
+	"os"
 )
 
-var clusterProperties = ionoscloud.CreateClusterProperties{} // flag values will point to these variables in memory
+const (
+	flagName            = "name"
+	flagNameShort       = "n"
+	flagTemplateId      = "template-id"
+	flagInstances       = "instances"
+	flagMaintenanceTime = "maintenance-time"
+	flagMaintenanceDay  = "maintenance-day"
+	flagLocation        = "location"
+	flagLocationShort   = "l"
+	flagDatacenterId    = "datacenter-id"
+	flagCidrList        = "cidr-list"
+	flagLanId           = "lan-id"
+)
+
+var createProperties = ionoscloud.CreateClusterProperties{}
+var conn = ionoscloud.Connection{}
 
 func ClusterCreateCmd() *core.Command {
 	cmd := core.NewCommand(context.TODO(), nil /* circular dependency 🤡*/, core.CommandBuilder{
 		Verb:      "create", // used in AVAILABLE COMMANDS in help
 		Aliases:   []string{"c"},
 		ShortDesc: "Create Mongo Clusters",
-		PreCmdRun: core.NoPreRun,
+		PreCmdRun: func(c *core.PreCommandConfig) error {
+			var err error
+			err = c.Command.Command.MarkFlagRequired(flagTemplateId)
+			if err != nil {
+				return err
+			}
+			err = c.Command.Command.MarkFlagRequired(flagName)
+			if err != nil {
+				return err
+			}
+			err = c.Command.Command.MarkFlagRequired(flagInstances)
+			if err != nil {
+				return err
+			}
+			err = c.Command.Command.MarkFlagRequired(flagLocation)
+			if err != nil {
+				return err
+			}
+			return nil
+		},
 		CmdRun: func(c *core.CommandConfig) error {
 			c.Printer.Verbose("Creating Cluster...")
+			day, err := c.Command.Command.Flags().GetString(flagMaintenanceDay)
+			if err != nil {
+				return err
+			}
+			time, err := c.Command.Command.Flags().GetString(flagMaintenanceTime)
+			if err != nil {
+				return err
+			}
+
+			maintenanceWindow := ionoscloud.MaintenanceWindow{}
+			maintenanceWindow.SetDayOfTheWeek(ionoscloud.DayOfTheWeek(day))
+			maintenanceWindow.SetTime(time)
+			createProperties.SetMaintenanceWindow(maintenanceWindow)
+			createProperties.SetConnections([]ionoscloud.Connection{conn})
 			input := ionoscloud.CreateClusterRequest{}
+			input.SetProperties(createProperties)
 
 			cr, r, err := c.DbaasMongoServices.Clusters().Create(input)
 			if err != nil {
 				return err
 			}
-			return c.Printer.Print(getClusterPrint(r, c, []CreateRes))
+			return c.Printer.Print(getClusterPrint(r, c, &[]ionoscloud.ClusterResponse{cr}))
 		},
 		InitClient: true,
 	})
 
-	// TODO: Move ArgName to DBAAS level constants
-	cmd.AddStringFlag(dbaaspg.ArgName, dbaaspg.ArgNameShort, "", "Response filter to list only the PostgreSQL Clusters that contain the specified name in the DisplayName field. The value is case insensitive")
-	cmd.AddStringFlag(dbaaspg.ArgLocation, "", "", "Location")
-	cmd.AddStringFlag("template-id", "", "", "Template to use")
-	cmd.AddInt32Flag("instances", "", 0, "Instances")
-	cmd.AddStringFlag(dbaaspg.ArgMaintenanceTime, dbaaspg.ArgMaintenanceTimeShort, "", "Time for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur. e.g.: 16:30:59")
-	cmd.AddStringFlag(dbaaspg.ArgMaintenanceDay, dbaaspg.ArgMaintenanceDayShort, "", "Day Of the Week for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur")
-	_ = cmd.Command.RegisterFlagCompletionFunc(dbaaspg.ArgMaintenanceDay, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return []string{"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"}, cobra.ShellCompDirectiveNoFileComp
+	// Linked to properties struct
+	_ = allocate.Zero(&createProperties)
+	cmd.AddStringVarFlag(createProperties.DisplayName, flagName, flagNameShort, "", "The name of your cluster")
+	cmd.AddStringVarFlag(createProperties.Location, flagLocation, flagLocationShort, "", "The physical location where the cluster will be created. This is the location where all your instances will be located. This property is immutable")
+	_ = cmd.Command.RegisterFlagCompletionFunc(flagLocation, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return cloudapiv6completer.LocationIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
+	cmd.AddStringVarFlag(createProperties.TemplateID, flagTemplateId, "", "", "The unique ID of the template, which specifies the number of cores, storage size, and memory")
+	cmd.AddInt32VarFlag(createProperties.Instances, flagInstances, "", 0, "The total number of instances in the cluster (one primary and n-1 secondaries)")
+
+	// Maintenance
+	cmd.AddStringFlag(flagMaintenanceTime, "", "", "Time for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur. e.g.: 16:30:59")
+	cmd.AddStringFlag(flagMaintenanceDay, "", "", "Day Of the Week for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur")
+	_ = cmd.Command.RegisterFlagCompletionFunc(flagMaintenanceDay, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return []string{"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"}, cobra.ShellCompDirectiveNoFileComp
+	}) // TODO: Completions should be a flag option func
+
+	// Misc
 	cmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Data Center creation to be executed")
 	cmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Data Center creation [seconds]")
-	cmd.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultCreateDepth, cloudapiv6.ArgDepthDescription)
 
+	// Connections
+	_ = allocate.Zero(&conn)
+	cmd.AddStringVarFlag(conn.DatacenterId, flagDatacenterId, "", "", "The datacenter to which your cluster will be connected")
+	cmd.AddStringVarFlag(conn.LanId, flagLanId, "", "", "The numeric LAN ID with which you connect your cluster")
+	cmd.AddStringSliceVarFlag(conn.CidrList, flagCidrList, "", nil, "The list of IPs and subnet for your cluster. Note the following unavailable IP ranges: 10.233.64.0/18 10.233.0.0/18 10.233.114.0/24")
 	/*
 	   TemplateID        *string            `json:"templateID"`
 	    MongoDBVersion    *string            `json:"mongoDBVersion,omitempty"`

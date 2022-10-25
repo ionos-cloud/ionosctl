@@ -21,11 +21,11 @@ func ClusterListCmd() *core.Command {
 		PreCmdRun: core.NoPreRun,
 		CmdRun: func(c *core.CommandConfig) error {
 			c.Printer.Verbose("Getting Clusters...")
-			clusters, _, err := c.DbaasMongoServices.Clusters().List("")
+			clusters, r, err := c.DbaasMongoServices.Clusters().List("")
 			if err != nil {
 				return err
 			}
-			return c.Printer.Print(getClusterPrint(nil, c, clusters.GetItems()))
+			return c.Printer.Print(getClusterPrint(r, c, clusters.GetItems()))
 		},
 		InitClient: true,
 	})

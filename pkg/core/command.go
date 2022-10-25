@@ -120,6 +120,22 @@ func (c *Command) AddSetFlag(name, shorthand, defaultValue string, allowed []str
 	}
 }
 
+func (c *Command) AddStringVarFlag(address *string, name, shorthand, value, desc string, optionFunc ...FlagOptionFunc) {
+	flags := c.Command.Flags()
+	fmt.Printf("%+v\n\n", address)
+	if shorthand != "" {
+		flags.StringVarP(address, name, shorthand, value, desc)
+	} else {
+		flags.StringVar(address, name, value, desc)
+	}
+	viper.BindPFlag(GetFlagName(c.NS, name), c.Command.Flags().Lookup(name))
+
+	// Add Option to Flag
+	for _, option := range optionFunc {
+		option(c, name)
+	}
+}
+
 func (c *Command) AddStringFlag(name, shorthand, defaultValue, desc string, optionFunc ...FlagOptionFunc) {
 	flags := c.Command.Flags()
 	if shorthand != "" {
@@ -167,6 +183,21 @@ func (c *Command) GetAnnotationsByKey(key string) string {
 	}
 }
 
+func (c *Command) AddStringSliceVarFlag(address *[]string, name, shorthand string, defaultValue []string, desc string, optionFunc ...FlagOptionFunc) {
+	flags := c.Command.Flags()
+	if shorthand != "" {
+		flags.StringSliceVarP(address, name, shorthand, defaultValue, desc)
+	} else {
+		flags.StringSliceVar(address, name, defaultValue, desc)
+	}
+	viper.BindPFlag(GetFlagName(c.NS, name), c.Command.Flags().Lookup(name))
+
+	// Add Option to Flag
+	for _, option := range optionFunc {
+		option(c, name)
+	}
+}
+
 func (c *Command) AddStringSliceFlag(name, shorthand string, defaultValue []string, desc string, optionFunc ...FlagOptionFunc) {
 	flags := c.Command.Flags()
 	if shorthand != "" {
@@ -203,6 +234,21 @@ func (c *Command) AddIntFlag(name, shorthand string, defaultValue int, desc stri
 		flags.IntP(name, shorthand, defaultValue, desc)
 	} else {
 		flags.Int(name, defaultValue, desc)
+	}
+	viper.BindPFlag(GetFlagName(c.NS, name), c.Command.Flags().Lookup(name))
+
+	// Add Option to Flag
+	for _, option := range optionFunc {
+		option(c, name)
+	}
+}
+
+func (c *Command) AddInt32VarFlag(address *int32, name, shorthand string, defaultValue int32, desc string, optionFunc ...FlagOptionFunc) {
+	flags := c.Command.Flags()
+	if shorthand != "" {
+		flags.Int32VarP(address, name, shorthand, defaultValue, desc)
+	} else {
+		flags.Int32Var(address, name, defaultValue, desc)
 	}
 	viper.BindPFlag(GetFlagName(c.NS, name), c.Command.Flags().Lookup(name))
 

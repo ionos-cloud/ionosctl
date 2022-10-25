@@ -6,7 +6,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
-	"github.com/ionos-cloud/ionosctl/services/dbaas-mongo/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go-dbaas-mongo"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -31,7 +30,7 @@ func ClusterCmd() *core.Command {
 // TODO: Why is this tightly coupled to resources.ClusterResponse? Should just take Headers and Columns as params. should also be moved to printer package, to reduce duplication
 //
 // this is a nightmare to maintain if it is tightly coupled to every single resource!!!!!!!!!!!!
-func getClusterPrint(resp *resources.Response, c *core.CommandConfig, dcs *[]ionoscloud.ClusterResponse) printer.Result {
+func getClusterPrint(resp *ionoscloud.APIResponse, c *core.CommandConfig, dcs *[]ionoscloud.ClusterResponse) printer.Result {
 	r := printer.Result{}
 	if c != nil {
 		if resp != nil {
