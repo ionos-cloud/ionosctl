@@ -240,6 +240,8 @@ github.com/inconshreveable/mousetrap v1.0.1/go.mod h1:vpF70FUmC8bwa3OWnCshd2FqLf
 github.com/influxdata/influxdb1-client v0.0.0-20191209144304-8bf82d3c094d/go.mod h1:qj24IKcXYK6Iy9ceXlo3Tc+vtHo9lIhSX5JddghvEPo=
 github.com/ionos-cloud/sdk-go-auth v1.0.5 h1:gbRssXxw/AToAw39pDk10+01T2fyCwy1tdH1hg7WsPk=
 github.com/ionos-cloud/sdk-go-auth v1.0.5/go.mod h1:YVinbTXBg0Kz4mNJ9BUxv9W7swXfKbquGEsyTpxXCIk=
+github.com/ionos-cloud/sdk-go-cert-manager v1.0.0 h1:pPIhdjTB3rjP9x3Cf6B4j8NTZ1u2v/w7/0h7GtFs/Ig=
+github.com/ionos-cloud/sdk-go-cert-manager v1.0.0/go.mod h1:nFzMT0UNtNiLIuDGYj8pulHFQiVVql43oEX/eQIyr5Q=
 github.com/ionos-cloud/sdk-go-dbaas-postgres v1.0.4 h1:RCEBhgOgE55H33s/Rsgv4vcr3HYx7nDtRocM4yFnC5U=
 github.com/ionos-cloud/sdk-go-dbaas-postgres v1.0.4/go.mod h1:87cFAQViqjorhuafmYIDCmCTr5GiaqDB7qr09K1gdOU=
 github.com/ionos-cloud/sdk-go/v6 v6.1.3 h1:vb6yqdpiqaytvreM0bsn2pXw+1YDvEk2RKSmBAQvgDQ=
