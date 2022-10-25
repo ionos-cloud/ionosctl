@@ -1,21 +1,18 @@
-package mongo
+package cluster
 
 import (
-	"context"
 	"fmt"
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/services/dbaas-mongo/resources"
-	dbaaspg "github.com/ionos-cloud/ionosctl/services/dbaas-postgres"
 	ionoscloud "github.com/ionos-cloud/sdk-go-dbaas-mongo"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
 func ClusterCmd() *core.Command {
-	ctx := context.TODO()
 	clusterCmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "cluster",
@@ -26,43 +23,13 @@ func ClusterCmd() *core.Command {
 		},
 	}
 
-	/*
-		List Command
-	*/
-	list := core.NewCommand(ctx, clusterCmd, core.CommandBuilder{
-		Namespace: "dbaas-mongo",
-		Resource:  "cluster",
-		Verb:      "list",
-		Aliases:   []string{"l", "ls"},
-		ShortDesc: "List Mongo Clusters",
-		LongDesc:  "Use this command to retrieve a list of Mongo Clusters provisioned under your account. You can filter the result based on Cluster Name using `--name` option.",
-		Example:   "ionosctl dbaas mongo cluster list",
-		PreCmdRun: core.NoPreRun,
-		CmdRun: func(c *core.CommandConfig) error {
-			c.Printer.Verbose("Getting Clusters...")
-			clusters, _, err := c.DbaasMongoServices.Clusters().List("")
-			if err != nil {
-				return err
-			}
-
-			return c.Printer.Print(getClusterPrint(nil, c, clusters.GetItems()))
-
-		},
-		InitClient: true,
-	})
-	// TODO: Move ArgName to DBAAS level constants
-	list.AddStringFlag(dbaaspg.ArgName, dbaaspg.ArgNameShort, "", "Response filter to list only the PostgreSQL Clusters that contain the specified name in the DisplayName field. The value is case insensitive")
-	list.AddBoolFlag(config.ArgNoHeaders, "", false, "When using text output, don't print headers")
-	list.AddStringSliceFlag(config.ArgCols, "", allCols[0:6], printer.ColsMessage(allCols))
-	_ = list.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return allCols, cobra.ShellCompDirectiveNoFileComp
-	})
-
+	clusterCmd.AddCommand(ClusterListCmd())
 	return clusterCmd
 }
 
-// TODO: Why is this tightly coupled to resources.ClusterResponse? Should just take Headers and Columns as params
-// TODO: should also be moved to printer package, to reduce duplication
+// TODO: Why is this tightly coupled to resources.ClusterResponse? Should just take Headers and Columns as params. should also be moved to printer package, to reduce duplication
+//
+// this is a nightmare to maintain if it is tightly coupled to every single resource!!!!!!!!!!!!
 func getClusterPrint(resp *resources.Response, c *core.CommandConfig, dcs *[]ionoscloud.ClusterResponse) printer.Result {
 	r := printer.Result{}
 	if c != nil {

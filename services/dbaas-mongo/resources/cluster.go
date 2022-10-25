@@ -2,7 +2,6 @@ package resources
 
 import (
 	"context"
-	"fmt"
 	sdkgo "github.com/ionos-cloud/sdk-go-dbaas-mongo"
 )
 
@@ -59,12 +58,10 @@ func NewClustersService(client *Client, ctx context.Context) ClustersService {
 
 func (svc *clustersService) List(filterName string) (sdkgo.ClusterList, *sdkgo.APIResponse, error) {
 	req := svc.client.ClustersApi.ClustersGet(svc.context)
-	fmt.Printf("Building request...\n")
 	if filterName != "" {
 		req = req.FilterName(filterName)
 	}
 	clusterList, res, err := svc.client.ClustersApi.ClustersGetExecute(req)
-	fmt.Printf("%+v\n", clusterList)
 	return clusterList, res, err
 }
 

@@ -1,6 +1,7 @@
 package mongo
 
 import (
+	"github.com/ionos-cloud/ionosctl/commands/dbaas/mongo/cluster"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/spf13/cobra"
 )
@@ -15,7 +16,7 @@ func DBaaSMongoCmd() *core.Command {
 			TraverseChildren: true,
 		},
 	}
-	mongoCmd.AddCommand(ClusterCmd())
+	mongoCmd.AddCommand(cluster.ClusterCmd())
 	//mongoCmd.AddCommand(LogsCmd())
 	//mongoCmd.AddCommand(BackupCmd())
 	//mongoCmd.AddCommand(PgsqlVersionCmd())

@@ -132,6 +132,13 @@ func NewCommandCfg(ctx context.Context, in io.Reader, p printer.PrintService, in
 			if err = c.CertificateManagerServices.InitServices(client); err != nil {
 				return err
 			}
+			dbaasMongoClient, err := c.DbaasMongoServices.InitClient()
+			if err != nil {
+				return err
+			}
+			if err = c.DbaasMongoServices.InitServices(dbaasMongoClient); err != nil {
+				return err
+			}
 			return nil
 		},
 	}
