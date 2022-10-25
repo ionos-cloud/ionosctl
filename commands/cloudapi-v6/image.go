@@ -203,10 +203,11 @@ func ImageCmd() *core.Command {
 		CmdRun:     RunImageUpload,
 		InitClient: true,
 	})
-	upload.AddStringSliceFlag(cloudapiv6.ArgLocation, cloudapiv6.ArgLocationShort, nil, "Location to upload to. Must be an array containing only fra, fkb, txl, lhr, las, ewr, vit", core.RequiredFlagOption())
+	upload.AddStringSliceFlag(cloudapiv6.ArgLocation, cloudapiv6.ArgLocationShort, []string{"fra"}, "Location to upload to. Must be an array containing only fra, fkb, txl, lhr, las, ewr, vit", core.RequiredFlagOption())
 	upload.AddStringSliceFlag("image", "i", nil, "Slice of paths to images, absolute path or relative to ionosctl binary.", core.RequiredFlagOption())
 	upload.AddStringFlag("ftp-url", "", "ftp-%s.ionos.com", "URL of FTP server, with %s flag if location is embedded into url")
 	upload.AddBoolFlag("skip-verify", "", false, "Skip verification of server certificate, useful if using a custom ftp-url. WARNING: You can be the target of a man-in-the-middle attack!")
+	upload.AddBoolFlag("skip-update", "", false, "After the image is uploaded to the FTP server, send a PATCH to the API with the contents of the image properties flags and emulate a \"create\" command.")
 	upload.AddStringFlag("crt-path", "", "", "(Unneeded for IONOS FTP Servers) Path to file containing server certificate. If your FTP server is self-signed, you need to add the server certificate to the list of certificate authorities trusted by the client.")
 	upload.AddStringSliceFlag(cloudapiv6.ArgImageAlias, cloudapiv6.ArgImageAliasShort, nil, "Rename the uploaded images. These names should not contain any extension. By default, this is the base of the image path")
 	upload.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, 300, "(seconds) Context Deadline. FTP connection will time out after this many seconds")
@@ -430,15 +431,6 @@ func RunImageUpdate(c *core.CommandConfig) error {
 }
 
 func PreRunImageUpload(c *core.PreCommandConfig) error {
-	err := c.Command.Command.MarkFlagRequired("image")
-	if err != nil {
-		return err
-	}
-	err = c.Command.Command.MarkFlagRequired(cloudapiv6.ArgLocation)
-	if err != nil {
-		return err
-	}
-
 	allSliceFlagValuesInSet := func(flagVals []string, set []string) error {
 		for _, val := range flagVals {
 			if !(slices.Contains(set, val)) {
@@ -446,6 +438,11 @@ func PreRunImageUpload(c *core.PreCommandConfig) error {
 			}
 		}
 		return nil
+	}
+
+	err := c.Command.Command.MarkFlagRequired("image")
+	if err != nil {
+		return err
 	}
 
 	validImageExtensions := []string{".iso", ".img", ".vmdk", ".vhd", ".vhdx", ".cow", ".qcow", ".qcow2", ".raw", ".vpc", ".vdi"}
@@ -465,10 +462,18 @@ func PreRunImageUpload(c *core.PreCommandConfig) error {
 		return err
 	}
 
-	validLocations := []string{"fra", "fkb", "txl", "lhr", "las", "ewr", "vit"}
-	err = allSliceFlagValuesInSet(viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgLocation)), validLocations)
-	if err != nil {
-		return err
+	// "Locations" flag only required if ftp-url custom flag contains a %s in which to add the location ID
+	if strings.Contains(viper.GetString(core.GetFlagName(c.NS, "ftp-url")), "%s") {
+		err = c.Command.Command.MarkFlagRequired(cloudapiv6.ArgLocation)
+		if err != nil {
+			return err
+		}
+
+		validLocations := []string{"fra", "fkb", "txl", "lhr", "las", "ewr", "vit"}
+		err = allSliceFlagValuesInSet(viper.GetStringSlice(cloudapiv6.ArgLocation), validLocations)
+		if err != nil {
+			return err
+		}
 	}
 
 	aliases := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgImageAlias))
@@ -579,7 +584,10 @@ func RunImageUpload(c *core.CommandConfig) error {
 	var eg errgroup.Group
 	for _, loc := range locations {
 		for imgIdx, img := range images {
-			url := fmt.Sprintf(viper.GetString(core.GetFlagName(c.NS, "ftp-url")), loc)
+			url := viper.GetString(core.GetFlagName(c.NS, "ftp-url"))
+			if strings.Contains(url, "%s") {
+				url = fmt.Sprintf(url, loc) // Add the location modifier, if the URL supports it
+			}
 			c.Printer.Verbose("Uploading %s to %s", img, url)
 
 			var isoOrHdd string
@@ -620,6 +628,11 @@ func RunImageUpload(c *core.CommandConfig) error {
 	}
 	if err := eg.Wait(); err != nil {
 		return err
+	}
+
+	if viper.GetBool(core.GetFlagName(c.NS, "skip-update")) {
+		c.Printer.Verbose("Successfully uploaded images")
+		return nil
 	}
 
 	names := images
