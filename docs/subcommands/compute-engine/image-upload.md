@@ -52,7 +52,7 @@ Required values to run command:
   -f, --force                    Force command to execute without user input
       --ftp-url string           URL of FTP server, with %s flag if location is embedded into url (default "ftp-%s.ionos.com")
   -h, --help                     Print usage
-  -i, --image strings            Slice of paths to images, absolute path or relative to ionosctl binary. (required)
+  -i, --image strings            Slice of paths to images, can be absolute path or relative to current working directory (required)
   -a, --image-alias strings      Rename the uploaded images. These names should not contain any extension. By default, this is the base of the image path
       --licence-type string      The OS type of this image. Can be one of: UNKNOWN, WINDOWS, WINDOWS2016, WINDOWS2022, LINUX, OTHER (default "UNKNOWN")
   -l, --location strings         Location to upload to. Must be an array containing only fra, fkb, txl, lhr, las, ewr, vit (required) (default [fra])
