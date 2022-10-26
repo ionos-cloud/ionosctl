@@ -8,8 +8,6 @@
   - Added `image update` and `image delete` which correspond to CloudAPI Image Patch and Image Delete routes.
   - Added `image upload` command, which uploads your image to the desired IONOS FTP servers. Each Ionos FTP server corresponds to a `location`. These uploads can run in parallel, and by default this command also runs a PATCH on the freshly uploaded image, in order to simulate a `create` command.
 
-- Snap release is now automated
-
 ### Fixed
 
 - Fixed `CLIHttpUserAgent` containing duplicated `v` characters for version
