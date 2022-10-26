@@ -2,6 +2,7 @@ package resources
 
 import (
 	"context"
+
 	sdkgo "github.com/ionos-cloud/sdk-go-cert-manager"
 )
 
@@ -11,7 +12,7 @@ type Response struct {
 
 // CertsService is a wrapper around ionoscloud.CertificateDto
 type CertsService interface {
-	Get(certId string) (sdkgo.CertificateDto, *sdkgo.APIResponse, error)
+	GetById(certId string) (sdkgo.CertificateDto, *sdkgo.APIResponse, error)
 }
 
 type certsService struct {
@@ -28,7 +29,7 @@ func NewCertsService(client *Client, ctx context.Context) CertsService {
 	}
 }
 
-func (svc *certsService) Get(certId string) (sdkgo.CertificateDto, *sdkgo.APIResponse, error) {
+func (svc *certsService) GetById(certId string) (sdkgo.CertificateDto, *sdkgo.APIResponse, error) {
 	req := svc.client.CertificatesApi.CertificatesGetById(svc.context, certId)
 	cert, res, err := svc.client.CertificatesApi.CertificatesGetByIdExecute(req)
 	return cert, res, err
