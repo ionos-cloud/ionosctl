@@ -1,5 +1,21 @@
 # Changelog
 
+## [6.4.0] (October 2022)
+
+### Added
+
+- Added `image` resource commands:    
+  - Added `image update` and `image delete` which correspond to CloudAPI Image Patch and Image Delete routes.
+  - Added `image upload` command, which uploads your image to the desired IONOS FTP servers. Each Ionos FTP server corresponds to a `location`. These uploads can run in parallel, and by default this command also runs a PATCH on the freshly uploaded image, in order to simulate a `create` command.
+
+- Snap release is now automated
+
+### Fixed
+
+- Fixed `CLIHttpUserAgent` containing duplicated `v` characters for version
+
+- Fixed config file username & password being ignored if environment variable IONOS_TOKEN is set, and IONOS_USERNAME and IONOS_PASSWORD not set
+
 ## [6.3.3] (October 2022)
 
 ### Fixed
