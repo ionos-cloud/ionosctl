@@ -1,13 +1,13 @@
 ---
-description: Update a specified Image
+description: Upload an image to FTP server
 ---
 
-# ImageUpdate
+# ImageUpload
 
 ## Usage
 
 ```text
-ionosctl image update [flags]
+ionosctl image upload [flags]
 ```
 
 ## Aliases
@@ -18,19 +18,20 @@ For `image` command:
 [img]
 ```
 
-For `update` command:
+For `upload` command:
 
 ```text
-[u up]
+[ftp-upload ftp upl]
 ```
 
 ## Description
 
-Use this command to update information about a specified Image.
+Use this command to upload an HDD or ISO image.
 
 Required values to run command:
 
-* Image Id
+* Location
+
 
 ## Options
 
@@ -42,32 +43,35 @@ Required values to run command:
   -c, --config string            Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --cpu-hot-plug             'Hot-Plug' CPU. It is not possible to have a hot-unplug CPU which you previously did not hot-plug (default true)
       --cpu-hot-unplug           'Hot-Unplug' CPU. It is not possible to have a hot-unplug CPU which you previously did not hot-plug
-  -D, --depth int32              Controls the detail depth of the response objects. Max depth is 10.
+      --crt-path string          (Unneeded for IONOS FTP Servers) Path to file containing server certificate. If your FTP server is self-signed, you need to add the server certificate to the list of certificate authorities trusted by the client.
   -d, --description string       Description of the Image
       --disc-scsi-hot-plug       'Hot-Plug' SCSI drive (default true)
       --disc-scsi-hot-unplug     'Hot-Unplug' SCSI drive
       --disc-virtio-hot-plug     'Hot-Plug' Virt-IO drive (default true)
       --disc-virtio-hot-unplug   'Hot-Unplug' Virt-IO drive
   -f, --force                    Force command to execute without user input
+      --ftp-url string           URL of FTP server, with %s flag if location is embedded into url (default "ftp-%s.ionos.com")
   -h, --help                     Print usage
-  -i, --image-id string          The unique Image Id (required)
+  -i, --image strings            Slice of paths to images, absolute path or relative to ionosctl binary. (required)
+  -a, --image-alias strings      Rename the uploaded images. These names should not contain any extension. By default, this is the base of the image path
       --licence-type string      The OS type of this image. Can be one of: UNKNOWN, WINDOWS, WINDOWS2016, WINDOWS2022, LINUX, OTHER (default "UNKNOWN")
+  -l, --location strings         Location to upload to. Must be an array containing only fra, fkb, txl, lhr, las, ewr, vit (required) (default [fra])
   -n, --name string              Name of the Image
       --nic-hot-plug             'Hot-Plug' NIC (default true)
       --nic-hot-unplug           'Hot-Unplug' NIC
-      --no-headers               When using text output, don't print headers
   -o, --output string            Desired output format [text|json] (default "text")
   -q, --quiet                    Quiet output
       --ram-hot-plug             'Hot-Plug' RAM (default true)
       --ram-hot-unplug           'Hot-Unplug' RAM
-  -t, --timeout int              Timeout option for Request for Image update [seconds] (default 60)
+      --skip-update              After the image is uploaded to the FTP server, send a PATCH to the API with the contents of the image properties flags and emulate a "create" command.
+      --skip-verify              Skip verification of server certificate, useful if using a custom ftp-url. WARNING: You can be the target of a man-in-the-middle attack!
+  -t, --timeout int              (seconds) Context Deadline. FTP connection will time out after this many seconds (default 300)
   -v, --verbose                  Print step-by-step process when running command
-  -w, --wait-for-request         Wait for the Request for Image update to be executed
 ```
 
 ## Examples
 
 ```text
-ionosctl image update --image-id IMAGE_ID
+ionosctl img u -i kolibri.iso -l fkb,fra,vit
 ```
 

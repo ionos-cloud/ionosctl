@@ -1,10 +1,16 @@
 package resources
 
 import (
+	"bufio"
 	"context"
-
+	"crypto/tls"
+	"crypto/x509"
+	"fmt"
 	"github.com/fatih/structs"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	"github.com/kardianos/ftps"
+	"path/filepath"
+	"time"
 )
 
 type Image struct {
@@ -19,8 +25,27 @@ type ImageProperties struct {
 	ionoscloud.ImageProperties
 }
 
+// UploadProperties contains info needed to initialize an FTP connection to IONOS server and upload an image.
+type UploadProperties struct {
+	ImageFileProperties
+	FTPServerProperties
+}
+
+type ImageFileProperties struct {
+	Path       string // File name, server path (not local) and file extension included
+	DataBuffer *bufio.Reader
+}
+type FTPServerProperties struct {
+	Url               string // Server URL without any directory path. Example: ftp-fkb.ionos.com
+	Port              int
+	SkipVerify        bool           // Skip FTP server certificate verification. WARNING man-in-the-middle attack possible
+	ServerCertificate *x509.CertPool // If FTP server uses self signed certificates, put this in tlsConfig. IONOS FTP Servers in prod DON'T need this
+	Timeout           int            // Timeout in seconds
+}
+
 // ImagesService is a wrapper around ionoscloud.Image
 type ImagesService interface {
+	Upload(properties UploadProperties) error
 	List(params ListQueryParams) (Images, *Response, error)
 	Get(imageId string, params QueryParams) (*Image, *Response, error)
 	Update(imageId string, imgProp ImageProperties, params QueryParams) (*Image, *Response, error)
@@ -39,6 +64,61 @@ func NewImageService(client *Client, ctx context.Context) ImagesService {
 		client:  client,
 		context: ctx,
 	}
+}
+
+func (s *imagesService) Upload(p UploadProperties) error {
+	tlsConfig := tls.Config{
+		InsecureSkipVerify: p.SkipVerify,
+		ServerName:         p.Url,
+		RootCAs:            p.ServerCertificate,
+		MaxVersion:         tls.VersionTLS12,
+	}
+
+	dialOptions := ftps.DialOptions{
+		Host:        p.Url,
+		Port:        p.Port,
+		Username:    s.client.GetConfig().Username,
+		Passowrd:    s.client.GetConfig().Password,
+		ExplicitTLS: true,
+		TLSConfig:   &tlsConfig,
+	}
+
+	ctx := context.Background()
+	if s.context != nil {
+		ctx = s.context
+	}
+	ctx, cancel := context.WithDeadline(ctx, time.Now().Add(time.Duration(p.Timeout)*time.Second))
+	defer cancel()
+
+	c, err := ftps.Dial(ctx, dialOptions)
+	if err != nil {
+		return err
+	}
+
+	err = c.Chdir(filepath.Dir(p.Path))
+	if err != nil {
+		return err
+	}
+
+	files, err := c.List(ctx)
+	if err != nil {
+		return err
+	}
+
+	// Check if there already exists an image with the given name at the location
+	desiredFileName := filepath.Base(p.Path)
+	for _, f := range files {
+		if f.Name == desiredFileName {
+			return fmt.Errorf("%s already exists at %s", desiredFileName, p.Url)
+		}
+	}
+
+	err = c.Upload(ctx, desiredFileName, p.DataBuffer)
+	if err != nil {
+		return err
+	}
+
+	return c.Close()
 }
 
 func (s *imagesService) List(params ListQueryParams) (Images, *Response, error) {

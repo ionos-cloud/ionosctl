@@ -55,6 +55,6 @@ Required values to run command:
 ## Examples
 
 ```text
-placeholder
+ionosctl image delete --image-id IMAGE_ID
 ```
 
