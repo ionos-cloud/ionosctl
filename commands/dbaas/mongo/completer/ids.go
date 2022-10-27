@@ -9,6 +9,25 @@ import (
 	"io"
 )
 
+func MongoClusterIds(outErr io.Writer) []string {
+	client, err := getClient()
+	clierror.CheckError(err, outErr)
+	svc := resources.NewClustersService(client, context.TODO())
+	templates, _, err := svc.List("")
+	clierror.CheckError(err, outErr)
+	ids := make([]string, 0)
+	if items, ok := templates.GetItemsOk(); ok && items != nil {
+		for _, item := range *items {
+			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
+				ids = append(ids, *itemId)
+			}
+		}
+	} else {
+		return nil
+	}
+	return ids
+}
+
 func MongoTemplateIds(outErr io.Writer) []string {
 	client, err := getClient()
 	clierror.CheckError(err, outErr)
