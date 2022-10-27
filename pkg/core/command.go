@@ -122,7 +122,6 @@ func (c *Command) AddSetFlag(name, shorthand, defaultValue string, allowed []str
 
 func (c *Command) AddStringVarFlag(address *string, name, shorthand, value, desc string, optionFunc ...FlagOptionFunc) {
 	flags := c.Command.Flags()
-	fmt.Printf("%+v\n\n", address)
 	if shorthand != "" {
 		flags.StringVarP(address, name, shorthand, value, desc)
 	} else {

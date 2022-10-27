@@ -8,13 +8,8 @@ import (
 )
 
 type Services struct {
-	// Dbaas Pgsql Resources Services
-	Clusters func() resources.ClustersService
-	//Backups  func() resources.BackupsService
-	//Versions func() resources.VersionsService
-	//Infos    func() resources.InfosService
-	//Restores func() resources.RestoresService
-	//Logs     func() resources.LogsService
+	Clusters  func() resources.ClustersService
+	Templates func() resources.TemplatesService
 	// Context
 	Context context.Context
 }
@@ -36,10 +31,6 @@ func (c *Services) InitClient() (*resources.Client, error) {
 // InitServices for Commands
 func (c *Services) InitServices(client *resources.Client) error {
 	c.Clusters = func() resources.ClustersService { return resources.NewClustersService(client, c.Context) }
-	//c.Backups = func() resources.BackupsService { return resources.NewBackupsService(client, c.Context) }
-	//c.Versions = func() resources.VersionsService { return resources.NewVersionsService(client, c.Context) }
-	//c.Infos = func() resources.InfosService { return resources.NewInfosService(client, c.Context) }
-	//c.Restores = func() resources.RestoresService { return resources.NewRestoresService(client, c.Context) }
-	//c.Logs = func() resources.LogsService { return resources.NewLogsService(client, c.Context) }
+	c.Templates = func() resources.TemplatesService { return resources.NewTemplatesService(client, c.Context) }
 	return nil
 }
