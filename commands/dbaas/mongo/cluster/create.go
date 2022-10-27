@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/cjrd/allocate"
 	cloudapiv6completer "github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/commands/dbaas/mongo/completer"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	ionoscloud "github.com/ionos-cloud/sdk-go-dbaas-mongo"
@@ -89,6 +90,9 @@ func ClusterCreateCmd() *core.Command {
 		return cloudapiv6completer.LocationIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddStringVarFlag(createProperties.TemplateID, flagTemplateId, "", "", "The unique ID of the template, which specifies the number of cores, storage size, and memory")
+	_ = cmd.Command.RegisterFlagCompletionFunc(flagTemplateId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.MongoTemplateIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+	})
 	cmd.AddInt32VarFlag(createProperties.Instances, flagInstances, "", 0, "The total number of instances in the cluster (one primary and n-1 secondaries)")
 
 	// Maintenance
