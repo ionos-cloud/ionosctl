@@ -19,7 +19,7 @@ func TemplatesListCmd() *core.Command {
 		Example:   "ionosctl dbaas mongo templates list",
 		PreCmdRun: core.NoPreRun,
 		CmdRun: func(c *core.CommandConfig) error {
-			c.Printer.Verbose("Getting Clusters...")
+			c.Printer.Verbose("Getting Templates...")
 			ls, r, err := c.DbaasMongoServices.Templates().List()
 			if err != nil {
 				return err
