@@ -17,21 +17,25 @@ const (
 // Right now, it has support for MB, GB
 func ConvertSize(sizeToConvert, unitToConvertTo string) (int, error) {
 	for _, unit := range []string{MegaBytes, GigaBytes, PetaBytes, TerraBytes} {
-		if strings.HasSuffix(sizeToConvert, unit) {
-			if strings.Contains(sizeToConvert, " ") {
-				sizeToConvert = strings.ReplaceAll(sizeToConvert, " ", "")
-			}
-			switch unitToConvertTo {
-			case MegaBytes:
-				return convertToMB(sizeToConvert, unit)
-			case GigaBytes:
-				return convertToGB(sizeToConvert, unit)
-			default:
-				return 0, errors.New("error converting to the specified unit")
-			}
+		if !strings.HasSuffix(sizeToConvert, unit) {
+			continue
+		}
+		sizeToConvert = strings.ReplaceAll(sizeToConvert, " ", "")
+		switch unitToConvertTo {
+		case MegaBytes:
+			return convertToMB(sizeToConvert, unit)
+		case GigaBytes:
+			return convertToGB(sizeToConvert, unit)
+		default:
+			return 0, errors.New("error converting to the specified unit")
 		}
 	}
 	return strconv.Atoi(sizeToConvert)
+}
+
+// don't ask me why this wasn't exported in the first place
+func ConvertToMB(size, unit string) (int, error) {
+	return convertToMB(size, unit)
 }
 
 func convertToMB(size, unit string) (int, error) {
@@ -65,8 +69,20 @@ func convertToMB(size, unit string) (int, error) {
 	}
 }
 
+// don't ask me why this wasn't exported in the first place
+func ConvertToGB(size, unit string) (int, error) {
+	return convertToGB(size, unit)
+}
+
 func convertToGB(size, unit string) (int, error) {
 	switch unit {
+	case MegaBytes:
+		s := strings.ReplaceAll(size, unit, "")
+		mb, err := strconv.Atoi(s)
+		if err != nil {
+			return 0, err
+		}
+		return mb / 1024, nil
 	case GigaBytes:
 		s := strings.ReplaceAll(size, unit, "")
 		return strconv.Atoi(s)
