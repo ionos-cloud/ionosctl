@@ -5,34 +5,6 @@ import (
 	sdkgo "github.com/ionos-cloud/sdk-go-dbaas-mongo"
 )
 
-type ClusterResponse struct {
-	sdkgo.ClusterResponse
-}
-
-type ClusterList struct {
-	sdkgo.ClusterList
-}
-
-type CreateClusterRequest struct {
-	sdkgo.CreateClusterRequest
-}
-
-type CreateClusterProperties struct {
-	sdkgo.CreateClusterProperties
-}
-
-//type PatchClusterRequest struct {
-//	sdkgo.PatchClusterRequest
-//}
-//
-//type PatchClusterProperties struct {
-//	sdkgo.PatchClusterProperties
-//}
-
-type Response struct {
-	sdkgo.APIResponse
-}
-
 // ClustersService is a wrapper around ionoscloud.Cluster
 type ClustersService interface {
 	List(filterName string) (sdkgo.ClusterList, *sdkgo.APIResponse, error)
