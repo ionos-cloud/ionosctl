@@ -19,7 +19,7 @@ type ClientConfig struct {
 
 // ClientService is a wrapper around ionoscloud.APIClient
 type ClientService interface {
-	GetById() *Client
+	Get() *Client
 	GetConfig() *ClientConfig
 }
 
@@ -40,7 +40,7 @@ func NewClientService(name, pwd, token, hostUrl string) (ClientService, error) {
 	}, nil
 }
 
-func (c clientService) GetById() *Client {
+func (c clientService) Get() *Client {
 	return &Client{
 		APIClient: *c.client,
 	}
