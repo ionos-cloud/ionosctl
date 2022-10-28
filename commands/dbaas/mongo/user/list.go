@@ -17,10 +17,14 @@ func UserListCmd() *core.Command {
 		ShortDesc: "Retrieves a list of MongoDB users.",
 		Example:   "ionosctl dbaas mongo user list",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			c.Command.Command.MarkFlagRequired("")
+			err := c.Command.Command.MarkFlagRequired("")
+			if err != nil {
+				return err
+			}
+			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			c.Printer.Verbose("Getting Templates...")
+			c.Printer.Verbose("Getting Users...")
 			ls, r, err := c.DbaasMongoServices.Users().List("")
 			if err != nil {
 				return err
@@ -31,7 +35,7 @@ func UserListCmd() *core.Command {
 	})
 
 	cmd.AddBoolFlag(config.ArgNoHeaders, "", false, "When using text output, don't print headers")
-	cmd.AddStringSliceFlag(config.ArgCols, "", allCols, printer.ColsMessage(allCols))
+	cmd.AddStringSliceFlag(config.ArgCols, "", nil, printer.ColsMessage(allCols))
 	_ = cmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allCols, cobra.ShellCompDirectiveNoFileComp
 	})

@@ -3,9 +3,14 @@ package user
 import (
 	"fmt"
 	"github.com/fatih/structs"
+	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
+	"github.com/ionos-cloud/ionosctl/pkg/printer"
+	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	ionoscloud "github.com/ionos-cloud/sdk-go-dbaas-mongo"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
+	"strings"
 )
 
 func UserCmd() *core.Command {
@@ -23,11 +28,13 @@ func UserCmd() *core.Command {
 }
 
 type UserPrint struct {
-	UserId      string `json:"UserId,omitempty"`
-	Cores       int32  `json:"Cores,omitempty"`
-	StorageSize string `json:"StorageSize,omitempty"`
-	Ram         string `json:"Ram,omitempty"`
+	Username  string `json:"Username,omitempty"`
+	Roles     string `json:"Roles,omitempty"`
+	Database  string `json:"Database,omitempty"`
+	CreatedBy string `json:"CreatedBy,omitempty"`
 }
+
+var allCols = structs.Names(UserPrint{})
 
 // given a User DB/Role pair, return its string representation
 // Role: { "role": "read", "database": "db" } -> "db: read"
@@ -48,28 +55,36 @@ func getUserRows(ls *[]ionoscloud.User) []map[string]interface{} {
 	for _, t := range *ls {
 		var cols UserPrint
 		properties, ok := t.GetPropertiesOk()
-		if !ok {
-			continue
-		}
-		roles := properties.GetRoles()
+		if ok {
+			rolesAsStrings := utils.MapNoIdx(*properties.GetRoles(), roleToString)
+			cols.Roles = strings.Join(rolesAsStrings, ", ") // "db1: read, db2: write, db3: abcd..."
 
-		rolesAsStrings :=
-		for _, r := range *roles {
-			roleToString(r)
+			cols.Database = *properties.GetDatabase()
+			cols.Username = *properties.GetUsername()
 		}
-
+		metadata, ok := t.GetMetadataOk()
+		if ok {
+			cols.CreatedBy = *metadata.GetCreatedBy()
+		}
 		o := structs.Map(cols)
 		out = append(out, o)
 	}
 	return out
 }
 
-func getClusterHeaders(customColumns []string) []string {
-	if customColumns == nil {
-		return allCols[0:6]
+func getUserPrint(resp *ionoscloud.APIResponse, c *core.CommandConfig, ls *[]ionoscloud.User) printer.Result {
+	r := printer.Result{}
+	if c != nil {
+		if resp != nil {
+			r.Resource = c.Resource
+			r.Verb = c.Verb
+			r.WaitForState = viper.GetBool(core.GetFlagName(c.NS, config.ArgWaitForState)) // this boolean is duplicated everywhere just to do an append of `& wait` to a verbose message
+		}
+		if ls != nil {
+			r.OutputJSON = ls
+			r.KeyValue = getUserRows(ls)                                                                                   // map header -> rows
+			r.Columns = printer.GetHeaders(allCols, allCols, viper.GetStringSlice(core.GetFlagName(c.NS, config.ArgCols))) // headers
+		}
 	}
-	//for _, c := customColumns {
-	//	if slices.Contains(allCols, c) {}
-	//}
-	return customColumns
+	return r
 }

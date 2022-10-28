@@ -40,14 +40,12 @@ func getTemplatesPrint(resp *ionoscloud.APIResponse, c *core.CommandConfig, ls *
 		}
 		if ls != nil {
 			r.OutputJSON = ls
-			r.KeyValue = getClusterRows(ls)                                                             // map header -> rows
-			r.Columns = getClusterHeaders(viper.GetStringSlice(core.GetFlagName(c.NS, config.ArgCols))) // headers
+			r.KeyValue = getClusterRows(ls)                                                                                 // map header -> rows
+			r.Columns = printer.GetHeadersAllDefault(allCols, viper.GetStringSlice(core.GetFlagName(c.NS, config.ArgCols))) // headers
 		}
 	}
 	return r
 }
-
-var allCols = structs.Names(TemplatePrint{})
 
 type TemplatePrint struct {
 	TemplateId  string `json:"TemplateId,omitempty"`
@@ -55,6 +53,8 @@ type TemplatePrint struct {
 	StorageSize string `json:"StorageSize,omitempty"`
 	Ram         string `json:"Ram,omitempty"`
 }
+
+var allCols = structs.Names(TemplatePrint{})
 
 func getClusterRows(ls *[]ionoscloud.TemplateResponse) []map[string]interface{} {
 	out := make([]map[string]interface{}, 0, len(*ls))
@@ -77,14 +77,4 @@ func getClusterRows(ls *[]ionoscloud.TemplateResponse) []map[string]interface{} 
 		out = append(out, o)
 	}
 	return out
-}
-
-func getClusterHeaders(customColumns []string) []string {
-	if customColumns == nil {
-		return allCols[0:6]
-	}
-	//for _, c := customColumns {
-	//	if slices.Contains(allCols, c) {}
-	//}
-	return customColumns
 }
