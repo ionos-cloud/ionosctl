@@ -10,6 +10,7 @@ import (
 type Services struct {
 	Clusters  func() resources.ClustersService
 	Templates func() resources.TemplatesService
+	Users     func() resources.UsersService
 	// Context
 	Context context.Context
 }
@@ -32,5 +33,6 @@ func (c *Services) InitClient() (*resources.Client, error) {
 func (c *Services) InitServices(client *resources.Client) error {
 	c.Clusters = func() resources.ClustersService { return resources.NewClustersService(client, c.Context) }
 	c.Templates = func() resources.TemplatesService { return resources.NewTemplatesService(client, c.Context) }
+	c.Users = func() resources.UsersService { return resources.NewUsersService(client, c.Context) }
 	return nil
 }
