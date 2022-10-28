@@ -3,6 +3,7 @@ package printer
 import (
 	"encoding/json"
 	"fmt"
+	"golang.org/x/exp/slices"
 	"io"
 	"regexp"
 	"strings"
@@ -29,6 +30,35 @@ type Result struct {
 	ApiResponse *resources.Response
 }
 
+// GetHeadersAllDefault is like GetHeaders, but defaultColumns is same as allColumns
+// Smaller signature for better dev experience
+func GetHeadersAllDefault(allColumns []string, customColumns []string) []string {
+	return GetHeaders(allColumns, allColumns, customColumns)
+}
+
+// GetHeaders takes all columns of a resource and the value of the columns flag,
+// returns the headers of the table. (Some legacy code might refer to these headers as "Columns")
+// allColumns can be found by using structs.Names
+func GetHeaders(allColumns []string, defaultColumns []string, customColumns []string) []string {
+	if customColumns == nil {
+		return defaultColumns
+	}
+
+	var validCustomColumns []string
+	for _, c := range customColumns {
+		if slices.Contains(allColumns, c) {
+			validCustomColumns = append(validCustomColumns, c)
+		}
+	}
+
+	if len(validCustomColumns) == 0 {
+		return defaultColumns
+	}
+
+	return validCustomColumns
+}
+
+// TODO: identical name to printText. Hard to decipher behaviour
 func (prt *Result) PrintText(out io.Writer, noHeaders bool) error {
 	var resultPrint ResultPrint
 	if prt.Resource != "" && prt.Verb != "" {
