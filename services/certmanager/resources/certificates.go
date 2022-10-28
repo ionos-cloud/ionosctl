@@ -12,7 +12,9 @@ type Response struct {
 
 // CertsService is a wrapper around ionoscloud.CertificateDto
 type CertsService interface {
-	GetById(certId string) (sdkgo.CertificateDto, *sdkgo.APIResponse, error)
+	Get(certId string) (sdkgo.CertificateDto, *sdkgo.APIResponse, error)
+	Post(sdkgo.CertificatePostDto) (sdkgo.CertificateDto, *sdkgo.APIResponse, error)
+	List() (sdkgo.CertificateCollectionDto, *sdkgo.APIResponse, error)
 }
 
 type certsService struct {
@@ -29,8 +31,20 @@ func NewCertsService(client *Client, ctx context.Context) CertsService {
 	}
 }
 
-func (svc *certsService) GetById(certId string) (sdkgo.CertificateDto, *sdkgo.APIResponse, error) {
+func (svc *certsService) Get(certId string) (sdkgo.CertificateDto, *sdkgo.APIResponse, error) {
 	req := svc.client.CertificatesApi.CertificatesGetById(svc.context, certId)
 	cert, res, err := svc.client.CertificatesApi.CertificatesGetByIdExecute(req)
+	return cert, res, err
+}
+
+func (svc *certsService) Post(input sdkgo.CertificatePostDto) (sdkgo.CertificateDto, *sdkgo.APIResponse, error) {
+	req := svc.client.CertificatesApi.CertificatesPost(svc.context).CertificatePostDto(input)
+	cert, res, err := svc.client.CertificatesApi.CertificatesPostExecute(req)
+	return cert, res, err
+}
+
+func (svc *certsService) List() (sdkgo.CertificateCollectionDto, *sdkgo.APIResponse, error) {
+	req := svc.client.CertificatesApi.CertificatesGet(svc.context)
+	cert, res, err := svc.client.CertificatesApi.CertificatesGetExecute(req)
 	return cert, res, err
 }

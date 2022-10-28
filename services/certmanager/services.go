@@ -24,7 +24,7 @@ func (c *Services) InitClient() (*resources.Client, error) {
 	if err != nil {
 		return nil, err
 	}
-	return clientSvc.GetById(), nil
+	return clientSvc.Get(), nil
 }
 
 // InitServices for Commands

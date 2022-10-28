@@ -6,6 +6,8 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/spf13/cobra"
+
+	sdkgo "github.com/ionos-cloud/sdk-go-cert-manager"
 )
 
 func CertGetCmd() *core.Command {
@@ -25,16 +27,20 @@ func CertGetCmd() *core.Command {
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			c.Printer.Verbose("Getting Clusters...")
+			c.Printer.Verbose("Getting Certificates...")
 			id, err := c.Command.Command.Flags().GetString("certificate-id")
 			if err != nil {
 				return err
 			}
-			cert, r, err := c.CertificateManagerServices.Certs().GetById(id)
+			cert, r, err := c.CertificateManagerServices.Certs().Get(id)
 			if err != nil {
 				return err
 			}
-			return c.Printer.Print(getCertPrint(r, c, &cert))
+
+			var list = sdkgo.CertificateCollectionDto{}
+
+			*list.GetItems() = append(*list.GetItems(), cert)
+			return c.Printer.Print(getCertPrint(r, c, &list))
 		},
 		InitClient: true,
 	})
