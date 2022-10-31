@@ -75,11 +75,11 @@ func ClusterCreateCmd() *core.Command {
 			input := ionoscloud.CreateClusterRequest{}
 			input.SetProperties(createProperties)
 
-			cr, r, err := c.DbaasMongoServices.Clusters().Create(input)
+			cr, _, err := c.DbaasMongoServices.Clusters().Create(input)
 			if err != nil {
 				return err
 			}
-			return c.Printer.Print(getClusterPrint(r, c, &[]ionoscloud.ClusterResponse{cr}))
+			return c.Printer.Print(getClusterPrint(c, &[]ionoscloud.ClusterResponse{cr}))
 		},
 		InitClient: true,
 	})

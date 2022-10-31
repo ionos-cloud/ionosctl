@@ -29,11 +29,11 @@ func UserListCmd() *core.Command {
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			c.Printer.Verbose("Getting Users...")
-			ls, r, err := c.DbaasMongoServices.Users().List(viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)))
+			ls, _, err := c.DbaasMongoServices.Users().List(viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)))
 			if err != nil {
 				return err
 			}
-			return c.Printer.Print(getUserPrint(r, c, ls.GetItems()))
+			return c.Printer.Print(getUserPrint(c, ls.GetItems()))
 		},
 		InitClient: true,
 	})

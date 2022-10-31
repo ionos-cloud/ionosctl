@@ -21,11 +21,11 @@ func TemplatesListCmd() *core.Command {
 		PreCmdRun: core.NoPreRun,
 		CmdRun: func(c *core.CommandConfig) error {
 			c.Printer.Verbose("Getting Templates...")
-			ls, r, err := c.DbaasMongoServices.Templates().List()
+			ls, _, err := c.DbaasMongoServices.Templates().List()
 			if err != nil {
 				return err
 			}
-			return c.Printer.Print(getTemplatesPrint(r, c, ls.GetItems()))
+			return c.Printer.Print(getTemplatesPrint(c, ls.GetItems()))
 		},
 		InitClient: true,
 	})

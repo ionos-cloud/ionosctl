@@ -29,11 +29,11 @@ func ClusterGetCmd() *core.Command {
 				return err
 			}
 			c.Printer.Verbose("Getting Cluster by id: %s", clusterId)
-			cluster, r, err := c.DbaasMongoServices.Clusters().Get(clusterId)
+			cluster, _, err := c.DbaasMongoServices.Clusters().Get(clusterId)
 			if err != nil {
 				return err
 			}
-			return c.Printer.Print(getClusterPrint(r, c, &[]ionoscloud.ClusterResponse{cluster}))
+			return c.Printer.Print(getClusterPrint(c, &[]ionoscloud.ClusterResponse{cluster}))
 		},
 		InitClient: true,
 	})

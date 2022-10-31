@@ -73,19 +73,12 @@ func getUserRows(ls *[]ionoscloud.User) []map[string]interface{} {
 	return out
 }
 
-func getUserPrint(resp *ionoscloud.APIResponse, c *core.CommandConfig, ls *[]ionoscloud.User) printer.Result {
+func getUserPrint(c *core.CommandConfig, ls *[]ionoscloud.User) printer.Result {
 	r := printer.Result{}
-	if c != nil {
-		if resp != nil {
-			r.Resource = c.Resource
-			r.Verb = c.Verb
-			r.WaitForState = viper.GetBool(core.GetFlagName(c.NS, constants.ArgWaitForState)) // this boolean is duplicated everywhere just to do an append of `& wait` to a verbose message
-		}
-		if ls != nil {
-			r.OutputJSON = ls
-			r.KeyValue = getUserRows(ls)                                                                                       // map header -> rows
-			r.Columns = printer.GetHeadersAllDefault(allCols, viper.GetStringSlice(core.GetFlagName(c.NS, constants.ArgCols))) // headers
-		}
+	if c != nil && ls != nil {
+		r.OutputJSON = ls
+		r.KeyValue = getUserRows(ls)                                                                                       // map header -> rows
+		r.Columns = printer.GetHeadersAllDefault(allCols, viper.GetStringSlice(core.GetFlagName(c.NS, constants.ArgCols))) // headers
 	}
 	return r
 }

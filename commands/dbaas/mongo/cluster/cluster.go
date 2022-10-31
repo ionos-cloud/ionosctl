@@ -32,19 +32,12 @@ func ClusterCmd() *core.Command {
 // TODO: Why is this tightly coupled to resources.ClusterResponse? Should just take Headers and Columns as params. should also be moved to printer package, to reduce duplication
 //
 // this is a nightmare to maintain if it is tightly coupled to every single resource!!!!!!!!!!!!
-func getClusterPrint(resp *ionoscloud.APIResponse, c *core.CommandConfig, dcs *[]ionoscloud.ClusterResponse) printer.Result {
+func getClusterPrint(c *core.CommandConfig, dcs *[]ionoscloud.ClusterResponse) printer.Result {
 	r := printer.Result{}
-	if c != nil {
-		if resp != nil {
-			r.Resource = c.Resource
-			r.Verb = c.Verb
-			r.WaitForState = viper.GetBool(core.GetFlagName(c.NS, constants.ArgWaitForState)) // this boolean is duplicated everywhere just to do an append of `& wait` to a verbose message
-		}
-		if dcs != nil {
-			r.OutputJSON = dcs
-			r.KeyValue = getClusterRows(dcs)                                                                                       // map header -> rows
-			r.Columns = printer.GetHeaders(allCols, allCols[0:6], viper.GetStringSlice(core.GetFlagName(c.NS, constants.ArgCols))) // headers
-		}
+	if c != nil && dcs != nil {
+		r.OutputJSON = dcs
+		r.KeyValue = getClusterRows(dcs)                                                                                       // map header -> rows
+		r.Columns = printer.GetHeaders(allCols, allCols[0:6], viper.GetStringSlice(core.GetFlagName(c.NS, constants.ArgCols))) // headers
 	}
 	return r
 }
