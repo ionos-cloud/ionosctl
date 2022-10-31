@@ -1,6 +1,7 @@
 package config
 
 import (
+	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"os"
 	"path/filepath"
 	"testing"
@@ -24,18 +25,18 @@ func TestGetServerUrl(t *testing.T) {
 	os.Clearenv()
 	viper.Reset()
 	viper.SetConfigFile(filepath.Join("..", "testdata", "config.json"))
-	viper.Set(ArgConfig, filepath.Join("..", "testdata", "config.json"))
+	viper.Set(constants.ArgConfig, filepath.Join("..", "testdata", "config.json"))
 	assert.NoError(t, os.Chmod(filepath.Join("..", "testdata", "config.json"), 0600))
 	assert.NoError(t, Load())
 	assert.Equal(t, "https://api.ionos.com", GetServerUrl())
 
 	viper.Reset()
-	fs := pflag.NewFlagSet(ArgServerUrl, pflag.ContinueOnError)
-	_ = fs.String(ArgServerUrl, "default", "test flag")
+	fs := pflag.NewFlagSet(constants.ArgServerUrl, pflag.ContinueOnError)
+	_ = fs.String(constants.ArgServerUrl, "default", "test flag")
 	viper.BindPFlags(fs)
 	assert.Equal(t, "default", GetServerUrl())
 
-	assert.NoError(t, fs.Parse([]string{"--" + ArgServerUrl, "explicit"}))
+	assert.NoError(t, fs.Parse([]string{"--" + constants.ArgServerUrl, "explicit"}))
 	assert.Equal(t, "explicit", GetServerUrl())
 }
 
@@ -44,7 +45,7 @@ func TestLoadFile(t *testing.T) {
 	viper.Reset()
 
 	viper.SetConfigFile(filepath.Join("..", "testdata", "config.json"))
-	viper.Set(ArgConfig, filepath.Join("..", "testdata", "config.json"))
+	viper.Set(constants.ArgConfig, filepath.Join("..", "testdata", "config.json"))
 	assert.NoError(t, os.Chmod(filepath.Join("..", "testdata", "config.json"), 0600))
 	assert.NoError(t, LoadFile())
 	assert.Equal(t, "test@ionos.com", viper.GetString(Username))
@@ -58,7 +59,7 @@ func TestLoadEnvFallback(t *testing.T) {
 	viper.Reset()
 
 	viper.SetConfigFile(filepath.Join("..", "testdata", "config.json"))
-	viper.Set(ArgConfig, filepath.Join("..", "testdata", "config.json"))
+	viper.Set(constants.ArgConfig, filepath.Join("..", "testdata", "config.json"))
 	assert.NoError(t, os.Setenv(sdk.IonosUsernameEnvVar, "user"))
 	assert.NoError(t, os.Setenv(sdk.IonosPasswordEnvVar, "pass"))
 	assert.NoError(t, os.Setenv(sdk.IonosTokenEnvVar, "token"))
