@@ -11,7 +11,6 @@ import (
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/waiter"
-	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
@@ -181,7 +180,7 @@ func RunNatGatewayLanList(c *core.CommandConfig) error {
 		resources.QueryParams{},
 	)
 	if resp != nil {
-		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -205,7 +204,7 @@ func RunNatGatewayLanAdd(c *core.CommandConfig) error {
 	input := getNewNatGatewayLanInfo(c, ng)
 	ng, resp, err := c.CloudApiV6Services.NatGateways().Update(dcId, natGatewayId, *input, queryParams)
 	if resp != nil && printer.GetId(resp) != "" {
-		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
+		c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -241,7 +240,7 @@ func RunNatGatewayLanRemove(c *core.CommandConfig) error {
 		input := removeNatGatewayLanInfo(c, ng)
 		ng, resp, err := c.CloudApiV6Services.NatGateways().Update(dcId, natGatewayId, *input, queryParams)
 		if resp != nil && printer.GetId(resp) != "" {
-			c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
+			c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
 		}
 		if err != nil {
 			return err
@@ -298,7 +297,7 @@ func RemoveAllNatGatewayLans(c *core.CommandConfig) error {
 			}
 			natGateway, resp, err = c.CloudApiV6Services.NatGateways().Update(dcId, natGatewayId, *natGatewaysProps, queryParams)
 			if resp != nil && printer.GetId(resp) != "" {
-				c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
+				c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
 			}
 			if err != nil {
 				return err

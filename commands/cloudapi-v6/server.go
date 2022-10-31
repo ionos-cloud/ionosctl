@@ -16,7 +16,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/waiter"
-	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
@@ -583,7 +582,7 @@ func RunServerListAll(c *core.CommandConfig) error {
 	}
 
 	if totalTime != time.Duration(0) {
-		c.Printer.Verbose(config.RequestTimeMessage, totalTime)
+		c.Printer.Verbose(constants.MessageRequestTime, totalTime)
 	}
 
 	return c.Printer.Print(getServerPrint(nil, c, allServers))
@@ -612,7 +611,7 @@ func RunServerList(c *core.CommandConfig) error {
 	}
 	servers, resp, err := c.CloudApiV6Services.Servers().List(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)), listQueryParams)
 	if resp != nil {
-		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -636,7 +635,7 @@ func RunServerGet(c *core.CommandConfig) error {
 		queryParams,
 	)
 	if resp != nil {
-		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -670,7 +669,7 @@ func RunServerCreate(c *core.CommandConfig) error {
 	}
 	svr, resp, err := c.CloudApiV6Services.Servers().Create(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)), *input, queryParams)
 	if resp != nil && printer.GetId(resp) != "" {
-		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
+		c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -714,7 +713,7 @@ func RunServerUpdate(c *core.CommandConfig) error {
 		queryParams,
 	)
 	if resp != nil && printer.GetId(resp) != "" {
-		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
+		c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -755,7 +754,7 @@ func RunServerDelete(c *core.CommandConfig) error {
 		c.Printer.Verbose("Starting deleting Server with id: %v from datacenter with id: %v... ", serverId, dcId)
 		resp, err := c.CloudApiV6Services.Servers().Delete(dcId, serverId, queryParams)
 		if resp != nil && printer.GetId(resp) != "" {
-			c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
+			c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
 		}
 		if err != nil {
 			return err
@@ -783,7 +782,7 @@ func RunServerStart(c *core.CommandConfig) error {
 		queryParams,
 	)
 	if resp != nil {
-		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -811,7 +810,7 @@ func RunServerStop(c *core.CommandConfig) error {
 		queryParams,
 	)
 	if resp != nil {
-		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -839,7 +838,7 @@ func RunServerSuspend(c *core.CommandConfig) error {
 		queryParams,
 	)
 	if resp != nil {
-		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -867,7 +866,7 @@ func RunServerReboot(c *core.CommandConfig) error {
 		queryParams,
 	)
 	if resp != nil {
-		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -895,7 +894,7 @@ func RunServerResume(c *core.CommandConfig) error {
 		queryParams,
 	)
 	if resp != nil {
-		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -1089,16 +1088,16 @@ func DeleteAllServers(c *core.CommandConfig) error {
 					c.Printer.Verbose("Starting deleting Server with id: %v from datacenter with id: %v... ", *id, dcId)
 					resp, err = c.CloudApiV6Services.Servers().Delete(dcId, *id, queryParams)
 					if resp != nil && printer.GetId(resp) != "" {
-						c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
+						c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
 					}
 					if err != nil {
-						multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *id, err))
+						multiErr = multierr.Append(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
 						continue
 					} else {
-						_ = c.Printer.Warn(fmt.Sprintf(config.StatusDeletingAll, c.Resource, *id))
+						_ = c.Printer.Warn(fmt.Sprintf(constants.MessageDeletingAll, c.Resource, *id))
 					}
 					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-						multiErr = multierr.Append(multiErr, fmt.Errorf(config.WaitDeleteAllAppendErr, c.Resource, *id, err))
+						multiErr = multierr.Append(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *id, err))
 						continue
 					}
 				}

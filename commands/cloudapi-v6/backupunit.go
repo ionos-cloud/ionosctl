@@ -13,7 +13,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/waiter"
-	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
@@ -239,7 +238,7 @@ func RunBackupUnitList(c *core.CommandConfig) error {
 	}
 	backupUnits, resp, err := c.CloudApiV6Services.BackupUnit().List(listQueryParams)
 	if resp != nil {
-		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -256,7 +255,7 @@ func RunBackupUnitGet(c *core.CommandConfig) error {
 	c.Printer.Verbose("Backup unit with id: %v is getting... ", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgBackupUnitId)))
 	u, resp, err := c.CloudApiV6Services.BackupUnit().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgBackupUnitId)), queryParams)
 	if resp != nil {
-		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -273,7 +272,7 @@ func RunBackupUnitGetSsoUrl(c *core.CommandConfig) error {
 	c.Printer.Verbose("Backup unit with id: %v is getting... ", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgBackupUnitId)))
 	u, resp, err := c.CloudApiV6Services.BackupUnit().GetSsoUrl(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgBackupUnitId)), queryParams)
 	if resp != nil {
-		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -302,7 +301,7 @@ func RunBackupUnitCreate(c *core.CommandConfig) error {
 	c.Printer.Verbose("Properties set for creating the Backup Unit: Name: %v , Email: %v", name, email)
 	u, resp, err := c.CloudApiV6Services.BackupUnit().Create(newBackupUnit, queryParams)
 	if resp != nil && printer.GetId(resp) != "" {
-		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
+		c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -326,7 +325,7 @@ func RunBackupUnitUpdate(c *core.CommandConfig) error {
 	newProperties := getBackupUnitInfo(c)
 	backupUnitUpd, resp, err := c.CloudApiV6Services.BackupUnit().Update(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgBackupUnitId)), *newProperties, queryParams)
 	if resp != nil && printer.GetId(resp) != "" {
-		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
+		c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -356,7 +355,7 @@ func RunBackupUnitDelete(c *core.CommandConfig) error {
 		c.Printer.Verbose("Starting deleting Backup unit with id: %v...", backupunitId)
 		resp, err := c.CloudApiV6Services.BackupUnit().Delete(backupunitId, queryParams)
 		if resp != nil && printer.GetId(resp) != "" {
-			c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
+			c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
 		}
 		if err != nil {
 			return err
@@ -419,16 +418,16 @@ func DeleteAllBackupUnits(c *core.CommandConfig) error {
 					c.Printer.Verbose("Starting deleting Backup unit with id: %v...", *id)
 					resp, err = c.CloudApiV6Services.BackupUnit().Delete(*id, queryParams)
 					if resp != nil && printer.GetId(resp) != "" {
-						c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
+						c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
 					}
 					if err != nil {
-						multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *id, err))
+						multiErr = multierr.Append(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
 						continue
 					} else {
-						_ = c.Printer.Warn(fmt.Sprintf(config.StatusDeletingAll, c.Resource, *id))
+						_ = c.Printer.Warn(fmt.Sprintf(constants.MessageDeletingAll, c.Resource, *id))
 					}
 					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-						multiErr = multierr.Append(multiErr, fmt.Errorf(config.WaitDeleteAllAppendErr, c.Resource, *id, err))
+						multiErr = multierr.Append(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *id, err))
 						continue
 					}
 				}

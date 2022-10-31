@@ -19,7 +19,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/waiter"
-	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
@@ -327,7 +326,7 @@ func RunK8sNodePoolListAll(c *core.CommandConfig) error {
 	}
 
 	if totalTime != time.Duration(0) {
-		c.Printer.Verbose(config.RequestTimeMessage, totalTime)
+		c.Printer.Verbose(constants.MessageRequestTime, totalTime)
 	}
 
 	return c.Printer.Print(getK8sNodePoolPrint(c, allNodePools))
@@ -358,7 +357,7 @@ func RunK8sNodePoolList(c *core.CommandConfig) error {
 	}
 	k8ss, resp, err := c.CloudApiV6Services.K8s().ListNodePools(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sClusterId)), listQueryParams)
 	if resp != nil {
-		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -380,7 +379,7 @@ func RunK8sNodePoolGet(c *core.CommandConfig) error {
 	c.Printer.Verbose("K8s node pool with id: %v from K8s Cluster with id: %v is getting...", k8sNodePoolId, k8sClusterId)
 	u, resp, err := c.CloudApiV6Services.K8s().GetNodePool(k8sClusterId, k8sNodePoolId, queryParams)
 	if resp != nil {
-		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -401,7 +400,7 @@ func RunK8sNodePoolCreate(c *core.CommandConfig) error {
 	c.Printer.Verbose("Creating K8s NodePool in K8s Cluster with ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sClusterId)))
 	u, resp, err := c.CloudApiV6Services.K8s().CreateNodePool(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sClusterId)), *newNodePool, queryParams)
 	if resp != nil && printer.GetId(resp) != "" {
-		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
+		c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -437,7 +436,7 @@ func RunK8sNodePoolUpdate(c *core.CommandConfig) error {
 	_, resp, err := c.CloudApiV6Services.K8s().UpdateNodePool(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sClusterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sNodePoolId)), newNodePool, queryParams)
 	if resp != nil && printer.GetId(resp) != "" {
-		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
+		c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -471,7 +470,7 @@ func RunK8sNodePoolDelete(c *core.CommandConfig) error {
 		c.Printer.Verbose("Starting deleting K8s node pool with id: %v from K8s Cluster with id: %v...", k8sNodePoolId, k8sClusterId)
 		resp, err := c.CloudApiV6Services.K8s().DeleteNodePool(k8sClusterId, k8sNodePoolId, queryParams)
 		if resp != nil && printer.GetId(resp) != "" {
-			c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
+			c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
 		}
 		if err != nil {
 			return err
@@ -717,16 +716,16 @@ func DeleteAllK8sNodepools(c *core.CommandConfig) error {
 					c.Printer.Verbose("Starting deleting K8sNodePool with id: %v...", *id)
 					resp, err = c.CloudApiV6Services.K8s().DeleteNodePool(k8sClusterId, *id, queryParams)
 					if resp != nil && printer.GetId(resp) != "" {
-						c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
+						c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
 					}
 					if err != nil {
-						multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *id, err))
+						multiErr = multierr.Append(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
 						continue
 					} else {
-						_ = c.Printer.Warn(fmt.Sprintf(config.StatusDeletingAll, c.Resource, *id))
+						_ = c.Printer.Warn(fmt.Sprintf(constants.MessageDeletingAll, c.Resource, *id))
 					}
 					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-						multiErr = multierr.Append(multiErr, fmt.Errorf(config.WaitDeleteAllAppendErr, c.Resource, *id, err))
+						multiErr = multierr.Append(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *id, err))
 						continue
 					}
 				}

@@ -6,7 +6,6 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/spf13/viper"

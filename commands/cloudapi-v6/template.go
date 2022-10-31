@@ -10,7 +10,6 @@ import (
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/query"
-	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
@@ -109,7 +108,7 @@ func RunTemplateList(c *core.CommandConfig) error {
 	}
 	templates, resp, err := c.CloudApiV6Services.Templates().List(listQueryParams)
 	if resp != nil {
-		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -126,7 +125,7 @@ func RunTemplateGet(c *core.CommandConfig) error {
 	c.Printer.Verbose("Template with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTemplateId)))
 	tpl, resp, err := c.CloudApiV6Services.Templates().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTemplateId)), queryParams)
 	if resp != nil {
-		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
 	if err != nil {
 		return err

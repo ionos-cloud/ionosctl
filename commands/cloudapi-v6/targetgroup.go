@@ -13,7 +13,6 @@ import (
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/waiter"
-	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
@@ -239,7 +238,7 @@ func RunTargetGroupList(c *core.CommandConfig) error {
 	c.Printer.Verbose("Getting TargetGroups")
 	ss, resp, err := c.CloudApiV6Services.TargetGroups().List(listQueryParams)
 	if resp != nil {
-		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -257,7 +256,7 @@ func RunTargetGroupGet(c *core.CommandConfig) error {
 	c.Printer.Verbose("Getting TargetGroup")
 	s, resp, err := c.CloudApiV6Services.TargetGroups().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)), queryParams)
 	if resp != nil {
-		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -274,7 +273,7 @@ func RunTargetGroupCreate(c *core.CommandConfig) error {
 	c.Printer.Verbose("Creating TargetGroup")
 	s, resp, err := c.CloudApiV6Services.TargetGroups().Create(getTargetGroupNew(c), queryParams)
 	if resp != nil {
-		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -295,7 +294,7 @@ func RunTargetGroupUpdate(c *core.CommandConfig) error {
 	c.Printer.Verbose("Updating TargetGroup")
 	s, resp, err := c.CloudApiV6Services.TargetGroups().Update(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)), getTargetGroupPropertiesSet(c), queryParams)
 	if resp != nil {
-		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -329,7 +328,7 @@ func RunTargetGroupDelete(c *core.CommandConfig) error {
 		c.Printer.Verbose("Deleting TargetGroup")
 		resp, err = c.CloudApiV6Services.TargetGroups().Delete(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)), queryParams)
 		if resp != nil {
-			c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+			c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
 		}
 		if err != nil {
 			return err
@@ -376,16 +375,16 @@ func DeleteAllTargetGroup(c *core.CommandConfig) error {
 					c.Printer.Verbose("Starting deleting Target Group with id: %v...", *id)
 					resp, err = c.CloudApiV6Services.TargetGroups().Delete(*id, queryParams)
 					if resp != nil && printer.GetId(resp) != "" {
-						c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
+						c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
 					}
 					if err != nil {
-						multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *id, err))
+						multiErr = multierr.Append(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
 						continue
 					} else {
-						_ = c.Printer.Warn(fmt.Sprintf(config.StatusDeletingAll, c.Resource, *id))
+						_ = c.Printer.Warn(fmt.Sprintf(constants.MessageDeletingAll, c.Resource, *id))
 					}
 					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-						multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *id, err))
+						multiErr = multierr.Append(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
 						continue
 					}
 				}

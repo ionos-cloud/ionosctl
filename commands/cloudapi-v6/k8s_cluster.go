@@ -13,7 +13,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/waiter"
-	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
@@ -244,7 +243,7 @@ func RunK8sClusterList(c *core.CommandConfig) error {
 	}
 	k8ss, resp, err := c.CloudApiV6Services.K8s().ListClusters(listQueryParams)
 	if resp != nil {
-		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -264,7 +263,7 @@ func RunK8sClusterGet(c *core.CommandConfig) error {
 	c.Printer.Verbose("K8s cluster with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sClusterId)))
 	u, resp, err := c.CloudApiV6Services.K8s().GetCluster(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sClusterId)), queryParams)
 	if resp != nil {
-		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -285,7 +284,7 @@ func RunK8sClusterCreate(c *core.CommandConfig) error {
 	c.Printer.Verbose("Creating K8s Cluster...")
 	u, resp, err := c.CloudApiV6Services.K8s().CreateCluster(*newCluster, queryParams)
 	if resp != nil && printer.GetId(resp) != "" {
-		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
+		c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -322,7 +321,7 @@ func RunK8sClusterUpdate(c *core.CommandConfig) error {
 	c.Printer.Verbose("Updating K8s cluster with ID: %v...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sClusterId)))
 	k8sUpd, resp, err := c.CloudApiV6Services.K8s().UpdateCluster(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sClusterId)), newCluster, queryParams)
 	if resp != nil && printer.GetId(resp) != "" {
-		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
+		c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -357,7 +356,7 @@ func RunK8sClusterDelete(c *core.CommandConfig) error {
 		c.Printer.Verbose("Starting deleting K8s cluster with id: %v...", k8sClusterId)
 		resp, err := c.CloudApiV6Services.K8s().DeleteCluster(k8sClusterId, queryParams)
 		if resp != nil && printer.GetId(resp) != "" {
-			c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
+			c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
 		}
 		if err != nil {
 			return err
@@ -502,16 +501,16 @@ func DeleteAllK8sClusters(c *core.CommandConfig) error {
 					c.Printer.Verbose("Starting deleting K8sCluster with id: %v...", *id)
 					resp, err = c.CloudApiV6Services.K8s().DeleteCluster(*id, queryParams)
 					if resp != nil && printer.GetId(resp) != "" {
-						c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
+						c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
 					}
 					if err != nil {
-						multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *id, err))
+						multiErr = multierr.Append(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
 						continue
 					} else {
-						_ = c.Printer.Warn(fmt.Sprintf(config.StatusDeletingAll, c.Resource, *id))
+						_ = c.Printer.Warn(fmt.Sprintf(constants.MessageDeletingAll, c.Resource, *id))
 					}
 					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-						multiErr = multierr.Append(multiErr, fmt.Errorf(config.WaitDeleteAllAppendErr, c.Resource, *id, err))
+						multiErr = multierr.Append(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *id, err))
 						continue
 					}
 				}

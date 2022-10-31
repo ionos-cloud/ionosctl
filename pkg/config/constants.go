@@ -8,7 +8,7 @@ const (
 	CLIHttpUserAgent = "cli-user-agent"
 )
 
-// Some legacy messages, which might need looking into. Too hard to move to pkg/constants
+// Some legacy messages, which might need looking into
 const (
 	RequestInfoMessage     = "Request ID: %v Execution Time: %v"
 	RequestTimeMessage     = "Request Execution Time: %v"

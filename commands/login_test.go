@@ -6,7 +6,6 @@ import (
 	"os"
 	"testing"
 
-	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"

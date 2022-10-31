@@ -12,7 +12,6 @@ import (
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/waiter"
-	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
@@ -150,7 +149,7 @@ func RunTargetGroupTargetList(c *core.CommandConfig) error {
 	c.Printer.Verbose("Getting Targets from TargetGroup")
 	targetGroups, resp, err := c.CloudApiV6Services.TargetGroups().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)), resources.QueryParams{})
 	if resp != nil {
-		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -203,7 +202,7 @@ func RunTargetGroupTargetAdd(c *core.CommandConfig) error {
 		queryParams,
 	)
 	if resp != nil {
-		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -261,7 +260,7 @@ func RunTargetGroupTargetRemove(c *core.CommandConfig) error {
 		c.Printer.Verbose("Updating TargetGroup with the new Targets")
 		_, resp, err = c.CloudApiV6Services.TargetGroups().Update(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)), &propertiesUpdated, queryParams)
 		if resp != nil {
-			c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+			c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
 		}
 		if err != nil {
 			return err
@@ -302,7 +301,7 @@ func RemoveAllTargetGroupTarget(c *core.CommandConfig) (*resources.Response, err
 		)
 		if resp != nil {
 			c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
-			c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+			c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
 		}
 		if err != nil {
 			return nil, err

@@ -17,7 +17,6 @@ import (
 	cloudapiv6completer "github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/commands/dbaas/postgres/completer"
 	"github.com/ionos-cloud/ionosctl/commands/dbaas/postgres/waiter"
-	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
@@ -506,13 +505,13 @@ func ClusterDeleteAll(c *core.CommandConfig) error {
 					c.Printer.Verbose("Deleting Cluster...")
 					_, err = c.CloudApiDbaasPgsqlServices.Clusters().Delete(*idOk)
 					if err != nil {
-						multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *idOk, err))
+						multiErr = multierr.Append(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *idOk, err))
 						continue
 					} else {
-						_ = c.Printer.Print(fmt.Sprintf(config.StatusDeletingAll, c.Resource, *idOk))
+						_ = c.Printer.Print(fmt.Sprintf(constants.MessageDeletingAll, c.Resource, *idOk))
 					}
 					if err = utils.WaitForDelete(c, waiter.ClusterDeleteInterrogator, *idOk); err != nil {
-						multiErr = multierr.Append(multiErr, fmt.Errorf(config.WaitDeleteAllAppendErr, c.Resource, *idOk, err))
+						multiErr = multierr.Append(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *idOk, err))
 						continue
 					}
 				}

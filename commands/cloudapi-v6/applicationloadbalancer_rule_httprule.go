@@ -13,7 +13,6 @@ import (
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/waiter"
-	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
@@ -223,7 +222,7 @@ func RunAlbRuleHttpRuleList(c *core.CommandConfig) error {
 		queryParams,
 	)
 	if resp != nil {
-		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -280,7 +279,7 @@ func RunAlbRuleHttpRuleAdd(c *core.CommandConfig) error {
 		queryParams,
 	)
 	if resp != nil {
-		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -337,7 +336,7 @@ func RunAlbRuleHttpRuleRemove(c *core.CommandConfig) error {
 			queryParams,
 		)
 		if resp != nil {
-			c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+			c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
 		}
 		if err != nil {
 			return err
@@ -393,7 +392,7 @@ func RemoveAllHTTPRules(c *core.CommandConfig) (*resources.Response, error) {
 		)
 		if resp != nil {
 			c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
-			c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+			c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
 		}
 		if err != nil {
 			return nil, err

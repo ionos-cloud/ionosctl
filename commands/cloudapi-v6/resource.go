@@ -10,7 +10,6 @@ import (
 
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
-	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
@@ -92,7 +91,7 @@ func PreRunResourceType(c *core.PreCommandConfig) error {
 func RunResourceList(c *core.CommandConfig) error {
 	resourcesListed, resp, err := c.CloudApiV6Services.Users().ListResources()
 	if resp != nil {
-		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -108,7 +107,7 @@ func RunResourceGet(c *core.CommandConfig) error {
 			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceId)),
 		)
 		if resp != nil {
-			c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+			c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
 		}
 		if err != nil {
 			return err
@@ -117,7 +116,7 @@ func RunResourceGet(c *core.CommandConfig) error {
 	} else {
 		resourcesListed, resp, err := c.CloudApiV6Services.Users().GetResourcesByType(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgType)))
 		if resp != nil {
-			c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+			c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
 		}
 		if err != nil {
 			return err
@@ -176,7 +175,7 @@ func RunGroupResourceList(c *core.CommandConfig) error {
 	c.Printer.Verbose("Listing Resources from Group with ID: %v...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)))
 	resourcesListed, resp, err := c.CloudApiV6Services.Groups().ListResources(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)), listQueryParams)
 	if resp != nil {
-		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
 	if err != nil {
 		return err

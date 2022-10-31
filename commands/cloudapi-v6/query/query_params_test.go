@@ -5,7 +5,6 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"

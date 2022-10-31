@@ -11,7 +11,6 @@ import (
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/waiter"
-	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
@@ -191,7 +190,7 @@ func RunIpFailoverList(c *core.CommandConfig) error {
 		resources.QueryParams{},
 	)
 	if resp != nil {
-		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -223,7 +222,7 @@ func RunIpFailoverAdd(c *core.CommandConfig) error {
 	ipsFailovers := make([]resources.IpFailover, 0)
 	lanUpdated, resp, err := c.CloudApiV6Services.Lans().Update(dcId, lanId, getIpFailoverInfo(c), queryParams)
 	if resp != nil && printer.GetId(resp) != "" {
-		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
+		c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -272,7 +271,7 @@ func RunIpFailoverRemove(c *core.CommandConfig) error {
 			if ipfailovers, ok := properties.GetIpFailoverOk(); ok && ipfailovers != nil {
 				_, resp, err := c.CloudApiV6Services.Lans().Update(dcId, lanId, removeIpFailoverInfo(c, ipfailovers), queryParams)
 				if resp != nil && printer.GetId(resp) != "" {
-					c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
+					c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
 				}
 				if err != nil {
 					return err
@@ -340,7 +339,7 @@ func RemoveAllIpFailovers(c *core.CommandConfig) error {
 					_, resp, err = c.CloudApiV6Services.Lans().Update(dcId, lanId, lanProperties, queryParams)
 					if resp != nil {
 						c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
-						c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+						c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
 					}
 					if err != nil {
 						return err

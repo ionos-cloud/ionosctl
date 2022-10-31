@@ -9,7 +9,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/query"
 
 	"github.com/fatih/structs"
-	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
@@ -72,7 +71,7 @@ func RunContractGet(c *core.CommandConfig) error {
 	c.Printer.Verbose("Contract with resource limits: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceLimits)))
 	contractResource, resp, err := c.CloudApiV6Services.Contracts().Get(queryParams)
 	if resp != nil {
-		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
 	if err != nil {
 		return err
