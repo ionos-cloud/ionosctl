@@ -30,15 +30,16 @@ type Result struct {
 	ApiResponse *resources.Response
 }
 
-// GetHeadersAllDefault is like GetHeaders, but defaultColumns is same as allColumns
-// Smaller signature for better dev experience
+// GetHeadersAllDefault is like GetHeaders, but defaultColumns is same as allColumns.
+// Useful for resources with small print table
 func GetHeadersAllDefault(allColumns []string, customColumns []string) []string {
 	return GetHeaders(allColumns, allColumns, customColumns)
 }
 
 // GetHeaders takes all columns of a resource and the value of the columns flag,
 // returns the headers of the table. (Some legacy code might refer to these headers as "Columns")
-// allColumns can be found by using structs.Names
+//
+// allColumns can be found by using structs.Names on a Print struct (i.e. structs.Names(DatacenterPrint{}))
 func GetHeaders(allColumns []string, defaultColumns []string, customColumns []string) []string {
 	if customColumns == nil {
 		return defaultColumns
