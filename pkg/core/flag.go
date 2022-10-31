@@ -3,9 +3,10 @@ package core
 import (
 	"errors"
 	"fmt"
+	"strings"
+
 	"github.com/google/uuid"
 	"github.com/spf13/viper"
-	"strings"
 )
 
 const (

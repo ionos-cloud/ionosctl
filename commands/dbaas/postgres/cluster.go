@@ -4,11 +4,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	cloudapiv6resources "github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 	"io"
 	"os"
 	"strings"
 	"time"
+
+	cloudapiv6resources "github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 
 	"go.uber.org/multierr"
 
@@ -17,6 +18,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/commands/dbaas/postgres/completer"
 	"github.com/ionos-cloud/ionosctl/commands/dbaas/postgres/waiter"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
+	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
@@ -56,9 +58,9 @@ func ClusterCmd() *core.Command {
 		InitClient: true,
 	})
 	list.AddStringFlag(dbaaspg.ArgName, dbaaspg.ArgNameShort, "", "Response filter to list only the PostgreSQL Clusters that contain the specified name in the DisplayName field. The value is case insensitive")
-	list.AddBoolFlag(config.ArgNoHeaders, "", false, "When using text output, don't print headers")
-	list.AddStringSliceFlag(config.ArgCols, "", defaultClusterCols, printer.ColsMessage(allClusterCols))
-	_ = list.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	list.AddBoolFlag(constants.ArgNoHeaders, "", false, "When using text output, don't print headers")
+	list.AddStringSliceFlag(constants.ArgCols, "", defaultClusterCols, printer.ColsMessage(allClusterCols))
+	_ = list.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allClusterCols, cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -81,13 +83,13 @@ func ClusterCmd() *core.Command {
 	_ = get.Command.RegisterFlagCompletionFunc(dbaaspg.ArgClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.ClustersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	get.AddBoolFlag(config.ArgWaitForState, config.ArgWaitForStateShort, config.DefaultWait, "Wait for Cluster to be in AVAILABLE state")
-	get.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, dbaaspg.DefaultClusterTimeout, "Timeout option for Cluster to be in AVAILABLE state [seconds]")
-	get.AddStringSliceFlag(config.ArgCols, "", defaultClusterCols, printer.ColsMessage(allClusterCols))
-	_ = get.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	get.AddBoolFlag(constants.ArgWaitForState, constants.ArgWaitForStateShort, constants.DefaultWait, "Wait for Cluster to be in AVAILABLE state")
+	get.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, dbaaspg.DefaultClusterTimeout, "Timeout option for Cluster to be in AVAILABLE state [seconds]")
+	get.AddStringSliceFlag(constants.ArgCols, "", defaultClusterCols, printer.ColsMessage(allClusterCols))
+	_ = get.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allClusterCols, cobra.ShellCompDirectiveNoFileComp
 	})
-	get.AddBoolFlag(config.ArgNoHeaders, "", false, "When using text output, don't print headers")
+	get.AddBoolFlag(constants.ArgNoHeaders, "", false, "When using text output, don't print headers")
 
 	/*
 		Create Command
@@ -163,10 +165,10 @@ Required values to run command:
 	_ = create.Command.RegisterFlagCompletionFunc(dbaaspg.ArgMaintenanceDay, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddBoolFlag(config.ArgWaitForState, config.ArgWaitForStateShort, config.DefaultWait, "Wait for Cluster to be in AVAILABLE state")
-	create.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, dbaaspg.DefaultClusterTimeout, "Timeout option for Cluster to be in AVAILABLE state[seconds]")
-	create.AddStringSliceFlag(config.ArgCols, "", defaultClusterCols, printer.ColsMessage(allClusterCols))
-	_ = create.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	create.AddBoolFlag(constants.ArgWaitForState, constants.ArgWaitForStateShort, constants.DefaultWait, "Wait for Cluster to be in AVAILABLE state")
+	create.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, dbaaspg.DefaultClusterTimeout, "Timeout option for Cluster to be in AVAILABLE state[seconds]")
+	create.AddStringSliceFlag(constants.ArgCols, "", defaultClusterCols, printer.ColsMessage(allClusterCols))
+	_ = create.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allClusterCols, cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -223,10 +225,10 @@ Required values to run command:
 	_ = update.Command.RegisterFlagCompletionFunc(dbaaspg.ArgMaintenanceDay, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddBoolFlag(config.ArgWaitForState, config.ArgWaitForStateShort, config.DefaultWait, "Wait for Cluster to be in AVAILABLE state")
-	update.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, dbaaspg.DefaultClusterTimeout, "Timeout option for Cluster to be in AVAILABLE state[seconds]")
-	update.AddStringSliceFlag(config.ArgCols, "", defaultClusterCols, printer.ColsMessage(allClusterCols))
-	_ = update.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	update.AddBoolFlag(constants.ArgWaitForState, constants.ArgWaitForStateShort, constants.DefaultWait, "Wait for Cluster to be in AVAILABLE state")
+	update.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, dbaaspg.DefaultClusterTimeout, "Timeout option for Cluster to be in AVAILABLE state[seconds]")
+	update.AddStringSliceFlag(constants.ArgCols, "", defaultClusterCols, printer.ColsMessage(allClusterCols))
+	_ = update.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allClusterCols, cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -259,10 +261,10 @@ Required values to run command:
 		return completer.BackupsIdsForCluster(os.Stderr, viper.GetString(core.GetFlagName(restoreCmd.NS, dbaaspg.ArgClusterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	restoreCmd.AddStringFlag(dbaaspg.ArgRecoveryTime, dbaaspg.ArgRecoveryTimeShort, "", "If this value is supplied as ISO 8601 timestamp, the backup will be replayed up until the given timestamp. If empty, the backup will be applied completely")
-	restoreCmd.AddBoolFlag(config.ArgWaitForState, config.ArgWaitForStateShort, config.DefaultWait, "Wait for Cluster to be in AVAILABLE state")
-	restoreCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, dbaaspg.DefaultClusterTimeout, "Timeout option for Cluster to be in AVAILABLE state[seconds]")
-	restoreCmd.AddStringSliceFlag(config.ArgCols, "", defaultClusterCols, printer.ColsMessage(allClusterCols))
-	_ = restoreCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	restoreCmd.AddBoolFlag(constants.ArgWaitForState, constants.ArgWaitForStateShort, constants.DefaultWait, "Wait for Cluster to be in AVAILABLE state")
+	restoreCmd.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, dbaaspg.DefaultClusterTimeout, "Timeout option for Cluster to be in AVAILABLE state[seconds]")
+	restoreCmd.AddStringSliceFlag(constants.ArgCols, "", defaultClusterCols, printer.ColsMessage(allClusterCols))
+	_ = restoreCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allClusterCols, cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -289,12 +291,12 @@ Required values to run command:
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(dbaaspg.ArgClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.ClustersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	deleteCmd.AddBoolFlag(config.ArgAll, config.ArgAllShort, false, "Delete all Clusters")
+	deleteCmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Delete all Clusters")
 	deleteCmd.AddStringFlag(dbaaspg.ArgName, dbaaspg.ArgNameShort, "", "Delete all Clusters after filtering based on name. It does not require an exact match. Can be used with --all flag")
-	deleteCmd.AddBoolFlag(config.ArgWaitForDelete, config.ArgWaitForStateShort, config.DefaultWait, "Wait for Cluster to be completely removed")
-	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, dbaaspg.DefaultClusterTimeout, "Timeout option for Cluster to be completely removed[seconds]")
-	deleteCmd.AddStringSliceFlag(config.ArgCols, "", defaultClusterCols, printer.ColsMessage(allClusterCols))
-	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	deleteCmd.AddBoolFlag(constants.ArgWaitForDelete, constants.ArgWaitForStateShort, constants.DefaultWait, "Wait for Cluster to be completely removed")
+	deleteCmd.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, dbaaspg.DefaultClusterTimeout, "Timeout option for Cluster to be completely removed[seconds]")
+	deleteCmd.AddStringSliceFlag(constants.ArgCols, "", defaultClusterCols, printer.ColsMessage(allClusterCols))
+	_ = deleteCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allClusterCols, cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -308,13 +310,13 @@ func PreRunClusterId(c *core.PreCommandConfig) error {
 }
 
 func PreRunClusterDelete(c *core.PreCommandConfig) error {
-	err := core.CheckRequiredFlagsSets(c.Command, c.NS, []string{dbaaspg.ArgClusterId}, []string{config.ArgAll})
+	err := core.CheckRequiredFlagsSets(c.Command, c.NS, []string{dbaaspg.ArgClusterId}, []string{constants.ArgAll})
 	if err != nil {
 		return err
 	}
 	// Validate Flags
 	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgName)) {
-		if !viper.IsSet(core.GetFlagName(c.NS, config.ArgAll)) {
+		if !viper.IsSet(core.GetFlagName(c.NS, constants.ArgAll)) {
 			return errors.New("error: name flag can to be used with the --all flag")
 		}
 	}
@@ -375,7 +377,7 @@ func RunClusterCreate(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	if viper.GetBool(core.GetFlagName(c.NS, config.ArgWaitForState)) {
+	if viper.GetBool(core.GetFlagName(c.NS, constants.ArgWaitForState)) {
 		if id, ok := cluster.GetIdOk(); ok && id != nil {
 			if err = utils.WaitForState(c, waiter.ClusterStateInterrogator, *id); err != nil {
 				return err
@@ -402,7 +404,7 @@ func RunClusterUpdate(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	if viper.GetBool(core.GetFlagName(c.NS, config.ArgWaitForState)) {
+	if viper.GetBool(core.GetFlagName(c.NS, constants.ArgWaitForState)) {
 		c.Printer.Verbose("Wait 10 seconds before checking state...")
 		// Sleeping 10 seconds to make sure the cluster is in BUSY state. This will be removed in future releases.
 		time.Sleep(10 * time.Second)
@@ -446,7 +448,7 @@ func RunClusterRestore(c *core.CommandConfig) error {
 }
 
 func RunClusterDelete(c *core.CommandConfig) error {
-	if viper.GetBool(core.GetFlagName(c.NS, config.ArgAll)) {
+	if viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)) {
 		if err := ClusterDeleteAll(c); err != nil {
 			return err
 		}
@@ -809,12 +811,12 @@ func getClusterPrint(resp *resources.Response, c *core.CommandConfig, dcs []reso
 		if resp != nil {
 			r.Resource = c.Resource
 			r.Verb = c.Verb
-			r.WaitForState = viper.GetBool(core.GetFlagName(c.NS, config.ArgWaitForState))
+			r.WaitForState = viper.GetBool(core.GetFlagName(c.NS, constants.ArgWaitForState))
 		}
 		if dcs != nil {
 			r.OutputJSON = dcs
 			r.KeyValue = getClustersKVMaps(dcs)
-			r.Columns = getClusterCols(core.GetFlagName(c.NS, config.ArgCols), c.Printer.GetStderr())
+			r.Columns = getClusterCols(core.GetFlagName(c.NS, constants.ArgCols), c.Printer.GetStderr())
 		}
 	}
 	return r

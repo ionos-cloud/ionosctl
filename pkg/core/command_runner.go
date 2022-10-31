@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/ionos-cloud/ionosctl/pkg/config"
+	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	authV1 "github.com/ionos-cloud/ionosctl/services/auth-v1"
@@ -25,7 +26,7 @@ func NewCommand(ctx context.Context, parent *Command, info CommandBuilder) *Comm
 		Example: info.Example,
 		PreRun: func(cmd *cobra.Command, args []string) {
 			// Set Printer in sync with the Output Flag
-			noHeaders, _ := cmd.Flags().GetBool(config.ArgNoHeaders)
+			noHeaders, _ := cmd.Flags().GetBool(constants.ArgNoHeaders)
 			p := getPrinter(noHeaders)
 			// Set Command to Command Builder
 			// The cmd is passed to the PreCommandCfg
@@ -37,7 +38,7 @@ func NewCommand(ctx context.Context, parent *Command, info CommandBuilder) *Comm
 		},
 		Run: func(cmd *cobra.Command, args []string) {
 			// Set Printer in sync with the Output Flag
-			noHeaders, _ := cmd.Flags().GetBool(config.ArgNoHeaders)
+			noHeaders, _ := cmd.Flags().GetBool(constants.ArgNoHeaders)
 			p := getPrinter(noHeaders)
 			// Set Buffers
 			cmd.SetIn(os.Stdin)
@@ -180,7 +181,7 @@ type CommandConfig struct {
 
 func getPrinter(noHeaders bool) printer.PrintService {
 	var out io.Writer
-	if viper.GetBool(config.ArgQuiet) {
+	if viper.GetBool(constants.ArgQuiet) {
 		var execOut bytes.Buffer
 		out = &execOut
 	} else {
@@ -188,5 +189,5 @@ func getPrinter(noHeaders bool) printer.PrintService {
 	}
 	printReg, err := printer.NewPrinterRegistry(out, os.Stderr, noHeaders)
 	clierror.CheckError(err, os.Stderr)
-	return printReg[viper.GetString(config.ArgOutput)]
+	return printReg[viper.GetString(constants.ArgOutput)]
 }

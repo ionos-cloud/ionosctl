@@ -35,7 +35,7 @@ func TestNewClientService(t *testing.T) {
 }
 
 func getTestClient(t *testing.T) ClientService {
-	svc, err := NewClientService("user", "pass", "", config.DefaultApiURL)
+	svc, err := NewClientService("user", "pass", "", constants.DefaultApiURL)
 	assert.NotNil(t, svc)
 	assert.NoError(t, err)
 	assert.Equal(t, "user", svc.GetConfig().Username)

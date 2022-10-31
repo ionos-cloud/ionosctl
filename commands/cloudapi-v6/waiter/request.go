@@ -2,6 +2,7 @@ package waiter
 
 import (
 	"errors"
+
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 )
 

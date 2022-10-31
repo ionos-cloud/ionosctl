@@ -2,12 +2,13 @@ package core
 
 import (
 	"context"
-	"github.com/stretchr/testify/assert"
 	"io"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"github.com/golang/mock/gomock"
-	"github.com/ionos-cloud/ionosctl/pkg/config"
+	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
 	authv1 "github.com/ionos-cloud/ionosctl/services/auth-v1"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
@@ -31,11 +32,11 @@ type PreCmdRunTest func(c *PreCommandConfig)
 func PreCmdConfigTest(t *testing.T, writer io.Writer, preRunner PreCmdRunTest) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	if viper.GetString(config.ArgOutput) == "" {
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+	if viper.GetString(constants.ArgOutput) == "" {
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 	}
 	p, _ := printer.NewPrinterRegistry(writer, writer, false)
-	prt := p[viper.GetString(config.ArgOutput)]
+	prt := p[viper.GetString(constants.ArgOutput)]
 	preCmdCfg := &PreCommandConfig{
 		Command: &Command{
 			Command: &cobra.Command{
@@ -102,11 +103,11 @@ func ExecuteTestCases(t *testing.T, funcToTest func(c *CommandConfig) error, tes
 func CmdConfigTest(t *testing.T, writer io.Writer, runner CmdRunnerTest) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	if viper.GetString(config.ArgOutput) == "" {
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+	if viper.GetString(constants.ArgOutput) == "" {
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 	}
 	printReg, _ := printer.NewPrinterRegistry(writer, writer, false)
-	prt := printReg[viper.GetString(config.ArgOutput)]
+	prt := printReg[viper.GetString(constants.ArgOutput)]
 	// Init Test Mock Resources and Services
 	testMocks := initMockResources(ctrl)
 	cmdConfig := &CommandConfig{

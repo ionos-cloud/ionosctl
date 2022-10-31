@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/ionos-cloud/ionosctl/pkg/config"
+	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	"github.com/ionos-cloud/ionosctl/services/dbaas-postgres/resources"
@@ -45,11 +46,11 @@ func TestRunAPIVersionList(t *testing.T) {
 	w := bufio.NewWriter(&b)
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
 		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgQuiet, false)
-		viper.Set(config.ArgVerbose, false)
-		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
-		viper.Set(core.GetGlobalFlagName(cfg.NS, config.ArgCols), defaultAPIVersionCols)
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+		viper.Set(constants.ArgQuiet, false)
+		viper.Set(constants.ArgVerbose, false)
+		viper.Set(constants.ArgServerUrl, constants.DefaultApiURL)
+		viper.Set(core.GetGlobalFlagName(cfg.NS, constants.ArgCols), defaultAPIVersionCols)
 		rm.CloudApiDbaasPgsqlMocks.Info.EXPECT().List().Return(testAPIVersions, nil, nil)
 		err := RunAPIVersionList(cfg)
 		assert.NoError(t, err)
@@ -61,9 +62,9 @@ func TestRunAPIVersionListErr(t *testing.T) {
 	w := bufio.NewWriter(&b)
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
 		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgQuiet, false)
-		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+		viper.Set(constants.ArgQuiet, false)
+		viper.Set(constants.ArgServerUrl, constants.DefaultApiURL)
 		rm.CloudApiDbaasPgsqlMocks.Info.EXPECT().List().Return(testAPIVersions, nil, testAPIVersionErr)
 		err := RunAPIVersionList(cfg)
 		assert.Error(t, err)
@@ -75,10 +76,10 @@ func TestRunAPIVersionGet(t *testing.T) {
 	w := bufio.NewWriter(&b)
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
 		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgQuiet, false)
-		viper.Set(config.ArgVerbose, false)
-		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+		viper.Set(constants.ArgQuiet, false)
+		viper.Set(constants.ArgVerbose, false)
+		viper.Set(constants.ArgServerUrl, constants.DefaultApiURL)
 		rm.CloudApiDbaasPgsqlMocks.Info.EXPECT().Get().Return(testAPIVersion, nil, nil)
 		err := RunAPIVersionGet(cfg)
 		assert.NoError(t, err)
@@ -90,9 +91,9 @@ func TestRunAPIVersionGetErr(t *testing.T) {
 	w := bufio.NewWriter(&b)
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
 		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgQuiet, false)
-		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+		viper.Set(constants.ArgQuiet, false)
+		viper.Set(constants.ArgServerUrl, constants.DefaultApiURL)
 		rm.CloudApiDbaasPgsqlMocks.Info.EXPECT().Get().Return(testAPIVersion, nil, testAPIVersionErr)
 		err := RunAPIVersionGet(cfg)
 		assert.Error(t, err)
@@ -104,8 +105,8 @@ func TestGetAPIVersionsCols(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
-	viper.Set(core.GetGlobalFlagName("api-version", config.ArgCols), []string{"SwaggerUrl"})
-	getAPIVersionCols(core.GetGlobalFlagName("api-version", config.ArgCols), w)
+	viper.Set(core.GetGlobalFlagName("api-version", constants.ArgCols), []string{"SwaggerUrl"})
+	getAPIVersionCols(core.GetGlobalFlagName("api-version", constants.ArgCols), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 }
@@ -115,8 +116,8 @@ func TestGetAPIVersionsColsErr(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
-	viper.Set(core.GetGlobalFlagName("api-version", config.ArgCols), []string{"Unknown"})
-	getAPIVersionCols(core.GetGlobalFlagName("api-version", config.ArgCols), w)
+	viper.Set(core.GetGlobalFlagName("api-version", constants.ArgCols), []string{"Unknown"})
+	getAPIVersionCols(core.GetGlobalFlagName("api-version", constants.ArgCols), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 	re := regexp.MustCompile(`unknown column Unknown`)

@@ -11,6 +11,7 @@ import (
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
+	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
@@ -32,9 +33,9 @@ func CpuCmd() *core.Command {
 		},
 	}
 	globalFlags := cpuCmd.GlobalFlags()
-	globalFlags.StringSliceP(config.ArgCols, "", defaultCpuCols, printer.ColsMessage(defaultCpuCols))
-	_ = viper.BindPFlag(core.GetGlobalFlagName(cpuCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
-	_ = cpuCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	globalFlags.StringSliceP(constants.ArgCols, "", defaultCpuCols, printer.ColsMessage(defaultCpuCols))
+	_ = viper.BindPFlag(core.GetGlobalFlagName(cpuCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
+	_ = cpuCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultCpuCols, cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -57,7 +58,7 @@ func CpuCmd() *core.Command {
 	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgLocationId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.LocationIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	list.AddBoolFlag(config.ArgNoHeaders, "", false, cloudapiv6.ArgNoHeadersDescription)
+	list.AddBoolFlag(constants.ArgNoHeaders, "", false, cloudapiv6.ArgNoHeadersDescription)
 	list.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultListDepth, cloudapiv6.ArgDepthDescription)
 
 	return cpuCmd
@@ -81,7 +82,7 @@ func RunLocationCpuList(c *core.CommandConfig) error {
 			return c.Printer.Print(printer.Result{
 				OutputJSON: cpus,
 				KeyValue:   getCpusKVMaps(getCpus(cpus)),
-				Columns:    getCpuCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr()),
+				Columns:    getCpuCols(core.GetGlobalFlagName(c.Resource, constants.ArgCols), c.Printer.GetStderr()),
 			})
 		} else {
 			return errors.New("error getting cpu architectures")

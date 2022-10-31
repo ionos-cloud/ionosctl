@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/ionos-cloud/ionosctl/pkg/config"
+	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	sdkgoauth "github.com/ionos-cloud/sdk-go-auth"
 	sdkgodbaaspostgres "github.com/ionos-cloud/sdk-go-dbaas-postgres"
@@ -34,7 +34,7 @@ func VersionCmd() *core.Command {
 		CmdRun:     RunVersion,
 		InitClient: false,
 	})
-	versionCmd.AddBoolFlag(config.ArgUpdates, "", false, "Check for latest updates for CLI")
+	versionCmd.AddBoolFlag(constants.ArgUpdates, "", false, "Check for latest updates for CLI")
 
 	return versionCmd
 }
@@ -57,7 +57,7 @@ func RunVersion(c *core.CommandConfig) error {
 		return err
 	}
 
-	if viper.GetBool(core.GetFlagName(c.NS, config.ArgUpdates)) {
+	if viper.GetBool(core.GetFlagName(c.NS, constants.ArgUpdates)) {
 		/*
 			Latest Github Release for IONOS Cloud CLI
 		*/
