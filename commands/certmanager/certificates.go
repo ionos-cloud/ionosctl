@@ -2,12 +2,13 @@ package certmanager
 
 import (
 	"github.com/fatih/structs"
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
+
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
 	ionoscloud "github.com/ionos-cloud/sdk-go-cert-manager"
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 func CertCmd() *core.Command {
@@ -25,20 +26,20 @@ func CertCmd() *core.Command {
 	return certCmd
 }
 
-func getCertPrint(resp *ionoscloud.APIResponse, c *core.CommandConfig, dcs *ionoscloud.CertificateCollectionDto) printer.Result {
+func getCertPrint(resp *ionoscloud.APIResponse, c *core.CommandConfig, dcs *[]ionoscloud.CertificateDto) printer.Result {
 	r := printer.Result{}
-		if c != nil {
-			if resp != nil {
-				r.Resource = c.Resource
-				r.Verb = c.Verb
-				r.WaitForState = viper.GetBool(core.GetFlagName(c.NS, config.ArgWaitForState)) // this boolean is duplicated everywhere just to do an append of `& wait` to a verbose message
-			}
-			if dcs != nil {
-				r.OutputJSON = dcs
-				r.KeyValue = getCertRows(dcs.Items)                                                            // map header -> rows
-				r.Columns = getCertHeaders(viper.GetStringSlice(core.GetFlagName(c.NS, config.ArgCols))) // headers
-			}
+	if c != nil {
+		if resp != nil {
+			r.Resource = c.Resource
+			r.Verb = c.Verb
+			r.WaitForState = viper.GetBool(core.GetFlagName(c.NS, config.ArgWaitForState)) // this boolean is duplicated everywhere just to do an append of `& wait` to a verbose message
 		}
+		if dcs != nil {
+			r.OutputJSON = dcs
+			r.KeyValue = getCertRows(dcs)                                                            // map header -> rows
+			r.Columns = getCertHeaders(viper.GetStringSlice(core.GetFlagName(c.NS, config.ArgCols))) // headers
+		}
+	}
 	return r
 }
 
@@ -51,17 +52,16 @@ type CertPrint struct {
 func getCertRows(certs *[]ionoscloud.CertificateDto) []map[string]interface{} {
 	out := make([]map[string]interface{}, 0, len(*certs))
 	for _, cert := range *certs {
-			var certPrint CertPrint
-			if idOk, ok := cert.GetIdOk(); ok && idOk != nil {
-				certPrint.CertId = *idOk
-			}
-		var CertPrint CertPrint
+		var certPrint CertPrint
 		if idOk, ok := cert.GetIdOk(); ok && idOk != nil {
-			CertPrint.CertId = *idOk
+			certPrint.CertId = *idOk
+		}
+		if idOk, ok := cert.GetIdOk(); ok && idOk != nil {
+			certPrint.CertId = *idOk
 		}
 		if propertiesOk, ok := cert.GetPropertiesOk(); ok && propertiesOk != nil {
 			if displayNameOk, ok := propertiesOk.GetNameOk(); ok && displayNameOk != nil {
-				CertPrint.DisplayName = *displayNameOk
+				certPrint.DisplayName = *displayNameOk
 			}
 			// if displayNameOk, ok := propertiesOk.get; ok && displayNameOk != nil {
 			// 	CertPrint.DisplayName = *displayNameOk
@@ -69,11 +69,11 @@ func getCertRows(certs *[]ionoscloud.CertificateDto) []map[string]interface{} {
 		}
 		if metadataOk, ok := cert.GetMetadataOk(); ok && metadataOk != nil {
 			if stateOk, ok := metadataOk.GetStateOk(); ok && stateOk != nil {
-				CertPrint.State = string(*stateOk)
+				certPrint.State = string(*stateOk)
 			}
 		}
-	o := structs.Map(certPrint)
-	out = append(out, o)
+		o := structs.Map(certPrint)
+		out = append(out, o)
 	}
 	return out
 }

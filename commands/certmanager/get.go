@@ -32,18 +32,17 @@ func CertGetCmd() *core.Command {
 			if err != nil {
 				return err
 			}
-			cert, r, err := c.CertificateManagerServices.Certs().Get(id)
+			cert, _, err := c.CertificateManagerServices.Certs().Get(id)
 			if err != nil {
 				return err
 			}
 
-			var list = sdkgo.CertificateCollectionDto{}
-
-			*list.GetItems() = append(*list.GetItems(), cert)
-			return c.Printer.Print(getCertPrint(r, c, &list))
+			return c.Printer.Print(getCertPrint(nil, c, &[]sdkgo.CertificateDto{cert}))
 		},
 		InitClient: true,
 	})
+
+	//TODO: add certifcate and certificate-chain boolean flags
 
 	cmd.AddStringFlag("certificate-id", "", "", "Response get a single certificate (required)")
 	_ = cmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
