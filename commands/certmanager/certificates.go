@@ -26,7 +26,7 @@ func CertCmd() *core.Command {
 	return certCmd
 }
 
-func getCertPrint(resp *ionoscloud.APIResponse, c *core.CommandConfig, dcs *[]ionoscloud.CertificateDto) printer.Result {
+func getCertPrint(resp *ionoscloud.APIResponse, c *core.CommandConfig, cert *[]ionoscloud.CertificateDto) printer.Result {
 	r := printer.Result{}
 	if c != nil {
 		if resp != nil {
@@ -34,13 +34,24 @@ func getCertPrint(resp *ionoscloud.APIResponse, c *core.CommandConfig, dcs *[]io
 			r.Verb = c.Verb
 			r.WaitForState = viper.GetBool(core.GetFlagName(c.NS, config.ArgWaitForState)) // this boolean is duplicated everywhere just to do an append of `& wait` to a verbose message
 		}
-		if dcs != nil {
-			r.OutputJSON = dcs
-			r.KeyValue = getCertRows(dcs)                                                            // map header -> rows
+		if cert != nil {
+			r.OutputJSON = cert
+			r.KeyValue = getCertRows(cert)                                                           // map header -> rows
 			r.Columns = getCertHeaders(viper.GetStringSlice(core.GetFlagName(c.NS, config.ArgCols))) // headers
 		}
 	}
 	return r
+}
+
+func printProperties(value *ionoscloud.CertificateDto, c *core.CommandConfig, flags []bool) string {
+	var printString string
+	if flags[0] {
+		printString += *value.Properties.Certificate
+	}
+	if flags[1] {
+		printString += *value.Properties.CertificateChain
+	}
+	return printString
 }
 
 type CertPrint struct {

@@ -11,8 +11,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var createProperties = sdkgo.CertificatePostPropertiesDto{}
-
 var RequiredFlagSets = [16][]string{{"certificate-name", "certificate", "certificate-chain", "private-key"},
 	{"certificate-name-path", "certificate", "certificate-chain", "private-key"},
 	{"certificate-name", "certificate-path", "certificate-chain", "private-key"},
@@ -30,6 +28,8 @@ var RequiredFlagSets = [16][]string{{"certificate-name", "certificate", "certifi
 	{"certificate-name", "certificate-path", "certificate-chain-path", "private-key-path"},
 	{"certificate-name-path", "certificate-path", "certificate-chain-path", "private-key-path"}}
 
+var createProperties = sdkgo.CertificatePostPropertiesDto{}
+
 func CertPostCmd() *core.Command {
 	cmd := core.NewCommand(context.TODO(), nil, core.CommandBuilder{
 		Namespace: "certmanager",
@@ -41,39 +41,13 @@ func CertPostCmd() *core.Command {
 		Example:   "ionosctl certificate-manager create",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			var err error
-			if (c.Command.Command.Flag("certificate").Value.String() == "" && c.Command.Command.Flag("certificate-path").Value.String() == "") {
-				err = c.Command.Command.MarkFlagRequired("certificate-name")
-				if err != nil {
-					return err
+			for _, RequiredFlagSet := range RequiredFlagSets {
+				err = core.CheckRequiredFlagsSets(c.Command, c.NS, RequiredFlagSet)
+				if err == nil {
+					return nil
 				}
 			}
-
-			if (c.Command.Command.Flag("certificate-name").Value.String() == "" && c.Command.Command.Flag("certificate-name-path").Value.String() == "") {
-				err = c.Command.Command.MarkFlagRequired("certificate-name")
-				if err != nil {
-					return err
-				}
-			}
-
-			if (c.Command.Command.Flag("certificate-chain").Value.String() == "" && c.Command.Command.Flag("certificate-chain-path").Value.String() == "") {
-				err = c.Command.Command.MarkFlagRequired("certificate-chain")
-				if err != nil {
-					return err
-				}
-			}
-
-			if (c.Command.Command.Flag("private-key").Value.String() == "" && c.Command.Command.Flag("private-key-path").Value.String() == "") {
-				err = c.Command.Command.MarkFlagRequired("private-key")
-				if err != nil {
-					return err
-				}
-			}
-
-			c.Command.Command.MarkFlagsMutuallyExclusive("certificate-name-path", "certificate-name")
-			c.Command.Command.MarkFlagsMutuallyExclusive("certificate-path", "certificate")
-			c.Command.Command.MarkFlagsMutuallyExclusive("certificate-chain-path", "certificate-chain")
-			c.Command.Command.MarkFlagsMutuallyExclusive("private-key-path", "private-key")
-			return nil
+			return err
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			c.Printer.Verbose("Adding Certificate...")
@@ -82,7 +56,7 @@ func CertPostCmd() *core.Command {
 			name, err := SetProperties(c, "certificate-name")
 			if err != nil {
 				return err
-			}	
+			}
 			certificate, err = SetProperties(c, "certificate")
 			if err != nil {
 				return err
@@ -152,3 +126,14 @@ func SetProperties(c *core.CommandConfig, property string) (string, error) {
 	}
 	return propertyValue, nil
 }
+
+// func ifEmptyMarkRequired(c *core.PreCommandConfig, flagName string) error {
+// 	flagNamePath := fmt.Sprintf("%s-path", flagName)
+// 	if c.Command.Command.Flag(flagName).Value.String() == "" && c.Command.Command.Flag(flagNamePath).Value.String() == "" {
+// 		err := c.Command.Command.MarkFlagRequired(flagName)
+// 		if err != nil {
+// 			return err
+// 		}
+// 	}
+// 	return nil
+// }
