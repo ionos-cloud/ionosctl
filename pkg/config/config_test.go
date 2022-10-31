@@ -6,6 +6,8 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/ionos-cloud/ionosctl/pkg/constants"
+
 	sdk "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"

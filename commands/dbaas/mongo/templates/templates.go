@@ -2,6 +2,7 @@ package templates
 
 import (
 	"fmt"
+
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
