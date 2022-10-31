@@ -24,7 +24,8 @@ func CertListCmd() *core.Command {
 			if err != nil {
 				return err
 			}
-			return c.Printer.Print(getCertPrint(nil, c, &cert))
+			list := cert.GetItems()
+			return c.Printer.Print(getCertPrint(nil, c, list))
 		},
 		InitClient: true,
 	})
