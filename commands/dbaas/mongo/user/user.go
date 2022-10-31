@@ -82,8 +82,8 @@ func getUserPrint(resp *ionoscloud.APIResponse, c *core.CommandConfig, ls *[]ion
 		}
 		if ls != nil {
 			r.OutputJSON = ls
-			r.KeyValue = getUserRows(ls)                                                                                   // map header -> rows
-			r.Columns = printer.GetHeaders(allCols, allCols, viper.GetStringSlice(core.GetFlagName(c.NS, config.ArgCols))) // headers
+			r.KeyValue = getUserRows(ls)                                                                                    // map header -> rows
+			r.Columns = printer.GetHeadersAllDefault(allCols, viper.GetStringSlice(core.GetFlagName(c.NS, config.ArgCols))) // headers
 		}
 	}
 	return r

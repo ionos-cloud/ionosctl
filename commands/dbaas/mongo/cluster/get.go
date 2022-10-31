@@ -4,16 +4,12 @@ import (
 	"context"
 	"github.com/ionos-cloud/ionosctl/commands/dbaas/mongo/completer"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
+	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
 	ionoscloud "github.com/ionos-cloud/sdk-go-dbaas-mongo"
 	"github.com/spf13/cobra"
 	"os"
-)
-
-const (
-	flagClusterId      = "cluster-id"
-	flagClusterIdShort = "i"
 )
 
 func ClusterGetCmd() *core.Command {
@@ -25,10 +21,10 @@ func ClusterGetCmd() *core.Command {
 		ShortDesc: "Get a Mongo Cluster by ID",
 		Example:   "ionosctl dbaas mongo cluster get --cluster-id <cluster-id>",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			return c.Command.Command.MarkFlagRequired(flagClusterId)
+			return c.Command.Command.MarkFlagRequired(constants.FlagClusterId)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			clusterId, err := c.Command.Command.Flags().GetString(flagClusterId)
+			clusterId, err := c.Command.Command.Flags().GetString(constants.FlagClusterId)
 			if err != nil {
 				return err
 			}
@@ -42,7 +38,7 @@ func ClusterGetCmd() *core.Command {
 		InitClient: true,
 	})
 
-	cmd.AddStringFlag(flagClusterId, flagClusterIdShort, "", "The unique ID of the cluster", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagClusterId, constants.FlagIdP, "", "The unique ID of the cluster", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(flagTemplateId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.MongoClusterIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})

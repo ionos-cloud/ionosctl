@@ -2,10 +2,14 @@ package user
 
 import (
 	"context"
+	"github.com/ionos-cloud/ionosctl/commands/dbaas/mongo/completer"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
+	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
+	"os"
 )
 
 func UserListCmd() *core.Command {
@@ -17,7 +21,7 @@ func UserListCmd() *core.Command {
 		ShortDesc: "Retrieves a list of MongoDB users.",
 		Example:   "ionosctl dbaas mongo user list",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			err := c.Command.Command.MarkFlagRequired("")
+			err := c.Command.Command.MarkFlagRequired(constants.FlagClusterId)
 			if err != nil {
 				return err
 			}
@@ -25,7 +29,7 @@ func UserListCmd() *core.Command {
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			c.Printer.Verbose("Getting Users...")
-			ls, r, err := c.DbaasMongoServices.Users().List("")
+			ls, r, err := c.DbaasMongoServices.Users().List(viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)))
 			if err != nil {
 				return err
 			}
@@ -34,6 +38,11 @@ func UserListCmd() *core.Command {
 		InitClient: true,
 	})
 
+	var clusterId string
+	cmd.AddStringVarFlag(&clusterId, constants.FlagClusterId, constants.FlagIdP, "", "")
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.MongoClusterIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+	})
 	cmd.AddBoolFlag(config.ArgNoHeaders, "", false, "When using text output, don't print headers")
 	cmd.AddStringSliceFlag(config.ArgCols, "", nil, printer.ColsMessage(allCols))
 	_ = cmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
