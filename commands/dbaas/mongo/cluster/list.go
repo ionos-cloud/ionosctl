@@ -2,7 +2,8 @@ package cluster
 
 import (
 	"context"
-	"github.com/ionos-cloud/ionosctl/pkg/config"
+
+	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
 	dbaaspg "github.com/ionos-cloud/ionosctl/services/dbaas-postgres"
@@ -32,9 +33,9 @@ func ClusterListCmd() *core.Command {
 
 	// TODO: Move ArgName to DBAAS level constants
 	cmd.AddStringFlag(dbaaspg.ArgName, dbaaspg.ArgNameShort, "", "Response filter to list only the PostgreSQL Clusters that contain the specified name in the DisplayName field. The value is case insensitive")
-	cmd.AddBoolFlag(config.ArgNoHeaders, "", false, "When using text output, don't print headers")
-	cmd.AddStringSliceFlag(config.ArgCols, "", allCols[0:6], printer.ColsMessage(allCols))
-	_ = cmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	cmd.AddBoolFlag(constants.ArgNoHeaders, "", false, "When using text output, don't print headers")
+	cmd.AddStringSliceFlag(constants.ArgCols, "", allCols[0:6], printer.ColsMessage(allCols))
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allCols, cobra.ShellCompDirectiveNoFileComp
 	})
 

@@ -2,8 +2,9 @@ package cluster
 
 import (
 	"fmt"
+
 	"github.com/fatih/structs"
-	"github.com/ionos-cloud/ionosctl/pkg/config"
+	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
 	ionoscloud "github.com/ionos-cloud/sdk-go-dbaas-mongo"
@@ -37,12 +38,12 @@ func getClusterPrint(resp *ionoscloud.APIResponse, c *core.CommandConfig, dcs *[
 		if resp != nil {
 			r.Resource = c.Resource
 			r.Verb = c.Verb
-			r.WaitForState = viper.GetBool(core.GetFlagName(c.NS, config.ArgWaitForState)) // this boolean is duplicated everywhere just to do an append of `& wait` to a verbose message
+			r.WaitForState = viper.GetBool(core.GetFlagName(c.NS, constants.ArgWaitForState)) // this boolean is duplicated everywhere just to do an append of `& wait` to a verbose message
 		}
 		if dcs != nil {
 			r.OutputJSON = dcs
-			r.KeyValue = getClusterRows(dcs)                                                                                    // map header -> rows
-			r.Columns = printer.GetHeaders(allCols, allCols[0:6], viper.GetStringSlice(core.GetFlagName(c.NS, config.ArgCols))) // headers
+			r.KeyValue = getClusterRows(dcs)                                                                                       // map header -> rows
+			r.Columns = printer.GetHeaders(allCols, allCols[0:6], viper.GetStringSlice(core.GetFlagName(c.NS, constants.ArgCols))) // headers
 		}
 	}
 	return r

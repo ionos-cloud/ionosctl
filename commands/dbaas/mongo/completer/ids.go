@@ -2,11 +2,12 @@ package completer
 
 import (
 	"context"
+	"io"
+
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	"github.com/ionos-cloud/ionosctl/services/dbaas-mongo/resources"
 	"github.com/spf13/viper"
-	"io"
 )
 
 func MongoClusterIds(outErr io.Writer) []string {
