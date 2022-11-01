@@ -57,15 +57,15 @@ func ClusterCreateCmd() *core.Command {
 			if err != nil {
 				return err
 			}
-			err = c.Command.Command.MarkFlagRequired(flagDatacenterId)
+			err = c.Command.Command.MarkFlagRequired(constants.FlagDatacenterId)
 			if err != nil {
 				return err
 			}
-			err = c.Command.Command.MarkFlagRequired(flagMaintenanceDay)
+			err = c.Command.Command.MarkFlagRequired(constants.FlagMaintenanceDay)
 			if err != nil {
 				return err
 			}
-			err = c.Command.Command.MarkFlagRequired(flagMaintenanceTime)
+			err = c.Command.Command.MarkFlagRequired(constants.FlagMaintenanceTime)
 			if err != nil {
 				return err
 			}
