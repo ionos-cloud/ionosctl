@@ -27,10 +27,7 @@ func ClusterSnapshotsListCmd() *core.Command {
 			return c.Command.Command.MarkFlagRequired(constants.FlagClusterId)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			clusterId, err := c.Command.Command.Flags().GetString(constants.FlagClusterId)
-			if err != nil {
-				return err
-			}
+			clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
 			c.Printer.Verbose("Getting snapshots of Cluster %s", clusterId)
 			snapshots, _, err := c.DbaasMongoServices.Clusters().SnapshotsList(clusterId)
 			if err != nil {
