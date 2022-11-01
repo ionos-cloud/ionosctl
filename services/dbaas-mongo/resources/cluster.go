@@ -2,6 +2,7 @@ package resources
 
 import (
 	"context"
+	"github.com/ionos-cloud/ionosctl/services/dbaas-postgres/resources"
 
 	sdkgo "github.com/ionos-cloud/sdk-go-dbaas-mongo"
 )
@@ -13,6 +14,7 @@ type ClustersService interface {
 	Delete(clusterId string) (*sdkgo.APIResponse, error)
 	Restore(clusterId, snapshotId string) (*sdkgo.APIResponse, error)
 	SnapshotsList(clusterId string) (sdkgo.SnapshotList, *sdkgo.APIResponse, error)
+	LogsList(clusterId string, logsQueryParams resources.LogsQueryParams) (sdkgo.ClusterLogs, *sdkgo.APIResponse, error)
 }
 
 type clustersService struct {
@@ -67,4 +69,13 @@ func (svc *clustersService) SnapshotsList(clusterId string) (sdkgo.SnapshotList,
 	req := svc.client.SnapshotsApi.ClustersSnapshotsGet(svc.context, clusterId)
 	snapshots, res, err := svc.client.SnapshotsApi.ClustersSnapshotsGetExecute(req)
 	return snapshots, res, err
+}
+
+func (svc *clustersService) LogsList(clusterId string, logsQueryParams resources.LogsQueryParams) (sdkgo.ClusterLogs, *sdkgo.APIResponse, error) {
+	req := svc.client.LogsApi.ClustersLogsGet(svc.context, clusterId)
+	logs, res, err := svc.client.LogsApi.ClustersLogsGetExecute(
+		req.Start(logsQueryParams.StartTime).End(logsQueryParams.EndTime).
+			Direction(logsQueryParams.Direction).Limit(logsQueryParams.Limit),
+	)
+	return logs, res, err
 }
