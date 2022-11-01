@@ -6,13 +6,13 @@ import (
 	sdkgo "github.com/ionos-cloud/sdk-go-dbaas-mongo"
 )
 
-// ClustersService is a wrapper around ionoscloud.Cluster
 type ClustersService interface {
 	List(filterName string) (sdkgo.ClusterList, *sdkgo.APIResponse, error)
 	Get(clusterId string) (sdkgo.ClusterResponse, *sdkgo.APIResponse, error)
 	Create(input sdkgo.CreateClusterRequest) (sdkgo.ClusterResponse, *sdkgo.APIResponse, error)
 	Delete(clusterId string) (*sdkgo.APIResponse, error)
 	Restore(clusterId, snapshotId string) (*sdkgo.APIResponse, error)
+	SnapshotsList(clusterId string) (sdkgo.SnapshotList, *sdkgo.APIResponse, error)
 }
 
 type clustersService struct {
@@ -61,4 +61,10 @@ func (svc *clustersService) Restore(clusterId, snapshotId string) (*sdkgo.APIRes
 	req.CreateRestoreRequest(sdkgo.CreateRestoreRequest{SnapshotId: &snapshotId})
 	res, err := svc.client.RestoresApi.ClustersRestorePostExecute(req)
 	return res, err
+}
+
+func (svc *clustersService) SnapshotsList(clusterId string) (sdkgo.SnapshotList, *sdkgo.APIResponse, error) {
+	req := svc.client.SnapshotsApi.ClustersSnapshotsGet(svc.context, clusterId)
+	snapshots, res, err := svc.client.SnapshotsApi.ClustersSnapshotsGetExecute(req)
+	return snapshots, res, err
 }

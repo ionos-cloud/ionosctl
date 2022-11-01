@@ -29,6 +29,8 @@ func ClusterCmd() *core.Command {
 	clusterCmd.AddCommand(ClusterCreateCmd())
 	clusterCmd.AddCommand(ClusterGetCmd())
 	clusterCmd.AddCommand(ClusterRestoreCmd())
+	clusterCmd.AddCommand(ClusterSnapshotsListCmd())
+
 	return clusterCmd
 }
 
