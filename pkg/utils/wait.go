@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/cheggaaa/pb/v3"
-	"github.com/ionos-cloud/ionosctl/pkg/config"
+	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	core2 "github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
 	"github.com/spf13/viper"
@@ -30,20 +30,20 @@ type InterrogateRequestFunc func(c *core2.CommandConfig, requestId string) (stat
 
 // WaitForRequest waits for Request to be executed
 func WaitForRequest(c *core2.CommandConfig, interrogator InterrogateRequestFunc, requestId string) error {
-	if !viper.GetBool(core2.GetFlagName(c.NS, config.ArgWaitForRequest)) {
+	if !viper.GetBool(core2.GetFlagName(c.NS, constants.ArgWaitForRequest)) {
 		// Double Check: return if flag not set
 		return nil
 	} else {
 		// Set context timeout
-		timeout := viper.GetInt(core2.GetFlagName(c.NS, config.ArgTimeout))
+		timeout := viper.GetInt(core2.GetFlagName(c.NS, constants.ArgTimeout))
 		if timeout == 0 {
-			timeout = config.DefaultTimeoutSeconds
+			timeout = constants.DefaultTimeoutSeconds
 		}
 		ctxTimeout, cancel := context.WithTimeout(c.Context, time.Duration(timeout)*time.Second)
 		defer cancel()
 
 		// Check the output format
-		if viper.GetString(config.ArgOutput) == printer.TypeText.String() {
+		if viper.GetString(constants.ArgOutput) == printer.TypeText.String() {
 			progress := pb.New(1)
 			progress.SetWriter(c.Printer.GetStdout())
 			progress.SetTemplateString(requestProgressCircleTpl)
@@ -72,20 +72,20 @@ func WaitForRequest(c *core2.CommandConfig, interrogator InterrogateRequestFunc,
 type InterrogateStateFunc func(c *core2.CommandConfig, resourceId string) (*string, error)
 
 func WaitForState(c *core2.CommandConfig, interrogator InterrogateStateFunc, resourceId string) error {
-	if !viper.GetBool(core2.GetFlagName(c.NS, config.ArgWaitForState)) {
+	if !viper.GetBool(core2.GetFlagName(c.NS, constants.ArgWaitForState)) {
 		// Double Check: return if flag not set
 		return nil
 	} else {
 		// Set context timeout
-		timeout := viper.GetInt(core2.GetFlagName(c.NS, config.ArgTimeout))
+		timeout := viper.GetInt(core2.GetFlagName(c.NS, constants.ArgTimeout))
 		if timeout == 0 {
-			timeout = config.DefaultTimeoutSeconds
+			timeout = constants.DefaultTimeoutSeconds
 		}
 		ctxTimeout, cancel := context.WithTimeout(c.Context, time.Duration(timeout)*time.Second)
 		defer cancel()
 
 		// Check the output format
-		if viper.GetString(config.ArgOutput) == printer.TypeText.String() {
+		if viper.GetString(constants.ArgOutput) == printer.TypeText.String() {
 			progress := pb.New(1)
 			progress.SetWriter(c.Printer.GetStdout())
 			progress.SetTemplateString(stateProgressCircleTpl)
@@ -114,20 +114,20 @@ func WaitForState(c *core2.CommandConfig, interrogator InterrogateStateFunc, res
 type InterrogateDeletionFunc func(c *core2.CommandConfig, resourceId string) (*int, error)
 
 func WaitForDelete(c *core2.CommandConfig, interrogator InterrogateDeletionFunc, resourceId string) error {
-	if !viper.GetBool(core2.GetFlagName(c.NS, config.ArgWaitForDelete)) {
+	if !viper.GetBool(core2.GetFlagName(c.NS, constants.ArgWaitForDelete)) {
 		// Double Check: return if flag not set
 		return nil
 	} else {
 		// Set context timeout
-		timeout := viper.GetInt(core2.GetFlagName(c.NS, config.ArgTimeout))
+		timeout := viper.GetInt(core2.GetFlagName(c.NS, constants.ArgTimeout))
 		if timeout == 0 {
-			timeout = config.DefaultTimeoutSeconds
+			timeout = constants.DefaultTimeoutSeconds
 		}
 		ctxTimeout, cancel := context.WithTimeout(c.Context, time.Duration(timeout)*time.Second)
 		defer cancel()
 
 		// Check the output format
-		if viper.GetString(config.ArgOutput) == printer.TypeText.String() {
+		if viper.GetString(constants.ArgOutput) == printer.TypeText.String() {
 			progress := pb.New(1)
 			progress.SetWriter(c.Printer.GetStdout())
 			progress.SetTemplateString(deleteProgressCircleTpl)

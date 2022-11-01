@@ -4,11 +4,12 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
-	"github.com/golang/mock/gomock"
 	"regexp"
 	"testing"
 
-	"github.com/ionos-cloud/ionosctl/pkg/config"
+	"github.com/golang/mock/gomock"
+
+	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
@@ -78,9 +79,9 @@ func TestRunContractGet(t *testing.T) {
 	w := bufio.NewWriter(&b)
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
 		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgQuiet, false)
-		viper.Set(config.ArgVerbose, false)
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+		viper.Set(constants.ArgQuiet, false)
+		viper.Set(constants.ArgVerbose, false)
 		rm.CloudApiV6Mocks.Contract.EXPECT().Get(gomock.AssignableToTypeOf(testQueryParamOther)).Return(testContracts, &testResponse, nil)
 		err := RunContractGet(cfg)
 		assert.NoError(t, err)
@@ -92,8 +93,8 @@ func TestRunContractGetErr(t *testing.T) {
 	w := bufio.NewWriter(&b)
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
 		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgQuiet, false)
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+		viper.Set(constants.ArgQuiet, false)
 		rm.CloudApiV6Mocks.Contract.EXPECT().Get(gomock.AssignableToTypeOf(testQueryParamOther)).Return(testContracts, nil, testContractErr)
 		err := RunContractGet(cfg)
 		assert.Error(t, err)
@@ -105,8 +106,8 @@ func TestGetContractsCols(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() { return }
 	w := bufio.NewWriter(&b)
-	viper.Set(core.GetGlobalFlagName("contract", config.ArgCols), []string{"ContractNumber"})
-	getContractCols(core.GetGlobalFlagName("contract", config.ArgCols), w)
+	viper.Set(core.GetGlobalFlagName("contract", constants.ArgCols), []string{"ContractNumber"})
+	getContractCols(core.GetGlobalFlagName("contract", constants.ArgCols), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 }
@@ -116,8 +117,8 @@ func TestGetContractsColsErr(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() { return }
 	w := bufio.NewWriter(&b)
-	viper.Set(core.GetGlobalFlagName("contract", config.ArgCols), []string{"Unknown"})
-	getContractCols(core.GetGlobalFlagName("contract", config.ArgCols), w)
+	viper.Set(core.GetGlobalFlagName("contract", constants.ArgCols), []string{"Unknown"})
+	getContractCols(core.GetGlobalFlagName("contract", constants.ArgCols), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 	re := regexp.MustCompile(`unknown column Unknown`)

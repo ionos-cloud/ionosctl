@@ -4,7 +4,8 @@ import (
 	"context"
 	"strings"
 
-	"github.com/ionos-cloud/ionosctl/pkg/config"
+	"github.com/ionos-cloud/ionosctl/pkg/constants"
+
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/spf13/cobra"
 )
@@ -59,7 +60,7 @@ func K8sVersionCmd() *core.Command {
 func RunK8sVersionList(c *core.CommandConfig) error {
 	u, resp, err := c.CloudApiV6Services.K8s().ListVersions()
 	if resp != nil {
-		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -80,7 +81,7 @@ func getK8sVersion(c *core.CommandConfig) (string, error) {
 		k8sversion = strings.ReplaceAll(k8sversion, "\"", "")
 		k8sversion = strings.ReplaceAll(k8sversion, "\n", "")
 		if resp != nil {
-			c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+			c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
 		}
 		return k8sversion, nil
 	} else {

@@ -7,7 +7,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/ionos-cloud/ionosctl/pkg/config"
+	"github.com/ionos-cloud/ionosctl/pkg/constants"
+
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
 	"github.com/spf13/viper"
 )
@@ -34,13 +35,13 @@ func CheckError(err error, outErr io.Writer) {
 		Detail: err.Error(),
 	}
 
-	switch viper.GetString(config.ArgOutput) {
+	switch viper.GetString(constants.ArgOutput) {
 	case printer.TypeJSON.String():
 		printer.WriteJSON(&cliErr, outErr)
 	case printer.TypeText.String():
 		errorConfirm(outErr, cliErr.Err.Error())
 	default:
-		err := errors.New(fmt.Sprintf(unknownTypeFormatErr, viper.GetString(config.ArgOutput)))
+		err := errors.New(fmt.Sprintf(unknownTypeFormatErr, viper.GetString(constants.ArgOutput)))
 		errorConfirm(outErr, err.Error())
 	}
 

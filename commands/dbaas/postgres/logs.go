@@ -12,7 +12,7 @@ import (
 
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/commands/dbaas/postgres/completer"
-	"github.com/ionos-cloud/ionosctl/pkg/config"
+	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
@@ -38,9 +38,9 @@ func LogsCmd() *core.Command {
 		},
 	}
 	globalFlags := clusterCmd.GlobalFlags()
-	globalFlags.StringSliceP(config.ArgCols, "", defaultClusterLogsCols, printer.ColsMessage(allClusterLogsCols))
-	_ = viper.BindPFlag(core.GetGlobalFlagName(clusterCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
-	_ = clusterCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	globalFlags.StringSliceP(constants.ArgCols, "", defaultClusterLogsCols, printer.ColsMessage(allClusterLogsCols))
+	_ = viper.BindPFlag(core.GetGlobalFlagName(clusterCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
+	_ = clusterCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allClusterLogsCols, cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -72,7 +72,7 @@ func LogsCmd() *core.Command {
 	_ = list.Command.RegisterFlagCompletionFunc(dbaaspg.ArgClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.ClustersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	list.AddBoolFlag(config.ArgNoHeaders, "", false, "When using text output, don't print headers")
+	list.AddBoolFlag(constants.ArgNoHeaders, "", false, "When using text output, don't print headers")
 
 	return clusterCmd
 }
@@ -196,7 +196,7 @@ func getClusterLogsPrint(c *core.CommandConfig, logs *resources.ClusterLogs) pri
 		if logs != nil {
 			r.OutputJSON = logs
 			r.KeyValue = getClusterLogsKVMaps(*logs)
-			r.Columns = getClusterLogsCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr())
+			r.Columns = getClusterLogsCols(core.GetGlobalFlagName(c.Resource, constants.ArgCols), c.Printer.GetStderr())
 		}
 	}
 	return r

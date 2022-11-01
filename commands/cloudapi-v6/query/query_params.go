@@ -7,9 +7,10 @@ package query
 import (
 	"errors"
 	"fmt"
+	"strings"
+
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
-	"strings"
 
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"

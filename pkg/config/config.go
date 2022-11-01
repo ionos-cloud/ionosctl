@@ -10,6 +10,8 @@ import (
 	"runtime"
 	"strconv"
 
+	"github.com/ionos-cloud/ionosctl/pkg/constants"
+
 	sdk "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
 )
@@ -31,17 +33,17 @@ func GetUserData() map[string]string {
 // 2. Env/config file
 // 3. Flag default value
 func GetServerUrl() string {
-	if viper.IsSet(ArgServerUrl) {
-		return viper.GetString(ArgServerUrl)
+	if viper.IsSet(constants.ArgServerUrl) {
+		return viper.GetString(constants.ArgServerUrl)
 	}
 	if url := viper.GetString(ServerUrl); url != "" {
 		return url
 	}
-	return viper.GetString(ArgServerUrl)
+	return viper.GetString(constants.ArgServerUrl)
 }
 
 func GetConfigFile() string {
-	return filepath.Join(getConfigHomeDir(), DefaultConfigFileName)
+	return filepath.Join(getConfigHomeDir(), constants.DefaultConfigFileName)
 }
 
 func getConfigHomeDir() string {
@@ -61,7 +63,7 @@ func getPermsByOS(os string) int {
 }
 
 func LoadFile() error {
-	path := viper.GetString(ArgConfig)
+	path := viper.GetString(constants.ArgConfig)
 	if !filepath.IsAbs(path) {
 		path, _ = filepath.Abs(path)
 	}
@@ -83,7 +85,7 @@ func LoadFile() error {
 		return fmt.Errorf("config file %s has wrong permissions: %d, should be %d", path, permNumber, permNumberExpected)
 	}
 
-	viper.SetConfigFile(viper.GetString(ArgConfig))
+	viper.SetConfigFile(viper.GetString(constants.ArgConfig))
 	err := viper.ReadInConfig()
 	if err != nil {
 		return err
@@ -124,18 +126,18 @@ func WriteFile() error {
 }
 
 func configFileWriter() (io.WriteCloser, error) {
-	if !viper.IsSet(ArgConfig) {
+	if !viper.IsSet(constants.ArgConfig) {
 		configPath := getConfigHomeDir()
 		err := os.MkdirAll(configPath, 0755)
 		if err != nil {
 			return nil, err
 		}
 	}
-	f, err := os.Create(viper.GetString(ArgConfig))
+	f, err := os.Create(viper.GetString(constants.ArgConfig))
 	if err != nil {
 		return nil, err
 	}
-	if err := os.Chmod(viper.GetString(ArgConfig), 0600); err != nil {
+	if err := os.Chmod(viper.GetString(constants.ArgConfig), 0600); err != nil {
 		return nil, err
 	}
 	return f, nil

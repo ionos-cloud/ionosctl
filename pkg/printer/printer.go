@@ -7,7 +7,8 @@ import (
 	"io"
 	"strings"
 
-	"github.com/ionos-cloud/ionosctl/pkg/config"
+	"github.com/ionos-cloud/ionosctl/pkg/constants"
+
 	"github.com/spf13/viper"
 )
 
@@ -30,9 +31,9 @@ type Registry map[string]PrintService
 var unknownTypeFormatErr = "unknown type format %s. Hint: use --output json|text"
 
 func NewPrinterRegistry(out, outErr io.Writer, noHeaders bool) (Registry, error) {
-	if viper.GetString(config.ArgOutput) != TypeJSON.String() &&
-		viper.GetString(config.ArgOutput) != TypeText.String() {
-		return nil, errors.New(fmt.Sprintf(unknownTypeFormatErr, viper.GetString(config.ArgOutput)))
+	if viper.GetString(constants.ArgOutput) != TypeJSON.String() &&
+		viper.GetString(constants.ArgOutput) != TypeText.String() {
+		return nil, errors.New(fmt.Sprintf(unknownTypeFormatErr, viper.GetString(constants.ArgOutput)))
 	}
 
 	return Registry{
@@ -102,7 +103,7 @@ func (p *JSONPrinter) Warn(v interface{}) error {
 }
 
 func (p *JSONPrinter) Verbose(format string, a ...interface{}) {
-	flag := viper.GetBool(config.ArgVerbose)
+	flag := viper.GetBool(constants.ArgVerbose)
 	var toPrint = ToPrint{}
 	if flag {
 		str := fmt.Sprintf("[INFO] "+format, a...)
@@ -163,7 +164,7 @@ func (p *TextPrinter) Warn(v interface{}) error {
 }
 
 func (p *TextPrinter) Verbose(format string, a ...interface{}) {
-	flag := viper.GetBool(config.ArgVerbose)
+	flag := viper.GetBool(constants.ArgVerbose)
 	if flag {
 		fmt.Printf("[INFO] "+format+"\n", a...)
 	} else {

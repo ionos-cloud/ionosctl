@@ -4,10 +4,11 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
-	"github.com/golang/mock/gomock"
 	"testing"
 
-	"github.com/ionos-cloud/ionosctl/pkg/config"
+	"github.com/golang/mock/gomock"
+
+	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
@@ -50,11 +51,11 @@ func TestPreRunResourceTypeLabelKey(t *testing.T) {
 	w := bufio.NewWriter(&b)
 	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
 		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgResourceType), cloudapiv6.DatacenterResource)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testLabelVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLabelKey), testLabelVar)
-		viper.Set(config.ArgQuiet, false)
+		viper.Set(constants.ArgQuiet, false)
 		err := PreRunResourceTypeLabelKey(cfg)
 		assert.NoError(t, err)
 	})
@@ -65,8 +66,8 @@ func TestPreRunResourceTypeLabelKeyErr(t *testing.T) {
 	w := bufio.NewWriter(&b)
 	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
 		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgQuiet, false)
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+		viper.Set(constants.ArgQuiet, false)
 		err := PreRunResourceTypeLabelKey(cfg)
 		assert.Error(t, err)
 	})
@@ -77,12 +78,12 @@ func TestPreRunResourceTypeLabelKeyValue(t *testing.T) {
 	w := bufio.NewWriter(&b)
 	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
 		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgResourceType), cloudapiv6.DatacenterResource)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testLabelVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLabelKey), testLabelVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLabelValue), testLabelVar)
-		viper.Set(config.ArgQuiet, false)
+		viper.Set(constants.ArgQuiet, false)
 		err := PreRunResourceTypeLabelKeyValue(cfg)
 		assert.NoError(t, err)
 	})
@@ -93,8 +94,8 @@ func TestPreRunResourceTypeLabelKeyValueErr(t *testing.T) {
 	w := bufio.NewWriter(&b)
 	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
 		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgQuiet, false)
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+		viper.Set(constants.ArgQuiet, false)
 		err := PreRunResourceTypeLabelKeyValue(cfg)
 		assert.Error(t, err)
 	})
@@ -105,42 +106,42 @@ func TestPreRunResourceTypeLabelKeyValueResourceErr(t *testing.T) {
 	w := bufio.NewWriter(&b)
 	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
 		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgResourceType), cloudapiv6.DatacenterResource)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLabelKey), "")
-		viper.Set(config.ArgQuiet, false)
+		viper.Set(constants.ArgQuiet, false)
 		err := PreRunResourceTypeLabelKey(cfg)
 		assert.Error(t, err)
 	})
 	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
 		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgResourceType), cloudapiv6.ServerResource)
-		viper.Set(config.ArgQuiet, false)
+		viper.Set(constants.ArgQuiet, false)
 		err := PreRunResourceTypeLabelKey(cfg)
 		assert.Error(t, err)
 	})
 	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
 		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgResourceType), cloudapiv6.VolumeResource)
-		viper.Set(config.ArgQuiet, false)
+		viper.Set(constants.ArgQuiet, false)
 		err := PreRunResourceTypeLabelKey(cfg)
 		assert.Error(t, err)
 	})
 	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
 		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgResourceType), cloudapiv6.IpBlockResource)
-		viper.Set(config.ArgQuiet, false)
+		viper.Set(constants.ArgQuiet, false)
 		err := PreRunResourceTypeLabelKey(cfg)
 		assert.Error(t, err)
 	})
 	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
 		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgResourceType), cloudapiv6.SnapshotResource)
-		viper.Set(config.ArgQuiet, false)
+		viper.Set(constants.ArgQuiet, false)
 		err := PreRunResourceTypeLabelKey(cfg)
 		assert.Error(t, err)
 	})
@@ -151,9 +152,9 @@ func TestPreRunLabelUrn(t *testing.T) {
 	w := bufio.NewWriter(&b)
 	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
 		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLabelUrn), testLabelVar)
-		viper.Set(config.ArgQuiet, false)
+		viper.Set(constants.ArgQuiet, false)
 		err := PreRunLabelUrn(cfg)
 		assert.NoError(t, err)
 	})
@@ -164,8 +165,8 @@ func TestPreRunLabelUrnErr(t *testing.T) {
 	w := bufio.NewWriter(&b)
 	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
 		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgQuiet, false)
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+		viper.Set(constants.ArgQuiet, false)
 		err := PreRunLabelUrn(cfg)
 		assert.Error(t, err)
 	})
@@ -176,16 +177,16 @@ func TestRunLabelList(t *testing.T) {
 	w := bufio.NewWriter(&b)
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
 		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgQuiet, false)
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+		viper.Set(constants.ArgQuiet, false)
 		rm.CloudApiV6Mocks.Label.EXPECT().List(gomock.AssignableToTypeOf(testListQueryParam)).Return(testLabels, nil, nil)
 		err := RunLabelList(cfg)
 		assert.NoError(t, err)
 	})
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
 		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgQuiet, false)
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+		viper.Set(constants.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgResourceType), cloudapiv6.DatacenterResource)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testLabelResourceVar)
 		rm.CloudApiV6Mocks.Label.EXPECT().DatacenterList(gomock.AssignableToTypeOf(testListQueryParam), testLabelResourceVar).Return(testLabelResources, nil, nil)
@@ -194,8 +195,8 @@ func TestRunLabelList(t *testing.T) {
 	})
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
 		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgQuiet, false)
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+		viper.Set(constants.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgResourceType), cloudapiv6.IpBlockResource)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIpBlockId), testLabelResourceVar)
 		rm.CloudApiV6Mocks.Label.EXPECT().IpBlockList(gomock.AssignableToTypeOf(testListQueryParam), testLabelResourceVar).Return(testLabelResources, nil, nil)
@@ -204,8 +205,8 @@ func TestRunLabelList(t *testing.T) {
 	})
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
 		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgQuiet, false)
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+		viper.Set(constants.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgResourceType), cloudapiv6.SnapshotResource)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgSnapshotId), testLabelResourceVar)
 		rm.CloudApiV6Mocks.Label.EXPECT().SnapshotList(gomock.AssignableToTypeOf(testListQueryParam), testLabelResourceVar).Return(testLabelResources, nil, nil)
@@ -214,8 +215,8 @@ func TestRunLabelList(t *testing.T) {
 	})
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
 		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgQuiet, false)
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+		viper.Set(constants.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgResourceType), cloudapiv6.ServerResource)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testLabelResourceVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testLabelResourceVar)
@@ -225,8 +226,8 @@ func TestRunLabelList(t *testing.T) {
 	})
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
 		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgQuiet, false)
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+		viper.Set(constants.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgResourceType), cloudapiv6.VolumeResource)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testLabelResourceVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgVolumeId), testLabelResourceVar)
@@ -241,8 +242,8 @@ func TestRunLabelListErr(t *testing.T) {
 	w := bufio.NewWriter(&b)
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
 		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgQuiet, false)
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+		viper.Set(constants.ArgQuiet, false)
 		rm.CloudApiV6Mocks.Label.EXPECT().List(gomock.AssignableToTypeOf(testListQueryParam)).Return(testLabels, nil, testLabelErr)
 		err := RunLabelList(cfg)
 		assert.Error(t, err)
@@ -255,8 +256,8 @@ func TestRunLabelGetByUrn(t *testing.T) {
 	w := bufio.NewWriter(&b)
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
 		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgQuiet, false)
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+		viper.Set(constants.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLabelUrn), testLabelVar)
 		label := resources.Label{Label: testLabel}
 		rm.CloudApiV6Mocks.Label.EXPECT().GetByUrn(testLabelVar).Return(&label, nil, nil)
@@ -270,8 +271,8 @@ func TestRunLabelGetByUrnErr(t *testing.T) {
 	w := bufio.NewWriter(&b)
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
 		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgQuiet, false)
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+		viper.Set(constants.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLabelUrn), testLabelVar)
 		label := resources.Label{Label: testLabel}
 		rm.CloudApiV6Mocks.Label.EXPECT().GetByUrn(testLabelVar).Return(&label, nil, testLabelErr)
@@ -285,8 +286,8 @@ func TestRunLabelGet(t *testing.T) {
 	w := bufio.NewWriter(&b)
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
 		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgQuiet, false)
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+		viper.Set(constants.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgResourceType), cloudapiv6.DatacenterResource)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testLabelResourceVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLabelKey), testLabelResourceVar)
@@ -296,8 +297,8 @@ func TestRunLabelGet(t *testing.T) {
 	})
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
 		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgQuiet, false)
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+		viper.Set(constants.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgResourceType), cloudapiv6.IpBlockResource)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIpBlockId), testLabelResourceVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLabelKey), testLabelResourceVar)
@@ -307,8 +308,8 @@ func TestRunLabelGet(t *testing.T) {
 	})
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
 		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgQuiet, false)
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+		viper.Set(constants.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgResourceType), cloudapiv6.SnapshotResource)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgSnapshotId), testLabelResourceVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLabelKey), testLabelResourceVar)
@@ -318,8 +319,8 @@ func TestRunLabelGet(t *testing.T) {
 	})
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
 		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgQuiet, false)
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+		viper.Set(constants.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgResourceType), cloudapiv6.ServerResource)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testLabelResourceVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testLabelResourceVar)
@@ -330,8 +331,8 @@ func TestRunLabelGet(t *testing.T) {
 	})
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
 		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgQuiet, false)
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+		viper.Set(constants.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgResourceType), cloudapiv6.VolumeResource)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testLabelResourceVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgVolumeId), testLabelResourceVar)
@@ -347,8 +348,8 @@ func TestRunLabelAdd(t *testing.T) {
 	w := bufio.NewWriter(&b)
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
 		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgQuiet, false)
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+		viper.Set(constants.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgResourceType), cloudapiv6.DatacenterResource)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testLabelResourceVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLabelKey), testLabelResourceVar)
@@ -359,8 +360,8 @@ func TestRunLabelAdd(t *testing.T) {
 	})
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
 		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgQuiet, false)
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+		viper.Set(constants.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgResourceType), cloudapiv6.IpBlockResource)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIpBlockId), testLabelResourceVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLabelKey), testLabelResourceVar)
@@ -371,8 +372,8 @@ func TestRunLabelAdd(t *testing.T) {
 	})
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
 		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgQuiet, false)
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+		viper.Set(constants.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgResourceType), cloudapiv6.SnapshotResource)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgSnapshotId), testLabelResourceVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLabelKey), testLabelResourceVar)
@@ -383,8 +384,8 @@ func TestRunLabelAdd(t *testing.T) {
 	})
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
 		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgQuiet, false)
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+		viper.Set(constants.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgResourceType), cloudapiv6.ServerResource)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testLabelResourceVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testLabelResourceVar)
@@ -396,8 +397,8 @@ func TestRunLabelAdd(t *testing.T) {
 	})
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
 		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgQuiet, false)
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+		viper.Set(constants.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgResourceType), cloudapiv6.VolumeResource)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testLabelResourceVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgVolumeId), testLabelResourceVar)
@@ -414,8 +415,8 @@ func TestRunLabelRemove(t *testing.T) {
 	w := bufio.NewWriter(&b)
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
 		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgQuiet, false)
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+		viper.Set(constants.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgResourceType), cloudapiv6.DatacenterResource)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testLabelResourceVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLabelKey), testLabelResourceVar)
@@ -425,8 +426,8 @@ func TestRunLabelRemove(t *testing.T) {
 	})
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
 		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgQuiet, false)
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+		viper.Set(constants.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgResourceType), cloudapiv6.IpBlockResource)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIpBlockId), testLabelResourceVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLabelKey), testLabelResourceVar)
@@ -436,8 +437,8 @@ func TestRunLabelRemove(t *testing.T) {
 	})
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
 		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgQuiet, false)
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+		viper.Set(constants.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgResourceType), cloudapiv6.SnapshotResource)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgSnapshotId), testLabelResourceVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLabelKey), testLabelResourceVar)
@@ -447,8 +448,8 @@ func TestRunLabelRemove(t *testing.T) {
 	})
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
 		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgQuiet, false)
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+		viper.Set(constants.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgResourceType), cloudapiv6.ServerResource)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testLabelResourceVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testLabelResourceVar)
@@ -459,8 +460,8 @@ func TestRunLabelRemove(t *testing.T) {
 	})
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
 		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgQuiet, false)
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+		viper.Set(constants.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgResourceType), cloudapiv6.VolumeResource)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testLabelResourceVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgVolumeId), testLabelResourceVar)

@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ionos-cloud/ionosctl/pkg/config"
+	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	dbaaspg "github.com/ionos-cloud/ionosctl/services/dbaas-postgres"
@@ -64,8 +64,8 @@ func TestPreRunClusterLogsList(t *testing.T) {
 	w := bufio.NewWriter(&b)
 	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
 		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgQuiet, false)
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+		viper.Set(constants.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgSince), testSinceVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgUntil), testUntilVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgClusterId), testClusterVar)
@@ -79,8 +79,8 @@ func TestPreRunClusterLogsListSinceErr(t *testing.T) {
 	w := bufio.NewWriter(&b)
 	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
 		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgQuiet, false)
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+		viper.Set(constants.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgSince), "3min")
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgUntil), testUntilVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgClusterId), testClusterVar)
@@ -94,8 +94,8 @@ func TestPreRunClusterLogsListUntilErr(t *testing.T) {
 	w := bufio.NewWriter(&b)
 	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
 		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgQuiet, false)
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+		viper.Set(constants.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgSince), testUntilVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgUntil), "1min")
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgClusterId), testClusterVar)
@@ -109,10 +109,10 @@ func TestRunClusterLogsGet(t *testing.T) {
 	w := bufio.NewWriter(&b)
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
 		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgQuiet, false)
-		viper.Set(config.ArgVerbose, false)
-		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+		viper.Set(constants.ArgQuiet, false)
+		viper.Set(constants.ArgVerbose, false)
+		viper.Set(constants.ArgServerUrl, constants.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgClusterId), testLogVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgStartTime), testStartTimeVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgEndTime), testEndTimeVar)
@@ -129,10 +129,10 @@ func TestRunClusterLogsGetSinceUntilIgnored(t *testing.T) {
 	w := bufio.NewWriter(&b)
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
 		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgQuiet, false)
-		viper.Set(config.ArgVerbose, false)
-		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+		viper.Set(constants.ArgQuiet, false)
+		viper.Set(constants.ArgVerbose, false)
+		viper.Set(constants.ArgServerUrl, constants.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgClusterId), testLogVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgSince), testSinceVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgUntil), testUntilVar)
@@ -151,9 +151,9 @@ func TestRunClusterLogsGetErr(t *testing.T) {
 	w := bufio.NewWriter(&b)
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
 		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgQuiet, false)
-		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+		viper.Set(constants.ArgQuiet, false)
+		viper.Set(constants.ArgServerUrl, constants.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgClusterId), testLogVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgStartTime), testStartTimeVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgEndTime), testEndTimeVar)
@@ -170,8 +170,8 @@ func TestGetClusterLogsCols(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
-	viper.Set(core.GetGlobalFlagName("logs", config.ArgCols), []string{"Name"})
-	getClusterLogsCols(core.GetGlobalFlagName("logs", config.ArgCols), w)
+	viper.Set(core.GetGlobalFlagName("logs", constants.ArgCols), []string{"Name"})
+	getClusterLogsCols(core.GetGlobalFlagName("logs", constants.ArgCols), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 }
@@ -181,8 +181,8 @@ func TestGetLogsColsErr(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
-	viper.Set(core.GetGlobalFlagName("logs", config.ArgCols), []string{"Unknown"})
-	getClusterLogsCols(core.GetGlobalFlagName("logs", config.ArgCols), w)
+	viper.Set(core.GetGlobalFlagName("logs", constants.ArgCols), []string{"Unknown"})
+	getClusterLogsCols(core.GetGlobalFlagName("logs", constants.ArgCols), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 	re := regexp.MustCompile(`unknown column Unknown`)

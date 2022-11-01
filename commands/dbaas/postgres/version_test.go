@@ -7,7 +7,7 @@ import (
 	"regexp"
 	"testing"
 
-	"github.com/ionos-cloud/ionosctl/pkg/config"
+	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	dbaaspg "github.com/ionos-cloud/ionosctl/services/dbaas-postgres"
@@ -43,11 +43,11 @@ func TestRunPgsqlVersionGet(t *testing.T) {
 	w := bufio.NewWriter(&b)
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
 		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgQuiet, false)
-		viper.Set(config.ArgVerbose, false)
-		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
-		viper.Set(core.GetGlobalFlagName(cfg.NS, config.ArgCols), defaultPgsqlVersionCols)
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+		viper.Set(constants.ArgQuiet, false)
+		viper.Set(constants.ArgVerbose, false)
+		viper.Set(constants.ArgServerUrl, constants.DefaultApiURL)
+		viper.Set(core.GetGlobalFlagName(cfg.NS, constants.ArgCols), defaultPgsqlVersionCols)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgClusterId), testVersionVar)
 		rm.CloudApiDbaasPgsqlMocks.Version.EXPECT().Get(testVersionVar).Return(testVersions, nil, nil)
 		err := RunPgsqlVersionGet(cfg)
@@ -60,11 +60,11 @@ func TestRunPgsqlVersionGetErr(t *testing.T) {
 	w := bufio.NewWriter(&b)
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
 		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgQuiet, false)
-		viper.Set(config.ArgVerbose, false)
-		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
-		viper.Set(core.GetGlobalFlagName(cfg.NS, config.ArgCols), defaultPgsqlVersionCols)
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+		viper.Set(constants.ArgQuiet, false)
+		viper.Set(constants.ArgVerbose, false)
+		viper.Set(constants.ArgServerUrl, constants.DefaultApiURL)
+		viper.Set(core.GetGlobalFlagName(cfg.NS, constants.ArgCols), defaultPgsqlVersionCols)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgClusterId), testVersionVar)
 		rm.CloudApiDbaasPgsqlMocks.Version.EXPECT().Get(testVersionVar).Return(testVersions, nil, testVersionErr)
 		err := RunPgsqlVersionGet(cfg)
@@ -77,11 +77,11 @@ func TestRunPgsqlVersionList(t *testing.T) {
 	w := bufio.NewWriter(&b)
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
 		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgQuiet, false)
-		viper.Set(config.ArgVerbose, false)
-		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
-		viper.Set(core.GetGlobalFlagName(cfg.NS, config.ArgCols), defaultPgsqlVersionCols)
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+		viper.Set(constants.ArgQuiet, false)
+		viper.Set(constants.ArgVerbose, false)
+		viper.Set(constants.ArgServerUrl, constants.DefaultApiURL)
+		viper.Set(core.GetGlobalFlagName(cfg.NS, constants.ArgCols), defaultPgsqlVersionCols)
 		rm.CloudApiDbaasPgsqlMocks.Version.EXPECT().List().Return(testVersions, nil, nil)
 		err := RunPgsqlVersionList(cfg)
 		assert.NoError(t, err)
@@ -93,9 +93,9 @@ func TestRunPgsqlVersionListErr(t *testing.T) {
 	w := bufio.NewWriter(&b)
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
 		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgQuiet, false)
-		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+		viper.Set(constants.ArgQuiet, false)
+		viper.Set(constants.ArgServerUrl, constants.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgClusterId), testVersionVar)
 		rm.CloudApiDbaasPgsqlMocks.Version.EXPECT().List().Return(testVersions, nil, testVersionErr)
 		err := RunPgsqlVersionList(cfg)
@@ -108,7 +108,7 @@ func TestGetPgsqlVersionColsNoSet(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
-	getPgsqlVersionCols(core.GetGlobalFlagName("version", config.ArgCols), w)
+	getPgsqlVersionCols(core.GetGlobalFlagName("version", constants.ArgCols), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 }
@@ -118,8 +118,8 @@ func TestGetPgsqlVersionCols(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
-	viper.Set(core.GetGlobalFlagName("version", config.ArgCols), []string{"PostgresVersions"})
-	getPgsqlVersionCols(core.GetGlobalFlagName("version", config.ArgCols), w)
+	viper.Set(core.GetGlobalFlagName("version", constants.ArgCols), []string{"PostgresVersions"})
+	getPgsqlVersionCols(core.GetGlobalFlagName("version", constants.ArgCols), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 }
@@ -129,8 +129,8 @@ func TestGetPgsqlVersionColsErr(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
-	viper.Set(core.GetGlobalFlagName("version", config.ArgCols), []string{"Unknown"})
-	getPgsqlVersionCols(core.GetGlobalFlagName("version", config.ArgCols), w)
+	viper.Set(core.GetGlobalFlagName("version", constants.ArgCols), []string{"Unknown"})
+	getPgsqlVersionCols(core.GetGlobalFlagName("version", constants.ArgCols), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 	re := regexp.MustCompile(`unknown column Unknown`)

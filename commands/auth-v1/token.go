@@ -10,6 +10,7 @@ import (
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/commands/auth-v1/completer"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
+	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
@@ -32,9 +33,9 @@ func TokenCmd() *core.Command {
 		},
 	}
 	globalFlags := tokenCmd.GlobalFlags()
-	globalFlags.StringSliceP(config.ArgCols, "", defaultTokenCols, printer.ColsMessage(allTokenCols))
-	_ = viper.BindPFlag(core.GetGlobalFlagName(tokenCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
-	_ = tokenCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	globalFlags.StringSliceP(constants.ArgCols, "", defaultTokenCols, printer.ColsMessage(allTokenCols))
+	_ = viper.BindPFlag(core.GetGlobalFlagName(tokenCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
+	_ = tokenCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allTokenCols, cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -54,7 +55,7 @@ func TokenCmd() *core.Command {
 		InitClient: true,
 	})
 	list.AddIntFlag(authv1.ArgContractNo, "", 0, "Users with multiple contracts must provide the contract number, for which the tokens are listed")
-	list.AddBoolFlag(config.ArgNoHeaders, "", false, "When using text output, don't print headers")
+	list.AddBoolFlag(constants.ArgNoHeaders, "", false, "When using text output, don't print headers")
 
 	/*
 		Get Command
@@ -76,7 +77,7 @@ func TokenCmd() *core.Command {
 		return completer.TokensIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	get.AddIntFlag(authv1.ArgContractNo, "", 0, "Users with multiple contracts must provide the contract number, for which the token information is displayed")
-	get.AddBoolFlag(config.ArgNoHeaders, "", false, "When using text output, don't print headers")
+	get.AddBoolFlag(constants.ArgNoHeaders, "", false, "When using text output, don't print headers")
 
 	/*
 		Generate/Create Command
@@ -300,7 +301,7 @@ func getTokenPrint(c *core.CommandConfig, dcs []resources.Token) printer.Result 
 		if dcs != nil {
 			r.OutputJSON = dcs
 			r.KeyValue = getTokensKVMaps(dcs)
-			r.Columns = getTokenCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr())
+			r.Columns = getTokenCols(core.GetGlobalFlagName(c.Resource, constants.ArgCols), c.Printer.GetStderr())
 		}
 	}
 	return r

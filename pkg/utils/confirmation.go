@@ -6,7 +6,7 @@ import (
 	"io"
 	"strings"
 
-	"github.com/ionos-cloud/ionosctl/pkg/config"
+	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
 	"github.com/spf13/viper"
 )
@@ -32,7 +32,7 @@ func readUserInput(reader io.Reader, writer printer.PrintService, message string
 
 // AskForConfirm parses and verifies user input for confirmation.
 func AskForConfirm(reader io.Reader, writer printer.PrintService, message string) error {
-	if viper.GetBool(config.ArgForce) || viper.GetBool(config.ArgQuiet) {
+	if viper.GetBool(constants.ArgForce) || viper.GetBool(constants.ArgQuiet) {
 		return nil
 	}
 	answer, err := getUserInput(reader, writer, message)

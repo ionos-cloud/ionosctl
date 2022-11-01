@@ -3,12 +3,13 @@ package commands
 import (
 	"context"
 	"errors"
-	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/query"
 	"io"
 	"strings"
 
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/query"
+
 	"github.com/fatih/structs"
-	"github.com/ionos-cloud/ionosctl/pkg/config"
+	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
@@ -31,9 +32,9 @@ func ContractCmd() *core.Command {
 		},
 	}
 	globalFlags := contractCmd.GlobalFlags()
-	globalFlags.StringSliceP(config.ArgCols, "", defaultContractCols, printer.ColsMessage(allContractCols))
-	_ = viper.BindPFlag(core.GetGlobalFlagName(contractCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
-	_ = contractCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	globalFlags.StringSliceP(constants.ArgCols, "", defaultContractCols, printer.ColsMessage(allContractCols))
+	_ = viper.BindPFlag(core.GetGlobalFlagName(contractCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
+	_ = contractCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allContractCols, cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -56,7 +57,7 @@ func ContractCmd() *core.Command {
 	_ = get.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgResourceLimits, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"CORES", "RAM", "HDD", "SSD", "DAS", "IPS", "K8S", "NLB", "NAT"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	get.AddBoolFlag(config.ArgNoHeaders, "", false, cloudapiv6.ArgNoHeadersDescription)
+	get.AddBoolFlag(constants.ArgNoHeaders, "", false, cloudapiv6.ArgNoHeadersDescription)
 	get.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultGetDepth, cloudapiv6.ArgDepthDescription)
 	return contractCmd
 }
@@ -70,7 +71,7 @@ func RunContractGet(c *core.CommandConfig) error {
 	c.Printer.Verbose("Contract with resource limits: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceLimits)))
 	contractResource, resp, err := c.CloudApiV6Services.Contracts().Get(queryParams)
 	if resp != nil {
-		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -97,7 +98,7 @@ func RunContractGet(c *core.CommandConfig) error {
 			return c.Printer.Print(getContractPrint(c, getContract(contractResource), contractNatCols))
 		}
 	}
-	return c.Printer.Print(getContractPrint(c, getContract(contractResource), getContractCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr())))
+	return c.Printer.Print(getContractPrint(c, getContract(contractResource), getContractCols(core.GetGlobalFlagName(c.Resource, constants.ArgCols), c.Printer.GetStderr())))
 }
 
 // Output Printing

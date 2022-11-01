@@ -9,6 +9,7 @@ import (
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/commands/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/commands/dbaas"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
+	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
@@ -89,21 +90,21 @@ func init() {
 	// Customize Help Flag
 	rootPFlagSet.BoolP("help", "h", false, "Print usage")
 	// Add Custom Flags
-	rootPFlagSet.StringVarP(&cfgFile, config.ArgConfig, config.ArgConfigShort, config.GetConfigFile(), "Configuration file used for authentication")
-	_ = viper.BindPFlag(config.ArgConfig, rootPFlagSet.Lookup(config.ArgConfig))
-	rootPFlagSet.StringVarP(&ServerURL, config.ArgServerUrl, config.ArgServerUrlShort, config.DefaultApiURL, "Override default host url")
-	_ = viper.BindPFlag(config.ArgServerUrl, rootPFlagSet.Lookup(config.ArgServerUrl))
-	rootPFlagSet.StringVarP(&Output, config.ArgOutput, config.ArgOutputShort, config.DefaultOutputFormat, "Desired output format [text|json]")
-	_ = viper.BindPFlag(config.ArgOutput, rootPFlagSet.Lookup(config.ArgOutput))
-	_ = rootCmd.Command.RegisterFlagCompletionFunc(config.ArgOutput, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	rootPFlagSet.StringVarP(&cfgFile, constants.ArgConfig, constants.ArgConfigShort, config.GetConfigFile(), "Configuration file used for authentication")
+	_ = viper.BindPFlag(constants.ArgConfig, rootPFlagSet.Lookup(constants.ArgConfig))
+	rootPFlagSet.StringVarP(&ServerURL, constants.ArgServerUrl, constants.ArgServerUrlShort, constants.DefaultApiURL, "Override default host url")
+	_ = viper.BindPFlag(constants.ArgServerUrl, rootPFlagSet.Lookup(constants.ArgServerUrl))
+	rootPFlagSet.StringVarP(&Output, constants.ArgOutput, constants.ArgOutputShort, constants.DefaultOutputFormat, "Desired output format [text|json]")
+	_ = viper.BindPFlag(constants.ArgOutput, rootPFlagSet.Lookup(constants.ArgOutput))
+	_ = rootCmd.Command.RegisterFlagCompletionFunc(constants.ArgOutput, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"json", "text"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	rootPFlagSet.BoolVarP(&Quiet, config.ArgQuiet, config.ArgQuietShort, false, "Quiet output")
-	_ = viper.BindPFlag(config.ArgQuiet, rootPFlagSet.Lookup(config.ArgQuiet))
-	rootPFlagSet.BoolVarP(&Force, config.ArgForce, config.ArgForceShort, false, "Force command to execute without user input")
-	_ = viper.BindPFlag(config.ArgForce, rootPFlagSet.Lookup(config.ArgForce))
-	rootPFlagSet.BoolVarP(&Verbose, config.ArgVerbose, config.ArgVerboseShort, false, "Print step-by-step process when running command")
-	_ = viper.BindPFlag(config.ArgVerbose, rootPFlagSet.Lookup(config.ArgVerbose))
+	rootPFlagSet.BoolVarP(&Quiet, constants.ArgQuiet, constants.ArgQuietShort, false, "Quiet output")
+	_ = viper.BindPFlag(constants.ArgQuiet, rootPFlagSet.Lookup(constants.ArgQuiet))
+	rootPFlagSet.BoolVarP(&Force, constants.ArgForce, constants.ArgForceShort, false, "Force command to execute without user input")
+	_ = viper.BindPFlag(constants.ArgForce, rootPFlagSet.Lookup(constants.ArgForce))
+	rootPFlagSet.BoolVarP(&Verbose, constants.ArgVerbose, constants.ArgVerboseShort, false, "Print step-by-step process when running command")
+	_ = viper.BindPFlag(constants.ArgVerbose, rootPFlagSet.Lookup(constants.ArgVerbose))
 
 	// Add SubCommands to RootCmd
 	addCommands()

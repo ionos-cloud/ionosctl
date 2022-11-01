@@ -6,11 +6,12 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"fmt"
+	"path/filepath"
+	"time"
+
 	"github.com/fatih/structs"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/kardianos/ftps"
-	"path/filepath"
-	"time"
 )
 
 type Image struct {

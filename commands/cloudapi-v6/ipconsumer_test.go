@@ -4,11 +4,12 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
-	"github.com/golang/mock/gomock"
 	"regexp"
 	"testing"
 
-	"github.com/ionos-cloud/ionosctl/pkg/config"
+	"github.com/golang/mock/gomock"
+
+	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
@@ -64,9 +65,9 @@ func TestRunIpConsumersList(t *testing.T) {
 	w := bufio.NewWriter(&b)
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
 		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgQuiet, false)
-		viper.Set(config.ArgVerbose, false)
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+		viper.Set(constants.ArgQuiet, false)
+		viper.Set(constants.ArgVerbose, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIpBlockId), testIpConsumerVar)
 		rm.CloudApiV6Mocks.IpBlocks.EXPECT().Get(testIpConsumerVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&resources.IpBlock{IpBlock: testIpConsumer}, &testResponse, nil)
 		err := RunIpConsumersList(cfg)
@@ -79,8 +80,8 @@ func TestRunIpConsumersListPropertiesErr(t *testing.T) {
 	w := bufio.NewWriter(&b)
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
 		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgQuiet, false)
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+		viper.Set(constants.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIpBlockId), testIpConsumerVar)
 		rm.CloudApiV6Mocks.IpBlocks.EXPECT().Get(testIpConsumerVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&resources.IpBlock{IpBlock: testIpConsumerProperties}, nil, nil)
 		err := RunIpConsumersList(cfg)
@@ -93,8 +94,8 @@ func TestRunIpConsumersListGetErr(t *testing.T) {
 	w := bufio.NewWriter(&b)
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
 		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgQuiet, false)
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+		viper.Set(constants.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIpBlockId), testIpConsumerVar)
 		rm.CloudApiV6Mocks.IpBlocks.EXPECT().Get(testIpConsumerVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&resources.IpBlock{IpBlock: testIpConsumerGet}, nil, nil)
 		err := RunIpConsumersList(cfg)
@@ -107,8 +108,8 @@ func TestRunIpConsumersListErr(t *testing.T) {
 	w := bufio.NewWriter(&b)
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
 		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgQuiet, false)
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+		viper.Set(constants.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIpBlockId), testIpConsumerVar)
 		rm.CloudApiV6Mocks.IpBlocks.EXPECT().Get(testIpConsumerVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&resources.IpBlock{IpBlock: testIpConsumer}, nil, testIpConsumerErr)
 		err := RunIpConsumersList(cfg)
@@ -122,10 +123,10 @@ func TestGetIpConsumersCols(t *testing.T) {
 	clierror.ErrAction = func() { return }
 	w := bufio.NewWriter(&b)
 	viper.Reset()
-	viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-	viper.Set(config.ArgQuiet, false)
-	viper.Set(core.GetGlobalFlagName("consumer", config.ArgCols), []string{"Ip"})
-	getIpConsumerCols(core.GetGlobalFlagName("consumer", config.ArgCols), w)
+	viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+	viper.Set(constants.ArgQuiet, false)
+	viper.Set(core.GetGlobalFlagName("consumer", constants.ArgCols), []string{"Ip"})
+	getIpConsumerCols(core.GetGlobalFlagName("consumer", constants.ArgCols), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 }
@@ -136,10 +137,10 @@ func TestGetIpConsumerColsErr(t *testing.T) {
 	clierror.ErrAction = func() { return }
 	w := bufio.NewWriter(&b)
 	viper.Reset()
-	viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-	viper.Set(config.ArgQuiet, false)
-	viper.Set(core.GetGlobalFlagName("consumer", config.ArgCols), []string{"Unknown"})
-	getIpConsumerCols(core.GetGlobalFlagName("consumer", config.ArgCols), w)
+	viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+	viper.Set(constants.ArgQuiet, false)
+	viper.Set(core.GetGlobalFlagName("consumer", constants.ArgCols), []string{"Unknown"})
+	getIpConsumerCols(core.GetGlobalFlagName("consumer", constants.ArgCols), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 	re := regexp.MustCompile(`unknown column Unknown`)

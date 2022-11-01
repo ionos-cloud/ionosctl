@@ -8,7 +8,7 @@ import (
 
 	"github.com/fatih/structs"
 	pgsqlcompleter "github.com/ionos-cloud/ionosctl/commands/dbaas/postgres/completer"
-	"github.com/ionos-cloud/ionosctl/pkg/config"
+	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
@@ -30,9 +30,9 @@ func PgsqlVersionCmd() *core.Command {
 		},
 	}
 	globalFlags := pgsqlversionCmd.GlobalFlags()
-	globalFlags.StringSliceP(config.ArgCols, "", defaultPgsqlVersionCols, printer.ColsMessage(defaultPgsqlVersionCols))
-	_ = viper.BindPFlag(core.GetGlobalFlagName(pgsqlversionCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
-	_ = pgsqlversionCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	globalFlags.StringSliceP(constants.ArgCols, "", defaultPgsqlVersionCols, printer.ColsMessage(defaultPgsqlVersionCols))
+	_ = viper.BindPFlag(core.GetGlobalFlagName(pgsqlversionCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
+	_ = pgsqlversionCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultPgsqlVersionCols, cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -51,7 +51,7 @@ func PgsqlVersionCmd() *core.Command {
 		CmdRun:     RunPgsqlVersionList,
 		InitClient: true,
 	})
-	list.AddBoolFlag(config.ArgNoHeaders, "", false, "When using text output, don't print headers")
+	list.AddBoolFlag(constants.ArgNoHeaders, "", false, "When using text output, don't print headers")
 
 	/*
 		Get Command
@@ -72,7 +72,7 @@ func PgsqlVersionCmd() *core.Command {
 	_ = get.Command.RegisterFlagCompletionFunc(dbaaspg.ArgClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return pgsqlcompleter.ClustersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	get.AddBoolFlag(config.ArgNoHeaders, "", false, "When using text output, don't print headers")
+	get.AddBoolFlag(constants.ArgNoHeaders, "", false, "When using text output, don't print headers")
 
 	return pgsqlversionCmd
 }
@@ -109,7 +109,7 @@ func getPgsqlVersionPrint(c *core.CommandConfig, postgresVersionList *pgsqlresou
 		if postgresVersionList != nil {
 			r.OutputJSON = postgresVersionList
 			r.KeyValue = getPgsqlVersionsKVMaps(postgresVersionList)
-			r.Columns = getPgsqlVersionCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr())
+			r.Columns = getPgsqlVersionCols(core.GetGlobalFlagName(c.Resource, constants.ArgCols), c.Printer.GetStderr())
 		}
 	}
 	return r

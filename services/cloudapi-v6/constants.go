@@ -1,8 +1,9 @@
 package cloudapi_v6
 
 import (
-	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 	"math"
+
+	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 )
 
 // Resources
