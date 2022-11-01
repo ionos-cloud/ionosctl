@@ -130,5 +130,7 @@ func ClusterCreateCmd() *core.Command {
 	    MaintenanceWindow *MaintenanceWindow `json:"maintenanceWindow,omitempty"
 	*/
 
+	cmd.Command.SilenceUsage = true
+
 	return cmd
 }

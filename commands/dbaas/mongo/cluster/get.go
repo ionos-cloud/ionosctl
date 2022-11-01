@@ -48,5 +48,7 @@ func ClusterGetCmd() *core.Command {
 		return allCols, cobra.ShellCompDirectiveNoFileComp
 	})
 
+	cmd.Command.SilenceUsage = true
+
 	return cmd
 }
