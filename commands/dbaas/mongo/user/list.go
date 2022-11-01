@@ -70,5 +70,7 @@ func UserListCmd() *core.Command {
 
 	cmd.Command.SilenceUsage = true
 
+	cmd.Command.SilenceUsage = true
+
 	return cmd
 }
