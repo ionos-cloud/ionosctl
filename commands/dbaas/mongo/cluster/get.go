@@ -2,6 +2,7 @@ package cluster
 
 import (
 	"context"
+	"github.com/spf13/viper"
 	"os"
 
 	"github.com/ionos-cloud/ionosctl/commands/dbaas/mongo/completer"
@@ -24,10 +25,7 @@ func ClusterGetCmd() *core.Command {
 			return c.Command.Command.MarkFlagRequired(constants.FlagClusterId)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			clusterId, err := c.Command.Command.Flags().GetString(constants.FlagClusterId)
-			if err != nil {
-				return err
-			}
+			clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
 			c.Printer.Verbose("Getting Cluster by id: %s", clusterId)
 			cluster, _, err := c.DbaasMongoServices.Clusters().Get(clusterId)
 			if err != nil {

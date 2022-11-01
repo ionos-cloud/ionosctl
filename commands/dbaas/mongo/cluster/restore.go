@@ -2,6 +2,7 @@ package cluster
 
 import (
 	"context"
+	"github.com/spf13/viper"
 	"os"
 
 	"github.com/ionos-cloud/ionosctl/commands/dbaas/mongo/completer"
@@ -27,20 +28,12 @@ func ClusterRestoreCmd() *core.Command {
 			return c.Command.Command.MarkFlagRequired(constants.FlagSnapshotId)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			clusterId, err := c.Command.Command.Flags().GetString(constants.FlagClusterId)
-			if err != nil {
-				return err
-			}
-			snapshotId, err := c.Command.Command.Flags().GetString(constants.FlagSnapshotId)
-			if err != nil {
-				return err
-			}
+			clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
+			snapshotId := viper.GetString(core.GetFlagName(c.NS, constants.FlagSnapshotId))
+
 			c.Printer.Verbose("Restoring Cluster %s with snapshot %s", clusterId, snapshotId)
-			_, err = c.DbaasMongoServices.Clusters().Restore(clusterId, snapshotId)
-			if err != nil {
-				return err
-			}
-			return nil
+			_, err := c.DbaasMongoServices.Clusters().Restore(clusterId, snapshotId)
+			return err
 		},
 		InitClient: true,
 	})

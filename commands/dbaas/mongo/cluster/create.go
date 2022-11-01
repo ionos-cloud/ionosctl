@@ -2,6 +2,7 @@ package cluster
 
 import (
 	"context"
+	"github.com/spf13/viper"
 	"os"
 
 	"github.com/cjrd/allocate"
@@ -55,14 +56,8 @@ func ClusterCreateCmd() *core.Command {
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			c.Printer.Verbose("Creating Cluster...")
-			day, err := c.Command.Command.Flags().GetString(constants.FlagMaintenanceDay)
-			if err != nil {
-				return err
-			}
-			time, err := c.Command.Command.Flags().GetString(constants.FlagMaintenanceTime)
-			if err != nil {
-				return err
-			}
+			day := viper.GetString(core.GetFlagName(c.NS, constants.FlagMaintenanceDay))
+			time := viper.GetString(core.GetFlagName(c.NS, constants.FlagMaintenanceTime))
 
 			maintenanceWindow := ionoscloud.MaintenanceWindow{}
 			maintenanceWindow.SetDayOfTheWeek(ionoscloud.DayOfTheWeek(day))

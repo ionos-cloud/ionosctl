@@ -34,10 +34,10 @@ func ClusterLogsListCmd() *core.Command {
 			return c.Command.Command.MarkFlagRequired(constants.FlagClusterId)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			clusterId, err := c.Command.Command.Flags().GetString(constants.FlagClusterId)
-			if err != nil {
-				return err
-			}
+			clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
+			limit := viper.GetInt32(flagLimit)
+			direction := viper.GetString(flagDirection)
+
 			start, err := time.Parse(time.RFC3339, viper.GetString(core.GetFlagName(c.NS, flagStart)))
 			if err != nil {
 				return err
@@ -46,8 +46,6 @@ func ClusterLogsListCmd() *core.Command {
 			if err != nil {
 				return err
 			}
-			direction := viper.GetString(flagDirection)
-			limit := viper.GetInt32(flagLimit)
 
 			c.Printer.Verbose("Getting logs of Cluster %s", clusterId)
 			logsQueryParams := resources.LogsQueryParams{

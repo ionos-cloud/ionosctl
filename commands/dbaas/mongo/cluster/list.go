@@ -2,11 +2,11 @@ package cluster
 
 import (
 	"context"
+	"github.com/spf13/viper"
 
 	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
-	dbaaspg "github.com/ionos-cloud/ionosctl/services/dbaas-postgres"
 	"github.com/spf13/cobra"
 )
 
@@ -22,7 +22,8 @@ func ClusterListCmd() *core.Command {
 		PreCmdRun: core.NoPreRun,
 		CmdRun: func(c *core.CommandConfig) error {
 			c.Printer.Verbose("Getting Clusters...")
-			clusters, _, err := c.DbaasMongoServices.Clusters().List("")
+			name := viper.GetString(core.GetFlagName(c.NS, constants.FlagName))
+			clusters, _, err := c.DbaasMongoServices.Clusters().List(name)
 			if err != nil {
 				return err
 			}
@@ -32,7 +33,7 @@ func ClusterListCmd() *core.Command {
 	})
 
 	// TODO: Move ArgName to DBAAS level constants
-	cmd.AddStringFlag(dbaaspg.ArgName, dbaaspg.ArgNameShort, "", "Response filter to list only the PostgreSQL Clusters that contain the specified name in the DisplayName field. The value is case insensitive")
+	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Response filter to list only the PostgreSQL Clusters that contain the specified name in the DisplayName field. The value is case insensitive")
 	cmd.AddBoolFlag(constants.ArgNoHeaders, "", false, "When using text output, don't print headers")
 	cmd.AddStringSliceFlag(constants.ArgCols, "", nil, printer.ColsMessage(allCols))
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
