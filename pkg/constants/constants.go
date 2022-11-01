@@ -6,8 +6,9 @@ package constants
 
 // DBaaS Mongo flags
 const (
-	FlagClusterId = "cluster-id"
-	FlagIdP       = "i"
+	FlagClusterId  = "cluster-id"
+	FlagSnapshotId = "snapshot-id"
+	FlagIdP        = "i"
 )
 
 // legacy flags. TODO: Arg should be renamed to Flag.

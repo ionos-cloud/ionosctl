@@ -12,6 +12,7 @@ type ClustersService interface {
 	Get(clusterId string) (sdkgo.ClusterResponse, *sdkgo.APIResponse, error)
 	Create(input sdkgo.CreateClusterRequest) (sdkgo.ClusterResponse, *sdkgo.APIResponse, error)
 	Delete(clusterId string) (*sdkgo.APIResponse, error)
+	Restore(clusterId, snapshotId string) (*sdkgo.APIResponse, error)
 }
 
 type clustersService struct {
@@ -52,5 +53,12 @@ func (svc *clustersService) Create(input sdkgo.CreateClusterRequest) (sdkgo.Clus
 func (svc *clustersService) Delete(clusterId string) (*sdkgo.APIResponse, error) {
 	req := svc.client.ClustersApi.ClustersDelete(svc.context, clusterId)
 	_, res, err := svc.client.ClustersApi.ClustersDeleteExecute(req)
+	return res, err
+}
+
+func (svc *clustersService) Restore(clusterId, snapshotId string) (*sdkgo.APIResponse, error) {
+	req := svc.client.RestoresApi.ClustersRestorePost(svc.context, clusterId)
+	req.CreateRestoreRequest(sdkgo.CreateRestoreRequest{SnapshotId: &snapshotId})
+	res, err := svc.client.RestoresApi.ClustersRestorePostExecute(req)
 	return res, err
 }
