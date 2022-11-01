@@ -57,6 +57,18 @@ func ClusterCreateCmd() *core.Command {
 			if err != nil {
 				return err
 			}
+			err = c.Command.Command.MarkFlagRequired(flagDatacenterId)
+			if err != nil {
+				return err
+			}
+			err = c.Command.Command.MarkFlagRequired(flagMaintenanceDay)
+			if err != nil {
+				return err
+			}
+			err = c.Command.Command.MarkFlagRequired(flagMaintenanceTime)
+			if err != nil {
+				return err
+			}
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
