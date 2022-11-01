@@ -4,11 +4,23 @@ package constants
  * Global level constants.
  */
 
-// DBaaS Mongo flags
+// flags
 const (
-	FlagClusterId  = "cluster-id"
-	FlagSnapshotId = "snapshot-id"
-	FlagIdP        = "i"
+	FlagClusterId       = "cluster-id"
+	FlagSnapshotId      = "snapshot-id"
+	FlagIdShort         = "i"
+	FlagName            = "name"
+	FlagNameShort       = "n"
+	FlagTemplateId      = "template-id"
+	FlagMongoVersion    = "mongo-version"
+	FlagInstances       = "instances"
+	FlagMaintenanceTime = "maintenance-time"
+	FlagMaintenanceDay  = "maintenance-day"
+	FlagLocation        = "location"
+	FlagLocationShort   = "l"
+	FlagDatacenterId    = "datacenter-id"
+	FlagCidrList        = "cidr-list"
+	FlagLanId           = "lan-id"
 )
 
 // legacy flags. TODO: Arg should be renamed to Flag.

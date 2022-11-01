@@ -39,7 +39,7 @@ func UserListCmd() *core.Command {
 	})
 
 	var clusterId string
-	cmd.AddStringVarFlag(&clusterId, constants.FlagClusterId, constants.FlagIdP, "", "")
+	cmd.AddStringVarFlag(&clusterId, constants.FlagClusterId, constants.FlagIdShort, "", "")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.MongoClusterIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})

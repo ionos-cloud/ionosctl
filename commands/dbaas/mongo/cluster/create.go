@@ -13,21 +13,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-const (
-	flagName            = "name"
-	flagNameShort       = "n"
-	flagTemplateId      = "template-id"
-	flagMongoVersion    = "mongo-version"
-	flagInstances       = "instances"
-	flagMaintenanceTime = "maintenance-time"
-	flagMaintenanceDay  = "maintenance-day"
-	flagLocation        = "location"
-	flagLocationShort   = "l"
-	flagDatacenterId    = "datacenter-id"
-	flagCidrList        = "cidr-list"
-	flagLanId           = "lan-id"
-)
-
 var createProperties = ionoscloud.CreateClusterProperties{}
 var conn = ionoscloud.Connection{}
 
@@ -38,31 +23,31 @@ func ClusterCreateCmd() *core.Command {
 		ShortDesc: "Create Mongo Clusters",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			var err error
-			err = c.Command.Command.MarkFlagRequired(flagTemplateId)
+			err = c.Command.Command.MarkFlagRequired(constants.FlagTemplateId)
 			if err != nil {
 				return err
 			}
-			err = c.Command.Command.MarkFlagRequired(flagName)
+			err = c.Command.Command.MarkFlagRequired(constants.FlagName)
 			if err != nil {
 				return err
 			}
-			err = c.Command.Command.MarkFlagRequired(flagInstances)
+			err = c.Command.Command.MarkFlagRequired(constants.FlagInstances)
 			if err != nil {
 				return err
 			}
-			err = c.Command.Command.MarkFlagRequired(flagLocation)
+			err = c.Command.Command.MarkFlagRequired(constants.FlagLocation)
 			if err != nil {
 				return err
 			}
-			err = c.Command.Command.MarkFlagRequired(flagDatacenterId)
+			err = c.Command.Command.MarkFlagRequired(constants.FlagDatacenterId)
 			if err != nil {
 				return err
 			}
-			err = c.Command.Command.MarkFlagRequired(flagMaintenanceDay)
+			err = c.Command.Command.MarkFlagRequired(constants.FlagMaintenanceDay)
 			if err != nil {
 				return err
 			}
-			err = c.Command.Command.MarkFlagRequired(flagMaintenanceTime)
+			err = c.Command.Command.MarkFlagRequired(constants.FlagMaintenanceTime)
 			if err != nil {
 				return err
 			}
@@ -70,11 +55,11 @@ func ClusterCreateCmd() *core.Command {
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			c.Printer.Verbose("Creating Cluster...")
-			day, err := c.Command.Command.Flags().GetString(flagMaintenanceDay)
+			day, err := c.Command.Command.Flags().GetString(constants.FlagMaintenanceDay)
 			if err != nil {
 				return err
 			}
-			time, err := c.Command.Command.Flags().GetString(flagMaintenanceTime)
+			time, err := c.Command.Command.Flags().GetString(constants.FlagMaintenanceTime)
 			if err != nil {
 				return err
 			}
@@ -98,22 +83,22 @@ func ClusterCreateCmd() *core.Command {
 
 	// Linked to properties struct
 	_ = allocate.Zero(&createProperties)
-	cmd.AddStringVarFlag(createProperties.DisplayName, flagName, flagNameShort, "", "The name of your cluster")
-	cmd.AddStringVarFlag(createProperties.Location, flagLocation, flagLocationShort, "", "The physical location where the cluster will be created. This is the location where all your instances will be located. This property is immutable")
-	_ = cmd.Command.RegisterFlagCompletionFunc(flagLocation, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	cmd.AddStringVarFlag(createProperties.DisplayName, constants.FlagName, constants.FlagNameShort, "", "The name of your cluster")
+	cmd.AddStringVarFlag(createProperties.Location, constants.FlagLocation, constants.FlagLocationShort, "", "The physical location where the cluster will be created. This is the location where all your instances will be located. This property is immutable")
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagLocation, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return cloudapiv6completer.LocationIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddStringVarFlag(createProperties.TemplateID, flagTemplateId, "", "", "The unique ID of the template, which specifies the number of cores, storage size, and memory")
-	_ = cmd.Command.RegisterFlagCompletionFunc(flagTemplateId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	cmd.AddStringVarFlag(createProperties.TemplateID, constants.FlagTemplateId, "", "", "The unique ID of the template, which specifies the number of cores, storage size, and memory")
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagTemplateId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.MongoTemplateIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddInt32VarFlag(createProperties.Instances, flagInstances, "", 0, "The total number of instances in the cluster (one primary and n-1 secondaries). Must be one of [3 5 7]")
-	cmd.AddStringVarFlag(createProperties.MongoDBVersion, flagMongoVersion, "", "5.0", "The MongoDB version of your cluster.")
+	cmd.AddInt32VarFlag(createProperties.Instances, constants.FlagInstances, "", 0, "The total number of instances in the cluster (one primary and n-1 secondaries). Must be one of [3 5 7]")
+	cmd.AddStringVarFlag(createProperties.MongoDBVersion, constants.FlagMongoVersion, "", "5.0", "The MongoDB version of your cluster.")
 
 	// Maintenance
-	cmd.AddStringFlag(flagMaintenanceTime, "", "", "Time for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur. e.g.: 16:30:59", core.RequiredFlagOption())
-	cmd.AddStringFlag(flagMaintenanceDay, "", "", "Day Of the Week for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur", core.RequiredFlagOption())
-	_ = cmd.Command.RegisterFlagCompletionFunc(flagMaintenanceDay, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	cmd.AddStringFlag(constants.FlagMaintenanceTime, "", "", "Time for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur. e.g.: 16:30:59", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagMaintenanceDay, "", "", "Day Of the Week for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur", core.RequiredFlagOption())
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagMaintenanceDay, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"}, cobra.ShellCompDirectiveNoFileComp
 	}) // TODO: Completions should be a flag option func
 
@@ -123,15 +108,15 @@ func ClusterCreateCmd() *core.Command {
 
 	// Connections
 	_ = allocate.Zero(&conn)
-	cmd.AddStringVarFlag(conn.DatacenterId, flagDatacenterId, "", "", "The datacenter to which your cluster will be connected. Must be in the same location as the cluster", core.RequiredFlagOption())
-	_ = cmd.Command.RegisterFlagCompletionFunc(flagDatacenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	cmd.AddStringVarFlag(conn.DatacenterId, constants.FlagDatacenterId, "", "", "The datacenter to which your cluster will be connected. Must be in the same location as the cluster", core.RequiredFlagOption())
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagDatacenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return cloudapiv6completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddStringVarFlag(conn.LanId, flagLanId, "", "", "The numeric LAN ID with which you connect your cluster", core.RequiredFlagOption())
-	_ = cmd.Command.RegisterFlagCompletionFunc(flagLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return cloudapiv6completer.LansIds(os.Stderr, cmd.Flag(flagDatacenterId).Value.String()), cobra.ShellCompDirectiveNoFileComp
+	cmd.AddStringVarFlag(conn.LanId, constants.FlagLanId, "", "", "The numeric LAN ID with which you connect your cluster", core.RequiredFlagOption())
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return cloudapiv6completer.LansIds(os.Stderr, cmd.Flag(constants.FlagDatacenterId).Value.String()), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddStringSliceVarFlag(conn.CidrList, flagCidrList, "", nil, "The list of IPs and subnet for your cluster. Note the following unavailable IP ranges: 10.233.64.0/18 10.233.0.0/18 10.233.114.0/24", core.RequiredFlagOption())
+	cmd.AddStringSliceVarFlag(conn.CidrList, constants.FlagCidrList, "", nil, "The list of IPs and subnet for your cluster. Note the following unavailable IP ranges: 10.233.64.0/18 10.233.0.0/18 10.233.114.0/24", core.RequiredFlagOption())
 	/*
 	   TemplateID        *string            `json:"templateID"`
 	    MongoDBVersion    *string            `json:"mongoDBVersion,omitempty"`
