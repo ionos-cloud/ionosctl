@@ -70,3 +70,9 @@ func (svc *usersService) Get(clusterID, username string) (sdkgo.User, *sdkgo.API
 func (svc *usersService) Delete(clusterID, username string) (sdkgo.User, *sdkgo.APIResponse, error) {
 	return svc.client.UsersApi.ClustersUsersDelete(svc.context, clusterID, username).Execute()
 }
+
+func (svc *usersService) Get(clusterID, database, username string) (sdkgo.User, *sdkgo.APIResponse, error) {
+	req := svc.client.UsersApi.ClustersUsersFindById(svc.context, clusterID, database, username)
+	u, res, err := svc.client.UsersApi.ClustersUsersFindByIdExecute(req)
+	return u, res, err
+}
