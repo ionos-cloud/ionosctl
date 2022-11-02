@@ -8,6 +8,7 @@ import (
 
 type UsersService interface {
 	List(clusterID string) (sdkgo.UsersList, *sdkgo.APIResponse, error)
+	Get(clusterID, database, user string) (sdkgo.User, *sdkgo.APIResponse, error)
 }
 
 type usersService struct {
@@ -28,4 +29,10 @@ func (svc *usersService) List(clusterID string) (sdkgo.UsersList, *sdkgo.APIResp
 	req := svc.client.UsersApi.ClustersUsersGet(svc.context, clusterID)
 	ls, res, err := svc.client.UsersApi.ClustersUsersGetExecute(req)
 	return ls, res, err
+}
+
+func (svc *usersService) Get(clusterID, database, username string) (sdkgo.User, *sdkgo.APIResponse, error) {
+	req := svc.client.UsersApi.ClustersUsersFindById(svc.context, clusterID, database, username)
+	u, res, err := svc.client.UsersApi.ClustersUsersFindByIdExecute(req)
+	return u, res, err
 }

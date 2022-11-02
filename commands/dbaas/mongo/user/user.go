@@ -14,6 +14,10 @@ import (
 	"github.com/spf13/viper"
 )
 
+const (
+	flagDatabase = "database"
+)
+
 func UserCmd() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{
@@ -25,14 +29,15 @@ func UserCmd() *core.Command {
 	}
 
 	cmd.AddCommand(UserListCmd())
+	cmd.AddCommand(UserGetCmd())
 	return cmd
 }
 
 type UserPrint struct {
 	Username  string `json:"Username,omitempty"`
-	Roles     string `json:"Roles,omitempty"`
 	Database  string `json:"Database,omitempty"`
 	CreatedBy string `json:"CreatedBy,omitempty"`
+	Roles     string `json:"Roles,omitempty"`
 }
 
 var allCols = structs.Names(UserPrint{})
