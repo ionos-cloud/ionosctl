@@ -2,6 +2,7 @@ package certmanager
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
@@ -24,7 +25,7 @@ func CertDeleteCmd() *core.Command {
 	})
 
 	cmd.AddStringFlag(CertId, "", "", "Response delete a single certificate (required)")
-	cmd.AddBoolFlag("all", "", false, "Response delete all certificates")
+	cmd.AddBoolFlag(AllFlag, "", false, "Response delete all certificates")
 	_ = cmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -34,17 +35,18 @@ func CertDeleteCmd() *core.Command {
 
 func CmdDelete(c *core.CommandConfig) error {
 	var err error
-	allFlag := c.Command.Command.Flag("all").Changed
+	allFlag := c.Command.Command.Flag(AllFlag).Changed
 	if allFlag {
 		c.Printer.Verbose("Deleting all Certificates...")
 		certs, _, err := c.CertificateManagerServices.Certs().List()
 		if err != nil {
 			return err
 		}
-		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete certificate"); err != nil {
-			return err
-		}
 		for _, cert := range *certs.Items {
+			msg := fmt.Sprintf("delete Certificate ID: %s", *cert.Id)
+			if err := utils.AskForConfirm(c.Stdin, c.Printer, msg); err != nil {
+				return err
+			}
 			_, err = c.CertificateManagerServices.Certs().Delete(*cert.Id)
 			if err != nil {
 				return err
@@ -52,9 +54,12 @@ func CmdDelete(c *core.CommandConfig) error {
 		}
 
 	} else {
-		c.Printer.Verbose("Deleting Certificate...")
 		id, err := c.Command.Command.Flags().GetString(CertId)
 		if err != nil {
+			return err
+		}
+		msg := fmt.Sprintf("delete Certificate ID: %s", id)
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, msg); err != nil {
 			return err
 		}
 		_, err = c.CertificateManagerServices.Certs().Delete(id)
@@ -67,6 +72,6 @@ func CmdDelete(c *core.CommandConfig) error {
 func PreCmdDelete(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlagsSets(c.Command, c.NS,
 		[]string{CertId},
-		[]string{"all"},
+		[]string{AllFlag},
 	)
 }
