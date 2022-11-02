@@ -2,6 +2,7 @@ package resources
 
 import (
 	"context"
+	"fmt"
 	"github.com/ionos-cloud/ionosctl/services/dbaas-postgres/resources"
 
 	sdkgo "github.com/ionos-cloud/sdk-go-dbaas-mongo"
@@ -68,6 +69,9 @@ func (svc *clustersService) Restore(clusterId, snapshotId string) (*sdkgo.APIRes
 func (svc *clustersService) SnapshotsList(clusterId string) (sdkgo.SnapshotList, *sdkgo.APIResponse, error) {
 	req := svc.client.SnapshotsApi.ClustersSnapshotsGet(svc.context, clusterId)
 	snapshots, res, err := svc.client.SnapshotsApi.ClustersSnapshotsGetExecute(req)
+	if err != nil {
+		fmt.Println(err)
+	}
 	return snapshots, res, err
 }
 
