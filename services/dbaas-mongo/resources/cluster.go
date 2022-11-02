@@ -2,6 +2,7 @@ package resources
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -19,6 +20,7 @@ type ClustersService interface {
 	Get(clusterId string) (sdkgo.ClusterResponse, *sdkgo.APIResponse, error)
 	Create(input sdkgo.CreateClusterRequest) (sdkgo.ClusterResponse, *sdkgo.APIResponse, error)
 	Delete(clusterId string) (*sdkgo.APIResponse, error)
+	DeleteAll(name string) (*sdkgo.APIResponse, error)
 	Restore(clusterId, snapshotId string) (*sdkgo.APIResponse, error)
 	SnapshotsList(clusterId string) (sdkgo.SnapshotList, *sdkgo.APIResponse, error)
 	LogsList(clusterId string, logsQueryParams LogsQueryParams) (sdkgo.ClusterLogs, *sdkgo.APIResponse, error)
@@ -62,6 +64,25 @@ func (svc *clustersService) Create(input sdkgo.CreateClusterRequest) (sdkgo.Clus
 func (svc *clustersService) Delete(clusterId string) (*sdkgo.APIResponse, error) {
 	req := svc.client.ClustersApi.ClustersDelete(svc.context, clusterId)
 	_, res, err := svc.client.ClustersApi.ClustersDeleteExecute(req)
+	return res, err
+}
+
+func (svc *clustersService) DeleteAll(filterName string) (*sdkgo.APIResponse, error) {
+	ls, _, err := svc.List(filterName)
+
+	if err != nil {
+		return nil, errors.New("deletion of all clusters failed early: " + err.Error())
+	}
+
+	var res *sdkgo.APIResponse
+	for _, c := range *ls.GetItems() {
+		req := svc.client.ClustersApi.ClustersDelete(svc.context, *c.GetId())
+		_, res, err = svc.client.ClustersApi.ClustersDeleteExecute(req)
+		if err != nil {
+			return nil, errors.New("deletion of all clusters failed early: " + err.Error())
+		}
+	}
+
 	return res, err
 }
 
