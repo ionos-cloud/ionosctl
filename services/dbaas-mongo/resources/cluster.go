@@ -3,10 +3,16 @@ package resources
 import (
 	"context"
 	"fmt"
-	"github.com/ionos-cloud/ionosctl/services/dbaas-postgres/resources"
+	"time"
 
 	sdkgo "github.com/ionos-cloud/sdk-go-dbaas-mongo"
 )
+
+type LogsQueryParams struct {
+	Direction          *string
+	Limit              *int32
+	StartTime, EndTime *time.Time
+}
 
 type ClustersService interface {
 	List(filterName string) (sdkgo.ClusterList, *sdkgo.APIResponse, error)
@@ -15,7 +21,7 @@ type ClustersService interface {
 	Delete(clusterId string) (*sdkgo.APIResponse, error)
 	Restore(clusterId, snapshotId string) (*sdkgo.APIResponse, error)
 	SnapshotsList(clusterId string) (sdkgo.SnapshotList, *sdkgo.APIResponse, error)
-	LogsList(clusterId string, logsQueryParams resources.LogsQueryParams) (sdkgo.ClusterLogs, *sdkgo.APIResponse, error)
+	LogsList(clusterId string, logsQueryParams LogsQueryParams) (sdkgo.ClusterLogs, *sdkgo.APIResponse, error)
 }
 
 type clustersService struct {
@@ -75,11 +81,25 @@ func (svc *clustersService) SnapshotsList(clusterId string) (sdkgo.SnapshotList,
 	return snapshots, res, err
 }
 
-func (svc *clustersService) LogsList(clusterId string, logsQueryParams resources.LogsQueryParams) (sdkgo.ClusterLogs, *sdkgo.APIResponse, error) {
+// Yuck! Reach out if you have a better solution.
+func (q LogsQueryParams) applyToRequest(req sdkgo.ApiClustersLogsGetRequest) sdkgo.ApiClustersLogsGetRequest {
+	if q.StartTime != nil {
+		req = req.Start(*q.StartTime)
+	}
+	if q.EndTime != nil {
+		req = req.Start(*q.EndTime)
+	}
+	if q.StartTime != nil {
+		req = req.Direction(*q.Direction)
+	}
+	if q.StartTime != nil {
+		req = req.Limit(*q.Limit)
+	}
+	return req
+}
+
+func (svc *clustersService) LogsList(clusterId string, q LogsQueryParams) (sdkgo.ClusterLogs, *sdkgo.APIResponse, error) {
 	req := svc.client.LogsApi.ClustersLogsGet(svc.context, clusterId)
-	logs, res, err := svc.client.LogsApi.ClustersLogsGetExecute(
-		req.Start(logsQueryParams.StartTime).End(logsQueryParams.EndTime).
-			Direction(logsQueryParams.Direction).Limit(logsQueryParams.Limit),
-	)
+	logs, res, err := svc.client.LogsApi.ClustersLogsGetExecute(q.applyToRequest(req))
 	return logs, res, err
 }

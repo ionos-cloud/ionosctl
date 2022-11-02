@@ -2,6 +2,8 @@ package mongo
 
 import (
 	"github.com/ionos-cloud/ionosctl/commands/dbaas/mongo/cluster"
+	"github.com/ionos-cloud/ionosctl/commands/dbaas/mongo/logs"
+	"github.com/ionos-cloud/ionosctl/commands/dbaas/mongo/snapshot"
 	"github.com/ionos-cloud/ionosctl/commands/dbaas/mongo/templates"
 	"github.com/ionos-cloud/ionosctl/commands/dbaas/mongo/user"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
@@ -21,11 +23,7 @@ func DBaaSMongoCmd() *core.Command {
 	mongoCmd.AddCommand(cluster.ClusterCmd())
 	mongoCmd.AddCommand(templates.TemplatesCmd())
 	mongoCmd.AddCommand(user.UserCmd())
-	//mongoCmd.AddCommand(PgsqlVersionCmd())
-	//mongoCmd.AddCommand(APIVersionCmd())
+	mongoCmd.AddCommand(snapshot.SnapshotCmd())
+	mongoCmd.AddCommand(logs.LogsCmd())
 	return mongoCmd
 }
-
-const (
-	flagClusterId = "cluster-id"
-)

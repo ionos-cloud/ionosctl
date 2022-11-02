@@ -12,6 +12,7 @@ func DataBaseServiceCmd() *core.Command {
 		Command: &cobra.Command{
 			Use:              "dbaas",
 			Short:            "Database as a Service Operations",
+			Aliases:          []string{"db"},
 			Long:             "The sub-commands of `ionosctl dbaas` allow you to perform operations on DBaaS resources.",
 			TraverseChildren: true,
 		},

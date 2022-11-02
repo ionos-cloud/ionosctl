@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net"
 	"strings"
+	"time"
 
 	"github.com/spf13/cobra"
 	flag "github.com/spf13/pflag"
@@ -126,6 +127,21 @@ func (c *Command) AddStringVarFlag(address *string, name, shorthand, value, desc
 		flags.StringVarP(address, name, shorthand, value, desc)
 	} else {
 		flags.StringVar(address, name, value, desc)
+	}
+	viper.BindPFlag(GetFlagName(c.NS, name), c.Command.Flags().Lookup(name))
+
+	// Add Option to Flag
+	for _, option := range optionFunc {
+		option(c, name)
+	}
+}
+
+func (c *Command) AddDurationFlag(name, shorthand string, defaultValue time.Duration, desc string, optionFunc ...FlagOptionFunc) {
+	flags := c.Command.Flags()
+	if shorthand != "" {
+		flags.DurationP(name, shorthand, defaultValue, desc)
+	} else {
+		flags.Duration(name, defaultValue, desc)
 	}
 	viper.BindPFlag(GetFlagName(c.NS, name), c.Command.Flags().Lookup(name))
 
