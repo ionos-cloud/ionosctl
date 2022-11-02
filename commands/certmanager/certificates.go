@@ -1,6 +1,8 @@
 package certmanager
 
 import (
+	"fmt"
+
 	"github.com/fatih/structs"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -24,6 +26,7 @@ func CertCmd() *core.Command {
 	certCmd.AddCommand(CertPostCmd())
 	certCmd.AddCommand(CertListCmd())
 	certCmd.AddCommand(CertDeleteCmd())
+	certCmd.AddCommand(CertGetApiVersionCmd())
 	return certCmd
 }
 
@@ -61,13 +64,16 @@ type CertPrint struct {
 	State       string `json:"State,omitempty"`
 }
 
+type ApiPrint struct {
+	Name string `json:"Name,omitempty"`
+	Href string `json:"Href,omitempty"`
+	Version string `json:"Version,omitempty"`
+}
+
 func getCertRows(certs *[]ionoscloud.CertificateDto) []map[string]interface{} {
 	out := make([]map[string]interface{}, 0, len(*certs))
 	for _, cert := range *certs {
 		var certPrint CertPrint
-		if idOk, ok := cert.GetIdOk(); ok && idOk != nil {
-			certPrint.CertId = *idOk
-		}
 		if idOk, ok := cert.GetIdOk(); ok && idOk != nil {
 			certPrint.CertId = *idOk
 		}
@@ -94,10 +100,57 @@ var allCols = structs.Names(CertPrint{})
 
 func getCertHeaders(customColumns []string) []string {
 	if customColumns == nil {
-		return allCols[0:2]
+		return allAPICols[0:2]
 	}
 	//for _, c := customColumns {
 	//	if slices.Contains(allCols, c) {}
 	//}
+	return customColumns
+}
+
+func getApiPrint(resp *ionoscloud.APIResponse, c *core.CommandConfig, cert *[]ionoscloud.ApiInfoDto) printer.Result {
+	r := printer.Result{}
+	if c != nil {
+		if resp != nil {
+			r.Resource = c.Resource
+			r.Verb = c.Verb
+			r.WaitForState = viper.GetBool(core.GetFlagName(c.NS, config.ArgWaitForState)) // this boolean is duplicated everywhere just to do an append of `& wait` to a verbose message
+		}
+		if cert != nil {
+			r.OutputJSON = cert
+			r.KeyValue = getApiRows(cert)                                                   // map header -> rows
+			r.Columns = getAPIHeaders(viper.GetStringSlice(core.GetFlagName(c.NS, config.ArgCols))) // headers
+			fmt.Println(r.Columns)
+		}
+	}
+	return r
+}
+
+func getApiRows(apis *[]ionoscloud.ApiInfoDto) []map[string]interface{} {
+	out := make([]map[string]interface{}, 0, len(*apis))
+	for _, api := range *apis {
+		var apiPrint ApiPrint
+		if nameOk, ok := api.GetNameOk(); ok && nameOk != nil {
+			apiPrint.Name = *nameOk
+		}
+		if hrefOk, ok := api.GetHrefOk(); ok && hrefOk != nil {
+			apiPrint.Href = *hrefOk
+		}
+		if versionOk, ok := api.GetVersionOk(); ok && versionOk != nil {
+			apiPrint.Version = *versionOk
+		}
+		o := structs.Map(apiPrint)
+		out = append(out, o)
+	}
+	return out
+}
+
+var allAPICols = structs.Names(ApiPrint{})
+
+func getAPIHeaders(customColumns []string) []string {
+	if customColumns == nil {
+		return allAPICols[0:3]
+	}
+
 	return customColumns
 }
