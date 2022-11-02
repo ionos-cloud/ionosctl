@@ -29,6 +29,7 @@ func UserCmd() *core.Command {
 	}
 
 	cmd.AddCommand(UserListCmd())
+	cmd.AddCommand(UserListAllCmd())
 	cmd.AddCommand(UserGetCmd())
 	cmd.AddCommand(UserDeleteCmd())
 	return cmd
