@@ -13,14 +13,14 @@ import (
 	"github.com/spf13/viper"
 )
 
-func UserGetCmd() *core.Command {
+func UserDeleteCmd() *core.Command {
 	cmd := core.NewCommand(context.TODO(), nil /* circular dependency 🤡*/, core.CommandBuilder{
 		Namespace: "dbaas-mongo",
 		Resource:  "user",
-		Verb:      "get",
+		Verb:      "delete",
 		Aliases:   []string{"g"},
-		ShortDesc: "Get a MongoDB user",
-		Example:   "ionosctl dbaas mongo user get",
+		ShortDesc: "Delete a MongoDB user",
+		Example:   "ionosctl dbaas mongo user delete",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			err := c.Command.Command.MarkFlagRequired(constants.FlagClusterId)
 			if err != nil {
@@ -41,7 +41,7 @@ func UserGetCmd() *core.Command {
 			database := viper.GetString(core.GetFlagName(c.NS, flagDatabase))
 			user := viper.GetString(core.GetFlagName(c.NS, constants.ArgUser))
 			c.Printer.Verbose("Getting User by ID %s...")
-			u, _, err := c.DbaasMongoServices.Users().Get(clusterId, database, user)
+			u, _, err := c.DbaasMongoServices.Users().Delete(clusterId, database, user)
 			if err != nil {
 				return err
 			}
