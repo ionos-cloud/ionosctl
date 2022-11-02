@@ -114,6 +114,9 @@ func (svc *clustersService) SnapshotsList(clusterId string, offset, limit *int32
 		req = req.Limit(*limit)
 	}
 	snapshots, res, err := svc.client.SnapshotsApi.ClustersSnapshotsGetExecute(req)
+	if err != nil {
+		fmt.Println(err)
+	}
 	return snapshots, res, err
 }
 
