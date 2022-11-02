@@ -17,8 +17,7 @@ func SnapshotCmd() *core.Command {
 		Command: &cobra.Command{
 			Use:              "snapshot",
 			Aliases:          []string{"snap", "backup", "snapshots", "backups"},
-			Short:            "PostgreSQL Cluster Operations",
-			Long:             "The sub-commands of `ionosctl dbaas postgres cluster` allow you to manage the PostgreSQL Clusters under your account.",
+			Short:            "Mongo Snapshot Operations",
 			TraverseChildren: true,
 		},
 	}

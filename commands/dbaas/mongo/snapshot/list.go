@@ -15,8 +15,8 @@ func SnapshotsListCmd() *core.Command {
 	cmd := core.NewCommand(context.TODO(), nil /* circular dependency 🤡*/, core.CommandBuilder{
 		Namespace: "dbaas-mongo",
 		Resource:  "cluster",
-		Verb:      "snapshots",
-		Aliases:   []string{"r"},
+		Verb:      "list",
+		Aliases:   []string{"ls"},
 		ShortDesc: "List the snapshots of your Mongo Cluster",
 		Example:   "ionosctl dbaas mongo cluster snapshots --cluster-id <cluster-id>",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
