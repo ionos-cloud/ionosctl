@@ -39,53 +39,8 @@ func CertPostCmd() *core.Command {
 		ShortDesc: "Add a new Certificate",
 		LongDesc:  "Use this command to add a Certificate.",
 		Example:   "ionosctl certificate-manager create",
-		PreCmdRun: func(c *core.PreCommandConfig) error {
-			var err error
-			for _, RequiredFlagSet := range RequiredFlagSets {
-				err = core.CheckRequiredFlagsSets(c.Command, c.NS, RequiredFlagSet)
-				if err == nil {
-					return nil
-				}
-			}
-			return err
-		},
-		CmdRun: func(c *core.CommandConfig) error {
-			c.Printer.Verbose("Adding Certificate...")
-			var name, certificate, certificateChain, privateKey string
-
-			name, err := SetProperties(c, "certificate-name")
-			if err != nil {
-				return err
-			}
-			certificate, err = SetProperties(c, "certificate")
-			if err != nil {
-				return err
-			}
-			certificateChain, err = SetProperties(c, "certificate-chain")
-			if err != nil {
-				return err
-			}
-			privateKey, err = SetProperties(c, "private-key")
-			if err != nil {
-				return err
-			}
-
-			createProperties.SetName(name)
-			createProperties.SetCertificate(certificate)
-			createProperties.SetCertificateChain(certificateChain)
-			createProperties.SetPrivateKey(privateKey)
-
-			Dto := sdkgo.NewCertificatePostDtoWithDefaults()
-
-			Dto.SetProperties(createProperties)
-
-			cert, _, err := c.CertificateManagerServices.Certs().Post(*Dto)
-			if err != nil {
-				return err
-			}
-
-			return c.Printer.Print(getCertPrint(nil, c, &[]sdkgo.CertificateDto{cert}))
-		},
+		PreCmdRun: PreCmdPost,
+		CmdRun: CmdPost,
 		InitClient: true,
 	})
 
@@ -127,13 +82,61 @@ func SetProperties(c *core.CommandConfig, property string) (string, error) {
 	return propertyValue, nil
 }
 
-// func ifEmptyMarkRequired(c *core.PreCommandConfig, flagName string) error {
-// 	flagNamePath := fmt.Sprintf("%s-path", flagName)
-// 	if c.Command.Command.Flag(flagName).Value.String() == "" && c.Command.Command.Flag(flagNamePath).Value.String() == "" {
-// 		err := c.Command.Command.MarkFlagRequired(flagName)
-// 		if err != nil {
-// 			return err
-// 		}
-// 	}
-// 	return nil
-// }
+func CmdPost(c *core.CommandConfig) error {
+	c.Printer.Verbose("Adding Certificate...")
+	var name, certificate, certificateChain, privateKey string
+
+	name, err := SetProperties(c, "certificate-name")
+	if err != nil {
+		return err
+	}
+	certificate, err = SetProperties(c, "certificate")
+	if err != nil {
+		return err
+	}
+	certificateChain, err = SetProperties(c, "certificate-chain")
+	if err != nil {
+		return err
+	}
+	privateKey, err = SetProperties(c, "private-key")
+	if err != nil {
+		return err
+	}
+
+	createProperties.SetName(name)
+	createProperties.SetCertificate(certificate)
+	createProperties.SetCertificateChain(certificateChain)
+	createProperties.SetPrivateKey(privateKey)
+
+	Dto := sdkgo.NewCertificatePostDtoWithDefaults()
+
+	Dto.SetProperties(createProperties)
+
+	cert, _, err := c.CertificateManagerServices.Certs().Post(*Dto)
+	if err != nil {
+		return err
+	}
+
+	return c.Printer.Print(getCertPrint(nil, c, &[]sdkgo.CertificateDto{cert}))
+}
+
+func PreCmdPost (c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlagsSets(c.Command, c.NS,
+		RequiredFlagSets[0],
+		RequiredFlagSets[1],
+		RequiredFlagSets[2],
+		RequiredFlagSets[3],
+		RequiredFlagSets[4],
+		RequiredFlagSets[5],
+		RequiredFlagSets[6],
+		RequiredFlagSets[7],
+		RequiredFlagSets[8],
+		RequiredFlagSets[9],
+		RequiredFlagSets[10],
+		RequiredFlagSets[11],
+		RequiredFlagSets[12],
+		RequiredFlagSets[13],
+		RequiredFlagSets[14],
+		RequiredFlagSets[15],
+	)
+}

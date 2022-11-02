@@ -15,6 +15,7 @@ type CertsService interface {
 	Get(certId string) (sdkgo.CertificateDto, *sdkgo.APIResponse, error)
 	Post(sdkgo.CertificatePostDto) (sdkgo.CertificateDto, *sdkgo.APIResponse, error)
 	List() (sdkgo.CertificateCollectionDto, *sdkgo.APIResponse, error)
+	Delete(certId string) (*sdkgo.APIResponse, error)
 }
 
 type certsService struct {
@@ -47,4 +48,10 @@ func (svc *certsService) List() (sdkgo.CertificateCollectionDto, *sdkgo.APIRespo
 	req := svc.client.CertificatesApi.CertificatesGet(svc.context)
 	cert, res, err := svc.client.CertificatesApi.CertificatesGetExecute(req)
 	return cert, res, err
+}
+
+func (svc *certsService) Delete(certId string) (*sdkgo.APIResponse, error) {
+	req := svc.client.CertificatesApi.CertificatesDelete(svc.context, certId)
+	res, err := svc.client.CertificatesApi.CertificatesDeleteExecute(req)
+	return res, err
 }

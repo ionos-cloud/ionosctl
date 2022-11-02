@@ -17,44 +17,10 @@ func CertGetCmd() *core.Command {
 		Verb:      "get",
 		Aliases:   []string{"g"},
 		ShortDesc: "Get Certificate by ID",
-		LongDesc:  "Use this command to retrieve a  Certificate by ID.",
+		LongDesc:  "Use this command to retrieve a Certificate by ID.",
 		Example:   "ionosctl certificate-manager get --certificate-id 12345678-1234-1234-1234-123456789012",
-		PreCmdRun: func(c *core.PreCommandConfig) error {
-			err := c.Command.Command.MarkFlagRequired("certificate-id")
-			if err != nil {
-				return err
-			}
-
-			c.Command.Command.MarkFlagsMutuallyExclusive("certificate", "certificate-chain")
-			return nil
-		},
-		CmdRun: func(c *core.CommandConfig) error {
-			var certFlag, certChainFlag bool
-			certFlag, err := c.Command.Command.Flags().GetBool("certificate")
-			if err != nil {
-				return err
-			}
-			certChainFlag, err = c.Command.Command.Flags().GetBool("certificate-chain")
-			if err != nil {
-				return err
-			}
-			c.Printer.Verbose("Getting Certificates...")
-			id, err := c.Command.Command.Flags().GetString("certificate-id")
-			if err != nil {
-				return err
-			}
-			cert, _, err := c.CertificateManagerServices.Certs().Get(id)
-			if err != nil {
-				return err
-			}
-
-			flags := []bool{certFlag, certChainFlag}
-			if certFlag || certChainFlag {
-				return c.Printer.Print(printProperties(&cert, c, flags))
-			}
-
-			return c.Printer.Print(getCertPrint(nil, c, &[]sdkgo.CertificateDto{cert}))
-		},
+		PreCmdRun: PreCmdGet,
+		CmdRun: CmdGet,
 		InitClient: true,
 	})
 
@@ -66,4 +32,42 @@ func CertGetCmd() *core.Command {
 	})
 
 	return cmd
+}
+
+func CmdGet(c *core.CommandConfig) error {
+	var certFlag, certChainFlag bool
+	certFlag, err := c.Command.Command.Flags().GetBool("certificate")
+	if err != nil {
+		return err
+	}
+	certChainFlag, err = c.Command.Command.Flags().GetBool("certificate-chain")
+	if err != nil {
+		return err
+	}
+	c.Printer.Verbose("Getting Certificates...")
+	id, err := c.Command.Command.Flags().GetString("certificate-id")
+	if err != nil {
+		return err
+	}
+	cert, _, err := c.CertificateManagerServices.Certs().Get(id)
+	if err != nil {
+		return err
+	}
+
+	flags := []bool{certFlag, certChainFlag}
+	if certFlag || certChainFlag {
+		return c.Printer.Print(printProperties(&cert, c, flags))
+	}
+
+	return c.Printer.Print(getCertPrint(nil, c, &[]sdkgo.CertificateDto{cert}))
+}
+
+func PreCmdGet(c *core.PreCommandConfig) error {
+	err := c.Command.Command.MarkFlagRequired("certificate-id")
+	if err != nil {
+		return err
+	}
+
+	c.Command.Command.MarkFlagsMutuallyExclusive("certificate", "certificate-chain")
+	return nil
 }
