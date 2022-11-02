@@ -23,6 +23,7 @@ func CertCmd() *core.Command {
 	certCmd.AddCommand(CertGetCmd())
 	certCmd.AddCommand(CertPostCmd())
 	certCmd.AddCommand(CertListCmd())
+	certCmd.AddCommand(CertDeleteCmd())
 	return certCmd
 }
 
