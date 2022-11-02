@@ -5,25 +5,26 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
+	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	"github.com/spf13/cobra"
 )
 
 func CertDeleteCmd() *core.Command {
 	cmd := core.NewCommand(context.TODO(), nil, core.CommandBuilder{
-		Namespace: "certmanager",
-		Resource:  "certificates",
-		Verb:      "delete",
-		Aliases:   []string{"g"},
-		ShortDesc: "Delete Certificate by ID",
-		LongDesc:  "Use this command to delete a Certificate by ID.",
-		Example:   "ionsoclt certificate-manager delete --certificate-id 12345678-1234-1234-1234-123456789012",
-		PreCmdRun: PreCmdDelete,
-		CmdRun: CmdDelete,
+		Namespace:  "certmanager",
+		Resource:   "certificates",
+		Verb:       "delete",
+		Aliases:    []string{"d"},
+		ShortDesc:  "Delete Certificate by ID",
+		LongDesc:   "Use this command to delete a Certificate by ID.",
+		Example:    "ionsoclt certificate-manager delete --certificate-id 12345678-1234-1234-1234-123456789012",
+		PreCmdRun:  PreCmdDelete,
+		CmdRun:     CmdDelete,
 		InitClient: true,
 	})
 
-	cmd.AddStringFlag("certificate-id", "", "", "Response get a single certificate (required)")
-	cmd.AddBoolFlag("all", "", false, "Response get a single certificate")
+	cmd.AddStringFlag(CertId, "", "", "Response delete a single certificate (required)")
+	cmd.AddBoolFlag("all", "", false, "Response delete all certificates")
 	_ = cmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -40,7 +41,9 @@ func CmdDelete(c *core.CommandConfig) error {
 		if err != nil {
 			return err
 		}
-
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete certificate"); err != nil {
+			return err
+		}
 		for _, cert := range *certs.Items {
 			_, err = c.CertificateManagerServices.Certs().Delete(*cert.Id)
 			if err != nil {
@@ -50,7 +53,7 @@ func CmdDelete(c *core.CommandConfig) error {
 
 	} else {
 		c.Printer.Verbose("Deleting Certificate...")
-		id, err := c.Command.Command.Flags().GetString("certificate-id")
+		id, err := c.Command.Command.Flags().GetString(CertId)
 		if err != nil {
 			return err
 		}
@@ -63,7 +66,7 @@ func CmdDelete(c *core.CommandConfig) error {
 
 func PreCmdDelete(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlagsSets(c.Command, c.NS,
-		[]string{"certificate-id"},
+		[]string{CertId},
 		[]string{"all"},
 	)
 }

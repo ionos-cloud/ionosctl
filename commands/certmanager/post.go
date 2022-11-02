@@ -11,48 +11,31 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var RequiredFlagSets = [16][]string{{"certificate-name", "certificate", "certificate-chain", "private-key"},
-	{"certificate-name-path", "certificate", "certificate-chain", "private-key"},
-	{"certificate-name", "certificate-path", "certificate-chain", "private-key"},
-	{"certificate-name-path", "certificate-path", "certificate-chain", "private-key"},
-	{"certificate-name", "certificate", "certificate-chain-path", "private-key"},
-	{"certificate-name-path", "certificate", "certificate-chain-path", "private-key"},
-	{"certificate-name", "certificate-path", "certificate-chain-path", "private-key"},
-	{"certificate-name-path", "certificate-path", "certificate-chain-path", "private-key"},
-	{"certificate-name", "certificate", "certificate-chain", "private-key-path"},
-	{"certificate-name-path", "certificate", "certificate-chain", "private-key-path"},
-	{"certificate-name", "certificate-path", "certificate-chain", "private-key-path"},
-	{"certificate-name-path", "certificate-path", "certificate-chain", "private-key-path"},
-	{"certificate-name", "certificate", "certificate-chain-path", "private-key-path"},
-	{"certificate-name-path", "certificate", "certificate-chain-path", "private-key-path"},
-	{"certificate-name", "certificate-path", "certificate-chain-path", "private-key-path"},
-	{"certificate-name-path", "certificate-path", "certificate-chain-path", "private-key-path"}}
-
 var createProperties = sdkgo.CertificatePostPropertiesDto{}
 
 func CertPostCmd() *core.Command {
 	cmd := core.NewCommand(context.TODO(), nil, core.CommandBuilder{
-		Namespace: "certmanager",
-		Resource:  "certificates",
-		Verb:      "create",
-		Aliases:   []string{"c"},
-		ShortDesc: "Add a new Certificate",
-		LongDesc:  "Use this command to add a Certificate.",
-		Example:   "ionosctl certificate-manager create",
-		PreCmdRun: PreCmdPost,
-		CmdRun: CmdPost,
+		Namespace:  "certmanager",
+		Resource:   "certificates",
+		Verb:       "create",
+		Aliases:    []string{"c"},
+		ShortDesc:  "Add a new Certificate",
+		LongDesc:   "Use this command to add a Certificate.",
+		Example:    "ionosctl certificate-manager create",
+		PreCmdRun:  PreCmdPost,
+		CmdRun:     CmdPost,
 		InitClient: true,
 	})
 
-	cmd.AddStringFlag("certificate-name", "", "", "Specify name of the certificate (required)")
-	cmd.AddStringFlag("certificate", "", "", "Specify the certificate itself (required)")
-	cmd.AddStringFlag("certificate-chain", "", "", "Specify the certificate chain (required)")
-	cmd.AddStringFlag("private-key", "", "", "Specify the private key (required)")
+	cmd.AddStringFlag(CertName, "", "", "Specify name of the certificate (required)")
+	cmd.AddStringFlag(Cert, "", "", "Specify the certificate itself (required)")
+	cmd.AddStringFlag(CertChain, "", "", "Specify the certificate chain (required)")
+	cmd.AddStringFlag(PrivateKey, "", "", "Specify the private key (required)")
 
-	cmd.AddStringFlag("certificate-name-path", "", "", "Specify name of the certificate from a file (required)")
-	cmd.AddStringFlag("certificate-path", "", "", "Specify the certificate itself from a file (required)")
-	cmd.AddStringFlag("certificate-chain-path", "", "", "Specify the certificate chain from a file (required)")
-	cmd.AddStringFlag("private-key-path", "", "", "Specify the private key from a file (required)")
+	cmd.AddStringFlag(CertNamePath, "", "", "Specify name of the certificate from a file (required)")
+	cmd.AddStringFlag(CertPath, "", "", "Specify the certificate itself from a file (required)")
+	cmd.AddStringFlag(CertChainPath, "", "", "Specify the certificate chain from a file (required)")
+	cmd.AddStringFlag(PrivateKeyPath, "", "", "Specify the private key from a file (required)")
 
 	_ = cmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allCols, cobra.ShellCompDirectiveNoFileComp
@@ -86,19 +69,19 @@ func CmdPost(c *core.CommandConfig) error {
 	c.Printer.Verbose("Adding Certificate...")
 	var name, certificate, certificateChain, privateKey string
 
-	name, err := SetProperties(c, "certificate-name")
+	name, err := SetProperties(c, CertName)
 	if err != nil {
 		return err
 	}
-	certificate, err = SetProperties(c, "certificate")
+	certificate, err = SetProperties(c, Cert)
 	if err != nil {
 		return err
 	}
-	certificateChain, err = SetProperties(c, "certificate-chain")
+	certificateChain, err = SetProperties(c, CertChain)
 	if err != nil {
 		return err
 	}
-	privateKey, err = SetProperties(c, "private-key")
+	privateKey, err = SetProperties(c, PrivateKey)
 	if err != nil {
 		return err
 	}
@@ -120,8 +103,9 @@ func CmdPost(c *core.CommandConfig) error {
 	return c.Printer.Print(getCertPrint(nil, c, &[]sdkgo.CertificateDto{cert}))
 }
 
-func PreCmdPost (c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlagsSets(c.Command, c.NS,
+// couldn't think of a better solution to this
+func PreCmdPost(c *core.PreCommandConfig) error {
+	err := core.CheckRequiredFlagsSets(c.Command, c.NS,
 		RequiredFlagSets[0],
 		RequiredFlagSets[1],
 		RequiredFlagSets[2],
@@ -139,4 +123,14 @@ func PreCmdPost (c *core.PreCommandConfig) error {
 		RequiredFlagSets[14],
 		RequiredFlagSets[15],
 	)
+
+	if err != nil {
+		return fmt.Errorf(PostErrorFormatFlag,
+			c.Command.CommandPath(),
+			PostErrorExample1,
+			PostErrorExample2,
+			c.Command.CommandPath(),
+		)
+	}
+	return nil
 }

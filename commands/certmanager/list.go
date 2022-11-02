@@ -13,7 +13,7 @@ func CertListCmd() *core.Command {
 		Namespace: "certmanager",
 		Resource:  "certificates",
 		Verb:      "list",
-		Aliases:   []string{"g"},
+		Aliases:   []string{"l"},
 		ShortDesc: "List all Certificates",
 		LongDesc:  "Use this command to retrieve all Certificates.",
 		Example:   "ionosctl certificate-manager list",
