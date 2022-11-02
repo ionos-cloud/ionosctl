@@ -29,7 +29,3 @@ func DBaaSMongoCmd() *core.Command {
 	mongoCmd.AddCommand(apiversion.ApiVersionCmd())
 	return mongoCmd
 }
-
-const (
-	flagClusterId = "cluster-id"
-)
