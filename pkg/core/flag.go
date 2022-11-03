@@ -182,7 +182,7 @@ func pluralize(word string, number int) string {
 // Use pflag's Var and VarP respectively in conjunction with the custom flag's constructor to add these custom types to a command.
 //
 
-/// -- START UUID FLAG TYPE --
+// / -- START UUID FLAG TYPE --
 type uuidFlag struct {
 	Value string
 }

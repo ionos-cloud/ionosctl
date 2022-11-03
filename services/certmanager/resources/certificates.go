@@ -64,8 +64,8 @@ func (svc *certsService) Patch(certId string, input sdkgo.CertificatePatchDto) (
 	return cert, res, err
 }
 
-func (svc *certsService) GetApiVersion() (sdkgo.ApiInfoDto ,*sdkgo.APIResponse, error) {
+func (svc *certsService) GetApiVersion() (sdkgo.ApiInfoDto, *sdkgo.APIResponse, error) {
 	req := svc.client.InformationApi.GetInfo(svc.context)
-	api, res, err :=svc.client.InformationApi.GetInfoExecute(req)
+	api, res, err := svc.client.InformationApi.GetInfoExecute(req)
 	return api, res, err
 }

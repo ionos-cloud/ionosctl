@@ -66,8 +66,8 @@ type CertPrint struct {
 }
 
 type ApiPrint struct {
-	Name string `json:"Name,omitempty"`
-	Href string `json:"Href,omitempty"`
+	Name    string `json:"Name,omitempty"`
+	Href    string `json:"Href,omitempty"`
 	Version string `json:"Version,omitempty"`
 }
 
@@ -119,7 +119,7 @@ func getApiPrint(resp *ionoscloud.APIResponse, c *core.CommandConfig, cert *[]io
 		}
 		if cert != nil {
 			r.OutputJSON = cert
-			r.KeyValue = getApiRows(cert)                                                   // map header -> rows
+			r.KeyValue = getApiRows(cert)                                                           // map header -> rows
 			r.Columns = getAPIHeaders(viper.GetStringSlice(core.GetFlagName(c.NS, config.ArgCols))) // headers
 			fmt.Println(r.Columns)
 		}

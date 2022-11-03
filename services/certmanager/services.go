@@ -9,7 +9,7 @@ import (
 
 type Services struct {
 	// Certificate Manager Resources Services
-	Certs func() resources.CertsService
+	Certs   func() resources.CertsService
 	Context context.Context
 }
 
