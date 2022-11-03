@@ -11,9 +11,9 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	authV1 "github.com/ionos-cloud/ionosctl/services/auth-v1"
+	certmanager "github.com/ionos-cloud/ionosctl/services/certmanager"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	cloudapidbaaspgsql "github.com/ionos-cloud/ionosctl/services/dbaas-postgres"
-	certmanager "github.com/ionos-cloud/ionosctl/services/certmanager"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )

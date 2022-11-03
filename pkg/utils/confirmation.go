@@ -42,12 +42,11 @@ func AskForConfirm(reader io.Reader, writer printer.PrintService, message string
 
 	//TODO: when responding no should not return error with invalid user input
 
-	//temporary solution 
+	//temporary solution
 	if answer == "n" || answer == "no" {
 		return errors.New("Stopped")
 	}
 
-	
 	if answer != "y" && answer != "ye" && answer != "yes" {
 		return errors.New("invalid user input")
 	}

@@ -12,15 +12,15 @@ import (
 
 func CertGetCmd() *core.Command {
 	cmd := core.NewCommand(context.TODO(), nil, core.CommandBuilder{
-		Namespace: "certmanager",
-		Resource:  "certificates",
-		Verb:      "get",
-		Aliases:   []string{"g"},
-		ShortDesc: "Get Certificate by ID",
-		LongDesc:  "Use this command to retrieve a Certificate by ID.",
-		Example:   "ionosctl certificate-manager get --certificate-id 47c5d9cc-b613-4b76-b0cc-dc531787a422",
-		PreCmdRun: PreCmdGet,
-		CmdRun: CmdGet,
+		Namespace:  "certmanager",
+		Resource:   "certificates",
+		Verb:       "get",
+		Aliases:    []string{"g"},
+		ShortDesc:  "Get Certificate by ID",
+		LongDesc:   "Use this command to retrieve a Certificate by ID.",
+		Example:    "ionosctl certificate-manager get --certificate-id 47c5d9cc-b613-4b76-b0cc-dc531787a422",
+		PreCmdRun:  PreCmdGet,
+		CmdRun:     CmdGet,
 		InitClient: true,
 	})
 

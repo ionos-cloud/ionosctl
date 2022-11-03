@@ -10,15 +10,15 @@ import (
 
 func CertListCmd() *core.Command {
 	cmd := core.NewCommand(context.TODO(), nil, core.CommandBuilder{
-		Namespace: "certmanager",
-		Resource:  "certificates",
-		Verb:      "list",
-		Aliases:   []string{"l"},
-		ShortDesc: "List all Certificates",
-		LongDesc:  "Use this command to retrieve all Certificates.",
-		Example:   "ionosctl certificate-manager list",
-		PreCmdRun: core.NoPreRun,
-		CmdRun:   CmdList,
+		Namespace:  "certmanager",
+		Resource:   "certificates",
+		Verb:       "list",
+		Aliases:    []string{"l"},
+		ShortDesc:  "List all Certificates",
+		LongDesc:   "Use this command to retrieve all Certificates.",
+		Example:    "ionosctl certificate-manager list",
+		PreCmdRun:  core.NoPreRun,
+		CmdRun:     CmdList,
 		InitClient: true,
 	})
 	_ = cmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
