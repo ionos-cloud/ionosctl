@@ -3,7 +3,6 @@ package certmanager
 import (
 	"context"
 
-	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/spf13/cobra"
 
@@ -27,7 +26,7 @@ func CertGetCmd() *core.Command {
 	cmd.AddStringFlag(CertId, "i", "", "Response get a single certificate (required)")
 	cmd.AddBoolFlag(Cert, "", false, "Print the certificate")
 	cmd.AddBoolFlag(CertChain, "", false, "Print the certificate chain")
-	_ = cmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	_ = cmd.Command.RegisterFlagCompletionFunc(ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allCols, cobra.ShellCompDirectiveNoFileComp
 	})
 
