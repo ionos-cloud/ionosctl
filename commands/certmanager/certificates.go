@@ -27,6 +27,7 @@ func CertCmd() *core.Command {
 	certCmd.AddCommand(CertListCmd())
 	certCmd.AddCommand(CertDeleteCmd())
 	certCmd.AddCommand(CertGetApiVersionCmd())
+	certCmd.AddCommand(CertPatchCmd())
 	return certCmd
 }
 
