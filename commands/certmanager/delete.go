@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	"github.com/spf13/cobra"
@@ -26,7 +25,7 @@ func CertDeleteCmd() *core.Command {
 
 	cmd.AddStringFlag(CertId, "i", "", "Response delete a single certificate (required)")
 	cmd.AddBoolFlag(AllFlag, "a", false, "Response delete all certificates")
-	_ = cmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	_ = cmd.Command.RegisterFlagCompletionFunc(ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allCols, cobra.ShellCompDirectiveNoFileComp
 	})
 

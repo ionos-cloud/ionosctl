@@ -15,6 +15,8 @@ const (
 	PostErrorExample1   = "ionosctl certificate-manager create --certificate-name CERTIFICATE_NAME --certificate CERTIFICATE --certificate-chain CERTIFICATE_CHAIN --private-key PRIVATE_KEY"
 	PostErrorExample2   = "ionosctl certificate-manager create --certificate-name-path CERTIFICATE_NAME_PATH --certificate CERTIFICATE_PATH --certificate-chain-path CERTIFICATE_CHAIN_PATH --private-key-path PRIVATE_KEY_PATH\n"
 	AllFlag             = "all"
+	ArgCols 			= "cols"
+	ArgWaitForState     = "wait-for-state"
 )
 
 var RequiredFlagSets = [16][]string{{CertName, Cert, CertChain, PrivateKey},

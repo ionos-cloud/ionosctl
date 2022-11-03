@@ -7,7 +7,6 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
 	ionoscloud "github.com/ionos-cloud/sdk-go-cert-manager"
@@ -37,12 +36,12 @@ func getCertPrint(resp *ionoscloud.APIResponse, c *core.CommandConfig, cert *[]i
 		if resp != nil {
 			r.Resource = c.Resource
 			r.Verb = c.Verb
-			r.WaitForState = viper.GetBool(core.GetFlagName(c.NS, config.ArgWaitForState)) // this boolean is duplicated everywhere just to do an append of `& wait` to a verbose message
+			r.WaitForState = viper.GetBool(core.GetFlagName(c.NS, ArgWaitForState)) // this boolean is duplicated everywhere just to do an append of `& wait` to a verbose message
 		}
 		if cert != nil {
 			r.OutputJSON = cert
-			r.KeyValue = getCertRows(cert)                                                           // map header -> rows
-			r.Columns = getCertHeaders(viper.GetStringSlice(core.GetFlagName(c.NS, config.ArgCols))) // headers
+			r.KeyValue = getCertRows(cert)                                                    // map header -> rows
+			r.Columns = getCertHeaders(viper.GetStringSlice(core.GetFlagName(c.NS, ArgCols))) // headers
 		}
 	}
 	return r
@@ -115,12 +114,12 @@ func getApiPrint(resp *ionoscloud.APIResponse, c *core.CommandConfig, cert *[]io
 		if resp != nil {
 			r.Resource = c.Resource
 			r.Verb = c.Verb
-			r.WaitForState = viper.GetBool(core.GetFlagName(c.NS, config.ArgWaitForState)) // this boolean is duplicated everywhere just to do an append of `& wait` to a verbose message
+			r.WaitForState = viper.GetBool(core.GetFlagName(c.NS, ArgWaitForState)) // this boolean is duplicated everywhere just to do an append of `& wait` to a verbose message
 		}
 		if cert != nil {
 			r.OutputJSON = cert
-			r.KeyValue = getApiRows(cert)                                                           // map header -> rows
-			r.Columns = getAPIHeaders(viper.GetStringSlice(core.GetFlagName(c.NS, config.ArgCols))) // headers
+			r.KeyValue = getApiRows(cert)                                                    // map header -> rows
+			r.Columns = getAPIHeaders(viper.GetStringSlice(core.GetFlagName(c.NS, ArgCols))) // headers
 			fmt.Println(r.Columns)
 		}
 	}
