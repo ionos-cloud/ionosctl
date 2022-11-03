@@ -18,7 +18,7 @@ func CertCmd() *core.Command {
 		Command: &cobra.Command{
 			Use:              "certificate-manager",
 			Short:            "Certificate Manager Operations",
-			Long:             "The sub-commands of `ionosctl certificate-manager` allow you to manage the SSL Certificates under your account.",
+			Long:             "The sub-commands of `ionosctl certificate-manager` allows you to manage the SSL Certificates under your account.",
 			TraverseChildren: true,
 		},
 	}
@@ -100,7 +100,7 @@ var allCols = structs.Names(CertPrint{})
 
 func getCertHeaders(customColumns []string) []string {
 	if customColumns == nil {
-		return allAPICols[0:2]
+		return allCols[0:2]
 	}
 	//for _, c := customColumns {
 	//	if slices.Contains(allCols, c) {}

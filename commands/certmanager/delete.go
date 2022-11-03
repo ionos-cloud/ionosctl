@@ -16,16 +16,16 @@ func CertDeleteCmd() *core.Command {
 		Resource:   "certificates",
 		Verb:       "delete",
 		Aliases:    []string{"d"},
-		ShortDesc:  "Delete Certificate by ID",
+		ShortDesc:  "Delete Certificate by ID or all Certificates",
 		LongDesc:   "Use this command to delete a Certificate by ID.",
-		Example:    "ionsoclt certificate-manager delete --certificate-id 12345678-1234-1234-1234-123456789012",
+		Example:    "ionsoclt certificate-manager delete --certificate-id 47c5d9cc-b613-4b76-b0cc-dc531787a422",
 		PreCmdRun:  PreCmdDelete,
 		CmdRun:     CmdDelete,
 		InitClient: true,
 	})
 
-	cmd.AddStringFlag(CertId, "", "", "Response delete a single certificate (required)")
-	cmd.AddBoolFlag(AllFlag, "", false, "Response delete all certificates")
+	cmd.AddStringFlag(CertId, "i", "", "Response delete a single certificate (required)")
+	cmd.AddBoolFlag(AllFlag, "a", false, "Response delete all certificates")
 	_ = cmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allCols, cobra.ShellCompDirectiveNoFileComp
 	})
