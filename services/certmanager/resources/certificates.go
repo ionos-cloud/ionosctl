@@ -16,6 +16,7 @@ type CertsService interface {
 	Post(sdkgo.CertificatePostDto) (sdkgo.CertificateDto, *sdkgo.APIResponse, error)
 	List() (sdkgo.CertificateCollectionDto, *sdkgo.APIResponse, error)
 	Delete(certId string) (*sdkgo.APIResponse, error)
+	Patch(certId string, input sdkgo.CertificatePatchDto) (sdkgo.CertificateDto, *sdkgo.APIResponse, error)
 	GetApiVersion() (sdkgo.ApiInfoDto, *sdkgo.APIResponse, error)
 }
 
@@ -55,6 +56,12 @@ func (svc *certsService) Delete(certId string) (*sdkgo.APIResponse, error) {
 	req := svc.client.CertificatesApi.CertificatesDelete(svc.context, certId)
 	res, err := svc.client.CertificatesApi.CertificatesDeleteExecute(req)
 	return res, err
+}
+
+func (svc *certsService) Patch(certId string, input sdkgo.CertificatePatchDto) (sdkgo.CertificateDto, *sdkgo.APIResponse, error) {
+	req := svc.client.CertificatesApi.CertificatesPatch(svc.context, certId).CertificatePatchDto(input)
+	cert, res, err := svc.client.CertificatesApi.CertificatesPatchExecute(req)
+	return cert, res, err
 }
 
 func (svc *certsService) GetApiVersion() (sdkgo.ApiInfoDto ,*sdkgo.APIResponse, error) {
