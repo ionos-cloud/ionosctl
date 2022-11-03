@@ -27,15 +27,15 @@ func CertPostCmd() *core.Command {
 		InitClient: true,
 	})
 
-	cmd.AddStringFlag(CertName, "", "", "Specify name of the certificate (required)")
-	cmd.AddStringFlag(Cert, "", "", "Specify the certificate itself (required)")
-	cmd.AddStringFlag(CertChain, "", "", "Specify the certificate chain (required)")
-	cmd.AddStringFlag(PrivateKey, "", "", "Specify the private key (required)")
+	cmd.AddStringFlag(CertName, "", "", "Specify name of the certificate (required either this or --certificate-name-path)")
+	cmd.AddStringFlag(Cert, "", "", "Specify the certificate itself (required either this or --certificate-path)")
+	cmd.AddStringFlag(CertChain, "", "", "Specify the certificate chain (required either this or --certificate-chain-path)")
+	cmd.AddStringFlag(PrivateKey, "", "", "Specify the private key (required either this or --private-key-path)")
 
-	cmd.AddStringFlag(CertNamePath, "", "", "Specify name of the certificate from a file (required)")
-	cmd.AddStringFlag(CertPath, "", "", "Specify the certificate itself from a file (required)")
-	cmd.AddStringFlag(CertChainPath, "", "", "Specify the certificate chain from a file (required)")
-	cmd.AddStringFlag(PrivateKeyPath, "", "", "Specify the private key from a file (required)")
+	cmd.AddStringFlag(CertNamePath, "", "", "Specify name of the certificate from a file (required either this or --certificate-name)")
+	cmd.AddStringFlag(CertPath, "", "", "Specify the certificate itself from a file (required either this or --certificate)")
+	cmd.AddStringFlag(CertChainPath, "", "", "Specify the certificate chain from a file (required either this or --certificate-chain)")
+	cmd.AddStringFlag(PrivateKeyPath, "", "", "Specify the private key from a file (required either this or --private-key)")
 
 	_ = cmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allCols, cobra.ShellCompDirectiveNoFileComp

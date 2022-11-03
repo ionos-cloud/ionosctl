@@ -18,13 +18,13 @@ func CertGetCmd() *core.Command {
 		Aliases:   []string{"g"},
 		ShortDesc: "Get Certificate by ID",
 		LongDesc:  "Use this command to retrieve a Certificate by ID.",
-		Example:   "ionosctl certificate-manager get --certificate-id 12345678-1234-1234-1234-123456789012",
+		Example:   "ionosctl certificate-manager get --certificate-id 47c5d9cc-b613-4b76-b0cc-dc531787a422",
 		PreCmdRun: PreCmdGet,
 		CmdRun: CmdGet,
 		InitClient: true,
 	})
 
-	cmd.AddStringFlag(CertId, "", "", "Response get a single certificate (required)")
+	cmd.AddStringFlag(CertId, "i", "", "Response get a single certificate (required)")
 	cmd.AddBoolFlag(Cert, "", false, "Print the certificate")
 	cmd.AddBoolFlag(CertChain, "", false, "Print the certificate chain")
 	_ = cmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
