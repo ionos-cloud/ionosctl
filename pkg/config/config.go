@@ -69,10 +69,8 @@ func LoadFile() error {
 	}
 	fileInfo, statErr := os.Stat(path)
 	if statErr != nil {
-		return fmt.Errorf("error getting credentials: nor $%s, $%s, $%s set, nor config file: %s",
-			sdk.IonosUsernameEnvVar, sdk.IonosPasswordEnvVar, sdk.IonosTokenEnvVar, statErr.Error())
+		return statErr
 	}
-
 	perm := fileInfo.Mode().Perm()
 	permNumberBase10 := int64(perm)
 	strBase10 := strconv.FormatInt(permNumberBase10, 8)
@@ -86,23 +84,28 @@ func LoadFile() error {
 	}
 
 	viper.SetConfigFile(viper.GetString(constants.ArgConfig))
-	err := viper.ReadInConfig()
-	if err != nil {
-		return err
-	}
-	return nil
+	return viper.ReadInConfig()
 }
 
-// Load collects config data from the config file, using environment variables as fallback.
+// Load binds environment variables (IONOS_USERNAME, IONOS_PASSWORD) to viper, and attempts
+// to read config file for setting fallbacks for these newly-bound viper vars
 func Load() (err error) {
 	_ = viper.BindEnv(Username, sdk.IonosUsernameEnvVar)
 	_ = viper.BindEnv(Password, sdk.IonosPasswordEnvVar)
 	_ = viper.BindEnv(Token, sdk.IonosTokenEnvVar)
 	_ = viper.BindEnv(ServerUrl, sdk.IonosApiUrlEnvVar)
 
-	err = LoadFile()
+	err = LoadFile() // Use config file as a fallback for any of the above variables. Could be used only for api-url
 
-	return err
+	if viper.IsSet(Token) || (viper.IsSet(Username) && viper.IsSet(Password)) {
+		// Error thrown by LoadFile is recoverable in this case.
+		// We don't want to throw an error e.g. if the user only uses the config file for api-url,
+		// or if he has IONOS_TOKEN, or IONOS_USERNAME and IONOS_PASSWORD exported as env vars and no config file at all
+		return nil
+	}
+
+	return fmt.Errorf("%w: Please export %s, or %s and %s, or do ionosctl login to generate a config file",
+		err, sdk.IonosTokenEnvVar, sdk.IonosUsernameEnvVar, sdk.IonosPasswordEnvVar)
 }
 
 func WriteFile() error {
