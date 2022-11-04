@@ -70,3 +70,18 @@ func TestLoadEnvFallback(t *testing.T) {
 	assert.Equal(t, "token", viper.GetString(Token))
 	assert.Equal(t, "url", viper.GetString(ServerUrl))
 }
+
+func TestRegressionLoadEnv(t *testing.T) {
+	os.Clearenv()
+	viper.Reset()
+
+	os.Setenv(sdk.IonosUsernameEnvVar, "user")
+	os.Setenv(sdk.IonosPasswordEnvVar, "pass")
+
+	// This will fail if the config file if attempting to load the config file
+	// Loading the config file is not necessary if environment variables are set
+	assert.NoError(t, Load())
+
+	assert.Equal(t, "user", viper.GetString(Username))
+	assert.Equal(t, "pass", viper.GetString(Password))
+}
