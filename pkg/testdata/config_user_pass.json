@@ -1,0 +1,6 @@
+{
+  "userdata.api-url": "https://api.ionos.com",
+  "userdata.name": "test@ionos.com",
+  "userdata.password": "test",
+  "userdata.token": "jwt-token"
+}
