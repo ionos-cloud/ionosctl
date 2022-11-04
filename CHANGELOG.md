@@ -1,5 +1,10 @@
 # Changelog
 
+## [6.4.1] (November 2022)
+
+### Fixed
+- Fixed ionosctl ignoring auth environment variables if no config file present
+
 ## [6.4.0] (October 2022)
 
 ### Added
