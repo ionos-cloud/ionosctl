@@ -15,6 +15,19 @@ import (
 	"github.com/spf13/viper"
 )
 
+func deleteAll(c *core.CommandConfig) error {
+	c.Printer.Verbose("Deleting All Clusters!")
+	if !viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce)) {
+		// TODO: This is a pretty nasty snippet to duplicate everywhere
+		err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all clusters")
+		if err != nil {
+			return err
+		}
+	}
+	_, err := c.DbaasMongoServices.Clusters().DeleteAll(viper.GetString(core.GetFlagName(c.NS, constants.FlagName)))
+	return err
+}
+
 func ClusterDeleteCmd() *core.Command {
 	cmd := core.NewCommand(context.TODO(), nil, core.CommandBuilder{
 		Namespace: "dbaas-mongo",

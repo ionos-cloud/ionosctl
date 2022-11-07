@@ -61,6 +61,7 @@ func UserListCmd() *core.Command {
 	})
 	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "List all users, across all clusters")
 	cmd.AddBoolFlag(constants.ArgNoHeaders, "", false, "When using text output, don't print headers")
+	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "List all users, across all clusters")
 	cmd.AddStringSliceFlag(constants.ArgCols, "", nil, printer.ColsMessage(allCols))
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allCols, cobra.ShellCompDirectiveNoFileComp
