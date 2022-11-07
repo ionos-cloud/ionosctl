@@ -2,6 +2,8 @@ package cluster
 
 import (
 	"context"
+	"fmt"
+	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	"github.com/spf13/viper"
 	"os"
 
@@ -12,6 +14,19 @@ import (
 	"github.com/spf13/cobra"
 )
 
+func deleteAll(c *core.CommandConfig) error {
+	c.Printer.Verbose("Deleting All Clusters!")
+	if !viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce)) {
+		// TODO: This is a pretty nasty snippet to duplicate everywhere
+		err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all clusters")
+		if err != nil {
+			return err
+		}
+	}
+	_, err := c.DbaasMongoServices.Clusters().DeleteAll(viper.GetString(core.GetFlagName(c.NS, constants.FlagName)))
+	return err
+}
+
 func ClusterDeleteCmd() *core.Command {
 	cmd := core.NewCommand(context.TODO(), nil /* circular dependency 🤡*/, core.CommandBuilder{
 		Namespace: "dbaas-mongo",
@@ -21,12 +36,20 @@ func ClusterDeleteCmd() *core.Command {
 		ShortDesc: "Delete a Mongo Cluster by ID",
 		Example:   "ionosctl dbaas mongo cluster delete --cluster-id <cluster-id>",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			return c.Command.Command.MarkFlagRequired(constants.FlagClusterId)
+			return core.CheckRequiredFlagsSets(c.Command, c.NS, []string{constants.ArgAll}, []string{constants.FlagClusterId})
 		},
 		CmdRun: func(c *core.CommandConfig) error {
+			if all := viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)); all {
+				return deleteAll(c)
+			}
+
 			clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
-			c.Printer.Verbose("Getting Cluster by id: %s", clusterId)
-			_, err := c.DbaasMongoServices.Clusters().Delete(clusterId)
+			err := utils.AskForConfirm(c.Stdin, c.Printer, fmt.Sprintf("delete cluster %s", clusterId))
+			if err != nil {
+				return err
+			}
+			c.Printer.Verbose("Deleting cluster: %s", clusterId)
+			_, err = c.DbaasMongoServices.Clusters().Delete(clusterId)
 			return err
 		},
 		InitClient: true,
@@ -37,6 +60,8 @@ func ClusterDeleteCmd() *core.Command {
 		return completer.MongoClusterIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddBoolFlag(constants.ArgNoHeaders, "", false, "When using text output, don't print headers")
+	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Delete all mongo clusters")
+	cmd.AddBoolFlag(constants.ArgForce, constants.ArgForceShort, false, "Skip yes/no verification")
 	cmd.AddStringSliceFlag(constants.ArgCols, "", nil, printer.ColsMessage(allCols))
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allCols, cobra.ShellCompDirectiveNoFileComp
