@@ -1,8 +1,10 @@
 package printer
 
 import (
-	"github.com/stretchr/testify/assert"
+	"bytes"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestGetHeaders(t *testing.T) {
@@ -74,4 +76,27 @@ func TestGetHeaders(t *testing.T) {
 			assert.Equalf(t, tt.want, GetHeaders(tt.args.allColumns, tt.args.defaultColumns, tt.args.customColumns), "GetHeaders(%v, %v, %v)", tt.args.allColumns, tt.args.defaultColumns, tt.args.customColumns)
 		})
 	}
+}
+
+func TestPrintText(t *testing.T) {
+	buf := new(bytes.Buffer)
+	headers := []string{
+		"String", "Int", "Float64", "Bool", "StringSlice",
+	}
+	kvmap := []map[string]interface{}{
+		{
+			"String":      "string",
+			"Int":         int(1),
+			"Float64":     float64(1.123),
+			"Bool":        true,
+			"StringSlice": []string{"a", "b"},
+		},
+	}
+
+	assert.NoError(t, printText(buf, headers, kvmap, false))
+
+	expectOut := `String   Int   Float64    Bool   StringSlice
+string   1     1.123000   true   a,b
+`
+	assert.Equal(t, expectOut, buf.String())
 }
