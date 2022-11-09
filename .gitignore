@@ -191,3 +191,9 @@ modules.xml
 
 
 # End of https://www.toptal.com/developers/gitignore/api/go,goland+iml,webstorm+iml,visualstudiocode
+
+# Contains built binaries
+builds/
+
+# direnv config
+.envrc
