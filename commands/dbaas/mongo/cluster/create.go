@@ -15,7 +15,7 @@ import (
 )
 
 var createProperties = ionoscloud.CreateClusterProperties{}
-var conn = ionoscloud.Connection{}
+var createConn = ionoscloud.Connection{}
 
 func ClusterCreateCmd() *core.Command {
 	cmd := core.NewCommand(context.TODO(), nil /* circular dependency 🤡*/, core.CommandBuilder{
@@ -63,7 +63,7 @@ func ClusterCreateCmd() *core.Command {
 			maintenanceWindow.SetDayOfTheWeek(ionoscloud.DayOfTheWeek(day))
 			maintenanceWindow.SetTime(time)
 			createProperties.SetMaintenanceWindow(maintenanceWindow)
-			createProperties.SetConnections([]ionoscloud.Connection{conn})
+			createProperties.SetConnections([]ionoscloud.Connection{createConn})
 			input := ionoscloud.CreateClusterRequest{}
 			input.SetProperties(createProperties)
 
@@ -102,16 +102,16 @@ func ClusterCreateCmd() *core.Command {
 	cmd.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for Data Center creation [seconds]")
 
 	// Connections
-	_ = allocate.Zero(&conn)
-	cmd.AddStringVarFlag(conn.DatacenterId, constants.FlagDatacenterId, "", "", "The datacenter to which your cluster will be connected. Must be in the same location as the cluster", core.RequiredFlagOption())
+	_ = allocate.Zero(&createConn)
+	cmd.AddStringVarFlag(createConn.DatacenterId, constants.FlagDatacenterId, "", "", "The datacenter to which your cluster will be connected. Must be in the same location as the cluster", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagDatacenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return cloudapiv6completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddStringVarFlag(conn.LanId, constants.FlagLanId, "", "", "The numeric LAN ID with which you connect your cluster", core.RequiredFlagOption())
+	cmd.AddStringVarFlag(createConn.LanId, constants.FlagLanId, "", "", "The numeric LAN ID with which you connect your cluster", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return cloudapiv6completer.LansIds(os.Stderr, cmd.Flag(constants.FlagDatacenterId).Value.String()), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddStringSliceVarFlag(conn.CidrList, constants.FlagCidrList, "", nil, "The list of IPs and subnet for your cluster. Note the following unavailable IP ranges: 10.233.64.0/18 10.233.0.0/18 10.233.114.0/24", core.RequiredFlagOption())
+	cmd.AddStringSliceVarFlag(createConn.CidrList, constants.FlagCidrList, "", nil, "The list of IPs and subnet for your cluster. Note the following unavailable IP ranges: 10.233.64.0/18 10.233.0.0/18 10.233.114.0/24", core.RequiredFlagOption())
 	/*
 	   TemplateID        *string            `json:"templateID"`
 	    MongoDBVersion    *string            `json:"mongoDBVersion,omitempty"`
