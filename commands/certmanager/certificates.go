@@ -1,8 +1,6 @@
 package certmanager
 
 import (
-	"fmt"
-
 	"github.com/fatih/structs"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -22,11 +20,11 @@ func CertCmd() *core.Command {
 		},
 	}
 	certCmd.AddCommand(CertGetCmd())
-	certCmd.AddCommand(CertPostCmd())
+	certCmd.AddCommand(CertCreateCmd())
 	certCmd.AddCommand(CertListCmd())
 	certCmd.AddCommand(CertDeleteCmd())
 	certCmd.AddCommand(CertGetApiVersionCmd())
-	certCmd.AddCommand(CertPatchCmd())
+	certCmd.AddCommand(CertUpdateCmd())
 	return certCmd
 }
 
@@ -36,12 +34,12 @@ func getCertPrint(resp *ionoscloud.APIResponse, c *core.CommandConfig, cert *[]i
 		if resp != nil {
 			r.Resource = c.Resource
 			r.Verb = c.Verb
-			r.WaitForState = viper.GetBool(core.GetFlagName(c.NS, ArgWaitForState)) // this boolean is duplicated everywhere just to do an append of `& wait` to a verbose message
+			r.WaitForState = viper.GetBool(core.GetFlagName(c.NS, FlagArgWaitForState)) // this boolean is duplicated everywhere just to do an append of `& wait` to a verbose message
 		}
 		if cert != nil {
 			r.OutputJSON = cert
-			r.KeyValue = getCertRows(cert)                                                    // map header -> rows
-			r.Columns = getCertHeaders(viper.GetStringSlice(core.GetFlagName(c.NS, ArgCols))) // headers
+			r.KeyValue = getCertRows(cert)                                                        // map header -> rows
+			r.Columns = getCertHeaders(viper.GetStringSlice(core.GetFlagName(c.NS, FlagArgCols))) // headers
 		}
 	}
 	return r
@@ -97,60 +95,3 @@ func getCertRows(certs *[]ionoscloud.CertificateDto) []map[string]interface{} {
 }
 
 var allCols = structs.Names(CertPrint{})
-
-func getCertHeaders(customColumns []string) []string {
-	if customColumns == nil {
-		return allCols[0:2]
-	}
-	//for _, c := customColumns {
-	//	if slices.Contains(allCols, c) {}
-	//}
-	return customColumns
-}
-
-func getApiPrint(resp *ionoscloud.APIResponse, c *core.CommandConfig, cert *[]ionoscloud.ApiInfoDto) printer.Result {
-	r := printer.Result{}
-	if c != nil {
-		if resp != nil {
-			r.Resource = c.Resource
-			r.Verb = c.Verb
-			r.WaitForState = viper.GetBool(core.GetFlagName(c.NS, ArgWaitForState)) // this boolean is duplicated everywhere just to do an append of `& wait` to a verbose message
-		}
-		if cert != nil {
-			r.OutputJSON = cert
-			r.KeyValue = getApiRows(cert)                                                    // map header -> rows
-			r.Columns = getAPIHeaders(viper.GetStringSlice(core.GetFlagName(c.NS, ArgCols))) // headers
-			fmt.Println(r.Columns)
-		}
-	}
-	return r
-}
-
-func getApiRows(apis *[]ionoscloud.ApiInfoDto) []map[string]interface{} {
-	out := make([]map[string]interface{}, 0, len(*apis))
-	for _, api := range *apis {
-		var apiPrint ApiPrint
-		if nameOk, ok := api.GetNameOk(); ok && nameOk != nil {
-			apiPrint.Name = *nameOk
-		}
-		if hrefOk, ok := api.GetHrefOk(); ok && hrefOk != nil {
-			apiPrint.Href = *hrefOk
-		}
-		if versionOk, ok := api.GetVersionOk(); ok && versionOk != nil {
-			apiPrint.Version = *versionOk
-		}
-		o := structs.Map(apiPrint)
-		out = append(out, o)
-	}
-	return out
-}
-
-var allAPICols = structs.Names(ApiPrint{})
-
-func getAPIHeaders(customColumns []string) []string {
-	if customColumns == nil {
-		return allAPICols[0:3]
-	}
-
-	return customColumns
-}

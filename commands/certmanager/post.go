@@ -12,7 +12,7 @@ import (
 
 var createProperties = sdkgo.CertificatePostPropertiesDto{}
 
-func CertPostCmd() *core.Command {
+func CertCreateCmd() *core.Command {
 	cmd := core.NewCommand(context.TODO(), nil, core.CommandBuilder{
 		Namespace:  "certmanager",
 		Resource:   "certificates",
@@ -26,24 +26,24 @@ func CertPostCmd() *core.Command {
 		InitClient: true,
 	})
 
-	cmd.AddStringFlag(CertName, "", "", "Specify name of the certificate (required either this or --certificate-name-path)")
-	cmd.AddStringFlag(Cert, "", "", "Specify the certificate itself (required either this or --certificate-path)")
-	cmd.AddStringFlag(CertChain, "", "", "Specify the certificate chain (required either this or --certificate-chain-path)")
-	cmd.AddStringFlag(PrivateKey, "", "", "Specify the private key (required either this or --private-key-path)")
+	cmd.AddStringFlag(FlagCertName, "", "", "Specify name of the certificate (required either this or --certificate-name-path)")
+	cmd.AddStringFlag(FlagCert, "", "", "Specify the certificate itself (required either this or --certificate-path)")
+	cmd.AddStringFlag(FlagCertChain, "", "", "Specify the certificate chain (required either this or --certificate-chain-path)")
+	cmd.AddStringFlag(FlagPrivateKey, "", "", "Specify the private key (required either this or --private-key-path)")
 
-	cmd.AddStringFlag(CertNamePath, "", "", "Specify name of the certificate from a file (required either this or --certificate-name)")
-	cmd.AddStringFlag(CertPath, "", "", "Specify the certificate itself from a file (required either this or --certificate)")
-	cmd.AddStringFlag(CertChainPath, "", "", "Specify the certificate chain from a file (required either this or --certificate-chain)")
-	cmd.AddStringFlag(PrivateKeyPath, "", "", "Specify the private key from a file (required either this or --private-key)")
+	cmd.AddStringFlag(FlagCertNamePath, "", "", "Specify name of the certificate from a file (required either this or --certificate-name)")
+	cmd.AddStringFlag(FlagCertPath, "", "", "Specify the certificate itself from a file (required either this or --certificate)")
+	cmd.AddStringFlag(FlagCertChainPath, "", "", "Specify the certificate chain from a file (required either this or --certificate-chain)")
+	cmd.AddStringFlag(FlagPrivateKeyPath, "", "", "Specify the private key from a file (required either this or --private-key)")
 
-	_ = cmd.Command.RegisterFlagCompletionFunc(ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	_ = cmd.Command.RegisterFlagCompletionFunc(FlagArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allCols, cobra.ShellCompDirectiveNoFileComp
 	})
 
 	return cmd
 }
 
-func SetProperties(c *core.CommandConfig, property string) (string, error) {
+func GetPropertyWithFallback(c *core.CommandConfig, property string) (string, error) {
 	propertyValue, err := c.Command.Command.Flags().GetString(property)
 	if propertyValue == "" {
 		if err != nil {
@@ -68,19 +68,19 @@ func CmdPost(c *core.CommandConfig) error {
 	c.Printer.Verbose("Adding Certificate...")
 	var name, certificate, certificateChain, privateKey string
 
-	name, err := SetProperties(c, CertName)
+	name, err := GetPropertyWithFallback(c, FlagCertName)
 	if err != nil {
 		return err
 	}
-	certificate, err = SetProperties(c, Cert)
+	certificate, err = GetPropertyWithFallback(c, FlagCert)
 	if err != nil {
 		return err
 	}
-	certificateChain, err = SetProperties(c, CertChain)
+	certificateChain, err = GetPropertyWithFallback(c, FlagCertChain)
 	if err != nil {
 		return err
 	}
-	privateKey, err = SetProperties(c, PrivateKey)
+	privateKey, err = GetPropertyWithFallback(c, FlagPrivateKey)
 	if err != nil {
 		return err
 	}
