@@ -4,7 +4,6 @@ package certmanager
 const (
 	FlagCertId              = "certificate-id"
 	FlagCertName            = "certificate-name"
-	FlagCertNamePath        = "certificate-name-path"
 	FlagCert                = "certificate"
 	FlagCertPath            = "certificate-path"
 	FlagCertChain           = "certificate-chain"
@@ -20,18 +19,11 @@ const (
 )
 
 var RequiredFlagSets = [16][]string{{FlagCertName, FlagCert, FlagCertChain, FlagPrivateKey},
-	{FlagCertNamePath, FlagCert, FlagCertChain, FlagPrivateKey},
 	{FlagCertName, FlagCertPath, FlagCertChain, FlagPrivateKey},
-	{FlagCertNamePath, FlagCertPath, FlagCertChain, FlagPrivateKey},
 	{FlagCertName, FlagCert, FlagCertChainPath, FlagPrivateKey},
-	{FlagCertNamePath, FlagCert, FlagCertChainPath, FlagPrivateKey},
 	{FlagCertName, FlagCertPath, FlagCertChainPath, FlagPrivateKey},
-	{FlagCertNamePath, FlagCertPath, FlagCertChainPath, FlagPrivateKey},
 	{FlagCertName, FlagCert, FlagCertChain, FlagPrivateKeyPath},
-	{FlagCertNamePath, FlagCert, FlagCertChain, FlagPrivateKeyPath},
 	{FlagCertName, FlagCertPath, FlagCertChain, FlagPrivateKeyPath},
-	{FlagCertNamePath, FlagCertPath, FlagCertChain, FlagPrivateKeyPath},
 	{FlagCertName, FlagCert, FlagCertChainPath, FlagPrivateKeyPath},
-	{FlagCertNamePath, FlagCert, FlagCertChainPath, FlagPrivateKeyPath},
 	{FlagCertName, FlagCertPath, FlagCertChainPath, FlagPrivateKeyPath},
-	{FlagCertNamePath, FlagCertPath, FlagCertChainPath, FlagPrivateKeyPath}}
+}
