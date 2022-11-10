@@ -25,6 +25,6 @@ func DBaaSMongoCmd() *core.Command {
 	mongoCmd.AddCommand(user.UserCmd())
 	mongoCmd.AddCommand(snapshot.SnapshotCmd())
 	mongoCmd.AddCommand(logs.LogsCmd())
-	mongoCmd.AddCommand(apiversion.ApiVersionCmd())
+	//mongoCmd.AddCommand(apiversion.ApiVersionCmd())
 	return mongoCmd
 }

@@ -2,6 +2,7 @@ package cluster
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/pkg/constants"
@@ -25,7 +26,7 @@ func ClusterCmd() *core.Command {
 
 	clusterCmd.AddCommand(ClusterListCmd())
 	clusterCmd.AddCommand(ClusterCreateCmd())
-	clusterCmd.AddCommand(ClusterUpdateCmd())
+	//clusterCmd.AddCommand(ClusterUpdateCmd())
 	clusterCmd.AddCommand(ClusterGetCmd())
 	clusterCmd.AddCommand(ClusterDeleteCmd())
 	clusterCmd.AddCommand(ClusterRestoreCmd())
@@ -40,22 +41,25 @@ func getClusterPrint(c *core.CommandConfig, dcs *[]ionoscloud.ClusterResponse) p
 	r := printer.Result{}
 	if c != nil && dcs != nil {
 		r.OutputJSON = dcs
-		r.KeyValue = getClusterRows(dcs)                                                                                       // map header -> rows
-		r.Columns = printer.GetHeaders(allCols, allCols[0:6], viper.GetStringSlice(core.GetFlagName(c.NS, constants.ArgCols))) // headers
+		r.KeyValue = getClusterRows(dcs)                                                                                   // map header -> rows
+		r.Columns = printer.GetHeadersAllDefault(allCols, viper.GetStringSlice(core.GetFlagName(c.NS, constants.ArgCols))) // headers
 	}
 	return r
 }
 
 type ClusterPrint struct {
 	ClusterId         string `json:"ClusterId,omitempty"`
-	Location          string `json:"Location,omitempty"`
 	TemplateId        string `json:"TemplateId,omitempty"`
-	State             string `json:"State,omitempty"`
 	DisplayName       string `json:"DisplayName,omitempty"`
-	MongoVersion      string `json:"MongoVersion,omitempty"`
+	URL               string `json:"URL,omitempty"`
+	State             string `json:"State,omitempty"`
 	Instances         int32  `json:"Instances,omitempty"`
-	Connections       string `json:"Connections,omitempty"`
+	Location          string `json:"Location,omitempty"`
+	MongoVersion      string `json:"MongoVersion,omitempty"`
 	MaintenanceWindow string `json:"MaintenanceWindow,omitempty"`
+	DatacenterId      string `json:"DatacenterId,omitempty"`
+	LanId             string `json:"LanId,omitempty"`
+	CidrList          string `json:"CidrList,omitempty"`
 }
 
 var allCols = structs.Names(ClusterPrint{})
@@ -64,36 +68,21 @@ func getClusterRows(clusters *[]ionoscloud.ClusterResponse) []map[string]interfa
 	out := make([]map[string]interface{}, 0, len(*clusters))
 	for _, cluster := range *clusters {
 		var clusterPrint ClusterPrint
-		if idOk, ok := cluster.GetIdOk(); ok && idOk != nil {
-			clusterPrint.ClusterId = *idOk
-		}
+		clusterPrint.ClusterId = *cluster.GetId()
 		if propertiesOk, ok := cluster.GetPropertiesOk(); ok && propertiesOk != nil {
-			if displayNameOk, ok := propertiesOk.GetDisplayNameOk(); ok && displayNameOk != nil {
-				clusterPrint.DisplayName = *displayNameOk
+			clusterPrint.DisplayName = *propertiesOk.GetDisplayName()
+			clusterPrint.Location = *propertiesOk.GetLocation()
+			clusterPrint.TemplateId = *propertiesOk.GetTemplateID()
+			clusterPrint.URL = *propertiesOk.GetConnectionString()
+			if vdcConnectionsOk, ok := propertiesOk.GetConnectionsOk(); ok && vdcConnectionsOk != nil {
+				for _, vdcConnection := range *vdcConnectionsOk {
+					// TODO: This only gets the last items in the connections slice. DBaaS API seems to only support one connection atm.
+					// Create connections sub-command if multiple connections are allowed
+					clusterPrint.DatacenterId = *vdcConnection.GetDatacenterId()
+					clusterPrint.LanId = *vdcConnection.GetLanId()
+					clusterPrint.CidrList = strings.Join(*vdcConnection.GetCidrList(), ", ")
+				}
 			}
-			if locationOk, ok := propertiesOk.GetLocationOk(); ok && locationOk != nil {
-				clusterPrint.Location = string(*locationOk)
-			}
-			if templateIdOk, ok := propertiesOk.GetTemplateIDOk(); ok && templateIdOk != nil {
-				clusterPrint.TemplateId = string(*templateIdOk)
-			}
-			if connectionsOk, ok := propertiesOk.GetConnectionStringOk(); ok && connectionsOk != nil {
-				clusterPrint.Connections = *connectionsOk
-			}
-			//if vdcConnectionsOk, ok := propertiesOk.GetConnectionsOk(); ok && vdcConnectionsOk != nil {
-			//	for _, vdcConnection := range *vdcConnectionsOk {
-			//		// TODO: This seems to only get the last items in the connections slice?
-			//		if vdcIdOk, ok := vdcConnection.GetDatacenterIdOk(); ok && vdcIdOk != nil {
-			//			clusterPrint.DatacenterId = *vdcIdOk
-			//		}
-			//		if lanIdOk, ok := vdcConnection.GetLanIdOk(); ok && lanIdOk != nil {
-			//			clusterPrint.LanId = *lanIdOk
-			//		}
-			//		if ipAddressOk, ok := vdcConnection.GetCidrOk(); ok && ipAddressOk != nil {
-			//			clusterPrint.Cidr = *ipAddressOk
-			//		}
-			//	}
-			//}
 			if versionOk, ok := propertiesOk.GetMongoDBVersionOk(); ok && versionOk != nil {
 				clusterPrint.MongoVersion = *versionOk
 			}
