@@ -23,10 +23,10 @@ func CertGetCmd() *core.Command {
 		InitClient: true,
 	})
 
-	cmd.AddStringFlag(CertId, "i", "", "Response get a single certificate (required)")
-	cmd.AddBoolFlag(Cert, "", false, "Print the certificate")
-	cmd.AddBoolFlag(CertChain, "", false, "Print the certificate chain")
-	_ = cmd.Command.RegisterFlagCompletionFunc(ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	cmd.AddStringFlag(FlagCertId, "i", "", "Response get a single certificate", core.RequiredFlagOption())
+	cmd.AddBoolFlag(FlagCert, "", false, "Print the certificate")
+	cmd.AddBoolFlag(FlagCertChain, "", false, "Print the certificate chain")
+	_ = cmd.Command.RegisterFlagCompletionFunc(FlagArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allCols, cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -35,16 +35,16 @@ func CertGetCmd() *core.Command {
 
 func CmdGet(c *core.CommandConfig) error {
 	var certFlag, certChainFlag bool
-	certFlag, err := c.Command.Command.Flags().GetBool(Cert)
+	certFlag, err := c.Command.Command.Flags().GetBool(FlagCert)
 	if err != nil {
 		return err
 	}
-	certChainFlag, err = c.Command.Command.Flags().GetBool(CertChain)
+	certChainFlag, err = c.Command.Command.Flags().GetBool(FlagCertChain)
 	if err != nil {
 		return err
 	}
 	c.Printer.Verbose("Getting Certificates...")
-	id, err := c.Command.Command.Flags().GetString(CertId)
+	id, err := c.Command.Command.Flags().GetString(FlagCertId)
 	if err != nil {
 		return err
 	}
@@ -62,11 +62,11 @@ func CmdGet(c *core.CommandConfig) error {
 }
 
 func PreCmdGet(c *core.PreCommandConfig) error {
-	err := c.Command.Command.MarkFlagRequired(CertId)
+	err := c.Command.Command.MarkFlagRequired(FlagCertId)
 	if err != nil {
 		return err
 	}
 
-	c.Command.Command.MarkFlagsMutuallyExclusive(Cert, CertChain)
+	c.Command.Command.MarkFlagsMutuallyExclusive(FlagCert, FlagCertChain)
 	return nil
 }

@@ -11,12 +11,12 @@ import (
 
 var editProperties = sdkgo.CertificatePatchPropertiesDto{}
 
-func CertPatchCmd() *core.Command {
+func CertUpdateCmd() *core.Command {
 	cmd := core.NewCommand(context.TODO(), nil, core.CommandBuilder{
 		Namespace:  "certmanager",
 		Resource:   "certificates",
-		Verb:       "patch",
-		Aliases:    []string{"p"},
+		Verb:       "update",
+		Aliases:    []string{"u"},
 		ShortDesc:  "Get Certificate by ID",
 		LongDesc:   "Use this command to retrieve a Certificate by ID.",
 		Example:    "ionosctl certificate-manager get --certificate-id 47c5d9cc-b613-4b76-b0cc-dc531787a422",
@@ -25,9 +25,9 @@ func CertPatchCmd() *core.Command {
 		InitClient: true,
 	})
 
-	cmd.AddStringFlag(CertId, "i", "", "Provide certificate ID (required)")
-	cmd.AddStringFlag(CertName, "n", "", "Provide new certificate name (required)")
-	_ = cmd.Command.RegisterFlagCompletionFunc(ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	cmd.AddStringFlag(FlagCertId, "i", "", "Provide certificate ID", core.RequiredFlagOption())
+	cmd.AddStringFlag(FlagCertName, "n", "", "Provide new certificate name", core.RequiredFlagOption())
+	_ = cmd.Command.RegisterFlagCompletionFunc(FlagArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allCols, cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -36,12 +36,12 @@ func CertPatchCmd() *core.Command {
 
 func CmdPatch(c *core.CommandConfig) error {
 	c.Printer.Verbose("Patching Certificate...")
-	id, err := c.Command.Command.Flags().GetString(CertId)
+	id, err := c.Command.Command.Flags().GetString(FlagCertId)
 	if err != nil {
 		return err
 	}
 
-	name, err := c.Command.Command.Flags().GetString(CertName)
+	name, err := c.Command.Command.Flags().GetString(FlagCertName)
 	if err != nil {
 		return err
 	}
@@ -58,11 +58,11 @@ func CmdPatch(c *core.CommandConfig) error {
 }
 
 func PreCmdPatch(c *core.PreCommandConfig) error {
-	err := c.Command.Command.MarkFlagRequired(CertId)
+	err := c.Command.Command.MarkFlagRequired(FlagCertId)
 	if err != nil {
 		return err
 	}
-	err = c.Command.Command.MarkFlagRequired(CertName)
+	err = c.Command.Command.MarkFlagRequired(FlagCertName)
 	if err != nil {
 		return err
 	}
