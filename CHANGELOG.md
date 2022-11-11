@@ -1,5 +1,11 @@
 # Changelog
 
+## [6.4.2] (November 2022)
+
+### Fixed
+- Fixed type of Cidr flag, for DBaaS Postgres commands `cluster create`, `cluster update`. Thanks to: @maboehm
+
+
 ## [6.4.1] (November 2022)
 
 ### Fixed
