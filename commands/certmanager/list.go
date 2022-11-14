@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/spf13/cobra"
 )
 
 func CertListCmd() *core.Command {
@@ -19,9 +18,6 @@ func CertListCmd() *core.Command {
 		PreCmdRun:  core.NoPreRun,
 		CmdRun:     CmdList,
 		InitClient: true,
-	})
-	_ = cmd.Command.RegisterFlagCompletionFunc(FlagArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return allCols, cobra.ShellCompDirectiveNoFileComp
 	})
 
 	return cmd

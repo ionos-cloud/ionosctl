@@ -5,9 +5,9 @@ import (
 	"fmt"
 
 	"github.com/fatih/structs"
+	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
-	ionoscloud "github.com/ionos-cloud/sdk-go-cert-manager"
 	sdkgo "github.com/ionos-cloud/sdk-go-cert-manager"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -27,7 +27,7 @@ func CertGetApiVersionCmd() *core.Command {
 		InitClient: true,
 	})
 
-	_ = cmd.Command.RegisterFlagCompletionFunc(FlagArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.ArgAll, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allCols, cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -43,25 +43,25 @@ func CmdGetApiVersion(c *core.CommandConfig) error {
 	return c.Printer.Print(getApiPrint(nil, c, &[]sdkgo.ApiInfoDto{APIVersion}))
 }
 
-func getApiPrint(resp *ionoscloud.APIResponse, c *core.CommandConfig, cert *[]ionoscloud.ApiInfoDto) printer.Result {
+func getApiPrint(resp *sdkgo.APIResponse, c *core.CommandConfig, cert *[]sdkgo.ApiInfoDto) printer.Result {
 	r := printer.Result{}
 	if c != nil {
 		if resp != nil {
 			r.Resource = c.Resource
 			r.Verb = c.Verb
-			r.WaitForState = viper.GetBool(core.GetFlagName(c.NS, FlagArgWaitForState)) // this boolean is duplicated everywhere just to do an append of `& wait` to a verbose message
+			r.WaitForState = viper.GetBool(core.GetFlagName(c.NS, constants.ArgWaitForRequest)) // this boolean is duplicated everywhere just to do an append of `& wait` to a verbose message
 		}
 		if cert != nil {
 			r.OutputJSON = cert
-			r.KeyValue = getApiRows(cert)                                                    // map header -> rows
-			r.Columns = getAPIHeaders(viper.GetStringSlice(core.GetFlagName(c.NS, FlagArgCols))) // headers
+			r.KeyValue = getApiRows(cert)                                                              // map header -> rows
+			r.Columns = getAPIHeaders(viper.GetStringSlice(core.GetFlagName(c.NS, constants.ArgCols))) // headers
 			fmt.Println(r.Columns)
 		}
 	}
 	return r
 }
 
-func getApiRows(apis *[]ionoscloud.ApiInfoDto) []map[string]interface{} {
+func getApiRows(apis *[]sdkgo.ApiInfoDto) []map[string]interface{} {
 	out := make([]map[string]interface{}, 0, len(*apis))
 	for _, api := range *apis {
 		var apiPrint ApiPrint
@@ -91,8 +91,6 @@ func getCertHeaders(customColumns []string) []string {
 	//}
 	return customColumns
 }
-
-
 
 func getAPIHeaders(customColumns []string) []string {
 	if customColumns == nil {
