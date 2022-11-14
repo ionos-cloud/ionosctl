@@ -39,7 +39,7 @@ func getCertPrint(resp *ionoscloud.APIResponse, c *core.CommandConfig, cert *[]i
 		}
 		if cert != nil {
 			r.OutputJSON = cert
-			r.KeyValue = getCertRows(cert)                                                        // map header -> rows
+			r.KeyValue = getCertRows(cert)                                                              // map header -> rows
 			r.Columns = getCertHeaders(viper.GetStringSlice(core.GetFlagName(c.NS, constants.ArgCols))) // headers
 		}
 	}
