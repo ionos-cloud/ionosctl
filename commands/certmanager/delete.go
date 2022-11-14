@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
-	"github.com/spf13/cobra"
 )
 
 func CertDeleteCmd() *core.Command {
@@ -23,18 +23,15 @@ func CertDeleteCmd() *core.Command {
 		InitClient: true,
 	})
 
-	cmd.AddStringFlag(FlagCertId, "i", "", "Response delete a single certificate (required)")
-	cmd.AddBoolFlag(FlagAllFlag, "a", false, "Response delete all certificates")
-	_ = cmd.Command.RegisterFlagCompletionFunc(FlagArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return allCols, cobra.ShellCompDirectiveNoFileComp
-	})
+	cmd.AddStringFlag(FlagCertId, constants.FlagIdP, "", "Response delete a single certificate (required)")
+	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Response delete all certificates")
 
 	return cmd
 }
 
 func CmdDelete(c *core.CommandConfig) error {
 	var err error
-	allFlag := c.Command.Command.Flag(FlagAllFlag).Changed
+	allFlag := c.Command.Command.Flag(constants.ArgAll).Changed
 	if allFlag {
 		c.Printer.Verbose("Deleting all Certificates...")
 		certs, _, err := c.CertificateManagerServices.Certs().List()
@@ -71,6 +68,6 @@ func CmdDelete(c *core.CommandConfig) error {
 func PreCmdDelete(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlagsSets(c.Command, c.NS,
 		[]string{FlagCertId},
-		[]string{FlagAllFlag},
+		[]string{constants.ArgAll},
 	)
 }

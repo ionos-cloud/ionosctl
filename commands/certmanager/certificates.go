@@ -5,6 +5,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
+	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
 	ionoscloud "github.com/ionos-cloud/sdk-go-cert-manager"
@@ -34,12 +35,12 @@ func getCertPrint(resp *ionoscloud.APIResponse, c *core.CommandConfig, cert *[]i
 		if resp != nil {
 			r.Resource = c.Resource
 			r.Verb = c.Verb
-			r.WaitForState = viper.GetBool(core.GetFlagName(c.NS, FlagArgWaitForState)) // this boolean is duplicated everywhere just to do an append of `& wait` to a verbose message
+			r.WaitForState = viper.GetBool(core.GetFlagName(c.NS, constants.ArgWaitForRequest)) // this boolean is duplicated everywhere just to do an append of `& wait` to a verbose message
 		}
 		if cert != nil {
 			r.OutputJSON = cert
 			r.KeyValue = getCertRows(cert)                                                        // map header -> rows
-			r.Columns = getCertHeaders(viper.GetStringSlice(core.GetFlagName(c.NS, FlagArgCols))) // headers
+			r.Columns = getCertHeaders(viper.GetStringSlice(core.GetFlagName(c.NS, constants.ArgCols))) // headers
 		}
 	}
 	return r

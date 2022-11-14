@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/spf13/cobra"
 
 	sdkgo "github.com/ionos-cloud/sdk-go-cert-manager"
 )
@@ -27,9 +26,6 @@ func CertUpdateCmd() *core.Command {
 
 	cmd.AddStringFlag(FlagCertId, "i", "", "Provide certificate ID", core.RequiredFlagOption())
 	cmd.AddStringFlag(FlagCertName, "n", "", "Provide new certificate name", core.RequiredFlagOption())
-	_ = cmd.Command.RegisterFlagCompletionFunc(FlagArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return allCols, cobra.ShellCompDirectiveNoFileComp
-	})
 
 	return cmd
 }
