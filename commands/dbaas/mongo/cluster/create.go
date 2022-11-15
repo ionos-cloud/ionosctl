@@ -69,6 +69,14 @@ func ClusterCreateCmd() *core.Command {
 			if err != nil {
 				return err
 			}
+			err = c.Command.Command.MarkFlagRequired(constants.FlagCidr)
+			if err != nil {
+				return err
+			}
+			err = c.Command.Command.MarkFlagRequired(constants.FlagLanId)
+			if err != nil {
+				return err
+			}
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
