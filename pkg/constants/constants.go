@@ -19,7 +19,8 @@ const (
 	FlagLocation        = "location"
 	FlagLocationShort   = "l"
 	FlagDatacenterId    = "datacenter-id"
-	FlagCidrList        = "cidr-list"
+	FlagCidr            = "cidr"
+	FlagCidrShort       = "c"
 	FlagLanId           = "lan-id"
 )
 

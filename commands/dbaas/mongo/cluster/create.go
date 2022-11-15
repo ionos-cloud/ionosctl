@@ -52,6 +52,14 @@ func ClusterCreateCmd() *core.Command {
 			if err != nil {
 				return err
 			}
+			err = c.Command.Command.MarkFlagRequired(constants.FlagCidr)
+			if err != nil {
+				return err
+			}
+			err = c.Command.Command.MarkFlagRequired(constants.FlagLanId)
+			if err != nil {
+				return err
+			}
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
@@ -111,16 +119,7 @@ func ClusterCreateCmd() *core.Command {
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return cloudapiv6completer.LansIds(os.Stderr, cmd.Flag(constants.FlagDatacenterId).Value.String()), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddStringSliceVarFlag(createConn.CidrList, constants.FlagCidrList, "", nil, "The list of IPs and subnet for your cluster. Note the following unavailable IP ranges: 10.233.64.0/18 10.233.0.0/18 10.233.114.0/24", core.RequiredFlagOption())
-	/*
-	   TemplateID        *string            `json:"templateID"`
-	    MongoDBVersion    *string            `json:"mongoDBVersion,omitempty"`
-	    Instances         *int32             `json:"instances"`
-	    Connections       *[]Connection      `json:"connections"`
-	    Location          *string            `json:"location"`
-	    DisplayName       *string            `json:"displayName"`
-	    MaintenanceWindow *MaintenanceWindow `json:"maintenanceWindow,omitempty"
-	*/
+	cmd.AddStringSliceVarFlag(createConn.CidrList, constants.FlagCidr, constants.FlagCidrShort, nil, "The list of IPs and subnet for your cluster. Note the following unavailable IP ranges: 10.233.64.0/18 10.233.0.0/18 10.233.114.0/24", core.RequiredFlagOption())
 
 	cmd.Command.SilenceUsage = true
 
