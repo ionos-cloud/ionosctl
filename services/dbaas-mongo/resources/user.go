@@ -8,6 +8,7 @@ import (
 
 type UsersService interface {
 	List(clusterID string) (sdkgo.UsersList, *sdkgo.APIResponse, error)
+	Create(clusterID string, user sdkgo.User) (sdkgo.User, *sdkgo.APIResponse, error)
 	ListAll() ([]sdkgo.User, error)
 	Get(clusterID, database, user string) (sdkgo.User, *sdkgo.APIResponse, error)
 	Delete(clusterID, database, user string) (sdkgo.User, *sdkgo.APIResponse, error)
@@ -51,6 +52,10 @@ func (svc *usersService) List(clusterID string) (sdkgo.UsersList, *sdkgo.APIResp
 	req := svc.client.UsersApi.ClustersUsersGet(svc.context, clusterID)
 	ls, res, err := svc.client.UsersApi.ClustersUsersGetExecute(req)
 	return ls, res, err
+}
+
+func (svc *usersService) Create(clusterID string, user sdkgo.User) (sdkgo.User, *sdkgo.APIResponse, error) {
+	return svc.client.UsersApi.ClustersUsersPost(svc.context, clusterID).User(user).Execute()
 }
 
 func (svc *usersService) Get(clusterID, database, username string) (sdkgo.User, *sdkgo.APIResponse, error) {

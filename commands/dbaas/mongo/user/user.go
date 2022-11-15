@@ -15,20 +15,24 @@ import (
 )
 
 const (
-	flagDatabase = "database"
+	flagDatabase      = "database"
+	flagDatabaseShort = "d"
+	flagRoles         = "roles"
+	flagRolesShort    = "r"
 )
 
 func UserCmd() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "user",
-			Aliases:          []string{"u"},
+			Use: "user",
+			//Aliases:          []string{"u"},
 			Short:            "Mongo Users Operations",
 			TraverseChildren: true,
 		},
 	}
 
 	cmd.AddCommand(UserListCmd())
+	cmd.AddCommand(UserCreateCmd())
 	cmd.AddCommand(UserGetCmd())
 	cmd.AddCommand(UserDeleteCmd())
 	return cmd

@@ -54,7 +54,7 @@ func UserGetCmd() *core.Command {
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.MongoClusterIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddStringFlag(flagDatabase, "d", "", "The authentication database")
+	cmd.AddStringFlag(flagDatabase, flagDatabaseShort, "", "The authentication database")
 	cmd.AddStringFlag(constants.ArgUser, "u", "", "The authentication username")
 	cmd.AddBoolFlag(constants.ArgNoHeaders, "", false, "When using text output, don't print headers")
 	cmd.AddStringSliceFlag(constants.ArgCols, "", nil, printer.ColsMessage(allCols))

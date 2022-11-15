@@ -15,7 +15,8 @@ require (
 	github.com/ionos-cloud/sdk-go/v6 v6.1.3
 	github.com/kardianos/ftps v1.0.3
 	github.com/mitchellh/go-homedir v1.1.0
-	github.com/spf13/cobra v1.6.1
+	github.com/mmatczuk/anyflag v0.0.0-20221011091730-9f8baeb6fd9c
+	github.com/spf13/cobra v1.5.0
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.15.0
 	github.com/stretchr/testify v1.8.1
