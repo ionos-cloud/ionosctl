@@ -46,11 +46,6 @@ package cluster
 //	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 //		return completer.MongoClusterIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 //	})
-//	cmd.AddBoolFlag(constants.ArgNoHeaders, "", false, "When using text output, don't print headers")
-//	cmd.AddStringSliceFlag(constants.ArgCols, "", nil, printer.ColsMessage(allCols))
-//	_ = cmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-//		return allCols, cobra.ShellCompDirectiveNoFileComp
-//	})
 //
 //	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "When using text output, don't print headers")
 //	cmd.AddStringFlag(constants.FlagTemplateId, "", "", "The unique ID of the template, which specifies the number of cores, storage size, and memory")

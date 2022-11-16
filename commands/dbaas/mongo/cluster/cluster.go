@@ -10,7 +10,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
 	ionoscloud "github.com/ionos-cloud/sdk-go-dbaas-mongo"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 func ClusterCmd() *core.Command {
@@ -18,15 +17,22 @@ func ClusterCmd() *core.Command {
 		Command: &cobra.Command{
 			Use:              "cluster",
 			Aliases:          []string{"c"},
-			Short:            "PostgreSQL Cluster Operations",
-			Long:             "The sub-commands of `ionosctl dbaas postgres cluster` allow you to manage the PostgreSQL Clusters under your account.",
+			Short:            "Mongo Cluster Operations",
+			Long:             "The sub-commands of `ionosctl dbaas mongo cluster` allow you to manage the Mongo Clusters under your account.",
 			TraverseChildren: true,
 		},
 	}
 
+	clusterCmd.Command.PersistentFlags().StringSlice(constants.ArgCols, nil, printer.ColsMessage(allCols))
+	_ = clusterCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return allCols, cobra.ShellCompDirectiveNoFileComp
+	})
+	// TODO: Once the rest of the codebase allows it... move this flag to root command!
+	clusterCmd.Command.PersistentFlags().Bool(constants.ArgNoHeaders, false, "When using text output, don't print headers")
+
 	clusterCmd.AddCommand(ClusterListCmd())
 	clusterCmd.AddCommand(ClusterCreateCmd())
-	//clusterCmd.AddCommand(ClusterUpdateCmd())
+	//clusterCmd.AddCommand(ClusterUpdateCmd()) // TODO
 	clusterCmd.AddCommand(ClusterGetCmd())
 	clusterCmd.AddCommand(ClusterDeleteCmd())
 	clusterCmd.AddCommand(ClusterRestoreCmd())
@@ -34,32 +40,33 @@ func ClusterCmd() *core.Command {
 	return clusterCmd
 }
 
-// TODO: Why is this tightly coupled to resources.ClusterResponse? Should just take Headers and Columns as params. should also be moved to printer package, to reduce duplication
-//
-// this is a nightmare to maintain if it is tightly coupled to every single resource!!!!!!!!!!!!
+// TODO: should be moved to printer package as a decoupled func, to reduce duplication
 func getClusterPrint(c *core.CommandConfig, dcs *[]ionoscloud.ClusterResponse) printer.Result {
 	r := printer.Result{}
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+
 	if c != nil && dcs != nil {
 		r.OutputJSON = dcs
-		r.KeyValue = getClusterRows(dcs)                                                                                   // map header -> rows
-		r.Columns = printer.GetHeadersAllDefault(allCols, viper.GetStringSlice(core.GetFlagName(c.NS, constants.ArgCols))) // headers
+		r.KeyValue = getClusterRows(dcs)                            // map header -> rows
+		r.Columns = printer.GetHeaders(allCols, allCols[0:6], cols) // headers
 	}
 	return r
 }
 
 type ClusterPrint struct {
 	ClusterId         string `json:"ClusterId,omitempty"`
-	TemplateId        string `json:"TemplateId,omitempty"`
 	DisplayName       string `json:"DisplayName,omitempty"`
 	URL               string `json:"URL,omitempty"`
 	State             string `json:"State,omitempty"`
 	Instances         int32  `json:"Instances,omitempty"`
-	Location          string `json:"Location,omitempty"`
+	TemplateName      string `json:"TemplateName,omitempty"`
 	MongoVersion      string `json:"MongoVersion,omitempty"`
 	MaintenanceWindow string `json:"MaintenanceWindow,omitempty"`
+	Location          string `json:"Location,omitempty"`
 	DatacenterId      string `json:"DatacenterId,omitempty"`
 	LanId             string `json:"LanId,omitempty"`
-	CidrList          string `json:"CidrList,omitempty"`
+	Cidr              string `json:"Cidr,omitempty"`
+	TemplateId        string `json:"TemplateId,omitempty"`
 }
 
 var allCols = structs.Names(ClusterPrint{})
@@ -73,38 +80,26 @@ func getClusterRows(clusters *[]ionoscloud.ClusterResponse) []map[string]interfa
 			clusterPrint.DisplayName = *propertiesOk.GetDisplayName()
 			clusterPrint.Location = *propertiesOk.GetLocation()
 			clusterPrint.TemplateId = *propertiesOk.GetTemplateID()
+			// TODO: Once ApiClient singleton implemented, do this !!!
+			//clusterPrint.TemplateName = sdkgo.TemplatesApi{config.GetApiClient()}.FindById(*propertiesOk.GetTemplateID())
 			clusterPrint.URL = *propertiesOk.GetConnectionString()
 			if vdcConnectionsOk, ok := propertiesOk.GetConnectionsOk(); ok && vdcConnectionsOk != nil {
 				for _, vdcConnection := range *vdcConnectionsOk {
 					// TODO: This only gets the last items in the connections slice. DBaaS API seems to only support one connection atm.
-					// Create connections sub-command if multiple connections are allowed
+					// TODO: Create "cluster connections add/remove" sub-command if multiple connections are allowed
 					clusterPrint.DatacenterId = *vdcConnection.GetDatacenterId()
 					clusterPrint.LanId = *vdcConnection.GetLanId()
-					clusterPrint.CidrList = strings.Join(*vdcConnection.GetCidrList(), ", ")
+					clusterPrint.Cidr = strings.Join(*vdcConnection.GetCidrList(), ", ")
 				}
 			}
-			if versionOk, ok := propertiesOk.GetMongoDBVersionOk(); ok && versionOk != nil {
-				clusterPrint.MongoVersion = *versionOk
-			}
-			if replicasOk, ok := propertiesOk.GetInstancesOk(); ok && replicasOk != nil {
-				clusterPrint.Instances = *replicasOk
-			}
+			clusterPrint.MongoVersion = *propertiesOk.GetMongoDBVersion()
+			clusterPrint.Instances = *propertiesOk.GetInstances()
 			if maintenanceWindowOk, ok := propertiesOk.GetMaintenanceWindowOk(); ok && maintenanceWindowOk != nil {
-				var maintenanceWindow string
-				if weekdayOk, ok := maintenanceWindowOk.GetDayOfTheWeekOk(); ok && weekdayOk != nil {
-					maintenanceWindow = string(*weekdayOk)
-				}
-				if timeOk, ok := maintenanceWindowOk.GetTimeOk(); ok && timeOk != nil {
-					maintenanceWindow = fmt.Sprintf("%s %s", maintenanceWindow, *timeOk)
-				}
-				clusterPrint.MaintenanceWindow = maintenanceWindow
+				clusterPrint.MaintenanceWindow =
+					fmt.Sprintf("%s %s", *maintenanceWindowOk.GetDayOfTheWeek(), *maintenanceWindowOk.GetTime())
 			}
 		}
-		if metadataOk, ok := cluster.GetMetadataOk(); ok && metadataOk != nil {
-			if stateOk, ok := metadataOk.GetStateOk(); ok && stateOk != nil {
-				clusterPrint.State = string(*stateOk)
-			}
-		}
+		clusterPrint.State = string(*cluster.GetMetadata().GetState())
 		o := structs.Map(clusterPrint)
 		out = append(out, o)
 	}

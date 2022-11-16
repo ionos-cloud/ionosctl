@@ -11,7 +11,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	ionoscloud "github.com/ionos-cloud/sdk-go-dbaas-mongo"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 const (
@@ -24,12 +23,18 @@ const (
 func UserCmd() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{
-			Use: "user",
-			//Aliases:          []string{"u"},
+			Use:              "user",
+			Aliases:          []string{"u"},
 			Short:            "Mongo Users Operations",
 			TraverseChildren: true,
 		},
 	}
+
+	cmd.Command.PersistentFlags().StringSlice(constants.ArgCols, nil, printer.ColsMessage(allCols))
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return allCols, cobra.ShellCompDirectiveNoFileComp
+	})
+	cmd.Command.PersistentFlags().Bool(constants.ArgNoHeaders, false, "When using text output, don't print headers")
 
 	cmd.AddCommand(UserListCmd())
 	cmd.AddCommand(UserCreateCmd())
@@ -85,10 +90,12 @@ func getUserRows(ls *[]ionoscloud.User) []map[string]interface{} {
 
 func getUserPrint(c *core.CommandConfig, ls *[]ionoscloud.User) printer.Result {
 	r := printer.Result{}
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+
 	if c != nil && ls != nil {
 		r.OutputJSON = ls
-		r.KeyValue = getUserRows(ls)                                                                                       // map header -> rows
-		r.Columns = printer.GetHeadersAllDefault(allCols, viper.GetStringSlice(core.GetFlagName(c.NS, constants.ArgCols))) // headers
+		r.KeyValue = getUserRows(ls)                            // map header -> rows
+		r.Columns = printer.GetHeadersAllDefault(allCols, cols) // headers
 	}
 	return r
 }

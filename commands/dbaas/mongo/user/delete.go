@@ -8,7 +8,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/commands/dbaas/mongo/completer"
 	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/printer"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -56,11 +55,6 @@ func UserDeleteCmd() *core.Command {
 	})
 	cmd.AddStringFlag(flagDatabase, flagDatabaseShort, "", "The authentication database")
 	cmd.AddStringFlag(constants.ArgUser, "u", "", "The authentication username")
-	cmd.AddBoolFlag(constants.ArgNoHeaders, "", false, "When using text output, don't print headers")
-	cmd.AddStringSliceFlag(constants.ArgCols, "", nil, printer.ColsMessage(allCols))
-	_ = cmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return allCols, cobra.ShellCompDirectiveNoFileComp
-	})
 
 	cmd.Command.SilenceUsage = true
 
