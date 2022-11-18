@@ -1,6 +1,7 @@
 package mongo
 
 import (
+	"github.com/ionos-cloud/ionosctl/commands/dbaas/mongo/apiversion"
 	"github.com/ionos-cloud/ionosctl/commands/dbaas/mongo/cluster"
 	"github.com/ionos-cloud/ionosctl/commands/dbaas/mongo/logs"
 	"github.com/ionos-cloud/ionosctl/commands/dbaas/mongo/snapshot"
@@ -25,6 +26,6 @@ func DBaaSMongoCmd() *core.Command {
 	mongoCmd.AddCommand(user.UserCmd())
 	mongoCmd.AddCommand(snapshot.SnapshotCmd())
 	mongoCmd.AddCommand(logs.LogsCmd())
-	//mongoCmd.AddCommand(apiversion.ApiVersionCmd())
+	mongoCmd.AddCommand(apiversion.ApiVersionCmd())
 	return mongoCmd
 }

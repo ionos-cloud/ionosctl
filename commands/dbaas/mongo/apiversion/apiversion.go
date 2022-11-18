@@ -1,63 +1,62 @@
-package logs
+package apiversion
 
 import (
+	"context"
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
 	ionoscloud "github.com/ionos-cloud/sdk-go-dbaas-mongo"
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 func ApiVersionCmd() *core.Command {
-	cmd := &core.Command{
-		Command: &cobra.Command{
-			Use:              "apiversion",
-			Short:            "Mongo API Metadata Operations",
-			TraverseChildren: true,
+	cmd := core.NewCommand(context.Background(), nil, core.CommandBuilder{
+		Namespace: "dbaas-mongo",
+		Verb:      "api-versions",
+		Aliases:   []string{"ls"},
+		ShortDesc: "Get Mongo API swagger files",
+		Example:   "ionosctl dbaas mongo api-versions",
+		PreCmdRun: core.NoPreRun,
+		CmdRun: func(c *core.CommandConfig) error {
+			list, _, err := c.DbaasMongoServices.ApiMetadata().List()
+			if err != nil {
+				return err
+			}
+			return c.Printer.Print(getApiVersionPrint(c, list))
 		},
-	}
-
-	cmd.AddCommand(ApiVersionCmd())
+		InitClient: true,
+	})
 
 	return cmd
 }
 
 type ApiVersionPrint struct {
-	Name    string `json:"Name,omitempty"`
+	Version string `json:"Name,omitempty"`
 	Href    string `json:"Href,omitempty"`
-	Version string `json:"Version,omitempty"`
 }
 
 var allCols = structs.Names(ApiVersionPrint{})
 
-func MakeLogsPrintObject(logs *[]ionoscloud.ClusterLogsInstances) []map[string]interface{} {
-	out := make([]map[string]interface{}, 0, len(*logs))
-	for idx, instance := range *logs {
-		for msgIdx, msg := range *instance.GetMessages() {
-			var logsPrint LogsPrint
+func MakeApiVersionPrintObject(objs []ionoscloud.APIVersion) []map[string]interface{} {
+	out := make([]map[string]interface{}, 0, len(objs))
 
-			logsPrint.InstanceNumber = idx
-			logsPrint.MessageNumber = msgIdx
-			logsPrint.Name = *instance.GetName()
-			logsPrint.Message = *msg.GetMessage()
-			logsPrint.Time = *msg.GetTime()
-
-			o := structs.Map(logsPrint)
-			out = append(out, o)
-		}
+	for _, o := range objs {
+		var printObj ApiVersionPrint
+		printObj.Version = *o.GetName()
+		printObj.Href = *o.GetSwaggerUrl()
 	}
 
 	return out
 }
 
-func getLogsPrint(c *core.CommandConfig, dcs *[]ionoscloud.ClusterLogsInstances) printer.Result {
+func getApiVersionPrint(c *core.CommandConfig, dcs []ionoscloud.APIVersion) printer.Result {
 	r := printer.Result{}
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+
 	if c != nil && dcs != nil {
 		r.OutputJSON = dcs
-		r.KeyValue = MakeLogsPrintObject(dcs)                                                                                                 // map header -> rows
-		r.Columns = printer.GetHeadersAllDefault(structs.Names(LogsPrint{}), viper.GetStringSlice(core.GetFlagName(c.NS, constants.ArgCols))) // headers
+		r.KeyValue = MakeApiVersionPrintObject(dcs)             // map header -> rows
+		r.Columns = printer.GetHeadersAllDefault(allCols, cols) // headers
 	}
 	return r
 }

@@ -9,9 +9,10 @@ import (
 )
 
 type Services struct {
-	Clusters  func() resources.ClustersService
-	Templates func() resources.TemplatesService
-	Users     func() resources.UsersService
+	Clusters    func() resources.ClustersService
+	Templates   func() resources.TemplatesService
+	Users       func() resources.UsersService
+	ApiMetadata func() resources.ApiMetadataService
 	// Context
 	Context context.Context
 }
@@ -35,5 +36,6 @@ func (c *Services) InitServices(client *resources.Client) error {
 	c.Clusters = func() resources.ClustersService { return resources.NewClustersService(client, c.Context) }
 	c.Templates = func() resources.TemplatesService { return resources.NewTemplatesService(client, c.Context) }
 	c.Users = func() resources.UsersService { return resources.NewUsersService(client, c.Context) }
+	c.ApiMetadata = func() resources.ApiMetadataService { return resources.NewApiMetadataService(client, c.Context) }
 	return nil
 }

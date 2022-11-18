@@ -18,8 +18,8 @@ func TemplatesCmd() *core.Command {
 		Command: &cobra.Command{
 			Use:              "templates",
 			Aliases:          []string{"t"},
-			Short:            "PostgreSQL Cluster Operations",
-			Long:             "The sub-commands of `ionosctl dbaas postgres cluster` allow you to manage the PostgreSQL Clusters under your account.",
+			Short:            "Mongo Templates Operations",
+			Long:             "Templates can be used to create MongoDB clusters; they contain properties such as number of cores, RAM, and the storage size",
 			TraverseChildren: true,
 		},
 	}

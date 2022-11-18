@@ -31,7 +31,7 @@ func ClusterListCmd() *core.Command {
 	})
 
 	// TODO: Move ArgName to DBAAS level constants
-	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Response filter to list only the PostgreSQL Clusters that contain the specified name in the DisplayName field. The value is case insensitive")
+	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Response filter to list only the Mongo Clusters that contain the specified name in the DisplayName field. The value is case insensitive")
 
 	return cmd
 }
