@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	sdkgo "github.com/ionos-cloud/sdk-go-cert-manager"
 	"github.com/spf13/viper"
@@ -34,6 +35,8 @@ func CertCreateCmd() *core.Command {
 	cmd.AddStringFlag(FlagCertPath, "", "", "Specify the certificate itself from a file (required either this or --certificate)")
 	cmd.AddStringFlag(FlagCertChainPath, "", "", "Specify the certificate chain from a file (required either this or --certificate-chain)")
 	cmd.AddStringFlag(FlagPrivateKeyPath, "", "", "Specify the private key from a file (required either this or --private-key)")
+
+	cmd.AddBoolFlag(constants.ArgNoHeaders, "", false, "Get response without headers")
 
 	return cmd
 }
