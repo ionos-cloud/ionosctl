@@ -17,7 +17,7 @@ func CertDeleteCmd() *core.Command {
 		Aliases:    []string{"d"},
 		ShortDesc:  "Delete Certificate by ID or all Certificates",
 		LongDesc:   "Use this command to delete a Certificate by ID.",
-		Example:    "ionsoclt certificate-manager delete --certificate-id 47c5d9cc-b613-4b76-b0cc-dc531787a422",
+		Example:    "ionsoctl certificate-manager delete --certificate-id 47c5d9cc-b613-4b76-b0cc-dc531787a422",
 		PreCmdRun:  PreCmdDelete,
 		CmdRun:     CmdDelete,
 		InitClient: true,
@@ -31,7 +31,10 @@ func CertDeleteCmd() *core.Command {
 
 func CmdDelete(c *core.CommandConfig) error {
 	var err error
-	allFlag := c.Command.Command.Flag(constants.ArgAll).Changed
+	allFlag, err := c.Command.Command.Flags().GetBool(constants.ArgAll)
+	if err != nil {
+		return err
+	}
 	if allFlag {
 		c.Printer.Verbose("Deleting all Certificates...")
 		certs, _, err := c.CertificateManagerServices.Certs().List()

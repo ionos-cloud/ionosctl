@@ -46,15 +46,11 @@ func getCertPrint(resp *ionoscloud.APIResponse, c *core.CommandConfig, cert *[]i
 	return r
 }
 
-func printProperties(value *ionoscloud.CertificateDto, c *core.CommandConfig, flags []bool) string {
-	var printString string
-	if flags[0] {
-		printString += *value.Properties.Certificate
+func printProperties(value *ionoscloud.CertificateDto, flag bool) string {
+	if !flag {
+		return *value.Properties.Certificate
 	}
-	if flags[1] {
-		printString += *value.Properties.CertificateChain
-	}
-	return printString
+	return *value.Properties.CertificateChain
 }
 
 type CertPrint struct {

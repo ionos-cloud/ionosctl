@@ -4,11 +4,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"os"
-
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	sdkgo "github.com/ionos-cloud/sdk-go-cert-manager"
 	"github.com/spf13/viper"
+	"os"
 )
 
 var createProperties = sdkgo.CertificatePostPropertiesDto{}
@@ -27,7 +26,7 @@ func CertCreateCmd() *core.Command {
 		InitClient: true,
 	})
 
-	cmd.AddStringFlag(FlagCertName, "n", "", "Specify name of the certificate (required either this or --certificate-name-path)")
+	cmd.AddStringFlag(FlagCertName, "n", "", "Specify name of the certificate", core.RequiredFlagOption())
 	cmd.AddStringFlag(FlagCert, "", "", "Specify the certificate itself (required either this or --certificate-path)")
 	cmd.AddStringFlag(FlagCertChain, "", "", "Specify the certificate chain (required either this or --certificate-chain-path)")
 	cmd.AddStringFlag(FlagPrivateKey, "", "", "Specify the private key (required either this or --private-key-path)")
@@ -44,18 +43,18 @@ func GetPropertyWithFallback(c *core.CommandConfig, property string, propertyPat
 	if err != nil {
 		return "", err
 	}
-	if propertyValue == "" {
-		propertyValuePath, err := c.Command.Command.Flags().GetString(propertyPath)
-		if err != nil {
-			return "", err
-		}
-		propertyBytes, err := os.ReadFile(propertyValuePath)
-		if err != nil {
-			return "", err
-		}
-		return string(propertyBytes), nil
+	if propertyValue != "" {
+		return propertyValue, nil
 	}
-	return propertyValue, nil
+	propertyValuePath, err := c.Command.Command.Flags().GetString(propertyPath)
+	if err != nil {
+		return "", err
+	}
+	propertyBytes, err := os.ReadFile(propertyValuePath)
+	if err != nil {
+		return "", err
+	}
+	return string(propertyBytes), nil
 }
 
 func CmdPost(c *core.CommandConfig) error {
@@ -96,7 +95,6 @@ func CmdPost(c *core.CommandConfig) error {
 	return c.Printer.Print(getCertPrint(nil, c, &[]sdkgo.CertificateDto{cert}))
 }
 
-// couldn't think of a better solution to this
 func PreCmdPost(c *core.PreCommandConfig) error {
 	err := errors.New("")
 	if !viper.IsSet(core.GetFlagName(c.NS, FlagCert)) && !viper.IsSet(core.GetFlagName(c.NS, FlagCertPath)) {
@@ -108,8 +106,9 @@ func PreCmdPost(c *core.PreCommandConfig) error {
 	if !viper.IsSet(core.GetFlagName(c.NS, FlagPrivateKey)) && !viper.IsSet(core.GetFlagName(c.NS, FlagPrivateKeyPath)) {
 		err = fmt.Errorf("%veither --%s or --%s must be set\n", err, FlagPrivateKey, FlagPrivateKeyPath)
 	}
-	if !viper.IsSet(core.GetFlagName(c.NS, FlagCertName)) {
-		err = fmt.Errorf("%veither --%s must be set\n", err, FlagCertName)
+	err = c.Command.Command.MarkFlagRequired(FlagCertName)
+	if err != nil {
+		return err
 	}
 
 	if err != nil {
