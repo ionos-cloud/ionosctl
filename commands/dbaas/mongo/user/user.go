@@ -45,7 +45,6 @@ func UserCmd() *core.Command {
 
 type UserPrint struct {
 	Username  string `json:"Username,omitempty"`
-	Database  string `json:"Database,omitempty"`
 	CreatedBy string `json:"CreatedBy,omitempty"`
 	Roles     string `json:"Roles,omitempty"`
 }
@@ -75,7 +74,6 @@ func getUserRows(ls *[]ionoscloud.User) []map[string]interface{} {
 			rolesAsStrings := utils.MapNoIdx(*properties.GetRoles(), roleToString)
 			cols.Roles = strings.Join(rolesAsStrings, ", ") // "db1: read, db2: write, db3: abcd..."
 
-			cols.Database = *properties.GetDatabase()
 			cols.Username = *properties.GetUsername()
 		}
 		metadata, ok := t.GetMetadataOk()

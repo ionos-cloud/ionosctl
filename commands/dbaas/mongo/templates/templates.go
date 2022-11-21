@@ -28,9 +28,6 @@ func TemplatesCmd() *core.Command {
 	return cmd
 }
 
-// TODO: Why is this tightly coupled to resources.ClusterResponse? Should just take Headers and Columns as params. should also be moved to printer package, to reduce duplication
-//
-// this is a nightmare to maintain if it is tightly coupled to every single resource!!!!!!!!!!!!
 func getTemplatesPrint(c *core.CommandConfig, ls *[]ionoscloud.TemplateResponse) printer.Result {
 	r := printer.Result{}
 	if c != nil && ls != nil {

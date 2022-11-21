@@ -18,7 +18,7 @@ var createProperties = ionoscloud.CreateClusterProperties{}
 var createConn = ionoscloud.Connection{}
 
 func ClusterCreateCmd() *core.Command {
-	cmd := core.NewCommand(context.TODO(), nil /* circular dependency 🤡*/, core.CommandBuilder{
+	cmd := core.NewCommand(context.TODO(), nil, core.CommandBuilder{
 		Verb:      "create", // used in AVAILABLE COMMANDS in help
 		Aliases:   []string{"c"},
 		ShortDesc: "Create Mongo Clusters",

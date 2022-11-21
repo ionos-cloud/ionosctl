@@ -33,7 +33,6 @@ func ConvertSize(sizeToConvert, unitToConvertTo string) (int, error) {
 	return strconv.Atoi(sizeToConvert)
 }
 
-// don't ask me why this wasn't exported in the first place
 func ConvertToMB(size, unit string) (int, error) {
 	return convertToMB(size, unit)
 }
@@ -69,7 +68,6 @@ func convertToMB(size, unit string) (int, error) {
 	}
 }
 
-// don't ask me why this wasn't exported in the first place
 func ConvertToGB(size, unit string) (int, error) {
 	return convertToGB(size, unit)
 }

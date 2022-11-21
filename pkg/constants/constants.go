@@ -74,10 +74,10 @@ const (
 	MessageRequestInfo = "Request ID: %v Execution Time: %v"
 	MessageRequestTime = "Request Execution Time: %v"
 	MessageDeletingAll = "Status: Deleting %v with ID: %v..."
-	MessageRemovingAll = "Status: Removing %v with ID: %v..." // TODO: what is the difference between Delete / Remove?
+	MessageRemovingAll = "Status: Removing %v with ID: %v..." // TODO: cleanup constant. reduce duplication
 )
 
 const (
 	ErrDeleteAll     = "error occurred removing %v with ID: %v. error: %w"
-	ErrWaitDeleteAll = "error occurred waiting on removing %v with ID: %v. error: %w" // TODO: Why a new constant just to add "waiting" to the middle of it?
+	ErrWaitDeleteAll = "error occurred waiting on removing %v with ID: %v. error: %w" // TODO: cleanup constant. reduce duplication
 )

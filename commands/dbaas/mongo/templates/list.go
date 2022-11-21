@@ -10,7 +10,7 @@ import (
 )
 
 func TemplatesListCmd() *core.Command {
-	cmd := core.NewCommand(context.TODO(), nil /* circular dependency 🤡*/, core.CommandBuilder{
+	cmd := core.NewCommand(context.TODO(), nil, core.CommandBuilder{
 		Namespace: "dbaas-mongo",
 		Resource:  "templates",
 		Verb:      "list",

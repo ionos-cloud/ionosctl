@@ -39,7 +39,6 @@ func GetHeadersAllDefault(allColumns []string, customColumns []string) []string 
 
 // GetHeaders takes all columns of a resource and the value of the columns flag,
 // returns the headers of the table. (Some legacy code might refer to these headers as "Columns")
-//
 // allColumns can be found by using structs.Names on a Print struct (i.e. structs.Names(DatacenterPrint{}))
 func GetHeaders(allColumns []string, defaultColumns []string, customColumns []string) []string {
 	if customColumns == nil {

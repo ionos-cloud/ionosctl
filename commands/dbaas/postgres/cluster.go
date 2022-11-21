@@ -405,8 +405,8 @@ func RunClusterUpdate(c *core.CommandConfig) error {
 	}
 	if viper.GetBool(core.GetFlagName(c.NS, constants.ArgWaitForState)) {
 		c.Printer.Verbose("Wait 10 seconds before checking state...")
-		// Sleeping 10 seconds to make sure the cluster is in BUSY state. This will be removed in future releases.
-		time.Sleep(10 * time.Second) // TODO: above?
+		// TODO: Sleeping 10 seconds to make sure the cluster is in BUSY state. This will be removed in future releases.
+		time.Sleep(10 * time.Second)
 		if err = utils.WaitForState(c, waiter.ClusterStateInterrogator, viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgClusterId))); err != nil {
 			return err
 		}

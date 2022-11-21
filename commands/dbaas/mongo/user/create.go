@@ -20,7 +20,7 @@ func UserCreateCmd() *core.Command {
 	var userProperties = sdkgo.UserProperties{}
 	var roles []sdkgo.UserRoles
 
-	cmd := core.NewCommand(context.TODO(), nil /* circular dependency 🤡*/, core.CommandBuilder{
+	cmd := core.NewCommand(context.TODO(), nil, core.CommandBuilder{
 		Namespace: "dbaas-mongo",
 		Resource:  "user",
 		Verb:      "create",
@@ -37,10 +37,6 @@ func UserCreateCmd() *core.Command {
 				return err
 			}
 			err = c.Command.Command.MarkFlagRequired(constants.ArgPassword)
-			if err != nil {
-				return err
-			}
-			err = c.Command.Command.MarkFlagRequired(flagDatabase)
 			if err != nil {
 				return err
 			}
@@ -68,7 +64,6 @@ func UserCreateCmd() *core.Command {
 	_ = allocate.Zero(&userProperties)
 	cmd.AddStringVarFlag(userProperties.Username, constants.FlagName, constants.FlagNameShort, "", "The authentication username", core.RequiredFlagOption())
 	cmd.AddStringVarFlag(userProperties.Password, constants.ArgPassword, constants.ArgPasswordShort, "", "The authentication password", core.RequiredFlagOption())
-	cmd.AddStringVarFlag(userProperties.Database, flagDatabase, flagDatabaseShort, "", "The authentication database", core.RequiredFlagOption())
 
 	sliceOfRolesFlag := anyflag.NewValue(nil, &roles, rolesParser)
 	cmd.Command.Flags().VarP(sliceOfRolesFlag, flagRoles, flagRolesShort, "User's role for each db. DB1=Role1,DB2:Role2")
