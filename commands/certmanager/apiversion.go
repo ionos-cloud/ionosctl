@@ -2,14 +2,11 @@ package certmanager
 
 import (
 	"context"
-	"fmt"
-
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
 	sdkgo "github.com/ionos-cloud/sdk-go-cert-manager"
-	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
@@ -27,23 +24,25 @@ func CertGetApiVersionCmd() *core.Command {
 		InitClient: true,
 	})
 
-	_ = cmd.Command.RegisterFlagCompletionFunc(constants.ArgAll, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return allCols, cobra.ShellCompDirectiveNoFileComp
-	})
+	cmd.AddBoolFlag(constants.ArgNoHeaders, "n", false, "Response delete all certificates")
 
 	return cmd
 }
 
 func CmdGetApiVersion(c *core.CommandConfig) error {
 	c.Printer.Verbose("Getting Api Version...")
+	headers, err := c.Command.Command.Flags().GetBool(constants.ArgNoHeaders)
+	if err != nil {
+		return err
+	}
 	APIVersion, _, err := c.CertificateManagerServices.Certs().GetApiVersion()
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getApiPrint(nil, c, &[]sdkgo.ApiInfoDto{APIVersion}))
+	return c.Printer.Print(getApiPrint(nil, c, &[]sdkgo.ApiInfoDto{APIVersion}, headers))
 }
 
-func getApiPrint(resp *sdkgo.APIResponse, c *core.CommandConfig, cert *[]sdkgo.ApiInfoDto) printer.Result {
+func getApiPrint(resp *sdkgo.APIResponse, c *core.CommandConfig, cert *[]sdkgo.ApiInfoDto, headers bool) printer.Result {
 	r := printer.Result{}
 	if c != nil {
 		if resp != nil {
@@ -55,7 +54,6 @@ func getApiPrint(resp *sdkgo.APIResponse, c *core.CommandConfig, cert *[]sdkgo.A
 			r.OutputJSON = cert
 			r.KeyValue = getApiRows(cert)                                                              // map header -> rows
 			r.Columns = getAPIHeaders(viper.GetStringSlice(core.GetFlagName(c.NS, constants.ArgCols))) // headers
-			fmt.Println(r.Columns)
 		}
 	}
 	return r

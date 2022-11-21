@@ -2,7 +2,6 @@ package certmanager
 
 import (
 	"context"
-
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 
 	sdkgo "github.com/ionos-cloud/sdk-go-cert-manager"
@@ -30,7 +29,7 @@ func CertGetCmd() *core.Command {
 }
 
 func CmdGet(c *core.CommandConfig) error {
-	var certFlag, certChainFlag bool
+	var certFlag, certChainFlag, getCertOrChain bool
 	certFlag, err := c.Command.Command.Flags().GetBool(FlagCert)
 	if err != nil {
 		return err
@@ -38,6 +37,9 @@ func CmdGet(c *core.CommandConfig) error {
 	certChainFlag, err = c.Command.Command.Flags().GetBool(FlagCertChain)
 	if err != nil {
 		return err
+	}
+	if !certFlag && certChainFlag {
+		getCertOrChain = true
 	}
 	c.Printer.Verbose("Getting Certificates...")
 	id, err := c.Command.Command.Flags().GetString(FlagCertId)
@@ -49,9 +51,8 @@ func CmdGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	flags := []bool{certFlag, certChainFlag}
 	if certFlag || certChainFlag {
-		return c.Printer.Print(printProperties(&cert, c, flags))
+		return c.Printer.Print(printProperties(&cert, getCertOrChain))
 	}
 
 	return c.Printer.Print(getCertPrint(nil, c, &[]sdkgo.CertificateDto{cert}))
