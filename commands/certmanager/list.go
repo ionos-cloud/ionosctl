@@ -2,7 +2,7 @@ package certmanager
 
 import (
 	"context"
-
+	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 )
 
@@ -19,6 +19,8 @@ func CertListCmd() *core.Command {
 		CmdRun:     CmdList,
 		InitClient: true,
 	})
+
+	cmd.AddBoolFlag(constants.ArgNoHeaders, "", false, "Get response without headers")
 
 	return cmd
 }

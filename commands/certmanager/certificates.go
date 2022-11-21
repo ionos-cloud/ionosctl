@@ -1,9 +1,14 @@
 package certmanager
 
 import (
+	"context"
 	"github.com/fatih/structs"
+	"github.com/ionos-cloud/ionosctl/pkg/config"
+	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
+	"github.com/ionos-cloud/ionosctl/services/certmanager/resources"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"io"
 
 	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
@@ -92,3 +97,39 @@ func getCertRows(certs *[]ionoscloud.CertificateDto) []map[string]interface{} {
 }
 
 var allCols = structs.Names(CertPrint{})
+
+func CertificatesIds(outErr io.Writer) []string {
+	client, err := getClient()
+	clierror.CheckError(err, outErr)
+	certSvc := resources.NewCertsService(client, context.Background())
+	certs, _, err := certSvc.List()
+	clierror.CheckError(err, outErr)
+	certIds := make([]string, 0)
+	if items, ok := certs.GetItemsOk(); ok && items != nil {
+		for _, item := range *items {
+			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
+				certIds = append(certIds, *itemId)
+			}
+		}
+	} else {
+		return nil
+	}
+	return certIds
+}
+
+// Get Client for Completion Functions
+func getClient() (*resources.Client, error) {
+	if err := config.Load(); err != nil {
+		return nil, err
+	}
+	clientSvc, err := resources.NewClientService(
+		viper.GetString(config.Username),
+		viper.GetString(config.Password),
+		viper.GetString(config.Token),
+		config.GetServerUrl(),
+	)
+	if err != nil {
+		return nil, err
+	}
+	return clientSvc.Get(), nil
+}
