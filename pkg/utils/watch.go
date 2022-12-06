@@ -143,6 +143,7 @@ func WatchDeletionProgress(ctx context.Context, c *core.CommandConfig, interroga
 		defer close(errChan)
 		defer close(progressChan)
 		ticker := time.NewTicker(pollTime)
+		defer ticker.Stop()
 		sendingProgress := func(p int) {
 			select {
 			case progressChan <- p:
