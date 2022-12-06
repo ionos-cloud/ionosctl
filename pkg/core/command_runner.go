@@ -179,6 +179,11 @@ type CommandConfig struct {
 	Context context.Context
 }
 
+// TODO: Seems like there's no better way to Verbose print outside of 'commands' pkg, other than instantiating a PrintService as so. PrintService merits a refactor. It seems like without this exported func, I can only make Verbose prints if I am inside of a `commands` command object.
+func GetPrinter(noHeaders bool) printer.PrintService {
+	return getPrinter(noHeaders)
+}
+
 func getPrinter(noHeaders bool) printer.PrintService {
 	var out io.Writer
 	if viper.GetBool(constants.ArgQuiet) {
