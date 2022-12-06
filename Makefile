@@ -23,7 +23,7 @@ test_unit:
 	@echo "DONE"
 
 .PHONY: test
-test: test_unit cloudapiv6_test auth_v1_test dbaas_postgres_test
+test: test_unit cloudapiv6_test auth_v1_test dbaas_postgres_test certmanager_test
 
 .PHONY: mocks_update
 mocks_update: cloudapiv6_mocks_update auth_v1_mocks_update dbaas_postgres_mocks_update certmanager_mocks_update
