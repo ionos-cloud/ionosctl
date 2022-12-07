@@ -200,7 +200,8 @@ func (u *uuidFlag) Set(p string) error {
 	}
 
 	if !IsValidUUID(p) {
-		return fmt.Errorf("%s does not match UUID-4 format", p)
+		//return fmt.Errorf("%s does not match UUID-4 format", p)
+		_ = getPrinter(true).Warn(fmt.Sprintf("WARNING: %s does not match UUID-4 format", p))
 	}
 
 	// Valid UUID if passed above check
