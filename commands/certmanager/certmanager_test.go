@@ -41,8 +41,8 @@ func TestCertificateManagerServiceCmd(t *testing.T) {
 	}
 	assert.NoError(t, err)
 
-	t.Run("cert create", func(t *testing.T) {
-		core.RootCmdTest.Command.SetArgs([]string{"certificate-manager", "list"})
-		err = CertCreateCmd().Command.Execute()
+	t.Run("cert list", func(t *testing.T) {
+		core.RootCmdTest.Command.SetArgs([]string{"list"})
+		err = core.RootCmdTest.Command.Execute()
 	})
 }
