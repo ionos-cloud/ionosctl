@@ -176,6 +176,7 @@ func addCommands() {
 	rootCmd.AddCommand(authv1.TokenCmd())
 	// Add DBaaS Commands
 	rootCmd.AddCommand(dbaas.DataBaseServiceCmd())
+	// Add Certificate Manager Commands
 	rootCmd.AddCommand(certificates.CertCmd())
 }
 
