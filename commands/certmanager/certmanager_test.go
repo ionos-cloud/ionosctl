@@ -2,18 +2,45 @@ package certmanager
 
 import (
 	"bytes"
+	"context"
 	"crypto/rand"
 	"crypto/rsa"
 	"crypto/x509"
+	"crypto/x509/pkix"
 	"encoding/pem"
 	"errors"
+	"math/big"
 	"testing"
+	"time"
 
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 
+	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
+	"github.com/ionos-cloud/ionosctl/services/certmanager/resources"
+)
+
+// test values
+var (
+	ca = &x509.Certificate{
+		SerialNumber: big.NewInt(2019),
+		Subject: pkix.Name{
+			Organization:  []string{"Company, INC."},
+			Country:       []string{"US"},
+			Province:      []string{""},
+			Locality:      []string{"San Francisco"},
+			StreetAddress: []string{"Golden Gate Bridge"},
+			PostalCode:    []string{"94016"},
+		},
+		NotBefore:             time.Now(),
+		NotAfter:              time.Now().AddDate(10, 0, 0),
+		IsCA:                  true,
+		ExtKeyUsage:           []x509.ExtKeyUsage{x509.ExtKeyUsageClientAuth, x509.ExtKeyUsageServerAuth},
+		KeyUsage:              x509.KeyUsageDigitalSignature | x509.KeyUsageCertSign,
+		BasicConstraintsValid: true,
+	}
 )
 
 func TestCertificateManagerServiceCmd(t *testing.T) {
@@ -89,6 +116,7 @@ func TestCertificateManagerServiceCmd(t *testing.T) {
 			viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 			viper.Set(constants.ArgQuiet, false)
 			viper.Set(constants.ArgVerbose, false)
+			viper.Set(constants.ArgForce, true)
 
 			c := CertCreateCmd()
 			c.Command.Flags().Set(FlagCertName, "certificate")
@@ -97,6 +125,30 @@ func TestCertificateManagerServiceCmd(t *testing.T) {
 			c.Command.Flags().Set(FlagPrivateKey, caPrivKeyPEM.String())
 
 			err = c.Command.Execute()
+			assert.NoError(t, err)
+
+			// var id string
+			svc, err := resources.NewClientService(
+				viper.GetString(config.Username),
+				viper.GetString(config.Password),
+				viper.GetString(config.Token),
+				config.GetServerUrl(),
+			)
+			certs, _, err := svc.Get().CertificatesApi.CertificatesGet(context.Background()).
+				Execute()
+			assert.NoError(t, err)
+
+			var id string
+			for _, dto := range *certs.GetItems() {
+				if *dto.GetProperties().GetName() == "certificate" {
+					id = *dto.GetId()
+				}
+			}
+
+
+			d := CertDeleteCmd()
+			d.Command.Flags().Set(FlagCertId, id)
+			err = d.Command.Execute()
 			assert.NoError(t, err)
 		},
 	)
