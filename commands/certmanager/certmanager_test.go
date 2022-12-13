@@ -1,6 +1,11 @@
 package certmanager
 
 import (
+	"bytes"
+	"crypto/rand"
+	"crypto/rsa"
+	"crypto/x509"
+	"encoding/pem"
 	"errors"
 	"testing"
 
@@ -8,10 +13,12 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/ionos-cloud/ionosctl/pkg/constants"
+	"github.com/ionos-cloud/ionosctl/pkg/core"
 )
 
 func TestCertificateManagerServiceCmd(t *testing.T) {
 	var err error
+	core.RootCmdTest.AddCommand(CertCmd())
 	if ok := CertCmd().IsAvailableCommand(); !ok {
 		err = errors.New("non-available cmd")
 	}
@@ -60,13 +67,36 @@ func TestCertificateManagerServiceCmd(t *testing.T) {
 		"cert create", func(t *testing.T) {
 			viper.Reset()
 
+			// os.Mkdir("testPaths", 777)
+			caPrivKey, err := rsa.GenerateKey(rand.Reader, 4096)
+			assert.NoError(t, err)
+
+			caBytes, err := x509.CreateCertificate(rand.Reader, ca, ca, &caPrivKey.PublicKey, caPrivKey)
+			assert.NoError(t, err)
+
+			caPEM := new(bytes.Buffer)
+			pem.Encode(caPEM, &pem.Block{
+				Type:  "CERTIFICATE",
+				Bytes: caBytes,
+			})
+
+			caPrivKeyPEM := new(bytes.Buffer)
+			pem.Encode(caPrivKeyPEM, &pem.Block{
+				Type:  "RSA PRIVATE KEY",
+				Bytes: x509.MarshalPKCS1PrivateKey(caPrivKey),
+			})
+
 			viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 			viper.Set(constants.ArgQuiet, false)
 			viper.Set(constants.ArgVerbose, false)
 
+			c := CertCreateCmd()
+			c.Command.Flags().Set(FlagCertName, "certificate")
+			c.Command.Flags().Set(FlagCert, caPEM.String())
+			c.Command.Flags().Set(FlagCertChain, caPEM.String())
+			c.Command.Flags().Set(FlagPrivateKey, caPrivKeyPEM.String())
 
-			CertCreateCmd().Command.SetArgs([]string{"certificate-name", "cert_test"} )
-			CertCreateCmd().Command.Execute()
+			err = c.Command.Execute()
 			assert.NoError(t, err)
 		},
 	)

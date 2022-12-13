@@ -53,6 +53,9 @@ func GetPropertyWithFallback(c *core.CommandConfig, property string, propertyPat
 	if err != nil {
 		return "", err
 	}
+	if propertyValuePath == "" {
+		return "", fmt.Errorf("either --%s or --%s must be set", property, propertyPath)
+	}
 	propertyBytes, err := os.ReadFile(propertyValuePath)
 	if err != nil {
 		return "", err
@@ -63,6 +66,7 @@ func GetPropertyWithFallback(c *core.CommandConfig, property string, propertyPat
 func CmdPost(c *core.CommandConfig) error {
 	c.Printer.Verbose("Adding Certificate...")
 	var name, certificate, certificateChain, privateKey string
+	fmt.Println(viper.GetString(FlagCertName))
 
 	name, err := c.Command.Command.Flags().GetString(FlagCertName)
 	if err != nil {
