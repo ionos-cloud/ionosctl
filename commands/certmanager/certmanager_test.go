@@ -222,6 +222,15 @@ func TestCertificateManagerServiceCmd(t *testing.T) {
 				}
 			}
 
+			p := CertUpdateCmd()
+			p.Command.Flags().Set(FlagCertId, id)
+			p.Command.Flags().Set(FlagCertName, "certificate-files-updated")
+			err = p.Command.Execute()
+
+			cert, _, err := svc.Get().CertificatesApi.CertificatesGetById(context.Background(), id).Execute()
+			assert.NoError(t, err)
+			assert.Equal(t, "certificate-files-updated", *cert.GetProperties().GetName())
+
 			d := CertDeleteCmd()
 			d.Command.Flags().Set(FlagCertId, id)
 			err = d.Command.Execute()
