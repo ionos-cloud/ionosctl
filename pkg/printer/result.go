@@ -60,7 +60,6 @@ func GetHeaders(allColumns []string, defaultColumns []string, customColumns []st
 	return validCustomColumns
 }
 
-// TODO: getHeadersListAll (allColumns, defaultColumns, parentCol, customColumns, ArgAll)
 func GetHeadersListAll(allColumns []string, defaultColumns []string, parentCol string, customColumns []string, argAll bool) []string {
 	if argAll {
 		defaultColumns = append(defaultColumns[:constants.DefaultParentIndex+1], defaultColumns[constants.DefaultParentIndex:]...)
