@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io"
 	"os"
 	"strings"
 
@@ -18,7 +17,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
-	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
@@ -632,41 +630,10 @@ func getFirewallRulePrint(resp *resources.Response, c *core.CommandConfig, rule 
 		if rule != nil {
 			r.OutputJSON = rule
 			r.KeyValue = getFirewallRulesKVMaps(rule)
-			r.Columns = getFirewallRulesCols(core.GetGlobalFlagName(c.Resource, constants.ArgCols), c.Printer.GetStderr())
+			r.Columns = printer.GetHeaders(allFirewallRuleCols, defaultFirewallRuleCols, viper.GetStringSlice(core.GetGlobalFlagName(c.Resource, constants.ArgCols)))
 		}
 	}
 	return r
-}
-
-func getFirewallRulesCols(flagName string, outErr io.Writer) []string {
-	if viper.IsSet(flagName) && len(viper.GetStringSlice(flagName)) > 0 {
-		var firewallRuleCols []string
-		columnsMap := map[string]string{
-			"FirewallRuleId": "FirewallRuleId",
-			"Name":           "Name",
-			"Protocol":       "Protocol",
-			"SourceMac":      "SourceMac",
-			"SourceIP":       "SourceIP",
-			"DestinationIP":  "DestinationIP",
-			"PortRangeStart": "PortRangeStart",
-			"PortRangeEnd":   "PortRangeEnd",
-			"IcmpCode":       "IcmpCode",
-			"IcmpType":       "IcmpType",
-			"Direction":      "Direction",
-			"State":          "State",
-		}
-		for _, k := range viper.GetStringSlice(flagName) {
-			col := columnsMap[k]
-			if col != "" {
-				firewallRuleCols = append(firewallRuleCols, col)
-			} else {
-				clierror.CheckError(errors.New("unknown column "+k), outErr)
-			}
-		}
-		return firewallRuleCols
-	} else {
-		return defaultFirewallRuleCols
-	}
 }
 
 func getFirewallRules(firewallRules resources.FirewallRules) []resources.FirewallRule {
