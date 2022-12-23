@@ -6,7 +6,6 @@ import (
 	"crypto/x509"
 	"errors"
 	"fmt"
-	"io"
 	"os"
 	"path/filepath"
 	"sort"
@@ -26,7 +25,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
-	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
@@ -277,7 +275,7 @@ func getNonPublicImages(imgs []ionoscloud.Image, printService printer.PrintServi
 	return nonPublicImgs, nil
 }
 
-//  deletes non-public images, as deleting public images is forbidden by the API.
+// deletes non-public images, as deleting public images is forbidden by the API.
 func DeleteAllNonPublicImages(c *core.CommandConfig) error {
 	depth := int32(1)
 	images, resp, err := c.CloudApiV6Services.Images().List(
@@ -760,45 +758,10 @@ func getImagePrint(resp *resources.Response, c *core.CommandConfig, imgs []resou
 		if imgs != nil {
 			r.OutputJSON = imgs
 			r.KeyValue = getImagesKVMaps(imgs)
-			r.Columns = getImageCols(core.GetGlobalFlagName(c.Resource, constants.ArgCols), c.Printer.GetStderr())
+			r.Columns = printer.GetHeaders(allImageCols, defaultImageCols, viper.GetStringSlice(core.GetGlobalFlagName(c.Resource, constants.ArgCols)))
 		}
 	}
 	return r
-}
-
-func getImageCols(flagName string, outErr io.Writer) []string {
-	var cols []string
-	if viper.IsSet(flagName) {
-		cols = viper.GetStringSlice(flagName)
-	} else {
-		return defaultImageCols
-	}
-
-	columnsMap := map[string]string{
-		"ImageId":         "ImageId",
-		"Name":            "Name",
-		"Description":     "Description",
-		"Location":        "Location",
-		"Size":            "Size",
-		"LicenceType":     "LicenceType",
-		"ImageType":       "ImageType",
-		"Public":          "Public",
-		"ImageAliases":    "ImageAliases",
-		"CloudInit":       "CloudInit",
-		"CreatedDate":     "CreatedDate",
-		"CreatedBy":       "CreatedBy",
-		"CreatedByUserId": "CreatedByUserId",
-	}
-	var datacenterCols []string
-	for _, k := range cols {
-		col := columnsMap[k]
-		if col != "" {
-			datacenterCols = append(datacenterCols, col)
-		} else {
-			clierror.CheckError(errors.New("unknown column "+k), outErr)
-		}
-	}
-	return datacenterCols
 }
 
 func getImages(images resources.Images) []resources.Image {

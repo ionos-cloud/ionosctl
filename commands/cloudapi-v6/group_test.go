@@ -6,14 +6,12 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"regexp"
 	"testing"
 
 	"github.com/golang/mock/gomock"
 
 	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
@@ -672,28 +670,4 @@ func TestRunGroupRemoveGroupAskForConfirmErr(t *testing.T) {
 		err := RunGroupDelete(cfg)
 		assert.Error(t, err)
 	})
-}
-
-func TestGetGroupsCols(t *testing.T) {
-	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
-	var b bytes.Buffer
-	clierror.ErrAction = func() {}
-	w := bufio.NewWriter(&b)
-	viper.Set(core.GetGlobalFlagName("group", constants.ArgCols), []string{"Name"})
-	getGroupCols(core.GetGlobalFlagName("group", constants.ArgCols), w)
-	err := w.Flush()
-	assert.NoError(t, err)
-}
-
-func TestGetGroupsColsErr(t *testing.T) {
-	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
-	var b bytes.Buffer
-	clierror.ErrAction = func() {}
-	w := bufio.NewWriter(&b)
-	viper.Set(core.GetGlobalFlagName("group", constants.ArgCols), []string{"Unknown"})
-	getGroupCols(core.GetGlobalFlagName("group", constants.ArgCols), w)
-	err := w.Flush()
-	assert.NoError(t, err)
-	re := regexp.MustCompile(`unknown column Unknown`)
-	assert.True(t, re.Match(b.Bytes()))
 }
