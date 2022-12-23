@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io"
 	"os"
 	"strings"
 	"time"
@@ -19,7 +18,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
-	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
@@ -344,7 +342,7 @@ func RunLanCreate(c *core.CommandConfig) error {
 	return c.Printer.Print(printer.Result{
 		OutputJSON:     l,
 		KeyValue:       getLanPostsKVMaps([]resources.LanPost{*l}),
-		Columns:        getLansCols(core.GetGlobalFlagName(c.Resource, constants.ArgCols), core.GetFlagName(c.NS, cloudapiv6.ArgAll), c.Printer.GetStderr()),
+		Columns:        printer.GetHeaders(allLanCols, defaultLanCols, viper.GetStringSlice(core.GetGlobalFlagName(c.Resource, constants.ArgCols))),
 		ApiResponse:    resp,
 		Resource:       "lan",
 		Verb:           "create",
@@ -517,46 +515,10 @@ func getLanPrint(resp *resources.Response, c *core.CommandConfig, lans []resourc
 		if lans != nil {
 			r.OutputJSON = lans
 			r.KeyValue = getLansKVMaps(lans)
-			r.Columns = getLansCols(core.GetGlobalFlagName(c.Resource, constants.ArgCols), core.GetFlagName(
-				c.NS,
-				cloudapiv6.ArgAll,
-			), c.Printer.GetStderr())
+			r.Columns = printer.GetHeaders(allLanCols, defaultLanCols, viper.GetStringSlice(core.GetGlobalFlagName(c.Resource, constants.ArgCols)))
 		}
 	}
 	return r
-}
-
-func getLansCols(argCols string, argAll string, outErr io.Writer) []string {
-	var cols []string
-	if viper.IsSet(argCols) {
-		cols = viper.GetStringSlice(argCols)
-
-		columnsMap := map[string]string{
-			"LanId":        "LanId",
-			"Name":         "Name",
-			"Public":       "Public",
-			"PccId":        "PccId",
-			"State":        "State",
-			"DatacenterId": "DatacenterId",
-		}
-		var lanCols []string
-		for _, k := range cols {
-			col := columnsMap[k]
-			if col != "" {
-				lanCols = append(lanCols, col)
-			} else {
-				clierror.CheckError(errors.New("unknown column "+k), outErr)
-			}
-		}
-		return lanCols
-	} else if viper.IsSet(argAll) {
-		// Add column which specifies which parent resource this belongs to, if using -a/--all flag
-		cols = append(defaultLanCols[:constants.DefaultParentIndex+1], defaultLanCols[constants.DefaultParentIndex:]...)
-		cols[constants.DefaultParentIndex] = "DatacenterId"
-		return cols
-	} else {
-		return defaultLanCols
-	}
 }
 
 func getLans(lans resources.Lans) []resources.Lan {
