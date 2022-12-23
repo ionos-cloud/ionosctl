@@ -6,14 +6,12 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"regexp"
 	"testing"
 
 	"github.com/golang/mock/gomock"
 
 	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
@@ -456,28 +454,4 @@ func TestRunIpBlockDeleteAskForConfirmErr(t *testing.T) {
 		err := RunIpBlockDelete(cfg)
 		assert.Error(t, err)
 	})
-}
-
-func TestGetIpBlocksCols(t *testing.T) {
-	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
-	var b bytes.Buffer
-	clierror.ErrAction = func() { return }
-	w := bufio.NewWriter(&b)
-	viper.Set(core.GetGlobalFlagName("ipblock", constants.ArgCols), []string{"IpBlockId"})
-	getIpBlocksCols(core.GetGlobalFlagName("ipblock", constants.ArgCols), w)
-	err := w.Flush()
-	assert.NoError(t, err)
-}
-
-func TestGetIpBlocksColsErr(t *testing.T) {
-	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
-	var b bytes.Buffer
-	clierror.ErrAction = func() { return }
-	w := bufio.NewWriter(&b)
-	viper.Set(core.GetGlobalFlagName("ipblock", constants.ArgCols), []string{"Unknown"})
-	getIpBlocksCols(core.GetGlobalFlagName("ipblock", constants.ArgCols), w)
-	err := w.Flush()
-	assert.NoError(t, err)
-	re := regexp.MustCompile(`unknown column Unknown`)
-	assert.True(t, re.Match(b.Bytes()))
 }

@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io"
 	"os"
 
 	"go.uber.org/multierr"
@@ -17,7 +16,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
-	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 	"github.com/spf13/cobra"
@@ -407,35 +405,10 @@ func getK8sNodePrint(c *core.CommandConfig, k8ss []resources.K8sNode) printer.Re
 		if k8ss != nil {
 			r.OutputJSON = k8ss
 			r.KeyValue = getK8sNodesKVMaps(k8ss)
-			r.Columns = getK8sNodeCols(core.GetGlobalFlagName(c.Resource, constants.ArgCols), c.Printer.GetStderr())
+			r.Columns = printer.GetHeadersAllDefault(defaultK8sNodeCols, viper.GetStringSlice(core.GetGlobalFlagName(c.Resource, constants.ArgCols)))
 		}
 	}
 	return r
-}
-
-func getK8sNodeCols(flagName string, outErr io.Writer) []string {
-	if viper.IsSet(flagName) {
-		var k8sCols []string
-		columnsMap := map[string]string{
-			"NodeId":     "NodeId",
-			"Name":       "Name",
-			"K8sVersion": "K8sVersion",
-			"PublicIP":   "PublicIP",
-			"PrivateIP":  "PrivateIP",
-			"State":      "State",
-		}
-		for _, k := range viper.GetStringSlice(flagName) {
-			col := columnsMap[k]
-			if col != "" {
-				k8sCols = append(k8sCols, col)
-			} else {
-				clierror.CheckError(errors.New("unknown column "+k), outErr)
-			}
-		}
-		return k8sCols
-	} else {
-		return defaultK8sNodeCols
-	}
 }
 
 func getK8sNodes(k8ss resources.K8sNodes) []resources.K8sNode {

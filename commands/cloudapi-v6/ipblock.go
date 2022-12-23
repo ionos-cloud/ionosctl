@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io"
 	"os"
 
 	"go.uber.org/multierr"
@@ -17,7 +16,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
-	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 	"github.com/spf13/cobra"
@@ -398,37 +396,10 @@ func getIpBlockPrint(resp *resources.Response, c *core.CommandConfig, ipBlocks [
 		if ipBlocks != nil {
 			r.OutputJSON = ipBlocks
 			r.KeyValue = getIpBlocksKVMaps(ipBlocks)
-			r.Columns = getIpBlocksCols(core.GetGlobalFlagName(c.Resource, constants.ArgCols), c.Printer.GetStderr())
+			r.Columns = printer.GetHeadersAllDefault(defaultIpBlockCols, viper.GetStringSlice(core.GetGlobalFlagName(c.Resource, constants.ArgCols)))
 		}
 	}
 	return r
-}
-
-func getIpBlocksCols(flagName string, outErr io.Writer) []string {
-	var cols []string
-	if viper.IsSet(flagName) {
-		cols = viper.GetStringSlice(flagName)
-	} else {
-		return defaultIpBlockCols
-	}
-	columnsMap := map[string]string{
-		"IpBlockId": "IpBlockId",
-		"Name":      "Name",
-		"Location":  "Location",
-		"Size":      "Size",
-		"Ips":       "Ips",
-		"State":     "State",
-	}
-	var ipBlockCols []string
-	for _, k := range cols {
-		col := columnsMap[k]
-		if col != "" {
-			ipBlockCols = append(ipBlockCols, col)
-		} else {
-			clierror.CheckError(errors.New("unknown column "+k), outErr)
-		}
-	}
-	return ipBlockCols
 }
 
 func getIpBlocks(ipBlocks resources.IpBlocks) []resources.IpBlock {

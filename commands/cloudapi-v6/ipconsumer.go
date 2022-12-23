@@ -3,7 +3,6 @@ package commands
 import (
 	"context"
 	"errors"
-	"io"
 	"os"
 
 	"github.com/fatih/structs"
@@ -11,7 +10,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
-	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 	"github.com/spf13/cobra"
@@ -109,38 +107,10 @@ func getIpConsumerPrint(c *core.CommandConfig, groups []resources.IpConsumer) pr
 		if groups != nil {
 			r.OutputJSON = groups
 			r.KeyValue = getIpConsumersKVMaps(groups)
-			r.Columns = getIpConsumerCols(core.GetGlobalFlagName(c.Resource, constants.ArgCols), c.Printer.GetStderr())
+			r.Columns = printer.GetHeaders(allIpConsumerCols, defaultIpConsumerCols, viper.GetStringSlice(core.GetGlobalFlagName(c.Resource, constants.ArgCols)))
 		}
 	}
 	return r
-}
-
-func getIpConsumerCols(flagName string, outErr io.Writer) []string {
-	if viper.IsSet(flagName) {
-		var groupCols []string
-		columnsMap := map[string]string{
-			"Ip":             "Ip",
-			"Mac":            "Mac",
-			"NicId":          "NicId",
-			"ServerId":       "ServerId",
-			"ServerName":     "ServerName",
-			"DatacenterId":   "DatacenterId",
-			"DatacenterName": "DatacenterName",
-			"K8sNodePoolId":  "K8sNodePoolId",
-			"K8sClusterId":   "K8sClusterId",
-		}
-		for _, k := range viper.GetStringSlice(flagName) {
-			col := columnsMap[k]
-			if col != "" {
-				groupCols = append(groupCols, col)
-			} else {
-				clierror.CheckError(errors.New("unknown column "+k), outErr)
-			}
-		}
-		return groupCols
-	} else {
-		return defaultIpConsumerCols
-	}
 }
 
 func getIpConsumersKVMaps(rs []resources.IpConsumer) []map[string]interface{} {
