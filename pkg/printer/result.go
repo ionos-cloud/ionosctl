@@ -3,6 +3,7 @@ package printer
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"golang.org/x/exp/slices"
 	"io"
 	"regexp"
@@ -57,6 +58,15 @@ func GetHeaders(allColumns []string, defaultColumns []string, customColumns []st
 	}
 
 	return validCustomColumns
+}
+
+// TODO: getHeadersListAll (allColumns, defaultColumns, parentCol, customColumns, ArgAll)
+func GetHeadersListAll(allColumns []string, defaultColumns []string, parentCol string, customColumns []string, argAll bool) []string {
+	if argAll {
+		defaultColumns = append(defaultColumns[:constants.DefaultParentIndex+1], defaultColumns[constants.DefaultParentIndex:]...)
+		defaultColumns[constants.DefaultParentIndex] = parentCol
+	}
+	return GetHeaders(allColumns, defaultColumns, customColumns)
 }
 
 // TODO: identical name to printText. Hard to decipher behaviour
