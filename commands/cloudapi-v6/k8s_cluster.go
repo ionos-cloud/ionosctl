@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io"
 	"os"
 
 	"go.uber.org/multierr"
@@ -17,7 +16,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
-	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
@@ -529,9 +527,10 @@ func DeleteAllK8sClusters(c *core.CommandConfig) error {
 
 // Output Printing
 
-var defaultK8sClusterCols = []string{"ClusterId", "Name", "K8sVersion", "State", "MaintenanceWindow"}
-
-var allK8sClusterCols = []string{"ClusterId", "Name", "K8sVersion", "State", "MaintenanceWindow", "AvailableUpgradeVersions", "ViableNodePoolVersions", "S3Bucket", "ApiSubnetAllowList"}
+var (
+	defaultK8sClusterCols = []string{"ClusterId", "Name", "K8sVersion", "State", "MaintenanceWindow"}
+	allK8sClusterCols     = []string{"ClusterId", "Name", "K8sVersion", "State", "MaintenanceWindow", "AvailableUpgradeVersions", "ViableNodePoolVersions", "S3Bucket", "ApiSubnetAllowList"}
+)
 
 type K8sClusterPrint struct {
 	ClusterId                string   `json:"ClusterId,omitempty"`
@@ -558,38 +557,10 @@ func getK8sClusterPrint(resp *resources.Response, c *core.CommandConfig, k8ss []
 		if k8ss != nil {
 			r.OutputJSON = k8ss
 			r.KeyValue = getK8sClustersKVMaps(k8ss)
-			r.Columns = getK8sClusterCols(core.GetGlobalFlagName(c.Resource, constants.ArgCols), c.Printer.GetStderr())
+			r.Columns = printer.GetHeaders(allK8sClusterCols, defaultK8sClusterCols, viper.GetStringSlice(core.GetGlobalFlagName(c.Resource, constants.ArgCols)))
 		}
 	}
 	return r
-}
-
-func getK8sClusterCols(flagName string, outErr io.Writer) []string {
-	if viper.IsSet(flagName) {
-		var k8sCols []string
-		columnsMap := map[string]string{
-			"ClusterId":                "ClusterId",
-			"Name":                     "Name",
-			"K8sVersion":               "K8sVersion",
-			"AvailableUpgradeVersions": "AvailableUpgradeVersions",
-			"ViableNodePoolVersions":   "ViableNodePoolVersions",
-			"MaintenanceWindow":        "MaintenanceWindow",
-			"State":                    "State",
-			"S3Bucket":                 "S3Bucket",
-			"ApiSubnetAllowList":       "ApiSubnetAllowList",
-		}
-		for _, k := range viper.GetStringSlice(flagName) {
-			col := columnsMap[k]
-			if col != "" {
-				k8sCols = append(k8sCols, col)
-			} else {
-				clierror.CheckError(errors.New("unknown column "+k), outErr)
-			}
-		}
-		return k8sCols
-	} else {
-		return defaultK8sClusterCols
-	}
 }
 
 func getK8sClusters(k8ss resources.K8sClusters) []resources.K8sCluster {

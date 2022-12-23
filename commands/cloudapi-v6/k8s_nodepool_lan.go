@@ -3,7 +3,6 @@ package commands
 import (
 	"context"
 	"errors"
-	"io"
 	"os"
 
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/query"
@@ -14,7 +13,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
-	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
@@ -416,7 +414,7 @@ func getK8sNodePoolLanPrint(c *core.CommandConfig, k8ss []resources.K8sNodePoolL
 		if k8ss != nil {
 			r.OutputJSON = k8ss
 			r.KeyValue = getK8sNodePoolLansKVMaps(k8ss)
-			r.Columns = getK8sNodePoolLanCols(core.GetGlobalFlagName(c.Resource, constants.ArgCols), c.Printer.GetStderr())
+			r.Columns = printer.GetHeadersAllDefault(defaultK8sNodePoolLanCols, viper.GetStringSlice(core.GetGlobalFlagName(c.Resource, constants.ArgCols)))
 		}
 	}
 	return r
@@ -436,29 +434,6 @@ func getK8sNodePoolLansForPut(ng *resources.K8sNodePool) []resources.K8sNodePool
 		}
 	}
 	return ss
-}
-
-func getK8sNodePoolLanCols(flagName string, outErr io.Writer) []string {
-	if viper.IsSet(flagName) {
-		var k8sCols []string
-		columnsMap := map[string]string{
-			"LanId":           "LanId",
-			"Dhcp":            "Dhcp",
-			"RoutesNetwork":   "RoutesNetwork",
-			"RoutesGatewayIp": "RoutesGatewayIp",
-		}
-		for _, k := range viper.GetStringSlice(flagName) {
-			col := columnsMap[k]
-			if col != "" {
-				k8sCols = append(k8sCols, col)
-			} else {
-				clierror.CheckError(errors.New("unknown column "+k), outErr)
-			}
-		}
-		return k8sCols
-	} else {
-		return defaultK8sNodePoolLanCols
-	}
 }
 
 func getK8sNodePoolLans(k8ss *[]ionoscloud.KubernetesNodePoolLan) []resources.K8sNodePoolLan {
