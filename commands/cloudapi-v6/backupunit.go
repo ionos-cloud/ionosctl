@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io"
 	"os"
 
 	"go.uber.org/multierr"
@@ -17,7 +16,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
-	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
@@ -468,7 +466,7 @@ func getBackupUnitPrint(resp *resources.Response, c *core.CommandConfig, backupU
 		if backupUnits != nil {
 			r.OutputJSON = backupUnits
 			r.KeyValue = getBackupUnitsKVMaps(backupUnits)
-			r.Columns = getBackupUnitCols(core.GetGlobalFlagName(c.Resource, constants.ArgCols), c.Printer.GetStderr())
+			r.Columns = printer.GetHeadersAllDefault(defaultBackupUnitCols, viper.GetStringSlice(core.GetGlobalFlagName(c.Resource, constants.ArgCols)))
 		}
 	}
 	return r
@@ -484,30 +482,6 @@ func getBackupUnitSSOPrint(c *core.CommandConfig, backupUnit *resources.BackupUn
 		}
 	}
 	return r
-}
-
-func getBackupUnitCols(flagName string, outErr io.Writer) []string {
-	if viper.IsSet(flagName) {
-		var backupUnitCols []string
-		columnsMap := map[string]string{
-			"BackupUnitId": "BackupUnitId",
-			"Name":         "Name",
-			"Password":     "Password",
-			"Email":        "Email",
-			"State":        "State",
-		}
-		for _, k := range viper.GetStringSlice(flagName) {
-			col := columnsMap[k]
-			if col != "" {
-				backupUnitCols = append(backupUnitCols, col)
-			} else {
-				clierror.CheckError(errors.New("unknown column "+k), outErr)
-			}
-		}
-		return backupUnitCols
-	} else {
-		return defaultBackupUnitCols
-	}
 }
 
 func getBackupUnits(backupUnits resources.BackupUnits) []resources.BackupUnit {
