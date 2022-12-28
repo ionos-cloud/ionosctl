@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io"
 	"os"
 
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/query"
@@ -18,7 +17,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
-	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
@@ -402,32 +400,10 @@ func getS3KeyPrint(resp *resources.Response, c *core.CommandConfig, s []resource
 		if s != nil {
 			r.OutputJSON = s
 			r.KeyValue = getS3KeysKVMaps(s)
-			r.Columns = getS3KeyCols(core.GetGlobalFlagName(c.Resource, constants.ArgCols), c.Printer.GetStderr())
+			r.Columns = printer.GetHeadersAllDefault(defaultS3KeyCols, viper.GetStringSlice(core.GetFlagName(c.NS, constants.ArgCols)))
 		}
 	}
 	return r
-}
-
-func getS3KeyCols(flagName string, outErr io.Writer) []string {
-	if viper.IsSet(flagName) {
-		var keyCols []string
-		columnsMap := map[string]string{
-			"S3KeyId":   "S3KeyId",
-			"Active":    "Active",
-			"SecretKey": "SecretKey",
-		}
-		for _, k := range viper.GetStringSlice(flagName) {
-			col := columnsMap[k]
-			if col != "" {
-				keyCols = append(keyCols, col)
-			} else {
-				clierror.CheckError(errors.New("unknown column "+k), outErr)
-			}
-		}
-		return keyCols
-	} else {
-		return defaultS3KeyCols
-	}
 }
 
 func getS3Keys(S3Keys resources.S3Keys) []resources.S3Key {

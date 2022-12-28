@@ -3,7 +3,6 @@ package commands
 import (
 	"context"
 	"errors"
-	"io"
 	"os"
 
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/query"
@@ -15,7 +14,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
-	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
@@ -382,34 +380,10 @@ func getNatGatewayLanPrint(resp *resources.Response, c *core.CommandConfig, ss [
 		if ss != nil {
 			r.OutputJSON = ss
 			r.KeyValue = getNatGatewayLansKVMaps(ss)
-			r.Columns = getNatGatewayLansCols(core.GetGlobalFlagName(c.Resource, constants.ArgCols), c.Printer.GetStderr())
+			r.Columns = printer.GetHeadersAllDefault(defaultNatGatewayLanCols, viper.GetStringSlice(core.GetFlagName(c.NS, constants.ArgCols)))
 		}
 	}
 	return r
-}
-
-func getNatGatewayLansCols(flagName string, outErr io.Writer) []string {
-	var cols []string
-	if viper.IsSet(flagName) {
-		cols = viper.GetStringSlice(flagName)
-	} else {
-		return defaultNatGatewayLanCols
-	}
-
-	columnsMap := map[string]string{
-		"NatGatewayLanId": "NatGatewayLanId",
-		"GatewayIps":      "GatewayIps",
-	}
-	var natgatewayCols []string
-	for _, k := range cols {
-		col := columnsMap[k]
-		if col != "" {
-			natgatewayCols = append(natgatewayCols, col)
-		} else {
-			clierror.CheckError(errors.New("unknown column "+k), outErr)
-		}
-	}
-	return natgatewayCols
 }
 
 func getNatGatewayLans(ng *resources.NatGateway) []resources.NatGatewayLanProperties {

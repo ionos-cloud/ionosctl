@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io"
 	"os"
 	"sort"
 	"strings"
@@ -16,7 +15,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
-	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
@@ -256,41 +254,10 @@ func getRequestPrint(c *core.CommandConfig, reqs []resources.Request) printer.Re
 		if reqs != nil {
 			r.OutputJSON = reqs
 			r.KeyValue = getRequestsKVMaps(reqs)
-			r.Columns = getRequestsCols(core.GetGlobalFlagName(c.Resource, constants.ArgCols), c.Printer.GetStderr())
+			r.Columns = printer.GetHeaders(allRequestCols, defaultRequestCols, viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgCols)))
 		}
 	}
 	return r
-}
-
-func getRequestsCols(flagName string, outErr io.Writer) []string {
-	var cols []string
-	if viper.IsSet(flagName) {
-		cols = viper.GetStringSlice(flagName)
-	} else {
-		return defaultRequestCols
-	}
-
-	columnsMap := map[string]string{
-		"RequestId":   "RequestId",
-		"Status":      "Status",
-		"Message":     "Message",
-		"Method":      "Method",
-		"Url":         "Url",
-		"Body":        "Body",
-		"CreatedDate": "CreatedDate",
-		"CreatedBy":   "CreatedBy",
-		"Targets":     "Targets",
-	}
-	var requestCols []string
-	for _, k := range cols {
-		col := columnsMap[k]
-		if col != "" {
-			requestCols = append(requestCols, col)
-		} else {
-			clierror.CheckError(errors.New("unknown column "+k), outErr)
-		}
-	}
-	return requestCols
 }
 
 func getRequests(requests resources.Requests) []resources.Request {

@@ -491,8 +491,10 @@ func DeleteAllLans(c *core.CommandConfig) error {
 
 // Output Printing
 
-var defaultLanCols = []string{"LanId", "Name", "Public", "PccId", "State"}
-var allLanCols = []string{"LanId", "Name", "Public", "PccId", "State", "DatacenterId"}
+var (
+	defaultLanCols = []string{"LanId", "Name", "Public", "PccId", "State"}
+	allLanCols     = []string{"LanId", "Name", "Public", "PccId", "State", "DatacenterId"}
+)
 
 type LanPrint struct {
 	LanId        string `json:"LanId,omitempty"`
@@ -515,7 +517,7 @@ func getLanPrint(resp *resources.Response, c *core.CommandConfig, lans []resourc
 		if lans != nil {
 			r.OutputJSON = lans
 			r.KeyValue = getLansKVMaps(lans)
-			r.Columns = printer.GetHeaders(allLanCols, defaultLanCols, viper.GetStringSlice(core.GetGlobalFlagName(c.Resource, constants.ArgCols)))
+			r.Columns = printer.GetHeadersListAll(allLanCols, defaultLanCols, "DatacenterId", viper.GetStringSlice(core.GetFlagName(c.NS, constants.ArgCols)), viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)))
 		}
 	}
 	return r

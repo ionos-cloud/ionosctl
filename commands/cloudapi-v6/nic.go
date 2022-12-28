@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io"
 	"os"
 
 	"go.uber.org/multierr"
@@ -17,7 +16,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
-	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
@@ -898,46 +896,13 @@ func getNicPrint(resp *resources.Response, c *core.CommandConfig, nics []resourc
 			r.OutputJSON = nics
 			r.KeyValue = getNicsKVMaps(nics)
 			if c.Resource != c.Namespace {
-				r.Columns = getNicsCols(core.GetFlagName(c.NS, constants.ArgCols), c.Printer.GetStderr())
+				r.Columns = printer.GetHeaders(allNicCols, defaultNicCols, viper.GetStringSlice(core.GetFlagName(c.NS, constants.ArgCols)))
 			} else {
-				r.Columns = getNicsCols(core.GetGlobalFlagName(c.Resource, constants.ArgCols), c.Printer.GetStderr())
+				r.Columns = printer.GetHeaders(allNicCols, defaultNicCols, viper.GetStringSlice(core.GetGlobalFlagName(c.NS, constants.ArgCols)))
 			}
 		}
 	}
 	return r
-}
-
-func getNicsCols(flagName string, outErr io.Writer) []string {
-	var cols []string
-	if viper.IsSet(flagName) {
-		cols = viper.GetStringSlice(flagName)
-	} else {
-		return defaultNicCols
-	}
-
-	columnsMap := map[string]string{
-		"NicId":          "NicId",
-		"Name":           "Name",
-		"Dhcp":           "Dhcp",
-		"LanId":          "LanId",
-		"Ips":            "Ips",
-		"FirewallActive": "FirewallActive",
-		"FirewallType":   "FirewallType",
-		"Mac":            "Mac",
-		"State":          "State",
-		"DeviceNumber":   "DeviceNumber",
-		"PciSlot":        "PciSlot",
-	}
-	var nicCols []string
-	for _, k := range cols {
-		col := columnsMap[k]
-		if col != "" {
-			nicCols = append(nicCols, col)
-		} else {
-			clierror.CheckError(errors.New("unknown column "+k), outErr)
-		}
-	}
-	return nicCols
 }
 
 func getNics(nics resources.Nics) []resources.Nic {
