@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io"
 	"os"
 
 	"go.uber.org/multierr"
@@ -17,7 +16,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
-	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 	"github.com/spf13/cobra"
@@ -562,37 +560,10 @@ func getSnapshotPrint(resp *resources.Response, c *core.CommandConfig, s []resou
 		if s != nil {
 			r.OutputJSON = s
 			r.KeyValue = getSnapshotsKVMaps(s)
-			r.Columns = getSnapshotCols(core.GetGlobalFlagName(c.Resource, constants.ArgCols), c.Printer.GetStderr())
+			r.Columns = printer.GetHeadersAllDefault(defaultSnapshotCols, viper.GetStringSlice(core.GetFlagName(c.NS, constants.ArgCols)))
 		}
 	}
 	return r
-}
-
-func getSnapshotCols(flagName string, outErr io.Writer) []string {
-	var cols []string
-	if viper.IsSet(flagName) {
-		cols = viper.GetStringSlice(flagName)
-	} else {
-		return defaultSnapshotCols
-	}
-
-	columnsMap := map[string]string{
-		"SnapshotId":  "SnapshotId",
-		"Name":        "Name",
-		"LicenceType": "LicenceType",
-		"Size":        "Size",
-		"State":       "State",
-	}
-	var datacenterCols []string
-	for _, k := range cols {
-		col := columnsMap[k]
-		if col != "" {
-			datacenterCols = append(datacenterCols, col)
-		} else {
-			clierror.CheckError(errors.New("unknown column "+k), outErr)
-		}
-	}
-	return datacenterCols
 }
 
 func getSnapshots(snapshots resources.Snapshots) []resources.Snapshot {

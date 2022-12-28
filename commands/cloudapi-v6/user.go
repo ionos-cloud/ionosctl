@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io"
 	"os"
 
 	"go.uber.org/multierr"
@@ -17,7 +16,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
-	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
@@ -716,41 +714,13 @@ func getUserPrint(resp *resources.Response, c *core.CommandConfig, users []resou
 			r.OutputJSON = users
 			r.KeyValue = getUsersKVMaps(users)
 			if c.Resource != c.Namespace {
-				r.Columns = getUserCols(core.GetFlagName(c.NS, constants.ArgCols), c.Printer.GetStderr())
+				r.Columns = printer.GetHeadersAllDefault(defaultUserCols, viper.GetStringSlice(core.GetFlagName(c.NS, constants.ArgCols)))
 			} else {
-				r.Columns = getUserCols(core.GetGlobalFlagName(c.Resource, constants.ArgCols), c.Printer.GetStderr())
+				r.Columns = printer.GetHeadersAllDefault(defaultUserCols, viper.GetStringSlice(core.GetGlobalFlagName(c.NS, constants.ArgCols)))
 			}
 		}
 	}
 	return r
-}
-
-func getUserCols(flagName string, outErr io.Writer) []string {
-	if viper.IsSet(flagName) {
-		var userCols []string
-		columnsMap := map[string]string{
-			"UserId":            "UserId",
-			"Firstname":         "Firstname",
-			"Lastname":          "Lastname",
-			"Email":             "Email",
-			"Administrator":     "Administrator",
-			"ForceSecAuth":      "ForceSecAuth",
-			"SecAuthActive":     "SecAuthActive",
-			"S3CanonicalUserId": "S3CanonicalUserId",
-			"Active":            "Active",
-		}
-		for _, k := range viper.GetStringSlice(flagName) {
-			col := columnsMap[k]
-			if col != "" {
-				userCols = append(userCols, col)
-			} else {
-				clierror.CheckError(errors.New("unknown column "+k), outErr)
-			}
-		}
-		return userCols
-	} else {
-		return defaultUserCols
-	}
 }
 
 func getUsers(users resources.Users) []resources.User {

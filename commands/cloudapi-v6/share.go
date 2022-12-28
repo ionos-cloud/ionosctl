@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io"
 	"os"
 	"strings"
 	"time"
@@ -20,7 +19,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
-	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
@@ -512,40 +510,10 @@ func getGroupSharePrint(resp *resources.Response, c *core.CommandConfig, groups 
 		if groups != nil {
 			r.OutputJSON = groups
 			r.KeyValue = getGroupSharesKVMaps(groups)
-			r.Columns = getGroupShareCols(core.GetGlobalFlagName(c.Resource, constants.ArgCols), core.GetFlagName(c.NS, cloudapiv6.ArgAll), c.Printer.GetStderr())
+			r.Columns = printer.GetHeadersListAll(allGroupShareCols, defaultGroupShareCols, "GroupId", viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgCols)), viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)))
 		}
 	}
 	return r
-}
-
-func getGroupShareCols(argCols string, argAll string, outErr io.Writer) []string {
-	if viper.IsSet(argCols) {
-		var groupCols []string
-		columnsMap := map[string]string{
-			"ShareId":        "ShareId",
-			"EditPrivilege":  "EditPrivilege",
-			"SharePrivilege": "SharePrivilege",
-			"Type":           "Type",
-			"GroupId":        "GroupId",
-		}
-		for _, k := range viper.GetStringSlice(argCols) {
-			col := columnsMap[k]
-			if col != "" {
-				groupCols = append(groupCols, col)
-			} else {
-				clierror.CheckError(errors.New("unknown column "+k), outErr)
-			}
-		}
-		return groupCols
-	} else if viper.GetBool(argAll) {
-		var cols []string
-		// Add column which specifies which parent resource this belongs to, if using -a/--all flag
-		cols = append(defaultGroupShareCols[:constants.DefaultParentIndex+1], defaultGroupShareCols[constants.DefaultParentIndex:]...)
-		cols[constants.DefaultParentIndex] = "GroupId"
-		return cols
-	} else {
-		return defaultGroupShareCols
-	}
 }
 
 func getGroupShares(groups resources.GroupShares) []resources.GroupShare {

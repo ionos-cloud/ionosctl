@@ -2,9 +2,7 @@ package commands
 
 import (
 	"context"
-	"errors"
 	"fmt"
-	"io"
 	"os"
 
 	"github.com/fatih/structs"
@@ -13,7 +11,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
-	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 	"github.com/spf13/cobra"
@@ -151,37 +148,10 @@ func getTemplatePrint(c *core.CommandConfig, tpls []resources.Template) printer.
 		if tpls != nil {
 			r.OutputJSON = tpls
 			r.KeyValue = getTemplatesKVMaps(tpls)
-			r.Columns = getTemplateCols(core.GetGlobalFlagName(c.Resource, constants.ArgCols), c.Printer.GetStderr())
+			r.Columns = printer.GetHeadersAllDefault(defaultTemplateCols, viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgCols)))
 		}
 	}
 	return r
-}
-
-func getTemplateCols(flagName string, outErr io.Writer) []string {
-	var cols []string
-	if viper.IsSet(flagName) {
-		cols = viper.GetStringSlice(flagName)
-	} else {
-		return defaultTemplateCols
-	}
-
-	columnsMap := map[string]string{
-		"TemplateId":  "TemplateId",
-		"Name":        "Name",
-		"Cores":       "Cores",
-		"Ram":         "Ram",
-		"StorageSize": "StorageSize",
-	}
-	var datacenterCols []string
-	for _, k := range cols {
-		col := columnsMap[k]
-		if col != "" {
-			datacenterCols = append(datacenterCols, col)
-		} else {
-			clierror.CheckError(errors.New("unknown column "+k), outErr)
-		}
-	}
-	return datacenterCols
 }
 
 func getTemplates(templates resources.Templates) []resources.Template {
