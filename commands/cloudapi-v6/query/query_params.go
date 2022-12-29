@@ -1,6 +1,6 @@
 /*
-	This is used for getting query parameters from options in the CLI.
-	And also for validate the parameters set - especially for filters.
+This is used for getting query parameters from options in the CLI.
+And also for validate the parameters set - especially for filters.
 */
 package query
 
