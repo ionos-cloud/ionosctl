@@ -85,4 +85,3 @@ func getApiRows(apis *[]sdkgo.ApiInfoDto) []map[string]interface{} {
 }
 
 var allAPICols = structs.Names(ApiPrint{})
-
