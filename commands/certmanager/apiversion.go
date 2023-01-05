@@ -86,10 +86,3 @@ func getApiRows(apis *[]sdkgo.ApiInfoDto) []map[string]interface{} {
 
 var allAPICols = structs.Names(ApiPrint{})
 
-func getAPIHeaders(customColumns []string) []string {
-	if customColumns == nil {
-		return allAPICols[0:3]
-	}
-
-	return customColumns
-}
