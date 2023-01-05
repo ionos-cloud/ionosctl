@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
+	"github.com/ionos-cloud/ionosctl/pkg/printer"
 	sdkgo "github.com/ionos-cloud/sdk-go-cert-manager"
+	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"os"
 )
@@ -36,7 +38,10 @@ func CertCreateCmd() *core.Command {
 	cmd.AddStringFlag(FlagCertChainPath, "", "", "Specify the certificate chain from a file (required either this or --certificate-chain)")
 	cmd.AddStringFlag(FlagPrivateKeyPath, "", "", "Specify the private key from a file (required either this or --private-key)")
 
-	cmd.AddBoolFlag(constants.ArgNoHeaders, "", false, "Get response without headers")
+	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, printer.ColsMessage(allCols))
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return allCols, cobra.ShellCompDirectiveNoFileComp
+	})
 
 	return cmd
 }

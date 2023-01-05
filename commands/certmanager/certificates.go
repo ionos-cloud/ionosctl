@@ -26,10 +26,7 @@ func CertCmd() *core.Command {
 		},
 	}
 
-	certCmd.Command.PersistentFlags().StringSlice(constants.ArgCols, nil, printer.ColsMessage(allCols))
-	_ = certCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return allCols, cobra.ShellCompDirectiveNoFileComp
-	})
+	certCmd.Command.PersistentFlags().Bool(constants.ArgNoHeaders, false, "When using text output, don't print headers")
 
 	certCmd.AddCommand(CertGetCmd())
 	certCmd.AddCommand(CertCreateCmd())
@@ -43,6 +40,8 @@ func CertCmd() *core.Command {
 
 func getCertPrint(resp *ionoscloud.APIResponse, c *core.CommandConfig, cert *[]ionoscloud.CertificateDto) printer.Result {
 	r := printer.Result{}
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+
 	if c != nil {
 		if resp != nil {
 			r.Resource = c.Resource
@@ -51,8 +50,8 @@ func getCertPrint(resp *ionoscloud.APIResponse, c *core.CommandConfig, cert *[]i
 		}
 		if cert != nil {
 			r.OutputJSON = cert
-			r.KeyValue = getCertRows(cert)                                                              // map header -> rows
-			r.Columns = getCertHeaders(viper.GetStringSlice(core.GetFlagName(c.NS, constants.ArgCols))) // headers
+			r.KeyValue = getCertRows(cert)                          // map header -> rows
+			r.Columns = printer.GetHeadersAllDefault(allCols, cols) // headers
 		}
 	}
 	return r

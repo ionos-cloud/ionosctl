@@ -2,6 +2,9 @@ package certmanager
 
 import (
 	"context"
+	"github.com/ionos-cloud/ionosctl/pkg/constants"
+	"github.com/ionos-cloud/ionosctl/pkg/printer"
+	"github.com/spf13/cobra"
 
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 
@@ -26,6 +29,11 @@ func CertUpdateCmd() *core.Command {
 
 	cmd.AddStringFlag(FlagCertId, "i", "", "Provide certificate ID", core.RequiredFlagOption())
 	cmd.AddStringFlag(FlagCertName, "n", "", "Provide new certificate name", core.RequiredFlagOption())
+
+	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, printer.ColsMessage(allCols))
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return allCols, cobra.ShellCompDirectiveNoFileComp
+	})
 
 	return cmd
 }

@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
+	"github.com/ionos-cloud/ionosctl/pkg/printer"
 	sdkgo "github.com/ionos-cloud/sdk-go-cert-manager"
 	"github.com/spf13/cobra"
 	"os"
@@ -23,13 +24,17 @@ func CertGetCmd() *core.Command {
 		InitClient: true,
 	})
 
-	cmd.AddBoolFlag(constants.ArgNoHeaders, "", false, "Get response without headers")
 	cmd.AddStringFlag(FlagCertId, "i", "", "Response get a single certificate", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(FlagCertId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return CertificatesIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddBoolFlag(FlagCert, "", false, "Print the certificate")
 	cmd.AddBoolFlag(FlagCertChain, "", false, "Print the certificate chain")
+
+	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, printer.ColsMessage(allCols))
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return allCols, cobra.ShellCompDirectiveNoFileComp
+	})
 
 	return cmd
 }

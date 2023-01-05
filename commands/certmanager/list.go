@@ -4,6 +4,8 @@ import (
 	"context"
 	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
+	"github.com/ionos-cloud/ionosctl/pkg/printer"
+	"github.com/spf13/cobra"
 )
 
 func CertListCmd() *core.Command {
@@ -20,14 +22,10 @@ func CertListCmd() *core.Command {
 		InitClient: true,
 	})
 
-	cmd.AddBoolFlag(constants.ArgNoHeaders, "", false, "Get response without headers")
-	//allCertCols := []string{"CertId", "Name"}
-	//globalFlags := cmd.GlobalFlags()
-	//globalFlags.StringSliceP(constants.ArgCols, "", allCertCols, printer.ColsMessage(allCertCols))
-	//_ = viper.BindPFlag(core.GetGlobalFlagName(CertCmd().Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
-	//_ = cmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-	//	return allCertCols, cobra.ShellCompDirectiveNoFileComp
-	//})
+	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, printer.ColsMessage(allCols))
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return allCols, cobra.ShellCompDirectiveNoFileComp
+	})
 	return cmd
 }
 

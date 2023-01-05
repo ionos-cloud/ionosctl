@@ -7,6 +7,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
 	sdkgo "github.com/ionos-cloud/sdk-go-cert-manager"
+	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
@@ -24,6 +25,10 @@ func CertGetApiVersionCmd() *core.Command {
 		InitClient: true,
 	})
 
+	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, printer.ColsMessage(allCols))
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return allAPICols, cobra.ShellCompDirectiveNoFileComp
+	})
 	cmd.AddBoolFlag(constants.ArgNoHeaders, "n", false, "Response delete all certificates")
 
 	return cmd
@@ -44,6 +49,7 @@ func CmdGetApiVersion(c *core.CommandConfig) error {
 
 func getApiPrint(resp *sdkgo.APIResponse, c *core.CommandConfig, cert *[]sdkgo.ApiInfoDto, headers bool) printer.Result {
 	r := printer.Result{}
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 	if c != nil {
 		if resp != nil {
 			r.Resource = c.Resource
@@ -52,8 +58,8 @@ func getApiPrint(resp *sdkgo.APIResponse, c *core.CommandConfig, cert *[]sdkgo.A
 		}
 		if cert != nil {
 			r.OutputJSON = cert
-			r.KeyValue = getApiRows(cert)                                                              // map header -> rows
-			r.Columns = getAPIHeaders(viper.GetStringSlice(core.GetFlagName(c.NS, constants.ArgCols))) // headers
+			r.KeyValue = getApiRows(cert)                              // map header -> rows
+			r.Columns = printer.GetHeadersAllDefault(allAPICols, cols) // headers
 		}
 	}
 	return r
@@ -79,16 +85,6 @@ func getApiRows(apis *[]sdkgo.ApiInfoDto) []map[string]interface{} {
 }
 
 var allAPICols = structs.Names(ApiPrint{})
-
-func getCertHeaders(customColumns []string) []string {
-	if customColumns == nil {
-		return allCols[0:2]
-	}
-	//for _, c := customColumns {
-	//	if slices.Contains(allCols, c) {}
-	//}
-	return customColumns
-}
 
 func getAPIHeaders(customColumns []string) []string {
 	if customColumns == nil {
