@@ -21,7 +21,13 @@ func CertListCmd() *core.Command {
 	})
 
 	cmd.AddBoolFlag(constants.ArgNoHeaders, "", false, "Get response without headers")
-
+	//allCertCols := []string{"CertId", "Name"}
+	//globalFlags := cmd.GlobalFlags()
+	//globalFlags.StringSliceP(constants.ArgCols, "", allCertCols, printer.ColsMessage(allCertCols))
+	//_ = viper.BindPFlag(core.GetGlobalFlagName(CertCmd().Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
+	//_ = cmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	//	return allCertCols, cobra.ShellCompDirectiveNoFileComp
+	//})
 	return cmd
 }
 

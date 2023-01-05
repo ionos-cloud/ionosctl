@@ -25,12 +25,19 @@ func CertCmd() *core.Command {
 			TraverseChildren: true,
 		},
 	}
+
+	certCmd.Command.PersistentFlags().StringSlice(constants.ArgCols, nil, printer.ColsMessage(allCols))
+	_ = certCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return allCols, cobra.ShellCompDirectiveNoFileComp
+	})
+
 	certCmd.AddCommand(CertGetCmd())
 	certCmd.AddCommand(CertCreateCmd())
 	certCmd.AddCommand(CertListCmd())
 	certCmd.AddCommand(CertDeleteCmd())
 	certCmd.AddCommand(CertGetApiVersionCmd())
 	certCmd.AddCommand(CertUpdateCmd())
+
 	return certCmd
 }
 
@@ -61,7 +68,6 @@ func printProperties(value *ionoscloud.CertificateDto, flag bool) string {
 type CertPrint struct {
 	CertId      string `json:"CertId,omitempty"`
 	DisplayName string `json:"DisplayName,omitempty"`
-	State       string `json:"State,omitempty"`
 }
 
 type ApiPrint struct {
@@ -80,14 +86,6 @@ func getCertRows(certs *[]ionoscloud.CertificateDto) []map[string]interface{} {
 		if propertiesOk, ok := cert.GetPropertiesOk(); ok && propertiesOk != nil {
 			if displayNameOk, ok := propertiesOk.GetNameOk(); ok && displayNameOk != nil {
 				certPrint.DisplayName = *displayNameOk
-			}
-			// if displayNameOk, ok := propertiesOk.get; ok && displayNameOk != nil {
-			// 	CertPrint.DisplayName = *displayNameOk
-			// }
-		}
-		if metadataOk, ok := cert.GetMetadataOk(); ok && metadataOk != nil {
-			if stateOk, ok := metadataOk.GetStateOk(); ok && stateOk != nil {
-				certPrint.State = string(*stateOk)
 			}
 		}
 		o := structs.Map(certPrint)
