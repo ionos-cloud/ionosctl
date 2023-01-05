@@ -2,7 +2,6 @@ package certmanager
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
@@ -15,13 +14,14 @@ var createProperties = sdkgo.CertificatePostPropertiesDto{}
 
 func CertCreateCmd() *core.Command {
 	cmd := core.NewCommand(context.TODO(), nil, core.CommandBuilder{
-		Namespace:  "certmanager",
-		Resource:   "certificates",
-		Verb:       "create",
-		Aliases:    []string{"c"},
-		ShortDesc:  "Add a new Certificate",
-		LongDesc:   "Use this command to add a Certificate.",
-		Example:    "ionosctl certificate-manager create",
+		Namespace: "certmanager",
+		Resource:  "certificates",
+		Verb:      "create",
+		Aliases:   []string{"c"},
+		ShortDesc: "Add a new Certificate",
+		LongDesc:  "Use this command to add a Certificate.",
+		Example: "ionosctl certificate-manager create --certificate-name my-cert --certificate-path /path/to/cert --certificate-chain-path /path/to/cert-chain --private-key-path /path/to/private-key" +
+			"\n" + "ionosctl certificate-manager create --certificate-name my-cert --certificate <certificate> --certificate-chain <certificate chain> --private-key <private key>",
 		PreCmdRun:  PreCmdPost,
 		CmdRun:     CmdPost,
 		InitClient: true,
@@ -103,27 +103,17 @@ func CmdPost(c *core.CommandConfig) error {
 }
 
 func PreCmdPost(c *core.PreCommandConfig) error {
-	err := errors.New("")
+	var err error
 	if !viper.IsSet(core.GetFlagName(c.NS, FlagCert)) && !viper.IsSet(core.GetFlagName(c.NS, FlagCertPath)) {
-		err = fmt.Errorf("%veither --%s or --%s must be set\n", err, FlagCert, FlagCertPath)
+		err = fmt.Errorf("%veither --%s or --%s must be set", err, FlagCert, FlagCertPath)
 	}
 	if !viper.IsSet(core.GetFlagName(c.NS, FlagCertChain)) && !viper.IsSet(core.GetFlagName(c.NS, FlagCertChainPath)) {
-		err = fmt.Errorf("%veither --%s or --%s must be set\n", err, FlagCertChain, FlagCertChainPath)
+		err = fmt.Errorf("%veither --%s or --%s must be set", err, FlagCertChain, FlagCertChainPath)
 	}
 	if !viper.IsSet(core.GetFlagName(c.NS, FlagPrivateKey)) && !viper.IsSet(core.GetFlagName(c.NS, FlagPrivateKeyPath)) {
-		err = fmt.Errorf("%veither --%s or --%s must be set\n", err, FlagPrivateKey, FlagPrivateKeyPath)
+		err = fmt.Errorf("%veither --%s or --%s must be set", err, FlagPrivateKey, FlagPrivateKeyPath)
 	}
 	err = c.Command.Command.MarkFlagRequired(FlagCertName)
-	if err != nil {
-		return err
-	}
 
-	if err != nil {
-		return fmt.Errorf("%v\nUsage:\n%s\n\nFor more details, see '%s --help'.",
-			err,
-			UsageCert,
-			c.Command.CommandPath(),
-		)
-	}
 	return err
 }
