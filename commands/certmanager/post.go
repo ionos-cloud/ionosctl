@@ -18,12 +18,12 @@ func CertCreateCmd() *core.Command {
 	cmd := core.NewCommand(context.TODO(), nil, core.CommandBuilder{
 		Namespace: "certmanager",
 		Resource:  "certificates",
-		Verb:      "create",
-		Aliases:   []string{"c"},
+		Verb:      "add",
+		Aliases:   []string{"a"},
 		ShortDesc: "Add a new Certificate",
 		LongDesc:  "Use this command to add a Certificate.",
-		Example: "ionosctl certificate-manager create --certificate-name my-cert --certificate-path /path/to/cert --certificate-chain-path /path/to/cert-chain --private-key-path /path/to/private-key" +
-			"\n" + "ionosctl certificate-manager create --certificate-name my-cert --certificate <certificate> --certificate-chain <certificate chain> --private-key <private key>",
+		Example: "ionosctl certificate-manager add --certificate-name my-cert --certificate-path /path/to/cert --certificate-chain-path /path/to/cert-chain --private-key-path /path/to/private-key" +
+			"\n" + "ionosctl certificate-manager add --certificate-name my-cert --certificate <certificate> --certificate-chain <certificate chain> --private-key <private key>",
 		PreCmdRun:  PreCmdPost,
 		CmdRun:     CmdPost,
 		InitClient: true,
