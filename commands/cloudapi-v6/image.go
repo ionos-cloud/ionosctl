@@ -530,10 +530,10 @@ func getDiffUploadedImages(c *core.CommandConfig, names, locations []string) ([]
 
 		for _, n := range names { // TODO: See SDK-1163. These nested for-loops could be O(1) instead!
 			for _, l := range locations { // TODO: See SDK-1163. These nested for-loops could be O(1) instead!
-				filters := map[string]string{
-					"name":     n,
-					"public":   "false",
-					"location": l,
+				filters := map[string][]string{
+					"name":     {n},
+					"public":   {"false"},
+					"location": {l},
 				}
 				c.Printer.Verbose("Filtering by name %s and location %s\n", n, l)
 

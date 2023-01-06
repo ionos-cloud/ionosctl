@@ -342,11 +342,11 @@ func RunVolumeList(c *core.CommandConfig) error {
 		if listQueryParams.Filters != nil {
 			filters := *listQueryParams.Filters
 			if val, ok := filters["size"]; ok {
-				convertedSize, err := utils.ConvertSize(val, utils.GigaBytes)
+				convertedSize, err := utils.ConvertSize(val[0], utils.GigaBytes)
 				if err != nil {
 					return err
 				}
-				filters["size"] = strconv.Itoa(convertedSize)
+				filters["size"] = []string{strconv.Itoa(convertedSize)}
 				listQueryParams.Filters = &filters
 			}
 		}
@@ -919,11 +919,11 @@ func RunServerVolumesList(c *core.CommandConfig) error {
 		if listQueryParams.Filters != nil {
 			filters := *listQueryParams.Filters
 			if val, ok := filters["size"]; ok {
-				convertedSize, err := utils.ConvertSize(val, utils.GigaBytes)
+				convertedSize, err := utils.ConvertSize(val[0], utils.GigaBytes)
 				if err != nil {
 					return err
 				}
-				filters["size"] = strconv.Itoa(convertedSize)
+				filters["size"] = []string{strconv.Itoa(convertedSize)}
 				listQueryParams.Filters = &filters
 			}
 		}

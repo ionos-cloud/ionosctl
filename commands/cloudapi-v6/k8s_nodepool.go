@@ -347,11 +347,11 @@ func RunK8sNodePoolList(c *core.CommandConfig) error {
 		if listQueryParams.Filters != nil {
 			filters := *listQueryParams.Filters
 			if val, ok := filters["ramSize"]; ok {
-				convertedSize, err := utils.ConvertSize(val, utils.MegaBytes)
+				convertedSize, err := utils.ConvertSize(val[0], utils.MegaBytes)
 				if err != nil {
 					return err
 				}
-				filters["ramSize"] = strconv.Itoa(convertedSize)
+				filters["ramSize"] = []string{strconv.Itoa(convertedSize)}
 				listQueryParams.Filters = &filters
 			}
 		}
