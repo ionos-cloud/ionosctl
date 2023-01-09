@@ -231,7 +231,6 @@ func (s *groupsService) ListShares(groupId string, params ListQueryParams) (Grou
 		if params.OrderBy != nil {
 			req = req.OrderBy(*params.OrderBy)
 		}
-		//fmt.Println(params.MaxResults)
 		if params.MaxResults != nil {
 			req = req.MaxResults(*params.MaxResults)
 		}
