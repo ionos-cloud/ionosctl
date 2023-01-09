@@ -277,7 +277,7 @@ func getNonPublicImages(imgs []ionoscloud.Image, printService printer.PrintServi
 	return nonPublicImgs, nil
 }
 
-//  deletes non-public images, as deleting public images is forbidden by the API.
+// deletes non-public images, as deleting public images is forbidden by the API.
 func DeleteAllNonPublicImages(c *core.CommandConfig) error {
 	depth := int32(1)
 	images, resp, err := c.CloudApiV6Services.Images().List(

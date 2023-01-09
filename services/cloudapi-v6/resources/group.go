@@ -2,7 +2,6 @@ package resources
 
 import (
 	"context"
-
 	"github.com/fatih/structs"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
