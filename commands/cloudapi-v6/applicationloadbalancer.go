@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io"
 	"os"
 	"strings"
 	"time"
@@ -19,7 +18,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
-	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
@@ -510,7 +508,10 @@ func getNewApplicationLoadBalancerInfo(c *core.CommandConfig) *resources.Applica
 
 // Output Printing
 
-var defaultApplicationLoadBalancerCols = []string{"ApplicationLoadBalancerId", "Name", "ListenerLan", "Ips", "TargetLan", "PrivateIps", "State"}
+var (
+	defaultApplicationLoadBalancerCols = []string{"ApplicationLoadBalancerId", "Name", "ListenerLan", "Ips", "TargetLan", "PrivateIps", "State"}
+	allApplicationLoadBalancerCols     = []string{"ApplicationLoadBalancerId", "DatacenterId", "Name", "ListenerLan", "Ips", "TargetLan", "PrivateIps", "State"}
+)
 
 type ApplicationLoadBalancerPrint struct {
 	ApplicationLoadBalancerId string   `json:"ApplicationLoadBalancerId,omitempty"`
@@ -536,49 +537,10 @@ func getApplicationLoadBalancerPrint(resp *resources.Response, c *core.CommandCo
 		if ss != nil {
 			r.OutputJSON = ss
 			r.KeyValue = getApplicationLoadBalancersKVMaps(ss)
-			r.Columns = getApplicationLoadBalancersCols(
-				core.GetGlobalFlagName(c.Resource, constants.ArgCols),
-				core.GetFlagName(c.NS, constants.ArgAll),
-				c.Printer.GetStderr(),
-			)
+			r.Columns = printer.GetHeadersListAll(allApplicationLoadBalancerCols, defaultApplicationLoadBalancerCols, "DatacenterId", viper.GetStringSlice(core.GetFlagName(c.NS, constants.ArgCols)), viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)))
 		}
 	}
 	return r
-}
-
-func getApplicationLoadBalancersCols(argCols string, argAll string, outErr io.Writer) []string {
-	var cols []string
-	if viper.IsSet(argCols) {
-		cols = viper.GetStringSlice(argCols)
-
-		columnsMap := map[string]string{
-			"ApplicationLoadBalancerId": "ApplicationLoadBalancerId",
-			"Name":                      "Name",
-			"ListenerLan":               "ListenerLan",
-			"Ips":                       "Ips",
-			"TargetLan":                 "TargetLan",
-			"LbPrivateIps":              "LbPrivateIps",
-			"State":                     "State",
-			"DatacenterId":              "DatacenterId",
-		}
-		var applicationloadbalancerCols []string
-		for _, k := range cols {
-			col := columnsMap[k]
-			if col != "" {
-				applicationloadbalancerCols = append(applicationloadbalancerCols, col)
-			} else {
-				clierror.CheckError(errors.New("unknown column "+k), outErr)
-			}
-		}
-		return applicationloadbalancerCols
-	} else if viper.IsSet(argAll) {
-		// Add column which specifies which parent resource this belongs to, if using -a/--all flag
-		cols = append(defaultApplicationLoadBalancerCols[:constants.DefaultParentIndex+1], defaultApplicationLoadBalancerCols[constants.DefaultParentIndex:]...)
-		cols[constants.DefaultParentIndex] = "DatacenterId"
-		return cols
-	} else {
-		return defaultApplicationLoadBalancerCols
-	}
 }
 
 func getApplicationLoadBalancers(applicationloadbalancers resources.ApplicationLoadBalancers) []resources.ApplicationLoadBalancer {

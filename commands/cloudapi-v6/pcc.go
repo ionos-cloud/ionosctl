@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io"
 	"os"
 
 	"go.uber.org/multierr"
@@ -17,7 +16,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
-	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
@@ -478,7 +476,7 @@ func getPccPrint(resp *resources.Response, c *core.CommandConfig, pccs []resourc
 		if pccs != nil {
 			r.OutputJSON = pccs
 			r.KeyValue = getPccsKVMaps(pccs)
-			r.Columns = getPccCols(core.GetGlobalFlagName(c.Resource, constants.ArgCols), os.Stderr)
+			r.Columns = printer.GetHeadersAllDefault(defaultPccCols, viper.GetStringSlice(core.GetGlobalFlagName(c.Resource, constants.ArgCols)))
 		}
 	}
 	return r
@@ -500,57 +498,10 @@ func getPccPeerPrint(c *core.CommandConfig, pccs []resources.Peer) printer.Resul
 		if pccs != nil {
 			r.OutputJSON = pccs
 			r.KeyValue = getPccPeersKVMaps(pccs)
-			r.Columns = getPccPeersCols(core.GetGlobalFlagName(c.Resource, constants.ArgCols), os.Stderr)
+			r.Columns = printer.GetHeadersAllDefault(defaultPccPeersCols, viper.GetStringSlice(core.GetGlobalFlagName(c.Resource, constants.ArgCols)))
 		}
 	}
 	return r
-}
-
-func getPccPeersCols(flagName string, outErr io.Writer) []string {
-	if viper.IsSet(flagName) {
-		var pccCols []string
-		columnsMap := map[string]string{
-			"LanId":          "LanId",
-			"LanName":        "LanName",
-			"DatacenterId":   "DatacenterId",
-			"DatacenterName": "DatacenterName",
-			"Location":       "Location",
-		}
-		for _, k := range viper.GetStringSlice(flagName) {
-			col := columnsMap[k]
-			if col != "" {
-				pccCols = append(pccCols, col)
-			} else {
-				clierror.CheckError(errors.New("unknown column "+k), outErr)
-			}
-		}
-		return pccCols
-	} else {
-		return defaultPccPeersCols
-	}
-}
-
-func getPccCols(flagName string, outErr io.Writer) []string {
-	if viper.IsSet(flagName) {
-		var pccCols []string
-		columnsMap := map[string]string{
-			"PccId":       "PccId",
-			"Name":        "Name",
-			"Description": "Description",
-			"State":       "State",
-		}
-		for _, k := range viper.GetStringSlice(flagName) {
-			col := columnsMap[k]
-			if col != "" {
-				pccCols = append(pccCols, col)
-			} else {
-				clierror.CheckError(errors.New("unknown column "+k), outErr)
-			}
-		}
-		return pccCols
-	} else {
-		return defaultPccCols
-	}
 }
 
 func getPccs(pccs resources.PrivateCrossConnects) []resources.PrivateCrossConnect {

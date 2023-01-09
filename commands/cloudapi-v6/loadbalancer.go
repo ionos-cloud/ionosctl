@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io"
 	"os"
 	"strings"
 	"time"
@@ -19,7 +18,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
-	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 	"github.com/spf13/cobra"
@@ -491,47 +489,10 @@ func getLoadbalancerPrint(resp *resources.Response, c *core.CommandConfig, lbs [
 		if lbs != nil {
 			r.OutputJSON = lbs
 			r.KeyValue = getLoadbalancersKVMaps(lbs)
-			r.Columns = getLoadbalancersCols(
-				core.GetGlobalFlagName(c.Resource, constants.ArgCols),
-				core.GetFlagName(c.NS, cloudapiv6.ArgAll),
-				c.Printer.GetStderr(),
-			)
+			r.Columns = printer.GetHeadersListAll(allLoadbalancerCols, defaultLoadbalancerCols, "DatacenterId", viper.GetStringSlice(core.GetFlagName(c.NS, constants.ArgCols)), viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)))
 		}
 	}
 	return r
-}
-
-func getLoadbalancersCols(argCols string, argAll string, outErr io.Writer) []string {
-	var cols []string
-	if viper.IsSet(argCols) {
-		cols = viper.GetStringSlice(argCols)
-
-		columnsMap := map[string]string{
-			"LoadBalancerId": "LoadBalancerId",
-			"Name":           "Name",
-			"Dhcp":           "Dhcp",
-			"Ip":             "Ip",
-			"State":          "State",
-			"DatacenterId":   "DatacenterId",
-		}
-		var loadbalancerCols []string
-		for _, k := range cols {
-			col := columnsMap[k]
-			if col != "" {
-				loadbalancerCols = append(loadbalancerCols, col)
-			} else {
-				clierror.CheckError(errors.New("unknown column "+k), outErr)
-			}
-		}
-		return loadbalancerCols
-	} else if viper.IsSet(argAll) {
-		// Add column which specifies which parent resource this belongs to, if using -a/--all flag
-		cols = append(defaultLoadbalancerCols[:constants.DefaultParentIndex+1], defaultLoadbalancerCols[constants.DefaultParentIndex:]...)
-		cols[constants.DefaultParentIndex] = "DatacenterId"
-		return cols
-	} else {
-		return defaultLoadbalancerCols
-	}
 }
 
 func getLoadbalancers(loadbalancers resources.Loadbalancers) []resources.Loadbalancer {

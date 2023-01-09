@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io"
 	"os"
 
 	"go.uber.org/multierr"
@@ -17,7 +16,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
-	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
@@ -606,43 +604,10 @@ func getGroupPrint(resp *resources.Response, c *core.CommandConfig, groups []res
 		if groups != nil {
 			r.OutputJSON = groups
 			r.KeyValue = getGroupsKVMaps(groups)
-			r.Columns = getGroupCols(core.GetGlobalFlagName(c.Resource, constants.ArgCols), c.Printer.GetStderr())
+			r.Columns = printer.GetHeaders(allGroupCols, defaultGroupCols, viper.GetStringSlice(core.GetGlobalFlagName(c.Resource, constants.ArgCols)))
 		}
 	}
 	return r
-}
-
-func getGroupCols(flagName string, outErr io.Writer) []string {
-	if viper.IsSet(flagName) {
-		var groupCols []string
-		columnsMap := map[string]string{
-			"GroupId":                     "GroupId",
-			"Name":                        "Name",
-			"CreateDataCenter":            "CreateDataCenter",
-			"CreateSnapshot":              "CreateSnapshot",
-			"ReserveIp":                   "ReserveIp",
-			"AccessActivityLog":           "AccessActivityLog",
-			"CreatePcc":                   "CreatePcc",
-			"S3Privilege":                 "S3Privilege",
-			"CreateBackupUnit":            "CreateBackupUnit",
-			"CreateInternetAccess":        "CreateInternetAccess",
-			"CreateK8s":                   "CreateK8s",
-			"CreateFlowLog":               "CreateFlowLog",
-			"AccessAndManageMonitoring":   "AccessAndManageMonitoring",
-			"AccessAndManageCertificates": "AccessAndManageCertificates",
-		}
-		for _, k := range viper.GetStringSlice(flagName) {
-			col := columnsMap[k]
-			if col != "" {
-				groupCols = append(groupCols, col)
-			} else {
-				clierror.CheckError(errors.New("unknown column "+k), outErr)
-			}
-		}
-		return groupCols
-	} else {
-		return defaultGroupCols
-	}
 }
 
 func getGroups(groups resources.Groups) []resources.Group {
