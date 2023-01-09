@@ -40,6 +40,8 @@ func AskForConfirm(reader io.Reader, writer printer.PrintService, message string
 		return errors.New("unable to parse users input " + err.Error())
 	}
 
+	//TODO: when responding no should not return error with invalid user input
+
 	if answer != "y" && answer != "ye" && answer != "yes" {
 		return errors.New("invalid user input")
 	}

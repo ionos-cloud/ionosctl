@@ -35,6 +35,9 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
 
       - name: Run tests
+        env:
+          IONOS_USERNAME: ${{ secrets.IONOS_USERNAME_V6 }}
+          IONOS_PASSWORD: ${{ secrets.IONOS_PASSWORD_V6 }}
         run: make test
 
       - name: Build
