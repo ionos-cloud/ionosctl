@@ -2,7 +2,6 @@ package resources
 
 import (
 	"context"
-
 	"github.com/fatih/structs"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
@@ -232,7 +231,7 @@ func (s *groupsService) ListShares(groupId string, params ListQueryParams) (Grou
 		if params.OrderBy != nil {
 			req = req.OrderBy(*params.OrderBy)
 		}
-		if params.MaxResults != nil {
+		if *params.MaxResults != 0 {
 			req = req.MaxResults(*params.MaxResults)
 		}
 		if !structs.IsZero(params.QueryParams) {
