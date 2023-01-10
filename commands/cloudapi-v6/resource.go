@@ -151,6 +151,7 @@ func GroupResourceCmd() *core.Command {
 		CmdRun:     RunGroupResourceList,
 		InitClient: true,
 	})
+	listResources.AddInt32Flag(cloudapiv6.ArgMaxResults, cloudapiv6.ArgMaxResultsShort, cloudapiv6.DefaultMaxResults, cloudapiv6.ArgMaxResultsDescription)
 	listResources.AddStringSliceFlag(constants.ArgCols, "", defaultResourceCols, printer.ColsMessage(defaultResourceCols))
 	_ = listResources.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultResourceCols, cobra.ShellCompDirectiveNoFileComp
