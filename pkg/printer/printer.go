@@ -65,17 +65,17 @@ type JSONPrinter struct {
 	Stderr io.Writer
 }
 
-func (p *JSONPrinter) Print(v interface{}) error {
+func (p *JSONPrinter) write(out io.Writer, v interface{}) error {
 	switch v.(type) {
 	case Result:
 		result := v.(Result)
-		if err := result.PrintJSON(p.Stdout); err != nil {
+		if err := result.PrintJSON(out); err != nil {
 			return err
 		}
 	default:
 		var msg DefaultMsgPrint
 		msg.Message = v
-		err := WriteJSON(&msg, p.Stdout)
+		err := WriteJSON(&msg, out)
 		if err != nil {
 			return err
 		}
@@ -83,23 +83,12 @@ func (p *JSONPrinter) Print(v interface{}) error {
 	return nil
 }
 
-// Same as Print, but in Stderr
+func (p *JSONPrinter) Print(v interface{}) error {
+	return p.write(p.Stdout, v)
+}
+
 func (p *JSONPrinter) Warn(v interface{}) error {
-	switch v.(type) {
-	case Result:
-		result := v.(Result)
-		if err := result.PrintJSON(p.Stderr); err != nil {
-			return err
-		}
-	default:
-		var msg DefaultMsgPrint
-		msg.Message = v
-		err := WriteJSON(&msg, p.Stderr)
-		if err != nil {
-			return err
-		}
-	}
-	return nil
+	return p.write(p.Stderr, v)
 }
 
 func (p *JSONPrinter) Verbose(format string, a ...interface{}) {
@@ -137,20 +126,20 @@ type TextPrinter struct {
 	NoHeaders bool
 }
 
-func (p *TextPrinter) Print(v interface{}) error {
+func (p *TextPrinter) write(out io.Writer, v interface{}) error {
 	switch v.(type) {
 	case Result:
 		result := v.(Result)
-		if err := result.PrintText(p.Stdout, p.NoHeaders); err != nil {
+		if err := result.PrintText(out, p.NoHeaders); err != nil {
 			return err
 		}
 	case string:
 		v = strings.TrimRight(v.(string), "\n")
-		if _, err := fmt.Fprintf(p.Stdout, "%v\n", v); err != nil {
+		if _, err := fmt.Fprintf(out, "%v\n", v); err != nil {
 			return err
 		}
 	default:
-		_, err := fmt.Fprintf(p.Stdout, "%v\n", v)
+		_, err := fmt.Fprintf(out, "%v\n", v)
 		if err != nil {
 			return err
 		}
@@ -159,8 +148,12 @@ func (p *TextPrinter) Print(v interface{}) error {
 	return nil
 }
 
+func (p *TextPrinter) Print(v interface{}) error {
+	return p.write(p.Stdout, v)
+}
+
 func (p *TextPrinter) Warn(v interface{}) error {
-	return p.Print(v) // Only implemented for JsonPrinter
+	return p.write(p.Stderr, v)
 }
 
 func (p *TextPrinter) Verbose(format string, a ...interface{}) {
