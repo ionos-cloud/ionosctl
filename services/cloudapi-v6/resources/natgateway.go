@@ -2,7 +2,7 @@ package resources
 
 import (
 	"context"
-
+	"fmt"
 	"github.com/fatih/structs"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
@@ -123,6 +123,8 @@ func (ds *natGatewaysService) Create(datacenterId string, input NatGateway, para
 		}
 	}
 	datacenter, res, err := ds.client.NATGatewaysApi.DatacentersNatgatewaysPostExecute(req)
+	// datacenter var seems empty
+	fmt.Println(datacenter)
 	return &NatGateway{datacenter}, &Response{*res}, err
 }
 
