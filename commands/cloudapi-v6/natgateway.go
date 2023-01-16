@@ -408,7 +408,9 @@ func getNewNatGatewayInfo(c *core.CommandConfig) *resources.NatGatewayProperties
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgIps)) {
 		publicIps := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgIps))
-		input.SetPublicIps(publicIps)
+		publicIps[0] = strings.Trim(publicIps[0], "[]")
+		inIps := strings.Split(publicIps[0], ",")
+		input.SetPublicIps(inIps)
 		c.Printer.Verbose("Property PublicIps set: %v", publicIps)
 	}
 	return &resources.NatGatewayProperties{
