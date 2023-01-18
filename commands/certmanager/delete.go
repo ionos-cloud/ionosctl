@@ -3,12 +3,11 @@ package certmanager
 import (
 	"context"
 	"fmt"
-	"github.com/ionos-cloud/ionosctl/pkg/printer"
-	"github.com/spf13/cobra"
-
 	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
+	"github.com/ionos-cloud/ionosctl/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
+	"github.com/spf13/cobra"
 )
 
 func CertDeleteCmd() *core.Command {
@@ -26,6 +25,9 @@ func CertDeleteCmd() *core.Command {
 	})
 
 	cmd.AddStringFlag(FlagCertId, constants.FlagIdP, "", "Response delete a single certificate (required)")
+	_ = cmd.Command.RegisterFlagCompletionFunc(FlagCertId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return CertificatesIds(), cobra.ShellCompDirectiveNoFileComp
+	})
 	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Response delete all certificates")
 
 	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, printer.ColsMessage(allCols))
