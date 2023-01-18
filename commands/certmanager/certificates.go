@@ -4,16 +4,14 @@ import (
 	"context"
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
-	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
-	"github.com/ionos-cloud/ionosctl/services/certmanager/resources"
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
-	"io"
-
 	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
+	"github.com/ionos-cloud/ionosctl/pkg/utils"
+	"github.com/ionos-cloud/ionosctl/services/certmanager/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go-cert-manager"
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 func CertCmd() *core.Command {
@@ -95,23 +93,13 @@ func getCertRows(certs *[]ionoscloud.CertificateDto) []map[string]interface{} {
 
 var allCols = structs.Names(CertPrint{})
 
-func CertificatesIds(outErr io.Writer) []string {
-	client, err := getClient()
-	clierror.CheckError(err, outErr)
-	certSvc := resources.NewCertsService(client, context.Background())
-	certs, _, err := certSvc.List()
-	clierror.CheckError(err, outErr)
-	certIds := make([]string, 0)
-	if items, ok := certs.GetItemsOk(); ok && items != nil {
-		for _, item := range *items {
-			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
-				certIds = append(certIds, *itemId)
-			}
-		}
-	} else {
-		return nil
-	}
-	return certIds
+func CertificatesIds() []string {
+	client, _ := getClient()
+	svc := resources.NewCertsService(client, context.Background())
+	certs, _, _ := svc.List()
+	return utils.Map(*certs.GetItems(), func(i int, dto ionoscloud.CertificateDto) string {
+		return *dto.GetId()
+	})
 }
 
 // Get Client for Completion Functions
