@@ -180,8 +180,6 @@ func printText(out io.Writer, cols []string, keyValueMap []map[string]interface{
 		for _, col := range cols {
 			v := r[col]
 
-			values = append(values, v)
-
 			switch v.(type) {
 			case string:
 				formats = append(formats, "%s")
@@ -191,9 +189,15 @@ func printText(out io.Writer, cols []string, keyValueMap []map[string]interface{
 				formats = append(formats, "%f")
 			case bool:
 				formats = append(formats, "%v")
+			case []string:
+				formats = append(formats, "%s")
+				v = strings.Join(v.([]string), ",")
 			default:
 				formats = append(formats, "%v")
 			}
+
+			values = append(values, v)
+
 		}
 		format := strings.Join(formats, "\t")
 		_, err := fmt.Fprintf(w, format+"\n", values...)
