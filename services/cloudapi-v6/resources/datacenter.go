@@ -2,8 +2,8 @@ package resources
 
 import (
 	"context"
-
 	"github.com/fatih/structs"
+	"github.com/ionos-cloud/ionosctl/pkg/config"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
 
@@ -33,18 +33,25 @@ type DatacentersService interface {
 }
 
 type dataCentersService struct {
-	client  *Client
+	client  *config.Client
 	context context.Context
 }
 
 var _ DatacentersService = &dataCentersService{}
 
-func NewDataCenterService(client *Client, ctx context.Context) DatacentersService {
+func NewDataCenterService(client *config.Client, ctx context.Context) DatacentersService {
 	return &dataCentersService{
 		client:  client,
 		context: ctx,
 	}
 }
+
+//func NewDataCenterServices(client *config.Client, ctx context.Context) DatacentersService {
+//	return &dataCentersService{
+//		client:  client,
+//		context: ctx,
+//	}
+//}
 
 func (ds *dataCentersService) List(params ListQueryParams) (Datacenters, *Response, error) {
 	req := ds.client.DataCentersApi.DatacentersGet(ds.context)

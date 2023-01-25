@@ -2,6 +2,7 @@ package completer
 
 import (
 	"context"
+	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"io"
 
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
@@ -14,7 +15,7 @@ func DatacenterCPUFamilies(ctx context.Context, outErr io.Writer, datacenterId s
 	if datacenterId == "" {
 		return []string{"AMD_OPTERON", "INTEL_XEON", "INTEL_SKYLAKE"}
 	}
-	client, err := getClient()
+	client, err := config.GetClient()
 	clierror.CheckError(err, outErr)
 	dcSvc := resources.NewDataCenterService(client, ctx)
 	dc, _, err := dcSvc.Get(datacenterId, resources.QueryParams{})

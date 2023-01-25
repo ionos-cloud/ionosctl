@@ -2,6 +2,7 @@ package resources
 
 import (
 	"context"
+	"github.com/ionos-cloud/ionosctl/pkg/config"
 
 	"github.com/fatih/structs"
 
@@ -51,13 +52,13 @@ type LabelResourcesService interface {
 }
 
 type labelResourcesService struct {
-	client  *Client
+	client  *config.Client
 	context context.Context
 }
 
 var _ LabelResourcesService = &labelResourcesService{}
 
-func NewLabelResourceService(client *Client, ctx context.Context) LabelResourcesService {
+func NewLabelResourceService(client *config.Client, ctx context.Context) LabelResourcesService {
 	return &labelResourcesService{
 		client:  client,
 		context: ctx,

@@ -2,6 +2,7 @@ package resources
 
 import (
 	"context"
+	"github.com/ionos-cloud/ionosctl/pkg/config"
 
 	"github.com/fatih/structs"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
@@ -106,13 +107,13 @@ type K8sService interface {
 }
 
 type k8sService struct {
-	client  *Client
+	client  *config.Client
 	context context.Context
 }
 
 var _ K8sService = &k8sService{}
 
-func NewK8sService(client *Client, ctx context.Context) K8sService {
+func NewK8sService(client *config.Client, ctx context.Context) K8sService {
 	return &k8sService{
 		client:  client,
 		context: ctx,

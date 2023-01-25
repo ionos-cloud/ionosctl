@@ -2,6 +2,7 @@ package resources
 
 import (
 	"context"
+	"github.com/ionos-cloud/ionosctl/pkg/config"
 
 	"github.com/fatih/structs"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
@@ -30,13 +31,13 @@ type SnapshotsService interface {
 }
 
 type snapshotsService struct {
-	client  *Client
+	client  *config.Client
 	context context.Context
 }
 
 var _ SnapshotsService = &snapshotsService{}
 
-func NewSnapshotService(client *Client, ctx context.Context) SnapshotsService {
+func NewSnapshotService(client *config.Client, ctx context.Context) SnapshotsService {
 	return &snapshotsService{
 		client:  client,
 		context: ctx,

@@ -2,6 +2,7 @@ package resources
 
 import (
 	"context"
+	"github.com/ionos-cloud/ionosctl/pkg/config"
 
 	"github.com/fatih/structs"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
@@ -29,13 +30,13 @@ type FirewallRulesService interface {
 }
 
 type firewallRulesService struct {
-	client  *Client
+	client  *config.Client
 	context context.Context
 }
 
 var _ FirewallRulesService = &firewallRulesService{}
 
-func NewFirewallRuleService(client *Client, ctx context.Context) FirewallRulesService {
+func NewFirewallRuleService(client *config.Client, ctx context.Context) FirewallRulesService {
 	return &firewallRulesService{
 		client:  client,
 		context: ctx,

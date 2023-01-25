@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"strconv"
+	"sync"
 
 	"github.com/ionos-cloud/ionosctl/pkg/constants"
 
@@ -144,4 +145,71 @@ func configFileWriter() (io.WriteCloser, error) {
 		return nil, err
 	}
 	return f, nil
+}
+
+const depthQueryParam = int32(5)
+
+type Client struct {
+	sdk.APIClient
+}
+
+type ClientConfig struct {
+	sdk.Configuration
+}
+
+// ClientService is a wrapper around sdk.APIClient
+type ClientService interface {
+	Get() *Client
+	GetConfig() *ClientConfig
+}
+
+type clientService struct {
+	client *sdk.APIClient
+}
+
+func NewClientService(name, pwd, token, hostUrl string) (ClientService, error) {
+	if token == "" && (name == "" || pwd == "") {
+		return nil, errors.New("username, password or token incorrect")
+	}
+	clientConfig := sdk.NewConfiguration(name, pwd, token, hostUrl)
+	clientConfig.UserAgent = fmt.Sprintf("%v_%v", viper.GetString(CLIHttpUserAgent), clientConfig.UserAgent)
+	// Set Depth Query Parameter globally
+	clientConfig.SetDepth(depthQueryParam)
+	return &clientService{
+		client: sdk.NewAPIClient(clientConfig),
+	}, nil
+}
+
+func (c clientService) Get() *Client {
+	return &Client{
+		APIClient: *c.client,
+	}
+}
+
+func (c clientService) GetConfig() *ClientConfig {
+	return &ClientConfig{
+		Configuration: *c.client.GetConfig(),
+	}
+}
+
+var once sync.Once
+var instance ClientService
+
+func GetClientService() (ClientService, error) {
+	var err error
+	once.Do(func() {
+		instance, err = NewClientService(viper.GetString(Username), viper.GetString(Password), viper.GetString(Token), GetServerUrl())
+	})
+	if err != nil {
+		return nil, err
+	}
+	return instance, nil
+}
+
+func GetClient() (*Client, error) {
+	client, err := GetClientService()
+	if err != nil {
+		return nil, err
+	}
+	return client.Get(), nil
 }

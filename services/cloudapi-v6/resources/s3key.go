@@ -2,6 +2,7 @@ package resources
 
 import (
 	"context"
+	"github.com/ionos-cloud/ionosctl/pkg/config"
 
 	"github.com/fatih/structs"
 
@@ -26,13 +27,13 @@ type S3KeysService interface {
 }
 
 type s3KeysService struct {
-	client  *Client
+	client  *config.Client
 	context context.Context
 }
 
 var _ S3KeysService = &s3KeysService{}
 
-func NewS3KeyService(client *Client, ctx context.Context) S3KeysService {
+func NewS3KeyService(client *config.Client, ctx context.Context) S3KeysService {
 	return &s3KeysService{
 		client:  client,
 		context: ctx,

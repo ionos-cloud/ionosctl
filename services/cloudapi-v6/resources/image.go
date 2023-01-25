@@ -6,6 +6,7 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"fmt"
+	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"path/filepath"
 	"time"
 
@@ -54,13 +55,13 @@ type ImagesService interface {
 }
 
 type imagesService struct {
-	client  *Client
+	client  *config.Client
 	context context.Context
 }
 
 var _ ImagesService = &imagesService{}
 
-func NewImageService(client *Client, ctx context.Context) ImagesService {
+func NewImageService(client *config.Client, ctx context.Context) ImagesService {
 	return &imagesService{
 		client:  client,
 		context: ctx,

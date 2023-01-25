@@ -118,11 +118,7 @@ func NewCommandCfg(ctx context.Context, in io.Reader, p printer.PrintService, in
 				return err
 			}
 			// Init Clients and Services
-			computeClient, err := c.CloudApiV6Services.InitClient()
-			if err != nil {
-				return err
-			}
-			if err = c.CloudApiV6Services.InitServices(computeClient); err != nil {
+			if err := c.CloudApiV6Services.InitServices(); err != nil {
 				return err
 			}
 			authClient, err := c.AuthV1Services.InitClient()

@@ -2,6 +2,7 @@ package resources
 
 import (
 	"context"
+	"github.com/ionos-cloud/ionosctl/pkg/config"
 
 	"github.com/fatih/structs"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
@@ -37,13 +38,13 @@ type NicsService interface {
 }
 
 type nicsService struct {
-	client  *Client
+	client  *config.Client
 	context context.Context
 }
 
 var _ NicsService = &nicsService{}
 
-func NewNicService(client *Client, ctx context.Context) NicsService {
+func NewNicService(client *config.Client, ctx context.Context) NicsService {
 	return &nicsService{
 		client:  client,
 		context: ctx,

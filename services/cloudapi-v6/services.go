@@ -5,7 +5,6 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
-	"github.com/spf13/viper"
 )
 
 type Services struct {
@@ -40,24 +39,16 @@ type Services struct {
 	Context context.Context
 }
 
-// InitClient for Commands
-func (c *Services) InitClient() (*resources.Client, error) {
-	clientSvc, err := resources.NewClientService(
-		viper.GetString(config.Username),
-		viper.GetString(config.Password),
-		viper.GetString(config.Token), // Token support
-		config.GetServerUrl(),
-	)
-	if err != nil {
-		return nil, err
-	}
-	return clientSvc.Get(), nil
-}
-
 // InitServices for Commands
-func (c *Services) InitServices(client *resources.Client) error {
+func (c *Services) InitServices() error {
+	client, err := config.GetClient()
+	if err != nil {
+		return err
+	}
 	c.Locations = func() resources.LocationsService { return resources.NewLocationService(client, c.Context) }
-	c.DataCenters = func() resources.DatacentersService { return resources.NewDataCenterService(client, c.Context) }
+	c.DataCenters = func() resources.DatacentersService {
+		return resources.NewDataCenterService(client, c.Context)
+	}
 	c.Servers = func() resources.ServersService { return resources.NewServerService(client, c.Context) }
 	c.Volumes = func() resources.VolumesService { return resources.NewVolumeService(client, c.Context) }
 	c.Lans = func() resources.LansService { return resources.NewLanService(client, c.Context) }

@@ -2,6 +2,7 @@ package resources
 
 import (
 	"context"
+	"github.com/ionos-cloud/ionosctl/pkg/config"
 
 	"github.com/fatih/structs"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
@@ -33,13 +34,13 @@ type IpBlocksService interface {
 }
 
 type ipBlocksService struct {
-	client  *Client
+	client  *config.Client
 	context context.Context
 }
 
 var _ IpBlocksService = &ipBlocksService{}
 
-func NewIpBlockService(client *Client, ctx context.Context) IpBlocksService {
+func NewIpBlockService(client *config.Client, ctx context.Context) IpBlocksService {
 	return &ipBlocksService{
 		client:  client,
 		context: ctx,
