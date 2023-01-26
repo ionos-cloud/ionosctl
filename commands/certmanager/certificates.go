@@ -94,27 +94,10 @@ func getCertRows(certs *[]ionoscloud.CertificateDto) []map[string]interface{} {
 var allCols = structs.Names(CertPrint{})
 
 func CertificatesIds() []string {
-	client, _ := getClient()
+	client, _ := config.GetClient()
 	svc := resources.NewCertsService(client, context.Background())
 	certs, _, _ := svc.List()
 	return utils.Map(*certs.GetItems(), func(i int, dto ionoscloud.CertificateDto) string {
 		return *dto.GetId()
 	})
-}
-
-// Get Client for Completion Functions
-func getClient() (*resources.Client, error) {
-	if err := config.Load(); err != nil {
-		return nil, err
-	}
-	clientSvc, err := resources.NewClientService(
-		viper.GetString(config.Username),
-		viper.GetString(config.Password),
-		viper.GetString(config.Token),
-		config.GetServerUrl(),
-	)
-	if err != nil {
-		return nil, err
-	}
-	return clientSvc.Get(), nil
 }

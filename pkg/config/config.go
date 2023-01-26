@@ -14,7 +14,10 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/constants"
 
 	sdkgoauth "github.com/ionos-cloud/sdk-go-auth"
+	certmanager "github.com/ionos-cloud/sdk-go-cert-manager"
+	dbaas "github.com/ionos-cloud/sdk-go-dbaas-postgres"
 	cloudv6 "github.com/ionos-cloud/sdk-go/v6"
+
 	"github.com/spf13/viper"
 )
 
@@ -151,8 +154,10 @@ func configFileWriter() (io.WriteCloser, error) {
 const depthQueryParam = int32(5)
 
 type Client struct {
-	CloudClient *cloudv6.APIClient
-	AuthClient  *sdkgoauth.APIClient
+	CloudClient       *cloudv6.APIClient
+	AuthClient        *sdkgoauth.APIClient
+	CertManagerClient *certmanager.APIClient
+	DbaasClient       *dbaas.APIClient
 }
 
 func NewClient(name, pwd, token, hostUrl string) (*Client, error) {
@@ -166,7 +171,15 @@ func NewClient(name, pwd, token, hostUrl string) (*Client, error) {
 
 	authConfig := sdkgoauth.NewConfiguration(name, pwd, token, hostUrl)
 	authConfig.UserAgent = fmt.Sprintf("%v_%v", viper.GetString(CLIHttpUserAgent), authConfig.UserAgent)
-	return &Client{CloudClient: cloudv6.NewAPIClient(clientConfig), AuthClient: sdkgoauth.NewAPIClient(authConfig)}, nil
+
+	certManagerConfig := certmanager.NewConfiguration(name, pwd, token, hostUrl)
+	certManagerConfig.UserAgent = fmt.Sprintf("%v_%v", viper.GetString(CLIHttpUserAgent), certManagerConfig.UserAgent)
+
+	dbaasConfig := dbaas.NewConfiguration(name, pwd, token, hostUrl)
+	dbaasConfig.UserAgent = fmt.Sprintf("%v_%v", viper.GetString(CLIHttpUserAgent), dbaasConfig.UserAgent)
+
+	return &Client{CloudClient: cloudv6.NewAPIClient(clientConfig), AuthClient: sdkgoauth.NewAPIClient(authConfig),
+		CertManagerClient: certmanager.NewAPIClient(certManagerConfig), DbaasClient: dbaas.NewAPIClient(dbaasConfig)}, nil
 }
 
 var once sync.Once

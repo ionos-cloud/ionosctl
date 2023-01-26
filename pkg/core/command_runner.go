@@ -124,18 +124,12 @@ func NewCommandCfg(ctx context.Context, in io.Reader, p printer.PrintService, in
 			if err = c.AuthV1Services.InitServices(client); err != nil {
 				return err
 			}
-			dbaasPgsqlClient, err := c.CloudApiDbaasPgsqlServices.InitClient()
-			if err != nil {
+
+			if err = c.CloudApiDbaasPgsqlServices.InitServices(client); err != nil {
 				return err
 			}
-			if err = c.CloudApiDbaasPgsqlServices.InitServices(dbaasPgsqlClient); err != nil {
-				return err
-			}
-			certificateClient, err := c.CertificateManagerServices.InitClient()
-			if err != nil {
-				return err
-			}
-			if err = c.CertificateManagerServices.InitServices(certificateClient); err != nil {
+
+			if err = c.CertificateManagerServices.InitServices(client); err != nil {
 				return err
 			}
 			return nil
