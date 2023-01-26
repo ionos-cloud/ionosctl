@@ -55,7 +55,7 @@ type ImagesService interface {
 }
 
 type imagesService struct {
-	client  *config.Client
+	client  *ionoscloud.APIClient
 	context context.Context
 }
 
@@ -63,7 +63,7 @@ var _ ImagesService = &imagesService{}
 
 func NewImageService(client *config.Client, ctx context.Context) ImagesService {
 	return &imagesService{
-		client:  client,
+		client:  client.CloudClient,
 		context: ctx,
 	}
 }

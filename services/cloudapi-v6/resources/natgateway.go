@@ -55,7 +55,7 @@ type NatGatewaysService interface {
 }
 
 type natGatewaysService struct {
-	client  *config.Client
+	client  *ionoscloud.APIClient
 	context context.Context
 }
 
@@ -63,7 +63,7 @@ var _ NatGatewaysService = &natGatewaysService{}
 
 func NewNatGatewayService(client *config.Client, ctx context.Context) NatGatewaysService {
 	return &natGatewaysService{
-		client:  client,
+		client:  client.CloudClient,
 		context: ctx,
 	}
 }

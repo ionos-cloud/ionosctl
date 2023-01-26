@@ -33,7 +33,7 @@ type VolumesService interface {
 }
 
 type volumesService struct {
-	client  *config.Client
+	client  *ionoscloud.APIClient
 	context context.Context
 }
 
@@ -41,7 +41,7 @@ var _ VolumesService = &volumesService{}
 
 func NewVolumeService(client *config.Client, ctx context.Context) VolumesService {
 	return &volumesService{
-		client:  client,
+		client:  client.CloudClient,
 		context: ctx,
 	}
 }

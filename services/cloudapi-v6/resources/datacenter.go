@@ -33,7 +33,7 @@ type DatacentersService interface {
 }
 
 type dataCentersService struct {
-	client  *config.Client
+	client  *ionoscloud.APIClient
 	context context.Context
 }
 
@@ -41,7 +41,7 @@ var _ DatacentersService = &dataCentersService{}
 
 func NewDataCenterService(client *config.Client, ctx context.Context) DatacentersService {
 	return &dataCentersService{
-		client:  client,
+		client:  client.CloudClient,
 		context: ctx,
 	}
 }

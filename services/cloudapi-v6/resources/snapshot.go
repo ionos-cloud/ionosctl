@@ -31,7 +31,7 @@ type SnapshotsService interface {
 }
 
 type snapshotsService struct {
-	client  *config.Client
+	client  *ionoscloud.APIClient
 	context context.Context
 }
 
@@ -39,7 +39,7 @@ var _ SnapshotsService = &snapshotsService{}
 
 func NewSnapshotService(client *config.Client, ctx context.Context) SnapshotsService {
 	return &snapshotsService{
-		client:  client,
+		client:  client.CloudClient,
 		context: ctx,
 	}
 }

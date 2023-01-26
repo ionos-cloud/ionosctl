@@ -38,7 +38,7 @@ type NicsService interface {
 }
 
 type nicsService struct {
-	client  *config.Client
+	client  *ionoscloud.APIClient
 	context context.Context
 }
 
@@ -46,7 +46,7 @@ var _ NicsService = &nicsService{}
 
 func NewNicService(client *config.Client, ctx context.Context) NicsService {
 	return &nicsService{
-		client:  client,
+		client:  client.CloudClient,
 		context: ctx,
 	}
 }

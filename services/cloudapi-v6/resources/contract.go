@@ -23,7 +23,7 @@ type ContractsService interface {
 }
 
 type contractsService struct {
-	client  *config.Client
+	client  *ionoscloud.APIClient
 	context context.Context
 }
 
@@ -31,7 +31,7 @@ var _ ContractsService = &contractsService{}
 
 func NewContractService(client *config.Client, ctx context.Context) ContractsService {
 	return &contractsService{
-		client:  client,
+		client:  client.CloudClient,
 		context: ctx,
 	}
 }

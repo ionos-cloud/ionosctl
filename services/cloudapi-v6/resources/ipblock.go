@@ -34,7 +34,7 @@ type IpBlocksService interface {
 }
 
 type ipBlocksService struct {
-	client  *config.Client
+	client  *ionoscloud.APIClient
 	context context.Context
 }
 
@@ -42,7 +42,7 @@ var _ IpBlocksService = &ipBlocksService{}
 
 func NewIpBlockService(client *config.Client, ctx context.Context) IpBlocksService {
 	return &ipBlocksService{
-		client:  client,
+		client:  client.CloudClient,
 		context: ctx,
 	}
 }

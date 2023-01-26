@@ -58,7 +58,7 @@ type GroupsService interface {
 }
 
 type groupsService struct {
-	client  *config.Client
+	client  *ionoscloud.APIClient
 	context context.Context
 }
 
@@ -66,7 +66,7 @@ var _ GroupsService = &groupsService{}
 
 func NewGroupService(client *config.Client, ctx context.Context) GroupsService {
 	return &groupsService{
-		client:  client,
+		client:  client.CloudClient,
 		context: ctx,
 	}
 }

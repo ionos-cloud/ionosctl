@@ -68,7 +68,7 @@ type NetworkLoadBalancersService interface {
 }
 
 type networkLoadBalancersService struct {
-	client  *config.Client
+	client  *ionoscloud.APIClient
 	context context.Context
 }
 
@@ -76,7 +76,7 @@ var _ NetworkLoadBalancersService = &networkLoadBalancersService{}
 
 func NewNetworkLoadBalancerService(client *config.Client, ctx context.Context) NetworkLoadBalancersService {
 	return &networkLoadBalancersService{
-		client:  client,
+		client:  client.CloudClient,
 		context: ctx,
 	}
 }

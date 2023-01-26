@@ -57,7 +57,7 @@ type UsersService interface {
 }
 
 type usersService struct {
-	client  *config.Client
+	client  *ionoscloud.APIClient
 	context context.Context
 }
 
@@ -65,7 +65,7 @@ var _ UsersService = &usersService{}
 
 func NewUserService(client *config.Client, ctx context.Context) UsersService {
 	return &usersService{
-		client:  client,
+		client:  client.CloudClient,
 		context: ctx,
 	}
 }

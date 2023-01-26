@@ -30,7 +30,7 @@ type FirewallRulesService interface {
 }
 
 type firewallRulesService struct {
-	client  *config.Client
+	client  *ionoscloud.APIClient
 	context context.Context
 }
 
@@ -38,7 +38,7 @@ var _ FirewallRulesService = &firewallRulesService{}
 
 func NewFirewallRuleService(client *config.Client, ctx context.Context) FirewallRulesService {
 	return &firewallRulesService{
-		client:  client,
+		client:  client.CloudClient,
 		context: ctx,
 	}
 }

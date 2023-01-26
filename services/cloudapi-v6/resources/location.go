@@ -28,7 +28,7 @@ type LocationsService interface {
 }
 
 type locationsService struct {
-	client  *config.Client
+	client  *ionoscloud.APIClient
 	context context.Context
 }
 
@@ -36,7 +36,7 @@ var _ LocationsService = &locationsService{}
 
 func NewLocationService(client *config.Client, ctx context.Context) LocationsService {
 	return &locationsService{
-		client:  client,
+		client:  client.CloudClient,
 		context: ctx,
 	}
 }

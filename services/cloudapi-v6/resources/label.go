@@ -52,7 +52,7 @@ type LabelResourcesService interface {
 }
 
 type labelResourcesService struct {
-	client  *config.Client
+	client  *ionoscloud.APIClient
 	context context.Context
 }
 
@@ -60,7 +60,7 @@ var _ LabelResourcesService = &labelResourcesService{}
 
 func NewLabelResourceService(client *config.Client, ctx context.Context) LabelResourcesService {
 	return &labelResourcesService{
-		client:  client,
+		client:  client.CloudClient,
 		context: ctx,
 	}
 }

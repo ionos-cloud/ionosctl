@@ -13,7 +13,8 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/pkg/constants"
 
-	sdk "github.com/ionos-cloud/sdk-go/v6"
+	sdkgoauth "github.com/ionos-cloud/sdk-go-auth"
+	cloudv6 "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
 )
 
@@ -91,10 +92,10 @@ func LoadFile() error {
 // Load binds environment variables (IONOS_USERNAME, IONOS_PASSWORD) to viper, and attempts
 // to read config file for setting fallbacks for these newly-bound viper vars
 func Load() (err error) {
-	_ = viper.BindEnv(Username, sdk.IonosUsernameEnvVar)
-	_ = viper.BindEnv(Password, sdk.IonosPasswordEnvVar)
-	_ = viper.BindEnv(Token, sdk.IonosTokenEnvVar)
-	_ = viper.BindEnv(ServerUrl, sdk.IonosApiUrlEnvVar)
+	_ = viper.BindEnv(Username, cloudv6.IonosUsernameEnvVar)
+	_ = viper.BindEnv(Password, cloudv6.IonosPasswordEnvVar)
+	_ = viper.BindEnv(Token, cloudv6.IonosTokenEnvVar)
+	_ = viper.BindEnv(ServerUrl, cloudv6.IonosApiUrlEnvVar)
 
 	err = LoadFile() // Use config file as a fallback for any of the above variables. Could be used only for api-url
 
@@ -106,7 +107,7 @@ func Load() (err error) {
 	}
 
 	return fmt.Errorf("%w: Please export %s, or %s and %s, or do ionosctl login to generate a config file",
-		err, sdk.IonosTokenEnvVar, sdk.IonosUsernameEnvVar, sdk.IonosPasswordEnvVar)
+		err, cloudv6.IonosTokenEnvVar, cloudv6.IonosUsernameEnvVar, cloudv6.IonosPasswordEnvVar)
 }
 
 func WriteFile() error {
@@ -150,66 +151,35 @@ func configFileWriter() (io.WriteCloser, error) {
 const depthQueryParam = int32(5)
 
 type Client struct {
-	sdk.APIClient
+	CloudClient *cloudv6.APIClient
+	AuthClient  *sdkgoauth.APIClient
 }
 
-type ClientConfig struct {
-	sdk.Configuration
-}
-
-// ClientService is a wrapper around sdk.APIClient
-type ClientService interface {
-	Get() *Client
-	GetConfig() *ClientConfig
-}
-
-type clientService struct {
-	client *sdk.APIClient
-}
-
-func NewClientService(name, pwd, token, hostUrl string) (ClientService, error) {
+func NewClient(name, pwd, token, hostUrl string) (*Client, error) {
 	if token == "" && (name == "" || pwd == "") {
 		return nil, errors.New("username, password or token incorrect")
 	}
-	clientConfig := sdk.NewConfiguration(name, pwd, token, hostUrl)
+	clientConfig := cloudv6.NewConfiguration(name, pwd, token, hostUrl)
 	clientConfig.UserAgent = fmt.Sprintf("%v_%v", viper.GetString(CLIHttpUserAgent), clientConfig.UserAgent)
 	// Set Depth Query Parameter globally
 	clientConfig.SetDepth(depthQueryParam)
-	return &clientService{
-		client: sdk.NewAPIClient(clientConfig),
-	}, nil
-}
 
-func (c clientService) Get() *Client {
-	return &Client{
-		APIClient: *c.client,
-	}
-}
-
-func (c clientService) GetConfig() *ClientConfig {
-	return &ClientConfig{
-		Configuration: *c.client.GetConfig(),
-	}
+	authConfig := sdkgoauth.NewConfiguration(name, pwd, token, hostUrl)
+	authConfig.UserAgent = fmt.Sprintf("%v_%v", viper.GetString(CLIHttpUserAgent), authConfig.UserAgent)
+	return &Client{CloudClient: cloudv6.NewAPIClient(clientConfig), AuthClient: sdkgoauth.NewAPIClient(authConfig)}, nil
 }
 
 var once sync.Once
-var instance ClientService
+var instance *Client
 
-func GetClientService() (ClientService, error) {
+func GetClient() (*Client, error) {
 	var err error
 	once.Do(func() {
-		instance, err = NewClientService(viper.GetString(Username), viper.GetString(Password), viper.GetString(Token), GetServerUrl())
+		err = Load()
+		instance, err = NewClient(viper.GetString(Username), viper.GetString(Password), viper.GetString(Token), GetServerUrl())
 	})
 	if err != nil {
 		return nil, err
 	}
 	return instance, nil
-}
-
-func GetClient() (*Client, error) {
-	client, err := GetClientService()
-	if err != nil {
-		return nil, err
-	}
-	return client.Get(), nil
 }

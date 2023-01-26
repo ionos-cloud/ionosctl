@@ -59,6 +59,7 @@ func DataCentersIds(outErr io.Writer) []string {
 	clierror.CheckError(err, outErr)
 	dcIds := make([]string, 0)
 	if items, ok := datacenters.Datacenters.GetItemsOk(); ok && items != nil {
+
 		for _, item := range *items {
 			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
 				dcIds = append(dcIds, *itemId)

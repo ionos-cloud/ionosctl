@@ -35,7 +35,7 @@ type PccsService interface {
 }
 
 type pccsService struct {
-	client  *config.Client
+	client  *ionoscloud.APIClient
 	context context.Context
 }
 
@@ -43,7 +43,7 @@ var _ PccsService = &pccsService{}
 
 func NewPrivateCrossConnectService(client *config.Client, ctx context.Context) PccsService {
 	return &pccsService{
-		client:  client,
+		client:  client.CloudClient,
 		context: ctx,
 	}
 }

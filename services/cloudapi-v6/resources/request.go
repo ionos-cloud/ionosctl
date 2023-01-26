@@ -29,7 +29,7 @@ type RequestsService interface {
 }
 
 type requestsService struct {
-	client  *config.Client
+	client  *ionoscloud.APIClient
 	context context.Context
 }
 
@@ -37,7 +37,7 @@ var _ RequestsService = &requestsService{}
 
 func NewRequestService(client *config.Client, ctx context.Context) RequestsService {
 	return &requestsService{
-		client:  client,
+		client:  client.CloudClient,
 		context: ctx,
 	}
 }

@@ -27,7 +27,7 @@ type TemplatesService interface {
 }
 
 type templatesService struct {
-	client  *config.Client
+	client  *ionoscloud.APIClient
 	context context.Context
 }
 
@@ -35,7 +35,7 @@ var _ TemplatesService = &templatesService{}
 
 func NewTemplateService(client *config.Client, ctx context.Context) TemplatesService {
 	return &templatesService{
-		client:  client,
+		client:  client.CloudClient,
 		context: ctx,
 	}
 }

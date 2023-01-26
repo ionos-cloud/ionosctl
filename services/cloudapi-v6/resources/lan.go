@@ -38,7 +38,7 @@ type LansService interface {
 }
 
 type lansService struct {
-	client  *config.Client
+	client  *ionoscloud.APIClient
 	context context.Context
 }
 
@@ -46,7 +46,7 @@ var _ LansService = &lansService{}
 
 func NewLanService(client *config.Client, ctx context.Context) LansService {
 	return &lansService{
-		client:  client,
+		client:  client.CloudClient,
 		context: ctx,
 	}
 }

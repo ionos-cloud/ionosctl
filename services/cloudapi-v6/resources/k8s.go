@@ -107,7 +107,7 @@ type K8sService interface {
 }
 
 type k8sService struct {
-	client  *config.Client
+	client  *ionoscloud.APIClient
 	context context.Context
 }
 
@@ -115,7 +115,7 @@ var _ K8sService = &k8sService{}
 
 func NewK8sService(client *config.Client, ctx context.Context) K8sService {
 	return &k8sService{
-		client:  client,
+		client:  client.CloudClient,
 		context: ctx,
 	}
 }

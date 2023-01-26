@@ -35,7 +35,7 @@ type BackupUnitsService interface {
 }
 
 type backupUnitsService struct {
-	client  *config.Client
+	client  *ionoscloud.APIClient
 	context context.Context
 }
 
@@ -43,7 +43,7 @@ var _ BackupUnitsService = &backupUnitsService{}
 
 func NewBackupUnitService(client *config.Client, ctx context.Context) BackupUnitsService {
 	return &backupUnitsService{
-		client:  client,
+		client:  client.CloudClient,
 		context: ctx,
 	}
 }

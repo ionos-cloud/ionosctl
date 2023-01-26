@@ -34,7 +34,7 @@ type FlowLogsService interface {
 }
 
 type flowLogsService struct {
-	client  *config.Client
+	client  *ionoscloud.APIClient
 	context context.Context
 }
 
@@ -42,7 +42,7 @@ var _ FlowLogsService = &flowLogsService{}
 
 func NewFlowLogService(client *config.Client, ctx context.Context) FlowLogsService {
 	return &flowLogsService{
-		client:  client,
+		client:  client.CloudClient,
 		context: ctx,
 	}
 }

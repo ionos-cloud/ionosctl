@@ -40,11 +40,7 @@ type Services struct {
 }
 
 // InitServices for Commands
-func (c *Services) InitServices() error {
-	client, err := config.GetClient()
-	if err != nil {
-		return err
-	}
+func (c *Services) InitServices(client *config.Client) error {
 	c.Locations = func() resources.LocationsService { return resources.NewLocationService(client, c.Context) }
 	c.DataCenters = func() resources.DatacentersService {
 		return resources.NewDataCenterService(client, c.Context)
