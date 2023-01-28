@@ -160,7 +160,7 @@ type Client struct {
 	DbaasClient       *dbaas.APIClient
 }
 
-func NewClient(name, pwd, token, hostUrl string) (*Client, error) {
+func newClient(name, pwd, token, hostUrl string) (*Client, error) {
 	if token == "" && (name == "" || pwd == "") {
 		return nil, errors.New("username, password or token incorrect")
 	}
@@ -189,10 +189,34 @@ func GetClient() (*Client, error) {
 	var err error
 	once.Do(func() {
 		err = Load()
-		instance, err = NewClient(viper.GetString(Username), viper.GetString(Password), viper.GetString(Token), GetServerUrl())
+		instance, err = newClient(viper.GetString(Username), viper.GetString(Password), viper.GetString(Token), GetServerUrl())
 	})
 	if err != nil {
 		return nil, err
 	}
 	return instance, nil
+}
+
+
+// function used only for tests
+func NewTestClient(name, pwd, token, hostUrl string) (*Client, error) {
+	if token == "" && (name == "" || pwd == "") {
+		return nil, errors.New("username, password or token incorrect")
+	}
+	clientConfig := cloudv6.NewConfiguration(name, pwd, token, hostUrl)
+	clientConfig.UserAgent = fmt.Sprintf("%v_%v", viper.GetString(CLIHttpUserAgent), clientConfig.UserAgent)
+	// Set Depth Query Parameter globally
+	clientConfig.SetDepth(depthQueryParam)
+
+	authConfig := sdkgoauth.NewConfiguration(name, pwd, token, hostUrl)
+	authConfig.UserAgent = fmt.Sprintf("%v_%v", viper.GetString(CLIHttpUserAgent), authConfig.UserAgent)
+
+	certManagerConfig := certmanager.NewConfiguration(name, pwd, token, hostUrl)
+	certManagerConfig.UserAgent = fmt.Sprintf("%v_%v", viper.GetString(CLIHttpUserAgent), certManagerConfig.UserAgent)
+
+	dbaasConfig := dbaas.NewConfiguration(name, pwd, token, hostUrl)
+	dbaasConfig.UserAgent = fmt.Sprintf("%v_%v", viper.GetString(CLIHttpUserAgent), dbaasConfig.UserAgent)
+
+	return &Client{CloudClient: cloudv6.NewAPIClient(clientConfig), AuthClient: sdkgoauth.NewAPIClient(authConfig),
+		CertManagerClient: certmanager.NewAPIClient(certManagerConfig), DbaasClient: dbaas.NewAPIClient(dbaasConfig)}, nil
 }

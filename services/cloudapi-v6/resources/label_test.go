@@ -150,7 +150,7 @@ func TestNewLabelResourceService(t *testing.T) {
 }
 
 func getTestClient(t *testing.T) *config.Client {
-	svc, err := config.NewClient("user", "pass", "", constants.DefaultApiURL)
+	svc, err := config.NewTestClient("user", "pass", "", constants.DefaultApiURL)
 	assert.NotNil(t, svc)
 	assert.NoError(t, err)
 	assert.Equal(t, "user", svc.CloudClient.GetConfig().Username)

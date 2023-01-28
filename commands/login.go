@@ -114,12 +114,7 @@ func RunLoginUser(c *core.CommandConfig) error {
 	}
 	c.Printer.Verbose("ServerUrl: %s", config.GetServerUrl())
 	viper.Set(config.ServerUrl, viper.GetString(constants.ArgServerUrl))
-	client, err := config.NewClient(
-		viper.GetString(config.Username),
-		viper.GetString(config.Password),
-		viper.GetString(config.Token),
-		config.GetServerUrl(),
-	)
+	client, err := config.GetClient()
 	if err != nil {
 		return err
 	}

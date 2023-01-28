@@ -9,24 +9,24 @@ import (
 
 func TestNewClientService(t *testing.T) {
 	t.Run("no credentials", func(t *testing.T) {
-		svc, err := config.NewClient("needspassword", "", "", "url")
+		svc, err := config.NewTestClient("needspassword", "", "", "url")
 		assert.Nil(t, svc)
 		assert.EqualError(t, err, "username, password or token incorrect")
 	})
 
 	t.Run("success", func(t *testing.T) {
-		svc, err := config.NewClient("", "", "token", "url")
+		svc, err := config.NewTestClient("", "", "token", "url")
 		assert.NotNil(t, svc)
 		assert.NoError(t, err)
 		assert.Equal(t, "token", svc.CloudClient.GetConfig().Token)
 
-		svc, err = config.NewClient("user", "pass", "", "url")
+		svc, err = config.NewTestClient("user", "pass", "", "url")
 		assert.NotNil(t, svc)
 		assert.NoError(t, err)
 		assert.Equal(t, "user", svc.CloudClient.GetConfig().Username)
 		assert.Equal(t, "pass", svc.CloudClient.GetConfig().Password)
 
-		svc, err = config.NewClient("user", "pass", "", "")
+		svc, err = config.NewTestClient("user", "pass", "", "")
 		assert.NotNil(t, svc)
 		assert.NoError(t, err)
 		assert.Equal(t, "user", svc.CloudClient.GetConfig().Username)

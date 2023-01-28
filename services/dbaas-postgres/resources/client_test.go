@@ -10,22 +10,22 @@ import (
 
 func TestNewClientService(t *testing.T) {
 	t.Run("no credentials", func(t *testing.T) {
-		svc, err := config.NewClient("", "", "", "")
+		svc, err := config.NewTestClient("", "", "", "")
 		assert.Nil(t, svc)
 		assert.EqualError(t, err, "username, password or token incorrect")
 
-		svc, err = config.NewClient("needspassword", "", "", "url")
+		svc, err = config.NewTestClient("needspassword", "", "", "url")
 		assert.Nil(t, svc)
 		assert.EqualError(t, err, "username, password or token incorrect")
 	})
 
 	t.Run("success", func(t *testing.T) {
-		svc, err := config.NewClient("", "", "token", "url")
+		svc, err := config.NewTestClient("", "", "token", "url")
 		assert.NotNil(t, svc)
 		assert.NoError(t, err)
 		assert.Equal(t, "token", svc.DbaasClient.GetConfig().Token)
 
-		svc, err = config.NewClient("user", "pass", "", "url")
+		svc, err = config.NewTestClient("user", "pass", "", "url")
 		assert.NotNil(t, svc)
 		assert.NoError(t, err)
 		assert.Equal(t, "user", svc.DbaasClient.GetConfig().Username)
@@ -34,7 +34,7 @@ func TestNewClientService(t *testing.T) {
 }
 
 func getTestClient(t *testing.T) *config.Client {
-	svc, err := config.NewClient("user", "pass", "", constants.DefaultApiURL)
+	svc, err := config.NewTestClient("user", "pass", "", constants.DefaultApiURL)
 	assert.NotNil(t, svc)
 	assert.NoError(t, err)
 	assert.Equal(t, "user", svc.DbaasClient.GetConfig().Username)
