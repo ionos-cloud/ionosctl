@@ -47,7 +47,7 @@ github.com/ionos-cloud/sdk-go-auth
 # github.com/ionos-cloud/sdk-go-dbaas-postgres v1.0.4
 ## explicit; go 1.17
 github.com/ionos-cloud/sdk-go-dbaas-postgres
-# github.com/ionos-cloud/sdk-go/v6 v6.1.3
+# github.com/ionos-cloud/sdk-go/v6 v6.1.4
 ## explicit; go 1.17
 github.com/ionos-cloud/sdk-go/v6
 # github.com/kardianos/ftps v1.0.3
