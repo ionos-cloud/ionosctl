@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"os"
 	"path/filepath"
@@ -222,4 +223,50 @@ func TestLoadEnvFallback(t *testing.T) {
 	assert.Equal(t, "pass", viper.GetString(Password))
 	assert.Equal(t, "token", viper.GetString(Token))
 	assert.Equal(t, "url", viper.GetString(ServerUrl))
+}
+
+func Test_newClient(t *testing.T) {
+	type args struct {
+		name    string
+		pwd     string
+		token   string
+		hostUrl string
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    *Client
+		wantErr assert.ErrorAssertionFunc
+	}{
+		// TODO: Add test cases.
+
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := newClient(tt.args.name, tt.args.pwd, tt.args.token, tt.args.hostUrl)
+			if !tt.wantErr(t, err, fmt.Sprintf("newClient(%v, %v, %v, %v)", tt.args.name, tt.args.pwd, tt.args.token, tt.args.hostUrl)) {
+				return
+			}
+			assert.Equalf(t, tt.want, got, "newClient(%v, %v, %v, %v)", tt.args.name, tt.args.pwd, tt.args.token, tt.args.hostUrl)
+		})
+	}
+}
+
+func TestGetClient(t *testing.T) {
+	tests := []struct {
+		name    string
+		want    *Client
+		wantErr assert.ErrorAssertionFunc
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := GetClient()
+			if !tt.wantErr(t, err, fmt.Sprintf("GetClient()")) {
+				return
+			}
+			assert.Equalf(t, tt.want, got, "GetClient()")
+		})
+	}
 }
