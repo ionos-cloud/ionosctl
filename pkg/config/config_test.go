@@ -1,7 +1,6 @@
 package config
 
 import (
-	"fmt"
 	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"os"
 	"path/filepath"
@@ -225,7 +224,7 @@ func TestLoadEnvFallback(t *testing.T) {
 	assert.Equal(t, "url", viper.GetString(ServerUrl))
 }
 
-func Test_newClient(t *testing.T) {
+func TestGetClient(t *testing.T) {
 	type args struct {
 		name    string
 		pwd     string
@@ -234,39 +233,31 @@ func Test_newClient(t *testing.T) {
 	}
 	tests := []struct {
 		name    string
+		runs    int
 		args    args
 		want    *Client
-		wantErr assert.ErrorAssertionFunc
+		wantErr bool
 	}{
-		// TODO: Add test cases.
-
+		{"MissingCredentials", 1, args{"", "", "", ""}, nil, true},
+		{"MultipleGetClients", 4, args{"user", "pass", "token", "url"}, instance, false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := newClient(tt.args.name, tt.args.pwd, tt.args.token, tt.args.hostUrl)
-			if !tt.wantErr(t, err, fmt.Sprintf("newClient(%v, %v, %v, %v)", tt.args.name, tt.args.pwd, tt.args.token, tt.args.hostUrl)) {
-				return
-			}
-			assert.Equalf(t, tt.want, got, "newClient(%v, %v, %v, %v)", tt.args.name, tt.args.pwd, tt.args.token, tt.args.hostUrl)
-		})
-	}
-}
+			os.Clearenv()
+			viper.Reset()
 
-func TestGetClient(t *testing.T) {
-	tests := []struct {
-		name    string
-		want    *Client
-		wantErr assert.ErrorAssertionFunc
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got, err := GetClient()
-			if !tt.wantErr(t, err, fmt.Sprintf("GetClient()")) {
-				return
+			assert.NoError(t, os.Setenv(sdk.IonosUsernameEnvVar, tt.args.name))
+			assert.NoError(t, os.Setenv(sdk.IonosPasswordEnvVar, tt.args.pwd))
+			assert.NoError(t, os.Setenv(sdk.IonosTokenEnvVar, tt.args.token))
+			assert.NoError(t, os.Setenv(sdk.IonosApiUrlEnvVar, tt.args.hostUrl))
+
+			for i := 0; i < tt.runs; i++ {
+				client, err := GetClient()
+				if !tt.wantErr && err != nil {
+					t.Errorf("Did not expect error: %v", err)
+				}
+				assert.Equalf(t, tt.want, client, "newClient(%v, %v, %v, %v)", tt.args.name, tt.args.pwd, tt.args.token, tt.args.hostUrl)
 			}
-			assert.Equalf(t, tt.want, got, "GetClient()")
 		})
 	}
 }
