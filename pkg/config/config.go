@@ -197,8 +197,8 @@ func GetClient() (*Client, error) {
 	return instance, nil
 }
 
-
-// function used only for tests
+// NewTestClient - function used only for tests
+// TO BE REMOVED ONCE TESTS ARE REFACTORED
 func NewTestClient(name, pwd, token, hostUrl string) (*Client, error) {
 	if token == "" && (name == "" || pwd == "") {
 		return nil, errors.New("username, password or token incorrect")
