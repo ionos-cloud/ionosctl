@@ -14,19 +14,19 @@ func TestNewLogsService(t *testing.T) {
 	ctx := context.Background()
 	t.Run("get_logs_error", func(t *testing.T) {
 		svc := getTestClient(t)
-		infoUnitSvc := NewLogsService(svc.Get(), ctx)
+		infoUnitSvc := NewLogsService(svc, ctx)
 		_, _, err := infoUnitSvc.Get(testLogsResourceVar, &LogsQueryParams{})
 		assert.Error(t, err)
 	})
 	t.Run("get_logs_nil_query_error", func(t *testing.T) {
 		svc := getTestClient(t)
-		infoUnitSvc := NewLogsService(svc.Get(), ctx)
+		infoUnitSvc := NewLogsService(svc, ctx)
 		_, _, err := infoUnitSvc.Get(testLogsResourceVar, nil)
 		assert.Error(t, err)
 	})
 	t.Run("get_logs_query_error", func(t *testing.T) {
 		svc := getTestClient(t)
-		infoUnitSvc := NewLogsService(svc.Get(), ctx)
+		infoUnitSvc := NewLogsService(svc, ctx)
 		_, _, err := infoUnitSvc.Get(testLogsResourceVar, &LogsQueryParams{
 			Direction: "",
 			Limit:     10,

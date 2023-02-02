@@ -3,6 +3,7 @@ package resources
 import (
 	"context"
 	"github.com/fatih/structs"
+	"github.com/ionos-cloud/ionosctl/pkg/config"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
 
@@ -57,15 +58,15 @@ type GroupsService interface {
 }
 
 type groupsService struct {
-	client  *Client
+	client  *ionoscloud.APIClient
 	context context.Context
 }
 
 var _ GroupsService = &groupsService{}
 
-func NewGroupService(client *Client, ctx context.Context) GroupsService {
+func NewGroupService(client *config.Client, ctx context.Context) GroupsService {
 	return &groupsService{
-		client:  client,
+		client:  client.CloudClient,
 		context: ctx,
 	}
 }

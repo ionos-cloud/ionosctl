@@ -15,7 +15,7 @@ func TestNewFirewallRuleService(t *testing.T) {
 	ctx := context.Background()
 	t.Run("list_firewallrules_error", func(t *testing.T) {
 		svc := getTestClient(t)
-		firewallruleSvc := NewFirewallRuleService(svc.Get(), ctx)
+		firewallruleSvc := NewFirewallRuleService(svc, ctx)
 		_, _, err := firewallruleSvc.List(
 			testFirewallRuleResourceVar,
 			testFirewallRuleResourceVar,
@@ -26,7 +26,7 @@ func TestNewFirewallRuleService(t *testing.T) {
 	})
 	t.Run("list_firewallrules_filters_error", func(t *testing.T) {
 		svc := getTestClient(t)
-		firewallruleSvc := NewFirewallRuleService(svc.Get(), ctx)
+		firewallruleSvc := NewFirewallRuleService(svc, ctx)
 		_, _, err := firewallruleSvc.List(
 			testFirewallRuleResourceVar,
 			testFirewallRuleResourceVar,
@@ -37,7 +37,7 @@ func TestNewFirewallRuleService(t *testing.T) {
 	})
 	t.Run("get_firewallrule_error", func(t *testing.T) {
 		svc := getTestClient(t)
-		firewallruleSvc := NewFirewallRuleService(svc.Get(), ctx)
+		firewallruleSvc := NewFirewallRuleService(svc, ctx)
 		_, _, err := firewallruleSvc.Get(
 			testFirewallRuleResourceVar,
 			testFirewallRuleResourceVar,
@@ -49,7 +49,7 @@ func TestNewFirewallRuleService(t *testing.T) {
 	})
 	t.Run("create_firewallrule_error", func(t *testing.T) {
 		svc := getTestClient(t)
-		firewallruleSvc := NewFirewallRuleService(svc.Get(), ctx)
+		firewallruleSvc := NewFirewallRuleService(svc, ctx)
 		_, _, err := firewallruleSvc.Create(
 			testFirewallRuleResourceVar,
 			testFirewallRuleResourceVar,
@@ -61,7 +61,7 @@ func TestNewFirewallRuleService(t *testing.T) {
 	})
 	t.Run("update_firewallrule_error", func(t *testing.T) {
 		svc := getTestClient(t)
-		firewallruleSvc := NewFirewallRuleService(svc.Get(), ctx)
+		firewallruleSvc := NewFirewallRuleService(svc, ctx)
 		_, _, err := firewallruleSvc.Update(
 			testFirewallRuleResourceVar,
 			testFirewallRuleResourceVar,
@@ -74,7 +74,7 @@ func TestNewFirewallRuleService(t *testing.T) {
 	})
 	t.Run("delete_firewallrule_error", func(t *testing.T) {
 		svc := getTestClient(t)
-		firewallruleSvc := NewFirewallRuleService(svc.Get(), ctx)
+		firewallruleSvc := NewFirewallRuleService(svc, ctx)
 		_, err := firewallruleSvc.Delete(
 			testFirewallRuleResourceVar,
 			testFirewallRuleResourceVar,

@@ -9,10 +9,15 @@ import (
 	"path/filepath"
 	"runtime"
 	"strconv"
+	"sync"
 
 	"github.com/ionos-cloud/ionosctl/pkg/constants"
 
-	sdk "github.com/ionos-cloud/sdk-go/v6"
+	sdkgoauth "github.com/ionos-cloud/sdk-go-auth"
+	certmanager "github.com/ionos-cloud/sdk-go-cert-manager"
+	dbaas "github.com/ionos-cloud/sdk-go-dbaas-postgres"
+	cloudv6 "github.com/ionos-cloud/sdk-go/v6"
+
 	"github.com/spf13/viper"
 )
 
@@ -90,10 +95,10 @@ func LoadFile() error {
 // Load binds environment variables (IONOS_USERNAME, IONOS_PASSWORD) to viper, and attempts
 // to read config file for setting fallbacks for these newly-bound viper vars
 func Load() (err error) {
-	_ = viper.BindEnv(Username, sdk.IonosUsernameEnvVar)
-	_ = viper.BindEnv(Password, sdk.IonosPasswordEnvVar)
-	_ = viper.BindEnv(Token, sdk.IonosTokenEnvVar)
-	_ = viper.BindEnv(ServerUrl, sdk.IonosApiUrlEnvVar)
+	_ = viper.BindEnv(Username, cloudv6.IonosUsernameEnvVar)
+	_ = viper.BindEnv(Password, cloudv6.IonosPasswordEnvVar)
+	_ = viper.BindEnv(Token, cloudv6.IonosTokenEnvVar)
+	_ = viper.BindEnv(ServerUrl, cloudv6.IonosApiUrlEnvVar)
 
 	err = LoadFile() // Use config file as a fallback for any of the above variables. Could be used only for api-url
 
@@ -105,7 +110,7 @@ func Load() (err error) {
 	}
 
 	return fmt.Errorf("%w: Please export %s, or %s and %s, or do ionosctl login to generate a config file",
-		err, sdk.IonosTokenEnvVar, sdk.IonosUsernameEnvVar, sdk.IonosPasswordEnvVar)
+		err, cloudv6.IonosTokenEnvVar, cloudv6.IonosUsernameEnvVar, cloudv6.IonosPasswordEnvVar)
 }
 
 func WriteFile() error {
@@ -144,4 +149,74 @@ func configFileWriter() (io.WriteCloser, error) {
 		return nil, err
 	}
 	return f, nil
+}
+
+const depthQueryParam = int32(5)
+
+type Client struct {
+	CloudClient       *cloudv6.APIClient
+	AuthClient        *sdkgoauth.APIClient
+	CertManagerClient *certmanager.APIClient
+	DbaasClient       *dbaas.APIClient
+}
+
+func newClient(name, pwd, token, hostUrl string) (*Client, error) {
+	if token == "" && (name == "" || pwd == "") {
+		return nil, errors.New("username, password or token incorrect")
+	}
+	clientConfig := cloudv6.NewConfiguration(name, pwd, token, hostUrl)
+	clientConfig.UserAgent = fmt.Sprintf("%v_%v", viper.GetString(CLIHttpUserAgent), clientConfig.UserAgent)
+	// Set Depth Query Parameter globally
+	clientConfig.SetDepth(depthQueryParam)
+
+	authConfig := sdkgoauth.NewConfiguration(name, pwd, token, hostUrl)
+	authConfig.UserAgent = fmt.Sprintf("%v_%v", viper.GetString(CLIHttpUserAgent), authConfig.UserAgent)
+
+	certManagerConfig := certmanager.NewConfiguration(name, pwd, token, hostUrl)
+	certManagerConfig.UserAgent = fmt.Sprintf("%v_%v", viper.GetString(CLIHttpUserAgent), certManagerConfig.UserAgent)
+
+	dbaasConfig := dbaas.NewConfiguration(name, pwd, token, hostUrl)
+	dbaasConfig.UserAgent = fmt.Sprintf("%v_%v", viper.GetString(CLIHttpUserAgent), dbaasConfig.UserAgent)
+
+	return &Client{CloudClient: cloudv6.NewAPIClient(clientConfig), AuthClient: sdkgoauth.NewAPIClient(authConfig),
+		CertManagerClient: certmanager.NewAPIClient(certManagerConfig), DbaasClient: dbaas.NewAPIClient(dbaasConfig)}, nil
+}
+
+var once sync.Once
+var instance *Client
+
+func GetClient() (*Client, error) {
+	var err error
+	once.Do(func() {
+		err = Load()
+		instance, err = newClient(viper.GetString(Username), viper.GetString(Password), viper.GetString(Token), GetServerUrl())
+	})
+	if err != nil {
+		return nil, err
+	}
+	return instance, nil
+}
+
+// NewTestClient - function used only for tests
+// TO BE REMOVED ONCE TESTS ARE REFACTORED
+func NewTestClient(name, pwd, token, hostUrl string) (*Client, error) {
+	if token == "" && (name == "" || pwd == "") {
+		return nil, errors.New("username, password or token incorrect")
+	}
+	clientConfig := cloudv6.NewConfiguration(name, pwd, token, hostUrl)
+	clientConfig.UserAgent = fmt.Sprintf("%v_%v", viper.GetString(CLIHttpUserAgent), clientConfig.UserAgent)
+	// Set Depth Query Parameter globally
+	clientConfig.SetDepth(depthQueryParam)
+
+	authConfig := sdkgoauth.NewConfiguration(name, pwd, token, hostUrl)
+	authConfig.UserAgent = fmt.Sprintf("%v_%v", viper.GetString(CLIHttpUserAgent), authConfig.UserAgent)
+
+	certManagerConfig := certmanager.NewConfiguration(name, pwd, token, hostUrl)
+	certManagerConfig.UserAgent = fmt.Sprintf("%v_%v", viper.GetString(CLIHttpUserAgent), certManagerConfig.UserAgent)
+
+	dbaasConfig := dbaas.NewConfiguration(name, pwd, token, hostUrl)
+	dbaasConfig.UserAgent = fmt.Sprintf("%v_%v", viper.GetString(CLIHttpUserAgent), dbaasConfig.UserAgent)
+
+	return &Client{CloudClient: cloudv6.NewAPIClient(clientConfig), AuthClient: sdkgoauth.NewAPIClient(authConfig),
+		CertManagerClient: certmanager.NewAPIClient(certManagerConfig), DbaasClient: dbaas.NewAPIClient(dbaasConfig)}, nil
 }

@@ -21,7 +21,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/services/certmanager/resources"
 )
 
 // test values
@@ -121,7 +120,7 @@ func TestCertificateManagerServiceCmd(t *testing.T) {
 			viper.Set(constants.ArgForce, true)
 
 			c := CertCreateCmd()
-			c.Command.Flags().Set(FlagCertName, "certificate")
+			c.Command.Flags().Set(FlagCertName, "___test___certificate___test___")
 			c.Command.Flags().Set(FlagCert, caPEM.String())
 			c.Command.Flags().Set(FlagCertChain, caPEM.String())
 			c.Command.Flags().Set(FlagPrivateKey, caPrivKeyPEM.String())
@@ -130,19 +129,13 @@ func TestCertificateManagerServiceCmd(t *testing.T) {
 			assert.NoError(t, err)
 
 			// var id string
-			svc, err := resources.NewClientService(
-				viper.GetString(config.Username),
-				viper.GetString(config.Password),
-				viper.GetString(config.Token),
-				config.GetServerUrl(),
-			)
-			certs, _, err := svc.Get().CertificatesApi.CertificatesGet(context.Background()).
-				Execute()
+			svc, err := config.GetClient()
+			certs, _, err := svc.CertManagerClient.CertificatesApi.CertificatesGet(context.Background()).Execute()
 			assert.NoError(t, err)
 
 			var id string
 			for _, dto := range *certs.GetItems() {
-				if *dto.GetProperties().GetName() == "certificate" {
+				if *dto.GetProperties().GetName() == "___test___certificate___test___" {
 					id = *dto.GetId()
 				}
 			}
@@ -196,7 +189,7 @@ func TestCertificateManagerServiceCmd(t *testing.T) {
 			viper.Set(constants.ArgForce, true)
 
 			c := CertCreateCmd()
-			c.Command.Flags().Set(FlagCertName, "certificate-files")
+			c.Command.Flags().Set(FlagCertName, "test_certificate-files_test")
 			c.Command.Flags().Set(FlagCertPath, certPath)
 			c.Command.Flags().Set(FlagCertChainPath, certPath)
 			c.Command.Flags().Set(FlagPrivateKeyPath, keyPath)
@@ -205,31 +198,26 @@ func TestCertificateManagerServiceCmd(t *testing.T) {
 			assert.NoError(t, err)
 
 			// var id string
-			svc, err := resources.NewClientService(
-				viper.GetString(config.Username),
-				viper.GetString(config.Password),
-				viper.GetString(config.Token),
-				config.GetServerUrl(),
-			)
-			certs, _, err := svc.Get().CertificatesApi.CertificatesGet(context.Background()).
+			svc, err := config.GetClient()
+			certs, _, err := svc.CertManagerClient.CertificatesApi.CertificatesGet(context.Background()).
 				Execute()
 			assert.NoError(t, err)
 
 			var id string
 			for _, dto := range *certs.GetItems() {
-				if *dto.GetProperties().GetName() == "certificate-files" {
+				if *dto.GetProperties().GetName() == "test_certificate-files_test" {
 					id = *dto.GetId()
 				}
 			}
 
 			p := CertUpdateCmd()
 			p.Command.Flags().Set(FlagCertId, id)
-			p.Command.Flags().Set(FlagCertName, "certificate-files-updated")
+			p.Command.Flags().Set(FlagCertName, "test_certificate-files-updated_test")
 			err = p.Command.Execute()
 
-			cert, _, err := svc.Get().CertificatesApi.CertificatesGetById(context.Background(), id).Execute()
+			cert, _, err := svc.CertManagerClient.CertificatesApi.CertificatesGetById(context.Background(), id).Execute()
 			assert.NoError(t, err)
-			assert.Equal(t, "certificate-files-updated", *cert.GetProperties().GetName())
+			assert.Equal(t, "test_certificate-files-updated_test", *cert.GetProperties().GetName())
 
 			d := CertDeleteCmd()
 			d.Command.Flags().Set(FlagCertId, id)

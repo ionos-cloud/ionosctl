@@ -113,37 +113,23 @@ func NewCommandCfg(ctx context.Context, in io.Reader, p printer.PrintService, in
 		Context:   ctx,
 		// Define cmd Command Config function for Command
 		initCfg: func(c *CommandConfig) error {
-			// Load configuration file or Env Variables once
-			if err := config.Load(); err != nil {
-				return err
-			}
 			// Init Clients and Services
-			computeClient, err := c.CloudApiV6Services.InitClient()
+			client, err := config.GetClient()
 			if err != nil {
 				return err
 			}
-			if err = c.CloudApiV6Services.InitServices(computeClient); err != nil {
+			if err := c.CloudApiV6Services.InitServices(client); err != nil {
 				return err
 			}
-			authClient, err := c.AuthV1Services.InitClient()
-			if err != nil {
+			if err = c.AuthV1Services.InitServices(client); err != nil {
 				return err
 			}
-			if err = c.AuthV1Services.InitServices(authClient); err != nil {
+
+			if err = c.CloudApiDbaasPgsqlServices.InitServices(client); err != nil {
 				return err
 			}
-			dbaasPgsqlClient, err := c.CloudApiDbaasPgsqlServices.InitClient()
-			if err != nil {
-				return err
-			}
-			if err = c.CloudApiDbaasPgsqlServices.InitServices(dbaasPgsqlClient); err != nil {
-				return err
-			}
-			certificateClient, err := c.CertificateManagerServices.InitClient()
-			if err != nil {
-				return err
-			}
-			if err = c.CertificateManagerServices.InitServices(certificateClient); err != nil {
+
+			if err = c.CertificateManagerServices.InitServices(client); err != nil {
 				return err
 			}
 			return nil

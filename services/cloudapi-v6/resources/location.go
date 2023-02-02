@@ -2,6 +2,7 @@ package resources
 
 import (
 	"context"
+	"github.com/ionos-cloud/ionosctl/pkg/config"
 
 	"github.com/fatih/structs"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
@@ -27,15 +28,15 @@ type LocationsService interface {
 }
 
 type locationsService struct {
-	client  *Client
+	client  *ionoscloud.APIClient
 	context context.Context
 }
 
 var _ LocationsService = &locationsService{}
 
-func NewLocationService(client *Client, ctx context.Context) LocationsService {
+func NewLocationService(client *config.Client, ctx context.Context) LocationsService {
 	return &locationsService{
-		client:  client,
+		client:  client.CloudClient,
 		context: ctx,
 	}
 }

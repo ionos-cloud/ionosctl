@@ -2,6 +2,7 @@ package resources
 
 import (
 	"context"
+	"github.com/ionos-cloud/ionosctl/pkg/config"
 
 	"github.com/fatih/structs"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
@@ -37,15 +38,15 @@ type LansService interface {
 }
 
 type lansService struct {
-	client  *Client
+	client  *ionoscloud.APIClient
 	context context.Context
 }
 
 var _ LansService = &lansService{}
 
-func NewLanService(client *Client, ctx context.Context) LansService {
+func NewLanService(client *config.Client, ctx context.Context) LansService {
 	return &lansService{
-		client:  client,
+		client:  client.CloudClient,
 		context: ctx,
 	}
 }
