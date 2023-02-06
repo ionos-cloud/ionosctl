@@ -103,7 +103,9 @@ func NewPreCommandCfg(p printer.PrintService, info CommandBuilder) *PreCommandCo
 	}
 }
 
-func NewCommandCfg(ctx context.Context, in io.Reader, p printer.PrintService, info CommandBuilder) (*CommandConfig, error) {
+func NewCommandCfg(ctx context.Context, in io.Reader, p printer.PrintService, info CommandBuilder) (
+	*CommandConfig, error,
+) {
 	cmdConfig := &CommandConfig{
 		Command:   info.Command,
 		NS:        info.GetNS(),
@@ -177,6 +179,7 @@ type CommandConfig struct {
 	CloudApiDbaasPgsqlServices cloudapidbaaspgsql.Services
 	DbaasMongoServices         dbaas_mongo.Services
 	CertificateManagerServices certmanager.Services
+	ContainerRegistryServices  container_registry.Services
 
 	// Context
 	Context context.Context
