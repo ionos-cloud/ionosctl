@@ -6,6 +6,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 func RegListCmd() *core.Command {
@@ -24,6 +25,11 @@ func RegListCmd() *core.Command {
 		},
 	)
 
+	cmd.AddStringFlag(
+		"name", "n", "",
+		"Response filter to list only the Registries that contain the specified name in the DisplayName field. The value is case insensitive",
+	)
+
 	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, printer.ColsMessage(allCols))
 	_ = cmd.Command.RegisterFlagCompletionFunc(
 		constants.ArgCols,
@@ -35,7 +41,10 @@ func RegListCmd() *core.Command {
 }
 
 func CmdList(c *core.CommandConfig) error {
-	regs, _, err := c.ContainerRegistryServices.Registry().List("")
+	if viper.IsSet(core.GetFlagName(c.NS, "name")) {
+		c.Printer.Verbose("Filtering after Registry Name: %v", viper.GetString(core.GetFlagName(c.NS, "name")))
+	}
+	regs, _, err := c.ContainerRegistryServices.Registry().List(viper.GetString(core.GetFlagName(c.NS, "name")))
 	if err != nil {
 		return err
 	}
