@@ -29,6 +29,7 @@ func RegistryCmd() *core.Command {
 	regCmd.Command.PersistentFlags().Bool(constants.ArgNoHeaders, false, "When using text output, don't print headers")
 
 	regCmd.AddCommand(RegListCmd())
+	regCmd.AddCommand(RegPostCmd())
 
 	return regCmd
 }

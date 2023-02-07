@@ -14,6 +14,7 @@ type Response struct {
 // RegistriesService is a wrapper around ionoscloud.Registry
 type RegistriesService interface {
 	List(filterName string) (sdkgo.RegistriesResponse, *Response, error)
+	Post(input sdkgo.PostRegistryInput) (sdkgo.PostRegistryOutput, *Response, error)
 }
 
 type registriesService struct {
@@ -36,5 +37,11 @@ func (svc *registriesService) List(filterName string) (sdkgo.RegistriesResponse,
 		req = req.FilterName(filterName)
 	}
 	registryList, res, err := svc.client.RegistriesApi.RegistriesGetExecute(req)
+	return registryList, &Response{*res}, err
+}
+
+func (svc *registriesService) Post(input sdkgo.PostRegistryInput) (sdkgo.PostRegistryOutput, *Response, error) {
+	req := svc.client.RegistriesApi.RegistriesPost(svc.context).PostRegistryInput(input)
+	registryList, res, err := svc.client.RegistriesApi.RegistriesPostExecute(req)
 	return registryList, &Response{*res}, err
 }
