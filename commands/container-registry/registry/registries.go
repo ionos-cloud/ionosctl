@@ -30,12 +30,14 @@ func RegistryCmd() *core.Command {
 
 	regCmd.AddCommand(RegListCmd())
 	regCmd.AddCommand(RegPostCmd())
+	regCmd.AddCommand(RegGetCmd())
 
 	return regCmd
 }
 
 func getRegistryPrint(
 	resp *ionoscloud.APIResponse, c *core.CommandConfig, response *[]ionoscloud.RegistryResponse,
+	post bool,
 ) printer.Result {
 	r := printer.Result{}
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
@@ -51,19 +53,30 @@ func getRegistryPrint(
 			) // this boolean is duplicated everywhere just to do an append of `& wait` to a verbose message
 		}
 		if response != nil {
-			r.OutputJSON = response
-			r.KeyValue = getRegRows(response)                       // map header -> rows
-			r.Columns = printer.GetHeadersAllDefault(allCols, cols) // headers
+			if !post {
+				r.OutputJSON = response
+				r.KeyValue = getRegRows(response)                       // map header -> rows
+				r.Columns = printer.GetHeadersAllDefault(allCols, cols) // headers
+			} else {
+				r.OutputJSON = response
+				r.KeyValue = getRegRows(response)
+				postHeaders := []string{
+					"DisplayName", "Location", "GarbageCollectionDays", "GarbageCollectionTime",
+				} // map header -> rows
+				r.Columns = printer.GetHeaders(allCols, postHeaders, cols) // headers
+			}
 		}
 	}
 	return r
 }
 
 type RegPrint struct {
-	RegistryId  string `json:"RegistryId,omitempty"`
-	DisplayName string `json:"DisplayName,omitempty"`
-	Location    string `json:"Location,omitempty"`
-	Hostname    string `json:"DisplayName,omitempty"`
+	RegistryId            string `json:"RegistryId,omitempty"`
+	DisplayName           string `json:"DisplayName,omitempty"`
+	Location              string `json:"Location,omitempty"`
+	Hostname              string `json:"DisplayName,omitempty"`
+	GarbageCollectionDays string `json:"GarbageCollectionDays,omitempty"`
+	GarbageCollectionTime string `json:"GarbageCollectionTime,omitempty"`
 }
 
 func getRegRows(regs *[]ionoscloud.RegistryResponse) []map[string]interface{} {
@@ -82,6 +95,17 @@ func getRegRows(regs *[]ionoscloud.RegistryResponse) []map[string]interface{} {
 			}
 			if hostnameOk, ok := propertiesOk.GetHostnameOk(); ok && hostnameOk != nil {
 				regPrint.Hostname = *hostnameOk
+			}
+			if gcOk, ok := propertiesOk.GetGarbageCollectionScheduleOk(); ok && gcOk != nil {
+				if gcDaysOk, ok := gcOk.GetDaysOk(); ok && gcDaysOk != nil {
+					for _, day := range *gcDaysOk {
+						regPrint.GarbageCollectionDays += string(day) + ", "
+					}
+					regPrint.GarbageCollectionDays = regPrint.GarbageCollectionDays[:len(regPrint.GarbageCollectionDays)-2]
+				}
+				if gcTimeOk, ok := gcOk.GetTimeOk(); ok && gcTimeOk != nil {
+					regPrint.GarbageCollectionTime = *gcTimeOk
+				}
 			}
 		}
 		o := structs.Map(regPrint)

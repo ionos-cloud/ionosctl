@@ -7,6 +7,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
 	sdkgo "github.com/ionos-cloud/sdk-go-container-registry"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 var regPostProperties = sdkgo.PostRegistryProperties{}
@@ -37,6 +38,19 @@ func RegPostCmd() *core.Command {
 	cmd.AddStringFlag("name", "n", "", "Specify name of the certificate", core.RequiredFlagOption())
 	cmd.AddStringFlag("location", "", "", "Specify the certificate itself", core.RequiredFlagOption())
 
+	cmd.AddStringSliceFlag(
+		"garbage-collection-schedule-days", "", []string{}, "Specify the garbage collection schedule days",
+	)
+	_ = cmd.Command.RegisterFlagCompletionFunc(
+		"garbage-collection-schedule-days",
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return []string{
+				"Modnday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday",
+			}, cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	cmd.AddStringFlag("garbage-collection-schedule-time", "", "", "Specify the garbage collection schedule time of day")
+
 	return cmd
 }
 
@@ -62,9 +76,25 @@ func CmdPost(c *core.CommandConfig) error {
 	}
 
 	v := sdkgo.NewWeeklyScheduleWithDefaults()
-	v.SetTime("01:23:00+00:00")
-	v.SetDays([]sdkgo.Day{"Monday"})
 
+	if viper.IsSet(core.GetFlagName(c.NS, "garbage-collection-schedule-days")) {
+		days := viper.GetStringSlice(core.GetFlagName(c.NS, "garbage-collection-schedule-days"))
+		var daysSdk = []sdkgo.Day{}
+		for _, day := range days {
+			// TODO: remove this default value when it will work with nil
+			daysSdk = append(daysSdk, sdkgo.Day(day))
+		}
+		v.SetDays(daysSdk)
+	} else {
+		// TODO: remove this default value when it will work with nil
+		v.SetDays([]sdkgo.Day{"Monday"})
+	}
+
+	if viper.IsSet(core.GetFlagName(c.NS, "garbage-collection-schedule-time")) {
+		*v.Time = viper.GetString(core.GetFlagName(c.NS, "garbage-collection-schedule-time"))
+	} else {
+		v.SetTime("01:23:00+00:00")
+	}
 	regPostProperties.SetName(name)
 	regPostProperties.SetLocation(location)
 	regPostProperties.SetGarbageCollectionSchedule(*v)
@@ -81,5 +111,7 @@ func CmdPost(c *core.CommandConfig) error {
 	regPrint := sdkgo.NewRegistryResponseWithDefaults()
 	regPrint.SetProperties(*reg.GetProperties())
 
-	return c.Printer.Print(getRegistryPrint(nil, c, &[]sdkgo.RegistryResponse{*regPrint}))
+	return c.Printer.Print(getRegistryPrint(nil, c, &[]sdkgo.RegistryResponse{*regPrint}, true))
 }
+
+//GarbageCollectionDays GarbageCollectionTime

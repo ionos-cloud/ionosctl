@@ -49,5 +49,5 @@ func CmdList(c *core.CommandConfig) error {
 		return err
 	}
 	list := regs.GetItems()
-	return c.Printer.Print(getRegistryPrint(nil, c, list))
+	return c.Printer.Print(getRegistryPrint(nil, c, list, false))
 }

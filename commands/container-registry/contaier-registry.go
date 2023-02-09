@@ -10,13 +10,15 @@ import (
 func ContainerRegistryCmd() *core.Command {
 	contregCmd := &core.Command{
 		Command: &cobra.Command{
-			Use:   "container-registry",
-			Short: "Registry Operations",
+			Use:     "container-registry",
+			Short:   "Registry Operations",
+			Aliases: []string{"cr"},
 			Long: "The sub-commands of `ionosctl container-registry` allows IONOS clients to manage docker and OCI compliant " +
 				"registries for use by their managed Kubernetes clusters. Use a Container Registry to ensure you have a " +
 				"privately accessed registry to efficiently support image pulls.",
 			TraverseChildren: true,
 		},
+
 	}
 
 	contregCmd.Command.PersistentFlags().Bool(
