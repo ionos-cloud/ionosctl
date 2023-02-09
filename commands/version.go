@@ -40,22 +40,13 @@ func VersionCmd() *core.Command {
 }
 
 func RunVersion(c *core.CommandConfig) error {
-	err := c.Printer.Print("IONOS Cloud CLI version: " + rootCmd.Command.Version)
+	err := c.Printer.Print(rootCmd.Command.Version)
 	if err != nil {
 		return err
 	}
-	err = c.Printer.Print("SDK GO version: " + sdkgo.Version)
-	if err != nil {
-		return err
-	}
-	err = c.Printer.Print("SDK GO DBaaS Postgres version: " + sdkgodbaaspostgres.Version)
-	if err != nil {
-		return err
-	}
-	err = c.Printer.Print("SDK GO Auth version: " + sdkgoauth.Version)
-	if err != nil {
-		return err
-	}
+	c.Printer.Verbose("sdk-go " + sdkgo.Version)
+	c.Printer.Verbose("sdk-go-dbaas-postgres " + sdkgodbaaspostgres.Version)
+	c.Printer.Verbose("sdk-go-dbaas-auth " + sdkgoauth.Version)
 
 	if viper.GetBool(core.GetFlagName(c.NS, constants.ArgUpdates)) {
 		/*
