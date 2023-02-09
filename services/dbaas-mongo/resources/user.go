@@ -76,13 +76,9 @@ func (svc *usersService) Create(clusterID string, user sdkgo.User) (sdkgo.User, 
 }
 
 func (svc *usersService) Get(clusterID, database, username string) (sdkgo.User, *sdkgo.APIResponse, error) {
-	req := svc.client.UsersApi.ClustersUsersFindById(svc.context, clusterID, database, username)
-	u, res, err := svc.client.UsersApi.ClustersUsersFindByIdExecute(req)
-	return u, res, err
+	return svc.client.UsersApi.ClustersUsersFindById(svc.context, clusterID, database, username).Execute()
 }
 
 func (svc *usersService) Delete(clusterID, database, username string) (sdkgo.User, *sdkgo.APIResponse, error) {
-	req := svc.client.UsersApi.ClustersUsersDelete(svc.context, clusterID, database, username)
-	u, res, err := svc.client.UsersApi.ClustersUsersDeleteExecute(req)
-	return u, res, err
+	return svc.client.UsersApi.ClustersUsersDelete(svc.context, clusterID, database, username).Execute()
 }
