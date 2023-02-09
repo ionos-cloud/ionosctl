@@ -2,6 +2,7 @@ package resources
 
 import (
 	"context"
+	"github.com/ionos-cloud/ionosctl/pkg/config"
 	sdkgo "github.com/ionos-cloud/sdk-go-dbaas-mongo"
 )
 
@@ -10,19 +11,19 @@ type ApiMetadataService interface {
 }
 
 type apiMetadataService struct {
-	client  *Client
+	client  *sdkgo.APIClient
 	context context.Context
 }
 
 var _ ApiMetadataService = &apiMetadataService{}
 
-func NewApiMetadataService(client *Client, ctx context.Context) ApiMetadataService {
+func NewApiMetadataService(client *config.Client, ctx context.Context) ApiMetadataService {
 	return &apiMetadataService{
-		client:  client,
+		client:  client.MongoClient,
 		context: ctx,
 	}
 }
 
 func (svc apiMetadataService) List() ([]sdkgo.APIVersion, *sdkgo.APIResponse, error) {
-	return svc.client.APIClient.MetadataApi.InfosVersionsGet(svc.context).Execute()
+	return svc.client.MetadataApi.InfosVersionsGet(svc.context).Execute()
 }
