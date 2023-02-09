@@ -1,5 +1,12 @@
 # Changelog
 
+### Changed
+- Changed `ionosctl version` behaviour to only display the version of the CLI by default. You can use verbose flag to display SDK versions. e.g.
+     ```bash
+      $ ionosctl version
+      v6.5.0
+     ```
+
 ## [6.5.0] (January 2023)
 
 ### Changed

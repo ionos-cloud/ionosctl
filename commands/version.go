@@ -45,10 +45,10 @@ func RunVersion(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	c.Printer.Verbose("sdk-go v" + sdkcompute.Version)
-	c.Printer.Verbose("sdk-go-dbaas-postgres v" + sdkpostgres.Version)
-	c.Printer.Verbose("sdk-go-dbaas-auth v" + sdkauth.Version)
-	c.Printer.Verbose("sdk-go-cert-manager v" + sdkcertmanager.Version)
+	c.Printer.Verbose("sdk-go " + sdkcompute.Version)
+	c.Printer.Verbose("sdk-go-dbaas-postgres " + sdkpostgres.Version)
+	c.Printer.Verbose("sdk-go-auth " + sdkauth.Version)
+	c.Printer.Verbose("sdk-go-cert-manager " + sdkcertmanager.Version)
 
 	if viper.GetBool(core.GetFlagName(c.NS, constants.ArgUpdates)) {
 		/*
