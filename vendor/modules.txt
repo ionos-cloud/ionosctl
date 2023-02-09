@@ -50,8 +50,11 @@ github.com/ionos-cloud/sdk-go-auth
 # github.com/ionos-cloud/sdk-go-cert-manager v1.0.0
 ## explicit; go 1.17
 github.com/ionos-cloud/sdk-go-cert-manager
-# github.com/ionos-cloud/sdk-go-dbaas-postgres v1.1.1
-## explicit; go 1.19
+# github.com/ionos-cloud/sdk-go-dbaas-mongo v1.2.0
+## explicit; go 1.18
+github.com/ionos-cloud/sdk-go-dbaas-mongo
+# github.com/ionos-cloud/sdk-go-dbaas-postgres v1.0.4
+## explicit; go 1.17
 github.com/ionos-cloud/sdk-go-dbaas-postgres
 # github.com/ionos-cloud/sdk-go/v6 v6.1.4
 ## explicit; go 1.17
@@ -151,28 +154,27 @@ golang.org/x/crypto/ssh/internal/bcrypt_pbkdf
 ## explicit; go 1.18
 golang.org/x/exp/constraints
 golang.org/x/exp/slices
-# golang.org/x/net v0.2.0
+# golang.org/x/net v0.6.0
 ## explicit; go 1.17
 golang.org/x/net/context
-golang.org/x/net/context/ctxhttp
-# golang.org/x/oauth2 v0.2.0
+# golang.org/x/oauth2 v0.5.0
 ## explicit; go 1.17
 golang.org/x/oauth2
 golang.org/x/oauth2/internal
 # golang.org/x/sync v0.1.0
 ## explicit
 golang.org/x/sync/errgroup
-# golang.org/x/sys v0.2.0
+# golang.org/x/sys v0.5.0
 ## explicit; go 1.17
 golang.org/x/sys/cpu
 golang.org/x/sys/internal/unsafeheader
 golang.org/x/sys/plan9
 golang.org/x/sys/unix
 golang.org/x/sys/windows
-# golang.org/x/term v0.2.0
+# golang.org/x/term v0.5.0
 ## explicit; go 1.17
 golang.org/x/term
-# golang.org/x/text v0.4.0
+# golang.org/x/text v0.7.0
 ## explicit; go 1.17
 golang.org/x/text/runes
 golang.org/x/text/transform

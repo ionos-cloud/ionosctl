@@ -27,7 +27,6 @@ func ClusterCmd() *core.Command {
 	_ = clusterCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allCols, cobra.ShellCompDirectiveNoFileComp
 	})
-	// TODO: Once the rest of the codebase allows it... move this flag to root command!
 	clusterCmd.Command.PersistentFlags().Bool(constants.ArgNoHeaders, false, "When using text output, don't print headers")
 
 	clusterCmd.AddCommand(ClusterListCmd())
