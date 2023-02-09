@@ -25,7 +25,7 @@ var _ RestoresService = &restoresService{}
 
 func NewRestoresService(client *config.Client, ctx context.Context) RestoresService {
 	return &restoresService{
-		client:  client.DbaasClient,
+		client:  client.PostgresClient,
 		context: ctx,
 	}
 }

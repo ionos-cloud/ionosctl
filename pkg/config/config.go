@@ -15,7 +15,8 @@ import (
 
 	sdkgoauth "github.com/ionos-cloud/sdk-go-auth"
 	certmanager "github.com/ionos-cloud/sdk-go-cert-manager"
-	dbaas "github.com/ionos-cloud/sdk-go-dbaas-postgres"
+	mongo "github.com/ionos-cloud/sdk-go-dbaas-mongo"
+	postgres "github.com/ionos-cloud/sdk-go-dbaas-postgres"
 	cloudv6 "github.com/ionos-cloud/sdk-go/v6"
 
 	"github.com/spf13/viper"
@@ -157,29 +158,44 @@ type Client struct {
 	CloudClient       *cloudv6.APIClient
 	AuthClient        *sdkgoauth.APIClient
 	CertManagerClient *certmanager.APIClient
-	DbaasClient       *dbaas.APIClient
+	PostgresClient    *postgres.APIClient
+	MongoClient       *mongo.APIClient
+}
+
+func appendUserAgent(userAgent string) string {
+	return fmt.Sprintf("%v_%v", viper.GetString(CLIHttpUserAgent), userAgent)
 }
 
 func newClient(name, pwd, token, hostUrl string) (*Client, error) {
 	if token == "" && (name == "" || pwd == "") {
 		return nil, errors.New("username, password or token incorrect")
 	}
+
 	clientConfig := cloudv6.NewConfiguration(name, pwd, token, hostUrl)
 	clientConfig.UserAgent = fmt.Sprintf("%v_%v", viper.GetString(CLIHttpUserAgent), clientConfig.UserAgent)
 	// Set Depth Query Parameter globally
 	clientConfig.SetDepth(depthQueryParam)
 
 	authConfig := sdkgoauth.NewConfiguration(name, pwd, token, hostUrl)
-	authConfig.UserAgent = fmt.Sprintf("%v_%v", viper.GetString(CLIHttpUserAgent), authConfig.UserAgent)
+	authConfig.UserAgent = appendUserAgent(authConfig.UserAgent)
 
 	certManagerConfig := certmanager.NewConfiguration(name, pwd, token, hostUrl)
-	certManagerConfig.UserAgent = fmt.Sprintf("%v_%v", viper.GetString(CLIHttpUserAgent), certManagerConfig.UserAgent)
+	certManagerConfig.UserAgent = appendUserAgent(certManagerConfig.UserAgent)
 
-	dbaasConfig := dbaas.NewConfiguration(name, pwd, token, hostUrl)
-	dbaasConfig.UserAgent = fmt.Sprintf("%v_%v", viper.GetString(CLIHttpUserAgent), dbaasConfig.UserAgent)
+	postgresConfig := postgres.NewConfiguration(name, pwd, token, hostUrl)
+	postgresConfig.UserAgent = appendUserAgent(postgresConfig.UserAgent)
 
-	return &Client{CloudClient: cloudv6.NewAPIClient(clientConfig), AuthClient: sdkgoauth.NewAPIClient(authConfig),
-		CertManagerClient: certmanager.NewAPIClient(certManagerConfig), DbaasClient: dbaas.NewAPIClient(dbaasConfig)}, nil
+	mongoConfig := mongo.NewConfiguration(name, pwd, token, hostUrl)
+	mongoConfig.UserAgent = appendUserAgent(mongoConfig.UserAgent)
+
+	return &Client{
+			CloudClient:       cloudv6.NewAPIClient(clientConfig),
+			AuthClient:        sdkgoauth.NewAPIClient(authConfig),
+			CertManagerClient: certmanager.NewAPIClient(certManagerConfig),
+			PostgresClient:    postgres.NewAPIClient(postgresConfig),
+			MongoClient:       mongo.NewAPIClient(mongoConfig),
+		},
+		nil
 }
 
 var once sync.Once
@@ -197,26 +213,9 @@ func GetClient() (*Client, error) {
 	return instance, nil
 }
 
-// NewTestClient - function used only for tests
+// NewTestClient - function used only for tests.
+// Bypasses the singleton check, not recommended for normal use.
 // TO BE REMOVED ONCE TESTS ARE REFACTORED
 func NewTestClient(name, pwd, token, hostUrl string) (*Client, error) {
-	if token == "" && (name == "" || pwd == "") {
-		return nil, errors.New("username, password or token incorrect")
-	}
-	clientConfig := cloudv6.NewConfiguration(name, pwd, token, hostUrl)
-	clientConfig.UserAgent = fmt.Sprintf("%v_%v", viper.GetString(CLIHttpUserAgent), clientConfig.UserAgent)
-	// Set Depth Query Parameter globally
-	clientConfig.SetDepth(depthQueryParam)
-
-	authConfig := sdkgoauth.NewConfiguration(name, pwd, token, hostUrl)
-	authConfig.UserAgent = fmt.Sprintf("%v_%v", viper.GetString(CLIHttpUserAgent), authConfig.UserAgent)
-
-	certManagerConfig := certmanager.NewConfiguration(name, pwd, token, hostUrl)
-	certManagerConfig.UserAgent = fmt.Sprintf("%v_%v", viper.GetString(CLIHttpUserAgent), certManagerConfig.UserAgent)
-
-	dbaasConfig := dbaas.NewConfiguration(name, pwd, token, hostUrl)
-	dbaasConfig.UserAgent = fmt.Sprintf("%v_%v", viper.GetString(CLIHttpUserAgent), dbaasConfig.UserAgent)
-
-	return &Client{CloudClient: cloudv6.NewAPIClient(clientConfig), AuthClient: sdkgoauth.NewAPIClient(authConfig),
-		CertManagerClient: certmanager.NewAPIClient(certManagerConfig), DbaasClient: dbaas.NewAPIClient(dbaasConfig)}, nil
+	return newClient(name, pwd, token, hostUrl)
 }

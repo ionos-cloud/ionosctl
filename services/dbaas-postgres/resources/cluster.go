@@ -53,7 +53,7 @@ var _ ClustersService = &clustersService{}
 
 func NewClustersService(client *config.Client, ctx context.Context) ClustersService {
 	return &clustersService{
-		client:  client.DbaasClient,
+		client:  client.PostgresClient,
 		context: ctx,
 	}
 }

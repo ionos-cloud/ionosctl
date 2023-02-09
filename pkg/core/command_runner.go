@@ -3,6 +3,7 @@ package core
 import (
 	"bytes"
 	"context"
+	dbaas_mongo "github.com/ionos-cloud/ionosctl/v6/services/dbaas-mongo"
 	"io"
 	"os"
 
@@ -132,13 +133,11 @@ func NewCommandCfg(ctx context.Context, in io.Reader, p printer.PrintService, in
 			if err = c.CertificateManagerServices.InitServices(client); err != nil {
 				return err
 			}
-			dbaasMongoClient, err := c.DbaasMongoServices.InitClient()
-			if err != nil {
+
+			if err = c.DbaasMongoServices.InitServices(client); err != nil {
 				return err
 			}
-			if err = c.DbaasMongoServices.InitServices(dbaasMongoClient); err != nil {
-				return err
-			}
+
 			return nil
 		},
 	}
@@ -175,6 +174,7 @@ type CommandConfig struct {
 	CloudApiV6Services         cloudapiv6.Services
 	AuthV1Services             authV1.Services
 	CloudApiDbaasPgsqlServices cloudapidbaaspgsql.Services
+	DbaasMongoServices         dbaas_mongo.Services
 	CertificateManagerServices certmanager.Services
 
 	// Context

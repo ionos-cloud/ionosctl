@@ -30,7 +30,7 @@ var _ InfosService = &infosService{}
 
 func NewInfosService(client *config.Client, ctx context.Context) InfosService {
 	return &infosService{
-		client:  client.DbaasClient,
+		client:  client.PostgresClient,
 		context: ctx,
 	}
 }
