@@ -113,5 +113,3 @@ func CmdPost(c *core.CommandConfig) error {
 
 	return c.Printer.Print(getRegistryPrint(nil, c, &[]sdkgo.RegistryResponse{*regPrint}, true))
 }
-
-//GarbageCollectionDays GarbageCollectionTime

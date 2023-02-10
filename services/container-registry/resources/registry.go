@@ -16,6 +16,7 @@ type RegistriesService interface {
 	Get(id string) (sdkgo.RegistryResponse, *Response, error)
 	List(filterName string) (sdkgo.RegistriesResponse, *Response, error)
 	Post(input sdkgo.PostRegistryInput) (sdkgo.PostRegistryOutput, *Response, error)
+	Delete(id string) (*Response, error)
 }
 
 type registriesService struct {
@@ -51,4 +52,10 @@ func (svc *registriesService) Get(id string) (sdkgo.RegistryResponse, *Response,
 	req := svc.client.RegistriesApi.RegistriesFindById(svc.context, id)
 	reg, res, err := svc.client.RegistriesApi.RegistriesFindByIdExecute(req)
 	return reg, &Response{*res}, err
+}
+
+func (svc *registriesService) Delete(id string) (*Response, error) {
+	req := svc.client.RegistriesApi.RegistriesDelete(svc.context, id)
+	res, err := svc.client.RegistriesApi.RegistriesDeleteExecute(req)
+	return &Response{*res}, err
 }

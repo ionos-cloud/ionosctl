@@ -26,9 +26,9 @@ func RegGetCmd() *core.Command {
 		},
 	)
 
-	cmd.AddStringFlag("id", "i", "", "Registry ID", core.RequiredFlagOption())
+	cmd.AddStringFlag("registry-id", "i", "", "Registry ID", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(
-		"id", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		"registry-id", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 			return RegsIds(), cobra.ShellCompDirectiveNoFileComp
 		},
 	)
@@ -44,7 +44,7 @@ func RegGetCmd() *core.Command {
 }
 
 func CmdGet(c *core.CommandConfig) error {
-	id := viper.GetString(core.GetFlagName(c.NS, "id"))
+	id := viper.GetString(core.GetFlagName(c.NS, "registry-id"))
 	reg, _, err := c.ContainerRegistryServices.Registry().Get(id)
 	if err != nil {
 		return err
@@ -53,7 +53,7 @@ func CmdGet(c *core.CommandConfig) error {
 }
 
 func PreCmdGet(c *core.PreCommandConfig) error {
-	err := core.CheckRequiredFlags(c.Command, c.NS, "id")
+	err := core.CheckRequiredFlags(c.Command, c.NS, "registry-id")
 	if err != nil {
 		return err
 	}

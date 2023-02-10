@@ -17,8 +17,9 @@ import (
 func RegistryCmd() *core.Command {
 	regCmd := &core.Command{
 		Command: &cobra.Command{
-			Use:   "registry",
-			Short: "Registry Operations",
+			Use:     "registry",
+			Aliases: []string{"reg", "registries", "r"},
+			Short:   "Registry Operations",
 			Long: "Manage container registries for storage of docker images and OCI compliant artifacts. " +
 				"This operation is restricted to contract owner, admin, and users with 'accessAndManageRegistries' and " +
 				"Share/Edit access permissions for the data center hosting the registry.",
@@ -31,6 +32,7 @@ func RegistryCmd() *core.Command {
 	regCmd.AddCommand(RegListCmd())
 	regCmd.AddCommand(RegPostCmd())
 	regCmd.AddCommand(RegGetCmd())
+	regCmd.AddCommand(RegDeleteCmd())
 
 	return regCmd
 }
