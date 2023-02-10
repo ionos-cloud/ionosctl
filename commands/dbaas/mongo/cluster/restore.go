@@ -2,13 +2,11 @@ package cluster
 
 import (
 	"context"
-	"github.com/spf13/viper"
-	"os"
-
 	"github.com/ionos-cloud/ionosctl/commands/dbaas/mongo/completer"
 	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 func ClusterRestoreCmd() *core.Command {
@@ -39,11 +37,11 @@ func ClusterRestoreCmd() *core.Command {
 
 	cmd.AddStringFlag(constants.FlagClusterId, constants.FlagIdShort, "", "The unique ID of the cluster", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.MongoClusterIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.MongoClusterIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddStringFlag(constants.FlagSnapshotId, "", "", "The unique ID of the snapshot you want to restore.", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagSnapshotId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.MongoClusterIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.MongoClusterIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	cmd.Command.SilenceUsage = true

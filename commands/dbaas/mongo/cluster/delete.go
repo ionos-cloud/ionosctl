@@ -3,14 +3,12 @@ package cluster
 import (
 	"context"
 	"fmt"
-	"github.com/ionos-cloud/ionosctl/pkg/utils"
-	"github.com/spf13/viper"
-	"os"
-
 	"github.com/ionos-cloud/ionosctl/commands/dbaas/mongo/completer"
 	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
+	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 func deleteAll(c *core.CommandConfig) error {
@@ -56,7 +54,7 @@ func ClusterDeleteCmd() *core.Command {
 
 	cmd.AddStringFlag(constants.FlagClusterId, constants.FlagIdShort, "", "The unique ID of the cluster", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.MongoClusterIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.MongoClusterIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Delete all mongo clusters")
 	cmd.AddBoolFlag(constants.ArgForce, constants.ArgForceShort, false, "Skip yes/no verification")

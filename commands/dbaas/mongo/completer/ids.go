@@ -2,66 +2,35 @@ package completer
 
 import (
 	"context"
-	"io"
-
 	"github.com/ionos-cloud/ionosctl/pkg/config"
-	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
-	"github.com/ionos-cloud/ionosctl/services/dbaas-mongo/resources"
-	"github.com/spf13/viper"
+	"github.com/ionos-cloud/ionosctl/pkg/utils"
+	sdkgo "github.com/ionos-cloud/sdk-go-dbaas-mongo"
 )
 
-func MongoClusterIds(outErr io.Writer) []string {
-	client, err := getClient()
-	clierror.CheckError(err, outErr)
-	svc := resources.NewClustersService(client, context.TODO())
-	templates, _, err := svc.List("")
-	clierror.CheckError(err, outErr)
-	ids := make([]string, 0)
-	if items, ok := templates.GetItemsOk(); ok && items != nil {
-		for _, item := range *items {
-			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
-				ids = append(ids, *itemId)
-			}
-		}
-	} else {
-		return nil
-	}
-	return ids
-}
-
-func MongoTemplateIds(outErr io.Writer) []string {
-	client, err := getClient()
-	clierror.CheckError(err, outErr)
-	svc := resources.NewTemplatesService(client, context.TODO())
-	templates, _, err := svc.List()
-	clierror.CheckError(err, outErr)
-	ids := make([]string, 0)
-	if items, ok := templates.GetItemsOk(); ok && items != nil {
-		for _, item := range *items {
-			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
-				ids = append(ids, *itemId)
-			}
-		}
-	} else {
-		return nil
-	}
-	return ids
-}
-
-// Get Client for Completion Functions
-// TODO: we should use a "client" package... this makes no sense to be in EVERY SINGLE completions package
-func getClient() (*resources.Client, error) {
-	if err := config.Load(); err != nil {
-		return nil, err
-	}
-	clientSvc, err := resources.NewClientService(
-		viper.GetString(config.Username),
-		viper.GetString(config.Password),
-		viper.GetString(config.Token),
-		config.GetServerUrl(),
-	)
+func MongoClusterIds() []string {
+	client, err := config.GetClient()
 	if err != nil {
-		return nil, err
+		return nil
 	}
-	return clientSvc.Get(), nil
+	ls, _, err := client.MongoClient.ClustersApi.ClustersGet(context.Background()).Execute()
+	if err != nil {
+		return nil
+	}
+	return utils.MapNoIdx(*ls.GetItems(), func(t sdkgo.ClusterResponse) string {
+		return *t.GetId()
+	})
+}
+
+func MongoTemplateIds() []string {
+	client, err := config.GetClient()
+	if err != nil {
+		return nil
+	}
+	ls, _, err := client.MongoClient.TemplatesApi.TemplatesGet(context.Background()).Execute()
+	if err != nil {
+		return nil
+	}
+	return utils.MapNoIdx(*ls.GetItems(), func(t sdkgo.TemplateResponse) string {
+		return *t.GetId()
+	})
 }

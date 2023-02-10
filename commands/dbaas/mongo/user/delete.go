@@ -2,12 +2,10 @@ package user
 
 import (
 	"context"
-	sdkgo "github.com/ionos-cloud/sdk-go-dbaas-mongo"
-	"os"
-
 	"github.com/ionos-cloud/ionosctl/commands/dbaas/mongo/completer"
 	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
+	sdkgo "github.com/ionos-cloud/sdk-go-dbaas-mongo"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -37,10 +35,9 @@ func UserDeleteCmd() *core.Command {
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
-			database := viper.GetString(core.GetFlagName(c.NS, flagDatabase))
 			user := viper.GetString(core.GetFlagName(c.NS, constants.ArgUser))
 			c.Printer.Verbose("Getting User by ID %s...")
-			u, _, err := c.DbaasMongoServices.Users().Delete(clusterId, database, user)
+			u, _, err := c.DbaasMongoServices.Users().Delete(clusterId, user)
 			if err != nil {
 				return err
 			}
@@ -51,7 +48,7 @@ func UserDeleteCmd() *core.Command {
 
 	cmd.AddStringFlag(constants.FlagClusterId, constants.FlagIdShort, "", "The unique ID of the cluster")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.MongoClusterIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.MongoClusterIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddStringFlag(flagDatabase, flagDatabaseShort, "", "The authentication database")
 	cmd.AddStringFlag(constants.ArgUser, "u", "", "The authentication username")

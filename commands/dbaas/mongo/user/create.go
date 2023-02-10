@@ -5,7 +5,6 @@ import (
 	"encoding/csv"
 	"github.com/cjrd/allocate"
 	"github.com/mmatczuk/anyflag"
-	"os"
 	"strings"
 
 	"github.com/ionos-cloud/ionosctl/commands/dbaas/mongo/completer"
@@ -57,7 +56,7 @@ func UserCreateCmd() *core.Command {
 
 	cmd.AddStringFlag(constants.FlagClusterId, constants.FlagIdShort, "", "")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.MongoClusterIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.MongoClusterIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	// required Path flags

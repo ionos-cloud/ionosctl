@@ -2,8 +2,6 @@ package user
 
 import (
 	"context"
-	"os"
-
 	"github.com/ionos-cloud/ionosctl/commands/dbaas/mongo/completer"
 	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
@@ -49,7 +47,7 @@ func UserListCmd() *core.Command {
 
 	cmd.AddStringFlag(constants.FlagClusterId, constants.FlagIdShort, "", "")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.MongoClusterIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.MongoClusterIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "List all users, across all clusters")
 
