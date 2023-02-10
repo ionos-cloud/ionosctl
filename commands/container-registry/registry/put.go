@@ -10,24 +10,26 @@ import (
 	"github.com/spf13/viper"
 )
 
-var patchInput = sdkgo.PatchRegistryInput{}
+var regPutProperties = sdkgo.PostRegistryProperties{}
 
-func RegUpdateCmd() *core.Command {
+func RegReplaceCmd() *core.Command {
 	cmd := core.NewCommand(
 		context.TODO(), nil, core.CommandBuilder{
-			Namespace: "container-registry",
-			Resource:  "registry",
-			Verb:      "update",
-			Aliases:   []string{"u", "up"},
-			ShortDesc: "Update the properties of a registry",
-			LongDesc: "Update the \"garbageCollectionSchedule\" time and days of the week for runs of a registry (if " +
-				"not set, the default is every Monday at 00:00 UTC).",
-			Example:    "ionosctl container-registry registry update --id [REGISTRY_ID]",
-			PreCmdRun:  PreCmdUpdate,
-			CmdRun:     CmdUpdate,
+			Namespace:  "container-registry",
+			Resource:   "registry",
+			Verb:       "replace",
+			Aliases:    []string{"r", "rep"},
+			ShortDesc:  "Replace a registry",
+			LongDesc:   "Create/replace a registry to hold container images or OCI compliant artifacts",
+			Example:    "ionosctl container-registry registry replace --id [REGISTRY_ID] --name [REGISTRY_NAME] --location [REGISTRY_LOCATION]",
+			PreCmdRun:  PreCmdPut,
+			CmdRun:     CmdPut,
 			InitClient: true,
 		},
 	)
+
+	cmd.AddStringFlag("name", "n", "", "Specify name of the certificate", core.RequiredFlagOption())
+	cmd.AddStringFlag("location", "", "", "Specify the certificate itself", core.RequiredFlagOption())
 
 	cmd.AddStringFlag("registry-id", "i", "", "Registry ID", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(
@@ -59,7 +61,18 @@ func RegUpdateCmd() *core.Command {
 	return cmd
 }
 
-func CmdUpdate(c *core.CommandConfig) error {
+func CmdPut(c *core.CommandConfig) error {
+	var name, location string
+
+	name, err := c.Command.Command.Flags().GetString("name")
+	if err != nil {
+		return err
+	}
+	location, err = c.Command.Command.Flags().GetString("location")
+	if err != nil {
+		return err
+	}
+
 	id, err := c.Command.Command.Flags().GetString("registry-id")
 	if err != nil {
 		return err
@@ -84,13 +97,26 @@ func CmdUpdate(c *core.CommandConfig) error {
 		v.SetTime("01:23:00+00:00")
 	}
 
-	patchInput.SetGarbageCollectionSchedule(*v)
-	reg, _, err := c.ContainerRegistryServices.Registry().Patch(id, patchInput)
-	return c.Printer.Print(getRegistryPrint(nil, c, &[]sdkgo.RegistryResponse{reg}, false))
+	regPutProperties.SetName(name)
+	regPutProperties.SetLocation(location)
+	regPutProperties.SetGarbageCollectionSchedule(*v)
+
+	var putInput = sdkgo.PutRegistryInput{}
+	putInput.SetProperties(regPutProperties)
+
+	reg, _, err := c.ContainerRegistryServices.Registry().Put(id, putInput)
+	if err != nil {
+		return err
+	}
+
+	regPrint := sdkgo.NewRegistryResponseWithDefaults()
+	regPrint.SetProperties(*reg.GetProperties())
+
+	return c.Printer.Print(getRegistryPrint(nil, c, &[]sdkgo.RegistryResponse{}, false))
 }
 
-func PreCmdUpdate(c *core.PreCommandConfig) error {
-	err := core.CheckRequiredFlags(c.Command, c.NS, "registry-id")
+func PreCmdPut(c *core.PreCommandConfig) error {
+	err := core.CheckRequiredFlags(c.Command, c.NS, "registry-id", "name", "location")
 	if err != nil {
 		return err
 	}
