@@ -8,7 +8,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 func RegDeleteCmd() *core.Command {
@@ -69,12 +68,15 @@ func CmdDelete(c *core.CommandConfig) error {
 		}
 
 	} else {
-		id := viper.GetString(core.GetFlagName(c.NS, "registry-id"))
+		id, err := c.Command.Command.Flags().GetString("registry-id")
+		if err != nil {
+			return err
+		}
 		msg := fmt.Sprintf("delete Container Registry: %s", id)
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, msg); err != nil {
 			return err
 		}
-		_, err := c.ContainerRegistryServices.Registry().Delete(id)
+		_, err = c.ContainerRegistryServices.Registry().Delete(id)
 		if err != nil {
 			return err
 		}

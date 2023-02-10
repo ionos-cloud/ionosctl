@@ -33,6 +33,7 @@ func RegistryCmd() *core.Command {
 	regCmd.AddCommand(RegPostCmd())
 	regCmd.AddCommand(RegGetCmd())
 	regCmd.AddCommand(RegDeleteCmd())
+	regCmd.AddCommand(RegUpdateCmd())
 
 	return regCmd
 }

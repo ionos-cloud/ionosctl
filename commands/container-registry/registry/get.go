@@ -7,7 +7,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
 	ionoscloud "github.com/ionos-cloud/sdk-go-container-registry"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 func RegGetCmd() *core.Command {
@@ -44,7 +43,10 @@ func RegGetCmd() *core.Command {
 }
 
 func CmdGet(c *core.CommandConfig) error {
-	id := viper.GetString(core.GetFlagName(c.NS, "registry-id"))
+	id, err := c.Command.Command.Flags().GetString("registry-id")
+	if err != nil {
+		return err
+	}
 	reg, _, err := c.ContainerRegistryServices.Registry().Get(id)
 	if err != nil {
 		return err
