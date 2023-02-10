@@ -20,6 +20,7 @@ type ClustersService interface {
 	List(filterName string) (sdkgo.ClusterList, *sdkgo.APIResponse, error)
 	Get(clusterId string) (sdkgo.ClusterResponse, *sdkgo.APIResponse, error)
 	Create(input sdkgo.CreateClusterRequest) (sdkgo.ClusterResponse, *sdkgo.APIResponse, error)
+	Update(id string, input sdkgo.PatchClusterRequest) (sdkgo.ClusterResponse, *sdkgo.APIResponse, error)
 	Delete(clusterId string) (*sdkgo.APIResponse, error)
 	DeleteAll(name string) (*sdkgo.APIResponse, error)
 	Restore(clusterId, snapshotId string) (*sdkgo.APIResponse, error)
@@ -57,9 +58,11 @@ func (svc *clustersService) Get(clusterId string) (sdkgo.ClusterResponse, *sdkgo
 }
 
 func (svc *clustersService) Create(input sdkgo.CreateClusterRequest) (sdkgo.ClusterResponse, *sdkgo.APIResponse, error) {
-	req := svc.client.ClustersApi.ClustersPost(svc.context).CreateClusterRequest(input)
-	cluster, res, err := svc.client.ClustersApi.ClustersPostExecute(req)
-	return cluster, res, err
+	return svc.client.ClustersApi.ClustersPost(svc.context).CreateClusterRequest(input).Execute()
+}
+
+func (svc *clustersService) Update(id string, input sdkgo.PatchClusterRequest) (sdkgo.ClusterResponse, *sdkgo.APIResponse, error) {
+	return svc.client.ClustersApi.ClustersPatch(svc.context, id).PatchClusterRequest(input).Execute()
 }
 
 func (svc *clustersService) Delete(clusterId string) (*sdkgo.APIResponse, error) {
@@ -109,7 +112,7 @@ func (q LogsQueryParams) applyToRequest(req sdkgo.ApiClustersLogsGetRequest) sdk
 		req = req.Start(*q.StartTime)
 	}
 	if q.EndTime != nil {
-		req = req.Start(*q.EndTime)
+		req = req.End(*q.EndTime)
 	}
 	if q.StartTime != nil {
 		req = req.Direction(*q.Direction)
