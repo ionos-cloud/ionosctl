@@ -9,6 +9,7 @@ import (
 type Services struct {
 	// Container Registry Resources Services
 	Registry func() resources.RegistriesService
+	Token    func() resources.TokenService
 	// Context
 	Context context.Context
 }
@@ -17,6 +18,9 @@ type Services struct {
 func (c *Services) InitServices(client *config.Client) error {
 	c.Registry = func() resources.RegistriesService {
 		return resources.NewRegistriesService(client, c.Context)
+	}
+	c.Token = func() resources.TokenService {
+		return resources.NewTokenService(client, c.Context)
 	}
 	return nil
 }
