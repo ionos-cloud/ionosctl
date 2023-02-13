@@ -39,12 +39,17 @@ func UserCreateCmd() *core.Command {
 			if err != nil {
 				return err
 			}
+			err = c.Command.Command.MarkFlagRequired(flagRoles)
+			if err != nil {
+				return err
+			}
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
-			c.Printer.Verbose("Getting Users from all cluster %s", clusterId)
+			c.Printer.Verbose("Creating users for cluster %s", clusterId)
 
+			userProperties.Roles = &roles
 			u, _, err := c.DbaasMongoServices.Users().Create(clusterId, sdkgo.User{Properties: &userProperties})
 			if err != nil {
 				return err
@@ -65,7 +70,7 @@ func UserCreateCmd() *core.Command {
 	cmd.AddStringVarFlag(userProperties.Password, constants.ArgPassword, constants.ArgPasswordShort, "", "The authentication password", core.RequiredFlagOption())
 
 	sliceOfRolesFlag := anyflag.NewValue(nil, &roles, rolesParser)
-	cmd.Command.Flags().VarP(sliceOfRolesFlag, flagRoles, flagRolesShort, "User's role for each db. DB1=Role1,DB2:Role2")
+	cmd.Command.Flags().VarP(sliceOfRolesFlag, flagRoles, flagRolesShort, "User's role for each db. DB1=Role1,DB2=Role2. Roles: read, readWrite, readAnyDatabase, readWriteAnyDatabase, dbAdmin, dbAdminAnyDatabase, clusterMonitor")
 	_ = viper.BindPFlag(core.GetFlagName(cmd.NS, flagRoles), cmd.Command.Flags().Lookup(flagRoles))
 
 	cmd.Command.SilenceUsage = true
@@ -86,7 +91,7 @@ func rolesParser(val string) ([]sdkgo.UserRoles, error) {
 	// step 2. For each tuple, get its Database and Role
 	var rs []sdkgo.UserRoles
 	for _, t := range tuples {
-		dbAndRole := strings.Split(t, "=:")
+		dbAndRole := strings.Split(t, "=")
 		r := sdkgo.UserRoles{Database: &dbAndRole[0], Role: &dbAndRole[1]}
 		rs = append(rs, r)
 	}
