@@ -6,7 +6,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
-	"github.com/ionos-cloud/ionosctl/services/dbaas-mongo/resources"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"time"
@@ -35,7 +34,8 @@ func LogsListCmd() *core.Command {
 				return err
 			}
 
-			c.Command.Command.MarkFlagsMutuallyExclusive()
+			c.Command.Command.MarkFlagsMutuallyExclusive(flagStart, flagStartDuration)
+			c.Command.Command.MarkFlagsMutuallyExclusive(flagEnd, flagEndDuration)
 
 			return nil
 		},
@@ -81,13 +81,7 @@ func LogsListCmd() *core.Command {
 			}
 
 			c.Printer.Verbose("Getting logs of Cluster %s", clusterId)
-			logsQueryParams := resources.LogsQueryParams{
-				StartTime: startPtr,
-				EndTime:   endPtr,
-				Limit:     limitPtr,
-				Direction: directionPtr,
-			}
-			logs, _, err := c.DbaasMongoServices.Clusters().LogsList(clusterId, logsQueryParams)
+			logs, _, err := c.DbaasMongoServices.Clusters().LogsList(clusterId, directionPtr, limitPtr, startPtr, endPtr)
 			if err != nil {
 				return err
 			}
@@ -106,7 +100,7 @@ func LogsListCmd() *core.Command {
 		return allCols, cobra.ShellCompDirectiveNoFileComp
 	})
 
-	cmd.AddDurationFlag(flagStartDuration, "", 0*time.Second /* pflag absolutely insists on being passed a default */, "The start time, as a duration. This should be negative, i.e. -720h. Valid: h, m, s")
+	cmd.AddDurationFlag(flagStartDuration, "", 0*time.Second, "The start time, as a duration. This should be negative, i.e. -720h. Valid: h, m, s")
 	cmd.AddStringFlag(flagStart, "", "", "The start time for the query in RFC3339 format. Must not be greater than 30 days ago and less than the end parameter. The default value is 30 days ago.")
 	cmd.AddDurationFlag(flagEndDuration, "", 0*time.Second, "The end time, as a duration. This should be negative and greater than the start time, i.e. -24h. Valid: h, m, s")
 	cmd.AddStringFlag(flagEnd, "", "", "The end time for the query in RFC3339 format. Must not be greater than the start parameter. The default value is the current timestamp.")

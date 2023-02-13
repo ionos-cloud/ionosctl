@@ -11,9 +11,9 @@ import (
 )
 
 type LogsQueryParams struct {
-	Direction          *string
-	Limit              *int32
-	StartTime, EndTime *time.Time
+	Direction          string
+	Limit              int32
+	StartTime, EndTime time.Time
 }
 
 type ClustersService interface {
@@ -25,7 +25,7 @@ type ClustersService interface {
 	DeleteAll(name string) (*sdkgo.APIResponse, error)
 	Restore(clusterId, snapshotId string) (*sdkgo.APIResponse, error)
 	SnapshotsList(clusterId string) (sdkgo.SnapshotList, *sdkgo.APIResponse, error)
-	LogsList(clusterId string, logsQueryParams LogsQueryParams) (sdkgo.ClusterLogs, *sdkgo.APIResponse, error)
+	LogsList(clusterId string, direction *string, limit *int32, start, end *time.Time) (sdkgo.ClusterLogs, *sdkgo.APIResponse, error)
 }
 
 type clustersService struct {
@@ -106,25 +106,20 @@ func (svc *clustersService) SnapshotsList(clusterId string) (sdkgo.SnapshotList,
 	return snapshots, res, err
 }
 
-// Yuck! Reach out if you have a better solution.
-func (q LogsQueryParams) applyToRequest(req sdkgo.ApiClustersLogsGetRequest) sdkgo.ApiClustersLogsGetRequest {
-	if q.StartTime != nil {
-		req = req.Start(*q.StartTime)
-	}
-	if q.EndTime != nil {
-		req = req.End(*q.EndTime)
-	}
-	if q.StartTime != nil {
-		req = req.Direction(*q.Direction)
-	}
-	if q.StartTime != nil {
-		req = req.Limit(*q.Limit)
-	}
-	return req
-}
-
-func (svc *clustersService) LogsList(clusterId string, q LogsQueryParams) (sdkgo.ClusterLogs, *sdkgo.APIResponse, error) {
+func (svc *clustersService) LogsList(clusterId string, direction *string, limit *int32, start, end *time.Time) (sdkgo.ClusterLogs, *sdkgo.APIResponse, error) {
 	req := svc.client.LogsApi.ClustersLogsGet(svc.context, clusterId)
-	logs, res, err := svc.client.LogsApi.ClustersLogsGetExecute(q.applyToRequest(req))
+	if direction != nil {
+		req = req.Direction(*direction)
+	}
+	if limit != nil {
+		req = req.Limit(*limit)
+	}
+	if start != nil {
+		req = req.Start(*start)
+	}
+	if end != nil {
+		req = req.End(*end)
+	}
+	logs, res, err := svc.client.LogsApi.ClustersLogsGetExecute(req)
 	return logs, res, err
 }

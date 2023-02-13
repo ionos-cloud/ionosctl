@@ -26,14 +26,15 @@ func LogsCmd() *core.Command {
 }
 
 type LogsPrint struct {
-	InstanceNumber int       `json:"InstanceNumber,omitempty"`
-	Name           string    `json:"SnapshotId,omitempty"`
-	MessageNumber  int       `json:"MessageNumber,omitempty"`
-	Message        string    `json:"Message,omitempty"`
-	Time           time.Time `json:"Time,omitempty"`
+	Instance      int       `json:"Instance,omitempty"`
+	Name          string    `json:"Name,omitempty"`
+	MessageNumber int       `json:"MessageNumber,omitempty"`
+	Message       string    `json:"Message,omitempty"`
+	Time          time.Time `json:"Time,omitempty"`
 }
 
 var allCols = structs.Names(LogsPrint{})
+var defaultCols = []string{"Instance", "Name", "MessageNumber", "Time"}
 
 func MakeLogsPrintObject(logs *[]ionoscloud.ClusterLogsInstances) []map[string]interface{} {
 	out := make([]map[string]interface{}, 0, len(*logs))
@@ -41,7 +42,7 @@ func MakeLogsPrintObject(logs *[]ionoscloud.ClusterLogsInstances) []map[string]i
 		for msgIdx, msg := range *instance.GetMessages() {
 			var logsPrint LogsPrint
 
-			logsPrint.InstanceNumber = idx
+			logsPrint.Instance = idx
 			logsPrint.MessageNumber = msgIdx
 			logsPrint.Name = *instance.GetName()
 			logsPrint.Message = *msg.GetMessage()
@@ -59,8 +60,8 @@ func getLogsPrint(c *core.CommandConfig, dcs *[]ionoscloud.ClusterLogsInstances)
 	r := printer.Result{}
 	if c != nil && dcs != nil {
 		r.OutputJSON = dcs
-		r.KeyValue = MakeLogsPrintObject(dcs)                                                                                                 // map header -> rows
-		r.Columns = printer.GetHeadersAllDefault(structs.Names(LogsPrint{}), viper.GetStringSlice(core.GetFlagName(c.NS, constants.ArgCols))) // headers
+		r.KeyValue = MakeLogsPrintObject(dcs)                                                                                 // map header -> rows
+		r.Columns = printer.GetHeaders(allCols, defaultCols, viper.GetStringSlice(core.GetFlagName(c.NS, constants.ArgCols))) // headers
 	}
 	return r
 }
