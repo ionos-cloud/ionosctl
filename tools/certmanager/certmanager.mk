@@ -13,7 +13,7 @@ certmanager_test_unit:
 	@echo "DONE"
 
 .PHONY: certmanager_test
-dbaas_postgres_test: certmanager_test_unit
+certmanager_test: certmanager_test_unit
 
 .PHONY: certmanager_docs_update
 certmanager_docs_update:
