@@ -1,8 +1,6 @@
 package cloudapi_v6
 
 import (
-	"math"
-
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 )
 
@@ -276,7 +274,7 @@ const (
 	DefaultServerCores     = 2
 	DefaultVolumeSize      = 10
 	DefaultNicLanId        = 1
-	DefaultMaxResults      = int32(math.MaxInt32)
+	DefaultMaxResults      = 0
 	DefaultServerCPUFamily = "AMD_OPTERON"
 	DefaultListDepth       = int32(1)
 	DefaultGetDepth        = int32(0)
