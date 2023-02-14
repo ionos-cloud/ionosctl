@@ -1,11 +1,22 @@
 # Changelog
 
+## [6.5.1] (February 2023)
+
 ### Changed
-- Changed `ionosctl version` behaviour to only display the version of the CLI by default. You can use verbose flag to display SDK versions. e.g.
+- Changed `ionosctl version` behaviour to only display the version of the CLI by default  e.g.
      ```bash
       $ ionosctl version
       v6.5.0
      ```
+     You can use -v/--verbose flag to display SDK versions.
+
+### Fixed
+- Added MaxResults flag to commands where it was missing from: `user s3key list`, `location cpu list`, etc.
+- Query Parameters MaxResults and OrderBy won't be sent to CloudAPI if their values are 0 or "". 
+
+### Dependencies
+- Updated go version to 1.19
+- Bump sdk-go to v6.1.4, bump sdk-go-dbaas-postgres to v1.0.6. Various other dependency updates.
 
 ## [6.5.0] (January 2023)
 
