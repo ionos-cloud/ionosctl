@@ -10,9 +10,10 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	sdkgoauth "github.com/ionos-cloud/sdk-go-auth"
-	sdkgodbaaspostgres "github.com/ionos-cloud/sdk-go-dbaas-postgres"
-	sdkgo "github.com/ionos-cloud/sdk-go/v6"
+	sdkauth "github.com/ionos-cloud/sdk-go-auth"
+	sdkcertmanager "github.com/ionos-cloud/sdk-go-cert-manager"
+	sdkpostgres "github.com/ionos-cloud/sdk-go-dbaas-postgres"
+	sdkcompute "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
 )
 
@@ -40,22 +41,14 @@ func VersionCmd() *core.Command {
 }
 
 func RunVersion(c *core.CommandConfig) error {
-	err := c.Printer.Print("IONOS Cloud CLI version: " + rootCmd.Command.Version)
+	err := c.Printer.Print(rootCmd.Command.Version)
 	if err != nil {
 		return err
 	}
-	err = c.Printer.Print("SDK GO version: " + sdkgo.Version)
-	if err != nil {
-		return err
-	}
-	err = c.Printer.Print("SDK GO DBaaS Postgres version: " + sdkgodbaaspostgres.Version)
-	if err != nil {
-		return err
-	}
-	err = c.Printer.Print("SDK GO Auth version: " + sdkgoauth.Version)
-	if err != nil {
-		return err
-	}
+	c.Printer.Verbose("sdk-go " + sdkcompute.Version)
+	c.Printer.Verbose("sdk-go-dbaas-postgres " + sdkpostgres.Version)
+	c.Printer.Verbose("sdk-go-auth " + sdkauth.Version)
+	c.Printer.Verbose("sdk-go-cert-manager " + sdkcertmanager.Version)
 
 	if viper.GetBool(core.GetFlagName(c.NS, constants.ArgUpdates)) {
 		/*
