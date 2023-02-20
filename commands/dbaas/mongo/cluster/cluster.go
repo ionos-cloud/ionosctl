@@ -80,8 +80,6 @@ func getClusterRows(clusters *[]ionoscloud.ClusterResponse) []map[string]interfa
 			clusterPrint.Name = *propertiesOk.GetDisplayName()
 			clusterPrint.Location = *propertiesOk.GetLocation()
 			clusterPrint.TemplateId = *propertiesOk.GetTemplateID()
-			// TODO: Once ApiClient singleton implemented, do this !!!
-			//clusterPrint.TemplateName = sdkgo.TemplatesApi{config.GetApiClient()}.FindById(*propertiesOk.GetTemplateID())
 			clusterPrint.URL = *propertiesOk.GetConnectionString()
 			if vdcConnectionsOk, ok := propertiesOk.GetConnectionsOk(); ok && vdcConnectionsOk != nil {
 				for _, vdcConnection := range *vdcConnectionsOk {
