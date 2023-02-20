@@ -30,9 +30,9 @@ func TokenCmd() *core.Command {
 	regCmd.Command.PersistentFlags().Bool(constants.ArgNoHeaders, false, "When using text output, don't print headers")
 
 	regCmd.AddCommand(TokenListCmd())
-	//regCmd.AddCommand(RegPostCmd())
+	regCmd.AddCommand(TokenPostCmd())
 	//regCmd.AddCommand(RegGetCmd())
-	//regCmd.AddCommand(RegDeleteCmd())
+	regCmd.AddCommand(TokenDeleteCmd())
 	//regCmd.AddCommand(RegUpdateCmd())
 	//regCmd.AddCommand(RegReplaceCmd())
 
@@ -127,12 +127,24 @@ func getTokensRows(tokens *[]ionoscloud.TokenResponse) []map[string]interface{} 
 
 var allCols = structs.Names(TokenPrint{})
 
+// TODO: check how other resources are doing this
 func TokensIds() []string {
 	client, _ := config.GetClient()
 	svc := resources.NewRegistriesService(client, context.Background())
-	tokens, _, _ := svc.List("")
+	regs, _, _ := svc.List("")
+
+	svcToken := resources.NewTokenService(client, context.Background())
+	regsIDs := *regs.GetItems()
+
+	var allTokens []ionoscloud.TokenResponse
+
+	for _, regID := range regsIDs {
+		tokens, _, _ := svcToken.List(*regID.GetId())
+		allTokens = append(allTokens, *tokens.GetItems()...)
+	}
+
 	return utils.Map(
-		*tokens.GetItems(), func(i int, reg ionoscloud.RegistryResponse) string {
+		allTokens, func(i int, reg ionoscloud.TokenResponse) string {
 			return *reg.GetId()
 		},
 	)

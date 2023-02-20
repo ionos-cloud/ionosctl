@@ -11,24 +11,30 @@ import (
 	"github.com/spf13/viper"
 )
 
-func TokenListCmd() *core.Command {
+func TokenPostCmd() *core.Command {
 	cmd := core.NewCommand(
 		context.TODO(), nil, core.CommandBuilder{
 			Namespace:  "container-registry",
 			Resource:   "token",
-			Verb:       "list",
-			Aliases:    []string{"l", "ls"},
-			ShortDesc:  "List all Registries",
-			LongDesc:   "List all tokens for your account",
-			Example:    "ionosctl container-registry token list --registry-id [REGISTRY-ID]",
+			Verb:       "create",
+			Aliases:    []string{"c"},
+			ShortDesc:  "Create a new token",
+			LongDesc:   "Create a new token used to access a container registry",
+			Example:    "ionosctl container-registry token create --registry-id [REGISTRY-ID] --name [TOKEN-NAME]",
 			PreCmdRun:  PreCmdListToken,
 			CmdRun:     CmdListToken,
 			InitClient: true,
 		},
 	)
 
-	cmd.AddBoolFlag("all", "a", false, "List all tokens, including expired ones")
-	cmd.AddStringFlag("registry-id", "r", "", "Registry ID")
+	cmd.AddStringFlag("name", "", "", "Name of the Token", core.RequiredFlagOption())
+	cmd.AddStringFlag("expiry-date", "", "", "Expiry date of the Token")
+	cmd.AddStringFlag("status", "", "", "Status of the Token")
+	cmd.AddStringSliceFlag("scope-actions", "", []string{}, "Scope actions of the Token")
+	cmd.AddStringFlag("scope-name", "", "", "Scope name of the Token")
+	cmd.AddStringFlag("scope-type", "", "", "Scope type of the Token")
+
+	cmd.AddStringFlag("registry-id", "r", "", "Registry ID", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(
 		"registry-id", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 			return registry.RegsIds(), cobra.ShellCompDirectiveNoFileComp
@@ -45,7 +51,17 @@ func TokenListCmd() *core.Command {
 	return cmd
 }
 
-func CmdListToken(c *core.CommandConfig) error {
+func PreCmdPostToken(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlagsSets(
+		c.Command, c.NS,
+		[]string{"registry-id", "name"},
+		[]string{"registry-id", "name", "scope-actions", "scope-name", "scope-type"},
+	)
+
+	return nil
+}
+
+func CmdPostToken(c *core.CommandConfig) error {
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, "all"))
 	if !allFlag {
 		id := viper.GetString(core.GetFlagName(c.NS, "registry-id"))
@@ -69,12 +85,4 @@ func CmdListToken(c *core.CommandConfig) error {
 		list = append(list, *tokens.GetItems()...)
 	}
 	return c.Printer.Print(getTokenPrint(nil, c, &list, false))
-}
-
-func PreCmdListToken(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlagsSets(
-		c.Command, c.NS,
-		[]string{"registry-id"},
-		[]string{constants.ArgAll},
-	)
 }

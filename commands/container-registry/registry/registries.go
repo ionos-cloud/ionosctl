@@ -123,9 +123,9 @@ var allCols = structs.Names(RegPrint{})
 func RegsIds() []string {
 	client, _ := config.GetClient()
 	svc := resources.NewRegistriesService(client, context.Background())
-	certs, _, _ := svc.List("")
+	regs, _, _ := svc.List("")
 	return utils.Map(
-		*certs.GetItems(), func(i int, reg ionoscloud.RegistryResponse) string {
+		*regs.GetItems(), func(i int, reg ionoscloud.RegistryResponse) string {
 			return *reg.GetId()
 		},
 	)
