@@ -11,6 +11,7 @@ type SliceValue[T any] struct {
 	parse   func(val string) (T, error)
 	value   *[]T
 	changed bool
+	redact  func(T) string
 }
 
 // NewSliceValue returns a new SliceValue[T] with the given value, pointer to a slice of T, and a parse function.
@@ -19,6 +20,14 @@ func NewSliceValue[T any](val []T, p *[]T, parse func(val string) (T, error)) *S
 	sv.parse = parse
 	sv.value = p
 	*sv.value = val
+	return sv
+}
+
+// NewSliceValueWithRedact returns a new SliceValue[T] and additionally sets custom String() function for T.
+// Redact primary purpose is to redact passwords to prevent them from leaking in logs.
+func NewSliceValueWithRedact[T any](val []T, p *[]T, parse func(val string) (T, error), redact func(T) string) *SliceValue[T] {
+	sv := NewSliceValue(val, p, parse)
+	sv.redact = redact
 	return sv
 }
 
@@ -49,7 +58,11 @@ func (s *SliceValue[T]) Type() string {
 func (s *SliceValue[T]) String() string {
 	out := make([]string, len(*s.value))
 	for i, d := range *s.value {
-		out[i] = fmt.Sprint(d)
+		if s.redact != nil {
+			out[i] = s.redact(d)
+		} else {
+			out[i] = fmt.Sprint(d)
+		}
 	}
 	return "[" + strings.Join(out, ",") + "]"
 }

@@ -9,6 +9,7 @@ To bind your custom type to a flag, all you have to do is specify the value type
 
 It supports any type including, but not limited to: enums, maps, slices, structs, struct pointers. 
 
+It also supports defining custom String() functions to redact passwords, see [redact example](examples/redact/cmd.go).
 ## Installation
 
 ```bash
