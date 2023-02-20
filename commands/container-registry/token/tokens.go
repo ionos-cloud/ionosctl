@@ -61,22 +61,15 @@ func getTokenPrint(
 				defaultHeaders := []string{"TokenId", "DisplayName", "ExpiryDate", "Status"}
 				r.OutputJSON = response
 				r.KeyValue = getTokensRows(response) // map header -> rows
-				//r.Columns = printer.GetHeadersListAll(
-				//	allCols, defaultHeaders, "RegistryId", cols,
-				//	viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)),
-				//) // headers
 				r.Columns = printer.GetHeaders(
 					allCols, defaultHeaders, cols,
 				) // headers
+			} else {
+				r.OutputJSON = response
+				r.KeyValue = getTokensRows(response)
+				postHeaders := []string{"DisplayName", "ExpiryDate", "Status"} // map header -> rows
+				r.Columns = printer.GetHeaders(allCols, postHeaders, cols)     // headers
 			}
-			//} else {
-			//	r.OutputJSON = response
-			//	r.KeyValue = getRegRows(response)
-			//	postHeaders := []string{
-			//		"DisplayName", "Location", "GarbageCollectionDays", "GarbageCollectionTime",
-			//	} // map header -> rows
-			//	r.Columns = printer.GetHeaders(allCols, postHeaders, cols) // headers
-			//}
 		}
 	}
 	return r
@@ -84,7 +77,6 @@ func getTokenPrint(
 
 type TokenPrint struct {
 	TokenId             string `json:"TokenId,omitempty"`
-	RegistryId          string `json:"RegistryId,omitempty"`
 	DisplayName         string `json:"DisplayName,omitempty"`
 	ExpiryDate          string `json:"ExpiryDate,omitempty"`
 	CredentialsUsername string `json:"CredentialsUsername,omitempty"`
@@ -118,7 +110,6 @@ func getTokensRows(tokens *[]ionoscloud.TokenResponse) []map[string]interface{} 
 				tokenPrint.Status = *statusOk
 			}
 		}
-		tokenPrint.RegistryId = *token.Href
 		o := structs.Map(tokenPrint)
 		out = append(out, o)
 	}

@@ -6,10 +6,13 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
-	ionoscloud "github.com/ionos-cloud/sdk-go-container-registry"
+	sdkgo "github.com/ionos-cloud/sdk-go-container-registry"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"time"
 )
+
+var tokenPostProperties = sdkgo.NewPostTokenPropertiesWithDefaults()
 
 func TokenPostCmd() *core.Command {
 	cmd := core.NewCommand(
@@ -21,8 +24,8 @@ func TokenPostCmd() *core.Command {
 			ShortDesc:  "Create a new token",
 			LongDesc:   "Create a new token used to access a container registry",
 			Example:    "ionosctl container-registry token create --registry-id [REGISTRY-ID] --name [TOKEN-NAME]",
-			PreCmdRun:  PreCmdListToken,
-			CmdRun:     CmdListToken,
+			PreCmdRun:  PreCmdPostToken,
+			CmdRun:     CmdPostToken,
 			InitClient: true,
 		},
 	)
@@ -30,9 +33,6 @@ func TokenPostCmd() *core.Command {
 	cmd.AddStringFlag("name", "", "", "Name of the Token", core.RequiredFlagOption())
 	cmd.AddStringFlag("expiry-date", "", "", "Expiry date of the Token")
 	cmd.AddStringFlag("status", "", "", "Status of the Token")
-	cmd.AddStringSliceFlag("scope-actions", "", []string{}, "Scope actions of the Token")
-	cmd.AddStringFlag("scope-name", "", "", "Scope name of the Token")
-	cmd.AddStringFlag("scope-type", "", "", "Scope type of the Token")
 
 	cmd.AddStringFlag("registry-id", "r", "", "Registry ID", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(
@@ -52,37 +52,65 @@ func TokenPostCmd() *core.Command {
 }
 
 func PreCmdPostToken(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlagsSets(
-		c.Command, c.NS,
-		[]string{"registry-id", "name"},
-		[]string{"registry-id", "name", "scope-actions", "scope-name", "scope-type"},
-	)
+	err := core.CheckRequiredFlags(c.Command, c.NS, "name", "registry-id")
+	if err != nil {
+		return err
+	}
+
+	return nil
 
 	return nil
 }
 
 func CmdPostToken(c *core.CommandConfig) error {
-	allFlag := viper.GetBool(core.GetFlagName(c.NS, "all"))
-	if !allFlag {
-		id := viper.GetString(core.GetFlagName(c.NS, "registry-id"))
-		tokens, _, err := c.ContainerRegistryServices.Token().List(id)
-		if err != nil {
-			return err
-		}
-		list := tokens.GetItems()
-		return c.Printer.Print(getTokenPrint(nil, c, list, false))
-	}
-	var list []ionoscloud.TokenResponse
-	regs, _, err := c.ContainerRegistryServices.Registry().List("")
+	var err error
+	var status string
+	var expiryDate time.Time
+	id, err := c.Command.Command.Flags().GetString("registry-id")
 	if err != nil {
 		return err
 	}
-	for _, reg := range *regs.GetItems() {
-		tokens, _, err := c.ContainerRegistryServices.Token().List(*reg.Id)
+	name, err := c.Command.Command.Flags().GetString("name")
+	if err != nil {
+		return err
+	}
+
+	if viper.IsSet(core.GetFlagName(c.NS, "expiry-date")) {
+		expiryDateString, err := c.Command.Command.Flags().GetString("expiry-date")
 		if err != nil {
 			return err
 		}
-		list = append(list, *tokens.GetItems()...)
+		expiryDate, err = time.Parse(time.RFC3339, expiryDateString)
+		if err != nil {
+			return err
+		}
+	} else {
+		expiryDate = time.Now().AddDate(1, 0, 0)
 	}
-	return c.Printer.Print(getTokenPrint(nil, c, &list, false))
+
+	if viper.IsSet(core.GetFlagName(c.NS, "status")) {
+		status, err = c.Command.Command.Flags().GetString("status")
+		if err != nil {
+			return err
+		}
+	} else {
+		status = "enabled"
+	}
+
+	tokenPostProperties.SetName(name)
+	tokenPostProperties.SetExpiryDate(expiryDate)
+	tokenPostProperties.SetStatus(status)
+
+	tokenInput := sdkgo.NewPostTokenInputWithDefaults()
+	tokenInput.SetProperties(*tokenPostProperties)
+
+	token, _, err := c.ContainerRegistryServices.Token().Post(*tokenInput, id)
+	if err != nil {
+		return err
+	}
+
+	tokenPrint := sdkgo.NewTokenResponseWithDefaults()
+	tokenPrint.SetProperties(*token.GetProperties())
+
+	return c.Printer.Print(getTokenPrint(nil, c, &[]sdkgo.TokenResponse{*tokenPrint}, true))
 }
