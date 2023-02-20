@@ -54,11 +54,10 @@ func getClusterPrint(c *core.CommandConfig, dcs *[]ionoscloud.ClusterResponse) p
 
 type ClusterPrint struct {
 	ClusterId         string `json:"ClusterId,omitempty"`
-	DisplayName       string `json:"DisplayName,omitempty"`
+	Name              string `json:"Name,omitempty"`
 	URL               string `json:"URL,omitempty"`
 	State             string `json:"State,omitempty"`
 	Instances         int32  `json:"Instances,omitempty"`
-	TemplateName      string `json:"TemplateName,omitempty"`
 	MongoVersion      string `json:"MongoVersion,omitempty"`
 	MaintenanceWindow string `json:"MaintenanceWindow,omitempty"`
 	Location          string `json:"Location,omitempty"`
@@ -72,20 +71,18 @@ var allCols = structs.Names(ClusterPrint{})
 
 func getClusterRows(clusters *[]ionoscloud.ClusterResponse) []map[string]interface{} {
 	out := make([]map[string]interface{}, 0, len(*clusters))
+
 	for _, cluster := range *clusters {
 		var clusterPrint ClusterPrint
 		clusterPrint.ClusterId = *cluster.GetId()
+
 		if propertiesOk, ok := cluster.GetPropertiesOk(); ok && propertiesOk != nil {
-			clusterPrint.DisplayName = *propertiesOk.GetDisplayName()
+			clusterPrint.Name = *propertiesOk.GetDisplayName()
 			clusterPrint.Location = *propertiesOk.GetLocation()
 			clusterPrint.TemplateId = *propertiesOk.GetTemplateID()
-			// TODO: Once ApiClient singleton implemented, do this !!!
-			//clusterPrint.TemplateName = sdkgo.TemplatesApi{config.GetApiClient()}.FindById(*propertiesOk.GetTemplateID())
 			clusterPrint.URL = *propertiesOk.GetConnectionString()
 			if vdcConnectionsOk, ok := propertiesOk.GetConnectionsOk(); ok && vdcConnectionsOk != nil {
 				for _, vdcConnection := range *vdcConnectionsOk {
-					// TODO: This only gets the last items in the connections slice. DBaaS API seems to only support one connection atm.
-					// TODO: Create "cluster connections add/remove" sub-command if multiple connections are allowed
 					clusterPrint.DatacenterId = *vdcConnection.GetDatacenterId()
 					clusterPrint.LanId = *vdcConnection.GetLanId()
 					clusterPrint.Cidr = strings.Join(*vdcConnection.GetCidrList(), ", ")
