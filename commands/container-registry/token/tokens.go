@@ -31,7 +31,7 @@ func TokenCmd() *core.Command {
 
 	regCmd.AddCommand(TokenListCmd())
 	regCmd.AddCommand(TokenPostCmd())
-	//regCmd.AddCommand(RegGetCmd())
+	regCmd.AddCommand(TokenGetCmd())
 	regCmd.AddCommand(TokenDeleteCmd())
 	//regCmd.AddCommand(RegUpdateCmd())
 	//regCmd.AddCommand(RegReplaceCmd())
