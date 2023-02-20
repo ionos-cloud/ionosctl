@@ -23,7 +23,7 @@ func UserGetCmd() *core.Command {
 			if err != nil {
 				return err
 			}
-			err = c.Command.Command.MarkFlagRequired(flagDatabase)
+			err = c.Command.Command.MarkFlagRequired(FlagDatabase)
 			if err != nil {
 				return err
 			}
@@ -50,7 +50,7 @@ func UserGetCmd() *core.Command {
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.MongoClusterIds(), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddStringFlag(flagDatabase, flagDatabaseShort, "", "The authentication database")
+	cmd.AddStringFlag(FlagDatabase, FlagDatabaseShort, "", "The authentication database")
 	cmd.AddStringFlag(constants.ArgUser, "u", "", "The authentication username")
 
 	cmd.Command.SilenceUsage = true

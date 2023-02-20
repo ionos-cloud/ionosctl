@@ -3,6 +3,7 @@ package user
 import (
 	"context"
 	"encoding/csv"
+	"fmt"
 	"github.com/cjrd/allocate"
 	"github.com/mmatczuk/anyflag"
 	"strings"
@@ -39,9 +40,9 @@ func UserCreateCmd() *core.Command {
 			if err != nil {
 				return err
 			}
-			err = c.Command.Command.MarkFlagRequired(flagRoles)
+			err = c.Command.Command.MarkFlagRequired(FlagRoles)
 			if err != nil {
-				return err
+				return fmt.Errorf("%w: DB1=Role1,DB2=Role2. Roles: read, readWrite, readAnyDatabase, readWriteAnyDatabase, dbAdmin, dbAdminAnyDatabase, clusterMonitor", err)
 			}
 			return nil
 		},
@@ -70,8 +71,8 @@ func UserCreateCmd() *core.Command {
 	cmd.AddStringVarFlag(userProperties.Password, constants.ArgPassword, constants.ArgPasswordShort, "", "The authentication password", core.RequiredFlagOption())
 
 	sliceOfRolesFlag := anyflag.NewValue(nil, &roles, rolesParser)
-	cmd.Command.Flags().VarP(sliceOfRolesFlag, flagRoles, flagRolesShort, "User's role for each db. DB1=Role1,DB2=Role2. Roles: read, readWrite, readAnyDatabase, readWriteAnyDatabase, dbAdmin, dbAdminAnyDatabase, clusterMonitor")
-	_ = viper.BindPFlag(core.GetFlagName(cmd.NS, flagRoles), cmd.Command.Flags().Lookup(flagRoles))
+	cmd.Command.Flags().VarP(sliceOfRolesFlag, FlagRoles, FlagRolesShort, "User's role for each db. DB1=Role1,DB2=Role2. Roles: read, readWrite, readAnyDatabase, readWriteAnyDatabase, dbAdmin, dbAdminAnyDatabase, clusterMonitor")
+	_ = viper.BindPFlag(core.GetFlagName(cmd.NS, FlagRoles), cmd.Command.Flags().Lookup(FlagRoles))
 
 	cmd.Command.SilenceUsage = true
 
@@ -92,6 +93,9 @@ func rolesParser(val string) ([]sdkgo.UserRoles, error) {
 	var rs []sdkgo.UserRoles
 	for _, t := range tuples {
 		dbAndRole := strings.Split(t, "=")
+		if len(dbAndRole) != 2 {
+			return nil, fmt.Errorf("invalid input format: %s, need db=role\n", val)
+		}
 		r := sdkgo.UserRoles{Database: &dbAndRole[0], Role: &dbAndRole[1]}
 		rs = append(rs, r)
 	}

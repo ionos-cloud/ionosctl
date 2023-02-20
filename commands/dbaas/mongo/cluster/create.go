@@ -75,7 +75,7 @@ func ClusterCreateCmd() *core.Command {
 			// Extra CLI helpers
 			if *input.Properties.Location == "" {
 				// If location isn't set to Datacenter's Location, Mongo API throws an error. Location property is also marked as required
-				// To improve user experience we mark it as optional and now we set it to the datacenter's location (set via connections) implicitly.
+				// To improve user experience we mark it as optional and now we set it to the datacenter's location implicitly (via connections datacenterID).
 				client, err := config.GetClient()
 				if err != nil {
 					return err

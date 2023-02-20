@@ -1,30 +1,67 @@
 package mongo
 
 import (
-	"bytes"
 	"context"
 	"fmt"
-	"github.com/fatih/structs"
+	"github.com/cilium/fake"
 	"github.com/ionos-cloud/ionosctl/commands/dbaas/mongo/cluster"
+	"github.com/ionos-cloud/ionosctl/commands/dbaas/mongo/user"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	sdkcompute "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"testing"
+	"time"
 )
 
-const (
-	uniqueResourceName = "ionosctl-mongo-cluster-test"
+var (
+	uniqueResourceName = "ionosctl-mongo-cluster-test-" + fake.AlphaNum(8)
+	cidr               = fake.IP(fake.WithIPv4(), fake.WithIPCIDR("192.168.0.0/16")) + "/24"
+	client             *config.Client
+	createdClusterId   string
+	createdDcId        string
 )
 
+// If your test is failing because your credentials env var seem empty, try running with `godotenv -f <config-file> go test <test>`
 func TestMongoCommands(t *testing.T) {
-	dcId, lanId, err := mongoClusterPrereqsMustExist() // Sets DatacenterId and LanId
+	var err error
+	client, err = config.GetClient()
 	assert.NoError(t, err)
-	defer cleanupMongoClusterPrereqs(dcId)
+	dcId, lanId, err := setupTestMongoCommands()
+	if err != nil {
+		t.Fatalf("Failed setting up Mongo required resources: %s", err)
+	}
+	t.Cleanup(teardownTestMongoCommands)
+	testMongoClusterCreate(t, dcId, lanId)
+	testMongoUserCreate(t)
+}
 
+func testMongoUserCreate(t *testing.T) {
 	viper.Set(constants.ArgOutput, "text")
-	viper.Set(constants.ArgCols, structs.Names(cluster.ClusterPrint{}.DisplayName[0]))
+	viper.Set(constants.ArgCols, "Name")
+	viper.Set(constants.ArgNoHeaders, true)
+	fmt.Printf(viper.GetString(constants.ArgCols))
+
+	name := fake.Name()
+	c := user.UserCreateCmd()
+	c.Command.Flags().Set(constants.FlagClusterId, createdClusterId)
+	c.Command.Flags().Set(user.FlagRoles, fake.DeploymentTier()+"="+"readWrite,"+fake.DeploymentTier()+"="+"readWrite")
+	c.Command.Flags().Set(constants.FlagName, name)
+	c.Command.Flags().Set(constants.ArgPassword, fake.AlphaNum(12))
+
+	err := c.Command.Execute()
+	assert.NoError(t, err)
+
+	createdUsers, _, err := client.MongoClient.UsersApi.ClustersUsersGet(context.Background(), createdClusterId).Execute()
+	assert.NoError(t, err)
+	assert.Equal(t, name, *(*createdUsers.GetItems())[0].GetProperties().Username)
+}
+
+func testMongoClusterCreate(t *testing.T, dcId, lanId string) {
+	viper.Set(constants.ArgOutput, "text")
+	viper.Set(constants.ArgCols, "Name")
+	viper.Set(constants.ArgNoHeaders, true)
 	fmt.Printf(viper.GetString(constants.ArgCols))
 
 	c := cluster.ClusterCreateCmd()
@@ -35,67 +72,69 @@ func TestMongoCommands(t *testing.T) {
 	c.Command.Flags().Set(constants.FlagTemplateId, getPlaygroundTemplateUuid())
 	c.Command.Flags().Set(constants.FlagMaintenanceDay, "Friday")
 	c.Command.Flags().Set(constants.FlagMaintenanceTime, "10:00:00")
-	c.Command.Flags().Set(constants.FlagCidr, "192.168.1.116/24")
+	c.Command.Flags().Set(constants.FlagCidr, cidr)
 
-	b := bytes.NewBufferString("")
-	c.Command.SetOut(b)
-	err = c.Command.Execute()
+	err := c.Command.Execute()
 	assert.NoError(t, err)
+
+	createdCluster, _, err := client.MongoClient.ClustersApi.ClustersGet(context.Background()).FilterName(uniqueResourceName).Execute()
+	createdClusterId = *(*createdCluster.GetItems())[0].GetId()
+	assert.NoError(t, err)
+	assert.Equal(t, uniqueResourceName, *(*createdCluster.Items)[0].Properties.DisplayName)
+	assert.Equal(t, "de/fra", *(*createdCluster.Items)[0].Properties.Location)
 }
 
-func mongoClusterPrereqsMustExist() (string, string, error) {
-	client, err := config.GetClient()
-	if err != nil {
-		return "", "", err
-	}
-
+func setupTestMongoCommands() (string, string, error) {
 	// make sure datacenter exists
-	var dcId string
 	dcs, resp, err := client.CloudClient.DataCentersApi.DatacentersGet(context.Background()).Filter("name", uniqueResourceName).Depth(1).Execute()
-	if (err != nil && resp.HttpNotFound()) || len(*dcs.Items) < 1 {
+	if resp.HttpNotFound() || len(*dcs.Items) < 1 {
 		dc, _, err := client.CloudClient.DataCentersApi.DatacentersPost(context.Background()).Datacenter(sdkcompute.Datacenter{Properties: &sdkcompute.DatacenterProperties{Name: sdkcompute.PtrString(uniqueResourceName), Location: sdkcompute.PtrString("de/fra")}}).Execute()
 		if err != nil {
-			return dcId, "", nil
+			return createdDcId, "", fmt.Errorf("failed creating dc %w", err)
 		}
-		dcId = *dc.Id
+		createdDcId = *dc.Id
+		time.Sleep(10 * time.Second)
 	} else if err != nil {
-		return dcId, "", nil
+		return createdDcId, "", fmt.Errorf("failed getting dc %w", err)
 	} else {
-		dcId = *(*dcs.GetItems())[0].GetId()
+		createdDcId = *(*dcs.GetItems())[0].GetId()
 	}
 
+	fmt.Printf("dcId: %s\n", createdDcId)
 	// make sure lan exists
 	var lanId string
-	lans, resp, err := client.CloudClient.LANsApi.DatacentersLansGet(context.Background(), dcId).Filter("name", uniqueResourceName).Depth(1).Execute()
-	if (err != nil && resp.HttpNotFound()) || len(*lans.Items) < 1 {
-		lan, _, err := client.CloudClient.LANsApi.DatacentersLansPost(context.Background(), dcId).Lan(sdkcompute.LanPost{Properties: &sdkcompute.LanPropertiesPost{Name: sdkcompute.PtrString(uniqueResourceName)}}).Execute()
+	lans, resp, err := client.CloudClient.LANsApi.DatacentersLansGet(context.Background(), createdDcId).Filter("name", uniqueResourceName).Depth(1).Execute()
+	if resp.HttpNotFound() || len(*lans.Items) < 1 {
+		lan, _, err := client.CloudClient.LANsApi.DatacentersLansPost(context.Background(), createdDcId).Lan(sdkcompute.LanPost{Properties: &sdkcompute.LanPropertiesPost{Name: sdkcompute.PtrString(uniqueResourceName), Public: sdkcompute.PtrBool(false)}}).Execute()
 		if err != nil {
-			return dcId, lanId, nil
+			return createdDcId, lanId, fmt.Errorf("failed creating lan: %w", err)
 		}
 		lanId = *lan.Id
+		time.Sleep(10 * time.Second)
 	} else if err != nil {
-		return dcId, lanId, nil
+		return createdDcId, lanId, fmt.Errorf("failed getting lan: %w", err)
 	} else {
 		lanId = *(*lans.GetItems())[0].GetId()
 	}
+	fmt.Printf("lanId: %s\n", lanId)
 
-	return dcId, lanId, nil
+	return createdDcId, lanId, nil
 }
 
-func cleanupMongoClusterPrereqs(dcId string) error {
-	client, err := config.GetClient()
+func teardownTestMongoCommands() {
+	_, _, err := client.MongoClient.ClustersApi.ClustersDelete(context.Background(), createdClusterId).Execute()
 	if err != nil {
-		return err
+		fmt.Printf("failed deleting cluster: %v\n", err)
 	}
-	_, err = client.CloudClient.DataCentersApi.DatacentersDelete(context.Background(), dcId).Execute()
+
+	_, err = client.CloudClient.DataCentersApi.DatacentersDelete(context.Background(), createdDcId).Execute()
 	if err != nil {
-		return err
+		fmt.Printf("failed deleting dc: %v\n", err)
 	}
-	return nil
 }
 
 // getPlaygroundTemplateUuid gets template ID of template "MongoDB Playground". In case of error, returns fallback UUID to that template as of 13 feb 2023
-// If using this outside testing funcs, you should remove 'fallbackUUID' and do some proper err handling
+// If using this in a real production environment, you should remove 'fallbackUUID' and do some proper err handling
 func getPlaygroundTemplateUuid() string {
 	const fallbackUuid = "33457e53-1f8b-4ed2-8a12-2d42355aa759"
 

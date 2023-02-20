@@ -14,10 +14,10 @@ import (
 )
 
 const (
-	flagDatabase      = "database"
-	flagDatabaseShort = "d"
-	flagRoles         = "roles"
-	flagRolesShort    = "r"
+	FlagDatabase      = "database"
+	FlagDatabaseShort = "d"
+	FlagRoles         = "roles"
+	FlagRolesShort    = "r"
 )
 
 func UserCmd() *core.Command {
