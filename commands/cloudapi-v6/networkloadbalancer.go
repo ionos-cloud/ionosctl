@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io"
 	"os"
 	"strings"
 	"time"
@@ -19,7 +18,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
-	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
@@ -133,8 +131,8 @@ Required values to run command:
 	create.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "Network Load Balancer", "Name of the Network Load Balancer")
 	create.AddIntFlag(cloudapiv6.ArgListenerLan, "", 2, "Id of the listening LAN")
 	create.AddIntFlag(cloudapiv6.ArgTargetLan, "", 1, "Id of the balanced private target LAN")
-	create.AddIpSliceFlag(cloudapiv6.ArgIps, "", nil, "Collection of IP addresses of the Network Load Balancer")
-	create.AddIpSliceFlag(cloudapiv6.ArgPrivateIps, "", nil, "Collection of private IP addresses with subnet mask of the Network Load Balancer")
+	create.AddStringSliceFlag(cloudapiv6.ArgIps, "", nil, "Collection of IP addresses of the Network Load Balancer")
+	create.AddStringSliceFlag(cloudapiv6.ArgPrivateIps, "", nil, "Collection of private IP addresses with subnet mask of the Network Load Balancer")
 	create.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait, "Wait for the Request for Network Load Balancer creation to be executed")
 	create.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, cloudapiv6.NlbTimeoutSeconds, "Timeout option for Request for Network Load Balancer creation [seconds]")
 	create.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultCreateDepth, cloudapiv6.ArgDepthDescription)
@@ -172,8 +170,8 @@ Required values to run command:
 	update.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "Network Load Balancer", "Name of the Network Load Balancer")
 	update.AddIntFlag(cloudapiv6.ArgListenerLan, "", 2, "Id of the listening LAN")
 	update.AddIntFlag(cloudapiv6.ArgTargetLan, "", 1, "Id of the balanced private target LAN")
-	update.AddIpSliceFlag(cloudapiv6.ArgIps, "", nil, "Collection of IP addresses of the Network Load Balancer")
-	update.AddIpSliceFlag(cloudapiv6.ArgPrivateIps, "", nil, "Collection of private IP addresses with subnet mask of the Network Load Balancer")
+	update.AddStringSliceFlag(cloudapiv6.ArgIps, "", nil, "Collection of IP addresses of the Network Load Balancer")
+	update.AddStringSliceFlag(cloudapiv6.ArgPrivateIps, "", nil, "Collection of private IP addresses with subnet mask of the Network Load Balancer")
 	update.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait, "Wait for the Request for Network Load Balancer update to be executed")
 	update.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, cloudapiv6.NlbTimeoutSeconds, "Timeout option for Request for Network Load Balancer update [seconds]")
 	update.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultUpdateDepth, cloudapiv6.ArgDepthDescription)
@@ -536,49 +534,10 @@ func getNetworkLoadBalancerPrint(resp *resources.Response, c *core.CommandConfig
 		if ss != nil {
 			r.OutputJSON = ss
 			r.KeyValue = getNetworkLoadBalancersKVMaps(ss)
-			r.Columns = getNetworkLoadBalancersCols(
-				core.GetGlobalFlagName(c.Resource, constants.ArgCols),
-				core.GetFlagName(c.NS, cloudapiv6.ArgAll),
-				c.Printer.GetStderr(),
-			)
+			r.Columns = printer.GetHeadersListAll(allNetworkLoadBalancerCols, defaultNetworkLoadBalancerCols, "DatacenterId", viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)), viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)))
 		}
 	}
 	return r
-}
-
-func getNetworkLoadBalancersCols(argCols string, argAll string, outErr io.Writer) []string {
-	var cols []string
-	if viper.IsSet(argCols) {
-		cols = viper.GetStringSlice(argCols)
-
-		columnsMap := map[string]string{
-			"NetworkLoadBalancerId": "NetworkLoadBalancerId",
-			"Name":                  "Name",
-			"ListenerLan":           "ListenerLan",
-			"Ips":                   "Ips",
-			"TargetLan":             "TargetLan",
-			"LbPrivateIps":          "LbPrivateIps",
-			"State":                 "State",
-			"DatacenterId":          "DatacenterId",
-		}
-		var networkloadbalancerCols []string
-		for _, k := range cols {
-			col := columnsMap[k]
-			if col != "" {
-				networkloadbalancerCols = append(networkloadbalancerCols, col)
-			} else {
-				clierror.CheckError(errors.New("unknown column "+k), outErr)
-			}
-		}
-		return networkloadbalancerCols
-	} else if viper.IsSet(argAll) {
-		// Add column which specifies which parent resource this belongs to, if using -a/--all flag
-		cols = append(defaultNetworkLoadBalancerCols[:constants.DefaultParentIndex+1], defaultNetworkLoadBalancerCols[constants.DefaultParentIndex:]...)
-		cols[constants.DefaultParentIndex] = "DatacenterId"
-		return cols
-	} else {
-		return defaultNetworkLoadBalancerCols
-	}
 }
 
 func getNetworkLoadBalancers(networkloadbalancers resources.NetworkLoadBalancers) []resources.NetworkLoadBalancer {

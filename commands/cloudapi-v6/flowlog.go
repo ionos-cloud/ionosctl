@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io"
 	"os"
 	"strings"
 
@@ -18,7 +17,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
-	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
@@ -499,38 +497,13 @@ func getFlowLogPrint(resp *resources.Response, c *core.CommandConfig, rule []res
 			r.OutputJSON = rule
 			r.KeyValue = getFlowLogsKVMaps(rule)
 			if c.Resource != c.Namespace {
-				r.Columns = getFlowLogsCols(core.GetFlagName(c.NS, constants.ArgCols), c.Printer.GetStderr())
+				r.Columns = printer.GetHeadersAllDefault(defaultFlowLogCols, viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)))
 			} else {
-				r.Columns = getFlowLogsCols(core.GetGlobalFlagName(c.Resource, constants.ArgCols), c.Printer.GetStderr())
+				r.Columns = printer.GetHeadersAllDefault(defaultFlowLogCols, viper.GetStringSlice(core.GetGlobalFlagName(c.Resource, constants.ArgCols)))
 			}
 		}
 	}
 	return r
-}
-
-func getFlowLogsCols(flagName string, outErr io.Writer) []string {
-	if viper.IsSet(flagName) && len(viper.GetStringSlice(flagName)) > 0 {
-		var flowLogCols []string
-		columnsMap := map[string]string{
-			"FlowLogId": "FlowLogId",
-			"Name":      "Name",
-			"Action":    "Action",
-			"Direction": "Direction",
-			"Bucket":    "Bucket",
-			"State":     "State",
-		}
-		for _, k := range viper.GetStringSlice(flagName) {
-			col := columnsMap[k]
-			if col != "" {
-				flowLogCols = append(flowLogCols, col)
-			} else {
-				clierror.CheckError(errors.New("unknown column "+k), outErr)
-			}
-		}
-		return flowLogCols
-	} else {
-		return defaultFlowLogCols
-	}
 }
 
 func getFlowLogs(flowLogs resources.FlowLogs) []resources.FlowLog {

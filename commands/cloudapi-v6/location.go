@@ -3,7 +3,6 @@ package commands
 import (
 	"context"
 	"errors"
-	"io"
 	"os"
 	"strings"
 
@@ -13,7 +12,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
-	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 	"github.com/spf13/cobra"
@@ -118,7 +116,7 @@ func RunLocationList(c *core.CommandConfig) error {
 	return c.Printer.Print(printer.Result{
 		OutputJSON: locations,
 		KeyValue:   getLocationsKVMaps(getLocations(locations)),
-		Columns:    getLocationCols(core.GetGlobalFlagName(c.Resource, constants.ArgCols), c.Printer.GetStderr()),
+		Columns:    printer.GetHeaders(allLocationCols, defaultLocationCols, viper.GetStringSlice(core.GetGlobalFlagName(c.NS, constants.ArgCols))),
 	})
 }
 
@@ -144,7 +142,7 @@ func RunLocationGet(c *core.CommandConfig) error {
 	return c.Printer.Print(printer.Result{
 		OutputJSON: loc,
 		KeyValue:   getLocationsKVMaps(getLocation(loc)),
-		Columns:    getLocationCols(core.GetGlobalFlagName(c.Resource, constants.ArgCols), c.Printer.GetStderr()),
+		Columns:    printer.GetHeaders(allLocationCols, defaultLocationCols, viper.GetStringSlice(core.GetGlobalFlagName(c.NS, constants.ArgCols))),
 	})
 }
 
@@ -161,33 +159,6 @@ type LocationPrint struct {
 	Features     []string `json:"Features,omitempty"`
 	CpuFamily    []string `json:"CpuFamily,omitempty"`
 	ImageAliases []string `json:"ImageAliases,omitempty"`
-}
-
-func getLocationCols(flagName string, outErr io.Writer) []string {
-	var cols []string
-	if viper.IsSet(flagName) {
-		cols = viper.GetStringSlice(flagName)
-	} else {
-		return defaultLocationCols
-	}
-
-	columnsMap := map[string]string{
-		"LocationId":   "LocationId",
-		"Name":         "Name",
-		"Features":     "Features",
-		"CpuFamily":    "CpuFamily",
-		"ImageAliases": "ImageAliases",
-	}
-	var locationsCols []string
-	for _, k := range cols {
-		col := columnsMap[k]
-		if col != "" {
-			locationsCols = append(locationsCols, col)
-		} else {
-			clierror.CheckError(errors.New("unknown column "+k), outErr)
-		}
-	}
-	return locationsCols
 }
 
 func getLocation(u *resources.Location) []resources.Location {

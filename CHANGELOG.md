@@ -1,5 +1,37 @@
 # Changelog
 
+## [6.5.1] (February 2023)
+
+### Changed
+- Changed `ionosctl version` behaviour to only display the version of the CLI by default  e.g.
+     ```bash
+      $ ionosctl version
+      v6.5.0
+     ```
+     You can use -v/--verbose flag to display SDK versions.
+
+### Fixed
+- Added MaxResults flag to commands where it was missing from: `user s3key list`, `location cpu list`, etc.
+- Query Parameters MaxResults and OrderBy won't be sent to CloudAPI if their values are 0 or "". 
+
+### Dependencies
+- Updated go version to 1.19
+- Bump sdk-go to v6.1.4, bump sdk-go-dbaas-postgres to v1.0.6. Various other dependency updates.
+
+## [6.5.0] (January 2023)
+
+### Changed
+- **Important (affects scripts):** Slice type printing has been improved. Before: `[property1 property2 property3]`, now: `property1,property2,property3`. This means you can direct ionosctl slice output back to its own commands. Thanks to @avorima.
+- Warnings while using `-o text` are now also piped to stderr, to keep consistent with `-o json`. Thanks to @webner
+
+### Added
+- Added support for Certificate Manager API: `ionosctl certificate-manager`
+
+### Fixed
+- Fixed list commands for Groups (@webner), Group Shares. 
+- Fixed a number of commands which used Viper to get the value of ipslice flags, including `natgateway create` (fixes #225).
+
+
 ## [6.4.2] (November 2022)
 
 ### Fixed

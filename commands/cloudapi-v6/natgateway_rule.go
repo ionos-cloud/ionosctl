@@ -554,7 +554,7 @@ func getNatGatewayRulePrint(resp *resources.Response, c *core.CommandConfig, ss 
 		if ss != nil {
 			r.OutputJSON = ss
 			r.KeyValue = getNatGatewayRulesKVMaps(ss)
-			r.Columns = getNatGatewayRulesCols(core.GetGlobalFlagName(c.Resource, constants.ArgCols), c.Printer.GetStderr())
+			r.Columns = printer.GetHeaders(allNatGatewayRuleCols, defaultNatGatewayRuleCols, viper.GetStringSlice(core.GetFlagName(c.NS, constants.ArgCols)))
 		}
 	}
 	return r

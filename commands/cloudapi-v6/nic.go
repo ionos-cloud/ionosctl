@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io"
 	"os"
 
 	"go.uber.org/multierr"
@@ -17,7 +16,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
-	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
@@ -140,7 +138,7 @@ Required values to run a command:
 		return completer.ServersIds(os.Stderr, viper.GetString(core.GetFlagName(create.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "Internet Access", "The name of the NIC")
-	create.AddIpSliceFlag(cloudapiv6.ArgIps, "", nil, "IPs assigned to the NIC. This can be a collection")
+	create.AddStringSliceFlag(cloudapiv6.ArgIps, "", nil, "IPs assigned to the NIC. This can be a collection")
 	create.AddBoolFlag(cloudapiv6.ArgDhcp, "", cloudapiv6.DefaultDhcp, "Set to false if you wish to disable DHCP on the NIC. E.g.: --dhcp=true, --dhcp=false")
 	create.AddBoolFlag(cloudapiv6.ArgFirewallActive, "", cloudapiv6.DefaultFirewallActive, "Activate or deactivate the Firewall. E.g.: --firewall-active=true, --firewall-active=false")
 	create.AddStringFlag(cloudapiv6.ArgFirewallType, "", "INGRESS", "The type of Firewall Rules that will be allowed on the NIC")
@@ -207,7 +205,7 @@ Required values to run command:
 	update.AddBoolFlag(cloudapiv6.ArgDhcp, "", cloudapiv6.DefaultDhcp, "Boolean value that indicates if the NIC is using DHCP (true) or not (false). E.g.: --dhcp=true, --dhcp=false")
 	update.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait, "Wait for the Request for NIC update to be executed")
 	update.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for NIC update [seconds]")
-	update.AddIpSliceFlag(cloudapiv6.ArgIps, "", nil, "IPs assigned to the NIC")
+	update.AddStringSliceFlag(cloudapiv6.ArgIps, "", nil, "IPs assigned to the NIC")
 	update.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultUpdateDepth, cloudapiv6.ArgDepthDescription)
 
 	/*
@@ -898,46 +896,13 @@ func getNicPrint(resp *resources.Response, c *core.CommandConfig, nics []resourc
 			r.OutputJSON = nics
 			r.KeyValue = getNicsKVMaps(nics)
 			if c.Resource != c.Namespace {
-				r.Columns = getNicsCols(core.GetFlagName(c.NS, constants.ArgCols), c.Printer.GetStderr())
+				r.Columns = printer.GetHeaders(allNicCols, defaultNicCols, viper.GetStringSlice(core.GetFlagName(c.NS, constants.ArgCols)))
 			} else {
-				r.Columns = getNicsCols(core.GetGlobalFlagName(c.Resource, constants.ArgCols), c.Printer.GetStderr())
+				r.Columns = printer.GetHeaders(allNicCols, defaultNicCols, viper.GetStringSlice(core.GetGlobalFlagName(c.NS, constants.ArgCols)))
 			}
 		}
 	}
 	return r
-}
-
-func getNicsCols(flagName string, outErr io.Writer) []string {
-	var cols []string
-	if viper.IsSet(flagName) {
-		cols = viper.GetStringSlice(flagName)
-	} else {
-		return defaultNicCols
-	}
-
-	columnsMap := map[string]string{
-		"NicId":          "NicId",
-		"Name":           "Name",
-		"Dhcp":           "Dhcp",
-		"LanId":          "LanId",
-		"Ips":            "Ips",
-		"FirewallActive": "FirewallActive",
-		"FirewallType":   "FirewallType",
-		"Mac":            "Mac",
-		"State":          "State",
-		"DeviceNumber":   "DeviceNumber",
-		"PciSlot":        "PciSlot",
-	}
-	var nicCols []string
-	for _, k := range cols {
-		col := columnsMap[k]
-		if col != "" {
-			nicCols = append(nicCols, col)
-		} else {
-			clierror.CheckError(errors.New("unknown column "+k), outErr)
-		}
-	}
-	return nicCols
 }
 
 func getNics(nics resources.Nics) []resources.Nic {

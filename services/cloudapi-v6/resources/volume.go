@@ -2,6 +2,7 @@ package resources
 
 import (
 	"context"
+	"github.com/ionos-cloud/ionosctl/pkg/config"
 
 	"github.com/fatih/structs"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
@@ -32,15 +33,15 @@ type VolumesService interface {
 }
 
 type volumesService struct {
-	client  *Client
+	client  *ionoscloud.APIClient
 	context context.Context
 }
 
 var _ VolumesService = &volumesService{}
 
-func NewVolumeService(client *Client, ctx context.Context) VolumesService {
+func NewVolumeService(client *config.Client, ctx context.Context) VolumesService {
 	return &volumesService{
-		client:  client,
+		client:  client.CloudClient,
 		context: ctx,
 	}
 }

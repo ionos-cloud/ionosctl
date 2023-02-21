@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io"
 	"os"
 	"strings"
 	"time"
@@ -19,7 +18,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
-	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
@@ -132,7 +130,7 @@ Required values to run command:
 		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "NAT Gateway", "Name of the NAT Gateway")
-	create.AddIpSliceFlag(cloudapiv6.ArgIps, "", nil, "Collection of public reserved IP addresses of the NAT Gateway", core.RequiredFlagOption())
+	create.AddStringSliceFlag(cloudapiv6.ArgIps, "", nil, "Collection of public reserved IP addresses of the NAT Gateway", core.RequiredFlagOption())
 	create.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait, "Wait for the Request for NAT Gateway creation to be executed")
 	create.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for NAT Gateway creation [seconds]")
 	create.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultCreateDepth, cloudapiv6.ArgDepthDescription)
@@ -168,7 +166,7 @@ Required values to run command:
 		return completer.NatGatewaysIds(os.Stderr, viper.GetString(core.GetFlagName(update.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "", "Name of the NAT Gateway")
-	update.AddIpSliceFlag(cloudapiv6.ArgIps, "", nil, "Collection of public reserved IP addresses of the NAT Gateway. This will overwrite the current values")
+	update.AddStringSliceFlag(cloudapiv6.ArgIps, "", nil, "Collection of public reserved IP addresses of the NAT Gateway. This will overwrite the current values")
 	update.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait, "Wait for the Request for NAT Gateway update to be executed")
 	update.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for NAT Gateway update [seconds]")
 	update.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultUpdateDepth, cloudapiv6.ArgDepthDescription)
@@ -508,46 +506,10 @@ func getNatGatewayPrint(resp *resources.Response, c *core.CommandConfig, ss []re
 		if ss != nil {
 			r.OutputJSON = ss
 			r.KeyValue = getNatGatewaysKVMaps(ss)
-			r.Columns = getNatGatewaysCols(
-				core.GetGlobalFlagName(c.Resource, constants.ArgCols),
-				core.GetFlagName(c.NS, cloudapiv6.ArgAll),
-				c.Printer.GetStderr(),
-			)
+			r.Columns = printer.GetHeadersListAll(allNatGatewayCols, defaultNatGatewayCols, "DatacenterId", viper.GetStringSlice(core.GetFlagName(c.NS, constants.ArgCols)), viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)))
 		}
 	}
 	return r
-}
-
-func getNatGatewaysCols(argCols string, argAll string, outErr io.Writer) []string {
-	var cols []string
-	if viper.IsSet(argCols) {
-		cols = viper.GetStringSlice(argCols)
-
-		columnsMap := map[string]string{
-			"NatGatewayId": "NatGatewayId",
-			"Name":         "Name",
-			"PublicIps":    "PublicIps",
-			"State":        "State",
-			"DatacenterId": "DatacenterId",
-		}
-		var natgatewayCols []string
-		for _, k := range cols {
-			col := columnsMap[k]
-			if col != "" {
-				natgatewayCols = append(natgatewayCols, col)
-			} else {
-				clierror.CheckError(errors.New("unknown column "+k), outErr)
-			}
-		}
-		return natgatewayCols
-	} else if viper.IsSet(argAll) {
-		// Add column which specifies which parent resource this belongs to, if using -a/--all flag
-		cols = append(defaultNatGatewayCols[:constants.DefaultParentIndex+1], defaultNatGatewayCols[constants.DefaultParentIndex:]...)
-		cols[constants.DefaultParentIndex] = "DatacenterId"
-		return cols
-	} else {
-		return defaultNatGatewayCols
-	}
 }
 
 func getNatGateways(natgateways resources.NatGateways) []resources.NatGateway {

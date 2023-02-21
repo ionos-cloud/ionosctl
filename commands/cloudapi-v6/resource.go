@@ -2,8 +2,6 @@ package commands
 
 import (
 	"context"
-	"errors"
-	"io"
 	"os"
 
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/query"
@@ -13,7 +11,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
-	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 	"github.com/spf13/cobra"
@@ -54,6 +51,7 @@ func ResourceCmd() *core.Command {
 		InitClient: true,
 	})
 	list.AddBoolFlag(constants.ArgNoHeaders, "", false, cloudapiv6.ArgNoHeadersDescription)
+	list.AddInt32Flag(cloudapiv6.ArgMaxResults, cloudapiv6.ArgMaxResultsShort, cloudapiv6.DefaultMaxResults, cloudapiv6.ArgMaxResultsDescription)
 	list.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultListDepth, cloudapiv6.ArgDepthDescription)
 
 	/*
@@ -154,6 +152,7 @@ func GroupResourceCmd() *core.Command {
 		CmdRun:     RunGroupResourceList,
 		InitClient: true,
 	})
+	listResources.AddInt32Flag(cloudapiv6.ArgMaxResults, cloudapiv6.ArgMaxResultsShort, cloudapiv6.DefaultMaxResults, cloudapiv6.ArgMaxResultsDescription)
 	listResources.AddStringSliceFlag(constants.ArgCols, "", defaultResourceCols, printer.ColsMessage(defaultResourceCols))
 	_ = listResources.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultResourceCols, cobra.ShellCompDirectiveNoFileComp
@@ -202,39 +201,14 @@ func getResourcePrint(c *core.CommandConfig, res []resources.Resource) printer.R
 			r.OutputJSON = res
 			r.KeyValue = getResourcesKVMaps(res)
 			if c.Resource != c.Namespace {
-				r.Columns = getResourceCols(core.GetFlagName(c.NS, constants.ArgCols), c.Printer.GetStderr())
+				r.Columns = printer.GetHeadersAllDefault(defaultResourceCols, viper.GetStringSlice(core.GetFlagName(c.NS, constants.ArgCols)))
 			} else {
-				r.Columns = getResourceCols(core.GetGlobalFlagName(c.Resource, constants.ArgCols), c.Printer.GetStderr())
+				r.Columns = printer.GetHeadersAllDefault(defaultResourceCols, viper.GetStringSlice(core.GetGlobalFlagName(c.NS, constants.ArgCols)))
 			}
 		}
 	}
 	return r
 }
-
-func getResourceCols(flagName string, outErr io.Writer) []string {
-	if viper.IsSet(flagName) {
-		var groupCols []string
-		columnsMap := map[string]string{
-			"ResourceId":        "ResourceId",
-			"Name":              "Name",
-			"SecAuthProtection": "SecAuthProtection",
-			"Type":              "Type",
-			"State":             "State",
-		}
-		for _, k := range viper.GetStringSlice(flagName) {
-			col := columnsMap[k]
-			if col != "" {
-				groupCols = append(groupCols, col)
-			} else {
-				clierror.CheckError(errors.New("unknown column "+k), outErr)
-			}
-		}
-		return groupCols
-	} else {
-		return defaultResourceCols
-	}
-}
-
 func getResource(res *resources.Resource) []resources.Resource {
 	ress := make([]resources.Resource, 0)
 	if res != nil {

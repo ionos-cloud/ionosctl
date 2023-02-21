@@ -2,6 +2,7 @@ package resources
 
 import (
 	"context"
+	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"time"
 
 	sdkgo "github.com/ionos-cloud/sdk-go-dbaas-postgres"
@@ -23,15 +24,15 @@ type LogsService interface {
 }
 
 type logsService struct {
-	client  *Client
+	client  *sdkgo.APIClient
 	context context.Context
 }
 
 var _ LogsService = &logsService{}
 
-func NewLogsService(client *Client, ctx context.Context) LogsService {
+func NewLogsService(client *config.Client, ctx context.Context) LogsService {
 	return &logsService{
-		client:  client,
+		client:  client.DbaasClient,
 		context: ctx,
 	}
 }

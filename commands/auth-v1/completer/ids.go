@@ -7,11 +7,10 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	"github.com/ionos-cloud/ionosctl/services/auth-v1/resources"
-	"github.com/spf13/viper"
 )
 
 func TokensIds(outErr io.Writer) []string {
-	client, err := getClient()
+	client, err := config.GetClient()
 	clierror.CheckError(err, outErr)
 	tokenSvc := resources.NewTokenService(client, context.TODO())
 	tokens, _, err := tokenSvc.List(0)
@@ -27,21 +26,4 @@ func TokensIds(outErr io.Writer) []string {
 		return nil
 	}
 	return tokenIds
-}
-
-// Get Client for Completion Functions
-func getClient() (*resources.Client, error) {
-	if err := config.Load(); err != nil {
-		return nil, err
-	}
-	clientSvc, err := resources.NewClientService(
-		viper.GetString(config.Username),
-		viper.GetString(config.Password),
-		viper.GetString(config.Token),
-		config.GetServerUrl(),
-	)
-	if err != nil {
-		return nil, err
-	}
-	return clientSvc.Get(), nil
 }

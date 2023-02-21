@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io"
 	"os"
 	"strconv"
 	"strings"
@@ -20,7 +19,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
-	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
@@ -1097,55 +1095,13 @@ func getVolumePrint(resp *resources.Response, c *core.CommandConfig, vols []reso
 			r.OutputJSON = vols
 			r.KeyValue = getVolumesKVMaps(vols)
 			if c.Resource != c.Namespace {
-				r.Columns = getVolumesCols(core.GetFlagName(c.NS, constants.ArgCols), core.GetFlagName(c.NS, cloudapiv6.ArgAll), c.Printer.GetStderr())
+				r.Columns = printer.GetHeadersListAll(allVolumeCols, defaultVolumeCols, "DatacenterId", viper.GetStringSlice(core.GetFlagName(c.NS, constants.ArgCols)), viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)))
 			} else {
-				r.Columns = getVolumesCols(core.GetGlobalFlagName(c.Resource, constants.ArgCols), core.GetFlagName(c.NS, cloudapiv6.ArgAll), c.Printer.GetStderr())
+				r.Columns = printer.GetHeadersListAll(allVolumeCols, defaultVolumeCols, "DatacenterId", viper.GetStringSlice(core.GetGlobalFlagName(c.NS, constants.ArgCols)), viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)))
 			}
 		}
 	}
 	return r
-}
-
-func getVolumesCols(argCols string, argAll string, outErr io.Writer) []string {
-	var cols []string
-	if viper.IsSet(argCols) {
-		cols = viper.GetStringSlice(argCols)
-
-		columnsMap := map[string]string{
-			"VolumeId":         "VolumeId",
-			"Name":             "Name",
-			"Size":             "Size",
-			"Type":             "Type",
-			"LicenceType":      "LicenceType",
-			"Bus":              "Bus",
-			"AvailabilityZone": "AvailabilityZone",
-			"State":            "State",
-			"Image":            "Image",
-			"ImageAlias":       "ImageAlias",
-			"DeviceNumber":     "DeviceNumber",
-			"BackupunitId":     "BackupunitId",
-			"UserData":         "UserData",
-			"BootServerId":     "BootServerId",
-			"DatacenterId":     "DatacenterId",
-		}
-		var volumeCols []string
-		for _, k := range cols {
-			col := columnsMap[k]
-			if col != "" {
-				volumeCols = append(volumeCols, col)
-			} else {
-				clierror.CheckError(errors.New("unknown column "+k), outErr)
-			}
-		}
-		return volumeCols
-	} else if viper.GetBool(argAll) {
-		// Add column which specifies which parent resource this belongs to, if using -a/--all flag
-		cols = append(defaultVolumeCols[:constants.DefaultParentIndex+1], defaultVolumeCols[constants.DefaultParentIndex:]...)
-		cols[constants.DefaultParentIndex] = "DatacenterId"
-		return cols
-	} else {
-		return defaultVolumeCols
-	}
 }
 
 func getVolumes(volumes resources.Volumes) []resources.Volume {

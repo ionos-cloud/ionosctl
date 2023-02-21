@@ -3,7 +3,6 @@ package commands
 import (
 	"context"
 	"errors"
-	"io"
 	"os"
 
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/query"
@@ -15,7 +14,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
-	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
@@ -106,7 +104,7 @@ Required values to run command:
 	_ = add.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.LansIds(os.Stderr, viper.GetString(core.GetFlagName(add.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	add.AddIpSliceFlag(cloudapiv6.ArgIps, "", nil, "Collection of Gateway IPs. If not set, it will automatically reserve public IPs")
+	add.AddStringSliceFlag(cloudapiv6.ArgIps, "", nil, "Collection of Gateway IPs. If not set, it will automatically reserve public IPs")
 	add.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait, "Wait for the Request for NAT Gateway Lan addition to be executed")
 	add.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for NAT Gateway Lan addition [seconds]")
 	add.AddStringSliceFlag(constants.ArgCols, "", defaultNatGatewayLanCols, printer.ColsMessage(defaultNatGatewayLanCols))
@@ -382,34 +380,10 @@ func getNatGatewayLanPrint(resp *resources.Response, c *core.CommandConfig, ss [
 		if ss != nil {
 			r.OutputJSON = ss
 			r.KeyValue = getNatGatewayLansKVMaps(ss)
-			r.Columns = getNatGatewayLansCols(core.GetGlobalFlagName(c.Resource, constants.ArgCols), c.Printer.GetStderr())
+			r.Columns = printer.GetHeadersAllDefault(defaultNatGatewayLanCols, viper.GetStringSlice(core.GetFlagName(c.NS, constants.ArgCols)))
 		}
 	}
 	return r
-}
-
-func getNatGatewayLansCols(flagName string, outErr io.Writer) []string {
-	var cols []string
-	if viper.IsSet(flagName) {
-		cols = viper.GetStringSlice(flagName)
-	} else {
-		return defaultNatGatewayLanCols
-	}
-
-	columnsMap := map[string]string{
-		"NatGatewayLanId": "NatGatewayLanId",
-		"GatewayIps":      "GatewayIps",
-	}
-	var natgatewayCols []string
-	for _, k := range cols {
-		col := columnsMap[k]
-		if col != "" {
-			natgatewayCols = append(natgatewayCols, col)
-		} else {
-			clierror.CheckError(errors.New("unknown column "+k), outErr)
-		}
-	}
-	return natgatewayCols
 }
 
 func getNatGatewayLans(ng *resources.NatGateway) []resources.NatGatewayLanProperties {

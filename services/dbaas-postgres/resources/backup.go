@@ -2,6 +2,7 @@ package resources
 
 import (
 	"context"
+	"github.com/ionos-cloud/ionosctl/pkg/config"
 
 	sdkgo "github.com/ionos-cloud/sdk-go-dbaas-postgres"
 )
@@ -26,15 +27,15 @@ type BackupsService interface {
 }
 
 type backupsService struct {
-	client  *Client
+	client  *sdkgo.APIClient
 	context context.Context
 }
 
 var _ BackupsService = &backupsService{}
 
-func NewBackupsService(client *Client, ctx context.Context) BackupsService {
+func NewBackupsService(client *config.Client, ctx context.Context) BackupsService {
 	return &backupsService{
-		client:  client,
+		client:  client.DbaasClient,
 		context: ctx,
 	}
 }

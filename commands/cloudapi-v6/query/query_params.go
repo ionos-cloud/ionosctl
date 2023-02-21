@@ -1,6 +1,6 @@
 /*
-	This is used for getting query parameters from options in the CLI.
-	And also for validate the parameters set - especially for filters.
+This is used for getting query parameters from options in the CLI.
+And also for validate the parameters set - especially for filters.
 */
 package query
 
@@ -60,17 +60,20 @@ func GetListQueryParams(c *core.CommandConfig) (resources.ListQueryParams, error
 			listQueryParams = listQueryParams.SetFilters(filters)
 		}
 	}
-	orderBy, _ := c.Command.Command.Flags().GetString(cloudapiv6.ArgOrderBy)
-	listQueryParams = listQueryParams.SetOrderBy(orderBy)
 
-	maxResults, _ := c.Command.Command.Flags().GetInt32(cloudapiv6.ArgMaxResults)
-	listQueryParams = listQueryParams.SetMaxResults(maxResults)
+	if c.Command.Command.Flags().Changed(cloudapiv6.ArgMaxResults) {
+		orderBy, _ := c.Command.Command.Flags().GetString(cloudapiv6.ArgOrderBy)
+		listQueryParams = listQueryParams.SetOrderBy(orderBy)
+	}
 
+	if c.Command.Command.Flags().Changed(cloudapiv6.ArgMaxResults) {
+		maxResults, _ := c.Command.Command.Flags().GetInt32(cloudapiv6.ArgMaxResults)
+		listQueryParams = listQueryParams.SetMaxResults(maxResults)
+	}
+
+	// No guard against "changed", as we want the pflag imposed defaults
 	depth, _ := c.Command.Command.Flags().GetInt32(cloudapiv6.ArgDepth)
 	listQueryParams = listQueryParams.SetDepth(depth)
-	// Uncomment this when support for Pretty param is added
-	//	pretty := viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgPretty))
-	//	queryParams = queryParams.SetPretty(pretty)
 
 	if !structs.IsZero(listQueryParams) || !structs.IsZero(listQueryParams.QueryParams) {
 		c.Printer.Verbose("Query Parameters set: %v, %v", utils.GetPropertiesKVSet(listQueryParams), utils.GetPropertiesKVSet(listQueryParams.QueryParams))

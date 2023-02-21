@@ -1,6 +1,7 @@
 package resources
 
 import (
+	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"testing"
 
 	"github.com/ionos-cloud/ionosctl/pkg/constants"
@@ -34,11 +35,11 @@ func TestNewClientService(t *testing.T) {
 	})
 }
 
-func getTestClient(t *testing.T) ClientService {
-	svc, err := NewClientService("user", "pass", "", constants.DefaultApiURL)
+func getTestClient(t *testing.T) *config.Client {
+	svc, err := config.NewTestClient("user", "pass", "", constants.DefaultApiURL)
 	assert.NotNil(t, svc)
 	assert.NoError(t, err)
-	assert.Equal(t, "user", svc.GetConfig().Username)
-	assert.Equal(t, "pass", svc.GetConfig().Password)
+	assert.Equal(t, "user", svc.AuthClient.GetConfig().Username)
+	assert.Equal(t, "pass", svc.AuthClient.GetConfig().Password)
 	return svc
 }

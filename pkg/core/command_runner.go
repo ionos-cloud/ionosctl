@@ -11,6 +11,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	authV1 "github.com/ionos-cloud/ionosctl/services/auth-v1"
+	certmanager "github.com/ionos-cloud/ionosctl/services/certmanager"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	cloudapidbaaspgsql "github.com/ionos-cloud/ionosctl/services/dbaas-postgres"
 	"github.com/spf13/cobra"
@@ -112,30 +113,23 @@ func NewCommandCfg(ctx context.Context, in io.Reader, p printer.PrintService, in
 		Context:   ctx,
 		// Define cmd Command Config function for Command
 		initCfg: func(c *CommandConfig) error {
-			// Load configuration file or Env Variables once
-			if err := config.Load(); err != nil {
-				return err
-			}
 			// Init Clients and Services
-			computeClient, err := c.CloudApiV6Services.InitClient()
+			client, err := config.GetClient()
 			if err != nil {
 				return err
 			}
-			if err = c.CloudApiV6Services.InitServices(computeClient); err != nil {
+			if err := c.CloudApiV6Services.InitServices(client); err != nil {
 				return err
 			}
-			authClient, err := c.AuthV1Services.InitClient()
-			if err != nil {
+			if err = c.AuthV1Services.InitServices(client); err != nil {
 				return err
 			}
-			if err = c.AuthV1Services.InitServices(authClient); err != nil {
+
+			if err = c.CloudApiDbaasPgsqlServices.InitServices(client); err != nil {
 				return err
 			}
-			dbaasPgsqlClient, err := c.CloudApiDbaasPgsqlServices.InitClient()
-			if err != nil {
-				return err
-			}
-			if err = c.CloudApiDbaasPgsqlServices.InitServices(dbaasPgsqlClient); err != nil {
+
+			if err = c.CertificateManagerServices.InitServices(client); err != nil {
 				return err
 			}
 			return nil
@@ -174,6 +168,7 @@ type CommandConfig struct {
 	CloudApiV6Services         cloudapiv6.Services
 	AuthV1Services             authV1.Services
 	CloudApiDbaasPgsqlServices cloudapidbaaspgsql.Services
+	CertificateManagerServices certmanager.Services
 
 	// Context
 	Context context.Context

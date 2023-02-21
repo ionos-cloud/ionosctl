@@ -178,13 +178,18 @@ After a successful authentication, you will no longer need to provide credential
 | `IONOS_USERNAME`     | Specify the username used to login, to authenticate against the IONOS Cloud API                                                                                                                                                | 
 | `IONOS_PASSWORD`     | Specify the password used to login, to authenticate against the IONOS Cloud API                                                                                                                                                | 
 | `IONOS_TOKEN`        | Specify the token used to login, if a token is being used instead of username and password                                                                                                                                     |
-| `IONOS_API_URL`      | Specify the API URL. It will overwrite the API endpoint default value `api.ionos.com`. Note: the host URL does not contain the `/cloudapi/v5` path, so it should _not_ be included in the `IONOS_API_URL` environment variable | 
-| `IONOS_PINNED_CERT`  | Specify the SHA-256 public fingerprint here, enables certificate pinning                                                                                                                                                       |
+| `IONOS_API_URL`      | Specify the API URL. It will overwrite the API endpoint default value `api.ionos.com`. Note: the host URL does not contain the `/cloudapi/v6` path, so it should _not_ be included in the `IONOS_API_URL` environment variable |
+| `IONOS_LOG_LEVEL`    | Specify the Log Level used to log messages sent to the API. Possible values: `Off`, `Debug`, `Trace`                                                                                                                           |
+| `IONOS_PINNED_CERT`  | Specify the SHA-256 public fingerprint, enables certificate pinning which allows you to use the cli on servers that have a self-signed certificate                                                                             |
+
+⚠️ **_Note: For `IONOS_LOG_LEVEL` we recommend you set to `TRACE` ONLY for debugging purposes. Disable it in your production environments because it can log sensitive data. <br>
+It logs the full request and response without encryption, even for an HTTPS call. <br>
+Verbose request and response logging can also significantly impact your application's performance._**
+
 
 ### Certificate pinning:
 
-You can enable certificate pinning if you want to bypass the normal certificate checking procedure,
-by doing the following:
+You can enable certificate pinning if you want to bypass the normal certificate checking procedure, by doing the following:
 
 Set env variable IONOS_PINNED_CERT=<insert_sha256_public_fingerprint_here>
 

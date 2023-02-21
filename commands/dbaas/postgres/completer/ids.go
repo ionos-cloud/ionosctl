@@ -7,11 +7,10 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	"github.com/ionos-cloud/ionosctl/services/dbaas-postgres/resources"
-	"github.com/spf13/viper"
 )
 
 func BackupsIds(outErr io.Writer) []string {
-	client, err := getDbaasPgsqlClient()
+	client, err := config.GetClient()
 	clierror.CheckError(err, outErr)
 	clustersService := resources.NewBackupsService(client, context.TODO())
 	backupList, _, err := clustersService.List()
@@ -30,7 +29,7 @@ func BackupsIds(outErr io.Writer) []string {
 }
 
 func BackupsIdsForCluster(outErr io.Writer, clusterId string) []string {
-	client, err := getDbaasPgsqlClient()
+	client, err := config.GetClient()
 	clierror.CheckError(err, outErr)
 	clustersService := resources.NewBackupsService(client, context.TODO())
 	backupList, _, err := clustersService.ListBackups(clusterId)
@@ -49,7 +48,7 @@ func BackupsIdsForCluster(outErr io.Writer, clusterId string) []string {
 }
 
 func ClustersIds(outErr io.Writer) []string {
-	client, err := getDbaasPgsqlClient()
+	client, err := config.GetClient()
 	clierror.CheckError(err, outErr)
 	clustersService := resources.NewClustersService(client, context.TODO())
 	clusterList, _, err := clustersService.List("")
@@ -68,7 +67,7 @@ func ClustersIds(outErr io.Writer) []string {
 }
 
 func PostgresVersions(outErr io.Writer) []string {
-	client, err := getDbaasPgsqlClient()
+	client, err := config.GetClient()
 	clierror.CheckError(err, outErr)
 	versionsService := resources.NewVersionsService(client, context.TODO())
 	versionList, _, err := versionsService.List()
@@ -84,21 +83,4 @@ func PostgresVersions(outErr io.Writer) []string {
 		return nil
 	}
 	return versions
-}
-
-// Get Client for Completion Functions
-func getDbaasPgsqlClient() (*resources.Client, error) {
-	if err := config.Load(); err != nil {
-		return nil, err
-	}
-	clientSvc, err := resources.NewClientService(
-		viper.GetString(config.Username),
-		viper.GetString(config.Password),
-		viper.GetString(config.Token),
-		config.GetServerUrl(),
-	)
-	if err != nil {
-		return nil, err
-	}
-	return clientSvc.Get(), nil
 }

@@ -114,18 +114,13 @@ func RunLoginUser(c *core.CommandConfig) error {
 	}
 	c.Printer.Verbose("ServerUrl: %s", config.GetServerUrl())
 	viper.Set(config.ServerUrl, viper.GetString(constants.ArgServerUrl))
-	clientSvc, err := resources.NewClientService(
-		viper.GetString(config.Username),
-		viper.GetString(config.Password),
-		viper.GetString(config.Token),
-		config.GetServerUrl(),
-	)
+	client, err := config.GetClient()
 	if err != nil {
 		return err
 	}
 	// Check the auth is correct
 	c.Printer.Verbose("Checking authentication...")
-	dcsSvc := resources.NewDataCenterService(clientSvc.Get(), context.TODO())
+	dcsSvc := resources.NewDataCenterService(client, context.TODO())
 	_, _, err = dcsSvc.List(resources.ListQueryParams{})
 	if err != nil {
 		return err

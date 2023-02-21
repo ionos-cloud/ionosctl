@@ -5,10 +5,10 @@
 package mock_resources
 
 import (
+	"github.com/ionos-cloud/ionosctl/pkg/config"
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
-	resources "github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 )
 
 // MockClientService is a mock of ClientService interface.
@@ -35,10 +35,10 @@ func (m *MockClientService) EXPECT() *MockClientServiceMockRecorder {
 }
 
 // Get mocks base method.
-func (m *MockClientService) Get() *resources.Client {
+func (m *MockClientService) Get() *config.Client {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Get")
-	ret0, _ := ret[0].(*resources.Client)
+	ret0, _ := ret[0].(*config.Client)
 	return ret0
 }
 
@@ -46,18 +46,4 @@ func (m *MockClientService) Get() *resources.Client {
 func (mr *MockClientServiceMockRecorder) Get() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockClientService)(nil).Get))
-}
-
-// GetConfig mocks base method.
-func (m *MockClientService) GetConfig() *resources.ClientConfig {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetConfig")
-	ret0, _ := ret[0].(*resources.ClientConfig)
-	return ret0
-}
-
-// GetConfig indicates an expected call of GetConfig.
-func (mr *MockClientServiceMockRecorder) GetConfig() *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetConfig", reflect.TypeOf((*MockClientService)(nil).GetConfig))
 }

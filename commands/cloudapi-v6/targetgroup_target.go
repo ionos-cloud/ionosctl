@@ -3,7 +3,6 @@ package commands
 import (
 	"context"
 	"errors"
-	"io"
 	"os"
 	"strconv"
 
@@ -16,7 +15,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
-	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
@@ -391,36 +389,10 @@ func getTargetGroupTargetPrint(resp *resources.Response, c *core.CommandConfig, 
 		if s != nil {
 			r.OutputJSON = s
 			r.KeyValue = getTargetGroupsTargetKVMaps(s)
-			r.Columns = getTargetGroupTargetCols(core.GetFlagName(c.NS, constants.ArgCols), c.Printer.GetStderr())
+			r.Columns = printer.GetHeadersAllDefault(defaultTargetGroupTargetCols, viper.GetStringSlice(core.GetFlagName(c.NS, constants.ArgCols)))
 		}
 	}
 	return r
-}
-
-func getTargetGroupTargetCols(flagName string, outErr io.Writer) []string {
-	var cols []string
-	if viper.IsSet(flagName) {
-		cols = viper.GetStringSlice(flagName)
-	} else {
-		return defaultTargetGroupTargetCols
-	}
-	columnsMap := map[string]string{
-		"TargetIp":           "TargetIp",
-		"TargetPort":         "TargetPort",
-		"Weight":             "Weight",
-		"HealthCheckEnabled": "HealthCheckEnabled",
-		"MaintenanceEnabled": "MaintenanceEnabled",
-	}
-	var targetCols []string
-	for _, k := range cols {
-		col := columnsMap[k]
-		if col != "" {
-			targetCols = append(targetCols, col)
-		} else {
-			clierror.CheckError(errors.New("unknown column "+k), outErr)
-		}
-	}
-	return targetCols
 }
 
 func getTargetGroupsTarget(targets *[]ionoscloud.TargetGroupTarget) []resources.TargetGroupTarget {
