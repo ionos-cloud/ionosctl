@@ -50,8 +50,7 @@ func TokenPatchCmd() *core.Command {
 
 func CmdPatchToken(c *core.CommandConfig) error {
 	var err error
-	var status string
-	var expiryDate time.Time
+
 	regId, err := c.Command.Command.Flags().GetString("registry-id")
 	if err != nil {
 		return err
@@ -62,6 +61,7 @@ func CmdPatchToken(c *core.CommandConfig) error {
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, "expiry-date")) {
+		var expiryDate time.Time
 		expiryDateString, err := c.Command.Command.Flags().GetString("expiry-date")
 		if err != nil {
 			return err
@@ -70,20 +70,19 @@ func CmdPatchToken(c *core.CommandConfig) error {
 		if err != nil {
 			return err
 		}
-	} else {
-		expiryDate = time.Now().AddDate(1, 0, 0)
+		tokenInput.SetExpiryDate(expiryDate)
+
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, "status")) {
+		var status string
 		status, err = c.Command.Command.Flags().GetString("status")
 		if err != nil {
 			return err
 		}
-	} else {
-		status = "enabled"
+		tokenInput.SetStatus(status)
+
 	}
-	tokenInput.SetExpiryDate(expiryDate)
-	tokenInput.SetStatus(status)
 
 	token, _, err := c.ContainerRegistryServices.Token().Patch(tokenId, *tokenInput, regId)
 	if err != nil {

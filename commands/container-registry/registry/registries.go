@@ -65,7 +65,7 @@ func getRegistryPrint(
 				r.OutputJSON = response
 				r.KeyValue = getRegRows(response)
 				postHeaders := []string{
-					"DisplayName", "Location", "GarbageCollectionDays", "GarbageCollectionTime",
+					"DisplayName", "Location",
 				} // map header -> rows
 				r.Columns = printer.GetHeaders(allCols, postHeaders, cols) // headers
 			}

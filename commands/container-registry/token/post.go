@@ -2,6 +2,8 @@ package token
 
 import (
 	"context"
+	"time"
+
 	"github.com/ionos-cloud/ionosctl/commands/container-registry/registry"
 	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
@@ -9,7 +11,6 @@ import (
 	sdkgo "github.com/ionos-cloud/sdk-go-container-registry"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"time"
 )
 
 var tokenPostProperties = sdkgo.NewPostTokenPropertiesWithDefaults()
@@ -62,8 +63,6 @@ func PreCmdPostToken(c *core.PreCommandConfig) error {
 
 func CmdPostToken(c *core.CommandConfig) error {
 	var err error
-	var status string
-	var expiryDate time.Time
 	id, err := c.Command.Command.Flags().GetString("registry-id")
 	if err != nil {
 		return err
@@ -72,8 +71,11 @@ func CmdPostToken(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+	tokenPostProperties.SetName(name)
+
 
 	if viper.IsSet(core.GetFlagName(c.NS, "expiry-date")) {
+		var expiryDate time.Time
 		expiryDateString, err := c.Command.Command.Flags().GetString("expiry-date")
 		if err != nil {
 			return err
@@ -82,23 +84,19 @@ func CmdPostToken(c *core.CommandConfig) error {
 		if err != nil {
 			return err
 		}
-	} else {
-		expiryDate = time.Now().AddDate(1, 0, 0)
-	}
+		tokenPostProperties.SetExpiryDate(expiryDate)
+
+	} 
 
 	if viper.IsSet(core.GetFlagName(c.NS, "status")) {
+		var status string
 		status, err = c.Command.Command.Flags().GetString("status")
 		if err != nil {
 			return err
 		}
-	} else {
-		status = "enabled"
+		tokenPostProperties.SetStatus(status)
 	}
-
-	tokenPostProperties.SetName(name)
-	tokenPostProperties.SetExpiryDate(expiryDate)
-	tokenPostProperties.SetStatus(status)
-
+	
 	tokenInput := sdkgo.NewPostTokenInputWithDefaults()
 	tokenInput.SetProperties(*tokenPostProperties)
 

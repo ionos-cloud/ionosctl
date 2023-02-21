@@ -2,6 +2,7 @@ package registry
 
 import (
 	"context"
+
 	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
@@ -81,14 +82,10 @@ func CmdPost(c *core.CommandConfig) error {
 		days := viper.GetStringSlice(core.GetFlagName(c.NS, "garbage-collection-schedule-days"))
 		var daysSdk = []sdkgo.Day{}
 		for _, day := range days {
-			// TODO: remove this default value when it will work with nil
 			daysSdk = append(daysSdk, sdkgo.Day(day))
 		}
 		v.SetDays(daysSdk)
-	} else {
-		// TODO: remove this default value when it will work with nil
-		v.SetDays([]sdkgo.Day{"Monday"})
-	}
+	} 
 
 	if viper.IsSet(core.GetFlagName(c.NS, "garbage-collection-schedule-time")) {
 		*v.Time = viper.GetString(core.GetFlagName(c.NS, "garbage-collection-schedule-time"))
