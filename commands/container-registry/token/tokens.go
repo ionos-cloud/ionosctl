@@ -15,7 +15,7 @@ import (
 )
 
 func TokenCmd() *core.Command {
-	regCmd := &core.Command{
+	tokenCmd := &core.Command{
 		Command: &cobra.Command{
 			Use:     "token",
 			Aliases: []string{"t", "tokens"},
@@ -27,16 +27,18 @@ func TokenCmd() *core.Command {
 		},
 	}
 
-	regCmd.Command.PersistentFlags().Bool(constants.ArgNoHeaders, false, "When using text output, don't print headers")
+	tokenCmd.Command.PersistentFlags().Bool(
+		constants.ArgNoHeaders, false, "When using text output, don't print headers",
+	)
 
-	regCmd.AddCommand(TokenListCmd())
-	regCmd.AddCommand(TokenPostCmd())
-	regCmd.AddCommand(TokenGetCmd())
-	regCmd.AddCommand(TokenDeleteCmd())
-	//regCmd.AddCommand(RegUpdateCmd())
-	//regCmd.AddCommand(RegReplaceCmd())
+	tokenCmd.AddCommand(TokenListCmd())
+	tokenCmd.AddCommand(TokenPostCmd())
+	tokenCmd.AddCommand(TokenGetCmd())
+	tokenCmd.AddCommand(TokenDeleteCmd())
+	//tokenCmd.AddCommand(RegUpdateCmd())
+	//tokenCmd.AddCommand(RegReplaceCmd())
 
-	return regCmd
+	return tokenCmd
 }
 
 func getTokenPrint(

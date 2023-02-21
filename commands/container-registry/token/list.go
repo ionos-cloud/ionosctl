@@ -18,7 +18,7 @@ func TokenListCmd() *core.Command {
 			Resource:   "token",
 			Verb:       "list",
 			Aliases:    []string{"l", "ls"},
-			ShortDesc:  "List all Registries",
+			ShortDesc:  "List all tokens",
 			LongDesc:   "List all tokens for your account",
 			Example:    "ionosctl container-registry token list --registry-id [REGISTRY-ID]",
 			PreCmdRun:  PreCmdListToken,
