@@ -11,23 +11,25 @@ import (
 	"github.com/spf13/viper"
 )
 
-var tokenInput = sdkgo.NewPatchTokenInput()
+var tokenPutProperties = sdkgo.PostTokenProperties{}
 
-func TokenPatchCmd() *core.Command {
+func TokenPutCmd() *core.Command {
 	cmd := core.NewCommand(
 		context.TODO(), nil, core.CommandBuilder{
 			Namespace:  "container-registry",
 			Resource:   "token",
-			Verb:       "update",
-			Aliases:    []string{"u", "up"},
-			ShortDesc:  "Update a token's properties",
-			LongDesc:   "Use this command to update a token's properties. You can update the token's expiry date and status.",
-			Example:    "ionosctl container-registry token update --registry-id [REGISTRY-ID], --token-id [TOKEN-ID] --expiry-date [EXPIRY-DATE] --status [STATUS]",
-			PreCmdRun:  PreCmdPatchToken,
-			CmdRun:     CmdPatchToken,
+			Verb:       "replace",
+			Aliases:    []string{"r", "re"},
+			ShortDesc:  "Create or replace a token",
+			LongDesc:   "Create or replace a token used to access a container registry",
+			Example:    "ionosctl container-registry token replace --name [NAME] --registry-id [REGISTRY-ID], --token-id [TOKEN-ID]",
+			PreCmdRun:  PreCmdPutToken,
+			CmdRun:     CmdPutToken,
 			InitClient: true,
 		},
 	)
+
+	cmd.AddStringFlag("name", "", "", "Name of the Token", core.RequiredFlagOption())
 
 	cmd.AddStringFlag("registry-id", "r", "", "Registry ID")
 	_ = cmd.Command.RegisterFlagCompletionFunc(
@@ -55,7 +57,7 @@ func TokenPatchCmd() *core.Command {
 	return cmd
 }
 
-func CmdPatchToken(c *core.CommandConfig) error {
+func CmdPutToken(c *core.CommandConfig) error {
 	var err error
 
 	regId, err := c.Command.Command.Flags().GetString("registry-id")
@@ -67,6 +69,13 @@ func CmdPatchToken(c *core.CommandConfig) error {
 		return err
 	}
 
+	name, err := c.Command.Command.Flags().GetString("name")
+	if err != nil {
+		return err
+	}
+
+	tokenPutProperties.SetName(name)
+
 	if viper.IsSet(core.GetFlagName(c.NS, "expiry-date")) {
 		var expiryDate time.Time
 		expiryDateString, err := c.Command.Command.Flags().GetString("expiry-date")
@@ -77,7 +86,7 @@ func CmdPatchToken(c *core.CommandConfig) error {
 		if err != nil {
 			return err
 		}
-		tokenInput.SetExpiryDate(expiryDate)
+		tokenPutProperties.SetExpiryDate(expiryDate)
 
 	}
 
@@ -87,20 +96,26 @@ func CmdPatchToken(c *core.CommandConfig) error {
 		if err != nil {
 			return err
 		}
-		tokenInput.SetStatus(status)
+		tokenPutProperties.SetStatus(status)
 
 	}
 
-	token, _, err := c.ContainerRegistryServices.Token().Patch(tokenId, *tokenInput, regId)
+	tokenInputPut := sdkgo.NewPutTokenInputWithDefaults()
+	tokenInputPut.SetProperties(tokenPutProperties)
+
+	token, _, err := c.ContainerRegistryServices.Token().Put(tokenId, *tokenInputPut, regId)
 	if err != nil {
 		return err
 	}
 
-	return c.Printer.Print(getTokenPrint(nil, c, &[]sdkgo.TokenResponse{token}, true))
+	tokenPrint := sdkgo.NewTokenResponseWithDefaults()
+	tokenPrint.SetProperties(*token.GetProperties())
+
+	return c.Printer.Print(getTokenPrint(nil, c, &[]sdkgo.TokenResponse{*tokenPrint}, true))
 }
 
-func PreCmdPatchToken(c *core.PreCommandConfig) error {
-	err := core.CheckRequiredFlags(c.Command, c.NS, "token-id", "registry-id")
+func PreCmdPutToken(c *core.PreCommandConfig) error {
+	err := core.CheckRequiredFlags(c.Command, c.NS, "token-id", "registry-id", "name")
 	if err != nil {
 		return err
 	}

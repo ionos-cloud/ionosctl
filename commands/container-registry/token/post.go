@@ -34,6 +34,13 @@ func TokenPostCmd() *core.Command {
 	cmd.AddStringFlag("name", "", "", "Name of the Token", core.RequiredFlagOption())
 	cmd.AddStringFlag("expiry-date", "", "", "Expiry date of the Token")
 	cmd.AddStringFlag("status", "", "", "Status of the Token")
+	_ = cmd.Command.RegisterFlagCompletionFunc(
+		"status", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return []string{
+				"enabled", "disabled",
+			}, cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 
 	cmd.AddStringFlag("registry-id", "r", "", "Registry ID", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(
@@ -96,7 +103,7 @@ func CmdPostToken(c *core.CommandConfig) error {
 		}
 		tokenPostProperties.SetStatus(status)
 	}
-	
+
 	tokenInput := sdkgo.NewPostTokenInputWithDefaults()
 	tokenInput.SetProperties(*tokenPostProperties)
 

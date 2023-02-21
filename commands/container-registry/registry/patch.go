@@ -70,14 +70,10 @@ func CmdUpdate(c *core.CommandConfig) error {
 		days := viper.GetStringSlice(core.GetFlagName(c.NS, "garbage-collection-schedule-days"))
 		var daysSdk = []sdkgo.Day{}
 		for _, day := range days {
-			// TODO: remove this default value when it will work with nil
 			daysSdk = append(daysSdk, sdkgo.Day(day))
 		}
 		v.SetDays(daysSdk)
-	} else {
-		// TODO: remove this default value when it will work with nil
-		v.SetDays([]sdkgo.Day{"Monday"})
-	}
+	} 
 	if viper.IsSet(core.GetFlagName(c.NS, "garbage-collection-schedule-time")) {
 		*v.Time = viper.GetString(core.GetFlagName(c.NS, "garbage-collection-schedule-time"))
 	} else {
@@ -86,6 +82,9 @@ func CmdUpdate(c *core.CommandConfig) error {
 
 	patchInput.SetGarbageCollectionSchedule(*v)
 	reg, _, err := c.ContainerRegistryServices.Registry().Patch(id, patchInput)
+	if err != nil {
+		return err
+	}
 	return c.Printer.Print(getRegistryPrint(nil, c, &[]sdkgo.RegistryResponse{reg}, false))
 }
 

@@ -78,7 +78,7 @@ type RegPrint struct {
 	RegistryId            string `json:"RegistryId,omitempty"`
 	DisplayName           string `json:"DisplayName,omitempty"`
 	Location              string `json:"Location,omitempty"`
-	Hostname              string `json:"DisplayName,omitempty"`
+	Hostname              string `json:"Hostname,omitempty"`
 	GarbageCollectionDays string `json:"GarbageCollectionDays,omitempty"`
 	GarbageCollectionTime string `json:"GarbageCollectionTime,omitempty"`
 }
