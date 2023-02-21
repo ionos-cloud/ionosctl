@@ -58,8 +58,6 @@ func PreCmdPostToken(c *core.PreCommandConfig) error {
 	}
 
 	return nil
-
-	return nil
 }
 
 func CmdPostToken(c *core.CommandConfig) error {
