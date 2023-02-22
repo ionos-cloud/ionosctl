@@ -27,8 +27,8 @@ func ClusterCmd() *core.Command {
 	})
 	clusterCmd.Command.PersistentFlags().Bool(constants.ArgNoHeaders, false, "When using text output, don't print headers")
 
-	//clusterCmd.AddCommand(ClusterListCmd())
-	//clusterCmd.AddCommand(ClusterCreateCmd())
+	clusterCmd.AddCommand(ClusterListCmd())
+	clusterCmd.AddCommand(ClusterCreateCmd())
 	//clusterCmd.AddCommand(ClusterUpdateCmd())
 	//clusterCmd.AddCommand(ClusterGetCmd())
 	//clusterCmd.AddCommand(ClusterDeleteCmd())
