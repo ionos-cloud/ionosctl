@@ -8,7 +8,7 @@ import (
 	"github.com/spf13/viper"
 	"os"
 
-	"github.com/ionos-cloud/ionosctl/commands/dbaas/mongo/completer"
+	"github.com/ionos-cloud/ionosctl/commands/dataplatform/completer"
 	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	sdkdataplatform "github.com/ionos-cloud/sdk-go-dataplatform"
@@ -64,7 +64,7 @@ func ClusterUpdateCmd() *core.Command {
 
 	cmd.AddStringFlag(constants.FlagClusterId, constants.FlagIdShort, "", "The unique ID of the cluster", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.MongoClusterIds(), cobra.ShellCompDirectiveNoFileComp
+		return completer.DataplatformClusterIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "The name of the cluster")

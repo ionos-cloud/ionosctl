@@ -16,7 +16,7 @@ func ClusterCmd() *core.Command {
 			Use:              "cluster",
 			Aliases:          []string{"c"},
 			Short:            "Dataplatform Cluster Operations",
-			Long:             "The following request allows to interact with the already created clusters or creates new clusters with in your virtual data center",
+			Long:             "This command allows you to interact with the already created clusters or creates new clusters in your virtual data center",
 			TraverseChildren: true,
 		},
 	}
@@ -30,9 +30,9 @@ func ClusterCmd() *core.Command {
 	clusterCmd.AddCommand(ClusterListCmd())
 	clusterCmd.AddCommand(ClusterCreateCmd())
 	clusterCmd.AddCommand(ClusterUpdateCmd())
-	//clusterCmd.AddCommand(ClusterGetCmd())
-	//clusterCmd.AddCommand(ClusterDeleteCmd())
-	//clusterCmd.AddCommand(ClusterRestoreCmd())
+	clusterCmd.AddCommand(ClusterGetCmd())
+	clusterCmd.AddCommand(ClusterDeleteCmd())
+	clusterCmd.AddCommand(ClustersKubeConfigCmd())
 
 	return clusterCmd
 }

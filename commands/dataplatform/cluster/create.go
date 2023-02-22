@@ -17,9 +17,12 @@ var createProperties = sdkdataplatform.CreateClusterProperties{}
 
 func ClusterCreateCmd() *core.Command {
 	cmd := core.NewCommand(context.TODO(), nil, core.CommandBuilder{
+		Namespace: "dataplatform",
+		Resource:  "cluster",
 		Verb:      "create", // used in AVAILABLE COMMANDS in help
 		Aliases:   []string{"c"},
-		ShortDesc: "The cluster will be provisioned in the datacenter matching the provided datacenterID. Therefore the datacenter must be created upfront and must be accessible by the user issuing the request",
+		ShortDesc: "Create Dataplatform Cluster",
+		LongDesc:  "The cluster will be provisioned in the datacenter matching the provided datacenterID. Therefore the datacenter must be created upfront and must be accessible by the user issuing the request",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			var err error
 			err = c.Command.Command.MarkFlagRequired(constants.FlagName)
