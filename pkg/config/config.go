@@ -15,6 +15,7 @@ import (
 
 	sdkgoauth "github.com/ionos-cloud/sdk-go-auth"
 	certmanager "github.com/ionos-cloud/sdk-go-cert-manager"
+	dataplatform "github.com/ionos-cloud/sdk-go-dataplatform"
 	mongo "github.com/ionos-cloud/sdk-go-dbaas-mongo"
 	postgres "github.com/ionos-cloud/sdk-go-dbaas-postgres"
 	cloudv6 "github.com/ionos-cloud/sdk-go/v6"
@@ -155,11 +156,12 @@ func configFileWriter() (io.WriteCloser, error) {
 const depthQueryParam = int32(5)
 
 type Client struct {
-	CloudClient       *cloudv6.APIClient
-	AuthClient        *sdkgoauth.APIClient
-	CertManagerClient *certmanager.APIClient
-	PostgresClient    *postgres.APIClient
-	MongoClient       *mongo.APIClient
+	CloudClient        *cloudv6.APIClient
+	AuthClient         *sdkgoauth.APIClient
+	CertManagerClient  *certmanager.APIClient
+	PostgresClient     *postgres.APIClient
+	MongoClient        *mongo.APIClient
+	DataplatformClient *dataplatform.APIClient
 }
 
 func appendUserAgent(userAgent string) string {
@@ -188,12 +190,16 @@ func newClient(name, pwd, token, hostUrl string) (*Client, error) {
 	mongoConfig := mongo.NewConfiguration(name, pwd, token, hostUrl)
 	mongoConfig.UserAgent = appendUserAgent(mongoConfig.UserAgent)
 
+	dpConfig := dataplatform.NewConfiguration(name, pwd, token, hostUrl)
+	dpConfig.UserAgent = appendUserAgent(dpConfig.UserAgent)
+
 	return &Client{
-			CloudClient:       cloudv6.NewAPIClient(clientConfig),
-			AuthClient:        sdkgoauth.NewAPIClient(authConfig),
-			CertManagerClient: certmanager.NewAPIClient(certManagerConfig),
-			PostgresClient:    postgres.NewAPIClient(postgresConfig),
-			MongoClient:       mongo.NewAPIClient(mongoConfig),
+			CloudClient:        cloudv6.NewAPIClient(clientConfig),
+			AuthClient:         sdkgoauth.NewAPIClient(authConfig),
+			CertManagerClient:  certmanager.NewAPIClient(certManagerConfig),
+			PostgresClient:     postgres.NewAPIClient(postgresConfig),
+			MongoClient:        mongo.NewAPIClient(mongoConfig),
+			DataplatformClient: dataplatform.NewAPIClient(dpConfig),
 		},
 		nil
 }
