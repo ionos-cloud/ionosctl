@@ -20,7 +20,7 @@ dbaas_mongo_mocks_update:
 
 .PHONY: dbaas_mongo_docs_update
 dbaas_mongo_docs_update:
-	@echo "--- Generate Markdown documentation for DBaaS mongo in ${DOCS_OUT_DBAAS_MONGO} ---"
+	@echo "--- Generate Markdown documentation for DBaaS Mongo in ${DOCS_OUT_DBAAS_MONGO} ---"
 	@mkdir -p ${DOCS_OUT_DBAAS_MONGO}
 	@DOCS_OUT_DBAAS_MONGO=${DOCS_OUT_DBAAS_MONGO} go run tools/dbaas-mongo/doc.go
 	@echo "DONE"

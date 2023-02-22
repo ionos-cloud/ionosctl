@@ -43,6 +43,7 @@ Required values to run command:
   -f, --force               Force command to execute without user input
   -h, --help                Print usage
       --ipblock-id string   The unique IpBlock Id (required)
+  -M, --max-results int32   The maximum number of elements to return
       --no-headers          When using text output, don't print headers
   -o, --output string       Desired output format [text|json] (default "text")
   -q, --quiet               Quiet output

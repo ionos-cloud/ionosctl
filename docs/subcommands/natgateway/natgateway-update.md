@@ -46,7 +46,7 @@ Required values to run command:
   -D, --depth int32            Controls the detail depth of the response objects. Max depth is 10.
   -f, --force                  Force command to execute without user input
   -h, --help                   Print usage
-      --ips ipSlice            Collection of public reserved IP addresses of the NAT Gateway. This will overwrite the current values (default [])
+      --ips strings            Collection of public reserved IP addresses of the NAT Gateway. This will overwrite the current values
   -n, --name string            Name of the NAT Gateway
   -i, --natgateway-id string   The unique NatGateway Id (required)
   -o, --output string          Desired output format [text|json] (default "text")

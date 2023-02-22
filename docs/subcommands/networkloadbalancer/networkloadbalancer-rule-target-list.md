@@ -51,6 +51,7 @@ Required values to run command:
   -D, --depth int32                     Controls the detail depth of the response objects. Max depth is 10. (default 1)
   -f, --force                           Force command to execute without user input
   -h, --help                            Print usage
+  -M, --max-results int32               The maximum number of elements to return
       --networkloadbalancer-id string   The unique NetworkLoadBalancer Id (required)
       --no-headers                      When using text output, don't print headers
   -o, --output string                   Desired output format [text|json] (default "text")

@@ -41,6 +41,8 @@ echo "Move Network Load Balancer documentation in ${DOCS_OUT_NLB}"
 mkdir -p ${DOCS_OUT_NLB}
 mv -f docs/subcommands/tmp/networkloadbalancer-* ${DOCS_OUT_NLB}
 
+
+
 ## natgateway
 DOCS_OUT_NAT_GATEWAY=${DOCS_OUT_NAT_GATEWAY:-${DOCS_OUT}/natgateway/}
 echo "Move NAT Gateway documentation in ${DOCS_OUT_NAT_GATEWAY}"

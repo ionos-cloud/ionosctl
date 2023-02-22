@@ -52,6 +52,7 @@ Required values to run command:
   -D, --depth int32                         Controls the detail depth of the response objects. Max depth is 10. (default 1)
   -f, --force                               Force command to execute without user input
   -h, --help                                Print usage
+  -M, --max-results int32                   The maximum number of elements to return
   -o, --output string                       Desired output format [text|json] (default "text")
   -q, --quiet                               Quiet output
       --rule-id string                      The unique ForwardingRule Id (required)
