@@ -40,7 +40,7 @@ func K8sNodePoolCmd() *core.Command {
 	}
 	globalFlags := k8sCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultK8sNodePoolCols, printer.ColsMessage(allK8sNodePoolCols))
-	_ = viper.BindPFlag(core.GetGlobalFlagName(k8sCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
+	_ = viper.BindPFlag(core.GetFlagName(k8sCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = k8sCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allK8sNodePoolCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -778,7 +778,7 @@ func getK8sNodePoolPrint(c *core.CommandConfig, k8ss []resources.K8sNodePool) pr
 		if k8ss != nil {
 			r.OutputJSON = k8ss
 			r.KeyValue = getK8sNodePoolsKVMaps(k8ss)
-			r.Columns = printer.GetHeaders(allK8sNodePoolCols, defaultK8sNodePoolCols, viper.GetStringSlice(core.GetGlobalFlagName(c.Resource, constants.ArgCols)))
+			r.Columns = printer.GetHeaders(allK8sNodePoolCols, defaultK8sNodePoolCols, viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)))
 		}
 	}
 	return r

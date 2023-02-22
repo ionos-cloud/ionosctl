@@ -38,7 +38,7 @@ func BackupunitCmd() *core.Command {
 	}
 	globalFlags := backupUnitCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultBackupUnitCols, printer.ColsMessage(defaultBackupUnitCols))
-	_ = viper.BindPFlag(core.GetGlobalFlagName(backupUnitCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
+	_ = viper.BindPFlag(core.GetFlagName(backupUnitCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = backupUnitCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultBackupUnitCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -466,7 +466,7 @@ func getBackupUnitPrint(resp *resources.Response, c *core.CommandConfig, backupU
 		if backupUnits != nil {
 			r.OutputJSON = backupUnits
 			r.KeyValue = getBackupUnitsKVMaps(backupUnits)
-			r.Columns = printer.GetHeadersAllDefault(defaultBackupUnitCols, viper.GetStringSlice(core.GetGlobalFlagName(c.Resource, constants.ArgCols)))
+			r.Columns = printer.GetHeadersAllDefault(defaultBackupUnitCols, viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)))
 		}
 	}
 	return r

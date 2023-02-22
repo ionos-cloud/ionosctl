@@ -35,7 +35,7 @@ func SnapshotCmd() *core.Command {
 	}
 	globalFlags := snapshotCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultSnapshotCols, printer.ColsMessage(defaultSnapshotCols))
-	_ = viper.BindPFlag(core.GetGlobalFlagName(snapshotCmd.NS, constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
+	_ = viper.BindPFlag(core.GetFlagName(snapshotCmd.NS, constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = snapshotCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultSnapshotCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -560,7 +560,7 @@ func getSnapshotPrint(resp *resources.Response, c *core.CommandConfig, s []resou
 		if s != nil {
 			r.OutputJSON = s
 			r.KeyValue = getSnapshotsKVMaps(s)
-			r.Columns = printer.GetHeadersAllDefault(defaultSnapshotCols, viper.GetStringSlice(core.GetFlagName(c.NS, constants.ArgCols)))
+			r.Columns = printer.GetHeadersAllDefault(defaultSnapshotCols, viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)))
 		}
 	}
 	return r

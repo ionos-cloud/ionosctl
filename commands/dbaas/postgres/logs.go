@@ -39,7 +39,7 @@ func LogsCmd() *core.Command {
 	}
 	globalFlags := clusterCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultClusterLogsCols, printer.ColsMessage(allClusterLogsCols))
-	_ = viper.BindPFlag(core.GetGlobalFlagName(clusterCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
+	_ = viper.BindPFlag(core.GetFlagName(clusterCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = clusterCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allClusterLogsCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -196,7 +196,7 @@ func getClusterLogsPrint(c *core.CommandConfig, logs *resources.ClusterLogs) pri
 		if logs != nil {
 			r.OutputJSON = logs
 			r.KeyValue = getClusterLogsKVMaps(*logs)
-			r.Columns = getClusterLogsCols(core.GetGlobalFlagName(c.Resource, constants.ArgCols), c.Printer.GetStderr())
+			r.Columns = getClusterLogsCols(core.GetFlagName(c.Resource, constants.ArgCols), c.Printer.GetStderr())
 		}
 	}
 	return r

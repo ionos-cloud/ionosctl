@@ -38,7 +38,7 @@ func LanCmd() *core.Command {
 	}
 	globalFlags := lanCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultLanCols, printer.ColsMessage(allLanCols))
-	_ = viper.BindPFlag(core.GetGlobalFlagName(lanCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
+	_ = viper.BindPFlag(core.GetFlagName(lanCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = lanCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allLanCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -342,7 +342,7 @@ func RunLanCreate(c *core.CommandConfig) error {
 	return c.Printer.Print(printer.Result{
 		OutputJSON:     l,
 		KeyValue:       getLanPostsKVMaps([]resources.LanPost{*l}),
-		Columns:        printer.GetHeaders(allLanCols, defaultLanCols, viper.GetStringSlice(core.GetGlobalFlagName(c.Resource, constants.ArgCols))),
+		Columns:        printer.GetHeaders(allLanCols, defaultLanCols, viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))),
 		ApiResponse:    resp,
 		Resource:       "lan",
 		Verb:           "create",
@@ -517,7 +517,7 @@ func getLanPrint(resp *resources.Response, c *core.CommandConfig, lans []resourc
 		if lans != nil {
 			r.OutputJSON = lans
 			r.KeyValue = getLansKVMaps(lans)
-			r.Columns = printer.GetHeadersListAll(allLanCols, defaultLanCols, "DatacenterId", viper.GetStringSlice(core.GetFlagName(c.NS, constants.ArgCols)), viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)))
+			r.Columns = printer.GetHeadersListAll(allLanCols, defaultLanCols, "DatacenterId", viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)), viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)))
 		}
 	}
 	return r

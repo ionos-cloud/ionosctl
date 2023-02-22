@@ -572,8 +572,8 @@ func TestGetAlbForwardingRulesCols(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
-	viper.Set(core.GetGlobalFlagName("forwardingrule", constants.ArgCols), []string{"Name"})
-	getAlbForwardingRulesCols(core.GetGlobalFlagName("forwardingrule", constants.ArgCols), w)
+	viper.Set(core.GetFlagName("forwardingrule", constants.ArgCols), []string{"Name"})
+	getAlbForwardingRulesCols(core.GetFlagName("forwardingrule", constants.ArgCols), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 }
@@ -583,8 +583,8 @@ func TestGetAlbForwardingRulesColsErr(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
-	viper.Set(core.GetGlobalFlagName("forwardingrule", constants.ArgCols), []string{"Unknown"})
-	getAlbForwardingRulesCols(core.GetGlobalFlagName("forwardingrule", constants.ArgCols), w)
+	viper.Set(core.GetFlagName("forwardingrule", constants.ArgCols), []string{"Unknown"})
+	getAlbForwardingRulesCols(core.GetFlagName("forwardingrule", constants.ArgCols), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 	re := regexp.MustCompile(`unknown column Unknown`)

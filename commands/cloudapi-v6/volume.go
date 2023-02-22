@@ -39,7 +39,7 @@ func VolumeCmd() *core.Command {
 	}
 	globalFlags := volumeCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultVolumeCols, printer.ColsMessage(allVolumeCols))
-	_ = viper.BindPFlag(core.GetGlobalFlagName(volumeCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
+	_ = viper.BindPFlag(core.GetFlagName(volumeCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = volumeCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allVolumeCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -1094,11 +1094,7 @@ func getVolumePrint(resp *resources.Response, c *core.CommandConfig, vols []reso
 		if vols != nil {
 			r.OutputJSON = vols
 			r.KeyValue = getVolumesKVMaps(vols)
-			if c.Resource != c.Namespace {
-				r.Columns = printer.GetHeadersListAll(allVolumeCols, defaultVolumeCols, "DatacenterId", viper.GetStringSlice(core.GetFlagName(c.NS, constants.ArgCols)), viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)))
-			} else {
-				r.Columns = printer.GetHeadersListAll(allVolumeCols, defaultVolumeCols, "DatacenterId", viper.GetStringSlice(core.GetGlobalFlagName(c.NS, constants.ArgCols)), viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)))
-			}
+			r.Columns = printer.GetHeadersListAll(allVolumeCols, defaultVolumeCols, "DatacenterId", viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)), viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)))
 		}
 	}
 	return r

@@ -38,7 +38,7 @@ func NetworkloadbalancerCmd() *core.Command {
 	}
 	globalFlags := networkloadbalancerCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultNetworkLoadBalancerCols, printer.ColsMessage(defaultNetworkLoadBalancerCols))
-	_ = viper.BindPFlag(core.GetGlobalFlagName(networkloadbalancerCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
+	_ = viper.BindPFlag(core.GetFlagName(networkloadbalancerCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = networkloadbalancerCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultNetworkLoadBalancerCols, cobra.ShellCompDirectiveNoFileComp
 	})

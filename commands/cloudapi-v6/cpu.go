@@ -33,7 +33,7 @@ func CpuCmd() *core.Command {
 	}
 	globalFlags := cpuCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultCpuCols, printer.ColsMessage(defaultCpuCols))
-	_ = viper.BindPFlag(core.GetGlobalFlagName(cpuCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
+	_ = viper.BindPFlag(core.GetFlagName(cpuCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = cpuCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultCpuCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -82,7 +82,7 @@ func RunLocationCpuList(c *core.CommandConfig) error {
 			return c.Printer.Print(printer.Result{
 				OutputJSON: cpus,
 				KeyValue:   getCpusKVMaps(getCpus(cpus)),
-				Columns:    getCpuCols(core.GetGlobalFlagName(c.Resource, constants.ArgCols), c.Printer.GetStderr()),
+				Columns:    getCpuCols(core.GetFlagName(c.Resource, constants.ArgCols), c.Printer.GetStderr()),
 			})
 		} else {
 			return errors.New("error getting cpu architectures")

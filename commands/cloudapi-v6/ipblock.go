@@ -35,7 +35,7 @@ func IpblockCmd() *core.Command {
 	}
 	globalFlags := ipblockCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultIpBlockCols, printer.ColsMessage(defaultIpBlockCols))
-	_ = viper.BindPFlag(core.GetGlobalFlagName(ipblockCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
+	_ = viper.BindPFlag(core.GetFlagName(ipblockCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = ipblockCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultIpBlockCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -396,7 +396,7 @@ func getIpBlockPrint(resp *resources.Response, c *core.CommandConfig, ipBlocks [
 		if ipBlocks != nil {
 			r.OutputJSON = ipBlocks
 			r.KeyValue = getIpBlocksKVMaps(ipBlocks)
-			r.Columns = printer.GetHeadersAllDefault(defaultIpBlockCols, viper.GetStringSlice(core.GetGlobalFlagName(c.Resource, constants.ArgCols)))
+			r.Columns = printer.GetHeadersAllDefault(defaultIpBlockCols, viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)))
 		}
 	}
 	return r

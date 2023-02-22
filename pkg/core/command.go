@@ -260,16 +260,3 @@ func (c *Command) AddBoolFlag(name, shorthand string, defaultValue bool, desc st
 func GetFlagName(ns, flagName string) string {
 	return fmt.Sprintf("%s.%s", ns, flagName)
 }
-
-// GetGlobalFlagName returns a string of cmdName on which the
-// Flag is defined as a Global Flag concatenated with the name
-// of the Flag.
-//
-// For example: in a `ionosctl namespace resource verb` command
-// structure, if the flag is inherited from the namespace level
-// at the verb level, the cmdName will be c.Namespace,
-// If the Global Flag is defined at resource level, the cmdName
-// will be c.Resource.
-func GetGlobalFlagName(cmdName, flagName string) string {
-	return fmt.Sprintf("%s.%s", cmdName, flagName)
-}

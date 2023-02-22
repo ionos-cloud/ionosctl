@@ -636,8 +636,8 @@ func TestGetAlbRuleHttpRulesCols(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
-	viper.Set(core.GetGlobalFlagName("httprule", constants.ArgCols), []string{"Name"})
-	getAlbRuleHttpRulesCols(core.GetGlobalFlagName("httprule", constants.ArgCols), w)
+	viper.Set(core.GetFlagName("httprule", constants.ArgCols), []string{"Name"})
+	getAlbRuleHttpRulesCols(core.GetFlagName("httprule", constants.ArgCols), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 }
@@ -647,8 +647,8 @@ func TestGetAlbRuleColsErr(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
-	viper.Set(core.GetGlobalFlagName("httprule", constants.ArgCols), []string{"Unknown"})
-	getAlbRuleHttpRulesCols(core.GetGlobalFlagName("httprule", constants.ArgCols), w)
+	viper.Set(core.GetFlagName("httprule", constants.ArgCols), []string{"Unknown"})
+	getAlbRuleHttpRulesCols(core.GetFlagName("httprule", constants.ArgCols), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 	re := regexp.MustCompile(`unknown column Unknown`)

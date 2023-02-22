@@ -106,8 +106,8 @@ func TestGetContractsCols(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() { return }
 	w := bufio.NewWriter(&b)
-	viper.Set(core.GetGlobalFlagName("contract", constants.ArgCols), []string{"ContractNumber"})
-	getContractCols(core.GetGlobalFlagName("contract", constants.ArgCols), w)
+	viper.Set(core.GetFlagName("contract", constants.ArgCols), []string{"ContractNumber"})
+	getContractCols(core.GetFlagName("contract", constants.ArgCols), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 }
@@ -117,8 +117,8 @@ func TestGetContractsColsErr(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() { return }
 	w := bufio.NewWriter(&b)
-	viper.Set(core.GetGlobalFlagName("contract", constants.ArgCols), []string{"Unknown"})
-	getContractCols(core.GetGlobalFlagName("contract", constants.ArgCols), w)
+	viper.Set(core.GetFlagName("contract", constants.ArgCols), []string{"Unknown"})
+	getContractCols(core.GetFlagName("contract", constants.ArgCols), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 	re := regexp.MustCompile(`unknown column Unknown`)

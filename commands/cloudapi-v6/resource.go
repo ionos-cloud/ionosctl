@@ -30,7 +30,7 @@ func ResourceCmd() *core.Command {
 	}
 	globalFlags := resourceCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultResourceCols, printer.ColsMessage(defaultResourceCols))
-	_ = viper.BindPFlag(core.GetGlobalFlagName(resourceCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
+	_ = viper.BindPFlag(core.GetFlagName(resourceCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = resourceCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultResourceCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -200,11 +200,7 @@ func getResourcePrint(c *core.CommandConfig, res []resources.Resource) printer.R
 		if res != nil {
 			r.OutputJSON = res
 			r.KeyValue = getResourcesKVMaps(res)
-			if c.Resource != c.Namespace {
-				r.Columns = printer.GetHeadersAllDefault(defaultResourceCols, viper.GetStringSlice(core.GetFlagName(c.NS, constants.ArgCols)))
-			} else {
-				r.Columns = printer.GetHeadersAllDefault(defaultResourceCols, viper.GetStringSlice(core.GetGlobalFlagName(c.NS, constants.ArgCols)))
-			}
+			r.Columns = printer.GetHeadersAllDefault(defaultResourceCols, viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)))
 		}
 	}
 	return r

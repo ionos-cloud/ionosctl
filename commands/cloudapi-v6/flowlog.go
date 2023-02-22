@@ -37,7 +37,7 @@ func FlowlogCmd() *core.Command {
 	}
 	globalFlags := flowLogCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultFlowLogCols, printer.ColsMessage(defaultFlowLogCols))
-	_ = viper.BindPFlag(core.GetGlobalFlagName(flowLogCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
+	_ = viper.BindPFlag(core.GetFlagName(flowLogCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = flowLogCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultFlowLogCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -496,11 +496,7 @@ func getFlowLogPrint(resp *resources.Response, c *core.CommandConfig, rule []res
 		if rule != nil {
 			r.OutputJSON = rule
 			r.KeyValue = getFlowLogsKVMaps(rule)
-			if c.Resource != c.Namespace {
-				r.Columns = printer.GetHeadersAllDefault(defaultFlowLogCols, viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)))
-			} else {
-				r.Columns = printer.GetHeadersAllDefault(defaultFlowLogCols, viper.GetStringSlice(core.GetGlobalFlagName(c.Resource, constants.ArgCols)))
-			}
+			r.Columns = printer.GetHeadersAllDefault(defaultFlowLogCols, viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)))
 		}
 	}
 	return r

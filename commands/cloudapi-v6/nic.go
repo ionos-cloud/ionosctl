@@ -36,7 +36,7 @@ func NicCmd() *core.Command {
 	}
 	globalFlags := nicCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultNicCols, printer.ColsMessage(allNicCols))
-	_ = viper.BindPFlag(core.GetGlobalFlagName(nicCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
+	_ = viper.BindPFlag(core.GetFlagName(nicCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = nicCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allNicCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -895,11 +895,7 @@ func getNicPrint(resp *resources.Response, c *core.CommandConfig, nics []resourc
 		if nics != nil {
 			r.OutputJSON = nics
 			r.KeyValue = getNicsKVMaps(nics)
-			if c.Resource != c.Namespace {
-				r.Columns = printer.GetHeaders(allNicCols, defaultNicCols, viper.GetStringSlice(core.GetFlagName(c.NS, constants.ArgCols)))
-			} else {
-				r.Columns = printer.GetHeaders(allNicCols, defaultNicCols, viper.GetStringSlice(core.GetGlobalFlagName(c.NS, constants.ArgCols)))
-			}
+			r.Columns = printer.GetHeaders(allNicCols, defaultNicCols, viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)))
 		}
 	}
 	return r

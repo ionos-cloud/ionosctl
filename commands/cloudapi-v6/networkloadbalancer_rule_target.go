@@ -36,7 +36,7 @@ func NlbRuleTargetCmd() *core.Command {
 	}
 	globalFlags := nlbRuleTargetCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultRuleTargetCols, printer.ColsMessage(defaultRuleTargetCols))
-	_ = viper.BindPFlag(core.GetGlobalFlagName(nlbRuleTargetCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
+	_ = viper.BindPFlag(core.GetFlagName(nlbRuleTargetCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = nlbRuleTargetCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultRuleTargetCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -461,7 +461,7 @@ func getRuleTargetPrint(resp *resources.Response, c *core.CommandConfig, ss []re
 		if ss != nil {
 			r.OutputJSON = ss
 			r.KeyValue = getRuleTargetsKVMaps(ss)
-			r.Columns = printer.GetHeadersAllDefault(defaultRuleTargetCols, viper.GetStringSlice(core.GetGlobalFlagName(c.Resource, constants.ArgCols)))
+			r.Columns = printer.GetHeadersAllDefault(defaultRuleTargetCols, viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)))
 		}
 	}
 	return r

@@ -38,7 +38,7 @@ func ApplicationLoadBalancerCmd() *core.Command {
 	}
 	globalFlags := applicationloadbalancerCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultApplicationLoadBalancerCols, printer.ColsMessage(defaultApplicationLoadBalancerCols))
-	_ = viper.BindPFlag(core.GetGlobalFlagName(applicationloadbalancerCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
+	_ = viper.BindPFlag(core.GetFlagName(applicationloadbalancerCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = applicationloadbalancerCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultApplicationLoadBalancerCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -537,7 +537,7 @@ func getApplicationLoadBalancerPrint(resp *resources.Response, c *core.CommandCo
 		if ss != nil {
 			r.OutputJSON = ss
 			r.KeyValue = getApplicationLoadBalancersKVMaps(ss)
-			r.Columns = printer.GetHeadersListAll(allApplicationLoadBalancerCols, defaultApplicationLoadBalancerCols, "DatacenterId", viper.GetStringSlice(core.GetFlagName(c.NS, constants.ArgCols)), viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)))
+			r.Columns = printer.GetHeadersListAll(allApplicationLoadBalancerCols, defaultApplicationLoadBalancerCols, "DatacenterId", viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)), viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)))
 		}
 	}
 	return r

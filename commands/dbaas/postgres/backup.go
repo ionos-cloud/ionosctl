@@ -33,7 +33,7 @@ func BackupCmd() *core.Command {
 	}
 	globalFlags := backupCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultBackupCols, printer.ColsMessage(allBackupCols))
-	_ = viper.BindPFlag(core.GetGlobalFlagName(backupCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
+	_ = viper.BindPFlag(core.GetFlagName(backupCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = backupCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allBackupCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -178,7 +178,7 @@ func getBackupPrint(c *core.CommandConfig, dcs []resources.BackupResponse) print
 			if strings.Contains(c.Namespace, "cluster") {
 				r.Columns = getBackupCols(core.GetFlagName(c.NS, constants.ArgCols), c.Printer.GetStderr())
 			} else {
-				r.Columns = getBackupCols(core.GetGlobalFlagName(c.Resource, constants.ArgCols), c.Printer.GetStderr())
+				r.Columns = getBackupCols(core.GetFlagName(c.Resource, constants.ArgCols), c.Printer.GetStderr())
 			}
 		}
 	}

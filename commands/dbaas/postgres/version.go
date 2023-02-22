@@ -31,7 +31,7 @@ func PgsqlVersionCmd() *core.Command {
 	}
 	globalFlags := pgsqlversionCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultPgsqlVersionCols, printer.ColsMessage(defaultPgsqlVersionCols))
-	_ = viper.BindPFlag(core.GetGlobalFlagName(pgsqlversionCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
+	_ = viper.BindPFlag(core.GetFlagName(pgsqlversionCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = pgsqlversionCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultPgsqlVersionCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -109,7 +109,7 @@ func getPgsqlVersionPrint(c *core.CommandConfig, postgresVersionList *pgsqlresou
 		if postgresVersionList != nil {
 			r.OutputJSON = postgresVersionList
 			r.KeyValue = getPgsqlVersionsKVMaps(postgresVersionList)
-			r.Columns = getPgsqlVersionCols(core.GetGlobalFlagName(c.Resource, constants.ArgCols), c.Printer.GetStderr())
+			r.Columns = getPgsqlVersionCols(core.GetFlagName(c.Resource, constants.ArgCols), c.Printer.GetStderr())
 		}
 	}
 	return r

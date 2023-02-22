@@ -59,8 +59,8 @@ func TestGetCpusCols(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() { return }
 	w := bufio.NewWriter(&b)
-	viper.Set(core.GetGlobalFlagName("cpu", constants.ArgCols), []string{"Vendor"})
-	getCpuCols(core.GetGlobalFlagName("cpu", constants.ArgCols), w)
+	viper.Set(core.GetFlagName("cpu", constants.ArgCols), []string{"Vendor"})
+	getCpuCols(core.GetFlagName("cpu", constants.ArgCols), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 }
@@ -70,8 +70,8 @@ func TestGetCpusColsErr(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() { return }
 	w := bufio.NewWriter(&b)
-	viper.Set(core.GetGlobalFlagName("cpu", constants.ArgCols), []string{"Unknown"})
-	getCpuCols(core.GetGlobalFlagName("cpu", constants.ArgCols), w)
+	viper.Set(core.GetFlagName("cpu", constants.ArgCols), []string{"Unknown"})
+	getCpuCols(core.GetFlagName("cpu", constants.ArgCols), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 	re := regexp.MustCompile(`unknown column Unknown`)

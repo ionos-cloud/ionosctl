@@ -46,7 +46,7 @@ func ServerCmd() *core.Command {
 	}
 	globalFlags := serverCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultServerCols, printer.ColsMessage(allServerCols))
-	_ = viper.BindPFlag(core.GetGlobalFlagName(serverCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
+	_ = viper.BindPFlag(core.GetFlagName(serverCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = serverCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allServerCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -1152,7 +1152,7 @@ func getServerPrint(resp *resources.Response, c *core.CommandConfig, ss []resour
 		if ss != nil {
 			r.OutputJSON = ss
 			r.KeyValue = getServersKVMaps(ss)
-			r.Columns = printer.GetHeadersListAll(allServerCols, defaultServerCols, "DatacenterId", viper.GetStringSlice(core.GetFlagName(c.NS, constants.ArgCols)), viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)))
+			r.Columns = printer.GetHeadersListAll(allServerCols, defaultServerCols, "DatacenterId", viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)), viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)))
 		}
 	}
 	return r

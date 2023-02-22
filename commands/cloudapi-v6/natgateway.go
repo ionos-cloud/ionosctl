@@ -38,7 +38,7 @@ func NatgatewayCmd() *core.Command {
 	}
 	globalFlags := natgatewayCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultNatGatewayCols, printer.ColsMessage(defaultNatGatewayCols))
-	_ = viper.BindPFlag(core.GetGlobalFlagName(natgatewayCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
+	_ = viper.BindPFlag(core.GetFlagName(natgatewayCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = natgatewayCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultNatGatewayCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -506,7 +506,7 @@ func getNatGatewayPrint(resp *resources.Response, c *core.CommandConfig, ss []re
 		if ss != nil {
 			r.OutputJSON = ss
 			r.KeyValue = getNatGatewaysKVMaps(ss)
-			r.Columns = printer.GetHeadersListAll(allNatGatewayCols, defaultNatGatewayCols, "DatacenterId", viper.GetStringSlice(core.GetFlagName(c.NS, constants.ArgCols)), viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)))
+			r.Columns = printer.GetHeadersListAll(allNatGatewayCols, defaultNatGatewayCols, "DatacenterId", viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)), viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)))
 		}
 	}
 	return r

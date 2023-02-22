@@ -37,7 +37,7 @@ func NetworkloadbalancerRuleCmd() *core.Command {
 	}
 	globalFlags := nlbRuleCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultForwardingRuleCols, printer.ColsMessage(allForwardingRuleCols))
-	_ = viper.BindPFlag(core.GetGlobalFlagName(nlbRuleCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
+	_ = viper.BindPFlag(core.GetFlagName(nlbRuleCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = nlbRuleCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allForwardingRuleCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -571,7 +571,7 @@ func getForwardingRulePrint(resp *resources.Response, c *core.CommandConfig, ss 
 		if ss != nil {
 			r.OutputJSON = ss
 			r.KeyValue = getForwardingRulesKVMaps(ss)
-			r.Columns = printer.GetHeaders(allForwardingRuleCols, defaultForwardingRuleCols, viper.GetStringSlice(core.GetFlagName(c.NS, constants.ArgCols)))
+			r.Columns = printer.GetHeaders(allForwardingRuleCols, defaultForwardingRuleCols, viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)))
 		}
 	}
 	return r

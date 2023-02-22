@@ -1293,8 +1293,8 @@ func TestGetServersCols(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() { return }
 	w := bufio.NewWriter(&b)
-	viper.Set(core.GetGlobalFlagName("server", constants.ArgCols), []string{"Name"})
-	getServersCols(core.GetGlobalFlagName("server", constants.ArgCols), core.GetFlagName("server", cloudapiv6.ArgAll), w)
+	viper.Set(core.GetFlagName("server", constants.ArgCols), []string{"Name"})
+	getServersCols(core.GetFlagName("server", constants.ArgCols), core.GetFlagName("server", cloudapiv6.ArgAll), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 }
@@ -1304,8 +1304,8 @@ func TestGetServersColsErr(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() { return }
 	w := bufio.NewWriter(&b)
-	viper.Set(core.GetGlobalFlagName("server", constants.ArgCols), []string{"Unknown"})
-	getServersCols(core.GetGlobalFlagName("server", constants.ArgCols), core.GetFlagName("server", cloudapiv6.ArgAll), w)
+	viper.Set(core.GetFlagName("server", constants.ArgCols), []string{"Unknown"})
+	getServersCols(core.GetFlagName("server", constants.ArgCols), core.GetFlagName("server", cloudapiv6.ArgAll), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 	re := regexp.MustCompile(`unknown column Unknown`)

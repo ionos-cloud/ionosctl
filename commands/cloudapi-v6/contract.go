@@ -33,7 +33,7 @@ func ContractCmd() *core.Command {
 	}
 	globalFlags := contractCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultContractCols, printer.ColsMessage(allContractCols))
-	_ = viper.BindPFlag(core.GetGlobalFlagName(contractCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
+	_ = viper.BindPFlag(core.GetFlagName(contractCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = contractCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allContractCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -98,7 +98,7 @@ func RunContractGet(c *core.CommandConfig) error {
 			return c.Printer.Print(getContractPrint(c, getContract(contractResource), contractNatCols))
 		}
 	}
-	return c.Printer.Print(getContractPrint(c, getContract(contractResource), getContractCols(core.GetGlobalFlagName(c.Resource, constants.ArgCols), c.Printer.GetStderr())))
+	return c.Printer.Print(getContractPrint(c, getContract(contractResource), getContractCols(core.GetFlagName(c.Resource, constants.ArgCols), c.Printer.GetStderr())))
 }
 
 // Output Printing

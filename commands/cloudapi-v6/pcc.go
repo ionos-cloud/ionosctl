@@ -35,7 +35,7 @@ func PccCmd() *core.Command {
 	}
 	globalFlags := pccCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultPccCols, printer.ColsMessage(defaultPccCols))
-	_ = viper.BindPFlag(core.GetGlobalFlagName(pccCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
+	_ = viper.BindPFlag(core.GetFlagName(pccCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = pccCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultPccCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -412,7 +412,7 @@ func PeersCmd() *core.Command {
 	globalFlags := peerCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultPccPeersCols,
 		printer.ColsMessage(defaultPccPeersCols))
-	_ = viper.BindPFlag(core.GetGlobalFlagName(peerCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
+	_ = viper.BindPFlag(core.GetFlagName(peerCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = peerCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultPccPeersCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -476,7 +476,7 @@ func getPccPrint(resp *resources.Response, c *core.CommandConfig, pccs []resourc
 		if pccs != nil {
 			r.OutputJSON = pccs
 			r.KeyValue = getPccsKVMaps(pccs)
-			r.Columns = printer.GetHeadersAllDefault(defaultPccCols, viper.GetStringSlice(core.GetGlobalFlagName(c.Resource, constants.ArgCols)))
+			r.Columns = printer.GetHeadersAllDefault(defaultPccCols, viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)))
 		}
 	}
 	return r
@@ -498,7 +498,7 @@ func getPccPeerPrint(c *core.CommandConfig, pccs []resources.Peer) printer.Resul
 		if pccs != nil {
 			r.OutputJSON = pccs
 			r.KeyValue = getPccPeersKVMaps(pccs)
-			r.Columns = printer.GetHeadersAllDefault(defaultPccPeersCols, viper.GetStringSlice(core.GetGlobalFlagName(c.Resource, constants.ArgCols)))
+			r.Columns = printer.GetHeadersAllDefault(defaultPccPeersCols, viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)))
 		}
 	}
 	return r

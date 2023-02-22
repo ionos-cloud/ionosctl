@@ -38,7 +38,7 @@ func AlbRuleHttpRuleCmd() *core.Command {
 	}
 	globalFlags := albRuleHttpRuleCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultAlbRuleHttpRuleCols, printer.ColsMessage(allAlbRuleHttpRuleCols))
-	_ = viper.BindPFlag(core.GetGlobalFlagName(albRuleHttpRuleCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
+	_ = viper.BindPFlag(core.GetFlagName(albRuleHttpRuleCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = albRuleHttpRuleCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allAlbRuleHttpRuleCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -532,7 +532,7 @@ func getAlbRuleHttpRulePrint(resp *resources.Response, c *core.CommandConfig, ss
 		if ss != nil {
 			r.OutputJSON = ss
 			r.KeyValue = getAlbRuleHttpRulesKVMaps(ss)
-			r.Columns = getAlbRuleHttpRulesCols(core.GetGlobalFlagName(c.Resource, constants.ArgCols), c.Printer.GetStderr())
+			r.Columns = getAlbRuleHttpRulesCols(core.GetFlagName(c.Resource, constants.ArgCols), c.Printer.GetStderr())
 		}
 	}
 	return r

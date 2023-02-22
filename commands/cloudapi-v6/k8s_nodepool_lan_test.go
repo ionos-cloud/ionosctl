@@ -223,7 +223,7 @@ func TestRunK8sNodePoolLanList(t *testing.T) {
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sClusterId), testK8sNodePoolLanVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sNodePoolId), testK8sNodePoolLanVar)
-		viper.Set(core.GetGlobalFlagName(cfg.Resource, cloudapiv6.ArgCols), defaultK8sNodePoolLanCols)
+		viper.Set(core.GetFlagName(cfg.Resource, cloudapiv6.ArgCols), defaultK8sNodePoolLanCols)
 		rm.CloudApiV6Mocks.K8s.EXPECT().GetNodePool(testK8sNodePoolLanVar, testK8sNodePoolLanVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&k8sNodepoolLanTest, &testResponse, nil)
 		err := RunK8sNodePoolLanList(cfg)
 		assert.NoError(t, err)
