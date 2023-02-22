@@ -623,8 +623,8 @@ func TestGetNatGatewayRulesCols(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
-	viper.Set(core.GetGlobalFlagName("rule", constants.ArgCols), []string{"Name"})
-	getNatGatewayRulesCols(core.GetGlobalFlagName("rule", constants.ArgCols), w)
+	viper.Set(core.GetFlagName("rule", constants.ArgCols), []string{"Name"})
+	getNatGatewayRulesCols(core.GetFlagName("rule", constants.ArgCols), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 }
@@ -634,8 +634,8 @@ func TestGetNatGatewayRulesColsErr(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
-	viper.Set(core.GetGlobalFlagName("rule", constants.ArgCols), []string{"Unknown"})
-	getNatGatewayRulesCols(core.GetGlobalFlagName("rule", constants.ArgCols), w)
+	viper.Set(core.GetFlagName("rule", constants.ArgCols), []string{"Unknown"})
+	getNatGatewayRulesCols(core.GetFlagName("rule", constants.ArgCols), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 	re := regexp.MustCompile(`unknown column Unknown`)

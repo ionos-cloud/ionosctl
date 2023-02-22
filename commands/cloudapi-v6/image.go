@@ -46,7 +46,7 @@ func ImageCmd() *core.Command {
 	}
 	globalFlags := imageCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultImageCols, printer.ColsMessage(allImageCols))
-	_ = viper.BindPFlag(core.GetGlobalFlagName(imageCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
+	_ = viper.BindPFlag(core.GetFlagName(imageCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = imageCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allImageCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -758,7 +758,7 @@ func getImagePrint(resp *resources.Response, c *core.CommandConfig, imgs []resou
 		if imgs != nil {
 			r.OutputJSON = imgs
 			r.KeyValue = getImagesKVMaps(imgs)
-			r.Columns = printer.GetHeaders(allImageCols, defaultImageCols, viper.GetStringSlice(core.GetGlobalFlagName(c.Resource, constants.ArgCols)))
+			r.Columns = printer.GetHeaders(allImageCols, defaultImageCols, viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)))
 		}
 	}
 	return r

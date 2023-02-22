@@ -36,7 +36,7 @@ func UserCmd() *core.Command {
 	}
 	globalFlags := userCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultUserCols, printer.ColsMessage(defaultUserCols))
-	_ = viper.BindPFlag(core.GetGlobalFlagName(userCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
+	_ = viper.BindPFlag(core.GetFlagName(userCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = userCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultUserCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -716,7 +716,7 @@ func getUserPrint(resp *resources.Response, c *core.CommandConfig, users []resou
 			if c.Resource != c.Namespace {
 				r.Columns = printer.GetHeadersAllDefault(defaultUserCols, viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)))
 			} else {
-				r.Columns = printer.GetHeadersAllDefault(defaultUserCols, viper.GetStringSlice(core.GetGlobalFlagName(c.NS, constants.ArgCols)))
+				r.Columns = printer.GetHeadersAllDefault(defaultUserCols, viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)))
 			}
 		}
 	}

@@ -415,7 +415,7 @@ func getK8sNodePoolLanPrint(c *core.CommandConfig, k8ss []resources.K8sNodePoolL
 		if k8ss != nil {
 			r.OutputJSON = k8ss
 			r.KeyValue = getK8sNodePoolLansKVMaps(k8ss)
-			r.Columns = printer.GetHeadersAllDefault(defaultK8sNodePoolLanCols, viper.GetStringSlice(core.GetGlobalFlagName(c.Resource, constants.ArgCols)))
+			r.Columns = printer.GetHeadersAllDefault(defaultK8sNodePoolLanCols, viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)))
 		}
 	}
 	return r

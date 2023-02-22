@@ -28,7 +28,7 @@ func LabelCmd() *core.Command {
 	}
 	globalFlags := labelCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultLabelResourceCols, printer.ColsMessage(defaultLabelResourceCols))
-	_ = viper.BindPFlag(core.GetGlobalFlagName(labelCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
+	_ = viper.BindPFlag(core.GetFlagName(labelCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = labelCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultLabelResourceCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -230,7 +230,7 @@ func LabelCmd() *core.Command {
 // If --resource-type server,	  --datacenter-id and --server-id are also required
 func generateFlagSets(c *core.PreCommandConfig, extraFlags ...string) []core.FlagNameSetWithPredicate {
 	funcResourceTypeSetAndMatches := func(resource interface{}) bool {
-		argResourceType := core.GetGlobalFlagName(c.NS, cloudapiv6.ArgResourceType)
+		argResourceType := core.GetFlagName(c.NS, cloudapiv6.ArgResourceType)
 		return !viper.IsSet(argResourceType) || viper.GetString(argResourceType) == resource
 	}
 	return []core.FlagNameSetWithPredicate{

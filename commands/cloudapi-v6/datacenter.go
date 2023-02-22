@@ -36,7 +36,7 @@ func DatacenterCmd() *core.Command {
 	}
 	globalFlags := datacenterCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultDatacenterCols, printer.ColsMessage(allDatacenterCols))
-	_ = viper.BindPFlag(core.GetGlobalFlagName(datacenterCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
+	_ = viper.BindPFlag(core.GetFlagName(datacenterCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = datacenterCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allDatacenterCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -414,7 +414,7 @@ func getDataCenterPrint(resp *resources.Response, c *core.CommandConfig, dcs []r
 		if dcs != nil {
 			r.OutputJSON = dcs
 			r.KeyValue = getDataCentersKVMaps(dcs)
-			r.Columns = printer.GetHeaders(allDatacenterCols, defaultDatacenterCols, viper.GetStringSlice(core.GetGlobalFlagName(c.Resource, constants.ArgCols)))
+			r.Columns = printer.GetHeaders(allDatacenterCols, defaultDatacenterCols, viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)))
 		}
 	}
 	return r

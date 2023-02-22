@@ -577,7 +577,7 @@ func TestRunClusterList(t *testing.T) {
 		viper.Set(constants.ArgQuiet, false)
 		viper.Set(constants.ArgVerbose, false)
 		viper.Set(constants.ArgServerUrl, constants.DefaultApiURL)
-		viper.Set(core.GetGlobalFlagName(cfg.NS, constants.ArgCols), defaultClusterCols)
+		viper.Set(core.GetFlagName(cfg.NS, constants.ArgCols), defaultClusterCols)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgName), testClusterVar)
 		rm.CloudApiDbaasPgsqlMocks.Cluster.EXPECT().List(testClusterVar).Return(testClusters, nil, nil)
 		err := RunClusterList(cfg)
@@ -1440,8 +1440,8 @@ func TestGetClustersCols(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
-	viper.Set(core.GetGlobalFlagName("cluster", constants.ArgCols), []string{"DisplayName"})
-	getClusterCols(core.GetGlobalFlagName("cluster", constants.ArgCols), w)
+	viper.Set(core.GetFlagName("cluster", constants.ArgCols), []string{"DisplayName"})
+	getClusterCols(core.GetFlagName("cluster", constants.ArgCols), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 }
@@ -1451,8 +1451,8 @@ func TestGetClustersColsErr(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
-	viper.Set(core.GetGlobalFlagName("cluster", constants.ArgCols), []string{"Unknown"})
-	getClusterCols(core.GetGlobalFlagName("cluster", constants.ArgCols), w)
+	viper.Set(core.GetFlagName("cluster", constants.ArgCols), []string{"Unknown"})
+	getClusterCols(core.GetFlagName("cluster", constants.ArgCols), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 	re := regexp.MustCompile(`unknown column Unknown`)

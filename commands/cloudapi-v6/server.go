@@ -46,7 +46,7 @@ func ServerCmd() *core.Command {
 	}
 	globalFlags := serverCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultServerCols, printer.ColsMessage(allServerCols))
-	_ = viper.BindPFlag(core.GetGlobalFlagName(serverCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
+	_ = viper.BindPFlag(core.GetFlagName(serverCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = serverCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allServerCols, cobra.ShellCompDirectiveNoFileComp
 	})

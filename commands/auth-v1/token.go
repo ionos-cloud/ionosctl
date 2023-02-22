@@ -34,7 +34,7 @@ func TokenCmd() *core.Command {
 	}
 	globalFlags := tokenCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultTokenCols, printer.ColsMessage(allTokenCols))
-	_ = viper.BindPFlag(core.GetGlobalFlagName(tokenCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
+	_ = viper.BindPFlag(core.GetFlagName(tokenCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = tokenCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allTokenCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -301,7 +301,7 @@ func getTokenPrint(c *core.CommandConfig, dcs []resources.Token) printer.Result 
 		if dcs != nil {
 			r.OutputJSON = dcs
 			r.KeyValue = getTokensKVMaps(dcs)
-			r.Columns = getTokenCols(core.GetGlobalFlagName(c.Resource, constants.ArgCols), c.Printer.GetStderr())
+			r.Columns = getTokenCols(core.GetFlagName(c.Resource, constants.ArgCols), c.Printer.GetStderr())
 		}
 	}
 	return r

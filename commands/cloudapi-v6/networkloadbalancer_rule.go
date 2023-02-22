@@ -37,7 +37,7 @@ func NetworkloadbalancerRuleCmd() *core.Command {
 	}
 	globalFlags := nlbRuleCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultForwardingRuleCols, printer.ColsMessage(allForwardingRuleCols))
-	_ = viper.BindPFlag(core.GetGlobalFlagName(nlbRuleCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
+	_ = viper.BindPFlag(core.GetFlagName(nlbRuleCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = nlbRuleCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allForwardingRuleCols, cobra.ShellCompDirectiveNoFileComp
 	})

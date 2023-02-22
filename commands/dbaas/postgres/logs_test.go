@@ -170,8 +170,8 @@ func TestGetClusterLogsCols(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
-	viper.Set(core.GetGlobalFlagName("logs", constants.ArgCols), []string{"Name"})
-	getClusterLogsCols(core.GetGlobalFlagName("logs", constants.ArgCols), w)
+	viper.Set(core.GetFlagName("logs", constants.ArgCols), []string{"Name"})
+	getClusterLogsCols(core.GetFlagName("logs", constants.ArgCols), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 }
@@ -181,8 +181,8 @@ func TestGetLogsColsErr(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
-	viper.Set(core.GetGlobalFlagName("logs", constants.ArgCols), []string{"Unknown"})
-	getClusterLogsCols(core.GetGlobalFlagName("logs", constants.ArgCols), w)
+	viper.Set(core.GetFlagName("logs", constants.ArgCols), []string{"Unknown"})
+	getClusterLogsCols(core.GetFlagName("logs", constants.ArgCols), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 	re := regexp.MustCompile(`unknown column Unknown`)

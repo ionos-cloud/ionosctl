@@ -31,7 +31,7 @@ func LocationCmd() *core.Command {
 	}
 	globalFlags := locationCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultLocationCols, printer.ColsMessage(allLocationCols))
-	_ = viper.BindPFlag(core.GetGlobalFlagName(locationCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
+	_ = viper.BindPFlag(core.GetFlagName(locationCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = locationCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allLocationCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -116,7 +116,7 @@ func RunLocationList(c *core.CommandConfig) error {
 	return c.Printer.Print(printer.Result{
 		OutputJSON: locations,
 		KeyValue:   getLocationsKVMaps(getLocations(locations)),
-		Columns:    printer.GetHeaders(allLocationCols, defaultLocationCols, viper.GetStringSlice(core.GetGlobalFlagName(c.NS, constants.ArgCols))),
+		Columns:    printer.GetHeaders(allLocationCols, defaultLocationCols, viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))),
 	})
 }
 
@@ -142,7 +142,7 @@ func RunLocationGet(c *core.CommandConfig) error {
 	return c.Printer.Print(printer.Result{
 		OutputJSON: loc,
 		KeyValue:   getLocationsKVMaps(getLocation(loc)),
-		Columns:    printer.GetHeaders(allLocationCols, defaultLocationCols, viper.GetStringSlice(core.GetGlobalFlagName(c.NS, constants.ArgCols))),
+		Columns:    printer.GetHeaders(allLocationCols, defaultLocationCols, viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))),
 	})
 }
 

@@ -582,8 +582,8 @@ func TestGetTokensCols(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() { return }
 	w := bufio.NewWriter(&b)
-	viper.Set(core.GetGlobalFlagName("token", constants.ArgCols), []string{"ExpirationDate"})
-	getTokenCols(core.GetGlobalFlagName("token", constants.ArgCols), w)
+	viper.Set(core.GetFlagName("token", constants.ArgCols), []string{"ExpirationDate"})
+	getTokenCols(core.GetFlagName("token", constants.ArgCols), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 }
@@ -593,8 +593,8 @@ func TestGetTokensColsErr(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() { return }
 	w := bufio.NewWriter(&b)
-	viper.Set(core.GetGlobalFlagName("token", constants.ArgCols), []string{"Unknown"})
-	getTokenCols(core.GetGlobalFlagName("token", constants.ArgCols), w)
+	viper.Set(core.GetFlagName("token", constants.ArgCols), []string{"Unknown"})
+	getTokenCols(core.GetFlagName("token", constants.ArgCols), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 	re := regexp.MustCompile(`unknown column Unknown`)

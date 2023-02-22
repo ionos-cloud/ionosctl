@@ -29,7 +29,7 @@ func IpconsumerCmd() *core.Command {
 	}
 	globalFlags := resourceCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultIpConsumerCols, printer.ColsMessage(allIpConsumerCols))
-	_ = viper.BindPFlag(core.GetGlobalFlagName(resourceCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
+	_ = viper.BindPFlag(core.GetFlagName(resourceCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = resourceCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allIpConsumerCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -108,7 +108,7 @@ func getIpConsumerPrint(c *core.CommandConfig, groups []resources.IpConsumer) pr
 		if groups != nil {
 			r.OutputJSON = groups
 			r.KeyValue = getIpConsumersKVMaps(groups)
-			r.Columns = printer.GetHeaders(allIpConsumerCols, defaultIpConsumerCols, viper.GetStringSlice(core.GetGlobalFlagName(c.Resource, constants.ArgCols)))
+			r.Columns = printer.GetHeaders(allIpConsumerCols, defaultIpConsumerCols, viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)))
 		}
 	}
 	return r

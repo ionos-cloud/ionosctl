@@ -35,7 +35,7 @@ func SnapshotCmd() *core.Command {
 	}
 	globalFlags := snapshotCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultSnapshotCols, printer.ColsMessage(defaultSnapshotCols))
-	_ = viper.BindPFlag(core.GetGlobalFlagName(snapshotCmd.NS, constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
+	_ = viper.BindPFlag(core.GetFlagName(snapshotCmd.NS, constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = snapshotCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultSnapshotCols, cobra.ShellCompDirectiveNoFileComp
 	})

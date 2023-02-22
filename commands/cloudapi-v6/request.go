@@ -35,7 +35,7 @@ func RequestCmd() *core.Command {
 	}
 	globalFlags := reqCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultRequestCols, printer.ColsMessage(allRequestCols))
-	_ = viper.BindPFlag(core.GetGlobalFlagName(reqCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
+	_ = viper.BindPFlag(core.GetFlagName(reqCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = reqCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allRequestCols, cobra.ShellCompDirectiveNoFileComp
 	})

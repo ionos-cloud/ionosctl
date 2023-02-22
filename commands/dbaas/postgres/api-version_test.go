@@ -49,7 +49,7 @@ func TestRunAPIVersionList(t *testing.T) {
 		viper.Set(constants.ArgQuiet, false)
 		viper.Set(constants.ArgVerbose, false)
 		viper.Set(constants.ArgServerUrl, constants.DefaultApiURL)
-		viper.Set(core.GetGlobalFlagName(cfg.NS, constants.ArgCols), defaultAPIVersionCols)
+		viper.Set(core.GetFlagName(cfg.NS, constants.ArgCols), defaultAPIVersionCols)
 		rm.CloudApiDbaasPgsqlMocks.Info.EXPECT().List().Return(testAPIVersions, nil, nil)
 		err := RunAPIVersionList(cfg)
 		assert.NoError(t, err)
@@ -104,8 +104,8 @@ func TestGetAPIVersionsCols(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
-	viper.Set(core.GetGlobalFlagName("api-version", constants.ArgCols), []string{"SwaggerUrl"})
-	getAPIVersionCols(core.GetGlobalFlagName("api-version", constants.ArgCols), w)
+	viper.Set(core.GetFlagName("api-version", constants.ArgCols), []string{"SwaggerUrl"})
+	getAPIVersionCols(core.GetFlagName("api-version", constants.ArgCols), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 }
@@ -115,8 +115,8 @@ func TestGetAPIVersionsColsErr(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
-	viper.Set(core.GetGlobalFlagName("api-version", constants.ArgCols), []string{"Unknown"})
-	getAPIVersionCols(core.GetGlobalFlagName("api-version", constants.ArgCols), w)
+	viper.Set(core.GetFlagName("api-version", constants.ArgCols), []string{"Unknown"})
+	getAPIVersionCols(core.GetFlagName("api-version", constants.ArgCols), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 	re := regexp.MustCompile(`unknown column Unknown`)

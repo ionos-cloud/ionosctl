@@ -37,7 +37,7 @@ func FirewallruleCmd() *core.Command {
 	}
 	globalFlags := firewallRuleCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultFirewallRuleCols, printer.ColsMessage(allFirewallRuleCols))
-	_ = viper.BindPFlag(core.GetGlobalFlagName(firewallRuleCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
+	_ = viper.BindPFlag(core.GetFlagName(firewallRuleCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = firewallRuleCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allFirewallRuleCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -443,9 +443,9 @@ func RunFirewallRuleDelete(c *core.CommandConfig) error {
 		return err
 	}
 	queryParams := listQueryParams.QueryParams
-	datacenterId := viper.GetString(core.GetGlobalFlagName(c.Resource, cloudapiv6.ArgDataCenterId))
-	serverId := viper.GetString(core.GetGlobalFlagName(c.Resource, cloudapiv6.ArgServerId))
-	nicId := viper.GetString(core.GetGlobalFlagName(c.Resource, cloudapiv6.ArgNicId))
+	datacenterId := viper.GetString(core.GetFlagName(c.Resource, cloudapiv6.ArgDataCenterId))
+	serverId := viper.GetString(core.GetFlagName(c.Resource, cloudapiv6.ArgServerId))
+	nicId := viper.GetString(core.GetFlagName(c.Resource, cloudapiv6.ArgNicId))
 	fruleId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFirewallRuleId))
 	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
 		if err := DeleteAllFirewallRuses(c); err != nil {
@@ -533,9 +533,9 @@ func DeleteAllFirewallRuses(c *core.CommandConfig) error {
 		return err
 	}
 	queryParams := listQueryParams.QueryParams
-	datacenterId := viper.GetString(core.GetGlobalFlagName(c.Resource, cloudapiv6.ArgDataCenterId))
-	serverId := viper.GetString(core.GetGlobalFlagName(c.Resource, cloudapiv6.ArgServerId))
-	nicId := viper.GetString(core.GetGlobalFlagName(c.Resource, cloudapiv6.ArgNicId))
+	datacenterId := viper.GetString(core.GetFlagName(c.Resource, cloudapiv6.ArgDataCenterId))
+	serverId := viper.GetString(core.GetFlagName(c.Resource, cloudapiv6.ArgServerId))
+	nicId := viper.GetString(core.GetFlagName(c.Resource, cloudapiv6.ArgNicId))
 	c.Printer.Verbose("Datacenter ID: %v", datacenterId)
 	c.Printer.Verbose("Server ID: %v", serverId)
 	c.Printer.Verbose("NIC with ID: %v", nicId)
@@ -630,7 +630,7 @@ func getFirewallRulePrint(resp *resources.Response, c *core.CommandConfig, rule 
 		if rule != nil {
 			r.OutputJSON = rule
 			r.KeyValue = getFirewallRulesKVMaps(rule)
-			r.Columns = printer.GetHeaders(allFirewallRuleCols, defaultFirewallRuleCols, viper.GetStringSlice(core.GetGlobalFlagName(c.Resource, constants.ArgCols)))
+			r.Columns = printer.GetHeaders(allFirewallRuleCols, defaultFirewallRuleCols, viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)))
 		}
 	}
 	return r

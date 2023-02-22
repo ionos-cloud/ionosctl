@@ -38,7 +38,7 @@ func NatgatewayCmd() *core.Command {
 	}
 	globalFlags := natgatewayCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultNatGatewayCols, printer.ColsMessage(defaultNatGatewayCols))
-	_ = viper.BindPFlag(core.GetGlobalFlagName(natgatewayCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
+	_ = viper.BindPFlag(core.GetFlagName(natgatewayCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = natgatewayCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultNatGatewayCols, cobra.ShellCompDirectiveNoFileComp
 	})

@@ -37,7 +37,7 @@ func LoadBalancerCmd() *core.Command {
 	}
 	globalFlags := loadbalancerCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultLoadbalancerCols, printer.ColsMessage(allLoadbalancerCols))
-	_ = viper.BindPFlag(core.GetGlobalFlagName(loadbalancerCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
+	_ = viper.BindPFlag(core.GetFlagName(loadbalancerCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = loadbalancerCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allLoadbalancerCols, cobra.ShellCompDirectiveNoFileComp
 	})

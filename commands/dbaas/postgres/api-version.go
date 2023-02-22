@@ -31,7 +31,7 @@ func APIVersionCmd() *core.Command {
 	}
 	globalFlags := apiversionCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultAPIVersionCols, printer.ColsMessage(defaultAPIVersionCols))
-	_ = viper.BindPFlag(core.GetGlobalFlagName(apiversionCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
+	_ = viper.BindPFlag(core.GetFlagName(apiversionCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = apiversionCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultAPIVersionCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -116,7 +116,7 @@ func getAPIVersionPrint(c *core.CommandConfig, postgresVersionList *[]pgsqlresou
 		if postgresVersionList != nil {
 			r.OutputJSON = postgresVersionList
 			r.KeyValue = getAPIVersionsKVMaps(postgresVersionList)
-			r.Columns = getAPIVersionCols(core.GetGlobalFlagName(c.Resource, constants.ArgCols), c.Printer.GetStderr())
+			r.Columns = getAPIVersionCols(core.GetFlagName(c.Resource, constants.ArgCols), c.Printer.GetStderr())
 		}
 	}
 	return r

@@ -54,7 +54,7 @@ func K8sClusterCmd() *core.Command {
 	}
 	globalFlags := k8sCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultK8sClusterCols, printer.ColsMessage(allK8sClusterCols))
-	_ = viper.BindPFlag(core.GetGlobalFlagName(k8sCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
+	_ = viper.BindPFlag(core.GetFlagName(k8sCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = k8sCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allK8sClusterCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -557,7 +557,7 @@ func getK8sClusterPrint(resp *resources.Response, c *core.CommandConfig, k8ss []
 		if k8ss != nil {
 			r.OutputJSON = k8ss
 			r.KeyValue = getK8sClustersKVMaps(k8ss)
-			r.Columns = printer.GetHeaders(allK8sClusterCols, defaultK8sClusterCols, viper.GetStringSlice(core.GetGlobalFlagName(c.Resource, constants.ArgCols)))
+			r.Columns = printer.GetHeaders(allK8sClusterCols, defaultK8sClusterCols, viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)))
 		}
 	}
 	return r

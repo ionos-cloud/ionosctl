@@ -98,7 +98,7 @@ func TestRunBackupList(t *testing.T) {
 		viper.Set(constants.ArgQuiet, false)
 		viper.Set(constants.ArgVerbose, false)
 		viper.Set(constants.ArgServerUrl, constants.DefaultApiURL)
-		viper.Set(core.GetGlobalFlagName(cfg.NS, constants.ArgCols), defaultBackupCols)
+		viper.Set(core.GetFlagName(cfg.NS, constants.ArgCols), defaultBackupCols)
 		rm.CloudApiDbaasPgsqlMocks.Backup.EXPECT().List().Return(testBackups, nil, nil)
 		err := RunBackupList(cfg)
 		assert.NoError(t, err)
@@ -187,8 +187,8 @@ func TestGetBackupsCols(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
-	viper.Set(core.GetGlobalFlagName("backup", constants.ArgCols), []string{"BackupId"})
-	getBackupCols(core.GetGlobalFlagName("backup", constants.ArgCols), w)
+	viper.Set(core.GetFlagName("backup", constants.ArgCols), []string{"BackupId"})
+	getBackupCols(core.GetFlagName("backup", constants.ArgCols), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 }
@@ -198,8 +198,8 @@ func TestGetBackupsColsErr(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
-	viper.Set(core.GetGlobalFlagName("backup", constants.ArgCols), []string{"Unknown"})
-	getBackupCols(core.GetGlobalFlagName("backup", constants.ArgCols), w)
+	viper.Set(core.GetFlagName("backup", constants.ArgCols), []string{"Unknown"})
+	getBackupCols(core.GetFlagName("backup", constants.ArgCols), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 	re := regexp.MustCompile(`unknown column Unknown`)
