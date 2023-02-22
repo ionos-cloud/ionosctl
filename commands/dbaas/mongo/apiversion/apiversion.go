@@ -13,7 +13,7 @@ func ApiVersionCmd() *core.Command {
 	cmd := core.NewCommand(context.Background(), nil, core.CommandBuilder{
 		Namespace: "dbaas-mongo",
 		Verb:      "api-versions",
-		Aliases:   []string{"ls"},
+		Aliases:   []string{"versions", "api-version"},
 		ShortDesc: "Get Mongo API swagger files",
 		Example:   "ionosctl dbaas mongo api-versions",
 		PreCmdRun: core.NoPreRun,

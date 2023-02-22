@@ -14,7 +14,6 @@ import (
 func deleteAll(c *core.CommandConfig) error {
 	c.Printer.Verbose("Deleting All Clusters!")
 	if !viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce)) {
-		// TODO: This is a pretty nasty snippet to duplicate everywhere
 		err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all clusters")
 		if err != nil {
 			return err
