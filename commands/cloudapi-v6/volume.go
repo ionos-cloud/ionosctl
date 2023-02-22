@@ -1094,11 +1094,7 @@ func getVolumePrint(resp *resources.Response, c *core.CommandConfig, vols []reso
 		if vols != nil {
 			r.OutputJSON = vols
 			r.KeyValue = getVolumesKVMaps(vols)
-			if c.Resource != c.Namespace {
-				r.Columns = printer.GetHeadersListAll(allVolumeCols, defaultVolumeCols, "DatacenterId", viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)), viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)))
-			} else {
-				r.Columns = printer.GetHeadersListAll(allVolumeCols, defaultVolumeCols, "DatacenterId", viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)), viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)))
-			}
+			r.Columns = printer.GetHeadersListAll(allVolumeCols, defaultVolumeCols, "DatacenterId", viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)), viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)))
 		}
 	}
 	return r

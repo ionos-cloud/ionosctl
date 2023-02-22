@@ -895,11 +895,7 @@ func getNicPrint(resp *resources.Response, c *core.CommandConfig, nics []resourc
 		if nics != nil {
 			r.OutputJSON = nics
 			r.KeyValue = getNicsKVMaps(nics)
-			if c.Resource != c.Namespace {
-				r.Columns = printer.GetHeaders(allNicCols, defaultNicCols, viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)))
-			} else {
-				r.Columns = printer.GetHeaders(allNicCols, defaultNicCols, viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)))
-			}
+			r.Columns = printer.GetHeaders(allNicCols, defaultNicCols, viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)))
 		}
 	}
 	return r

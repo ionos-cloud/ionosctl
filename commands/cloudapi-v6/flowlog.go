@@ -496,11 +496,7 @@ func getFlowLogPrint(resp *resources.Response, c *core.CommandConfig, rule []res
 		if rule != nil {
 			r.OutputJSON = rule
 			r.KeyValue = getFlowLogsKVMaps(rule)
-			if c.Resource != c.Namespace {
-				r.Columns = printer.GetHeadersAllDefault(defaultFlowLogCols, viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)))
-			} else {
-				r.Columns = printer.GetHeadersAllDefault(defaultFlowLogCols, viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)))
-			}
+			r.Columns = printer.GetHeadersAllDefault(defaultFlowLogCols, viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)))
 		}
 	}
 	return r

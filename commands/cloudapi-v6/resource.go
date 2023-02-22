@@ -200,11 +200,7 @@ func getResourcePrint(c *core.CommandConfig, res []resources.Resource) printer.R
 		if res != nil {
 			r.OutputJSON = res
 			r.KeyValue = getResourcesKVMaps(res)
-			if c.Resource != c.Namespace {
-				r.Columns = printer.GetHeadersAllDefault(defaultResourceCols, viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)))
-			} else {
-				r.Columns = printer.GetHeadersAllDefault(defaultResourceCols, viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)))
-			}
+			r.Columns = printer.GetHeadersAllDefault(defaultResourceCols, viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)))
 		}
 	}
 	return r

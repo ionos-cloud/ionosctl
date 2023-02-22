@@ -713,11 +713,7 @@ func getUserPrint(resp *resources.Response, c *core.CommandConfig, users []resou
 		if users != nil {
 			r.OutputJSON = users
 			r.KeyValue = getUsersKVMaps(users)
-			if c.Resource != c.Namespace {
-				r.Columns = printer.GetHeadersAllDefault(defaultUserCols, viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)))
-			} else {
-				r.Columns = printer.GetHeadersAllDefault(defaultUserCols, viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)))
-			}
+			r.Columns = printer.GetHeadersAllDefault(defaultUserCols, viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)))
 		}
 	}
 	return r
