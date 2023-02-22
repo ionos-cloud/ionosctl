@@ -2,7 +2,9 @@ package token
 
 import (
 	"context"
+
 	"github.com/fatih/structs"
+	scope "github.com/ionos-cloud/ionosctl/commands/container-registry/token/scopes"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
@@ -37,7 +39,7 @@ func TokenCmd() *core.Command {
 	tokenCmd.AddCommand(TokenDeleteCmd())
 	tokenCmd.AddCommand(TokenPatchCmd())
 	tokenCmd.AddCommand(TokenPutCmd())
-	tokenCmd.AddCommand(TokenScopesCmd())
+	tokenCmd.AddCommand(scope.TokenScopesCmd())
 
 	return tokenCmd
 }
