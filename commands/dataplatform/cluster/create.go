@@ -65,8 +65,8 @@ func ClusterCreateCmd() *core.Command {
 	// Linked to properties struct
 	_ = allocate.Zero(&createProperties)
 	cmd.AddStringVarFlag(createProperties.Name, constants.FlagName, constants.FlagNameShort, "", "The name of your cluster")
-	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagMaintenanceTime, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return []string{fake.App()}, cobra.ShellCompDirectiveNoFileComp
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagName, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return fake.Names(10), cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddStringVarFlag(createProperties.DataPlatformVersion, constants.FlagDataplatformVersion, "", "22.11", "The version of your cluster")
 	cmd.AddStringVarFlag(createProperties.DatacenterId, constants.FlagDatacenterId, constants.FlagIdShort, "", "The ID of the connected datacenter")
