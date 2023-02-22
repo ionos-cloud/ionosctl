@@ -401,7 +401,7 @@ func getS3KeyPrint(resp *resources.Response, c *core.CommandConfig, s []resource
 		if s != nil {
 			r.OutputJSON = s
 			r.KeyValue = getS3KeysKVMaps(s)
-			r.Columns = printer.GetHeadersAllDefault(defaultS3KeyCols, viper.GetStringSlice(core.GetFlagName(c.NS, constants.ArgCols)))
+			r.Columns = printer.GetHeadersAllDefault(defaultS3KeyCols, viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)))
 		}
 	}
 	return r

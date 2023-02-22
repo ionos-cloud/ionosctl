@@ -517,7 +517,7 @@ func getLanPrint(resp *resources.Response, c *core.CommandConfig, lans []resourc
 		if lans != nil {
 			r.OutputJSON = lans
 			r.KeyValue = getLansKVMaps(lans)
-			r.Columns = printer.GetHeadersListAll(allLanCols, defaultLanCols, "DatacenterId", viper.GetStringSlice(core.GetFlagName(c.NS, constants.ArgCols)), viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)))
+			r.Columns = printer.GetHeadersListAll(allLanCols, defaultLanCols, "DatacenterId", viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)), viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)))
 		}
 	}
 	return r

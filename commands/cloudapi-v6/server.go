@@ -1152,7 +1152,7 @@ func getServerPrint(resp *resources.Response, c *core.CommandConfig, ss []resour
 		if ss != nil {
 			r.OutputJSON = ss
 			r.KeyValue = getServersKVMaps(ss)
-			r.Columns = printer.GetHeadersListAll(allServerCols, defaultServerCols, "DatacenterId", viper.GetStringSlice(core.GetFlagName(c.NS, constants.ArgCols)), viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)))
+			r.Columns = printer.GetHeadersListAll(allServerCols, defaultServerCols, "DatacenterId", viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)), viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)))
 		}
 	}
 	return r

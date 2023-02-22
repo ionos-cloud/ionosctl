@@ -560,7 +560,7 @@ func getSnapshotPrint(resp *resources.Response, c *core.CommandConfig, s []resou
 		if s != nil {
 			r.OutputJSON = s
 			r.KeyValue = getSnapshotsKVMaps(s)
-			r.Columns = printer.GetHeadersAllDefault(defaultSnapshotCols, viper.GetStringSlice(core.GetFlagName(c.NS, constants.ArgCols)))
+			r.Columns = printer.GetHeadersAllDefault(defaultSnapshotCols, viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)))
 		}
 	}
 	return r

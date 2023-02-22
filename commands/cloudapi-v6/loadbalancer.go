@@ -489,7 +489,7 @@ func getLoadbalancerPrint(resp *resources.Response, c *core.CommandConfig, lbs [
 		if lbs != nil {
 			r.OutputJSON = lbs
 			r.KeyValue = getLoadbalancersKVMaps(lbs)
-			r.Columns = printer.GetHeadersListAll(allLoadbalancerCols, defaultLoadbalancerCols, "DatacenterId", viper.GetStringSlice(core.GetFlagName(c.NS, constants.ArgCols)), viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)))
+			r.Columns = printer.GetHeadersListAll(allLoadbalancerCols, defaultLoadbalancerCols, "DatacenterId", viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)), viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)))
 		}
 	}
 	return r

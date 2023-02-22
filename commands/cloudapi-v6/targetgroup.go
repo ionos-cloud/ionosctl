@@ -554,7 +554,7 @@ func getTargetGroupPrint(resp *resources.Response, c *core.CommandConfig, s []re
 		if s != nil {
 			r.OutputJSON = s
 			r.KeyValue = getTargetGroupsKVMaps(s)
-			r.Columns = printer.GetHeaders(allTargetGroupCols, defaultTargetGroupCols, viper.GetStringSlice(core.GetFlagName(c.NS, constants.ArgCols)))
+			r.Columns = printer.GetHeaders(allTargetGroupCols, defaultTargetGroupCols, viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)))
 		}
 	}
 	return r

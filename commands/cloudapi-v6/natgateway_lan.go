@@ -380,7 +380,7 @@ func getNatGatewayLanPrint(resp *resources.Response, c *core.CommandConfig, ss [
 		if ss != nil {
 			r.OutputJSON = ss
 			r.KeyValue = getNatGatewayLansKVMaps(ss)
-			r.Columns = printer.GetHeadersAllDefault(defaultNatGatewayLanCols, viper.GetStringSlice(core.GetFlagName(c.NS, constants.ArgCols)))
+			r.Columns = printer.GetHeadersAllDefault(defaultNatGatewayLanCols, viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)))
 		}
 	}
 	return r

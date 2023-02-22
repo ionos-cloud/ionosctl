@@ -537,7 +537,7 @@ func getApplicationLoadBalancerPrint(resp *resources.Response, c *core.CommandCo
 		if ss != nil {
 			r.OutputJSON = ss
 			r.KeyValue = getApplicationLoadBalancersKVMaps(ss)
-			r.Columns = printer.GetHeadersListAll(allApplicationLoadBalancerCols, defaultApplicationLoadBalancerCols, "DatacenterId", viper.GetStringSlice(core.GetFlagName(c.NS, constants.ArgCols)), viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)))
+			r.Columns = printer.GetHeadersListAll(allApplicationLoadBalancerCols, defaultApplicationLoadBalancerCols, "DatacenterId", viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)), viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)))
 		}
 	}
 	return r
