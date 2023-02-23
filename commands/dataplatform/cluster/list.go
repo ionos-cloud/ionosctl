@@ -10,7 +10,7 @@ import (
 
 func ClusterListCmd() *core.Command {
 	cmd := core.NewCommand(context.Background(), nil, core.CommandBuilder{
-		Namespace: "dbaas-mongo",
+		Namespace: "dataplatform",
 		Resource:  "cluster",
 		Verb:      "list",
 		Aliases:   []string{"l", "ls"},

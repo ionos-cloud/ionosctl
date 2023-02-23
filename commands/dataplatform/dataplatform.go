@@ -2,6 +2,7 @@ package dataplatform
 
 import (
 	"github.com/ionos-cloud/ionosctl/commands/dataplatform/cluster"
+	"github.com/ionos-cloud/ionosctl/commands/dataplatform/nodepool"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/spf13/cobra"
 )
@@ -17,5 +18,6 @@ func DataplatformCmd() *core.Command {
 		},
 	}
 	cmd.AddCommand(cluster.ClusterCmd())
+	cmd.AddCommand(nodepool.NodepoolCmd())
 	return cmd
 }
