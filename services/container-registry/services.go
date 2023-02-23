@@ -11,6 +11,7 @@ type Services struct {
 	Registry func() resources.RegistriesService
 	Token    func() resources.TokenService
 	Location func() resources.LocationsService
+	Name     func() resources.NameService
 	// Context
 	Context context.Context
 }
@@ -25,6 +26,9 @@ func (c *Services) InitServices(client *config.Client) error {
 	}
 	c.Location = func() resources.LocationsService {
 		return resources.NewLocationsService(client, c.Context)
+	}
+	c.Name = func() resources.NameService {
+		return resources.NewNameService(client, c.Context)
 	}
 	return nil
 }

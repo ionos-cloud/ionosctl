@@ -2,6 +2,7 @@ package container_registry
 
 import (
 	"github.com/ionos-cloud/ionosctl/commands/container-registry/location"
+	"github.com/ionos-cloud/ionosctl/commands/container-registry/name"
 	"github.com/ionos-cloud/ionosctl/commands/container-registry/registry"
 	"github.com/ionos-cloud/ionosctl/commands/container-registry/token"
 	"github.com/ionos-cloud/ionosctl/pkg/constants"
@@ -29,6 +30,7 @@ func ContainerRegistryCmd() *core.Command {
 	contregCmd.AddCommand(registry.RegistryCmd())
 	contregCmd.AddCommand(token.TokenCmd())
 	contregCmd.AddCommand(location.RegLocationsListCmd())
+	contregCmd.AddCommand(name.RegNamesCmd())
 
 	return contregCmd
 }

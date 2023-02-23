@@ -20,7 +20,7 @@ func RegLocationsListCmd() *core.Command {
 			Aliases:    []string{"location", "loc", "l", "locs"},
 			ShortDesc:  "List all Registries Locations",
 			LongDesc:   "List all managed container registries locations for your account",
-			Example:    "ionosctl container-registry registry locations",
+			Example:    "ionosctl container-registry locations",
 			PreCmdRun:  core.NoPreRun,
 			CmdRun:     CmdList,
 			InitClient: true,
