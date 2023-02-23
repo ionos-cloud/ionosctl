@@ -10,6 +10,7 @@ type Services struct {
 	// Container Registry Resources Services
 	Registry func() resources.RegistriesService
 	Token    func() resources.TokenService
+	Location func() resources.LocationsService
 	// Context
 	Context context.Context
 }
@@ -21,6 +22,9 @@ func (c *Services) InitServices(client *config.Client) error {
 	}
 	c.Token = func() resources.TokenService {
 		return resources.NewTokenService(client, c.Context)
+	}
+	c.Location = func() resources.LocationsService {
+		return resources.NewLocationsService(client, c.Context)
 	}
 	return nil
 }

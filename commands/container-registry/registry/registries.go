@@ -85,12 +85,12 @@ type RegPrint struct {
 
 func getRegRows(regs *[]ionoscloud.RegistryResponse) []map[string]interface{} {
 	out := make([]map[string]interface{}, 0, len(*regs))
-	for _, cert := range *regs {
+	for _, reg := range *regs {
 		var regPrint RegPrint
-		if idOk, ok := cert.GetIdOk(); ok && idOk != nil {
+		if idOk, ok := reg.GetIdOk(); ok && idOk != nil {
 			regPrint.RegistryId = *idOk
 		}
-		if propertiesOk, ok := cert.GetPropertiesOk(); ok && propertiesOk != nil {
+		if propertiesOk, ok := reg.GetPropertiesOk(); ok && propertiesOk != nil {
 			if displayNameOk, ok := propertiesOk.GetNameOk(); ok && displayNameOk != nil {
 				regPrint.DisplayName = *displayNameOk
 			}
