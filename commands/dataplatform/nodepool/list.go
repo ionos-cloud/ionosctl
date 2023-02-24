@@ -2,6 +2,7 @@ package nodepool
 
 import (
 	"context"
+
 	"github.com/ionos-cloud/ionosctl/commands/dataplatform/completer"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/constants"

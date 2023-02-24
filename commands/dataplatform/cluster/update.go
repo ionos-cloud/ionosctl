@@ -2,11 +2,12 @@ package cluster
 
 import (
 	"context"
+	"os"
+
 	"github.com/cilium/fake"
 	cloudapiv6completer "github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/spf13/viper"
-	"os"
 
 	"github.com/ionos-cloud/ionosctl/commands/dataplatform/completer"
 	"github.com/ionos-cloud/ionosctl/pkg/constants"

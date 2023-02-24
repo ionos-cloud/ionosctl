@@ -2,6 +2,7 @@ package cluster
 
 import (
 	"fmt"
+
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/pkg/core"

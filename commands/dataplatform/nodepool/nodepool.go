@@ -2,6 +2,8 @@ package nodepool
 
 import (
 	"fmt"
+	"strconv"
+
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
@@ -9,7 +11,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	ionoscloud "github.com/ionos-cloud/sdk-go-dataplatform"
 	"github.com/spf13/cobra"
-	"strconv"
 )
 
 func NodepoolCmd() *core.Command {
@@ -30,11 +31,7 @@ func NodepoolCmd() *core.Command {
 	cmd.Command.PersistentFlags().Bool(constants.ArgNoHeaders, false, "When using text output, don't print headers")
 
 	cmd.AddCommand(NodepoolListCmd())
-	//cmd.AddCommand(ClusterCreateCmd())
-	//cmd.AddCommand(ClusterUpdateCmd())
-	//cmd.AddCommand(ClusterGetCmd())
-	//cmd.AddCommand(ClusterDeleteCmd())
-	//cmd.AddCommand(ClustersKubeConfigCmd())
+	cmd.AddCommand(NodepoolGetCmd())
 
 	return cmd
 }
