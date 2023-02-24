@@ -2,7 +2,6 @@ package name
 
 import (
 	"context"
-	"fmt"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"strings"
 )
@@ -34,11 +33,20 @@ func CmdCheck(c *core.CommandConfig) error {
 	}
 	res, _ := c.ContainerRegistryServices.Name().Get(name)
 	if strings.Contains(res.Status, "404") {
-		fmt.Println("name is available")
+		err := c.Printer.Print("Name is available.")
+		if err != nil {
+			return err
+		}
 	} else if strings.Contains(res.Status, "400") {
-		fmt.Println("bad request")
+		err := c.Printer.Print("Bad request.")
+		if err != nil {
+			return err
+		}
 	} else {
-		fmt.Println("name is already being used")
+		err := c.Printer.Print("Name is already being used.")
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }
