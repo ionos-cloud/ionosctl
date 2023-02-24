@@ -78,8 +78,8 @@ func ClusterCmd() *core.Command {
 		CmdRun:     RunClusterGet,
 		InitClient: true,
 	})
-	get.AddUUIDFlag(dbaaspg.ArgClusterId, dbaaspg.ArgIdShort, "", dbaaspg.ClusterId, core.RequiredFlagOption())
-	_ = get.Command.RegisterFlagCompletionFunc(dbaaspg.ArgClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	get.AddUUIDFlag(constants.FlagClusterId, dbaaspg.ArgIdShort, "", dbaaspg.ClusterId, core.RequiredFlagOption())
+	_ = get.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.ClustersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	get.AddBoolFlag(constants.ArgWaitForState, constants.ArgWaitForStateShort, constants.DefaultWait, "Wait for Cluster to be in AVAILABLE state")
@@ -190,8 +190,8 @@ Required values to run command:
 		CmdRun:     RunClusterUpdate,
 		InitClient: true,
 	})
-	update.AddUUIDFlag(dbaaspg.ArgClusterId, dbaaspg.ArgIdShort, "", dbaaspg.ClusterId, core.RequiredFlagOption())
-	_ = update.Command.RegisterFlagCompletionFunc(dbaaspg.ArgClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	update.AddUUIDFlag(constants.FlagClusterId, dbaaspg.ArgIdShort, "", dbaaspg.ClusterId, core.RequiredFlagOption())
+	_ = update.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.ClustersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddStringFlag(dbaaspg.ArgVersion, dbaaspg.ArgVersionShort, "", "The PostgreSQL version of your cluster")
@@ -251,13 +251,13 @@ Required values to run command:
 		CmdRun:     RunClusterRestore,
 		InitClient: true,
 	})
-	restoreCmd.AddUUIDFlag(dbaaspg.ArgClusterId, dbaaspg.ArgIdShort, "", dbaaspg.ClusterId, core.RequiredFlagOption())
-	_ = restoreCmd.Command.RegisterFlagCompletionFunc(dbaaspg.ArgClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	restoreCmd.AddUUIDFlag(constants.FlagClusterId, dbaaspg.ArgIdShort, "", dbaaspg.ClusterId, core.RequiredFlagOption())
+	_ = restoreCmd.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.ClustersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	restoreCmd.AddStringFlag(dbaaspg.ArgBackupId, "", "", "The unique ID of the backup you want to restore", core.RequiredFlagOption())
 	_ = restoreCmd.Command.RegisterFlagCompletionFunc(dbaaspg.ArgBackupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.BackupsIdsForCluster(os.Stderr, viper.GetString(core.GetFlagName(restoreCmd.NS, dbaaspg.ArgClusterId))), cobra.ShellCompDirectiveNoFileComp
+		return completer.BackupsIdsForCluster(os.Stderr, viper.GetString(core.GetFlagName(restoreCmd.NS, constants.FlagClusterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	restoreCmd.AddStringFlag(dbaaspg.ArgRecoveryTime, dbaaspg.ArgRecoveryTimeShort, "", "If this value is supplied as ISO 8601 timestamp, the backup will be replayed up until the given timestamp. If empty, the backup will be applied completely")
 	restoreCmd.AddBoolFlag(constants.ArgWaitForState, constants.ArgWaitForStateShort, constants.DefaultWait, "Wait for Cluster to be in AVAILABLE state")
@@ -286,8 +286,8 @@ Required values to run command:
 		CmdRun:     RunClusterDelete,
 		InitClient: true,
 	})
-	deleteCmd.AddUUIDFlag(dbaaspg.ArgClusterId, dbaaspg.ArgIdShort, "", dbaaspg.ClusterId, core.RequiredFlagOption())
-	_ = deleteCmd.Command.RegisterFlagCompletionFunc(dbaaspg.ArgClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	deleteCmd.AddUUIDFlag(constants.FlagClusterId, dbaaspg.ArgIdShort, "", dbaaspg.ClusterId, core.RequiredFlagOption())
+	_ = deleteCmd.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.ClustersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Delete all Clusters")
@@ -305,11 +305,11 @@ Required values to run command:
 }
 
 func PreRunClusterId(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.Command, c.NS, dbaaspg.ArgClusterId)
+	return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagClusterId)
 }
 
 func PreRunClusterDelete(c *core.PreCommandConfig) error {
-	err := core.CheckRequiredFlagsSets(c.Command, c.NS, []string{dbaaspg.ArgClusterId}, []string{constants.ArgAll})
+	err := core.CheckRequiredFlagsSets(c.Command, c.NS, []string{constants.FlagClusterId}, []string{constants.ArgAll})
 	if err != nil {
 		return err
 	}
@@ -338,7 +338,7 @@ func PreRunClusterCreate(c *core.PreCommandConfig) error {
 }
 
 func PreRunClusterBackupIds(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.Command, c.NS, dbaaspg.ArgClusterId, dbaaspg.ArgBackupId)
+	return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagClusterId, dbaaspg.ArgBackupId)
 }
 
 func RunClusterList(c *core.CommandConfig) error {
@@ -354,12 +354,12 @@ func RunClusterList(c *core.CommandConfig) error {
 }
 
 func RunClusterGet(c *core.CommandConfig) error {
-	c.Printer.Verbose("Cluster ID: %v", viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgClusterId)))
+	c.Printer.Verbose("Cluster ID: %v", viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)))
 	c.Printer.Verbose("Getting Cluster...")
-	if err := utils.WaitForState(c, waiter.ClusterStateInterrogator, viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgClusterId))); err != nil {
+	if err := utils.WaitForState(c, waiter.ClusterStateInterrogator, viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))); err != nil {
 		return err
 	}
-	cluster, _, err := c.CloudApiDbaasPgsqlServices.Clusters().Get(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgClusterId)))
+	cluster, _, err := c.CloudApiDbaasPgsqlServices.Clusters().Get(viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)))
 	if err != nil {
 		return err
 	}
@@ -392,7 +392,7 @@ func RunClusterCreate(c *core.CommandConfig) error {
 }
 
 func RunClusterUpdate(c *core.CommandConfig) error {
-	clusterId := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgClusterId))
+	clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
 	c.Printer.Verbose("Cluster ID: %v", clusterId)
 	input, err := getPatchClusterRequest(c)
 	if err != nil {
@@ -407,7 +407,7 @@ func RunClusterUpdate(c *core.CommandConfig) error {
 		c.Printer.Verbose("Wait 10 seconds before checking state...")
 		// TODO: Sleeping 10 seconds to make sure the cluster is in BUSY state. This will be removed in future releases.
 		time.Sleep(10 * time.Second)
-		if err = utils.WaitForState(c, waiter.ClusterStateInterrogator, viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgClusterId))); err != nil {
+		if err = utils.WaitForState(c, waiter.ClusterStateInterrogator, viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))); err != nil {
 			return err
 		}
 	}
@@ -415,7 +415,7 @@ func RunClusterUpdate(c *core.CommandConfig) error {
 }
 
 func RunClusterRestore(c *core.CommandConfig) error {
-	clusterId := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgClusterId))
+	clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
 	backupId := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgBackupId))
 	c.Printer.Verbose("Cluster ID: %v", clusterId)
 	c.Printer.Verbose("Backup ID: %v", backupId)
@@ -440,7 +440,7 @@ func RunClusterRestore(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	if err = utils.WaitForState(c, waiter.ClusterStateInterrogator, viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgClusterId))); err != nil {
+	if err = utils.WaitForState(c, waiter.ClusterStateInterrogator, viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))); err != nil {
 		return err
 	}
 	return c.Printer.Print(getClusterPrint(resp, c, nil))
@@ -453,7 +453,7 @@ func RunClusterDelete(c *core.CommandConfig) error {
 		}
 		return c.Printer.Print(printer.Result{Resource: c.Resource, Verb: c.Verb})
 	} else {
-		clusterId := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgClusterId))
+		clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
 		c.Printer.Verbose("Cluster ID: %v", clusterId)
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, fmt.Sprintf("delete cluster with id: %v", clusterId)); err != nil {
 			return err
@@ -463,7 +463,7 @@ func RunClusterDelete(c *core.CommandConfig) error {
 		if err != nil {
 			return err
 		}
-		if err = utils.WaitForDelete(c, waiter.ClusterDeleteInterrogator, viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgClusterId))); err != nil {
+		if err = utils.WaitForDelete(c, waiter.ClusterDeleteInterrogator, viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))); err != nil {
 			return err
 		}
 		return c.Printer.Print(getClusterPrint(resp, c, nil))
@@ -705,7 +705,7 @@ func getPatchClusterRequest(c *core.CommandConfig) (*resources.PatchClusterReque
 		input.SetMaintenanceWindow(maintenanceWindow)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgDatacenterId)) || viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgLanId)) || viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgCidr)) {
-		connection, err := getConnectionFromCluster(c, viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgClusterId)))
+		connection, err := getConnectionFromCluster(c, viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)))
 		if err != nil {
 			return nil, err
 		}
@@ -728,7 +728,7 @@ func getPatchClusterRequest(c *core.CommandConfig) (*resources.PatchClusterReque
 		input.SetConnections([]sdkgo.Connection{connection})
 	}
 	if viper.GetBool(core.GetFlagName(c.NS, dbaaspg.ArgRemoveConnection)) {
-		connection, err := getConnectionFromCluster(c, viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgClusterId)))
+		connection, err := getConnectionFromCluster(c, viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)))
 		if err != nil {
 			return nil, err
 		}

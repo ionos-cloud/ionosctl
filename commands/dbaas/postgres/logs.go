@@ -68,8 +68,8 @@ func LogsCmd() *core.Command {
 		return []string{"BACKWARD", "FORWARD"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	list.AddIntFlag(dbaaspg.ArgLimit, dbaaspg.ArgLimitShort, 100, "The maximal number of log lines to return. If the limit is reached then log lines will be cut at the end (respecting the scan direction). Minimum: 1. Maximum: 5000")
-	list.AddUUIDFlag(dbaaspg.ArgClusterId, dbaaspg.ArgIdShort, "", dbaaspg.ClusterId, core.RequiredFlagOption())
-	_ = list.Command.RegisterFlagCompletionFunc(dbaaspg.ArgClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	list.AddUUIDFlag(constants.FlagClusterId, dbaaspg.ArgIdShort, "", dbaaspg.ClusterId, core.RequiredFlagOption())
+	_ = list.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.ClustersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	list.AddBoolFlag(constants.ArgNoHeaders, "", false, "When using text output, don't print headers")
@@ -90,17 +90,17 @@ func PreRunClusterLogsList(c *core.PreCommandConfig) error {
 			return errors.New("--until option must have suffix h(hours) or m(minutes). e.g.: --until 1h")
 		}
 	}
-	return core.CheckRequiredFlags(c.Command, c.NS, dbaaspg.ArgClusterId)
+	return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagClusterId)
 }
 
 func RunClusterLogsList(c *core.CommandConfig) error {
-	c.Printer.Verbose("Cluster ID: %v", viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgClusterId)))
+	c.Printer.Verbose("Cluster ID: %v", viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)))
 	queryParams, err := getLogsQueryParams(c)
 	if err != nil {
 		return err
 	}
 	c.Printer.Verbose("Getting Logs for the specified Cluster...")
-	clusterLogs, _, err := c.CloudApiDbaasPgsqlServices.Logs().Get(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgClusterId)), queryParams)
+	clusterLogs, _, err := c.CloudApiDbaasPgsqlServices.Logs().Get(viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)), queryParams)
 	if err != nil {
 		return err
 	}

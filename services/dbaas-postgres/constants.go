@@ -2,7 +2,6 @@ package dbaas_postgres
 
 const (
 	ArgIdShort              = "i"
-	ArgClusterId            = "cluster-id"
 	ArgStartTime            = "start-time"
 	ArgStartTimeShort       = "s"
 	ArgEndTime              = "end-time"

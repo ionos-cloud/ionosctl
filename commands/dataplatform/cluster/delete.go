@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/ionos-cloud/ionosctl/commands/dataplatform/completer"
+	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
@@ -45,7 +46,11 @@ func ClusterDeleteCmd() *core.Command {
 				return err
 			}
 			c.Printer.Verbose("Deleting cluster: %s", clusterId)
-			_, err = c.DbaasMongoServices.Clusters().Delete(clusterId)
+			client, err := config.GetClient()
+			_, _, err = client.DataplatformClient.DataPlatformClusterApi.DeleteCluster(c.Context, clusterId).Execute()
+			if err != nil {
+				return err
+			}
 			return err
 		},
 		InitClient: true,

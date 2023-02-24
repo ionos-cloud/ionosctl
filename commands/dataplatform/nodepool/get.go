@@ -14,12 +14,14 @@ func NodepoolGetCmd() *core.Command {
 	cmd := core.NewCommand(context.Background(), nil, core.CommandBuilder{
 		Namespace: "dataplatform",
 		Resource:  "nodepool",
-		Verb:      "list",
-		Aliases:   []string{"l", "ls"},
-		ShortDesc: "List Dataplatform Nodepools of a certain cluster",
-		Example:   "ionosctl dataplatform nodepool list",
+		Verb:      "get",
+		Aliases:   []string{"g"},
+		ShortDesc: "Get Dataplatform Nodepool by cluster and nodepool id",
+		Example:   "ionosctl dataplatform nodepool get",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			err := c.Command.Command.MarkFlagRequired(constants.FlagClusterId)
+			return err
+			err := c.Command.Command.MarkFlagRequired(Nodepool)
 			return err
 		},
 		CmdRun: func(c *core.CommandConfig) error {

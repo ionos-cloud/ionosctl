@@ -68,8 +68,8 @@ func PgsqlVersionCmd() *core.Command {
 		CmdRun:     RunPgsqlVersionGet,
 		InitClient: true,
 	})
-	get.AddUUIDFlag(dbaaspg.ArgClusterId, dbaaspg.ArgIdShort, "", dbaaspg.ClusterId, core.RequiredFlagOption())
-	_ = get.Command.RegisterFlagCompletionFunc(dbaaspg.ArgClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	get.AddUUIDFlag(constants.FlagClusterId, dbaaspg.ArgIdShort, "", dbaaspg.ClusterId, core.RequiredFlagOption())
+	_ = get.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return pgsqlcompleter.ClustersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	get.AddBoolFlag(constants.ArgNoHeaders, "", false, "When using text output, don't print headers")
@@ -87,7 +87,7 @@ func RunPgsqlVersionList(c *core.CommandConfig) error {
 
 func RunPgsqlVersionGet(c *core.CommandConfig) error {
 	versionList, _, err := c.CloudApiDbaasPgsqlServices.Versions().Get(
-		viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgClusterId)),
+		viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)),
 	)
 	if err != nil {
 		return err
