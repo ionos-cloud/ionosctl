@@ -8,7 +8,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"time"
 )
 
 const (

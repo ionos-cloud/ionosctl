@@ -4,7 +4,6 @@ import (
 	"context"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
 	"github.com/spf13/viper"
-	"os"
 
 	"github.com/cjrd/allocate"
 	cloudapiv6completer "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"

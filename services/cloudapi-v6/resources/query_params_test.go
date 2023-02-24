@@ -3,7 +3,6 @@ package resources
 import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/pointer"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestListQueryParams_SetMaxResults(t *testing.T) {

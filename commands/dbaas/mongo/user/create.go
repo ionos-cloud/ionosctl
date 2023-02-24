@@ -4,9 +4,10 @@ import (
 	"context"
 	"encoding/csv"
 	"fmt"
+	"strings"
+
 	"github.com/cjrd/allocate"
 	"github.com/mmatczuk/anyflag"
-	"strings"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/completer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"

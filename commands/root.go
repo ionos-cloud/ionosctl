@@ -2,7 +2,6 @@ package commands
 
 import (
 	"fmt"
-	"github.com/ionos-cloud/ionosctl/commands/dataplatform"
 	"os"
 	"strings"
 

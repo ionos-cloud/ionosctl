@@ -9,7 +9,6 @@ import (
 	sdkgo "github.com/ionos-cloud/sdk-go-cert-manager"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"os"
 )
 
 var createProperties = sdkgo.CertificatePostPropertiesDto{}

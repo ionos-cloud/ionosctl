@@ -11,6 +11,9 @@ import (
 	"strings"
 	"text/tabwriter"
 
+	"github.com/ionos-cloud/ionosctl/pkg/constants"
+	"golang.org/x/exp/slices"
+
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
 )

@@ -8,6 +8,8 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/ionos-cloud/ionosctl/pkg/core"
 )
 
 // Generate Markdown documentation based on information described in commands.

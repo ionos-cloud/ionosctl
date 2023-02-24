@@ -2,9 +2,10 @@ package main
 
 import (
 	"fmt"
+	"os"
+
 	"github.com/ionos-cloud/ionosctl/commands/dataplatform"
 	"github.com/ionos-cloud/ionosctl/pkg/doc"
-	"os"
 )
 
 const (

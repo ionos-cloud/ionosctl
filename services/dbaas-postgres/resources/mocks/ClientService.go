@@ -8,6 +8,8 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
 	reflect "reflect"
 
+	"github.com/ionos-cloud/ionosctl/pkg/config"
+
 	gomock "github.com/golang/mock/gomock"
 )
 
