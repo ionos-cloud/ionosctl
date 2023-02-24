@@ -3,7 +3,6 @@ package name
 import (
 	"context"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"strings"
 )
 
 func RegNamesCmd() *core.Command {
@@ -31,24 +30,14 @@ func CmdCheck(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	res, _ := c.ContainerRegistryServices.Name().Get(name)
-	if strings.Contains(res.Status, "404") {
-		err := c.Printer.Print("Name is available.")
-		if err != nil {
-			return err
-		}
-	} else if strings.Contains(res.Status, "400") {
-		err := c.Printer.Print("Bad request.")
-		if err != nil {
-			return err
-		}
-	} else {
-		err := c.Printer.Print("Name is already being used.")
-		if err != nil {
-			return err
-		}
+	res, _ := c.ContainerRegistryServices.Name().Head(name)
+	if res.StatusCode == 404 {
+		return c.Printer.Print("Name is available.")
 	}
-	return nil
+	if res.StatusCode == 400 {
+		return c.Printer.Print("Bad request.")
+	}
+	return c.Printer.Print("Name is already being used.")
 }
 
 func PreCmdCheck(c *core.PreCommandConfig) error {

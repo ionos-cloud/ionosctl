@@ -9,7 +9,7 @@ import (
 
 // NameService is a contract for the name service.
 type NameService interface {
-	Get(name string) (*Response, error)
+	Head(name string) (*Response, error)
 }
 
 // NameServiceOp is an implementation of the NameService interface.
@@ -29,7 +29,7 @@ func NewNameService(client *config.Client, ctx context.Context) NameService {
 }
 
 // Get returns a response.
-func (svc *nameService) Get(name string) (*Response, error) {
+func (svc *nameService) Head(name string) (*Response, error) {
 	req := svc.client.NamesApi.NamesCheckUsage(svc.context, name)
 	res, err := svc.client.NamesApi.NamesCheckUsageExecute(req)
 	return &Response{*res}, err
