@@ -149,10 +149,10 @@ Required values to run a command (for Private Kubernetes Cluster):
 		return completer.LansIds(os.Stderr, viper.GetString(core.GetFlagName(create.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddBoolFlag(cloudapiv6.ArgDhcp, "", true, "Indicates if the Kubernetes Node Pool LANs will reserve an IP using DHCP. E.g.: --dhcp=true, --dhcp=false")
-	create.AddIntFlag(cloudapiv6.ArgK8sNodeCount, "", 1, "The number of worker Nodes that the Node Pool should contain. Min 1, Max: Determined by the resource availability")
-	create.AddIntFlag(cloudapiv6.ArgCores, "", 2, "The total number of cores for the Node")
-	create.AddStringFlag(cloudapiv6.ArgRam, "", strconv.Itoa(2048), "RAM size for node, minimum size is 2048MB. Ram size must be set to multiple of 1024MB. e.g. --ram 2048 or --ram 2048MB")
-	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgRam, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	create.AddIntFlag(constants.FlagNodeCount, "", 1, "The number of worker Nodes that the Node Pool should contain. Min 1, Max: Determined by the resource availability")
+	create.AddIntFlag(constants.FlagCores, "", 2, "The total number of cores for the Node")
+	create.AddStringFlag(constants.FlagRam, "", strconv.Itoa(2048), "RAM size for node, minimum size is 2048MB. Ram size must be set to multiple of 1024MB. e.g. --ram 2048 or --ram 2048MB")
+	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagRam, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"2048MB", "3GB", "4GB", "5GB", "10GB", "50GB", "100GB"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddStringFlag(cloudapiv6.ArgCpuFamily, "", cloudapiv6.DefaultServerCPUFamily, "CPU Type")
@@ -160,20 +160,20 @@ Required values to run a command (for Private Kubernetes Cluster):
 		datacenterId := viper.GetString(core.GetFlagName(create.NS, cloudapiv6.ArgDataCenterId))
 		return completer.DatacenterCPUFamilies(create.Command.Context(), os.Stderr, datacenterId), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(cloudapiv6.ArgAvailabilityZone, cloudapiv6.ArgAvailabilityZoneShort, "AUTO", "The compute Availability Zone in which the Node should exist")
+	create.AddStringFlag(constants.FlagAvailabilityZone, constants.FlagAvailabilityZoneShort, "AUTO", "The compute Availability Zone in which the Node should exist")
 	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgCpuFamily, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"AUTO", "ZONE_1", "ZONE_2"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(cloudapiv6.ArgStorageType, "", "HDD", "Storage Type")
-	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgStorageType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	create.AddStringFlag(constants.FlagStorageType, "", "HDD", "Storage Type")
+	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagStorageType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"HDD", "SSD"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(cloudapiv6.ArgStorageSize, "", strconv.Itoa(cloudapiv6.DefaultVolumeSize), "The size of the Storage in GB. e.g.: --size 10 or --size 10GB. The maximum Volume size is determined by your contract limit")
-	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgStorageSize, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	create.AddStringFlag(constants.FlagStorageSize, "", strconv.Itoa(cloudapiv6.DefaultVolumeSize), "The size of the Storage in GB. e.g.: --size 10 or --size 10GB. The maximum Volume size is determined by your contract limit")
+	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagStorageSize, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"10GB", "20GB", "50GB", "100GB", "1TB"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringToStringFlag(cloudapiv6.ArgLabels, cloudapiv6.ArgLabelsShort, map[string]string{}, "Labels to set on a NodePool. It will overwrite the existing labels, if there are any. Use the following format: --labels KEY=VALUE,KEY=VALUE")
-	create.AddStringToStringFlag(cloudapiv6.ArgAnnotations, cloudapiv6.ArgAnnotationsShort, map[string]string{}, "Annotations to set on a NodePool. It will overwrite the existing annotations, if there are any. Use the following format: --annotations KEY=VALUE,KEY=VALUE")
+	create.AddStringToStringFlag(constants.FlagLabels, constants.FlagLabelsShort, map[string]string{}, "Labels to set on a NodePool. It will overwrite the existing labels, if there are any. Use the following format: --labels KEY=VALUE,KEY=VALUE")
+	create.AddStringToStringFlag(constants.FlagAnnotations, constants.FlagAnnotationsShort, map[string]string{}, "Annotations to set on a NodePool. It will overwrite the existing annotations, if there are any. Use the following format: --annotations KEY=VALUE,KEY=VALUE")
 	create.AddBoolFlag(constants.ArgWaitForState, constants.ArgWaitForStateShort, constants.DefaultWait, "Wait for the new NodePool to be in ACTIVE state")
 	create.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, cloudapiv6.K8sTimeoutSeconds, "Timeout option for waiting for NodePool to be in ACTIVE state[seconds]")
 	create.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultCreateDepth, cloudapiv6.ArgDepthDescription)
@@ -209,11 +209,11 @@ Required values to run command:
 			nodepoolId := viper.GetString(core.GetFlagName(update.NS, constants.FlagNodepoolId))
 			return completer.K8sNodePoolUpgradeVersions(os.Stderr, clusterId, nodepoolId), cobra.ShellCompDirectiveNoFileComp
 		})
-	update.AddIntFlag(cloudapiv6.ArgK8sNodeCount, "", 1, "The number of worker Nodes that the NodePool should contain")
+	update.AddIntFlag(constants.FlagNodeCount, "", 1, "The number of worker Nodes that the NodePool should contain")
 	update.AddIntFlag(cloudapiv6.ArgK8sMinNodeCount, "", 1, "The minimum number of worker Nodes that the managed NodePool can scale in. Should be set together with --max-node-count")
 	update.AddIntFlag(cloudapiv6.ArgK8sMaxNodeCount, "", 1, "The maximum number of worker Nodes that the managed NodePool can scale out. Should be set together with --min-node-count")
-	update.AddStringToStringFlag(cloudapiv6.ArgLabels, cloudapiv6.ArgLabelsShort, map[string]string{}, "Labels to set on a NodePool. It will overwrite the existing labels, if there are any. Use the following format: --labels KEY=VALUE,KEY=VALUE")
-	update.AddStringToStringFlag(cloudapiv6.ArgAnnotations, cloudapiv6.ArgAnnotationsShort, map[string]string{}, "Annotations to set on a NodePool. It will overwrite the existing annotations, if there are any. Use the following format: --annotations KEY=VALUE,KEY=VALUE")
+	update.AddStringToStringFlag(constants.FlagLabels, constants.FlagLabelsShort, map[string]string{}, "Labels to set on a NodePool. It will overwrite the existing labels, if there are any. Use the following format: --labels KEY=VALUE,KEY=VALUE")
+	update.AddStringToStringFlag(constants.FlagAnnotations, constants.FlagAnnotationsShort, map[string]string{}, "Annotations to set on a NodePool. It will overwrite the existing annotations, if there are any. Use the following format: --annotations KEY=VALUE,KEY=VALUE")
 	update.AddStringFlag(cloudapiv6.ArgLabelKey, "", "", "Label key. Must be set together with --label-value", core.DeprecatedFlagOption())
 	update.AddStringFlag(cloudapiv6.ArgLabelValue, "", "", "Label value. Must be set together with --label-key", core.DeprecatedFlagOption())
 	update.AddStringFlag(cloudapiv6.ArgK8sAnnotationKey, "", "", "Annotation key. Must be set together with --annotation-value", core.DeprecatedFlagOption())
@@ -490,21 +490,21 @@ func getNewK8sNodePool(c *core.CommandConfig) (*resources.K8sNodePoolForPost, er
 			return nil, err
 		}
 	}
-	ramSize, err := utils.ConvertSize(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRam)), utils.MegaBytes)
+	ramSize, err := utils.ConvertSize(viper.GetString(core.GetFlagName(c.NS, constants.FlagRam)), utils.MegaBytes)
 	if err != nil {
 		return nil, err
 	}
-	storageSize, err := utils.ConvertSize(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgStorageSize)), utils.GigaBytes)
+	storageSize, err := utils.ConvertSize(viper.GetString(core.GetFlagName(c.NS, constants.FlagStorageSize)), utils.GigaBytes)
 	if err != nil {
 		return nil, err
 	}
 	name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
-	nodeCount := viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgK8sNodeCount))
+	nodeCount := viper.GetInt32(core.GetFlagName(c.NS, constants.FlagNodeCount))
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	cpuFamily := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgCpuFamily))
-	cores := viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgCores))
-	availabilityZone := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgAvailabilityZone))
-	storageType := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgStorageType))
+	cores := viper.GetInt32(core.GetFlagName(c.NS, constants.FlagCores))
+	availabilityZone := viper.GetString(core.GetFlagName(c.NS, constants.FlagAvailabilityZone))
+	storageType := viper.GetString(core.GetFlagName(c.NS, constants.FlagStorageType))
 	// Set Properties
 	nodePoolProperties := ionoscloud.KubernetesNodePoolPropertiesForPost{}
 	nodePoolProperties.SetName(name)
@@ -527,13 +527,13 @@ func getNewK8sNodePool(c *core.CommandConfig) (*resources.K8sNodePoolForPost, er
 	c.Printer.Verbose("Property Storage Size set: %vGB", int32(storageSize))
 	nodePoolProperties.SetStorageType(storageType)
 	c.Printer.Verbose("Property Storage Type set: %v", storageType)
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgLabels)) {
-		keyValueMapLabels := viper.GetStringMapString(core.GetFlagName(c.NS, cloudapiv6.ArgLabels))
+	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagLabels)) {
+		keyValueMapLabels := viper.GetStringMapString(core.GetFlagName(c.NS, constants.FlagLabels))
 		nodePoolProperties.SetLabels(keyValueMapLabels)
 		c.Printer.Verbose("Property Labels set: %v", keyValueMapLabels)
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgAnnotations)) {
-		keyValueMapAnnotations := viper.GetStringMapString(core.GetFlagName(c.NS, cloudapiv6.ArgAnnotations))
+	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagAnnotations)) {
+		keyValueMapAnnotations := viper.GetStringMapString(core.GetFlagName(c.NS, constants.FlagAnnotations))
 		nodePoolProperties.SetAnnotations(keyValueMapAnnotations)
 		c.Printer.Verbose("Property Annotations set: %v", keyValueMapAnnotations)
 	}
@@ -572,8 +572,8 @@ func getNewK8sNodePoolUpdated(oldUser *resources.K8sNodePool, c *core.CommandCon
 				propertiesUpdated.SetK8sVersion(*vers)
 			}
 		}
-		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgK8sNodeCount)) {
-			nodeCount := viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgK8sNodeCount))
+		if viper.IsSet(core.GetFlagName(c.NS, constants.FlagNodeCount)) {
+			nodeCount := viper.GetInt32(core.GetFlagName(c.NS, constants.FlagNodeCount))
 			propertiesUpdated.SetNodeCount(nodeCount)
 			c.Printer.Verbose("Property NodeCount set: %v", nodeCount)
 		} else {
@@ -633,13 +633,13 @@ func getNewK8sNodePoolUpdated(oldUser *resources.K8sNodePool, c *core.CommandCon
 			})
 			c.Printer.Verbose("Property Labels set: key: %v, value: %v", key, value)
 		}
-		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgLabels)) {
-			keyValueMapLabels := viper.GetStringMapString(core.GetFlagName(c.NS, cloudapiv6.ArgLabels))
+		if viper.IsSet(core.GetFlagName(c.NS, constants.FlagLabels)) {
+			keyValueMapLabels := viper.GetStringMapString(core.GetFlagName(c.NS, constants.FlagLabels))
 			propertiesUpdated.SetLabels(keyValueMapLabels)
 			c.Printer.Verbose("Property Labels set: %v", keyValueMapLabels)
 		}
-		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgAnnotations)) {
-			keyValueMapAnnotations := viper.GetStringMapString(core.GetFlagName(c.NS, cloudapiv6.ArgAnnotations))
+		if viper.IsSet(core.GetFlagName(c.NS, constants.FlagAnnotations)) {
+			keyValueMapAnnotations := viper.GetStringMapString(core.GetFlagName(c.NS, constants.FlagAnnotations))
 			propertiesUpdated.SetAnnotations(keyValueMapAnnotations)
 			c.Printer.Verbose("Property Annotations set: %v", keyValueMapAnnotations)
 		}

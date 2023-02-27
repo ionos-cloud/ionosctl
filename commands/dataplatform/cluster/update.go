@@ -38,8 +38,8 @@ func ClusterUpdateCmd() *core.Command {
 			if viper.IsSet(core.GetFlagName(c.NS, constants.FlagName)) {
 				updateProperties.SetName(viper.GetString(core.GetFlagName(c.NS, constants.FlagName)))
 			}
-			if viper.IsSet(core.GetFlagName(c.NS, constants.FlagDataplatformVersion)) {
-				updateProperties.SetDataPlatformVersion(viper.GetString(core.GetFlagName(c.NS, constants.FlagDataplatformVersion)))
+			if viper.IsSet(core.GetFlagName(c.NS, constants.FlagVersion)) {
+				updateProperties.SetDataPlatformVersion(viper.GetString(core.GetFlagName(c.NS, constants.FlagVersion)))
 			}
 			if viper.IsSet(core.GetFlagName(c.NS, constants.FlagMaintenanceDay)) &&
 				viper.IsSet(core.GetFlagName(c.NS, constants.FlagMaintenanceTime)) {
@@ -72,7 +72,7 @@ func ClusterUpdateCmd() *core.Command {
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagName, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return fake.Names(10), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddStringFlag(constants.FlagDataplatformVersion, "", "", "The version of the cluster")
+	cmd.AddStringFlag(constants.FlagVersion, "", "", "The version of the cluster")
 
 	// Maintenance
 	cmd.AddStringFlag(constants.FlagMaintenanceTime, "", "", "Time for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur. e.g.: 16:30:59", core.RequiredFlagOption())

@@ -127,7 +127,7 @@ func ClusterCreateCmd() *core.Command {
 		return completer.MongoTemplateIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddInt32VarFlag(createProperties.Instances, constants.FlagInstances, "", 0, "The total number of instances in the cluster (one primary and n-1 secondaries)")
-	cmd.AddStringVarFlag(createProperties.MongoDBVersion, constants.FlagMongoVersion, "", "5.0", "The MongoDB version of your cluster")
+	cmd.AddStringVarFlag(createProperties.MongoDBVersion, constants.FlagVersion, "", "5.0", "The MongoDB version of your cluster")
 
 	// Maintenance
 	cmd.AddStringFlag(constants.FlagMaintenanceTime, "", "", "Time for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur. e.g.: 16:30:59", core.RequiredFlagOption())
