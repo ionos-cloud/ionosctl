@@ -10,6 +10,4 @@ const (
 	FlagCertChainPath  = "certificate-chain-path"
 	FlagPrivateKey     = "private-key"
 	FlagPrivateKeyPath = "private-key-path"
-
-	UsageCert = "ionosctl certificate-manager create --name, --cert/--cert-path, --cert-chain/--cert-chain-path, --private-key/--private-key-path"
 )

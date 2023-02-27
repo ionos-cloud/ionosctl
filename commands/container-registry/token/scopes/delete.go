@@ -30,20 +30,20 @@ func TokenScopesDeleteCmd() *core.Command {
 		},
 	)
 
-	cmd.AddStringFlag("registry-id", "r", "", "Registry ID")
+	cmd.AddStringFlag(FlagRegId, "r", "", "Registry ID")
 	_ = cmd.Command.RegisterFlagCompletionFunc(
-		"registry-id", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		FlagRegId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 			return registry.RegsIds(), cobra.ShellCompDirectiveNoFileComp
 		},
 	)
-	cmd.AddStringFlag("token-id", "t", "", "Token ID")
+	cmd.AddStringFlag(FlagTokenId, "t", "", "Token ID")
 	_ = cmd.Command.RegisterFlagCompletionFunc(
-		"token-id", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		FlagTokenId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 			return TokensIds(), cobra.ShellCompDirectiveNoFileComp
 		},
 	)
 
-	cmd.AddIntFlag("id", "n", -1, "Scope id")
+	cmd.AddIntFlag(FlagScopeId, "n", -1, "Scope id")
 	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "List all scopes of all tokens of a registry.")
 
 	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, printer.ColsMessage(allScopeCols))
@@ -57,9 +57,9 @@ func TokenScopesDeleteCmd() *core.Command {
 }
 
 func CmdGetTokenScopesDelete(c *core.CommandConfig) error {
-	reg_id := viper.GetString(core.GetFlagName(c.NS, "registry-id"))
-	token_id := viper.GetString(core.GetFlagName(c.NS, "token-id"))
-	token, _, err := c.ContainerRegistryServices.Token().Get(token_id, reg_id)
+	regId := viper.GetString(core.GetFlagName(c.NS, FlagRegId))
+	tokenId := viper.GetString(core.GetFlagName(c.NS, FlagTokenId))
+	token, _, err := c.ContainerRegistryServices.Token().Get(tokenId, regId)
 	if err != nil {
 		return err
 	}
@@ -76,11 +76,11 @@ func CmdGetTokenScopesDelete(c *core.CommandConfig) error {
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, msg); err != nil {
 			return err
 		}
-		_, err = c.ContainerRegistryServices.Token().Delete(token_id, reg_id)
+		_, err = c.ContainerRegistryServices.Token().Delete(tokenId, regId)
 		if err != nil {
 			return err
 		}
-		_, _, err = c.ContainerRegistryServices.Token().Put(token_id, *updateToken, reg_id)
+		_, _, err = c.ContainerRegistryServices.Token().Put(tokenId, *updateToken, regId)
 		if err != nil {
 			return err
 		}
@@ -88,7 +88,7 @@ func CmdGetTokenScopesDelete(c *core.CommandConfig) error {
 		return nil
 	}
 
-	id, err := c.Command.Command.Flags().GetInt("id")
+	id, err := c.Command.Command.Flags().GetInt(FlagScopeId)
 	if err != nil {
 		return err
 	}
@@ -109,11 +109,11 @@ func CmdGetTokenScopesDelete(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, msg); err != nil {
 		return err
 	}
-	_, err = c.ContainerRegistryServices.Token().Delete(token_id, reg_id)
+	_, err = c.ContainerRegistryServices.Token().Delete(tokenId, regId)
 	if err != nil {
 		return err
 	}
-	_, _, err = c.ContainerRegistryServices.Token().Put(token_id, *updateToken, reg_id)
+	_, _, err = c.ContainerRegistryServices.Token().Put(tokenId, *updateToken, regId)
 	if err != nil {
 		return err
 	}
@@ -124,8 +124,8 @@ func CmdGetTokenScopesDelete(c *core.CommandConfig) error {
 func PreCmdTokenScopesDelete(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlagsSets(
 		c.Command, c.NS,
-		[]string{"registry-id", "token-id", "id"},
-		[]string{"registry-id", "token-id", constants.ArgAll},
+		[]string{FlagRegId, FlagTokenId, FlagScopeId},
+		[]string{FlagRegId, FlagTokenId, constants.ArgAll},
 	)
 }
 

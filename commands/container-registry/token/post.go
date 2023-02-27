@@ -31,11 +31,11 @@ func TokenPostCmd() *core.Command {
 		},
 	)
 
-	cmd.AddStringFlag("name", "", "", "Name of the Token", core.RequiredFlagOption())
-	cmd.AddStringFlag("expiry-date", "", "", "Expiry date of the Token")
-	cmd.AddStringFlag("status", "", "", "Status of the Token")
+	cmd.AddStringFlag(FlagName, "", "", "Name of the Token", core.RequiredFlagOption())
+	cmd.AddStringFlag(FlagExpiryDate, "", "", "Expiry date of the Token")
+	cmd.AddStringFlag(FlagStatus, "", "", "Status of the Token")
 	_ = cmd.Command.RegisterFlagCompletionFunc(
-		"status", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		FlagStatus, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 			return []string{
 				"enabled", "disabled",
 			}, cobra.ShellCompDirectiveNoFileComp
@@ -60,7 +60,7 @@ func TokenPostCmd() *core.Command {
 }
 
 func PreCmdPostToken(c *core.PreCommandConfig) error {
-	err := core.CheckRequiredFlags(c.Command, c.NS, "name", "registry-id")
+	err := core.CheckRequiredFlags(c.Command, c.NS, FlagName, FlagRegId)
 	if err != nil {
 		return err
 	}
@@ -74,16 +74,15 @@ func CmdPostToken(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	name, err := c.Command.Command.Flags().GetString("name")
+	name, err := c.Command.Command.Flags().GetString(FlagName)
 	if err != nil {
 		return err
 	}
 	tokenPostProperties.SetName(name)
 
-
-	if viper.IsSet(core.GetFlagName(c.NS, "expiry-date")) {
+	if viper.IsSet(core.GetFlagName(c.NS, FlagExpiryDate)) {
 		var expiryDate time.Time
-		expiryDateString, err := c.Command.Command.Flags().GetString("expiry-date")
+		expiryDateString, err := c.Command.Command.Flags().GetString(FlagExpiryDate)
 		if err != nil {
 			return err
 		}
@@ -93,11 +92,11 @@ func CmdPostToken(c *core.CommandConfig) error {
 		}
 		tokenPostProperties.SetExpiryDate(expiryDate)
 
-	} 
+	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, "status")) {
+	if viper.IsSet(core.GetFlagName(c.NS, FlagStatus)) {
 		var status string
-		status, err = c.Command.Command.Flags().GetString("status")
+		status, err = c.Command.Command.Flags().GetString(FlagStatus)
 		if err != nil {
 			return err
 		}

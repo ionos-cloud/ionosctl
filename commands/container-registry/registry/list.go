@@ -25,8 +25,7 @@ func RegListCmd() *core.Command {
 		},
 	)
 
-	cmd.AddStringFlag(
-		"name", "n", "",
+	cmd.AddStringFlag(FlagName, "n", "",
 		"Response filter to list only the Registries that contain the specified name in the DisplayName field. The value is case insensitive",
 	)
 
@@ -41,7 +40,7 @@ func RegListCmd() *core.Command {
 }
 
 func CmdList(c *core.CommandConfig) error {
-	if viper.IsSet(core.GetFlagName(c.NS, "name")) {
+	if viper.IsSet(core.GetFlagName(c.NS, FlagName)) {
 		c.Printer.Verbose("Filtering after Registry Name: %v", viper.GetString(core.GetFlagName(c.NS, "name")))
 	}
 	regs, _, err := c.ContainerRegistryServices.Registry().List(viper.GetString(core.GetFlagName(c.NS, "name")))

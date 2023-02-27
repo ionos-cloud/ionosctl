@@ -18,7 +18,7 @@ func TokenScopesListCmd() *core.Command {
 			Verb:       "list",
 			Aliases:    []string{"l", "ls"},
 			ShortDesc:  "Get a token scopes",
-			LongDesc:   "Use this command to get a token scopes of a container registry.",
+			LongDesc:   "Use this command to list all scopes of a token of a container registry.",
 			Example:    "ionosctl container-registry token scope list --registry-id [REGISTRY-ID], --token-id [TOKEN-ID]",
 			PreCmdRun:  PreCmdTokenScopesList,
 			CmdRun:     CmdGetTokenScopesList,
@@ -26,15 +26,15 @@ func TokenScopesListCmd() *core.Command {
 		},
 	)
 
-	cmd.AddStringFlag("registry-id", "r", "", "Registry ID")
+	cmd.AddStringFlag(FlagRegId, "r", "", "Registry ID")
 	_ = cmd.Command.RegisterFlagCompletionFunc(
-		"registry-id", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		FlagRegId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 			return registry.RegsIds(), cobra.ShellCompDirectiveNoFileComp
 		},
 	)
-	cmd.AddStringFlag("token-id", "t", "", "Token ID")
+	cmd.AddStringFlag(FlagTokenId, "t", "", "Token ID")
 	_ = cmd.Command.RegisterFlagCompletionFunc(
-		"token-id", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		FlagTokenId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 			return TokensIds(), cobra.ShellCompDirectiveNoFileComp
 		},
 	)
@@ -53,8 +53,8 @@ func TokenScopesListCmd() *core.Command {
 }
 
 func CmdGetTokenScopesList(c *core.CommandConfig) error {
-	reg_id := viper.GetString(core.GetFlagName(c.NS, "registry-id"))
-	token_id := viper.GetString(core.GetFlagName(c.NS, "token-id"))
+	reg_id := viper.GetString(core.GetFlagName(c.NS, FlagRegId))
+	token_id := viper.GetString(core.GetFlagName(c.NS, FlagTokenId))
 	token, _, err := c.ContainerRegistryServices.Token().Get(token_id, reg_id)
 	if err != nil {
 		return err
@@ -64,7 +64,7 @@ func CmdGetTokenScopesList(c *core.CommandConfig) error {
 }
 
 func PreCmdTokenScopesList(c *core.PreCommandConfig) error {
-	err := core.CheckRequiredFlags(c.Command, c.NS, "token-id", "registry-id")
+	err := core.CheckRequiredFlags(c.Command, c.NS, FlagTokenId, FlagRegId)
 	if err != nil {
 		return err
 	}

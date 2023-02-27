@@ -28,20 +28,20 @@ func TokenScopesAddCmd() *core.Command {
 		},
 	)
 
-	cmd.AddStringFlag("registry-id", "r", "", "Registry ID", core.RequiredFlagOption())
+	cmd.AddStringFlag(FlagRegId, "r", "", "Registry ID", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(
-		"registry-id", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		FlagRegId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 			return registry.RegsIds(), cobra.ShellCompDirectiveNoFileComp
 		},
 	)
-	cmd.AddStringFlag("token-id", "t", "", "Token ID")
+	cmd.AddStringFlag(FlagTokenId, "t", "", "Token ID")
 	_ = cmd.Command.RegisterFlagCompletionFunc(
-		"token-id", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		FlagTokenId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 			return TokensIds(), cobra.ShellCompDirectiveNoFileComp
 		},
 	)
 
-	cmd.AddStringFlag("name", "n", "", "Scope name", core.RequiredFlagOption())
+	cmd.AddStringFlag(FlagName, "n", "", "Scope name", core.RequiredFlagOption())
 	cmd.AddStringFlag("type", "y", "", "Scope type", core.RequiredFlagOption())
 	cmd.AddStringSliceFlag("actions", "a", []string{}, "Scope actions", core.RequiredFlagOption())
 
@@ -56,7 +56,7 @@ func TokenScopesAddCmd() *core.Command {
 }
 
 func PreCmdTokenScopesAdd(c *core.PreCommandConfig) error {
-	err := core.CheckRequiredFlags(c.Command, c.NS, "token-id", "registry-id", "name", "actions", "type")
+	err := core.CheckRequiredFlags(c.Command, c.NS, FlagTokenId, FlagRegId, FlagName, "actions", "type")
 	if err != nil {
 		return err
 	}
@@ -67,17 +67,17 @@ func CmdTokenScopesAdd(c *core.CommandConfig) error {
 	var scope sdkgo.Scope
 	var err error
 
-	reg_id, err := c.Command.Command.Flags().GetString("registry-id")
+	reg_id, err := c.Command.Command.Flags().GetString(FlagRegId)
 	if err != nil {
 		return err
 	}
 
-	token_id, err := c.Command.Command.Flags().GetString("token-id")
+	token_id, err := c.Command.Command.Flags().GetString(FlagTokenId)
 	if err != nil {
 		return err
 	}
 
-	name, err := c.Command.Command.Flags().GetString("name")
+	name, err := c.Command.Command.Flags().GetString(FlagName)
 	if err != nil {
 		return err
 	}

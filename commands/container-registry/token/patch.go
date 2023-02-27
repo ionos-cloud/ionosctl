@@ -29,23 +29,23 @@ func TokenPatchCmd() *core.Command {
 		},
 	)
 
-	cmd.AddStringFlag("registry-id", "r", "", "Registry ID")
+	cmd.AddStringFlag(FlagRegId, "r", "", "Registry ID")
 	_ = cmd.Command.RegisterFlagCompletionFunc(
-		"registry-id", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		FlagRegId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 			return registry.RegsIds(), cobra.ShellCompDirectiveNoFileComp
 		},
 	)
-	cmd.AddStringFlag("token-id", "t", "", "Token ID")
+	cmd.AddStringFlag(FlagTokenId, "t", "", "Token ID")
 	_ = cmd.Command.RegisterFlagCompletionFunc(
-		"token-id", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		FlagTokenId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 			return TokensIds(), cobra.ShellCompDirectiveNoFileComp
 		},
 	)
 
-	cmd.AddStringFlag("expiry-date", "", "", "Expiry date of the Token")
-	cmd.AddStringFlag("status", "", "", "Status of the Token")
+	cmd.AddStringFlag(FlagExpiryDate, "", "", "Expiry date of the Token")
+	cmd.AddStringFlag(FlagStatus, "", "", "Status of the Token")
 	_ = cmd.Command.RegisterFlagCompletionFunc(
-		"status", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		FlagStatus, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 			return []string{
 				"enabled", "disabled",
 			}, cobra.ShellCompDirectiveNoFileComp
@@ -58,18 +58,18 @@ func TokenPatchCmd() *core.Command {
 func CmdPatchToken(c *core.CommandConfig) error {
 	var err error
 
-	regId, err := c.Command.Command.Flags().GetString("registry-id")
+	regId, err := c.Command.Command.Flags().GetString(FlagRegId)
 	if err != nil {
 		return err
 	}
-	tokenId, err := c.Command.Command.Flags().GetString("token-id")
+	tokenId, err := c.Command.Command.Flags().GetString(FlagTokenId)
 	if err != nil {
 		return err
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, "expiry-date")) {
+	if viper.IsSet(core.GetFlagName(c.NS, FlagExpiryDate)) {
 		var expiryDate time.Time
-		expiryDateString, err := c.Command.Command.Flags().GetString("expiry-date")
+		expiryDateString, err := c.Command.Command.Flags().GetString(FlagExpiryDate)
 		if err != nil {
 			return err
 		}
@@ -81,9 +81,9 @@ func CmdPatchToken(c *core.CommandConfig) error {
 
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, "status")) {
+	if viper.IsSet(core.GetFlagName(c.NS, FlagStatus)) {
 		var status string
-		status, err = c.Command.Command.Flags().GetString("status")
+		status, err = c.Command.Command.Flags().GetString(FlagStatus)
 		if err != nil {
 			return err
 		}
@@ -100,7 +100,7 @@ func CmdPatchToken(c *core.CommandConfig) error {
 }
 
 func PreCmdPatchToken(c *core.PreCommandConfig) error {
-	err := core.CheckRequiredFlags(c.Command, c.NS, "token-id", "registry-id")
+	err := core.CheckRequiredFlags(c.Command, c.NS, FlagTokenId, FlagRegId)
 	if err != nil {
 		return err
 	}

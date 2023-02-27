@@ -19,7 +19,7 @@ func TokenListCmd() *core.Command {
 			Verb:       "list",
 			Aliases:    []string{"l", "ls"},
 			ShortDesc:  "List all tokens",
-			LongDesc:   "List all tokens for your account",
+			LongDesc:   "List all tokens for your container registry",
 			Example:    "ionosctl container-registry token list --registry-id [REGISTRY-ID]",
 			PreCmdRun:  PreCmdListToken,
 			CmdRun:     CmdListToken,
@@ -27,10 +27,10 @@ func TokenListCmd() *core.Command {
 		},
 	)
 
-	cmd.AddBoolFlag("all", "a", false, "List all tokens, including expired ones")
-	cmd.AddStringFlag("registry-id", "r", "", "Registry ID")
+	cmd.AddBoolFlag(constants.ArgAll, "a", false, "List all tokens, including expired ones")
+	cmd.AddStringFlag(FlagRegId, "r", "", "Registry ID")
 	_ = cmd.Command.RegisterFlagCompletionFunc(
-		"registry-id", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		FlagRegId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 			return registry.RegsIds(), cobra.ShellCompDirectiveNoFileComp
 		},
 	)
@@ -46,9 +46,9 @@ func TokenListCmd() *core.Command {
 }
 
 func CmdListToken(c *core.CommandConfig) error {
-	allFlag := viper.GetBool(core.GetFlagName(c.NS, "all"))
+	allFlag := viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll))
 	if !allFlag {
-		id := viper.GetString(core.GetFlagName(c.NS, "registry-id"))
+		id := viper.GetString(core.GetFlagName(c.NS, FlagRegId))
 		tokens, _, err := c.ContainerRegistryServices.Token().List(id)
 		if err != nil {
 			return err
@@ -74,7 +74,7 @@ func CmdListToken(c *core.CommandConfig) error {
 func PreCmdListToken(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlagsSets(
 		c.Command, c.NS,
-		[]string{"registry-id"},
+		[]string{FlagRegId},
 		[]string{constants.ArgAll},
 	)
 }

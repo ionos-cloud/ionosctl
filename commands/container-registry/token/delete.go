@@ -28,17 +28,17 @@ func TokenDeleteCmd() *core.Command {
 		},
 	)
 
-	cmd.AddBoolFlag("all", "a", false, "Delete all tokens from all registries")
-	cmd.AddStringFlag("registry-id", "r", "", "Registry ID")
+	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Delete all tokens from all registries")
+	cmd.AddStringFlag(FlagRegId, "r", "", "Registry ID")
 	_ = cmd.Command.RegisterFlagCompletionFunc(
-		"registry-id", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		FlagRegId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 			return registry.RegsIds(), cobra.ShellCompDirectiveNoFileComp
 		},
 	)
-	cmd.AddBoolFlag("all-tokens", "", false, "Delete all tokens from a registry")
-	cmd.AddStringFlag("token-id", "t", "", "Token ID")
+	cmd.AddBoolFlag(FlagAllTokens, "", false, "Delete all tokens from a registry")
+	cmd.AddStringFlag(FlagTokenId, "t", "", "Token ID")
 	_ = cmd.Command.RegisterFlagCompletionFunc(
-		"token-id", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		FlagTokenId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 			return TokensIds(), cobra.ShellCompDirectiveNoFileComp
 		},
 	)
@@ -54,23 +54,23 @@ func TokenDeleteCmd() *core.Command {
 }
 
 func CmdDeleteToken(c *core.CommandConfig) error {
-	allFlag := viper.GetBool(core.GetFlagName(c.NS, "all"))
+	allFlag := viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll))
 	if !allFlag {
-		reg_id := viper.GetString(core.GetFlagName(c.NS, "registry-id"))
-		allTokensFlag := viper.GetBool(core.GetFlagName(c.NS, "all-tokens"))
+		regId := viper.GetString(core.GetFlagName(c.NS, FlagRegId))
+		allTokensFlag := viper.GetBool(core.GetFlagName(c.NS, FlagAllTokens))
 		if !allTokensFlag {
-			token_id := viper.GetString(core.GetFlagName(c.NS, "token-id"))
-			msg := fmt.Sprintf("delete Token: %s", token_id)
+			tokenId := viper.GetString(core.GetFlagName(c.NS, FlagTokenId))
+			msg := fmt.Sprintf("delete Token: %s", tokenId)
 			if err := utils.AskForConfirm(c.Stdin, c.Printer, msg); err != nil {
 				return err
 			}
-			_, err := c.ContainerRegistryServices.Token().Delete(token_id, reg_id)
+			_, err := c.ContainerRegistryServices.Token().Delete(tokenId, regId)
 			if err != nil {
 				return err
 			}
 			return nil
 		}
-		tokens, _, err := c.ContainerRegistryServices.Token().List(reg_id)
+		tokens, _, err := c.ContainerRegistryServices.Token().List(regId)
 		if err != nil {
 			return err
 		}
@@ -79,7 +79,7 @@ func CmdDeleteToken(c *core.CommandConfig) error {
 			if err := utils.AskForConfirm(c.Stdin, c.Printer, msg); err != nil {
 				return err
 			}
-			_, err := c.ContainerRegistryServices.Token().Delete(*token.Id, reg_id)
+			_, err := c.ContainerRegistryServices.Token().Delete(*token.Id, regId)
 			if err != nil {
 				return err
 			}
@@ -116,8 +116,8 @@ func CmdDeleteToken(c *core.CommandConfig) error {
 func PreCmdDeleteToken(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlagsSets(
 		c.Command, c.NS,
-		[]string{"registry-id", "token-id"},
-		[]string{"registry-id", "all-tokens"},
+		[]string{FlagRegId, FlagTokenId},
+		[]string{FlagRegId, FlagAllTokens},
 		[]string{constants.ArgAll},
 	)
 }

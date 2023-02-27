@@ -29,12 +29,12 @@ func RegUpdateCmd() *core.Command {
 		},
 	)
 
-	cmd.AddStringFlag("registry-id", "i", "", "Registry ID", core.RequiredFlagOption())
+	cmd.AddStringFlag(FlagRegId, "i", "", "Specify the Registry ID", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(
-		"registry-id", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-			return RegsIds(), cobra.ShellCompDirectiveNoFileComp
-		},
-	)
+	FlagRegId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return RegsIds(), cobra.ShellCompDirectiveNoFileComp
+	},
+)
 
 	cmd.AddStringSliceFlag(
 		"garbage-collection-schedule-days", "", []string{}, "Specify the garbage collection schedule days",
@@ -60,7 +60,7 @@ func RegUpdateCmd() *core.Command {
 }
 
 func CmdUpdate(c *core.CommandConfig) error {
-	id, err := c.Command.Command.Flags().GetString("registry-id")
+	id, err := c.Command.Command.Flags().GetString(FlagRegId)
 	if err != nil {
 		return err
 	}
@@ -73,7 +73,7 @@ func CmdUpdate(c *core.CommandConfig) error {
 			daysSdk = append(daysSdk, sdkgo.Day(day))
 		}
 		v.SetDays(daysSdk)
-	} 
+	}
 	if viper.IsSet(core.GetFlagName(c.NS, "garbage-collection-schedule-time")) {
 		*v.Time = viper.GetString(core.GetFlagName(c.NS, "garbage-collection-schedule-time"))
 	} else {
@@ -89,7 +89,7 @@ func CmdUpdate(c *core.CommandConfig) error {
 }
 
 func PreCmdUpdate(c *core.PreCommandConfig) error {
-	err := core.CheckRequiredFlags(c.Command, c.NS, "registry-id")
+	err := core.CheckRequiredFlags(c.Command, c.NS,FlagRegId)
 	if err != nil {
 		return err
 	}
