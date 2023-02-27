@@ -155,13 +155,13 @@ Required values to run a command (for Private Kubernetes Cluster):
 	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagRam, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"2048MB", "3GB", "4GB", "5GB", "10GB", "50GB", "100GB"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(cloudapiv6.ArgCpuFamily, "", cloudapiv6.DefaultServerCPUFamily, "CPU Type")
-	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgCpuFamily, func(*cobra.Command, []string, string) ([]string, cobra.ShellCompDirective) {
+	create.AddStringFlag(constants.FlagCpuFamily, "", cloudapiv6.DefaultServerCPUFamily, "CPU Type")
+	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagCpuFamily, func(*cobra.Command, []string, string) ([]string, cobra.ShellCompDirective) {
 		datacenterId := viper.GetString(core.GetFlagName(create.NS, cloudapiv6.ArgDataCenterId))
 		return completer.DatacenterCPUFamilies(create.Command.Context(), os.Stderr, datacenterId), cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddStringFlag(constants.FlagAvailabilityZone, constants.FlagAvailabilityZoneShort, "AUTO", "The compute Availability Zone in which the Node should exist")
-	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgCpuFamily, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagCpuFamily, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"AUTO", "ZONE_1", "ZONE_2"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddStringFlag(constants.FlagStorageType, "", "HDD", "Storage Type")
@@ -501,7 +501,7 @@ func getNewK8sNodePool(c *core.CommandConfig) (*resources.K8sNodePoolForPost, er
 	name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
 	nodeCount := viper.GetInt32(core.GetFlagName(c.NS, constants.FlagNodeCount))
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
-	cpuFamily := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgCpuFamily))
+	cpuFamily := viper.GetString(core.GetFlagName(c.NS, constants.FlagCpuFamily))
 	cores := viper.GetInt32(core.GetFlagName(c.NS, constants.FlagCores))
 	availabilityZone := viper.GetString(core.GetFlagName(c.NS, constants.FlagAvailabilityZone))
 	storageType := viper.GetString(core.GetFlagName(c.NS, constants.FlagStorageType))

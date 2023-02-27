@@ -2,7 +2,6 @@ package completer
 
 import (
 	"context"
-
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	sdkgo "github.com/ionos-cloud/sdk-go-dataplatform"

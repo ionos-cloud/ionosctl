@@ -165,8 +165,8 @@ You can wait for the Request to be executed using ` + "`" + `--wait-for-request`
 	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagRam, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"256MB", "512MB", "1024MB", "2GB", "3GB", "4GB", "5GB", "10GB", "16GB"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(cloudapiv6.ArgCPUFamily, "", cloudapiv6.DefaultServerCPUFamily, "CPU Family for the Server. For CUBE Servers, the CPU Family is INTEL_SKYLAKE")
-	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgCpuFamily, func(*cobra.Command, []string, string) ([]string, cobra.ShellCompDirective) {
+	create.AddStringFlag(constants.FlagCpuFamily, "", cloudapiv6.DefaultServerCPUFamily, "CPU Family for the Server. For CUBE Servers, the CPU Family is INTEL_SKYLAKE")
+	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagCpuFamily, func(*cobra.Command, []string, string) ([]string, cobra.ShellCompDirective) {
 		datacenterId := viper.GetString(core.GetFlagName(create.NS, cloudapiv6.ArgDataCenterId))
 		return completer.DatacenterCPUFamilies(create.Command.Context(), os.Stderr, datacenterId), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -255,8 +255,8 @@ Required values to run command:
 		}}), cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "", "Name of the Server")
-	update.AddStringFlag(cloudapiv6.ArgCPUFamily, "", cloudapiv6.DefaultServerCPUFamily, "CPU Family of the Server")
-	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgCpuFamily, func(*cobra.Command, []string, string) ([]string, cobra.ShellCompDirective) {
+	update.AddStringFlag(constants.FlagCpuFamily, "", cloudapiv6.DefaultServerCPUFamily, "CPU Family of the Server")
+	_ = update.Command.RegisterFlagCompletionFunc(constants.FlagCpuFamily, func(*cobra.Command, []string, string) ([]string, cobra.ShellCompDirective) {
 		datacenterId := viper.GetString(core.GetFlagName(update.NS, cloudapiv6.ArgDataCenterId))
 		return completer.DatacenterCPUFamilies(update.Command.Context(), os.Stderr, datacenterId), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -915,8 +915,8 @@ func getUpdateServerInfo(c *core.CommandConfig) (*resources.ServerProperties, er
 		input.SetName(name)
 		c.Printer.Verbose("Property name set: %v ", name)
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgCPUFamily)) {
-		cpuFamily := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgCPUFamily))
+	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagCpuFamily)) {
+		cpuFamily := viper.GetString(core.GetFlagName(c.NS, constants.FlagCpuFamily))
 		c.Printer.Verbose("Property CpuFamily set: %v ", cpuFamily)
 		input.SetCpuFamily(cpuFamily)
 	}
@@ -988,7 +988,7 @@ func getNewServer(c *core.CommandConfig) (*resources.Server, error) {
 
 	// ENTERPRISE Server Properties
 	if viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgType)) == serverEnterpriseType {
-		input.SetCpuFamily(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgCpuFamily)))
+		input.SetCpuFamily(viper.GetString(core.GetFlagName(c.NS, constants.FlagCpuFamily)))
 		if !input.HasName() {
 			input.SetName("Unnamed Server")
 		}

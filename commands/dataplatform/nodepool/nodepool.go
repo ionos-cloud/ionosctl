@@ -31,7 +31,9 @@ func NodepoolCmd() *core.Command {
 	cmd.Command.PersistentFlags().Bool(constants.ArgNoHeaders, false, "When using text output, don't print headers")
 
 	cmd.AddCommand(NodepoolListCmd())
+	cmd.AddCommand(NodepoolCreateCmd())
 	cmd.AddCommand(NodepoolGetCmd())
+	cmd.AddCommand(NodepoolUpdateCmd())
 
 	return cmd
 }
@@ -42,8 +44,8 @@ func getNodepoolsPrint(c *core.CommandConfig, dcs *[]ionoscloud.NodePoolResponse
 
 	if c != nil && dcs != nil {
 		r.OutputJSON = dcs
-		r.KeyValue = makeNodepoolPrintObj(dcs)                  // map header -> rows
-		r.Columns = printer.GetHeadersAllDefault(allCols, cols) // headers
+		r.KeyValue = makeNodepoolPrintObj(dcs)                 // map header -> rows
+		r.Columns = printer.GetHeaders(allCols, defCols, cols) // headers
 	}
 	return r
 }
@@ -51,19 +53,21 @@ func getNodepoolsPrint(c *core.CommandConfig, dcs *[]ionoscloud.NodePoolResponse
 type NodepoolPrint struct {
 	Id                string `json:"Id,omitempty"`
 	Name              string `json:"Name,omitempty"`
-	NodeCount         int32  `json:"NodeCount,omitempty"`
-	CoresCount        int32  `json:"CoresCount,omitempty"`
+	Nodes             int32  `json:"Nodes,omitempty"`
+	Cores             int32  `json:"Cores,omitempty"`
 	CpuFamily         string `json:"CpuFamily,omitempty"`
 	Ram               string `json:"Ram,omitempty"`
-	AvailabilityZone  string `json:"AvailabilityZone,omitempty"`
-	StorageSize       string `json:"StorageSize,omitempty"`
+	Storage           string `json:"Storage,omitempty"`
 	MaintenanceWindow string `json:"MaintenanceWindow,omitempty"`
-	Labels            string `json:"Labels,omitempty"`
-	Annotations       string `json:"Annotations,omitempty"`
 	State             string `json:"State,omitempty"`
+
+	AvailabilityZone string `json:"AvailabilityZone,omitempty"`
+	Labels           string `json:"Labels,omitempty"`
+	Annotations      string `json:"Annotations,omitempty"`
 }
 
 var allCols = structs.Names(NodepoolPrint{})
+var defCols = allCols[:len(allCols)-3]
 
 func makeNodepoolPrintObj(clusters *[]ionoscloud.NodePoolResponseData) []map[string]interface{} {
 	out := make([]map[string]interface{}, 0, len(*clusters))
@@ -74,13 +78,14 @@ func makeNodepoolPrintObj(clusters *[]ionoscloud.NodePoolResponseData) []map[str
 
 		if propertiesOk, ok := cluster.GetPropertiesOk(); ok && propertiesOk != nil {
 			nodepoolPrint.Name = *propertiesOk.GetName()
-			nodepoolPrint.NodeCount = *propertiesOk.GetNodeCount()
-			nodepoolPrint.CoresCount = *propertiesOk.GetCoresCount()
+			nodepoolPrint.Nodes = *propertiesOk.GetNodeCount()
+			nodepoolPrint.Cores = *propertiesOk.GetCoresCount()
 			nodepoolPrint.CpuFamily = *propertiesOk.GetCpuFamily()
-			ramGb, err := utils.ConvertToGB(strconv.Itoa(int(*propertiesOk.GetRamSize())), utils.MegaBytes)
+			gb, err := utils.ConvertToGB(strconv.Itoa(int(*propertiesOk.GetRamSize())), utils.MegaBytes)
 			if err == nil {
-				nodepoolPrint.Ram = fmt.Sprintf("%d GB", ramGb)
+				nodepoolPrint.Ram = fmt.Sprintf("%d GB", gb)
 			}
+			nodepoolPrint.Storage = fmt.Sprintf("%s %d GB", *propertiesOk.StorageType, *propertiesOk.GetStorageSize())
 			nodepoolPrint.AvailabilityZone = *propertiesOk.GetCpuFamily()
 			if maintenanceWindowOk, ok := propertiesOk.GetMaintenanceWindowOk(); ok && maintenanceWindowOk != nil {
 				nodepoolPrint.MaintenanceWindow =
