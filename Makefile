@@ -6,6 +6,8 @@ include ./tools/dbaas-postgres/dbaas_postgres.mk
 include ./tools/dbaas-mongo/dbaas_mongo.mk
 include ./tools/auth-v1/auth_v1.mk
 include ./tools/certmanager/certmanager.mk
+include ./tools/dataplatform/dataplatform.mk
+
 
 export CGO_ENABLED = 0
 export GO111MODULE := on
@@ -33,7 +35,7 @@ mocks_update: cloudapiv6_mocks_update auth_v1_mocks_update dbaas_postgres_mocks_
 	@echo "DONE"
 
 .PHONY: docs_update
-docs_update: dbaas_postgres_docs_update certmanager_docs_update dbaas_mongo_docs_update
+docs_update: dbaas_postgres_docs_update certmanager_docs_update dbaas_mongo_docs_update dataplatform_docs_update
 	@echo "--- Update documentation in ${DOCS_OUT} ---"
 	@mkdir -p ${DOCS_OUT}
 	@DOCS_OUT=${DOCS_OUT} tools/regenerate_doc.sh

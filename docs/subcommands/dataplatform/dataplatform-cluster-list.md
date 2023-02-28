@@ -1,0 +1,52 @@
+---
+description: List Dataplatform Clusters
+---
+
+# DataplatformClusterList
+
+## Usage
+
+```text
+dataplatform cluster list [flags]
+```
+
+## Aliases
+
+For `dataplatform` command:
+
+```text
+[mdp dp stackable managed-dataplatform]
+```
+
+For `cluster` command:
+
+```text
+[c]
+```
+
+For `list` command:
+
+```text
+[l ls]
+```
+
+## Description
+
+List Dataplatform Clusters
+
+## Options
+
+```text
+      --cols strings   Set of columns to be printed on output 
+                       Available columns: [Id Name Version MaintenanceWindow DatacenterId State]
+  -h, --help           help for list
+  -n, --name string    Response filter to list only the clusters which include the specified name. case insensitive
+      --no-headers     When using text output, don't print headers
+```
+
+## Examples
+
+```text
+ionosctl dataplatform cluster list
+```
+

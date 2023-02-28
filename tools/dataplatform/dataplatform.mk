@@ -1,6 +1,3 @@
-## This Makefile contains operations
-## for CloudApiDBaaSPgsql resources:
-## Tests, Mocks, Documentation
 DOCS_OUT_DATAPLATFORM?=$(shell pwd)/docs/subcommands/dataplatform/
 
 .PHONY: dataplatform_test_unit
@@ -21,6 +18,6 @@ dataplatform_mocks_update:
 .PHONY: dataplatform_docs_update
 dataplatform_docs_update:
 	@echo "--- Generate Markdown documentation for Dataplatform in ${DOCS_OUT_DATAPLATFORM} ---"
-	@mkdir -p ${DOCS_OUT_dataplatform}
-	@DOCS_OUT_dataplatform=${DOCS_OUT_dataplatform} go run tools/dataplatform/doc.go
+	@mkdir -p ${DOCS_OUT_DATAPLATFORM}
+	@DOCS_OUT_DATAPLATFORM=${DOCS_OUT_DATAPLATFORM} go run tools/dataplatform/doc.go
 	@echo "DONE"

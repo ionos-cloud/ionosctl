@@ -47,11 +47,11 @@ Create Mongo Clusters
   -l, --location string           The physical location where the cluster will be created. Defaults to the connection's datacenter location
       --maintenance-day string    Day Of the Week for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur (required)
       --maintenance-time string   Time for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur. e.g.: 16:30:59 (required)
-      --mongo-version string      The MongoDB version of your cluster (default "5.0")
   -n, --name string               The name of your cluster
       --no-headers                When using text output, don't print headers
       --template-id string        The unique ID of the template, which specifies the number of cores, storage size, and memory
   -t, --timeout int               Timeout option for Request [seconds] (default 60)
+      --version string            The MongoDB version of your cluster (default "5.0")
   -w, --wait-for-request          Wait for the Request to be executed
 ```
 
