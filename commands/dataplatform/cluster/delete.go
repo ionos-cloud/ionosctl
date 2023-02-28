@@ -34,7 +34,7 @@ func ClusterDeleteCmd() *core.Command {
 		ShortDesc: "Delete a Dataplatform Cluster by ID",
 		Example:   "ionosctl dataplatform cluster delete --cluster-id <cluster-id>",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			return core.CheckRequiredFlagsSets(c.Command, []string{constants.ArgAll}, []string{constants.FlagClusterId})
+			return core.CheckRequiredFlagsSets(c.Command, c.NS, []string{constants.ArgAll}, []string{constants.FlagClusterId})
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			if all := viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)); all {

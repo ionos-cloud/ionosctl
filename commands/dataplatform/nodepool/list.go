@@ -2,8 +2,7 @@ package nodepool
 
 import (
 	"context"
-	"fmt"
-	"github.com/ionos-cloud/ionosctl/pkg/utils"
+	"github.com/ionos-cloud/ionosctl/internal/functional"
 	ionoscloud "github.com/ionos-cloud/sdk-go-dataplatform"
 
 	"github.com/ionos-cloud/ionosctl/commands/dataplatform/completer"
@@ -23,10 +22,7 @@ func NodepoolListCmd() *core.Command {
 		ShortDesc: "List Dataplatform Nodepools of a certain cluster",
 		Example:   "ionosctl dataplatform nodepool list",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			if viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)) || viper.IsSet(core.GetFlagName(c.NS, constants.FlagClusterId)) {
-				return nil
-			}
-			return fmt.Errorf("required flag --%s or --%s not set", constants.ArgAll, constants.FlagClusterId)
+			return core.CheckRequiredFlagsSets(c.Command, c.NS, []string{constants.ArgAll}, []string{constants.FlagClusterId})
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			if viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)) {
@@ -73,7 +69,7 @@ func listAll(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	clusterIds := utils.MapNoIdx(*ls.GetItems(), func(t ionoscloud.ClusterResponseData) string {
+	clusterIds := functional.Map(*ls.GetItems(), func(t ionoscloud.ClusterResponseData) string {
 		return *t.GetId()
 	})
 

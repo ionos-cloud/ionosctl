@@ -2,8 +2,8 @@ package completer
 
 import (
 	"context"
+	"github.com/ionos-cloud/ionosctl/internal/functional"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
-	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	sdkgo "github.com/ionos-cloud/sdk-go-dataplatform"
 )
 
@@ -16,7 +16,7 @@ func DataplatformClusterIds() []string {
 	if err != nil {
 		return nil
 	}
-	return utils.MapNoIdx(*ls.GetItems(), func(t sdkgo.ClusterResponseData) string {
+	return functional.Map(*ls.GetItems(), func(t sdkgo.ClusterResponseData) string {
 		return *t.GetId()
 	})
 }
@@ -30,7 +30,7 @@ func DataplatformNodepoolsIds(clusterId string) []string {
 	if err != nil {
 		return nil
 	}
-	return utils.MapNoIdx(*ls.GetItems(), func(t sdkgo.NodePoolResponseData) string {
+	return functional.Map(*ls.GetItems(), func(t sdkgo.NodePoolResponseData) string {
 		return *t.GetId()
 	})
 }

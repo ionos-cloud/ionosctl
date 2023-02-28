@@ -34,6 +34,7 @@ func NodepoolCmd() *core.Command {
 	cmd.AddCommand(NodepoolCreateCmd())
 	cmd.AddCommand(NodepoolGetCmd())
 	cmd.AddCommand(NodepoolUpdateCmd())
+	cmd.AddCommand(NodepoolDeleteCmd())
 
 	return cmd
 }
