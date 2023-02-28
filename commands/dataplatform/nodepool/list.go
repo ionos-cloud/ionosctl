@@ -2,6 +2,9 @@ package nodepool
 
 import (
 	"context"
+	"fmt"
+	"github.com/ionos-cloud/ionosctl/pkg/utils"
+	ionoscloud "github.com/ionos-cloud/sdk-go-dataplatform"
 
 	"github.com/ionos-cloud/ionosctl/commands/dataplatform/completer"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
@@ -20,10 +23,15 @@ func NodepoolListCmd() *core.Command {
 		ShortDesc: "List Dataplatform Nodepools of a certain cluster",
 		Example:   "ionosctl dataplatform nodepool list",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			err := c.Command.Command.MarkFlagRequired(constants.FlagClusterId)
-			return err
+			if viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)) || viper.IsSet(core.GetFlagName(c.NS, constants.FlagClusterId)) {
+				return nil
+			}
+			return fmt.Errorf("required flag --%s or --%s not set", constants.ArgAll, constants.FlagClusterId)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
+			if viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)) {
+				return listAll(c)
+			}
 			c.Printer.Verbose("Getting Nodepools...")
 			clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
 
@@ -41,6 +49,10 @@ func NodepoolListCmd() *core.Command {
 		InitClient: true,
 	})
 
+	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "List all account nodepools, by iterating through all clusters first. May invoke a lot of GET calls")
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.DataplatformClusterIds(), cobra.ShellCompDirectiveNoFileComp
+	})
 	cmd.AddStringFlag(constants.FlagClusterId, constants.FlagIdShort, "", "The unique ID of the cluster. Must conform to the UUID format")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.DataplatformClusterIds(), cobra.ShellCompDirectiveNoFileComp
@@ -48,4 +60,31 @@ func NodepoolListCmd() *core.Command {
 	cmd.Command.SilenceUsage = true
 
 	return cmd
+}
+
+func listAll(c *core.CommandConfig) error {
+	c.Printer.Verbose("Getting all nodepools...")
+
+	client, err := config.GetClient()
+	if err != nil {
+		return err
+	}
+	ls, _, err := client.DataplatformClient.DataPlatformClusterApi.GetClusters(context.Background()).Execute()
+	if err != nil {
+		return err
+	}
+	clusterIds := utils.MapNoIdx(*ls.GetItems(), func(t ionoscloud.ClusterResponseData) string {
+		return *t.GetId()
+	})
+
+	nps := make([]ionoscloud.NodePoolResponseData, 0)
+	for _, cID := range clusterIds {
+		np, _, err := client.DataplatformClient.DataPlatformNodePoolApi.GetClusterNodepools(c.Context, cID).Execute()
+		if err != nil {
+			return err
+		}
+		nps = append(nps, *np.GetItems()...)
+	}
+
+	return c.Printer.Print(getNodepoolsPrint(c, &nps))
 }

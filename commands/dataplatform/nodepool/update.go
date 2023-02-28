@@ -2,6 +2,7 @@ package nodepool
 
 import (
 	"context"
+	"github.com/ionos-cloud/ionosctl/commands/dataplatform/completer"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
@@ -12,11 +13,6 @@ import (
 
 func NodepoolUpdateCmd() *core.Command {
 	var (
-		clusterId  string
-		nodepoolId string
-		//nodeCount        *int32
-		maintenanceDay   *string
-		maintenanceTime  *string
 		updateProperties = sdkdataplatform.PatchNodePoolProperties{}
 	)
 
@@ -25,8 +21,8 @@ func NodepoolUpdateCmd() *core.Command {
 		Resource:  "nodepool",
 		Verb:      "update", // used in AVAILABLE COMMANDS in help
 		Aliases:   []string{"u"},
-		ShortDesc: "Create Dataplatform Nodepools",
-		LongDesc:  "Node pools are the resources that powers the DataPlatformCluster.\n\nThe following requests allows to alter the existing resources, add or remove new resources to the cluster.",
+		ShortDesc: "Update Dataplatform Nodepools",
+		LongDesc:  "Node pools are the resources that powers the DataPlatformCluster.\n\nThe following requests allows to alter the existing resources of the cluster",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			var err error
 			err = c.Command.Command.MarkFlagRequired(constants.FlagClusterId)
@@ -44,17 +40,25 @@ func NodepoolUpdateCmd() *core.Command {
 		CmdRun: func(c *core.CommandConfig) error {
 			c.Printer.Verbose("Updating Nodepool...")
 
-			if maintenanceDay != nil && maintenanceTime != nil {
+			clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
+			npId := viper.GetString(core.GetFlagName(c.NS, constants.FlagNodepoolId))
+
+			fd := core.GetFlagName(c.NS, constants.FlagMaintenanceDay)
+			ft := core.GetFlagName(c.NS, constants.FlagMaintenanceTime)
+			if viper.IsSet(fd) && viper.IsSet(ft) {
 				maintenanceWindow := sdkdataplatform.MaintenanceWindow{}
-				maintenanceWindow.SetDayOfTheWeek(*maintenanceDay)
-				maintenanceWindow.SetTime(*maintenanceTime)
+				maintenanceWindow.SetDayOfTheWeek(viper.GetString(fd))
+				maintenanceWindow.SetTime(viper.GetString(ft))
 				updateProperties.SetMaintenanceWindow(maintenanceWindow)
 			}
-			if viper.IsSet(core.GetFlagName(c.NS, constants.FlagAnnotations)) {
-				updateProperties.SetAnnotations(viper.GetStringMap(core.GetFlagName(c.NS, constants.FlagAnnotations)))
+			if f := core.GetFlagName(c.NS, constants.FlagNodeCount); viper.IsSet(f) {
+				updateProperties.SetNodeCount(viper.GetInt32(f))
 			}
-			if viper.IsSet(core.GetFlagName(c.NS, constants.FlagLabels)) {
-				updateProperties.SetLabels(viper.GetStringMap(core.GetFlagName(c.NS, constants.FlagLabels)))
+			if f := core.GetFlagName(c.NS, constants.FlagAnnotations); viper.IsSet(f) {
+				updateProperties.SetAnnotations(viper.GetStringMap(f))
+			}
+			if f := core.GetFlagName(c.NS, constants.FlagLabels); viper.IsSet(f) {
+				updateProperties.SetLabels(viper.GetStringMap(f))
 			}
 
 			input := sdkdataplatform.PatchNodePoolRequest{}
@@ -64,7 +68,7 @@ func NodepoolUpdateCmd() *core.Command {
 			if err != nil {
 				return err
 			}
-			cr, _, err := client.DataplatformClient.DataPlatformNodePoolApi.PatchClusterNodepool(context.Background(), clusterId, nodepoolId).PatchNodePoolRequest(input).Execute()
+			cr, _, err := client.DataplatformClient.DataPlatformNodePoolApi.PatchClusterNodepool(context.Background(), clusterId, npId).PatchNodePoolRequest(input).Execute()
 			if err != nil {
 				return err
 			}
@@ -74,10 +78,14 @@ func NodepoolUpdateCmd() *core.Command {
 	})
 
 	cmd.AddUUIDFlag(constants.FlagClusterId, "", "", "The UUID of the cluster the nodepool belongs to")
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.DataplatformClusterIds(), cobra.ShellCompDirectiveNoFileComp
+	})
 	cmd.AddUUIDFlag(constants.FlagNodepoolId, constants.FlagIdShort, "", "The UUID of the cluster the nodepool belongs to")
-
-	// Linked to properties struct
-	//cmd.AddInt32VarFlag(updateProperties.NodeCount, constants.FlagNodeCount, "", 0, "The number of nodes that make up the node pool", core.RequiredFlagOption())
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagNodepoolId, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.DataplatformNodepoolsIds(viper.GetString(core.GetFlagName(cmd.NS, constants.FlagClusterId))), cobra.ShellCompDirectiveNoFileComp
+	})
+	cmd.AddInt32Flag(constants.FlagNodeCount, "n", 0, "The number of nodes that make up the node pool", core.RequiredFlagOption())
 	cmd.AddStringToStringFlag(constants.FlagLabels, constants.FlagLabelsShort, map[string]string{}, "Labels to set on a NodePool. It will overwrite the existing labels, if there are any. Use the following format: --labels KEY=VALUE,KEY=VALUE")
 	cmd.AddStringToStringFlag(constants.FlagAnnotations, constants.FlagAnnotationsShort, map[string]string{}, "Annotations to set on a NodePool. It will overwrite the existing annotations, if there are any. Use the following format: --annotations KEY=VALUE,KEY=VALUE")
 
