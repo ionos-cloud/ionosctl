@@ -18,12 +18,6 @@ For `mongo` command:
 [mongodb mdb m]
 ```
 
-For `user` command:
-
-```text
-[u]
-```
-
 For `get` command:
 
 ```text

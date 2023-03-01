@@ -21,7 +21,7 @@ For `mongo` command:
 For `api-versions` command:
 
 ```text
-[ls]
+[versions api-version]
 ```
 
 ## Description
