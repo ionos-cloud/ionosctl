@@ -4,25 +4,17 @@ import (
 	"context"
 	"fmt"
 	"github.com/ionos-cloud/ionosctl/commands/dbaas/mongo/completer"
+	"github.com/ionos-cloud/ionosctl/internal/confirm"
+	"github.com/ionos-cloud/ionosctl/internal/functional"
+	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
+	sdkgo "github.com/ionos-cloud/sdk-go-dbaas-mongo"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
-
-func deleteAll(c *core.CommandConfig) error {
-	c.Printer.Verbose("Deleting All Clusters!")
-	if !viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce)) {
-		err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all clusters")
-		if err != nil {
-			return err
-		}
-	}
-	_, err := c.DbaasMongoServices.Clusters().DeleteAll(viper.GetString(core.GetFlagName(c.NS, constants.FlagName)))
-	return err
-}
 
 func ClusterDeleteCmd() *core.Command {
 	cmd := core.NewCommand(context.TODO(), nil, core.CommandBuilder{
@@ -67,4 +59,27 @@ func ClusterDeleteCmd() *core.Command {
 	cmd.Command.SilenceUsage = true
 
 	return cmd
+}
+
+func deleteAll(c *core.CommandConfig) error {
+	client, err := config.GetClient()
+	if err != nil {
+		return err
+	}
+	c.Printer.Verbose("Deleting All Clusters!")
+	xs, _, err := client.MongoClient.ClustersApi.ClustersGet(c.Context).Execute()
+	if err != nil {
+		return err
+	}
+
+	return functional.ApplyOrFail(*xs.GetItems(), func(x sdkgo.ClusterResponse) error {
+		yes := confirm.Ask(fmt.Sprintf("delete cluster %s (%s)", *x.Id, *x.Properties.DisplayName), viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce)))
+		if yes {
+			_, _, delErr := client.MongoClient.ClustersApi.ClustersDelete(c.Context, *x.Id).Execute()
+			if delErr != nil {
+				return fmt.Errorf("failed deleting one of the clusters: %w", delErr)
+			}
+		}
+		return nil
+	})
 }

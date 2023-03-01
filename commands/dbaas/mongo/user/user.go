@@ -2,13 +2,13 @@ package user
 
 import (
 	"fmt"
+	"github.com/ionos-cloud/ionosctl/internal/functional"
 	"strings"
 
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
-	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	ionoscloud "github.com/ionos-cloud/sdk-go-dbaas-mongo"
 	"github.com/spf13/cobra"
 )
@@ -24,7 +24,6 @@ func UserCmd() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "user",
-			Aliases:          []string{"u"},
 			Short:            "Mongo Users Operations",
 			TraverseChildren: true,
 		},
@@ -71,7 +70,7 @@ func getUserRows(ls *[]ionoscloud.User) []map[string]interface{} {
 		var cols UserPrint
 		properties, ok := t.GetPropertiesOk()
 		if ok {
-			rolesAsStrings := utils.MapNoIdx(*properties.GetRoles(), roleToString)
+			rolesAsStrings := functional.Map(*properties.GetRoles(), roleToString)
 			cols.Roles = strings.Join(rolesAsStrings, ", ") // "db1: read, db2: write, db3: abcd..."
 
 			cols.Username = *properties.GetUsername()

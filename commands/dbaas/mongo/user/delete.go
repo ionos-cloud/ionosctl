@@ -2,7 +2,11 @@ package user
 
 import (
 	"context"
+	"fmt"
 	"github.com/ionos-cloud/ionosctl/commands/dbaas/mongo/completer"
+	"github.com/ionos-cloud/ionosctl/internal/confirm"
+	"github.com/ionos-cloud/ionosctl/internal/functional"
+	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	sdkgo "github.com/ionos-cloud/sdk-go-dbaas-mongo"
@@ -19,24 +23,14 @@ func UserDeleteCmd() *core.Command {
 		ShortDesc: "Delete a MongoDB user",
 		Example:   "ionosctl dbaas mongo user delete",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			err := c.Command.Command.MarkFlagRequired(constants.FlagClusterId)
-			if err != nil {
-				return err
-			}
-			err = c.Command.Command.MarkFlagRequired(FlagDatabase)
-			if err != nil {
-				return err
-			}
-			err = c.Command.Command.MarkFlagRequired(constants.ArgUser)
-			if err != nil {
-				return err
-			}
-			return nil
+			return core.CheckRequiredFlagsSets(c.Command, c.NS, []string{constants.FlagClusterId, constants.ArgAll}, []string{constants.FlagClusterId, constants.FlagName})
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
+			if all := viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)); all {
+				return deleteAll(c, clusterId)
+			}
 			user := viper.GetString(core.GetFlagName(c.NS, constants.ArgUser))
-			c.Printer.Verbose("Getting User by ID %s...")
 			u, _, err := c.DbaasMongoServices.Users().Delete(clusterId, user)
 			if err != nil {
 				return err
@@ -51,9 +45,33 @@ func UserDeleteCmd() *core.Command {
 		return completer.MongoClusterIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddStringFlag(FlagDatabase, FlagDatabaseShort, "", "The authentication database")
-	cmd.AddStringFlag(constants.ArgUser, "u", "", "The authentication username")
+	cmd.AddStringFlag(constants.ArgUser, "", "", "The authentication username")
+	cmd.AddBoolFlag(constants.ArgAll, "a", false, "Delete all users in a cluster")
 
 	cmd.Command.SilenceUsage = true
 
 	return cmd
+}
+
+func deleteAll(c *core.CommandConfig, clusterId string) error {
+	client, err := config.GetClient()
+	if err != nil {
+		return err
+	}
+	c.Printer.Verbose("Deleting all users")
+	xs, _, err := client.MongoClient.UsersApi.ClustersUsersGet(c.Context, clusterId).Execute()
+	if err != nil {
+		return err
+	}
+
+	return functional.ApplyOrFail(*xs.GetItems(), func(x sdkgo.User) error {
+		yes := confirm.Ask(fmt.Sprintf("delete user %s", *x.Properties.Username), viper.GetBool(constants.ArgForce))
+		if yes {
+			_, _, delErr := client.MongoClient.UsersApi.ClustersUsersDelete(c.Context, clusterId, *x.Properties.Username).Execute()
+			if delErr != nil {
+				return fmt.Errorf("failed deleting one of the resources: %w", delErr)
+			}
+		}
+		return nil
+	})
 }

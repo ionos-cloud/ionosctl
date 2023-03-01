@@ -32,7 +32,7 @@ func TestMongoCommands(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed setting up Mongo required resources: %s", err)
 	}
-	t.Cleanup(teardownTestMongoCommands)
+	//t.Cleanup(teardownTestMongoCommands)
 	testMongoClusterCreate(t, dcId, lanId)
 	testMongoUserCreate(t)
 }
