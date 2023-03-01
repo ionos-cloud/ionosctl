@@ -2,8 +2,8 @@ package completer
 
 import (
 	"context"
+	"github.com/ionos-cloud/ionosctl/internal/functional"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
-	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	sdkgo "github.com/ionos-cloud/sdk-go-dbaas-mongo"
 )
 
@@ -16,7 +16,7 @@ func MongoClusterIds() []string {
 	if err != nil {
 		return nil
 	}
-	return utils.MapNoIdx(*ls.GetItems(), func(t sdkgo.ClusterResponse) string {
+	return functional.Map(*ls.GetItems(), func(t sdkgo.ClusterResponse) string {
 		return *t.GetId()
 	})
 }
@@ -30,7 +30,7 @@ func MongoTemplateIds() []string {
 	if err != nil {
 		return nil
 	}
-	return utils.MapNoIdx(*ls.GetItems(), func(t sdkgo.TemplateResponse) string {
+	return functional.Map(*ls.GetItems(), func(t sdkgo.TemplateResponse) string {
 		return *t.GetId()
 	})
 }

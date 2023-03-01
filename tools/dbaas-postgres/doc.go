@@ -2,19 +2,8 @@ package main
 
 import (
 	"fmt"
-<<<<<<< HEAD
-	"io"
-	"os"
-	"path/filepath"
-	"strings"
-
 	"github.com/ionos-cloud/ionosctl/v6/commands"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
-=======
-	"github.com/ionos-cloud/ionosctl/commands"
-	"github.com/ionos-cloud/ionosctl/pkg/doc"
 	"os"
->>>>>>> ca183e9b (doc: doc update script with refactor for less duplicated code)
 )
 
 func main() {
