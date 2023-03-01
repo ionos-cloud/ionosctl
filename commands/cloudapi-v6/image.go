@@ -6,6 +6,7 @@ import (
 	"crypto/x509"
 	"errors"
 	"fmt"
+	"github.com/ionos-cloud/ionosctl/internal/functional"
 	"os"
 	"path/filepath"
 	"sort"
@@ -448,13 +449,9 @@ func PreRunImageUpload(c *core.PreCommandConfig) error {
 	images := viper.GetStringSlice(core.GetFlagName(c.NS, "image"))
 	// All images in 'images' slice should have extensions in set of validImageExtensions
 	err = allSliceFlagValuesInSet(
-		utils.Map(
-			// Returns only the extensions that are in `images` slice
-			images,
-			func(_ int, s string) string {
-				return filepath.Ext(s)
-			},
-		),
+		functional.Map(images, func(s string) string {
+			return filepath.Ext(s)
+		}),
 		validImageExtensions,
 	)
 	if err != nil {
@@ -639,7 +636,7 @@ func RunImageUpload(c *core.CommandConfig) error {
 		// Returns a slice containing `alias[i] + filepath.Ext(images[i])`
 		// (i.e it gets the extensions from `images` flag, and appends them to each elem `image-alias`)
 		// Resulting slice is the full image names, as returned by `ionosctl image list` on the Name column
-		names = utils.Map(aliases, func(k int, v string) string {
+		names = functional.MapIdx(aliases, func(k int, v string) string {
 			return v + filepath.Ext(images[k])
 		})
 	}
