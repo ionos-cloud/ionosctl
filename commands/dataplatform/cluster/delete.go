@@ -3,6 +3,7 @@ package cluster
 import (
 	"context"
 	"fmt"
+	"github.com/ionos-cloud/ionosctl/internal/confirm"
 	"github.com/ionos-cloud/ionosctl/internal/functional"
 	ionoscloud "github.com/ionos-cloud/sdk-go-dataplatform"
 
@@ -71,8 +72,8 @@ func deleteAll(c *core.CommandConfig) error {
 	}
 
 	err = functional.ApplyOrFail(*xs.GetItems(), func(x ionoscloud.ClusterResponseData) error {
-		confirmErr := utils.AskForConfirm(c.Stdin, c.Printer, fmt.Sprintf("delete cluster %s (%s)", *x.Id, *x.Properties.Name))
-		if confirmErr == nil {
+		yes := confirm.Ask(fmt.Sprintf("delete cluster %s (%s)", *x.Id, *x.Properties.Name), viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce)))
+		if yes {
 			_, _, delErr := client.DataplatformClient.DataPlatformClusterApi.DeleteCluster(c.Context, *x.Id).Execute()
 			if delErr != nil {
 				return delErr
