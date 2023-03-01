@@ -1,27 +1,29 @@
-package apiversion
+package dataplatform
 
 import (
 	"context"
+	"fmt"
+	"github.com/ionos-cloud/ionosctl/pkg/config"
 
 	"github.com/fatih/structs"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
-	ionoscloud "github.com/ionos-cloud/sdk-go-dbaas-mongo"
+	"github.com/ionos-cloud/ionosctl/pkg/constants"
+	"github.com/ionos-cloud/ionosctl/pkg/core"
+	"github.com/ionos-cloud/ionosctl/pkg/printer"
 )
 
 func ApiVersionCmd() *core.Command {
 	cmd := core.NewCommand(context.Background(), nil, core.CommandBuilder{
-		Namespace: "dbaas-mongo",
+		Namespace: "dataplatform",
 		Verb:      "api-versions",
-		Aliases:   []string{"versions", "api-version"},
-		ShortDesc: "Get Mongo API swagger files",
-		Example:   "ionosctl dbaas mongo api-versions",
+		Aliases:   []string{"versions", "api-version", "api", "meta"},
+		ShortDesc: "Get API version",
+		Example:   "ionosctl dataplatform meta",
 		PreCmdRun: core.NoPreRun,
 		CmdRun: func(c *core.CommandConfig) error {
-			list, _, err := c.DbaasMongoServices.ApiMetadata().List()
+			client, err := config.GetClient()
+			list, _, err := client.DataplatformClient.DataPlatformMetaDataApi.VersionsGet(c.Context).Execute()
 			if err != nil {
-				return err
+				return fmt.Errorf("fail VersionsGet: %w", err)
 			}
 			return c.Printer.Print(getApiVersionPrint(c, list))
 		},
@@ -32,27 +34,26 @@ func ApiVersionCmd() *core.Command {
 }
 
 type ApiVersionPrint struct {
-	Version string `json:"Name,omitempty"`
-	Href    string `json:"Href,omitempty"`
+	Version string `json:"Version,omitempty"`
 }
 
 var allCols = structs.Names(ApiVersionPrint{})
 
-func MakeApiVersionPrintObject(objs []ionoscloud.APIVersion) []map[string]interface{} {
+func MakeApiVersionPrintObject(objs []string) []map[string]interface{} {
 	out := make([]map[string]interface{}, 0, len(objs))
 
 	for _, o := range objs {
 		var printObj ApiVersionPrint
-		printObj.Version = *o.GetName()
-		printObj.Href = *o.GetSwaggerUrl()
+		printObj.Version = o
 		o := structs.Map(printObj)
+
 		out = append(out, o)
 	}
 
 	return out
 }
 
-func getApiVersionPrint(c *core.CommandConfig, dcs []ionoscloud.APIVersion) printer.Result {
+func getApiVersionPrint(c *core.CommandConfig, dcs []string) printer.Result {
 	r := printer.Result{}
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 

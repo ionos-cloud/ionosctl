@@ -17,7 +17,7 @@ import (
 func NodepoolDeleteCmd() *core.Command {
 	cmd := core.NewCommand(context.TODO(), nil, core.CommandBuilder{
 		Namespace: "dataplatform",
-		Resource:  "cluster",
+		Resource:  "nodepool",
 		Verb:      "delete",
 		Aliases:   []string{"del", "d"},
 		ShortDesc: "Delete a Dataplatform Cluster by ID",
