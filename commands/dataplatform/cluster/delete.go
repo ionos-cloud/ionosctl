@@ -3,6 +3,8 @@ package cluster
 import (
 	"context"
 	"fmt"
+	"github.com/ionos-cloud/ionosctl/internal/functional"
+	ionoscloud "github.com/ionos-cloud/sdk-go-dataplatform"
 
 	"github.com/ionos-cloud/ionosctl/commands/dataplatform/completer"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
@@ -12,18 +14,6 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
-
-func deleteAll(c *core.CommandConfig) error {
-	c.Printer.Verbose("Deleting All Clusters!")
-	if !viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce)) {
-		err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all clusters")
-		if err != nil {
-			return err
-		}
-	}
-	_, err := c.DbaasMongoServices.Clusters().DeleteAll(viper.GetString(core.GetFlagName(c.NS, constants.FlagName)))
-	return err
-}
 
 func ClusterDeleteCmd() *core.Command {
 	cmd := core.NewCommand(context.TODO(), nil, core.CommandBuilder{
@@ -67,4 +57,30 @@ func ClusterDeleteCmd() *core.Command {
 	cmd.Command.SilenceUsage = true
 
 	return cmd
+}
+
+func deleteAll(c *core.CommandConfig) error {
+	client, err := config.GetClient()
+	if err != nil {
+		return err
+	}
+	c.Printer.Verbose("Deleting All Clusters!")
+	xs, _, err := client.DataplatformClient.DataPlatformClusterApi.GetClusters(c.Context).Execute()
+	if err != nil {
+		return err
+	}
+
+	err = functional.ApplyOrFail(*xs.GetItems(), func(x ionoscloud.ClusterResponseData) error {
+		confirmErr := utils.AskForConfirm(c.Stdin, c.Printer, fmt.Sprintf("delete cluster %s (%s)", *x.Id, *x.Properties.Name))
+		if confirmErr == nil {
+			_, _, delErr := client.DataplatformClient.DataPlatformClusterApi.DeleteCluster(c.Context, *x.Id).Execute()
+			if delErr != nil {
+				return delErr
+			}
+		}
+		return nil
+	})
+
+	_, _, err = client.DataplatformClient.DataPlatformClusterApi.DeleteCluster(c.Context, viper.GetString(core.GetFlagName(c.NS, constants.FlagName))).Execute()
+	return err
 }
