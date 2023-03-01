@@ -3,11 +3,11 @@ package certmanager
 import (
 	"context"
 	"github.com/fatih/structs"
+	"github.com/ionos-cloud/ionosctl/internal/functional"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/printer"
-	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	"github.com/ionos-cloud/ionosctl/services/certmanager/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go-cert-manager"
 	"github.com/spf13/cobra"
@@ -97,7 +97,7 @@ func CertificatesIds() []string {
 	client, _ := config.GetClient()
 	svc := resources.NewCertsService(client, context.Background())
 	certs, _, _ := svc.List()
-	return utils.Map(*certs.GetItems(), func(i int, dto ionoscloud.CertificateDto) string {
+	return functional.Map(*certs.GetItems(), func(dto ionoscloud.CertificateDto) string {
 		return *dto.GetId()
 	})
 }
