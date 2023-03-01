@@ -31,6 +31,8 @@ func readUserInput(reader io.Reader, writer printer.PrintService, message string
 }
 
 // AskForConfirm parses and verifies user input for confirmation.
+// Checks "--force" or "--quiet", and if these are set, then it skips verification.
+// DEPRECATED: Use confirm.Ask instead
 func AskForConfirm(reader io.Reader, writer printer.PrintService, message string) error {
 	if viper.GetBool(constants.ArgForce) || viper.GetBool(constants.ArgQuiet) {
 		return nil
