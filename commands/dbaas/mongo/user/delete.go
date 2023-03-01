@@ -30,7 +30,7 @@ func UserDeleteCmd() *core.Command {
 			if all := viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)); all {
 				return deleteAll(c, clusterId)
 			}
-			user := viper.GetString(core.GetFlagName(c.NS, constants.ArgUser))
+			user := viper.GetString(core.GetFlagName(c.NS, constants.FlagName))
 			u, _, err := c.DbaasMongoServices.Users().Delete(clusterId, user)
 			if err != nil {
 				return err
@@ -45,8 +45,9 @@ func UserDeleteCmd() *core.Command {
 		return completer.MongoClusterIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddStringFlag(FlagDatabase, FlagDatabaseShort, "", "The authentication database")
-	cmd.AddStringFlag(constants.ArgUser, "", "", "The authentication username")
-	cmd.AddBoolFlag(constants.ArgAll, "a", false, "Delete all users in a cluster")
+	cmd.AddStringFlag(constants.FlagName, "", "", "The authentication username")
+	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Delete all users in a cluster")
+	cmd.AddBoolFlag(constants.ArgForce, constants.ArgForceShort, false, "Skip y/n checks")
 
 	cmd.Command.SilenceUsage = true
 

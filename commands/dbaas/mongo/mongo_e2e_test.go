@@ -28,16 +28,17 @@ func TestMongoCommands(t *testing.T) {
 	var err error
 	client, err = config.GetClient()
 	assert.NoError(t, err)
+	go testMongoClusterCreateIdentifyRequiredNotSet(t)
 	dcId, lanId, err := setupTestMongoCommands()
 	if err != nil {
 		t.Fatalf("Failed setting up Mongo required resources: %s", err)
 	}
-	//t.Cleanup(teardownTestMongoCommands)
+	t.Cleanup(teardownTestMongoCommands)
 	testMongoClusterCreate(t, dcId, lanId)
-	testMongoUserCreate(t)
+	testMongoUser(t)
 }
 
-func testMongoUserCreate(t *testing.T) {
+func testMongoUser(t *testing.T) {
 	viper.Set(constants.ArgOutput, "text")
 	viper.Set(constants.ArgCols, "Name")
 	viper.Set(constants.ArgNoHeaders, true)
@@ -56,6 +57,15 @@ func testMongoUserCreate(t *testing.T) {
 	createdUsers, _, err := client.MongoClient.UsersApi.ClustersUsersGet(context.Background(), createdClusterId).Execute()
 	assert.NoError(t, err)
 	assert.Equal(t, name, *(*createdUsers.GetItems())[0].GetProperties().Username)
+
+	c = user.UserDeleteCmd()
+	c.Command.Flags().Set(constants.FlagClusterId, createdClusterId)
+	c.Command.Flags().Set(constants.FlagName, name)
+	err = c.Command.Execute()
+	assert.NoError(t, err)
+	createdUsers, _, err = client.MongoClient.UsersApi.ClustersUsersGet(context.Background(), createdClusterId).Execute()
+	assert.NoError(t, err)
+	assert.Empty(t, *createdUsers.GetItems())
 }
 
 func testMongoClusterCreate(t *testing.T, dcId, lanId string) {
@@ -82,6 +92,26 @@ func testMongoClusterCreate(t *testing.T, dcId, lanId string) {
 	assert.NoError(t, err)
 	assert.Equal(t, uniqueResourceName, *(*createdCluster.Items)[0].Properties.DisplayName)
 	assert.Equal(t, "de/fra", *(*createdCluster.Items)[0].Properties.Location)
+}
+
+func testMongoClusterCreateIdentifyRequiredNotSet(t *testing.T) {
+	viper.Set(constants.ArgOutput, "text")
+	viper.Set(constants.ArgCols, "Name")
+	viper.Set(constants.ArgNoHeaders, true)
+	fmt.Printf(viper.GetString(constants.ArgCols))
+
+	c := cluster.ClusterCreateCmd()
+	// Intentionally leave FlagDatacenterId unset, to see if err points us to this missing flag
+	c.Command.Flags().Set(constants.FlagLanId, "foo")
+	c.Command.Flags().Set(constants.FlagName, uniqueResourceName)
+	c.Command.Flags().Set(constants.FlagInstances, "1")
+	c.Command.Flags().Set(constants.FlagTemplateId, getPlaygroundTemplateUuid())
+	c.Command.Flags().Set(constants.FlagMaintenanceDay, "Friday")
+	c.Command.Flags().Set(constants.FlagMaintenanceTime, "10:00:00")
+	c.Command.Flags().Set(constants.FlagCidr, cidr)
+
+	err := c.Command.Execute()
+	assert.ErrorContains(t, err, constants.FlagDatacenterId) // Assert that the error screams something about FlagDatacenterId
 }
 
 func setupTestMongoCommands() (string, string, error) {
@@ -126,6 +156,8 @@ func teardownTestMongoCommands() {
 	if err != nil {
 		fmt.Printf("failed deleting cluster: %v\n", err)
 	}
+
+	time.Sleep(30 * time.Second) // Some clusters take longer to delete, and they still delete-protect datacenters. TODO: Use proxy API to slow down the deletion asynchronously for ~300secs
 
 	_, err = client.CloudClient.DataCentersApi.DatacentersDelete(context.Background(), createdDcId).Execute()
 	if err != nil {
