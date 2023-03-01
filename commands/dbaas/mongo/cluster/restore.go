@@ -40,8 +40,8 @@ func ClusterRestoreCmd() *core.Command {
 		return completer.MongoClusterIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddStringFlag(constants.FlagSnapshotId, "", "", "The unique ID of the snapshot you want to restore.", core.RequiredFlagOption())
-	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagSnapshotId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.MongoClusterIds(), cobra.ShellCompDirectiveNoFileComp
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagSnapshotId, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.MongoSnapshots(viper.GetString(core.GetFlagName(cmd.NS, constants.FlagClusterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	cmd.Command.SilenceUsage = true

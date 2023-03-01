@@ -13,11 +13,11 @@ import (
 func SnapshotsListCmd() *core.Command {
 	cmd := core.NewCommand(context.TODO(), nil, core.CommandBuilder{
 		Namespace: "dbaas-mongo",
-		Resource:  "cluster",
+		Resource:  "snapshot",
 		Verb:      "list",
 		Aliases:   []string{"ls"},
 		ShortDesc: "List the snapshots of your Mongo Cluster",
-		Example:   "ionosctl dbaas mongo cluster snapshots --cluster-id <cluster-id>",
+		Example:   "ionosctl dbaas mongo cluster snapshot ls --cluster-id <cluster-id>",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return c.Command.Command.MarkFlagRequired(constants.FlagClusterId)
 		},

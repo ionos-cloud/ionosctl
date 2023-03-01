@@ -21,6 +21,20 @@ func MongoClusterIds() []string {
 	})
 }
 
+func MongoSnapshots(clusterId string) []string {
+	client, err := config.GetClient()
+	if err != nil {
+		return nil
+	}
+	ls, _, err := client.MongoClient.SnapshotsApi.ClustersSnapshotsGet(context.Background(), clusterId).Execute()
+	if err != nil {
+		return nil
+	}
+	return functional.Map(*ls.GetItems(), func(t sdkgo.SnapshotResponse) string {
+		return *t.GetId()
+	})
+}
+
 func MongoTemplateIds() []string {
 	client, err := config.GetClient()
 	if err != nil {
