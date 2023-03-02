@@ -8,6 +8,7 @@ include ./tools/auth-v1/auth_v1.mk
 include ./tools/certmanager/certmanager.mk
 include ./tools/dataplatform/dataplatform.mk
 
+include ./tools/container-registry/contregistry.mk
 
 export CGO_ENABLED = 0
 export GO111MODULE := on
