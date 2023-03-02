@@ -27,10 +27,10 @@ func RegGetCmd() *core.Command {
 
 	cmd.AddStringFlag(FlagRegId, "i", "", "Registry ID", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(
-	FlagRegId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return RegsIds(), cobra.ShellCompDirectiveNoFileComp
-	},
-)
+		FlagRegId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return RegsIds(), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 
 	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, printer.ColsMessage(allCols))
 	_ = cmd.Command.RegisterFlagCompletionFunc(
@@ -55,7 +55,7 @@ func CmdGet(c *core.CommandConfig) error {
 }
 
 func PreCmdGet(c *core.PreCommandConfig) error {
-	err := core.CheckRequiredFlags(c.Command, c.NS,FlagRegId)
+	err := core.CheckRequiredFlags(c.Command, c.NS, FlagRegId)
 	if err != nil {
 		return err
 	}

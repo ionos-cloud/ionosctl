@@ -43,6 +43,7 @@ func TokenPatchCmd() *core.Command {
 	)
 
 	cmd.AddStringFlag(FlagExpiryDate, "", "", "Expiry date of the Token")
+	cmd.AddStringFlag(FlagTimeUntilExpiry, "", "", "Time until the Token expires (ex: 1y2d)")
 	cmd.AddStringFlag(FlagStatus, "", "", "Status of the Token")
 	_ = cmd.Command.RegisterFlagCompletionFunc(
 		FlagStatus, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -79,6 +80,18 @@ func CmdPatchToken(c *core.CommandConfig) error {
 		}
 		tokenInput.SetExpiryDate(expiryDate)
 
+	} else if viper.IsSet(core.GetFlagName(c.NS, FlagTimeUntilExpiry)) {
+		var timeUntilExpiry string
+		timeUntilExpiry, err = c.Command.Command.Flags().GetString(FlagTimeUntilExpiry)
+		if err != nil {
+			return err
+		}
+		timeNow := time.Now()
+		duration, err := ParseExpiryTime(timeUntilExpiry)
+		if err != nil {
+			return err
+		}
+		timeNow.Add(duration)
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, FlagStatus)) {

@@ -2,6 +2,10 @@ package token
 
 import (
 	"context"
+	"fmt"
+	"strconv"
+	"strings"
+	"time"
 
 	"github.com/fatih/structs"
 	scope "github.com/ionos-cloud/ionosctl/commands/container-registry/token/scopes"
@@ -144,4 +148,37 @@ func TokensIds() []string {
 			return *reg.GetId()
 		},
 	)
+}
+
+func ParseExpiryTime(expiryTime string) (time.Duration, error) {
+	years := 0
+	months := 0
+	days := 0
+	hours := 0
+
+	if !strings.ContainsAny(expiryTime, "0123456789") {
+		return 0, fmt.Errorf("invalid expiry time format")
+	}
+
+	number := ""
+
+	for i := 0; i < len(expiryTime); i++ {
+		if string(expiryTime[i]) != "y" && string(expiryTime[i]) != "m" && string(expiryTime[i]) != "d" && string(expiryTime[i]) != "h" {
+			number += string(expiryTime[i])
+		} else if expiryTime[i] == 'y' {
+			years, _ = strconv.Atoi(number)
+			number = ""
+		} else if expiryTime[i] == 'm' {
+			months, _ = strconv.Atoi(number)
+			number = ""
+		} else if expiryTime[i] == 'd' {
+			days, _ = strconv.Atoi(number)
+			number = ""
+		} else if expiryTime[i] == 'h' {
+			hours, _ = strconv.Atoi(number)
+			number = ""
+		}
+	}
+
+	return time.Duration(years)*time.Hour*24*365 + time.Duration(months)*time.Hour*24*30 + time.Duration(days)*time.Hour*24 + time.Duration(hours)*time.Hour, nil
 }

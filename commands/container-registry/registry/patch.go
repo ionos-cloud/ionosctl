@@ -31,10 +31,10 @@ func RegUpdateCmd() *core.Command {
 
 	cmd.AddStringFlag(FlagRegId, "i", "", "Specify the Registry ID", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(
-	FlagRegId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return RegsIds(), cobra.ShellCompDirectiveNoFileComp
-	},
-)
+		FlagRegId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return RegsIds(), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 
 	cmd.AddStringSliceFlag(
 		"garbage-collection-schedule-days", "", []string{}, "Specify the garbage collection schedule days",
@@ -89,7 +89,7 @@ func CmdUpdate(c *core.CommandConfig) error {
 }
 
 func PreCmdUpdate(c *core.PreCommandConfig) error {
-	err := core.CheckRequiredFlags(c.Command, c.NS,FlagRegId)
+	err := core.CheckRequiredFlags(c.Command, c.NS, FlagRegId)
 	if err != nil {
 		return err
 	}

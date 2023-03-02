@@ -2,9 +2,6 @@ package token
 
 import (
 	"context"
-	"fmt"
-	"strconv"
-	"strings"
 	"time"
 
 	"github.com/ionos-cloud/ionosctl/commands/container-registry/registry"
@@ -44,8 +41,7 @@ func TokenPostCmd() *core.Command {
 			}, cobra.ShellCompDirectiveNoFileComp
 		},
 	)
-	cmd.AddStringFlag(FlagTimeUntilExpiry, "", "", "Set the amount of time until the token expires (e.g. 1h, 1d, 1w, 1m, 1y)")
-
+	cmd.AddStringFlag(FlagTimeUntilExpiry, "", "", "Time until the Token expires (ex: 1y2d)")
 	cmd.AddStringFlag(FlagRegId, "r", "", "Registry ID", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(
 		"registry-id", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -132,37 +128,4 @@ func CmdPostToken(c *core.CommandConfig) error {
 	tokenPrint.SetProperties(*token.GetProperties())
 
 	return c.Printer.Print(getTokenPrint(nil, c, &[]sdkgo.TokenResponse{*tokenPrint}, true))
-}
-
-func ParseExpiryTime(expiryTime string) (time.Duration, error) {
-	years := 0
-	months := 0
-	days := 0
-	hours := 0
-
-	if !strings.ContainsAny(expiryTime, "0123456789") {
-		return 0, fmt.Errorf("invalid expiry time format")
-	}
-
-	number := ""
-
-	for i := 0; i < len(expiryTime); i++ {
-		if string(expiryTime[i]) != "y" && string(expiryTime[i]) != "m" && string(expiryTime[i]) != "d" && string(expiryTime[i]) != "h" {
-			number += string(expiryTime[i])
-		} else if expiryTime[i] == 'y' {
-			years, _ = strconv.Atoi(number)
-			number = ""
-		} else if expiryTime[i] == 'm' {
-			months, _ = strconv.Atoi(number)
-			number = ""
-		} else if expiryTime[i] == 'd' {
-			days, _ = strconv.Atoi(number)
-			number = ""
-		} else if expiryTime[i] == 'h' {
-			hours, _ = strconv.Atoi(number)
-			number = ""
-		}
-	}
-
-	return time.Duration(years)*time.Hour*24*365 + time.Duration(months)*time.Hour*24*30 + time.Duration(days)*time.Hour*24 + time.Duration(hours)*time.Hour, nil
 }
