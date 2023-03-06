@@ -2,9 +2,9 @@ package dbaas_postgres
 
 import (
 	"context"
-	"github.com/ionos-cloud/ionosctl/pkg/config"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
 
-	"github.com/ionos-cloud/ionosctl/services/dbaas-postgres/resources"
+	"github.com/ionos-cloud/ionosctl/v6/services/dbaas-postgres/resources"
 )
 
 type Services struct {

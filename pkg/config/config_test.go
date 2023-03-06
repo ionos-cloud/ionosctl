@@ -1,7 +1,7 @@
 package config
 
 import (
-	"github.com/ionos-cloud/ionosctl/pkg/constants"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"os"
 	"path/filepath"
 	"testing"

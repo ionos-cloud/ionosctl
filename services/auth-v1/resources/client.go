@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/ionos-cloud/ionosctl/pkg/config"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
 	sdkgoauth "github.com/ionos-cloud/sdk-go-auth"
 	"github.com/spf13/viper"
 )

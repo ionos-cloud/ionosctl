@@ -1,8 +1,8 @@
 package dbaas
 
 import (
-	"github.com/ionos-cloud/ionosctl/commands/dbaas/postgres"
-	"github.com/ionos-cloud/ionosctl/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/spf13/cobra"
 )
 

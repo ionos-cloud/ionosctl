@@ -5,7 +5,7 @@
 package mock_resources
 
 import (
-	"github.com/ionos-cloud/ionosctl/pkg/config"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"

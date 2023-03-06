@@ -2,8 +2,8 @@ package certmanager
 
 import (
 	"context"
-	"github.com/ionos-cloud/ionosctl/pkg/config"
-	"github.com/ionos-cloud/ionosctl/services/certmanager/resources"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
+	"github.com/ionos-cloud/ionosctl/v6/services/certmanager/resources"
 )
 
 type Services struct {

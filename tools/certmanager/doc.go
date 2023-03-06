@@ -8,8 +8,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/ionos-cloud/ionosctl/commands"
-	"github.com/ionos-cloud/ionosctl/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/commands"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 )
 
 func main() {
