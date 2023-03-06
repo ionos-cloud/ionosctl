@@ -1,5 +1,10 @@
 # Changelog
 
+## [T.B.A]
+
+### Fixed
+- Fixed go.mod: added v6 as the major version
+
 ## [6.5.1] (February 2023)
 
 ### Changed
