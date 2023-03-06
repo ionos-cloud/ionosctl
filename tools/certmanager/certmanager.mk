@@ -6,14 +6,14 @@ certmanager_mocks_update:
 	@tools/certmanager/regenerate_mocks.sh
 	@echo "DONE"
 
-.PHONY: certmanager_test_unit
-certmanager_test_unit:
-	@echo "--- Run unit tests for Certificate Manger ---"
+.PHONY: certmanager_test_integration
+certmanager_test_integration:
+	@echo "--- Run tests for Certificate Manger ---"
 	@go test -cover ./commands/certmanager/...
 	@echo "DONE"
 
 .PHONY: certmanager_test
-certmanager_test: certmanager_test_unit
+certmanager_test: certmanager_test_integration
 
 .PHONY: certmanager_docs_update
 certmanager_docs_update:

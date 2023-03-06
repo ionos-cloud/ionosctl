@@ -6,3 +6,12 @@ contreg_docs_update:
 	@mkdir -p ${DOCS_OUT_CONTAINER_REGISTRY}
 	@DOCS_OUT_CONTAINER_REGISTRY=${DOCS_OUT_CONTAINER_REGISTRY} go run tools/container-registry/doc.go
 	@echo "DONE"
+
+.PHONY: contreg_test_unit
+contreg_test_unit:
+	@echo "--- Run unit tests for Container Registry ---"
+	@go test -cover ./commands/container-registry/...
+	@echo "DONE"
+
+.PHONY: contreg_test
+contreg_test: contreg_test_unit

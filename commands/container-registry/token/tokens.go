@@ -41,8 +41,8 @@ func TokenCmd() *core.Command {
 	tokenCmd.AddCommand(TokenPostCmd())
 	tokenCmd.AddCommand(TokenGetCmd())
 	tokenCmd.AddCommand(TokenDeleteCmd())
-	tokenCmd.AddCommand(TokenPatchCmd())
-	tokenCmd.AddCommand(TokenPutCmd())
+	tokenCmd.AddCommand(TokenUpdateCmd())
+	tokenCmd.AddCommand(TokenReplaceCmd())
 	tokenCmd.AddCommand(scope.TokenScopesCmd())
 
 	return tokenCmd

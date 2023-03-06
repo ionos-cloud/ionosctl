@@ -13,7 +13,7 @@ import (
 
 var tokenInput = sdkgo.NewPatchTokenInput()
 
-func TokenPatchCmd() *core.Command {
+func TokenUpdateCmd() *core.Command {
 	cmd := core.NewCommand(
 		context.TODO(), nil, core.CommandBuilder{
 			Namespace:  "container-registry",

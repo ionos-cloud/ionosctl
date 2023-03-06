@@ -13,7 +13,7 @@ import (
 
 var tokenPutProperties = sdkgo.PostTokenProperties{}
 
-func TokenPutCmd() *core.Command {
+func TokenReplaceCmd() *core.Command {
 	cmd := core.NewCommand(
 		context.TODO(), nil, core.CommandBuilder{
 			Namespace:  "container-registry",
