@@ -8,7 +8,7 @@ import (
 )
 
 type UsersService interface {
-	List(clusterID string) (sdkgo.UsersList, *sdkgo.APIResponse, error)
+	List(clusterID string, limit, offset *int32) (sdkgo.UsersList, *sdkgo.APIResponse, error)
 	Create(clusterID string, user sdkgo.User) (sdkgo.User, *sdkgo.APIResponse, error)
 	ListAll() ([]sdkgo.User, error)
 	Get(clusterID, user string) (sdkgo.User, *sdkgo.APIResponse, error)
@@ -37,7 +37,8 @@ func (svc *usersService) ListAll() ([]sdkgo.User, error) {
 
 	var users []sdkgo.User
 	for _, c := range *clusters.GetItems() {
-		ls, _, err := svc.client.UsersApi.ClustersUsersGet(svc.context, *c.GetId()).Execute()
+		req := svc.client.UsersApi.ClustersUsersGet(svc.context, *c.GetId())
+		ls, _, err := req.Execute()
 		if err != nil {
 			return nil, err
 		}
@@ -47,8 +48,15 @@ func (svc *usersService) ListAll() ([]sdkgo.User, error) {
 	return users, err
 }
 
-func (svc *usersService) List(clusterID string) (sdkgo.UsersList, *sdkgo.APIResponse, error) {
-	return svc.client.UsersApi.ClustersUsersGet(svc.context, clusterID).Execute()
+func (svc *usersService) List(clusterID string, limit, offset *int32) (sdkgo.UsersList, *sdkgo.APIResponse, error) {
+	req := svc.client.UsersApi.ClustersUsersGet(svc.context, clusterID)
+	if limit != nil {
+		req.Limit(*limit)
+	}
+	if offset != nil {
+		req.Offset(*offset)
+	}
+	return req.Execute()
 }
 
 func (svc *usersService) Create(clusterID string, user sdkgo.User) (sdkgo.User, *sdkgo.APIResponse, error) {

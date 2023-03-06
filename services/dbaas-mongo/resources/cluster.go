@@ -17,14 +17,14 @@ type LogsQueryParams struct {
 }
 
 type ClustersService interface {
-	List(filterName string) (sdkgo.ClusterList, *sdkgo.APIResponse, error)
+	List(filterName string, limit, offset *int32) (sdkgo.ClusterList, *sdkgo.APIResponse, error)
 	Get(clusterId string) (sdkgo.ClusterResponse, *sdkgo.APIResponse, error)
 	Create(input sdkgo.CreateClusterRequest) (sdkgo.ClusterResponse, *sdkgo.APIResponse, error)
 	Update(id string, input sdkgo.PatchClusterRequest) (sdkgo.ClusterResponse, *sdkgo.APIResponse, error)
 	Delete(clusterId string) (*sdkgo.APIResponse, error)
 	DeleteAll(name string) (*sdkgo.APIResponse, error)
 	Restore(clusterId, snapshotId string) (*sdkgo.APIResponse, error)
-	SnapshotsList(clusterId string) (sdkgo.SnapshotList, *sdkgo.APIResponse, error)
+	SnapshotsList(clusterId string, limit, offset *int32) (sdkgo.SnapshotList, *sdkgo.APIResponse, error)
 	LogsList(clusterId string, direction *string, limit *int32, start, end *time.Time) (sdkgo.ClusterLogs, *sdkgo.APIResponse, error)
 }
 
@@ -42,8 +42,14 @@ func NewClustersService(client *config.Client, ctx context.Context) ClustersServ
 	}
 }
 
-func (svc *clustersService) List(filterName string) (sdkgo.ClusterList, *sdkgo.APIResponse, error) {
+func (svc *clustersService) List(filterName string, limit, offset *int32) (sdkgo.ClusterList, *sdkgo.APIResponse, error) {
 	req := svc.client.ClustersApi.ClustersGet(svc.context)
+	if offset != nil {
+		req.Offset(*offset)
+	}
+	if limit != nil {
+		req.Limit(*limit)
+	}
 	if filterName != "" {
 		req = req.FilterName(filterName)
 	}
@@ -72,7 +78,7 @@ func (svc *clustersService) Delete(clusterId string) (*sdkgo.APIResponse, error)
 }
 
 func (svc *clustersService) DeleteAll(filterName string) (*sdkgo.APIResponse, error) {
-	ls, _, err := svc.List(filterName)
+	ls, _, err := svc.List(filterName, nil, nil)
 
 	if err != nil {
 		return nil, errors.New("deletion of all clusters failed early: " + err.Error())
@@ -97,8 +103,14 @@ func (svc *clustersService) Restore(clusterId, snapshotId string) (*sdkgo.APIRes
 	return res, err
 }
 
-func (svc *clustersService) SnapshotsList(clusterId string) (sdkgo.SnapshotList, *sdkgo.APIResponse, error) {
+func (svc *clustersService) SnapshotsList(clusterId string, offset, limit *int32) (sdkgo.SnapshotList, *sdkgo.APIResponse, error) {
 	req := svc.client.SnapshotsApi.ClustersSnapshotsGet(svc.context, clusterId)
+	if offset != nil {
+		req.Offset(*offset)
+	}
+	if limit != nil {
+		req.Limit(*limit)
+	}
 	snapshots, res, err := svc.client.SnapshotsApi.ClustersSnapshotsGetExecute(req)
 	if err != nil {
 		fmt.Println(err)
