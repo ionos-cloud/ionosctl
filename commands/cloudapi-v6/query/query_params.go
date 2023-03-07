@@ -92,7 +92,7 @@ func getFilters(args []string, cmd *core.Command) (map[string]string, error) {
 	for _, arg := range args {
 		if strings.Contains(arg, FiltersPartitionChar) {
 			kv := strings.Split(arg, FiltersPartitionChar)
-			filtersKV[kv[0]] = kv[1]
+			filtersKV[strings.ToLower(kv[0])] = kv[1]
 		} else {
 			return filtersKV, errors.New(
 				fmt.Sprintf("\"%s --filters\" option set incorrectly.\n\nUsage: %s --filters KEY1%sVALUE1,KEY2%sVALUE2\n\nFor more details, see '%s --help'.",
