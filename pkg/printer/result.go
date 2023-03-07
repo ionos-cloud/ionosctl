@@ -46,10 +46,14 @@ func GetHeaders(allColumns []string, defaultColumns []string, customColumns []st
 		return defaultColumns
 	}
 
+	allColumnsLowercase := functional.Map(allColumns, func(x string) string {
+		return strings.ToLower(x)
+	})
+
 	var validCustomColumns []string
 	for _, c := range customColumns {
-		if slices.Contains(allColumns, c) {
-			validCustomColumns = append(validCustomColumns, c)
+		if idx := slices.Index(allColumnsLowercase, strings.ToLower(c)); idx != -1 {
+			validCustomColumns = append(validCustomColumns, allColumns[idx])
 		}
 	}
 
