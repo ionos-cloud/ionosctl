@@ -113,7 +113,7 @@ func getFilters(args []string, cmd *core.Command) (map[string]string, error) {
 func isValidFilter(filter string, availableFiltersObjs ...[]string) bool {
 	for _, availableFilters := range availableFiltersObjs {
 		for _, availableFilter := range availableFilters {
-			if availableFilter == filter {
+			if strings.ToLower(availableFilter) == strings.ToLower(filter) {
 				return true
 			}
 		}
