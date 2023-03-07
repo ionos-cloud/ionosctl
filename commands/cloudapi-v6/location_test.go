@@ -145,7 +145,7 @@ func TestRunLocationListQueryParams(t *testing.T) {
 		viper.Set(constants.ArgVerbose, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgFilters), []string{fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar)})
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgOrderBy), testQueryParamVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgMaxResults), testMaxResultsVar)
+		viper.Set(core.GetFlagName(cfg.NS, constants.FlagMaxResults), testMaxResultsVar)
 		rm.CloudApiV6Mocks.Location.EXPECT().List(gomock.AssignableToTypeOf(testListQueryParam)).Return(resources.Locations{}, &testResponse, nil)
 		err := RunLocationList(cfg)
 		assert.NoError(t, err)

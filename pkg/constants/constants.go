@@ -27,6 +27,11 @@ const (
 	FlagLanId           = "lan-id"
 )
 
+// Flag descriptions. Prefixed with "Desc" for easy find and replace
+const (
+	DescMaxResults = "The maximum number of elements to return"
+)
+
 // legacy flags. TODO: Arg should be renamed to Flag.
 const (
 	ArgConfig              = "config"

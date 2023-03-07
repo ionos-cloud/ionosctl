@@ -249,10 +249,9 @@ const (
 
 // Descriptions
 const (
-	ArgMaxResultsDescription = "The maximum number of elements to return"
-	ArgDepthDescription      = "Controls the detail depth of the response objects. Max depth is 10."
-	ArgOrderByDescription    = "Limits results to those containing a matching value for a specific property"
-	ArgFiltersDescription    = "Limits results to those containing a matching value for a specific property. " +
+	ArgDepthDescription   = "Controls the detail depth of the response objects. Max depth is 10."
+	ArgOrderByDescription = "Limits results to those containing a matching value for a specific property"
+	ArgFiltersDescription = "Limits results to those containing a matching value for a specific property. " +
 		"Use the following format to set filters: --filters KEY1=VALUE1,KEY2=VALUE2"
 	ArgNoHeadersDescription = "When using text output, don't print headers"
 	ArgListAllDescription   = "List all resources without the need of specifying parent ID name."
