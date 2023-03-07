@@ -42,6 +42,7 @@ func ClusterListCmd() *core.Command {
 
 	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Response filter to list only the Mongo Clusters that contain the specified name in the DisplayName field. The value is case insensitive")
 	cmd.AddInt32Flag(constants.FlagMaxResults, constants.FlagMaxResultsShort, 0, constants.DescMaxResults)
+	cmd.AddInt32Flag(constants.FlagOffset, "", 0, "Skip a certain number of results")
 
 	return cmd
 }

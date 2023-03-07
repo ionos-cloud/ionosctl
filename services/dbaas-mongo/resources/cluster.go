@@ -45,10 +45,12 @@ func NewClustersService(client *config.Client, ctx context.Context) ClustersServ
 func (svc *clustersService) List(filterName string, limit, offset *int32) (sdkgo.ClusterList, *sdkgo.APIResponse, error) {
 	req := svc.client.ClustersApi.ClustersGet(svc.context)
 	if offset != nil {
-		req.Offset(*offset)
+		fmt.Printf("Running with offset: %d\n", *offset)
+		req = req.Offset(*offset)
 	}
 	if limit != nil {
-		req.Limit(*limit)
+		fmt.Printf("Running with limit: %d\n", *limit)
+		req = req.Limit(*limit)
 	}
 	if filterName != "" {
 		req = req.FilterName(filterName)
@@ -106,15 +108,12 @@ func (svc *clustersService) Restore(clusterId, snapshotId string) (*sdkgo.APIRes
 func (svc *clustersService) SnapshotsList(clusterId string, offset, limit *int32) (sdkgo.SnapshotList, *sdkgo.APIResponse, error) {
 	req := svc.client.SnapshotsApi.ClustersSnapshotsGet(svc.context, clusterId)
 	if offset != nil {
-		req.Offset(*offset)
+		req = req.Offset(*offset)
 	}
 	if limit != nil {
-		req.Limit(*limit)
+		req = req.Limit(*limit)
 	}
 	snapshots, res, err := svc.client.SnapshotsApi.ClustersSnapshotsGetExecute(req)
-	if err != nil {
-		fmt.Println(err)
-	}
 	return snapshots, res, err
 }
 

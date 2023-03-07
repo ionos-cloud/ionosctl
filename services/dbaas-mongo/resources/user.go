@@ -51,10 +51,10 @@ func (svc *usersService) ListAll() ([]sdkgo.User, error) {
 func (svc *usersService) List(clusterID string, limit, offset *int32) (sdkgo.UsersList, *sdkgo.APIResponse, error) {
 	req := svc.client.UsersApi.ClustersUsersGet(svc.context, clusterID)
 	if limit != nil {
-		req.Limit(*limit)
+		req = req.Limit(*limit)
 	}
 	if offset != nil {
-		req.Offset(*offset)
+		req = req.Offset(*offset)
 	}
 	return req.Execute()
 }

@@ -24,7 +24,17 @@ func SnapshotsListCmd() *core.Command {
 		CmdRun: func(c *core.CommandConfig) error {
 			clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
 			c.Printer.Verbose("Getting snapshots of Cluster %s", clusterId)
-			snapshots, _, err := c.DbaasMongoServices.Clusters().SnapshotsList(clusterId)
+			var limitPtr *int32 = nil
+			if f := core.GetFlagName(c.NS, constants.FlagMaxResults); viper.IsSet(f) {
+				limit := viper.GetInt32(f)
+				limitPtr = &limit
+			}
+			var offsetPtr *int32 = nil
+			if f := core.GetFlagName(c.NS, constants.FlagOffset); viper.IsSet(f) {
+				offset := viper.GetInt32(f)
+				offsetPtr = &offset
+			}
+			snapshots, _, err := c.DbaasMongoServices.Clusters().SnapshotsList(clusterId, limitPtr, offsetPtr)
 			if err != nil {
 				return err
 			}

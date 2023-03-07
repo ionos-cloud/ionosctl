@@ -7,6 +7,7 @@ package query
 import (
 	"errors"
 	"fmt"
+	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"strings"
 
 	"github.com/fatih/structs"
@@ -61,7 +62,7 @@ func GetListQueryParams(c *core.CommandConfig) (resources.ListQueryParams, error
 		}
 	}
 
-	if c.Command.Command.Flags().Changed(constants.FlagMaxResults) {
+	if c.Command.Command.Flags().Changed(cloudapiv6.ArgOrderBy) {
 		orderBy, _ := c.Command.Command.Flags().GetString(cloudapiv6.ArgOrderBy)
 		listQueryParams = listQueryParams.SetOrderBy(orderBy)
 	}
