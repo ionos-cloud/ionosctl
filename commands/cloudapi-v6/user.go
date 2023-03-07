@@ -34,12 +34,6 @@ func UserCmd() *core.Command {
 			TraverseChildren: true,
 		},
 	}
-	globalFlags := userCmd.GlobalFlags()
-	globalFlags.StringSliceP(constants.ArgCols, "", defaultUserCols, printer.ColsMessage(defaultUserCols))
-	_ = viper.BindPFlag(core.GetFlagName(userCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
-	_ = userCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return defaultUserCols, cobra.ShellCompDirectiveNoFileComp
-	})
 
 	/*
 		List Command
@@ -65,6 +59,10 @@ func UserCmd() *core.Command {
 	list.AddStringSliceFlag(cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, cloudapiv6.ArgFiltersDescription)
 	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgFilters, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.UsersFilters(), cobra.ShellCompDirectiveNoFileComp
+	})
+	list.AddStringSliceFlag(constants.ArgCols, "", defaultUserCols, printer.ColsMessage(defaultUserCols))
+	_ = list.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return defaultUserCols, cobra.ShellCompDirectiveNoFileComp
 	})
 	list.AddBoolFlag(constants.ArgNoHeaders, "", false, cloudapiv6.ArgNoHeadersDescription)
 
@@ -724,7 +722,7 @@ func getUserPrint(resp *resources.Response, c *core.CommandConfig, users []resou
 		if users != nil {
 			r.OutputJSON = users
 			r.KeyValue = getUsersKVMaps(users)
-			r.Columns = printer.GetHeadersAllDefault(defaultUserCols, viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)))
+			r.Columns = printer.GetHeadersAllDefault(defaultUserCols, viper.GetStringSlice(core.GetFlagName(c.NS, constants.ArgCols)))
 		}
 	}
 	return r
