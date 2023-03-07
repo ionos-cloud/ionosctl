@@ -37,11 +37,13 @@ Use this command to retrieve a list of Mongo Clusters provisioned under your acc
 ## Options
 
 ```text
-      --cols strings   Set of columns to be printed on output 
-                       Available columns: [ClusterId Name URL State Instances MongoVersion MaintenanceWindow Location DatacenterId LanId Cidr TemplateId]
-  -h, --help           help for list
-  -n, --name string    Response filter to list only the Mongo Clusters that contain the specified name in the DisplayName field. The value is case insensitive
-      --no-headers     When using text output, don't print headers
+      --cols strings        Set of columns to be printed on output 
+                            Available columns: [ClusterId Name URL State Instances MongoVersion MaintenanceWindow Location DatacenterId LanId Cidr TemplateId]
+  -h, --help                help for list
+  -M, --max-results int32   The maximum number of elements to return
+  -n, --name string         Response filter to list only the Mongo Clusters that contain the specified name in the DisplayName field. The value is case insensitive
+      --no-headers          When using text output, don't print headers
+      --offset int32        Skip a certain number of results
 ```
 
 ## Examples

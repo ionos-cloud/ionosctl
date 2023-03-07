@@ -47,6 +47,6 @@ List the snapshots of your Mongo Cluster
 ## Examples
 
 ```text
-ionosctl dbaas mongo cluster snapshots --cluster-id <cluster-id>
+ionosctl dbaas mongo cluster snapshot ls --cluster-id <cluster-id>
 ```
 

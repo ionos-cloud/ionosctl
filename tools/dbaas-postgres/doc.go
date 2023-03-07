@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/ionos-cloud/ionosctl/v6/commands"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/doc"
 	"os"
 )
 
