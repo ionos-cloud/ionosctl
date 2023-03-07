@@ -2,9 +2,9 @@ package auth_v1
 
 import (
 	"context"
-	"github.com/ionos-cloud/ionosctl/pkg/config"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
 
-	"github.com/ionos-cloud/ionosctl/services/auth-v1/resources"
+	"github.com/ionos-cloud/ionosctl/v6/services/auth-v1/resources"
 )
 
 type Services struct {

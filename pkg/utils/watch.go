@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/ionos-cloud/ionosctl/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
 

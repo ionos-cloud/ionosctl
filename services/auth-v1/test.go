@@ -2,8 +2,8 @@ package auth_v1
 
 import (
 	"github.com/golang/mock/gomock"
-	"github.com/ionos-cloud/ionosctl/services/auth-v1/resources"
-	mockResources "github.com/ionos-cloud/ionosctl/services/auth-v1/resources/mocks"
+	"github.com/ionos-cloud/ionosctl/v6/services/auth-v1/resources"
+	mockResources "github.com/ionos-cloud/ionosctl/v6/services/auth-v1/resources/mocks"
 )
 
 type ResourcesMocks struct {

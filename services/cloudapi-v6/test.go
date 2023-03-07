@@ -2,8 +2,8 @@ package cloudapi_v6
 
 import (
 	"github.com/golang/mock/gomock"
-	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
-	mockResources "github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources/mocks"
+	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
+	mockResources "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources/mocks"
 )
 
 type ResourcesMocks struct {

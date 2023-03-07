@@ -9,9 +9,9 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	"github.com/ionos-cloud/ionosctl/pkg/constants"
-	"github.com/ionos-cloud/ionosctl/pkg/printer"
-	mockprinter "github.com/ionos-cloud/ionosctl/pkg/printer/mocks"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
+	mockprinter "github.com/ionos-cloud/ionosctl/v6/pkg/printer/mocks"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )

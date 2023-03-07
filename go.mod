@@ -1,4 +1,4 @@
-module github.com/ionos-cloud/ionosctl
+module github.com/ionos-cloud/ionosctl/v6
 
 go 1.19
 

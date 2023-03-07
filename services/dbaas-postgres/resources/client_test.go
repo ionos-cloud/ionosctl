@@ -1,10 +1,10 @@
 package resources
 
 import (
-	"github.com/ionos-cloud/ionosctl/pkg/config"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
 	"testing"
 
-	"github.com/ionos-cloud/ionosctl/pkg/constants"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/stretchr/testify/assert"
 )
 

@@ -2,11 +2,11 @@ package completer
 
 import (
 	"context"
-	"github.com/ionos-cloud/ionosctl/pkg/config"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
 	"io"
 
-	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
-	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/utils/clierror"
+	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
 )
 
 // DatacenterCPUFamilies returns the list of available CPU families in a given datacenter

@@ -2,8 +2,8 @@ package dbaas_postgres
 
 import (
 	"github.com/golang/mock/gomock"
-	"github.com/ionos-cloud/ionosctl/services/dbaas-postgres/resources"
-	mockResources "github.com/ionos-cloud/ionosctl/services/dbaas-postgres/resources/mocks"
+	"github.com/ionos-cloud/ionosctl/v6/services/dbaas-postgres/resources"
+	mockResources "github.com/ionos-cloud/ionosctl/v6/services/dbaas-postgres/resources/mocks"
 )
 
 type ResourcesMocks struct {

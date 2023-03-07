@@ -3,7 +3,7 @@ package printer
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/ionos-cloud/ionosctl/pkg/constants"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"golang.org/x/exp/slices"
 	"io"
 	"regexp"
@@ -11,7 +11,7 @@ import (
 	"text/tabwriter"
 
 	"github.com/fatih/structs"
-	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
+	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
 )
 
 func ColsMessage(cols []string) string {
