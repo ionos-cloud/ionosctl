@@ -7,9 +7,9 @@ import (
 	"github.com/spf13/viper"
 	"time"
 
-	"github.com/ionos-cloud/ionosctl/pkg/constants"
-	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/printer"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 )
 
 func SnapshotCmd() *core.Command {

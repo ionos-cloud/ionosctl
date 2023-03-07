@@ -2,13 +2,13 @@ package cluster
 
 import (
 	"context"
-	cloudapiv6completer "github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
+	cloudapiv6completer "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	"github.com/spf13/viper"
 	"os"
 
-	"github.com/ionos-cloud/ionosctl/commands/dbaas/mongo/completer"
-	"github.com/ionos-cloud/ionosctl/pkg/constants"
-	"github.com/ionos-cloud/ionosctl/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/completer"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	ionoscloud "github.com/ionos-cloud/sdk-go-dbaas-mongo"
 	"github.com/spf13/cobra"
 )

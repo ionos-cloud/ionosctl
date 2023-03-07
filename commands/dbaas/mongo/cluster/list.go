@@ -4,8 +4,8 @@ import (
 	"context"
 	"github.com/spf13/viper"
 
-	"github.com/ionos-cloud/ionosctl/pkg/constants"
-	"github.com/ionos-cloud/ionosctl/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 )
 
 func ClusterListCmd() *core.Command {

@@ -3,7 +3,7 @@ package doc
 import (
 	"bytes"
 	"fmt"
-	"github.com/ionos-cloud/ionosctl/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"io"
 	"os"
 	"path/filepath"

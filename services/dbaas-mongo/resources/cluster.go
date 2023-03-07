@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/ionos-cloud/ionosctl/pkg/config"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
 	"time"
 
 	sdkgo "github.com/ionos-cloud/sdk-go-dbaas-mongo"

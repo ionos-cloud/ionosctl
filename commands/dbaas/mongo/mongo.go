@@ -1,13 +1,13 @@
 package mongo
 
 import (
-	"github.com/ionos-cloud/ionosctl/commands/dbaas/mongo/apiversion"
-	"github.com/ionos-cloud/ionosctl/commands/dbaas/mongo/cluster"
-	"github.com/ionos-cloud/ionosctl/commands/dbaas/mongo/logs"
-	"github.com/ionos-cloud/ionosctl/commands/dbaas/mongo/snapshot"
-	"github.com/ionos-cloud/ionosctl/commands/dbaas/mongo/templates"
-	"github.com/ionos-cloud/ionosctl/commands/dbaas/mongo/user"
-	"github.com/ionos-cloud/ionosctl/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/apiversion"
+	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/cluster"
+	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/logs"
+	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/snapshot"
+	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/templates"
+	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/user"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/spf13/cobra"
 )
 

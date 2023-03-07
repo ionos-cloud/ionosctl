@@ -7,7 +7,7 @@ package query
 import (
 	"errors"
 	"fmt"
-	"github.com/ionos-cloud/ionosctl/pkg/constants"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"strings"
 
 	"github.com/fatih/structs"

@@ -3,8 +3,8 @@ package dbaas_mongo
 import (
 	"context"
 
-	"github.com/ionos-cloud/ionosctl/pkg/config"
-	"github.com/ionos-cloud/ionosctl/services/dbaas-mongo/resources"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
+	"github.com/ionos-cloud/ionosctl/v6/services/dbaas-mongo/resources"
 )
 
 type Services struct {
