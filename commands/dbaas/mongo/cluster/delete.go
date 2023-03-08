@@ -10,7 +10,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
 	sdkgo "github.com/ionos-cloud/sdk-go-dbaas-mongo"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -33,12 +32,12 @@ func ClusterDeleteCmd() *core.Command {
 			}
 
 			clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
-			err := utils.AskForConfirm(c.Stdin, c.Printer, fmt.Sprintf("delete cluster %s", clusterId))
-			if err != nil {
-				return err
+			ok := confirm.Ask(fmt.Sprintf("delete cluster %s", clusterId))
+			if !ok {
+				return fmt.Errorf("user denied confirmation")
 			}
 			c.Printer.Verbose("Deleting cluster: %s", clusterId)
-			_, err = c.DbaasMongoServices.Clusters().Delete(clusterId)
+			_, err := c.DbaasMongoServices.Clusters().Delete(clusterId)
 			return err
 		},
 		InitClient: true,
