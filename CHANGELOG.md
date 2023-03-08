@@ -1,9 +1,14 @@
 # Changelog
 
-## [T.B.A]
+## [6.5.2] (March 2023)
 
 ### Fixed
 - Fixed go.mod: added v6 as the major version
+- Fixed cols flag on certain commands e.g. `user list`
+- Fixed `group user list` command
+
+### Dependencies
+- Updated SDK Postgres to v1.1.1
 
 ## [6.5.1] (February 2023)
 
