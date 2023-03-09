@@ -42,8 +42,8 @@ func TokenScopesAddCmd() *core.Command {
 	)
 
 	cmd.AddStringFlag(FlagName, "n", "", "Scope name", core.RequiredFlagOption())
-	cmd.AddStringFlag("type", "y", "", "Scope type", core.RequiredFlagOption())
-	cmd.AddStringSliceFlag("actions", "a", []string{}, "Scope actions", core.RequiredFlagOption())
+	cmd.AddStringFlag(FlagType, "y", "", "Scope type", core.RequiredFlagOption())
+	cmd.AddStringSliceFlag(FlagActions, "a", []string{}, "Scope actions", core.RequiredFlagOption())
 
 	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, printer.ColsMessage(allScopeCols))
 	_ = cmd.Command.RegisterFlagCompletionFunc(
@@ -56,7 +56,7 @@ func TokenScopesAddCmd() *core.Command {
 }
 
 func PreCmdTokenScopesAdd(c *core.PreCommandConfig) error {
-	err := core.CheckRequiredFlags(c.Command, c.NS, FlagTokenId, FlagRegId, FlagName, "actions", "type")
+	err := core.CheckRequiredFlags(c.Command, c.NS, FlagTokenId, FlagRegId, FlagName, FlagActions, FlagType)
 	if err != nil {
 		return err
 	}
@@ -82,12 +82,12 @@ func CmdTokenScopesAdd(c *core.CommandConfig) error {
 		return err
 	}
 
-	actions, err := c.Command.Command.Flags().GetStringSlice("actions")
+	actions, err := c.Command.Command.Flags().GetStringSlice(FlagActions)
 	if err != nil {
 		return err
 	}
 
-	scope_type, err := c.Command.Command.Flags().GetString("type")
+	scope_type, err := c.Command.Command.Flags().GetString(FlagType)
 	if err != nil {
 		return err
 	}
@@ -102,8 +102,12 @@ func CmdTokenScopesAdd(c *core.CommandConfig) error {
 	}
 
 	updateToken := sdkgo.NewPatchTokenInput()
-	updateToken.SetExpiryDate(*token.Properties.GetExpiryDate())
-	updateToken.SetStatus(*token.Properties.GetStatus())
+	if token.Properties.GetExpiryDate() != nil {
+		updateToken.SetExpiryDate(*token.Properties.GetExpiryDate())
+	}
+	if token.Properties.GetStatus() != nil {
+		updateToken.SetStatus(*token.Properties.GetStatus())
+	}
 	scopes := *token.Properties.GetScopes()
 	scopes = append(scopes, scope)
 	updateToken.SetScopes(scopes)
