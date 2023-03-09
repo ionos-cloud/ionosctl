@@ -116,3 +116,8 @@ func TokensIds() []string {
 		},
 	)
 }
+
+var (
+	defaultScopeCols = []string{"ScopeId", "DisplayName", "Type", "Actions"}
+	allScopeCols     = []string{"ScopeId", "TokenId", "DisplayName", "Type", "Actions"}
+)

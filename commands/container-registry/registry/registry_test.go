@@ -20,6 +20,7 @@ func TestRegistryService(t *testing.T) {
 		viper.Set(constants.ArgForce, true)
 
 		name, err := reggen.Generate("^[a-z][-a-z0-9]{1,61}[a-z0-9]$", 10)
+		assert.NoError(t, err)
 		c := RegPostCmd()
 		c.Command.Flags().Set(FlagName, name)
 		c.Command.Flags().Set(FlagLocation, "de/fra")
@@ -53,6 +54,10 @@ func TestRegistryService(t *testing.T) {
 		err = patch.Command.Execute()
 		assert.NoError(t, err)
 
+		checkRegistry, _, err := svc.RegistryClient.RegistriesApi.RegistriesFindById(context.Background(), *newRegistry.GetId()).Execute()
+		assert.NoError(t, err)
+		assert.Equal(t, []ionoscloud.Day([]ionoscloud.Day{"Tuesday"}), *checkRegistry.GetProperties().GetGarbageCollectionSchedule().GetDays())
+
 		d := RegDeleteCmd()
 		d.Command.Flags().Set(FlagRegId, *newRegistry.GetId())
 		assert.NoError(t, err)
@@ -61,6 +66,8 @@ func TestRegistryService(t *testing.T) {
 		assert.NoError(t, err)
 
 		replace := RegReplaceCmd()
+		name, err = reggen.Generate("^[a-z][-a-z0-9]{1,61}[a-z0-9]$", 10)
+		assert.NoError(t, err)
 		replace.Command.Flags().Set(FlagRegId, *newRegistry.GetId())
 		replace.Command.Flags().Set(FlagName, name)
 		replace.Command.Flags().Set(FlagLocation, "de/fra")

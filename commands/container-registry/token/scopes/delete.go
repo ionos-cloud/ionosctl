@@ -68,8 +68,12 @@ func CmdGetTokenScopesDelete(c *core.CommandConfig) error {
 		updateToken := sdkgo.NewPutTokenInputWithDefaults()
 		updateProp := sdkgo.NewPostTokenPropertiesWithDefaults()
 
-		updateProp.SetExpiryDate(*token.Properties.GetExpiryDate())
-		updateProp.SetStatus(*token.Properties.GetStatus())
+		if token.Properties.GetExpiryDate() != nil {
+			updateProp.SetExpiryDate(*token.Properties.GetExpiryDate())
+		}
+		if token.Properties.GetStatus() != nil {
+			updateProp.SetStatus(*token.Properties.GetStatus())
+		}
 		updateProp.SetName(*token.Properties.GetName())
 		updateToken.SetProperties(*updateProp)
 		msg := fmt.Sprintf("delete all scopes from Token: %s", *token.Id)
@@ -128,8 +132,3 @@ func PreCmdTokenScopesDelete(c *core.PreCommandConfig) error {
 		[]string{FlagRegId, FlagTokenId, constants.ArgAll},
 	)
 }
-
-var (
-	defaultScopeCols = []string{"ScopeId", "DisplayName", "Type", "Actions"}
-	allScopeCols     = []string{"ScopeId", "TokenId", "DisplayName", "Type", "Actions"}
-)
