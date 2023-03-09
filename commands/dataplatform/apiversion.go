@@ -3,6 +3,7 @@ package dataplatform
 import (
 	"context"
 	"fmt"
+	"github.com/spf13/cobra"
 
 	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
 
@@ -29,6 +30,12 @@ func ApiVersionCmd() *core.Command {
 			return c.Printer.Print(getApiVersionPrint(c, list))
 		},
 		InitClient: true,
+	})
+
+	cmd.AddBoolFlag(constants.ArgNoHeaders, "", false, "When using text output, don't print headers")
+	cmd.AddStringSliceFlag(constants.ArgCols, "", nil, printer.ColsMessage(allCols))
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return allCols, cobra.ShellCompDirectiveNoFileComp
 	})
 
 	return cmd
