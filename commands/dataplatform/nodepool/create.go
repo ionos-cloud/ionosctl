@@ -2,6 +2,7 @@ package nodepool
 
 import (
 	"context"
+
 	"github.com/cilium/fake"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dataplatform/completer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/config"

@@ -2,6 +2,7 @@ package resources
 
 import (
 	"context"
+
 	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
 
 	"github.com/fatih/structs"

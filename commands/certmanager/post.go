@@ -3,6 +3,8 @@ package certmanager
 import (
 	"context"
 	"fmt"
+	"os"
+
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"

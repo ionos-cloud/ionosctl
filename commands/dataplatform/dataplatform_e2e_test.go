@@ -50,7 +50,7 @@ func testClusterOk(t *testing.T) {
 	err := c.Command.Execute()
 	assert.NoError(t, err)
 
-	createdCluster, resp, err := client.DataplatformClient.DataPlatformClusterApi.GetClusters(context.Background()).Name("broken-test").Execute()
+	createdCluster, resp, err := client.DataplatformClient.DataPlatformClusterApi.GetClusters(context.Background()).Name(uniqueResourceName).Execute()
 	assert.NoError(t, err)
 	assert.False(t, resp.HttpNotFound())
 	createdClusterId = *(*createdCluster.GetItems())[0].GetId()

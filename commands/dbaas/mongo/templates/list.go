@@ -2,6 +2,7 @@ package templates
 
 import (
 	"context"
+
 	"github.com/spf13/viper"
 
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"

@@ -2,6 +2,8 @@ package cluster
 
 import (
 	"context"
+	"os"
+
 	cloudapiv6completer "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	"github.com/spf13/viper"
 

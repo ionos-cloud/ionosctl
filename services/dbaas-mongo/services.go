@@ -2,7 +2,6 @@ package dbaas_mongo
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
 	"github.com/ionos-cloud/ionosctl/v6/services/dbaas-mongo/resources"

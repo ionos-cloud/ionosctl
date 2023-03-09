@@ -2,8 +2,9 @@ package user
 
 import (
 	"fmt"
-	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
 	"strings"
+
+	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
 
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"

@@ -2,6 +2,8 @@ package cluster
 
 import (
 	"context"
+	"os"
+
 	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
 	"github.com/spf13/viper"
 

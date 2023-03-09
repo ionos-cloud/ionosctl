@@ -53,7 +53,14 @@ github.com/ionos-cloud/sdk-go-auth
 # github.com/ionos-cloud/sdk-go-cert-manager v1.0.0
 ## explicit; go 1.17
 github.com/ionos-cloud/sdk-go-cert-manager
+<<<<<<< HEAD
 # github.com/ionos-cloud/sdk-go-dbaas-mongo v1.2.2
+=======
+# github.com/ionos-cloud/sdk-go-dataplatform v1.0.0
+## explicit; go 1.18
+github.com/ionos-cloud/sdk-go-dataplatform
+# github.com/ionos-cloud/sdk-go-dbaas-mongo v1.2.1
+>>>>>>> a7a135ee (fix: merge conflicts)
 ## explicit; go 1.18
 github.com/ionos-cloud/sdk-go-dbaas-mongo
 # github.com/ionos-cloud/sdk-go-dbaas-postgres v1.1.1

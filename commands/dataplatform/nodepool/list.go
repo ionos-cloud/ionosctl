@@ -2,6 +2,7 @@ package nodepool
 
 import (
 	"context"
+
 	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
 	ionoscloud "github.com/ionos-cloud/sdk-go-dataplatform"
 

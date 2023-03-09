@@ -8,6 +8,7 @@ import (
 	authv1 "github.com/ionos-cloud/ionosctl/v6/commands/auth-v1"
 	certificates "github.com/ionos-cloud/ionosctl/v6/commands/certmanager"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
+	"github.com/ionos-cloud/ionosctl/v6/commands/dataplatform"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
