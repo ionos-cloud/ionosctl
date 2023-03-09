@@ -3,6 +3,9 @@ package dataplatform
 import (
 	"context"
 	"fmt"
+	"github.com/ionos-cloud/ionosctl/v6/commands/dataplatform/nodepool"
+	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
+	ionoscloud "github.com/ionos-cloud/sdk-go-dataplatform"
 	"testing"
 	"time"
 
@@ -50,11 +53,41 @@ func testClusterOk(t *testing.T) {
 	err := c.Command.Execute()
 	assert.NoError(t, err)
 
-	createdCluster, resp, err := client.DataplatformClient.DataPlatformClusterApi.GetClusters(context.Background()).Name(uniqueResourceName).Execute()
+	ls, resp, err := client.DataplatformClient.DataPlatformClusterApi.GetClusters(context.Background()).Name(uniqueResourceName).Execute()
 	assert.NoError(t, err)
 	assert.False(t, resp.HttpNotFound())
-	createdClusterId = *(*createdCluster.GetItems())[0].GetId()
-	assert.Equal(t, uniqueResourceName, *(*createdCluster.Items)[0].Properties.Name)
+	items := *ls.Items
+	assert.Len(t, items, 1)
+	createdClusterId = *(items)[0].GetId()
+	assert.Equal(t, uniqueResourceName, *(*ls.Items)[0].Properties.Name)
+}
+
+func testNodepoolOk(t *testing.T) {
+	viper.Set(constants.ArgOutput, "text")
+	viper.Set(constants.ArgCols, "Name")
+	viper.Set(constants.ArgNoHeaders, true)
+	fmt.Printf(viper.GetString(constants.ArgCols))
+
+	c := nodepool.NodepoolCreateCmd()
+	c.Command.Flags().Set(constants.FlagClusterId, createdClusterId)
+	c.Command.Flags().Set(constants.FlagName, uniqueResourceName)
+	c.Command.Flags().Set(constants.FlagNodeCount, "2")
+
+	err := c.Command.Execute()
+	assert.NoError(t, err)
+
+	ls, resp, err := client.DataplatformClient.DataPlatformNodePoolApi.GetClusterNodepools(context.Background(), createdClusterId).Execute()
+	assert.NoError(t, err)
+	assert.False(t, resp.HttpNotFound())
+	var foundNodepool ionoscloud.NodePoolResponseData
+	assert.True(t, functional.Fold(*ls.GetItems(), func(found bool, x ionoscloud.NodePoolResponseData) bool {
+		if *x.Properties.Name == uniqueResourceName {
+			foundNodepool = x
+			return true
+		}
+		return found
+	}, false))
+	assert.Equal(t, 2, foundNodepool.Properties.NodeCount)
 }
 
 func testClusterIdentifyRequiredNotSet(t *testing.T) {
