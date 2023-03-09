@@ -11,7 +11,7 @@ require (
 	github.com/google/uuid v1.3.0
 	github.com/ionos-cloud/sdk-go-auth v1.0.5
 	github.com/ionos-cloud/sdk-go-dbaas-mongo v1.2.1
-	github.com/ionos-cloud/sdk-go-dbaas-postgres v1.0.6
+	github.com/ionos-cloud/sdk-go-dbaas-postgres v1.1.1
 	github.com/ionos-cloud/sdk-go/v6 v6.1.4
 	github.com/kardianos/ftps v1.0.3
 	github.com/mitchellh/go-homedir v1.1.0
