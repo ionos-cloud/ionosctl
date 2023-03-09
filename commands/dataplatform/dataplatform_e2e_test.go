@@ -7,9 +7,9 @@ import (
 	"time"
 
 	"github.com/cilium/fake"
-	"github.com/ionos-cloud/ionosctl/commands/dataplatform/cluster"
-	"github.com/ionos-cloud/ionosctl/pkg/config"
-	"github.com/ionos-cloud/ionosctl/pkg/constants"
+	"github.com/ionos-cloud/ionosctl/v6/commands/dataplatform/cluster"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	sdkcompute "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"

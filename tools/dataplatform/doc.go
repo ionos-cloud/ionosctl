@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/ionos-cloud/ionosctl/commands/dataplatform"
-	"github.com/ionos-cloud/ionosctl/pkg/doc"
+	"github.com/ionos-cloud/ionosctl/v6/commands/dataplatform"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/doc"
 )
 
 const (

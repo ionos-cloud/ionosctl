@@ -3,15 +3,15 @@ package cluster
 import (
 	"context"
 	"fmt"
-	"github.com/ionos-cloud/ionosctl/internal/confirm"
-	"github.com/ionos-cloud/ionosctl/internal/functional"
+	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
+	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
 	ionoscloud "github.com/ionos-cloud/sdk-go-dataplatform"
 
-	"github.com/ionos-cloud/ionosctl/commands/dataplatform/completer"
-	"github.com/ionos-cloud/ionosctl/pkg/config"
-	"github.com/ionos-cloud/ionosctl/pkg/constants"
-	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/utils"
+	"github.com/ionos-cloud/ionosctl/v6/commands/dataplatform/completer"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
