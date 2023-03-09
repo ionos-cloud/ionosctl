@@ -26,7 +26,7 @@ var _ VersionsService = &versionsService{}
 
 func NewVersionsService(client *config.Client, ctx context.Context) VersionsService {
 	return &versionsService{
-		client:  client.DbaasClient,
+		client:  client.PostgresClient,
 		context: ctx,
 	}
 }

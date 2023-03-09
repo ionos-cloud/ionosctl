@@ -5,6 +5,12 @@ github.com/VividCortex/ewma
 ## explicit; go 1.12
 github.com/cheggaaa/pb/v3
 github.com/cheggaaa/pb/v3/termutil
+# github.com/cilium/fake v0.3.0
+## explicit; go 1.18
+github.com/cilium/fake
+# github.com/cjrd/allocate v0.0.0-20220510215731-986f24f0fb18
+## explicit
+github.com/cjrd/allocate
 # github.com/davecgh/go-spew v1.1.1
 ## explicit
 github.com/davecgh/go-spew/spew
@@ -47,6 +53,9 @@ github.com/ionos-cloud/sdk-go-auth
 # github.com/ionos-cloud/sdk-go-cert-manager v1.0.0
 ## explicit; go 1.17
 github.com/ionos-cloud/sdk-go-cert-manager
+# github.com/ionos-cloud/sdk-go-dbaas-mongo v1.2.1
+## explicit; go 1.18
+github.com/ionos-cloud/sdk-go-dbaas-mongo
 # github.com/ionos-cloud/sdk-go-dbaas-postgres v1.1.1
 ## explicit; go 1.19
 github.com/ionos-cloud/sdk-go-dbaas-postgres
@@ -74,6 +83,9 @@ github.com/mitchellh/go-homedir
 # github.com/mitchellh/mapstructure v1.5.0
 ## explicit; go 1.14
 github.com/mitchellh/mapstructure
+# github.com/mmatczuk/anyflag v0.0.0-20230209112147-9567d4cab866
+## explicit; go 1.19
+github.com/mmatczuk/anyflag
 # github.com/pelletier/go-toml/v2 v2.0.6
 ## explicit; go 1.16
 github.com/pelletier/go-toml/v2
@@ -138,7 +150,7 @@ golang.org/x/crypto/internal/alias
 golang.org/x/crypto/internal/poly1305
 golang.org/x/crypto/ssh
 golang.org/x/crypto/ssh/internal/bcrypt_pbkdf
-# golang.org/x/exp v0.0.0-20230206171751-46f607a40771
+# golang.org/x/exp v0.0.0-20230213192124-5e25df0256eb
 ## explicit; go 1.18
 golang.org/x/exp/constraints
 golang.org/x/exp/slices

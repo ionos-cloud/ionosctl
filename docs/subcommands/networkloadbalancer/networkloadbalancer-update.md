@@ -46,12 +46,12 @@ Required values to run command:
   -D, --depth int32                     Controls the detail depth of the response objects. Max depth is 10.
   -f, --force                           Force command to execute without user input
   -h, --help                            Print usage
-      --ips ipSlice                     Collection of IP addresses of the Network Load Balancer (default [])
+      --ips strings                     Collection of IP addresses of the Network Load Balancer
       --listener-lan int                Id of the listening LAN (default 2)
   -n, --name string                     Name of the Network Load Balancer (default "Network Load Balancer")
   -i, --networkloadbalancer-id string   The unique NetworkLoadBalancer Id (required)
   -o, --output string                   Desired output format [text|json] (default "text")
-      --private-ips ipSlice             Collection of private IP addresses with subnet mask of the Network Load Balancer (default [])
+      --private-ips strings             Collection of private IP addresses with subnet mask of the Network Load Balancer
   -q, --quiet                           Quiet output
       --target-lan int                  Id of the balanced private target LAN (default 1)
   -t, --timeout int                     Timeout option for Request for Network Load Balancer update [seconds] (default 300)

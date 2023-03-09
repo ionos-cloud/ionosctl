@@ -48,7 +48,7 @@ Available Filters:
       --latest int            Show the latest N Images, based on creation date, starting from now in descending order. If it is not set, all Images will be printed (deprecated)
       --licence-type string   The licence type of the Image (deprecated)
   -l, --location string       The location of the Image (deprecated)
-  -M, --max-results int32     The maximum number of elements to return (default 2147483647)
+  -M, --max-results int32     The maximum number of elements to return
       --no-headers            When using text output, don't print headers
       --order-by string       Limits results to those containing a matching value for a specific property
   -o, --output string         Desired output format [text|json] (default "text")

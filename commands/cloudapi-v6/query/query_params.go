@@ -7,6 +7,7 @@ package query
 import (
 	"errors"
 	"fmt"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"strings"
 
 	"github.com/fatih/structs"
@@ -61,13 +62,13 @@ func GetListQueryParams(c *core.CommandConfig) (resources.ListQueryParams, error
 		}
 	}
 
-	if c.Command.Command.Flags().Changed(cloudapiv6.ArgMaxResults) {
+	if c.Command.Command.Flags().Changed(cloudapiv6.ArgOrderBy) {
 		orderBy, _ := c.Command.Command.Flags().GetString(cloudapiv6.ArgOrderBy)
 		listQueryParams = listQueryParams.SetOrderBy(orderBy)
 	}
 
-	if c.Command.Command.Flags().Changed(cloudapiv6.ArgMaxResults) {
-		maxResults, _ := c.Command.Command.Flags().GetInt32(cloudapiv6.ArgMaxResults)
+	if c.Command.Command.Flags().Changed(constants.FlagMaxResults) {
+		maxResults, _ := c.Command.Command.Flags().GetInt32(constants.FlagMaxResults)
 		listQueryParams = listQueryParams.SetMaxResults(maxResults)
 	}
 

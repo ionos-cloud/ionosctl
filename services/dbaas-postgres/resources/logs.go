@@ -32,7 +32,7 @@ var _ LogsService = &logsService{}
 
 func NewLogsService(client *config.Client, ctx context.Context) LogsService {
 	return &logsService{
-		client:  client.DbaasClient,
+		client:  client.PostgresClient,
 		context: ctx,
 	}
 }

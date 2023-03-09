@@ -136,7 +136,7 @@ func TestRunTemplateListQueryParams(t *testing.T) {
 		viper.Set(constants.ArgVerbose, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgFilters), []string{fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar)})
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgOrderBy), testQueryParamVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgMaxResults), testMaxResultsVar)
+		viper.Set(core.GetFlagName(cfg.NS, constants.FlagMaxResults), testMaxResultsVar)
 		rm.CloudApiV6Mocks.Template.EXPECT().List(gomock.AssignableToTypeOf(testListQueryParam)).Return(resources.Templates{}, &testResponse, nil)
 		err := RunTemplateList(cfg)
 		assert.NoError(t, err)

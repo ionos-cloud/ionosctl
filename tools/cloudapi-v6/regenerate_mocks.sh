@@ -7,7 +7,6 @@ pushd "services/cloudapi-v6/resources" >/dev/null || exit
 
 GO111MODULE=off go get -d github.com/golang/mock/mockgen
 
-mockgen -source client.go >mocks/ClientService.go
 mockgen -source datacenter.go >mocks/DataCenterService.go
 mockgen -source lan.go >mocks/LanService.go
 mockgen -source loadbalancer.go >mocks/LoadBalancerService.go

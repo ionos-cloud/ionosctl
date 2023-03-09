@@ -51,7 +51,7 @@ Required values to run command:
   -F, --filters strings        Limits results to those containing a matching value for a specific property. Use the following format to set filters: --filters KEY1=VALUE1,KEY2=VALUE2
   -f, --force                  Force command to execute without user input
   -h, --help                   Print usage
-  -M, --max-results int32      The maximum number of elements to return (default 2147483647)
+  -M, --max-results int32      The maximum number of elements to return
       --nic-id string          The unique NIC Id (required)
       --no-headers             When using text output, don't print headers
       --order-by string        Limits results to those containing a matching value for a specific property

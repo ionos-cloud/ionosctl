@@ -35,7 +35,7 @@ var _ BackupsService = &backupsService{}
 
 func NewBackupsService(client *config.Client, ctx context.Context) BackupsService {
 	return &backupsService{
-		client:  client.DbaasClient,
+		client:  client.PostgresClient,
 		context: ctx,
 	}
 }

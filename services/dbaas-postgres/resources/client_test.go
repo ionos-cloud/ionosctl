@@ -23,13 +23,13 @@ func TestNewClientService(t *testing.T) {
 		svc, err := config.NewTestClient("", "", "token", "url")
 		assert.NotNil(t, svc)
 		assert.NoError(t, err)
-		assert.Equal(t, "token", svc.DbaasClient.GetConfig().Token)
+		assert.Equal(t, "token", svc.PostgresClient.GetConfig().Token)
 
 		svc, err = config.NewTestClient("user", "pass", "", "url")
 		assert.NotNil(t, svc)
 		assert.NoError(t, err)
-		assert.Equal(t, "user", svc.DbaasClient.GetConfig().Username)
-		assert.Equal(t, "pass", svc.DbaasClient.GetConfig().Password)
+		assert.Equal(t, "user", svc.PostgresClient.GetConfig().Username)
+		assert.Equal(t, "pass", svc.PostgresClient.GetConfig().Password)
 	})
 }
 
@@ -37,7 +37,7 @@ func getTestClient(t *testing.T) *config.Client {
 	svc, err := config.NewTestClient("user", "pass", "", constants.DefaultApiURL)
 	assert.NotNil(t, svc)
 	assert.NoError(t, err)
-	assert.Equal(t, "user", svc.DbaasClient.GetConfig().Username)
-	assert.Equal(t, "pass", svc.DbaasClient.GetConfig().Password)
+	assert.Equal(t, "user", svc.PostgresClient.GetConfig().Username)
+	assert.Equal(t, "pass", svc.PostgresClient.GetConfig().Password)
 	return svc
 }

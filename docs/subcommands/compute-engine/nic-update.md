@@ -53,7 +53,7 @@ Required values to run command:
       --firewall-type string   The type of Firewall Rules that will be allowed on the NIC (default "INGRESS")
   -f, --force                  Force command to execute without user input
   -h, --help                   Print usage
-      --ips ipSlice            IPs assigned to the NIC (default [])
+      --ips strings            IPs assigned to the NIC
       --lan-id int             The LAN ID the NIC sits on (default 1)
   -n, --name string            The name of the NIC
   -i, --nic-id string          The unique NIC Id (required)

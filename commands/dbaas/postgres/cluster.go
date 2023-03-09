@@ -405,7 +405,7 @@ func RunClusterUpdate(c *core.CommandConfig) error {
 	}
 	if viper.GetBool(core.GetFlagName(c.NS, constants.ArgWaitForState)) {
 		c.Printer.Verbose("Wait 10 seconds before checking state...")
-		// Sleeping 10 seconds to make sure the cluster is in BUSY state. This will be removed in future releases.
+		// TODO: Sleeping 10 seconds to make sure the cluster is in BUSY state. This will be removed in future releases.
 		time.Sleep(10 * time.Second)
 		if err = utils.WaitForState(c, waiter.ClusterStateInterrogator, viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgClusterId))); err != nil {
 			return err
@@ -829,6 +829,7 @@ func getClusterCols(flagName string, outErr io.Writer) []string {
 		return defaultClusterCols
 	}
 
+	// TODO: this binds a key to itself... not to mention, all the keys are just the ClusterPrint slice values?
 	columnsMap := map[string]string{
 		"ClusterId":           "ClusterId",
 		"DisplayName":         "DisplayName",
@@ -888,6 +889,7 @@ func getClustersKVMaps(clusters []resources.ClusterResponse) []map[string]interf
 			}
 			if vdcConnectionsOk, ok := propertiesOk.GetConnectionsOk(); ok && vdcConnectionsOk != nil {
 				for _, vdcConnection := range *vdcConnectionsOk {
+					// TODO: This seems to only get the last items in the connections slice?
 					if vdcIdOk, ok := vdcConnection.GetDatacenterIdOk(); ok && vdcIdOk != nil {
 						clusterPrint.DatacenterId = *vdcIdOk
 					}
