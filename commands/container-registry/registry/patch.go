@@ -15,13 +15,12 @@ var patchInput = sdkgo.PatchRegistryInput{}
 func RegUpdateCmd() *core.Command {
 	cmd := core.NewCommand(
 		context.TODO(), nil, core.CommandBuilder{
-			Namespace: "container-registry",
-			Resource:  "registry",
-			Verb:      "update",
-			Aliases:   []string{"u", "up"},
-			ShortDesc: "Update the properties of a registry",
-			LongDesc: "Update the \"garbageCollectionSchedule\" time and days of the week for runs of a registry (if " +
-				"not set, the default is every Monday at 00:00 UTC).",
+			Namespace:  "container-registry",
+			Resource:   "registry",
+			Verb:       "update",
+			Aliases:    []string{"u", "up"},
+			ShortDesc:  "Update the properties of a registry",
+			LongDesc:   "Update the \"garbageCollectionSchedule\" time and days of the week for runs of a registry",
 			Example:    "ionosctl container-registry registry update --id [REGISTRY_ID]",
 			PreCmdRun:  PreCmdUpdate,
 			CmdRun:     CmdUpdate,
@@ -37,17 +36,17 @@ func RegUpdateCmd() *core.Command {
 	)
 
 	cmd.AddStringSliceFlag(
-		"garbage-collection-schedule-days", "", []string{}, "Specify the garbage collection schedule days",
+		FlagRegGCDays, "", []string{}, "Specify the garbage collection schedule days",
 	)
 	_ = cmd.Command.RegisterFlagCompletionFunc(
-		"garbage-collection-schedule-days",
+		FlagRegGCDays,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 			return []string{
 				"Modnday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday",
 			}, cobra.ShellCompDirectiveNoFileComp
 		},
 	)
-	cmd.AddStringFlag("garbage-collection-schedule-time", "", "", "Specify the garbage collection schedule time of day")
+	cmd.AddStringFlag(FlagRegGCTime, "", "", "Specify the garbage collection schedule time of day")
 
 	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, printer.ColsMessage(allCols))
 	_ = cmd.Command.RegisterFlagCompletionFunc(

@@ -146,6 +146,9 @@ func TestCertificateManagerServiceCmd(t *testing.T) {
 			g.Command.Flags().Set(FlagCertId, id)
 			assert.NoError(t, err)
 
+			err = g.Command.Execute()
+			assert.NoError(t, err)
+
 			d := CertDeleteCmd()
 			d.Command.Flags().Set(FlagCertId, id)
 			err = d.Command.Execute()
