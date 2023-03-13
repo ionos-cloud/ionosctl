@@ -2,8 +2,8 @@ package registry
 
 import (
 	"context"
-	"github.com/ionos-cloud/ionosctl/pkg/config"
-	"github.com/ionos-cloud/ionosctl/pkg/constants"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	ionoscloud "github.com/ionos-cloud/sdk-go-container-registry"
 	"github.com/lucasjones/reggen"
 	"github.com/spf13/viper"

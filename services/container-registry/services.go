@@ -2,8 +2,8 @@ package container_registry
 
 import (
 	"context"
-	"github.com/ionos-cloud/ionosctl/pkg/config"
-	"github.com/ionos-cloud/ionosctl/services/container-registry/resources"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
+	"github.com/ionos-cloud/ionosctl/v6/services/container-registry/resources"
 )
 
 type Services struct {

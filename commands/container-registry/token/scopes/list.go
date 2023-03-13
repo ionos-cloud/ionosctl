@@ -2,10 +2,10 @@ package scopes
 
 import (
 	"context"
-	"github.com/ionos-cloud/ionosctl/commands/container-registry/registry"
-	"github.com/ionos-cloud/ionosctl/pkg/constants"
-	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/printer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/registry"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )

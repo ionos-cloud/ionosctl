@@ -2,9 +2,9 @@ package registry
 
 import (
 	"context"
-	"github.com/ionos-cloud/ionosctl/pkg/constants"
-	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/printer"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	ionoscloud "github.com/ionos-cloud/sdk-go-container-registry"
 	"github.com/spf13/cobra"
 )

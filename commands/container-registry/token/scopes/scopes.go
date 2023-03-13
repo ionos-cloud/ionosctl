@@ -2,15 +2,15 @@ package scopes
 
 import (
 	"context"
-	"github.com/ionos-cloud/ionosctl/pkg/config"
-	"github.com/ionos-cloud/ionosctl/pkg/utils"
-	"github.com/ionos-cloud/ionosctl/services/container-registry/resources"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
+	"github.com/ionos-cloud/ionosctl/v6/services/container-registry/resources"
 	"strconv"
 
 	"github.com/fatih/structs"
-	"github.com/ionos-cloud/ionosctl/pkg/constants"
-	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/printer"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	sdkgo "github.com/ionos-cloud/sdk-go-container-registry"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
