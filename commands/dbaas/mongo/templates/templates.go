@@ -54,11 +54,11 @@ func getClusterRows(ls *[]ionoscloud.TemplateResponse) []map[string]interface{} 
 	for _, t := range *ls {
 		var cols TemplatePrint
 		cols.TemplateId = *t.Id
-		cols.Cores = *t.Cores
-		cols.StorageSize = fmt.Sprintf("%d GB", *t.StorageSize)
-		cols.Name = *t.Name
-		cols.Edition = *t.Edition
-		ramGb, err := utils.ConvertToGB(strconv.Itoa(int(*t.Ram)), utils.MegaBytes)
+		cols.Cores = *t.Properties.Cores
+		cols.StorageSize = fmt.Sprintf("%d GB", *t.Properties.StorageSize)
+		cols.Name = *t.Properties.Name
+		cols.Edition = *t.Properties.Edition
+		ramGb, err := utils.ConvertToGB(strconv.Itoa(int(*t.Properties.Ram)), utils.MegaBytes)
 		if err == nil {
 			cols.Ram = fmt.Sprintf("%d GB", ramGb)
 		}
