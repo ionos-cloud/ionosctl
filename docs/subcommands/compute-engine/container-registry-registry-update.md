@@ -32,7 +32,7 @@ For `update` command:
 
 ## Description
 
-Update the "garbageCollectionSchedule" time and days of the week for runs of a registry (if not set, the default is every Monday at 00:00 UTC).
+Update the "garbageCollectionSchedule" time and days of the week for runs of a registry
 
 ## Options
 
