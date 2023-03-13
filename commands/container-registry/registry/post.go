@@ -49,7 +49,7 @@ func RegPostCmd() *core.Command {
 			}, cobra.ShellCompDirectiveNoFileComp
 		},
 	)
-	cmd.AddStringFlag(FlagRegGCTime, "", "", "Specify the garbage collection schedule time of day")
+	cmd.AddStringFlag(FlagRegGCTime, "", "", "Specify the garbage collection schedule time of day using RFC3339 format")
 
 	return cmd
 }
