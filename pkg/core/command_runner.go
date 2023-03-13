@@ -142,6 +142,10 @@ func NewCommandCfg(ctx context.Context, in io.Reader, p printer.PrintService, in
 				return err
 			}
 
+			if err = c.ContainerRegistryServices.InitServices(client); err != nil {
+				return err
+			}
+
 			return nil
 		},
 	}
