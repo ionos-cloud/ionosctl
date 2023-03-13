@@ -2,8 +2,8 @@ package scopes
 
 import (
 	"context"
+	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
 	"github.com/ionos-cloud/ionosctl/v6/services/container-registry/resources"
 	"strconv"
 
@@ -110,8 +110,8 @@ func TokensIds() []string {
 		allTokens = append(allTokens, *tokens.GetItems()...)
 	}
 
-	return utils.Map(
-		allTokens, func(i int, reg sdkgo.TokenResponse) string {
+	return functional.Map(
+		allTokens, func(reg sdkgo.TokenResponse) string {
 			return *reg.GetId()
 		},
 	)

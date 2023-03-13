@@ -3,6 +3,7 @@ package token
 import (
 	"context"
 	"fmt"
+	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
 	"strconv"
 	"strings"
 	"time"
@@ -13,7 +14,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
 	"github.com/ionos-cloud/ionosctl/v6/services/container-registry/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go-container-registry"
 	"github.com/spf13/cobra"
@@ -143,8 +143,8 @@ func TokensIds() []string {
 		allTokens = append(allTokens, *tokens.GetItems()...)
 	}
 
-	return utils.Map(
-		allTokens, func(i int, reg ionoscloud.TokenResponse) string {
+	return functional.Map(
+		allTokens, func(reg ionoscloud.TokenResponse) string {
 			return *reg.GetId()
 		},
 	)

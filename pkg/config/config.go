@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	registry "github.com/ionos-cloud/sdk-go-container-registry"
 	"io"
 	"os"
 	"path/filepath"
@@ -162,6 +163,7 @@ type Client struct {
 	PostgresClient     *postgres.APIClient
 	MongoClient        *mongo.APIClient
 	DataplatformClient *dataplatform.APIClient
+	RegistryClient    *registry.APIClient
 }
 
 func appendUserAgent(userAgent string) string {
@@ -193,6 +195,9 @@ func newClient(name, pwd, token, hostUrl string) (*Client, error) {
 	dpConfig := dataplatform.NewConfiguration(name, pwd, token, hostUrl)
 	dpConfig.UserAgent = appendUserAgent(dpConfig.UserAgent)
 
+	registryConfig := registry.NewConfiguration(name, pwd, token, hostUrl)
+	registryConfig.UserAgent = appendUserAgent(registryConfig.UserAgent)
+
 	return &Client{
 			CloudClient:        cloudv6.NewAPIClient(clientConfig),
 			AuthClient:         sdkgoauth.NewAPIClient(authConfig),
@@ -200,6 +205,7 @@ func newClient(name, pwd, token, hostUrl string) (*Client, error) {
 			PostgresClient:     postgres.NewAPIClient(postgresConfig),
 			MongoClient:        mongo.NewAPIClient(mongoConfig),
 			DataplatformClient: dataplatform.NewAPIClient(dpConfig),
+			RegistryClient:    registry.NewAPIClient(registryConfig),
 		},
 		nil
 }
