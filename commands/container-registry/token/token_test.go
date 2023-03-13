@@ -2,6 +2,9 @@ package token
 
 import (
 	"context"
+	"testing"
+	"time"
+
 	"github.com/ionos-cloud/ionosctl/commands/container-registry/registry"
 	"github.com/ionos-cloud/ionosctl/commands/container-registry/token/scopes"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
@@ -10,10 +13,9 @@ import (
 	"github.com/lucasjones/reggen"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
-func TestRegistryService(t *testing.T) {
+func TestTokenService(t *testing.T) {
 	t.Run("token functions", func(t *testing.T) {
 		viper.Reset()
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
@@ -30,9 +32,11 @@ func TestRegistryService(t *testing.T) {
 
 		err = c.Command.Execute()
 		assert.NoError(t, err)
+		time.Sleep(3 * time.Second)
 
 		// get registry
 		svc, err := config.GetClient()
+		assert.NoError(t, err)
 		registries, _, err := svc.RegistryClient.RegistriesApi.RegistriesGet(context.Background()).Execute()
 		assert.NoError(t, err)
 
