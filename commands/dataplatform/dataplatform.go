@@ -19,6 +19,5 @@ func DataplatformCmd() *core.Command {
 	}
 	cmd.AddCommand(cluster.ClusterCmd())
 	cmd.AddCommand(nodepool.NodepoolCmd())
-	cmd.AddCommand(ApiVersionCmd())
 	return cmd
 }
