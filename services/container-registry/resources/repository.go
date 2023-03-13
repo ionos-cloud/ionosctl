@@ -3,12 +3,10 @@ package resources
 import (
 	"context"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
-
-	sdkgo "github.com/ionos-cloud/sdk-go-container-registry"
 )
 
 type RepositoryService interface {
-	Delete(regId string, name string) (*Response, error)
+	Delete(regId string, name string) (*sdkgo.APIResponse, error)
 }
 
 type repositoryService struct {
@@ -25,8 +23,8 @@ func NewRepositoryService(client *config.Client, ctx context.Context) Repository
 	}
 }
 
-func (svc *repositoryService) Delete(regId string, name string) (*Response, error) {
+func (svc *repositoryService) Delete(regId string, name string) (*sdkgo.APIResponse, error) {
 	req := svc.client.RepositoriesApi.RegistriesRepositoriesDelete(svc.context, regId, name)
 	res, err := svc.client.RepositoriesApi.RegistriesRepositoriesDeleteExecute(req)
-	return &Response{*res}, err
+	return res, err
 }
