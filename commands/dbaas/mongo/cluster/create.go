@@ -2,9 +2,9 @@ package cluster
 
 import (
 	"context"
+	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"os"
 
-	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
 	"github.com/spf13/viper"
 
 	"github.com/cjrd/allocate"
@@ -97,7 +97,7 @@ func ClusterCreateCmd() *core.Command {
 			if *input.Properties.Location == "" {
 				// If location isn't set to Datacenter's Location, Mongo API throws an error. Location property is also marked as required
 				// To improve user experience we mark it as optional and now we set it to the datacenter's location implicitly (via connections datacenterID).
-				client, err := config.GetClient()
+				client, err := client2.Get()
 				if err != nil {
 					return err
 				}

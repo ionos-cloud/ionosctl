@@ -9,7 +9,6 @@ import (
 
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/v6/commands/auth-v1/completer"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
@@ -239,7 +238,7 @@ func RunTokenDeleteExpired(c *core.CommandConfig) error {
 
 func RunTokenDeleteCurrent(c *core.CommandConfig) error {
 	c.Printer.Verbose("Note: This operation is based on Authorization Header for Bearer Token")
-	if viper.GetString(config.Token) == "" {
+	if viper.GetString(constants.Token) == "" {
 		return errors.New(fmt.Sprintf("no token found. Please make sure you have exported the %s environment variable or you have token set in the config file",
 			sdkgoauth.IonosTokenEnvVar))
 	}

@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"context"
 	"errors"
+	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"os"
 	"strings"
 
@@ -80,7 +81,7 @@ func RunLoginUser(c *core.CommandConfig) error {
 
 	if token != "" {
 		// If token is set, use only token
-		viper.Set(config.Token, token)
+		viper.Set(constants.Token, token)
 		c.Printer.Verbose("Token is set.")
 	} else {
 		// If token and username are not set, display messages
@@ -107,14 +108,14 @@ func RunLoginUser(c *core.CommandConfig) error {
 			}
 			pwd = string(bytesPwd)
 		}
-		viper.Set(config.Username, username)
-		c.Printer.Verbose("Username is set %s", viper.GetString(config.Username))
-		viper.Set(config.Password, pwd)
+		viper.Set(constants.Username, username)
+		c.Printer.Verbose("Username is set %s", viper.GetString(constants.Username))
+		viper.Set(constants.Password, pwd)
 		c.Printer.Verbose("Password is set.")
 	}
 	c.Printer.Verbose("ServerUrl: %s", config.GetServerUrl())
-	viper.Set(config.ServerUrl, viper.GetString(constants.ArgServerUrl))
-	client, err := config.GetClient()
+	viper.Set(constants.ServerUrl, viper.GetString(constants.ArgServerUrl))
+	client, err := client2.Get()
 	if err != nil {
 		return err
 	}

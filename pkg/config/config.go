@@ -4,21 +4,13 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	registry "github.com/ionos-cloud/sdk-go-container-registry"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"io"
 	"os"
 	"path/filepath"
 	"runtime"
 	"strconv"
-	"sync"
 
-	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
-
-	sdkgoauth "github.com/ionos-cloud/sdk-go-auth"
-	certmanager "github.com/ionos-cloud/sdk-go-cert-manager"
-	dataplatform "github.com/ionos-cloud/sdk-go-dataplatform"
-	mongo "github.com/ionos-cloud/sdk-go-dbaas-mongo"
-	postgres "github.com/ionos-cloud/sdk-go-dbaas-postgres"
 	cloudv6 "github.com/ionos-cloud/sdk-go/v6"
 
 	"github.com/spf13/viper"
@@ -26,10 +18,10 @@ import (
 
 func GetUserData() map[string]string {
 	return map[string]string{
-		Username:  viper.GetString(Username),
-		Password:  viper.GetString(Password),
-		Token:     viper.GetString(Token),
-		ServerUrl: viper.GetString(ServerUrl),
+		constants.Username:  viper.GetString(constants.Username),
+		constants.Password:  viper.GetString(constants.Password),
+		constants.Token:     viper.GetString(constants.Token),
+		constants.ServerUrl: viper.GetString(constants.ServerUrl),
 	}
 }
 
@@ -44,7 +36,7 @@ func GetServerUrl() string {
 	if viper.IsSet(constants.ArgServerUrl) {
 		return viper.GetString(constants.ArgServerUrl)
 	}
-	if url := viper.GetString(ServerUrl); url != "" {
+	if url := viper.GetString(constants.ServerUrl); url != "" {
 		return url
 	}
 	return viper.GetString(constants.ArgServerUrl)
@@ -98,14 +90,14 @@ func LoadFile() error {
 // Load binds environment variables (IONOS_USERNAME, IONOS_PASSWORD) to viper, and attempts
 // to read config file for setting fallbacks for these newly-bound viper vars
 func Load() (err error) {
-	_ = viper.BindEnv(Username, cloudv6.IonosUsernameEnvVar)
-	_ = viper.BindEnv(Password, cloudv6.IonosPasswordEnvVar)
-	_ = viper.BindEnv(Token, cloudv6.IonosTokenEnvVar)
-	_ = viper.BindEnv(ServerUrl, cloudv6.IonosApiUrlEnvVar)
+	_ = viper.BindEnv(constants.Username, cloudv6.IonosUsernameEnvVar)
+	_ = viper.BindEnv(constants.Password, cloudv6.IonosPasswordEnvVar)
+	_ = viper.BindEnv(constants.Token, cloudv6.IonosTokenEnvVar)
+	_ = viper.BindEnv(constants.ServerUrl, cloudv6.IonosApiUrlEnvVar)
 
 	err = LoadFile() // Use config file as a fallback for any of the above variables. Could be used only for api-url
 
-	if viper.IsSet(Token) || (viper.IsSet(Username) && viper.IsSet(Password)) {
+	if viper.IsSet(constants.Token) || (viper.IsSet(constants.Username) && viper.IsSet(constants.Password)) {
 		// Error thrown by LoadFile is recoverable in this case.
 		// We don't want to throw an error e.g. if the user only uses the config file for api-url,
 		// or if he has IONOS_TOKEN, or IONOS_USERNAME and IONOS_PASSWORD exported as env vars and no config file at all
@@ -152,82 +144,4 @@ func configFileWriter() (io.WriteCloser, error) {
 		return nil, err
 	}
 	return f, nil
-}
-
-const depthQueryParam = int32(5)
-
-type Client struct {
-	CloudClient        *cloudv6.APIClient
-	AuthClient         *sdkgoauth.APIClient
-	CertManagerClient  *certmanager.APIClient
-	PostgresClient     *postgres.APIClient
-	MongoClient        *mongo.APIClient
-	DataplatformClient *dataplatform.APIClient
-	RegistryClient     *registry.APIClient
-}
-
-func appendUserAgent(userAgent string) string {
-	return fmt.Sprintf("%v_%v", viper.GetString(CLIHttpUserAgent), userAgent)
-}
-
-func newClient(name, pwd, token, hostUrl string) (*Client, error) {
-	if token == "" && (name == "" || pwd == "") {
-		return nil, errors.New("username, password or token incorrect")
-	}
-
-	clientConfig := cloudv6.NewConfiguration(name, pwd, token, hostUrl)
-	clientConfig.UserAgent = fmt.Sprintf("%v_%v", viper.GetString(CLIHttpUserAgent), clientConfig.UserAgent)
-	// Set Depth Query Parameter globally
-	clientConfig.SetDepth(depthQueryParam)
-
-	authConfig := sdkgoauth.NewConfiguration(name, pwd, token, hostUrl)
-	authConfig.UserAgent = appendUserAgent(authConfig.UserAgent)
-
-	certManagerConfig := certmanager.NewConfiguration(name, pwd, token, hostUrl)
-	certManagerConfig.UserAgent = appendUserAgent(certManagerConfig.UserAgent)
-
-	postgresConfig := postgres.NewConfiguration(name, pwd, token, hostUrl)
-	postgresConfig.UserAgent = appendUserAgent(postgresConfig.UserAgent)
-
-	mongoConfig := mongo.NewConfiguration(name, pwd, token, hostUrl)
-	mongoConfig.UserAgent = appendUserAgent(mongoConfig.UserAgent)
-
-	dpConfig := dataplatform.NewConfiguration(name, pwd, token, hostUrl)
-	dpConfig.UserAgent = appendUserAgent(dpConfig.UserAgent)
-
-	registryConfig := registry.NewConfiguration(name, pwd, token, hostUrl)
-	registryConfig.UserAgent = appendUserAgent(registryConfig.UserAgent)
-
-	return &Client{
-			CloudClient:        cloudv6.NewAPIClient(clientConfig),
-			AuthClient:         sdkgoauth.NewAPIClient(authConfig),
-			CertManagerClient:  certmanager.NewAPIClient(certManagerConfig),
-			PostgresClient:     postgres.NewAPIClient(postgresConfig),
-			MongoClient:        mongo.NewAPIClient(mongoConfig),
-			DataplatformClient: dataplatform.NewAPIClient(dpConfig),
-			RegistryClient:     registry.NewAPIClient(registryConfig),
-		},
-		nil
-}
-
-var once sync.Once
-var instance *Client
-
-func GetClient() (*Client, error) {
-	var err error
-	once.Do(func() {
-		err = Load()
-		instance, err = newClient(viper.GetString(Username), viper.GetString(Password), viper.GetString(Token), GetServerUrl())
-	})
-	if err != nil {
-		return nil, err
-	}
-	return instance, nil
-}
-
-// NewTestClient - function used only for tests.
-// Bypasses the singleton check, not recommended for normal use.
-// TO BE REMOVED ONCE TESTS ARE REFACTORED
-func NewTestClient(name, pwd, token, hostUrl string) (*Client, error) {
-	return newClient(name, pwd, token, hostUrl)
 }

@@ -2,12 +2,12 @@ package nodepool
 
 import (
 	"context"
+	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
 	ionoscloud "github.com/ionos-cloud/sdk-go-dataplatform"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dataplatform/completer"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/spf13/cobra"
@@ -32,7 +32,7 @@ func NodepoolListCmd() *core.Command {
 			c.Printer.Verbose("Getting Nodepools...")
 			clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
 
-			client, err := config.GetClient()
+			client, err := client2.Get()
 			if err != nil {
 				return err
 			}
@@ -62,7 +62,7 @@ func NodepoolListCmd() *core.Command {
 func listAll(c *core.CommandConfig) error {
 	c.Printer.Verbose("Getting all nodepools...")
 
-	client, err := config.GetClient()
+	client, err := client2.Get()
 	if err != nil {
 		return err
 	}

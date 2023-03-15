@@ -2,8 +2,7 @@ package resources
 
 import (
 	"context"
-
-	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
 	"github.com/fatih/structs"
 
@@ -59,7 +58,7 @@ type labelResourcesService struct {
 
 var _ LabelResourcesService = &labelResourcesService{}
 
-func NewLabelResourceService(client *config.Client, ctx context.Context) LabelResourcesService {
+func NewLabelResourceService(client *client.Client, ctx context.Context) LabelResourcesService {
 	return &labelResourcesService{
 		client:  client.CloudClient,
 		context: ctx,

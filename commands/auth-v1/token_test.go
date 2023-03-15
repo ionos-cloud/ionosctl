@@ -8,7 +8,6 @@ import (
 	"regexp"
 	"testing"
 
-	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/utils/clierror"
@@ -295,7 +294,7 @@ func TestRunTokenDeleteCriteriaCurrent(t *testing.T) {
 		viper.Set(constants.ArgForce, true)
 		viper.Set(constants.ArgVerbose, false)
 		viper.Set(core.GetFlagName(cfg.NS, authv1.ArgCurrent), true)
-		viper.Set(config.Token, testTokenVar)
+		viper.Set(constants.Token, testTokenVar)
 		rm.AuthV1Mocks.Token.EXPECT().DeleteByCriteria("CURRENT", int32(0)).Return(&testDeleteResponse, nil, nil)
 		err := RunTokenDelete(cfg)
 		assert.NoError(t, err)
@@ -460,7 +459,7 @@ func TestRunTokenDeleteCurrent(t *testing.T) {
 		viper.Set(constants.ArgForce, true)
 		viper.Set(core.GetFlagName(cfg.NS, authv1.ArgCurrent), true)
 		viper.Set(core.GetFlagName(cfg.NS, authv1.ArgContractNo), testTokenContractNo)
-		viper.Set(config.Token, testTokenVar)
+		viper.Set(constants.Token, testTokenVar)
 		rm.AuthV1Mocks.Token.EXPECT().DeleteByCriteria("CURRENT", testTokenContractNo).Return(&testDeleteResponse, nil, nil)
 		err := RunTokenDeleteCurrent(cfg)
 		assert.NoError(t, err)
@@ -491,7 +490,7 @@ func TestRunTokenDeleteCurrentErr(t *testing.T) {
 		viper.Set(constants.ArgQuiet, false)
 		viper.Set(constants.ArgForce, true)
 		viper.Set(core.GetFlagName(cfg.NS, authv1.ArgCurrent), true)
-		viper.Set(config.Token, testTokenVar)
+		viper.Set(constants.Token, testTokenVar)
 		viper.Set(core.GetFlagName(cfg.NS, authv1.ArgContractNo), testTokenContractNo)
 		rm.AuthV1Mocks.Token.EXPECT().DeleteByCriteria("CURRENT", testTokenContractNo).Return(&testDeleteResponse, nil, testTokenErr)
 		err := RunTokenDeleteCurrent(cfg)
@@ -540,7 +539,7 @@ func TestRunTokenDeleteCurrentAskForConfirmErr(t *testing.T) {
 		viper.Set(constants.ArgQuiet, false)
 		viper.Set(constants.ArgForce, false)
 		viper.Set(core.GetFlagName(cfg.NS, authv1.ArgCurrent), true)
-		viper.Set(config.Token, testTokenVar)
+		viper.Set(constants.Token, testTokenVar)
 		cfg.Stdin = os.Stdin
 		err := RunTokenDeleteCurrent(cfg)
 		assert.Error(t, err)

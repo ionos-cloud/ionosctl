@@ -3,13 +3,13 @@ package cluster
 import (
 	"context"
 	"fmt"
+	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
 	ionoscloud "github.com/ionos-cloud/sdk-go-dataplatform"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dataplatform/completer"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
@@ -39,7 +39,7 @@ func ClusterDeleteCmd() *core.Command {
 				return err
 			}
 			c.Printer.Verbose("Deleting cluster: %s", clusterId)
-			client, err := config.GetClient()
+			client, err := client2.Get()
 			_, _, err = client.DataplatformClient.DataPlatformClusterApi.DeleteCluster(c.Context, clusterId).Execute()
 			if err != nil {
 				return err
@@ -62,7 +62,7 @@ func ClusterDeleteCmd() *core.Command {
 }
 
 func deleteAll(c *core.CommandConfig) error {
-	client, err := config.GetClient()
+	client, err := client2.Get()
 	if err != nil {
 		return err
 	}

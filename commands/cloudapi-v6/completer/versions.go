@@ -2,16 +2,15 @@ package completer
 
 import (
 	"context"
+	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"io"
-
-	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
 
 	"github.com/ionos-cloud/ionosctl/v6/pkg/utils/clierror"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
 )
 
 func K8sClusterUpgradeVersions(outErr io.Writer, clusterId string) []string {
-	client, err := config.GetClient()
+	client, err := client2.Get()
 	clierror.CheckError(err, outErr)
 	k8sSvc := resources.NewK8sService(client, context.Background())
 	cluster, _, err := k8sSvc.GetCluster(clusterId, resources.QueryParams{})
@@ -23,7 +22,7 @@ func K8sClusterUpgradeVersions(outErr io.Writer, clusterId string) []string {
 }
 
 func K8sNodePoolUpgradeVersions(outErr io.Writer, clusterId, nodepoolId string) []string {
-	client, err := config.GetClient()
+	client, err := client2.Get()
 	clierror.CheckError(err, outErr)
 	k8sSvc := resources.NewK8sService(client, context.Background())
 	nodepool, _, err := k8sSvc.GetNodePool(clusterId, nodepoolId, resources.QueryParams{})

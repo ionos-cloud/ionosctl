@@ -2,9 +2,8 @@ package resources
 
 import (
 	"context"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"testing"
-
-	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
 
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/stretchr/testify/assert"
@@ -150,8 +149,8 @@ func TestNewLabelResourceService(t *testing.T) {
 	})
 }
 
-func getTestClient(t *testing.T) *config.Client {
-	svc, err := config.NewTestClient("user", "pass", "", constants.DefaultApiURL)
+func getTestClient(t *testing.T) *client.Client {
+	svc, err := client.NewTestClient("user", "pass", "", constants.DefaultApiURL)
 	assert.NotNil(t, svc)
 	assert.NoError(t, err)
 	assert.Equal(t, "user", svc.CloudClient.GetConfig().Username)

@@ -3,13 +3,13 @@ package mongo
 import (
 	"context"
 	"fmt"
+	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"testing"
 	"time"
 
 	"github.com/cilium/fake"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/cluster"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/user"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	sdkcompute "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
@@ -19,7 +19,7 @@ import (
 var (
 	uniqueResourceName = "ionosctl-mongo-cluster-test-" + fake.AlphaNum(8)
 	cidr               = fake.IP(fake.WithIPv4(), fake.WithIPCIDR("192.168.0.0/16")) + "/24"
-	client             *config.Client
+	client             *client2.Client
 	createdClusterId   string
 	createdDcId        string
 )
@@ -27,7 +27,7 @@ var (
 // If your test is failing because your credentials env var seem empty, try running with `godotenv -f <config-file> go test <test>`
 func TestMongoCommands(t *testing.T) {
 	var err error
-	client, err = config.GetClient()
+	client, err = client2.Get()
 	assert.NoError(t, err)
 	go testMongoClusterCreateIdentifyRequiredNotSet(t)
 	dcId, lanId, err := setupTestMongoCommands()
@@ -171,7 +171,7 @@ func teardownTestMongoCommands() {
 func getPlaygroundTemplateUuid() string {
 	const fallbackUuid = "33457e53-1f8b-4ed2-8a12-2d42355aa759"
 
-	client, err := config.GetClient()
+	client, err := client2.Get()
 	if err != nil {
 		return fallbackUuid
 	}

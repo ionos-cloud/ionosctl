@@ -4,9 +4,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"time"
-
-	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
 
 	sdkgo "github.com/ionos-cloud/sdk-go-dbaas-mongo"
 )
@@ -36,7 +35,7 @@ type clustersService struct {
 
 var _ ClustersService = &clustersService{}
 
-func NewClustersService(client *config.Client, ctx context.Context) ClustersService {
+func NewClustersService(client *client.Client, ctx context.Context) ClustersService {
 	return &clustersService{
 		client:  client.MongoClient,
 		context: ctx,

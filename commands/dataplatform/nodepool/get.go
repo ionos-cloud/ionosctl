@@ -2,9 +2,9 @@ package nodepool
 
 import (
 	"context"
+	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dataplatform/completer"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	ionoscloud "github.com/ionos-cloud/sdk-go-dataplatform"
@@ -33,7 +33,7 @@ func NodepoolGetCmd() *core.Command {
 			npId := viper.GetString(core.GetFlagName(c.NS, constants.FlagNodepoolId))
 			c.Printer.Verbose("Getting Nodepool %s...", npId)
 
-			client, err := config.GetClient()
+			client, err := client2.Get()
 			if err != nil {
 				return err
 			}

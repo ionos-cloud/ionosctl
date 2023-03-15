@@ -1,9 +1,8 @@
 package resources
 
 import (
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"testing"
-
-	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
 
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/stretchr/testify/assert"
@@ -11,22 +10,22 @@ import (
 
 func TestNewClientService(t *testing.T) {
 	t.Run("no credentials", func(t *testing.T) {
-		svc, err := config.NewTestClient("", "", "", "")
+		svc, err := client.NewTestClient("", "", "", "")
 		assert.Nil(t, svc)
 		assert.EqualError(t, err, "username, password or token incorrect")
 
-		svc, err = config.NewTestClient("needspassword", "", "", "url")
+		svc, err = client.NewTestClient("needspassword", "", "", "url")
 		assert.Nil(t, svc)
 		assert.EqualError(t, err, "username, password or token incorrect")
 	})
 
 	t.Run("success", func(t *testing.T) {
-		svc, err := config.NewTestClient("", "", "token", "url")
+		svc, err := client.NewTestClient("", "", "token", "url")
 		assert.NotNil(t, svc)
 		assert.NoError(t, err)
 		assert.Equal(t, "token", svc.PostgresClient.GetConfig().Token)
 
-		svc, err = config.NewTestClient("user", "pass", "", "url")
+		svc, err = client.NewTestClient("user", "pass", "", "url")
 		assert.NotNil(t, svc)
 		assert.NoError(t, err)
 		assert.Equal(t, "user", svc.PostgresClient.GetConfig().Username)
@@ -34,8 +33,8 @@ func TestNewClientService(t *testing.T) {
 	})
 }
 
-func getTestClient(t *testing.T) *config.Client {
-	svc, err := config.NewTestClient("user", "pass", "", constants.DefaultApiURL)
+func getTestClient(t *testing.T) *client.Client {
+	svc, err := client.NewTestClient("user", "pass", "", constants.DefaultApiURL)
 	assert.NotNil(t, svc)
 	assert.NoError(t, err)
 	assert.Equal(t, "user", svc.PostgresClient.GetConfig().Username)

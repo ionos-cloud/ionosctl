@@ -2,8 +2,7 @@ package resources
 
 import (
 	"context"
-
-	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
 	"github.com/fatih/structs"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
@@ -36,7 +35,7 @@ type requestsService struct {
 
 var _ RequestsService = &requestsService{}
 
-func NewRequestService(client *config.Client, ctx context.Context) RequestsService {
+func NewRequestService(client *client.Client, ctx context.Context) RequestsService {
 	return &requestsService{
 		client:  client.CloudClient,
 		context: ctx,

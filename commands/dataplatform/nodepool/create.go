@@ -2,10 +2,10 @@ package nodepool
 
 import (
 	"context"
+	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"
 
 	"github.com/cilium/fake"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dataplatform/completer"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	sdkdataplatform "github.com/ionos-cloud/sdk-go-dataplatform"
@@ -89,7 +89,7 @@ func NodepoolCreateCmd() *core.Command {
 			input := sdkdataplatform.CreateNodePoolRequest{}
 			input.SetProperties(createProperties)
 
-			client, err := config.GetClient()
+			client, err := client2.Get()
 			if err != nil {
 				return err
 			}

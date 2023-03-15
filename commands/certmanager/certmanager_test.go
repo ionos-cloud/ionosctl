@@ -9,6 +9,7 @@ import (
 	"crypto/x509/pkix"
 	"encoding/pem"
 	"errors"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"math/big"
 	"os"
 	"path/filepath"
@@ -18,7 +19,6 @@ import (
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 )
@@ -131,7 +131,7 @@ func TestCertificateManagerServiceCmd(t *testing.T) {
 			assert.NoError(t, err)
 
 			// var id string
-			svc, err := config.GetClient()
+			svc, err := client.Get()
 			certs, _, err := svc.CertManagerClient.CertificatesApi.CertificatesGet(context.Background()).Execute()
 			assert.NoError(t, err)
 
@@ -203,7 +203,7 @@ func TestCertificateManagerServiceCmd(t *testing.T) {
 			assert.NoError(t, err)
 
 			// var id string
-			svc, err := config.GetClient()
+			svc, err := client.Get()
 			certs, _, err := svc.CertManagerClient.CertificatesApi.CertificatesGet(context.Background()).
 				Execute()
 			assert.NoError(t, err)

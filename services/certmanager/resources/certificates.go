@@ -2,8 +2,7 @@ package resources
 
 import (
 	"context"
-
-	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
 	sdkgo "github.com/ionos-cloud/sdk-go-cert-manager"
 )
@@ -29,7 +28,7 @@ type certsService struct {
 
 var _ CertsService = &certsService{}
 
-func NewCertsService(client *config.Client, ctx context.Context) CertsService {
+func NewCertsService(client *client.Client, ctx context.Context) CertsService {
 	return &certsService{
 		client:  client.CertManagerClient,
 		context: ctx,

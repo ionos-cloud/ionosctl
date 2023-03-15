@@ -3,12 +3,12 @@ package core
 import (
 	"bytes"
 	"context"
+	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"io"
 	"os"
 
 	dbaas_mongo "github.com/ionos-cloud/ionosctl/v6/services/dbaas-mongo"
 
-	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/utils/clierror"
@@ -119,7 +119,7 @@ func NewCommandCfg(ctx context.Context, in io.Reader, p printer.PrintService, in
 		// Define cmd Command Config function for Command
 		initCfg: func(c *CommandConfig) error {
 			// Init Clients and Services
-			client, err := config.GetClient()
+			client, err := client2.Get()
 			if err != nil {
 				return err
 			}

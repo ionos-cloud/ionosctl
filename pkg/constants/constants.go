@@ -103,3 +103,11 @@ const (
 	ErrDeleteAll     = "error occurred removing %v with ID: %v. error: %w"
 	ErrWaitDeleteAll = "error occurred waiting on removing %v with ID: %v. error: %w" // TODO: cleanup constant. reduce duplication
 )
+
+const (
+	Username         = "userdata.name"
+	Password         = "userdata.password"
+	Token            = "userdata.token"
+	ServerUrl        = "userdata.api-url"
+	CLIHttpUserAgent = "cli-user-agent"
+)
