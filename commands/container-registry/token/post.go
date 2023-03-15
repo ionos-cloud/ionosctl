@@ -104,7 +104,8 @@ func CmdPostToken(c *core.CommandConfig) error {
 		if err != nil {
 			return err
 		}
-		timeNow.Add(duration)
+		timeNow = timeNow.Add(duration)
+		tokenPostProperties.SetExpiryDate(timeNow)
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, FlagStatus)) {

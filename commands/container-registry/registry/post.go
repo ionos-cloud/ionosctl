@@ -2,6 +2,8 @@ package registry
 
 import (
 	"context"
+
+	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
@@ -37,6 +39,12 @@ func RegPostCmd() *core.Command {
 	)
 	cmd.AddStringFlag(FlagName, "n", "", "Specify the name of the registry", core.RequiredFlagOption())
 	cmd.AddStringFlag(FlagLocation, "", "", "Specify the location of the registry", core.RequiredFlagOption())
+	_ = cmd.Command.RegisterFlagCompletionFunc(
+		FlagLocation,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return getLocForAutoComplete(), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 
 	cmd.AddStringSliceFlag(
 		FlagRegGCDays, "", []string{}, "Specify the garbage collection schedule days",
@@ -108,4 +116,17 @@ func CmdPost(c *core.CommandConfig) error {
 	regPrint.SetProperties(*reg.GetProperties())
 
 	return c.Printer.Print(getRegistryPrint(nil, c, &[]sdkgo.RegistryResponse{*regPrint}, true))
+}
+
+func getLocForAutoComplete() []string {
+	var locations []string
+	svc, _ := config.GetClient()
+	locs, _, _ := svc.RegistryClient.LocationsApi.LocationsGet(context.Background()).Execute()
+	list := locs.GetItems()
+
+	for _, item := range *list {
+		locations = append(locations, *item.GetId())
+	}
+
+	return locations
 }

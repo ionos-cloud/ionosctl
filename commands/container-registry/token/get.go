@@ -2,6 +2,7 @@ package token
 
 import (
 	"context"
+
 	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/registry"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
@@ -33,10 +34,11 @@ func TokenGetCmd() *core.Command {
 			return registry.RegsIds(), cobra.ShellCompDirectiveNoFileComp
 		},
 	)
+
 	cmd.AddStringFlag(FlagTokenId, "t", "", "Token ID")
 	_ = cmd.Command.RegisterFlagCompletionFunc(
-		FlagTokenId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-			return TokensIds(), cobra.ShellCompDirectiveNoFileComp
+		FlagTokenId, func(cobracmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return TokensIds(viper.GetString(core.GetFlagName(cmd.NS, FlagRegId))), cobra.ShellCompDirectiveNoFileComp
 		},
 	)
 

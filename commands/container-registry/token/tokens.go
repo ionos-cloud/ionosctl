@@ -3,10 +3,11 @@ package token
 import (
 	"context"
 	"fmt"
-	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
 
 	"github.com/fatih/structs"
 	scope "github.com/ionos-cloud/ionosctl/v6/commands/container-registry/token/scopes"
@@ -128,18 +129,31 @@ func getTokensRows(tokens *[]ionoscloud.TokenResponse) []map[string]interface{} 
 var allCols = structs.Names(TokenPrint{})
 
 // TODO: check how other resources are doing this
-func TokensIds() []string {
+func TokensIds(regId string) []string {
 	client, _ := config.GetClient()
+	svcToken := resources.NewTokenService(client, context.Background())
+	var allTokens []ionoscloud.TokenResponse
+
+	if regId != "" {
+
+		tokens, _, _ := svcToken.List(regId)
+
+		allTokens = append(allTokens, *tokens.GetItems()...)
+
+		return functional.Map(
+			allTokens, func(reg ionoscloud.TokenResponse) string {
+				return *reg.GetId()
+			},
+		)
+	}
+
 	svc := resources.NewRegistriesService(client, context.Background())
 	regs, _, _ := svc.List("")
-
-	svcToken := resources.NewTokenService(client, context.Background())
 	regsIDs := *regs.GetItems()
-
-	var allTokens []ionoscloud.TokenResponse
 
 	for _, regID := range regsIDs {
 		tokens, _, _ := svcToken.List(*regID.GetId())
+		
 		allTokens = append(allTokens, *tokens.GetItems()...)
 	}
 

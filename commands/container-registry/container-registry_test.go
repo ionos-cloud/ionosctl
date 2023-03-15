@@ -1,7 +1,8 @@
 package container_registry
 
 import (
-	"errors"
+	"testing"
+
 	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/location"
 	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/name"
 	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/registry"
@@ -9,73 +10,24 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/token"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestContainerRegistryServiceCmd(t *testing.T) {
-	var err error
 	core.RootCmdTest.AddCommand(ContainerRegistryCmd())
-	if ok := ContainerRegistryCmd().IsAvailableCommand(); !ok {
-		err = errors.New("non-available cmd")
-	}
-	assert.NoError(t, err)
-	if ok := registry.RegPostCmd().IsAvailableCommand(); !ok {
-		err = errors.New("non-available cmd")
-	}
-	assert.NoError(t, err)
-	if ok := registry.RegGetCmd().IsAvailableCommand(); !ok {
-		err = errors.New("non-available cmd")
-	}
-	assert.NoError(t, err)
-	if ok := registry.RegListCmd().IsAvailableCommand(); !ok {
-		err = errors.New("non-available cmd")
-	}
-	assert.NoError(t, err)
-	if ok := registry.RegDeleteCmd().IsAvailableCommand(); !ok {
-		err = errors.New("non-available cmd")
-	}
-	assert.NoError(t, err)
-	if ok := registry.RegUpdateCmd().IsAvailableCommand(); !ok {
-		err = errors.New("non-available cmd")
-	}
-	assert.NoError(t, err)
-	if ok := registry.RegReplaceCmd().IsAvailableCommand(); !ok {
-		err = errors.New("non-available cmd")
-	}
-	assert.NoError(t, err)
-	if ok := token.TokenPostCmd().IsAvailableCommand(); !ok {
-		err = errors.New("non-available cmd")
-	}
-	assert.NoError(t, err)
-	if ok := token.TokenGetCmd().IsAvailableCommand(); !ok {
-		err = errors.New("non-available cmd")
-	}
-	assert.NoError(t, err)
-	if ok := token.TokenListCmd().IsAvailableCommand(); !ok {
-		err = errors.New("non-available cmd")
-	}
-	assert.NoError(t, err)
-	if ok := token.TokenDeleteCmd().IsAvailableCommand(); !ok {
-		err = errors.New("non-available cmd")
-	}
-	assert.NoError(t, err)
-	if ok := token.TokenUpdateCmd().IsAvailableCommand(); !ok {
-		err = errors.New("non-available cmd")
-	}
-	assert.NoError(t, err)
-	if ok := token.TokenReplaceCmd().IsAvailableCommand(); !ok {
-		err = errors.New("non-available cmd")
-	}
-	assert.NoError(t, err)
-	if ok := name.RegNamesCmd().IsAvailableCommand(); !ok {
-		err = errors.New("non-available cmd")
-	}
-	assert.NoError(t, err)
-	if ok := location.RegLocationsListCmd().IsAvailableCommand(); !ok {
-		err = errors.New("non-available cmd")
-	}
-	assert.NoError(t, err)
-	if ok := repository.RegRepoDeleteCmd().IsAvailableCommand(); !ok {
-		err = errors.New("non-available cmd")
-	}
+	assert.True(t, ContainerRegistryCmd().IsAvailableCommand())
+	assert.True(t, registry.RegPostCmd().IsAvailableCommand())
+	assert.True(t, registry.RegGetCmd().IsAvailableCommand())
+	assert.True(t, registry.RegListCmd().IsAvailableCommand())
+	assert.True(t, registry.RegDeleteCmd().IsAvailableCommand())
+	assert.True(t, registry.RegUpdateCmd().IsAvailableCommand())
+	assert.True(t, registry.RegReplaceCmd().IsAvailableCommand())
+	assert.True(t, token.TokenPostCmd().IsAvailableCommand())
+	assert.True(t, token.TokenGetCmd().IsAvailableCommand())
+	assert.True(t, token.TokenListCmd().IsAvailableCommand())
+	assert.True(t, token.TokenDeleteCmd().IsAvailableCommand())
+	assert.True(t, token.TokenUpdateCmd().IsAvailableCommand())
+	assert.True(t, token.TokenReplaceCmd().IsAvailableCommand())
+	assert.True(t, name.RegNamesCmd().IsAvailableCommand())
+	assert.True(t, location.RegLocationsListCmd().IsAvailableCommand())
+	assert.True(t, repository.RegRepoDeleteCmd().IsAvailableCommand())
 }

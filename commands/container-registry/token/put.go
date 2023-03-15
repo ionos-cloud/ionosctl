@@ -37,10 +37,10 @@ func TokenReplaceCmd() *core.Command {
 			return registry.RegsIds(), cobra.ShellCompDirectiveNoFileComp
 		},
 	)
-	cmd.AddStringFlag("token-id", "t", "", "Token ID")
+	cmd.AddStringFlag(FlagTokenId, "t", "", "Token ID")
 	_ = cmd.Command.RegisterFlagCompletionFunc(
-		"token-id", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-			return TokensIds(), cobra.ShellCompDirectiveNoFileComp
+		FlagTokenId, func(cobracmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return TokensIds(viper.GetString(core.GetFlagName(cmd.NS, FlagRegId))), cobra.ShellCompDirectiveNoFileComp
 		},
 	)
 
@@ -101,7 +101,8 @@ func CmdPutToken(c *core.CommandConfig) error {
 		if err != nil {
 			return err
 		}
-		timeNow.Add(duration)
+		timeNow = timeNow.Add(duration)
+		tokenPutProperties.SetExpiryDate(timeNow)
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, FlagStatus)) {
