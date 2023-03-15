@@ -9,6 +9,7 @@ import (
 	"crypto/x509/pkix"
 	"encoding/pem"
 	"errors"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"math/big"
 	"os"
 	"path/filepath"

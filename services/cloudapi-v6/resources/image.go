@@ -6,6 +6,7 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"fmt"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"path/filepath"
 	"time"
 

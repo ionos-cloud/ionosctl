@@ -3,6 +3,7 @@ package resources
 import (
 	"errors"
 	"fmt"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 

@@ -2,6 +2,7 @@ package resources
 
 import (
 	"context"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"time"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
