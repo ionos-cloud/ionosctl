@@ -14,12 +14,12 @@ func RegRepoDeleteCmd() *core.Command {
 			Namespace: "container-registry",
 			Resource:  "repository",
 			Verb:      "repository",
-			Aliases:   []string{"rd", "del", "repo", "rep-del"},
+			Aliases:   []string{"rd", "del", "repo", "rep-del", "repository-delete"},
 			ShortDesc: "Delete all repository contents.",
 			LongDesc: "Delete all repository contents. The registry V2 API allows manifests and blobs to be deleted " +
 				"individually but it is not possible to remove an entire repository. This operation is provided for " +
 				"convenience",
-			Example:    "ionosctl container-registry locations",
+			Example:    "ionosctl container-registry repository-delete --registry-id [REGISTRY-ID], --name [REPOSITORY-NAME]",
 			PreCmdRun:  PreCmdDelete,
 			CmdRun:     CmdDelete,
 			InitClient: true,

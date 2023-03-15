@@ -128,7 +128,6 @@ func getTokensRows(tokens *[]ionoscloud.TokenResponse) []map[string]interface{} 
 
 var allCols = structs.Names(TokenPrint{})
 
-// TODO: check how other resources are doing this
 func TokensIds(regId string) []string {
 	client, _ := config.GetClient()
 	svcToken := resources.NewTokenService(client, context.Background())
