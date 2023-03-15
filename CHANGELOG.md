@@ -1,5 +1,14 @@
 # Changelog
 
+## [6.6.0] (March 2023)
+
+### Added
+- Added support for DBaaS Mongo API
+- Added support for Dataplatform API
+
+### Changed
+- flag values for `cols`, `filters` are now case insensitive
+
 ## [6.5.2] (March 2023)
 
 ### Fixed
