@@ -152,7 +152,7 @@ func TokensIds(regId string) []string {
 
 	for _, regID := range regsIDs {
 		tokens, _, _ := svcToken.List(*regID.GetId())
-		
+
 		allTokens = append(allTokens, *tokens.GetItems()...)
 	}
 

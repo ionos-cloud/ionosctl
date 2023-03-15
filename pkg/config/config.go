@@ -163,7 +163,7 @@ type Client struct {
 	PostgresClient     *postgres.APIClient
 	MongoClient        *mongo.APIClient
 	DataplatformClient *dataplatform.APIClient
-	RegistryClient    *registry.APIClient
+	RegistryClient     *registry.APIClient
 }
 
 func appendUserAgent(userAgent string) string {
@@ -205,7 +205,7 @@ func newClient(name, pwd, token, hostUrl string) (*Client, error) {
 			PostgresClient:     postgres.NewAPIClient(postgresConfig),
 			MongoClient:        mongo.NewAPIClient(mongoConfig),
 			DataplatformClient: dataplatform.NewAPIClient(dpConfig),
-			RegistryClient:    registry.NewAPIClient(registryConfig),
+			RegistryClient:     registry.NewAPIClient(registryConfig),
 		},
 		nil
 }
