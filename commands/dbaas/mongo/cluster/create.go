@@ -2,9 +2,10 @@ package cluster
 
 import (
 	"context"
+	"os"
+
 	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
 	"github.com/spf13/viper"
-	"os"
 
 	"github.com/cjrd/allocate"
 	cloudapiv6completer "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
@@ -34,6 +35,26 @@ func ClusterCreateCmd() *core.Command {
 				return err
 			}
 			err = c.Command.Command.MarkFlagRequired(constants.FlagInstances)
+			if err != nil {
+				return err
+			}
+			err = c.Command.Command.MarkFlagRequired(constants.FlagDatacenterId)
+			if err != nil {
+				return err
+			}
+			err = c.Command.Command.MarkFlagRequired(constants.FlagMaintenanceDay)
+			if err != nil {
+				return err
+			}
+			err = c.Command.Command.MarkFlagRequired(constants.FlagMaintenanceTime)
+			if err != nil {
+				return err
+			}
+			err = c.Command.Command.MarkFlagRequired(constants.FlagCidr)
+			if err != nil {
+				return err
+			}
+			err = c.Command.Command.MarkFlagRequired(constants.FlagLanId)
 			if err != nil {
 				return err
 			}
@@ -108,7 +129,7 @@ func ClusterCreateCmd() *core.Command {
 		return completer.MongoTemplateIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddInt32VarFlag(createProperties.Instances, constants.FlagInstances, "", 0, "The total number of instances in the cluster (one primary and n-1 secondaries)")
-	cmd.AddStringVarFlag(createProperties.MongoDBVersion, constants.FlagMongoVersion, "", "5.0", "The MongoDB version of your cluster")
+	cmd.AddStringVarFlag(createProperties.MongoDBVersion, constants.FlagVersion, "", "5.0", "The MongoDB version of your cluster")
 
 	// Maintenance
 	cmd.AddStringFlag(constants.FlagMaintenanceTime, "", "", "Time for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur. e.g.: 16:30:59", core.RequiredFlagOption())
@@ -135,6 +156,8 @@ func ClusterCreateCmd() *core.Command {
 		return cloudapiv6completer.LansIds(os.Stderr, cmd.Flag(constants.FlagDatacenterId).Value.String()), cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddStringSliceVarFlag(createConn.CidrList, constants.FlagCidr, "", nil, "The list of IPs and subnet for your cluster. Note the following unavailable IP ranges: 10.233.64.0/18 10.233.0.0/18 10.233.114.0/24", core.RequiredFlagOption())
+
+	cmd.Command.SilenceUsage = true
 
 	cmd.Command.SilenceUsage = true
 

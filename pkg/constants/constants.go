@@ -6,13 +6,12 @@ package constants
 
 // flags
 const (
-	FlagClusterId       = "cluster-id"
+	FlagDatacenterId    = "datacenter-id"
 	FlagSnapshotId      = "snapshot-id"
 	FlagIdShort         = "i"
 	FlagName            = "name"
 	FlagNameShort       = "n"
 	FlagTemplateId      = "template-id"
-	FlagMongoVersion    = "mongo-version"
 	FlagInstances       = "instances"
 	FlagMaintenanceTime = "maintenance-time"
 	FlagMaintenanceDay  = "maintenance-day"
@@ -21,10 +20,25 @@ const (
 	FlagOffset          = "offset"
 	FlagMaxResults      = "max-results"
 	FlagMaxResultsShort = "M"
-	FlagDatacenterId    = "datacenter-id"
 	FlagCidr            = "cidr"
-	FlagCidrShort       = "c"
 	FlagLanId           = "lan-id"
+
+	FlagCores                 = "cores"
+	FlagRam                   = "ram"
+	FlagAvailabilityZone      = "availability-zone"
+	FlagAvailabilityZoneShort = "z"
+	FlagCpuFamily             = "cpu-family"
+	FlagStorageType           = "storage-type"
+	FlagStorageSize           = "storage-size"
+
+	FlagClusterId        = "cluster-id"
+	FlagNodepoolId       = "nodepool-id"
+	FlagNodeCount        = "node-count"
+	FlagLabels           = "labels"
+	FlagLabelsShort      = "L"
+	FlagAnnotations      = "annotations"
+	FlagAnnotationsShort = "A"
+	FlagVersion          = "version"
 )
 
 // Flag descriptions. Prefixed with "Desc" for easy find and replace

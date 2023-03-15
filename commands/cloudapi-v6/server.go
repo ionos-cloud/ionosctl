@@ -160,18 +160,18 @@ You can wait for the Request to be executed using ` + "`" + `--wait-for-request`
 		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "Unnamed Server", "Name of the Server")
-	create.AddIntFlag(cloudapiv6.ArgCores, "", cloudapiv6.DefaultServerCores, "The total number of cores for the Server, e.g. 4. Maximum: depends on contract resource limits", core.RequiredFlagOption())
-	create.AddStringFlag(cloudapiv6.ArgRam, "", "", "The amount of memory for the Server. Size must be specified in multiples of 256. e.g. --ram 256 or --ram 256MB", core.RequiredFlagOption())
-	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgRam, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	create.AddIntFlag(constants.FlagCores, "", cloudapiv6.DefaultServerCores, "The total number of cores for the Server, e.g. 4. Maximum: depends on contract resource limits", core.RequiredFlagOption())
+	create.AddStringFlag(constants.FlagRam, "", "", "The amount of memory for the Server. Size must be specified in multiples of 256. e.g. --ram 256 or --ram 256MB", core.RequiredFlagOption())
+	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagRam, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"256MB", "512MB", "1024MB", "2GB", "3GB", "4GB", "5GB", "10GB", "16GB"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(cloudapiv6.ArgCPUFamily, "", cloudapiv6.DefaultServerCPUFamily, "CPU Family for the Server. For CUBE Servers, the CPU Family is INTEL_SKYLAKE")
-	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgCpuFamily, func(*cobra.Command, []string, string) ([]string, cobra.ShellCompDirective) {
+	create.AddStringFlag(constants.FlagCpuFamily, "", cloudapiv6.DefaultServerCPUFamily, "CPU Family for the Server. For CUBE Servers, the CPU Family is INTEL_SKYLAKE")
+	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagCpuFamily, func(*cobra.Command, []string, string) ([]string, cobra.ShellCompDirective) {
 		datacenterId := viper.GetString(core.GetFlagName(create.NS, cloudapiv6.ArgDataCenterId))
 		return completer.DatacenterCPUFamilies(create.Command.Context(), os.Stderr, datacenterId), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(cloudapiv6.ArgAvailabilityZone, cloudapiv6.ArgAvailabilityZoneShort, "AUTO", "Availability zone of the Server")
-	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgAvailabilityZone, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	create.AddStringFlag(constants.FlagAvailabilityZone, constants.FlagAvailabilityZoneShort, "AUTO", "Availability zone of the Server")
+	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagAvailabilityZone, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"AUTO", "ZONE_1", "ZONE_2"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddUUIDFlag(cloudapiv6.ArgTemplateId, "", "", "[CUBE Server] The unique Template Id", core.RequiredFlagOption())
@@ -255,18 +255,18 @@ Required values to run command:
 		}}), cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "", "Name of the Server")
-	update.AddStringFlag(cloudapiv6.ArgCPUFamily, "", cloudapiv6.DefaultServerCPUFamily, "CPU Family of the Server")
-	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgCpuFamily, func(*cobra.Command, []string, string) ([]string, cobra.ShellCompDirective) {
+	update.AddStringFlag(constants.FlagCpuFamily, "", cloudapiv6.DefaultServerCPUFamily, "CPU Family of the Server")
+	_ = update.Command.RegisterFlagCompletionFunc(constants.FlagCpuFamily, func(*cobra.Command, []string, string) ([]string, cobra.ShellCompDirective) {
 		datacenterId := viper.GetString(core.GetFlagName(update.NS, cloudapiv6.ArgDataCenterId))
 		return completer.DatacenterCPUFamilies(update.Command.Context(), os.Stderr, datacenterId), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddStringFlag(cloudapiv6.ArgAvailabilityZone, cloudapiv6.ArgAvailabilityZoneShort, "", "Availability zone of the Server")
-	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgAvailabilityZone, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	update.AddStringFlag(constants.FlagAvailabilityZone, constants.FlagAvailabilityZoneShort, "", "Availability zone of the Server")
+	_ = update.Command.RegisterFlagCompletionFunc(constants.FlagAvailabilityZone, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"AUTO", "ZONE_1", "ZONE_2"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddIntFlag(cloudapiv6.ArgCores, "", cloudapiv6.DefaultServerCores, "The total number of cores for the Server, e.g. 4. Maximum: depends on contract resource limits")
-	update.AddStringFlag(cloudapiv6.ArgRam, "", "", "The amount of memory for the Server. Size must be specified in multiples of 256. e.g. --ram 256 or --ram 256MB")
-	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgRam, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	update.AddIntFlag(constants.FlagCores, "", cloudapiv6.DefaultServerCores, "The total number of cores for the Server, e.g. 4. Maximum: depends on contract resource limits")
+	update.AddStringFlag(constants.FlagRam, "", "", "The amount of memory for the Server. Size must be specified in multiples of 256. e.g. --ram 256 or --ram 256MB")
+	_ = update.Command.RegisterFlagCompletionFunc(constants.FlagRam, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"256MB", "512MB", "1024MB", "2GB", "3GB", "4GB", "5GB", "10GB", "16GB"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait, "Wait for the Request for Server update to be executed")
@@ -513,7 +513,7 @@ func PreRunServerList(c *core.PreCommandConfig) error {
 
 func PreRunServerCreate(c *core.PreCommandConfig) error {
 	err := core.CheckRequiredFlagsSets(c.Command, c.NS,
-		[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgCores, cloudapiv6.ArgRam},
+		[]string{cloudapiv6.ArgDataCenterId, constants.FlagCores, constants.FlagRam},
 		[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgType, cloudapiv6.ArgTemplateId})
 	if err != nil {
 		return err
@@ -521,10 +521,10 @@ func PreRunServerCreate(c *core.PreCommandConfig) error {
 	// Validate flags
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgImageId)) || viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgImageAlias)) {
 		err = core.CheckRequiredFlagsSets(c.Command, c.NS,
-			[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgCores, cloudapiv6.ArgRam, cloudapiv6.ArgImageId, cloudapiv6.ArgPassword},
-			[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgCores, cloudapiv6.ArgRam, cloudapiv6.ArgImageId, cloudapiv6.ArgSshKeyPaths},
-			[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgCores, cloudapiv6.ArgRam, cloudapiv6.ArgImageAlias, cloudapiv6.ArgPassword},
-			[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgCores, cloudapiv6.ArgRam, cloudapiv6.ArgImageAlias, cloudapiv6.ArgSshKeyPaths},
+			[]string{cloudapiv6.ArgDataCenterId, constants.FlagCores, constants.FlagRam, cloudapiv6.ArgImageId, cloudapiv6.ArgPassword},
+			[]string{cloudapiv6.ArgDataCenterId, constants.FlagCores, constants.FlagRam, cloudapiv6.ArgImageId, cloudapiv6.ArgSshKeyPaths},
+			[]string{cloudapiv6.ArgDataCenterId, constants.FlagCores, constants.FlagRam, cloudapiv6.ArgImageAlias, cloudapiv6.ArgPassword},
+			[]string{cloudapiv6.ArgDataCenterId, constants.FlagCores, constants.FlagRam, cloudapiv6.ArgImageAlias, cloudapiv6.ArgSshKeyPaths},
 			[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgType, cloudapiv6.ArgTemplateId, cloudapiv6.ArgImageId, cloudapiv6.ArgPassword},
 			[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgType, cloudapiv6.ArgTemplateId, cloudapiv6.ArgImageId, cloudapiv6.ArgSshKeyPaths},
 			[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgType, cloudapiv6.ArgTemplateId, cloudapiv6.ArgImageAlias, cloudapiv6.ArgPassword},
@@ -915,18 +915,18 @@ func getUpdateServerInfo(c *core.CommandConfig) (*resources.ServerProperties, er
 		input.SetName(name)
 		c.Printer.Verbose("Property name set: %v ", name)
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgCPUFamily)) {
-		cpuFamily := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgCPUFamily))
+	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagCpuFamily)) {
+		cpuFamily := viper.GetString(core.GetFlagName(c.NS, constants.FlagCpuFamily))
 		c.Printer.Verbose("Property CpuFamily set: %v ", cpuFamily)
 		input.SetCpuFamily(cpuFamily)
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgAvailabilityZone)) {
-		availabilityZone := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgAvailabilityZone))
+	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagAvailabilityZone)) {
+		availabilityZone := viper.GetString(core.GetFlagName(c.NS, constants.FlagAvailabilityZone))
 		c.Printer.Verbose("Property AvailabilityZone set: %v ", availabilityZone)
 		input.SetAvailabilityZone(availabilityZone)
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgCores)) {
-		cores := viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgCores))
+	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagCores)) {
+		cores := viper.GetInt32(core.GetFlagName(c.NS, constants.FlagCores))
 		c.Printer.Verbose("Property Cores set: %v ", cores)
 		input.SetCores(cores)
 	}
@@ -944,9 +944,9 @@ func getUpdateServerInfo(c *core.CommandConfig) (*resources.ServerProperties, er
 			Id: &cdromId,
 		})
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgRam)) {
+	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagRam)) {
 		size, err := utils.ConvertSize(
-			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRam)),
+			viper.GetString(core.GetFlagName(c.NS, constants.FlagRam)),
 			utils.MegaBytes,
 		)
 		if err != nil {
@@ -963,7 +963,7 @@ func getUpdateServerInfo(c *core.CommandConfig) (*resources.ServerProperties, er
 func getNewServer(c *core.CommandConfig) (*resources.Server, error) {
 	input := resources.ServerProperties{}
 	serverType := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgType))
-	availabilityZone := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgAvailabilityZone))
+	availabilityZone := viper.GetString(core.GetFlagName(c.NS, constants.FlagAvailabilityZone))
 	name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
 	input.SetType(serverType)
 	input.SetAvailabilityZone(availabilityZone)
@@ -988,18 +988,18 @@ func getNewServer(c *core.CommandConfig) (*resources.Server, error) {
 
 	// ENTERPRISE Server Properties
 	if viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgType)) == serverEnterpriseType {
-		input.SetCpuFamily(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgCpuFamily)))
+		input.SetCpuFamily(viper.GetString(core.GetFlagName(c.NS, constants.FlagCpuFamily)))
 		if !input.HasName() {
 			input.SetName("Unnamed Server")
 		}
-		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgCores)) {
-			cores := viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgCores))
+		if viper.IsSet(core.GetFlagName(c.NS, constants.FlagCores)) {
+			cores := viper.GetInt32(core.GetFlagName(c.NS, constants.FlagCores))
 			input.SetCores(cores)
 			c.Printer.Verbose("Property Cores set: %v", cores)
 		}
-		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgRam)) {
+		if viper.IsSet(core.GetFlagName(c.NS, constants.FlagRam)) {
 			size, err := utils.ConvertSize(
-				viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRam)),
+				viper.GetString(core.GetFlagName(c.NS, constants.FlagRam)),
 				utils.MegaBytes,
 			)
 			if err != nil {

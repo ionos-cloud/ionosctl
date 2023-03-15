@@ -203,8 +203,6 @@ const (
 	ArgS3KeyId                   = "s3key-id"
 	ArgBackupUnitId              = "backupunit-id"
 	ArgPccId                     = "pcc-id"
-	ArgK8sClusterId              = "cluster-id"
-	ArgK8sNodePoolId             = "nodepool-id"
 	ArgK8sNodeId                 = "node-id"
 	ArgCdromId                   = "cdrom-id"
 	ArgTargetGroupId             = "targetgroup-id"

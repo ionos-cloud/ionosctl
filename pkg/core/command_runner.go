@@ -3,9 +3,10 @@ package core
 import (
 	"bytes"
 	"context"
-	dbaas_mongo "github.com/ionos-cloud/ionosctl/v6/services/dbaas-mongo"
 	"io"
 	"os"
+
+	dbaas_mongo "github.com/ionos-cloud/ionosctl/v6/services/dbaas-mongo"
 
 	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"

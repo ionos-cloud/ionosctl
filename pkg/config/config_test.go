@@ -1,10 +1,11 @@
 package config
 
 import (
-	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"os"
 	"path/filepath"
 	"testing"
+
+	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 
 	sdk "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/pflag"

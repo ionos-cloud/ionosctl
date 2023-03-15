@@ -3,11 +3,12 @@ package doc
 import (
 	"bytes"
 	"fmt"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"io"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 )
 
 // Generate Markdown documentation based on information described in commands.

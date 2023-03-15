@@ -2,9 +2,10 @@ package main
 
 import (
 	"fmt"
+	"os"
+
 	"github.com/ionos-cloud/ionosctl/v6/commands"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/doc"
-	"os"
 )
 
 func main() {

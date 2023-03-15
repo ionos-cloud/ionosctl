@@ -29,6 +29,8 @@ require (
 
 require github.com/cilium/fake v0.3.0
 
+require github.com/ionos-cloud/sdk-go-dataplatform v1.0.0
+
 require (
 	github.com/VividCortex/ewma v1.2.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect

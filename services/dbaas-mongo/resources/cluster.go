@@ -4,8 +4,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
 	"time"
+
+	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
 
 	sdkgo "github.com/ionos-cloud/sdk-go-dbaas-mongo"
 )
@@ -114,6 +115,9 @@ func (svc *clustersService) SnapshotsList(clusterId string, offset, limit *int32
 		req = req.Limit(*limit)
 	}
 	snapshots, res, err := svc.client.SnapshotsApi.ClustersSnapshotsGetExecute(req)
+	if err != nil {
+		fmt.Println(err)
+	}
 	return snapshots, res, err
 }
 

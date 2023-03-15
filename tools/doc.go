@@ -24,7 +24,7 @@ func main() {
 	}
 
 	for _, cmd := range commands.GetRootCmd().SubCommands() {
-		if cmd.Name() != "dbaas" {
+		if cmd.Name() != "dbaas" && cmd.Name() != "certificate-manager" && cmd.Name() != "dataplatform" {
 			err := WriteDocs(cmd, dir)
 			if err != nil {
 				fmt.Printf("Error: %v\n", err)

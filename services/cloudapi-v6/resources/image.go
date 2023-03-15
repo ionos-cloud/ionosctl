@@ -6,9 +6,10 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"fmt"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
 	"path/filepath"
 	"time"
+
+	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
 
 	"github.com/fatih/structs"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"

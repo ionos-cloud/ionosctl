@@ -1,6 +1,7 @@
 package waiter
 
 import (
+	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
@@ -34,8 +35,8 @@ func K8sClusterStateInterrogator(c *core.CommandConfig, objId string) (*string, 
 }
 
 func K8sNodeStateInterrogator(c *core.CommandConfig, objId string) (*string, error) {
-	obj, _, err := c.CloudApiV6Services.K8s().GetNode(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sClusterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sNodePoolId)), objId, resources.QueryParams{})
+	obj, _, err := c.CloudApiV6Services.K8s().GetNode(viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)),
+		viper.GetString(core.GetFlagName(c.NS, constants.FlagNodepoolId)), objId, resources.QueryParams{})
 	if err != nil {
 		return nil, err
 	}
@@ -48,7 +49,7 @@ func K8sNodeStateInterrogator(c *core.CommandConfig, objId string) (*string, err
 }
 
 func K8sNodePoolStateInterrogator(c *core.CommandConfig, objId string) (*string, error) {
-	obj, _, err := c.CloudApiV6Services.K8s().GetNodePool(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sClusterId)), objId, resources.QueryParams{})
+	obj, _, err := c.CloudApiV6Services.K8s().GetNodePool(viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)), objId, resources.QueryParams{})
 	if err != nil {
 		return nil, err
 	}
