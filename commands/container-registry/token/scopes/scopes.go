@@ -95,18 +95,31 @@ func getTokensScopeRows(token *sdkgo.TokenResponse) []map[string]interface{} {
 
 var allColsScopes = structs.Names(TokenScopePrint{})
 
-func TokensIds() []string {
+func TokensIds(regId string) []string {
 	client, _ := config.GetClient()
+	svcToken := resources.NewTokenService(client, context.Background())
+	var allTokens []sdkgo.TokenResponse
+
+	if regId != "" {
+
+		tokens, _, _ := svcToken.List(regId)
+
+		allTokens = append(allTokens, *tokens.GetItems()...)
+
+		return functional.Map(
+			allTokens, func(reg sdkgo.TokenResponse) string {
+				return *reg.GetId()
+			},
+		)
+	}
+
 	svc := resources.NewRegistriesService(client, context.Background())
 	regs, _, _ := svc.List("")
-
-	svcToken := resources.NewTokenService(client, context.Background())
 	regsIDs := *regs.GetItems()
-
-	var allTokens []sdkgo.TokenResponse
 
 	for _, regID := range regsIDs {
 		tokens, _, _ := svcToken.List(*regID.GetId())
+
 		allTokens = append(allTokens, *tokens.GetItems()...)
 	}
 

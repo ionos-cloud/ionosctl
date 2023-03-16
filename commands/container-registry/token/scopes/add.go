@@ -2,6 +2,7 @@ package scopes
 
 import (
 	"context"
+
 	sdkgo "github.com/ionos-cloud/sdk-go-container-registry"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/registry"
@@ -9,6 +10,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 func TokenScopesAddCmd() *core.Command {
@@ -36,8 +38,8 @@ func TokenScopesAddCmd() *core.Command {
 	)
 	cmd.AddStringFlag(FlagTokenId, "t", "", "Token ID")
 	_ = cmd.Command.RegisterFlagCompletionFunc(
-		FlagTokenId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-			return TokensIds(), cobra.ShellCompDirectiveNoFileComp
+		FlagTokenId, func(cobracmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return TokensIds(viper.GetString(core.GetFlagName(cmd.NS, FlagRegId))), cobra.ShellCompDirectiveNoFileComp
 		},
 	)
 

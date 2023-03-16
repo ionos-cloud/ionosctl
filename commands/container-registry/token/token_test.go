@@ -47,6 +47,7 @@ func TestTokenService(t *testing.T) {
 			}
 		}
 
+		time.Sleep(3 * time.Second)
 		// create token
 		tokenName, err := reggen.Generate("^[A-Za-z][-A-Za-z0-9]{0,61}[A-Za-z0-9]$", 10)
 		cToken := TokenPostCmd()
@@ -57,6 +58,7 @@ func TestTokenService(t *testing.T) {
 		err = cToken.Command.Execute()
 		assert.NoError(t, err)
 
+		time.Sleep(3 * time.Second)
 		// get token
 		tokens, _, err := svc.RegistryClient.TokensApi.RegistriesTokensGet(context.Background(), *newReg.GetId()).Execute()
 		assert.NoError(t, err)
@@ -68,6 +70,7 @@ func TestTokenService(t *testing.T) {
 			}
 		}
 
+		time.Sleep(3 * time.Second)
 		// add scopes
 		addScopes := scopes.TokenScopesAddCmd()
 		addScopes.Command.Flags().Set(FlagRegId, *newReg.GetId())
@@ -78,6 +81,7 @@ func TestTokenService(t *testing.T) {
 
 		err = addScopes.Command.Execute()
 		assert.NoError(t, err)
+		time.Sleep(3 * time.Second)
 
 		addScopes = scopes.TokenScopesAddCmd()
 		addScopes.Command.Flags().Set(FlagRegId, *newReg.GetId())
@@ -85,6 +89,7 @@ func TestTokenService(t *testing.T) {
 		addScopes.Command.Flags().Set(scopes.FlagName, "test2")
 		addScopes.Command.Flags().Set(scopes.FlagType, "repository")
 		addScopes.Command.Flags().Set(scopes.FlagActions, "push")
+		time.Sleep(3 * time.Second)
 
 		err = addScopes.Command.Execute()
 		assert.NoError(t, err)
@@ -97,6 +102,8 @@ func TestTokenService(t *testing.T) {
 
 		err = deleteScopes.Command.Execute()
 		assert.NoError(t, err)
+
+		time.Sleep(3 * time.Second)
 
 		gToken := TokenGetCmd()
 		gToken.Command.Flags().Set(FlagRegId, *newReg.GetId())
@@ -113,11 +120,12 @@ func TestTokenService(t *testing.T) {
 
 		err = uToken.Command.Execute()
 		assert.NoError(t, err)
+		time.Sleep(3 * time.Second)
 
 		checkProp, _, err := svc.RegistryClient.TokensApi.RegistriesTokensFindById(context.Background(), *newReg.GetId(), *newToken.GetId()).Execute()
 		assert.NoError(t, err)
 		assert.Equal(t, "disabled", *checkProp.GetProperties().GetStatus())
-
+		time.Sleep(3 * time.Second)
 		// delete token
 		dToken := TokenDeleteCmd()
 		dToken.Command.Flags().Set(FlagRegId, *newReg.GetId())
@@ -125,15 +133,18 @@ func TestTokenService(t *testing.T) {
 
 		err = dToken.Command.Execute()
 		assert.NoError(t, err)
+		time.Sleep(3 * time.Second)
 
 		// replace token
 		rToken := TokenReplaceCmd()
 		rToken.Command.Flags().Set(FlagRegId, *newReg.GetId())
 		rToken.Command.Flags().Set(FlagTokenId, *newToken.GetId())
 		rToken.Command.Flags().Set(FlagName, "newName")
+		time.Sleep(3 * time.Second)
 
 		err = rToken.Command.Execute()
 		assert.NoError(t, err)
+		time.Sleep(3 * time.Second)
 
 		// delete registry
 		d := registry.RegDeleteCmd()
