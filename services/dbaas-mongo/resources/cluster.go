@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"time"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"

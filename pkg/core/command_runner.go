@@ -3,7 +3,6 @@ package core
 import (
 	"bytes"
 	"context"
-	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"io"
 	"os"
 

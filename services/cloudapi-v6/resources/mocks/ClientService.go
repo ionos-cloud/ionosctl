@@ -5,7 +5,6 @@
 package mock_resources
 
 import (
-	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	reflect "reflect"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"

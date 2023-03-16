@@ -2,7 +2,6 @@ package completer
 
 import (
 	"context"
-	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"io"
 
 	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"

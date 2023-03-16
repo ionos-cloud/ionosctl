@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"context"
 	"errors"
-	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"os"
 	"strings"
 
