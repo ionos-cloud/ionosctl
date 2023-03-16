@@ -35,8 +35,8 @@ func CmdCheck(c *core.CommandConfig) error {
 		return c.Printer.Print("Name is available.")
 	}
 	if res.StatusCode == 400 {
-		return c.Printer.Print("Name must use only the characters \"a-z\", \"0-9\", or \"-\"" +
-			"and starts with a letter and ends with a letter or number" +
+		return c.Printer.Print("Name must use only the characters \"a-z\", \"0-9\", or \"-\" " +
+			"and starts with a letter and ends with a letter or number " +
 			"and is between 3 to 63 characters in length.")
 	}
 	return c.Printer.Print("Name is already being used.")
