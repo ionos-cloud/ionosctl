@@ -4,9 +4,10 @@ import (
 	"bufio"
 	"context"
 	"errors"
-	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"os"
 	"strings"
+
+	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"
 
 	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"

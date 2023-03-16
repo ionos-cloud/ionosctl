@@ -3,6 +3,8 @@ package client
 import (
 	"errors"
 	"fmt"
+	"sync"
+
 	"github.com/ionos-cloud/ionosctl/v6/internal/die"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
@@ -13,7 +15,6 @@ import (
 	postgres "github.com/ionos-cloud/sdk-go-dbaas-postgres"
 	cloudv6 "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
-	"sync"
 )
 
 type Client struct {

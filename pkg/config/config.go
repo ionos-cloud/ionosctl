@@ -4,12 +4,13 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"io"
 	"os"
 	"path/filepath"
 	"runtime"
 	"strconv"
+
+	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 
 	cloudv6 "github.com/ionos-cloud/sdk-go/v6"
 

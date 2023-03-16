@@ -2,6 +2,7 @@ package auth_v1
 
 import (
 	"context"
+
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
 	"github.com/ionos-cloud/ionosctl/v6/services/auth-v1/resources"

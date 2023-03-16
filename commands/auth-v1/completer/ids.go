@@ -2,8 +2,9 @@ package completer
 
 import (
 	"context"
-	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"io"
+
+	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"
 
 	"github.com/ionos-cloud/ionosctl/v6/pkg/utils/clierror"
 	"github.com/ionos-cloud/ionosctl/v6/services/auth-v1/resources"

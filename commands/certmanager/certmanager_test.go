@@ -9,12 +9,13 @@ import (
 	"crypto/x509/pkix"
 	"encoding/pem"
 	"errors"
-	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"math/big"
 	"os"
 	"path/filepath"
 	"testing"
 	"time"
+
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"

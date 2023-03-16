@@ -2,8 +2,9 @@ package resources
 
 import (
 	"context"
-	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"testing"
+
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/stretchr/testify/assert"

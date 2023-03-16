@@ -2,8 +2,9 @@ package cluster
 
 import (
 	"context"
-	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"os"
+
+	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"
 
 	"github.com/spf13/viper"
 

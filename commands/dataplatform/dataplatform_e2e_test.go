@@ -3,12 +3,13 @@ package dataplatform
 import (
 	"context"
 	"fmt"
+	"testing"
+	"time"
+
 	"github.com/ionos-cloud/ionosctl/v6/commands/dataplatform/nodepool"
 	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
 	ionoscloud "github.com/ionos-cloud/sdk-go-dataplatform"
-	"testing"
-	"time"
 
 	"github.com/cilium/fake"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dataplatform/cluster"
