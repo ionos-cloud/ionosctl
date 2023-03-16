@@ -6,14 +6,15 @@ import (
 	"crypto/x509"
 	"errors"
 	"fmt"
-	"github.com/ionos-cloud/ionosctl/v6/internal/client"
-	"golang.org/x/exp/slices"
 	"os"
 	"path/filepath"
 	"sort"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"golang.org/x/exp/slices"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
 
