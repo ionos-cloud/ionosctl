@@ -429,7 +429,7 @@ func RunImageUpdate(c *core.CommandConfig) error {
 	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 		return err
 	}
-	return c.Printer.Print(getImagePrint(resp, c, []ionoscloud.Image{img.Image}))
+	return c.Printer.Print(getImagePrint(resp, c, []resources.Image{*img}))
 }
 
 func PreRunImageUpload(c *core.PreCommandConfig) error {
@@ -532,7 +532,6 @@ func getDiffUploadedImages(c *core.CommandConfig, names, locations []string) ([]
 			}
 			for _, l := range locations {
 				req.Filter("location", l)
-				c.Printer.Verbose("Filtering by name %s and location %s\n", n, l)
 			}
 
 			imgs, _, err := req.Execute()
@@ -645,7 +644,8 @@ func RunImageUpload(c *core.CommandConfig) error {
 	}
 
 	c.Printer.Verbose("Successfully uploaded and updated images")
-	return c.Printer.Print(getImagePrint(nil, c, imgs))
+	// oh my lord, we need to get rid of the `resources` wrappers...
+	return c.Printer.Print(getImagePrint(nil, c, getImages(resources.Images{Images: ionoscloud.Images{Items: &imgs}})))
 }
 
 func PreRunImageList(c *core.PreCommandConfig) error {
@@ -693,7 +693,7 @@ func RunImageList(c *core.CommandConfig) error {
 			return errors.New("error getting images based on given criteria")
 		}
 	}
-	return c.Printer.Print(getImagePrint(nil, c, *images.Items))
+	return c.Printer.Print(getImagePrint(nil, c, getImages(images)))
 }
 
 func RunImageGet(c *core.CommandConfig) error {
@@ -710,7 +710,7 @@ func RunImageGet(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getImagePrint(nil, c, []ionoscloud.Image{img.Image}))
+	return c.Printer.Print(getImagePrint(nil, c, getImage(img)))
 }
 
 // Output Printing
@@ -736,7 +736,7 @@ type ImagePrint struct {
 	CreatedDate     time.Time `json:"CreatedDate,omitempty"`
 }
 
-func getImagePrint(resp *resources.Response, c *core.CommandConfig, imgs []ionoscloud.Image) printer.Result {
+func getImagePrint(resp *resources.Response, c *core.CommandConfig, imgs []resources.Image) printer.Result {
 	r := printer.Result{}
 	if c != nil {
 		if resp != nil {
@@ -754,7 +754,7 @@ func getImagePrint(resp *resources.Response, c *core.CommandConfig, imgs []ionos
 	return r
 }
 
-func getImages(images ionoscloud.Images) []resources.Image {
+func getImages(images resources.Images) []resources.Image {
 	imgs := make([]resources.Image, 0)
 	if items, ok := images.GetItemsOk(); ok && items != nil {
 		for _, d := range *items {
@@ -764,15 +764,15 @@ func getImages(images ionoscloud.Images) []resources.Image {
 	return imgs
 }
 
-func getImage(image *ionoscloud.Image) []resources.Image {
+func getImage(image *resources.Image) []resources.Image {
 	imgs := make([]resources.Image, 0)
 	if image != nil {
-		imgs = append(imgs, resources.Image{Image: *image})
+		imgs = append(imgs, resources.Image{Image: image.Image})
 	}
 	return imgs
 }
 
-func getImagesKVMaps(imgs []ionoscloud.Image) []map[string]interface{} {
+func getImagesKVMaps(imgs []resources.Image) []map[string]interface{} {
 	out := make([]map[string]interface{}, 0, len(imgs))
 	for _, img := range imgs {
 		o := getImageKVMap(img)
@@ -781,7 +781,7 @@ func getImagesKVMaps(imgs []ionoscloud.Image) []map[string]interface{} {
 	return out
 }
 
-func getImageKVMap(img ionoscloud.Image) map[string]interface{} {
+func getImageKVMap(img resources.Image) map[string]interface{} {
 	var imgPrint ImagePrint
 	if idOk, ok := img.GetIdOk(); ok && idOk != nil {
 		imgPrint.ImageId = *idOk
