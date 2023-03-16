@@ -6,10 +6,8 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"fmt"
-	"path/filepath"
-	"time"
-
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"path/filepath"
 
 	"github.com/fatih/structs"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
@@ -43,7 +41,7 @@ type FTPServerProperties struct {
 	Port              int
 	SkipVerify        bool           // Skip FTP server certificate verification. WARNING man-in-the-middle attack possible
 	ServerCertificate *x509.CertPool // If FTP server uses self signed certificates, put this in tlsConfig. IONOS FTP Servers in prod DON'T need this
-	Timeout           int            // Timeout in seconds
+	Context           context.Context
 }
 
 // ImagesService is a wrapper around ionoscloud.Image
@@ -86,14 +84,7 @@ func (s *imagesService) Upload(p UploadProperties) error {
 		TLSConfig:   &tlsConfig,
 	}
 
-	ctx := context.Background()
-	if s.context != nil {
-		ctx = s.context
-	}
-	ctx, cancel := context.WithDeadline(ctx, time.Now().Add(time.Duration(p.Timeout)*time.Second))
-	defer cancel()
-
-	c, err := ftps.Dial(ctx, dialOptions)
+	c, err := ftps.Dial(p.Context, dialOptions)
 	if err != nil {
 		return err
 	}
@@ -103,7 +94,7 @@ func (s *imagesService) Upload(p UploadProperties) error {
 		return err
 	}
 
-	files, err := c.List(ctx)
+	files, err := c.List(p.Context)
 	if err != nil {
 		return err
 	}
@@ -116,7 +107,7 @@ func (s *imagesService) Upload(p UploadProperties) error {
 		}
 	}
 
-	err = c.Upload(ctx, desiredFileName, p.DataBuffer)
+	err = c.Upload(p.Context, desiredFileName, p.DataBuffer)
 	if err != nil {
 		return err
 	}

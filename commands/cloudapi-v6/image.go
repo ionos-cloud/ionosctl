@@ -519,12 +519,10 @@ func updateImagesAfterUpload(c *core.CommandConfig, diffImgs []ionoscloud.Image,
 func getDiffUploadedImages(c *core.CommandConfig, names, locations []string) ([]ionoscloud.Image, error) {
 	var diffImgs []ionoscloud.Image
 
-	c.Printer.Verbose("Will iterate over %+v\n", names)
-
 	for {
 		select {
 		case <-c.Context.Done():
-			return nil, c.Context.Err()
+			return nil, fmt.Errorf("ran out of time: %w", c.Context.Err())
 		default:
 			req := client.Must().CloudClient.ImagesApi.ImagesGet(c.Context).Depth(1).Filter("public", "false")
 			for _, n := range names {
@@ -538,18 +536,14 @@ func getDiffUploadedImages(c *core.CommandConfig, names, locations []string) ([]
 			if err != nil {
 				return nil, fmt.Errorf("failed listing images")
 			}
-			c.Printer.Verbose("Got images by listing: %+v\n", *imgs.Items)
+			c.Printer.Verbose("Got images by listing: %+v", *imgs.Items)
 
 			diffImgs = append(diffImgs, *imgs.Items...)
-			c.Printer.Verbose("Total images: %+v\n", diffImgs)
+			c.Printer.Verbose("Total images: %+v", diffImgs)
 
 			if len(diffImgs) == len(names)*len(locations) {
-				c.Printer.Verbose("Success! All images found via API: %+v\n", diffImgs)
+				c.Printer.Verbose("Success! All images found via API: %+v", diffImgs)
 				return diffImgs, nil
-			}
-
-			if c.Context.Err() != nil {
-				return nil, c.Context.Err()
 			}
 
 			// New attempt...
@@ -568,7 +562,10 @@ func RunImageUpload(c *core.CommandConfig) error {
 	aliases := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgImageAlias))
 	locations := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgLocation))
 	skipVerify := viper.GetBool(core.GetFlagName(c.NS, "skip-verify"))
-	timeout := viper.GetInt(core.GetFlagName(c.NS, constants.ArgTimeout))
+	ctx, cancel := context.WithTimeout(c.Context, time.Duration(viper.GetInt(core.GetFlagName(c.NS, constants.ArgTimeout)))*time.Second)
+	defer cancel()
+	c.Context = ctx
+
 	var eg errgroup.Group
 	for _, loc := range locations {
 		for imgIdx, img := range images {
@@ -603,7 +600,7 @@ func RunImageUpload(c *core.CommandConfig) error {
 			eg.Go(func() error {
 				err := c.CloudApiV6Services.Images().Upload(
 					resources.UploadProperties{
-						FTPServerProperties: resources.FTPServerProperties{Url: url, Port: 21, SkipVerify: skipVerify, ServerCertificate: certPool, Timeout: timeout},
+						FTPServerProperties: resources.FTPServerProperties{Url: url, Port: 21, SkipVerify: skipVerify, ServerCertificate: certPool, Context: c.Context},
 						ImageFileProperties: resources.ImageFileProperties{Path: serverFilePath, DataBuffer: data},
 					},
 				)
@@ -634,13 +631,13 @@ func RunImageUpload(c *core.CommandConfig) error {
 	}
 	diffImgs, err := getDiffUploadedImages(c, names, locations) // Get UUIDs of uploaded images
 	if err != nil {
-		return fmt.Errorf("%e, however the upload was successful. Please run `ionosctl image update` manually", err)
+		return fmt.Errorf("failed updating image with given properties, but uploading to FTP sucessful: %w", err)
 	}
 
 	properties := getDesiredImageAfterPatch(c)
 	imgs, err := updateImagesAfterUpload(c, diffImgs, properties)
 	if err != nil {
-		return fmt.Errorf("%e, however the upload was successful. Please run `ionosctl image update` manually", err)
+		return fmt.Errorf("failed updating image with given properties, but uploading to FTP sucessful: %w", err)
 	}
 
 	c.Printer.Verbose("Successfully uploaded and updated images")
