@@ -600,8 +600,9 @@ func RunImageUpload(c *core.CommandConfig) error {
 			// Uploads each image to each location.
 			eg.Go(func() error {
 				err := c.CloudApiV6Services.Images().Upload(
+					c.Context,
 					resources.UploadProperties{
-						FTPServerProperties: resources.FTPServerProperties{Url: url, Port: 21, SkipVerify: skipVerify, ServerCertificate: certPool, Context: c.Context},
+						FTPServerProperties: resources.FTPServerProperties{Url: url, Port: 21, SkipVerify: skipVerify, ServerCertificate: certPool},
 						ImageFileProperties: resources.ImageFileProperties{Path: serverFilePath, DataBuffer: data},
 					},
 				)
