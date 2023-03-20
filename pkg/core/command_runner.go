@@ -13,8 +13,9 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/utils/clierror"
 	authV1 "github.com/ionos-cloud/ionosctl/v6/services/auth-v1"
-	certmanager "github.com/ionos-cloud/ionosctl/v6/services/certmanager"
+	"github.com/ionos-cloud/ionosctl/v6/services/certmanager"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
+	"github.com/ionos-cloud/ionosctl/v6/services/container-registry"
 	cloudapidbaaspgsql "github.com/ionos-cloud/ionosctl/v6/services/dbaas-postgres"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -103,7 +104,9 @@ func NewPreCommandCfg(p printer.PrintService, info CommandBuilder) *PreCommandCo
 	}
 }
 
-func NewCommandCfg(ctx context.Context, in io.Reader, p printer.PrintService, info CommandBuilder) (*CommandConfig, error) {
+func NewCommandCfg(ctx context.Context, in io.Reader, p printer.PrintService, info CommandBuilder) (
+	*CommandConfig, error,
+) {
 	cmdConfig := &CommandConfig{
 		Command:   info.Command,
 		NS:        info.GetNS(),
@@ -136,6 +139,10 @@ func NewCommandCfg(ctx context.Context, in io.Reader, p printer.PrintService, in
 			}
 
 			if err = c.DbaasMongoServices.InitServices(client); err != nil {
+				return err
+			}
+
+			if err = c.ContainerRegistryServices.InitServices(client); err != nil {
 				return err
 			}
 
@@ -177,6 +184,7 @@ type CommandConfig struct {
 	CloudApiDbaasPgsqlServices cloudapidbaaspgsql.Services
 	DbaasMongoServices         dbaas_mongo.Services
 	CertificateManagerServices certmanager.Services
+	ContainerRegistryServices  container_registry.Services
 
 	// Context
 	Context context.Context

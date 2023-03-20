@@ -8,6 +8,7 @@ include ./tools/auth-v1/auth_v1.mk
 include ./tools/certmanager/certmanager.mk
 include ./tools/dataplatform/dataplatform.mk
 
+include ./tools/container-registry/contregistry.mk
 
 export CGO_ENABLED = 0
 export GO111MODULE := on
@@ -26,7 +27,7 @@ test_unit:
 	@echo "DONE"
 
 .PHONY: test
-test: test_unit cloudapiv6_test auth_v1_test dbaas_postgres_test certmanager_test dbaas_mongo_test dataplatform_test
+test: test_unit cloudapiv6_test auth_v1_test dbaas_postgres_test dbaas_mongo_test certmanager_test contreg_test dataplatform_test
 
 .PHONY: mocks_update
 mocks_update: cloudapiv6_mocks_update auth_v1_mocks_update dbaas_postgres_mocks_update certmanager_mocks_update dbaas_mongo_mocks_update
