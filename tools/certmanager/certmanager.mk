@@ -8,12 +8,18 @@ certmanager_mocks_update:
 
 .PHONY: certmanager_test_integration
 certmanager_test_integration:
-	@echo "--- Run tests for Certificate Manger ---"
-	@go test -cover ./commands/certmanager/...
+	@echo "--- Run Integration tests for Certificate Manger ---"
+	@go test -cover -tags=integration ./commands/certmanager/...
+	@echo "DONE"
+
+.PHONY: certmanager_test_unit
+certmanager_test_unit:
+	@echo "--- Run Unit tests for Certificate Manger ---"
+	@go test -cover -tags=unit ./commands/certmanager/...
 	@echo "DONE"
 
 .PHONY: certmanager_test
-certmanager_test: certmanager_test_integration
+certmanager_test: certmanager_test_integration certmanager_test_unit
 
 .PHONY: certmanager_docs_update
 certmanager_docs_update:
