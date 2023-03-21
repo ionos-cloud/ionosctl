@@ -48,6 +48,7 @@ var (
 
 func TestCertificateManagerServiceCmd(t *testing.T) {
 
+	var err error
 	t.Run(
 		"cert list", func(t *testing.T) {
 			viper.Reset()
