@@ -3,7 +3,7 @@ package resources
 import (
 	"context"
 
-	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
 	"github.com/fatih/structs"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
@@ -34,7 +34,7 @@ type templatesService struct {
 
 var _ TemplatesService = &templatesService{}
 
-func NewTemplateService(client *config.Client, ctx context.Context) TemplatesService {
+func NewTemplateService(client *client.Client, ctx context.Context) TemplatesService {
 	return &templatesService{
 		client:  client.CloudClient,
 		context: ctx,

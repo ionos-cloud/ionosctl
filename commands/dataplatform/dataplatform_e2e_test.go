@@ -3,15 +3,16 @@ package dataplatform
 import (
 	"context"
 	"fmt"
-	"github.com/ionos-cloud/ionosctl/v6/commands/dataplatform/nodepool"
-	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
-	ionoscloud "github.com/ionos-cloud/sdk-go-dataplatform"
 	"testing"
 	"time"
 
+	"github.com/ionos-cloud/ionosctl/v6/commands/dataplatform/nodepool"
+	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
+	ionoscloud "github.com/ionos-cloud/sdk-go-dataplatform"
+
 	"github.com/cilium/fake"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dataplatform/cluster"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	sdkcompute "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
@@ -20,7 +21,7 @@ import (
 
 var (
 	uniqueResourceName = "ionosctl-dataplatform-cluster-test-" + fake.AlphaNum(8)
-	client             *config.Client
+	client             *client2.Client
 	createdClusterId   string
 	createdDcId        string
 )
@@ -28,7 +29,7 @@ var (
 // If your test is failing because your credentials env var seem empty, try running with `godotenv -f <config-file> go test <test>`
 func TestDataplatformCmd(t *testing.T) {
 	var err error
-	client, err = config.GetClient()
+	client, err = client2.Get()
 	assert.NoError(t, err)
 	go testClusterIdentifyRequiredNotSet(t)
 	if setup() != nil {

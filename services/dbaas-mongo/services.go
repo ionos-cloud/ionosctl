@@ -3,7 +3,8 @@ package dbaas_mongo
 import (
 	"context"
 
-	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+
 	"github.com/ionos-cloud/ionosctl/v6/services/dbaas-mongo/resources"
 )
 
@@ -17,7 +18,7 @@ type Services struct {
 }
 
 // InitServices for Commands
-func (c *Services) InitServices(client *config.Client) error {
+func (c *Services) InitServices(client *client.Client) error {
 	c.Clusters = func() resources.ClustersService { return resources.NewClustersService(client, c.Context) }
 	c.Templates = func() resources.TemplatesService { return resources.NewTemplatesService(client, c.Context) }
 	c.Users = func() resources.UsersService { return resources.NewUsersService(client, c.Context) }

@@ -2,7 +2,7 @@ package registry
 
 import (
 	"context"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	ionoscloud "github.com/ionos-cloud/sdk-go-container-registry"
 	"github.com/lucasjones/reggen"
@@ -28,8 +28,7 @@ func TestRegistryService(t *testing.T) {
 		err = c.Command.Execute()
 		assert.NoError(t, err)
 
-		svc, err := config.GetClient()
-		registries, _, err := svc.RegistryClient.RegistriesApi.RegistriesGet(context.Background()).Execute()
+		registries, _, err := client.Must().RegistryClient.RegistriesApi.RegistriesGet(context.Background()).Execute()
 		assert.NoError(t, err)
 
 		var newRegistry *ionoscloud.RegistryResponse
@@ -54,7 +53,7 @@ func TestRegistryService(t *testing.T) {
 		err = patch.Command.Execute()
 		assert.NoError(t, err)
 
-		checkRegistry, _, err := svc.RegistryClient.RegistriesApi.RegistriesFindById(context.Background(), *newRegistry.GetId()).Execute()
+		checkRegistry, _, err := client.Must().RegistryClient.RegistriesApi.RegistriesFindById(context.Background(), *newRegistry.GetId()).Execute()
 		assert.NoError(t, err)
 		assert.Equal(t, []ionoscloud.Day([]ionoscloud.Day{"Tuesday"}), *checkRegistry.GetProperties().GetGarbageCollectionSchedule().GetDays())
 

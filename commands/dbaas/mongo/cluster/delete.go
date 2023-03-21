@@ -4,10 +4,11 @@ import (
 	"context"
 	"fmt"
 
+	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"
+
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
@@ -62,7 +63,7 @@ func ClusterDeleteCmd() *core.Command {
 }
 
 func deleteAll(c *core.CommandConfig) error {
-	client, err := config.GetClient()
+	client, err := client2.Get()
 	if err != nil {
 		return err
 	}

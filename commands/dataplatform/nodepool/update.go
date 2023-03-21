@@ -3,8 +3,9 @@ package nodepool
 import (
 	"context"
 
+	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"
+
 	"github.com/ionos-cloud/ionosctl/v6/commands/dataplatform/completer"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	sdkdataplatform "github.com/ionos-cloud/sdk-go-dataplatform"
@@ -65,7 +66,7 @@ func NodepoolUpdateCmd() *core.Command {
 			input := sdkdataplatform.PatchNodePoolRequest{}
 			input.SetProperties(updateProperties)
 
-			client, err := config.GetClient()
+			client, err := client2.Get()
 			if err != nil {
 				return err
 			}

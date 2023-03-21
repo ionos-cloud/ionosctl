@@ -3,8 +3,9 @@ package resources
 import (
 	"context"
 
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+
 	"github.com/fatih/structs"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
 
@@ -62,7 +63,7 @@ type natGatewaysService struct {
 
 var _ NatGatewaysService = &natGatewaysService{}
 
-func NewNatGatewayService(client *config.Client, ctx context.Context) NatGatewaysService {
+func NewNatGatewayService(client *client.Client, ctx context.Context) NatGatewaysService {
 	return &natGatewaysService{
 		client:  client.CloudClient,
 		context: ctx,

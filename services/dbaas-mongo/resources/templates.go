@@ -3,7 +3,7 @@ package resources
 import (
 	"context"
 
-	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
 	sdkgo "github.com/ionos-cloud/sdk-go-dbaas-mongo"
 )
@@ -19,7 +19,7 @@ type templatesService struct {
 
 var _ TemplatesService = &templatesService{}
 
-func NewTemplatesService(client *config.Client, ctx context.Context) TemplatesService {
+func NewTemplatesService(client *client.Client, ctx context.Context) TemplatesService {
 	return &templatesService{
 		client:  client.MongoClient,
 		context: ctx,

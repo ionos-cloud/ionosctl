@@ -4,7 +4,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
+
 	sdkgoauth "github.com/ionos-cloud/sdk-go-auth"
 	"github.com/spf13/viper"
 )
@@ -34,7 +35,7 @@ func NewClientService(name, pwd, token, hostUrl string) (ClientService, error) {
 		return nil, errors.New("username, password or token incorrect")
 	}
 	clientConfig := sdkgoauth.NewConfiguration(name, pwd, token, hostUrl)
-	clientConfig.UserAgent = fmt.Sprintf("%v_%v", viper.GetString(config.CLIHttpUserAgent), clientConfig.UserAgent)
+	clientConfig.UserAgent = fmt.Sprintf("%v_%v", viper.GetString(constants.CLIHttpUserAgent), clientConfig.UserAgent)
 	return &clientService{
 		client: sdkgoauth.NewAPIClient(clientConfig),
 	}, nil

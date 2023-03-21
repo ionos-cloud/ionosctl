@@ -7,7 +7,7 @@ package mock_resources
 import (
 	reflect "reflect"
 
-	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
 	gomock "github.com/golang/mock/gomock"
 )
@@ -36,10 +36,10 @@ func (m *MockClientService) EXPECT() *MockClientServiceMockRecorder {
 }
 
 // Get mocks base method.
-func (m *MockClientService) Get() *config.Client {
+func (m *MockClientService) Get() *client.Client {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Get")
-	ret0, _ := ret[0].(*config.Client)
+	ret0, _ := ret[0].(*client.Client)
 	return ret0
 }
 

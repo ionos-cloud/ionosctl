@@ -3,6 +3,7 @@ package token
 import (
 	"context"
 	"fmt"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"strconv"
 	"strings"
 	"time"
@@ -11,7 +12,6 @@ import (
 
 	"github.com/fatih/structs"
 	scope "github.com/ionos-cloud/ionosctl/v6/commands/container-registry/token/scopes"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
@@ -129,8 +129,7 @@ func getTokensRows(tokens *[]ionoscloud.TokenResponse) []map[string]interface{} 
 var allCols = structs.Names(TokenPrint{})
 
 func TokensIds(regId string) []string {
-	client, _ := config.GetClient()
-	svcToken := resources.NewTokenService(client, context.Background())
+	svcToken := resources.NewTokenService(client.Must(), context.Background())
 	var allTokens []ionoscloud.TokenResponse
 
 	if regId != "" {
@@ -146,8 +145,7 @@ func TokensIds(regId string) []string {
 		)
 	}
 
-	svc := resources.NewRegistriesService(client, context.Background())
-	regs, _, _ := svc.List("")
+	regs, _, _ := resources.NewRegistriesService(client.Must(), context.Background()).List("")
 	regsIDs := *regs.GetItems()
 
 	for _, regID := range regsIDs {

@@ -2,7 +2,7 @@ package container_registry
 
 import (
 	"context"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
+	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/services/container-registry/resources"
 )
 
@@ -18,7 +18,7 @@ type Services struct {
 }
 
 // InitServices for Commands
-func (c *Services) InitServices(client *config.Client) error {
+func (c *Services) InitServices(client *client2.Client) error {
 	c.Registry = func() resources.RegistriesService {
 		return resources.NewRegistriesService(client, c.Context)
 	}

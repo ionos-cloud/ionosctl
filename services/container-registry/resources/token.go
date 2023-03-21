@@ -2,9 +2,8 @@ package resources
 
 import (
 	"context"
+	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"
 	sdkgo "github.com/ionos-cloud/sdk-go-container-registry"
-
-	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
 )
 
 // TokenService is a wrapper around ionoscloud.Registry
@@ -24,7 +23,7 @@ type tokenService struct {
 
 var _ TokenService = &tokenService{}
 
-func NewTokenService(client *config.Client, ctx context.Context) TokenService {
+func NewTokenService(client *client2.Client, ctx context.Context) TokenService {
 	return &tokenService{
 		client:  client.RegistryClient,
 		context: ctx,

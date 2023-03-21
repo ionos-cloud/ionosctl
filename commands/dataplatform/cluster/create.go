@@ -3,10 +3,11 @@ package cluster
 import (
 	"context"
 
+	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"
+
 	"github.com/cilium/fake"
 	"github.com/cjrd/allocate"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	sdkdataplatform "github.com/ionos-cloud/sdk-go-dataplatform"
@@ -52,7 +53,7 @@ func ClusterCreateCmd() *core.Command {
 			input := sdkdataplatform.CreateClusterRequest{}
 			input.SetProperties(createProperties)
 
-			client, err := config.GetClient()
+			client, err := client2.Get()
 			if err != nil {
 				return err
 			}

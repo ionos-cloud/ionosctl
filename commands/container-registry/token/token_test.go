@@ -2,12 +2,12 @@ package token
 
 import (
 	"context"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"testing"
 	"time"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/registry"
 	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/token/scopes"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	ionoscloud "github.com/ionos-cloud/sdk-go-container-registry"
 	"github.com/lucasjones/reggen"
@@ -35,9 +35,8 @@ func TestTokenService(t *testing.T) {
 		time.Sleep(3 * time.Second)
 
 		// get registry
-		svc, err := config.GetClient()
 		assert.NoError(t, err)
-		registries, _, err := svc.RegistryClient.RegistriesApi.RegistriesGet(context.Background()).Execute()
+		registries, _, err := client.Must().RegistryClient.RegistriesApi.RegistriesGet(context.Background()).Execute()
 		assert.NoError(t, err)
 
 		var newReg *ionoscloud.RegistryResponse
@@ -60,7 +59,7 @@ func TestTokenService(t *testing.T) {
 
 		time.Sleep(3 * time.Second)
 		// get token
-		tokens, _, err := svc.RegistryClient.TokensApi.RegistriesTokensGet(context.Background(), *newReg.GetId()).Execute()
+		tokens, _, err := client.Must().RegistryClient.TokensApi.RegistriesTokensGet(context.Background(), *newReg.GetId()).Execute()
 		assert.NoError(t, err)
 
 		var newToken *ionoscloud.TokenResponse
@@ -122,7 +121,7 @@ func TestTokenService(t *testing.T) {
 		assert.NoError(t, err)
 		time.Sleep(3 * time.Second)
 
-		checkProp, _, err := svc.RegistryClient.TokensApi.RegistriesTokensFindById(context.Background(), *newReg.GetId(), *newToken.GetId()).Execute()
+		checkProp, _, err := client.Must().RegistryClient.TokensApi.RegistriesTokensFindById(context.Background(), *newReg.GetId(), *newToken.GetId()).Execute()
 		assert.NoError(t, err)
 		assert.Equal(t, "disabled", *checkProp.GetProperties().GetStatus())
 		time.Sleep(3 * time.Second)

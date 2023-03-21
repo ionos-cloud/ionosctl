@@ -2,8 +2,8 @@ package registry
 
 import (
 	"context"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
-	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
@@ -120,8 +120,7 @@ func CmdPost(c *core.CommandConfig) error {
 
 func getLocForAutoComplete() []string {
 	var locations []string
-	svc, _ := config.GetClient()
-	locs, _, _ := svc.RegistryClient.LocationsApi.LocationsGet(context.Background()).Execute()
+	locs, _, _ := client.Must().RegistryClient.LocationsApi.LocationsGet(context.Background()).Execute()
 	list := locs.GetItems()
 
 	for _, item := range *list {

@@ -3,10 +3,11 @@ package certmanager
 import (
 	"context"
 
+	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"
+
 	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
 
 	"github.com/fatih/structs"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
@@ -96,7 +97,7 @@ func getCertRows(certs *[]ionoscloud.CertificateDto) []map[string]interface{} {
 var allCols = structs.Names(CertPrint{})
 
 func CertificatesIds() []string {
-	client, _ := config.GetClient()
+	client, _ := client2.Get()
 	svc := resources.NewCertsService(client, context.Background())
 	certs, _, _ := svc.List()
 	return functional.Map(*certs.GetItems(), func(dto ionoscloud.CertificateDto) string {

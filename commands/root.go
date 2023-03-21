@@ -84,7 +84,7 @@ func init() {
 	} else {
 		rootCmd.Command.Version = fmt.Sprintf("%s-%s", CLIVersionDev, GitCommit)
 	}
-	viper.Set(config.CLIHttpUserAgent, fmt.Sprintf("ionosctl/%v", rootCmd.Command.Version))
+	viper.Set(constants.CLIHttpUserAgent, fmt.Sprintf("ionosctl/%v", rootCmd.Command.Version))
 
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,

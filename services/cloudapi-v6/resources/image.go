@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
 	"github.com/fatih/structs"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
@@ -62,7 +62,7 @@ type imagesService struct {
 
 var _ ImagesService = &imagesService{}
 
-func NewImageService(client *config.Client, ctx context.Context) ImagesService {
+func NewImageService(client *client.Client, ctx context.Context) ImagesService {
 	return &imagesService{
 		client:  client.CloudClient,
 		context: ctx,

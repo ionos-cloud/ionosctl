@@ -4,9 +4,10 @@ import (
 	"context"
 	"fmt"
 
+	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"
+
 	"github.com/ionos-cloud/ionosctl/v6/commands/dataplatform/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
@@ -38,7 +39,7 @@ func NodepoolDeleteCmd() *core.Command {
 				return err
 			}
 			c.Printer.Verbose("Deleting nodepool: %s", nodepoolId)
-			client, err := config.GetClient()
+			client, err := client2.Get()
 			_, _, err = client.DataplatformClient.DataPlatformNodePoolApi.DeleteClusterNodepool(c.Context, clusterId, nodepoolId).Execute()
 			if err != nil {
 				return err
@@ -78,7 +79,7 @@ func deleteAll(c *core.CommandConfig, clusterId string) error {
 	}
 	// Only --all is provided, so delete all nodepools
 
-	client, err := config.GetClient()
+	client, err := client2.Get()
 	if err != nil {
 		return err
 	}
@@ -94,7 +95,7 @@ func deleteAll(c *core.CommandConfig, clusterId string) error {
 }
 
 func deleteNodePools(clusterId string) error {
-	client, err := config.GetClient()
+	client, err := client2.Get()
 	if err != nil {
 		return err
 	}

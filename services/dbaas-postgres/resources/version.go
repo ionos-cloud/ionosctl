@@ -3,7 +3,7 @@ package resources
 import (
 	"context"
 
-	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
 	sdkgo "github.com/ionos-cloud/sdk-go-dbaas-postgres"
 )
@@ -25,7 +25,7 @@ type versionsService struct {
 
 var _ VersionsService = &versionsService{}
 
-func NewVersionsService(client *config.Client, ctx context.Context) VersionsService {
+func NewVersionsService(client *client.Client, ctx context.Context) VersionsService {
 	return &versionsService{
 		client:  client.PostgresClient,
 		context: ctx,

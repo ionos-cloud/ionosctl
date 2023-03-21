@@ -3,7 +3,7 @@ package resources
 import (
 	"context"
 
-	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
 	"github.com/fatih/structs"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
@@ -42,7 +42,7 @@ type pccsService struct {
 
 var _ PccsService = &pccsService{}
 
-func NewPrivateCrossConnectService(client *config.Client, ctx context.Context) PccsService {
+func NewPrivateCrossConnectService(client *client.Client, ctx context.Context) PccsService {
 	return &pccsService{
 		client:  client.CloudClient,
 		context: ctx,
