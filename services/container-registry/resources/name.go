@@ -2,8 +2,8 @@ package resources
 
 import (
 	"context"
+	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"
 
-	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
 	sdkgo "github.com/ionos-cloud/sdk-go-container-registry"
 )
 
@@ -21,7 +21,7 @@ type nameService struct {
 var _ NameService = &nameService{}
 
 // NewNameService returns a new NameService.
-func NewNameService(client *config.Client, ctx context.Context) NameService {
+func NewNameService(client *client2.Client, ctx context.Context) NameService {
 	return &nameService{
 		client:  client.RegistryClient,
 		context: ctx,

@@ -2,8 +2,7 @@ package resources
 
 import (
 	"context"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
-
+	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"
 	sdkgo "github.com/ionos-cloud/sdk-go-container-registry"
 )
 
@@ -18,7 +17,7 @@ type repositoryService struct {
 
 var _ RepositoryService = &repositoryService{}
 
-func NewRepositoryService(client *config.Client, ctx context.Context) RepositoryService {
+func NewRepositoryService(client *client2.Client, ctx context.Context) RepositoryService {
 	return &repositoryService{
 		client:  client.RegistryClient,
 		context: ctx,

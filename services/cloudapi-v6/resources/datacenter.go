@@ -48,7 +48,7 @@ func NewDataCenterService(client *client.Client, ctx context.Context) Datacenter
 	}
 }
 
-//func NewDataCenterServices(client *config.Client, ctx context.Context) DatacentersService {
+//func NewDataCenterServices(client *client2.Client, ctx context.Context) DatacentersService {
 //	return &dataCentersService{
 //		client:  client,
 //		context: ctx,

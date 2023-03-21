@@ -2,8 +2,8 @@ package scopes
 
 import (
 	"context"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
 	"github.com/ionos-cloud/ionosctl/v6/services/container-registry/resources"
 	"strconv"
 
@@ -96,8 +96,7 @@ func getTokensScopeRows(token *sdkgo.TokenResponse) []map[string]interface{} {
 var allColsScopes = structs.Names(TokenScopePrint{})
 
 func TokensIds(regId string) []string {
-	client, _ := config.GetClient()
-	svcToken := resources.NewTokenService(client, context.Background())
+	svcToken := resources.NewTokenService(client.Must(), context.Background())
 	var allTokens []sdkgo.TokenResponse
 
 	if regId != "" {
@@ -113,7 +112,7 @@ func TokensIds(regId string) []string {
 		)
 	}
 
-	svc := resources.NewRegistriesService(client, context.Background())
+	svc := resources.NewRegistriesService(client.Must(), context.Background())
 	regs, _, _ := svc.List("")
 	regsIDs := *regs.GetItems()
 

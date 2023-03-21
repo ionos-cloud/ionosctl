@@ -3,8 +3,8 @@ package registry
 import (
 	"context"
 	"github.com/fatih/structs"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
@@ -121,8 +121,8 @@ func getRegRows(regs *[]ionoscloud.RegistryResponse) []map[string]interface{} {
 var allCols = structs.Names(RegPrint{})
 
 func RegsIds() []string {
-	client, _ := config.GetClient()
-	svc := resources.NewRegistriesService(client, context.Background())
+	//client, _ := config.GetClient()
+	svc := resources.NewRegistriesService(client.Must(), context.Background())
 	regs, _, _ := svc.List("")
 	return functional.Map(
 		*regs.GetItems(), func(reg ionoscloud.RegistryResponse) string {
