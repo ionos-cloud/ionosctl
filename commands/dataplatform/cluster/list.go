@@ -5,8 +5,6 @@ import (
 
 	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"
 
-	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"
-
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/spf13/viper"

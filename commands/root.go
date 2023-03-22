@@ -2,9 +2,10 @@ package commands
 
 import (
 	"fmt"
-	container_registry "github.com/ionos-cloud/ionosctl/v6/commands/container-registry"
 	"os"
 	"strings"
+
+	container_registry "github.com/ionos-cloud/ionosctl/v6/commands/container-registry"
 
 	authv1 "github.com/ionos-cloud/ionosctl/v6/commands/auth-v1"
 	certificates "github.com/ionos-cloud/ionosctl/v6/commands/certmanager"

@@ -2,6 +2,7 @@ package registry
 
 import (
 	"context"
+
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/functional"

@@ -5,8 +5,6 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
-	"github.com/ionos-cloud/ionosctl/v6/internal/client"
-
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
 )
 

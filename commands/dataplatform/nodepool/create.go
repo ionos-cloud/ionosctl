@@ -5,8 +5,6 @@ import (
 
 	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"
 
-	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"
-
 	"github.com/cilium/fake"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dataplatform/completer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"

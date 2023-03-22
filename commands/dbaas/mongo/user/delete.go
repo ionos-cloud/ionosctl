@@ -6,8 +6,6 @@ import (
 
 	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"
 
-	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"
-
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/internal/functional"

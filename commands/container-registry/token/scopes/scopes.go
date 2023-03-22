@@ -2,10 +2,11 @@ package scopes
 
 import (
 	"context"
+	"strconv"
+
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
 	"github.com/ionos-cloud/ionosctl/v6/services/container-registry/resources"
-	"strconv"
 
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"

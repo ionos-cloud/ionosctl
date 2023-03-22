@@ -6,8 +6,6 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 
-	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
-
 	sdkgoauth "github.com/ionos-cloud/sdk-go-auth"
 	"github.com/spf13/viper"
 )

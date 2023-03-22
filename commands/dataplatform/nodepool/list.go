@@ -5,8 +5,6 @@ import (
 
 	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"
 
-	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"
-
 	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
 	ionoscloud "github.com/ionos-cloud/sdk-go-dataplatform"
 

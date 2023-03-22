@@ -2,9 +2,10 @@ package token
 
 import (
 	"context"
-	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"testing"
 	"time"
+
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/registry"
 	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/token/scopes"
