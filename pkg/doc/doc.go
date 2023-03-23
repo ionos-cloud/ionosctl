@@ -108,6 +108,11 @@ func determineSubdir(name string, nonComputeNamespaces []string) string {
 		return "cli-setup"
 	}
 
+	if segments[0] == "token" {
+		// I don't know why these weren't added to some auth namespace
+		return "authentication/token/a"
+	}
+
 	combinedNamespace := segments[0] + "-" + segments[1]
 
 	for _, api := range nonComputeNamespaces {
