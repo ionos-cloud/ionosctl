@@ -3,10 +3,11 @@ package token
 import (
 	"context"
 	"fmt"
-	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
 

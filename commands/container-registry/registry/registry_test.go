@@ -2,13 +2,14 @@ package registry
 
 import (
 	"context"
+	"testing"
+
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	ionoscloud "github.com/ionos-cloud/sdk-go-container-registry"
 	"github.com/lucasjones/reggen"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestRegistryService(t *testing.T) {

@@ -1,5 +1,9 @@
 package functional
 
+/*
+ * TODO: Remove this pkg once sdk-go-bundle is imported, and import github.com/ionos-cloud/sdk-go-bundle/shared/functional.go
+ */
+
 // ApplyOrFail tries applying the provided function for each element of the slice
 // If the function returns an error, we break execution and return the error
 func ApplyOrFail[T any](xs []T, f func(T) error) error {
@@ -14,6 +18,17 @@ func ApplyOrFail[T any](xs []T, f func(T) error) error {
 		},
 		nil,
 	)
+}
+
+// Filter applies a function to each element of a slice, returning a new slice with only the elements for which the function returns true.
+func Filter[T any](xs []T, f func(T) bool) []T {
+	result := make([]T, 0, len(xs))
+	for _, x := range xs {
+		if f(x) {
+			result = append(result, x)
+		}
+	}
+	return result
 }
 
 // Fold accumulates the result of f into acc and returns acc by applying f over each element in the slice

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry"
+	container_registry "github.com/ionos-cloud/ionosctl/v6/commands/container-registry"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/doc"
 )
 
