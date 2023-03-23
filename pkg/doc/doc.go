@@ -71,9 +71,14 @@ func createStructure(cmd *core.Command, dir string) error {
 		if cmd.Command.HasParent() && cmd.Command.Runnable() {
 			name := strings.ReplaceAll(cmd.Command.CommandPath(), rootCmdName+" ", "")
 			name = strings.ReplaceAll(name, " ", "-")
-			filename = fmt.Sprintf("%s.md", name)
 			subdir := determineSubdir(name, Products)
 			dir = filepath.Join(dir, subdir)
+
+			lastSegment := strings.Split(name, "-")
+			filename = fmt.Sprintf("%s.md", lastSegment[len(lastSegment)-1])
+
+			// Move one directory up to store the .md file
+			dir = filepath.Dir(dir)
 		} else {
 			return nil
 		}
