@@ -1,3 +1,13 @@
+// Package doc generates Markdown files and organizes a directory structure that follows the command hierarchy.
+//
+// The WriteDocs function is the main entry point for generating the documentation. It recursively processes all
+// subcommands and creates the appropriate files and directories based on the command structure, following this rule:
+//
+// - For commands with no namespace (e.g., `ionosctl version`, `ionosctl login`), files are placed in `docs/subcommands/cli-setup`
+// - For commands with a one-level deep namespace (e.g., `ionosctl server list`, `ionosctl datacenter list`), files are placed in `docs/subcommands/compute`
+// - For commands with deeper namespaces (e.g., `ionosctl dbaas mongo cluster create`), files are placed in corresponding subdirectories (e.g., `docs/subcommands/dbaas/mongo/cluster`)
+//
+// The GenerateSummary function is another entry point, which can create a summary.md file containing the table of contents for the generated documentation.
 package doc
 
 import (
@@ -11,20 +21,31 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 )
 
-// Generate Markdown documentation based on information described in commands.
-// Using WriteDocs function, it will be created one structure in the path specified.
-// For each runnable command, an Markdown file is generated with the following fields:
-// # Usage
-// # Description
-// # Options
-// # Examples
-// # See also
-// depending if these fields are set in the command.
-
 const rootCmdName = "ionosctl"
 
+func GenerateSummary(dir string) error {
+	f, err := os.Create(filepath.Join(dir, "summary.md"))
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	buf := new(bytes.Buffer)
+
+	buf.WriteString("# Table of contents\n\n")
+	buf.WriteString("* [Introduction](README.md)\n")
+	buf.WriteString("* [Changelog](/CHANGELOG.md)\n\n")
+	buf.WriteString("## Subcommands\n\n")
+
+	err = generateDirectoryContent(filepath.Join(dir, "subcommands"), buf, "")
+	if err != nil {
+		return err
+	}
+	_, err = buf.WriteTo(f)
+	return err
+}
+
 func WriteDocs(cmd *core.Command, dir string) error {
-	// Exit if there's an error
 	for _, c := range cmd.SubCommands() {
 		if c.Command.HasParent() {
 			if !c.Command.IsAvailableCommand() {
@@ -48,8 +69,13 @@ func createStructure(cmd *core.Command, dir string) error {
 			name := strings.ReplaceAll(cmd.Command.CommandPath(), rootCmdName+" ", "")
 			name = strings.ReplaceAll(name, " ", "-")
 			filename = fmt.Sprintf("%s.md", name)
+			subdir := determineSubdir(name)
+			dir = filepath.Join(dir, subdir)
 		} else {
 			return nil
+		}
+		if err := os.MkdirAll(dir, os.ModePerm); err != nil {
+			return err
 		}
 		file = filepath.Join(dir, filename)
 		f, err := os.Create(file)
@@ -60,6 +86,49 @@ func createStructure(cmd *core.Command, dir string) error {
 		err = writeDoc(cmd, f)
 		if err != nil {
 			return err
+		}
+	}
+	return nil
+}
+
+// determineSubdir is a hack to respect the current doc tree style
+func determineSubdir(name string) string {
+	segments := strings.Split(name, "-")
+	switch len(segments) {
+	case 0, 1:
+		return "cli-setup"
+	case 2:
+		return "compute"
+	default:
+		return filepath.Join(segments[0], strings.Join(segments[1:], "/"))
+	}
+}
+
+func generateDirectoryContent(dir string, buf *bytes.Buffer, prefix string) error {
+	files, err := os.ReadDir(dir)
+	if err != nil {
+		return err
+	}
+
+	for _, file := range files {
+		name := file.Name()
+		title := strings.ToTitle(strings.ReplaceAll(name, "-", " "))
+
+		if file.IsDir() {
+			subdir := filepath.Join(dir, name)
+			buf.WriteString(fmt.Sprintf("%s* %s\n", prefix, title))
+			err = generateDirectoryContent(subdir, buf, prefix+"    ")
+			if err != nil {
+				return err
+			}
+			continue
+		}
+
+		if filepath.Ext(name) == ".md" {
+			nameWithoutExt := strings.TrimSuffix(name, filepath.Ext(name))
+			title = strings.ToTitle(strings.ReplaceAll(nameWithoutExt, "-", " "))
+			link := filepath.Join("subcommands", strings.ReplaceAll(dir, "\\", "/"), name)
+			buf.WriteString(fmt.Sprintf("%s* [%s](%s)\n", prefix, title, link))
 		}
 	}
 	return nil

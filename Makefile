@@ -44,12 +44,9 @@ mocks_update: cloudapiv6_mocks_update auth_v1_mocks_update dbaas_postgres_mocks_
 	@tools/regenerate_mocks.sh
 	@echo "DONE"
 
-.PHONY: docs_update
-docs_update: dbaas_postgres_docs_update certmanager_docs_update dbaas_mongo_docs_update dataplatform_docs_update
-	@echo "--- Update documentation in ${DOCS_OUT} ---"
-	@mkdir -p ${DOCS_OUT}
-	@DOCS_OUT=${DOCS_OUT} tools/regenerate_doc.sh
-	@echo "DONE"
+.PHONY: docs generate-docs
+docs generate-docs:
+	@go run tools/doc.go
 
 .PHONY: gofmt_check
 gofmt_check:
