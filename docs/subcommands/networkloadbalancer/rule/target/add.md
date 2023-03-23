@@ -75,6 +75,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl networkloadbalancer rule target add --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID --rule-id FORWARDINGRULE_ID --target-ip TARGET_IP --target-port TARGET_PORT -w
+ionosctl networkloadbalancer rule target add --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID --rule-id FORWARDINGRULE_ID --ip TARGET_IP --port TARGET_PORT
 ```
 

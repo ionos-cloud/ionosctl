@@ -97,7 +97,7 @@ func determineSubdir(name string, nonComputeNamespaces []string) string {
 	segments := strings.Split(name, "-")
 
 	if segments[0] == "login" || segments[0] == "version" || segments[0] == "completion" {
-		return "\"CLI Setup\""
+		return filepath.Join("CLI Setup", segments[0])
 	}
 
 	if segments[0] == "token" {
