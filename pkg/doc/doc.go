@@ -1,10 +1,8 @@
 // Package doc generates Markdown files and organizes a directory structure that follows the command hierarchy.
 //
 // The WriteDocs function is the main entry point for generating the documentation. It recursively processes all
-// subcommands and creates the appropriate files and directories based on the command structure, following this rule:
-//
-// - For commands with no namespace (e.g., `ionosctl version`, `ionosctl login`), files are placed in `docs/subcommands/cli-setup`
-// - For commands with deeper namespaces (e.g., `ionosctl dbaas mongo cluster create`), files are placed in corresponding subdirectories (e.g., `docs/subcommands/dbaas/mongo/cluster`)
+// subcommands and creates the appropriate files and directories based on the command structure,
+// following the rules defined in determineSubdir
 //
 // The GenerateSummary function is another entry point, which can create a summary.md file containing the table of contents for the generated documentation.
 package doc
@@ -109,7 +107,7 @@ func determineSubdir(name string, nonComputeNamespaces []string) string {
 	}
 
 	if segments[0] == "token" {
-		// I don't know why these weren't added to some auth namespace
+		// I don't know why these commands weren't added to some auth namespace
 		return "authentication/token/a"
 	}
 
