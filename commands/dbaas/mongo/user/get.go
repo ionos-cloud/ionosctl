@@ -52,7 +52,7 @@ func UserGetCmd() *core.Command {
 		return completer.MongoClusterIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddStringFlag(FlagDatabase, FlagDatabaseShort, "", "The authentication database")
-	cmd.AddStringFlag(constants.ArgUser, "u", "", "The authentication username")
+	cmd.AddStringFlag(constants.ArgUser, "", "", "The authentication username")
 
 	cmd.Command.SilenceUsage = true
 

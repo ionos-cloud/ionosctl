@@ -158,8 +158,15 @@ func generateDirectoryContent(dir string, buf *bytes.Buffer, prefix string) erro
 }
 
 func writeDoc(cmd *core.Command, w io.Writer) error {
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Printf("Panic occurred for command path: %s\n", cmd.Command.CommandPath())
+			//err := fmt.Errorf("panic: %v", r)
+		}
+	}()
+
 	cmd.Command.InitDefaultHelpCmd()
-	//cmd.Command.InitDefaultHelpFlag()
+	cmd.Command.InitDefaultHelpFlag()
 
 	buf := new(bytes.Buffer)
 	name := cmd.Command.CommandPath()
