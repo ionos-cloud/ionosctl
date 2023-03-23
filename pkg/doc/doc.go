@@ -71,19 +71,14 @@ func createStructure(cmd *core.Command, dir string) error {
 			name = strings.ReplaceAll(name, " ", "-")
 			subdir := determineSubdir(name, Products)
 			dir = filepath.Join(dir, subdir)
-
-			lastSegment := strings.Split(name, "-")
-			filename = fmt.Sprintf("%s.md", lastSegment[len(lastSegment)-1])
-
-			// Move one directory up to store the .md file
-			dir = filepath.Dir(dir)
 		} else {
 			return nil
 		}
-		if err := os.MkdirAll(dir, os.ModePerm); err != nil {
+		if err := os.MkdirAll(filepath.Dir(dir), os.ModePerm); err != nil {
 			return err
 		}
-		file = filepath.Join(dir, filename)
+		filename = filepath.Base(dir) + ".md"
+		file = filepath.Join(filepath.Dir(dir), filename)
 		f, err := os.Create(file)
 		if err != nil {
 			return err
@@ -101,14 +96,13 @@ func createStructure(cmd *core.Command, dir string) error {
 func determineSubdir(name string, nonComputeNamespaces []string) string {
 	segments := strings.Split(name, "-")
 
-	if len(segments) == 0 || len(segments) == 1 {
-		// e.g. version, login
-		return "cli-setup"
+	if segments[0] == "login" || segments[0] == "version" || segments[0] == "completion" {
+		return "\"CLI Setup\""
 	}
 
 	if segments[0] == "token" {
 		// I don't know why these commands weren't added to some auth namespace
-		return "authentication/token/a"
+		return "Authentication/token/"
 	}
 
 	combinedNamespace := segments[0] + "-" + segments[1]
@@ -128,7 +122,7 @@ func determineSubdir(name string, nonComputeNamespaces []string) string {
 	}
 
 	// If not part of a known API, put it in the "compute" subdirectory
-	return filepath.Join("compute", filepath.Join(segments...))
+	return filepath.Join("Compute Engine", filepath.Join(segments...))
 }
 
 func generateDirectoryContent(dir string, buf *bytes.Buffer, prefix string) error {
