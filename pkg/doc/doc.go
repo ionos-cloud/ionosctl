@@ -24,16 +24,16 @@ const rootCmdName = "ionosctl"
 // Products establishes non-compute namespaces, and deduces that the rest of the root-level commands MUST be part of compute. If you add support for a new API, add your command here
 // TODO: Change me, when compute namespace is added!
 var nonComputeNamespaces = map[string]string{
-	"applicationloadbalancer": "Application Load Balancer",
-	"backupunit":              "Managed Backup",
-	"certificate-manager":     "Certificate Manager",
-	"container-registry":      "Container Registry",
-	"dataplatform":            "Managed Stackable Data Platform",
-	"dbaas":                   "Database as a Service",
-	"natgateway":              "NAT Gateway",
-	"networkloadbalancer":     "Network Load Balancer",
-	"k8s":                     "Managed Kubernetes",
-	"user":                    "User Management",
+	"applicationloadbalancer": "Application-Load-Balancer",
+	"backupunit":              "Managed-Backup",
+	"certificate-manager":     "Certificate-Manager",
+	"container-registry":      "Container-Registry",
+	"dataplatform":            "Managed-Stackable-Data-Platform",
+	"dbaas":                   "Database-as-a-Service",
+	"natgateway":              "NAT-Gateway",
+	"networkloadbalancer":     "Network-Load-Balancer",
+	"k8s":                     "Managed-Kubernetes",
+	"user":                    "User-Management",
 }
 
 func GenerateSummary(dir string) error {
@@ -59,7 +59,7 @@ func GenerateSummary(dir string) error {
 	if err != nil {
 		return err
 	}
-	
+
 	_, err = buf.WriteTo(f)
 	if err != nil {
 		return err
