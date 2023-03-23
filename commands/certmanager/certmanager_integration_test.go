@@ -1,3 +1,6 @@
+//go:build integration
+// +build integration
+
 package certmanager
 
 import (
@@ -8,7 +11,6 @@ import (
 	"crypto/x509"
 	"crypto/x509/pkix"
 	"encoding/pem"
-	"errors"
 	"math/big"
 	"os"
 	"path/filepath"
@@ -21,7 +23,6 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 )
 
 // test values
@@ -43,43 +44,11 @@ var (
 		KeyUsage:              x509.KeyUsageDigitalSignature | x509.KeyUsageCertSign,
 		BasicConstraintsValid: true,
 	}
-
-	nonAvailableCmdErr = errors.New("non-available cmd")
 )
 
 func TestCertificateManagerServiceCmd(t *testing.T) {
+
 	var err error
-	core.RootCmdTest.AddCommand(CertCmd())
-	if ok := CertCmd().IsAvailableCommand(); !ok {
-		err = nonAvailableCmdErr
-	}
-	assert.NoError(t, err)
-
-	if ok := CertCreateCmd().IsAvailableCommand(); !ok {
-		err = nonAvailableCmdErr
-	}
-	assert.NoError(t, err)
-
-	if ok := CertDeleteCmd().IsAvailableCommand(); !ok {
-		err = nonAvailableCmdErr
-	}
-	assert.NoError(t, err)
-
-	if ok := CertGetCmd().IsAvailableCommand(); !ok {
-		err = nonAvailableCmdErr
-	}
-	assert.NoError(t, err)
-
-	if ok := CertListCmd().IsAvailableCommand(); !ok {
-		err = nonAvailableCmdErr
-	}
-	assert.NoError(t, err)
-
-	if ok := CertGetApiVersionCmd().IsAvailableCommand(); !ok {
-		err = nonAvailableCmdErr
-	}
-	assert.NoError(t, err)
-
 	t.Run(
 		"cert list", func(t *testing.T) {
 			viper.Reset()

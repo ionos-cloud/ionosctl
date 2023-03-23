@@ -26,8 +26,17 @@ test_unit:
 	@go test -cover ./commands/ ./pkg/...
 	@echo "DONE"
 
+# run unit tests for all services
+.PHONY: utest
+utest: test_unit cloudapiv6_test auth_v1_test dbaas_postgres_test dbaas_mongo_test_unit certmanager_test_unit contreg_test_unit dataplatform_test_unit
+
+# run integration tests for all services
+.PHONY: itest
+itest: dbaas_mongo_test_integration certmanager_test_integration contreg_test_integration dataplatform_test
+
+# run all tests
 .PHONY: test
-test: test_unit cloudapiv6_test auth_v1_test dbaas_postgres_test dbaas_mongo_test certmanager_test contreg_test dataplatform_test
+test: utest itest
 
 .PHONY: mocks_update
 mocks_update: cloudapiv6_mocks_update auth_v1_mocks_update dbaas_postgres_mocks_update certmanager_mocks_update dbaas_mongo_mocks_update
