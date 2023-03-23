@@ -1,0 +1,50 @@
+---
+description: Delete one or multiple Tokens
+---
+
+# TokenDelete
+
+## Usage
+
+```text
+ionosctl token delete [flags]
+```
+
+## Aliases
+
+For `delete` command:
+
+```text
+[d]
+```
+
+## Description
+
+Use this command to delete a specified Token by token Id or multiple Tokens (based on a criteria: CURRENT, EXPIRED, ALL) from your account. With parameter values ALL and EXPIRED, 'Basic Authentication' or 'Token Authentication' tokens with valid credentials must be encapsulated in the header. With value CURRENT, only the 'Token Authentication' with valid credentials is required.
+
+Required values to run command:
+
+* Token Id/CURRENT/EXPIRED/ALL
+
+## Options
+
+```text
+  -A, --all               Delete the Tokens under your account (required)
+      --contract int      Users with multiple contracts must provide the contract number, for which the tokens are deleted
+  -C, --current           Delete the Token that is currently used. This requires a token to be set for authentication via environment variable IONOS_TOKEN or via config file (required)
+  -E, --expired           Delete the Tokens that are currently expired (required)
+  -i, --token-id string   The unique Key ID of a Token (required)
+```
+
+## Examples
+
+```text
+ionosctl token delete --token-id TOKEN_ID
+
+ionosctl token delete --expired
+
+ionosctl token delete --current
+
+ionosctl token delete --all
+```
+

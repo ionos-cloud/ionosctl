@@ -4,18 +4,19 @@ import (
 	"fmt"
 	"github.com/ionos-cloud/ionosctl/v6/internal/die"
 	"os"
+	"path/filepath"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/doc"
 )
 
 const (
-	DocsOutFolder = "docs"
+	DocsOutFolder = "docs/subcommands"
 )
 
 func main() {
-	if _, err := os.Stat(DocsOutFolder); err != nil {
-		die.Die(fmt.Errorf("error getting directory stat: %w", err).Error())
+	if err := os.MkdirAll(DocsOutFolder, os.ModePerm); err != nil {
+		die.Die(fmt.Errorf("error creating directories: %w", err).Error())
 	}
 
 	err := doc.WriteDocs(commands.GetRootCmd(), DocsOutFolder)
@@ -23,7 +24,7 @@ func main() {
 		die.Die(fmt.Errorf("error writing command docs %w", err).Error())
 	}
 
-	err = doc.GenerateSummary(DocsOutFolder)
+	err = doc.GenerateSummary(filepath.Join(DocsOutFolder, ".."))
 	if err != nil {
 		die.Die(fmt.Errorf("error writing summary %w", err).Error())
 	}

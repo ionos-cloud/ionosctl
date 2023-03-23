@@ -4,7 +4,6 @@
 // subcommands and creates the appropriate files and directories based on the command structure, following this rule:
 //
 // - For commands with no namespace (e.g., `ionosctl version`, `ionosctl login`), files are placed in `docs/subcommands/cli-setup`
-// - For commands with a one-level deep namespace (e.g., `ionosctl server list`, `ionosctl datacenter list`), files are placed in `docs/subcommands/compute`
 // - For commands with deeper namespaces (e.g., `ionosctl dbaas mongo cluster create`), files are placed in corresponding subdirectories (e.g., `docs/subcommands/dbaas/mongo/cluster`)
 //
 // The GenerateSummary function is another entry point, which can create a summary.md file containing the table of contents for the generated documentation.
@@ -22,6 +21,10 @@ import (
 )
 
 const rootCmdName = "ionosctl"
+
+// Products establishes non-compute namespaces, and deduces that the rest of the root-level commands MUST be part of compute. If you add support for a new API, add your command here
+// TODO: Change me, when compute namespace is added!
+var Products = []string{"container-registry", "certificate-manager", "k8s", "dbaas", "natgateway", "applicationloadbalancer", "networkloadbalancer", "backupunit", "user", "dataplatform"}
 
 func GenerateSummary(dir string) error {
 	f, err := os.Create(filepath.Join(dir, "summary.md"))
@@ -69,7 +72,7 @@ func createStructure(cmd *core.Command, dir string) error {
 			name := strings.ReplaceAll(cmd.Command.CommandPath(), rootCmdName+" ", "")
 			name = strings.ReplaceAll(name, " ", "-")
 			filename = fmt.Sprintf("%s.md", name)
-			subdir := determineSubdir(name)
+			subdir := determineSubdir(name, Products)
 			dir = filepath.Join(dir, subdir)
 		} else {
 			return nil
@@ -91,17 +94,33 @@ func createStructure(cmd *core.Command, dir string) error {
 	return nil
 }
 
-// determineSubdir is a hack to respect the current doc tree style
-func determineSubdir(name string) string {
+// determineSubdir is a hack to support the old tree structure...
+func determineSubdir(name string, nonComputeNamespaces []string) string {
 	segments := strings.Split(name, "-")
-	switch len(segments) {
-	case 0, 1:
+
+	if len(segments) == 0 || len(segments) == 1 {
+		// e.g. version, login
 		return "cli-setup"
-	case 2:
-		return "compute"
-	default:
-		return filepath.Join(segments[0], strings.Join(segments[1:], "/"))
 	}
+
+	combinedNamespace := segments[0] + "-" + segments[1]
+
+	for _, api := range nonComputeNamespaces {
+		if combinedNamespace == api {
+			// If the combined namespace matches a known API, update the segments
+			// e.g. container-registry
+			segments[0] = combinedNamespace
+			segments = append([]string{segments[0]}, segments[2:]...)
+			return filepath.Join(api, filepath.Join(segments[1:]...))
+		} else if segments[0] == api {
+			// If the first segment matches a known API
+			// e.g. dbaas
+			return filepath.Join(api, filepath.Join(segments[1:]...))
+		}
+	}
+
+	// If not part of a known API, put it in the "compute" subdirectory
+	return filepath.Join("compute", filepath.Join(segments...))
 }
 
 func generateDirectoryContent(dir string, buf *bytes.Buffer, prefix string) error {
@@ -112,11 +131,10 @@ func generateDirectoryContent(dir string, buf *bytes.Buffer, prefix string) erro
 
 	for _, file := range files {
 		name := file.Name()
-		title := strings.ToTitle(strings.ReplaceAll(name, "-", " "))
 
 		if file.IsDir() {
 			subdir := filepath.Join(dir, name)
-			buf.WriteString(fmt.Sprintf("%s* %s\n", prefix, title))
+			buf.WriteString(fmt.Sprintf("%s* %s\n", prefix, name))
 			err = generateDirectoryContent(subdir, buf, prefix+"    ")
 			if err != nil {
 				return err
@@ -126,7 +144,7 @@ func generateDirectoryContent(dir string, buf *bytes.Buffer, prefix string) erro
 
 		if filepath.Ext(name) == ".md" {
 			nameWithoutExt := strings.TrimSuffix(name, filepath.Ext(name))
-			title = strings.ToTitle(strings.ReplaceAll(nameWithoutExt, "-", " "))
+			title := strings.ToTitle(strings.ReplaceAll(nameWithoutExt, "-", " "))
 			link := filepath.Join("subcommands", strings.ReplaceAll(dir, "\\", "/"), name)
 			buf.WriteString(fmt.Sprintf("%s* [%s](%s)\n", prefix, title, link))
 		}
@@ -136,7 +154,7 @@ func generateDirectoryContent(dir string, buf *bytes.Buffer, prefix string) erro
 
 func writeDoc(cmd *core.Command, w io.Writer) error {
 	cmd.Command.InitDefaultHelpCmd()
-	cmd.Command.InitDefaultHelpFlag()
+	//cmd.Command.InitDefaultHelpFlag()
 
 	buf := new(bytes.Buffer)
 	name := cmd.Command.CommandPath()
