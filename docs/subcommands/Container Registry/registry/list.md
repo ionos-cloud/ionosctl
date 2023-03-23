@@ -27,7 +27,7 @@ For `registry` command:
 For `list` command:
 
 ```text
-[l]
+[l ls]
 ```
 
 ## Description

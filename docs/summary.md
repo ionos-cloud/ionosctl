@@ -5,974 +5,1184 @@
 
 ## Subcommands
 
+* Application Load Balancer
+    * [create](subcommands%2FApplication%20Load%20Balancer%2Fcreate.md)
+    * [delete](subcommands%2FApplication%20Load%20Balancer%2Fdelete.md)
+    * flowlog
+        * [create](subcommands%2FApplication%20Load%20Balancer%2Fflowlog%2Fcreate.md)
+        * [delete](subcommands%2FApplication%20Load%20Balancer%2Fflowlog%2Fdelete.md)
+        * [get](subcommands%2FApplication%20Load%20Balancer%2Fflowlog%2Fget.md)
+        * [list](subcommands%2FApplication%20Load%20Balancer%2Fflowlog%2Flist.md)
+        * [update](subcommands%2FApplication%20Load%20Balancer%2Fflowlog%2Fupdate.md)
+    * [get](subcommands%2FApplication%20Load%20Balancer%2Fget.md)
+    * [list](subcommands%2FApplication%20Load%20Balancer%2Flist.md)
+    * rule
+        * [create](subcommands%2FApplication%20Load%20Balancer%2Frule%2Fcreate.md)
+        * [delete](subcommands%2FApplication%20Load%20Balancer%2Frule%2Fdelete.md)
+        * [get](subcommands%2FApplication%20Load%20Balancer%2Frule%2Fget.md)
+        * httprule
+            * [add](subcommands%2FApplication%20Load%20Balancer%2Frule%2Fhttprule%2Fadd.md)
+            * [list](subcommands%2FApplication%20Load%20Balancer%2Frule%2Fhttprule%2Flist.md)
+            * [remove](subcommands%2FApplication%20Load%20Balancer%2Frule%2Fhttprule%2Fremove.md)
+        * [list](subcommands%2FApplication%20Load%20Balancer%2Frule%2Flist.md)
+        * [update](subcommands%2FApplication%20Load%20Balancer%2Frule%2Fupdate.md)
+    * [update](subcommands%2FApplication%20Load%20Balancer%2Fupdate.md)
 * Authentication
-    * [token](subcommands/Authentication/token.md)
+    * [token](subcommands%2FAuthentication%2Ftoken.md)
 * CLI Setup
-    * [login](subcommands/CLI Setup/login.md)
-    * [version](subcommands/CLI Setup/version.md)
+    * [login](subcommands%2FCLI%20Setup%2Flogin.md)
+    * [version](subcommands%2FCLI%20Setup%2Fversion.md)
+* Certificate Manager
+    * [add](subcommands%2FCertificate%20Manager%2Fadd.md)
+    * api
+        * [version](subcommands%2FCertificate%20Manager%2Fapi%2Fversion.md)
+    * [delete](subcommands%2FCertificate%20Manager%2Fdelete.md)
+    * [get](subcommands%2FCertificate%20Manager%2Fget.md)
+    * [list](subcommands%2FCertificate%20Manager%2Flist.md)
+    * [update](subcommands%2FCertificate%20Manager%2Fupdate.md)
 * Compute Engine
     * contract
-        * [get](subcommands/Compute Engine/contract/get.md)
+        * [get](subcommands%2FCompute%20Engine%2Fcontract%2Fget.md)
     * datacenter
-        * [create](subcommands/Compute Engine/datacenter/create.md)
-        * [delete](subcommands/Compute Engine/datacenter/delete.md)
-        * [get](subcommands/Compute Engine/datacenter/get.md)
-        * [list](subcommands/Compute Engine/datacenter/list.md)
-        * [update](subcommands/Compute Engine/datacenter/update.md)
+        * [create](subcommands%2FCompute%20Engine%2Fdatacenter%2Fcreate.md)
+        * [delete](subcommands%2FCompute%20Engine%2Fdatacenter%2Fdelete.md)
+        * [get](subcommands%2FCompute%20Engine%2Fdatacenter%2Fget.md)
+        * [list](subcommands%2FCompute%20Engine%2Fdatacenter%2Flist.md)
+        * [update](subcommands%2FCompute%20Engine%2Fdatacenter%2Fupdate.md)
     * firewallrule
-        * [create](subcommands/Compute Engine/firewallrule/create.md)
-        * [delete](subcommands/Compute Engine/firewallrule/delete.md)
-        * [get](subcommands/Compute Engine/firewallrule/get.md)
-        * [list](subcommands/Compute Engine/firewallrule/list.md)
-        * [update](subcommands/Compute Engine/firewallrule/update.md)
+        * [create](subcommands%2FCompute%20Engine%2Ffirewallrule%2Fcreate.md)
+        * [delete](subcommands%2FCompute%20Engine%2Ffirewallrule%2Fdelete.md)
+        * [get](subcommands%2FCompute%20Engine%2Ffirewallrule%2Fget.md)
+        * [list](subcommands%2FCompute%20Engine%2Ffirewallrule%2Flist.md)
+        * [update](subcommands%2FCompute%20Engine%2Ffirewallrule%2Fupdate.md)
     * flowlog
-        * [create](subcommands/Compute Engine/flowlog/create.md)
-        * [delete](subcommands/Compute Engine/flowlog/delete.md)
-        * [get](subcommands/Compute Engine/flowlog/get.md)
-        * [list](subcommands/Compute Engine/flowlog/list.md)
+        * [create](subcommands%2FCompute%20Engine%2Fflowlog%2Fcreate.md)
+        * [delete](subcommands%2FCompute%20Engine%2Fflowlog%2Fdelete.md)
+        * [get](subcommands%2FCompute%20Engine%2Fflowlog%2Fget.md)
+        * [list](subcommands%2FCompute%20Engine%2Fflowlog%2Flist.md)
     * group
-        * [create](subcommands/Compute Engine/group/create.md)
-        * [delete](subcommands/Compute Engine/group/delete.md)
-        * [get](subcommands/Compute Engine/group/get.md)
-        * [list](subcommands/Compute Engine/group/list.md)
+        * [create](subcommands%2FCompute%20Engine%2Fgroup%2Fcreate.md)
+        * [delete](subcommands%2FCompute%20Engine%2Fgroup%2Fdelete.md)
+        * [get](subcommands%2FCompute%20Engine%2Fgroup%2Fget.md)
+        * [list](subcommands%2FCompute%20Engine%2Fgroup%2Flist.md)
         * resource
-            * [list](subcommands/Compute Engine/group/resource/list.md)
-        * [update](subcommands/Compute Engine/group/update.md)
+            * [list](subcommands%2FCompute%20Engine%2Fgroup%2Fresource%2Flist.md)
+        * [update](subcommands%2FCompute%20Engine%2Fgroup%2Fupdate.md)
         * user
-            * [add](subcommands/Compute Engine/group/user/add.md)
-            * [list](subcommands/Compute Engine/group/user/list.md)
-            * [remove](subcommands/Compute Engine/group/user/remove.md)
+            * [add](subcommands%2FCompute%20Engine%2Fgroup%2Fuser%2Fadd.md)
+            * [list](subcommands%2FCompute%20Engine%2Fgroup%2Fuser%2Flist.md)
+            * [remove](subcommands%2FCompute%20Engine%2Fgroup%2Fuser%2Fremove.md)
     * image
-        * [delete](subcommands/Compute Engine/image/delete.md)
-        * [get](subcommands/Compute Engine/image/get.md)
-        * [list](subcommands/Compute Engine/image/list.md)
-        * [update](subcommands/Compute Engine/image/update.md)
-        * [upload](subcommands/Compute Engine/image/upload.md)
+        * [delete](subcommands%2FCompute%20Engine%2Fimage%2Fdelete.md)
+        * [get](subcommands%2FCompute%20Engine%2Fimage%2Fget.md)
+        * [list](subcommands%2FCompute%20Engine%2Fimage%2Flist.md)
+        * [update](subcommands%2FCompute%20Engine%2Fimage%2Fupdate.md)
+        * [upload](subcommands%2FCompute%20Engine%2Fimage%2Fupload.md)
     * ipblock
-        * [create](subcommands/Compute Engine/ipblock/create.md)
-        * [delete](subcommands/Compute Engine/ipblock/delete.md)
-        * [get](subcommands/Compute Engine/ipblock/get.md)
-        * [list](subcommands/Compute Engine/ipblock/list.md)
-        * [update](subcommands/Compute Engine/ipblock/update.md)
+        * [create](subcommands%2FCompute%20Engine%2Fipblock%2Fcreate.md)
+        * [delete](subcommands%2FCompute%20Engine%2Fipblock%2Fdelete.md)
+        * [get](subcommands%2FCompute%20Engine%2Fipblock%2Fget.md)
+        * [list](subcommands%2FCompute%20Engine%2Fipblock%2Flist.md)
+        * [update](subcommands%2FCompute%20Engine%2Fipblock%2Fupdate.md)
     * ipconsumer
-        * [list](subcommands/Compute Engine/ipconsumer/list.md)
+        * [list](subcommands%2FCompute%20Engine%2Fipconsumer%2Flist.md)
     * ipfailover
-        * [add](subcommands/Compute Engine/ipfailover/add.md)
-        * [list](subcommands/Compute Engine/ipfailover/list.md)
-        * [remove](subcommands/Compute Engine/ipfailover/remove.md)
+        * [add](subcommands%2FCompute%20Engine%2Fipfailover%2Fadd.md)
+        * [list](subcommands%2FCompute%20Engine%2Fipfailover%2Flist.md)
+        * [remove](subcommands%2FCompute%20Engine%2Fipfailover%2Fremove.md)
     * label
-        * [add](subcommands/Compute Engine/label/add.md)
+        * [add](subcommands%2FCompute%20Engine%2Flabel%2Fadd.md)
         * get
             * by
-                * [urn](subcommands/Compute Engine/label/get/by/urn.md)
-        * [get](subcommands/Compute Engine/label/get.md)
-        * [list](subcommands/Compute Engine/label/list.md)
-        * [remove](subcommands/Compute Engine/label/remove.md)
+                * [urn](subcommands%2FCompute%20Engine%2Flabel%2Fget%2Fby%2Furn.md)
+        * [get](subcommands%2FCompute%20Engine%2Flabel%2Fget.md)
+        * [list](subcommands%2FCompute%20Engine%2Flabel%2Flist.md)
+        * [remove](subcommands%2FCompute%20Engine%2Flabel%2Fremove.md)
     * lan
-        * [create](subcommands/Compute Engine/lan/create.md)
-        * [delete](subcommands/Compute Engine/lan/delete.md)
-        * [get](subcommands/Compute Engine/lan/get.md)
-        * [list](subcommands/Compute Engine/lan/list.md)
-        * [update](subcommands/Compute Engine/lan/update.md)
+        * [create](subcommands%2FCompute%20Engine%2Flan%2Fcreate.md)
+        * [delete](subcommands%2FCompute%20Engine%2Flan%2Fdelete.md)
+        * [get](subcommands%2FCompute%20Engine%2Flan%2Fget.md)
+        * [list](subcommands%2FCompute%20Engine%2Flan%2Flist.md)
+        * [update](subcommands%2FCompute%20Engine%2Flan%2Fupdate.md)
     * loadbalancer
-        * [create](subcommands/Compute Engine/loadbalancer/create.md)
-        * [delete](subcommands/Compute Engine/loadbalancer/delete.md)
-        * [get](subcommands/Compute Engine/loadbalancer/get.md)
-        * [list](subcommands/Compute Engine/loadbalancer/list.md)
+        * [create](subcommands%2FCompute%20Engine%2Floadbalancer%2Fcreate.md)
+        * [delete](subcommands%2FCompute%20Engine%2Floadbalancer%2Fdelete.md)
+        * [get](subcommands%2FCompute%20Engine%2Floadbalancer%2Fget.md)
+        * [list](subcommands%2FCompute%20Engine%2Floadbalancer%2Flist.md)
         * nic
-            * [attach](subcommands/Compute Engine/loadbalancer/nic/attach.md)
-            * [detach](subcommands/Compute Engine/loadbalancer/nic/detach.md)
-            * [get](subcommands/Compute Engine/loadbalancer/nic/get.md)
-            * [list](subcommands/Compute Engine/loadbalancer/nic/list.md)
-        * [update](subcommands/Compute Engine/loadbalancer/update.md)
+            * [attach](subcommands%2FCompute%20Engine%2Floadbalancer%2Fnic%2Fattach.md)
+            * [detach](subcommands%2FCompute%20Engine%2Floadbalancer%2Fnic%2Fdetach.md)
+            * [get](subcommands%2FCompute%20Engine%2Floadbalancer%2Fnic%2Fget.md)
+            * [list](subcommands%2FCompute%20Engine%2Floadbalancer%2Fnic%2Flist.md)
+        * [update](subcommands%2FCompute%20Engine%2Floadbalancer%2Fupdate.md)
     * location
         * cpu
-            * [list](subcommands/Compute Engine/location/cpu/list.md)
-        * [get](subcommands/Compute Engine/location/get.md)
-        * [list](subcommands/Compute Engine/location/list.md)
+            * [list](subcommands%2FCompute%20Engine%2Flocation%2Fcpu%2Flist.md)
+        * [get](subcommands%2FCompute%20Engine%2Flocation%2Fget.md)
+        * [list](subcommands%2FCompute%20Engine%2Flocation%2Flist.md)
     * nic
-        * [create](subcommands/Compute Engine/nic/create.md)
-        * [delete](subcommands/Compute Engine/nic/delete.md)
-        * [get](subcommands/Compute Engine/nic/get.md)
-        * [list](subcommands/Compute Engine/nic/list.md)
-        * [update](subcommands/Compute Engine/nic/update.md)
+        * [create](subcommands%2FCompute%20Engine%2Fnic%2Fcreate.md)
+        * [delete](subcommands%2FCompute%20Engine%2Fnic%2Fdelete.md)
+        * [get](subcommands%2FCompute%20Engine%2Fnic%2Fget.md)
+        * [list](subcommands%2FCompute%20Engine%2Fnic%2Flist.md)
+        * [update](subcommands%2FCompute%20Engine%2Fnic%2Fupdate.md)
     * pcc
-        * [create](subcommands/Compute Engine/pcc/create.md)
-        * [delete](subcommands/Compute Engine/pcc/delete.md)
-        * [get](subcommands/Compute Engine/pcc/get.md)
-        * [list](subcommands/Compute Engine/pcc/list.md)
+        * [create](subcommands%2FCompute%20Engine%2Fpcc%2Fcreate.md)
+        * [delete](subcommands%2FCompute%20Engine%2Fpcc%2Fdelete.md)
+        * [get](subcommands%2FCompute%20Engine%2Fpcc%2Fget.md)
+        * [list](subcommands%2FCompute%20Engine%2Fpcc%2Flist.md)
         * peers
-            * [list](subcommands/Compute Engine/pcc/peers/list.md)
-        * [update](subcommands/Compute Engine/pcc/update.md)
+            * [list](subcommands%2FCompute%20Engine%2Fpcc%2Fpeers%2Flist.md)
+        * [update](subcommands%2FCompute%20Engine%2Fpcc%2Fupdate.md)
     * request
-        * [get](subcommands/Compute Engine/request/get.md)
-        * [list](subcommands/Compute Engine/request/list.md)
-        * [wait](subcommands/Compute Engine/request/wait.md)
+        * [get](subcommands%2FCompute%20Engine%2Frequest%2Fget.md)
+        * [list](subcommands%2FCompute%20Engine%2Frequest%2Flist.md)
+        * [wait](subcommands%2FCompute%20Engine%2Frequest%2Fwait.md)
     * resource
-        * [get](subcommands/Compute Engine/resource/get.md)
-        * [list](subcommands/Compute Engine/resource/list.md)
+        * [get](subcommands%2FCompute%20Engine%2Fresource%2Fget.md)
+        * [list](subcommands%2FCompute%20Engine%2Fresource%2Flist.md)
     * server
         * cdrom
-            * [attach](subcommands/Compute Engine/server/cdrom/attach.md)
-            * [detach](subcommands/Compute Engine/server/cdrom/detach.md)
-            * [get](subcommands/Compute Engine/server/cdrom/get.md)
-            * [list](subcommands/Compute Engine/server/cdrom/list.md)
+            * [attach](subcommands%2FCompute%20Engine%2Fserver%2Fcdrom%2Fattach.md)
+            * [detach](subcommands%2FCompute%20Engine%2Fserver%2Fcdrom%2Fdetach.md)
+            * [get](subcommands%2FCompute%20Engine%2Fserver%2Fcdrom%2Fget.md)
+            * [list](subcommands%2FCompute%20Engine%2Fserver%2Fcdrom%2Flist.md)
         * console
-            * [get](subcommands/Compute Engine/server/console/get.md)
-        * [create](subcommands/Compute Engine/server/create.md)
-        * [delete](subcommands/Compute Engine/server/delete.md)
-        * [get](subcommands/Compute Engine/server/get.md)
-        * [list](subcommands/Compute Engine/server/list.md)
-        * [reboot](subcommands/Compute Engine/server/reboot.md)
-        * [resume](subcommands/Compute Engine/server/resume.md)
-        * [start](subcommands/Compute Engine/server/start.md)
-        * [stop](subcommands/Compute Engine/server/stop.md)
-        * [suspend](subcommands/Compute Engine/server/suspend.md)
+            * [get](subcommands%2FCompute%20Engine%2Fserver%2Fconsole%2Fget.md)
+        * [create](subcommands%2FCompute%20Engine%2Fserver%2Fcreate.md)
+        * [delete](subcommands%2FCompute%20Engine%2Fserver%2Fdelete.md)
+        * [get](subcommands%2FCompute%20Engine%2Fserver%2Fget.md)
+        * [list](subcommands%2FCompute%20Engine%2Fserver%2Flist.md)
+        * [reboot](subcommands%2FCompute%20Engine%2Fserver%2Freboot.md)
+        * [resume](subcommands%2FCompute%20Engine%2Fserver%2Fresume.md)
+        * [start](subcommands%2FCompute%20Engine%2Fserver%2Fstart.md)
+        * [stop](subcommands%2FCompute%20Engine%2Fserver%2Fstop.md)
+        * [suspend](subcommands%2FCompute%20Engine%2Fserver%2Fsuspend.md)
         * token
-            * [get](subcommands/Compute Engine/server/token/get.md)
-        * [update](subcommands/Compute Engine/server/update.md)
+            * [get](subcommands%2FCompute%20Engine%2Fserver%2Ftoken%2Fget.md)
+        * [update](subcommands%2FCompute%20Engine%2Fserver%2Fupdate.md)
         * volume
-            * [attach](subcommands/Compute Engine/server/volume/attach.md)
-            * [detach](subcommands/Compute Engine/server/volume/detach.md)
-            * [get](subcommands/Compute Engine/server/volume/get.md)
-            * [list](subcommands/Compute Engine/server/volume/list.md)
+            * [attach](subcommands%2FCompute%20Engine%2Fserver%2Fvolume%2Fattach.md)
+            * [detach](subcommands%2FCompute%20Engine%2Fserver%2Fvolume%2Fdetach.md)
+            * [get](subcommands%2FCompute%20Engine%2Fserver%2Fvolume%2Fget.md)
+            * [list](subcommands%2FCompute%20Engine%2Fserver%2Fvolume%2Flist.md)
     * share
-        * [create](subcommands/Compute Engine/share/create.md)
-        * [delete](subcommands/Compute Engine/share/delete.md)
-        * [get](subcommands/Compute Engine/share/get.md)
-        * [list](subcommands/Compute Engine/share/list.md)
-        * [update](subcommands/Compute Engine/share/update.md)
+        * [create](subcommands%2FCompute%20Engine%2Fshare%2Fcreate.md)
+        * [delete](subcommands%2FCompute%20Engine%2Fshare%2Fdelete.md)
+        * [get](subcommands%2FCompute%20Engine%2Fshare%2Fget.md)
+        * [list](subcommands%2FCompute%20Engine%2Fshare%2Flist.md)
+        * [update](subcommands%2FCompute%20Engine%2Fshare%2Fupdate.md)
     * snapshot
-        * [create](subcommands/Compute Engine/snapshot/create.md)
-        * [delete](subcommands/Compute Engine/snapshot/delete.md)
-        * [get](subcommands/Compute Engine/snapshot/get.md)
-        * [list](subcommands/Compute Engine/snapshot/list.md)
-        * [restore](subcommands/Compute Engine/snapshot/restore.md)
-        * [update](subcommands/Compute Engine/snapshot/update.md)
+        * [create](subcommands%2FCompute%20Engine%2Fsnapshot%2Fcreate.md)
+        * [delete](subcommands%2FCompute%20Engine%2Fsnapshot%2Fdelete.md)
+        * [get](subcommands%2FCompute%20Engine%2Fsnapshot%2Fget.md)
+        * [list](subcommands%2FCompute%20Engine%2Fsnapshot%2Flist.md)
+        * [restore](subcommands%2FCompute%20Engine%2Fsnapshot%2Frestore.md)
+        * [update](subcommands%2FCompute%20Engine%2Fsnapshot%2Fupdate.md)
     * targetgroup
-        * [create](subcommands/Compute Engine/targetgroup/create.md)
-        * [delete](subcommands/Compute Engine/targetgroup/delete.md)
-        * [get](subcommands/Compute Engine/targetgroup/get.md)
-        * [list](subcommands/Compute Engine/targetgroup/list.md)
+        * [create](subcommands%2FCompute%20Engine%2Ftargetgroup%2Fcreate.md)
+        * [delete](subcommands%2FCompute%20Engine%2Ftargetgroup%2Fdelete.md)
+        * [get](subcommands%2FCompute%20Engine%2Ftargetgroup%2Fget.md)
+        * [list](subcommands%2FCompute%20Engine%2Ftargetgroup%2Flist.md)
         * target
-            * [add](subcommands/Compute Engine/targetgroup/target/add.md)
-            * [list](subcommands/Compute Engine/targetgroup/target/list.md)
-            * [remove](subcommands/Compute Engine/targetgroup/target/remove.md)
-        * [update](subcommands/Compute Engine/targetgroup/update.md)
+            * [add](subcommands%2FCompute%20Engine%2Ftargetgroup%2Ftarget%2Fadd.md)
+            * [list](subcommands%2FCompute%20Engine%2Ftargetgroup%2Ftarget%2Flist.md)
+            * [remove](subcommands%2FCompute%20Engine%2Ftargetgroup%2Ftarget%2Fremove.md)
+        * [update](subcommands%2FCompute%20Engine%2Ftargetgroup%2Fupdate.md)
     * template
-        * [get](subcommands/Compute Engine/template/get.md)
-        * [list](subcommands/Compute Engine/template/list.md)
+        * [get](subcommands%2FCompute%20Engine%2Ftemplate%2Fget.md)
+        * [list](subcommands%2FCompute%20Engine%2Ftemplate%2Flist.md)
     * volume
-        * [create](subcommands/Compute Engine/volume/create.md)
-        * [delete](subcommands/Compute Engine/volume/delete.md)
-        * [get](subcommands/Compute Engine/volume/get.md)
-        * [list](subcommands/Compute Engine/volume/list.md)
-        * [update](subcommands/Compute Engine/volume/update.md)
+        * [create](subcommands%2FCompute%20Engine%2Fvolume%2Fcreate.md)
+        * [delete](subcommands%2FCompute%20Engine%2Fvolume%2Fdelete.md)
+        * [get](subcommands%2FCompute%20Engine%2Fvolume%2Fget.md)
+        * [list](subcommands%2FCompute%20Engine%2Fvolume%2Flist.md)
+        * [update](subcommands%2FCompute%20Engine%2Fvolume%2Fupdate.md)
+* Container Registry
+    * [locations](subcommands%2FContainer%20Registry%2Flocations.md)
+    * [names](subcommands%2FContainer%20Registry%2Fnames.md)
+    * registry
+        * [create](subcommands%2FContainer%20Registry%2Fregistry%2Fcreate.md)
+        * [delete](subcommands%2FContainer%20Registry%2Fregistry%2Fdelete.md)
+        * [get](subcommands%2FContainer%20Registry%2Fregistry%2Fget.md)
+        * [list](subcommands%2FContainer%20Registry%2Fregistry%2Flist.md)
+        * [replace](subcommands%2FContainer%20Registry%2Fregistry%2Freplace.md)
+        * [update](subcommands%2FContainer%20Registry%2Fregistry%2Fupdate.md)
+    * [repository](subcommands%2FContainer%20Registry%2Frepository.md)
+    * token
+        * [create](subcommands%2FContainer%20Registry%2Ftoken%2Fcreate.md)
+        * [delete](subcommands%2FContainer%20Registry%2Ftoken%2Fdelete.md)
+        * [get](subcommands%2FContainer%20Registry%2Ftoken%2Fget.md)
+        * [list](subcommands%2FContainer%20Registry%2Ftoken%2Flist.md)
+        * [replace](subcommands%2FContainer%20Registry%2Ftoken%2Freplace.md)
+        * scope
+            * [add](subcommands%2FContainer%20Registry%2Ftoken%2Fscope%2Fadd.md)
+            * [delete](subcommands%2FContainer%20Registry%2Ftoken%2Fscope%2Fdelete.md)
+            * [list](subcommands%2FContainer%20Registry%2Ftoken%2Fscope%2Flist.md)
+        * [update](subcommands%2FContainer%20Registry%2Ftoken%2Fupdate.md)
+* Database as a Service
+    * mongo
+        * api
+            * [versions](subcommands%2FDatabase%20as%20a%20Service%2Fmongo%2Fapi%2Fversions.md)
+        * cluster
+            * [create](subcommands%2FDatabase%20as%20a%20Service%2Fmongo%2Fcluster%2Fcreate.md)
+            * [delete](subcommands%2FDatabase%20as%20a%20Service%2Fmongo%2Fcluster%2Fdelete.md)
+            * [get](subcommands%2FDatabase%20as%20a%20Service%2Fmongo%2Fcluster%2Fget.md)
+            * [list](subcommands%2FDatabase%20as%20a%20Service%2Fmongo%2Fcluster%2Flist.md)
+            * [restore](subcommands%2FDatabase%20as%20a%20Service%2Fmongo%2Fcluster%2Frestore.md)
+            * [update](subcommands%2FDatabase%20as%20a%20Service%2Fmongo%2Fcluster%2Fupdate.md)
+        * logs
+            * [list](subcommands%2FDatabase%20as%20a%20Service%2Fmongo%2Flogs%2Flist.md)
+        * snapshot
+            * [list](subcommands%2FDatabase%20as%20a%20Service%2Fmongo%2Fsnapshot%2Flist.md)
+        * templates
+            * [list](subcommands%2FDatabase%20as%20a%20Service%2Fmongo%2Ftemplates%2Flist.md)
+        * user
+            * [create](subcommands%2FDatabase%20as%20a%20Service%2Fmongo%2Fuser%2Fcreate.md)
+            * [delete](subcommands%2FDatabase%20as%20a%20Service%2Fmongo%2Fuser%2Fdelete.md)
+            * [get](subcommands%2FDatabase%20as%20a%20Service%2Fmongo%2Fuser%2Fget.md)
+            * [list](subcommands%2FDatabase%20as%20a%20Service%2Fmongo%2Fuser%2Flist.md)
+    * postgres
+        * api
+            * version
+                * [get](subcommands%2FDatabase%20as%20a%20Service%2Fpostgres%2Fapi%2Fversion%2Fget.md)
+                * [list](subcommands%2FDatabase%20as%20a%20Service%2Fpostgres%2Fapi%2Fversion%2Flist.md)
+        * backup
+            * [get](subcommands%2FDatabase%20as%20a%20Service%2Fpostgres%2Fbackup%2Fget.md)
+            * [list](subcommands%2FDatabase%20as%20a%20Service%2Fpostgres%2Fbackup%2Flist.md)
+        * cluster
+            * backup
+                * [list](subcommands%2FDatabase%20as%20a%20Service%2Fpostgres%2Fcluster%2Fbackup%2Flist.md)
+            * [create](subcommands%2FDatabase%20as%20a%20Service%2Fpostgres%2Fcluster%2Fcreate.md)
+            * [delete](subcommands%2FDatabase%20as%20a%20Service%2Fpostgres%2Fcluster%2Fdelete.md)
+            * [get](subcommands%2FDatabase%20as%20a%20Service%2Fpostgres%2Fcluster%2Fget.md)
+            * [list](subcommands%2FDatabase%20as%20a%20Service%2Fpostgres%2Fcluster%2Flist.md)
+            * [restore](subcommands%2FDatabase%20as%20a%20Service%2Fpostgres%2Fcluster%2Frestore.md)
+            * [update](subcommands%2FDatabase%20as%20a%20Service%2Fpostgres%2Fcluster%2Fupdate.md)
+        * logs
+            * [list](subcommands%2FDatabase%20as%20a%20Service%2Fpostgres%2Flogs%2Flist.md)
+        * version
+            * [get](subcommands%2FDatabase%20as%20a%20Service%2Fpostgres%2Fversion%2Fget.md)
+            * [list](subcommands%2FDatabase%20as%20a%20Service%2Fpostgres%2Fversion%2Flist.md)
+* Managed Backup
+    * [create](subcommands%2FManaged%20Backup%2Fcreate.md)
+    * [delete](subcommands%2FManaged%20Backup%2Fdelete.md)
+    * get
+        * sso
+            * [url](subcommands%2FManaged%20Backup%2Fget%2Fsso%2Furl.md)
+    * [get](subcommands%2FManaged%20Backup%2Fget.md)
+    * [list](subcommands%2FManaged%20Backup%2Flist.md)
+    * [update](subcommands%2FManaged%20Backup%2Fupdate.md)
+* Managed Kubernetes
+    * cluster
+        * [create](subcommands%2FManaged%20Kubernetes%2Fcluster%2Fcreate.md)
+        * [delete](subcommands%2FManaged%20Kubernetes%2Fcluster%2Fdelete.md)
+        * [get](subcommands%2FManaged%20Kubernetes%2Fcluster%2Fget.md)
+        * [list](subcommands%2FManaged%20Kubernetes%2Fcluster%2Flist.md)
+        * [update](subcommands%2FManaged%20Kubernetes%2Fcluster%2Fupdate.md)
+    * kubeconfig
+        * [get](subcommands%2FManaged%20Kubernetes%2Fkubeconfig%2Fget.md)
+    * node
+        * [delete](subcommands%2FManaged%20Kubernetes%2Fnode%2Fdelete.md)
+        * [get](subcommands%2FManaged%20Kubernetes%2Fnode%2Fget.md)
+        * [list](subcommands%2FManaged%20Kubernetes%2Fnode%2Flist.md)
+        * [recreate](subcommands%2FManaged%20Kubernetes%2Fnode%2Frecreate.md)
+    * nodepool
+        * [create](subcommands%2FManaged%20Kubernetes%2Fnodepool%2Fcreate.md)
+        * [delete](subcommands%2FManaged%20Kubernetes%2Fnodepool%2Fdelete.md)
+        * [get](subcommands%2FManaged%20Kubernetes%2Fnodepool%2Fget.md)
+        * lan
+            * [add](subcommands%2FManaged%20Kubernetes%2Fnodepool%2Flan%2Fadd.md)
+            * [list](subcommands%2FManaged%20Kubernetes%2Fnodepool%2Flan%2Flist.md)
+            * [remove](subcommands%2FManaged%20Kubernetes%2Fnodepool%2Flan%2Fremove.md)
+        * [list](subcommands%2FManaged%20Kubernetes%2Fnodepool%2Flist.md)
+        * [update](subcommands%2FManaged%20Kubernetes%2Fnodepool%2Fupdate.md)
+    * version
+        * [get](subcommands%2FManaged%20Kubernetes%2Fversion%2Fget.md)
+        * [list](subcommands%2FManaged%20Kubernetes%2Fversion%2Flist.md)
+* Managed Stackable Data Platform
+    * cluster
+        * [create](subcommands%2FManaged%20Stackable%20Data%20Platform%2Fcluster%2Fcreate.md)
+        * [delete](subcommands%2FManaged%20Stackable%20Data%20Platform%2Fcluster%2Fdelete.md)
+        * [get](subcommands%2FManaged%20Stackable%20Data%20Platform%2Fcluster%2Fget.md)
+        * [kubeconfig](subcommands%2FManaged%20Stackable%20Data%20Platform%2Fcluster%2Fkubeconfig.md)
+        * [list](subcommands%2FManaged%20Stackable%20Data%20Platform%2Fcluster%2Flist.md)
+        * [update](subcommands%2FManaged%20Stackable%20Data%20Platform%2Fcluster%2Fupdate.md)
+    * nodepool
+        * [create](subcommands%2FManaged%20Stackable%20Data%20Platform%2Fnodepool%2Fcreate.md)
+        * [delete](subcommands%2FManaged%20Stackable%20Data%20Platform%2Fnodepool%2Fdelete.md)
+        * [get](subcommands%2FManaged%20Stackable%20Data%20Platform%2Fnodepool%2Fget.md)
+        * [list](subcommands%2FManaged%20Stackable%20Data%20Platform%2Fnodepool%2Flist.md)
+        * [update](subcommands%2FManaged%20Stackable%20Data%20Platform%2Fnodepool%2Fupdate.md)
+* NAT Gateway
+    * [create](subcommands%2FNAT%20Gateway%2Fcreate.md)
+    * [delete](subcommands%2FNAT%20Gateway%2Fdelete.md)
+    * flowlog
+        * [create](subcommands%2FNAT%20Gateway%2Fflowlog%2Fcreate.md)
+        * [delete](subcommands%2FNAT%20Gateway%2Fflowlog%2Fdelete.md)
+        * [get](subcommands%2FNAT%20Gateway%2Fflowlog%2Fget.md)
+        * [list](subcommands%2FNAT%20Gateway%2Fflowlog%2Flist.md)
+        * [update](subcommands%2FNAT%20Gateway%2Fflowlog%2Fupdate.md)
+    * [get](subcommands%2FNAT%20Gateway%2Fget.md)
+    * lan
+        * [add](subcommands%2FNAT%20Gateway%2Flan%2Fadd.md)
+        * [list](subcommands%2FNAT%20Gateway%2Flan%2Flist.md)
+        * [remove](subcommands%2FNAT%20Gateway%2Flan%2Fremove.md)
+    * [list](subcommands%2FNAT%20Gateway%2Flist.md)
+    * rule
+        * [create](subcommands%2FNAT%20Gateway%2Frule%2Fcreate.md)
+        * [delete](subcommands%2FNAT%20Gateway%2Frule%2Fdelete.md)
+        * [get](subcommands%2FNAT%20Gateway%2Frule%2Fget.md)
+        * [list](subcommands%2FNAT%20Gateway%2Frule%2Flist.md)
+        * [update](subcommands%2FNAT%20Gateway%2Frule%2Fupdate.md)
+    * [update](subcommands%2FNAT%20Gateway%2Fupdate.md)
+* Network Load Balancer
+    * [create](subcommands%2FNetwork%20Load%20Balancer%2Fcreate.md)
+    * [delete](subcommands%2FNetwork%20Load%20Balancer%2Fdelete.md)
+    * flowlog
+        * [create](subcommands%2FNetwork%20Load%20Balancer%2Fflowlog%2Fcreate.md)
+        * [delete](subcommands%2FNetwork%20Load%20Balancer%2Fflowlog%2Fdelete.md)
+        * [get](subcommands%2FNetwork%20Load%20Balancer%2Fflowlog%2Fget.md)
+        * [list](subcommands%2FNetwork%20Load%20Balancer%2Fflowlog%2Flist.md)
+        * [update](subcommands%2FNetwork%20Load%20Balancer%2Fflowlog%2Fupdate.md)
+    * [get](subcommands%2FNetwork%20Load%20Balancer%2Fget.md)
+    * [list](subcommands%2FNetwork%20Load%20Balancer%2Flist.md)
+    * rule
+        * [create](subcommands%2FNetwork%20Load%20Balancer%2Frule%2Fcreate.md)
+        * [delete](subcommands%2FNetwork%20Load%20Balancer%2Frule%2Fdelete.md)
+        * [get](subcommands%2FNetwork%20Load%20Balancer%2Frule%2Fget.md)
+        * [list](subcommands%2FNetwork%20Load%20Balancer%2Frule%2Flist.md)
+        * target
+            * [add](subcommands%2FNetwork%20Load%20Balancer%2Frule%2Ftarget%2Fadd.md)
+            * [list](subcommands%2FNetwork%20Load%20Balancer%2Frule%2Ftarget%2Flist.md)
+            * [remove](subcommands%2FNetwork%20Load%20Balancer%2Frule%2Ftarget%2Fremove.md)
+        * [update](subcommands%2FNetwork%20Load%20Balancer%2Frule%2Fupdate.md)
+    * [update](subcommands%2FNetwork%20Load%20Balancer%2Fupdate.md)
+* User Management
+    * [create](subcommands%2FUser%20Management%2Fcreate.md)
+    * [delete](subcommands%2FUser%20Management%2Fdelete.md)
+    * [get](subcommands%2FUser%20Management%2Fget.md)
+    * [list](subcommands%2FUser%20Management%2Flist.md)
+    * s3key
+        * [create](subcommands%2FUser%20Management%2Fs3key%2Fcreate.md)
+        * [delete](subcommands%2FUser%20Management%2Fs3key%2Fdelete.md)
+        * [get](subcommands%2FUser%20Management%2Fs3key%2Fget.md)
+        * [list](subcommands%2FUser%20Management%2Fs3key%2Flist.md)
+        * [update](subcommands%2FUser%20Management%2Fs3key%2Fupdate.md)
+    * [update](subcommands%2FUser%20Management%2Fupdate.md)
 * application-load-balancer
-    * [applicationloadbalancer flowlog create](subcommands/application-load-balancer/applicationloadbalancer-flowlog-create.md)
-    * [targetgroup target add](subcommands/application-load-balancer/targetgroup-target-add.md)
-    * [targetgroup target remove](subcommands/application-load-balancer/targetgroup-target-remove.md)
+    * [applicationloadbalancer flowlog create](subcommands%2Fapplication-load-balancer%2Fapplicationloadbalancer-flowlog-create.md)
+    * [targetgroup target add](subcommands%2Fapplication-load-balancer%2Ftargetgroup-target-add.md)
+    * [targetgroup target remove](subcommands%2Fapplication-load-balancer%2Ftargetgroup-target-remove.md)
 * applicationloadbalancer
     * create
-        * [applicationloadbalancer create](subcommands/applicationloadbalancer/create/applicationloadbalancer-create.md)
-    * [create](subcommands/applicationloadbalancer/create.md)
+        * [applicationloadbalancer create](subcommands%2Fapplicationloadbalancer%2Fcreate%2Fapplicationloadbalancer-create.md)
+    * [create](subcommands%2Fapplicationloadbalancer%2Fcreate.md)
     * delete
-        * [applicationloadbalancer delete](subcommands/applicationloadbalancer/delete/applicationloadbalancer-delete.md)
-    * [delete](subcommands/applicationloadbalancer/delete.md)
+        * [applicationloadbalancer delete](subcommands%2Fapplicationloadbalancer%2Fdelete%2Fapplicationloadbalancer-delete.md)
+    * [delete](subcommands%2Fapplicationloadbalancer%2Fdelete.md)
     * flowlog
         * create
-            * [applicationloadbalancer flowlog create](subcommands/applicationloadbalancer/flowlog/create/applicationloadbalancer-flowlog-create.md)
-        * [create](subcommands/applicationloadbalancer/flowlog/create.md)
+            * [applicationloadbalancer flowlog create](subcommands%2Fapplicationloadbalancer%2Fflowlog%2Fcreate%2Fapplicationloadbalancer-flowlog-create.md)
+        * [create](subcommands%2Fapplicationloadbalancer%2Fflowlog%2Fcreate.md)
         * delete
-            * [applicationloadbalancer flowlog delete](subcommands/applicationloadbalancer/flowlog/delete/applicationloadbalancer-flowlog-delete.md)
-        * [delete](subcommands/applicationloadbalancer/flowlog/delete.md)
+            * [applicationloadbalancer flowlog delete](subcommands%2Fapplicationloadbalancer%2Fflowlog%2Fdelete%2Fapplicationloadbalancer-flowlog-delete.md)
+        * [delete](subcommands%2Fapplicationloadbalancer%2Fflowlog%2Fdelete.md)
         * get
-            * [applicationloadbalancer flowlog get](subcommands/applicationloadbalancer/flowlog/get/applicationloadbalancer-flowlog-get.md)
-        * [get](subcommands/applicationloadbalancer/flowlog/get.md)
+            * [applicationloadbalancer flowlog get](subcommands%2Fapplicationloadbalancer%2Fflowlog%2Fget%2Fapplicationloadbalancer-flowlog-get.md)
+        * [get](subcommands%2Fapplicationloadbalancer%2Fflowlog%2Fget.md)
         * list
-            * [applicationloadbalancer flowlog list](subcommands/applicationloadbalancer/flowlog/list/applicationloadbalancer-flowlog-list.md)
-        * [list](subcommands/applicationloadbalancer/flowlog/list.md)
+            * [applicationloadbalancer flowlog list](subcommands%2Fapplicationloadbalancer%2Fflowlog%2Flist%2Fapplicationloadbalancer-flowlog-list.md)
+        * [list](subcommands%2Fapplicationloadbalancer%2Fflowlog%2Flist.md)
         * update
-            * [applicationloadbalancer flowlog update](subcommands/applicationloadbalancer/flowlog/update/applicationloadbalancer-flowlog-update.md)
-        * [update](subcommands/applicationloadbalancer/flowlog/update.md)
+            * [applicationloadbalancer flowlog update](subcommands%2Fapplicationloadbalancer%2Fflowlog%2Fupdate%2Fapplicationloadbalancer-flowlog-update.md)
+        * [update](subcommands%2Fapplicationloadbalancer%2Fflowlog%2Fupdate.md)
     * get
-        * [applicationloadbalancer get](subcommands/applicationloadbalancer/get/applicationloadbalancer-get.md)
-    * [get](subcommands/applicationloadbalancer/get.md)
+        * [applicationloadbalancer get](subcommands%2Fapplicationloadbalancer%2Fget%2Fapplicationloadbalancer-get.md)
+    * [get](subcommands%2Fapplicationloadbalancer%2Fget.md)
     * list
-        * [applicationloadbalancer list](subcommands/applicationloadbalancer/list/applicationloadbalancer-list.md)
-    * [list](subcommands/applicationloadbalancer/list.md)
+        * [applicationloadbalancer list](subcommands%2Fapplicationloadbalancer%2Flist%2Fapplicationloadbalancer-list.md)
+    * [list](subcommands%2Fapplicationloadbalancer%2Flist.md)
     * rule
         * create
-            * [applicationloadbalancer rule create](subcommands/applicationloadbalancer/rule/create/applicationloadbalancer-rule-create.md)
-        * [create](subcommands/applicationloadbalancer/rule/create.md)
+            * [applicationloadbalancer rule create](subcommands%2Fapplicationloadbalancer%2Frule%2Fcreate%2Fapplicationloadbalancer-rule-create.md)
+        * [create](subcommands%2Fapplicationloadbalancer%2Frule%2Fcreate.md)
         * delete
-            * [applicationloadbalancer rule delete](subcommands/applicationloadbalancer/rule/delete/applicationloadbalancer-rule-delete.md)
-        * [delete](subcommands/applicationloadbalancer/rule/delete.md)
+            * [applicationloadbalancer rule delete](subcommands%2Fapplicationloadbalancer%2Frule%2Fdelete%2Fapplicationloadbalancer-rule-delete.md)
+        * [delete](subcommands%2Fapplicationloadbalancer%2Frule%2Fdelete.md)
         * get
-            * [applicationloadbalancer rule get](subcommands/applicationloadbalancer/rule/get/applicationloadbalancer-rule-get.md)
-        * [get](subcommands/applicationloadbalancer/rule/get.md)
+            * [applicationloadbalancer rule get](subcommands%2Fapplicationloadbalancer%2Frule%2Fget%2Fapplicationloadbalancer-rule-get.md)
+        * [get](subcommands%2Fapplicationloadbalancer%2Frule%2Fget.md)
         * httprule
             * add
-                * [applicationloadbalancer rule httprule add](subcommands/applicationloadbalancer/rule/httprule/add/applicationloadbalancer-rule-httprule-add.md)
-            * [add](subcommands/applicationloadbalancer/rule/httprule/add.md)
+                * [applicationloadbalancer rule httprule add](subcommands%2Fapplicationloadbalancer%2Frule%2Fhttprule%2Fadd%2Fapplicationloadbalancer-rule-httprule-add.md)
+            * [add](subcommands%2Fapplicationloadbalancer%2Frule%2Fhttprule%2Fadd.md)
             * list
-                * [applicationloadbalancer rule httprule list](subcommands/applicationloadbalancer/rule/httprule/list/applicationloadbalancer-rule-httprule-list.md)
-            * [list](subcommands/applicationloadbalancer/rule/httprule/list.md)
+                * [applicationloadbalancer rule httprule list](subcommands%2Fapplicationloadbalancer%2Frule%2Fhttprule%2Flist%2Fapplicationloadbalancer-rule-httprule-list.md)
+            * [list](subcommands%2Fapplicationloadbalancer%2Frule%2Fhttprule%2Flist.md)
             * remove
-                * [applicationloadbalancer rule httprule remove](subcommands/applicationloadbalancer/rule/httprule/remove/applicationloadbalancer-rule-httprule-remove.md)
-            * [remove](subcommands/applicationloadbalancer/rule/httprule/remove.md)
+                * [applicationloadbalancer rule httprule remove](subcommands%2Fapplicationloadbalancer%2Frule%2Fhttprule%2Fremove%2Fapplicationloadbalancer-rule-httprule-remove.md)
+            * [remove](subcommands%2Fapplicationloadbalancer%2Frule%2Fhttprule%2Fremove.md)
         * list
-            * [applicationloadbalancer rule list](subcommands/applicationloadbalancer/rule/list/applicationloadbalancer-rule-list.md)
-        * [list](subcommands/applicationloadbalancer/rule/list.md)
+            * [applicationloadbalancer rule list](subcommands%2Fapplicationloadbalancer%2Frule%2Flist%2Fapplicationloadbalancer-rule-list.md)
+        * [list](subcommands%2Fapplicationloadbalancer%2Frule%2Flist.md)
         * update
-            * [applicationloadbalancer rule update](subcommands/applicationloadbalancer/rule/update/applicationloadbalancer-rule-update.md)
-        * [update](subcommands/applicationloadbalancer/rule/update.md)
+            * [applicationloadbalancer rule update](subcommands%2Fapplicationloadbalancer%2Frule%2Fupdate%2Fapplicationloadbalancer-rule-update.md)
+        * [update](subcommands%2Fapplicationloadbalancer%2Frule%2Fupdate.md)
     * update
-        * [applicationloadbalancer update](subcommands/applicationloadbalancer/update/applicationloadbalancer-update.md)
-    * [update](subcommands/applicationloadbalancer/update.md)
+        * [applicationloadbalancer update](subcommands%2Fapplicationloadbalancer%2Fupdate%2Fapplicationloadbalancer-update.md)
+    * [update](subcommands%2Fapplicationloadbalancer%2Fupdate.md)
 * backupunit
     * create
-        * [backupunit create](subcommands/backupunit/create/backupunit-create.md)
-    * [create](subcommands/backupunit/create.md)
+        * [backupunit create](subcommands%2Fbackupunit%2Fcreate%2Fbackupunit-create.md)
+    * [create](subcommands%2Fbackupunit%2Fcreate.md)
     * delete
-        * [backupunit delete](subcommands/backupunit/delete/backupunit-delete.md)
-    * [delete](subcommands/backupunit/delete.md)
+        * [backupunit delete](subcommands%2Fbackupunit%2Fdelete%2Fbackupunit-delete.md)
+    * [delete](subcommands%2Fbackupunit%2Fdelete.md)
     * get
-        * [backupunit get](subcommands/backupunit/get/backupunit-get.md)
+        * [backupunit get](subcommands%2Fbackupunit%2Fget%2Fbackupunit-get.md)
         * sso
             * url
-                * [backupunit get sso url](subcommands/backupunit/get/sso/url/backupunit-get-sso-url.md)
-            * [url](subcommands/backupunit/get/sso/url.md)
-    * [get](subcommands/backupunit/get.md)
+                * [backupunit get sso url](subcommands%2Fbackupunit%2Fget%2Fsso%2Furl%2Fbackupunit-get-sso-url.md)
+            * [url](subcommands%2Fbackupunit%2Fget%2Fsso%2Furl.md)
+    * [get](subcommands%2Fbackupunit%2Fget.md)
     * list
-        * [backupunit list](subcommands/backupunit/list/backupunit-list.md)
-    * [list](subcommands/backupunit/list.md)
+        * [backupunit list](subcommands%2Fbackupunit%2Flist%2Fbackupunit-list.md)
+    * [list](subcommands%2Fbackupunit%2Flist.md)
     * update
-        * [backupunit update](subcommands/backupunit/update/backupunit-update.md)
-    * [update](subcommands/backupunit/update.md)
+        * [backupunit update](subcommands%2Fbackupunit%2Fupdate%2Fbackupunit-update.md)
+    * [update](subcommands%2Fbackupunit%2Fupdate.md)
 * certificate-manager
     * add
-        * [certificate manager add](subcommands/certificate-manager/add/certificate-manager-add.md)
-    * [add](subcommands/certificate-manager/add.md)
+        * [certificate manager add](subcommands%2Fcertificate-manager%2Fadd%2Fcertificate-manager-add.md)
+    * [add](subcommands%2Fcertificate-manager%2Fadd.md)
     * api
         * version
-            * [certificate manager api version](subcommands/certificate-manager/api/version/certificate-manager-api-version.md)
-        * [version](subcommands/certificate-manager/api/version.md)
+            * [certificate manager api version](subcommands%2Fcertificate-manager%2Fapi%2Fversion%2Fcertificate-manager-api-version.md)
+        * [version](subcommands%2Fcertificate-manager%2Fapi%2Fversion.md)
     * delete
-        * [certificate manager delete](subcommands/certificate-manager/delete/certificate-manager-delete.md)
-    * [delete](subcommands/certificate-manager/delete.md)
+        * [certificate manager delete](subcommands%2Fcertificate-manager%2Fdelete%2Fcertificate-manager-delete.md)
+    * [delete](subcommands%2Fcertificate-manager%2Fdelete.md)
     * get
-        * [certificate manager get](subcommands/certificate-manager/get/certificate-manager-get.md)
-    * [get](subcommands/certificate-manager/get.md)
+        * [certificate manager get](subcommands%2Fcertificate-manager%2Fget%2Fcertificate-manager-get.md)
+    * [get](subcommands%2Fcertificate-manager%2Fget.md)
     * list
-        * [certificate manager list](subcommands/certificate-manager/list/certificate-manager-list.md)
-    * [list](subcommands/certificate-manager/list.md)
+        * [certificate manager list](subcommands%2Fcertificate-manager%2Flist%2Fcertificate-manager-list.md)
+    * [list](subcommands%2Fcertificate-manager%2Flist.md)
     * update
-        * [certificate manager update](subcommands/certificate-manager/update/certificate-manager-update.md)
-    * [update](subcommands/certificate-manager/update.md)
+        * [certificate manager update](subcommands%2Fcertificate-manager%2Fupdate%2Fcertificate-manager-update.md)
+    * [update](subcommands%2Fcertificate-manager%2Fupdate.md)
 * cli-setup
-    * [login](subcommands/cli-setup/login.md)
-    * [version](subcommands/cli-setup/version.md)
+    * [login](subcommands%2Fcli-setup%2Flogin.md)
+    * [version](subcommands%2Fcli-setup%2Fversion.md)
 * compute
     * contract
         * get
-            * [contract get](subcommands/compute/contract/get/contract-get.md)
+            * [contract get](subcommands%2Fcompute%2Fcontract%2Fget%2Fcontract-get.md)
     * datacenter
         * create
-            * [datacenter create](subcommands/compute/datacenter/create/datacenter-create.md)
+            * [datacenter create](subcommands%2Fcompute%2Fdatacenter%2Fcreate%2Fdatacenter-create.md)
         * delete
-            * [datacenter delete](subcommands/compute/datacenter/delete/datacenter-delete.md)
+            * [datacenter delete](subcommands%2Fcompute%2Fdatacenter%2Fdelete%2Fdatacenter-delete.md)
         * get
-            * [datacenter get](subcommands/compute/datacenter/get/datacenter-get.md)
+            * [datacenter get](subcommands%2Fcompute%2Fdatacenter%2Fget%2Fdatacenter-get.md)
         * list
-            * [datacenter list](subcommands/compute/datacenter/list/datacenter-list.md)
+            * [datacenter list](subcommands%2Fcompute%2Fdatacenter%2Flist%2Fdatacenter-list.md)
         * update
-            * [datacenter update](subcommands/compute/datacenter/update/datacenter-update.md)
+            * [datacenter update](subcommands%2Fcompute%2Fdatacenter%2Fupdate%2Fdatacenter-update.md)
     * firewallrule
         * create
-            * [firewallrule create](subcommands/compute/firewallrule/create/firewallrule-create.md)
+            * [firewallrule create](subcommands%2Fcompute%2Ffirewallrule%2Fcreate%2Ffirewallrule-create.md)
         * delete
-            * [firewallrule delete](subcommands/compute/firewallrule/delete/firewallrule-delete.md)
+            * [firewallrule delete](subcommands%2Fcompute%2Ffirewallrule%2Fdelete%2Ffirewallrule-delete.md)
         * get
-            * [firewallrule get](subcommands/compute/firewallrule/get/firewallrule-get.md)
+            * [firewallrule get](subcommands%2Fcompute%2Ffirewallrule%2Fget%2Ffirewallrule-get.md)
         * list
-            * [firewallrule list](subcommands/compute/firewallrule/list/firewallrule-list.md)
+            * [firewallrule list](subcommands%2Fcompute%2Ffirewallrule%2Flist%2Ffirewallrule-list.md)
         * update
-            * [firewallrule update](subcommands/compute/firewallrule/update/firewallrule-update.md)
+            * [firewallrule update](subcommands%2Fcompute%2Ffirewallrule%2Fupdate%2Ffirewallrule-update.md)
     * flowlog
         * create
-            * [flowlog create](subcommands/compute/flowlog/create/flowlog-create.md)
+            * [flowlog create](subcommands%2Fcompute%2Fflowlog%2Fcreate%2Fflowlog-create.md)
         * delete
-            * [flowlog delete](subcommands/compute/flowlog/delete/flowlog-delete.md)
+            * [flowlog delete](subcommands%2Fcompute%2Fflowlog%2Fdelete%2Fflowlog-delete.md)
         * get
-            * [flowlog get](subcommands/compute/flowlog/get/flowlog-get.md)
+            * [flowlog get](subcommands%2Fcompute%2Fflowlog%2Fget%2Fflowlog-get.md)
         * list
-            * [flowlog list](subcommands/compute/flowlog/list/flowlog-list.md)
+            * [flowlog list](subcommands%2Fcompute%2Fflowlog%2Flist%2Fflowlog-list.md)
     * group
         * create
-            * [group create](subcommands/compute/group/create/group-create.md)
+            * [group create](subcommands%2Fcompute%2Fgroup%2Fcreate%2Fgroup-create.md)
         * delete
-            * [group delete](subcommands/compute/group/delete/group-delete.md)
+            * [group delete](subcommands%2Fcompute%2Fgroup%2Fdelete%2Fgroup-delete.md)
         * get
-            * [group get](subcommands/compute/group/get/group-get.md)
+            * [group get](subcommands%2Fcompute%2Fgroup%2Fget%2Fgroup-get.md)
         * list
-            * [group list](subcommands/compute/group/list/group-list.md)
+            * [group list](subcommands%2Fcompute%2Fgroup%2Flist%2Fgroup-list.md)
         * resource
             * list
-                * [group resource list](subcommands/compute/group/resource/list/group-resource-list.md)
+                * [group resource list](subcommands%2Fcompute%2Fgroup%2Fresource%2Flist%2Fgroup-resource-list.md)
         * update
-            * [group update](subcommands/compute/group/update/group-update.md)
+            * [group update](subcommands%2Fcompute%2Fgroup%2Fupdate%2Fgroup-update.md)
         * user
             * add
-                * [group user add](subcommands/compute/group/user/add/group-user-add.md)
+                * [group user add](subcommands%2Fcompute%2Fgroup%2Fuser%2Fadd%2Fgroup-user-add.md)
             * list
-                * [group user list](subcommands/compute/group/user/list/group-user-list.md)
+                * [group user list](subcommands%2Fcompute%2Fgroup%2Fuser%2Flist%2Fgroup-user-list.md)
             * remove
-                * [group user remove](subcommands/compute/group/user/remove/group-user-remove.md)
+                * [group user remove](subcommands%2Fcompute%2Fgroup%2Fuser%2Fremove%2Fgroup-user-remove.md)
     * image
         * delete
-            * [image delete](subcommands/compute/image/delete/image-delete.md)
+            * [image delete](subcommands%2Fcompute%2Fimage%2Fdelete%2Fimage-delete.md)
         * get
-            * [image get](subcommands/compute/image/get/image-get.md)
+            * [image get](subcommands%2Fcompute%2Fimage%2Fget%2Fimage-get.md)
         * list
-            * [image list](subcommands/compute/image/list/image-list.md)
+            * [image list](subcommands%2Fcompute%2Fimage%2Flist%2Fimage-list.md)
         * update
-            * [image update](subcommands/compute/image/update/image-update.md)
+            * [image update](subcommands%2Fcompute%2Fimage%2Fupdate%2Fimage-update.md)
         * upload
-            * [image upload](subcommands/compute/image/upload/image-upload.md)
+            * [image upload](subcommands%2Fcompute%2Fimage%2Fupload%2Fimage-upload.md)
     * ipblock
         * create
-            * [ipblock create](subcommands/compute/ipblock/create/ipblock-create.md)
+            * [ipblock create](subcommands%2Fcompute%2Fipblock%2Fcreate%2Fipblock-create.md)
         * delete
-            * [ipblock delete](subcommands/compute/ipblock/delete/ipblock-delete.md)
+            * [ipblock delete](subcommands%2Fcompute%2Fipblock%2Fdelete%2Fipblock-delete.md)
         * get
-            * [ipblock get](subcommands/compute/ipblock/get/ipblock-get.md)
+            * [ipblock get](subcommands%2Fcompute%2Fipblock%2Fget%2Fipblock-get.md)
         * list
-            * [ipblock list](subcommands/compute/ipblock/list/ipblock-list.md)
+            * [ipblock list](subcommands%2Fcompute%2Fipblock%2Flist%2Fipblock-list.md)
         * update
-            * [ipblock update](subcommands/compute/ipblock/update/ipblock-update.md)
+            * [ipblock update](subcommands%2Fcompute%2Fipblock%2Fupdate%2Fipblock-update.md)
     * ipconsumer
         * list
-            * [ipconsumer list](subcommands/compute/ipconsumer/list/ipconsumer-list.md)
+            * [ipconsumer list](subcommands%2Fcompute%2Fipconsumer%2Flist%2Fipconsumer-list.md)
     * ipfailover
         * add
-            * [ipfailover add](subcommands/compute/ipfailover/add/ipfailover-add.md)
+            * [ipfailover add](subcommands%2Fcompute%2Fipfailover%2Fadd%2Fipfailover-add.md)
         * list
-            * [ipfailover list](subcommands/compute/ipfailover/list/ipfailover-list.md)
+            * [ipfailover list](subcommands%2Fcompute%2Fipfailover%2Flist%2Fipfailover-list.md)
         * remove
-            * [ipfailover remove](subcommands/compute/ipfailover/remove/ipfailover-remove.md)
+            * [ipfailover remove](subcommands%2Fcompute%2Fipfailover%2Fremove%2Fipfailover-remove.md)
     * label
         * add
-            * [label add](subcommands/compute/label/add/label-add.md)
+            * [label add](subcommands%2Fcompute%2Flabel%2Fadd%2Flabel-add.md)
         * get
             * by
                 * urn
-                    * [label get by urn](subcommands/compute/label/get/by/urn/label-get-by-urn.md)
-            * [label get](subcommands/compute/label/get/label-get.md)
+                    * [label get by urn](subcommands%2Fcompute%2Flabel%2Fget%2Fby%2Furn%2Flabel-get-by-urn.md)
+            * [label get](subcommands%2Fcompute%2Flabel%2Fget%2Flabel-get.md)
         * list
-            * [label list](subcommands/compute/label/list/label-list.md)
+            * [label list](subcommands%2Fcompute%2Flabel%2Flist%2Flabel-list.md)
         * remove
-            * [label remove](subcommands/compute/label/remove/label-remove.md)
+            * [label remove](subcommands%2Fcompute%2Flabel%2Fremove%2Flabel-remove.md)
     * lan
         * create
-            * [lan create](subcommands/compute/lan/create/lan-create.md)
+            * [lan create](subcommands%2Fcompute%2Flan%2Fcreate%2Flan-create.md)
         * delete
-            * [lan delete](subcommands/compute/lan/delete/lan-delete.md)
+            * [lan delete](subcommands%2Fcompute%2Flan%2Fdelete%2Flan-delete.md)
         * get
-            * [lan get](subcommands/compute/lan/get/lan-get.md)
+            * [lan get](subcommands%2Fcompute%2Flan%2Fget%2Flan-get.md)
         * list
-            * [lan list](subcommands/compute/lan/list/lan-list.md)
+            * [lan list](subcommands%2Fcompute%2Flan%2Flist%2Flan-list.md)
         * update
-            * [lan update](subcommands/compute/lan/update/lan-update.md)
+            * [lan update](subcommands%2Fcompute%2Flan%2Fupdate%2Flan-update.md)
     * loadbalancer
         * create
-            * [loadbalancer create](subcommands/compute/loadbalancer/create/loadbalancer-create.md)
+            * [loadbalancer create](subcommands%2Fcompute%2Floadbalancer%2Fcreate%2Floadbalancer-create.md)
         * delete
-            * [loadbalancer delete](subcommands/compute/loadbalancer/delete/loadbalancer-delete.md)
+            * [loadbalancer delete](subcommands%2Fcompute%2Floadbalancer%2Fdelete%2Floadbalancer-delete.md)
         * get
-            * [loadbalancer get](subcommands/compute/loadbalancer/get/loadbalancer-get.md)
+            * [loadbalancer get](subcommands%2Fcompute%2Floadbalancer%2Fget%2Floadbalancer-get.md)
         * list
-            * [loadbalancer list](subcommands/compute/loadbalancer/list/loadbalancer-list.md)
+            * [loadbalancer list](subcommands%2Fcompute%2Floadbalancer%2Flist%2Floadbalancer-list.md)
         * nic
             * attach
-                * [loadbalancer nic attach](subcommands/compute/loadbalancer/nic/attach/loadbalancer-nic-attach.md)
+                * [loadbalancer nic attach](subcommands%2Fcompute%2Floadbalancer%2Fnic%2Fattach%2Floadbalancer-nic-attach.md)
             * detach
-                * [loadbalancer nic detach](subcommands/compute/loadbalancer/nic/detach/loadbalancer-nic-detach.md)
+                * [loadbalancer nic detach](subcommands%2Fcompute%2Floadbalancer%2Fnic%2Fdetach%2Floadbalancer-nic-detach.md)
             * get
-                * [loadbalancer nic get](subcommands/compute/loadbalancer/nic/get/loadbalancer-nic-get.md)
+                * [loadbalancer nic get](subcommands%2Fcompute%2Floadbalancer%2Fnic%2Fget%2Floadbalancer-nic-get.md)
             * list
-                * [loadbalancer nic list](subcommands/compute/loadbalancer/nic/list/loadbalancer-nic-list.md)
+                * [loadbalancer nic list](subcommands%2Fcompute%2Floadbalancer%2Fnic%2Flist%2Floadbalancer-nic-list.md)
         * update
-            * [loadbalancer update](subcommands/compute/loadbalancer/update/loadbalancer-update.md)
+            * [loadbalancer update](subcommands%2Fcompute%2Floadbalancer%2Fupdate%2Floadbalancer-update.md)
     * location
         * cpu
             * list
-                * [location cpu list](subcommands/compute/location/cpu/list/location-cpu-list.md)
+                * [location cpu list](subcommands%2Fcompute%2Flocation%2Fcpu%2Flist%2Flocation-cpu-list.md)
         * get
-            * [location get](subcommands/compute/location/get/location-get.md)
+            * [location get](subcommands%2Fcompute%2Flocation%2Fget%2Flocation-get.md)
         * list
-            * [location list](subcommands/compute/location/list/location-list.md)
+            * [location list](subcommands%2Fcompute%2Flocation%2Flist%2Flocation-list.md)
     * nic
         * create
-            * [nic create](subcommands/compute/nic/create/nic-create.md)
+            * [nic create](subcommands%2Fcompute%2Fnic%2Fcreate%2Fnic-create.md)
         * delete
-            * [nic delete](subcommands/compute/nic/delete/nic-delete.md)
+            * [nic delete](subcommands%2Fcompute%2Fnic%2Fdelete%2Fnic-delete.md)
         * get
-            * [nic get](subcommands/compute/nic/get/nic-get.md)
+            * [nic get](subcommands%2Fcompute%2Fnic%2Fget%2Fnic-get.md)
         * list
-            * [nic list](subcommands/compute/nic/list/nic-list.md)
+            * [nic list](subcommands%2Fcompute%2Fnic%2Flist%2Fnic-list.md)
         * update
-            * [nic update](subcommands/compute/nic/update/nic-update.md)
+            * [nic update](subcommands%2Fcompute%2Fnic%2Fupdate%2Fnic-update.md)
     * pcc
         * create
-            * [pcc create](subcommands/compute/pcc/create/pcc-create.md)
+            * [pcc create](subcommands%2Fcompute%2Fpcc%2Fcreate%2Fpcc-create.md)
         * delete
-            * [pcc delete](subcommands/compute/pcc/delete/pcc-delete.md)
+            * [pcc delete](subcommands%2Fcompute%2Fpcc%2Fdelete%2Fpcc-delete.md)
         * get
-            * [pcc get](subcommands/compute/pcc/get/pcc-get.md)
+            * [pcc get](subcommands%2Fcompute%2Fpcc%2Fget%2Fpcc-get.md)
         * list
-            * [pcc list](subcommands/compute/pcc/list/pcc-list.md)
+            * [pcc list](subcommands%2Fcompute%2Fpcc%2Flist%2Fpcc-list.md)
         * peers
             * list
-                * [pcc peers list](subcommands/compute/pcc/peers/list/pcc-peers-list.md)
+                * [pcc peers list](subcommands%2Fcompute%2Fpcc%2Fpeers%2Flist%2Fpcc-peers-list.md)
         * update
-            * [pcc update](subcommands/compute/pcc/update/pcc-update.md)
+            * [pcc update](subcommands%2Fcompute%2Fpcc%2Fupdate%2Fpcc-update.md)
     * request
         * get
-            * [request get](subcommands/compute/request/get/request-get.md)
+            * [request get](subcommands%2Fcompute%2Frequest%2Fget%2Frequest-get.md)
         * list
-            * [request list](subcommands/compute/request/list/request-list.md)
+            * [request list](subcommands%2Fcompute%2Frequest%2Flist%2Frequest-list.md)
         * wait
-            * [request wait](subcommands/compute/request/wait/request-wait.md)
+            * [request wait](subcommands%2Fcompute%2Frequest%2Fwait%2Frequest-wait.md)
     * resource
         * get
-            * [resource get](subcommands/compute/resource/get/resource-get.md)
+            * [resource get](subcommands%2Fcompute%2Fresource%2Fget%2Fresource-get.md)
         * list
-            * [resource list](subcommands/compute/resource/list/resource-list.md)
+            * [resource list](subcommands%2Fcompute%2Fresource%2Flist%2Fresource-list.md)
     * server
         * cdrom
             * attach
-                * [server cdrom attach](subcommands/compute/server/cdrom/attach/server-cdrom-attach.md)
+                * [server cdrom attach](subcommands%2Fcompute%2Fserver%2Fcdrom%2Fattach%2Fserver-cdrom-attach.md)
             * detach
-                * [server cdrom detach](subcommands/compute/server/cdrom/detach/server-cdrom-detach.md)
+                * [server cdrom detach](subcommands%2Fcompute%2Fserver%2Fcdrom%2Fdetach%2Fserver-cdrom-detach.md)
             * get
-                * [server cdrom get](subcommands/compute/server/cdrom/get/server-cdrom-get.md)
+                * [server cdrom get](subcommands%2Fcompute%2Fserver%2Fcdrom%2Fget%2Fserver-cdrom-get.md)
             * list
-                * [server cdrom list](subcommands/compute/server/cdrom/list/server-cdrom-list.md)
+                * [server cdrom list](subcommands%2Fcompute%2Fserver%2Fcdrom%2Flist%2Fserver-cdrom-list.md)
         * console
             * get
-                * [server console get](subcommands/compute/server/console/get/server-console-get.md)
+                * [server console get](subcommands%2Fcompute%2Fserver%2Fconsole%2Fget%2Fserver-console-get.md)
         * create
-            * [server create](subcommands/compute/server/create/server-create.md)
+            * [server create](subcommands%2Fcompute%2Fserver%2Fcreate%2Fserver-create.md)
         * delete
-            * [server delete](subcommands/compute/server/delete/server-delete.md)
+            * [server delete](subcommands%2Fcompute%2Fserver%2Fdelete%2Fserver-delete.md)
         * get
-            * [server get](subcommands/compute/server/get/server-get.md)
+            * [server get](subcommands%2Fcompute%2Fserver%2Fget%2Fserver-get.md)
         * list
-            * [server list](subcommands/compute/server/list/server-list.md)
+            * [server list](subcommands%2Fcompute%2Fserver%2Flist%2Fserver-list.md)
         * reboot
-            * [server reboot](subcommands/compute/server/reboot/server-reboot.md)
+            * [server reboot](subcommands%2Fcompute%2Fserver%2Freboot%2Fserver-reboot.md)
         * resume
-            * [server resume](subcommands/compute/server/resume/server-resume.md)
+            * [server resume](subcommands%2Fcompute%2Fserver%2Fresume%2Fserver-resume.md)
         * start
-            * [server start](subcommands/compute/server/start/server-start.md)
+            * [server start](subcommands%2Fcompute%2Fserver%2Fstart%2Fserver-start.md)
         * stop
-            * [server stop](subcommands/compute/server/stop/server-stop.md)
+            * [server stop](subcommands%2Fcompute%2Fserver%2Fstop%2Fserver-stop.md)
         * suspend
-            * [server suspend](subcommands/compute/server/suspend/server-suspend.md)
+            * [server suspend](subcommands%2Fcompute%2Fserver%2Fsuspend%2Fserver-suspend.md)
         * token
             * get
-                * [server token get](subcommands/compute/server/token/get/server-token-get.md)
+                * [server token get](subcommands%2Fcompute%2Fserver%2Ftoken%2Fget%2Fserver-token-get.md)
         * update
-            * [server update](subcommands/compute/server/update/server-update.md)
+            * [server update](subcommands%2Fcompute%2Fserver%2Fupdate%2Fserver-update.md)
         * volume
             * attach
-                * [server volume attach](subcommands/compute/server/volume/attach/server-volume-attach.md)
+                * [server volume attach](subcommands%2Fcompute%2Fserver%2Fvolume%2Fattach%2Fserver-volume-attach.md)
             * detach
-                * [server volume detach](subcommands/compute/server/volume/detach/server-volume-detach.md)
+                * [server volume detach](subcommands%2Fcompute%2Fserver%2Fvolume%2Fdetach%2Fserver-volume-detach.md)
             * get
-                * [server volume get](subcommands/compute/server/volume/get/server-volume-get.md)
+                * [server volume get](subcommands%2Fcompute%2Fserver%2Fvolume%2Fget%2Fserver-volume-get.md)
             * list
-                * [server volume list](subcommands/compute/server/volume/list/server-volume-list.md)
+                * [server volume list](subcommands%2Fcompute%2Fserver%2Fvolume%2Flist%2Fserver-volume-list.md)
     * share
         * create
-            * [share create](subcommands/compute/share/create/share-create.md)
+            * [share create](subcommands%2Fcompute%2Fshare%2Fcreate%2Fshare-create.md)
         * delete
-            * [share delete](subcommands/compute/share/delete/share-delete.md)
+            * [share delete](subcommands%2Fcompute%2Fshare%2Fdelete%2Fshare-delete.md)
         * get
-            * [share get](subcommands/compute/share/get/share-get.md)
+            * [share get](subcommands%2Fcompute%2Fshare%2Fget%2Fshare-get.md)
         * list
-            * [share list](subcommands/compute/share/list/share-list.md)
+            * [share list](subcommands%2Fcompute%2Fshare%2Flist%2Fshare-list.md)
         * update
-            * [share update](subcommands/compute/share/update/share-update.md)
+            * [share update](subcommands%2Fcompute%2Fshare%2Fupdate%2Fshare-update.md)
     * snapshot
         * create
-            * [snapshot create](subcommands/compute/snapshot/create/snapshot-create.md)
+            * [snapshot create](subcommands%2Fcompute%2Fsnapshot%2Fcreate%2Fsnapshot-create.md)
         * delete
-            * [snapshot delete](subcommands/compute/snapshot/delete/snapshot-delete.md)
+            * [snapshot delete](subcommands%2Fcompute%2Fsnapshot%2Fdelete%2Fsnapshot-delete.md)
         * get
-            * [snapshot get](subcommands/compute/snapshot/get/snapshot-get.md)
+            * [snapshot get](subcommands%2Fcompute%2Fsnapshot%2Fget%2Fsnapshot-get.md)
         * list
-            * [snapshot list](subcommands/compute/snapshot/list/snapshot-list.md)
+            * [snapshot list](subcommands%2Fcompute%2Fsnapshot%2Flist%2Fsnapshot-list.md)
         * restore
-            * [snapshot restore](subcommands/compute/snapshot/restore/snapshot-restore.md)
+            * [snapshot restore](subcommands%2Fcompute%2Fsnapshot%2Frestore%2Fsnapshot-restore.md)
         * update
-            * [snapshot update](subcommands/compute/snapshot/update/snapshot-update.md)
+            * [snapshot update](subcommands%2Fcompute%2Fsnapshot%2Fupdate%2Fsnapshot-update.md)
     * targetgroup
         * create
-            * [targetgroup create](subcommands/compute/targetgroup/create/targetgroup-create.md)
+            * [targetgroup create](subcommands%2Fcompute%2Ftargetgroup%2Fcreate%2Ftargetgroup-create.md)
         * delete
-            * [targetgroup delete](subcommands/compute/targetgroup/delete/targetgroup-delete.md)
+            * [targetgroup delete](subcommands%2Fcompute%2Ftargetgroup%2Fdelete%2Ftargetgroup-delete.md)
         * get
-            * [targetgroup get](subcommands/compute/targetgroup/get/targetgroup-get.md)
+            * [targetgroup get](subcommands%2Fcompute%2Ftargetgroup%2Fget%2Ftargetgroup-get.md)
         * list
-            * [targetgroup list](subcommands/compute/targetgroup/list/targetgroup-list.md)
+            * [targetgroup list](subcommands%2Fcompute%2Ftargetgroup%2Flist%2Ftargetgroup-list.md)
         * target
             * add
-                * [targetgroup target add](subcommands/compute/targetgroup/target/add/targetgroup-target-add.md)
+                * [targetgroup target add](subcommands%2Fcompute%2Ftargetgroup%2Ftarget%2Fadd%2Ftargetgroup-target-add.md)
             * list
-                * [targetgroup target list](subcommands/compute/targetgroup/target/list/targetgroup-target-list.md)
+                * [targetgroup target list](subcommands%2Fcompute%2Ftargetgroup%2Ftarget%2Flist%2Ftargetgroup-target-list.md)
             * remove
-                * [targetgroup target remove](subcommands/compute/targetgroup/target/remove/targetgroup-target-remove.md)
+                * [targetgroup target remove](subcommands%2Fcompute%2Ftargetgroup%2Ftarget%2Fremove%2Ftargetgroup-target-remove.md)
         * update
-            * [targetgroup update](subcommands/compute/targetgroup/update/targetgroup-update.md)
+            * [targetgroup update](subcommands%2Fcompute%2Ftargetgroup%2Fupdate%2Ftargetgroup-update.md)
     * template
         * get
-            * [template get](subcommands/compute/template/get/template-get.md)
+            * [template get](subcommands%2Fcompute%2Ftemplate%2Fget%2Ftemplate-get.md)
         * list
-            * [template list](subcommands/compute/template/list/template-list.md)
+            * [template list](subcommands%2Fcompute%2Ftemplate%2Flist%2Ftemplate-list.md)
     * token
         * delete
-            * [token delete](subcommands/compute/token/delete/token-delete.md)
+            * [token delete](subcommands%2Fcompute%2Ftoken%2Fdelete%2Ftoken-delete.md)
         * generate
-            * [token generate](subcommands/compute/token/generate/token-generate.md)
+            * [token generate](subcommands%2Fcompute%2Ftoken%2Fgenerate%2Ftoken-generate.md)
         * get
-            * [token get](subcommands/compute/token/get/token-get.md)
+            * [token get](subcommands%2Fcompute%2Ftoken%2Fget%2Ftoken-get.md)
         * list
-            * [token list](subcommands/compute/token/list/token-list.md)
+            * [token list](subcommands%2Fcompute%2Ftoken%2Flist%2Ftoken-list.md)
     * volume
         * create
-            * [volume create](subcommands/compute/volume/create/volume-create.md)
+            * [volume create](subcommands%2Fcompute%2Fvolume%2Fcreate%2Fvolume-create.md)
         * delete
-            * [volume delete](subcommands/compute/volume/delete/volume-delete.md)
+            * [volume delete](subcommands%2Fcompute%2Fvolume%2Fdelete%2Fvolume-delete.md)
         * get
-            * [volume get](subcommands/compute/volume/get/volume-get.md)
+            * [volume get](subcommands%2Fcompute%2Fvolume%2Fget%2Fvolume-get.md)
         * list
-            * [volume list](subcommands/compute/volume/list/volume-list.md)
+            * [volume list](subcommands%2Fcompute%2Fvolume%2Flist%2Fvolume-list.md)
         * update
-            * [volume update](subcommands/compute/volume/update/volume-update.md)
+            * [volume update](subcommands%2Fcompute%2Fvolume%2Fupdate%2Fvolume-update.md)
 * compute-engine
-    * [container registry registry create](subcommands/compute-engine/container-registry-registry-create.md)
-    * [container registry repository](subcommands/compute-engine/container-registry-repository.md)
-    * [image upload](subcommands/compute-engine/image-upload.md)
+    * [container registry registry create](subcommands%2Fcompute-engine%2Fcontainer-registry-registry-create.md)
+    * [container registry repository](subcommands%2Fcompute-engine%2Fcontainer-registry-repository.md)
+    * [image upload](subcommands%2Fcompute-engine%2Fimage-upload.md)
 * container-registry
     * locations
-        * [container registry locations](subcommands/container-registry/locations/container-registry-locations.md)
-    * [locations](subcommands/container-registry/locations.md)
+        * [container registry locations](subcommands%2Fcontainer-registry%2Flocations%2Fcontainer-registry-locations.md)
+    * [locations](subcommands%2Fcontainer-registry%2Flocations.md)
     * names
-        * [container registry names](subcommands/container-registry/names/container-registry-names.md)
-    * [names](subcommands/container-registry/names.md)
+        * [container registry names](subcommands%2Fcontainer-registry%2Fnames%2Fcontainer-registry-names.md)
+    * [names](subcommands%2Fcontainer-registry%2Fnames.md)
     * registry
         * create
-            * [container registry registry create](subcommands/container-registry/registry/create/container-registry-registry-create.md)
-        * [create](subcommands/container-registry/registry/create.md)
+            * [container registry registry create](subcommands%2Fcontainer-registry%2Fregistry%2Fcreate%2Fcontainer-registry-registry-create.md)
+        * [create](subcommands%2Fcontainer-registry%2Fregistry%2Fcreate.md)
         * delete
-            * [container registry registry delete](subcommands/container-registry/registry/delete/container-registry-registry-delete.md)
-        * [delete](subcommands/container-registry/registry/delete.md)
+            * [container registry registry delete](subcommands%2Fcontainer-registry%2Fregistry%2Fdelete%2Fcontainer-registry-registry-delete.md)
+        * [delete](subcommands%2Fcontainer-registry%2Fregistry%2Fdelete.md)
         * get
-            * [container registry registry get](subcommands/container-registry/registry/get/container-registry-registry-get.md)
-        * [get](subcommands/container-registry/registry/get.md)
+            * [container registry registry get](subcommands%2Fcontainer-registry%2Fregistry%2Fget%2Fcontainer-registry-registry-get.md)
+        * [get](subcommands%2Fcontainer-registry%2Fregistry%2Fget.md)
         * list
-            * [container registry registry list](subcommands/container-registry/registry/list/container-registry-registry-list.md)
-        * [list](subcommands/container-registry/registry/list.md)
+            * [container registry registry list](subcommands%2Fcontainer-registry%2Fregistry%2Flist%2Fcontainer-registry-registry-list.md)
+        * [list](subcommands%2Fcontainer-registry%2Fregistry%2Flist.md)
         * replace
-            * [container registry registry replace](subcommands/container-registry/registry/replace/container-registry-registry-replace.md)
-        * [replace](subcommands/container-registry/registry/replace.md)
+            * [container registry registry replace](subcommands%2Fcontainer-registry%2Fregistry%2Freplace%2Fcontainer-registry-registry-replace.md)
+        * [replace](subcommands%2Fcontainer-registry%2Fregistry%2Freplace.md)
         * update
-            * [container registry registry update](subcommands/container-registry/registry/update/container-registry-registry-update.md)
-        * [update](subcommands/container-registry/registry/update.md)
+            * [container registry registry update](subcommands%2Fcontainer-registry%2Fregistry%2Fupdate%2Fcontainer-registry-registry-update.md)
+        * [update](subcommands%2Fcontainer-registry%2Fregistry%2Fupdate.md)
     * repository
-        * [container registry repository](subcommands/container-registry/repository/container-registry-repository.md)
-    * [repository](subcommands/container-registry/repository.md)
+        * [container registry repository](subcommands%2Fcontainer-registry%2Frepository%2Fcontainer-registry-repository.md)
+    * [repository](subcommands%2Fcontainer-registry%2Frepository.md)
     * token
         * create
-            * [container registry token create](subcommands/container-registry/token/create/container-registry-token-create.md)
-        * [create](subcommands/container-registry/token/create.md)
+            * [container registry token create](subcommands%2Fcontainer-registry%2Ftoken%2Fcreate%2Fcontainer-registry-token-create.md)
+        * [create](subcommands%2Fcontainer-registry%2Ftoken%2Fcreate.md)
         * delete
-            * [container registry token delete](subcommands/container-registry/token/delete/container-registry-token-delete.md)
-        * [delete](subcommands/container-registry/token/delete.md)
+            * [container registry token delete](subcommands%2Fcontainer-registry%2Ftoken%2Fdelete%2Fcontainer-registry-token-delete.md)
+        * [delete](subcommands%2Fcontainer-registry%2Ftoken%2Fdelete.md)
         * get
-            * [container registry token get](subcommands/container-registry/token/get/container-registry-token-get.md)
-        * [get](subcommands/container-registry/token/get.md)
+            * [container registry token get](subcommands%2Fcontainer-registry%2Ftoken%2Fget%2Fcontainer-registry-token-get.md)
+        * [get](subcommands%2Fcontainer-registry%2Ftoken%2Fget.md)
         * list
-            * [container registry token list](subcommands/container-registry/token/list/container-registry-token-list.md)
-        * [list](subcommands/container-registry/token/list.md)
+            * [container registry token list](subcommands%2Fcontainer-registry%2Ftoken%2Flist%2Fcontainer-registry-token-list.md)
+        * [list](subcommands%2Fcontainer-registry%2Ftoken%2Flist.md)
         * replace
-            * [container registry token replace](subcommands/container-registry/token/replace/container-registry-token-replace.md)
-        * [replace](subcommands/container-registry/token/replace.md)
+            * [container registry token replace](subcommands%2Fcontainer-registry%2Ftoken%2Freplace%2Fcontainer-registry-token-replace.md)
+        * [replace](subcommands%2Fcontainer-registry%2Ftoken%2Freplace.md)
         * scope
             * add
-                * [container registry token scope add](subcommands/container-registry/token/scope/add/container-registry-token-scope-add.md)
-            * [add](subcommands/container-registry/token/scope/add.md)
+                * [container registry token scope add](subcommands%2Fcontainer-registry%2Ftoken%2Fscope%2Fadd%2Fcontainer-registry-token-scope-add.md)
+            * [add](subcommands%2Fcontainer-registry%2Ftoken%2Fscope%2Fadd.md)
             * delete
-                * [container registry token scope delete](subcommands/container-registry/token/scope/delete/container-registry-token-scope-delete.md)
-            * [delete](subcommands/container-registry/token/scope/delete.md)
+                * [container registry token scope delete](subcommands%2Fcontainer-registry%2Ftoken%2Fscope%2Fdelete%2Fcontainer-registry-token-scope-delete.md)
+            * [delete](subcommands%2Fcontainer-registry%2Ftoken%2Fscope%2Fdelete.md)
             * list
-                * [container registry token scope list](subcommands/container-registry/token/scope/list/container-registry-token-scope-list.md)
-            * [list](subcommands/container-registry/token/scope/list.md)
+                * [container registry token scope list](subcommands%2Fcontainer-registry%2Ftoken%2Fscope%2Flist%2Fcontainer-registry-token-scope-list.md)
+            * [list](subcommands%2Fcontainer-registry%2Ftoken%2Fscope%2Flist.md)
         * update
-            * [container registry token update](subcommands/container-registry/token/update/container-registry-token-update.md)
-        * [update](subcommands/container-registry/token/update.md)
+            * [container registry token update](subcommands%2Fcontainer-registry%2Ftoken%2Fupdate%2Fcontainer-registry-token-update.md)
+        * [update](subcommands%2Fcontainer-registry%2Ftoken%2Fupdate.md)
 * dataplatform
     * cluster
         * create
-            * [dataplatform cluster create](subcommands/dataplatform/cluster/create/dataplatform-cluster-create.md)
-        * [create](subcommands/dataplatform/cluster/create.md)
+            * [dataplatform cluster create](subcommands%2Fdataplatform%2Fcluster%2Fcreate%2Fdataplatform-cluster-create.md)
+        * [create](subcommands%2Fdataplatform%2Fcluster%2Fcreate.md)
         * delete
-            * [dataplatform cluster delete](subcommands/dataplatform/cluster/delete/dataplatform-cluster-delete.md)
-        * [delete](subcommands/dataplatform/cluster/delete.md)
+            * [dataplatform cluster delete](subcommands%2Fdataplatform%2Fcluster%2Fdelete%2Fdataplatform-cluster-delete.md)
+        * [delete](subcommands%2Fdataplatform%2Fcluster%2Fdelete.md)
         * get
-            * [dataplatform cluster get](subcommands/dataplatform/cluster/get/dataplatform-cluster-get.md)
-        * [get](subcommands/dataplatform/cluster/get.md)
+            * [dataplatform cluster get](subcommands%2Fdataplatform%2Fcluster%2Fget%2Fdataplatform-cluster-get.md)
+        * [get](subcommands%2Fdataplatform%2Fcluster%2Fget.md)
         * kubeconfig
-            * [dataplatform cluster kubeconfig](subcommands/dataplatform/cluster/kubeconfig/dataplatform-cluster-kubeconfig.md)
-        * [kubeconfig](subcommands/dataplatform/cluster/kubeconfig.md)
+            * [dataplatform cluster kubeconfig](subcommands%2Fdataplatform%2Fcluster%2Fkubeconfig%2Fdataplatform-cluster-kubeconfig.md)
+        * [kubeconfig](subcommands%2Fdataplatform%2Fcluster%2Fkubeconfig.md)
         * list
-            * [dataplatform cluster list](subcommands/dataplatform/cluster/list/dataplatform-cluster-list.md)
-        * [list](subcommands/dataplatform/cluster/list.md)
+            * [dataplatform cluster list](subcommands%2Fdataplatform%2Fcluster%2Flist%2Fdataplatform-cluster-list.md)
+        * [list](subcommands%2Fdataplatform%2Fcluster%2Flist.md)
         * update
-            * [dataplatform cluster update](subcommands/dataplatform/cluster/update/dataplatform-cluster-update.md)
-        * [update](subcommands/dataplatform/cluster/update.md)
+            * [dataplatform cluster update](subcommands%2Fdataplatform%2Fcluster%2Fupdate%2Fdataplatform-cluster-update.md)
+        * [update](subcommands%2Fdataplatform%2Fcluster%2Fupdate.md)
     * nodepool
         * create
-            * [dataplatform nodepool create](subcommands/dataplatform/nodepool/create/dataplatform-nodepool-create.md)
-        * [create](subcommands/dataplatform/nodepool/create.md)
+            * [dataplatform nodepool create](subcommands%2Fdataplatform%2Fnodepool%2Fcreate%2Fdataplatform-nodepool-create.md)
+        * [create](subcommands%2Fdataplatform%2Fnodepool%2Fcreate.md)
         * delete
-            * [dataplatform nodepool delete](subcommands/dataplatform/nodepool/delete/dataplatform-nodepool-delete.md)
-        * [delete](subcommands/dataplatform/nodepool/delete.md)
+            * [dataplatform nodepool delete](subcommands%2Fdataplatform%2Fnodepool%2Fdelete%2Fdataplatform-nodepool-delete.md)
+        * [delete](subcommands%2Fdataplatform%2Fnodepool%2Fdelete.md)
         * get
-            * [dataplatform nodepool get](subcommands/dataplatform/nodepool/get/dataplatform-nodepool-get.md)
-        * [get](subcommands/dataplatform/nodepool/get.md)
+            * [dataplatform nodepool get](subcommands%2Fdataplatform%2Fnodepool%2Fget%2Fdataplatform-nodepool-get.md)
+        * [get](subcommands%2Fdataplatform%2Fnodepool%2Fget.md)
         * list
-            * [dataplatform nodepool list](subcommands/dataplatform/nodepool/list/dataplatform-nodepool-list.md)
-        * [list](subcommands/dataplatform/nodepool/list.md)
+            * [dataplatform nodepool list](subcommands%2Fdataplatform%2Fnodepool%2Flist%2Fdataplatform-nodepool-list.md)
+        * [list](subcommands%2Fdataplatform%2Fnodepool%2Flist.md)
         * update
-            * [dataplatform nodepool update](subcommands/dataplatform/nodepool/update/dataplatform-nodepool-update.md)
-        * [update](subcommands/dataplatform/nodepool/update.md)
+            * [dataplatform nodepool update](subcommands%2Fdataplatform%2Fnodepool%2Fupdate%2Fdataplatform-nodepool-update.md)
+        * [update](subcommands%2Fdataplatform%2Fnodepool%2Fupdate.md)
 * dbaas
     * mongo
         * api
             * versions
-                * [dbaas mongo api versions](subcommands/dbaas/mongo/api/versions/dbaas-mongo-api-versions.md)
-            * [versions](subcommands/dbaas/mongo/api/versions.md)
+                * [dbaas mongo api versions](subcommands%2Fdbaas%2Fmongo%2Fapi%2Fversions%2Fdbaas-mongo-api-versions.md)
+            * [versions](subcommands%2Fdbaas%2Fmongo%2Fapi%2Fversions.md)
         * cluster
             * create
-                * [dbaas mongo cluster create](subcommands/dbaas/mongo/cluster/create/dbaas-mongo-cluster-create.md)
-            * [create](subcommands/dbaas/mongo/cluster/create.md)
+                * [dbaas mongo cluster create](subcommands%2Fdbaas%2Fmongo%2Fcluster%2Fcreate%2Fdbaas-mongo-cluster-create.md)
+            * [create](subcommands%2Fdbaas%2Fmongo%2Fcluster%2Fcreate.md)
             * delete
-                * [dbaas mongo cluster delete](subcommands/dbaas/mongo/cluster/delete/dbaas-mongo-cluster-delete.md)
-            * [delete](subcommands/dbaas/mongo/cluster/delete.md)
+                * [dbaas mongo cluster delete](subcommands%2Fdbaas%2Fmongo%2Fcluster%2Fdelete%2Fdbaas-mongo-cluster-delete.md)
+            * [delete](subcommands%2Fdbaas%2Fmongo%2Fcluster%2Fdelete.md)
             * get
-                * [dbaas mongo cluster get](subcommands/dbaas/mongo/cluster/get/dbaas-mongo-cluster-get.md)
-            * [get](subcommands/dbaas/mongo/cluster/get.md)
+                * [dbaas mongo cluster get](subcommands%2Fdbaas%2Fmongo%2Fcluster%2Fget%2Fdbaas-mongo-cluster-get.md)
+            * [get](subcommands%2Fdbaas%2Fmongo%2Fcluster%2Fget.md)
             * list
-                * [dbaas mongo cluster list](subcommands/dbaas/mongo/cluster/list/dbaas-mongo-cluster-list.md)
-            * [list](subcommands/dbaas/mongo/cluster/list.md)
+                * [dbaas mongo cluster list](subcommands%2Fdbaas%2Fmongo%2Fcluster%2Flist%2Fdbaas-mongo-cluster-list.md)
+            * [list](subcommands%2Fdbaas%2Fmongo%2Fcluster%2Flist.md)
             * restore
-                * [dbaas mongo cluster restore](subcommands/dbaas/mongo/cluster/restore/dbaas-mongo-cluster-restore.md)
-            * [restore](subcommands/dbaas/mongo/cluster/restore.md)
+                * [dbaas mongo cluster restore](subcommands%2Fdbaas%2Fmongo%2Fcluster%2Frestore%2Fdbaas-mongo-cluster-restore.md)
+            * [restore](subcommands%2Fdbaas%2Fmongo%2Fcluster%2Frestore.md)
             * update
-                * [dbaas mongo cluster update](subcommands/dbaas/mongo/cluster/update/dbaas-mongo-cluster-update.md)
-            * [update](subcommands/dbaas/mongo/cluster/update.md)
+                * [dbaas mongo cluster update](subcommands%2Fdbaas%2Fmongo%2Fcluster%2Fupdate%2Fdbaas-mongo-cluster-update.md)
+            * [update](subcommands%2Fdbaas%2Fmongo%2Fcluster%2Fupdate.md)
         * logs
             * list
-                * [dbaas mongo logs list](subcommands/dbaas/mongo/logs/list/dbaas-mongo-logs-list.md)
-            * [list](subcommands/dbaas/mongo/logs/list.md)
+                * [dbaas mongo logs list](subcommands%2Fdbaas%2Fmongo%2Flogs%2Flist%2Fdbaas-mongo-logs-list.md)
+            * [list](subcommands%2Fdbaas%2Fmongo%2Flogs%2Flist.md)
         * snapshot
             * list
-                * [dbaas mongo snapshot list](subcommands/dbaas/mongo/snapshot/list/dbaas-mongo-snapshot-list.md)
-            * [list](subcommands/dbaas/mongo/snapshot/list.md)
+                * [dbaas mongo snapshot list](subcommands%2Fdbaas%2Fmongo%2Fsnapshot%2Flist%2Fdbaas-mongo-snapshot-list.md)
+            * [list](subcommands%2Fdbaas%2Fmongo%2Fsnapshot%2Flist.md)
         * templates
             * list
-                * [dbaas mongo templates list](subcommands/dbaas/mongo/templates/list/dbaas-mongo-templates-list.md)
-            * [list](subcommands/dbaas/mongo/templates/list.md)
+                * [dbaas mongo templates list](subcommands%2Fdbaas%2Fmongo%2Ftemplates%2Flist%2Fdbaas-mongo-templates-list.md)
+            * [list](subcommands%2Fdbaas%2Fmongo%2Ftemplates%2Flist.md)
         * user
             * create
-                * [dbaas mongo user create](subcommands/dbaas/mongo/user/create/dbaas-mongo-user-create.md)
-            * [create](subcommands/dbaas/mongo/user/create.md)
+                * [dbaas mongo user create](subcommands%2Fdbaas%2Fmongo%2Fuser%2Fcreate%2Fdbaas-mongo-user-create.md)
+            * [create](subcommands%2Fdbaas%2Fmongo%2Fuser%2Fcreate.md)
             * delete
-                * [dbaas mongo user delete](subcommands/dbaas/mongo/user/delete/dbaas-mongo-user-delete.md)
-            * [delete](subcommands/dbaas/mongo/user/delete.md)
+                * [dbaas mongo user delete](subcommands%2Fdbaas%2Fmongo%2Fuser%2Fdelete%2Fdbaas-mongo-user-delete.md)
+            * [delete](subcommands%2Fdbaas%2Fmongo%2Fuser%2Fdelete.md)
             * get
-                * [dbaas mongo user get](subcommands/dbaas/mongo/user/get/dbaas-mongo-user-get.md)
-            * [get](subcommands/dbaas/mongo/user/get.md)
+                * [dbaas mongo user get](subcommands%2Fdbaas%2Fmongo%2Fuser%2Fget%2Fdbaas-mongo-user-get.md)
+            * [get](subcommands%2Fdbaas%2Fmongo%2Fuser%2Fget.md)
             * list
-                * [dbaas mongo user list](subcommands/dbaas/mongo/user/list/dbaas-mongo-user-list.md)
-            * [list](subcommands/dbaas/mongo/user/list.md)
+                * [dbaas mongo user list](subcommands%2Fdbaas%2Fmongo%2Fuser%2Flist%2Fdbaas-mongo-user-list.md)
+            * [list](subcommands%2Fdbaas%2Fmongo%2Fuser%2Flist.md)
     * postgres
         * api
             * version
                 * get
-                    * [dbaas postgres api version get](subcommands/dbaas/postgres/api/version/get/dbaas-postgres-api-version-get.md)
-                * [get](subcommands/dbaas/postgres/api/version/get.md)
+                    * [dbaas postgres api version get](subcommands%2Fdbaas%2Fpostgres%2Fapi%2Fversion%2Fget%2Fdbaas-postgres-api-version-get.md)
+                * [get](subcommands%2Fdbaas%2Fpostgres%2Fapi%2Fversion%2Fget.md)
                 * list
-                    * [dbaas postgres api version list](subcommands/dbaas/postgres/api/version/list/dbaas-postgres-api-version-list.md)
-                * [list](subcommands/dbaas/postgres/api/version/list.md)
+                    * [dbaas postgres api version list](subcommands%2Fdbaas%2Fpostgres%2Fapi%2Fversion%2Flist%2Fdbaas-postgres-api-version-list.md)
+                * [list](subcommands%2Fdbaas%2Fpostgres%2Fapi%2Fversion%2Flist.md)
         * backup
             * get
-                * [dbaas postgres backup get](subcommands/dbaas/postgres/backup/get/dbaas-postgres-backup-get.md)
-            * [get](subcommands/dbaas/postgres/backup/get.md)
+                * [dbaas postgres backup get](subcommands%2Fdbaas%2Fpostgres%2Fbackup%2Fget%2Fdbaas-postgres-backup-get.md)
+            * [get](subcommands%2Fdbaas%2Fpostgres%2Fbackup%2Fget.md)
             * list
-                * [dbaas postgres backup list](subcommands/dbaas/postgres/backup/list/dbaas-postgres-backup-list.md)
-            * [list](subcommands/dbaas/postgres/backup/list.md)
+                * [dbaas postgres backup list](subcommands%2Fdbaas%2Fpostgres%2Fbackup%2Flist%2Fdbaas-postgres-backup-list.md)
+            * [list](subcommands%2Fdbaas%2Fpostgres%2Fbackup%2Flist.md)
         * cluster
             * backup
                 * list
-                    * [dbaas postgres cluster backup list](subcommands/dbaas/postgres/cluster/backup/list/dbaas-postgres-cluster-backup-list.md)
-                * [list](subcommands/dbaas/postgres/cluster/backup/list.md)
+                    * [dbaas postgres cluster backup list](subcommands%2Fdbaas%2Fpostgres%2Fcluster%2Fbackup%2Flist%2Fdbaas-postgres-cluster-backup-list.md)
+                * [list](subcommands%2Fdbaas%2Fpostgres%2Fcluster%2Fbackup%2Flist.md)
             * create
-                * [dbaas postgres cluster create](subcommands/dbaas/postgres/cluster/create/dbaas-postgres-cluster-create.md)
-            * [create](subcommands/dbaas/postgres/cluster/create.md)
+                * [dbaas postgres cluster create](subcommands%2Fdbaas%2Fpostgres%2Fcluster%2Fcreate%2Fdbaas-postgres-cluster-create.md)
+            * [create](subcommands%2Fdbaas%2Fpostgres%2Fcluster%2Fcreate.md)
             * delete
-                * [dbaas postgres cluster delete](subcommands/dbaas/postgres/cluster/delete/dbaas-postgres-cluster-delete.md)
-            * [delete](subcommands/dbaas/postgres/cluster/delete.md)
+                * [dbaas postgres cluster delete](subcommands%2Fdbaas%2Fpostgres%2Fcluster%2Fdelete%2Fdbaas-postgres-cluster-delete.md)
+            * [delete](subcommands%2Fdbaas%2Fpostgres%2Fcluster%2Fdelete.md)
             * get
-                * [dbaas postgres cluster get](subcommands/dbaas/postgres/cluster/get/dbaas-postgres-cluster-get.md)
-            * [get](subcommands/dbaas/postgres/cluster/get.md)
+                * [dbaas postgres cluster get](subcommands%2Fdbaas%2Fpostgres%2Fcluster%2Fget%2Fdbaas-postgres-cluster-get.md)
+            * [get](subcommands%2Fdbaas%2Fpostgres%2Fcluster%2Fget.md)
             * list
-                * [dbaas postgres cluster list](subcommands/dbaas/postgres/cluster/list/dbaas-postgres-cluster-list.md)
-            * [list](subcommands/dbaas/postgres/cluster/list.md)
+                * [dbaas postgres cluster list](subcommands%2Fdbaas%2Fpostgres%2Fcluster%2Flist%2Fdbaas-postgres-cluster-list.md)
+            * [list](subcommands%2Fdbaas%2Fpostgres%2Fcluster%2Flist.md)
             * restore
-                * [dbaas postgres cluster restore](subcommands/dbaas/postgres/cluster/restore/dbaas-postgres-cluster-restore.md)
-            * [restore](subcommands/dbaas/postgres/cluster/restore.md)
+                * [dbaas postgres cluster restore](subcommands%2Fdbaas%2Fpostgres%2Fcluster%2Frestore%2Fdbaas-postgres-cluster-restore.md)
+            * [restore](subcommands%2Fdbaas%2Fpostgres%2Fcluster%2Frestore.md)
             * update
-                * [dbaas postgres cluster update](subcommands/dbaas/postgres/cluster/update/dbaas-postgres-cluster-update.md)
-            * [update](subcommands/dbaas/postgres/cluster/update.md)
+                * [dbaas postgres cluster update](subcommands%2Fdbaas%2Fpostgres%2Fcluster%2Fupdate%2Fdbaas-postgres-cluster-update.md)
+            * [update](subcommands%2Fdbaas%2Fpostgres%2Fcluster%2Fupdate.md)
         * logs
             * list
-                * [dbaas postgres logs list](subcommands/dbaas/postgres/logs/list/dbaas-postgres-logs-list.md)
-            * [list](subcommands/dbaas/postgres/logs/list.md)
+                * [dbaas postgres logs list](subcommands%2Fdbaas%2Fpostgres%2Flogs%2Flist%2Fdbaas-postgres-logs-list.md)
+            * [list](subcommands%2Fdbaas%2Fpostgres%2Flogs%2Flist.md)
         * version
             * get
-                * [dbaas postgres version get](subcommands/dbaas/postgres/version/get/dbaas-postgres-version-get.md)
-            * [get](subcommands/dbaas/postgres/version/get.md)
+                * [dbaas postgres version get](subcommands%2Fdbaas%2Fpostgres%2Fversion%2Fget%2Fdbaas-postgres-version-get.md)
+            * [get](subcommands%2Fdbaas%2Fpostgres%2Fversion%2Fget.md)
             * list
-                * [dbaas postgres version list](subcommands/dbaas/postgres/version/list/dbaas-postgres-version-list.md)
-            * [list](subcommands/dbaas/postgres/version/list.md)
+                * [dbaas postgres version list](subcommands%2Fdbaas%2Fpostgres%2Fversion%2Flist%2Fdbaas-postgres-version-list.md)
+            * [list](subcommands%2Fdbaas%2Fpostgres%2Fversion%2Flist.md)
 * k8s
     * cluster
         * create
-            * [k8s cluster create](subcommands/k8s/cluster/create/k8s-cluster-create.md)
-        * [create](subcommands/k8s/cluster/create.md)
+            * [k8s cluster create](subcommands%2Fk8s%2Fcluster%2Fcreate%2Fk8s-cluster-create.md)
+        * [create](subcommands%2Fk8s%2Fcluster%2Fcreate.md)
         * delete
-            * [k8s cluster delete](subcommands/k8s/cluster/delete/k8s-cluster-delete.md)
-        * [delete](subcommands/k8s/cluster/delete.md)
+            * [k8s cluster delete](subcommands%2Fk8s%2Fcluster%2Fdelete%2Fk8s-cluster-delete.md)
+        * [delete](subcommands%2Fk8s%2Fcluster%2Fdelete.md)
         * get
-            * [k8s cluster get](subcommands/k8s/cluster/get/k8s-cluster-get.md)
-        * [get](subcommands/k8s/cluster/get.md)
+            * [k8s cluster get](subcommands%2Fk8s%2Fcluster%2Fget%2Fk8s-cluster-get.md)
+        * [get](subcommands%2Fk8s%2Fcluster%2Fget.md)
         * list
-            * [k8s cluster list](subcommands/k8s/cluster/list/k8s-cluster-list.md)
-        * [list](subcommands/k8s/cluster/list.md)
+            * [k8s cluster list](subcommands%2Fk8s%2Fcluster%2Flist%2Fk8s-cluster-list.md)
+        * [list](subcommands%2Fk8s%2Fcluster%2Flist.md)
         * update
-            * [k8s cluster update](subcommands/k8s/cluster/update/k8s-cluster-update.md)
-        * [update](subcommands/k8s/cluster/update.md)
+            * [k8s cluster update](subcommands%2Fk8s%2Fcluster%2Fupdate%2Fk8s-cluster-update.md)
+        * [update](subcommands%2Fk8s%2Fcluster%2Fupdate.md)
     * kubeconfig
         * get
-            * [k8s kubeconfig get](subcommands/k8s/kubeconfig/get/k8s-kubeconfig-get.md)
-        * [get](subcommands/k8s/kubeconfig/get.md)
+            * [k8s kubeconfig get](subcommands%2Fk8s%2Fkubeconfig%2Fget%2Fk8s-kubeconfig-get.md)
+        * [get](subcommands%2Fk8s%2Fkubeconfig%2Fget.md)
     * node
         * delete
-            * [k8s node delete](subcommands/k8s/node/delete/k8s-node-delete.md)
-        * [delete](subcommands/k8s/node/delete.md)
+            * [k8s node delete](subcommands%2Fk8s%2Fnode%2Fdelete%2Fk8s-node-delete.md)
+        * [delete](subcommands%2Fk8s%2Fnode%2Fdelete.md)
         * get
-            * [k8s node get](subcommands/k8s/node/get/k8s-node-get.md)
-        * [get](subcommands/k8s/node/get.md)
+            * [k8s node get](subcommands%2Fk8s%2Fnode%2Fget%2Fk8s-node-get.md)
+        * [get](subcommands%2Fk8s%2Fnode%2Fget.md)
         * list
-            * [k8s node list](subcommands/k8s/node/list/k8s-node-list.md)
-        * [list](subcommands/k8s/node/list.md)
+            * [k8s node list](subcommands%2Fk8s%2Fnode%2Flist%2Fk8s-node-list.md)
+        * [list](subcommands%2Fk8s%2Fnode%2Flist.md)
         * recreate
-            * [k8s node recreate](subcommands/k8s/node/recreate/k8s-node-recreate.md)
-        * [recreate](subcommands/k8s/node/recreate.md)
+            * [k8s node recreate](subcommands%2Fk8s%2Fnode%2Frecreate%2Fk8s-node-recreate.md)
+        * [recreate](subcommands%2Fk8s%2Fnode%2Frecreate.md)
     * nodepool
         * create
-            * [k8s nodepool create](subcommands/k8s/nodepool/create/k8s-nodepool-create.md)
-        * [create](subcommands/k8s/nodepool/create.md)
+            * [k8s nodepool create](subcommands%2Fk8s%2Fnodepool%2Fcreate%2Fk8s-nodepool-create.md)
+        * [create](subcommands%2Fk8s%2Fnodepool%2Fcreate.md)
         * delete
-            * [k8s nodepool delete](subcommands/k8s/nodepool/delete/k8s-nodepool-delete.md)
-        * [delete](subcommands/k8s/nodepool/delete.md)
+            * [k8s nodepool delete](subcommands%2Fk8s%2Fnodepool%2Fdelete%2Fk8s-nodepool-delete.md)
+        * [delete](subcommands%2Fk8s%2Fnodepool%2Fdelete.md)
         * get
-            * [k8s nodepool get](subcommands/k8s/nodepool/get/k8s-nodepool-get.md)
-        * [get](subcommands/k8s/nodepool/get.md)
+            * [k8s nodepool get](subcommands%2Fk8s%2Fnodepool%2Fget%2Fk8s-nodepool-get.md)
+        * [get](subcommands%2Fk8s%2Fnodepool%2Fget.md)
         * lan
             * add
-                * [k8s nodepool lan add](subcommands/k8s/nodepool/lan/add/k8s-nodepool-lan-add.md)
-            * [add](subcommands/k8s/nodepool/lan/add.md)
+                * [k8s nodepool lan add](subcommands%2Fk8s%2Fnodepool%2Flan%2Fadd%2Fk8s-nodepool-lan-add.md)
+            * [add](subcommands%2Fk8s%2Fnodepool%2Flan%2Fadd.md)
             * list
-                * [k8s nodepool lan list](subcommands/k8s/nodepool/lan/list/k8s-nodepool-lan-list.md)
-            * [list](subcommands/k8s/nodepool/lan/list.md)
+                * [k8s nodepool lan list](subcommands%2Fk8s%2Fnodepool%2Flan%2Flist%2Fk8s-nodepool-lan-list.md)
+            * [list](subcommands%2Fk8s%2Fnodepool%2Flan%2Flist.md)
             * remove
-                * [k8s nodepool lan remove](subcommands/k8s/nodepool/lan/remove/k8s-nodepool-lan-remove.md)
-            * [remove](subcommands/k8s/nodepool/lan/remove.md)
+                * [k8s nodepool lan remove](subcommands%2Fk8s%2Fnodepool%2Flan%2Fremove%2Fk8s-nodepool-lan-remove.md)
+            * [remove](subcommands%2Fk8s%2Fnodepool%2Flan%2Fremove.md)
         * list
-            * [k8s nodepool list](subcommands/k8s/nodepool/list/k8s-nodepool-list.md)
-        * [list](subcommands/k8s/nodepool/list.md)
+            * [k8s nodepool list](subcommands%2Fk8s%2Fnodepool%2Flist%2Fk8s-nodepool-list.md)
+        * [list](subcommands%2Fk8s%2Fnodepool%2Flist.md)
         * update
-            * [k8s nodepool update](subcommands/k8s/nodepool/update/k8s-nodepool-update.md)
-        * [update](subcommands/k8s/nodepool/update.md)
+            * [k8s nodepool update](subcommands%2Fk8s%2Fnodepool%2Fupdate%2Fk8s-nodepool-update.md)
+        * [update](subcommands%2Fk8s%2Fnodepool%2Fupdate.md)
     * version
         * get
-            * [k8s version get](subcommands/k8s/version/get/k8s-version-get.md)
-        * [get](subcommands/k8s/version/get.md)
+            * [k8s version get](subcommands%2Fk8s%2Fversion%2Fget%2Fk8s-version-get.md)
+        * [get](subcommands%2Fk8s%2Fversion%2Fget.md)
         * list
-            * [k8s version list](subcommands/k8s/version/list/k8s-version-list.md)
-        * [list](subcommands/k8s/version/list.md)
+            * [k8s version list](subcommands%2Fk8s%2Fversion%2Flist%2Fk8s-version-list.md)
+        * [list](subcommands%2Fk8s%2Fversion%2Flist.md)
 * natgateway
     * create
-        * [natgateway create](subcommands/natgateway/create/natgateway-create.md)
-    * [create](subcommands/natgateway/create.md)
+        * [natgateway create](subcommands%2Fnatgateway%2Fcreate%2Fnatgateway-create.md)
+    * [create](subcommands%2Fnatgateway%2Fcreate.md)
     * delete
-        * [natgateway delete](subcommands/natgateway/delete/natgateway-delete.md)
-    * [delete](subcommands/natgateway/delete.md)
+        * [natgateway delete](subcommands%2Fnatgateway%2Fdelete%2Fnatgateway-delete.md)
+    * [delete](subcommands%2Fnatgateway%2Fdelete.md)
     * flowlog
         * create
-            * [natgateway flowlog create](subcommands/natgateway/flowlog/create/natgateway-flowlog-create.md)
-        * [create](subcommands/natgateway/flowlog/create.md)
+            * [natgateway flowlog create](subcommands%2Fnatgateway%2Fflowlog%2Fcreate%2Fnatgateway-flowlog-create.md)
+        * [create](subcommands%2Fnatgateway%2Fflowlog%2Fcreate.md)
         * delete
-            * [natgateway flowlog delete](subcommands/natgateway/flowlog/delete/natgateway-flowlog-delete.md)
-        * [delete](subcommands/natgateway/flowlog/delete.md)
+            * [natgateway flowlog delete](subcommands%2Fnatgateway%2Fflowlog%2Fdelete%2Fnatgateway-flowlog-delete.md)
+        * [delete](subcommands%2Fnatgateway%2Fflowlog%2Fdelete.md)
         * get
-            * [natgateway flowlog get](subcommands/natgateway/flowlog/get/natgateway-flowlog-get.md)
-        * [get](subcommands/natgateway/flowlog/get.md)
+            * [natgateway flowlog get](subcommands%2Fnatgateway%2Fflowlog%2Fget%2Fnatgateway-flowlog-get.md)
+        * [get](subcommands%2Fnatgateway%2Fflowlog%2Fget.md)
         * list
-            * [natgateway flowlog list](subcommands/natgateway/flowlog/list/natgateway-flowlog-list.md)
-        * [list](subcommands/natgateway/flowlog/list.md)
+            * [natgateway flowlog list](subcommands%2Fnatgateway%2Fflowlog%2Flist%2Fnatgateway-flowlog-list.md)
+        * [list](subcommands%2Fnatgateway%2Fflowlog%2Flist.md)
         * update
-            * [natgateway flowlog update](subcommands/natgateway/flowlog/update/natgateway-flowlog-update.md)
-        * [update](subcommands/natgateway/flowlog/update.md)
+            * [natgateway flowlog update](subcommands%2Fnatgateway%2Fflowlog%2Fupdate%2Fnatgateway-flowlog-update.md)
+        * [update](subcommands%2Fnatgateway%2Fflowlog%2Fupdate.md)
     * get
-        * [natgateway get](subcommands/natgateway/get/natgateway-get.md)
-    * [get](subcommands/natgateway/get.md)
+        * [natgateway get](subcommands%2Fnatgateway%2Fget%2Fnatgateway-get.md)
+    * [get](subcommands%2Fnatgateway%2Fget.md)
     * lan
         * add
-            * [natgateway lan add](subcommands/natgateway/lan/add/natgateway-lan-add.md)
-        * [add](subcommands/natgateway/lan/add.md)
+            * [natgateway lan add](subcommands%2Fnatgateway%2Flan%2Fadd%2Fnatgateway-lan-add.md)
+        * [add](subcommands%2Fnatgateway%2Flan%2Fadd.md)
         * list
-            * [natgateway lan list](subcommands/natgateway/lan/list/natgateway-lan-list.md)
-        * [list](subcommands/natgateway/lan/list.md)
+            * [natgateway lan list](subcommands%2Fnatgateway%2Flan%2Flist%2Fnatgateway-lan-list.md)
+        * [list](subcommands%2Fnatgateway%2Flan%2Flist.md)
         * remove
-            * [natgateway lan remove](subcommands/natgateway/lan/remove/natgateway-lan-remove.md)
-        * [remove](subcommands/natgateway/lan/remove.md)
+            * [natgateway lan remove](subcommands%2Fnatgateway%2Flan%2Fremove%2Fnatgateway-lan-remove.md)
+        * [remove](subcommands%2Fnatgateway%2Flan%2Fremove.md)
     * list
-        * [natgateway list](subcommands/natgateway/list/natgateway-list.md)
-    * [list](subcommands/natgateway/list.md)
+        * [natgateway list](subcommands%2Fnatgateway%2Flist%2Fnatgateway-list.md)
+    * [list](subcommands%2Fnatgateway%2Flist.md)
     * rule
         * create
-            * [natgateway rule create](subcommands/natgateway/rule/create/natgateway-rule-create.md)
-        * [create](subcommands/natgateway/rule/create.md)
+            * [natgateway rule create](subcommands%2Fnatgateway%2Frule%2Fcreate%2Fnatgateway-rule-create.md)
+        * [create](subcommands%2Fnatgateway%2Frule%2Fcreate.md)
         * delete
-            * [natgateway rule delete](subcommands/natgateway/rule/delete/natgateway-rule-delete.md)
-        * [delete](subcommands/natgateway/rule/delete.md)
+            * [natgateway rule delete](subcommands%2Fnatgateway%2Frule%2Fdelete%2Fnatgateway-rule-delete.md)
+        * [delete](subcommands%2Fnatgateway%2Frule%2Fdelete.md)
         * get
-            * [natgateway rule get](subcommands/natgateway/rule/get/natgateway-rule-get.md)
-        * [get](subcommands/natgateway/rule/get.md)
+            * [natgateway rule get](subcommands%2Fnatgateway%2Frule%2Fget%2Fnatgateway-rule-get.md)
+        * [get](subcommands%2Fnatgateway%2Frule%2Fget.md)
         * list
-            * [natgateway rule list](subcommands/natgateway/rule/list/natgateway-rule-list.md)
-        * [list](subcommands/natgateway/rule/list.md)
+            * [natgateway rule list](subcommands%2Fnatgateway%2Frule%2Flist%2Fnatgateway-rule-list.md)
+        * [list](subcommands%2Fnatgateway%2Frule%2Flist.md)
         * update
-            * [natgateway rule update](subcommands/natgateway/rule/update/natgateway-rule-update.md)
-        * [update](subcommands/natgateway/rule/update.md)
+            * [natgateway rule update](subcommands%2Fnatgateway%2Frule%2Fupdate%2Fnatgateway-rule-update.md)
+        * [update](subcommands%2Fnatgateway%2Frule%2Fupdate.md)
     * update
-        * [natgateway update](subcommands/natgateway/update/natgateway-update.md)
-    * [update](subcommands/natgateway/update.md)
+        * [natgateway update](subcommands%2Fnatgateway%2Fupdate%2Fnatgateway-update.md)
+    * [update](subcommands%2Fnatgateway%2Fupdate.md)
 * networkloadbalancer
     * create
-        * [networkloadbalancer create](subcommands/networkloadbalancer/create/networkloadbalancer-create.md)
-    * [create](subcommands/networkloadbalancer/create.md)
+        * [networkloadbalancer create](subcommands%2Fnetworkloadbalancer%2Fcreate%2Fnetworkloadbalancer-create.md)
+    * [create](subcommands%2Fnetworkloadbalancer%2Fcreate.md)
     * delete
-        * [networkloadbalancer delete](subcommands/networkloadbalancer/delete/networkloadbalancer-delete.md)
-    * [delete](subcommands/networkloadbalancer/delete.md)
+        * [networkloadbalancer delete](subcommands%2Fnetworkloadbalancer%2Fdelete%2Fnetworkloadbalancer-delete.md)
+    * [delete](subcommands%2Fnetworkloadbalancer%2Fdelete.md)
     * flowlog
         * create
-            * [networkloadbalancer flowlog create](subcommands/networkloadbalancer/flowlog/create/networkloadbalancer-flowlog-create.md)
-        * [create](subcommands/networkloadbalancer/flowlog/create.md)
+            * [networkloadbalancer flowlog create](subcommands%2Fnetworkloadbalancer%2Fflowlog%2Fcreate%2Fnetworkloadbalancer-flowlog-create.md)
+        * [create](subcommands%2Fnetworkloadbalancer%2Fflowlog%2Fcreate.md)
         * delete
-            * [networkloadbalancer flowlog delete](subcommands/networkloadbalancer/flowlog/delete/networkloadbalancer-flowlog-delete.md)
-        * [delete](subcommands/networkloadbalancer/flowlog/delete.md)
+            * [networkloadbalancer flowlog delete](subcommands%2Fnetworkloadbalancer%2Fflowlog%2Fdelete%2Fnetworkloadbalancer-flowlog-delete.md)
+        * [delete](subcommands%2Fnetworkloadbalancer%2Fflowlog%2Fdelete.md)
         * get
-            * [networkloadbalancer flowlog get](subcommands/networkloadbalancer/flowlog/get/networkloadbalancer-flowlog-get.md)
-        * [get](subcommands/networkloadbalancer/flowlog/get.md)
+            * [networkloadbalancer flowlog get](subcommands%2Fnetworkloadbalancer%2Fflowlog%2Fget%2Fnetworkloadbalancer-flowlog-get.md)
+        * [get](subcommands%2Fnetworkloadbalancer%2Fflowlog%2Fget.md)
         * list
-            * [networkloadbalancer flowlog list](subcommands/networkloadbalancer/flowlog/list/networkloadbalancer-flowlog-list.md)
-        * [list](subcommands/networkloadbalancer/flowlog/list.md)
+            * [networkloadbalancer flowlog list](subcommands%2Fnetworkloadbalancer%2Fflowlog%2Flist%2Fnetworkloadbalancer-flowlog-list.md)
+        * [list](subcommands%2Fnetworkloadbalancer%2Fflowlog%2Flist.md)
         * update
-            * [networkloadbalancer flowlog update](subcommands/networkloadbalancer/flowlog/update/networkloadbalancer-flowlog-update.md)
-        * [update](subcommands/networkloadbalancer/flowlog/update.md)
+            * [networkloadbalancer flowlog update](subcommands%2Fnetworkloadbalancer%2Fflowlog%2Fupdate%2Fnetworkloadbalancer-flowlog-update.md)
+        * [update](subcommands%2Fnetworkloadbalancer%2Fflowlog%2Fupdate.md)
     * get
-        * [networkloadbalancer get](subcommands/networkloadbalancer/get/networkloadbalancer-get.md)
-    * [get](subcommands/networkloadbalancer/get.md)
+        * [networkloadbalancer get](subcommands%2Fnetworkloadbalancer%2Fget%2Fnetworkloadbalancer-get.md)
+    * [get](subcommands%2Fnetworkloadbalancer%2Fget.md)
     * list
-        * [networkloadbalancer list](subcommands/networkloadbalancer/list/networkloadbalancer-list.md)
-    * [list](subcommands/networkloadbalancer/list.md)
-    * [networkloadbalancer rule target add](subcommands/networkloadbalancer/networkloadbalancer-rule-target-add.md)
-    * [networkloadbalancer rule target remove](subcommands/networkloadbalancer/networkloadbalancer-rule-target-remove.md)
+        * [networkloadbalancer list](subcommands%2Fnetworkloadbalancer%2Flist%2Fnetworkloadbalancer-list.md)
+    * [list](subcommands%2Fnetworkloadbalancer%2Flist.md)
+    * [networkloadbalancer rule target add](subcommands%2Fnetworkloadbalancer%2Fnetworkloadbalancer-rule-target-add.md)
+    * [networkloadbalancer rule target remove](subcommands%2Fnetworkloadbalancer%2Fnetworkloadbalancer-rule-target-remove.md)
     * rule
         * create
-            * [networkloadbalancer rule create](subcommands/networkloadbalancer/rule/create/networkloadbalancer-rule-create.md)
-        * [create](subcommands/networkloadbalancer/rule/create.md)
+            * [networkloadbalancer rule create](subcommands%2Fnetworkloadbalancer%2Frule%2Fcreate%2Fnetworkloadbalancer-rule-create.md)
+        * [create](subcommands%2Fnetworkloadbalancer%2Frule%2Fcreate.md)
         * delete
-            * [networkloadbalancer rule delete](subcommands/networkloadbalancer/rule/delete/networkloadbalancer-rule-delete.md)
-        * [delete](subcommands/networkloadbalancer/rule/delete.md)
+            * [networkloadbalancer rule delete](subcommands%2Fnetworkloadbalancer%2Frule%2Fdelete%2Fnetworkloadbalancer-rule-delete.md)
+        * [delete](subcommands%2Fnetworkloadbalancer%2Frule%2Fdelete.md)
         * get
-            * [networkloadbalancer rule get](subcommands/networkloadbalancer/rule/get/networkloadbalancer-rule-get.md)
-        * [get](subcommands/networkloadbalancer/rule/get.md)
+            * [networkloadbalancer rule get](subcommands%2Fnetworkloadbalancer%2Frule%2Fget%2Fnetworkloadbalancer-rule-get.md)
+        * [get](subcommands%2Fnetworkloadbalancer%2Frule%2Fget.md)
         * list
-            * [networkloadbalancer rule list](subcommands/networkloadbalancer/rule/list/networkloadbalancer-rule-list.md)
-        * [list](subcommands/networkloadbalancer/rule/list.md)
+            * [networkloadbalancer rule list](subcommands%2Fnetworkloadbalancer%2Frule%2Flist%2Fnetworkloadbalancer-rule-list.md)
+        * [list](subcommands%2Fnetworkloadbalancer%2Frule%2Flist.md)
         * target
             * add
-                * [networkloadbalancer rule target add](subcommands/networkloadbalancer/rule/target/add/networkloadbalancer-rule-target-add.md)
-            * [add](subcommands/networkloadbalancer/rule/target/add.md)
+                * [networkloadbalancer rule target add](subcommands%2Fnetworkloadbalancer%2Frule%2Ftarget%2Fadd%2Fnetworkloadbalancer-rule-target-add.md)
+            * [add](subcommands%2Fnetworkloadbalancer%2Frule%2Ftarget%2Fadd.md)
             * list
-                * [networkloadbalancer rule target list](subcommands/networkloadbalancer/rule/target/list/networkloadbalancer-rule-target-list.md)
-            * [list](subcommands/networkloadbalancer/rule/target/list.md)
+                * [networkloadbalancer rule target list](subcommands%2Fnetworkloadbalancer%2Frule%2Ftarget%2Flist%2Fnetworkloadbalancer-rule-target-list.md)
+            * [list](subcommands%2Fnetworkloadbalancer%2Frule%2Ftarget%2Flist.md)
             * remove
-                * [networkloadbalancer rule target remove](subcommands/networkloadbalancer/rule/target/remove/networkloadbalancer-rule-target-remove.md)
-            * [remove](subcommands/networkloadbalancer/rule/target/remove.md)
+                * [networkloadbalancer rule target remove](subcommands%2Fnetworkloadbalancer%2Frule%2Ftarget%2Fremove%2Fnetworkloadbalancer-rule-target-remove.md)
+            * [remove](subcommands%2Fnetworkloadbalancer%2Frule%2Ftarget%2Fremove.md)
         * update
-            * [networkloadbalancer rule update](subcommands/networkloadbalancer/rule/update/networkloadbalancer-rule-update.md)
-        * [update](subcommands/networkloadbalancer/rule/update.md)
+            * [networkloadbalancer rule update](subcommands%2Fnetworkloadbalancer%2Frule%2Fupdate%2Fnetworkloadbalancer-rule-update.md)
+        * [update](subcommands%2Fnetworkloadbalancer%2Frule%2Fupdate.md)
     * update
-        * [networkloadbalancer update](subcommands/networkloadbalancer/update/networkloadbalancer-update.md)
-    * [update](subcommands/networkloadbalancer/update.md)
+        * [networkloadbalancer update](subcommands%2Fnetworkloadbalancer%2Fupdate%2Fnetworkloadbalancer-update.md)
+    * [update](subcommands%2Fnetworkloadbalancer%2Fupdate.md)
 * user
     * create
-        * [user create](subcommands/user/create/user-create.md)
-    * [create](subcommands/user/create.md)
+        * [user create](subcommands%2Fuser%2Fcreate%2Fuser-create.md)
+    * [create](subcommands%2Fuser%2Fcreate.md)
     * delete
-        * [user delete](subcommands/user/delete/user-delete.md)
-    * [delete](subcommands/user/delete.md)
+        * [user delete](subcommands%2Fuser%2Fdelete%2Fuser-delete.md)
+    * [delete](subcommands%2Fuser%2Fdelete.md)
     * get
-        * [user get](subcommands/user/get/user-get.md)
-    * [get](subcommands/user/get.md)
+        * [user get](subcommands%2Fuser%2Fget%2Fuser-get.md)
+    * [get](subcommands%2Fuser%2Fget.md)
     * list
-        * [user list](subcommands/user/list/user-list.md)
-    * [list](subcommands/user/list.md)
+        * [user list](subcommands%2Fuser%2Flist%2Fuser-list.md)
+    * [list](subcommands%2Fuser%2Flist.md)
     * s3key
         * create
-            * [user s3key create](subcommands/user/s3key/create/user-s3key-create.md)
-        * [create](subcommands/user/s3key/create.md)
+            * [user s3key create](subcommands%2Fuser%2Fs3key%2Fcreate%2Fuser-s3key-create.md)
+        * [create](subcommands%2Fuser%2Fs3key%2Fcreate.md)
         * delete
-            * [user s3key delete](subcommands/user/s3key/delete/user-s3key-delete.md)
-        * [delete](subcommands/user/s3key/delete.md)
+            * [user s3key delete](subcommands%2Fuser%2Fs3key%2Fdelete%2Fuser-s3key-delete.md)
+        * [delete](subcommands%2Fuser%2Fs3key%2Fdelete.md)
         * get
-            * [user s3key get](subcommands/user/s3key/get/user-s3key-get.md)
-        * [get](subcommands/user/s3key/get.md)
+            * [user s3key get](subcommands%2Fuser%2Fs3key%2Fget%2Fuser-s3key-get.md)
+        * [get](subcommands%2Fuser%2Fs3key%2Fget.md)
         * list
-            * [user s3key list](subcommands/user/s3key/list/user-s3key-list.md)
-        * [list](subcommands/user/s3key/list.md)
+            * [user s3key list](subcommands%2Fuser%2Fs3key%2Flist%2Fuser-s3key-list.md)
+        * [list](subcommands%2Fuser%2Fs3key%2Flist.md)
         * update
-            * [user s3key update](subcommands/user/s3key/update/user-s3key-update.md)
-        * [update](subcommands/user/s3key/update.md)
+            * [user s3key update](subcommands%2Fuser%2Fs3key%2Fupdate%2Fuser-s3key-update.md)
+        * [update](subcommands%2Fuser%2Fs3key%2Fupdate.md)
     * update
-        * [user update](subcommands/user/update/user-update.md)
-    * [update](subcommands/user/update.md)
+        * [user update](subcommands%2Fuser%2Fupdate%2Fuser-update.md)
+    * [update](subcommands%2Fuser%2Fupdate.md)
+
+
+## Legal
+
+---
+
+* [Privacy policy](https://www.ionos.com/terms-gtc/terms-privacy/)
+* [Imprint](https://www.ionos.de/impressum)

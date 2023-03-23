@@ -38,7 +38,7 @@ Create Mongo Clusters
 
 ```text
   -u, --api-url string            Override default host url (default "https://api.ionos.com")
-      --cidr strings              The list of IPs and subnet for your cluster. Note the following unavailable IP ranges: 10.233.64.0/18 10.233.0.0/18 10.233.114.0/24 (required)
+      --cidr strings              The list of IPs and subnet for your cluster. All IPs must be in a /24 network. Note the following unavailable IP range: 10.233.114.0/24 (required)
       --cols strings              Set of columns to be printed on output 
                                   Available columns: [ClusterId Name URL State Instances MongoVersion MaintenanceWindow Location DatacenterId LanId Cidr TemplateId]
   -c, --config string             Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")

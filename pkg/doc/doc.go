@@ -11,6 +11,7 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"net/url"
 	"os"
 	"path/filepath"
 	"strings"
@@ -44,19 +45,57 @@ func GenerateSummary(dir string) error {
 
 	buf := new(bytes.Buffer)
 
-	buf.WriteString("# Table of contents\n\n* [Introduction](README.md)\n* [Changelog](/CHANGELOG.md)\n\n## Subcommands\n\n")
+	_, err = buf.WriteString("# Table of contents\n\n* [Introduction](README.md)\n* [Changelog](/CHANGELOG.md)\n\n## Subcommands\n\n")
+	if err != nil {
+		return err
+	}
 
 	err = generateDirectoryContent(filepath.Join(dir, "subcommands"), buf, "")
 	if err != nil {
 		return err
 	}
+
+	buf.WriteString("\n\n## Legal\n\n---\n\n* [Privacy policy](https://www.ionos.com/terms-gtc/terms-privacy/)\n* [Imprint](https://www.ionos.de/impressum)\n")
+	if err != nil {
+		return err
+	}
+	
 	_, err = buf.WriteTo(f)
 	if err != nil {
 		return err
 	}
-	buf.WriteString("## Legal\n\n---\n\n* [Privacy policy](https://www.ionos.com/terms-gtc/terms-privacy/)\n* [Imprint](https://www.ionos.de/impressum)\n")
 
-	return err
+	return nil
+}
+
+func generateDirectoryContent(dir string, buf *bytes.Buffer, prefix string) error {
+	files, err := os.ReadDir(dir)
+	if err != nil {
+		return err
+	}
+
+	for _, file := range files {
+		name := file.Name()
+
+		if file.IsDir() {
+			subdir := filepath.Join(dir, name)
+			buf.WriteString(fmt.Sprintf("%s* %s\n", prefix, name))
+			err = generateDirectoryContent(subdir, buf, prefix+"    ")
+			if err != nil {
+				return err
+			}
+			continue
+		}
+
+		if filepath.Ext(name) == ".md" {
+			nameWithoutExt := strings.TrimSuffix(name, filepath.Ext(name))
+			title := strings.ReplaceAll(nameWithoutExt, "-", " ")
+			link := filepath.Join("subcommands", strings.ReplaceAll(strings.TrimPrefix(dir, "docs/subcommands/"), "\\", "/"), file.Name())
+			escapedLink := url.PathEscape(link)
+			buf.WriteString(fmt.Sprintf("%s* [%s](%s)\n", prefix, title, escapedLink))
+		}
+	}
+	return nil
 }
 
 func WriteDocs(cmd *core.Command, dir string) error {
@@ -128,35 +167,6 @@ func determineSubdir(name string, nonComputeNamespaces map[string]string) string
 	}
 
 	return filepath.Join("Compute Engine", filepath.Join(segments...))
-}
-
-func generateDirectoryContent(dir string, buf *bytes.Buffer, prefix string) error {
-	files, err := os.ReadDir(dir)
-	if err != nil {
-		return err
-	}
-
-	for _, file := range files {
-		name := file.Name()
-
-		if file.IsDir() {
-			subdir := filepath.Join(dir, name)
-			buf.WriteString(fmt.Sprintf("%s* %s\n", prefix, name))
-			err = generateDirectoryContent(subdir, buf, prefix+"    ")
-			if err != nil {
-				return err
-			}
-			continue
-		}
-
-		if filepath.Ext(name) == ".md" {
-			nameWithoutExt := strings.TrimSuffix(name, filepath.Ext(name))
-			title := strings.ReplaceAll(nameWithoutExt, "-", " ")
-			link := filepath.Join("subcommands", strings.ReplaceAll(strings.TrimPrefix(dir, "docs/subcommands/"), "\\", "/"), file.Name())
-			buf.WriteString(fmt.Sprintf("%s* [%s](%s)\n", prefix, title, link))
-		}
-	}
-	return nil
 }
 
 func writeDoc(cmd *core.Command, w io.Writer) error {
