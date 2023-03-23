@@ -152,8 +152,8 @@ func generateDirectoryContent(dir string, buf *bytes.Buffer, prefix string) erro
 
 		if filepath.Ext(name) == ".md" {
 			nameWithoutExt := strings.TrimSuffix(name, filepath.Ext(name))
-			title := strings.ToTitle(strings.ReplaceAll(nameWithoutExt, "-", " "))
-			link := filepath.Join("subcommands", strings.ReplaceAll(dir, "\\", "/"), name)
+			title := strings.ReplaceAll(nameWithoutExt, "-", " ")
+			link := filepath.Join("subcommands", strings.ReplaceAll(strings.TrimPrefix(dir, "docs/subcommands/"), "\\", "/"), file.Name())
 			buf.WriteString(fmt.Sprintf("%s* [%s](%s)\n", prefix, title, link))
 		}
 	}
