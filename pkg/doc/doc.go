@@ -22,7 +22,18 @@ const rootCmdName = "ionosctl"
 
 // Products establishes non-compute namespaces, and deduces that the rest of the root-level commands MUST be part of compute. If you add support for a new API, add your command here
 // TODO: Change me, when compute namespace is added!
-var Products = []string{"container-registry", "certificate-manager", "k8s", "dbaas", "natgateway", "applicationloadbalancer", "networkloadbalancer", "backupunit", "user", "dataplatform"}
+var nonComputeNamespaces = map[string]string{
+	"applicationloadbalancer": "Application Load Balancer",
+	"backupunit":              "Managed Backup",
+	"certificate-manager":     "Certificate Manager",
+	"container-registry":      "Container Registry",
+	"dataplatform":            "Managed Stackable Data Platform",
+	"dbaas":                   "Database as a Service",
+	"natgateway":              "NAT Gateway",
+	"networkloadbalancer":     "Network Load Balancer",
+	"k8s":                     "Managed Kubernetes",
+	"user":                    "User Management",
+}
 
 func GenerateSummary(dir string) error {
 	f, err := os.Create(filepath.Join(dir, "summary.md"))
@@ -33,16 +44,18 @@ func GenerateSummary(dir string) error {
 
 	buf := new(bytes.Buffer)
 
-	buf.WriteString("# Table of contents\n\n")
-	buf.WriteString("* [Introduction](README.md)\n")
-	buf.WriteString("* [Changelog](/CHANGELOG.md)\n\n")
-	buf.WriteString("## Subcommands\n\n")
+	buf.WriteString("# Table of contents\n\n* [Introduction](README.md)\n* [Changelog](/CHANGELOG.md)\n\n## Subcommands\n\n")
 
 	err = generateDirectoryContent(filepath.Join(dir, "subcommands"), buf, "")
 	if err != nil {
 		return err
 	}
 	_, err = buf.WriteTo(f)
+	if err != nil {
+		return err
+	}
+	buf.WriteString("## Legal\n\n---\n\n* [Privacy policy](https://www.ionos.com/terms-gtc/terms-privacy/)\n* [Imprint](https://www.ionos.de/impressum)\n")
+
 	return err
 }
 
@@ -69,7 +82,7 @@ func createStructure(cmd *core.Command, dir string) error {
 		if cmd.Command.HasParent() && cmd.Command.Runnable() {
 			name := strings.ReplaceAll(cmd.Command.CommandPath(), rootCmdName+" ", "")
 			name = strings.ReplaceAll(name, " ", "-")
-			subdir := determineSubdir(name, Products)
+			subdir := determineSubdir(name, nonComputeNamespaces)
 			dir = filepath.Join(dir, subdir)
 		} else {
 			return nil
@@ -93,7 +106,7 @@ func createStructure(cmd *core.Command, dir string) error {
 }
 
 // determineSubdir is a hack to support the old tree structure...
-func determineSubdir(name string, nonComputeNamespaces []string) string {
+func determineSubdir(name string, nonComputeNamespaces map[string]string) string {
 	segments := strings.Split(name, "-")
 
 	if segments[0] == "login" || segments[0] == "version" || segments[0] == "completion" {
@@ -101,27 +114,19 @@ func determineSubdir(name string, nonComputeNamespaces []string) string {
 	}
 
 	if segments[0] == "token" {
-		// I don't know why these commands weren't added to some auth namespace
 		return "Authentication/token/"
 	}
 
-	combinedNamespace := segments[0] + "-" + segments[1]
-
-	for _, api := range nonComputeNamespaces {
-		if combinedNamespace == api {
-			// If the combined namespace matches a known API, update the segments
-			// e.g. container-registry
-			segments[0] = combinedNamespace
-			segments = append([]string{segments[0]}, segments[2:]...)
-			return filepath.Join(api, filepath.Join(segments[1:]...))
-		} else if segments[0] == api {
-			// If the first segment matches a known API
-			// e.g. dbaas
-			return filepath.Join(api, filepath.Join(segments[1:]...))
-		}
+	namespaceKey := segments[0]
+	if apiName, ok := nonComputeNamespaces[namespaceKey]; ok {
+		return filepath.Join(apiName, filepath.Join(segments[1:]...))
 	}
 
-	// If not part of a known API, put it in the "compute" subdirectory
+	namespaceKey = segments[0] + "-" + segments[1]
+	if apiName, ok := nonComputeNamespaces[namespaceKey]; ok {
+		return filepath.Join(apiName, filepath.Join(segments[2:]...))
+	}
+
 	return filepath.Join("Compute Engine", filepath.Join(segments...))
 }
 
