@@ -79,7 +79,7 @@ func generateDirectoryContent(dir string, buf *bytes.Buffer, prefix string) erro
 
 		if file.IsDir() {
 			subdir := filepath.Join(dir, name)
-			buf.WriteString(fmt.Sprintf("%s* %s\n", prefix, name))
+			buf.WriteString(fmt.Sprintf("%s* %s\n", prefix, strings.ReplaceAll(name, "-", " ")))
 			err = generateDirectoryContent(subdir, buf, prefix+"    ")
 			if err != nil {
 				return err
