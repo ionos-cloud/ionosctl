@@ -350,8 +350,8 @@ ionosctl natgateway lan add --datacenter-id DATACENTER_ID --natgateway-id NATGAT
 		Network Load Balancer ForwardingRule Target Example
 	*/
 	listNetworkLoadBalancerRuleTargetExample   = `ionosctl networkloadbalancer rule target list --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID --rule-id FORWARDINGRULE_ID`
-	addNetworkLoadBalancerRuleTargetExample    = `ionosctl networkloadbalancer rule target add --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID --rule-id FORWARDINGRULE_ID --target-ip TARGET_IP --target-port TARGET_PORT -w`
-	removeNetworkLoadBalancerRuleTargetExample = `ionosctl nlb rule target remove --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID --rule-id FORWARDINGRULE_ID --target-ip TARGET_IP --target-port TARGET_PORT -w`
+	addNetworkLoadBalancerRuleTargetExample    = `ionosctl networkloadbalancer rule target add --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID --rule-id FORWARDINGRULE_ID --ip TARGET_IP --port TARGET_PORT`
+	removeNetworkLoadBalancerRuleTargetExample = `ionosctl nlb rule target remove --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID --rule-id FORWARDINGRULE_ID --ip TARGET_IP --port TARGET_PORT`
 
 	/*
 		Target Group Example
@@ -363,8 +363,8 @@ ionosctl natgateway lan add --datacenter-id DATACENTER_ID --natgateway-id NATGAT
 	deleteTargetGroupExample = `ionosctl targetgroup delete --targetgroup-id TARGET_GROUP_ID --force`
 
 	listTargetGroupTargetExample   = `ionosctl targetgroup target list --targetgroup-id TARGET_GROUP_ID`
-	addTargetGroupTargetExample    = `ionosctl targetgroup target add --targetgroup-id TARGET_GROUP_ID --target-ip TARGET_IP --target-port TARGET_PORT`
-	removeTargetGroupTargetExample = `ionosctl targetgroup target remove --targetgroup-id TARGET_GROUP_ID --target-ip TARGET_IP --target-port TARGET_PORT`
+	addTargetGroupTargetExample    = `ionosctl targetgroup target add --targetgroup-id TARGET_GROUP_ID --ip TARGET_IP --port TARGET_PORT`
+	removeTargetGroupTargetExample = `ionosctl targetgroup target remove --targetgroup-id TARGET_GROUP_ID --ip TARGET_IP --port TARGET_PORT`
 
 	/*
 		Application Load Balancer Example
@@ -396,7 +396,7 @@ ionosctl natgateway lan add --datacenter-id DATACENTER_ID --natgateway-id NATGAT
 	*/
 	listApplicationLoadBalancerFlowLogExample   = `ionosctl applicationloadbalancer flowlog list --datacenter-id DATACENTER_ID --applicationloadbalancer-id APPLICATIONLOADBALANCER_ID`
 	getApplicationLoadBalancerFlowLogExample    = `ionosctl applicationloadbalancer flowlog get --datacenter-id DATACENTER_ID --applicationloadbalancer-id APPLICATIONLOADBALANCER_ID -i FLOWLOG_ID`
-	createApplicationLoadBalancerFlowLogExample = `ionosctl applicationloadbalancer flowlog create --datacenter-id DATACENTER_ID --applicationloadbalancer-id APPLICATIONLOADBALANCER_ID --action ACTION --name NAME --direction DIRECTION --bucket-name BUCKET_NAME`
+	createApplicationLoadBalancerFlowLogExample = `ionosctl applicationloadbalancer flowlog create --datacenter-id DATACENTER_ID --applicationloadbalancer-id APPLICATIONLOADBALANCER_ID --action ACTION --name NAME --direction DIRECTION --s3bucket BUCKET_NAME`
 	updateApplicationLoadBalancerFlowLogExample = `ionosctl applicationloadbalancer flowlog update --datacenter-id DATACENTER_ID --applicationloadbalancer-id APPLICATIONLOADBALANCER_ID -i FLOWLOG_ID --name NAME`
 	deleteApplicationLoadBalancerFlowLogExample = `ionosctl applicationloadbalancer flowlog delete --datacenter-id DATACENTER_ID --applicationloadbalancer-id APPLICATIONLOADBALANCER_ID -i FLOWLOG_ID`
 )
