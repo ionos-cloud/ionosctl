@@ -63,6 +63,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl targetgroup target remove --targetgroup-id TARGET_GROUP_ID --target-ip TARGET_IP --target-port TARGET_PORT
+ionosctl targetgroup target remove --targetgroup-id TARGET_GROUP_ID --ip TARGET_IP --port TARGET_PORT
 ```
 
