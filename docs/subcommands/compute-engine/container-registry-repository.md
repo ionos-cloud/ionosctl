@@ -21,7 +21,7 @@ For `container-registry` command:
 For `repository` command:
 
 ```text
-[rd del repo rep-del]
+[rd del repo rep-del repository-delete]
 ```
 
 ## Description
@@ -46,6 +46,6 @@ Delete all repository contents. The registry V2 API allows manifests and blobs t
 ## Examples
 
 ```text
-ionosctl container-registry locations
+ionosctl container-registry repository-delete --registry-id [REGISTRY-ID], --name [REPOSITORY-NAME]
 ```
 

@@ -43,7 +43,7 @@ Create a registry to hold container images or OCI compliant artifacts
   -c, --config string                              Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -f, --force                                      Force command to execute without user input
       --garbage-collection-schedule-days strings   Specify the garbage collection schedule days
-      --garbage-collection-schedule-time string    Specify the garbage collection schedule time of day
+      --garbage-collection-schedule-time string    Specify the garbage collection schedule time of day using RFC3339 format
   -h, --help                                       Print usage
       --location string                            Specify the location of the registry (required)
   -n, --name string                                Specify the name of the registry (required)
