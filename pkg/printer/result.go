@@ -134,7 +134,7 @@ func (prt *Result) PrintJSON(out io.Writer) error {
 type ResultPrint struct {
 	Message   interface{} `json:"Status,omitempty"`
 	RequestId interface{} `json:"RequestId,omitempty"`
-	Output    interface{} `json:"Resources,omitempty"`
+	Output    interface{} `json:"items,omitempty"`
 }
 
 var (
