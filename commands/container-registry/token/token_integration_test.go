@@ -5,6 +5,7 @@ package token
 
 import (
 	"context"
+	"github.com/cilium/fake"
 	"testing"
 	"time"
 
@@ -14,7 +15,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/token/scopes"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	ionoscloud "github.com/ionos-cloud/sdk-go-container-registry"
-	"github.com/lucasjones/reggen"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
@@ -28,15 +28,14 @@ func TestTokenService(t *testing.T) {
 		viper.Set(constants.ArgForce, true)
 
 		// create registry
-		name, err := reggen.Generate("^[a-z][-a-z0-9]{1,61}[a-z0-9]$", 10)
-		assert.NoError(t, err)
+		name := "ionosctl-crreg-test-" + fake.AlphaNum(8)
 		c := registry.RegPostCmd()
 		c.Command.Flags().Set(FlagName, name)
 		c.Command.Flags().Set(registry.FlagLocation, "de/fra")
 
-		err = c.Command.Execute()
+		err := c.Command.Execute()
 		assert.NoError(t, err)
-		time.Sleep(10 * time.Second)
+		time.Sleep(20 * time.Second)
 
 		// get registry
 		assert.NoError(t, err)
@@ -50,9 +49,9 @@ func TestTokenService(t *testing.T) {
 			}
 		}
 
-		time.Sleep(10 * time.Second)
+		time.Sleep(20 * time.Second)
 		// create token
-		tokenName, err := reggen.Generate("^[A-Za-z][-A-Za-z0-9]{0,61}[A-Za-z0-9]$", 10)
+		tokenName := "ionosctl-crreg-test-" + fake.AlphaNum(8)
 		cToken := TokenPostCmd()
 		cToken.Command.Flags().Set(FlagRegId, *newReg.GetId())
 		cToken.Command.Flags().Set(FlagName, tokenName)
@@ -61,7 +60,7 @@ func TestTokenService(t *testing.T) {
 		err = cToken.Command.Execute()
 		assert.NoError(t, err)
 
-		time.Sleep(10 * time.Second)
+		time.Sleep(20 * time.Second)
 		// get token
 		tokens, _, err := client.Must().RegistryClient.TokensApi.RegistriesTokensGet(context.Background(), *newReg.GetId()).Execute()
 		assert.NoError(t, err)
@@ -73,7 +72,7 @@ func TestTokenService(t *testing.T) {
 			}
 		}
 
-		time.Sleep(10 * time.Second)
+		time.Sleep(20 * time.Second)
 		// add scopes
 		addScopes := scopes.TokenScopesAddCmd()
 		addScopes.Command.Flags().Set(FlagRegId, *newReg.GetId())
@@ -84,7 +83,7 @@ func TestTokenService(t *testing.T) {
 
 		err = addScopes.Command.Execute()
 		assert.NoError(t, err)
-		time.Sleep(10 * time.Second)
+		time.Sleep(20 * time.Second)
 
 		addScopes = scopes.TokenScopesAddCmd()
 		addScopes.Command.Flags().Set(FlagRegId, *newReg.GetId())
@@ -92,7 +91,7 @@ func TestTokenService(t *testing.T) {
 		addScopes.Command.Flags().Set(scopes.FlagName, "test2")
 		addScopes.Command.Flags().Set(scopes.FlagType, "repository")
 		addScopes.Command.Flags().Set(scopes.FlagActions, "push")
-		time.Sleep(10 * time.Second)
+		time.Sleep(20 * time.Second)
 
 		err = addScopes.Command.Execute()
 		assert.NoError(t, err)
@@ -106,7 +105,7 @@ func TestTokenService(t *testing.T) {
 		err = deleteScopes.Command.Execute()
 		assert.NoError(t, err)
 
-		time.Sleep(10 * time.Second)
+		time.Sleep(20 * time.Second)
 
 		gToken := TokenGetCmd()
 		gToken.Command.Flags().Set(FlagRegId, *newReg.GetId())
@@ -123,12 +122,12 @@ func TestTokenService(t *testing.T) {
 
 		err = uToken.Command.Execute()
 		assert.NoError(t, err)
-		time.Sleep(10 * time.Second)
+		time.Sleep(20 * time.Second)
 
 		checkProp, _, err := client.Must().RegistryClient.TokensApi.RegistriesTokensFindById(context.Background(), *newReg.GetId(), *newToken.GetId()).Execute()
 		assert.NoError(t, err)
 		assert.Equal(t, "disabled", *checkProp.GetProperties().GetStatus())
-		time.Sleep(10 * time.Second)
+		time.Sleep(20 * time.Second)
 		// delete token
 		dToken := TokenDeleteCmd()
 		dToken.Command.Flags().Set(FlagRegId, *newReg.GetId())
@@ -136,18 +135,18 @@ func TestTokenService(t *testing.T) {
 
 		err = dToken.Command.Execute()
 		assert.NoError(t, err)
-		time.Sleep(10 * time.Second)
+		time.Sleep(20 * time.Second)
 
 		// replace token
 		rToken := TokenReplaceCmd()
 		rToken.Command.Flags().Set(FlagRegId, *newReg.GetId())
 		rToken.Command.Flags().Set(FlagTokenId, *newToken.GetId())
 		rToken.Command.Flags().Set(FlagName, "newName")
-		time.Sleep(10 * time.Second)
+		time.Sleep(20 * time.Second)
 
 		err = rToken.Command.Execute()
 		assert.NoError(t, err)
-		time.Sleep(10 * time.Second)
+		time.Sleep(20 * time.Second)
 
 		// delete registry
 		d := registry.RegDeleteCmd()

@@ -5,12 +5,12 @@ package registry
 
 import (
 	"context"
+	"github.com/cilium/fake"
 	"testing"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	ionoscloud "github.com/ionos-cloud/sdk-go-container-registry"
-	"github.com/lucasjones/reggen"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
@@ -23,13 +23,12 @@ func TestRegistryService(t *testing.T) {
 		viper.Set(constants.ArgVerbose, false)
 		viper.Set(constants.ArgForce, true)
 
-		name, err := reggen.Generate("^[a-z][-a-z0-9]{1,61}[a-z0-9]$", 10)
-		assert.NoError(t, err)
+		name := "ionosctl-crreg-test-" + fake.AlphaNum(8)
 		c := RegPostCmd()
 		c.Command.Flags().Set(FlagName, name)
 		c.Command.Flags().Set(FlagLocation, "de/fra")
 
-		err = c.Command.Execute()
+		err := c.Command.Execute()
 		assert.NoError(t, err)
 
 		registries, _, err := client.Must().RegistryClient.RegistriesApi.RegistriesGet(context.Background()).Execute()
@@ -69,8 +68,7 @@ func TestRegistryService(t *testing.T) {
 		assert.NoError(t, err)
 
 		replace := RegReplaceCmd()
-		name, err = reggen.Generate("^[a-z][-a-z0-9]{1,61}[a-z0-9]$", 10)
-		assert.NoError(t, err)
+		name = "ionosctl-crreg-test-" + fake.AlphaNum(8)
 		replace.Command.Flags().Set(FlagRegId, *newRegistry.GetId())
 		replace.Command.Flags().Set(FlagName, name)
 		replace.Command.Flags().Set(FlagLocation, "de/fra")
