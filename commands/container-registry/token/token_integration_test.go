@@ -5,7 +5,9 @@ package token
 
 import (
 	"context"
+	"fmt"
 	"github.com/cilium/fake"
+	"log"
 	"testing"
 	"time"
 
@@ -19,8 +21,24 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func teardown() {
+	regs, _, err := client.Must().RegistryClient.RegistriesApi.RegistriesGet(context.Background()).Execute()
+
+	if err != nil {
+		log.Print(fmt.Errorf("failed deleting all registries: %w", err))
+	}
+	for _, reg := range *regs.Items {
+		_, err := client.Must().RegistryClient.RegistriesApi.RegistriesDelete(context.Background(), *reg.Id).Execute()
+		if err != nil {
+			log.Print(fmt.Errorf("failed deleting registry: %w", err))
+		}
+	}
+	time.Sleep(30 * time.Second)
+}
+
 func TestTokenService(t *testing.T) {
 	t.Run("token functions", func(t *testing.T) {
+		t.Cleanup(teardown)
 		viper.Reset()
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(constants.ArgQuiet, false)

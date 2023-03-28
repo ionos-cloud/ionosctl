@@ -32,7 +32,7 @@ utest: test_unit cloudapiv6_test auth_v1_test dbaas_postgres_test dbaas_mongo_te
 
 # run integration tests for all services
 .PHONY: itest
-itest: dbaas_mongo_test_integration certmanager_test_integration dataplatform_test # contreg_test_integration Temp Skip because 409 Conflict
+itest: dbaas_mongo_test_integration certmanager_test_integration dataplatform_test # contreg_test_integration # Temp Skip because 409 Conflict
 
 # run all tests
 .PHONY: test

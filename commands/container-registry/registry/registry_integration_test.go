@@ -5,8 +5,11 @@ package registry
 
 import (
 	"context"
+	"fmt"
 	"github.com/cilium/fake"
+	"log"
 	"testing"
+	"time"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
@@ -15,8 +18,24 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func teardown() {
+	regs, _, err := client.Must().RegistryClient.RegistriesApi.RegistriesGet(context.Background()).Execute()
+
+	if err != nil {
+		log.Print(fmt.Errorf("failed deleting all registries: %w", err))
+	}
+	for _, reg := range *regs.Items {
+		_, err := client.Must().RegistryClient.RegistriesApi.RegistriesDelete(context.Background(), *reg.Id).Execute()
+		if err != nil {
+			log.Print(fmt.Errorf("failed deleting registry: %w", err))
+		}
+	}
+	time.Sleep(30 * time.Second)
+}
+
 func TestRegistryService(t *testing.T) {
 	t.Run("registry functions", func(t *testing.T) {
+		t.Cleanup(teardown)
 		viper.Reset()
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(constants.ArgQuiet, false)
