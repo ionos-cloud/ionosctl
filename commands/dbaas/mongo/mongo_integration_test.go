@@ -22,7 +22,7 @@ import (
 
 var (
 	uniqueResourceName = "ionosctl-mongo-cluster-test-" + fake.AlphaNum(8)
-	cidr               = fake.IP(fake.WithIPv4(), fake.WithIPCIDR("192.168.0.0/16")) + "/24"
+	cidr               = fake.IP(fake.WithIPv4(), fake.WithIPCIDR("192.168.1.128/25")) + "/24"
 	client             *client2.Client
 	createdClusterId   string
 	createdDcId        string
@@ -162,7 +162,7 @@ func teardownTestMongoCommands() {
 		fmt.Printf("failed deleting cluster: %v\n", err)
 	}
 
-	time.Sleep(30 * time.Second) // Some clusters take longer to delete, and they still delete-protect datacenters. TODO: Use proxy API to slow down the deletion asynchronously for ~300secs
+	time.Sleep(300 * time.Second) // Some clusters take longer to delete, and they still delete-protect datacenters. TODO: Use proxy API to slow down the deletion asynchronously for ~300secs
 
 	_, err = client.CloudClient.DataCentersApi.DatacentersDelete(context.Background(), createdDcId).Execute()
 	if err != nil {
