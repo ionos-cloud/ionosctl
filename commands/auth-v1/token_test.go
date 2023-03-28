@@ -5,12 +5,10 @@ import (
 	"bytes"
 	"errors"
 	"os"
-	"regexp"
 	"testing"
 
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/utils/clierror"
 	authv1 "github.com/ionos-cloud/ionosctl/v6/services/auth-v1"
 	"github.com/ionos-cloud/ionosctl/v6/services/auth-v1/resources"
 	sdkgoauth "github.com/ionos-cloud/sdk-go-auth"
@@ -574,28 +572,4 @@ func TestRunTokenDeleteAllAskForConfirmErr(t *testing.T) {
 		err := RunTokenDeleteAll(cfg)
 		assert.Error(t, err)
 	})
-}
-
-func TestGetTokensCols(t *testing.T) {
-	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
-	var b bytes.Buffer
-	clierror.ErrAction = func() { return }
-	w := bufio.NewWriter(&b)
-	viper.Set(core.GetFlagName("token", constants.ArgCols), []string{"ExpirationDate"})
-	getTokenCols(core.GetFlagName("token", constants.ArgCols), w)
-	err := w.Flush()
-	assert.NoError(t, err)
-}
-
-func TestGetTokensColsErr(t *testing.T) {
-	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
-	var b bytes.Buffer
-	clierror.ErrAction = func() { return }
-	w := bufio.NewWriter(&b)
-	viper.Set(core.GetFlagName("token", constants.ArgCols), []string{"Unknown"})
-	getTokenCols(core.GetFlagName("token", constants.ArgCols), w)
-	err := w.Flush()
-	assert.NoError(t, err)
-	re := regexp.MustCompile(`unknown column Unknown`)
-	assert.True(t, re.Match(b.Bytes()))
 }

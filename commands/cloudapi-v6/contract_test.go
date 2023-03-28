@@ -4,14 +4,12 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
-	"regexp"
 	"testing"
 
 	"github.com/golang/mock/gomock"
 
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/utils/clierror"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
@@ -99,28 +97,4 @@ func TestRunContractGetErr(t *testing.T) {
 		err := RunContractGet(cfg)
 		assert.Error(t, err)
 	})
-}
-
-func TestGetContractsCols(t *testing.T) {
-	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
-	var b bytes.Buffer
-	clierror.ErrAction = func() { return }
-	w := bufio.NewWriter(&b)
-	viper.Set(core.GetFlagName("contract", constants.ArgCols), []string{"ContractNumber"})
-	getContractCols(core.GetFlagName("contract", constants.ArgCols), w)
-	err := w.Flush()
-	assert.NoError(t, err)
-}
-
-func TestGetContractsColsErr(t *testing.T) {
-	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
-	var b bytes.Buffer
-	clierror.ErrAction = func() { return }
-	w := bufio.NewWriter(&b)
-	viper.Set(core.GetFlagName("contract", constants.ArgCols), []string{"Unknown"})
-	getContractCols(core.GetFlagName("contract", constants.ArgCols), w)
-	err := w.Flush()
-	assert.NoError(t, err)
-	re := regexp.MustCompile(`unknown column Unknown`)
-	assert.True(t, re.Match(b.Bytes()))
 }

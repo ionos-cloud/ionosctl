@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io"
 	"os"
 
 	"github.com/fatih/structs"
@@ -13,7 +12,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/utils/clierror"
 	authv1 "github.com/ionos-cloud/ionosctl/v6/services/auth-v1"
 	"github.com/ionos-cloud/ionosctl/v6/services/auth-v1/resources"
 	sdkgoauth "github.com/ionos-cloud/sdk-go-auth"
@@ -300,36 +298,10 @@ func getTokenPrint(c *core.CommandConfig, dcs []resources.Token) printer.Result 
 		if dcs != nil {
 			r.OutputJSON = dcs
 			r.KeyValue = getTokensKVMaps(dcs)
-			r.Columns = getTokenCols(core.GetFlagName(c.Resource, constants.ArgCols), c.Printer.GetStderr())
+			r.Columns = printer.GetHeadersAllDefault(allTokenCols, viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)))
 		}
 	}
 	return r
-}
-
-func getTokenCols(flagName string, outErr io.Writer) []string {
-	var cols []string
-	if viper.IsSet(flagName) {
-		cols = viper.GetStringSlice(flagName)
-	} else {
-		return defaultTokenCols
-	}
-
-	columnsMap := map[string]string{
-		"TokenId":        "TokenId",
-		"CreatedDate":    "CreatedDate",
-		"ExpirationDate": "ExpirationDate",
-		"Href":           "Href",
-	}
-	var tokenCols []string
-	for _, k := range cols {
-		col := columnsMap[k]
-		if col != "" {
-			tokenCols = append(tokenCols, col)
-		} else {
-			clierror.CheckError(errors.New("unknown column "+k), outErr)
-		}
-	}
-	return tokenCols
 }
 
 func getTokens(tokens resources.Tokens) []resources.Token {
