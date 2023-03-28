@@ -16,7 +16,7 @@ func RegListCmd() *core.Command {
 			Namespace:  "container-registry",
 			Resource:   "registry",
 			Verb:       "list",
-			Aliases:    []string{"l"},
+			Aliases:    []string{"l", "ls"},
 			ShortDesc:  "List all Registries",
 			LongDesc:   "List all managed container registries for your account",
 			Example:    "ionosctl container-registry registry list",

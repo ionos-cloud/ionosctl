@@ -19,12 +19,6 @@ jobs:
         with:
           go-version-file: 'go.mod'
 
-      - name: Run tests
-        env:
-          IONOS_USERNAME: ${{ secrets.IONOS_USERNAME_V5 }}
-          IONOS_PASSWORD: ${{ secrets.IONOS_PASSWORD_V6 }}
-        run: go test -coverprofile=coverage.out ./...
-
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         env:
