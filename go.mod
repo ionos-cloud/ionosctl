@@ -28,7 +28,13 @@ require (
 	golang.org/x/exp v0.0.0-20230321023759-10a507213a29
 	golang.org/x/sync v0.1.0
 	golang.org/x/term v0.6.0
+	github.com/cilium/fake v0.3.0
+	github.com/ionos-cloud/sdk-go-container-registry v1.0.0
+	github.com/ionos-cloud/sdk-go-dataplatform v1.0.1
+
 )
+
+
 
 require (
 <<<<<<< HEAD
