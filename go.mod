@@ -31,8 +31,6 @@ require (
 )
 
 require (
-<<<<<<< HEAD
-=======
 	github.com/cilium/fake v0.3.0
 	github.com/ionos-cloud/sdk-go-container-registry v1.0.0
 )
@@ -40,7 +38,6 @@ require (
 require github.com/ionos-cloud/sdk-go-dataplatform v1.0.1
 
 require (
->>>>>>> cea78932 (deps: bump deps)
 	github.com/VividCortex/ewma v1.2.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
