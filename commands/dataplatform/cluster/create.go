@@ -3,7 +3,7 @@ package cluster
 import (
 	"context"
 
-	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
 	"github.com/cilium/fake"
 	"github.com/cjrd/allocate"
@@ -53,11 +53,7 @@ func ClusterCreateCmd() *core.Command {
 			input := sdkdataplatform.CreateClusterRequest{}
 			input.SetProperties(createProperties)
 
-			client, err := client2.Get()
-			if err != nil {
-				return err
-			}
-			cr, _, err := client.DataplatformClient.DataPlatformClusterApi.CreateCluster(context.Background()).CreateClusterRequest(input).Execute()
+			cr, _, err := client.Must().DataplatformClient.DataPlatformClusterApi.ClustersPost(context.Background()).CreateClusterRequest(input).Execute()
 			if err != nil {
 				return err
 			}
