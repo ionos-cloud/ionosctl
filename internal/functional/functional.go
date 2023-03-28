@@ -1,7 +1,7 @@
 package functional
 
 import (
-	"github.com/hashicorp/go-multierror"
+	"errors"
 )
 
 /*
@@ -14,15 +14,15 @@ import (
 func ApplyAndAggregateErrors[T any](xs []T, f func(T) error) error {
 	return Fold(
 		xs,
-		func(errs *multierror.Error, x T) *multierror.Error {
+		func(errs error, x T) error {
 			err := f(x)
 			if err != nil {
-				errs = multierror.Append(errs, err)
+				errs = errors.Join(errs, err)
 			}
 			return errs
 		},
-		new(multierror.Error),
-	).ErrorOrNil()
+		nil,
+	)
 }
 
 // ApplyOrFail tries applying the provided function for each element of the slice
