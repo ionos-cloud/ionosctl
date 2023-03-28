@@ -162,6 +162,7 @@ func initConfig() {
 func addCommands() {
 	rootCmd.AddCommand(VersionCmd())
 	rootCmd.AddCommand(LoginCmd())
+	rootCmd.AddCommand(InteractiveShellCmd())
 	// V6 Resources Commands
 	rootCmd.AddCommand(cloudapiv6.LocationCmd())
 	rootCmd.AddCommand(cloudapiv6.DatacenterCmd())

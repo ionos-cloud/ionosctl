@@ -32,7 +32,16 @@ require (
 	github.com/ionos-cloud/sdk-go-container-registry v1.0.0
 )
 
-require github.com/ionos-cloud/sdk-go-dataplatform v1.0.0
+require (
+	github.com/ionos-cloud/sdk-go-dataplatform v1.0.0
+	github.com/stromland/cobra-prompt v0.5.0
+)
+
+require (
+	github.com/c-bata/go-prompt v0.2.6 // indirect
+	github.com/mattn/go-tty v0.0.3 // indirect
+	github.com/pkg/term v1.2.0-beta.2 // indirect
+)
 
 require (
 	github.com/VividCortex/ewma v1.2.0 // indirect
