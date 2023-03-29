@@ -1,5 +1,22 @@
 # Changelog
 
+## [6.6.1] (April 2023)
+
+### Added
+- Added support for Container Registry API
+
+### Fixed
+- Fixed multiple issues related to image upload:
+  - Fixed: Timeout for image diff finding (continuous polling on GET `/images`) after FTP upload is no longer hardcoded. This polling now respects the `--timeout` flag and uses context.
+  - Fixed: Silent failing due to timeout for image diff finding
+  - Changed: no longer throw error if any of the values in `--location` is non-IONOS, because `--ftp-url` is customizable.
+  - Changed: improved image diff finding complexity to use the new SDK multi-value-per-key filtering 
+- Fixed `-o json` renaming `items` to `Resources`
+- Fixed various flag names in the ALB, Targetgroup examples
+
+### Changed
+- Various documentation generation improvements. `summary.md` is now generated automatically.
+
 ## [6.6.0] (March 2023)
 
 ### Added
