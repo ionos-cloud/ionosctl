@@ -1,9 +1,17 @@
+// Package doc generates Markdown files and organizes a directory structure that follows the command hierarchy.
+//
+// The WriteDocs function is the main entry point for generating the documentation. It recursively processes all
+// subcommands and creates the appropriate files and directories based on the command structure,
+// following the rules defined in determineSubdir
+//
+// The GenerateSummary function is another entry point, which can create a summary.md file containing the table of contents for the generated documentation.
 package doc
 
 import (
 	"bytes"
 	"fmt"
 	"io"
+	"net/url"
 	"os"
 	"path/filepath"
 	"strings"
@@ -11,20 +19,86 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 )
 
-// Generate Markdown documentation based on information described in commands.
-// Using WriteDocs function, it will be created one structure in the path specified.
-// For each runnable command, an Markdown file is generated with the following fields:
-// # Usage
-// # Description
-// # Options
-// # Examples
-// # See also
-// depending if these fields are set in the command.
-
 const rootCmdName = "ionosctl"
 
+// Products establishes non-compute namespaces, and deduces that the rest of the root-level commands MUST be part of compute. If you add support for a new API, add your command here
+// TODO: Change me, when compute namespace is added!
+var nonComputeNamespaces = map[string]string{
+	"applicationloadbalancer": "Application-Load-Balancer",
+	"backupunit":              "Managed-Backup",
+	"certificate-manager":     "Certificate-Manager",
+	"container-registry":      "Container-Registry",
+	"dataplatform":            "Managed-Stackable-Data-Platform",
+	"dbaas":                   "Database-as-a-Service",
+	"natgateway":              "NAT-Gateway",
+	"networkloadbalancer":     "Network-Load-Balancer",
+	"k8s":                     "Managed-Kubernetes",
+	"user":                    "User-Management",
+}
+
+func GenerateSummary(dir string) error {
+	f, err := os.Create(filepath.Join(dir, "summary.md"))
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	buf := new(bytes.Buffer)
+
+	_, err = buf.WriteString("# Table of contents\n\n* [Introduction](README.md)\n* [Changelog](/CHANGELOG.md)\n\n## Subcommands\n\n")
+	if err != nil {
+		return err
+	}
+
+	err = generateDirectoryContent(filepath.Join(dir, "subcommands"), buf, "")
+	if err != nil {
+		return err
+	}
+
+	buf.WriteString("\n\n## Legal\n\n---\n\n* [Privacy policy](https://www.ionos.com/terms-gtc/terms-privacy/)\n* [Imprint](https://www.ionos.de/impressum)\n")
+	if err != nil {
+		return err
+	}
+
+	_, err = buf.WriteTo(f)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func generateDirectoryContent(dir string, buf *bytes.Buffer, prefix string) error {
+	files, err := os.ReadDir(dir)
+	if err != nil {
+		return err
+	}
+
+	for _, file := range files {
+		name := file.Name()
+
+		if file.IsDir() {
+			subdir := filepath.Join(dir, name)
+			buf.WriteString(fmt.Sprintf("%s* %s\n", prefix, strings.ReplaceAll(name, "-", " ")))
+			err = generateDirectoryContent(subdir, buf, prefix+"    ")
+			if err != nil {
+				return err
+			}
+			continue
+		}
+
+		if filepath.Ext(name) == ".md" {
+			nameWithoutExt := strings.TrimSuffix(name, filepath.Ext(name))
+			title := strings.ReplaceAll(nameWithoutExt, "-", " ")
+			link := filepath.Join("subcommands", strings.ReplaceAll(strings.TrimPrefix(dir, "docs/subcommands/"), "\\", "/"), file.Name())
+			escapedLink := url.PathEscape(link)
+			buf.WriteString(fmt.Sprintf("%s* [%s](%s)\n", prefix, title, escapedLink))
+		}
+	}
+	return nil
+}
+
 func WriteDocs(cmd *core.Command, dir string) error {
-	// Exit if there's an error
 	for _, c := range cmd.SubCommands() {
 		if c.Command.HasParent() {
 			if !c.Command.IsAvailableCommand() {
@@ -47,11 +121,16 @@ func createStructure(cmd *core.Command, dir string) error {
 		if cmd.Command.HasParent() && cmd.Command.Runnable() {
 			name := strings.ReplaceAll(cmd.Command.CommandPath(), rootCmdName+" ", "")
 			name = strings.ReplaceAll(name, " ", "-")
-			filename = fmt.Sprintf("%s.md", name)
+			subdir := determineSubdir(name, nonComputeNamespaces)
+			dir = filepath.Join(dir, subdir)
 		} else {
 			return nil
 		}
-		file = filepath.Join(dir, filename)
+		if err := os.MkdirAll(filepath.Dir(dir), os.ModePerm); err != nil {
+			return err
+		}
+		filename = filepath.Base(dir) + ".md"
+		file = filepath.Join(filepath.Dir(dir), filename)
 		f, err := os.Create(file)
 		if err != nil {
 			return err
@@ -65,7 +144,39 @@ func createStructure(cmd *core.Command, dir string) error {
 	return nil
 }
 
+// determineSubdir is a hack to support the old tree structure...
+func determineSubdir(name string, nonComputeNamespaces map[string]string) string {
+	segments := strings.Split(name, "-")
+
+	if segments[0] == "login" || segments[0] == "version" || segments[0] == "completion" {
+		return filepath.Join("CLI Setup", segments[0])
+	}
+
+	if segments[0] == "token" {
+		return "Authentication/token/"
+	}
+
+	namespaceKey := segments[0]
+	if apiName, ok := nonComputeNamespaces[namespaceKey]; ok {
+		return filepath.Join(apiName, filepath.Join(segments[1:]...))
+	}
+
+	namespaceKey = segments[0] + "-" + segments[1]
+	if apiName, ok := nonComputeNamespaces[namespaceKey]; ok {
+		return filepath.Join(apiName, filepath.Join(segments[2:]...))
+	}
+
+	return filepath.Join("Compute Engine", filepath.Join(segments...))
+}
+
 func writeDoc(cmd *core.Command, w io.Writer) error {
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Printf("Panic occurred for command path: %s\n", cmd.Command.CommandPath())
+			//err := fmt.Errorf("panic: %v", r)
+		}
+	}()
+
 	cmd.Command.InitDefaultHelpCmd()
 	cmd.Command.InitDefaultHelpFlag()
 
