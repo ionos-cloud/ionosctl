@@ -53,12 +53,12 @@ github.com/ionos-cloud/sdk-go-auth
 # github.com/ionos-cloud/sdk-go-cert-manager v1.0.0
 ## explicit; go 1.17
 github.com/ionos-cloud/sdk-go-cert-manager
-# github.com/ionos-cloud/sdk-go-dataplatform v1.0.0
-## explicit; go 1.18
-github.com/ionos-cloud/sdk-go-dataplatform
 # github.com/ionos-cloud/sdk-go-container-registry v1.0.0
 ## explicit; go 1.18
 github.com/ionos-cloud/sdk-go-container-registry
+# github.com/ionos-cloud/sdk-go-dataplatform v1.0.0
+## explicit; go 1.18
+github.com/ionos-cloud/sdk-go-dataplatform
 # github.com/ionos-cloud/sdk-go-dbaas-mongo v1.2.2
 ## explicit; go 1.18
 github.com/ionos-cloud/sdk-go-dbaas-mongo
@@ -73,7 +73,6 @@ github.com/ionos-cloud/sdk-go/v6
 github.com/kardianos/ftps
 # github.com/lucasjones/reggen v0.0.0-20200904144131-37ba4fa293bb
 ## explicit
-github.com/lucasjones/reggen
 # github.com/magiconair/properties v1.8.7
 ## explicit; go 1.19
 github.com/magiconair/properties

@@ -14,7 +14,6 @@ require (
 	github.com/ionos-cloud/sdk-go-dbaas-postgres v1.1.1
 	github.com/ionos-cloud/sdk-go/v6 v6.1.4
 	github.com/kardianos/ftps v1.0.3
-	github.com/lucasjones/reggen v0.0.0-20200904144131-37ba4fa293bb
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/mmatczuk/anyflag v0.0.0-20230209112147-9567d4cab866
 	github.com/spf13/cobra v1.6.1
