@@ -46,6 +46,9 @@ mocks_update: cloudapiv6_mocks_update auth_v1_mocks_update dbaas_postgres_mocks_
 
 .PHONY: docs generate-docs
 docs generate-docs:
+	@echo "--- Purging docs ---"
+	rm -rf docs
+	@echo "--- Regenerating docs ---"
 	@go run tools/doc.go
 
 .PHONY: gofmt_check
