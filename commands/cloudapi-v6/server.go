@@ -535,6 +535,10 @@ func PreRunServerCreate(c *core.PreCommandConfig) error {
 		return err
 	}
 	// Validate flags
+	fmt.Println(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgType)))
+	if viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgType)) == serverVCPUType && viper.IsSet(core.GetFlagName(c.NS, constants.FlagCpuFamily)) {
+		return fmt.Errorf("cannot set %s flag for %s type", constants.FlagCpuFamily, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgType)))
+	}
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgImageId)) || viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgImageAlias)) {
 		err = core.CheckRequiredFlagsSets(c.Command, c.NS,
 			[]string{cloudapiv6.ArgDataCenterId, constants.FlagCores, constants.FlagRam, cloudapiv6.ArgImageId, cloudapiv6.ArgPassword},
