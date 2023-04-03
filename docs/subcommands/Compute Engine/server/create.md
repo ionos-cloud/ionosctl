@@ -53,6 +53,21 @@ Required values to create a Server of type CUBE:
 * Type
 * Template Id
 
+* For VCPU Servers:
+
+You need to set the number of cores for the Server and the amount of memory for the Server to be set. The amount of memory for the Server must be specified in multiples of 256. The default unit is MB. Minimum: 256MB. Maximum: it depends on your contract limit. You can set the RAM size in the following ways:
+
+* providing only the value, e.g.`--ram 256` equals 256MB.
+* providing both the value and the unit, e.g.`--ram 1GB`.
+
+You cannot set the CPU Family for VCPU Servers.
+
+Required values to create a Server of type ENTERPRISE:
+
+* Data Center Id
+* Cores
+* RAM
+
 By default, Licence Type for Direct Attached Storage is set to LINUX. You can set it using the `--licence-type` option or set an Image Id. For Image Id, it is needed to set a password or SSH keys.
 
 You can wait for the Request to be executed using `--wait-for-request` option. You can also wait for Server to be in AVAILABLE state using `--wait-for-state` option. It is recommended to use both options together for this command.
