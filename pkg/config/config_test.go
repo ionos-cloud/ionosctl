@@ -7,7 +7,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 
-	sdk "github.com/ionos-cloud/sdk-go/v6"
+	sdk "github.com/ionos-cloud/sdk-go-bundle/shared"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"

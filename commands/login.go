@@ -14,7 +14,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	sdk "github.com/ionos-cloud/sdk-go/v6"
+	sdk "github.com/ionos-cloud/sdk-go-bundle/shared"
 	"github.com/spf13/viper"
 	"golang.org/x/term"
 )

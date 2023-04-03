@@ -53,12 +53,14 @@ github.com/ionos-cloud/sdk-go-auth
 # github.com/ionos-cloud/sdk-go-bundle/products/cert v0.1.0
 ## explicit; go 1.19
 github.com/ionos-cloud/sdk-go-bundle/products/cert
+# github.com/ionos-cloud/sdk-go-bundle/products/compute v0.1.0
+## explicit; go 1.19
+github.com/ionos-cloud/sdk-go-bundle/products/compute
 # github.com/ionos-cloud/sdk-go-bundle/shared v0.1.0
 ## explicit; go 1.19
 github.com/ionos-cloud/sdk-go-bundle/shared
 # github.com/ionos-cloud/sdk-go-cert-manager v1.0.0
 ## explicit; go 1.17
-github.com/ionos-cloud/sdk-go-cert-manager
 # github.com/ionos-cloud/sdk-go-container-registry v1.0.0
 ## explicit; go 1.18
 github.com/ionos-cloud/sdk-go-container-registry
@@ -71,9 +73,6 @@ github.com/ionos-cloud/sdk-go-dbaas-mongo
 # github.com/ionos-cloud/sdk-go-dbaas-postgres v1.1.1
 ## explicit; go 1.19
 github.com/ionos-cloud/sdk-go-dbaas-postgres
-# github.com/ionos-cloud/sdk-go/v6 v6.1.4
-## explicit; go 1.17
-github.com/ionos-cloud/sdk-go/v6
 # github.com/kardianos/ftps v1.0.3
 ## explicit; go 1.14
 github.com/kardianos/ftps

@@ -4,7 +4,7 @@ import (
 	"os"
 	"testing"
 
-	sdk "github.com/ionos-cloud/sdk-go/v6"
+	sdk "github.com/ionos-cloud/sdk-go-bundle/shared"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )

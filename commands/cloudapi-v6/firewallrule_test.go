@@ -16,7 +16,8 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	ionoscloud "github.com/ionos-cloud/sdk-go-bundle/products/compute"
+	"github.com/ionos-cloud/sdk-go-bundle/shared"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
@@ -78,7 +79,7 @@ var (
 	}
 	testRequestIdVar = "f2354da4-83e3-4e92-9d23-f3cb1ffecc31"
 	testResponse     = resources.Response{
-		APIResponse: ionoscloud.APIResponse{
+		APIResponse: shared.APIResponse{
 			Response: &http.Response{
 				Header: map[string][]string{
 					"Location": {"https://api.ionos.com/cloudapi/v6/requests/f2354da4-83e3-4e92-9d23-f3cb1ffecc31/status"},
@@ -88,7 +89,7 @@ var (
 		},
 	}
 	testResponseErr = resources.Response{
-		APIResponse: ionoscloud.APIResponse{
+		APIResponse: shared.APIResponse{
 			Response: &http.Response{
 				Header: map[string][]string{
 					"Location": {""},

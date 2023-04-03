@@ -6,7 +6,8 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
 	"github.com/fatih/structs"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	"github.com/ionos-cloud/sdk-go-bundle/shared"
+	ionoscloud "github.com/ionos-cloud/sdk-go-bundle/products/compute"
 )
 
 type Datacenter struct {
@@ -22,7 +23,7 @@ type Datacenters struct {
 }
 
 type Response struct {
-	ionoscloud.APIResponse
+	shared.APIResponse
 }
 
 // DatacentersService is a wrapper around ionoscloud.Datacenter
@@ -47,13 +48,6 @@ func NewDataCenterService(client *client.Client, ctx context.Context) Datacenter
 		context: ctx,
 	}
 }
-
-//func NewDataCenterServices(client *client2.Client, ctx context.Context) DatacentersService {
-//	return &dataCentersService{
-//		client:  client,
-//		context: ctx,
-//	}
-//}
 
 func (ds *dataCentersService) List(params ListQueryParams) (Datacenters, *Response, error) {
 	req := ds.client.DataCentersApi.DatacentersGet(ds.context)

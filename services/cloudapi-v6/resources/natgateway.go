@@ -6,7 +6,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
 	"github.com/fatih/structs"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	ionoscloud "github.com/ionos-cloud/sdk-go-bundle/products/compute"
 )
 
 type NatGateway struct {
