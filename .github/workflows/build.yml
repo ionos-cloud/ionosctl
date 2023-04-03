@@ -14,6 +14,17 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Run make docs
+        run: make docs
+
+      - name: Check for differences
+        run: |
+          if ! git diff --quiet; then
+            echo "There are differences in the generated documentation."
+            git diff
+            exit 1
+          fi
+
       - name: Set up Go
         uses: actions/setup-go@v3
         with:
