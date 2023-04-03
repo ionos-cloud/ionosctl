@@ -71,8 +71,6 @@ github.com/ionos-cloud/sdk-go/v6
 # github.com/kardianos/ftps v1.0.3
 ## explicit; go 1.14
 github.com/kardianos/ftps
-# github.com/lucasjones/reggen v0.0.0-20200904144131-37ba4fa293bb
-## explicit
 # github.com/magiconair/properties v1.8.7
 ## explicit; go 1.19
 github.com/magiconair/properties
