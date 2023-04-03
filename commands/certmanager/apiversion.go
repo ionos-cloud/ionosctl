@@ -7,7 +7,8 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
-	sdkgo "github.com/ionos-cloud/sdk-go-cert-manager"
+	sdkgo "github.com/ionos-cloud/sdk-go-bundle/products/cert"
+	shared "github.com/ionos-cloud/sdk-go-bundle/shared"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -48,7 +49,7 @@ func CmdGetApiVersion(c *core.CommandConfig) error {
 	return c.Printer.Print(getApiPrint(nil, c, &[]sdkgo.ApiInfoDto{APIVersion}, headers))
 }
 
-func getApiPrint(resp *sdkgo.APIResponse, c *core.CommandConfig, cert *[]sdkgo.ApiInfoDto, headers bool) printer.Result {
+func getApiPrint(resp *shared.APIResponse, c *core.CommandConfig, cert *[]sdkgo.ApiInfoDto, headers bool) printer.Result {
 	r := printer.Result{}
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 	if c != nil {

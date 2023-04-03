@@ -32,7 +32,12 @@ require (
 	github.com/ionos-cloud/sdk-go-container-registry v1.0.0
 )
 
-require github.com/ionos-cloud/sdk-go-dataplatform v1.0.0
+require (
+	github.com/ionos-cloud/sdk-go-bundle/products/cert v0.1.0
+	github.com/ionos-cloud/sdk-go-dataplatform v1.0.0
+)
+
+require github.com/ionos-cloud/sdk-go-bundle/shared v0.1.0 // indirect
 
 require (
 	github.com/VividCortex/ewma v1.2.0 // indirect

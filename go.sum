@@ -245,6 +245,10 @@ github.com/inconshreveable/mousetrap v1.1.0/go.mod h1:vpF70FUmC8bwa3OWnCshd2FqLf
 github.com/influxdata/influxdb1-client v0.0.0-20191209144304-8bf82d3c094d/go.mod h1:qj24IKcXYK6Iy9ceXlo3Tc+vtHo9lIhSX5JddghvEPo=
 github.com/ionos-cloud/sdk-go-auth v1.0.5 h1:gbRssXxw/AToAw39pDk10+01T2fyCwy1tdH1hg7WsPk=
 github.com/ionos-cloud/sdk-go-auth v1.0.5/go.mod h1:YVinbTXBg0Kz4mNJ9BUxv9W7swXfKbquGEsyTpxXCIk=
+github.com/ionos-cloud/sdk-go-bundle/products/cert v0.1.0 h1:bquGue86hU8NpQC3uDCzGqgbTQW3jul9XLvz/Z1YNHA=
+github.com/ionos-cloud/sdk-go-bundle/products/cert v0.1.0/go.mod h1:y1Su+ZZuohEGPKsJVPbwIpL0rRm2+PZ9AK7wm+d32+U=
+github.com/ionos-cloud/sdk-go-bundle/shared v0.1.0 h1:1psLbSn+i/wK0Samy8XqLxsqEnhTshz3Py1lbp5F/ao=
+github.com/ionos-cloud/sdk-go-bundle/shared v0.1.0/go.mod h1:hDQ5fhujYFaYr1fD8bmmf4rlCKAsqKwczuBS0Z5PNBQ=
 github.com/ionos-cloud/sdk-go-cert-manager v1.0.0 h1:pPIhdjTB3rjP9x3Cf6B4j8NTZ1u2v/w7/0h7GtFs/Ig=
 github.com/ionos-cloud/sdk-go-cert-manager v1.0.0/go.mod h1:nFzMT0UNtNiLIuDGYj8pulHFQiVVql43oEX/eQIyr5Q=
 github.com/ionos-cloud/sdk-go-container-registry v1.0.0 h1:03FKtFfHdOPZdXxRAFWgivbhmkyY4xk+R79EffoFt/4=
