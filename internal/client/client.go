@@ -10,12 +10,12 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	sdkgoauth "github.com/ionos-cloud/sdk-go-auth"
 	certmanager "github.com/ionos-cloud/sdk-go-bundle/products/cert"
+	cloudv6 "github.com/ionos-cloud/sdk-go-bundle/products/compute"
 	"github.com/ionos-cloud/sdk-go-bundle/shared"
 	registry "github.com/ionos-cloud/sdk-go-container-registry"
 	dataplatform "github.com/ionos-cloud/sdk-go-dataplatform"
 	mongo "github.com/ionos-cloud/sdk-go-dbaas-mongo"
 	postgres "github.com/ionos-cloud/sdk-go-dbaas-postgres"
-	cloudv6 "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
 )
 
@@ -38,10 +38,11 @@ func newClient(name, pwd, token, hostUrl string) (*Client, error) {
 		return nil, errors.New("username, password or token incorrect")
 	}
 
-	clientConfig := cloudv6.NewConfiguration(name, pwd, token, hostUrl)
+	cloudURL := fmt.Sprintf("%s/cloudapi/v6", hostUrl)
+	clientConfig := shared.NewConfiguration(name, pwd, token, cloudURL)
 	clientConfig.UserAgent = fmt.Sprintf("%v_%v", viper.GetString(constants.CLIHttpUserAgent), clientConfig.UserAgent)
 	// Set Depth Query Parameter globally
-	clientConfig.SetDepth(1)
+	clientConfig.DefaultQueryParams.Add("depth", "1")
 
 	authConfig := sdkgoauth.NewConfiguration(name, pwd, token, hostUrl)
 	authConfig.UserAgent = appendUserAgent(authConfig.UserAgent)

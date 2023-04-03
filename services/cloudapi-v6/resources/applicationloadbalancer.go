@@ -7,7 +7,7 @@ import (
 
 	"github.com/fatih/structs"
 
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	ionoscloud "github.com/ionos-cloud/sdk-go-bundle/products/compute"
 )
 
 type ApplicationLoadBalancer struct {

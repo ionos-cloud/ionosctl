@@ -12,7 +12,6 @@ require (
 	github.com/ionos-cloud/sdk-go-auth v1.0.5
 	github.com/ionos-cloud/sdk-go-dbaas-mongo v1.2.2
 	github.com/ionos-cloud/sdk-go-dbaas-postgres v1.1.1
-	github.com/ionos-cloud/sdk-go/v6 v6.1.4
 	github.com/kardianos/ftps v1.0.3
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/mmatczuk/anyflag v0.0.0-20230209112147-9567d4cab866
@@ -37,7 +36,10 @@ require (
 	github.com/ionos-cloud/sdk-go-dataplatform v1.0.0
 )
 
-require github.com/ionos-cloud/sdk-go-bundle/shared v0.1.0 // indirect
+require (
+	github.com/ionos-cloud/sdk-go-bundle/products/compute v0.1.0 // indirect
+	github.com/ionos-cloud/sdk-go-bundle/shared v0.1.0 // indirect
+)
 
 require (
 	github.com/VividCortex/ewma v1.2.0 // indirect

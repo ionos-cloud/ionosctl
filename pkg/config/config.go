@@ -12,7 +12,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 
-	cloudv6 "github.com/ionos-cloud/sdk-go/v6"
+	cloudv6 "github.com/ionos-cloud/sdk-go-bundle/shared"
 
 	"github.com/spf13/viper"
 )

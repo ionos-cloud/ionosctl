@@ -10,7 +10,7 @@ import (
 	"reflect"
 	"strings"
 
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	ionoscloud "github.com/ionos-cloud/sdk-go-bundle/products/compute"
 )
 
 func DataCentersFilters() []string {

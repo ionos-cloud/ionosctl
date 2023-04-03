@@ -17,7 +17,7 @@ import (
 	"github.com/cilium/fake"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dataplatform/cluster"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
-	sdkcompute "github.com/ionos-cloud/sdk-go/v6"
+	sdkcompute "github.com/ionos-cloud/sdk-go-bundle/products/compute"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
