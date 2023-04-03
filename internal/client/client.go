@@ -9,7 +9,8 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	sdkgoauth "github.com/ionos-cloud/sdk-go-auth"
-	certmanager "github.com/ionos-cloud/sdk-go-cert-manager"
+	certmanager "github.com/ionos-cloud/sdk-go-bundle/products/cert"
+	"github.com/ionos-cloud/sdk-go-bundle/shared"
 	registry "github.com/ionos-cloud/sdk-go-container-registry"
 	dataplatform "github.com/ionos-cloud/sdk-go-dataplatform"
 	mongo "github.com/ionos-cloud/sdk-go-dbaas-mongo"
@@ -45,7 +46,7 @@ func newClient(name, pwd, token, hostUrl string) (*Client, error) {
 	authConfig := sdkgoauth.NewConfiguration(name, pwd, token, hostUrl)
 	authConfig.UserAgent = appendUserAgent(authConfig.UserAgent)
 
-	certManagerConfig := certmanager.NewConfiguration(name, pwd, token, hostUrl)
+	certManagerConfig := shared.NewConfiguration(name, pwd, token, hostUrl)
 	certManagerConfig.UserAgent = appendUserAgent(certManagerConfig.UserAgent)
 
 	postgresConfig := postgres.NewConfiguration(name, pwd, token, hostUrl)

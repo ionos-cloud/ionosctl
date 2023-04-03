@@ -11,7 +11,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	sdkauth "github.com/ionos-cloud/sdk-go-auth"
-	sdkcertmanager "github.com/ionos-cloud/sdk-go-cert-manager"
+	sdkcertmanager "github.com/ionos-cloud/sdk-go-bundle/products/cert"
 	sdkpostgres "github.com/ionos-cloud/sdk-go-dbaas-postgres"
 	sdkcompute "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"

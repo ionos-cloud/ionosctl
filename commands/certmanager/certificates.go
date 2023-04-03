@@ -12,7 +12,8 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/v6/services/certmanager/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go-cert-manager"
+	ionoscloud "github.com/ionos-cloud/sdk-go-bundle/products/cert"
+	shared "github.com/ionos-cloud/sdk-go-bundle/shared"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -39,7 +40,7 @@ func CertCmd() *core.Command {
 	return certCmd
 }
 
-func getCertPrint(resp *ionoscloud.APIResponse, c *core.CommandConfig, cert *[]ionoscloud.CertificateDto) printer.Result {
+func getCertPrint(resp *shared.APIResponse, c *core.CommandConfig, cert *[]ionoscloud.CertificateDto) printer.Result {
 	r := printer.Result{}
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
