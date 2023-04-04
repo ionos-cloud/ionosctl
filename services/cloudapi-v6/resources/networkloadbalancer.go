@@ -2,7 +2,8 @@ package resources
 
 import (
 	"context"
-	"github.com/ionos-cloud/ionosctl/pkg/config"
+
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
 	"github.com/fatih/structs"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
@@ -74,7 +75,7 @@ type networkLoadBalancersService struct {
 
 var _ NetworkLoadBalancersService = &networkLoadBalancersService{}
 
-func NewNetworkLoadBalancerService(client *config.Client, ctx context.Context) NetworkLoadBalancersService {
+func NewNetworkLoadBalancerService(client *client.Client, ctx context.Context) NetworkLoadBalancersService {
 	return &networkLoadBalancersService{
 		client:  client.CloudClient,
 		context: ctx,

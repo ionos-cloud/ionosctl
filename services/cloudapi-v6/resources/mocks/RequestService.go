@@ -8,7 +8,7 @@ import (
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
-	resources "github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
+	resources "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
 )
 
 // MockRequestsService is a mock of RequestsService interface.

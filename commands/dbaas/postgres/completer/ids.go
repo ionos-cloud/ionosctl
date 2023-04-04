@@ -4,13 +4,14 @@ import (
 	"context"
 	"io"
 
-	"github.com/ionos-cloud/ionosctl/pkg/config"
-	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
-	"github.com/ionos-cloud/ionosctl/services/dbaas-postgres/resources"
+	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"
+
+	"github.com/ionos-cloud/ionosctl/v6/pkg/utils/clierror"
+	"github.com/ionos-cloud/ionosctl/v6/services/dbaas-postgres/resources"
 )
 
 func BackupsIds(outErr io.Writer) []string {
-	client, err := config.GetClient()
+	client, err := client2.Get()
 	clierror.CheckError(err, outErr)
 	clustersService := resources.NewBackupsService(client, context.TODO())
 	backupList, _, err := clustersService.List()
@@ -29,7 +30,7 @@ func BackupsIds(outErr io.Writer) []string {
 }
 
 func BackupsIdsForCluster(outErr io.Writer, clusterId string) []string {
-	client, err := config.GetClient()
+	client, err := client2.Get()
 	clierror.CheckError(err, outErr)
 	clustersService := resources.NewBackupsService(client, context.TODO())
 	backupList, _, err := clustersService.ListBackups(clusterId)
@@ -48,7 +49,7 @@ func BackupsIdsForCluster(outErr io.Writer, clusterId string) []string {
 }
 
 func ClustersIds(outErr io.Writer) []string {
-	client, err := config.GetClient()
+	client, err := client2.Get()
 	clierror.CheckError(err, outErr)
 	clustersService := resources.NewClustersService(client, context.TODO())
 	clusterList, _, err := clustersService.List("")
@@ -67,7 +68,7 @@ func ClustersIds(outErr io.Writer) []string {
 }
 
 func PostgresVersions(outErr io.Writer) []string {
-	client, err := config.GetClient()
+	client, err := client2.Get()
 	clierror.CheckError(err, outErr)
 	versionsService := resources.NewVersionsService(client, context.TODO())
 	versionList, _, err := versionsService.List()

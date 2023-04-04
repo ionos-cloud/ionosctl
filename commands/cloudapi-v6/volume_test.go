@@ -10,10 +10,10 @@ import (
 
 	"github.com/golang/mock/gomock"
 
-	"github.com/ionos-cloud/ionosctl/pkg/constants"
-	"github.com/ionos-cloud/ionosctl/pkg/core"
-	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
+	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
@@ -343,7 +343,7 @@ func TestRunVolumeListQueryParams(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testVolumeVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgFilters), []string{fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar)})
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgOrderBy), testQueryParamVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgMaxResults), testMaxResultsVar)
+		viper.Set(core.GetFlagName(cfg.NS, constants.FlagMaxResults), testMaxResultsVar)
 		rm.CloudApiV6Mocks.Volume.EXPECT().List(testVolumeVar, gomock.AssignableToTypeOf(testListQueryParam)).Return(resources.Volumes{}, &testResponse, nil)
 		err := RunVolumeList(cfg)
 		assert.NoError(t, err)
@@ -409,7 +409,7 @@ func TestRunVolumeCreate(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLicenceType), testVolumeVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgType), testVolumeVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgBus), testVolumeVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAvailabilityZone), zoneVolume)
+		viper.Set(core.GetFlagName(cfg.NS, constants.FlagAvailabilityZone), zoneVolume)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgBackupUnitId), testVolumeVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgUserData), testVolumeVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgCpuHotPlug), testVolumeBoolVar)
@@ -440,7 +440,7 @@ func TestRunVolumeCreateImg(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPassword), testVolumeVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgType), testVolumeVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgBus), testVolumeVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAvailabilityZone), zoneVolume)
+		viper.Set(core.GetFlagName(cfg.NS, constants.FlagAvailabilityZone), zoneVolume)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgBackupUnitId), testVolumeVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgUserData), testVolumeVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgCpuHotPlug), testVolumeBoolVar)
@@ -471,7 +471,7 @@ func TestRunVolumeCreateSshKeyErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgSshKeyPaths), []string{testVolumeVar})
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgType), testVolumeVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgBus), testVolumeVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAvailabilityZone), zoneVolume)
+		viper.Set(core.GetFlagName(cfg.NS, constants.FlagAvailabilityZone), zoneVolume)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgBackupUnitId), testVolumeVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgUserData), testVolumeVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgCpuHotPlug), testVolumeBoolVar)
@@ -499,7 +499,7 @@ func TestRunVolumeCreateErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLicenceType), testVolumeVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgType), testVolumeVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgBus), testVolumeVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAvailabilityZone), zoneVolume)
+		viper.Set(core.GetFlagName(cfg.NS, constants.FlagAvailabilityZone), zoneVolume)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgBackupUnitId), testVolumeVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgUserData), testVolumeVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgCpuHotPlug), testVolumeBoolVar)
@@ -528,7 +528,7 @@ func TestRunVolumeCreateWaitErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLicenceType), testVolumeVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgType), testVolumeVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgBus), testVolumeVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAvailabilityZone), zoneVolume)
+		viper.Set(core.GetFlagName(cfg.NS, constants.FlagAvailabilityZone), zoneVolume)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgBackupUnitId), testVolumeVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgUserData), testVolumeVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgCpuHotPlug), testVolumeBoolVar)
@@ -857,7 +857,7 @@ func TestPreRunServerVolumeListFilters(t *testing.T) {
 		viper.Set(constants.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgFilters), []string{fmt.Sprintf("createdBy=%s", testQueryParamVar)})
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgFilters), []string{fmt.Sprintf("createdby=%s", testQueryParamVar)})
 		err := PreRunServerVolumeList(cfg)
 		assert.NoError(t, err)
 	})

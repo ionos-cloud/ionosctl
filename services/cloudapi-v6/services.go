@@ -3,8 +3,9 @@ package cloudapi_v6
 import (
 	"context"
 
-	"github.com/ionos-cloud/ionosctl/pkg/config"
-	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+
+	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
 )
 
 type Services struct {
@@ -40,7 +41,7 @@ type Services struct {
 }
 
 // InitServices for Commands
-func (c *Services) InitServices(client *config.Client) error {
+func (c *Services) InitServices(client *client.Client) error {
 	c.Locations = func() resources.LocationsService { return resources.NewLocationService(client, c.Context) }
 	c.DataCenters = func() resources.DatacentersService {
 		return resources.NewDataCenterService(client, c.Context)

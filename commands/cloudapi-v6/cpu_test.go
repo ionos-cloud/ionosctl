@@ -10,10 +10,10 @@ import (
 
 	"github.com/golang/mock/gomock"
 
-	"github.com/ionos-cloud/ionosctl/pkg/constants"
-	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
-	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/utils/clierror"
+	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
@@ -59,8 +59,8 @@ func TestGetCpusCols(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() { return }
 	w := bufio.NewWriter(&b)
-	viper.Set(core.GetGlobalFlagName("cpu", constants.ArgCols), []string{"Vendor"})
-	getCpuCols(core.GetGlobalFlagName("cpu", constants.ArgCols), w)
+	viper.Set(core.GetFlagName("cpu", constants.ArgCols), []string{"Vendor"})
+	getCpuCols(core.GetFlagName("cpu", constants.ArgCols), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 }
@@ -70,8 +70,8 @@ func TestGetCpusColsErr(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() { return }
 	w := bufio.NewWriter(&b)
-	viper.Set(core.GetGlobalFlagName("cpu", constants.ArgCols), []string{"Unknown"})
-	getCpuCols(core.GetGlobalFlagName("cpu", constants.ArgCols), w)
+	viper.Set(core.GetFlagName("cpu", constants.ArgCols), []string{"Unknown"})
+	getCpuCols(core.GetFlagName("cpu", constants.ArgCols), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 	re := regexp.MustCompile(`unknown column Unknown`)

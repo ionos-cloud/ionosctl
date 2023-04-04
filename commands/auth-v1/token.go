@@ -8,15 +8,14 @@ import (
 	"os"
 
 	"github.com/fatih/structs"
-	"github.com/ionos-cloud/ionosctl/commands/auth-v1/completer"
-	"github.com/ionos-cloud/ionosctl/pkg/config"
-	"github.com/ionos-cloud/ionosctl/pkg/constants"
-	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/printer"
-	"github.com/ionos-cloud/ionosctl/pkg/utils"
-	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
-	authv1 "github.com/ionos-cloud/ionosctl/services/auth-v1"
-	"github.com/ionos-cloud/ionosctl/services/auth-v1/resources"
+	"github.com/ionos-cloud/ionosctl/v6/commands/auth-v1/completer"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/utils/clierror"
+	authv1 "github.com/ionos-cloud/ionosctl/v6/services/auth-v1"
+	"github.com/ionos-cloud/ionosctl/v6/services/auth-v1/resources"
 	sdkgoauth "github.com/ionos-cloud/sdk-go-auth"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -34,7 +33,7 @@ func TokenCmd() *core.Command {
 	}
 	globalFlags := tokenCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultTokenCols, printer.ColsMessage(allTokenCols))
-	_ = viper.BindPFlag(core.GetGlobalFlagName(tokenCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
+	_ = viper.BindPFlag(core.GetFlagName(tokenCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = tokenCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allTokenCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -239,7 +238,7 @@ func RunTokenDeleteExpired(c *core.CommandConfig) error {
 
 func RunTokenDeleteCurrent(c *core.CommandConfig) error {
 	c.Printer.Verbose("Note: This operation is based on Authorization Header for Bearer Token")
-	if viper.GetString(config.Token) == "" {
+	if viper.GetString(constants.Token) == "" {
 		return errors.New(fmt.Sprintf("no token found. Please make sure you have exported the %s environment variable or you have token set in the config file",
 			sdkgoauth.IonosTokenEnvVar))
 	}
@@ -301,7 +300,7 @@ func getTokenPrint(c *core.CommandConfig, dcs []resources.Token) printer.Result 
 		if dcs != nil {
 			r.OutputJSON = dcs
 			r.KeyValue = getTokensKVMaps(dcs)
-			r.Columns = getTokenCols(core.GetGlobalFlagName(c.Resource, constants.ArgCols), c.Printer.GetStderr())
+			r.Columns = getTokenCols(core.GetFlagName(c.Resource, constants.ArgCols), c.Printer.GetStderr())
 		}
 	}
 	return r

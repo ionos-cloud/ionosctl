@@ -2,7 +2,8 @@ package resources
 
 import (
 	"context"
-	"github.com/ionos-cloud/ionosctl/pkg/config"
+
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
 	"github.com/fatih/structs"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
@@ -40,7 +41,7 @@ type flowLogsService struct {
 
 var _ FlowLogsService = &flowLogsService{}
 
-func NewFlowLogService(client *config.Client, ctx context.Context) FlowLogsService {
+func NewFlowLogService(client *client.Client, ctx context.Context) FlowLogsService {
 	return &flowLogsService{
 		client:  client.CloudClient,
 		context: ctx,

@@ -2,7 +2,8 @@ package resources
 
 import (
 	"context"
-	"github.com/ionos-cloud/ionosctl/pkg/config"
+
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
 	"github.com/fatih/structs"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
@@ -41,7 +42,7 @@ type backupUnitsService struct {
 
 var _ BackupUnitsService = &backupUnitsService{}
 
-func NewBackupUnitService(client *config.Client, ctx context.Context) BackupUnitsService {
+func NewBackupUnitService(client *client.Client, ctx context.Context) BackupUnitsService {
 	return &backupUnitsService{
 		client:  client.CloudClient,
 		context: ctx,

@@ -5,13 +5,16 @@ import (
 	"os"
 	"strings"
 
-	authv1 "github.com/ionos-cloud/ionosctl/commands/auth-v1"
-	certificates "github.com/ionos-cloud/ionosctl/commands/certmanager"
-	cloudapiv6 "github.com/ionos-cloud/ionosctl/commands/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/commands/dbaas"
-	"github.com/ionos-cloud/ionosctl/pkg/config"
-	"github.com/ionos-cloud/ionosctl/pkg/constants"
-	"github.com/ionos-cloud/ionosctl/pkg/core"
+	container_registry "github.com/ionos-cloud/ionosctl/v6/commands/container-registry"
+
+	authv1 "github.com/ionos-cloud/ionosctl/v6/commands/auth-v1"
+	certificates "github.com/ionos-cloud/ionosctl/v6/commands/certmanager"
+	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
+	"github.com/ionos-cloud/ionosctl/v6/commands/dataplatform"
+	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -82,7 +85,7 @@ func init() {
 	} else {
 		rootCmd.Command.Version = fmt.Sprintf("%s-%s", CLIVersionDev, GitCommit)
 	}
-	viper.Set(config.CLIHttpUserAgent, fmt.Sprintf("ionosctl/%v", rootCmd.Command.Version))
+	viper.Set(constants.CLIHttpUserAgent, fmt.Sprintf("ionosctl/%v", rootCmd.Command.Version))
 
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
@@ -91,20 +94,37 @@ func init() {
 	// Customize Help Flag
 	rootPFlagSet.BoolP("help", "h", false, "Print usage")
 	// Add Custom Flags
-	rootPFlagSet.StringVarP(&cfgFile, constants.ArgConfig, constants.ArgConfigShort, config.GetConfigFile(), "Configuration file used for authentication")
+	rootPFlagSet.StringVarP(
+		&cfgFile, constants.ArgConfig, constants.ArgConfigShort, config.GetConfigFile(),
+		"Configuration file used for authentication",
+	)
 	_ = viper.BindPFlag(constants.ArgConfig, rootPFlagSet.Lookup(constants.ArgConfig))
-	rootPFlagSet.StringVarP(&ServerURL, constants.ArgServerUrl, constants.ArgServerUrlShort, constants.DefaultApiURL, "Override default host url")
+	rootPFlagSet.StringVarP(
+		&ServerURL, constants.ArgServerUrl, constants.ArgServerUrlShort, constants.DefaultApiURL,
+		"Override default host url",
+	)
 	_ = viper.BindPFlag(constants.ArgServerUrl, rootPFlagSet.Lookup(constants.ArgServerUrl))
-	rootPFlagSet.StringVarP(&Output, constants.ArgOutput, constants.ArgOutputShort, constants.DefaultOutputFormat, "Desired output format [text|json]")
+	rootPFlagSet.StringVarP(
+		&Output, constants.ArgOutput, constants.ArgOutputShort, constants.DefaultOutputFormat,
+		"Desired output format [text|json]",
+	)
 	_ = viper.BindPFlag(constants.ArgOutput, rootPFlagSet.Lookup(constants.ArgOutput))
-	_ = rootCmd.Command.RegisterFlagCompletionFunc(constants.ArgOutput, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return []string{"json", "text"}, cobra.ShellCompDirectiveNoFileComp
-	})
+	_ = rootCmd.Command.RegisterFlagCompletionFunc(
+		constants.ArgOutput,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return []string{"json", "text"}, cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 	rootPFlagSet.BoolVarP(&Quiet, constants.ArgQuiet, constants.ArgQuietShort, false, "Quiet output")
 	_ = viper.BindPFlag(constants.ArgQuiet, rootPFlagSet.Lookup(constants.ArgQuiet))
-	rootPFlagSet.BoolVarP(&Force, constants.ArgForce, constants.ArgForceShort, false, "Force command to execute without user input")
+	rootPFlagSet.BoolVarP(
+		&Force, constants.ArgForce, constants.ArgForceShort, false, "Force command to execute without user input",
+	)
 	_ = viper.BindPFlag(constants.ArgForce, rootPFlagSet.Lookup(constants.ArgForce))
-	rootPFlagSet.BoolVarP(&Verbose, constants.ArgVerbose, constants.ArgVerboseShort, false, "Print step-by-step process when running command")
+	rootPFlagSet.BoolVarP(
+		&Verbose, constants.ArgVerbose, constants.ArgVerboseShort, false,
+		"Print step-by-step process when running command",
+	)
 	_ = viper.BindPFlag(constants.ArgVerbose, rootPFlagSet.Lookup(constants.ArgVerbose))
 
 	// Add SubCommands to RootCmd
@@ -178,6 +198,10 @@ func addCommands() {
 	rootCmd.AddCommand(dbaas.DataBaseServiceCmd())
 	// Add Certificate Manager Commands
 	rootCmd.AddCommand(certificates.CertCmd())
+	// dp commands
+	rootCmd.AddCommand(dataplatform.DataplatformCmd())
+	// Add Container Registry Commands
+	rootCmd.AddCommand(container_registry.ContainerRegistryCmd())
 }
 
 const helpTemplate = `USAGE: {{if .Runnable}}

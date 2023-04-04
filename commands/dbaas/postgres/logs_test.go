@@ -8,11 +8,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ionos-cloud/ionosctl/pkg/constants"
-	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
-	dbaaspg "github.com/ionos-cloud/ionosctl/services/dbaas-postgres"
-	"github.com/ionos-cloud/ionosctl/services/dbaas-postgres/resources"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/utils/clierror"
+	dbaaspg "github.com/ionos-cloud/ionosctl/v6/services/dbaas-postgres"
+	"github.com/ionos-cloud/ionosctl/v6/services/dbaas-postgres/resources"
 	sdkgo "github.com/ionos-cloud/sdk-go-dbaas-postgres"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
@@ -68,7 +68,7 @@ func TestPreRunClusterLogsList(t *testing.T) {
 		viper.Set(constants.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgSince), testSinceVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgUntil), testUntilVar)
-		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgClusterId), testClusterVar)
+		viper.Set(core.GetFlagName(cfg.NS, constants.FlagClusterId), testClusterVar)
 		err := PreRunClusterLogsList(cfg)
 		assert.NoError(t, err)
 	})
@@ -83,7 +83,7 @@ func TestPreRunClusterLogsListSinceErr(t *testing.T) {
 		viper.Set(constants.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgSince), "3min")
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgUntil), testUntilVar)
-		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgClusterId), testClusterVar)
+		viper.Set(core.GetFlagName(cfg.NS, constants.FlagClusterId), testClusterVar)
 		err := PreRunClusterLogsList(cfg)
 		assert.Error(t, err)
 	})
@@ -98,7 +98,7 @@ func TestPreRunClusterLogsListUntilErr(t *testing.T) {
 		viper.Set(constants.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgSince), testUntilVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgUntil), "1min")
-		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgClusterId), testClusterVar)
+		viper.Set(core.GetFlagName(cfg.NS, constants.FlagClusterId), testClusterVar)
 		err := PreRunClusterLogsList(cfg)
 		assert.Error(t, err)
 	})
@@ -113,7 +113,7 @@ func TestRunClusterLogsGet(t *testing.T) {
 		viper.Set(constants.ArgQuiet, false)
 		viper.Set(constants.ArgVerbose, false)
 		viper.Set(constants.ArgServerUrl, constants.DefaultApiURL)
-		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgClusterId), testLogVar)
+		viper.Set(core.GetFlagName(cfg.NS, constants.FlagClusterId), testLogVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgStartTime), testStartTimeVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgEndTime), testEndTimeVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgLimit), testLimitVar)
@@ -133,7 +133,7 @@ func TestRunClusterLogsGetSinceUntilIgnored(t *testing.T) {
 		viper.Set(constants.ArgQuiet, false)
 		viper.Set(constants.ArgVerbose, false)
 		viper.Set(constants.ArgServerUrl, constants.DefaultApiURL)
-		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgClusterId), testLogVar)
+		viper.Set(core.GetFlagName(cfg.NS, constants.FlagClusterId), testLogVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgSince), testSinceVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgUntil), testUntilVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgStartTime), testStartTimeVar)
@@ -154,7 +154,7 @@ func TestRunClusterLogsGetErr(t *testing.T) {
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(constants.ArgQuiet, false)
 		viper.Set(constants.ArgServerUrl, constants.DefaultApiURL)
-		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgClusterId), testLogVar)
+		viper.Set(core.GetFlagName(cfg.NS, constants.FlagClusterId), testLogVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgStartTime), testStartTimeVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgEndTime), testEndTimeVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgLimit), testLimitVar)
@@ -170,8 +170,8 @@ func TestGetClusterLogsCols(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
-	viper.Set(core.GetGlobalFlagName("logs", constants.ArgCols), []string{"Name"})
-	getClusterLogsCols(core.GetGlobalFlagName("logs", constants.ArgCols), w)
+	viper.Set(core.GetFlagName("logs", constants.ArgCols), []string{"Name"})
+	getClusterLogsCols(core.GetFlagName("logs", constants.ArgCols), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 }
@@ -181,8 +181,8 @@ func TestGetLogsColsErr(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
-	viper.Set(core.GetGlobalFlagName("logs", constants.ArgCols), []string{"Unknown"})
-	getClusterLogsCols(core.GetGlobalFlagName("logs", constants.ArgCols), w)
+	viper.Set(core.GetFlagName("logs", constants.ArgCols), []string{"Unknown"})
+	getClusterLogsCols(core.GetFlagName("logs", constants.ArgCols), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 	re := regexp.MustCompile(`unknown column Unknown`)

@@ -9,10 +9,10 @@ import (
 
 	"github.com/golang/mock/gomock"
 
-	"github.com/ionos-cloud/ionosctl/pkg/constants"
-	"github.com/ionos-cloud/ionosctl/pkg/core"
-	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
+	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
@@ -122,7 +122,7 @@ func TestRunNatGatewayLanList(t *testing.T) {
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNatGatewayLanVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNatGatewayId), testNatGatewayLanVar)
-		viper.Set(core.GetGlobalFlagName(cfg.Resource, constants.ArgCols), defaultNatGatewayLanCols)
+		viper.Set(core.GetFlagName(cfg.Resource, constants.ArgCols), defaultNatGatewayLanCols)
 		rm.CloudApiV6Mocks.NatGateway.EXPECT().Get(testNatGatewayLanVar, testNatGatewayLanVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&natgatewayLanTest, &testResponse, nil)
 		err := RunNatGatewayLanList(cfg)
 		assert.NoError(t, err)

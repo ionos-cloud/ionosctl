@@ -8,11 +8,11 @@ import (
 	"strings"
 
 	"github.com/fatih/structs"
-	"github.com/ionos-cloud/ionosctl/pkg/constants"
-	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/printer"
-	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
-	pgsqlresources "github.com/ionos-cloud/ionosctl/services/dbaas-postgres/resources"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/utils/clierror"
+	pgsqlresources "github.com/ionos-cloud/ionosctl/v6/services/dbaas-postgres/resources"
 	sdkgo "github.com/ionos-cloud/sdk-go-dbaas-postgres"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -31,7 +31,7 @@ func APIVersionCmd() *core.Command {
 	}
 	globalFlags := apiversionCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultAPIVersionCols, printer.ColsMessage(defaultAPIVersionCols))
-	_ = viper.BindPFlag(core.GetGlobalFlagName(apiversionCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
+	_ = viper.BindPFlag(core.GetFlagName(apiversionCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = apiversionCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultAPIVersionCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -116,7 +116,7 @@ func getAPIVersionPrint(c *core.CommandConfig, postgresVersionList *[]pgsqlresou
 		if postgresVersionList != nil {
 			r.OutputJSON = postgresVersionList
 			r.KeyValue = getAPIVersionsKVMaps(postgresVersionList)
-			r.Columns = getAPIVersionCols(core.GetGlobalFlagName(c.Resource, constants.ArgCols), c.Printer.GetStderr())
+			r.Columns = getAPIVersionCols(core.GetFlagName(c.Resource, constants.ArgCols), c.Printer.GetStderr())
 		}
 	}
 	return r

@@ -4,15 +4,15 @@ import (
 	"context"
 	"os"
 
-	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/query"
+	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 
 	"github.com/fatih/structs"
-	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
-	"github.com/ionos-cloud/ionosctl/pkg/constants"
-	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/printer"
-	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
+	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
+	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
+	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -30,7 +30,7 @@ func ResourceCmd() *core.Command {
 	}
 	globalFlags := resourceCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultResourceCols, printer.ColsMessage(defaultResourceCols))
-	_ = viper.BindPFlag(core.GetGlobalFlagName(resourceCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
+	_ = viper.BindPFlag(core.GetFlagName(resourceCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = resourceCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultResourceCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -51,7 +51,7 @@ func ResourceCmd() *core.Command {
 		InitClient: true,
 	})
 	list.AddBoolFlag(constants.ArgNoHeaders, "", false, cloudapiv6.ArgNoHeadersDescription)
-	list.AddInt32Flag(cloudapiv6.ArgMaxResults, cloudapiv6.ArgMaxResultsShort, cloudapiv6.DefaultMaxResults, cloudapiv6.ArgMaxResultsDescription)
+	list.AddInt32Flag(constants.FlagMaxResults, constants.FlagMaxResultsShort, cloudapiv6.DefaultMaxResults, constants.DescMaxResults)
 	list.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultListDepth, cloudapiv6.ArgDepthDescription)
 
 	/*
@@ -152,7 +152,7 @@ func GroupResourceCmd() *core.Command {
 		CmdRun:     RunGroupResourceList,
 		InitClient: true,
 	})
-	listResources.AddInt32Flag(cloudapiv6.ArgMaxResults, cloudapiv6.ArgMaxResultsShort, cloudapiv6.DefaultMaxResults, cloudapiv6.ArgMaxResultsDescription)
+	listResources.AddInt32Flag(constants.FlagMaxResults, constants.FlagMaxResultsShort, cloudapiv6.DefaultMaxResults, constants.DescMaxResults)
 	listResources.AddStringSliceFlag(constants.ArgCols, "", defaultResourceCols, printer.ColsMessage(defaultResourceCols))
 	_ = listResources.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultResourceCols, cobra.ShellCompDirectiveNoFileComp
@@ -200,11 +200,7 @@ func getResourcePrint(c *core.CommandConfig, res []resources.Resource) printer.R
 		if res != nil {
 			r.OutputJSON = res
 			r.KeyValue = getResourcesKVMaps(res)
-			if c.Resource != c.Namespace {
-				r.Columns = printer.GetHeadersAllDefault(defaultResourceCols, viper.GetStringSlice(core.GetFlagName(c.NS, constants.ArgCols)))
-			} else {
-				r.Columns = printer.GetHeadersAllDefault(defaultResourceCols, viper.GetStringSlice(core.GetGlobalFlagName(c.NS, constants.ArgCols)))
-			}
+			r.Columns = printer.GetHeadersAllDefault(defaultResourceCols, viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)))
 		}
 	}
 	return r

@@ -8,8 +8,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/ionos-cloud/ionosctl/pkg/constants"
-	"github.com/ionos-cloud/ionosctl/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	sdkauth "github.com/ionos-cloud/sdk-go-auth"
 	sdkcertmanager "github.com/ionos-cloud/sdk-go-cert-manager"
 	sdkpostgres "github.com/ionos-cloud/sdk-go-dbaas-postgres"

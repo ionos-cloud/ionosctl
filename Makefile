@@ -3,8 +3,12 @@
 ## Include Services Makefile Targets
 include ./tools/cloudapi-v6/cloudapi_v6.mk
 include ./tools/dbaas-postgres/dbaas_postgres.mk
+include ./tools/dbaas-mongo/dbaas_mongo.mk
 include ./tools/auth-v1/auth_v1.mk
 include ./tools/certmanager/certmanager.mk
+include ./tools/dataplatform/dataplatform.mk
+
+include ./tools/container-registry/contregistry.mk
 
 export CGO_ENABLED = 0
 export GO111MODULE := on
@@ -22,21 +26,30 @@ test_unit:
 	@go test -cover ./commands/ ./pkg/...
 	@echo "DONE"
 
+# run unit tests for all services
+.PHONY: utest
+utest: test_unit cloudapiv6_test auth_v1_test dbaas_postgres_test dbaas_mongo_test_unit certmanager_test_unit dataplatform_test_unit contreg_test_unit
+
+# run integration tests for all services
+.PHONY: itest
+itest: dbaas_mongo_test_integration certmanager_test_integration dataplatform_test # contreg_test_integration # Temp Skip because 409 Conflict
+
+# run all tests
 .PHONY: test
-test: test_unit cloudapiv6_test auth_v1_test dbaas_postgres_test certmanager_test
+test: utest itest
 
 .PHONY: mocks_update
-mocks_update: cloudapiv6_mocks_update auth_v1_mocks_update dbaas_postgres_mocks_update certmanager_mocks_update
+mocks_update: cloudapiv6_mocks_update auth_v1_mocks_update dbaas_postgres_mocks_update certmanager_mocks_update dbaas_mongo_mocks_update
 	@echo "--- Update mocks ---"
 	@tools/regenerate_mocks.sh
 	@echo "DONE"
 
-.PHONY: docs_update
-docs_update: dbaas_postgres_docs_update certmanager_docs_update
-	@echo "--- Update documentation in ${DOCS_OUT} ---"
-	@mkdir -p ${DOCS_OUT}
-	@DOCS_OUT=${DOCS_OUT} tools/regenerate_doc.sh
-	@echo "DONE"
+.PHONY: docs generate-docs
+docs generate-docs:
+	@echo "--- Purging docs ---"
+	rm -rf docs
+	@echo "--- Regenerating docs ---"
+	@go run tools/doc.go
 
 .PHONY: gofmt_check
 gofmt_check:

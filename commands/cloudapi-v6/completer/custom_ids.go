@@ -6,15 +6,16 @@ package completer
 
 import (
 	"context"
-	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"io"
 
-	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
-	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
+	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"
+
+	"github.com/ionos-cloud/ionosctl/v6/pkg/utils/clierror"
+	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
 )
 
 func ImagesIdsCustom(outErr io.Writer, params resources.ListQueryParams) []string {
-	client, err := config.GetClient()
+	client, err := client2.Get()
 	clierror.CheckError(err, outErr)
 	imageSvc := resources.NewImageService(client, context.TODO())
 	images, _, err := imageSvc.List(params)
@@ -33,7 +34,7 @@ func ImagesIdsCustom(outErr io.Writer, params resources.ListQueryParams) []strin
 }
 
 func ServersIdsCustom(outErr io.Writer, datacenterId string, params resources.ListQueryParams) []string {
-	client, err := config.GetClient()
+	client, err := client2.Get()
 	clierror.CheckError(err, outErr)
 	serverSvc := resources.NewServerService(client, context.TODO())
 	servers, _, err := serverSvc.List(datacenterId, params)

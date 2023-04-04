@@ -3,15 +3,17 @@ package printer
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/ionos-cloud/ionosctl/pkg/constants"
-	"golang.org/x/exp/slices"
 	"io"
 	"regexp"
 	"strings"
 	"text/tabwriter"
 
+	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
+	"golang.org/x/exp/slices"
+
 	"github.com/fatih/structs"
-	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
+	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
 )
 
 func ColsMessage(cols []string) string {
@@ -39,17 +41,20 @@ func GetHeadersAllDefault(allColumns []string, customColumns []string) []string 
 
 // GetHeaders takes all columns of a resource and the value of the columns flag,
 // returns the headers of the table. (Some legacy code might refer to these headers as "Columns")
-//
 // allColumns can be found by using structs.Names on a Print struct (i.e. structs.Names(DatacenterPrint{}))
 func GetHeaders(allColumns []string, defaultColumns []string, customColumns []string) []string {
 	if customColumns == nil {
 		return defaultColumns
 	}
 
+	allColumnsLowercase := functional.Map(allColumns, func(x string) string {
+		return strings.ToLower(x)
+	})
+
 	var validCustomColumns []string
 	for _, c := range customColumns {
-		if slices.Contains(allColumns, c) {
-			validCustomColumns = append(validCustomColumns, c)
+		if idx := slices.Index(allColumnsLowercase, strings.ToLower(c)); idx != -1 {
+			validCustomColumns = append(validCustomColumns, allColumns[idx])
 		}
 	}
 
@@ -129,7 +134,7 @@ func (prt *Result) PrintJSON(out io.Writer) error {
 type ResultPrint struct {
 	Message   interface{} `json:"Status,omitempty"`
 	RequestId interface{} `json:"RequestId,omitempty"`
-	Output    interface{} `json:"Resources,omitempty"`
+	Output    interface{} `json:"items,omitempty"`
 }
 
 var (

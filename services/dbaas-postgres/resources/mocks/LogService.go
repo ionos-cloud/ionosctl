@@ -8,7 +8,7 @@ import (
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
-	resources "github.com/ionos-cloud/ionosctl/services/dbaas-postgres/resources"
+	resources "github.com/ionos-cloud/ionosctl/v6/services/dbaas-postgres/resources"
 )
 
 // MockLogsService is a mock of LogsService interface.

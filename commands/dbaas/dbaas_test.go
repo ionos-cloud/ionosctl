@@ -4,7 +4,7 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/ionos-cloud/ionosctl/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/stretchr/testify/assert"
 )
 

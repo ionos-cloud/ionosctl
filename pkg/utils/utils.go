@@ -32,12 +32,3 @@ func StringSlicesEqual(a, b []string) bool {
 	}
 	return true
 }
-
-// Map applies a function to a slice, and returns the modified slice
-func Map[V comparable, R any](s []V, f func(int, V) R) []R {
-	sm := make([]R, len(s))
-	for i, v := range s {
-		sm[i] = f(i, v)
-	}
-	return sm
-}

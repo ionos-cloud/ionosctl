@@ -2,7 +2,8 @@ package resources
 
 import (
 	"context"
-	"github.com/ionos-cloud/ionosctl/pkg/config"
+
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
 	"github.com/fatih/structs"
 
@@ -71,7 +72,7 @@ type applicationLoadBalancersService struct {
 
 var _ ApplicationLoadBalancersService = &applicationLoadBalancersService{}
 
-func NewApplicationLoadBalancerService(client *config.Client, ctx context.Context) ApplicationLoadBalancersService {
+func NewApplicationLoadBalancerService(client *client.Client, ctx context.Context) ApplicationLoadBalancersService {
 	return &applicationLoadBalancersService{
 		client:  client.CloudClient,
 		context: ctx,

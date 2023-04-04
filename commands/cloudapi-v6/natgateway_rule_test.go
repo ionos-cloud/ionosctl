@@ -11,11 +11,11 @@ import (
 
 	"github.com/golang/mock/gomock"
 
-	"github.com/ionos-cloud/ionosctl/pkg/constants"
-	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
-	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/utils/clierror"
+	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
+	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
@@ -215,7 +215,7 @@ func TestRunNatGatewayRuleListQueryParams(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNatGatewayId), testNatGatewayRuleVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgFilters), []string{fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar)})
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgOrderBy), testQueryParamVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgMaxResults), testMaxResultsVar)
+		viper.Set(core.GetFlagName(cfg.NS, constants.FlagMaxResults), testMaxResultsVar)
 		rm.CloudApiV6Mocks.NatGateway.EXPECT().ListRules(testNatGatewayRuleVar, testNatGatewayRuleVar, gomock.AssignableToTypeOf(testListQueryParam)).Return(resources.NatGatewayRules{}, &testResponse, nil)
 		err := RunNatGatewayRuleList(cfg)
 		assert.NoError(t, err)
@@ -623,8 +623,8 @@ func TestGetNatGatewayRulesCols(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
-	viper.Set(core.GetGlobalFlagName("rule", constants.ArgCols), []string{"Name"})
-	getNatGatewayRulesCols(core.GetGlobalFlagName("rule", constants.ArgCols), w)
+	viper.Set(core.GetFlagName("rule", constants.ArgCols), []string{"Name"})
+	getNatGatewayRulesCols(core.GetFlagName("rule", constants.ArgCols), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 }
@@ -634,8 +634,8 @@ func TestGetNatGatewayRulesColsErr(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
-	viper.Set(core.GetGlobalFlagName("rule", constants.ArgCols), []string{"Unknown"})
-	getNatGatewayRulesCols(core.GetGlobalFlagName("rule", constants.ArgCols), w)
+	viper.Set(core.GetFlagName("rule", constants.ArgCols), []string{"Unknown"})
+	getNatGatewayRulesCols(core.GetFlagName("rule", constants.ArgCols), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 	re := regexp.MustCompile(`unknown column Unknown`)

@@ -2,7 +2,8 @@ package resources
 
 import (
 	"context"
-	"github.com/ionos-cloud/ionosctl/pkg/config"
+
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
 	"github.com/fatih/structs"
 
@@ -49,7 +50,7 @@ type targetGroupsService struct {
 
 var _ TargetGroupsService = &targetGroupsService{}
 
-func NewTargetGroupService(client *config.Client, ctx context.Context) TargetGroupsService {
+func NewTargetGroupService(client *client.Client, ctx context.Context) TargetGroupsService {
 	return &targetGroupsService{
 		client:  client.CloudClient,
 		context: ctx,

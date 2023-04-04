@@ -11,13 +11,13 @@ import (
 	"time"
 
 	"github.com/fatih/structs"
-	"github.com/ionos-cloud/ionosctl/commands/dbaas/postgres/completer"
-	"github.com/ionos-cloud/ionosctl/pkg/constants"
-	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/printer"
-	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
-	dbaaspg "github.com/ionos-cloud/ionosctl/services/dbaas-postgres"
-	"github.com/ionos-cloud/ionosctl/services/dbaas-postgres/resources"
+	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres/completer"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/utils/clierror"
+	dbaaspg "github.com/ionos-cloud/ionosctl/v6/services/dbaas-postgres"
+	"github.com/ionos-cloud/ionosctl/v6/services/dbaas-postgres/resources"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -39,7 +39,7 @@ func LogsCmd() *core.Command {
 	}
 	globalFlags := clusterCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultClusterLogsCols, printer.ColsMessage(allClusterLogsCols))
-	_ = viper.BindPFlag(core.GetGlobalFlagName(clusterCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
+	_ = viper.BindPFlag(core.GetFlagName(clusterCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = clusterCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allClusterLogsCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -68,8 +68,8 @@ func LogsCmd() *core.Command {
 		return []string{"BACKWARD", "FORWARD"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	list.AddIntFlag(dbaaspg.ArgLimit, dbaaspg.ArgLimitShort, 100, "The maximal number of log lines to return. If the limit is reached then log lines will be cut at the end (respecting the scan direction). Minimum: 1. Maximum: 5000")
-	list.AddUUIDFlag(dbaaspg.ArgClusterId, dbaaspg.ArgIdShort, "", dbaaspg.ClusterId, core.RequiredFlagOption())
-	_ = list.Command.RegisterFlagCompletionFunc(dbaaspg.ArgClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	list.AddUUIDFlag(constants.FlagClusterId, dbaaspg.ArgIdShort, "", dbaaspg.ClusterId, core.RequiredFlagOption())
+	_ = list.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.ClustersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	list.AddBoolFlag(constants.ArgNoHeaders, "", false, "When using text output, don't print headers")
@@ -90,17 +90,17 @@ func PreRunClusterLogsList(c *core.PreCommandConfig) error {
 			return errors.New("--until option must have suffix h(hours) or m(minutes). e.g.: --until 1h")
 		}
 	}
-	return core.CheckRequiredFlags(c.Command, c.NS, dbaaspg.ArgClusterId)
+	return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagClusterId)
 }
 
 func RunClusterLogsList(c *core.CommandConfig) error {
-	c.Printer.Verbose("Cluster ID: %v", viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgClusterId)))
+	c.Printer.Verbose("Cluster ID: %v", viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)))
 	queryParams, err := getLogsQueryParams(c)
 	if err != nil {
 		return err
 	}
 	c.Printer.Verbose("Getting Logs for the specified Cluster...")
-	clusterLogs, _, err := c.CloudApiDbaasPgsqlServices.Logs().Get(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgClusterId)), queryParams)
+	clusterLogs, _, err := c.CloudApiDbaasPgsqlServices.Logs().Get(viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)), queryParams)
 	if err != nil {
 		return err
 	}
@@ -196,7 +196,7 @@ func getClusterLogsPrint(c *core.CommandConfig, logs *resources.ClusterLogs) pri
 		if logs != nil {
 			r.OutputJSON = logs
 			r.KeyValue = getClusterLogsKVMaps(*logs)
-			r.Columns = getClusterLogsCols(core.GetGlobalFlagName(c.Resource, constants.ArgCols), c.Printer.GetStderr())
+			r.Columns = getClusterLogsCols(core.GetFlagName(c.Resource, constants.ArgCols), c.Printer.GetStderr())
 		}
 	}
 	return r

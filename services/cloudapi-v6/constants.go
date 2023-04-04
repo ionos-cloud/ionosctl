@@ -1,7 +1,7 @@
 package cloudapi_v6
 
 import (
-	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
+	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
 )
 
 // Resources
@@ -150,31 +150,30 @@ const (
 	ArgFilters               = "filters"
 	ArgFiltersShort          = "F"
 	ArgOrderBy               = "order-by"
-	ArgMaxResults            = "max-results"
-	ArgMaxResultsShort       = "M"
-	ArgDepth                 = "depth"
-	ArgDepthShort            = "D"
-	ArgCheckTimeout          = "check-timeout"
-	ArgPath                  = "path"
-	ArgMatchType             = "match-type"
-	ArgResponse              = "response"
-	ArgMessage               = "message"
-	ArgMessageShort          = "m"
-	ArgRegex                 = "regex"
-	ArgNegate                = "negate"
-	ArgServerCertificates    = "server-certificates"
-	ArgQuery                 = "query"
-	ArgQueryShort            = "Q"
-	ArgStatusCode            = "status-code"
-	ArgContentType           = "content-type"
-	ArgCondition             = "condition"
-	ArgConditionShort        = "C"
-	ArgConditionType         = "condition-type"
-	ArgConditionTypeShort    = "T"
-	ArgConditionKey          = "condition-key"
-	ArgConditionKeyShort     = "K"
-	ArgConditionValue        = "condition-value"
-	ArgConditionValueShort   = "V"
+
+	ArgDepth               = "depth"
+	ArgDepthShort          = "D"
+	ArgCheckTimeout        = "check-timeout"
+	ArgPath                = "path"
+	ArgMatchType           = "match-type"
+	ArgResponse            = "response"
+	ArgMessage             = "message"
+	ArgMessageShort        = "m"
+	ArgRegex               = "regex"
+	ArgNegate              = "negate"
+	ArgServerCertificates  = "server-certificates"
+	ArgQuery               = "query"
+	ArgQueryShort          = "Q"
+	ArgStatusCode          = "status-code"
+	ArgContentType         = "content-type"
+	ArgCondition           = "condition"
+	ArgConditionShort      = "C"
+	ArgConditionType       = "condition-type"
+	ArgConditionTypeShort  = "T"
+	ArgConditionKey        = "condition-key"
+	ArgConditionKeyShort   = "K"
+	ArgConditionValue      = "condition-value"
+	ArgConditionValueShort = "V"
 )
 
 // IDs Flags
@@ -204,8 +203,6 @@ const (
 	ArgS3KeyId                   = "s3key-id"
 	ArgBackupUnitId              = "backupunit-id"
 	ArgPccId                     = "pcc-id"
-	ArgK8sClusterId              = "cluster-id"
-	ArgK8sNodePoolId             = "nodepool-id"
 	ArgK8sNodeId                 = "node-id"
 	ArgCdromId                   = "cdrom-id"
 	ArgTargetGroupId             = "targetgroup-id"
@@ -250,10 +247,9 @@ const (
 
 // Descriptions
 const (
-	ArgMaxResultsDescription = "The maximum number of elements to return"
-	ArgDepthDescription      = "Controls the detail depth of the response objects. Max depth is 10."
-	ArgOrderByDescription    = "Limits results to those containing a matching value for a specific property"
-	ArgFiltersDescription    = "Limits results to those containing a matching value for a specific property. " +
+	ArgDepthDescription   = "Controls the detail depth of the response objects. Max depth is 10."
+	ArgOrderByDescription = "Limits results to those containing a matching value for a specific property"
+	ArgFiltersDescription = "Limits results to those containing a matching value for a specific property. " +
 		"Use the following format to set filters: --filters KEY1=VALUE1,KEY2=VALUE2"
 	ArgNoHeadersDescription = "When using text output, don't print headers"
 	ArgListAllDescription   = "List all resources without the need of specifying parent ID name."

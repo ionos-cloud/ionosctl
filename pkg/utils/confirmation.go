@@ -6,8 +6,8 @@ import (
 	"io"
 	"strings"
 
-	"github.com/ionos-cloud/ionosctl/pkg/constants"
-	"github.com/ionos-cloud/ionosctl/pkg/printer"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/spf13/viper"
 )
 
@@ -31,6 +31,8 @@ func readUserInput(reader io.Reader, writer printer.PrintService, message string
 }
 
 // AskForConfirm parses and verifies user input for confirmation.
+// Checks "--force" or "--quiet" WITHOUT core.GetFlagName. WARNING: if your Force/Quiet flags are bound to viper, they are most likely going to be ignored!
+// DEPRECATED: Use confirm.Ask instead
 func AskForConfirm(reader io.Reader, writer printer.PrintService, message string) error {
 	if viper.GetBool(constants.ArgForce) || viper.GetBool(constants.ArgQuiet) {
 		return nil

@@ -1,10 +1,11 @@
 package config
 
 import (
-	"github.com/ionos-cloud/ionosctl/pkg/constants"
 	"os"
 	"path/filepath"
 	"testing"
+
+	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 
 	sdk "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/pflag"
@@ -21,10 +22,10 @@ func TestUsingJustTokenEnvVar(t *testing.T) {
 
 	assert.NoError(t, os.Setenv(sdk.IonosTokenEnvVar, "tok"))
 	assert.NoError(t, Load())
-	assert.Equal(t, "tok", viper.GetString(Token))
-	assert.Equal(t, "", viper.GetString(Username))
-	assert.Equal(t, "", viper.GetString(Password))
-	assert.Equal(t, "", viper.GetString(ServerUrl))
+	assert.Equal(t, "tok", viper.GetString(constants.Token))
+	assert.Equal(t, "", viper.GetString(constants.Username))
+	assert.Equal(t, "", viper.GetString(constants.Password))
+	assert.Equal(t, "", viper.GetString(constants.ServerUrl))
 }
 
 func TestTokEnvWithUserPassConfigBackup(t *testing.T) {
@@ -39,10 +40,10 @@ func TestTokEnvWithUserPassConfigBackup(t *testing.T) {
 	assert.NoError(t, os.Chmod(path, 0600))
 	assert.NoError(t, Load())
 
-	assert.Equal(t, "tok", viper.GetString(Token))
-	assert.Equal(t, "test@ionos.com", viper.GetString(Username))
-	assert.Equal(t, "test", viper.GetString(Password))
-	assert.Equal(t, "", viper.GetString(ServerUrl))
+	assert.Equal(t, "tok", viper.GetString(constants.Token))
+	assert.Equal(t, "test@ionos.com", viper.GetString(constants.Username))
+	assert.Equal(t, "test", viper.GetString(constants.Password))
+	assert.Equal(t, "", viper.GetString(constants.ServerUrl))
 }
 
 func TestTokEnvWithFullConfig(t *testing.T) {
@@ -57,10 +58,10 @@ func TestTokEnvWithFullConfig(t *testing.T) {
 	assert.NoError(t, os.Chmod(path, 0600))
 	assert.NoError(t, Load())
 
-	assert.Equal(t, "tok", viper.GetString(Token))
-	assert.Equal(t, "test@ionos.com", viper.GetString(Username))
-	assert.Equal(t, "test", viper.GetString(Password))
-	assert.Equal(t, "https://api.ionos.com", viper.GetString(ServerUrl))
+	assert.Equal(t, "tok", viper.GetString(constants.Token))
+	assert.Equal(t, "test@ionos.com", viper.GetString(constants.Username))
+	assert.Equal(t, "test", viper.GetString(constants.Password))
+	assert.Equal(t, "https://api.ionos.com", viper.GetString(constants.ServerUrl))
 }
 
 func TestEnvVarsHavePriority(t *testing.T) {
@@ -78,10 +79,10 @@ func TestEnvVarsHavePriority(t *testing.T) {
 	assert.NoError(t, os.Chmod(path, 0600))
 	assert.NoError(t, Load())
 
-	assert.Equal(t, "env_tok", viper.GetString(Token))
-	assert.Equal(t, "env_user", viper.GetString(Username))
-	assert.Equal(t, "env_pass", viper.GetString(Password))
-	assert.Equal(t, "env_url", viper.GetString(ServerUrl))
+	assert.Equal(t, "env_tok", viper.GetString(constants.Token))
+	assert.Equal(t, "env_user", viper.GetString(constants.Username))
+	assert.Equal(t, "env_pass", viper.GetString(constants.Password))
+	assert.Equal(t, "env_url", viper.GetString(constants.ServerUrl))
 }
 
 func TestAuthErr(t *testing.T) {
@@ -96,8 +97,8 @@ func TestAuthErr(t *testing.T) {
 
 	assert.Error(t, Load()) // Need password or token
 
-	assert.Equal(t, "env_user", viper.GetString(Username))
-	assert.Equal(t, "env_url", viper.GetString(ServerUrl))
+	assert.Equal(t, "env_user", viper.GetString(constants.Username))
+	assert.Equal(t, "env_url", viper.GetString(constants.ServerUrl))
 }
 
 func TestUsingJustUsernameAndPasswordEnvVar(t *testing.T) {
@@ -110,10 +111,10 @@ func TestUsingJustUsernameAndPasswordEnvVar(t *testing.T) {
 	assert.NoError(t, os.Setenv(sdk.IonosUsernameEnvVar, "user"))
 	assert.NoError(t, os.Setenv(sdk.IonosPasswordEnvVar, "pass"))
 	assert.NoError(t, Load())
-	assert.Equal(t, "", viper.GetString(Token))
-	assert.Equal(t, "user", viper.GetString(Username))
-	assert.Equal(t, "pass", viper.GetString(Password))
-	assert.Equal(t, "", viper.GetString(ServerUrl))
+	assert.Equal(t, "", viper.GetString(constants.Token))
+	assert.Equal(t, "user", viper.GetString(constants.Username))
+	assert.Equal(t, "pass", viper.GetString(constants.Password))
+	assert.Equal(t, "", viper.GetString(constants.ServerUrl))
 }
 
 func TestBadConfigPerms(t *testing.T) {
@@ -126,10 +127,10 @@ func TestBadConfigPerms(t *testing.T) {
 	assert.NoError(t, os.Chmod(path, 0000)) // no read perms
 	assert.Error(t, Load())
 
-	assert.Equal(t, "", viper.GetString(Token))
-	assert.Equal(t, "", viper.GetString(Username))
-	assert.Equal(t, "", viper.GetString(Password))
-	assert.Equal(t, "", viper.GetString(ServerUrl))
+	assert.Equal(t, "", viper.GetString(constants.Token))
+	assert.Equal(t, "", viper.GetString(constants.Username))
+	assert.Equal(t, "", viper.GetString(constants.Password))
+	assert.Equal(t, "", viper.GetString(constants.ServerUrl))
 }
 
 func TestUsingJustTokenConfig(t *testing.T) {
@@ -142,10 +143,10 @@ func TestUsingJustTokenConfig(t *testing.T) {
 	assert.NoError(t, os.Chmod(path, 0600))
 	assert.NoError(t, Load())
 
-	assert.Equal(t, "tok", viper.GetString(Token))
-	assert.Equal(t, "", viper.GetString(Username))
-	assert.Equal(t, "", viper.GetString(Password))
-	assert.Equal(t, "", viper.GetString(ServerUrl))
+	assert.Equal(t, "tok", viper.GetString(constants.Token))
+	assert.Equal(t, "", viper.GetString(constants.Username))
+	assert.Equal(t, "", viper.GetString(constants.Password))
+	assert.Equal(t, "", viper.GetString(constants.ServerUrl))
 }
 
 func TestUsingJustUsernameAndPasswordConfig(t *testing.T) {
@@ -158,10 +159,10 @@ func TestUsingJustUsernameAndPasswordConfig(t *testing.T) {
 	assert.NoError(t, os.Chmod(path, 0600))
 	assert.NoError(t, Load())
 
-	assert.Equal(t, "", viper.GetString(Token))
-	assert.Equal(t, "test@ionos.com", viper.GetString(Username))
-	assert.Equal(t, "test", viper.GetString(Password))
-	assert.Equal(t, "", viper.GetString(ServerUrl))
+	assert.Equal(t, "", viper.GetString(constants.Token))
+	assert.Equal(t, "test@ionos.com", viper.GetString(constants.Username))
+	assert.Equal(t, "test", viper.GetString(constants.Password))
+	assert.Equal(t, "", viper.GetString(constants.ServerUrl))
 }
 
 func TestGetServerUrl(t *testing.T) {
@@ -172,7 +173,7 @@ func TestGetServerUrl(t *testing.T) {
 	assert.NoError(t, os.Setenv(sdk.IonosApiUrlEnvVar, "url"))
 	err := Load()
 	assert.Error(t, err) // Error because neither token nor user & pass set
-	assert.Equal(t, "url", viper.GetString(ServerUrl))
+	assert.Equal(t, "url", viper.GetString(constants.ServerUrl))
 
 	// from config
 	os.Clearenv()
@@ -201,10 +202,10 @@ func TestLoadFile(t *testing.T) {
 	viper.Set(constants.ArgConfig, filepath.Join("..", "testdata", "config.json"))
 	assert.NoError(t, os.Chmod(filepath.Join("..", "testdata", "config.json"), 0600))
 	assert.NoError(t, LoadFile())
-	assert.Equal(t, "test@ionos.com", viper.GetString(Username))
-	assert.Equal(t, "test", viper.GetString(Password))
-	assert.Equal(t, "jwt-token", viper.GetString(Token))
-	assert.Equal(t, "https://api.ionos.com", viper.GetString(ServerUrl))
+	assert.Equal(t, "test@ionos.com", viper.GetString(constants.Username))
+	assert.Equal(t, "test", viper.GetString(constants.Password))
+	assert.Equal(t, "jwt-token", viper.GetString(constants.Token))
+	assert.Equal(t, "https://api.ionos.com", viper.GetString(constants.ServerUrl))
 }
 
 func TestLoadEnvFallback(t *testing.T) {
@@ -218,46 +219,8 @@ func TestLoadEnvFallback(t *testing.T) {
 	assert.NoError(t, os.Setenv(sdk.IonosTokenEnvVar, "token"))
 	assert.NoError(t, os.Setenv(sdk.IonosApiUrlEnvVar, "url"))
 	assert.NoError(t, Load())
-	assert.Equal(t, "user", viper.GetString(Username))
-	assert.Equal(t, "pass", viper.GetString(Password))
-	assert.Equal(t, "token", viper.GetString(Token))
-	assert.Equal(t, "url", viper.GetString(ServerUrl))
-}
-
-func TestGetClient(t *testing.T) {
-	type args struct {
-		name    string
-		pwd     string
-		token   string
-		hostUrl string
-	}
-	tests := []struct {
-		name    string
-		runs    int
-		args    args
-		want    *Client
-		wantErr bool
-	}{
-		{"MissingCredentials", 1, args{"", "", "", ""}, nil, true},
-		{"MultipleGetClients", 4, args{"user", "pass", "token", "url"}, instance, false},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			os.Clearenv()
-			viper.Reset()
-
-			assert.NoError(t, os.Setenv(sdk.IonosUsernameEnvVar, tt.args.name))
-			assert.NoError(t, os.Setenv(sdk.IonosPasswordEnvVar, tt.args.pwd))
-			assert.NoError(t, os.Setenv(sdk.IonosTokenEnvVar, tt.args.token))
-			assert.NoError(t, os.Setenv(sdk.IonosApiUrlEnvVar, tt.args.hostUrl))
-
-			for i := 0; i < tt.runs; i++ {
-				client, err := GetClient()
-				if !tt.wantErr && err != nil {
-					t.Errorf("Did not expect error: %v", err)
-				}
-				assert.Equalf(t, tt.want, client, "newClient(%v, %v, %v, %v)", tt.args.name, tt.args.pwd, tt.args.token, tt.args.hostUrl)
-			}
-		})
-	}
+	assert.Equal(t, "user", viper.GetString(constants.Username))
+	assert.Equal(t, "pass", viper.GetString(constants.Password))
+	assert.Equal(t, "token", viper.GetString(constants.Token))
+	assert.Equal(t, "url", viper.GetString(constants.ServerUrl))
 }

@@ -9,12 +9,14 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/fatih/structs"
-	"github.com/ionos-cloud/ionosctl/pkg/utils"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 
-	"github.com/ionos-cloud/ionosctl/pkg/core"
-	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
+	"github.com/fatih/structs"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
+
+	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
+	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
 	"github.com/spf13/viper"
 )
 
@@ -61,13 +63,13 @@ func GetListQueryParams(c *core.CommandConfig) (resources.ListQueryParams, error
 		}
 	}
 
-	if c.Command.Command.Flags().Changed(cloudapiv6.ArgMaxResults) {
+	if c.Command.Command.Flags().Changed(cloudapiv6.ArgOrderBy) {
 		orderBy, _ := c.Command.Command.Flags().GetString(cloudapiv6.ArgOrderBy)
 		listQueryParams = listQueryParams.SetOrderBy(orderBy)
 	}
 
-	if c.Command.Command.Flags().Changed(cloudapiv6.ArgMaxResults) {
-		maxResults, _ := c.Command.Command.Flags().GetInt32(cloudapiv6.ArgMaxResults)
+	if c.Command.Command.Flags().Changed(constants.FlagMaxResults) {
+		maxResults, _ := c.Command.Command.Flags().GetInt32(constants.FlagMaxResults)
 		listQueryParams = listQueryParams.SetMaxResults(maxResults)
 	}
 
@@ -92,7 +94,7 @@ func getFilters(args []string, cmd *core.Command) (map[string][]string, error) {
 	for _, arg := range args {
 		if strings.Contains(arg, FiltersPartitionChar) {
 			kv := strings.Split(arg, FiltersPartitionChar)
-			filtersKV[kv[0]] = append(filtersKV[kv[0]], kv[1])
+			filtersKV[strings.ToLower(kv[0])] = append(filtersKV[strings.ToLower(kv[0])], kv[1])
 		} else {
 			return filtersKV, errors.New(
 				fmt.Sprintf("\"%s --filters\" option set incorrectly.\n\nUsage: %s --filters KEY1%sVALUE1,KEY2%sVALUE2\n\nFor more details, see '%s --help'.",
@@ -113,7 +115,7 @@ func getFilters(args []string, cmd *core.Command) (map[string][]string, error) {
 func isValidFilter(filter string, availableFiltersObjs ...[]string) bool {
 	for _, availableFilters := range availableFiltersObjs {
 		for _, availableFilter := range availableFilters {
-			if availableFilter == filter {
+			if strings.ToLower(availableFilter) == strings.ToLower(filter) {
 				return true
 			}
 		}

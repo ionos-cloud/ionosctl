@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net"
 	"strings"
+	"time"
 
 	"github.com/spf13/cobra"
 	flag "github.com/spf13/pflag"
@@ -120,12 +121,57 @@ func (c *Command) AddSetFlag(name, shorthand, defaultValue string, allowed []str
 	}
 }
 
+func (c *Command) AddStringVarFlag(address *string, name, shorthand, value, desc string, optionFunc ...FlagOptionFunc) {
+	flags := c.Command.Flags()
+	if shorthand != "" {
+		flags.StringVarP(address, name, shorthand, value, desc)
+	} else {
+		flags.StringVar(address, name, value, desc)
+	}
+	viper.BindPFlag(GetFlagName(c.NS, name), c.Command.Flags().Lookup(name))
+
+	// Add Option to Flag
+	for _, option := range optionFunc {
+		option(c, name)
+	}
+}
+
+func (c *Command) AddDurationFlag(name, shorthand string, defaultValue time.Duration, desc string, optionFunc ...FlagOptionFunc) {
+	flags := c.Command.Flags()
+	if shorthand != "" {
+		flags.DurationP(name, shorthand, defaultValue, desc)
+	} else {
+		flags.Duration(name, defaultValue, desc)
+	}
+	viper.BindPFlag(GetFlagName(c.NS, name), c.Command.Flags().Lookup(name))
+
+	// Add Option to Flag
+	for _, option := range optionFunc {
+		option(c, name)
+	}
+}
+
 func (c *Command) AddStringFlag(name, shorthand, defaultValue, desc string, optionFunc ...FlagOptionFunc) {
 	flags := c.Command.Flags()
 	if shorthand != "" {
 		flags.StringP(name, shorthand, defaultValue, desc)
 	} else {
 		flags.String(name, defaultValue, desc)
+	}
+	viper.BindPFlag(GetFlagName(c.NS, name), c.Command.Flags().Lookup(name))
+
+	// Add Option to Flag
+	for _, option := range optionFunc {
+		option(c, name)
+	}
+}
+
+func (c *Command) AddStringToStringVarFlag(v *map[string]string, name, shorthand string, defaultValue map[string]string, desc string, optionFunc ...FlagOptionFunc) {
+	flags := c.Command.Flags()
+	if shorthand != "" {
+		flags.StringToStringVarP(v, name, shorthand, defaultValue, desc)
+	} else {
+		flags.StringToStringVar(v, name, defaultValue, desc)
 	}
 	viper.BindPFlag(GetFlagName(c.NS, name), c.Command.Flags().Lookup(name))
 
@@ -167,6 +213,21 @@ func (c *Command) GetAnnotationsByKey(key string) string {
 	}
 }
 
+func (c *Command) AddStringSliceVarFlag(address *[]string, name, shorthand string, defaultValue []string, desc string, optionFunc ...FlagOptionFunc) {
+	flags := c.Command.Flags()
+	if shorthand != "" {
+		flags.StringSliceVarP(address, name, shorthand, defaultValue, desc)
+	} else {
+		flags.StringSliceVar(address, name, defaultValue, desc)
+	}
+	viper.BindPFlag(GetFlagName(c.NS, name), c.Command.Flags().Lookup(name))
+
+	// Add Option to Flag
+	for _, option := range optionFunc {
+		option(c, name)
+	}
+}
+
 func (c *Command) AddStringSliceFlag(name, shorthand string, defaultValue []string, desc string, optionFunc ...FlagOptionFunc) {
 	flags := c.Command.Flags()
 	if shorthand != "" {
@@ -203,6 +264,21 @@ func (c *Command) AddIntFlag(name, shorthand string, defaultValue int, desc stri
 		flags.IntP(name, shorthand, defaultValue, desc)
 	} else {
 		flags.Int(name, defaultValue, desc)
+	}
+	viper.BindPFlag(GetFlagName(c.NS, name), c.Command.Flags().Lookup(name))
+
+	// Add Option to Flag
+	for _, option := range optionFunc {
+		option(c, name)
+	}
+}
+
+func (c *Command) AddInt32VarFlag(address *int32, name, shorthand string, defaultValue int32, desc string, optionFunc ...FlagOptionFunc) {
+	flags := c.Command.Flags()
+	if shorthand != "" {
+		flags.Int32VarP(address, name, shorthand, defaultValue, desc)
+	} else {
+		flags.Int32Var(address, name, defaultValue, desc)
 	}
 	viper.BindPFlag(GetFlagName(c.NS, name), c.Command.Flags().Lookup(name))
 
@@ -259,17 +335,4 @@ func (c *Command) AddBoolFlag(name, shorthand string, defaultValue bool, desc st
 
 func GetFlagName(ns, flagName string) string {
 	return fmt.Sprintf("%s.%s", ns, flagName)
-}
-
-// GetGlobalFlagName returns a string of cmdName on which the
-// Flag is defined as a Global Flag concatenated with the name
-// of the Flag.
-//
-// For example: in a `ionosctl namespace resource verb` command
-// structure, if the flag is inherited from the namespace level
-// at the verb level, the cmdName will be c.Namespace,
-// If the Global Flag is defined at resource level, the cmdName
-// will be c.Resource.
-func GetGlobalFlagName(cmdName, flagName string) string {
-	return fmt.Sprintf("%s.%s", cmdName, flagName)
 }

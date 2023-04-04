@@ -5,10 +5,11 @@
 package mock_resources
 
 import (
+	context "context"
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
-	resources "github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
+	resources "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
 )
 
 // MockImagesService is a mock of ImagesService interface.
@@ -98,15 +99,15 @@ func (mr *MockImagesServiceMockRecorder) Update(imageId, imgProp, params interfa
 }
 
 // Upload mocks base method.
-func (m *MockImagesService) Upload(properties resources.UploadProperties) error {
+func (m *MockImagesService) Upload(ctx context.Context, properties resources.UploadProperties) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Upload", properties)
+	ret := m.ctrl.Call(m, "Upload", ctx, properties)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Upload indicates an expected call of Upload.
-func (mr *MockImagesServiceMockRecorder) Upload(properties interface{}) *gomock.Call {
+func (mr *MockImagesServiceMockRecorder) Upload(ctx, properties interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upload", reflect.TypeOf((*MockImagesService)(nil).Upload), properties)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upload", reflect.TypeOf((*MockImagesService)(nil).Upload), ctx, properties)
 }

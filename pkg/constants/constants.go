@@ -4,10 +4,46 @@ package constants
  * Global level constants.
  */
 
-// DBaaS Mongo flags
+// flags
 const (
-	FlagClusterId = "cluster-id"
-	FlagIdP       = "i"
+	FlagDatacenterId    = "datacenter-id"
+	FlagSnapshotId      = "snapshot-id"
+	FlagIdShort         = "i"
+	FlagName            = "name"
+	FlagNameShort       = "n"
+	FlagTemplateId      = "template-id"
+	FlagInstances       = "instances"
+	FlagMaintenanceTime = "maintenance-time"
+	FlagMaintenanceDay  = "maintenance-day"
+	FlagLocation        = "location"
+	FlagLocationShort   = "l"
+	FlagOffset          = "offset"
+	FlagMaxResults      = "max-results"
+	FlagMaxResultsShort = "M"
+	FlagCidr            = "cidr"
+	FlagLanId           = "lan-id"
+
+	FlagCores                 = "cores"
+	FlagRam                   = "ram"
+	FlagAvailabilityZone      = "availability-zone"
+	FlagAvailabilityZoneShort = "z"
+	FlagCpuFamily             = "cpu-family"
+	FlagStorageType           = "storage-type"
+	FlagStorageSize           = "storage-size"
+
+	FlagClusterId        = "cluster-id"
+	FlagNodepoolId       = "nodepool-id"
+	FlagNodeCount        = "node-count"
+	FlagLabels           = "labels"
+	FlagLabelsShort      = "L"
+	FlagAnnotations      = "annotations"
+	FlagAnnotationsShort = "A"
+	FlagVersion          = "version"
+)
+
+// Flag descriptions. Prefixed with "Desc" for easy find and replace
+const (
+	DescMaxResults = "The maximum number of elements to return"
 )
 
 // legacy flags. TODO: Arg should be renamed to Flag.
@@ -60,10 +96,18 @@ const (
 	MessageRequestInfo = "Request ID: %v Execution Time: %v"
 	MessageRequestTime = "Request Execution Time: %v"
 	MessageDeletingAll = "Status: Deleting %v with ID: %v..."
-	MessageRemovingAll = "Status: Removing %v with ID: %v..." // TODO: what is the difference between Delete / Remove?
+	MessageRemovingAll = "Status: Removing %v with ID: %v..." // TODO: cleanup constant. reduce duplication
 )
 
 const (
 	ErrDeleteAll     = "error occurred removing %v with ID: %v. error: %w"
-	ErrWaitDeleteAll = "error occurred waiting on removing %v with ID: %v. error: %w" // TODO: Why a new constant just to add "waiting" to the middle of it?
+	ErrWaitDeleteAll = "error occurred waiting on removing %v with ID: %v. error: %w" // TODO: cleanup constant. reduce duplication
+)
+
+const (
+	Username         = "userdata.name"
+	Password         = "userdata.password"
+	Token            = "userdata.token"
+	ServerUrl        = "userdata.api-url"
+	CLIHttpUserAgent = "cli-user-agent"
 )

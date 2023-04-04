@@ -9,13 +9,13 @@ import (
 	"time"
 
 	"github.com/fatih/structs"
-	"github.com/ionos-cloud/ionosctl/commands/dbaas/postgres/completer"
-	"github.com/ionos-cloud/ionosctl/pkg/constants"
-	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/printer"
-	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
-	dbaaspg "github.com/ionos-cloud/ionosctl/services/dbaas-postgres"
-	"github.com/ionos-cloud/ionosctl/services/dbaas-postgres/resources"
+	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres/completer"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/utils/clierror"
+	dbaaspg "github.com/ionos-cloud/ionosctl/v6/services/dbaas-postgres"
+	"github.com/ionos-cloud/ionosctl/v6/services/dbaas-postgres/resources"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -33,7 +33,7 @@ func BackupCmd() *core.Command {
 	}
 	globalFlags := backupCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultBackupCols, printer.ColsMessage(allBackupCols))
-	_ = viper.BindPFlag(core.GetGlobalFlagName(backupCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
+	_ = viper.BindPFlag(core.GetFlagName(backupCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = backupCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allBackupCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -129,8 +129,8 @@ func ClusterBackupCmd() *core.Command {
 		CmdRun:     RunClusterBackupList,
 		InitClient: true,
 	})
-	list.AddUUIDFlag(dbaaspg.ArgClusterId, dbaaspg.ArgIdShort, "", dbaaspg.ClusterId, core.RequiredFlagOption())
-	_ = list.Command.RegisterFlagCompletionFunc(dbaaspg.ArgClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	list.AddUUIDFlag(constants.FlagClusterId, dbaaspg.ArgIdShort, "", dbaaspg.ClusterId, core.RequiredFlagOption())
+	_ = list.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.ClustersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	list.AddStringSliceFlag(constants.ArgCols, "", defaultBackupCols, printer.ColsMessage(allBackupCols))
@@ -143,9 +143,9 @@ func ClusterBackupCmd() *core.Command {
 }
 
 func RunClusterBackupList(c *core.CommandConfig) error {
-	c.Printer.Verbose("Cluster ID: %v", viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgClusterId)))
+	c.Printer.Verbose("Cluster ID: %v", viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)))
 	c.Printer.Verbose("Getting Backups from Cluster...")
-	backups, _, err := c.CloudApiDbaasPgsqlServices.Backups().ListBackups(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgClusterId)))
+	backups, _, err := c.CloudApiDbaasPgsqlServices.Backups().ListBackups(viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)))
 	if err != nil {
 		return err
 	}
@@ -178,7 +178,7 @@ func getBackupPrint(c *core.CommandConfig, dcs []resources.BackupResponse) print
 			if strings.Contains(c.Namespace, "cluster") {
 				r.Columns = getBackupCols(core.GetFlagName(c.NS, constants.ArgCols), c.Printer.GetStderr())
 			} else {
-				r.Columns = getBackupCols(core.GetGlobalFlagName(c.Resource, constants.ArgCols), c.Printer.GetStderr())
+				r.Columns = getBackupCols(core.GetFlagName(c.Resource, constants.ArgCols), c.Printer.GetStderr())
 			}
 		}
 	}

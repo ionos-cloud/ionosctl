@@ -6,15 +6,15 @@ import (
 	"io"
 	"strings"
 
-	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/query"
+	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 
 	"github.com/fatih/structs"
-	"github.com/ionos-cloud/ionosctl/pkg/constants"
-	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/printer"
-	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
-	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/utils/clierror"
+	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
+	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -33,7 +33,7 @@ func ContractCmd() *core.Command {
 	}
 	globalFlags := contractCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultContractCols, printer.ColsMessage(allContractCols))
-	_ = viper.BindPFlag(core.GetGlobalFlagName(contractCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
+	_ = viper.BindPFlag(core.GetFlagName(contractCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = contractCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allContractCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -98,7 +98,7 @@ func RunContractGet(c *core.CommandConfig) error {
 			return c.Printer.Print(getContractPrint(c, getContract(contractResource), contractNatCols))
 		}
 	}
-	return c.Printer.Print(getContractPrint(c, getContract(contractResource), getContractCols(core.GetGlobalFlagName(c.Resource, constants.ArgCols), c.Printer.GetStderr())))
+	return c.Printer.Print(getContractPrint(c, getContract(contractResource), getContractCols(core.GetFlagName(c.Resource, constants.ArgCols), c.Printer.GetStderr())))
 }
 
 // Output Printing

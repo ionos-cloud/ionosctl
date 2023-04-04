@@ -12,10 +12,10 @@ import (
 
 	"github.com/golang/mock/gomock"
 
-	"github.com/ionos-cloud/ionosctl/pkg/constants"
-	"github.com/ionos-cloud/ionosctl/pkg/core"
-	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
+	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
@@ -276,7 +276,7 @@ func TestRunFirewallRuleListQueryParams(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNicId), testFirewallRuleVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgFilters), []string{fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar)})
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgOrderBy), testQueryParamVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgMaxResults), testMaxResultsVar)
+		viper.Set(core.GetFlagName(cfg.NS, constants.FlagMaxResults), testMaxResultsVar)
 		rm.CloudApiV6Mocks.FirewallRule.EXPECT().List(testFirewallRuleVar, testFirewallRuleVar, testFirewallRuleVar, gomock.AssignableToTypeOf(testListQueryParam)).Return(resources.FirewallRules{}, &testResponse, nil)
 		err := RunFirewallRuleList(cfg)
 		assert.NoError(t, err)
@@ -565,9 +565,9 @@ func TestRunFirewallRuleDeleteAll(t *testing.T) {
 		viper.Set(constants.ArgForce, true)
 		viper.Set(constants.ArgVerbose, false)
 		viper.Set(constants.ArgServerUrl, constants.DefaultApiURL)
-		viper.Set(core.GetGlobalFlagName(cfg.Resource, cloudapiv6.ArgDataCenterId), testFirewallRuleVar)
-		viper.Set(core.GetGlobalFlagName(cfg.Resource, cloudapiv6.ArgServerId), testFirewallRuleVar)
-		viper.Set(core.GetGlobalFlagName(cfg.Resource, cloudapiv6.ArgNicId), testFirewallRuleVar)
+		viper.Set(core.GetFlagName(cfg.Resource, cloudapiv6.ArgDataCenterId), testFirewallRuleVar)
+		viper.Set(core.GetFlagName(cfg.Resource, cloudapiv6.ArgServerId), testFirewallRuleVar)
+		viper.Set(core.GetFlagName(cfg.Resource, cloudapiv6.ArgNicId), testFirewallRuleVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
 		viper.Set(core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), false)
 		rm.CloudApiV6Mocks.FirewallRule.EXPECT().List(testFirewallRuleVar, testFirewallRuleVar, testFirewallRuleVar, gomock.AssignableToTypeOf(testListQueryParam)).Return(testFirewallRulesList, &testResponse, nil)
@@ -588,9 +588,9 @@ func TestRunFirewallRuleDeleteAllListErr(t *testing.T) {
 		viper.Set(constants.ArgForce, true)
 		viper.Set(constants.ArgVerbose, false)
 		viper.Set(constants.ArgServerUrl, constants.DefaultApiURL)
-		viper.Set(core.GetGlobalFlagName(cfg.Resource, cloudapiv6.ArgDataCenterId), testFirewallRuleVar)
-		viper.Set(core.GetGlobalFlagName(cfg.Resource, cloudapiv6.ArgServerId), testFirewallRuleVar)
-		viper.Set(core.GetGlobalFlagName(cfg.Resource, cloudapiv6.ArgNicId), testFirewallRuleVar)
+		viper.Set(core.GetFlagName(cfg.Resource, cloudapiv6.ArgDataCenterId), testFirewallRuleVar)
+		viper.Set(core.GetFlagName(cfg.Resource, cloudapiv6.ArgServerId), testFirewallRuleVar)
+		viper.Set(core.GetFlagName(cfg.Resource, cloudapiv6.ArgNicId), testFirewallRuleVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
 		viper.Set(core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), false)
 		rm.CloudApiV6Mocks.FirewallRule.EXPECT().List(testFirewallRuleVar, testFirewallRuleVar, testFirewallRuleVar, gomock.AssignableToTypeOf(testListQueryParam)).Return(testFirewallRulesList, nil, testFirewallRuleErr)
@@ -609,9 +609,9 @@ func TestRunFirewallRuleDeleteAllItemsErr(t *testing.T) {
 		viper.Set(constants.ArgForce, true)
 		viper.Set(constants.ArgVerbose, false)
 		viper.Set(constants.ArgServerUrl, constants.DefaultApiURL)
-		viper.Set(core.GetGlobalFlagName(cfg.Resource, cloudapiv6.ArgDataCenterId), testFirewallRuleVar)
-		viper.Set(core.GetGlobalFlagName(cfg.Resource, cloudapiv6.ArgServerId), testFirewallRuleVar)
-		viper.Set(core.GetGlobalFlagName(cfg.Resource, cloudapiv6.ArgNicId), testFirewallRuleVar)
+		viper.Set(core.GetFlagName(cfg.Resource, cloudapiv6.ArgDataCenterId), testFirewallRuleVar)
+		viper.Set(core.GetFlagName(cfg.Resource, cloudapiv6.ArgServerId), testFirewallRuleVar)
+		viper.Set(core.GetFlagName(cfg.Resource, cloudapiv6.ArgNicId), testFirewallRuleVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
 		viper.Set(core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), false)
 		rm.CloudApiV6Mocks.FirewallRule.EXPECT().List(testFirewallRuleVar, testFirewallRuleVar, testFirewallRuleVar, gomock.AssignableToTypeOf(testListQueryParam)).Return(resources.FirewallRules{}, &testResponse, nil)
@@ -630,9 +630,9 @@ func TestRunFirewallRuleDeleteAllLenErr(t *testing.T) {
 		viper.Set(constants.ArgForce, true)
 		viper.Set(constants.ArgVerbose, false)
 		viper.Set(constants.ArgServerUrl, constants.DefaultApiURL)
-		viper.Set(core.GetGlobalFlagName(cfg.Resource, cloudapiv6.ArgDataCenterId), testFirewallRuleVar)
-		viper.Set(core.GetGlobalFlagName(cfg.Resource, cloudapiv6.ArgServerId), testFirewallRuleVar)
-		viper.Set(core.GetGlobalFlagName(cfg.Resource, cloudapiv6.ArgNicId), testFirewallRuleVar)
+		viper.Set(core.GetFlagName(cfg.Resource, cloudapiv6.ArgDataCenterId), testFirewallRuleVar)
+		viper.Set(core.GetFlagName(cfg.Resource, cloudapiv6.ArgServerId), testFirewallRuleVar)
+		viper.Set(core.GetFlagName(cfg.Resource, cloudapiv6.ArgNicId), testFirewallRuleVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
 		viper.Set(core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), false)
 		rm.CloudApiV6Mocks.FirewallRule.EXPECT().List(testFirewallRuleVar, testFirewallRuleVar, testFirewallRuleVar, gomock.AssignableToTypeOf(testListQueryParam)).Return(
@@ -652,9 +652,9 @@ func TestRunFirewallRuleDeleteAllErr(t *testing.T) {
 		viper.Set(constants.ArgForce, true)
 		viper.Set(constants.ArgVerbose, false)
 		viper.Set(constants.ArgServerUrl, constants.DefaultApiURL)
-		viper.Set(core.GetGlobalFlagName(cfg.Resource, cloudapiv6.ArgDataCenterId), testFirewallRuleVar)
-		viper.Set(core.GetGlobalFlagName(cfg.Resource, cloudapiv6.ArgServerId), testFirewallRuleVar)
-		viper.Set(core.GetGlobalFlagName(cfg.Resource, cloudapiv6.ArgNicId), testFirewallRuleVar)
+		viper.Set(core.GetFlagName(cfg.Resource, cloudapiv6.ArgDataCenterId), testFirewallRuleVar)
+		viper.Set(core.GetFlagName(cfg.Resource, cloudapiv6.ArgServerId), testFirewallRuleVar)
+		viper.Set(core.GetFlagName(cfg.Resource, cloudapiv6.ArgNicId), testFirewallRuleVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
 		viper.Set(core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), false)
 		rm.CloudApiV6Mocks.FirewallRule.EXPECT().List(testFirewallRuleVar, testFirewallRuleVar, testFirewallRuleVar, gomock.AssignableToTypeOf(testListQueryParam)).Return(testFirewallRulesList, &testResponse, nil)

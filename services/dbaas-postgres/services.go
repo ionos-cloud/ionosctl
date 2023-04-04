@@ -2,9 +2,10 @@ package dbaas_postgres
 
 import (
 	"context"
-	"github.com/ionos-cloud/ionosctl/pkg/config"
 
-	"github.com/ionos-cloud/ionosctl/services/dbaas-postgres/resources"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+
+	"github.com/ionos-cloud/ionosctl/v6/services/dbaas-postgres/resources"
 )
 
 type Services struct {
@@ -20,7 +21,7 @@ type Services struct {
 }
 
 // InitServices for Commands
-func (c *Services) InitServices(client *config.Client) error {
+func (c *Services) InitServices(client *client.Client) error {
 	c.Clusters = func() resources.ClustersService { return resources.NewClustersService(client, c.Context) }
 	c.Backups = func() resources.BackupsService { return resources.NewBackupsService(client, c.Context) }
 	c.Versions = func() resources.VersionsService { return resources.NewVersionsService(client, c.Context) }

@@ -2,7 +2,8 @@ package resources
 
 import (
 	"context"
-	"github.com/ionos-cloud/ionosctl/pkg/config"
+
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
 	"github.com/fatih/structs"
 
@@ -29,7 +30,7 @@ type contractsService struct {
 
 var _ ContractsService = &contractsService{}
 
-func NewContractService(client *config.Client, ctx context.Context) ContractsService {
+func NewContractService(client *client.Client, ctx context.Context) ContractsService {
 	return &contractsService{
 		client:  client.CloudClient,
 		context: ctx,

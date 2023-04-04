@@ -7,13 +7,13 @@ import (
 	"os"
 
 	"github.com/fatih/structs"
-	pgsqlcompleter "github.com/ionos-cloud/ionosctl/commands/dbaas/postgres/completer"
-	"github.com/ionos-cloud/ionosctl/pkg/constants"
-	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/printer"
-	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
-	dbaaspg "github.com/ionos-cloud/ionosctl/services/dbaas-postgres"
-	pgsqlresources "github.com/ionos-cloud/ionosctl/services/dbaas-postgres/resources"
+	pgsqlcompleter "github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres/completer"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/utils/clierror"
+	dbaaspg "github.com/ionos-cloud/ionosctl/v6/services/dbaas-postgres"
+	pgsqlresources "github.com/ionos-cloud/ionosctl/v6/services/dbaas-postgres/resources"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -31,7 +31,7 @@ func PgsqlVersionCmd() *core.Command {
 	}
 	globalFlags := pgsqlversionCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultPgsqlVersionCols, printer.ColsMessage(defaultPgsqlVersionCols))
-	_ = viper.BindPFlag(core.GetGlobalFlagName(pgsqlversionCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
+	_ = viper.BindPFlag(core.GetFlagName(pgsqlversionCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = pgsqlversionCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultPgsqlVersionCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -68,8 +68,8 @@ func PgsqlVersionCmd() *core.Command {
 		CmdRun:     RunPgsqlVersionGet,
 		InitClient: true,
 	})
-	get.AddUUIDFlag(dbaaspg.ArgClusterId, dbaaspg.ArgIdShort, "", dbaaspg.ClusterId, core.RequiredFlagOption())
-	_ = get.Command.RegisterFlagCompletionFunc(dbaaspg.ArgClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	get.AddUUIDFlag(constants.FlagClusterId, dbaaspg.ArgIdShort, "", dbaaspg.ClusterId, core.RequiredFlagOption())
+	_ = get.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return pgsqlcompleter.ClustersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	get.AddBoolFlag(constants.ArgNoHeaders, "", false, "When using text output, don't print headers")
@@ -87,7 +87,7 @@ func RunPgsqlVersionList(c *core.CommandConfig) error {
 
 func RunPgsqlVersionGet(c *core.CommandConfig) error {
 	versionList, _, err := c.CloudApiDbaasPgsqlServices.Versions().Get(
-		viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgClusterId)),
+		viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)),
 	)
 	if err != nil {
 		return err
@@ -109,7 +109,7 @@ func getPgsqlVersionPrint(c *core.CommandConfig, postgresVersionList *pgsqlresou
 		if postgresVersionList != nil {
 			r.OutputJSON = postgresVersionList
 			r.KeyValue = getPgsqlVersionsKVMaps(postgresVersionList)
-			r.Columns = getPgsqlVersionCols(core.GetGlobalFlagName(c.Resource, constants.ArgCols), c.Printer.GetStderr())
+			r.Columns = getPgsqlVersionCols(core.GetFlagName(c.Resource, constants.ArgCols), c.Printer.GetStderr())
 		}
 	}
 	return r

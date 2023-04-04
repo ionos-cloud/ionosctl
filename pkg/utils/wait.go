@@ -5,9 +5,9 @@ import (
 	"time"
 
 	"github.com/cheggaaa/pb/v3"
-	"github.com/ionos-cloud/ionosctl/pkg/constants"
-	core2 "github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/printer"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
+	core2 "github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/spf13/viper"
 )
 

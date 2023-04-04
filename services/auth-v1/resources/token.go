@@ -2,7 +2,8 @@ package resources
 
 import (
 	"context"
-	"github.com/ionos-cloud/ionosctl/pkg/config"
+
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
 	sdkgoauth "github.com/ionos-cloud/sdk-go-auth"
 )
@@ -43,7 +44,7 @@ type tokensService struct {
 
 var _ TokensService = &tokensService{}
 
-func NewTokenService(client *config.Client, ctx context.Context) TokensService {
+func NewTokenService(client *client.Client, ctx context.Context) TokensService {
 	return &tokensService{
 		client:  client.AuthClient,
 		context: ctx,

@@ -10,11 +10,11 @@ import (
 
 	"github.com/golang/mock/gomock"
 
-	"github.com/ionos-cloud/ionosctl/pkg/constants"
-	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
-	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/utils/clierror"
+	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
+	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
@@ -636,8 +636,8 @@ func TestGetAlbRuleHttpRulesCols(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
-	viper.Set(core.GetGlobalFlagName("httprule", constants.ArgCols), []string{"Name"})
-	getAlbRuleHttpRulesCols(core.GetGlobalFlagName("httprule", constants.ArgCols), w)
+	viper.Set(core.GetFlagName("httprule", constants.ArgCols), []string{"Name"})
+	getAlbRuleHttpRulesCols(core.GetFlagName("httprule", constants.ArgCols), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 }
@@ -647,8 +647,8 @@ func TestGetAlbRuleColsErr(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
-	viper.Set(core.GetGlobalFlagName("httprule", constants.ArgCols), []string{"Unknown"})
-	getAlbRuleHttpRulesCols(core.GetGlobalFlagName("httprule", constants.ArgCols), w)
+	viper.Set(core.GetFlagName("httprule", constants.ArgCols), []string{"Unknown"})
+	getAlbRuleHttpRulesCols(core.GetFlagName("httprule", constants.ArgCols), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 	re := regexp.MustCompile(`unknown column Unknown`)

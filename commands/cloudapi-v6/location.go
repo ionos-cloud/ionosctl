@@ -7,13 +7,13 @@ import (
 	"strings"
 
 	"github.com/fatih/structs"
-	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
-	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/query"
-	"github.com/ionos-cloud/ionosctl/pkg/constants"
-	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/printer"
-	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
+	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
+	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
+	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -31,7 +31,7 @@ func LocationCmd() *core.Command {
 	}
 	globalFlags := locationCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultLocationCols, printer.ColsMessage(allLocationCols))
-	_ = viper.BindPFlag(core.GetGlobalFlagName(locationCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
+	_ = viper.BindPFlag(core.GetFlagName(locationCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = locationCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allLocationCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -51,7 +51,7 @@ func LocationCmd() *core.Command {
 		CmdRun:     RunLocationList,
 		InitClient: true,
 	})
-	list.AddInt32Flag(cloudapiv6.ArgMaxResults, cloudapiv6.ArgMaxResultsShort, cloudapiv6.DefaultMaxResults, cloudapiv6.ArgMaxResultsDescription)
+	list.AddInt32Flag(constants.FlagMaxResults, constants.FlagMaxResultsShort, cloudapiv6.DefaultMaxResults, constants.DescMaxResults)
 	list.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultListDepth, cloudapiv6.ArgDepthDescription)
 	list.AddStringFlag(cloudapiv6.ArgOrderBy, "", "", cloudapiv6.ArgOrderByDescription)
 	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgOrderBy, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -116,7 +116,7 @@ func RunLocationList(c *core.CommandConfig) error {
 	return c.Printer.Print(printer.Result{
 		OutputJSON: locations,
 		KeyValue:   getLocationsKVMaps(getLocations(locations)),
-		Columns:    printer.GetHeaders(allLocationCols, defaultLocationCols, viper.GetStringSlice(core.GetGlobalFlagName(c.NS, constants.ArgCols))),
+		Columns:    printer.GetHeaders(allLocationCols, defaultLocationCols, viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))),
 	})
 }
 
@@ -142,7 +142,7 @@ func RunLocationGet(c *core.CommandConfig) error {
 	return c.Printer.Print(printer.Result{
 		OutputJSON: loc,
 		KeyValue:   getLocationsKVMaps(getLocation(loc)),
-		Columns:    printer.GetHeaders(allLocationCols, defaultLocationCols, viper.GetStringSlice(core.GetGlobalFlagName(c.NS, constants.ArgCols))),
+		Columns:    printer.GetHeaders(allLocationCols, defaultLocationCols, viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))),
 	})
 }
 

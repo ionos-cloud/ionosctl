@@ -1,5 +1,41 @@
 # Changelog
 
+## [6.6.1] (April 2023)
+
+### Added
+- Added support for Container Registry API
+
+### Fixed
+- Fixed multiple issues related to image upload:
+  - Fixed: Timeout for image diff finding (continuous polling on GET `/images`) after FTP upload is no longer hardcoded. This polling now respects the `--timeout` flag and uses context.
+  - Fixed: Silent failing due to timeout for image diff finding
+  - Changed: no longer throw error if any of the values in `--location` is non-IONOS, because `--ftp-url` is customizable.
+  - Changed: improved image diff finding complexity to use the new SDK multi-value-per-key filtering 
+- Fixed `-o json` renaming `items` to `Resources`
+- Fixed various flag names in the ALB, Targetgroup examples
+
+### Changed
+- Various documentation generation improvements. `summary.md` is now generated automatically.
+
+## [6.6.0] (March 2023)
+
+### Added
+- Added support for DBaaS Mongo API
+- Added support for Dataplatform API
+
+### Changed
+- flag values for `cols`, `filters` are now case insensitive
+
+## [6.5.2] (March 2023)
+
+### Fixed
+- Fixed go.mod: added v6 as the major version
+- Fixed cols flag on certain commands e.g. `user list`
+- Fixed `group user list` command
+
+### Dependencies
+- Updated SDK Postgres to v1.1.1
+
 ## [6.5.1] (February 2023)
 
 ### Changed
