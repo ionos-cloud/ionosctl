@@ -250,8 +250,8 @@ Required values to run command:
 	})
 	update.AddUUIDFlag(cloudapiv6.ArgCdromId, "", "", "The unique Cdrom Id for the BootCdrom. The Cdrom needs to be already attached to the Server")
 	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgCdromId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.ImagesIdsCustom(os.Stderr, resources.ListQueryParams{Filters: &map[string]string{
-			"type": "CDROM",
+		return completer.ImagesIdsCustom(os.Stderr, resources.ListQueryParams{Filters: &map[string][]string{
+			"type": {"CDROM"},
 		}}), cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "", "Name of the Server")
@@ -340,8 +340,8 @@ Required values to run command:
 	_ = suspend.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.ServersIdsCustom(os.Stderr, viper.GetString(core.GetFlagName(suspend.NS, cloudapiv6.ArgDataCenterId)),
 			resources.ListQueryParams{
-				Filters: &map[string]string{
-					"type": serverCubeType,
+				Filters: &map[string][]string{
+					"type": {serverCubeType},
 				},
 			}), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -481,8 +481,8 @@ Required values to run command:
 	_ = resume.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.ServersIdsCustom(os.Stderr, viper.GetString(core.GetFlagName(resume.NS, cloudapiv6.ArgDataCenterId)),
 			resources.ListQueryParams{
-				Filters: &map[string]string{
-					"type": serverCubeType,
+				Filters: &map[string][]string{
+					"type": {serverCubeType},
 				},
 			}), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -557,11 +557,11 @@ func RunServerListAll(c *core.CommandConfig) error {
 		if listQueryParams.Filters != nil {
 			filters := *listQueryParams.Filters
 			if val, ok := filters["ram"]; ok {
-				convertedSize, err := utils.ConvertSize(val, utils.MegaBytes)
+				convertedSize, err := utils.ConvertSize(val[0], utils.MegaBytes)
 				if err != nil {
 					return err
 				}
-				filters["ram"] = strconv.Itoa(convertedSize)
+				filters["ram"] = []string{strconv.Itoa(convertedSize)}
 				listQueryParams.Filters = &filters
 			}
 		}
@@ -602,11 +602,11 @@ func RunServerList(c *core.CommandConfig) error {
 		if listQueryParams.Filters != nil {
 			filters := *listQueryParams.Filters
 			if val, ok := filters["ram"]; ok {
-				convertedSize, err := utils.ConvertSize(val, utils.MegaBytes)
+				convertedSize, err := utils.ConvertSize(val[0], utils.MegaBytes)
 				if err != nil {
 					return err
 				}
-				filters["ram"] = strconv.Itoa(convertedSize)
+				filters["ram"] = []string{strconv.Itoa(convertedSize)}
 				listQueryParams.Filters = &filters
 			}
 		}

@@ -1,13 +1,13 @@
 package resources
 
 type ListQueryParams struct {
-	Filters     *map[string]string `json:"Filters,omitempty"`
-	OrderBy     *string            `json:"OrderBy,omitempty"`
-	MaxResults  *int32             `json:"MaxResults,omitempty"`
-	QueryParams QueryParams        `json:"QueryParams,omitempty"`
+	Filters     *map[string][]string `json:"Filters,omitempty"`
+	OrderBy     *string              `json:"OrderBy,omitempty"`
+	MaxResults  *int32               `json:"MaxResults,omitempty"`
+	QueryParams QueryParams          `json:"QueryParams,omitempty"`
 }
 
-func (q ListQueryParams) SetFilters(filters map[string]string) ListQueryParams {
+func (q ListQueryParams) SetFilters(filters map[string][]string) ListQueryParams {
 	q.Filters = &filters
 	return q
 }

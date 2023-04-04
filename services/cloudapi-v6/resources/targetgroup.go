@@ -62,7 +62,9 @@ func (svc *targetGroupsService) List(params ListQueryParams) (TargetGroups, *Res
 	if !structs.IsZero(params) {
 		if params.Filters != nil {
 			for k, v := range *params.Filters {
-				req = req.Filter(k, v)
+				for _, val := range v {
+					req = req.Filter(k, val)
+				}
 			}
 		}
 		if params.OrderBy != nil {

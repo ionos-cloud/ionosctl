@@ -86,15 +86,15 @@ func GetListQueryParams(c *core.CommandConfig) (resources.ListQueryParams, error
 
 // getFilters should get the input from the user: --filters key=value,key=value
 // and return a map with the corresponding key values
-func getFilters(args []string, cmd *core.Command) (map[string]string, error) {
-	filtersKV := map[string]string{}
+func getFilters(args []string, cmd *core.Command) (map[string][]string, error) {
+	filtersKV := map[string][]string{}
 	if len(args) == 0 {
 		return filtersKV, errors.New("must provide at least one filter")
 	}
 	for _, arg := range args {
 		if strings.Contains(arg, FiltersPartitionChar) {
 			kv := strings.Split(arg, FiltersPartitionChar)
-			filtersKV[strings.ToLower(kv[0])] = kv[1]
+			filtersKV[strings.ToLower(kv[0])] = append(filtersKV[strings.ToLower(kv[0])], kv[1])
 		} else {
 			return filtersKV, errors.New(
 				fmt.Sprintf("\"%s --filters\" option set incorrectly.\n\nUsage: %s --filters KEY1%sVALUE1,KEY2%sVALUE2\n\nFor more details, see '%s --help'.",

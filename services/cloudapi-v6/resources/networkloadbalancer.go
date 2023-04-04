@@ -87,7 +87,9 @@ func (svc *networkLoadBalancersService) List(datacenterId string, params ListQue
 	if !structs.IsZero(params) {
 		if params.Filters != nil {
 			for k, v := range *params.Filters {
-				req = req.Filter(k, v)
+				for _, val := range v {
+					req = req.Filter(k, val)
+				}
 			}
 		}
 		if params.OrderBy != nil {
@@ -175,7 +177,9 @@ func (svc *networkLoadBalancersService) ListForwardingRules(datacenterId, networ
 	if !structs.IsZero(params) {
 		if params.Filters != nil {
 			for k, v := range *params.Filters {
-				req = req.Filter(k, v)
+				for _, val := range v {
+					req = req.Filter(k, val)
+				}
 			}
 		}
 		if params.OrderBy != nil {
@@ -263,7 +267,9 @@ func (svc *networkLoadBalancersService) ListFlowLogs(datacenterId, networkLoadBa
 	if !structs.IsZero(params) {
 		if params.Filters != nil {
 			for k, v := range *params.Filters {
-				req = req.Filter(k, v)
+				for _, val := range v {
+					req = req.Filter(k, val)
+				}
 			}
 		}
 		if params.OrderBy != nil {
