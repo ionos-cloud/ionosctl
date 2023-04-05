@@ -51,10 +51,10 @@ Required values to run command:
       --applicationloadbalancer-id string   The unique ApplicationLoadBalancer Id (required)
       --cols strings                        Set of columns to be printed on output 
                                             Available columns: [Name Type TargetGroupId DropQuery Location StatusCode ResponseMessage ContentType Condition] (default [Name,Type,TargetGroupId,DropQuery,Condition])
-  -C, --condition string                    Matching rule for the HTTP rule condition attribute; mandatory for HEADER, PATH, QUERY, METHOD, HOST, and COOKIE types; must be null when type is SOURCE_IP. (default "STARTS_WITH")
-  -K, --condition-key string                Must be null when type is PATH, METHOD, HOST, or SOURCE_IP. Key can only be set when type is COOKIES, HEADER, or QUERY. (default "forward-at")
-  -T, --condition-type string               Type of the HTTP rule condition. (default "HEADER")
-  -V, --condition-value string              Mandatory for conditions CONTAINS, EQUALS, MATCHES, STARTS_WITH, ENDS_WITH; must be null when condition is EXISTS; should be a valid CIDR if provided and if type is SOURCE_IP. (default "Friday")
+  -C, --condition string                    comparison rule for condition-value and the element selected with condition-type and condition-key. Possible values: EXISTS, CONTAINS, EQUALS, MATCHES, STARTS_WITH, ENDS_WITH. mandatory for HEADER, PATH, QUERY, METHOD, HOST, and COOKIE types; must be null when type is SOURCE_IP. (default "EQUALS")
+  -K, --condition-key string                selects which entry in the selected HTTP element is used for the rule. For example, "Accept" for condition-type=HEADER. Not applicable for HOST, PATH or SOURCE_IP (default "Accept")
+  -T, --condition-type string               selects which element in the incoming HTTP request is used for the rule. Possible values HEADER, PATH, QUERY, METHOD, HOST, COOKIE, SOURCE _IP (default "HEADER")
+  -V, --condition-value string              value compared with the selected HTTP element. For example "application/json" in combination with condition=EQUALS, condition-type=HEADER, condition-key=Accept would be valid. Not applicable for condition EXISTS. Mandatory for conditions CONTAINS, EQUALS, MATCHES, STARTS_WITH, ENDS_WITH; must be null when condition is EXISTS (default "application/json")
   -c, --config string                       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --content-type string                 Valid only for STATIC actions. (default "application/json")
       --datacenter-id string                The unique Data Center Id (required)
@@ -64,7 +64,7 @@ Required values to run command:
   -l, --location string                     The location for redirecting; mandatory and valid only for REDIRECT actions. (default "www.ionos.com")
   -m, --message string                      The response message of the request; mandatory for STATIC actions. (default "Application Down")
   -n, --name string                         The unique name of the Application Load Balancer HTTP rule. (required)
-      --negate                              Specifies whether the condition is negated or not; the default is False.
+      --negate                              Specifies whether the condition is negated or not
   -o, --output string                       Desired output format [text|json] (default "text")
   -Q, --query                               Default is false; valid only for REDIRECT actions.
   -q, --quiet                               Quiet output
