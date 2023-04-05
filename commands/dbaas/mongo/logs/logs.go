@@ -7,7 +7,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
-	ionoscloud "github.com/ionos-cloud/sdk-go-dbaas-mongo"
+	ionoscloud "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )

@@ -13,8 +13,8 @@ import (
 	cloudv6 "github.com/ionos-cloud/sdk-go-bundle/products/compute"
 	registry "github.com/ionos-cloud/sdk-go-bundle/products/containerregistry"
 	dataplatform "github.com/ionos-cloud/sdk-go-bundle/products/dataplatform"
+	mongo "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo"
 	"github.com/ionos-cloud/sdk-go-bundle/shared"
-	mongo "github.com/ionos-cloud/sdk-go-dbaas-mongo"
 	postgres "github.com/ionos-cloud/sdk-go-dbaas-postgres"
 	"github.com/spf13/viper"
 )
@@ -53,7 +53,8 @@ func newClient(name, pwd, token, hostUrl string) (*Client, error) {
 	postgresConfig := postgres.NewConfiguration(name, pwd, token, hostUrl)
 	postgresConfig.UserAgent = appendUserAgent(postgresConfig.UserAgent)
 
-	mongoConfig := mongo.NewConfiguration(name, pwd, token, hostUrl)
+	mongoUrl := fmt.Sprintf("%s/databases/mongodb", hostUrl)
+	mongoConfig := shared.NewConfiguration(name, pwd, token, mongoUrl)
 	mongoConfig.UserAgent = appendUserAgent(mongoConfig.UserAgent)
 
 	dataplatformURL := fmt.Sprintf("%s/dataplatform", hostUrl)

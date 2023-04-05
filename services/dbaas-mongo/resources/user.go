@@ -5,15 +5,16 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
-	sdkgo "github.com/ionos-cloud/sdk-go-dbaas-mongo"
+	sdkgo "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo"
+	"github.com/ionos-cloud/sdk-go-bundle/shared"
 )
 
 type UsersService interface {
-	List(clusterID string, limit, offset *int32) (sdkgo.UsersList, *sdkgo.APIResponse, error)
-	Create(clusterID string, user sdkgo.User) (sdkgo.User, *sdkgo.APIResponse, error)
+	List(clusterID string, limit, offset *int32) (sdkgo.UsersList, *shared.APIResponse, error)
+	Create(clusterID string, user sdkgo.User) (sdkgo.User, *shared.APIResponse, error)
 	ListAll() ([]sdkgo.User, error)
-	Get(clusterID, user string) (sdkgo.User, *sdkgo.APIResponse, error)
-	Delete(clusterID, user string) (sdkgo.User, *sdkgo.APIResponse, error)
+	Get(clusterID, user string) (sdkgo.User, *shared.APIResponse, error)
+	Delete(clusterID, user string) (sdkgo.User, *shared.APIResponse, error)
 }
 
 type usersService struct {
@@ -49,25 +50,25 @@ func (svc *usersService) ListAll() ([]sdkgo.User, error) {
 	return users, err
 }
 
-func (svc *usersService) List(clusterID string, limit, offset *int32) (sdkgo.UsersList, *sdkgo.APIResponse, error) {
+func (svc *usersService) List(clusterID string, limit, offset *int32) (sdkgo.UsersList, *shared.APIResponse, error) {
 	req := svc.client.UsersApi.ClustersUsersGet(svc.context, clusterID)
-	if limit != nil {
-		req = req.Limit(*limit)
-	}
-	if offset != nil {
-		req = req.Offset(*offset)
-	}
+	// if limit != nil {
+	// 	req = req.Limit(*limit)
+	// }
+	// if offset != nil {
+	// 	req = req.Offset(*offset)
+	// }
 	return req.Execute()
 }
 
-func (svc *usersService) Create(clusterID string, user sdkgo.User) (sdkgo.User, *sdkgo.APIResponse, error) {
+func (svc *usersService) Create(clusterID string, user sdkgo.User) (sdkgo.User, *shared.APIResponse, error) {
 	return svc.client.UsersApi.ClustersUsersPost(svc.context, clusterID).User(user).Execute()
 }
 
-func (svc *usersService) Get(clusterID, username string) (sdkgo.User, *sdkgo.APIResponse, error) {
+func (svc *usersService) Get(clusterID, username string) (sdkgo.User, *shared.APIResponse, error) {
 	return svc.client.UsersApi.ClustersUsersFindById(svc.context, clusterID, username).Execute()
 }
 
-func (svc *usersService) Delete(clusterID, username string) (sdkgo.User, *sdkgo.APIResponse, error) {
+func (svc *usersService) Delete(clusterID, username string) (sdkgo.User, *shared.APIResponse, error) {
 	return svc.client.UsersApi.ClustersUsersDelete(svc.context, clusterID, username).Execute()
 }

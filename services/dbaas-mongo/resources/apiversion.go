@@ -5,11 +5,12 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
-	sdkgo "github.com/ionos-cloud/sdk-go-dbaas-mongo"
+	sdkgo "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo"
+	"github.com/ionos-cloud/sdk-go-bundle/shared"
 )
 
 type ApiMetadataService interface {
-	List() ([]sdkgo.APIVersion, *sdkgo.APIResponse, error)
+	List() ([]sdkgo.APIVersion, *shared.APIResponse, error)
 }
 
 type apiMetadataService struct {
@@ -26,6 +27,6 @@ func NewApiMetadataService(client *client.Client, ctx context.Context) ApiMetada
 	}
 }
 
-func (svc apiMetadataService) List() ([]sdkgo.APIVersion, *sdkgo.APIResponse, error) {
+func (svc apiMetadataService) List() ([]sdkgo.APIVersion, *shared.APIResponse, error) {
 	return svc.client.MetadataApi.InfosVersionsGet(svc.context).Execute()
 }

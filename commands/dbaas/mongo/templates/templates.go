@@ -9,7 +9,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
-	ionoscloud "github.com/ionos-cloud/sdk-go-dbaas-mongo"
+	ionoscloud "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -55,11 +55,11 @@ func getClusterRows(ls *[]ionoscloud.TemplateResponse) []map[string]interface{} 
 	for _, t := range *ls {
 		var cols TemplatePrint
 		cols.TemplateId = *t.Id
-		cols.Cores = *t.Properties.Cores
-		cols.StorageSize = fmt.Sprintf("%d GB", *t.Properties.StorageSize)
-		cols.Name = *t.Properties.Name
-		cols.Edition = *t.Properties.Edition
-		ramGb, err := utils.ConvertToGB(strconv.Itoa(int(*t.Properties.Ram)), utils.MegaBytes)
+		cols.Cores = *t.Cores
+		cols.StorageSize = fmt.Sprintf("%d GB", *t.StorageSize)
+		cols.Name = *t.Name
+		cols.Edition = *t.Edition
+		ramGb, err := utils.ConvertToGB(strconv.Itoa(int(*t.Ram)), utils.MegaBytes)
 		if err == nil {
 			cols.Ram = fmt.Sprintf("%d GB", ramGb)
 		}
