@@ -14,7 +14,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
-	ionoscloud "github.com/ionos-cloud/sdk-go-container-registry"
+	ionoscloud "github.com/ionos-cloud/sdk-go-bundle/products/containerregistry"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )

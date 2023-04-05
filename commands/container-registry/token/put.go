@@ -6,7 +6,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/registry"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
-	sdkgo "github.com/ionos-cloud/sdk-go-container-registry"
+	sdkgo "github.com/ionos-cloud/sdk-go-bundle/products/containerregistry"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )

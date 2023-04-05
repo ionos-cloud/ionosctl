@@ -11,8 +11,8 @@ import (
 	sdkgoauth "github.com/ionos-cloud/sdk-go-auth"
 	certmanager "github.com/ionos-cloud/sdk-go-bundle/products/cert"
 	cloudv6 "github.com/ionos-cloud/sdk-go-bundle/products/compute"
+	registry "github.com/ionos-cloud/sdk-go-bundle/products/containerregistry"
 	"github.com/ionos-cloud/sdk-go-bundle/shared"
-	registry "github.com/ionos-cloud/sdk-go-container-registry"
 	dataplatform "github.com/ionos-cloud/sdk-go-dataplatform"
 	mongo "github.com/ionos-cloud/sdk-go-dbaas-mongo"
 	postgres "github.com/ionos-cloud/sdk-go-dbaas-postgres"
@@ -59,7 +59,8 @@ func newClient(name, pwd, token, hostUrl string) (*Client, error) {
 	dpConfig := dataplatform.NewConfiguration(name, pwd, token, hostUrl)
 	dpConfig.UserAgent = appendUserAgent(dpConfig.UserAgent)
 
-	registryConfig := registry.NewConfiguration(name, pwd, token, hostUrl)
+	contregURL := fmt.Sprintf("%s/containerregistries", hostUrl)
+	registryConfig := shared.NewConfiguration(name, pwd, token, contregURL)
 	registryConfig.UserAgent = appendUserAgent(registryConfig.UserAgent)
 
 	return &Client{
