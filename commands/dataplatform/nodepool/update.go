@@ -8,7 +8,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/dataplatform/completer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
-	sdkdataplatform "github.com/ionos-cloud/sdk-go-dataplatform"
+	sdkdataplatform "github.com/ionos-cloud/sdk-go-bundle/products/dataplatform"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -70,7 +70,7 @@ func NodepoolUpdateCmd() *core.Command {
 			if err != nil {
 				return err
 			}
-			cr, _, err := client.DataplatformClient.DataPlatformNodePoolApi.PatchClusterNodepool(context.Background(), clusterId, npId).PatchNodePoolRequest(input).Execute()
+			cr, _, err := client.DataplatformClient.DataPlatformNodePoolApi.ClustersNodepoolsPatch(context.Background(), clusterId, npId).PatchNodePoolRequest(input).Execute()
 			if err != nil {
 				return err
 			}

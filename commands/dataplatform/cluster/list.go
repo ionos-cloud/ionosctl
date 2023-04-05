@@ -28,7 +28,7 @@ func ClusterListCmd() *core.Command {
 				return err
 			}
 
-			req := client.DataplatformClient.DataPlatformClusterApi.GetClusters(c.Context)
+			req := client.DataplatformClient.DataPlatformClusterApi.ClustersGet(c.Context)
 			if name != "" {
 				req = req.Name(name)
 			}

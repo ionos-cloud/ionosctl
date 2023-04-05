@@ -8,7 +8,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
-	ionoscloud "github.com/ionos-cloud/sdk-go-dataplatform"
+	ionoscloud "github.com/ionos-cloud/sdk-go-bundle/products/dataplatform"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dataplatform/completer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
@@ -41,7 +41,7 @@ func ClusterDeleteCmd() *core.Command {
 			}
 			c.Printer.Verbose("Deleting cluster: %s", clusterId)
 			client, err := client2.Get()
-			_, _, err = client.DataplatformClient.DataPlatformClusterApi.DeleteCluster(c.Context, clusterId).Execute()
+			_, _, err = client.DataplatformClient.DataPlatformClusterApi.ClustersDelete(c.Context, clusterId).Execute()
 			if err != nil {
 				return err
 			}
@@ -68,7 +68,7 @@ func deleteAll(c *core.CommandConfig) error {
 		return err
 	}
 	c.Printer.Verbose("Deleting All Clusters!")
-	xs, _, err := client.DataplatformClient.DataPlatformClusterApi.GetClusters(c.Context).Execute()
+	xs, _, err := client.DataplatformClient.DataPlatformClusterApi.ClustersGet(c.Context).Execute()
 	if err != nil {
 		return err
 	}
@@ -76,7 +76,7 @@ func deleteAll(c *core.CommandConfig) error {
 	err = functional.ApplyOrFail(*xs.GetItems(), func(x ionoscloud.ClusterResponseData) error {
 		yes := confirm.Ask(fmt.Sprintf("delete cluster %s (%s)", *x.Id, *x.Properties.Name), viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce)))
 		if yes {
-			_, _, delErr := client.DataplatformClient.DataPlatformClusterApi.DeleteCluster(c.Context, *x.Id).Execute()
+			_, _, delErr := client.DataplatformClient.DataPlatformClusterApi.ClustersDelete(c.Context, *x.Id).Execute()
 			if delErr != nil {
 				return delErr
 			}
@@ -84,6 +84,6 @@ func deleteAll(c *core.CommandConfig) error {
 		return nil
 	})
 
-	_, _, err = client.DataplatformClient.DataPlatformClusterApi.DeleteCluster(c.Context, viper.GetString(core.GetFlagName(c.NS, constants.FlagName))).Execute()
+	_, _, err = client.DataplatformClient.DataPlatformClusterApi.ClustersDelete(c.Context, viper.GetString(core.GetFlagName(c.NS, constants.FlagName))).Execute()
 	return err
 }
