@@ -23,4 +23,3 @@ dbaas_mongo_mocks_update:
 	@echo "--- Update mocks for CloudApi DBaaS mongo ---"
 	@tools/dbaas-mongo/regenerate_mocks.sh
 	@echo "DONE"
-

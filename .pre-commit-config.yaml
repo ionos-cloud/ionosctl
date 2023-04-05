@@ -1,0 +1,33 @@
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+exclude: 'vendor'
+
+repos:
+- repo: https://github.com/tekwizely/pre-commit-golang
+  rev: v1.0.0-rc.1
+  hooks:
+    - id: go-fmt
+    - id: go-imports
+    - id: go-mod-tidy
+    # - id: go-critic # add me once all complaints are fixed
+    # - id: golangci-lint # add me once all complaints are fixed
+
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v4.4.0
+  hooks:
+  - id: trailing-whitespace
+    exclude: 'docs'
+  - id: end-of-file-fixer
+    exclude: 'docs'
+  - id: check-yaml
+  - id: check-added-large-files
+  - id: check-merge-conflict
+
+- repo: local
+  hooks:
+    - id: make-docs
+      name: Generate documentation with make
+      description: This hook generates documentation with the make docs command.
+      entry: make docs
+      language: system
+      files: ^docs/.*
