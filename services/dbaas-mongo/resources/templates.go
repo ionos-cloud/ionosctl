@@ -5,11 +5,12 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
-	sdkgo "github.com/ionos-cloud/sdk-go-dbaas-mongo"
+	sdkgo "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo"
+	"github.com/ionos-cloud/sdk-go-bundle/shared"
 )
 
 type TemplatesService interface {
-	List(limit, offset *int32) (sdkgo.TemplateList, *sdkgo.APIResponse, error)
+	List(limit, offset *int32) (sdkgo.TemplateList, *shared.APIResponse, error)
 }
 
 type templatesService struct {
@@ -26,14 +27,14 @@ func NewTemplatesService(client *client.Client, ctx context.Context) TemplatesSe
 	}
 }
 
-func (svc *templatesService) List(limit, offset *int32) (sdkgo.TemplateList, *sdkgo.APIResponse, error) {
+func (svc *templatesService) List(limit, offset *int32) (sdkgo.TemplateList, *shared.APIResponse, error) {
 	req := svc.client.TemplatesApi.TemplatesGet(svc.context)
-	if limit != nil {
-		req = req.Limit(*limit)
-	}
-	if offset != nil {
-		req = req.Offset(*offset)
-	}
+	// if limit != nil {
+	// 	req = req.Limit(*limit)
+	// }
+	// if offset != nil {
+	// 	req = req.Offset(*offset)
+	// }
 	ls, res, err := svc.client.TemplatesApi.TemplatesGetExecute(req)
 	return ls, res, err
 }
