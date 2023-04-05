@@ -8,7 +8,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/dataplatform/completer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
-	sdkdataplatform "github.com/ionos-cloud/sdk-go-dataplatform"
+	sdkdataplatform "github.com/ionos-cloud/sdk-go-bundle/products/dataplatform"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -33,7 +33,7 @@ func ClusterGetCmd() *core.Command {
 				return err
 			}
 
-			cluster, _, err := client.DataplatformClient.DataPlatformClusterApi.GetCluster(c.Context, clusterId).Execute()
+			cluster, _, err := client.DataplatformClient.DataPlatformClusterApi.ClustersFindById(c.Context, clusterId).Execute()
 			if err != nil {
 				return err
 			}

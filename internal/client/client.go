@@ -12,8 +12,8 @@ import (
 	certmanager "github.com/ionos-cloud/sdk-go-bundle/products/cert"
 	cloudv6 "github.com/ionos-cloud/sdk-go-bundle/products/compute"
 	registry "github.com/ionos-cloud/sdk-go-bundle/products/containerregistry"
+	dataplatform "github.com/ionos-cloud/sdk-go-bundle/products/dataplatform"
 	"github.com/ionos-cloud/sdk-go-bundle/shared"
-	dataplatform "github.com/ionos-cloud/sdk-go-dataplatform"
 	mongo "github.com/ionos-cloud/sdk-go-dbaas-mongo"
 	postgres "github.com/ionos-cloud/sdk-go-dbaas-postgres"
 	"github.com/spf13/viper"
@@ -56,7 +56,8 @@ func newClient(name, pwd, token, hostUrl string) (*Client, error) {
 	mongoConfig := mongo.NewConfiguration(name, pwd, token, hostUrl)
 	mongoConfig.UserAgent = appendUserAgent(mongoConfig.UserAgent)
 
-	dpConfig := dataplatform.NewConfiguration(name, pwd, token, hostUrl)
+	dataplatformURL := fmt.Sprintf("%s/dataplatform", hostUrl)
+	dpConfig := shared.NewConfiguration(name, pwd, token, dataplatformURL)
 	dpConfig.UserAgent = appendUserAgent(dpConfig.UserAgent)
 
 	contregURL := fmt.Sprintf("%s/containerregistries", hostUrl)

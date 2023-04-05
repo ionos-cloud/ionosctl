@@ -9,7 +9,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
-	ionoscloud "github.com/ionos-cloud/sdk-go-dataplatform"
+	ionoscloud "github.com/ionos-cloud/sdk-go-bundle/products/dataplatform"
 	"github.com/spf13/cobra"
 )
 

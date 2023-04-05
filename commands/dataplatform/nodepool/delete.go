@@ -11,7 +11,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
-	ionoscloud "github.com/ionos-cloud/sdk-go-dataplatform"
+	ionoscloud "github.com/ionos-cloud/sdk-go-bundle/products/dataplatform"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -40,7 +40,7 @@ func NodepoolDeleteCmd() *core.Command {
 			}
 			c.Printer.Verbose("Deleting nodepool: %s", nodepoolId)
 			client, err := client2.Get()
-			_, _, err = client.DataplatformClient.DataPlatformNodePoolApi.DeleteClusterNodepool(c.Context, clusterId, nodepoolId).Execute()
+			_, _, err = client.DataplatformClient.DataPlatformNodePoolApi.ClustersNodepoolsDelete(c.Context, clusterId, nodepoolId).Execute()
 			if err != nil {
 				return err
 			}
@@ -83,7 +83,7 @@ func deleteAll(c *core.CommandConfig, clusterId string) error {
 	if err != nil {
 		return err
 	}
-	ls, _, err := client.DataplatformClient.DataPlatformClusterApi.GetClusters(c.Context).Execute()
+	ls, _, err := client.DataplatformClient.DataPlatformClusterApi.ClustersGet(c.Context).Execute()
 	if err != nil {
 		return err
 	}
@@ -99,12 +99,12 @@ func deleteNodePools(clusterId string) error {
 	if err != nil {
 		return err
 	}
-	xs, _, err := client.DataplatformClient.DataPlatformNodePoolApi.GetClusterNodepools(context.Background(), clusterId).Execute()
+	xs, _, err := client.DataplatformClient.DataPlatformNodePoolApi.ClustersNodepoolsGet(context.Background(), clusterId).Execute()
 	if err != nil {
 		return err
 	}
 	return functional.ApplyOrFail(*xs.GetItems(), func(x ionoscloud.NodePoolResponseData) error {
-		_, _, err := client.DataplatformClient.DataPlatformNodePoolApi.DeleteClusterNodepool(context.Background(), clusterId, *x.Id).Execute()
+		_, _, err := client.DataplatformClient.DataPlatformNodePoolApi.ClustersNodepoolsDelete(context.Background(), clusterId, *x.Id).Execute()
 		return err
 	})
 }

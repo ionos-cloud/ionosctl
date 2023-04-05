@@ -39,6 +39,7 @@ require (
 require (
 	github.com/ionos-cloud/sdk-go-bundle/products/compute v0.1.0 // indirect
 	github.com/ionos-cloud/sdk-go-bundle/products/containerregistry v0.1.0 // indirect
+	github.com/ionos-cloud/sdk-go-bundle/products/dataplatform v0.1.1 // indirect
 	github.com/ionos-cloud/sdk-go-bundle/shared v0.1.0 // indirect
 )
 

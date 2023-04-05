@@ -13,7 +13,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/dataplatform/completer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
-	sdkdataplatform "github.com/ionos-cloud/sdk-go-dataplatform"
+	sdkdataplatform "github.com/ionos-cloud/sdk-go-bundle/products/dataplatform"
 	"github.com/spf13/cobra"
 )
 
@@ -55,7 +55,7 @@ func ClusterUpdateCmd() *core.Command {
 				return err
 			}
 
-			cluster, _, err := client.DataplatformClient.DataPlatformClusterApi.PatchCluster(c.Context, clusterId).PatchClusterRequest(sdkdataplatform.PatchClusterRequest{Properties: &updateProperties}).Execute()
+			cluster, _, err := client.DataplatformClient.DataPlatformClusterApi.ClustersPatch(c.Context, clusterId).PatchClusterRequest(sdkdataplatform.PatchClusterRequest{Properties: &updateProperties}).Execute()
 			if err != nil {
 				return err
 			}

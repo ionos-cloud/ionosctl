@@ -32,7 +32,7 @@ func ClustersKubeConfigCmd() *core.Command {
 				return err
 			}
 
-			kubeconfig, _, err := client.DataplatformClient.DataPlatformClusterApi.GetClusterKubeconfig(c.Context, clusterId).Execute()
+			kubeconfig, _, err := client.DataplatformClient.DataPlatformClusterApi.ClustersKubeconfigFindByClusterId(c.Context, clusterId).Execute()
 			if err != nil {
 				return err
 			}
