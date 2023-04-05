@@ -4,12 +4,15 @@ go 1.20
 
 require (
 	github.com/cheggaaa/pb/v3 v3.1.2
+	github.com/cilium/fake v0.3.0
 	github.com/cjrd/allocate v0.0.0-20220510215731-986f24f0fb18
 	github.com/fatih/color v1.15.0
 	github.com/fatih/structs v1.1.0
 	github.com/golang/mock v1.6.0
 	github.com/google/uuid v1.3.0
 	github.com/ionos-cloud/sdk-go-auth v1.0.5
+	github.com/ionos-cloud/sdk-go-container-registry v1.0.0
+	github.com/ionos-cloud/sdk-go-dataplatform v1.0.1
 	github.com/ionos-cloud/sdk-go-dbaas-mongo v1.2.2
 	github.com/ionos-cloud/sdk-go-dbaas-postgres v1.1.1
 	github.com/ionos-cloud/sdk-go/v6 v6.1.4
@@ -26,13 +29,6 @@ require (
 	golang.org/x/sync v0.1.0
 	golang.org/x/term v0.6.0
 )
-
-require (
-	github.com/cilium/fake v0.3.0
-	github.com/ionos-cloud/sdk-go-container-registry v1.0.0
-)
-
-require github.com/ionos-cloud/sdk-go-dataplatform v1.0.1
 
 require (
 	github.com/VividCortex/ewma v1.2.0 // indirect
