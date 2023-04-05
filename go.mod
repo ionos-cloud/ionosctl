@@ -31,6 +31,7 @@ require (
 )
 
 require (
+<<<<<<< HEAD
 	github.com/cilium/fake v0.3.0
 	github.com/ionos-cloud/sdk-go-container-registry v1.0.0
  github.com/ionos-cloud/sdk-go-dataplatform v1.0.1
