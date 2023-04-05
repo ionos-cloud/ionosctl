@@ -3,7 +3,7 @@ package scopes
 import (
 	"context"
 
-	sdkgo "github.com/ionos-cloud/sdk-go-container-registry"
+	sdkgo "github.com/ionos-cloud/sdk-go-bundle/products/containerregistry"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/registry"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"

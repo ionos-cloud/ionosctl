@@ -56,6 +56,9 @@ github.com/ionos-cloud/sdk-go-bundle/products/cert
 # github.com/ionos-cloud/sdk-go-bundle/products/compute v0.1.0
 ## explicit; go 1.19
 github.com/ionos-cloud/sdk-go-bundle/products/compute
+# github.com/ionos-cloud/sdk-go-bundle/products/containerregistry v0.1.0
+## explicit; go 1.19
+github.com/ionos-cloud/sdk-go-bundle/products/containerregistry
 # github.com/ionos-cloud/sdk-go-bundle/shared v0.1.0
 ## explicit; go 1.19
 github.com/ionos-cloud/sdk-go-bundle/shared
@@ -63,7 +66,6 @@ github.com/ionos-cloud/sdk-go-bundle/shared
 ## explicit; go 1.17
 # github.com/ionos-cloud/sdk-go-container-registry v1.0.0
 ## explicit; go 1.18
-github.com/ionos-cloud/sdk-go-container-registry
 # github.com/ionos-cloud/sdk-go-dataplatform v1.0.0
 ## explicit; go 1.18
 github.com/ionos-cloud/sdk-go-dataplatform

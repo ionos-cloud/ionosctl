@@ -7,7 +7,8 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
-	ionoscloud "github.com/ionos-cloud/sdk-go-container-registry"
+	ionoscloud "github.com/ionos-cloud/sdk-go-bundle/products/containerregistry"
+	"github.com/ionos-cloud/sdk-go-bundle/shared"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -54,7 +55,7 @@ type LocPrint struct {
 var allCols = structs.Names(LocPrint{})
 
 func getLocPrint(
-	resp *ionoscloud.APIResponse, c *core.CommandConfig, response *[]ionoscloud.Location,
+	resp *shared.APIResponse, c *core.CommandConfig, response *[]ionoscloud.Location,
 ) printer.Result {
 	r := printer.Result{}
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)

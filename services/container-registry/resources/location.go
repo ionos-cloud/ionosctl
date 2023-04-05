@@ -4,11 +4,12 @@ import (
 	"context"
 
 	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"
-	sdkgo "github.com/ionos-cloud/sdk-go-container-registry"
+	sdkgo "github.com/ionos-cloud/sdk-go-bundle/products/containerregistry"
+	"github.com/ionos-cloud/sdk-go-bundle/shared"
 )
 
 type LocationsService interface {
-	Get() (sdkgo.LocationsResponse, *sdkgo.APIResponse, error)
+	Get() (sdkgo.LocationsResponse, *shared.APIResponse, error)
 }
 
 type locationsService struct {
@@ -25,7 +26,7 @@ func NewLocationsService(client *client2.Client, ctx context.Context) LocationsS
 	}
 }
 
-func (svc *locationsService) Get() (sdkgo.LocationsResponse, *sdkgo.APIResponse, error) {
+func (svc *locationsService) Get() (sdkgo.LocationsResponse, *shared.APIResponse, error) {
 	req := svc.client.LocationsApi.LocationsGet(svc.context)
 	loc, res, err := svc.client.LocationsApi.LocationsGetExecute(req)
 	return loc, res, err

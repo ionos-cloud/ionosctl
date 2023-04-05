@@ -10,7 +10,8 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/v6/services/container-registry/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go-container-registry"
+	ionoscloud "github.com/ionos-cloud/sdk-go-bundle/products/containerregistry"
+	"github.com/ionos-cloud/sdk-go-bundle/shared"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -41,7 +42,7 @@ func RegistryCmd() *core.Command {
 }
 
 func getRegistryPrint(
-	resp *ionoscloud.APIResponse, c *core.CommandConfig, response *[]ionoscloud.RegistryResponse,
+	resp *shared.APIResponse, c *core.CommandConfig, response *[]ionoscloud.RegistryResponse,
 	post bool,
 ) printer.Result {
 	r := printer.Result{}
