@@ -13,7 +13,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/utils/clierror"
 	pgsqlresources "github.com/ionos-cloud/ionosctl/v6/services/dbaas-postgres/resources"
-	sdkgo "github.com/ionos-cloud/sdk-go-dbaas-postgres"
+	"github.com/ionos-cloud/sdk-go-bundle/shared"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -155,8 +155,8 @@ func getAPIVersionsKVMaps(apiVersions *[]pgsqlresources.APIVersion) []map[string
 				if strings.HasPrefix(*swaggerUrlOk, "appserver:8181/postgresql") {
 					*swaggerUrlOk = strings.TrimPrefix(*swaggerUrlOk, "appserver:8181/postgresql")
 				}
-				if !strings.HasPrefix(*swaggerUrlOk, sdkgo.DefaultIonosServerUrl) {
-					*swaggerUrlOk = fmt.Sprintf("%s%s", sdkgo.DefaultIonosServerUrl, *swaggerUrlOk)
+				if !strings.HasPrefix(*swaggerUrlOk, shared.DefaultIonosServerUrl) {
+					*swaggerUrlOk = fmt.Sprintf("%s%s", shared.DefaultIonosServerUrl, *swaggerUrlOk)
 				}
 				uPrint.SwaggerUrl = *swaggerUrlOk
 			}

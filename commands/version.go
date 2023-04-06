@@ -13,7 +13,7 @@ import (
 	sdkauth "github.com/ionos-cloud/sdk-go-auth"
 	sdkcertmanager "github.com/ionos-cloud/sdk-go-bundle/products/cert"
 	sdkcompute "github.com/ionos-cloud/sdk-go-bundle/products/compute"
-	sdkpostgres "github.com/ionos-cloud/sdk-go-dbaas-postgres"
+	sdkpostgres "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql"
 	"github.com/spf13/viper"
 )
 

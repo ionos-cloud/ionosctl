@@ -5,7 +5,8 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
-	sdkgo "github.com/ionos-cloud/sdk-go-dbaas-postgres"
+	sdkgo "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql"
+	"github.com/ionos-cloud/sdk-go-bundle/shared"
 )
 
 type ClusterResponse struct {
@@ -33,7 +34,7 @@ type PatchClusterProperties struct {
 }
 
 type Response struct {
-	sdkgo.APIResponse
+	shared.APIResponse
 }
 
 // ClustersService is a wrapper around ionoscloud.Cluster
