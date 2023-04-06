@@ -24,7 +24,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/utils/clierror"
 	dbaaspg "github.com/ionos-cloud/ionosctl/v6/services/dbaas-postgres"
 	"github.com/ionos-cloud/ionosctl/v6/services/dbaas-postgres/resources"
-	sdkgo "github.com/ionos-cloud/sdk-go-dbaas-postgres"
+	sdkgo "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -560,10 +560,10 @@ func getCreateClusterRequest(c *core.CommandConfig) (*resources.CreateClusterReq
 	c.Printer.Verbose("StorageSize: %v[MB]", int32(storageSize))
 	storageType := strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgStorageType)))
 	if storageType == "SSD_PREMIUM" || storageType == "SSD PREMIUM" {
-		storageType = string(sdkgo.SSD_PREMIUM)
+		storageType = string(sdkgo.STORAGETYPE_SSD_PREMIUM)
 	}
 	if storageType == "SSD_STANDARD" || storageType == "SSD STANDARD" {
-		storageType = string(sdkgo.SSD_STANDARD)
+		storageType = string(sdkgo.STORAGETYPE_SSD_STANDARD)
 	}
 	c.Printer.Verbose("StorageType: %v", storageType)
 	input.SetStorageType(sdkgo.StorageType(storageType))

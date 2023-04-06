@@ -14,8 +14,8 @@ import (
 	registry "github.com/ionos-cloud/sdk-go-bundle/products/containerregistry"
 	dataplatform "github.com/ionos-cloud/sdk-go-bundle/products/dataplatform"
 	mongo "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo"
+	postgres "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql"
 	"github.com/ionos-cloud/sdk-go-bundle/shared"
-	postgres "github.com/ionos-cloud/sdk-go-dbaas-postgres"
 	"github.com/spf13/viper"
 )
 
@@ -38,8 +38,8 @@ func newClient(name, pwd, token, hostUrl string) (*Client, error) {
 		return nil, errors.New("username, password or token incorrect")
 	}
 
-	cloudURL := fmt.Sprintf("%s/cloudapi/v6", hostUrl)
-	clientConfig := shared.NewConfiguration(name, pwd, token, cloudURL)
+	cloudUrl := fmt.Sprintf("%s/cloudapi/v6", hostUrl)
+	clientConfig := shared.NewConfiguration(name, pwd, token, cloudUrl)
 	clientConfig.UserAgent = fmt.Sprintf("%v_%v", viper.GetString(constants.CLIHttpUserAgent), clientConfig.UserAgent)
 	// Set Depth Query Parameter globally
 	clientConfig.DefaultQueryParams.Add("depth", "1")
@@ -50,7 +50,8 @@ func newClient(name, pwd, token, hostUrl string) (*Client, error) {
 	certManagerConfig := shared.NewConfiguration(name, pwd, token, hostUrl)
 	certManagerConfig.UserAgent = appendUserAgent(certManagerConfig.UserAgent)
 
-	postgresConfig := postgres.NewConfiguration(name, pwd, token, hostUrl)
+	postgresUrl := fmt.Sprintf("%s/databases/postgresql", hostUrl)
+	postgresConfig := shared.NewConfiguration(name, pwd, token, postgresUrl)
 	postgresConfig.UserAgent = appendUserAgent(postgresConfig.UserAgent)
 
 	mongoUrl := fmt.Sprintf("%s/databases/mongodb", hostUrl)

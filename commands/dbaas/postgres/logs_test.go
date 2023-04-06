@@ -13,7 +13,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/utils/clierror"
 	dbaaspg "github.com/ionos-cloud/ionosctl/v6/services/dbaas-postgres"
 	"github.com/ionos-cloud/ionosctl/v6/services/dbaas-postgres/resources"
-	sdkgo "github.com/ionos-cloud/sdk-go-dbaas-postgres"
+	sdkgo "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )

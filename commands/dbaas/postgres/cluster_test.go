@@ -19,7 +19,7 @@ import (
 	dbaaspg "github.com/ionos-cloud/ionosctl/v6/services/dbaas-postgres"
 	"github.com/ionos-cloud/ionosctl/v6/services/dbaas-postgres/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go-bundle/products/compute"
-	sdkgo "github.com/ionos-cloud/sdk-go-dbaas-postgres"
+	sdkgo "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
@@ -362,9 +362,9 @@ var (
 	testClusterBackupLocation            = "de"
 	testClusterIntVar                    = int32(1)
 	testClusterIntNewVar                 = int32(2)
-	testClusterStorageTypeVar            = sdkgo.HDD
-	testClusterStorageTypeSSDPremiumVar  = sdkgo.SSD_PREMIUM
-	testClusterStorageTypeSSDStandardVar = sdkgo.SSD_STANDARD
+	testClusterStorageTypeVar            = sdkgo.STORAGETYPE_HDD
+	testClusterStorageTypeSSDPremiumVar  = sdkgo.STORAGETYPE_SSD_PREMIUM
+	testClusterStorageTypeSSDStandardVar = sdkgo.STORAGETYPE_SSD_STANDARD
 	testClusterVar                       = "test-cluster"
 	testClusterNewVar                    = "test-cluster-new"
 	testClusterErr                       = errors.New("test cluster error")
@@ -684,7 +684,7 @@ func TestRunClusterCreate(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgSyncMode), strings.ToUpper(testClusterVar))
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgCores), testClusterIntVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgStorageSize), testClusterMbVar)
-		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgStorageType), string(sdkgo.HDD))
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgStorageType), string(sdkgo.STORAGETYPE_HDD))
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgMaintenanceDay), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgMaintenanceTime), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgName), testClusterVar)
@@ -786,7 +786,7 @@ func TestRunClusterCreateErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgSyncMode), strings.ToUpper(testClusterVar))
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgCores), testClusterIntVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgStorageSize), testClusterMbVar)
-		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgStorageType), string(sdkgo.HDD))
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgStorageType), string(sdkgo.STORAGETYPE_HDD))
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgMaintenanceDay), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgMaintenanceTime), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgName), testClusterVar)
@@ -820,7 +820,7 @@ func TestRunClusterCreateConvertErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgSyncMode), strings.ToUpper(testClusterVar))
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgCores), testClusterIntVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgStorageSize), testClusterMbVar)
-		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgStorageType), string(sdkgo.HDD))
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgStorageType), string(sdkgo.STORAGETYPE_HDD))
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgMaintenanceDay), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgMaintenanceTime), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgName), testClusterVar)
@@ -852,7 +852,7 @@ func TestRunClusterCreateLocation(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgRam), testClusterMbVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgCores), testClusterIntVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgStorageSize), testClusterMbVar)
-		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgStorageType), string(sdkgo.HDD))
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgStorageType), string(sdkgo.STORAGETYPE_HDD))
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgMaintenanceDay), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgMaintenanceTime), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgName), testClusterVar)
@@ -886,7 +886,7 @@ func TestRunClusterCreateLocationErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgSyncMode), strings.ToUpper(testClusterVar))
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgCores), testClusterIntVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgStorageSize), testClusterMbVar)
-		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgStorageType), string(sdkgo.HDD))
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgStorageType), string(sdkgo.STORAGETYPE_HDD))
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgMaintenanceDay), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgMaintenanceTime), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgName), testClusterVar)
@@ -921,7 +921,7 @@ func TestRunClusterCreateWaitForState(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgSyncMode), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgCores), testClusterIntVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgStorageSize), testClusterMbVar)
-		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgStorageType), string(sdkgo.HDD))
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgStorageType), string(sdkgo.STORAGETYPE_HDD))
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgMaintenanceDay), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgMaintenanceTime), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgName), testClusterVar)
@@ -957,7 +957,7 @@ func TestRunClusterCreateWaitForStateResponse(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgSyncMode), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgCores), testClusterIntVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgStorageSize), testClusterMbVar)
-		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgStorageType), string(sdkgo.HDD))
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgStorageType), string(sdkgo.STORAGETYPE_HDD))
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgMaintenanceDay), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgMaintenanceTime), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgName), testClusterVar)
@@ -993,7 +993,7 @@ func TestRunClusterCreateWaitForStateIdErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgSyncMode), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgCores), testClusterIntVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgStorageSize), testClusterMbVar)
-		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgStorageType), string(sdkgo.HDD))
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgStorageType), string(sdkgo.STORAGETYPE_HDD))
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgMaintenanceDay), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgMaintenanceTime), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgName), testClusterVar)
@@ -1028,7 +1028,7 @@ func TestRunClusterCreateWaitForStateErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgRam), testClusterMbVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgCores), testClusterIntVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgStorageSize), testClusterMbVar)
-		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgStorageType), string(sdkgo.HDD))
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgStorageType), string(sdkgo.STORAGETYPE_HDD))
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgMaintenanceDay), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgMaintenanceTime), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgName), testClusterVar)
@@ -1064,7 +1064,7 @@ func TestRunClusterCreateWaitForStateNewClusterErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgRam), testClusterMbVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgCores), testClusterIntVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgStorageSize), testClusterMbVar)
-		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgStorageType), string(sdkgo.HDD))
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgStorageType), string(sdkgo.STORAGETYPE_HDD))
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgMaintenanceDay), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgMaintenanceTime), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgName), testClusterVar)
