@@ -7,7 +7,6 @@ import (
 	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
-	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
 	ionoscloud "github.com/ionos-cloud/sdk-go-bundle/products/dataplatform"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dataplatform/completer"
@@ -16,6 +15,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"github.com/ionos-cloud/sdk-go-bundle/shared"
 )
 
 func ClusterDeleteCmd() *core.Command {
@@ -73,7 +73,7 @@ func deleteAll(c *core.CommandConfig) error {
 		return err
 	}
 
-	err = functional.ApplyOrFail(*xs.GetItems(), func(x ionoscloud.ClusterResponseData) error {
+	err = shared.ApplyOrFail(*xs.GetItems(), func(x ionoscloud.ClusterResponseData) error {
 		yes := confirm.Ask(fmt.Sprintf("delete cluster %s (%s)", *x.Id, *x.Properties.Name), viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce)))
 		if yes {
 			_, _, delErr := client.DataplatformClient.DataPlatformClusterApi.ClustersDelete(c.Context, *x.Id).Execute()

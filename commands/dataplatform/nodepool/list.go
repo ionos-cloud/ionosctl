@@ -5,7 +5,6 @@ import (
 
 	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"
 
-	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
 	ionoscloud "github.com/ionos-cloud/sdk-go-bundle/products/dataplatform"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dataplatform/completer"
@@ -13,6 +12,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"github.com/ionos-cloud/sdk-go-bundle/shared"
 )
 
 func NodepoolListCmd() *core.Command {
@@ -71,7 +71,7 @@ func listAll(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	clusterIds := functional.Map(*ls.GetItems(), func(t ionoscloud.ClusterResponseData) string {
+	clusterIds := shared.Map(*ls.GetItems(), func(t ionoscloud.ClusterResponseData) string {
 		return *t.GetId()
 	})
 

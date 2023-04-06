@@ -5,7 +5,6 @@ import (
 	"strconv"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
-	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
 	"github.com/ionos-cloud/ionosctl/v6/services/container-registry/resources"
 
 	"github.com/fatih/structs"
@@ -107,7 +106,7 @@ func TokensIds(regId string) []string {
 
 		allTokens = append(allTokens, *tokens.GetItems()...)
 
-		return functional.Map(
+		return shared.Map(
 			allTokens, func(reg sdkgo.TokenResponse) string {
 				return *reg.GetId()
 			},
@@ -124,7 +123,7 @@ func TokensIds(regId string) []string {
 		allTokens = append(allTokens, *tokens.GetItems()...)
 	}
 
-	return functional.Map(
+	return shared.Map(
 		allTokens, func(reg sdkgo.TokenResponse) string {
 			return *reg.GetId()
 		},

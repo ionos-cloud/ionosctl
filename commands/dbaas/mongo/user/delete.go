@@ -8,12 +8,12 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
-	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	sdkgo "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"github.com/ionos-cloud/sdk-go-bundle/shared"
 )
 
 func UserDeleteCmd() *core.Command {
@@ -67,7 +67,7 @@ func deleteAll(c *core.CommandConfig, clusterId string) error {
 		return err
 	}
 
-	return functional.ApplyOrFail(*xs.GetItems(), func(x sdkgo.User) error {
+	return shared.ApplyOrFail(*xs.GetItems(), func(x sdkgo.User) error {
 		yes := confirm.Ask(fmt.Sprintf("delete user %s", *x.Properties.Username), viper.GetBool(constants.ArgForce))
 		if yes {
 			_, _, delErr := client.MongoClient.UsersApi.ClustersUsersDelete(c.Context, clusterId, *x.Properties.Username).Execute()

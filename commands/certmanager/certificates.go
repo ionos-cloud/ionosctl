@@ -5,8 +5,6 @@ import (
 
 	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"
 
-	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
-
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
@@ -101,7 +99,7 @@ func CertificatesIds() []string {
 	client, _ := client2.Get()
 	svc := resources.NewCertsService(client, context.Background())
 	certs, _, _ := svc.List()
-	return functional.Map(*certs.GetItems(), func(dto ionoscloud.CertificateDto) string {
+	return shared.Map(*certs.GetItems(), func(dto ionoscloud.CertificateDto) string {
 		return *dto.GetId()
 	})
 }

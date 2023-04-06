@@ -5,8 +5,9 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
-	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
 	sdkgo "github.com/ionos-cloud/sdk-go-bundle/products/dataplatform"
+	"github.com/ionos-cloud/sdk-go-bundle/shared"
+
 )
 
 func DataplatformClusterIds() []string {
@@ -14,7 +15,7 @@ func DataplatformClusterIds() []string {
 	if err != nil {
 		return nil
 	}
-	return functional.Map(*ls.GetItems(), func(t sdkgo.ClusterResponseData) string {
+	return shared.Map(*ls.GetItems(), func(t sdkgo.ClusterResponseData) string {
 		return *t.GetId()
 	})
 }
@@ -24,7 +25,7 @@ func DataplatformNodepoolsIds(clusterId string) []string {
 	if err != nil {
 		return nil
 	}
-	return functional.Map(*ls.GetItems(), func(t sdkgo.NodePoolResponseData) string {
+	return shared.Map(*ls.GetItems(), func(t sdkgo.NodePoolResponseData) string {
 		return *t.GetId()
 	})
 }
