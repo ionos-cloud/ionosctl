@@ -6,10 +6,11 @@ package registry
 import (
 	"context"
 	"fmt"
-	"github.com/cilium/fake"
 	"log"
 	"testing"
 	"time"
+
+	"github.com/cilium/fake"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"

@@ -120,7 +120,7 @@ func ServerCmd() *core.Command {
 		Verb:      "create",
 		Aliases:   []string{"c"},
 		ShortDesc: "Create a Server",
-		LongDesc: `Use this command to create an ENTERPRISE or CUBE Server in a specified Virtual Data Center. 
+		LongDesc: `Use this command to create an ENTERPRISE or CUBE Server in a specified Virtual Data Center.
 
 * For ENTERPRISE Servers:
 

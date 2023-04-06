@@ -143,7 +143,7 @@ Required values to run command:
 
 * Data Center Id
 * Server Id
-* Nic Id 
+* Nic Id
 * Protocol`,
 		Example:    createFirewallRuleExample,
 		PreCmdRun:  PreRunDcServerNicIdsFRuleProtocol,

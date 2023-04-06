@@ -16,10 +16,10 @@
 
 ## Overview
 
-IonosCTL is a tool to help you manage your Ionos Cloud resources directly from your terminal. 
+IonosCTL is a tool to help you manage your Ionos Cloud resources directly from your terminal.
 
 IonosCTL uses [Cobra](https://github.com/spf13/cobra) and [Viper](https://github.com/spf13/viper) libraries in order to manage commands and options.
-Cobra is both a library for creating powerful modern command-line interface (CLI) applications as well as a program to generate applications and command files and it is used in many Go projects together with Viper library. 
+Cobra is both a library for creating powerful modern command-line interface (CLI) applications as well as a program to generate applications and command files and it is used in many Go projects together with Viper library.
 
 [![overview](.github/images/overview.gif)](.github/images/overview.gif)
 
@@ -63,7 +63,7 @@ Check the [Release Page](https://github.com/ionos-cloud/ionosctl/releases) and f
 # Check if /usr/local/bin is part of your PATH
 echo $PATH
 
-# Download and extract the binary (<version> is the full semantic version): 
+# Download and extract the binary (<version> is the full semantic version):
 curl -sL https://github.com/ionos-cloud/ionosctl/releases/download/v<version>/ionosctl-<version>-linux-amd64.tar.gz | tar -xzv
 
 # Move the binary somewhere in your $PATH:
@@ -88,9 +88,9 @@ After cloning the repository, you can build `ionosctl` locally with:
 ```
 make build
 ```
-To install `ionosctl` locally, you can use: 
+To install `ionosctl` locally, you can use:
 ```
-make install 
+make install
 ```
 
 Note that the development version is a work-in-progress of a future stable release and can include bugs. Officially released versions will generally be more stable. Check the latest releases in the [Release Page](https://github.com/ionos-cloud/ionosctl/releases).
@@ -175,8 +175,8 @@ After a successful authentication, you will no longer need to provide credential
 
 | Environment Variable | Description                                                                                                                                                                                                                    |
 |----------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `IONOS_USERNAME`     | Specify the username used to login, to authenticate against the IONOS Cloud API                                                                                                                                                | 
-| `IONOS_PASSWORD`     | Specify the password used to login, to authenticate against the IONOS Cloud API                                                                                                                                                | 
+| `IONOS_USERNAME`     | Specify the username used to login, to authenticate against the IONOS Cloud API                                                                                                                                                |
+| `IONOS_PASSWORD`     | Specify the password used to login, to authenticate against the IONOS Cloud API                                                                                                                                                |
 | `IONOS_TOKEN`        | Specify the token used to login, if a token is being used instead of username and password                                                                                                                                     |
 | `IONOS_API_URL`      | Specify the API URL. It will overwrite the API endpoint default value `api.ionos.com`. Note: the host URL does not contain the `/cloudapi/v6` path, so it should _not_ be included in the `IONOS_API_URL` environment variable |
 | `IONOS_LOG_LEVEL`    | Specify the Log Level used to log messages sent to the API. Possible values: `Off`, `Debug`, `Trace`                                                                                                                           |
@@ -197,7 +197,7 @@ You can get the sha256 fingerprint most easily from the browser by inspecting th
 
 ### Enabling Shell Auto-Completion
 
-`ionosctl` provides completions for various shells, for both commands and flags. If you partially type a command or a flag and then press `TAB`, the rest of the command will be automatically filled in. 
+`ionosctl` provides completions for various shells, for both commands and flags. If you partially type a command or a flag and then press `TAB`, the rest of the command will be automatically filled in.
 
 To enable auto-completion, you need to use `ionosctl completion [shell]`, depending on the shell you are using.
 
@@ -205,7 +205,7 @@ To enable auto-completion, you need to use `ionosctl completion [shell]`, depend
 
 #### Enabling Bash Shell Auto-Completion
 
-To load completions for the current session, execute: 
+To load completions for the current session, execute:
 ```
 source <(ionosctl completion bash)
 ```
@@ -215,7 +215,7 @@ To make these changes permanent, append the above line to your `.bashrc` file an
 source ~/.bashrc
 ```
 
-By default, `TAB` key in Bash is bound to `complete` readline command. 
+By default, `TAB` key in Bash is bound to `complete` readline command.
 If you want to use `menu-complete` append the following line to `.bashrc` file:
 ```
 bind 'TAB':menu-complete
@@ -237,7 +237,7 @@ ionosctl completion fish > ~/.config/fish/completions/ionosctl.fish
 
 #### Enabling Zsh Shell Auto-Completion
 
-If shell completions are not already enabled for your environment, you need to enable them. 
+If shell completions are not already enabled for your environment, you need to enable them.
 Add the following line to your `~/.zshrc` file:
 ```
 autoload -Uz compinit; compinit
@@ -280,7 +280,7 @@ Descriptions will only be supported for Complete and MenuComplete.
 
 Follow the next steps to enable it:
 
-To load completions for the current session, execute: 
+To load completions for the current session, execute:
 ```
 PS> ionosctl completion powershell | Out-String | Invoke-Expression
 ```
@@ -290,7 +290,7 @@ To load completions for every new session, run:
 PS> ionosctl completion powershell > ionosctl.ps1
 ```
 
-and source this file from your PowerShell profile or you can append the above line to your PowerShell profile file. 
+and source this file from your PowerShell profile or you can append the above line to your PowerShell profile file.
 
 Regarding the PowerShell profile, you can follow the next steps:
 
@@ -298,7 +298,7 @@ Regarding the PowerShell profile, you can follow the next steps:
 
 * If the result of the previous command is false, the profile doesn’t exist you need to create one, so you can use the command ```New-Item -Type File -Force $PROFILE```.
 
-* Now, you created the profile and you can oopen file with a text editor and add the following line: ```. $PATH\ionosctl.ps1```, where $PATH is absolute path to ionosctl.ps1 (for example . D:\ionoscloud\ionosctl.ps1) 
+* Now, you created the profile and you can oopen file with a text editor and add the following line: ```. $PATH\ionosctl.ps1```, where $PATH is absolute path to ionosctl.ps1 (for example . D:\ionoscloud\ionosctl.ps1)
 
 In case you want more details, the profile creating steps are detailed in this link: https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_profiles?view=powershell-7.1
 
@@ -307,7 +307,7 @@ After you finish your work with ionosctl, you can run ```Set-ExecutionPolicy Res
 
 You will need to start a new PowerShell for this setup to take effect.
 
-Note: PowerShell completions require version 5.0 or above, which comes with Windows 10 and can be downloaded separately for Windows 7 or 8.1. 
+Note: PowerShell completions require version 5.0 or above, which comes with Windows 10 and can be downloaded separately for Windows 7 or 8.1.
 
 ### Output formatting
 
@@ -317,7 +317,7 @@ You can control the output format with the `--output` or `-o` option. IonosCTL s
 
 * Use the `--quiet` option
 
-To redirect all the output to `dev/null`, except for error messages, you can use `--quiet` or `-q` option. 
+To redirect all the output to `dev/null`, except for error messages, you can use `--quiet` or `-q` option.
 
 * Use the `--force` option
 
@@ -391,14 +391,14 @@ make test
 
 For each runnable command, use `ionosctl [command] --help`, `ionosctl [command] -h`  or `ionosctl help [command]` or see the [full reference documentation](docs/subcommands) to see examples.
 
-### Uninstalling `ionosctl` 
+### Uninstalling `ionosctl`
 
 #### Local version
 
 To uninstall a local version built with the steps from [Installing Ionosctl](#building-a-local-versionon-a-linux-machine), use:
 ```text
 make clean
-``` 
+```
 
 ## Contributing
 
