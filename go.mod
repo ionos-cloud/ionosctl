@@ -42,7 +42,7 @@ require (
 	github.com/ionos-cloud/sdk-go-bundle/products/dataplatform v0.1.1 // indirect
 	github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo v0.1.0 // indirect
 	github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql v0.1.0 // indirect
-	github.com/ionos-cloud/sdk-go-bundle/shared v0.1.0 // indirect
+	github.com/ionos-cloud/sdk-go-bundle/shared v0.1.1 // indirect
 )
 
 require (

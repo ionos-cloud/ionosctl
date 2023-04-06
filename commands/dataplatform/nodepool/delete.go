@@ -7,13 +7,13 @@ import (
 	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dataplatform/completer"
-	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
 	ionoscloud "github.com/ionos-cloud/sdk-go-bundle/products/dataplatform"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"github.com/ionos-cloud/sdk-go-bundle/shared"
 )
 
 func NodepoolDeleteCmd() *core.Command {
@@ -89,7 +89,7 @@ func deleteAll(c *core.CommandConfig, clusterId string) error {
 	}
 
 	// accumulate the error. If it's not nil break out of the fold
-	return functional.ApplyOrFail(*ls.GetItems(), func(x ionoscloud.ClusterResponseData) error {
+	return shared.ApplyOrFail(*ls.GetItems(), func(x ionoscloud.ClusterResponseData) error {
 		return deleteNodePools(*x.Id)
 	})
 }
@@ -103,7 +103,7 @@ func deleteNodePools(clusterId string) error {
 	if err != nil {
 		return err
 	}
-	return functional.ApplyOrFail(*xs.GetItems(), func(x ionoscloud.NodePoolResponseData) error {
+	return shared.ApplyOrFail(*xs.GetItems(), func(x ionoscloud.NodePoolResponseData) error {
 		_, _, err := client.DataplatformClient.DataPlatformNodePoolApi.ClustersNodepoolsDelete(context.Background(), clusterId, *x.Id).Execute()
 		return err
 	})

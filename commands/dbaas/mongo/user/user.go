@@ -4,14 +4,13 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
-
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	ionoscloud "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo"
 	"github.com/spf13/cobra"
+	"github.com/ionos-cloud/sdk-go-bundle/shared"
 )
 
 const (
@@ -71,7 +70,7 @@ func getUserRows(ls *[]ionoscloud.User) []map[string]interface{} {
 		var cols UserPrint
 		properties, ok := t.GetPropertiesOk()
 		if ok {
-			rolesAsStrings := functional.Map(*properties.GetRoles(), roleToString)
+			rolesAsStrings := shared.Map(*properties.GetRoles(), roleToString)
 			cols.Roles = strings.Join(rolesAsStrings, ", ") // "db1: read, db2: write, db3: abcd..."
 
 			cols.Username = *properties.GetUsername()

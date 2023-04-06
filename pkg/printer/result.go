@@ -8,12 +8,12 @@ import (
 	"strings"
 	"text/tabwriter"
 
-	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"golang.org/x/exp/slices"
 
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
+	"github.com/ionos-cloud/sdk-go-bundle/shared"
 )
 
 func ColsMessage(cols []string) string {
@@ -47,7 +47,7 @@ func GetHeaders(allColumns []string, defaultColumns []string, customColumns []st
 		return defaultColumns
 	}
 
-	allColumnsLowercase := functional.Map(allColumns, func(x string) string {
+	allColumnsLowercase := shared.Map(allColumns, func(x string) string {
 		return strings.ToLower(x)
 	})
 

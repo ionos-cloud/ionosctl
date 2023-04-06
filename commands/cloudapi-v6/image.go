@@ -16,8 +16,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"golang.org/x/exp/slices"
 
-	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
-
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
@@ -34,6 +32,7 @@ import (
 	"github.com/spf13/viper"
 	"go.uber.org/multierr"
 	"golang.org/x/sync/errgroup"
+	"github.com/ionos-cloud/sdk-go-bundle/shared"
 )
 
 func ImageCmd() *core.Command {
@@ -441,8 +440,8 @@ func PreRunImageUpload(c *core.PreCommandConfig) error {
 
 	validExts := []string{".iso", ".img", ".vmdk", ".vhd", ".vhdx", ".cow", ".qcow", ".qcow2", ".raw", ".vpc", ".vdi"}
 	images := viper.GetStringSlice(core.GetFlagName(c.NS, "image"))
-	invalidImages := functional.Filter(
-		functional.Map(images, func(s string) string {
+	invalidImages := shared.Filter(
+		shared.Map(images, func(s string) string {
 			return filepath.Ext(s)
 		}),
 		func(ext string) bool {
@@ -466,7 +465,7 @@ func PreRunImageUpload(c *core.PreCommandConfig) error {
 
 	validLocs := []string{"fra", "fkb", "txl", "lhr", "las", "ewr", "vit"}
 	locs := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgLocation))
-	invalidLocs := functional.Filter(
+	invalidLocs := shared.Filter(
 		locs,
 		func(loc string) bool {
 			return !slices.Contains(
@@ -627,7 +626,7 @@ func RunImageUpload(c *core.CommandConfig) error {
 		// Returns a slice containing `alias[i] + filepath.Ext(images[i])`
 		// (i.e it gets the extensions from `images` flag, and appends them to each elem `image-alias`)
 		// Resulting slice is the full image names, as returned by `ionosctl image list` on the Name column
-		names = functional.MapIdx(aliases, func(k int, v string) string {
+		names = shared.MapIdx(aliases, func(k int, v string) string {
 			return v + filepath.Ext(images[k])
 		})
 	}

@@ -5,7 +5,6 @@ import (
 
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
-	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
@@ -126,7 +125,7 @@ func RegsIds() []string {
 	//client, _ := config.GetClient()
 	svc := resources.NewRegistriesService(client.Must(), context.Background())
 	regs, _, _ := svc.List("")
-	return functional.Map(
+	return shared.Map(
 		*regs.GetItems(), func(reg ionoscloud.RegistryResponse) string {
 			return *reg.GetId()
 		},

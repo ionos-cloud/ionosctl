@@ -9,8 +9,6 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
-	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
-
 	"github.com/fatih/structs"
 	scope "github.com/ionos-cloud/ionosctl/v6/commands/container-registry/token/scopes"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
@@ -140,7 +138,7 @@ func TokensIds(regId string) []string {
 
 		allTokens = append(allTokens, *tokens.GetItems()...)
 
-		return functional.Map(
+		return shared.Map(
 			allTokens, func(reg ionoscloud.TokenResponse) string {
 				return *reg.GetId()
 			},
@@ -156,7 +154,7 @@ func TokensIds(regId string) []string {
 		allTokens = append(allTokens, *tokens.GetItems()...)
 	}
 
-	return functional.Map(
+	return shared.Map(
 		allTokens, func(reg ionoscloud.TokenResponse) string {
 			return *reg.GetId()
 		},

@@ -11,7 +11,6 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dataplatform/nodepool"
 	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"
-	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
 	ionoscloud "github.com/ionos-cloud/sdk-go-bundle/products/dataplatform"
 
 	"github.com/cilium/fake"
@@ -84,7 +83,7 @@ func testNodepoolOk(t *testing.T) {
 	assert.NoError(t, err)
 	assert.False(t, resp.HttpNotFound())
 	var foundNodepool ionoscloud.NodePoolResponseData
-	assert.True(t, functional.Fold(*ls.GetItems(), func(found bool, x ionoscloud.NodePoolResponseData) bool {
+	assert.True(t, shared.Fold(*ls.GetItems(), func(found bool, x ionoscloud.NodePoolResponseData) bool {
 		if *x.Properties.Name == uniqueResourceName {
 			foundNodepool = x
 			return true

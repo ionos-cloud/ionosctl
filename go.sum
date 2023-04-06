@@ -261,6 +261,8 @@ github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql v0.1.0 h1:s/FZdHaews1vI
 github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql v0.1.0/go.mod h1:8qebNZf4GeZm64BDUqeunDDw/jIQqhry6RyIhEqIHJE=
 github.com/ionos-cloud/sdk-go-bundle/shared v0.1.0 h1:1psLbSn+i/wK0Samy8XqLxsqEnhTshz3Py1lbp5F/ao=
 github.com/ionos-cloud/sdk-go-bundle/shared v0.1.0/go.mod h1:hDQ5fhujYFaYr1fD8bmmf4rlCKAsqKwczuBS0Z5PNBQ=
+github.com/ionos-cloud/sdk-go-bundle/shared v0.1.1 h1:NWobgIhmUJKG6ohFXefMj+KmpEEvLYEDUgGzpns6HQE=
+github.com/ionos-cloud/sdk-go-bundle/shared v0.1.1/go.mod h1:cLIl4zmB1yMdPSNgTzaRmXeuusEAY1O3Lp/iXSc/R6E=
 github.com/ionos-cloud/sdk-go-cert-manager v1.0.0 h1:pPIhdjTB3rjP9x3Cf6B4j8NTZ1u2v/w7/0h7GtFs/Ig=
 github.com/ionos-cloud/sdk-go-cert-manager v1.0.0/go.mod h1:nFzMT0UNtNiLIuDGYj8pulHFQiVVql43oEX/eQIyr5Q=
 github.com/ionos-cloud/sdk-go-container-registry v1.0.0 h1:03FKtFfHdOPZdXxRAFWgivbhmkyY4xk+R79EffoFt/4=
