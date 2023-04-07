@@ -1,6 +1,6 @@
 module github.com/ionos-cloud/ionosctl/v6
 
-go 1.19
+go 1.20
 
 require (
 	github.com/cheggaaa/pb/v3 v3.1.0
@@ -35,8 +35,6 @@ require (
 	github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql v0.1.0
 	github.com/ionos-cloud/sdk-go-bundle/shared v0.1.1
 )
-
-require github.com/ionos-cloud/sdk-go-dataplatform v1.0.0
 
 require (
 	github.com/VividCortex/ewma v1.2.0 // indirect
