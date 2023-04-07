@@ -30,7 +30,7 @@ Use this command to get a list of existing Kubernetes Clusters.
 
 You can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.
 Available Filters:
-* filter by property: [name k8sVersion maintenanceWindow availableUpgradeVersions viableNodePoolVersions apiSubnetAllowList]
+* filter by property: [name k8sVersion maintenanceWindow availableUpgradeVersions viableNodePoolVersions public location natGatewayIp nodeSubnet apiSubnetAllowList]
 * filter by metadata: [etag createdDate createdBy createdByUserId lastModifiedDate lastModifiedBy lastModifiedByUserId state]
 
 ## Options

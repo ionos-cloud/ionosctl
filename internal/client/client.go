@@ -51,7 +51,6 @@ func newClient(name, pwd, token, hostUrl string) (*Client, error) {
 	certManagerConfig := shared.NewConfiguration(name, pwd, token, hostUrl)
 	certManagerConfig.UserAgent = appendUserAgent(certManagerConfig.UserAgent)
 
-
 	postgresUrl := fmt.Sprintf("%s/databases/postgresql", hostUrl)
 	postgresConfig := shared.NewConfiguration(name, pwd, token, postgresUrl)
 	postgresConfig.UserAgent = appendUserAgent(postgresConfig.UserAgent)

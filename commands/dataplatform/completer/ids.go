@@ -7,7 +7,6 @@ import (
 
 	sdkgo "github.com/ionos-cloud/sdk-go-bundle/products/dataplatform"
 	"github.com/ionos-cloud/sdk-go-bundle/shared"
-
 )
 
 func DataplatformClusterIds() []string {
