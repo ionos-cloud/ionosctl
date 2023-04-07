@@ -79,6 +79,5 @@ func deleteAll(c *core.CommandConfig) error {
 		return nil
 	})
 
-	_, _, err = client.Must().DataplatformClient.DataPlatformClusterApi.ClustersDelete(c.Context, viper.GetString(core.GetFlagName(c.NS, constants.FlagName))).Execute()
 	return err
 }
