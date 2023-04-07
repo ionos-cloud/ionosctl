@@ -71,6 +71,8 @@ github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql
 # github.com/ionos-cloud/sdk-go-bundle/shared v0.1.1
 ## explicit; go 1.20
 github.com/ionos-cloud/sdk-go-bundle/shared
+# github.com/ionos-cloud/sdk-go-dataplatform v1.0.0
+## explicit; go 1.18
 # github.com/kardianos/ftps v1.0.3
 ## explicit; go 1.14
 github.com/kardianos/ftps
