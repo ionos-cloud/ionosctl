@@ -68,17 +68,16 @@ func deleteAll(c *core.CommandConfig) error {
 		return err
 	}
 
-	err = functional.ApplyOrFail(*xs.GetItems(), func(x ionoscloud.ClusterResponseData) error {
+	err = functional.ApplyAndAggregateErrors(*xs.GetItems(), func(x ionoscloud.ClusterResponseData) error {
 		yes := confirm.Ask(fmt.Sprintf("delete cluster %s (%s)", *x.Id, *x.Properties.Name), viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce)))
 		if yes {
 			_, _, delErr := client.Must().DataplatformClient.DataPlatformClusterApi.ClustersDelete(c.Context, *x.Id).Execute()
 			if delErr != nil {
-				return delErr
+				return fmt.Errorf("failed deleting %s: %w", *x.Id, delErr)
 			}
 		}
 		return nil
 	})
 
-	_, _, err = client.Must().DataplatformClient.DataPlatformClusterApi.ClustersDelete(c.Context, viper.GetString(core.GetFlagName(c.NS, constants.FlagName))).Execute()
 	return err
 }

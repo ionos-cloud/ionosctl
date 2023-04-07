@@ -84,7 +84,7 @@ func deleteAll(c *core.CommandConfig, clusterId string) error {
 	}
 
 	// accumulate the error. If it's not nil break out of the fold
-	return functional.ApplyOrFail(*ls.GetItems(), func(x ionoscloud.ClusterResponseData) error {
+	return functional.ApplyAndAggregateErrors(*ls.GetItems(), func(x ionoscloud.ClusterResponseData) error {
 		return deleteNodePools(*x.Id)
 	})
 }
