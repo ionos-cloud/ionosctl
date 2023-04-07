@@ -4,7 +4,7 @@ import (
 	"context"
 	"os"
 
-	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
 	"github.com/cilium/fake"
 	cloudapiv6completer "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
@@ -50,12 +50,7 @@ func ClusterUpdateCmd() *core.Command {
 				updateProperties.SetMaintenanceWindow(maintenanceWindow)
 			}
 
-			client, err := client2.Get()
-			if err != nil {
-				return err
-			}
-
-			cluster, _, err := client.DataplatformClient.DataPlatformClusterApi.PatchCluster(c.Context, clusterId).PatchClusterRequest(sdkdataplatform.PatchClusterRequest{Properties: &updateProperties}).Execute()
+			cluster, _, err := client.Must().DataplatformClient.DataPlatformClusterApi.ClustersPatch(c.Context, clusterId).PatchClusterRequest(sdkdataplatform.PatchClusterRequest{Properties: &updateProperties}).Execute()
 			if err != nil {
 				return err
 			}

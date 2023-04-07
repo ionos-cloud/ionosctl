@@ -3,7 +3,7 @@ package nodepool
 import (
 	"context"
 
-	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
 	"github.com/cilium/fake"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dataplatform/completer"
@@ -90,11 +90,7 @@ func NodepoolCreateCmd() *core.Command {
 			input := sdkdataplatform.CreateNodePoolRequest{}
 			input.SetProperties(createProperties)
 
-			client, err := client2.Get()
-			if err != nil {
-				return err
-			}
-			cr, _, err := client.DataplatformClient.DataPlatformNodePoolApi.CreateClusterNodepool(context.Background(), clusterId).CreateNodePoolRequest(input).Execute()
+			cr, _, err := client.Must().DataplatformClient.DataPlatformNodePoolApi.ClustersNodepoolsPost(context.Background(), clusterId).CreateNodePoolRequest(input).Execute()
 			if err != nil {
 				return err
 			}
