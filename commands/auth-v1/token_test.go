@@ -13,7 +13,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/utils/clierror"
 	authv1 "github.com/ionos-cloud/ionosctl/v6/services/auth-v1"
 	"github.com/ionos-cloud/ionosctl/v6/services/auth-v1/resources"
-	sdkgoauth "github.com/ionos-cloud/sdk-go-auth"
+	sdkgoauth "github.com/ionos-cloud/sdk-go-bundle/products/auth"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )

@@ -8,7 +8,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/die"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
-	sdkgoauth "github.com/ionos-cloud/sdk-go-auth"
+	sdkgoauth "github.com/ionos-cloud/sdk-go-bundle/products/auth"
 	certmanager "github.com/ionos-cloud/sdk-go-bundle/products/cert"
 	cloudv6 "github.com/ionos-cloud/sdk-go-bundle/products/compute"
 	registry "github.com/ionos-cloud/sdk-go-bundle/products/containerregistry"
@@ -44,7 +44,8 @@ func newClient(name, pwd, token, hostUrl string) (*Client, error) {
 	// Set Depth Query Parameter globally
 	clientConfig.DefaultQueryParams.Add("depth", "1")
 
-	authConfig := sdkgoauth.NewConfiguration(name, pwd, token, hostUrl)
+	authUrl := fmt.Sprintf("%s/auth/v1", hostUrl)
+	authConfig := shared.NewConfiguration(name, pwd, token, authUrl)
 	authConfig.UserAgent = appendUserAgent(authConfig.UserAgent)
 
 	certManagerConfig := shared.NewConfiguration(name, pwd, token, hostUrl)

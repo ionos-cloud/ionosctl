@@ -5,7 +5,8 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
-	sdkgoauth "github.com/ionos-cloud/sdk-go-auth"
+	sdkgoauth "github.com/ionos-cloud/sdk-go-bundle/products/auth"
+	"github.com/ionos-cloud/sdk-go-bundle/shared"
 )
 
 type Token struct {
@@ -21,7 +22,7 @@ type Tokens struct {
 }
 
 type Response struct {
-	sdkgoauth.APIResponse
+	shared.APIResponse
 }
 
 type DeleteResponse struct {

@@ -47,9 +47,9 @@ github.com/hashicorp/hcl/json/token
 # github.com/inconshreveable/mousetrap v1.1.0
 ## explicit; go 1.18
 github.com/inconshreveable/mousetrap
-# github.com/ionos-cloud/sdk-go-auth v1.0.5
-## explicit; go 1.17
-github.com/ionos-cloud/sdk-go-auth
+# github.com/ionos-cloud/sdk-go-bundle/products/auth v0.1.0
+## explicit; go 1.19
+github.com/ionos-cloud/sdk-go-bundle/products/auth
 # github.com/ionos-cloud/sdk-go-bundle/products/cert v0.1.0
 ## explicit; go 1.19
 github.com/ionos-cloud/sdk-go-bundle/products/cert
@@ -71,16 +71,6 @@ github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql
 # github.com/ionos-cloud/sdk-go-bundle/shared v0.1.1
 ## explicit; go 1.20
 github.com/ionos-cloud/sdk-go-bundle/shared
-# github.com/ionos-cloud/sdk-go-cert-manager v1.0.0
-## explicit; go 1.17
-# github.com/ionos-cloud/sdk-go-container-registry v1.0.0
-## explicit; go 1.18
-# github.com/ionos-cloud/sdk-go-dataplatform v1.0.0
-## explicit; go 1.18
-# github.com/ionos-cloud/sdk-go-dbaas-mongo v1.2.2
-## explicit; go 1.18
-# github.com/ionos-cloud/sdk-go-dbaas-postgres v1.1.1
-## explicit; go 1.19
 # github.com/kardianos/ftps v1.0.3
 ## explicit; go 1.14
 github.com/kardianos/ftps

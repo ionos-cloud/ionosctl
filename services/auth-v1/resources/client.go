@@ -6,7 +6,8 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 
-	sdkgoauth "github.com/ionos-cloud/sdk-go-auth"
+	sdkgoauth "github.com/ionos-cloud/sdk-go-bundle/products/auth"
+	"github.com/ionos-cloud/sdk-go-bundle/shared"
 	"github.com/spf13/viper"
 )
 
@@ -15,7 +16,7 @@ type Client struct {
 }
 
 type ClientConfig struct {
-	sdkgoauth.Configuration
+	shared.Configuration
 }
 
 // ClientService is a wrapper around sdkgoauth.APIClient
@@ -34,7 +35,7 @@ func NewClientService(name, pwd, token, hostUrl string) (ClientService, error) {
 	if token == "" && (name == "" || pwd == "") {
 		return nil, errors.New("username, password or token incorrect")
 	}
-	clientConfig := sdkgoauth.NewConfiguration(name, pwd, token, hostUrl)
+	clientConfig := shared.NewConfiguration(name, pwd, token, hostUrl)
 	clientConfig.UserAgent = fmt.Sprintf("%v_%v", viper.GetString(constants.CLIHttpUserAgent), clientConfig.UserAgent)
 	return &clientService{
 		client: sdkgoauth.NewAPIClient(clientConfig),

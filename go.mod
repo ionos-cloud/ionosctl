@@ -9,9 +9,6 @@ require (
 	github.com/fatih/structs v1.1.0
 	github.com/golang/mock v1.6.0
 	github.com/google/uuid v1.3.0
-	github.com/ionos-cloud/sdk-go-auth v1.0.5
-	github.com/ionos-cloud/sdk-go-dbaas-mongo v1.2.2
-	github.com/ionos-cloud/sdk-go-dbaas-postgres v1.1.1
 	github.com/kardianos/ftps v1.0.3
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/mmatczuk/anyflag v0.0.0-20230209112147-9567d4cab866
@@ -26,23 +23,17 @@ require (
 	golang.org/x/term v0.6.0
 )
 
-require (
-	github.com/cilium/fake v0.3.0
-	github.com/ionos-cloud/sdk-go-container-registry v1.0.0
-)
+require github.com/cilium/fake v0.3.0
 
 require (
+	github.com/ionos-cloud/sdk-go-bundle/products/auth v0.1.0
 	github.com/ionos-cloud/sdk-go-bundle/products/cert v0.1.0
-	github.com/ionos-cloud/sdk-go-dataplatform v1.0.0
-)
-
-require (
-	github.com/ionos-cloud/sdk-go-bundle/products/compute v0.1.0 // indirect
-	github.com/ionos-cloud/sdk-go-bundle/products/containerregistry v0.1.0 // indirect
-	github.com/ionos-cloud/sdk-go-bundle/products/dataplatform v0.1.1 // indirect
-	github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo v0.1.0 // indirect
-	github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql v0.1.0 // indirect
-	github.com/ionos-cloud/sdk-go-bundle/shared v0.1.1 // indirect
+	github.com/ionos-cloud/sdk-go-bundle/products/compute v0.1.0
+	github.com/ionos-cloud/sdk-go-bundle/products/containerregistry v0.1.0
+	github.com/ionos-cloud/sdk-go-bundle/products/dataplatform v0.1.1
+	github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo v0.1.0
+	github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql v0.1.0
+	github.com/ionos-cloud/sdk-go-bundle/shared v0.1.1
 )
 
 require (
@@ -52,7 +43,6 @@ require (
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
-	github.com/ionos-cloud/sdk-go-cert-manager v1.0.0
 	github.com/magiconair/properties v1.8.7 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.17 // indirect
