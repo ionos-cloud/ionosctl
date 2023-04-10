@@ -57,7 +57,7 @@ func main() {
 	command := CLICommand{
 		FunctionName:     pascalCase(*operationID),
 		Namespace:        strings.TrimSuffix(strings.TrimSuffix(filepath.Base(*openAPIFile), ".yaml"), ".json"),
-		Resource:         extractResource(*operationID),
+		Resource:         strings.TrimSuffix(extractResource(*operationID), "s"),
 		Verb:             strings.ToLower(method),
 		Aliases:          createAliases(method),
 		ShortDesc:        operation.Summary,
@@ -66,6 +66,18 @@ func main() {
 		Flags:            flags,
 	}
 
+	if command.Verb == "post" {
+		command.Verb = "create"
+	}
+	if command.Verb == "patch" || command.Verb == "put" {
+		command.Verb = "update"
+	}
+	if command.Verb == "delete" {
+		command.Verb = "remove"
+	}
+	if command.Verb == "get" {
+		command.Verb = "list OR get // TODO"
+	}
 	command.Example = fmt.Sprintf("ionosctl %s %s %s\",// TODO: Add required flags or improve gen script", command.Namespace, command.Resource, command.Verb)
 
 	tmpl, err := template.New("cli-command").Parse(cliCommandTemplate)
@@ -123,6 +135,10 @@ type Flag struct {
 	Required    bool
 }
 
+func parseFlagDescription(desc string) string {
+	return strings.TrimSuffix(strings.ReplaceAll(desc, "\n", ""), ".")
+}
+
 func findOperation(swagger *openapi3.T, operationID string) (*openapi3.Operation, string, string, error) {
 	for path, pathItem := range swagger.Paths {
 		for method, operation := range pathItem.Operations() {
@@ -151,7 +167,7 @@ func extractFlags(swagger *openapi3.T, operation *openapi3.Operation) ([]Flag, e
 			ShortName:   "", // You can provide a custom mapping for short names or leave it empty
 			Type:        flagTypeFromSchema(param.Schema.Value),
 			Default:     flagDefaultFromSchema(param.Schema.Value),
-			Description: strings.TrimSuffix(strings.ReplaceAll(param.Description, "\n", ""), "."),
+			Description: parseFlagDescription(param.Description),
 			Required:    param.Required,
 		}
 		flags = append(flags, flag)
@@ -173,11 +189,11 @@ func extractFlags(swagger *openapi3.T, operation *openapi3.Operation) ([]Flag, e
 func appendNestedFlags(flags []Flag, propName string, prop *openapi3.SchemaRef, content *openapi3.MediaType) []Flag {
 	if prop.Value.Properties == nil {
 		flag := Flag{
-			Name:        propName,
+			Name:        "constants.Flag" + strings.Title(propName),
 			ShortName:   "",
 			Type:        flagTypeFromSchema(prop.Value),
 			Default:     flagDefaultFromSchema(prop.Value),
-			Description: prop.Value.Description,
+			Description: parseFlagDescription(prop.Value.Description),
 			Required:    slices.Contains(content.Schema.Value.Required, propName),
 		}
 		flags = append(flags, flag)
@@ -203,7 +219,7 @@ func flagTypeFromSchema(schema *openapi3.Schema) string {
 	case "array":
 		return "StringSlice"
 	case "object":
-		return "StringToString/*Check me!*/"
+		return "StringToString"
 	default:
 		return "String" // Default to string for unknown types
 	}
@@ -250,8 +266,10 @@ func createAliases(verb string) string {
 		return "{\"u\", \"patch\"}"
 	case "get":
 		return "{\"g\"}"
+	case "create":
+		return "{\"c\", \"post\"}"
 	default:
-		return ""
+		return "{}"
 	}
 }
 
@@ -276,7 +294,9 @@ func pascalCase(s string) string {
 	return strings.Join(words, "")
 }
 
-const cliCommandTemplate = `func {{.FunctionName}}Cmd() *core.Command {
+const cliCommandTemplate = `package todo
+
+func {{.FunctionName}}Cmd() *core.Command {
 	cmd := core.NewCommand(context.TODO(), nil, core.CommandBuilder{
 		Namespace: "{{.Namespace}}",
 		Resource:  "{{.Resource}}",
@@ -295,8 +315,7 @@ const cliCommandTemplate = `func {{.FunctionName}}Cmd() *core.Command {
 
 	// TODO: Check me! Did I successfully add all flags for {{.FunctionName}}?
 	{{range .Flags}}
-	cmd.Add{{.Type}}Flag("{{.Name}}", "{{.ShortName}}", {{.Default}}, "{{.Description}}"{{if .Required}}, core.RequiredFlagOption(){{end}})
-	{{end}}
+	cmd.Add{{.Type}}Flag({{.Name}}, "{{.ShortName}}", {{.Default}}, "{{.Description}}"{{if .Required}}, core.RequiredFlagOption(){{end}}){{end}}
 
 
 	return cmd
