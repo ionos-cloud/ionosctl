@@ -3,7 +3,7 @@ package cluster
 import (
 	"context"
 
-	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
@@ -23,12 +23,7 @@ func ClusterListCmd() *core.Command {
 			c.Printer.Verbose("Getting Clusters...")
 			name := viper.GetString(core.GetFlagName(c.NS, constants.FlagName))
 
-			client, err := client2.Get()
-			if err != nil {
-				return err
-			}
-
-			req := client.DataplatformClient.DataPlatformClusterApi.ClustersGet(c.Context)
+			req := client.Must().DataplatformClient.DataPlatformClusterApi.ClustersGet(c.Context)
 			if name != "" {
 				req = req.Name(name)
 			}

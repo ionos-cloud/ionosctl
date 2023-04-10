@@ -3,7 +3,7 @@ package nodepool
 import (
 	"context"
 
-	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
 	ionoscloud "github.com/ionos-cloud/sdk-go-bundle/products/dataplatform"
 
@@ -33,12 +33,7 @@ func NodepoolListCmd() *core.Command {
 			c.Printer.Verbose("Getting Nodepools...")
 			clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
 
-			client, err := client2.Get()
-			if err != nil {
-				return err
-			}
-
-			np, _, err := client.DataplatformClient.DataPlatformNodePoolApi.ClustersNodepoolsGet(c.Context, clusterId).Execute()
+			np, _, err := client.Must().DataplatformClient.DataPlatformNodePoolApi.ClustersNodepoolsGet(c.Context, clusterId).Execute()
 			if err != nil {
 				return err
 			}
@@ -63,11 +58,7 @@ func NodepoolListCmd() *core.Command {
 func listAll(c *core.CommandConfig) error {
 	c.Printer.Verbose("Getting all nodepools...")
 
-	client, err := client2.Get()
-	if err != nil {
-		return err
-	}
-	ls, _, err := client.DataplatformClient.DataPlatformClusterApi.ClustersGet(context.Background()).Execute()
+	ls, _, err := client.Must().DataplatformClient.DataPlatformClusterApi.ClustersGet(context.Background()).Execute()
 	if err != nil {
 		return err
 	}
@@ -77,7 +68,7 @@ func listAll(c *core.CommandConfig) error {
 
 	nps := make([]ionoscloud.NodePoolResponseData, 0)
 	for _, cID := range clusterIds {
-		np, _, err := client.DataplatformClient.DataPlatformNodePoolApi.ClustersNodepoolsGet(c.Context, cID).Execute()
+		np, _, err := client.Must().DataplatformClient.DataPlatformNodePoolApi.ClustersNodepoolsGet(c.Context, cID).Execute()
 		if err != nil {
 			return err
 		}

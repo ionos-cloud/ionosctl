@@ -73,7 +73,7 @@ func deleteAll(c *core.CommandConfig) error {
 		return err
 	}
 
-	return shared.ApplyOrFail(*xs.GetItems(), func(x sdkgo.ClusterResponse) error {
+	return shared.ApplyAndAggregateErrors(*xs.GetItems(), func(x sdkgo.ClusterResponse) error {
 		yes := confirm.Ask(fmt.Sprintf("delete cluster %s (%s)", *x.Id, *x.Properties.DisplayName), viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce)))
 		if yes {
 			_, _, delErr := client.MongoClient.ClustersApi.ClustersDelete(c.Context, *x.Id).Execute()

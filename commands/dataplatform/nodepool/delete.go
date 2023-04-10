@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dataplatform/completer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
@@ -39,8 +39,7 @@ func NodepoolDeleteCmd() *core.Command {
 				return err
 			}
 			c.Printer.Verbose("Deleting nodepool: %s", nodepoolId)
-			client, err := client2.Get()
-			_, _, err = client.DataplatformClient.DataPlatformNodePoolApi.ClustersNodepoolsDelete(c.Context, clusterId, nodepoolId).Execute()
+			_, _, err = client.Must().DataplatformClient.DataPlatformNodePoolApi.ClustersNodepoolsDelete(c.Context, clusterId, nodepoolId).Execute()
 			if err != nil {
 				return err
 			}
@@ -79,32 +78,24 @@ func deleteAll(c *core.CommandConfig, clusterId string) error {
 	}
 	// Only --all is provided, so delete all nodepools
 
-	client, err := client2.Get()
-	if err != nil {
-		return err
-	}
-	ls, _, err := client.DataplatformClient.DataPlatformClusterApi.ClustersGet(c.Context).Execute()
+	ls, _, err := client.Must().DataplatformClient.DataPlatformClusterApi.ClustersGet(c.Context).Execute()
 	if err != nil {
 		return err
 	}
 
 	// accumulate the error. If it's not nil break out of the fold
-	return shared.ApplyOrFail(*ls.GetItems(), func(x ionoscloud.ClusterResponseData) error {
+	return shared.ApplyAndAggregateErrors(*ls.GetItems(), func(x ionoscloud.ClusterResponseData) error {
 		return deleteNodePools(*x.Id)
 	})
 }
 
 func deleteNodePools(clusterId string) error {
-	client, err := client2.Get()
-	if err != nil {
-		return err
-	}
-	xs, _, err := client.DataplatformClient.DataPlatformNodePoolApi.ClustersNodepoolsGet(context.Background(), clusterId).Execute()
+	xs, _, err := client.Must().DataplatformClient.DataPlatformNodePoolApi.ClustersNodepoolsGet(context.Background(), clusterId).Execute()
 	if err != nil {
 		return err
 	}
 	return shared.ApplyOrFail(*xs.GetItems(), func(x ionoscloud.NodePoolResponseData) error {
-		_, _, err := client.DataplatformClient.DataPlatformNodePoolApi.ClustersNodepoolsDelete(context.Background(), clusterId, *x.Id).Execute()
+		_, _, err := client.Must().DataplatformClient.DataPlatformNodePoolApi.ClustersNodepoolsDelete(context.Background(), clusterId, *x.Id).Execute()
 		return err
 	})
 }

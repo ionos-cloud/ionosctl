@@ -67,7 +67,7 @@ func deleteAll(c *core.CommandConfig, clusterId string) error {
 		return err
 	}
 
-	return shared.ApplyOrFail(*xs.GetItems(), func(x sdkgo.User) error {
+	return shared.ApplyAndAggregateErrors(*xs.GetItems(), func(x sdkgo.User) error {
 		yes := confirm.Ask(fmt.Sprintf("delete user %s", *x.Properties.Username), viper.GetBool(constants.ArgForce))
 		if yes {
 			_, _, delErr := client.MongoClient.UsersApi.ClustersUsersDelete(c.Context, clusterId, *x.Properties.Username).Execute()
