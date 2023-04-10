@@ -1,6 +1,6 @@
 # See https://pre-commit.com for more information
 # See https://pre-commit.com/hooks.html for more hooks
-exclude: 'vendor'
+exclude: '(vendor|(^|/)out/)'
 
 repos:
 - repo: https://github.com/tekwizely/pre-commit-golang
