@@ -197,3 +197,10 @@ builds/
 
 # direnv config
 .envrc
+
+# Ignore everything in tools/cmdgen
+/tools/cmdgen/*
+# But don't ignore the following:
+!/tools/cmdgen/*.go
+!/tools/cmdgen/go.mod
+!/tools/cmdgen/vendor

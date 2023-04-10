@@ -162,21 +162,32 @@ func extractFlags(swagger *openapi3.T, operation *openapi3.Operation) ([]Flag, e
 		content := operation.RequestBody.Value.Content["application/json"]
 		if content != nil {
 			for propName, prop := range content.Schema.Value.Properties {
-				// Extract property properties
-				flag := Flag{
-					Name:        propName,
-					ShortName:   "",
-					Type:        flagTypeFromSchema(prop.Value),
-					Default:     flagDefaultFromSchema(prop.Value),
-					Description: prop.Value.Description,
-					Required:    slices.Contains(content.Schema.Value.Required, propName),
-				}
-				flags = append(flags, flag)
+				flags = appendNestedFlags(flags, propName, prop, content)
 			}
 		}
 	}
 
 	return flags, nil
+}
+
+func appendNestedFlags(flags []Flag, propName string, prop *openapi3.SchemaRef, content *openapi3.MediaType) []Flag {
+	if prop.Value.Properties == nil {
+		flag := Flag{
+			Name:        propName,
+			ShortName:   "",
+			Type:        flagTypeFromSchema(prop.Value),
+			Default:     flagDefaultFromSchema(prop.Value),
+			Description: prop.Value.Description,
+			Required:    slices.Contains(content.Schema.Value.Required, propName),
+		}
+		flags = append(flags, flag)
+	} else {
+		for nestedPropName, nestedProp := range prop.Value.Properties {
+			flags = appendNestedFlags(flags, nestedPropName, nestedProp, content)
+		}
+	}
+
+	return flags
 }
 
 func flagTypeFromSchema(schema *openapi3.Schema) string {
