@@ -40,7 +40,11 @@ func GetServerUrl() string {
 	if url := viper.GetString(constants.ServerUrl); url != "" {
 		return url
 	}
-	return viper.GetString(constants.ArgServerUrl)
+	if url := viper.GetString(constants.ArgServerUrl); url != "" {
+		return url
+	} else {
+		return constants.DefaultApiURL
+	}
 }
 
 func GetConfigFile() string {

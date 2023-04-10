@@ -39,10 +39,10 @@ func newClient(name, pwd, token, hostUrl string) (*Client, error) {
 	}
 
 	cloudUrl := fmt.Sprintf("%s/cloudapi/v6", hostUrl)
-	clientConfig := shared.NewConfiguration(name, pwd, token, cloudUrl)
-	clientConfig.UserAgent = fmt.Sprintf("%v_%v", viper.GetString(constants.CLIHttpUserAgent), clientConfig.UserAgent)
+	cloudConfig := shared.NewConfiguration(name, pwd, token, cloudUrl)
+	cloudConfig.UserAgent = appendUserAgent(cloudConfig.UserAgent)
 	// Set Depth Query Parameter globally
-	clientConfig.DefaultQueryParams.Add("depth", "1")
+	cloudConfig.DefaultQueryParams.Add("depth", "1")
 
 	authUrl := fmt.Sprintf("%s/auth/v1", hostUrl)
 	authConfig := shared.NewConfiguration(name, pwd, token, authUrl)
@@ -68,7 +68,7 @@ func newClient(name, pwd, token, hostUrl string) (*Client, error) {
 	registryConfig.UserAgent = appendUserAgent(registryConfig.UserAgent)
 
 	return &Client{
-			CloudClient:        cloudv6.NewAPIClient(clientConfig),
+			CloudClient:        cloudv6.NewAPIClient(cloudConfig),
 			AuthClient:         sdkgoauth.NewAPIClient(authConfig),
 			CertManagerClient:  certmanager.NewAPIClient(certManagerConfig),
 			PostgresClient:     postgres.NewAPIClient(postgresConfig),

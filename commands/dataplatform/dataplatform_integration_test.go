@@ -12,6 +12,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/dataplatform/nodepool"
 	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"
 	ionoscloud "github.com/ionos-cloud/sdk-go-bundle/products/dataplatform"
+	"github.com/ionos-cloud/sdk-go-bundle/shared"
 
 	"github.com/cilium/fake"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dataplatform/cluster"
@@ -56,7 +57,7 @@ func testClusterOk(t *testing.T) {
 	err := c.Command.Execute()
 	assert.NoError(t, err)
 
-	ls, resp, err := client.DataplatformClient.DataPlatformClusterApi.GetClusters(context.Background()).Name(uniqueResourceName).Execute()
+	ls, resp, err := client.DataplatformClient.DataPlatformClusterApi.ClustersGet(context.Background()).Name(uniqueResourceName).Execute()
 	assert.NoError(t, err)
 	assert.False(t, resp.HttpNotFound())
 	items := *ls.Items
@@ -79,7 +80,7 @@ func testNodepoolOk(t *testing.T) {
 	err := c.Command.Execute()
 	assert.NoError(t, err)
 
-	ls, resp, err := client.DataplatformClient.DataPlatformNodePoolApi.GetClusterNodepools(context.Background(), createdClusterId).Execute()
+	ls, resp, err := client.DataplatformClient.DataPlatformNodePoolApi.ClustersNodepoolsGet(context.Background(), createdClusterId).Execute()
 	assert.NoError(t, err)
 	assert.False(t, resp.HttpNotFound())
 	var foundNodepool ionoscloud.NodePoolResponseData
@@ -112,7 +113,7 @@ func setup() error {
 	// make sure datacenter exists
 	dcs, resp, err := client.CloudClient.DataCentersApi.DatacentersGet(context.Background()).Filter("name", uniqueResourceName).Depth(1).Execute()
 	if resp.HttpNotFound() || len(*dcs.Items) < 1 {
-		dc, _, err := client.CloudClient.DataCentersApi.DatacentersPost(context.Background()).Datacenter(sdkcompute.Datacenter{Properties: &sdkcompute.DatacenterProperties{Name: sdkcompute.PtrString(uniqueResourceName), Location: sdkcompute.PtrString("de/fra")}}).Execute()
+		dc, _, err := client.CloudClient.DataCentersApi.DatacentersPost(context.Background()).Datacenter(sdkcompute.Datacenter{Properties: &sdkcompute.DatacenterProperties{Name: shared.ToPtr(uniqueResourceName), Location: shared.ToPtr("de/fra")}}).Execute()
 		if err != nil {
 			return fmt.Errorf("failed creating dc %w", err)
 		}
@@ -128,7 +129,7 @@ func setup() error {
 }
 
 func teardown() {
-	_, _, err := client.DataplatformClient.DataPlatformClusterApi.DeleteCluster(context.Background(), createdClusterId).Execute()
+	_, _, err := client.DataplatformClient.DataPlatformClusterApi.ClustersDelete(context.Background(), createdClusterId).Execute()
 	if err != nil {
 		fmt.Printf("failed deleting cluster: %v\n", err)
 	}
