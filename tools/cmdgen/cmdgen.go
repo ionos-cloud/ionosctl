@@ -52,8 +52,6 @@ func main() {
 		panic(err)
 	}
 
-	log.Printf("Extracted flags: %+v\n", flags)
-
 	command := CLICommand{
 		FunctionName:     pascalCase(*operationID),
 		Namespace:        strings.TrimSuffix(strings.TrimSuffix(filepath.Base(*openAPIFile), ".yaml"), ".json"),
@@ -157,8 +155,6 @@ func extractFlags(swagger *openapi3.T, operation *openapi3.Operation) ([]Flag, e
 	log.Printf("Operation: %s\n", j)
 	// Iterate through operation parameters
 	for _, paramRef := range operation.Parameters {
-		log.Printf("Looking at parameter: %+v\n", paramRef.Value.Description)
-
 		param := paramRef.Value
 
 		// Extract parameter properties
@@ -194,7 +190,7 @@ func appendNestedFlags(flags []Flag, propName string, prop *openapi3.SchemaRef, 
 			Type:        flagTypeFromSchema(prop.Value),
 			Default:     flagDefaultFromSchema(prop.Value),
 			Description: parseFlagDescription(prop.Value.Description),
-			Required:    slices.Contains(content.Schema.Value.Required, propName),
+			Required:    slices.Contains(prop.Value.Required, propName),
 		}
 		flags = append(flags, flag)
 	} else {
@@ -294,10 +290,16 @@ func pascalCase(s string) string {
 	return strings.Join(words, "")
 }
 
-const cliCommandTemplate = `package todo
+const cliCommandTemplate = `package main
+
+import (
+	"context"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+)
 
 func {{.FunctionName}}Cmd() *core.Command {
-	cmd := core.NewCommand(context.TODO(), nil, core.CommandBuilder{
+	cmd := core.NewCommand(context.Background(), nil, core.CommandBuilder{
 		Namespace: "{{.Namespace}}",
 		Resource:  "{{.Resource}}",
 		Verb:      "{{.Verb}}",
@@ -305,7 +307,7 @@ func {{.FunctionName}}Cmd() *core.Command {
 		ShortDesc: "{{.ShortDesc}}",
 		Example:   "{{.Example}}",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			return core.CheckRequiredFlagsSets(c.Command, c.NS, []string{{.RequiredFlagSets}})
+			return core.CheckRequiredFlagsSets(c.Command, c.NS, {{.RequiredFlagSets}})
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			// Implement the actual command logic here
