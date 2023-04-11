@@ -1,6 +1,6 @@
 # See https://pre-commit.com for more information
 # See https://pre-commit.com/hooks.html for more hooks
-exclude: '(vendor|(^|/)out/)'
+exclude: '(vendor|out)/'
 
 repos:
 - repo: https://github.com/tekwizely/pre-commit-golang
@@ -8,7 +8,7 @@ repos:
   hooks:
     - id: go-fmt
     - id: go-imports
-    - id: go-mod-tidy
+#    - id: go-mod-tidy
     # - id: go-critic # add me once all complaints are fixed
     # - id: golangci-lint # add me once all complaints are fixed
 

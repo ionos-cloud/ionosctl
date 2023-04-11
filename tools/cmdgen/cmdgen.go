@@ -19,6 +19,8 @@ func main() {
 	openAPIFile := flag.String("s", "dataplatform.yaml", "Path to the OpenAPI spec file (required)")
 	operationID := flag.String("i", "", "Operation ID to generate the CLI command for (required or -l)")
 	listOperationIDs := flag.Bool("l", false, "List all operation IDs instead of generating a command (required or -i)")
+	genHelpers := flag.Bool("p", false, "Generate the duplicated printing helper functions: Make(obj)Print, allCols, PrintObject, etc")
+
 	out := flag.String("o", "generated_command", "Output file")
 	flag.Parse()
 
@@ -78,7 +80,26 @@ func main() {
 	}
 	command.Example = fmt.Sprintf("ionosctl %s %s %s\",// TODO: Add required flags or improve gen script", command.Namespace, command.Resource, command.Verb)
 
-	tmpl, err := template.New("cli-command").Parse(cliCommandTemplate)
+	if *genHelpers {
+		tmplHelpers, err := template.New("cli-helpers").Parse(printHelpersTmpl)
+		if err != nil {
+			panic(err)
+		}
+		var bufHelpers bytes.Buffer
+		err = tmplHelpers.Execute(&bufHelpers, command)
+		if err != nil {
+			panic(err)
+		}
+		command.Helpers = bufHelpers.String()
+	} else {
+		command.Helpers = ""
+	}
+
+	var templateFunctions = template.FuncMap{
+		"requiredFlagsExample": requiredFlagsExample,
+	}
+
+	tmpl, err := template.New("cli-command").Funcs(templateFunctions).Parse(cliCommandTemplate)
 	if err != nil {
 		panic(err)
 	}
@@ -122,6 +143,7 @@ type CLICommand struct {
 	RequiredFlagSets string
 	InitClient       string
 	Flags            []Flag
+	PrintHelpers     string // MakePrint, allCols and other duplicated code related to printing.
 }
 
 type Flag struct {
@@ -305,9 +327,22 @@ func {{.FunctionName}}Cmd() *core.Command {
 		Verb:      "{{.Verb}}",
 		Aliases:   []string{{.Aliases}},
 		ShortDesc: "{{.ShortDesc}}",
-		Example:   "{{.Example}}",
+		Example:   "ionosctl {{.Namespace}} {{.Resource}} {{.Verb}} {{requiredFlagsExample .Flags}}",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			return core.CheckRequiredFlagsSets(c.Command, c.NS, {{.RequiredFlagSets}})
+			/* TODO: Delete/modify me for --all
+			 * err := core.CheckRequiredFlagsSets(c.Command, c.NS, []string{constants.ArgAll}, []string{constants.Flag<Parent>Id}, []string{constants.ArgAll, constants.Flag<Parent>Id})
+			 * if err != nil {
+			 * 	return err
+			 * }
+             * */
+
+			// TODO: If no --all, mark individual flags as required{{range .Flags}}{{if .Required}}
+			err = c.Command.Command.MarkFlagRequired("{{.Name}}")
+			if err != nil {
+				return err
+			}{{end}}{{end}}
+
+			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			// Implement the actual command logic here
@@ -315,11 +350,60 @@ func {{.FunctionName}}Cmd() *core.Command {
 		InitClient: {{.InitClient}},
 	})
 
-	// TODO: Check me! Did I successfully add all flags for {{.FunctionName}}?
 	{{range .Flags}}
 	cmd.Add{{.Type}}Flag({{.Name}}, "{{.ShortName}}", {{.Default}}, "{{.Description}}"{{if .Required}}, core.RequiredFlagOption(){{end}}){{end}}
-
 
 	return cmd
 }
 `
+
+const printHelpersTmpl = `// Helper functions for printing {{.Resource}}
+
+func get{{.Resource}}Print(c *core.CommandConfig, dcs *[]{{.PackageName}}.{{.Resource}}ResponseData) printer.Result {
+	r := printer.Result{}
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+
+	if c != nil && dcs != nil {
+		r.OutputJSON = dcs
+		r.KeyValue = make{{.Resource}}PrintObj(dcs)
+		r.Columns = printer.GetHeaders(allCols, defCols, cols)
+	}
+	return r
+}
+
+type {{.Resource}}Print struct {
+{{range .Columns}}	{{.Name}} {{.Type}} 'json:"{{.Name}},omitempty"'{{end}}
+}
+
+var allCols = structs.Names({{.Resource}}Print{})
+var defCols = allCols[:len(allCols)-3]
+
+func make{{.Resource}}PrintObj(data *[]{{.PackageName}}.{{.Resource}}ResponseData) []map[string]interface{} {
+	out := make([]map[string]interface{}, 0, len(*data))
+
+	for _, item := range *data {
+		var printObj {{.Resource}}Print
+		printObj.Id = *item.GetId()
+
+		// Fill in the rest of the fields from the response object
+		{{range .Columns}}
+		if propertiesOk, ok := item.GetPropertiesOk(); ok && propertiesOk != nil {
+			printObj.{{.Name}} = *propertiesOk.Get{{.Name}}()
+		}{{end}}
+
+		o := structs.Map(printObj)
+		out = append(out, o)
+	}
+	return out
+}
+`
+
+func requiredFlagsExample(flags []Flag) string {
+	var flagExample []string
+	for _, flag := range flags {
+		if flag.Required {
+			flagExample = append(flagExample, fmt.Sprintf("--%s <%s>", flag.Name, flag.Type))
+		}
+	}
+	return strings.Join(flagExample, " ")
+}
