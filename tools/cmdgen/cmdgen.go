@@ -49,21 +49,26 @@ func main() {
 		panic(err)
 	}
 
-	flags, err := extractFlags(swagger, operation)
+	flags, err := extractFlags(operation)
+	if err != nil {
+		panic(err)
+	}
+
+	cols, err := extractCols(operation)
 	if err != nil {
 		panic(err)
 	}
 
 	command := CLICommand{
-		FunctionName:     pascalCase(*operationID),
-		Namespace:        strings.TrimSuffix(strings.TrimSuffix(filepath.Base(*openAPIFile), ".yaml"), ".json"),
-		Resource:         strings.TrimSuffix(extractResource(*operationID), "s"),
-		Verb:             strings.ToLower(method),
-		Aliases:          createAliases(method),
-		ShortDesc:        operation.Summary,
-		RequiredFlagSets: "[]string{constants.ArgAll}, []string{constants.FlagClusterId}, []string{constants.ArgAll, constants.FlagClusterId}",
-		InitClient:       "true",
-		Flags:            flags,
+		FunctionName: pascalCase(*operationID),
+		Namespace:    strings.TrimSuffix(strings.TrimSuffix(filepath.Base(*openAPIFile), ".yaml"), ".json"),
+		Resource:     strings.TrimSuffix(extractResource(*operationID), "s"),
+		Verb:         strings.ToLower(method),
+		Aliases:      createAliases(method),
+		ShortDesc:    operation.Summary,
+		InitClient:   "true",
+		Flags:        flags,
+		Columns:      cols,
 	}
 
 	if command.Verb == "post" {
@@ -91,8 +96,6 @@ func main() {
 			panic(err)
 		}
 		command.Helpers = bufHelpers.String()
-	} else {
-		command.Helpers = ""
 	}
 
 	var templateFunctions = template.FuncMap{
@@ -133,17 +136,17 @@ func printOperationIDs(swagger *openapi3.T) {
 }
 
 type CLICommand struct {
-	FunctionName     string
-	Namespace        string
-	Resource         string
-	Verb             string
-	Aliases          string
-	ShortDesc        string
-	Example          string
-	RequiredFlagSets string
-	InitClient       string
-	Flags            []Flag
-	PrintHelpers     string // MakePrint, allCols and other duplicated code related to printing.
+	FunctionName string
+	Namespace    string
+	Resource     string
+	Verb         string
+	Aliases      string
+	ShortDesc    string
+	Example      string
+	InitClient   string
+	Flags        []Flag
+	Helpers      string // MakePrint, allCols and other duplicated code related to printing.
+	Columns      []Col  // Columns for the response object
 }
 
 type Flag struct {
@@ -153,6 +156,11 @@ type Flag struct {
 	Default     string
 	Description string
 	Required    bool
+}
+
+type Col struct {
+	Name string
+	Type string
 }
 
 func parseFlagDescription(desc string) string {
@@ -170,7 +178,60 @@ func findOperation(swagger *openapi3.T, operationID string) (*openapi3.Operation
 	return nil, "", "", fmt.Errorf("operation not found: %s", operationID)
 }
 
-func extractFlags(swagger *openapi3.T, operation *openapi3.Operation) ([]Flag, error) {
+func extractCols(operation *openapi3.Operation) ([]Col, error) {
+	var cols []Col
+
+	response := operation.Responses.Get(200)
+	if response == nil {
+		return nil, fmt.Errorf("no 200 response found")
+	}
+
+	content := response.Value.Content["application/json"]
+	if content == nil {
+		return nil, fmt.Errorf("no 'application/json' content found")
+	}
+
+	schema := content.Schema
+	if schema == nil {
+		return nil, fmt.Errorf("no schema found")
+	}
+
+	cols, err := extractNestedCols(schema.Value.Properties, "")
+	if err != nil {
+		return nil, err
+	}
+
+	return cols, nil
+}
+
+func extractNestedCols(properties map[string]*openapi3.SchemaRef, parentName string) ([]Col, error) {
+	var cols []Col
+
+	for propName, prop := range properties {
+		fullPropName := propName
+		if parentName != "" {
+			fullPropName = strings.Title(propName)
+		}
+
+		if prop.Value.Type == "object" {
+			nestedCols, err := extractNestedCols(prop.Value.Properties, fullPropName)
+			if err != nil {
+				return nil, err
+			}
+			cols = append(cols, nestedCols...)
+		} else {
+			col := Col{
+				Name: strings.Title(fullPropName),
+				Type: goTypeFromSchema(prop.Value.Type),
+			}
+			cols = append(cols, col)
+		}
+	}
+
+	return cols, nil
+}
+
+func extractFlags(operation *openapi3.Operation) ([]Flag, error) {
 	var flags []Flag
 
 	j, _ := operation.MarshalJSON()
@@ -183,7 +244,7 @@ func extractFlags(swagger *openapi3.T, operation *openapi3.Operation) ([]Flag, e
 		flag := Flag{
 			Name:        param.Name,
 			ShortName:   "", // You can provide a custom mapping for short names or leave it empty
-			Type:        flagTypeFromSchema(param.Schema.Value),
+			Type:        flagTypeFromSchema(param.Schema.Value.Type),
 			Default:     flagDefaultFromSchema(param.Schema.Value),
 			Description: parseFlagDescription(param.Description),
 			Required:    param.Required,
@@ -209,7 +270,7 @@ func appendNestedFlags(flags []Flag, propName string, prop *openapi3.SchemaRef, 
 		flag := Flag{
 			Name:        "constants.Flag" + strings.Title(propName),
 			ShortName:   "",
-			Type:        flagTypeFromSchema(prop.Value),
+			Type:        flagTypeFromSchema(prop.Value.Type),
 			Default:     flagDefaultFromSchema(prop.Value),
 			Description: parseFlagDescription(prop.Value.Description),
 			Required:    slices.Contains(prop.Value.Required, propName),
@@ -224,8 +285,8 @@ func appendNestedFlags(flags []Flag, propName string, prop *openapi3.SchemaRef, 
 	return flags
 }
 
-func flagTypeFromSchema(schema *openapi3.Schema) string {
-	switch schema.Type {
+func flagTypeFromSchema(schema string) string {
+	switch schema {
 	case "integer":
 		return "Int"
 	case "number":
@@ -243,6 +304,24 @@ func flagTypeFromSchema(schema *openapi3.Schema) string {
 	}
 }
 
+func goTypeFromSchema(schema string) string {
+	switch schema {
+	case "integer":
+		return "int"
+	case "number":
+		return "float"
+	case "string":
+		return "string"
+	case "boolean":
+		return "bool"
+	case "array":
+		return "[]string"
+	case "object":
+		return "interface{}"
+	default:
+		return "string" // Default to string for unknown types
+	}
+}
 func flagDefaultFromSchema(schema *openapi3.Schema) string {
 	switch schema.Type {
 	case "integer":
@@ -355,11 +434,13 @@ func {{.FunctionName}}Cmd() *core.Command {
 
 	return cmd
 }
+
+{{.Helpers}}
 `
 
 const printHelpersTmpl = `// Helper functions for printing {{.Resource}}
 
-func get{{.Resource}}Print(c *core.CommandConfig, dcs *[]{{.PackageName}}.{{.Resource}}ResponseData) printer.Result {
+func get{{.Resource}}Print(c *core.CommandConfig, dcs *[]ionoscloud.{{.Resource}}ResponseData) printer.Result {
 	r := printer.Result{}
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
@@ -372,13 +453,14 @@ func get{{.Resource}}Print(c *core.CommandConfig, dcs *[]{{.PackageName}}.{{.Res
 }
 
 type {{.Resource}}Print struct {
-{{range .Columns}}	{{.Name}} {{.Type}} 'json:"{{.Name}},omitempty"'{{end}}
+{{range .Columns}}	{{.Name}} {{.Type}} ` + "`json:\"{{.Name}},omitempty\"`" + `
+{{end}}
 }
 
 var allCols = structs.Names({{.Resource}}Print{})
 var defCols = allCols[:len(allCols)-3]
 
-func make{{.Resource}}PrintObj(data *[]{{.PackageName}}.{{.Resource}}ResponseData) []map[string]interface{} {
+func make{{.Resource}}PrintObj(data *[]ionoscloud.{{.Resource}}ResponseData) []map[string]interface{} {
 	out := make([]map[string]interface{}, 0, len(*data))
 
 	for _, item := range *data {
