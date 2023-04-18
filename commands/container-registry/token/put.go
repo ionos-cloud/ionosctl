@@ -5,7 +5,9 @@ import (
 	"time"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/registry"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	sdkgo "github.com/ionos-cloud/sdk-go-container-registry"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -16,13 +18,14 @@ var tokenPutProperties = sdkgo.PostTokenProperties{}
 func TokenReplaceCmd() *core.Command {
 	cmd := core.NewCommand(
 		context.TODO(), nil, core.CommandBuilder{
-			Namespace:  "container-registry",
-			Resource:   "token",
-			Verb:       "replace",
-			Aliases:    []string{"r", "re"},
-			ShortDesc:  "Create or replace a token",
-			LongDesc:   "Create or replace a token used to access a container registry",
-			Example:    "ionosctl container-registry token replace --name [NAME] --registry-id [REGISTRY-ID], --token-id [TOKEN-ID]",
+			Namespace: "container-registry",
+			Resource:  "token",
+			Verb:      "replace",
+			Aliases:   []string{"r", "re"},
+			ShortDesc: "Create or replace a token",
+			LongDesc:  "Create or replace a token used to access a container registry",
+			Example: "ionosctl container-registry token replace --name [NAME] --registry-id [REGISTRY-ID] --token-id [TOKEN-ID]\n" +
+				"In order to save the token to a environment variable: export [ENV-VAL-NAME]=$(ionosctl cr token replace --name [TOKEN-NAME] --registry-id [REGISTRY-ID] --token-id [TOKEN-ID]",
 			PreCmdRun:  PreCmdPutToken,
 			CmdRun:     CmdPutToken,
 			InitClient: true,
@@ -30,7 +33,9 @@ func TokenReplaceCmd() *core.Command {
 	)
 
 	cmd.AddStringFlag(FlagName, "", "", "Name of the Token", core.RequiredFlagOption())
-
+	cmd.Command.PersistentFlags().Bool(
+		constants.ArgNoHeaders, true, "When using text output, don't print headers",
+	)
 	cmd.AddStringFlag(FlagRegId, "r", "", "Registry ID")
 	_ = cmd.Command.RegisterFlagCompletionFunc(
 		FlagRegId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -52,6 +57,13 @@ func TokenReplaceCmd() *core.Command {
 			return []string{
 				"enabled", "disabled",
 			}, cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, printer.ColsMessage(allCols))
+	_ = cmd.Command.RegisterFlagCompletionFunc(
+		constants.ArgCols,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return allCols, cobra.ShellCompDirectiveNoFileComp
 		},
 	)
 

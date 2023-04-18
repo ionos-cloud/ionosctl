@@ -18,13 +18,14 @@ var tokenPostProperties = sdkgo.NewPostTokenPropertiesWithDefaults()
 func TokenPostCmd() *core.Command {
 	cmd := core.NewCommand(
 		context.TODO(), nil, core.CommandBuilder{
-			Namespace:  "container-registry",
-			Resource:   "token",
-			Verb:       "create",
-			Aliases:    []string{"c"},
-			ShortDesc:  "Create a new token",
-			LongDesc:   "Create a new token used to access a container registry",
-			Example:    "ionosctl container-registry token create --registry-id [REGISTRY-ID] --name [TOKEN-NAME]",
+			Namespace: "container-registry",
+			Resource:  "token",
+			Verb:      "create",
+			Aliases:   []string{"c"},
+			ShortDesc: "Create a new token",
+			LongDesc:  "Create a new token used to access a container registry",
+			Example: "ionosctl container-registry token create --registry-id [REGISTRY-ID] --name [TOKEN-NAME]\n" +
+				"In order to save the token to a environment variable: export [ENV-VAL-NAME]=$(ionosctl cr token create --name [TOKEN-NAME] --registry-id [REGISTRY-ID]",
 			PreCmdRun:  PreCmdPostToken,
 			CmdRun:     CmdPostToken,
 			InitClient: true,
