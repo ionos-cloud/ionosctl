@@ -78,8 +78,8 @@ func getTokenPrint(
 			} else {
 				r.OutputJSON = response
 				r.KeyValue = getTokensRows(response)
-				postHeaders := []string{"DisplayName", "ExpiryDate", "Status"} // map header -> rows
-				r.Columns = printer.GetHeaders(allCols, postHeaders, cols)     // headers
+				postHeaders := []string{"CredentialsPassword"}             // map header -> rows
+				r.Columns = printer.GetHeaders(allCols, postHeaders, cols) // headers
 			}
 		}
 	}
