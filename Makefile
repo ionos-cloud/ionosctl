@@ -47,11 +47,10 @@ mocks_update: cloudapiv6_mocks_update auth_v1_mocks_update dbaas_postgres_mocks_
 .PHONY: docs generate-docs
 docs generate-docs:
 	@echo "--- Purging docs ---"
-	rm -rf docs
+	rm -rf docs/subcommands
+	rm docs/summary.md
 	@echo "--- Regenerating docs ---"
 	@go run tools/doc.go
-	@echo "--- Downloading and copying README.md. For gitbook a specific readme is wanted. TODO: Improve this ---"
-	wget -O docs/README.md https://raw.githubusercontent.com/ionos-cloud/ionosctl/df0dc8167d0441ec362de9550353e067e39bc8f2/docs/README.md
 
 
 .PHONY: gofmt_check
