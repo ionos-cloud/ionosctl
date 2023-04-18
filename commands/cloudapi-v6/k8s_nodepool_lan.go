@@ -98,8 +98,8 @@ Required values to run a command:
 	})
 	add.AddIntFlag(cloudapiv6.ArgLanId, cloudapiv6.ArgIdShort, 0, "The unique LAN Id of existing LANs to be attached to worker Nodes", core.RequiredFlagOption())
 	add.AddBoolFlag(cloudapiv6.ArgDhcp, "", true, "Indicates if the Kubernetes Node Pool LAN will reserve an IP using DHCP. E.g.: --dhcp=true, --dhcp=false")
-	add.AddStringSliceFlag(cloudapiv6.ArgNetwork, "", nil, "IPv4 or IPv6 CIDR to be routed via the interface. Must be set with --gateway-ip flag")
-	add.AddStringSliceFlag(cloudapiv6.ArgGatewayIp, "", nil, "IPv4 or IPv6 Gateway IP for the route. Must be set with --network flag")
+	add.AddStringSliceFlag(cloudapiv6.ArgNetwork, "", nil, "Slice of IPv4 or IPv6 CIDRs to be routed via the interface. Must contain same number of arguments as --gateway-ip flag")
+	add.AddStringSliceFlag(cloudapiv6.ArgGatewayIp, "", nil, "Slice of IPv4 or IPv6 Gateway IPs for the routes. Must contain same number of arguments as --network flag")
 	add.AddStringSliceFlag(cloudapiv6.ArgCols, "", defaultK8sNodePoolLanCols, printer.ColsMessage(defaultK8sNodePoolLanCols))
 	_ = add.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultK8sNodePoolLanCols, cobra.ShellCompDirectiveNoFileComp
