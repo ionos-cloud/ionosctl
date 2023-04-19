@@ -46,7 +46,7 @@ Create or replace a token used to access a container registry
   -f, --force                Force command to execute without user input
   -h, --help                 Print usage
       --name string          Name of the Token (required)
-      --no-headers           When using text output, don't print headers (default true)
+      --no-headers           Use --no-headers=false to show column headers (default true)
   -o, --output string        Desired output format [text|json] (default "text")
   -q, --quiet                Quiet output
   -r, --registry-id string   Registry ID
