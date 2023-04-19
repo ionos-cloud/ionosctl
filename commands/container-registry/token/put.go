@@ -34,7 +34,7 @@ func TokenReplaceCmd() *core.Command {
 
 	cmd.AddStringFlag(FlagName, "", "", "Name of the Token", core.RequiredFlagOption())
 	cmd.Command.PersistentFlags().Bool(
-		constants.ArgNoHeaders, true, "When using text output, don't print headers",
+		constants.ArgNoHeaders, true, "Use --no-headers=false to show column headers",
 	)
 	cmd.AddStringFlag(FlagRegId, "r", "", "Registry ID")
 	_ = cmd.Command.RegisterFlagCompletionFunc(
