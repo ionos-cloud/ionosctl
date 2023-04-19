@@ -5,7 +5,9 @@ import (
 	"time"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/registry"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	sdkgo "github.com/ionos-cloud/sdk-go-container-registry"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -50,6 +52,13 @@ func TokenUpdateCmd() *core.Command {
 			return []string{
 				"enabled", "disabled",
 			}, cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, printer.ColsMessage(allCols))
+	_ = cmd.Command.RegisterFlagCompletionFunc(
+		constants.ArgCols,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return allCols, cobra.ShellCompDirectiveNoFileComp
 		},
 	)
 
@@ -109,7 +118,7 @@ func CmdPatchToken(c *core.CommandConfig) error {
 		return err
 	}
 
-	return c.Printer.Print(getTokenPrint(nil, c, &[]sdkgo.TokenResponse{token}, true))
+	return c.Printer.Print(getTokenPrint(nil, c, &[]sdkgo.TokenResponse{token}, false))
 }
 
 func PreCmdPatchToken(c *core.PreCommandConfig) error {
