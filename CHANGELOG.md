@@ -1,5 +1,19 @@
 # Changelog
 
+## [6.6.2] (April 2023)
+
+### Added
+- Added the ability to add multiple networks CIDRs / gateway IPs for `ionosctl k8s np lan add`
+- Added the possibility of listing all columns: `--cols all`
+- Added the possibility of filtering for multiple values per key. For example, `--filters name=hello,name=world` would list resources which contain either name `hello`, or name `world`.
+
+### Fixed
+- Fixed broken columns for `ionosctl k8s np lan list`
+- Fixed certain flag descriptions for `ionosctl alb rule httprule add`
+
+### Changed
+- Changed `ionosctl container-registry token create` defaults to more closely resemble `ionosctl token create`: `--no-headers true`, `--cols CredentialsPassword`, such that token will be the only output by default.
+
 ## [6.6.1] (April 2023)
 
 ### Added
