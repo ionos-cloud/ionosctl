@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io"
 	"os"
 	"strings"
 
@@ -17,7 +16,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/utils/clierror"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
@@ -538,41 +536,10 @@ func getAlbRuleHttpRulePrint(resp *resources.Response, c *core.CommandConfig, ss
 		if ss != nil {
 			r.OutputJSON = ss
 			r.KeyValue = getAlbRuleHttpRulesKVMaps(ss)
-			r.Columns = getAlbRuleHttpRulesCols(core.GetFlagName(c.Resource, constants.ArgCols), c.Printer.GetStderr())
+			r.Columns = printer.GetHeaders(allAlbRuleHttpRuleCols, defaultAlbRuleHttpRuleCols, viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)))
 		}
 	}
 	return r
-}
-
-func getAlbRuleHttpRulesCols(flagName string, outErr io.Writer) []string {
-	var cols []string
-	if viper.IsSet(flagName) {
-		cols = viper.GetStringSlice(flagName)
-	} else {
-		return defaultAlbRuleHttpRuleCols
-	}
-
-	columnsMap := map[string]string{
-		"Name":            "Name",
-		"Type":            "Type",
-		"TargetGroupId":   "TargetGroupId",
-		"DropQuery":       "DropQuery",
-		"Location":        "Location",
-		"StatusCode":      "StatusCode",
-		"ResponseMessage": "ResponseMessage",
-		"ContentType":     "ContentType",
-		"Condition":       "Condition",
-	}
-	var ruleHttpRuleCols []string
-	for _, k := range cols {
-		col := columnsMap[k]
-		if col != "" {
-			ruleHttpRuleCols = append(ruleHttpRuleCols, col)
-		} else {
-			clierror.CheckError(errors.New("unknown column "+k), outErr)
-		}
-	}
-	return ruleHttpRuleCols
 }
 
 func getAlbRuleHttpRules(httprules *[]ionoscloud.ApplicationLoadBalancerHttpRule) []resources.ApplicationLoadBalancerHttpRule {
