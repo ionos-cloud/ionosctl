@@ -2,9 +2,8 @@ package cluster
 
 import (
 	"context"
-	"os"
-
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"os"
 
 	"github.com/cilium/fake"
 	cloudapiv6completer "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
