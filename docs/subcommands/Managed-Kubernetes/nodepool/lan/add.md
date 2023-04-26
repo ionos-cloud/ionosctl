@@ -47,10 +47,10 @@ Required values to run a command:
   -D, --depth int32          Controls the detail depth of the response objects. Max depth is 10.
       --dhcp                 Indicates if the Kubernetes Node Pool LAN will reserve an IP using DHCP. E.g.: --dhcp=true, --dhcp=false (default true)
   -f, --force                Force command to execute without user input
-      --gateway-ip ip        IPv4 or IPv6 Gateway IP for the route. Must be set with --network flag
+      --gateway-ip strings   Slice of IPv4 or IPv6 Gateway IPs for the routes. Must contain same number of arguments as --network flag
   -h, --help                 Print usage
   -i, --lan-id int           The unique LAN Id of existing LANs to be attached to worker Nodes (required)
-      --network string       IPv4 or IPv6 CIDR to be routed via the interface. Must be set with --gateway-ip flag
+      --network strings      Slice of IPv4 or IPv6 CIDRs to be routed via the interface. Must contain same number of arguments as --gateway-ip flag
       --nodepool-id string   The unique K8s Node Pool Id (required)
   -o, --output string        Desired output format [text|json] (default "text")
   -q, --quiet                Quiet output
