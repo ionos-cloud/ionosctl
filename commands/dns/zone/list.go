@@ -1,4 +1,4 @@
-package main
+package zone
 
 import (
 	"context"
@@ -9,18 +9,18 @@ import (
 func ZonesGetCmd() *core.Command {
 	cmd := core.NewCommand(context.Background(), nil, core.CommandBuilder{
 		Namespace: "dns",
-		Resource:  "zon",
+		Resource:  "zone",
 		Verb:      "list",
 		Aliases:   []string{"g"},
 		ShortDesc: "Retrieve zones",
-		Example:   "ionosctl dns zon list ",
+		Example:   "ionosctl dns zonelist ",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			/* TODO: Delete/modify me for --all
-			 * err := core.CheckRequiredFlagsSets(c.Command, c.NS, []string{constants.ArgAll}, []string{constants.Flag<Parent>Id}, []string{constants.ArgAll, constants.Flag<Parent>Id})
-			 * if err != nil {
-			 * 	return err
-			 * }
-             * */
+						 * err := core.CheckRequiredFlagsSets(c.Command, c.NS, []string{constants.ArgAll}, []string{constants.Flag<Parent>Id}, []string{constants.ArgAll, constants.Flag<Parent>Id})
+						 * if err != nil {
+						 * 	return err
+						 * }
+			             * */
 
 			// TODO: If no --all, mark individual flags as required
 
@@ -31,7 +31,6 @@ func ZonesGetCmd() *core.Command {
 		},
 		InitClient: true,
 	})
-
 
 	cmd.AddStringFlag(filter.state, "", "", "Filter used to fetch all zones in a particular state (PROVISIONING, DEPROVISIONING, CREATED, FAILED)")
 	cmd.AddStringFlag(filter.zoneName, "", "", "Filter used to fetch only the zones that contain the specified zone name")

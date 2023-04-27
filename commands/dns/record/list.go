@@ -1,4 +1,4 @@
-package main
+package record
 
 import (
 	"context"
@@ -16,11 +16,11 @@ func RecordsGetCmd() *core.Command {
 		Example:   "ionosctl dns record list ",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			/* TODO: Delete/modify me for --all
-			 * err := core.CheckRequiredFlagsSets(c.Command, c.NS, []string{constants.ArgAll}, []string{constants.Flag<Parent>Id}, []string{constants.ArgAll, constants.Flag<Parent>Id})
-			 * if err != nil {
-			 * 	return err
-			 * }
-             * */
+						 * err := core.CheckRequiredFlagsSets(c.Command, c.NS, []string{constants.ArgAll}, []string{constants.Flag<Parent>Id}, []string{constants.ArgAll, constants.Flag<Parent>Id})
+						 * if err != nil {
+						 * 	return err
+						 * }
+			             * */
 
 			// TODO: If no --all, mark individual flags as required
 
@@ -31,7 +31,6 @@ func RecordsGetCmd() *core.Command {
 		},
 		InitClient: true,
 	})
-
 
 	cmd.AddStringFlag(filter.zoneId, "", "", "Filter used to fetch only the records that contain specified zoneId")
 	cmd.AddStringFlag(filter.name, "", "", "Filter used to fetch only the records that contain specified record name")

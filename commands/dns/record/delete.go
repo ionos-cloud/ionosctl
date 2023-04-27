@@ -1,8 +1,7 @@
-package main
+package record
 
 import (
 	"context"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 )
 
@@ -16,11 +15,11 @@ func ZonesRecordsDeleteCmd() *core.Command {
 		Example:   "ionosctl dns record delete ",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			/* TODO: Delete/modify me for --all
-			 * err := core.CheckRequiredFlagsSets(c.Command, c.NS, []string{constants.ArgAll}, []string{constants.Flag<Parent>Id}, []string{constants.ArgAll, constants.Flag<Parent>Id})
-			 * if err != nil {
-			 * 	return err
-			 * }
-             * */
+						 * err := core.CheckRequiredFlagsSets(c.Command, c.NS, []string{constants.ArgAll}, []string{constants.Flag<Parent>Id}, []string{constants.ArgAll, constants.Flag<Parent>Id})
+						 * if err != nil {
+						 * 	return err
+						 * }
+			             * */
 
 			// TODO: If no --all, mark individual flags as required
 
@@ -31,8 +30,6 @@ func ZonesRecordsDeleteCmd() *core.Command {
 		},
 		InitClient: true,
 	})
-
-
 
 	return cmd
 }

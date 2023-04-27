@@ -1,4 +1,4 @@
-package main
+package zone
 
 import (
 	"context"
@@ -9,18 +9,18 @@ import (
 func ZonesGetCmd() *core.Command {
 	cmd := core.NewCommand(context.Background(), nil, core.CommandBuilder{
 		Namespace: "dns",
-		Resource:  "zon",
+		Resource:  "zone",
 		Verb:      "list",
 		Aliases:   []string{"g"},
 		ShortDesc: "Retrieve zones",
-		Example:   "ionosctl dns zon list ",
+		Example:   "ionosctl dns zonelist ",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			/* TODO: Delete/modify me for --all
-			 * err := core.CheckRequiredFlagsSets(c.Command, c.NS, []string{constants.ArgAll}, []string{constants.Flag<Parent>Id}, []string{constants.ArgAll, constants.Flag<Parent>Id})
-			 * if err != nil {
-			 * 	return err
-			 * }
-             * */
+						 * err := core.CheckRequiredFlagsSets(c.Command, c.NS, []string{constants.ArgAll}, []string{constants.Flag<Parent>Id}, []string{constants.ArgAll, constants.Flag<Parent>Id})
+						 * if err != nil {
+						 * 	return err
+						 * }
+			             * */
 
 			// TODO: If no --all, mark individual flags as required
 
@@ -31,7 +31,6 @@ func ZonesGetCmd() *core.Command {
 		},
 		InitClient: true,
 	})
-
 
 	cmd.AddStringFlag(filter.state, "", "", "Filter used to fetch all zones in a particular state (PROVISIONING, DEPROVISIONING, CREATED, FAILED)")
 	cmd.AddStringFlag(filter.zoneName, "", "", "Filter used to fetch only the zones that contain the specified zone name")
@@ -44,7 +43,7 @@ func ZonesGetCmd() *core.Command {
 	return cmd
 }
 
-// Helper functions for printing zon
+// Helper functions for printing zone
 
 func getzonPrint(c *core.CommandConfig, dcs *[]ionoscloud.zonResponseData) printer.Result {
 	r := printer.Result{}
@@ -59,10 +58,9 @@ func getzonPrint(c *core.CommandConfig, dcs *[]ionoscloud.zonResponseData) print
 }
 
 type zonPrint struct {
-	Offset float `json:"Offset,omitempty"`
-	Items []string `json:"Items,omitempty"`
-	Limit float `json:"Limit,omitempty"`
-
+	Offset float    `json:"Offset,omitempty"`
+	Items  []string `json:"Items,omitempty"`
+	Limit  float    `json:"Limit,omitempty"`
 }
 
 var allCols = structs.Names(zonPrint{})

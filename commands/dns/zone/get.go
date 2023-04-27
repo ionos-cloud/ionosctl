@@ -1,4 +1,4 @@
-package main
+package zone
 
 import (
 	"context"
@@ -9,18 +9,18 @@ import (
 func ZonesFindByIdCmd() *core.Command {
 	cmd := core.NewCommand(context.Background(), nil, core.CommandBuilder{
 		Namespace: "dns",
-		Resource:  "zon",
+		Resource:  "zone",
 		Verb:      "get",
 		Aliases:   []string{"g"},
 		ShortDesc: "Retrieve a zone",
-		Example:   "ionosctl dns zon get --zoneId <String>",
+		Example:   "ionosctl dns zoneget --zoneId <String>",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			/* TODO: Delete/modify me for --all
-			 * err := core.CheckRequiredFlagsSets(c.Command, c.NS, []string{constants.ArgAll}, []string{constants.Flag<Parent>Id}, []string{constants.ArgAll, constants.Flag<Parent>Id})
-			 * if err != nil {
-			 * 	return err
-			 * }
-             * */
+						 * err := core.CheckRequiredFlagsSets(c.Command, c.NS, []string{constants.ArgAll}, []string{constants.Flag<Parent>Id}, []string{constants.ArgAll, constants.Flag<Parent>Id})
+						 * if err != nil {
+						 * 	return err
+						 * }
+			             * */
 
 			// TODO: If no --all, mark individual flags as required
 			err = c.Command.Command.MarkFlagRequired("zoneId")
@@ -35,7 +35,6 @@ func ZonesFindByIdCmd() *core.Command {
 		},
 		InitClient: true,
 	})
-
 
 	cmd.AddStringFlag(zoneId, "", "", "The ID (UUID) of the DNS zone", core.RequiredFlagOption())
 	cmd.AddStringFlag(constants.FlagDescription, "", "", "The hosted zone is used for..")

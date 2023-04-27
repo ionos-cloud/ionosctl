@@ -1,26 +1,25 @@
-package main
+package zone
 
 import (
 	"context"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 )
 
 func ZonesPutCmd() *core.Command {
 	cmd := core.NewCommand(context.Background(), nil, core.CommandBuilder{
 		Namespace: "dns",
-		Resource:  "zon",
+		Resource:  "zone",
 		Verb:      "update",
 		Aliases:   []string{},
 		ShortDesc: "Ensure a zone",
-		Example:   "ionosctl dns zon update ",
+		Example:   "ionosctl dns zoneupdate ",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			/* TODO: Delete/modify me for --all
-			 * err := core.CheckRequiredFlagsSets(c.Command, c.NS, []string{constants.ArgAll}, []string{constants.Flag<Parent>Id}, []string{constants.ArgAll, constants.Flag<Parent>Id})
-			 * if err != nil {
-			 * 	return err
-			 * }
-             * */
+						 * err := core.CheckRequiredFlagsSets(c.Command, c.NS, []string{constants.ArgAll}, []string{constants.Flag<Parent>Id}, []string{constants.ArgAll, constants.Flag<Parent>Id})
+						 * if err != nil {
+						 * 	return err
+						 * }
+			             * */
 
 			// TODO: If no --all, mark individual flags as required
 
@@ -31,8 +30,6 @@ func ZonesPutCmd() *core.Command {
 		},
 		InitClient: true,
 	})
-
-
 
 	return cmd
 }
