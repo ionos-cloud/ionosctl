@@ -1,88 +1,70 @@
 package zone
 
 import (
-	"context"
+	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
+	ionoscloud "github.com/ionos-cloud/sdk-go-dnsaas"
+	"github.com/spf13/cobra"
 )
 
-func ZonesGetCmd() *core.Command {
-	cmd := core.NewCommand(context.Background(), nil, core.CommandBuilder{
-		Namespace: "dns",
-		Resource:  "zone",
-		Verb:      "list",
-		Aliases:   []string{"g"},
-		ShortDesc: "Retrieve zones",
-		Example:   "ionosctl dns zonelist ",
-		PreCmdRun: func(c *core.PreCommandConfig) error {
-			/* TODO: Delete/modify me for --all
-						 * err := core.CheckRequiredFlagsSets(c.Command, c.NS, []string{constants.ArgAll}, []string{constants.Flag<Parent>Id}, []string{constants.ArgAll, constants.Flag<Parent>Id})
-						 * if err != nil {
-						 * 	return err
-						 * }
-			             * */
-
-			// TODO: If no --all, mark individual flags as required
-
-			return nil
+func ZoneCommand() *core.Command {
+	cmd := &core.Command{
+		Command: &cobra.Command{
+			Use:              "zone",
+			Short:            "DNS zones",
+			Aliases:          []string{"z"},
+			Long:             "The sub-commands of `ionosctl dns zone` allow you to perform operations on DNS zones",
+			TraverseChildren: true,
 		},
-		CmdRun: func(c *core.CommandConfig) error {
-			// Implement the actual command logic here
-		},
-		InitClient: true,
-	})
-
-	cmd.AddStringFlag(filter.state, "", "", "Filter used to fetch all zones in a particular state (PROVISIONING, DEPROVISIONING, CREATED, FAILED)")
-	cmd.AddStringFlag(filter.zoneName, "", "", "Filter used to fetch only the zones that contain the specified zone name")
-	cmd.AddIntFlag(offset, "", 0, "The first element (of the total list of elements) to include in the response. Use together with limit for pagination")
-	cmd.AddIntFlag(limit, "", 0, "The maximum number of elements to return. Use together with offset for pagination")
-	cmd.AddFloat64Flag(constants.FlagOffset, "", 0.0, "Pagination offset")
-	cmd.AddStringSliceFlag(constants.FlagItems, "", []string{}, "")
-	cmd.AddFloat64Flag(constants.FlagLimit, "", 0.0, "Pagination limit")
-
+	}
+	cmd.AddCommand(ZonesGetCmd())
+	cmd.AddCommand(ZonesDeleteCmd())
+	cmd.AddCommand(ZonesPostCmd())
+	cmd.AddCommand(ZonesPutCmd())
+	cmd.AddCommand(ZonesFindByIdCmd())
 	return cmd
 }
 
 // Helper functions for printing zone
 
-func getzonPrint(c *core.CommandConfig, dcs *[]ionoscloud.zonResponseData) printer.Result {
+func getZonePrint(c *core.CommandConfig, dcs *[]ionoscloud.ZoneResponse) printer.Result {
 	r := printer.Result{}
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	if c != nil && dcs != nil {
 		r.OutputJSON = dcs
-		r.KeyValue = makezonPrintObj(dcs)
-		r.Columns = printer.GetHeaders(allCols, defCols, cols)
+		r.KeyValue = makeZonePrintObj(dcs)
+		r.Columns = printer.GetHeadersAllDefault(allCols, cols)
 	}
 	return r
 }
 
-type zonPrint struct {
-	Offset float    `json:"Offset,omitempty"`
-	Items  []string `json:"Items,omitempty"`
-	Limit  float    `json:"Limit,omitempty"`
+type zonePrint struct {
+	Id          string `json:"ID,omitempty"`
+	Name        string `json:"Name,omitempty"`
+	Description string `json:"Content,omitempty"`
+	Enabled     bool   `json:"Enabled,omitempty"`
+	State       string `json:"State,omitempty"`
 }
 
-var allCols = structs.Names(zonPrint{})
-var defCols = allCols[:len(allCols)-3]
+var allCols = structs.Names(zonePrint{})
 
-func makezonPrintObj(data *[]ionoscloud.zonResponseData) []map[string]interface{} {
+func makeZonePrintObj(data *[]ionoscloud.ZoneResponse) []map[string]interface{} {
 	out := make([]map[string]interface{}, 0, len(*data))
 
 	for _, item := range *data {
-		var printObj zonPrint
+		var printObj zonePrint
 		printObj.Id = *item.GetId()
 
-		// Fill in the rest of the fields from the response object
-
-		if propertiesOk, ok := item.GetPropertiesOk(); ok && propertiesOk != nil {
-			printObj.Offset = *propertiesOk.GetOffset()
+		if p, ok := item.GetPropertiesOk(); ok {
+			printObj.Enabled = *p.Enabled
+			printObj.Description = *p.Description
+			printObj.Name = *p.ZoneName
 		}
-		if propertiesOk, ok := item.GetPropertiesOk(); ok && propertiesOk != nil {
-			printObj.Items = *propertiesOk.GetItems()
-		}
-		if propertiesOk, ok := item.GetPropertiesOk(); ok && propertiesOk != nil {
-			printObj.Limit = *propertiesOk.GetLimit()
+		if m, ok := item.GetMetadataOk(); ok && m != nil {
+			printObj.State = string(*m.State)
 		}
 
 		o := structs.Map(printObj)

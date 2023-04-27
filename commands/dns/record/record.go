@@ -2,11 +2,10 @@ package record
 
 import (
 	"github.com/fatih/structs"
-	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo"
-	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
+	ionoscloud "github.com/ionos-cloud/sdk-go-dnsaas"
 	"github.com/spf13/cobra"
 )
 
@@ -16,39 +15,44 @@ func RecordCommand() *core.Command {
 			Use:              "record",
 			Short:            "DNS Records",
 			Aliases:          []string{"r"},
-			Long:             "The sub-commands of `ionosctl record` allow you to perform operations on DBaaS resources.",
+			Long:             "The sub-commands of `ionosctl dns record` allow you to perform operations on DNS records",
 			TraverseChildren: true,
 		},
 	}
-	dbaasCmd.AddCommand(postgres.DBaaSPostgresCmd())
-	dbaasCmd.AddCommand(mongo.DBaaSMongoCmd())
-	return dbaasCmd
+	cmd.AddCommand(RecordsGetCmd())
+	cmd.AddCommand(ZonesRecordsDeleteCmd())
+	cmd.AddCommand(ZonesRecordsPostCmd())
+	cmd.AddCommand(ZonesRecordsFindByIdCmd())
+	cmd.AddCommand(ZonesRecordsPutCmd())
+	return cmd
 }
 
 // Helper functions for printing record
 
-func getrecordPrint(c *core.CommandConfig, dcs *[]ionoscloud.recordResponseData) printer.Result {
+func getRecordPrint(c *core.CommandConfig, dcs *[]ionoscloud.RecordResponse) printer.Result {
 	r := printer.Result{}
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	if c != nil && dcs != nil {
 		r.OutputJSON = dcs
-		r.KeyValue = makerecordPrintObj(dcs)
-		r.Columns = printer.GetHeaders(allCols, defCols, cols)
+		r.KeyValue = makeRecordPrintObj(dcs)
+		r.Columns = printer.GetHeadersAllDefault(allCols, cols)
 	}
 	return r
 }
 
 type recordPrint struct {
-	Offset float    `json:"Offset,omitempty"`
-	Items  []string `json:"Items,omitempty"`
-	Limit  float    `json:"Limit,omitempty"`
+	Id      string `json:"ID,omitempty"`
+	Name    string `json:"Name,omitempty"`
+	Content string `json:"Content,omitempty"`
+	Type    string `json:"Type,omitempty"`
+	Enabled bool   `json:"Enabled,omitempty"`
+	State   string `json:"State,omitempty"`
 }
 
 var allCols = structs.Names(recordPrint{})
-var defCols = allCols[:len(allCols)-3]
 
-func makerecordPrintObj(data *[]ionoscloud.recordResponseData) []map[string]interface{} {
+func makeRecordPrintObj(data *[]ionoscloud.RecordResponse) []map[string]interface{} {
 	out := make([]map[string]interface{}, 0, len(*data))
 
 	for _, item := range *data {
@@ -58,13 +62,18 @@ func makerecordPrintObj(data *[]ionoscloud.recordResponseData) []map[string]inte
 		// Fill in the rest of the fields from the response object
 
 		if propertiesOk, ok := item.GetPropertiesOk(); ok && propertiesOk != nil {
-			printObj.Offset = *propertiesOk.GetOffset()
+			var j []byte
+			err := propertiesOk.Type.UnmarshalJSON(j)
+			if err == nil {
+				printObj.Type = string(j)
+			}
+
+			printObj.Enabled = *propertiesOk.Enabled
+			printObj.Content = *propertiesOk.Content
+			printObj.Name = *propertiesOk.Name
 		}
-		if propertiesOk, ok := item.GetPropertiesOk(); ok && propertiesOk != nil {
-			printObj.Items = *propertiesOk.GetItems()
-		}
-		if propertiesOk, ok := item.GetPropertiesOk(); ok && propertiesOk != nil {
-			printObj.Limit = *propertiesOk.GetLimit()
+		if m, ok := item.GetMetadataOk(); ok && m != nil {
+			printObj.State = string(*m.State)
 		}
 
 		o := structs.Map(printObj)
