@@ -3,6 +3,8 @@ package record
 import (
 	"context"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+
+	ionoscloud "github.com/ionos-cloud/sdk-go-dnsaas"
 )
 
 func ZonesRecordsDeleteCmd() *core.Command {
@@ -14,14 +16,7 @@ func ZonesRecordsDeleteCmd() *core.Command {
 		ShortDesc: "Delete a record",
 		Example:   "ionosctl dns record delete ",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			/* TODO: Delete/modify me for --all
-						 * err := core.CheckRequiredFlagsSets(c.Command, c.NS, []string{constants.ArgAll}, []string{constants.Flag<Parent>Id}, []string{constants.ArgAll, constants.Flag<Parent>Id})
-						 * if err != nil {
-						 * 	return err
-						 * }
-			             * */
-
-			// TODO: If no --all, mark individual flags as required
+all, mark individual flags as required
 
 			return nil
 		},

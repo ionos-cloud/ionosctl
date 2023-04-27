@@ -2,6 +2,7 @@ package record
 
 import (
 	"context"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 )
@@ -13,17 +14,9 @@ func ZonesRecordsFindByIdCmd() *core.Command {
 		Verb:      "get",
 		Aliases:   []string{"g"},
 		ShortDesc: "Retrieve a record",
-		Example:   "ionosctl dns record get --zoneId <String> --recordId <String>",
+		Example:   "ionosctl dns record get --zoneId ZONE_ID --recordId RECORD_ID",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			/* TODO: Delete/modify me for --all
-						 * err := core.CheckRequiredFlagsSets(c.Command, c.NS, []string{constants.ArgAll}, []string{constants.Flag<Parent>Id}, []string{constants.ArgAll, constants.Flag<Parent>Id})
-						 * if err != nil {
-						 * 	return err
-						 * }
-			             * */
-
-			// TODO: If no --all, mark individual flags as required
-			err = c.Command.Command.MarkFlagRequired("zoneId")
+			err := c.Command.Command.MarkFlagRequired("zoneId")
 			if err != nil {
 				return err
 			}
@@ -35,7 +28,7 @@ func ZonesRecordsFindByIdCmd() *core.Command {
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			// Implement the actual command logic here
+			client.Must().DNSClient
 		},
 		InitClient: true,
 	})
