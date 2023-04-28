@@ -14,6 +14,7 @@ import (
 	dataplatform "github.com/ionos-cloud/sdk-go-dataplatform"
 	mongo "github.com/ionos-cloud/sdk-go-dbaas-mongo"
 	postgres "github.com/ionos-cloud/sdk-go-dbaas-postgres"
+	dns "github.com/ionos-cloud/sdk-go-dnsaas"
 	cloudv6 "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
 )
@@ -26,6 +27,7 @@ type Client struct {
 	MongoClient        *mongo.APIClient
 	DataplatformClient *dataplatform.APIClient
 	RegistryClient     *registry.APIClient
+	DnsClient          *dns.APIClient
 }
 
 func appendUserAgent(userAgent string) string {
@@ -60,6 +62,9 @@ func newClient(name, pwd, token, hostUrl string) (*Client, error) {
 	registryConfig := registry.NewConfiguration(name, pwd, token, hostUrl)
 	registryConfig.UserAgent = appendUserAgent(registryConfig.UserAgent)
 
+	dnsConfig := dns.NewConfiguration(name, pwd, token, hostUrl)
+	dnsConfig.UserAgent = appendUserAgent(authConfig.UserAgent)
+
 	return &Client{
 			CloudClient:        cloudv6.NewAPIClient(clientConfig),
 			AuthClient:         sdkgoauth.NewAPIClient(authConfig),
@@ -68,6 +73,7 @@ func newClient(name, pwd, token, hostUrl string) (*Client, error) {
 			MongoClient:        mongo.NewAPIClient(mongoConfig),
 			DataplatformClient: dataplatform.NewAPIClient(dpConfig),
 			RegistryClient:     registry.NewAPIClient(registryConfig),
+			DnsClient:          dns.NewAPIClient(dnsConfig),
 		},
 		nil
 }

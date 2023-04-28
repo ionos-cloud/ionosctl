@@ -27,6 +27,8 @@ func ZonesRecordsPostCmd() *core.Command {
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			// Implement the actual command logic here
+			return nil
+
 		},
 		InitClient: true,
 	})

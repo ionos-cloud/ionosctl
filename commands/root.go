@@ -2,6 +2,7 @@ package commands
 
 import (
 	"fmt"
+	"github.com/ionos-cloud/ionosctl/v6/commands/dns"
 	"os"
 	"strings"
 
@@ -202,6 +203,8 @@ func addCommands() {
 	rootCmd.AddCommand(dataplatform.DataplatformCmd())
 	// Add Container Registry Commands
 	rootCmd.AddCommand(container_registry.ContainerRegistryCmd())
+	// DNS
+	rootCmd.AddCommand(dns.DNSCommand())
 }
 
 const helpTemplate = `USAGE: {{if .Runnable}}

@@ -29,13 +29,13 @@ func RecordCommand() *core.Command {
 
 // Helper functions for printing record
 
-func getRecordPrint(c *core.CommandConfig, dcs *[]ionoscloud.RecordResponse) printer.Result {
+func getRecordPrint(c *core.CommandConfig, data ionoscloud.RecordsResponse) printer.Result {
 	r := printer.Result{}
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-	if c != nil && dcs != nil {
-		r.OutputJSON = dcs
-		r.KeyValue = makeRecordPrintObj(dcs)
+	if c != nil {
+		r.OutputJSON = data
+		r.KeyValue = makeRecordPrintObj(*data.Items...)
 		r.Columns = printer.GetHeadersAllDefault(allCols, cols)
 	}
 	return r
@@ -52,10 +52,10 @@ type recordPrint struct {
 
 var allCols = structs.Names(recordPrint{})
 
-func makeRecordPrintObj(data *[]ionoscloud.RecordResponse) []map[string]interface{} {
-	out := make([]map[string]interface{}, 0, len(*data))
+func makeRecordPrintObj(data ...ionoscloud.RecordResponse) []map[string]interface{} {
+	out := make([]map[string]interface{}, 0, len(data))
 
-	for _, item := range *data {
+	for _, item := range data {
 		var printObj recordPrint
 		printObj.Id = *item.GetId()
 

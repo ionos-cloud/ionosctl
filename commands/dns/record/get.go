@@ -5,6 +5,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/spf13/viper"
 )
 
 func ZonesRecordsFindByIdCmd() *core.Command {
@@ -28,25 +29,34 @@ func ZonesRecordsFindByIdCmd() *core.Command {
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			client.Must().DNSClient
+			req := client.Must().DnsClient.RecordsApi.RecordsGet(context.Background())
+
+			if fn := core.GetFlagName(c.NS, constants.FlagZoneId); viper.IsSet(fn) {
+				req.FilterZoneId(viper.GetString(fn))
+			}
+			if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) {
+				req.FilterZoneId(viper.GetString(fn))
+			}
+			if fn := core.GetFlagName(c.NS, constants.FlagOffset); viper.IsSet(fn) {
+				req.Offset(viper.GetInt32(fn))
+			}
+			if fn := core.GetFlagName(c.NS, constants.FlagMaxResults); viper.IsSet(fn) {
+				req.Limit(viper.GetInt32(fn))
+			}
+
+			ls, _, err := req.Execute()
+			if err != nil {
+				return err
+			}
+			return c.Printer.Print(getRecordPrint(c, ls))
 		},
 		InitClient: true,
 	})
 
-	cmd.AddStringFlag(zoneId, "", "", "The ID (UUID) of the DNS zone", core.RequiredFlagOption())
-	cmd.AddStringFlag(recordId, "", "", "The ID (UUID) of the record", core.RequiredFlagOption())
-	cmd.AddStringFlag(constants.FlagId, "", "", "")
-	cmd.AddStringFlag(constants.FlagFqdn, "", "", "A fully qualified domain name. FQDN consists of two parts - the hostname and the domain name")
-	cmd.AddStringFlag(constants.FlagLastModifiedDate, "", "", "The date of the last change formatted as yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
-	cmd.AddStringFlag(constants.FlagState, "", "", "The list of possible provisioning states in which DNS resource could be at the specific time")
 	cmd.AddStringFlag(constants.FlagZoneId, "", "", "The ID (UUID) of the DNS zone of which record belongs to")
-	cmd.AddStringFlag(constants.FlagCreatedDate, "", "", "The date of the record creation formatted as yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
-	cmd.AddStringFlag(constants.FlagType, "", "", "Holds supported DNS resource record types. In the DNS context a record is a DNS resource record")
-	cmd.AddStringFlag(constants.FlagContent, "", "", "")
-	cmd.AddBoolFlag(constants.FlagEnabled, "", false, "When true - the record is visible for lookup")
 	cmd.AddStringFlag(constants.FlagName, "", "", "")
-	cmd.AddIntFlag(constants.FlagPriority, "", 0, "Priority value is between 0 and 65535. Priority is mandatory for MX, SRV and URI record types and ignored for all other types")
-	cmd.AddIntFlag(constants.FlagTtl, "", 0, "Time to live for the record, recommended 3600")
+	cmd.AddInt32Flag(constants.FlagOffset, "", 0, "Priority value is between 0 and 65535. Priority is mandatory for MX, SRV and URI record types and ignored for all other types")
+	cmd.AddInt32Flag(constants.FlagMaxResults, "", 0, constants.DescMaxResults)
 
 	return cmd
 }
