@@ -28,7 +28,11 @@
         * [update](subcommands%2FApplication-Load-Balancer%2Frule%2Fupdate.md)
     * [update](subcommands%2FApplication-Load-Balancer%2Fupdate.md)
 * Authentication
-    * [token](subcommands%2FAuthentication%2Ftoken.md)
+    * token
+        * [delete](subcommands%2FAuthentication%2Ftoken%2Fdelete.md)
+        * [generate](subcommands%2FAuthentication%2Ftoken%2Fgenerate.md)
+        * [get](subcommands%2FAuthentication%2Ftoken%2Fget.md)
+        * [list](subcommands%2FAuthentication%2Ftoken%2Flist.md)
 * CLI Setup
     * [login](subcommands%2FCLI%20Setup%2Flogin.md)
     * [version](subcommands%2FCLI%20Setup%2Fversion.md)

@@ -153,7 +153,7 @@ func determineSubdir(name string, nonComputeNamespaces map[string]string) string
 	}
 
 	if segments[0] == "token" {
-		return "Authentication/token/"
+		return filepath.Join("Authentication", filepath.Join(segments...))
 	}
 
 	namespaceKey := segments[0]
