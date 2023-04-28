@@ -40,7 +40,8 @@ const (
 	FlagAnnotationsShort = "A"
 	FlagVersion          = "version"
 
-	FlagZoneId = "zone-id"
+	FlagZoneId   = "zone-id"
+	FlagRecordId = "record-id"
 )
 
 // Flag descriptions. Prefixed with "Desc" for easy find and replace

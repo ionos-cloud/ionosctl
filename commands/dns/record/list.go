@@ -36,7 +36,8 @@ func RecordsGetCmd() *core.Command {
 			if err != nil {
 				return err
 			}
-			return c.Printer.Print(getRecordPrint(c, ls))
+
+			return c.Printer.Print(getRecordsPrint(c, ls))
 		},
 		InitClient: true,
 	})

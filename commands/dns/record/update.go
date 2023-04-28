@@ -11,7 +11,7 @@ func ZonesRecordsPutCmd() *core.Command {
 		Resource:  "record",
 		Verb:      "update",
 		Aliases:   []string{},
-		ShortDesc: "Ensure a record",
+		ShortDesc: "Modify an existing record",
 		Example:   "ionosctl dns record update ",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			/* TODO: Delete/modify me for --all
@@ -27,6 +27,7 @@ func ZonesRecordsPutCmd() *core.Command {
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			// Implement the actual command logic here
+			return nil
 		},
 		InitClient: true,
 	})

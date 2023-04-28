@@ -29,13 +29,25 @@ func ZoneCommand() *core.Command {
 
 // Helper functions for printing zone
 
-func getZonePrint(c *core.CommandConfig, dcs *[]ionoscloud.ZoneResponse) printer.Result {
+func getZonesPrint(c *core.CommandConfig, data ionoscloud.ZonesResponse) printer.Result {
 	r := printer.Result{}
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-	if c != nil && dcs != nil {
-		r.OutputJSON = dcs
-		r.KeyValue = makeZonePrintObj(dcs)
+	if c != nil {
+		r.OutputJSON = data
+		r.KeyValue = makeZonePrintObj(*data.Items...)
+		r.Columns = printer.GetHeadersAllDefault(allCols, cols)
+	}
+	return r
+}
+
+func getZonePrint(c *core.CommandConfig, data ionoscloud.ZoneResponse) printer.Result {
+	r := printer.Result{}
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+
+	if c != nil {
+		r.OutputJSON = data
+		r.KeyValue = makeZonePrintObj(data)
 		r.Columns = printer.GetHeadersAllDefault(allCols, cols)
 	}
 	return r
@@ -51,10 +63,10 @@ type zonePrint struct {
 
 var allCols = structs.Names(zonePrint{})
 
-func makeZonePrintObj(data *[]ionoscloud.ZoneResponse) []map[string]interface{} {
-	out := make([]map[string]interface{}, 0, len(*data))
+func makeZonePrintObj(data ...ionoscloud.ZoneResponse) []map[string]interface{} {
+	out := make([]map[string]interface{}, 0, len(data))
 
-	for _, item := range *data {
+	for _, item := range data {
 		var printObj zonePrint
 		printObj.Id = *item.GetId()
 

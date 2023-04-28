@@ -26,6 +26,7 @@ func ZonesDeleteCmd() *core.Command {
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
+			return nil
 			// Implement the actual command logic here
 		},
 		InitClient: true,
