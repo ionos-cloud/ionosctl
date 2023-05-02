@@ -32,7 +32,7 @@ func ZonesFindByIdCmd() *core.Command {
 			if err != nil {
 				return err
 			}
-			getZonePrint(c, z)
+			return c.Printer.Print(getZonePrint(c, z))
 		},
 		InitClient: true,
 	})

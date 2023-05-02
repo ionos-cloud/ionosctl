@@ -2,8 +2,10 @@ package zone
 
 import (
 	"context"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/spf13/viper"
 )
 
 func ZonesGetCmd() *core.Command {
@@ -11,34 +13,42 @@ func ZonesGetCmd() *core.Command {
 		Namespace: "dns",
 		Resource:  "zone",
 		Verb:      "list",
-		Aliases:   []string{"g"},
+		Aliases:   []string{"ls"},
 		ShortDesc: "Retrieve zones",
-		Example:   "ionosctl dns zonelist ",
+		Example:   "ionosctl dns zone list",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			/* TODO: Delete/modify me for --all
-						 * err := core.CheckRequiredFlagsSets(c.Command, c.NS, []string{constants.ArgAll}, []string{constants.Flag<Parent>Id}, []string{constants.ArgAll, constants.Flag<Parent>Id})
-						 * if err != nil {
-						 * 	return err
-						 * }
-			             * */
-
-			// TODO: If no --all, mark individual flags as required
-
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			// Implement the actual command logic here
+			req := client.Must().DnsClient.ZonesApi.ZonesGet(context.Background())
+
+			if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) {
+				req.FilterZoneName(viper.GetString(fn))
+			}
+			if fn := core.GetFlagName(c.NS, constants.FlagState); viper.IsSet(fn) {
+				req.FilterState(viper.GetString(fn))
+			}
+			if fn := core.GetFlagName(c.NS, constants.FlagOffset); viper.IsSet(fn) {
+				req.Offset(viper.GetInt32(fn))
+			}
+			if fn := core.GetFlagName(c.NS, constants.FlagMaxResults); viper.IsSet(fn) {
+				req.Limit(viper.GetInt32(fn))
+			}
+
+			ls, _, err := req.Execute()
+			if err != nil {
+				return err
+			}
+
+			return c.Printer.Print(getZonesPrint(c, ls))
 		},
 		InitClient: true,
 	})
 
-	cmd.AddStringFlag(filter.state, "", "", "Filter used to fetch all zones in a particular state (PROVISIONING, DEPROVISIONING, CREATED, FAILED)")
-	cmd.AddStringFlag(filter.zoneName, "", "", "Filter used to fetch only the zones that contain the specified zone name")
-	cmd.AddIntFlag(offset, "", 0, "The first element (of the total list of elements) to include in the response. Use together with limit for pagination")
-	cmd.AddIntFlag(limit, "", 0, "The maximum number of elements to return. Use together with offset for pagination")
-	cmd.AddStringSliceFlag(constants.FlagItems, "", []string{}, "")
-	cmd.AddFloat64Flag(constants.FlagLimit, "", 0.0, "Pagination limit")
-	cmd.AddFloat64Flag(constants.FlagOffset, "", 0.0, "Pagination offset")
+	cmd.AddStringFlag(constants.FlagState, "", "", "Filter used to fetch all zones in a particular state (PROVISIONING, DEPROVISIONING, CREATED, FAILED)")
+	cmd.AddStringFlag(constants.FlagName, "", "", "Filter used to fetch only the zones that contain the specified zone name")
+	cmd.AddInt32Flag(constants.FlagMaxResults, "", 0, "Pagination limit")
+	cmd.AddInt32Flag(constants.FlagOffset, "", 0, "Pagination offset")
 
 	return cmd
 }

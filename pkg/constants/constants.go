@@ -42,6 +42,7 @@ const (
 
 	FlagZoneId   = "zone-id"
 	FlagRecordId = "record-id"
+	FlagState    = "state"
 )
 
 // Flag descriptions. Prefixed with "Desc" for easy find and replace
