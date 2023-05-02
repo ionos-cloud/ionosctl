@@ -2,9 +2,10 @@ package commands
 
 import (
 	"fmt"
-	"github.com/ionos-cloud/ionosctl/v6/commands/dns"
 	"os"
 	"strings"
+
+	"github.com/ionos-cloud/ionosctl/v6/commands/dns"
 
 	container_registry "github.com/ionos-cloud/ionosctl/v6/commands/container-registry"
 
