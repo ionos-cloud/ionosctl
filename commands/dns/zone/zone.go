@@ -40,7 +40,13 @@ func getZonesPrint(c *core.CommandConfig, data ionoscloud.ZonesResponse) printer
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	if c != nil {
-		r.OutputJSON = data
+		// TODO for r.OutputJSON: This loses all kinds of information in `-o json`, like `limit`, `offset`, etc. See https://github.com/ionos-cloud/ionosctl/issues/249
+		// But we are forced to do this otherwise we'd have this JSON output due to how the JSON output is designed:
+		// {
+		//  "items": {
+		//    "items": [
+		// ...
+		r.OutputJSON = data.Items // TODO: See above comment. Remove `.Items` once JSON marshalling works as one would expect
 		r.KeyValue = makeZonePrintObj(*data.Items...)
 		r.Columns = printer.GetHeadersAllDefault(allCols, cols)
 	}
@@ -48,15 +54,7 @@ func getZonesPrint(c *core.CommandConfig, data ionoscloud.ZonesResponse) printer
 }
 
 func getZonePrint(c *core.CommandConfig, data ionoscloud.ZoneResponse) printer.Result {
-	r := printer.Result{}
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-
-	if c != nil {
-		r.OutputJSON = data
-		r.KeyValue = makeZonePrintObj(data)
-		r.Columns = printer.GetHeadersAllDefault(allCols, cols)
-	}
-	return r
+	return getZonesPrint(c, ionoscloud.ZonesResponse{Items: &[]ionoscloud.ZoneResponse{data}})
 }
 
 type zonePrint struct {
