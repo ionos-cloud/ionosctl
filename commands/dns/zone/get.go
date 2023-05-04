@@ -2,6 +2,7 @@ package zone
 
 import (
 	"context"
+
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
@@ -15,7 +16,7 @@ func ZonesFindByIdCmd() *core.Command {
 		Verb:      "get",
 		Aliases:   []string{"g"},
 		ShortDesc: "Retrieve a zone",
-		Example:   "ionosctl dns zone get --zone-id",
+		Example:   "ionosctl dns zone get --zone-id ZONE_ID",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			err := c.Command.Command.MarkFlagRequired(constants.FlagZoneId)
 			if err != nil {

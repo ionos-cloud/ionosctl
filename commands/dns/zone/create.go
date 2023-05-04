@@ -13,7 +13,7 @@ func ZonesPostCmd() *core.Command {
 		Verb:      "create",
 		Aliases:   []string{},
 		ShortDesc: "Create a zone",
-		Example:   "ionosctl dns zonecreate ",
+		Example:   "ionosctl dns zone create",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 
 			return nil
