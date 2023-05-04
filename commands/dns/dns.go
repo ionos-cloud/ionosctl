@@ -10,7 +10,7 @@ import (
 func DNSCommand() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "DNS",
+			Use:              "dns",
 			Short:            "DNS API",
 			TraverseChildren: true,
 		},

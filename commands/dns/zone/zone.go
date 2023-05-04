@@ -19,6 +19,7 @@ func ZoneCommand() *core.Command {
 			TraverseChildren: true,
 		},
 	}
+
 	cmd.AddCommand(ZonesGetCmd())
 	cmd.AddCommand(ZonesDeleteCmd())
 	cmd.AddCommand(ZonesPostCmd())
