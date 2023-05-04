@@ -24,16 +24,16 @@ func ZonesGetCmd() *core.Command {
 			req := client.Must().DnsClient.ZonesApi.ZonesGet(context.Background())
 
 			if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) {
-				req.FilterZoneName(viper.GetString(fn))
+				req = req.FilterZoneName(viper.GetString(fn))
 			}
 			if fn := core.GetFlagName(c.NS, constants.FlagState); viper.IsSet(fn) {
-				req.FilterState(viper.GetString(fn))
+				req = req.FilterState(viper.GetString(fn))
 			}
 			if fn := core.GetFlagName(c.NS, constants.FlagOffset); viper.IsSet(fn) {
-				req.Offset(viper.GetInt32(fn))
+				req = req.Offset(viper.GetInt32(fn))
 			}
 			if fn := core.GetFlagName(c.NS, constants.FlagMaxResults); viper.IsSet(fn) {
-				req.Limit(viper.GetInt32(fn))
+				req = req.Limit(viper.GetInt32(fn))
 			}
 
 			ls, _, err := req.Execute()

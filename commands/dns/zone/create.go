@@ -2,6 +2,11 @@ package zone
 
 import (
 	"context"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/internal/pointer"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
+	ionoscloud "github.com/ionos-cloud/sdk-go-dnsaas"
+	"github.com/spf13/viper"
 
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 )
@@ -13,17 +18,43 @@ func ZonesPostCmd() *core.Command {
 		Verb:      "create",
 		Aliases:   []string{},
 		ShortDesc: "Create a zone",
-		Example:   "ionosctl dns zone create",
+		Example:   "ionosctl dns zone create --name name.com",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
+			//err := c.Command.Command.MarkFlagRequired(constants.FlagZoneId)
+			//if err != nil {
+			//	return err
+			//}
 
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			// Implement the actual command logic here
-			return nil
+
+			input := ionoscloud.ZoneCreateRequestProperties{}
+			if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) {
+				input.ZoneName = pointer.From(viper.GetString(fn))
+			}
+			if fn := core.GetFlagName(c.NS, constants.FlagDescription); viper.IsSet(fn) {
+				input.Description = pointer.From(viper.GetString(fn))
+			}
+			if fn := core.GetFlagName(c.NS, constants.FlagEnabled); viper.IsSet(fn) {
+				input.Enabled = pointer.From(viper.GetBool(fn))
+			}
+
+			z, _, err := client.Must().DnsClient.ZonesApi.ZonesPost(context.Background()).
+				ZoneCreateRequest(ionoscloud.ZoneCreateRequest{Properties: &input}).Execute()
+			if err != nil {
+				return err
+			}
+			return c.Printer.Print(getZonePrint(c, z))
 		},
 		InitClient: true,
 	})
+
+	cmd.AddStringVarFlag(&id, constants.FlagZoneId, constants.FlagIdShort, "", "The ID (UUID) of the DNS zone", core.RequiredFlagOption())
+
+	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "The name of the DNS zone, e.g. foo.com")
+	cmd.AddStringFlag(constants.FlagDescription, "", "", "The description of the DNS zone")
+	cmd.AddBoolFlag(constants.FlagEnabled, "", true, "Activate or deactivate the DNS zone")
 
 	return cmd
 }
