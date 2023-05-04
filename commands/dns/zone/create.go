@@ -2,6 +2,7 @@ package zone
 
 import (
 	"context"
+
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/pointer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
@@ -16,14 +17,14 @@ func ZonesPostCmd() *core.Command {
 		Namespace: "dns",
 		Resource:  "zone",
 		Verb:      "create",
-		Aliases:   []string{},
+		Aliases:   []string{"post", "c"},
 		ShortDesc: "Create a zone",
 		Example:   "ionosctl dns zone create --name name.com",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			//err := c.Command.Command.MarkFlagRequired(constants.FlagZoneId)
-			//if err != nil {
-			//	return err
-			//}
+			err := c.Command.Command.MarkFlagRequired(constants.FlagName)
+			if err != nil {
+				return err
+			}
 
 			return nil
 		},
@@ -49,8 +50,6 @@ func ZonesPostCmd() *core.Command {
 		},
 		InitClient: true,
 	})
-
-	cmd.AddStringVarFlag(&id, constants.FlagZoneId, constants.FlagIdShort, "", "The ID (UUID) of the DNS zone", core.RequiredFlagOption())
 
 	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "The name of the DNS zone, e.g. foo.com")
 	cmd.AddStringFlag(constants.FlagDescription, "", "", "The description of the DNS zone")

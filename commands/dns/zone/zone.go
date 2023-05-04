@@ -14,7 +14,7 @@ func ZoneCommand() *core.Command {
 		Command: &cobra.Command{
 			Use:              "zone",
 			Short:            "DNS zones",
-			Aliases:          []string{"z"},
+			Aliases:          []string{"z", "zones"},
 			Long:             "The sub-commands of `ionosctl dns zone` allow you to perform operations on DNS zones",
 			TraverseChildren: true,
 		},
@@ -41,7 +41,7 @@ func getZonesPrint(c *core.CommandConfig, data ionoscloud.ZonesResponse) printer
 
 	if c != nil {
 		// TODO for r.OutputJSON: This loses all kinds of information in `-o json`, like `limit`, `offset`, etc. See https://github.com/ionos-cloud/ionosctl/issues/249
-		// But we are forced to do this otherwise we'd have this JSON output due to how the JSON output is designed:
+		// But we are forced to do this otherwise we'd have this JSON output:
 		// {
 		//  "items": {
 		//    "items": [

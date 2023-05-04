@@ -3,6 +3,8 @@ package zone
 import (
 	"context"
 
+	"github.com/spf13/cobra"
+
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
@@ -47,6 +49,10 @@ func ZonesGetCmd() *core.Command {
 	})
 
 	cmd.AddStringFlag(constants.FlagState, "", "", "Filter used to fetch all zones in a particular state (PROVISIONING, DEPROVISIONING, CREATED, FAILED)")
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagState, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return []string{"PROVISIONING", "DEPROVISIONING", "CREATED", "FAILED"}, cobra.ShellCompDirectiveNoFileComp
+	})
+
 	cmd.AddStringFlag(constants.FlagName, "", "", "Filter used to fetch only the zones that contain the specified zone name")
 	cmd.AddInt32Flag(constants.FlagMaxResults, "", 0, "Pagination limit")
 	cmd.AddInt32Flag(constants.FlagOffset, "", 0, "Pagination offset")

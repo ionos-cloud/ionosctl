@@ -3,6 +3,9 @@ package zone
 import (
 	"context"
 
+	"github.com/ionos-cloud/ionosctl/v6/commands/dns/completer"
+	"github.com/spf13/cobra"
+
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
@@ -39,6 +42,8 @@ func ZonesFindByIdCmd() *core.Command {
 	})
 
 	cmd.AddStringFlag(constants.FlagZoneId, constants.FlagIdShort, "", "The ID (UUID) of the DNS zone", core.RequiredFlagOption())
-
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagZoneId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.Zones(), cobra.ShellCompDirectiveNoFileComp
+	})
 	return cmd
 }

@@ -47,7 +47,7 @@ docs generate-docs:
 .PHONY: gofmt_check
 gofmt_check:
 	@echo "--- Ensure code adheres to gofmt and list files whose formatting differs(vendor directory excluded) ---"
-	@if [ "$(shell echo $$(gofmt -l ${GOFILES_NOVENDOR}))" != "" ]; then (echo "Format files: $(shell echo $$(gofmt -l ${GOFILES_NOVENDOR})) Hint: use \`make gofmt_update\`"; exit 1); fi
+	@if [ "$(shell echo $$(gofmt -l ${GOFILES_NOVENDOR}))" != "" ]; then (echo "Format files: $(shell echo $$(gofmt -l ${GOFILES_NOVENDOR})) Hint: use \`make gofmt\`"; exit 1); fi
 	@echo "DONE"
 
 .PHONY: gofmt
