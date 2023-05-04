@@ -25,6 +25,11 @@ func ZoneCommand() *core.Command {
 	cmd.AddCommand(ZonesPostCmd())
 	cmd.AddCommand(ZonesPutCmd())
 	cmd.AddCommand(ZonesFindByIdCmd())
+
+	// Quality-Of-Life commands which use another command in their implementation
+	cmd.AddCommand(ZonesEnableCmd())
+	cmd.AddCommand(ZonesDisableCmd())
+
 	return cmd
 }
 

@@ -11,6 +11,8 @@ import (
 	"github.com/spf13/viper"
 )
 
+var id string
+
 func ZonesPutCmd() *core.Command {
 	cmd := core.NewCommand(context.Background(), nil, core.CommandBuilder{
 		Namespace: "dns",
@@ -28,8 +30,6 @@ func ZonesPutCmd() *core.Command {
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			id := viper.GetString(core.GetFlagName(c.NS, constants.FlagZoneId))
-
 			z, _, err := client.Must().DnsClient.ZonesApi.ZonesFindById(context.Background(), id).Execute()
 			if err != nil {
 				return err
@@ -62,11 +62,79 @@ func ZonesPutCmd() *core.Command {
 		InitClient: true,
 	})
 
-	cmd.AddStringFlag(constants.FlagZoneId, constants.FlagIdShort, "", "The ID (UUID) of the DNS zone", core.RequiredFlagOption())
+	cmd.AddStringVarFlag(&id, constants.FlagZoneId, constants.FlagIdShort, "", "The ID (UUID) of the DNS zone", core.RequiredFlagOption())
 
 	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "The name of the DNS zone, e.g. foo.com")
 	cmd.AddStringFlag(constants.FlagDescription, "", "", "The description of the DNS zone")
-	cmd.AddStringFlag(constants.FlagEnabled, "", "", "Activate or deactivate the DNS zone")
+	cmd.AddBoolFlag(constants.FlagEnabled, "", true, "Activate or deactivate the DNS zone")
+
+	return cmd
+}
+
+func ZonesEnableCmd() *core.Command {
+	cmd := core.NewCommand(context.Background(), nil, core.CommandBuilder{
+		Namespace: "dns",
+		Resource:  "zone",
+		Verb:      "enable",
+		Aliases:   []string{"on"},
+		ShortDesc: "Enable a zone",
+		Example:   "ionosctl dns zone enable --zone-id ZONE_ID",
+		PreCmdRun: func(c *core.PreCommandConfig) error {
+			err := c.Command.Command.MarkFlagRequired(constants.FlagZoneId)
+			if err != nil {
+				return err
+			}
+
+			return nil
+		},
+		CmdRun: func(c *core.CommandConfig) error {
+			// Set the 'enabled' flag to true before calling the update command
+			cmd := ZonesPutCmd().Command
+			err := cmd.Flags().Set(constants.FlagEnabled, "true")
+			if err != nil {
+				return err
+			}
+
+			return cmd.Execute()
+		},
+		InitClient: true,
+	})
+
+	cmd.AddStringVarFlag(&id, constants.FlagZoneId, constants.FlagIdShort, "", "The ID (UUID) of the DNS zone", core.RequiredFlagOption())
+
+	return cmd
+}
+
+func ZonesDisableCmd() *core.Command {
+	cmd := core.NewCommand(context.Background(), nil, core.CommandBuilder{
+		Namespace: "dns",
+		Resource:  "zone",
+		Verb:      "disable",
+		Aliases:   []string{"off"},
+		ShortDesc: "Disable a zone",
+		Example:   "ionosctl dns zone disable --zone-id ZONE_ID",
+		PreCmdRun: func(c *core.PreCommandConfig) error {
+			err := c.Command.Command.MarkFlagRequired(constants.FlagZoneId)
+			if err != nil {
+				return err
+			}
+
+			return nil
+		},
+		CmdRun: func(c *core.CommandConfig) error {
+			// Set the 'enabled' flag to true before calling the update command
+			cmd := ZonesPutCmd().Command
+			err := cmd.Flags().Set(constants.FlagEnabled, "false")
+			if err != nil {
+				return err
+			}
+
+			return cmd.Execute()
+		},
+		InitClient: true,
+	})
+
+	cmd.AddStringVarFlag(&id, constants.FlagZoneId, constants.FlagIdShort, "", "The ID (UUID) of the DNS zone", core.RequiredFlagOption())
 
 	return cmd
 }
