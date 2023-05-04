@@ -3,6 +3,10 @@ package zone
 import (
 	"context"
 
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
+	"github.com/spf13/viper"
+
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 )
 
@@ -13,25 +17,26 @@ func ZonesDeleteCmd() *core.Command {
 		Verb:      "delete",
 		Aliases:   []string{"del", "d"},
 		ShortDesc: "Delete a zone",
-		Example:   "ionosctl dns zone delete ",
+		Example:   "ionosctl dns zone delete --zone-id ZONE_ID",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			/* TODO: Delete/modify me for --all
-						 * err := core.CheckRequiredFlagsSets(c.Command, c.NS, []string{constants.ArgAll}, []string{constants.Flag<Parent>Id}, []string{constants.ArgAll, constants.Flag<Parent>Id})
-						 * if err != nil {
-						 * 	return err
-						 * }
-			             * */
-
-			// TODO: If no --all, mark individual flags as required
+			err := c.Command.Command.MarkFlagRequired(constants.FlagZoneId)
+			if err != nil {
+				return err
+			}
 
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			return nil
-			// Implement the actual command logic here
+			_, err := client.Must().DnsClient.ZonesApi.ZonesDelete(context.Background(),
+				viper.GetString(core.GetFlagName(c.NS, constants.FlagZoneId)),
+			).Execute()
+
+			return err
 		},
 		InitClient: true,
 	})
+
+	cmd.AddStringFlag(constants.FlagZoneId, constants.FlagIdShort, "", "The ID (UUID) of the DNS zone", core.RequiredFlagOption())
 
 	return cmd
 }
