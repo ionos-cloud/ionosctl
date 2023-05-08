@@ -23,6 +23,11 @@ import (
 )
 
 func NewCommand(ctx context.Context, parent *Command, info CommandBuilder) *Command {
+	if info.PreCmdRun == nil {
+		// Fixes a nil pointer reference panic
+		info.PreCmdRun = NoPreRun
+	}
+
 	cc := &cobra.Command{
 		Use:     info.Verb,
 		Short:   info.ShortDesc,
