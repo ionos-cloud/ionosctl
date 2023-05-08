@@ -86,7 +86,7 @@ func ZonesRecordsPostCmd() *core.Command {
 		return completer.Zones(), cobra.ShellCompDirectiveNoFileComp
 	})
 
-	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "The name of the DNS record")
+	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "The name of the DNS record.  Provide a wildcard i.e. `*` to match requests for non-existent names under your DNS Zone name")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagName, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return fake.Names(10), cobra.ShellCompDirectiveNoFileComp
 	})
