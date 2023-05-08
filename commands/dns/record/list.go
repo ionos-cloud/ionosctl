@@ -21,16 +21,16 @@ func RecordsGetCmd() *core.Command {
 			req := client.Must().DnsClient.RecordsApi.RecordsGet(context.Background())
 
 			if fn := core.GetFlagName(c.NS, constants.FlagZoneId); viper.IsSet(fn) {
-				req.FilterZoneId(viper.GetString(fn))
+				req = req.FilterZoneId(viper.GetString(fn))
 			}
 			if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) {
-				req.FilterZoneId(viper.GetString(fn))
+				req = req.FilterName(viper.GetString(fn))
 			}
 			if fn := core.GetFlagName(c.NS, constants.FlagOffset); viper.IsSet(fn) {
-				req.Offset(viper.GetInt32(fn))
+				req = req.Offset(viper.GetInt32(fn))
 			}
 			if fn := core.GetFlagName(c.NS, constants.FlagMaxResults); viper.IsSet(fn) {
-				req.Limit(viper.GetInt32(fn))
+				req = req.Limit(viper.GetInt32(fn))
 			}
 
 			ls, _, err := req.Execute()

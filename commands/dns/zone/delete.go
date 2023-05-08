@@ -27,7 +27,7 @@ func ZonesDeleteCmd() *core.Command {
 		ShortDesc: "Delete a zone",
 		Example:   "ionosctl dns zone delete --zone-id ZONE_ID",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			return core.CheckRequiredFlagsSets(c.Command, c.NS, []string{constants.ArgAll}, []string{constants.FlagClusterId})
+			return core.CheckRequiredFlagsSets(c.Command, c.NS, []string{constants.ArgAll}, []string{constants.FlagZoneId})
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			if all := viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)); all {

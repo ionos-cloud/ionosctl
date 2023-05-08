@@ -19,3 +19,22 @@ func Zones() []string {
 		return *t.GetId()
 	})
 }
+
+type RecordFilter func(dns.ApiRecordsGetRequest) dns.ApiRecordsGetRequest
+
+func Records(filters ...RecordFilter) []string {
+	req := client.Must().DnsClient.RecordsApi.RecordsGet(context.Background())
+
+	for _, f := range filters {
+		req = f(req)
+	}
+
+	ls, _, err := req.Execute()
+	if err != nil {
+		return nil
+	}
+
+	return functional.Map(*ls.GetItems(), func(t dns.RecordResponse) string {
+		return *t.GetId()
+	})
+}
