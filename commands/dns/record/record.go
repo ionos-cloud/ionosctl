@@ -34,7 +34,13 @@ func getRecordsPrint(c *core.CommandConfig, data ionoscloud.RecordsResponse) pri
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	if c != nil {
-		r.OutputJSON = data
+		// TODO for r.OutputJSON: This loses all kinds of information in `-o json`, like `limit`, `offset`, etc. See https://github.com/ionos-cloud/ionosctl/issues/249
+		// But we are forced to do this otherwise we'd have this JSON output:
+		// {
+		//  "items": {
+		//    "items": [
+		// ...
+		r.OutputJSON = data.Items // TODO: See above comment. Remove `.Items` once JSON marshalling works as one would expect
 		r.KeyValue = makeRecordPrintObj(*data.Items...)
 		r.Columns = printer.GetHeadersAllDefault(allCols, cols)
 	}
@@ -42,15 +48,7 @@ func getRecordsPrint(c *core.CommandConfig, data ionoscloud.RecordsResponse) pri
 }
 
 func getRecordPrint(c *core.CommandConfig, data ionoscloud.RecordResponse) printer.Result {
-	r := printer.Result{}
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-
-	if c != nil {
-		r.OutputJSON = data
-		r.KeyValue = makeRecordPrintObj(data)
-		r.Columns = printer.GetHeadersAllDefault(allCols, cols)
-	}
-	return r
+	return getRecordsPrint(c, ionoscloud.RecordsResponse{Items: &[]ionoscloud.RecordResponse{data}})
 }
 
 type recordPrint struct {

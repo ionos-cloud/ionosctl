@@ -45,6 +45,7 @@ const (
 	FlagState       = "state"
 	FlagDescription = "description"
 	FlagEnabled     = "enabled"
+	FlagContent     = "content"
 )
 
 // Flag descriptions. Prefixed with "Desc" for easy find and replace
