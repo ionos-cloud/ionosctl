@@ -10,7 +10,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/pointer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
-	ionoscloud "github.com/ionos-cloud/sdk-go-dnsaas"
 	"github.com/spf13/viper"
 )
 
@@ -67,7 +66,7 @@ func ZonesPutCmd() *core.Command {
 
 	cmd.AddStringVarFlag(&id, constants.FlagZoneId, constants.FlagIdShort, "", "The ID (UUID) of the DNS zone", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagZoneId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.Zones(), cobra.ShellCompDirectiveNoFileComp
+		return completer.ZoneIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "The name of the DNS zone, e.g. foo.com")
 	cmd.AddStringFlag(constants.FlagDescription, "", "", "The description of the DNS zone")

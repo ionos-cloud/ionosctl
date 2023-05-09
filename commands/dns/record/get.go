@@ -45,9 +45,6 @@ func ZonesRecordsFindByIdCmd() *core.Command {
 
 	cmd.AddStringFlag(constants.FlagZoneId, "", "", "The ID (UUID) of the DNS zone of which record belongs to")
 	cmd.AddStringFlag(constants.FlagRecordId, "", "", "The ID (UUID) of the DNS record")
-	cmd.AddStringFlag(constants.FlagName, "", "", "")
-	cmd.AddInt32Flag(constants.FlagOffset, "", 0, "Priority value is between 0 and 65535. Priority is mandatory for MX, SRV and URI record types and ignored for all other types")
-	cmd.AddInt32Flag(constants.FlagMaxResults, "", 0, constants.DescMaxResults)
 
 	return cmd
 }

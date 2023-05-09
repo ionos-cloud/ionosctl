@@ -1,11 +1,14 @@
 package record
 
 import (
+	"context"
+	dns "github.com/ionos-cloud/sdk-go-dnsaas"
+
 	"github.com/fatih/structs"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
-	ionoscloud "github.com/ionos-cloud/sdk-go-dnsaas"
 	"github.com/spf13/cobra"
 )
 
@@ -29,7 +32,7 @@ func RecordCommand() *core.Command {
 
 // Helper functions for printing record
 
-func getRecordsPrint(c *core.CommandConfig, data ionoscloud.RecordsResponse) printer.Result {
+func getRecordsPrint(c *core.CommandConfig, data dns.RecordsResponse) printer.Result {
 	r := printer.Result{}
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
@@ -47,8 +50,8 @@ func getRecordsPrint(c *core.CommandConfig, data ionoscloud.RecordsResponse) pri
 	return r
 }
 
-func getRecordPrint(c *core.CommandConfig, data ionoscloud.RecordResponse) printer.Result {
-	return getRecordsPrint(c, ionoscloud.RecordsResponse{Items: &[]ionoscloud.RecordResponse{data}})
+func getRecordPrint(c *core.CommandConfig, data dns.RecordResponse) printer.Result {
+	return getRecordsPrint(c, dns.RecordsResponse{Items: &[]dns.RecordResponse{data}})
 }
 
 type recordPrint struct {
@@ -62,7 +65,7 @@ type recordPrint struct {
 
 var allCols = structs.Names(recordPrint{})
 
-func makeRecordPrintObj(data ...ionoscloud.RecordResponse) []map[string]interface{} {
+func makeRecordPrintObj(data ...dns.RecordResponse) []map[string]interface{} {
 	out := make([]map[string]interface{}, 0, len(data))
 
 	for _, item := range data {
@@ -72,11 +75,7 @@ func makeRecordPrintObj(data ...ionoscloud.RecordResponse) []map[string]interfac
 		// Fill in the rest of the fields from the response object
 
 		if propertiesOk, ok := item.GetPropertiesOk(); ok && propertiesOk != nil {
-			var j []byte
-			err := propertiesOk.Type.UnmarshalJSON(j)
-			if err == nil {
-				printObj.Type = string(j)
-			}
+			printObj.Type = string(*propertiesOk.Type)
 
 			printObj.Enabled = *propertiesOk.Enabled
 			printObj.Content = *propertiesOk.Content
@@ -90,4 +89,21 @@ func makeRecordPrintObj(data ...ionoscloud.RecordResponse) []map[string]interfac
 		out = append(out, o)
 	}
 	return out
+}
+
+type Filter func(dns.ApiRecordsGetRequest) dns.ApiRecordsGetRequest
+
+func Records(filters ...Filter) (*dns.RecordsResponse, error) {
+	req := client.Must().DnsClient.RecordsApi.RecordsGet(context.Background())
+
+	for _, f := range filters {
+		req = f(req)
+	}
+
+	ls, _, err := req.Execute()
+	if err != nil {
+		return nil, err
+	}
+
+	return &ls, nil
 }

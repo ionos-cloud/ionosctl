@@ -3,12 +3,12 @@ package record
 import (
 	"context"
 	"fmt"
+	dns "github.com/ionos-cloud/sdk-go-dnsaas"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dns/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/pointer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
-	ionoscloud "github.com/ionos-cloud/sdk-go-dnsaas"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
@@ -46,29 +46,10 @@ func ZonesRecordsPostCmd() *core.Command {
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			input := ionoscloud.RecordProperties{}
-			if fn := core.GetFlagName(c.NS, constants.FlagEnabled); viper.IsSet(fn) {
-				input.Enabled = pointer.From(viper.GetBool(fn))
-			}
-			if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) {
-				input.Name = pointer.From(viper.GetString(fn))
-			}
-			if fn := core.GetFlagName(c.NS, constants.FlagContent); viper.IsSet(fn) {
-				input.Content = pointer.From(viper.GetString(fn))
-			}
-			if fn := core.GetFlagName(c.NS, constants.FlagTtl); true {
-				input.Ttl = pointer.From(viper.GetInt32(fn))
-			}
-			if fn := core.GetFlagName(c.NS, constants.FlagPriority); true {
-				input.Priority = pointer.From(viper.GetInt32(fn))
-			}
-			if fn := core.GetFlagName(c.NS, constants.FlagType); viper.IsSet(fn) {
-				input.Type = (*ionoscloud.RecordType)(pointer.From(viper.GetString(fn)))
-			}
 
 			rec, _, err := client.Must().DnsClient.RecordsApi.ZonesRecordsPost(context.Background(), id).
-				RecordCreateRequest(ionoscloud.RecordCreateRequest{
-					Properties: &input,
+				RecordCreateRequest(dns.RecordCreateRequest{
+					Properties: &modifyRecordPropertiesFromFlags(c, dns.RecordProperties{}),
 				}).Execute()
 			if err != nil {
 				return err
@@ -81,9 +62,36 @@ func ZonesRecordsPostCmd() *core.Command {
 
 	cmd.AddStringVarFlag(&id, constants.FlagZoneId, constants.FlagIdShort, "", "The ID (UUID) of the DNS zone", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagZoneId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.Zones(), cobra.ShellCompDirectiveNoFileComp
+		return completer.ZoneIds(), cobra.ShellCompDirectiveNoFileComp
 	})
+	cmd.Command.SilenceUsage = true
 
+	return addRecordCreateFlags(cmd)
+}
+
+func modifyRecordPropertiesFromFlags(c *core.CommandConfig, input dns.RecordProperties) dns.RecordProperties {
+	if fn := core.GetFlagName(c.NS, constants.FlagEnabled); viper.IsSet(fn) {
+		input.Enabled = pointer.From(viper.GetBool(fn))
+	}
+	if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) {
+		input.Name = pointer.From(viper.GetString(fn))
+	}
+	if fn := core.GetFlagName(c.NS, constants.FlagContent); viper.IsSet(fn) {
+		input.Content = pointer.From(viper.GetString(fn))
+	}
+	if fn := core.GetFlagName(c.NS, constants.FlagTtl); true {
+		input.Ttl = pointer.From(viper.GetInt32(fn))
+	}
+	if fn := core.GetFlagName(c.NS, constants.FlagPriority); true {
+		input.Priority = pointer.From(viper.GetInt32(fn))
+	}
+	if fn := core.GetFlagName(c.NS, constants.FlagType); viper.IsSet(fn) {
+		input.Type = (*dns.RecordType)(pointer.From(viper.GetString(fn)))
+	}
+	return input
+}
+
+func addRecordCreateFlags(cmd *core.Command) *core.Command {
 	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "The name of the DNS record.  Provide a wildcard i.e. `*` to match requests for non-existent names under your DNS Zone name", core.RequiredFlagOption())
 	cmd.AddBoolFlag(constants.FlagEnabled, "", true, "When true - the record is visible for lookup")
 	cmd.AddStringFlag(constants.FlagContent, "", "", fmt.Sprintf("The content (Record Data) for your chosen record type. For example, if --%s A, --%s should be an IPv4 IP.", constants.FlagType, constants.FlagContent), core.RequiredFlagOption())
@@ -92,8 +100,6 @@ func ZonesRecordsPostCmd() *core.Command {
 	cmd.AddSetFlag(constants.FlagType, "t", "AAAA",
 		[]string{"A", "AAAA", "CNAME", "ALIAS", "MX", "NS", "SRV", "TXT", "CAA", "SSHFP", "TLSA", "SMIMEA", "DS", "HTTPS", "SVCB", "OPENPGPKEY", "CERT", "URI", "RP", "LOC"},
 		"Type of DNS Record", core.RequiredFlagOption())
-
-	cmd.Command.SilenceUsage = true
 
 	return cmd
 }

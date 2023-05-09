@@ -57,7 +57,7 @@ func ZonesDeleteCmd() *core.Command {
 
 	cmd.AddStringFlag(constants.FlagZoneId, constants.FlagIdShort, "", fmt.Sprintf("The ID (UUID) of the DNS zone. Required or -%s", constants.ArgAllShort))
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagZoneId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.Zones(), cobra.ShellCompDirectiveNoFileComp
+		return completer.ZoneIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	cmd.AddBoolFlag(constants.ArgForce, constants.ArgForceShort, false, "Skip yes/no confirmation")

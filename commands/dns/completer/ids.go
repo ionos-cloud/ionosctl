@@ -3,6 +3,8 @@ package completer
 import (
 	"context"
 
+	"github.com/ionos-cloud/ionosctl/v6/commands/dns/record"
+
 	dns "github.com/ionos-cloud/sdk-go-dnsaas"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
@@ -10,7 +12,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
 )
 
-func Zones() []string {
+func ZoneIds() []string {
 	ls, _, err := client.Must().DnsClient.ZonesApi.ZonesGet(context.Background()).Execute()
 	if err != nil {
 		return nil
@@ -20,16 +22,8 @@ func Zones() []string {
 	})
 }
 
-type RecordFilter func(dns.ApiRecordsGetRequest) dns.ApiRecordsGetRequest
-
-func Records(filters ...RecordFilter) []string {
-	req := client.Must().DnsClient.RecordsApi.RecordsGet(context.Background())
-
-	for _, f := range filters {
-		req = f(req)
-	}
-
-	ls, _, err := req.Execute()
+func RecordIds(filters ...record.Filter) []string {
+	ls, err := record.Records(filters...)
 	if err != nil {
 		return nil
 	}
