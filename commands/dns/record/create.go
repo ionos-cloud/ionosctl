@@ -3,9 +3,10 @@ package record
 import (
 	"context"
 	"fmt"
+
+	"github.com/ionos-cloud/ionosctl/v6/commands/dns/zone"
 	dns "github.com/ionos-cloud/sdk-go-dnsaas"
 
-	"github.com/ionos-cloud/ionosctl/v6/commands/dns/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/pointer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
@@ -46,10 +47,11 @@ func ZonesRecordsPostCmd() *core.Command {
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-
+			input := dns.RecordProperties{}
+			modifyRecordPropertiesFromFlags(c, &input)
 			rec, _, err := client.Must().DnsClient.RecordsApi.ZonesRecordsPost(context.Background(), id).
 				RecordCreateRequest(dns.RecordCreateRequest{
-					Properties: &modifyRecordPropertiesFromFlags(c, dns.RecordProperties{}),
+					Properties: &input,
 				}).Execute()
 			if err != nil {
 				return err
@@ -62,14 +64,27 @@ func ZonesRecordsPostCmd() *core.Command {
 
 	cmd.AddStringVarFlag(&id, constants.FlagZoneId, constants.FlagIdShort, "", "The ID (UUID) of the DNS zone", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagZoneId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.ZoneIds(), cobra.ShellCompDirectiveNoFileComp
+		return zone.ZoneIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.Command.SilenceUsage = true
 
 	return addRecordCreateFlags(cmd)
 }
 
-func modifyRecordPropertiesFromFlags(c *core.CommandConfig, input dns.RecordProperties) dns.RecordProperties {
+func addRecordCreateFlags(cmd *core.Command) *core.Command {
+	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "The name of the DNS record.  Provide a wildcard i.e. `*` to match requests for non-existent names under your DNS Zone name", core.RequiredFlagOption())
+	cmd.AddBoolFlag(constants.FlagEnabled, "", true, "When true - the record is visible for lookup")
+	cmd.AddStringFlag(constants.FlagContent, "", "", fmt.Sprintf("The content (Record Data) for your chosen record type. For example, if --%s A, --%s should be an IPv4 IP.", constants.FlagType, constants.FlagContent), core.RequiredFlagOption())
+	cmd.AddInt32Flag(constants.FlagTtl, "", 3600, "Time to live. The amount of time the record can be cached by a resolver or server before it needs to be refreshed from the authoritative DNS server")
+	cmd.AddInt32Flag(constants.FlagPriority, "", 0, "Priority value is between 0 and 65535. Priority is mandatory for MX, SRV and URI record types and ignored for all other types.")
+	cmd.AddSetFlag(constants.FlagType, "t", "AAAA",
+		[]string{"A", "AAAA", "CNAME", "ALIAS", "MX", "NS", "SRV", "TXT", "CAA", "SSHFP", "TLSA", "SMIMEA", "DS", "HTTPS", "SVCB", "OPENPGPKEY", "CERT", "URI", "RP", "LOC"},
+		"Type of DNS Record", core.RequiredFlagOption())
+
+	return cmd
+}
+
+func modifyRecordPropertiesFromFlags(c *core.CommandConfig, input *dns.RecordProperties) {
 	if fn := core.GetFlagName(c.NS, constants.FlagEnabled); viper.IsSet(fn) {
 		input.Enabled = pointer.From(viper.GetBool(fn))
 	}
@@ -88,18 +103,4 @@ func modifyRecordPropertiesFromFlags(c *core.CommandConfig, input dns.RecordProp
 	if fn := core.GetFlagName(c.NS, constants.FlagType); viper.IsSet(fn) {
 		input.Type = (*dns.RecordType)(pointer.From(viper.GetString(fn)))
 	}
-	return input
-}
-
-func addRecordCreateFlags(cmd *core.Command) *core.Command {
-	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "The name of the DNS record.  Provide a wildcard i.e. `*` to match requests for non-existent names under your DNS Zone name", core.RequiredFlagOption())
-	cmd.AddBoolFlag(constants.FlagEnabled, "", true, "When true - the record is visible for lookup")
-	cmd.AddStringFlag(constants.FlagContent, "", "", fmt.Sprintf("The content (Record Data) for your chosen record type. For example, if --%s A, --%s should be an IPv4 IP.", constants.FlagType, constants.FlagContent), core.RequiredFlagOption())
-	cmd.AddInt32Flag(constants.FlagTtl, "", 3600, "Time to live. The amount of time the record can be cached by a resolver or server before it needs to be refreshed from the authoritative DNS server")
-	cmd.AddInt32Flag(constants.FlagPriority, "", 0, "Priority value is between 0 and 65535. Priority is mandatory for MX, SRV and URI record types and ignored for all other types.")
-	cmd.AddSetFlag(constants.FlagType, "t", "AAAA",
-		[]string{"A", "AAAA", "CNAME", "ALIAS", "MX", "NS", "SRV", "TXT", "CAA", "SSHFP", "TLSA", "SMIMEA", "DS", "HTTPS", "SVCB", "OPENPGPKEY", "CERT", "URI", "RP", "LOC"},
-		"Type of DNS Record", core.RequiredFlagOption())
-
-	return cmd
 }

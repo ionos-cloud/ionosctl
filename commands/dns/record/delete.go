@@ -4,7 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/ionos-cloud/ionosctl/v6/commands/dns/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/dns/zone"
+
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
@@ -59,12 +60,12 @@ func ZonesRecordsDeleteCmd() *core.Command {
 	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "If --all is set, filter --all deletion by record name")
 	cmd.AddStringFlag(constants.FlagZoneId, "", "", "The zone of the target record. If --all is set, filter --all deletion by this zone id")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagZoneId, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.ZoneIds(), cobra.ShellCompDirectiveNoFileComp
+		return zone.ZoneIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	cmd.AddStringFlag(constants.FlagRecordId, constants.FlagIdShort, "", fmt.Sprintf("The ID (UUID) of the DNS record. Required together with --%s or -%s", constants.FlagZoneId, constants.ArgAllShort))
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagRecordId, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.RecordIds(func(r dns.ApiRecordsGetRequest) dns.ApiRecordsGetRequest {
+		return RecordIds(func(r dns.ApiRecordsGetRequest) dns.ApiRecordsGetRequest {
 			if fn := core.GetFlagName(cmd.NS, constants.FlagName); viper.IsSet(fn) {
 				r = r.FilterName(viper.GetString(fn))
 			}

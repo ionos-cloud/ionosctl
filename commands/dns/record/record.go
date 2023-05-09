@@ -2,6 +2,8 @@ package record
 
 import (
 	"context"
+
+	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
 	dns "github.com/ionos-cloud/sdk-go-dnsaas"
 
 	"github.com/fatih/structs"
@@ -106,4 +108,15 @@ func Records(filters ...Filter) (*dns.RecordsResponse, error) {
 	}
 
 	return &ls, nil
+}
+
+func RecordIds(filters ...Filter) []string {
+	ls, err := Records(filters...)
+	if err != nil {
+		return nil
+	}
+
+	return functional.Map(*ls.GetItems(), func(t dns.RecordResponse) string {
+		return *t.GetId()
+	})
 }

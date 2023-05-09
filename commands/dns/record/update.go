@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/ionos-cloud/ionosctl/v6/commands/dns/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/dns/zone"
+
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
-	"github.com/ionos-cloud/ionosctl/v6/internal/pointer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	dns "github.com/ionos-cloud/sdk-go-dnsaas"
 	"github.com/spf13/cobra"
@@ -88,32 +88,21 @@ You must use either --%s and --%s, or alternatively use filters: --%s and/or --%
 
 	cmd.AddStringVarFlag(&zoneId, constants.FlagZoneId, "", "", "The ID (UUID) of the DNS zone", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagZoneId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.ZoneIds(), cobra.ShellCompDirectiveNoFileComp
+		return zone.ZoneIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddStringVarFlag(&recordId, constants.FlagRecordId, constants.FlagIdShort, "", "The ID (UUID) of the DNS record", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagZoneId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.ZoneIds(), cobra.ShellCompDirectiveNoFileComp
+		return RecordIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 	return addRecordCreateFlags(cmd)
 }
 
 func partiallyUpdateRecord(c *core.CommandConfig, r dns.RecordResponse) error {
-
-	if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) {
-		r.Properties.Name = pointer.From(viper.GetString(fn))
-	}
-	if fn := core.GetFlagName(c.NS, constants.FlagType); viper.IsSet(fn) {
-		r.Properties.Type = (*dns.RecordType)(pointer.From(viper.GetString(fn)))
-	}
-	if fn := core.GetFlagName(c.NS, constants.FlagContent); viper.IsSet(fn) {
-		r.Properties.Content = pointer.From(viper.GetString(fn))
-	}
-	if fn := core.GetFlagName(c.NS, constants.FlagEnabled); viper.IsSet(fn) {
-		r.Properties.Enabled = pointer.From(viper.GetBool(fn))
-	}
+	input := r.Properties
+	modifyRecordPropertiesFromFlags(c, input)
 
 	rNew, _, err := client.Must().DnsClient.RecordsApi.ZonesRecordsPut(context.Background(), *r.Metadata.ZoneId, *r.Id).
-		RecordUpdateRequest(dns.RecordUpdateRequest{Properties: r.Properties}).Execute()
+		RecordUpdateRequest(dns.RecordUpdateRequest{Properties: input}).Execute()
 	if err != nil {
 		return err
 	}

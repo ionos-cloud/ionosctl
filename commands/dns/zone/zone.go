@@ -1,10 +1,15 @@
 package zone
 
 import (
+	"context"
+
 	"github.com/fatih/structs"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
+	dns "github.com/ionos-cloud/sdk-go-dnsaas"
 	"github.com/spf13/cobra"
 )
 
@@ -34,7 +39,7 @@ func ZoneCommand() *core.Command {
 
 // Helper functions for printing zone
 
-func getZonesPrint(c *core.CommandConfig, data ionoscloud.ZonesResponse) printer.Result {
+func getZonesPrint(c *core.CommandConfig, data dns.ZonesResponse) printer.Result {
 	r := printer.Result{}
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
@@ -52,8 +57,8 @@ func getZonesPrint(c *core.CommandConfig, data ionoscloud.ZonesResponse) printer
 	return r
 }
 
-func getZonePrint(c *core.CommandConfig, data ionoscloud.ZoneResponse) printer.Result {
-	return getZonesPrint(c, ionoscloud.ZonesResponse{Items: &[]ionoscloud.ZoneResponse{data}})
+func getZonePrint(c *core.CommandConfig, data dns.ZoneResponse) printer.Result {
+	return getZonesPrint(c, dns.ZonesResponse{Items: &[]dns.ZoneResponse{data}})
 }
 
 type zonePrint struct {
@@ -66,7 +71,7 @@ type zonePrint struct {
 
 var allCols = structs.Names(zonePrint{})
 
-func makeZonePrintObj(data ...ionoscloud.ZoneResponse) []map[string]interface{} {
+func makeZonePrintObj(data ...dns.ZoneResponse) []map[string]interface{} {
 	out := make([]map[string]interface{}, 0, len(data))
 
 	for _, item := range data {
@@ -86,4 +91,14 @@ func makeZonePrintObj(data ...ionoscloud.ZoneResponse) []map[string]interface{} 
 		out = append(out, o)
 	}
 	return out
+}
+
+func ZoneIds() []string {
+	ls, _, err := client.Must().DnsClient.ZonesApi.ZonesGet(context.Background()).Execute()
+	if err != nil {
+		return nil
+	}
+	return functional.Map(*ls.GetItems(), func(t dns.ZoneResponse) string {
+		return *t.GetId()
+	})
 }

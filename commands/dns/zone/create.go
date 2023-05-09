@@ -3,6 +3,8 @@ package zone
 import (
 	"context"
 
+	dns "github.com/ionos-cloud/sdk-go-dnsaas"
+
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/pointer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
@@ -29,7 +31,7 @@ func ZonesPostCmd() *core.Command {
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 
-			input := ionoscloud.ZoneCreateRequestProperties{}
+			input := dns.ZoneCreateRequestProperties{}
 			if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) {
 				input.ZoneName = pointer.From(viper.GetString(fn))
 			}
@@ -41,7 +43,7 @@ func ZonesPostCmd() *core.Command {
 			}
 
 			z, _, err := client.Must().DnsClient.ZonesApi.ZonesPost(context.Background()).
-				ZoneCreateRequest(ionoscloud.ZoneCreateRequest{Properties: &input}).Execute()
+				ZoneCreateRequest(dns.ZoneCreateRequest{Properties: &input}).Execute()
 			if err != nil {
 				return err
 			}

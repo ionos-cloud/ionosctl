@@ -3,7 +3,8 @@ package zone
 import (
 	"context"
 
-	"github.com/ionos-cloud/ionosctl/v6/commands/dns/completer"
+	dns "github.com/ionos-cloud/sdk-go-dnsaas"
+
 	"github.com/spf13/cobra"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
@@ -49,7 +50,7 @@ func ZonesPutCmd() *core.Command {
 
 			zNew, _, err := client.Must().DnsClient.ZonesApi.ZonesPut(context.Background(), id).
 				ZoneUpdateRequest(
-					ionoscloud.ZoneUpdateRequest{Properties: &ionoscloud.ZoneUpdateRequestProperties{
+					dns.ZoneUpdateRequest{Properties: &dns.ZoneUpdateRequestProperties{
 						// We can't pass `z.Properties` directly as it is a different object type
 						ZoneName:    z.Properties.ZoneName,
 						Description: z.Properties.Description,
@@ -66,7 +67,7 @@ func ZonesPutCmd() *core.Command {
 
 	cmd.AddStringVarFlag(&id, constants.FlagZoneId, constants.FlagIdShort, "", "The ID (UUID) of the DNS zone", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagZoneId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.ZoneIds(), cobra.ShellCompDirectiveNoFileComp
+		return ZoneIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "The name of the DNS zone, e.g. foo.com")
 	cmd.AddStringFlag(constants.FlagDescription, "", "", "The description of the DNS zone")
