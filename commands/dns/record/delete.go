@@ -26,29 +26,50 @@ func ZonesRecordsDeleteCmd() *core.Command {
 		ShortDesc: "Delete a record",
 		Example:   `ionosctl dns record delete (--zone-id ZONE --record-id RECORD | --all [--name PARTIAL_NAME] [--zone-id ZONE_ID])`,
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			return core.CheckRequiredFlagsSets(c.Command, c.NS, []string{constants.ArgAll}, []string{constants.FlagZoneId, constants.FlagRecordId})
+			c.Command.Command.MarkFlagsMutuallyExclusive(constants.ArgAll, constants.FlagRecordId)
+
+			err := core.CheckRequiredFlagsSets(c.Command, c.NS, []string{constants.ArgAll}, // All with optional filters
+				[]string{constants.FlagZoneId, constants.FlagRecordId},       // Known IDs
+				[]string{constants.FlagName}, []string{constants.FlagZoneId}, // If none of the above, user can narrow down to a single record using filters. If more than one result, throw err
+			)
+			if err != nil {
+				return fmt.Errorf("either provide --%s and optionally filters, or --%s and --%s, or narrow down to one record with --%s and/or --%s: %w",
+					constants.ArgAll, constants.FlagZoneId, constants.FlagRecordId, constants.FlagName, constants.FlagZoneId, err)
+			}
+			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			if all := viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)); all {
 				return deleteAll(c)
 			}
 
-			z, _, err := client.Must().DnsClient.RecordsApi.ZonesRecordsFindById(context.Background(),
-				viper.GetString(core.GetFlagName(c.NS, constants.FlagZoneId)),
-				viper.GetString(core.GetFlagName(c.NS, constants.FlagRecordId)),
-			).Execute()
-			if err != nil {
-				return fmt.Errorf("failed getting record by id %s", id)
+			r := dns.RecordResponse{}
+			var err error
+			if fn := core.GetFlagName(c.NS, constants.FlagRecordId); viper.IsSet(fn) {
+				// In this case we know for sure that FlagZoneId is also set, because of the pre-run check
+				r, _, err = client.Must().DnsClient.RecordsApi.ZonesRecordsFindById(context.Background(),
+					viper.GetString(core.GetFlagName(c.NS, constants.FlagZoneId)),
+					viper.GetString(core.GetFlagName(c.NS, constants.FlagRecordId)),
+				).Execute()
+				if err != nil {
+					return fmt.Errorf("failed finding record using Zone and Record IDs: %w", err)
+				}
+			} else {
+				r, err = findRecordByListAndFilters(c)
+				if err != nil {
+					return fmt.Errorf("failed attempt to narrow down record using filters: %w", err)
+				}
 			}
-			yes := confirm.Ask(fmt.Sprintf("Are you sure you want to delete record %s (content: %s)", *z.Properties.Name, *z.Properties.Content),
+
+			yes := confirm.Ask(fmt.Sprintf("Are you sure you want to delete record %s (type: %s; content: %s)", *r.Properties.Name, *r.Properties.Type, *r.Properties.Content),
 				viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce)))
 			if !yes {
 				return nil
 			}
 
 			_, err = client.Must().DnsClient.RecordsApi.ZonesRecordsDelete(context.Background(),
-				viper.GetString(core.GetFlagName(c.NS, constants.FlagZoneId)),
-				viper.GetString(core.GetFlagName(c.NS, constants.FlagRecordId)),
+				*r.Metadata.ZoneId,
+				*r.Id,
 			).Execute()
 
 			return err

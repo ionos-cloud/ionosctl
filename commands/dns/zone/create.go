@@ -30,7 +30,6 @@ func ZonesPostCmd() *core.Command {
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-
 			input := dns.ZoneCreateRequestProperties{}
 			if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) {
 				input.ZoneName = pointer.From(viper.GetString(fn))

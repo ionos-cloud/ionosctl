@@ -95,10 +95,10 @@ func makeRecordPrintObj(data ...dns.RecordResponse) []map[string]interface{} {
 
 type Filter func(dns.ApiRecordsGetRequest) dns.ApiRecordsGetRequest
 
-func Records(filters ...Filter) (*dns.RecordsResponse, error) {
+func Records(f Filter) (*dns.RecordsResponse, error) {
 	req := client.Must().DnsClient.RecordsApi.RecordsGet(context.Background())
 
-	for _, f := range filters {
+	if f != nil {
 		req = f(req)
 	}
 
@@ -110,8 +110,8 @@ func Records(filters ...Filter) (*dns.RecordsResponse, error) {
 	return &ls, nil
 }
 
-func RecordIds(filters ...Filter) []string {
-	ls, err := Records(filters...)
+func RecordIds(f Filter) []string {
+	ls, err := Records(f)
 	if err != nil {
 		return nil
 	}
