@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/ionos-cloud/ionosctl/v6/internal/pointer"
+
 	"github.com/ionos-cloud/ionosctl/v6/internal/die"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
@@ -352,7 +354,7 @@ func getNewK8sNodePoolLanInfo(c *core.CommandConfig, oldNg *resources.K8sNodePoo
 				for i, net := range network {
 					routes = append(routes,
 						ionoscloud.KubernetesNodePoolLanRoutes{
-							Network:   &net,
+							Network:   pointer.From(net), // Copy the loop variable and take its address. See #289 - always same address would be used
 							GatewayIp: &gatewayIp[i],
 						},
 					)
