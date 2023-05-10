@@ -224,6 +224,21 @@
             * [delete](subcommands%2FContainer-Registry%2Ftoken%2Fscope%2Fdelete.md)
             * [list](subcommands%2FContainer-Registry%2Ftoken%2Fscope%2Flist.md)
         * [update](subcommands%2FContainer-Registry%2Ftoken%2Fupdate.md)
+* DNS
+    * record
+        * [create](subcommands%2FDNS%2Frecord%2Fcreate.md)
+        * [delete](subcommands%2FDNS%2Frecord%2Fdelete.md)
+        * [get](subcommands%2FDNS%2Frecord%2Fget.md)
+        * [list](subcommands%2FDNS%2Frecord%2Flist.md)
+        * [update](subcommands%2FDNS%2Frecord%2Fupdate.md)
+    * zone
+        * [create](subcommands%2FDNS%2Fzone%2Fcreate.md)
+        * [delete](subcommands%2FDNS%2Fzone%2Fdelete.md)
+        * [disable](subcommands%2FDNS%2Fzone%2Fdisable.md)
+        * [enable](subcommands%2FDNS%2Fzone%2Fenable.md)
+        * [get](subcommands%2FDNS%2Fzone%2Fget.md)
+        * [list](subcommands%2FDNS%2Fzone%2Flist.md)
+        * [update](subcommands%2FDNS%2Fzone%2Fupdate.md)
 * Database as a Service
     * mongo
         * api

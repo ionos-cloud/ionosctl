@@ -1,0 +1,52 @@
+---
+description: Retrieve all records
+---
+
+# DnsRecordList
+
+## Usage
+
+```text
+ionosctl dns record list [flags]
+```
+
+## Aliases
+
+For `record` command:
+
+```text
+[r]
+```
+
+For `list` command:
+
+```text
+[ls]
+```
+
+## Description
+
+Retrieve all records
+
+## Options
+
+```text
+  -u, --api-url string      Override default host url (default "https://api.ionos.com")
+  -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+  -f, --force               Force command to execute without user input
+  -h, --help                Print usage
+      --max-results int32   The maximum number of elements to return
+      --name string         Filter used to fetch only the records that contain specified record name
+      --offset int32        The first element (of the total list of elements) to include in the response. Use together with limit for pagination
+  -o, --output string       Desired output format [text|json] (default "text")
+  -q, --quiet               Quiet output
+  -v, --verbose             Print step-by-step process when running command
+      --zone-id string      Filter used to fetch only the records that contain specified zoneId
+```
+
+## Examples
+
+```text
+ionosctl dns record list
+```
+
