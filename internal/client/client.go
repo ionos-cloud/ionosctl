@@ -77,11 +77,23 @@ var instance *Client
 
 // Get a client and possibly fail
 func Get() (*Client, error) {
-	var err error
+	errChan := make(chan error, 1)
 	once.Do(func() {
+		var err error
 		err = config.Load()
+		if err != nil {
+			errChan <- fmt.Errorf("failed loading credentials: %w", err)
+			return
+		}
 		instance, err = newClient(viper.GetString(constants.Username), viper.GetString(constants.Password), viper.GetString(constants.Token), config.GetServerUrl())
+		if err != nil {
+			errChan <- fmt.Errorf("failed creating client: %w", err)
+			return
+		}
+		errChan <- nil // send nil if no error occurred
 	})
+
+	err := <-errChan // receive error from channel
 	if err != nil {
 		return nil, err
 	}
