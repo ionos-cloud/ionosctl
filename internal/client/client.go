@@ -77,27 +77,21 @@ var instance *Client
 
 // Get a client and possibly fail
 func Get() (*Client, error) {
-	errChan := make(chan error, 1)
+	var getClientErr error
+
 	once.Do(func() {
 		var err error
 		err = config.Load()
 		if err != nil {
-			errChan <- fmt.Errorf("failed loading credentials: %w", err)
-			return
+			getClientErr = errors.Join(getClientErr, fmt.Errorf("failed loading config: %w"), err)
 		}
 		instance, err = newClient(viper.GetString(constants.Username), viper.GetString(constants.Password), viper.GetString(constants.Token), config.GetServerUrl())
 		if err != nil {
-			errChan <- fmt.Errorf("failed creating client: %w", err)
-			return
+			getClientErr = errors.Join(getClientErr, fmt.Errorf("failed creating client: %w"), err)
 		}
-		errChan <- nil // send nil if no error occurred
 	})
 
-	err := <-errChan // receive error from channel
-	if err != nil {
-		return nil, err
-	}
-	return instance, nil
+	return instance, getClientErr
 }
 
 // Must gets the client obj or fatally dies
