@@ -83,11 +83,11 @@ func Get() (*Client, error) {
 		var err error
 		err = config.Load()
 		if err != nil {
-			getClientErr = errors.Join(getClientErr, fmt.Errorf("failed loading config: %w"), err)
+			getClientErr = errors.Join(getClientErr, fmt.Errorf("failed loading config: %w", err))
 		}
 		instance, err = newClient(viper.GetString(constants.Username), viper.GetString(constants.Password), viper.GetString(constants.Token), config.GetServerUrl())
 		if err != nil {
-			getClientErr = errors.Join(getClientErr, fmt.Errorf("failed creating client: %w"), err)
+			getClientErr = errors.Join(getClientErr, fmt.Errorf("failed creating client: %w", err))
 		}
 	})
 
