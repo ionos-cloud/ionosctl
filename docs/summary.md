@@ -234,8 +234,6 @@
     * zone
         * [create](subcommands%2FDNS%2Fzone%2Fcreate.md)
         * [delete](subcommands%2FDNS%2Fzone%2Fdelete.md)
-        * [disable](subcommands%2FDNS%2Fzone%2Fdisable.md)
-        * [enable](subcommands%2FDNS%2Fzone%2Fenable.md)
         * [get](subcommands%2FDNS%2Fzone%2Fget.md)
         * [list](subcommands%2FDNS%2Fzone%2Flist.md)
         * [update](subcommands%2FDNS%2Fzone%2Fupdate.md)
