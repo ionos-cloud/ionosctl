@@ -91,6 +91,11 @@ const (
 	DefaultParentIndex    = int(1)
 )
 
+// enum values. TODO: ideally i'd like these handled by the SDK
+var (
+	EnumLicenceType = []string{"LINUX", "RHEL", "WINDOWS", "WINDOWS2016", "UNKNOWN", "OTHER"}
+)
+
 // Some legacy messages, which might need looking into
 const (
 	MessageRequestInfo = "Request ID: %v Execution Time: %v"
