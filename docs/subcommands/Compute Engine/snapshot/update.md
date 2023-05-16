@@ -51,7 +51,7 @@ Required values to run command:
       --disc-virtio-hot-unplug   This volume is capable of VirtIO drive hot unplug (no reboot required). E.g.: --disc-virtio-unplug=true, --disc-virtio-unplug=false
   -f, --force                    Force command to execute without user input
   -h, --help                     Print usage
-      --licence-type string      Licence Type of the Snapshot
+      --licence-type string      Licence Type of the Snapshot. Can be one of: LINUX, RHEL, WINDOWS, WINDOWS2016, UNKNOWN, OTHER
   -n, --name string              Name of the Snapshot
       --nic-hot-plug             This volume is capable of NIC hot plug (no reboot required). E.g.: --nic-hot-plug=true, --nic-hot-plug=false
       --nic-hot-unplug           This volume is capable of NIC hot unplug (no reboot required). E.g.: --nic-hot-unplug=true, --nic-hot-unplug=false

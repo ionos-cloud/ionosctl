@@ -47,7 +47,7 @@ Required values to run command:
   -d, --description string     Description of the Snapshot
   -f, --force                  Force command to execute without user input
   -h, --help                   Print usage
-      --licence-type string    Licence Type of the Snapshot (default "LINUX")
+      --licence-type string    Licence Type of the Snapshot. Can be one of: LINUX, RHEL, WINDOWS, WINDOWS2016, UNKNOWN, OTHER (default "LINUX")
   -n, --name string            Name of the Snapshot (default "Unnamed Snapshot")
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output

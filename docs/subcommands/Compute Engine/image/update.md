@@ -51,7 +51,7 @@ Required values to run command:
   -f, --force                    Force command to execute without user input
   -h, --help                     Print usage
   -i, --image-id string          The unique Image Id (required)
-      --licence-type string      The OS type of this image. Can be one of: UNKNOWN, WINDOWS, WINDOWS2016, WINDOWS2022, LINUX, OTHER (default "UNKNOWN")
+      --licence-type string      The OS type of this image. Can be one of: LINUX, RHEL, WINDOWS, WINDOWS2016, UNKNOWN, OTHER (default "UNKNOWN")
   -n, --name string              Name of the Image
       --nic-hot-plug             'Hot-Plug' NIC (default true)
       --nic-hot-unplug           'Hot-Unplug' NIC
