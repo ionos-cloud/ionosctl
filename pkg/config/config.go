@@ -5,10 +5,10 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"runtime"
-	"strconv"
 
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 
@@ -16,6 +16,11 @@ import (
 
 	"github.com/spf13/viper"
 )
+
+var FieldsWithSensitiveDataInConfigFile = []string{
+	"userdata.name", "userdata.password", "userdata.token", // credentials stored in config file pre June 2023
+	constants.Token, // credentials currently stored in config file
+}
 
 func GetUserData() map[string]string {
 	return map[string]string{
@@ -53,37 +58,75 @@ func getConfigHomeDir() string {
 	return filepath.Join(configPath, "ionosctl")
 }
 
-func getPermsByOS(os string) int {
+func ReadFile() (map[string]string, error) {
+	path, err := getConfigPath()
+	if err != nil {
+		return nil, err
+	}
+
+	fileInfo, err := os.Stat(path)
+	if err != nil {
+		return nil, fmt.Errorf("failed getting config file info: %w", err)
+	}
+
+	expectedPerms := getPermsByOS(runtime.GOOS)
+	if perms := int64(fileInfo.Mode().Perm()); perms != expectedPerms {
+		return nil, fmt.Errorf("failed reading config file: file %s has wrong permissions: %d, should be %d", path, perms, expectedPerms)
+	}
+
+	data, err := ioutil.ReadFile(path)
+	if err != nil {
+		return nil, fmt.Errorf("failed reading config file: %w", err)
+	}
+
+	var result map[string]string
+	err = json.Unmarshal(data, &result)
+	if err != nil {
+		return nil, fmt.Errorf("failed unmarshalling config file data: %w", err)
+	}
+
+	return result, nil
+}
+
+func LoadData(data map[string]string) {
+	for key, value := range data {
+		viper.Set(key, value)
+	}
+}
+
+// LoadFile is a QOL func which does LoadData(ReadFile()) with err checking
+// Exists because of old code
+func LoadFile() error {
+	data, err := ReadFile()
+	if err != nil {
+		return fmt.Errorf("failed reading config file: %w", err)
+	}
+	LoadData(data)
+	return nil
+}
+
+// getConfigPath retrieves the configuration file path and makes it absolute if it isn't.
+func getConfigPath() (string, error) {
+	path := viper.GetString(constants.ArgConfig)
+
+	if !filepath.IsAbs(path) {
+		// TODO: What is the point of turning this into an abs path ?
+		absPath, err := filepath.Abs(path)
+		if err != nil {
+			return "", err
+		}
+		return absPath, nil
+	}
+
+	return path, nil
+}
+
+func getPermsByOS(os string) int64 {
 	if os == "windows" {
 		return 666
 	} else {
 		return 600
 	}
-}
-
-func LoadFile() error {
-	path := viper.GetString(constants.ArgConfig)
-	if !filepath.IsAbs(path) {
-		path, _ = filepath.Abs(path)
-	}
-	fileInfo, statErr := os.Stat(path)
-	if statErr != nil {
-		return statErr
-	}
-	perm := fileInfo.Mode().Perm()
-	permNumberBase10 := int64(perm)
-	strBase10 := strconv.FormatInt(permNumberBase10, 8)
-	permNumber, _ := strconv.Atoi(strBase10)
-
-	system := runtime.GOOS
-
-	permNumberExpected := getPermsByOS(system)
-	if permNumber != permNumberExpected {
-		return fmt.Errorf("config file %s has wrong permissions: %d, should be %d", path, permNumber, permNumberExpected)
-	}
-
-	viper.SetConfigFile(viper.GetString(constants.ArgConfig))
-	return viper.ReadInConfig()
 }
 
 // Load binds environment variables (IONOS_USERNAME, IONOS_PASSWORD) to viper, and attempts
@@ -105,7 +148,7 @@ func Load() (err error) {
 		err, cloudv6.IonosTokenEnvVar, cloudv6.IonosUsernameEnvVar, cloudv6.IonosPasswordEnvVar)
 }
 
-func WriteFile() error {
+func WriteFile(data map[string]string) error {
 	f, err := configFileWriter()
 	if err != nil {
 		return err
@@ -115,7 +158,7 @@ func WriteFile() error {
 
 	defer f.Close()
 
-	b, err := json.MarshalIndent(GetUserData(), "", "  ")
+	b, err := json.MarshalIndent(data, "", "  ")
 	if err != nil {
 		return errors.New("unable to encode configuration to JSON format")
 	}

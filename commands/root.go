@@ -153,16 +153,13 @@ func initConfig() {
 	}
 
 	viper.AutomaticEnv()
-
-	if err := viper.ReadInConfig(); err == nil {
-		fmt.Println("Using config file: ", viper.ConfigFileUsed())
-	}
 }
 
 // AddCommands adds sub commands to the base command.
 func addCommands() {
 	rootCmd.AddCommand(VersionCmd())
 	rootCmd.AddCommand(LoginCmd())
+	rootCmd.AddCommand(LogoutCmd())
 	// V6 Resources Commands
 	rootCmd.AddCommand(cloudapiv6.LocationCmd())
 	rootCmd.AddCommand(cloudapiv6.DatacenterCmd())
