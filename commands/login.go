@@ -110,7 +110,10 @@ func RunLoginUser(c *core.CommandConfig) error {
 			}
 			pwd = string(bytesPwd)
 		}
-		tok, _, err := client2.Must().AuthClient.TokensApi.TokensGenerate(context.Background()).Execute()
+		c.Printer.Verbose("Generating token with creds")
+
+		cl, err := client2.NewClient(username, pwd, "", "")
+		tok, _, err := cl.AuthClient.TokensApi.TokensGenerate(context.Background()).Execute()
 		if err != nil {
 			return fmt.Errorf("failed using username and password to generate a token: %w", err)
 		}

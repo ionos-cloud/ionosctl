@@ -103,9 +103,9 @@ func Must() *Client {
 	return client
 }
 
-// NewTestClient - function used only for tests.
+// NewClient - function used only for tests.
 // Bypasses the singleton check, not recommended for normal use.
 // TO BE REMOVED ONCE TESTS ARE REFACTORED
-func NewTestClient(name, pwd, token, hostUrl string) (*Client, error) {
+func NewClient(name, pwd, token, hostUrl string) (*Client, error) {
 	return newClient(name, pwd, token, hostUrl)
 }

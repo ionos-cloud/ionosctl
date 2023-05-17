@@ -10,24 +10,24 @@ import (
 
 func TestNewClientService(t *testing.T) {
 	t.Run("no credentials", func(t *testing.T) {
-		svc, err := client.NewTestClient("needspassword", "", "", "url")
+		svc, err := client.NewClient("needspassword", "", "", "url")
 		assert.Nil(t, svc)
 		assert.EqualError(t, err, "username, password or token incorrect")
 	})
 
 	t.Run("success", func(t *testing.T) {
-		svc, err := client.NewTestClient("", "", "token", "url")
+		svc, err := client.NewClient("", "", "token", "url")
 		assert.NotNil(t, svc)
 		assert.NoError(t, err)
 		assert.Equal(t, "token", svc.CloudClient.GetConfig().Token)
 
-		svc, err = client.NewTestClient("user", "pass", "", "url")
+		svc, err = client.NewClient("user", "pass", "", "url")
 		assert.NotNil(t, svc)
 		assert.NoError(t, err)
 		assert.Equal(t, "user", svc.CloudClient.GetConfig().Username)
 		assert.Equal(t, "pass", svc.CloudClient.GetConfig().Password)
 
-		svc, err = client.NewTestClient("user", "pass", "", "")
+		svc, err = client.NewClient("user", "pass", "", "")
 		assert.NotNil(t, svc)
 		assert.NoError(t, err)
 		assert.Equal(t, "user", svc.CloudClient.GetConfig().Username)

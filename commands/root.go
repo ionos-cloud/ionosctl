@@ -5,6 +5,8 @@ import (
 	"os"
 	"strings"
 
+	"github.com/ionos-cloud/ionosctl/v6/internal/die"
+
 	container_registry "github.com/ionos-cloud/ionosctl/v6/commands/container-registry"
 
 	authv1 "github.com/ionos-cloud/ionosctl/v6/commands/auth-v1"
@@ -142,8 +144,7 @@ func initConfig() {
 		// Find home directory.
 		home, err := homedir.Dir()
 		if err != nil {
-			fmt.Println(err)
-			os.Exit(1)
+			die.Die(fmt.Errorf("failed getting home directory: %w", err).Error())
 		}
 
 		viper.AddConfigPath(home)
@@ -151,11 +152,11 @@ func initConfig() {
 		viper.SetConfigType("json")
 	}
 
-	// Read Environment Variables.
-	// For authentication, there are used the following ENV:
-	// IONOS_USERNAME, IONOS_PASSWORD or IONOS_TOKEN
-	// The user can also overwrite the endpoint: IONOS_API_URL
 	viper.AutomaticEnv()
+
+	if err := viper.ReadInConfig(); err == nil {
+		fmt.Println("Using config file: ", viper.ConfigFileUsed())
+	}
 }
 
 // AddCommands adds sub commands to the base command.

@@ -89,21 +89,19 @@ func LoadFile() error {
 // Load binds environment variables (IONOS_USERNAME, IONOS_PASSWORD) to viper, and attempts
 // to read config file for setting fallbacks for these newly-bound viper vars
 func Load() (err error) {
-	_ = viper.BindEnv(constants.Username, cloudv6.IonosUsernameEnvVar)
-	_ = viper.BindEnv(constants.Password, cloudv6.IonosPasswordEnvVar)
 	_ = viper.BindEnv(constants.Token, cloudv6.IonosTokenEnvVar)
 	_ = viper.BindEnv(constants.ServerUrl, cloudv6.IonosApiUrlEnvVar)
 
 	err = LoadFile() // Use config file as a fallback for any of the above variables. Could be used only for api-url
 
-	if viper.IsSet(constants.Token) || (viper.IsSet(constants.Username) && viper.IsSet(constants.Password)) {
+	if viper.IsSet(constants.Token) || (viper.IsSet("IONOS_USERNAME") && viper.IsSet("IONOS_PASSWORD")) {
 		// Error thrown by LoadFile is recoverable in this case.
 		// We don't want to throw an error e.g. if the user only uses the config file for api-url,
 		// or if he has IONOS_TOKEN, or IONOS_USERNAME and IONOS_PASSWORD exported as env vars and no config file at all
 		return nil
 	}
 
-	return fmt.Errorf("%w: Please export %s, or %s and %s, or do ionosctl login to generate a config file",
+	return fmt.Errorf("%w: Please export %s, or %s and %s, or do ionosctl login to generate a config file containing a token",
 		err, cloudv6.IonosTokenEnvVar, cloudv6.IonosUsernameEnvVar, cloudv6.IonosPasswordEnvVar)
 }
 
@@ -113,6 +111,8 @@ func WriteFile() error {
 		return err
 	}
 
+	fmt.Println("WriteFile")
+
 	defer f.Close()
 
 	b, err := json.MarshalIndent(GetUserData(), "", "  ")
@@ -121,6 +121,7 @@ func WriteFile() error {
 	}
 
 	_, err = f.Write(b)
+
 	if err != nil {
 		return errors.New("unable to write configuration")
 	}

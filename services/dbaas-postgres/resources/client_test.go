@@ -11,22 +11,22 @@ import (
 
 func TestNewClientService(t *testing.T) {
 	t.Run("no credentials", func(t *testing.T) {
-		svc, err := client.NewTestClient("", "", "", "")
+		svc, err := client.NewClient("", "", "", "")
 		assert.Nil(t, svc)
 		assert.EqualError(t, err, "username, password or token incorrect")
 
-		svc, err = client.NewTestClient("needspassword", "", "", "url")
+		svc, err = client.NewClient("needspassword", "", "", "url")
 		assert.Nil(t, svc)
 		assert.EqualError(t, err, "username, password or token incorrect")
 	})
 
 	t.Run("success", func(t *testing.T) {
-		svc, err := client.NewTestClient("", "", "token", "url")
+		svc, err := client.NewClient("", "", "token", "url")
 		assert.NotNil(t, svc)
 		assert.NoError(t, err)
 		assert.Equal(t, "token", svc.PostgresClient.GetConfig().Token)
 
-		svc, err = client.NewTestClient("user", "pass", "", "url")
+		svc, err = client.NewClient("user", "pass", "", "url")
 		assert.NotNil(t, svc)
 		assert.NoError(t, err)
 		assert.Equal(t, "user", svc.PostgresClient.GetConfig().Username)
@@ -35,7 +35,7 @@ func TestNewClientService(t *testing.T) {
 }
 
 func getTestClient(t *testing.T) *client.Client {
-	svc, err := client.NewTestClient("user", "pass", "", constants.DefaultApiURL)
+	svc, err := client.NewClient("user", "pass", "", constants.DefaultApiURL)
 	assert.NotNil(t, svc)
 	assert.NoError(t, err)
 	assert.Equal(t, "user", svc.PostgresClient.GetConfig().Username)
