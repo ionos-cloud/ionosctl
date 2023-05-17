@@ -105,8 +105,8 @@ const (
 )
 
 const (
-	Username         = "userdata.name"
-	Password         = "userdata.password"
+	Username         = "IONOS_USERNAME"
+	Password         = "IONOS_PASSWORD"
 	Token            = "userdata.token"
 	ServerUrl        = "userdata.api-url"
 	CLIHttpUserAgent = "cli-user-agent"

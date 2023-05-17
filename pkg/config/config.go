@@ -19,8 +19,6 @@ import (
 
 func GetUserData() map[string]string {
 	return map[string]string{
-		constants.Username:  viper.GetString(constants.Username),
-		constants.Password:  viper.GetString(constants.Password),
 		constants.Token:     viper.GetString(constants.Token),
 		constants.ServerUrl: viper.GetString(constants.ServerUrl),
 	}
