@@ -58,8 +58,8 @@ func NodepoolDeleteCmd() *core.Command {
 		return completer.DataplatformClusterIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddUUIDFlag(constants.FlagNodepoolId, constants.FlagIdShort, "", "The unique ID of the nodepool", core.RequiredFlagOption())
-	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagNodepoolId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.DataplatformClusterIds(), cobra.ShellCompDirectiveNoFileComp
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagNodepoolId, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.DataplatformNodepoolsIds(viper.GetString(core.GetFlagName(cmd.NS, constants.FlagClusterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Delete all clusters. If cluster ID is provided, delete all nodepools in given cluster")
 	cmd.AddBoolFlag(constants.ArgForce, constants.ArgForceShort, false, "Skip yes/no verification")
@@ -93,10 +93,10 @@ func deleteNodePools(c *core.CommandConfig, clusterId string) error {
 	if err != nil {
 		return err
 	}
-	return functional.ApplyOrFail(*xs.GetItems(), func(x ionoscloud.NodePoolResponseData) error {
+	return functional.ApplyAndAggregateErrors(*xs.GetItems(), func(x ionoscloud.NodePoolResponseData) error {
 		ok := confirm.Ask(fmt.Sprintf("delete nodepool %s (%s)", *x.Id, *x.Properties.Name), viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce)))
 		if !ok {
-			return fmt.Errorf("canceled deletion: invalid input")
+			return fmt.Errorf("canceled deletion for %s (%s): invalid input", *x.Id, *x.Properties.Name)
 		}
 		_, _, err := client.Must().DataplatformClient.DataPlatformNodePoolApi.ClustersNodepoolsDelete(context.Background(), clusterId, *x.Id).Execute()
 		return err
