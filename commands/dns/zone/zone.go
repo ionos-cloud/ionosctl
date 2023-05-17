@@ -2,6 +2,7 @@ package zone
 
 import (
 	"context"
+	"strings"
 
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
@@ -23,6 +24,12 @@ func ZoneCommand() *core.Command {
 			TraverseChildren: true,
 		},
 	}
+
+	cmd.Command.PersistentFlags().StringSlice(constants.ArgCols, nil, printer.ColsMessage(allCols))
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return allCols, cobra.ShellCompDirectiveNoFileComp
+	})
+	cmd.Command.PersistentFlags().Bool(constants.ArgNoHeaders, false, "When using text output, don't print headers")
 
 	cmd.AddCommand(ZonesGetCmd())
 	cmd.AddCommand(ZonesDeleteCmd())
@@ -61,6 +68,7 @@ type zonePrint struct {
 	Id          string `json:"ID,omitempty"`
 	Name        string `json:"Name,omitempty"`
 	Description string `json:"Content,omitempty"`
+	NameServers string `json:"NameServers,omitempty"`
 	Enabled     bool   `json:"Enabled,omitempty"`
 	State       string `json:"State,omitempty"`
 }
@@ -81,6 +89,7 @@ func makeZonePrintObj(data ...dns.ZoneResponse) []map[string]interface{} {
 		}
 		if m, ok := item.GetMetadataOk(); ok && m != nil {
 			printObj.State = string(*m.State)
+			printObj.NameServers = strings.Join(*m.Nameservers, ", ")
 		}
 
 		o := structs.Map(printObj)

@@ -24,6 +24,12 @@ func RecordCommand() *core.Command {
 			TraverseChildren: true,
 		},
 	}
+	cmd.Command.PersistentFlags().StringSlice(constants.ArgCols, nil, printer.ColsMessage(allCols))
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return allCols, cobra.ShellCompDirectiveNoFileComp
+	})
+	cmd.Command.PersistentFlags().Bool(constants.ArgNoHeaders, false, "When using text output, don't print headers")
+
 	cmd.AddCommand(RecordsGetCmd())
 	cmd.AddCommand(ZonesRecordsDeleteCmd())
 	cmd.AddCommand(ZonesRecordsPostCmd())
@@ -62,6 +68,7 @@ type recordPrint struct {
 	Content string `json:"Content,omitempty"`
 	Type    string `json:"Type,omitempty"`
 	Enabled bool   `json:"Enabled,omitempty"`
+	FQDN    string `json:"FQDN,omitempty"`
 	State   string `json:"State,omitempty"`
 }
 
@@ -84,6 +91,7 @@ func makeRecordPrintObj(data ...dns.RecordResponse) []map[string]interface{} {
 			printObj.Name = *propertiesOk.Name
 		}
 		if m, ok := item.GetMetadataOk(); ok && m != nil {
+			printObj.FQDN = *m.Fqdn
 			printObj.State = string(*m.State)
 		}
 
