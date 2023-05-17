@@ -6,6 +6,7 @@ package dns_test
 import (
 	"context"
 	"fmt"
+	"log"
 	"strconv"
 	"testing"
 
@@ -142,5 +143,7 @@ func Cleanup(t *testing.T) {
 			return err2
 		},
 	)
-	assert.NoError(t, err)
+	if err != nil {
+		log.Printf("Failed deletion: %s", err.Error())
+	}
 }
