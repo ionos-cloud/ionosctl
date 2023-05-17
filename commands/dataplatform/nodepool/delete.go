@@ -25,7 +25,7 @@ func NodepoolDeleteCmd() *core.Command {
 		ShortDesc: "Delete a Dataplatform Cluster by ID",
 		Example:   "ionosctl dataplatform cluster delete --cluster-id <cluster-id>",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			return core.CheckRequiredFlagsSets(c.Command, c.NS, []string{constants.ArgAll}, []string{constants.FlagClusterId}, []string{constants.ArgAll, constants.FlagClusterId})
+			return core.CheckRequiredFlagsSets(c.Command, c.NS, []string{constants.ArgAll}, []string{constants.FlagClusterId, constants.FlagNodepoolId}, []string{constants.ArgAll, constants.FlagClusterId})
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
@@ -53,7 +53,7 @@ func NodepoolDeleteCmd() *core.Command {
 		return completer.DataplatformClusterIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddUUIDFlag(constants.FlagNodepoolId, constants.FlagIdShort, "", "The unique ID of the nodepool", core.RequiredFlagOption())
-	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagNodepoolId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.DataplatformClusterIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Delete all clusters. If cluster ID is provided, delete all nodepools in given cluster")
