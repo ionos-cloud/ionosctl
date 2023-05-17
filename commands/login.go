@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"context"
 	"errors"
+	"fmt"
 	"os"
 	"strings"
 
@@ -109,10 +110,11 @@ func RunLoginUser(c *core.CommandConfig) error {
 			}
 			pwd = string(bytesPwd)
 		}
-		viper.Set(constants.Username, username)
-		c.Printer.Verbose("Username is set %s", viper.GetString(constants.Username))
-		viper.Set(constants.Password, pwd)
-		c.Printer.Verbose("Password is set.")
+		tok, _, err := client2.Must().AuthClient.TokensApi.TokensGenerate(context.Background()).Execute()
+		if err != nil {
+			return fmt.Errorf("failed using username and password to generate a token: %w", err)
+		}
+		viper.Set(constants.Token, *tok.Token)
 	}
 	c.Printer.Verbose("ServerUrl: %s", config.GetServerUrl())
 	viper.Set(constants.ServerUrl, viper.GetString(constants.ArgServerUrl))
