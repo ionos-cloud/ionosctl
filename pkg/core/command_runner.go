@@ -207,7 +207,7 @@ func getPrinter(noHeaders bool) printer.PrintService {
 		var execOut bytes.Buffer
 		out = &execOut
 	} else {
-		out = os.Stdout
+		out = os.Stdout // lol we should either not allow CommandBuilder to customize out buffer at all, or find a way for it to influence this line. I can't change command output in tests because of this
 	}
 	printReg, err := printer.NewPrinterRegistry(out, os.Stderr, noHeaders)
 	clierror.CheckError(err, os.Stderr)
