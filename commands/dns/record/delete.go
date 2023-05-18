@@ -83,7 +83,9 @@ ionosctl dns record delete --name PARTIAL_NAME [--zone-id ZONE_ID]`,
 	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "If --all is set, filter --all deletion by record name")
 	cmd.AddStringFlag(constants.FlagZoneId, "", "", "The zone of the target record. If --all is set, filter --all deletion by this zone id")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagZoneId, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return zone.ZoneIds(), cobra.ShellCompDirectiveNoFileComp
+		return zone.Zones(func(t dns.ZoneResponse) string {
+			return *t.GetId()
+		}), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	cmd.AddStringFlag(constants.FlagRecordId, constants.FlagIdShort, "", fmt.Sprintf("The ID (UUID) of the DNS record. Required together with --%s or -%s", constants.FlagZoneId, constants.ArgAllShort))

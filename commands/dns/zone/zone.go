@@ -98,12 +98,20 @@ func makeZonePrintObj(data ...dns.ZoneResponse) []map[string]interface{} {
 	return out
 }
 
-func ZoneIds() []string {
+func ZoneNames() []string {
 	ls, _, err := client.Must().DnsClient.ZonesApi.ZonesGet(context.Background()).Execute()
 	if err != nil {
 		return nil
 	}
 	return functional.Map(*ls.GetItems(), func(t dns.ZoneResponse) string {
-		return *t.GetId()
+		return *t.Properties.ZoneName
 	})
+}
+
+func Zones(f func(dns.ZoneResponse) string) []string {
+	ls, _, err := client.Must().DnsClient.ZonesApi.ZonesGet(context.Background()).Execute()
+	if err != nil {
+		return nil
+	}
+	return functional.Map(*ls.GetItems(), f)
 }

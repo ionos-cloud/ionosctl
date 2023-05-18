@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dns/zone"
+
 	dns "github.com/ionos-cloud/sdk-go-dnsaas"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
@@ -64,7 +65,9 @@ func ZonesRecordsPostCmd() *core.Command {
 
 	cmd.AddStringVarFlag(&id, constants.FlagZoneId, constants.FlagIdShort, "", "The ID (UUID) of the DNS zone", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagZoneId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return zone.ZoneIds(), cobra.ShellCompDirectiveNoFileComp
+		return zone.Zones(func(t dns.ZoneResponse) string {
+			return *t.GetId()
+		}), cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.Command.SilenceUsage = true
 

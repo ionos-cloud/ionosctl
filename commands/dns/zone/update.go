@@ -67,7 +67,9 @@ func ZonesPutCmd() *core.Command {
 
 	cmd.AddStringVarFlag(&id, constants.FlagZoneId, constants.FlagIdShort, "", "The ID (UUID) of the DNS zone", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagZoneId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return ZoneIds(), cobra.ShellCompDirectiveNoFileComp
+		return Zones(func(t dns.ZoneResponse) string {
+			return *t.GetId()
+		}), cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "The name of the DNS zone, e.g. foo.com")
 	cmd.AddStringFlag(constants.FlagDescription, "", "", "The description of the DNS zone")

@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dns/zone"
+
 	dns "github.com/ionos-cloud/sdk-go-dnsaas"
 	"github.com/spf13/cobra"
 
@@ -49,7 +50,9 @@ func ZonesRecordsFindByIdCmd() *core.Command {
 
 	cmd.AddStringFlag(constants.FlagZoneId, "", "", "The ID (UUID) of the DNS zone of which record belongs to")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagZoneId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return zone.ZoneIds(), cobra.ShellCompDirectiveNoFileComp
+		return zone.Zones(func(t dns.ZoneResponse) string {
+			return *t.GetId()
+		}), cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddStringFlag(constants.FlagRecordId, "", "", "The ID (UUID) of the DNS record")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagRecordId, func(cobraCmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {

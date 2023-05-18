@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dns/zone"
+
 	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
@@ -55,7 +56,9 @@ You must use either --%s and --%s, or alternatively use filters: --%s and/or --%
 
 	cmd.AddStringVarFlag(&zoneId, constants.FlagZoneId, "", "", "The ID (UUID) of the DNS zone", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagZoneId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return zone.ZoneIds(), cobra.ShellCompDirectiveNoFileComp
+		return zone.Zones(func(t dns.ZoneResponse) string {
+			return *t.GetId()
+		}), cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddStringVarFlag(&recordId, constants.FlagRecordId, constants.FlagIdShort, "", "The ID (UUID) of the DNS record", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagRecordId, func(cobraCmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
