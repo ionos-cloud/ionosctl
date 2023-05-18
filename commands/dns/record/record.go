@@ -53,7 +53,7 @@ func getRecordsPrint(c *core.CommandConfig, data dns.RecordsResponse) printer.Re
 		// ...
 		r.OutputJSON = data.Items // TODO: See above comment. Remove `.Items` once JSON marshalling works as one would expect
 		r.KeyValue = makeRecordPrintObj(*data.Items...)
-		r.Columns = printer.GetHeadersAllDefault(allCols, cols)
+		r.Columns = printer.GetHeaders(allCols, defaultCols, cols)
 	}
 	return r
 }
@@ -63,16 +63,19 @@ func getRecordPrint(c *core.CommandConfig, data dns.RecordResponse) printer.Resu
 }
 
 type recordPrint struct {
-	Id      string `json:"ID,omitempty"`
-	Name    string `json:"Name,omitempty"`
-	Content string `json:"Content,omitempty"`
-	Type    string `json:"Type,omitempty"`
-	Enabled bool   `json:"Enabled,omitempty"`
-	FQDN    string `json:"FQDN,omitempty"`
-	State   string `json:"State,omitempty"`
+	Id       string `json:"ID,omitempty"`
+	Name     string `json:"Name,omitempty"`
+	Content  string `json:"Content,omitempty"`
+	Type     string `json:"Type,omitempty"`
+	Enabled  bool   `json:"Enabled,omitempty"`
+	FQDN     string `json:"FQDN,omitempty"`
+	State    string `json:"State,omitempty"`
+	ZoneId   string `json:"ZoneId,omitempty"`
+	ZoneName string `json:"ZoneName,omitempty"`
 }
 
 var allCols = structs.Names(recordPrint{})
+var defaultCols = allCols[:len(allCols)-2]
 
 func makeRecordPrintObj(data ...dns.RecordResponse) []map[string]interface{} {
 	out := make([]map[string]interface{}, 0, len(data))
@@ -93,6 +96,11 @@ func makeRecordPrintObj(data ...dns.RecordResponse) []map[string]interface{} {
 		if m, ok := item.GetMetadataOk(); ok && m != nil {
 			printObj.FQDN = *m.Fqdn
 			printObj.State = string(*m.State)
+			printObj.ZoneId = *m.ZoneId
+			z, _, err := client.Must().DnsClient.ZonesApi.ZonesFindById(context.Background(), *m.ZoneId).Execute()
+			if err == nil && z.Properties != nil {
+				printObj.ZoneName = *z.Properties.ZoneName
+			}
 		}
 
 		o := structs.Map(printObj)
