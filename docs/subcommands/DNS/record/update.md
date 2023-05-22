@@ -33,12 +33,15 @@ You must use either --zone-id and --record-id, or alternatively use filters: --n
 
 ```text
   -u, --api-url string     Override default host url (default "https://api.ionos.com")
+      --cols strings       Set of columns to be printed on output 
+                           Available columns: [Id Name Content Type Enabled FQDN State ZoneId ZoneName]
   -c, --config string      Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --content string     The content (Record Data) for your chosen record type. For example, if --type A, --content should be an IPv4 IP. (required)
       --enabled            When true - the record is visible for lookup (default true)
   -f, --force              Force command to execute without user input
   -h, --help               Print usage
   -n, --name *             The name of the DNS record.  Provide a wildcard i.e. * to match requests for non-existent names under your DNS Zone name (required)
+      --no-headers         When using text output, don't print headers
   -o, --output string      Desired output format [text|json] (default "text")
       --priority int32     Priority value is between 0 and 65535. Priority is mandatory for MX, SRV and URI record types and ignored for all other types.
   -q, --quiet              Quiet output
