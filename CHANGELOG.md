@@ -1,5 +1,17 @@
 # Changelog
 
+## [6.7.0] (XXX 2023)
+
+### Added
+- Added a `logout` command, which iterates through fields in your config file which contain sensitive data and removes their value
+
+
+### Changed
+- Changed the `login`/config file functionality:
+  - Username and password are no longer saved to the config file on successful logins
+  - The API JWT token is now the only sensitive field saved to the config file.
+  - If `login` is done via username & password, a JWT token is created via Auth API and this is stored in the config file
+
 ## [6.6.2] (April 2023)
 
 ### Added
