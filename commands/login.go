@@ -3,36 +3,30 @@ package commands
 import (
 	"bufio"
 	"context"
-	"errors"
 	"fmt"
 	"os"
 	"strings"
 
-	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"golang.org/x/term"
 
 	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
-	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
 	sdk "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
-	"golang.org/x/term"
 )
 
 const (
 	loginExamples = `ionosctl login --user $IONOS_USERNAME --password $IONOS_PASSWORD
-Status: Authentication successful!
 
 ionosctl login --token $IONOS_TOKEN
-Status: Authentication successful!
 
 ionosctl login
 Enter your username:
 USERNAME
-Enter your password:
-
-Status: Authentication successful!`
+Enter your password:`
 )
 
 func LoginCmd() *core.Command {
@@ -43,17 +37,12 @@ func LoginCmd() *core.Command {
 		Verb:      "login",
 		Aliases:   []string{"log", "auth"},
 		ShortDesc: "Authentication command for SDK",
-		LongDesc: `Use this command to authenticate. You can use  ` + "`" + `--user` + "`" + ` and ` + "`" + `--password` + "`" + ` flags or you can use  ` + "`" + `--token` + "`" + ` flag to set the credentials.
+		LongDesc: fmt.Sprintf(`Use this command to authenticate.
+You can either use the interactive mode, or you can use "--user" and "--password" flags or "--token" flag to set the credentials.
+If using username & password, this command will generate a JWT token which will be saved in the config file. Please safeguard your token.
+The config file, by default, will be created at %s. You can use another configuration file for authentication with the "--config" global option.
 
-By default, the user data after running this command will be saved in:
-
-* macOS: ` + "`" + `${HOME}/Library/Application Support/ionosctl/config.json` + "`" + `
-* Linux: ` + "`" + `${XDG_CONFIG_HOME}/ionosctl/config.json` + "`" + `
-* Windows: ` + "`" + `%APPDATA%\ionosctl\config.json` + "`" + `.
-
-You can use another configuration file for authentication with the ` + "`" + `--config` + "`" + ` global option.
-
-Note: The IONOS Cloud CLI supports also authentication with environment variables: $IONOS_USERNAME, $IONOS_PASSWORD or $IONOS_TOKEN.`,
+Note: The IONOS Cloud CLI supports also authentication with environment variables: $IONOS_USERNAME, $IONOS_PASSWORD or $IONOS_TOKEN, these override the config file token.`, config.GetConfigFile()),
 		Example:    loginExamples,
 		PreCmdRun:  PreRunLoginCmd,
 		CmdRun:     RunLoginUser,
@@ -67,8 +56,8 @@ Note: The IONOS Cloud CLI supports also authentication with environment variable
 }
 
 func PreRunLoginCmd(c *core.PreCommandConfig) error {
-	if viper.IsSet(core.GetFlagName(c.NS, constants.ArgUser)) && viper.IsSet(core.GetFlagName(c.NS, constants.ArgPassword)) && viper.IsSet(core.GetFlagName(c.NS, constants.ArgToken)) {
-		return errors.New("it is recommended to use either username + password, either token")
+	if (viper.IsSet(core.GetFlagName(c.NS, constants.ArgUser)) || viper.IsSet(core.GetFlagName(c.NS, constants.ArgPassword))) && viper.IsSet(core.GetFlagName(c.NS, constants.ArgToken)) {
+		return fmt.Errorf("use either --%s and/or --%s, either --%s", constants.ArgUser, constants.ArgPassword, constants.ArgToken)
 	}
 	return nil
 }
@@ -77,70 +66,99 @@ func RunLoginUser(c *core.CommandConfig) error {
 	c.Printer.Verbose("Note: The login command will save the credentials in a configuration file after the authentication is successful!")
 	c.Printer.Verbose("Note: As an alternative to this, ionosctl offers support for environment variables: $%s, $%s or $%s.",
 		sdk.IonosUsernameEnvVar, sdk.IonosPasswordEnvVar, sdk.IonosTokenEnvVar)
-	username := viper.GetString(core.GetFlagName(c.NS, constants.ArgUser))
-	pwd := viper.GetString(core.GetFlagName(c.NS, constants.ArgPassword))
-	token := viper.GetString(core.GetFlagName(c.NS, constants.ArgToken))
 
-	if token != "" {
-		// If token is set, use only token
-		viper.Set(constants.Token, token)
-		c.Printer.Verbose("Token is set.")
-	} else {
-		// If token and username are not set, display messages
-		if username == "" {
-			err := c.Printer.Print("Enter your username:")
-			if err != nil {
-				return err
-			}
-			in := bufio.NewReader(c.Stdin)
-			username, err = in.ReadString('\n')
-			if err != nil {
-				return err
-			}
-			username = strings.TrimRight(username, "\r\n")
-		}
-		if pwd == "" {
-			err := c.Printer.Print("Enter your password:")
-			if err != nil {
-				return err
-			}
-			bytesPwd, err := term.ReadPassword(int(os.Stdin.Fd()))
-			if err != nil {
-				return err
-			}
-			pwd = string(bytesPwd)
-		}
-		c.Printer.Verbose("Generating token with creds")
-
-		cl, err := client2.NewClient(username, pwd, "", "")
-		tok, _, err := cl.AuthClient.TokensApi.TokensGenerate(context.Background()).Execute()
-		if err != nil {
-			return fmt.Errorf("failed using username and password to generate a token: %w", err)
-		}
-		viper.Set(constants.Token, *tok.Token)
-	}
-	c.Printer.Verbose("ServerUrl: %s", config.GetServerUrl())
-	viper.Set(constants.ServerUrl, viper.GetString(constants.ArgServerUrl))
-	client, err := client2.Get()
+	data, err := buildConfigData(c)
 	if err != nil {
-		return err
-	}
-	// Check the auth is correct
-	c.Printer.Verbose("Checking authentication...")
-	dcsSvc := resources.NewDataCenterService(client, context.TODO())
-	_, _, err = dcsSvc.List(resources.ListQueryParams{})
-	if err != nil {
-		return err
+		return fmt.Errorf("failed building config data: %w", err)
 	}
 
 	// Store credentials
 	c.Printer.Verbose("Storing credentials to the configuration file: %v", viper.GetString(constants.ArgConfig))
-	err = config.WriteFile(config.GetUserData())
+	err = config.WriteFile(data)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed writing config data: %w", err)
 	}
 
 	return c.Printer.Print(printer.Result{
 		Message: "Authentication successful!",
 	})
+}
+
+func testToken(token string) error {
+	cl, err := client.NewClient("", "", token, config.GetServerUrl())
+	if err != nil {
+		return fmt.Errorf("failed getting client via token: %w", err)
+	}
+
+	_, _, err = cl.CloudClient.DataCentersApi.DatacentersGet(context.Background()).Execute()
+	if err != nil {
+		return fmt.Errorf("failed running a test SDK func (DatacentersGet): %w", err)
+	}
+
+	return nil
+}
+
+// buildConfigData returns map that will be written to config file, while also checking token is usable via testToken
+func buildConfigData(c *core.CommandConfig) (map[string]string, error) {
+	configData := map[string]string{} // This map is what we will write to the config file
+
+	// API URL
+	c.Printer.Verbose("API Url: %s", config.GetServerUrl())
+	if explicitUrl := config.GetServerUrl(); explicitUrl != constants.DefaultApiURL {
+		c.Printer.Verbose("Saving API URL to config file")
+		configData[constants.ServerUrl] = explicitUrl
+	}
+
+	// Explicit token
+	if fn := core.GetFlagName(c.NS, constants.ArgToken); viper.IsSet(fn) {
+		tok := viper.GetString(fn)
+		configData[constants.Token] = tok
+		return configData, testToken(tok) // Early return for preset token
+	}
+
+	// If here, user did not give a pre-set token. Generate one via username & password.
+	// If the username & password are not given via flags, ask for them interactively
+
+	var (
+		// Set by flags. If not set, interactive mode will ask the user iff token not set.
+		// They die here in this func block. Don't use them anywhere else!
+		username string
+		password string
+	)
+
+	// Note: Because of the prerun checks, we know for sure the following:
+	// Either flags for token set, or username set, or password set, or username & password set.
+	if fn := core.GetFlagName(c.NS, constants.ArgUser); viper.IsSet(fn) {
+		username = viper.GetString(fn)
+	} else {
+		// Interactively ask for username
+		c.Printer.Print("Enter your username: ")
+		reader := bufio.NewReader(c.Stdin)
+		username, _ = reader.ReadString('\n')
+		username = strings.TrimSpace(username) // remove trailing newline
+	}
+
+	if fn := core.GetFlagName(c.NS, constants.ArgPassword); viper.IsSet(fn) {
+		password = viper.GetString(fn)
+	} else {
+		// Interactively ask for password
+		c.Printer.Print("Enter your password: ")
+
+		if file, ok := c.Stdin.(*os.File); ok {
+			bytePassword, _ := term.ReadPassword(int(file.Fd()))
+			password = string(bytePassword)
+			fmt.Println() // print a newline after password input
+		} else {
+			return nil, fmt.Errorf("the set input does not have a file descriptor (is it set to a terminal?)")
+		}
+	}
+
+	cl, err := client.NewClient(username, password, "", config.GetServerUrl())
+	tok, _, err := cl.AuthClient.TokensApi.TokensGenerate(context.Background()).Execute()
+	if err != nil {
+		return nil, fmt.Errorf("failed using username and password to generate a token: %w", err)
+	}
+
+	configData[constants.Token] = *tok.Token
+	return configData, testToken(*tok.Token)
 }
