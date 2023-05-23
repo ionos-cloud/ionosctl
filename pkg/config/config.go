@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -22,6 +21,9 @@ var FieldsWithSensitiveDataInConfigFile = []string{
 	constants.Token, // credentials currently stored in config file
 }
 
+// GetUserData is deprecated
+// It is hard to tell what values it will use and hence is un go-ish
+// Use config.WriteFile
 func GetUserData() map[string]string {
 	return map[string]string{
 		constants.Token:     viper.GetString(constants.Token),
@@ -58,6 +60,7 @@ func getConfigHomeDir() string {
 	return filepath.Join(configPath, "ionosctl")
 }
 
+// ReadFile reads config file at getConfigPath() and returns its data as a map
 func ReadFile() (map[string]string, error) {
 	path, err := getConfigPath()
 	if err != nil {
@@ -74,7 +77,7 @@ func ReadFile() (map[string]string, error) {
 		return nil, fmt.Errorf("failed reading config file: file %s has wrong permissions: %d, should be %d", path, perms, expectedPerms)
 	}
 
-	data, err := ioutil.ReadFile(path)
+	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, fmt.Errorf("failed reading config file: %w", err)
 	}
@@ -107,7 +110,7 @@ func LoadFile() error {
 
 // getConfigPath retrieves the configuration file path and makes it absolute if it isn't.
 func getConfigPath() (string, error) {
-	path := viper.GetString(constants.ArgConfig)
+	path := GetConfigFile()
 
 	if !filepath.IsAbs(path) {
 		// TODO: What is the point of turning this into an abs path ?
@@ -153,8 +156,6 @@ func WriteFile(data map[string]string) error {
 	if err != nil {
 		return err
 	}
-
-	fmt.Println("WriteFile")
 
 	defer f.Close()
 
