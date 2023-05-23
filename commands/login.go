@@ -13,7 +13,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	sdk "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
 )
@@ -79,9 +78,12 @@ func RunLoginUser(c *core.CommandConfig) error {
 		return fmt.Errorf("failed writing config data: %w", err)
 	}
 
-	return c.Printer.Print(printer.Result{
-		Message: "Authentication successful!",
-	})
+	msg := "Authentication successful. Created the following fields in your config file:\n"
+	for k, _ := range data {
+		msg += fmt.Sprintf("• %s", strings.TrimPrefix(k, "userdata."))
+	}
+
+	return c.Printer.Print(msg)
 }
 
 func testToken(token string) error {
