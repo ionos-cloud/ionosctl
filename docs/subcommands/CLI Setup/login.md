@@ -20,17 +20,12 @@ For `login` command:
 
 ## Description
 
-Use this command to authenticate. You can use  `--user` and `--password` flags or you can use  `--token` flag to set the credentials.
+Use this command to authenticate.
+You can either use the interactive mode, or you can use "--user" and "--password" flags or "--token" flag to set the credentials.
+If using username & password, this command will generate a JWT token which will be saved in the config file. Please safeguard your token.
+The config file, by default, will be created at /home/avirtopeanu/.config/ionosctl/config.json. You can use another configuration file for authentication with the "--config" global option.
 
-By default, the user data after running this command will be saved in:
-
-* macOS: `${HOME}/Library/Application Support/ionosctl/config.json`
-* Linux: `${XDG_CONFIG_HOME}/ionosctl/config.json`
-* Windows: `%APPDATA%\ionosctl\config.json`.
-
-You can use another configuration file for authentication with the `--config` global option.
-
-Note: The IONOS Cloud CLI supports also authentication with environment variables: $IONOS_USERNAME, $IONOS_PASSWORD or $IONOS_TOKEN.
+Note: The IONOS Cloud CLI supports also authentication with environment variables: $IONOS_USERNAME, $IONOS_PASSWORD or $IONOS_TOKEN, these override the config file token.
 
 ## Options
 
@@ -51,16 +46,12 @@ Note: The IONOS Cloud CLI supports also authentication with environment variable
 
 ```text
 ionosctl login --user $IONOS_USERNAME --password $IONOS_PASSWORD
-Status: Authentication successful!
 
 ionosctl login --token $IONOS_TOKEN
-Status: Authentication successful!
 
 ionosctl login
 Enter your username:
 USERNAME
 Enter your password:
-
-Status: Authentication successful!
 ```
 

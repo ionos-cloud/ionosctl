@@ -35,6 +35,7 @@
         * [list](subcommands%2FAuthentication%2Ftoken%2Flist.md)
 * CLI Setup
     * [login](subcommands%2FCLI%20Setup%2Flogin.md)
+    * [logout](subcommands%2FCLI%20Setup%2Flogout.md)
     * [version](subcommands%2FCLI%20Setup%2Fversion.md)
 * Certificate Manager
     * [add](subcommands%2FCertificate-Manager%2Fadd.md)
