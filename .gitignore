@@ -197,3 +197,10 @@ builds/
 
 # direnv config
 .envrc
+
+commands
+commands/*
+commands/
+commands*
+commands/login_integration_test.go
+
