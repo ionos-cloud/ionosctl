@@ -80,7 +80,7 @@ func RunLoginUser(c *core.CommandConfig) error {
 
 	msg := "Authentication successful. Created the following fields in your config file:\n"
 	for k, _ := range data {
-		msg += fmt.Sprintf("• %s", strings.TrimPrefix(k, "userdata."))
+		msg += fmt.Sprintf(" • %s\n", strings.TrimPrefix(k, "userdata."))
 	}
 
 	return c.Printer.Print(msg)
@@ -106,7 +106,9 @@ func buildConfigData(c *core.CommandConfig) (map[string]string, error) {
 
 	// API URL
 	c.Printer.Verbose("API Url: %s", config.GetServerUrl())
-	if explicitUrl := config.GetServerUrl(); explicitUrl != constants.DefaultApiURL {
+	if explicitUrl := config.GetServerUrl(); strings.TrimLeft(explicitUrl, "https://") != strings.TrimLeft(constants.DefaultApiURL, "https://") {
+		// Don't save the API url to the config if it's the default, since we don't want to revert to that value if the user doesn't provide any.
+		// This was changed from old behaviour because some APIs (e.g. DNS API) [can] use a different server URL
 		c.Printer.Verbose("Saving API URL to config file")
 		configData[constants.ServerUrl] = explicitUrl
 	}
