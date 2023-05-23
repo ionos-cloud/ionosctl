@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
@@ -15,7 +16,7 @@ func LogoutCmd() *core.Command {
 		Resource:  "logout",
 		Verb:      "logout",
 		ShortDesc: "Convenience command for deletion of config file credentials",
-		Example:   loginExamples,
+		Example:   "ionosctl logout",
 		PreCmdRun: core.NoPreRun,
 		CmdRun: func(c *core.CommandConfig) error {
 			data, err := config.ReadFile()
@@ -24,24 +25,19 @@ func LogoutCmd() *core.Command {
 			}
 
 			// Go through data struct and blank out all credentials, including old ones (userdata.username, userdata.password)
-			modificationsExist := false
+			msg := "De-authentication successful. Blanked out the following fields in your config file:\n"
 			for k, _ := range data {
 				if slices.Contains(config.FieldsWithSensitiveDataInConfigFile, k) {
 					data[k] = ""
-					modificationsExist = true
+					msg += fmt.Sprintf(" • %s\n", strings.TrimPrefix(k, "userdata."))
 				}
-			}
-
-			wereModifsOut := "no credentials were found in the config file"
-			if modificationsExist {
-				wereModifsOut = "some credentials were found in the config file"
 			}
 
 			err = config.WriteFile(data)
 			if err != nil {
-				return fmt.Errorf("failed updating config file, %s: %w", wereModifsOut, err)
+				return fmt.Errorf("failed updating config file: %w", err)
 			}
-			return nil
+			return c.Printer.Print(msg)
 		},
 		InitClient: false,
 	})

@@ -29,13 +29,6 @@ Convenience command for deletion of config file credentials
 ## Examples
 
 ```text
-ionosctl login --user $IONOS_USERNAME --password $IONOS_PASSWORD
-
-ionosctl login --token $IONOS_TOKEN
-
-ionosctl login
-Enter your username:
-USERNAME
-Enter your password:
+ionosctl logout
 ```
 
