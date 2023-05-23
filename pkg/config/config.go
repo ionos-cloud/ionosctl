@@ -60,6 +60,20 @@ func getConfigHomeDir() string {
 	return filepath.Join(configPath, "ionosctl")
 }
 
+func checkFilePermissions(fileInfo os.FileInfo, path string) error {
+	var requiredPerm os.FileMode
+	if runtime.GOOS == "windows" {
+		requiredPerm = 0666
+	} else {
+		requiredPerm = 0600
+	}
+
+	if fileInfo.Mode().Perm() != requiredPerm {
+		return fmt.Errorf("invalid permissions for %s: expected %o, got %o", path, requiredPerm, fileInfo.Mode().Perm())
+	}
+	return nil
+}
+
 // ReadFile reads config file at getConfigPath() and returns its data as a map
 func ReadFile() (map[string]string, error) {
 	path, err := getConfigPath()
@@ -72,9 +86,9 @@ func ReadFile() (map[string]string, error) {
 		return nil, fmt.Errorf("failed getting config file info: %w", err)
 	}
 
-	expectedPerms := getPermsByOS(runtime.GOOS)
-	if perms := int64(fileInfo.Mode().Perm()); perms != expectedPerms {
-		return nil, fmt.Errorf("failed reading config file: file %s has wrong permissions: %d, should be %d", path, perms, expectedPerms)
+	err = checkFilePermissions(fileInfo, path)
+	if err != nil {
+		return nil, fmt.Errorf("failed config file permissions check: %w", err)
 	}
 
 	data, err := os.ReadFile(path)
@@ -122,14 +136,6 @@ func getConfigPath() (string, error) {
 	}
 
 	return path, nil
-}
-
-func getPermsByOS(os string) int64 {
-	if os == "windows" {
-		return 666
-	} else {
-		return 600
-	}
 }
 
 // Load binds environment variables (IONOS_USERNAME, IONOS_PASSWORD) to viper, and attempts
