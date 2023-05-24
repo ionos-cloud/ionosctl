@@ -21,16 +21,6 @@ var FieldsWithSensitiveDataInConfigFile = []string{
 	constants.Token, // credentials currently stored in config file
 }
 
-// GetUserData is deprecated
-// It is hard to tell what values it will use and hence is un go-ish
-// Use config.WriteFile
-func GetUserData() map[string]string {
-	return map[string]string{
-		constants.Token:     viper.GetString(constants.Token),
-		constants.ServerUrl: viper.GetString(constants.ServerUrl),
-	}
-}
-
 // GetServerUrl returns the API URL from flags, config or env in order of priority.
 // The caller must ensure to load config or env vars beforehand, so they can be included.
 //
