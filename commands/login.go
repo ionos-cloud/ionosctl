@@ -18,6 +18,8 @@ import (
 )
 
 const (
+	loginFlagUseApiUrl = "use-default-api-url"
+
 	loginExamples = `ionosctl login --user $IONOS_USERNAME --password $IONOS_PASSWORD
 
 ionosctl login --token $IONOS_TOKEN
@@ -36,10 +38,14 @@ func LoginCmd() *core.Command {
 		Verb:      "login",
 		Aliases:   []string{"log", "auth"},
 		ShortDesc: "Authentication command for SDK",
-		LongDesc: fmt.Sprintf(`Use this command to authenticate.
-You can either use the interactive mode, or you can use "--user" and "--password" flags or "--token" flag to set the credentials.
-If using username & password, this command will generate a JWT token which will be saved in the config file. Please safeguard your token.
-The config file, by default, will be created at %s. You can use another configuration file for authentication with the "--config" global option.
+		LongDesc: fmt.Sprintf(`The 'login' command allows you to authenticate with the IONOS Cloud APIs. There are three ways you can use it:
+  1. Interactive mode: Just type 'ionosctl login' and you'll be prompted to enter your username and password.
+  2. Use the '--user' and '--password' flags: Enter your credentials in the command.
+  3. Use the '--token' flag: Provide an authentication token.
+
+If you use a username and password, this command generates a token that's saved in the config file. Please keep this token safe. If you specify a custom '--api-url', it'll be saved to the config file when you login successfully and used for future API calls.
+
+By default, the config file is located at %s. If you want to use a different config file, use the '--config' global option. Changing the permissions of the config file will cause it to no longer work.
 
 Note: The IONOS Cloud CLI supports also authentication with environment variables: $IONOS_USERNAME, $IONOS_PASSWORD or $IONOS_TOKEN, these override the config file token.`, config.GetConfigFile()),
 		Example:    loginExamples,
@@ -50,6 +56,8 @@ Note: The IONOS Cloud CLI supports also authentication with environment variable
 	loginCmd.AddStringFlag(constants.ArgUser, "", "", "Username to authenticate")
 	loginCmd.AddStringFlag(constants.ArgPassword, constants.ArgPasswordShort, "", "Password to authenticate")
 	loginCmd.AddStringFlag(constants.ArgToken, constants.ArgTokenShort, "", "Token to authenticate")
+	loginCmd.AddBoolFlag(loginFlagUseApiUrl, "", false, fmt.Sprintf(
+		"Use the default authentication URL (%s) for auth checking, even if you specify a different '--%s'", constants.DefaultApiURL, constants.ArgServerUrl))
 
 	return loginCmd
 }
@@ -138,7 +146,11 @@ func buildConfigData(c *core.CommandConfig) (map[string]string, error) {
 		// Interactively ask for username
 		c.Printer.Print("Enter your username: ")
 		reader := bufio.NewReader(c.Stdin)
-		username, _ = reader.ReadString('\n')
+		var err error
+		username, err = reader.ReadString('\n')
+		if err != nil {
+			return nil, fmt.Errorf("failed reading username from set reader")
+		}
 		username = strings.TrimSpace(username) // remove trailing newline
 	}
 
@@ -149,7 +161,10 @@ func buildConfigData(c *core.CommandConfig) (map[string]string, error) {
 		c.Printer.Print("Enter your password: ")
 
 		if file, ok := c.Stdin.(*os.File); ok {
-			bytePassword, _ := term.ReadPassword(int(file.Fd()))
+			bytePassword, err := term.ReadPassword(int(file.Fd()))
+			if err != nil {
+				return nil, fmt.Errorf("failed securely reading password from set file descriptor")
+			}
 			password = string(bytePassword)
 			fmt.Println() // print a newline after password input
 		} else {
