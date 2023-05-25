@@ -169,19 +169,22 @@ func WriteFile(data map[string]string) error {
 }
 
 func configFileWriter() (io.WriteCloser, error) {
-	if !viper.IsSet(constants.ArgConfig) {
+	var filePath string
+	if viper.IsSet(constants.ArgConfig) {
+		filePath = viper.GetString(constants.ArgConfig)
+	} else {
 		configPath := getConfigHomeDir()
-		err := os.MkdirAll(configPath, 0755)
+		err := os.MkdirAll(configPath, 0700) // Permissions are set to 0700
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("failed to create config directory: %w", err)
 		}
+		filePath = filepath.Join(configPath, constants.DefaultConfigFileName)
 	}
-	f, err := os.Create(viper.GetString(constants.ArgConfig))
+
+	f, err := os.OpenFile(filePath, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0600) // File is directly created with 0600 permissions
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to create config file: %w", err)
 	}
-	if err := os.Chmod(viper.GetString(constants.ArgConfig), 0600); err != nil {
-		return nil, err
-	}
+
 	return f, nil
 }

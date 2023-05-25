@@ -80,7 +80,7 @@ func RunLoginUser(c *core.CommandConfig) error {
 	}
 
 	// Store credentials
-	c.Printer.Verbose("Storing credentials to the configuration file: %v", viper.GetString(constants.ArgConfig))
+	c.Printer.Verbose("Storing credentials to the configuration file: %s", viper.GetString(constants.ArgConfig))
 	err = config.WriteFile(data)
 	if err != nil {
 		return fmt.Errorf("failed writing config data: %w", err)
