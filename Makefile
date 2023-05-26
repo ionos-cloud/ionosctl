@@ -27,10 +27,10 @@ itest test test_integration:
 # `// +build integration` is still maintained for compatibility reasons
 # `go fmt` still maintains these lines, if one is removed. If it stops this behaviour, then we can remove them
 
-.PHONY: mocks_update
-mocks_update: cloudapiv6_mocks_update auth_v1_mocks_update dbaas_postgres_mocks_update certmanager_mocks_update dbaas_mongo_mocks_update
+.PHONY: mocks
+mocks:
 	@echo "--- Update mocks ---"
-	@tools/regenerate_mocks.sh && echo "DONE"
+	@tools/mocks.sh && echo "DONE"
 
 .PHONY: docs generate-docs
 docs generate-docs:
@@ -93,7 +93,7 @@ help:
 	@echo "The following are some of the valid targets for this Makefile:"
 	@echo "... utest: Run unit tests"
 	@echo "... test: Run integration and unit tests (CI Target)"
-	@echo "... mocks_update: Update mocks (Used in some legacy tests)"
+	@echo "... mocks: Update mocks (Used in some legacy tests)"
 	@echo "... docs: Regenerate docs"
 	@echo "... gofmt_check: Check code adheres to gofmt"
 	@echo "... gofmt_update: Format code to adhere to gofmt"

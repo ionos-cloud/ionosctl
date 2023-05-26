@@ -34,6 +34,8 @@ done
 # Go back to the root directory
 pushd "$(dirname "$0")"/.. >/dev/null || exit
 
+echo "pkg/printer/printer.go:"
+
 mkdir -p pkg/printer/mocks
 mockgen -source pkg/printer/printer.go >pkg/printer/mocks/PrintService.go
 
