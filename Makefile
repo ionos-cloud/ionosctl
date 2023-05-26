@@ -10,7 +10,7 @@ GOARCH?=$(shell go env GOARCH)
 
 OUT_D?=$(shell pwd)/builds
 DOCS_OUT?=$(shell pwd)/docs/subcommands
-TEST_DIRS := ./commands/... ./pkg/... ./services/... ./internal/...
+TEST_DIRS := $(shell go list ./... | grep -v /commands/container-registry) # All pkgs except containter-registry
 
 .PHONY: utest test_unit
 utest test_unit:
