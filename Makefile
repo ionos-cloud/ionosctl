@@ -9,22 +9,26 @@ GOARCH?=$(shell go env GOARCH)
 
 OUT_D?=$(shell pwd)/builds
 DOCS_OUT?=$(shell pwd)/docs/subcommands
+
+# Want to test verbosely? (i.e. see what test is failing?) Run like:
+# make test TEST_FLAGS="-v [optionally other flags]"
+
 TEST_DIRS := $(shell go list ./... | grep -v /commands/container-registry) # All pkgs except containter-registry
-
-.PHONY: utest test_unit
-utest test_unit:
+TEST_FLAGS := "-cover"
+.PHONY: utest
+utest:
 	@echo "--- Run unit tests ---"
-	@go test -v -cover $(TEST_DIRS) && echo "DONE"
-
-.PHONY: test itest test_integration
-itest test test_integration:
-	@echo "--- Run integration and unit tests ---"
-	@go test -v -tags=integration -cover $(TEST_DIRS) && echo "DONE"
+	@go test $(TEST_FLAGS) $(TEST_DIRS) | grep -v '\[no test files\]' && echo "DONE"
 
 # Note about test file tagging:
 # `//go:build integration` was introduced in Go 1.17
 # `// +build integration` is still maintained for compatibility reasons
 # `go fmt` still maintains these lines, if one is removed. If it stops this behaviour, then we can remove them
+
+.PHONY: test
+test:
+	@echo "--- Run integration and unit tests ---"
+	@go test $(TEST_FLAGS) -tags=integration $(TEST_DIRS) | grep -v '\[no test files\]' && echo "DONE"
 
 .PHONY: mocks
 mocks:
@@ -66,6 +70,8 @@ vendor:
 	@go mod vendor
 	@go mod tidy
 	@echo "DONE"
+
+BINARY_NAME ?= ionosctl # To install with a custom name, e.g. `io`, do `make install BINARY_NAME=io`
 
 .PHONY: build
 build: vendor

@@ -40,7 +40,7 @@ jobs:
         env:
           IONOS_USERNAME: ${{ secrets.IONOS_USERNAME_V5 }}
           IONOS_PASSWORD: ${{ secrets.IONOS_PASSWORD_V6 }}
-        run: make test
+        run: make test TEST_FLAGS="-v -cover"
 
       - name: Build
         run: make build
