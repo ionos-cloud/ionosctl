@@ -10,7 +10,7 @@ GOARCH?=$(shell go env GOARCH)
 
 OUT_D?=$(shell pwd)/builds
 DOCS_OUT?=$(shell pwd)/docs/subcommands
-TEST_DIRS := ./commands/... ./pkg/...
+TEST_DIRS := ./commands/... ./pkg/... ./services/... ./internal/...
 
 .PHONY: utest test_unit
 utest test_unit:
@@ -47,13 +47,13 @@ gofmt_check:
 	@if [ "$(shell echo $$(gofmt -l ${GOFILES_NOVENDOR}))" != "" ]; then (echo "Format files: $(shell echo $$(gofmt -l ${GOFILES_NOVENDOR})) Hint: use \`make gofmt_update\`"; exit 1); fi
 	@echo "DONE"
 
-.PHONY: gofmt_update
-gofmt_update:
+.PHONY: gofmt
+gofmt:
 	@echo "--- Ensure code adheres to gofmt and change files accordingly(vendor directory excluded) ---"
 	@gofmt -w ${GOFILES_NOVENDOR} && echo "DONE"
 
-.PHONY: goimports_update
-goimports_update:
+.PHONY: goimports
+goimports:
 	@echo "--- Ensure code adheres to goimports and change files accordingly(vendor directory excluded) ---"
 	@goimports -w ${GOFILES_NOVENDOR} && echo "DONE"
 
@@ -61,22 +61,22 @@ goimports_update:
 vendor_status:
 	@govendor status
 
-.PHONY: vendor_update
-vendor_update:
+.PHONY: vendor
+vendor:
 	@echo "--- Update vendor dependencies ---"
 	@go mod vendor
 	@go mod tidy
 	@echo "DONE"
 
 .PHONY: build
-build: vendor_update
+build: vendor
 	@echo "--- Building ionosctl via go build ---"
 	@OUT_D=${OUT_D} GOOS=$(GOOS) GOARCH=$(GOARCH) tools/build.sh build
 	@echo "built ${OUT_D}/ionosctl_${GOOS}_${GOARCH}"
 	@echo "DONE"
 
 .PHONY: install
-install: vendor_update
+install: vendor
 	@echo "--- Install ionosctl via go install ---"
 	@GOOS=$(GOOS) GOARCH=$(GOARCH) tools/build.sh install
 	@echo "DONE"
@@ -96,10 +96,10 @@ help:
 	@echo "... mocks: Update mocks (Used in some legacy tests)"
 	@echo "... docs: Regenerate docs"
 	@echo "... gofmt_check: Check code adheres to gofmt"
-	@echo "... gofmt_update: Format code to adhere to gofmt"
-	@echo "... goimports_update: Format code to adhere to goimports"
+	@echo "... gofmt: Format code to adhere to gofmt"
+	@echo "... goimports: Format, sort imports"
 	@echo "... vendor_status: Check vendor status"
-	@echo "... vendor_update: Update vendor dependencies"
+	@echo "... vendor: Update vendor dependencies"
 	@echo "... build: Build ionosctl"
 	@echo "... install: Install ionosctl"
 	@echo "... clean: Remove built / installed artifacts"
