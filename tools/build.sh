@@ -11,6 +11,10 @@ GIT_COMMIT="$(git rev-parse --short HEAD)"
 
 ldflags="-X github.com/ionos-cloud/ionosctl/v6/commands.Version=${VERSION} -X github.com/ionos-cloud/ionosctl/v6/commands.GitCommit=${GIT_COMMIT}"
 
+echo "VERSION: ${VERSION}"
+echo "GIT_COMMIT: ${GIT_COMMIT}"
+echo "ldflags: ${ldflags}"
+
 export GO111MODULE=on
 export CGO_ENABLED=0
 
