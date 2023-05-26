@@ -57,8 +57,8 @@ goimports:
 	@echo "--- Ensure code adheres to goimports and change files accordingly(vendor directory excluded) ---"
 	@goimports -w ${GOFILES_NOVENDOR} && echo "DONE"
 
-.PHONY: vendor_status
-vendor_status:
+.PHONY: vendor_check
+vendor_check:
 	@govendor status
 
 .PHONY: vendor
@@ -90,16 +90,12 @@ clean:
 
 .PHONY: help
 help:
-	@echo "The following are some of the valid targets for this Makefile:"
-	@echo "... utest: Run unit tests"
-	@echo "... test: Run integration and unit tests (CI Target)"
-	@echo "... mocks: Update mocks (Used in some legacy tests)"
-	@echo "... docs: Regenerate docs"
-	@echo "... gofmt_check: Check code adheres to gofmt"
-	@echo "... gofmt: Format code to adhere to gofmt"
-	@echo "... goimports: Format, sort imports"
-	@echo "... vendor_status: Check vendor status"
-	@echo "... vendor: Update vendor dependencies"
-	@echo "... build: Build ionosctl"
-	@echo "... install: Install ionosctl"
-	@echo "... clean: Remove built / installed artifacts"
+	@echo "TARGETS: "
+	@echo " - utest:\tRun unit tests"
+	@echo " - test:\tRun integration and unit tests (CI Target)"
+	@echo " - mocks:\tUpdate mocks. WARNING: Do not interrupt early!"
+	@echo " - gofmt:\tFormat code to adhere to gofmt [gofmt_check for checking only]"
+	@echo " - vendor:\tUpdate vendor dependencies. [vendor_check for checking only]"
+	@echo " - goimports:\tFormat, sort imports"
+	@echo " - docs:\tRegenerate docs"
+	@echo " - build/install/clean"
