@@ -71,14 +71,15 @@ vendor_update:
 .PHONY: build
 build: vendor_update
 	@echo "--- Building ionosctl via go build ---"
-	@OUT_D=${OUT_D} GOOS=$(GOOS) GOARCH=$(GOARCH) tools/build.sh
+	@OUT_D=${OUT_D} GOOS=$(GOOS) GOARCH=$(GOARCH) tools/build.sh build
 	@echo "built ${OUT_D}/ionosctl_${GOOS}_${GOARCH}"
 	@echo "DONE"
 
 .PHONY: install
-install:
+install: vendor_update
 	@echo "--- Install ionosctl via go install ---"
-	@GOOS=$(GOOS) GOARCH=$(GOARCH) tools/install.sh && echo "DONE"
+	@GOOS=$(GOOS) GOARCH=$(GOARCH) tools/build.sh install
+	@echo "DONE"
 
 .PHONY: clean
 clean:
