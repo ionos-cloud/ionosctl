@@ -2,7 +2,6 @@
 
 export CGO_ENABLED = 0
 export GO111MODULE := on
-export GOFLAGS := -cover
 
 GOFILES_NOVENDOR=$(shell find . -type f -name '*.go' | grep -v vendor)
 GOOS?=$(shell go env GOOS)
@@ -15,12 +14,12 @@ TEST_DIRS := $(shell go list ./... | grep -v /commands/container-registry) # All
 .PHONY: utest test_unit
 utest test_unit:
 	@echo "--- Run unit tests ---"
-	@go test -v $(TEST_DIRS) && echo "DONE"
+	@go test -v -cover $(TEST_DIRS) && echo "DONE"
 
 .PHONY: test itest test_integration
 itest test test_integration:
 	@echo "--- Run integration and unit tests ---"
-	@go test -v -tags=integration $(TEST_DIRS) && echo "DONE"
+	@go test -v -tags=integration -cover $(TEST_DIRS) && echo "DONE"
 
 # Note about test file tagging:
 # `//go:build integration` was introduced in Go 1.17
