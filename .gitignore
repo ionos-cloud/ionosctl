@@ -197,5 +197,3 @@ builds/
 
 # direnv config
 .envrc
-
-commands/login_integration_test.go
