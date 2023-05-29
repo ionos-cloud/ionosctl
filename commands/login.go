@@ -81,7 +81,7 @@ func RunLoginUser(c *core.CommandConfig) error {
 
 	// Store credentials
 	c.Printer.Verbose("Storing credentials to the configuration file: %s", viper.GetString(constants.ArgConfig))
-	err = config.WriteFile(data)
+	err = config.Write(data)
 	if err != nil {
 		return fmt.Errorf("failed writing config data: %w", err)
 	}
@@ -92,20 +92,6 @@ func RunLoginUser(c *core.CommandConfig) error {
 	}
 
 	return c.Printer.Print(msg)
-}
-
-func testToken(token string) error {
-	cl, err := client.NewClient("", "", token, config.GetServerUrl())
-	if err != nil {
-		return fmt.Errorf("failed getting client via token: %w", err)
-	}
-
-	_, _, err = cl.CloudClient.DataCentersApi.DatacentersGet(context.Background()).Execute()
-	if err != nil {
-		return fmt.Errorf("failed running a test SDK func (DatacentersGet): %w", err)
-	}
-
-	return nil
 }
 
 // buildConfigData returns map that will be written to config file, while also checking token is usable via testToken
@@ -125,7 +111,7 @@ func buildConfigData(c *core.CommandConfig) (map[string]string, error) {
 	if fn := core.GetFlagName(c.NS, constants.ArgToken); viper.IsSet(fn) {
 		tok := viper.GetString(fn)
 		configData[constants.Token] = tok
-		return configData, testToken(tok) // Early return for preset token
+		return configData, client.TestCreds("", "", tok) // Early return for preset token
 	}
 
 	// If here, user did not give a pre-set token. Generate one via username & password.
@@ -179,5 +165,5 @@ func buildConfigData(c *core.CommandConfig) (map[string]string, error) {
 	}
 
 	configData[constants.Token] = *tok.Token
-	return configData, testToken(*tok.Token)
+	return configData, client.TestCreds("", "", *tok.Token)
 }

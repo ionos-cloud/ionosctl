@@ -1,8 +1,10 @@
 package client
 
 import (
+	"context"
 	"errors"
 	"fmt"
+	"log"
 	"sync"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/die"
@@ -17,6 +19,20 @@ import (
 	cloudv6 "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
 )
+
+func TestCreds(user, pass, token string) error {
+	cl, err := newClient(user, pass, token, config.GetServerUrl())
+	if err != nil {
+		return fmt.Errorf("failed getting client via token: %w", err)
+	}
+
+	_, _, err = cl.CloudClient.DataCentersApi.DatacentersGet(context.Background()).Execute()
+	if err != nil {
+		return fmt.Errorf("failed running a test SDK func (DatacentersGet): %w", err)
+	}
+
+	return nil
+}
 
 type Client struct {
 	CloudClient        *cloudv6.APIClient
@@ -81,11 +97,11 @@ func Get() (*Client, error) {
 
 	once.Do(func() {
 		var err error
-		err = config.Load()
+		err = loadCredentialsToViper()
 		if err != nil {
 			getClientErr = errors.Join(getClientErr, fmt.Errorf("failed loading config: %w", err))
 		}
-		instance, err = newClient(viper.GetString(constants.Username), viper.GetString(constants.Password), viper.GetString(constants.Token), config.GetServerUrl())
+		instance, err = newClient(viper.GetString(constants.ArgUser), viper.GetString(constants.ArgPassword), viper.GetString(constants.ArgToken), viper.GetString(constants.ArgServerUrl))
 		if err != nil {
 			getClientErr = errors.Join(getClientErr, fmt.Errorf("failed creating client: %w", err))
 		}
@@ -108,4 +124,46 @@ func Must() *Client {
 // TO BE REMOVED ONCE TESTS ARE REFACTORED
 func NewClient(name, pwd, token, hostUrl string) (*Client, error) {
 	return newClient(name, pwd, token, hostUrl)
+}
+
+// Load attempts to load configuration from environment variables, falling back to config file data if not found.
+// Use the following Viper keys:
+// - ArgServerUrl
+// - ArgToken
+// - ArgPassword
+// - ArgUser
+func loadCredentialsToViper() (err error) {
+	// TODO: The names of these constants suck
+	_ = viper.BindEnv(constants.ArgServerUrl, cloudv6.IonosApiUrlEnvVar, constants.ServerUrl) // --api-url, IONOS_API_URL, userdata
+	_ = viper.BindEnv(constants.ArgToken, cloudv6.IonosTokenEnvVar, constants.Token)          // --token, IONOS_TOKEN, userdata
+	_ = viper.BindEnv(constants.ArgPassword, constants.Password)                              // --password, IONOS_PASSWORD
+	_ = viper.BindEnv(constants.ArgUser, constants.Username)                                  // --user, IONOS_USERNAME
+
+	data, err := config.Read()
+	if err != nil {
+		// Failed reading config
+		if viper.IsSet(constants.ArgToken) || (viper.IsSet(constants.ArgUser) && viper.IsSet(constants.ArgPassword)) {
+			// It's fine if we got the credentials from some place else though
+			errTestCreds := TestCreds(viper.GetString(constants.ArgUser), viper.GetString(constants.ArgPassword), viper.GetString(constants.ArgToken))
+			if errTestCreds != nil {
+				return fmt.Errorf("failed reading config file and environment variables are not valid: %w", err)
+			}
+		}
+		return fmt.Errorf("failed reading config file: %w", err)
+	}
+
+	for k, v := range data {
+		// Load config data into viper if not set
+		if !viper.IsSet(k) {
+			log.Printf("Using config to set %s\n", k)
+			viper.Set(k, v)
+		}
+	}
+
+	if viper.IsSet(constants.ArgToken) || (viper.IsSet(constants.ArgUser) && viper.IsSet(constants.ArgPassword)) {
+		return nil
+	}
+
+	return fmt.Errorf("not logged in: use either environment variables %s or %s and %s, either `ionosctl login`",
+		cloudv6.IonosTokenEnvVar, cloudv6.IonosUsernameEnvVar, cloudv6.IonosPasswordEnvVar)
 }
