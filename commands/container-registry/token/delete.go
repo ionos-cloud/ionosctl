@@ -37,7 +37,7 @@ func TokenDeleteCmd() *core.Command {
 		},
 	)
 	cmd.AddBoolFlag(FlagAllTokens, "", false, "Delete all tokens from a registry")
-	cmd.AddStringFlag(FlagTokenId, "t", "", "Token ID")
+	cmd.AddStringFlag(FlagTokenId, "t", "", "CfgToken ID")
 	_ = cmd.Command.RegisterFlagCompletionFunc(
 		FlagTokenId, func(cobracmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 			return TokensIds(viper.GetString(core.GetFlagName(cmd.NS, FlagRegId))), cobra.ShellCompDirectiveNoFileComp
@@ -61,7 +61,7 @@ func CmdDeleteToken(c *core.CommandConfig) error {
 		allTokensFlag := viper.GetBool(core.GetFlagName(c.NS, FlagAllTokens))
 		if !allTokensFlag {
 			tokenId := viper.GetString(core.GetFlagName(c.NS, FlagTokenId))
-			msg := fmt.Sprintf("delete Token: %s", tokenId)
+			msg := fmt.Sprintf("delete CfgToken: %s", tokenId)
 			if err := utils.AskForConfirm(c.Stdin, c.Printer, msg); err != nil {
 				return err
 			}
@@ -76,7 +76,7 @@ func CmdDeleteToken(c *core.CommandConfig) error {
 			return err
 		}
 		for _, token := range *tokens.GetItems() {
-			msg := fmt.Sprintf("delete Token: %s", *token.Id)
+			msg := fmt.Sprintf("delete CfgToken: %s", *token.Id)
 			if err := utils.AskForConfirm(c.Stdin, c.Printer, msg); err != nil {
 				return err
 			}
@@ -98,7 +98,7 @@ func CmdDeleteToken(c *core.CommandConfig) error {
 			return err
 		}
 		for _, token := range *tokens.GetItems() {
-			msg := fmt.Sprintf("delete Token: %s", *token.Id)
+			msg := fmt.Sprintf("delete CfgToken: %s", *token.Id)
 			if err := utils.AskForConfirm(c.Stdin, c.Printer, msg); err != nil {
 				return err
 			}

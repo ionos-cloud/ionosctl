@@ -53,9 +53,9 @@ Note: The IONOS Cloud CLI supports also authentication with environment variable
 		CmdRun:     RunLoginUser,
 		InitClient: false,
 	})
-	loginCmd.AddStringFlag(constants.ArgUser, "", "", "Username to authenticate")
-	loginCmd.AddStringFlag(constants.ArgPassword, constants.ArgPasswordShort, "", "Password to authenticate")
-	loginCmd.AddStringFlag(constants.ArgToken, constants.ArgTokenShort, "", "Token to authenticate")
+	loginCmd.AddStringFlag(constants.ArgUser, "", "", "EnvUsername to authenticate")
+	loginCmd.AddStringFlag(constants.ArgPassword, constants.ArgPasswordShort, "", "EnvPassword to authenticate")
+	loginCmd.AddStringFlag(constants.ArgToken, constants.ArgTokenShort, "", "CfgToken to authenticate")
 	loginCmd.AddBoolFlag(loginFlagUseApiUrl, "", false, fmt.Sprintf(
 		"Use the default authentication URL (%s) for auth checking, even if you specify a different '--%s'", constants.DefaultApiURL, constants.ArgServerUrl))
 
@@ -104,13 +104,13 @@ func buildConfigData(c *core.CommandConfig) (map[string]string, error) {
 		// Don't save the API url to the config if it's the default, since we don't want to revert to that value if the user doesn't provide any.
 		// This was changed from old behaviour because some APIs (e.g. DNS API) [can] use a different server URL
 		c.Printer.Verbose("Saving API URL to config file")
-		configData[constants.ServerUrl] = explicitUrl
+		configData[constants.CfgApiUrl] = explicitUrl
 	}
 
 	// Explicit token
 	if fn := core.GetFlagName(c.NS, constants.ArgToken); viper.IsSet(fn) {
 		tok := viper.GetString(fn)
-		configData[constants.Token] = tok
+		configData[constants.CfgToken] = tok
 		return configData, client.TestCreds("", "", tok) // Early return for preset token
 	}
 
@@ -163,6 +163,6 @@ func buildConfigData(c *core.CommandConfig) (map[string]string, error) {
 		return nil, fmt.Errorf("failed using username and password to generate a token: %w", err)
 	}
 
-	configData[constants.Token] = *tok.Token
+	configData[constants.CfgToken] = *tok.Token
 	return configData, client.TestCreds("", "", *tok.Token)
 }

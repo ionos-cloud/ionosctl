@@ -21,8 +21,8 @@ func ServerTokenCmd() *core.Command {
 		Command: &cobra.Command{
 			Use:              "token",
 			Aliases:          []string{"t"},
-			Short:            "Server Token Operations",
-			Long:             "The sub-command of `ionosctl server token` allows you to get Token for specific Server.",
+			Short:            "Server CfgToken Operations",
+			Long:             "The sub-command of `ionosctl server token` allows you to get CfgToken for specific Server.",
 			TraverseChildren: true,
 		},
 	}
@@ -35,7 +35,7 @@ func ServerTokenCmd() *core.Command {
 		Resource:   "token",
 		Verb:       "get",
 		Aliases:    []string{"g"},
-		ShortDesc:  "Get a Token from a Server",
+		ShortDesc:  "Get a CfgToken from a Server",
 		LongDesc:   "Use this command to get the Server's jwToken.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id",
 		Example:    getTokenServerExample,
 		PreCmdRun:  PreRunDcServerIds,
@@ -69,10 +69,10 @@ func RunServerTokenGet(c *core.CommandConfig) error {
 
 // Output Printing
 
-var defaultTokenCols = []string{"Token"}
+var defaultTokenCols = []string{"CfgToken"}
 
 type TokenPrint struct {
-	Token string `json:"Token,omitempty"`
+	Token string `json:"CfgToken,omitempty"`
 }
 
 func getTokenPrint(c *core.CommandConfig, ss []resources.Token) printer.Result {

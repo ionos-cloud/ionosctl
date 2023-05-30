@@ -76,19 +76,21 @@ func newClient(name, pwd, token, hostUrl string) (*Client, error) {
 var once sync.Once
 var instance *Client
 
-// Get a client and possibly fail
+// Get a client and possibly fail. Uses viper to get the credentials and API URL.
+// NOTE: The Viper credentials are bound using BindEnv, in this order:
+// `--token`, `IONOS_TOKEN`, config file's `userdata.token`
+// `--api-url`, `IONOS_API_URL`, config file api url.
+// `IONOS_USERNAME`, config file's `userdata.user` (Config file entry is kept for backwards compatibility reasons. However, the config file
 func Get() (*Client, error) {
 	var getClientErr error
 
 	once.Do(func() {
 		var err error
-		_ = viper.BindEnv(constants.ArgServerUrl, cloudv6.IonosApiUrlEnvVar, constants.ServerUrl) // --api-url, IONOS_API_URL, userdata
-		_ = viper.BindEnv(constants.ArgToken, cloudv6.IonosTokenEnvVar, constants.Token)          // --token, IONOS_TOKEN, userdata
 
 		data, err := config.Read()
 		if err != nil {
 			// Failed reading config
-			if viper.IsSet(constants.ArgToken) || (viper.IsSet(constants.Username) && viper.IsSet(constants.Password)) {
+			if viper.IsSet(constants.ArgToken) || (viper.IsSet(constants.EnvUsername) && viper.IsSet(constants.EnvPassword)) {
 				// It's fine if we got the credentials from some place else though (eg env vars)
 				err = testCredentialsFromViper()
 				if err != nil {
@@ -107,8 +109,8 @@ func Get() (*Client, error) {
 			}
 		}
 
-		if !viper.IsSet(constants.ArgToken) && (!viper.IsSet(constants.Username) || !viper.IsSet(constants.Password)) {
-			getClientErr = errors.Join(getClientErr, errors.New("not logged in: use either environment variables %s or %s and %s, or `ionosctl login`"))
+		if !viper.IsSet(constants.ArgToken) && (!viper.IsSet(constants.EnvUsername) || !viper.IsSet(constants.EnvPassword)) {
+			getClientErr = errors.Join(getClientErr, fmt.Errorf("not logged in: use either environment variables %s or %s and %s, either `ionosctl login`", constants.EnvToken, constants.EnvUsername, constants.EnvPassword))
 			return
 		}
 
@@ -118,7 +120,7 @@ func Get() (*Client, error) {
 			return
 		}
 
-		instance, err = newClient(viper.GetString(constants.Username), viper.GetString(constants.Password), viper.GetString(constants.ArgToken), viper.GetString(constants.ArgServerUrl))
+		instance, err = newClient(viper.GetString(constants.EnvUsername), viper.GetString(constants.EnvPassword), viper.GetString(constants.ArgToken), viper.GetString(constants.ArgServerUrl))
 		if err != nil {
 			getClientErr = errors.Join(getClientErr, fmt.Errorf("failed creating client: %w", err))
 		}
@@ -136,9 +138,8 @@ func Must() *Client {
 	return client
 }
 
-// NewClient - function used only for tests.
-// Bypasses the singleton check, not recommended for normal use.
-// TO BE REMOVED ONCE TESTS ARE REFACTORED
+// NewClient bypasses the singleton check, not recommended for normal use.
+// Use it if you must
 func NewClient(name, pwd, token, hostUrl string) (*Client, error) {
 	return newClient(name, pwd, token, hostUrl)
 }
@@ -163,5 +164,5 @@ func TestCreds(user, pass, token string) error {
 
 // helper used in Get
 func testCredentialsFromViper() error {
-	return TestCreds(viper.GetString(constants.Username), viper.GetString(constants.Password), viper.GetString(constants.ArgToken))
+	return TestCreds(viper.GetString(constants.EnvUsername), viper.GetString(constants.EnvPassword), viper.GetString(constants.ArgToken))
 }

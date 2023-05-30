@@ -104,7 +104,7 @@ Required values to run a command:
 * First Name
 * Last Name
 * Email
-* Password`,
+* EnvPassword`,
 		Example:    createUserExample,
 		PreCmdRun:  PreRunUserNameEmailPwd,
 		CmdRun:     RunUserCreate,
@@ -354,7 +354,7 @@ func getUserInfo(oldUser *resources.User, c *core.CommandConfig) *resources.User
 		}
 		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgPassword)) {
 			password := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgPassword))
-			c.Printer.Verbose("Property Password set: %v", password)
+			c.Printer.Verbose("Property EnvPassword set: %v", password)
 			userPropertiesPut.SetPassword(password)
 		}
 		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgForceSecAuth)) {

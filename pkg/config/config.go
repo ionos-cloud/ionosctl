@@ -16,7 +16,7 @@ import (
 
 var FieldsWithSensitiveDataInConfigFile = []string{
 	"userdata.name", "userdata.password", "userdata.token", // credentials stored in config file pre June 2023
-	constants.Token, // credentials currently stored in config file
+	constants.CfgToken, // credentials currently stored in config file
 }
 
 // DEPRECATED: Use viper.Get(ArgServerUrl)
@@ -24,7 +24,7 @@ func GetServerUrl() string {
 	if viper.IsSet(constants.ArgServerUrl) {
 		return viper.GetString(constants.ArgServerUrl)
 	}
-	if url := viper.GetString(constants.ServerUrl); url != "" {
+	if url := viper.GetString(constants.CfgApiUrl); url != "" {
 		return url
 	}
 	return viper.GetString(constants.ArgServerUrl)

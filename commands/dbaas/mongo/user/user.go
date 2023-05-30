@@ -44,7 +44,7 @@ func UserCmd() *core.Command {
 }
 
 type UserPrint struct {
-	Username  string `json:"Username,omitempty"`
+	Username  string `json:"EnvUsername,omitempty"`
 	CreatedBy string `json:"CreatedBy,omitempty"`
 	Roles     string `json:"Roles,omitempty"`
 }

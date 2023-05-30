@@ -37,16 +37,16 @@ func TokenUpdateCmd() *core.Command {
 			return registry.RegsIds(), cobra.ShellCompDirectiveNoFileComp
 		},
 	)
-	cmd.AddStringFlag(FlagTokenId, "t", "", "Token ID")
+	cmd.AddStringFlag(FlagTokenId, "t", "", "CfgToken ID")
 	_ = cmd.Command.RegisterFlagCompletionFunc(
 		FlagTokenId, func(cobracmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 			return TokensIds(viper.GetString(core.GetFlagName(cmd.NS, FlagRegId))), cobra.ShellCompDirectiveNoFileComp
 		},
 	)
 
-	cmd.AddStringFlag(FlagExpiryDate, "", "", "Expiry date of the Token")
-	cmd.AddStringFlag(FlagTimeUntilExpiry, "", "", "Time until the Token expires (ex: 1y2d)")
-	cmd.AddStringFlag(FlagStatus, "", "", "Status of the Token")
+	cmd.AddStringFlag(FlagExpiryDate, "", "", "Expiry date of the CfgToken")
+	cmd.AddStringFlag(FlagTimeUntilExpiry, "", "", "Time until the CfgToken expires (ex: 1y2d)")
+	cmd.AddStringFlag(FlagStatus, "", "", "Status of the CfgToken")
 	_ = cmd.Command.RegisterFlagCompletionFunc(
 		FlagStatus, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 			return []string{

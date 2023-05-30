@@ -137,6 +137,14 @@ func init() {
 
 // initConfig reads in config file and ENV variables if set.
 func initConfig() {
+	_ = viper.BindEnv(constants.ArgServerUrl, constants.EnvApiUrl, constants.CfgApiUrl) // --api-url, IONOS_API_URL, userdata
+	_ = viper.BindEnv(constants.ArgToken, constants.EnvToken, constants.CfgToken)       // --token, IONOS_TOKEN, userdata
+
+	// NOTE: EnvUsername & EnvPassword are no longer generated in config file on `ionosctl login`.
+	// However, they are still read from the config file, if they exist.
+	_ = viper.BindEnv(constants.EnvUsername, constants.CfgUsername) // IONOS_USERNAME, userdata.user
+	_ = viper.BindEnv(constants.EnvPassword, constants.CfgPassword) // IONOS_PASSWORD, userdata.password
+
 	if cfgFile != "" {
 		// Use config file from the flag.
 		viper.SetConfigFile(cfgFile)

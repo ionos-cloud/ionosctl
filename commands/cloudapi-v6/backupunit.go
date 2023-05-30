@@ -133,7 +133,7 @@ Required values to run a command:
 
 * Name
 * Email
-* Password`,
+* EnvPassword`,
 		Example:    createBackupUnitExample,
 		PreCmdRun:  PreRunBackupUnitNameEmailPwd,
 		CmdRun:     RunBackupUnitCreate,
@@ -370,7 +370,7 @@ func getBackupUnitInfo(c *core.CommandConfig) *resources.BackupUnitProperties {
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgPassword)) {
 		pwd := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgPassword))
 		properties.SetPassword(pwd)
-		c.Printer.Verbose("Property Password set")
+		c.Printer.Verbose("Property EnvPassword set")
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgEmail)) {
 		email := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgEmail))

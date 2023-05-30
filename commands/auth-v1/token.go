@@ -24,7 +24,7 @@ func TokenCmd() *core.Command {
 	tokenCmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "token",
-			Short:            "Token Operations",
+			Short:            "CfgToken Operations",
 			Long:             "The sub-commands of `ionosctl token` allow you to generate, list, get, delete Tokens.",
 			TraverseChildren: true,
 		},
@@ -62,8 +62,8 @@ func TokenCmd() *core.Command {
 		Resource:   "token",
 		Verb:       "get",
 		Aliases:    []string{"g"},
-		ShortDesc:  "Get a specified Token",
-		LongDesc:   "Use this command to retrieve details about a Token by using its ID.\n\nRequired values to run command:\n\n* Token Id",
+		ShortDesc:  "Get a specified CfgToken",
+		LongDesc:   "Use this command to retrieve details about a CfgToken by using its ID.\n\nRequired values to run command:\n\n* CfgToken Id",
 		Example:    getTokenExample,
 		PreCmdRun:  PreRunTokenId,
 		CmdRun:     RunTokenGet,
@@ -84,8 +84,8 @@ func TokenCmd() *core.Command {
 		Resource:   "token",
 		Verb:       "generate",
 		Aliases:    []string{"create"},
-		ShortDesc:  "Create a new Token",
-		LongDesc:   "Use this command to generate a new Token. Only the JSON Web Token, associated with user credentials, will be displayed.",
+		ShortDesc:  "Create a new CfgToken",
+		LongDesc:   "Use this command to generate a new CfgToken. Only the JSON Web CfgToken, associated with user credentials, will be displayed.",
 		Example:    generateTokenExample,
 		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunTokenCreate,
@@ -102,11 +102,11 @@ func TokenCmd() *core.Command {
 		Verb:      "delete",
 		Aliases:   []string{"d"},
 		ShortDesc: "Delete one or multiple Tokens",
-		LongDesc: `Use this command to delete a specified Token by token Id or multiple Tokens (based on a criteria: CURRENT, EXPIRED, ALL) from your account. With parameter values ALL and EXPIRED, 'Basic Authentication' or 'Token Authentication' tokens with valid credentials must be encapsulated in the header. With value CURRENT, only the 'Token Authentication' with valid credentials is required.
+		LongDesc: `Use this command to delete a specified CfgToken by token Id or multiple Tokens (based on a criteria: CURRENT, EXPIRED, ALL) from your account. With parameter values ALL and EXPIRED, 'Basic Authentication' or 'CfgToken Authentication' tokens with valid credentials must be encapsulated in the header. With value CURRENT, only the 'CfgToken Authentication' with valid credentials is required.
 
 Required values to run command:
 
-* Token Id/CURRENT/EXPIRED/ALL`,
+* CfgToken Id/CURRENT/EXPIRED/ALL`,
 		Example:    deleteTokenExample,
 		PreCmdRun:  PreRunTokenDelete,
 		CmdRun:     RunTokenDelete,
@@ -116,7 +116,7 @@ Required values to run command:
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(authv1.ArgTokenId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.TokensIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	deleteCmd.AddBoolFlag(authv1.ArgCurrent, authv1.ArgCurrentShort, false, "Delete the Token that is currently used. This requires a token to be set for authentication via environment variable IONOS_TOKEN or via config file", core.RequiredFlagOption())
+	deleteCmd.AddBoolFlag(authv1.ArgCurrent, authv1.ArgCurrentShort, false, "Delete the CfgToken that is currently used. This requires a token to be set for authentication via environment variable IONOS_TOKEN or via config file", core.RequiredFlagOption())
 	deleteCmd.AddBoolFlag(authv1.ArgExpired, authv1.ArgExpiredShort, false, "Delete the Tokens that are currently expired", core.RequiredFlagOption())
 	deleteCmd.AddBoolFlag(authv1.ArgAll, authv1.ArgAllShort, false, "Delete the Tokens under your account", core.RequiredFlagOption())
 	deleteCmd.AddIntFlag(authv1.ArgContractNo, "", 0, "Users with multiple contracts must provide the contract number, for which the tokens are deleted")
@@ -146,7 +146,7 @@ func RunTokenList(c *core.CommandConfig) error {
 }
 
 func RunTokenGet(c *core.CommandConfig) error {
-	c.Printer.Verbose("Getting Token with ID: %v...", viper.GetString(core.GetFlagName(c.NS, authv1.ArgTokenId)))
+	c.Printer.Verbose("Getting CfgToken with ID: %v...", viper.GetString(core.GetFlagName(c.NS, authv1.ArgTokenId)))
 	if viper.IsSet(core.GetFlagName(c.NS, authv1.ArgContractNo)) {
 		c.Printer.Verbose(contractNumberMessage, viper.GetInt32(core.GetFlagName(c.NS, authv1.ArgContractNo)))
 	}
@@ -235,8 +235,8 @@ func RunTokenDeleteExpired(c *core.CommandConfig) error {
 }
 
 func RunTokenDeleteCurrent(c *core.CommandConfig) error {
-	c.Printer.Verbose("Note: This operation is based on Authorization Header for Bearer Token")
-	if viper.GetString(constants.Token) == "" {
+	c.Printer.Verbose("Note: This operation is based on Authorization Header for Bearer CfgToken")
+	if viper.GetString(constants.CfgToken) == "" {
 		return errors.New(fmt.Sprintf("no token found. Please make sure you have exported the %s environment variable or you have token set in the config file",
 			sdkgoauth.IonosTokenEnvVar))
 	}
@@ -260,7 +260,7 @@ func RunTokenDeleteCurrent(c *core.CommandConfig) error {
 
 func RunTokenDeleteById(c *core.CommandConfig) error {
 	tokenId := viper.GetString(core.GetFlagName(c.NS, authv1.ArgTokenId))
-	c.Printer.Verbose("Token ID: %s", tokenId)
+	c.Printer.Verbose("CfgToken ID: %s", tokenId)
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, fmt.Sprintf("delete token with ID: %s", tokenId)); err != nil {
 		return err
 	}
