@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log"
 	"sync"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/die"
@@ -156,7 +155,6 @@ func loadCredentialsToViper() (err error) {
 	for k, v := range data {
 		// Load config data into viper if not set
 		if !viper.IsSet(k) {
-			log.Printf("Using config to set %s\n", k)
 			viper.Set(k, v)
 		}
 	}

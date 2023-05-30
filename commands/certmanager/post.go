@@ -72,7 +72,7 @@ func GetPropertyWithFallback(c *core.CommandConfig, property string, propertyPat
 func CmdPost(c *core.CommandConfig) error {
 	c.Printer.Verbose("Adding Certificate...")
 	var name, certificate, certificateChain, privateKey string
-	fmt.Println(viper.GetString(FlagCertName))
+	fmt.Println(viper.GetString(FlagCertName)) // TODO: Is this print statement supposed to be here ?
 
 	name, err := c.Command.Command.Flags().GetString(FlagCertName)
 	if err != nil {

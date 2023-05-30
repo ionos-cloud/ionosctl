@@ -152,7 +152,6 @@ func buildConfigData(c *core.CommandConfig) (map[string]string, error) {
 				return nil, fmt.Errorf("failed securely reading password from set file descriptor")
 			}
 			password = string(bytePassword)
-			fmt.Println() // print a newline after password input
 		} else {
 			return nil, fmt.Errorf("the set input does not have a file descriptor (is it set to a terminal?)")
 		}
