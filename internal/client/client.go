@@ -77,50 +77,61 @@ var once sync.Once
 var instance *Client
 
 // Get a client and possibly fail. Uses viper to get the credentials and API URL.
-// NOTE: The Viper credentials are bound using BindEnv, in this order:
-// `--token`, `IONOS_TOKEN`, config file's `userdata.token`
-// `--api-url`, `IONOS_API_URL`, config file api url.
-// `IONOS_USERNAME`, config file's `userdata.user` (Config file entry is kept for backwards compatibility reasons. However, the config file
+// Order:
+// `--token` (constants.ArgToken), `IONOS_TOKEN` (constants.EnvToken), config file's `userdata.token` (data[constants.CfgToken])
+// `--api-url`, `IONOS_API_URL`, config file `userdata.api-url`
+// `IONOS_USERNAME`, config file's `userdata.user`
+// `IONOS_PASSWORD`, config file's `userdata.password`
 func Get() (*Client, error) {
 	var getClientErr error
 
 	once.Do(func() {
 		var err error
 
+		// Read config file, if available
 		data, err := config.Read()
-		if err != nil {
-			// Failed reading config
-			if viper.IsSet(constants.ArgToken) || (viper.IsSet(constants.EnvUsername) && viper.IsSet(constants.EnvPassword)) {
-				// It's fine if we got the credentials from some place else though (eg env vars)
-				err = testCredentialsFromViper()
-				if err != nil {
-					getClientErr = errors.Join(getClientErr, err)
-					return
+		if err == nil {
+			for k, v := range data {
+				if !viper.IsSet(k) {
+					viper.Set(k, v)
 				}
 			}
-			getClientErr = errors.Join(getClientErr, fmt.Errorf("failed reading config file: %w", err))
+		}
+
+		// Credentials and API URL priority: command line arguments -> environment variables -> config file
+		token := viper.GetString(constants.ArgToken)
+		if token == "" {
+			token = viper.GetString(constants.EnvToken)
+		}
+		if token == "" {
+			token = viper.GetString(constants.CfgToken)
+		}
+
+		hostUrl := viper.GetString(constants.ArgServerUrl)
+		if hostUrl == "" {
+			hostUrl = viper.GetString(constants.EnvServerUrl)
+		}
+		if hostUrl == "" {
+			hostUrl = viper.GetString(constants.CfgServerUrl)
+		}
+
+		username := viper.GetString(constants.EnvUsername)
+		if username == "" {
+			username = viper.GetString(constants.CfgUsername)
+		}
+
+		password := viper.GetString(constants.EnvPassword)
+		if password == "" {
+			password = viper.GetString(constants.CfgPassword)
+		}
+
+		// Check if at least one authentication method is available
+		if token == "" && (username == "" || password == "") {
+			getClientErr = errors.Join(getClientErr, fmt.Errorf("not logged in: use either environment variables %s or %s and %s, or use `ionosctl login`", constants.EnvToken, constants.EnvUsername, constants.EnvPassword))
 			return
 		}
 
-		for k, v := range data {
-			// Load config data into viper if not set
-			if !viper.IsSet(k) {
-				viper.Set(k, v)
-			}
-		}
-
-		if !viper.IsSet(constants.ArgToken) && (!viper.IsSet(constants.EnvUsername) || !viper.IsSet(constants.EnvPassword)) {
-			getClientErr = errors.Join(getClientErr, fmt.Errorf("not logged in: use either environment variables %s or %s and %s, either `ionosctl login`", constants.EnvToken, constants.EnvUsername, constants.EnvPassword))
-			return
-		}
-
-		err = testCredentialsFromViper()
-		if err != nil {
-			getClientErr = errors.Join(getClientErr, err)
-			return
-		}
-
-		instance, err = newClient(viper.GetString(constants.EnvUsername), viper.GetString(constants.EnvPassword), viper.GetString(constants.ArgToken), viper.GetString(constants.ArgServerUrl))
+		instance, err = newClient(username, password, token, hostUrl)
 		if err != nil {
 			getClientErr = errors.Join(getClientErr, fmt.Errorf("failed creating client: %w", err))
 		}
@@ -139,7 +150,6 @@ func Must() *Client {
 }
 
 // NewClient bypasses the singleton check, not recommended for normal use.
-// Use it if you must
 func NewClient(name, pwd, token, hostUrl string) (*Client, error) {
 	return newClient(name, pwd, token, hostUrl)
 }
@@ -160,9 +170,4 @@ func TestCreds(user, pass, token string) error {
 	}
 
 	return nil
-}
-
-// helper used in Get
-func testCredentialsFromViper() error {
-	return TestCreds(viper.GetString(constants.EnvUsername), viper.GetString(constants.EnvPassword), viper.GetString(constants.ArgToken))
 }

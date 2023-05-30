@@ -24,7 +24,7 @@ func GetServerUrl() string {
 	if viper.IsSet(constants.ArgServerUrl) {
 		return viper.GetString(constants.ArgServerUrl)
 	}
-	if url := viper.GetString(constants.CfgApiUrl); url != "" {
+	if url := viper.GetString(constants.CfgServerUrl); url != "" {
 		return url
 	}
 	return viper.GetString(constants.ArgServerUrl)

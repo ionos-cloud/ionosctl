@@ -105,15 +105,15 @@ const (
 )
 
 const (
-	EnvUsername = "IONOS_USERNAME"
-	EnvPassword = "IONOS_PASSWORD"
-	EnvToken    = "IONOS_TOKEN"
-	EnvApiUrl   = "IONOS_API_URL"
+	EnvUsername  = "IONOS_USERNAME"
+	EnvPassword  = "IONOS_PASSWORD"
+	EnvToken     = "IONOS_TOKEN"
+	EnvServerUrl = "IONOS_API_URL"
 
-	CfgToken    = "userdata.token"
-	CfgApiUrl   = "userdata.api-url"
-	CfgUsername = "userdata.name"
-	CfgPassword = "userdata.password"
+	CfgToken     = "userdata.token"
+	CfgServerUrl = "userdata.api-url"
+	CfgUsername  = "userdata.name"
+	CfgPassword  = "userdata.password"
 
 	CLIHttpUserAgent = "cli-user-agent"
 )
