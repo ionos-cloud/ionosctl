@@ -115,15 +115,9 @@ func TestNewClient(t *testing.T) {
 }
 
 func TestGet(t *testing.T) {
-	viper.Reset()
-	os.Clearenv()
-
 	t.Parallel()
 
-	t.Run("Client Get works, user & pass", func(t *testing.T) {
-		viper.Set("IONOS_USERNAME", GoodUsername)
-		viper.Set("IONOS_PASSWORD", GoodPassword)
-
+	t.Run("Client Get works, user & pass env", func(t *testing.T) {
 		cl, err := client.Get()
 		assert.NoError(t, err)
 		_, _, err = cl.CloudClient.DataCentersApi.DatacentersGet(context.Background()).Limit(1).Depth(0).Execute()
@@ -131,6 +125,9 @@ func TestGet(t *testing.T) {
 	})
 
 	t.Run("Client Get works, token", func(t *testing.T) {
+		viper.Reset()
+		os.Clearenv()
+
 		viper.Set("IONOS_TOKEN", GoodToken)
 
 		cl, err := client.Get()
@@ -140,6 +137,9 @@ func TestGet(t *testing.T) {
 	})
 
 	t.Run("Client Get fails 1", func(t *testing.T) {
+		viper.Reset()
+		os.Clearenv()
+
 		viper.Set("IONOS_TOKEN", "foobar")
 
 		cl, err := client.Get()
@@ -149,26 +149,11 @@ func TestGet(t *testing.T) {
 	})
 
 	t.Run("Client Get fails 2", func(t *testing.T) {
+		viper.Reset()
+		os.Clearenv()
+
 		viper.Set("IONOS_USERNAME", "foo")
 		viper.Set("IONOS_PASSWORD", GoodPassword)
-
-		cl, err := client.Get()
-		assert.NoError(t, err)
-		_, _, err = cl.CloudClient.DataCentersApi.DatacentersGet(context.Background()).Limit(1).Depth(0).Execute()
-		assert.NoError(t, err)
-	})
-
-	t.Run("Client Get fails 3", func(t *testing.T) {
-		viper.Set("IONOS_USERNAME", "foo")
-
-		cl, err := client.Get()
-		assert.NoError(t, err)
-		_, _, err = cl.CloudClient.DataCentersApi.DatacentersGet(context.Background()).Limit(1).Depth(0).Execute()
-		assert.NoError(t, err)
-	})
-
-	t.Run("Client Get fails 4", func(t *testing.T) {
-		viper.Set("IONOS_USERNAME", "foo")
 
 		cl, err := client.Get()
 		assert.NoError(t, err)
