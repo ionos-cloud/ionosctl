@@ -39,7 +39,7 @@ Required values to run command:
 * Datacenter Id
 * Lan Id
 * CIDR (IP and subnet)
-* Credentials for the database user: Username and Password
+* Credentials for the database user: EnvUsername and Password
 
 ## Options
 
@@ -54,7 +54,7 @@ Required values to run command:
       --cores int                 The number of CPU cores per instance. Minimum: 1 (default 2)
   -D, --datacenter-id string      The unique ID of the Datacenter to connect to your cluster (required)
   -P, --db-password string        Password for the initial postgres user (required)
-  -U, --db-username string        Username for the initial postgres user. Some system usernames are restricted (e.g. postgres, admin, standby) (required)
+  -U, --db-username string        EnvUsername for the initial postgres user. Some system usernames are restricted (e.g. postgres, admin, standby) (required)
   -f, --force                     Force command to execute without user input
   -h, --help                      Print usage
   -I, --instances int             The number of instances in your cluster (one master and n-1 standbys). Minimum: 1. Maximum: 5 (default 1)

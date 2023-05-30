@@ -1,5 +1,5 @@
 ---
-description: Convenience command for deletion of config file credentials
+description: Convenience command for deletion of config file credentials. To also remove your account's active tokens, use `ionosctl token delete --all`
 ---
 
 # Logout
@@ -12,7 +12,7 @@ ionosctl logout [flags]
 
 ## Description
 
-Convenience command for deletion of config file credentials
+Convenience command for deletion of config file credentials. To also remove your account's active tokens, use `ionosctl token delete --all`
 
 ## Options
 

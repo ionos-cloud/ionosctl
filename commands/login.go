@@ -53,7 +53,7 @@ Note: The IONOS Cloud CLI supports also authentication with environment variable
 		CmdRun:     RunLoginUser,
 		InitClient: false,
 	})
-	loginCmd.AddStringFlag(constants.ArgUser, "", "", "EnvUsername to authenticate")
+	loginCmd.AddStringFlag(constants.ArgUser, "", "", "Username to authenticate")
 	loginCmd.AddStringFlag(constants.ArgPassword, constants.ArgPasswordShort, "", "Password to authenticate")
 	loginCmd.AddStringFlag(constants.ArgToken, constants.ArgTokenShort, "", "Token to authenticate")
 	loginCmd.AddBoolFlag(loginFlagUseApiUrl, "", false, fmt.Sprintf(
