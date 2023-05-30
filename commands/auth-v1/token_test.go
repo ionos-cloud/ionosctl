@@ -7,6 +7,8 @@ import (
 	"os"
 	"testing"
 
+	"github.com/golang/mock/gomock"
+
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	authv1 "github.com/ionos-cloud/ionosctl/v6/services/auth-v1"
@@ -474,6 +476,7 @@ func TestRunTokenDeleteCurrentNoErr(t *testing.T) {
 		viper.Set(constants.ArgForce, true)
 		viper.Set(core.GetFlagName(cfg.NS, authv1.ArgCurrent), true)
 		viper.Set(core.GetFlagName(cfg.NS, authv1.ArgContractNo), testTokenContractNo)
+		rm.AuthV1Mocks.Token.EXPECT().DeleteByCriteria(gomock.Any(), gomock.Any())
 		err := RunTokenDeleteCurrent(cfg)
 		assert.Error(t, err)
 	})
