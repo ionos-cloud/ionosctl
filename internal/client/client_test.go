@@ -2,8 +2,6 @@ package client_test
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
 	"os"
 	"testing"
 
@@ -24,16 +22,10 @@ func pre(t *testing.T) {
 	GoodUsername = os.Getenv("IONOS_USERNAME")
 	GoodPassword = os.Getenv("IONOS_PASSWORD")
 
-	fmt.Printf("Testing with %s:%s", GoodUsername, GoodPassword)
-
-	tok, a, err := client.Must().AuthClient.TokensApi.TokensGenerate(context.Background()).Execute()
+	tok, _, err := client.Must().AuthClient.TokensApi.TokensGenerate(context.Background()).Execute()
 	assert.NoError(t, err)
 
 	GoodToken = *tok.Token
-
-	j, _ := json.Marshal(a)
-	fmt.Printf("Gen tok %s\nResp: %s\n", GoodToken, string(j))
-
 }
 
 func TestClientPkg(t *testing.T) {
