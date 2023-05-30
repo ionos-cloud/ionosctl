@@ -86,7 +86,13 @@ func RunLoginUser(c *core.CommandConfig) error {
 		return fmt.Errorf("failed writing config data: %w", err)
 	}
 
-	msg := "Authentication successful. Created the following fields in your config file:\n"
+	ls, _, err := client.Must().AuthClient.TokensApi.TokensGet(context.Background()).Execute()
+	if err != nil {
+		return err
+	}
+
+	// Go through data struct and blank out all credentials, including old ones (userdata.username, userdata.password)
+	msg := fmt.Sprintf("Authentication successful. Note: Your account has %d active tokens. Created the following fields in your config file:\n", len(*ls.Tokens))
 	for k, _ := range data {
 		msg += fmt.Sprintf(" • %s\n", strings.TrimPrefix(k, "userdata."))
 	}
