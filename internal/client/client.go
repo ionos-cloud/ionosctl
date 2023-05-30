@@ -78,10 +78,9 @@ var instance *Client
 
 // Get a client and possibly fail. Uses viper to get the credentials and API URL.
 // Order:
-// `--token` (constants.ArgToken), `IONOS_TOKEN` (constants.EnvToken), config file's `userdata.token` (data[constants.CfgToken])
-// `--api-url`, `IONOS_API_URL`, config file `userdata.api-url`
-// `IONOS_USERNAME`, config file's `userdata.user`
-// `IONOS_PASSWORD`, config file's `userdata.password`
+// Explicit flags ( e.g. --token )
+// Environment Variables ( e.g. IONOS_TOKEN )
+// Config File ( e.g. userdata.token )
 func Get() (*Client, error) {
 	var getClientErr error
 
