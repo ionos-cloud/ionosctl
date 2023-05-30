@@ -54,8 +54,8 @@ Note: The IONOS Cloud CLI supports also authentication with environment variable
 		InitClient: false,
 	})
 	loginCmd.AddStringFlag(constants.ArgUser, "", "", "EnvUsername to authenticate")
-	loginCmd.AddStringFlag(constants.ArgPassword, constants.ArgPasswordShort, "", "EnvPassword to authenticate")
-	loginCmd.AddStringFlag(constants.ArgToken, constants.ArgTokenShort, "", "CfgToken to authenticate")
+	loginCmd.AddStringFlag(constants.ArgPassword, constants.ArgPasswordShort, "", "Password to authenticate")
+	loginCmd.AddStringFlag(constants.ArgToken, constants.ArgTokenShort, "", "Token to authenticate")
 	loginCmd.AddBoolFlag(loginFlagUseApiUrl, "", false, fmt.Sprintf(
 		"Use the default authentication URL (%s) for auth checking, even if you specify a different '--%s'", constants.DefaultApiURL, constants.ArgServerUrl))
 

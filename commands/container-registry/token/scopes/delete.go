@@ -37,7 +37,7 @@ func TokenScopesDeleteCmd() *core.Command {
 			return registry.RegsIds(), cobra.ShellCompDirectiveNoFileComp
 		},
 	)
-	cmd.AddStringFlag(FlagTokenId, "t", "", "CfgToken ID")
+	cmd.AddStringFlag(FlagTokenId, "t", "", "Token ID")
 	_ = cmd.Command.RegisterFlagCompletionFunc(
 		FlagTokenId, func(cobracmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 			return TokensIds(viper.GetString(core.GetFlagName(cmd.NS, FlagRegId))), cobra.ShellCompDirectiveNoFileComp
@@ -77,7 +77,7 @@ func CmdGetTokenScopesDelete(c *core.CommandConfig) error {
 		}
 		updateProp.SetName(*token.Properties.GetName())
 		updateToken.SetProperties(*updateProp)
-		msg := fmt.Sprintf("delete all scopes from CfgToken: %s", *token.Id)
+		msg := fmt.Sprintf("delete all scopes from Token: %s", *token.Id)
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, msg); err != nil {
 			return err
 		}
@@ -110,7 +110,7 @@ func CmdGetTokenScopesDelete(c *core.CommandConfig) error {
 	updateProp.SetScopes(scopes)
 	updateToken.SetProperties(*updateProp)
 
-	msg := fmt.Sprintf("delete scope %d from CfgToken: %s", id+1, *token.Id)
+	msg := fmt.Sprintf("delete scope %d from Token: %s", id+1, *token.Id)
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, msg); err != nil {
 		return err
 	}

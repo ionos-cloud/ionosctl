@@ -35,9 +35,9 @@ func TokenPostCmd() *core.Command {
 	cmd.Command.PersistentFlags().Bool(
 		constants.ArgNoHeaders, true, "Use --no-headers=false to show column headers",
 	)
-	cmd.AddStringFlag(FlagName, "", "", "Name of the CfgToken", core.RequiredFlagOption())
-	cmd.AddStringFlag(FlagExpiryDate, "", "", "Expiry date of the CfgToken")
-	cmd.AddStringFlag(FlagStatus, "", "", "Status of the CfgToken")
+	cmd.AddStringFlag(FlagName, "", "", "Name of the Token", core.RequiredFlagOption())
+	cmd.AddStringFlag(FlagExpiryDate, "", "", "Expiry date of the Token")
+	cmd.AddStringFlag(FlagStatus, "", "", "Status of the Token")
 	_ = cmd.Command.RegisterFlagCompletionFunc(
 		FlagStatus, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 			return []string{
@@ -45,7 +45,7 @@ func TokenPostCmd() *core.Command {
 			}, cobra.ShellCompDirectiveNoFileComp
 		},
 	)
-	cmd.AddStringFlag(FlagTimeUntilExpiry, "", "", "Time until the CfgToken expires (ex: 1y2d)")
+	cmd.AddStringFlag(FlagTimeUntilExpiry, "", "", "Time until the Token expires (ex: 1y2d)")
 	cmd.AddStringFlag(FlagRegId, "r", "", "Registry ID", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(
 		"registry-id", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {

@@ -106,7 +106,7 @@ Required values to run command:
 * Datacenter Id
 * Lan Id
 * CIDR (IP and subnet)
-* Credentials for the database user: EnvUsername and EnvPassword`,
+* Credentials for the database user: EnvUsername and Password`,
 		Example:    createClusterExample,
 		PreCmdRun:  PreRunClusterCreate,
 		CmdRun:     RunClusterCreate,
@@ -158,7 +158,7 @@ Required values to run command:
 	})
 	create.AddStringFlag(dbaaspg.ArgRecoveryTime, dbaaspg.ArgRecoveryTimeShort, "", "If this value is supplied as ISO 8601 timestamp, the backup will be replayed up until the given timestamp. If empty, the backup will be applied completely")
 	create.AddStringFlag(dbaaspg.ArgDbUsername, dbaaspg.ArgDbUsernameShort, "", "EnvUsername for the initial postgres user. Some system usernames are restricted (e.g. postgres, admin, standby)", core.RequiredFlagOption())
-	create.AddStringFlag(dbaaspg.ArgDbPassword, dbaaspg.ArgDbPasswordShort, "", "EnvPassword for the initial postgres user", core.RequiredFlagOption())
+	create.AddStringFlag(dbaaspg.ArgDbPassword, dbaaspg.ArgDbPasswordShort, "", "Password for the initial postgres user", core.RequiredFlagOption())
 	create.AddStringFlag(dbaaspg.ArgMaintenanceTime, dbaaspg.ArgMaintenanceTimeShort, "", "Time for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur. e.g.: 16:30:59")
 	create.AddStringFlag(dbaaspg.ArgMaintenanceDay, dbaaspg.ArgMaintenanceDayShort, "", "Day Of the Week for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur")
 	_ = create.Command.RegisterFlagCompletionFunc(dbaaspg.ArgMaintenanceDay, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -596,7 +596,7 @@ func getCreateClusterRequest(c *core.CommandConfig) (*resources.CreateClusterReq
 	c.Printer.Verbose("DBUser - EnvUsername: %v", username)
 	dbuser.SetUsername(username)
 	password := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgDbPassword))
-	c.Printer.Verbose("DBUser - EnvPassword: %v", password)
+	c.Printer.Verbose("DBUser - Password: %v", password)
 	dbuser.SetPassword(password)
 	input.SetCredentials(dbuser)
 	vdcConnection := sdkgo.Connection{}
