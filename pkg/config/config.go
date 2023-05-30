@@ -130,7 +130,7 @@ func configFileWriter() (io.WriteCloser, error) {
 		filePath = viper.GetString(constants.ArgConfig)
 	} else {
 		configPath := getConfigHomeDir()
-		err := os.MkdirAll(configPath, 0700) // Permissions are set to 0700
+		err := os.MkdirAll(configPath, 0700) // Directory permissions are set to 0700
 		if err != nil {
 			return nil, fmt.Errorf("failed to create config directory: %w", err)
 		}

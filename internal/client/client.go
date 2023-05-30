@@ -23,12 +23,16 @@ import (
 func TestCreds(user, pass, token string) error {
 	cl, err := newClient(user, pass, token, config.GetServerUrl())
 	if err != nil {
-		return fmt.Errorf("failed getting client via token: %w", err)
+		return fmt.Errorf("failed initializing client with credentials: %w", err)
 	}
 
 	_, _, err = cl.CloudClient.DataCentersApi.DatacentersGet(context.Background()).Execute()
 	if err != nil {
-		return fmt.Errorf("failed running a test SDK func (DatacentersGet): %w", err)
+		usedScheme := "used token"
+		if token == "" {
+			usedScheme = fmt.Sprintf("used username '%s' and password", user)
+		}
+		return fmt.Errorf("credentials test failed. %s: %w", usedScheme, err)
 	}
 
 	return nil
@@ -50,7 +54,7 @@ func appendUserAgent(userAgent string) string {
 
 func newClient(name, pwd, token, hostUrl string) (*Client, error) {
 	if token == "" && (name == "" || pwd == "") {
-		return nil, errors.New("username, password or token incorrect")
+		return nil, errors.New("both token and at least one of username and password are empty")
 	}
 
 	clientConfig := cloudv6.NewConfiguration(name, pwd, token, hostUrl)
@@ -101,7 +105,7 @@ func Get() (*Client, error) {
 		if err != nil {
 			getClientErr = errors.Join(getClientErr, fmt.Errorf("failed loading config: %w", err))
 		}
-		instance, err = newClient(viper.GetString(constants.ArgUser), viper.GetString(constants.ArgPassword), viper.GetString(constants.ArgToken), viper.GetString(constants.ArgServerUrl))
+		instance, err = newClient(viper.GetString(constants.Username), viper.GetString(constants.Password), viper.GetString(constants.ArgToken), viper.GetString(constants.ArgServerUrl))
 		if err != nil {
 			getClientErr = errors.Join(getClientErr, fmt.Errorf("failed creating client: %w", err))
 		}
@@ -130,24 +134,21 @@ func NewClient(name, pwd, token, hostUrl string) (*Client, error) {
 // Use the following Viper keys:
 // - ArgServerUrl
 // - ArgToken
-// - ArgPassword
-// - ArgUser
 func loadCredentialsToViper() (err error) {
 	// TODO: The names of these constants suck
 	_ = viper.BindEnv(constants.ArgServerUrl, cloudv6.IonosApiUrlEnvVar, constants.ServerUrl) // --api-url, IONOS_API_URL, userdata
 	_ = viper.BindEnv(constants.ArgToken, cloudv6.IonosTokenEnvVar, constants.Token)          // --token, IONOS_TOKEN, userdata
-	_ = viper.BindEnv(constants.ArgPassword, constants.Password)                              // --password, IONOS_PASSWORD
-	_ = viper.BindEnv(constants.ArgUser, constants.Username)                                  // --user, IONOS_USERNAME
 
 	data, err := config.Read()
 	if err != nil {
 		// Failed reading config
-		if viper.IsSet(constants.ArgToken) || (viper.IsSet(constants.ArgUser) && viper.IsSet(constants.ArgPassword)) {
-			// It's fine if we got the credentials from some place else though
-			errTestCreds := TestCreds(viper.GetString(constants.ArgUser), viper.GetString(constants.ArgPassword), viper.GetString(constants.ArgToken))
+		if viper.IsSet(constants.ArgToken) || (viper.IsSet(constants.Username) && viper.IsSet(constants.Password)) {
+			// It's fine if we got the credentials from some place else though (eg env vars)
+			errTestCreds := TestCreds(viper.GetString(constants.Username), viper.GetString(constants.Password), viper.GetString(constants.ArgToken))
 			if errTestCreds != nil {
-				return fmt.Errorf("failed reading config file and environment variables are not valid: %w", err)
+				return fmt.Errorf("environment variables are not valid credentials (%s, %s), and failed falling back to config file: %w", viper.GetString(constants.ArgUser), viper.GetString(constants.ArgPassword), err)
 			}
+			return nil
 		}
 		return fmt.Errorf("failed reading config file: %w", err)
 	}
@@ -160,8 +161,8 @@ func loadCredentialsToViper() (err error) {
 		}
 	}
 
-	if viper.IsSet(constants.ArgToken) || (viper.IsSet(constants.ArgUser) && viper.IsSet(constants.ArgPassword)) {
-		return nil
+	if viper.IsSet(constants.ArgToken) || (viper.IsSet(constants.Username) && viper.IsSet(constants.Password)) {
+		return TestCreds(viper.GetString(constants.Username), viper.GetString(constants.Password), viper.GetString(constants.ArgToken))
 	}
 
 	return fmt.Errorf("not logged in: use either environment variables %s or %s and %s, either `ionosctl login`",
