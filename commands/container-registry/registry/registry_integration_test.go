@@ -20,13 +20,17 @@ import (
 )
 
 func teardown() {
-	regs, _, err := client.Must().RegistryClient.RegistriesApi.RegistriesGet(context.Background()).Execute()
+	regs, _, err := client.Must(func(err error) {
+		panic(err.Error())
+	}).RegistryClient.RegistriesApi.RegistriesGet(context.Background()).Execute()
 
 	if err != nil {
 		log.Print(fmt.Errorf("failed deleting all registries: %w", err))
 	}
 	for _, reg := range *regs.Items {
-		_, err := client.Must().RegistryClient.RegistriesApi.RegistriesDelete(context.Background(), *reg.Id).Execute()
+		_, err := client.Must(func(err error) {
+			panic(err.Error())
+		}).RegistryClient.RegistriesApi.RegistriesDelete(context.Background(), *reg.Id).Execute()
 		if err != nil {
 			log.Print(fmt.Errorf("failed deleting registry: %w", err))
 		}
@@ -51,7 +55,9 @@ func TestRegistryService(t *testing.T) {
 		err := c.Command.Execute()
 		assert.NoError(t, err)
 
-		registries, _, err := client.Must().RegistryClient.RegistriesApi.RegistriesGet(context.Background()).Execute()
+		registries, _, err := client.Must(func(err error) {
+			t.Fatalf(err.Error())
+		}).RegistryClient.RegistriesApi.RegistriesGet(context.Background()).Execute()
 		assert.NoError(t, err)
 
 		var newRegistry *ionoscloud.RegistryResponse
@@ -76,7 +82,9 @@ func TestRegistryService(t *testing.T) {
 		err = patch.Command.Execute()
 		assert.NoError(t, err)
 
-		checkRegistry, _, err := client.Must().RegistryClient.RegistriesApi.RegistriesFindById(context.Background(), *newRegistry.GetId()).Execute()
+		checkRegistry, _, err := client.Must(func(err error) {
+			t.Fatalf(err.Error())
+		}).RegistryClient.RegistriesApi.RegistriesFindById(context.Background(), *newRegistry.GetId()).Execute()
 		assert.NoError(t, err)
 		assert.Equal(t, []ionoscloud.Day([]ionoscloud.Day{"Tuesday"}), *checkRegistry.GetProperties().GetGarbageCollectionSchedule().GetDays())
 

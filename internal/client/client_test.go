@@ -20,28 +20,36 @@ func pre(t *testing.T) {
 	GoodUsername = os.Getenv("IONOS_USERNAME")
 	GoodPassword = os.Getenv("IONOS_PASSWORD")
 
-	tok, _, err := client.Must().AuthClient.TokensApi.TokensGenerate(context.Background()).Execute()
+	assert.NotEmpty(t, GoodUsername)
+	assert.NotEmpty(t, GoodPassword)
+
+	tok, _, err := client.Must(func(err error) {
+		t.Fatalf(err.Error())
+	}).AuthClient.TokensApi.TokensGenerate(context.Background()).Execute()
 	assert.NoError(t, err)
 
 	GoodToken = *tok.Token
 }
 
 func TestClientPkg(t *testing.T) {
-	if tk := os.Getenv("IONOS_TOKEN"); tk != "" {
-		GoodToken = tk
-	} else {
-		pre(t)
-	}
+	assert.NotEmpty(t, os.Getenv("IONOS_USERNAME"))
+	assert.NotEmpty(t, os.Getenv("IONOS_PASSWORD"))
+
+	pre(t)
+
+	assert.NotEmpty(t, GoodUsername)
+	assert.NotEmpty(t, GoodPassword)
+	assert.NotEmpty(t, GoodToken)
 
 	viper.Reset()
 	os.Clearenv()
 
-	TestNewClient(t)
-	TestGet(t)
-	TestTestCreds(t)
+	testNewClient(t)
+	testGetClient(t)
+	testTestCreds(t)
 }
 
-func TestTestCreds(t *testing.T) {
+func testTestCreds(t *testing.T) {
 	t.Parallel()
 
 	t.Run("empty creds", func(t *testing.T) {
@@ -90,7 +98,7 @@ func TestTestCreds(t *testing.T) {
 	})
 }
 
-func TestNewClient(t *testing.T) {
+func testNewClient(t *testing.T) {
 	t.Run("should return an error when both token and username/password are empty", func(t *testing.T) {
 		cl, err := client.NewClient("", "", "", "")
 
@@ -114,8 +122,7 @@ func TestNewClient(t *testing.T) {
 	})
 }
 
-func TestGet(t *testing.T) {
-	t.Parallel()
+func testGetClient(t *testing.T) {
 
 	t.Run("Client Get works, user & pass env", func(t *testing.T) {
 		cl, err := client.Get()

@@ -55,7 +55,9 @@ func testClusterOk(t *testing.T) {
 	err := c.Command.Execute()
 	assert.NoError(t, err)
 
-	ls, resp, err := client.Must().DataplatformClient.DataPlatformClusterApi.ClustersGet(context.Background()).Name(uniqueResourceName).Execute()
+	ls, resp, err := client.Must(func(err error) {
+		t.Fatalf(err.Error())
+	}).DataplatformClient.DataPlatformClusterApi.ClustersGet(context.Background()).Name(uniqueResourceName).Execute()
 	assert.NoError(t, err)
 	assert.False(t, resp.HttpNotFound())
 	items := *ls.Items
@@ -78,7 +80,9 @@ func testNodepoolOk(t *testing.T) {
 	err := c.Command.Execute()
 	assert.NoError(t, err)
 
-	ls, resp, err := client.Must().DataplatformClient.DataPlatformNodePoolApi.ClustersNodepoolsGet(context.Background(), createdClusterId).Execute()
+	ls, resp, err := client.Must(func(err error) {
+		t.Fatalf(err.Error())
+	}).DataplatformClient.DataPlatformNodePoolApi.ClustersNodepoolsGet(context.Background(), createdClusterId).Execute()
 	assert.NoError(t, err)
 	assert.False(t, resp.HttpNotFound())
 	var foundNodepool ionoscloud.NodePoolResponseData
@@ -109,9 +113,13 @@ func testClusterIdentifyRequiredNotSet(t *testing.T) {
 
 func setup() error {
 	// make sure datacenter exists
-	dcs, resp, err := client.Must().CloudClient.DataCentersApi.DatacentersGet(context.Background()).Filter("name", uniqueResourceName).Depth(1).Execute()
+	dcs, resp, err := client.Must(func(err error) {
+		panic(err.Error())
+	}).CloudClient.DataCentersApi.DatacentersGet(context.Background()).Filter("name", uniqueResourceName).Depth(1).Execute()
 	if resp.HttpNotFound() || len(*dcs.Items) < 1 {
-		dc, _, err := client.Must().CloudClient.DataCentersApi.DatacentersPost(context.Background()).Datacenter(sdkcompute.Datacenter{Properties: &sdkcompute.DatacenterProperties{Name: sdkcompute.PtrString(uniqueResourceName), Location: sdkcompute.PtrString("de/fra")}}).Execute()
+		dc, _, err := client.Must(func(err error) {
+			panic(err.Error())
+		}).CloudClient.DataCentersApi.DatacentersPost(context.Background()).Datacenter(sdkcompute.Datacenter{Properties: &sdkcompute.DatacenterProperties{Name: sdkcompute.PtrString(uniqueResourceName), Location: sdkcompute.PtrString("de/fra")}}).Execute()
 		if err != nil {
 			return fmt.Errorf("failed creating dc %w", err)
 		}
@@ -127,14 +135,18 @@ func setup() error {
 }
 
 func teardown() {
-	_, _, err := client.Must().DataplatformClient.DataPlatformClusterApi.ClustersDelete(context.Background(), createdClusterId).Execute()
+	_, _, err := client.Must(func(err error) {
+		panic(err.Error())
+	}).DataplatformClient.DataPlatformClusterApi.ClustersDelete(context.Background(), createdClusterId).Execute()
 	if err != nil {
 		fmt.Printf("failed deleting cluster: %v\n", err)
 	}
 
 	time.Sleep(5 * time.Second)
 
-	_, err = client.Must().CloudClient.DataCentersApi.DatacentersDelete(context.Background(), createdDcId).Execute()
+	_, err = client.Must(func(err error) {
+		panic(err.Error())
+	}).CloudClient.DataCentersApi.DatacentersDelete(context.Background(), createdDcId).Execute()
 	if err != nil {
 		fmt.Printf("failed deleting dc: %v\n", err)
 	}

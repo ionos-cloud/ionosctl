@@ -23,13 +23,17 @@ import (
 )
 
 func teardown() {
-	regs, _, err := client.Must().RegistryClient.RegistriesApi.RegistriesGet(context.Background()).Execute()
+	regs, _, err := client.Must(func(err error) {
+		panic(err.Error())
+	}).RegistryClient.RegistriesApi.RegistriesGet(context.Background()).Execute()
 
 	if err != nil {
 		log.Print(fmt.Errorf("failed deleting all registries: %w", err))
 	}
 	for _, reg := range *regs.Items {
-		_, err := client.Must().RegistryClient.RegistriesApi.RegistriesDelete(context.Background(), *reg.Id).Execute()
+		_, err := client.Must(func(err error) {
+			panic(err.Error())
+		}).RegistryClient.RegistriesApi.RegistriesDelete(context.Background(), *reg.Id).Execute()
 		if err != nil {
 			log.Print(fmt.Errorf("failed deleting registry: %w", err))
 		}
@@ -58,7 +62,9 @@ func TestTokenService(t *testing.T) {
 
 		// get registry
 		assert.NoError(t, err)
-		registries, _, err := client.Must().RegistryClient.RegistriesApi.RegistriesGet(context.Background()).Execute()
+		registries, _, err := client.Must(func(err error) {
+			t.Fatalf(err.Error())
+		}).RegistryClient.RegistriesApi.RegistriesGet(context.Background()).Execute()
 		assert.NoError(t, err)
 
 		var newReg *ionoscloud.RegistryResponse
@@ -81,7 +87,9 @@ func TestTokenService(t *testing.T) {
 
 		time.Sleep(20 * time.Second)
 		// get token
-		tokens, _, err := client.Must().RegistryClient.TokensApi.RegistriesTokensGet(context.Background(), *newReg.GetId()).Execute()
+		tokens, _, err := client.Must(func(err error) {
+			t.Fatalf(err.Error())
+		}).RegistryClient.TokensApi.RegistriesTokensGet(context.Background(), *newReg.GetId()).Execute()
 		assert.NoError(t, err)
 
 		var newToken *ionoscloud.TokenResponse
@@ -143,7 +151,9 @@ func TestTokenService(t *testing.T) {
 		assert.NoError(t, err)
 		time.Sleep(20 * time.Second)
 
-		checkProp, _, err := client.Must().RegistryClient.TokensApi.RegistriesTokensFindById(context.Background(), *newReg.GetId(), *newToken.GetId()).Execute()
+		checkProp, _, err := client.Must(func(err error) {
+			t.Fatalf(err.Error())
+		}).RegistryClient.TokensApi.RegistriesTokensFindById(context.Background(), *newReg.GetId(), *newToken.GetId()).Execute()
 		assert.NoError(t, err)
 		assert.Equal(t, "disabled", *checkProp.GetProperties().GetStatus())
 		time.Sleep(20 * time.Second)

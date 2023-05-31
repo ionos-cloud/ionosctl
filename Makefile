@@ -97,7 +97,7 @@ clean:
 help:
 	@echo "TARGETS: "
 	@echo " - utest:\tRun unit tests"
-	@echo " - test:\tRun integration and unit tests (CI Target)"
+	@echo " - test:\tRun integration and unit tests (CI Target). Use TEST_FLAGS='-v' for verbose testing"
 	@echo " - mocks:\tUpdate mocks. WARNING: Do not interrupt early!"
 	@echo " - gofmt:\tFormat code to adhere to gofmt [gofmt_check for checking only]"
 	@echo " - vendor:\tUpdate vendor dependencies. [vendor_check for checking only]"

@@ -97,6 +97,8 @@ func Get() (*Client, error) {
 			}
 		}
 
+		viper.AutomaticEnv()
+
 		// Credentials and API URL priority: command line arguments -> environment variables -> config file
 		token := viper.GetString(constants.ArgToken)
 		if token == "" {
@@ -140,10 +142,18 @@ func Get() (*Client, error) {
 }
 
 // Must gets the client obj or fatally dies
-func Must() *Client {
+// You can provide some optional custom error handlers as params
+// If error handlers not provided, dies with err message and exits with code 1
+func Must(ehs ...func(error)) *Client {
 	client, err := Get()
 	if err != nil {
-		die.Die(fmt.Errorf("failed getting client: %w", err).Error())
+		if len(ehs) == 0 {
+			die.Die(fmt.Errorf("failed getting client: %w", err).Error())
+		} else {
+			for _, eh := range ehs {
+				eh(err)
+			}
+		}
 	}
 	return client
 }
