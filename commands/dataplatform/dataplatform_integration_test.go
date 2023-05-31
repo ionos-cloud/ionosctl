@@ -38,6 +38,7 @@ func TestDataplatformCmd(t *testing.T) {
 	}
 	t.Cleanup(teardown)
 	testClusterOk(t)
+	testNodepoolOk(t)
 }
 
 func testClusterOk(t *testing.T) {
@@ -132,7 +133,7 @@ func teardown() {
 		fmt.Printf("failed deleting cluster: %v\n", err)
 	}
 
-	time.Sleep(5 * time.Second)
+	time.Sleep(30 * time.Second)
 
 	_, err = client.Must().CloudClient.DataCentersApi.DatacentersDelete(context.Background(), createdDcId).Execute()
 	if err != nil {
