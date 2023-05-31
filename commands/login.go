@@ -97,7 +97,8 @@ func RunLoginUser(c *core.CommandConfig) error {
 		msg += fmt.Sprintf(" • %s\n", strings.TrimPrefix(k, "userdata."))
 	}
 
-	return c.Printer.Print(msg)
+	_, err = fmt.Fprintln(c.Command.Command.OutOrStdout(), msg)
+	return err
 }
 
 // buildConfigData returns map that will be written to config file, while also checking token is usable via testToken
@@ -136,9 +137,8 @@ func buildConfigData(c *core.CommandConfig) (map[string]string, error) {
 		username = viper.GetString(fn)
 	} else {
 		// Interactively ask for username
-		c.Printer.Print("Enter your username: ")
-		reader := bufio.NewReader(c.Stdin)
-		var err error
+		_, err := fmt.Fprintln(c.Command.Command.OutOrStdout(), "Enter your username: ")
+		reader := bufio.NewReader(c.Command.Command.InOrStdin())
 		username, err = reader.ReadString('\n')
 		if err != nil {
 			return nil, fmt.Errorf("failed reading username from set reader")
@@ -150,9 +150,9 @@ func buildConfigData(c *core.CommandConfig) (map[string]string, error) {
 		password = viper.GetString(fn)
 	} else {
 		// Interactively ask for password
-		c.Printer.Print("Enter your password: ")
+		fmt.Fprintf(c.Command.Command.OutOrStdout(), "Enter your password: ")
 
-		if file, ok := c.Stdin.(*os.File); ok {
+		if file, ok := c.Command.Command.InOrStdin().(*os.File); ok {
 			bytePassword, err := term.ReadPassword(int(file.Fd()))
 			if err != nil {
 				return nil, fmt.Errorf("failed securely reading password from set file descriptor")
@@ -164,6 +164,7 @@ func buildConfigData(c *core.CommandConfig) (map[string]string, error) {
 	}
 
 	cl, err := client.NewClient(username, password, "", config.GetServerUrl())
+	fmt.Println(username + ":" + password)
 	tok, _, err := cl.AuthClient.TokensApi.TokensGenerate(context.Background()).Execute()
 	if err != nil {
 		return nil, fmt.Errorf("failed using username and password to generate a token: %w", err)
