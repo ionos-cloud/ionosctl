@@ -164,7 +164,6 @@ func buildConfigData(c *core.CommandConfig) (map[string]string, error) {
 	}
 
 	cl, err := client.NewClient(username, password, "", config.GetServerUrl())
-	fmt.Println(username + ":" + password)
 	tok, _, err := cl.AuthClient.TokensApi.TokensGenerate(context.Background()).Execute()
 	if err != nil {
 		return nil, fmt.Errorf("failed using username and password to generate a token: %w", err)
