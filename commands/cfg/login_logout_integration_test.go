@@ -32,7 +32,7 @@ func TestAuthCmds(t *testing.T) {
 	if err := setup(); err != nil {
 		t.Fatalf("Failed setting up auth tests: %s", err)
 	}
-	teardown()
+	t.Cleanup(teardown)
 
 	assert.NotEmpty(t, GoodUsername)
 	assert.NotEmpty(t, GoodPassword)
