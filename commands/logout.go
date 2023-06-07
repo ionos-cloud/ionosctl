@@ -44,7 +44,8 @@ func LogoutCmd() *core.Command {
 			if err != nil {
 				return fmt.Errorf("failed updating config file: %w", err)
 			}
-			return c.Printer.Print(msg)
+			_, err = fmt.Fprintln(c.Command.Command.OutOrStdout(), msg)
+			return err
 		},
 		InitClient: false,
 	})

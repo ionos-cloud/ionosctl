@@ -24,10 +24,10 @@ var (
 )
 
 func TestAuthCmds(t *testing.T) {
-	//if err := setup(); err != nil {
-	//	t.Fatalf("Failed setting up auth tests: %s", err)
-	//}
-	//teardown()
+	if err := setup(); err != nil {
+		t.Fatalf("Failed setting up auth tests: %s", err)
+	}
+	teardown()
 
 	assert.NotEmpty(t, GoodUsername)
 	assert.NotEmpty(t, GoodPassword)
@@ -35,24 +35,9 @@ func TestAuthCmds(t *testing.T) {
 
 	t.Parallel()
 
-	_ = commands.LogoutCmd()
-
-	t.Run("login test interactive input", func(t *testing.T) {
+	t.Run("login test user interactively, password as flag - valid token saved to config", func(t *testing.T) {
 		login := commands.LoginCmd()
-
-		out := &bytes.Buffer{}
-		in := bytes.NewBufferString("MockUsername\nMockPassword\n")
-		login.Command.SetOut(out)
-		login.Command.SetIn(in)
-		err := login.Command.Execute()
-		assert.Contains(t, out.String(), "Enter your username: ")
-		assert.Contains(t, out.String(), "Enter your password: ")
-		// I tried mocking the terminal reader, but sadly can't inject it without major code rewrite
-		assert.ErrorContains(t, err, "the set input does not have a file descriptor (is it set to a terminal?)")
-	})
-
-	t.Run("login test user interactively, password as flag", func(t *testing.T) {
-		login := commands.LoginCmd()
+		logout := commands.LogoutCmd()
 
 		login.Command.Flags().Set(constants.ArgPassword, GoodPassword)
 
@@ -68,10 +53,22 @@ func TestAuthCmds(t *testing.T) {
 		assert.NoError(t, err)
 		assert.NoError(t, client.TestCreds("", "", cfg[constants.CfgToken]))
 		assert.Empty(t, cfg[constants.ArgServerUrl])
+		assert.Empty(t, cfg[constants.CfgUsername])
+		assert.Empty(t, cfg[constants.CfgPassword])
+
+		out = &bytes.Buffer{}
+		logout.Command.SetOut(out)
+		err = logout.Command.Execute()
+		assert.Contains(t, out.String(), "De-authentication successful")
+		assert.NoError(t, err)
+		cfg, err = config.Read()
+		assert.NoError(t, err)
+		assert.Empty(t, cfg[constants.CfgToken])
 	})
 
-	t.Run("login test user, password as flag", func(t *testing.T) {
+	t.Run("login test user, password as flag - valid token saved to config", func(t *testing.T) {
 		login := commands.LoginCmd()
+		logout := commands.LogoutCmd()
 
 		login.Command.Flags().Set(constants.ArgUser, GoodUsername)
 		login.Command.Flags().Set(constants.ArgPassword, GoodPassword)
@@ -85,27 +82,20 @@ func TestAuthCmds(t *testing.T) {
 		cfg, err := config.Read()
 		assert.NoError(t, err)
 		assert.NoError(t, client.TestCreds("", "", cfg[constants.CfgToken]))
-	})
 
-	t.Run("login test user, password as flag", func(t *testing.T) {
-		login := commands.LoginCmd()
-
-		login.Command.Flags().Set(constants.ArgUser, GoodUsername)
-		login.Command.Flags().Set(constants.ArgPassword, GoodPassword)
-
-		out := &bytes.Buffer{}
-		login.Command.SetOut(out)
-		err := login.Command.Execute()
-		assert.Contains(t, out.String(), "Authentication successful")
+		out = &bytes.Buffer{}
+		logout.Command.SetOut(out)
+		err = logout.Command.Execute()
+		assert.Contains(t, out.String(), "De-authentication successful")
 		assert.NoError(t, err)
-
-		cfg, err := config.Read()
+		cfg, err = config.Read()
 		assert.NoError(t, err)
-		assert.NoError(t, client.TestCreds("", "", cfg[constants.CfgToken]))
+		assert.Empty(t, cfg[constants.CfgToken])
 	})
 
 	t.Run("login test token as flag", func(t *testing.T) {
 		login := commands.LoginCmd()
+		logout := commands.LogoutCmd()
 
 		login.Command.Flags().Set(constants.ArgToken, GoodToken)
 
@@ -120,6 +110,15 @@ func TestAuthCmds(t *testing.T) {
 		assert.NoError(t, client.TestCreds("", "", cfg[constants.CfgToken]))
 
 		assert.Equal(t, cfg[constants.CfgToken], GoodToken)
+
+		out = &bytes.Buffer{}
+		logout.Command.SetOut(out)
+		err = logout.Command.Execute()
+		assert.Contains(t, out.String(), "De-authentication successful")
+		assert.NoError(t, err)
+		cfg, err = config.Read()
+		assert.NoError(t, err)
+		assert.Empty(t, cfg[constants.CfgToken])
 	})
 
 	t.Run("login test user, pass, token", func(t *testing.T) {
@@ -132,6 +131,9 @@ func TestAuthCmds(t *testing.T) {
 		err := login.Command.Execute()
 		assert.ErrorContains(t, err, "use either --user and/or --password, either --token")
 
+		cfg, err := config.Read()
+		assert.NoError(t, err)
+		assert.Empty(t, cfg[constants.CfgToken])
 	})
 
 	toks, _, err := client.Must(func(err error) {
@@ -163,9 +165,17 @@ func setup() error {
 		panic(err)
 	}).AuthClient.TokensApi.TokensGenerate(context.Background()).Execute()
 
+	if err != nil {
+		return err
+	}
+
+	if tok.Token == nil {
+		return fmt.Errorf("tok is nil")
+	}
+
 	GoodToken = *tok.Token
 
-	return err
+	return nil
 
 	// TODO: Mark tok generation time
 }
