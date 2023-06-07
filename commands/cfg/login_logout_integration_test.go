@@ -50,20 +50,27 @@ func TestAuthCmds(t *testing.T) {
 		in := bytes.NewBufferString(GoodUsername + "\n")
 		login.Command.SetOut(out)
 		login.Command.SetIn(in)
+
+		// Exec login
 		err := login.Command.Execute()
 		assert.Contains(t, out.String(), "Enter your username: ")
 		assert.NoError(t, err)
 
+		// Read the configuration after login and assert that the token is valid
 		cfg, err := config.Read()
 		assert.NoError(t, err)
+
 		assert.NoError(t, client.TestCreds("", "", cfg[constants.CfgToken]))
 		assert.Empty(t, cfg[constants.ArgServerUrl])
 		assert.Empty(t, cfg[constants.CfgUsername])
 		assert.Empty(t, cfg[constants.CfgPassword])
 
+		// Exec logout
 		out = &bytes.Buffer{}
 		logout.Command.SetOut(out)
 		err = logout.Command.Execute()
+
+		// Assert that logout was successful and the token is removed from the configuration
 		assert.Contains(t, out.String(), "De-authentication successful")
 		assert.NoError(t, err)
 		cfg, err = config.Read()
@@ -84,6 +91,7 @@ func TestAuthCmds(t *testing.T) {
 		assert.Contains(t, out.String(), "Authentication successful")
 		assert.NoError(t, err)
 
+		// Read the configuration after login and assert that the token is valid
 		cfg, err := config.Read()
 		assert.NoError(t, err)
 		assert.NoError(t, client.TestCreds("", "", cfg[constants.CfgToken]))
@@ -110,15 +118,19 @@ func TestAuthCmds(t *testing.T) {
 		assert.Contains(t, out.String(), "Authentication successful")
 		assert.NoError(t, err)
 
+		// Read the configuration after login and assert that the token is valid
 		cfg, err := config.Read()
 		assert.NoError(t, err)
 		assert.NoError(t, client.TestCreds("", "", cfg[constants.CfgToken]))
 
+		// In the case token is provided by user via --token ; then the saved cfg file token should be identical to the provided one
 		assert.Equal(t, cfg[constants.CfgToken], GoodToken)
 
 		out = &bytes.Buffer{}
 		logout.Command.SetOut(out)
 		err = logout.Command.Execute()
+
+		// Assert that logout was successful and the token is removed from the configuration
 		assert.Contains(t, out.String(), "De-authentication successful")
 		assert.NoError(t, err)
 		cfg, err = config.Read()
@@ -126,19 +138,47 @@ func TestAuthCmds(t *testing.T) {
 		assert.Empty(t, cfg[constants.CfgToken])
 	})
 
-	toks, _, err := cl.AuthClient.TokensApi.TokensGet(context.Background()).Execute()
-	if err != nil {
-		return
-	}
+	t.Run("Pre-june config file logout - Username and password removed from config file", func(t *testing.T) {
+		logout := cfg.LogoutCmd()
 
-	msg := ""
+		before := map[string]string{
+			constants.CfgUsername:  "UsernameHere",
+			constants.CfgPassword:  "PasswordHere",
+			constants.CfgToken:     "TokenHere",
+			constants.CfgServerUrl: "dont-kill-me.com",
+		}
+		config.Write(before)
 
-	for _, t := range *toks.Tokens {
-		date := t.CreatedDate
-		msg += fmt.Sprintf("Tok %s created at %s\n", *t.Id, *date)
-	}
+		// Read the configuration - is it what we expect ?
+		cfg, err := config.Read()
+		assert.NoError(t, err)
+		assert.Equal(t, before, cfg)
 
-	panic(msg)
+		out := &bytes.Buffer{}
+		logout.Command.SetOut(out)
+		err = logout.Command.Execute()
+
+		// Assert that logout was successful and the username, password, token removed from cfg
+		assert.Contains(t, out.String(), "De-authentication successful")
+		assert.NoError(t, err)
+		after, err := config.Read()
+		assert.NoError(t, err)
+		assert.Empty(t, after[constants.CfgToken])
+		assert.Empty(t, after[constants.CfgPassword])
+		assert.Empty(t, after[constants.CfgUsername])
+		assert.Equal(t, before[constants.CfgServerUrl], after[constants.CfgServerUrl])
+	})
+
+	t.Run("cfg location cmd returns valid location", func(t *testing.T) {
+		cfgLocCmd := cfg.CfgLocationCmd()
+		out := &bytes.Buffer{}
+		cfgLocCmd.Command.SetOut(out)
+		err := cfgLocCmd.Command.Execute()
+		assert.NoError(t, err)
+
+		assert.Equal(t, config.GetConfigFile(), out.String())
+
+	})
 }
 
 func setup() error {
