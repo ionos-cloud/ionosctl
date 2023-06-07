@@ -1,7 +1,7 @@
 //go:build integration
 // +build integration
 
-package commands_test
+package cfg_test
 
 import (
 	"bytes"
@@ -12,7 +12,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ionos-cloud/ionosctl/v6/commands"
+	"github.com/ionos-cloud/ionosctl/v6/commands/cfg"
+
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
@@ -40,8 +41,8 @@ func TestAuthCmds(t *testing.T) {
 	t.Parallel()
 
 	t.Run("login test user interactively, password as flag - valid token saved to config", func(t *testing.T) {
-		login := commands.LoginCmd()
-		logout := commands.LogoutCmd()
+		login := cfg.LoginCmd()
+		logout := cfg.LogoutCmd()
 
 		login.Command.Flags().Set(constants.ArgPassword, GoodPassword)
 
@@ -71,8 +72,8 @@ func TestAuthCmds(t *testing.T) {
 	})
 
 	t.Run("login test user, password as flag - valid token saved to config", func(t *testing.T) {
-		login := commands.LoginCmd()
-		logout := commands.LogoutCmd()
+		login := cfg.LoginCmd()
+		logout := cfg.LogoutCmd()
 
 		login.Command.Flags().Set(constants.ArgUser, GoodUsername)
 		login.Command.Flags().Set(constants.ArgPassword, GoodPassword)
@@ -98,8 +99,8 @@ func TestAuthCmds(t *testing.T) {
 	})
 
 	t.Run("login test token as flag", func(t *testing.T) {
-		login := commands.LoginCmd()
-		logout := commands.LogoutCmd()
+		login := cfg.LoginCmd()
+		logout := cfg.LogoutCmd()
 
 		login.Command.Flags().Set(constants.ArgToken, GoodToken)
 

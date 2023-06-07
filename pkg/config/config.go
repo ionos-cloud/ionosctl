@@ -9,6 +9,8 @@ import (
 	"path/filepath"
 	"runtime"
 
+	"github.com/ionos-cloud/ionosctl/v6/internal/die"
+
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 
 	"github.com/spf13/viper"
@@ -40,7 +42,7 @@ func GetConfigFile() string {
 func getConfigHomeDir() string {
 	configPath, err := os.UserConfigDir()
 	if err != nil {
-		return err.Error()
+		die.Die("is $HOME defined? couldn't get config dir: " + err.Error())
 	}
 	return filepath.Join(configPath, "ionosctl")
 }
