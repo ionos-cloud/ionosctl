@@ -39,6 +39,7 @@ mocks:
 docs generate-docs:
 	@echo "--- Purging docs ---"
 	rm -rf docs/subcommands
+	touch docs/summary.md # create summary.md it if not exists
 	rm docs/summary.md
 	@echo "--- Regenerating docs ---"
 	@go run tools/doc.go

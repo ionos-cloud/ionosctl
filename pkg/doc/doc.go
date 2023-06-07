@@ -148,7 +148,7 @@ func createStructure(cmd *core.Command, dir string) error {
 func determineSubdir(name string, nonComputeNamespaces map[string]string) string {
 	segments := strings.Split(name, "-")
 
-	if segments[0] == "login" || segments[0] == "logout" || segments[0] == "version" || segments[0] == "completion" {
+	if segments[0] == "login" || segments[0] == "logout" || segments[0] == "config" || segments[0] == "version" || segments[0] == "completion" {
 		return filepath.Join("CLI Setup", filepath.Join(segments...))
 	}
 

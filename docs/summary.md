@@ -34,6 +34,7 @@
         * [get](subcommands%2FAuthentication%2Ftoken%2Fget.md)
         * [list](subcommands%2FAuthentication%2Ftoken%2Flist.md)
 * CLI Setup
+    * [config](subcommands%2FCLI%20Setup%2Fconfig.md)
     * [login](subcommands%2FCLI%20Setup%2Flogin.md)
     * [logout](subcommands%2FCLI%20Setup%2Flogout.md)
     * [version](subcommands%2FCLI%20Setup%2Fversion.md)

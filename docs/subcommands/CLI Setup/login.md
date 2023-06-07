@@ -27,7 +27,7 @@ The 'login' command allows you to authenticate with the IONOS Cloud APIs. There 
 
 If you use a username and password, this command generates a token that's saved in the config file. Please keep this token safe. If you specify a custom '--api-url', it'll be saved to the config file when you login successfully and used for future API calls.
 
-By default, the config file is located at /home/avirtopeanu/.config/ionosctl/config.json. If you want to use a different config file, use the '--config' global option. Changing the permissions of the config file will cause it to no longer work.
+To find your config file location, use 'ionosctl config'. If you want to use a different config file, use the '--config' global option. Changing the permissions of the config file will cause it to no longer work.
 
 Note: The IONOS Cloud CLI supports also authentication with environment variables: $IONOS_USERNAME, $IONOS_PASSWORD or $IONOS_TOKEN, these override the config file token.
 
