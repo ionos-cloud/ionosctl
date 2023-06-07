@@ -4,6 +4,7 @@
 
 ### Added
 - Added a `logout` command, which iterates through fields in your config file which contain sensitive data and removes their value
+- Added a `config` command which prints config file path.
 
 
 ### Changed
