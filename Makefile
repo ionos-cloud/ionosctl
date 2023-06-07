@@ -13,7 +13,7 @@ DOCS_OUT?=$(shell pwd)/docs/subcommands
 # Want to test verbosely? (i.e. see what test is failing?) Run like:
 # make test TEST_FLAGS="-v [optionally other flags]"
 
-TEST_DIRS := $(shell go list ./... | grep -Ev 'mongo|container-registry|dataplatform|certmanager') # All pkgs except containter-registry
+TEST_DIRS := $(shell go list ./... | grep -v /commands/container-registry) # All pkgs except containter-registry
 TEST_FLAGS := "-cover"
 .PHONY: utest
 utest:
