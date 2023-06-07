@@ -7,5 +7,5 @@ INSTALL = $(QUIET)install
 BINDIR ?= /usr/local/bin
 TARGET := fake
 
-GOLANGCILINT_WANT_VERSION = 1.46.2
+GOLANGCILINT_WANT_VERSION = 1.50.1
 GOLANGCILINT_VERSION = $(shell golangci-lint version 2>/dev/null)
