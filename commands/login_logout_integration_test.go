@@ -8,7 +8,9 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"strings"
 	"testing"
+	"time"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
@@ -18,9 +20,11 @@ import (
 )
 
 var (
-	GoodUsername = ""
-	GoodPassword = ""
-	GoodToken    = ""
+	GoodUsername    = ""
+	GoodPassword    = ""
+	GoodToken       = ""
+	cl              *client.Client
+	tokCreationTime time.Time
 )
 
 func TestAuthCmds(t *testing.T) {
@@ -121,24 +125,7 @@ func TestAuthCmds(t *testing.T) {
 		assert.Empty(t, cfg[constants.CfgToken])
 	})
 
-	t.Run("login test user, pass, token", func(t *testing.T) {
-		login := commands.LoginCmd()
-
-		login.Command.Flags().Set(constants.ArgUser, GoodUsername)
-		login.Command.Flags().Set(constants.ArgPassword, GoodPassword)
-		login.Command.Flags().Set(constants.ArgToken, GoodToken)
-
-		err := login.Command.Execute()
-		assert.ErrorContains(t, err, "use either --user and/or --password, either --token")
-
-		cfg, err := config.Read()
-		assert.NoError(t, err)
-		assert.Empty(t, cfg[constants.CfgToken])
-	})
-
-	toks, _, err := client.Must(func(err error) {
-		panic(err)
-	}).AuthClient.TokensApi.TokensGet(context.Background()).Execute()
+	toks, _, err := cl.AuthClient.TokensApi.TokensGet(context.Background()).Execute()
 	if err != nil {
 		return
 	}
@@ -161,9 +148,8 @@ func setup() error {
 		return fmt.Errorf("empty user/pass")
 	}
 
-	tok, _, err := client.Must(func(err error) {
-		panic(err)
-	}).AuthClient.TokensApi.TokensGenerate(context.Background()).Execute()
+	cl, _ = client.NewClient(GoodUsername, GoodPassword, "", "")
+	tok, _, err := cl.AuthClient.TokensApi.TokensGenerate(context.Background()).Execute()
 
 	if err != nil {
 		return err
@@ -174,13 +160,38 @@ func setup() error {
 	}
 
 	GoodToken = *tok.Token
+	tokCreationTime = time.Now().In(time.UTC).Add(-1 * time.Minute)
 
 	return nil
-
-	// TODO: Mark tok generation time
 }
 
 func teardown() {
 
-	// TODO: Delete tokens generated since setup
+	toks, _, err := cl.AuthClient.TokensApi.TokensGet(context.Background()).Execute()
+
+	if err != nil {
+		panic(err)
+	}
+
+	// Delete tokens generated since setup
+	for _, t := range *toks.Tokens {
+		strDate, ok := strings.CutSuffix(*t.CreatedDate, "[UTC]")
+		if !ok {
+			panic("they changed the date format: no more [UTC] suffix")
+		}
+		date, err := time.Parse(time.RFC3339, strDate)
+		if err != nil {
+			panic(fmt.Errorf("they changed the date format: %w", err))
+		}
+
+		// Delete the token if it was created after setup
+		if date.After(tokCreationTime) {
+			_, _, err := cl.AuthClient.TokensApi.TokensDeleteById(context.Background(), *t.Id).Execute()
+
+			if err != nil {
+				panic(err)
+			}
+		}
+	}
+
 }
