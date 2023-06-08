@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/ionos-cloud/ionosctl/v6/pkg/uuidgen"
+
 	"github.com/ionos-cloud/ionosctl/v6/commands/dns/zone"
 
 	dns "github.com/ionos-cloud/sdk-go-dnsaas"
@@ -50,8 +52,8 @@ func ZonesRecordsPostCmd() *core.Command {
 		CmdRun: func(c *core.CommandConfig) error {
 			input := dns.RecordProperties{}
 			modifyRecordPropertiesFromFlags(c, &input)
-			rec, _, err := client.Must().DnsClient.RecordsApi.ZonesRecordsPost(context.Background(), id).
-				RecordCreateRequest(dns.RecordCreateRequest{
+			rec, _, err := client.Must().DnsClient.RecordsApi.ZonesRecordsPut(context.Background(), id, uuidgen.Must()).
+				RecordUpdateRequest(dns.RecordUpdateRequest{
 					Properties: &input,
 				}).Execute()
 			if err != nil {

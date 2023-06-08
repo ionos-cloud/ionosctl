@@ -3,6 +3,8 @@ package zone
 import (
 	"context"
 
+	"github.com/ionos-cloud/ionosctl/v6/pkg/uuidgen"
+
 	dns "github.com/ionos-cloud/sdk-go-dnsaas"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
@@ -30,7 +32,7 @@ func ZonesPostCmd() *core.Command {
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			input := dns.ZoneCreateRequestProperties{}
+			input := dns.ZoneUpdateRequestProperties{}
 			if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) {
 				input.ZoneName = pointer.From(viper.GetString(fn))
 			}
@@ -41,8 +43,8 @@ func ZonesPostCmd() *core.Command {
 				input.Enabled = pointer.From(viper.GetBool(fn))
 			}
 
-			z, _, err := client.Must().DnsClient.ZonesApi.ZonesPost(context.Background()).
-				ZoneCreateRequest(dns.ZoneCreateRequest{Properties: &input}).Execute()
+			z, _, err := client.Must().DnsClient.ZonesApi.ZonesPut(context.Background(), uuidgen.Must()).
+				ZoneUpdateRequest(dns.ZoneUpdateRequest{Properties: &input}).Execute()
 			if err != nil {
 				return err
 			}
