@@ -32,6 +32,8 @@ require (
 
 require github.com/ionos-cloud/sdk-go-dnsaas v1.0.0
 
+require github.com/gofrs/uuid/v5 v5.0.0
+
 require (
 	github.com/VividCortex/ewma v1.2.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
