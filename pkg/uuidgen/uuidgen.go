@@ -7,7 +7,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/die"
 )
 
-// Must returns an UUIDv5 namespaced to ionostl repo, or fatally dies.
+// Must returns an UUIDv5 namespaced to ionosctl repo, or fatally dies.
 // If given names as parameters, it will iterate through each of the names, using the previously generated IDv5 as a namespace
 func Must(names ...string) string {
 	if len(names) == 0 {
@@ -24,4 +24,10 @@ func Must(names ...string) string {
 		ns = uuid.NewV5(ns, name)
 	}
 	return ns.String()
+}
+
+// MustSingle generates an UUIDv5 namespaced to github.com/ionos-cloud/ionosctl while guaranteeing a single name is used
+// this func simply uses Must() under the hood, but guarantees no other names are used, and that no UUIDv4 is used as name
+func MustSingle(name string) string {
+	return Must(name)
 }
