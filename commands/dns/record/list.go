@@ -4,10 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/google/uuid"
-	"github.com/ionos-cloud/ionosctl/v6/internal/client"
-	"github.com/ionos-cloud/ionosctl/v6/internal/die"
-
 	"github.com/ionos-cloud/ionosctl/v6/commands/dns/zone"
 	dns "github.com/ionos-cloud/sdk-go-dnsaas"
 	"github.com/spf13/cobra"
@@ -26,23 +22,14 @@ func RecordsGetCmd() *core.Command {
 		ShortDesc: "Retrieve all records",
 		Example:   "ionosctl dns record list",
 		CmdRun: func(c *core.CommandConfig) error {
-			ls, err := Records(func(req dns.ApiRecordsGetRequest) dns.ApiRecordsGetRequest {
+			ls, err := Records(func(req dns.ApiRecordsGetRequest) (dns.ApiRecordsGetRequest, error) {
 				if fn := core.GetFlagName(c.NS, constants.FlagZone); viper.IsSet(fn) {
-					z := viper.GetString(fn)
-					uid, errParseUuid := uuid.Parse(z)
-					id := uid.String()
-					if errParseUuid != nil {
-						// Find uuid by name and then apply filter
-						ls, _, errFindZoneByName := client.Must().DnsClient.ZonesApi.ZonesGet(context.Background()).FilterZoneName(z).Limit(1).Execute()
-						if errFindZoneByName != nil {
-							die.Die(fmt.Errorf("failed finding a zone by name: %w", errFindZoneByName).Error())
-						}
-						if len(*ls.Items) < 1 {
-							die.Die(fmt.Errorf("could not find zone by name %s", z).Error())
-						}
-						id = *(*ls.Items)[0].Id
+					zoneId, err := zone.ZoneIdByNameOrId(viper.GetString(fn))
+					if err != nil {
+						return req, err
 					}
-					req = req.FilterZoneId(id)
+					req = req.FilterZoneId(zoneId)
+
 				}
 				if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) {
 					req = req.FilterName(viper.GetString(fn))
@@ -53,7 +40,7 @@ func RecordsGetCmd() *core.Command {
 				if fn := core.GetFlagName(c.NS, constants.FlagMaxResults); viper.IsSet(fn) {
 					req = req.Limit(viper.GetInt32(fn))
 				}
-				return req
+				return req, nil
 			})
 
 			if err != nil {

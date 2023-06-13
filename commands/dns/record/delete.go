@@ -90,14 +90,14 @@ ionosctl dns record delete --name PARTIAL_NAME [--zone-id ZONE_ID]`,
 
 	cmd.AddStringFlag(constants.FlagRecordId, constants.FlagIdShort, "", fmt.Sprintf("The ID (UUID) of the DNS record. Required together with --%s or -%s", constants.FlagZoneId, constants.ArgAllShort))
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagRecordId, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return RecordIds(func(r dns.ApiRecordsGetRequest) dns.ApiRecordsGetRequest {
+		return RecordIds(func(r dns.ApiRecordsGetRequest) (dns.ApiRecordsGetRequest, error) {
 			if fn := core.GetFlagName(cmd.NS, constants.FlagName); viper.IsSet(fn) {
 				r = r.FilterName(viper.GetString(fn))
 			}
 			if fn := core.GetFlagName(cmd.NS, constants.FlagZoneId); viper.IsSet(fn) {
 				r = r.FilterZoneId(viper.GetString(fn))
 			}
-			return r
+			return r, nil
 		}), cobra.ShellCompDirectiveNoFileComp
 	})
 

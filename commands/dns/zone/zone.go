@@ -2,7 +2,10 @@ package zone
 
 import (
 	"context"
+	"fmt"
 	"strings"
+
+	"github.com/google/uuid"
 
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
@@ -114,4 +117,21 @@ func Zones(f func(dns.ZoneResponse) string) []string {
 		return nil
 	}
 	return functional.Map(*ls.GetItems(), f)
+}
+
+func ZoneIdByNameOrId(nameOrId string) (string, error) {
+	uid, errParseUuid := uuid.Parse(nameOrId)
+	zId := uid.String()
+	if errParseUuid != nil {
+		// nameOrId is a name
+		ls, _, errFindZoneByName := client.Must().DnsClient.ZonesApi.ZonesGet(context.Background()).FilterZoneName(nameOrId).Limit(1).Execute()
+		if errFindZoneByName != nil {
+			return "", fmt.Errorf("failed finding a zone by name: %w", errFindZoneByName)
+		}
+		if len(*ls.Items) < 1 {
+			return "", fmt.Errorf("could not find zone by name %s", nameOrId)
+		}
+		zId = *(*ls.Items)[0].Id
+	}
+	return zId, nil
 }

@@ -62,11 +62,11 @@ You must use either --%s and --%s, or alternatively use filters: --%s and/or --%
 	})
 	cmd.AddStringVarFlag(&recordId, constants.FlagRecordId, constants.FlagIdShort, "", "The ID (UUID) of the DNS record", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagRecordId, func(cobraCmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return RecordIds(func(req dns.ApiRecordsGetRequest) dns.ApiRecordsGetRequest {
+		return RecordIds(func(req dns.ApiRecordsGetRequest) (dns.ApiRecordsGetRequest, error) {
 			if fn := core.GetFlagName(cmd.NS, constants.FlagZoneId); viper.IsSet(fn) {
 				req = req.FilterZoneId(viper.GetString(fn))
 			}
-			return req
+			return req, nil
 		}), cobra.ShellCompDirectiveNoFileComp
 	})
 	return addRecordCreateFlags(cmd)
@@ -85,14 +85,14 @@ func partiallyUpdateRecordAndPrint(c *core.CommandConfig, r dns.RecordResponse) 
 }
 
 func findRecordByListAndFilters(c *core.CommandConfig) (dns.RecordResponse, error) {
-	recs, err := Records(func(r dns.ApiRecordsGetRequest) dns.ApiRecordsGetRequest {
+	recs, err := Records(func(r dns.ApiRecordsGetRequest) (dns.ApiRecordsGetRequest, error) {
 		if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) {
 			r = r.FilterName(viper.GetString(fn))
 		}
 		if fn := core.GetFlagName(c.NS, constants.FlagZoneId); viper.IsSet(fn) {
 			r = r.FilterZoneId(viper.GetString(fn))
 		}
-		return r
+		return r, nil
 	})
 	if err != nil {
 		return dns.RecordResponse{}, fmt.Errorf("failed listing records: %w", err)

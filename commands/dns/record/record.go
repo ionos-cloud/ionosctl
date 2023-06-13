@@ -109,13 +109,17 @@ func makeRecordPrintObj(data ...dns.RecordResponse) []map[string]interface{} {
 	return out
 }
 
-type Filter func(dns.ApiRecordsGetRequest) dns.ApiRecordsGetRequest
+type Filter func(dns.ApiRecordsGetRequest) (dns.ApiRecordsGetRequest, error)
 
 func Records(f Filter) (*dns.RecordsResponse, error) {
 	req := client.Must().DnsClient.RecordsApi.RecordsGet(context.Background())
 
 	if f != nil {
-		req = f(req)
+		var err error
+		req, err = f(req)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	ls, _, err := req.Execute()
