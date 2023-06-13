@@ -23,17 +23,22 @@ func ZonesDeleteCmd() *core.Command {
 		Verb:      "delete",
 		Aliases:   []string{"del", "d"},
 		ShortDesc: "Delete a zone",
-		Example:   "ionosctl dns zone delete --zone-id ZONE_ID",
+		Example:   "ionosctl dns zone delete --zone ZONE_NAME_OR_ID",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			return core.CheckRequiredFlagsSets(c.Command, c.NS, []string{constants.ArgAll}, []string{constants.FlagZoneId})
+			return core.CheckRequiredFlagsSets(c.Command, c.NS, []string{constants.ArgAll}, []string{constants.FlagZone})
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			if all := viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)); all {
 				return deleteAll(c)
 			}
 
+			zoneId, err := ZoneIdByNameOrId(viper.GetString(core.GetFlagName(c.NS, constants.FlagZone)))
+			if err != nil {
+				return err
+			}
+
 			z, _, err := client.Must().DnsClient.ZonesApi.ZonesFindById(context.Background(),
-				viper.GetString(core.GetFlagName(c.NS, constants.FlagZoneId)),
+				zoneId,
 			).Execute()
 			if err != nil {
 				return fmt.Errorf("failed getting zone by id %s", id)
@@ -45,7 +50,7 @@ func ZonesDeleteCmd() *core.Command {
 			}
 
 			_, err = client.Must().DnsClient.ZonesApi.ZonesDelete(context.Background(),
-				viper.GetString(core.GetFlagName(c.NS, constants.FlagZoneId)),
+				viper.GetString(core.GetFlagName(c.NS, constants.FlagZone)),
 			).Execute()
 
 			return err
@@ -53,10 +58,10 @@ func ZonesDeleteCmd() *core.Command {
 		InitClient: true,
 	})
 
-	cmd.AddStringFlag(constants.FlagZoneId, constants.FlagIdShort, "", fmt.Sprintf("The ID (UUID) of the DNS zone. Required or -%s", constants.ArgAllShort))
-	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagZoneId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	cmd.AddStringFlag(constants.FlagZone, constants.FlagZoneShort, "", fmt.Sprintf("%s. Required or -%s", constants.DescZone, constants.ArgAllShort))
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagZone, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return Zones(func(t dns.ZoneResponse) string {
-			return *t.GetId()
+			return *t.Properties.ZoneName
 		}), cobra.ShellCompDirectiveNoFileComp
 	})
 

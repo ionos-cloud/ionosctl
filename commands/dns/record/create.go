@@ -19,8 +19,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 )
 
-var id string
-
 func ZonesRecordsPostCmd() *core.Command {
 	cmd := core.NewCommand(context.Background(), nil, core.CommandBuilder{
 		Namespace: "dns",
@@ -34,7 +32,7 @@ func ZonesRecordsPostCmd() *core.Command {
 			if err != nil {
 				return err
 			}
-			err = c.Command.Command.MarkFlagRequired(constants.FlagZoneId)
+			err = c.Command.Command.MarkFlagRequired(constants.FlagZone)
 			if err != nil {
 				return err
 			}
@@ -52,7 +50,13 @@ func ZonesRecordsPostCmd() *core.Command {
 		CmdRun: func(c *core.CommandConfig) error {
 			input := dns.RecordProperties{}
 			modifyRecordPropertiesFromFlags(c, &input)
-			rec, _, err := client.Must().DnsClient.RecordsApi.ZonesRecordsPut(context.Background(), id, uuidgen.Must()).
+
+			zoneId, err := zone.ZoneIdByNameOrId(viper.GetString(core.GetFlagName(c.NS, constants.FlagZone)))
+			if err != nil {
+				return err
+			}
+
+			rec, _, err := client.Must().DnsClient.RecordsApi.ZonesRecordsPut(context.Background(), zoneId, uuidgen.Must()).
 				RecordUpdateRequest(dns.RecordUpdateRequest{
 					Properties: &input,
 				}).Execute()
@@ -65,10 +69,10 @@ func ZonesRecordsPostCmd() *core.Command {
 		InitClient: true,
 	})
 
-	cmd.AddStringVarFlag(&id, constants.FlagZoneId, constants.FlagIdShort, "", "The ID (UUID) of the DNS zone", core.RequiredFlagOption())
-	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagZoneId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	cmd.AddStringFlag(constants.FlagZone, constants.FlagZoneShort, "", "The ID or name of the DNS zone", core.RequiredFlagOption())
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagZone, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return zone.Zones(func(t dns.ZoneResponse) string {
-			return *t.GetId()
+			return *t.Properties.ZoneName
 		}), cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.Command.SilenceUsage = true

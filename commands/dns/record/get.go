@@ -21,9 +21,9 @@ func ZonesRecordsFindByIdCmd() *core.Command {
 		Verb:      "get",
 		Aliases:   []string{"g"},
 		ShortDesc: "Retrieve a record",
-		Example:   "ionosctl dns record get --zoneId ZONE_ID --recordId RECORD_ID",
+		Example:   "ionosctl dns record get --zone ZONE --recordId RECORD_ID",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			err := c.Command.Command.MarkFlagRequired(constants.FlagZoneId)
+			err := c.Command.Command.MarkFlagRequired(constants.FlagZone)
 			if err != nil {
 				return err
 			}
@@ -35,9 +35,12 @@ func ZonesRecordsFindByIdCmd() *core.Command {
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
+			zoneId, err := zone.ZoneIdByNameOrId(viper.GetString(core.GetFlagName(c.NS, constants.FlagZone)))
+			if err != nil {
+				return err
+			}
 			r, _, err := client.Must().DnsClient.RecordsApi.ZonesRecordsFindById(context.Background(),
-				viper.GetString(core.GetFlagName(c.NS, constants.FlagZoneId)),
-				viper.GetString(core.GetFlagName(c.NS, constants.FlagRecordId)),
+				zoneId, viper.GetString(core.GetFlagName(c.NS, constants.FlagRecordId)),
 			).Execute()
 
 			if err != nil {
@@ -48,10 +51,10 @@ func ZonesRecordsFindByIdCmd() *core.Command {
 		InitClient: true,
 	})
 
-	cmd.AddStringFlag(constants.FlagZoneId, "", "", "The ID (UUID) of the DNS zone of which record belongs to")
-	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagZoneId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	cmd.AddStringFlag(constants.FlagZone, constants.FlagZoneShort, "", constants.DescZone)
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagZone, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return zone.Zones(func(t dns.ZoneResponse) string {
-			return *t.GetId()
+			return *t.Properties.ZoneName
 		}), cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddStringFlag(constants.FlagRecordId, "", "", "The ID (UUID) of the DNS record")

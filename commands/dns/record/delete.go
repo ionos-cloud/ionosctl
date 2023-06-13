@@ -31,12 +31,12 @@ ionosctl dns record delete --name PARTIAL_NAME [--zone-id ZONE_ID]`,
 			c.Command.Command.MarkFlagsMutuallyExclusive(constants.ArgAll, constants.FlagRecordId)
 
 			err := core.CheckRequiredFlagsSets(c.Command, c.NS, []string{constants.ArgAll}, // All with optional filters
-				[]string{constants.FlagZoneId, constants.FlagRecordId},       // Known IDs
-				[]string{constants.FlagName}, []string{constants.FlagZoneId}, // If none of the above, user can narrow down to a single record using filters. If more than one result, throw err
+				[]string{constants.FlagZone, constants.FlagRecordId},       // Known IDs
+				[]string{constants.FlagName}, []string{constants.FlagZone}, // If none of the above, user can narrow down to a single record using filters. If more than one result, throw err
 			)
 			if err != nil {
 				return fmt.Errorf("either provide --%s and optionally filters, or --%s and --%s, or narrow down to one record with --%s and/or --%s: %w",
-					constants.ArgAll, constants.FlagZoneId, constants.FlagRecordId, constants.FlagName, constants.FlagZoneId, err)
+					constants.ArgAll, constants.FlagZone, constants.FlagRecordId, constants.FlagName, constants.FlagZone, err)
 			}
 			return nil
 		},
@@ -45,13 +45,16 @@ ionosctl dns record delete --name PARTIAL_NAME [--zone-id ZONE_ID]`,
 				return deleteAll(c)
 			}
 
+			zoneId, err := zone.ZoneIdByNameOrId(viper.GetString(core.GetFlagName(c.NS, constants.FlagZone)))
+			if err != nil {
+				return err
+			}
+
 			r := dns.RecordResponse{}
-			var err error
 			if fn := core.GetFlagName(c.NS, constants.FlagRecordId); viper.IsSet(fn) {
-				// In this case we know for sure that FlagZoneId is also set, because of the pre-run check
+				// In this case we know for sure that FlagZone is also set, because of the pre-run check
 				r, _, err = client.Must().DnsClient.RecordsApi.ZonesRecordsFindById(context.Background(),
-					viper.GetString(core.GetFlagName(c.NS, constants.FlagZoneId)),
-					viper.GetString(core.GetFlagName(c.NS, constants.FlagRecordId)),
+					zoneId, viper.GetString(core.GetFlagName(c.NS, constants.FlagRecordId)),
 				).Execute()
 				if err != nil {
 					return fmt.Errorf("failed finding record using Zone and Record IDs: %w", err)
@@ -79,16 +82,16 @@ ionosctl dns record delete --name PARTIAL_NAME [--zone-id ZONE_ID]`,
 		InitClient: true,
 	})
 
-	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, fmt.Sprintf("Delete all records. Required or --%s and --%s", constants.FlagZoneId, constants.FlagRecordId))
+	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, fmt.Sprintf("Delete all records. Required or --%s and --%s", constants.FlagZone, constants.FlagRecordId))
 	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "If --all is set, filter --all deletion by record name")
-	cmd.AddStringFlag(constants.FlagZoneId, "", "", "The zone of the target record. If --all is set, filter --all deletion by this zone id")
-	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagZoneId, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	cmd.AddStringFlag(constants.FlagZone, constants.FlagZoneShort, "", "The zone of the target record. If --all is set, filter --all deletion by limiting to records within this zone")
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagZone, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return zone.Zones(func(t dns.ZoneResponse) string {
-			return *t.GetId()
+			return *t.Properties.ZoneName
 		}), cobra.ShellCompDirectiveNoFileComp
 	})
 
-	cmd.AddStringFlag(constants.FlagRecordId, constants.FlagIdShort, "", fmt.Sprintf("The ID (UUID) of the DNS record. Required together with --%s or -%s", constants.FlagZoneId, constants.ArgAllShort))
+	cmd.AddStringFlag(constants.FlagRecordId, constants.FlagIdShort, "", fmt.Sprintf("The ID (UUID) of the DNS record. Required together with --%s or -%s", constants.FlagZone, constants.ArgAllShort))
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagRecordId, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return RecordIds(func(r dns.ApiRecordsGetRequest) (dns.ApiRecordsGetRequest, error) {
 			if fn := core.GetFlagName(cmd.NS, constants.FlagName); viper.IsSet(fn) {

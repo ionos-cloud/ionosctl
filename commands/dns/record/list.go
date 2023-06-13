@@ -29,7 +29,6 @@ func RecordsGetCmd() *core.Command {
 						return req, err
 					}
 					req = req.FilterZoneId(zoneId)
-
 				}
 				if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) {
 					req = req.FilterName(viper.GetString(fn))
@@ -52,7 +51,7 @@ func RecordsGetCmd() *core.Command {
 		InitClient: true,
 	})
 
-	cmd.AddStringFlag(constants.FlagZone, "", "", "(UUID or Zone Name) Filter used to fetch only the records that contain specified zone.")
+	cmd.AddStringFlag(constants.FlagZone, constants.FlagZoneShort, "", "(UUID or Zone Name) Filter used to fetch only the records that contain specified zone.")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagZone, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return zone.Zones(func(t dns.ZoneResponse) string {
 			return *t.Properties.ZoneName

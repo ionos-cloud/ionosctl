@@ -19,7 +19,6 @@ import (
 )
 
 var (
-	zoneId   string
 	recordId string
 )
 
@@ -32,9 +31,9 @@ func ZonesRecordsPutCmd() *core.Command {
 		ShortDesc: "Partially modify a record's properties. This command uses a combination of GET and PUT to simulate a PATCH operation",
 		LongDesc: fmt.Sprintf(`Partially modify a record's properties. This command uses a combination of GET and PUT to simulate a PATCH operation.
 You must use either --%s and --%s, or alternatively use filters: --%s and/or --%s. Note that if choosing to use filters, the operation will fail if more than one record is found`, constants.FlagZoneId, constants.FlagRecordId, constants.FlagName, constants.FlagZoneId),
-		Example: "ionosctl dns zone update --zone-id ZONE_ID --record-id RECORD_ID",
+		Example: "ionosctl dns zone update --zone ZONE_ID --record-id RECORD_ID",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			err := c.Command.Command.MarkFlagRequired(constants.FlagZoneId)
+			err := c.Command.Command.MarkFlagRequired(constants.FlagZone)
 			if err != nil {
 				return err
 			}
@@ -45,6 +44,10 @@ You must use either --%s and --%s, or alternatively use filters: --%s and/or --%
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
+			zoneId, err := zone.ZoneIdByNameOrId(viper.GetString(core.GetFlagName(c.NS, constants.FlagZone)))
+			if err != nil {
+				return err
+			}
 			r, _, err := client.Must().DnsClient.RecordsApi.ZonesRecordsFindById(context.Background(), zoneId, recordId).Execute()
 			if err != nil {
 				return fmt.Errorf("failed finding record: %w", err)
@@ -54,10 +57,10 @@ You must use either --%s and --%s, or alternatively use filters: --%s and/or --%
 		InitClient: true,
 	})
 
-	cmd.AddStringVarFlag(&zoneId, constants.FlagZoneId, "", "", "The ID (UUID) of the DNS zone", core.RequiredFlagOption())
-	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagZoneId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	cmd.AddStringFlag(constants.FlagZoneId, constants.FlagZone, "", constants.DescZone, core.RequiredFlagOption())
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagZone, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return zone.Zones(func(t dns.ZoneResponse) string {
-			return *t.GetId()
+			return *t.Properties.ZoneName
 		}), cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddStringVarFlag(&recordId, constants.FlagRecordId, constants.FlagIdShort, "", "The ID (UUID) of the DNS record", core.RequiredFlagOption())

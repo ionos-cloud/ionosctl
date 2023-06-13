@@ -42,6 +42,7 @@ const (
 
 	FlagZoneId      = "zone-id"
 	FlagZone        = "zone"
+	FlagZoneShort   = "z"
 	FlagRecordId    = "record-id"
 	FlagState       = "state"
 	FlagDescription = "description"
@@ -55,6 +56,7 @@ const (
 // Flag descriptions. Prefixed with "Desc" for easy find and replace
 const (
 	DescMaxResults = "The maximum number of elements to return"
+	DescZone       = "The name or ID of the DNS zone"
 )
 
 // legacy flags. TODO: Arg should be renamed to Flag.
