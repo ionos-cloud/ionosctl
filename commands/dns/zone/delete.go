@@ -67,7 +67,7 @@ func ZonesDeleteCmd() *core.Command {
 }
 
 func deleteAll(c *core.CommandConfig) error {
-	c.Printer.Verbose("Deleting All Clusters!")
+	c.Printer.Verbose("Deleting all zones!")
 	xs, _, err := client.Must().DnsClient.ZonesApi.ZonesGet(c.Context).Execute()
 	if err != nil {
 		return err
