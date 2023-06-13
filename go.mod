@@ -24,10 +24,10 @@ require (
 	github.com/spf13/viper v1.16.0
 	github.com/stretchr/testify v1.8.4
 	go.uber.org/multierr v1.11.0
-	golang.org/x/crypto v0.9.0
+	golang.org/x/crypto v0.10.0
 	golang.org/x/exp v0.0.0-20230522175609-2e198f4a06a1
 	golang.org/x/sync v0.2.0
-	golang.org/x/term v0.8.0
+	golang.org/x/term v0.9.0
 )
 
 require github.com/ionos-cloud/sdk-go-dnsaas v1.0.0
@@ -56,8 +56,8 @@ require (
 	github.com/subosito/gotenv v1.4.2 // indirect
 	golang.org/x/net v0.10.0 // indirect
 	golang.org/x/oauth2 v0.8.0 // indirect
-	golang.org/x/sys v0.8.0 // indirect
-	golang.org/x/text v0.9.0 // indirect
+	golang.org/x/sys v0.9.0 // indirect
+	golang.org/x/text v0.10.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/protobuf v1.30.0 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
