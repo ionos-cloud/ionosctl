@@ -55,6 +55,6 @@ You must use either --zone-id and --record-id, or alternatively use filters: --n
 ## Examples
 
 ```text
-ionosctl dns zone update --zone-id ZONE_ID --record-id RECORD_ID
+ionosctl dns zone update --zone ZONE --record-id RECORD_ID
 ```
 

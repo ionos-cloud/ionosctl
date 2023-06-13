@@ -14,8 +14,6 @@ import (
 	"github.com/spf13/viper"
 )
 
-var id string
-
 func ZonesPutCmd() *core.Command {
 	cmd := core.NewCommand(context.Background(), nil, core.CommandBuilder{
 		Namespace: "dns",
@@ -23,7 +21,7 @@ func ZonesPutCmd() *core.Command {
 		Verb:      "update",
 		Aliases:   []string{"u"},
 		ShortDesc: "Partially modify a zone's properties. This command uses a combination of GET and PUT to simulate a PATCH operation",
-		Example:   "ionosctl dns zone update --zone-id ZONE_ID --name newname.com",
+		Example:   "ionosctl dns zone update --zone ZONE --name newname.com",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			err := c.Command.Command.MarkFlagRequired(constants.FlagZoneId)
 			if err != nil {
@@ -33,6 +31,11 @@ func ZonesPutCmd() *core.Command {
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
+			id, err := ZoneIdByNameOrId(viper.GetString(core.GetFlagName(c.NS, constants.FlagZone)))
+			if err != nil {
+				return err
+			}
+
 			z, _, err := client.Must().DnsClient.ZonesApi.ZonesFindById(context.Background(), id).Execute()
 			if err != nil {
 				return err
@@ -65,10 +68,10 @@ func ZonesPutCmd() *core.Command {
 		InitClient: true,
 	})
 
-	cmd.AddStringVarFlag(&id, constants.FlagZoneId, constants.FlagIdShort, "", "The ID (UUID) of the DNS zone", core.RequiredFlagOption())
-	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagZoneId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	cmd.AddStringFlag(constants.FlagZoneId, constants.FlagIdShort, "", constants.DescZone, core.RequiredFlagOption())
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagZone, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return Zones(func(t dns.ZoneResponse) string {
-			return *t.GetId()
+			return *t.Properties.ZoneName
 		}), cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "The name of the DNS zone, e.g. foo.com")

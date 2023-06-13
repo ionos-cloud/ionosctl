@@ -51,7 +51,7 @@ Delete a record
 
 ```text
 ionosctl dns record delete --zone-id ZONE --record-id RECORD
-ionosctl dns record delete --all [--name PARTIAL_NAME] [--zone-id ZONE_ID]
-ionosctl dns record delete --name PARTIAL_NAME [--zone-id ZONE_ID]
+ionosctl dns record delete --all [--name PARTIAL_NAME] [--zone ZONE]
+ionosctl dns record delete --name PARTIAL_NAME [--zone ZONE]
 ```
 

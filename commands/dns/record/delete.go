@@ -25,8 +25,8 @@ func ZonesRecordsDeleteCmd() *core.Command {
 		Aliases:   []string{"del", "d"},
 		ShortDesc: "Delete a record",
 		Example: `ionosctl dns record delete --zone-id ZONE --record-id RECORD
-ionosctl dns record delete --all [--name PARTIAL_NAME] [--zone-id ZONE_ID]
-ionosctl dns record delete --name PARTIAL_NAME [--zone-id ZONE_ID]`,
+ionosctl dns record delete --all [--name PARTIAL_NAME] [--zone ZONE]
+ionosctl dns record delete --name PARTIAL_NAME [--zone ZONE]`,
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			c.Command.Command.MarkFlagsMutuallyExclusive(constants.ArgAll, constants.FlagRecordId)
 

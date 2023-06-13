@@ -50,6 +50,6 @@ Partially modify a zone's properties. This command uses a combination of GET and
 ## Examples
 
 ```text
-ionosctl dns zone update --zone-id ZONE_ID --name newname.com
+ionosctl dns zone update --zone ZONE --name newname.com
 ```
 

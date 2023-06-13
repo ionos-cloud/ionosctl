@@ -48,6 +48,6 @@ Delete a zone
 ## Examples
 
 ```text
-ionosctl dns zone delete --zone-id ZONE_ID
+ionosctl dns zone delete --zone ZONE
 ```
 
