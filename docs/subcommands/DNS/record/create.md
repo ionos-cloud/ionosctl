@@ -47,7 +47,7 @@ Create a record. Wiki: https://docs.ionos.com/dns-as-a-service/readme/api-how-to
       --ttl int32        Time to live. The amount of time the record can be cached by a resolver or server before it needs to be refreshed from the authoritative DNS server (default 3600)
   -t, --type string      Type of DNS Record. Can be one of: A, AAAA, CNAME, ALIAS, MX, NS, SRV, TXT, CAA, SSHFP, TLSA, SMIMEA, DS, HTTPS, SVCB, OPENPGPKEY, CERT, URI, RP, LOC (required) (default "AAAA")
   -v, --verbose          Print step-by-step process when running command
-  -i, --zone-id string   The ID (UUID) of the DNS zone (required)
+  -z, --zone string      The ID or name of the DNS zone (required)
 ```
 
 ## Examples

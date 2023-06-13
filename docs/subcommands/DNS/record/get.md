@@ -42,12 +42,12 @@ Retrieve a record
   -q, --quiet              Quiet output
       --record-id string   The ID (UUID) of the DNS record
   -v, --verbose            Print step-by-step process when running command
-      --zone-id string     The ID (UUID) of the DNS zone of which record belongs to
+  -z, --zone string        The name or ID of the DNS zone
 ```
 
 ## Examples
 
 ```text
-ionosctl dns record get --zoneId ZONE_ID --recordId RECORD_ID
+ionosctl dns record get --zone ZONE --recordId RECORD_ID
 ```
 

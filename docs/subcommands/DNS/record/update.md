@@ -26,8 +26,7 @@ For `update` command:
 
 ## Description
 
-Partially modify a record's properties. This command uses a combination of GET and PUT to simulate a PATCH operation.
-You must use either --zone-id and --record-id, or alternatively use filters: --name and/or --zone-id. Note that if choosing to use filters, the operation will fail if more than one record is found
+Partially modify a record's properties. This command uses a combination of GET and PUT to simulate a PATCH operation
 
 ## Options
 
@@ -49,12 +48,12 @@ You must use either --zone-id and --record-id, or alternatively use filters: --n
       --ttl int32          Time to live. The amount of time the record can be cached by a resolver or server before it needs to be refreshed from the authoritative DNS server (default 3600)
   -t, --type string        Type of DNS Record. Can be one of: A, AAAA, CNAME, ALIAS, MX, NS, SRV, TXT, CAA, SSHFP, TLSA, SMIMEA, DS, HTTPS, SVCB, OPENPGPKEY, CERT, URI, RP, LOC (required) (default "AAAA")
   -v, --verbose            Print step-by-step process when running command
-      --zone-id string     The ID (UUID) of the DNS zone (required)
+  -z, --zone string        The name or ID of the DNS zone (required)
 ```
 
 ## Examples
 
 ```text
-ionosctl dns zone update --zone ZONE --record-id RECORD_ID
+ionosctl dns zone update --zone ZONE_ID --record-id RECORD_ID
 ```
 

@@ -44,7 +44,7 @@ Retrieve all records
   -o, --output string       Desired output format [text|json] (default "text")
   -q, --quiet               Quiet output
   -v, --verbose             Print step-by-step process when running command
-      --zone string         (UUID or Zone Name) Filter used to fetch only the records that contain specified zone.
+  -z, --zone string         (UUID or Zone Name) Filter used to fetch only the records that contain specified zone.
 ```
 
 ## Examples

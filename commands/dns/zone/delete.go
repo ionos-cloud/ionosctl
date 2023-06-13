@@ -23,7 +23,7 @@ func ZonesDeleteCmd() *core.Command {
 		Verb:      "delete",
 		Aliases:   []string{"del", "d"},
 		ShortDesc: "Delete a zone",
-		Example:   "ionosctl dns zone delete --zone ZONE_NAME_OR_ID",
+		Example:   "ionosctl dns zone delete --zone ZONE",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return core.CheckRequiredFlagsSets(c.Command, c.NS, []string{constants.ArgAll}, []string{constants.FlagZone})
 		},
@@ -37,11 +37,9 @@ func ZonesDeleteCmd() *core.Command {
 				return err
 			}
 
-			z, _, err := client.Must().DnsClient.ZonesApi.ZonesFindById(context.Background(),
-				zoneId,
-			).Execute()
+			z, _, err := client.Must().DnsClient.ZonesApi.ZonesFindById(context.Background(), zoneId).Execute()
 			if err != nil {
-				return fmt.Errorf("failed getting zone by id %s", id)
+				return fmt.Errorf("failed getting zone by id %s", zoneId)
 			}
 			yes := confirm.Ask(fmt.Sprintf("Are you sure you want to delete zone %s (%s)", *z.Properties.ZoneName, *z.Properties.Description),
 				viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce)))

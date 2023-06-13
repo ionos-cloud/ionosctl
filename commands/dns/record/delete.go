@@ -3,6 +3,7 @@ package record
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dns/zone"
 
@@ -97,8 +98,12 @@ ionosctl dns record delete --name PARTIAL_NAME [--zone ZONE]`,
 			if fn := core.GetFlagName(cmd.NS, constants.FlagName); viper.IsSet(fn) {
 				r = r.FilterName(viper.GetString(fn))
 			}
-			if fn := core.GetFlagName(cmd.NS, constants.FlagZoneId); viper.IsSet(fn) {
-				r = r.FilterZoneId(viper.GetString(fn))
+			if fn := core.GetFlagName(cmd.NS, constants.FlagZone); viper.IsSet(fn) {
+				zoneId, err := zone.ZoneIdByNameOrId(viper.GetString(fn))
+				if err != nil {
+					return r, err
+				}
+				r = r.FilterZoneId(zoneId)
 			}
 			return r, nil
 		}), cobra.ShellCompDirectiveNoFileComp
@@ -115,8 +120,12 @@ func deleteAll(c *core.CommandConfig) error {
 	if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) {
 		req = req.FilterName(viper.GetString(fn))
 	}
-	if fn := core.GetFlagName(c.NS, constants.FlagZoneId); viper.IsSet(fn) {
-		req = req.FilterZoneId(viper.GetString(fn))
+	if fn := core.GetFlagName(c.NS, constants.FlagZone); viper.IsSet(fn) {
+		zoneId, err := zone.ZoneIdByNameOrId(viper.GetString(fn))
+		if err != nil {
+			return err
+		}
+		req = req.FilterZoneId(zoneId)
 	}
 
 	xs, _, err := req.Execute()
@@ -138,4 +147,40 @@ func deleteAll(c *core.CommandConfig) error {
 	})
 
 	return err
+}
+
+func findRecordByListAndFilters(c *core.CommandConfig) (dns.RecordResponse, error) {
+	recs, err := Records(func(r dns.ApiRecordsGetRequest) (dns.ApiRecordsGetRequest, error) {
+		if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) {
+			r = r.FilterName(viper.GetString(fn))
+		}
+		if fn := core.GetFlagName(c.NS, constants.FlagZone); viper.IsSet(fn) {
+			zoneId, err := zone.ZoneIdByNameOrId(viper.GetString(fn))
+			if err != nil {
+				return r, err
+			}
+			r = r.FilterZoneId(zoneId)
+		}
+		return r, nil
+	})
+	if err != nil {
+		return dns.RecordResponse{}, fmt.Errorf("failed listing records: %w", err)
+	}
+
+	if len(*recs.Items) > 1 {
+		recsNames := functional.Fold(*recs.Items, func(acc []string, t dns.RecordResponse) []string {
+			return append(acc, *t.Properties.Name)
+		}, []string{})
+
+		return dns.RecordResponse{}, fmt.Errorf("found too many records matching the given filters: %+v. "+
+			"The given filters (--%s and/or --%s) must narrow down to a single result",
+			strings.Join(recsNames, ", "), constants.FlagName, constants.FlagZone)
+	}
+
+	if len(*recs.Items) == 0 {
+		return dns.RecordResponse{}, fmt.Errorf("found no records matching the given filters. "+
+			"The given filters (--%s and/or --%s) must narrow down to a single result", constants.FlagName, constants.FlagZone)
+	}
+
+	return (*recs.Items)[0], nil
 }

@@ -23,7 +23,7 @@ func ZonesPutCmd() *core.Command {
 		ShortDesc: "Partially modify a zone's properties. This command uses a combination of GET and PUT to simulate a PATCH operation",
 		Example:   "ionosctl dns zone update --zone ZONE --name newname.com",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			err := c.Command.Command.MarkFlagRequired(constants.FlagZoneId)
+			err := c.Command.Command.MarkFlagRequired(constants.FlagZone)
 			if err != nil {
 				return err
 			}
@@ -68,7 +68,7 @@ func ZonesPutCmd() *core.Command {
 		InitClient: true,
 	})
 
-	cmd.AddStringFlag(constants.FlagZoneId, constants.FlagIdShort, "", constants.DescZone, core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagZone, constants.FlagZoneShort, "", constants.DescZone, core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagZone, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return Zones(func(t dns.ZoneResponse) string {
 			return *t.Properties.ZoneName

@@ -31,7 +31,7 @@ Delete a record
 ## Options
 
 ```text
-  -a, --all                Delete all records. Required or --zone-id and --record-id
+  -a, --all                Delete all records. Required or --zone and --record-id
   -u, --api-url string     Override default host url (default "https://api.ionos.com")
       --cols strings       Set of columns to be printed on output 
                            Available columns: [Id Name Content Type Enabled FQDN State ZoneId ZoneName]
@@ -42,9 +42,9 @@ Delete a record
       --no-headers         When using text output, don't print headers
   -o, --output string      Desired output format [text|json] (default "text")
   -q, --quiet              Quiet output
-  -i, --record-id string   The ID (UUID) of the DNS record. Required together with --zone-id or -a
+  -i, --record-id string   The ID (UUID) of the DNS record. Required together with --zone or -a
   -v, --verbose            Print step-by-step process when running command
-      --zone-id string     The zone of the target record. If --all is set, filter --all deletion by this zone id
+  -z, --zone string        The zone of the target record. If --all is set, filter --all deletion by limiting to records within this zone
 ```
 
 ## Examples

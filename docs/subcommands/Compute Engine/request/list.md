@@ -30,8 +30,8 @@ Use this command to list all Requests on your account.
 
 You can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.
 Available Filters:
-* filter by property: [method headers body url]
-* filter by metadata: [createdDate createdBy etag requestStatus]
+* filter by property: [body headers method url]
+* filter by metadata: [createdBy createdDate etag requestStatus]
 
 ## Options
 

@@ -44,7 +44,7 @@ Partially modify a zone's properties. This command uses a combination of GET and
   -o, --output string        Desired output format [text|json] (default "text")
   -q, --quiet                Quiet output
   -v, --verbose              Print step-by-step process when running command
-  -i, --zone-id string       The ID (UUID) of the DNS zone (required)
+  -z, --zone string          The name or ID of the DNS zone (required)
 ```
 
 ## Examples
