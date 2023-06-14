@@ -16,6 +16,8 @@ import (
 	"path/filepath"
 	"strings"
 
+	"golang.org/x/exp/slices"
+
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 )
 
@@ -144,11 +146,15 @@ func createStructure(cmd *core.Command, dir string) error {
 	return nil
 }
 
+var (
+	CLISetupCommands = []string{"login", "logout", "config", "whoami", "version", "completion"}
+)
+
 // determineSubdir is a hack to support the old tree structure...
 func determineSubdir(name string, nonComputeNamespaces map[string]string) string {
 	segments := strings.Split(name, "-")
 
-	if segments[0] == "login" || segments[0] == "logout" || segments[0] == "config" || segments[0] == "version" || segments[0] == "completion" {
+	if slices.Contains(CLISetupCommands, segments[0]) {
 		return filepath.Join("CLI Setup", filepath.Join(segments...))
 	}
 

@@ -15,6 +15,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"io"
 	"strings"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
@@ -36,15 +37,18 @@ func Claims(token string) (map[string]interface{}, error) {
 		return nil, fmt.Errorf("incorrect format of JWT token")
 	}
 
-	payload, err := base64.RawURLEncoding.DecodeString(pad(parts[1]))
+	payload := strings.NewReader(parts[1])
+	payloadDecoded := base64.NewDecoder(base64.StdEncoding, payload)
+	decBytes, err := io.ReadAll(payloadDecoded)
 	if err != nil {
-		return nil, fmt.Errorf("could not decode JWT payload: %v", err)
+		return nil, fmt.Errorf("failed to decode payload: %v", err)
 	}
 
 	var claims map[string]interface{}
-	if err := json.Unmarshal(payload, &claims); err != nil {
+	if err := json.Unmarshal(decBytes, &claims); err != nil {
 		return nil, fmt.Errorf("could not parse JWT payload: %v", err)
 	}
+
 	return claims, nil
 }
 

@@ -83,7 +83,7 @@ func WhoamiCmd() *core.Command {
 		InitClient: false,
 	})
 
-	cmd.AddBoolFlag(FlagProvenance, FlagProvenanceShort, false, "If set, prints a JSON object which explains the source of each configuration variable")
+	cmd.AddBoolFlag(FlagProvenance, FlagProvenanceShort, false, "If set, prints a JSON object which explains the source of each configuration variable. All-caps rules represent env vars. Rules prefixed with `userdata` represent vars read from config. Otherwise, the rules represent flags.")
 
 	return cmd
 }
