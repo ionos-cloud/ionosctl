@@ -20,6 +20,8 @@ import (
 )
 
 type Client struct {
+	credsProvenance *AuthProvenance
+
 	CloudClient        *cloudv6.APIClient
 	AuthClient         *sdkgoauth.APIClient
 	CertManagerClient  *certmanager.APIClient
@@ -27,6 +29,28 @@ type Client struct {
 	MongoClient        *mongo.APIClient
 	DataplatformClient *dataplatform.APIClient
 	RegistryClient     *registry.APIClient
+}
+
+type AuthProvenance struct {
+	Token    string `json:"token"`
+	Username string `json:"username"`
+	Password string `json:"password"`
+	ApiUrl   string `json:"api_url"`
+}
+
+func (c *Client) GetProvenance() *AuthProvenance {
+	if c.credsProvenance != nil {
+		return c.credsProvenance
+	}
+
+	// Get / Must were skipped via NewClient, which happens for testing pkgs, or for testing non-active credentials, etc.
+	return &AuthProvenance{
+		Token:    "direct",
+		Username: "direct",
+		Password: "direct",
+		ApiUrl:   "direct",
+	}
+
 }
 
 func appendUserAgent(userAgent string) string {
@@ -77,6 +101,7 @@ var once sync.Once
 var instance *Client
 
 // Get a client and possibly fail. Uses viper to get the credentials and API URL.
+// The returned client is guaranteed to have working credentials
 // Order:
 // Explicit flags ( e.g. --token )
 // Environment Variables ( e.g. IONOS_TOKEN )
@@ -99,31 +124,46 @@ func Get() (*Client, error) {
 
 		viper.AutomaticEnv()
 
+		prov := AuthProvenance{}
 		// Credentials and API URL priority: command line arguments -> environment variables -> config file
 		token := viper.GetString(constants.ArgToken)
+		prov.Token = "flag"
 		if token == "" {
 			token = viper.GetString(constants.EnvToken)
+			prov.Token = "env"
 		}
 		if token == "" {
 			token = viper.GetString(constants.CfgToken)
+			prov.Token = "cfg"
 		}
 
 		hostUrl := viper.GetString(constants.ArgServerUrl)
+		prov.ApiUrl = "flag"
 		if hostUrl == "" {
 			hostUrl = viper.GetString(constants.EnvServerUrl)
+			prov.ApiUrl = "env"
 		}
 		if hostUrl == "" {
 			hostUrl = viper.GetString(constants.CfgServerUrl)
+			prov.ApiUrl = "cfg"
 		}
 
 		username := viper.GetString(constants.EnvUsername)
+		prov.Username = "env"
 		if username == "" {
+			// Since June 2023 these config variables are no longer stored on successful `ionosctl login`.
+			// However, we continue supporting them to avoid breaking changes. The user can manually add them to their config.
 			username = viper.GetString(constants.CfgUsername)
+			prov.Username = "cfg"
 		}
 
 		password := viper.GetString(constants.EnvPassword)
+		prov.Password = "env"
 		if password == "" {
+			// Since June 2023 these config variables are no longer stored on successful `ionosctl login`.
+			// However, we continue supporting them to avoid breaking changes. The user can manually add them to their config.
 			password = viper.GetString(constants.CfgPassword)
+			prov.Password = "cfg"
 		}
 
 		// Check if at least one authentication method is available
@@ -133,17 +173,24 @@ func Get() (*Client, error) {
 		}
 
 		instance, err = newClient(username, password, token, hostUrl)
+		instance.credsProvenance = &prov
 		if err != nil {
 			getClientErr = errors.Join(getClientErr, fmt.Errorf("failed creating client: %w", err))
 		}
+
+		err = TestCreds(username, password, token)
+		if err != nil {
+			getClientErr = errors.Join(getClientErr, fmt.Errorf("failed creating client: %w", err))
+		}
+
 	})
 
 	return instance, getClientErr
 }
 
 // Must gets the client obj or fatally dies
-// You can provide some optional custom error handlers as params
-// If error handlers not provided, dies with err message and exits with code 1
+// You can provide some optional custom error handlers as params. The err is sent to each error handler in order.
+// The default error handler is die.Die which exits with code 1 and violently terminates the program
 func Must(ehs ...func(error)) *Client {
 	client, err := Get()
 	if err != nil {

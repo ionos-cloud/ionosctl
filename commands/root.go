@@ -163,6 +163,7 @@ func addCommands() {
 	rootCmd.AddCommand(cfg.LoginCmd())
 	rootCmd.AddCommand(cfg.LogoutCmd())
 	rootCmd.AddCommand(cfg.CfgLocationCmd())
+	rootCmd.AddCommand(cfg.WhoamiCmd())
 	// V6 Resources Commands
 	rootCmd.AddCommand(cloudapiv6.LocationCmd())
 	rootCmd.AddCommand(cloudapiv6.DatacenterCmd())
