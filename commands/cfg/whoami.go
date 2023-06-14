@@ -56,6 +56,7 @@ func WhoamiCmd() *core.Command {
 				return err
 			}
 
+			// Get Client error. Intentionally handled after provenance rule prints
 			if err != nil {
 				return err
 			}
@@ -63,7 +64,7 @@ func WhoamiCmd() *core.Command {
 			// -- Below this point, we are 100% certain the client is using valid credentials. --
 
 			token := cl.CloudClient.GetConfig().Token
-			if jwt.Valid(token) && err != nil {
+			if jwt.Valid(token) {
 				// Valid token
 				usernameViaToken, err := jwt.Username(token)
 				if err != nil {
