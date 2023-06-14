@@ -77,11 +77,23 @@ func getFirstValidSource(sources ...string) (string, string) {
 	for _, source := range sources {
 		val := viper.GetString(source)
 		if val != "" {
-			return val, source
+			src := source
+			// TODO: If flag , append prefix --
+			// TODO: If userdata , append prefix config.
+			return val, src
 		}
 	}
 	return "", ""
 }
+
+var (
+	ConfigurationPriorityRules = map[string][]string{
+		"token":    {constants.ArgToken, constants.EnvToken, constants.CfgToken},
+		"url":      {constants.ArgServerUrl, constants.EnvServerUrl, constants.CfgServerUrl},
+		"username": {constants.EnvUsername, constants.CfgUsername},
+		"password": {constants.EnvPassword, constants.CfgPassword},
+	}
+)
 
 // Get a client and possibly fail. Uses viper to get the credentials and API URL.
 // The returned client is guaranteed to have working credentials
@@ -112,16 +124,14 @@ func Get() (*Client, error) {
 
 		// Note: I don't like that we're kind of duplicating data. Ideally we'd be storing this with a direct relationship to their respective keys in sdk Configuration object.
 		// However I'll wait for sdk-go-bundle shared configuration, so we can use a single configuration object in this whole package.
-		values["token"], prov["token"] = getFirstValidSource(constants.ArgToken, constants.EnvToken, constants.CfgToken)
-		values["url"], prov["url"] = getFirstValidSource(constants.ArgServerUrl, constants.EnvServerUrl, constants.CfgServerUrl)
-		values["username"], prov["username"] = getFirstValidSource(constants.EnvUsername, constants.CfgUsername)
-		values["password"], prov["password"] = getFirstValidSource(constants.EnvPassword, constants.CfgPassword)
+		for _, key := range []string{"token", "url", "username", "password"} {
+			values[key], prov[key] = getFirstValidSource(ConfigurationPriorityRules[key]...)
+		}
 
 		instance = newClient(values["username"], values["password"], values["token"], values["serverUrl"])
 		instance.ConfigSource = prov
 
 		// Check if at least one authentication method is available
-		// TODO: Is this check still needed?
 		if values["token"] == "" && (values["username"] == "" || values["password"] == "") {
 			getClientErr = errors.Join(getClientErr, fmt.Errorf("not logged in: use either environment variables %s or %s and %s, or use `ionosctl login`", constants.EnvToken, constants.EnvUsername, constants.EnvPassword))
 			return

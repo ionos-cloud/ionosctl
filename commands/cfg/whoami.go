@@ -14,6 +14,12 @@ import (
 
 func WhoamiCmd() *core.Command {
 
+	type KeyInfo struct {
+		// For json printing the provenance
+		Rules   []string `json:"rules"`
+		UsedSrc string   `json:"used"`
+	}
+
 	const (
 		FlagProvenance      = "provenance"
 		FlagProvenanceShort = "p"
@@ -29,9 +35,19 @@ func WhoamiCmd() *core.Command {
 		CmdRun: func(c *core.CommandConfig) error {
 			cl, err := client.Get()
 
+			// Does user want to see provenance of his configuration? i.e. where does each key get its value from.
 			if fn := core.GetFlagName(c.NS, FlagProvenance); viper.GetBool(fn) {
 				// Provenance of credentials should ignore client errors, since user might want to debug his configuration, and client.Get() fails if credentials are bad.
-				jBytes, err := json.Marshal(cl.ConfigSource)
+				provenance := make(map[string]KeyInfo)
+
+				for key, src := range cl.ConfigSource {
+					provenance[key] = KeyInfo{
+						Rules:   client.ConfigurationPriorityRules[key],
+						UsedSrc: src,
+					}
+				}
+
+				jBytes, err := json.MarshalIndent(provenance, "", "  ")
 				if err != nil {
 					return fmt.Errorf("failed getting provenance: %w", err)
 				}
@@ -48,6 +64,7 @@ func WhoamiCmd() *core.Command {
 
 			token := cl.CloudClient.GetConfig().Token
 			if jwt.Valid(token) && err != nil {
+				// Valid token
 				usernameViaToken, err := jwt.Username(token)
 				if err != nil {
 					return fmt.Errorf("failed getting username via token: %w", err)
@@ -56,7 +73,7 @@ func WhoamiCmd() *core.Command {
 				return err
 			}
 
-			// -- Below this point, we are 100% certain the client is using username & password. --
+			// -- Below this point, we are 100% certain the client is using valid username & password. --
 
 			_, err = fmt.Fprintln(c.Command.Command.OutOrStdout(), cl.CloudClient.GetConfig().Username)
 			return err

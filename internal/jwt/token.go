@@ -1,5 +1,15 @@
 package jwt
 
+/*
+ * This package is meant to find more details about JWT tokens.
+ * - Valid: 	Tests the token against IONOS Datacenters API
+ * - Claims:	Retrieve Claims payload off a JWT token
+ * - Username: 	Given a JWT, retrieve user email using the identity found in the JWT Claims; and using CloudAPI
+ * 				User Management API to query the found UUID. Note that the UUID can only be queried if
+ * 				its respective user is managed by (or is) the user with that JWT
+ *
+ */
+
 import (
 	"context"
 	"encoding/base64"
@@ -10,6 +20,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 )
 
+// Valid ensures that the given JWT is active using Datacenters API
 func Valid(token string) bool {
 	err := client.TestCreds("", "", token)
 	if err != nil {
