@@ -31,7 +31,7 @@ func WhoamiCmd() *core.Command {
 
 			if fn := core.GetFlagName(c.NS, FlagProvenance); viper.GetBool(fn) {
 				// Provenance of credentials should ignore client errors, since user might want to debug his configuration, and client.Get() fails if credentials are bad.
-				jBytes, err := json.Marshal(*cl.GetProvenance())
+				jBytes, err := json.Marshal(cl.ConfigSource)
 				if err != nil {
 					return fmt.Errorf("failed getting provenance: %w", err)
 				}
