@@ -35,11 +35,7 @@ func appendUserAgent(userAgent string) string {
 	return fmt.Sprintf("%v_%v", viper.GetString(constants.CLIHttpUserAgent), userAgent)
 }
 
-func newClient(name, pwd, token, hostUrl string) (*Client, error) {
-	if token == "" && (name == "" || pwd == "") {
-		return nil, errors.New("both token and at least one of username and password are empty")
-	}
-
+func newClient(name, pwd, token, hostUrl string) *Client {
 	clientConfig := cloudv6.NewConfiguration(name, pwd, token, hostUrl)
 	clientConfig.UserAgent = fmt.Sprintf("%v_%v", viper.GetString(constants.CLIHttpUserAgent), clientConfig.UserAgent)
 	// Set Depth Query Parameter globally
@@ -64,15 +60,14 @@ func newClient(name, pwd, token, hostUrl string) (*Client, error) {
 	registryConfig.UserAgent = appendUserAgent(registryConfig.UserAgent)
 
 	return &Client{
-			CloudClient:        cloudv6.NewAPIClient(clientConfig),
-			AuthClient:         sdkgoauth.NewAPIClient(authConfig),
-			CertManagerClient:  certmanager.NewAPIClient(certManagerConfig),
-			PostgresClient:     postgres.NewAPIClient(postgresConfig),
-			MongoClient:        mongo.NewAPIClient(mongoConfig),
-			DataplatformClient: dataplatform.NewAPIClient(dpConfig),
-			RegistryClient:     registry.NewAPIClient(registryConfig),
-		},
-		nil
+		CloudClient:        cloudv6.NewAPIClient(clientConfig),
+		AuthClient:         sdkgoauth.NewAPIClient(authConfig),
+		CertManagerClient:  certmanager.NewAPIClient(certManagerConfig),
+		PostgresClient:     postgres.NewAPIClient(postgresConfig),
+		MongoClient:        mongo.NewAPIClient(mongoConfig),
+		DataplatformClient: dataplatform.NewAPIClient(dpConfig),
+		RegistryClient:     registry.NewAPIClient(registryConfig),
+	}
 }
 
 var once sync.Once
@@ -122,20 +117,17 @@ func Get() (*Client, error) {
 		values["username"], prov["username"] = getFirstValidSource(constants.EnvUsername, constants.CfgUsername)
 		values["password"], prov["password"] = getFirstValidSource(constants.EnvPassword, constants.CfgPassword)
 
+		instance = newClient(values["username"], values["password"], values["token"], values["serverUrl"])
+		instance.ConfigSource = prov
+
 		// Check if at least one authentication method is available
+		// TODO: Is this check still needed?
 		if values["token"] == "" && (values["username"] == "" || values["password"] == "") {
 			getClientErr = errors.Join(getClientErr, fmt.Errorf("not logged in: use either environment variables %s or %s and %s, or use `ionosctl login`", constants.EnvToken, constants.EnvUsername, constants.EnvPassword))
 			return
 		}
 
-		instance, err = newClient(values["username"], values["password"], values["token"], values["serverUrl"])
-		instance.ConfigSource = prov
-		if err != nil {
-			getClientErr = errors.Join(getClientErr, fmt.Errorf("failed creating client: %w", err))
-		}
-
-		err = TestCreds(values["username"], values["password"], values["token"])
-		if err != nil {
+		if err := instance.TestCreds(); err != nil {
 			getClientErr = errors.Join(getClientErr, fmt.Errorf("failed creating client: %w", err))
 		}
 	})
@@ -161,21 +153,21 @@ func Must(ehs ...func(error)) *Client {
 }
 
 // NewClient bypasses the singleton check, not recommended for normal use.
-func NewClient(name, pwd, token, hostUrl string) (*Client, error) {
+func NewClient(name, pwd, token, hostUrl string) *Client {
 	return newClient(name, pwd, token, hostUrl)
 }
 
 func TestCreds(user, pass, token string) error {
-	cl, err := newClient(user, pass, token, config.GetServerUrl())
-	if err != nil {
-		return fmt.Errorf("failed initializing client with credentials: %w", err)
-	}
+	cl := newClient(user, pass, token, constants.DefaultApiURL)
+	return cl.TestCreds()
+}
 
-	_, _, err = cl.CloudClient.DataCentersApi.DatacentersGet(context.Background()).Execute()
+func (c *Client) TestCreds() error {
+	_, _, err := c.CloudClient.DataCentersApi.DatacentersGet(context.Background()).Execute()
 	if err != nil {
 		usedScheme := "used token"
-		if token == "" {
-			usedScheme = fmt.Sprintf("used username '%s' and password", user)
+		if c.CloudClient.GetConfig().Token == "" {
+			usedScheme = fmt.Sprintf("used username '%s' and password", c.CloudClient.GetConfig().Username)
 		}
 		return fmt.Errorf("credentials test failed. %s: %w", usedScheme, err)
 	}

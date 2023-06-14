@@ -189,7 +189,7 @@ func setup() error {
 		return fmt.Errorf("empty user/pass")
 	}
 
-	cl, _ = client.NewClient(GoodUsername, GoodPassword, "", "")
+	cl = client.NewClient(GoodUsername, GoodPassword, "", "")
 	tok, _, err := cl.AuthClient.TokensApi.TokensGenerate(context.Background()).Execute()
 
 	if err != nil {
