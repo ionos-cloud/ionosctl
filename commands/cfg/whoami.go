@@ -16,7 +16,7 @@ func WhoamiCmd() *core.Command {
 
 	type KeyInfo struct {
 		// For json printing the provenance
-		Rules   []string `json:"rules"`
+		Rules   []string `json:"order"`
 		UsedSrc string   `json:"used"`
 	}
 

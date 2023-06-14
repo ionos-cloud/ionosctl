@@ -41,12 +41,12 @@ func Claims(token string) (map[string]interface{}, error) {
 	payloadDecoded := base64.NewDecoder(base64.StdEncoding, payload)
 	decBytes, err := io.ReadAll(payloadDecoded)
 	if err != nil {
-		return nil, fmt.Errorf("failed to decode payload: %v", err)
+		return nil, fmt.Errorf("failed to decode payload: %w", err)
 	}
 
 	var claims map[string]interface{}
-	if err := json.Unmarshal(decBytes, &claims); err != nil {
-		return nil, fmt.Errorf("could not parse JWT payload: %v", err)
+	if err = json.Unmarshal(decBytes, &claims); err != nil {
+		return nil, fmt.Errorf("could not parse JWT payload: %w", err)
 	}
 
 	return claims, nil
@@ -90,15 +90,4 @@ func uuid(claims map[string]interface{}) (string, error) {
 	}
 
 	return id, nil
-}
-
-// pad adds padding to base64-encoded string, if needed
-func pad(base64string string) string {
-	switch len(base64string) % 4 {
-	case 2:
-		base64string += "=="
-	case 3:
-		base64string += "="
-	}
-	return base64string
 }
