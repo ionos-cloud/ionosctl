@@ -26,8 +26,6 @@ func WhoamiCmd() *core.Command {
 	)
 
 	cmd := core.NewCommand(context.Background(), nil, core.CommandBuilder{
-		Namespace: "whoami",
-		Resource:  "whoami",
 		Verb:      "whoami",
 		ShortDesc: "Tells you who you are logged in as. Use `--provenance` to debug where your credentials are being used from",
 		Example:   "ionosctl whoami",
