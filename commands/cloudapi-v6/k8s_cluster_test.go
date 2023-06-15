@@ -68,7 +68,7 @@ var (
 	}
 	clusterTest = resources.K8sCluster{
 		KubernetesCluster: ionoscloud.KubernetesCluster{
-			Properties: &ionoscloud.KubernetesClusterProperties{
+			Properties: &ionoscloud.KubernetesClusterProperties{ // TODO: :(
 				Name:       &testClusterVar,
 				K8sVersion: &testClusterVar,
 				S3Buckets: &[]ionoscloud.S3Bucket{
@@ -92,7 +92,7 @@ var (
 	clusterTestId = resources.K8sCluster{
 		KubernetesCluster: ionoscloud.KubernetesCluster{
 			Id: &testClusterVar,
-			Properties: &ionoscloud.KubernetesClusterProperties{
+			Properties: &ionoscloud.KubernetesClusterProperties{ // TODO: :(
 				Name:       &testClusterVar,
 				K8sVersion: &testClusterVar,
 				S3Buckets: &[]ionoscloud.S3Bucket{
@@ -107,7 +107,7 @@ var (
 	clusterTestGet = resources.K8sCluster{
 		KubernetesCluster: ionoscloud.KubernetesCluster{
 			Id: &testClusterVar,
-			Properties: &ionoscloud.KubernetesClusterProperties{
+			Properties: &ionoscloud.KubernetesClusterProperties{ // TODO: :(
 				Name:                     &testClusterVar,
 				K8sVersion:               &testClusterVar,
 				AvailableUpgradeVersions: &testClusterSliceVar,
@@ -123,7 +123,7 @@ var (
 				},
 				ApiSubnetAllowList: &[]string{testClusterVar},
 			},
-			Metadata: &ionoscloud.DatacenterElementMetadata{
+			Metadata: &ionoscloud.DatacenterElementMetadata{ // TODO: :(
 				State: &testStateVar,
 			},
 		},

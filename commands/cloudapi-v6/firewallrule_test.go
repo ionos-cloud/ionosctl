@@ -25,7 +25,7 @@ var (
 	testRule = resources.FirewallRule{
 		FirewallRule: ionoscloud.FirewallRule{
 			Id: &testFirewallRuleVar,
-			Properties: &ionoscloud.FirewallruleProperties{
+			Properties: &ionoscloud.FirewallruleProperties{ // TODO: :(
 				Name:           &testFirewallRuleVar,
 				Protocol:       &testFirewallRuleProtocol,
 				SourceMac:      &testFirewallRuleVar,
@@ -37,7 +37,7 @@ var (
 				PortRangeEnd:   &testFirewallRulePortRangeEnd,
 				Type:           &testFirewallRuleType,
 			},
-			Metadata: &ionoscloud.DatacenterElementMetadata{
+			Metadata: &ionoscloud.DatacenterElementMetadata{ // TODO: :(
 				State: &testFirewallRuleState,
 			},
 		},

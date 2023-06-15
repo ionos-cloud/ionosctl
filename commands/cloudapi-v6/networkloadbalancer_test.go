@@ -22,7 +22,7 @@ import (
 var (
 	networkloadbalancerTest = resources.NetworkLoadBalancer{
 		NetworkLoadBalancer: ionoscloud.NetworkLoadBalancer{
-			Properties: &ionoscloud.NetworkLoadBalancerProperties{
+			Properties: &ionoscloud.NetworkLoadBalancerProperties{ // TODO: :(
 				Name:         &testNetworkLoadBalancerVar,
 				Ips:          &[]string{testNetworkLoadBalancerVar},
 				TargetLan:    &testNetworkLoadBalancerIntVar,
@@ -34,7 +34,7 @@ var (
 	networkloadbalancerTestId = resources.NetworkLoadBalancer{
 		NetworkLoadBalancer: ionoscloud.NetworkLoadBalancer{
 			Id: &testNetworkLoadBalancerVar,
-			Properties: &ionoscloud.NetworkLoadBalancerProperties{
+			Properties: &ionoscloud.NetworkLoadBalancerProperties{ // TODO: :(
 				Name:         &testNetworkLoadBalancerVar,
 				Ips:          &[]string{testNetworkLoadBalancerVar},
 				TargetLan:    &testNetworkLoadBalancerIntVar,

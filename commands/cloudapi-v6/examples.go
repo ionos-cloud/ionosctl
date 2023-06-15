@@ -1,5 +1,10 @@
 package commands
 
+/*
+ * TODO: This is hard to maintain, they should be aware of the flags they're using instead of being hardcoded
+ * TODO: This is incompatible with cobra command structure: Having subfolders for commands means losing access to these unexported fields
+ */
+
 const (
 	/*
 		Location Examples
@@ -107,10 +112,6 @@ ionosctl lan delete --datacenter-id DATACENTER_ID --lan-id LAN_ID --wait-for-req
 	/*
 		Image Examples
 	*/
-	listImagesExample = `ionosctl image list
-
-ionosctl image list --location us/las --type HDD --licence-type LINUX`
-	getImageExample = `ionosctl image get --image-id IMAGE_ID`
 
 	/*
 		Snapshot Examples
@@ -260,14 +261,6 @@ ionosctl label add --resource-type datacenter --datacenter-id DATACENTER_ID --la
 	getK8sKubeconfigExample = `ionosctl k8s kubeconfig get --cluster-id CLUSTER_ID`
 	listK8sVersionsExample  = `ionosctl k8s version list`
 	getK8sVersionExample    = `ionosctl k8s version get`
-
-	/*
-		Server Cdrom Example
-	*/
-	listCdromServerExample   = `ionosctl server cdrom list --datacenter-id DATACENTER_ID --server-id SERVER_ID`
-	getCdromServerExample    = `ionosctl server cdrom get --datacenter-id DATACENTER_ID --server-id SERVER_ID --cdrom-id CDROM_ID`
-	attachCdromServerExample = `ionosctl server cdrom attach --datacenter-id DATACENTER_ID --server-id SERVER_ID --cdrom-id CDROM_ID --wait-for-request`
-	detachCdromServerExample = `ionosctl server cdrom detach --datacenter-id DATACENTER_ID --server-id SERVER_ID --cdrom-id CDROM_ID --wait-for-request --force`
 
 	/*
 		Template Example

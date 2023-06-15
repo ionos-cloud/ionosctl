@@ -20,7 +20,7 @@ import (
 var (
 	testLabelResource = ionoscloud.LabelResource{
 		Id: &testLabelVar,
-		Properties: &ionoscloud.LabelResourceProperties{
+		Properties: &ionoscloud.LabelResourceProperties{ // TODO: :(
 			Key:   &testLabelResourceVar,
 			Value: &testLabelResourceVar,
 		},

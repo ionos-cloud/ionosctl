@@ -8,7 +8,6 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
@@ -21,7 +20,7 @@ import (
 var (
 	k8sNodepoolLanTest = resources.K8sNodePool{
 		KubernetesNodePool: ionoscloud.KubernetesNodePool{
-			Properties: &ionoscloud.KubernetesNodePoolProperties{
+			Properties: &ionoscloud.KubernetesNodePoolProperties{ // TODO: :(
 				NodeCount:  &testK8sNodePoolLanIntVar,
 				K8sVersion: &testK8sNodePoolLanVar,
 				MaintenanceWindow: &ionoscloud.KubernetesMaintenanceWindow{
@@ -47,7 +46,7 @@ var (
 	}
 	test = ionoscloud.KubernetesNodePool{
 		Id: &testK8sNodePoolLanVar,
-		Properties: &ionoscloud.KubernetesNodePoolProperties{
+		Properties: &ionoscloud.KubernetesNodePoolProperties{ // TODO: :(
 			Name: &testK8sNodePoolLanVar,
 			Lans: &[]ionoscloud.KubernetesNodePoolLan{testLan, testLan},
 		},
@@ -130,7 +129,7 @@ var (
 	k8sNodepoolLanTestUpdatedRemove = resources.K8sNodePool{
 		KubernetesNodePool: ionoscloud.KubernetesNodePool{
 			Id: &testK8sNodePoolLanVar,
-			Properties: &ionoscloud.KubernetesNodePoolProperties{
+			Properties: &ionoscloud.KubernetesNodePoolProperties{ // TODO: :(
 				NodeCount:  &testK8sNodePoolLanIntVar,
 				K8sVersion: &testK8sNodePoolLanVar,
 				MaintenanceWindow: &ionoscloud.KubernetesMaintenanceWindow{
@@ -142,13 +141,13 @@ var (
 					MaxNodeCount: &testK8sNodePoolLanIntVar,
 				},
 			},
-			Metadata: &ionoscloud.DatacenterElementMetadata{State: &testStateVar},
+			Metadata: &ionoscloud.DatacenterElementMetadata{State: &testStateVar}, // TODO: :(
 		},
 	}
 	k8sNodepoolLanTestUpdated = resources.K8sNodePool{
 		KubernetesNodePool: ionoscloud.KubernetesNodePool{
 			Id: &testK8sNodePoolLanVar,
-			Properties: &ionoscloud.KubernetesNodePoolProperties{
+			Properties: &ionoscloud.KubernetesNodePoolProperties{ // TODO: :(
 				NodeCount:  &testK8sNodePoolLanIntVar,
 				K8sVersion: &testK8sNodePoolLanVar,
 				MaintenanceWindow: &ionoscloud.KubernetesMaintenanceWindow{
@@ -176,7 +175,7 @@ var (
 					},
 				},
 			},
-			Metadata: &ionoscloud.DatacenterElementMetadata{State: &testStateVar},
+			Metadata: &ionoscloud.DatacenterElementMetadata{State: &testStateVar}, // TODO: :(
 		},
 	}
 	testK8sNodePoolLanIntVar    = int32(1)
@@ -257,7 +256,7 @@ func TestRunK8sNodePoolLanListLansErr(t *testing.T) {
 		rm.CloudApiV6Mocks.K8s.EXPECT().GetNodePool(testK8sNodePoolLanVar, testK8sNodePoolLanVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&resources.K8sNodePool{
 			KubernetesNodePool: ionoscloud.KubernetesNodePool{
 				Id:         &testK8sNodePoolLanVar,
-				Properties: &ionoscloud.KubernetesNodePoolProperties{},
+				Properties: &ionoscloud.KubernetesNodePoolProperties{}, // TODO: :(
 			},
 		}, nil, nil)
 		err := RunK8sNodePoolLanList(cfg)

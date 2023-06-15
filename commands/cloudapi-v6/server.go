@@ -10,6 +10,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/image"
+
 	"go.uber.org/multierr"
 
 	"github.com/fatih/structs"
@@ -493,7 +495,7 @@ Required values to run command:
 	serverCmd.AddCommand(ServerTokenCmd())
 	serverCmd.AddCommand(ServerConsoleCmd())
 	serverCmd.AddCommand(ServerVolumeCmd())
-	serverCmd.AddCommand(ServerCdromCmd())
+	serverCmd.AddCommand(image.ServerCdromCmd()) // :D
 
 	return serverCmd
 }

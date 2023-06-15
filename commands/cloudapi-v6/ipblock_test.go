@@ -22,7 +22,7 @@ import (
 var (
 	testIpBlock = ionoscloud.IpBlock{
 		Id: &testIpBlockVar,
-		Properties: &ionoscloud.IpBlockProperties{
+		Properties: &ionoscloud.IpBlockProperties{ // TODO: :(
 			Location: &testIpBlockLocation,
 			Size:     &testIpBlockSize,
 			Name:     &testIpBlockVar,
@@ -41,7 +41,7 @@ var (
 				},
 			},
 		},
-		Metadata: &ionoscloud.DatacenterElementMetadata{
+		Metadata: &ionoscloud.DatacenterElementMetadata{ // TODO: :(
 			State: &testIpBlockStateVar,
 		},
 	}

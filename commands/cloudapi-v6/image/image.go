@@ -1,4 +1,8 @@
-package commands
+package image
+
+/*
+ * TODO: This file is too big. Split it; create `img` package.
+ */
 
 import (
 	"bufio"
@@ -58,13 +62,15 @@ func ImageCmd() *core.Command {
 		List Command
 	*/
 	list := core.NewCommand(ctx, imageCmd, core.CommandBuilder{
-		Namespace:  "image",
-		Resource:   "image",
-		Verb:       "list",
-		Aliases:    []string{"l", "ls"},
-		ShortDesc:  "List Images",
-		LongDesc:   "Use this command to get a full list of available public Images.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.ImagesFiltersUsage(),
-		Example:    listImagesExample,
+		Namespace: "image",
+		Resource:  "image",
+		Verb:      "list",
+		Aliases:   []string{"l", "ls"},
+		ShortDesc: "List Images",
+		LongDesc:  "Use this command to get a full list of available public Images.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.ImagesFiltersUsage(),
+		Example: `ionosctl image list
+
+ionosctl image list --location us/las --type HDD --licence-type LINUX`,
 		PreCmdRun:  PreRunImageList,
 		CmdRun:     RunImageList,
 		InitClient: true,
@@ -105,7 +111,7 @@ func ImageCmd() *core.Command {
 		Aliases:    []string{"g"},
 		ShortDesc:  "Get a specified Image",
 		LongDesc:   "Use this command to get information about a specified Image.\n\nRequired values to run command:\n\n* Image Id",
-		Example:    getImageExample,
+		Example:    "ionosctl image get --image-id IMAGE_ID",
 		PreCmdRun:  PreRunImageId,
 		CmdRun:     RunImageGet,
 		InitClient: true,
@@ -198,9 +204,8 @@ func ImageCmd() *core.Command {
 		Resource:   "image",
 		Verb:       "upload",
 		Aliases:    []string{"ftp-upload", "ftp", "upl"},
-		ShortDesc:  "Upload an image to FTP server",
-		LongDesc:   "Use this command to upload an HDD or ISO image.\n\nRequired values to run command:\n\n* Location\n",
-		Example:    "ionosctl img u -i kolibri.iso -l fkb,fra,vit",
+		ShortDesc:  "Upload an HDD or ISO image to FTP server. Note: token auth not supported",
+		Example:    "ionosctl img upl -i kolibri.iso -l fkb,fra,vit",
 		PreCmdRun:  PreRunImageUpload,
 		CmdRun:     RunImageUpload,
 		InitClient: true,

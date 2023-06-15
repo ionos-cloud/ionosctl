@@ -8,7 +8,6 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
@@ -21,7 +20,7 @@ import (
 var (
 	natgatewayLanTest = resources.NatGateway{
 		NatGateway: ionoscloud.NatGateway{
-			Properties: &ionoscloud.NatGatewayProperties{
+			Properties: &ionoscloud.NatGatewayProperties{ // TODO: :(
 				Name:      &testNatGatewayLanVar,
 				PublicIps: &[]string{testNatGatewayLanVar},
 				Lans:      &[]ionoscloud.NatGatewayLanProperties{natgatewayLanProperties.NatGatewayLanProperties},
@@ -37,12 +36,12 @@ var (
 	natgatewayLanTestUpdated = resources.NatGateway{
 		NatGateway: ionoscloud.NatGateway{
 			Id: &testNatGatewayLanVar,
-			Properties: &ionoscloud.NatGatewayProperties{
+			Properties: &ionoscloud.NatGatewayProperties{ // TODO: :(
 				Name:      &testNatGatewayLanVar,
 				PublicIps: &[]string{testNatGatewayLanVar},
 				Lans:      &[]ionoscloud.NatGatewayLanProperties{natgatewayLanProperties.NatGatewayLanProperties},
 			},
-			Metadata: &ionoscloud.DatacenterElementMetadata{State: &testStateVar},
+			Metadata: &ionoscloud.DatacenterElementMetadata{State: &testStateVar}, // TODO: :(
 		},
 	}
 	natgatewayLanTestProper = resources.NatGatewayProperties{

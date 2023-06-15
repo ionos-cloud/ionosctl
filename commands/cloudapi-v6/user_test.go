@@ -44,7 +44,7 @@ var (
 	userTestGet = resources.User{
 		User: ionoscloud.User{
 			Id: &testUserVar,
-			Properties: &ionoscloud.UserProperties{
+			Properties: &ionoscloud.UserProperties{ // TODO: :(
 				Firstname:         &testUserVar,
 				Lastname:          &testUserVar,
 				Email:             &testUserVar,

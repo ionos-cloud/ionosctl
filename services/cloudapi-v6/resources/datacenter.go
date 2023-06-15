@@ -111,7 +111,7 @@ func (ds *dataCentersService) Get(datacenterId string, params QueryParams) (*Dat
 
 func (ds *dataCentersService) Create(name, description, region string, params QueryParams) (*Datacenter, *Response, error) {
 	dc := ionoscloud.Datacenter{
-		Properties: &ionoscloud.DatacenterProperties{
+		Properties: &ionoscloud.DatacenterProperties{ // TODO: :(
 			Name:        &name,
 			Description: &description,
 			Location:    &region,

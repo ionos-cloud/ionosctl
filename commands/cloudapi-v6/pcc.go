@@ -233,7 +233,7 @@ func RunPccCreate(c *core.CommandConfig) error {
 	description := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDescription))
 	newUser := resources.PrivateCrossConnect{
 		PrivateCrossConnect: ionoscloud.PrivateCrossConnect{
-			Properties: &ionoscloud.PrivateCrossConnectProperties{
+			Properties: &ionoscloud.PrivateCrossConnectProperties{ // TODO: :(
 				Name:        &name,
 				Description: &description,
 			},

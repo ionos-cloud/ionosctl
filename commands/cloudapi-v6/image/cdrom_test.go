@@ -1,4 +1,4 @@
-package commands
+package image
 
 import (
 	"bufio"
@@ -37,7 +37,7 @@ var (
 	testImageCdRoms = resources.Image{
 		Image: ionoscloud.Image{
 			Id: &testCdromVar,
-			Properties: &ionoscloud.ImageProperties{
+			Properties: &ionoscloud.ImageProperties{ // TODO: :(
 				Name:         &testImageVar,
 				Location:     &testImageVar,
 				Description:  &testImageVar,
@@ -48,7 +48,7 @@ var (
 				ImageAliases: &[]string{testImageVar},
 				CloudInit:    &testImageVar,
 			},
-			Metadata: &ionoscloud.DatacenterElementMetadata{
+			Metadata: &ionoscloud.DatacenterElementMetadata{ // TODO: :(
 				CreatedDate:     &testIonosTime,
 				CreatedBy:       &testImageVar,
 				CreatedByUserId: &testImageVar,

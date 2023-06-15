@@ -24,7 +24,7 @@ import (
 var (
 	testInputAlbForwardingRule = resources.ApplicationLoadBalancerForwardingRule{
 		ApplicationLoadBalancerForwardingRule: ionoscloud.ApplicationLoadBalancerForwardingRule{
-			Properties: &ionoscloud.ApplicationLoadBalancerForwardingRuleProperties{
+			Properties: &ionoscloud.ApplicationLoadBalancerForwardingRuleProperties{ // TODO: :(
 				Name:               &testAlbForwardingRuleVar,
 				Protocol:           &testAlbForwardingRuleProtocol,
 				ListenerIp:         &testAlbForwardingRuleVar,
@@ -46,7 +46,7 @@ var (
 		ApplicationLoadBalancerForwardingRule: ionoscloud.ApplicationLoadBalancerForwardingRule{
 			Id:         &testAlbForwardingRuleVar,
 			Properties: testInputAlbForwardingRule.Properties,
-			Metadata: &ionoscloud.DatacenterElementMetadata{
+			Metadata: &ionoscloud.DatacenterElementMetadata{ // TODO: :(
 				State: &testStateVar,
 			},
 		},

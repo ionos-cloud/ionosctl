@@ -22,7 +22,7 @@ import (
 var (
 	backupUnitTest = resources.BackupUnit{
 		BackupUnit: ionoscloud.BackupUnit{
-			Properties: &ionoscloud.BackupUnitProperties{
+			Properties: &ionoscloud.BackupUnitProperties{ // TODO: :(
 				Email:    &testBackupUnitVar,
 				Name:     &testBackupUnitVar,
 				Password: &testBackupUnitVar,
@@ -32,7 +32,7 @@ var (
 	backupUnitTestId = resources.BackupUnit{
 		BackupUnit: ionoscloud.BackupUnit{
 			Id: &testBackUnitId,
-			Properties: &ionoscloud.BackupUnitProperties{
+			Properties: &ionoscloud.BackupUnitProperties{ // TODO: :(
 				Email:    &testBackupUnitVar,
 				Name:     &testBackupUnitVar,
 				Password: &testBackupUnitVar,
@@ -74,7 +74,7 @@ var (
 	}
 	backupUnitNew = resources.BackupUnit{
 		BackupUnit: ionoscloud.BackupUnit{
-			Properties: &ionoscloud.BackupUnitProperties{
+			Properties: &ionoscloud.BackupUnitProperties{ // TODO: :(
 				Name:     &testBackupUnitVar,
 				Email:    &testBackupUnitNewVar,
 				Password: &testBackupUnitNewVar,

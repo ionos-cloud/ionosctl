@@ -62,7 +62,7 @@ var (
 	}
 	nodepoolTest = resources.K8sNodePool{
 		KubernetesNodePool: ionoscloud.KubernetesNodePool{
-			Properties: &ionoscloud.KubernetesNodePoolProperties{
+			Properties: &ionoscloud.KubernetesNodePoolProperties{ // TODO: :(
 				Name:             &testNodepoolVar,
 				NodeCount:        &testNodepoolIntVar,
 				DatacenterId:     &testNodepoolVar,
@@ -86,7 +86,7 @@ var (
 	}
 	nodepoolTestPrivate = resources.K8sNodePool{
 		KubernetesNodePool: ionoscloud.KubernetesNodePool{
-			Properties: &ionoscloud.KubernetesNodePoolProperties{
+			Properties: &ionoscloud.KubernetesNodePoolProperties{ // TODO: :(
 				Name:             &testNodepoolVar,
 				NodeCount:        &testNodepoolIntVar,
 				DatacenterId:     &testNodepoolVar,
@@ -112,7 +112,7 @@ var (
 	nodepoolTestId = resources.K8sNodePool{
 		KubernetesNodePool: ionoscloud.KubernetesNodePool{
 			Id: &testNodepoolVar,
-			Properties: &ionoscloud.KubernetesNodePoolProperties{
+			Properties: &ionoscloud.KubernetesNodePoolProperties{ // TODO: :(
 				Name:             &testNodepoolVar,
 				NodeCount:        &testNodepoolIntVar,
 				DatacenterId:     &testNodepoolVar,
@@ -130,7 +130,7 @@ var (
 					},
 				},
 			},
-			Metadata: &ionoscloud.DatacenterElementMetadata{
+			Metadata: &ionoscloud.DatacenterElementMetadata{ // TODO: :(
 				State: &testStateVar,
 			},
 		},
@@ -138,7 +138,7 @@ var (
 	nodepoolTestGet = resources.K8sNodePool{
 		KubernetesNodePool: ionoscloud.KubernetesNodePool{
 			Id: &testNodepoolVar,
-			Properties: &ionoscloud.KubernetesNodePoolProperties{
+			Properties: &ionoscloud.KubernetesNodePoolProperties{ // TODO: :(
 				Name:                     &testNodepoolVar,
 				NodeCount:                &testNodepoolIntVar,
 				DatacenterId:             &testNodepoolVar,
@@ -166,7 +166,7 @@ var (
 					},
 				},
 			},
-			Metadata: &ionoscloud.DatacenterElementMetadata{
+			Metadata: &ionoscloud.DatacenterElementMetadata{ // TODO: :(
 				State: &testStateVar,
 			},
 		},
@@ -174,7 +174,7 @@ var (
 	nodepoolTestGetNew = resources.K8sNodePool{
 		KubernetesNodePool: ionoscloud.KubernetesNodePool{
 			Id: &testNodepoolVar,
-			Properties: &ionoscloud.KubernetesNodePoolProperties{
+			Properties: &ionoscloud.KubernetesNodePoolProperties{ // TODO: :(
 				Name:                     &testNodepoolVar,
 				NodeCount:                &testNodepoolIntVar,
 				DatacenterId:             &testNodepoolVar,
@@ -206,7 +206,7 @@ var (
 					},
 				},
 			},
-			Metadata: &ionoscloud.DatacenterElementMetadata{
+			Metadata: &ionoscloud.DatacenterElementMetadata{ // TODO: :(
 				State: &testStateVar,
 			},
 		},
@@ -220,7 +220,7 @@ var (
 	nodepoolTestNew = resources.K8sNodePool{
 		KubernetesNodePool: ionoscloud.KubernetesNodePool{
 			Id: &testNodepoolVar,
-			Properties: &ionoscloud.KubernetesNodePoolProperties{
+			Properties: &ionoscloud.KubernetesNodePoolProperties{ // TODO: :(
 				Name:       &testNodepoolVar,
 				K8sVersion: &testNodepoolNewVar,
 				NodeCount:  &testNodepoolIntNewVar,
@@ -280,7 +280,7 @@ var (
 	nodepoolTestOld = resources.K8sNodePool{
 		KubernetesNodePool: ionoscloud.KubernetesNodePool{
 			Id: &testNodepoolVar,
-			Properties: &ionoscloud.KubernetesNodePoolProperties{
+			Properties: &ionoscloud.KubernetesNodePoolProperties{ // TODO: :(
 				Name:       &testNodepoolVar,
 				NodeCount:  &testNodepoolIntVar,
 				K8sVersion: &testNodepoolVar,

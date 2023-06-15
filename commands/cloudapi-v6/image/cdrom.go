@@ -1,4 +1,4 @@
-package commands
+package image
 
 import (
 	"context"
@@ -20,6 +20,11 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
+
+/*
+ * `cdrom` commands are in image package because they share a lot of code with `image` commands and I'm too busy/(lazy)
+ * to currently do it properly. I only wanted to refactor 'image' pkg, but this broke too. So now, it's here.
+ */
 
 // Server Cdrom Commands
 
@@ -59,7 +64,7 @@ Required values to run command:
 * Data Center Id
 * Server Id
 * Cdrom Id`,
-		Example:    attachCdromServerExample,
+		Example:    "ionosctl server cdrom attach --datacenter-id DATACENTER_ID --server-id SERVER_ID --cdrom-id CDROM_ID --wait-for-request",
 		PreCmdRun:  PreRunDcServerCdromIds,
 		CmdRun:     RunServerCdromAttach,
 		InitClient: true,
@@ -92,7 +97,7 @@ Required values to run command:
 		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List attached CD-ROMs from a Server",
 		LongDesc:   "Use this command to retrieve a list of CD-ROMs attached to the Server.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.ImagesFiltersUsage() + "\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id",
-		Example:    listCdromServerExample,
+		Example:    "ionosctl server cdrom list --datacenter-id DATACENTER_ID --server-id SERVER_ID",
 		PreCmdRun:  PreRunServerCdromList,
 		CmdRun:     RunServerCdromsList,
 		InitClient: true,
@@ -127,7 +132,7 @@ Required values to run command:
 		Aliases:    []string{"g"},
 		ShortDesc:  "Get a specific attached CD-ROM from a Server",
 		LongDesc:   "Use this command to retrieve information about an attached CD-ROM on Server.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id\n* Cdrom Id",
-		Example:    getCdromServerExample,
+		Example:    "ionosctl server cdrom get --datacenter-id DATACENTER_ID --server-id SERVER_ID --cdrom-id CDROM_ID",
 		InitClient: true,
 		PreCmdRun:  PreRunDcServerCdromIds,
 		CmdRun:     RunServerCdromGet,
@@ -165,7 +170,7 @@ Required values to run command:
 * Data Center Id
 * Server Id
 * Cdrom Id`,
-		Example:    detachCdromServerExample,
+		Example:    "ionosctl server cdrom detach --datacenter-id DATACENTER_ID --server-id SERVER_ID --cdrom-id CDROM_ID --wait-for-request --force",
 		PreCmdRun:  PreRunDcServerCdromDetach,
 		CmdRun:     RunServerCdromDetach,
 		InitClient: true,

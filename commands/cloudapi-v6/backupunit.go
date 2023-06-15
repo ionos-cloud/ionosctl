@@ -289,7 +289,7 @@ func RunBackupUnitCreate(c *core.CommandConfig) error {
 	pwd := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgPassword))
 	newBackupUnit := resources.BackupUnit{
 		BackupUnit: ionoscloud.BackupUnit{
-			Properties: &ionoscloud.BackupUnitProperties{
+			Properties: &ionoscloud.BackupUnitProperties{ // TODO: :(
 				Name:     &name,
 				Email:    &email,
 				Password: &pwd,

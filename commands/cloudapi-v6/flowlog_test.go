@@ -24,13 +24,13 @@ var (
 	testFlowLog = resources.FlowLog{
 		FlowLog: ionoscloud.FlowLog{
 			Id: &testFlowLogVar,
-			Properties: &ionoscloud.FlowLogProperties{
+			Properties: &ionoscloud.FlowLogProperties{ // TODO: :(
 				Name:      &testFlowLogVar,
 				Action:    &testFlowLogUpperVar,
 				Direction: &testFlowLogUpperVar,
 				Bucket:    &testFlowLogVar,
 			},
-			Metadata: &ionoscloud.DatacenterElementMetadata{
+			Metadata: &ionoscloud.DatacenterElementMetadata{ // TODO: :(
 				State: &testFlowLogState,
 			},
 		},

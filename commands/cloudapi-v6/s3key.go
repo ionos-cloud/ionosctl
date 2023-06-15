@@ -267,7 +267,7 @@ func RunUserS3KeyUpdate(c *core.CommandConfig) error {
 	c.Printer.Verbose("Property Active set: %v", active)
 	newKey := resources.S3Key{
 		S3Key: ionoscloud.S3Key{
-			Properties: &ionoscloud.S3KeyProperties{
+			Properties: &ionoscloud.S3KeyProperties{ // TODO: :(
 				Active: &active,
 			},
 		},

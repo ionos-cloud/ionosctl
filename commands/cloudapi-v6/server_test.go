@@ -26,7 +26,7 @@ var (
 	// Resources
 	serverCreate = resources.Server{
 		Server: ionoscloud.Server{
-			Properties: &ionoscloud.ServerProperties{
+			Properties: &ionoscloud.ServerProperties{ // TODO: :(
 				Name:             &testServerVar,
 				Cores:            &cores,
 				Ram:              &ram,
@@ -38,7 +38,7 @@ var (
 	}
 	serverCubeCreate = resources.Server{
 		Server: ionoscloud.Server{
-			Properties: &ionoscloud.ServerProperties{
+			Properties: &ionoscloud.ServerProperties{ // TODO: :(
 				Name:             &testServerVar,
 				Type:             &testServerCubeType,
 				TemplateUuid:     &testServerVar,
@@ -49,7 +49,7 @@ var (
 				Volumes: &ionoscloud.AttachedVolumes{
 					Items: &[]ionoscloud.Volume{
 						{
-							Properties: &ionoscloud.VolumeProperties{
+							Properties: &ionoscloud.VolumeProperties{ // TODO: :(
 								Name:        &testServerVar,
 								Bus:         &testServerVar,
 								Type:        &testVolumeType,
@@ -63,7 +63,7 @@ var (
 	}
 	serverCubeCreateImg = resources.Server{
 		Server: ionoscloud.Server{
-			Properties: &ionoscloud.ServerProperties{
+			Properties: &ionoscloud.ServerProperties{ // TODO: :(
 				Name:             &testServerVar,
 				Type:             &testServerCubeType,
 				TemplateUuid:     &testServerVar,
@@ -74,7 +74,7 @@ var (
 				Volumes: &ionoscloud.AttachedVolumes{
 					Items: &[]ionoscloud.Volume{
 						{
-							Properties: &ionoscloud.VolumeProperties{
+							Properties: &ionoscloud.VolumeProperties{ // TODO: :(
 								Name:          &testServerVar,
 								Bus:           &testServerVar,
 								Type:          &testVolumeType,
@@ -89,10 +89,10 @@ var (
 	}
 	s = ionoscloud.Server{
 		Id: &testServerVar,
-		Metadata: &ionoscloud.DatacenterElementMetadata{
+		Metadata: &ionoscloud.DatacenterElementMetadata{ // TODO: :(
 			State: &state,
 		},
-		Properties: &ionoscloud.ServerProperties{
+		Properties: &ionoscloud.ServerProperties{ // TODO: :(
 			Name:             &testServerVar,
 			Cores:            &cores,
 			Ram:              &ram,
@@ -133,7 +133,7 @@ var (
 	}
 	serverNew = resources.Server{
 		Server: ionoscloud.Server{
-			Metadata: &ionoscloud.DatacenterElementMetadata{
+			Metadata: &ionoscloud.DatacenterElementMetadata{ // TODO: :(
 				State: &state,
 			},
 			Id:         &testServerVar,

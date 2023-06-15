@@ -20,7 +20,7 @@ import (
 var (
 	testIpConsumer = ionoscloud.IpBlock{
 		Id: &testIpConsumerVar,
-		Properties: &ionoscloud.IpBlockProperties{
+		Properties: &ionoscloud.IpBlockProperties{ // TODO: :(
 			IpConsumers: &[]ionoscloud.IpConsumer{
 				{
 					Ip:              &testIpConsumerVar,
@@ -41,7 +41,7 @@ var (
 	}
 	testIpConsumerGet = ionoscloud.IpBlock{
 		Id: &testIpConsumerVar,
-		Properties: &ionoscloud.IpBlockProperties{
+		Properties: &ionoscloud.IpBlockProperties{ // TODO: :(
 			Name: &testIpConsumerVar,
 		},
 	}

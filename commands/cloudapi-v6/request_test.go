@@ -41,14 +41,14 @@ var (
 			CreatedBy:   &testRequestVar,
 		},
 		Href: &testRequestPathVar,
-		Properties: &ionoscloud.RequestProperties{
+		Properties: &ionoscloud.RequestProperties{ // TODO: :(
 			Url:    &testRequestVar,
 			Body:   &testRequestVar,
 			Method: &testRequestVar,
 		},
 	}
 	testRequestUpdated = ionoscloud.Request{
-		Properties: &ionoscloud.RequestProperties{
+		Properties: &ionoscloud.RequestProperties{ // TODO: :(
 			Method: &testRequestMethodPut,
 		},
 		Metadata: &ionoscloud.RequestMetadata{
@@ -56,7 +56,7 @@ var (
 		},
 	}
 	testRequestUpdatedPatch = ionoscloud.Request{
-		Properties: &ionoscloud.RequestProperties{
+		Properties: &ionoscloud.RequestProperties{ // TODO: :(
 			Method: &testRequestMethodPatch,
 		},
 		Metadata: &ionoscloud.RequestMetadata{
@@ -64,7 +64,7 @@ var (
 		},
 	}
 	testRequestDeleted = ionoscloud.Request{
-		Properties: &ionoscloud.RequestProperties{
+		Properties: &ionoscloud.RequestProperties{ // TODO: :(
 			Method: &testRequestMethodDelete,
 		},
 		Metadata: &ionoscloud.RequestMetadata{
@@ -72,7 +72,7 @@ var (
 		},
 	}
 	testRequestCreated = ionoscloud.Request{
-		Properties: &ionoscloud.RequestProperties{
+		Properties: &ionoscloud.RequestProperties{ // TODO: :(
 			Method: &testRequestMethodPost,
 		},
 		Metadata: &ionoscloud.RequestMetadata{

@@ -23,7 +23,7 @@ var (
 	dcVersion = int32(1)
 	dc        = ionoscloud.Datacenter{
 		Id: &testDatacenterVar,
-		Properties: &ionoscloud.DatacenterProperties{
+		Properties: &ionoscloud.DatacenterProperties{ // TODO: :(
 			Name:        &testDatacenterVar,
 			Description: &testDatacenterVar,
 			Location:    &testDatacenterVar,
@@ -35,7 +35,7 @@ var (
 				}},
 			SecAuthProtection: &testDatacenterBoolVar,
 		},
-		Metadata: &ionoscloud.DatacenterElementMetadata{
+		Metadata: &ionoscloud.DatacenterElementMetadata{ // TODO: :(
 			State: &testStateVar,
 		},
 	}
@@ -48,7 +48,7 @@ var (
 	dcNew = resources.Datacenter{
 		Datacenter: ionoscloud.Datacenter{
 			Id: &testDatacenterVar,
-			Properties: &ionoscloud.DatacenterProperties{
+			Properties: &ionoscloud.DatacenterProperties{ // TODO: :(
 				Name:        dcProperties.DatacenterProperties.Name,
 				Description: dcProperties.DatacenterProperties.Description,
 				Location:    &testDatacenterVar,

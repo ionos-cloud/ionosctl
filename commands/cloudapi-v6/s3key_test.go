@@ -21,7 +21,7 @@ import (
 var (
 	s3keyTest = resources.S3Key{
 		S3Key: ionoscloud.S3Key{
-			Properties: &ionoscloud.S3KeyProperties{
+			Properties: &ionoscloud.S3KeyProperties{ // TODO: :(
 				Active: &testS3keyBoolVar,
 			},
 		},
@@ -29,7 +29,7 @@ var (
 	s3keyTestId = resources.S3Key{
 		S3Key: ionoscloud.S3Key{
 			Id: &testS3keyVar,
-			Properties: &ionoscloud.S3KeyProperties{
+			Properties: &ionoscloud.S3KeyProperties{ // TODO: :(
 				Active: &testS3keyBoolVar,
 			},
 		},
@@ -46,7 +46,7 @@ var (
 	s3keyTestGet = resources.S3Key{
 		S3Key: ionoscloud.S3Key{
 			Id: &testS3keyVar,
-			Properties: &ionoscloud.S3KeyProperties{
+			Properties: &ionoscloud.S3KeyProperties{ // TODO: :(
 				SecretKey: &testS3keyVar,
 				Active:    &testS3keyBoolVar,
 			},

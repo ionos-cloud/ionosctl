@@ -7,7 +7,6 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
@@ -20,7 +19,7 @@ import (
 var (
 	resourceTest = resources.Resource{
 		Resource: ionoscloud.Resource{
-			Properties: &ionoscloud.ResourceProperties{
+			Properties: &ionoscloud.ResourceProperties{ // TODO: :(
 				Name:              &testResourceVar,
 				SecAuthProtection: &testResourceBoolVar,
 			},
@@ -30,11 +29,11 @@ var (
 	resourceTestGet = resources.Resource{
 		Resource: ionoscloud.Resource{
 			Id: &testResourceVar,
-			Properties: &ionoscloud.ResourceProperties{
+			Properties: &ionoscloud.ResourceProperties{ // TODO: :(
 				Name:              &testResourceVar,
 				SecAuthProtection: &testResourceBoolVar,
 			},
-			Metadata: &ionoscloud.DatacenterElementMetadata{State: &testStateVar},
+			Metadata: &ionoscloud.DatacenterElementMetadata{State: &testStateVar}, // TODO: :(
 		},
 	}
 	rs = resources.Resources{

@@ -22,7 +22,7 @@ import (
 var (
 	natgatewayTest = resources.NatGateway{
 		NatGateway: ionoscloud.NatGateway{
-			Properties: &ionoscloud.NatGatewayProperties{
+			Properties: &ionoscloud.NatGatewayProperties{ // TODO: :(
 				Name:      &testNatGatewayVar,
 				PublicIps: &[]string{testNatGatewayVar},
 			},
@@ -31,7 +31,7 @@ var (
 	natgatewayTestId = resources.NatGateway{
 		NatGateway: ionoscloud.NatGateway{
 			Id: &testNatGatewayVar,
-			Properties: &ionoscloud.NatGatewayProperties{
+			Properties: &ionoscloud.NatGatewayProperties{ // TODO: :(
 				Name:      &testNatGatewayVar,
 				PublicIps: &[]string{testNatGatewayVar},
 			},

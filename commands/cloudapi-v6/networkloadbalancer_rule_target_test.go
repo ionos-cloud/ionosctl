@@ -8,7 +8,6 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
@@ -38,7 +37,7 @@ var (
 	testNlbRuleTargetGet = resources.NetworkLoadBalancerForwardingRule{
 		NetworkLoadBalancerForwardingRule: ionoscloud.NetworkLoadBalancerForwardingRule{
 			Id:         &testNlbRuleTargetVar,
-			Properties: &ionoscloud.NetworkLoadBalancerForwardingRuleProperties{},
+			Properties: &ionoscloud.NetworkLoadBalancerForwardingRuleProperties{}, // TODO: :(
 		},
 	}
 	testNlbRuleTargetGetUpdated = resources.NetworkLoadBalancerForwardingRule{
@@ -53,7 +52,7 @@ var (
 	}
 	testNlbRuleTarget = ionoscloud.NetworkLoadBalancerForwardingRule{
 		Id: &testNlbRuleTargetVar,
-		Properties: &ionoscloud.NetworkLoadBalancerForwardingRuleProperties{
+		Properties: &ionoscloud.NetworkLoadBalancerForwardingRuleProperties{ // TODO: :(
 			Name:    &testNlbRuleTargetVar,
 			Targets: &[]ionoscloud.NetworkLoadBalancerForwardingRuleTarget{testTarget, testTarget},
 		},

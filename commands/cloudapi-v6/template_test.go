@@ -22,7 +22,7 @@ var (
 	tpl = resources.Template{
 		Template: ionoscloud.Template{
 			Id: &testTemplateVar,
-			Properties: &ionoscloud.TemplateProperties{
+			Properties: &ionoscloud.TemplateProperties{ // TODO: :(
 				Name:        &testTemplateVar,
 				Cores:       &testTemplateSize,
 				Ram:         &testTemplateSize,

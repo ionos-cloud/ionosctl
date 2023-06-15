@@ -22,7 +22,7 @@ import (
 var (
 	testInputForwardingRule = resources.NetworkLoadBalancerForwardingRule{
 		NetworkLoadBalancerForwardingRule: ionoscloud.NetworkLoadBalancerForwardingRule{
-			Properties: &ionoscloud.NetworkLoadBalancerForwardingRuleProperties{
+			Properties: &ionoscloud.NetworkLoadBalancerForwardingRuleProperties{ // TODO: :(
 				Name:         &testNlbForwardingRuleVar,
 				Algorithm:    &testNlbForwardingRuleAlgorithm,
 				Protocol:     &testNlbForwardingRuleProtocol,
@@ -53,7 +53,7 @@ var (
 		NetworkLoadBalancerForwardingRule: ionoscloud.NetworkLoadBalancerForwardingRule{
 			Id:         &testNlbForwardingRuleVar,
 			Properties: testInputForwardingRule.Properties,
-			Metadata: &ionoscloud.DatacenterElementMetadata{
+			Metadata: &ionoscloud.DatacenterElementMetadata{ // TODO: :(
 				State: &testStateVar,
 			},
 		},

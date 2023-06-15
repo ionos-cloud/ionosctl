@@ -23,14 +23,14 @@ var (
 	snapshotTest = resources.Snapshot{
 		Snapshot: ionoscloud.Snapshot{
 			Id: &testSnapshotVar,
-			Properties: &ionoscloud.SnapshotProperties{
+			Properties: &ionoscloud.SnapshotProperties{ // TODO: :(
 				Name:        &testSnapshotVar,
 				Location:    &testSnapshotVar,
 				Description: &testSnapshotVar,
 				Size:        &testSnapshotSize,
 				LicenceType: &testSnapshotVar,
 			},
-			Metadata: &ionoscloud.DatacenterElementMetadata{
+			Metadata: &ionoscloud.DatacenterElementMetadata{ // TODO: :(
 				State: &snapshotState,
 			},
 		},

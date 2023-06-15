@@ -23,7 +23,7 @@ var (
 	targetGroupTestGet = resources.TargetGroup{
 		TargetGroup: ionoscloud.TargetGroup{
 			Id: &testTargetGroupVar,
-			Properties: &ionoscloud.TargetGroupProperties{
+			Properties: &ionoscloud.TargetGroupProperties{ // TODO: :(
 				Name:      &testTargetGroupVar,
 				Algorithm: &testTargetGroupVar,
 				Protocol:  &testTargetGroupVar,
@@ -41,14 +41,14 @@ var (
 					Negate:    &testTargetGroupBoolVar,
 				},
 			},
-			Metadata: &ionoscloud.DatacenterElementMetadata{
+			Metadata: &ionoscloud.DatacenterElementMetadata{ // TODO: :(
 				State: &targetGroupState,
 			},
 		},
 	}
 	targetGroupTest = resources.TargetGroup{
 		TargetGroup: ionoscloud.TargetGroup{
-			Properties: &ionoscloud.TargetGroupProperties{
+			Properties: &ionoscloud.TargetGroupProperties{ // TODO: :(
 				Name:      &testTargetGroupVar,
 				Algorithm: &testTargetGroupVar,
 				Protocol:  &testTargetGroupVar,

@@ -86,7 +86,7 @@ func (ls *loadbalancersService) Get(datacenterId, loadbalancerId string, params 
 
 func (ls *loadbalancersService) Create(datacenterId, name string, dhcp bool, params QueryParams) (*Loadbalancer, *Response, error) {
 	s := ionoscloud.Loadbalancer{
-		Properties: &ionoscloud.LoadbalancerProperties{
+		Properties: &ionoscloud.LoadbalancerProperties{ // TODO: :(
 			Name: &name,
 			Dhcp: &dhcp,
 		},

@@ -302,7 +302,7 @@ func RunShareCreate(c *core.CommandConfig) error {
 	sharePrivilege := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgSharePrivilege))
 	input := resources.GroupShare{
 		GroupShare: ionoscloud.GroupShare{
-			Properties: &ionoscloud.GroupShareProperties{
+			Properties: &ionoscloud.GroupShareProperties{ // TODO: :(
 				EditPrivilege:  &editPrivilege,
 				SharePrivilege: &sharePrivilege,
 			},

@@ -25,7 +25,7 @@ var (
 	zoneVolume    = "ZONE_1"
 	v             = ionoscloud.Volume{
 		Id: &testVolumeVar,
-		Properties: &ionoscloud.VolumeProperties{
+		Properties: &ionoscloud.VolumeProperties{ // TODO: :(
 			Name:                &testVolumeVar,
 			Size:                &sizeVolume,
 			LicenceType:         &testVolumeVar,
@@ -46,13 +46,13 @@ var (
 			DeviceNumber:        &testDeviceNumberVolumeVar,
 			BootServer:          &testVolumeVar,
 		},
-		Metadata: &ionoscloud.DatacenterElementMetadata{
+		Metadata: &ionoscloud.DatacenterElementMetadata{ // TODO: :(
 			State: &testVolumeVar,
 		},
 	}
 	serverVolume = ionoscloud.Volume{
 		Id: &testServerVar,
-		Properties: &ionoscloud.VolumeProperties{
+		Properties: &ionoscloud.VolumeProperties{ // TODO: :(
 			Name:                &testVolumeVar,
 			Size:                &sizeVolume,
 			LicenceType:         &testVolumeVar,
@@ -71,13 +71,13 @@ var (
 			DiscVirtioHotUnplug: &testVolumeBoolVar,
 			BootServer:          &testVolumeVar,
 		},
-		Metadata: &ionoscloud.DatacenterElementMetadata{
+		Metadata: &ionoscloud.DatacenterElementMetadata{ // TODO: :(
 			State: &testVolumeVar,
 		},
 	}
 	testVolume = resources.Volume{
 		Volume: ionoscloud.Volume{
-			Properties: &ionoscloud.VolumeProperties{
+			Properties: &ionoscloud.VolumeProperties{ // TODO: :(
 				Name:                &testVolumeVar,
 				Size:                &sizeVolume,
 				LicenceType:         &testVolumeVar,
@@ -97,7 +97,7 @@ var (
 	}
 	testVolumeImg = resources.Volume{
 		Volume: ionoscloud.Volume{
-			Properties: &ionoscloud.VolumeProperties{
+			Properties: &ionoscloud.VolumeProperties{ // TODO: :(
 				Name:                &testVolumeVar,
 				Size:                &sizeVolume,
 				Image:               &testVolumeVar,
@@ -154,7 +154,7 @@ var (
 	volumeNew = resources.Volume{
 		Volume: ionoscloud.Volume{
 			Id: &testVolumeVar,
-			Properties: &ionoscloud.VolumeProperties{
+			Properties: &ionoscloud.VolumeProperties{ // TODO: :(
 				Name:                volumeProperties.VolumeProperties.Name,
 				Size:                volumeProperties.VolumeProperties.Size,
 				LicenceType:         &testVolumeVar,

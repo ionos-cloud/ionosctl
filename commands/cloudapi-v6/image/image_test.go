@@ -1,12 +1,12 @@
-package commands
+package image
 
 import (
 	"bufio"
 	"bytes"
 	"errors"
-	"fmt"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/golang/mock/gomock"
 
@@ -19,11 +19,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+/*
+ * TODO: Tests shouldn't be in pkg `image` but in pkg `image_test`.
+ * TODO: I dont want, and shouldn't have access to this mock garbage in regular code
+ */
+
 var (
 	testImage = resources.Image{
 		Image: ionoscloud.Image{
 			Id: &testImageVar,
-			Properties: &ionoscloud.ImageProperties{
+			Properties: &ionoscloud.ImageProperties{ // TODO: :(
 				Name:         &testImageVar,
 				Location:     &testImageVar,
 				Description:  &testImageVar,
@@ -34,8 +39,8 @@ var (
 				ImageAliases: &[]string{testImageVar},
 				CloudInit:    &testImageVar,
 			},
-			Metadata: &ionoscloud.DatacenterElementMetadata{
-				CreatedDate:     &testIonosTime,
+			Metadata: &ionoscloud.DatacenterElementMetadata{ // TODO: :(
+				CreatedDate:     &ionoscloud.IonosTime{Time: time.Date(2021, 1, 1, 0, 0, 0, 0, time.Now().Location())},
 				CreatedBy:       &testImageVar,
 				CreatedByUserId: &testImageVar,
 			},
@@ -107,7 +112,7 @@ func TestPreRunImageListFilter(t *testing.T) {
 		viper.Reset()
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(constants.ArgQuiet, false)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgFilters), []string{fmt.Sprintf("createdBy=%s", testQueryParamVar)})
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgFilters), []string{"createdBy=testVariable"})
 		err := PreRunImageList(cfg)
 		assert.NoError(t, err)
 	})
@@ -120,7 +125,7 @@ func TestPreRunImageListErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(constants.ArgQuiet, false)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgFilters), []string{fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar)})
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgFilters), []string{"test=testVariable"})
 		err := PreRunImageList(cfg)
 		assert.Error(t, err)
 	})
@@ -135,7 +140,7 @@ func TestRunImageList(t *testing.T) {
 		viper.Set(constants.ArgQuiet, false)
 		viper.Set(constants.ArgVerbose, false)
 		viper.Set(core.GetFlagName(cfg.NS, constants.ArgCols), allImageCols)
-		rm.CloudApiV6Mocks.Image.EXPECT().List(gomock.AssignableToTypeOf(testListQueryParam)).Return(testImages, &testResponse, nil)
+		rm.CloudApiV6Mocks.Image.EXPECT().List(gomock.AssignableToTypeOf(resources.ListQueryParams{}))
 		err := RunImageList(cfg)
 		assert.NoError(t, err)
 	})
@@ -150,10 +155,10 @@ func TestRunImageListQueryParams(t *testing.T) {
 		viper.Set(constants.ArgQuiet, false)
 		viper.Set(constants.ArgVerbose, false)
 		viper.Set(core.GetFlagName(cfg.NS, constants.ArgCols), allImageCols)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgFilters), []string{fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar)})
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgOrderBy), testQueryParamVar)
-		viper.Set(core.GetFlagName(cfg.NS, constants.FlagMaxResults), testMaxResultsVar)
-		rm.CloudApiV6Mocks.Image.EXPECT().List(gomock.AssignableToTypeOf(testListQueryParam)).Return(resources.Images{}, &testResponse, nil)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgFilters), []string{"test=testVariable"})
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgOrderBy), "testVariable")
+		viper.Set(core.GetFlagName(cfg.NS, constants.FlagMaxResults), 4)
+		rm.CloudApiV6Mocks.Image.EXPECT().List(gomock.AssignableToTypeOf(resources.ListQueryParams{})).Return(resources.Images{}, gomock.AssignableToTypeOf(resources.Response{}), nil)
 		err := RunImageList(cfg)
 		assert.NoError(t, err)
 	})
@@ -166,7 +171,7 @@ func TestRunImageListErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(constants.ArgQuiet, false)
-		rm.CloudApiV6Mocks.Image.EXPECT().List(gomock.AssignableToTypeOf(testListQueryParam)).Return(testImages, nil, testImageErr)
+		rm.CloudApiV6Mocks.Image.EXPECT().List(gomock.AssignableToTypeOf(resources.ListQueryParams{})).Return(testImages, nil, testImageErr)
 		err := RunImageList(cfg)
 		assert.Error(t, err)
 	})
@@ -184,7 +189,7 @@ func TestRunImageListSort(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgType), testImageVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLatest), 1)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgImageAlias), testImageVar)
-		rm.CloudApiV6Mocks.Image.EXPECT().List(gomock.AssignableToTypeOf(testListQueryParam)).Return(testImages, nil, nil)
+		rm.CloudApiV6Mocks.Image.EXPECT().List(gomock.AssignableToTypeOf(resources.ListQueryParams{})).Return(testImages, nil, nil)
 		err := RunImageList(cfg)
 		assert.NoError(t, err)
 	})
@@ -202,7 +207,7 @@ func TestRunImageListSortOptionErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgType), testImageVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLatest), 1)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgImageAlias), "no alias")
-		rm.CloudApiV6Mocks.Image.EXPECT().List(gomock.AssignableToTypeOf(testListQueryParam)).Return(testImages, nil, nil)
+		rm.CloudApiV6Mocks.Image.EXPECT().List(gomock.AssignableToTypeOf(resources.ListQueryParams{})).Return(testImages, nil, nil)
 		err := RunImageList(cfg)
 		assert.Error(t, err)
 	})
@@ -220,7 +225,7 @@ func TestRunImageListSortErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgType), testImageVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLatest), 1)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgImageAlias), testImageVar)
-		rm.CloudApiV6Mocks.Image.EXPECT().List(gomock.AssignableToTypeOf(testListQueryParam)).Return(testImages, nil, testImageErr)
+		rm.CloudApiV6Mocks.Image.EXPECT().List(gomock.AssignableToTypeOf(resources.ListQueryParams{})).Return(testImages, nil, testImageErr)
 		err := RunImageList(cfg)
 		assert.Error(t, err)
 	})
@@ -235,7 +240,7 @@ func TestRunImageGet(t *testing.T) {
 		viper.Set(constants.ArgQuiet, false)
 		viper.Set(constants.ArgVerbose, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgImageId), testImageVar)
-		rm.CloudApiV6Mocks.Image.EXPECT().Get(testImageVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&testImage, &testResponse, nil)
+		rm.CloudApiV6Mocks.Image.EXPECT().Get(testImageVar, gomock.AssignableToTypeOf(resources.QueryParams{})).Return(&testImage, gomock.AssignableToTypeOf(resources.Response{}), nil)
 		err := RunImageGet(cfg)
 		assert.NoError(t, err)
 	})
@@ -249,7 +254,7 @@ func TestRunImageGetErr(t *testing.T) {
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(constants.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgImageId), testImageVar)
-		rm.CloudApiV6Mocks.Image.EXPECT().Get(testImageVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&testImage, nil, testImageErr)
+		rm.CloudApiV6Mocks.Image.EXPECT().Get(testImageVar, gomock.AssignableToTypeOf(resources.QueryParams{})).Return(&testImage, nil, testImageErr)
 		err := RunImageGet(cfg)
 		assert.Error(t, err)
 	})

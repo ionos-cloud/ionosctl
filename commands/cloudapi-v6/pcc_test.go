@@ -22,7 +22,7 @@ import (
 var (
 	pccTest = resources.PrivateCrossConnect{
 		PrivateCrossConnect: ionoscloud.PrivateCrossConnect{
-			Properties: &ionoscloud.PrivateCrossConnectProperties{
+			Properties: &ionoscloud.PrivateCrossConnectProperties{ // TODO: :(
 				Name:        &testPccVar,
 				Description: &testPccVar,
 			},
@@ -31,7 +31,7 @@ var (
 	pccTestId = resources.PrivateCrossConnect{
 		PrivateCrossConnect: ionoscloud.PrivateCrossConnect{
 			Id: &testPccVar,
-			Properties: &ionoscloud.PrivateCrossConnectProperties{
+			Properties: &ionoscloud.PrivateCrossConnectProperties{ // TODO: :(
 				Name:        &testPccVar,
 				Description: &testPccVar,
 			},

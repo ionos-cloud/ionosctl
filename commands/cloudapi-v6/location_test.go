@@ -23,7 +23,7 @@ var (
 	loc = resources.Location{
 		Location: ionoscloud.Location{
 			Id: &testLocationVar,
-			Properties: &ionoscloud.LocationProperties{
+			Properties: &ionoscloud.LocationProperties{ // TODO: :(
 				Name:         &testLocationVar,
 				Features:     &[]string{testLocationVar},
 				ImageAliases: &[]string{testLocationVar},

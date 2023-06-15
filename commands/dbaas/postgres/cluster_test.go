@@ -345,7 +345,7 @@ var (
 	testVdcGet = cloudapiv6resources.Datacenter{
 		Datacenter: ionoscloud.Datacenter{
 			Id: &testClusterVar,
-			Properties: &ionoscloud.DatacenterProperties{
+			Properties: &ionoscloud.DatacenterProperties{ // TODO: :(
 				Location: &testClusterVar,
 			},
 		},

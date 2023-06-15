@@ -9,7 +9,6 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
@@ -27,7 +26,7 @@ var (
 	ipsNic      = []string{"x.x.x.x"}
 	n           = ionoscloud.Nic{
 		Id: &testNicVar,
-		Properties: &ionoscloud.NicProperties{
+		Properties: &ionoscloud.NicProperties{ // TODO: :(
 			Name:           &testNicVar,
 			Lan:            &lanNicId,
 			Dhcp:           &dhcpNic,
@@ -38,7 +37,7 @@ var (
 			PciSlot:        &lanNicId,
 			Mac:            &testNicVar,
 		},
-		Metadata: &ionoscloud.DatacenterElementMetadata{State: &testStateVar},
+		Metadata: &ionoscloud.DatacenterElementMetadata{State: &testStateVar}, // TODO: :(
 	}
 	nicsList = resources.Nics{
 		Nics: ionoscloud.Nics{
@@ -51,7 +50,7 @@ var (
 	}
 	nicLoadBalancer = ionoscloud.Nic{
 		Id: &testLoadbalancerVar,
-		Properties: &ionoscloud.NicProperties{
+		Properties: &ionoscloud.NicProperties{ // TODO: :(
 			Name:           &testNicVar,
 			Lan:            &lanNicId,
 			Dhcp:           &dhcpNic,
@@ -59,7 +58,7 @@ var (
 			FirewallActive: &dhcpNic,
 			Mac:            &testNicVar,
 		},
-		Metadata: &ionoscloud.DatacenterElementMetadata{State: &testStateVar},
+		Metadata: &ionoscloud.DatacenterElementMetadata{State: &testStateVar}, // TODO: :(
 	}
 	balancedNicsList = resources.BalancedNics{
 		BalancedNics: ionoscloud.BalancedNics{
@@ -77,7 +76,7 @@ var (
 	nicNew = resources.Nic{
 		Nic: ionoscloud.Nic{
 			Id: &testNicVar,
-			Properties: &ionoscloud.NicProperties{
+			Properties: &ionoscloud.NicProperties{ // TODO: :(
 				Name:           nicProperties.NicProperties.Name,
 				Lan:            nicProperties.NicProperties.Lan,
 				Dhcp:           nicProperties.NicProperties.Dhcp,
@@ -88,7 +87,7 @@ var (
 	}
 	testNicCreate = resources.Nic{
 		Nic: ionoscloud.Nic{
-			Properties: &ionoscloud.NicProperties{
+			Properties: &ionoscloud.NicProperties{ // TODO: :(
 				Name:           &testNicVar,
 				Lan:            &lanNicId,
 				Dhcp:           &dhcpNic,
