@@ -34,11 +34,12 @@
         * [get](subcommands%2FAuthentication%2Ftoken%2Fget.md)
         * [list](subcommands%2FAuthentication%2Ftoken%2Flist.md)
 * CLI Setup
-    * [config](subcommands%2FCLI%20Setup%2Fconfig.md)
-    * [login](subcommands%2FCLI%20Setup%2Flogin.md)
-    * [logout](subcommands%2FCLI%20Setup%2Flogout.md)
+    * config
+        * [location](subcommands%2FCLI%20Setup%2Fconfig%2Flocation.md)
+        * [login](subcommands%2FCLI%20Setup%2Fconfig%2Flogin.md)
+        * [logout](subcommands%2FCLI%20Setup%2Fconfig%2Flogout.md)
+        * [whoami](subcommands%2FCLI%20Setup%2Fconfig%2Fwhoami.md)
     * [version](subcommands%2FCLI%20Setup%2Fversion.md)
-    * [whoami](subcommands%2FCLI%20Setup%2Fwhoami.md)
 * Certificate Manager
     * [add](subcommands%2FCertificate-Manager%2Fadd.md)
     * api

@@ -1,18 +1,32 @@
 ---
-description: Convenience command for deletion of config file credentials. To also remove your account's active tokens, use `ionosctl token delete --all`
+description: Print your config file's path
 ---
 
-# Logout
+# ConfigLocation
 
 ## Usage
 
 ```text
-ionosctl logout [flags]
+ionosctl config location [flags]
+```
+
+## Aliases
+
+For `config` command:
+
+```text
+[cfg]
+```
+
+For `location` command:
+
+```text
+[location loc]
 ```
 
 ## Description
 
-Convenience command for deletion of config file credentials. To also remove your account's active tokens, use `ionosctl token delete --all`
+Print your config file's path
 
 ## Options
 
@@ -29,6 +43,6 @@ Convenience command for deletion of config file credentials. To also remove your
 ## Examples
 
 ```text
-ionosctl logout
+ionosctl cfg loc
 ```
 

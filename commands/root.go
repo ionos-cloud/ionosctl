@@ -160,7 +160,10 @@ func initConfig() {
 // AddCommands adds sub commands to the base command.
 func addCommands() {
 	rootCmd.AddCommand(VersionCmd())
-	rootCmd.AddCommand(cfg.LoginCmd()) // Hidden. Users will only find out help about the one in `config` namespace
+	rootLoginCmd := cfg.LoginCmd()
+	rootLoginCmd.Command.Deprecated = "use `ionosctl cfg login`."
+	rootLoginCmd.Command.Hidden = true // Hidden. Users will only find out help about the one in `config` namespace
+	rootCmd.AddCommand(rootLoginCmd)
 	rootCmd.AddCommand(cfg.ConfigCmd())
 
 	// V6 Resources Commands

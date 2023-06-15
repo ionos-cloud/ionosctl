@@ -8,7 +8,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 )
 
-func CfgLocationCmd() *core.Command {
+func LocationCmd() *core.Command {
 	cmd := core.NewCommand(context.Background(), nil, core.CommandBuilder{
 		Namespace: "config",
 		Resource:  "location",

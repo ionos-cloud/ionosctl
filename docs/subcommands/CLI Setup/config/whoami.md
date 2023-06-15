@@ -2,12 +2,20 @@
 description: Tells you who you are logged in as. Use `--provenance` to debug where your credentials are being used from
 ---
 
-# Whoami
+# ConfigWhoami
 
 ## Usage
 
 ```text
-ionosctl whoami [flags]
+ionosctl config whoami [flags]
+```
+
+## Aliases
+
+For `config` command:
+
+```text
+[cfg]
 ```
 
 ## Description

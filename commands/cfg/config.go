@@ -14,7 +14,7 @@ func ConfigCmd() *core.Command {
 			TraverseChildren: true,
 		},
 	}
-	cmd.AddCommand(CfgLocationCmd())
+	cmd.AddCommand(LocationCmd())
 	cmd.AddCommand(LoginCmd())
 	cmd.AddCommand(LogoutCmd())
 	cmd.AddCommand(WhoamiCmd())
