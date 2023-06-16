@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
+
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/jwt"
 	"github.com/spf13/viper"
@@ -27,15 +29,12 @@ func WhoamiCmd() *core.Command {
 	cmd := core.NewCommand(context.Background(), nil, core.CommandBuilder{
 		Verb:      "whoami",
 		ShortDesc: "Tells you who you are logged in as. Use `--provenance` to debug where your credentials are being used from",
-		LongDesc: `'ionosctl whoami' will tell you the email of the user you are logged in as.
-ionosctl prioritizes different sources of authentication, in the following order:
-  1. Token provided as a global flag
-  2. Token, Username and Password provided as environment variables
-  3. Token, Username and Password read from the config file
-Additionally, the token has priority over username & password in the layer it is originating from. (meaning that a token in your config file will be overridden by IONOS_USERNAME & IONOS_PASSWORD)
+		LongDesc: fmt.Sprintf(`This command will tell you the email of the user you are logged in as.
 You can use '--provenance' flag to see which of these sources are being used.
 If using a token, it will use the JWT's claims payload to find out your user UUID, then use the Users API on that UUID to find out your e-mail address.
-If no token is present, the command will fall back to using the username and password for authentication.`,
+If no token is present, the command will fall back to using the username and password for authentication.
+
+%s`, constants.DescAuthenticationOrder),
 		Example: `ionosctl cfg whoami
 ionosctl cfg whoami --provenance`,
 		PreCmdRun: core.NoPreRun,

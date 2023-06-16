@@ -13,7 +13,7 @@ import (
 )
 
 func LogoutCmd() *core.Command {
-	loginCmd := core.NewCommand(context.Background(), nil, core.CommandBuilder{
+	cmd := core.NewCommand(context.Background(), nil, core.CommandBuilder{
 		Namespace: "logout",
 		Resource:  "logout",
 		Verb:      "logout",
@@ -26,14 +26,23 @@ func LogoutCmd() *core.Command {
 				return fmt.Errorf("logout intrerrupted: %w", err)
 			}
 
-			ls, _, err := client.Must().AuthClient.TokensApi.TokensGet(context.Background()).Execute()
+			printNumberOfTokens := true
+			ls, _, err := client.Must(func(_ error) {
+				// If some error in creating the client, don't fail the command, but disable client-related functionality
+				printNumberOfTokens = false
+			}).AuthClient.TokensApi.TokensGet(context.Background()).Execute()
 			if err != nil {
 				return err
 			}
 
-			// Go through data struct and blank out all credentials, including old ones (userdata.username, userdata.password)
-			msg := fmt.Sprintf("De-authentication successful. Note: Your account has %d active tokens. Affected fields:\n", len(*ls.Tokens))
+			msg := "De-authentication successful."
+			if printNumberOfTokens {
+				msg += fmt.Sprintf(" Note: Your account has %d active tokens.", len(*ls.Tokens))
+			}
+			msg += " Affected fields:\n"
+
 			for k, _ := range data {
+				// Go through data struct and blank out all credentials, including old ones (userdata.username, userdata.password)
 				if slices.Contains(config.FieldsWithSensitiveDataInConfigFile, k) {
 					data[k] = ""
 					msg += fmt.Sprintf(" • %s\n", strings.TrimPrefix(k, "userdata."))
@@ -50,5 +59,5 @@ func LogoutCmd() *core.Command {
 		InitClient: false,
 	})
 
-	return loginCmd
+	return cmd
 }
