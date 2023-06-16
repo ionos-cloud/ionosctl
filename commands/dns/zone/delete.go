@@ -58,7 +58,7 @@ func ZonesDeleteCmd() *core.Command {
 
 	cmd.AddStringFlag(constants.FlagZone, constants.FlagZoneShort, "", fmt.Sprintf("%s. Required or -%s", constants.DescZone, constants.ArgAllShort))
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagZone, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return Zones(func(t dns.ZoneResponse) string {
+		return Zones(func(t dns.ZoneRead) string {
 			return *t.Properties.ZoneName
 		}), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -76,7 +76,7 @@ func deleteAll(c *core.CommandConfig) error {
 		return err
 	}
 
-	err = functional.ApplyAndAggregateErrors(*xs.GetItems(), func(z dns.ZoneResponse) error {
+	err = functional.ApplyAndAggregateErrors(*xs.GetItems(), func(z dns.ZoneRead) error {
 		yes := confirm.Ask(fmt.Sprintf("Are you sure you want to delete zone %s (desc: %s)", *z.Properties.ZoneName, *z.Properties.Description),
 			viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce)))
 		if yes {

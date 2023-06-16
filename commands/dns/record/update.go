@@ -54,7 +54,7 @@ func ZonesRecordsPutCmd() *core.Command {
 
 	cmd.AddStringFlag(constants.FlagZone, constants.FlagZoneShort, "", constants.DescZone, core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagZone, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return zone.Zones(func(t dns.ZoneResponse) string {
+		return zone.Zones(func(t dns.ZoneRead) string {
 			return *t.Properties.ZoneName
 		}), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -74,12 +74,12 @@ func ZonesRecordsPutCmd() *core.Command {
 	return addRecordCreateFlags(cmd)
 }
 
-func partiallyUpdateRecordAndPrint(c *core.CommandConfig, r dns.RecordResponse) error {
+func partiallyUpdateRecordAndPrint(c *core.CommandConfig, r dns.RecordRead) error {
 	input := r.Properties
 	modifyRecordPropertiesFromFlags(c, input)
 
 	rNew, _, err := client.Must().DnsClient.RecordsApi.ZonesRecordsPut(context.Background(), *r.Metadata.ZoneId, *r.Id).
-		RecordUpdateRequest(dns.RecordUpdateRequest{Properties: input}).Execute()
+		RecordEnsure(dns.RecordEnsure{Properties: input}).Execute()
 	if err != nil {
 		return err
 	}

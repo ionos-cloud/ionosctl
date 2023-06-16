@@ -43,7 +43,7 @@ func RecordCommand() *core.Command {
 
 // Helper functions for printing record
 
-func getRecordsPrint(c *core.CommandConfig, data dns.RecordsResponse) printer.Result {
+func getRecordsPrint(c *core.CommandConfig, data dns.RecordReadList) printer.Result {
 	r := printer.Result{}
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
@@ -61,8 +61,8 @@ func getRecordsPrint(c *core.CommandConfig, data dns.RecordsResponse) printer.Re
 	return r
 }
 
-func getRecordPrint(c *core.CommandConfig, data dns.RecordResponse) printer.Result {
-	return getRecordsPrint(c, dns.RecordsResponse{Items: &[]dns.RecordResponse{data}})
+func getRecordPrint(c *core.CommandConfig, data dns.RecordRead) printer.Result {
+	return getRecordsPrint(c, dns.RecordReadList{Items: &[]dns.RecordRead{data}})
 }
 
 type recordPrint struct {
@@ -80,7 +80,7 @@ type recordPrint struct {
 var allCols = structs.Names(recordPrint{})
 var defaultCols = allCols[:len(allCols)-2]
 
-func makeRecordPrintObj(data ...dns.RecordResponse) []map[string]interface{} {
+func makeRecordPrintObj(data ...dns.RecordRead) []map[string]interface{} {
 	out := make([]map[string]interface{}, 0, len(data))
 
 	for _, item := range data {
@@ -114,7 +114,7 @@ func makeRecordPrintObj(data ...dns.RecordResponse) []map[string]interface{} {
 
 type Filter func(dns.ApiRecordsGetRequest) (dns.ApiRecordsGetRequest, error)
 
-func Records(f Filter) (*dns.RecordsResponse, error) {
+func Records(f Filter) (*dns.RecordReadList, error) {
 	req := client.Must().DnsClient.RecordsApi.RecordsGet(context.Background())
 
 	if f != nil {
@@ -139,7 +139,7 @@ func RecordIds(f Filter) []string {
 		return nil
 	}
 
-	return functional.Map(*ls.GetItems(), func(t dns.RecordResponse) string {
+	return functional.Map(*ls.GetItems(), func(t dns.RecordRead) string {
 		return *t.GetId()
 	})
 }

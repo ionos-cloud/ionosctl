@@ -3,6 +3,8 @@ package zone
 import (
 	"context"
 
+	dns "github.com/ionos-cloud/sdk-go-dns"
+
 	"github.com/spf13/cobra"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
@@ -29,7 +31,7 @@ func ZonesGetCmd() *core.Command {
 				req = req.FilterZoneName(viper.GetString(fn))
 			}
 			if fn := core.GetFlagName(c.NS, constants.FlagState); viper.IsSet(fn) {
-				req = req.FilterState(viper.GetString(fn))
+				req = req.FilterState(dns.ProvisioningState(viper.GetString(fn)))
 			}
 			if fn := core.GetFlagName(c.NS, constants.FlagOffset); viper.IsSet(fn) {
 				req = req.Offset(viper.GetInt32(fn))

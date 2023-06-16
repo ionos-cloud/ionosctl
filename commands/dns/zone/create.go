@@ -31,7 +31,7 @@ func ZonesPostCmd() *core.Command {
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			input := dns.ZoneUpdateRequestProperties{}
+			input := dns.Zone{}
 			if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) {
 				input.ZoneName = pointer.From(viper.GetString(fn))
 			}
@@ -43,7 +43,7 @@ func ZonesPostCmd() *core.Command {
 			}
 
 			z, _, err := client.Must().DnsClient.ZonesApi.ZonesPut(context.Background(), uuidgen.Must()).
-				ZoneUpdateRequest(dns.ZoneUpdateRequest{Properties: &input}).Execute()
+				ZoneEnsure(dns.ZoneEnsure{Properties: &input}).Execute()
 			if err != nil {
 				return err
 			}

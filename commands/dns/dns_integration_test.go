@@ -23,7 +23,7 @@ import (
 )
 
 var (
-	sharedZ dns.ZoneResponse
+	sharedZ dns.ZoneRead
 )
 
 func TestDNSCommands(t *testing.T) {
@@ -138,7 +138,7 @@ func Cleanup(t *testing.T) {
 	assert.NoError(t, err)
 
 	err = functional.ApplyAndAggregateErrors(*ls.Items,
-		func(z dns.ZoneResponse) error {
+		func(z dns.ZoneRead) error {
 			_, err2 := client.Must().DnsClient.ZonesApi.ZonesDelete(context.Background(), *z.Id).Execute()
 			return err2
 		},

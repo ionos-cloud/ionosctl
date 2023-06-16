@@ -51,7 +51,7 @@ ionosctl dns record delete --name PARTIAL_NAME [--zone ZONE]`,
 				return err
 			}
 
-			r := dns.RecordResponse{}
+			r := dns.RecordRead{}
 			if fn := core.GetFlagName(c.NS, constants.FlagRecord); viper.IsSet(fn) {
 				// In this case we know for sure that FlagZone is also set, because of the pre-run check
 				r, _, err = client.Must().DnsClient.RecordsApi.ZonesRecordsFindById(context.Background(),
@@ -87,7 +87,7 @@ ionosctl dns record delete --name PARTIAL_NAME [--zone ZONE]`,
 	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "If --all is set, filter --all deletion by record name")
 	cmd.AddStringFlag(constants.FlagZone, constants.FlagZoneShort, "", "The zone of the target record. If --all is set, filter --all deletion by limiting to records within this zone")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagZone, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return zone.Zones(func(t dns.ZoneResponse) string {
+		return zone.Zones(func(t dns.ZoneRead) string {
 			return *t.Properties.ZoneName
 		}), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -133,7 +133,7 @@ func deleteAll(c *core.CommandConfig) error {
 		return err
 	}
 
-	err = functional.ApplyAndAggregateErrors(*xs.GetItems(), func(r dns.RecordResponse) error {
+	err = functional.ApplyAndAggregateErrors(*xs.GetItems(), func(r dns.RecordRead) error {
 		yes := confirm.Ask(fmt.Sprintf("Are you sure you want to delete record %s (content: %s)", *r.Properties.Name, *r.Properties.Content),
 			viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce)))
 
@@ -149,7 +149,7 @@ func deleteAll(c *core.CommandConfig) error {
 	return err
 }
 
-func findRecordByListAndFilters(c *core.CommandConfig) (dns.RecordResponse, error) {
+func findRecordByListAndFilters(c *core.CommandConfig) (dns.RecordRead, error) {
 	recs, err := Records(func(r dns.ApiRecordsGetRequest) (dns.ApiRecordsGetRequest, error) {
 		if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) {
 			r = r.FilterName(viper.GetString(fn))
@@ -164,21 +164,21 @@ func findRecordByListAndFilters(c *core.CommandConfig) (dns.RecordResponse, erro
 		return r, nil
 	})
 	if err != nil {
-		return dns.RecordResponse{}, fmt.Errorf("failed listing records: %w", err)
+		return dns.RecordRead{}, fmt.Errorf("failed listing records: %w", err)
 	}
 
 	if len(*recs.Items) > 1 {
-		recsNames := functional.Fold(*recs.Items, func(acc []string, t dns.RecordResponse) []string {
+		recsNames := functional.Fold(*recs.Items, func(acc []string, t dns.RecordRead) []string {
 			return append(acc, *t.Properties.Name)
 		}, []string{})
 
-		return dns.RecordResponse{}, fmt.Errorf("found too many records matching the given filters: %+v. "+
+		return dns.RecordRead{}, fmt.Errorf("found too many records matching the given filters: %+v. "+
 			"The given filters (--%s and/or --%s) must narrow down to a single result",
 			strings.Join(recsNames, ", "), constants.FlagName, constants.FlagZone)
 	}
 
 	if len(*recs.Items) == 0 {
-		return dns.RecordResponse{}, fmt.Errorf("found no records matching the given filters. "+
+		return dns.RecordRead{}, fmt.Errorf("found no records matching the given filters. "+
 			"The given filters (--%s and/or --%s) must narrow down to a single result", constants.FlagName, constants.FlagZone)
 	}
 

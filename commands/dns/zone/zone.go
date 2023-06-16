@@ -45,7 +45,7 @@ func ZoneCommand() *core.Command {
 
 // Helper functions for printing zone
 
-func getZonesPrint(c *core.CommandConfig, data dns.ZonesResponse) printer.Result {
+func getZonesPrint(c *core.CommandConfig, data dns.ZoneReadList) printer.Result {
 	r := printer.Result{}
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
@@ -63,8 +63,8 @@ func getZonesPrint(c *core.CommandConfig, data dns.ZonesResponse) printer.Result
 	return r
 }
 
-func getZonePrint(c *core.CommandConfig, data dns.ZoneResponse) printer.Result {
-	return getZonesPrint(c, dns.ZonesResponse{Items: &[]dns.ZoneResponse{data}})
+func getZonePrint(c *core.CommandConfig, data dns.ZoneRead) printer.Result {
+	return getZonesPrint(c, dns.ZoneReadList{Items: &[]dns.ZoneRead{data}})
 }
 
 type zonePrint struct {
@@ -78,7 +78,7 @@ type zonePrint struct {
 
 var allCols = structs.Names(zonePrint{})
 
-func makeZonePrintObj(data ...dns.ZoneResponse) []map[string]interface{} {
+func makeZonePrintObj(data ...dns.ZoneRead) []map[string]interface{} {
 	out := make([]map[string]interface{}, 0, len(data))
 
 	for _, item := range data {
@@ -106,12 +106,12 @@ func ZoneNames() []string {
 	if err != nil {
 		return nil
 	}
-	return functional.Map(*ls.GetItems(), func(t dns.ZoneResponse) string {
+	return functional.Map(*ls.GetItems(), func(t dns.ZoneRead) string {
 		return *t.Properties.ZoneName
 	})
 }
 
-func Zones(f func(dns.ZoneResponse) string) []string {
+func Zones(f func(dns.ZoneRead) string) []string {
 	ls, _, err := client.Must().DnsClient.ZonesApi.ZonesGet(context.Background()).Execute()
 	if err != nil {
 		return nil

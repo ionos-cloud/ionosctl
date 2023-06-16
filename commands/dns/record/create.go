@@ -48,7 +48,7 @@ func ZonesRecordsPostCmd() *core.Command {
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			input := dns.RecordProperties{}
+			input := dns.Record{}
 			modifyRecordPropertiesFromFlags(c, &input)
 
 			zoneId, err := zone.Resolve(viper.GetString(core.GetFlagName(c.NS, constants.FlagZone)))
@@ -57,7 +57,7 @@ func ZonesRecordsPostCmd() *core.Command {
 			}
 
 			rec, _, err := client.Must().DnsClient.RecordsApi.ZonesRecordsPut(context.Background(), zoneId, uuidgen.Must()).
-				RecordUpdateRequest(dns.RecordUpdateRequest{
+				RecordEnsure(dns.RecordEnsure{
 					Properties: &input,
 				}).Execute()
 			if err != nil {
@@ -71,7 +71,7 @@ func ZonesRecordsPostCmd() *core.Command {
 
 	cmd.AddStringFlag(constants.FlagZone, constants.FlagZoneShort, "", "The ID or name of the DNS zone", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagZone, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return zone.Zones(func(t dns.ZoneResponse) string {
+		return zone.Zones(func(t dns.ZoneRead) string {
 			return *t.Properties.ZoneName
 		}), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -93,7 +93,7 @@ func addRecordCreateFlags(cmd *core.Command) *core.Command {
 	return cmd
 }
 
-func modifyRecordPropertiesFromFlags(c *core.CommandConfig, input *dns.RecordProperties) {
+func modifyRecordPropertiesFromFlags(c *core.CommandConfig, input *dns.Record) {
 	if fn := core.GetFlagName(c.NS, constants.FlagEnabled); viper.IsSet(fn) {
 		input.Enabled = pointer.From(viper.GetBool(fn))
 	}
@@ -110,6 +110,6 @@ func modifyRecordPropertiesFromFlags(c *core.CommandConfig, input *dns.RecordPro
 		input.Priority = pointer.From(viper.GetInt32(fn))
 	}
 	if fn := core.GetFlagName(c.NS, constants.FlagType); viper.IsSet(fn) {
-		input.Type = (*dns.RecordType)(pointer.From(viper.GetString(fn)))
+		input.Type = pointer.From(viper.GetString(fn))
 	}
 }

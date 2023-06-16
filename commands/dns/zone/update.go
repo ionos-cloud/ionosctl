@@ -52,8 +52,8 @@ func ZonesPutCmd() *core.Command {
 			}
 
 			zNew, _, err := client.Must().DnsClient.ZonesApi.ZonesPut(context.Background(), id).
-				ZoneUpdateRequest(
-					dns.ZoneUpdateRequest{Properties: &dns.ZoneUpdateRequestProperties{
+				ZoneEnsure(
+					dns.ZoneEnsure{Properties: &dns.Zone{
 						// We can't pass `z.Properties` directly as it is a different object type
 						ZoneName:    z.Properties.ZoneName,
 						Description: z.Properties.Description,
@@ -70,7 +70,7 @@ func ZonesPutCmd() *core.Command {
 
 	cmd.AddStringFlag(constants.FlagZone, constants.FlagZoneShort, "", constants.DescZone, core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagZone, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return Zones(func(t dns.ZoneResponse) string {
+		return Zones(func(t dns.ZoneRead) string {
 			return *t.Properties.ZoneName
 		}), cobra.ShellCompDirectiveNoFileComp
 	})
