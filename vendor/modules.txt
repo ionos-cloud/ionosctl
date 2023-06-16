@@ -56,7 +56,7 @@ github.com/ionos-cloud/sdk-go-auth
 # github.com/ionos-cloud/sdk-go-cert-manager v1.0.1
 ## explicit; go 1.19
 github.com/ionos-cloud/sdk-go-cert-manager
-# github.com/ionos-cloud/sdk-go-container-registry v1.0.0
+# github.com/ionos-cloud/sdk-go-container-registry v1.0.1
 ## explicit; go 1.18
 github.com/ionos-cloud/sdk-go-container-registry
 # github.com/ionos-cloud/sdk-go-dataplatform v1.0.1
@@ -163,15 +163,15 @@ golang.org/x/crypto/ssh/internal/bcrypt_pbkdf
 ## explicit; go 1.20
 golang.org/x/exp/constraints
 golang.org/x/exp/slices
-# golang.org/x/net v0.10.0
+# golang.org/x/net v0.11.0
 ## explicit; go 1.17
 golang.org/x/net/context
-# golang.org/x/oauth2 v0.8.0
+# golang.org/x/oauth2 v0.9.0
 ## explicit; go 1.17
 golang.org/x/oauth2
 golang.org/x/oauth2/internal
-# golang.org/x/sync v0.2.0
-## explicit
+# golang.org/x/sync v0.3.0
+## explicit; go 1.17
 golang.org/x/sync/errgroup
 # golang.org/x/sys v0.9.0
 ## explicit; go 1.17
