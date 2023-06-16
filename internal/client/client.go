@@ -30,7 +30,7 @@ func selectAuthLayer(layers []Layer) (values map[string]string, usedLayer Layer,
 			}, layer, nil
 		}
 	}
-	return nil, Layer{}, fmt.Errorf("none of the layers provided a value for either token or ")
+	return nil, Layer{}, fmt.Errorf("none of the layers provided a value for either token or username & password. use `ionosctl whoami --provenance` for help")
 }
 
 // Get a client and possibly fail. Uses viper to get the credentials and API URL.
@@ -58,19 +58,13 @@ func Get() (*Client, error) {
 		viper.AutomaticEnv()
 
 		values, usedLayer, err := selectAuthLayer(ConfigurationPriorityRules)
-		if values == nil {
-			getClientErr = errors.Join(getClientErr, fmt.Errorf("not logged in: use either environment variables %s or %s and %s, or use `ionosctl login`", constants.EnvToken, constants.EnvUsername, constants.EnvPassword))
+		if err != nil {
+			getClientErr = errors.Join(getClientErr, fmt.Errorf("failed selecting an auth layer: %w", err))
 			return
 		}
 
 		instance = newClient(values["username"], values["password"], values["token"], values["serverUrl"])
 		instance.UsedLayer = usedLayer
-
-		// Check if at least one authentication method is available
-		if values["token"] == "" && (values["username"] == "" || values["password"] == "") {
-			getClientErr = errors.Join(getClientErr, fmt.Errorf("not logged in: use either environment variables %s or %s and %s, or use `ionosctl login`", constants.EnvToken, constants.EnvUsername, constants.EnvPassword))
-			return
-		}
 
 		if err := instance.TestCreds(); err != nil {
 			getClientErr = errors.Join(getClientErr, fmt.Errorf("failed creating client: %w", err))

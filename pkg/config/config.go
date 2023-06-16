@@ -17,19 +17,26 @@ import (
 )
 
 var FieldsWithSensitiveDataInConfigFile = []string{
-	"userdata.name", "userdata.password", "userdata.token", // credentials stored in config file pre June 2023
-	constants.CfgToken, // credentials currently stored in config file
+	constants.CfgUsername, constants.CfgPassword, constants.CfgToken,
 }
 
-// DEPRECATED: Use viper.Get(ArgServerUrl)
 func GetServerUrl() string {
-	if viper.IsSet(constants.ArgServerUrl) {
-		return viper.GetString(constants.ArgServerUrl)
+	viper.AutomaticEnv()
+	if flagVal := viper.GetString(constants.ArgServerUrl); flagVal != "" {
+		// 1. Above all, use if the global flag is set
+		return flagVal
 	}
-	if url := viper.GetString(constants.CfgServerUrl); url != "" {
-		return url
+	if envVal := viper.GetString(constants.EnvServerUrl); envVal != "" {
+		// 2. Fallback to non-empty env vars
+		return envVal
 	}
-	return viper.GetString(constants.ArgServerUrl)
+	if cfgVal := viper.GetString(constants.CfgServerUrl); cfgVal != "" {
+		// 3. Fallback to non-empty cfg field
+		return cfgVal
+	}
+	// 4. Return empty string. TODO: SDK (should) handle it. Test me
+	return ""
+	//return viper.GetString(constants.ArgServerUrl) // Return flag default. NOTE: DNS API uses a different set of URLs!
 }
 
 func GetConfigFile() string {
