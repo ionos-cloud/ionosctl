@@ -20,15 +20,16 @@ For `config` command:
 
 ## Description
 
-'ionosctl whoami' will tell you the email of the user you are logged in as.
-ionosctl prioritizes different sources of authentication, in the following order:
-  1. Token provided as a global flag
-  2. Token, Username and Password provided as environment variables
-  3. Token, Username and Password read from the config file
-Additionally, the token has priority over username & password in the layer it is originating from. (meaning that a token in your config file will be overridden by IONOS_USERNAME & IONOS_PASSWORD)
+This command will tell you the email of the user you are logged in as.
 You can use '--provenance' flag to see which of these sources are being used.
 If using a token, it will use the JWT's claims payload to find out your user UUID, then use the Users API on that UUID to find out your e-mail address.
 If no token is present, the command will fall back to using the username and password for authentication.
+
+ionosctl uses a layered approach for authentication, prioritizing sources in this order:
+  1. Global flags
+  2. Environment variables
+  3. Config file entries
+Within each layer, a token takes precedence over a username and password combination. For instance, if a token and a username/password pair are both defined in environment variables, ionosctl will prioritize the token. However, higher layers can override the use of a token from a lower layer. For example, username and password environment variables will supersede a token found in the config file.
 
 ## Options
 
