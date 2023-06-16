@@ -1,28 +1,22 @@
 package cfg
 
 import (
-	"context"
-	"fmt"
-
-	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/spf13/cobra"
 )
 
-func CfgLocationCmd() *core.Command {
-	loginCmd := core.NewCommand(context.Background(), nil, core.CommandBuilder{
-		Namespace: "config",
-		Resource:  "config",
-		Verb:      "config",
-		Aliases:   []string{"cfg"},
-		ShortDesc: "Print your config file's path",
-		Example:   "ionosctl cfg",
-		PreCmdRun: core.NoPreRun,
-		CmdRun: func(c *core.CommandConfig) error {
-			_, err := fmt.Fprintf(c.Command.Command.OutOrStdout(), config.GetConfigFile())
-			return err
+func ConfigCmd() *core.Command {
+	cmd := &core.Command{
+		Command: &cobra.Command{
+			Use:              "config",
+			Short:            "Manage your CLI Configuration",
+			Aliases:          []string{"cfg"},
+			TraverseChildren: true,
 		},
-		InitClient: false,
-	})
-
-	return loginCmd
+	}
+	cmd.AddCommand(LocationCmd())
+	cmd.AddCommand(LoginCmd())
+	cmd.AddCommand(LogoutCmd())
+	cmd.AddCommand(WhoamiCmd())
+	return cmd
 }

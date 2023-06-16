@@ -17,10 +17,12 @@ import (
 	"github.com/spf13/viper"
 )
 
-const (
-	loginFlagUseApiUrl = "use-default-api-url"
+func LoginCmd() *core.Command {
 
-	loginExamples = `ionosctl login --user $IONOS_USERNAME --password $IONOS_PASSWORD
+	const (
+		loginFlagUseApiUrl = "use-default-api-url"
+
+		loginExamples = `ionosctl login --user $IONOS_USERNAME --password $IONOS_PASSWORD
 
 ionosctl login --token $IONOS_TOKEN
 
@@ -28,16 +30,15 @@ ionosctl login
 Enter your username:
 USERNAME
 Enter your password:`
-)
+	)
 
-func LoginCmd() *core.Command {
 	ctx := context.TODO()
 	loginCmd := core.NewCommand(ctx, nil, core.CommandBuilder{
 		Namespace: "login",
 		Resource:  "login",
 		Verb:      "login",
 		Aliases:   []string{"log", "auth"},
-		ShortDesc: "Authentication command for SDK",
+		ShortDesc: "Use credentials to generate a config file in `ionosctl cfg location`",
 		LongDesc: fmt.Sprintf(`The 'login' command allows you to authenticate with the IONOS Cloud APIs. There are three ways you can use it:
   1. Interactive mode: Just type 'ionosctl login' and you'll be prompted to enter your username and password.
   2. Use the '--user' and '--password' flags: Enter your credentials in the command.
@@ -45,7 +46,7 @@ func LoginCmd() *core.Command {
 
 If you use a username and password, this command generates a token that's saved in the config file. Please keep this token safe. If you specify a custom '--api-url', it'll be saved to the config file when you login successfully and used for future API calls.
 
-To find your config file location, use 'ionosctl config'. If you want to use a different config file, use the '--config' global option. Changing the permissions of the config file will cause it to no longer work.
+To find your config file location, use 'ionosctl cfg location'. If you want to use a different config file, use the '--config' global option. Changing the permissions of the config file will cause it to no longer work.
 
 Note: The IONOS Cloud CLI supports also authentication with environment variables: $IONOS_USERNAME, $IONOS_PASSWORD or $IONOS_TOKEN, these override the config file token.`),
 		Example:    loginExamples,
@@ -163,7 +164,7 @@ func buildConfigData(c *core.CommandConfig) (map[string]string, error) {
 		}
 	}
 
-	cl, err := client.NewClient(username, password, "", config.GetServerUrl())
+	cl := client.NewClient(username, password, "", config.GetServerUrl())
 	tok, _, err := cl.AuthClient.TokensApi.TokensGenerate(context.Background()).Execute()
 	if err != nil {
 		return nil, fmt.Errorf("failed using username and password to generate a token: %w", err)

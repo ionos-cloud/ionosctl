@@ -170,7 +170,7 @@ func TestAuthCmds(t *testing.T) {
 	})
 
 	t.Run("cfg location cmd returns valid location", func(t *testing.T) {
-		cfgLocCmd := cfg.CfgLocationCmd()
+		cfgLocCmd := cfg.LocationCmd()
 		out := &bytes.Buffer{}
 		cfgLocCmd.Command.SetOut(out)
 		err := cfgLocCmd.Command.Execute()
@@ -189,7 +189,7 @@ func setup() error {
 		return fmt.Errorf("empty user/pass")
 	}
 
-	cl, _ = client.NewClient(GoodUsername, GoodPassword, "", "")
+	cl = client.NewClient(GoodUsername, GoodPassword, "", "")
 	tok, _, err := cl.AuthClient.TokensApi.TokensGenerate(context.Background()).Execute()
 
 	if err != nil {

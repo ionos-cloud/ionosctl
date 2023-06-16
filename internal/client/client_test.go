@@ -99,26 +99,19 @@ func testTestCreds(t *testing.T) {
 }
 
 func testNewClient(t *testing.T) {
-	t.Run("should return an error when both token and username/password are empty", func(t *testing.T) {
-		cl, err := client.NewClient("", "", "", "")
-
-		assert.Error(t, err)
-		assert.ErrorContains(t, err, "empty")
-		assert.Nil(t, cl)
-	})
-
 	t.Run("should return a valid client when token is provided", func(t *testing.T) {
-		cl, err := client.NewClient("", "", "some-token", "")
+		cl := client.NewClient("", "", "some-token", "")
 
-		assert.NoError(t, err)
 		assert.NotNil(t, cl)
+		assert.NoError(t, cl.TestCreds())
 	})
 
 	t.Run("should return a valid client when username and password are provided", func(t *testing.T) {
-		cl, err := client.NewClient("username", "password", "", "")
+		cl := client.NewClient("username", "password", "", "")
 
-		assert.NoError(t, err)
 		assert.NotNil(t, cl)
+		assert.NoError(t, cl.TestCreds())
+
 	})
 }
 

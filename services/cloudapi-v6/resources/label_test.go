@@ -151,9 +151,8 @@ func TestNewLabelResourceService(t *testing.T) {
 }
 
 func getTestClient(t *testing.T) *client.Client {
-	svc, err := client.NewClient("user", "pass", "", constants.DefaultApiURL)
+	svc := client.NewClient("user", "pass", "", constants.DefaultApiURL)
 	assert.NotNil(t, svc)
-	assert.NoError(t, err)
 	assert.Equal(t, "user", svc.CloudClient.GetConfig().Username)
 	assert.Equal(t, "pass", svc.CloudClient.GetConfig().Password)
 	return svc

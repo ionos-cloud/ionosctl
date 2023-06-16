@@ -3,11 +3,13 @@
 ## [6.7.0] (XXX 2023)
 
 ### Added
-- Added a `logout` command, which iterates through fields in your config file which contain sensitive data and removes their value
-- Added a `config` command which prints config file path.
+- Added `cfg logout` command, which iterates through fields in your config file which contain sensitive data and removes their value
+- Added `cfg location` command which prints config file path.
+- Added `cfg whoami` command which prints the authenticated user, with the option (`-p/--provenance`) to print the source and rules/order  of credentials.
 
 
 ### Changed
+- `ionosctl login` is now deprecated: it will simply call `ionosctl cfg login`.
 - Changed the `login`/config file functionality:
   - Username and password are no longer saved to the config file on successful logins
   - The API JWT token is now the only sensitive field saved to the config file.

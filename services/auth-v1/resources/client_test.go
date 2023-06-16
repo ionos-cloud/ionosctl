@@ -36,10 +36,10 @@ func TestNewClientService(t *testing.T) {
 	})
 }
 
+// TODO: Find a way to replace all of these duped funcs in the entirety of the codebase via a regex with NewClient
 func getTestClient(t *testing.T) *client.Client {
-	svc, err := client.NewClient("user", "pass", "", constants.DefaultApiURL)
+	svc := client.NewClient("user", "pass", "", constants.DefaultApiURL)
 	assert.NotNil(t, svc)
-	assert.NoError(t, err)
 	assert.Equal(t, "user", svc.AuthClient.GetConfig().Username)
 	assert.Equal(t, "pass", svc.AuthClient.GetConfig().Password)
 	return svc

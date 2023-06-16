@@ -160,9 +160,13 @@ func initConfig() {
 // AddCommands adds sub commands to the base command.
 func addCommands() {
 	rootCmd.AddCommand(VersionCmd())
-	rootCmd.AddCommand(cfg.LoginCmd())
-	rootCmd.AddCommand(cfg.LogoutCmd())
-	rootCmd.AddCommand(cfg.CfgLocationCmd())
+	rootCmd.AddCommand(cfg.ConfigCmd())
+
+	for _, cmd := range cfg.ConfigCmd().SubCommands() {
+		cmd.Command.Hidden = true
+		rootCmd.AddCommand(cmd)
+	}
+
 	// V6 Resources Commands
 	rootCmd.AddCommand(cloudapiv6.LocationCmd())
 	rootCmd.AddCommand(cloudapiv6.DatacenterCmd())
