@@ -72,6 +72,7 @@ const (
 	ArgDepth               = "depth"
 	ArgDepthShort          = "D"
 	ArgServerUrl           = "api-url"
+	EnvServerUrl           = "IONOS_API_URL"
 	ArgServerUrlShort      = "u"
 	ArgAll                 = "all"
 	ArgAllShort            = "a"

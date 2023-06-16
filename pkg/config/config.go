@@ -26,21 +26,28 @@ func GetUserData() map[string]string {
 	}
 }
 
-// GetServerUrl returns the API URL from flags, config or env in order of priority.
-// The caller must ensure to load config or env vars beforehand, so they can be included.
+// GetServerUrl returns the server URL the SDK should use, with support for layered fallbacks.
 //
-// Priority:
-// 1. Explicit flag
-// 2. Env/config file
-// 3. Flag default value
+// ⚠️ WARNING: NEVER use viper.Get/os.Getenv to try to bypass this function! ⚠️
 func GetServerUrl() string {
-	if viper.IsSet(constants.ArgServerUrl) {
-		return viper.GetString(constants.ArgServerUrl)
+	viper.AutomaticEnv()
+	if flagVal := viper.GetString(constants.ArgServerUrl); flagVal != "" {
+		// 1. Above all, use if the global flag is set
+		return flagVal
 	}
-	if url := viper.GetString(constants.ServerUrl); url != "" {
-		return url
+	if envVal := viper.GetString(constants.EnvServerUrl); envVal != "" {
+		// 2. Fallback to non-empty env vars
+		// Advice to future devs: If you're thinking of replacing this with os.GetEnv - Don't.
+		// In older versions this env var was bound to Viper. Viper does not support case-sensitive keys.
+		// This means someone could export `IoNoS_API_url` and it would work. So - don't try it. Would be breaking.
+		return envVal
 	}
-	return viper.GetString(constants.ArgServerUrl)
+	if cfgVal := viper.GetString(constants.ServerUrl); cfgVal != "" {
+		// 3. Fallback to non-empty cfg field
+		return cfgVal
+	}
+	// 4. Return empty string. SDKs should handle it, per docs
+	return ""
 }
 
 func GetConfigFile() string {
