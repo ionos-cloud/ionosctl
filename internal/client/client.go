@@ -20,7 +20,7 @@ import (
 )
 
 type Client struct {
-	ConfigSource map[string]string // Set on Get/Must only. Keys: API configuration keys (token, api-url, etc). Values: Their used source (e.g. constants.EnvToken, constants.CfgToken); can be empty.
+	UsedLayer Layer // i.e. which auth layer are we using. Flags / Env Vars / Config File
 
 	CloudClient        *cloudv6.APIClient
 	AuthClient         *sdkgoauth.APIClient
@@ -73,27 +73,36 @@ func newClient(name, pwd, token, hostUrl string) *Client {
 var once sync.Once
 var instance *Client
 
-func getFirstValidSource(sources ...string) (string, string) {
-	for _, source := range sources {
-		val := viper.GetString(source)
-		if val != "" {
-			src := source
-			// TODO: If flag , append prefix --
-			// TODO: If userdata , append prefix config.
-			return val, src
+func getFirstValidSource(layers []Layer) (values map[string]string, usedLayer Layer) {
+	for _, layer := range layers {
+		token := viper.GetString(layer.TokenKey)
+		username := viper.GetString(layer.UsernameKey)
+		password := viper.GetString(layer.PasswordKey)
+
+		if layer.TokenKey != "" && token != "" ||
+			layer.UsernameKey != "" && username != "" && layer.PasswordKey != "" && password != "" {
+			return map[string]string{
+				"token":    token,
+				"username": username,
+				"password": password,
+			}, layer
 		}
 	}
-	return "", ""
+	return nil, Layer{}
 }
 
-var (
-	ConfigurationPriorityRules = map[string][]string{
-		"token":    {constants.ArgToken, constants.EnvToken, constants.CfgToken},
-		"url":      {constants.ArgServerUrl, constants.EnvServerUrl, constants.CfgServerUrl},
-		"username": {constants.EnvUsername, constants.CfgUsername},
-		"password": {constants.EnvPassword, constants.CfgPassword},
-	}
-)
+type Layer struct {
+	TokenKey    string
+	UsernameKey string
+	PasswordKey string
+	Help        string
+}
+
+var ConfigurationPriorityRules = []Layer{
+	{constants.ArgToken, "", "", fmt.Sprintf("Global Flags (--%s)", constants.ArgToken)},
+	{constants.EnvToken, constants.EnvUsername, constants.EnvPassword, fmt.Sprintf("Environment Variables (%s, %s, %s)", constants.EnvToken, constants.EnvUsername, constants.EnvPassword)},
+	{constants.CfgToken, constants.CfgUsername, constants.CfgPassword, fmt.Sprintf("Config file settings (%s, %s, %s)", constants.CfgToken, constants.CfgUsername, constants.CfgPassword)}, // Note: Username & Password are no longer generated in cfg file by `ionosctl login`, however we will keep this for backward compatibility.
+}
 
 // Get a client and possibly fail. Uses viper to get the credentials and API URL.
 // The returned client is guaranteed to have working credentials
@@ -119,17 +128,14 @@ func Get() (*Client, error) {
 
 		viper.AutomaticEnv()
 
-		prov := map[string]string{}
-		values := map[string]string{}
-
-		// Note: I don't like that we're kind of duplicating data. Ideally we'd be storing this with a direct relationship to their respective keys in sdk Configuration object.
-		// However I'll wait for sdk-go-bundle shared configuration, so we can use a single configuration object in this whole package.
-		for _, key := range []string{"token", "url", "username", "password"} {
-			values[key], prov[key] = getFirstValidSource(ConfigurationPriorityRules[key]...)
+		values, usedLayer := getFirstValidSource(ConfigurationPriorityRules)
+		if values == nil {
+			getClientErr = errors.Join(getClientErr, fmt.Errorf("not logged in: use either environment variables %s or %s and %s, or use `ionosctl login`", constants.EnvToken, constants.EnvUsername, constants.EnvPassword))
+			return
 		}
 
 		instance = newClient(values["username"], values["password"], values["token"], values["serverUrl"])
-		instance.ConfigSource = prov
+		instance.UsedLayer = usedLayer
 
 		// Check if at least one authentication method is available
 		if values["token"] == "" && (values["username"] == "" || values["password"] == "") {
@@ -183,4 +189,9 @@ func (c *Client) TestCreds() error {
 	}
 
 	return nil
+}
+
+// IsTokenAuth returns true if a token is being used for authentication. Otherwise, username & password were used.
+func (c *Client) IsTokenAuth() bool {
+	return c.CloudClient.GetConfig().Token != ""
 }

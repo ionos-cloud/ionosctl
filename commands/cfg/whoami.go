@@ -2,7 +2,6 @@ package cfg
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
@@ -35,22 +34,20 @@ func WhoamiCmd() *core.Command {
 
 			// Does user want to see provenance of his configuration? i.e. where does each key get its value from.
 			if fn := core.GetFlagName(c.NS, FlagProvenance); viper.GetBool(fn) {
-				// Provenance of credentials should ignore client errors, since user might want to debug his configuration, and client.Get() fails if credentials are bad.
-				provenance := make(map[string]KeyInfo)
-
-				for key, src := range cl.ConfigSource {
-					provenance[key] = KeyInfo{
-						Rules:   client.ConfigurationPriorityRules[key],
-						UsedSrc: src,
+				out := "Authentication layers, in order of priority:\n"
+				for i, layer := range client.ConfigurationPriorityRules {
+					if layer == cl.UsedLayer {
+						out += fmt.Sprintf("* [%d] %s (USED)\n", i+1, layer.Help)
+						if cl.IsTokenAuth() {
+							out += "    - Using token for authentication.\n"
+						} else {
+							out += "    - Using username and password for authentication.\n"
+						}
+					} else {
+						out += fmt.Sprintf("  [%d] %s\n", i+1, layer.Help)
 					}
 				}
-
-				jBytes, err := json.MarshalIndent(provenance, "", "  ")
-				if err != nil {
-					return fmt.Errorf("failed getting provenance: %w", err)
-				}
-
-				_, err = fmt.Fprintln(c.Command.Command.OutOrStdout(), string(jBytes))
+				_, err = fmt.Fprintln(c.Command.Command.OutOrStdout(), out)
 				return err
 			}
 
