@@ -12,7 +12,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dns/record"
 	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
-	dns "github.com/ionos-cloud/sdk-go-dnsaas"
+	dns "github.com/ionos-cloud/sdk-go-dns"
 
 	"github.com/cilium/fake"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dns/zone"

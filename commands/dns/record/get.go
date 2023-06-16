@@ -5,7 +5,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dns/zone"
 
-	dns "github.com/ionos-cloud/sdk-go-dnsaas"
+	dns "github.com/ionos-cloud/sdk-go-dns"
 	"github.com/spf13/cobra"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
@@ -21,13 +21,13 @@ func ZonesRecordsFindByIdCmd() *core.Command {
 		Verb:      "get",
 		Aliases:   []string{"g"},
 		ShortDesc: "Retrieve a record",
-		Example:   "ionosctl dns record get --zone ZONE --recordId RECORD_ID",
+		Example:   "ionosctl dns record get --zone ZONE --record RECORD",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			err := c.Command.Command.MarkFlagRequired(constants.FlagZone)
 			if err != nil {
 				return err
 			}
-			err = c.Command.Command.MarkFlagRequired(constants.FlagRecordId)
+			err = c.Command.Command.MarkFlagRequired(constants.FlagRecord)
 			if err != nil {
 				return err
 			}
@@ -35,12 +35,12 @@ func ZonesRecordsFindByIdCmd() *core.Command {
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			zoneId, err := zone.ZoneIdByNameOrId(viper.GetString(core.GetFlagName(c.NS, constants.FlagZone)))
+			zoneId, err := zone.Resolve(viper.GetString(core.GetFlagName(c.NS, constants.FlagZone)))
 			if err != nil {
 				return err
 			}
 			r, _, err := client.Must().DnsClient.RecordsApi.ZonesRecordsFindById(context.Background(),
-				zoneId, viper.GetString(core.GetFlagName(c.NS, constants.FlagRecordId)),
+				zoneId, viper.GetString(core.GetFlagName(c.NS, constants.FlagRecord)),
 			).Execute()
 
 			if err != nil {
@@ -57,11 +57,11 @@ func ZonesRecordsFindByIdCmd() *core.Command {
 			return *t.Properties.ZoneName
 		}), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddStringFlag(constants.FlagRecordId, "", "", "The ID (UUID) of the DNS record")
-	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagRecordId, func(cobraCmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	cmd.AddStringFlag(constants.FlagRecord, "", "", "The ID (UUID) of the DNS record")
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagRecord, func(cobraCmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return RecordIds(func(req dns.ApiRecordsGetRequest) (dns.ApiRecordsGetRequest, error) {
 			if fn := core.GetFlagName(cmd.NS, constants.FlagZone); viper.IsSet(fn) {
-				zoneId, err := zone.ZoneIdByNameOrId(viper.GetString(fn))
+				zoneId, err := zone.Resolve(viper.GetString(fn))
 				if err != nil {
 					return req, err
 				}

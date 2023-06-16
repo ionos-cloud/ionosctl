@@ -2,9 +2,12 @@ package record
 
 import (
 	"context"
+	"fmt"
+
+	"github.com/google/uuid"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
-	dns "github.com/ionos-cloud/sdk-go-dnsaas"
+	dns "github.com/ionos-cloud/sdk-go-dns"
 
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
@@ -139,4 +142,23 @@ func RecordIds(f Filter) []string {
 	return functional.Map(*ls.GetItems(), func(t dns.RecordResponse) string {
 		return *t.GetId()
 	})
+}
+
+// Resolve resolves nameOrId (the name of a record, or the ID of a record) - to the ID of the record.
+// If it's an ID, it's returned as is. If it's not, then it's a name, and we try to resolve it
+func Resolve(nameOrId string) (string, error) {
+	uid, errParseUuid := uuid.Parse(nameOrId)
+	rId := uid.String()
+	if errParseUuid != nil {
+		// nameOrId is a name
+		ls, _, err := client.Must().DnsClient.RecordsApi.RecordsGet(context.Background()).FilterName(nameOrId).Limit(1).Execute()
+		if err != nil {
+			return "", fmt.Errorf("failed finding a record by name %s: %w", nameOrId, err)
+		}
+		if len(*ls.Items) < 1 {
+			return "", fmt.Errorf("could not find record by name %s: got %d records", nameOrId, len(*ls.Items))
+		}
+		rId = *(*ls.Items)[0].Id
+	}
+	return rId, nil
 }

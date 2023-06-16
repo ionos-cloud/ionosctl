@@ -11,7 +11,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
-	dns "github.com/ionos-cloud/sdk-go-dnsaas"
+	dns "github.com/ionos-cloud/sdk-go-dns"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
@@ -25,19 +25,19 @@ func ZonesRecordsDeleteCmd() *core.Command {
 		Verb:      "delete",
 		Aliases:   []string{"del", "d"},
 		ShortDesc: "Delete a record",
-		Example: `ionosctl dns record delete --zone-id ZONE --record-id RECORD
+		Example: `ionosctl dns record delete --zone ZONE --record-id RECORD
 ionosctl dns record delete --all [--name PARTIAL_NAME] [--zone ZONE]
 ionosctl dns record delete --name PARTIAL_NAME [--zone ZONE]`,
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			c.Command.Command.MarkFlagsMutuallyExclusive(constants.ArgAll, constants.FlagRecordId)
+			c.Command.Command.MarkFlagsMutuallyExclusive(constants.ArgAll, constants.FlagRecord)
 
 			err := core.CheckRequiredFlagsSets(c.Command, c.NS, []string{constants.ArgAll}, // All with optional filters
-				[]string{constants.FlagZone, constants.FlagRecordId},       // Known IDs
-				[]string{constants.FlagName}, []string{constants.FlagZone}, // If none of the above, user can narrow down to a single record using filters. If more than one result, throw err
+				[]string{constants.FlagZone, constants.FlagRecord},         // Known resources
+				[]string{constants.FlagName}, []string{constants.FlagZone}, // TODO: Is this 3rd way still valid, if we now use the Resolve funcs (old:  If none of the above, user can narrow down to a single record using filters. If more than one result, throw err
 			)
 			if err != nil {
 				return fmt.Errorf("either provide --%s and optionally filters, or --%s and --%s, or narrow down to one record with --%s and/or --%s: %w",
-					constants.ArgAll, constants.FlagZone, constants.FlagRecordId, constants.FlagName, constants.FlagZone, err)
+					constants.ArgAll, constants.FlagZone, constants.FlagRecord, constants.FlagName, constants.FlagZone, err)
 			}
 			return nil
 		},
@@ -46,16 +46,16 @@ ionosctl dns record delete --name PARTIAL_NAME [--zone ZONE]`,
 				return deleteAll(c)
 			}
 
-			zoneId, err := zone.ZoneIdByNameOrId(viper.GetString(core.GetFlagName(c.NS, constants.FlagZone)))
+			zoneId, err := zone.Resolve(viper.GetString(core.GetFlagName(c.NS, constants.FlagZone)))
 			if err != nil {
 				return err
 			}
 
 			r := dns.RecordResponse{}
-			if fn := core.GetFlagName(c.NS, constants.FlagRecordId); viper.IsSet(fn) {
+			if fn := core.GetFlagName(c.NS, constants.FlagRecord); viper.IsSet(fn) {
 				// In this case we know for sure that FlagZone is also set, because of the pre-run check
 				r, _, err = client.Must().DnsClient.RecordsApi.ZonesRecordsFindById(context.Background(),
-					zoneId, viper.GetString(core.GetFlagName(c.NS, constants.FlagRecordId)),
+					zoneId, viper.GetString(core.GetFlagName(c.NS, constants.FlagRecord)),
 				).Execute()
 				if err != nil {
 					return fmt.Errorf("failed finding record using Zone and Record IDs: %w", err)
@@ -83,7 +83,7 @@ ionosctl dns record delete --name PARTIAL_NAME [--zone ZONE]`,
 		InitClient: true,
 	})
 
-	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, fmt.Sprintf("Delete all records. Required or --%s and --%s", constants.FlagZone, constants.FlagRecordId))
+	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, fmt.Sprintf("Delete all records. Required or --%s and --%s", constants.FlagZone, constants.FlagRecord))
 	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "If --all is set, filter --all deletion by record name")
 	cmd.AddStringFlag(constants.FlagZone, constants.FlagZoneShort, "", "The zone of the target record. If --all is set, filter --all deletion by limiting to records within this zone")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagZone, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -92,14 +92,14 @@ ionosctl dns record delete --name PARTIAL_NAME [--zone ZONE]`,
 		}), cobra.ShellCompDirectiveNoFileComp
 	})
 
-	cmd.AddStringFlag(constants.FlagRecordId, constants.FlagIdShort, "", fmt.Sprintf("The ID (UUID) of the DNS record. Required together with --%s or -%s", constants.FlagZone, constants.ArgAllShort))
-	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagRecordId, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	cmd.AddStringFlag(constants.FlagRecord, constants.FlagIdShort, "", fmt.Sprintf("The ID (UUID) of the DNS record. Required together with --%s or -%s", constants.FlagZone, constants.ArgAllShort))
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagRecord, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return RecordIds(func(r dns.ApiRecordsGetRequest) (dns.ApiRecordsGetRequest, error) {
 			if fn := core.GetFlagName(cmd.NS, constants.FlagName); viper.IsSet(fn) {
 				r = r.FilterName(viper.GetString(fn))
 			}
 			if fn := core.GetFlagName(cmd.NS, constants.FlagZone); viper.IsSet(fn) {
-				zoneId, err := zone.ZoneIdByNameOrId(viper.GetString(fn))
+				zoneId, err := zone.Resolve(viper.GetString(fn))
 				if err != nil {
 					return r, err
 				}
@@ -121,7 +121,7 @@ func deleteAll(c *core.CommandConfig) error {
 		req = req.FilterName(viper.GetString(fn))
 	}
 	if fn := core.GetFlagName(c.NS, constants.FlagZone); viper.IsSet(fn) {
-		zoneId, err := zone.ZoneIdByNameOrId(viper.GetString(fn))
+		zoneId, err := zone.Resolve(viper.GetString(fn))
 		if err != nil {
 			return err
 		}
@@ -155,7 +155,7 @@ func findRecordByListAndFilters(c *core.CommandConfig) (dns.RecordResponse, erro
 			r = r.FilterName(viper.GetString(fn))
 		}
 		if fn := core.GetFlagName(c.NS, constants.FlagZone); viper.IsSet(fn) {
-			zoneId, err := zone.ZoneIdByNameOrId(viper.GetString(fn))
+			zoneId, err := zone.Resolve(viper.GetString(fn))
 			if err != nil {
 				return r, err
 			}

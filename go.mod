@@ -30,7 +30,7 @@ require (
 	golang.org/x/term v0.9.0
 )
 
-require github.com/ionos-cloud/sdk-go-dnsaas v1.0.0
+require github.com/ionos-cloud/sdk-go-dns v1.1.1
 
 require github.com/gofrs/uuid/v5 v5.0.0
 

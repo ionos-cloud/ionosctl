@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dns/zone"
-	dns "github.com/ionos-cloud/sdk-go-dnsaas"
+	dns "github.com/ionos-cloud/sdk-go-dns"
 	"github.com/spf13/cobra"
 
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
@@ -24,7 +24,7 @@ func RecordsGetCmd() *core.Command {
 		CmdRun: func(c *core.CommandConfig) error {
 			ls, err := Records(func(req dns.ApiRecordsGetRequest) (dns.ApiRecordsGetRequest, error) {
 				if fn := core.GetFlagName(c.NS, constants.FlagZone); viper.IsSet(fn) {
-					zoneId, err := zone.ZoneIdByNameOrId(viper.GetString(fn))
+					zoneId, err := zone.Resolve(viper.GetString(fn))
 					if err != nil {
 						return req, err
 					}

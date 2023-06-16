@@ -1,9 +1,9 @@
 /*
- * IONOS Cloud - DNS as a Service API
+ * IONOS Cloud - DNS API
  *
  * DNS API Specification
  *
- * API version: 0.1.0
+ * API version: 1.2.0
  * Contact: support@cloud.ionos.com
  */
 
@@ -33,6 +33,7 @@ type ApiRecordsGetRequest struct {
 	ApiService   *RecordsApiService
 	filterZoneId *string
 	filterName   *string
+	filterState  *ProvisioningState
 	offset       *int32
 	limit        *int32
 }
@@ -45,6 +46,10 @@ func (r ApiRecordsGetRequest) FilterName(filterName string) ApiRecordsGetRequest
 	r.filterName = &filterName
 	return r
 }
+func (r ApiRecordsGetRequest) FilterState(filterState ProvisioningState) ApiRecordsGetRequest {
+	r.filterState = &filterState
+	return r
+}
 func (r ApiRecordsGetRequest) Offset(offset int32) ApiRecordsGetRequest {
 	r.offset = &offset
 	return r
@@ -54,7 +59,7 @@ func (r ApiRecordsGetRequest) Limit(limit int32) ApiRecordsGetRequest {
 	return r
 }
 
-func (r ApiRecordsGetRequest) Execute() (RecordsResponse, *APIResponse, error) {
+func (r ApiRecordsGetRequest) Execute() (RecordReadList, *APIResponse, error) {
 	return r.ApiService.RecordsGetExecute(r)
 }
 
@@ -73,16 +78,16 @@ func (a *RecordsApiService) RecordsGet(ctx _context.Context) ApiRecordsGetReques
 
 /*
  * Execute executes the request
- * @return RecordsResponse
+ * @return RecordReadList
  */
-func (a *RecordsApiService) RecordsGetExecute(r ApiRecordsGetRequest) (RecordsResponse, *APIResponse, error) {
+func (a *RecordsApiService) RecordsGetExecute(r ApiRecordsGetRequest) (RecordReadList, *APIResponse, error) {
 	var (
 		localVarHTTPMethod   = _nethttp.MethodGet
 		localVarPostBody     interface{}
 		localVarFormFileName string
 		localVarFileName     string
 		localVarFileBytes    []byte
-		localVarReturnValue  RecordsResponse
+		localVarReturnValue  RecordReadList
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "RecordsApiService.RecordsGet")
@@ -101,6 +106,9 @@ func (a *RecordsApiService) RecordsGetExecute(r ApiRecordsGetRequest) (RecordsRe
 	}
 	if r.filterName != nil {
 		localVarQueryParams.Add("filter.name", parameterToString(*r.filterName, ""))
+	}
+	if r.filterState != nil {
+		localVarQueryParams.Add("filter.state", parameterToString(*r.filterState, ""))
 	}
 	if r.offset != nil {
 		localVarQueryParams.Add("offset", parameterToString(*r.offset, ""))
@@ -172,7 +180,7 @@ func (a *RecordsApiService) RecordsGetExecute(r ApiRecordsGetRequest) (RecordsRe
 			error:      fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		if localVarHTTPResponse.StatusCode == 400 {
-			var v ErrorResponse
+			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -181,7 +189,7 @@ func (a *RecordsApiService) RecordsGetExecute(r ApiRecordsGetRequest) (RecordsRe
 			newErr.model = v
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
-			var v ErrorResponse
+			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -190,7 +198,7 @@ func (a *RecordsApiService) RecordsGetExecute(r ApiRecordsGetRequest) (RecordsRe
 			newErr.model = v
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
-			var v ErrorResponse
+			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -199,7 +207,7 @@ func (a *RecordsApiService) RecordsGetExecute(r ApiRecordsGetRequest) (RecordsRe
 			newErr.model = v
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
-			var v ErrorResponse
+			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -340,7 +348,7 @@ func (a *RecordsApiService) ZonesRecordsDeleteExecute(r ApiZonesRecordsDeleteReq
 			error:      fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		if localVarHTTPResponse.StatusCode == 400 {
-			var v ErrorResponse
+			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -349,7 +357,7 @@ func (a *RecordsApiService) ZonesRecordsDeleteExecute(r ApiZonesRecordsDeleteReq
 			newErr.model = v
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
-			var v ErrorResponse
+			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -358,7 +366,7 @@ func (a *RecordsApiService) ZonesRecordsDeleteExecute(r ApiZonesRecordsDeleteReq
 			newErr.model = v
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
-			var v ErrorResponse
+			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -367,7 +375,7 @@ func (a *RecordsApiService) ZonesRecordsDeleteExecute(r ApiZonesRecordsDeleteReq
 			newErr.model = v
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
-			var v ErrorResponse
+			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -376,7 +384,7 @@ func (a *RecordsApiService) ZonesRecordsDeleteExecute(r ApiZonesRecordsDeleteReq
 			newErr.model = v
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
-			var v ErrorResponse
+			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -397,7 +405,7 @@ type ApiZonesRecordsFindByIdRequest struct {
 	recordId   string
 }
 
-func (r ApiZonesRecordsFindByIdRequest) Execute() (RecordResponse, *APIResponse, error) {
+func (r ApiZonesRecordsFindByIdRequest) Execute() (RecordRead, *APIResponse, error) {
 	return r.ApiService.ZonesRecordsFindByIdExecute(r)
 }
 
@@ -420,16 +428,16 @@ func (a *RecordsApiService) ZonesRecordsFindById(ctx _context.Context, zoneId st
 
 /*
  * Execute executes the request
- * @return RecordResponse
+ * @return RecordRead
  */
-func (a *RecordsApiService) ZonesRecordsFindByIdExecute(r ApiZonesRecordsFindByIdRequest) (RecordResponse, *APIResponse, error) {
+func (a *RecordsApiService) ZonesRecordsFindByIdExecute(r ApiZonesRecordsFindByIdRequest) (RecordRead, *APIResponse, error) {
 	var (
 		localVarHTTPMethod   = _nethttp.MethodGet
 		localVarPostBody     interface{}
 		localVarFormFileName string
 		localVarFileName     string
 		localVarFileBytes    []byte
-		localVarReturnValue  RecordResponse
+		localVarReturnValue  RecordRead
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "RecordsApiService.ZonesRecordsFindById")
@@ -509,7 +517,7 @@ func (a *RecordsApiService) ZonesRecordsFindByIdExecute(r ApiZonesRecordsFindByI
 			error:      fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		if localVarHTTPResponse.StatusCode == 400 {
-			var v ErrorResponse
+			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -518,7 +526,7 @@ func (a *RecordsApiService) ZonesRecordsFindByIdExecute(r ApiZonesRecordsFindByI
 			newErr.model = v
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
-			var v ErrorResponse
+			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -527,7 +535,7 @@ func (a *RecordsApiService) ZonesRecordsFindByIdExecute(r ApiZonesRecordsFindByI
 			newErr.model = v
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
-			var v ErrorResponse
+			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -536,7 +544,7 @@ func (a *RecordsApiService) ZonesRecordsFindByIdExecute(r ApiZonesRecordsFindByI
 			newErr.model = v
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
-			var v ErrorResponse
+			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -545,7 +553,7 @@ func (a *RecordsApiService) ZonesRecordsFindByIdExecute(r ApiZonesRecordsFindByI
 			newErr.model = v
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
-			var v ErrorResponse
+			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -575,7 +583,7 @@ type ApiZonesRecordsGetRequest struct {
 	zoneId     string
 }
 
-func (r ApiZonesRecordsGetRequest) Execute() (RecordsResponse, *APIResponse, error) {
+func (r ApiZonesRecordsGetRequest) Execute() (RecordReadList, *APIResponse, error) {
 	return r.ApiService.ZonesRecordsGetExecute(r)
 }
 
@@ -596,16 +604,16 @@ func (a *RecordsApiService) ZonesRecordsGet(ctx _context.Context, zoneId string)
 
 /*
  * Execute executes the request
- * @return RecordsResponse
+ * @return RecordReadList
  */
-func (a *RecordsApiService) ZonesRecordsGetExecute(r ApiZonesRecordsGetRequest) (RecordsResponse, *APIResponse, error) {
+func (a *RecordsApiService) ZonesRecordsGetExecute(r ApiZonesRecordsGetRequest) (RecordReadList, *APIResponse, error) {
 	var (
 		localVarHTTPMethod   = _nethttp.MethodGet
 		localVarPostBody     interface{}
 		localVarFormFileName string
 		localVarFileName     string
 		localVarFileBytes    []byte
-		localVarReturnValue  RecordsResponse
+		localVarReturnValue  RecordReadList
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "RecordsApiService.ZonesRecordsGet")
@@ -684,7 +692,7 @@ func (a *RecordsApiService) ZonesRecordsGetExecute(r ApiZonesRecordsGetRequest) 
 			error:      fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		if localVarHTTPResponse.StatusCode == 400 {
-			var v ErrorResponse
+			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -693,7 +701,7 @@ func (a *RecordsApiService) ZonesRecordsGetExecute(r ApiZonesRecordsGetRequest) 
 			newErr.model = v
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
-			var v ErrorResponse
+			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -702,7 +710,7 @@ func (a *RecordsApiService) ZonesRecordsGetExecute(r ApiZonesRecordsGetRequest) 
 			newErr.model = v
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
-			var v ErrorResponse
+			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -711,7 +719,7 @@ func (a *RecordsApiService) ZonesRecordsGetExecute(r ApiZonesRecordsGetRequest) 
 			newErr.model = v
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
-			var v ErrorResponse
+			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -736,18 +744,18 @@ func (a *RecordsApiService) ZonesRecordsGetExecute(r ApiZonesRecordsGetRequest) 
 }
 
 type ApiZonesRecordsPostRequest struct {
-	ctx                 _context.Context
-	ApiService          *RecordsApiService
-	zoneId              string
-	recordCreateRequest *RecordCreateRequest
+	ctx          _context.Context
+	ApiService   *RecordsApiService
+	zoneId       string
+	recordCreate *RecordCreate
 }
 
-func (r ApiZonesRecordsPostRequest) RecordCreateRequest(recordCreateRequest RecordCreateRequest) ApiZonesRecordsPostRequest {
-	r.recordCreateRequest = &recordCreateRequest
+func (r ApiZonesRecordsPostRequest) RecordCreate(recordCreate RecordCreate) ApiZonesRecordsPostRequest {
+	r.recordCreate = &recordCreate
 	return r
 }
 
-func (r ApiZonesRecordsPostRequest) Execute() (RecordResponse, *APIResponse, error) {
+func (r ApiZonesRecordsPostRequest) Execute() (RecordRead, *APIResponse, error) {
 	return r.ApiService.ZonesRecordsPostExecute(r)
 }
 
@@ -768,16 +776,16 @@ func (a *RecordsApiService) ZonesRecordsPost(ctx _context.Context, zoneId string
 
 /*
  * Execute executes the request
- * @return RecordResponse
+ * @return RecordRead
  */
-func (a *RecordsApiService) ZonesRecordsPostExecute(r ApiZonesRecordsPostRequest) (RecordResponse, *APIResponse, error) {
+func (a *RecordsApiService) ZonesRecordsPostExecute(r ApiZonesRecordsPostRequest) (RecordRead, *APIResponse, error) {
 	var (
 		localVarHTTPMethod   = _nethttp.MethodPost
 		localVarPostBody     interface{}
 		localVarFormFileName string
 		localVarFileName     string
 		localVarFileBytes    []byte
-		localVarReturnValue  RecordResponse
+		localVarReturnValue  RecordRead
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "RecordsApiService.ZonesRecordsPost")
@@ -791,8 +799,8 @@ func (a *RecordsApiService) ZonesRecordsPostExecute(r ApiZonesRecordsPostRequest
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}
 	localVarFormParams := _neturl.Values{}
-	if r.recordCreateRequest == nil {
-		return localVarReturnValue, nil, reportError("recordCreateRequest is required and must be specified")
+	if r.recordCreate == nil {
+		return localVarReturnValue, nil, reportError("recordCreate is required and must be specified")
 	}
 
 	// to determine the Content-Type header
@@ -813,7 +821,7 @@ func (a *RecordsApiService) ZonesRecordsPostExecute(r ApiZonesRecordsPostRequest
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
 	// body params
-	localVarPostBody = r.recordCreateRequest
+	localVarPostBody = r.recordCreate
 	if r.ctx != nil {
 		// API Key Authentication
 		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
@@ -861,7 +869,7 @@ func (a *RecordsApiService) ZonesRecordsPostExecute(r ApiZonesRecordsPostRequest
 			error:      fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		if localVarHTTPResponse.StatusCode == 400 {
-			var v ErrorResponse
+			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -870,7 +878,7 @@ func (a *RecordsApiService) ZonesRecordsPostExecute(r ApiZonesRecordsPostRequest
 			newErr.model = v
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
-			var v ErrorResponse
+			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -879,7 +887,7 @@ func (a *RecordsApiService) ZonesRecordsPostExecute(r ApiZonesRecordsPostRequest
 			newErr.model = v
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
-			var v ErrorResponse
+			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -888,7 +896,7 @@ func (a *RecordsApiService) ZonesRecordsPostExecute(r ApiZonesRecordsPostRequest
 			newErr.model = v
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
-			var v ErrorResponse
+			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -913,19 +921,19 @@ func (a *RecordsApiService) ZonesRecordsPostExecute(r ApiZonesRecordsPostRequest
 }
 
 type ApiZonesRecordsPutRequest struct {
-	ctx                 _context.Context
-	ApiService          *RecordsApiService
-	zoneId              string
-	recordId            string
-	recordUpdateRequest *RecordUpdateRequest
+	ctx          _context.Context
+	ApiService   *RecordsApiService
+	zoneId       string
+	recordId     string
+	recordEnsure *RecordEnsure
 }
 
-func (r ApiZonesRecordsPutRequest) RecordUpdateRequest(recordUpdateRequest RecordUpdateRequest) ApiZonesRecordsPutRequest {
-	r.recordUpdateRequest = &recordUpdateRequest
+func (r ApiZonesRecordsPutRequest) RecordEnsure(recordEnsure RecordEnsure) ApiZonesRecordsPutRequest {
+	r.recordEnsure = &recordEnsure
 	return r
 }
 
-func (r ApiZonesRecordsPutRequest) Execute() (RecordResponse, *APIResponse, error) {
+func (r ApiZonesRecordsPutRequest) Execute() (RecordRead, *APIResponse, error) {
 	return r.ApiService.ZonesRecordsPutExecute(r)
 }
 
@@ -948,16 +956,16 @@ func (a *RecordsApiService) ZonesRecordsPut(ctx _context.Context, zoneId string,
 
 /*
  * Execute executes the request
- * @return RecordResponse
+ * @return RecordRead
  */
-func (a *RecordsApiService) ZonesRecordsPutExecute(r ApiZonesRecordsPutRequest) (RecordResponse, *APIResponse, error) {
+func (a *RecordsApiService) ZonesRecordsPutExecute(r ApiZonesRecordsPutRequest) (RecordRead, *APIResponse, error) {
 	var (
 		localVarHTTPMethod   = _nethttp.MethodPut
 		localVarPostBody     interface{}
 		localVarFormFileName string
 		localVarFileName     string
 		localVarFileBytes    []byte
-		localVarReturnValue  RecordResponse
+		localVarReturnValue  RecordRead
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "RecordsApiService.ZonesRecordsPut")
@@ -972,8 +980,8 @@ func (a *RecordsApiService) ZonesRecordsPutExecute(r ApiZonesRecordsPutRequest) 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}
 	localVarFormParams := _neturl.Values{}
-	if r.recordUpdateRequest == nil {
-		return localVarReturnValue, nil, reportError("recordUpdateRequest is required and must be specified")
+	if r.recordEnsure == nil {
+		return localVarReturnValue, nil, reportError("recordEnsure is required and must be specified")
 	}
 
 	// to determine the Content-Type header
@@ -994,7 +1002,7 @@ func (a *RecordsApiService) ZonesRecordsPutExecute(r ApiZonesRecordsPutRequest) 
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
 	// body params
-	localVarPostBody = r.recordUpdateRequest
+	localVarPostBody = r.recordEnsure
 	if r.ctx != nil {
 		// API Key Authentication
 		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
@@ -1042,7 +1050,7 @@ func (a *RecordsApiService) ZonesRecordsPutExecute(r ApiZonesRecordsPutRequest) 
 			error:      fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		if localVarHTTPResponse.StatusCode == 400 {
-			var v ErrorResponse
+			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -1051,7 +1059,7 @@ func (a *RecordsApiService) ZonesRecordsPutExecute(r ApiZonesRecordsPutRequest) 
 			newErr.model = v
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
-			var v ErrorResponse
+			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -1060,7 +1068,7 @@ func (a *RecordsApiService) ZonesRecordsPutExecute(r ApiZonesRecordsPutRequest) 
 			newErr.model = v
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
-			var v ErrorResponse
+			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -1069,7 +1077,7 @@ func (a *RecordsApiService) ZonesRecordsPutExecute(r ApiZonesRecordsPutRequest) 
 			newErr.model = v
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
-			var v ErrorResponse
+			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -1078,7 +1086,7 @@ func (a *RecordsApiService) ZonesRecordsPutExecute(r ApiZonesRecordsPutRequest) 
 			newErr.model = v
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
-			var v ErrorResponse
+			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()

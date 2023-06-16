@@ -1,9 +1,9 @@
 /*
- * IONOS Cloud - DNS as a Service API
+ * IONOS Cloud - DNS API
  *
  * DNS API Specification
  *
- * API version: 0.1.0
+ * API version: 1.2.0
  * Contact: support@cloud.ionos.com
  */
 
@@ -129,7 +129,7 @@ func NewConfiguration(username, password, token, hostUrl string) *Configuration 
 	cfg := &Configuration{
 		DefaultHeader:      make(map[string]string),
 		DefaultQueryParams: url.Values{},
-		UserAgent:          "ionos-cloud-sdk-go-dnsaas/v1.0.0",
+		UserAgent:          "ionos-cloud-sdk-go-dns/vv1.1.1",
 		Debug:              false,
 		Username:           username,
 		Password:           password,

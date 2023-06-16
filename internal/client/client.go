@@ -14,7 +14,7 @@ import (
 	dataplatform "github.com/ionos-cloud/sdk-go-dataplatform"
 	mongo "github.com/ionos-cloud/sdk-go-dbaas-mongo"
 	postgres "github.com/ionos-cloud/sdk-go-dbaas-postgres"
-	dns "github.com/ionos-cloud/sdk-go-dnsaas"
+	dns "github.com/ionos-cloud/sdk-go-dns"
 	cloudv6 "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
 )

@@ -13,7 +13,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
-	dns "github.com/ionos-cloud/sdk-go-dnsaas"
+	dns "github.com/ionos-cloud/sdk-go-dns"
 	"github.com/spf13/cobra"
 )
 
@@ -119,7 +119,9 @@ func Zones(f func(dns.ZoneResponse) string) []string {
 	return functional.Map(*ls.GetItems(), f)
 }
 
-func ZoneIdByNameOrId(nameOrId string) (string, error) {
+// Resolve resolves nameOrId (the name of a zone, or the ID of a zone) - to the ID of the zone.
+// If it's an ID, it's returned as is. If it's not, then it's a name, and we try to resolve it
+func Resolve(nameOrId string) (string, error) {
 	uid, errParseUuid := uuid.Parse(nameOrId)
 	zId := uid.String()
 	if errParseUuid != nil {
@@ -129,7 +131,7 @@ func ZoneIdByNameOrId(nameOrId string) (string, error) {
 			return "", fmt.Errorf("failed finding a zone by name: %w", errFindZoneByName)
 		}
 		if len(*ls.Items) < 1 {
-			return "", fmt.Errorf("could not find zone by name %s", nameOrId)
+			return "", fmt.Errorf("could not find zone by name %s: got %d zones", nameOrId, len(*ls.Items))
 		}
 		zId = *(*ls.Items)[0].Id
 	}

@@ -1,9 +1,9 @@
 /*
- * IONOS Cloud - DNS as a Service API
+ * IONOS Cloud - DNS API
  *
  * DNS API Specification
  *
- * API version: 0.1.0
+ * API version: 1.2.0
  * Contact: support@cloud.ionos.com
  */
 
@@ -16,40 +16,41 @@ import (
 	"time"
 )
 
-// RecordMetadata struct for RecordMetadata
-type RecordMetadata struct {
-	// The date of the last change formatted as yyyy-MM-dd'T'HH:mm:ss.SSS'Z'
+// MetadataWithStateNameservers struct for MetadataWithStateNameservers
+type MetadataWithStateNameservers struct {
+	// The date of the last change formatted as yyyy-MM-dd'T'HH:mm:ss.SSS'Z'.
 	LastModifiedDate *IonosTime `json:"lastModifiedDate,omitempty"`
-	// The date of the record creation formatted as yyyy-MM-dd'T'HH:mm:ss.SSS'Z'
+	// The date of creation of the zone formatted as yyyy-MM-dd'T'HH:mm:ss.SSS'Z'.
 	CreatedDate *IonosTime         `json:"createdDate,omitempty"`
-	State       *ProvisioningState `json:"state,omitempty"`
-	// A fully qualified domain name. FQDN consists of two parts - the hostname and the domain name.
-	Fqdn *string `json:"fqdn,omitempty"`
-	// The ID (UUID) of the DNS zone of which record belongs to.
-	ZoneId *string `json:"zoneId,omitempty"`
+	State       *ProvisioningState `json:"state"`
+	// The list of nameservers associated to the zone
+	Nameservers *[]string `json:"nameservers"`
 }
 
-// NewRecordMetadata instantiates a new RecordMetadata object
+// NewMetadataWithStateNameservers instantiates a new MetadataWithStateNameservers object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewRecordMetadata() *RecordMetadata {
-	this := RecordMetadata{}
+func NewMetadataWithStateNameservers(state ProvisioningState, nameservers []string) *MetadataWithStateNameservers {
+	this := MetadataWithStateNameservers{}
+
+	this.State = &state
+	this.Nameservers = &nameservers
 
 	return &this
 }
 
-// NewRecordMetadataWithDefaults instantiates a new RecordMetadata object
+// NewMetadataWithStateNameserversWithDefaults instantiates a new MetadataWithStateNameservers object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewRecordMetadataWithDefaults() *RecordMetadata {
-	this := RecordMetadata{}
+func NewMetadataWithStateNameserversWithDefaults() *MetadataWithStateNameservers {
+	this := MetadataWithStateNameservers{}
 	return &this
 }
 
 // GetLastModifiedDate returns the LastModifiedDate field value
 // If the value is explicit nil, the zero value for time.Time will be returned
-func (o *RecordMetadata) GetLastModifiedDate() *time.Time {
+func (o *MetadataWithStateNameservers) GetLastModifiedDate() *time.Time {
 	if o == nil {
 		return nil
 	}
@@ -64,7 +65,7 @@ func (o *RecordMetadata) GetLastModifiedDate() *time.Time {
 // GetLastModifiedDateOk returns a tuple with the LastModifiedDate field value
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *RecordMetadata) GetLastModifiedDateOk() (*time.Time, bool) {
+func (o *MetadataWithStateNameservers) GetLastModifiedDateOk() (*time.Time, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -77,14 +78,14 @@ func (o *RecordMetadata) GetLastModifiedDateOk() (*time.Time, bool) {
 }
 
 // SetLastModifiedDate sets field value
-func (o *RecordMetadata) SetLastModifiedDate(v time.Time) {
+func (o *MetadataWithStateNameservers) SetLastModifiedDate(v time.Time) {
 
 	o.LastModifiedDate = &IonosTime{v}
 
 }
 
 // HasLastModifiedDate returns a boolean if a field has been set.
-func (o *RecordMetadata) HasLastModifiedDate() bool {
+func (o *MetadataWithStateNameservers) HasLastModifiedDate() bool {
 	if o != nil && o.LastModifiedDate != nil {
 		return true
 	}
@@ -94,7 +95,7 @@ func (o *RecordMetadata) HasLastModifiedDate() bool {
 
 // GetCreatedDate returns the CreatedDate field value
 // If the value is explicit nil, the zero value for time.Time will be returned
-func (o *RecordMetadata) GetCreatedDate() *time.Time {
+func (o *MetadataWithStateNameservers) GetCreatedDate() *time.Time {
 	if o == nil {
 		return nil
 	}
@@ -109,7 +110,7 @@ func (o *RecordMetadata) GetCreatedDate() *time.Time {
 // GetCreatedDateOk returns a tuple with the CreatedDate field value
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *RecordMetadata) GetCreatedDateOk() (*time.Time, bool) {
+func (o *MetadataWithStateNameservers) GetCreatedDateOk() (*time.Time, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -122,14 +123,14 @@ func (o *RecordMetadata) GetCreatedDateOk() (*time.Time, bool) {
 }
 
 // SetCreatedDate sets field value
-func (o *RecordMetadata) SetCreatedDate(v time.Time) {
+func (o *MetadataWithStateNameservers) SetCreatedDate(v time.Time) {
 
 	o.CreatedDate = &IonosTime{v}
 
 }
 
 // HasCreatedDate returns a boolean if a field has been set.
-func (o *RecordMetadata) HasCreatedDate() bool {
+func (o *MetadataWithStateNameservers) HasCreatedDate() bool {
 	if o != nil && o.CreatedDate != nil {
 		return true
 	}
@@ -139,7 +140,7 @@ func (o *RecordMetadata) HasCreatedDate() bool {
 
 // GetState returns the State field value
 // If the value is explicit nil, the zero value for ProvisioningState will be returned
-func (o *RecordMetadata) GetState() *ProvisioningState {
+func (o *MetadataWithStateNameservers) GetState() *ProvisioningState {
 	if o == nil {
 		return nil
 	}
@@ -151,7 +152,7 @@ func (o *RecordMetadata) GetState() *ProvisioningState {
 // GetStateOk returns a tuple with the State field value
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *RecordMetadata) GetStateOk() (*ProvisioningState, bool) {
+func (o *MetadataWithStateNameservers) GetStateOk() (*ProvisioningState, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -160,14 +161,14 @@ func (o *RecordMetadata) GetStateOk() (*ProvisioningState, bool) {
 }
 
 // SetState sets field value
-func (o *RecordMetadata) SetState(v ProvisioningState) {
+func (o *MetadataWithStateNameservers) SetState(v ProvisioningState) {
 
 	o.State = &v
 
 }
 
 // HasState returns a boolean if a field has been set.
-func (o *RecordMetadata) HasState() bool {
+func (o *MetadataWithStateNameservers) HasState() bool {
 	if o != nil && o.State != nil {
 		return true
 	}
@@ -175,83 +176,45 @@ func (o *RecordMetadata) HasState() bool {
 	return false
 }
 
-// GetFqdn returns the Fqdn field value
-// If the value is explicit nil, the zero value for string will be returned
-func (o *RecordMetadata) GetFqdn() *string {
+// GetNameservers returns the Nameservers field value
+// If the value is explicit nil, the zero value for []string will be returned
+func (o *MetadataWithStateNameservers) GetNameservers() *[]string {
 	if o == nil {
 		return nil
 	}
 
-	return o.Fqdn
+	return o.Nameservers
 
 }
 
-// GetFqdnOk returns a tuple with the Fqdn field value
+// GetNameserversOk returns a tuple with the Nameservers field value
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *RecordMetadata) GetFqdnOk() (*string, bool) {
+func (o *MetadataWithStateNameservers) GetNameserversOk() (*[]string, bool) {
 	if o == nil {
 		return nil, false
 	}
 
-	return o.Fqdn, true
+	return o.Nameservers, true
 }
 
-// SetFqdn sets field value
-func (o *RecordMetadata) SetFqdn(v string) {
+// SetNameservers sets field value
+func (o *MetadataWithStateNameservers) SetNameservers(v []string) {
 
-	o.Fqdn = &v
+	o.Nameservers = &v
 
 }
 
-// HasFqdn returns a boolean if a field has been set.
-func (o *RecordMetadata) HasFqdn() bool {
-	if o != nil && o.Fqdn != nil {
+// HasNameservers returns a boolean if a field has been set.
+func (o *MetadataWithStateNameservers) HasNameservers() bool {
+	if o != nil && o.Nameservers != nil {
 		return true
 	}
 
 	return false
 }
 
-// GetZoneId returns the ZoneId field value
-// If the value is explicit nil, the zero value for string will be returned
-func (o *RecordMetadata) GetZoneId() *string {
-	if o == nil {
-		return nil
-	}
-
-	return o.ZoneId
-
-}
-
-// GetZoneIdOk returns a tuple with the ZoneId field value
-// and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *RecordMetadata) GetZoneIdOk() (*string, bool) {
-	if o == nil {
-		return nil, false
-	}
-
-	return o.ZoneId, true
-}
-
-// SetZoneId sets field value
-func (o *RecordMetadata) SetZoneId(v string) {
-
-	o.ZoneId = &v
-
-}
-
-// HasZoneId returns a boolean if a field has been set.
-func (o *RecordMetadata) HasZoneId() bool {
-	if o != nil && o.ZoneId != nil {
-		return true
-	}
-
-	return false
-}
-
-func (o RecordMetadata) MarshalJSON() ([]byte, error) {
+func (o MetadataWithStateNameservers) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 	if o.LastModifiedDate != nil {
 		toSerialize["lastModifiedDate"] = o.LastModifiedDate
@@ -265,49 +228,45 @@ func (o RecordMetadata) MarshalJSON() ([]byte, error) {
 		toSerialize["state"] = o.State
 	}
 
-	if o.Fqdn != nil {
-		toSerialize["fqdn"] = o.Fqdn
-	}
-
-	if o.ZoneId != nil {
-		toSerialize["zoneId"] = o.ZoneId
+	if o.Nameservers != nil {
+		toSerialize["nameservers"] = o.Nameservers
 	}
 
 	return json.Marshal(toSerialize)
 }
 
-type NullableRecordMetadata struct {
-	value *RecordMetadata
+type NullableMetadataWithStateNameservers struct {
+	value *MetadataWithStateNameservers
 	isSet bool
 }
 
-func (v NullableRecordMetadata) Get() *RecordMetadata {
+func (v NullableMetadataWithStateNameservers) Get() *MetadataWithStateNameservers {
 	return v.value
 }
 
-func (v *NullableRecordMetadata) Set(val *RecordMetadata) {
+func (v *NullableMetadataWithStateNameservers) Set(val *MetadataWithStateNameservers) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableRecordMetadata) IsSet() bool {
+func (v NullableMetadataWithStateNameservers) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableRecordMetadata) Unset() {
+func (v *NullableMetadataWithStateNameservers) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableRecordMetadata(val *RecordMetadata) *NullableRecordMetadata {
-	return &NullableRecordMetadata{value: val, isSet: true}
+func NewNullableMetadataWithStateNameservers(val *MetadataWithStateNameservers) *NullableMetadataWithStateNameservers {
+	return &NullableMetadataWithStateNameservers{value: val, isSet: true}
 }
 
-func (v NullableRecordMetadata) MarshalJSON() ([]byte, error) {
+func (v NullableMetadataWithStateNameservers) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableRecordMetadata) UnmarshalJSON(src []byte) error {
+func (v *NullableMetadataWithStateNameservers) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

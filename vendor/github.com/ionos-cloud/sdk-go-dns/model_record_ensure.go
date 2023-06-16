@@ -1,9 +1,9 @@
 /*
- * IONOS Cloud - DNS as a Service API
+ * IONOS Cloud - DNS API
  *
  * DNS API Specification
  *
- * API version: 0.1.0
+ * API version: 1.2.0
  * Contact: support@cloud.ionos.com
  */
 
@@ -15,34 +15,34 @@ import (
 	"encoding/json"
 )
 
-// ZoneUpdateRequest struct for ZoneUpdateRequest
-type ZoneUpdateRequest struct {
-	Properties *ZoneUpdateRequestProperties `json:"properties"`
+// RecordEnsure struct for RecordEnsure
+type RecordEnsure struct {
+	Properties *Record `json:"properties"`
 }
 
-// NewZoneUpdateRequest instantiates a new ZoneUpdateRequest object
+// NewRecordEnsure instantiates a new RecordEnsure object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewZoneUpdateRequest(properties ZoneUpdateRequestProperties) *ZoneUpdateRequest {
-	this := ZoneUpdateRequest{}
+func NewRecordEnsure(properties Record) *RecordEnsure {
+	this := RecordEnsure{}
 
 	this.Properties = &properties
 
 	return &this
 }
 
-// NewZoneUpdateRequestWithDefaults instantiates a new ZoneUpdateRequest object
+// NewRecordEnsureWithDefaults instantiates a new RecordEnsure object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewZoneUpdateRequestWithDefaults() *ZoneUpdateRequest {
-	this := ZoneUpdateRequest{}
+func NewRecordEnsureWithDefaults() *RecordEnsure {
+	this := RecordEnsure{}
 	return &this
 }
 
 // GetProperties returns the Properties field value
-// If the value is explicit nil, the zero value for ZoneUpdateRequestProperties will be returned
-func (o *ZoneUpdateRequest) GetProperties() *ZoneUpdateRequestProperties {
+// If the value is explicit nil, the zero value for Record will be returned
+func (o *RecordEnsure) GetProperties() *Record {
 	if o == nil {
 		return nil
 	}
@@ -54,7 +54,7 @@ func (o *ZoneUpdateRequest) GetProperties() *ZoneUpdateRequestProperties {
 // GetPropertiesOk returns a tuple with the Properties field value
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *ZoneUpdateRequest) GetPropertiesOk() (*ZoneUpdateRequestProperties, bool) {
+func (o *RecordEnsure) GetPropertiesOk() (*Record, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -63,14 +63,14 @@ func (o *ZoneUpdateRequest) GetPropertiesOk() (*ZoneUpdateRequestProperties, boo
 }
 
 // SetProperties sets field value
-func (o *ZoneUpdateRequest) SetProperties(v ZoneUpdateRequestProperties) {
+func (o *RecordEnsure) SetProperties(v Record) {
 
 	o.Properties = &v
 
 }
 
 // HasProperties returns a boolean if a field has been set.
-func (o *ZoneUpdateRequest) HasProperties() bool {
+func (o *RecordEnsure) HasProperties() bool {
 	if o != nil && o.Properties != nil {
 		return true
 	}
@@ -78,7 +78,7 @@ func (o *ZoneUpdateRequest) HasProperties() bool {
 	return false
 }
 
-func (o ZoneUpdateRequest) MarshalJSON() ([]byte, error) {
+func (o RecordEnsure) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 	if o.Properties != nil {
 		toSerialize["properties"] = o.Properties
@@ -87,38 +87,38 @@ func (o ZoneUpdateRequest) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-type NullableZoneUpdateRequest struct {
-	value *ZoneUpdateRequest
+type NullableRecordEnsure struct {
+	value *RecordEnsure
 	isSet bool
 }
 
-func (v NullableZoneUpdateRequest) Get() *ZoneUpdateRequest {
+func (v NullableRecordEnsure) Get() *RecordEnsure {
 	return v.value
 }
 
-func (v *NullableZoneUpdateRequest) Set(val *ZoneUpdateRequest) {
+func (v *NullableRecordEnsure) Set(val *RecordEnsure) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableZoneUpdateRequest) IsSet() bool {
+func (v NullableRecordEnsure) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableZoneUpdateRequest) Unset() {
+func (v *NullableRecordEnsure) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableZoneUpdateRequest(val *ZoneUpdateRequest) *NullableZoneUpdateRequest {
-	return &NullableZoneUpdateRequest{value: val, isSet: true}
+func NewNullableRecordEnsure(val *RecordEnsure) *NullableRecordEnsure {
+	return &NullableRecordEnsure{value: val, isSet: true}
 }
 
-func (v NullableZoneUpdateRequest) MarshalJSON() ([]byte, error) {
+func (v NullableRecordEnsure) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableZoneUpdateRequest) UnmarshalJSON(src []byte) error {
+func (v *NullableRecordEnsure) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

@@ -3,7 +3,7 @@ package zone
 import (
 	"context"
 
-	dns "github.com/ionos-cloud/sdk-go-dnsaas"
+	dns "github.com/ionos-cloud/sdk-go-dns"
 
 	"github.com/spf13/cobra"
 
@@ -31,7 +31,7 @@ func ZonesPutCmd() *core.Command {
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			id, err := ZoneIdByNameOrId(viper.GetString(core.GetFlagName(c.NS, constants.FlagZone)))
+			id, err := Resolve(viper.GetString(core.GetFlagName(c.NS, constants.FlagZone)))
 			if err != nil {
 				return err
 			}

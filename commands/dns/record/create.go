@@ -8,7 +8,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dns/zone"
 
-	dns "github.com/ionos-cloud/sdk-go-dnsaas"
+	dns "github.com/ionos-cloud/sdk-go-dns"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/pointer"
@@ -51,7 +51,7 @@ func ZonesRecordsPostCmd() *core.Command {
 			input := dns.RecordProperties{}
 			modifyRecordPropertiesFromFlags(c, &input)
 
-			zoneId, err := zone.ZoneIdByNameOrId(viper.GetString(core.GetFlagName(c.NS, constants.FlagZone)))
+			zoneId, err := zone.Resolve(viper.GetString(core.GetFlagName(c.NS, constants.FlagZone)))
 			if err != nil {
 				return err
 			}

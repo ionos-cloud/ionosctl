@@ -3,13 +3,12 @@ package zone
 import (
 	"context"
 
-	"github.com/ionos-cloud/ionosctl/v6/pkg/uuidgen"
-
-	dns "github.com/ionos-cloud/sdk-go-dnsaas"
+	dns "github.com/ionos-cloud/sdk-go-dns"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/pointer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/uuidgen"
 	"github.com/spf13/viper"
 
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
