@@ -16,24 +16,24 @@ import (
 
 // ApplicationLoadBalancerHttpRule struct for ApplicationLoadBalancerHttpRule
 type ApplicationLoadBalancerHttpRule struct {
-	// An array of items in the collection. The action will be executed only if each condition is met; the rule will always be applied if no conditions are set.
-	Conditions *[]ApplicationLoadBalancerHttpRuleCondition `json:"conditions,omitempty"`
-	// Specifies the content type and is valid only for 'STATIC' actions.
-	ContentType *string `json:"contentType,omitempty"`
-	// Indicates whether the query part of the URI should be dropped and is valid only for 'REDIRECT' actions. Default value is 'FALSE', the redirect URI does not contain any query parameters.
-	DropQuery *bool `json:"dropQuery,omitempty"`
-	// The location for the redirection; this parameter is mandatory and valid only for 'REDIRECT' actions.
-	Location *string `json:"location,omitempty"`
 	// The unique name of the Application Load Balancer HTTP rule.
 	Name *string `json:"name"`
-	// The response message of the request; this parameter is mandatory for 'STATIC' actions.
-	ResponseMessage *string `json:"responseMessage,omitempty"`
-	// The status code is for 'REDIRECT' and 'STATIC' actions only.   If the HTTP rule is 'REDIRECT' the valid values are: 301, 302, 303, 307, 308; default value is '301'.  If the HTTP rule is 'STATIC' the valid values are from the range 200-599; default value is '503'.
-	StatusCode *int32 `json:"statusCode,omitempty"`
-	// The ID of the target group; this parameter is mandatory and is valid only for 'FORWARD' actions.
-	TargetGroup *string `json:"targetGroup,omitempty"`
-	// The HTTP rule type.
+	// Type of the HTTP rule.
 	Type *string `json:"type"`
+	// The ID of the target group; mandatory and only valid for FORWARD actions.
+	TargetGroup *string `json:"targetGroup,omitempty"`
+	// Default is false; valid only for REDIRECT actions.
+	DropQuery *bool `json:"dropQuery,omitempty"`
+	// The location for redirecting; mandatory and valid only for REDIRECT actions.
+	Location *string `json:"location,omitempty"`
+	// Valid only for REDIRECT and STATIC actions. For REDIRECT actions, default is 301 and possible values are 301, 302, 303, 307, and 308. For STATIC actions, default is 503 and valid range is 200 to 599.
+	StatusCode *int32 `json:"statusCode,omitempty"`
+	// The response message of the request; mandatory for STATIC actions.
+	ResponseMessage *string `json:"responseMessage,omitempty"`
+	// Valid only for STATIC actions.
+	ContentType *string `json:"contentType,omitempty"`
+	// An array of items in the collection.The action is only performed if each and every condition is met; if no conditions are set, the rule will always be performed.
+	Conditions *[]ApplicationLoadBalancerHttpRuleCondition `json:"conditions,omitempty"`
 }
 
 // NewApplicationLoadBalancerHttpRule instantiates a new ApplicationLoadBalancerHttpRule object
@@ -57,76 +57,114 @@ func NewApplicationLoadBalancerHttpRuleWithDefaults() *ApplicationLoadBalancerHt
 	return &this
 }
 
-// GetConditions returns the Conditions field value
-// If the value is explicit nil, nil is returned
-func (o *ApplicationLoadBalancerHttpRule) GetConditions() *[]ApplicationLoadBalancerHttpRuleCondition {
+// GetName returns the Name field value
+// If the value is explicit nil, the zero value for string will be returned
+func (o *ApplicationLoadBalancerHttpRule) GetName() *string {
 	if o == nil {
 		return nil
 	}
 
-	return o.Conditions
+	return o.Name
 
 }
 
-// GetConditionsOk returns a tuple with the Conditions field value
+// GetNameOk returns a tuple with the Name field value
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *ApplicationLoadBalancerHttpRule) GetConditionsOk() (*[]ApplicationLoadBalancerHttpRuleCondition, bool) {
+func (o *ApplicationLoadBalancerHttpRule) GetNameOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
 
-	return o.Conditions, true
+	return o.Name, true
 }
 
-// SetConditions sets field value
-func (o *ApplicationLoadBalancerHttpRule) SetConditions(v []ApplicationLoadBalancerHttpRuleCondition) {
+// SetName sets field value
+func (o *ApplicationLoadBalancerHttpRule) SetName(v string) {
 
-	o.Conditions = &v
+	o.Name = &v
 
 }
 
-// HasConditions returns a boolean if a field has been set.
-func (o *ApplicationLoadBalancerHttpRule) HasConditions() bool {
-	if o != nil && o.Conditions != nil {
+// HasName returns a boolean if a field has been set.
+func (o *ApplicationLoadBalancerHttpRule) HasName() bool {
+	if o != nil && o.Name != nil {
 		return true
 	}
 
 	return false
 }
 
-// GetContentType returns the ContentType field value
-// If the value is explicit nil, nil is returned
-func (o *ApplicationLoadBalancerHttpRule) GetContentType() *string {
+// GetType returns the Type field value
+// If the value is explicit nil, the zero value for string will be returned
+func (o *ApplicationLoadBalancerHttpRule) GetType() *string {
 	if o == nil {
 		return nil
 	}
 
-	return o.ContentType
+	return o.Type
 
 }
 
-// GetContentTypeOk returns a tuple with the ContentType field value
+// GetTypeOk returns a tuple with the Type field value
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *ApplicationLoadBalancerHttpRule) GetContentTypeOk() (*string, bool) {
+func (o *ApplicationLoadBalancerHttpRule) GetTypeOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
 
-	return o.ContentType, true
+	return o.Type, true
 }
 
-// SetContentType sets field value
-func (o *ApplicationLoadBalancerHttpRule) SetContentType(v string) {
+// SetType sets field value
+func (o *ApplicationLoadBalancerHttpRule) SetType(v string) {
 
-	o.ContentType = &v
+	o.Type = &v
 
 }
 
-// HasContentType returns a boolean if a field has been set.
-func (o *ApplicationLoadBalancerHttpRule) HasContentType() bool {
-	if o != nil && o.ContentType != nil {
+// HasType returns a boolean if a field has been set.
+func (o *ApplicationLoadBalancerHttpRule) HasType() bool {
+	if o != nil && o.Type != nil {
+		return true
+	}
+
+	return false
+}
+
+// GetTargetGroup returns the TargetGroup field value
+// If the value is explicit nil, the zero value for string will be returned
+func (o *ApplicationLoadBalancerHttpRule) GetTargetGroup() *string {
+	if o == nil {
+		return nil
+	}
+
+	return o.TargetGroup
+
+}
+
+// GetTargetGroupOk returns a tuple with the TargetGroup field value
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *ApplicationLoadBalancerHttpRule) GetTargetGroupOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+
+	return o.TargetGroup, true
+}
+
+// SetTargetGroup sets field value
+func (o *ApplicationLoadBalancerHttpRule) SetTargetGroup(v string) {
+
+	o.TargetGroup = &v
+
+}
+
+// HasTargetGroup returns a boolean if a field has been set.
+func (o *ApplicationLoadBalancerHttpRule) HasTargetGroup() bool {
+	if o != nil && o.TargetGroup != nil {
 		return true
 	}
 
@@ -134,7 +172,7 @@ func (o *ApplicationLoadBalancerHttpRule) HasContentType() bool {
 }
 
 // GetDropQuery returns the DropQuery field value
-// If the value is explicit nil, nil is returned
+// If the value is explicit nil, the zero value for bool will be returned
 func (o *ApplicationLoadBalancerHttpRule) GetDropQuery() *bool {
 	if o == nil {
 		return nil
@@ -172,7 +210,7 @@ func (o *ApplicationLoadBalancerHttpRule) HasDropQuery() bool {
 }
 
 // GetLocation returns the Location field value
-// If the value is explicit nil, nil is returned
+// If the value is explicit nil, the zero value for string will be returned
 func (o *ApplicationLoadBalancerHttpRule) GetLocation() *string {
 	if o == nil {
 		return nil
@@ -209,84 +247,8 @@ func (o *ApplicationLoadBalancerHttpRule) HasLocation() bool {
 	return false
 }
 
-// GetName returns the Name field value
-// If the value is explicit nil, nil is returned
-func (o *ApplicationLoadBalancerHttpRule) GetName() *string {
-	if o == nil {
-		return nil
-	}
-
-	return o.Name
-
-}
-
-// GetNameOk returns a tuple with the Name field value
-// and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *ApplicationLoadBalancerHttpRule) GetNameOk() (*string, bool) {
-	if o == nil {
-		return nil, false
-	}
-
-	return o.Name, true
-}
-
-// SetName sets field value
-func (o *ApplicationLoadBalancerHttpRule) SetName(v string) {
-
-	o.Name = &v
-
-}
-
-// HasName returns a boolean if a field has been set.
-func (o *ApplicationLoadBalancerHttpRule) HasName() bool {
-	if o != nil && o.Name != nil {
-		return true
-	}
-
-	return false
-}
-
-// GetResponseMessage returns the ResponseMessage field value
-// If the value is explicit nil, nil is returned
-func (o *ApplicationLoadBalancerHttpRule) GetResponseMessage() *string {
-	if o == nil {
-		return nil
-	}
-
-	return o.ResponseMessage
-
-}
-
-// GetResponseMessageOk returns a tuple with the ResponseMessage field value
-// and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *ApplicationLoadBalancerHttpRule) GetResponseMessageOk() (*string, bool) {
-	if o == nil {
-		return nil, false
-	}
-
-	return o.ResponseMessage, true
-}
-
-// SetResponseMessage sets field value
-func (o *ApplicationLoadBalancerHttpRule) SetResponseMessage(v string) {
-
-	o.ResponseMessage = &v
-
-}
-
-// HasResponseMessage returns a boolean if a field has been set.
-func (o *ApplicationLoadBalancerHttpRule) HasResponseMessage() bool {
-	if o != nil && o.ResponseMessage != nil {
-		return true
-	}
-
-	return false
-}
-
 // GetStatusCode returns the StatusCode field value
-// If the value is explicit nil, nil is returned
+// If the value is explicit nil, the zero value for int32 will be returned
 func (o *ApplicationLoadBalancerHttpRule) GetStatusCode() *int32 {
 	if o == nil {
 		return nil
@@ -323,76 +285,114 @@ func (o *ApplicationLoadBalancerHttpRule) HasStatusCode() bool {
 	return false
 }
 
-// GetTargetGroup returns the TargetGroup field value
-// If the value is explicit nil, nil is returned
-func (o *ApplicationLoadBalancerHttpRule) GetTargetGroup() *string {
+// GetResponseMessage returns the ResponseMessage field value
+// If the value is explicit nil, the zero value for string will be returned
+func (o *ApplicationLoadBalancerHttpRule) GetResponseMessage() *string {
 	if o == nil {
 		return nil
 	}
 
-	return o.TargetGroup
+	return o.ResponseMessage
 
 }
 
-// GetTargetGroupOk returns a tuple with the TargetGroup field value
+// GetResponseMessageOk returns a tuple with the ResponseMessage field value
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *ApplicationLoadBalancerHttpRule) GetTargetGroupOk() (*string, bool) {
+func (o *ApplicationLoadBalancerHttpRule) GetResponseMessageOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
 
-	return o.TargetGroup, true
+	return o.ResponseMessage, true
 }
 
-// SetTargetGroup sets field value
-func (o *ApplicationLoadBalancerHttpRule) SetTargetGroup(v string) {
+// SetResponseMessage sets field value
+func (o *ApplicationLoadBalancerHttpRule) SetResponseMessage(v string) {
 
-	o.TargetGroup = &v
+	o.ResponseMessage = &v
 
 }
 
-// HasTargetGroup returns a boolean if a field has been set.
-func (o *ApplicationLoadBalancerHttpRule) HasTargetGroup() bool {
-	if o != nil && o.TargetGroup != nil {
+// HasResponseMessage returns a boolean if a field has been set.
+func (o *ApplicationLoadBalancerHttpRule) HasResponseMessage() bool {
+	if o != nil && o.ResponseMessage != nil {
 		return true
 	}
 
 	return false
 }
 
-// GetType returns the Type field value
-// If the value is explicit nil, nil is returned
-func (o *ApplicationLoadBalancerHttpRule) GetType() *string {
+// GetContentType returns the ContentType field value
+// If the value is explicit nil, the zero value for string will be returned
+func (o *ApplicationLoadBalancerHttpRule) GetContentType() *string {
 	if o == nil {
 		return nil
 	}
 
-	return o.Type
+	return o.ContentType
 
 }
 
-// GetTypeOk returns a tuple with the Type field value
+// GetContentTypeOk returns a tuple with the ContentType field value
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *ApplicationLoadBalancerHttpRule) GetTypeOk() (*string, bool) {
+func (o *ApplicationLoadBalancerHttpRule) GetContentTypeOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
 
-	return o.Type, true
+	return o.ContentType, true
 }
 
-// SetType sets field value
-func (o *ApplicationLoadBalancerHttpRule) SetType(v string) {
+// SetContentType sets field value
+func (o *ApplicationLoadBalancerHttpRule) SetContentType(v string) {
 
-	o.Type = &v
+	o.ContentType = &v
 
 }
 
-// HasType returns a boolean if a field has been set.
-func (o *ApplicationLoadBalancerHttpRule) HasType() bool {
-	if o != nil && o.Type != nil {
+// HasContentType returns a boolean if a field has been set.
+func (o *ApplicationLoadBalancerHttpRule) HasContentType() bool {
+	if o != nil && o.ContentType != nil {
+		return true
+	}
+
+	return false
+}
+
+// GetConditions returns the Conditions field value
+// If the value is explicit nil, the zero value for []ApplicationLoadBalancerHttpRuleCondition will be returned
+func (o *ApplicationLoadBalancerHttpRule) GetConditions() *[]ApplicationLoadBalancerHttpRuleCondition {
+	if o == nil {
+		return nil
+	}
+
+	return o.Conditions
+
+}
+
+// GetConditionsOk returns a tuple with the Conditions field value
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *ApplicationLoadBalancerHttpRule) GetConditionsOk() (*[]ApplicationLoadBalancerHttpRuleCondition, bool) {
+	if o == nil {
+		return nil, false
+	}
+
+	return o.Conditions, true
+}
+
+// SetConditions sets field value
+func (o *ApplicationLoadBalancerHttpRule) SetConditions(v []ApplicationLoadBalancerHttpRuleCondition) {
+
+	o.Conditions = &v
+
+}
+
+// HasConditions returns a boolean if a field has been set.
+func (o *ApplicationLoadBalancerHttpRule) HasConditions() bool {
+	if o != nil && o.Conditions != nil {
 		return true
 	}
 
@@ -401,42 +401,33 @@ func (o *ApplicationLoadBalancerHttpRule) HasType() bool {
 
 func (o ApplicationLoadBalancerHttpRule) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
-	if o.Conditions != nil {
-		toSerialize["conditions"] = o.Conditions
-	}
-
-	if o.ContentType != nil {
-		toSerialize["contentType"] = o.ContentType
-	}
-
-	if o.DropQuery != nil {
-		toSerialize["dropQuery"] = o.DropQuery
-	}
-
-	if o.Location != nil {
-		toSerialize["location"] = o.Location
-	}
-
 	if o.Name != nil {
 		toSerialize["name"] = o.Name
 	}
-
-	if o.ResponseMessage != nil {
-		toSerialize["responseMessage"] = o.ResponseMessage
-	}
-
-	if o.StatusCode != nil {
-		toSerialize["statusCode"] = o.StatusCode
-	}
-
-	if o.TargetGroup != nil {
-		toSerialize["targetGroup"] = o.TargetGroup
-	}
-
 	if o.Type != nil {
 		toSerialize["type"] = o.Type
 	}
-
+	if o.TargetGroup != nil {
+		toSerialize["targetGroup"] = o.TargetGroup
+	}
+	if o.DropQuery != nil {
+		toSerialize["dropQuery"] = o.DropQuery
+	}
+	if o.Location != nil {
+		toSerialize["location"] = o.Location
+	}
+	if o.StatusCode != nil {
+		toSerialize["statusCode"] = o.StatusCode
+	}
+	if o.ResponseMessage != nil {
+		toSerialize["responseMessage"] = o.ResponseMessage
+	}
+	if o.ContentType != nil {
+		toSerialize["contentType"] = o.ContentType
+	}
+	if o.Conditions != nil {
+		toSerialize["conditions"] = o.Conditions
+	}
 	return json.Marshal(toSerialize)
 }
 

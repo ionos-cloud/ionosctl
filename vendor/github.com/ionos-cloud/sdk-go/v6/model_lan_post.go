@@ -16,15 +16,15 @@ import (
 
 // LanPost struct for LanPost
 type LanPost struct {
-	Entities *LanEntities `json:"entities,omitempty"`
-	// URL to the object representation (absolute path).
-	Href *string `json:"href,omitempty"`
 	// The resource's unique identifier.
-	Id         *string                    `json:"id,omitempty"`
-	Metadata   *DatacenterElementMetadata `json:"metadata,omitempty"`
-	Properties *LanPropertiesPost         `json:"properties"`
+	Id *string `json:"id,omitempty"`
 	// The type of object that has been created.
 	Type *Type `json:"type,omitempty"`
+	// URL to the object representation (absolute path).
+	Href       *string                    `json:"href,omitempty"`
+	Metadata   *DatacenterElementMetadata `json:"metadata,omitempty"`
+	Entities   *LanEntities               `json:"entities,omitempty"`
+	Properties *LanPropertiesPost         `json:"properties"`
 }
 
 // NewLanPost instantiates a new LanPost object
@@ -47,84 +47,8 @@ func NewLanPostWithDefaults() *LanPost {
 	return &this
 }
 
-// GetEntities returns the Entities field value
-// If the value is explicit nil, nil is returned
-func (o *LanPost) GetEntities() *LanEntities {
-	if o == nil {
-		return nil
-	}
-
-	return o.Entities
-
-}
-
-// GetEntitiesOk returns a tuple with the Entities field value
-// and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *LanPost) GetEntitiesOk() (*LanEntities, bool) {
-	if o == nil {
-		return nil, false
-	}
-
-	return o.Entities, true
-}
-
-// SetEntities sets field value
-func (o *LanPost) SetEntities(v LanEntities) {
-
-	o.Entities = &v
-
-}
-
-// HasEntities returns a boolean if a field has been set.
-func (o *LanPost) HasEntities() bool {
-	if o != nil && o.Entities != nil {
-		return true
-	}
-
-	return false
-}
-
-// GetHref returns the Href field value
-// If the value is explicit nil, nil is returned
-func (o *LanPost) GetHref() *string {
-	if o == nil {
-		return nil
-	}
-
-	return o.Href
-
-}
-
-// GetHrefOk returns a tuple with the Href field value
-// and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *LanPost) GetHrefOk() (*string, bool) {
-	if o == nil {
-		return nil, false
-	}
-
-	return o.Href, true
-}
-
-// SetHref sets field value
-func (o *LanPost) SetHref(v string) {
-
-	o.Href = &v
-
-}
-
-// HasHref returns a boolean if a field has been set.
-func (o *LanPost) HasHref() bool {
-	if o != nil && o.Href != nil {
-		return true
-	}
-
-	return false
-}
-
 // GetId returns the Id field value
-// If the value is explicit nil, nil is returned
+// If the value is explicit nil, the zero value for string will be returned
 func (o *LanPost) GetId() *string {
 	if o == nil {
 		return nil
@@ -161,84 +85,8 @@ func (o *LanPost) HasId() bool {
 	return false
 }
 
-// GetMetadata returns the Metadata field value
-// If the value is explicit nil, nil is returned
-func (o *LanPost) GetMetadata() *DatacenterElementMetadata {
-	if o == nil {
-		return nil
-	}
-
-	return o.Metadata
-
-}
-
-// GetMetadataOk returns a tuple with the Metadata field value
-// and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *LanPost) GetMetadataOk() (*DatacenterElementMetadata, bool) {
-	if o == nil {
-		return nil, false
-	}
-
-	return o.Metadata, true
-}
-
-// SetMetadata sets field value
-func (o *LanPost) SetMetadata(v DatacenterElementMetadata) {
-
-	o.Metadata = &v
-
-}
-
-// HasMetadata returns a boolean if a field has been set.
-func (o *LanPost) HasMetadata() bool {
-	if o != nil && o.Metadata != nil {
-		return true
-	}
-
-	return false
-}
-
-// GetProperties returns the Properties field value
-// If the value is explicit nil, nil is returned
-func (o *LanPost) GetProperties() *LanPropertiesPost {
-	if o == nil {
-		return nil
-	}
-
-	return o.Properties
-
-}
-
-// GetPropertiesOk returns a tuple with the Properties field value
-// and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *LanPost) GetPropertiesOk() (*LanPropertiesPost, bool) {
-	if o == nil {
-		return nil, false
-	}
-
-	return o.Properties, true
-}
-
-// SetProperties sets field value
-func (o *LanPost) SetProperties(v LanPropertiesPost) {
-
-	o.Properties = &v
-
-}
-
-// HasProperties returns a boolean if a field has been set.
-func (o *LanPost) HasProperties() bool {
-	if o != nil && o.Properties != nil {
-		return true
-	}
-
-	return false
-}
-
 // GetType returns the Type field value
-// If the value is explicit nil, nil is returned
+// If the value is explicit nil, the zero value for Type will be returned
 func (o *LanPost) GetType() *Type {
 	if o == nil {
 		return nil
@@ -275,32 +123,178 @@ func (o *LanPost) HasType() bool {
 	return false
 }
 
+// GetHref returns the Href field value
+// If the value is explicit nil, the zero value for string will be returned
+func (o *LanPost) GetHref() *string {
+	if o == nil {
+		return nil
+	}
+
+	return o.Href
+
+}
+
+// GetHrefOk returns a tuple with the Href field value
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *LanPost) GetHrefOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+
+	return o.Href, true
+}
+
+// SetHref sets field value
+func (o *LanPost) SetHref(v string) {
+
+	o.Href = &v
+
+}
+
+// HasHref returns a boolean if a field has been set.
+func (o *LanPost) HasHref() bool {
+	if o != nil && o.Href != nil {
+		return true
+	}
+
+	return false
+}
+
+// GetMetadata returns the Metadata field value
+// If the value is explicit nil, the zero value for DatacenterElementMetadata will be returned
+func (o *LanPost) GetMetadata() *DatacenterElementMetadata {
+	if o == nil {
+		return nil
+	}
+
+	return o.Metadata
+
+}
+
+// GetMetadataOk returns a tuple with the Metadata field value
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *LanPost) GetMetadataOk() (*DatacenterElementMetadata, bool) {
+	if o == nil {
+		return nil, false
+	}
+
+	return o.Metadata, true
+}
+
+// SetMetadata sets field value
+func (o *LanPost) SetMetadata(v DatacenterElementMetadata) {
+
+	o.Metadata = &v
+
+}
+
+// HasMetadata returns a boolean if a field has been set.
+func (o *LanPost) HasMetadata() bool {
+	if o != nil && o.Metadata != nil {
+		return true
+	}
+
+	return false
+}
+
+// GetEntities returns the Entities field value
+// If the value is explicit nil, the zero value for LanEntities will be returned
+func (o *LanPost) GetEntities() *LanEntities {
+	if o == nil {
+		return nil
+	}
+
+	return o.Entities
+
+}
+
+// GetEntitiesOk returns a tuple with the Entities field value
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *LanPost) GetEntitiesOk() (*LanEntities, bool) {
+	if o == nil {
+		return nil, false
+	}
+
+	return o.Entities, true
+}
+
+// SetEntities sets field value
+func (o *LanPost) SetEntities(v LanEntities) {
+
+	o.Entities = &v
+
+}
+
+// HasEntities returns a boolean if a field has been set.
+func (o *LanPost) HasEntities() bool {
+	if o != nil && o.Entities != nil {
+		return true
+	}
+
+	return false
+}
+
+// GetProperties returns the Properties field value
+// If the value is explicit nil, the zero value for LanPropertiesPost will be returned
+func (o *LanPost) GetProperties() *LanPropertiesPost {
+	if o == nil {
+		return nil
+	}
+
+	return o.Properties
+
+}
+
+// GetPropertiesOk returns a tuple with the Properties field value
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *LanPost) GetPropertiesOk() (*LanPropertiesPost, bool) {
+	if o == nil {
+		return nil, false
+	}
+
+	return o.Properties, true
+}
+
+// SetProperties sets field value
+func (o *LanPost) SetProperties(v LanPropertiesPost) {
+
+	o.Properties = &v
+
+}
+
+// HasProperties returns a boolean if a field has been set.
+func (o *LanPost) HasProperties() bool {
+	if o != nil && o.Properties != nil {
+		return true
+	}
+
+	return false
+}
+
 func (o LanPost) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
-	if o.Entities != nil {
-		toSerialize["entities"] = o.Entities
-	}
-
-	if o.Href != nil {
-		toSerialize["href"] = o.Href
-	}
-
 	if o.Id != nil {
 		toSerialize["id"] = o.Id
 	}
-
-	if o.Metadata != nil {
-		toSerialize["metadata"] = o.Metadata
-	}
-
-	if o.Properties != nil {
-		toSerialize["properties"] = o.Properties
-	}
-
 	if o.Type != nil {
 		toSerialize["type"] = o.Type
 	}
-
+	if o.Href != nil {
+		toSerialize["href"] = o.Href
+	}
+	if o.Metadata != nil {
+		toSerialize["metadata"] = o.Metadata
+	}
+	if o.Entities != nil {
+		toSerialize["entities"] = o.Entities
+	}
+	if o.Properties != nil {
+		toSerialize["properties"] = o.Properties
+	}
 	return json.Marshal(toSerialize)
 }
 

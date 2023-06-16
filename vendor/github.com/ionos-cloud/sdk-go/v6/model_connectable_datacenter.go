@@ -17,8 +17,8 @@ import (
 // ConnectableDatacenter struct for ConnectableDatacenter
 type ConnectableDatacenter struct {
 	Id       *string `json:"id,omitempty"`
-	Location *string `json:"location,omitempty"`
 	Name     *string `json:"name,omitempty"`
+	Location *string `json:"location,omitempty"`
 }
 
 // NewConnectableDatacenter instantiates a new ConnectableDatacenter object
@@ -40,7 +40,7 @@ func NewConnectableDatacenterWithDefaults() *ConnectableDatacenter {
 }
 
 // GetId returns the Id field value
-// If the value is explicit nil, nil is returned
+// If the value is explicit nil, the zero value for string will be returned
 func (o *ConnectableDatacenter) GetId() *string {
 	if o == nil {
 		return nil
@@ -77,46 +77,8 @@ func (o *ConnectableDatacenter) HasId() bool {
 	return false
 }
 
-// GetLocation returns the Location field value
-// If the value is explicit nil, nil is returned
-func (o *ConnectableDatacenter) GetLocation() *string {
-	if o == nil {
-		return nil
-	}
-
-	return o.Location
-
-}
-
-// GetLocationOk returns a tuple with the Location field value
-// and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *ConnectableDatacenter) GetLocationOk() (*string, bool) {
-	if o == nil {
-		return nil, false
-	}
-
-	return o.Location, true
-}
-
-// SetLocation sets field value
-func (o *ConnectableDatacenter) SetLocation(v string) {
-
-	o.Location = &v
-
-}
-
-// HasLocation returns a boolean if a field has been set.
-func (o *ConnectableDatacenter) HasLocation() bool {
-	if o != nil && o.Location != nil {
-		return true
-	}
-
-	return false
-}
-
 // GetName returns the Name field value
-// If the value is explicit nil, nil is returned
+// If the value is explicit nil, the zero value for string will be returned
 func (o *ConnectableDatacenter) GetName() *string {
 	if o == nil {
 		return nil
@@ -153,20 +115,55 @@ func (o *ConnectableDatacenter) HasName() bool {
 	return false
 }
 
+// GetLocation returns the Location field value
+// If the value is explicit nil, the zero value for string will be returned
+func (o *ConnectableDatacenter) GetLocation() *string {
+	if o == nil {
+		return nil
+	}
+
+	return o.Location
+
+}
+
+// GetLocationOk returns a tuple with the Location field value
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *ConnectableDatacenter) GetLocationOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+
+	return o.Location, true
+}
+
+// SetLocation sets field value
+func (o *ConnectableDatacenter) SetLocation(v string) {
+
+	o.Location = &v
+
+}
+
+// HasLocation returns a boolean if a field has been set.
+func (o *ConnectableDatacenter) HasLocation() bool {
+	if o != nil && o.Location != nil {
+		return true
+	}
+
+	return false
+}
+
 func (o ConnectableDatacenter) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 	if o.Id != nil {
 		toSerialize["id"] = o.Id
 	}
-
-	if o.Location != nil {
-		toSerialize["location"] = o.Location
-	}
-
 	if o.Name != nil {
 		toSerialize["name"] = o.Name
 	}
-
+	if o.Location != nil {
+		toSerialize["location"] = o.Location
+	}
 	return json.Marshal(toSerialize)
 }
 

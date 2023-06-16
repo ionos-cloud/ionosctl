@@ -17,8 +17,8 @@ import (
 // ServerEntities struct for ServerEntities
 type ServerEntities struct {
 	Cdroms  *Cdroms          `json:"cdroms,omitempty"`
-	Nics    *Nics            `json:"nics,omitempty"`
 	Volumes *AttachedVolumes `json:"volumes,omitempty"`
+	Nics    *Nics            `json:"nics,omitempty"`
 }
 
 // NewServerEntities instantiates a new ServerEntities object
@@ -40,7 +40,7 @@ func NewServerEntitiesWithDefaults() *ServerEntities {
 }
 
 // GetCdroms returns the Cdroms field value
-// If the value is explicit nil, nil is returned
+// If the value is explicit nil, the zero value for Cdroms will be returned
 func (o *ServerEntities) GetCdroms() *Cdroms {
 	if o == nil {
 		return nil
@@ -77,46 +77,8 @@ func (o *ServerEntities) HasCdroms() bool {
 	return false
 }
 
-// GetNics returns the Nics field value
-// If the value is explicit nil, nil is returned
-func (o *ServerEntities) GetNics() *Nics {
-	if o == nil {
-		return nil
-	}
-
-	return o.Nics
-
-}
-
-// GetNicsOk returns a tuple with the Nics field value
-// and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *ServerEntities) GetNicsOk() (*Nics, bool) {
-	if o == nil {
-		return nil, false
-	}
-
-	return o.Nics, true
-}
-
-// SetNics sets field value
-func (o *ServerEntities) SetNics(v Nics) {
-
-	o.Nics = &v
-
-}
-
-// HasNics returns a boolean if a field has been set.
-func (o *ServerEntities) HasNics() bool {
-	if o != nil && o.Nics != nil {
-		return true
-	}
-
-	return false
-}
-
 // GetVolumes returns the Volumes field value
-// If the value is explicit nil, nil is returned
+// If the value is explicit nil, the zero value for AttachedVolumes will be returned
 func (o *ServerEntities) GetVolumes() *AttachedVolumes {
 	if o == nil {
 		return nil
@@ -153,20 +115,55 @@ func (o *ServerEntities) HasVolumes() bool {
 	return false
 }
 
+// GetNics returns the Nics field value
+// If the value is explicit nil, the zero value for Nics will be returned
+func (o *ServerEntities) GetNics() *Nics {
+	if o == nil {
+		return nil
+	}
+
+	return o.Nics
+
+}
+
+// GetNicsOk returns a tuple with the Nics field value
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *ServerEntities) GetNicsOk() (*Nics, bool) {
+	if o == nil {
+		return nil, false
+	}
+
+	return o.Nics, true
+}
+
+// SetNics sets field value
+func (o *ServerEntities) SetNics(v Nics) {
+
+	o.Nics = &v
+
+}
+
+// HasNics returns a boolean if a field has been set.
+func (o *ServerEntities) HasNics() bool {
+	if o != nil && o.Nics != nil {
+		return true
+	}
+
+	return false
+}
+
 func (o ServerEntities) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 	if o.Cdroms != nil {
 		toSerialize["cdroms"] = o.Cdroms
 	}
-
-	if o.Nics != nil {
-		toSerialize["nics"] = o.Nics
-	}
-
 	if o.Volumes != nil {
 		toSerialize["volumes"] = o.Volumes
 	}
-
+	if o.Nics != nil {
+		toSerialize["nics"] = o.Nics
+	}
 	return json.Marshal(toSerialize)
 }
 

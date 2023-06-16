@@ -16,15 +16,15 @@ import (
 
 // KubernetesCluster struct for KubernetesCluster
 type KubernetesCluster struct {
-	Entities *KubernetesClusterEntities `json:"entities,omitempty"`
-	// The URL to the object representation (absolute path).
-	Href *string `json:"href,omitempty"`
-	// The resource unique identifier.
-	Id         *string                      `json:"id,omitempty"`
+	// The resource's unique identifier.
+	Id *string `json:"id,omitempty"`
+	// The type of object.
+	Type *string `json:"type,omitempty"`
+	// URL to the object representation (absolute path).
+	Href       *string                      `json:"href,omitempty"`
 	Metadata   *DatacenterElementMetadata   `json:"metadata,omitempty"`
 	Properties *KubernetesClusterProperties `json:"properties"`
-	// The object type.
-	Type *string `json:"type,omitempty"`
+	Entities   *KubernetesClusterEntities   `json:"entities,omitempty"`
 }
 
 // NewKubernetesCluster instantiates a new KubernetesCluster object
@@ -47,84 +47,8 @@ func NewKubernetesClusterWithDefaults() *KubernetesCluster {
 	return &this
 }
 
-// GetEntities returns the Entities field value
-// If the value is explicit nil, nil is returned
-func (o *KubernetesCluster) GetEntities() *KubernetesClusterEntities {
-	if o == nil {
-		return nil
-	}
-
-	return o.Entities
-
-}
-
-// GetEntitiesOk returns a tuple with the Entities field value
-// and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *KubernetesCluster) GetEntitiesOk() (*KubernetesClusterEntities, bool) {
-	if o == nil {
-		return nil, false
-	}
-
-	return o.Entities, true
-}
-
-// SetEntities sets field value
-func (o *KubernetesCluster) SetEntities(v KubernetesClusterEntities) {
-
-	o.Entities = &v
-
-}
-
-// HasEntities returns a boolean if a field has been set.
-func (o *KubernetesCluster) HasEntities() bool {
-	if o != nil && o.Entities != nil {
-		return true
-	}
-
-	return false
-}
-
-// GetHref returns the Href field value
-// If the value is explicit nil, nil is returned
-func (o *KubernetesCluster) GetHref() *string {
-	if o == nil {
-		return nil
-	}
-
-	return o.Href
-
-}
-
-// GetHrefOk returns a tuple with the Href field value
-// and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *KubernetesCluster) GetHrefOk() (*string, bool) {
-	if o == nil {
-		return nil, false
-	}
-
-	return o.Href, true
-}
-
-// SetHref sets field value
-func (o *KubernetesCluster) SetHref(v string) {
-
-	o.Href = &v
-
-}
-
-// HasHref returns a boolean if a field has been set.
-func (o *KubernetesCluster) HasHref() bool {
-	if o != nil && o.Href != nil {
-		return true
-	}
-
-	return false
-}
-
 // GetId returns the Id field value
-// If the value is explicit nil, nil is returned
+// If the value is explicit nil, the zero value for string will be returned
 func (o *KubernetesCluster) GetId() *string {
 	if o == nil {
 		return nil
@@ -161,8 +85,84 @@ func (o *KubernetesCluster) HasId() bool {
 	return false
 }
 
+// GetType returns the Type field value
+// If the value is explicit nil, the zero value for string will be returned
+func (o *KubernetesCluster) GetType() *string {
+	if o == nil {
+		return nil
+	}
+
+	return o.Type
+
+}
+
+// GetTypeOk returns a tuple with the Type field value
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *KubernetesCluster) GetTypeOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+
+	return o.Type, true
+}
+
+// SetType sets field value
+func (o *KubernetesCluster) SetType(v string) {
+
+	o.Type = &v
+
+}
+
+// HasType returns a boolean if a field has been set.
+func (o *KubernetesCluster) HasType() bool {
+	if o != nil && o.Type != nil {
+		return true
+	}
+
+	return false
+}
+
+// GetHref returns the Href field value
+// If the value is explicit nil, the zero value for string will be returned
+func (o *KubernetesCluster) GetHref() *string {
+	if o == nil {
+		return nil
+	}
+
+	return o.Href
+
+}
+
+// GetHrefOk returns a tuple with the Href field value
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *KubernetesCluster) GetHrefOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+
+	return o.Href, true
+}
+
+// SetHref sets field value
+func (o *KubernetesCluster) SetHref(v string) {
+
+	o.Href = &v
+
+}
+
+// HasHref returns a boolean if a field has been set.
+func (o *KubernetesCluster) HasHref() bool {
+	if o != nil && o.Href != nil {
+		return true
+	}
+
+	return false
+}
+
 // GetMetadata returns the Metadata field value
-// If the value is explicit nil, nil is returned
+// If the value is explicit nil, the zero value for DatacenterElementMetadata will be returned
 func (o *KubernetesCluster) GetMetadata() *DatacenterElementMetadata {
 	if o == nil {
 		return nil
@@ -200,7 +200,7 @@ func (o *KubernetesCluster) HasMetadata() bool {
 }
 
 // GetProperties returns the Properties field value
-// If the value is explicit nil, nil is returned
+// If the value is explicit nil, the zero value for KubernetesClusterProperties will be returned
 func (o *KubernetesCluster) GetProperties() *KubernetesClusterProperties {
 	if o == nil {
 		return nil
@@ -237,38 +237,38 @@ func (o *KubernetesCluster) HasProperties() bool {
 	return false
 }
 
-// GetType returns the Type field value
-// If the value is explicit nil, nil is returned
-func (o *KubernetesCluster) GetType() *string {
+// GetEntities returns the Entities field value
+// If the value is explicit nil, the zero value for KubernetesClusterEntities will be returned
+func (o *KubernetesCluster) GetEntities() *KubernetesClusterEntities {
 	if o == nil {
 		return nil
 	}
 
-	return o.Type
+	return o.Entities
 
 }
 
-// GetTypeOk returns a tuple with the Type field value
+// GetEntitiesOk returns a tuple with the Entities field value
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *KubernetesCluster) GetTypeOk() (*string, bool) {
+func (o *KubernetesCluster) GetEntitiesOk() (*KubernetesClusterEntities, bool) {
 	if o == nil {
 		return nil, false
 	}
 
-	return o.Type, true
+	return o.Entities, true
 }
 
-// SetType sets field value
-func (o *KubernetesCluster) SetType(v string) {
+// SetEntities sets field value
+func (o *KubernetesCluster) SetEntities(v KubernetesClusterEntities) {
 
-	o.Type = &v
+	o.Entities = &v
 
 }
 
-// HasType returns a boolean if a field has been set.
-func (o *KubernetesCluster) HasType() bool {
-	if o != nil && o.Type != nil {
+// HasEntities returns a boolean if a field has been set.
+func (o *KubernetesCluster) HasEntities() bool {
+	if o != nil && o.Entities != nil {
 		return true
 	}
 
@@ -277,30 +277,24 @@ func (o *KubernetesCluster) HasType() bool {
 
 func (o KubernetesCluster) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
-	if o.Entities != nil {
-		toSerialize["entities"] = o.Entities
-	}
-
-	if o.Href != nil {
-		toSerialize["href"] = o.Href
-	}
-
 	if o.Id != nil {
 		toSerialize["id"] = o.Id
 	}
-
-	if o.Metadata != nil {
-		toSerialize["metadata"] = o.Metadata
-	}
-
-	if o.Properties != nil {
-		toSerialize["properties"] = o.Properties
-	}
-
 	if o.Type != nil {
 		toSerialize["type"] = o.Type
 	}
-
+	if o.Href != nil {
+		toSerialize["href"] = o.Href
+	}
+	if o.Metadata != nil {
+		toSerialize["metadata"] = o.Metadata
+	}
+	if o.Properties != nil {
+		toSerialize["properties"] = o.Properties
+	}
+	if o.Entities != nil {
+		toSerialize["entities"] = o.Entities
+	}
 	return json.Marshal(toSerialize)
 }
 

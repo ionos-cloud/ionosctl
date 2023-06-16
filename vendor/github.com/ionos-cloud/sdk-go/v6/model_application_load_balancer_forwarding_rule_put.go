@@ -16,13 +16,13 @@ import (
 
 // ApplicationLoadBalancerForwardingRulePut struct for ApplicationLoadBalancerForwardingRulePut
 type ApplicationLoadBalancerForwardingRulePut struct {
-	// The URL to the object representation (absolute path).
-	Href *string `json:"href,omitempty"`
 	// The resource's unique identifier.
-	Id         *string                                          `json:"id,omitempty"`
-	Properties *ApplicationLoadBalancerForwardingRuleProperties `json:"properties"`
+	Id *string `json:"id,omitempty"`
 	// The type of object that has been created.
 	Type *Type `json:"type,omitempty"`
+	// URL to the object representation (absolute path).
+	Href       *string                                          `json:"href,omitempty"`
+	Properties *ApplicationLoadBalancerForwardingRuleProperties `json:"properties"`
 }
 
 // NewApplicationLoadBalancerForwardingRulePut instantiates a new ApplicationLoadBalancerForwardingRulePut object
@@ -45,46 +45,8 @@ func NewApplicationLoadBalancerForwardingRulePutWithDefaults() *ApplicationLoadB
 	return &this
 }
 
-// GetHref returns the Href field value
-// If the value is explicit nil, nil is returned
-func (o *ApplicationLoadBalancerForwardingRulePut) GetHref() *string {
-	if o == nil {
-		return nil
-	}
-
-	return o.Href
-
-}
-
-// GetHrefOk returns a tuple with the Href field value
-// and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *ApplicationLoadBalancerForwardingRulePut) GetHrefOk() (*string, bool) {
-	if o == nil {
-		return nil, false
-	}
-
-	return o.Href, true
-}
-
-// SetHref sets field value
-func (o *ApplicationLoadBalancerForwardingRulePut) SetHref(v string) {
-
-	o.Href = &v
-
-}
-
-// HasHref returns a boolean if a field has been set.
-func (o *ApplicationLoadBalancerForwardingRulePut) HasHref() bool {
-	if o != nil && o.Href != nil {
-		return true
-	}
-
-	return false
-}
-
 // GetId returns the Id field value
-// If the value is explicit nil, nil is returned
+// If the value is explicit nil, the zero value for string will be returned
 func (o *ApplicationLoadBalancerForwardingRulePut) GetId() *string {
 	if o == nil {
 		return nil
@@ -121,46 +83,8 @@ func (o *ApplicationLoadBalancerForwardingRulePut) HasId() bool {
 	return false
 }
 
-// GetProperties returns the Properties field value
-// If the value is explicit nil, nil is returned
-func (o *ApplicationLoadBalancerForwardingRulePut) GetProperties() *ApplicationLoadBalancerForwardingRuleProperties {
-	if o == nil {
-		return nil
-	}
-
-	return o.Properties
-
-}
-
-// GetPropertiesOk returns a tuple with the Properties field value
-// and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *ApplicationLoadBalancerForwardingRulePut) GetPropertiesOk() (*ApplicationLoadBalancerForwardingRuleProperties, bool) {
-	if o == nil {
-		return nil, false
-	}
-
-	return o.Properties, true
-}
-
-// SetProperties sets field value
-func (o *ApplicationLoadBalancerForwardingRulePut) SetProperties(v ApplicationLoadBalancerForwardingRuleProperties) {
-
-	o.Properties = &v
-
-}
-
-// HasProperties returns a boolean if a field has been set.
-func (o *ApplicationLoadBalancerForwardingRulePut) HasProperties() bool {
-	if o != nil && o.Properties != nil {
-		return true
-	}
-
-	return false
-}
-
 // GetType returns the Type field value
-// If the value is explicit nil, nil is returned
+// If the value is explicit nil, the zero value for Type will be returned
 func (o *ApplicationLoadBalancerForwardingRulePut) GetType() *Type {
 	if o == nil {
 		return nil
@@ -197,24 +121,96 @@ func (o *ApplicationLoadBalancerForwardingRulePut) HasType() bool {
 	return false
 }
 
-func (o ApplicationLoadBalancerForwardingRulePut) MarshalJSON() ([]byte, error) {
-	toSerialize := map[string]interface{}{}
-	if o.Href != nil {
-		toSerialize["href"] = o.Href
+// GetHref returns the Href field value
+// If the value is explicit nil, the zero value for string will be returned
+func (o *ApplicationLoadBalancerForwardingRulePut) GetHref() *string {
+	if o == nil {
+		return nil
 	}
 
+	return o.Href
+
+}
+
+// GetHrefOk returns a tuple with the Href field value
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *ApplicationLoadBalancerForwardingRulePut) GetHrefOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+
+	return o.Href, true
+}
+
+// SetHref sets field value
+func (o *ApplicationLoadBalancerForwardingRulePut) SetHref(v string) {
+
+	o.Href = &v
+
+}
+
+// HasHref returns a boolean if a field has been set.
+func (o *ApplicationLoadBalancerForwardingRulePut) HasHref() bool {
+	if o != nil && o.Href != nil {
+		return true
+	}
+
+	return false
+}
+
+// GetProperties returns the Properties field value
+// If the value is explicit nil, the zero value for ApplicationLoadBalancerForwardingRuleProperties will be returned
+func (o *ApplicationLoadBalancerForwardingRulePut) GetProperties() *ApplicationLoadBalancerForwardingRuleProperties {
+	if o == nil {
+		return nil
+	}
+
+	return o.Properties
+
+}
+
+// GetPropertiesOk returns a tuple with the Properties field value
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *ApplicationLoadBalancerForwardingRulePut) GetPropertiesOk() (*ApplicationLoadBalancerForwardingRuleProperties, bool) {
+	if o == nil {
+		return nil, false
+	}
+
+	return o.Properties, true
+}
+
+// SetProperties sets field value
+func (o *ApplicationLoadBalancerForwardingRulePut) SetProperties(v ApplicationLoadBalancerForwardingRuleProperties) {
+
+	o.Properties = &v
+
+}
+
+// HasProperties returns a boolean if a field has been set.
+func (o *ApplicationLoadBalancerForwardingRulePut) HasProperties() bool {
+	if o != nil && o.Properties != nil {
+		return true
+	}
+
+	return false
+}
+
+func (o ApplicationLoadBalancerForwardingRulePut) MarshalJSON() ([]byte, error) {
+	toSerialize := map[string]interface{}{}
 	if o.Id != nil {
 		toSerialize["id"] = o.Id
 	}
-
-	if o.Properties != nil {
-		toSerialize["properties"] = o.Properties
-	}
-
 	if o.Type != nil {
 		toSerialize["type"] = o.Type
 	}
-
+	if o.Href != nil {
+		toSerialize["href"] = o.Href
+	}
+	if o.Properties != nil {
+		toSerialize["properties"] = o.Properties
+	}
 	return json.Marshal(toSerialize)
 }
 

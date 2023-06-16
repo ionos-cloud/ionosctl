@@ -16,14 +16,14 @@ import (
 
 // BackupUnit struct for BackupUnit
 type BackupUnit struct {
-	// URL to the object representation (absolute path).
-	Href *string `json:"href,omitempty"`
 	// The resource's unique identifier.
-	Id         *string                    `json:"id,omitempty"`
-	Metadata   *DatacenterElementMetadata `json:"metadata,omitempty"`
-	Properties *BackupUnitProperties      `json:"properties"`
+	Id *string `json:"id,omitempty"`
 	// The type of object that has been created.
 	Type *string `json:"type,omitempty"`
+	// URL to the object representation (absolute path).
+	Href       *string                    `json:"href,omitempty"`
+	Metadata   *DatacenterElementMetadata `json:"metadata,omitempty"`
+	Properties *BackupUnitProperties      `json:"properties"`
 }
 
 // NewBackupUnit instantiates a new BackupUnit object
@@ -46,46 +46,8 @@ func NewBackupUnitWithDefaults() *BackupUnit {
 	return &this
 }
 
-// GetHref returns the Href field value
-// If the value is explicit nil, nil is returned
-func (o *BackupUnit) GetHref() *string {
-	if o == nil {
-		return nil
-	}
-
-	return o.Href
-
-}
-
-// GetHrefOk returns a tuple with the Href field value
-// and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *BackupUnit) GetHrefOk() (*string, bool) {
-	if o == nil {
-		return nil, false
-	}
-
-	return o.Href, true
-}
-
-// SetHref sets field value
-func (o *BackupUnit) SetHref(v string) {
-
-	o.Href = &v
-
-}
-
-// HasHref returns a boolean if a field has been set.
-func (o *BackupUnit) HasHref() bool {
-	if o != nil && o.Href != nil {
-		return true
-	}
-
-	return false
-}
-
 // GetId returns the Id field value
-// If the value is explicit nil, nil is returned
+// If the value is explicit nil, the zero value for string will be returned
 func (o *BackupUnit) GetId() *string {
 	if o == nil {
 		return nil
@@ -122,8 +84,84 @@ func (o *BackupUnit) HasId() bool {
 	return false
 }
 
+// GetType returns the Type field value
+// If the value is explicit nil, the zero value for string will be returned
+func (o *BackupUnit) GetType() *string {
+	if o == nil {
+		return nil
+	}
+
+	return o.Type
+
+}
+
+// GetTypeOk returns a tuple with the Type field value
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *BackupUnit) GetTypeOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+
+	return o.Type, true
+}
+
+// SetType sets field value
+func (o *BackupUnit) SetType(v string) {
+
+	o.Type = &v
+
+}
+
+// HasType returns a boolean if a field has been set.
+func (o *BackupUnit) HasType() bool {
+	if o != nil && o.Type != nil {
+		return true
+	}
+
+	return false
+}
+
+// GetHref returns the Href field value
+// If the value is explicit nil, the zero value for string will be returned
+func (o *BackupUnit) GetHref() *string {
+	if o == nil {
+		return nil
+	}
+
+	return o.Href
+
+}
+
+// GetHrefOk returns a tuple with the Href field value
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *BackupUnit) GetHrefOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+
+	return o.Href, true
+}
+
+// SetHref sets field value
+func (o *BackupUnit) SetHref(v string) {
+
+	o.Href = &v
+
+}
+
+// HasHref returns a boolean if a field has been set.
+func (o *BackupUnit) HasHref() bool {
+	if o != nil && o.Href != nil {
+		return true
+	}
+
+	return false
+}
+
 // GetMetadata returns the Metadata field value
-// If the value is explicit nil, nil is returned
+// If the value is explicit nil, the zero value for DatacenterElementMetadata will be returned
 func (o *BackupUnit) GetMetadata() *DatacenterElementMetadata {
 	if o == nil {
 		return nil
@@ -161,7 +199,7 @@ func (o *BackupUnit) HasMetadata() bool {
 }
 
 // GetProperties returns the Properties field value
-// If the value is explicit nil, nil is returned
+// If the value is explicit nil, the zero value for BackupUnitProperties will be returned
 func (o *BackupUnit) GetProperties() *BackupUnitProperties {
 	if o == nil {
 		return nil
@@ -198,66 +236,23 @@ func (o *BackupUnit) HasProperties() bool {
 	return false
 }
 
-// GetType returns the Type field value
-// If the value is explicit nil, nil is returned
-func (o *BackupUnit) GetType() *string {
-	if o == nil {
-		return nil
-	}
-
-	return o.Type
-
-}
-
-// GetTypeOk returns a tuple with the Type field value
-// and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *BackupUnit) GetTypeOk() (*string, bool) {
-	if o == nil {
-		return nil, false
-	}
-
-	return o.Type, true
-}
-
-// SetType sets field value
-func (o *BackupUnit) SetType(v string) {
-
-	o.Type = &v
-
-}
-
-// HasType returns a boolean if a field has been set.
-func (o *BackupUnit) HasType() bool {
-	if o != nil && o.Type != nil {
-		return true
-	}
-
-	return false
-}
-
 func (o BackupUnit) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
-	if o.Href != nil {
-		toSerialize["href"] = o.Href
-	}
-
 	if o.Id != nil {
 		toSerialize["id"] = o.Id
 	}
-
-	if o.Metadata != nil {
-		toSerialize["metadata"] = o.Metadata
-	}
-
-	if o.Properties != nil {
-		toSerialize["properties"] = o.Properties
-	}
-
 	if o.Type != nil {
 		toSerialize["type"] = o.Type
 	}
-
+	if o.Href != nil {
+		toSerialize["href"] = o.Href
+	}
+	if o.Metadata != nil {
+		toSerialize["metadata"] = o.Metadata
+	}
+	if o.Properties != nil {
+		toSerialize["properties"] = o.Properties
+	}
 	return json.Marshal(toSerialize)
 }
 

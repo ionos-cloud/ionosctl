@@ -16,15 +16,15 @@ import (
 
 // IpConsumer struct for IpConsumer
 type IpConsumer struct {
-	DatacenterId    *string `json:"datacenterId,omitempty"`
-	DatacenterName  *string `json:"datacenterName,omitempty"`
 	Ip              *string `json:"ip,omitempty"`
-	K8sClusterUuid  *string `json:"k8sClusterUuid,omitempty"`
-	K8sNodePoolUuid *string `json:"k8sNodePoolUuid,omitempty"`
 	Mac             *string `json:"mac,omitempty"`
 	NicId           *string `json:"nicId,omitempty"`
 	ServerId        *string `json:"serverId,omitempty"`
 	ServerName      *string `json:"serverName,omitempty"`
+	DatacenterId    *string `json:"datacenterId,omitempty"`
+	DatacenterName  *string `json:"datacenterName,omitempty"`
+	K8sNodePoolUuid *string `json:"k8sNodePoolUuid,omitempty"`
+	K8sClusterUuid  *string `json:"k8sClusterUuid,omitempty"`
 }
 
 // NewIpConsumer instantiates a new IpConsumer object
@@ -45,84 +45,8 @@ func NewIpConsumerWithDefaults() *IpConsumer {
 	return &this
 }
 
-// GetDatacenterId returns the DatacenterId field value
-// If the value is explicit nil, nil is returned
-func (o *IpConsumer) GetDatacenterId() *string {
-	if o == nil {
-		return nil
-	}
-
-	return o.DatacenterId
-
-}
-
-// GetDatacenterIdOk returns a tuple with the DatacenterId field value
-// and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *IpConsumer) GetDatacenterIdOk() (*string, bool) {
-	if o == nil {
-		return nil, false
-	}
-
-	return o.DatacenterId, true
-}
-
-// SetDatacenterId sets field value
-func (o *IpConsumer) SetDatacenterId(v string) {
-
-	o.DatacenterId = &v
-
-}
-
-// HasDatacenterId returns a boolean if a field has been set.
-func (o *IpConsumer) HasDatacenterId() bool {
-	if o != nil && o.DatacenterId != nil {
-		return true
-	}
-
-	return false
-}
-
-// GetDatacenterName returns the DatacenterName field value
-// If the value is explicit nil, nil is returned
-func (o *IpConsumer) GetDatacenterName() *string {
-	if o == nil {
-		return nil
-	}
-
-	return o.DatacenterName
-
-}
-
-// GetDatacenterNameOk returns a tuple with the DatacenterName field value
-// and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *IpConsumer) GetDatacenterNameOk() (*string, bool) {
-	if o == nil {
-		return nil, false
-	}
-
-	return o.DatacenterName, true
-}
-
-// SetDatacenterName sets field value
-func (o *IpConsumer) SetDatacenterName(v string) {
-
-	o.DatacenterName = &v
-
-}
-
-// HasDatacenterName returns a boolean if a field has been set.
-func (o *IpConsumer) HasDatacenterName() bool {
-	if o != nil && o.DatacenterName != nil {
-		return true
-	}
-
-	return false
-}
-
 // GetIp returns the Ip field value
-// If the value is explicit nil, nil is returned
+// If the value is explicit nil, the zero value for string will be returned
 func (o *IpConsumer) GetIp() *string {
 	if o == nil {
 		return nil
@@ -159,84 +83,8 @@ func (o *IpConsumer) HasIp() bool {
 	return false
 }
 
-// GetK8sClusterUuid returns the K8sClusterUuid field value
-// If the value is explicit nil, nil is returned
-func (o *IpConsumer) GetK8sClusterUuid() *string {
-	if o == nil {
-		return nil
-	}
-
-	return o.K8sClusterUuid
-
-}
-
-// GetK8sClusterUuidOk returns a tuple with the K8sClusterUuid field value
-// and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *IpConsumer) GetK8sClusterUuidOk() (*string, bool) {
-	if o == nil {
-		return nil, false
-	}
-
-	return o.K8sClusterUuid, true
-}
-
-// SetK8sClusterUuid sets field value
-func (o *IpConsumer) SetK8sClusterUuid(v string) {
-
-	o.K8sClusterUuid = &v
-
-}
-
-// HasK8sClusterUuid returns a boolean if a field has been set.
-func (o *IpConsumer) HasK8sClusterUuid() bool {
-	if o != nil && o.K8sClusterUuid != nil {
-		return true
-	}
-
-	return false
-}
-
-// GetK8sNodePoolUuid returns the K8sNodePoolUuid field value
-// If the value is explicit nil, nil is returned
-func (o *IpConsumer) GetK8sNodePoolUuid() *string {
-	if o == nil {
-		return nil
-	}
-
-	return o.K8sNodePoolUuid
-
-}
-
-// GetK8sNodePoolUuidOk returns a tuple with the K8sNodePoolUuid field value
-// and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *IpConsumer) GetK8sNodePoolUuidOk() (*string, bool) {
-	if o == nil {
-		return nil, false
-	}
-
-	return o.K8sNodePoolUuid, true
-}
-
-// SetK8sNodePoolUuid sets field value
-func (o *IpConsumer) SetK8sNodePoolUuid(v string) {
-
-	o.K8sNodePoolUuid = &v
-
-}
-
-// HasK8sNodePoolUuid returns a boolean if a field has been set.
-func (o *IpConsumer) HasK8sNodePoolUuid() bool {
-	if o != nil && o.K8sNodePoolUuid != nil {
-		return true
-	}
-
-	return false
-}
-
 // GetMac returns the Mac field value
-// If the value is explicit nil, nil is returned
+// If the value is explicit nil, the zero value for string will be returned
 func (o *IpConsumer) GetMac() *string {
 	if o == nil {
 		return nil
@@ -274,7 +122,7 @@ func (o *IpConsumer) HasMac() bool {
 }
 
 // GetNicId returns the NicId field value
-// If the value is explicit nil, nil is returned
+// If the value is explicit nil, the zero value for string will be returned
 func (o *IpConsumer) GetNicId() *string {
 	if o == nil {
 		return nil
@@ -312,7 +160,7 @@ func (o *IpConsumer) HasNicId() bool {
 }
 
 // GetServerId returns the ServerId field value
-// If the value is explicit nil, nil is returned
+// If the value is explicit nil, the zero value for string will be returned
 func (o *IpConsumer) GetServerId() *string {
 	if o == nil {
 		return nil
@@ -350,7 +198,7 @@ func (o *IpConsumer) HasServerId() bool {
 }
 
 // GetServerName returns the ServerName field value
-// If the value is explicit nil, nil is returned
+// If the value is explicit nil, the zero value for string will be returned
 func (o *IpConsumer) GetServerName() *string {
 	if o == nil {
 		return nil
@@ -387,44 +235,187 @@ func (o *IpConsumer) HasServerName() bool {
 	return false
 }
 
+// GetDatacenterId returns the DatacenterId field value
+// If the value is explicit nil, the zero value for string will be returned
+func (o *IpConsumer) GetDatacenterId() *string {
+	if o == nil {
+		return nil
+	}
+
+	return o.DatacenterId
+
+}
+
+// GetDatacenterIdOk returns a tuple with the DatacenterId field value
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *IpConsumer) GetDatacenterIdOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+
+	return o.DatacenterId, true
+}
+
+// SetDatacenterId sets field value
+func (o *IpConsumer) SetDatacenterId(v string) {
+
+	o.DatacenterId = &v
+
+}
+
+// HasDatacenterId returns a boolean if a field has been set.
+func (o *IpConsumer) HasDatacenterId() bool {
+	if o != nil && o.DatacenterId != nil {
+		return true
+	}
+
+	return false
+}
+
+// GetDatacenterName returns the DatacenterName field value
+// If the value is explicit nil, the zero value for string will be returned
+func (o *IpConsumer) GetDatacenterName() *string {
+	if o == nil {
+		return nil
+	}
+
+	return o.DatacenterName
+
+}
+
+// GetDatacenterNameOk returns a tuple with the DatacenterName field value
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *IpConsumer) GetDatacenterNameOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+
+	return o.DatacenterName, true
+}
+
+// SetDatacenterName sets field value
+func (o *IpConsumer) SetDatacenterName(v string) {
+
+	o.DatacenterName = &v
+
+}
+
+// HasDatacenterName returns a boolean if a field has been set.
+func (o *IpConsumer) HasDatacenterName() bool {
+	if o != nil && o.DatacenterName != nil {
+		return true
+	}
+
+	return false
+}
+
+// GetK8sNodePoolUuid returns the K8sNodePoolUuid field value
+// If the value is explicit nil, the zero value for string will be returned
+func (o *IpConsumer) GetK8sNodePoolUuid() *string {
+	if o == nil {
+		return nil
+	}
+
+	return o.K8sNodePoolUuid
+
+}
+
+// GetK8sNodePoolUuidOk returns a tuple with the K8sNodePoolUuid field value
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *IpConsumer) GetK8sNodePoolUuidOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+
+	return o.K8sNodePoolUuid, true
+}
+
+// SetK8sNodePoolUuid sets field value
+func (o *IpConsumer) SetK8sNodePoolUuid(v string) {
+
+	o.K8sNodePoolUuid = &v
+
+}
+
+// HasK8sNodePoolUuid returns a boolean if a field has been set.
+func (o *IpConsumer) HasK8sNodePoolUuid() bool {
+	if o != nil && o.K8sNodePoolUuid != nil {
+		return true
+	}
+
+	return false
+}
+
+// GetK8sClusterUuid returns the K8sClusterUuid field value
+// If the value is explicit nil, the zero value for string will be returned
+func (o *IpConsumer) GetK8sClusterUuid() *string {
+	if o == nil {
+		return nil
+	}
+
+	return o.K8sClusterUuid
+
+}
+
+// GetK8sClusterUuidOk returns a tuple with the K8sClusterUuid field value
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *IpConsumer) GetK8sClusterUuidOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+
+	return o.K8sClusterUuid, true
+}
+
+// SetK8sClusterUuid sets field value
+func (o *IpConsumer) SetK8sClusterUuid(v string) {
+
+	o.K8sClusterUuid = &v
+
+}
+
+// HasK8sClusterUuid returns a boolean if a field has been set.
+func (o *IpConsumer) HasK8sClusterUuid() bool {
+	if o != nil && o.K8sClusterUuid != nil {
+		return true
+	}
+
+	return false
+}
+
 func (o IpConsumer) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
-	if o.DatacenterId != nil {
-		toSerialize["datacenterId"] = o.DatacenterId
-	}
-
-	if o.DatacenterName != nil {
-		toSerialize["datacenterName"] = o.DatacenterName
-	}
-
 	if o.Ip != nil {
 		toSerialize["ip"] = o.Ip
 	}
-
-	if o.K8sClusterUuid != nil {
-		toSerialize["k8sClusterUuid"] = o.K8sClusterUuid
-	}
-
-	if o.K8sNodePoolUuid != nil {
-		toSerialize["k8sNodePoolUuid"] = o.K8sNodePoolUuid
-	}
-
 	if o.Mac != nil {
 		toSerialize["mac"] = o.Mac
 	}
-
 	if o.NicId != nil {
 		toSerialize["nicId"] = o.NicId
 	}
-
 	if o.ServerId != nil {
 		toSerialize["serverId"] = o.ServerId
 	}
-
 	if o.ServerName != nil {
 		toSerialize["serverName"] = o.ServerName
 	}
-
+	if o.DatacenterId != nil {
+		toSerialize["datacenterId"] = o.DatacenterId
+	}
+	if o.DatacenterName != nil {
+		toSerialize["datacenterName"] = o.DatacenterName
+	}
+	if o.K8sNodePoolUuid != nil {
+		toSerialize["k8sNodePoolUuid"] = o.K8sNodePoolUuid
+	}
+	if o.K8sClusterUuid != nil {
+		toSerialize["k8sClusterUuid"] = o.K8sClusterUuid
+	}
 	return json.Marshal(toSerialize)
 }
 

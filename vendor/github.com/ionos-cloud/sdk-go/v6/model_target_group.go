@@ -16,14 +16,14 @@ import (
 
 // TargetGroup struct for TargetGroup
 type TargetGroup struct {
-	// The URL to the object representation (absolute path).
-	Href *string `json:"href,omitempty"`
 	// The resource's unique identifier.
-	Id         *string                    `json:"id,omitempty"`
-	Metadata   *DatacenterElementMetadata `json:"metadata,omitempty"`
-	Properties *TargetGroupProperties     `json:"properties"`
+	Id *string `json:"id,omitempty"`
 	// The type of object that has been created.
 	Type *Type `json:"type,omitempty"`
+	// URL to the object representation (absolute path).
+	Href       *string                    `json:"href,omitempty"`
+	Metadata   *DatacenterElementMetadata `json:"metadata,omitempty"`
+	Properties *TargetGroupProperties     `json:"properties"`
 }
 
 // NewTargetGroup instantiates a new TargetGroup object
@@ -46,46 +46,8 @@ func NewTargetGroupWithDefaults() *TargetGroup {
 	return &this
 }
 
-// GetHref returns the Href field value
-// If the value is explicit nil, nil is returned
-func (o *TargetGroup) GetHref() *string {
-	if o == nil {
-		return nil
-	}
-
-	return o.Href
-
-}
-
-// GetHrefOk returns a tuple with the Href field value
-// and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *TargetGroup) GetHrefOk() (*string, bool) {
-	if o == nil {
-		return nil, false
-	}
-
-	return o.Href, true
-}
-
-// SetHref sets field value
-func (o *TargetGroup) SetHref(v string) {
-
-	o.Href = &v
-
-}
-
-// HasHref returns a boolean if a field has been set.
-func (o *TargetGroup) HasHref() bool {
-	if o != nil && o.Href != nil {
-		return true
-	}
-
-	return false
-}
-
 // GetId returns the Id field value
-// If the value is explicit nil, nil is returned
+// If the value is explicit nil, the zero value for string will be returned
 func (o *TargetGroup) GetId() *string {
 	if o == nil {
 		return nil
@@ -122,8 +84,84 @@ func (o *TargetGroup) HasId() bool {
 	return false
 }
 
+// GetType returns the Type field value
+// If the value is explicit nil, the zero value for Type will be returned
+func (o *TargetGroup) GetType() *Type {
+	if o == nil {
+		return nil
+	}
+
+	return o.Type
+
+}
+
+// GetTypeOk returns a tuple with the Type field value
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *TargetGroup) GetTypeOk() (*Type, bool) {
+	if o == nil {
+		return nil, false
+	}
+
+	return o.Type, true
+}
+
+// SetType sets field value
+func (o *TargetGroup) SetType(v Type) {
+
+	o.Type = &v
+
+}
+
+// HasType returns a boolean if a field has been set.
+func (o *TargetGroup) HasType() bool {
+	if o != nil && o.Type != nil {
+		return true
+	}
+
+	return false
+}
+
+// GetHref returns the Href field value
+// If the value is explicit nil, the zero value for string will be returned
+func (o *TargetGroup) GetHref() *string {
+	if o == nil {
+		return nil
+	}
+
+	return o.Href
+
+}
+
+// GetHrefOk returns a tuple with the Href field value
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *TargetGroup) GetHrefOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+
+	return o.Href, true
+}
+
+// SetHref sets field value
+func (o *TargetGroup) SetHref(v string) {
+
+	o.Href = &v
+
+}
+
+// HasHref returns a boolean if a field has been set.
+func (o *TargetGroup) HasHref() bool {
+	if o != nil && o.Href != nil {
+		return true
+	}
+
+	return false
+}
+
 // GetMetadata returns the Metadata field value
-// If the value is explicit nil, nil is returned
+// If the value is explicit nil, the zero value for DatacenterElementMetadata will be returned
 func (o *TargetGroup) GetMetadata() *DatacenterElementMetadata {
 	if o == nil {
 		return nil
@@ -161,7 +199,7 @@ func (o *TargetGroup) HasMetadata() bool {
 }
 
 // GetProperties returns the Properties field value
-// If the value is explicit nil, nil is returned
+// If the value is explicit nil, the zero value for TargetGroupProperties will be returned
 func (o *TargetGroup) GetProperties() *TargetGroupProperties {
 	if o == nil {
 		return nil
@@ -198,66 +236,23 @@ func (o *TargetGroup) HasProperties() bool {
 	return false
 }
 
-// GetType returns the Type field value
-// If the value is explicit nil, nil is returned
-func (o *TargetGroup) GetType() *Type {
-	if o == nil {
-		return nil
-	}
-
-	return o.Type
-
-}
-
-// GetTypeOk returns a tuple with the Type field value
-// and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *TargetGroup) GetTypeOk() (*Type, bool) {
-	if o == nil {
-		return nil, false
-	}
-
-	return o.Type, true
-}
-
-// SetType sets field value
-func (o *TargetGroup) SetType(v Type) {
-
-	o.Type = &v
-
-}
-
-// HasType returns a boolean if a field has been set.
-func (o *TargetGroup) HasType() bool {
-	if o != nil && o.Type != nil {
-		return true
-	}
-
-	return false
-}
-
 func (o TargetGroup) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
-	if o.Href != nil {
-		toSerialize["href"] = o.Href
-	}
-
 	if o.Id != nil {
 		toSerialize["id"] = o.Id
 	}
-
-	if o.Metadata != nil {
-		toSerialize["metadata"] = o.Metadata
-	}
-
-	if o.Properties != nil {
-		toSerialize["properties"] = o.Properties
-	}
-
 	if o.Type != nil {
 		toSerialize["type"] = o.Type
 	}
-
+	if o.Href != nil {
+		toSerialize["href"] = o.Href
+	}
+	if o.Metadata != nil {
+		toSerialize["metadata"] = o.Metadata
+	}
+	if o.Properties != nil {
+		toSerialize["properties"] = o.Properties
+	}
 	return json.Marshal(toSerialize)
 }
 

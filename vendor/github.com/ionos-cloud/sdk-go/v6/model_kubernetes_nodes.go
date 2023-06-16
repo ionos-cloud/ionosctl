@@ -16,14 +16,14 @@ import (
 
 // KubernetesNodes struct for KubernetesNodes
 type KubernetesNodes struct {
-	// The URL to the collection representation (absolute path).
-	Href *string `json:"href,omitempty"`
 	// A unique representation of the Kubernetes node pool as a resource collection.
 	Id *string `json:"id,omitempty"`
+	// The type of resource within a collection.
+	Type *string `json:"type,omitempty"`
+	// URL to the collection representation (absolute path).
+	Href *string `json:"href,omitempty"`
 	// Array of items in the collection.
 	Items *[]KubernetesNode `json:"items,omitempty"`
-	// The resource type within a collection.
-	Type *string `json:"type,omitempty"`
 }
 
 // NewKubernetesNodes instantiates a new KubernetesNodes object
@@ -44,46 +44,8 @@ func NewKubernetesNodesWithDefaults() *KubernetesNodes {
 	return &this
 }
 
-// GetHref returns the Href field value
-// If the value is explicit nil, nil is returned
-func (o *KubernetesNodes) GetHref() *string {
-	if o == nil {
-		return nil
-	}
-
-	return o.Href
-
-}
-
-// GetHrefOk returns a tuple with the Href field value
-// and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *KubernetesNodes) GetHrefOk() (*string, bool) {
-	if o == nil {
-		return nil, false
-	}
-
-	return o.Href, true
-}
-
-// SetHref sets field value
-func (o *KubernetesNodes) SetHref(v string) {
-
-	o.Href = &v
-
-}
-
-// HasHref returns a boolean if a field has been set.
-func (o *KubernetesNodes) HasHref() bool {
-	if o != nil && o.Href != nil {
-		return true
-	}
-
-	return false
-}
-
 // GetId returns the Id field value
-// If the value is explicit nil, nil is returned
+// If the value is explicit nil, the zero value for string will be returned
 func (o *KubernetesNodes) GetId() *string {
 	if o == nil {
 		return nil
@@ -120,46 +82,8 @@ func (o *KubernetesNodes) HasId() bool {
 	return false
 }
 
-// GetItems returns the Items field value
-// If the value is explicit nil, nil is returned
-func (o *KubernetesNodes) GetItems() *[]KubernetesNode {
-	if o == nil {
-		return nil
-	}
-
-	return o.Items
-
-}
-
-// GetItemsOk returns a tuple with the Items field value
-// and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *KubernetesNodes) GetItemsOk() (*[]KubernetesNode, bool) {
-	if o == nil {
-		return nil, false
-	}
-
-	return o.Items, true
-}
-
-// SetItems sets field value
-func (o *KubernetesNodes) SetItems(v []KubernetesNode) {
-
-	o.Items = &v
-
-}
-
-// HasItems returns a boolean if a field has been set.
-func (o *KubernetesNodes) HasItems() bool {
-	if o != nil && o.Items != nil {
-		return true
-	}
-
-	return false
-}
-
 // GetType returns the Type field value
-// If the value is explicit nil, nil is returned
+// If the value is explicit nil, the zero value for string will be returned
 func (o *KubernetesNodes) GetType() *string {
 	if o == nil {
 		return nil
@@ -196,24 +120,96 @@ func (o *KubernetesNodes) HasType() bool {
 	return false
 }
 
-func (o KubernetesNodes) MarshalJSON() ([]byte, error) {
-	toSerialize := map[string]interface{}{}
-	if o.Href != nil {
-		toSerialize["href"] = o.Href
+// GetHref returns the Href field value
+// If the value is explicit nil, the zero value for string will be returned
+func (o *KubernetesNodes) GetHref() *string {
+	if o == nil {
+		return nil
 	}
 
+	return o.Href
+
+}
+
+// GetHrefOk returns a tuple with the Href field value
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *KubernetesNodes) GetHrefOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+
+	return o.Href, true
+}
+
+// SetHref sets field value
+func (o *KubernetesNodes) SetHref(v string) {
+
+	o.Href = &v
+
+}
+
+// HasHref returns a boolean if a field has been set.
+func (o *KubernetesNodes) HasHref() bool {
+	if o != nil && o.Href != nil {
+		return true
+	}
+
+	return false
+}
+
+// GetItems returns the Items field value
+// If the value is explicit nil, the zero value for []KubernetesNode will be returned
+func (o *KubernetesNodes) GetItems() *[]KubernetesNode {
+	if o == nil {
+		return nil
+	}
+
+	return o.Items
+
+}
+
+// GetItemsOk returns a tuple with the Items field value
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *KubernetesNodes) GetItemsOk() (*[]KubernetesNode, bool) {
+	if o == nil {
+		return nil, false
+	}
+
+	return o.Items, true
+}
+
+// SetItems sets field value
+func (o *KubernetesNodes) SetItems(v []KubernetesNode) {
+
+	o.Items = &v
+
+}
+
+// HasItems returns a boolean if a field has been set.
+func (o *KubernetesNodes) HasItems() bool {
+	if o != nil && o.Items != nil {
+		return true
+	}
+
+	return false
+}
+
+func (o KubernetesNodes) MarshalJSON() ([]byte, error) {
+	toSerialize := map[string]interface{}{}
 	if o.Id != nil {
 		toSerialize["id"] = o.Id
 	}
-
-	if o.Items != nil {
-		toSerialize["items"] = o.Items
-	}
-
 	if o.Type != nil {
 		toSerialize["type"] = o.Type
 	}
-
+	if o.Href != nil {
+		toSerialize["href"] = o.Href
+	}
+	if o.Items != nil {
+		toSerialize["items"] = o.Items
+	}
 	return json.Marshal(toSerialize)
 }
 

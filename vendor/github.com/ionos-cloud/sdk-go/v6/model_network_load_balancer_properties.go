@@ -16,27 +16,27 @@ import (
 
 // NetworkLoadBalancerProperties struct for NetworkLoadBalancerProperties
 type NetworkLoadBalancerProperties struct {
-	// Collection of the Network Load Balancer IP addresses. (Inbound and outbound) IPs of the listenerLan must be customer-reserved IPs for public Load Balancers, and private IPs for private Load Balancers.
-	Ips *[]string `json:"ips,omitempty"`
-	// Collection of private IP addresses with subnet mask of the Network Load Balancer. IPs must contain a valid subnet mask. If no IP is provided, the system will generate an IP with /24 subnet.
-	LbPrivateIps *[]string `json:"lbPrivateIps,omitempty"`
-	// ID of the listening LAN (inbound).
-	ListenerLan *int32 `json:"listenerLan"`
 	// The name of the Network Load Balancer.
 	Name *string `json:"name"`
+	// ID of the listening LAN (inbound).
+	ListenerLan *int32 `json:"listenerLan"`
+	// Collection of the Network Load Balancer IP addresses. (Inbound and outbound) IPs of the listenerLan must be customer-reserved IPs for public Load Balancers, and private IPs for private Load Balancers.
+	Ips *[]string `json:"ips,omitempty"`
 	// ID of the balanced private target LAN (outbound).
 	TargetLan *int32 `json:"targetLan"`
+	// Collection of private IP addresses with subnet mask of the Network Load Balancer. IPs must contain a valid subnet mask. If no IP is provided, the system will generate an IP with /24 subnet.
+	LbPrivateIps *[]string `json:"lbPrivateIps,omitempty"`
 }
 
 // NewNetworkLoadBalancerProperties instantiates a new NetworkLoadBalancerProperties object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewNetworkLoadBalancerProperties(listenerLan int32, name string, targetLan int32) *NetworkLoadBalancerProperties {
+func NewNetworkLoadBalancerProperties(name string, listenerLan int32, targetLan int32) *NetworkLoadBalancerProperties {
 	this := NetworkLoadBalancerProperties{}
 
-	this.ListenerLan = &listenerLan
 	this.Name = &name
+	this.ListenerLan = &listenerLan
 	this.TargetLan = &targetLan
 
 	return &this
@@ -50,122 +50,8 @@ func NewNetworkLoadBalancerPropertiesWithDefaults() *NetworkLoadBalancerProperti
 	return &this
 }
 
-// GetIps returns the Ips field value
-// If the value is explicit nil, nil is returned
-func (o *NetworkLoadBalancerProperties) GetIps() *[]string {
-	if o == nil {
-		return nil
-	}
-
-	return o.Ips
-
-}
-
-// GetIpsOk returns a tuple with the Ips field value
-// and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *NetworkLoadBalancerProperties) GetIpsOk() (*[]string, bool) {
-	if o == nil {
-		return nil, false
-	}
-
-	return o.Ips, true
-}
-
-// SetIps sets field value
-func (o *NetworkLoadBalancerProperties) SetIps(v []string) {
-
-	o.Ips = &v
-
-}
-
-// HasIps returns a boolean if a field has been set.
-func (o *NetworkLoadBalancerProperties) HasIps() bool {
-	if o != nil && o.Ips != nil {
-		return true
-	}
-
-	return false
-}
-
-// GetLbPrivateIps returns the LbPrivateIps field value
-// If the value is explicit nil, nil is returned
-func (o *NetworkLoadBalancerProperties) GetLbPrivateIps() *[]string {
-	if o == nil {
-		return nil
-	}
-
-	return o.LbPrivateIps
-
-}
-
-// GetLbPrivateIpsOk returns a tuple with the LbPrivateIps field value
-// and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *NetworkLoadBalancerProperties) GetLbPrivateIpsOk() (*[]string, bool) {
-	if o == nil {
-		return nil, false
-	}
-
-	return o.LbPrivateIps, true
-}
-
-// SetLbPrivateIps sets field value
-func (o *NetworkLoadBalancerProperties) SetLbPrivateIps(v []string) {
-
-	o.LbPrivateIps = &v
-
-}
-
-// HasLbPrivateIps returns a boolean if a field has been set.
-func (o *NetworkLoadBalancerProperties) HasLbPrivateIps() bool {
-	if o != nil && o.LbPrivateIps != nil {
-		return true
-	}
-
-	return false
-}
-
-// GetListenerLan returns the ListenerLan field value
-// If the value is explicit nil, nil is returned
-func (o *NetworkLoadBalancerProperties) GetListenerLan() *int32 {
-	if o == nil {
-		return nil
-	}
-
-	return o.ListenerLan
-
-}
-
-// GetListenerLanOk returns a tuple with the ListenerLan field value
-// and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *NetworkLoadBalancerProperties) GetListenerLanOk() (*int32, bool) {
-	if o == nil {
-		return nil, false
-	}
-
-	return o.ListenerLan, true
-}
-
-// SetListenerLan sets field value
-func (o *NetworkLoadBalancerProperties) SetListenerLan(v int32) {
-
-	o.ListenerLan = &v
-
-}
-
-// HasListenerLan returns a boolean if a field has been set.
-func (o *NetworkLoadBalancerProperties) HasListenerLan() bool {
-	if o != nil && o.ListenerLan != nil {
-		return true
-	}
-
-	return false
-}
-
 // GetName returns the Name field value
-// If the value is explicit nil, nil is returned
+// If the value is explicit nil, the zero value for string will be returned
 func (o *NetworkLoadBalancerProperties) GetName() *string {
 	if o == nil {
 		return nil
@@ -202,8 +88,84 @@ func (o *NetworkLoadBalancerProperties) HasName() bool {
 	return false
 }
 
+// GetListenerLan returns the ListenerLan field value
+// If the value is explicit nil, the zero value for int32 will be returned
+func (o *NetworkLoadBalancerProperties) GetListenerLan() *int32 {
+	if o == nil {
+		return nil
+	}
+
+	return o.ListenerLan
+
+}
+
+// GetListenerLanOk returns a tuple with the ListenerLan field value
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *NetworkLoadBalancerProperties) GetListenerLanOk() (*int32, bool) {
+	if o == nil {
+		return nil, false
+	}
+
+	return o.ListenerLan, true
+}
+
+// SetListenerLan sets field value
+func (o *NetworkLoadBalancerProperties) SetListenerLan(v int32) {
+
+	o.ListenerLan = &v
+
+}
+
+// HasListenerLan returns a boolean if a field has been set.
+func (o *NetworkLoadBalancerProperties) HasListenerLan() bool {
+	if o != nil && o.ListenerLan != nil {
+		return true
+	}
+
+	return false
+}
+
+// GetIps returns the Ips field value
+// If the value is explicit nil, the zero value for []string will be returned
+func (o *NetworkLoadBalancerProperties) GetIps() *[]string {
+	if o == nil {
+		return nil
+	}
+
+	return o.Ips
+
+}
+
+// GetIpsOk returns a tuple with the Ips field value
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *NetworkLoadBalancerProperties) GetIpsOk() (*[]string, bool) {
+	if o == nil {
+		return nil, false
+	}
+
+	return o.Ips, true
+}
+
+// SetIps sets field value
+func (o *NetworkLoadBalancerProperties) SetIps(v []string) {
+
+	o.Ips = &v
+
+}
+
+// HasIps returns a boolean if a field has been set.
+func (o *NetworkLoadBalancerProperties) HasIps() bool {
+	if o != nil && o.Ips != nil {
+		return true
+	}
+
+	return false
+}
+
 // GetTargetLan returns the TargetLan field value
-// If the value is explicit nil, nil is returned
+// If the value is explicit nil, the zero value for int32 will be returned
 func (o *NetworkLoadBalancerProperties) GetTargetLan() *int32 {
 	if o == nil {
 		return nil
@@ -240,28 +202,61 @@ func (o *NetworkLoadBalancerProperties) HasTargetLan() bool {
 	return false
 }
 
+// GetLbPrivateIps returns the LbPrivateIps field value
+// If the value is explicit nil, the zero value for []string will be returned
+func (o *NetworkLoadBalancerProperties) GetLbPrivateIps() *[]string {
+	if o == nil {
+		return nil
+	}
+
+	return o.LbPrivateIps
+
+}
+
+// GetLbPrivateIpsOk returns a tuple with the LbPrivateIps field value
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *NetworkLoadBalancerProperties) GetLbPrivateIpsOk() (*[]string, bool) {
+	if o == nil {
+		return nil, false
+	}
+
+	return o.LbPrivateIps, true
+}
+
+// SetLbPrivateIps sets field value
+func (o *NetworkLoadBalancerProperties) SetLbPrivateIps(v []string) {
+
+	o.LbPrivateIps = &v
+
+}
+
+// HasLbPrivateIps returns a boolean if a field has been set.
+func (o *NetworkLoadBalancerProperties) HasLbPrivateIps() bool {
+	if o != nil && o.LbPrivateIps != nil {
+		return true
+	}
+
+	return false
+}
+
 func (o NetworkLoadBalancerProperties) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
-	if o.Ips != nil {
-		toSerialize["ips"] = o.Ips
-	}
-
-	if o.LbPrivateIps != nil {
-		toSerialize["lbPrivateIps"] = o.LbPrivateIps
-	}
-
-	if o.ListenerLan != nil {
-		toSerialize["listenerLan"] = o.ListenerLan
-	}
-
 	if o.Name != nil {
 		toSerialize["name"] = o.Name
 	}
-
+	if o.ListenerLan != nil {
+		toSerialize["listenerLan"] = o.ListenerLan
+	}
+	if o.Ips != nil {
+		toSerialize["ips"] = o.Ips
+	}
 	if o.TargetLan != nil {
 		toSerialize["targetLan"] = o.TargetLan
 	}
-
+	if o.LbPrivateIps != nil {
+		toSerialize["lbPrivateIps"] = o.LbPrivateIps
+	}
 	return json.Marshal(toSerialize)
 }
 

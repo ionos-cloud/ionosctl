@@ -16,13 +16,11 @@ import (
 
 // KubernetesNodePoolLan struct for KubernetesNodePoolLan
 type KubernetesNodePoolLan struct {
-	// The datacenter ID, requires system privileges, for internal usage only
-	DatacenterId *string `json:"datacenterId,omitempty"`
-	// Specifies whether the Kubernetes node pool LAN reserves an IP with DHCP.
-	Dhcp *bool `json:"dhcp,omitempty"`
-	// The LAN ID of an existing LAN at the related data center
+	// The LAN ID of an existing LAN at the related datacenter
 	Id *int32 `json:"id"`
-	// The array of additional LANs attached to worker nodes.
+	// Indicates if the Kubernetes node pool LAN will reserve an IP using DHCP.
+	Dhcp *bool `json:"dhcp,omitempty"`
+	// array of additional LANs attached to worker nodes
 	Routes *[]KubernetesNodePoolLanRoutes `json:"routes,omitempty"`
 }
 
@@ -46,84 +44,8 @@ func NewKubernetesNodePoolLanWithDefaults() *KubernetesNodePoolLan {
 	return &this
 }
 
-// GetDatacenterId returns the DatacenterId field value
-// If the value is explicit nil, nil is returned
-func (o *KubernetesNodePoolLan) GetDatacenterId() *string {
-	if o == nil {
-		return nil
-	}
-
-	return o.DatacenterId
-
-}
-
-// GetDatacenterIdOk returns a tuple with the DatacenterId field value
-// and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *KubernetesNodePoolLan) GetDatacenterIdOk() (*string, bool) {
-	if o == nil {
-		return nil, false
-	}
-
-	return o.DatacenterId, true
-}
-
-// SetDatacenterId sets field value
-func (o *KubernetesNodePoolLan) SetDatacenterId(v string) {
-
-	o.DatacenterId = &v
-
-}
-
-// HasDatacenterId returns a boolean if a field has been set.
-func (o *KubernetesNodePoolLan) HasDatacenterId() bool {
-	if o != nil && o.DatacenterId != nil {
-		return true
-	}
-
-	return false
-}
-
-// GetDhcp returns the Dhcp field value
-// If the value is explicit nil, nil is returned
-func (o *KubernetesNodePoolLan) GetDhcp() *bool {
-	if o == nil {
-		return nil
-	}
-
-	return o.Dhcp
-
-}
-
-// GetDhcpOk returns a tuple with the Dhcp field value
-// and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *KubernetesNodePoolLan) GetDhcpOk() (*bool, bool) {
-	if o == nil {
-		return nil, false
-	}
-
-	return o.Dhcp, true
-}
-
-// SetDhcp sets field value
-func (o *KubernetesNodePoolLan) SetDhcp(v bool) {
-
-	o.Dhcp = &v
-
-}
-
-// HasDhcp returns a boolean if a field has been set.
-func (o *KubernetesNodePoolLan) HasDhcp() bool {
-	if o != nil && o.Dhcp != nil {
-		return true
-	}
-
-	return false
-}
-
 // GetId returns the Id field value
-// If the value is explicit nil, nil is returned
+// If the value is explicit nil, the zero value for int32 will be returned
 func (o *KubernetesNodePoolLan) GetId() *int32 {
 	if o == nil {
 		return nil
@@ -160,8 +82,46 @@ func (o *KubernetesNodePoolLan) HasId() bool {
 	return false
 }
 
+// GetDhcp returns the Dhcp field value
+// If the value is explicit nil, the zero value for bool will be returned
+func (o *KubernetesNodePoolLan) GetDhcp() *bool {
+	if o == nil {
+		return nil
+	}
+
+	return o.Dhcp
+
+}
+
+// GetDhcpOk returns a tuple with the Dhcp field value
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *KubernetesNodePoolLan) GetDhcpOk() (*bool, bool) {
+	if o == nil {
+		return nil, false
+	}
+
+	return o.Dhcp, true
+}
+
+// SetDhcp sets field value
+func (o *KubernetesNodePoolLan) SetDhcp(v bool) {
+
+	o.Dhcp = &v
+
+}
+
+// HasDhcp returns a boolean if a field has been set.
+func (o *KubernetesNodePoolLan) HasDhcp() bool {
+	if o != nil && o.Dhcp != nil {
+		return true
+	}
+
+	return false
+}
+
 // GetRoutes returns the Routes field value
-// If the value is explicit nil, nil is returned
+// If the value is explicit nil, the zero value for []KubernetesNodePoolLanRoutes will be returned
 func (o *KubernetesNodePoolLan) GetRoutes() *[]KubernetesNodePoolLanRoutes {
 	if o == nil {
 		return nil
@@ -200,22 +160,15 @@ func (o *KubernetesNodePoolLan) HasRoutes() bool {
 
 func (o KubernetesNodePoolLan) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
-	if o.DatacenterId != nil {
-		toSerialize["datacenterId"] = o.DatacenterId
-	}
-
-	if o.Dhcp != nil {
-		toSerialize["dhcp"] = o.Dhcp
-	}
-
 	if o.Id != nil {
 		toSerialize["id"] = o.Id
 	}
-
+	if o.Dhcp != nil {
+		toSerialize["dhcp"] = o.Dhcp
+	}
 	if o.Routes != nil {
 		toSerialize["routes"] = o.Routes
 	}
-
 	return json.Marshal(toSerialize)
 }
 

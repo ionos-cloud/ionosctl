@@ -16,9 +16,9 @@ import (
 
 // Contract struct for Contract
 type Contract struct {
-	Properties *ContractProperties `json:"properties"`
 	// The type of the resource.
-	Type *Type `json:"type,omitempty"`
+	Type       *Type               `json:"type,omitempty"`
+	Properties *ContractProperties `json:"properties"`
 }
 
 // NewContract instantiates a new Contract object
@@ -41,46 +41,8 @@ func NewContractWithDefaults() *Contract {
 	return &this
 }
 
-// GetProperties returns the Properties field value
-// If the value is explicit nil, nil is returned
-func (o *Contract) GetProperties() *ContractProperties {
-	if o == nil {
-		return nil
-	}
-
-	return o.Properties
-
-}
-
-// GetPropertiesOk returns a tuple with the Properties field value
-// and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *Contract) GetPropertiesOk() (*ContractProperties, bool) {
-	if o == nil {
-		return nil, false
-	}
-
-	return o.Properties, true
-}
-
-// SetProperties sets field value
-func (o *Contract) SetProperties(v ContractProperties) {
-
-	o.Properties = &v
-
-}
-
-// HasProperties returns a boolean if a field has been set.
-func (o *Contract) HasProperties() bool {
-	if o != nil && o.Properties != nil {
-		return true
-	}
-
-	return false
-}
-
 // GetType returns the Type field value
-// If the value is explicit nil, nil is returned
+// If the value is explicit nil, the zero value for Type will be returned
 func (o *Contract) GetType() *Type {
 	if o == nil {
 		return nil
@@ -117,16 +79,52 @@ func (o *Contract) HasType() bool {
 	return false
 }
 
-func (o Contract) MarshalJSON() ([]byte, error) {
-	toSerialize := map[string]interface{}{}
-	if o.Properties != nil {
-		toSerialize["properties"] = o.Properties
+// GetProperties returns the Properties field value
+// If the value is explicit nil, the zero value for ContractProperties will be returned
+func (o *Contract) GetProperties() *ContractProperties {
+	if o == nil {
+		return nil
 	}
 
+	return o.Properties
+
+}
+
+// GetPropertiesOk returns a tuple with the Properties field value
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *Contract) GetPropertiesOk() (*ContractProperties, bool) {
+	if o == nil {
+		return nil, false
+	}
+
+	return o.Properties, true
+}
+
+// SetProperties sets field value
+func (o *Contract) SetProperties(v ContractProperties) {
+
+	o.Properties = &v
+
+}
+
+// HasProperties returns a boolean if a field has been set.
+func (o *Contract) HasProperties() bool {
+	if o != nil && o.Properties != nil {
+		return true
+	}
+
+	return false
+}
+
+func (o Contract) MarshalJSON() ([]byte, error) {
+	toSerialize := map[string]interface{}{}
 	if o.Type != nil {
 		toSerialize["type"] = o.Type
 	}
-
+	if o.Properties != nil {
+		toSerialize["properties"] = o.Properties
+	}
 	return json.Marshal(toSerialize)
 }
 

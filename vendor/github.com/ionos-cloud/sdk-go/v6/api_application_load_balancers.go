@@ -55,8 +55,8 @@ func (r ApiDatacentersApplicationloadbalancersDeleteRequest) Execute() (*APIResp
 }
 
 /*
- * DatacentersApplicationloadbalancersDelete Delete an Application Load Balancer by ID
- * Removes the specified Application Load Balancer from the data center.
+ * DatacentersApplicationloadbalancersDelete Delete Application Load Balancers
+ * Remove the specified Application Load Balancer from the data center..
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param datacenterId The unique ID of the data center.
  * @param applicationLoadBalancerId The unique ID of the Application Load Balancer.
@@ -220,8 +220,8 @@ func (r ApiDatacentersApplicationloadbalancersFindByApplicationLoadBalancerIdReq
 }
 
 /*
- * DatacentersApplicationloadbalancersFindByApplicationLoadBalancerId Get an Application Load Balancer by ID
- * Retrieves the properties of the specified Application Load Balancer within the data center.
+ * DatacentersApplicationloadbalancersFindByApplicationLoadBalancerId Retrieve Application Load Balancers
+ * Retrieve the properties of the specified Application Load Balancer within the data center.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param datacenterId The unique ID of the data center.
  * @param applicationLoadBalancerId The unique ID of the Application Load Balancer.
@@ -398,12 +398,12 @@ func (r ApiDatacentersApplicationloadbalancersFlowlogsDeleteRequest) Execute() (
 }
 
 /*
- * DatacentersApplicationloadbalancersFlowlogsDelete Delete an ALB Flow Log by ID
- * Deletes the Application Load Balancer flow log specified by its ID.
+ * DatacentersApplicationloadbalancersFlowlogsDelete Delete ALB Flow Logs
+ * Delete the specified Application Load Balancer Flow Log.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param datacenterId The unique ID of the data center.
  * @param applicationLoadBalancerId The unique ID of the Application Load Balancer.
- * @param flowLogId The unique ID of the flow log.
+ * @param flowLogId The unique ID of the Flow Log.
  * @return ApiDatacentersApplicationloadbalancersFlowlogsDeleteRequest
  */
 func (a *ApplicationLoadBalancersApiService) DatacentersApplicationloadbalancersFlowlogsDelete(ctx _context.Context, datacenterId string, applicationLoadBalancerId string, flowLogId string) ApiDatacentersApplicationloadbalancersFlowlogsDeleteRequest {
@@ -567,12 +567,12 @@ func (r ApiDatacentersApplicationloadbalancersFlowlogsFindByFlowLogIdRequest) Ex
 }
 
 /*
- * DatacentersApplicationloadbalancersFlowlogsFindByFlowLogId Get an ALB Flow Log by ID
- * Retrieves the Application Load Balancer flow log specified by its ID.
+ * DatacentersApplicationloadbalancersFlowlogsFindByFlowLogId Retrieve ALB Flow Logs
+ * Retrieve the specified Application Load Balancer Flow Log.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param datacenterId The unique ID of the data center.
  * @param applicationLoadBalancerId The unique ID of the Application Load Balancer.
- * @param flowLogId The unique ID of the flow log.
+ * @param flowLogId The unique ID of the Flow Log.
  * @return ApiDatacentersApplicationloadbalancersFlowlogsFindByFlowLogIdRequest
  */
 func (a *ApplicationLoadBalancersApiService) DatacentersApplicationloadbalancersFlowlogsFindByFlowLogId(ctx _context.Context, datacenterId string, applicationLoadBalancerId string, flowLogId string) ApiDatacentersApplicationloadbalancersFlowlogsFindByFlowLogIdRequest {
@@ -769,8 +769,8 @@ func (r ApiDatacentersApplicationloadbalancersFlowlogsGetRequest) Execute() (Flo
 }
 
 /*
- * DatacentersApplicationloadbalancersFlowlogsGet Get ALB Flow Logs
- * Retrieves the flow logs for the specified Application Load Balancer.
+ * DatacentersApplicationloadbalancersFlowlogsGet List ALB Flow Logs
+ * List the Flow Logs for the specified Application Load Balancer.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param datacenterId The unique ID of the data center.
  * @param applicationLoadBalancerId The unique ID of the Application Load Balancer.
@@ -966,12 +966,12 @@ func (r ApiDatacentersApplicationloadbalancersFlowlogsPatchRequest) Execute() (F
 }
 
 /*
- * DatacentersApplicationloadbalancersFlowlogsPatch Partially Modify an ALB Flow Log by ID
- * Updates the properties of the Application Load Balancer flow log specified by its ID.
+ * DatacentersApplicationloadbalancersFlowlogsPatch Partially modify ALB Flow Logs
+ * Update the properties of the specified Application Load Balancer Flow Log.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param datacenterId The unique ID of the data center.
  * @param applicationLoadBalancerId The unique ID of the Application Load Balancer.
- * @param flowLogId The unique ID of the flow log.
+ * @param flowLogId The unique ID of the Flow Log.
  * @return ApiDatacentersApplicationloadbalancersFlowlogsPatchRequest
  */
 func (a *ApplicationLoadBalancersApiService) DatacentersApplicationloadbalancersFlowlogsPatch(ctx _context.Context, datacenterId string, applicationLoadBalancerId string, flowLogId string) ApiDatacentersApplicationloadbalancersFlowlogsPatchRequest {
@@ -1156,8 +1156,8 @@ func (r ApiDatacentersApplicationloadbalancersFlowlogsPostRequest) Execute() (Fl
 }
 
 /*
- * DatacentersApplicationloadbalancersFlowlogsPost Create an ALB Flow Log
- * Creates a flow log for the Application Load Balancer specified by ID.
+ * DatacentersApplicationloadbalancersFlowlogsPost Create ALB Flow Logs
+ * Add a new Flow Log for the Application Load Balancer.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param datacenterId The unique ID of the data center.
  * @param applicationLoadBalancerId The unique ID of the Application Load Balancer.
@@ -1344,12 +1344,12 @@ func (r ApiDatacentersApplicationloadbalancersFlowlogsPutRequest) Execute() (Flo
 }
 
 /*
- * DatacentersApplicationloadbalancersFlowlogsPut Modify an ALB Flow Log by ID
- * Modifies the Application Load Balancer flow log specified by its ID.
+ * DatacentersApplicationloadbalancersFlowlogsPut Modify ALB Flow Logs
+ * Modify the specified Application Load Balancer Flow Log.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param datacenterId The unique ID of the data center.
  * @param applicationLoadBalancerId The unique ID of the Application Load Balancer.
- * @param flowLogId The unique ID of the flow log.
+ * @param flowLogId The unique ID of the Flow Log.
  * @return ApiDatacentersApplicationloadbalancersFlowlogsPutRequest
  */
 func (a *ApplicationLoadBalancersApiService) DatacentersApplicationloadbalancersFlowlogsPut(ctx _context.Context, datacenterId string, applicationLoadBalancerId string, flowLogId string) ApiDatacentersApplicationloadbalancersFlowlogsPutRequest {
@@ -1530,8 +1530,8 @@ func (r ApiDatacentersApplicationloadbalancersForwardingrulesDeleteRequest) Exec
 }
 
 /*
- * DatacentersApplicationloadbalancersForwardingrulesDelete Delete an ALB Forwarding Rule by ID
- * Deletes the Application Load Balancer forwarding rule specified by its ID.
+ * DatacentersApplicationloadbalancersForwardingrulesDelete Delete ALB forwarding rules
+ * Delete the specified Application Load Balancer forwarding rule.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param datacenterId The unique ID of the data center.
  * @param applicationLoadBalancerId The unique ID of the Application Load Balancer.
@@ -1699,8 +1699,8 @@ func (r ApiDatacentersApplicationloadbalancersForwardingrulesFindByForwardingRul
 }
 
 /*
- * DatacentersApplicationloadbalancersForwardingrulesFindByForwardingRuleId Get an ALB Forwarding Rule by ID
- * Retrieves the Application Load Balancer forwarding rule specified by its ID.
+ * DatacentersApplicationloadbalancersForwardingrulesFindByForwardingRuleId Retrieve ALB forwarding rules
+ * Retrieve the specified Application Load Balancer forwarding rule.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param datacenterId The unique ID of the data center.
  * @param applicationLoadBalancerId The unique ID of the Application Load Balancer.
@@ -1901,8 +1901,8 @@ func (r ApiDatacentersApplicationloadbalancersForwardingrulesGetRequest) Execute
 }
 
 /*
- * DatacentersApplicationloadbalancersForwardingrulesGet Get ALB Forwarding Rules
- * Lists the forwarding rules of the specified Application Load Balancer.
+ * DatacentersApplicationloadbalancersForwardingrulesGet List ALB forwarding rules
+ * List the forwarding rules for the specified Application Load Balancer.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param datacenterId The unique ID of the data center.
  * @param applicationLoadBalancerId The unique ID of the Application Load Balancer.
@@ -2098,8 +2098,8 @@ func (r ApiDatacentersApplicationloadbalancersForwardingrulesPatchRequest) Execu
 }
 
 /*
- * DatacentersApplicationloadbalancersForwardingrulesPatch Partially modify an ALB Forwarding Rule by ID
- * Updates the properties of the Application Load Balancer forwarding rule specified by its ID.
+ * DatacentersApplicationloadbalancersForwardingrulesPatch Partially modify ALB forwarding rules
+ * Update the properties of the specified Application Load Balancer forwarding rule.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param datacenterId The unique ID of the data center.
  * @param applicationLoadBalancerId The unique ID of the Application Load Balancer.
@@ -2288,8 +2288,8 @@ func (r ApiDatacentersApplicationloadbalancersForwardingrulesPostRequest) Execut
 }
 
 /*
- * DatacentersApplicationloadbalancersForwardingrulesPost Create an ALB Forwarding Rule
- * Creates a forwarding rule for the specified Application Load Balancer.
+ * DatacentersApplicationloadbalancersForwardingrulesPost Create ALB forwarding rules
+ * Create a forwarding rule for the Application Load Balancer.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param datacenterId The unique ID of the data center.
  * @param applicationLoadBalancerId The unique ID of the Application Load Balancer.
@@ -2476,8 +2476,8 @@ func (r ApiDatacentersApplicationloadbalancersForwardingrulesPutRequest) Execute
 }
 
 /*
- * DatacentersApplicationloadbalancersForwardingrulesPut Modify an ALB Forwarding Rule by ID
- * Modifies the Application Load Balancer forwarding rule specified by its ID.
+ * DatacentersApplicationloadbalancersForwardingrulesPut Modify ALB forwarding rules
+ * Modify the specified Application Load Balancer forwarding rule.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param datacenterId The unique ID of the data center.
  * @param applicationLoadBalancerId The unique ID of the Application Load Balancer.
@@ -2692,8 +2692,8 @@ func (r ApiDatacentersApplicationloadbalancersGetRequest) Execute() (Application
 }
 
 /*
- * DatacentersApplicationloadbalancersGet Get Application Load Balancers
- * Lists all Application Load Balancers within a data center.
+ * DatacentersApplicationloadbalancersGet List Application Load Balancers
+ * List all Application Load Balancers within the data center.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param datacenterId The unique ID of the data center.
  * @return ApiDatacentersApplicationloadbalancersGetRequest
@@ -2901,8 +2901,8 @@ func (r ApiDatacentersApplicationloadbalancersPatchRequest) Execute() (Applicati
 }
 
 /*
- * DatacentersApplicationloadbalancersPatch Partially Modify an Application Load Balancer by ID
- * Updates the properties of the specified Application Load Balancer within the data center.
+ * DatacentersApplicationloadbalancersPatch Partially modify Application Load Balancers
+ * Update the properties of the specified Application Load Balancer within the data center.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param datacenterId The unique ID of the data center.
  * @param applicationLoadBalancerId The unique ID of the Application Load Balancer.
@@ -3087,8 +3087,8 @@ func (r ApiDatacentersApplicationloadbalancersPostRequest) Execute() (Applicatio
 }
 
 /*
- * DatacentersApplicationloadbalancersPost Create an Application Load Balancer
- * Creates an Application Load Balancer within the data center.
+ * DatacentersApplicationloadbalancersPost Create Application Load Balancers
+ * Create an Application Load Balancer within the datacenter.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param datacenterId The unique ID of the data center.
  * @return ApiDatacentersApplicationloadbalancersPostRequest
@@ -3271,8 +3271,8 @@ func (r ApiDatacentersApplicationloadbalancersPutRequest) Execute() (Application
 }
 
 /*
- * DatacentersApplicationloadbalancersPut Modify an Application Load Balancer by ID
- * Modifies the properties of the specified Application Load Balancer within the data center.
+ * DatacentersApplicationloadbalancersPut Modify Application Load Balancers
+ * Modify the properties of the specified Application Load Balancer within the data center.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param datacenterId The unique ID of the data center.
  * @param applicationLoadBalancerId The unique ID of the Application Load Balancer.

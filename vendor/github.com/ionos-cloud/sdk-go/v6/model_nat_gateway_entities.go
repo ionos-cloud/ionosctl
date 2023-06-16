@@ -16,8 +16,8 @@ import (
 
 // NatGatewayEntities struct for NatGatewayEntities
 type NatGatewayEntities struct {
-	Flowlogs *FlowLogs        `json:"flowlogs,omitempty"`
 	Rules    *NatGatewayRules `json:"rules,omitempty"`
+	Flowlogs *FlowLogs        `json:"flowlogs,omitempty"`
 }
 
 // NewNatGatewayEntities instantiates a new NatGatewayEntities object
@@ -38,46 +38,8 @@ func NewNatGatewayEntitiesWithDefaults() *NatGatewayEntities {
 	return &this
 }
 
-// GetFlowlogs returns the Flowlogs field value
-// If the value is explicit nil, nil is returned
-func (o *NatGatewayEntities) GetFlowlogs() *FlowLogs {
-	if o == nil {
-		return nil
-	}
-
-	return o.Flowlogs
-
-}
-
-// GetFlowlogsOk returns a tuple with the Flowlogs field value
-// and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *NatGatewayEntities) GetFlowlogsOk() (*FlowLogs, bool) {
-	if o == nil {
-		return nil, false
-	}
-
-	return o.Flowlogs, true
-}
-
-// SetFlowlogs sets field value
-func (o *NatGatewayEntities) SetFlowlogs(v FlowLogs) {
-
-	o.Flowlogs = &v
-
-}
-
-// HasFlowlogs returns a boolean if a field has been set.
-func (o *NatGatewayEntities) HasFlowlogs() bool {
-	if o != nil && o.Flowlogs != nil {
-		return true
-	}
-
-	return false
-}
-
 // GetRules returns the Rules field value
-// If the value is explicit nil, nil is returned
+// If the value is explicit nil, the zero value for NatGatewayRules will be returned
 func (o *NatGatewayEntities) GetRules() *NatGatewayRules {
 	if o == nil {
 		return nil
@@ -114,16 +76,52 @@ func (o *NatGatewayEntities) HasRules() bool {
 	return false
 }
 
-func (o NatGatewayEntities) MarshalJSON() ([]byte, error) {
-	toSerialize := map[string]interface{}{}
-	if o.Flowlogs != nil {
-		toSerialize["flowlogs"] = o.Flowlogs
+// GetFlowlogs returns the Flowlogs field value
+// If the value is explicit nil, the zero value for FlowLogs will be returned
+func (o *NatGatewayEntities) GetFlowlogs() *FlowLogs {
+	if o == nil {
+		return nil
 	}
 
+	return o.Flowlogs
+
+}
+
+// GetFlowlogsOk returns a tuple with the Flowlogs field value
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *NatGatewayEntities) GetFlowlogsOk() (*FlowLogs, bool) {
+	if o == nil {
+		return nil, false
+	}
+
+	return o.Flowlogs, true
+}
+
+// SetFlowlogs sets field value
+func (o *NatGatewayEntities) SetFlowlogs(v FlowLogs) {
+
+	o.Flowlogs = &v
+
+}
+
+// HasFlowlogs returns a boolean if a field has been set.
+func (o *NatGatewayEntities) HasFlowlogs() bool {
+	if o != nil && o.Flowlogs != nil {
+		return true
+	}
+
+	return false
+}
+
+func (o NatGatewayEntities) MarshalJSON() ([]byte, error) {
+	toSerialize := map[string]interface{}{}
 	if o.Rules != nil {
 		toSerialize["rules"] = o.Rules
 	}
-
+	if o.Flowlogs != nil {
+		toSerialize["flowlogs"] = o.Flowlogs
+	}
 	return json.Marshal(toSerialize)
 }
 

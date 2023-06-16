@@ -16,13 +16,13 @@ import (
 
 // RequestStatus struct for RequestStatus
 type RequestStatus struct {
-	// URL to the object representation (absolute path).
-	Href *string `json:"href,omitempty"`
 	// The resource's unique identifier.
-	Id       *string                `json:"id,omitempty"`
-	Metadata *RequestStatusMetadata `json:"metadata,omitempty"`
+	Id *string `json:"id,omitempty"`
 	// The type of object that has been created.
 	Type *Type `json:"type,omitempty"`
+	// URL to the object representation (absolute path).
+	Href     *string                `json:"href,omitempty"`
+	Metadata *RequestStatusMetadata `json:"metadata,omitempty"`
 }
 
 // NewRequestStatus instantiates a new RequestStatus object
@@ -43,46 +43,8 @@ func NewRequestStatusWithDefaults() *RequestStatus {
 	return &this
 }
 
-// GetHref returns the Href field value
-// If the value is explicit nil, nil is returned
-func (o *RequestStatus) GetHref() *string {
-	if o == nil {
-		return nil
-	}
-
-	return o.Href
-
-}
-
-// GetHrefOk returns a tuple with the Href field value
-// and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *RequestStatus) GetHrefOk() (*string, bool) {
-	if o == nil {
-		return nil, false
-	}
-
-	return o.Href, true
-}
-
-// SetHref sets field value
-func (o *RequestStatus) SetHref(v string) {
-
-	o.Href = &v
-
-}
-
-// HasHref returns a boolean if a field has been set.
-func (o *RequestStatus) HasHref() bool {
-	if o != nil && o.Href != nil {
-		return true
-	}
-
-	return false
-}
-
 // GetId returns the Id field value
-// If the value is explicit nil, nil is returned
+// If the value is explicit nil, the zero value for string will be returned
 func (o *RequestStatus) GetId() *string {
 	if o == nil {
 		return nil
@@ -119,46 +81,8 @@ func (o *RequestStatus) HasId() bool {
 	return false
 }
 
-// GetMetadata returns the Metadata field value
-// If the value is explicit nil, nil is returned
-func (o *RequestStatus) GetMetadata() *RequestStatusMetadata {
-	if o == nil {
-		return nil
-	}
-
-	return o.Metadata
-
-}
-
-// GetMetadataOk returns a tuple with the Metadata field value
-// and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *RequestStatus) GetMetadataOk() (*RequestStatusMetadata, bool) {
-	if o == nil {
-		return nil, false
-	}
-
-	return o.Metadata, true
-}
-
-// SetMetadata sets field value
-func (o *RequestStatus) SetMetadata(v RequestStatusMetadata) {
-
-	o.Metadata = &v
-
-}
-
-// HasMetadata returns a boolean if a field has been set.
-func (o *RequestStatus) HasMetadata() bool {
-	if o != nil && o.Metadata != nil {
-		return true
-	}
-
-	return false
-}
-
 // GetType returns the Type field value
-// If the value is explicit nil, nil is returned
+// If the value is explicit nil, the zero value for Type will be returned
 func (o *RequestStatus) GetType() *Type {
 	if o == nil {
 		return nil
@@ -195,24 +119,96 @@ func (o *RequestStatus) HasType() bool {
 	return false
 }
 
-func (o RequestStatus) MarshalJSON() ([]byte, error) {
-	toSerialize := map[string]interface{}{}
-	if o.Href != nil {
-		toSerialize["href"] = o.Href
+// GetHref returns the Href field value
+// If the value is explicit nil, the zero value for string will be returned
+func (o *RequestStatus) GetHref() *string {
+	if o == nil {
+		return nil
 	}
 
+	return o.Href
+
+}
+
+// GetHrefOk returns a tuple with the Href field value
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *RequestStatus) GetHrefOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+
+	return o.Href, true
+}
+
+// SetHref sets field value
+func (o *RequestStatus) SetHref(v string) {
+
+	o.Href = &v
+
+}
+
+// HasHref returns a boolean if a field has been set.
+func (o *RequestStatus) HasHref() bool {
+	if o != nil && o.Href != nil {
+		return true
+	}
+
+	return false
+}
+
+// GetMetadata returns the Metadata field value
+// If the value is explicit nil, the zero value for RequestStatusMetadata will be returned
+func (o *RequestStatus) GetMetadata() *RequestStatusMetadata {
+	if o == nil {
+		return nil
+	}
+
+	return o.Metadata
+
+}
+
+// GetMetadataOk returns a tuple with the Metadata field value
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *RequestStatus) GetMetadataOk() (*RequestStatusMetadata, bool) {
+	if o == nil {
+		return nil, false
+	}
+
+	return o.Metadata, true
+}
+
+// SetMetadata sets field value
+func (o *RequestStatus) SetMetadata(v RequestStatusMetadata) {
+
+	o.Metadata = &v
+
+}
+
+// HasMetadata returns a boolean if a field has been set.
+func (o *RequestStatus) HasMetadata() bool {
+	if o != nil && o.Metadata != nil {
+		return true
+	}
+
+	return false
+}
+
+func (o RequestStatus) MarshalJSON() ([]byte, error) {
+	toSerialize := map[string]interface{}{}
 	if o.Id != nil {
 		toSerialize["id"] = o.Id
 	}
-
-	if o.Metadata != nil {
-		toSerialize["metadata"] = o.Metadata
-	}
-
 	if o.Type != nil {
 		toSerialize["type"] = o.Type
 	}
-
+	if o.Href != nil {
+		toSerialize["href"] = o.Href
+	}
+	if o.Metadata != nil {
+		toSerialize["metadata"] = o.Metadata
+	}
 	return json.Marshal(toSerialize)
 }
 

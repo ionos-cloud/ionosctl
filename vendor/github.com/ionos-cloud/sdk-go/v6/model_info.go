@@ -16,11 +16,11 @@ import (
 
 // Info struct for Info
 type Info struct {
-	// The API entry point.
+	// API entry point
 	Href *string `json:"href,omitempty"`
-	// The API name.
+	// Name of the API
 	Name *string `json:"name,omitempty"`
-	// The API version.
+	// Version of the API
 	Version *string `json:"version,omitempty"`
 }
 
@@ -43,7 +43,7 @@ func NewInfoWithDefaults() *Info {
 }
 
 // GetHref returns the Href field value
-// If the value is explicit nil, nil is returned
+// If the value is explicit nil, the zero value for string will be returned
 func (o *Info) GetHref() *string {
 	if o == nil {
 		return nil
@@ -81,7 +81,7 @@ func (o *Info) HasHref() bool {
 }
 
 // GetName returns the Name field value
-// If the value is explicit nil, nil is returned
+// If the value is explicit nil, the zero value for string will be returned
 func (o *Info) GetName() *string {
 	if o == nil {
 		return nil
@@ -119,7 +119,7 @@ func (o *Info) HasName() bool {
 }
 
 // GetVersion returns the Version field value
-// If the value is explicit nil, nil is returned
+// If the value is explicit nil, the zero value for string will be returned
 func (o *Info) GetVersion() *string {
 	if o == nil {
 		return nil
@@ -161,15 +161,12 @@ func (o Info) MarshalJSON() ([]byte, error) {
 	if o.Href != nil {
 		toSerialize["href"] = o.Href
 	}
-
 	if o.Name != nil {
 		toSerialize["name"] = o.Name
 	}
-
 	if o.Version != nil {
 		toSerialize["version"] = o.Version
 	}
-
 	return json.Marshal(toSerialize)
 }
 

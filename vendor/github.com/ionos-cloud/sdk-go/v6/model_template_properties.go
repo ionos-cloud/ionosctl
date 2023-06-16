@@ -16,10 +16,10 @@ import (
 
 // TemplateProperties struct for TemplateProperties
 type TemplateProperties struct {
+	// The name of the  resource.
+	Name *string `json:"name"`
 	// The CPU cores count.
 	Cores *float32 `json:"cores"`
-	// The resource name.
-	Name *string `json:"name"`
 	// The RAM size in MB.
 	Ram *float32 `json:"ram"`
 	// The storage size in GB.
@@ -30,11 +30,11 @@ type TemplateProperties struct {
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewTemplateProperties(cores float32, name string, ram float32, storageSize float32) *TemplateProperties {
+func NewTemplateProperties(name string, cores float32, ram float32, storageSize float32) *TemplateProperties {
 	this := TemplateProperties{}
 
-	this.Cores = &cores
 	this.Name = &name
+	this.Cores = &cores
 	this.Ram = &ram
 	this.StorageSize = &storageSize
 
@@ -49,46 +49,8 @@ func NewTemplatePropertiesWithDefaults() *TemplateProperties {
 	return &this
 }
 
-// GetCores returns the Cores field value
-// If the value is explicit nil, nil is returned
-func (o *TemplateProperties) GetCores() *float32 {
-	if o == nil {
-		return nil
-	}
-
-	return o.Cores
-
-}
-
-// GetCoresOk returns a tuple with the Cores field value
-// and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *TemplateProperties) GetCoresOk() (*float32, bool) {
-	if o == nil {
-		return nil, false
-	}
-
-	return o.Cores, true
-}
-
-// SetCores sets field value
-func (o *TemplateProperties) SetCores(v float32) {
-
-	o.Cores = &v
-
-}
-
-// HasCores returns a boolean if a field has been set.
-func (o *TemplateProperties) HasCores() bool {
-	if o != nil && o.Cores != nil {
-		return true
-	}
-
-	return false
-}
-
 // GetName returns the Name field value
-// If the value is explicit nil, nil is returned
+// If the value is explicit nil, the zero value for string will be returned
 func (o *TemplateProperties) GetName() *string {
 	if o == nil {
 		return nil
@@ -125,8 +87,46 @@ func (o *TemplateProperties) HasName() bool {
 	return false
 }
 
+// GetCores returns the Cores field value
+// If the value is explicit nil, the zero value for float32 will be returned
+func (o *TemplateProperties) GetCores() *float32 {
+	if o == nil {
+		return nil
+	}
+
+	return o.Cores
+
+}
+
+// GetCoresOk returns a tuple with the Cores field value
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *TemplateProperties) GetCoresOk() (*float32, bool) {
+	if o == nil {
+		return nil, false
+	}
+
+	return o.Cores, true
+}
+
+// SetCores sets field value
+func (o *TemplateProperties) SetCores(v float32) {
+
+	o.Cores = &v
+
+}
+
+// HasCores returns a boolean if a field has been set.
+func (o *TemplateProperties) HasCores() bool {
+	if o != nil && o.Cores != nil {
+		return true
+	}
+
+	return false
+}
+
 // GetRam returns the Ram field value
-// If the value is explicit nil, nil is returned
+// If the value is explicit nil, the zero value for float32 will be returned
 func (o *TemplateProperties) GetRam() *float32 {
 	if o == nil {
 		return nil
@@ -164,7 +164,7 @@ func (o *TemplateProperties) HasRam() bool {
 }
 
 // GetStorageSize returns the StorageSize field value
-// If the value is explicit nil, nil is returned
+// If the value is explicit nil, the zero value for float32 will be returned
 func (o *TemplateProperties) GetStorageSize() *float32 {
 	if o == nil {
 		return nil
@@ -203,22 +203,18 @@ func (o *TemplateProperties) HasStorageSize() bool {
 
 func (o TemplateProperties) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
-	if o.Cores != nil {
-		toSerialize["cores"] = o.Cores
-	}
-
 	if o.Name != nil {
 		toSerialize["name"] = o.Name
 	}
-
+	if o.Cores != nil {
+		toSerialize["cores"] = o.Cores
+	}
 	if o.Ram != nil {
 		toSerialize["ram"] = o.Ram
 	}
-
 	if o.StorageSize != nil {
 		toSerialize["storageSize"] = o.StorageSize
 	}
-
 	return json.Marshal(toSerialize)
 }
 

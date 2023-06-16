@@ -38,7 +38,7 @@ func NewLanEntitiesWithDefaults() *LanEntities {
 }
 
 // GetNics returns the Nics field value
-// If the value is explicit nil, nil is returned
+// If the value is explicit nil, the zero value for LanNics will be returned
 func (o *LanEntities) GetNics() *LanNics {
 	if o == nil {
 		return nil
@@ -80,7 +80,6 @@ func (o LanEntities) MarshalJSON() ([]byte, error) {
 	if o.Nics != nil {
 		toSerialize["nics"] = o.Nics
 	}
-
 	return json.Marshal(toSerialize)
 }
 

@@ -16,81 +16,81 @@ import (
 
 // ResourceLimits struct for ResourceLimits
 type ResourceLimits struct {
-	// The maximum number of CPU cores per contract.
-	CoresPerContract *int32 `json:"coresPerContract"`
-	// The maximum number of CPU cores per server.
+	// The maximum number of cores per server.
 	CoresPerServer *int32 `json:"coresPerServer"`
-	// The number of CPU cores provisioned.
+	// The maximum number of cores per contract.
+	CoresPerContract *int32 `json:"coresPerContract"`
+	// The number of cores provisioned.
 	CoresProvisioned *int32 `json:"coresProvisioned"`
-	// The amount of DAS disk space (in MB) in a Cube server that is currently provisioned.
-	DasVolumeProvisioned *int64 `json:"dasVolumeProvisioned"`
-	// The maximum amount of disk space (in MB) that can be provided under this contract.
-	HddLimitPerContract *int64 `json:"hddLimitPerContract"`
-	// The maximum size (in MB) of an idividual hard disk volume.
-	HddLimitPerVolume *int64 `json:"hddLimitPerVolume"`
-	// The amount of hard disk space (in MB) that is currently provisioned.
-	HddVolumeProvisioned *int64 `json:"hddVolumeProvisioned"`
-	// The maximum number of Kubernetes clusters that can be created under this contract.
-	K8sClusterLimitTotal *int32 `json:"k8sClusterLimitTotal"`
-	// The amount of Kubernetes clusters that is currently provisioned.
-	K8sClustersProvisioned *int32 `json:"k8sClustersProvisioned"`
-	// The NAT Gateway total limit.
-	NatGatewayLimitTotal *int32 `json:"natGatewayLimitTotal"`
-	// The NAT Gateways provisioned.
-	NatGatewayProvisioned *int32 `json:"natGatewayProvisioned"`
-	// The NLB total limit.
-	NlbLimitTotal *int32 `json:"nlbLimitTotal"`
-	// The NLBs provisioned.
-	NlbProvisioned *int32 `json:"nlbProvisioned"`
-	// The maximum amount of RAM (in MB) that can be provisioned under this contract.
-	RamPerContract *int32 `json:"ramPerContract"`
-	// The maximum amount of RAM (in MB) that can be provisioned for a particular server under this contract.
+	// The maximum RAM per server.
 	RamPerServer *int32 `json:"ramPerServer"`
-	// The amount of RAM (in MB) provisioned under this contract.
+	// The maximum RAM per contract.
+	RamPerContract *int32 `json:"ramPerContract"`
+	// RAM provisioned.
 	RamProvisioned *int32 `json:"ramProvisioned"`
-	// The maximum number of static public IP addresses that can be reserved by this customer across contracts.
-	ReservableIps *int32 `json:"reservableIps"`
-	// The number of static public IP addresses in use.
-	ReservedIpsInUse *int32 `json:"reservedIpsInUse"`
-	// The maximum number of static public IP addresses that can be reserved for this contract.
-	ReservedIpsOnContract *int32 `json:"reservedIpsOnContract"`
-	// The maximum amount of solid state disk space (in MB) that can be provisioned under this contract.
-	SsdLimitPerContract *int64 `json:"ssdLimitPerContract"`
-	// The maximum size (in MB) of an individual solid state disk volume.
+	// HDD limit per volume.
+	HddLimitPerVolume *int64 `json:"hddLimitPerVolume"`
+	// HDD limit per contract.
+	HddLimitPerContract *int64 `json:"hddLimitPerContract"`
+	// HDD volume provisioned.
+	HddVolumeProvisioned *int64 `json:"hddVolumeProvisioned"`
+	// SSD limit per volume.
 	SsdLimitPerVolume *int64 `json:"ssdLimitPerVolume"`
-	// The amount of solid state disk space (in MB) that is currently provisioned.
+	// SSD limit per contract.
+	SsdLimitPerContract *int64 `json:"ssdLimitPerContract"`
+	// SSD volume provisioned.
 	SsdVolumeProvisioned *int64 `json:"ssdVolumeProvisioned"`
+	// DAS (Direct Attached Storage) volume provisioned.
+	DasVolumeProvisioned *int64 `json:"dasVolumeProvisioned"`
+	// Total reservable IP limit for the customer.
+	ReservableIps *int32 `json:"reservableIps"`
+	// Reserved ips for the contract.
+	ReservedIpsOnContract *int32 `json:"reservedIpsOnContract"`
+	// Reserved ips in use.
+	ReservedIpsInUse *int32 `json:"reservedIpsInUse"`
+	// K8s clusters total limit.
+	K8sClusterLimitTotal *int32 `json:"k8sClusterLimitTotal"`
+	// K8s clusters provisioned.
+	K8sClustersProvisioned *int32 `json:"k8sClustersProvisioned"`
+	// NLB total limit.
+	NlbLimitTotal *int32 `json:"nlbLimitTotal"`
+	// NLBs provisioned.
+	NlbProvisioned *int32 `json:"nlbProvisioned"`
+	// NAT Gateway total limit.
+	NatGatewayLimitTotal *int32 `json:"natGatewayLimitTotal"`
+	// NAT Gateways provisioned.
+	NatGatewayProvisioned *int32 `json:"natGatewayProvisioned"`
 }
 
 // NewResourceLimits instantiates a new ResourceLimits object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewResourceLimits(coresPerContract int32, coresPerServer int32, coresProvisioned int32, dasVolumeProvisioned int64, hddLimitPerContract int64, hddLimitPerVolume int64, hddVolumeProvisioned int64, k8sClusterLimitTotal int32, k8sClustersProvisioned int32, natGatewayLimitTotal int32, natGatewayProvisioned int32, nlbLimitTotal int32, nlbProvisioned int32, ramPerContract int32, ramPerServer int32, ramProvisioned int32, reservableIps int32, reservedIpsInUse int32, reservedIpsOnContract int32, ssdLimitPerContract int64, ssdLimitPerVolume int64, ssdVolumeProvisioned int64) *ResourceLimits {
+func NewResourceLimits(coresPerServer int32, coresPerContract int32, coresProvisioned int32, ramPerServer int32, ramPerContract int32, ramProvisioned int32, hddLimitPerVolume int64, hddLimitPerContract int64, hddVolumeProvisioned int64, ssdLimitPerVolume int64, ssdLimitPerContract int64, ssdVolumeProvisioned int64, dasVolumeProvisioned int64, reservableIps int32, reservedIpsOnContract int32, reservedIpsInUse int32, k8sClusterLimitTotal int32, k8sClustersProvisioned int32, nlbLimitTotal int32, nlbProvisioned int32, natGatewayLimitTotal int32, natGatewayProvisioned int32) *ResourceLimits {
 	this := ResourceLimits{}
 
-	this.CoresPerContract = &coresPerContract
 	this.CoresPerServer = &coresPerServer
+	this.CoresPerContract = &coresPerContract
 	this.CoresProvisioned = &coresProvisioned
-	this.DasVolumeProvisioned = &dasVolumeProvisioned
-	this.HddLimitPerContract = &hddLimitPerContract
+	this.RamPerServer = &ramPerServer
+	this.RamPerContract = &ramPerContract
+	this.RamProvisioned = &ramProvisioned
 	this.HddLimitPerVolume = &hddLimitPerVolume
+	this.HddLimitPerContract = &hddLimitPerContract
 	this.HddVolumeProvisioned = &hddVolumeProvisioned
+	this.SsdLimitPerVolume = &ssdLimitPerVolume
+	this.SsdLimitPerContract = &ssdLimitPerContract
+	this.SsdVolumeProvisioned = &ssdVolumeProvisioned
+	this.DasVolumeProvisioned = &dasVolumeProvisioned
+	this.ReservableIps = &reservableIps
+	this.ReservedIpsOnContract = &reservedIpsOnContract
+	this.ReservedIpsInUse = &reservedIpsInUse
 	this.K8sClusterLimitTotal = &k8sClusterLimitTotal
 	this.K8sClustersProvisioned = &k8sClustersProvisioned
-	this.NatGatewayLimitTotal = &natGatewayLimitTotal
-	this.NatGatewayProvisioned = &natGatewayProvisioned
 	this.NlbLimitTotal = &nlbLimitTotal
 	this.NlbProvisioned = &nlbProvisioned
-	this.RamPerContract = &ramPerContract
-	this.RamPerServer = &ramPerServer
-	this.RamProvisioned = &ramProvisioned
-	this.ReservableIps = &reservableIps
-	this.ReservedIpsInUse = &reservedIpsInUse
-	this.ReservedIpsOnContract = &reservedIpsOnContract
-	this.SsdLimitPerContract = &ssdLimitPerContract
-	this.SsdLimitPerVolume = &ssdLimitPerVolume
-	this.SsdVolumeProvisioned = &ssdVolumeProvisioned
+	this.NatGatewayLimitTotal = &natGatewayLimitTotal
+	this.NatGatewayProvisioned = &natGatewayProvisioned
 
 	return &this
 }
@@ -103,46 +103,8 @@ func NewResourceLimitsWithDefaults() *ResourceLimits {
 	return &this
 }
 
-// GetCoresPerContract returns the CoresPerContract field value
-// If the value is explicit nil, nil is returned
-func (o *ResourceLimits) GetCoresPerContract() *int32 {
-	if o == nil {
-		return nil
-	}
-
-	return o.CoresPerContract
-
-}
-
-// GetCoresPerContractOk returns a tuple with the CoresPerContract field value
-// and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *ResourceLimits) GetCoresPerContractOk() (*int32, bool) {
-	if o == nil {
-		return nil, false
-	}
-
-	return o.CoresPerContract, true
-}
-
-// SetCoresPerContract sets field value
-func (o *ResourceLimits) SetCoresPerContract(v int32) {
-
-	o.CoresPerContract = &v
-
-}
-
-// HasCoresPerContract returns a boolean if a field has been set.
-func (o *ResourceLimits) HasCoresPerContract() bool {
-	if o != nil && o.CoresPerContract != nil {
-		return true
-	}
-
-	return false
-}
-
 // GetCoresPerServer returns the CoresPerServer field value
-// If the value is explicit nil, nil is returned
+// If the value is explicit nil, the zero value for int32 will be returned
 func (o *ResourceLimits) GetCoresPerServer() *int32 {
 	if o == nil {
 		return nil
@@ -179,8 +141,46 @@ func (o *ResourceLimits) HasCoresPerServer() bool {
 	return false
 }
 
+// GetCoresPerContract returns the CoresPerContract field value
+// If the value is explicit nil, the zero value for int32 will be returned
+func (o *ResourceLimits) GetCoresPerContract() *int32 {
+	if o == nil {
+		return nil
+	}
+
+	return o.CoresPerContract
+
+}
+
+// GetCoresPerContractOk returns a tuple with the CoresPerContract field value
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *ResourceLimits) GetCoresPerContractOk() (*int32, bool) {
+	if o == nil {
+		return nil, false
+	}
+
+	return o.CoresPerContract, true
+}
+
+// SetCoresPerContract sets field value
+func (o *ResourceLimits) SetCoresPerContract(v int32) {
+
+	o.CoresPerContract = &v
+
+}
+
+// HasCoresPerContract returns a boolean if a field has been set.
+func (o *ResourceLimits) HasCoresPerContract() bool {
+	if o != nil && o.CoresPerContract != nil {
+		return true
+	}
+
+	return false
+}
+
 // GetCoresProvisioned returns the CoresProvisioned field value
-// If the value is explicit nil, nil is returned
+// If the value is explicit nil, the zero value for int32 will be returned
 func (o *ResourceLimits) GetCoresProvisioned() *int32 {
 	if o == nil {
 		return nil
@@ -217,76 +217,114 @@ func (o *ResourceLimits) HasCoresProvisioned() bool {
 	return false
 }
 
-// GetDasVolumeProvisioned returns the DasVolumeProvisioned field value
-// If the value is explicit nil, nil is returned
-func (o *ResourceLimits) GetDasVolumeProvisioned() *int64 {
+// GetRamPerServer returns the RamPerServer field value
+// If the value is explicit nil, the zero value for int32 will be returned
+func (o *ResourceLimits) GetRamPerServer() *int32 {
 	if o == nil {
 		return nil
 	}
 
-	return o.DasVolumeProvisioned
+	return o.RamPerServer
 
 }
 
-// GetDasVolumeProvisionedOk returns a tuple with the DasVolumeProvisioned field value
+// GetRamPerServerOk returns a tuple with the RamPerServer field value
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *ResourceLimits) GetDasVolumeProvisionedOk() (*int64, bool) {
+func (o *ResourceLimits) GetRamPerServerOk() (*int32, bool) {
 	if o == nil {
 		return nil, false
 	}
 
-	return o.DasVolumeProvisioned, true
+	return o.RamPerServer, true
 }
 
-// SetDasVolumeProvisioned sets field value
-func (o *ResourceLimits) SetDasVolumeProvisioned(v int64) {
+// SetRamPerServer sets field value
+func (o *ResourceLimits) SetRamPerServer(v int32) {
 
-	o.DasVolumeProvisioned = &v
+	o.RamPerServer = &v
 
 }
 
-// HasDasVolumeProvisioned returns a boolean if a field has been set.
-func (o *ResourceLimits) HasDasVolumeProvisioned() bool {
-	if o != nil && o.DasVolumeProvisioned != nil {
+// HasRamPerServer returns a boolean if a field has been set.
+func (o *ResourceLimits) HasRamPerServer() bool {
+	if o != nil && o.RamPerServer != nil {
 		return true
 	}
 
 	return false
 }
 
-// GetHddLimitPerContract returns the HddLimitPerContract field value
-// If the value is explicit nil, nil is returned
-func (o *ResourceLimits) GetHddLimitPerContract() *int64 {
+// GetRamPerContract returns the RamPerContract field value
+// If the value is explicit nil, the zero value for int32 will be returned
+func (o *ResourceLimits) GetRamPerContract() *int32 {
 	if o == nil {
 		return nil
 	}
 
-	return o.HddLimitPerContract
+	return o.RamPerContract
 
 }
 
-// GetHddLimitPerContractOk returns a tuple with the HddLimitPerContract field value
+// GetRamPerContractOk returns a tuple with the RamPerContract field value
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *ResourceLimits) GetHddLimitPerContractOk() (*int64, bool) {
+func (o *ResourceLimits) GetRamPerContractOk() (*int32, bool) {
 	if o == nil {
 		return nil, false
 	}
 
-	return o.HddLimitPerContract, true
+	return o.RamPerContract, true
 }
 
-// SetHddLimitPerContract sets field value
-func (o *ResourceLimits) SetHddLimitPerContract(v int64) {
+// SetRamPerContract sets field value
+func (o *ResourceLimits) SetRamPerContract(v int32) {
 
-	o.HddLimitPerContract = &v
+	o.RamPerContract = &v
 
 }
 
-// HasHddLimitPerContract returns a boolean if a field has been set.
-func (o *ResourceLimits) HasHddLimitPerContract() bool {
-	if o != nil && o.HddLimitPerContract != nil {
+// HasRamPerContract returns a boolean if a field has been set.
+func (o *ResourceLimits) HasRamPerContract() bool {
+	if o != nil && o.RamPerContract != nil {
+		return true
+	}
+
+	return false
+}
+
+// GetRamProvisioned returns the RamProvisioned field value
+// If the value is explicit nil, the zero value for int32 will be returned
+func (o *ResourceLimits) GetRamProvisioned() *int32 {
+	if o == nil {
+		return nil
+	}
+
+	return o.RamProvisioned
+
+}
+
+// GetRamProvisionedOk returns a tuple with the RamProvisioned field value
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *ResourceLimits) GetRamProvisionedOk() (*int32, bool) {
+	if o == nil {
+		return nil, false
+	}
+
+	return o.RamProvisioned, true
+}
+
+// SetRamProvisioned sets field value
+func (o *ResourceLimits) SetRamProvisioned(v int32) {
+
+	o.RamProvisioned = &v
+
+}
+
+// HasRamProvisioned returns a boolean if a field has been set.
+func (o *ResourceLimits) HasRamProvisioned() bool {
+	if o != nil && o.RamProvisioned != nil {
 		return true
 	}
 
@@ -294,7 +332,7 @@ func (o *ResourceLimits) HasHddLimitPerContract() bool {
 }
 
 // GetHddLimitPerVolume returns the HddLimitPerVolume field value
-// If the value is explicit nil, nil is returned
+// If the value is explicit nil, the zero value for int64 will be returned
 func (o *ResourceLimits) GetHddLimitPerVolume() *int64 {
 	if o == nil {
 		return nil
@@ -331,8 +369,46 @@ func (o *ResourceLimits) HasHddLimitPerVolume() bool {
 	return false
 }
 
+// GetHddLimitPerContract returns the HddLimitPerContract field value
+// If the value is explicit nil, the zero value for int64 will be returned
+func (o *ResourceLimits) GetHddLimitPerContract() *int64 {
+	if o == nil {
+		return nil
+	}
+
+	return o.HddLimitPerContract
+
+}
+
+// GetHddLimitPerContractOk returns a tuple with the HddLimitPerContract field value
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *ResourceLimits) GetHddLimitPerContractOk() (*int64, bool) {
+	if o == nil {
+		return nil, false
+	}
+
+	return o.HddLimitPerContract, true
+}
+
+// SetHddLimitPerContract sets field value
+func (o *ResourceLimits) SetHddLimitPerContract(v int64) {
+
+	o.HddLimitPerContract = &v
+
+}
+
+// HasHddLimitPerContract returns a boolean if a field has been set.
+func (o *ResourceLimits) HasHddLimitPerContract() bool {
+	if o != nil && o.HddLimitPerContract != nil {
+		return true
+	}
+
+	return false
+}
+
 // GetHddVolumeProvisioned returns the HddVolumeProvisioned field value
-// If the value is explicit nil, nil is returned
+// If the value is explicit nil, the zero value for int64 will be returned
 func (o *ResourceLimits) GetHddVolumeProvisioned() *int64 {
 	if o == nil {
 		return nil
@@ -369,8 +445,274 @@ func (o *ResourceLimits) HasHddVolumeProvisioned() bool {
 	return false
 }
 
+// GetSsdLimitPerVolume returns the SsdLimitPerVolume field value
+// If the value is explicit nil, the zero value for int64 will be returned
+func (o *ResourceLimits) GetSsdLimitPerVolume() *int64 {
+	if o == nil {
+		return nil
+	}
+
+	return o.SsdLimitPerVolume
+
+}
+
+// GetSsdLimitPerVolumeOk returns a tuple with the SsdLimitPerVolume field value
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *ResourceLimits) GetSsdLimitPerVolumeOk() (*int64, bool) {
+	if o == nil {
+		return nil, false
+	}
+
+	return o.SsdLimitPerVolume, true
+}
+
+// SetSsdLimitPerVolume sets field value
+func (o *ResourceLimits) SetSsdLimitPerVolume(v int64) {
+
+	o.SsdLimitPerVolume = &v
+
+}
+
+// HasSsdLimitPerVolume returns a boolean if a field has been set.
+func (o *ResourceLimits) HasSsdLimitPerVolume() bool {
+	if o != nil && o.SsdLimitPerVolume != nil {
+		return true
+	}
+
+	return false
+}
+
+// GetSsdLimitPerContract returns the SsdLimitPerContract field value
+// If the value is explicit nil, the zero value for int64 will be returned
+func (o *ResourceLimits) GetSsdLimitPerContract() *int64 {
+	if o == nil {
+		return nil
+	}
+
+	return o.SsdLimitPerContract
+
+}
+
+// GetSsdLimitPerContractOk returns a tuple with the SsdLimitPerContract field value
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *ResourceLimits) GetSsdLimitPerContractOk() (*int64, bool) {
+	if o == nil {
+		return nil, false
+	}
+
+	return o.SsdLimitPerContract, true
+}
+
+// SetSsdLimitPerContract sets field value
+func (o *ResourceLimits) SetSsdLimitPerContract(v int64) {
+
+	o.SsdLimitPerContract = &v
+
+}
+
+// HasSsdLimitPerContract returns a boolean if a field has been set.
+func (o *ResourceLimits) HasSsdLimitPerContract() bool {
+	if o != nil && o.SsdLimitPerContract != nil {
+		return true
+	}
+
+	return false
+}
+
+// GetSsdVolumeProvisioned returns the SsdVolumeProvisioned field value
+// If the value is explicit nil, the zero value for int64 will be returned
+func (o *ResourceLimits) GetSsdVolumeProvisioned() *int64 {
+	if o == nil {
+		return nil
+	}
+
+	return o.SsdVolumeProvisioned
+
+}
+
+// GetSsdVolumeProvisionedOk returns a tuple with the SsdVolumeProvisioned field value
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *ResourceLimits) GetSsdVolumeProvisionedOk() (*int64, bool) {
+	if o == nil {
+		return nil, false
+	}
+
+	return o.SsdVolumeProvisioned, true
+}
+
+// SetSsdVolumeProvisioned sets field value
+func (o *ResourceLimits) SetSsdVolumeProvisioned(v int64) {
+
+	o.SsdVolumeProvisioned = &v
+
+}
+
+// HasSsdVolumeProvisioned returns a boolean if a field has been set.
+func (o *ResourceLimits) HasSsdVolumeProvisioned() bool {
+	if o != nil && o.SsdVolumeProvisioned != nil {
+		return true
+	}
+
+	return false
+}
+
+// GetDasVolumeProvisioned returns the DasVolumeProvisioned field value
+// If the value is explicit nil, the zero value for int64 will be returned
+func (o *ResourceLimits) GetDasVolumeProvisioned() *int64 {
+	if o == nil {
+		return nil
+	}
+
+	return o.DasVolumeProvisioned
+
+}
+
+// GetDasVolumeProvisionedOk returns a tuple with the DasVolumeProvisioned field value
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *ResourceLimits) GetDasVolumeProvisionedOk() (*int64, bool) {
+	if o == nil {
+		return nil, false
+	}
+
+	return o.DasVolumeProvisioned, true
+}
+
+// SetDasVolumeProvisioned sets field value
+func (o *ResourceLimits) SetDasVolumeProvisioned(v int64) {
+
+	o.DasVolumeProvisioned = &v
+
+}
+
+// HasDasVolumeProvisioned returns a boolean if a field has been set.
+func (o *ResourceLimits) HasDasVolumeProvisioned() bool {
+	if o != nil && o.DasVolumeProvisioned != nil {
+		return true
+	}
+
+	return false
+}
+
+// GetReservableIps returns the ReservableIps field value
+// If the value is explicit nil, the zero value for int32 will be returned
+func (o *ResourceLimits) GetReservableIps() *int32 {
+	if o == nil {
+		return nil
+	}
+
+	return o.ReservableIps
+
+}
+
+// GetReservableIpsOk returns a tuple with the ReservableIps field value
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *ResourceLimits) GetReservableIpsOk() (*int32, bool) {
+	if o == nil {
+		return nil, false
+	}
+
+	return o.ReservableIps, true
+}
+
+// SetReservableIps sets field value
+func (o *ResourceLimits) SetReservableIps(v int32) {
+
+	o.ReservableIps = &v
+
+}
+
+// HasReservableIps returns a boolean if a field has been set.
+func (o *ResourceLimits) HasReservableIps() bool {
+	if o != nil && o.ReservableIps != nil {
+		return true
+	}
+
+	return false
+}
+
+// GetReservedIpsOnContract returns the ReservedIpsOnContract field value
+// If the value is explicit nil, the zero value for int32 will be returned
+func (o *ResourceLimits) GetReservedIpsOnContract() *int32 {
+	if o == nil {
+		return nil
+	}
+
+	return o.ReservedIpsOnContract
+
+}
+
+// GetReservedIpsOnContractOk returns a tuple with the ReservedIpsOnContract field value
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *ResourceLimits) GetReservedIpsOnContractOk() (*int32, bool) {
+	if o == nil {
+		return nil, false
+	}
+
+	return o.ReservedIpsOnContract, true
+}
+
+// SetReservedIpsOnContract sets field value
+func (o *ResourceLimits) SetReservedIpsOnContract(v int32) {
+
+	o.ReservedIpsOnContract = &v
+
+}
+
+// HasReservedIpsOnContract returns a boolean if a field has been set.
+func (o *ResourceLimits) HasReservedIpsOnContract() bool {
+	if o != nil && o.ReservedIpsOnContract != nil {
+		return true
+	}
+
+	return false
+}
+
+// GetReservedIpsInUse returns the ReservedIpsInUse field value
+// If the value is explicit nil, the zero value for int32 will be returned
+func (o *ResourceLimits) GetReservedIpsInUse() *int32 {
+	if o == nil {
+		return nil
+	}
+
+	return o.ReservedIpsInUse
+
+}
+
+// GetReservedIpsInUseOk returns a tuple with the ReservedIpsInUse field value
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *ResourceLimits) GetReservedIpsInUseOk() (*int32, bool) {
+	if o == nil {
+		return nil, false
+	}
+
+	return o.ReservedIpsInUse, true
+}
+
+// SetReservedIpsInUse sets field value
+func (o *ResourceLimits) SetReservedIpsInUse(v int32) {
+
+	o.ReservedIpsInUse = &v
+
+}
+
+// HasReservedIpsInUse returns a boolean if a field has been set.
+func (o *ResourceLimits) HasReservedIpsInUse() bool {
+	if o != nil && o.ReservedIpsInUse != nil {
+		return true
+	}
+
+	return false
+}
+
 // GetK8sClusterLimitTotal returns the K8sClusterLimitTotal field value
-// If the value is explicit nil, nil is returned
+// If the value is explicit nil, the zero value for int32 will be returned
 func (o *ResourceLimits) GetK8sClusterLimitTotal() *int32 {
 	if o == nil {
 		return nil
@@ -408,7 +750,7 @@ func (o *ResourceLimits) HasK8sClusterLimitTotal() bool {
 }
 
 // GetK8sClustersProvisioned returns the K8sClustersProvisioned field value
-// If the value is explicit nil, nil is returned
+// If the value is explicit nil, the zero value for int32 will be returned
 func (o *ResourceLimits) GetK8sClustersProvisioned() *int32 {
 	if o == nil {
 		return nil
@@ -445,84 +787,8 @@ func (o *ResourceLimits) HasK8sClustersProvisioned() bool {
 	return false
 }
 
-// GetNatGatewayLimitTotal returns the NatGatewayLimitTotal field value
-// If the value is explicit nil, nil is returned
-func (o *ResourceLimits) GetNatGatewayLimitTotal() *int32 {
-	if o == nil {
-		return nil
-	}
-
-	return o.NatGatewayLimitTotal
-
-}
-
-// GetNatGatewayLimitTotalOk returns a tuple with the NatGatewayLimitTotal field value
-// and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *ResourceLimits) GetNatGatewayLimitTotalOk() (*int32, bool) {
-	if o == nil {
-		return nil, false
-	}
-
-	return o.NatGatewayLimitTotal, true
-}
-
-// SetNatGatewayLimitTotal sets field value
-func (o *ResourceLimits) SetNatGatewayLimitTotal(v int32) {
-
-	o.NatGatewayLimitTotal = &v
-
-}
-
-// HasNatGatewayLimitTotal returns a boolean if a field has been set.
-func (o *ResourceLimits) HasNatGatewayLimitTotal() bool {
-	if o != nil && o.NatGatewayLimitTotal != nil {
-		return true
-	}
-
-	return false
-}
-
-// GetNatGatewayProvisioned returns the NatGatewayProvisioned field value
-// If the value is explicit nil, nil is returned
-func (o *ResourceLimits) GetNatGatewayProvisioned() *int32 {
-	if o == nil {
-		return nil
-	}
-
-	return o.NatGatewayProvisioned
-
-}
-
-// GetNatGatewayProvisionedOk returns a tuple with the NatGatewayProvisioned field value
-// and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *ResourceLimits) GetNatGatewayProvisionedOk() (*int32, bool) {
-	if o == nil {
-		return nil, false
-	}
-
-	return o.NatGatewayProvisioned, true
-}
-
-// SetNatGatewayProvisioned sets field value
-func (o *ResourceLimits) SetNatGatewayProvisioned(v int32) {
-
-	o.NatGatewayProvisioned = &v
-
-}
-
-// HasNatGatewayProvisioned returns a boolean if a field has been set.
-func (o *ResourceLimits) HasNatGatewayProvisioned() bool {
-	if o != nil && o.NatGatewayProvisioned != nil {
-		return true
-	}
-
-	return false
-}
-
 // GetNlbLimitTotal returns the NlbLimitTotal field value
-// If the value is explicit nil, nil is returned
+// If the value is explicit nil, the zero value for int32 will be returned
 func (o *ResourceLimits) GetNlbLimitTotal() *int32 {
 	if o == nil {
 		return nil
@@ -560,7 +826,7 @@ func (o *ResourceLimits) HasNlbLimitTotal() bool {
 }
 
 // GetNlbProvisioned returns the NlbProvisioned field value
-// If the value is explicit nil, nil is returned
+// If the value is explicit nil, the zero value for int32 will be returned
 func (o *ResourceLimits) GetNlbProvisioned() *int32 {
 	if o == nil {
 		return nil
@@ -597,342 +863,76 @@ func (o *ResourceLimits) HasNlbProvisioned() bool {
 	return false
 }
 
-// GetRamPerContract returns the RamPerContract field value
-// If the value is explicit nil, nil is returned
-func (o *ResourceLimits) GetRamPerContract() *int32 {
+// GetNatGatewayLimitTotal returns the NatGatewayLimitTotal field value
+// If the value is explicit nil, the zero value for int32 will be returned
+func (o *ResourceLimits) GetNatGatewayLimitTotal() *int32 {
 	if o == nil {
 		return nil
 	}
 
-	return o.RamPerContract
+	return o.NatGatewayLimitTotal
 
 }
 
-// GetRamPerContractOk returns a tuple with the RamPerContract field value
+// GetNatGatewayLimitTotalOk returns a tuple with the NatGatewayLimitTotal field value
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *ResourceLimits) GetRamPerContractOk() (*int32, bool) {
+func (o *ResourceLimits) GetNatGatewayLimitTotalOk() (*int32, bool) {
 	if o == nil {
 		return nil, false
 	}
 
-	return o.RamPerContract, true
+	return o.NatGatewayLimitTotal, true
 }
 
-// SetRamPerContract sets field value
-func (o *ResourceLimits) SetRamPerContract(v int32) {
+// SetNatGatewayLimitTotal sets field value
+func (o *ResourceLimits) SetNatGatewayLimitTotal(v int32) {
 
-	o.RamPerContract = &v
+	o.NatGatewayLimitTotal = &v
 
 }
 
-// HasRamPerContract returns a boolean if a field has been set.
-func (o *ResourceLimits) HasRamPerContract() bool {
-	if o != nil && o.RamPerContract != nil {
+// HasNatGatewayLimitTotal returns a boolean if a field has been set.
+func (o *ResourceLimits) HasNatGatewayLimitTotal() bool {
+	if o != nil && o.NatGatewayLimitTotal != nil {
 		return true
 	}
 
 	return false
 }
 
-// GetRamPerServer returns the RamPerServer field value
-// If the value is explicit nil, nil is returned
-func (o *ResourceLimits) GetRamPerServer() *int32 {
+// GetNatGatewayProvisioned returns the NatGatewayProvisioned field value
+// If the value is explicit nil, the zero value for int32 will be returned
+func (o *ResourceLimits) GetNatGatewayProvisioned() *int32 {
 	if o == nil {
 		return nil
 	}
 
-	return o.RamPerServer
+	return o.NatGatewayProvisioned
 
 }
 
-// GetRamPerServerOk returns a tuple with the RamPerServer field value
+// GetNatGatewayProvisionedOk returns a tuple with the NatGatewayProvisioned field value
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *ResourceLimits) GetRamPerServerOk() (*int32, bool) {
+func (o *ResourceLimits) GetNatGatewayProvisionedOk() (*int32, bool) {
 	if o == nil {
 		return nil, false
 	}
 
-	return o.RamPerServer, true
+	return o.NatGatewayProvisioned, true
 }
 
-// SetRamPerServer sets field value
-func (o *ResourceLimits) SetRamPerServer(v int32) {
+// SetNatGatewayProvisioned sets field value
+func (o *ResourceLimits) SetNatGatewayProvisioned(v int32) {
 
-	o.RamPerServer = &v
-
-}
-
-// HasRamPerServer returns a boolean if a field has been set.
-func (o *ResourceLimits) HasRamPerServer() bool {
-	if o != nil && o.RamPerServer != nil {
-		return true
-	}
-
-	return false
-}
-
-// GetRamProvisioned returns the RamProvisioned field value
-// If the value is explicit nil, nil is returned
-func (o *ResourceLimits) GetRamProvisioned() *int32 {
-	if o == nil {
-		return nil
-	}
-
-	return o.RamProvisioned
+	o.NatGatewayProvisioned = &v
 
 }
 
-// GetRamProvisionedOk returns a tuple with the RamProvisioned field value
-// and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *ResourceLimits) GetRamProvisionedOk() (*int32, bool) {
-	if o == nil {
-		return nil, false
-	}
-
-	return o.RamProvisioned, true
-}
-
-// SetRamProvisioned sets field value
-func (o *ResourceLimits) SetRamProvisioned(v int32) {
-
-	o.RamProvisioned = &v
-
-}
-
-// HasRamProvisioned returns a boolean if a field has been set.
-func (o *ResourceLimits) HasRamProvisioned() bool {
-	if o != nil && o.RamProvisioned != nil {
-		return true
-	}
-
-	return false
-}
-
-// GetReservableIps returns the ReservableIps field value
-// If the value is explicit nil, nil is returned
-func (o *ResourceLimits) GetReservableIps() *int32 {
-	if o == nil {
-		return nil
-	}
-
-	return o.ReservableIps
-
-}
-
-// GetReservableIpsOk returns a tuple with the ReservableIps field value
-// and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *ResourceLimits) GetReservableIpsOk() (*int32, bool) {
-	if o == nil {
-		return nil, false
-	}
-
-	return o.ReservableIps, true
-}
-
-// SetReservableIps sets field value
-func (o *ResourceLimits) SetReservableIps(v int32) {
-
-	o.ReservableIps = &v
-
-}
-
-// HasReservableIps returns a boolean if a field has been set.
-func (o *ResourceLimits) HasReservableIps() bool {
-	if o != nil && o.ReservableIps != nil {
-		return true
-	}
-
-	return false
-}
-
-// GetReservedIpsInUse returns the ReservedIpsInUse field value
-// If the value is explicit nil, nil is returned
-func (o *ResourceLimits) GetReservedIpsInUse() *int32 {
-	if o == nil {
-		return nil
-	}
-
-	return o.ReservedIpsInUse
-
-}
-
-// GetReservedIpsInUseOk returns a tuple with the ReservedIpsInUse field value
-// and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *ResourceLimits) GetReservedIpsInUseOk() (*int32, bool) {
-	if o == nil {
-		return nil, false
-	}
-
-	return o.ReservedIpsInUse, true
-}
-
-// SetReservedIpsInUse sets field value
-func (o *ResourceLimits) SetReservedIpsInUse(v int32) {
-
-	o.ReservedIpsInUse = &v
-
-}
-
-// HasReservedIpsInUse returns a boolean if a field has been set.
-func (o *ResourceLimits) HasReservedIpsInUse() bool {
-	if o != nil && o.ReservedIpsInUse != nil {
-		return true
-	}
-
-	return false
-}
-
-// GetReservedIpsOnContract returns the ReservedIpsOnContract field value
-// If the value is explicit nil, nil is returned
-func (o *ResourceLimits) GetReservedIpsOnContract() *int32 {
-	if o == nil {
-		return nil
-	}
-
-	return o.ReservedIpsOnContract
-
-}
-
-// GetReservedIpsOnContractOk returns a tuple with the ReservedIpsOnContract field value
-// and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *ResourceLimits) GetReservedIpsOnContractOk() (*int32, bool) {
-	if o == nil {
-		return nil, false
-	}
-
-	return o.ReservedIpsOnContract, true
-}
-
-// SetReservedIpsOnContract sets field value
-func (o *ResourceLimits) SetReservedIpsOnContract(v int32) {
-
-	o.ReservedIpsOnContract = &v
-
-}
-
-// HasReservedIpsOnContract returns a boolean if a field has been set.
-func (o *ResourceLimits) HasReservedIpsOnContract() bool {
-	if o != nil && o.ReservedIpsOnContract != nil {
-		return true
-	}
-
-	return false
-}
-
-// GetSsdLimitPerContract returns the SsdLimitPerContract field value
-// If the value is explicit nil, nil is returned
-func (o *ResourceLimits) GetSsdLimitPerContract() *int64 {
-	if o == nil {
-		return nil
-	}
-
-	return o.SsdLimitPerContract
-
-}
-
-// GetSsdLimitPerContractOk returns a tuple with the SsdLimitPerContract field value
-// and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *ResourceLimits) GetSsdLimitPerContractOk() (*int64, bool) {
-	if o == nil {
-		return nil, false
-	}
-
-	return o.SsdLimitPerContract, true
-}
-
-// SetSsdLimitPerContract sets field value
-func (o *ResourceLimits) SetSsdLimitPerContract(v int64) {
-
-	o.SsdLimitPerContract = &v
-
-}
-
-// HasSsdLimitPerContract returns a boolean if a field has been set.
-func (o *ResourceLimits) HasSsdLimitPerContract() bool {
-	if o != nil && o.SsdLimitPerContract != nil {
-		return true
-	}
-
-	return false
-}
-
-// GetSsdLimitPerVolume returns the SsdLimitPerVolume field value
-// If the value is explicit nil, nil is returned
-func (o *ResourceLimits) GetSsdLimitPerVolume() *int64 {
-	if o == nil {
-		return nil
-	}
-
-	return o.SsdLimitPerVolume
-
-}
-
-// GetSsdLimitPerVolumeOk returns a tuple with the SsdLimitPerVolume field value
-// and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *ResourceLimits) GetSsdLimitPerVolumeOk() (*int64, bool) {
-	if o == nil {
-		return nil, false
-	}
-
-	return o.SsdLimitPerVolume, true
-}
-
-// SetSsdLimitPerVolume sets field value
-func (o *ResourceLimits) SetSsdLimitPerVolume(v int64) {
-
-	o.SsdLimitPerVolume = &v
-
-}
-
-// HasSsdLimitPerVolume returns a boolean if a field has been set.
-func (o *ResourceLimits) HasSsdLimitPerVolume() bool {
-	if o != nil && o.SsdLimitPerVolume != nil {
-		return true
-	}
-
-	return false
-}
-
-// GetSsdVolumeProvisioned returns the SsdVolumeProvisioned field value
-// If the value is explicit nil, nil is returned
-func (o *ResourceLimits) GetSsdVolumeProvisioned() *int64 {
-	if o == nil {
-		return nil
-	}
-
-	return o.SsdVolumeProvisioned
-
-}
-
-// GetSsdVolumeProvisionedOk returns a tuple with the SsdVolumeProvisioned field value
-// and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *ResourceLimits) GetSsdVolumeProvisionedOk() (*int64, bool) {
-	if o == nil {
-		return nil, false
-	}
-
-	return o.SsdVolumeProvisioned, true
-}
-
-// SetSsdVolumeProvisioned sets field value
-func (o *ResourceLimits) SetSsdVolumeProvisioned(v int64) {
-
-	o.SsdVolumeProvisioned = &v
-
-}
-
-// HasSsdVolumeProvisioned returns a boolean if a field has been set.
-func (o *ResourceLimits) HasSsdVolumeProvisioned() bool {
-	if o != nil && o.SsdVolumeProvisioned != nil {
+// HasNatGatewayProvisioned returns a boolean if a field has been set.
+func (o *ResourceLimits) HasNatGatewayProvisioned() bool {
+	if o != nil && o.NatGatewayProvisioned != nil {
 		return true
 	}
 
@@ -941,94 +941,72 @@ func (o *ResourceLimits) HasSsdVolumeProvisioned() bool {
 
 func (o ResourceLimits) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
-	if o.CoresPerContract != nil {
-		toSerialize["coresPerContract"] = o.CoresPerContract
-	}
-
 	if o.CoresPerServer != nil {
 		toSerialize["coresPerServer"] = o.CoresPerServer
 	}
-
+	if o.CoresPerContract != nil {
+		toSerialize["coresPerContract"] = o.CoresPerContract
+	}
 	if o.CoresProvisioned != nil {
 		toSerialize["coresProvisioned"] = o.CoresProvisioned
 	}
-
-	if o.DasVolumeProvisioned != nil {
-		toSerialize["dasVolumeProvisioned"] = o.DasVolumeProvisioned
-	}
-
-	if o.HddLimitPerContract != nil {
-		toSerialize["hddLimitPerContract"] = o.HddLimitPerContract
-	}
-
-	if o.HddLimitPerVolume != nil {
-		toSerialize["hddLimitPerVolume"] = o.HddLimitPerVolume
-	}
-
-	if o.HddVolumeProvisioned != nil {
-		toSerialize["hddVolumeProvisioned"] = o.HddVolumeProvisioned
-	}
-
-	if o.K8sClusterLimitTotal != nil {
-		toSerialize["k8sClusterLimitTotal"] = o.K8sClusterLimitTotal
-	}
-
-	if o.K8sClustersProvisioned != nil {
-		toSerialize["k8sClustersProvisioned"] = o.K8sClustersProvisioned
-	}
-
-	if o.NatGatewayLimitTotal != nil {
-		toSerialize["natGatewayLimitTotal"] = o.NatGatewayLimitTotal
-	}
-
-	if o.NatGatewayProvisioned != nil {
-		toSerialize["natGatewayProvisioned"] = o.NatGatewayProvisioned
-	}
-
-	if o.NlbLimitTotal != nil {
-		toSerialize["nlbLimitTotal"] = o.NlbLimitTotal
-	}
-
-	if o.NlbProvisioned != nil {
-		toSerialize["nlbProvisioned"] = o.NlbProvisioned
-	}
-
-	if o.RamPerContract != nil {
-		toSerialize["ramPerContract"] = o.RamPerContract
-	}
-
 	if o.RamPerServer != nil {
 		toSerialize["ramPerServer"] = o.RamPerServer
 	}
-
+	if o.RamPerContract != nil {
+		toSerialize["ramPerContract"] = o.RamPerContract
+	}
 	if o.RamProvisioned != nil {
 		toSerialize["ramProvisioned"] = o.RamProvisioned
 	}
-
-	if o.ReservableIps != nil {
-		toSerialize["reservableIps"] = o.ReservableIps
+	if o.HddLimitPerVolume != nil {
+		toSerialize["hddLimitPerVolume"] = o.HddLimitPerVolume
 	}
-
-	if o.ReservedIpsInUse != nil {
-		toSerialize["reservedIpsInUse"] = o.ReservedIpsInUse
+	if o.HddLimitPerContract != nil {
+		toSerialize["hddLimitPerContract"] = o.HddLimitPerContract
 	}
-
-	if o.ReservedIpsOnContract != nil {
-		toSerialize["reservedIpsOnContract"] = o.ReservedIpsOnContract
+	if o.HddVolumeProvisioned != nil {
+		toSerialize["hddVolumeProvisioned"] = o.HddVolumeProvisioned
 	}
-
-	if o.SsdLimitPerContract != nil {
-		toSerialize["ssdLimitPerContract"] = o.SsdLimitPerContract
-	}
-
 	if o.SsdLimitPerVolume != nil {
 		toSerialize["ssdLimitPerVolume"] = o.SsdLimitPerVolume
 	}
-
+	if o.SsdLimitPerContract != nil {
+		toSerialize["ssdLimitPerContract"] = o.SsdLimitPerContract
+	}
 	if o.SsdVolumeProvisioned != nil {
 		toSerialize["ssdVolumeProvisioned"] = o.SsdVolumeProvisioned
 	}
-
+	if o.DasVolumeProvisioned != nil {
+		toSerialize["dasVolumeProvisioned"] = o.DasVolumeProvisioned
+	}
+	if o.ReservableIps != nil {
+		toSerialize["reservableIps"] = o.ReservableIps
+	}
+	if o.ReservedIpsOnContract != nil {
+		toSerialize["reservedIpsOnContract"] = o.ReservedIpsOnContract
+	}
+	if o.ReservedIpsInUse != nil {
+		toSerialize["reservedIpsInUse"] = o.ReservedIpsInUse
+	}
+	if o.K8sClusterLimitTotal != nil {
+		toSerialize["k8sClusterLimitTotal"] = o.K8sClusterLimitTotal
+	}
+	if o.K8sClustersProvisioned != nil {
+		toSerialize["k8sClustersProvisioned"] = o.K8sClustersProvisioned
+	}
+	if o.NlbLimitTotal != nil {
+		toSerialize["nlbLimitTotal"] = o.NlbLimitTotal
+	}
+	if o.NlbProvisioned != nil {
+		toSerialize["nlbProvisioned"] = o.NlbProvisioned
+	}
+	if o.NatGatewayLimitTotal != nil {
+		toSerialize["natGatewayLimitTotal"] = o.NatGatewayLimitTotal
+	}
+	if o.NatGatewayProvisioned != nil {
+		toSerialize["natGatewayProvisioned"] = o.NatGatewayProvisioned
+	}
 	return json.Marshal(toSerialize)
 }
 

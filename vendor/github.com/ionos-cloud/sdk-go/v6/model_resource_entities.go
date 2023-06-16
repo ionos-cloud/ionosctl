@@ -38,7 +38,7 @@ func NewResourceEntitiesWithDefaults() *ResourceEntities {
 }
 
 // GetGroups returns the Groups field value
-// If the value is explicit nil, nil is returned
+// If the value is explicit nil, the zero value for ResourceGroups will be returned
 func (o *ResourceEntities) GetGroups() *ResourceGroups {
 	if o == nil {
 		return nil
@@ -80,7 +80,6 @@ func (o ResourceEntities) MarshalJSON() ([]byte, error) {
 	if o.Groups != nil {
 		toSerialize["groups"] = o.Groups
 	}
-
 	return json.Marshal(toSerialize)
 }
 
