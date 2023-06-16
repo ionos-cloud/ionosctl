@@ -14,8 +14,6 @@ import (
 
 func LogoutCmd() *core.Command {
 	cmd := core.NewCommand(context.Background(), nil, core.CommandBuilder{
-		Namespace: "logout",
-		Resource:  "logout",
 		Verb:      "logout",
 		ShortDesc: "Convenience command for deletion of config file credentials. To also remove your account's active tokens, use `ionosctl token delete --all`",
 		Example:   "ionosctl logout",

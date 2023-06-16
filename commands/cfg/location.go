@@ -10,8 +10,6 @@ import (
 
 func LocationCmd() *core.Command {
 	cmd := core.NewCommand(context.Background(), nil, core.CommandBuilder{
-		Namespace: "config",
-		Resource:  "location",
 		Verb:      "location",
 		Aliases:   []string{"location", "loc"},
 		ShortDesc: "Print your config file's path",
