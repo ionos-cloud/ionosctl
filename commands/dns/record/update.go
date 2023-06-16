@@ -58,7 +58,7 @@ func ZonesRecordsPutCmd() *core.Command {
 			return *t.Properties.ZoneName
 		}), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddStringVarFlag(&recordId, constants.FlagRecord, constants.FlagIdShort, "", "The ID (UUID) of the DNS record", core.RequiredFlagOption())
+	cmd.AddStringVarFlag(&recordId, constants.FlagRecord, constants.FlagRecordShort, "", "The ID or name of the DNS record", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagRecord, func(cobraCmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return RecordIds(func(req dns.ApiRecordsGetRequest) (dns.ApiRecordsGetRequest, error) {
 			if fn := core.GetFlagName(cmd.NS, constants.FlagZone); viper.IsSet(fn) {

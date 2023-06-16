@@ -44,7 +44,7 @@ Partially modify a record's properties. This command uses a combination of GET a
   -o, --output string      Desired output format [text|json] (default "text")
       --priority int32     Priority value is between 0 and 65535. Priority is mandatory for MX, SRV and URI record types and ignored for all other types.
   -q, --quiet              Quiet output
-  -i, --record-id string   The ID (UUID) of the DNS record (required)
+  -i, --record-id string   The ID or name of the DNS record (required)
       --ttl int32          Time to live. The amount of time the record can be cached by a resolver or server before it needs to be refreshed from the authoritative DNS server (default 3600)
   -t, --type string        Type of DNS Record. Can be one of: A, AAAA, CNAME, ALIAS, MX, NS, SRV, TXT, CAA, SSHFP, TLSA, SMIMEA, DS, HTTPS, SVCB, OPENPGPKEY, CERT, URI, RP, LOC (required) (default "AAAA")
   -v, --verbose            Print step-by-step process when running command

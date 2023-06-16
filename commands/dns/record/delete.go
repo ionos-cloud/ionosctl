@@ -51,12 +51,15 @@ ionosctl dns record delete --name PARTIAL_NAME [--zone ZONE]`,
 				return err
 			}
 
+			recordId, err := Resolve(viper.GetString(core.GetFlagName(c.NS, constants.FlagRecord)))
+			if err != nil {
+				return err
+			}
+
 			r := dns.RecordRead{}
 			if fn := core.GetFlagName(c.NS, constants.FlagRecord); viper.IsSet(fn) {
 				// In this case we know for sure that FlagZone is also set, because of the pre-run check
-				r, _, err = client.Must().DnsClient.RecordsApi.ZonesRecordsFindById(context.Background(),
-					zoneId, viper.GetString(core.GetFlagName(c.NS, constants.FlagRecord)),
-				).Execute()
+				r, _, err = client.Must().DnsClient.RecordsApi.ZonesRecordsFindById(context.Background(), zoneId, recordId).Execute()
 				if err != nil {
 					return fmt.Errorf("failed finding record using Zone and Record IDs: %w", err)
 				}
@@ -92,7 +95,7 @@ ionosctl dns record delete --name PARTIAL_NAME [--zone ZONE]`,
 		}), cobra.ShellCompDirectiveNoFileComp
 	})
 
-	cmd.AddStringFlag(constants.FlagRecord, constants.FlagIdShort, "", fmt.Sprintf("The ID (UUID) of the DNS record. Required together with --%s or -%s", constants.FlagZone, constants.ArgAllShort))
+	cmd.AddStringFlag(constants.FlagRecord, constants.FlagRecordShort, "", fmt.Sprintf("The ID or name of the DNS record. Required together with --%s or -%s", constants.FlagZone, constants.ArgAllShort))
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagRecord, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return RecordIds(func(r dns.ApiRecordsGetRequest) (dns.ApiRecordsGetRequest, error) {
 			if fn := core.GetFlagName(cmd.NS, constants.FlagName); viper.IsSet(fn) {

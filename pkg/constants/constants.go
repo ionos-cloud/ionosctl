@@ -45,6 +45,7 @@ const (
 	FlagZoneShort   = "z"
 	FlagRecordId    = "record-id"
 	FlagRecord      = "record"
+	FlagRecordShort = "r"
 	FlagState       = "state"
 	FlagDescription = "description"
 	FlagEnabled     = "enabled"

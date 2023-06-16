@@ -40,7 +40,7 @@ Retrieve a record
       --no-headers         When using text output, don't print headers
   -o, --output string      Desired output format [text|json] (default "text")
   -q, --quiet              Quiet output
-      --record-id string   The ID (UUID) of the DNS record
+      --record-id string   The ID or name of the DNS record
   -v, --verbose            Print step-by-step process when running command
   -z, --zone string        The name or ID of the DNS zone
 ```
