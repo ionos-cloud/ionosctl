@@ -20,6 +20,9 @@ var FieldsWithSensitiveDataInConfigFile = []string{
 	constants.CfgUsername, constants.CfgPassword, constants.CfgToken,
 }
 
+// GetServerUrl returns the server URL the SDK should use, with support for layered fallbacks.
+//
+// ⚠️ WARNING: NEVER use viper.Get/os.Getenv to try to bypass this function! ⚠️
 func GetServerUrl() string {
 	viper.AutomaticEnv()
 	if flagVal := viper.GetString(constants.ArgServerUrl); flagVal != "" {
@@ -28,6 +31,9 @@ func GetServerUrl() string {
 	}
 	if envVal := viper.GetString(constants.EnvServerUrl); envVal != "" {
 		// 2. Fallback to non-empty env vars
+		// Advice to future devs: If you're thinking of replacing this with os.GetEnv - Don't.
+		// In older versions this env var was bound to Viper. Viper does not support case-sensitive keys.
+		// This means someone could export `IoNoS_API_url` and it would work. So - don't try it. Would be breaking.
 		return envVal
 	}
 	if cfgVal := viper.GetString(constants.CfgServerUrl); cfgVal != "" {
