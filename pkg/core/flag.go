@@ -22,9 +22,9 @@ var (
 
 type FlagOptionFunc func(cmd *Command, flagName string)
 
-func DeprecatedFlagOption() FlagOptionFunc {
+func DeprecatedFlagOption(help string) FlagOptionFunc {
 	return func(cmd *Command, flagName string) {
-		cmd.Command.Flag(flagName).Usage = fmt.Sprintf("%s (deprecated)", cmd.Command.Flag(flagName).Usage)
+		cmd.Command.Flag(flagName).Deprecated = help
 		// For documentation purposes, add flag to command Annotation
 		if len(cmd.Command.Annotations) > 0 {
 			cmd.Command.Annotations[DeprecatedFlagsAnnotation] = fmt.Sprintf(flagNamePrintF, cmd.Command.Annotations[DeprecatedFlagsAnnotation], flagName, strings.ToUpper(strings.ReplaceAll(flagName, "-", "_")))

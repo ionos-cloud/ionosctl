@@ -40,8 +40,8 @@ Required values to run command:
 ## Options
 
 ```text
-      --annotation-key string        Annotation key. Must be set together with --annotation-value (deprecated)
-      --annotation-value string      Annotation value. Must be set together with --annotation-key (deprecated)
+      --annotation-key string        Annotation key. Must be set together with --annotation-value (DEPRECATED: Use --labels, --annotations options instead!)
+      --annotation-value string      Annotation value. Must be set together with --annotation-key (DEPRECATED: Use --labels, --annotations options instead!)
   -A, --annotations stringToString   Annotations to set on a NodePool. It will overwrite the existing annotations, if there are any. Use the following format: --annotations KEY=VALUE,KEY=VALUE (default [])
   -u, --api-url string               Override default host url (default "https://api.ionos.com")
       --cluster-id string            The unique K8s Cluster Id (required)
@@ -53,8 +53,8 @@ Required values to run command:
   -f, --force                        Force command to execute without user input
   -h, --help                         Print usage
       --k8s-version string           The K8s version for the NodePool. K8s version downgrade is not supported
-      --label-key string             Label key. Must be set together with --label-value (deprecated)
-      --label-value string           Label value. Must be set together with --label-key (deprecated)
+      --label-key string             Label key. Must be set together with --label-value (DEPRECATED: Use --labels, --annotations options instead!)
+      --label-value string           Label value. Must be set together with --label-key (DEPRECATED: Use --labels, --annotations options instead!)
   -L, --labels stringToString        Labels to set on a NodePool. It will overwrite the existing labels, if there are any. Use the following format: --labels KEY=VALUE,KEY=VALUE (default [])
       --lan-ids ints                 Collection of LAN Ids of existing LANs to be attached to worker Nodes. It will be added to the existing LANs attached
       --maintenance-day string       The day of the week for Maintenance Window has the English day format as following: Monday or Saturday

@@ -1,5 +1,10 @@
 # Changelog
 
+## [6.7.0] (XXX 2023)
+
+### Fixed
+- Deprecated warnings only show if the deprecated flag is being used
+
 ## [6.6.2] (April 2023)
 
 ### Added

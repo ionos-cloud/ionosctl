@@ -55,8 +55,8 @@ func RequestCmd() *core.Command {
 		CmdRun:     RunRequestList,
 		InitClient: true,
 	})
-	list.AddIntFlag(cloudapiv6.ArgLatest, "", 0, "Show latest N Requests. If it is not set, all Requests will be printed", core.DeprecatedFlagOption())
-	list.AddStringFlag(cloudapiv6.ArgMethod, "", "", "Show only the Requests with this method. E.g CREATE, UPDATE, DELETE", core.DeprecatedFlagOption())
+	list.AddIntFlag(cloudapiv6.ArgLatest, "", 0, "Show latest N Requests. If it is not set, all Requests will be printed", core.DeprecatedFlagOption("Use --filters --order-by --max-results options instead!"))
+	list.AddStringFlag(cloudapiv6.ArgMethod, "", "", "Show only the Requests with this method. E.g CREATE, UPDATE, DELETE", core.DeprecatedFlagOption("Use --filters --order-by --max-results options instead!"))
 	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgMethod, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"POST", "PUT", "DELETE", "PATCH", "CREATE", "UPDATE"}, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -137,7 +137,6 @@ func PreRunRequestId(c *core.PreCommandConfig) error {
 }
 
 func RunRequestList(c *core.CommandConfig) error {
-	c.Printer.Warn("WARNING: The following flags are deprecated:" + c.Command.GetAnnotationsByKey(core.DeprecatedFlagsAnnotation) + ". Use --filters --order-by --max-results options instead!")
 	// Add Query Parameters for GET Requests
 	listQueryParams, err := query.GetListQueryParams(c)
 	if err != nil {
