@@ -35,11 +35,11 @@ Partially modify a zone's properties. This command uses a combination of GET and
       --cols strings         Set of columns to be printed on output 
                              Available columns: [Id Name Description NameServers Enabled State]
   -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
-      --description string   The description of the DNS zone
+      --description string   The new description of the DNS zone
       --enabled              Activate or deactivate the DNS zone (default true)
   -f, --force                Force command to execute without user input
   -h, --help                 Print usage
-  -n, --name string          The name of the DNS zone, e.g. foo.com
+  -n, --name string          The new name of the DNS zone, e.g. foo.com
       --no-headers           When using text output, don't print headers
   -o, --output string        Desired output format [text|json] (default "text")
   -q, --quiet                Quiet output

@@ -26,32 +26,41 @@ For `delete` command:
 
 ## Description
 
-Delete a record
+To delete a specific record from a specific zone:
+ionosctl dns r del --zone ZONE --record RECORD
+Here, ZONE is the ID or name of the DNS zone from where you want to delete a record, and RECORD is the ID or full name of the DNS record you want to delete.
+
+To delete all records, optionally filtering by partial name and zone:
+ionosctl dns r delete --all [--record PARTIAL_NAME] [--zone ZONE]
+Here, --all deletes all DNS records. You can also filter the records to delete by providing a PARTIAL_NAME that matches part of the name of the records you want to delete. Additionally, you can specify a ZONE to restrict the deletion to a specific DNS zone.
+
+To delete a record by partial name, optionally specifying the zone:
+ionosctl dns r delete --record PARTIAL_NAME [--zone ZONE]
+Here, PARTIAL_NAME is a part of the name of the DNS record you want to delete. If multiple records match the partial name, you will need to narrow down to a single record. You can also specify a ZONE to narrow down the search for the record to a specific DNS zone.
 
 ## Options
 
 ```text
-  -a, --all              Delete all records. Required or --zone and --record
+  -a, --all              Delete all records. You can optionally filter the deleted records using --zone (full name / ID) and --record (partial name)
   -u, --api-url string   Override default host url (default "https://api.ionos.com")
       --cols strings     Set of columns to be printed on output 
                          Available columns: [Id Name Content Type Enabled FQDN State ZoneId ZoneName]
   -c, --config string    Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -f, --force            Skip yes/no confirmation
   -h, --help             Print usage
-  -n, --name string      If --all is set, filter --all deletion by record name
       --no-headers       When using text output, don't print headers
   -o, --output string    Desired output format [text|json] (default "text")
   -q, --quiet            Quiet output
-  -r, --record string    The ID or name of the DNS record. Required together with --zone or -a
+  -r, --record string    The ID, or full name of the DNS record. Required together with --zone. Can also provide partial names, but must narrow down to a single record result if not using --all. If using it, will however delete all records that match.
   -v, --verbose          Print step-by-step process when running command
-  -z, --zone string      The zone of the target record. If --all is set, filter --all deletion by limiting to records within this zone
+  -z, --zone string      The full name or ID of the zone of the containing the target record. If --all is set this is applied as a filter - limiting to records within this zone
 ```
 
 ## Examples
 
 ```text
-ionosctl dns r delete --zone ZONE --record-id RECORD
-ionosctl dns r delete --all [--name PARTIAL_NAME] [--zone ZONE]
-ionosctl dns r delete --name PARTIAL_NAME [--zone ZONE]
+ionosctl dns r del --zone ZONE --record RECORD
+ionosctl dns r delete --all [--record PARTIAL_NAME] [--zone ZONE]
+ionosctl dns r delete --record PARTIAL_NAME [--zone ZONE]
 ```
 
