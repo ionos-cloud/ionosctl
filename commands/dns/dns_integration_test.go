@@ -115,7 +115,7 @@ func TestRecord(t *testing.T) {
 	// `ionosctl dns r create`
 	c := record.ZonesRecordsPostCmd()
 	err := c.Command.Execute()
-	assert.ErrorContains(t, err, fmt.Sprintf("\"%s\", \"%s\", \"%s\", \"%s\" not set", constants.FlagContent, constants.FlagName, constants.FlagType, constants.FlagZoneId))
+	assert.ErrorContains(t, err, fmt.Sprintf("\"%s\", \"%s\", \"%s\", \"%s\" not set", constants.FlagZone, constants.FlagName, constants.FlagContent, constants.FlagType))
 
 	// Generate a record
 	randIp := fake.IP(fake.WithIPv4())
@@ -128,24 +128,30 @@ func TestRecord(t *testing.T) {
 	assert.NoError(t, err)
 
 	// Try to find the record created by the command
-	recByName, _, err := client.Must().DnsClient.RecordsApi.RecordsGet(context.Background()).FilterName(randName).FilterZoneId(*sharedZ.Id).Limit(1).Execute()
+	recByName, _, err := client.Must().DnsClient.RecordsApi.RecordsGet(context.Background()).FilterName(randName).
+		FilterZoneId(*sharedZ.Id).Limit(1).Execute()
 	assert.NoError(t, err)
 	assert.NotEmpty(t, *recByName.Items)
 	r := (*recByName.Items)[0]
 	assert.NotEmpty(t, r.Properties)
 	assert.Equal(t, randIp, *r.Properties.Content)
 
+	// also test record.Resolve
+	resolvedId, err := record.Resolve(randName)
+	assert.NoError(t, err)
+	assert.Equal(t, *r.Id, resolvedId)
+
 	// `ionosctl dns r update`
 	// check prereqs
 	c = record.ZonesRecordsPutCmd()
 	err = c.Command.Execute()
-	assert.ErrorContains(t, err, fmt.Sprintf("\"%s\", \"%s\" not set", constants.FlagRecordId, constants.FlagZoneId))
+	assert.ErrorContains(t, err, fmt.Sprintf("\"%s\", \"%s\" not set", constants.FlagRecord, constants.FlagZone))
 
 	// try changing content of prev record
 	randIp = fake.IP(fake.WithIPv4())
 	c.Command.Flags().Set(constants.FlagContent, randIp)
 	c.Command.Flags().Set(constants.FlagZoneId, *sharedZ.Id)
-	c.Command.Flags().Set(constants.FlagRecordId, *r.Id)
+	c.Command.Flags().Set(constants.FlagRecord, *r.Properties.Name) // test that querying by name works too
 	err = c.Command.Execute()
 	assert.NoError(t, err)
 }
