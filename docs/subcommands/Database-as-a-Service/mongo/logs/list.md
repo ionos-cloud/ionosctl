@@ -1,5 +1,5 @@
 ---
-description: List the logs of your Mongo Cluster
+description: "List the logs of your Mongo Cluster"
 ---
 
 # DbaasMongoLogsList

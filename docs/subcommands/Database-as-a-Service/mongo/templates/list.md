@@ -1,5 +1,5 @@
 ---
-description: List Mongo Templates
+description: "List Mongo Templates"
 ---
 
 # DbaasMongoTemplatesList

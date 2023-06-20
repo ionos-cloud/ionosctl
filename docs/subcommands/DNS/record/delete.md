@@ -1,5 +1,5 @@
 ---
-description: Delete a record
+description: "Delete a record"
 ---
 
 # DnsRecordDelete

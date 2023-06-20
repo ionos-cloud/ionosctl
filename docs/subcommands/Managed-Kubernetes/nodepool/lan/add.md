@@ -1,5 +1,5 @@
 ---
-description: Add a Kubernetes NodePool LAN
+description: "Add a Kubernetes NodePool LAN"
 ---
 
 # K8sNodepoolLanAdd

@@ -1,5 +1,5 @@
 ---
-description: List IP Failovers groups from a LAN
+description: "List IP Failovers groups from a LAN"
 ---
 
 # IpfailoverList

@@ -1,5 +1,5 @@
 ---
-description: Get a Kubernetes Node
+description: "Get a Kubernetes Node"
 ---
 
 # K8sNodeGet

@@ -1,5 +1,5 @@
 ---
-description: List Kubernetes Clusters
+description: "List Kubernetes Clusters"
 ---
 
 # K8sClusterList

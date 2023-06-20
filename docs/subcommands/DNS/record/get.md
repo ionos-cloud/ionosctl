@@ -1,5 +1,5 @@
 ---
-description: Retrieve a record
+description: "Retrieve a record"
 ---
 
 # DnsRecordGet

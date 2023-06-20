@@ -1,5 +1,5 @@
 ---
-description: Update a User
+description: "Update a User"
 ---
 
 # UserUpdate

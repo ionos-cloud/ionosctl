@@ -1,5 +1,5 @@
 ---
-description: Remove a Kubernetes NodePool LAN
+description: "Remove a Kubernetes NodePool LAN"
 ---
 
 # K8sNodepoolLanRemove

@@ -1,5 +1,5 @@
 ---
-description: Upload an image to FTP server
+description: "Upload an image to FTP server"
 ---
 
 # ImageUpload

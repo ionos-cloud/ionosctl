@@ -1,5 +1,5 @@
 ---
-description: Get a Firewall Rule
+description: "Get a Firewall Rule"
 ---
 
 # FirewallruleGet

@@ -1,5 +1,5 @@
 ---
-description: Get a specified Template
+description: "Get a specified Template"
 ---
 
 # TemplateGet

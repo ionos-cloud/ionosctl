@@ -1,5 +1,5 @@
 ---
-description: Delete a Server
+description: "Delete a Server"
 ---
 
 # ServerDelete

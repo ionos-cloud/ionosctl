@@ -1,5 +1,5 @@
 ---
-description: Delete a Load Balancer
+description: "Delete a Load Balancer"
 ---
 
 # LoadbalancerDelete

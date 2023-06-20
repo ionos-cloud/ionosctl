@@ -1,5 +1,5 @@
 ---
-description: Update a specified Image
+description: "Update a specified Image"
 ---
 
 # ImageUpdate

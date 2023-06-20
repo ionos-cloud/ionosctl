@@ -1,5 +1,5 @@
 ---
-description: List Kubernetes Nodes
+description: "List Kubernetes Nodes"
 ---
 
 # K8sNodeList

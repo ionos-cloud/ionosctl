@@ -1,5 +1,5 @@
 ---
-description: Update the properties of a registry
+description: "Update the properties of a registry"
 ---
 
 # ContainerRegistryRegistryUpdate

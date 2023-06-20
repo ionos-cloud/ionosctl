@@ -1,5 +1,5 @@
 ---
-description: List Dataplatform Clusters
+description: "List Dataplatform Clusters"
 ---
 
 # DataplatformClusterList

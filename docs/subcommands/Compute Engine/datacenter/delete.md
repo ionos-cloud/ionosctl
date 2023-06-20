@@ -1,5 +1,5 @@
 ---
-description: Delete a Data Center
+description: "Delete a Data Center"
 ---
 
 # DatacenterDelete

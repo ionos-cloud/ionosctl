@@ -1,5 +1,5 @@
 ---
-description: Get an Application Load Balancer
+description: "Get an Application Load Balancer"
 ---
 
 # ApplicationloadbalancerGet

@@ -1,5 +1,5 @@
 ---
-description: Add a Target to a Target Group
+description: "Add a Target to a Target Group"
 ---
 
 # TargetgroupTargetAdd

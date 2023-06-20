@@ -1,5 +1,5 @@
 ---
-description: Get a Data Center
+description: "Get a Data Center"
 ---
 
 # DatacenterGet

@@ -1,5 +1,5 @@
 ---
-description: List Logs for a PostgreSQL Cluster
+description: "List Logs for a PostgreSQL Cluster"
 ---
 
 # DbaasPostgresLogsList

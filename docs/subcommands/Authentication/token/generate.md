@@ -1,5 +1,5 @@
 ---
-description: Create a new Token
+description: "Create a new Token"
 ---
 
 # TokenGenerate

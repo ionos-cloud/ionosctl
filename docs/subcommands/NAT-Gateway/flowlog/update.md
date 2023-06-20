@@ -1,5 +1,5 @@
 ---
-description: Update a NAT Gateway FlowLog
+description: "Update a NAT Gateway FlowLog"
 ---
 
 # NatgatewayFlowlogUpdate

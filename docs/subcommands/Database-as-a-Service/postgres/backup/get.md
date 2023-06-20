@@ -1,5 +1,5 @@
 ---
-description: Get a Cluster Backup
+description: "Get a Cluster Backup"
 ---
 
 # DbaasPostgresBackupGet

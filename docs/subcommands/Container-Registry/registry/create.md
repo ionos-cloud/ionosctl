@@ -1,5 +1,5 @@
 ---
-description: Create a registry
+description: "Create a registry"
 ---
 
 # ContainerRegistryRegistryCreate

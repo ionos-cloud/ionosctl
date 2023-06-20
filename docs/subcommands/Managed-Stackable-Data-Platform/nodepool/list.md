@@ -1,5 +1,5 @@
 ---
-description: List Dataplatform Nodepools of a certain cluster
+description: "List Dataplatform Nodepools of a certain cluster"
 ---
 
 # DataplatformNodepoolList

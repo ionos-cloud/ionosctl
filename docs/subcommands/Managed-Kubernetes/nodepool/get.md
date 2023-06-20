@@ -1,5 +1,5 @@
 ---
-description: Get a Kubernetes NodePool
+description: "Get a Kubernetes NodePool"
 ---
 
 # K8sNodepoolGet

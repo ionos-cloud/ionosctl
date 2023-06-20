@@ -1,5 +1,5 @@
 ---
-description: Retrieve zones
+description: "Retrieve zones"
 ---
 
 # DnsZoneList

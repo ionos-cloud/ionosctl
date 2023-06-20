@@ -1,5 +1,5 @@
 ---
-description: Get a Group
+description: "Get a Group"
 ---
 
 # GroupGet

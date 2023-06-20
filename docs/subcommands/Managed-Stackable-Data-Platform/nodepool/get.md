@@ -1,5 +1,5 @@
 ---
-description: Get Dataplatform Nodepool by cluster and nodepool id
+description: "Get Dataplatform Nodepool by cluster and nodepool id"
 ---
 
 # DataplatformNodepoolGet

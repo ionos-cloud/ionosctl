@@ -1,5 +1,5 @@
 ---
-description: Delete one or multiple Tokens
+description: "Delete one or multiple Tokens"
 ---
 
 # TokenDelete

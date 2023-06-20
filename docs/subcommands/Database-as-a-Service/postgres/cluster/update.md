@@ -1,5 +1,5 @@
 ---
-description: Update a PostgreSQL Cluster
+description: "Update a PostgreSQL Cluster"
 ---
 
 # DbaasPostgresClusterUpdate
