@@ -64,7 +64,7 @@ func ZonesDeleteCmd() *core.Command {
 	})
 
 	cmd.AddBoolFlag(constants.ArgForce, constants.ArgForceShort, false, "Skip yes/no confirmation")
-	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, fmt.Sprintf("Delete all zones. Required or -%s", constants.FlagIdShort))
+	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, fmt.Sprintf("Delete all zones. Required or -%s", constants.FlagZoneShort))
 
 	cmd.Command.SilenceUsage = true
 	cmd.Command.Flags().SortFlags = false

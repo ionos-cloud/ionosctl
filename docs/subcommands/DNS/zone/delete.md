@@ -31,7 +31,7 @@ Delete a zone
 ## Options
 
 ```text
-  -a, --all              Delete all zones. Required or -i
+  -a, --all              Delete all zones. Required or -z
   -u, --api-url string   Override default host url (default "https://api.ionos.com")
       --cols strings     Set of columns to be printed on output 
                          Available columns: [Id Name Description NameServers Enabled State]
