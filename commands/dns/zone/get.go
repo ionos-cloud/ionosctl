@@ -50,6 +50,9 @@ func ZonesFindByIdCmd() *core.Command {
 			return *t.Properties.ZoneName
 		}), cobra.ShellCompDirectiveNoFileComp
 	})
-	return cmd
 
+	cmd.Command.SilenceUsage = true
+	cmd.Command.Flags().SortFlags = false
+
+	return cmd
 }

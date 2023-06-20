@@ -114,6 +114,9 @@ ionosctl dns record delete --name PARTIAL_NAME [--zone ZONE]`,
 
 	cmd.AddBoolFlag(constants.ArgForce, constants.ArgForceShort, false, "Skip yes/no confirmation")
 
+	cmd.Command.SilenceUsage = true
+	cmd.Command.Flags().SortFlags = false
+
 	return cmd
 }
 

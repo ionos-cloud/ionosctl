@@ -76,6 +76,7 @@ func ZonesRecordsPostCmd() *core.Command {
 		}), cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.Command.SilenceUsage = true
+	cmd.Command.Flags().SortFlags = false
 
 	return addRecordCreateFlags(cmd)
 }

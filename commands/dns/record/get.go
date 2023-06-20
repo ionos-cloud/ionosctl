@@ -3,6 +3,8 @@ package record
 import (
 	"context"
 
+	"github.com/google/uuid"
+
 	"github.com/ionos-cloud/ionosctl/v6/commands/dns/zone"
 
 	dns "github.com/ionos-cloud/sdk-go-dns"
@@ -39,8 +41,12 @@ func ZonesRecordsFindByIdCmd() *core.Command {
 			if err != nil {
 				return err
 			}
+			recordId, err := Resolve(viper.GetString(core.GetFlagName(c.NS, constants.FlagRecord)))
+			if err != nil {
+				return err
+			}
 			r, _, err := client.Must().DnsClient.RecordsApi.ZonesRecordsFindById(context.Background(),
-				zoneId, viper.GetString(core.GetFlagName(c.NS, constants.FlagRecord)),
+				zoneId, recordId,
 			).Execute()
 
 			if err != nil {
@@ -67,9 +73,19 @@ func ZonesRecordsFindByIdCmd() *core.Command {
 				}
 				req = req.FilterZoneId(zoneId)
 			}
+
+			if fn := core.GetFlagName(cmd.NS, constants.FlagRecord); viper.IsSet(fn) {
+				record := viper.GetString(fn)
+				if _, ok := uuid.Parse(record); ok == nil /* not ok (name is provided) */ {
+					req = req.FilterName(record)
+				}
+			}
 			return req, nil
 		}), cobra.ShellCompDirectiveNoFileComp
 	})
+
+	cmd.Command.SilenceUsage = true
+	cmd.Command.Flags().SortFlags = false
 
 	return cmd
 }

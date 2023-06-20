@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/google/uuid"
+
 	"github.com/ionos-cloud/ionosctl/v6/commands/dns/zone"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
@@ -15,10 +17,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 )
 
-var (
-	recordId string
-)
-
 func ZonesRecordsPutCmd() *core.Command {
 	cmd := core.NewCommand(context.Background(), nil, core.CommandBuilder{
 		Namespace: "dns",
@@ -26,7 +24,7 @@ func ZonesRecordsPutCmd() *core.Command {
 		Verb:      "update",
 		Aliases:   []string{"u"},
 		ShortDesc: "Partially modify a record's properties. This command uses a combination of GET and PUT to simulate a PATCH operation",
-		Example:   "ionosctl dns zone update --zone ZONE_ID --record-id RECORD_ID",
+		Example:   "ionosctl dns zone update --zone ZONE_ID --record RECORD",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			err := c.Command.Command.MarkFlagRequired(constants.FlagZone)
 			if err != nil {
@@ -40,6 +38,10 @@ func ZonesRecordsPutCmd() *core.Command {
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			zoneId, err := zone.Resolve(viper.GetString(core.GetFlagName(c.NS, constants.FlagZone)))
+			if err != nil {
+				return err
+			}
+			recordId, err := Resolve(viper.GetString(core.GetFlagName(c.NS, constants.FlagRecord)))
 			if err != nil {
 				return err
 			}
@@ -58,7 +60,7 @@ func ZonesRecordsPutCmd() *core.Command {
 			return *t.Properties.ZoneName
 		}), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddStringVarFlag(&recordId, constants.FlagRecord, constants.FlagRecordShort, "", "The ID or name of the DNS record", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagRecord, constants.FlagRecordShort, "", "The ID or name of the DNS record", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagRecord, func(cobraCmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return RecordIds(func(req dns.ApiRecordsGetRequest) (dns.ApiRecordsGetRequest, error) {
 			if fn := core.GetFlagName(cmd.NS, constants.FlagZone); viper.IsSet(fn) {
@@ -68,9 +70,20 @@ func ZonesRecordsPutCmd() *core.Command {
 				}
 				req = req.FilterZoneId(zoneId)
 			}
+
+			if fn := core.GetFlagName(cmd.NS, constants.FlagRecord); viper.IsSet(fn) {
+				record := viper.GetString(fn)
+				if _, ok := uuid.Parse(record); ok == nil /* not ok (name is provided) */ {
+					req = req.FilterName(record)
+				}
+			}
 			return req, nil
 		}), cobra.ShellCompDirectiveNoFileComp
 	})
+
+	cmd.Command.SilenceUsage = true
+	cmd.Command.Flags().SortFlags = false
+
 	return addRecordCreateFlags(cmd)
 }
 

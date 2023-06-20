@@ -78,5 +78,8 @@ func ZonesPutCmd() *core.Command {
 	cmd.AddStringFlag(constants.FlagDescription, "", "", "The description of the DNS zone")
 	cmd.AddBoolFlag(constants.FlagEnabled, "", true, "Activate or deactivate the DNS zone")
 
+	cmd.Command.SilenceUsage = true
+	cmd.Command.Flags().SortFlags = false
+
 	return cmd
 }

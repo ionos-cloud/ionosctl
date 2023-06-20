@@ -59,5 +59,8 @@ func ZonesGetCmd() *core.Command {
 	cmd.AddInt32Flag(constants.FlagMaxResults, "", 0, "Pagination limit")
 	cmd.AddInt32Flag(constants.FlagOffset, "", 0, "Pagination offset")
 
+	cmd.Command.SilenceUsage = true
+	cmd.Command.Flags().SortFlags = false
+
 	return cmd
 }
