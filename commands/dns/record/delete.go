@@ -32,8 +32,7 @@ ionosctl dns r delete --name PARTIAL_NAME [--zone ZONE]`,
 			c.Command.Command.MarkFlagsMutuallyExclusive(constants.ArgAll, constants.FlagRecord)
 
 			err := core.CheckRequiredFlagsSets(c.Command, c.NS, []string{constants.ArgAll}, // All with optional filters
-				[]string{constants.FlagZone, constants.FlagRecord},         // Known resources
-				[]string{constants.FlagName}, []string{constants.FlagZone}, // TODO: Is this 3rd way still valid, if we now use the Resolve funcs (old:  If none of the above, user can narrow down to a single record using filters. If more than one result, throw err
+				[]string{constants.FlagZone, constants.FlagRecord}, // Known resources
 			)
 			if err != nil {
 				return fmt.Errorf("either provide --%s and optionally filters, or --%s and --%s, or narrow down to one record with --%s and/or --%s: %w",
@@ -87,7 +86,6 @@ ionosctl dns r delete --name PARTIAL_NAME [--zone ZONE]`,
 	})
 
 	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, fmt.Sprintf("Delete all records. Required or --%s and --%s", constants.FlagZone, constants.FlagRecord))
-	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "If --all is set, filter --all deletion by record name")
 	cmd.AddStringFlag(constants.FlagZone, constants.FlagZoneShort, "", "The zone of the target record. If --all is set, filter --all deletion by limiting to records within this zone")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagZone, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return zone.Zones(func(t dns.ZoneRead) string {
@@ -95,7 +93,7 @@ ionosctl dns r delete --name PARTIAL_NAME [--zone ZONE]`,
 		}), cobra.ShellCompDirectiveNoFileComp
 	})
 
-	cmd.AddStringFlag(constants.FlagRecord, constants.FlagRecordShort, "", fmt.Sprintf("The ID or name of the DNS record. Required together with --%s or -%s", constants.FlagZone, constants.ArgAllShort))
+	cmd.AddStringFlag(constants.FlagRecord, constants.FlagRecordShort, "", fmt.Sprintf("The ID or name of the DNS record. Required together with --%s", constants.FlagZone))
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagRecord, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return RecordIds(func(r dns.ApiRecordsGetRequest) (dns.ApiRecordsGetRequest, error) {
 			if fn := core.GetFlagName(cmd.NS, constants.FlagName); viper.IsSet(fn) {

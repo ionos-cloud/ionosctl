@@ -40,7 +40,7 @@ func newClient(name, pwd, token, hostUrl string) (*Client, error) {
 	}
 
 	clientConfig := cloudv6.NewConfiguration(name, pwd, token, hostUrl)
-	clientConfig.UserAgent = fmt.Sprintf("%v_%v", viper.GetString(constants.CLIHttpUserAgent), clientConfig.UserAgent)
+	clientConfig.UserAgent = appendUserAgent(clientConfig.UserAgent)
 	// Set Depth Query Parameter globally
 	clientConfig.SetDepth(1)
 
@@ -68,7 +68,7 @@ func newClient(name, pwd, token, hostUrl string) (*Client, error) {
 	// 3. I can't use a decorator cmdRun approach, where I define a custom behaviour for hostUrl at dns namespace level, because of circular imports.
 	// I think the easiest way to add back hostUrl is by 2. and fixing GetServerURL
 	dnsConfig := dns.NewConfiguration(name, pwd, token, "")
-	dnsConfig.UserAgent = appendUserAgent(authConfig.UserAgent)
+	dnsConfig.UserAgent = appendUserAgent(dnsConfig.UserAgent)
 
 	return &Client{
 			CloudClient:        cloudv6.NewAPIClient(clientConfig),

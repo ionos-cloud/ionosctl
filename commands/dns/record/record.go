@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/google/uuid"
-
 	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
 	dns "github.com/ionos-cloud/sdk-go-dns"
 
