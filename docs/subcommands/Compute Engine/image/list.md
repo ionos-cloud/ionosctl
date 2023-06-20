@@ -44,16 +44,16 @@ Available Filters:
   -F, --filters strings       Limits results to those containing a matching value for a specific property. Use the following format to set filters: --filters KEY1=VALUE1,KEY2=VALUE2
   -f, --force                 Force command to execute without user input
   -h, --help                  Print usage
-      --image-alias string    Image Alias or part of Image Alias to sort Images by (deprecated)
-      --latest int            Show the latest N Images, based on creation date, starting from now in descending order. If it is not set, all Images will be printed (deprecated)
-      --licence-type string   The licence type of the Image (deprecated)
-  -l, --location string       The location of the Image (deprecated)
+      --image-alias string    Image Alias or part of Image Alias to sort Images by (DEPRECATED: incompatible with --max-results. Use --filters --order-by --max-results options instead!)
+      --latest int            Show the latest N Images, based on creation date, starting from now in descending order. If it is not set, all Images will be printed (DEPRECATED: Use --filters --order-by --max-results options instead!)
+      --licence-type string   The licence type of the Image (DEPRECATED: incompatible with --max-results. Use --filters --order-by --max-results options instead!)
+  -l, --location string       The location of the Image (DEPRECATED: incompatible with --max-results. Use --filters --order-by --max-results options instead!)
   -M, --max-results int32     The maximum number of elements to return
       --no-headers            When using text output, don't print headers
       --order-by string       Limits results to those containing a matching value for a specific property
   -o, --output string         Desired output format [text|json] (default "text")
   -q, --quiet                 Quiet output
-      --type string           The type of the Image (deprecated)
+      --type string           The type of the Image (DEPRECATED: incompatible with --max-results. Use --filters --order-by --max-results options instead!)
   -v, --verbose               Print step-by-step process when running command
 ```
 
