@@ -189,7 +189,7 @@ func writeDoc(cmd *core.Command, w io.Writer) error {
 	name := cmd.Command.CommandPath()
 
 	buf.WriteString("---\n")
-	buf.WriteString(fmt.Sprintf("description: %s\n", cmd.Command.Short))
+	buf.WriteString(fmt.Sprintf("description: \"%s\"\n", cmd.Command.Short))
 	buf.WriteString("---\n\n")
 
 	// Customize title
