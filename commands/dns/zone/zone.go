@@ -101,13 +101,34 @@ func makeZonePrintObj(data ...dns.ZoneRead) []map[string]interface{} {
 	return out
 }
 
-func Zones(f func(dns.ZoneRead) string) []string {
-	ls, _, err := client.Must().DnsClient.ZonesApi.ZonesGet(context.Background()).Execute()
+// Zones returns all zones matching the given filters
+func Zones(fs ...Filter) (dns.ZoneReadList, error) {
+	req := client.Must().DnsClient.ZonesApi.ZonesGet(context.Background())
+
+	for _, f := range fs {
+		var err error
+		req, err = f(req)
+		if err != nil {
+			return dns.ZoneReadList{}, err
+		}
+	}
+
+	ls, _, err := req.Execute()
+	if err != nil {
+		return dns.ZoneReadList{}, err
+	}
+	return ls, nil
+}
+
+func ZonesProperty[V any](f func(dns.ZoneRead) V, fs ...Filter) []V {
+	recs, err := Zones(fs...)
 	if err != nil {
 		return nil
 	}
-	return functional.Map(*ls.GetItems(), f)
+	return functional.Map(*recs.Items, f)
 }
+
+type Filter func(request dns.ApiZonesGetRequest) (dns.ApiZonesGetRequest, error)
 
 // Resolve resolves nameOrId (the name of a zone, or the ID of a zone) - to the ID of the zone.
 // If it's an ID, it's returned as is. If it's not, then it's a name, and we try to resolve it
