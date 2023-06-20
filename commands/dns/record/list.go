@@ -46,7 +46,7 @@ func RecordsGetCmd() *core.Command {
 				return fmt.Errorf("failed listing records: %w", err)
 			}
 
-			return c.Printer.Print(getRecordsPrint(c, *ls))
+			return c.Printer.Print(getRecordsPrint(c, ls))
 		},
 		InitClient: true,
 	})

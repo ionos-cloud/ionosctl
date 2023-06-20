@@ -4,6 +4,9 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/ionos-cloud/ionosctl/v6/commands/dns/zone"
+	"github.com/spf13/viper"
+
 	"github.com/google/uuid"
 	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
 	dns "github.com/ionos-cloud/sdk-go-dns"
@@ -20,7 +23,7 @@ func RecordCommand() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "record",
-			Short:            "DNS Records",
+			Short:            "DNS RecordsProperty",
 			Aliases:          []string{"r"},
 			Long:             "The sub-commands of `ionosctl dns record` allow you to perform operations on DNS records",
 			TraverseChildren: true,
@@ -47,12 +50,6 @@ func getRecordsPrint(c *core.CommandConfig, data dns.RecordReadList) printer.Res
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	if c != nil {
-		// TODO for r.OutputJSON: This loses all kinds of information in `-o json`, like `limit`, `offset`, etc. See https://github.com/ionos-cloud/ionosctl/issues/249
-		// But we are forced to do this otherwise we'd have this JSON output:
-		// {
-		//  "items": {
-		//    "items": [
-		// ...
 		r.OutputJSON = data.Items // TODO: See above comment. Remove `.Items` once JSON marshalling works as one would expect
 		r.KeyValue = makeRecordPrintObj(*data.Items...)
 		r.Columns = printer.GetHeaders(allCols, defaultCols, cols)
@@ -111,36 +108,32 @@ func makeRecordPrintObj(data ...dns.RecordRead) []map[string]interface{} {
 	return out
 }
 
-type Filter func(dns.ApiRecordsGetRequest) (dns.ApiRecordsGetRequest, error)
+// RecordsProperty returns a list of properties of all records matching the given filters
+func RecordsProperty[V any](f func(dns.RecordRead) V, fs ...Filter) []V {
+	recs, err := Records(fs...)
+	if err != nil {
+		return nil
+	}
+	return functional.Map(*recs.Items, f)
+}
 
-func Records(f Filter) (*dns.RecordReadList, error) {
+// Records returns all records matching the given filters
+func Records(fs ...Filter) (dns.RecordReadList, error) {
 	req := client.Must().DnsClient.RecordsApi.RecordsGet(context.Background())
 
-	if f != nil {
+	for _, f := range fs {
 		var err error
 		req, err = f(req)
 		if err != nil {
-			return nil, err
+			return dns.RecordReadList{}, err
 		}
 	}
 
 	ls, _, err := req.Execute()
 	if err != nil {
-		return nil, err
+		return dns.RecordReadList{}, err
 	}
-
-	return &ls, nil
-}
-
-func RecordIds(f Filter) []string {
-	ls, err := Records(f)
-	if err != nil {
-		return nil
-	}
-
-	return functional.Map(*ls.GetItems(), func(t dns.RecordRead) string {
-		return *t.GetId()
-	})
+	return ls, nil
 }
 
 // Resolve resolves nameOrId (the name of a record, or the ID of a record) - to the ID of the record.
@@ -160,4 +153,26 @@ func Resolve(nameOrId string) (string, error) {
 		rId = *(*ls.Items)[0].Id
 	}
 	return rId, nil
+}
+
+type Filter func(dns.ApiRecordsGetRequest) (dns.ApiRecordsGetRequest, error)
+
+func FilterRecordsByZoneAndRecordFlags(cmdNs string) Filter {
+	return func(req dns.ApiRecordsGetRequest) (dns.ApiRecordsGetRequest, error) {
+		if fn := core.GetFlagName(cmdNs, constants.FlagZone); viper.IsSet(fn) {
+			zoneId, err := zone.Resolve(viper.GetString(fn))
+			if err != nil {
+				return req, err
+			}
+			req = req.FilterZoneId(zoneId)
+		}
+
+		if fn := core.GetFlagName(cmdNs, constants.FlagRecord); viper.IsSet(fn) {
+			record := viper.GetString(fn)
+			if _, ok := uuid.Parse(record); ok != nil /* not ok (name is provided) */ {
+				req = req.FilterName(record)
+			}
+		}
+		return req, nil
+	}
 }

@@ -3,8 +3,6 @@ package record
 import (
 	"context"
 
-	"github.com/google/uuid"
-
 	"github.com/ionos-cloud/ionosctl/v6/commands/dns/zone"
 
 	dns "github.com/ionos-cloud/sdk-go-dns"
@@ -65,23 +63,9 @@ func ZonesRecordsFindByIdCmd() *core.Command {
 	})
 	cmd.AddStringFlag(constants.FlagRecord, "", "", "The ID or name of the DNS record")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagRecord, func(cobraCmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return RecordIds(func(req dns.ApiRecordsGetRequest) (dns.ApiRecordsGetRequest, error) {
-			if fn := core.GetFlagName(cmd.NS, constants.FlagZone); viper.IsSet(fn) {
-				zoneId, err := zone.Resolve(viper.GetString(fn))
-				if err != nil {
-					return req, err
-				}
-				req = req.FilterZoneId(zoneId)
-			}
-
-			if fn := core.GetFlagName(cmd.NS, constants.FlagRecord); viper.IsSet(fn) {
-				record := viper.GetString(fn)
-				if _, ok := uuid.Parse(record); ok == nil /* not ok (name is provided) */ {
-					req = req.FilterName(record)
-				}
-			}
-			return req, nil
-		}), cobra.ShellCompDirectiveNoFileComp
+		return RecordsProperty(func(r dns.RecordRead) string {
+			return *r.Properties.Name
+		}, FilterRecordsByZoneAndRecordFlags(cmd.NS)), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	cmd.Command.SilenceUsage = true
