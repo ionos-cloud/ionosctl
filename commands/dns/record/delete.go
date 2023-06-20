@@ -35,12 +35,12 @@ To delete all records, optionally filtering by partial name and zone:
 ionosctl dns r delete --all [--record PARTIAL_NAME] [--zone ZONE]
 Here, --all deletes all DNS records. You can also filter the records to delete by providing a PARTIAL_NAME that matches part of the name of the records you want to delete. Additionally, you can specify a ZONE to restrict the deletion to a specific DNS zone.
 
-To delete a record by partial name, optionally specifying the zone:
-ionosctl dns r delete --record PARTIAL_NAME [--zone ZONE]
-Here, PARTIAL_NAME is a part of the name of the DNS record you want to delete. If multiple records match the partial name, you will need to narrow down to a single record. You can also specify a ZONE to narrow down the search for the record to a specific DNS zone.`,
+To delete a record by partial name, specifying the zone:
+ionosctl dns r delete --record PARTIAL_NAME --zone ZONE
+Here, PARTIAL_NAME is a part of the name of the DNS record you want to delete. If multiple records match the partial name, an error will be thrown: you will need to narrow down to a single record`,
 		Example: `ionosctl dns r del --zone ZONE --record RECORD
 ionosctl dns r delete --all [--record PARTIAL_NAME] [--zone ZONE]
-ionosctl dns r delete --record PARTIAL_NAME [--zone ZONE]`,
+ionosctl dns r delete --record PARTIAL_NAME --zone ZONE`,
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			c.Command.Command.MarkFlagsMutuallyExclusive(constants.ArgAll, constants.FlagRecord)
 
