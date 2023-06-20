@@ -74,8 +74,8 @@ func ZonesPutCmd() *core.Command {
 			return *t.Properties.ZoneName
 		}), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "The name of the DNS zone, e.g. foo.com")
-	cmd.AddStringFlag(constants.FlagDescription, "", "", "The description of the DNS zone")
+	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "The new name of the DNS zone, e.g. foo.com")
+	cmd.AddStringFlag(constants.FlagDescription, "", "", "The new description of the DNS zone")
 	cmd.AddBoolFlag(constants.FlagEnabled, "", true, "Activate or deactivate the DNS zone")
 
 	cmd.Command.SilenceUsage = true

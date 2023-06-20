@@ -59,14 +59,18 @@ func TestZone(t *testing.T) {
 	assert.NotEmpty(t, sharedZ.Properties)
 	assert.Equal(t, randDesc, *sharedZ.Properties.Description)
 
+	resolvedId, err := zone.Resolve(randName)
+	assert.NoError(t, err)
+	assert.Equal(t, *sharedZ.Id, resolvedId) // I added these 3 lines later - to test zone.Resolve too
+
 	// === `ionosctl dns z get`
 	// Verify id is required for zone get
 	c = zone.ZonesFindByIdCmd()
 	err = c.Command.Execute()
-	assert.ErrorContains(t, err, fmt.Sprintf("\"%s\" not set", constants.FlagZoneId))
+	assert.ErrorContains(t, err, fmt.Sprintf("\"%s\" not set", constants.FlagZone))
 
-	// Try to see if ionosctl zone get finds newly created zone
-	c.Command.Flags().Set(constants.FlagZoneId, *sharedZ.Id)
+	// Try to see if ionosctl zone get finds newly created zone, using ID
+	c.Command.Flags().Set(constants.FlagZone, *sharedZ.Properties.ZoneName)
 	err = c.Command.Execute()
 	assert.NoError(t, err)
 	// TODO: I can't change command output to a buffer and check correctness, because output buffer is hardcoded in command runner
@@ -75,18 +79,33 @@ func TestZone(t *testing.T) {
 	// Check `ionosctl dns z update` prereqs
 	c = zone.ZonesPutCmd()
 	err = c.Command.Execute()
-	assert.ErrorContains(t, err, fmt.Sprintf("\"%s\" not set", constants.FlagZoneId))
+	assert.ErrorContains(t, err, fmt.Sprintf("\"%s\" not set", constants.FlagZone))
 
 	// Try changing desc using `ionosctl dns z update`
 	randDesc = fake.AlphaNum(32)
 	c.Command.Flags().Set(constants.FlagDescription, randDesc)
-	c.Command.Flags().Set(constants.FlagZoneId, *sharedZ.Id)
+	c.Command.Flags().Set(constants.FlagZone, *sharedZ.Properties.ZoneName)
 	err = c.Command.Execute()
 	assert.NoError(t, err)
 
 	zoneThroughSdk, _, err := client.Must().DnsClient.ZonesApi.ZonesFindById(context.Background(), *sharedZ.Id).Execute()
 	assert.NoError(t, err)
 	assert.Equal(t, randDesc, *zoneThroughSdk.Properties.Description)
+
+	// Try changing name using `ionosctl dns z update`
+	randName = fake.AlphaNum(32)
+	c.Command.Flags().Set(constants.FlagName, randName)
+	c.Command.Flags().Set(constants.FlagZone, *sharedZ.Properties.ZoneName)
+	err = c.Command.Execute()
+	assert.NoError(t, err)
+
+	zoneThroughSdk, _, err = client.Must().DnsClient.ZonesApi.ZonesFindById(context.Background(), *sharedZ.Id).Execute()
+	assert.NoError(t, err)
+	assert.Equal(t, randName, *zoneThroughSdk.Properties.ZoneName)
+
+	resolvedId, err = zone.Resolve(randName)
+	assert.NoError(t, err)
+	assert.Equal(t, *sharedZ.Id, resolvedId) // I added these 3 lines later - to test zone.Resolve too
 
 }
 
