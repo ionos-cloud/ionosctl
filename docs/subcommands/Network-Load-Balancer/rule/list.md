@@ -36,8 +36,8 @@ Use this command to list Network Load Balancer Forwarding Rules from a specified
 
 You can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.
 Available Filters:
-* filter by property: [algorithm healthCheck listenerIp listenerPort name protocol]
-* filter by metadata: [createdBy createdByUserId createdDate etag lastModifiedBy lastModifiedByUserId lastModifiedDate state]
+* filter by property: [name algorithm protocol listenerIp listenerPort healthCheck]
+* filter by metadata: [etag createdDate createdBy createdByUserId lastModifiedDate lastModifiedBy lastModifiedByUserId state]
 
 Required values to run command:
 

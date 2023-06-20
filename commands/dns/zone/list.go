@@ -20,7 +20,7 @@ func ZonesGetCmd() *core.Command {
 		Verb:      "list",
 		Aliases:   []string{"ls"},
 		ShortDesc: "Retrieve zones",
-		Example:   "ionosctl dns zone list",
+		Example:   "ionosctl dns z list",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return nil
 		},

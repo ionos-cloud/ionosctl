@@ -50,6 +50,6 @@ Retrieve all records
 ## Examples
 
 ```text
-ionosctl dns record list
+ionosctl dns r list
 ```
 

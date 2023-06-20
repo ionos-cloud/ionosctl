@@ -20,7 +20,7 @@ func ZonesFindByIdCmd() *core.Command {
 		Verb:      "get",
 		Aliases:   []string{"g"},
 		ShortDesc: "Retrieve a zone",
-		Example:   "ionosctl dns zone get --zone ZONE",
+		Example:   "ionosctl dns z get --zone ZONE",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			err := c.Command.Command.MarkFlagRequired(constants.FlagZone)
 			if err != nil {

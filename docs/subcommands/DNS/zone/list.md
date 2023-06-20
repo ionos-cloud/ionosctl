@@ -50,6 +50,6 @@ Retrieve zones
 ## Examples
 
 ```text
-ionosctl dns zone list
+ionosctl dns z list
 ```
 

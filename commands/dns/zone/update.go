@@ -21,7 +21,7 @@ func ZonesPutCmd() *core.Command {
 		Verb:      "update",
 		Aliases:   []string{"u"},
 		ShortDesc: "Partially modify a zone's properties. This command uses a combination of GET and PUT to simulate a PATCH operation",
-		Example:   "ionosctl dns zone update --zone ZONE --name newname.com",
+		Example:   "ionosctl dns z update --zone ZONE --name newname.com",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			err := c.Command.Command.MarkFlagRequired(constants.FlagZone)
 			if err != nil {

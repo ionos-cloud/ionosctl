@@ -49,6 +49,6 @@ Create a zone
 ## Examples
 
 ```text
-ionosctl dns zone create --name name.com
+ionosctl dns z create --name name.com
 ```
 

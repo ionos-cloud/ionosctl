@@ -20,7 +20,7 @@ func RecordsGetCmd() *core.Command {
 		Verb:      "list",
 		Aliases:   []string{"ls"},
 		ShortDesc: "Retrieve all records",
-		Example:   "ionosctl dns record list",
+		Example:   "ionosctl dns r list",
 		CmdRun: func(c *core.CommandConfig) error {
 			ls, err := Records(func(req dns.ApiRecordsGetRequest) (dns.ApiRecordsGetRequest, error) {
 				if fn := core.GetFlagName(c.NS, constants.FlagZone); viper.IsSet(fn) {

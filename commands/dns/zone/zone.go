@@ -23,7 +23,7 @@ func ZoneCommand() *core.Command {
 			Use:              "zone",
 			Short:            "DNS zones",
 			Aliases:          []string{"z", "zones"},
-			Long:             "The sub-commands of `ionosctl dns zone` allow you to perform operations on DNS zones",
+			Long:             "The sub-commands of `ionosctl dns z one` allow you to perform operations on DNS zones",
 			TraverseChildren: true,
 		},
 	}

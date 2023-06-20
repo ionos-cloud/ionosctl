@@ -53,6 +53,6 @@ Create a record. Wiki: https://docs.ionos.com/dns-as-a-service/readme/api-how-to
 ## Examples
 
 ```text
-ionosctl dns record create --type A --content 1.2.3.4 --name *
+ionosctl dns r create --type A --content 1.2.3.4 --name *
 ```
 

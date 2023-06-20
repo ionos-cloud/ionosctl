@@ -23,7 +23,7 @@ func ZonesDeleteCmd() *core.Command {
 		Verb:      "delete",
 		Aliases:   []string{"del", "d"},
 		ShortDesc: "Delete a zone",
-		Example:   "ionosctl dns zone delete --zone ZONE",
+		Example:   "ionosctl dns z delete --zone ZONE",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return core.CheckRequiredFlagsSets(c.Command, c.NS, []string{constants.ArgAll}, []string{constants.FlagZone})
 		},

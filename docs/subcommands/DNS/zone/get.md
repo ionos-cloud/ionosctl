@@ -47,6 +47,6 @@ Retrieve a zone
 ## Examples
 
 ```text
-ionosctl dns zone get --zone ZONE
+ionosctl dns z get --zone ZONE
 ```
 

@@ -37,7 +37,7 @@ func TestDNSCommands(t *testing.T) {
 func TestZone(t *testing.T) {
 	viper.Set(constants.ArgOutput, "text")
 
-	// === `ionosctl dns zone create`
+	// === `ionosctl dns z create`
 	// Verify name is required for zone creation
 	c := zone.ZonesPostCmd()
 	err := c.Command.Execute()
@@ -59,7 +59,7 @@ func TestZone(t *testing.T) {
 	assert.NotEmpty(t, sharedZ.Properties)
 	assert.Equal(t, randDesc, *sharedZ.Properties.Description)
 
-	// === `ionosctl dns zone get`
+	// === `ionosctl dns z get`
 	// Verify id is required for zone get
 	c = zone.ZonesFindByIdCmd()
 	err = c.Command.Execute()
@@ -71,13 +71,13 @@ func TestZone(t *testing.T) {
 	assert.NoError(t, err)
 	// TODO: I can't change command output to a buffer and check correctness, because output buffer is hardcoded in command runner
 
-	// === `ionosctl dns zone update`
-	// Check `ionosctl dns zone update` prereqs
+	// === `ionosctl dns z update`
+	// Check `ionosctl dns z update` prereqs
 	c = zone.ZonesPutCmd()
 	err = c.Command.Execute()
 	assert.ErrorContains(t, err, fmt.Sprintf("\"%s\" not set", constants.FlagZoneId))
 
-	// Try changing desc using `ionosctl dns zone update`
+	// Try changing desc using `ionosctl dns z update`
 	randDesc = fake.AlphaNum(32)
 	c.Command.Flags().Set(constants.FlagDescription, randDesc)
 	c.Command.Flags().Set(constants.FlagZoneId, *sharedZ.Id)
@@ -93,7 +93,7 @@ func TestZone(t *testing.T) {
 func TestRecord(t *testing.T) {
 	viper.Set(constants.ArgOutput, "text")
 
-	// `ionosctl dns record create`
+	// `ionosctl dns r create`
 	c := record.ZonesRecordsPostCmd()
 	err := c.Command.Execute()
 	assert.ErrorContains(t, err, fmt.Sprintf("\"%s\", \"%s\", \"%s\", \"%s\" not set", constants.FlagContent, constants.FlagName, constants.FlagType, constants.FlagZoneId))
@@ -116,7 +116,7 @@ func TestRecord(t *testing.T) {
 	assert.NotEmpty(t, r.Properties)
 	assert.Equal(t, randIp, *r.Properties.Content)
 
-	// `ionosctl dns record update`
+	// `ionosctl dns r update`
 	// check prereqs
 	c = record.ZonesRecordsPutCmd()
 	err = c.Command.Execute()
