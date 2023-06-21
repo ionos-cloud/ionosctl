@@ -4,13 +4,13 @@ go 1.20
 
 require (
 	github.com/cheggaaa/pb/v3 v3.1.2
-	github.com/cilium/fake v0.4.0
+	github.com/cilium/fake v0.3.0
 	github.com/cjrd/allocate v0.0.0-20220510215731-986f24f0fb18
 	github.com/fatih/color v1.15.0
 	github.com/fatih/structs v1.1.0
 	github.com/golang/mock v1.6.0
 	github.com/google/uuid v1.3.0
-	github.com/ionos-cloud/sdk-go-auth v1.0.6
+	github.com/ionos-cloud/sdk-go-auth v1.0.5
 	github.com/ionos-cloud/sdk-go-container-registry v1.0.0
 	github.com/ionos-cloud/sdk-go-dataplatform v1.0.1
 	github.com/ionos-cloud/sdk-go-dbaas-mongo v1.2.2
@@ -19,14 +19,14 @@ require (
 	github.com/kardianos/ftps v1.0.3
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/mmatczuk/anyflag v0.0.0-20230209112147-9567d4cab866
-	github.com/spf13/cobra v1.7.0
+	github.com/spf13/cobra v1.6.1
 	github.com/spf13/pflag v1.0.5
-	github.com/spf13/viper v1.16.0
-	github.com/stretchr/testify v1.8.4
-	go.uber.org/multierr v1.11.0
-	golang.org/x/crypto v0.9.0
+	github.com/spf13/viper v1.15.0
+	github.com/stretchr/testify v1.8.3
+	go.uber.org/multierr v1.10.0
+	golang.org/x/crypto v0.7.0
 	golang.org/x/exp v0.0.0-20230522175609-2e198f4a06a1
-	golang.org/x/sync v0.2.0
+	golang.org/x/sync v0.1.0
 	golang.org/x/term v0.8.0
 )
 
