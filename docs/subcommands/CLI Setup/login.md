@@ -1,5 +1,5 @@
 ---
-description: Authentication command for SDK
+description: "Authentication command for SDK"
 ---
 
 # Login

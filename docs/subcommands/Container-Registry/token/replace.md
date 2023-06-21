@@ -1,5 +1,5 @@
 ---
-description: Create or replace a token
+description: "Create or replace a token"
 ---
 
 # ContainerRegistryTokenReplace

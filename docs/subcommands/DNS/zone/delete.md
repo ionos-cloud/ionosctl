@@ -1,5 +1,5 @@
 ---
-description: Delete a zone
+description: "Delete a zone"
 ---
 
 # DnsZoneDelete

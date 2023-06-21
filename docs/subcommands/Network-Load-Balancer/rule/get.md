@@ -1,5 +1,5 @@
 ---
-description: Get a Network Load Balancer Forwarding Rule
+description: "Get a Network Load Balancer Forwarding Rule"
 ---
 
 # NetworkloadbalancerRuleGet

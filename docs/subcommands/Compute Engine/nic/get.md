@@ -1,5 +1,5 @@
 ---
-description: Get a NIC
+description: "Get a NIC"
 ---
 
 # NicGet

@@ -1,5 +1,5 @@
 ---
-description: Remove a Target from a Network Load Balancer Forwarding Rule
+description: "Remove a Target from a Network Load Balancer Forwarding Rule"
 ---
 
 # NetworkloadbalancerRuleTargetRemove

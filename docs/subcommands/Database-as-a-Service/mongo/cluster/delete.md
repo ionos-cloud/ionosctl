@@ -1,5 +1,5 @@
 ---
-description: Delete a Mongo Cluster by ID
+description: "Delete a Mongo Cluster by ID"
 ---
 
 # DbaasMongoClusterDelete

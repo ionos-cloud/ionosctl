@@ -1,5 +1,5 @@
 ---
-description: Delete a NAT Gateway FlowLog
+description: "Delete a NAT Gateway FlowLog"
 ---
 
 # NatgatewayFlowlogDelete

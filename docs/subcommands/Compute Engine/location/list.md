@@ -1,5 +1,5 @@
 ---
-description: List Locations
+description: "List Locations"
 ---
 
 # LocationList

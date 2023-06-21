@@ -1,5 +1,5 @@
 ---
-description: Retrieve all records
+description: "Retrieve all records"
 ---
 
 # DnsRecordList

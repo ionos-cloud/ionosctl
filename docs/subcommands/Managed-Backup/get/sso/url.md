@@ -1,5 +1,5 @@
 ---
-description: Get BackupUnit SSO URL
+description: "Get BackupUnit SSO URL"
 ---
 
 # BackupunitGetSsoUrl

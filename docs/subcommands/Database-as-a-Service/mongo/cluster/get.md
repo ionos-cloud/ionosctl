@@ -1,5 +1,5 @@
 ---
-description: Get a Mongo Cluster by ID
+description: "Get a Mongo Cluster by ID"
 ---
 
 # DbaasMongoClusterGet

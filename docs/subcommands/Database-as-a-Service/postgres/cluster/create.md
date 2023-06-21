@@ -1,5 +1,5 @@
 ---
-description: Create a PostgreSQL Cluster
+description: "Create a PostgreSQL Cluster"
 ---
 
 # DbaasPostgresClusterCreate

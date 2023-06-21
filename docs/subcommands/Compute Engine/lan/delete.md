@@ -1,5 +1,5 @@
 ---
-description: Delete a LAN
+description: "Delete a LAN"
 ---
 
 # LanDelete

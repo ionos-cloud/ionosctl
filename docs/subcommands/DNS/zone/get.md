@@ -1,5 +1,5 @@
 ---
-description: Retrieve a zone
+description: "Retrieve a zone"
 ---
 
 # DnsZoneGet

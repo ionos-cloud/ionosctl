@@ -1,5 +1,5 @@
 ---
-description: Get a Label
+description: "Get a Label"
 ---
 
 # LabelGet

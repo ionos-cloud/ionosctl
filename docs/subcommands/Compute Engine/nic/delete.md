@@ -1,5 +1,5 @@
 ---
-description: Delete a NIC
+description: "Delete a NIC"
 ---
 
 # NicDelete

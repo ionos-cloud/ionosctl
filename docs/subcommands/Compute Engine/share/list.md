@@ -1,5 +1,5 @@
 ---
-description: List Resources Shares through a Group
+description: "List Resources Shares through a Group"
 ---
 
 # ShareList

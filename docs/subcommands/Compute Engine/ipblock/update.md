@@ -1,5 +1,5 @@
 ---
-description: Update an IpBlock
+description: "Update an IpBlock"
 ---
 
 # IpblockUpdate

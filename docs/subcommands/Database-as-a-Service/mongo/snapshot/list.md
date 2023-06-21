@@ -1,5 +1,5 @@
 ---
-description: List the snapshots of your Mongo Cluster
+description: "List the snapshots of your Mongo Cluster"
 ---
 
 # DbaasMongoSnapshotList

@@ -1,5 +1,5 @@
 ---
-description: Delete a Registry
+description: "Delete a Registry"
 ---
 
 # ContainerRegistryRegistryDelete

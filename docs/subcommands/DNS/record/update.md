@@ -1,5 +1,5 @@
 ---
-description: Partially modify a record's properties. This command uses a combination of GET and PUT to simulate a PATCH operation
+description: "Partially modify a record's properties. This command uses a combination of GET and PUT to simulate a PATCH operation"
 ---
 
 # DnsRecordUpdate

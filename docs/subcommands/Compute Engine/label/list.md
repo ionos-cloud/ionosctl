@@ -1,5 +1,5 @@
 ---
-description: List Labels from Resources
+description: "List Labels from Resources"
 ---
 
 # LabelList

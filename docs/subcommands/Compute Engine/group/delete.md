@@ -1,5 +1,5 @@
 ---
-description: Delete a Group
+description: "Delete a Group"
 ---
 
 # GroupDelete

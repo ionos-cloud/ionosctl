@@ -1,5 +1,5 @@
 ---
-description: Get an attached NIC to a Load Balancer
+description: "Get an attached NIC to a Load Balancer"
 ---
 
 # LoadbalancerNicGet

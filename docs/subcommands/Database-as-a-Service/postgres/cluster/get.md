@@ -1,5 +1,5 @@
 ---
-description: Get a PostgreSQL Cluster
+description: "Get a PostgreSQL Cluster"
 ---
 
 # DbaasPostgresClusterGet

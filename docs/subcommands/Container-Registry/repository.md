@@ -1,5 +1,5 @@
 ---
-description: Delete all repository contents.
+description: "Delete all repository contents."
 ---
 
 # ContainerRegistryRepository

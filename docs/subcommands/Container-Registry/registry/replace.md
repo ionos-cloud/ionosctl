@@ -1,5 +1,5 @@
 ---
-description: Replace a registry
+description: "Replace a registry"
 ---
 
 # ContainerRegistryRegistryReplace

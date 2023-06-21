@@ -1,5 +1,5 @@
 ---
-description: List attached NICs from a Load Balancer
+description: "List attached NICs from a Load Balancer"
 ---
 
 # LoadbalancerNicList
