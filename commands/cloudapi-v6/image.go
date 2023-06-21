@@ -205,6 +205,11 @@ func ImageCmd() *core.Command {
 		CmdRun:     RunImageUpload,
 		InitClient: true,
 	})
+
+	// Username, Password override flags. DO NOT BIND TO VIPER, as the environment variables are linked to some linux things on certain apps, incl. zsh
+	upload.Command.Flags().String(constants.ArgUser, "", "Override username")
+	upload.Command.Flags().String(constants.ArgPassword, "", "Override password")
+
 	upload.AddStringSliceFlag(cloudapiv6.ArgLocation, cloudapiv6.ArgLocationShort, nil, "Location to upload to. Must be an array containing only fra, fkb, txl, lhr, las, ewr, vit", core.RequiredFlagOption())
 	upload.AddStringSliceFlag("image", "i", nil, "Slice of paths to images, can be absolute path or relative to current working directory", core.RequiredFlagOption())
 	upload.AddStringFlag("ftp-url", "", "ftp-%s.ionos.com", "URL of FTP server, with %s flag if location is embedded into url")
