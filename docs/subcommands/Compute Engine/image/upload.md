@@ -26,16 +26,24 @@ For `upload` command:
 
 ## Description
 
-Use this command to securely upload one or more HDD or ISO images to the specified FTP server using FTP over TLS (FTPS). This command supports a variety of options to provide flexibility during the upload process.
-To override your client's (API) credentials, you can use --ftp-user and --ftp-pass. Note that, by default, this command will query the '/images' endpoint for your uploaded images, then try to use the PATCH operation to update the uploaded images with the given property fields. It is necessary to use valid API credentials for this. To skip this API behaviour, you can use '--skip-update'.
+OVERVIEW:
+  Use this command to securely upload one or more HDD or ISO images to the specified FTP server using FTP over TLS (FTPS). This command supports a variety of options to provide flexibility during the upload process:
+  - To override your client's (API) credentials, you can use '--ftp-user' and '--ftp-pass', note that if only using only these and not standard auth methods ('ionosctl login'), you may only use this command for FTP uploads.
+  - The command supports renaming the uploaded images with the '--image-alias' flag. If uploading multiple images, you must provide an alias for each image.
+  - Specify the context deadline for the FTP connection using the '--timeout' flag. The operation as a whole will terminate after the specified number of seconds, i.e. if the FTP upload had finished but your PATCH operation did not, only the PATCH operation will be intrerrupted.
 
-This command supports usage of other FTP servers too, not just the default ones. Use the --skip-verify flag to skip the verification of the server certificate. This can be useful when using a custom ftp-url, but be warned that this could expose you to a man-in-the-middle attack. If you're using a self-signed FTP server, you can provide the path to the server certificate file using the --crt-path flag.
+POST-UPLOAD OPERATIONS:
+  By default, this command will query 'GET /images' endpoint for your uploaded images, then try to use 'PATCH /images/<UUID>' to update the uploaded images with the given property fields.
+  - It is necessary to use valid API credentials for this.
+  - To skip this API behaviour, you can use '--skip-update'.
 
-For flexibility purposes, the --location flag is only required if your --ftp-url contains a placeholder variable (i.e. %s). In this case, for every location in that slice, an attempt of FTP upload would be made at the URL computed by embedding it into the placeholder variable
-
-The command supports renaming the uploaded images with the --image-alias flag. However, if you're uploading multiple images, make sure to provide an alias for each image as uploading multiple images with the same alias is forbidden.
-
-You can specify the context deadline for the FTP connection using the --timeout flag. The operation as a whole will terminate after the specified number of seconds, i.e. if the FTP upload had finished but your PATCH operation did not, only the PATCH operation will be intrerrupted.
+CUSTOM URLs:
+  This command supports usage of other FTP servers too, not just the IONOS ones.
+  - The '--location' flag is only required if your '--ftp-url' contains a placeholder variable (i.e. %s).
+  In this case, for every location in that slice, an attempt of FTP upload would be made at the URL computed by embedding it into the placeholder variable
+  - Use the '--skip-verify' flag to skip the verification of the server certificate. This can be useful when using a custom ftp-url,
+  but be warned that this could expose you to a man-in-the-middle attack.
+  - If you're using a self-signed FTP server, you can provide the path to the server certificate file using the '--crt-path' flag.
 
 
 ## Options
@@ -79,10 +87,10 @@ You can specify the context deadline for the FTP connection using the --timeout 
 ## Examples
 
 ```text
-- 'ionosctl img u -i kolibri.iso -l fkb,fra,vit --skip-update': \t\tSimply upload the image 'kolibri.iso' from the current directory to IONOS FTP servers 'ftp://ftp-fkb.ionos.com/iso-images', 'ftp://ftp-fra.ionos.com/iso-images', 'ftp://ftp-vit.ionos.com/iso-images'.
-- 'ionosctl img u -i kolibri.iso --skip-update --skip-verify --ftp-url ftp://12.34.56.78': \t\tThe same operation, but use your own custom server. Use skip verify to skip checking server's identity
-- 'ionosctl img u -i kolibri.iso -l fra': \t\tUpload the image 'kolibri.iso' from the current directory to IONOS FTP server 'ftp://ftp-fra.ionos.com/iso-images'. Once the upload has finished, start querying 'GET /images' with a filter for 'kolibri', to get the UUID of the image as seen by the Images API. When UUID is found, perform a 'PATCH /images/<UUID>' to set the default flag values.
-- 'ionosctl img u -i kolibri.iso -l fra --ftp-url ftp://myComplexFTPServer/locations/%s --crt-path certificates/my-servers-cert.crt --location Paris,Berlin,LA,ZZZ --skip-update': \t\tUpload the image to multiple FTP servers, with location embedding into URL.
+- 'ionosctl img u -i kolibri.iso -l fkb,fra,vit --skip-update': Simply upload the image 'kolibri.iso' from the current directory to IONOS FTP servers 'ftp://ftp-fkb.ionos.com/iso-images', 'ftp://ftp-fra.ionos.com/iso-images', 'ftp://ftp-vit.ionos.com/iso-images'.
+- 'ionosctl img u -i kolibri.iso -l fra': Upload the image 'kolibri.iso' from the current directory to IONOS FTP server 'ftp://ftp-fra.ionos.com/iso-images'. Once the upload has finished, start querying 'GET /images' with a filter for 'kolibri', to get the UUID of the image as seen by the Images API. When UUID is found, perform a 'PATCH /images/<UUID>' to set the default flag values.
 
+- 'ionosctl img u -i kolibri.iso --skip-update --skip-verify --ftp-url ftp://12.34.56.78': Use your own custom server. Use skip verify to skip checking server's identity
+- 'ionosctl img u -i kolibri.iso -l fra --ftp-url ftp://myComplexFTPServer/locations/%s --crt-path certificates/my-servers-cert.crt --location Paris,Berlin,LA,ZZZ --skip-update': Upload the image to multiple FTP servers, with location embedding into URL.
 ```
 
