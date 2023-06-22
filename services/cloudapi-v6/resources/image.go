@@ -80,37 +80,42 @@ func (s *imagesService) Upload(ctx context.Context, p UploadProperties) error {
 	dialOptions := ftps.DialOptions{
 		Host:        p.Url,
 		Port:        p.Port,
-		Username:    s.client.GetConfig().Username,
-		Passowrd:    s.client.GetConfig().Password,
+		Username:    p.Username,
+		Passowrd:    p.Password,
 		ExplicitTLS: true,
 		TLSConfig:   &tlsConfig,
 	}
 
 	c, err := ftps.Dial(ctx, dialOptions)
 	if err != nil {
-		return err
+		return fmt.Errorf("dialing FTP server failed. Are you using the correct username & password?: %w", err)
 	}
 
 	err = c.Chdir(filepath.Dir(p.Path))
 	if err != nil {
-		return err
+		return fmt.Errorf("failed while changing directory within FTP server: %w", err)
 	}
 
 	files, err := c.List(ctx)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed while listing files within FTP server: %w", err)
 	}
 
 	// Check if there already exists an image with the given name at the location
 	desiredFileName := filepath.Base(p.Path)
+	var errExists error
 	for _, f := range files {
 		if f.Name == desiredFileName {
-			return fmt.Errorf("%s already exists at %s", desiredFileName, p.Url)
+			errExists = fmt.Errorf("%s already exists at %s", desiredFileName, p.Url)
 		}
 	}
 
 	err = c.Upload(ctx, desiredFileName, p.DataBuffer)
 	if err != nil {
+		err = fmt.Errorf("failed while uploading %s to FTP server: %w", desiredFileName, err)
+		if errExists != nil {
+			err = fmt.Errorf("%w: Note, your error could be because of: %w", err, errExists)
+		}
 		return err
 	}
 

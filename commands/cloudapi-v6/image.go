@@ -449,9 +449,11 @@ func PreRunImageUpload(c *core.PreCommandConfig) error {
 	ftpPass := viper.GetString(core.GetFlagName(c.NS, "ftp-pass"))
 
 	errHandler := func(err error) {
-		errMsg := fmt.Errorf(
-			"failed trying to use standard client credentials for FTP server: %w",
-			err,
+		errMsg := c.Printer.Warn("Warn: " +
+			fmt.Errorf(
+				"failed trying to use standard client credentials for FTP server: %w",
+				err,
+			).Error(),
 		)
 		die.Die(errMsg.Error())
 	}
