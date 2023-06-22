@@ -3,10 +3,13 @@
 ## [6.7.0] (XXX 2023)
 
 ### Added
-- Added `cfg logout` command, which iterates through fields in your config file which contain sensitive data and removes their value
-- Added `cfg location` command which prints config file path.
-- Added `cfg whoami` command which prints the authenticated user, with the option (`-p/--provenance`) to print the source and rules/order  of credentials.
-- Added `--ftp-user`, `--ftp-pass` to image upload command, which doesn't support JWT token. They can be used to override auth credentials only for the FTP server.
+- Config:
+  - Added `cfg logout` command, which iterates through fields in your config file which contain sensitive data and removes their value
+  - Added `cfg location` command which prints config file path.
+  - Added `cfg whoami` command which prints the authenticated user, with the option (`-p/--provenance`) to print the source and rules/order  of credentials.
+- Command `image upload`:
+  - Added `--ftp-user`, `--ftp-pass` flags. They can be used to override auth credentials only for the FTP server. Your API credentials are now checked only when necessary (e.g. post-upload operations), and are no longer needed to be valid for the initial FTP upload.
+  - Added a significantly improved documentation and more verbose, detailed errors for this command
 
 ### Changed
 - `ionosctl login` is now deprecated: it will simply call `ionosctl cfg login`.
