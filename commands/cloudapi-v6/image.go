@@ -196,15 +196,6 @@ func ImageCmd() *core.Command {
 		https://docs.ionos.com/cloud/compute-engine/block-storage/block-storage-faq#how-do-i-upload-my-own-images-with-ftp
 	*/
 
-	const (
-		FlagFtpUser         = "ftp-user"
-		FlagFtpPass         = "ftp-pass"
-		FlagSkipUpdate      = "skip-update"
-		FlagSkipVerify      = "skip-verify"
-		FlagFtpUrl          = "ftp-url"
-		FlagCertificatePath = "crt-path"
-	)
-
 	upload := core.NewCommand(ctx, imageCmd, core.CommandBuilder{
 		Namespace: "image",
 		Resource:  "image",
@@ -235,20 +226,19 @@ CUSTOM URLs:
 
 - 'ionosctl img u -i kolibri.iso --skip-update --skip-verify --ftp-url ftp://12.34.56.78': Use your own custom server. Use skip verify to skip checking server's identity
 - 'ionosctl img u -i kolibri.iso -l fra --ftp-url ftp://myComplexFTPServer/locations/%s --crt-path certificates/my-servers-cert.crt --location Paris,Berlin,LA,ZZZ --skip-update': Upload the image to multiple FTP servers, with location embedding into URL.`,
-		PreCmdRun:  PreRunImageUpload,
-		CmdRun:     RunImageUpload,
-		InitClient: true,
+		PreCmdRun: PreRunImageUpload,
+		CmdRun:    RunImageUpload,
 	})
 
 	upload.AddStringFlag(FlagFtpUser, "", "", "Override username for FTP server")
 	upload.AddStringFlag(FlagFtpPass, "", "", "Override password for FTP server")
 
 	upload.AddStringSliceFlag(cloudapiv6.ArgLocation, cloudapiv6.ArgLocationShort, nil, fmt.Sprintf("Location to upload to. Must be an array containing only fra, fkb, txl, lhr, las, ewr, vit if not using --%s", FlagFtpUrl), core.RequiredFlagOption())
-	upload.AddStringSliceFlag("image", "i", nil, "Slice of paths to images, can be absolute path or relative to current working directory", core.RequiredFlagOption())
-	upload.AddStringFlag("ftp-url", "", "ftp-%s.ionos.com", "URL of FTP server, with %s flag if location is embedded into url")
-	upload.AddBoolFlag("skip-verify", "", false, "Skip verification of server certificate, useful if using a custom ftp-url. WARNING: You can be the target of a man-in-the-middle attack!")
-	upload.AddBoolFlag("skip-update", "", false, "After the image is uploaded to the FTP server, send a PATCH to the API with the contents of the image properties flags and emulate a \"create\" command.")
-	upload.AddStringFlag("crt-path", "", "", "(Unneeded for IONOS FTP Servers) Path to file containing server certificate. If your FTP server is self-signed, you need to add the server certificate to the list of certificate authorities trusted by the client.")
+	upload.AddStringSliceFlag(FlagImage, "i", nil, "Slice of paths to images, can be absolute path or relative to current working directory", core.RequiredFlagOption())
+	upload.AddStringFlag(FlagFtpUrl, "", "ftp-%s.ionos.com", "URL of FTP server, with %s flag if location is embedded into url")
+	upload.AddBoolFlag(FlagSkipVerify, "", false, "Skip verification of server certificate, useful if using a custom ftp-url. WARNING: You can be the target of a man-in-the-middle attack!")
+	upload.AddBoolFlag(FlagSkipUpdate, "", false, "After the image is uploaded to the FTP server, send a PATCH to the API with the contents of the image properties flags and emulate a \"create\" command.")
+	upload.AddStringFlag(FlagCertificatePath, "", "", "(Not needed for IONOS FTP Servers) Path to file containing server certificate. If your FTP server is self-signed, you need to add the server certificate to the list of certificate authorities trusted by the client.")
 	upload.AddStringSliceFlag(cloudapiv6.ArgImageAlias, cloudapiv6.ArgImageAliasShort, nil, "Rename the uploaded images. These names should not contain any extension. By default, this is the base of the image path")
 	upload.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, 300, "(seconds) Context Deadline. FTP connection will time out after this many seconds")
 
@@ -260,23 +250,32 @@ CUSTOM URLs:
 	return imageCmd
 }
 
+const (
+	FlagImage           = "image"
+	FlagFtpUser         = "ftp-user"
+	FlagFtpPass         = "ftp-pass"
+	FlagSkipUpdate      = "skip-update"
+	FlagSkipVerify      = "skip-verify"
+	FlagFtpUrl          = "ftp-url"
+	FlagCertificatePath = "crt-path"
+)
+
 func PreRunImageUpload(c *core.PreCommandConfig) error {
-	err := c.Command.Command.MarkFlagRequired("image")
+	err := c.Command.Command.MarkFlagRequired(FlagImage)
 	if err != nil {
 		return err
 	}
 
-	ftpUser := viper.GetString(core.GetFlagName(c.NS, "ftp-user"))
-	ftpPass := viper.GetString(core.GetFlagName(c.NS, "ftp-pass"))
+	ftpUser := viper.GetString(core.GetFlagName(c.NS, FlagFtpUser))
+	ftpPass := viper.GetString(core.GetFlagName(c.NS, FlagFtpPass))
 
 	errHandler := func(err error) {
-		errMsg := c.Printer.Warn("Warn: " +
+		_ = c.Printer.Warn("Warn: " +
 			fmt.Errorf(
 				"failed trying to use standard client credentials for FTP server: %w",
 				err,
 			).Error(),
 		)
-		die.Die(errMsg.Error())
 	}
 	if ftpUser == "" || ftpPass == "" {
 		if client.Must(errHandler).IsTokenAuth() {
@@ -286,7 +285,7 @@ func PreRunImageUpload(c *core.PreCommandConfig) error {
 	}
 
 	validExts := []string{".iso", ".img", ".vmdk", ".vhd", ".vhdx", ".cow", ".qcow", ".qcow2", ".raw", ".vpc", ".vdi"}
-	images := viper.GetStringSlice(core.GetFlagName(c.NS, "image"))
+	images := viper.GetStringSlice(core.GetFlagName(c.NS, FlagImage))
 	invalidImages := functional.Filter(
 		functional.Map(images, func(s string) string {
 			return filepath.Ext(s)
@@ -303,7 +302,7 @@ func PreRunImageUpload(c *core.PreCommandConfig) error {
 	}
 
 	// "Locations" flag only required if ftp-url custom flag contains a %s in which to add the location ID
-	if strings.Contains(viper.GetString(core.GetFlagName(c.NS, "ftp-url")), "%s") {
+	if strings.Contains(viper.GetString(core.GetFlagName(c.NS, FlagFtpUrl)), "%s") {
 		err = c.Command.Command.MarkFlagRequired(cloudapiv6.ArgLocation)
 		if err != nil {
 			return err
@@ -362,17 +361,17 @@ func updateImagesAfterUpload(c *core.CommandConfig, diffImgs []ionoscloud.Image,
 	return imgs, nil
 }
 func RunImageUpload(c *core.CommandConfig) error {
-	certPool, err := getCertificate(viper.GetString(core.GetFlagName(c.NS, "crt-path")))
+	certPool, err := getCertificate(viper.GetString(core.GetFlagName(c.NS, FlagCertificatePath)))
 	if err != nil {
 		return err
 	}
 
-	images := viper.GetStringSlice(core.GetFlagName(c.NS, "image"))
+	images := viper.GetStringSlice(core.GetFlagName(c.NS, FlagImage))
 	aliases := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgImageAlias))
 	locations := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgLocation))
-	skipVerify := viper.GetBool(core.GetFlagName(c.NS, "skip-verify"))
-	ftpUser := viper.GetString(core.GetFlagName(c.NS, "ftp-user"))
-	ftpPass := viper.GetString(core.GetFlagName(c.NS, "ftp-pass"))
+	skipVerify := viper.GetBool(core.GetFlagName(c.NS, FlagSkipVerify))
+	ftpUser := viper.GetString(core.GetFlagName(c.NS, FlagFtpUser))
+	ftpPass := viper.GetString(core.GetFlagName(c.NS, FlagFtpPass))
 
 	errHandler := func(err error) {
 		errMsg := fmt.Errorf(
@@ -395,7 +394,7 @@ func RunImageUpload(c *core.CommandConfig) error {
 	var eg errgroup.Group
 	for _, loc := range locations {
 		for imgIdx, img := range images {
-			url := viper.GetString(core.GetFlagName(c.NS, "ftp-url"))
+			url := viper.GetString(core.GetFlagName(c.NS, FlagFtpUrl))
 			if strings.Contains(url, "%s") {
 				url = fmt.Sprintf(url, loc) // Add the location modifier, if the URL supports it
 			}
@@ -424,7 +423,7 @@ func RunImageUpload(c *core.CommandConfig) error {
 			// Catching error from goroutines. https://stackoverflow.com/questions/62387307/how-to-catch-errors-from-goroutines
 			// Uploads each image to each location.
 			eg.Go(func() error {
-				err := c.CloudApiV6Services.Images().Upload(
+				err := resources.FtpUpload(
 					c.Context,
 					resources.UploadProperties{
 						FTPServerProperties: resources.FTPServerProperties{
@@ -452,10 +451,19 @@ func RunImageUpload(c *core.CommandConfig) error {
 		return err
 	}
 
-	if viper.GetBool(core.GetFlagName(c.NS, "skip-update")) {
+	if viper.GetBool(core.GetFlagName(c.NS, FlagSkipUpdate)) {
 		c.Printer.Verbose("Successfully uploaded images")
 		return nil
 	}
+
+	// End of the ride for those users who used --ftp-user and --ftp-pass, but no valid API credentials
+	client.Must(func(err error) {
+		if err != nil {
+			err = fmt.Errorf("you did not provide valid API credentials and did not use --%s. "+
+				"FTP Upload successful, but cannot query 'GET /images' for your uploaded image: %w", FlagSkipUpdate, err)
+			die.Die("Error: " + err.Error())
+		}
+	})
 
 	names := images
 	if len(aliases) != 0 {
