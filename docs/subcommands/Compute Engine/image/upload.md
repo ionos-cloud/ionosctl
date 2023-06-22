@@ -56,7 +56,7 @@ CUSTOM URLs:
   -c, --config string            Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --cpu-hot-plug             'Hot-Plug' CPU. It is not possible to have a hot-unplug CPU which you previously did not hot-plug (default true)
       --cpu-hot-unplug           'Hot-Unplug' CPU. It is not possible to have a hot-unplug CPU which you previously did not hot-plug
-      --crt-path string          (Unneeded for IONOS FTP Servers) Path to file containing server certificate. If your FTP server is self-signed, you need to add the server certificate to the list of certificate authorities trusted by the client.
+      --crt-path string          (Not needed for IONOS FTP Servers) Path to file containing server certificate. If your FTP server is self-signed, you need to add the server certificate to the list of certificate authorities trusted by the client.
   -d, --description string       Description of the Image
       --disc-scsi-hot-plug       'Hot-Plug' SCSI drive (default true)
       --disc-scsi-hot-unplug     'Hot-Unplug' SCSI drive
