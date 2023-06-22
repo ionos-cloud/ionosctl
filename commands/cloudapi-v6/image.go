@@ -598,10 +598,11 @@ func RunImageUpload(c *core.CommandConfig) error {
 		)
 		die.Die(errMsg.Error())
 	}
-	if ftpUser == "" || ftpPass == "" {
-		cfg := client.Must(errHandler).CloudClient.GetConfig()
-		ftpUser = cfg.Username
-		ftpPass = cfg.Password
+	if ftpUser == "" {
+		ftpUser = client.Must(errHandler).CloudClient.GetConfig().Username
+	}
+	if ftpPass == "" {
+		ftpPass = client.Must(errHandler).CloudClient.GetConfig().Password
 	}
 
 	ctx, cancel := context.WithTimeout(c.Context, time.Duration(viper.GetInt(core.GetFlagName(c.NS, constants.ArgTimeout)))*time.Second)
@@ -640,7 +641,6 @@ func RunImageUpload(c *core.CommandConfig) error {
 			// Catching error from goroutines. https://stackoverflow.com/questions/62387307/how-to-catch-errors-from-goroutines
 			// Uploads each image to each location.
 			eg.Go(func() error {
-
 				err := c.CloudApiV6Services.Images().Upload(
 					c.Context,
 					resources.UploadProperties{

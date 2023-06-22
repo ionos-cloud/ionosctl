@@ -88,7 +88,7 @@ func (s *imagesService) Upload(ctx context.Context, p UploadProperties) error {
 
 	c, err := ftps.Dial(ctx, dialOptions)
 	if err != nil {
-		return fmt.Errorf("dialing FTP server failed. Are you using the correct username & password?: %w", err)
+		return fmt.Errorf("dialing FTP server failed. Check username & password. FTP server doesn't support usage of JWT token: %w", err)
 	}
 
 	err = c.Chdir(filepath.Dir(p.Path))
@@ -106,7 +106,7 @@ func (s *imagesService) Upload(ctx context.Context, p UploadProperties) error {
 	var errExists error
 	for _, f := range files {
 		if f.Name == desiredFileName {
-			errExists = fmt.Errorf("%s already exists at %s", desiredFileName, p.Url)
+			errExists = fmt.Errorf("%s already exists at %s. Please contact support at support@cloud.ionos.com to delete the old image. We're sorry for the inconvenience", desiredFileName, p.Url)
 		}
 	}
 
@@ -114,9 +114,14 @@ func (s *imagesService) Upload(ctx context.Context, p UploadProperties) error {
 	if err != nil {
 		err = fmt.Errorf("failed while uploading %s to FTP server: %w", desiredFileName, err)
 		if errExists != nil {
-			err = fmt.Errorf("%w: Note, your error could be because of: %w", err, errExists)
+			/*
+			 * Error: failed while uploading go.iso to FTP server: upload data: cmd failed read expected code 1 with message "": failed to read code, got code 550 and message go.iso: Operation not permitted: 550 go.iso: Operation not permitted
+			 * Note, your error could be because of: `go.iso already exists at ftp-fra.ionos.com. Please contact support at support@cloud.ionos.com to delete the old image. We're sorry for the inconvenience`
+			 */
+			err = fmt.Errorf("%w\nNote: %w", err, errExists)
 		}
 		return err
+
 	}
 
 	return c.Close()
