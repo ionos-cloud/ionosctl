@@ -42,6 +42,8 @@ type FTPServerProperties struct {
 	Port              int
 	SkipVerify        bool           // Skip FTP server certificate verification. WARNING man-in-the-middle attack possible
 	ServerCertificate *x509.CertPool // If FTP server uses self signed certificates, put this in tlsConfig. IONOS FTP Servers in prod DON'T need this
+	Username          string
+	Password          string
 }
 
 // ImagesService is a wrapper around ionoscloud.Image

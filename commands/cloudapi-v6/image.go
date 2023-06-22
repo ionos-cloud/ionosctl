@@ -13,6 +13,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/ionos-cloud/ionosctl/v6/internal/die"
+
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"golang.org/x/exp/slices"
 
@@ -198,7 +200,7 @@ func ImageCmd() *core.Command {
 		Resource:   "image",
 		Verb:       "upload",
 		Aliases:    []string{"ftp-upload", "ftp", "upl"},
-		ShortDesc:  "Upload an image to FTP server",
+		ShortDesc:  "Upload an image to FTP server using FTP over TLS (FTPS)",
 		LongDesc:   "Use this command to upload an HDD or ISO image.\n\nRequired values to run command:\n\n* Location\n",
 		Example:    "ionosctl img u -i kolibri.iso -l fkb,fra,vit",
 		PreCmdRun:  PreRunImageUpload,
@@ -206,9 +208,8 @@ func ImageCmd() *core.Command {
 		InitClient: true,
 	})
 
-	// Username, Password override flags. DO NOT BIND TO VIPER, as the environment variables are linked to some linux things on certain apps, incl. zsh
-	upload.Command.Flags().String(constants.ArgUser, "", "Override username")
-	upload.Command.Flags().String(constants.ArgPassword, "", "Override password")
+	upload.AddStringFlag("ftp-user", "", "", "Override username for FTP server")
+	upload.AddStringFlag("ftp-pass", "", "", "Override password for FTP server")
 
 	upload.AddStringSliceFlag(cloudapiv6.ArgLocation, cloudapiv6.ArgLocationShort, nil, "Location to upload to. Must be an array containing only fra, fkb, txl, lhr, las, ewr, vit", core.RequiredFlagOption())
 	upload.AddStringSliceFlag("image", "i", nil, "Slice of paths to images, can be absolute path or relative to current working directory", core.RequiredFlagOption())
@@ -444,6 +445,23 @@ func PreRunImageUpload(c *core.PreCommandConfig) error {
 		return err
 	}
 
+	ftpUser := viper.GetString(core.GetFlagName(c.NS, "ftp-user"))
+	ftpPass := viper.GetString(core.GetFlagName(c.NS, "ftp-pass"))
+
+	errHandler := func(err error) {
+		errMsg := fmt.Errorf(
+			"failed trying to use standard client credentials for FTP server: %w",
+			err,
+		)
+		die.Die(errMsg.Error())
+	}
+	if ftpUser == "" || ftpPass == "" {
+		if client.Must(errHandler).IsTokenAuth() {
+			c.Printer.Warn("Warn: You are using token authentication for your client. FTP connection does not support JWT token")
+			c.Printer.Warn("Warn: You can use --ftp-user and --ftp-pass to override the client's credentials for the FTP server only")
+		}
+	}
+
 	validExts := []string{".iso", ".img", ".vmdk", ".vhd", ".vhdx", ".cow", ".qcow", ".qcow2", ".raw", ".vpc", ".vdi"}
 	images := viper.GetStringSlice(core.GetFlagName(c.NS, "image"))
 	invalidImages := functional.Filter(
@@ -568,6 +586,22 @@ func RunImageUpload(c *core.CommandConfig) error {
 	aliases := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgImageAlias))
 	locations := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgLocation))
 	skipVerify := viper.GetBool(core.GetFlagName(c.NS, "skip-verify"))
+	ftpUser := viper.GetString(core.GetFlagName(c.NS, "ftp-user"))
+	ftpPass := viper.GetString(core.GetFlagName(c.NS, "ftp-pass"))
+
+	errHandler := func(err error) {
+		errMsg := fmt.Errorf(
+			"failed trying to use standard client credentials for FTP server: %w",
+			err,
+		)
+		die.Die(errMsg.Error())
+	}
+	if ftpUser == "" || ftpPass == "" {
+		cfg := client.Must(errHandler).CloudClient.GetConfig()
+		ftpUser = cfg.Username
+		ftpPass = cfg.Password
+	}
+
 	ctx, cancel := context.WithTimeout(c.Context, time.Duration(viper.GetInt(core.GetFlagName(c.NS, constants.ArgTimeout)))*time.Second)
 	defer cancel()
 	c.Context = ctx
@@ -604,11 +638,22 @@ func RunImageUpload(c *core.CommandConfig) error {
 			// Catching error from goroutines. https://stackoverflow.com/questions/62387307/how-to-catch-errors-from-goroutines
 			// Uploads each image to each location.
 			eg.Go(func() error {
+
 				err := c.CloudApiV6Services.Images().Upload(
 					c.Context,
 					resources.UploadProperties{
-						FTPServerProperties: resources.FTPServerProperties{Url: url, Port: 21, SkipVerify: skipVerify, ServerCertificate: certPool},
-						ImageFileProperties: resources.ImageFileProperties{Path: serverFilePath, DataBuffer: data},
+						FTPServerProperties: resources.FTPServerProperties{
+							Url:               url,
+							Port:              21,
+							SkipVerify:        skipVerify,
+							ServerCertificate: certPool,
+							Username:          ftpUser,
+							Password:          ftpPass,
+						},
+						ImageFileProperties: resources.ImageFileProperties{
+							Path:       serverFilePath,
+							DataBuffer: data,
+						},
 					},
 				)
 				if err != nil {
