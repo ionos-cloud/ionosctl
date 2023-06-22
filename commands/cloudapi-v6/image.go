@@ -266,24 +266,6 @@ func PreRunImageUpload(c *core.PreCommandConfig) error {
 		return err
 	}
 
-	ftpUser := viper.GetString(core.GetFlagName(c.NS, FlagFtpUser))
-	ftpPass := viper.GetString(core.GetFlagName(c.NS, FlagFtpPass))
-
-	errHandler := func(err error) {
-		_ = c.Printer.Warn("Warn: " +
-			fmt.Errorf(
-				"failed trying to use standard client credentials for FTP server: %w",
-				err,
-			).Error(),
-		)
-	}
-	if ftpUser == "" || ftpPass == "" {
-		if client.Must(errHandler).IsTokenAuth() {
-			c.Printer.Warn("Warn: You are using token authentication for your client. FTP connection does not support JWT token")
-			c.Printer.Warn("Warn: You can use --ftp-user and --ftp-pass to override the client's credentials for the FTP server only")
-		}
-	}
-
 	validExts := []string{".iso", ".img", ".vmdk", ".vhd", ".vhdx", ".cow", ".qcow", ".qcow2", ".raw", ".vpc", ".vdi"}
 	images := viper.GetStringSlice(core.GetFlagName(c.NS, FlagImage))
 	invalidImages := functional.Filter(
@@ -375,7 +357,7 @@ func RunImageUpload(c *core.CommandConfig) error {
 
 	errHandler := func(err error) {
 		errMsg := fmt.Errorf(
-			"failed trying to use standard client credentials for FTP server: %w",
+			"failed trying to get client in order to fall back to standard client credentials for FTP server: %w",
 			err,
 		)
 		die.Die(errMsg.Error())
