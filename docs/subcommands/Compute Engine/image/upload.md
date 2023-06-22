@@ -1,5 +1,5 @@
 ---
-description: Upload an image to FTP server
+description: Upload an image to FTP server using FTP over TLS (FTPS)
 ---
 
 # ImageUpload
@@ -26,11 +26,16 @@ For `upload` command:
 
 ## Description
 
-Use this command to upload an HDD or ISO image.
+Use this command to securely upload one or more HDD or ISO images to the specified FTP server using FTP over TLS (FTPS). This command supports a variety of options to provide flexibility during the upload process.
+To override your client's (API) credentials, you can use --ftp-user and --ftp-pass. Note that, by default, this command will query the '/images' endpoint for your uploaded images, then try to use the PATCH operation to update the uploaded images with the given property fields. It is necessary to use valid API credentials for this. To skip this API behaviour, you can use '--skip-update'.
 
-Required values to run command:
+This command supports usage of other FTP servers too, not just the default ones. Use the --skip-verify flag to skip the verification of the server certificate. This can be useful when using a custom ftp-url, but be warned that this could expose you to a man-in-the-middle attack. If you're using a self-signed FTP server, you can provide the path to the server certificate file using the --crt-path flag.
 
-* Location
+For flexibility purposes, the --location flag is only required if your --ftp-url contains a placeholder variable (i.e. %s). In this case, for every location in that slice, an attempt of FTP upload would be made at the URL computed by embedding it into the placeholder variable
+
+The command supports renaming the uploaded images with the --image-alias flag. However, if you're uploading multiple images, make sure to provide an alias for each image as uploading multiple images with the same alias is forbidden.
+
+You can specify the context deadline for the FTP connection using the --timeout flag. The operation as a whole will terminate after the specified number of seconds, i.e. if the FTP upload had finished but your PATCH operation did not, only the PATCH operation will be intrerrupted.
 
 
 ## Options
@@ -50,12 +55,14 @@ Required values to run command:
       --disc-virtio-hot-plug     'Hot-Plug' Virt-IO drive (default true)
       --disc-virtio-hot-unplug   'Hot-Unplug' Virt-IO drive
   -f, --force                    Force command to execute without user input
+      --ftp-pass string          Override password for FTP server
       --ftp-url string           URL of FTP server, with %s flag if location is embedded into url (default "ftp-%s.ionos.com")
+      --ftp-user string          Override username for FTP server
   -h, --help                     Print usage
   -i, --image strings            Slice of paths to images, can be absolute path or relative to current working directory (required)
   -a, --image-alias strings      Rename the uploaded images. These names should not contain any extension. By default, this is the base of the image path
       --licence-type string      The OS type of this image. Can be one of: UNKNOWN, WINDOWS, WINDOWS2016, WINDOWS2022, LINUX, OTHER (default "UNKNOWN")
-  -l, --location strings         Location to upload to. Must be an array containing only fra, fkb, txl, lhr, las, ewr, vit (required)
+  -l, --location strings         Location to upload to. Must be an array containing only fra, fkb, txl, lhr, las, ewr, vit if not using --ftp-url (required)
   -n, --name string              Name of the Image
       --nic-hot-plug             'Hot-Plug' NIC (default true)
       --nic-hot-unplug           'Hot-Unplug' NIC
@@ -72,6 +79,10 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl img u -i kolibri.iso -l fkb,fra,vit
+- 'ionosctl img u -i kolibri.iso -l fkb,fra,vit --skip-update': \t\tSimply upload the image 'kolibri.iso' from the current directory to IONOS FTP servers 'ftp://ftp-fkb.ionos.com/iso-images', 'ftp://ftp-fra.ionos.com/iso-images', 'ftp://ftp-vit.ionos.com/iso-images'.
+- 'ionosctl img u -i kolibri.iso --skip-update --skip-verify --ftp-url ftp://12.34.56.78': \t\tThe same operation, but use your own custom server. Use skip verify to skip checking server's identity
+- 'ionosctl img u -i kolibri.iso -l fra': \t\tUpload the image 'kolibri.iso' from the current directory to IONOS FTP server 'ftp://ftp-fra.ionos.com/iso-images'. Once the upload has finished, start querying 'GET /images' with a filter for 'kolibri', to get the UUID of the image as seen by the Images API. When UUID is found, perform a 'PATCH /images/<UUID>' to set the default flag values.
+- 'ionosctl img u -i kolibri.iso -l fra --ftp-url ftp://myComplexFTPServer/locations/%s --crt-path certificates/my-servers-cert.crt --location Paris,Berlin,LA,ZZZ --skip-update': \t\tUpload the image to multiple FTP servers, with location embedding into URL.
+
 ```
 
