@@ -28,7 +28,12 @@ func GetUserData() map[string]string {
 
 // GetServerUrl returns the server URL the SDK should use, with support for layered fallbacks.
 //
-// ⚠️ WARNING: NEVER use viper.Get/os.Getenv to try to bypass this function! ⚠️
+//	  ⚠️ WARNING: NEVER use viper.Get/os.Getenv to try to bypass this function! ⚠️
+//	- In older versions this env var was bound to Viper. Viper does not support case-sensitive keys.
+//	  This means someone could export `IoNoS_API_url` and it would work. So - don't try it. Would be breaking.
+//	- Using viper.Get instead of this func means you rely on non-deterministic global behaviour. Which is hard to debug.
+//	  You won't have the certainty that ArgServerUrl is bound to the chain (ArgServerUrl, EnvServerUrl, CfgServerUrl) when you call viper.Get(ArgServerUrl)
+//	  so, a very natural reaction to this is checking the next chain variables yourself or leaving it blank - which creates a ton of technical debt and code duplication, or unpredictable behaviour for the user
 func GetServerUrl() string {
 	viper.AutomaticEnv()
 	if flagVal := viper.GetString(constants.ArgServerUrl); flagVal != "" {
@@ -37,9 +42,6 @@ func GetServerUrl() string {
 	}
 	if envVal := viper.GetString(constants.EnvServerUrl); envVal != "" {
 		// 2. Fallback to non-empty env vars
-		// Advice to future devs: If you're thinking of replacing this with os.GetEnv - Don't.
-		// In older versions this env var was bound to Viper. Viper does not support case-sensitive keys.
-		// This means someone could export `IoNoS_API_url` and it would work. So - don't try it. Would be breaking.
 		return envVal
 	}
 	if cfgVal := viper.GetString(constants.ServerUrl); cfgVal != "" {
