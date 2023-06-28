@@ -42,10 +42,8 @@ Here, PARTIAL_NAME is a part of the name of the DNS record you want to delete. I
 ionosctl dns r delete --all [--record PARTIAL_NAME] [--zone ZONE]
 ionosctl dns r delete --record PARTIAL_NAME --zone ZONE`,
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			c.Command.Command.MarkFlagsMutuallyExclusive(constants.ArgAll, constants.FlagRecord)
-
 			err := core.CheckRequiredFlagsSets(c.Command, c.NS, []string{constants.ArgAll}, // All with optional filters
-				[]string{constants.FlagZone, constants.FlagRecord}, // Known resources
+				[]string{constants.FlagZone, constants.FlagRecord}, // Known resource
 			)
 			if err != nil {
 				return fmt.Errorf("either provide --%s and optionally filters, or --%s and --%s, or narrow down to one record with --%s and/or --%s: %w",
@@ -67,11 +65,13 @@ ionosctl dns r delete --record PARTIAL_NAME --zone ZONE`,
 
 			if fn := core.GetFlagName(c.NS, constants.FlagRecord); viper.IsSet(fn) {
 				if _, ok := uuid.Parse(viper.GetString(fn)); ok != nil /* not ok (name is provided) */ {
+					// record name is provided for FlagRecord
 					r, err = deleteSingleWithFilters(c)
 					if err != nil {
 						return fmt.Errorf("failed deleting a single record using filters: %w", err)
 					}
 				} else {
+					// record uuid is provided for FlagRecord
 					r, _, err = client.Must().DnsClient.RecordsApi.ZonesRecordsFindById(context.Background(), zoneId, viper.GetString(fn)).Execute()
 					if err != nil {
 						return fmt.Errorf("failed finding record using Zone and Record IDs: %w", err)
@@ -119,16 +119,13 @@ ionosctl dns r delete --record PARTIAL_NAME --zone ZONE`,
 }
 
 func deleteAll(c *core.CommandConfig) error {
-	recordsGet := client.Must().DnsClient.RecordsApi.RecordsGet(c.Context)
-
-	recordsGet, err := FilterRecordsByZoneAndRecordFlags(c.NS)(recordsGet)
+	xs, err := Records(FilterRecordsByZoneAndRecordFlags(c.NS)) // full zone name and partial record name filter, if set
 	if err != nil {
-		return err
+		return fmt.Errorf("failed listing records: %w", err)
 	}
 
-	xs, _, err := recordsGet.Execute()
-	if err != nil {
-		return err
+	if len(*xs.Items) == 0 {
+		return fmt.Errorf("found no records matching given filters")
 	}
 
 	err = functional.ApplyAndAggregateErrors(*xs.GetItems(), func(r dns.RecordRead) error {
@@ -155,8 +152,8 @@ func deleteSingleWithFilters(c *core.CommandConfig) (dns.RecordRead, error) {
 
 	recsLen := len(*recs.Items)
 	if recsLen == 0 {
-		return dns.RecordRead{}, fmt.Errorf("got %d but expected 1. The given filters (--%s and/or --%s)"+
-			" must narrow down to a single result", recsLen, constants.FlagRecord, constants.FlagZone)
+		return dns.RecordRead{}, fmt.Errorf("found no records matching given filters (--%s and/or --%s). They"+
+			" must narrow down to a single result", constants.FlagRecord, constants.FlagZone)
 	}
 
 	if recsLen > 1 {
