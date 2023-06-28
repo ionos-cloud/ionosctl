@@ -36,8 +36,8 @@ Use this command to list NAT Gateway Rules from a specified NAT Gateway.
 
 You can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.
 Available Filters:
-* filter by property: [name type protocol sourceSubnet publicIp targetSubnet targetPortRange]
-* filter by metadata: [etag createdDate createdBy createdByUserId lastModifiedDate lastModifiedBy lastModifiedByUserId state]
+* filter by property: [name protocol publicIp sourceSubnet targetPortRange targetSubnet type]
+* filter by metadata: [createdBy createdByUserId createdDate etag lastModifiedBy lastModifiedByUserId lastModifiedDate state]
 
 Required values to run command:
 

@@ -30,8 +30,8 @@ Use this command to get a full list of available public Images.
 
 You can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.
 Available Filters:
-* filter by property: [name description location size cpuHotPlug cpuHotUnplug ramHotPlug ramHotUnplug nicHotPlug nicHotUnplug discVirtioHotPlug discVirtioHotUnplug discScsiHotPlug discScsiHotUnplug licenceType imageType public imageAliases cloudInit]
-* filter by metadata: [etag createdDate createdBy createdByUserId lastModifiedDate lastModifiedBy lastModifiedByUserId state]
+* filter by property: [cloudInit cpuHotPlug cpuHotUnplug description discScsiHotPlug discScsiHotUnplug discVirtioHotPlug discVirtioHotUnplug imageAliases imageType licenceType location name nicHotPlug nicHotUnplug public ramHotPlug ramHotUnplug size]
+* filter by metadata: [createdBy createdByUserId createdDate etag lastModifiedBy lastModifiedByUserId lastModifiedDate state]
 
 ## Options
 
