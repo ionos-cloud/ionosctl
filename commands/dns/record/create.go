@@ -26,7 +26,7 @@ func ZonesRecordsPostCmd() *core.Command {
 		Verb:      "create",
 		Aliases:   []string{"c", "post"},
 		ShortDesc: "Create a record. Wiki: https://docs.ionos.com/dns-as-a-service/readme/api-how-tos/create-a-new-dns-record",
-		Example:   "ionosctl dns r create --type A --content 1.2.3.4 --name *",
+		Example:   "ionosctl dns r create --type A --content 1.2.3.4 --name \\*",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			err := c.Command.Command.MarkFlagRequired(constants.FlagName)
 			if err != nil {
@@ -82,7 +82,7 @@ func ZonesRecordsPostCmd() *core.Command {
 }
 
 func addRecordCreateFlags(cmd *core.Command) *core.Command {
-	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "The name of the DNS record.  Provide a wildcard i.e. `*` to match requests for non-existent names under your DNS Zone name", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "The name of the DNS record.  Provide a wildcard i.e. `\\*` to match requests for non-existent names under your DNS Zone name. Note that some terminals require '*' to be escaped, e.g. '\\*'", core.RequiredFlagOption())
 	cmd.AddBoolFlag(constants.FlagEnabled, "", true, "When true - the record is visible for lookup")
 	cmd.AddStringFlag(constants.FlagContent, "", "", fmt.Sprintf("The content (Record Data) for your chosen record type. For example, if --%s A, --%s should be an IPv4 IP.", constants.FlagType, constants.FlagContent), core.RequiredFlagOption())
 	cmd.AddInt32Flag(constants.FlagTtl, "", 3600, "Time to live. The amount of time the record can be cached by a resolver or server before it needs to be refreshed from the authoritative DNS server")

@@ -39,7 +39,7 @@ Create a record. Wiki: https://docs.ionos.com/dns-as-a-service/readme/api-how-to
       --enabled          When true - the record is visible for lookup (default true)
   -f, --force            Force command to execute without user input
   -h, --help             Print usage
-  -n, --name *           The name of the DNS record.  Provide a wildcard i.e. * to match requests for non-existent names under your DNS Zone name (required)
+  -n, --name \*          The name of the DNS record.  Provide a wildcard i.e. \* to match requests for non-existent names under your DNS Zone name. Note that some terminals require '*' to be escaped, e.g. '\*' (required)
       --no-headers       When using text output, don't print headers
   -o, --output string    Desired output format [text|json] (default "text")
       --priority int32   Priority value is between 0 and 65535. Priority is mandatory for MX, SRV and URI record types and ignored for all other types.
@@ -53,6 +53,6 @@ Create a record. Wiki: https://docs.ionos.com/dns-as-a-service/readme/api-how-to
 ## Examples
 
 ```text
-ionosctl dns r create --type A --content 1.2.3.4 --name *
+ionosctl dns r create --type A --content 1.2.3.4 --name \*
 ```
 
