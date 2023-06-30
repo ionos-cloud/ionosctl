@@ -30,8 +30,8 @@ Use this command to get a list of available locations to create objects on.
 
 You can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.
 Available Filters:
-* filter by property: [name features imageAliases]
-* filter by metadata: [etag createdDate createdBy createdByUserId lastModifiedDate lastModifiedBy lastModifiedByUserId state]
+* filter by property: [features imageAliases name]
+* filter by metadata: [createdBy createdByUserId createdDate etag lastModifiedBy lastModifiedByUserId lastModifiedDate state]
 
 ## Options
 

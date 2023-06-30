@@ -189,10 +189,7 @@ You can wait for the Request to be executed using ` + "`" + `--wait-for-request`
 	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgBus, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"VIRTIO", "IDE"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(cloudapiv6.ArgLicenceType, "l", "LINUX", "[CUBE Server] Licence Type of the Direct Attached Storage")
-	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgLicenceType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return []string{"LINUX", "WINDOWS", "WINDOWS2016", "UNKNOWN", "OTHER"}, cobra.ShellCompDirectiveNoFileComp
-	})
+	create.AddSetFlag(cloudapiv6.ArgLicenceType, "l", "LINUX", constants.EnumLicenceType, "[CUBE Server] Licence Type of the Direct Attached Storage")
 	create.AddStringFlag(cloudapiv6.ArgImageAlias, cloudapiv6.ArgImageAliasShort, "", "[CUBE Server] The Image Alias to use instead of Image Id for the Direct Attached Storage")
 	create.AddUUIDFlag(cloudapiv6.ArgImageId, "", "", "[CUBE Server] The Image Id or snapshot Id to be used as for the Direct Attached Storage")
 	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgImageId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
