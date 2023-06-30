@@ -116,10 +116,13 @@ func buildConfigData(c *core.CommandConfig) (map[string]string, error) {
 	}
 
 	// Explicit token
-	if fn := core.GetFlagName(c.NS, constants.ArgToken); viper.IsSet(fn) {
-		tok := viper.GetString(fn)
-		configData[constants.CfgToken] = tok
-		return configData, client.TestCreds("", "", tok) // Early return for preset token
+	token, err := c.Command.Command.Flags().GetString(constants.ArgToken)
+	if err != nil {
+		return nil, fmt.Errorf("failed reading token flag: %w", err)
+	}
+	if token != "" {
+		configData[constants.CfgToken] = token
+		return configData, client.TestCreds("", "", token) // Early return for preset token
 	}
 
 	// If here, user did not give a pre-set token. Generate one via username & password.
