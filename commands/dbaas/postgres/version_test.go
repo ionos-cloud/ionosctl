@@ -19,9 +19,11 @@ import (
 var (
 	testVersions = resources.PostgresVersionList{
 		PostgresVersionList: sdkgo.PostgresVersionList{
-			Data: &[]sdkgo.PostgresVersionListData{{
-				Name: &testVersionVar,
-			}},
+			Data: &[]sdkgo.PostgresVersionListData{
+				{
+					Name: &testVersionVar,
+				},
+			},
 		},
 	}
 	testVersionVar = "test-version"
@@ -40,66 +42,74 @@ func TestPgsqlVersionCmd(t *testing.T) {
 func TestRunPgsqlVersionGet(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
-		viper.Reset()
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(constants.ArgQuiet, false)
-		viper.Set(constants.ArgVerbose, false)
-		viper.Set(constants.ArgServerUrl, constants.DefaultApiURL)
-		viper.Set(core.GetFlagName(cfg.NS, constants.ArgCols), defaultPgsqlVersionCols)
-		viper.Set(core.GetFlagName(cfg.NS, constants.FlagClusterId), testVersionVar)
-		rm.CloudApiDbaasPgsqlMocks.Version.EXPECT().Get(testVersionVar).Return(testVersions, nil, nil)
-		err := RunPgsqlVersionGet(cfg)
-		assert.NoError(t, err)
-	})
+	core.CmdConfigTest(
+		t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+			viper.Reset()
+			viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+			viper.Set(constants.ArgQuiet, false)
+			viper.Set(constants.ArgVerbose, false)
+			viper.Set(constants.ArgServerUrl, constants.DefaultApiURL)
+			viper.Set(core.GetFlagName(cfg.NS, constants.ArgCols), defaultPgsqlVersionCols)
+			viper.Set(core.GetFlagName(cfg.NS, constants.FlagClusterId), testVersionVar)
+			rm.CloudApiDbaasPgsqlMocks.Version.EXPECT().Get(testVersionVar).Return(testVersions, nil, nil)
+			err := RunPgsqlVersionGet(cfg)
+			assert.NoError(t, err)
+		},
+	)
 }
 
 func TestRunPgsqlVersionGetErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
-		viper.Reset()
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(constants.ArgQuiet, false)
-		viper.Set(constants.ArgVerbose, false)
-		viper.Set(constants.ArgServerUrl, constants.DefaultApiURL)
-		viper.Set(core.GetFlagName(cfg.NS, constants.ArgCols), defaultPgsqlVersionCols)
-		viper.Set(core.GetFlagName(cfg.NS, constants.FlagClusterId), testVersionVar)
-		rm.CloudApiDbaasPgsqlMocks.Version.EXPECT().Get(testVersionVar).Return(testVersions, nil, testVersionErr)
-		err := RunPgsqlVersionGet(cfg)
-		assert.Error(t, err)
-	})
+	core.CmdConfigTest(
+		t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+			viper.Reset()
+			viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+			viper.Set(constants.ArgQuiet, false)
+			viper.Set(constants.ArgVerbose, false)
+			viper.Set(constants.ArgServerUrl, constants.DefaultApiURL)
+			viper.Set(core.GetFlagName(cfg.NS, constants.ArgCols), defaultPgsqlVersionCols)
+			viper.Set(core.GetFlagName(cfg.NS, constants.FlagClusterId), testVersionVar)
+			rm.CloudApiDbaasPgsqlMocks.Version.EXPECT().Get(testVersionVar).Return(testVersions, nil, testVersionErr)
+			err := RunPgsqlVersionGet(cfg)
+			assert.Error(t, err)
+		},
+	)
 }
 
 func TestRunPgsqlVersionList(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
-		viper.Reset()
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(constants.ArgQuiet, false)
-		viper.Set(constants.ArgVerbose, false)
-		viper.Set(constants.ArgServerUrl, constants.DefaultApiURL)
-		viper.Set(core.GetFlagName(cfg.NS, constants.ArgCols), defaultPgsqlVersionCols)
-		rm.CloudApiDbaasPgsqlMocks.Version.EXPECT().List().Return(testVersions, nil, nil)
-		err := RunPgsqlVersionList(cfg)
-		assert.NoError(t, err)
-	})
+	core.CmdConfigTest(
+		t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+			viper.Reset()
+			viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+			viper.Set(constants.ArgQuiet, false)
+			viper.Set(constants.ArgVerbose, false)
+			viper.Set(constants.ArgServerUrl, constants.DefaultApiURL)
+			viper.Set(core.GetFlagName(cfg.NS, constants.ArgCols), defaultPgsqlVersionCols)
+			rm.CloudApiDbaasPgsqlMocks.Version.EXPECT().List().Return(testVersions, nil, nil)
+			err := RunPgsqlVersionList(cfg)
+			assert.NoError(t, err)
+		},
+	)
 }
 
 func TestRunPgsqlVersionListErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
-		viper.Reset()
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(constants.ArgQuiet, false)
-		viper.Set(constants.ArgServerUrl, constants.DefaultApiURL)
-		viper.Set(core.GetFlagName(cfg.NS, constants.FlagClusterId), testVersionVar)
-		rm.CloudApiDbaasPgsqlMocks.Version.EXPECT().List().Return(testVersions, nil, testVersionErr)
-		err := RunPgsqlVersionList(cfg)
-		assert.Error(t, err)
-	})
+	core.CmdConfigTest(
+		t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+			viper.Reset()
+			viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+			viper.Set(constants.ArgQuiet, false)
+			viper.Set(constants.ArgServerUrl, constants.DefaultApiURL)
+			viper.Set(core.GetFlagName(cfg.NS, constants.FlagClusterId), testVersionVar)
+			rm.CloudApiDbaasPgsqlMocks.Version.EXPECT().List().Return(testVersions, nil, testVersionErr)
+			err := RunPgsqlVersionList(cfg)
+			assert.Error(t, err)
+		},
+	)
 }
 
 func TestGetPgsqlVersionColsNoSet(t *testing.T) {

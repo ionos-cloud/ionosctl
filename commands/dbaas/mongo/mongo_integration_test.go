@@ -59,7 +59,9 @@ func testMongoUser(t *testing.T) {
 	err := c.Command.Execute()
 	assert.NoError(t, err)
 
-	createdUsers, _, err := client.MongoClient.UsersApi.ClustersUsersGet(context.Background(), createdClusterId).Execute()
+	createdUsers, _, err := client.MongoClient.UsersApi.ClustersUsersGet(
+		context.Background(), createdClusterId,
+	).Execute()
 	assert.NoError(t, err)
 	assert.Equal(t, name, *(*createdUsers.GetItems())[0].GetProperties().Username)
 
@@ -68,7 +70,9 @@ func testMongoUser(t *testing.T) {
 	c.Command.Flags().Set(constants.FlagName, name)
 	err = c.Command.Execute()
 	assert.NoError(t, err)
-	createdUsers, _, err = client.MongoClient.UsersApi.ClustersUsersGet(context.Background(), createdClusterId).Execute()
+	createdUsers, _, err = client.MongoClient.UsersApi.ClustersUsersGet(
+		context.Background(), createdClusterId,
+	).Execute()
 	assert.NoError(t, err)
 	assert.Empty(t, *createdUsers.GetItems())
 }
@@ -116,14 +120,24 @@ func testMongoClusterCreateIdentifyRequiredNotSet(t *testing.T) {
 	c.Command.Flags().Set(constants.FlagCidr, cidr)
 
 	err := c.Command.Execute()
-	assert.ErrorContains(t, err, constants.FlagDatacenterId) // Assert that the error screams something about FlagDatacenterId
+	assert.ErrorContains(
+		t, err, constants.FlagDatacenterId,
+	) // Assert that the error screams something about FlagDatacenterId
 }
 
 func setupTestMongoCommands() (string, string, error) {
 	// make sure datacenter exists
-	dcs, resp, err := client.CloudClient.DataCentersApi.DatacentersGet(context.Background()).Filter("name", uniqueResourceName).Depth(1).Execute()
+	dcs, resp, err := client.CloudClient.DataCentersApi.DatacentersGet(context.Background()).Filter(
+		"name", uniqueResourceName,
+	).Depth(1).Execute()
 	if resp.HttpNotFound() || len(*dcs.Items) < 1 {
-		dc, _, err := client.CloudClient.DataCentersApi.DatacentersPost(context.Background()).Datacenter(sdkcompute.Datacenter{Properties: &sdkcompute.DatacenterProperties{Name: sdkcompute.PtrString(uniqueResourceName), Location: sdkcompute.PtrString("de/fra")}}).Execute()
+		dc, _, err := client.CloudClient.DataCentersApi.DatacentersPost(context.Background()).Datacenter(
+			sdkcompute.Datacenter{
+				Properties: &sdkcompute.DatacenterProperties{
+					Name: sdkcompute.PtrString(uniqueResourceName), Location: sdkcompute.PtrString("de/fra"),
+				},
+			},
+		).Execute()
 		if err != nil {
 			return createdDcId, "", fmt.Errorf("failed creating dc %w", err)
 		}
@@ -138,9 +152,19 @@ func setupTestMongoCommands() (string, string, error) {
 	fmt.Printf("dcId: %s\n", createdDcId)
 	// make sure lan exists
 	var lanId string
-	lans, resp, err := client.CloudClient.LANsApi.DatacentersLansGet(context.Background(), createdDcId).Filter("name", uniqueResourceName).Depth(1).Execute()
+	lans, resp, err := client.CloudClient.LANsApi.DatacentersLansGet(context.Background(), createdDcId).Filter(
+		"name", uniqueResourceName,
+	).Depth(1).Execute()
 	if resp.HttpNotFound() || len(*lans.Items) < 1 {
-		lan, _, err := client.CloudClient.LANsApi.DatacentersLansPost(context.Background(), createdDcId).Lan(sdkcompute.LanPost{Properties: &sdkcompute.LanPropertiesPost{Name: sdkcompute.PtrString(uniqueResourceName), Public: sdkcompute.PtrBool(false)}}).Execute()
+		lan, _, err := client.CloudClient.LANsApi.DatacentersLansPost(
+			context.Background(), createdDcId,
+		).Lan(
+			sdkcompute.LanPost{
+				Properties: &sdkcompute.LanPropertiesPost{
+					Name: sdkcompute.PtrString(uniqueResourceName), Public: sdkcompute.PtrBool(false),
+				},
+			},
+		).Execute()
 		if err != nil {
 			return createdDcId, lanId, fmt.Errorf("failed creating lan: %w", err)
 		}

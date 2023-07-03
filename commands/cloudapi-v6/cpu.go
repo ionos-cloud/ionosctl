@@ -34,32 +34,44 @@ func CpuCmd() *core.Command {
 	globalFlags := cpuCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultCpuCols, printer.ColsMessage(defaultCpuCols))
 	_ = viper.BindPFlag(core.GetFlagName(cpuCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
-	_ = cpuCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return defaultCpuCols, cobra.ShellCompDirectiveNoFileComp
-	})
+	_ = cpuCmd.Command.RegisterFlagCompletionFunc(
+		constants.ArgCols,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return defaultCpuCols, cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 
 	/*
 		List Command
 	*/
-	list := core.NewCommand(ctx, cpuCmd, core.CommandBuilder{
-		Namespace:  "location",
-		Resource:   "cpu",
-		Verb:       "list",
-		Aliases:    []string{"l", "ls"},
-		ShortDesc:  "List available CPU Architecture from a Location",
-		LongDesc:   "Use this command to get information about available CPU Architectures from a specific Location.\n\nRequired values to run command:\n\n* Location Id",
-		Example:    listLocationCpuExample,
-		PreCmdRun:  PreRunLocationId,
-		CmdRun:     RunLocationCpuList,
-		InitClient: true,
-	})
+	list := core.NewCommand(
+		ctx, cpuCmd, core.CommandBuilder{
+			Namespace:  "location",
+			Resource:   "cpu",
+			Verb:       "list",
+			Aliases:    []string{"l", "ls"},
+			ShortDesc:  "List available CPU Architecture from a Location",
+			LongDesc:   "Use this command to get information about available CPU Architectures from a specific Location.\n\nRequired values to run command:\n\n* Location Id",
+			Example:    listLocationCpuExample,
+			PreCmdRun:  PreRunLocationId,
+			CmdRun:     RunLocationCpuList,
+			InitClient: true,
+		},
+	)
 	list.AddStringFlag(cloudapiv6.ArgLocationId, "", "", cloudapiv6.LocationId, core.RequiredFlagOption())
-	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgLocationId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.LocationIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
-	})
+	_ = list.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgLocationId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.LocationIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 	list.AddBoolFlag(constants.ArgNoHeaders, "", false, cloudapiv6.ArgNoHeadersDescription)
-	list.AddInt32Flag(constants.FlagMaxResults, constants.FlagMaxResultsShort, cloudapiv6.DefaultMaxResults, constants.DescMaxResults)
-	list.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultListDepth, cloudapiv6.ArgDepthDescription)
+	list.AddInt32Flag(
+		constants.FlagMaxResults, constants.FlagMaxResultsShort, cloudapiv6.DefaultMaxResults, constants.DescMaxResults,
+	)
+	list.AddInt32Flag(
+		cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultListDepth, cloudapiv6.ArgDepthDescription,
+	)
 
 	return cpuCmd
 }
@@ -79,11 +91,13 @@ func RunLocationCpuList(c *core.CommandConfig) error {
 	}
 	if properties, ok := loc.GetPropertiesOk(); ok && properties != nil {
 		if cpus, ok := properties.GetCpuArchitectureOk(); ok && cpus != nil {
-			return c.Printer.Print(printer.Result{
-				OutputJSON: cpus,
-				KeyValue:   getCpusKVMaps(getCpus(cpus)),
-				Columns:    getCpuCols(core.GetFlagName(c.Resource, constants.ArgCols), c.Printer.GetStderr()),
-			})
+			return c.Printer.Print(
+				printer.Result{
+					OutputJSON: cpus,
+					KeyValue:   getCpusKVMaps(getCpus(cpus)),
+					Columns:    getCpuCols(core.GetFlagName(c.Resource, constants.ArgCols), c.Printer.GetStderr()),
+				},
+			)
 		} else {
 			return errors.New("error getting cpu architectures")
 		}

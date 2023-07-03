@@ -47,80 +47,119 @@ func ServerCmd() *core.Command {
 	globalFlags := serverCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultServerCols, printer.ColsMessage(allServerCols))
 	_ = viper.BindPFlag(core.GetFlagName(serverCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
-	_ = serverCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return allServerCols, cobra.ShellCompDirectiveNoFileComp
-	})
+	_ = serverCmd.Command.RegisterFlagCompletionFunc(
+		constants.ArgCols,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return allServerCols, cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 
 	/*
 		List Command
 	*/
-	list := core.NewCommand(ctx, serverCmd, core.CommandBuilder{
-		Namespace:  "server",
-		Resource:   "server",
-		Verb:       "list",
-		Aliases:    []string{"l", "ls"},
-		ShortDesc:  "List Servers",
-		LongDesc:   "Use this command to list Servers from a specified Virtual Data Center.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.ServersFiltersUsage() + "\n\nRequired values to run command:\n\n* Data Center Id",
-		Example:    listServerExample,
-		PreCmdRun:  PreRunServerList,
-		CmdRun:     RunServerList,
-		InitClient: true,
-	})
+	list := core.NewCommand(
+		ctx, serverCmd, core.CommandBuilder{
+			Namespace:  "server",
+			Resource:   "server",
+			Verb:       "list",
+			Aliases:    []string{"l", "ls"},
+			ShortDesc:  "List Servers",
+			LongDesc:   "Use this command to list Servers from a specified Virtual Data Center.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.ServersFiltersUsage() + "\n\nRequired values to run command:\n\n* Data Center Id",
+			Example:    listServerExample,
+			PreCmdRun:  PreRunServerList,
+			CmdRun:     RunServerList,
+			InitClient: true,
+		},
+	)
 	list.AddUUIDFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
-	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
-	})
-	list.AddInt32Flag(constants.FlagMaxResults, constants.FlagMaxResultsShort, cloudapiv6.DefaultMaxResults, constants.DescMaxResults)
-	list.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultListDepth, cloudapiv6.ArgDepthDescription)
+	_ = list.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgDataCenterId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	list.AddInt32Flag(
+		constants.FlagMaxResults, constants.FlagMaxResultsShort, cloudapiv6.DefaultMaxResults, constants.DescMaxResults,
+	)
+	list.AddInt32Flag(
+		cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultListDepth, cloudapiv6.ArgDepthDescription,
+	)
 	list.AddStringFlag(cloudapiv6.ArgOrderBy, "", "", cloudapiv6.ArgOrderByDescription)
-	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgOrderBy, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.ServersFilters(), cobra.ShellCompDirectiveNoFileComp
-	})
-	list.AddStringSliceFlag(cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, cloudapiv6.ArgFiltersDescription)
-	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgFilters, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.ServersFilters(), cobra.ShellCompDirectiveNoFileComp
-	})
+	_ = list.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgOrderBy,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.ServersFilters(), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	list.AddStringSliceFlag(
+		cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, cloudapiv6.ArgFiltersDescription,
+	)
+	_ = list.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgFilters,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.ServersFilters(), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 	list.AddBoolFlag(constants.ArgNoHeaders, "", false, cloudapiv6.ArgNoHeadersDescription)
 	list.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, cloudapiv6.ArgListAllDescription)
 
 	/*
 		Get Command
 	*/
-	get := core.NewCommand(ctx, serverCmd, core.CommandBuilder{
-		Namespace:  "server",
-		Resource:   "server",
-		Verb:       "get",
-		Aliases:    []string{"g"},
-		ShortDesc:  "Get a Server",
-		LongDesc:   "Use this command to get information about a specified Server from a Virtual Data Center. You can also wait for Server to get in AVAILABLE state using `--wait-for-state` option.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id",
-		Example:    getServerExample,
-		PreCmdRun:  PreRunDcServerIds,
-		CmdRun:     RunServerGet,
-		InitClient: true,
-	})
+	get := core.NewCommand(
+		ctx, serverCmd, core.CommandBuilder{
+			Namespace:  "server",
+			Resource:   "server",
+			Verb:       "get",
+			Aliases:    []string{"g"},
+			ShortDesc:  "Get a Server",
+			LongDesc:   "Use this command to get information about a specified Server from a Virtual Data Center. You can also wait for Server to get in AVAILABLE state using `--wait-for-state` option.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id",
+			Example:    getServerExample,
+			PreCmdRun:  PreRunDcServerIds,
+			CmdRun:     RunServerGet,
+			InitClient: true,
+		},
+	)
 	get.AddUUIDFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
-	_ = get.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
-	})
+	_ = get.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgDataCenterId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 	get.AddUUIDFlag(cloudapiv6.ArgServerId, cloudapiv6.ArgIdShort, "", cloudapiv6.ServerId, core.RequiredFlagOption())
-	_ = get.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.ServersIds(os.Stderr, viper.GetString(core.GetFlagName(get.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
-	})
-	get.AddBoolFlag(constants.ArgWaitForState, constants.ArgWaitForStateShort, constants.DefaultWait, "Wait for specified Server to be in AVAILABLE state")
-	get.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for waiting for Server to be in AVAILABLE state [seconds]")
+	_ = get.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgServerId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.ServersIds(
+				os.Stderr, viper.GetString(core.GetFlagName(get.NS, cloudapiv6.ArgDataCenterId)),
+			), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	get.AddBoolFlag(
+		constants.ArgWaitForState, constants.ArgWaitForStateShort, constants.DefaultWait,
+		"Wait for specified Server to be in AVAILABLE state",
+	)
+	get.AddIntFlag(
+		constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds,
+		"Timeout option for waiting for Server to be in AVAILABLE state [seconds]",
+	)
 	get.AddBoolFlag(constants.ArgNoHeaders, "", false, cloudapiv6.ArgNoHeadersDescription)
-	get.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultGetDepth, cloudapiv6.ArgDepthDescription)
+	get.AddInt32Flag(
+		cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultGetDepth, cloudapiv6.ArgDepthDescription,
+	)
 
 	/*
 		Create Command
 	*/
-	create := core.NewCommand(ctx, serverCmd, core.CommandBuilder{
-		Namespace: "server",
-		Resource:  "server",
-		Verb:      "create",
-		Aliases:   []string{"c"},
-		ShortDesc: "Create a Server",
-		LongDesc: `Use this command to create an ENTERPRISE or CUBE Server in a specified Virtual Data Center.
+	create := core.NewCommand(
+		ctx, serverCmd, core.CommandBuilder{
+			Namespace: "server",
+			Resource:  "server",
+			Verb:      "create",
+			Aliases:   []string{"c"},
+			ShortDesc: "Create a Server",
+			LongDesc: `Use this command to create an ENTERPRISE or CUBE Server in a specified Virtual Data Center.
 
 * For ENTERPRISE Servers:
 
@@ -150,68 +189,141 @@ Required values to create a Server of type CUBE:
 By default, Licence Type for Direct Attached Storage is set to LINUX. You can set it using the ` + "`" + `--licence-type` + "`" + ` option or set an Image Id. For Image Id, it is needed to set a password or SSH keys.
 
 You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option. You can also wait for Server to be in AVAILABLE state using ` + "`" + `--wait-for-state` + "`" + ` option. It is recommended to use both options together for this command.`,
-		Example:    createServerExample,
-		PreCmdRun:  PreRunServerCreate,
-		CmdRun:     RunServerCreate,
-		InitClient: true,
-	})
+			Example:    createServerExample,
+			PreCmdRun:  PreRunServerCreate,
+			CmdRun:     RunServerCreate,
+			InitClient: true,
+		},
+	)
 	create.AddUUIDFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
-	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
-	})
+	_ = create.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgDataCenterId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 	create.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "Unnamed Server", "Name of the Server")
-	create.AddIntFlag(constants.FlagCores, "", cloudapiv6.DefaultServerCores, "The total number of cores for the Server, e.g. 4. Maximum: depends on contract resource limits", core.RequiredFlagOption())
-	create.AddStringFlag(constants.FlagRam, "", "", "The amount of memory for the Server. Size must be specified in multiples of 256. e.g. --ram 256 or --ram 256MB", core.RequiredFlagOption())
-	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagRam, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return []string{"256MB", "512MB", "1024MB", "2GB", "3GB", "4GB", "5GB", "10GB", "16GB"}, cobra.ShellCompDirectiveNoFileComp
-	})
-	create.AddStringFlag(constants.FlagCpuFamily, "", cloudapiv6.DefaultServerCPUFamily, "CPU Family for the Server. For CUBE Servers, the CPU Family is INTEL_SKYLAKE")
-	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagCpuFamily, func(*cobra.Command, []string, string) ([]string, cobra.ShellCompDirective) {
-		datacenterId := viper.GetString(core.GetFlagName(create.NS, cloudapiv6.ArgDataCenterId))
-		return completer.DatacenterCPUFamilies(create.Command.Context(), os.Stderr, datacenterId), cobra.ShellCompDirectiveNoFileComp
-	})
-	create.AddStringFlag(constants.FlagAvailabilityZone, constants.FlagAvailabilityZoneShort, "AUTO", "Availability zone of the Server")
-	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagAvailabilityZone, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return []string{"AUTO", "ZONE_1", "ZONE_2"}, cobra.ShellCompDirectiveNoFileComp
-	})
-	create.AddUUIDFlag(cloudapiv6.ArgTemplateId, "", "", "[CUBE Server] The unique Template Id", core.RequiredFlagOption())
-	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgTemplateId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.TemplatesIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
-	})
+	create.AddIntFlag(
+		constants.FlagCores, "", cloudapiv6.DefaultServerCores,
+		"The total number of cores for the Server, e.g. 4. Maximum: depends on contract resource limits",
+		core.RequiredFlagOption(),
+	)
+	create.AddStringFlag(
+		constants.FlagRam, "", "",
+		"The amount of memory for the Server. Size must be specified in multiples of 256. e.g. --ram 256 or --ram 256MB",
+		core.RequiredFlagOption(),
+	)
+	_ = create.Command.RegisterFlagCompletionFunc(
+		constants.FlagRam,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return []string{
+				"256MB", "512MB", "1024MB", "2GB", "3GB", "4GB", "5GB", "10GB", "16GB",
+			}, cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	create.AddStringFlag(
+		constants.FlagCpuFamily, "", cloudapiv6.DefaultServerCPUFamily,
+		"CPU Family for the Server. For CUBE Servers, the CPU Family is INTEL_SKYLAKE",
+	)
+	_ = create.Command.RegisterFlagCompletionFunc(
+		constants.FlagCpuFamily, func(*cobra.Command, []string, string) ([]string, cobra.ShellCompDirective) {
+			datacenterId := viper.GetString(core.GetFlagName(create.NS, cloudapiv6.ArgDataCenterId))
+			return completer.DatacenterCPUFamilies(
+				create.Command.Context(), os.Stderr, datacenterId,
+			), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	create.AddStringFlag(
+		constants.FlagAvailabilityZone, constants.FlagAvailabilityZoneShort, "AUTO", "Availability zone of the Server",
+	)
+	_ = create.Command.RegisterFlagCompletionFunc(
+		constants.FlagAvailabilityZone,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return []string{"AUTO", "ZONE_1", "ZONE_2"}, cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	create.AddUUIDFlag(
+		cloudapiv6.ArgTemplateId, "", "", "[CUBE Server] The unique Template Id", core.RequiredFlagOption(),
+	)
+	_ = create.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgTemplateId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.TemplatesIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 	create.AddStringFlag(cloudapiv6.ArgType, "", serverEnterpriseType, "Type usages for the Server")
-	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return []string{serverEnterpriseType, serverCubeType}, cobra.ShellCompDirectiveNoFileComp
-	})
+	_ = create.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgType,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return []string{serverEnterpriseType, serverCubeType}, cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 
 	// Volume Properties - for DAS Volume associated with Cube Server
-	create.AddStringFlag(cloudapiv6.ArgVolumeName, "N", "Unnamed Direct Attached Storage", "[CUBE Server] Name of the Direct Attached Storage")
+	create.AddStringFlag(
+		cloudapiv6.ArgVolumeName, "N", "Unnamed Direct Attached Storage",
+		"[CUBE Server] Name of the Direct Attached Storage",
+	)
 	create.AddStringFlag(cloudapiv6.ArgBus, "", "VIRTIO", "[CUBE Server] The bus type of the Direct Attached Storage")
-	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgBus, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return []string{"VIRTIO", "IDE"}, cobra.ShellCompDirectiveNoFileComp
-	})
-	create.AddSetFlag(cloudapiv6.ArgLicenceType, "l", "LINUX", constants.EnumLicenceType, "[CUBE Server] Licence Type of the Direct Attached Storage")
-	create.AddStringFlag(cloudapiv6.ArgImageAlias, cloudapiv6.ArgImageAliasShort, "", "[CUBE Server] The Image Alias to use instead of Image Id for the Direct Attached Storage")
-	create.AddUUIDFlag(cloudapiv6.ArgImageId, "", "", "[CUBE Server] The Image Id or snapshot Id to be used as for the Direct Attached Storage")
-	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgImageId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.ImageIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
-	})
-	create.AddStringFlag(constants.ArgPassword, constants.ArgPasswordShort, "", "[CUBE Server] Initial image password to be set for installed OS. Works with public Images only. Not modifiable. Password rules allows all characters from a-z, A-Z, 0-9")
-	create.AddStringSliceFlag(cloudapiv6.ArgSshKeyPaths, cloudapiv6.ArgSshKeyPathsShort, []string{""}, "[CUBE Server] Absolute paths for the SSH Keys of the Direct Attached Storage")
-	create.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait, "Wait for the Request for Server creation to be executed")
-	create.AddBoolFlag(constants.ArgWaitForState, constants.ArgWaitForStateShort, constants.DefaultWait, "Wait for new Server to be in AVAILABLE state")
-	create.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for Server creation/for Server to be in AVAILABLE state [seconds]")
-	create.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultCreateDepth, cloudapiv6.ArgDepthDescription)
+	_ = create.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgBus,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return []string{"VIRTIO", "IDE"}, cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	create.AddSetFlag(
+		cloudapiv6.ArgLicenceType, "l", "LINUX", constants.EnumLicenceType,
+		"[CUBE Server] Licence Type of the Direct Attached Storage",
+	)
+	create.AddStringFlag(
+		cloudapiv6.ArgImageAlias, cloudapiv6.ArgImageAliasShort, "",
+		"[CUBE Server] The Image Alias to use instead of Image Id for the Direct Attached Storage",
+	)
+	create.AddUUIDFlag(
+		cloudapiv6.ArgImageId, "", "",
+		"[CUBE Server] The Image Id or snapshot Id to be used as for the Direct Attached Storage",
+	)
+	_ = create.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgImageId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.ImageIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	create.AddStringFlag(
+		constants.ArgPassword, constants.ArgPasswordShort, "",
+		"[CUBE Server] Initial image password to be set for installed OS. Works with public Images only. Not modifiable. Password rules allows all characters from a-z, A-Z, 0-9",
+	)
+	create.AddStringSliceFlag(
+		cloudapiv6.ArgSshKeyPaths, cloudapiv6.ArgSshKeyPathsShort, []string{""},
+		"[CUBE Server] Absolute paths for the SSH Keys of the Direct Attached Storage",
+	)
+	create.AddBoolFlag(
+		constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait,
+		"Wait for the Request for Server creation to be executed",
+	)
+	create.AddBoolFlag(
+		constants.ArgWaitForState, constants.ArgWaitForStateShort, constants.DefaultWait,
+		"Wait for new Server to be in AVAILABLE state",
+	)
+	create.AddIntFlag(
+		constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds,
+		"Timeout option for Request for Server creation/for Server to be in AVAILABLE state [seconds]",
+	)
+	create.AddInt32Flag(
+		cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultCreateDepth, cloudapiv6.ArgDepthDescription,
+	)
 
 	/*
 		Update Command
 	*/
-	update := core.NewCommand(ctx, serverCmd, core.CommandBuilder{
-		Namespace: "server",
-		Resource:  "server",
-		Verb:      "update",
-		Aliases:   []string{"u", "up"},
-		ShortDesc: "Update a Server",
-		LongDesc: `Use this command to update a specified Server from a Virtual Data Center.
+	update := core.NewCommand(
+		ctx, serverCmd, core.CommandBuilder{
+			Namespace: "server",
+			Resource:  "server",
+			Verb:      "update",
+			Aliases:   []string{"u", "up"},
+			ShortDesc: "Update a Server",
+			LongDesc: `Use this command to update a specified Server from a Virtual Data Center.
 
 You can set the RAM size in the following ways:
 
@@ -228,59 +340,120 @@ Required values to run command:
 
 * Data Center Id
 * Server Id`,
-		Example:    updateServerExample,
-		PreCmdRun:  PreRunDcServerIds,
-		CmdRun:     RunServerUpdate,
-		InitClient: true,
-	})
+			Example:    updateServerExample,
+			PreCmdRun:  PreRunDcServerIds,
+			CmdRun:     RunServerUpdate,
+			InitClient: true,
+		},
+	)
 	update.AddUUIDFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
-	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
-	})
-	update.AddUUIDFlag(cloudapiv6.ArgServerId, cloudapiv6.ArgIdShort, "", cloudapiv6.ServerId, core.RequiredFlagOption())
-	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.ServersIds(os.Stderr, viper.GetString(core.GetFlagName(update.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
-	})
-	update.AddUUIDFlag(cloudapiv6.ArgVolumeId, "", "", "The unique Volume Id for the BootVolume. The Volume needs to be already attached to the Server")
-	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgVolumeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.VolumesIds(os.Stderr, viper.GetString(core.GetFlagName(update.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
-	})
-	update.AddUUIDFlag(cloudapiv6.ArgCdromId, "", "", "The unique Cdrom Id for the BootCdrom. The Cdrom needs to be already attached to the Server")
-	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgCdromId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.ImagesIdsCustom(os.Stderr, resources.ListQueryParams{Filters: &map[string][]string{
-			"type": {"CDROM"},
-		}}), cobra.ShellCompDirectiveNoFileComp
-	})
+	_ = update.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgDataCenterId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	update.AddUUIDFlag(
+		cloudapiv6.ArgServerId, cloudapiv6.ArgIdShort, "", cloudapiv6.ServerId, core.RequiredFlagOption(),
+	)
+	_ = update.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgServerId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.ServersIds(
+				os.Stderr, viper.GetString(core.GetFlagName(update.NS, cloudapiv6.ArgDataCenterId)),
+			), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	update.AddUUIDFlag(
+		cloudapiv6.ArgVolumeId, "", "",
+		"The unique Volume Id for the BootVolume. The Volume needs to be already attached to the Server",
+	)
+	_ = update.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgVolumeId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.VolumesIds(
+				os.Stderr, viper.GetString(core.GetFlagName(update.NS, cloudapiv6.ArgDataCenterId)),
+			), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	update.AddUUIDFlag(
+		cloudapiv6.ArgCdromId, "", "",
+		"The unique Cdrom Id for the BootCdrom. The Cdrom needs to be already attached to the Server",
+	)
+	_ = update.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgCdromId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.ImagesIdsCustom(
+				os.Stderr, resources.ListQueryParams{
+					Filters: &map[string][]string{
+						"type": {"CDROM"},
+					},
+				},
+			), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 	update.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "", "Name of the Server")
 	update.AddStringFlag(constants.FlagCpuFamily, "", cloudapiv6.DefaultServerCPUFamily, "CPU Family of the Server")
-	_ = update.Command.RegisterFlagCompletionFunc(constants.FlagCpuFamily, func(*cobra.Command, []string, string) ([]string, cobra.ShellCompDirective) {
-		datacenterId := viper.GetString(core.GetFlagName(update.NS, cloudapiv6.ArgDataCenterId))
-		return completer.DatacenterCPUFamilies(update.Command.Context(), os.Stderr, datacenterId), cobra.ShellCompDirectiveNoFileComp
-	})
-	update.AddStringFlag(constants.FlagAvailabilityZone, constants.FlagAvailabilityZoneShort, "", "Availability zone of the Server")
-	_ = update.Command.RegisterFlagCompletionFunc(constants.FlagAvailabilityZone, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return []string{"AUTO", "ZONE_1", "ZONE_2"}, cobra.ShellCompDirectiveNoFileComp
-	})
-	update.AddIntFlag(constants.FlagCores, "", cloudapiv6.DefaultServerCores, "The total number of cores for the Server, e.g. 4. Maximum: depends on contract resource limits")
-	update.AddStringFlag(constants.FlagRam, "", "", "The amount of memory for the Server. Size must be specified in multiples of 256. e.g. --ram 256 or --ram 256MB")
-	_ = update.Command.RegisterFlagCompletionFunc(constants.FlagRam, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return []string{"256MB", "512MB", "1024MB", "2GB", "3GB", "4GB", "5GB", "10GB", "16GB"}, cobra.ShellCompDirectiveNoFileComp
-	})
-	update.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait, "Wait for the Request for Server update to be executed")
-	update.AddBoolFlag(constants.ArgWaitForState, constants.ArgWaitForStateShort, constants.DefaultWait, "Wait for the updated Server to be in AVAILABLE state")
-	update.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for Server update/for Server to be in AVAILABLE state [seconds]")
-	update.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultUpdateDepth, cloudapiv6.ArgDepthDescription)
+	_ = update.Command.RegisterFlagCompletionFunc(
+		constants.FlagCpuFamily, func(*cobra.Command, []string, string) ([]string, cobra.ShellCompDirective) {
+			datacenterId := viper.GetString(core.GetFlagName(update.NS, cloudapiv6.ArgDataCenterId))
+			return completer.DatacenterCPUFamilies(
+				update.Command.Context(), os.Stderr, datacenterId,
+			), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	update.AddStringFlag(
+		constants.FlagAvailabilityZone, constants.FlagAvailabilityZoneShort, "", "Availability zone of the Server",
+	)
+	_ = update.Command.RegisterFlagCompletionFunc(
+		constants.FlagAvailabilityZone,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return []string{"AUTO", "ZONE_1", "ZONE_2"}, cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	update.AddIntFlag(
+		constants.FlagCores, "", cloudapiv6.DefaultServerCores,
+		"The total number of cores for the Server, e.g. 4. Maximum: depends on contract resource limits",
+	)
+	update.AddStringFlag(
+		constants.FlagRam, "", "",
+		"The amount of memory for the Server. Size must be specified in multiples of 256. e.g. --ram 256 or --ram 256MB",
+	)
+	_ = update.Command.RegisterFlagCompletionFunc(
+		constants.FlagRam,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return []string{
+				"256MB", "512MB", "1024MB", "2GB", "3GB", "4GB", "5GB", "10GB", "16GB",
+			}, cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	update.AddBoolFlag(
+		constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait,
+		"Wait for the Request for Server update to be executed",
+	)
+	update.AddBoolFlag(
+		constants.ArgWaitForState, constants.ArgWaitForStateShort, constants.DefaultWait,
+		"Wait for the updated Server to be in AVAILABLE state",
+	)
+	update.AddIntFlag(
+		constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds,
+		"Timeout option for Request for Server update/for Server to be in AVAILABLE state [seconds]",
+	)
+	update.AddInt32Flag(
+		cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultUpdateDepth, cloudapiv6.ArgDepthDescription,
+	)
 
 	/*
 		Delete Command
 	*/
-	deleteCmd := core.NewCommand(ctx, serverCmd, core.CommandBuilder{
-		Namespace: "server",
-		Resource:  "server",
-		Verb:      "delete",
-		Aliases:   []string{"d"},
-		ShortDesc: "Delete a Server",
-		LongDesc: `Use this command to delete a specified Server from a Virtual Data Center.
+	deleteCmd := core.NewCommand(
+		ctx, serverCmd, core.CommandBuilder{
+			Namespace: "server",
+			Resource:  "server",
+			Verb:      "delete",
+			Aliases:   []string{"d"},
+			ShortDesc: "Delete a Server",
+			LongDesc: `Use this command to delete a specified Server from a Virtual Data Center.
 
 NOTE: This will not automatically remove the storage Volumes attached to a Server.
 
@@ -290,33 +463,55 @@ Required values to run command:
 
 * Data Center Id
 * Server Id`,
-		Example:    deleteServerExample,
-		PreCmdRun:  PreRunDcServerDelete,
-		CmdRun:     RunServerDelete,
-		InitClient: true,
-	})
+			Example:    deleteServerExample,
+			PreCmdRun:  PreRunDcServerDelete,
+			CmdRun:     RunServerDelete,
+			InitClient: true,
+		},
+	)
 	deleteCmd.AddUUIDFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
-	_ = deleteCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
-	})
-	deleteCmd.AddUUIDFlag(cloudapiv6.ArgServerId, cloudapiv6.ArgIdShort, "", cloudapiv6.ServerId, core.RequiredFlagOption())
-	_ = deleteCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.ServersIds(os.Stderr, viper.GetString(core.GetFlagName(deleteCmd.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
-	})
-	deleteCmd.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait, "Wait for the Request for Server deletion to be executed")
-	deleteCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete all Servers form a virtual Datacenter.")
-	deleteCmd.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for Server deletion [seconds]")
-	deleteCmd.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultDeleteDepth, cloudapiv6.ArgDepthDescription)
+	_ = deleteCmd.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgDataCenterId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	deleteCmd.AddUUIDFlag(
+		cloudapiv6.ArgServerId, cloudapiv6.ArgIdShort, "", cloudapiv6.ServerId, core.RequiredFlagOption(),
+	)
+	_ = deleteCmd.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgServerId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.ServersIds(
+				os.Stderr, viper.GetString(core.GetFlagName(deleteCmd.NS, cloudapiv6.ArgDataCenterId)),
+			), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	deleteCmd.AddBoolFlag(
+		constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait,
+		"Wait for the Request for Server deletion to be executed",
+	)
+	deleteCmd.AddBoolFlag(
+		cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete all Servers form a virtual Datacenter.",
+	)
+	deleteCmd.AddIntFlag(
+		constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds,
+		"Timeout option for Request for Server deletion [seconds]",
+	)
+	deleteCmd.AddInt32Flag(
+		cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultDeleteDepth, cloudapiv6.ArgDepthDescription,
+	)
 
 	/*
 		Suspend Command
 	*/
-	suspend := core.NewCommand(ctx, serverCmd, core.CommandBuilder{
-		Namespace: "server",
-		Resource:  "server",
-		Verb:      "suspend",
-		ShortDesc: "Suspend a Cube Server",
-		LongDesc: `Use this command to suspend a Cube Server. The operation can only be applied to Cube Servers. Note: The virtual machine will not be deleted.
+	suspend := core.NewCommand(
+		ctx, serverCmd, core.CommandBuilder{
+			Namespace: "server",
+			Resource:  "server",
+			Verb:      "suspend",
+			ShortDesc: "Suspend a Cube Server",
+			LongDesc: `Use this command to suspend a Cube Server. The operation can only be applied to Cube Servers. Note: The virtual machine will not be deleted.
 
 You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option. You can force the command to execute without user input using ` + "`" + `--force` + "`" + ` option.
 
@@ -324,38 +519,58 @@ Required values to run command:
 
 * Data Center Id
 * Server Id`,
-		Example:    suspendServerExample,
-		PreCmdRun:  PreRunDcServerIds,
-		CmdRun:     RunServerSuspend,
-		InitClient: true,
-	})
+			Example:    suspendServerExample,
+			PreCmdRun:  PreRunDcServerIds,
+			CmdRun:     RunServerSuspend,
+			InitClient: true,
+		},
+	)
 	suspend.AddUUIDFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
-	_ = suspend.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
-	})
-	suspend.AddUUIDFlag(cloudapiv6.ArgServerId, cloudapiv6.ArgIdShort, "", cloudapiv6.ServerId, core.RequiredFlagOption())
-	_ = suspend.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.ServersIdsCustom(os.Stderr, viper.GetString(core.GetFlagName(suspend.NS, cloudapiv6.ArgDataCenterId)),
-			resources.ListQueryParams{
-				Filters: &map[string][]string{
-					"type": {serverCubeType},
+	_ = suspend.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgDataCenterId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	suspend.AddUUIDFlag(
+		cloudapiv6.ArgServerId, cloudapiv6.ArgIdShort, "", cloudapiv6.ServerId, core.RequiredFlagOption(),
+	)
+	_ = suspend.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgServerId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.ServersIdsCustom(
+				os.Stderr, viper.GetString(core.GetFlagName(suspend.NS, cloudapiv6.ArgDataCenterId)),
+				resources.ListQueryParams{
+					Filters: &map[string][]string{
+						"type": {serverCubeType},
+					},
 				},
-			}), cobra.ShellCompDirectiveNoFileComp
-	})
-	suspend.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait, "Wait for the Request for Server suspend to be executed")
-	suspend.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for Server suspend [seconds]")
-	suspend.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultMiscDepth, cloudapiv6.ArgDepthDescription)
+			), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	suspend.AddBoolFlag(
+		constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait,
+		"Wait for the Request for Server suspend to be executed",
+	)
+	suspend.AddIntFlag(
+		constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds,
+		"Timeout option for Request for Server suspend [seconds]",
+	)
+	suspend.AddInt32Flag(
+		cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultMiscDepth, cloudapiv6.ArgDepthDescription,
+	)
 
 	/*
 		Start Command
 	*/
-	start := core.NewCommand(ctx, serverCmd, core.CommandBuilder{
-		Namespace: "server",
-		Resource:  "server",
-		Verb:      "start",
-		Aliases:   []string{"on"},
-		ShortDesc: "Start a Server",
-		LongDesc: `Use this command to start a Server from a Virtual Data Center. If the Server's public IP was deallocated then a new IP will be assigned.
+	start := core.NewCommand(
+		ctx, serverCmd, core.CommandBuilder{
+			Namespace: "server",
+			Resource:  "server",
+			Verb:      "start",
+			Aliases:   []string{"on"},
+			ShortDesc: "Start a Server",
+			LongDesc: `Use this command to start a Server from a Virtual Data Center. If the Server's public IP was deallocated then a new IP will be assigned.
 
 You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option. You can force the command to execute without user input using ` + "`" + `--force` + "`" + ` option.
 
@@ -363,33 +578,51 @@ Required values to run command:
 
 * Data Center Id
 * Server Id`,
-		Example:    startServerExample,
-		PreCmdRun:  PreRunDcServerIds,
-		CmdRun:     RunServerStart,
-		InitClient: true,
-	})
+			Example:    startServerExample,
+			PreCmdRun:  PreRunDcServerIds,
+			CmdRun:     RunServerStart,
+			InitClient: true,
+		},
+	)
 	start.AddUUIDFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
-	_ = start.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
-	})
+	_ = start.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgDataCenterId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 	start.AddUUIDFlag(cloudapiv6.ArgServerId, cloudapiv6.ArgIdShort, "", cloudapiv6.ServerId, core.RequiredFlagOption())
-	_ = start.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.ServersIds(os.Stderr, viper.GetString(core.GetFlagName(start.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
-	})
-	start.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait, "Wait for the Request for Server start to be executed")
-	start.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for Server start [seconds]")
-	start.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultMiscDepth, cloudapiv6.ArgDepthDescription)
+	_ = start.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgServerId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.ServersIds(
+				os.Stderr, viper.GetString(core.GetFlagName(start.NS, cloudapiv6.ArgDataCenterId)),
+			), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	start.AddBoolFlag(
+		constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait,
+		"Wait for the Request for Server start to be executed",
+	)
+	start.AddIntFlag(
+		constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds,
+		"Timeout option for Request for Server start [seconds]",
+	)
+	start.AddInt32Flag(
+		cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultMiscDepth, cloudapiv6.ArgDepthDescription,
+	)
 
 	/*
 		Stop Command
 	*/
-	stop := core.NewCommand(ctx, serverCmd, core.CommandBuilder{
-		Namespace: "server",
-		Resource:  "server",
-		Verb:      "stop",
-		Aliases:   []string{"off"},
-		ShortDesc: "Stop a Server",
-		LongDesc: `Use this command to stop a Server from a Virtual Data Center. The machine will be forcefully powered off, billing will cease, and the public IP, if one is allocated, will be deallocated.
+	stop := core.NewCommand(
+		ctx, serverCmd, core.CommandBuilder{
+			Namespace: "server",
+			Resource:  "server",
+			Verb:      "stop",
+			Aliases:   []string{"off"},
+			ShortDesc: "Stop a Server",
+			LongDesc: `Use this command to stop a Server from a Virtual Data Center. The machine will be forcefully powered off, billing will cease, and the public IP, if one is allocated, will be deallocated.
 
 You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option. You can force the command to execute without user input using ` + "`" + `--force` + "`" + ` option.
 
@@ -397,33 +630,51 @@ Required values to run command:
 
 * Data Center Id
 * Server Id`,
-		Example:    stopServerExample,
-		PreCmdRun:  PreRunDcServerIds,
-		CmdRun:     RunServerStop,
-		InitClient: true,
-	})
+			Example:    stopServerExample,
+			PreCmdRun:  PreRunDcServerIds,
+			CmdRun:     RunServerStop,
+			InitClient: true,
+		},
+	)
 	stop.AddUUIDFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
-	_ = stop.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
-	})
+	_ = stop.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgDataCenterId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 	stop.AddUUIDFlag(cloudapiv6.ArgServerId, cloudapiv6.ArgIdShort, "", cloudapiv6.ServerId, core.RequiredFlagOption())
-	_ = stop.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.ServersIds(os.Stderr, viper.GetString(core.GetFlagName(stop.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
-	})
-	stop.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait, "Wait for the Request for Server stop to be executed")
-	stop.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for Server stop [seconds]")
-	stop.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultMiscDepth, cloudapiv6.ArgDepthDescription)
+	_ = stop.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgServerId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.ServersIds(
+				os.Stderr, viper.GetString(core.GetFlagName(stop.NS, cloudapiv6.ArgDataCenterId)),
+			), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	stop.AddBoolFlag(
+		constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait,
+		"Wait for the Request for Server stop to be executed",
+	)
+	stop.AddIntFlag(
+		constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds,
+		"Timeout option for Request for Server stop [seconds]",
+	)
+	stop.AddInt32Flag(
+		cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultMiscDepth, cloudapiv6.ArgDepthDescription,
+	)
 
 	/*
 		Reboot Command
 	*/
-	reboot := core.NewCommand(ctx, serverCmd, core.CommandBuilder{
-		Namespace: "server",
-		Resource:  "server",
-		Verb:      "reboot",
-		Aliases:   []string{"r"},
-		ShortDesc: "Force a hard reboot of a Server",
-		LongDesc: `Use this command to force a hard reboot of the Server. Do not use this method if you want to gracefully reboot the machine. This is the equivalent of powering off the machine and turning it back on.
+	reboot := core.NewCommand(
+		ctx, serverCmd, core.CommandBuilder{
+			Namespace: "server",
+			Resource:  "server",
+			Verb:      "reboot",
+			Aliases:   []string{"r"},
+			ShortDesc: "Force a hard reboot of a Server",
+			LongDesc: `Use this command to force a hard reboot of the Server. Do not use this method if you want to gracefully reboot the machine. This is the equivalent of powering off the machine and turning it back on.
 
 You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option. You can force the command to execute without user input using ` + "`" + `--force` + "`" + ` option.
 
@@ -431,33 +682,53 @@ Required values to run command:
 
 * Data Center Id
 * Server Id`,
-		Example:    rebootServerExample,
-		PreCmdRun:  PreRunDcServerIds,
-		CmdRun:     RunServerReboot,
-		InitClient: true,
-	})
+			Example:    rebootServerExample,
+			PreCmdRun:  PreRunDcServerIds,
+			CmdRun:     RunServerReboot,
+			InitClient: true,
+		},
+	)
 	reboot.AddUUIDFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
-	_ = reboot.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
-	})
-	reboot.AddUUIDFlag(cloudapiv6.ArgServerId, cloudapiv6.ArgIdShort, "", cloudapiv6.ServerId, core.RequiredFlagOption())
-	_ = reboot.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.ServersIds(os.Stderr, viper.GetString(core.GetFlagName(reboot.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
-	})
-	reboot.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait, "Wait for the Request for Server reboot to be executed")
-	reboot.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for Server reboot [seconds]")
-	reboot.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultMiscDepth, cloudapiv6.ArgDepthDescription)
+	_ = reboot.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgDataCenterId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	reboot.AddUUIDFlag(
+		cloudapiv6.ArgServerId, cloudapiv6.ArgIdShort, "", cloudapiv6.ServerId, core.RequiredFlagOption(),
+	)
+	_ = reboot.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgServerId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.ServersIds(
+				os.Stderr, viper.GetString(core.GetFlagName(reboot.NS, cloudapiv6.ArgDataCenterId)),
+			), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	reboot.AddBoolFlag(
+		constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait,
+		"Wait for the Request for Server reboot to be executed",
+	)
+	reboot.AddIntFlag(
+		constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds,
+		"Timeout option for Request for Server reboot [seconds]",
+	)
+	reboot.AddInt32Flag(
+		cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultMiscDepth, cloudapiv6.ArgDepthDescription,
+	)
 
 	/*
 		Resume Command
 	*/
-	resume := core.NewCommand(ctx, serverCmd, core.CommandBuilder{
-		Namespace: "server",
-		Resource:  "server",
-		Verb:      "resume",
-		Aliases:   []string{"res"},
-		ShortDesc: "Resume a Cube Server",
-		LongDesc: `Use this command to resume a Cube Server. The operation can only be applied to suspended Cube Servers.
+	resume := core.NewCommand(
+		ctx, serverCmd, core.CommandBuilder{
+			Namespace: "server",
+			Resource:  "server",
+			Verb:      "resume",
+			Aliases:   []string{"res"},
+			ShortDesc: "Resume a Cube Server",
+			LongDesc: `Use this command to resume a Cube Server. The operation can only be applied to suspended Cube Servers.
 
 You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option. You can force the command to execute without user input using ` + "`" + `--force` + "`" + ` option.
 
@@ -465,27 +736,46 @@ Required values to run command:
 
 * Data Center Id
 * Server Id`,
-		Example:    resumeServerExample,
-		PreCmdRun:  PreRunDcServerIds,
-		CmdRun:     RunServerResume,
-		InitClient: true,
-	})
+			Example:    resumeServerExample,
+			PreCmdRun:  PreRunDcServerIds,
+			CmdRun:     RunServerResume,
+			InitClient: true,
+		},
+	)
 	resume.AddUUIDFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
-	_ = resume.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
-	})
-	resume.AddUUIDFlag(cloudapiv6.ArgServerId, cloudapiv6.ArgIdShort, "", cloudapiv6.ServerId, core.RequiredFlagOption())
-	_ = resume.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.ServersIdsCustom(os.Stderr, viper.GetString(core.GetFlagName(resume.NS, cloudapiv6.ArgDataCenterId)),
-			resources.ListQueryParams{
-				Filters: &map[string][]string{
-					"type": {serverCubeType},
+	_ = resume.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgDataCenterId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	resume.AddUUIDFlag(
+		cloudapiv6.ArgServerId, cloudapiv6.ArgIdShort, "", cloudapiv6.ServerId, core.RequiredFlagOption(),
+	)
+	_ = resume.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgServerId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.ServersIdsCustom(
+				os.Stderr, viper.GetString(core.GetFlagName(resume.NS, cloudapiv6.ArgDataCenterId)),
+				resources.ListQueryParams{
+					Filters: &map[string][]string{
+						"type": {serverCubeType},
+					},
 				},
-			}), cobra.ShellCompDirectiveNoFileComp
-	})
-	resume.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait, "Wait for the Request for Server resume to be executed")
-	resume.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for Server resume [seconds]")
-	resume.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultMiscDepth, cloudapiv6.ArgDepthDescription)
+			), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	resume.AddBoolFlag(
+		constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait,
+		"Wait for the Request for Server resume to be executed",
+	)
+	resume.AddIntFlag(
+		constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds,
+		"Timeout option for Request for Server resume [seconds]",
+	)
+	resume.AddInt32Flag(
+		cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultMiscDepth, cloudapiv6.ArgDepthDescription,
+	)
 
 	serverCmd.AddCommand(ServerTokenCmd())
 	serverCmd.AddCommand(ServerConsoleCmd())
@@ -496,7 +786,8 @@ Required values to run command:
 }
 
 func PreRunServerList(c *core.PreCommandConfig) error {
-	if err := core.CheckRequiredFlagsSets(c.Command, c.NS,
+	if err := core.CheckRequiredFlagsSets(
+		c.Command, c.NS,
 		[]string{cloudapiv6.ArgDataCenterId},
 		[]string{cloudapiv6.ArgAll},
 	); err != nil {
@@ -509,23 +800,54 @@ func PreRunServerList(c *core.PreCommandConfig) error {
 }
 
 func PreRunServerCreate(c *core.PreCommandConfig) error {
-	err := core.CheckRequiredFlagsSets(c.Command, c.NS,
+	err := core.CheckRequiredFlagsSets(
+		c.Command, c.NS,
 		[]string{cloudapiv6.ArgDataCenterId, constants.FlagCores, constants.FlagRam},
-		[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgType, cloudapiv6.ArgTemplateId})
+		[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgType, cloudapiv6.ArgTemplateId},
+	)
 	if err != nil {
 		return err
 	}
 	// Validate flags
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgImageId)) || viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgImageAlias)) {
-		err = core.CheckRequiredFlagsSets(c.Command, c.NS,
-			[]string{cloudapiv6.ArgDataCenterId, constants.FlagCores, constants.FlagRam, cloudapiv6.ArgImageId, cloudapiv6.ArgPassword},
-			[]string{cloudapiv6.ArgDataCenterId, constants.FlagCores, constants.FlagRam, cloudapiv6.ArgImageId, cloudapiv6.ArgSshKeyPaths},
-			[]string{cloudapiv6.ArgDataCenterId, constants.FlagCores, constants.FlagRam, cloudapiv6.ArgImageAlias, cloudapiv6.ArgPassword},
-			[]string{cloudapiv6.ArgDataCenterId, constants.FlagCores, constants.FlagRam, cloudapiv6.ArgImageAlias, cloudapiv6.ArgSshKeyPaths},
-			[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgType, cloudapiv6.ArgTemplateId, cloudapiv6.ArgImageId, cloudapiv6.ArgPassword},
-			[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgType, cloudapiv6.ArgTemplateId, cloudapiv6.ArgImageId, cloudapiv6.ArgSshKeyPaths},
-			[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgType, cloudapiv6.ArgTemplateId, cloudapiv6.ArgImageAlias, cloudapiv6.ArgPassword},
-			[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgType, cloudapiv6.ArgTemplateId, cloudapiv6.ArgImageAlias, cloudapiv6.ArgSshKeyPaths},
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgImageId)) || viper.IsSet(
+		core.GetFlagName(
+			c.NS, cloudapiv6.ArgImageAlias,
+		),
+	) {
+		err = core.CheckRequiredFlagsSets(
+			c.Command, c.NS,
+			[]string{
+				cloudapiv6.ArgDataCenterId, constants.FlagCores, constants.FlagRam, cloudapiv6.ArgImageId,
+				cloudapiv6.ArgPassword,
+			},
+			[]string{
+				cloudapiv6.ArgDataCenterId, constants.FlagCores, constants.FlagRam, cloudapiv6.ArgImageId,
+				cloudapiv6.ArgSshKeyPaths,
+			},
+			[]string{
+				cloudapiv6.ArgDataCenterId, constants.FlagCores, constants.FlagRam, cloudapiv6.ArgImageAlias,
+				cloudapiv6.ArgPassword,
+			},
+			[]string{
+				cloudapiv6.ArgDataCenterId, constants.FlagCores, constants.FlagRam, cloudapiv6.ArgImageAlias,
+				cloudapiv6.ArgSshKeyPaths,
+			},
+			[]string{
+				cloudapiv6.ArgDataCenterId, cloudapiv6.ArgType, cloudapiv6.ArgTemplateId, cloudapiv6.ArgImageId,
+				cloudapiv6.ArgPassword,
+			},
+			[]string{
+				cloudapiv6.ArgDataCenterId, cloudapiv6.ArgType, cloudapiv6.ArgTemplateId, cloudapiv6.ArgImageId,
+				cloudapiv6.ArgSshKeyPaths,
+			},
+			[]string{
+				cloudapiv6.ArgDataCenterId, cloudapiv6.ArgType, cloudapiv6.ArgTemplateId, cloudapiv6.ArgImageAlias,
+				cloudapiv6.ArgPassword,
+			},
+			[]string{
+				cloudapiv6.ArgDataCenterId, cloudapiv6.ArgType, cloudapiv6.ArgTemplateId, cloudapiv6.ArgImageAlias,
+				cloudapiv6.ArgSshKeyPaths,
+			},
 		)
 		if err != nil {
 			return err
@@ -539,7 +861,8 @@ func PreRunDcServerIds(c *core.PreCommandConfig) error {
 }
 
 func PreRunDcServerDelete(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlagsSets(c.Command, c.NS,
+	return core.CheckRequiredFlagsSets(
+		c.Command, c.NS,
 		[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgServerId},
 		[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgAll},
 	)
@@ -608,7 +931,13 @@ func RunServerList(c *core.CommandConfig) error {
 			}
 		}
 	}
-	servers, resp, err := c.CloudApiV6Services.Servers().List(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)), listQueryParams)
+	servers, resp, err := c.CloudApiV6Services.Servers().List(
+		viper.GetString(
+			core.GetFlagName(
+				c.NS, cloudapiv6.ArgDataCenterId,
+			),
+		), listQueryParams,
+	)
 	if resp != nil {
 		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
@@ -624,8 +953,12 @@ func RunServerGet(c *core.CommandConfig) error {
 		return err
 	}
 	queryParams := listQueryParams.QueryParams
-	c.Printer.Verbose("Server with id: %v is getting... ", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)))
-	if err := utils.WaitForState(c, waiter.ServerStateInterrogator, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))); err != nil {
+	c.Printer.Verbose(
+		"Server with id: %v is getting... ", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
+	)
+	if err := utils.WaitForState(
+		c, waiter.ServerStateInterrogator, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
+	); err != nil {
 		return err
 	}
 	svr, resp, err := c.CloudApiV6Services.Servers().Get(
@@ -660,13 +993,21 @@ func RunServerCreate(c *core.CommandConfig) error {
 			return err
 		}
 		// Attach Storage
-		input.SetEntities(ionoscloud.ServerEntities{
-			Volumes: &ionoscloud.AttachedVolumes{
-				Items: &[]ionoscloud.Volume{volumeDAS.Volume},
+		input.SetEntities(
+			ionoscloud.ServerEntities{
+				Volumes: &ionoscloud.AttachedVolumes{
+					Items: &[]ionoscloud.Volume{volumeDAS.Volume},
+				},
 			},
-		})
+		)
 	}
-	svr, resp, err := c.CloudApiV6Services.Servers().Create(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)), *input, queryParams)
+	svr, resp, err := c.CloudApiV6Services.Servers().Create(
+		viper.GetString(
+			core.GetFlagName(
+				c.NS, cloudapiv6.ArgDataCenterId,
+			),
+		), *input, queryParams,
+	)
 	if resp != nil && printer.GetId(resp) != "" {
 		c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
 	}
@@ -682,8 +1023,10 @@ func RunServerCreate(c *core.CommandConfig) error {
 			if err = utils.WaitForState(c, waiter.ServerStateInterrogator, *id); err != nil {
 				return err
 			}
-			if svr, _, err = c.CloudApiV6Services.Servers().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-				*id, queryParams); err != nil {
+			if svr, _, err = c.CloudApiV6Services.Servers().Get(
+				viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
+				*id, queryParams,
+			); err != nil {
 				return err
 			}
 		} else {
@@ -703,8 +1046,11 @@ func RunServerUpdate(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	c.Printer.Verbose("Updating Server with ID: %v in Datacenter with ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
+	c.Printer.Verbose(
+		"Updating Server with ID: %v in Datacenter with ID: %v",
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
+	)
 	svr, resp, err := c.CloudApiV6Services.Servers().Update(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
@@ -722,11 +1068,15 @@ func RunServerUpdate(c *core.CommandConfig) error {
 		return err
 	}
 	if viper.GetBool(core.GetFlagName(c.NS, constants.ArgWaitForState)) {
-		if err = utils.WaitForState(c, waiter.ServerStateInterrogator, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))); err != nil {
+		if err = utils.WaitForState(
+			c, waiter.ServerStateInterrogator, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
+		); err != nil {
 			return err
 		}
-		if svr, _, err = c.CloudApiV6Services.Servers().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)), queryParams); err != nil {
+		if svr, _, err = c.CloudApiV6Services.Servers().Get(
+			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
+			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)), queryParams,
+		); err != nil {
 			return err
 		}
 	}
@@ -930,16 +1280,20 @@ func getUpdateServerInfo(c *core.CommandConfig) (*resources.ServerProperties, er
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeId)) {
 		volumeId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeId))
 		c.Printer.Verbose("Property BootVolume set: %v ", volumeId)
-		input.SetBootVolume(ionoscloud.ResourceReference{
-			Id: &volumeId,
-		})
+		input.SetBootVolume(
+			ionoscloud.ResourceReference{
+				Id: &volumeId,
+			},
+		)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgCdromId)) {
 		cdromId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgCdromId))
 		c.Printer.Verbose("Property BootCdrom set: %v ", cdromId)
-		input.SetBootCdrom(ionoscloud.ResourceReference{
-			Id: &cdromId,
-		})
+		input.SetBootCdrom(
+			ionoscloud.ResourceReference{
+				Id: &cdromId,
+			},
+		)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagRam)) {
 		size, err := utils.ConvertSize(
@@ -1096,7 +1450,9 @@ func DeleteAllServers(c *core.CommandConfig) error {
 						_ = c.Printer.Warn(fmt.Sprintf(constants.MessageDeletingAll, c.Resource, *id))
 					}
 					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-						multiErr = multierr.Append(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *id, err))
+						multiErr = multierr.Append(
+							multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *id, err),
+						)
 						continue
 					}
 				}
@@ -1116,8 +1472,13 @@ func DeleteAllServers(c *core.CommandConfig) error {
 // Output Printing
 
 var (
-	defaultServerCols = []string{"ServerId", "Name", "Type", "AvailabilityZone", "Cores", "Ram", "CpuFamily", "VmState", "State"}
-	allServerCols     = []string{"ServerId", "DatacenterId", "Name", "AvailabilityZone", "Cores", "Ram", "CpuFamily", "VmState", "State", "TemplateId", "Type", "BootCdromId", "BootVolumeId"}
+	defaultServerCols = []string{
+		"ServerId", "Name", "Type", "AvailabilityZone", "Cores", "Ram", "CpuFamily", "VmState", "State",
+	}
+	allServerCols = []string{
+		"ServerId", "DatacenterId", "Name", "AvailabilityZone", "Cores", "Ram", "CpuFamily", "VmState", "State",
+		"TemplateId", "Type", "BootCdromId", "BootVolumeId",
+	}
 )
 
 type ServerPrint struct {
@@ -1149,7 +1510,11 @@ func getServerPrint(resp *resources.Response, c *core.CommandConfig, ss []resour
 		if ss != nil {
 			r.OutputJSON = ss
 			r.KeyValue = getServersKVMaps(ss)
-			r.Columns = printer.GetHeadersListAll(allServerCols, defaultServerCols, "DatacenterId", viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)), viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)))
+			r.Columns = printer.GetHeadersListAll(
+				allServerCols, defaultServerCols, "DatacenterId",
+				viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)),
+				viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)),
+			)
 		}
 	}
 	return r
@@ -1187,7 +1552,9 @@ func getServersCols(argCols string, argAll string, outErr io.Writer) []string {
 		return serverCols
 	} else if viper.IsSet(argAll) {
 		// Add column which specifies which parent resource this belongs to, if using -a/--all flag
-		cols = append(defaultServerCols[:constants.DefaultParentIndex+1], defaultServerCols[constants.DefaultParentIndex:]...)
+		cols = append(
+			defaultServerCols[:constants.DefaultParentIndex+1], defaultServerCols[constants.DefaultParentIndex:]...,
+		)
 		cols[constants.DefaultParentIndex] = "DatacenterId"
 		return cols
 	} else {

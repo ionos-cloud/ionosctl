@@ -14,17 +14,23 @@ func DataplatformClusterIds() []string {
 	if err != nil {
 		return nil
 	}
-	return functional.Map(*ls.GetItems(), func(t sdkgo.ClusterResponseData) string {
-		return *t.GetId()
-	})
+	return functional.Map(
+		*ls.GetItems(), func(t sdkgo.ClusterResponseData) string {
+			return *t.GetId()
+		},
+	)
 }
 
 func DataplatformNodepoolsIds(clusterId string) []string {
-	ls, _, err := client.Must().DataplatformClient.DataPlatformNodePoolApi.ClustersNodepoolsGet(context.Background(), clusterId).Execute()
+	ls, _, err := client.Must().DataplatformClient.DataPlatformNodePoolApi.ClustersNodepoolsGet(
+		context.Background(), clusterId,
+	).Execute()
 	if err != nil {
 		return nil
 	}
-	return functional.Map(*ls.GetItems(), func(t sdkgo.NodePoolResponseData) string {
-		return *t.GetId()
-	})
+	return functional.Map(
+		*ls.GetItems(), func(t sdkgo.NodePoolResponseData) string {
+			return *t.GetId()
+		},
+	)
 }

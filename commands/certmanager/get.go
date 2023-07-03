@@ -11,30 +11,37 @@ import (
 )
 
 func CertGetCmd() *core.Command {
-	cmd := core.NewCommand(context.TODO(), nil, core.CommandBuilder{
-		Namespace:  "certmanager",
-		Resource:   "certificates",
-		Verb:       "get",
-		Aliases:    []string{"g"},
-		ShortDesc:  "Get Certificate by ID",
-		LongDesc:   "Use this command to retrieve a Certificate by ID.",
-		Example:    "ionosctl certificate-manager get --certificate-id 47c5d9cc-b613-4b76-b0cc-dc531787a422",
-		PreCmdRun:  PreCmdGet,
-		CmdRun:     CmdGet,
-		InitClient: true,
-	})
+	cmd := core.NewCommand(
+		context.TODO(), nil, core.CommandBuilder{
+			Namespace:  "certmanager",
+			Resource:   "certificates",
+			Verb:       "get",
+			Aliases:    []string{"g"},
+			ShortDesc:  "Get Certificate by ID",
+			LongDesc:   "Use this command to retrieve a Certificate by ID.",
+			Example:    "ionosctl certificate-manager get --certificate-id 47c5d9cc-b613-4b76-b0cc-dc531787a422",
+			PreCmdRun:  PreCmdGet,
+			CmdRun:     CmdGet,
+			InitClient: true,
+		},
+	)
 
 	cmd.AddStringFlag(FlagCertId, "i", "", "Response get a single certificate", core.RequiredFlagOption())
-	_ = cmd.Command.RegisterFlagCompletionFunc(FlagCertId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return CertificatesIds(), cobra.ShellCompDirectiveNoFileComp
-	})
+	_ = cmd.Command.RegisterFlagCompletionFunc(
+		FlagCertId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return CertificatesIds(), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 	cmd.AddBoolFlag(FlagCert, "", false, "Print the certificate")
 	cmd.AddBoolFlag(FlagCertChain, "", false, "Print the certificate chain")
 
 	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, printer.ColsMessage(allCols))
-	_ = cmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return allCols, cobra.ShellCompDirectiveNoFileComp
-	})
+	_ = cmd.Command.RegisterFlagCompletionFunc(
+		constants.ArgCols,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return allCols, cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 
 	return cmd
 }

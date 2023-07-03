@@ -11,22 +11,24 @@ import (
 )
 
 func ApiVersionCmd() *core.Command {
-	cmd := core.NewCommand(context.Background(), nil, core.CommandBuilder{
-		Namespace: "dbaas-mongo",
-		Verb:      "api-versions",
-		Aliases:   []string{"versions", "api-version"},
-		ShortDesc: "Get Mongo API swagger files",
-		Example:   "ionosctl dbaas mongo api-versions",
-		PreCmdRun: core.NoPreRun,
-		CmdRun: func(c *core.CommandConfig) error {
-			list, _, err := c.DbaasMongoServices.ApiMetadata().List()
-			if err != nil {
-				return err
-			}
-			return c.Printer.Print(getApiVersionPrint(c, list))
+	cmd := core.NewCommand(
+		context.Background(), nil, core.CommandBuilder{
+			Namespace: "dbaas-mongo",
+			Verb:      "api-versions",
+			Aliases:   []string{"versions", "api-version"},
+			ShortDesc: "Get Mongo API swagger files",
+			Example:   "ionosctl dbaas mongo api-versions",
+			PreCmdRun: core.NoPreRun,
+			CmdRun: func(c *core.CommandConfig) error {
+				list, _, err := c.DbaasMongoServices.ApiMetadata().List()
+				if err != nil {
+					return err
+				}
+				return c.Printer.Print(getApiVersionPrint(c, list))
+			},
+			InitClient: true,
 		},
-		InitClient: true,
-	})
+	)
 
 	return cmd
 }

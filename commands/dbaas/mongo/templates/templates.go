@@ -33,8 +33,10 @@ func getTemplatesPrint(c *core.CommandConfig, ls *[]ionoscloud.TemplateResponse)
 	r := printer.Result{}
 	if c != nil && ls != nil {
 		r.OutputJSON = ls
-		r.KeyValue = getClusterRows(ls)                                                                                    // map header -> rows
-		r.Columns = printer.GetHeadersAllDefault(allCols, viper.GetStringSlice(core.GetFlagName(c.NS, constants.ArgCols))) // headers
+		r.KeyValue = getClusterRows(ls) // map header -> rows
+		r.Columns = printer.GetHeadersAllDefault(
+			allCols, viper.GetStringSlice(core.GetFlagName(c.NS, constants.ArgCols)),
+		) // headers
 	}
 	return r
 }

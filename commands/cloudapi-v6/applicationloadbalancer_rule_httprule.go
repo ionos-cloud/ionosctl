@@ -35,55 +35,83 @@ func AlbRuleHttpRuleCmd() *core.Command {
 		},
 	}
 	globalFlags := albRuleHttpRuleCmd.GlobalFlags()
-	globalFlags.StringSliceP(constants.ArgCols, "", defaultAlbRuleHttpRuleCols, printer.ColsMessage(allAlbRuleHttpRuleCols))
-	_ = viper.BindPFlag(core.GetFlagName(albRuleHttpRuleCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
-	_ = albRuleHttpRuleCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return allAlbRuleHttpRuleCols, cobra.ShellCompDirectiveNoFileComp
-	})
+	globalFlags.StringSliceP(
+		constants.ArgCols, "", defaultAlbRuleHttpRuleCols, printer.ColsMessage(allAlbRuleHttpRuleCols),
+	)
+	_ = viper.BindPFlag(
+		core.GetFlagName(albRuleHttpRuleCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols),
+	)
+	_ = albRuleHttpRuleCmd.Command.RegisterFlagCompletionFunc(
+		constants.ArgCols,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return allAlbRuleHttpRuleCols, cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 
 	/*
 		List Command
 	*/
-	list := core.NewCommand(ctx, albRuleHttpRuleCmd, core.CommandBuilder{
-		Namespace:  "forwardingrule",
-		Resource:   "httprule",
-		Verb:       "list",
-		Aliases:    []string{"l", "ls"},
-		ShortDesc:  "List Application Load Balancer Forwarding Rule Http Rules",
-		LongDesc:   "Use this command to list Http Rules of a Application Load Balancer Forwarding Rule.\n\nRequired values to run command:\n\n* Data Center Id\n* Application Load Balancer Id\n* Forwarding Rule Id",
-		Example:    listApplicationLoadBalancerForwardingRuleHttpExample,
-		PreCmdRun:  PreRunDcApplicationLoadBalancerForwardingRuleIds,
-		CmdRun:     RunAlbRuleHttpRuleList,
-		InitClient: true,
-	})
+	list := core.NewCommand(
+		ctx, albRuleHttpRuleCmd, core.CommandBuilder{
+			Namespace:  "forwardingrule",
+			Resource:   "httprule",
+			Verb:       "list",
+			Aliases:    []string{"l", "ls"},
+			ShortDesc:  "List Application Load Balancer Forwarding Rule Http Rules",
+			LongDesc:   "Use this command to list Http Rules of a Application Load Balancer Forwarding Rule.\n\nRequired values to run command:\n\n* Data Center Id\n* Application Load Balancer Id\n* Forwarding Rule Id",
+			Example:    listApplicationLoadBalancerForwardingRuleHttpExample,
+			PreCmdRun:  PreRunDcApplicationLoadBalancerForwardingRuleIds,
+			CmdRun:     RunAlbRuleHttpRuleList,
+			InitClient: true,
+		},
+	)
 	list.AddUUIDFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
-	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
-	})
-	list.AddUUIDFlag(cloudapiv6.ArgApplicationLoadBalancerId, "", "", cloudapiv6.ApplicationLoadBalancerId, core.RequiredFlagOption())
-	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgApplicationLoadBalancerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.ApplicationLoadBalancersIds(os.Stderr, viper.GetString(core.GetFlagName(list.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
-	})
+	_ = list.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgDataCenterId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	list.AddUUIDFlag(
+		cloudapiv6.ArgApplicationLoadBalancerId, "", "", cloudapiv6.ApplicationLoadBalancerId, core.RequiredFlagOption(),
+	)
+	_ = list.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgApplicationLoadBalancerId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.ApplicationLoadBalancersIds(
+				os.Stderr, viper.GetString(core.GetFlagName(list.NS, cloudapiv6.ArgDataCenterId)),
+			), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 	list.AddUUIDFlag(cloudapiv6.ArgRuleId, "", "", cloudapiv6.ForwardingRuleId, core.RequiredFlagOption())
-	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgRuleId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.AlbForwardingRulesIds(os.Stderr,
-			viper.GetString(core.GetFlagName(list.NS, cloudapiv6.ArgDataCenterId)),
-			viper.GetString(core.GetFlagName(list.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
-		), cobra.ShellCompDirectiveNoFileComp
-	})
-	list.AddInt32Flag(constants.FlagMaxResults, constants.FlagMaxResultsShort, cloudapiv6.DefaultMaxResults, constants.DescMaxResults)
-	list.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultListDepth, cloudapiv6.ArgDepthDescription)
+	_ = list.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgRuleId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.AlbForwardingRulesIds(
+				os.Stderr,
+				viper.GetString(core.GetFlagName(list.NS, cloudapiv6.ArgDataCenterId)),
+				viper.GetString(core.GetFlagName(list.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
+			), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	list.AddInt32Flag(
+		constants.FlagMaxResults, constants.FlagMaxResultsShort, cloudapiv6.DefaultMaxResults, constants.DescMaxResults,
+	)
+	list.AddInt32Flag(
+		cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultListDepth, cloudapiv6.ArgDepthDescription,
+	)
 
 	/*
 		Add Command
 	*/
-	add := core.NewCommand(ctx, albRuleHttpRuleCmd, core.CommandBuilder{
-		Namespace: "forwardingrule",
-		Resource:  "httprule",
-		Verb:      "add",
-		Aliases:   []string{"a"},
-		ShortDesc: "Add a Http Rule to Application Load Balancer Forwarding Rule",
-		LongDesc: `Use this command to add a Http Rule in a specified Application Load Balancer Forwarding Rule.
+	add := core.NewCommand(
+		ctx, albRuleHttpRuleCmd, core.CommandBuilder{
+			Namespace: "forwardingrule",
+			Resource:  "httprule",
+			Verb:      "add",
+			Aliases:   []string{"a"},
+			ShortDesc: "Add a Http Rule to Application Load Balancer Forwarding Rule",
+			LongDesc: `Use this command to add a Http Rule in a specified Application Load Balancer Forwarding Rule.
 
 You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option.
 
@@ -94,74 +122,150 @@ Required values to run command:
 * Forwarding Rule Id
 * Http Rule Name
 * Http Rule Type`,
-		Example:    addApplicationLoadBalancerForwardingRuleHttpExample,
-		PreCmdRun:  PreRunApplicationLoadBalancerRuleHttpRule,
-		CmdRun:     RunAlbRuleHttpRuleAdd,
-		InitClient: true,
-	})
+			Example:    addApplicationLoadBalancerForwardingRuleHttpExample,
+			PreCmdRun:  PreRunApplicationLoadBalancerRuleHttpRule,
+			CmdRun:     RunAlbRuleHttpRuleAdd,
+			InitClient: true,
+		},
+	)
 	add.AddUUIDFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
-	_ = add.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
-	})
-	add.AddUUIDFlag(cloudapiv6.ArgApplicationLoadBalancerId, "", "", cloudapiv6.ApplicationLoadBalancerId, core.RequiredFlagOption())
-	_ = add.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgApplicationLoadBalancerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.ApplicationLoadBalancersIds(os.Stderr, viper.GetString(core.GetFlagName(add.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
-	})
+	_ = add.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgDataCenterId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	add.AddUUIDFlag(
+		cloudapiv6.ArgApplicationLoadBalancerId, "", "", cloudapiv6.ApplicationLoadBalancerId, core.RequiredFlagOption(),
+	)
+	_ = add.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgApplicationLoadBalancerId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.ApplicationLoadBalancersIds(
+				os.Stderr, viper.GetString(core.GetFlagName(add.NS, cloudapiv6.ArgDataCenterId)),
+			), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 	add.AddUUIDFlag(cloudapiv6.ArgRuleId, "", "", cloudapiv6.ForwardingRuleId, core.RequiredFlagOption())
-	_ = add.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgRuleId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.AlbForwardingRulesIds(os.Stderr, viper.GetString(core.GetFlagName(add.NS, cloudapiv6.ArgDataCenterId)), viper.GetString(core.GetFlagName(add.NS, cloudapiv6.ArgApplicationLoadBalancerId))), cobra.ShellCompDirectiveNoFileComp
-	})
+	_ = add.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgRuleId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.AlbForwardingRulesIds(
+				os.Stderr, viper.GetString(core.GetFlagName(add.NS, cloudapiv6.ArgDataCenterId)),
+				viper.GetString(core.GetFlagName(add.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
+			), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 
 	// see https://github.com/ionos-cloud/ionosctl/issues/263#issuecomment-1485258399
-	add.AddStringFlag(cloudapiv6.ArgConditionType, cloudapiv6.ArgConditionTypeShort, "HEADER", "selects which element in the incoming HTTP request is used for the rule. Possible values HEADER, PATH, QUERY, METHOD, HOST, COOKIE, SOURCE _IP")
-	_ = add.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgConditionType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return []string{"HEADER", "PATH", "QUERY", "METHOD", "HOST", "COOKIE", "SOURCE_IP"}, cobra.ShellCompDirectiveNoFileComp
-	})
-	add.AddStringFlag(cloudapiv6.ArgConditionKey, cloudapiv6.ArgConditionKeyShort, "Accept", "selects which entry in the selected HTTP element is used for the rule. For example, \"Accept\" for condition-type=HEADER. Not applicable for HOST, PATH or SOURCE_IP")
-	add.AddStringFlag(cloudapiv6.ArgCondition, cloudapiv6.ArgConditionShort, "EQUALS", "comparison rule for condition-value and the element selected with condition-type and condition-key. Possible values: EXISTS, CONTAINS, EQUALS, MATCHES, STARTS_WITH, ENDS_WITH. mandatory for HEADER, PATH, QUERY, METHOD, HOST, and COOKIE types; must be null when type is SOURCE_IP.")
-	_ = add.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgCondition, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return []string{"EXISTS", "CONTAINS", "EQUALS", "MATCHES", "STARTS_WITH", "ENDS_WITH"}, cobra.ShellCompDirectiveNoFileComp
-	})
-	add.AddStringFlag(cloudapiv6.ArgConditionValue, cloudapiv6.ArgConditionValueShort, "application/json", "value compared with the selected HTTP element. For example \"application/json\" in combination with condition=EQUALS, condition-type=HEADER, condition-key=Accept would be valid. Not applicable for condition EXISTS. Mandatory for conditions CONTAINS, EQUALS, MATCHES, STARTS_WITH, ENDS_WITH; must be null when condition is EXISTS")
+	add.AddStringFlag(
+		cloudapiv6.ArgConditionType, cloudapiv6.ArgConditionTypeShort, "HEADER",
+		"selects which element in the incoming HTTP request is used for the rule. Possible values HEADER, PATH, QUERY, METHOD, HOST, COOKIE, SOURCE _IP",
+	)
+	_ = add.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgConditionType,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return []string{
+				"HEADER", "PATH", "QUERY", "METHOD", "HOST", "COOKIE", "SOURCE_IP",
+			}, cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	add.AddStringFlag(
+		cloudapiv6.ArgConditionKey, cloudapiv6.ArgConditionKeyShort, "Accept",
+		"selects which entry in the selected HTTP element is used for the rule. For example, \"Accept\" for condition-type=HEADER. Not applicable for HOST, PATH or SOURCE_IP",
+	)
+	add.AddStringFlag(
+		cloudapiv6.ArgCondition, cloudapiv6.ArgConditionShort, "EQUALS",
+		"comparison rule for condition-value and the element selected with condition-type and condition-key. Possible values: EXISTS, CONTAINS, EQUALS, MATCHES, STARTS_WITH, ENDS_WITH. mandatory for HEADER, PATH, QUERY, METHOD, HOST, and COOKIE types; must be null when type is SOURCE_IP.",
+	)
+	_ = add.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgCondition,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return []string{
+				"EXISTS", "CONTAINS", "EQUALS", "MATCHES", "STARTS_WITH", "ENDS_WITH",
+			}, cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	add.AddStringFlag(
+		cloudapiv6.ArgConditionValue, cloudapiv6.ArgConditionValueShort, "application/json",
+		"value compared with the selected HTTP element. For example \"application/json\" in combination with condition=EQUALS, condition-type=HEADER, condition-key=Accept would be valid. Not applicable for condition EXISTS. Mandatory for conditions CONTAINS, EQUALS, MATCHES, STARTS_WITH, ENDS_WITH; must be null when condition is EXISTS",
+	)
 	add.AddBoolFlag(cloudapiv6.ArgNegate, "", false, "Specifies whether the condition is negated or not")
 
-	add.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "", "The unique name of the Application Load Balancer HTTP rule.", core.RequiredFlagOption())
+	add.AddStringFlag(
+		cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "", "The unique name of the Application Load Balancer HTTP rule.",
+		core.RequiredFlagOption(),
+	)
 	add.AddStringFlag(cloudapiv6.ArgType, "", "", "Type of the HTTP rule.", core.RequiredFlagOption())
-	_ = add.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return []string{"FORWARD", "STATIC", "REDIRECT"}, cobra.ShellCompDirectiveNoFileComp
-	})
-	add.AddUUIDFlag(cloudapiv6.ArgTargetGroupId, "", "", "he ID of the target group; mandatory and only valid for FORWARD actions.")
-	_ = add.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgTargetGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.TargetGroupIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
-	})
-	add.AddBoolFlag(cloudapiv6.ArgQuery, cloudapiv6.ArgQueryShort, false, "Default is false; valid only for REDIRECT actions.")
-	add.AddStringFlag(cloudapiv6.ArgLocation, cloudapiv6.ArgLocationShort, "www.ionos.com", "The location for redirecting; mandatory and valid only for REDIRECT actions.")
-	add.AddIntFlag(cloudapiv6.ArgStatusCode, "", 301, "Valid only for REDIRECT and STATIC actions. For REDIRECT actions, default is 301 and possible values are 301, 302, 303, 307, and 308. For STATIC actions, default is 503 and valid range is 200 to 599.")
-	_ = add.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgStatusCode, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return []string{"301", "302", "303", "307", "308", "200", "503", "599"}, cobra.ShellCompDirectiveNoFileComp
-	})
-	add.AddStringFlag(cloudapiv6.ArgMessage, cloudapiv6.ArgMessageShort, "Application Down", "The response message of the request; mandatory for STATIC actions.")
+	_ = add.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgType,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return []string{"FORWARD", "STATIC", "REDIRECT"}, cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	add.AddUUIDFlag(
+		cloudapiv6.ArgTargetGroupId, "", "", "he ID of the target group; mandatory and only valid for FORWARD actions.",
+	)
+	_ = add.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgTargetGroupId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.TargetGroupIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	add.AddBoolFlag(
+		cloudapiv6.ArgQuery, cloudapiv6.ArgQueryShort, false, "Default is false; valid only for REDIRECT actions.",
+	)
+	add.AddStringFlag(
+		cloudapiv6.ArgLocation, cloudapiv6.ArgLocationShort, "www.ionos.com",
+		"The location for redirecting; mandatory and valid only for REDIRECT actions.",
+	)
+	add.AddIntFlag(
+		cloudapiv6.ArgStatusCode, "", 301,
+		"Valid only for REDIRECT and STATIC actions. For REDIRECT actions, default is 301 and possible values are 301, 302, 303, 307, and 308. For STATIC actions, default is 503 and valid range is 200 to 599.",
+	)
+	_ = add.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgStatusCode,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return []string{"301", "302", "303", "307", "308", "200", "503", "599"}, cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	add.AddStringFlag(
+		cloudapiv6.ArgMessage, cloudapiv6.ArgMessageShort, "Application Down",
+		"The response message of the request; mandatory for STATIC actions.",
+	)
 	add.AddStringFlag(cloudapiv6.ArgContentType, "", "application/json", "Valid only for STATIC actions.")
-	_ = add.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgContentType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return []string{"application/json", "text/html"}, cobra.ShellCompDirectiveNoFileComp
-	})
+	_ = add.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgContentType,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return []string{"application/json", "text/html"}, cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 
-	add.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait, "Wait for the Request for Forwarding Rule Http Rule creation to be executed")
-	add.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, cloudapiv6.LbTimeoutSeconds, "Timeout option for Request for Forwarding Rule Http Rule creation [seconds]")
-	add.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultMiscDepth, cloudapiv6.ArgDepthDescription)
+	add.AddBoolFlag(
+		constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait,
+		"Wait for the Request for Forwarding Rule Http Rule creation to be executed",
+	)
+	add.AddIntFlag(
+		constants.ArgTimeout, constants.ArgTimeoutShort, cloudapiv6.LbTimeoutSeconds,
+		"Timeout option for Request for Forwarding Rule Http Rule creation [seconds]",
+	)
+	add.AddInt32Flag(
+		cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultMiscDepth, cloudapiv6.ArgDepthDescription,
+	)
 
 	add.Command.Flags().SortFlags = false
 
 	/*
 		Remove Command
 	*/
-	removeCmd := core.NewCommand(ctx, albRuleHttpRuleCmd, core.CommandBuilder{
-		Namespace: "forwardingrule",
-		Resource:  "httprule",
-		Verb:      "remove",
-		Aliases:   []string{"r"},
-		ShortDesc: "Remove a Http Rule from a Application Load Balancer Forwarding Rule",
-		LongDesc: `Use this command to remove a specified Http Rule from Application Load Balancer Forwarding Rule.
+	removeCmd := core.NewCommand(
+		ctx, albRuleHttpRuleCmd, core.CommandBuilder{
+			Namespace: "forwardingrule",
+			Resource:  "httprule",
+			Verb:      "remove",
+			Aliases:   []string{"r"},
+			ShortDesc: "Remove a Http Rule from a Application Load Balancer Forwarding Rule",
+			LongDesc: `Use this command to remove a specified Http Rule from Application Load Balancer Forwarding Rule.
 
 You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option. You can force the command to execute without user input using ` + "`" + `--force` + "`" + ` option.
 
@@ -171,42 +275,77 @@ Required values to run command:
 * Application Load Balancer Id
 * Forwarding Rule Id
 * Http Rule Name`,
-		Example:    removeApplicationLoadBalancerForwardingRuleHttpExample,
-		PreCmdRun:  PreRunApplicationLoadBalancerRuleHttpRuleDelete,
-		CmdRun:     RunAlbRuleHttpRuleRemove,
-		InitClient: true,
-	})
+			Example:    removeApplicationLoadBalancerForwardingRuleHttpExample,
+			PreCmdRun:  PreRunApplicationLoadBalancerRuleHttpRuleDelete,
+			CmdRun:     RunAlbRuleHttpRuleRemove,
+			InitClient: true,
+		},
+	)
 	removeCmd.AddUUIDFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
-	_ = removeCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
-	})
-	removeCmd.AddUUIDFlag(cloudapiv6.ArgApplicationLoadBalancerId, "", "", cloudapiv6.ApplicationLoadBalancerId, core.RequiredFlagOption())
-	_ = removeCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgApplicationLoadBalancerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.ApplicationLoadBalancersIds(os.Stderr, viper.GetString(core.GetFlagName(removeCmd.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
-	})
+	_ = removeCmd.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgDataCenterId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	removeCmd.AddUUIDFlag(
+		cloudapiv6.ArgApplicationLoadBalancerId, "", "", cloudapiv6.ApplicationLoadBalancerId, core.RequiredFlagOption(),
+	)
+	_ = removeCmd.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgApplicationLoadBalancerId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.ApplicationLoadBalancersIds(
+				os.Stderr, viper.GetString(core.GetFlagName(removeCmd.NS, cloudapiv6.ArgDataCenterId)),
+			), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 	removeCmd.AddUUIDFlag(cloudapiv6.ArgRuleId, "", "", cloudapiv6.ForwardingRuleId, core.RequiredFlagOption())
-	_ = removeCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgRuleId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.AlbForwardingRulesIds(os.Stderr, viper.GetString(core.GetFlagName(removeCmd.NS, cloudapiv6.ArgDataCenterId)),
-			viper.GetString(core.GetFlagName(removeCmd.NS, cloudapiv6.ArgApplicationLoadBalancerId))), cobra.ShellCompDirectiveNoFileComp
-	})
-	removeCmd.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "", "A name of that Application Load Balancer Http Rule", core.RequiredFlagOption())
+	_ = removeCmd.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgRuleId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.AlbForwardingRulesIds(
+				os.Stderr, viper.GetString(core.GetFlagName(removeCmd.NS, cloudapiv6.ArgDataCenterId)),
+				viper.GetString(core.GetFlagName(removeCmd.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
+			), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	removeCmd.AddStringFlag(
+		cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "", "A name of that Application Load Balancer Http Rule",
+		core.RequiredFlagOption(),
+	)
 	removeCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Remove all HTTP Rules")
-	removeCmd.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait, "Wait for the Request for Forwarding Rule Http Rule deletion to be executed")
-	removeCmd.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, cloudapiv6.LbTimeoutSeconds, "Timeout option for Request for Forwarding Rule Http Rule deletion [seconds]")
-	removeCmd.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultMiscDepth, cloudapiv6.ArgDepthDescription)
+	removeCmd.AddBoolFlag(
+		constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait,
+		"Wait for the Request for Forwarding Rule Http Rule deletion to be executed",
+	)
+	removeCmd.AddIntFlag(
+		constants.ArgTimeout, constants.ArgTimeoutShort, cloudapiv6.LbTimeoutSeconds,
+		"Timeout option for Request for Forwarding Rule Http Rule deletion [seconds]",
+	)
+	removeCmd.AddInt32Flag(
+		cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultMiscDepth, cloudapiv6.ArgDepthDescription,
+	)
 
 	return albRuleHttpRuleCmd
 }
 
 func PreRunApplicationLoadBalancerRuleHttpRule(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgDataCenterId,
-		cloudapiv6.ArgApplicationLoadBalancerId, cloudapiv6.ArgRuleId, cloudapiv6.ArgName, cloudapiv6.ArgType)
+	return core.CheckRequiredFlags(
+		c.Command, c.NS, cloudapiv6.ArgDataCenterId,
+		cloudapiv6.ArgApplicationLoadBalancerId, cloudapiv6.ArgRuleId, cloudapiv6.ArgName, cloudapiv6.ArgType,
+	)
 }
 
 func PreRunApplicationLoadBalancerRuleHttpRuleDelete(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlagsSets(c.Command, c.NS,
-		[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgApplicationLoadBalancerId, cloudapiv6.ArgRuleId, cloudapiv6.ArgName},
-		[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgApplicationLoadBalancerId, cloudapiv6.ArgRuleId, cloudapiv6.ArgAll},
+	return core.CheckRequiredFlagsSets(
+		c.Command, c.NS,
+		[]string{
+			cloudapiv6.ArgDataCenterId, cloudapiv6.ArgApplicationLoadBalancerId, cloudapiv6.ArgRuleId,
+			cloudapiv6.ArgName,
+		},
+		[]string{
+			cloudapiv6.ArgDataCenterId, cloudapiv6.ArgApplicationLoadBalancerId, cloudapiv6.ArgRuleId, cloudapiv6.ArgAll,
+		},
 	)
 }
 
@@ -217,7 +356,10 @@ func RunAlbRuleHttpRuleList(c *core.CommandConfig) error {
 	}
 	queryParams := listQueryParams.QueryParams
 	c.Printer.Verbose("Datacenter ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
-	c.Printer.Verbose("ApplicationLoadBalancer ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)))
+	c.Printer.Verbose(
+		"ApplicationLoadBalancer ID: %v",
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
+	)
 	c.Printer.Verbose("ForwardingRule ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)))
 	c.Printer.Verbose("Getting HttpRules")
 	ng, resp, err := c.CloudApiV6Services.ApplicationLoadBalancers().GetForwardingRule(
@@ -251,9 +393,15 @@ func RunAlbRuleHttpRuleAdd(c *core.CommandConfig) error {
 	queryParams := listQueryParams.QueryParams
 	var httpRuleItems []ionoscloud.ApplicationLoadBalancerHttpRule
 	c.Printer.Verbose("Datacenter ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
-	c.Printer.Verbose("ApplicationLoadBalancer ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)))
+	c.Printer.Verbose(
+		"ApplicationLoadBalancer ID: %v",
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
+	)
 	c.Printer.Verbose("ForwardingRule ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)))
-	c.Printer.Verbose("Getting HttpRules from ForwardingRule with ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)))
+	c.Printer.Verbose(
+		"Getting HttpRules from ForwardingRule with ID: %v",
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)),
+	)
 	ngOld, resp, err := c.CloudApiV6Services.ApplicationLoadBalancers().GetForwardingRule(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
@@ -303,7 +451,10 @@ func RunAlbRuleHttpRuleRemove(c *core.CommandConfig) error {
 	queryParams := listQueryParams.QueryParams
 	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
 		c.Printer.Verbose("Datacenter ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
-		c.Printer.Verbose("ApplicationLoadBalancer ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)))
+		c.Printer.Verbose(
+			"ApplicationLoadBalancer ID: %v",
+			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
+		)
 		c.Printer.Verbose("ForwardingRule ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)))
 		resp, err := RemoveAllHTTPRules(c)
 		if err != nil {
@@ -312,7 +463,10 @@ func RunAlbRuleHttpRuleRemove(c *core.CommandConfig) error {
 		return c.Printer.Print(getAlbRuleHttpRulePrint(resp, c, nil))
 	} else {
 		c.Printer.Verbose("Datacenter ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
-		c.Printer.Verbose("ApplicationLoadBalancer ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)))
+		c.Printer.Verbose(
+			"ApplicationLoadBalancer ID: %v",
+			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
+		)
 		c.Printer.Verbose("ForwardingRule ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)))
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "remove forwarding rule http rule"); err != nil {
 			return err
@@ -418,7 +572,9 @@ func getRuleHttpRuleInfo(c *core.CommandConfig) resources.ApplicationLoadBalance
 	c.Printer.Verbose("Property Type set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgType)))
 	if strings.EqualFold(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgType)), "FORWARD") {
 		httprule.SetTargetGroup(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)))
-		c.Printer.Verbose("Property TargetGroup set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)))
+		c.Printer.Verbose(
+			"Property TargetGroup set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)),
+		)
 	}
 	if strings.EqualFold(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgType)), "REDIRECT") {
 		httprule.SetLocation(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLocation)))
@@ -426,25 +582,35 @@ func getRuleHttpRuleInfo(c *core.CommandConfig) resources.ApplicationLoadBalance
 		httprule.SetDropQuery(viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgQuery)))
 		c.Printer.Verbose("Property DropQuery set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgQuery)))
 		httprule.SetStatusCode(viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgStatusCode)))
-		c.Printer.Verbose("Property StatusCode set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgStatusCode)))
+		c.Printer.Verbose(
+			"Property StatusCode set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgStatusCode)),
+		)
 	}
 	if strings.EqualFold(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgType)), "STATIC") {
 		httprule.SetResponseMessage(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgMessage)))
-		c.Printer.Verbose("Property ResponseMessage set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgMessage)))
+		c.Printer.Verbose(
+			"Property ResponseMessage set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgMessage)),
+		)
 		httprule.SetContentType(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgContentType)))
-		c.Printer.Verbose("Property ContentType set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgContentType)))
+		c.Printer.Verbose(
+			"Property ContentType set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgContentType)),
+		)
 		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgStatusCode)) {
 			httprule.SetStatusCode(viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgStatusCode)))
-			c.Printer.Verbose("Property StatusCode set: %v", viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgStatusCode)))
+			c.Printer.Verbose(
+				"Property StatusCode set: %v", viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgStatusCode)),
+			)
 		} else {
 			httprule.SetStatusCode(503)
 			c.Printer.Verbose("Property StatusCode set with the default value: %v", 503)
 		}
 	}
 	httpRuleCondition := getRuleHttpRuleConditionInfo(c)
-	httprule.SetConditions([]ionoscloud.ApplicationLoadBalancerHttpRuleCondition{
-		httpRuleCondition.ApplicationLoadBalancerHttpRuleCondition,
-	})
+	httprule.SetConditions(
+		[]ionoscloud.ApplicationLoadBalancerHttpRuleCondition{
+			httpRuleCondition.ApplicationLoadBalancerHttpRuleCondition,
+		},
+	)
 	c.Printer.Verbose("Setting Condition to HttpRule")
 	return httprule
 }
@@ -453,27 +619,39 @@ func getRuleHttpRuleConditionInfo(c *core.CommandConfig) resources.ApplicationLo
 	// Set Application Load Balancer HTTP Rule Condition Properties
 	httpRuleCondition := resources.ApplicationLoadBalancerHttpRuleCondition{}
 	httpRuleCondition.SetType(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgConditionType)))
-	c.Printer.Verbose("Property Condition Type set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgConditionType)))
+	c.Printer.Verbose(
+		"Property Condition Type set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgConditionType)),
+	)
 	if !strings.EqualFold(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgConditionType)), "SOURCE_IP") {
 		httpRuleCondition.SetCondition(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgCondition)))
-		c.Printer.Verbose("Property Condition set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgCondition)))
+		c.Printer.Verbose(
+			"Property Condition set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgCondition)),
+		)
 	}
 	httpRuleCondition.SetNegate(viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgNegate)))
-	c.Printer.Verbose("Property Condition Negate set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNegate)))
+	c.Printer.Verbose(
+		"Property Condition Negate set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNegate)),
+	)
 	if strings.EqualFold(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgConditionType)), "COOKIES") ||
 		strings.EqualFold(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgConditionType)), "HEADER") ||
 		strings.EqualFold(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgConditionType)), "QUERY") {
 		httpRuleCondition.SetKey(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgConditionKey)))
-		c.Printer.Verbose("Property Condition Key set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgConditionKey)))
+		c.Printer.Verbose(
+			"Property Condition Key set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgConditionKey)),
+		)
 	}
 	if !strings.EqualFold(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgCondition)), "EXISTS") {
 		httpRuleCondition.SetValue(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgConditionValue)))
-		c.Printer.Verbose("Property Condition Value set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgConditionValue)))
+		c.Printer.Verbose(
+			"Property Condition Value set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgConditionValue)),
+		)
 	}
 	return httpRuleCondition
 }
 
-func getRuleHttpRulesRemove(c *core.CommandConfig, frOld *resources.ApplicationLoadBalancerForwardingRule) (*resources.ApplicationLoadBalancerForwardingRuleProperties, error) {
+func getRuleHttpRulesRemove(
+	c *core.CommandConfig, frOld *resources.ApplicationLoadBalancerForwardingRule,
+) (*resources.ApplicationLoadBalancerForwardingRuleProperties, error) {
 	httpRuleItems := make([]ionoscloud.ApplicationLoadBalancerHttpRule, 0)
 	if properties, ok := frOld.GetPropertiesOk(); ok && properties != nil {
 		c.Printer.Verbose("Getting Properties from the Forwarding Rule")
@@ -508,7 +686,10 @@ func getRuleHttpRulesRemove(c *core.CommandConfig, frOld *resources.ApplicationL
 
 var (
 	defaultAlbRuleHttpRuleCols = []string{"Name", "Type", "TargetGroupId", "DropQuery", "Condition"}
-	allAlbRuleHttpRuleCols     = []string{"Name", "Type", "TargetGroupId", "DropQuery", "Location", "StatusCode", "ResponseMessage", "ContentType", "Condition"}
+	allAlbRuleHttpRuleCols     = []string{
+		"Name", "Type", "TargetGroupId", "DropQuery", "Location", "StatusCode", "ResponseMessage", "ContentType",
+		"Condition",
+	}
 )
 
 type AlbRuleHttpRulePrint struct {
@@ -523,7 +704,9 @@ type AlbRuleHttpRulePrint struct {
 	Condition       []string `json:"Condition,omitempty"`
 }
 
-func getAlbRuleHttpRulePrint(resp *resources.Response, c *core.CommandConfig, ss []resources.ApplicationLoadBalancerHttpRule) printer.Result {
+func getAlbRuleHttpRulePrint(
+	resp *resources.Response, c *core.CommandConfig, ss []resources.ApplicationLoadBalancerHttpRule,
+) printer.Result {
 	r := printer.Result{}
 	if c != nil {
 		if resp != nil {
@@ -536,7 +719,10 @@ func getAlbRuleHttpRulePrint(resp *resources.Response, c *core.CommandConfig, ss
 		if ss != nil {
 			r.OutputJSON = ss
 			r.KeyValue = getAlbRuleHttpRulesKVMaps(ss)
-			r.Columns = printer.GetHeaders(allAlbRuleHttpRuleCols, defaultAlbRuleHttpRuleCols, viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)))
+			r.Columns = printer.GetHeaders(
+				allAlbRuleHttpRuleCols, defaultAlbRuleHttpRuleCols,
+				viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)),
+			)
 		}
 	}
 	return r
@@ -546,9 +732,11 @@ func getAlbRuleHttpRules(httprules *[]ionoscloud.ApplicationLoadBalancerHttpRule
 	ss := make([]resources.ApplicationLoadBalancerHttpRule, 0)
 	if httprules != nil {
 		for _, s := range *httprules {
-			ss = append(ss, resources.ApplicationLoadBalancerHttpRule{
-				ApplicationLoadBalancerHttpRule: s,
-			})
+			ss = append(
+				ss, resources.ApplicationLoadBalancerHttpRule{
+					ApplicationLoadBalancerHttpRule: s,
+				},
+			)
 		}
 	}
 	return ss

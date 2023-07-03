@@ -75,26 +75,34 @@ func TestContractCmd(t *testing.T) {
 func TestRunContractGet(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
-		viper.Reset()
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(constants.ArgQuiet, false)
-		viper.Set(constants.ArgVerbose, false)
-		rm.CloudApiV6Mocks.Contract.EXPECT().Get(gomock.AssignableToTypeOf(testQueryParamOther)).Return(testContracts, &testResponse, nil)
-		err := RunContractGet(cfg)
-		assert.NoError(t, err)
-	})
+	core.CmdConfigTest(
+		t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+			viper.Reset()
+			viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+			viper.Set(constants.ArgQuiet, false)
+			viper.Set(constants.ArgVerbose, false)
+			rm.CloudApiV6Mocks.Contract.EXPECT().Get(gomock.AssignableToTypeOf(testQueryParamOther)).Return(
+				testContracts, &testResponse, nil,
+			)
+			err := RunContractGet(cfg)
+			assert.NoError(t, err)
+		},
+	)
 }
 
 func TestRunContractGetErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
-		viper.Reset()
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(constants.ArgQuiet, false)
-		rm.CloudApiV6Mocks.Contract.EXPECT().Get(gomock.AssignableToTypeOf(testQueryParamOther)).Return(testContracts, nil, testContractErr)
-		err := RunContractGet(cfg)
-		assert.Error(t, err)
-	})
+	core.CmdConfigTest(
+		t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+			viper.Reset()
+			viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+			viper.Set(constants.ArgQuiet, false)
+			rm.CloudApiV6Mocks.Contract.EXPECT().Get(gomock.AssignableToTypeOf(testQueryParamOther)).Return(
+				testContracts, nil, testContractErr,
+			)
+			err := RunContractGet(cfg)
+			assert.Error(t, err)
+		},
+	)
 }

@@ -32,58 +32,84 @@ func LocationCmd() *core.Command {
 	globalFlags := locationCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultLocationCols, printer.ColsMessage(allLocationCols))
 	_ = viper.BindPFlag(core.GetFlagName(locationCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
-	_ = locationCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return allLocationCols, cobra.ShellCompDirectiveNoFileComp
-	})
+	_ = locationCmd.Command.RegisterFlagCompletionFunc(
+		constants.ArgCols,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return allLocationCols, cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 
 	/*
 		List Command
 	*/
-	list := core.NewCommand(ctx, locationCmd, core.CommandBuilder{
-		Namespace:  "location",
-		Resource:   "location",
-		Verb:       "list",
-		Aliases:    []string{"l", "ls"},
-		ShortDesc:  "List Locations",
-		LongDesc:   "Use this command to get a list of available locations to create objects on.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.LocationsFiltersUsage(),
-		Example:    listLocationExample,
-		PreCmdRun:  PreRunLocationsList,
-		CmdRun:     RunLocationList,
-		InitClient: true,
-	})
-	list.AddInt32Flag(constants.FlagMaxResults, constants.FlagMaxResultsShort, cloudapiv6.DefaultMaxResults, constants.DescMaxResults)
-	list.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultListDepth, cloudapiv6.ArgDepthDescription)
+	list := core.NewCommand(
+		ctx, locationCmd, core.CommandBuilder{
+			Namespace:  "location",
+			Resource:   "location",
+			Verb:       "list",
+			Aliases:    []string{"l", "ls"},
+			ShortDesc:  "List Locations",
+			LongDesc:   "Use this command to get a list of available locations to create objects on.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.LocationsFiltersUsage(),
+			Example:    listLocationExample,
+			PreCmdRun:  PreRunLocationsList,
+			CmdRun:     RunLocationList,
+			InitClient: true,
+		},
+	)
+	list.AddInt32Flag(
+		constants.FlagMaxResults, constants.FlagMaxResultsShort, cloudapiv6.DefaultMaxResults, constants.DescMaxResults,
+	)
+	list.AddInt32Flag(
+		cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultListDepth, cloudapiv6.ArgDepthDescription,
+	)
 	list.AddStringFlag(cloudapiv6.ArgOrderBy, "", "", cloudapiv6.ArgOrderByDescription)
-	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgOrderBy, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.LocationsFilters(), cobra.ShellCompDirectiveNoFileComp
-	})
-	list.AddStringSliceFlag(cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, cloudapiv6.ArgFiltersDescription)
-	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgFilters, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.LocationsFilters(), cobra.ShellCompDirectiveNoFileComp
-	})
+	_ = list.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgOrderBy,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.LocationsFilters(), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	list.AddStringSliceFlag(
+		cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, cloudapiv6.ArgFiltersDescription,
+	)
+	_ = list.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgFilters,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.LocationsFilters(), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 	list.AddBoolFlag(constants.ArgNoHeaders, "", false, cloudapiv6.ArgNoHeadersDescription)
 
 	/*
 		Get Command
 	*/
-	get := core.NewCommand(ctx, locationCmd, core.CommandBuilder{
-		Namespace:  "location",
-		Resource:   "location",
-		Verb:       "get",
-		Aliases:    []string{"g"},
-		ShortDesc:  "Get a Location",
-		LongDesc:   "Use this command to get information about a specific Location from a Region.\n\nRequired values to run command:\n\n* Location Id",
-		Example:    getLocationExample,
-		PreCmdRun:  PreRunLocationId,
-		CmdRun:     RunLocationGet,
-		InitClient: true,
-	})
-	get.AddStringFlag(cloudapiv6.ArgLocationId, cloudapiv6.ArgIdShort, "", cloudapiv6.LocationId, core.RequiredFlagOption())
-	_ = get.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgLocationId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.LocationIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
-	})
+	get := core.NewCommand(
+		ctx, locationCmd, core.CommandBuilder{
+			Namespace:  "location",
+			Resource:   "location",
+			Verb:       "get",
+			Aliases:    []string{"g"},
+			ShortDesc:  "Get a Location",
+			LongDesc:   "Use this command to get information about a specific Location from a Region.\n\nRequired values to run command:\n\n* Location Id",
+			Example:    getLocationExample,
+			PreCmdRun:  PreRunLocationId,
+			CmdRun:     RunLocationGet,
+			InitClient: true,
+		},
+	)
+	get.AddStringFlag(
+		cloudapiv6.ArgLocationId, cloudapiv6.ArgIdShort, "", cloudapiv6.LocationId, core.RequiredFlagOption(),
+	)
+	_ = get.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgLocationId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.LocationIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 	get.AddBoolFlag(constants.ArgNoHeaders, "", false, cloudapiv6.ArgNoHeadersDescription)
-	get.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultGetDepth, cloudapiv6.ArgDepthDescription)
+	get.AddInt32Flag(
+		cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultGetDepth, cloudapiv6.ArgDepthDescription,
+	)
 	locationCmd.AddCommand(CpuCmd())
 
 	return locationCmd
@@ -113,11 +139,16 @@ func RunLocationList(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(printer.Result{
-		OutputJSON: locations,
-		KeyValue:   getLocationsKVMaps(getLocations(locations)),
-		Columns:    printer.GetHeaders(allLocationCols, defaultLocationCols, viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))),
-	})
+	return c.Printer.Print(
+		printer.Result{
+			OutputJSON: locations,
+			KeyValue:   getLocationsKVMaps(getLocations(locations)),
+			Columns: printer.GetHeaders(
+				allLocationCols, defaultLocationCols,
+				viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)),
+			),
+		},
+	)
 }
 
 func RunLocationGet(c *core.CommandConfig) error {
@@ -131,7 +162,9 @@ func RunLocationGet(c *core.CommandConfig) error {
 	if len(ids) != 2 {
 		return errors.New("error getting location id & region id")
 	}
-	c.Printer.Verbose("Location with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLocationId)))
+	c.Printer.Verbose(
+		"Location with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLocationId)),
+	)
 	loc, resp, err := c.CloudApiV6Services.Locations().GetByRegionAndLocationId(ids[0], ids[1], queryParams)
 	if resp != nil {
 		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
@@ -139,11 +172,16 @@ func RunLocationGet(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(printer.Result{
-		OutputJSON: loc,
-		KeyValue:   getLocationsKVMaps(getLocation(loc)),
-		Columns:    printer.GetHeaders(allLocationCols, defaultLocationCols, viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))),
-	})
+	return c.Printer.Print(
+		printer.Result{
+			OutputJSON: loc,
+			KeyValue:   getLocationsKVMaps(getLocation(loc)),
+			Columns: printer.GetHeaders(
+				allLocationCols, defaultLocationCols,
+				viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)),
+			),
+		},
+	)
 }
 
 // Output Printing

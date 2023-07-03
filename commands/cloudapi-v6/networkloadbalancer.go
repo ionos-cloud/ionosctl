@@ -37,116 +37,180 @@ func NetworkloadbalancerCmd() *core.Command {
 		},
 	}
 	globalFlags := networkloadbalancerCmd.GlobalFlags()
-	globalFlags.StringSliceP(constants.ArgCols, "", defaultNetworkLoadBalancerCols, printer.ColsMessage(defaultNetworkLoadBalancerCols))
-	_ = viper.BindPFlag(core.GetFlagName(networkloadbalancerCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
-	_ = networkloadbalancerCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return defaultNetworkLoadBalancerCols, cobra.ShellCompDirectiveNoFileComp
-	})
+	globalFlags.StringSliceP(
+		constants.ArgCols, "", defaultNetworkLoadBalancerCols, printer.ColsMessage(defaultNetworkLoadBalancerCols),
+	)
+	_ = viper.BindPFlag(
+		core.GetFlagName(networkloadbalancerCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols),
+	)
+	_ = networkloadbalancerCmd.Command.RegisterFlagCompletionFunc(
+		constants.ArgCols,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return defaultNetworkLoadBalancerCols, cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 
 	/*
 		List Command
 	*/
-	list := core.NewCommand(ctx, networkloadbalancerCmd, core.CommandBuilder{
-		Namespace:  "networkloadbalancer",
-		Resource:   "networkloadbalancer",
-		Verb:       "list",
-		Aliases:    []string{"l", "ls"},
-		ShortDesc:  "List Network Load Balancers",
-		LongDesc:   "Use this command to list Network Load Balancers from a specified Virtual Data Center.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.NlbsFiltersUsage() + "\n\nRequired values to run command:\n\n* Data Center Id",
-		Example:    listNetworkLoadBalancerExample,
-		PreCmdRun:  PreRunNetworkLoadBalancerList,
-		CmdRun:     RunNetworkLoadBalancerList,
-		InitClient: true,
-	})
+	list := core.NewCommand(
+		ctx, networkloadbalancerCmd, core.CommandBuilder{
+			Namespace:  "networkloadbalancer",
+			Resource:   "networkloadbalancer",
+			Verb:       "list",
+			Aliases:    []string{"l", "ls"},
+			ShortDesc:  "List Network Load Balancers",
+			LongDesc:   "Use this command to list Network Load Balancers from a specified Virtual Data Center.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.NlbsFiltersUsage() + "\n\nRequired values to run command:\n\n* Data Center Id",
+			Example:    listNetworkLoadBalancerExample,
+			PreCmdRun:  PreRunNetworkLoadBalancerList,
+			CmdRun:     RunNetworkLoadBalancerList,
+			InitClient: true,
+		},
+	)
 	list.AddUUIDFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
-	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
-	})
-	list.AddInt32Flag(constants.FlagMaxResults, constants.FlagMaxResultsShort, cloudapiv6.DefaultMaxResults, constants.DescMaxResults)
-	list.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultListDepth, cloudapiv6.ArgDepthDescription)
+	_ = list.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgDataCenterId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	list.AddInt32Flag(
+		constants.FlagMaxResults, constants.FlagMaxResultsShort, cloudapiv6.DefaultMaxResults, constants.DescMaxResults,
+	)
+	list.AddInt32Flag(
+		cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultListDepth, cloudapiv6.ArgDepthDescription,
+	)
 	list.AddStringFlag(cloudapiv6.ArgOrderBy, "", "", cloudapiv6.ArgOrderByDescription)
-	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgOrderBy, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.NlbsFilters(), cobra.ShellCompDirectiveNoFileComp
-	})
-	list.AddStringSliceFlag(cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, cloudapiv6.ArgFiltersDescription)
-	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgFilters, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.NlbsFilters(), cobra.ShellCompDirectiveNoFileComp
-	})
+	_ = list.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgOrderBy,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.NlbsFilters(), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	list.AddStringSliceFlag(
+		cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, cloudapiv6.ArgFiltersDescription,
+	)
+	_ = list.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgFilters,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.NlbsFilters(), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 	list.AddBoolFlag(constants.ArgNoHeaders, "", false, cloudapiv6.ArgNoHeadersDescription)
 	list.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, cloudapiv6.ArgListAllDescription)
 
 	/*
 		Get Command
 	*/
-	get := core.NewCommand(ctx, networkloadbalancerCmd, core.CommandBuilder{
-		Namespace:  "networkloadbalancer",
-		Resource:   "networkloadbalancer",
-		Verb:       "get",
-		Aliases:    []string{"g"},
-		ShortDesc:  "Get a Network Load Balancer",
-		LongDesc:   "Use this command to get information about a specified Network Load Balancer from a Virtual Data Center. You can also wait for Network Load Balancer to get in AVAILABLE state using `--wait-for-state` option.\n\nRequired values to run command:\n\n* Data Center Id\n* Network Load Balancer Id",
-		Example:    getNetworkLoadBalancerExample,
-		PreCmdRun:  PreRunDcNetworkLoadBalancerIds,
-		CmdRun:     RunNetworkLoadBalancerGet,
-		InitClient: true,
-	})
+	get := core.NewCommand(
+		ctx, networkloadbalancerCmd, core.CommandBuilder{
+			Namespace:  "networkloadbalancer",
+			Resource:   "networkloadbalancer",
+			Verb:       "get",
+			Aliases:    []string{"g"},
+			ShortDesc:  "Get a Network Load Balancer",
+			LongDesc:   "Use this command to get information about a specified Network Load Balancer from a Virtual Data Center. You can also wait for Network Load Balancer to get in AVAILABLE state using `--wait-for-state` option.\n\nRequired values to run command:\n\n* Data Center Id\n* Network Load Balancer Id",
+			Example:    getNetworkLoadBalancerExample,
+			PreCmdRun:  PreRunDcNetworkLoadBalancerIds,
+			CmdRun:     RunNetworkLoadBalancerGet,
+			InitClient: true,
+		},
+	)
 	get.AddUUIDFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
-	_ = get.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
-	})
-	get.AddUUIDFlag(cloudapiv6.ArgNetworkLoadBalancerId, cloudapiv6.ArgIdShort, "", cloudapiv6.NetworkLoadBalancerId, core.RequiredFlagOption())
-	_ = get.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgNetworkLoadBalancerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.NetworkLoadBalancersIds(os.Stderr, viper.GetString(core.GetFlagName(get.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
-	})
-	get.AddBoolFlag(constants.ArgWaitForState, constants.ArgWaitForStateShort, constants.DefaultWait, "Wait for specified Network Load Balancer to be in AVAILABLE state")
-	get.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, cloudapiv6.NlbTimeoutSeconds, "Timeout option for waiting for Network Load Balancer to be in AVAILABLE state [seconds]")
+	_ = get.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgDataCenterId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	get.AddUUIDFlag(
+		cloudapiv6.ArgNetworkLoadBalancerId, cloudapiv6.ArgIdShort, "", cloudapiv6.NetworkLoadBalancerId,
+		core.RequiredFlagOption(),
+	)
+	_ = get.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgNetworkLoadBalancerId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.NetworkLoadBalancersIds(
+				os.Stderr, viper.GetString(core.GetFlagName(get.NS, cloudapiv6.ArgDataCenterId)),
+			), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	get.AddBoolFlag(
+		constants.ArgWaitForState, constants.ArgWaitForStateShort, constants.DefaultWait,
+		"Wait for specified Network Load Balancer to be in AVAILABLE state",
+	)
+	get.AddIntFlag(
+		constants.ArgTimeout, constants.ArgTimeoutShort, cloudapiv6.NlbTimeoutSeconds,
+		"Timeout option for waiting for Network Load Balancer to be in AVAILABLE state [seconds]",
+	)
 	get.AddBoolFlag(constants.ArgNoHeaders, "", false, cloudapiv6.ArgNoHeadersDescription)
-	get.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultGetDepth, cloudapiv6.ArgDepthDescription)
+	get.AddInt32Flag(
+		cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultGetDepth, cloudapiv6.ArgDepthDescription,
+	)
 
 	/*
 		Create Command
 	*/
-	create := core.NewCommand(ctx, networkloadbalancerCmd, core.CommandBuilder{
-		Namespace: "networkloadbalancer",
-		Resource:  "networkloadbalancer",
-		Verb:      "create",
-		Aliases:   []string{"c"},
-		ShortDesc: "Create a Network Load Balancer",
-		LongDesc: `Use this command to create a Network Load Balancer in a specified Virtual Data Center.
+	create := core.NewCommand(
+		ctx, networkloadbalancerCmd, core.CommandBuilder{
+			Namespace: "networkloadbalancer",
+			Resource:  "networkloadbalancer",
+			Verb:      "create",
+			Aliases:   []string{"c"},
+			ShortDesc: "Create a Network Load Balancer",
+			LongDesc: `Use this command to create a Network Load Balancer in a specified Virtual Data Center.
 
 You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option.
 
 Required values to run command:
 
 * Data Center Id`,
-		Example:    createNetworkLoadBalancerExample,
-		PreCmdRun:  PreRunDataCenterId,
-		CmdRun:     RunNetworkLoadBalancerCreate,
-		InitClient: true,
-	})
+			Example:    createNetworkLoadBalancerExample,
+			PreCmdRun:  PreRunDataCenterId,
+			CmdRun:     RunNetworkLoadBalancerCreate,
+			InitClient: true,
+		},
+	)
 	create.AddUUIDFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
-	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
-	})
-	create.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "Network Load Balancer", "Name of the Network Load Balancer")
+	_ = create.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgDataCenterId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	create.AddStringFlag(
+		cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "Network Load Balancer", "Name of the Network Load Balancer",
+	)
 	create.AddIntFlag(cloudapiv6.ArgListenerLan, "", 2, "Id of the listening LAN")
 	create.AddIntFlag(cloudapiv6.ArgTargetLan, "", 1, "Id of the balanced private target LAN")
 	create.AddStringSliceFlag(cloudapiv6.ArgIps, "", nil, "Collection of IP addresses of the Network Load Balancer")
-	create.AddStringSliceFlag(cloudapiv6.ArgPrivateIps, "", nil, "Collection of private IP addresses with subnet mask of the Network Load Balancer")
-	create.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait, "Wait for the Request for Network Load Balancer creation to be executed")
-	create.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, cloudapiv6.NlbTimeoutSeconds, "Timeout option for Request for Network Load Balancer creation [seconds]")
-	create.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultCreateDepth, cloudapiv6.ArgDepthDescription)
+	create.AddStringSliceFlag(
+		cloudapiv6.ArgPrivateIps, "", nil,
+		"Collection of private IP addresses with subnet mask of the Network Load Balancer",
+	)
+	create.AddBoolFlag(
+		constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait,
+		"Wait for the Request for Network Load Balancer creation to be executed",
+	)
+	create.AddIntFlag(
+		constants.ArgTimeout, constants.ArgTimeoutShort, cloudapiv6.NlbTimeoutSeconds,
+		"Timeout option for Request for Network Load Balancer creation [seconds]",
+	)
+	create.AddInt32Flag(
+		cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultCreateDepth, cloudapiv6.ArgDepthDescription,
+	)
 
 	/*
 		Update Command
 	*/
-	update := core.NewCommand(ctx, networkloadbalancerCmd, core.CommandBuilder{
-		Namespace: "networkloadbalancer",
-		Resource:  "networkloadbalancer",
-		Verb:      "update",
-		Aliases:   []string{"u", "up"},
-		ShortDesc: "Update a Network Load Balancer",
-		LongDesc: `Use this command to update a specified Network Load Balancer from a Virtual Data Center.
+	update := core.NewCommand(
+		ctx, networkloadbalancerCmd, core.CommandBuilder{
+			Namespace: "networkloadbalancer",
+			Resource:  "networkloadbalancer",
+			Verb:      "update",
+			Aliases:   []string{"u", "up"},
+			ShortDesc: "Update a Network Load Balancer",
+			LongDesc: `Use this command to update a specified Network Load Balancer from a Virtual Data Center.
 
 You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option.
 
@@ -154,38 +218,64 @@ Required values to run command:
 
 * Data Center Id
 * Network Load Balancer Id`,
-		Example:    updateNetworkLoadBalancerExample,
-		PreCmdRun:  PreRunDcNetworkLoadBalancerIds,
-		CmdRun:     RunNetworkLoadBalancerUpdate,
-		InitClient: true,
-	})
+			Example:    updateNetworkLoadBalancerExample,
+			PreCmdRun:  PreRunDcNetworkLoadBalancerIds,
+			CmdRun:     RunNetworkLoadBalancerUpdate,
+			InitClient: true,
+		},
+	)
 	update.AddUUIDFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
-	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
-	})
-	update.AddUUIDFlag(cloudapiv6.ArgNetworkLoadBalancerId, cloudapiv6.ArgIdShort, "", cloudapiv6.NetworkLoadBalancerId, core.RequiredFlagOption())
-	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgNetworkLoadBalancerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.NetworkLoadBalancersIds(os.Stderr, viper.GetString(core.GetFlagName(update.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
-	})
-	update.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "Network Load Balancer", "Name of the Network Load Balancer")
+	_ = update.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgDataCenterId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	update.AddUUIDFlag(
+		cloudapiv6.ArgNetworkLoadBalancerId, cloudapiv6.ArgIdShort, "", cloudapiv6.NetworkLoadBalancerId,
+		core.RequiredFlagOption(),
+	)
+	_ = update.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgNetworkLoadBalancerId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.NetworkLoadBalancersIds(
+				os.Stderr, viper.GetString(core.GetFlagName(update.NS, cloudapiv6.ArgDataCenterId)),
+			), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	update.AddStringFlag(
+		cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "Network Load Balancer", "Name of the Network Load Balancer",
+	)
 	update.AddIntFlag(cloudapiv6.ArgListenerLan, "", 2, "Id of the listening LAN")
 	update.AddIntFlag(cloudapiv6.ArgTargetLan, "", 1, "Id of the balanced private target LAN")
 	update.AddStringSliceFlag(cloudapiv6.ArgIps, "", nil, "Collection of IP addresses of the Network Load Balancer")
-	update.AddStringSliceFlag(cloudapiv6.ArgPrivateIps, "", nil, "Collection of private IP addresses with subnet mask of the Network Load Balancer")
-	update.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait, "Wait for the Request for Network Load Balancer update to be executed")
-	update.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, cloudapiv6.NlbTimeoutSeconds, "Timeout option for Request for Network Load Balancer update [seconds]")
-	update.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultUpdateDepth, cloudapiv6.ArgDepthDescription)
+	update.AddStringSliceFlag(
+		cloudapiv6.ArgPrivateIps, "", nil,
+		"Collection of private IP addresses with subnet mask of the Network Load Balancer",
+	)
+	update.AddBoolFlag(
+		constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait,
+		"Wait for the Request for Network Load Balancer update to be executed",
+	)
+	update.AddIntFlag(
+		constants.ArgTimeout, constants.ArgTimeoutShort, cloudapiv6.NlbTimeoutSeconds,
+		"Timeout option for Request for Network Load Balancer update [seconds]",
+	)
+	update.AddInt32Flag(
+		cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultUpdateDepth, cloudapiv6.ArgDepthDescription,
+	)
 
 	/*
 		Delete Command
 	*/
-	deleteCmd := core.NewCommand(ctx, networkloadbalancerCmd, core.CommandBuilder{
-		Namespace: "networkloadbalancer",
-		Resource:  "networkloadbalancer",
-		Verb:      "delete",
-		Aliases:   []string{"d"},
-		ShortDesc: "Delete a Network Load Balancer",
-		LongDesc: `Use this command to delete a specified Network Load Balancer from a Virtual Data Center.
+	deleteCmd := core.NewCommand(
+		ctx, networkloadbalancerCmd, core.CommandBuilder{
+			Namespace: "networkloadbalancer",
+			Resource:  "networkloadbalancer",
+			Verb:      "delete",
+			Aliases:   []string{"d"},
+			ShortDesc: "Delete a Network Load Balancer",
+			LongDesc: `Use this command to delete a specified Network Load Balancer from a Virtual Data Center.
 
 You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option. You can force the command to execute without user input using ` + "`" + `--force` + "`" + ` option.
 
@@ -193,23 +283,43 @@ Required values to run command:
 
 * Data Center Id
 * Network Load Balancer Id`,
-		Example:    deleteNetworkLoadBalancerExample,
-		PreCmdRun:  PreRunDcNetworkLoadBalancerDelete,
-		CmdRun:     RunNetworkLoadBalancerDelete,
-		InitClient: true,
-	})
+			Example:    deleteNetworkLoadBalancerExample,
+			PreCmdRun:  PreRunDcNetworkLoadBalancerDelete,
+			CmdRun:     RunNetworkLoadBalancerDelete,
+			InitClient: true,
+		},
+	)
 	deleteCmd.AddUUIDFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
-	_ = deleteCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
-	})
-	deleteCmd.AddUUIDFlag(cloudapiv6.ArgNetworkLoadBalancerId, cloudapiv6.ArgIdShort, "", cloudapiv6.NetworkLoadBalancerId, core.RequiredFlagOption())
-	_ = deleteCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgNetworkLoadBalancerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.NetworkLoadBalancersIds(os.Stderr, viper.GetString(core.GetFlagName(deleteCmd.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
-	})
-	deleteCmd.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait, "Wait for the Request for Network Load Balancer deletion to be executed")
+	_ = deleteCmd.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgDataCenterId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	deleteCmd.AddUUIDFlag(
+		cloudapiv6.ArgNetworkLoadBalancerId, cloudapiv6.ArgIdShort, "", cloudapiv6.NetworkLoadBalancerId,
+		core.RequiredFlagOption(),
+	)
+	_ = deleteCmd.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgNetworkLoadBalancerId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.NetworkLoadBalancersIds(
+				os.Stderr, viper.GetString(core.GetFlagName(deleteCmd.NS, cloudapiv6.ArgDataCenterId)),
+			), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	deleteCmd.AddBoolFlag(
+		constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait,
+		"Wait for the Request for Network Load Balancer deletion to be executed",
+	)
 	deleteCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete all NetworkLoadBalancers.")
-	deleteCmd.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, cloudapiv6.NlbTimeoutSeconds, "Timeout option for Request for Network Load Balancer deletion [seconds]")
-	deleteCmd.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultDeleteDepth, cloudapiv6.ArgDepthDescription)
+	deleteCmd.AddIntFlag(
+		constants.ArgTimeout, constants.ArgTimeoutShort, cloudapiv6.NlbTimeoutSeconds,
+		"Timeout option for Request for Network Load Balancer deletion [seconds]",
+	)
+	deleteCmd.AddInt32Flag(
+		cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultDeleteDepth, cloudapiv6.ArgDepthDescription,
+	)
 
 	networkloadbalancerCmd.AddCommand(NetworkloadbalancerFlowLogCmd())
 	networkloadbalancerCmd.AddCommand(NetworkloadbalancerRuleCmd())
@@ -218,7 +328,8 @@ Required values to run command:
 }
 
 func PreRunNetworkLoadBalancerList(c *core.PreCommandConfig) error {
-	if err := core.CheckRequiredFlagsSets(c.Command, c.NS,
+	if err := core.CheckRequiredFlagsSets(
+		c.Command, c.NS,
 		[]string{cloudapiv6.ArgDataCenterId},
 		[]string{cloudapiv6.ArgAll},
 	); err != nil {
@@ -235,7 +346,8 @@ func PreRunDcNetworkLoadBalancerIds(c *core.PreCommandConfig) error {
 }
 
 func PreRunDcNetworkLoadBalancerDelete(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlagsSets(c.Command, c.NS,
+	return core.CheckRequiredFlagsSets(
+		c.Command, c.NS,
 		[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgNetworkLoadBalancerId},
 		[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgAll},
 	)
@@ -254,7 +366,9 @@ func RunNetworkLoadBalancerListAll(c *core.CommandConfig) error {
 	var allNetworkLoadBalancers []resources.NetworkLoadBalancer
 	totalTime := time.Duration(0)
 	for _, dc := range allDcs {
-		NetworkLoadBalancers, resp, err := c.CloudApiV6Services.NetworkLoadBalancers().List(*dc.GetId(), listQueryParams)
+		NetworkLoadBalancers, resp, err := c.CloudApiV6Services.NetworkLoadBalancers().List(
+			*dc.GetId(), listQueryParams,
+		)
 		if err != nil {
 			return err
 		}
@@ -296,10 +410,16 @@ func RunNetworkLoadBalancerGet(c *core.CommandConfig) error {
 		return err
 	}
 	queryParams := listQueryParams.QueryParams
-	if err := utils.WaitForState(c, waiter.NetworkLoadBalancerStateInterrogator, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNetworkLoadBalancerId))); err != nil {
+	if err := utils.WaitForState(
+		c, waiter.NetworkLoadBalancerStateInterrogator,
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNetworkLoadBalancerId)),
+	); err != nil {
 		return err
 	}
-	c.Printer.Verbose("NetworkLoadBalancer with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNetworkLoadBalancerId)))
+	c.Printer.Verbose(
+		"NetworkLoadBalancer with id: %v is getting...",
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNetworkLoadBalancerId)),
+	)
 	ng, resp, err := c.CloudApiV6Services.NetworkLoadBalancers().Get(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNetworkLoadBalancerId)),
@@ -450,7 +570,9 @@ func DeleteAllNetworkLoadBalancers(c *core.CommandConfig) error {
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	c.Printer.Verbose("Datacenter ID: %v", dcId)
 	c.Printer.Verbose("Getting NetworkLoadBalancers...")
-	networkLoadBalancers, resp, err := c.CloudApiV6Services.NetworkLoadBalancers().List(dcId, cloudapiv6.ParentResourceListQueryParams)
+	networkLoadBalancers, resp, err := c.CloudApiV6Services.NetworkLoadBalancers().List(
+		dcId, cloudapiv6.ParentResourceListQueryParams,
+	)
 	if err != nil {
 		return err
 	}
@@ -507,8 +629,12 @@ func DeleteAllNetworkLoadBalancers(c *core.CommandConfig) error {
 
 // Output Printing
 
-var defaultNetworkLoadBalancerCols = []string{"NetworkLoadBalancerId", "Name", "ListenerLan", "Ips", "TargetLan", "LbPrivateIps", "State"}
-var allNetworkLoadBalancerCols = []string{"NetworkLoadBalancerId", "Name", "ListenerLan", "Ips", "TargetLan", "LbPrivateIps", "State", "DatacenterId"}
+var defaultNetworkLoadBalancerCols = []string{
+	"NetworkLoadBalancerId", "Name", "ListenerLan", "Ips", "TargetLan", "LbPrivateIps", "State",
+}
+var allNetworkLoadBalancerCols = []string{
+	"NetworkLoadBalancerId", "Name", "ListenerLan", "Ips", "TargetLan", "LbPrivateIps", "State", "DatacenterId",
+}
 
 type NetworkLoadBalancerPrint struct {
 	NetworkLoadBalancerId string   `json:"NetworkLoadBalancerId,omitempty"`
@@ -521,7 +647,9 @@ type NetworkLoadBalancerPrint struct {
 	DatacenterId          string   `json:"DatacenterId,omitempty"`
 }
 
-func getNetworkLoadBalancerPrint(resp *resources.Response, c *core.CommandConfig, ss []resources.NetworkLoadBalancer) printer.Result {
+func getNetworkLoadBalancerPrint(
+	resp *resources.Response, c *core.CommandConfig, ss []resources.NetworkLoadBalancer,
+) printer.Result {
 	r := printer.Result{}
 	if c != nil {
 		if resp != nil {
@@ -534,7 +662,11 @@ func getNetworkLoadBalancerPrint(resp *resources.Response, c *core.CommandConfig
 		if ss != nil {
 			r.OutputJSON = ss
 			r.KeyValue = getNetworkLoadBalancersKVMaps(ss)
-			r.Columns = printer.GetHeadersListAll(allNetworkLoadBalancerCols, defaultNetworkLoadBalancerCols, "DatacenterId", viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)), viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)))
+			r.Columns = printer.GetHeadersListAll(
+				allNetworkLoadBalancerCols, defaultNetworkLoadBalancerCols, "DatacenterId",
+				viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
+				viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)),
+			)
 		}
 	}
 	return r
@@ -544,7 +676,9 @@ func getNetworkLoadBalancers(networkloadbalancers resources.NetworkLoadBalancers
 	networkLoadBalancerObjs := make([]resources.NetworkLoadBalancer, 0)
 	if items, ok := networkloadbalancers.GetItemsOk(); ok && items != nil {
 		for _, networkLoadBalancer := range *items {
-			networkLoadBalancerObjs = append(networkLoadBalancerObjs, resources.NetworkLoadBalancer{NetworkLoadBalancer: networkLoadBalancer})
+			networkLoadBalancerObjs = append(
+				networkLoadBalancerObjs, resources.NetworkLoadBalancer{NetworkLoadBalancer: networkLoadBalancer},
+			)
 		}
 	}
 	return networkLoadBalancerObjs

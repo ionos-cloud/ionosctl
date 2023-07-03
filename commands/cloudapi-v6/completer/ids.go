@@ -370,7 +370,9 @@ func NetworkLoadBalancerFlowLogsIds(outErr io.Writer, datacenterId, networkloadb
 	client, err := client2.Get()
 	clierror.CheckError(err, outErr)
 	networkloadbalancerSvc := resources.NewNetworkLoadBalancerService(client, context.TODO())
-	natFlowLogs, _, err := networkloadbalancerSvc.ListFlowLogs(datacenterId, networkloadbalancerId, resources.ListQueryParams{})
+	natFlowLogs, _, err := networkloadbalancerSvc.ListFlowLogs(
+		datacenterId, networkloadbalancerId, resources.ListQueryParams{},
+	)
 	clierror.CheckError(err, outErr)
 	ssIds := make([]string, 0)
 	if items, ok := natFlowLogs.FlowLogs.GetItemsOk(); ok && items != nil {
@@ -693,7 +695,9 @@ func ApplicationLoadBalancerFlowLogsIds(outErr io.Writer, datacenterId, applicat
 	client, err := client2.Get()
 	clierror.CheckError(err, outErr)
 	applicationloadbalancerSvc := resources.NewApplicationLoadBalancerService(client, context.TODO())
-	natFlowLogs, _, err := applicationloadbalancerSvc.ListFlowLogs(datacenterId, applicationloadbalancerId, resources.ListQueryParams{})
+	natFlowLogs, _, err := applicationloadbalancerSvc.ListFlowLogs(
+		datacenterId, applicationloadbalancerId, resources.ListQueryParams{},
+	)
 	clierror.CheckError(err, outErr)
 	ssIds := make([]string, 0)
 	if items, ok := natFlowLogs.FlowLogs.GetItemsOk(); ok && items != nil {

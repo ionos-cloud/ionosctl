@@ -53,8 +53,10 @@ func getSnapshotPrint(c *core.CommandConfig, dcs *[]ionoscloud.SnapshotResponse)
 	r := printer.Result{}
 	if c != nil && dcs != nil {
 		r.OutputJSON = dcs
-		r.KeyValue = MakeSnapshotPrintObject(dcs)                                                                                                 // map header -> rows
-		r.Columns = printer.GetHeadersAllDefault(structs.Names(SnapshotPrint{}), viper.GetStringSlice(core.GetFlagName(c.NS, constants.ArgCols))) // headers
+		r.KeyValue = MakeSnapshotPrintObject(dcs) // map header -> rows
+		r.Columns = printer.GetHeadersAllDefault(
+			structs.Names(SnapshotPrint{}), viper.GetStringSlice(core.GetFlagName(c.NS, constants.ArgCols)),
+		) // headers
 	}
 	return r
 }

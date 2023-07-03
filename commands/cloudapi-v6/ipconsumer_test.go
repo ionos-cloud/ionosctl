@@ -61,56 +61,72 @@ func TestIpconsumerCmd(t *testing.T) {
 func TestRunIpConsumersList(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
-		viper.Reset()
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(constants.ArgQuiet, false)
-		viper.Set(constants.ArgVerbose, false)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIpBlockId), testIpConsumerVar)
-		rm.CloudApiV6Mocks.IpBlocks.EXPECT().Get(testIpConsumerVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&resources.IpBlock{IpBlock: testIpConsumer}, &testResponse, nil)
-		err := RunIpConsumersList(cfg)
-		assert.NoError(t, err)
-	})
+	core.CmdConfigTest(
+		t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+			viper.Reset()
+			viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+			viper.Set(constants.ArgQuiet, false)
+			viper.Set(constants.ArgVerbose, false)
+			viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIpBlockId), testIpConsumerVar)
+			rm.CloudApiV6Mocks.IpBlocks.EXPECT().Get(
+				testIpConsumerVar, gomock.AssignableToTypeOf(testQueryParamOther),
+			).Return(&resources.IpBlock{IpBlock: testIpConsumer}, &testResponse, nil)
+			err := RunIpConsumersList(cfg)
+			assert.NoError(t, err)
+		},
+	)
 }
 
 func TestRunIpConsumersListPropertiesErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
-		viper.Reset()
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(constants.ArgQuiet, false)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIpBlockId), testIpConsumerVar)
-		rm.CloudApiV6Mocks.IpBlocks.EXPECT().Get(testIpConsumerVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&resources.IpBlock{IpBlock: testIpConsumerProperties}, nil, nil)
-		err := RunIpConsumersList(cfg)
-		assert.Error(t, err)
-	})
+	core.CmdConfigTest(
+		t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+			viper.Reset()
+			viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+			viper.Set(constants.ArgQuiet, false)
+			viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIpBlockId), testIpConsumerVar)
+			rm.CloudApiV6Mocks.IpBlocks.EXPECT().Get(
+				testIpConsumerVar, gomock.AssignableToTypeOf(testQueryParamOther),
+			).Return(&resources.IpBlock{IpBlock: testIpConsumerProperties}, nil, nil)
+			err := RunIpConsumersList(cfg)
+			assert.Error(t, err)
+		},
+	)
 }
 
 func TestRunIpConsumersListGetErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
-		viper.Reset()
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(constants.ArgQuiet, false)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIpBlockId), testIpConsumerVar)
-		rm.CloudApiV6Mocks.IpBlocks.EXPECT().Get(testIpConsumerVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&resources.IpBlock{IpBlock: testIpConsumerGet}, nil, nil)
-		err := RunIpConsumersList(cfg)
-		assert.Error(t, err)
-	})
+	core.CmdConfigTest(
+		t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+			viper.Reset()
+			viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+			viper.Set(constants.ArgQuiet, false)
+			viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIpBlockId), testIpConsumerVar)
+			rm.CloudApiV6Mocks.IpBlocks.EXPECT().Get(
+				testIpConsumerVar, gomock.AssignableToTypeOf(testQueryParamOther),
+			).Return(&resources.IpBlock{IpBlock: testIpConsumerGet}, nil, nil)
+			err := RunIpConsumersList(cfg)
+			assert.Error(t, err)
+		},
+	)
 }
 
 func TestRunIpConsumersListErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
-		viper.Reset()
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(constants.ArgQuiet, false)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIpBlockId), testIpConsumerVar)
-		rm.CloudApiV6Mocks.IpBlocks.EXPECT().Get(testIpConsumerVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&resources.IpBlock{IpBlock: testIpConsumer}, nil, testIpConsumerErr)
-		err := RunIpConsumersList(cfg)
-		assert.Error(t, err)
-	})
+	core.CmdConfigTest(
+		t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+			viper.Reset()
+			viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+			viper.Set(constants.ArgQuiet, false)
+			viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIpBlockId), testIpConsumerVar)
+			rm.CloudApiV6Mocks.IpBlocks.EXPECT().Get(
+				testIpConsumerVar, gomock.AssignableToTypeOf(testQueryParamOther),
+			).Return(&resources.IpBlock{IpBlock: testIpConsumer}, nil, testIpConsumerErr)
+			err := RunIpConsumersList(cfg)
+			assert.Error(t, err)
+		},
+	)
 }

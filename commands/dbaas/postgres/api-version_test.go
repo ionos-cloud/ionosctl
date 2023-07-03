@@ -43,60 +43,68 @@ func TestAPIVersionCmd(t *testing.T) {
 func TestRunAPIVersionList(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
-		viper.Reset()
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(constants.ArgQuiet, false)
-		viper.Set(constants.ArgVerbose, false)
-		viper.Set(constants.ArgServerUrl, constants.DefaultApiURL)
-		viper.Set(core.GetFlagName(cfg.NS, constants.ArgCols), defaultAPIVersionCols)
-		rm.CloudApiDbaasPgsqlMocks.Info.EXPECT().List().Return(testAPIVersions, nil, nil)
-		err := RunAPIVersionList(cfg)
-		assert.NoError(t, err)
-	})
+	core.CmdConfigTest(
+		t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+			viper.Reset()
+			viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+			viper.Set(constants.ArgQuiet, false)
+			viper.Set(constants.ArgVerbose, false)
+			viper.Set(constants.ArgServerUrl, constants.DefaultApiURL)
+			viper.Set(core.GetFlagName(cfg.NS, constants.ArgCols), defaultAPIVersionCols)
+			rm.CloudApiDbaasPgsqlMocks.Info.EXPECT().List().Return(testAPIVersions, nil, nil)
+			err := RunAPIVersionList(cfg)
+			assert.NoError(t, err)
+		},
+	)
 }
 
 func TestRunAPIVersionListErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
-		viper.Reset()
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(constants.ArgQuiet, false)
-		viper.Set(constants.ArgServerUrl, constants.DefaultApiURL)
-		rm.CloudApiDbaasPgsqlMocks.Info.EXPECT().List().Return(testAPIVersions, nil, testAPIVersionErr)
-		err := RunAPIVersionList(cfg)
-		assert.Error(t, err)
-	})
+	core.CmdConfigTest(
+		t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+			viper.Reset()
+			viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+			viper.Set(constants.ArgQuiet, false)
+			viper.Set(constants.ArgServerUrl, constants.DefaultApiURL)
+			rm.CloudApiDbaasPgsqlMocks.Info.EXPECT().List().Return(testAPIVersions, nil, testAPIVersionErr)
+			err := RunAPIVersionList(cfg)
+			assert.Error(t, err)
+		},
+	)
 }
 
 func TestRunAPIVersionGet(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
-		viper.Reset()
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(constants.ArgQuiet, false)
-		viper.Set(constants.ArgVerbose, false)
-		viper.Set(constants.ArgServerUrl, constants.DefaultApiURL)
-		rm.CloudApiDbaasPgsqlMocks.Info.EXPECT().Get().Return(testAPIVersion, nil, nil)
-		err := RunAPIVersionGet(cfg)
-		assert.NoError(t, err)
-	})
+	core.CmdConfigTest(
+		t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+			viper.Reset()
+			viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+			viper.Set(constants.ArgQuiet, false)
+			viper.Set(constants.ArgVerbose, false)
+			viper.Set(constants.ArgServerUrl, constants.DefaultApiURL)
+			rm.CloudApiDbaasPgsqlMocks.Info.EXPECT().Get().Return(testAPIVersion, nil, nil)
+			err := RunAPIVersionGet(cfg)
+			assert.NoError(t, err)
+		},
+	)
 }
 
 func TestRunAPIVersionGetErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
-		viper.Reset()
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(constants.ArgQuiet, false)
-		viper.Set(constants.ArgServerUrl, constants.DefaultApiURL)
-		rm.CloudApiDbaasPgsqlMocks.Info.EXPECT().Get().Return(testAPIVersion, nil, testAPIVersionErr)
-		err := RunAPIVersionGet(cfg)
-		assert.Error(t, err)
-	})
+	core.CmdConfigTest(
+		t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+			viper.Reset()
+			viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+			viper.Set(constants.ArgQuiet, false)
+			viper.Set(constants.ArgServerUrl, constants.DefaultApiURL)
+			rm.CloudApiDbaasPgsqlMocks.Info.EXPECT().Get().Return(testAPIVersion, nil, testAPIVersionErr)
+			err := RunAPIVersionGet(cfg)
+			assert.Error(t, err)
+		},
+	)
 }
 
 func TestGetAPIVersionsCols(t *testing.T) {

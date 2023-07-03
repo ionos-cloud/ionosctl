@@ -13,23 +13,28 @@ import (
 )
 
 func CertGetApiVersionCmd() *core.Command {
-	cmd := core.NewCommand(context.TODO(), nil, core.CommandBuilder{
-		Namespace:  "certmanager",
-		Resource:   "certificates",
-		Verb:       "api-version",
-		Aliases:    []string{"api", "info"},
-		ShortDesc:  "Get Certificate Manager API Version",
-		LongDesc:   "Use this command to retrieve API Version.",
-		Example:    "ionosctl certificate-manager api-version",
-		PreCmdRun:  core.NoPreRun,
-		CmdRun:     CmdGetApiVersion,
-		InitClient: true,
-	})
+	cmd := core.NewCommand(
+		context.TODO(), nil, core.CommandBuilder{
+			Namespace:  "certmanager",
+			Resource:   "certificates",
+			Verb:       "api-version",
+			Aliases:    []string{"api", "info"},
+			ShortDesc:  "Get Certificate Manager API Version",
+			LongDesc:   "Use this command to retrieve API Version.",
+			Example:    "ionosctl certificate-manager api-version",
+			PreCmdRun:  core.NoPreRun,
+			CmdRun:     CmdGetApiVersion,
+			InitClient: true,
+		},
+	)
 
 	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, printer.ColsMessage(allCols))
-	_ = cmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return allAPICols, cobra.ShellCompDirectiveNoFileComp
-	})
+	_ = cmd.Command.RegisterFlagCompletionFunc(
+		constants.ArgCols,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return allAPICols, cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 	cmd.AddBoolFlag(constants.ArgNoHeaders, "n", false, "Response delete all certificates")
 
 	return cmd
@@ -48,14 +53,20 @@ func CmdGetApiVersion(c *core.CommandConfig) error {
 	return c.Printer.Print(getApiPrint(nil, c, &[]sdkgo.ApiInfoDto{APIVersion}, headers))
 }
 
-func getApiPrint(resp *sdkgo.APIResponse, c *core.CommandConfig, cert *[]sdkgo.ApiInfoDto, headers bool) printer.Result {
+func getApiPrint(
+	resp *sdkgo.APIResponse, c *core.CommandConfig, cert *[]sdkgo.ApiInfoDto, headers bool,
+) printer.Result {
 	r := printer.Result{}
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 	if c != nil {
 		if resp != nil {
 			r.Resource = c.Resource
 			r.Verb = c.Verb
-			r.WaitForState = viper.GetBool(core.GetFlagName(c.NS, constants.ArgWaitForRequest)) // this boolean is duplicated everywhere just to do an append of `& wait` to a verbose message
+			r.WaitForState = viper.GetBool(
+				core.GetFlagName(
+					c.NS, constants.ArgWaitForRequest,
+				),
+			) // this boolean is duplicated everywhere just to do an append of `& wait` to a verbose message
 		}
 		if cert != nil {
 			r.OutputJSON = cert

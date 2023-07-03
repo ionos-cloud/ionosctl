@@ -36,145 +36,214 @@ func IpblockCmd() *core.Command {
 	globalFlags := ipblockCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultIpBlockCols, printer.ColsMessage(defaultIpBlockCols))
 	_ = viper.BindPFlag(core.GetFlagName(ipblockCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
-	_ = ipblockCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return defaultIpBlockCols, cobra.ShellCompDirectiveNoFileComp
-	})
+	_ = ipblockCmd.Command.RegisterFlagCompletionFunc(
+		constants.ArgCols,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return defaultIpBlockCols, cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 
 	/*
 		List Command
 	*/
-	list := core.NewCommand(ctx, ipblockCmd, core.CommandBuilder{
-		Namespace:  "ipblock",
-		Resource:   "ipblock",
-		Verb:       "list",
-		Aliases:    []string{"l", "ls"},
-		ShortDesc:  "List IpBlocks",
-		LongDesc:   "Use this command to list IpBlocks.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.IpBlocksFiltersUsage(),
-		Example:    listIpBlockExample,
-		PreCmdRun:  PreRunIpblockList,
-		CmdRun:     RunIpBlockList,
-		InitClient: true,
-	})
-	list.AddInt32Flag(constants.FlagMaxResults, constants.FlagMaxResultsShort, cloudapiv6.DefaultMaxResults, constants.DescMaxResults)
-	list.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultListDepth, cloudapiv6.ArgDepthDescription)
+	list := core.NewCommand(
+		ctx, ipblockCmd, core.CommandBuilder{
+			Namespace:  "ipblock",
+			Resource:   "ipblock",
+			Verb:       "list",
+			Aliases:    []string{"l", "ls"},
+			ShortDesc:  "List IpBlocks",
+			LongDesc:   "Use this command to list IpBlocks.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.IpBlocksFiltersUsage(),
+			Example:    listIpBlockExample,
+			PreCmdRun:  PreRunIpblockList,
+			CmdRun:     RunIpBlockList,
+			InitClient: true,
+		},
+	)
+	list.AddInt32Flag(
+		constants.FlagMaxResults, constants.FlagMaxResultsShort, cloudapiv6.DefaultMaxResults, constants.DescMaxResults,
+	)
+	list.AddInt32Flag(
+		cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultListDepth, cloudapiv6.ArgDepthDescription,
+	)
 	list.AddStringFlag(cloudapiv6.ArgOrderBy, "", "", cloudapiv6.ArgOrderByDescription)
-	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgOrderBy, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.IpBlocksFilters(), cobra.ShellCompDirectiveNoFileComp
-	})
-	list.AddStringSliceFlag(cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, cloudapiv6.ArgFiltersDescription)
-	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgFilters, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.IpBlocksFilters(), cobra.ShellCompDirectiveNoFileComp
-	})
+	_ = list.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgOrderBy,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.IpBlocksFilters(), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	list.AddStringSliceFlag(
+		cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, cloudapiv6.ArgFiltersDescription,
+	)
+	_ = list.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgFilters,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.IpBlocksFilters(), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 	list.AddBoolFlag(constants.ArgNoHeaders, "", false, cloudapiv6.ArgNoHeadersDescription)
 
 	/*
 		Get Command
 	*/
-	get := core.NewCommand(ctx, ipblockCmd, core.CommandBuilder{
-		Namespace:  "ipblock",
-		Resource:   "ipblock",
-		Verb:       "get",
-		Aliases:    []string{"g"},
-		ShortDesc:  "Get an IpBlock",
-		LongDesc:   "Use this command to retrieve the attributes of a specific IpBlock.\n\nRequired values to run command:\n\n* IpBlock Id",
-		Example:    getIpBlockExample,
-		PreCmdRun:  PreRunIpBlockId,
-		CmdRun:     RunIpBlockGet,
-		InitClient: true,
-	})
+	get := core.NewCommand(
+		ctx, ipblockCmd, core.CommandBuilder{
+			Namespace:  "ipblock",
+			Resource:   "ipblock",
+			Verb:       "get",
+			Aliases:    []string{"g"},
+			ShortDesc:  "Get an IpBlock",
+			LongDesc:   "Use this command to retrieve the attributes of a specific IpBlock.\n\nRequired values to run command:\n\n* IpBlock Id",
+			Example:    getIpBlockExample,
+			PreCmdRun:  PreRunIpBlockId,
+			CmdRun:     RunIpBlockGet,
+			InitClient: true,
+		},
+	)
 	get.AddUUIDFlag(cloudapiv6.ArgIpBlockId, cloudapiv6.ArgIdShort, "", cloudapiv6.IpBlockId, core.RequiredFlagOption())
-	_ = get.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgIpBlockId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.IpBlocksIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
-	})
+	_ = get.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgIpBlockId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.IpBlocksIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 	get.AddBoolFlag(constants.ArgNoHeaders, "", false, cloudapiv6.ArgNoHeadersDescription)
-	get.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultGetDepth, cloudapiv6.ArgDepthDescription)
+	get.AddInt32Flag(
+		cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultGetDepth, cloudapiv6.ArgDepthDescription,
+	)
 
 	/*
 		Create Command
 	*/
-	create := core.NewCommand(ctx, ipblockCmd, core.CommandBuilder{
-		Namespace: "ipblock",
-		Resource:  "ipblock",
-		Verb:      "create",
-		Aliases:   []string{"c"},
-		ShortDesc: "Create/Reserve an IpBlock",
-		LongDesc: `Use this command to create/reserve an IpBlock in a specified location that can be used by resources within any Virtual Data Centers provisioned in that same location. An IpBlock consists of one or more static IP addresses. The name, size of the IpBlock can be set.
+	create := core.NewCommand(
+		ctx, ipblockCmd, core.CommandBuilder{
+			Namespace: "ipblock",
+			Resource:  "ipblock",
+			Verb:      "create",
+			Aliases:   []string{"c"},
+			ShortDesc: "Create/Reserve an IpBlock",
+			LongDesc: `Use this command to create/reserve an IpBlock in a specified location that can be used by resources within any Virtual Data Centers provisioned in that same location. An IpBlock consists of one or more static IP addresses. The name, size of the IpBlock can be set.
 
 You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option.`,
-		Example:    createIpBlockExample,
-		PreCmdRun:  core.NoPreRun,
-		CmdRun:     RunIpBlockCreate,
-		InitClient: true,
-	})
-	create.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "", "Name of the IpBlock. If not set, it will automatically be set")
+			Example:    createIpBlockExample,
+			PreCmdRun:  core.NoPreRun,
+			CmdRun:     RunIpBlockCreate,
+			InitClient: true,
+		},
+	)
+	create.AddStringFlag(
+		cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "", "Name of the IpBlock. If not set, it will automatically be set",
+	)
 	create.AddStringFlag(cloudapiv6.ArgLocation, cloudapiv6.ArgLocationShort, "de/txl", "Location of the IpBlock")
-	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgLocation, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.LocationIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
-	})
+	_ = create.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgLocation,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.LocationIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 	create.AddIntFlag(cloudapiv6.ArgSize, "", 2, "Size of the IpBlock")
-	create.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait, "Wait for the Request for IpBlock creation to be executed")
-	create.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for IpBlock creation [seconds]")
-	create.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultCreateDepth, cloudapiv6.ArgDepthDescription)
+	create.AddBoolFlag(
+		constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait,
+		"Wait for the Request for IpBlock creation to be executed",
+	)
+	create.AddIntFlag(
+		constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds,
+		"Timeout option for Request for IpBlock creation [seconds]",
+	)
+	create.AddInt32Flag(
+		cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultCreateDepth, cloudapiv6.ArgDepthDescription,
+	)
 
 	/*
 		Update Command
 	*/
-	update := core.NewCommand(ctx, ipblockCmd, core.CommandBuilder{
-		Namespace: "ipblock",
-		Resource:  "ipblock",
-		Verb:      "update",
-		Aliases:   []string{"u", "up"},
-		ShortDesc: "Update an IpBlock",
-		LongDesc: `Use this command to update the properties of an existing IpBlock.
+	update := core.NewCommand(
+		ctx, ipblockCmd, core.CommandBuilder{
+			Namespace: "ipblock",
+			Resource:  "ipblock",
+			Verb:      "update",
+			Aliases:   []string{"u", "up"},
+			ShortDesc: "Update an IpBlock",
+			LongDesc: `Use this command to update the properties of an existing IpBlock.
 
 You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option.
 
 Required values to run command:
 
 * IpBlock Id`,
-		Example:    updateIpBlockExample,
-		PreCmdRun:  PreRunIpBlockId,
-		CmdRun:     RunIpBlockUpdate,
-		InitClient: true,
-	})
-	update.AddUUIDFlag(cloudapiv6.ArgIpBlockId, cloudapiv6.ArgIdShort, "", cloudapiv6.IpBlockId, core.RequiredFlagOption())
-	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgIpBlockId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.IpBlocksIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
-	})
+			Example:    updateIpBlockExample,
+			PreCmdRun:  PreRunIpBlockId,
+			CmdRun:     RunIpBlockUpdate,
+			InitClient: true,
+		},
+	)
+	update.AddUUIDFlag(
+		cloudapiv6.ArgIpBlockId, cloudapiv6.ArgIdShort, "", cloudapiv6.IpBlockId, core.RequiredFlagOption(),
+	)
+	_ = update.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgIpBlockId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.IpBlocksIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 	update.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "", "Name of the IpBlock")
-	update.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait, "Wait for the Request for IpBlock update to be executed")
-	update.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for IpBlock update [seconds]")
-	update.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultUpdateDepth, cloudapiv6.ArgDepthDescription)
+	update.AddBoolFlag(
+		constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait,
+		"Wait for the Request for IpBlock update to be executed",
+	)
+	update.AddIntFlag(
+		constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds,
+		"Timeout option for Request for IpBlock update [seconds]",
+	)
+	update.AddInt32Flag(
+		cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultUpdateDepth, cloudapiv6.ArgDepthDescription,
+	)
 
 	/*
 		Delete Command
 	*/
-	deleteCmd := core.NewCommand(ctx, ipblockCmd, core.CommandBuilder{
-		Namespace: "ipblock",
-		Resource:  "ipblock",
-		Verb:      "delete",
-		Aliases:   []string{"d"},
-		ShortDesc: "Delete an IpBlock",
-		LongDesc: `Use this command to delete a specified IpBlock.
+	deleteCmd := core.NewCommand(
+		ctx, ipblockCmd, core.CommandBuilder{
+			Namespace: "ipblock",
+			Resource:  "ipblock",
+			Verb:      "delete",
+			Aliases:   []string{"d"},
+			ShortDesc: "Delete an IpBlock",
+			LongDesc: `Use this command to delete a specified IpBlock.
 
 You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option. You can force the command to execute without user input using ` + "`" + `--force` + "`" + ` option.
 
 Required values to run command:
 
 * IpBlock Id`,
-		Example:    deleteIpBlockExample,
-		PreCmdRun:  PreRunIpBlockDelete,
-		CmdRun:     RunIpBlockDelete,
-		InitClient: true,
-	})
-	deleteCmd.AddUUIDFlag(cloudapiv6.ArgIpBlockId, cloudapiv6.ArgIdShort, "", cloudapiv6.IpBlockId, core.RequiredFlagOption())
-	_ = deleteCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgIpBlockId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.IpBlocksIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
-	})
-	deleteCmd.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait, "Wait for the Request for IpBlock deletion to be executed")
+			Example:    deleteIpBlockExample,
+			PreCmdRun:  PreRunIpBlockDelete,
+			CmdRun:     RunIpBlockDelete,
+			InitClient: true,
+		},
+	)
+	deleteCmd.AddUUIDFlag(
+		cloudapiv6.ArgIpBlockId, cloudapiv6.ArgIdShort, "", cloudapiv6.IpBlockId, core.RequiredFlagOption(),
+	)
+	_ = deleteCmd.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgIpBlockId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.IpBlocksIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	deleteCmd.AddBoolFlag(
+		constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait,
+		"Wait for the Request for IpBlock deletion to be executed",
+	)
 	deleteCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete all the IpBlocks.")
-	deleteCmd.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for IpBlock deletion [seconds]")
-	deleteCmd.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultDeleteDepth, cloudapiv6.ArgDepthDescription)
+	deleteCmd.AddIntFlag(
+		constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds,
+		"Timeout option for Request for IpBlock deletion [seconds]",
+	)
+	deleteCmd.AddInt32Flag(
+		cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultDeleteDepth, cloudapiv6.ArgDepthDescription,
+	)
 
 	return ipblockCmd
 }
@@ -191,7 +260,8 @@ func PreRunIpBlockId(c *core.PreCommandConfig) error {
 }
 
 func PreRunIpBlockDelete(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlagsSets(c.Command, c.NS,
+	return core.CheckRequiredFlagsSets(
+		c.Command, c.NS,
 		[]string{cloudapiv6.ArgIpBlockId},
 		[]string{cloudapiv6.ArgAll},
 	)
@@ -219,8 +289,16 @@ func RunIpBlockGet(c *core.CommandConfig) error {
 		return err
 	}
 	queryParams := listQueryParams.QueryParams
-	c.Printer.Verbose("Ip block with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgIpBlockId)))
-	i, resp, err := c.CloudApiV6Services.IpBlocks().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgIpBlockId)), queryParams)
+	c.Printer.Verbose(
+		"Ip block with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgIpBlockId)),
+	)
+	i, resp, err := c.CloudApiV6Services.IpBlocks().Get(
+		viper.GetString(
+			core.GetFlagName(
+				c.NS, cloudapiv6.ArgIpBlockId,
+			),
+		), queryParams,
+	)
 	if resp != nil {
 		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
@@ -265,7 +343,13 @@ func RunIpBlockUpdate(c *core.CommandConfig) error {
 		input.SetName(name)
 		c.Printer.Verbose("Property Name set: %v", name)
 	}
-	i, resp, err := c.CloudApiV6Services.IpBlocks().Update(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgIpBlockId)), input, queryParams)
+	i, resp, err := c.CloudApiV6Services.IpBlocks().Update(
+		viper.GetString(
+			core.GetFlagName(
+				c.NS, cloudapiv6.ArgIpBlockId,
+			),
+		), input, queryParams,
+	)
 	if resp != nil && printer.GetId(resp) != "" {
 		c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
 	}
@@ -354,7 +438,9 @@ func DeleteAllIpBlocks(c *core.CommandConfig) error {
 						_ = c.Printer.Warn(fmt.Sprintf(constants.MessageDeletingAll, c.Resource, *id))
 					}
 					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-						multiErr = multierr.Append(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *id, err))
+						multiErr = multierr.Append(
+							multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *id, err),
+						)
 						continue
 					}
 				}
@@ -396,7 +482,9 @@ func getIpBlockPrint(resp *resources.Response, c *core.CommandConfig, ipBlocks [
 		if ipBlocks != nil {
 			r.OutputJSON = ipBlocks
 			r.KeyValue = getIpBlocksKVMaps(ipBlocks)
-			r.Columns = printer.GetHeadersAllDefault(defaultIpBlockCols, viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)))
+			r.Columns = printer.GetHeadersAllDefault(
+				defaultIpBlockCols, viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)),
+			)
 		}
 	}
 	return r

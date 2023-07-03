@@ -26,7 +26,8 @@ func RegListCmd() *core.Command {
 		},
 	)
 
-	cmd.AddStringFlag(FlagName, "n", "",
+	cmd.AddStringFlag(
+		FlagName, "n", "",
 		"Response filter to list only the Registries that contain the specified name in the DisplayName field. The value is case insensitive",
 	)
 

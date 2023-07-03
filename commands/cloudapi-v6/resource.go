@@ -31,52 +31,77 @@ func ResourceCmd() *core.Command {
 	globalFlags := resourceCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultResourceCols, printer.ColsMessage(defaultResourceCols))
 	_ = viper.BindPFlag(core.GetFlagName(resourceCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
-	_ = resourceCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return defaultResourceCols, cobra.ShellCompDirectiveNoFileComp
-	})
+	_ = resourceCmd.Command.RegisterFlagCompletionFunc(
+		constants.ArgCols,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return defaultResourceCols, cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 
 	/*
 		List Command
 	*/
-	list := core.NewCommand(ctx, resourceCmd, core.CommandBuilder{
-		Namespace:  "resource",
-		Resource:   "resource",
-		Verb:       "list",
-		Aliases:    []string{"l", "ls"},
-		ShortDesc:  "List Resources",
-		LongDesc:   "Use this command to get a full list of existing Resources. To sort list by Resource Type, use `ionosctl resource get` command.",
-		Example:    listResourcesExample,
-		PreCmdRun:  core.NoPreRun,
-		CmdRun:     RunResourceList,
-		InitClient: true,
-	})
+	list := core.NewCommand(
+		ctx, resourceCmd, core.CommandBuilder{
+			Namespace:  "resource",
+			Resource:   "resource",
+			Verb:       "list",
+			Aliases:    []string{"l", "ls"},
+			ShortDesc:  "List Resources",
+			LongDesc:   "Use this command to get a full list of existing Resources. To sort list by Resource Type, use `ionosctl resource get` command.",
+			Example:    listResourcesExample,
+			PreCmdRun:  core.NoPreRun,
+			CmdRun:     RunResourceList,
+			InitClient: true,
+		},
+	)
 	list.AddBoolFlag(constants.ArgNoHeaders, "", false, cloudapiv6.ArgNoHeadersDescription)
-	list.AddInt32Flag(constants.FlagMaxResults, constants.FlagMaxResultsShort, cloudapiv6.DefaultMaxResults, constants.DescMaxResults)
-	list.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultListDepth, cloudapiv6.ArgDepthDescription)
+	list.AddInt32Flag(
+		constants.FlagMaxResults, constants.FlagMaxResultsShort, cloudapiv6.DefaultMaxResults, constants.DescMaxResults,
+	)
+	list.AddInt32Flag(
+		cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultListDepth, cloudapiv6.ArgDepthDescription,
+	)
 
 	/*
 		Get Command
 	*/
-	getRsc := core.NewCommand(ctx, resourceCmd, core.CommandBuilder{
-		Namespace:  "resource",
-		Resource:   "resource",
-		Verb:       "get",
-		Aliases:    []string{"g"},
-		ShortDesc:  "Get all Resources of a Type or a specific Resource Type",
-		LongDesc:   "Use this command to get all Resources of a Type or a specific Resource Type using its Type and ID.\n\nRequired values to run command:\n\n* Type",
-		Example:    getResourceExample,
-		PreCmdRun:  PreRunResourceType,
-		CmdRun:     RunResourceGet,
-		InitClient: true,
-	})
-	getRsc.AddStringFlag(cloudapiv6.ArgType, "", "", "The specific Type of Resources to retrieve information about", core.RequiredFlagOption())
-	_ = getRsc.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return []string{"datacenter", "snapshot", "image", "ipblock", "pcc", "backupunit", "k8s"}, cobra.ShellCompDirectiveNoFileComp
-	})
-	getRsc.AddUUIDFlag(cloudapiv6.ArgResourceId, cloudapiv6.ArgIdShort, "", "The ID of the specific Resource to retrieve information about")
-	_ = getRsc.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgResourceId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.ResourcesIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
-	})
+	getRsc := core.NewCommand(
+		ctx, resourceCmd, core.CommandBuilder{
+			Namespace:  "resource",
+			Resource:   "resource",
+			Verb:       "get",
+			Aliases:    []string{"g"},
+			ShortDesc:  "Get all Resources of a Type or a specific Resource Type",
+			LongDesc:   "Use this command to get all Resources of a Type or a specific Resource Type using its Type and ID.\n\nRequired values to run command:\n\n* Type",
+			Example:    getResourceExample,
+			PreCmdRun:  PreRunResourceType,
+			CmdRun:     RunResourceGet,
+			InitClient: true,
+		},
+	)
+	getRsc.AddStringFlag(
+		cloudapiv6.ArgType, "", "", "The specific Type of Resources to retrieve information about",
+		core.RequiredFlagOption(),
+	)
+	_ = getRsc.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgType,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return []string{
+				"datacenter", "snapshot", "image", "ipblock", "pcc", "backupunit", "k8s",
+			}, cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	getRsc.AddUUIDFlag(
+		cloudapiv6.ArgResourceId, cloudapiv6.ArgIdShort, "",
+		"The ID of the specific Resource to retrieve information about",
+	)
+	_ = getRsc.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgResourceId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.ResourcesIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 	getRsc.AddBoolFlag(constants.ArgNoHeaders, "", false, cloudapiv6.ArgNoHeadersDescription)
 
 	return resourceCmd
@@ -98,7 +123,9 @@ func RunResourceList(c *core.CommandConfig) error {
 }
 
 func RunResourceGet(c *core.CommandConfig) error {
-	c.Printer.Verbose("Resource with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceId)))
+	c.Printer.Verbose(
+		"Resource with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceId)),
+	)
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgResourceId)) {
 		resourceListed, resp, err := c.CloudApiV6Services.Users().GetResourceByTypeAndId(
 			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgType)),
@@ -112,7 +139,13 @@ func RunResourceGet(c *core.CommandConfig) error {
 		}
 		return c.Printer.Print(getResourcePrint(c, getResource(resourceListed)))
 	} else {
-		resourcesListed, resp, err := c.CloudApiV6Services.Users().GetResourcesByType(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgType)))
+		resourcesListed, resp, err := c.CloudApiV6Services.Users().GetResourcesByType(
+			viper.GetString(
+				core.GetFlagName(
+					c.NS, cloudapiv6.ArgType,
+				),
+			),
+		)
 		if resp != nil {
 			c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
 		}
@@ -140,27 +173,39 @@ func GroupResourceCmd() *core.Command {
 	/*
 		List Resources Command
 	*/
-	listResources := core.NewCommand(ctx, resourceCmd, core.CommandBuilder{
-		Namespace:  "group",
-		Resource:   "resource",
-		Verb:       "list",
-		Aliases:    []string{"l", "ls"},
-		ShortDesc:  "List Resources from a Group",
-		LongDesc:   "Use this command to get a list of Resources assigned to a Group. To see more details about existing Resources, use `ionosctl resource` commands.\n\nRequired values to run command:\n\n* Group Id",
-		Example:    listGroupResourcesExample,
-		PreCmdRun:  PreRunGroupId,
-		CmdRun:     RunGroupResourceList,
-		InitClient: true,
-	})
-	listResources.AddInt32Flag(constants.FlagMaxResults, constants.FlagMaxResultsShort, cloudapiv6.DefaultMaxResults, constants.DescMaxResults)
-	listResources.AddStringSliceFlag(constants.ArgCols, "", defaultResourceCols, printer.ColsMessage(defaultResourceCols))
-	_ = listResources.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return defaultResourceCols, cobra.ShellCompDirectiveNoFileComp
-	})
+	listResources := core.NewCommand(
+		ctx, resourceCmd, core.CommandBuilder{
+			Namespace:  "group",
+			Resource:   "resource",
+			Verb:       "list",
+			Aliases:    []string{"l", "ls"},
+			ShortDesc:  "List Resources from a Group",
+			LongDesc:   "Use this command to get a list of Resources assigned to a Group. To see more details about existing Resources, use `ionosctl resource` commands.\n\nRequired values to run command:\n\n* Group Id",
+			Example:    listGroupResourcesExample,
+			PreCmdRun:  PreRunGroupId,
+			CmdRun:     RunGroupResourceList,
+			InitClient: true,
+		},
+	)
+	listResources.AddInt32Flag(
+		constants.FlagMaxResults, constants.FlagMaxResultsShort, cloudapiv6.DefaultMaxResults, constants.DescMaxResults,
+	)
+	listResources.AddStringSliceFlag(
+		constants.ArgCols, "", defaultResourceCols, printer.ColsMessage(defaultResourceCols),
+	)
+	_ = listResources.Command.RegisterFlagCompletionFunc(
+		constants.ArgCols,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return defaultResourceCols, cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 	listResources.AddUUIDFlag(cloudapiv6.ArgGroupId, "", "", cloudapiv6.GroupId, core.RequiredFlagOption())
-	_ = listResources.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.GroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
-	})
+	_ = listResources.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgGroupId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.GroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 
 	return resourceCmd
 }
@@ -171,8 +216,16 @@ func RunGroupResourceList(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	c.Printer.Verbose("Listing Resources from Group with ID: %v...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)))
-	resourcesListed, resp, err := c.CloudApiV6Services.Groups().ListResources(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)), listQueryParams)
+	c.Printer.Verbose(
+		"Listing Resources from Group with ID: %v...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)),
+	)
+	resourcesListed, resp, err := c.CloudApiV6Services.Groups().ListResources(
+		viper.GetString(
+			core.GetFlagName(
+				c.NS, cloudapiv6.ArgGroupId,
+			),
+		), listQueryParams,
+	)
 	if resp != nil {
 		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
@@ -200,7 +253,9 @@ func getResourcePrint(c *core.CommandConfig, res []resources.Resource) printer.R
 		if res != nil {
 			r.OutputJSON = res
 			r.KeyValue = getResourcesKVMaps(res)
-			r.Columns = printer.GetHeadersAllDefault(defaultResourceCols, viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)))
+			r.Columns = printer.GetHeadersAllDefault(
+				defaultResourceCols, viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)),
+			)
 		}
 	}
 	return r

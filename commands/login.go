@@ -36,13 +36,14 @@ Status: Authentication successful!`
 
 func LoginCmd() *core.Command {
 	ctx := context.TODO()
-	loginCmd := core.NewCommand(ctx, nil, core.CommandBuilder{
-		Namespace: "login",
-		Resource:  "login",
-		Verb:      "login",
-		Aliases:   []string{"log", "auth"},
-		ShortDesc: "Authentication command for SDK",
-		LongDesc: `Use this command to authenticate. You can use  ` + "`" + `--user` + "`" + ` and ` + "`" + `--password` + "`" + ` flags or you can use  ` + "`" + `--token` + "`" + ` flag to set the credentials.
+	loginCmd := core.NewCommand(
+		ctx, nil, core.CommandBuilder{
+			Namespace: "login",
+			Resource:  "login",
+			Verb:      "login",
+			Aliases:   []string{"log", "auth"},
+			ShortDesc: "Authentication command for SDK",
+			LongDesc: `Use this command to authenticate. You can use  ` + "`" + `--user` + "`" + ` and ` + "`" + `--password` + "`" + ` flags or you can use  ` + "`" + `--token` + "`" + ` flag to set the credentials.
 
 By default, the user data after running this command will be saved in:
 
@@ -53,11 +54,12 @@ By default, the user data after running this command will be saved in:
 You can use another configuration file for authentication with the ` + "`" + `--config` + "`" + ` global option.
 
 Note: The IONOS Cloud CLI supports also authentication with environment variables: $IONOS_USERNAME, $IONOS_PASSWORD or $IONOS_TOKEN.`,
-		Example:    loginExamples,
-		PreCmdRun:  PreRunLoginCmd,
-		CmdRun:     RunLoginUser,
-		InitClient: false,
-	})
+			Example:    loginExamples,
+			PreCmdRun:  PreRunLoginCmd,
+			CmdRun:     RunLoginUser,
+			InitClient: false,
+		},
+	)
 	loginCmd.AddStringFlag(constants.ArgUser, "", "", "Username to authenticate")
 	loginCmd.AddStringFlag(constants.ArgPassword, constants.ArgPasswordShort, "", "Password to authenticate")
 	loginCmd.AddStringFlag(constants.ArgToken, constants.ArgTokenShort, "", "Token to authenticate")
@@ -66,7 +68,11 @@ Note: The IONOS Cloud CLI supports also authentication with environment variable
 }
 
 func PreRunLoginCmd(c *core.PreCommandConfig) error {
-	if viper.IsSet(core.GetFlagName(c.NS, constants.ArgUser)) && viper.IsSet(core.GetFlagName(c.NS, constants.ArgPassword)) && viper.IsSet(core.GetFlagName(c.NS, constants.ArgToken)) {
+	if viper.IsSet(core.GetFlagName(c.NS, constants.ArgUser)) && viper.IsSet(
+		core.GetFlagName(
+			c.NS, constants.ArgPassword,
+		),
+	) && viper.IsSet(core.GetFlagName(c.NS, constants.ArgToken)) {
 		return errors.New("it is recommended to use either username + password, either token")
 	}
 	return nil
@@ -74,8 +80,10 @@ func PreRunLoginCmd(c *core.PreCommandConfig) error {
 
 func RunLoginUser(c *core.CommandConfig) error {
 	c.Printer.Verbose("Note: The login command will save the credentials in a configuration file after the authentication is successful!")
-	c.Printer.Verbose("Note: As an alternative to this, ionosctl offers support for environment variables: $%s, $%s or $%s.",
-		sdk.IonosUsernameEnvVar, sdk.IonosPasswordEnvVar, sdk.IonosTokenEnvVar)
+	c.Printer.Verbose(
+		"Note: As an alternative to this, ionosctl offers support for environment variables: $%s, $%s or $%s.",
+		sdk.IonosUsernameEnvVar, sdk.IonosPasswordEnvVar, sdk.IonosTokenEnvVar,
+	)
 	username := viper.GetString(core.GetFlagName(c.NS, constants.ArgUser))
 	pwd := viper.GetString(core.GetFlagName(c.NS, constants.ArgPassword))
 	token := viper.GetString(core.GetFlagName(c.NS, constants.ArgToken))
@@ -135,7 +143,9 @@ func RunLoginUser(c *core.CommandConfig) error {
 		return err
 	}
 
-	return c.Printer.Print(printer.Result{
-		Message: "Authentication successful!",
-	})
+	return c.Printer.Print(
+		printer.Result{
+			Message: "Authentication successful!",
+		},
+	)
 }

@@ -30,38 +30,56 @@ func IpconsumerCmd() *core.Command {
 	globalFlags := resourceCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultIpConsumerCols, printer.ColsMessage(allIpConsumerCols))
 	_ = viper.BindPFlag(core.GetFlagName(resourceCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
-	_ = resourceCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return allIpConsumerCols, cobra.ShellCompDirectiveNoFileComp
-	})
+	_ = resourceCmd.Command.RegisterFlagCompletionFunc(
+		constants.ArgCols,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return allIpConsumerCols, cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 
 	/*
 		List Command
 	*/
-	listResources := core.NewCommand(ctx, resourceCmd, core.CommandBuilder{
-		Namespace:  "ipconsumer",
-		Resource:   "ipconsumer",
-		Verb:       "list",
-		Aliases:    []string{"l", "ls"},
-		ShortDesc:  "List IpConsumers",
-		LongDesc:   "Use this command to get a list of Resources where each IP address from an IpBlock is being used.\n\nRequired values to run command:\n\n* IpBlock Id",
-		Example:    listIpConsumersExample,
-		PreCmdRun:  PreRunIpBlockId,
-		CmdRun:     RunIpConsumersList,
-		InitClient: true,
-	})
+	listResources := core.NewCommand(
+		ctx, resourceCmd, core.CommandBuilder{
+			Namespace:  "ipconsumer",
+			Resource:   "ipconsumer",
+			Verb:       "list",
+			Aliases:    []string{"l", "ls"},
+			ShortDesc:  "List IpConsumers",
+			LongDesc:   "Use this command to get a list of Resources where each IP address from an IpBlock is being used.\n\nRequired values to run command:\n\n* IpBlock Id",
+			Example:    listIpConsumersExample,
+			PreCmdRun:  PreRunIpBlockId,
+			CmdRun:     RunIpConsumersList,
+			InitClient: true,
+		},
+	)
 	listResources.AddUUIDFlag(cloudapiv6.ArgIpBlockId, "", "", cloudapiv6.IpBlockId, core.RequiredFlagOption())
-	_ = listResources.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgIpBlockId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.IpBlocksIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
-	})
+	_ = listResources.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgIpBlockId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.IpBlocksIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 	listResources.AddBoolFlag(constants.ArgNoHeaders, "", false, cloudapiv6.ArgNoHeadersDescription)
-	listResources.AddInt32Flag(constants.FlagMaxResults, constants.FlagMaxResultsShort, cloudapiv6.DefaultMaxResults, constants.DescMaxResults)
-	listResources.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultListDepth, cloudapiv6.ArgDepthDescription)
+	listResources.AddInt32Flag(
+		constants.FlagMaxResults, constants.FlagMaxResultsShort, cloudapiv6.DefaultMaxResults, constants.DescMaxResults,
+	)
+	listResources.AddInt32Flag(
+		cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultListDepth, cloudapiv6.ArgDepthDescription,
+	)
 
 	return resourceCmd
 }
 
 func RunIpConsumersList(c *core.CommandConfig) error {
-	ipBlock, resp, err := c.CloudApiV6Services.IpBlocks().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgIpBlockId)), resources.QueryParams{})
+	ipBlock, resp, err := c.CloudApiV6Services.IpBlocks().Get(
+		viper.GetString(
+			core.GetFlagName(
+				c.NS, cloudapiv6.ArgIpBlockId,
+			),
+		), resources.QueryParams{},
+	)
 	if resp != nil {
 		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
@@ -87,7 +105,10 @@ func RunIpConsumersList(c *core.CommandConfig) error {
 
 var (
 	defaultIpConsumerCols = []string{"Ip", "NicId", "ServerId", "DatacenterId", "K8sNodePoolId", "K8sClusterId"}
-	allIpConsumerCols     = []string{"Ip", "Mac", "NicId", "ServerId", "ServerName", "DatacenterId", "DatacenterName", "K8sNodePoolId", "K8sClusterId"}
+	allIpConsumerCols     = []string{
+		"Ip", "Mac", "NicId", "ServerId", "ServerName", "DatacenterId", "DatacenterName", "K8sNodePoolId",
+		"K8sClusterId",
+	}
 )
 
 type IpConsumerPrint struct {
@@ -108,7 +129,10 @@ func getIpConsumerPrint(c *core.CommandConfig, groups []resources.IpConsumer) pr
 		if groups != nil {
 			r.OutputJSON = groups
 			r.KeyValue = getIpConsumersKVMaps(groups)
-			r.Columns = printer.GetHeaders(allIpConsumerCols, defaultIpConsumerCols, viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)))
+			r.Columns = printer.GetHeaders(
+				allIpConsumerCols, defaultIpConsumerCols,
+				viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)),
+			)
 		}
 	}
 	return r

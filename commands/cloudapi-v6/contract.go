@@ -34,31 +34,43 @@ func ContractCmd() *core.Command {
 	globalFlags := contractCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultContractCols, printer.ColsMessage(allContractCols))
 	_ = viper.BindPFlag(core.GetFlagName(contractCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
-	_ = contractCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return allContractCols, cobra.ShellCompDirectiveNoFileComp
-	})
+	_ = contractCmd.Command.RegisterFlagCompletionFunc(
+		constants.ArgCols,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return allContractCols, cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 
 	/*
 		Get Command
 	*/
-	get := core.NewCommand(ctx, contractCmd, core.CommandBuilder{
-		Namespace:  "contract",
-		Resource:   "contract",
-		Verb:       "get",
-		Aliases:    []string{"g"},
-		ShortDesc:  "Get information about the Contract Resources on your account",
-		LongDesc:   "Use this command to get information about the Contract Resources on your account. Use `--resource-limits` flag to see specific Contract Resources Limits.",
-		Example:    getContractExample,
-		PreCmdRun:  core.NoPreRun,
-		CmdRun:     RunContractGet,
-		InitClient: true,
-	})
+	get := core.NewCommand(
+		ctx, contractCmd, core.CommandBuilder{
+			Namespace:  "contract",
+			Resource:   "contract",
+			Verb:       "get",
+			Aliases:    []string{"g"},
+			ShortDesc:  "Get information about the Contract Resources on your account",
+			LongDesc:   "Use this command to get information about the Contract Resources on your account. Use `--resource-limits` flag to see specific Contract Resources Limits.",
+			Example:    getContractExample,
+			PreCmdRun:  core.NoPreRun,
+			CmdRun:     RunContractGet,
+			InitClient: true,
+		},
+	)
 	get.AddStringFlag(cloudapiv6.ArgResourceLimits, "", "", "Specify Resource Limits to see details about it")
-	_ = get.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgResourceLimits, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return []string{"CORES", "RAM", "HDD", "SSD", "DAS", "IPS", "K8S", "NLB", "NAT"}, cobra.ShellCompDirectiveNoFileComp
-	})
+	_ = get.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgResourceLimits,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return []string{
+				"CORES", "RAM", "HDD", "SSD", "DAS", "IPS", "K8S", "NLB", "NAT",
+			}, cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 	get.AddBoolFlag(constants.ArgNoHeaders, "", false, cloudapiv6.ArgNoHeadersDescription)
-	get.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultGetDepth, cloudapiv6.ArgDepthDescription)
+	get.AddInt32Flag(
+		cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultGetDepth, cloudapiv6.ArgDepthDescription,
+	)
 	return contractCmd
 }
 
@@ -68,7 +80,10 @@ func RunContractGet(c *core.CommandConfig) error {
 		return err
 	}
 	queryParams := listQueryParams.QueryParams
-	c.Printer.Verbose("Contract with resource limits: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceLimits)))
+	c.Printer.Verbose(
+		"Contract with resource limits: %v is getting...",
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceLimits)),
+	)
 	contractResource, resp, err := c.CloudApiV6Services.Contracts().Get(queryParams)
 	if resp != nil {
 		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
@@ -98,25 +113,55 @@ func RunContractGet(c *core.CommandConfig) error {
 			return c.Printer.Print(getContractPrint(c, getContract(contractResource), contractNatCols))
 		}
 	}
-	return c.Printer.Print(getContractPrint(c, getContract(contractResource), getContractCols(core.GetFlagName(c.Resource, constants.ArgCols), c.Printer.GetStderr())))
+	return c.Printer.Print(
+		getContractPrint(
+			c, getContract(contractResource),
+			getContractCols(core.GetFlagName(c.Resource, constants.ArgCols), c.Printer.GetStderr()),
+		),
+	)
 }
 
 // Output Printing
 
 var (
 	defaultContractCols = []string{"ContractNumber", "Owner", "Status", "RegistrationDomain"}
-	contractCoresCols   = []string{"ContractNumber", "Owner", "Status", "RegistrationDomain", "CoresPerServer", "CoresPerContract", "CoresProvisioned"}
-	contractRamCols     = []string{"ContractNumber", "Owner", "Status", "RegistrationDomain", "RamPerServer", "RamPerContract", "RamProvisioned"}
-	contractHddCols     = []string{"ContractNumber", "Owner", "Status", "RegistrationDomain", "HddLimitPerVolume", "HddLimitPerContract", "HddVolumeProvisioned"}
-	contractSsdCols     = []string{"ContractNumber", "Owner", "Status", "RegistrationDomain", "SsdLimitPerVolume", "SsdLimitPerContract", "SsdVolumeProvisioned"}
-	contractDasCols     = []string{"ContractNumber", "Owner", "Status", "RegistrationDomain", "DasVolumeProvisioned"}
-	contractIpsCols     = []string{"ContractNumber", "Owner", "Status", "RegistrationDomain", "ReservableIps", "ReservedIpsOnContract", "ReservedIpsInUse"}
-	contractK8sCols     = []string{"ContractNumber", "Owner", "Status", "RegistrationDomain", "K8sClusterLimitTotal", "K8sClustersProvisioned"}
-	contractNatCols     = []string{"ContractNumber", "Owner", "Status", "RegistrationDomain", "NatGatewayLimitTotal", "NatGatewayProvisioned"}
-	contractNlbCols     = []string{"ContractNumber", "Owner", "Status", "RegistrationDomain", "NlbLimitTotal", "NlbProvisioned"}
-	allContractCols     = []string{"ContractNumber", "Owner", "Status", "RegistrationDomain", "CoresPerServer", "CoresPerContract", "CoresProvisioned", "RamPerServer", "RamPerContract", "RamProvisioned",
-		"HddLimitPerVolume", "HddLimitPerContract", "HddVolumeProvisioned", "SsdLimitPerVolume", "SsdLimitPerContract", "SsdVolumeProvisioned", "DasVolumeProvisioned", "ReservableIps", "ReservedIpsOnContract",
-		"ReservedIpsInUse", "K8sClusterLimitTotal", "K8sClustersProvisioned", "NlbLimitTotal", "NlbProvisioned", "NatGatewayLimitTotal", "NatGatewayProvisioned"}
+	contractCoresCols   = []string{
+		"ContractNumber", "Owner", "Status", "RegistrationDomain", "CoresPerServer", "CoresPerContract",
+		"CoresProvisioned",
+	}
+	contractRamCols = []string{
+		"ContractNumber", "Owner", "Status", "RegistrationDomain", "RamPerServer", "RamPerContract", "RamProvisioned",
+	}
+	contractHddCols = []string{
+		"ContractNumber", "Owner", "Status", "RegistrationDomain", "HddLimitPerVolume", "HddLimitPerContract",
+		"HddVolumeProvisioned",
+	}
+	contractSsdCols = []string{
+		"ContractNumber", "Owner", "Status", "RegistrationDomain", "SsdLimitPerVolume", "SsdLimitPerContract",
+		"SsdVolumeProvisioned",
+	}
+	contractDasCols = []string{"ContractNumber", "Owner", "Status", "RegistrationDomain", "DasVolumeProvisioned"}
+	contractIpsCols = []string{
+		"ContractNumber", "Owner", "Status", "RegistrationDomain", "ReservableIps", "ReservedIpsOnContract",
+		"ReservedIpsInUse",
+	}
+	contractK8sCols = []string{
+		"ContractNumber", "Owner", "Status", "RegistrationDomain", "K8sClusterLimitTotal", "K8sClustersProvisioned",
+	}
+	contractNatCols = []string{
+		"ContractNumber", "Owner", "Status", "RegistrationDomain", "NatGatewayLimitTotal", "NatGatewayProvisioned",
+	}
+	contractNlbCols = []string{
+		"ContractNumber", "Owner", "Status", "RegistrationDomain", "NlbLimitTotal", "NlbProvisioned",
+	}
+	allContractCols = []string{
+		"ContractNumber", "Owner", "Status", "RegistrationDomain", "CoresPerServer", "CoresPerContract",
+		"CoresProvisioned", "RamPerServer", "RamPerContract", "RamProvisioned",
+		"HddLimitPerVolume", "HddLimitPerContract", "HddVolumeProvisioned", "SsdLimitPerVolume", "SsdLimitPerContract",
+		"SsdVolumeProvisioned", "DasVolumeProvisioned", "ReservableIps", "ReservedIpsOnContract",
+		"ReservedIpsInUse", "K8sClusterLimitTotal", "K8sClustersProvisioned", "NlbLimitTotal", "NlbProvisioned",
+		"NatGatewayLimitTotal", "NatGatewayProvisioned",
+	}
 )
 
 type ContractPrint struct {

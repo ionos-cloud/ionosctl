@@ -39,7 +39,9 @@ func CertCmd() *core.Command {
 	return certCmd
 }
 
-func getCertPrint(resp *ionoscloud.APIResponse, c *core.CommandConfig, cert *[]ionoscloud.CertificateDto) printer.Result {
+func getCertPrint(
+	resp *ionoscloud.APIResponse, c *core.CommandConfig, cert *[]ionoscloud.CertificateDto,
+) printer.Result {
 	r := printer.Result{}
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
@@ -47,7 +49,11 @@ func getCertPrint(resp *ionoscloud.APIResponse, c *core.CommandConfig, cert *[]i
 		if resp != nil {
 			r.Resource = c.Resource
 			r.Verb = c.Verb
-			r.WaitForState = viper.GetBool(core.GetFlagName(c.NS, constants.ArgWaitForRequest)) // this boolean is duplicated everywhere just to do an append of `& wait` to a verbose message
+			r.WaitForState = viper.GetBool(
+				core.GetFlagName(
+					c.NS, constants.ArgWaitForRequest,
+				),
+			) // this boolean is duplicated everywhere just to do an append of `& wait` to a verbose message
 		}
 		if cert != nil {
 			r.OutputJSON = cert
@@ -100,7 +106,9 @@ func CertificatesIds() []string {
 	client, _ := client2.Get()
 	svc := resources.NewCertsService(client, context.Background())
 	certs, _, _ := svc.List()
-	return functional.Map(*certs.GetItems(), func(dto ionoscloud.CertificateDto) string {
-		return *dto.GetId()
-	})
+	return functional.Map(
+		*certs.GetItems(), func(dto ionoscloud.CertificateDto) string {
+			return *dto.GetId()
+		},
+	)
 }

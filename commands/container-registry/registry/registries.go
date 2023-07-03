@@ -122,7 +122,7 @@ func getRegRows(regs *[]ionoscloud.RegistryResponse) []map[string]interface{} {
 var allCols = structs.Names(RegPrint{})
 
 func RegsIds() []string {
-	//client, _ := config.GetClient()
+	// client, _ := config.GetClient()
 	svc := resources.NewRegistriesService(client.Must(), context.Background())
 	regs, _, _ := svc.List("")
 	return functional.Map(

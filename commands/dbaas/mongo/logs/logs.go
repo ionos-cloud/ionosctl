@@ -61,8 +61,10 @@ func getLogsPrint(c *core.CommandConfig, dcs *[]ionoscloud.ClusterLogsInstances)
 	r := printer.Result{}
 	if c != nil && dcs != nil {
 		r.OutputJSON = dcs
-		r.KeyValue = MakeLogsPrintObject(dcs)                                                                                 // map header -> rows
-		r.Columns = printer.GetHeaders(allCols, defaultCols, viper.GetStringSlice(core.GetFlagName(c.NS, constants.ArgCols))) // headers
+		r.KeyValue = MakeLogsPrintObject(dcs) // map header -> rows
+		r.Columns = printer.GetHeaders(
+			allCols, defaultCols, viper.GetStringSlice(core.GetFlagName(c.NS, constants.ArgCols)),
+		) // headers
 	}
 	return r
 }

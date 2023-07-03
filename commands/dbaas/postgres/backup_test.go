@@ -67,119 +67,137 @@ func TestClusterBackupCmd(t *testing.T) {
 func TestPreBackupId(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(constants.ArgQuiet, false)
-		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgBackupId), testBackupVar)
-		err := PreRunBackupId(cfg)
-		assert.NoError(t, err)
-	})
+	core.PreCmdConfigTest(
+		t, w, func(cfg *core.PreCommandConfig) {
+			viper.Reset()
+			viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+			viper.Set(constants.ArgQuiet, false)
+			viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgBackupId), testBackupVar)
+			err := PreRunBackupId(cfg)
+			assert.NoError(t, err)
+		},
+	)
 }
 
 func TestPreBackupIdErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(constants.ArgQuiet, false)
-		err := PreRunBackupId(cfg)
-		assert.Error(t, err)
-	})
+	core.PreCmdConfigTest(
+		t, w, func(cfg *core.PreCommandConfig) {
+			viper.Reset()
+			viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+			viper.Set(constants.ArgQuiet, false)
+			err := PreRunBackupId(cfg)
+			assert.Error(t, err)
+		},
+	)
 }
 
 func TestRunBackupList(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
-		viper.Reset()
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(constants.ArgQuiet, false)
-		viper.Set(constants.ArgVerbose, false)
-		viper.Set(constants.ArgServerUrl, constants.DefaultApiURL)
-		viper.Set(core.GetFlagName(cfg.NS, constants.ArgCols), defaultBackupCols)
-		rm.CloudApiDbaasPgsqlMocks.Backup.EXPECT().List().Return(testBackups, nil, nil)
-		err := RunBackupList(cfg)
-		assert.NoError(t, err)
-	})
+	core.CmdConfigTest(
+		t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+			viper.Reset()
+			viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+			viper.Set(constants.ArgQuiet, false)
+			viper.Set(constants.ArgVerbose, false)
+			viper.Set(constants.ArgServerUrl, constants.DefaultApiURL)
+			viper.Set(core.GetFlagName(cfg.NS, constants.ArgCols), defaultBackupCols)
+			rm.CloudApiDbaasPgsqlMocks.Backup.EXPECT().List().Return(testBackups, nil, nil)
+			err := RunBackupList(cfg)
+			assert.NoError(t, err)
+		},
+	)
 }
 
 func TestRunBackupListErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
-		viper.Reset()
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(constants.ArgQuiet, false)
-		viper.Set(constants.ArgServerUrl, constants.DefaultApiURL)
-		rm.CloudApiDbaasPgsqlMocks.Backup.EXPECT().List().Return(testBackups, nil, testBackupErr)
-		err := RunBackupList(cfg)
-		assert.Error(t, err)
-	})
+	core.CmdConfigTest(
+		t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+			viper.Reset()
+			viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+			viper.Set(constants.ArgQuiet, false)
+			viper.Set(constants.ArgServerUrl, constants.DefaultApiURL)
+			rm.CloudApiDbaasPgsqlMocks.Backup.EXPECT().List().Return(testBackups, nil, testBackupErr)
+			err := RunBackupList(cfg)
+			assert.Error(t, err)
+		},
+	)
 }
 
 func TestRunBackupGet(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
-		viper.Reset()
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(constants.ArgQuiet, false)
-		viper.Set(constants.ArgVerbose, false)
-		viper.Set(constants.ArgServerUrl, constants.DefaultApiURL)
-		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgBackupId), testBackupVar)
-		rm.CloudApiDbaasPgsqlMocks.Backup.EXPECT().Get(testBackupVar).Return(&testBackup, nil, nil)
-		err := RunBackupGet(cfg)
-		assert.NoError(t, err)
-	})
+	core.CmdConfigTest(
+		t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+			viper.Reset()
+			viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+			viper.Set(constants.ArgQuiet, false)
+			viper.Set(constants.ArgVerbose, false)
+			viper.Set(constants.ArgServerUrl, constants.DefaultApiURL)
+			viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgBackupId), testBackupVar)
+			rm.CloudApiDbaasPgsqlMocks.Backup.EXPECT().Get(testBackupVar).Return(&testBackup, nil, nil)
+			err := RunBackupGet(cfg)
+			assert.NoError(t, err)
+		},
+	)
 }
 
 func TestRunBackupGetErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
-		viper.Reset()
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(constants.ArgQuiet, false)
-		viper.Set(constants.ArgServerUrl, constants.DefaultApiURL)
-		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgBackupId), testBackupVar)
-		rm.CloudApiDbaasPgsqlMocks.Backup.EXPECT().Get(testBackupVar).Return(&testBackup, nil, testBackupErr)
-		err := RunBackupGet(cfg)
-		assert.Error(t, err)
-	})
+	core.CmdConfigTest(
+		t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+			viper.Reset()
+			viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+			viper.Set(constants.ArgQuiet, false)
+			viper.Set(constants.ArgServerUrl, constants.DefaultApiURL)
+			viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgBackupId), testBackupVar)
+			rm.CloudApiDbaasPgsqlMocks.Backup.EXPECT().Get(testBackupVar).Return(&testBackup, nil, testBackupErr)
+			err := RunBackupGet(cfg)
+			assert.Error(t, err)
+		},
+	)
 }
 
 func TestRunClusterBackupList(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
-		viper.Reset()
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(constants.ArgQuiet, false)
-		viper.Set(constants.ArgVerbose, false)
-		viper.Set(constants.ArgServerUrl, constants.DefaultApiURL)
-		viper.Set(core.GetFlagName(cfg.NS, constants.ArgCols), defaultBackupCols)
-		viper.Set(core.GetFlagName(cfg.NS, constants.FlagClusterId), testBackupVar)
-		rm.CloudApiDbaasPgsqlMocks.Backup.EXPECT().ListBackups(testBackupVar).Return(testBackups, nil, nil)
-		err := RunClusterBackupList(cfg)
-		assert.NoError(t, err)
-	})
+	core.CmdConfigTest(
+		t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+			viper.Reset()
+			viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+			viper.Set(constants.ArgQuiet, false)
+			viper.Set(constants.ArgVerbose, false)
+			viper.Set(constants.ArgServerUrl, constants.DefaultApiURL)
+			viper.Set(core.GetFlagName(cfg.NS, constants.ArgCols), defaultBackupCols)
+			viper.Set(core.GetFlagName(cfg.NS, constants.FlagClusterId), testBackupVar)
+			rm.CloudApiDbaasPgsqlMocks.Backup.EXPECT().ListBackups(testBackupVar).Return(testBackups, nil, nil)
+			err := RunClusterBackupList(cfg)
+			assert.NoError(t, err)
+		},
+	)
 }
 
 func TestRunClusterBackupListErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
-		viper.Reset()
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(constants.ArgQuiet, false)
-		viper.Set(constants.ArgServerUrl, constants.DefaultApiURL)
-		viper.Set(core.GetFlagName(cfg.NS, constants.FlagClusterId), testBackupVar)
-		rm.CloudApiDbaasPgsqlMocks.Backup.EXPECT().ListBackups(testBackupVar).Return(testBackups, nil, testBackupErr)
-		err := RunClusterBackupList(cfg)
-		assert.Error(t, err)
-	})
+	core.CmdConfigTest(
+		t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+			viper.Reset()
+			viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+			viper.Set(constants.ArgQuiet, false)
+			viper.Set(constants.ArgServerUrl, constants.DefaultApiURL)
+			viper.Set(core.GetFlagName(cfg.NS, constants.FlagClusterId), testBackupVar)
+			rm.CloudApiDbaasPgsqlMocks.Backup.EXPECT().ListBackups(testBackupVar).Return(
+				testBackups, nil, testBackupErr,
+			)
+			err := RunClusterBackupList(cfg)
+			assert.Error(t, err)
+		},
+	)
 }
 
 func TestGetBackupsCols(t *testing.T) {

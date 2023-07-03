@@ -14,9 +14,11 @@ func MongoClusterIds() []string {
 	if err != nil {
 		return nil
 	}
-	return functional.Map(*ls.GetItems(), func(t sdkgo.ClusterResponse) string {
-		return *t.GetId()
-	})
+	return functional.Map(
+		*ls.GetItems(), func(t sdkgo.ClusterResponse) string {
+			return *t.GetId()
+		},
+	)
 }
 
 func MongoSnapshots(clusterId string) []string {
@@ -24,9 +26,11 @@ func MongoSnapshots(clusterId string) []string {
 	if err != nil {
 		return nil
 	}
-	return functional.Map(*ls.GetItems(), func(t sdkgo.SnapshotResponse) string {
-		return *t.GetId()
-	})
+	return functional.Map(
+		*ls.GetItems(), func(t sdkgo.SnapshotResponse) string {
+			return *t.GetId()
+		},
+	)
 }
 
 func MongoTemplateIds() []string {
@@ -34,7 +38,9 @@ func MongoTemplateIds() []string {
 	if err != nil {
 		return nil
 	}
-	return functional.Map(*ls.GetItems(), func(t sdkgo.TemplateResponse) string {
-		return *t.GetId()
-	})
+	return functional.Map(
+		*ls.GetItems(), func(t sdkgo.TemplateResponse) string {
+			return *t.GetId()
+		},
+	)
 }

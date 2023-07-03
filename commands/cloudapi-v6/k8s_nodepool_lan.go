@@ -39,44 +39,64 @@ func K8sNodePoolLanCmd() *core.Command {
 	/*
 		List Command
 	*/
-	list := core.NewCommand(ctx, k8sCmd, core.CommandBuilder{
-		Namespace:  "nodepool",
-		Resource:   "lan",
-		Verb:       "list",
-		Aliases:    []string{"l", "ls"},
-		ShortDesc:  "List Kubernetes NodePool LANs",
-		LongDesc:   "Use this command to get a list of all contained NodePool LANs in a selected Kubernetes Cluster.\n\nRequired values to run command:\n\n* K8s Cluster Id\n* K8s NodePool Id",
-		Example:    listK8sNodePoolLanExample,
-		PreCmdRun:  PreRunK8sClusterNodePoolIds,
-		CmdRun:     RunK8sNodePoolLanList,
-		InitClient: true,
-	})
+	list := core.NewCommand(
+		ctx, k8sCmd, core.CommandBuilder{
+			Namespace:  "nodepool",
+			Resource:   "lan",
+			Verb:       "list",
+			Aliases:    []string{"l", "ls"},
+			ShortDesc:  "List Kubernetes NodePool LANs",
+			LongDesc:   "Use this command to get a list of all contained NodePool LANs in a selected Kubernetes Cluster.\n\nRequired values to run command:\n\n* K8s Cluster Id\n* K8s NodePool Id",
+			Example:    listK8sNodePoolLanExample,
+			PreCmdRun:  PreRunK8sClusterNodePoolIds,
+			CmdRun:     RunK8sNodePoolLanList,
+			InitClient: true,
+		},
+	)
 	list.AddUUIDFlag(constants.FlagClusterId, "", "", cloudapiv6.K8sClusterId, core.RequiredFlagOption())
-	_ = list.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.K8sClustersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
-	})
+	_ = list.Command.RegisterFlagCompletionFunc(
+		constants.FlagClusterId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.K8sClustersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 	list.AddUUIDFlag(constants.FlagNodepoolId, "", "", cloudapiv6.K8sNodePoolId, core.RequiredFlagOption())
-	_ = list.Command.RegisterFlagCompletionFunc(constants.FlagNodepoolId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.K8sNodePoolsIds(os.Stderr, viper.GetString(core.GetFlagName(list.NS, constants.FlagClusterId))), cobra.ShellCompDirectiveNoFileComp
-	})
-	list.AddStringSliceFlag(constants.ArgCols, "", defaultK8sNodePoolLanCols, printer.ColsMessage(defaultK8sNodePoolLanCols))
-	_ = list.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return defaultK8sNodePoolLanCols, cobra.ShellCompDirectiveNoFileComp
-	})
+	_ = list.Command.RegisterFlagCompletionFunc(
+		constants.FlagNodepoolId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.K8sNodePoolsIds(
+				os.Stderr, viper.GetString(core.GetFlagName(list.NS, constants.FlagClusterId)),
+			), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	list.AddStringSliceFlag(
+		constants.ArgCols, "", defaultK8sNodePoolLanCols, printer.ColsMessage(defaultK8sNodePoolLanCols),
+	)
+	_ = list.Command.RegisterFlagCompletionFunc(
+		constants.ArgCols,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return defaultK8sNodePoolLanCols, cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 	list.AddBoolFlag(constants.ArgNoHeaders, "", false, cloudapiv6.ArgNoHeadersDescription)
-	list.AddInt32Flag(constants.FlagMaxResults, constants.FlagMaxResultsShort, cloudapiv6.DefaultMaxResults, constants.DescMaxResults)
-	list.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultListDepth, cloudapiv6.ArgDepthDescription)
+	list.AddInt32Flag(
+		constants.FlagMaxResults, constants.FlagMaxResultsShort, cloudapiv6.DefaultMaxResults, constants.DescMaxResults,
+	)
+	list.AddInt32Flag(
+		cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultListDepth, cloudapiv6.ArgDepthDescription,
+	)
 
 	/*
 		Add Command
 	*/
-	add := core.NewCommand(ctx, k8sCmd, core.CommandBuilder{
-		Namespace: "nodepool",
-		Resource:  "lan",
-		Verb:      "add",
-		Aliases:   []string{"a"},
-		ShortDesc: "Add a Kubernetes NodePool LAN",
-		LongDesc: `Use this command to add a Node Pool LAN into an existing Node Pool.
+	add := core.NewCommand(
+		ctx, k8sCmd, core.CommandBuilder{
+			Namespace: "nodepool",
+			Resource:  "lan",
+			Verb:      "add",
+			Aliases:   []string{"a"},
+			ShortDesc: "Add a Kubernetes NodePool LAN",
+			LongDesc: `Use this command to add a Node Pool LAN into an existing Node Pool.
 
 You can wait for the Node Pool to be in "ACTIVE" state using ` + "`" + `--wait-for-state` + "`" + ` flag together with ` + "`" + `--timeout` + "`" + ` option.
 
@@ -85,71 +105,117 @@ Required values to run a command:
 * K8s Cluster Id
 * K8s NodePool Id
 * Lan Id`,
-		Example:    addK8sNodePoolLanExample,
-		PreCmdRun:  PreRunK8sClusterNodePoolLanIds,
-		CmdRun:     RunK8sNodePoolLanAdd,
-		InitClient: true,
-	})
+			Example:    addK8sNodePoolLanExample,
+			PreCmdRun:  PreRunK8sClusterNodePoolLanIds,
+			CmdRun:     RunK8sNodePoolLanAdd,
+			InitClient: true,
+		},
+	)
 	add.AddUUIDFlag(constants.FlagClusterId, "", "", cloudapiv6.K8sClusterId, core.RequiredFlagOption())
-	_ = add.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.K8sClustersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
-	})
+	_ = add.Command.RegisterFlagCompletionFunc(
+		constants.FlagClusterId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.K8sClustersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 	add.AddUUIDFlag(constants.FlagNodepoolId, "", "", cloudapiv6.K8sNodePoolId, core.RequiredFlagOption())
-	_ = add.Command.RegisterFlagCompletionFunc(constants.FlagNodepoolId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.K8sNodePoolsIds(os.Stderr, viper.GetString(core.GetFlagName(add.NS, constants.FlagClusterId))), cobra.ShellCompDirectiveNoFileComp
-	})
-	add.AddIntFlag(cloudapiv6.ArgLanId, cloudapiv6.ArgIdShort, 0, "The unique LAN Id of existing LANs to be attached to worker Nodes", core.RequiredFlagOption())
-	add.AddBoolFlag(cloudapiv6.ArgDhcp, "", true, "Indicates if the Kubernetes Node Pool LAN will reserve an IP using DHCP. E.g.: --dhcp=true, --dhcp=false")
-	add.AddStringSliceFlag(cloudapiv6.ArgNetwork, "", nil, "Slice of IPv4 or IPv6 CIDRs to be routed via the interface. Must contain same number of arguments as --gateway-ip flag")
-	add.AddStringSliceFlag(cloudapiv6.ArgGatewayIp, "", nil, "Slice of IPv4 or IPv6 Gateway IPs for the routes. Must contain same number of arguments as --network flag")
-	add.AddStringSliceFlag(cloudapiv6.ArgCols, "", defaultK8sNodePoolLanCols, printer.ColsMessage(defaultK8sNodePoolLanCols))
-	_ = add.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return defaultK8sNodePoolLanCols, cobra.ShellCompDirectiveNoFileComp
-	})
-	add.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultMiscDepth, cloudapiv6.ArgDepthDescription)
+	_ = add.Command.RegisterFlagCompletionFunc(
+		constants.FlagNodepoolId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.K8sNodePoolsIds(
+				os.Stderr, viper.GetString(core.GetFlagName(add.NS, constants.FlagClusterId)),
+			), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	add.AddIntFlag(
+		cloudapiv6.ArgLanId, cloudapiv6.ArgIdShort, 0,
+		"The unique LAN Id of existing LANs to be attached to worker Nodes", core.RequiredFlagOption(),
+	)
+	add.AddBoolFlag(
+		cloudapiv6.ArgDhcp, "", true,
+		"Indicates if the Kubernetes Node Pool LAN will reserve an IP using DHCP. E.g.: --dhcp=true, --dhcp=false",
+	)
+	add.AddStringSliceFlag(
+		cloudapiv6.ArgNetwork, "", nil,
+		"Slice of IPv4 or IPv6 CIDRs to be routed via the interface. Must contain same number of arguments as --gateway-ip flag",
+	)
+	add.AddStringSliceFlag(
+		cloudapiv6.ArgGatewayIp, "", nil,
+		"Slice of IPv4 or IPv6 Gateway IPs for the routes. Must contain same number of arguments as --network flag",
+	)
+	add.AddStringSliceFlag(
+		cloudapiv6.ArgCols, "", defaultK8sNodePoolLanCols, printer.ColsMessage(defaultK8sNodePoolLanCols),
+	)
+	_ = add.Command.RegisterFlagCompletionFunc(
+		constants.ArgCols,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return defaultK8sNodePoolLanCols, cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	add.AddInt32Flag(
+		cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultMiscDepth, cloudapiv6.ArgDepthDescription,
+	)
 
 	/*
 		Remove Command
 	*/
-	removeCmd := core.NewCommand(ctx, k8sCmd, core.CommandBuilder{
-		Namespace: "nodepool",
-		Resource:  "lan",
-		Verb:      "remove",
-		Aliases:   []string{"r"},
-		ShortDesc: "Remove a Kubernetes NodePool LAN",
-		LongDesc: `This command removes a Kubernetes Node Pool LAN from a Node Pool.
+	removeCmd := core.NewCommand(
+		ctx, k8sCmd, core.CommandBuilder{
+			Namespace: "nodepool",
+			Resource:  "lan",
+			Verb:      "remove",
+			Aliases:   []string{"r"},
+			ShortDesc: "Remove a Kubernetes NodePool LAN",
+			LongDesc: `This command removes a Kubernetes Node Pool LAN from a Node Pool.
 
 Required values to run command:
 
 * K8s Cluster Id
 * K8s NodePool Id
 * Lan Id`,
-		Example:    removeK8sNodePoolLanExample,
-		PreCmdRun:  PreRunK8sClusterNodePoolLanRemove,
-		CmdRun:     RunK8sNodePoolLanRemove,
-		InitClient: true,
-	})
+			Example:    removeK8sNodePoolLanExample,
+			PreCmdRun:  PreRunK8sClusterNodePoolLanRemove,
+			CmdRun:     RunK8sNodePoolLanRemove,
+			InitClient: true,
+		},
+	)
 	removeCmd.AddUUIDFlag(constants.FlagClusterId, "", "", cloudapiv6.K8sClusterId, core.RequiredFlagOption())
-	_ = removeCmd.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.K8sClustersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
-	})
+	_ = removeCmd.Command.RegisterFlagCompletionFunc(
+		constants.FlagClusterId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.K8sClustersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 	removeCmd.AddUUIDFlag(constants.FlagNodepoolId, "", "", cloudapiv6.K8sNodePoolId, core.RequiredFlagOption())
-	_ = removeCmd.Command.RegisterFlagCompletionFunc(constants.FlagNodepoolId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.K8sNodePoolsIds(os.Stderr, viper.GetString(core.GetFlagName(removeCmd.NS, constants.FlagClusterId))), cobra.ShellCompDirectiveNoFileComp
-	})
-	removeCmd.AddIntFlag(cloudapiv6.ArgLanId, cloudapiv6.ArgIdShort, 0, "The unique LAN Id of existing LANs to be detached from worker Nodes", core.RequiredFlagOption())
+	_ = removeCmd.Command.RegisterFlagCompletionFunc(
+		constants.FlagNodepoolId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.K8sNodePoolsIds(
+				os.Stderr, viper.GetString(core.GetFlagName(removeCmd.NS, constants.FlagClusterId)),
+			), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	removeCmd.AddIntFlag(
+		cloudapiv6.ArgLanId, cloudapiv6.ArgIdShort, 0,
+		"The unique LAN Id of existing LANs to be detached from worker Nodes", core.RequiredFlagOption(),
+	)
 	removeCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Remove all FK8s Nodepool Lans.")
-	removeCmd.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultDeleteDepth, cloudapiv6.ArgDepthDescription)
+	removeCmd.AddInt32Flag(
+		cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultDeleteDepth, cloudapiv6.ArgDepthDescription,
+	)
 
 	return k8sCmd
 }
 
 func PreRunK8sClusterNodePoolLanIds(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagClusterId, constants.FlagNodepoolId, cloudapiv6.ArgLanId)
+	return core.CheckRequiredFlags(
+		c.Command, c.NS, constants.FlagClusterId, constants.FlagNodepoolId, cloudapiv6.ArgLanId,
+	)
 }
 
 func PreRunK8sClusterNodePoolLanRemove(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlagsSets(c.Command, c.NS,
+	return core.CheckRequiredFlagsSets(
+		c.Command, c.NS,
 		[]string{constants.FlagClusterId, constants.FlagNodepoolId, cloudapiv6.ArgLanId},
 		[]string{constants.FlagClusterId, constants.FlagNodepoolId, cloudapiv6.ArgAll},
 	)
@@ -252,7 +318,9 @@ func RemoveAllK8sNodePoolsLans(c *core.CommandConfig) error {
 	c.Printer.Verbose("K8sCluster ID: %v", clusterId)
 	c.Printer.Verbose("K8sNodePool ID: %v", nodePoolId)
 	c.Printer.Verbose("Getting K8sNodePool Lans...")
-	k8sNodepool, resp, err := c.CloudApiV6Services.K8s().GetNodePool(clusterId, nodePoolId, cloudapiv6.ParentResourceQueryParams)
+	k8sNodepool, resp, err := c.CloudApiV6Services.K8s().GetNodePool(
+		clusterId, nodePoolId, cloudapiv6.ParentResourceQueryParams,
+	)
 	if err != nil {
 		return err
 	}
@@ -347,12 +415,18 @@ func getNewK8sNodePoolLanInfo(c *core.CommandConfig, oldNg *resources.K8sNodePoo
 				c.Printer.Verbose("Property GatewayIp set: %v", gatewayIp)
 
 				if len(network) != len(gatewayIp) {
-					die.Die(fmt.Sprintf("Flags %s, %s have different number of arguments, must be the same", cloudapiv6.ArgNetwork, cloudapiv6.ArgGatewayIp))
+					die.Die(
+						fmt.Sprintf(
+							"Flags %s, %s have different number of arguments, must be the same", cloudapiv6.ArgNetwork,
+							cloudapiv6.ArgGatewayIp,
+						),
+					)
 				}
 
 				routes := make([]ionoscloud.KubernetesNodePoolLanRoutes, 0)
 				for i, net := range network {
-					routes = append(routes,
+					routes = append(
+						routes,
 						ionoscloud.KubernetesNodePoolLanRoutes{
 							Network:   pointer.From(net), // Copy the loop variable and take its address. See #289 - always same address would be used
 							GatewayIp: &gatewayIp[i],
@@ -428,7 +502,9 @@ func getK8sNodePoolLanPrint(c *core.CommandConfig, k8ss []resources.K8sNodePoolL
 		if k8ss != nil {
 			r.OutputJSON = k8ss
 			r.KeyValue = getK8sNodePoolLansKVMaps(k8ss)
-			r.Columns = printer.GetHeadersAllDefault(defaultK8sNodePoolLanCols, viper.GetStringSlice(core.GetFlagName(c.NS, constants.ArgCols)))
+			r.Columns = printer.GetHeadersAllDefault(
+				defaultK8sNodePoolLanCols, viper.GetStringSlice(core.GetFlagName(c.NS, constants.ArgCols)),
+			)
 		}
 	}
 	return r
@@ -440,9 +516,11 @@ func getK8sNodePoolLansForPut(ng *resources.K8sNodePool) []resources.K8sNodePool
 		if properties, ok := ng.GetPropertiesOk(); ok && properties != nil {
 			if lans, ok := properties.GetLansOk(); ok && lans != nil {
 				for _, lanItem := range *lans {
-					ss = append(ss, resources.K8sNodePoolLan{
-						KubernetesNodePoolLan: lanItem,
-					})
+					ss = append(
+						ss, resources.K8sNodePoolLan{
+							KubernetesNodePoolLan: lanItem,
+						},
+					)
 				}
 			}
 		}

@@ -27,30 +27,45 @@ func K8sKubeconfigCmd() *core.Command {
 	/*
 		Get Command
 	*/
-	get := core.NewCommand(ctx, k8sCmd, core.CommandBuilder{
-		Namespace:  "k8s",
-		Resource:   "kubeconfig",
-		Verb:       "get",
-		Aliases:    []string{"g"},
-		ShortDesc:  "Get the kubeconfig file for a Kubernetes Cluster",
-		LongDesc:   "Use this command to retrieve the kubeconfig file for a given Kubernetes Cluster.\n\nRequired values to run command:\n\n* K8s Cluster Id",
-		Example:    getK8sKubeconfigExample,
-		PreCmdRun:  PreRunK8sClusterId,
-		CmdRun:     RunK8sKubeconfigGet,
-		InitClient: true,
-	})
+	get := core.NewCommand(
+		ctx, k8sCmd, core.CommandBuilder{
+			Namespace:  "k8s",
+			Resource:   "kubeconfig",
+			Verb:       "get",
+			Aliases:    []string{"g"},
+			ShortDesc:  "Get the kubeconfig file for a Kubernetes Cluster",
+			LongDesc:   "Use this command to retrieve the kubeconfig file for a given Kubernetes Cluster.\n\nRequired values to run command:\n\n* K8s Cluster Id",
+			Example:    getK8sKubeconfigExample,
+			PreCmdRun:  PreRunK8sClusterId,
+			CmdRun:     RunK8sKubeconfigGet,
+			InitClient: true,
+		},
+	)
 	get.AddUUIDFlag(constants.FlagClusterId, "", "", cloudapiv6.K8sClusterId, core.RequiredFlagOption())
-	_ = get.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.K8sClustersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
-	})
+	_ = get.Command.RegisterFlagCompletionFunc(
+		constants.FlagClusterId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.K8sClustersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 	get.AddBoolFlag(constants.ArgNoHeaders, "", false, cloudapiv6.ArgNoHeadersDescription)
-	get.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultGetDepth, cloudapiv6.ArgDepthDescription)
+	get.AddInt32Flag(
+		cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultGetDepth, cloudapiv6.ArgDepthDescription,
+	)
 	return k8sCmd
 }
 
 func RunK8sKubeconfigGet(c *core.CommandConfig) error {
-	c.Printer.Verbose("K8s kube config with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)))
-	u, resp, err := c.CloudApiV6Services.K8s().ReadKubeConfig(viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)))
+	c.Printer.Verbose(
+		"K8s kube config with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)),
+	)
+	u, resp, err := c.CloudApiV6Services.K8s().ReadKubeConfig(
+		viper.GetString(
+			core.GetFlagName(
+				c.NS, constants.FlagClusterId,
+			),
+		),
+	)
 	if resp != nil {
 		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}

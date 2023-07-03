@@ -15,11 +15,13 @@ import (
 func TestRunVersion(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
-		viper.Set(core.GetFlagName(cfg.NS, constants.ArgUpdates), false)
-		err := RunVersion(cfg)
-		assert.NoError(t, err)
-	})
+	core.CmdConfigTest(
+		t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+			viper.Set(core.GetFlagName(cfg.NS, constants.ArgUpdates), false)
+			err := RunVersion(cfg)
+			assert.NoError(t, err)
+		},
+	)
 }
 
 func TestGetGithubLatestReleaseErr(t *testing.T) {

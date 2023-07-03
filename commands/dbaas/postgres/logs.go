@@ -40,38 +40,67 @@ func LogsCmd() *core.Command {
 	globalFlags := clusterCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultClusterLogsCols, printer.ColsMessage(allClusterLogsCols))
 	_ = viper.BindPFlag(core.GetFlagName(clusterCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
-	_ = clusterCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return allClusterLogsCols, cobra.ShellCompDirectiveNoFileComp
-	})
+	_ = clusterCmd.Command.RegisterFlagCompletionFunc(
+		constants.ArgCols,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return allClusterLogsCols, cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 
 	/*
 		List Command
 	*/
-	list := core.NewCommand(ctx, clusterCmd, core.CommandBuilder{
-		Namespace:  "dbaas-postgres-cluster",
-		Resource:   "logs",
-		Verb:       "list",
-		Aliases:    []string{"l", "ls"},
-		ShortDesc:  "List Logs for a PostgreSQL Cluster",
-		Example:    listLogsExample,
-		LongDesc:   "Use this command to retrieve the Logs of a specified PostgreSQL Cluster. By default, the result will contain all Cluster Logs. You can specify the start time, end time or a limit for sorting Cluster Logs.\n\nRequired values to run command:\n\n* Cluster Id",
-		PreCmdRun:  PreRunClusterLogsList,
-		CmdRun:     RunClusterLogsList,
-		InitClient: true,
-	})
-	list.AddStringFlag(dbaaspg.ArgSince, dbaaspg.ArgSinceShort, "", "The start time for the query using a time delta since the current moment: 2h - 2 hours ago, 20m - 20 minutes ago. Only hours and minutes are supported, and not at the same time. If both start-time and since are set, start-time will be used.")
-	list.AddStringFlag(dbaaspg.ArgUntil, dbaaspg.ArgUntilShort, "", "The end time for the query using a time delta since the current moment: 2h - 2 hours ago, 20m - 20 minutes ago. Only hours and minutes are supported, and not at the same time. If both end-time and until are set, end-time will be used.")
-	list.AddStringFlag(dbaaspg.ArgStartTime, dbaaspg.ArgStartTimeShort, "", "The start time for the query in RFC3339 format. Example: 2021-10-05T11:30:17.45Z")
-	list.AddStringFlag(dbaaspg.ArgEndTime, dbaaspg.ArgEndTimeShort, "", "The end time for the query in RFC3339 format. Example: 2021-10-05T11:30:17.45Z")
-	list.AddStringFlag(dbaaspg.ArgDirection, dbaaspg.ArgDirectionShort, "BACKWARD", "The direction in which to scan through the logs. The logs are returned in order of the direction.")
-	_ = list.Command.RegisterFlagCompletionFunc(dbaaspg.ArgDirection, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return []string{"BACKWARD", "FORWARD"}, cobra.ShellCompDirectiveNoFileComp
-	})
-	list.AddIntFlag(dbaaspg.ArgLimit, dbaaspg.ArgLimitShort, 100, "The maximal number of log lines to return. If the limit is reached then log lines will be cut at the end (respecting the scan direction). Minimum: 1. Maximum: 5000")
+	list := core.NewCommand(
+		ctx, clusterCmd, core.CommandBuilder{
+			Namespace:  "dbaas-postgres-cluster",
+			Resource:   "logs",
+			Verb:       "list",
+			Aliases:    []string{"l", "ls"},
+			ShortDesc:  "List Logs for a PostgreSQL Cluster",
+			Example:    listLogsExample,
+			LongDesc:   "Use this command to retrieve the Logs of a specified PostgreSQL Cluster. By default, the result will contain all Cluster Logs. You can specify the start time, end time or a limit for sorting Cluster Logs.\n\nRequired values to run command:\n\n* Cluster Id",
+			PreCmdRun:  PreRunClusterLogsList,
+			CmdRun:     RunClusterLogsList,
+			InitClient: true,
+		},
+	)
+	list.AddStringFlag(
+		dbaaspg.ArgSince, dbaaspg.ArgSinceShort, "",
+		"The start time for the query using a time delta since the current moment: 2h - 2 hours ago, 20m - 20 minutes ago. Only hours and minutes are supported, and not at the same time. If both start-time and since are set, start-time will be used.",
+	)
+	list.AddStringFlag(
+		dbaaspg.ArgUntil, dbaaspg.ArgUntilShort, "",
+		"The end time for the query using a time delta since the current moment: 2h - 2 hours ago, 20m - 20 minutes ago. Only hours and minutes are supported, and not at the same time. If both end-time and until are set, end-time will be used.",
+	)
+	list.AddStringFlag(
+		dbaaspg.ArgStartTime, dbaaspg.ArgStartTimeShort, "",
+		"The start time for the query in RFC3339 format. Example: 2021-10-05T11:30:17.45Z",
+	)
+	list.AddStringFlag(
+		dbaaspg.ArgEndTime, dbaaspg.ArgEndTimeShort, "",
+		"The end time for the query in RFC3339 format. Example: 2021-10-05T11:30:17.45Z",
+	)
+	list.AddStringFlag(
+		dbaaspg.ArgDirection, dbaaspg.ArgDirectionShort, "BACKWARD",
+		"The direction in which to scan through the logs. The logs are returned in order of the direction.",
+	)
+	_ = list.Command.RegisterFlagCompletionFunc(
+		dbaaspg.ArgDirection,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return []string{"BACKWARD", "FORWARD"}, cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	list.AddIntFlag(
+		dbaaspg.ArgLimit, dbaaspg.ArgLimitShort, 100,
+		"The maximal number of log lines to return. If the limit is reached then log lines will be cut at the end (respecting the scan direction). Minimum: 1. Maximum: 5000",
+	)
 	list.AddUUIDFlag(constants.FlagClusterId, dbaaspg.ArgIdShort, "", dbaaspg.ClusterId, core.RequiredFlagOption())
-	_ = list.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.ClustersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
-	})
+	_ = list.Command.RegisterFlagCompletionFunc(
+		constants.FlagClusterId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.ClustersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 	list.AddBoolFlag(constants.ArgNoHeaders, "", false, "When using text output, don't print headers")
 
 	return clusterCmd
@@ -100,7 +129,13 @@ func RunClusterLogsList(c *core.CommandConfig) error {
 		return err
 	}
 	c.Printer.Verbose("Getting Logs for the specified Cluster...")
-	clusterLogs, _, err := c.CloudApiDbaasPgsqlServices.Logs().Get(viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)), queryParams)
+	clusterLogs, _, err := c.CloudApiDbaasPgsqlServices.Logs().Get(
+		viper.GetString(
+			core.GetFlagName(
+				c.NS, constants.FlagClusterId,
+			),
+		), queryParams,
+	)
 	if err != nil {
 		return err
 	}
@@ -112,7 +147,11 @@ func getLogsQueryParams(c *core.CommandConfig) (*resources.LogsQueryParams, erro
 		startTime, endTime time.Time
 		err                error
 	)
-	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgSince)) && !viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgStartTime)) {
+	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgSince)) && !viper.IsSet(
+		core.GetFlagName(
+			c.NS, dbaaspg.ArgStartTime,
+		),
+	) {
 		since := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgSince))
 		if strings.Contains(since, hourSuffix) {
 			noHours, err := strconv.Atoi(strings.TrimSuffix(since, hourSuffix))
@@ -132,7 +171,11 @@ func getLogsQueryParams(c *core.CommandConfig) (*resources.LogsQueryParams, erro
 		}
 		c.Printer.Verbose("Since: %v. StartTime [RFC3339 format]: %v", since, startTime)
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgUntil)) && !viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgEndTime)) {
+	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgUntil)) && !viper.IsSet(
+		core.GetFlagName(
+			c.NS, dbaaspg.ArgEndTime,
+		),
+	) {
 		until := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgUntil))
 		if strings.Contains(until, hourSuffix) {
 			noHours, err := strconv.Atoi(strings.TrimSuffix(until, hourSuffix))
@@ -153,7 +196,9 @@ func getLogsQueryParams(c *core.CommandConfig) (*resources.LogsQueryParams, erro
 		c.Printer.Verbose("Until: %v. End Time [RFC3339 format]: %v", until, endTime)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgStartTime)) {
-		c.Printer.Verbose("Start Time [RFC3339 format]: %v", viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgStartTime)))
+		c.Printer.Verbose(
+			"Start Time [RFC3339 format]: %v", viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgStartTime)),
+		)
 		startTime, err = time.Parse(time.RFC3339, viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgStartTime)))
 		if err != nil {
 			return nil, err

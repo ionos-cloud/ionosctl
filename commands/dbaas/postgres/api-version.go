@@ -31,43 +31,52 @@ func APIVersionCmd() *core.Command {
 	}
 	globalFlags := apiversionCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultAPIVersionCols, printer.ColsMessage(defaultAPIVersionCols))
-	_ = viper.BindPFlag(core.GetFlagName(apiversionCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
-	_ = apiversionCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return defaultAPIVersionCols, cobra.ShellCompDirectiveNoFileComp
-	})
+	_ = viper.BindPFlag(
+		core.GetFlagName(apiversionCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols),
+	)
+	_ = apiversionCmd.Command.RegisterFlagCompletionFunc(
+		constants.ArgCols,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return defaultAPIVersionCols, cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 
 	/*
 		List Command
 	*/
-	list := core.NewCommand(ctx, apiversionCmd, core.CommandBuilder{
-		Namespace:  "dbaas-postgres",
-		Resource:   "api-version",
-		Verb:       "list",
-		Aliases:    []string{"l", "ls"},
-		ShortDesc:  "List DBaaS PostgreSQL API Versions",
-		LongDesc:   "Use this command to retrieve all available DBaaS PostgreSQL API versions.",
-		Example:    listAPIVersionExample,
-		PreCmdRun:  core.NoPreRun,
-		CmdRun:     RunAPIVersionList,
-		InitClient: true,
-	})
+	list := core.NewCommand(
+		ctx, apiversionCmd, core.CommandBuilder{
+			Namespace:  "dbaas-postgres",
+			Resource:   "api-version",
+			Verb:       "list",
+			Aliases:    []string{"l", "ls"},
+			ShortDesc:  "List DBaaS PostgreSQL API Versions",
+			LongDesc:   "Use this command to retrieve all available DBaaS PostgreSQL API versions.",
+			Example:    listAPIVersionExample,
+			PreCmdRun:  core.NoPreRun,
+			CmdRun:     RunAPIVersionList,
+			InitClient: true,
+		},
+	)
 	list.AddBoolFlag(constants.ArgNoHeaders, "", false, "When using text output, don't print headers")
 
 	/*
 		Get Command
 	*/
-	get := core.NewCommand(ctx, apiversionCmd, core.CommandBuilder{
-		Namespace:  "dbaas-postgres",
-		Resource:   "api-version",
-		Verb:       "get",
-		Aliases:    []string{"g"},
-		ShortDesc:  "Get current version of DBaaS PostgreSQL API",
-		LongDesc:   "Use this command to get the current version of DBaaS PostgreSQL API.",
-		Example:    getAPIVersionExample,
-		PreCmdRun:  core.NoPreRun,
-		CmdRun:     RunAPIVersionGet,
-		InitClient: true,
-	})
+	get := core.NewCommand(
+		ctx, apiversionCmd, core.CommandBuilder{
+			Namespace:  "dbaas-postgres",
+			Resource:   "api-version",
+			Verb:       "get",
+			Aliases:    []string{"g"},
+			ShortDesc:  "Get current version of DBaaS PostgreSQL API",
+			LongDesc:   "Use this command to get the current version of DBaaS PostgreSQL API.",
+			Example:    getAPIVersionExample,
+			PreCmdRun:  core.NoPreRun,
+			CmdRun:     RunAPIVersionGet,
+			InitClient: true,
+		},
+	)
 	get.AddBoolFlag(constants.ArgNoHeaders, "", false, "When using text output, don't print headers")
 
 	return apiversionCmd

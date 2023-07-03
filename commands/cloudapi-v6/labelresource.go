@@ -24,7 +24,9 @@ func RunDataCenterLabelsList(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	labelDcs, resp, err := c.CloudApiV6Services.Labels().DatacenterList(listQueryParams, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
+	labelDcs, resp, err := c.CloudApiV6Services.Labels().DatacenterList(
+		listQueryParams, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
+	)
 	if resp != nil {
 		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
@@ -52,7 +54,9 @@ func RunDataCenterLabelAdd(c *core.CommandConfig) error {
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	labelKey := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelKey))
 	labelValue := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelValue))
-	c.Printer.Verbose("Adding label with key: %v and value: %v to Datacenter with id: %v...", labelKey, labelValue, dcId)
+	c.Printer.Verbose(
+		"Adding label with key: %v and value: %v to Datacenter with id: %v...", labelKey, labelValue, dcId,
+	)
 	labelDc, resp, err := c.CloudApiV6Services.Labels().DatacenterCreate(dcId, labelKey, labelValue)
 	if resp != nil && printer.GetId(resp) != "" {
 		c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
@@ -107,7 +111,9 @@ func RemoveAllDatacenterLabels(c *core.CommandConfig) error {
 				}
 				_ = c.Printer.Warn(delIdAndName)
 			}
-			if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Labels from Datacenter with Id: "+dcId); err != nil {
+			if err = utils.AskForConfirm(
+				c.Stdin, c.Printer, "delete all the Labels from Datacenter with Id: "+dcId,
+			); err != nil {
 				return err
 			}
 			c.Printer.Verbose("Deleting all the Labels from Datacenter with Id: %v...", dcId)
@@ -121,13 +127,17 @@ func RemoveAllDatacenterLabels(c *core.CommandConfig) error {
 							c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
 						}
 						if err != nil {
-							multiErr = multierr.Append(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *key, err))
+							multiErr = multierr.Append(
+								multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *key, err),
+							)
 							continue
 						} else {
 							_ = c.Printer.Print(fmt.Sprintf(constants.MessageDeletingAll, c.Resource, *key))
 						}
 						if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-							multiErr = multierr.Append(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *key, err))
+							multiErr = multierr.Append(
+								multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *key, err),
+							)
 							continue
 						}
 					}
@@ -184,7 +194,9 @@ func RunServerLabelAdd(c *core.CommandConfig) error {
 	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
 	labelKey := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelKey))
 	labelValue := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelValue))
-	c.Printer.Verbose("Adding label with key: %v and value: %v to Server with id: %v...", labelKey, labelValue, serverId)
+	c.Printer.Verbose(
+		"Adding label with key: %v and value: %v to Server with id: %v...", labelKey, labelValue, serverId,
+	)
 	labelDc, resp, err := c.CloudApiV6Services.Labels().ServerCreate(dcId, serverId, labelKey, labelValue)
 	if resp != nil && printer.GetId(resp) != "" {
 		c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
@@ -246,7 +258,9 @@ func RemoveAllServerLabels(c *core.CommandConfig) error {
 				}
 				_ = c.Printer.Warn(delIdAndName)
 			}
-			if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Labels from Server with Id: "+serverId); err != nil {
+			if err = utils.AskForConfirm(
+				c.Stdin, c.Printer, "delete all the Labels from Server with Id: "+serverId,
+			); err != nil {
 				return err
 			}
 			c.Printer.Verbose("Deleting all the Labels from Server with Id: %v...", serverId)
@@ -260,13 +274,17 @@ func RemoveAllServerLabels(c *core.CommandConfig) error {
 							c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
 						}
 						if err != nil {
-							multiErr = multierr.Append(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *key, err))
+							multiErr = multierr.Append(
+								multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *key, err),
+							)
 							continue
 						} else {
 							_ = c.Printer.Print(fmt.Sprintf(constants.MessageDeletingAll, c.Resource, *key))
 						}
 						if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-							multiErr = multierr.Append(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *key, err))
+							multiErr = multierr.Append(
+								multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *key, err),
+							)
 							continue
 						}
 					}
@@ -323,7 +341,9 @@ func RunVolumeLabelAdd(c *core.CommandConfig) error {
 	volumeId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeId))
 	labelKey := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelKey))
 	labelValue := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelValue))
-	c.Printer.Verbose("Adding label with key: %v and value: %v to Volume with id: %v...", labelKey, labelValue, volumeId)
+	c.Printer.Verbose(
+		"Adding label with key: %v and value: %v to Volume with id: %v...", labelKey, labelValue, volumeId,
+	)
 	labelDc, resp, err := c.CloudApiV6Services.Labels().VolumeCreate(dcId, volumeId, labelKey, labelValue)
 	if resp != nil && printer.GetId(resp) != "" {
 		c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
@@ -379,7 +399,9 @@ func RemoveAllVolumeLabels(c *core.CommandConfig) error {
 				}
 				_ = c.Printer.Warn(delIdAndName)
 			}
-			if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Labels from Volume with Id: "+volumeId); err != nil {
+			if err = utils.AskForConfirm(
+				c.Stdin, c.Printer, "delete all the Labels from Volume with Id: "+volumeId,
+			); err != nil {
 				return err
 			}
 			c.Printer.Verbose("Deleting all the Labels from Volume with Id: %v...", volumeId)
@@ -393,13 +415,17 @@ func RemoveAllVolumeLabels(c *core.CommandConfig) error {
 							c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
 						}
 						if err != nil {
-							multiErr = multierr.Append(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *key, err))
+							multiErr = multierr.Append(
+								multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *key, err),
+							)
 							continue
 						} else {
 							_ = c.Printer.Print(fmt.Sprintf(constants.MessageDeletingAll, c.Resource, *key))
 						}
 						if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-							multiErr = multierr.Append(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *key, err))
+							multiErr = multierr.Append(
+								multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *key, err),
+							)
 							continue
 						}
 					}
@@ -422,7 +448,9 @@ func RunIpBlockLabelsList(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	labelDcs, resp, err := c.CloudApiV6Services.Labels().IpBlockList(listQueryParams, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgIpBlockId)))
+	labelDcs, resp, err := c.CloudApiV6Services.Labels().IpBlockList(
+		listQueryParams, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgIpBlockId)),
+	)
 	if resp != nil {
 		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
@@ -450,7 +478,9 @@ func RunIpBlockLabelAdd(c *core.CommandConfig) error {
 	ipBlockId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgIpBlockId))
 	labelKey := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelKey))
 	labelValue := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelValue))
-	c.Printer.Verbose("Adding label with key: %v and value: %v to IpBlock with id: %v...", labelKey, labelValue, ipBlockId)
+	c.Printer.Verbose(
+		"Adding label with key: %v and value: %v to IpBlock with id: %v...", labelKey, labelValue, ipBlockId,
+	)
 	labelDc, resp, err := c.CloudApiV6Services.Labels().IpBlockCreate(ipBlockId, labelKey, labelValue)
 	if resp != nil && printer.GetId(resp) != "" {
 		c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
@@ -505,7 +535,9 @@ func RemoveAllIpBlockLabels(c *core.CommandConfig) error {
 				}
 				_ = c.Printer.Warn(delIdAndName)
 			}
-			if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Labels from IpBlock with Id: "+ipBlockId); err != nil {
+			if err = utils.AskForConfirm(
+				c.Stdin, c.Printer, "delete all the Labels from IpBlock with Id: "+ipBlockId,
+			); err != nil {
 				return err
 			}
 			c.Printer.Verbose("Deleting all the Labels from IpBlock with Id: %v...", ipBlockId)
@@ -519,13 +551,17 @@ func RemoveAllIpBlockLabels(c *core.CommandConfig) error {
 							c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
 						}
 						if err != nil {
-							multiErr = multierr.Append(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *key, err))
+							multiErr = multierr.Append(
+								multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *key, err),
+							)
 							continue
 						} else {
 							_ = c.Printer.Print(fmt.Sprintf(constants.MessageDeletingAll, c.Resource, *key))
 						}
 						if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-							multiErr = multierr.Append(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *key, err))
+							multiErr = multierr.Append(
+								multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *key, err),
+							)
 							continue
 						}
 					}
@@ -548,7 +584,9 @@ func RunSnapshotLabelsList(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	labelDcs, resp, err := c.CloudApiV6Services.Labels().SnapshotList(listQueryParams, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSnapshotId)))
+	labelDcs, resp, err := c.CloudApiV6Services.Labels().SnapshotList(
+		listQueryParams, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSnapshotId)),
+	)
 	if resp != nil {
 		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
@@ -576,7 +614,9 @@ func RunSnapshotLabelAdd(c *core.CommandConfig) error {
 	snapshotId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSnapshotId))
 	labelKey := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelKey))
 	labelValue := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelValue))
-	c.Printer.Verbose("Adding label with key: %v and value: %v to Snapshot with id: %v...", labelKey, labelValue, snapshotId)
+	c.Printer.Verbose(
+		"Adding label with key: %v and value: %v to Snapshot with id: %v...", labelKey, labelValue, snapshotId,
+	)
 	labelDc, resp, err := c.CloudApiV6Services.Labels().SnapshotCreate(snapshotId, labelKey, labelValue)
 	if resp != nil && printer.GetId(resp) != "" {
 		c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
@@ -630,7 +670,9 @@ func RemoveAllSnapshotLabels(c *core.CommandConfig) error {
 				}
 				_ = c.Printer.Warn(delIdAndName)
 			}
-			if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Labels from Snapshot with Id: "+snapshotId); err != nil {
+			if err = utils.AskForConfirm(
+				c.Stdin, c.Printer, "delete all the Labels from Snapshot with Id: "+snapshotId,
+			); err != nil {
 				return err
 			}
 			c.Printer.Verbose("Deleting all the Labels from Snapshot with Id: %v...", snapshotId)
@@ -644,13 +686,17 @@ func RemoveAllSnapshotLabels(c *core.CommandConfig) error {
 							c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
 						}
 						if err != nil {
-							multiErr = multierr.Append(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *key, err))
+							multiErr = multierr.Append(
+								multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *key, err),
+							)
 							continue
 						} else {
 							_ = c.Printer.Print(fmt.Sprintf(constants.MessageDeletingAll, c.Resource, *key))
 						}
 						if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-							multiErr = multierr.Append(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *key, err))
+							multiErr = multierr.Append(
+								multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *key, err),
+							)
 							continue
 						}
 					}

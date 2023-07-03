@@ -50,111 +50,179 @@ func ImageCmd() *core.Command {
 	globalFlags := imageCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultImageCols, printer.ColsMessage(allImageCols))
 	_ = viper.BindPFlag(core.GetFlagName(imageCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
-	_ = imageCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return allImageCols, cobra.ShellCompDirectiveNoFileComp
-	})
+	_ = imageCmd.Command.RegisterFlagCompletionFunc(
+		constants.ArgCols,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return allImageCols, cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 
 	/*
 		List Command
 	*/
-	list := core.NewCommand(ctx, imageCmd, core.CommandBuilder{
-		Namespace:  "image",
-		Resource:   "image",
-		Verb:       "list",
-		Aliases:    []string{"l", "ls"},
-		ShortDesc:  "List Images",
-		LongDesc:   "Use this command to get a full list of available public Images.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.ImagesFiltersUsage(),
-		Example:    listImagesExample,
-		PreCmdRun:  PreRunImageList,
-		CmdRun:     RunImageList,
-		InitClient: true,
-	})
+	list := core.NewCommand(
+		ctx, imageCmd, core.CommandBuilder{
+			Namespace:  "image",
+			Resource:   "image",
+			Verb:       "list",
+			Aliases:    []string{"l", "ls"},
+			ShortDesc:  "List Images",
+			LongDesc:   "Use this command to get a full list of available public Images.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.ImagesFiltersUsage(),
+			Example:    listImagesExample,
+			PreCmdRun:  PreRunImageList,
+			CmdRun:     RunImageList,
+			InitClient: true,
+		},
+	)
 
 	deprecatedMessage := "incompatible with --max-results. Use --filters --order-by --max-results options instead!"
 
-	list.AddStringFlag(cloudapiv6.ArgType, "", "", "The type of the Image", core.DeprecatedFlagOption(deprecatedMessage))
-	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return []string{"CDROM", "HDD"}, cobra.ShellCompDirectiveNoFileComp
-	})
-	list.AddStringFlag(cloudapiv6.ArgLicenceType, "", "", "The licence type of the Image", core.DeprecatedFlagOption(deprecatedMessage))
-	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgLicenceType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return constants.EnumLicenceType, cobra.ShellCompDirectiveNoFileComp
-	})
-	list.AddStringFlag(cloudapiv6.ArgLocation, cloudapiv6.ArgLocationShort, "", "The location of the Image", core.DeprecatedFlagOption(deprecatedMessage))
-	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgLocation, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.LocationIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
-	})
-	list.AddStringFlag(cloudapiv6.ArgImageAlias, "", "", "Image Alias or part of Image Alias to sort Images by", core.DeprecatedFlagOption(deprecatedMessage))
-	list.AddIntFlag(cloudapiv6.ArgLatest, "", 0, "Show the latest N Images, based on creation date, starting from now in descending order. If it is not set, all Images will be printed", core.DeprecatedFlagOption("Use --filters --order-by --max-results options instead!"))
-	list.AddInt32Flag(constants.FlagMaxResults, constants.FlagMaxResultsShort, cloudapiv6.DefaultMaxResults, constants.DescMaxResults)
-	list.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultListDepth, cloudapiv6.ArgDepthDescription)
+	list.AddStringFlag(
+		cloudapiv6.ArgType, "", "", "The type of the Image", core.DeprecatedFlagOption(deprecatedMessage),
+	)
+	_ = list.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgType,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return []string{"CDROM", "HDD"}, cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	list.AddStringFlag(
+		cloudapiv6.ArgLicenceType, "", "", "The licence type of the Image", core.DeprecatedFlagOption(deprecatedMessage),
+	)
+	_ = list.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgLicenceType,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return constants.EnumLicenceType, cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	list.AddStringFlag(
+		cloudapiv6.ArgLocation, cloudapiv6.ArgLocationShort, "", "The location of the Image",
+		core.DeprecatedFlagOption(deprecatedMessage),
+	)
+	_ = list.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgLocation,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.LocationIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	list.AddStringFlag(
+		cloudapiv6.ArgImageAlias, "", "", "Image Alias or part of Image Alias to sort Images by",
+		core.DeprecatedFlagOption(deprecatedMessage),
+	)
+	list.AddIntFlag(
+		cloudapiv6.ArgLatest, "", 0,
+		"Show the latest N Images, based on creation date, starting from now in descending order. If it is not set, all Images will be printed",
+		core.DeprecatedFlagOption("Use --filters --order-by --max-results options instead!"),
+	)
+	list.AddInt32Flag(
+		constants.FlagMaxResults, constants.FlagMaxResultsShort, cloudapiv6.DefaultMaxResults, constants.DescMaxResults,
+	)
+	list.AddInt32Flag(
+		cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultListDepth, cloudapiv6.ArgDepthDescription,
+	)
 	list.AddStringFlag(cloudapiv6.ArgOrderBy, "", "", cloudapiv6.ArgOrderByDescription)
-	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgOrderBy, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.ImagesFilters(), cobra.ShellCompDirectiveNoFileComp
-	})
-	list.AddStringSliceFlag(cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, cloudapiv6.ArgFiltersDescription)
-	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgFilters, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.ImagesFilters(), cobra.ShellCompDirectiveNoFileComp
-	})
+	_ = list.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgOrderBy,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.ImagesFilters(), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	list.AddStringSliceFlag(
+		cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, cloudapiv6.ArgFiltersDescription,
+	)
+	_ = list.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgFilters,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.ImagesFilters(), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 	list.AddBoolFlag(constants.ArgNoHeaders, "", false, cloudapiv6.ArgNoHeadersDescription)
 
 	/*
 		Get Command
 	*/
-	get := core.NewCommand(ctx, imageCmd, core.CommandBuilder{
-		Namespace:  "image",
-		Resource:   "image",
-		Verb:       "get",
-		Aliases:    []string{"g"},
-		ShortDesc:  "Get a specified Image",
-		LongDesc:   "Use this command to get information about a specified Image.\n\nRequired values to run command:\n\n* Image Id",
-		Example:    getImageExample,
-		PreCmdRun:  PreRunImageId,
-		CmdRun:     RunImageGet,
-		InitClient: true,
-	})
+	get := core.NewCommand(
+		ctx, imageCmd, core.CommandBuilder{
+			Namespace:  "image",
+			Resource:   "image",
+			Verb:       "get",
+			Aliases:    []string{"g"},
+			ShortDesc:  "Get a specified Image",
+			LongDesc:   "Use this command to get information about a specified Image.\n\nRequired values to run command:\n\n* Image Id",
+			Example:    getImageExample,
+			PreCmdRun:  PreRunImageId,
+			CmdRun:     RunImageGet,
+			InitClient: true,
+		},
+	)
 	get.AddUUIDFlag(cloudapiv6.ArgImageId, cloudapiv6.ArgIdShort, "", cloudapiv6.ImageId, core.RequiredFlagOption())
-	_ = get.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgImageId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.ImageIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
-	})
+	_ = get.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgImageId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.ImageIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 	get.AddBoolFlag(constants.ArgNoHeaders, "", false, cloudapiv6.ArgNoHeadersDescription)
-	get.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultGetDepth, cloudapiv6.ArgDepthDescription)
+	get.AddInt32Flag(
+		cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultGetDepth, cloudapiv6.ArgDepthDescription,
+	)
 
-	update := core.NewCommand(ctx, imageCmd, core.CommandBuilder{
-		Namespace:  "image",
-		Resource:   "image",
-		Verb:       "update",
-		Aliases:    []string{"u", "up"},
-		ShortDesc:  "Update a specified Image",
-		LongDesc:   "Use this command to update information about a specified Image.\n\nRequired values to run command:\n\n* Image Id",
-		Example:    "ionosctl image update --image-id IMAGE_ID",
-		PreCmdRun:  PreRunImageId,
-		CmdRun:     RunImageUpdate,
-		InitClient: true,
-	})
+	update := core.NewCommand(
+		ctx, imageCmd, core.CommandBuilder{
+			Namespace:  "image",
+			Resource:   "image",
+			Verb:       "update",
+			Aliases:    []string{"u", "up"},
+			ShortDesc:  "Update a specified Image",
+			LongDesc:   "Use this command to update information about a specified Image.\n\nRequired values to run command:\n\n* Image Id",
+			Example:    "ionosctl image update --image-id IMAGE_ID",
+			PreCmdRun:  PreRunImageId,
+			CmdRun:     RunImageUpdate,
+			InitClient: true,
+		},
+	)
 	update.AddUUIDFlag(cloudapiv6.ArgImageId, cloudapiv6.ArgIdShort, "", cloudapiv6.ImageId, core.RequiredFlagOption())
-	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgImageId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.ImageIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
-	})
+	_ = update.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgImageId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.ImageIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 
 	update.Command.Flags().SortFlags = false // Hot Plugs generate a lot of flags to scroll through, put them at the end
 
-	update.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait, "Wait for the Request for Image update to be executed")
-	update.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for Image update [seconds]")
+	update.AddBoolFlag(
+		constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait,
+		"Wait for the Request for Image update to be executed",
+	)
+	update.AddIntFlag(
+		constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds,
+		"Timeout option for Request for Image update [seconds]",
+	)
 	update.AddBoolFlag(constants.ArgNoHeaders, "", false, cloudapiv6.ArgNoHeadersDescription)
-	update.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultGetDepth, cloudapiv6.ArgDepthDescription)
+	update.AddInt32Flag(
+		cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultGetDepth, cloudapiv6.ArgDepthDescription,
+	)
 
 	addPropertiesFlags := func(command *core.Command) {
 		command.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "", "Name of the Image")
 		command.AddStringFlag(cloudapiv6.ArgDescription, cloudapiv6.ArgDescriptionShort, "", "Description of the Image")
-		command.AddSetFlag(cloudapiv6.ArgLicenceType, "", "UNKNOWN", constants.EnumLicenceType, "The OS type of this image")
+		command.AddSetFlag(
+			cloudapiv6.ArgLicenceType, "", "UNKNOWN", constants.EnumLicenceType, "The OS type of this image",
+		)
 		command.AddSetFlag("cloud-init", "", "V1", []string{"V1", "NONE"}, "Cloud init compatibility")
-		command.AddBoolFlag(cloudapiv6.ArgCpuHotPlug, "", true, "'Hot-Plug' CPU. It is not possible to have a hot-unplug CPU which you previously did not hot-plug")
+		command.AddBoolFlag(
+			cloudapiv6.ArgCpuHotPlug, "", true,
+			"'Hot-Plug' CPU. It is not possible to have a hot-unplug CPU which you previously did not hot-plug",
+		)
 		command.AddBoolFlag(cloudapiv6.ArgRamHotPlug, "", true, "'Hot-Plug' RAM")
 		command.AddBoolFlag(cloudapiv6.ArgNicHotPlug, "", true, "'Hot-Plug' NIC")
 		command.AddBoolFlag(cloudapiv6.ArgDiscVirtioHotPlug, "", true, "'Hot-Plug' Virt-IO drive")
 		command.AddBoolFlag(cloudapiv6.ArgDiscScsiHotPlug, "", true, "'Hot-Plug' SCSI drive")
-		command.AddBoolFlag(cloudapiv6.ArgCpuHotUnplug, "", false, "'Hot-Unplug' CPU. It is not possible to have a hot-unplug CPU which you previously did not hot-plug")
+		command.AddBoolFlag(
+			cloudapiv6.ArgCpuHotUnplug, "", false,
+			"'Hot-Unplug' CPU. It is not possible to have a hot-unplug CPU which you previously did not hot-plug",
+		)
 		command.AddBoolFlag(cloudapiv6.ArgRamHotUnplug, "", false, "'Hot-Unplug' RAM")
 		command.AddBoolFlag(cloudapiv6.ArgNicHotUnplug, "", false, "'Hot-Unplug' NIC")
 		command.AddBoolFlag(cloudapiv6.ArgDiscVirtioHotUnplug, "", false, "'Hot-Unplug' Virt-IO drive")
@@ -166,28 +234,43 @@ func ImageCmd() *core.Command {
 	/*
 		Delete Command
 	*/
-	deleteCmd := core.NewCommand(ctx, imageCmd, core.CommandBuilder{
-		Namespace:  "image",
-		Resource:   "image",
-		Verb:       "delete",
-		Aliases:    []string{"d"},
-		ShortDesc:  "Delete an image",
-		LongDesc:   "Use this command to delete a specified Image.\n\nRequired values to run command:\n\n* Image Id",
-		Example:    "ionosctl image delete --image-id IMAGE_ID",
-		PreCmdRun:  PreRunImageDelete,
-		CmdRun:     RunImageDelete,
-		InitClient: true,
-	})
-	deleteCmd.AddUUIDFlag(cloudapiv6.ArgImageId, cloudapiv6.ArgIdShort, "", cloudapiv6.ImageId, core.RequiredFlagOption())
-	_ = deleteCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgImageId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.ImageIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
-	})
+	deleteCmd := core.NewCommand(
+		ctx, imageCmd, core.CommandBuilder{
+			Namespace:  "image",
+			Resource:   "image",
+			Verb:       "delete",
+			Aliases:    []string{"d"},
+			ShortDesc:  "Delete an image",
+			LongDesc:   "Use this command to delete a specified Image.\n\nRequired values to run command:\n\n* Image Id",
+			Example:    "ionosctl image delete --image-id IMAGE_ID",
+			PreCmdRun:  PreRunImageDelete,
+			CmdRun:     RunImageDelete,
+			InitClient: true,
+		},
+	)
+	deleteCmd.AddUUIDFlag(
+		cloudapiv6.ArgImageId, cloudapiv6.ArgIdShort, "", cloudapiv6.ImageId, core.RequiredFlagOption(),
+	)
+	_ = deleteCmd.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgImageId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.ImageIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 	deleteCmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Delete all non-public images")
 
-	deleteCmd.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait, "Wait for the Request for Image update to be executed")
-	deleteCmd.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for Image update [seconds]")
+	deleteCmd.AddBoolFlag(
+		constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait,
+		"Wait for the Request for Image update to be executed",
+	)
+	deleteCmd.AddIntFlag(
+		constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds,
+		"Timeout option for Request for Image update [seconds]",
+	)
 	deleteCmd.AddBoolFlag(constants.ArgNoHeaders, "", false, cloudapiv6.ArgNoHeadersDescription)
-	deleteCmd.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultGetDepth, cloudapiv6.ArgDepthDescription)
+	deleteCmd.AddInt32Flag(
+		cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultGetDepth, cloudapiv6.ArgDepthDescription,
+	)
 
 	/*
 		upload Command
@@ -196,26 +279,52 @@ func ImageCmd() *core.Command {
 		- ftp://ftp-fkb.ionos.com/iso-images
 		https://docs.ionos.com/cloud/compute-engine/block-storage/block-storage-faq#how-do-i-upload-my-own-images-with-ftp
 	*/
-	upload := core.NewCommand(ctx, imageCmd, core.CommandBuilder{
-		Namespace:  "image",
-		Resource:   "image",
-		Verb:       "upload",
-		Aliases:    []string{"ftp-upload", "ftp", "upl"},
-		ShortDesc:  "Upload an image to FTP server",
-		LongDesc:   "Use this command to upload an HDD or ISO image.\n\nRequired values to run command:\n\n* Location\n",
-		Example:    "ionosctl img u -i kolibri.iso -l fkb,fra,vit",
-		PreCmdRun:  PreRunImageUpload,
-		CmdRun:     RunImageUpload,
-		InitClient: true,
-	})
-	upload.AddStringSliceFlag(cloudapiv6.ArgLocation, cloudapiv6.ArgLocationShort, nil, "Location to upload to. Must be an array containing only fra, fkb, txl, lhr, las, ewr, vit", core.RequiredFlagOption())
-	upload.AddStringSliceFlag("image", "i", nil, "Slice of paths to images, can be absolute path or relative to current working directory", core.RequiredFlagOption())
-	upload.AddStringFlag("ftp-url", "", "ftp-%s.ionos.com", "URL of FTP server, with %s flag if location is embedded into url")
-	upload.AddBoolFlag("skip-verify", "", false, "Skip verification of server certificate, useful if using a custom ftp-url. WARNING: You can be the target of a man-in-the-middle attack!")
-	upload.AddBoolFlag("skip-update", "", false, "After the image is uploaded to the FTP server, send a PATCH to the API with the contents of the image properties flags and emulate a \"create\" command.")
-	upload.AddStringFlag("crt-path", "", "", "(Unneeded for IONOS FTP Servers) Path to file containing server certificate. If your FTP server is self-signed, you need to add the server certificate to the list of certificate authorities trusted by the client.")
-	upload.AddStringSliceFlag(cloudapiv6.ArgImageAlias, cloudapiv6.ArgImageAliasShort, nil, "Rename the uploaded images. These names should not contain any extension. By default, this is the base of the image path")
-	upload.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, 300, "(seconds) Context Deadline. FTP connection will time out after this many seconds")
+	upload := core.NewCommand(
+		ctx, imageCmd, core.CommandBuilder{
+			Namespace:  "image",
+			Resource:   "image",
+			Verb:       "upload",
+			Aliases:    []string{"ftp-upload", "ftp", "upl"},
+			ShortDesc:  "Upload an image to FTP server",
+			LongDesc:   "Use this command to upload an HDD or ISO image.\n\nRequired values to run command:\n\n* Location\n",
+			Example:    "ionosctl img u -i kolibri.iso -l fkb,fra,vit",
+			PreCmdRun:  PreRunImageUpload,
+			CmdRun:     RunImageUpload,
+			InitClient: true,
+		},
+	)
+	upload.AddStringSliceFlag(
+		cloudapiv6.ArgLocation, cloudapiv6.ArgLocationShort, nil,
+		"Location to upload to. Must be an array containing only fra, fkb, txl, lhr, las, ewr, vit",
+		core.RequiredFlagOption(),
+	)
+	upload.AddStringSliceFlag(
+		"image", "i", nil, "Slice of paths to images, can be absolute path or relative to current working directory",
+		core.RequiredFlagOption(),
+	)
+	upload.AddStringFlag(
+		"ftp-url", "", "ftp-%s.ionos.com", "URL of FTP server, with %s flag if location is embedded into url",
+	)
+	upload.AddBoolFlag(
+		"skip-verify", "", false,
+		"Skip verification of server certificate, useful if using a custom ftp-url. WARNING: You can be the target of a man-in-the-middle attack!",
+	)
+	upload.AddBoolFlag(
+		"skip-update", "", false,
+		"After the image is uploaded to the FTP server, send a PATCH to the API with the contents of the image properties flags and emulate a \"create\" command.",
+	)
+	upload.AddStringFlag(
+		"crt-path", "", "",
+		"(Unneeded for IONOS FTP Servers) Path to file containing server certificate. If your FTP server is self-signed, you need to add the server certificate to the list of certificate authorities trusted by the client.",
+	)
+	upload.AddStringSliceFlag(
+		cloudapiv6.ArgImageAlias, cloudapiv6.ArgImageAliasShort, nil,
+		"Rename the uploaded images. These names should not contain any extension. By default, this is the base of the image path",
+	)
+	upload.AddIntFlag(
+		constants.ArgTimeout, constants.ArgTimeoutShort, 300,
+		"(seconds) Context Deadline. FTP connection will time out after this many seconds",
+	)
 
 	addPropertiesFlags(upload)
 
@@ -353,61 +462,63 @@ func DeleteAllNonPublicImages(c *core.CommandConfig) error {
 // returns an ImageProperties object which reflects the currently set flags
 func getDesiredImageAfterPatch(c *core.CommandConfig) resources.ImageProperties {
 	input := resources.ImageProperties{}
-	c.Command.Command.Flags().VisitAll(func(flag *pflag.Flag) {
-		val := flag.Value.String()
-		if val == "" {
-			return
-		}
-		boolval, _ := strconv.ParseBool(val)
-		switch flag.Name {
-		case cloudapiv6.ArgName:
-			input.SetName(val)
-			break
-		case cloudapiv6.ArgDescription:
-			input.SetDescription(val)
-			break
-		case "cloud-init":
-			input.SetCloudInit(val)
-			break
-		case cloudapiv6.ArgLicenceType:
-			input.SetLicenceType(val)
-			break
-		case cloudapiv6.ArgCpuHotPlug:
-			input.SetCpuHotPlug(boolval)
-			break
-		case cloudapiv6.ArgRamHotPlug:
-			input.SetRamHotPlug(boolval)
-			break
-		case cloudapiv6.ArgNicHotPlug:
-			input.SetNicHotPlug(boolval)
-			break
-		case cloudapiv6.ArgDiscVirtioHotPlug:
-			input.SetDiscVirtioHotPlug(boolval)
-			break
-		case cloudapiv6.ArgDiscScsiHotPlug:
-			input.SetDiscScsiHotPlug(boolval)
-			break
-		case cloudapiv6.ArgCpuHotUnplug:
-			input.SetCpuHotUnplug(boolval)
-			break
-		case cloudapiv6.ArgRamHotUnplug:
-			input.SetRamHotUnplug(boolval)
-			break
-		case cloudapiv6.ArgNicHotUnplug:
-			input.SetNicHotUnplug(boolval)
-			break
-		case cloudapiv6.ArgDiscVirtioHotUnplug:
-			input.SetDiscVirtioHotUnplug(boolval)
-			break
-		case cloudapiv6.ArgDiscScsiHotUnplug:
-			input.SetDiscScsiHotUnplug(boolval)
-			break
-		default:
-			// --image-id, verbose, filters, depth, etc
-			break
-		}
-		c.Printer.Verbose(fmt.Sprintf("Property %s set: %s", flag.Name, flag.Value))
-	})
+	c.Command.Command.Flags().VisitAll(
+		func(flag *pflag.Flag) {
+			val := flag.Value.String()
+			if val == "" {
+				return
+			}
+			boolval, _ := strconv.ParseBool(val)
+			switch flag.Name {
+			case cloudapiv6.ArgName:
+				input.SetName(val)
+				break
+			case cloudapiv6.ArgDescription:
+				input.SetDescription(val)
+				break
+			case "cloud-init":
+				input.SetCloudInit(val)
+				break
+			case cloudapiv6.ArgLicenceType:
+				input.SetLicenceType(val)
+				break
+			case cloudapiv6.ArgCpuHotPlug:
+				input.SetCpuHotPlug(boolval)
+				break
+			case cloudapiv6.ArgRamHotPlug:
+				input.SetRamHotPlug(boolval)
+				break
+			case cloudapiv6.ArgNicHotPlug:
+				input.SetNicHotPlug(boolval)
+				break
+			case cloudapiv6.ArgDiscVirtioHotPlug:
+				input.SetDiscVirtioHotPlug(boolval)
+				break
+			case cloudapiv6.ArgDiscScsiHotPlug:
+				input.SetDiscScsiHotPlug(boolval)
+				break
+			case cloudapiv6.ArgCpuHotUnplug:
+				input.SetCpuHotUnplug(boolval)
+				break
+			case cloudapiv6.ArgRamHotUnplug:
+				input.SetRamHotUnplug(boolval)
+				break
+			case cloudapiv6.ArgNicHotUnplug:
+				input.SetNicHotUnplug(boolval)
+				break
+			case cloudapiv6.ArgDiscVirtioHotUnplug:
+				input.SetDiscVirtioHotUnplug(boolval)
+				break
+			case cloudapiv6.ArgDiscScsiHotUnplug:
+				input.SetDiscScsiHotUnplug(boolval)
+				break
+			default:
+				// --image-id, verbose, filters, depth, etc
+				break
+			}
+			c.Printer.Verbose(fmt.Sprintf("Property %s set: %s", flag.Name, flag.Value))
+		},
+	)
 	return input
 }
 
@@ -445,9 +556,11 @@ func PreRunImageUpload(c *core.PreCommandConfig) error {
 	validExts := []string{".iso", ".img", ".vmdk", ".vhd", ".vhdx", ".cow", ".qcow", ".qcow2", ".raw", ".vpc", ".vdi"}
 	images := viper.GetStringSlice(core.GetFlagName(c.NS, "image"))
 	invalidImages := functional.Filter(
-		functional.Map(images, func(s string) string {
-			return filepath.Ext(s)
-		}),
+		functional.Map(
+			images, func(s string) string {
+				return filepath.Ext(s)
+			},
+		),
 		func(ext string) bool {
 			return !slices.Contains(
 				validExts,
@@ -456,7 +569,9 @@ func PreRunImageUpload(c *core.PreCommandConfig) error {
 		},
 	)
 	if len(invalidImages) > 0 {
-		return fmt.Errorf("%s is an invalid image extension. Valid extensions are: %s", strings.Join(invalidImages, ","), validExts)
+		return fmt.Errorf(
+			"%s is an invalid image extension. Valid extensions are: %s", strings.Join(invalidImages, ","), validExts,
+		)
 	}
 
 	// "Locations" flag only required if ftp-url custom flag contains a %s in which to add the location ID
@@ -479,7 +594,9 @@ func PreRunImageUpload(c *core.PreCommandConfig) error {
 		},
 	)
 	if len(invalidLocs) > 0 {
-		c.Printer.Verbose("WARN: %s is an invalid location. Valid IONOS locations are: %s", strings.Join(invalidLocs, ","), locs)
+		c.Printer.Verbose(
+			"WARN: %s is an invalid location. Valid IONOS locations are: %s", strings.Join(invalidLocs, ","), locs,
+		)
 	}
 
 	aliases := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgImageAlias))
@@ -506,11 +623,15 @@ func getCertificate(path string) (*x509.CertPool, error) {
 	return caCertPool, nil
 }
 
-func updateImagesAfterUpload(c *core.CommandConfig, diffImgs []ionoscloud.Image, properties resources.ImageProperties) ([]ionoscloud.Image, error) {
+func updateImagesAfterUpload(
+	c *core.CommandConfig, diffImgs []ionoscloud.Image, properties resources.ImageProperties,
+) ([]ionoscloud.Image, error) {
 	// do a patch on the uploaded images
 	var imgs []ionoscloud.Image
 	for _, diffImg := range diffImgs {
-		img, _, err := client.Must().CloudClient.ImagesApi.ImagesPatch(c.Context, *diffImg.GetId()).Image(properties.ImageProperties).Execute()
+		img, _, err := client.Must().CloudClient.ImagesApi.ImagesPatch(
+			c.Context, *diffImg.GetId(),
+		).Image(properties.ImageProperties).Execute()
 		imgs = append(imgs, img)
 		if err != nil {
 			return nil, err
@@ -566,7 +687,9 @@ func RunImageUpload(c *core.CommandConfig) error {
 	aliases := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgImageAlias))
 	locations := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgLocation))
 	skipVerify := viper.GetBool(core.GetFlagName(c.NS, "skip-verify"))
-	ctx, cancel := context.WithTimeout(c.Context, time.Duration(viper.GetInt(core.GetFlagName(c.NS, constants.ArgTimeout)))*time.Second)
+	ctx, cancel := context.WithTimeout(
+		c.Context, time.Duration(viper.GetInt(core.GetFlagName(c.NS, constants.ArgTimeout)))*time.Second,
+	)
 	defer cancel()
 	c.Context = ctx
 
@@ -601,19 +724,23 @@ func RunImageUpload(c *core.CommandConfig) error {
 			data := bufio.NewReader(file)
 			// Catching error from goroutines. https://stackoverflow.com/questions/62387307/how-to-catch-errors-from-goroutines
 			// Uploads each image to each location.
-			eg.Go(func() error {
-				err := c.CloudApiV6Services.Images().Upload(
-					c.Context,
-					resources.UploadProperties{
-						FTPServerProperties: resources.FTPServerProperties{Url: url, Port: 21, SkipVerify: skipVerify, ServerCertificate: certPool},
-						ImageFileProperties: resources.ImageFileProperties{Path: serverFilePath, DataBuffer: data},
-					},
-				)
-				if err != nil {
-					return err
-				}
-				return file.Close()
-			})
+			eg.Go(
+				func() error {
+					err := c.CloudApiV6Services.Images().Upload(
+						c.Context,
+						resources.UploadProperties{
+							FTPServerProperties: resources.FTPServerProperties{
+								Url: url, Port: 21, SkipVerify: skipVerify, ServerCertificate: certPool,
+							},
+							ImageFileProperties: resources.ImageFileProperties{Path: serverFilePath, DataBuffer: data},
+						},
+					)
+					if err != nil {
+						return err
+					}
+					return file.Close()
+				},
+			)
 		}
 	}
 	if err := eg.Wait(); err != nil {
@@ -630,9 +757,11 @@ func RunImageUpload(c *core.CommandConfig) error {
 		// Returns a slice containing `alias[i] + filepath.Ext(images[i])`
 		// (i.e it gets the extensions from `images` flag, and appends them to each elem `image-alias`)
 		// Resulting slice is the full image names, as returned by `ionosctl image list` on the Name column
-		names = functional.MapIdx(aliases, func(k int, v string) string {
-			return v + filepath.Ext(images[k])
-		})
+		names = functional.MapIdx(
+			aliases, func(k int, v string) string {
+				return v + filepath.Ext(images[k])
+			},
+		)
 	}
 	diffImgs, err := getDiffUploadedImages(c, names, locations) // Get UUIDs of uploaded images
 	if err != nil {
@@ -678,7 +807,9 @@ func RunImageList(c *core.CommandConfig) error {
 		images = sortImagesByLocation(images, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLocation)))
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgLicenceType)) {
-		images = sortImagesByLicenceType(images, strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLicenceType))))
+		images = sortImagesByLicenceType(
+			images, strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLicenceType))),
+		)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgType)) {
 		images = sortImagesByType(images, strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgType))))
@@ -704,7 +835,9 @@ func RunImageGet(c *core.CommandConfig) error {
 	}
 	queryParams := listQueryParams.QueryParams
 	c.Printer.Verbose("Image with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgImageId)))
-	img, resp, err := c.CloudApiV6Services.Images().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgImageId)), queryParams)
+	img, resp, err := c.CloudApiV6Services.Images().Get(
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgImageId)), queryParams,
+	)
 	if resp != nil {
 		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
 	}
@@ -717,8 +850,13 @@ func RunImageGet(c *core.CommandConfig) error {
 // Output Printing
 
 var (
-	defaultImageCols = []string{"ImageId", "Name", "ImageAliases", "Location", "LicenceType", "ImageType", "CloudInit", "CreatedDate"}
-	allImageCols     = []string{"ImageId", "Name", "ImageAliases", "Location", "Size", "LicenceType", "ImageType", "Description", "Public", "CloudInit", "CreatedDate", "CreatedBy", "CreatedByUserId"}
+	defaultImageCols = []string{
+		"ImageId", "Name", "ImageAliases", "Location", "LicenceType", "ImageType", "CloudInit", "CreatedDate",
+	}
+	allImageCols = []string{
+		"ImageId", "Name", "ImageAliases", "Location", "Size", "LicenceType", "ImageType", "Description", "Public",
+		"CloudInit", "CreatedDate", "CreatedBy", "CreatedByUserId",
+	}
 )
 
 type ImagePrint struct {
@@ -749,7 +887,9 @@ func getImagePrint(resp *resources.Response, c *core.CommandConfig, imgs []resou
 		if imgs != nil {
 			r.OutputJSON = imgs
 			r.KeyValue = getImagesKVMaps(imgs)
-			r.Columns = printer.GetHeaders(allImageCols, defaultImageCols, viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)))
+			r.Columns = printer.GetHeaders(
+				allImageCols, defaultImageCols, viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)),
+			)
 		}
 	}
 	return r
@@ -903,9 +1043,11 @@ func sortImagesByTime(images resources.Images, n int) resources.Images {
 		imageItems := *items
 		if len(imageItems) > 0 {
 			// Sort Requests using time.Time, in descending order
-			sort.SliceStable(imageItems, func(i, j int) bool {
-				return imageItems[i].Metadata.CreatedDate.Time.After(imageItems[j].Metadata.CreatedDate.Time)
-			})
+			sort.SliceStable(
+				imageItems, func(i, j int) bool {
+					return imageItems[i].Metadata.CreatedDate.Time.After(imageItems[j].Metadata.CreatedDate.Time)
+				},
+			)
 		}
 		if len(imageItems) >= n {
 			imageItems = imageItems[:n]

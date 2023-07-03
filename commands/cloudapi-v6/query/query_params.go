@@ -29,7 +29,7 @@ func ValidateFilters(c *core.PreCommandConfig, availableFilters []string, usageF
 	}
 	c.Printer.Verbose("Validating %v filters...", len(filtersKV))
 	invalidFilters := make([]string, 0)
-	for filterKey, _ := range filtersKV {
+	for filterKey := range filtersKV {
 		if !isValidFilter(filterKey, availableFilters) {
 			c.Printer.Verbose("Invalid Filter: %s", filterKey)
 			invalidFilters = append(invalidFilters, filterKey)
@@ -39,7 +39,8 @@ func ValidateFilters(c *core.PreCommandConfig, availableFilters []string, usageF
 	}
 	if len(invalidFilters) > 0 {
 		return errors.New(
-			fmt.Sprintf("%q has at least %d invalid %s.\n\n%s\n\nFor more details, see '%s --help'.",
+			fmt.Sprintf(
+				"%q has at least %d invalid %s.\n\n%s\n\nFor more details, see '%s --help'.",
 				c.Command.CommandPath(),
 				len(invalidFilters),
 				pluralize("filter", len(invalidFilters)),
@@ -78,7 +79,10 @@ func GetListQueryParams(c *core.CommandConfig) (resources.ListQueryParams, error
 	listQueryParams = listQueryParams.SetDepth(depth)
 
 	if !structs.IsZero(listQueryParams) || !structs.IsZero(listQueryParams.QueryParams) {
-		c.Printer.Verbose("Query Parameters set: %v, %v", utils.GetPropertiesKVSet(listQueryParams), utils.GetPropertiesKVSet(listQueryParams.QueryParams))
+		c.Printer.Verbose(
+			"Query Parameters set: %v, %v", utils.GetPropertiesKVSet(listQueryParams),
+			utils.GetPropertiesKVSet(listQueryParams.QueryParams),
+		)
 	}
 
 	return listQueryParams, nil
@@ -97,7 +101,8 @@ func getFilters(args []string, cmd *core.Command) (map[string][]string, error) {
 			filtersKV[strings.ToLower(kv[0])] = append(filtersKV[strings.ToLower(kv[0])], kv[1])
 		} else {
 			return filtersKV, errors.New(
-				fmt.Sprintf("\"%s --filters\" option set incorrectly.\n\nUsage: %s --filters KEY1%sVALUE1,KEY2%sVALUE2\n\nFor more details, see '%s --help'.",
+				fmt.Sprintf(
+					"\"%s --filters\" option set incorrectly.\n\nUsage: %s --filters KEY1%sVALUE1,KEY2%sVALUE2\n\nFor more details, see '%s --help'.",
 					cmd.CommandPath(),
 					cmd.CommandPath(),
 					FiltersPartitionChar,

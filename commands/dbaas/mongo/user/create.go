@@ -21,58 +21,75 @@ func UserCreateCmd() *core.Command {
 	var userProperties = sdkgo.UserProperties{}
 	var roles []sdkgo.UserRoles
 
-	cmd := core.NewCommand(context.TODO(), nil, core.CommandBuilder{
-		Namespace: "dbaas-mongo",
-		Resource:  "user",
-		Verb:      "create",
-		Aliases:   []string{"c"},
-		ShortDesc: "Create MongoDB users.",
-		Example:   "ionosctl dbaas mongo user create --cluster-id CLUSTER_ID --name USERNAME --password PASSWORD --database DATABASE",
-		PreCmdRun: func(c *core.PreCommandConfig) (err error) {
-			err = c.Command.Command.MarkFlagRequired(constants.FlagClusterId)
-			if err != nil {
-				return err
-			}
-			err = c.Command.Command.MarkFlagRequired(constants.FlagName)
-			if err != nil {
-				return err
-			}
-			err = c.Command.Command.MarkFlagRequired(constants.ArgPassword)
-			if err != nil {
-				return err
-			}
-			err = c.Command.Command.MarkFlagRequired(FlagRoles)
-			if err != nil {
-				return fmt.Errorf("%w: DB1=Role1,DB2=Role2. Roles: read, readWrite, readAnyDatabase, readWriteAnyDatabase, dbAdmin, dbAdminAnyDatabase, clusterMonitor", err)
-			}
-			return nil
-		},
-		CmdRun: func(c *core.CommandConfig) error {
-			clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
-			c.Printer.Verbose("Creating users for cluster %s", clusterId)
+	cmd := core.NewCommand(
+		context.TODO(), nil, core.CommandBuilder{
+			Namespace: "dbaas-mongo",
+			Resource:  "user",
+			Verb:      "create",
+			Aliases:   []string{"c"},
+			ShortDesc: "Create MongoDB users.",
+			Example:   "ionosctl dbaas mongo user create --cluster-id CLUSTER_ID --name USERNAME --password PASSWORD --database DATABASE",
+			PreCmdRun: func(c *core.PreCommandConfig) (err error) {
+				err = c.Command.Command.MarkFlagRequired(constants.FlagClusterId)
+				if err != nil {
+					return err
+				}
+				err = c.Command.Command.MarkFlagRequired(constants.FlagName)
+				if err != nil {
+					return err
+				}
+				err = c.Command.Command.MarkFlagRequired(constants.ArgPassword)
+				if err != nil {
+					return err
+				}
+				err = c.Command.Command.MarkFlagRequired(FlagRoles)
+				if err != nil {
+					return fmt.Errorf(
+						"%w: DB1=Role1,DB2=Role2. Roles: read, readWrite, readAnyDatabase, readWriteAnyDatabase, dbAdmin, dbAdminAnyDatabase, clusterMonitor",
+						err,
+					)
+				}
+				return nil
+			},
+			CmdRun: func(c *core.CommandConfig) error {
+				clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
+				c.Printer.Verbose("Creating users for cluster %s", clusterId)
 
-			userProperties.Roles = &roles
-			u, _, err := c.DbaasMongoServices.Users().Create(clusterId, sdkgo.User{Properties: &userProperties})
-			if err != nil {
-				return err
-			}
-			return c.Printer.Print(getUserPrint(c, &[]sdkgo.User{u}))
+				userProperties.Roles = &roles
+				u, _, err := c.DbaasMongoServices.Users().Create(clusterId, sdkgo.User{Properties: &userProperties})
+				if err != nil {
+					return err
+				}
+				return c.Printer.Print(getUserPrint(c, &[]sdkgo.User{u}))
+			},
+			InitClient: true,
 		},
-		InitClient: true,
-	})
+	)
 
 	cmd.AddStringFlag(constants.FlagClusterId, constants.FlagIdShort, "", "")
-	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.MongoClusterIds(), cobra.ShellCompDirectiveNoFileComp
-	})
+	_ = cmd.Command.RegisterFlagCompletionFunc(
+		constants.FlagClusterId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.MongoClusterIds(), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 
 	// required Path flags
 	_ = allocate.Zero(&userProperties)
-	cmd.AddStringVarFlag(userProperties.Username, constants.FlagName, constants.FlagNameShort, "", "The authentication username", core.RequiredFlagOption())
-	cmd.AddStringVarFlag(userProperties.Password, constants.ArgPassword, constants.ArgPasswordShort, "", "The authentication password", core.RequiredFlagOption())
+	cmd.AddStringVarFlag(
+		userProperties.Username, constants.FlagName, constants.FlagNameShort, "", "The authentication username",
+		core.RequiredFlagOption(),
+	)
+	cmd.AddStringVarFlag(
+		userProperties.Password, constants.ArgPassword, constants.ArgPasswordShort, "", "The authentication password",
+		core.RequiredFlagOption(),
+	)
 
 	sliceOfRolesFlag := anyflag.NewValue(nil, &roles, rolesParser)
-	cmd.Command.Flags().VarP(sliceOfRolesFlag, FlagRoles, FlagRolesShort, "User's role for each db. DB1=Role1,DB2=Role2. Roles: read, readWrite, readAnyDatabase, readWriteAnyDatabase, dbAdmin, dbAdminAnyDatabase, clusterMonitor")
+	cmd.Command.Flags().VarP(
+		sliceOfRolesFlag, FlagRoles, FlagRolesShort,
+		"User's role for each db. DB1=Role1,DB2=Role2. Roles: read, readWrite, readAnyDatabase, readWriteAnyDatabase, dbAdmin, dbAdminAnyDatabase, clusterMonitor",
+	)
 	_ = viper.BindPFlag(core.GetFlagName(cmd.NS, FlagRoles), cmd.Command.Flags().Lookup(FlagRoles))
 
 	cmd.Command.SilenceUsage = true

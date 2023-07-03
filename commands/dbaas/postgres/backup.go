@@ -34,46 +34,56 @@ func BackupCmd() *core.Command {
 	globalFlags := backupCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultBackupCols, printer.ColsMessage(allBackupCols))
 	_ = viper.BindPFlag(core.GetFlagName(backupCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
-	_ = backupCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return allBackupCols, cobra.ShellCompDirectiveNoFileComp
-	})
+	_ = backupCmd.Command.RegisterFlagCompletionFunc(
+		constants.ArgCols,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return allBackupCols, cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 
 	/*
 		List Command
 	*/
-	list := core.NewCommand(ctx, backupCmd, core.CommandBuilder{
-		Namespace:  "dbaas-postgres",
-		Resource:   "backup",
-		Verb:       "list",
-		Aliases:    []string{"l", "ls"},
-		ShortDesc:  "List Cluster Backups",
-		LongDesc:   "Use this command to retrieve a list of PostgreSQL Cluster Backups.",
-		Example:    listBackupExample,
-		PreCmdRun:  core.NoPreRun,
-		CmdRun:     RunBackupList,
-		InitClient: true,
-	})
+	list := core.NewCommand(
+		ctx, backupCmd, core.CommandBuilder{
+			Namespace:  "dbaas-postgres",
+			Resource:   "backup",
+			Verb:       "list",
+			Aliases:    []string{"l", "ls"},
+			ShortDesc:  "List Cluster Backups",
+			LongDesc:   "Use this command to retrieve a list of PostgreSQL Cluster Backups.",
+			Example:    listBackupExample,
+			PreCmdRun:  core.NoPreRun,
+			CmdRun:     RunBackupList,
+			InitClient: true,
+		},
+	)
 	list.AddBoolFlag(constants.ArgNoHeaders, "", false, "When using text output, don't print headers")
 
 	/*
 		Get Command
 	*/
-	get := core.NewCommand(ctx, backupCmd, core.CommandBuilder{
-		Namespace:  "dbaas-postgres",
-		Resource:   "backup",
-		Verb:       "get",
-		Aliases:    []string{"g"},
-		ShortDesc:  "Get a Cluster Backup",
-		Example:    getBackupExample,
-		LongDesc:   "Use this command to retrieve details about a PostgreSQL Backup by using its ID.\n\nRequired values to run command:\n\n* Backup Id",
-		PreCmdRun:  PreRunBackupId,
-		CmdRun:     RunBackupGet,
-		InitClient: true,
-	})
+	get := core.NewCommand(
+		ctx, backupCmd, core.CommandBuilder{
+			Namespace:  "dbaas-postgres",
+			Resource:   "backup",
+			Verb:       "get",
+			Aliases:    []string{"g"},
+			ShortDesc:  "Get a Cluster Backup",
+			Example:    getBackupExample,
+			LongDesc:   "Use this command to retrieve details about a PostgreSQL Backup by using its ID.\n\nRequired values to run command:\n\n* Backup Id",
+			PreCmdRun:  PreRunBackupId,
+			CmdRun:     RunBackupGet,
+			InitClient: true,
+		},
+	)
 	get.AddStringFlag(dbaaspg.ArgBackupId, dbaaspg.ArgIdShort, "", dbaaspg.BackupId, core.RequiredFlagOption())
-	_ = get.Command.RegisterFlagCompletionFunc(dbaaspg.ArgBackupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.BackupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
-	})
+	_ = get.Command.RegisterFlagCompletionFunc(
+		dbaaspg.ArgBackupId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.BackupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 	get.AddBoolFlag(constants.ArgNoHeaders, "", false, "When using text output, don't print headers")
 
 	return backupCmd
@@ -95,7 +105,13 @@ func RunBackupList(c *core.CommandConfig) error {
 func RunBackupGet(c *core.CommandConfig) error {
 	c.Printer.Verbose("Backup ID: %v", viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgBackupId)))
 	c.Printer.Verbose("Getting Backup...")
-	backup, _, err := c.CloudApiDbaasPgsqlServices.Backups().Get(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgBackupId)))
+	backup, _, err := c.CloudApiDbaasPgsqlServices.Backups().Get(
+		viper.GetString(
+			core.GetFlagName(
+				c.NS, dbaaspg.ArgBackupId,
+			),
+		),
+	)
 	if err != nil {
 		return err
 	}
@@ -117,26 +133,34 @@ func ClusterBackupCmd() *core.Command {
 	/*
 		List Command
 	*/
-	list := core.NewCommand(ctx, clusterBackupCmd, core.CommandBuilder{
-		Namespace:  "dbaas-postgres.cluster",
-		Resource:   "backup",
-		Verb:       "list",
-		Aliases:    []string{"l", "ls"},
-		ShortDesc:  "List Cluster Backups from a Cluster",
-		LongDesc:   "Use this command to retrieve a list of PostgreSQL Cluster Backups from a specific Cluster.",
-		Example:    listBackupExample,
-		PreCmdRun:  PreRunClusterId,
-		CmdRun:     RunClusterBackupList,
-		InitClient: true,
-	})
+	list := core.NewCommand(
+		ctx, clusterBackupCmd, core.CommandBuilder{
+			Namespace:  "dbaas-postgres.cluster",
+			Resource:   "backup",
+			Verb:       "list",
+			Aliases:    []string{"l", "ls"},
+			ShortDesc:  "List Cluster Backups from a Cluster",
+			LongDesc:   "Use this command to retrieve a list of PostgreSQL Cluster Backups from a specific Cluster.",
+			Example:    listBackupExample,
+			PreCmdRun:  PreRunClusterId,
+			CmdRun:     RunClusterBackupList,
+			InitClient: true,
+		},
+	)
 	list.AddUUIDFlag(constants.FlagClusterId, dbaaspg.ArgIdShort, "", dbaaspg.ClusterId, core.RequiredFlagOption())
-	_ = list.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.ClustersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
-	})
+	_ = list.Command.RegisterFlagCompletionFunc(
+		constants.FlagClusterId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.ClustersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 	list.AddStringSliceFlag(constants.ArgCols, "", defaultBackupCols, printer.ColsMessage(allBackupCols))
-	_ = list.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return allBackupCols, cobra.ShellCompDirectiveNoFileComp
-	})
+	_ = list.Command.RegisterFlagCompletionFunc(
+		constants.ArgCols,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return allBackupCols, cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 	list.AddBoolFlag(constants.ArgNoHeaders, "", false, "When using text output, don't print headers")
 
 	return clusterBackupCmd
@@ -145,7 +169,13 @@ func ClusterBackupCmd() *core.Command {
 func RunClusterBackupList(c *core.CommandConfig) error {
 	c.Printer.Verbose("Cluster ID: %v", viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)))
 	c.Printer.Verbose("Getting Backups from Cluster...")
-	backups, _, err := c.CloudApiDbaasPgsqlServices.Backups().ListBackups(viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)))
+	backups, _, err := c.CloudApiDbaasPgsqlServices.Backups().ListBackups(
+		viper.GetString(
+			core.GetFlagName(
+				c.NS, constants.FlagClusterId,
+			),
+		),
+	)
 	if err != nil {
 		return err
 	}
@@ -155,8 +185,12 @@ func RunClusterBackupList(c *core.CommandConfig) error {
 // Output Printing
 
 var (
-	defaultBackupCols = []string{"BackupId", "ClusterId", "CreatedDate", "EarliestRecoveryTargetTime", "Active", "State"}
-	allBackupCols     = []string{"BackupId", "ClusterId", "Active", "CreatedDate", "EarliestRecoveryTargetTime", "Version", "State"}
+	defaultBackupCols = []string{
+		"BackupId", "ClusterId", "CreatedDate", "EarliestRecoveryTargetTime", "Active", "State",
+	}
+	allBackupCols = []string{
+		"BackupId", "ClusterId", "Active", "CreatedDate", "EarliestRecoveryTargetTime", "Version", "State",
+	}
 )
 
 type BackupPrint struct {

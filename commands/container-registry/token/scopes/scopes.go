@@ -54,8 +54,10 @@ func getTokenScopePrint(
 		}
 		if response != nil {
 			r.OutputJSON = response
-			r.Columns = printer.GetHeadersListAll(allColsScopes, defaultScopeCols, "TokenId", nil, viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll))) // headers
-			r.KeyValue = getTokensScopeRows(response)                                                                                                       // map header -> rows
+			r.Columns = printer.GetHeadersListAll(
+				allColsScopes, defaultScopeCols, "TokenId", nil, viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)),
+			) // headers
+			r.KeyValue = getTokensScopeRows(response) // map header -> rows
 		}
 	}
 	return r

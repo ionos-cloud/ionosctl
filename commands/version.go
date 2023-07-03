@@ -24,17 +24,19 @@ const (
 
 func VersionCmd() *core.Command {
 	ctx := context.TODO()
-	versionCmd := core.NewCommand(ctx, nil, core.CommandBuilder{
-		Namespace:  "version",
-		Resource:   "version",
-		Verb:       "version",
-		ShortDesc:  "Show the current version",
-		LongDesc:   "The `ionosctl version` command displays the current version of the ionosctl software and the latest Github release.",
-		Example:    "ionosctl version",
-		PreCmdRun:  core.NoPreRun,
-		CmdRun:     RunVersion,
-		InitClient: false,
-	})
+	versionCmd := core.NewCommand(
+		ctx, nil, core.CommandBuilder{
+			Namespace:  "version",
+			Resource:   "version",
+			Verb:       "version",
+			ShortDesc:  "Show the current version",
+			LongDesc:   "The `ionosctl version` command displays the current version of the ionosctl software and the latest Github release.",
+			Example:    "ionosctl version",
+			PreCmdRun:  core.NoPreRun,
+			CmdRun:     RunVersion,
+			InitClient: false,
+		},
+	)
 	versionCmd.AddBoolFlag(constants.ArgUpdates, "", false, "Check for latest updates for CLI")
 
 	return versionCmd
@@ -58,7 +60,12 @@ func RunVersion(c *core.CommandConfig) error {
 		if err != nil {
 			return err
 		}
-		return c.Printer.Print(fmt.Sprintf("Latest ionosctl Github release: %s\nFor more information, go to: %s", latestGhRelease, latestGhReleaseUrl))
+		return c.Printer.Print(
+			fmt.Sprintf(
+				"Latest ionosctl Github release: %s\nFor more information, go to: %s", latestGhRelease,
+				latestGhReleaseUrl,
+			),
+		)
 	}
 	return nil
 }
