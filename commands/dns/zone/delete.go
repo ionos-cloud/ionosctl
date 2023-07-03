@@ -39,7 +39,7 @@ func ZonesDeleteCmd() *core.Command {
 
 			z, _, err := client.Must().DnsClient.ZonesApi.ZonesFindById(context.Background(), zoneId).Execute()
 			if err != nil {
-				return fmt.Errorf("failed getting zone by id %s", zoneId)
+				return fmt.Errorf("failed getting zone by id %s: %w", zoneId, err)
 			}
 			yes := confirm.Ask(fmt.Sprintf("Are you sure you want to delete zone %s (%s)", *z.Properties.ZoneName, *z.Properties.Description),
 				viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce)))

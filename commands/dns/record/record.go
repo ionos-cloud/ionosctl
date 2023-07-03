@@ -23,7 +23,7 @@ func RecordCommand() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "record",
-			Short:            "DNS RecordsProperty",
+			Short:            "DNS Records",
 			Aliases:          []string{"r"},
 			Long:             "The sub-commands of `ionosctl dns record` allow you to perform operations on DNS records",
 			TraverseChildren: true,

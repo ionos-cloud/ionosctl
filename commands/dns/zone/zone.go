@@ -21,7 +21,7 @@ func ZoneCommand() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "zone",
-			Short:            "DNS zones",
+			Short:            "DNS Zones",
 			Aliases:          []string{"z", "zones"},
 			Long:             "The sub-commands of `ionosctl dns z one` allow you to perform operations on DNS zones",
 			TraverseChildren: true,
