@@ -43,7 +43,7 @@ Retrieve zones
       --offset int32        Pagination offset
   -o, --output string       Desired output format [text|json] (default "text")
   -q, --quiet               Quiet output
-      --state string        Filter used to fetch all zones in a particular state (PROVISIONING, DEPROVISIONING, CREATED, FAILED)
+      --state string        Filter used to fetch all zones in a particular state (AVAILABLE, FAILED, PROVISIONING, DESTROYING)
   -v, --verbose             Print step-by-step process when running command
 ```
 

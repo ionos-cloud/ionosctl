@@ -24,14 +24,10 @@ func ZonesRecordsPutCmd() *core.Command {
 		ShortDesc: "Partially modify a record's properties. This command uses a combination of GET and PUT to simulate a PATCH operation",
 		Example:   "ionosctl dns z update --zone ZONE_ID --record RECORD",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			err := c.Command.Command.MarkFlagRequired(constants.FlagZone)
-			if err != nil {
+			if err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagZone, constants.FlagRecord); err != nil {
 				return err
 			}
-			err = c.Command.Command.MarkFlagRequired(constants.FlagRecord)
-			if err != nil {
-				return err
-			}
+
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {

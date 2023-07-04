@@ -23,12 +23,7 @@ func ZonesRecordsFindByIdCmd() *core.Command {
 		ShortDesc: "Retrieve a record",
 		Example:   "ionosctl dns r get --zone ZONE --record RECORD",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			err := c.Command.Command.MarkFlagRequired(constants.FlagZone)
-			if err != nil {
-				return err
-			}
-			err = c.Command.Command.MarkFlagRequired(constants.FlagRecord)
-			if err != nil {
+			if err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagZone, constants.FlagRecord); err != nil {
 				return err
 			}
 

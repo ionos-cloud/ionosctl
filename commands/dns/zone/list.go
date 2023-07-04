@@ -2,6 +2,8 @@ package zone
 
 import (
 	"context"
+	"fmt"
+	"strings"
 
 	dns "github.com/ionos-cloud/sdk-go-dns"
 
@@ -50,9 +52,10 @@ func ZonesGetCmd() *core.Command {
 		InitClient: true,
 	})
 
-	cmd.AddStringFlag(constants.FlagState, "", "", "Filter used to fetch all zones in a particular state (PROVISIONING, DEPROVISIONING, CREATED, FAILED)")
+	enumStates := []string{"AVAILABLE", "FAILED", "PROVISIONING", "DESTROYING"}
+	cmd.AddStringFlag(constants.FlagState, "", "", fmt.Sprintf("Filter used to fetch all zones in a particular state (%s)", strings.Join(enumStates, ", ")))
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagState, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return []string{"PROVISIONING", "DEPROVISIONING", "CREATED", "FAILED"}, cobra.ShellCompDirectiveNoFileComp
+		return enumStates, cobra.ShellCompDirectiveNoFileComp
 	})
 
 	cmd.AddStringFlag(constants.FlagName, "", "", "Filter used to fetch only the zones that contain the specified zone name")

@@ -11,7 +11,7 @@ func DNSCommand() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "dns",
-			Short:            "DNS API",
+			Short:            "The sub-commands of `ionosctl dns` allow you to manage your DNS Zones (domains) and Records (where the traffic should be redirected)",
 			TraverseChildren: true,
 		},
 	}

@@ -23,8 +23,7 @@ func ZonesPostCmd() *core.Command {
 		ShortDesc: "Create a zone",
 		Example:   "ionosctl dns z create --name name.com",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			err := c.Command.Command.MarkFlagRequired(constants.FlagName)
-			if err != nil {
+			if err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagName); err != nil {
 				return err
 			}
 
