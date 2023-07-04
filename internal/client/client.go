@@ -3,6 +3,7 @@ package client
 import (
 	"errors"
 	"fmt"
+	"strings"
 	"sync"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/die"
@@ -62,12 +63,14 @@ func newClient(name, pwd, token, hostUrl string) (*Client, error) {
 	registryConfig := registry.NewConfiguration(name, pwd, token, hostUrl)
 	registryConfig.UserAgent = appendUserAgent(registryConfig.UserAgent)
 
-	// HostURL is disabled for DNS currently because of multiple reasons.
-	// 1. https://hosting-jira.1and1.org/browse/SDK-1452
-	// 2. I can't override defaults for this flag on a leaf-command-level because config.GetServerURL() then prefers some other default
-	// 3. I can't use a decorator cmdRun approach, where I define a custom behaviour for hostUrl at dns namespace level, because of circular imports.
-	// I think the easiest way to add back hostUrl is by 2. and fixing GetServerURL
-	dnsConfig := dns.NewConfiguration(name, pwd, token, "")
+	// Hacky workaround for not being able to change defaults of root level flags, in sub-commands.
+	// Rationale: If it is the global default, it probably didn't get changed by the user
+	// FIXME: Replace me with a better alternative. What if the user specifically sets api.ionos.com for DNS ? (Presently, he should get 404, but not sure about future)
+	dnsHostUrl := hostUrl // Absolutely do not use `dnsHostUrl` anywhere other than DNS Configuration
+	if strings.Trim("https://", hostUrl) == strings.Trim("https://", constants.DefaultApiURL) {
+		dnsHostUrl = ""
+	}
+	dnsConfig := dns.NewConfiguration(name, pwd, token, dnsHostUrl)
 	dnsConfig.UserAgent = appendUserAgent(dnsConfig.UserAgent)
 
 	return &Client{

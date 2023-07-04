@@ -17,5 +17,6 @@ func DNSCommand() *core.Command {
 	}
 	cmd.AddCommand(zone.ZoneCommand())
 	cmd.AddCommand(record.RecordCommand())
+
 	return cmd
 }
