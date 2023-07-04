@@ -22,7 +22,7 @@ func ZoneCommand() *core.Command {
 		Command: &cobra.Command{
 			Use:              "zone",
 			Aliases:          []string{"z", "zones"},
-			Short:            "The sub-commands of `ionosctl dns record` allow you to manage DNS zones. A DNS zone serves as an authoritative source of information about which IP addresses belong to which domains",
+			Short:            "The sub-commands of `ionosctl dns zone` allow you to manage DNS zones. A DNS zone serves as an authoritative source of information about which IP addresses belong to which domains",
 			TraverseChildren: true,
 		},
 	}
