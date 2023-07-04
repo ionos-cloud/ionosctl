@@ -34,11 +34,10 @@ var (
 			TraverseChildren: true,
 		},
 	}
-	ServerURL string
-	Output    string
-	Quiet     bool
-	Force     bool
-	Verbose   bool
+	Output  string
+	Quiet   bool
+	Force   bool
+	Verbose bool
 
 	cfgFile string
 
@@ -101,8 +100,8 @@ func init() {
 		"Configuration file used for authentication",
 	)
 	_ = viper.BindPFlag(constants.ArgConfig, rootPFlagSet.Lookup(constants.ArgConfig))
-	rootPFlagSet.StringVarP(
-		&ServerURL, constants.ArgServerUrl, constants.ArgServerUrlShort, constants.DefaultApiURL,
+	rootPFlagSet.StringP(
+		constants.ArgServerUrl, constants.ArgServerUrlShort, constants.DefaultApiURL,
 		"Override default host url",
 	)
 	_ = viper.BindPFlag(constants.ArgServerUrl, rootPFlagSet.Lookup(constants.ArgServerUrl))
@@ -205,7 +204,19 @@ func addCommands() {
 	// Add Container Registry Commands
 	rootCmd.AddCommand(container_registry.ContainerRegistryCmd())
 	// DNS
-	rootCmd.AddCommand(dns.DNSCommand())
+
+	funcChangeDefaultApiUrl := func(command *core.Command, newDefault string) *core.Command {
+		command.Command.PersistentFlags().StringP(
+			constants.ArgServerUrl, constants.ArgServerUrlShort, newDefault, "Server URL for DNS API")
+		command.Command.PersistentPreRun = func(cmd *cobra.Command, args []string) {
+			if !cmd.Flags().Changed(constants.ArgServerUrl) {
+				viper.Set(constants.ArgServerUrl, newDefault)
+			}
+		}
+		return command
+	}
+
+	rootCmd.AddCommand(funcChangeDefaultApiUrl(dns.DNSCommand(), dns.DefaultApiURL))
 }
 
 const helpTemplate = `USAGE: {{if .Runnable}}

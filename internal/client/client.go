@@ -3,7 +3,6 @@ package client
 import (
 	"errors"
 	"fmt"
-	"strings"
 	"sync"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/die"
@@ -63,14 +62,7 @@ func newClient(name, pwd, token, hostUrl string) (*Client, error) {
 	registryConfig := registry.NewConfiguration(name, pwd, token, hostUrl)
 	registryConfig.UserAgent = appendUserAgent(registryConfig.UserAgent)
 
-	// Hacky workaround for not being able to change defaults of root level flags, in sub-commands.
-	// Rationale: If it is the global default, it probably didn't get changed by the user
-	// FIXME: Replace me with a better alternative. What if the user specifically sets api.ionos.com for DNS ? (Presently, he should get 404, but not sure about future)
-	dnsHostUrl := hostUrl // Absolutely do not use `dnsHostUrl` anywhere other than DNS Configuration
-	if strings.Trim("https://", hostUrl) == strings.Trim("https://", constants.DefaultApiURL) {
-		dnsHostUrl = ""
-	}
-	dnsConfig := dns.NewConfiguration(name, pwd, token, dnsHostUrl)
+	dnsConfig := dns.NewConfiguration(name, pwd, token, hostUrl)
 	dnsConfig.UserAgent = appendUserAgent(dnsConfig.UserAgent)
 
 	return &Client{
