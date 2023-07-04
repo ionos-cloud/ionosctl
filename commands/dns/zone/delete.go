@@ -47,9 +47,7 @@ func ZonesDeleteCmd() *core.Command {
 				return nil
 			}
 
-			_, err = client.Must().DnsClient.ZonesApi.ZonesDelete(context.Background(),
-				viper.GetString(core.GetFlagName(c.NS, constants.FlagZone)),
-			).Execute()
+			_, err = client.Must().DnsClient.ZonesApi.ZonesDelete(context.Background(), zoneId).Execute()
 
 			return err
 		},
