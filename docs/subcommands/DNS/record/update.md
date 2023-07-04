@@ -31,7 +31,7 @@ Partially modify a record's properties. This command uses a combination of GET a
 ## Options
 
 ```text
-  -u, --api-url string   Override default host url (default "https://api.ionos.com")
+  -u, --api-url string   Override default host url (default "dns.de-fra.ionos.com")
       --cols strings     Set of columns to be printed on output 
                          Available columns: [Id Name Content Type Enabled FQDN State ZoneId ZoneName]
   -c, --config string    Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
