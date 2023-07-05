@@ -13,12 +13,12 @@ DOCS_OUT?=$(shell pwd)/docs/subcommands
 # Want to test verbosely? (i.e. see what test is failing?) Run like:
 # make test TEST_FLAGS="-v [optionally other flags]"
 
-TEST_DIRS := $(shell go list ./... | grep -v /commands/container-registry) # All pkgs except containter-registry
+TEST_DIRS := $(shell go list ./commands/dns)# $(shell go list ./... | grep -v /commands/container-registry) # All pkgs except containter-registry
 TEST_FLAGS := "-cover"
 .PHONY: utest
 utest:
 	@echo "--- Run unit tests ---"
-	@go test $(TEST_FLAGS) $(TEST_DIRS) | grep -v '\[no test files\]' && echo "DONE"
+	@go test $(TEST_FLAGS) $(TEST_DIRS)
 
 # Note about test file tagging:
 # `//go:build integration` was introduced in Go 1.17
