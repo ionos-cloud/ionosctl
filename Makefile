@@ -28,7 +28,7 @@ utest:
 .PHONY: test
 test:
 	@echo "--- Run integration and unit tests ---"
-	@go test $(TEST_FLAGS) -tags=integration $(TEST_DIRS) | grep -v '\[no test files\]' && echo "DONE"
+	@go test $(TEST_FLAGS) -tags=integration $(TEST_DIRS)
 
 .PHONY: mocks
 mocks:
