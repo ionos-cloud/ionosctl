@@ -79,7 +79,7 @@ ionosctl dns r delete --record PARTIAL_NAME --zone ZONE`,
 				}
 			}
 
-			yes := confirm.Ask(fmt.Sprintf("Are you sure you want to delete record %s (type: %s; content: %s)", *r.Metadata.Fqdn, *r.Properties.Type, *r.Properties.Content),
+			yes := confirm.Ask(fmt.Sprintf("Are you sure you want to delete record %s (type: '%s'; content: '%s')", *r.Metadata.Fqdn, *r.Properties.Type, *r.Properties.Content),
 				viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce)))
 			if !yes {
 				return fmt.Errorf("user cancelled deletion")
@@ -129,7 +129,7 @@ func deleteAll(c *core.CommandConfig) error {
 	}
 
 	err = functional.ApplyAndAggregateErrors(*xs.GetItems(), func(r dns.RecordRead) error {
-		yes := confirm.Ask(fmt.Sprintf("Are you sure you want to delete record %s (content: %s)", *r.Properties.Name, *r.Properties.Content),
+		yes := confirm.Ask(fmt.Sprintf("Are you sure you want to delete record %s (type: '%s'; content: '%s')", *r.Properties.Name, *r.Properties.Type, *r.Properties.Content),
 			viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce)))
 
 		if yes {
