@@ -2,8 +2,16 @@
 
 ## [6.7.0] (XXX 2023)
 
+### Added
+- Commenced the phased introduction of help text for flag completions to improve usability. The enhancements in this release include:
+  - Help text for flag completions in `ionosctl image` command
+  - Help text for flag completions in `ionosctl server cdrom` command
+  - **Note**: We are progressively implementing this feature across all commands.
+
 ### Fixed
 - Deprecated warnings only show if the deprecated flag is being used
+
+
 
 ## [6.6.2] (April 2023)
 
