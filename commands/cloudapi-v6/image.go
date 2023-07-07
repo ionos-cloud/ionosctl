@@ -914,3 +914,29 @@ func sortImagesByTime(images resources.Images, n int) resources.Images {
 	}
 	return images
 }
+
+type Filter func(request ionoscloud.ApiImagesGetRequest) ionoscloud.ApiImagesGetRequest
+
+// ImagesE returns all images matching the given filters
+func ImagesE(fs ...Filter) (ionoscloud.Images, error) {
+	req := client.Must().CloudClient.ImagesApi.ImagesGet(context.Background())
+
+	for _, f := range fs {
+		req = f(req)
+	}
+
+	ls, _, err := req.Execute()
+	if err != nil {
+		return ionoscloud.Images{}, err
+	}
+	return ls, nil
+}
+
+// Images returns all images matching the given filters
+func Images(fs ...Filter) ionoscloud.Images {
+	imgs, err := ImagesE(fs...)
+	if err != nil {
+		return ionoscloud.Images{}
+	}
+	return imgs
+}

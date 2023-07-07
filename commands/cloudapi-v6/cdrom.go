@@ -5,7 +5,11 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"strings"
 
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
+	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"go.uber.org/multierr"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
@@ -62,10 +66,11 @@ You can wait for the Request to be executed using ` + "`" + `--wait-for-request`
 Required values to run command:
 
 * Data Center Id
-* Server Id
-* ID of an Image with type CD-ROM`,
-		Example:    attachCdromServerExample,
-		PreCmdRun:  PreRunDcServerCdromIds,
+* Server Id`,
+		Example: attachCdromServerExample,
+		PreCmdRun: func(c *core.PreCommandConfig) error {
+			return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgDataCenterId, cloudapiv6.ArgServerId)
+		},
 		CmdRun:     RunServerCdromAttach,
 		InitClient: true,
 	})
@@ -73,11 +78,14 @@ Required values to run command:
 	_ = attachCdrom.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
+	filterOnlyCdRoms := func(r ionoscloud.ApiImagesGetRequest) ionoscloud.ApiImagesGetRequest {
+		return r.Filter("imageType", "CDROM")
+	}
 	attachCdrom.AddUUIDFlag(cloudapiv6.ArgCdromId, cloudapiv6.ArgIdShort, "", cloudapiv6.CdromId, core.RequiredFlagOption())
 	_ = attachCdrom.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgCdromId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.ImagesIdsCustom(os.Stderr, resources.ListQueryParams{Filters: &map[string][]string{
-			"type": {"CDROM"},
-		}}), cobra.ShellCompDirectiveNoFileComp
+		return functional.Map(*Images(filterOnlyCdRoms).Items, func(t ionoscloud.Image) string {
+			return fmt.Sprintf("%s\t%s (%s): %s", *t.Id, *t.Properties.Name, *t.Properties.Location, strings.Join(*t.Properties.ImageAliases, ","))
+		}), cobra.ShellCompDirectiveNoFileComp
 	})
 	attachCdrom.AddUUIDFlag(cloudapiv6.ArgServerId, "", "", cloudapiv6.ServerId, core.RequiredFlagOption())
 	_ = attachCdrom.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgServerId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -134,8 +142,10 @@ Required values to run command:
 		LongDesc:   "Use this command to retrieve information about an attached CD-ROM on Server.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id\n* Cdrom Id",
 		Example:    getCdromServerExample,
 		InitClient: true,
-		PreCmdRun:  PreRunDcServerCdromIds,
-		CmdRun:     RunServerCdromGet,
+		PreCmdRun: func(c *core.PreCommandConfig) error {
+			return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgDataCenterId, cloudapiv6.ArgServerId, cloudapiv6.ArgCdromId)
+		},
+		CmdRun: RunServerCdromGet,
 	})
 	getCdromCmd.AddUUIDFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
 	_ = getCdromCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -206,10 +216,6 @@ func PreRunServerCdromList(c *core.PreCommandConfig) error {
 	return nil
 }
 
-func PreRunDcServerCdromIds(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgDataCenterId, cloudapiv6.ArgServerId, cloudapiv6.ArgCdromId)
-}
-
 func PreRunDcServerCdromDetach(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlagsSets(c.Command, c.NS,
 		[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgServerId, cloudapiv6.ArgCdromId},
@@ -227,7 +233,7 @@ func RunServerCdromAttach(c *core.CommandConfig) error {
 	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
 	cdRomId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgCdromId))
 	c.Printer.Verbose("CD-ROM with id: %v is attaching to server with id: %v from Datacenter with id: %v... ", cdRomId, serverId, dcId)
-	attachedCdrom, resp, err := c.CloudApiV6Services.Servers().AttachCdrom(dcId, serverId, cdRomId, queryParams)
+	attachedCdrom, resp, err := client.Must().CloudClient.ServersApi.DatacentersServersCdromsPost().Execute() // c.CloudApiV6Services.Servers().AttachCdrom(dcId, serverId, cdRomId, queryParams)
 	if resp != nil && printer.GetId(resp) != "" {
 		c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
 	}
