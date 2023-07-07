@@ -162,7 +162,7 @@ func TestRecord(t *testing.T) {
 	c.Command.Flags().Set(constants.FlagContent, randIp)
 	c.Command.Flags().Set(constants.FlagType, "A")
 	c.Command.Flags().Set(constants.FlagName, randName)
-	c.Command.Flags().Set(constants.FlagZoneId, *sharedZ.Id)
+	c.Command.Flags().Set(constants.FlagZone, *sharedZ.Id)
 	err = c.Command.Execute()
 	assert.NoError(t, err)
 
@@ -189,7 +189,7 @@ func TestRecord(t *testing.T) {
 	// try changing content of prev record
 	randIp = fake.IP(fake.WithIPv4())
 	c.Command.Flags().Set(constants.FlagContent, randIp)
-	c.Command.Flags().Set(constants.FlagZoneId, *sharedZ.Id)
+	c.Command.Flags().Set(constants.FlagZone, *sharedZ.Id)
 	c.Command.Flags().Set(constants.FlagRecord, *r.Properties.Name) // test that querying by name works too
 	err = c.Command.Execute()
 	assert.NoError(t, err)
