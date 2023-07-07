@@ -51,14 +51,7 @@ func ZonesPutCmd() *core.Command {
 			}
 
 			zNew, _, err := client.Must().DnsClient.ZonesApi.ZonesPut(context.Background(), id).
-				ZoneEnsure(
-					dns.ZoneEnsure{Properties: &dns.Zone{
-						// We can't pass `z.Properties` directly as it is a different object type
-						ZoneName:    z.Properties.ZoneName,
-						Description: z.Properties.Description,
-						Enabled:     z.Properties.Enabled,
-					}},
-				).Execute()
+				ZoneEnsure(dns.ZoneEnsure{Properties: z.Properties}).Execute()
 			if err != nil {
 				return err
 			}

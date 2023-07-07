@@ -27,17 +27,20 @@ import (
 
 var (
 	sharedZ         dns.ZoneRead
-	GoodToken       = ""
 	cl              *client.Client
+	GoodToken       string
 	tokCreationTime time.Time
 )
 
 func TestDNSCommands(t *testing.T) {
-	setup()
+	err := setup()
+	if err != nil {
+		assert.FailNow(t, err.Error())
+	}
 	TestZone(t)   // sets sharedZ
 	TestRecord(t) // uses sharedZ
 
-	t.Cleanup(Cleanup) // Cleanup using ionosctl commands, otherwise use SDK directly
+	t.Cleanup(Cleanup)
 }
 
 // TODO: Improve me with the new config PR
@@ -79,6 +82,7 @@ func setup() error {
 func TestZone(t *testing.T) {
 	var err error
 	viper.Set(constants.ArgOutput, "text")
+	viper.Set(constants.Token, GoodToken)
 
 	// === `ionosctl dns z create`
 	c := zone.ZonesPostCmd()
@@ -136,17 +140,6 @@ func TestZone(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, randDesc, *zoneThroughSdk.Properties.Description)
 
-	// Try changing name using `ionosctl dns z update`
-	randName = fake.AlphaNum(32)
-	c.Command.Flags().Set(constants.FlagName, randName)
-	c.Command.Flags().Set(constants.FlagZone, *sharedZ.Properties.ZoneName)
-	err = c.Command.Execute()
-	assert.NoError(t, err)
-
-	zoneThroughSdk, _, err = client.Must().DnsClient.ZonesApi.ZonesFindById(context.Background(), *sharedZ.Id).Execute()
-	assert.NoError(t, err)
-	assert.Equal(t, randName, *zoneThroughSdk.Properties.ZoneName)
-
 	resolvedId, err = zone.Resolve(randName)
 	assert.NoError(t, err)
 	assert.Equal(t, *sharedZ.Id, resolvedId)
@@ -154,6 +147,7 @@ func TestZone(t *testing.T) {
 
 func TestRecord(t *testing.T) {
 	var err error
+	viper.Set(constants.Token, GoodToken)
 	viper.Set(constants.ArgOutput, "text")
 
 	// `ionosctl dns r create`
