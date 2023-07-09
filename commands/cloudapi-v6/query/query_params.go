@@ -7,7 +7,6 @@ package query
 import (
 	"errors"
 	"fmt"
-	"log"
 	"strings"
 
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
@@ -39,7 +38,6 @@ const FiltersPartitionChar = "="
 //
 // by MANUALLY setting the flag values, as well as the viper (global config) values.
 func ValidateFilters(c *core.PreCommandConfig, availableFilters []string, usageFilters string) error {
-	log.Printf("before: %s\n", viper.Get(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)))
 	filtersKV, err := getFilters(viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)), c.Command)
 	if err != nil {
 		return err
@@ -78,8 +76,6 @@ func ValidateFilters(c *core.PreCommandConfig, availableFilters []string, usageF
 	viper.Set(core.GetFlagName(c.NS, cloudapiv6.ArgFilters), setString)
 	_ = c.Command.Command.Flags().Set(cloudapiv6.ArgFilters, setString)
 	// End hacky workaround
-
-	log.Printf("after: %s\n", viper.Get(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)))
 
 	return nil
 }
