@@ -23,8 +23,11 @@ import (
 const FiltersPartitionChar = "="
 
 // ValidateFilters is currently being used in PreRun to check if the user provided any invalid filters
-// availableFilters is set by the caller to be the properties of the struct (e.g. Name, Description, etc) with the first letter non-caps
+// availableFilters is set by the caller to be the properties of the struct (e.g. Name, Description, etc) with the first letter non-caps, by using the SDK generated structs.
 // usageFilters is the usage string printed to output if the usage is wrong
+//
+// WARNING: It just so happens that we can find the `availableFilters` by using the SDK structs namings with non-caps first letter,
+// but if the SDK struct fields naming were to change, then we would be forced to refactor the whole file commands/cloudapi/completer/filters.go
 //
 // HACKY WORKAROUND WARNING: To work around the fact that we don't have access to availableFilters after this func's
 // execution ends, and to keep support for 'any caps notation for properties is valid' rule e.g naME=myserver
