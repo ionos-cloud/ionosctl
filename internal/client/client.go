@@ -62,12 +62,7 @@ func newClient(name, pwd, token, hostUrl string) (*Client, error) {
 	registryConfig := registry.NewConfiguration(name, pwd, token, hostUrl)
 	registryConfig.UserAgent = appendUserAgent(registryConfig.UserAgent)
 
-	// HostURL is disabled for DNS currently because of multiple reasons.
-	// 1. https://hosting-jira.1and1.org/browse/SDK-1452
-	// 2. I can't override defaults for this flag on a leaf-command-level because config.GetServerURL() then prefers some other default
-	// 3. I can't use a decorator cmdRun approach, where I define a custom behaviour for hostUrl at dns namespace level, because of circular imports.
-	// I think the easiest way to add back hostUrl is by 2. and fixing GetServerURL
-	dnsConfig := dns.NewConfiguration(name, pwd, token, "")
+	dnsConfig := dns.NewConfiguration(name, pwd, token, hostUrl)
 	dnsConfig.UserAgent = appendUserAgent(dnsConfig.UserAgent)
 
 	return &Client{

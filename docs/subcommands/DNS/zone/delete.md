@@ -32,7 +32,7 @@ Delete a zone
 
 ```text
   -a, --all              Delete all zones. Required or -z
-  -u, --api-url string   Override default host url (default "https://api.ionos.com")
+  -u, --api-url string   Override default host url (default "dns.de-fra.ionos.com")
       --cols strings     Set of columns to be printed on output 
                          Available columns: [Id Name Description NameServers Enabled State]
   -c, --config string    Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
