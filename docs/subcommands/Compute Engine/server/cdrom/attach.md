@@ -1,5 +1,5 @@
 ---
-description: Attach a CD-ROM to a Server
+description: Attach an existing image of type CD-ROM to a Server
 ---
 
 # ServerCdromAttach
@@ -32,7 +32,9 @@ For `attach` command:
 
 ## Description
 
-Use this command to attach a CD-ROM to an existing Server.
+Use this command to attach a CD-ROM to an existing Server. It is possible to attach up to two CD-ROMs to the same server.
+
+WARNING: Attaching a CD-ROM leads to a reset of the server!
 
 You can wait for the Request to be executed using `--wait-for-request` option.
 
@@ -40,7 +42,7 @@ Required values to run command:
 
 * Data Center Id
 * Server Id
-* Cdrom Id
+* ID of an Image with type CD-ROM
 
 ## Options
 

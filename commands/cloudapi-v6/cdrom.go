@@ -31,9 +31,8 @@ func ServerCdromCmd() *core.Command {
 			Aliases: []string{"cd"},
 			Short:   "Server CD-ROM Operations",
 			Long: `The sub-commands of 'ionosctl server cdrom' allow you to attach, get, list, detach CD-ROMs from Servers.
-CD-ROMs cannot be created stand-alone like volumes. They are either attached to a server or do not exist. They always have an ISO-Image associated; empty CD-ROMs can not be provisioned. It is possible to attach up to two CD-ROMs to the same server.
-
-WARNING: Attaching a CD-ROM leads to a reset of the server!`,
+CD-ROMs cannot be created stand-alone like volumes. They are either attached to a server or do not exist. They always have an ISO-Image associated;
+empty CD-ROMs can not be provisioned. It is possible to attach up to two CD-ROMs to the same server.`,
 			TraverseChildren: true,
 		},
 	}
@@ -52,7 +51,7 @@ WARNING: Attaching a CD-ROM leads to a reset of the server!`,
 		Resource:  "cdrom",
 		Verb:      "attach",
 		Aliases:   []string{"a"},
-		ShortDesc: "Attach an image CD-ROM to a Server",
+		ShortDesc: "Attach an existing image of type CD-ROM to a Server",
 		LongDesc: `Use this command to attach a CD-ROM to an existing Server. It is possible to attach up to two CD-ROMs to the same server.
 
 WARNING: Attaching a CD-ROM leads to a reset of the server!
