@@ -10,5 +10,7 @@ ionosctl token delete --expired
 
 ionosctl token delete --current
 
-ionosctl token delete --all`
+ionosctl token delete --all
+
+ionosctl token delete --token TOKEN`
 )
