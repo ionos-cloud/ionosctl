@@ -6,11 +6,11 @@ const (
 	generateTokenExample = `ionosctl token generate`
 	deleteTokenExample   = `ionosctl token delete --token-id TOKEN_ID
 
+ionosctl token delete --token TOKEN
+
 ionosctl token delete --expired
 
 ionosctl token delete --current
 
-ionosctl token delete --all
-
-ionosctl token delete --token TOKEN`
+ionosctl token delete --all`
 )

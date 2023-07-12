@@ -298,7 +298,7 @@ func RunTokenDeleteByToken(c *core.CommandConfig) error {
 		return fmt.Errorf("tokenId could not be found")
 	}
 
-	if !confirm.Ask(fmt.Sprintf("delete token with ID: %s", tokenId)) {
+	if !confirm.Ask(fmt.Sprintf("delete token with ID: %s", tokenId), viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 

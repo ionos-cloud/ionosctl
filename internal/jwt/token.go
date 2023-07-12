@@ -21,16 +21,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 )
 
-// Valid ensures that the given JWT is active using Datacenters API
-//func Valid(token string) bool {
-//	err := client.TestCreds("", "", token)
-//	if err != nil {
-//		return false
-//	}
-//
-//	return true
-//}
-
 func Claims(token string) (map[string]interface{}, error) {
 	parts := strings.Split(token, ".")
 	if len(parts) != 3 {
