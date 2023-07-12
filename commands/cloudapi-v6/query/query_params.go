@@ -9,10 +9,10 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
-
 	"github.com/fatih/structs"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
+	"golang.org/x/exp/slices"
 
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
@@ -49,7 +49,7 @@ func ValidateFilters(c *core.PreCommandConfig, availableFilters []string, usageF
 	invalidFilters := make([]string, 0)
 	correctedFilters := make(map[string][]string, 0)
 	for key, vals := range filtersKV {
-		validFilter, err := isValidFilter(key, availableFilters) // filterKey with proper caps
+		validFilter, err := getFirstValidFilter(key, availableFilters...) // filterKey with proper caps
 		correctedFilters[validFilter] = append(correctedFilters[validFilter], vals...)
 		if err != nil {
 			c.Printer.Verbose("Invalid Filter: %s", key)
@@ -142,17 +142,23 @@ func getFilters(args []string, cmd *core.Command) (map[string][]string, error) {
 	return filtersKV, nil
 }
 
-// isValidFilter will return true if the filter is part
-// of the available filters array and false if is not.
-func isValidFilter(filter string, availableFiltersObjs ...[]string) (string, error) {
-	for _, availableFilters := range availableFiltersObjs {
-		for _, availableFilter := range availableFilters {
-			if strings.ToLower(availableFilter) == strings.ToLower(filter) {
-				return availableFilter, nil
-			}
-		}
+// getFirstValidFilter will return the filter with the expected case
+// if it is part of availableFilters - the comparison is case insensitive.
+// An error is returned if the filter is not found in the slice.
+// Examples:
+//
+//	getFirstValidFilter("imagetype", "imageType", "OtherFilterHere", "foo") -> "imageType"
+//	getFirstValidFilter("imagetype", "OtherFilterHere", "foo", "bar") ->
+//	  -> error("imagetype is not case insensitively equal to any of OtherFilterHere, foo, bar")
+func getFirstValidFilter(filter string, availableFilters ...string) (string, error) {
+	idx := slices.IndexFunc(availableFilters, func(s string) bool {
+		return strings.EqualFold(filter, s)
+	})
+	if idx == -1 {
+		return "", fmt.Errorf("%s is not case-insensitively equal to any of %s",
+			filter, strings.Join(availableFilters, ", "))
 	}
-	return "", fmt.Errorf("TODO")
+	return availableFilters[idx], nil
 }
 
 func pluralize(word string, number int) string {
