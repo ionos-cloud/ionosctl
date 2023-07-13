@@ -126,11 +126,11 @@ func LoadbalancersFiltersUsage() string {
 }
 
 func RequestsFilters() []string {
-	return getPropertiesName(ionoscloud.RequestProperties{}, ionoscloud.RequestMetadata{})
+	return getPropertiesName(ionoscloud.RequestProperties{}, ionoscloud.RequestMetadata{}, ionoscloud.RequestStatusMetadata{})
 }
 
 func RequestsFiltersUsage() string {
-	return getFilterUsage(getPropertiesName(ionoscloud.RequestProperties{}), getPropertiesName(ionoscloud.RequestMetadata{}))
+	return getFilterUsage(getPropertiesName(ionoscloud.RequestProperties{}), getPropertiesName(ionoscloud.RequestMetadata{}, ionoscloud.RequestStatusMetadata{}))
 }
 
 func UsersFilters() []string {
