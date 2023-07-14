@@ -41,6 +41,7 @@ Required values to run command:
   -h, --help              Print usage
   -o, --output string     Desired output format [text|json] (default "text")
   -q, --quiet             Quiet output
+  -t, --token string      The contents of a Token (required)
   -i, --token-id string   The unique Key ID of a Token (required)
   -v, --verbose           Print step-by-step process when running command
 ```
@@ -49,6 +50,8 @@ Required values to run command:
 
 ```text
 ionosctl token delete --token-id TOKEN_ID
+
+ionosctl token delete --token TOKEN
 
 ionosctl token delete --expired
 

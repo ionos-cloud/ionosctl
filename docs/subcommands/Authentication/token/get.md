@@ -39,6 +39,7 @@ Required values to run command:
       --no-headers        When using text output, don't print headers
   -o, --output string     Desired output format [text|json] (default "text")
   -q, --quiet             Quiet output
+  -t, --token string      The contents of a Token (required)
   -i, --token-id string   The unique Key ID of a Token (required)
   -v, --verbose           Print step-by-step process when running command
 ```
@@ -47,5 +48,6 @@ Required values to run command:
 
 ```text
 ionosctl token get --token-id TOKEN_ID
+ionosctl token get --token TOKEN
 ```
 
