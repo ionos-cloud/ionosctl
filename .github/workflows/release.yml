@@ -4,6 +4,12 @@ on:
   push:
     tags:
       - 'v*'
+  workflow_dispatch:
+    inputs:
+      runTests:
+        description: 'Run tests?'
+        required: true
+        default: 'yes'
 
 jobs:
   goreleaser:
@@ -28,6 +34,7 @@ jobs:
           IONOS_USERNAME: ${{ secrets.IONOS_USERNAME_V5 }}
           IONOS_PASSWORD: ${{ secrets.IONOS_PASSWORD_V6 }}
         run: make test
+        if: github.event_name == 'push' || github.event.inputs.runTests == 'yes'
 
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v3
