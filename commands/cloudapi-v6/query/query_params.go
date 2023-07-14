@@ -46,26 +46,17 @@ func ValidateFilters(c *core.PreCommandConfig, availableFilters []string, usageF
 		return err
 	}
 	c.Printer.Verbose("Validating %v filters...", len(filtersKV))
-	invalidFilters := make([]string, 0)
 	correctedFilters := make(map[string][]string, 0)
 	for key, vals := range filtersKV {
-		validFilter, err := getFirstValidFilter(key, availableFilters...) // filterKey with proper caps
-		correctedFilters[validFilter] = append(correctedFilters[validFilter], vals...)
-		if err != nil {
-			c.Printer.Verbose("Invalid Filter: %s", key)
-			invalidFilters = append(invalidFilters, key)
+		keyWithProperCaps, errValidFilter := getFirstValidFilter(key, availableFilters...)
+		if errValidFilter != nil {
+			err = errors.Join(err, errValidFilter)
+			continue
 		}
+		correctedFilters[keyWithProperCaps] = append(correctedFilters[keyWithProperCaps], vals...)
 	}
-	if len(invalidFilters) > 0 {
-		return errors.New(
-			fmt.Sprintf("%q has at least %d invalid %s.\n\n%s\n\nFor more details, see '%s --help'.",
-				c.Command.CommandPath(),
-				len(invalidFilters),
-				pluralize("filter", len(invalidFilters)),
-				usageFilters,
-				c.Command.CommandPath(),
-			),
-		)
+	if err != nil {
+		return fmt.Errorf("encountered invalid filters:\n%w\n\n%s", err, usageFilters)
 	}
 
 	// Hacky workaround
@@ -155,8 +146,7 @@ func getFirstValidFilter(filter string, availableFilters ...string) (string, err
 		return strings.EqualFold(filter, s)
 	})
 	if idx == -1 {
-		return "", fmt.Errorf("%s is not case-insensitively equal to any of %s",
-			filter, strings.Join(availableFilters, ", "))
+		return "", fmt.Errorf("%s is not a valid filter", filter)
 	}
 	return availableFilters[idx], nil
 }
