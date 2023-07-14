@@ -5,6 +5,7 @@
 ### Added
 * Added support for DNS API
 * Added RHEL license type
+* Added the possibility of getting or deleting a token using the JWT directly: `--token`
 
 ### Fixed
 * Deprecated warnings only show if the deprecated flag is being used

@@ -6,6 +6,9 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
+	"github.com/ionos-cloud/ionosctl/v6/internal/jwt"
+
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/v6/commands/auth-v1/completer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
@@ -73,6 +76,7 @@ func TokenCmd() *core.Command {
 	_ = get.Command.RegisterFlagCompletionFunc(authv1.ArgTokenId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.TokensIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
+	get.AddStringFlag(authv1.ArgToken, authv1.ArgTokenShort, "", authv1.Token, core.RequiredFlagOption())
 	get.AddIntFlag(authv1.ArgContractNo, "", 0, "Users with multiple contracts must provide the contract number, for which the token information is displayed")
 	get.AddBoolFlag(constants.ArgNoHeaders, "", false, "When using text output, don't print headers")
 
@@ -116,6 +120,7 @@ Required values to run command:
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(authv1.ArgTokenId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.TokensIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
+	deleteCmd.AddStringFlag(authv1.ArgToken, authv1.ArgTokenShort, "", authv1.Token, core.RequiredFlagOption())
 	deleteCmd.AddBoolFlag(authv1.ArgCurrent, authv1.ArgCurrentShort, false, "Delete the Token that is currently used. This requires a token to be set for authentication via environment variable IONOS_TOKEN or via config file", core.RequiredFlagOption())
 	deleteCmd.AddBoolFlag(authv1.ArgExpired, authv1.ArgExpiredShort, false, "Delete the Tokens that are currently expired", core.RequiredFlagOption())
 	deleteCmd.AddBoolFlag(authv1.ArgAll, authv1.ArgAllShort, false, "Delete the Tokens under your account", core.RequiredFlagOption())
@@ -127,11 +132,11 @@ Required values to run command:
 const contractNumberMessage = "Contract Number: %v"
 
 func PreRunTokenId(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.Command, c.NS, authv1.ArgTokenId)
+	return core.CheckRequiredFlagsSets(c.Command, c.NS, []string{authv1.ArgTokenId}, []string{authv1.ArgToken})
 }
 
 func PreRunTokenDelete(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlagsSets(c.Command, c.NS, []string{authv1.ArgTokenId}, []string{authv1.ArgCurrent}, []string{authv1.ArgExpired}, []string{authv1.ArgAll})
+	return core.CheckRequiredFlagsSets(c.Command, c.NS, []string{authv1.ArgTokenId}, []string{authv1.ArgCurrent}, []string{authv1.ArgExpired}, []string{authv1.ArgAll}, []string{authv1.ArgToken})
 }
 
 func RunTokenList(c *core.CommandConfig) error {
@@ -146,6 +151,18 @@ func RunTokenList(c *core.CommandConfig) error {
 }
 
 func RunTokenGet(c *core.CommandConfig) error {
+	if viper.IsSet(core.GetFlagName(c.NS, authv1.ArgTokenId)) {
+		return RunTokenGetById(c)
+	}
+
+	if viper.IsSet(core.GetFlagName(c.NS, authv1.ArgToken)) {
+		return RunTokenGetByToken(c)
+	}
+
+	return nil
+}
+
+func RunTokenGetById(c *core.CommandConfig) error {
 	c.Printer.Verbose("Getting Token with ID: %v...", viper.GetString(core.GetFlagName(c.NS, authv1.ArgTokenId)))
 	if viper.IsSet(core.GetFlagName(c.NS, authv1.ArgContractNo)) {
 		c.Printer.Verbose(contractNumberMessage, viper.GetInt32(core.GetFlagName(c.NS, authv1.ArgContractNo)))
@@ -155,6 +172,31 @@ func RunTokenGet(c *core.CommandConfig) error {
 		return err
 	}
 	return c.Printer.Print(getTokenPrint(c, []resources.Token{*token}))
+}
+
+func RunTokenGetByToken(c *core.CommandConfig) error {
+	token := viper.GetString(core.GetFlagName(c.NS, authv1.ArgToken))
+	c.Printer.Verbose("Token content is: %s", token)
+
+	headers, err := jwt.Headers(token)
+	if err != nil {
+		return err
+	}
+
+	tokenId, ok := headers["kid"]
+	if !ok {
+		return fmt.Errorf("tokenId could not be found")
+	}
+
+	c.Printer.Verbose("Getting Token with ID: %v...", tokenId)
+	if viper.IsSet(core.GetFlagName(c.NS, authv1.ArgContractNo)) {
+		c.Printer.Verbose(contractNumberMessage, viper.GetInt32(core.GetFlagName(c.NS, authv1.ArgContractNo)))
+	}
+	tokenObj, _, err := c.AuthV1Services.Tokens().Get(fmt.Sprintf("%v", tokenId), viper.GetInt32(core.GetFlagName(c.NS, authv1.ArgContractNo)))
+	if err != nil {
+		return err
+	}
+	return c.Printer.Print(getTokenPrint(c, []resources.Token{*tokenObj}))
 }
 
 func RunTokenCreate(c *core.CommandConfig) error {
@@ -192,6 +234,9 @@ func RunTokenDelete(c *core.CommandConfig) error {
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, authv1.ArgAll)) && viper.GetBool(core.GetFlagName(c.NS, authv1.ArgAll)) {
 		return RunTokenDeleteAll(c)
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, authv1.ArgToken)) {
+		return RunTokenDeleteByToken(c)
 	}
 	return nil
 }
@@ -275,6 +320,40 @@ func RunTokenDeleteById(c *core.CommandConfig) error {
 			}
 		}
 	}
+	return errors.New("error deleting token")
+}
+
+func RunTokenDeleteByToken(c *core.CommandConfig) error {
+	token := viper.GetString(core.GetFlagName(c.NS, authv1.ArgToken))
+	c.Printer.Verbose("Token content is: %s", token)
+
+	headers, err := jwt.Headers(token)
+	if err != nil {
+		return err
+	}
+
+	tokenId, ok := headers["kid"]
+	if !ok {
+		return fmt.Errorf("tokenId could not be found")
+	}
+
+	if !confirm.Ask(fmt.Sprintf("delete token with ID: %s", tokenId), viper.GetBool(constants.ArgForce)) {
+		return nil
+	}
+
+	tokenResponse, _, err := c.AuthV1Services.Tokens().DeleteByID(fmt.Sprintf("%v", tokenId), viper.GetInt32(core.GetFlagName(c.NS, authv1.ArgContractNo)))
+	if err != nil {
+		return err
+	}
+
+	if tokenResponse != nil {
+		if success, ok := tokenResponse.GetSuccessOk(); ok && success != nil {
+			if *success {
+				return c.Printer.Warn("Status: token has been successfully deleted")
+			}
+		}
+	}
+
 	return errors.New("error deleting token")
 }
 
