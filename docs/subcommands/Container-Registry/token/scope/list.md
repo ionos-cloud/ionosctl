@@ -1,5 +1,5 @@
 ---
-description: Get a token scopes
+description: "Get a token scopes"
 ---
 
 # ContainerRegistryTokenScopeList

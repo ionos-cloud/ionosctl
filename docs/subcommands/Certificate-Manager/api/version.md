@@ -1,5 +1,5 @@
 ---
-description: Get Certificate Manager API Version
+description: "Get Certificate Manager API Version"
 ---
 
 # CertificateManagerApiVersion

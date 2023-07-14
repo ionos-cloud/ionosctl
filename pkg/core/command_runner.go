@@ -23,6 +23,11 @@ import (
 )
 
 func NewCommand(ctx context.Context, parent *Command, info CommandBuilder) *Command {
+	if info.PreCmdRun == nil {
+		// Fixes a nil pointer reference panic
+		info.PreCmdRun = NoPreRun
+	}
+
 	cc := &cobra.Command{
 		Use:     info.Verb,
 		Short:   info.ShortDesc,
@@ -202,7 +207,7 @@ func getPrinter(noHeaders bool) printer.PrintService {
 		var execOut bytes.Buffer
 		out = &execOut
 	} else {
-		out = os.Stdout
+		out = os.Stdout // lol we should either not allow CommandBuilder to customize out buffer at all, or find a way for it to influence this line. I can't change command output in tests because of this
 	}
 	printReg, err := printer.NewPrinterRegistry(out, os.Stderr, noHeaders)
 	clierror.CheckError(err, os.Stderr)

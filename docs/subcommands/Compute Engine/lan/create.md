@@ -1,5 +1,5 @@
 ---
-description: Create a LAN
+description: "Create a LAN"
 ---
 
 # LanCreate

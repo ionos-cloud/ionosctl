@@ -1,5 +1,5 @@
 ---
-description: List IpBlocks
+description: "List IpBlocks"
 ---
 
 # IpblockList

@@ -1,5 +1,5 @@
 ---
-description: Delete a MongoDB user
+description: "Delete a MongoDB user"
 ---
 
 # DbaasMongoUserDelete

@@ -1,5 +1,5 @@
 ---
-description: Delete a Snapshot
+description: "Delete a Snapshot"
 ---
 
 # SnapshotDelete

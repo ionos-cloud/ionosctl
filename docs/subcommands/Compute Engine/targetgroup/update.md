@@ -1,5 +1,5 @@
 ---
-description: Update a Target Group
+description: "Update a Target Group"
 ---
 
 # TargetgroupUpdate

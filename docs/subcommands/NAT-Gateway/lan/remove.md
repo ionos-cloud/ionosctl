@@ -1,5 +1,5 @@
 ---
-description: Remove a NAT Gateway Lan
+description: "Remove a NAT Gateway Lan"
 ---
 
 # NatgatewayLanRemove

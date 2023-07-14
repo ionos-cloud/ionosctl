@@ -1,5 +1,5 @@
 ---
-description: Delete a FlowLog from a NIC
+description: "Delete a FlowLog from a NIC"
 ---
 
 # FlowlogDelete

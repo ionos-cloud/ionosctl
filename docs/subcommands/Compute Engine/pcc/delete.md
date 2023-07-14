@@ -1,5 +1,5 @@
 ---
-description: Delete a Private Cross-Connect
+description: "Delete a Private Cross-Connect"
 ---
 
 # PccDelete

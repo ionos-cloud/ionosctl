@@ -1,5 +1,5 @@
 ---
-description: Remove a Label from a Resource
+description: "Remove a Label from a Resource"
 ---
 
 # LabelRemove

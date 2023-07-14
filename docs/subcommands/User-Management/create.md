@@ -1,5 +1,5 @@
 ---
-description: Create a User under a particular contract
+description: "Create a User under a particular contract"
 ---
 
 # UserCreate

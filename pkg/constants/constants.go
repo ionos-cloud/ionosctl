@@ -39,11 +39,24 @@ const (
 	FlagAnnotations      = "annotations"
 	FlagAnnotationsShort = "A"
 	FlagVersion          = "version"
+
+	FlagZone        = "zone"
+	FlagZoneShort   = "z"
+	FlagRecord      = "record"
+	FlagRecordShort = "r"
+	FlagState       = "state"
+	FlagDescription = "description"
+	FlagEnabled     = "enabled"
+	FlagContent     = "content"
+	FlagTtl         = "ttl"
+	FlagPriority    = "priority"
+	FlagType        = "type"
 )
 
 // Flag descriptions. Prefixed with "Desc" for easy find and replace
 const (
 	DescMaxResults = "The maximum number of elements to return"
+	DescZone       = "The name or ID of the DNS zone"
 )
 
 // legacy flags. TODO: Arg should be renamed to Flag.
@@ -59,6 +72,7 @@ const (
 	ArgDepth               = "depth"
 	ArgDepthShort          = "D"
 	ArgServerUrl           = "api-url"
+	EnvServerUrl           = "IONOS_API_URL"
 	ArgServerUrlShort      = "u"
 	ArgAll                 = "all"
 	ArgAllShort            = "a"

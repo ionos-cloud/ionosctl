@@ -1,5 +1,5 @@
 ---
-description: Get a specific attached CD-ROM from a Server
+description: "Get a specific attached CD-ROM from a Server"
 ---
 
 # ServerCdromGet

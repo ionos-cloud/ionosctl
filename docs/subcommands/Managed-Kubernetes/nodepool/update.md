@@ -1,5 +1,5 @@
 ---
-description: Update a Kubernetes NodePool
+description: "Update a Kubernetes NodePool"
 ---
 
 # K8sNodepoolUpdate

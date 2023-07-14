@@ -1,5 +1,5 @@
 ---
-description: Get a token
+description: "Get a token"
 ---
 
 # ContainerRegistryTokenGet

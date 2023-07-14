@@ -1,5 +1,5 @@
 ---
-description: Restore a PostgreSQL Cluster
+description: "Restore a PostgreSQL Cluster"
 ---
 
 # DbaasPostgresClusterRestore

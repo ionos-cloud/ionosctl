@@ -1,5 +1,5 @@
 ---
-description: Delete Certificate by ID or all Certificates
+description: "Delete Certificate by ID or all Certificates"
 ---
 
 # CertificateManagerDelete

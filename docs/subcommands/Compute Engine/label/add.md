@@ -1,5 +1,5 @@
 ---
-description: Add a Label to a Resource
+description: "Add a Label to a Resource"
 ---
 
 # LabelAdd

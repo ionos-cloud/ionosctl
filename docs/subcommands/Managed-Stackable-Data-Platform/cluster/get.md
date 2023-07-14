@@ -1,5 +1,5 @@
 ---
-description: Get a Dataplatform Cluster by ID
+description: "Get a Dataplatform Cluster by ID"
 ---
 
 # DataplatformClusterGet

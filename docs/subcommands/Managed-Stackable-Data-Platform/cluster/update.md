@@ -1,5 +1,5 @@
 ---
-description: Update a Dataplatform Cluster by ID
+description: "Update a Dataplatform Cluster by ID"
 ---
 
 # DataplatformClusterUpdate

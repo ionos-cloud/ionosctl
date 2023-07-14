@@ -1,5 +1,5 @@
 ---
-description: Create a Resource Share for a Group
+description: "Create a Resource Share for a Group"
 ---
 
 # ShareCreate

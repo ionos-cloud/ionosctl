@@ -1,7 +1,1 @@
--   id: make-docs
-    name: Generate documentation with make
-    description: This hook generates documentation with the make docs command.
-    entry: make docs
-    always_run: true
-    language: system
-    files: ^docs/.*
+## Custom pre-commit hooks

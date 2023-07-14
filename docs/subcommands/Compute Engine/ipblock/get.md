@@ -1,5 +1,5 @@
 ---
-description: Get an IpBlock
+description: "Get an IpBlock"
 ---
 
 # IpblockGet

@@ -1,5 +1,5 @@
 ---
-description: Show the current version
+description: "Show the current version"
 ---
 
 # Version

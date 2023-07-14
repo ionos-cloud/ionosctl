@@ -1,5 +1,5 @@
 ---
-description: Get information about the Contract Resources on your account
+description: "Get information about the Contract Resources on your account"
 ---
 
 # ContractGet

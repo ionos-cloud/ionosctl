@@ -1,5 +1,5 @@
 ---
-description: Get a NAT Gateway FlowLog
+description: "Get a NAT Gateway FlowLog"
 ---
 
 # NatgatewayFlowlogGet

@@ -5,6 +5,8 @@ import (
 	"os"
 	"strings"
 
+	"github.com/ionos-cloud/ionosctl/v6/commands/dns"
+
 	container_registry "github.com/ionos-cloud/ionosctl/v6/commands/container-registry"
 
 	authv1 "github.com/ionos-cloud/ionosctl/v6/commands/auth-v1"
@@ -32,11 +34,10 @@ var (
 			TraverseChildren: true,
 		},
 	}
-	ServerURL string
-	Output    string
-	Quiet     bool
-	Force     bool
-	Verbose   bool
+	Output  string
+	Quiet   bool
+	Force   bool
+	Verbose bool
 
 	cfgFile string
 
@@ -99,8 +100,8 @@ func init() {
 		"Configuration file used for authentication",
 	)
 	_ = viper.BindPFlag(constants.ArgConfig, rootPFlagSet.Lookup(constants.ArgConfig))
-	rootPFlagSet.StringVarP(
-		&ServerURL, constants.ArgServerUrl, constants.ArgServerUrlShort, constants.DefaultApiURL,
+	rootPFlagSet.StringP(
+		constants.ArgServerUrl, constants.ArgServerUrlShort, constants.DefaultApiURL,
 		"Override default host url",
 	)
 	_ = viper.BindPFlag(constants.ArgServerUrl, rootPFlagSet.Lookup(constants.ArgServerUrl))
@@ -202,6 +203,23 @@ func addCommands() {
 	rootCmd.AddCommand(dataplatform.DataplatformCmd())
 	// Add Container Registry Commands
 	rootCmd.AddCommand(container_registry.ContainerRegistryCmd())
+	// DNS
+
+	funcChangeDefaultApiUrl := func(command *core.Command, newDefault string) *core.Command {
+		// For some reason, this line only changes the help text
+		command.Command.PersistentFlags().StringP(
+			constants.ArgServerUrl, constants.ArgServerUrlShort, newDefault, "Override default host url")
+
+		// If unset, manually set the flag to the new default. SIDE EFFECT: Now, this flag will always be considered "set", within DNS sub commands. Can't find a better alternative
+		command.Command.PersistentPreRun = func(cmd *cobra.Command, args []string) {
+			if !cmd.Flags().Changed(constants.ArgServerUrl) {
+				viper.Set(constants.ArgServerUrl, newDefault)
+			}
+		}
+		return command
+	}
+
+	rootCmd.AddCommand(funcChangeDefaultApiUrl(dns.DNSCommand(), dns.DefaultApiURL))
 }
 
 const helpTemplate = `USAGE: {{if .Runnable}}

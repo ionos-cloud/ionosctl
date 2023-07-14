@@ -1,5 +1,5 @@
 ---
-description: Get a specified Token
+description: "Get a specified Token"
 ---
 
 # TokenGet

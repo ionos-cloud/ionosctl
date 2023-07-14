@@ -1,5 +1,5 @@
 ---
-description: Create Dataplatform Nodepools
+description: "Create Dataplatform Nodepools"
 ---
 
 # DataplatformNodepoolCreate

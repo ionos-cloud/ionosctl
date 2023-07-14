@@ -1,5 +1,5 @@
 ---
-description: Create a NAT Gateway FlowLog
+description: "Create a NAT Gateway FlowLog"
 ---
 
 # NatgatewayFlowlogCreate

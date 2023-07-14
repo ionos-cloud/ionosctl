@@ -25,6 +25,8 @@ type CliError struct {
 	Detail string `json:"Detail,omitempty"`
 }
 
+// CheckError is Deprecated! - Use die.Die instead, this function doesn't only "Check" an error, it dies, and takes your precious error away with it :(
+//
 // CheckError Standard error checking
 func CheckError(err error, outErr io.Writer) {
 	if err == nil {

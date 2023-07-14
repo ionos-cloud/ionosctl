@@ -34,6 +34,7 @@ var nonComputeNamespaces = map[string]string{
 	"networkloadbalancer":     "Network-Load-Balancer",
 	"k8s":                     "Managed-Kubernetes",
 	"user":                    "User-Management",
+	"dns":                     "DNS",
 }
 
 func GenerateSummary(dir string) error {
@@ -148,6 +149,7 @@ func createStructure(cmd *core.Command, dir string) error {
 func determineSubdir(name string, nonComputeNamespaces map[string]string) string {
 	segments := strings.Split(name, "-")
 
+	// Custom names depending on first level names
 	if segments[0] == "login" || segments[0] == "version" || segments[0] == "completion" {
 		return filepath.Join("CLI Setup", filepath.Join(segments...))
 	}
@@ -156,16 +158,19 @@ func determineSubdir(name string, nonComputeNamespaces map[string]string) string
 		return filepath.Join("Authentication", filepath.Join(segments...))
 	}
 
+	// Names for single names, eg certmanager in nonComputeNamespaces map
 	namespaceKey := segments[0]
 	if apiName, ok := nonComputeNamespaces[namespaceKey]; ok {
 		return filepath.Join(apiName, filepath.Join(segments[1:]...))
 	}
 
+	// Names for multi word names, eg container-registry in nonComputeNamespaces map
 	namespaceKey = segments[0] + "-" + segments[1]
 	if apiName, ok := nonComputeNamespaces[namespaceKey]; ok {
 		return filepath.Join(apiName, filepath.Join(segments[2:]...))
 	}
 
+	// Default for first level resources which didnt meet any of the above criteria
 	return filepath.Join("Compute Engine", filepath.Join(segments...))
 }
 
@@ -184,7 +189,7 @@ func writeDoc(cmd *core.Command, w io.Writer) error {
 	name := cmd.Command.CommandPath()
 
 	buf.WriteString("---\n")
-	buf.WriteString(fmt.Sprintf("description: %s\n", cmd.Command.Short))
+	buf.WriteString(fmt.Sprintf("description: \"%s\"\n", cmd.Command.Short))
 	buf.WriteString("---\n\n")
 
 	// Customize title

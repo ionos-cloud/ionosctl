@@ -1,5 +1,5 @@
 ---
-description: Update a LAN
+description: "Update a LAN"
 ---
 
 # LanUpdate

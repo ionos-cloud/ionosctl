@@ -18,7 +18,7 @@ TEST_FLAGS := "-cover"
 .PHONY: utest
 utest:
 	@echo "--- Run unit tests ---"
-	@go test $(TEST_FLAGS) $(TEST_DIRS) | grep -v '\[no test files\]' && echo "DONE"
+	@go test $(TEST_FLAGS) $(TEST_DIRS)
 
 # Note about test file tagging:
 # `//go:build integration` was introduced in Go 1.17
@@ -28,7 +28,7 @@ utest:
 .PHONY: test
 test:
 	@echo "--- Run integration and unit tests ---"
-	@go test $(TEST_FLAGS) -tags=integration $(TEST_DIRS) | grep -v '\[no test files\]' && echo "DONE"
+	@go test $(TEST_FLAGS) -tags=integration $(TEST_DIRS)
 
 .PHONY: mocks
 mocks:
@@ -48,7 +48,7 @@ docs generate-docs:
 .PHONY: gofmt_check
 gofmt_check:
 	@echo "--- Ensure code adheres to gofmt and list files whose formatting differs(vendor directory excluded) ---"
-	@if [ "$(shell echo $$(gofmt -l ${GOFILES_NOVENDOR}))" != "" ]; then (echo "Format files: $(shell echo $$(gofmt -l ${GOFILES_NOVENDOR})) Hint: use \`make gofmt_update\`"; exit 1); fi
+	@if [ "$(shell echo $$(gofmt -l ${GOFILES_NOVENDOR}))" != "" ]; then (echo "Format files: $(shell echo $$(gofmt -l ${GOFILES_NOVENDOR})) Hint: use \`make gofmt\`"; exit 1); fi
 	@echo "DONE"
 
 .PHONY: gofmt

@@ -1,5 +1,5 @@
 ---
-description: List NAT Gateway Rules
+description: "List NAT Gateway Rules"
 ---
 
 # NatgatewayRuleList

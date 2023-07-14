@@ -1,5 +1,5 @@
 ---
-description: Create a NAT Gateway Rule
+description: "Create a NAT Gateway Rule"
 ---
 
 # NatgatewayRuleCreate

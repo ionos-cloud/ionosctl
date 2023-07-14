@@ -1,5 +1,5 @@
 ---
-description: Get a Resource Share from a Group
+description: "Get a Resource Share from a Group"
 ---
 
 # ShareGet

@@ -1,5 +1,5 @@
 ---
-description: Get a Dataplatform Cluster's Kubeconfig by ID
+description: "Get a Dataplatform Cluster's Kubeconfig by ID"
 ---
 
 # DataplatformClusterKubeconfig

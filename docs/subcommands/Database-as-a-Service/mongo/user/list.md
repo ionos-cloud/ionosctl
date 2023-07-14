@@ -1,5 +1,5 @@
 ---
-description: Retrieves a list of MongoDB users.
+description: "Retrieves a list of MongoDB users."
 ---
 
 # DbaasMongoUserList

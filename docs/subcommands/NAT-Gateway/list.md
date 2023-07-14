@@ -1,5 +1,5 @@
 ---
-description: List NAT Gateways
+description: "List NAT Gateways"
 ---
 
 # NatgatewayList
