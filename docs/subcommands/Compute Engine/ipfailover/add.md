@@ -1,5 +1,5 @@
 ---
-description: Add IP Failover group to a LAN
+description: "Add IP Failover group to a LAN"
 ---
 
 # IpfailoverAdd

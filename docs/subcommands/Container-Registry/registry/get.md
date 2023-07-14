@@ -1,5 +1,5 @@
 ---
-description: Get Properties of a Registry
+description: "Get Properties of a Registry"
 ---
 
 # ContainerRegistryRegistryGet

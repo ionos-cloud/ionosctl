@@ -1,5 +1,5 @@
 ---
-description: Get a MongoDB user
+description: "Get a MongoDB user"
 ---
 
 # DbaasMongoUserGet

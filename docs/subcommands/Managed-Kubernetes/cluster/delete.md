@@ -1,5 +1,5 @@
 ---
-description: Delete a Kubernetes Cluster
+description: "Delete a Kubernetes Cluster"
 ---
 
 # K8sClusterDelete

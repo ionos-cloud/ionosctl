@@ -1,5 +1,5 @@
 ---
-description: List LANs
+description: "List LANs"
 ---
 
 # LanList

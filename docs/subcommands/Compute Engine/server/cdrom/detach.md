@@ -1,5 +1,5 @@
 ---
-description: Detach a CD-ROM from a Server
+description: "Detach a CD-ROM from a Server"
 ---
 
 # ServerCdromDetach

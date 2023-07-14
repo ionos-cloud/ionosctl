@@ -1,5 +1,5 @@
 ---
-description: Add a NAT Gateway Lan
+description: "Add a NAT Gateway Lan"
 ---
 
 # NatgatewayLanAdd

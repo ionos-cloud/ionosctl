@@ -1,5 +1,5 @@
 ---
-description: Remove a Target from a Target Group
+description: "Remove a Target from a Target Group"
 ---
 
 # TargetgroupTargetRemove

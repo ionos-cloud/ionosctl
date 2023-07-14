@@ -1,5 +1,5 @@
 ---
-description: Create a new token
+description: "Create a new token"
 ---
 
 # ContainerRegistryTokenCreate

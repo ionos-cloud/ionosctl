@@ -1,5 +1,6 @@
 # See https://pre-commit.com for more information
 # See https://pre-commit.com/hooks.html for more hooks
+# Use `-n` flag to skip checks. For example, `git commit -n -m "Work in progress commit"`
 exclude: 'vendor'
 
 repos:
@@ -22,12 +23,3 @@ repos:
   - id: check-yaml
   - id: check-added-large-files
   - id: check-merge-conflict
-
-- repo: local
-  hooks:
-    - id: make-docs
-      name: Generate documentation with make
-      description: This hook generates documentation with the make docs command.
-      entry: make docs
-      language: system
-      files: ^docs/.*

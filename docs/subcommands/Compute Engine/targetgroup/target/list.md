@@ -1,5 +1,5 @@
 ---
-description: List Target Groups Targets
+description: "List Target Groups Targets"
 ---
 
 # TargetgroupTargetList

@@ -1,5 +1,5 @@
 ---
-description: Get a Snapshot
+description: "Get a Snapshot"
 ---
 
 # SnapshotGet

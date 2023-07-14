@@ -1,10 +1,21 @@
 # Changelog
 
-## [6.7.0] (XXX 2023)
+## [v6.6.4] (June 2023)
+
+## Added
+* Added support for DNS API
 
 ### Fixed
 - Deprecated warnings only show if the deprecated flag is being used
 
+## [v6.6.3] (May 2023)
+
+## Fixed
+* Fixed token docs
+* Fixed maintenance default, now maintenance is disabled by default for targetgroup target add
+* Fix #288: improve client, config errors
+* Fix #289  nodepool lan add --network flag using only last network
+* 
 ## [6.6.2] (April 2023)
 
 ### Added

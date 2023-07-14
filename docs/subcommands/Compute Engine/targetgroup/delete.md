@@ -1,5 +1,5 @@
 ---
-description: Delete a Target Group
+description: "Delete a Target Group"
 ---
 
 # TargetgroupDelete

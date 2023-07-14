@@ -1,5 +1,5 @@
 ---
-description: List Resources
+description: "List Resources"
 ---
 
 # ResourceList

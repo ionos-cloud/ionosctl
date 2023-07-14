@@ -1,5 +1,5 @@
 ---
-description: Get a Token from a Server
+description: "Get a Token from a Server"
 ---
 
 # ServerTokenGet

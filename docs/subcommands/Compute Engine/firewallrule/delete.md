@@ -1,5 +1,5 @@
 ---
-description: Delete a FirewallRule
+description: "Delete a FirewallRule"
 ---
 
 # FirewallruleDelete

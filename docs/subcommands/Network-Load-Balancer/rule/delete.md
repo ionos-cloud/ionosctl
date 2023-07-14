@@ -1,5 +1,5 @@
 ---
-description: Delete a Network Load Balancer Forwarding Rule
+description: "Delete a Network Load Balancer Forwarding Rule"
 ---
 
 # NetworkloadbalancerRuleDelete

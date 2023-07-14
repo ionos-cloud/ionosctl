@@ -1,5 +1,5 @@
 ---
-description: Update Dataplatform Nodepools
+description: "Update Dataplatform Nodepools"
 ---
 
 # DataplatformNodepoolUpdate

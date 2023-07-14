@@ -1,5 +1,5 @@
 ---
-description: Add scopes to a token
+description: "Add scopes to a token"
 ---
 
 # ContainerRegistryTokenScopeAdd

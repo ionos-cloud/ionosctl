@@ -1,5 +1,5 @@
 ---
-description: Create a Kubernetes Cluster
+description: "Create a Kubernetes Cluster"
 ---
 
 # K8sClusterCreate

@@ -1,5 +1,5 @@
 ---
-description: Delete a PostgreSQL Cluster
+description: "Delete a PostgreSQL Cluster"
 ---
 
 # DbaasPostgresClusterDelete

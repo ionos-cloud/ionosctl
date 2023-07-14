@@ -1,5 +1,5 @@
 ---
-description: Create Dataplatform Cluster
+description: "Create Dataplatform Cluster"
 ---
 
 # DataplatformClusterCreate

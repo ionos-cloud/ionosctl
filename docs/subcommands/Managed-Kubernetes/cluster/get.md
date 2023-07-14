@@ -1,5 +1,5 @@
 ---
-description: Get a Kubernetes Cluster
+description: "Get a Kubernetes Cluster"
 ---
 
 # K8sClusterGet

@@ -1,5 +1,5 @@
 ---
-description: Remove User from a Group
+description: "Remove User from a Group"
 ---
 
 # GroupUserRemove

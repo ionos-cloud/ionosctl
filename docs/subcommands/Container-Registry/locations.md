@@ -1,5 +1,5 @@
 ---
-description: List all Registries Locations
+description: "List all Registries Locations"
 ---
 
 # ContainerRegistryLocations

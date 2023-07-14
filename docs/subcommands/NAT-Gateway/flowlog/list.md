@@ -1,5 +1,5 @@
 ---
-description: List NAT Gateway FlowLogs
+description: "List NAT Gateway FlowLogs"
 ---
 
 # NatgatewayFlowlogList

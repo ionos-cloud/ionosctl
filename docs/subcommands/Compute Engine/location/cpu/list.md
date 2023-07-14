@@ -1,5 +1,5 @@
 ---
-description: List available CPU Architecture from a Location
+description: "List available CPU Architecture from a Location"
 ---
 
 # LocationCpuList

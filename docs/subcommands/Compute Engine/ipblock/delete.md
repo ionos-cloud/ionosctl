@@ -1,5 +1,5 @@
 ---
-description: Delete an IpBlock
+description: "Delete an IpBlock"
 ---
 
 # IpblockDelete

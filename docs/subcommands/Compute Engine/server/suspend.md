@@ -1,5 +1,5 @@
 ---
-description: Suspend a Cube Server
+description: "Suspend a Cube Server"
 ---
 
 # ServerSuspend

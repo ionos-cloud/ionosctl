@@ -1,5 +1,5 @@
 ---
-description: Update a FirewallRule
+description: "Update a FirewallRule"
 ---
 
 # FirewallruleUpdate

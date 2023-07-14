@@ -1,5 +1,5 @@
 ---
-description: Get the Remote Console URL to access a Server
+description: "Get the Remote Console URL to access a Server"
 ---
 
 # ServerConsoleGet

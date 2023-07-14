@@ -1,5 +1,5 @@
 ---
-description: Check if a Registry Name is available
+description: "Check if a Registry Name is available"
 ---
 
 # ContainerRegistryNames

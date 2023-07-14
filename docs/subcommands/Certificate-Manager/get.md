@@ -1,5 +1,5 @@
 ---
-description: Get Certificate by ID
+description: "Get Certificate by ID"
 ---
 
 # CertificateManagerGet

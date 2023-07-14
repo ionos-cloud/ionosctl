@@ -1,5 +1,5 @@
 ---
-description: Resume a Cube Server
+description: "Resume a Cube Server"
 ---
 
 # ServerResume

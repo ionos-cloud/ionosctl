@@ -1,5 +1,5 @@
 ---
-description: Get a NAT Gateway
+description: "Get a NAT Gateway"
 ---
 
 # NatgatewayGet

@@ -1,5 +1,5 @@
 ---
-description: List Kubernetes NodePool LANs
+description: "List Kubernetes NodePool LANs"
 ---
 
 # K8sNodepoolLanList

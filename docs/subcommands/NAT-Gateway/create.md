@@ -1,5 +1,5 @@
 ---
-description: Create a NAT Gateway
+description: "Create a NAT Gateway"
 ---
 
 # NatgatewayCreate

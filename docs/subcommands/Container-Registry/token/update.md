@@ -1,5 +1,5 @@
 ---
-description: Update a token's properties
+description: "Update a token's properties"
 ---
 
 # ContainerRegistryTokenUpdate

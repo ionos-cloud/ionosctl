@@ -8,13 +8,15 @@ require (
 	github.com/cjrd/allocate v0.0.0-20220510215731-986f24f0fb18
 	github.com/fatih/color v1.15.0
 	github.com/fatih/structs v1.1.0
+	github.com/gofrs/uuid/v5 v5.0.0
 	github.com/golang/mock v1.6.0
-	github.com/google/uuid v1.3.0
+	github.com/google/uuid v1.3.0 // TODO: Replace all calls by gofrs/uuid/v5
 	github.com/ionos-cloud/sdk-go-auth v1.0.5
 	github.com/ionos-cloud/sdk-go-container-registry v1.0.0
 	github.com/ionos-cloud/sdk-go-dataplatform v1.0.1
 	github.com/ionos-cloud/sdk-go-dbaas-mongo v1.2.2
 	github.com/ionos-cloud/sdk-go-dbaas-postgres v1.1.1
+	github.com/ionos-cloud/sdk-go-dns v1.1.1
 	github.com/ionos-cloud/sdk-go/v6 v6.1.7
 	github.com/kardianos/ftps v1.0.3
 	github.com/mitchellh/go-homedir v1.1.0

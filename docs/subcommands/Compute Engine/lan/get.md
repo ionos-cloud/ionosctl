@@ -1,5 +1,5 @@
 ---
-description: Get a LAN
+description: "Get a LAN"
 ---
 
 # LanGet
