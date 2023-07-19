@@ -4,10 +4,10 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/gofrs/uuid/v5"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dns/zone"
 	"github.com/spf13/viper"
 
-	"github.com/google/uuid"
 	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
 	dns "github.com/ionos-cloud/sdk-go-dns"
 
@@ -138,7 +138,7 @@ func Records(fs ...Filter) (dns.RecordReadList, error) {
 // Resolve resolves nameOrId (the name of a record, or the ID of a record) - to the ID of the record.
 // If it's an ID, it's returned as is. If it's not, then it's a name, and we try to resolve it
 func Resolve(nameOrId string) (string, error) {
-	uid, errParseUuid := uuid.Parse(nameOrId)
+	uid, errParseUuid := uuid.FromString(nameOrId)
 	rId := uid.String()
 	if errParseUuid != nil {
 		// nameOrId is a name
@@ -168,7 +168,7 @@ func FilterRecordsByZoneAndRecordFlags(cmdNs string) Filter {
 
 		if fn := core.GetFlagName(cmdNs, constants.FlagRecord); viper.IsSet(fn) {
 			record := viper.GetString(fn)
-			if _, ok := uuid.Parse(record); ok != nil /* not ok (name is provided) */ {
+			if _, ok := uuid.FromString(record); ok != nil /* not ok (name is provided) */ {
 				req = req.FilterName(record)
 			}
 		}
