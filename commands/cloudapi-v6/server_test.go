@@ -11,6 +11,7 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
+	"github.com/ionos-cloud/ionosctl/v6/internal/pointer"
 
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
@@ -506,7 +507,38 @@ func TestRunServerCreateCube(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, constants.FlagAvailabilityZone), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLicenceType), testLicenceType)
 		viper.Set(core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), false)
-		rm.CloudApiV6Mocks.Server.EXPECT().Create(testServerVar, serverCubeCreate, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&resources.Server{Server: s}, nil, nil)
+		sentServer := serverCubeCreate
+		sentServer.Properties.CpuFamily = nil
+		expectedServer := s
+		expectedServer.Properties.CpuFamily = nil
+		rm.CloudApiV6Mocks.Server.EXPECT().Create(testServerVar, sentServer, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&resources.Server{Server: expectedServer}, nil, nil)
+		err := RunServerCreate(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunServerCreateCubeExplicitCpuFamily(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+		viper.Set(constants.ArgQuiet, false)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgName), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgVolumeName), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgType), testServerCubeType)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgBus), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgTemplateId), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, constants.FlagAvailabilityZone), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, constants.FlagCpuFamily), "AMD_OPTERON")
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLicenceType), testLicenceType)
+		viper.Set(core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), false)
+		sentServer := serverCubeCreate
+		sentServer.Properties.CpuFamily = pointer.From("AMD_OPTERON")
+		expectedServer := s
+		expectedServer.Properties.CpuFamily = pointer.From("AMD_OPTERON")
+		rm.CloudApiV6Mocks.Server.EXPECT().Create(testServerVar, sentServer, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&resources.Server{Server: expectedServer}, nil, nil)
 		err := RunServerCreate(cfg)
 		assert.NoError(t, err)
 	})
@@ -529,7 +561,11 @@ func TestRunServerCreateCubeImgAlias(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgImageAlias), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPassword), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), false)
-		rm.CloudApiV6Mocks.Server.EXPECT().Create(testServerVar, serverCubeCreateImg, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&resources.Server{Server: s}, nil, nil)
+		sentServer := serverCubeCreateImg
+		sentServer.Properties.CpuFamily = nil
+		expectedServer := s
+		s.Properties.CpuFamily = nil
+		rm.CloudApiV6Mocks.Server.EXPECT().Create(testServerVar, sentServer, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&resources.Server{Server: expectedServer}, nil, nil)
 		err := RunServerCreate(cfg)
 		assert.NoError(t, err)
 	})
