@@ -16,7 +16,7 @@ import (
 
 // CreateClusterRequest Request payload with all data needed to create a new PostgreSQL cluster.
 type CreateClusterRequest struct {
-	Metadata   *ClusterMetadata         `json:"metadata,omitempty"`
+	Metadata   *Metadata                `json:"metadata,omitempty"`
 	Properties *CreateClusterProperties `json:"properties,omitempty"`
 }
 
@@ -39,8 +39,8 @@ func NewCreateClusterRequestWithDefaults() *CreateClusterRequest {
 }
 
 // GetMetadata returns the Metadata field value
-// If the value is explicit nil, the zero value for ClusterMetadata will be returned
-func (o *CreateClusterRequest) GetMetadata() *ClusterMetadata {
+// If the value is explicit nil, the zero value for Metadata will be returned
+func (o *CreateClusterRequest) GetMetadata() *Metadata {
 	if o == nil {
 		return nil
 	}
@@ -52,7 +52,7 @@ func (o *CreateClusterRequest) GetMetadata() *ClusterMetadata {
 // GetMetadataOk returns a tuple with the Metadata field value
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *CreateClusterRequest) GetMetadataOk() (*ClusterMetadata, bool) {
+func (o *CreateClusterRequest) GetMetadataOk() (*Metadata, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -61,7 +61,7 @@ func (o *CreateClusterRequest) GetMetadataOk() (*ClusterMetadata, bool) {
 }
 
 // SetMetadata sets field value
-func (o *CreateClusterRequest) SetMetadata(v ClusterMetadata) {
+func (o *CreateClusterRequest) SetMetadata(v Metadata) {
 
 	o.Metadata = &v
 

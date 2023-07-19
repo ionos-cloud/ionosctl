@@ -14,7 +14,7 @@ require (
 	github.com/ionos-cloud/sdk-go-container-registry v1.0.1
 	github.com/ionos-cloud/sdk-go-dataplatform v1.0.1
 	github.com/ionos-cloud/sdk-go-dbaas-mongo v1.2.2
-	github.com/ionos-cloud/sdk-go-dbaas-postgres v1.1.2
+	github.com/ionos-cloud/sdk-go-dbaas-postgres v1.1.1
 	github.com/ionos-cloud/sdk-go-dns v1.1.1
 	github.com/ionos-cloud/sdk-go/v6 v6.1.8
 	github.com/kardianos/ftps v1.0.3

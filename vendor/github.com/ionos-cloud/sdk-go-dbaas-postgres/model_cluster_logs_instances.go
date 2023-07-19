@@ -14,38 +14,34 @@ import (
 	"encoding/json"
 )
 
-// DatabaseProperties struct for DatabaseProperties
-type DatabaseProperties struct {
-	// The databasename of a given database.
-	Name *string `json:"name"`
-	// The name of the role owning a given database.
-	Owner *string `json:"owner"`
+// ClusterLogsInstances struct for ClusterLogsInstances
+type ClusterLogsInstances struct {
+	// The name of the PostgreSQL instance.
+	Name     *string                `json:"name,omitempty"`
+	Messages *[]ClusterLogsMessages `json:"messages,omitempty"`
 }
 
-// NewDatabaseProperties instantiates a new DatabaseProperties object
+// NewClusterLogsInstances instantiates a new ClusterLogsInstances object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewDatabaseProperties(name string, owner string) *DatabaseProperties {
-	this := DatabaseProperties{}
-
-	this.Name = &name
-	this.Owner = &owner
+func NewClusterLogsInstances() *ClusterLogsInstances {
+	this := ClusterLogsInstances{}
 
 	return &this
 }
 
-// NewDatabasePropertiesWithDefaults instantiates a new DatabaseProperties object
+// NewClusterLogsInstancesWithDefaults instantiates a new ClusterLogsInstances object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewDatabasePropertiesWithDefaults() *DatabaseProperties {
-	this := DatabaseProperties{}
+func NewClusterLogsInstancesWithDefaults() *ClusterLogsInstances {
+	this := ClusterLogsInstances{}
 	return &this
 }
 
 // GetName returns the Name field value
 // If the value is explicit nil, the zero value for string will be returned
-func (o *DatabaseProperties) GetName() *string {
+func (o *ClusterLogsInstances) GetName() *string {
 	if o == nil {
 		return nil
 	}
@@ -57,7 +53,7 @@ func (o *DatabaseProperties) GetName() *string {
 // GetNameOk returns a tuple with the Name field value
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *DatabaseProperties) GetNameOk() (*string, bool) {
+func (o *ClusterLogsInstances) GetNameOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -66,14 +62,14 @@ func (o *DatabaseProperties) GetNameOk() (*string, bool) {
 }
 
 // SetName sets field value
-func (o *DatabaseProperties) SetName(v string) {
+func (o *ClusterLogsInstances) SetName(v string) {
 
 	o.Name = &v
 
 }
 
 // HasName returns a boolean if a field has been set.
-func (o *DatabaseProperties) HasName() bool {
+func (o *ClusterLogsInstances) HasName() bool {
 	if o != nil && o.Name != nil {
 		return true
 	}
@@ -81,89 +77,89 @@ func (o *DatabaseProperties) HasName() bool {
 	return false
 }
 
-// GetOwner returns the Owner field value
-// If the value is explicit nil, the zero value for string will be returned
-func (o *DatabaseProperties) GetOwner() *string {
+// GetMessages returns the Messages field value
+// If the value is explicit nil, the zero value for []ClusterLogsMessages will be returned
+func (o *ClusterLogsInstances) GetMessages() *[]ClusterLogsMessages {
 	if o == nil {
 		return nil
 	}
 
-	return o.Owner
+	return o.Messages
 
 }
 
-// GetOwnerOk returns a tuple with the Owner field value
+// GetMessagesOk returns a tuple with the Messages field value
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *DatabaseProperties) GetOwnerOk() (*string, bool) {
+func (o *ClusterLogsInstances) GetMessagesOk() (*[]ClusterLogsMessages, bool) {
 	if o == nil {
 		return nil, false
 	}
 
-	return o.Owner, true
+	return o.Messages, true
 }
 
-// SetOwner sets field value
-func (o *DatabaseProperties) SetOwner(v string) {
+// SetMessages sets field value
+func (o *ClusterLogsInstances) SetMessages(v []ClusterLogsMessages) {
 
-	o.Owner = &v
+	o.Messages = &v
 
 }
 
-// HasOwner returns a boolean if a field has been set.
-func (o *DatabaseProperties) HasOwner() bool {
-	if o != nil && o.Owner != nil {
+// HasMessages returns a boolean if a field has been set.
+func (o *ClusterLogsInstances) HasMessages() bool {
+	if o != nil && o.Messages != nil {
 		return true
 	}
 
 	return false
 }
 
-func (o DatabaseProperties) MarshalJSON() ([]byte, error) {
+func (o ClusterLogsInstances) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 	if o.Name != nil {
 		toSerialize["name"] = o.Name
 	}
 
-	if o.Owner != nil {
-		toSerialize["owner"] = o.Owner
+	if o.Messages != nil {
+		toSerialize["messages"] = o.Messages
 	}
 
 	return json.Marshal(toSerialize)
 }
 
-type NullableDatabaseProperties struct {
-	value *DatabaseProperties
+type NullableClusterLogsInstances struct {
+	value *ClusterLogsInstances
 	isSet bool
 }
 
-func (v NullableDatabaseProperties) Get() *DatabaseProperties {
+func (v NullableClusterLogsInstances) Get() *ClusterLogsInstances {
 	return v.value
 }
 
-func (v *NullableDatabaseProperties) Set(val *DatabaseProperties) {
+func (v *NullableClusterLogsInstances) Set(val *ClusterLogsInstances) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableDatabaseProperties) IsSet() bool {
+func (v NullableClusterLogsInstances) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableDatabaseProperties) Unset() {
+func (v *NullableClusterLogsInstances) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableDatabaseProperties(val *DatabaseProperties) *NullableDatabaseProperties {
-	return &NullableDatabaseProperties{value: val, isSet: true}
+func NewNullableClusterLogsInstances(val *ClusterLogsInstances) *NullableClusterLogsInstances {
+	return &NullableClusterLogsInstances{value: val, isSet: true}
 }
 
-func (v NullableDatabaseProperties) MarshalJSON() ([]byte, error) {
+func (v NullableClusterLogsInstances) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableDatabaseProperties) UnmarshalJSON(src []byte) error {
+func (v *NullableClusterLogsInstances) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
