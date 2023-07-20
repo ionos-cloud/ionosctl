@@ -43,7 +43,7 @@ CUSTOM URLs:
   In this case, for every location in that slice, an attempt of FTP upload would be made at the URL computed by embedding it into the placeholder variable
   - Use the '--skip-verify' flag to skip the verification of the server certificate. This can be useful when using a custom ftp-url,
   but be warned that this could expose you to a man-in-the-middle attack.
-  - If you're using a self-signed FTP server, you can provide the path to the server certificate file using the '--crt-path' flag.
+  - If you're using a self-signed FTP server, you can provide the path to the server certificate file in base64 PEM format using the '--crt-path' flag.
 
 
 ## Options
