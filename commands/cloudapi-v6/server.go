@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"math/rand"
 	"os"
 	"strconv"
 	"strings"
@@ -31,6 +32,8 @@ import (
 const (
 	serverCubeType       = "CUBE"
 	serverEnterpriseType = "ENTERPRISE"
+
+	generateLenRandomPostfix = 8
 )
 
 func ServerCmd() *core.Command {
@@ -199,6 +202,7 @@ You can wait for the Request to be executed using ` + "`" + `--wait-for-request`
 	create.AddStringSliceFlag(cloudapiv6.ArgSshKeyPaths, cloudapiv6.ArgSshKeyPathsShort, []string{""}, "[CUBE Server] Absolute paths for the SSH Keys of the Direct Attached Storage")
 	create.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait, "Wait for the Request for Server creation to be executed")
 	create.AddBoolFlag(constants.ArgWaitForState, constants.ArgWaitForStateShort, constants.DefaultWait, "Wait for new Server to be in AVAILABLE state")
+	create.AddBoolFlag(constants.FlagGenerateName, "", constants.DefaultGenerateName, "Generate a random postfix for the server name")
 	create.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for Server creation/for Server to be in AVAILABLE state [seconds]")
 	create.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultCreateDepth, cloudapiv6.ArgDepthDescription)
 
@@ -962,6 +966,10 @@ func getNewServer(c *core.CommandConfig) (*resources.Server, error) {
 	serverType := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgType))
 	availabilityZone := viper.GetString(core.GetFlagName(c.NS, constants.FlagAvailabilityZone))
 	name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
+	// Name length is checked by server
+	if viper.GetBool(core.GetFlagName(c.NS, constants.FlagGenerateName)) {
+		name = fmt.Sprintf("%s%s", name, ranString(generateLenRandomPostfix))
+	}
 	input.SetType(serverType)
 	input.SetAvailabilityZone(availabilityZone)
 	input.SetName(name)
@@ -1261,4 +1269,31 @@ func getServersKVMaps(ss []resources.Server) []map[string]interface{} {
 		out = append(out, o)
 	}
 	return out
+}
+
+// From https://github.com/kubernetes/apimachinery/blob/master/pkg/util/rand/rand.go
+func ranString(n int) string {
+	const (
+		alphanums          = "bcdfghjklmnpqrstvwxz2456789"
+		alphanumsIdxBits   = 5
+		alphanumsIdxMask   = 1<<alphanumsIdxBits - 1
+		maxAlphanumsPerInt = 63 / alphanumsIdxBits
+	)
+	b := make([]byte, n)
+
+	ran := rand.New(rand.NewSource(time.Now().UnixNano()))
+	randomInt63 := ran.Int63()
+	remaining := maxAlphanumsPerInt
+	for i := 0; i < n; {
+		if remaining == 0 {
+			randomInt63, remaining = ran.Int63(), maxAlphanumsPerInt
+		}
+		if idx := int(randomInt63 & alphanumsIdxMask); idx < len(alphanums) {
+			b[i] = alphanums[idx]
+			i++
+		}
+		randomInt63 >>= alphanumsIdxBits
+		remaining--
+	}
+	return string(b)
 }

@@ -11,6 +11,7 @@ const (
 	FlagIdShort         = "i"
 	FlagName            = "name"
 	FlagNameShort       = "n"
+	FlagGenerateName    = "generate-name"
 	FlagTemplateId      = "template-id"
 	FlagInstances       = "instances"
 	FlagMaintenanceTime = "maintenance-time"
@@ -99,6 +100,7 @@ const (
 const (
 	DefaultApiURL         = "https://api.ionos.com"
 	DefaultConfigFileName = "/config.json"
+	DefaultGenerateName   = false
 	DefaultOutputFormat   = "text"
 	DefaultWait           = false
 	DefaultTimeoutSeconds = int(60)
