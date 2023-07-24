@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/google/uuid"
+	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
@@ -21,6 +22,16 @@ var (
 )
 
 type FlagOptionFunc func(cmd *Command, flagName string)
+
+func CompletionsOption(completions []string) FlagOptionFunc {
+	return func(cmd *Command, flagName string) {
+		_ = cmd.Command.RegisterFlagCompletionFunc(flagName,
+			func(*cobra.Command, []string, string) ([]string, cobra.ShellCompDirective) {
+				return completions, cobra.ShellCompDirectiveNoFileComp
+			},
+		)
+	}
+}
 
 func DeprecatedFlagOption(help string) FlagOptionFunc {
 	return func(cmd *Command, flagName string) {
@@ -176,7 +187,7 @@ func pluralize(word string, number int) string {
 	return word + "s"
 }
 
-////
+// //
 // --- CUSTOM FLAG TYPES ---
 // For custom validation and error handling within pflag's Set function
 // Use pflag's Var and VarP respectively in conjunction with the custom flag's constructor to add these custom types to a command.
@@ -200,7 +211,7 @@ func (u *uuidFlag) Set(p string) error {
 	}
 
 	if !IsValidUUID(p) {
-		//return fmt.Errorf("%s does not match UUID-4 format", p)
+		// return fmt.Errorf("%s does not match UUID-4 format", p)
 		_ = getPrinter(true).Warn(fmt.Sprintf("WARNING: %s does not match UUID-4 format", p))
 	}
 
@@ -217,7 +228,7 @@ func (u uuidFlag) String() string {
 	return u.Value
 }
 
-/// -- END UUID FLAG TYPE --
+// / -- END UUID FLAG TYPE --
 
 // SetFlag /
 // Values set for this flag must be part of allowed values

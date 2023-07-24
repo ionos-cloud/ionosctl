@@ -6,11 +6,11 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/ionos-cloud/ionosctl/v6/commands/auth-v1/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/internal/jwt"
 
 	"github.com/fatih/structs"
-	"github.com/ionos-cloud/ionosctl/v6/commands/auth-v1/completer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
@@ -72,10 +72,7 @@ func TokenCmd() *core.Command {
 		CmdRun:     RunTokenGet,
 		InitClient: true,
 	})
-	get.AddUUIDFlag(authv1.ArgTokenId, authv1.ArgIdShort, "", authv1.TokenId, core.RequiredFlagOption())
-	_ = get.Command.RegisterFlagCompletionFunc(authv1.ArgTokenId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.TokensIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
-	})
+	get.AddUUIDFlag(authv1.ArgTokenId, authv1.ArgIdShort, "", authv1.TokenId, core.RequiredFlagOption(), core.CompletionsOption(completer.TokensIds(os.Stderr)))
 	get.AddStringFlag(authv1.ArgToken, authv1.ArgTokenShort, "", authv1.Token, core.RequiredFlagOption())
 	get.AddIntFlag(authv1.ArgContractNo, "", 0, "Users with multiple contracts must provide the contract number, for which the token information is displayed")
 	get.AddBoolFlag(constants.ArgNoHeaders, "", false, "When using text output, don't print headers")
@@ -116,10 +113,7 @@ Required values to run command:
 		CmdRun:     RunTokenDelete,
 		InitClient: true,
 	})
-	deleteCmd.AddUUIDFlag(authv1.ArgTokenId, authv1.ArgIdShort, "", authv1.TokenId, core.RequiredFlagOption())
-	_ = deleteCmd.Command.RegisterFlagCompletionFunc(authv1.ArgTokenId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.TokensIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
-	})
+	deleteCmd.AddUUIDFlag(authv1.ArgTokenId, authv1.ArgIdShort, "", authv1.TokenId, core.RequiredFlagOption(), core.CompletionsOption(completer.TokensIds(os.Stderr)))
 	deleteCmd.AddStringFlag(authv1.ArgToken, authv1.ArgTokenShort, "", authv1.Token, core.RequiredFlagOption())
 	deleteCmd.AddBoolFlag(authv1.ArgCurrent, authv1.ArgCurrentShort, false, "Delete the Token that is currently used. This requires a token to be set for authentication via environment variable IONOS_TOKEN or via config file", core.RequiredFlagOption())
 	deleteCmd.AddBoolFlag(authv1.ArgExpired, authv1.ArgExpiredShort, false, "Delete the Tokens that are currently expired", core.RequiredFlagOption())

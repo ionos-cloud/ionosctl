@@ -121,10 +121,7 @@ func ClusterCreateCmd() *core.Command {
 	// Linked to properties struct
 	_ = allocate.Zero(&createProperties)
 	cmd.AddStringVarFlag(createProperties.DisplayName, constants.FlagName, constants.FlagNameShort, "", "The name of your cluster")
-	cmd.AddStringVarFlag(createProperties.Location, constants.FlagLocation, constants.FlagLocationShort, "", "The physical location where the cluster will be created. Defaults to the connection's datacenter location")
-	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagLocation, func(cmdCobra *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return cloudapiv6completer.LocationIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
-	})
+	cmd.AddStringVarFlag(createProperties.Location, constants.FlagLocation, constants.FlagLocationShort, "", "The physical location where the cluster will be created. Defaults to the connection's datacenter location", core.CompletionsOption(cloudapiv6completer.LocationIds(os.Stderr)))
 	cmd.AddStringVarFlag(createProperties.TemplateID, constants.FlagTemplateId, "", "", "The unique ID of the template, which specifies the number of cores, storage size, and memory")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagTemplateId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.MongoTemplateIds(), cobra.ShellCompDirectiveNoFileComp
@@ -148,10 +145,7 @@ func ClusterCreateCmd() *core.Command {
 
 	// Connections
 	_ = allocate.Zero(&createConn)
-	cmd.AddStringVarFlag(createConn.DatacenterId, constants.FlagDatacenterId, "", "", "The datacenter to which your cluster will be connected. Must be in the same location as the cluster", core.RequiredFlagOption())
-	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagDatacenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return cloudapiv6completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
-	})
+	cmd.AddStringVarFlag(createConn.DatacenterId, constants.FlagDatacenterId, "", "", "The datacenter to which your cluster will be connected. Must be in the same location as the cluster", core.RequiredFlagOption(), core.CompletionsOption(cloudapiv6completer.DataCentersIds(os.Stderr)))
 	cmd.AddStringVarFlag(createConn.LanId, constants.FlagLanId, "", "", "The numeric LAN ID with which you connect your cluster", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return cloudapiv6completer.LansIds(os.Stderr, cmd.Flag(constants.FlagDatacenterId).Value.String()), cobra.ShellCompDirectiveNoFileComp

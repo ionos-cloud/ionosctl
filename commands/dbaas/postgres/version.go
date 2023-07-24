@@ -7,7 +7,6 @@ import (
 	"os"
 
 	"github.com/fatih/structs"
-	pgsqlcompleter "github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres/completer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
@@ -68,10 +67,7 @@ func PgsqlVersionCmd() *core.Command {
 		CmdRun:     RunPgsqlVersionGet,
 		InitClient: true,
 	})
-	get.AddUUIDFlag(constants.FlagClusterId, dbaaspg.ArgIdShort, "", dbaaspg.ClusterId, core.RequiredFlagOption())
-	_ = get.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return pgsqlcompleter.ClustersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
-	})
+	get.AddUUIDFlag(constants.FlagClusterId, dbaaspg.ArgIdShort, "", dbaaspg.ClusterId, core.RequiredFlagOption(), core.CompletionsOption(pgsqlcompleter.ClustersIds(os.Stderr)))
 	get.AddBoolFlag(constants.ArgNoHeaders, "", false, "When using text output, don't print headers")
 
 	return pgsqlversionCmd

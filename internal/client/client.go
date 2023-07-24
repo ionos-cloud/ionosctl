@@ -106,6 +106,11 @@ func Must() *Client {
 	if err != nil {
 		die.Die(fmt.Errorf("failed getting client: %w", err).Error())
 	}
+
+	execute, a, err := client.MongoClient.ClustersApi.ClustersDelete().Execute()
+	if err != nil {
+		return nil
+	}
 	return client
 }
 
