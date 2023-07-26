@@ -167,3 +167,38 @@ func Role(claims map[string]interface{}) (string, error) {
 
 	return role, nil
 }
+
+func Privileges(claims map[string]interface{}) ([]string, error) {
+	identityInterface, ok := claims["identity"]
+	if !ok {
+		return nil, fmt.Errorf("could not find identity in JWT payload")
+	}
+
+	identity, ok := identityInterface.(map[string]interface{})
+	if !ok {
+		return nil, fmt.Errorf("could not parse identity in JWT payload")
+	}
+
+	privilegesInterface, ok := identity["privileges"]
+	if !ok {
+		return nil, fmt.Errorf("could not find privileges in JWT payload identity")
+	}
+
+	privilegesInterfaceArray, ok := privilegesInterface.([]interface{})
+	if !ok {
+		return nil, fmt.Errorf("could not parse privileges in JWT payoad identity")
+	}
+
+	var privileges = make([]string, 0)
+
+	for _, privInterface := range privilegesInterfaceArray {
+		priv, ok := privInterface.(string)
+		if !ok {
+			return nil, fmt.Errorf("could not parse individual privileges")
+		}
+
+		privileges = append(privileges, priv)
+	}
+
+	return privileges, nil
+}

@@ -29,7 +29,7 @@ func TokenDeleteCmd() *core.Command {
 
 Required values to run command:
 
-* Token Id/CURRENT/EXPIRED/ALL`,
+* Token Id/Token/CURRENT/EXPIRED/ALL`,
 		Example:    deleteTokenExample,
 		PreCmdRun:  preRunTokenDelete,
 		CmdRun:     runTokenDelete,

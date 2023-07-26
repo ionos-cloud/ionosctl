@@ -14,18 +14,23 @@ import (
 
 func TokenParseCmd() *core.Command {
 	cmd := core.NewCommand(context.Background(), nil, core.CommandBuilder{
-		Namespace:  "token",
-		Resource:   "token",
-		Verb:       "parse",
-		Aliases:    []string{"p"},
-		ShortDesc:  "Parse the contents of a Token",
-		LongDesc:   "", // TODO: write description
-		Example:    "", // TODO: prep examples,
+		Namespace: "token",
+		Resource:  "token",
+		Verb:      "parse",
+		Aliases:   []string{"p"},
+		ShortDesc: "Parse the contents of a Token",
+		LongDesc: `Use this command to parse a Token and find out Token ID, User ID, Contract Number, Role and Privileges (separate).
+
+Required values to run: 
+
+* Token`, // TODO: write description
+		Example:    parseTokenExample,
 		PreCmdRun:  preRunTokenParse,
 		CmdRun:     runTokenParse,
 		InitClient: false,
 	})
 	cmd.AddStringFlag(authv1.ArgToken, authv1.ArgTokenShort, "", authv1.Token, core.RequiredFlagOption())
+	cmd.AddBoolFlag(authv1.ArgPrivileges, authv1.ArgPrivilegesShort, false, authv1.Privileges)
 
 	return cmd
 }
@@ -34,9 +39,22 @@ func preRunTokenParse(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.Command, c.NS, constants.ArgToken)
 }
 
-// TODO: implement parsing
 func runTokenParse(c *core.CommandConfig) error {
 	token := viper.GetString(core.GetFlagName(c.NS, authv1.ArgToken))
+
+	if viper.IsSet(core.GetFlagName(c.NS, authv1.ArgPrivileges)) {
+		claims, err := jwt.Claims(token)
+		if err != nil {
+			return err
+		}
+
+		privileges, err := jwt.Privileges(claims)
+		if err != nil {
+			return err
+		}
+
+		return c.Printer.Print(getTokenPrivilegesPrint(c, privileges))
+	}
 
 	headers, err := jwt.Headers(token)
 	if err != nil {
@@ -73,7 +91,7 @@ func runTokenParse(c *core.CommandConfig) error {
 	return c.Printer.Print(getTokenInfoPrint(c, tokenInfo))
 }
 
-// Token content printing
+// Token info printing
 
 type tokenInfoPrint struct {
 	TokenId        string `json:"TokenId,omitempty"`
@@ -101,5 +119,29 @@ func makeTokenInfoPrintObject(tokenInfo tokenInfoPrint) []map[string]interface{}
 	var out = make([]map[string]interface{}, 0)
 
 	out = append(out, structs.Map(tokenInfo))
+	return out
+}
+
+func getTokenPrivilegesPrint(c *core.CommandConfig, privileges []string) printer.Result {
+	r := printer.Result{}
+
+	if c != nil {
+		r.OutputJSON = privileges
+		r.Columns = []string{"Privileges"}
+		r.KeyValue = makeTokenPrivilegesPrintObject(privileges)
+	}
+
+	return r
+}
+
+func makeTokenPrivilegesPrintObject(privileges []string) []map[string]interface{} {
+	var out = make([]map[string]interface{}, 0)
+
+	for _, priv := range privileges {
+		temp := make(map[string]interface{}, 0)
+		temp["Privileges"] = priv
+		out = append(out, temp)
+	}
+
 	return out
 }
