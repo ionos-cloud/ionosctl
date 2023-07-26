@@ -30,7 +30,7 @@ Use this command to retrieve a complete list of Virtual Data Centers provisioned
 
 You can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`
 Available Filters:
-* filter by property: [description features location name secAuthProtection version]
+* filter by property: [description features ipv6CidrBlock location name secAuthProtection version]
 * filter by metadata: [createdBy createdByUserId createdDate etag lastModifiedBy lastModifiedByUserId lastModifiedDate state]
 
 ## Options
