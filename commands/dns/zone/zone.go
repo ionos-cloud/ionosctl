@@ -9,11 +9,13 @@ import (
 	"github.com/gofrs/uuid/v5"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	dns "github.com/ionos-cloud/sdk-go-dns"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 func ZoneCommand() *core.Command {
@@ -101,6 +103,11 @@ func makeZonePrintObj(data ...dns.ZoneRead) []map[string]interface{} {
 
 // Zones returns all zones matching the given filters
 func Zones(fs ...Filter) (dns.ZoneReadList, error) {
+	// Hack to enforce the dns-level flag default for API URL on the completions too
+	if url := config.GetServerUrl(); url == constants.DefaultApiURL {
+		viper.Set(constants.ArgServerUrl, "")
+	}
+
 	req := client.Must().DnsClient.ZonesApi.ZonesGet(context.Background())
 
 	for _, f := range fs {
