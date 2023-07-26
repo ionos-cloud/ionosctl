@@ -104,7 +104,7 @@ func makeZonePrintObj(data ...dns.ZoneRead) []map[string]interface{} {
 // Zones returns all zones matching the given filters
 func Zones(fs ...Filter) (dns.ZoneReadList, error) {
 	// Hack to enforce the dns-level flag default for API URL on the completions too
-	if url := config.GetServerUrl(); strings.Trim(url, "https://") == strings.Trim(constants.DefaultApiURL, "https://") {
+	if url := config.GetServerUrl(); url == constants.DefaultApiURL {
 		viper.Set(constants.ArgServerUrl, "")
 	}
 

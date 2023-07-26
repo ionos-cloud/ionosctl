@@ -3,7 +3,6 @@ package record
 import (
 	"context"
 	"fmt"
-	"strings"
 
 	"github.com/gofrs/uuid/v5"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dns/zone"
@@ -121,9 +120,10 @@ func RecordsProperty[V any](f func(dns.RecordRead) V, fs ...Filter) []V {
 // Records returns all records matching the given filters
 func Records(fs ...Filter) (dns.RecordReadList, error) {
 	// Hack to enforce the dns-level flag default for API URL on the completions too
-	if url := config.GetServerUrl(); strings.Trim(url, "https://") == strings.Trim(constants.DefaultApiURL, "https://") {
+	if url := config.GetServerUrl(); url == constants.DefaultApiURL {
 		viper.Set(constants.ArgServerUrl, "")
 	}
+
 	req := client.Must().DnsClient.RecordsApi.RecordsGet(context.Background())
 
 	for _, f := range fs {
