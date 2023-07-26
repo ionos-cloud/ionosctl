@@ -3,7 +3,8 @@
 ## [v6.6.5] (July 2023)
 
 ### Fixed
-* Changed `dataplatform cluster create --version` to 23.4 as 22.11 is no longer supported
+* Changed default for `dataplatform cluster create --version` to 23.4 as 22.11 is no longer supported
+* Fixed a bug for DNS completions regarding overriding the default value for `api-url`
 * Fixed filters breaking for camelcase properties (e.g. `imageAlias`)
 * Fixed missing filters for `RequestStatusMetadata` for command `request list` i.e. now you can also filter by `message, status`
 * Removed the hardcoded `INTEL_SKYLAKE` value for `CPU_FAMILY` if creating a CUBE server. Now, by default for CUBE servers, this field is sent as nil to the API.
