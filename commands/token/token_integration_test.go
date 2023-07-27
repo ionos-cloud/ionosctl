@@ -67,7 +67,6 @@ func testCreateToken(t *testing.T) {
 	var err error
 
 	tokFirstCreationTime = time.Now().In(time.UTC)
-	fmt.Println(tokFirstCreationTime)
 	viper.Set(constants.ArgQuiet, true)
 
 	c := token.TokenPostCmd()
@@ -97,7 +96,6 @@ func testCreateToken(t *testing.T) {
 			panic(fmt.Errorf("they changed the date format: %w", err))
 		}
 
-		fmt.Println(date)
 		if date.After(tokFirstCreationTime) {
 			temp := tok
 			foundTokenViaSdk = &temp
@@ -155,7 +153,6 @@ func testDeleteTokens(t *testing.T) {
 
 	c := token.TokenDeleteCmd()
 	c.Command.Flags().Set(authservice.ArgTokenId, *testToken.Id)
-	fmt.Println(*testToken.Id)
 
 	err = c.Command.Execute()
 	assert.NoError(t, err)
