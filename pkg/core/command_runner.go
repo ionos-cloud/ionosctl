@@ -13,7 +13,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/utils/clierror"
-	authV1 "github.com/ionos-cloud/ionosctl/v6/services/auth-v1"
+	authservice "github.com/ionos-cloud/ionosctl/v6/services/auth-v1"
 	"github.com/ionos-cloud/ionosctl/v6/services/certmanager"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	container_registry "github.com/ionos-cloud/ionosctl/v6/services/container-registry"
@@ -186,7 +186,7 @@ type CommandConfig struct {
 
 	// Services
 	CloudApiV6Services         cloudapiv6.Services
-	AuthV1Services             authV1.Services
+	AuthV1Services             authservice.Services
 	CloudApiDbaasPgsqlServices cloudapidbaaspgsql.Services
 	DbaasMongoServices         dbaas_mongo.Services
 	CertificateManagerServices certmanager.Services

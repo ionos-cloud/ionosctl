@@ -8,7 +8,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
-	authv1 "github.com/ionos-cloud/ionosctl/v6/services/auth-v1"
+	authservice "github.com/ionos-cloud/ionosctl/v6/services/auth-v1"
 	"github.com/spf13/viper"
 )
 
@@ -29,8 +29,8 @@ Required values to run:
 		CmdRun:     runTokenParse,
 		InitClient: false,
 	})
-	cmd.AddStringFlag(authv1.ArgToken, authv1.ArgTokenShort, "", authv1.Token, core.RequiredFlagOption())
-	cmd.AddBoolFlag(authv1.ArgPrivileges, authv1.ArgPrivilegesShort, false, authv1.Privileges)
+	cmd.AddStringFlag(authservice.ArgToken, authservice.ArgTokenShort, "", authservice.Token, core.RequiredFlagOption())
+	cmd.AddBoolFlag(authservice.ArgPrivileges, authservice.ArgPrivilegesShort, false, authservice.Privileges)
 
 	return cmd
 }
@@ -40,9 +40,9 @@ func preRunTokenParse(c *core.PreCommandConfig) error {
 }
 
 func runTokenParse(c *core.CommandConfig) error {
-	token := viper.GetString(core.GetFlagName(c.NS, authv1.ArgToken))
+	token := viper.GetString(core.GetFlagName(c.NS, authservice.ArgToken))
 
-	if viper.IsSet(core.GetFlagName(c.NS, authv1.ArgPrivileges)) {
+	if viper.IsSet(core.GetFlagName(c.NS, authservice.ArgPrivileges)) {
 		claims, err := jwt.Claims(token)
 		if err != nil {
 			return err

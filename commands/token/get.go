@@ -9,7 +9,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/jwt"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
-	authv1 "github.com/ionos-cloud/ionosctl/v6/services/auth-v1"
+	authservice "github.com/ionos-cloud/ionosctl/v6/services/auth-v1"
 	"github.com/ionos-cloud/ionosctl/v6/services/auth-v1/resources"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -29,27 +29,27 @@ func TokenGetCmd() *core.Command {
 		InitClient: true,
 	})
 
-	cmd.AddUUIDFlag(authv1.ArgTokenId, authv1.ArgIdShort, "", authv1.TokenId, core.RequiredFlagOption())
-	_ = cmd.Command.RegisterFlagCompletionFunc(authv1.ArgTokenId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	cmd.AddUUIDFlag(authservice.ArgTokenId, authservice.ArgIdShort, "", authservice.TokenId, core.RequiredFlagOption())
+	_ = cmd.Command.RegisterFlagCompletionFunc(authservice.ArgTokenId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.TokensIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddStringFlag(authv1.ArgToken, authv1.ArgTokenShort, "", authv1.Token, core.RequiredFlagOption())
-	cmd.AddIntFlag(authv1.ArgContractNo, "", 0, "Users with multiple contracts must provide the contract number, for which the token information is displayed")
+	cmd.AddStringFlag(authservice.ArgToken, authservice.ArgTokenShort, "", authservice.Token, core.RequiredFlagOption())
+	cmd.AddIntFlag(authservice.ArgContractNo, "", 0, "Users with multiple contracts must provide the contract number, for which the token information is displayed")
 	cmd.AddBoolFlag(constants.ArgNoHeaders, "", false, "When using text output, don't print headers")
 
 	return cmd
 }
 
 func preRunTokenId(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlagsSets(c.Command, c.NS, []string{authv1.ArgTokenId}, []string{authv1.ArgToken})
+	return core.CheckRequiredFlagsSets(c.Command, c.NS, []string{authservice.ArgTokenId}, []string{authservice.ArgToken})
 }
 
 func runTokenGet(c *core.CommandConfig) error {
-	if viper.IsSet(core.GetFlagName(c.NS, authv1.ArgTokenId)) {
+	if viper.IsSet(core.GetFlagName(c.NS, authservice.ArgTokenId)) {
 		return runTokenGetById(c)
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, authv1.ArgToken)) {
+	if viper.IsSet(core.GetFlagName(c.NS, authservice.ArgToken)) {
 		return runTokenGetByToken(c)
 	}
 
@@ -57,11 +57,11 @@ func runTokenGet(c *core.CommandConfig) error {
 }
 
 func runTokenGetById(c *core.CommandConfig) error {
-	c.Printer.Verbose("Getting Token with ID: %v...", viper.GetString(core.GetFlagName(c.NS, authv1.ArgTokenId)))
-	if viper.IsSet(core.GetFlagName(c.NS, authv1.ArgContractNo)) {
-		c.Printer.Verbose(contractNumberMessage, viper.GetInt32(core.GetFlagName(c.NS, authv1.ArgContractNo)))
+	c.Printer.Verbose("Getting Token with ID: %v...", viper.GetString(core.GetFlagName(c.NS, authservice.ArgTokenId)))
+	if viper.IsSet(core.GetFlagName(c.NS, authservice.ArgContractNo)) {
+		c.Printer.Verbose(contractNumberMessage, viper.GetInt32(core.GetFlagName(c.NS, authservice.ArgContractNo)))
 	}
-	token, _, err := c.AuthV1Services.Tokens().Get(viper.GetString(core.GetFlagName(c.NS, authv1.ArgTokenId)), viper.GetInt32(core.GetFlagName(c.NS, authv1.ArgContractNo)))
+	token, _, err := c.AuthV1Services.Tokens().Get(viper.GetString(core.GetFlagName(c.NS, authservice.ArgTokenId)), viper.GetInt32(core.GetFlagName(c.NS, authservice.ArgContractNo)))
 	if err != nil {
 		return err
 	}
@@ -69,7 +69,7 @@ func runTokenGetById(c *core.CommandConfig) error {
 }
 
 func runTokenGetByToken(c *core.CommandConfig) error {
-	token := viper.GetString(core.GetFlagName(c.NS, authv1.ArgToken))
+	token := viper.GetString(core.GetFlagName(c.NS, authservice.ArgToken))
 	c.Printer.Verbose("Token content is: %s", token)
 
 	headers, err := jwt.Headers(token)
@@ -83,10 +83,10 @@ func runTokenGetByToken(c *core.CommandConfig) error {
 	}
 
 	c.Printer.Verbose("Getting Token with ID: %v...", tokenId)
-	if viper.IsSet(core.GetFlagName(c.NS, authv1.ArgContractNo)) {
-		c.Printer.Verbose(contractNumberMessage, viper.GetInt32(core.GetFlagName(c.NS, authv1.ArgContractNo)))
+	if viper.IsSet(core.GetFlagName(c.NS, authservice.ArgContractNo)) {
+		c.Printer.Verbose(contractNumberMessage, viper.GetInt32(core.GetFlagName(c.NS, authservice.ArgContractNo)))
 	}
-	tokenObj, _, err := c.AuthV1Services.Tokens().Get(fmt.Sprintf("%v", tokenId), viper.GetInt32(core.GetFlagName(c.NS, authv1.ArgContractNo)))
+	tokenObj, _, err := c.AuthV1Services.Tokens().Get(fmt.Sprintf("%v", tokenId), viper.GetInt32(core.GetFlagName(c.NS, authservice.ArgContractNo)))
 	if err != nil {
 		return err
 	}

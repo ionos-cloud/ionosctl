@@ -13,7 +13,7 @@ import (
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dataplatform"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas"
-	authv1 "github.com/ionos-cloud/ionosctl/v6/commands/token"
+	"github.com/ionos-cloud/ionosctl/v6/commands/token"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
@@ -194,7 +194,7 @@ func addCommands() {
 	rootCmd.AddCommand(cloudapiv6.TargetGroupCmd())
 	rootCmd.AddCommand(cloudapiv6.TemplateCmd())
 	// Auth Command
-	rootCmd.AddCommand(authv1.TokenCmd())
+	rootCmd.AddCommand(token.TokenCmd())
 	// Add DBaaS Commands
 	rootCmd.AddCommand(dbaas.DataBaseServiceCmd())
 	// Add Certificate Manager Commands

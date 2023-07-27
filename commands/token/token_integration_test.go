@@ -14,7 +14,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/token"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
-	authservices "github.com/ionos-cloud/ionosctl/v6/services/auth-v1"
+	authservice "github.com/ionos-cloud/ionosctl/v6/services/auth-v1"
 	sdkgoauth "github.com/ionos-cloud/sdk-go-auth"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
@@ -123,13 +123,13 @@ func testGetTokens(t *testing.T) {
 	var err error
 
 	c := token.TokenGetCmd()
-	c.Command.Flags().Set(authservices.ArgTokenId, *testToken.Id)
+	c.Command.Flags().Set(authservice.ArgTokenId, *testToken.Id)
 
 	err = c.Command.Execute()
 	assert.NoError(t, err)
 
 	c = token.TokenGetCmd()
-	c.Command.Flags().Set(authservices.ArgToken, *tokenContent.Token)
+	c.Command.Flags().Set(authservice.ArgToken, *tokenContent.Token)
 
 	err = c.Command.Execute()
 	assert.NoError(t, err)
@@ -139,12 +139,12 @@ func testParseToken(t *testing.T) {
 	var err error
 
 	c := token.TokenParseCmd()
-	c.Command.Flags().Set(authservices.ArgToken, *tokenContent.Token)
+	c.Command.Flags().Set(authservice.ArgToken, *tokenContent.Token)
 
 	err = c.Command.Execute()
 	assert.NoError(t, err)
 
-	c.Command.Flags().Set(authservices.ArgPrivileges, "true")
+	c.Command.Flags().Set(authservice.ArgPrivileges, "true")
 	err = c.Command.Execute()
 	assert.NoError(t, err)
 }
@@ -154,14 +154,14 @@ func testDeleteTokens(t *testing.T) {
 	viper.Set(constants.ArgForce, true)
 
 	c := token.TokenDeleteCmd()
-	c.Command.Flags().Set(authservices.ArgTokenId, *testToken.Id)
+	c.Command.Flags().Set(authservice.ArgTokenId, *testToken.Id)
 	fmt.Println(*testToken.Id)
 
 	err = c.Command.Execute()
 	assert.NoError(t, err)
 
 	c = token.TokenDeleteCmd()
-	c.Command.Flags().Set(authservices.ArgToken, *tokenContent.Token)
+	c.Command.Flags().Set(authservice.ArgToken, *tokenContent.Token)
 
 	err = c.Command.Execute()
 	assert.NoError(t, err)
