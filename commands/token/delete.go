@@ -1,4 +1,4 @@
-package authv1
+package token
 
 import (
 	"context"
@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/ionos-cloud/ionosctl/v6/commands/auth-v1/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/token/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/internal/jwt"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"

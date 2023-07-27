@@ -1,4 +1,4 @@
-package authv1
+package token
 
 import (
 	"github.com/fatih/structs"

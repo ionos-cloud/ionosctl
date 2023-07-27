@@ -1,7 +1,7 @@
 //go:build integration
 // +build integration
 
-package authv1_test
+package token_test
 
 import (
 	"context"
@@ -11,7 +11,7 @@ import (
 	"testing"
 	"time"
 
-	authv1 "github.com/ionos-cloud/ionosctl/v6/commands/auth-v1"
+	"github.com/ionos-cloud/ionosctl/v6/commands/token"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	authservices "github.com/ionos-cloud/ionosctl/v6/services/auth-v1"
@@ -23,7 +23,7 @@ import (
 var (
 	cl                   *client.Client
 	tokFirstCreationTime time.Time
-	token                sdkgoauth.Token
+	testToken            sdkgoauth.Token
 	tokenContent         sdkgoauth.Jwt
 )
 
@@ -53,6 +53,12 @@ func setup() error {
 	var err error
 
 	cl, err = client.NewTestClient(username, password, "", "")
+	if err != nil {
+		return err
+	}
+
+	tokenContent, _, err = cl.AuthClient.TokensApi.TokensGenerate(context.Background()).Execute()
+	time.Sleep(2 * time.Second)
 
 	return err
 }
@@ -60,10 +66,15 @@ func setup() error {
 func testCreateToken(t *testing.T) {
 	var err error
 
-	c := authv1.TokenPostCmd()
 	tokFirstCreationTime = time.Now().In(time.UTC)
+	fmt.Println(tokFirstCreationTime)
+	viper.Set(constants.ArgQuiet, true)
+
+	c := token.TokenPostCmd()
 	err = c.Command.Execute()
 	assert.NoError(t, err)
+
+	time.Sleep(2 * time.Second)
 
 	tokens, _, err := client.Must().AuthClient.TokensApi.TokensGet(context.Background()).Execute()
 	assert.NoError(t, err)
@@ -71,6 +82,9 @@ func testCreateToken(t *testing.T) {
 	allTokens, ok := tokens.GetTokensOk()
 	assert.NotEmpty(t, ok)
 	assert.NotEmpty(t, *allTokens)
+
+	var foundTokenViaSdk *sdkgoauth.Token
+	foundTokenViaSdk = nil
 
 	for _, tok := range *allTokens {
 		strDate, ok := strings.CutSuffix(*tok.CreatedDate, "[UTC]")
@@ -83,20 +97,24 @@ func testCreateToken(t *testing.T) {
 			panic(fmt.Errorf("they changed the date format: %w", err))
 		}
 
+		fmt.Println(date)
 		if date.After(tokFirstCreationTime) {
-			token = tok
+			temp := tok
+			foundTokenViaSdk = &temp
 		}
 	}
+	assert.NotNil(t, foundTokenViaSdk)
 
-	tokenContent, _, err = cl.AuthClient.TokensApi.TokensGenerate(context.Background()).Execute()
-	assert.NoError(t, err)
-	assert.NotEmpty(t, *tokenContent.Token)
+	testToken = *foundTokenViaSdk
+
+	viper.Reset()
+	viper.Set(constants.ArgOutput, "text")
 }
 
 func testListTokens(t *testing.T) {
 	var err error
 
-	c := authv1.TokenListCmd()
+	c := token.TokenListCmd()
 	err = c.Command.Execute()
 	assert.NoError(t, err)
 }
@@ -104,13 +122,13 @@ func testListTokens(t *testing.T) {
 func testGetTokens(t *testing.T) {
 	var err error
 
-	c := authv1.TokenGetCmd()
-	c.Command.Flags().Set(authservices.ArgTokenId, *token.Id)
+	c := token.TokenGetCmd()
+	c.Command.Flags().Set(authservices.ArgTokenId, *testToken.Id)
 
 	err = c.Command.Execute()
 	assert.NoError(t, err)
 
-	c = authv1.TokenGetCmd()
+	c = token.TokenGetCmd()
 	c.Command.Flags().Set(authservices.ArgToken, *tokenContent.Token)
 
 	err = c.Command.Execute()
@@ -120,7 +138,7 @@ func testGetTokens(t *testing.T) {
 func testParseToken(t *testing.T) {
 	var err error
 
-	c := authv1.TokenParseCmd()
+	c := token.TokenParseCmd()
 	c.Command.Flags().Set(authservices.ArgToken, *tokenContent.Token)
 
 	err = c.Command.Execute()
@@ -135,13 +153,14 @@ func testDeleteTokens(t *testing.T) {
 	var err error
 	viper.Set(constants.ArgForce, true)
 
-	c := authv1.TokenDeleteCmd()
-	c.Command.Flags().Set(authservices.ArgTokenId, *token.Id)
+	c := token.TokenDeleteCmd()
+	c.Command.Flags().Set(authservices.ArgTokenId, *testToken.Id)
+	fmt.Println(*testToken.Id)
 
 	err = c.Command.Execute()
 	assert.NoError(t, err)
 
-	c = authv1.TokenDeleteCmd()
+	c = token.TokenDeleteCmd()
 	c.Command.Flags().Set(authservices.ArgToken, *tokenContent.Token)
 
 	err = c.Command.Execute()

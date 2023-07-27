@@ -1,4 +1,4 @@
-package authv1
+package token
 
 const (
 	listTokenExample = `ionosctl token list`

@@ -1,8 +1,9 @@
-package authv1
+package token
 
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	authv1 "github.com/ionos-cloud/ionosctl/v6/services/auth-v1"
@@ -38,7 +39,8 @@ func runTokenCreate(c *core.CommandConfig) error {
 	}
 	if newJwt != nil {
 		if token, ok := newJwt.GetTokenOk(); ok && token != nil {
-			return c.Printer.Print(*token)
+			_, err = fmt.Fprintln(c.Command.Command.OutOrStdout(), *token)
+			return err
 		} else {
 			return errors.New("error getting generated token")
 		}
