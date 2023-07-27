@@ -5,8 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/google/uuid"
-
+	"github.com/gofrs/uuid/v5"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dns/zone"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
@@ -64,7 +63,7 @@ ionosctl dns r delete --record PARTIAL_NAME --zone ZONE`,
 			r := dns.RecordRead{}
 
 			if fn := core.GetFlagName(c.NS, constants.FlagRecord); viper.IsSet(fn) {
-				if _, ok := uuid.Parse(viper.GetString(fn)); ok != nil /* not ok (name is provided) */ {
+				if _, ok := uuid.FromString(viper.GetString(fn)); ok != nil /* not ok (name is provided) */ {
 					// record name is provided for FlagRecord
 					r, err = deleteSingleWithFilters(c)
 					if err != nil {

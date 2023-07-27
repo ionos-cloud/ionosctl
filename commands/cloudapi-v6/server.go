@@ -10,8 +10,6 @@ import (
 	"strings"
 	"time"
 
-	"go.uber.org/multierr"
-
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
@@ -971,8 +969,20 @@ func getNewServer(c *core.CommandConfig) (*resources.Server, error) {
 
 	// CUBE Server Properties
 	if viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgType)) == serverCubeType {
-		// Right now, for the CUBE Server - only INTEL_SKYLAKE is supported
-		input.SetCpuFamily("INTEL_SKYLAKE")
+		input.ServerProperties.CpuFamily = nil
+		if fn := core.GetFlagName(c.NS, constants.FlagCpuFamily); viper.IsSet(fn) {
+			// NOTE 19.07.2023:
+			// In the past, all CUBE servers had to have "INTEL_SKYLAKE" as a CPU Family.
+			// As such, INTEL_SKYLAKE was hardcoded as the CpuFamily field.
+			//
+			// However, something changed on the API side, and started throwing errs if Cpu Family was set:
+			// `[VDC-5-1921] The attribute 'cpuFamily' must not be provided for Cube servers.`
+			//
+			// I will allow the user to modify this field, but only if the flag is explicitly set,
+			// in case the API changes back to its old state in the future
+
+			input.SetCpuFamily(viper.GetString(fn))
+		}
 		if !input.HasName() {
 			input.SetName("Unnamed Cube")
 		}
@@ -1090,13 +1100,13 @@ func DeleteAllServers(c *core.CommandConfig) error {
 						c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
 					}
 					if err != nil {
-						multiErr = multierr.Append(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
+						multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
 						continue
 					} else {
 						_ = c.Printer.Warn(fmt.Sprintf(constants.MessageDeletingAll, c.Resource, *id))
 					}
 					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-						multiErr = multierr.Append(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *id, err))
+						multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *id, err))
 						continue
 					}
 				}

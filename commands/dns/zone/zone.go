@@ -5,16 +5,17 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/google/uuid"
-
 	"github.com/fatih/structs"
+	"github.com/gofrs/uuid/v5"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	dns "github.com/ionos-cloud/sdk-go-dns"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 func ZoneCommand() *core.Command {
@@ -102,6 +103,11 @@ func makeZonePrintObj(data ...dns.ZoneRead) []map[string]interface{} {
 
 // Zones returns all zones matching the given filters
 func Zones(fs ...Filter) (dns.ZoneReadList, error) {
+	// Hack to enforce the dns-level flag default for API URL on the completions too
+	if url := config.GetServerUrl(); url == constants.DefaultApiURL {
+		viper.Set(constants.ArgServerUrl, "")
+	}
+
 	req := client.Must().DnsClient.ZonesApi.ZonesGet(context.Background())
 
 	for _, f := range fs {
@@ -132,7 +138,7 @@ type Filter func(request dns.ApiZonesGetRequest) (dns.ApiZonesGetRequest, error)
 // Resolve resolves nameOrId (the name of a zone, or the ID of a zone) - to the ID of the zone.
 // If it's an ID, it's returned as is. If it's not, then it's a name, and we try to resolve it
 func Resolve(nameOrId string) (string, error) {
-	uid, errParseUuid := uuid.Parse(nameOrId)
+	uid, errParseUuid := uuid.FromString(nameOrId)
 	zId := uid.String()
 	if errParseUuid != nil {
 		// nameOrId is a name

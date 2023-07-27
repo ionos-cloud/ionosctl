@@ -6,10 +6,8 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
-	"go.uber.org/multierr"
-
 	"github.com/fatih/structs"
+	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
@@ -121,13 +119,13 @@ func RemoveAllDatacenterLabels(c *core.CommandConfig) error {
 							c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
 						}
 						if err != nil {
-							multiErr = multierr.Append(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *key, err))
+							multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *key, err))
 							continue
 						} else {
 							_ = c.Printer.Print(fmt.Sprintf(constants.MessageDeletingAll, c.Resource, *key))
 						}
 						if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-							multiErr = multierr.Append(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *key, err))
+							multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *key, err))
 							continue
 						}
 					}
@@ -260,13 +258,13 @@ func RemoveAllServerLabels(c *core.CommandConfig) error {
 							c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
 						}
 						if err != nil {
-							multiErr = multierr.Append(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *key, err))
+							multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *key, err))
 							continue
 						} else {
 							_ = c.Printer.Print(fmt.Sprintf(constants.MessageDeletingAll, c.Resource, *key))
 						}
 						if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-							multiErr = multierr.Append(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *key, err))
+							multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *key, err))
 							continue
 						}
 					}
@@ -393,13 +391,13 @@ func RemoveAllVolumeLabels(c *core.CommandConfig) error {
 							c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
 						}
 						if err != nil {
-							multiErr = multierr.Append(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *key, err))
+							multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *key, err))
 							continue
 						} else {
 							_ = c.Printer.Print(fmt.Sprintf(constants.MessageDeletingAll, c.Resource, *key))
 						}
 						if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-							multiErr = multierr.Append(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *key, err))
+							multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *key, err))
 							continue
 						}
 					}
@@ -519,13 +517,13 @@ func RemoveAllIpBlockLabels(c *core.CommandConfig) error {
 							c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
 						}
 						if err != nil {
-							multiErr = multierr.Append(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *key, err))
+							multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *key, err))
 							continue
 						} else {
 							_ = c.Printer.Print(fmt.Sprintf(constants.MessageDeletingAll, c.Resource, *key))
 						}
 						if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-							multiErr = multierr.Append(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *key, err))
+							multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *key, err))
 							continue
 						}
 					}
@@ -644,13 +642,13 @@ func RemoveAllSnapshotLabels(c *core.CommandConfig) error {
 							c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
 						}
 						if err != nil {
-							multiErr = multierr.Append(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *key, err))
+							multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *key, err))
 							continue
 						} else {
 							_ = c.Printer.Print(fmt.Sprintf(constants.MessageDeletingAll, c.Resource, *key))
 						}
 						if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-							multiErr = multierr.Append(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *key, err))
+							multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *key, err))
 							continue
 						}
 					}
