@@ -33,6 +33,7 @@
         * [generate](subcommands%2FAuthentication%2Ftoken%2Fgenerate.md)
         * [get](subcommands%2FAuthentication%2Ftoken%2Fget.md)
         * [list](subcommands%2FAuthentication%2Ftoken%2Flist.md)
+        * [parse](subcommands%2FAuthentication%2Ftoken%2Fparse.md)
 * CLI Setup
     * [login](subcommands%2FCLI%20Setup%2Flogin.md)
     * [version](subcommands%2FCLI%20Setup%2Fversion.md)

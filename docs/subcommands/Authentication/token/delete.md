@@ -24,7 +24,7 @@ Use this command to delete a specified Token by token Id or multiple Tokens (bas
 
 Required values to run command:
 
-* Token Id/CURRENT/EXPIRED/ALL
+* Token Id/Token/CURRENT/EXPIRED/ALL
 
 ## Options
 

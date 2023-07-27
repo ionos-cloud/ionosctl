@@ -23,7 +23,7 @@ func TokenParseCmd() *core.Command {
 
 Required values to run: 
 
-* Token`, // TODO: write description
+* Token`,
 		Example:    parseTokenExample,
 		PreCmdRun:  preRunTokenParse,
 		CmdRun:     runTokenParse,
