@@ -10,7 +10,7 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
-	authv1 "github.com/ionos-cloud/ionosctl/v6/services/auth-v1"
+	authservice "github.com/ionos-cloud/ionosctl/v6/services/auth-v1"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	cloudapidbaaspgsql "github.com/ionos-cloud/ionosctl/v6/services/dbaas-postgres"
 	"github.com/spf13/cobra"
@@ -58,7 +58,7 @@ type ResourcesMocksTest struct {
 	// Add New Services Resources Mocks
 	CloudApiV6Mocks         cloudapiv6.ResourcesMocks
 	CloudApiDbaasPgsqlMocks cloudapidbaaspgsql.ResourcesMocks
-	AuthV1Mocks             authv1.ResourcesMocks
+	AuthV1Mocks             authservice.ResourcesMocks
 }
 
 type FlagValuePair struct {
@@ -132,7 +132,7 @@ func CmdConfigTest(t *testing.T, writer io.Writer, runner CmdRunnerTest) {
 func initMockResources(ctrl *gomock.Controller) *ResourcesMocksTest {
 	return &ResourcesMocksTest{
 		CloudApiV6Mocks:         *cloudapiv6.InitMocksResources(ctrl),
-		AuthV1Mocks:             *authv1.InitMocksResources(ctrl),
+		AuthV1Mocks:             *authservice.InitMocksResources(ctrl),
 		CloudApiDbaasPgsqlMocks: *cloudapidbaaspgsql.InitMocksResources(ctrl),
 	}
 }
@@ -140,7 +140,7 @@ func initMockResources(ctrl *gomock.Controller) *ResourcesMocksTest {
 // Init Mock Services for Command Test
 func initMockServices(c *CommandConfig, tm *ResourcesMocksTest) *CommandConfig {
 	c.CloudApiV6Services = *cloudapiv6.InitMockServices(&c.CloudApiV6Services, &tm.CloudApiV6Mocks)
-	c.AuthV1Services = *authv1.InitMockServices(&c.AuthV1Services, &tm.AuthV1Mocks)
+	c.AuthV1Services = *authservice.InitMockServices(&c.AuthV1Services, &tm.AuthV1Mocks)
 	c.CloudApiDbaasPgsqlServices = *cloudapidbaaspgsql.InitMockServices(&c.CloudApiDbaasPgsqlServices, &tm.CloudApiDbaasPgsqlMocks)
 	return c
 }

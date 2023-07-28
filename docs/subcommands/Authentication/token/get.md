@@ -48,6 +48,7 @@ Required values to run command:
 
 ```text
 ionosctl token get --token-id TOKEN_ID
+
 ionosctl token get --token TOKEN
 ```
 
