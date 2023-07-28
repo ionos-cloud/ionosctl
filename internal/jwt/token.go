@@ -24,6 +24,11 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 )
 
+var (
+	identityFindErr  = fmt.Errorf("could not find identity in JWT payload")
+	identityParseErr = fmt.Errorf("could not parse identity in JWT payload")
+)
+
 func Claims(token string) (map[string]interface{}, error) {
 	parts := strings.Split(token, ".")
 	if len(parts) != 3 {
@@ -85,12 +90,12 @@ func Username(token string) (string, error) {
 func Uuid(claims map[string]interface{}) (string, error) {
 	identityInterface, ok := claims["identity"]
 	if !ok {
-		return "", fmt.Errorf("could not find identity in JWT payload")
+		return "", identityFindErr
 	}
 
 	identity, ok := identityInterface.(map[string]interface{})
 	if !ok {
-		return "", fmt.Errorf("could not parse identity in JWT payload")
+		return "", identityParseErr
 	}
 
 	uuidInterface, ok := identity["uuid"]
@@ -123,12 +128,12 @@ func Kid(headers map[string]interface{}) (string, error) {
 func ContractNumber(claims map[string]interface{}) (int64, error) {
 	identityInterface, ok := claims["identity"]
 	if !ok {
-		return -1, fmt.Errorf("could not find identity in JWT payload")
+		return -1, identityFindErr
 	}
 
 	identity, ok := identityInterface.(map[string]interface{})
 	if !ok {
-		return -1, fmt.Errorf("could not parse identity in JWT payload")
+		return -1, identityParseErr
 	}
 
 	contractNumberInterface, ok := identity["contractNumber"]
@@ -147,12 +152,12 @@ func ContractNumber(claims map[string]interface{}) (int64, error) {
 func Role(claims map[string]interface{}) (string, error) {
 	identityInterface, ok := claims["identity"]
 	if !ok {
-		return "", fmt.Errorf("could not find identity in JWT payload")
+		return "", identityFindErr
 	}
 
 	identity, ok := identityInterface.(map[string]interface{})
 	if !ok {
-		return "", fmt.Errorf("could not parse identity in JWT payload")
+		return "", identityParseErr
 	}
 
 	roleInterface, ok := identity["role"]
@@ -171,12 +176,12 @@ func Role(claims map[string]interface{}) (string, error) {
 func Privileges(claims map[string]interface{}) ([]string, error) {
 	identityInterface, ok := claims["identity"]
 	if !ok {
-		return nil, fmt.Errorf("could not find identity in JWT payload")
+		return nil, identityFindErr
 	}
 
 	identity, ok := identityInterface.(map[string]interface{})
 	if !ok {
-		return nil, fmt.Errorf("could not parse identity in JWT payload")
+		return nil, identityParseErr
 	}
 
 	privilegesInterface, ok := identity["privileges"]
