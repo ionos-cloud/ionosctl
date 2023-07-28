@@ -20,7 +20,8 @@ For `parse` command:
 
 ## Description
 
-Use this command to parse a Token and find out Token ID, User ID, Contract Number, Role and Privileges (separate).
+Use this command to parse a Token and find out Token ID, User ID, Contract Number, Role.
+If you want to view the privileges associated with the token, you must set the --privileges flag. When this flag is set, the command will output a list of privileges instead of the default output.
 
 Required values to run: 
 
