@@ -1,17 +1,5 @@
+// Package jwt provides means of obtaining more info from JWT tokens
 package jwt
-
-/*
- * This package is meant to find more details about JWT tokens.
- * - Claims:			Retrieve Claims payload off a JWT token
- * - Headers:			Retrieve Headers off a JWT token
- * - Username: 			Given a JWT, retrieve user email using the identity found in the JWT Claims; and using CloudAPI
- * 						User Management API to query the found UUID. Note that the UUID can only be queried if
- * 						its respective user is managed by (or is) the user with that JWT
- * - Kid:				Extract TokenId from JWT token Headers
- * - Uuid:				Extract UserId from JWT token Claims
- * - ContractNumber:	Extract ContractNumber from JWT token Claims
- * - Role:				Extract Role from JWT token Claims
- */
 
 import (
 	"context"
@@ -29,6 +17,7 @@ var (
 	identityParseErr = fmt.Errorf("could not parse identity in JWT payload")
 )
 
+// Claims retrieves claims payload off a JWT token
 func Claims(token string) (map[string]interface{}, error) {
 	parts := strings.Split(token, ".")
 	if len(parts) != 3 {
@@ -50,6 +39,7 @@ func Claims(token string) (map[string]interface{}, error) {
 	return claims, nil
 }
 
+// Headers retrieves headers off a JWT token
 func Headers(token string) (map[string]interface{}, error) {
 	parts := strings.Split(token, ".")
 	if len(parts) != 3 {
@@ -71,6 +61,8 @@ func Headers(token string) (map[string]interface{}, error) {
 	return headers, nil
 }
 
+// Username retrieves user email using the identity found in the JWT token claims; and using CloudAPI
+// User Management API to query the found UUID. Note that the UUID can only be queried if its respective user is managed by (or is) the user with that JWT
 func Username(token string) (string, error) {
 	claims, err := Claims(token)
 	if err != nil {
@@ -87,6 +79,7 @@ func Username(token string) (string, error) {
 	return *ls.Properties.Email, nil
 }
 
+// Uuid extracts UserId from JWT token claims
 func Uuid(claims map[string]interface{}) (string, error) {
 	identityInterface, ok := claims["identity"]
 	if !ok {
@@ -111,6 +104,7 @@ func Uuid(claims map[string]interface{}) (string, error) {
 	return id, nil
 }
 
+// Kid extracts TokenId from JWT token headers
 func Kid(headers map[string]interface{}) (string, error) {
 	kidInterface, ok := headers["kid"]
 	if !ok {
@@ -125,6 +119,7 @@ func Kid(headers map[string]interface{}) (string, error) {
 	return kid, nil
 }
 
+// ContractNumber extracts contract number from JWT token claims
 func ContractNumber(claims map[string]interface{}) (int64, error) {
 	identityInterface, ok := claims["identity"]
 	if !ok {
@@ -149,6 +144,7 @@ func ContractNumber(claims map[string]interface{}) (int64, error) {
 	return int64(contractNumberFloat), nil
 }
 
+// Role extracts role from JWT token claims
 func Role(claims map[string]interface{}) (string, error) {
 	identityInterface, ok := claims["identity"]
 	if !ok {
@@ -173,6 +169,7 @@ func Role(claims map[string]interface{}) (string, error) {
 	return role, nil
 }
 
+// Privileges extracts privileges from JWT token claims
 func Privileges(claims map[string]interface{}) ([]string, error) {
 	identityInterface, ok := claims["identity"]
 	if !ok {
