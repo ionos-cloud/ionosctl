@@ -51,9 +51,9 @@ func NewCommand(ctx context.Context, parent *Command, info CommandBuilder) *Comm
 			noHeaders, _ := cmd.Flags().GetBool(constants.ArgNoHeaders)
 			p := getPrinter(noHeaders)
 			// Set Buffers
-			cmd.SetIn(os.Stdin)
-			cmd.SetOut(p.GetStdout())
-			cmd.SetErr(p.GetStderr())
+			//cmd.SetIn(os.Stdin)
+			//cmd.SetOut(p.GetStdout())
+			//cmd.SetErr(p.GetStderr())
 			// Set Command to Command Builder
 			// The cmd is passed to the CommandCfg
 			info.Command = &Command{Command: cmd}

@@ -167,6 +167,10 @@ func statusMsg(writer io.Writer, msg string, args ...interface{}) {
 	}
 }
 
+// NOTE: idea, replace the printer package bullshit with a formatter (maybe just rebrand the printer package as a formatter
+// and change its behavior to match), which returns the fully formatted output ready to just be printed. This enables the
+// coder to have full access to the command stdout, stderr settings (a lot of work, though)
+// Consult with Alex (perhaps even Mihaela)
 func printText(out io.Writer, cols []string, keyValueMap []map[string]interface{}, noHeaders bool) error {
 	w := new(tabwriter.Writer)
 	w.Init(out, 5, 0, 3, ' ', tabwriter.StripEscape)

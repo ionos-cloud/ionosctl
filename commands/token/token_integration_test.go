@@ -4,6 +4,7 @@
 package token_test
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"os"
@@ -65,11 +66,13 @@ func setup() error {
 
 func testCreateToken(t *testing.T) {
 	var err error
+	var buff bytes.Buffer
 
 	tokFirstCreationTime = time.Now().In(time.UTC)
-	viper.Set(constants.ArgQuiet, true)
+	//viper.Set(constants.ArgQuiet, true)
 
 	c := token.TokenPostCmd()
+	c.Command.SetOut(&buff)
 	err = c.Command.Execute()
 	assert.NoError(t, err)
 
@@ -105,8 +108,8 @@ func testCreateToken(t *testing.T) {
 
 	testToken = *foundTokenViaSdk
 
-	viper.Reset()
-	viper.Set(constants.ArgOutput, "text")
+	//viper.Reset()
+	//viper.Set(constants.ArgOutput, "text")
 }
 
 func testListTokens(t *testing.T) {
@@ -135,8 +138,10 @@ func testGetTokens(t *testing.T) {
 
 func testParseToken(t *testing.T) {
 	var err error
+	var buff bytes.Buffer
 
 	c := token.TokenParseCmd()
+	c.Command.SetOut(&buff) // NOTE: so basically in every command that uses c.Printer.Print(...), overriding just like this isn't enough
 	c.Command.Flags().Set(authservice.ArgToken, *tokenContent.Token)
 
 	err = c.Command.Execute()
