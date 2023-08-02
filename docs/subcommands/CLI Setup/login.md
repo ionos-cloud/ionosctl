@@ -1,5 +1,5 @@
 ---
-description: Authentication command for SDK
+description: "Authentication command for SDK"
 ---
 
 # Login
@@ -56,7 +56,7 @@ Status: Authentication successful!
 ionosctl login --token $IONOS_TOKEN
 Status: Authentication successful!
 
-ionosctl login 
+ionosctl login
 Enter your username:
 USERNAME
 Enter your password:

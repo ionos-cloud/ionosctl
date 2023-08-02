@@ -3,7 +3,12 @@ package commands
 import (
 	"context"
 	"errors"
+	"fmt"
 	"os"
+
+	"github.com/ionos-cloud/ionosctl/v6/internal/pointer"
+
+	"github.com/ionos-cloud/ionosctl/v6/internal/die"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 
@@ -95,8 +100,8 @@ Required values to run a command:
 	})
 	add.AddIntFlag(cloudapiv6.ArgLanId, cloudapiv6.ArgIdShort, 0, "The unique LAN Id of existing LANs to be attached to worker Nodes", core.RequiredFlagOption())
 	add.AddBoolFlag(cloudapiv6.ArgDhcp, "", true, "Indicates if the Kubernetes Node Pool LAN will reserve an IP using DHCP. E.g.: --dhcp=true, --dhcp=false")
-	add.AddStringFlag(cloudapiv6.ArgNetwork, "", "", "IPv4 or IPv6 CIDR to be routed via the interface. Must be set with --gateway-ip flag")
-	add.AddIpFlag(cloudapiv6.ArgGatewayIp, "", nil, "IPv4 or IPv6 Gateway IP for the route. Must be set with --network flag")
+	add.AddStringSliceFlag(cloudapiv6.ArgNetwork, "", nil, "Slice of IPv4 or IPv6 CIDRs to be routed via the interface. Must contain same number of arguments as --gateway-ip flag")
+	add.AddStringSliceFlag(cloudapiv6.ArgGatewayIp, "", nil, "Slice of IPv4 or IPv6 Gateway IPs for the routes. Must contain same number of arguments as --network flag")
 	add.AddStringSliceFlag(cloudapiv6.ArgCols, "", defaultK8sNodePoolLanCols, printer.ColsMessage(defaultK8sNodePoolLanCols))
 	_ = add.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultK8sNodePoolLanCols, cobra.ShellCompDirectiveNoFileComp
@@ -334,21 +339,29 @@ func getNewK8sNodePoolLanInfo(c *core.CommandConfig, oldNg *resources.K8sNodePoo
 				Dhcp: &dhcp,
 			}
 			c.Printer.Verbose("Adding a Kubernetes NodePool LAN with id: %v and dhcp: %v", lanId, dhcp)
-			if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgNetwork)) &&
-				viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgGatewayIp)) {
-				newRoute := ionoscloud.KubernetesNodePoolLanRoutes{}
-				if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgNetwork)) {
-					network := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNetwork))
-					newRoute.SetNetwork(network)
-					c.Printer.Verbose("Property Network set: %v", network)
+			if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgNetwork)) {
+				network := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgNetwork))
+				gatewayIp := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgGatewayIp))
+
+				c.Printer.Verbose("Property Network set: %v", network)
+				c.Printer.Verbose("Property GatewayIp set: %v", gatewayIp)
+
+				if len(network) != len(gatewayIp) {
+					die.Die(fmt.Sprintf("Flags %s, %s have different number of arguments, must be the same", cloudapiv6.ArgNetwork, cloudapiv6.ArgGatewayIp))
 				}
-				if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgGatewayIp)) {
-					gatewayIp := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGatewayIp))
-					newRoute.SetGatewayIp(gatewayIp)
-					c.Printer.Verbose("Property GatewayIp set: %v", gatewayIp)
+
+				routes := make([]ionoscloud.KubernetesNodePoolLanRoutes, 0)
+				for i, net := range network {
+					routes = append(routes,
+						ionoscloud.KubernetesNodePoolLanRoutes{
+							Network:   pointer.From(net), // Copy the loop variable and take its address. See #289 - always same address would be used
+							GatewayIp: &gatewayIp[i],
+						},
+					)
 				}
-				newLan.SetRoutes([]ionoscloud.KubernetesNodePoolLanRoutes{newRoute})
+				newLan.SetRoutes(routes)
 			}
+
 			newLans = append(newLans, newLan)
 			propertiesUpdated.SetLans(newLans)
 		}
@@ -415,7 +428,7 @@ func getK8sNodePoolLanPrint(c *core.CommandConfig, k8ss []resources.K8sNodePoolL
 		if k8ss != nil {
 			r.OutputJSON = k8ss
 			r.KeyValue = getK8sNodePoolLansKVMaps(k8ss)
-			r.Columns = printer.GetHeadersAllDefault(defaultK8sNodePoolLanCols, viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)))
+			r.Columns = printer.GetHeadersAllDefault(defaultK8sNodePoolLanCols, viper.GetStringSlice(core.GetFlagName(c.NS, constants.ArgCols)))
 		}
 	}
 	return r

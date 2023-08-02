@@ -10,7 +10,7 @@ import (
 )
 
 func DataplatformClusterIds() []string {
-	ls, _, err := client.Must().DataplatformClient.DataPlatformClusterApi.GetClusters(context.Background()).Execute()
+	ls, _, err := client.Must().DataplatformClient.DataPlatformClusterApi.ClustersGet(context.Background()).Execute()
 	if err != nil {
 		return nil
 	}
@@ -20,7 +20,7 @@ func DataplatformClusterIds() []string {
 }
 
 func DataplatformNodepoolsIds(clusterId string) []string {
-	ls, _, err := client.Must().DataplatformClient.DataPlatformNodePoolApi.GetClusterNodepools(context.Background(), clusterId).Execute()
+	ls, _, err := client.Must().DataplatformClient.DataPlatformNodePoolApi.ClustersNodepoolsGet(context.Background(), clusterId).Execute()
 	if err != nil {
 		return nil
 	}

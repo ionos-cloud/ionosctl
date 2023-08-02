@@ -1,5 +1,5 @@
 ---
-description: Get a Label using URN
+description: "Get a Label using URN"
 ---
 
 # LabelGetByUrn

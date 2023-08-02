@@ -1,5 +1,5 @@
 ---
-description: Get a Application Load Balancer Forwarding Rule
+description: "Get a Application Load Balancer Forwarding Rule"
 ---
 
 # ApplicationloadbalancerRuleGet

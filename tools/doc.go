@@ -2,9 +2,10 @@ package main
 
 import (
 	"fmt"
-	"github.com/ionos-cloud/ionosctl/v6/internal/die"
 	"os"
 	"path/filepath"
+
+	"github.com/ionos-cloud/ionosctl/v6/internal/die"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/doc"

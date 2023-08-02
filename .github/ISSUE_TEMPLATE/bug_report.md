@@ -15,16 +15,16 @@ assignees: LiviusP
 
 ## Environment
 
-Go Version: 
+Go Version:
 ```
 ```
-Ionosctl version: 
+Ionosctl version:
 ```
 ```
-OS: 
+OS:
 ```
 ```
-Shell: 
+Shell:
 ```
 ```
 

@@ -1,5 +1,5 @@
 ---
-description: Create a Volume
+description: "Create a Volume"
 ---
 
 # VolumeCreate
@@ -55,7 +55,7 @@ Required values to run command:
   -h, --help                       Print usage
   -a, --image-alias string         The Image Alias to set instead of Image Id. A password or SSH Key need to be set
       --image-id string            The Image Id or Snapshot Id to be used as template for the new Volume. A password or SSH Key need to be set
-      --licence-type string        Licence Type of the Volume (default "LINUX")
+      --licence-type string        Licence Type of the Volume. Can be one of: LINUX, RHEL, WINDOWS, WINDOWS2016, UNKNOWN, OTHER (default "LINUX")
   -n, --name string                Name of the Volume (default "Unnamed Volume")
       --nic-hot-plug               It is capable of nic hot plug (no reboot required). E.g.: --nic-hot-plug=true, --nic-hot-plug=false
       --nic-hot-unplug             It is capable of nic hot unplug (no reboot required). E.g.: --nic-hot-unplug=true, --nic-hot-unplug=false

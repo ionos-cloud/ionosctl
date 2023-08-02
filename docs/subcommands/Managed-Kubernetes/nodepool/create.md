@@ -1,5 +1,5 @@
 ---
-description: Create a Kubernetes NodePool
+description: "Create a Kubernetes NodePool"
 ---
 
 # K8sNodepoolCreate

@@ -3,7 +3,7 @@ package cluster
 import (
 	"context"
 
-	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
 	"github.com/cilium/fake"
 	"github.com/cjrd/allocate"
@@ -53,11 +53,7 @@ func ClusterCreateCmd() *core.Command {
 			input := sdkdataplatform.CreateClusterRequest{}
 			input.SetProperties(createProperties)
 
-			client, err := client2.Get()
-			if err != nil {
-				return err
-			}
-			cr, _, err := client.DataplatformClient.DataPlatformClusterApi.CreateCluster(context.Background()).CreateClusterRequest(input).Execute()
+			cr, _, err := client.Must().DataplatformClient.DataPlatformClusterApi.ClustersPost(context.Background()).CreateClusterRequest(input).Execute()
 			if err != nil {
 				return err
 			}
@@ -72,7 +68,7 @@ func ClusterCreateCmd() *core.Command {
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagName, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return fake.Names(10), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddStringVarFlag(createProperties.DataPlatformVersion, constants.FlagVersion, "", "22.11", "The version of your cluster")
+	cmd.AddStringVarFlag(createProperties.DataPlatformVersion, constants.FlagVersion, "", "23.4", "The version of your cluster")
 	cmd.AddStringVarFlag(createProperties.DatacenterId, constants.FlagDatacenterId, constants.FlagIdShort, "", "The ID of the connected datacenter")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagDatacenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.DataCentersIds(nil), cobra.ShellCompDirectiveNoFileComp

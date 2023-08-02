@@ -1,5 +1,5 @@
 ---
-description: Get a User
+description: "Get a User"
 ---
 
 # UserGet

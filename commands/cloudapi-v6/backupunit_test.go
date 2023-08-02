@@ -82,8 +82,8 @@ var (
 		},
 	}
 	testListQueryParamFilters = resources.ListQueryParams{
-		Filters: &map[string]string{
-			testQueryParamVar: testQueryParamVar,
+		Filters: &map[string][]string{
+			testQueryParamVar: {testQueryParamVar},
 		},
 		OrderBy:    &testQueryParamVar,
 		MaxResults: &testMaxResultsVar,

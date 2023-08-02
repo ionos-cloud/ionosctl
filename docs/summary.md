@@ -28,7 +28,12 @@
         * [update](subcommands%2FApplication-Load-Balancer%2Frule%2Fupdate.md)
     * [update](subcommands%2FApplication-Load-Balancer%2Fupdate.md)
 * Authentication
-    * [token](subcommands%2FAuthentication%2Ftoken.md)
+    * token
+        * [delete](subcommands%2FAuthentication%2Ftoken%2Fdelete.md)
+        * [generate](subcommands%2FAuthentication%2Ftoken%2Fgenerate.md)
+        * [get](subcommands%2FAuthentication%2Ftoken%2Fget.md)
+        * [list](subcommands%2FAuthentication%2Ftoken%2Flist.md)
+        * [parse](subcommands%2FAuthentication%2Ftoken%2Fparse.md)
 * CLI Setup
     * [login](subcommands%2FCLI%20Setup%2Flogin.md)
     * [version](subcommands%2FCLI%20Setup%2Fversion.md)
@@ -220,6 +225,19 @@
             * [delete](subcommands%2FContainer-Registry%2Ftoken%2Fscope%2Fdelete.md)
             * [list](subcommands%2FContainer-Registry%2Ftoken%2Fscope%2Flist.md)
         * [update](subcommands%2FContainer-Registry%2Ftoken%2Fupdate.md)
+* DNS
+    * record
+        * [create](subcommands%2FDNS%2Frecord%2Fcreate.md)
+        * [delete](subcommands%2FDNS%2Frecord%2Fdelete.md)
+        * [get](subcommands%2FDNS%2Frecord%2Fget.md)
+        * [list](subcommands%2FDNS%2Frecord%2Flist.md)
+        * [update](subcommands%2FDNS%2Frecord%2Fupdate.md)
+    * zone
+        * [create](subcommands%2FDNS%2Fzone%2Fcreate.md)
+        * [delete](subcommands%2FDNS%2Fzone%2Fdelete.md)
+        * [get](subcommands%2FDNS%2Fzone%2Fget.md)
+        * [list](subcommands%2FDNS%2Fzone%2Flist.md)
+        * [update](subcommands%2FDNS%2Fzone%2Fupdate.md)
 * Database as a Service
     * mongo
         * api

@@ -4,13 +4,14 @@ import (
 	"context"
 	"fmt"
 
-	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
+
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dataplatform/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
 	ionoscloud "github.com/ionos-cloud/sdk-go-dataplatform"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -25,7 +26,7 @@ func NodepoolDeleteCmd() *core.Command {
 		ShortDesc: "Delete a Dataplatform Cluster by ID",
 		Example:   "ionosctl dataplatform cluster delete --cluster-id <cluster-id>",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			return core.CheckRequiredFlagsSets(c.Command, c.NS, []string{constants.ArgAll}, []string{constants.FlagClusterId}, []string{constants.ArgAll, constants.FlagClusterId})
+			return core.CheckRequiredFlagsSets(c.Command, c.NS, []string{constants.ArgAll}, []string{constants.FlagClusterId, constants.FlagNodepoolId}, []string{constants.ArgAll, constants.FlagClusterId})
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
@@ -34,17 +35,20 @@ func NodepoolDeleteCmd() *core.Command {
 			}
 
 			nodepoolId := viper.GetString(core.GetFlagName(c.NS, constants.FlagNodepoolId))
-			err := utils.AskForConfirm(c.Stdin, c.Printer, fmt.Sprintf("delete nodepool %s", nodepoolId))
+			np, _, err := client.Must().DataplatformClient.DataPlatformNodePoolApi.ClustersNodepoolsFindById(context.Background(), clusterId, nodepoolId).Execute()
 			if err != nil {
-				return err
+				return fmt.Errorf("couldn't find nodepool: %w", err)
 			}
+
+			ok := confirm.Ask(fmt.Sprintf("delete nodepool %s (%s)", nodepoolId, *np.Properties.Name))
+			if !ok {
+				return fmt.Errorf("canceled deletion: invalid input")
+			}
+
 			c.Printer.Verbose("Deleting nodepool: %s", nodepoolId)
-			client, err := client2.Get()
-			_, _, err = client.DataplatformClient.DataPlatformNodePoolApi.DeleteClusterNodepool(c.Context, clusterId, nodepoolId).Execute()
-			if err != nil {
-				return err
-			}
+			_, _, err = client.Must().DataplatformClient.DataPlatformNodePoolApi.ClustersNodepoolsDelete(c.Context, clusterId, nodepoolId).Execute()
 			return err
+
 		},
 		InitClient: true,
 	})
@@ -54,8 +58,8 @@ func NodepoolDeleteCmd() *core.Command {
 		return completer.DataplatformClusterIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddUUIDFlag(constants.FlagNodepoolId, constants.FlagIdShort, "", "The unique ID of the nodepool", core.RequiredFlagOption())
-	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.DataplatformClusterIds(), cobra.ShellCompDirectiveNoFileComp
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagNodepoolId, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.DataplatformNodepoolsIds(viper.GetString(core.GetFlagName(cmd.NS, constants.FlagClusterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Delete all clusters. If cluster ID is provided, delete all nodepools in given cluster")
 	cmd.AddBoolFlag(constants.ArgForce, constants.ArgForceShort, false, "Skip yes/no verification")
@@ -67,44 +71,34 @@ func NodepoolDeleteCmd() *core.Command {
 
 func deleteAll(c *core.CommandConfig, clusterId string) error {
 	c.Printer.Verbose("Deleting all nodepools!")
-	if !viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce)) {
-		err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all nodepools")
-		if err != nil {
-			return err
-		}
-	}
 	if clusterId != "" {
 		// Both --all and --cluster-id provided, so delete only the nodepools of the given cluster.
-		return deleteNodePools(clusterId)
+		return deleteNodePools(c, clusterId)
 	}
 	// Only --all is provided, so delete all nodepools
 
-	client, err := client2.Get()
-	if err != nil {
-		return err
-	}
-	ls, _, err := client.DataplatformClient.DataPlatformClusterApi.GetClusters(c.Context).Execute()
+	ls, _, err := client.Must().DataplatformClient.DataPlatformClusterApi.ClustersGet(c.Context).Execute()
 	if err != nil {
 		return err
 	}
 
 	// accumulate the error. If it's not nil break out of the fold
-	return functional.ApplyOrFail(*ls.GetItems(), func(x ionoscloud.ClusterResponseData) error {
-		return deleteNodePools(*x.Id)
+	return functional.ApplyAndAggregateErrors(*ls.GetItems(), func(x ionoscloud.ClusterResponseData) error {
+		return deleteNodePools(c, *x.Id)
 	})
 }
 
-func deleteNodePools(clusterId string) error {
-	client, err := client2.Get()
+func deleteNodePools(c *core.CommandConfig, clusterId string) error {
+	xs, _, err := client.Must().DataplatformClient.DataPlatformNodePoolApi.ClustersNodepoolsGet(context.Background(), clusterId).Execute()
 	if err != nil {
 		return err
 	}
-	xs, _, err := client.DataplatformClient.DataPlatformNodePoolApi.GetClusterNodepools(context.Background(), clusterId).Execute()
-	if err != nil {
-		return err
-	}
-	return functional.ApplyOrFail(*xs.GetItems(), func(x ionoscloud.NodePoolResponseData) error {
-		_, _, err := client.DataplatformClient.DataPlatformNodePoolApi.DeleteClusterNodepool(context.Background(), clusterId, *x.Id).Execute()
+	return functional.ApplyAndAggregateErrors(*xs.GetItems(), func(x ionoscloud.NodePoolResponseData) error {
+		ok := confirm.Ask(fmt.Sprintf("delete nodepool %s (%s)", *x.Id, *x.Properties.Name), viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce)))
+		if !ok {
+			return fmt.Errorf("canceled deletion for %s (%s): invalid input", *x.Id, *x.Properties.Name)
+		}
+		_, _, err := client.Must().DataplatformClient.DataPlatformNodePoolApi.ClustersNodepoolsDelete(context.Background(), clusterId, *x.Id).Execute()
 		return err
 	})
 }

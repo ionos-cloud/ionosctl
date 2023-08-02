@@ -1,5 +1,5 @@
 ---
-description: Get a Target Group
+description: "Get a Target Group"
 ---
 
 # TargetgroupGet

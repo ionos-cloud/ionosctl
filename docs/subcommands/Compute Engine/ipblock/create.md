@@ -1,5 +1,5 @@
 ---
-description: Create/Reserve an IpBlock
+description: "Create/Reserve an IpBlock"
 ---
 
 # IpblockCreate

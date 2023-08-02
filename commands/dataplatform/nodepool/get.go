@@ -3,7 +3,7 @@ package nodepool
 import (
 	"context"
 
-	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dataplatform/completer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
@@ -34,12 +34,7 @@ func NodepoolGetCmd() *core.Command {
 			npId := viper.GetString(core.GetFlagName(c.NS, constants.FlagNodepoolId))
 			c.Printer.Verbose("Getting Nodepool %s...", npId)
 
-			client, err := client2.Get()
-			if err != nil {
-				return err
-			}
-
-			np, _, err := client.DataplatformClient.DataPlatformNodePoolApi.GetClusterNodepool(c.Context, clusterId, npId).Execute()
+			np, _, err := client.Must().DataplatformClient.DataPlatformNodePoolApi.ClustersNodepoolsFindById(c.Context, clusterId, npId).Execute()
 			if err != nil {
 				return err
 			}

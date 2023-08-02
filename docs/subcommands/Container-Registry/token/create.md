@@ -1,5 +1,5 @@
 ---
-description: Create a new token
+description: "Create a new token"
 ---
 
 # ContainerRegistryTokenCreate
@@ -46,7 +46,7 @@ Create a new token used to access a container registry
   -f, --force                Force command to execute without user input
   -h, --help                 Print usage
       --name string          Name of the Token (required)
-      --no-headers           When using text output, don't print headers
+      --no-headers           Use --no-headers=false to show column headers (default true)
   -o, --output string        Desired output format [text|json] (default "text")
   -q, --quiet                Quiet output
   -r, --registry-id string   Registry ID (required)
@@ -58,5 +58,6 @@ Create a new token used to access a container registry
 
 ```text
 ionosctl container-registry token create --registry-id [REGISTRY-ID] --name [TOKEN-NAME]
+In order to save the token to a environment variable: export [ENV-VAL-NAME]=$(ionosctl cr token create --name [TOKEN-NAME] --registry-id [REGISTRY-ID]
 ```
 

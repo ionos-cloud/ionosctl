@@ -1,5 +1,5 @@
 ---
-description: List Private Cross-Connects
+description: "List Private Cross-Connects"
 ---
 
 # PccList
@@ -24,8 +24,8 @@ Use this command to get a list of existing Private Cross-Connects available on y
 
 You can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.
 Available Filters:
-* filter by property: [name description]
-* filter by metadata: [etag createdDate createdBy createdByUserId lastModifiedDate lastModifiedBy lastModifiedByUserId state]
+* filter by property: [description name]
+* filter by metadata: [createdBy createdByUserId createdDate etag lastModifiedBy lastModifiedByUserId lastModifiedDate state]
 
 ## Options
 

@@ -96,8 +96,8 @@ func TestGetListQueryParams(t *testing.T) {
 		assert.NoError(t, err)
 		assert.True(t, result.Filters != nil)
 		filtersKV := *result.Filters
-		assert.True(t, filtersKV["name"] == "test")
-		assert.True(t, filtersKV["location"] == "test")
+		assert.True(t, filtersKV["name"][0] == "test")
+		assert.True(t, filtersKV["location"][0] == "test")
 		//assert.True(t, *result.OrderBy == testFilterVar) Muted temporarily due to viper pflag mapping removal
 		//assert.True(t, *result.MaxResults == testMaxResultsVar)
 	})

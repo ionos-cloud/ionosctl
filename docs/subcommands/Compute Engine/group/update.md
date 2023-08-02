@@ -1,5 +1,5 @@
 ---
-description: Update a Group
+description: "Update a Group"
 ---
 
 # GroupUpdate

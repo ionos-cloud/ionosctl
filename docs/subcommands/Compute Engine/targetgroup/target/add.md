@@ -1,5 +1,5 @@
 ---
-description: Add a Target to a Target Group
+description: "Add a Target to a Target Group"
 ---
 
 # TargetgroupTargetAdd
@@ -55,7 +55,7 @@ Required values to run command:
       --health-check-enabled    Makes the target available only if it accepts periodic health check TCP connection attempts; when turned off, the target is considered always available. The health check only consists of a connection attempt to the address and port of the target. Default is True. (default true)
   -h, --help                    Print usage
       --ip ip                   The IP of the balanced target VM. (required)
-  -m, --maintenance-enabled     Maintenance mode prevents the target from receiving balanced traffic. (default true)
+  -m, --maintenance-enabled     Maintenance mode prevents the target from receiving balanced traffic.
   -o, --output string           Desired output format [text|json] (default "text")
   -P, --port int                The port of the balanced target service; valid range is 1 to 65535. (required) (default 8080)
   -q, --quiet                   Quiet output

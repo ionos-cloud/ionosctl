@@ -1,5 +1,5 @@
 ---
-description: Delete a Dataplatform Cluster by ID
+description: "Delete a Dataplatform Cluster by ID"
 ---
 
 # DataplatformNodepoolDelete

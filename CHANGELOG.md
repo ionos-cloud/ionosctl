@@ -1,5 +1,53 @@
 # Changelog
 
+## [v6.6.5] (July 2023)
+
+### Fixed
+* Changed default for `dataplatform cluster create --version` to 23.4 as 22.11 is no longer supported
+* Fixed a bug for DNS completions regarding overriding the default value for `api-url`
+* Fixed filters breaking for camelcase properties (e.g. `imageAlias`)
+* Fixed missing filters for `RequestStatusMetadata` for command `request list` i.e. now you can also filter by `message, status`
+* Removed the hardcoded `INTEL_SKYLAKE` value for `CPU_FAMILY` if creating a CUBE server. Now, by default for CUBE servers, this field is sent as nil to the API.
+
+### Dependencies
+* Various dependencies bumps (see #320). Most importantly:
+  * Bump Cobra to v1.7.0
+  * Bump Auth SDK to v1.0.6
+  * Bump Container Registry SDK to v1.0.1, which fixes #326
+  * Refactored away some dependencies (e.g. `google/uuid`, `uber/multierr`)
+
+## [v6.6.4] (July 2023)
+
+### Added
+* Added support for DNS API
+* Added RHEL license type
+* Added the possibility of getting or deleting a token using the JWT directly: `--token`
+
+### Fixed
+* Deprecated warnings only show if the deprecated flag is being used
+
+## [v6.6.3] (May 2023)
+
+### Fixed
+* Fixed token docs
+* Fixed maintenance default, now maintenance is disabled by default for targetgroup target add
+* Fix #288: improve client, config errors
+* Fix #289  nodepool lan add --network flag using only last network
+
+## [6.6.2] (April 2023)
+
+### Added
+- Added the ability to add multiple networks CIDRs / gateway IPs for `ionosctl k8s np lan add`
+- Added the possibility of listing all columns: `--cols all`
+- Added the possibility of filtering for multiple values per key. For example, `--filters name=hello,name=world` would list resources which contain either name `hello`, or name `world`.
+
+### Fixed
+- Fixed broken columns for `ionosctl k8s np lan list`
+- Fixed certain flag descriptions for `ionosctl alb rule httprule add`
+
+### Changed
+- Changed `ionosctl container-registry token create` defaults to more closely resemble `ionosctl token create`: `--no-headers true`, `--cols CredentialsPassword`, such that token will be the only output by default.
+
 ## [6.6.1] (April 2023)
 
 ### Added
@@ -10,7 +58,7 @@
   - Fixed: Timeout for image diff finding (continuous polling on GET `/images`) after FTP upload is no longer hardcoded. This polling now respects the `--timeout` flag and uses context.
   - Fixed: Silent failing due to timeout for image diff finding
   - Changed: no longer throw error if any of the values in `--location` is non-IONOS, because `--ftp-url` is customizable.
-  - Changed: improved image diff finding complexity to use the new SDK multi-value-per-key filtering 
+  - Changed: improved image diff finding complexity to use the new SDK multi-value-per-key filtering
 - Fixed `-o json` renaming `items` to `Resources`
 - Fixed various flag names in the ALB, Targetgroup examples
 
@@ -48,7 +96,7 @@
 
 ### Fixed
 - Added MaxResults flag to commands where it was missing from: `user s3key list`, `location cpu list`, etc.
-- Query Parameters MaxResults and OrderBy won't be sent to CloudAPI if their values are 0 or "". 
+- Query Parameters MaxResults and OrderBy won't be sent to CloudAPI if their values are 0 or "".
 
 ### Dependencies
 - Updated go version to 1.19
@@ -64,7 +112,7 @@
 - Added support for Certificate Manager API: `ionosctl certificate-manager`
 
 ### Fixed
-- Fixed list commands for Groups (@webner), Group Shares. 
+- Fixed list commands for Groups (@webner), Group Shares.
 - Fixed a number of commands which used Viper to get the value of ipslice flags, including `natgateway create` (fixes #225).
 
 
@@ -83,7 +131,7 @@
 
 ### Added
 
-- Added `image` resource commands:    
+- Added `image` resource commands:
   - Added `image update` and `image delete` which correspond to CloudAPI Image Patch and Image Delete routes.
   - Added `image upload` command, which uploads your image to the desired IONOS FTP servers. Each Ionos FTP server corresponds to a `location`. These uploads can run in parallel, and by default this command also runs a PATCH on the freshly uploaded image, in order to simulate a `create` command.
 
@@ -104,11 +152,11 @@
 
 - Added latest commit hash to `ionosctl version`, when ionosctl was built from source (`make build` or `make install`).
 - Added support for file descriptors when using `-o json`. Stdout will contain only the API response, while stderr will contain CLI messages. For example, you can use `2> /dev/null` in combination with `-o json` to get rid of CLI messages such as wait for state messages, verbose messages, and other status messages. (Default behaviour remains unchanged)
-- Added `UUID`, `IP`, `IPSlice` flag verifications, IonosCTL will throw more verbose errors now when parameter types are not matching a certain format. 
+- Added `UUID`, `IP`, `IPSlice` flag verifications, IonosCTL will throw more verbose errors now when parameter types are not matching a certain format.
 
 ### Fixed
 - Fixed various bugs with the label command (#194)
-    - Fixed conditional flag requirements for label --resource-type flag: now errors will be more verbose about what flags are required in conjunction with this flag. 
+    - Fixed conditional flag requirements for label --resource-type flag: now errors will be more verbose about what flags are required in conjunction with this flag.
     - Fixed filtering, maxResults, orderBy for label list
 
 ### Dependency updates
@@ -139,10 +187,10 @@
 ### Features
 - added `-a`/`-all` flag to list all contract-level resources of a specific type without the need of providing dependent resource ID
   - supported resources: `k8s nodepool`, `share`, `server`, `lan`, `volume`, `loadbalancer`, `networkloadbalancer`, `applicationloadbalancer`
-  - example: `ionosctl server list --all -F "vmState"="RUNNING"`  
+  - example: `ionosctl server list --all -F "vmState"="RUNNING"`
 - added flag `--depth` (short `-D`) to control depth response. Useful in combination with `-o json`.
- 
-    _**Note:** Short flag `-D` not yet available for `firewallrule` command (belongs to `--destination-ip` flag.)_ 
+
+    _**Note:** Short flag `-D` not yet available for `firewallrule` command (belongs to `--destination-ip` flag.)_
 
 - added support and instructions to install ionosctl from `snap` package manager
 - added support and instructions to install ionosctl from `brew` package manager
@@ -151,7 +199,7 @@
 
 - Short flag `-D` for `--destination-ip` for `firewallrule` is considered deprecated and will be replaced by `-D` for `--depth` pending the next major release.
 
-## [6.2.0] (June 2022) 
+## [6.2.0] (June 2022)
 
 ### Features
 - new service: **Application Load Balancer (ALB)**
@@ -162,7 +210,7 @@
     - `ionosctl applicationloadbalancer rule httprule`
     - `ionosctl targetgroup `
     - `ionosctl targetgroup target`
-    
+
 ### Dependency update
 - updated SDK-Go version from [6.0.4](https://github.com/ionos-cloud/sdk-go/releases/tag/v6.0.4) to [v6.1.0](https://github.com/ionos-cloud/sdk-go/releases/tag/v6.1.0)
 
@@ -210,7 +258,7 @@
 ### Fixes
 - added `--labels`,`--annotations` options for `ionosctl k8s nodepool create` command to set one or multiple labels, annotations
 - added `--labels`,`--annotations` options for `ionosctl k8s nodepool update` command to set one or multiple labels, annotations (fixes [164](https://github.com/ionos-cloud/ionosctl/issues/164))
-- added `Annotations,Labels` values for `--cols` option for `ionosctl k8s nodepool` commands 
+- added `Annotations,Labels` values for `--cols` option for `ionosctl k8s nodepool` commands
 
 ### Deprecated
 - marked as deprecated the following options: `--label-key`,`--label-value`,`--annotation-key`,`--annotation-value` for `ionosctl k8s nodepool update` command (use `--labels`,`--annotations` options instead).
@@ -246,7 +294,7 @@
 
 - new service: **Database as a Service (DBaaS) - Postgres**
   - added the CLI commands for DBaaS Postgres under `dbaas postgres` namespace (PR #155):
-    - `ionosctl dbaas postgres cluster` 
+    - `ionosctl dbaas postgres cluster`
     - `ionosctl dbaas postgres logs`
     - `ionosctl dbaas postgres backup`
     - `ionosctl dbaas postgres version`

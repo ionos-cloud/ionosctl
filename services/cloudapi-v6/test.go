@@ -7,7 +7,6 @@ import (
 )
 
 type ResourcesMocks struct {
-	Client                  *mockResources.MockClientService
 	Location                *mockResources.MockLocationsService
 	Datacenter              *mockResources.MockDatacentersService
 	Server                  *mockResources.MockServersService
@@ -39,7 +38,6 @@ type ResourcesMocks struct {
 // InitMocksResources for Test
 func InitMocksResources(ctrl *gomock.Controller) *ResourcesMocks {
 	return &ResourcesMocks{
-		Client:                  mockResources.NewMockClientService(ctrl),
 		Location:                mockResources.NewMockLocationsService(ctrl),
 		Datacenter:              mockResources.NewMockDatacentersService(ctrl),
 		Server:                  mockResources.NewMockServersService(ctrl),

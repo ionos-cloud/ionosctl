@@ -1,5 +1,5 @@
 ---
-description: Delete a token
+description: "Delete a token"
 ---
 
 # ContainerRegistryTokenDelete

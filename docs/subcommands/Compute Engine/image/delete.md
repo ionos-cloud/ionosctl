@@ -1,5 +1,5 @@
 ---
-description: Delete an image
+description: "Delete an image"
 ---
 
 # ImageDelete

@@ -1,5 +1,5 @@
 ---
-description: Get a Private Cross-Connect
+description: "Get a Private Cross-Connect"
 ---
 
 # PccGet

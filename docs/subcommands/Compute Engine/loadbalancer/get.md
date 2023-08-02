@@ -1,5 +1,5 @@
 ---
-description: Get a Load Balancer
+description: "Get a Load Balancer"
 ---
 
 # LoadbalancerGet

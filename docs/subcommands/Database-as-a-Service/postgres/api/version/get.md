@@ -1,5 +1,5 @@
 ---
-description: Get current version of DBaaS PostgreSQL API
+description: "Get current version of DBaaS PostgreSQL API"
 ---
 
 # DbaasPostgresApiVersionGet

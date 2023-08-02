@@ -1,5 +1,5 @@
 ---
-description: Get a list of Peers from a Private Cross-Connect
+description: "Get a list of Peers from a Private Cross-Connect"
 ---
 
 # PccPeersList

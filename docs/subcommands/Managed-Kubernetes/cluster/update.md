@@ -1,5 +1,5 @@
 ---
-description: Update a Kubernetes Cluster
+description: "Update a Kubernetes Cluster"
 ---
 
 # K8sClusterUpdate

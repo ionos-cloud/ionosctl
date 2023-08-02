@@ -13,7 +13,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/utils/clierror"
-	authV1 "github.com/ionos-cloud/ionosctl/v6/services/auth-v1"
+	authservice "github.com/ionos-cloud/ionosctl/v6/services/auth-v1"
 	"github.com/ionos-cloud/ionosctl/v6/services/certmanager"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	container_registry "github.com/ionos-cloud/ionosctl/v6/services/container-registry"
@@ -23,6 +23,11 @@ import (
 )
 
 func NewCommand(ctx context.Context, parent *Command, info CommandBuilder) *Command {
+	if info.PreCmdRun == nil {
+		// Fixes a nil pointer reference panic
+		info.PreCmdRun = NoPreRun
+	}
+
 	cc := &cobra.Command{
 		Use:     info.Verb,
 		Short:   info.ShortDesc,
@@ -181,7 +186,7 @@ type CommandConfig struct {
 
 	// Services
 	CloudApiV6Services         cloudapiv6.Services
-	AuthV1Services             authV1.Services
+	AuthV1Services             authservice.Services
 	CloudApiDbaasPgsqlServices cloudapidbaaspgsql.Services
 	DbaasMongoServices         dbaas_mongo.Services
 	CertificateManagerServices certmanager.Services
@@ -202,7 +207,7 @@ func getPrinter(noHeaders bool) printer.PrintService {
 		var execOut bytes.Buffer
 		out = &execOut
 	} else {
-		out = os.Stdout
+		out = os.Stdout // lol we should either not allow CommandBuilder to customize out buffer at all, or find a way for it to influence this line. I can't change command output in tests because of this
 	}
 	printReg, err := printer.NewPrinterRegistry(out, os.Stderr, noHeaders)
 	clierror.CheckError(err, os.Stderr)

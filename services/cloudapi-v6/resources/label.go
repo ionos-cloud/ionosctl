@@ -77,7 +77,9 @@ func (svc *labelResourcesService) List(params ListQueryParams) (Labels, *Respons
 	if !structs.IsZero(params) {
 		if params.Filters != nil {
 			for k, v := range *params.Filters {
-				req = req.Filter(k, v)
+				for _, val := range v {
+					req = req.Filter(k, val)
+				}
 			}
 		}
 		if params.OrderBy != nil {
@@ -105,7 +107,9 @@ func (svc *labelResourcesService) DatacenterList(params ListQueryParams, datacen
 	if !structs.IsZero(params) {
 		if params.Filters != nil {
 			for k, v := range *params.Filters {
-				req = req.Filter(k, v)
+				for _, val := range v {
+					req = req.Filter(k, val)
+				}
 			}
 		}
 		if params.OrderBy != nil {
@@ -157,7 +161,9 @@ func (svc *labelResourcesService) ServerList(params ListQueryParams, datacenterI
 	if !structs.IsZero(params) {
 		if params.Filters != nil {
 			for k, v := range *params.Filters {
-				req = req.Filter(k, v)
+				for _, val := range v {
+					req = req.Filter(k, val)
+				}
 			}
 		}
 		if params.OrderBy != nil {
@@ -209,7 +215,9 @@ func (svc *labelResourcesService) VolumeList(params ListQueryParams, datacenterI
 	if !structs.IsZero(params) {
 		if params.Filters != nil {
 			for k, v := range *params.Filters {
-				req = req.Filter(k, v)
+				for _, val := range v {
+					req = req.Filter(k, val)
+				}
 			}
 		}
 		if params.OrderBy != nil {
@@ -261,7 +269,9 @@ func (svc *labelResourcesService) IpBlockList(params ListQueryParams, ipblockId 
 	if !structs.IsZero(params) {
 		if params.Filters != nil {
 			for k, v := range *params.Filters {
-				req = req.Filter(k, v)
+				for _, val := range v {
+					req = req.Filter(k, val)
+				}
 			}
 		}
 		if params.OrderBy != nil {
@@ -313,7 +323,9 @@ func (svc *labelResourcesService) SnapshotList(params ListQueryParams, snapshotI
 	if !structs.IsZero(params) {
 		if params.Filters != nil {
 			for k, v := range *params.Filters {
-				req = req.Filter(k, v)
+				for _, val := range v {
+					req = req.Filter(k, val)
+				}
 			}
 		}
 		if params.OrderBy != nil {

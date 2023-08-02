@@ -1,5 +1,5 @@
 ---
-description: List Users
+description: "List Users"
 ---
 
 # UserList
@@ -30,8 +30,8 @@ Use this command to get a list of existing Users available on your account.
 
 You can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.
 Available Filters:
-* filter by property: [firstname lastname email administrator forceSecAuth secAuthActive s3CanonicalUserId active]
-* filter by metadata: [etag createdDate lastLogin]
+* filter by property: [active administrator email firstname forceSecAuth lastname s3CanonicalUserId secAuthActive]
+* filter by metadata: [createdDate etag lastLogin]
 
 ## Options
 

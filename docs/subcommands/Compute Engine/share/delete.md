@@ -1,5 +1,5 @@
 ---
-description: Delete a Resource Share from a Group
+description: "Delete a Resource Share from a Group"
 ---
 
 # ShareDelete

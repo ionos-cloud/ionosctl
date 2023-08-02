@@ -1,5 +1,5 @@
 ---
-description: List Labels from Resources
+description: "List Labels from Resources"
 ---
 
 # LabelList
@@ -24,8 +24,8 @@ Use this command to list all Labels from all Resources under your account. If yo
 
 You can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.
 Available Filters:
-* filter by property: [key value resourceId resourceType resourceHref]
-* filter by metadata: [etag createdDate createdBy createdByUserId lastModifiedDate lastModifiedBy lastModifiedByUserId state]
+* filter by property: [key resourceHref resourceId resourceType value]
+* filter by metadata: [createdBy createdByUserId createdDate etag lastModifiedBy lastModifiedByUserId lastModifiedDate state]
 
 ## Options
 

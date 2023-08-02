@@ -1,5 +1,5 @@
 ---
-description: List Resources from a Group
+description: "List Resources from a Group"
 ---
 
 # GroupResourceList

@@ -1,5 +1,5 @@
 ---
-description: Create Dataplatform Cluster
+description: "Create Dataplatform Cluster"
 ---
 
 # DataplatformClusterCreate
@@ -52,7 +52,7 @@ The cluster will be provisioned in the datacenter matching the provided datacent
   -q, --quiet                     Quiet output
   -t, --timeout int               Timeout option for Request [seconds] (default 60)
   -v, --verbose                   Print step-by-step process when running command
-      --version string            The version of your cluster (default "22.11")
+      --version string            The version of your cluster (default "23.4")
   -w, --wait-for-request          Wait for the Request to be executed
 ```
 

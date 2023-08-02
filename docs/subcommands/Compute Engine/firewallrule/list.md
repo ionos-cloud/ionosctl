@@ -1,5 +1,5 @@
 ---
-description: List Firewall Rules
+description: "List Firewall Rules"
 ---
 
 # FirewallruleList
@@ -30,8 +30,8 @@ Use this command to get a list of Firewall Rules from a specified NIC from a Ser
 
 You can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.
 Available Filters:
-* filter by property: [name protocol sourceMac sourceIp targetIp icmpCode icmpType portRangeStart portRangeEnd type]
-* filter by metadata: [etag createdDate createdBy createdByUserId lastModifiedDate lastModifiedBy lastModifiedByUserId state]
+* filter by property: [icmpCode icmpType ipVersion name portRangeEnd portRangeStart protocol sourceIp sourceMac targetIp type]
+* filter by metadata: [createdBy createdByUserId createdDate etag lastModifiedBy lastModifiedByUserId lastModifiedDate state]
 
 Required values to run command:
 

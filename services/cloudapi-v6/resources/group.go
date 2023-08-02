@@ -78,7 +78,9 @@ func (s *groupsService) List(params ListQueryParams) (Groups, *Response, error) 
 	if !structs.IsZero(params) {
 		if params.Filters != nil {
 			for k, v := range *params.Filters {
-				req = req.Filter(k, v)
+				for _, val := range v {
+					req = req.Filter(k, val)
+				}
 			}
 		}
 		if params.OrderBy != nil {
@@ -168,7 +170,9 @@ func (s *groupsService) ListUsers(groupId string, params ListQueryParams) (Group
 	if !structs.IsZero(params) {
 		if params.Filters != nil {
 			for k, v := range *params.Filters {
-				req = req.Filter(k, v)
+				for _, val := range v {
+					req = req.Filter(k, val)
+				}
 			}
 		}
 		if params.OrderBy != nil {
@@ -228,7 +232,9 @@ func (s *groupsService) ListShares(groupId string, params ListQueryParams) (Grou
 	if !structs.IsZero(params) {
 		if params.Filters != nil {
 			for k, v := range *params.Filters {
-				req = req.Filter(k, v)
+				for _, val := range v {
+					req = req.Filter(k, val)
+				}
 			}
 		}
 		if params.OrderBy != nil {
@@ -318,7 +324,9 @@ func (s *groupsService) ListResources(groupId string, params ListQueryParams) (R
 	if !structs.IsZero(params) {
 		if params.Filters != nil {
 			for k, v := range *params.Filters {
-				req = req.Filter(k, v)
+				for _, val := range v {
+					req = req.Filter(k, val)
+				}
 			}
 		}
 		if params.OrderBy != nil {

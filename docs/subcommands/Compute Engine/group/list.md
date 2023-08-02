@@ -1,5 +1,5 @@
 ---
-description: List Groups
+description: "List Groups"
 ---
 
 # GroupList
@@ -30,7 +30,7 @@ Use this command to get a list of available Groups available on your account
 
 You can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.
 Available Filters:
-* filter by property: [name createDataCenter createSnapshot reserveIp accessActivityLog createPcc s3Privilege createBackupUnit createInternetAccess createK8sCluster createFlowLog accessAndManageMonitoring accessAndManageCertificates manageDBaaS]
+* filter by property: [accessActivityLog accessAndManageCertificates accessAndManageDns accessAndManageMonitoring createBackupUnit createDataCenter createFlowLog createInternetAccess createK8sCluster createPcc createSnapshot manageDBaaS manageDataplatform manageRegistry name reserveIp s3Privilege]
 
 ## Options
 

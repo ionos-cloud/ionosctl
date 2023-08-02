@@ -1,5 +1,5 @@
 ---
-description: Upload an image to FTP server
+description: "Upload an image to FTP server"
 ---
 
 # ImageUpload
@@ -54,7 +54,7 @@ Required values to run command:
   -h, --help                     Print usage
   -i, --image strings            Slice of paths to images, can be absolute path or relative to current working directory (required)
   -a, --image-alias strings      Rename the uploaded images. These names should not contain any extension. By default, this is the base of the image path
-      --licence-type string      The OS type of this image. Can be one of: UNKNOWN, WINDOWS, WINDOWS2016, WINDOWS2022, LINUX, OTHER (default "UNKNOWN")
+      --licence-type string      The OS type of this image. Can be one of: LINUX, RHEL, WINDOWS, WINDOWS2016, UNKNOWN, OTHER (default "UNKNOWN")
   -l, --location strings         Location to upload to. Must be an array containing only fra, fkb, txl, lhr, las, ewr, vit (required)
   -n, --name string              Name of the Image
       --nic-hot-plug             'Hot-Plug' NIC (default true)

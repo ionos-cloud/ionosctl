@@ -1,5 +1,5 @@
 ---
-description: Update a Resource Share from a Group
+description: "Update a Resource Share from a Group"
 ---
 
 # ShareUpdate

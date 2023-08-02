@@ -1,5 +1,5 @@
 ---
-description: Delete a token scope
+description: "Delete a token scope"
 ---
 
 # ContainerRegistryTokenScopeDelete

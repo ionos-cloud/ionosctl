@@ -1,5 +1,5 @@
 ---
-description: Get all Resources of a Type or a specific Resource Type
+description: "Get all Resources of a Type or a specific Resource Type"
 ---
 
 # ResourceGet

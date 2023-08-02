@@ -1,5 +1,5 @@
 ---
-description: List NAT Gateway FlowLogs
+description: "List NAT Gateway FlowLogs"
 ---
 
 # NatgatewayFlowlogList
@@ -36,8 +36,8 @@ Use this command to list NAT Gateway FlowLogs from a specified NAT Gateway.
 
 You can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.
 Available Filters:
-* filter by property: [name action direction bucket]
-* filter by metadata: [etag createdDate createdBy createdByUserId lastModifiedDate lastModifiedBy lastModifiedByUserId state]
+* filter by property: [action bucket direction name]
+* filter by metadata: [createdBy createdByUserId createdDate etag lastModifiedBy lastModifiedByUserId lastModifiedDate state]
 
 Required values to run command:
 

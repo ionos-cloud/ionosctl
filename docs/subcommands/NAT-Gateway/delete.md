@@ -1,5 +1,5 @@
 ---
-description: Delete a NAT Gateway
+description: "Delete a NAT Gateway"
 ---
 
 # NatgatewayDelete

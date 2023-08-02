@@ -7,7 +7,6 @@ import (
 )
 
 type ResourcesMocks struct {
-	Client  *mockResources.MockClientService
 	Cluster *mockResources.MockClustersService
 	Backup  *mockResources.MockBackupsService
 	Version *mockResources.MockVersionsService
@@ -19,7 +18,6 @@ type ResourcesMocks struct {
 // InitMocksResources for Test
 func InitMocksResources(ctrl *gomock.Controller) *ResourcesMocks {
 	return &ResourcesMocks{
-		Client:  mockResources.NewMockClientService(ctrl),
 		Cluster: mockResources.NewMockClustersService(ctrl),
 		Backup:  mockResources.NewMockBackupsService(ctrl),
 		Version: mockResources.NewMockVersionsService(ctrl),

@@ -1,5 +1,5 @@
 ---
-description: Get a Location
+description: "Get a Location"
 ---
 
 # LocationGet

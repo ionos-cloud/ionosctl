@@ -1,5 +1,5 @@
 ---
-description: Remove IP Failover group from a LAN
+description: "Remove IP Failover group from a LAN"
 ---
 
 # IpfailoverRemove

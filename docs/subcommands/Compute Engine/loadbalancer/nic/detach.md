@@ -1,5 +1,5 @@
 ---
-description: Detach a NIC from a Load Balancer
+description: "Detach a NIC from a Load Balancer"
 ---
 
 # LoadbalancerNicDetach

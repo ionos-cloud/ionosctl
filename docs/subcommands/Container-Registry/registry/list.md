@@ -1,5 +1,5 @@
 ---
-description: List all Registries
+description: "List all Registries"
 ---
 
 # ContainerRegistryRegistryList

@@ -1,5 +1,5 @@
 ---
-description: List IpBlocks
+description: "List IpBlocks"
 ---
 
 # IpblockList
@@ -30,8 +30,8 @@ Use this command to list IpBlocks.
 
 You can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.
 Available Filters:
-* filter by property: [ips location size name]
-* filter by metadata: [etag createdDate createdBy createdByUserId lastModifiedDate lastModifiedBy lastModifiedByUserId state]
+* filter by property: [ips location name size]
+* filter by metadata: [createdBy createdByUserId createdDate etag lastModifiedBy lastModifiedByUserId lastModifiedDate state]
 
 ## Options
 

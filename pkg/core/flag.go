@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/google/uuid"
+	"github.com/gofrs/uuid/v5"
 	"github.com/spf13/viper"
 )
 
@@ -22,9 +22,9 @@ var (
 
 type FlagOptionFunc func(cmd *Command, flagName string)
 
-func DeprecatedFlagOption() FlagOptionFunc {
+func DeprecatedFlagOption(help string) FlagOptionFunc {
 	return func(cmd *Command, flagName string) {
-		cmd.Command.Flag(flagName).Usage = fmt.Sprintf("%s (deprecated)", cmd.Command.Flag(flagName).Usage)
+		cmd.Command.Flag(flagName).Deprecated = help
 		// For documentation purposes, add flag to command Annotation
 		if len(cmd.Command.Annotations) > 0 {
 			cmd.Command.Annotations[DeprecatedFlagsAnnotation] = fmt.Sprintf(flagNamePrintF, cmd.Command.Annotations[DeprecatedFlagsAnnotation], flagName, strings.ToUpper(strings.ReplaceAll(flagName, "-", "_")))
@@ -176,7 +176,7 @@ func pluralize(word string, number int) string {
 	return word + "s"
 }
 
-////
+// //
 // --- CUSTOM FLAG TYPES ---
 // For custom validation and error handling within pflag's Set function
 // Use pflag's Var and VarP respectively in conjunction with the custom flag's constructor to add these custom types to a command.
@@ -195,12 +195,12 @@ func newUuidFlag(defaultValue string) *uuidFlag {
 // PFlag calls this function when it finds an argument provided by the user of uuidFlag type.
 func (u *uuidFlag) Set(p string) error {
 	IsValidUUID := func(u string) bool {
-		_, err := uuid.Parse(u)
+		_, err := uuid.FromString(u)
 		return err == nil
 	}
 
 	if !IsValidUUID(p) {
-		//return fmt.Errorf("%s does not match UUID-4 format", p)
+		// return fmt.Errorf("%s does not match UUID-4 format", p)
 		_ = getPrinter(true).Warn(fmt.Sprintf("WARNING: %s does not match UUID-4 format", p))
 	}
 
@@ -217,7 +217,7 @@ func (u uuidFlag) String() string {
 	return u.Value
 }
 
-/// -- END UUID FLAG TYPE --
+// / -- END UUID FLAG TYPE --
 
 // SetFlag /
 // Values set for this flag must be part of allowed values

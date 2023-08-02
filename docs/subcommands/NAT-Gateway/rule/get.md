@@ -1,5 +1,5 @@
 ---
-description: Get a NAT Gateway Rule
+description: "Get a NAT Gateway Rule"
 ---
 
 # NatgatewayRuleGet

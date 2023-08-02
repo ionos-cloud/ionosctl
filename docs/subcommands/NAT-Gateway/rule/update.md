@@ -1,5 +1,5 @@
 ---
-description: Update a NAT Gateway Rule
+description: "Update a NAT Gateway Rule"
 ---
 
 # NatgatewayRuleUpdate

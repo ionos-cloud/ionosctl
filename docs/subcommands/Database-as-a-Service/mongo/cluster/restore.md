@@ -1,5 +1,5 @@
 ---
-description: Restore a Mongo Cluster by ID, using a snapshot
+description: "Restore a Mongo Cluster by ID, using a snapshot"
 ---
 
 # DbaasMongoClusterRestore

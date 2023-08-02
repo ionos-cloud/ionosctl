@@ -1,5 +1,5 @@
 ---
-description: Create MongoDB users.
+description: "Create MongoDB users."
 ---
 
 # DbaasMongoUserCreate

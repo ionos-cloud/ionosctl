@@ -1,5 +1,5 @@
 ---
-description: Add a new Certificate
+description: "Add a new Certificate"
 ---
 
 # CertificateManagerAdd

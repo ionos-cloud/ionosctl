@@ -1,5 +1,5 @@
 ---
-description: List Data Centers
+description: "List Data Centers"
 ---
 
 # DatacenterList
@@ -30,8 +30,8 @@ Use this command to retrieve a complete list of Virtual Data Centers provisioned
 
 You can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`
 Available Filters:
-* filter by property: [name description location version features secAuthProtection]
-* filter by metadata: [etag createdDate createdBy createdByUserId lastModifiedDate lastModifiedBy lastModifiedByUserId state]
+* filter by property: [description features ipv6CidrBlock location name secAuthProtection version]
+* filter by metadata: [createdBy createdByUserId createdDate etag lastModifiedBy lastModifiedByUserId lastModifiedDate state]
 
 ## Options
 

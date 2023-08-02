@@ -101,6 +101,9 @@ func (c *Command) AddUUIDFlag(name, shorthand, defaultValue, desc string, option
 	}
 }
 
+// AddSetFlag adds a String slice flag with support for limitation to certain values in a slice.
+// It also adds completions for those limited values,
+// on top of throwing an error if the flag value isn't found among the marked valid values
 func (c *Command) AddSetFlag(name, shorthand, defaultValue string, allowed []string, desc string, optionFunc ...FlagOptionFunc) {
 	flags := c.Command.Flags()
 	desc += fmt.Sprintf(". Can be one of: %s", strings.Join(allowed, ", "))

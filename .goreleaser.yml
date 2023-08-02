@@ -55,7 +55,7 @@ brews:
   - name: ionosctl
     ids:
       - ionosctl
-    tap: 
+    tap:
       owner: ionos-cloud
       name: homebrew-ionos-cloud
     folder: Formula
