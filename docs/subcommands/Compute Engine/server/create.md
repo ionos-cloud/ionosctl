@@ -114,3 +114,4 @@ ionosctl server create --datacenter-id DATACENTER_ID --type CUBE --template-id T
 
 ionosctl server create --datacenter-id DATACENTER_ID --type CUBE --template-id TEMPLATE_ID --image-id IMAGE_ID --password IMAGE_PASSWORD -w -W
 ```
+
