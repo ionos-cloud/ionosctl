@@ -73,9 +73,7 @@ func (p *JSONPrinter) write(out io.Writer, v interface{}) error {
 			return err
 		}
 	default:
-		var msg DefaultMsgPrint
-		msg.Message = v
-		err := WriteJSON(&msg, out)
+		err := WriteJSON(v, out)
 		if err != nil {
 			return err
 		}
@@ -179,10 +177,6 @@ func (p *TextPrinter) GetStderr() io.Writer {
 
 func (p *TextPrinter) SetStderr(writer io.Writer) {
 	p.Stderr = writer
-}
-
-type DefaultMsgPrint struct {
-	Message interface{} `json:"Message,omitempty"`
 }
 
 type ToPrint struct {
