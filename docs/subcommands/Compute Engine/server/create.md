@@ -26,9 +26,9 @@ For `create` command:
 
 ## Description
 
-Use this command to create an ENTERPRISE or CUBE Server in a specified Virtual Data Center. 
+Use this command to create an ENTERPRISE, CUBE or VCPU Server in a specified Virtual Data Center. 
 
-* For ENTERPRISE Servers:
+1. For ENTERPRISE Servers:
 
 You need to set the number of cores for the Server and the amount of memory for the Server to be set. The amount of memory for the Server must be specified in multiples of 256. The default unit is MB. Minimum: 256MB. Maximum: it depends on your contract limit. You can set the RAM size in the following ways:
 
@@ -43,7 +43,8 @@ Required values to create a Server of type ENTERPRISE:
 * Cores
 * RAM
 
-* For CUBE Servers:
+
+2. For CUBE Servers:
 
 Servers of type CUBE will be created with a Direct Attached Storage with the size set from the Template. To see more details about the available Templates, use `ionosctl template` commands.
 
@@ -53,7 +54,7 @@ Required values to create a Server of type CUBE:
 * Type
 * Template Id
 
-* For VCPU Servers:
+3. For VCPU Servers:
 
 You need to set the number of cores for the Server and the amount of memory for the Server to be set. The amount of memory for the Server must be specified in multiples of 256. The default unit is MB. Minimum: 256MB. Maximum: it depends on your contract limit. You can set the RAM size in the following ways:
 
@@ -62,7 +63,7 @@ You need to set the number of cores for the Server and the amount of memory for 
 
 You cannot set the CPU Family for VCPU Servers.
 
-Required values to create a Server of type ENTERPRISE:
+Required values to create a Server of type VCPU:
 
 * Data Center Id
 * Cores

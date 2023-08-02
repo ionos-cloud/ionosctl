@@ -31,7 +31,7 @@ import (
 const (
 	serverCubeType       = "CUBE"
 	serverEnterpriseType = "ENTERPRISE"
-	serverVCPUType       = "VCPU_INSTANCE"
+	serverVCPUType       = "VCPU"
 )
 
 func ServerCmd() *core.Command {
@@ -121,9 +121,9 @@ func ServerCmd() *core.Command {
 		Verb:      "create",
 		Aliases:   []string{"c"},
 		ShortDesc: "Create a Server",
-		LongDesc: `Use this command to create an ENTERPRISE or CUBE Server in a specified Virtual Data Center. 
+		LongDesc: `Use this command to create an ENTERPRISE, CUBE or VCPU Server in a specified Virtual Data Center. 
 
-* For ENTERPRISE Servers:
+1. For ENTERPRISE Servers:
 
 You need to set the number of cores for the Server and the amount of memory for the Server to be set. The amount of memory for the Server must be specified in multiples of 256. The default unit is MB. Minimum: 256MB. Maximum: it depends on your contract limit. You can set the RAM size in the following ways:
 
@@ -138,7 +138,7 @@ Required values to create a Server of type ENTERPRISE:
 * Cores
 * RAM
 
-* For CUBE Servers:
+2. For CUBE Servers:
 
 Servers of type CUBE will be created with a Direct Attached Storage with the size set from the Template. To see more details about the available Templates, use ` + "`" + `ionosctl template` + "`" + ` commands.
 
@@ -148,7 +148,7 @@ Required values to create a Server of type CUBE:
 * Type
 * Template Id
 
-* For VCPU Servers:
+3. For VCPU Servers:
 
 You need to set the number of cores for the Server and the amount of memory for the Server to be set. The amount of memory for the Server must be specified in multiples of 256. The default unit is MB. Minimum: 256MB. Maximum: it depends on your contract limit. You can set the RAM size in the following ways:
 
@@ -157,7 +157,7 @@ You need to set the number of cores for the Server and the amount of memory for 
 
 You cannot set the CPU Family for VCPU Servers.
 
-Required values to create a Server of type ENTERPRISE:
+Required values to create a Server of type VCPU:
 
 * Data Center Id
 * Cores
@@ -535,7 +535,6 @@ func PreRunServerCreate(c *core.PreCommandConfig) error {
 		return err
 	}
 	// Validate flags
-	fmt.Println(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgType)))
 	if viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgType)) == serverVCPUType && viper.IsSet(core.GetFlagName(c.NS, constants.FlagCpuFamily)) {
 		return fmt.Errorf("cannot set %s flag for %s type", constants.FlagCpuFamily, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgType)))
 	}
@@ -1029,6 +1028,26 @@ func getNewServer(c *core.CommandConfig) (*resources.Server, error) {
 			c.Printer.Verbose("Property Ram set: %vMB", int32(size))
 		}
 	}
+
+	if viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgType)) == serverVCPUType {
+		if viper.IsSet(core.GetFlagName(c.NS, constants.FlagCores)) {
+			cores := viper.GetInt32(core.GetFlagName(c.NS, constants.FlagCores))
+			input.SetCores(cores)
+			c.Printer.Verbose("Property Cores set: %v", cores)
+		}
+		if viper.IsSet(core.GetFlagName(c.NS, constants.FlagRam)) {
+			size, err := utils.ConvertSize(
+				viper.GetString(core.GetFlagName(c.NS, constants.FlagRam)),
+				utils.MegaBytes,
+			)
+			if err != nil {
+				return nil, err
+			}
+			input.SetRam(int32(size))
+			c.Printer.Verbose("Property Ram set: %vMB", int32(size))
+		}
+	}
+
 	return &resources.Server{
 		Server: ionoscloud.Server{
 			Properties: &input.ServerProperties,
