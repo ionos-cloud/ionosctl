@@ -28,19 +28,24 @@ func UserListCmd() *core.Command {
 
 		var ls []sdkgo.User
 		var multiErr error
-		for _, c := range *clusters.GetItems() {
-			l, _, err := client.Must().MongoClient.UsersApi.ClustersUsersGet(context.Background(), *c.Id).Execute()
+		var lastResult printer.Result
+		for _, cs := range *clusters.GetItems() {
+			l, _, err := client.Must().MongoClient.UsersApi.ClustersUsersGet(context.Background(), *cs.Id).Execute()
 			if err != nil {
-				multiErr = errors.Join(multiErr, fmt.Errorf("failed listing users of cluster %s: %w", *c.Properties.DisplayName, err))
+				multiErr = errors.Join(multiErr, fmt.Errorf("failed listing users of cluster %s: %w", *cs.Properties.DisplayName, err))
 			}
 			ls = append(ls, *l.GetItems()...)
-		}
 
+			r := getUserPrint(c, l.GetItems())
+			r.AppendColumn("ClusterId", *cs.Id)
+			r.Add(lastResult)
+			lastResult = r
+		}
 		if multiErr != nil {
 			return fmt.Errorf("failed getting users of at least one cluster: %w", err)
 		}
 
-		return c.Printer.Print(getUserPrint(c, &ls))
+		return c.Printer.Print(lastResult)
 	}
 
 	cmd := core.NewCommand(context.TODO(), nil, core.CommandBuilder{
@@ -52,7 +57,10 @@ func UserListCmd() *core.Command {
 			"You can either list users of a certain cluster (--%s), "+
 			"or all clusters with an optional partial-match name filter (--%s)",
 			constants.FlagClusterId, FlagFilterByClusterNameWhenListAll),
-		Example:   "ionosctl dbaas mongo user list",
+		Example: `
+ionosctl dbaas mongo user list --cluster-id <cluster-id> && echo "Cheaper GET success, I am saving the environment"
+ionosctl dbaas mongo user list"
+ionosctl dbaas mongo user list --cluster-name <partial-name>`,
 		PreCmdRun: core.NoPreRun,
 		CmdRun: func(c *core.CommandConfig) error {
 			fnClusterId := core.GetFlagName(c.NS, constants.FlagClusterId)
@@ -61,6 +69,7 @@ func UserListCmd() *core.Command {
 				if err != nil {
 					return fmt.Errorf("failed listing users across all clusters: %w", err)
 				}
+				return nil
 			}
 			clusterId := viper.GetString(fnClusterId)
 

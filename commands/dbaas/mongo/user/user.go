@@ -25,6 +25,7 @@ func UserCmd() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "user",
+			Aliases:          []string{"u"},
 			Short:            "Mongo Users Operations",
 			TraverseChildren: true,
 		},

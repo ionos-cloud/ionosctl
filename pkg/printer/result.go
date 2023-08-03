@@ -33,6 +33,19 @@ type Result struct {
 	ApiResponse *resources.Response
 }
 
+func (r *Result) AppendColumn(name string, value string) {
+	r.Columns = append(r.Columns, name)
+	for i, column := range r.KeyValue {
+		column[name] = value
+		r.KeyValue[i] = column
+	}
+}
+
+func (r *Result) Add(r2 Result) {
+	r.Columns = append(r.Columns, r2.Columns...)
+	r.KeyValue = append(r.KeyValue, r2.KeyValue...)
+}
+
 // GetHeadersAllDefault is like GetHeaders, but defaultColumns is same as allColumns.
 // Useful for resources with small print table
 func GetHeadersAllDefault(allColumns []string, customColumns []string) []string {
