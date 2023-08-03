@@ -80,25 +80,47 @@ func getClusterRows(clusters *[]ionoscloud.ClusterResponse) []map[string]interfa
 		clusterPrint.ClusterId = *cluster.GetId()
 
 		if propertiesOk, ok := cluster.GetPropertiesOk(); ok && propertiesOk != nil {
-			clusterPrint.Name = *propertiesOk.GetDisplayName()
-			clusterPrint.Location = *propertiesOk.GetLocation()
-			clusterPrint.TemplateId = *propertiesOk.GetTemplateID()
-			clusterPrint.URL = *propertiesOk.GetConnectionString()
+			if propertiesOk.DisplayName != nil {
+				clusterPrint.Name = *propertiesOk.GetDisplayName()
+			}
+			if propertiesOk.GetLocation() != nil {
+				clusterPrint.Location = *propertiesOk.GetLocation()
+			}
+			if propertiesOk.GetTemplateID() != nil {
+				clusterPrint.TemplateId = *propertiesOk.GetTemplateID()
+			}
+			if propertiesOk.GetConnectionString() != nil {
+				clusterPrint.URL = *propertiesOk.GetConnectionString()
+			}
 			if vdcConnectionsOk, ok := propertiesOk.GetConnectionsOk(); ok && vdcConnectionsOk != nil {
 				for _, vdcConnection := range *vdcConnectionsOk {
-					clusterPrint.DatacenterId = *vdcConnection.GetDatacenterId()
-					clusterPrint.LanId = *vdcConnection.GetLanId()
-					clusterPrint.Cidr = strings.Join(*vdcConnection.GetCidrList(), ", ")
+					if vdcConnection.GetDatacenterId() != nil {
+						clusterPrint.DatacenterId = *vdcConnection.GetDatacenterId()
+					}
+					if vdcConnection.GetLanId() != nil {
+						clusterPrint.LanId = *vdcConnection.GetLanId()
+					}
+					if vdcConnection.GetCidrList() != nil {
+						clusterPrint.Cidr = strings.Join(*vdcConnection.GetCidrList(), ", ")
+					}
 				}
 			}
-			clusterPrint.MongoVersion = *propertiesOk.GetMongoDBVersion()
-			clusterPrint.Instances = *propertiesOk.GetInstances()
+			if propertiesOk.GetMongoDBVersion() != nil {
+				clusterPrint.MongoVersion = *propertiesOk.GetMongoDBVersion()
+			}
+			if propertiesOk.GetInstances() != nil {
+				clusterPrint.Instances = *propertiesOk.GetInstances()
+			}
 			if maintenanceWindowOk, ok := propertiesOk.GetMaintenanceWindowOk(); ok && maintenanceWindowOk != nil {
-				clusterPrint.MaintenanceWindow =
-					fmt.Sprintf("%s %s", *maintenanceWindowOk.GetDayOfTheWeek(), *maintenanceWindowOk.GetTime())
+				if maintenanceWindowOk.GetDayOfTheWeek() != nil && maintenanceWindowOk.GetTime() != nil {
+					clusterPrint.MaintenanceWindow =
+						fmt.Sprintf("%s %s", *maintenanceWindowOk.GetDayOfTheWeek(), *maintenanceWindowOk.GetTime())
+				}
 			}
 		}
-		clusterPrint.State = string(*cluster.GetMetadata().GetState())
+		if cluster.GetMetadata() != nil && cluster.GetMetadata().GetState() != nil {
+			clusterPrint.State = string(*cluster.GetMetadata().GetState())
+		}
 		o := structs.Map(clusterPrint)
 		out = append(out, o)
 	}
