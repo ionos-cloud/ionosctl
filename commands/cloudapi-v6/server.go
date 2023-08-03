@@ -192,7 +192,7 @@ You can wait for the Request to be executed using ` + "`" + `--wait-for-request`
 	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgTemplateId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.TemplatesIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(cloudapiv6.ArgType, "", serverEnterpriseType, "Type usages for the Server")
+	create.AddStringFlag(cloudapiv6.ArgType, "", serverEnterpriseType, "Type usages for the Server. Can be one of: ENTERPRISE, CUBE or VCPU")
 	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{serverEnterpriseType, serverCubeType, serverVCPUType}, cobra.ShellCompDirectiveNoFileComp
 	})
