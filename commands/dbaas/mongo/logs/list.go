@@ -2,9 +2,11 @@ package logs
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/completer"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
@@ -42,47 +44,44 @@ func LogsListCmd() *core.Command {
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
-
-			var startPtr *time.Time = nil
-			if viper.IsSet(core.GetFlagName(c.NS, flagStart)) {
-				start, err := time.Parse(time.RFC3339, viper.GetString(core.GetFlagName(c.NS, flagStart)))
-				if err != nil {
-					return err
-				}
-				startPtr = &start
-			}
-			if viper.IsSet(core.GetFlagName(c.NS, flagStartDuration)) {
-				start := time.Now().Add(viper.GetDuration(core.GetFlagName(c.NS, flagStartDuration)))
-				startPtr = &start
-			}
-
-			var endPtr *time.Time = nil
-			if viper.IsSet(core.GetFlagName(c.NS, flagEnd)) {
-				end, err := time.Parse(time.RFC3339, viper.GetString(core.GetFlagName(c.NS, flagEnd)))
-				if err != nil {
-					return err
-				}
-				endPtr = &end
-			}
-			if viper.IsSet(core.GetFlagName(c.NS, flagEndDuration)) {
-				end := time.Now().Add(viper.GetDuration(core.GetFlagName(c.NS, flagEndDuration)))
-				endPtr = &end
-			}
-
-			var limitPtr *int32 = nil
-			if viper.IsSet(core.GetFlagName(c.NS, flagLimit)) {
-				limit := viper.GetInt32(core.GetFlagName(c.NS, flagLimit))
-				limitPtr = &limit
-			}
-
-			var directionPtr *string = nil
-			if viper.IsSet(core.GetFlagName(c.NS, flagDirection)) {
-				direction := viper.GetString(core.GetFlagName(c.NS, flagDirection))
-				directionPtr = &direction
-			}
-
 			c.Printer.Verbose("Getting logs of Cluster %s", clusterId)
-			logs, _, err := c.DbaasMongoServices.Clusters().LogsList(clusterId, directionPtr, limitPtr, startPtr, endPtr)
+
+			req := client.Must().MongoClient.LogsApi.ClustersLogsGet(context.Background(), clusterId)
+			if fn := core.GetFlagName(c.NS, flagStart); viper.IsSet(fn) {
+				start, err := time.Parse(time.RFC3339, viper.GetString(fn))
+				if err != nil {
+					return fmt.Errorf("failed parsing start time as RFC3339: %w", err)
+				}
+				req = req.Start(start)
+			}
+			if fn := core.GetFlagName(c.NS, flagStartDuration); viper.IsSet(fn) {
+				start := time.Now().Add(viper.GetDuration(fn))
+				req = req.Start(start)
+			}
+
+			if fn := core.GetFlagName(c.NS, flagEnd); viper.IsSet(fn) {
+				end, err := time.Parse(time.RFC3339, viper.GetString(fn))
+				if err != nil {
+					return fmt.Errorf("failed parsing end time as RFC3339: %w", err)
+				}
+				req = req.End(end)
+			}
+			if fn := core.GetFlagName(c.NS, flagEndDuration); viper.IsSet(fn) {
+				end := time.Now().Add(viper.GetDuration(fn))
+				req = req.End(end)
+			}
+
+			if fn := core.GetFlagName(c.NS, flagLimit); viper.IsSet(fn) {
+				limit := viper.GetInt32(fn)
+				req = req.Limit(limit)
+			}
+
+			if fn := core.GetFlagName(c.NS, flagDirection); viper.IsSet(fn) {
+				direction := viper.GetString(fn)
+				req = req.Direction(direction)
+			}
+
+			logs, _, err := req.Execute()
 			if err != nil {
 				return err
 			}

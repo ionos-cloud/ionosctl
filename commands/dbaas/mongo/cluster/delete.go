@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
@@ -39,7 +39,8 @@ func ClusterDeleteCmd() *core.Command {
 				return fmt.Errorf("user denied confirmation")
 			}
 			c.Printer.Verbose("Deleting cluster: %s", clusterId)
-			_, err := c.DbaasMongoServices.Clusters().Delete(clusterId)
+
+			_, _, err := client.Must().MongoClient.ClustersApi.ClustersDelete(context.Background(), clusterId).Execute()
 			return err
 		},
 		InitClient: true,
@@ -63,12 +64,8 @@ func ClusterDeleteCmd() *core.Command {
 }
 
 func deleteAll(c *core.CommandConfig) error {
-	client, err := client2.Get()
-	if err != nil {
-		return err
-	}
 	c.Printer.Verbose("Deleting All Clusters!")
-	xs, _, err := client.MongoClient.ClustersApi.ClustersGet(c.Context).Execute()
+	xs, _, err := client.Must().MongoClient.ClustersApi.ClustersGet(c.Context).Execute()
 	if err != nil {
 		return err
 	}
@@ -76,7 +73,7 @@ func deleteAll(c *core.CommandConfig) error {
 	return functional.ApplyAndAggregateErrors(*xs.GetItems(), func(x sdkgo.ClusterResponse) error {
 		yes := confirm.Ask(fmt.Sprintf("delete cluster %s (%s)", *x.Id, *x.Properties.DisplayName), viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce)))
 		if yes {
-			_, _, delErr := client.MongoClient.ClustersApi.ClustersDelete(c.Context, *x.Id).Execute()
+			_, _, delErr := client.Must().MongoClient.ClustersApi.ClustersDelete(c.Context, *x.Id).Execute()
 			if delErr != nil {
 				return fmt.Errorf("failed deleting one of the clusters: %w", delErr)
 			}

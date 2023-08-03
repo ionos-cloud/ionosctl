@@ -5,6 +5,7 @@ import (
 	"os"
 
 	cloudapiv6completer "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/spf13/viper"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/completer"
@@ -58,7 +59,10 @@ func ClusterUpdateCmd() *core.Command {
 				updateProperties.SetConnections([]ionoscloud.Connection{conn})
 			}
 
-			cluster, _, err := c.DbaasMongoServices.Clusters().Update(clusterId, ionoscloud.PatchClusterRequest{Properties: &updateProperties})
+			cluster, _, err := client.Must().MongoClient.ClustersApi.ClustersPatch(context.Background(), clusterId).
+				PatchClusterRequest(
+					ionoscloud.PatchClusterRequest{Properties: &updateProperties},
+				).Execute()
 			if err != nil {
 				return err
 			}

@@ -4,8 +4,10 @@ import (
 	"context"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/completer"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	ionoscloud "github.com/ionos-cloud/sdk-go-dbaas-mongo"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -30,7 +32,14 @@ func ClusterRestoreCmd() *core.Command {
 			snapshotId := viper.GetString(core.GetFlagName(c.NS, constants.FlagSnapshotId))
 
 			c.Printer.Verbose("Restoring Cluster %s with snapshot %s", clusterId, snapshotId)
-			_, err := c.DbaasMongoServices.Clusters().Restore(clusterId, snapshotId)
+
+			_, err := client.Must().MongoClient.RestoresApi.ClustersRestorePost(context.Background(), clusterId).
+				CreateRestoreRequest(
+					ionoscloud.CreateRestoreRequest{
+						SnapshotId: &snapshotId,
+					},
+				).Execute()
+
 			return err
 		},
 		InitClient: true,

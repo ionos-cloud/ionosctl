@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/fatih/structs"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
@@ -19,11 +20,11 @@ func ApiVersionCmd() *core.Command {
 		Example:   "ionosctl dbaas mongo api-versions",
 		PreCmdRun: core.NoPreRun,
 		CmdRun: func(c *core.CommandConfig) error {
-			list, _, err := c.DbaasMongoServices.ApiMetadata().List()
+			list, _, err := client.Must().MongoClient.MetadataApi.InfosVersionGet(context.Background()).Execute()
 			if err != nil {
 				return err
 			}
-			return c.Printer.Print(getApiVersionPrint(c, list))
+			return c.Printer.Print(getApiVersionPrint(c, []ionoscloud.APIVersion{list}))
 		},
 		InitClient: true,
 	})

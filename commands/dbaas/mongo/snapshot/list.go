@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/completer"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
@@ -25,17 +26,16 @@ func SnapshotsListCmd() *core.Command {
 		CmdRun: func(c *core.CommandConfig) error {
 			clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
 			c.Printer.Verbose("Getting snapshots of Cluster %s", clusterId)
-			var limitPtr *int32 = nil
+
+			req := client.Must().MongoClient.SnapshotsApi.ClustersSnapshotsGet(context.Background(), clusterId)
 			if f := core.GetFlagName(c.NS, constants.FlagMaxResults); viper.IsSet(f) {
-				limit := viper.GetInt32(f)
-				limitPtr = &limit
+				req = req.Limit(viper.GetInt32(f))
 			}
-			var offsetPtr *int32 = nil
 			if f := core.GetFlagName(c.NS, constants.FlagOffset); viper.IsSet(f) {
-				offset := viper.GetInt32(f)
-				offsetPtr = &offset
+				req = req.Offset(viper.GetInt32(f))
 			}
-			snapshots, _, err := c.DbaasMongoServices.Clusters().SnapshotsList(clusterId, limitPtr, offsetPtr)
+
+			snapshots, _, err := req.Execute()
 			if err != nil {
 				return err
 			}
