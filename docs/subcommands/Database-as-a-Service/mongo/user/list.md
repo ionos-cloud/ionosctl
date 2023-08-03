@@ -18,6 +18,12 @@ For `mongo` command:
 [mongodb mdb m]
 ```
 
+For `user` command:
+
+```text
+[u]
+```
+
 For `list` command:
 
 ```text
@@ -50,6 +56,9 @@ Retrieves a list of MongoDB users. You can either list users of a certain cluste
 ## Examples
 
 ```text
-ionosctl dbaas mongo user list
+
+ionosctl dbaas mongo user list --cluster-id <cluster-id> && echo "Cheaper GET success, I am saving the environment"
+ionosctl dbaas mongo user list"
+ionosctl dbaas mongo user list --cluster-name <partial-name>
 ```
 
