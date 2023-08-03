@@ -98,7 +98,7 @@ You can wait for the Request to be executed using `--wait-for-request` option. Y
   -k, --ssh-key-paths strings      [CUBE Server] Absolute paths for the SSH Keys of the Direct Attached Storage
       --template-id string         [CUBE Server] The unique Template Id (required)
   -t, --timeout int                Timeout option for Request for Server creation/for Server to be in AVAILABLE state [seconds] (default 60)
-      --type string                Type usages for the Server. Can be one of: ENTERPRISE, CUBE or VCPU (default "ENTERPRISE")
+      --type string                Type usages for the Server. Can be one of: ENTERPRISE, CUBE, VCPU (default "ENTERPRISE")
   -v, --verbose                    Print step-by-step process when running command
   -N, --volume-name string         [CUBE Server] Name of the Direct Attached Storage (default "Unnamed Direct Attached Storage")
   -w, --wait-for-request           Wait for the Request for Server creation to be executed

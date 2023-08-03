@@ -192,10 +192,7 @@ You can wait for the Request to be executed using ` + "`" + `--wait-for-request`
 	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgTemplateId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.TemplatesIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(cloudapiv6.ArgType, "", serverEnterpriseType, "Type usages for the Server. Can be one of: ENTERPRISE, CUBE or VCPU")
-	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return []string{serverEnterpriseType, serverCubeType, serverVCPUType}, cobra.ShellCompDirectiveNoFileComp
-	})
+	create.AddSetFlag(cloudapiv6.ArgType, "", serverEnterpriseType, []string{serverEnterpriseType, serverCubeType, serverVCPUType}, "Type usages for the Server")
 
 	// Volume Properties - for DAS Volume associated with Cube Server
 	create.AddStringFlag(cloudapiv6.ArgVolumeName, "N", "Unnamed Direct Attached Storage", "[CUBE Server] Name of the Direct Attached Storage")
@@ -529,10 +526,8 @@ func PreRunServerCreate(c *core.PreCommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	// Validate flags
-	if viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgType)) == serverVCPUType && viper.IsSet(core.GetFlagName(c.NS, constants.FlagCpuFamily)) {
-		return fmt.Errorf("cannot set %s flag for %s type", constants.FlagCpuFamily, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgType)))
-	}
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgImageId)) || viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgImageAlias)) {
 		err = core.CheckRequiredFlagsSets(c.Command, c.NS,
 			[]string{cloudapiv6.ArgDataCenterId, constants.FlagCores, constants.FlagRam, cloudapiv6.ArgImageId, cloudapiv6.ArgPassword},
