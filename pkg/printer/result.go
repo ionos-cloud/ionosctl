@@ -42,7 +42,11 @@ func (r *Result) AppendColumn(name string, value string) {
 }
 
 func (r *Result) Add(r2 Result) {
-	r.Columns = append(r.Columns, r2.Columns...)
+	for _, column := range r2.Columns {
+		if !slices.Contains(r.Columns, column) {
+			r.Columns = append(r.Columns, column)
+		}
+	}
 	r.KeyValue = append(r.KeyValue, r2.KeyValue...)
 }
 
