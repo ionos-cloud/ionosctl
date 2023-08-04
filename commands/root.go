@@ -127,6 +127,12 @@ func init() {
 		"Print step-by-step process when running command",
 	)
 	_ = viper.BindPFlag(constants.ArgVerbose, rootPFlagSet.Lookup(constants.ArgVerbose))
+	rootPFlagSet.StringSlice(
+		constants.ArgCols, nil, "Case insensitively limit table columns to those mentioned in this flag. "+
+			"ignores non-existing columns",
+	)
+	_ = viper.BindPFlag(constants.ArgCols, rootPFlagSet.Lookup(constants.ArgCols))
+	_ = viper.BindEnv(constants.ArgCols, constants.EnvCols)
 
 	// Add SubCommands to RootCmd
 	addCommands()

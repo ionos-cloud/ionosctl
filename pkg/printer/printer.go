@@ -69,6 +69,9 @@ func (p *JSONPrinter) write(out io.Writer, v interface{}) error {
 	switch v.(type) {
 	case Result:
 		result := v.(Result)
+		if customCols := viper.GetStringSlice(constants.ArgCols); len(customCols) > 0 {
+			result.Filter(customCols)
+		}
 		if err := result.PrintJSON(out); err != nil {
 			return err
 		}
@@ -128,6 +131,9 @@ func (p *TextPrinter) write(out io.Writer, v interface{}) error {
 	switch v.(type) {
 	case Result:
 		result := v.(Result)
+		if customCols := viper.GetStringSlice("test"); len(customCols) > 0 {
+			result.Filter(customCols)
+		}
 		if err := result.PrintText(out, p.NoHeaders); err != nil {
 			return err
 		}

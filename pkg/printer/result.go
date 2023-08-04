@@ -33,16 +33,19 @@ type Result struct {
 	ApiResponse *resources.Response
 }
 
-// Filter limits the Result's columns to those specified in the parameter
+// Filter case insensitively limits the Result's columns to those specified in the parameter
 // and ignores column names from `cols` that are non-existent in r.Columns
 // an empty `cols` will result in no filter being applied.
-func (r *Result) Filter(cols []string) {
-	if cols == nil || len(cols) == 0 {
+func (r *Result) Filter(customCols []string) {
+	if customCols == nil || len(customCols) == 0 {
 		return
 	}
 
-	r.Columns = functional.Filter(cols, func(col string) bool {
-		return slices.Contains(r.Columns, col)
+	allColumnsLowercase := functional.Map(r.Columns, func(col string) string {
+		return strings.ToLower(col)
+	})
+	r.Columns = functional.Filter(customCols, func(customColumn string) bool {
+		return slices.Contains(allColumnsLowercase, strings.ToLower(customColumn))
 	})
 
 	// Keep old behaviour of nil slices if empty

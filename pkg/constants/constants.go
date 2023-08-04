@@ -86,6 +86,7 @@ const (
 	ArgTimeout             = "timeout"
 	ArgTimeoutShort        = "t"
 	ArgCols                = "cols"
+	EnvCols                = "IONOSCTL_CUSTOM_COLUMNS"
 	ArgUpdates             = "updates"
 	ArgToken               = "token"
 	ArgTokenShort          = "t"
