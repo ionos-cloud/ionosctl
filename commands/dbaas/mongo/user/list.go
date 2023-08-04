@@ -61,6 +61,7 @@ func UserListCmd() *core.Command {
 				if err != nil {
 					return fmt.Errorf("failed listing users across all clusters: %w", err)
 				}
+				return nil
 			}
 			clusterId := viper.GetString(fnClusterId)
 
@@ -99,6 +100,9 @@ func UserListCmd() *core.Command {
 	cmd.AddInt32Flag(constants.FlagOffset, "", 0, "Skip a certain number of results")
 
 	cmd.Command.SilenceUsage = true
+
+	cmd.AddBoolFlag(constants.ArgAll, "", true, "This flag exists for backward-compatibility reasons. This is now the default behaviour")
+	_ = cmd.Command.Flags().MarkHidden(constants.ArgAll)
 
 	return cmd
 }
