@@ -95,14 +95,9 @@ func GetHeadersListAll(allColumns []string, defaultColumns []string, parentCol s
 	return GetHeaders(allColumns, defaultColumns, customColumns)
 }
 
-// TODO: identical name to printText. Hard to decipher behaviour
 func (r *Result) PrintText(out io.Writer, noHeaders bool) error {
 	var resultPrint ResultPrint
-	if r.Resource != "" && r.Verb != "" {
-		resultPrint.Message = standardSuccessMsg(r.Resource, r.Verb, r.WaitForRequest, r.WaitForState)
-	} else if r.Message != "" {
-		resultPrint.Message = r.Message
-	}
+
 	if r.ApiResponse != nil {
 		requestId, err := GetRequestId(GetRequestPath(r.ApiResponse))
 		if err != nil {
@@ -110,25 +105,47 @@ func (r *Result) PrintText(out io.Writer, noHeaders bool) error {
 		}
 		resultPrint.RequestId = requestId
 	}
+
 	if r.KeyValue != nil && r.Columns != nil {
 		err := printText(out, r.Columns, r.KeyValue, noHeaders)
 		if err != nil {
 			return err
 		}
 	}
+
+	if r.Resource != "" && r.Verb != "" {
+		resultPrint.Message = fmt.Sprintf("Command %s %s has been successfully executed", r.Resource, r.Verb)
+	} else if r.Message != "" {
+		resultPrint.Message = r.Message
+	}
+
 	if resultPrint.RequestId != nil {
-		requestIdMsg(out, "%v", resultPrint.RequestId)
+		_, err := fmt.Fprintf(out, "RequestId: %v\n", resultPrint.RequestId)
+		if err != nil {
+			return err
+		}
 	}
+
 	if resultPrint.Message != nil {
-		statusMsg(out, "%v", resultPrint.Message)
+		_, err := fmt.Fprintf(out, "Status: %v\n", resultPrint.Message)
+		if err != nil {
+			return err
+		}
 	}
+
 	return nil
 }
 
 func (r *Result) PrintJSON(out io.Writer) error {
 	var resultPrint ResultPrint
 	if r.Resource != "" && r.Verb != "" {
-		resultPrint.Message = standardSuccessMsg(r.Resource, r.Verb, r.WaitForRequest, r.WaitForState)
+		oldStringKeptForBackwardsCompatibility := ""
+		if r.WaitForRequest || r.WaitForState {
+			// May the lord have mercy on our souls
+			oldStringKeptForBackwardsCompatibility = "& wait"
+		}
+		r.Message = fmt.Sprintf("Command %s %s%s has been successfully executed",
+			r.Resource, r.Verb, oldStringKeptForBackwardsCompatibility)
 	} else if r.Message != "" {
 		resultPrint.Message = r.Message
 	}
@@ -139,6 +156,7 @@ func (r *Result) PrintJSON(out io.Writer) error {
 		}
 		resultPrint.RequestId = requestId
 	}
+	// wtf
 	resultPrint.Output = r.OutputJSON
 	if !structs.IsZero(resultPrint) {
 		j, err := json.MarshalIndent(&resultPrint, "", "  ")
@@ -157,32 +175,6 @@ type ResultPrint struct {
 	Message   interface{} `json:"Status,omitempty"`
 	RequestId interface{} `json:"RequestId,omitempty"`
 	Output    interface{} `json:"items,omitempty"`
-}
-
-var (
-	standardSuccessMessages     = "Command %s %s has been successfully executed"
-	waitStandardSuccessMessages = "Command %s %s & wait have been successfully executed"
-)
-
-func standardSuccessMsg(resource, verb string, waitRequest, waitState bool) string {
-	if waitRequest || waitState {
-		return fmt.Sprintf(waitStandardSuccessMessages, resource, verb)
-	}
-	return fmt.Sprintf(standardSuccessMessages, resource, verb)
-}
-
-func requestIdMsg(writer io.Writer, msg string, args ...interface{}) {
-	_, err := fmt.Fprintf(writer, "RequestId: %s\n", fmt.Sprintf(msg, args...))
-	if err != nil {
-		return
-	}
-}
-
-func statusMsg(writer io.Writer, msg string, args ...interface{}) {
-	_, err := fmt.Fprintf(writer, "Status: %s\n", fmt.Sprintf(msg, args...))
-	if err != nil {
-		return
-	}
 }
 
 func printText(out io.Writer, cols []string, keyValueMap []map[string]interface{}, noHeaders bool) error {
@@ -208,14 +200,6 @@ func printText(out io.Writer, cols []string, keyValueMap []map[string]interface{
 			v := r[col]
 
 			switch v.(type) {
-			case string:
-				formats = append(formats, "%s")
-			case int:
-				formats = append(formats, "%d")
-			case float64:
-				formats = append(formats, "%f")
-			case bool:
-				formats = append(formats, "%v")
 			case []string:
 				formats = append(formats, "%s")
 				v = strings.Join(v.([]string), ",")
