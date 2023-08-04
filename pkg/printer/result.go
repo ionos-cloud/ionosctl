@@ -33,6 +33,24 @@ type Result struct {
 	ApiResponse *resources.Response
 }
 
+// Filter limits the Result's columns to those specified in the parameter
+// and ignores column names from `cols` that are non-existent in r.Columns
+// an empty `cols` will result in no filter being applied.
+func (r *Result) Filter(cols []string) {
+	if cols == nil || len(cols) == 0 {
+		return
+	}
+
+	r.Columns = functional.Filter(cols, func(col string) bool {
+		return slices.Contains(r.Columns, col)
+	})
+
+	// Keep old behaviour of nil slices if empty
+	if len(r.Columns) == 0 {
+		r.Columns = nil
+	}
+}
+
 // GetHeadersAllDefault is like GetHeaders, but defaultColumns is same as allColumns.
 // Useful for resources with small print table
 func GetHeadersAllDefault(allColumns []string, customColumns []string) []string {
@@ -78,22 +96,22 @@ func GetHeadersListAll(allColumns []string, defaultColumns []string, parentCol s
 }
 
 // TODO: identical name to printText. Hard to decipher behaviour
-func (prt *Result) PrintText(out io.Writer, noHeaders bool) error {
+func (r *Result) PrintText(out io.Writer, noHeaders bool) error {
 	var resultPrint ResultPrint
-	if prt.Resource != "" && prt.Verb != "" {
-		resultPrint.Message = standardSuccessMsg(prt.Resource, prt.Verb, prt.WaitForRequest, prt.WaitForState)
-	} else if prt.Message != "" {
-		resultPrint.Message = prt.Message
+	if r.Resource != "" && r.Verb != "" {
+		resultPrint.Message = standardSuccessMsg(r.Resource, r.Verb, r.WaitForRequest, r.WaitForState)
+	} else if r.Message != "" {
+		resultPrint.Message = r.Message
 	}
-	if prt.ApiResponse != nil {
-		requestId, err := GetRequestId(GetRequestPath(prt.ApiResponse))
+	if r.ApiResponse != nil {
+		requestId, err := GetRequestId(GetRequestPath(r.ApiResponse))
 		if err != nil {
 			return err
 		}
 		resultPrint.RequestId = requestId
 	}
-	if prt.KeyValue != nil && prt.Columns != nil {
-		err := printText(out, prt.Columns, prt.KeyValue, noHeaders)
+	if r.KeyValue != nil && r.Columns != nil {
+		err := printText(out, r.Columns, r.KeyValue, noHeaders)
 		if err != nil {
 			return err
 		}
@@ -107,21 +125,21 @@ func (prt *Result) PrintText(out io.Writer, noHeaders bool) error {
 	return nil
 }
 
-func (prt *Result) PrintJSON(out io.Writer) error {
+func (r *Result) PrintJSON(out io.Writer) error {
 	var resultPrint ResultPrint
-	if prt.Resource != "" && prt.Verb != "" {
-		resultPrint.Message = standardSuccessMsg(prt.Resource, prt.Verb, prt.WaitForRequest, prt.WaitForState)
-	} else if prt.Message != "" {
-		resultPrint.Message = prt.Message
+	if r.Resource != "" && r.Verb != "" {
+		resultPrint.Message = standardSuccessMsg(r.Resource, r.Verb, r.WaitForRequest, r.WaitForState)
+	} else if r.Message != "" {
+		resultPrint.Message = r.Message
 	}
-	if prt.ApiResponse != nil {
-		requestId, err := GetRequestId(GetRequestPath(prt.ApiResponse))
+	if r.ApiResponse != nil {
+		requestId, err := GetRequestId(GetRequestPath(r.ApiResponse))
 		if err != nil {
 			return err
 		}
 		resultPrint.RequestId = requestId
 	}
-	resultPrint.Output = prt.OutputJSON
+	resultPrint.Output = r.OutputJSON
 	if !structs.IsZero(resultPrint) {
 		j, err := json.MarshalIndent(&resultPrint, "", "  ")
 		if err != nil {

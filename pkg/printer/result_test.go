@@ -100,3 +100,85 @@ string   1     1.123000   true   a,b
 `
 	assert.Equal(t, expectOut, buf.String())
 }
+
+func TestResult_Filter(t *testing.T) {
+	t.Parallel()
+	tests := []struct {
+		name       string
+		fields     Result
+		customCols []string
+		expected   Result
+	}{
+		{
+			name:       "Empty Fields Filter",
+			fields:     Result{},
+			customCols: []string{"a"},
+			expected:   Result{},
+		},
+		{
+			name: "No Filter - nil",
+			fields: Result{
+				Columns: []string{"a", "b"},
+			},
+			customCols: nil,
+			expected: Result{
+				Columns: []string{"a", "b"},
+			},
+		},
+		{
+			name: "All Columns Exist",
+			fields: Result{
+				Columns: []string{"a", "b", "c"},
+			},
+			customCols: []string{"a", "b"},
+			expected: Result{
+				Columns: []string{"a", "b"},
+			},
+		},
+		{
+			name: "Some Columns Do Not Exist",
+			fields: Result{
+				Columns: []string{"a", "b"},
+			},
+			customCols: []string{"a", "c"},
+			expected: Result{
+				Columns: []string{"a"},
+			},
+		},
+		{
+			name: "No Columns Exist",
+			fields: Result{
+				Columns: []string{"a", "b"},
+			},
+			customCols: []string{"c", "d"},
+			expected: Result{
+				Columns: nil,
+			},
+		},
+		{
+			name: "Empty Custom Cols should return original columns",
+			fields: Result{
+				Columns: []string{"a", "b"},
+			},
+			customCols: []string{},
+			expected: Result{
+				Columns: []string{"a", "b"},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			tt.fields.Filter(tt.customCols)
+			type SimplerStructForComprehensiveError struct {
+				cols []string
+			}
+			assert.Equal(t,
+				SimplerStructForComprehensiveError{
+					cols: tt.expected.Columns,
+				}, SimplerStructForComprehensiveError{
+					cols: tt.fields.Columns,
+				},
+			)
+		})
+	}
+}
