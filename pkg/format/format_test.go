@@ -10,23 +10,35 @@ import (
 	"testing"
 	"text/tabwriter"
 
-	"github.com/fatih/structs"
+	"github.com/Jeffail/gabs/v2"
 	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
 )
 
 var outputFormatErr = fmt.Errorf("invalid format")
 
-type Formatter struct {
+type formatter struct {
 	Json interface{}
-	Text []interface{}
+	Text []map[string]interface{}
+}
+
+type HeaderJsonPath struct {
+	Header string
+	Path   string
+}
+
+var datacenter = []HeaderJsonPath{
+	{"DatacenterId", "id"},
+	{"Name", "properties.name"},
+	{"Location", "properties.location"},
+	{"CpuFamily", "properties.cpuArchitecture.*.cpuFamily"},
+	{"State", "metadata.state"},
+	{"Version", "properties.version"},
 }
 
 func TestGen(t *testing.T) {
-	//var test interface{}
-	var cols = []string{"DatacenterId", "Name", "Location", "CpuFamily", "State"}
+	var cols = []string{"DatacenterId", "Name", "Location", "CpuFamily", "Version"}
 
 	client, err := client2.NewTestClient(os.Getenv("IONOS_USERNAME"), os.Getenv("IONOS_PASSWORD"), "", "")
 	if err != nil {
@@ -34,61 +46,96 @@ func TestGen(t *testing.T) {
 		return
 	}
 
-	//dcs, _, err := client.CloudClient.DataCentersApi.DatacentersFindById(context.Background(), "374a0987-d594-48e7-b599-e08e6cf95012").Depth(0).Execute()
-	dcs, _, err := client.CloudClient.DataCentersApi.DatacentersGet(context.Background()).Execute()
-	//dcs := []interface{}{"create", "delete", "whatever"}
+	dcs, _, err := client.CloudClient.DataCentersApi.DatacentersFindById(context.Background(), "374a0987-d594-48e7-b599-e08e6cf95012").Depth(0).Execute()
+	//dcs, _, err := client.CloudClient.DataCentersApi.DatacentersGet(context.Background()).Execute()
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
-	obj := Formatter{
-		Json: dcs,
-		//Text: mapToTextOutputStruct(dcs),
-	}
-
-	viper.Set(constants.ArgOutput, "json")
-	out, _ := obj.GenerateOutput(false, cols)
+	viper.Set(constants.ArgOutput, "text")
+	out, _ := GenerateOutput(false, cols, "", dcs)
 	fmt.Println(out)
 }
 
-func (f Formatter) GenerateOutput(noHeaders bool, cols []string) (string, error) {
+func GenerateOutput(noHeaders bool, cols []string, rootPath string, obj interface{}) (string, error) {
+	objToText, err := mapObjectToText(rootPath, datacenter, obj)
+	if err != nil {
+		return "", err
+	}
+
+	format := formatter{
+		Json: obj,
+		Text: objToText,
+	}
+
 	if viper.GetString(constants.ArgOutput) == "json" {
-		return f.generateJSONOutput()
+		return format.generateJSONOutput()
 	}
 
 	if viper.GetString(constants.ArgOutput) == "text" {
-		return f.generateTextOutput(noHeaders, cols)
+		return format.generateTextOutput(noHeaders, cols)
 	}
 
 	return "", outputFormatErr
 }
 
-type simpleDC struct {
-	DatacenterId string `json:"DatacenterId,omitempty"`
-	Name         string `json:"Name,omitempty"`
-	Location     string `json:"Location,omitempty"`
-	CpuFamily    string `json:"CpuFamily,omitempty"`
-	State        string `json:"State,omitempty"`
-}
+func mapObjectToText(rootPath string, headerPaths []HeaderJsonPath, rootObj interface{}) ([]map[string]interface{}, error) {
+	var res = make([]map[string]interface{}, 0)
 
-func mapToTextOutputStruct(dc ionoscloud.Datacenter) []interface{} {
-	texts := make([]interface{}, 0)
-	text := simpleDC{
-		DatacenterId: *dc.Id,
-		Name:         *dc.Properties.Name,
-		Location:     *dc.Properties.Location,
-		CpuFamily:    *(*dc.Properties.GetCpuArchitecture())[0].CpuFamily,
-		State:        *dc.Metadata.State,
+	objs, err := traverseRoot(rootPath, rootObj)
+	if err != nil {
+		return nil, err
 	}
 
-	texts = append(texts, text)
+	for _, obj := range objs {
+		mappedObj := make(map[string]interface{}, 0)
 
-	return texts
+		for _, iter := range headerPaths {
+			if !obj.ExistsP(iter.Path) {
+				return nil, fmt.Errorf("wrong path provided: %s", iter.Path)
+			}
+
+			objData := obj.Path(iter.Path)
+			mappedObj[iter.Header] = objData.Data()
+		}
+
+		res = append(res, mappedObj)
+	}
+
+	return res, nil
 }
 
-// NOTE: does it require a wrapper to not create breaking changes in users' scripts? To be used with raw, api returned structures
-func (f Formatter) generateJSONOutput() (string, error) {
+func traverseRoot(rootPath string, obj interface{}) ([]*gabs.Container, error) {
+	jsonObj, err := json.Marshal(obj)
+	if err != nil {
+		return nil, err
+	}
+
+	parsedObj, err := gabs.ParseJSON(jsonObj)
+	if err != nil {
+		return nil, err
+	}
+
+	if rootPath == "" {
+		return []*gabs.Container{parsedObj}, nil
+	}
+
+	if !parsedObj.ExistsP(rootPath) {
+		return nil, fmt.Errorf("root path does not exist in object: %s", rootPath)
+	}
+
+	parsedObj = parsedObj.Path(rootPath)
+	children := parsedObj.Children()
+
+	if children == nil {
+		return nil, fmt.Errorf("root path does not lead to an array in object: %s", rootPath)
+	}
+
+	return children, nil
+}
+
+func (f formatter) generateJSONOutput() (string, error) {
 	out, err := json.MarshalIndent(f.Json, "", "\t")
 	if err != nil {
 		return "", err
@@ -97,8 +144,7 @@ func (f Formatter) generateJSONOutput() (string, error) {
 	return string(out), nil
 }
 
-// NOTE: to be used with user-defined structures (json output should return more info?)
-func (f Formatter) generateTextOutput(noHeaders bool, cols []string) (string, error) {
+func (f formatter) generateTextOutput(noHeaders bool, cols []string) (string, error) {
 	var buff = new(bytes.Buffer)
 	var w = new(tabwriter.Writer)
 	w.Init(buff, 5, 0, 3, ' ', tabwriter.StripEscape)
@@ -114,16 +160,19 @@ func (f Formatter) generateTextOutput(noHeaders bool, cols []string) (string, er
 		var formats []string
 		var values []interface{}
 
-		fields := structs.Map(obj)
-		// Properties -> Name
-
 		for _, col := range cols {
-			field := fields[col]
+			field := obj[col]
 
 			switch field.(type) {
-			case []string:
+			case []interface{}:
 				formats = append(formats, "%s")
-				field = strings.Join(field.([]string), "\t")
+
+				temp := make([]string, 0)
+				for _, val := range field.([]interface{}) {
+					temp = append(temp, fmt.Sprintf("%v", val))
+				}
+
+				field = strings.Join(temp, ", ")
 			default:
 				formats = append(formats, "%v")
 			}
