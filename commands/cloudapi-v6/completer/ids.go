@@ -6,10 +6,10 @@ package completer
 
 import (
 	"context"
+	"fmt"
 	"io"
 
 	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"
-
 	"github.com/ionos-cloud/ionosctl/v6/pkg/utils/clierror"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
 )
@@ -59,12 +59,24 @@ func DataCentersIds(outErr io.Writer) []string {
 	datacenters, _, err := datacenterSvc.List(resources.ListQueryParams{})
 	clierror.CheckError(err, outErr)
 	dcIds := make([]string, 0)
-	if items, ok := datacenters.Datacenters.GetItemsOk(); ok && items != nil {
-
+	if items, ok := datacenters.Datacenters.GetItemsOk(); ok {
 		for _, item := range *items {
-			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
-				dcIds = append(dcIds, *itemId)
+			var completion string
+			if item.Id == nil {
+				continue
 			}
+			completion = *item.Id
+			if props, ok := item.GetPropertiesOk(); ok {
+				if name, ok := props.GetNameOk(); ok {
+					// Here is where the completion descriptions start
+					completion = fmt.Sprintf("%s\t%s", completion, *name)
+				}
+				if location, ok := props.GetLocationOk(); ok {
+					completion = fmt.Sprintf("%s - %s", completion, *location)
+				}
+			}
+
+			dcIds = append(dcIds, completion)
 		}
 	} else {
 		return nil
@@ -240,11 +252,28 @@ func LansIds(outErr io.Writer, datacenterId string) []string {
 	lans, _, err := lanSvc.List(datacenterId, resources.ListQueryParams{})
 	clierror.CheckError(err, outErr)
 	lansIds := make([]string, 0)
-	if items, ok := lans.Lans.GetItemsOk(); ok && items != nil {
+	if items, ok := lans.Lans.GetItemsOk(); ok {
 		for _, item := range *items {
-			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
-				lansIds = append(lansIds, *itemId)
+			var completion string
+			if item.Id == nil {
+				continue
 			}
+			completion = *item.Id
+			if props, ok := item.GetPropertiesOk(); ok {
+				if name, ok := props.GetNameOk(); ok {
+					// Here is where the completion descriptions start
+					completion = fmt.Sprintf("%s\t%s", completion, *name)
+				}
+				if public, ok := props.GetPublicOk(); ok {
+					if *public {
+						completion = fmt.Sprintf("%s (public)", completion)
+					} else {
+						completion = fmt.Sprintf("%s (private)", completion)
+					}
+				}
+			}
+
+			lansIds = append(lansIds, completion)
 		}
 	} else {
 		return nil
