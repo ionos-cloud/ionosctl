@@ -107,25 +107,17 @@ func GenerateLogOutput(a interface{}) string {
 	outputFormat := viper.GetString(constants.ArgOutput)
 
 	if outputFormat == "json" {
-		return generateJSONLogOutput(a)
+		out, err := generateJSONOutput(a)
+		if err != nil {
+			return ""
+		}
+
+		return out
 	}
 
 	if outputFormat == "text" {
-		return generateTextLogOutput(a)
+		return fmt.Sprintf("%v\n", a)
 	}
 
 	return ""
-}
-
-func generateJSONLogOutput(a interface{}) string {
-	out, err := json.MarshalIndent(a, "", "\t")
-	if err != nil {
-		return ""
-	}
-
-	return fmt.Sprintf("%s\n", string(out))
-}
-
-func generateTextLogOutput(a interface{}) string {
-	return fmt.Sprintf("%v\n", a)
 }
