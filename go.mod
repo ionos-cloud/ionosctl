@@ -13,7 +13,7 @@ require (
 	github.com/ionos-cloud/sdk-go-auth v1.0.6
 	github.com/ionos-cloud/sdk-go-container-registry v1.0.1
 	github.com/ionos-cloud/sdk-go-dataplatform v1.0.1
-	github.com/ionos-cloud/sdk-go-dbaas-mongo v1.2.2
+	github.com/ionos-cloud/sdk-go-dbaas-mongo v1.2.3-0.20230802103338-69d728307a85
 	github.com/ionos-cloud/sdk-go-dbaas-postgres v1.1.1
 	github.com/ionos-cloud/sdk-go-dns v1.1.1
 	github.com/ionos-cloud/sdk-go/v6 v6.1.8
