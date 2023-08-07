@@ -2,10 +2,10 @@ package cluster
 
 import (
 	"context"
+	"fmt"
 	"os"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
-
 	"github.com/spf13/viper"
 
 	"github.com/cjrd/allocate"
@@ -22,62 +22,33 @@ var createConn = ionoscloud.Connection{}
 
 func ClusterCreateCmd() *core.Command {
 	cmd := core.NewCommand(context.TODO(), nil, core.CommandBuilder{
+		Namespace: "dbaas-mongo",
+		Resource:  "cluster",
 		Verb:      "create", // used in AVAILABLE COMMANDS in help
 		Aliases:   []string{"c"},
 		ShortDesc: "Create Mongo Clusters",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			var err error
-			err = c.Command.Command.MarkFlagRequired(constants.FlagTemplateId)
-			if err != nil {
-				return err
-			}
-			err = c.Command.Command.MarkFlagRequired(constants.FlagName)
-			if err != nil {
-				return err
-			}
-			err = c.Command.Command.MarkFlagRequired(constants.FlagInstances)
-			if err != nil {
-				return err
-			}
-			err = c.Command.Command.MarkFlagRequired(constants.FlagDatacenterId)
-			if err != nil {
-				return err
-			}
-			err = c.Command.Command.MarkFlagRequired(constants.FlagMaintenanceDay)
-			if err != nil {
-				return err
-			}
-			err = c.Command.Command.MarkFlagRequired(constants.FlagMaintenanceTime)
-			if err != nil {
-				return err
-			}
-			err = c.Command.Command.MarkFlagRequired(constants.FlagCidr)
-			if err != nil {
-				return err
-			}
-			err = c.Command.Command.MarkFlagRequired(constants.FlagLanId)
-			if err != nil {
-				return err
-			}
-			err = c.Command.Command.MarkFlagRequired(constants.FlagDatacenterId)
-			if err != nil {
-				return err
-			}
-			err = c.Command.Command.MarkFlagRequired(constants.FlagMaintenanceDay)
-			if err != nil {
-				return err
-			}
-			err = c.Command.Command.MarkFlagRequired(constants.FlagMaintenanceTime)
-			if err != nil {
-				return err
-			}
-			err = c.Command.Command.MarkFlagRequired(constants.FlagCidr)
-			if err != nil {
-				return err
-			}
-			err = c.Command.Command.MarkFlagRequired(constants.FlagLanId)
-			if err != nil {
-				return err
+			// old: "cidr", "datacenter-id", "instances", "lan-id", "maintenance-day", "maintenance-time", "name", "template-id"
+
+			/* Supermongo:
+			 * For edition playground, only replica-set and playground template (33457e53-1f8b-4ed2-8a12-2d42355aa759, 1 core, 50 GB Storage, 2 GB RAM).
+			 * For edition business, only replica-set and any template.
+			 * For edition enterprise, type replica-set/sharded-cluster and must select custom cores/storage-size/storage-type/ram.
+			 *
+			 * CPU Cores: 1-8
+			 * RAM Size (GB): <16 GB
+			 * Storage Size:  >100GB for optimal perf. max 1048.576 GB.
+			 * Shards: 2-32 shards.
+			**/
+			// var extraHelp string
+			if fn := core.GetFlagName(c.NS, constants.FlagEdition); !viper.IsSet(fn) {
+				return fmt.Errorf("set --edition (playground|business|enterprise) for smarter " +
+					"completions/requirements based on your desired cluster type")
+			} else {
+				edition := viper.GetString(fn)
+				if edition == "playground" {
+					// Don't ask for template ID
+				}
 			}
 			return nil
 		},
@@ -130,11 +101,11 @@ func ClusterCreateCmd() *core.Command {
 	cmd.AddStringVarFlag(createProperties.MongoDBVersion, constants.FlagVersion, "", "5.0", "The MongoDB version of your cluster")
 
 	// Maintenance
-	cmd.AddStringFlag(constants.FlagMaintenanceTime, "", "", "Time for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur. e.g.: 16:30:59", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagMaintenanceTime, "", "", "Time for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long window, during which maintenance might occur. e.g.: 16:30:59", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagMaintenanceTime, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"00:00:00", "08:00:00", "10:00:00", "12:00:00", "16:00:00"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddStringFlag(constants.FlagMaintenanceDay, "", "", "Day Of the Week for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagMaintenanceDay, "", "", "Day Of the Week for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur. e.g.: Saturday", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagMaintenanceDay, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"}, cobra.ShellCompDirectiveNoFileComp
 	})

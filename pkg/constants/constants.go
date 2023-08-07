@@ -22,6 +22,7 @@ const (
 	FlagMaxResultsShort = "M"
 	FlagCidr            = "cidr"
 	FlagLanId           = "lan-id"
+	FlagEdition         = "edition"
 
 	FlagCores                 = "cores"
 	FlagRam                   = "ram"

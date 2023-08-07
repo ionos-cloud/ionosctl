@@ -192,7 +192,10 @@ You can wait for the Request to be executed using ` + "`" + `--wait-for-request`
 	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgTemplateId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.TemplatesIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddSetFlag(cloudapiv6.ArgType, "", serverEnterpriseType, []string{serverEnterpriseType, serverCubeType, serverVCPUType}, "Type usages for the Server")
+	create.AddSetFlag(constants.FlagType, "", serverEnterpriseType, []string{serverEnterpriseType, serverCubeType, serverVCPUType}, "Type usages for the Server")
+	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return []string{serverEnterpriseType, serverCubeType}, cobra.ShellCompDirectiveNoFileComp
+	})
 
 	// Volume Properties - for DAS Volume associated with Cube Server
 	create.AddStringFlag(cloudapiv6.ArgVolumeName, "N", "Unnamed Direct Attached Storage", "[CUBE Server] Name of the Direct Attached Storage")
@@ -522,7 +525,7 @@ func PreRunServerList(c *core.PreCommandConfig) error {
 func PreRunServerCreate(c *core.PreCommandConfig) error {
 	err := core.CheckRequiredFlagsSets(c.Command, c.NS,
 		[]string{cloudapiv6.ArgDataCenterId, constants.FlagCores, constants.FlagRam},
-		[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgType, cloudapiv6.ArgTemplateId})
+		[]string{cloudapiv6.ArgDataCenterId, constants.FlagType, cloudapiv6.ArgTemplateId})
 	if err != nil {
 		return err
 	}
@@ -534,10 +537,10 @@ func PreRunServerCreate(c *core.PreCommandConfig) error {
 			[]string{cloudapiv6.ArgDataCenterId, constants.FlagCores, constants.FlagRam, cloudapiv6.ArgImageId, cloudapiv6.ArgSshKeyPaths},
 			[]string{cloudapiv6.ArgDataCenterId, constants.FlagCores, constants.FlagRam, cloudapiv6.ArgImageAlias, cloudapiv6.ArgPassword},
 			[]string{cloudapiv6.ArgDataCenterId, constants.FlagCores, constants.FlagRam, cloudapiv6.ArgImageAlias, cloudapiv6.ArgSshKeyPaths},
-			[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgType, cloudapiv6.ArgTemplateId, cloudapiv6.ArgImageId, cloudapiv6.ArgPassword},
-			[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgType, cloudapiv6.ArgTemplateId, cloudapiv6.ArgImageId, cloudapiv6.ArgSshKeyPaths},
-			[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgType, cloudapiv6.ArgTemplateId, cloudapiv6.ArgImageAlias, cloudapiv6.ArgPassword},
-			[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgType, cloudapiv6.ArgTemplateId, cloudapiv6.ArgImageAlias, cloudapiv6.ArgSshKeyPaths},
+			[]string{cloudapiv6.ArgDataCenterId, constants.FlagType, cloudapiv6.ArgTemplateId, cloudapiv6.ArgImageId, cloudapiv6.ArgPassword},
+			[]string{cloudapiv6.ArgDataCenterId, constants.FlagType, cloudapiv6.ArgTemplateId, cloudapiv6.ArgImageId, cloudapiv6.ArgSshKeyPaths},
+			[]string{cloudapiv6.ArgDataCenterId, constants.FlagType, cloudapiv6.ArgTemplateId, cloudapiv6.ArgImageAlias, cloudapiv6.ArgPassword},
+			[]string{cloudapiv6.ArgDataCenterId, constants.FlagType, cloudapiv6.ArgTemplateId, cloudapiv6.ArgImageAlias, cloudapiv6.ArgSshKeyPaths},
 		)
 		if err != nil {
 			return err
@@ -665,7 +668,7 @@ func RunServerCreate(c *core.CommandConfig) error {
 		return err
 	}
 	// If Server is of type CUBE, it will create an attached Volume
-	if viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgType)) == serverCubeType {
+	if viper.GetString(core.GetFlagName(c.NS, constants.FlagType)) == serverCubeType {
 		// Volume Properties
 		volumeDAS, err := getNewDAS(c)
 		if err != nil {
@@ -971,7 +974,7 @@ func getUpdateServerInfo(c *core.CommandConfig) (*resources.ServerProperties, er
 
 func getNewServer(c *core.CommandConfig) (*resources.Server, error) {
 	input := resources.ServerProperties{}
-	serverType := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgType))
+	serverType := viper.GetString(core.GetFlagName(c.NS, constants.FlagType))
 	availabilityZone := viper.GetString(core.GetFlagName(c.NS, constants.FlagAvailabilityZone))
 	name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
 	input.SetType(serverType)
@@ -982,7 +985,7 @@ func getNewServer(c *core.CommandConfig) (*resources.Server, error) {
 	c.Printer.Verbose("Property Name set: %v", name)
 
 	// CUBE Server Properties
-	if viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgType)) == serverCubeType {
+	if viper.GetString(core.GetFlagName(c.NS, constants.FlagType)) == serverCubeType {
 		input.ServerProperties.CpuFamily = nil
 		if fn := core.GetFlagName(c.NS, constants.FlagCpuFamily); viper.IsSet(fn) {
 			// NOTE 19.07.2023:
@@ -1008,7 +1011,7 @@ func getNewServer(c *core.CommandConfig) (*resources.Server, error) {
 	}
 
 	// ENTERPRISE Server Properties
-	if viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgType)) == serverEnterpriseType {
+	if viper.GetString(core.GetFlagName(c.NS, constants.FlagType)) == serverEnterpriseType {
 		input.SetCpuFamily(viper.GetString(core.GetFlagName(c.NS, constants.FlagCpuFamily)))
 		if !input.HasName() {
 			input.SetName("Unnamed Server")
@@ -1031,7 +1034,7 @@ func getNewServer(c *core.CommandConfig) (*resources.Server, error) {
 		}
 	}
 
-	if viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgType)) == serverVCPUType {
+	if viper.GetString(core.GetFlagName(c.NS, constants.FlagType)) == serverVCPUType {
 		input.ServerProperties.CpuFamily = nil
 		if fn := core.GetFlagName(c.NS, constants.FlagCpuFamily); viper.IsSet(fn) {
 			input.SetCpuFamily(viper.GetString(fn))
