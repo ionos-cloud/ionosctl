@@ -43,8 +43,8 @@ func ClusterCreateCmd() *core.Command {
 			**/
 
 			if fn := core.GetFlagName(c.NS, constants.FlagEdition); !viper.IsSet(fn) {
-				return fmt.Errorf("set --%s (%s) for smarter completions/requirements based on your desired "+
-					"cluster type", constants.FlagEdition, strings.Join(enumEditions, " | "))
+				return fmt.Errorf("--%s (%s) is a required option",
+					constants.FlagEdition, strings.Join(enumEditions, " | "))
 			} else {
 				edition := viper.GetString(fn)
 				// type is a reserved keyword
@@ -56,7 +56,7 @@ func ClusterCreateCmd() *core.Command {
 
 				err = core.CheckRequiredFlags(c.Command, c.NS, flags...)
 				if err != nil {
-					return fmt.Errorf("failed checking required flags for edition %s: %w", edition, err)
+					return fmt.Errorf("not all %s edition flags are set: %w", edition, err)
 				}
 			}
 			return nil
@@ -94,6 +94,9 @@ func ClusterCreateCmd() *core.Command {
 		},
 		InitClient: true,
 	})
+
+	cmd.AddStringFlag(constants.FlagEdition, "e", "", "Cluster Edition")
+	cmd.AddStringFlag(constants.FlagType, "", "", "Cluster Type")
 
 	// Linked to properties struct
 	_ = allocate.Zero(&createProperties)
@@ -141,7 +144,7 @@ func ClusterCreateCmd() *core.Command {
 // returns a slice of flags to be marked as required, depending on wanted edition and type
 func getRequiredFlagsByEditionAndType(edition, cType string) ([]string, error) {
 	alwaysRequired := []string{
-		constants.FlagName,
+		constants.FlagEdition, constants.FlagName,
 		constants.FlagMaintenanceDay, constants.FlagMaintenanceTime,
 		constants.FlagDatacenterId, constants.FlagLanId, constants.FlagCidr,
 	}
@@ -155,19 +158,17 @@ func getRequiredFlagsByEditionAndType(edition, cType string) ([]string, error) {
 		return append(alwaysRequired, constants.FlagTemplateId, constants.FlagInstances), nil
 	case "enterprise":
 		// Enterprise allows you to specify custom compute sizes instead of using a template
-		enterpriseComputeFlags := []string{constants.FlagCores, constants.FlagStorageType, constants.FlagStorageSize, constants.FlagRam}
+		alwaysRequiredEnterprise := append(alwaysRequired,
+			constants.FlagCores, constants.FlagStorageType, constants.FlagStorageSize, constants.FlagRam)
 
 		// As a special case for easier usage only for enterprise edition, we can infer that the user wants
 		//  - `replicaset` type if setting `--instances`,
 		//  - `sharded-cluster` type if setting `--shards`.
-		appendIfUnset := func(slice []string, flagIfUnset, appended string) []string {
-			return nil
-		}
 		switch cType {
 		case "replicaset":
-			return append(appendIfUnset(alwaysRequired, constants.FlagType, constants.FlagInstances), enterpriseComputeFlags...), nil
+			return append(alwaysRequiredEnterprise, constants.FlagInstances), nil
 		case "sharded-cluster":
-			return append(append(alwaysRequired, constants.FlagShards), enterpriseComputeFlags...), nil
+			return append(alwaysRequiredEnterprise, constants.FlagShards), nil
 		case "":
 			return nil, fmt.Errorf("--%s is required for enterprise clusters (valid: <%s>)",
 				constants.FlagType, strings.Join(enumTypes, " | "))
