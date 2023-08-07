@@ -13,6 +13,7 @@ const (
 	FlagNameShort       = "n"
 	FlagTemplateId      = "template-id"
 	FlagInstances       = "instances"
+	FlagShards          = "shards"
 	FlagMaintenanceTime = "maintenance-time"
 	FlagMaintenanceDay  = "maintenance-day"
 	FlagLocation        = "location"

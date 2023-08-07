@@ -15,6 +15,9 @@ import (
 	"github.com/spf13/viper"
 )
 
+var enumEditions = []string{"playground", "business", "enterprise"} // Remove whenever the SDK adds this as an actual type with enum vals
+var enumTypes = []string{"replicaset", "sharded-cluster"}           // Remove whenever the SDK adds this as an actual type with enum vals
+
 func ClusterCmd() *core.Command {
 	clusterCmd := &core.Command{
 		Command: &cobra.Command{
@@ -52,6 +55,7 @@ func getClusterPrint(c *core.CommandConfig, dcs *[]ionoscloud.ClusterResponse) p
 		r.KeyValue = getClusterRows(dcs)                            // map header -> rows
 		r.Columns = printer.GetHeaders(allCols, allCols[0:6], cols) // headers
 	}
+
 	return r
 }
 
