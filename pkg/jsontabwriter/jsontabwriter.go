@@ -118,9 +118,7 @@ func GenerateLogOutput(a interface{}) string {
 }
 
 func generateJSONLogOutput(a interface{}) string {
-	out, err := json.MarshalIndent(map[string]interface{}{
-		"Message": a,
-	}, "", "\t")
+	out, err := json.MarshalIndent(a, "", "\t")
 	if err != nil {
 		return ""
 	}
