@@ -16,33 +16,9 @@ import (
 	"github.com/spf13/viper"
 )
 
+const flagFilterByClusterNameWhenListAll = "cluster-name"
+
 func UserListCmd() *core.Command {
-	const FlagFilterByClusterNameWhenListAll = "cluster-name"
-	// Sorry for defining it here, but I needed a ref to that --cluster-name flag and didnt feel like it was worth declaring a global
-	listAll := func(c *core.CommandConfig) error {
-		c.Printer.Verbose("Getting Users from all clusters...")
-		clusters, err := cluster.Clusters(cluster.FilterNameFlags(c))
-		if err != nil {
-			return fmt.Errorf("failed getting clusters: %w", err)
-		}
-
-		var ls []sdkgo.User
-		var multiErr error
-		for _, c := range *clusters.GetItems() {
-			l, _, err := client.Must().MongoClient.UsersApi.ClustersUsersGet(context.Background(), *c.Id).Execute()
-			if err != nil {
-				multiErr = errors.Join(multiErr, fmt.Errorf("failed listing users of cluster %s: %w", *c.Properties.DisplayName, err))
-			}
-			ls = append(ls, *l.GetItems()...)
-		}
-
-		if multiErr != nil {
-			return fmt.Errorf("failed getting users of at least one cluster: %w", err)
-		}
-
-		return c.Printer.Print(getUserPrint(c, &ls))
-	}
-
 	cmd := core.NewCommand(context.TODO(), nil, core.CommandBuilder{
 		Namespace: "dbaas-mongo",
 		Resource:  "user",
@@ -51,7 +27,7 @@ func UserListCmd() *core.Command {
 		ShortDesc: fmt.Sprintf("Retrieves a list of MongoDB users. "+
 			"You can either list users of a certain cluster (--%s), "+
 			"or all clusters with an optional partial-match name filter (--%s)",
-			constants.FlagClusterId, FlagFilterByClusterNameWhenListAll),
+			constants.FlagClusterId, flagFilterByClusterNameWhenListAll),
 		Example:   "ionosctl dbaas mongo user list",
 		PreCmdRun: core.NoPreRun,
 		CmdRun: func(c *core.CommandConfig) error {
@@ -84,7 +60,7 @@ func UserListCmd() *core.Command {
 		InitClient: true,
 	})
 
-	cmd.AddStringFlag(FlagFilterByClusterNameWhenListAll, "", "",
+	cmd.AddStringFlag(flagFilterByClusterNameWhenListAll, "", "",
 		"When listing all users, you can optionally filter by partial-match cluster name")
 
 	cmd.AddStringFlag(constants.FlagClusterId, constants.FlagIdShort, "", "")
@@ -105,4 +81,27 @@ func UserListCmd() *core.Command {
 	_ = cmd.Command.Flags().MarkHidden(constants.ArgAll)
 
 	return cmd
+}
+
+func listAll(c *core.CommandConfig) error {
+	c.Printer.Verbose("Getting Users from all clusters...")
+	clusters, err := cluster.Clusters(cluster.FilterNameFlags(c))
+	if err != nil {
+		return fmt.Errorf("failed getting clusters: %w", err)
+	}
+
+	var ls []sdkgo.User
+	var multiErr error
+	for _, c := range *clusters.GetItems() {
+		l, _, err := client.Must().MongoClient.UsersApi.ClustersUsersGet(context.Background(), *c.Id).Execute()
+		if err != nil {
+			multiErr = errors.Join(multiErr, fmt.Errorf("failed listing users of cluster %s: %w", *c.Properties.DisplayName, err))
+		}
+		ls = append(ls, *l.GetItems()...)
+	}
+	if multiErr != nil {
+		return fmt.Errorf("failed getting users of at least one cluster: %w", err)
+	}
+
+	return c.Printer.Print(getUserPrint(c, &ls))
 }
