@@ -33,7 +33,7 @@ func getTemplatesPrint(c *core.CommandConfig, ls *[]ionoscloud.TemplateResponse)
 	r := printer.Result{}
 	if c != nil && ls != nil {
 		r.OutputJSON = ls
-		r.KeyValue = getClusterRows(ls)                                                                                    // map header -> rows
+		r.KeyValue = getTemplateRows(ls)                                                                                   // map header -> rows
 		r.Columns = printer.GetHeadersAllDefault(allCols, viper.GetStringSlice(core.GetFlagName(c.NS, constants.ArgCols))) // headers
 	}
 	return r
@@ -50,19 +50,41 @@ type TemplatePrint struct {
 
 var allCols = structs.Names(TemplatePrint{})
 
-func getClusterRows(ls *[]ionoscloud.TemplateResponse) []map[string]interface{} {
+func getTemplateRows(ls *[]ionoscloud.TemplateResponse) []map[string]interface{} {
+	if ls == nil {
+		return nil
+	}
+
 	out := make([]map[string]interface{}, 0, len(*ls))
 	for _, t := range *ls {
 		var cols TemplatePrint
-		cols.TemplateId = *t.Id
-		cols.Cores = *t.Properties.Cores
-		cols.StorageSize = fmt.Sprintf("%d GB", *t.Properties.StorageSize)
-		cols.Name = *t.Properties.Name
-		cols.Edition = *t.Properties.Edition
-		ramGb, err := utils.ConvertToGB(strconv.Itoa(int(*t.Properties.Ram)), utils.MegaBytes)
-		if err == nil {
-			cols.Ram = fmt.Sprintf("%d GB", ramGb)
+
+		if t.Id != nil {
+			cols.TemplateId = *t.Id
 		}
+
+		properties := t.Properties
+		if properties != nil {
+			if properties.Cores != nil {
+				cols.Cores = *properties.Cores
+			}
+			if properties.StorageSize != nil {
+				cols.StorageSize = fmt.Sprintf("%d GB", *properties.StorageSize)
+			}
+			if properties.Name != nil {
+				cols.Name = *properties.Name
+			}
+			if properties.Edition != nil {
+				cols.Edition = *properties.Edition
+			}
+			if properties.Ram != nil {
+				ramGb, err := utils.ConvertToGB(strconv.Itoa(int(*properties.Ram)), utils.MegaBytes)
+				if err == nil {
+					cols.Ram = fmt.Sprintf("%d GB", ramGb)
+				}
+			}
+		}
+
 		o := structs.Map(cols)
 		out = append(out, o)
 	}

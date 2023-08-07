@@ -66,20 +66,32 @@ func roleToString(role ionoscloud.UserRoles) string {
 }
 
 func getUserRows(ls *[]ionoscloud.User) []map[string]interface{} {
+	if ls == nil {
+		return nil
+	}
+
 	out := make([]map[string]interface{}, 0, len(*ls))
 	for _, t := range *ls {
 		var cols UserPrint
-		properties, ok := t.GetPropertiesOk()
-		if ok {
-			rolesAsStrings := functional.Map(*properties.GetRoles(), roleToString)
-			cols.Roles = strings.Join(rolesAsStrings, ", ") // "db1: read, db2: write, db3: abcd..."
 
-			cols.Username = *properties.GetUsername()
+		properties, ok := t.GetPropertiesOk()
+		if ok && properties != nil {
+			if properties.GetRoles() != nil {
+				rolesAsStrings := functional.Map(*properties.GetRoles(), roleToString)
+				cols.Roles = strings.Join(rolesAsStrings, ", ") // "db1: read, db2: write, db3: abcd..."
+			}
+			if properties.GetUsername() != nil {
+				cols.Username = *properties.GetUsername()
+			}
 		}
+
 		metadata, ok := t.GetMetadataOk()
-		if ok {
-			cols.CreatedBy = *metadata.GetCreatedBy()
+		if ok && metadata != nil {
+			if metadata.GetCreatedBy() != nil {
+				cols.CreatedBy = *metadata.GetCreatedBy()
+			}
 		}
+
 		o := structs.Map(cols)
 		out = append(out, o)
 	}
