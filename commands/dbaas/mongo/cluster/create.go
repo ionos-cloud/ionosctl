@@ -15,44 +15,24 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var (
-	alwaysRequired = []string{
-		constants.FlagEdition, constants.FlagName,
-		constants.FlagMaintenanceDay, constants.FlagMaintenanceTime,
-		constants.FlagDatacenterId, constants.FlagLanId, constants.FlagCidr,
-	}
-
-	playgroundFlags = alwaysRequired
-
-	businessFlags = append(alwaysRequired,
-		constants.FlagTemplateId, constants.FlagInstances,
-	)
-
-	enterpriseBaseFlags = append(alwaysRequired,
-		constants.FlagCores, constants.FlagStorageType,
-		constants.FlagStorageSize, constants.FlagRam,
-	)
-
-	enterpriseReplicasetFlags     = append(enterpriseBaseFlags, constants.FlagInstances)
-	enterpriseShardedClusterFlags = append(enterpriseBaseFlags, constants.FlagShards)
-)
-
 func ClusterCreateCmd() *core.Command {
+
+	playgroundRequired, _ := getRequiredFlagsByEditionAndType("playground", "")
+	businessRequired, _ := getRequiredFlagsByEditionAndType("business", "")
+	enterpriseReplicasetRequired, _ := getRequiredFlagsByEditionAndType("enterprise", "replicaset")
+	enterpriseShardedRequired, _ := getRequiredFlagsByEditionAndType("enterprise", "sharded-cluster")
 
 	examples := []string{
 		fmt.Sprintf("ionosctl dbaas mongo cluster create --%s playground %s",
-			constants.FlagEdition, core.FlagsUsage(playgroundFlags[1:]...)),
+			constants.FlagEdition, core.FlagsUsage(playgroundRequired[1:]...)),
 		fmt.Sprintf("ionosctl dbaas mongo cluster create --%s business %s",
-			constants.FlagEdition, core.FlagsUsage(businessFlags[1:]...)),
-		// Example where --type is inferred via the user setting either --instances or --sharded
+			constants.FlagEdition, core.FlagsUsage(businessRequired[1:]...)),
 		fmt.Sprintf("ionosctl dbaas mongo cluster create --%s enterprise (%s | %s) %s ",
-			constants.FlagEdition, core.FlagUsage(constants.FlagInstances), core.FlagUsage(constants.FlagShards), core.FlagsUsage(enterpriseReplicasetFlags[1:len(enterpriseReplicasetFlags)-1]...)),
-		// Example where --type is creating a requirement for --instances
+			constants.FlagEdition, core.FlagUsage(constants.FlagInstances), core.FlagUsage(constants.FlagShards), core.FlagsUsage(enterpriseReplicasetRequired[1:len(enterpriseReplicasetRequired)-1]...)),
 		fmt.Sprintf("ionosctl dbaas mongo cluster create --%s enterprise --%s replicaset %s",
-			constants.FlagEdition, constants.FlagType, core.FlagsUsage(enterpriseReplicasetFlags[1:]...)),
-		// Example where --type is creating a requirement for --shards
+			constants.FlagEdition, constants.FlagType, core.FlagsUsage(enterpriseReplicasetRequired[1:]...)),
 		fmt.Sprintf("ionosctl dbaas mongo cluster create --%s enterprise --%s sharded-cluster %s",
-			constants.FlagEdition, constants.FlagType, core.FlagsUsage(enterpriseShardedClusterFlags[1:]...)),
+			constants.FlagEdition, constants.FlagType, core.FlagsUsage(enterpriseShardedRequired[1:]...)),
 	}
 
 	cmd := core.NewCommand(context.TODO(), nil, core.CommandBuilder{
@@ -166,27 +146,25 @@ func getRequiredFlagsByEditionAndType(edition, cType string) ([]string, error) {
 		constants.FlagMaintenanceDay, constants.FlagMaintenanceTime,
 		constants.FlagDatacenterId, constants.FlagLanId, constants.FlagCidr,
 	}
-
 	switch edition {
 	case "playground":
 		// Type inferred as replicaset. Template inferred as type playground. Instances inferred as 1
 		return alwaysRequired, nil
 	case "business":
 		// Type inferred as replicaset.
-		return append(alwaysRequired, constants.FlagTemplateId, constants.FlagInstances), nil
+		return append(alwaysRequired,
+			constants.FlagTemplateId, constants.FlagInstances,
+		), nil
 	case "enterprise":
-		// Enterprise allows you to specify custom compute sizes instead of using a template
-		alwaysRequiredEnterprise := append(alwaysRequired,
-			constants.FlagCores, constants.FlagStorageType, constants.FlagStorageSize, constants.FlagRam)
-
-		// As a special case for easier usage only for enterprise edition, we can infer that the user wants
-		//  - `replicaset` type if setting `--instances`,
-		//  - `sharded-cluster` type if setting `--shards`.
+		enterpriseBaseFlags := append(alwaysRequired,
+			constants.FlagCores, constants.FlagStorageType,
+			constants.FlagStorageSize, constants.FlagRam,
+		)
 		switch cType {
 		case "replicaset":
-			return append(alwaysRequiredEnterprise, constants.FlagInstances), nil
+			return append(enterpriseBaseFlags, constants.FlagInstances), nil
 		case "sharded-cluster":
-			return append(alwaysRequiredEnterprise, constants.FlagShards), nil
+			return append(enterpriseBaseFlags, constants.FlagShards), nil
 		case "":
 			return nil, fmt.Errorf("--%s is required for enterprise clusters (valid: <%s>)",
 				constants.FlagType, strings.Join(enumTypes, " | "))
