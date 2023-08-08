@@ -27,10 +27,13 @@ func ClusterCreateCmd() *core.Command {
 			constants.FlagEdition, core.FlagsUsage(playgroundRequired[1:]...)),
 		fmt.Sprintf("ionosctl dbaas mongo cluster create --%s business %s",
 			constants.FlagEdition, core.FlagsUsage(businessRequired[1:]...)),
-		fmt.Sprintf("ionosctl dbaas mongo cluster create --%s enterprise (%s | %s) %s ",
+		// Example where type is inferred by using --shards or --instances
+		fmt.Sprintf("ionosctl dbaas mongo cluster create --%s enterprise (%s | %s) %s",
 			constants.FlagEdition, core.FlagUsage(constants.FlagInstances), core.FlagUsage(constants.FlagShards), core.FlagsUsage(enterpriseReplicasetRequired[1:len(enterpriseReplicasetRequired)-1]...)),
+		// Example where using --type creates a requirement for --instances
 		fmt.Sprintf("ionosctl dbaas mongo cluster create --%s enterprise --%s replicaset %s",
 			constants.FlagEdition, constants.FlagType, core.FlagsUsage(enterpriseReplicasetRequired[1:]...)),
+		// Example where using --type creates a requirement for --shards
 		fmt.Sprintf("ionosctl dbaas mongo cluster create --%s enterprise --%s sharded-cluster %s",
 			constants.FlagEdition, constants.FlagType, core.FlagsUsage(enterpriseShardedRequired[1:]...)),
 	}

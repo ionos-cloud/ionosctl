@@ -73,8 +73,7 @@ func RequiresMinOptionsErr(cmd *Command, flagNames ...string) error {
 	if cmd == nil || cmd.Command == nil {
 		return requiredFlagErr
 	}
-	var usage string
-	usage = cmd.CommandPath() + FlagsUsage(flagNames...)
+	usage := fmt.Sprintf("%s %s", cmd.CommandPath(), FlagsUsage(flagNames...))
 	return errors.New(
 		fmt.Sprintf("%q requires at least %d %s.\n\nUsage: %s\n\nFor more details, see '%s --help'.",
 			cmd.CommandPath(),
