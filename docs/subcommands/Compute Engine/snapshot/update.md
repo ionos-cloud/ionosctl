@@ -55,6 +55,7 @@ Required values to run command:
   -n, --name string              Name of the Snapshot
       --nic-hot-plug             This volume is capable of NIC hot plug (no reboot required). E.g.: --nic-hot-plug=true, --nic-hot-plug=false
       --nic-hot-unplug           This volume is capable of NIC hot unplug (no reboot required). E.g.: --nic-hot-unplug=true, --nic-hot-unplug=false
+      --no-headers               Don't print column headers
   -o, --output string            Desired output format [text|json] (default "text")
   -q, --quiet                    Quiet output
       --ram-hot-plug             This volume is capable of memory hot plug (no reboot required). E.g.: --ram-hot-plug=true, --ram-hot-plug=false
