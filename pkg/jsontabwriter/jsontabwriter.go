@@ -49,44 +49,19 @@ func generateTextOutput(rootPath string, obj interface{}, jsonPaths map[string]s
 	w.Init(buff, 5, 0, 3, ' ', tabwriter.StripEscape)
 
 	if !viper.IsSet(constants.ArgNoHeaders) {
-		_, err := fmt.Fprintln(w, strings.Join(cols, "\t"))
-		if err != nil {
+		if _, err = fmt.Fprintln(w, strings.Join(cols, "\t")); err != nil {
 			return "", nil
 		}
 	}
 
-	for _, obj := range text {
-		var formats []string
-		var values []interface{}
-
-		for _, col := range cols {
-			field := obj[col]
-
-			switch field.(type) {
-			case []interface{}:
-				formats = append(formats, "%s")
-
-				temp := make([]string, 0)
-				for _, val := range field.([]interface{}) {
-					temp = append(temp, fmt.Sprintf("%v", val))
-				}
-
-				field = strings.Join(temp, ", ")
-			default:
-				formats = append(formats, "%v")
-			}
-
-			values = append(values, field)
-		}
-
-		format := strings.Join(formats, "\t")
-		_, err := fmt.Fprintf(w, format+"\n", values...)
-		if err != nil {
+	for _, t := range text {
+		format, values := mapTextToTableColumns(cols, t)
+		if _, err = fmt.Fprintf(w, format+"\n", values...); err != nil {
 			return "", err
 		}
 	}
 
-	if err := w.Flush(); err != nil {
+	if err = w.Flush(); err != nil {
 		return "", err
 	}
 
@@ -120,4 +95,28 @@ func GenerateLogOutput(a interface{}) string {
 	}
 
 	return ""
+}
+
+func mapTextToTableColumns(cols []string, o map[string]interface{}) (format string, values []interface{}) {
+	formats := make([]string, 0)
+	values = make([]interface{}, 0)
+
+	for _, col := range cols {
+		field := o[col]
+
+		switch field.(type) {
+		case []interface{}:
+			temp := make([]string, 0)
+			for _, val := range field.([]interface{}) {
+				temp = append(temp, fmt.Sprintf("%v", val))
+			}
+
+			field = strings.Join(temp, ", ")
+		}
+
+		formats = append(formats, "%v")
+		values = append(values, field)
+	}
+
+	return strings.Join(formats, "\t"), values
 }
