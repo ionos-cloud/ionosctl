@@ -6,28 +6,62 @@ import (
 	"os"
 	"strings"
 
-	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/spf13/viper"
 
-	"github.com/cjrd/allocate"
 	cloudapiv6completer "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/completer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
-	ionoscloud "github.com/ionos-cloud/sdk-go-dbaas-mongo"
 	"github.com/spf13/cobra"
 )
 
-var createProperties = ionoscloud.CreateClusterProperties{}
-var createConn = ionoscloud.Connection{}
+var (
+	alwaysRequired = []string{
+		constants.FlagEdition, constants.FlagName,
+		constants.FlagMaintenanceDay, constants.FlagMaintenanceTime,
+		constants.FlagDatacenterId, constants.FlagLanId, constants.FlagCidr,
+	}
+
+	playgroundFlags = alwaysRequired
+
+	businessFlags = append(alwaysRequired,
+		constants.FlagTemplateId, constants.FlagInstances,
+	)
+
+	enterpriseBaseFlags = append(alwaysRequired,
+		constants.FlagCores, constants.FlagStorageType,
+		constants.FlagStorageSize, constants.FlagRam,
+	)
+
+	enterpriseReplicasetFlags     = append(enterpriseBaseFlags, constants.FlagInstances)
+	enterpriseShardedClusterFlags = append(enterpriseBaseFlags, constants.FlagShards)
+)
 
 func ClusterCreateCmd() *core.Command {
+
+	examples := []string{
+		fmt.Sprintf("ionosctl dbaas mongo cluster create --%s playground %s",
+			constants.FlagEdition, core.FlagsUsage(playgroundFlags[1:]...)),
+		fmt.Sprintf("ionosctl dbaas mongo cluster create --%s business %s",
+			constants.FlagEdition, core.FlagsUsage(businessFlags[1:]...)),
+		// Example where --type is inferred via the user setting either --instances or --sharded
+		fmt.Sprintf("ionosctl dbaas mongo cluster create --%s enterprise (%s | %s) %s ",
+			constants.FlagEdition, core.FlagUsage(constants.FlagInstances), core.FlagUsage(constants.FlagShards), core.FlagsUsage(enterpriseReplicasetFlags[1:len(enterpriseReplicasetFlags)-1]...)),
+		// Example where --type is creating a requirement for --instances
+		fmt.Sprintf("ionosctl dbaas mongo cluster create --%s enterprise --%s replicaset %s",
+			constants.FlagEdition, constants.FlagType, core.FlagsUsage(enterpriseReplicasetFlags[1:]...)),
+		// Example where --type is creating a requirement for --shards
+		fmt.Sprintf("ionosctl dbaas mongo cluster create --%s enterprise --%s sharded-cluster %s",
+			constants.FlagEdition, constants.FlagType, core.FlagsUsage(enterpriseShardedClusterFlags[1:]...)),
+	}
+
 	cmd := core.NewCommand(context.TODO(), nil, core.CommandBuilder{
 		Namespace: "dbaas-mongo",
 		Resource:  "cluster",
 		Verb:      "create", // used in AVAILABLE COMMANDS in help
 		Aliases:   []string{"c"},
 		ShortDesc: "Create Mongo Replicaset or Sharded Clusters",
+		Example:   strings.Join(examples, "\n\n"),
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			// old: "cidr", "datacenter-id", "instances", "lan-id", "maintenance-day", "maintenance-time", "name", "template-id"
 
@@ -62,35 +96,21 @@ func ClusterCreateCmd() *core.Command {
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			c.Printer.Verbose("Creating Cluster...")
-			day := viper.GetString(core.GetFlagName(c.NS, constants.FlagMaintenanceDay))
-			time := viper.GetString(core.GetFlagName(c.NS, constants.FlagMaintenanceTime))
-
-			maintenanceWindow := ionoscloud.MaintenanceWindow{}
-			maintenanceWindow.SetDayOfTheWeek(ionoscloud.DayOfTheWeek(day))
-			maintenanceWindow.SetTime(time)
-			createProperties.SetMaintenanceWindow(maintenanceWindow)
-			createProperties.SetConnections([]ionoscloud.Connection{createConn})
-			input := ionoscloud.CreateClusterRequest{}
-			input.SetProperties(createProperties)
-
-			// Extra CLI helpers
-			if *input.Properties.Location == "" {
-				// If location isn't set to Datacenter's Location, Mongo API throws an error. Location property is also marked as required
-				// To improve user experience we mark it as optional, and set it to the datacenter's location implicitly via connections.datacenterID.
-				dc, _, err := client.Must().CloudClient.DataCentersApi.DatacentersFindById(c.Context, *createConn.DatacenterId).Execute()
-				if err != nil {
-					return err
+			// TODO
+			return nil
+			/*
+				// Extra CLI helpers
+				if *input.Properties.Location == "" {
+					// If location isn't set to Datacenter's Location, Mongo API throws an error. Location property is also marked as required
+					// To improve user experience we mark it as optional, and set it to the datacenter's location implicitly via connections.datacenterID.
+					dc, _, err := client.Must().CloudClient.DataCentersApi.DatacentersFindById(c.Context, *createConn.DatacenterId).Execute()
+					if err != nil {
+						return err
+					}
+					input.Properties.Location = dc.Properties.Location
 				}
-				input.Properties.Location = dc.Properties.Location
-			}
 
-			cr, _, err := client.Must().MongoClient.ClustersApi.ClustersPost(context.Background()).CreateClusterRequest(input).Execute()
-
-			if err != nil {
-				return err
-			}
-			return c.Printer.Print(getClusterPrint(c, &[]ionoscloud.ClusterResponse{cr}))
+			*/
 		},
 		InitClient: true,
 	})
@@ -98,8 +118,6 @@ func ClusterCreateCmd() *core.Command {
 	cmd.AddStringFlag(constants.FlagEdition, "e", "", "Cluster Edition")
 	cmd.AddStringFlag(constants.FlagType, "", "", "Cluster Type")
 
-	// Linked to properties struct
-	_ = allocate.Zero(&createProperties)
 	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "The name of your cluster")
 	cmd.AddStringFlag(constants.FlagLocation, constants.FlagLocationShort, "", "The physical location where the cluster will be created. Defaults to the connection's datacenter location")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagLocation, func(cmdCobra *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -115,7 +133,7 @@ func ClusterCreateCmd() *core.Command {
 	// Maintenance
 	cmd.AddStringFlag(constants.FlagMaintenanceTime, "", "", "Time for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long window, during which maintenance might occur. e.g.: 16:30:59", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagMaintenanceTime, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return []string{"00:00:00", "08:00:00", "10:00:00", "12:00:00", "16:00:00"}, cobra.ShellCompDirectiveNoFileComp
+		return []string{"00:00:00", "04:00:00", "08:00:00", "10:00:00", "12:00:00", "16:00:00", "20:00:00"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddStringFlag(constants.FlagMaintenanceDay, "", "", "Day Of the Week for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur. e.g.: Saturday", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagMaintenanceDay, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
