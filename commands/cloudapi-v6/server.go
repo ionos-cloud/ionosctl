@@ -1032,6 +1032,15 @@ func getNewServer(c *core.CommandConfig) (*resources.Server, error) {
 	}
 
 	if viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgType)) == serverVCPUType {
+		input.ServerProperties.CpuFamily = nil
+		if fn := core.GetFlagName(c.NS, constants.FlagCpuFamily); viper.IsSet(fn) {
+			input.SetCpuFamily(viper.GetString(fn))
+		}
+
+		if !input.HasName() {
+			input.SetName("Unnamed VCPU")
+		}
+
 		if viper.IsSet(core.GetFlagName(c.NS, constants.FlagCores)) {
 			cores := viper.GetInt32(core.GetFlagName(c.NS, constants.FlagCores))
 			input.SetCores(cores)
