@@ -93,9 +93,7 @@ func TestPrinterPrintStandardResultJson(t *testing.T) {
 func TestPrinterPrintDefaultJson(t *testing.T) {
 	var (
 		b   bytes.Buffer
-		str = `{
-  "Message": "command executed"
-}`
+		str = `"command executed"`
 	)
 	viper.Set(constants.ArgOutput, "json")
 	viper.Set(constants.ArgServerUrl, constants.DefaultApiURL)

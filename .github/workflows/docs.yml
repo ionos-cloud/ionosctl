@@ -1,0 +1,26 @@
+name: Docs
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    types: [ opened, synchronize, reopened ]
+jobs:
+  check_diff:
+    name: Check Generated Docs Diff
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Run make docs
+        run: make docs
+
+      - name: Check for differences
+        run: |
+          if ! git diff --quiet; then
+            echo "There are differences in the generated documentation. Run `make docs` to fix."
+            git diff
+            exit 1
+          fi

@@ -92,7 +92,7 @@ func TestZone(t *testing.T) {
 	// assert.ErrorContains(t, err, fmt.Sprintf("\"%s\" not set", constants.FlagName))
 
 	// Generate a zone
-	randName := fake.Adjective() + ".com"
+	randName := fmt.Sprintf("%s%s.%s.space", fake.Adjective(), fake.Noun(), fake.AlphaNum(4))
 	randDesc := fake.AlphaNum(32)
 	c.Command.Flags().Set(constants.FlagName, randName)
 	c.Command.Flags().Set(constants.FlagDescription, randDesc)
