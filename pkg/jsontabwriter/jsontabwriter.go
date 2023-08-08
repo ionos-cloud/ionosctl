@@ -14,7 +14,8 @@ import (
 
 var outputFormatErr = "invalid format: %s"
 
-func GenerateOutput(rootPath string, jsonPaths map[string]string, obj interface{}) (string, error) {
+// TODO: remove cols as function parameter once --cols flag fix is ready
+func GenerateOutput(rootPath string, jsonPaths map[string]string, obj interface{}, cols []string) (string, error) {
 	outputFormat := viper.GetString(constants.ArgOutput)
 
 	if outputFormat == "json" {
@@ -22,7 +23,7 @@ func GenerateOutput(rootPath string, jsonPaths map[string]string, obj interface{
 	}
 
 	if outputFormat == "text" {
-		return generateTextOutput(rootPath, obj, jsonPaths)
+		return generateTextOutput(rootPath, obj, jsonPaths, cols)
 	}
 
 	return "", fmt.Errorf(outputFormatErr, outputFormat)
@@ -37,8 +38,7 @@ func generateJSONOutput(obj interface{}) (string, error) {
 	return fmt.Sprintf("%s\n", string(out)), nil
 }
 
-func generateTextOutput(rootPath string, obj interface{}, jsonPaths map[string]string) (string, error) {
-	cols := viper.GetStringSlice(constants.ArgCols)
+func generateTextOutput(rootPath string, obj interface{}, jsonPaths map[string]string, cols []string) (string, error) {
 	text, err := json2table.ConvertJSONToText(rootPath, jsonPaths, obj)
 	if err != nil {
 		return "", err

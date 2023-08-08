@@ -90,9 +90,8 @@ func testGenerateTextOutputWithBasicStruct(t *testing.T) {
 	viper.Reset()
 
 	viper.Set(constants.ArgOutput, "text")
-	viper.Set(constants.ArgCols, []string{"int32", "string"})
 
-	out, err := jsontabwriter.GenerateOutput("", innerStructJsonPaths, testInnerStruct)
+	out, err := jsontabwriter.GenerateOutput("", innerStructJsonPaths, testInnerStruct, []string{"int32", "string"})
 	assert.NoError(t, err)
 
 	fmt.Println(out)
@@ -102,9 +101,8 @@ func testGenerateJSONOutputWithBasicStruct(t *testing.T) {
 	viper.Reset()
 
 	viper.Set(constants.ArgOutput, "json")
-	viper.Set(constants.ArgCols, []string{"int32", "string"})
 
-	out, err := jsontabwriter.GenerateOutput("", innerStructJsonPaths, testInnerStruct)
+	out, err := jsontabwriter.GenerateOutput("", innerStructJsonPaths, testInnerStruct, []string{"int32", "string"})
 	assert.NoError(t, err)
 
 	fmt.Println(out)
@@ -114,9 +112,9 @@ func testGenerateTextOutputWithComplexStruct(t *testing.T) {
 	viper.Reset()
 
 	viper.Set(constants.ArgOutput, "text")
-	viper.Set(constants.ArgCols, []string{"int64", "string", "float64", "strings", "innerStrings", "innerInts32"})
 
-	out, err := jsontabwriter.GenerateOutput("", outerStructJsonPaths, testOuterStruct)
+	out, err := jsontabwriter.GenerateOutput("", outerStructJsonPaths, testOuterStruct,
+		[]string{"int64", "string", "float64", "strings", "innerStrings", "innerInts32"})
 	assert.NoError(t, err)
 
 	fmt.Println(out)
@@ -126,9 +124,9 @@ func testGenerateJSONOutputWithComplexStruct(t *testing.T) {
 	viper.Reset()
 
 	viper.Set(constants.ArgOutput, "json")
-	viper.Set(constants.ArgCols, []string{"int32", "string", "float64", "strings", "innerStrings", "innerInts32"})
 
-	out, err := jsontabwriter.GenerateOutput("", outerStructJsonPaths, testOuterStruct)
+	out, err := jsontabwriter.GenerateOutput("", outerStructJsonPaths, testOuterStruct,
+		[]string{"int32", "string", "float64", "strings", "innerStrings", "innerInts32"})
 	assert.NoError(t, err)
 
 	fmt.Println(out)
@@ -138,9 +136,7 @@ func testGenerateTextOutputWithInnerBasicStructs(t *testing.T) {
 	viper.Reset()
 
 	viper.Set(constants.ArgOutput, "text")
-	viper.Set(constants.ArgCols, []string{"int32", "string"})
-
-	out, err := jsontabwriter.GenerateOutput("innerStructs", innerStructJsonPaths, testOuterStruct)
+	out, err := jsontabwriter.GenerateOutput("innerStructs", innerStructJsonPaths, testOuterStruct, []string{"int32", "string"})
 	assert.NoError(t, err)
 
 	fmt.Println(out)
@@ -150,9 +146,8 @@ func testGenerateJSONOutputWithInnerBasicStructs(t *testing.T) {
 	viper.Reset()
 
 	viper.Set(constants.ArgOutput, "json")
-	viper.Set(constants.ArgCols, []string{"int32", "string"})
 
-	out, err := jsontabwriter.GenerateOutput("innerStructs", innerStructJsonPaths, testOuterStruct)
+	out, err := jsontabwriter.GenerateOutput("innerStructs", innerStructJsonPaths, testOuterStruct, []string{"int32", "string"})
 	assert.NoError(t, err)
 
 	fmt.Println(out)
