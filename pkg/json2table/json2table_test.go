@@ -106,68 +106,68 @@ func TestConvertJSONToText(t *testing.T) {
 }
 
 func testConvertJSONToTextWithBasicStruct(t *testing.T) {
-	res, err := json2table.ConvertJSONToText("", innerStructJsonPaths, testInnerStruct)
+	res, err := json2table.ConvertJSONToTable("", innerStructJsonPaths, testInnerStruct)
 	assert.NoError(t, err)
 	assert.ElementsMatch(t, expectedResultBasicStruct, res)
 
 }
 
 func testConvertJSONToTextWithComplexStruct(t *testing.T) {
-	res, err := json2table.ConvertJSONToText("", outerStructJsonPaths, testOuterStruct)
+	res, err := json2table.ConvertJSONToTable("", outerStructJsonPaths, testOuterStruct)
 	assert.NoError(t, err)
 	assert.ElementsMatch(t, expectedResultComplexStruct, res)
 }
 
 func testConvertJSONToTextWithInnerBasicStructs(t *testing.T) {
-	res, err := json2table.ConvertJSONToText("innerStructs", innerStructJsonPaths, testOuterStruct)
+	res, err := json2table.ConvertJSONToTable("innerStructs", innerStructJsonPaths, testOuterStruct)
 	assert.NoError(t, err)
 	assert.ElementsMatch(t, expectedResultInnerBasicStructs, res)
 }
 
 func testFailConvertJSONToTextWithWrongRoot(t *testing.T) {
-	_, err := json2table.ConvertJSONToText("random.root.path", innerStructJsonPaths, testOuterStruct)
+	_, err := json2table.ConvertJSONToTable("random.root.path", innerStructJsonPaths, testOuterStruct)
 	if assert.Error(t, err) {
 		fmt.Println(err)
 	}
 }
 
 func testFailConvertJSONToTextWithWrongRootDestination(t *testing.T) {
-	_, err := json2table.ConvertJSONToText("int64", innerStructJsonPaths, testOuterStruct)
+	_, err := json2table.ConvertJSONToTable("int64", innerStructJsonPaths, testOuterStruct)
 	if assert.Error(t, err) {
 		fmt.Println(err)
 	}
 }
 
 func testFailConvertJSONToTextWithUnsupportedJSONValue(t *testing.T) {
-	_, err := json2table.ConvertJSONToText("", innerStructJsonPaths, math.Inf(1))
+	_, err := json2table.ConvertJSONToTable("", innerStructJsonPaths, math.Inf(1))
 	if assert.Error(t, err) {
 		fmt.Println(err)
 	}
 }
 
 func testFailConvertJSONToTextWithUnsupportedJSONType(t *testing.T) {
-	_, err := json2table.ConvertJSONToText("", innerStructJsonPaths, make(chan int))
+	_, err := json2table.ConvertJSONToTable("", innerStructJsonPaths, make(chan int))
 	if assert.Error(t, err) {
 		fmt.Println(err)
 	}
 }
 
 func testFailConvertJSONToTextWithEmptyJSON(t *testing.T) {
-	_, err := json2table.ConvertJSONToText("", innerStructJsonPaths, nil)
+	_, err := json2table.ConvertJSONToTable("", innerStructJsonPaths, nil)
 	if assert.Error(t, err) {
 		fmt.Println(err)
 	}
 }
 
 func testFailConvertJSONToTextWithEmptyPaths(t *testing.T) {
-	_, err := json2table.ConvertJSONToText("", nil, testInnerStruct)
+	_, err := json2table.ConvertJSONToTable("", nil, testInnerStruct)
 	if assert.Error(t, err) {
 		fmt.Println(err)
 	}
 }
 
 func testFailConvertJSONToTextWithWrongPaths(t *testing.T) {
-	_, err := json2table.ConvertJSONToText("", wrongPaths, testInnerStruct)
+	_, err := json2table.ConvertJSONToTable("", wrongPaths, testInnerStruct)
 	if assert.Error(t, err) {
 		fmt.Println(err)
 	}

@@ -7,7 +7,7 @@ import (
 	"github.com/Jeffail/gabs/v2"
 )
 
-func ConvertJSONToText(rootPath string, jsonPaths map[string]string, rootObj interface{}) ([]map[string]interface{}, error) {
+func ConvertJSONToTable(rootPath string, jsonPaths map[string]string, rootObj interface{}) ([]map[string]interface{}, error) {
 	if rootObj == nil {
 		return nil, fmt.Errorf("object provided cannot be nil")
 	}

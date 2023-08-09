@@ -39,7 +39,7 @@ func generateJSONOutput(obj interface{}) (string, error) {
 }
 
 func generateTextOutput(rootPath string, obj interface{}, jsonPaths map[string]string, cols []string) (string, error) {
-	text, err := json2table.ConvertJSONToText(rootPath, jsonPaths, obj)
+	table, err := json2table.ConvertJSONToTable(rootPath, jsonPaths, obj)
 	if err != nil {
 		return "", err
 	}
@@ -54,8 +54,8 @@ func generateTextOutput(rootPath string, obj interface{}, jsonPaths map[string]s
 		}
 	}
 
-	for _, t := range text {
-		format, values := mapTextToTableColumns(cols, t)
+	for _, t := range table {
+		format, values := convertTableToText(cols, t)
 		if _, err = fmt.Fprintf(w, format+"\n", values...); err != nil {
 			return "", err
 		}
@@ -97,12 +97,12 @@ func GenerateLogOutput(a interface{}) string {
 	return ""
 }
 
-func mapTextToTableColumns(cols []string, o map[string]interface{}) (format string, values []interface{}) {
+func convertTableToText(cols []string, table map[string]interface{}) (format string, values []interface{}) {
 	formats := make([]string, 0)
 	values = make([]interface{}, 0)
 
 	for _, col := range cols {
-		field := o[col]
+		field := table[col]
 
 		switch field.(type) {
 		case []interface{}:
