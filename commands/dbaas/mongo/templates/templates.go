@@ -135,16 +135,18 @@ func Find(found func(x ionoscloud.TemplateResponse) bool) (ionoscloud.TemplateRe
 // e.g.:
 // - Resolve("S") -> "id of MongoDB Business S template" (note that 4XL_S is correctly ignored in this case)
 // - Resolve("id of MongoDB Business L template") -> "id of MongoDB Business L template"
-func Resolve(nameOrId string) string {
+func Resolve(nameOrId string) (string, error) {
 	if dumbWord := strings.ToLower(nameOrId); dumbWord == "mongodb" || dumbWord == "business" {
 		// Save the user from himself by throwing away queries that result in very vague and unwanted expensive stuff
-		return ""
+		return "", fmt.Errorf("the words used to select your template (%s) are too vague. please be more specific", dumbWord)
 	}
 
 	uid, errParseUuid := uuid.FromString(nameOrId)
 	id := uid.String()
 	if errParseUuid != nil {
 		// It's a name
+
+		// Why doesn't the API have a FindByID or something :(
 		templateMatchingWholeWordIgnoreCase, err := Find(func(x ionoscloud.TemplateResponse) bool {
 			if x.Properties == nil || x.Properties.Name == nil {
 				return false
@@ -160,10 +162,10 @@ func Resolve(nameOrId string) string {
 		})
 
 		if err != nil {
-			return ""
+			return "", fmt.Errorf("failed finding a template with any word of its name case-insensitively matching %s: %w", nameOrId, err)
 		}
 
 		id = *templateMatchingWholeWordIgnoreCase.Id
 	}
-	return id
+	return id, nil
 }

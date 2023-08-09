@@ -7,20 +7,106 @@ import (
 	"os"
 	"strings"
 
-	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/templates"
-	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
-	ionoscloud "github.com/ionos-cloud/sdk-go-dbaas-mongo"
-	"github.com/spf13/viper"
-	"golang.org/x/exp/slices"
-
 	cloudapiv6completer "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/templates"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	ionoscloud "github.com/ionos-cloud/sdk-go-dbaas-mongo"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
+	"golang.org/x/exp/slices"
 )
 
-func ClusterCreateCmd() *core.Command {
+// SIDE EFFECT: sets FlagEdition if not set and can be inferred
+func validateOrInferEditionByTemplate(c *core.PreCommandConfig) error {
+	if fn := core.GetFlagName(c.NS, constants.FlagTemplate); viper.IsSet(fn) {
+		tmplId, err := templates.Resolve(viper.GetString(fn))
+		if err != nil {
+			return fmt.Errorf("failed resolving %s to an ID of template: %w", viper.GetString(fn), err)
+		}
+		template, err := templates.Find(func(x ionoscloud.TemplateResponse) bool {
+			return *x.Id == tmplId
+		})
+		if err != nil {
+			return fmt.Errorf("failed finding template with ID %s: %w", tmplId, err)
+		}
 
+		if template.Properties == nil || template.Id == nil ||
+			template.Properties.Edition == nil || template.Properties.Name == nil {
+			return fmt.Errorf("found a template with some unset fields: %#v.\n Please use IONOS_LOG_LEVEL=trace and file a Github Issue", template)
+		}
+
+		if fnEd := core.GetFlagName(c.NS, constants.FlagEdition); viper.IsSet(fnEd) {
+			edition := viper.GetString(fnEd)
+			// Check that template & edition aren't set to incompatible things
+
+			if edition == "enterprise" && viper.IsSet(core.GetFlagName(c.NS, constants.FlagTemplate)) {
+				return fmt.Errorf("for enterprise edition, setting --%s is forbidden. Use %s", constants.FlagTemplate,
+					core.FlagsUsage(constants.FlagCores, constants.FlagRam, constants.FlagStorageType, constants.FlagStorageSize))
+			}
+
+			if *template.Properties.Edition != edition {
+				return fmt.Errorf("the edition %s is not compatible with template %s (must be %s). Unset the flag --%s to use that edition instead",
+					edition, *template.Properties.Name, *template.Properties.Edition, constants.FlagEdition)
+			}
+		} else {
+			// Fallback edition to inferred one via template ID, if not explicitly set
+			if slices.Contains(enumEditions, *template.Properties.Edition) {
+				viper.Set(core.GetFlagName(c.NS, constants.FlagEdition), *template.Properties.Edition)
+			}
+		}
+	}
+
+	return nil
+}
+
+// validateEdition validates edition settings
+func validateEdition(c *core.PreCommandConfig) error {
+	fnEd := core.GetFlagName(c.NS, constants.FlagEdition)
+	if !viper.IsSet(fnEd) {
+		return fmt.Errorf("set --%s or --%s (%s) to get a list of required flags",
+			constants.FlagTemplate, constants.FlagEdition, strings.Join(enumEditions, " | "))
+	}
+
+	edition := viper.GetString(fnEd)
+	// Enterprise edition cannot have --template-id
+	if edition == "enterprise" && viper.IsSet(core.GetFlagName(c.NS, constants.FlagTemplate)) {
+		return fmt.Errorf("for enterprise edition, setting --%s is forbidden. Use %s", constants.FlagTemplate,
+			core.FlagsUsage(constants.FlagCores, constants.FlagRam, constants.FlagStorageType, constants.FlagStorageSize))
+	}
+
+	flags, err := getRequiredFlagsByEditionAndType(edition, viper.GetString(core.GetFlagName(c.NS, constants.FlagType)))
+	if err != nil {
+		return fmt.Errorf("failed getting required flags for edition %s: %w", edition, err)
+	}
+
+	err = core.CheckRequiredFlags(c.Command, c.NS, flags...)
+	if err != nil {
+		return fmt.Errorf("not all %s edition flags are set: %w", edition, err)
+	}
+
+	return nil
+}
+
+// SIDE EFFECT: sets FlagLocation if not set and can be inferred
+func inferLocationByDatacenter(c *core.PreCommandConfig) error {
+	if fn := core.GetFlagName(c.NS, constants.FlagLocation); !viper.IsSet(fn) {
+		dcId := viper.GetString(core.GetFlagName(c.NS, constants.FlagDatacenterId))
+		dc, _, err := client.Must().CloudClient.DataCentersApi.DatacentersFindById(context.Background(), dcId).Execute()
+		if err != nil {
+			return fmt.Errorf("failed inferring location via datacenter's ID: failed getting datacenter with ID %s: %w", dcId, err)
+		}
+		if dc.Properties == nil || dc.Properties.Location == nil {
+			return fmt.Errorf("failed inferring location via datacenter's ID: datacenter %s location is nil: %w", dcId, err)
+		}
+		viper.Set(fn, dcId)
+	}
+	return nil
+}
+
+func ClusterCreateCmd() *core.Command {
 	playgroundRequired, _ := getRequiredFlagsByEditionAndType("playground", "")
 	businessRequired, _ := getRequiredFlagsByEditionAndType("business", "")
 	enterpriseReplicasetRequired, _ := getRequiredFlagsByEditionAndType("enterprise", "replicaset")
@@ -63,49 +149,19 @@ func ClusterCreateCmd() *core.Command {
 			 *  - Instances: >3
 			**/
 
-			inferEdition := func(templateId string) string {
-				setTemplate, err := templates.Find(func(x ionoscloud.TemplateResponse) bool {
-					return *x.Id == templateId
-				})
-				if err != nil {
-					return ""
-				}
-
-				if setTemplate.Properties == nil || setTemplate.Properties.Edition == nil {
-					return ""
-				}
-
-				return *setTemplate.Properties.Edition
+			err := validateOrInferEditionByTemplate(c) // sets FlagEdition if unset and possible to infer
+			if err != nil {
+				return fmt.Errorf("failed inferring or validating edition: %w", err)
 			}
 
-			if fn := core.GetFlagName(c.NS, constants.FlagTemplate); viper.IsSet(fn) {
-				tmplId := templates.Resolve(viper.GetString(fn))
-				if edition := inferEdition(tmplId); slices.Contains(enumEditions, edition) {
-					viper.Set(core.GetFlagName(c.NS, constants.FlagEdition), edition)
-				}
+			err = validateEdition(c)
+			if err != nil {
+				return fmt.Errorf("failed validating edition specific flags: %w", err)
 			}
 
-			if fn := core.GetFlagName(c.NS, constants.FlagEdition); !viper.IsSet(fn) {
-				return fmt.Errorf("set --%s or --%s (%s) to get a list of required flags",
-					constants.FlagTemplate, constants.FlagEdition, strings.Join(enumEditions, " | "))
-			} else {
-				edition := viper.GetString(fn)
-
-				// Enterprise edition can not have --template-id
-				if edition == "enterprise" && viper.IsSet(core.GetFlagName(c.NS, constants.FlagTemplate)) {
-					return fmt.Errorf("for enterprise edition, setting --%s is forbidden. Use %s", constants.FlagTemplate,
-						core.FlagsUsage(constants.FlagCores, constants.FlagRam, constants.FlagStorageType, constants.FlagStorageSize))
-				}
-
-				flags, err := getRequiredFlagsByEditionAndType(edition, viper.GetString(core.GetFlagName(c.NS, constants.FlagType)))
-				if err != nil {
-					return fmt.Errorf("failed getting required flags for edition %s: %w", edition, err)
-				}
-
-				err = core.CheckRequiredFlags(c.Command, c.NS, flags...)
-				if err != nil {
-					return fmt.Errorf("not all %s edition flags are set: %w", edition, err)
-				}
+			err = inferLocationByDatacenter(c)
+			if err != nil {
+				return fmt.Errorf("failed inferring location: %w", err)
 			}
 			return nil
 		},
