@@ -3,13 +3,17 @@ package cluster
 import (
 	"context"
 	"fmt"
+	"log"
 	"os"
 	"strings"
 
+	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/templates"
+	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
+	ionoscloud "github.com/ionos-cloud/sdk-go-dbaas-mongo"
 	"github.com/spf13/viper"
+	"golang.org/x/exp/slices"
 
 	cloudapiv6completer "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
-	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/completer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/spf13/cobra"
@@ -59,14 +63,41 @@ func ClusterCreateCmd() *core.Command {
 			 *  - Instances: >3
 			**/
 
+			inferEdition := func(templateId string) string {
+				setTemplate, err := templates.Find(func(x ionoscloud.TemplateResponse) bool {
+					return *x.Id == templateId
+				})
+				if err != nil {
+					return ""
+				}
+
+				if setTemplate.Properties == nil || setTemplate.Properties.Edition == nil {
+					return ""
+				}
+
+				return *setTemplate.Properties.Edition
+			}
+
+			if fn := core.GetFlagName(c.NS, constants.FlagTemplate); viper.IsSet(fn) {
+				tmplId := templates.Resolve(viper.GetString(fn))
+				if edition := inferEdition(tmplId); slices.Contains(enumEditions, edition) {
+					viper.Set(core.GetFlagName(c.NS, constants.FlagEdition), edition)
+				}
+			}
+
 			if fn := core.GetFlagName(c.NS, constants.FlagEdition); !viper.IsSet(fn) {
-				return fmt.Errorf("--%s (%s) is a required option",
-					constants.FlagEdition, strings.Join(enumEditions, " | "))
+				return fmt.Errorf("set --%s or --%s (%s) to get a list of required flags",
+					constants.FlagTemplate, constants.FlagEdition, strings.Join(enumEditions, " | "))
 			} else {
 				edition := viper.GetString(fn)
-				// type is a reserved keyword
-				cType := viper.GetString(core.GetFlagName(c.NS, constants.FlagType))
-				flags, err := getRequiredFlagsByEditionAndType(edition, cType)
+
+				// Enterprise edition can not have --template-id
+				if edition == "enterprise" && viper.IsSet(core.GetFlagName(c.NS, constants.FlagTemplate)) {
+					return fmt.Errorf("for enterprise edition, setting --%s is forbidden. Use %s", constants.FlagTemplate,
+						core.FlagsUsage(constants.FlagCores, constants.FlagRam, constants.FlagStorageType, constants.FlagStorageSize))
+				}
+
+				flags, err := getRequiredFlagsByEditionAndType(edition, viper.GetString(core.GetFlagName(c.NS, constants.FlagType)))
 				if err != nil {
 					return fmt.Errorf("failed getting required flags for edition %s: %w", edition, err)
 				}
@@ -80,6 +111,7 @@ func ClusterCreateCmd() *core.Command {
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			// TODO
+
 			return nil
 			/*
 				// Extra CLI helpers
@@ -106,9 +138,23 @@ func ClusterCreateCmd() *core.Command {
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagLocation, func(cmdCobra *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return cloudapiv6completer.LocationIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddStringFlag(constants.FlagTemplateId, "", "", "The unique ID of the template, which specifies the number of cores, storage size, and memory. Must not be provided for enterprise clusters")
-	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagTemplateId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.MongoTemplateIds(), cobra.ShellCompDirectiveNoFileComp
+	cmd.AddStringFlag(constants.FlagTemplate, "", "", "The ID or a word contained within the template name. This specifies the number of cores, storage size, and memory. Must not be provided for enterprise clusters")
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagTemplate, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		templates, err := templates.List()
+		if err != nil {
+			log.Println("err")
+			return nil, cobra.ShellCompDirectiveError
+		}
+		names := functional.Fold(templates, func(acc []string, t ionoscloud.TemplateResponse) []string {
+			if t.Properties == nil || t.Properties.Name == nil {
+				return acc
+			}
+			wordsInTemplateName := strings.Split(*t.Properties.Name, " ")
+			// Add only the last words of templates (e.g. 4XL, L, S, XS, Playground) since completions dont support spaces
+			return append(acc, wordsInTemplateName[len(wordsInTemplateName)-1])
+		}, nil)
+
+		return names, cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddInt32Flag(constants.FlagInstances, "", 1, "The total number of instances in the cluster (one primary and n-1 secondaries). (required for non-playground clusters)")
 	cmd.AddStringFlag(constants.FlagVersion, "", "6.0", "The MongoDB version of your cluster")
@@ -158,7 +204,7 @@ func getRequiredFlagsByEditionAndType(edition, cType string) ([]string, error) {
 	case "business":
 		// Type inferred as replicaset.
 		return append(alwaysRequired,
-			constants.FlagTemplateId, constants.FlagInstances,
+			constants.FlagTemplate, constants.FlagInstances,
 		), nil
 	case "enterprise":
 		enterpriseBaseFlags := append(alwaysRequired,

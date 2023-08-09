@@ -11,6 +11,7 @@ const (
 	FlagIdShort         = "i"
 	FlagName            = "name"
 	FlagNameShort       = "n"
+	FlagTemplate        = "template"
 	FlagTemplateId      = "template-id"
 	FlagInstances       = "instances"
 	FlagShards          = "shards"
