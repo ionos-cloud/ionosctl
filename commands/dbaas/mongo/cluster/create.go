@@ -3,7 +3,6 @@ package cluster
 import (
 	"context"
 	"fmt"
-	"log"
 	"os"
 	"strings"
 
@@ -166,22 +165,7 @@ func ClusterCreateCmd() *core.Command {
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			// TODO
-
 			return nil
-			/*
-				// Extra CLI helpers
-				if *input.Properties.Location == "" {
-					// If location isn't set to Datacenter's Location, Mongo API throws an error. Location property is also marked as required
-					// To improve user experience we mark it as optional, and set it to the datacenter's location implicitly via connections.datacenterID.
-					dc, _, err := client.Must().CloudClient.DataCentersApi.DatacentersFindById(c.Context, *createConn.DatacenterId).Execute()
-					if err != nil {
-						return err
-					}
-					input.Properties.Location = dc.Properties.Location
-				}
-
-			*/
 		},
 		InitClient: true,
 	})
@@ -198,7 +182,6 @@ func ClusterCreateCmd() *core.Command {
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagTemplate, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		templates, err := templates.List()
 		if err != nil {
-			log.Println("err")
 			return nil, cobra.ShellCompDirectiveError
 		}
 		names := functional.Fold(templates, func(acc []string, t ionoscloud.TemplateResponse) []string {
