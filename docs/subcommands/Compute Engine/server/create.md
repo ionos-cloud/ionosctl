@@ -26,9 +26,9 @@ For `create` command:
 
 ## Description
 
-Use this command to create an ENTERPRISE or CUBE Server in a specified Virtual Data Center.
+Use this command to create an ENTERPRISE, CUBE or VCPU Server in a specified Virtual Data Center. 
 
-* For ENTERPRISE Servers:
+1. For ENTERPRISE Servers:
 
 You need to set the number of cores for the Server and the amount of memory for the Server to be set. The amount of memory for the Server must be specified in multiples of 256. The default unit is MB. Minimum: 256MB. Maximum: it depends on your contract limit. You can set the RAM size in the following ways:
 
@@ -43,7 +43,7 @@ Required values to create a Server of type ENTERPRISE:
 * Cores
 * RAM
 
-* For CUBE Servers:
+2. For CUBE Servers:
 
 Servers of type CUBE will be created with a Direct Attached Storage with the size set from the Template. To see more details about the available Templates, use `ionosctl template` commands.
 
@@ -52,6 +52,21 @@ Required values to create a Server of type CUBE:
 * Data Center Id
 * Type
 * Template Id
+
+3. For VCPU Servers:
+
+You need to set the number of cores for the Server and the amount of memory for the Server to be set. The amount of memory for the Server must be specified in multiples of 256. The default unit is MB. Minimum: 256MB. Maximum: it depends on your contract limit. You can set the RAM size in the following ways:
+
+* providing only the value, e.g.`--ram 256` equals 256MB.
+* providing both the value and the unit, e.g.`--ram 1GB`.
+
+You cannot set the CPU Family for VCPU Servers.
+
+Required values to create a Server of type VCPU:
+
+* Data Center Id
+* Cores
+* RAM
 
 By default, Licence Type for Direct Attached Storage is set to LINUX. You can set it using the `--licence-type` option or set an Image Id. For Image Id, it is needed to set a password or SSH keys.
 
@@ -83,7 +98,7 @@ You can wait for the Request to be executed using `--wait-for-request` option. Y
   -k, --ssh-key-paths strings      [CUBE Server] Absolute paths for the SSH Keys of the Direct Attached Storage
       --template-id string         [CUBE Server] The unique Template Id (required)
   -t, --timeout int                Timeout option for Request for Server creation/for Server to be in AVAILABLE state [seconds] (default 60)
-      --type string                Type usages for the Server (default "ENTERPRISE")
+      --type string                Type usages for the Server. Can be one of: ENTERPRISE, CUBE, VCPU (default "ENTERPRISE")
   -v, --verbose                    Print step-by-step process when running command
   -N, --volume-name string         [CUBE Server] Name of the Direct Attached Storage (default "Unnamed Direct Attached Storage")
   -w, --wait-for-request           Wait for the Request for Server creation to be executed
