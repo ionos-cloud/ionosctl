@@ -8,11 +8,19 @@ import (
 )
 
 func ConvertJSONToText(rootPath string, jsonPaths map[string]string, rootObj interface{}) ([]map[string]interface{}, error) {
+	if rootObj == nil {
+		return nil, fmt.Errorf("object provided cannot be nil")
+	}
+
 	var res = make([]map[string]interface{}, 0)
 
 	objs, err := traverseJSONRoot(rootPath, rootObj)
 	if err != nil {
 		return nil, err
+	}
+
+	if jsonPaths == nil || len(jsonPaths) == 0 {
+		return nil, fmt.Errorf("json paths must not be empty/nil")
 	}
 
 	for _, obj := range objs {
