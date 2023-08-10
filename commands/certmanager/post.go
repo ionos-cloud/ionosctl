@@ -7,6 +7,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	sdkgo "github.com/ionos-cloud/sdk-go-cert-manager"
 	"github.com/spf13/cobra"
@@ -52,40 +53,49 @@ func GetPropertyWithFallback(c *core.CommandConfig, property string, propertyPat
 	if err != nil {
 		return "", err
 	}
+
 	if propertyValue != "" {
 		return propertyValue, nil
 	}
+
 	propertyValuePath, err := c.Command.Command.Flags().GetString(propertyPath)
 	if err != nil {
 		return "", err
 	}
+
 	if propertyValuePath == "" {
 		return "", fmt.Errorf("either --%s or --%s must be set", property, propertyPath)
 	}
+
 	propertyBytes, err := os.ReadFile(propertyValuePath)
 	if err != nil {
 		return "", err
 	}
+
 	return string(propertyBytes), nil
 }
 
 func CmdPost(c *core.CommandConfig) error {
-	c.Printer.Verbose("Adding Certificate...")
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Adding Certificate..."))
+
 	var name, certificate, certificateChain, privateKey string
-	fmt.Println(viper.GetString(FlagCertName))
+	//fmt.Println(viper.GetString(FlagCertName)) // NOTE: ask about why this is printed
 
 	name, err := c.Command.Command.Flags().GetString(FlagCertName)
 	if err != nil {
 		return err
 	}
+
 	certificate, err = GetPropertyWithFallback(c, FlagCert, FlagCertPath)
 	if err != nil {
 		return err
 	}
+
 	certificateChain, err = GetPropertyWithFallback(c, FlagCertChain, FlagCertChainPath)
 	if err != nil {
 		return err
 	}
+
 	privateKey, err = GetPropertyWithFallback(c, FlagPrivateKey, FlagPrivateKeyPath)
 	if err != nil {
 		return err
@@ -105,7 +115,14 @@ func CmdPost(c *core.CommandConfig) error {
 		return err
 	}
 
-	return c.Printer.Print(getCertPrint(nil, c, &[]sdkgo.CertificateDto{cert}))
+	out, err := jsontabwriter.GenerateOutput("", allCertificateJSONPaths, cert, allCertificateCols)
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, out)
+
+	return nil
 }
 
 func PreCmdPost(c *core.PreCommandConfig) error {

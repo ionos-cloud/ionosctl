@@ -2,8 +2,10 @@ package certmanager
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/spf13/cobra"
 
@@ -34,16 +36,17 @@ func CertUpdateCmd() *core.Command {
 	})
 	cmd.AddStringFlag(FlagCertName, "n", "", "Provide new certificate name", core.RequiredFlagOption())
 
-	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, printer.ColsMessage(allCols))
+	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, printer.ColsMessage(allCertificateCols))
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return allCols, cobra.ShellCompDirectiveNoFileComp
+		return allCertificateCols, cobra.ShellCompDirectiveNoFileComp
 	})
 
 	return cmd
 }
 
 func CmdPatch(c *core.CommandConfig) error {
-	c.Printer.Verbose("Patching Certificate...")
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Patching Certificate..."))
+
 	id, err := c.Command.Command.Flags().GetString(FlagCertId)
 	if err != nil {
 		return err
@@ -62,7 +65,14 @@ func CmdPatch(c *core.CommandConfig) error {
 		return err
 	}
 
-	return c.Printer.Print(getCertPrint(nil, c, &[]sdkgo.CertificateDto{cert}))
+	out, err := jsontabwriter.GenerateOutput("", allCertificateJSONPaths, cert, allCertificateCols)
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, out)
+
+	return nil
 }
 
 func PreCmdPatch(c *core.PreCommandConfig) error {
@@ -70,9 +80,11 @@ func PreCmdPatch(c *core.PreCommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	err = c.Command.Command.MarkFlagRequired(FlagCertName)
 	if err != nil {
 		return err
 	}
+
 	return nil
 }

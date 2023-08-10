@@ -17,6 +17,15 @@ import (
 	"github.com/spf13/viper"
 )
 
+var (
+	allCertificateJSONPaths = map[string]string{
+		"CertId":      "id",
+		"DisplayName": "properties.name",
+	}
+
+	allCertificateCols = []string{"CertId", "DisplayName"}
+)
+
 func CertCmd() *core.Command {
 	certCmd := &core.Command{
 		Command: &cobra.Command{
@@ -51,8 +60,8 @@ func getCertPrint(resp *ionoscloud.APIResponse, c *core.CommandConfig, cert *[]i
 		}
 		if cert != nil {
 			r.OutputJSON = cert
-			r.KeyValue = getCertRows(cert)                          // map header -> rows
-			r.Columns = printer.GetHeadersAllDefault(allCols, cols) // headers
+			r.KeyValue = getCertRows(cert)                                     // map header -> rows
+			r.Columns = printer.GetHeadersAllDefault(allCertificateCols, cols) // headers
 		}
 	}
 	return r
@@ -68,12 +77,6 @@ func printProperties(value *ionoscloud.CertificateDto, flag bool) string {
 type CertPrint struct {
 	CertId      string `json:"CertId,omitempty"`
 	DisplayName string `json:"DisplayName,omitempty"`
-}
-
-type ApiPrint struct {
-	Name    string `json:"Name,omitempty"`
-	Href    string `json:"Href,omitempty"`
-	Version string `json:"Version,omitempty"`
 }
 
 func getCertRows(certs *[]ionoscloud.CertificateDto) []map[string]interface{} {

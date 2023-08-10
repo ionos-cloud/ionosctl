@@ -10,6 +10,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	sdkauth "github.com/ionos-cloud/sdk-go-auth"
 	sdkcertmanager "github.com/ionos-cloud/sdk-go-cert-manager"
 	sdkpostgres "github.com/ionos-cloud/sdk-go-dbaas-postgres"
@@ -45,10 +46,11 @@ func RunVersion(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	c.Printer.Verbose("sdk-go " + sdkcompute.Version)
-	c.Printer.Verbose("sdk-go-dbaas-postgres " + sdkpostgres.Version)
-	c.Printer.Verbose("sdk-go-auth " + sdkauth.Version)
-	c.Printer.Verbose("sdk-go-cert-manager " + sdkcertmanager.Version)
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("sdk-go "+sdkcompute.Version))
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("sdk-go-dbaas-postgres "+sdkpostgres.Version))
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("sdk-go-auth "+sdkauth.Version))
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("sdk-go-cert-manager "+sdkcertmanager.Version))
 
 	if viper.GetBool(core.GetFlagName(c.NS, constants.ArgUpdates)) {
 		/*
@@ -58,7 +60,11 @@ func RunVersion(c *core.CommandConfig) error {
 		if err != nil {
 			return err
 		}
-		return c.Printer.Print(fmt.Sprintf("Latest ionosctl Github release: %s\nFor more information, go to: %s", latestGhRelease, latestGhReleaseUrl))
+
+		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput(
+			"Latest ionosctl Github release: %s\nFor more information, go to: %s", latestGhRelease, latestGhReleaseUrl))
+
+		return nil
 	}
 	return nil
 }

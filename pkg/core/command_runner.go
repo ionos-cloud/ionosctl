@@ -50,15 +50,11 @@ func NewCommand(ctx context.Context, parent *Command, info CommandBuilder) *Comm
 			// Set Printer in sync with the Output Flag
 			noHeaders, _ := cmd.Flags().GetBool(constants.ArgNoHeaders)
 			p := getPrinter(noHeaders)
-			// Set Buffers
-			cmd.SetIn(os.Stdin)
-			cmd.SetOut(p.GetStdout())
-			cmd.SetErr(p.GetStderr())
 			// Set Command to Command Builder
 			// The cmd is passed to the CommandCfg
 			info.Command = &Command{Command: cmd}
 			// Create New CommandCfg
-			cmdConfig, err := NewCommandCfg(ctx, os.Stdin, p, info)
+			cmdConfig, err := NewCommandCfg(ctx, p, info)
 			clierror.CheckError(err, p.GetStderr())
 			err = info.CmdRun(cmdConfig)
 			clierror.CheckError(err, p.GetStderr())
@@ -95,6 +91,10 @@ type PreCommandConfig struct {
 	// Verb is the 3rd level of the Command. e.g. [ionosctl server volume] attach
 	Verb string
 
+	Stdin  io.Reader
+	Stdout io.Writer
+	Stderr io.Writer
+
 	// Printer used in output formatting
 	Printer printer.PrintService
 }
@@ -107,10 +107,13 @@ func NewPreCommandCfg(p printer.PrintService, info CommandBuilder) *PreCommandCo
 		Resource:  info.Resource,
 		Verb:      info.Verb,
 		Printer:   p,
+		Stdin:     info.Command.Command.InOrStdin(),
+		Stdout:    info.Command.Command.OutOrStdout(),
+		Stderr:    info.Command.Command.ErrOrStderr(),
 	}
 }
 
-func NewCommandCfg(ctx context.Context, in io.Reader, p printer.PrintService, info CommandBuilder) (
+func NewCommandCfg(ctx context.Context, p printer.PrintService, info CommandBuilder) (
 	*CommandConfig, error,
 ) {
 	cmdConfig := &CommandConfig{
@@ -119,7 +122,9 @@ func NewCommandCfg(ctx context.Context, in io.Reader, p printer.PrintService, in
 		Namespace: info.Namespace,
 		Resource:  info.Resource,
 		Verb:      info.Verb,
-		Stdin:     in,
+		Stdin:     info.Command.Command.InOrStdin(),
+		Stdout:    info.Command.Command.OutOrStdout(),
+		Stderr:    info.Command.Command.ErrOrStderr(),
 		Printer:   p,
 		Context:   ctx,
 		// Define cmd Command Config function for Command
@@ -181,6 +186,8 @@ type CommandConfig struct {
 	// Verb is the 3rd level of the Command. e.g. [ionosctl server volume] attach
 	Verb    string
 	Stdin   io.Reader
+	Stdout  io.Writer
+	Stderr  io.Writer
 	Printer printer.PrintService
 	initCfg func(commandConfig *CommandConfig) error
 

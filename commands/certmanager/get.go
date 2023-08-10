@@ -2,11 +2,12 @@ package certmanager
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
-	sdkgo "github.com/ionos-cloud/sdk-go-cert-manager"
 	"github.com/spf13/cobra"
 )
 
@@ -31,9 +32,9 @@ func CertGetCmd() *core.Command {
 	cmd.AddBoolFlag(FlagCert, "", false, "Print the certificate")
 	cmd.AddBoolFlag(FlagCertChain, "", false, "Print the certificate chain")
 
-	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, printer.ColsMessage(allCols))
+	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, printer.ColsMessage(allCertificateCols))
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return allCols, cobra.ShellCompDirectiveNoFileComp
+		return allCertificateCols, cobra.ShellCompDirectiveNoFileComp
 	})
 
 	return cmd
@@ -41,32 +42,47 @@ func CertGetCmd() *core.Command {
 
 func CmdGet(c *core.CommandConfig) error {
 	var certFlag, certChainFlag, getCertOrChain bool
+
 	certFlag, err := c.Command.Command.Flags().GetBool(FlagCert)
 	if err != nil {
 		return err
 	}
+
 	certChainFlag, err = c.Command.Command.Flags().GetBool(FlagCertChain)
 	if err != nil {
 		return err
 	}
+
 	if !certFlag && certChainFlag {
 		getCertOrChain = true
 	}
-	c.Printer.Verbose("Getting Certificates...")
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Getting Certificates..."))
+
 	id, err := c.Command.Command.Flags().GetString(FlagCertId)
 	if err != nil {
 		return err
 	}
+
 	cert, _, err := c.CertificateManagerServices.Certs().Get(id)
 	if err != nil {
 		return err
 	}
 
 	if certFlag || certChainFlag {
-		return c.Printer.Print(printProperties(&cert, getCertOrChain))
+		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput(printProperties(&cert, getCertOrChain)))
+
+		return nil
 	}
 
-	return c.Printer.Print(getCertPrint(nil, c, &[]sdkgo.CertificateDto{cert}))
+	out, err := jsontabwriter.GenerateOutput("", allCertificateJSONPaths, cert, allCertificateCols)
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, out)
+
+	return nil
 }
 
 func PreCmdGet(c *core.PreCommandConfig) error {
