@@ -54,7 +54,7 @@ func getClusterPrint(c *core.CommandConfig, dcs *[]ionoscloud.ClusterResponse) p
 	if c != nil && dcs != nil {
 		r.OutputJSON = dcs
 		r.KeyValue = getClusterRows(dcs)                            // map header -> rows
-		r.Columns = printer.GetHeaders(allCols, allCols[0:6], cols) // headers
+		r.Columns = printer.GetHeaders(allCols, allCols[0:9], cols) // headers
 	}
 
 	return r
@@ -63,10 +63,13 @@ func getClusterPrint(c *core.CommandConfig, dcs *[]ionoscloud.ClusterResponse) p
 type ClusterPrint struct {
 	ClusterId         string `json:"ClusterId,omitempty"`
 	Name              string `json:"Name,omitempty"`
+	Edition           string `json:"Edition,omitempty"`
+	Type              string `json:"Type,omitempty"`
 	URL               string `json:"URL,omitempty"`
+	Instances         int32  `json:"Instances,omitempty"`
+	Shards            int32  `json:"Shards,omitempty"`
 	Health            string `json:"Health,omitempty"`
 	State             string `json:"State,omitempty"`
-	Instances         int32  `json:"Instances,omitempty"`
 	MongoVersion      string `json:"MongoVersion,omitempty"`
 	MaintenanceWindow string `json:"MaintenanceWindow,omitempty"`
 	Location          string `json:"Location,omitempty"`
@@ -92,6 +95,12 @@ func getClusterRows(clusters *[]ionoscloud.ClusterResponse) []map[string]interfa
 		if propertiesOk, ok := cluster.GetPropertiesOk(); ok && propertiesOk != nil {
 			if propertiesOk.DisplayName != nil {
 				clusterPrint.Name = *propertiesOk.GetDisplayName()
+			}
+			if propertiesOk.Edition != nil {
+				clusterPrint.Edition = *propertiesOk.Edition
+			}
+			if propertiesOk.Type != nil {
+				clusterPrint.Type = *propertiesOk.Type
 			}
 			if propertiesOk.GetLocation() != nil {
 				clusterPrint.Location = *propertiesOk.GetLocation()
@@ -120,6 +129,9 @@ func getClusterRows(clusters *[]ionoscloud.ClusterResponse) []map[string]interfa
 			}
 			if propertiesOk.GetInstances() != nil {
 				clusterPrint.Instances = *propertiesOk.GetInstances()
+			}
+			if propertiesOk.GetShards() != nil {
+				clusterPrint.Shards = *propertiesOk.GetShards()
 			}
 			if maintenanceWindowOk, ok := propertiesOk.GetMaintenanceWindowOk(); ok && maintenanceWindowOk != nil {
 				if maintenanceWindowOk.GetDayOfTheWeek() != nil && maintenanceWindowOk.GetTime() != nil {

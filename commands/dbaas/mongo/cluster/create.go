@@ -103,19 +103,10 @@ func inferTypeForEnterprise(c *core.PreCommandConfig) error {
 		return nil
 	}
 
-	c.Command.Command.MarkFlagsMutuallyExclusive(constants.FlagInstances, constants.FlagShards)
-
-	if flagInstances := core.GetFlagName(c.NS, constants.FlagInstances); viper.IsSet(flagInstances) {
-		viper.Set(fn, "replicaset")
-	}
+	viper.Set(fn, "replicaset")
 
 	if flagShards := core.GetFlagName(c.NS, constants.FlagShards); viper.IsSet(flagShards) {
 		viper.Set(fn, "sharded-cluster")
-	}
-
-	if !viper.IsSet(fn) {
-		return fmt.Errorf("failed inferring --%[1]s from --%[2]s or --%[3]s. Set it explicitly or infer it via setting --%[2]s or --%[3]s",
-			constants.FlagType, constants.FlagInstances, constants.FlagShards)
 	}
 
 	return nil
