@@ -1,5 +1,14 @@
 # Changelog
 
+## [v6.6.6] (August 2023)
+### Added
+* Added support for VCPU server type
+* Added `token parse` command, which you can use to verify your token's privileges or see more details about your JWT
+
+### Fixed
+* Fixed #333: Fix flags --no-headers and --cols for `snapshot` command
+* @avorima (#332): Avoid wrapping non-Result objects (i.e. arrays) in a `Message` JSON object when using `-o json`
+
 ## [v6.6.5] (July 2023)
 
 ### Fixed
