@@ -88,11 +88,11 @@ func GenerateLogOutput(format string, a ...interface{}) string {
 			return ""
 		}
 
-		return out
+		return out + "\n"
 	}
 
 	if outputFormat == "text" {
-		return msg
+		return msg + "\n"
 	}
 
 	return ""
