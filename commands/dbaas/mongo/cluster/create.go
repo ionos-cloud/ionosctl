@@ -96,6 +96,31 @@ func validateEdition(c *core.PreCommandConfig) error {
 	return nil
 }
 
+// SIDE EFFECT: sets FlagType if not set and can be inferred via --instances or --sharded
+func inferTypeForEnterprise(c *core.PreCommandConfig) error {
+	fn := core.GetFlagName(c.NS, constants.FlagType)
+	if viper.IsSet(fn) {
+		return nil
+	}
+
+	c.Command.Command.MarkFlagsMutuallyExclusive(constants.FlagInstances, constants.FlagShards)
+
+	if flagInstances := core.GetFlagName(c.NS, constants.FlagInstances); viper.IsSet(flagInstances) {
+		viper.Set(fn, "replicaset")
+	}
+
+	if flagShards := core.GetFlagName(c.NS, constants.FlagShards); viper.IsSet(flagShards) {
+		viper.Set(fn, "sharded-cluster")
+	}
+
+	if !viper.IsSet(fn) {
+		return fmt.Errorf("failed inferring --%[1]s from --%[2]s or --%[3]s. Set it explicitly or infer it via setting --%[2]s or --%[3]s",
+			constants.FlagType, constants.FlagInstances, constants.FlagShards)
+	}
+
+	return nil
+}
+
 // SIDE EFFECT: sets FlagLocation if not set and can be inferred
 func inferLocationByDatacenter(c *core.PreCommandConfig) error {
 	if fn := core.GetFlagName(c.NS, constants.FlagLocation); !viper.IsSet(fn) {
@@ -160,6 +185,11 @@ func ClusterCreateCmd() *core.Command {
 			err := validateOrInferEditionByTemplate(c) // sets FlagEdition if unset and possible to infer
 			if err != nil {
 				return fmt.Errorf("failed inferring or validating edition: %w", err)
+			}
+
+			err = inferTypeForEnterprise(c) // sets FlagType if unset and possible to infer
+			if err != nil {
+				return fmt.Errorf("failed inferring type: %w", err)
 			}
 
 			err = validateEdition(c)
