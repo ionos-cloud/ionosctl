@@ -39,9 +39,10 @@ Create DBaaS Mongo Replicaset or Sharded Clusters for your chosen edition
 ```text
   -u, --api-url string            Override default host url (default "https://api.ionos.com")
       --backup-location string    The location where the cluster backups will be stored. If not set, the backup is stored in the nearest location of the cluster
+      --biconnector string        The host and port where this new BI Connector is installed. The MongoDB Connector for Business Intelligence allows you to query a MongoDB database using SQL commands. Example: r1.m-abcdefgh1234.mongodb.de-fra.ionos.com:27015
       --cidr strings              The list of IPs and subnet for your cluster. All IPs must be in a /24 network. Note the following unavailable IP range: 10.233.114.0/24 (required)
       --cols strings              Set of columns to be printed on output 
-                                  Available columns: [ClusterId Name URL Health State Instances MongoVersion MaintenanceWindow Location DatacenterId LanId Cidr TemplateId Cores RAM StorageSize StorageType]
+                                  Available columns: [ClusterId Name Edition Type URL Instances Shards Health State MongoVersion MaintenanceWindow Location DatacenterId LanId Cidr TemplateId Cores RAM StorageSize StorageType]
   -c, --config string             Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --cores int                 The total number of cores for the Server, e.g. 4. (required and only settable for enterprise edition) (required)
       --datacenter-id string      The datacenter to which your cluster will be connected. Must be in the same location as the cluster (required)
@@ -60,7 +61,7 @@ Create DBaaS Mongo Replicaset or Sharded Clusters for your chosen edition
       --ram string                Custom RAM: multiples of 1024. e.g. --ram 1024 or --ram 1024MB or --ram 4GB (required and only settable for enterprise edition) (required)
       --shards int32              The total number of shards in the sharded_cluster cluster. Setting this flag is only possible for enterprise clusters and infers a sharded_cluster type. Possible values: 2 - 32. (required for sharded_cluster enterprise clusters) (required) (default 1)
       --storage-size string       Custom Storage: Greater performance for values greater than 100 GB. (required and only settable for enterprise edition) (required)
-      --storage-type string       Custom Storage Type. (required and only settable for enterprise edition). Can be one of: HDD, SSD, SSD Premium (required)
+      --storage-type string       Custom Storage Type. (required and only settable for enterprise edition). Can be one of: HDD, SSD, "SSD Premium" (required)
       --template string           The ID of a Mongo Template, or a word contained in the name of one. Templates specify the number of cores, storage size, and memory. (Required only for business edition) (required)
   -t, --timeout int               Timeout option for Request [seconds] (default 60)
       --type string               Cluster Type. Required for enterprise clusters. Not required (inferred) if using --shards or --instances. Can be one of: replicaset, sharded-cluster (default "replicaset")
