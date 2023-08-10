@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/convbytes"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
 	sdkgo "github.com/ionos-cloud/sdk-go-dbaas-mongo"
@@ -47,6 +48,9 @@ func MongoSnapshots(clusterId string) []string {
 			}
 			if v, ok := props.GetVersionOk(); ok {
 				completion = fmt.Sprintf("%s - v%s", completion, *v)
+			}
+			if size, ok := props.GetSizeOk(); ok {
+				completion = fmt.Sprintf("%s (%d GB)", completion, convbytes.Convert(int64(*size), convbytes.MB, convbytes.GB))
 			}
 		}
 
