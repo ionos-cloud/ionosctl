@@ -35,7 +35,7 @@ func generateJSONOutput(obj interface{}) (string, error) {
 		return "", err
 	}
 
-	return string(out), nil
+	return string(out) + "\n", nil
 }
 
 func generateTextOutput(rootPath string, obj interface{}, jsonPaths map[string]string, cols []string) (string, error) {
@@ -88,7 +88,7 @@ func GenerateLogOutput(format string, a ...interface{}) string {
 			return ""
 		}
 
-		return out + "\n"
+		return out
 	}
 
 	if outputFormat == "text" {
