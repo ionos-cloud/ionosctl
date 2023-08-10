@@ -29,6 +29,7 @@ import (
 const (
 	serverCubeType       = "CUBE"
 	serverEnterpriseType = "ENTERPRISE"
+	serverVCPUType       = "VCPU"
 )
 
 func ServerCmd() *core.Command {
@@ -118,9 +119,9 @@ func ServerCmd() *core.Command {
 		Verb:      "create",
 		Aliases:   []string{"c"},
 		ShortDesc: "Create a Server",
-		LongDesc: `Use this command to create an ENTERPRISE or CUBE Server in a specified Virtual Data Center.
+		LongDesc: `Use this command to create an ENTERPRISE, CUBE or VCPU Server in a specified Virtual Data Center. 
 
-* For ENTERPRISE Servers:
+1. For ENTERPRISE Servers:
 
 You need to set the number of cores for the Server and the amount of memory for the Server to be set. The amount of memory for the Server must be specified in multiples of 256. The default unit is MB. Minimum: 256MB. Maximum: it depends on your contract limit. You can set the RAM size in the following ways:
 
@@ -135,7 +136,7 @@ Required values to create a Server of type ENTERPRISE:
 * Cores
 * RAM
 
-* For CUBE Servers:
+2. For CUBE Servers:
 
 Servers of type CUBE will be created with a Direct Attached Storage with the size set from the Template. To see more details about the available Templates, use ` + "`" + `ionosctl template` + "`" + ` commands.
 
@@ -144,6 +145,21 @@ Required values to create a Server of type CUBE:
 * Data Center Id
 * Type
 * Template Id
+
+3. For VCPU Servers:
+
+You need to set the number of cores for the Server and the amount of memory for the Server to be set. The amount of memory for the Server must be specified in multiples of 256. The default unit is MB. Minimum: 256MB. Maximum: it depends on your contract limit. You can set the RAM size in the following ways:
+
+* providing only the value, e.g.` + "`" + `--ram 256` + "`" + ` equals 256MB.
+* providing both the value and the unit, e.g.` + "`" + `--ram 1GB` + "`" + `.
+
+You cannot set the CPU Family for VCPU Servers.
+
+Required values to create a Server of type VCPU:
+
+* Data Center Id
+* Cores
+* RAM
 
 By default, Licence Type for Direct Attached Storage is set to LINUX. You can set it using the ` + "`" + `--licence-type` + "`" + ` option or set an Image Id. For Image Id, it is needed to set a password or SSH keys.
 
@@ -176,10 +192,7 @@ You can wait for the Request to be executed using ` + "`" + `--wait-for-request`
 	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgTemplateId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.TemplatesIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(cloudapiv6.ArgType, "", serverEnterpriseType, "Type usages for the Server")
-	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return []string{serverEnterpriseType, serverCubeType}, cobra.ShellCompDirectiveNoFileComp
-	})
+	create.AddSetFlag(cloudapiv6.ArgType, "", serverEnterpriseType, []string{serverEnterpriseType, serverCubeType, serverVCPUType}, "Type usages for the Server")
 
 	// Volume Properties - for DAS Volume associated with Cube Server
 	create.AddStringFlag(cloudapiv6.ArgVolumeName, "N", "Unnamed Direct Attached Storage", "[CUBE Server] Name of the Direct Attached Storage")
@@ -513,6 +526,7 @@ func PreRunServerCreate(c *core.PreCommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	// Validate flags
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgImageId)) || viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgImageAlias)) {
 		err = core.CheckRequiredFlagsSets(c.Command, c.NS,
@@ -1016,6 +1030,35 @@ func getNewServer(c *core.CommandConfig) (*resources.Server, error) {
 			c.Printer.Verbose("Property Ram set: %vMB", int32(size))
 		}
 	}
+
+	if viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgType)) == serverVCPUType {
+		input.ServerProperties.CpuFamily = nil
+		if fn := core.GetFlagName(c.NS, constants.FlagCpuFamily); viper.IsSet(fn) {
+			input.SetCpuFamily(viper.GetString(fn))
+		}
+
+		if !input.HasName() {
+			input.SetName("Unnamed VCPU")
+		}
+
+		if viper.IsSet(core.GetFlagName(c.NS, constants.FlagCores)) {
+			cores := viper.GetInt32(core.GetFlagName(c.NS, constants.FlagCores))
+			input.SetCores(cores)
+			c.Printer.Verbose("Property Cores set: %v", cores)
+		}
+		if viper.IsSet(core.GetFlagName(c.NS, constants.FlagRam)) {
+			size, err := utils.ConvertSize(
+				viper.GetString(core.GetFlagName(c.NS, constants.FlagRam)),
+				utils.MegaBytes,
+			)
+			if err != nil {
+				return nil, err
+			}
+			input.SetRam(int32(size))
+			c.Printer.Verbose("Property Ram set: %vMB", int32(size))
+		}
+	}
+
 	return &resources.Server{
 		Server: ionoscloud.Server{
 			Properties: &input.ServerProperties,
