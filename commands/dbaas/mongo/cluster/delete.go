@@ -34,7 +34,7 @@ func ClusterDeleteCmd() *core.Command {
 			}
 
 			clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
-			ok := confirm.Ask(fmt.Sprintf("delete cluster %s", clusterId))
+			ok := confirm.Ask(fmt.Sprintf("delete cluster %s and its snapshots", clusterId))
 			if !ok {
 				return fmt.Errorf("user denied confirmation")
 			}
@@ -71,11 +71,11 @@ func deleteAll(c *core.CommandConfig) error {
 	}
 
 	return functional.ApplyAndAggregateErrors(*xs.GetItems(), func(x sdkgo.ClusterResponse) error {
-		yes := confirm.Ask(fmt.Sprintf("delete cluster %s (%s)", *x.Id, *x.Properties.DisplayName), viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce)))
+		yes := confirm.Ask(fmt.Sprintf("delete cluster %s (%s) and its snapshots", *x.Id, *x.Properties.DisplayName), viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce)))
 		if yes {
 			_, _, delErr := client.Must().MongoClient.ClustersApi.ClustersDelete(c.Context, *x.Id).Execute()
 			if delErr != nil {
-				return fmt.Errorf("failed deleting one of the clusters: %w", delErr)
+				return fmt.Errorf("failed deleting cluster %s: %w", *x.Properties.DisplayName, delErr)
 			}
 		}
 		return nil
