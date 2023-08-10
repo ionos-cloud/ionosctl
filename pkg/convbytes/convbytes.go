@@ -22,6 +22,9 @@ func ToBytes(value int64, unit int64) int64 {
 
 // FromBytes converts a given byte value to a target unit.
 func FromBytes(bytes int64, unit int64) int64 {
+	if unit == 0 {
+		return 0
+	}
 	return bytes / unit
 }
 
@@ -69,4 +72,19 @@ func FromStringOk(s string) (int64, bool) {
 func FromString(s string) int64 {
 	f, _ := FromStringOk(s)
 	return f
+}
+
+// ConvertStringToUnitOk converts a size string to a target unit and returns the converted value and a boolean indicating if the conversion was successful.
+func ConvertStringToUnitOk(s string, targetUnit int64) (int64, bool) {
+	bytes, ok := FromStringOk(s)
+	if !ok {
+		return 0, false
+	}
+	return FromBytes(bytes, targetUnit), true
+}
+
+// ConvertStringToUnit converts a size string to a target unit and returns the converted value.
+func ConvertStringToUnit(s string, targetUnit int64) int64 {
+	val, _ := ConvertStringToUnitOk(s, targetUnit)
+	return val
 }
