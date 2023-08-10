@@ -3,6 +3,7 @@ package cluster
 import (
 	"context"
 	"fmt"
+	"net"
 	"os"
 	"strings"
 
@@ -130,6 +131,7 @@ func inferLocationByDatacenter(c *core.PreCommandConfig) error {
 
 func ClusterCreateCmd() *core.Command {
 	flagBackupLocation := "backup-location"
+	flagBiconnector := "biconnector"
 
 	playgroundRequired, _ := getRequiredFlagsByEditionAndType("playground", "")
 	businessRequired, _ := getRequiredFlagsByEditionAndType("business", "")
@@ -264,6 +266,21 @@ func ClusterCreateCmd() *core.Command {
 				cluster.Backup.Location = pointer.From(viper.GetString(fn))
 			}
 
+			cluster.BiConnector = nil
+			if fn := core.GetFlagName(c.NS, flagBiconnector); viper.IsSet(fn) {
+				if cluster.BiConnector == nil {
+					cluster.BiConnector = &ionoscloud.BiConnectorProperties{}
+				}
+				hostAndPort := viper.GetString(fn)
+				host, port, err := net.SplitHostPort(hostAndPort)
+				if err != nil {
+					return fmt.Errorf("failed splitting --%s %s into host and port: %w",
+						flagBiconnector, hostAndPort, err)
+				}
+				cluster.BiConnector.Enabled = pointer.From(true)
+				cluster.BiConnector.Host = pointer.From(host)
+				cluster.BiConnector.Port = pointer.From(port)
+			}
 			// Enterprise flags
 			if fn := core.GetFlagName(c.NS, constants.FlagCores); viper.IsSet(fn) {
 				cluster.Cores = pointer.From(viper.GetInt32(fn))
@@ -363,14 +380,11 @@ func ClusterCreateCmd() *core.Command {
 
 	cmd.AddStringFlag(flagBackupLocation, "", "", "The location where the cluster backups will be stored. If not set, the backup is stored in the nearest location of the cluster")
 
-	// Snapshot interval. Backup location
-	// TODO
-
 	// From Backup: Snapshot_ID,Recovery_Target_Time
 	// TODO
 
 	// Biconnector
-	// TODO
+	cmd.AddStringFlag(flagBiconnector, "", "", "The host and port where this new BI Connector is installed. The MongoDB Connector for Business Intelligence allows you to query a MongoDB database using SQL commands. Example: r1.m-abcdefgh1234.mongodb.de-fra.ionos.com:27015")
 
 	// Misc
 	cmd.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait, "Wait for the Request to be executed")
