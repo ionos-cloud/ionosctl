@@ -15,8 +15,6 @@ const (
 
 // ConvertSize converts the specified size to the unit specified
 // Right now, it has support for MB, GB
-//
-// DEPRECATED: Use `convbytes` pkg
 func ConvertSize(sizeToConvert, unitToConvertTo string) (int, error) {
 	for _, unit := range []string{MegaBytes, GigaBytes, PetaBytes, TerraBytes} {
 		if !strings.HasSuffix(sizeToConvert, unit) {
@@ -35,7 +33,6 @@ func ConvertSize(sizeToConvert, unitToConvertTo string) (int, error) {
 	return strconv.Atoi(sizeToConvert)
 }
 
-// DEPRECATED: Use `convbytes` pkg
 func ConvertToMB(size, unit string) (int, error) {
 	return convertToMB(size, unit)
 }
@@ -71,7 +68,6 @@ func convertToMB(size, unit string) (int, error) {
 	}
 }
 
-// DEPRECATED: Use `convbytes` pkg
 func ConvertToGB(size, unit string) (int, error) {
 	return convertToGB(size, unit)
 }
