@@ -113,6 +113,8 @@ func inferLocationByDatacenter(c *core.PreCommandConfig) error {
 }
 
 func ClusterCreateCmd() *core.Command {
+	flagBackupLocation := "backup-location"
+
 	playgroundRequired, _ := getRequiredFlagsByEditionAndType("playground", "")
 	businessRequired, _ := getRequiredFlagsByEditionAndType("business", "")
 	enterpriseReplicasetRequired, _ := getRequiredFlagsByEditionAndType("enterprise", "replicaset")
@@ -232,6 +234,15 @@ func ClusterCreateCmd() *core.Command {
 					viper.GetString(fn))
 			}
 
+			// backup flags
+			cluster.Backup = nil
+			if fn := core.GetFlagName(c.NS, flagBackupLocation); viper.IsSet(fn) {
+				if cluster.Backup == nil {
+					cluster.Backup = &ionoscloud.BackupProperties{}
+				}
+				cluster.Backup.Location = pointer.From(viper.GetString(fn))
+			}
+
 			// Enterprise flags
 			if fn := core.GetFlagName(c.NS, constants.FlagCores); viper.IsSet(fn) {
 				cluster.Cores = pointer.From(viper.GetInt32(fn))
@@ -325,6 +336,8 @@ func ClusterCreateCmd() *core.Command {
 			cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddStringSliceFlag(constants.FlagCidr, "", nil, "The list of IPs and subnet for your cluster. All IPs must be in a /24 network. Note the following unavailable IP range: 10.233.114.0/24", core.RequiredFlagOption())
+
+	cmd.AddStringFlag(flagBackupLocation, "", "", "The location where the cluster backups will be stored. If not set, the backup is stored in the nearest location of the cluster")
 
 	// Snapshot interval. Backup location
 	// TODO
