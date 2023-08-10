@@ -78,11 +78,12 @@ func GenerateVerboseOutput(format string, a ...interface{}) string {
 	return GenerateLogOutput(msg)
 }
 
-func GenerateLogOutput(a interface{}) string {
+func GenerateLogOutput(format string, a ...interface{}) string {
 	outputFormat := viper.GetString(constants.ArgOutput)
+	msg := fmt.Sprintf(format, a...)
 
 	if outputFormat == "json" {
-		out, err := generateJSONOutput(a)
+		out, err := generateJSONOutput(msg)
 		if err != nil {
 			return ""
 		}
@@ -91,7 +92,7 @@ func GenerateLogOutput(a interface{}) string {
 	}
 
 	if outputFormat == "text" {
-		return fmt.Sprintf("%v", a)
+		return msg
 	}
 
 	return ""
