@@ -78,6 +78,11 @@ func validateEdition(c *core.PreCommandConfig) error {
 			core.FlagsUsage(constants.FlagCores, constants.FlagRam, constants.FlagStorageType, constants.FlagStorageSize))
 	}
 
+	// Special case for playground: infer that instances is 1
+	if flagInstances := core.GetFlagName(c.NS, constants.FlagInstances); edition == "playground" && !viper.IsSet(flagInstances) {
+		viper.Set(flagInstances, 1)
+	}
+
 	flags, err := getRequiredFlagsByEditionAndType(edition, viper.GetString(core.GetFlagName(c.NS, constants.FlagType)))
 	if err != nil {
 		return fmt.Errorf("failed getting required flags for edition %s: %w", edition, err)
@@ -169,17 +174,17 @@ func ClusterCreateCmd() *core.Command {
 		CmdRun: func(c *core.CommandConfig) error {
 			cluster := ionoscloud.CreateClusterProperties{}
 			if fn := core.GetFlagName(c.NS, constants.FlagEdition); viper.IsSet(fn) {
-				cluster.Edition = pointer.From(viper.GetString(constants.FlagEdition))
+				cluster.Edition = pointer.From(viper.GetString(fn))
 			}
 			if fn := core.GetFlagName(c.NS, constants.FlagType); viper.IsSet(fn) {
-				cluster.Type = pointer.From(viper.GetString(constants.FlagType))
+				cluster.Type = pointer.From(viper.GetString(fn))
 			}
 			if fn := core.GetFlagName(c.NS, constants.FlagTemplateId); viper.IsSet(fn) {
 				// Old flag kept for backwards compatibility. Behaviour fully included in --template flag
-				cluster.TemplateID = pointer.From(viper.GetString(constants.FlagTemplateId))
+				cluster.TemplateID = pointer.From(viper.GetString(fn))
 			} else {
 				if fn := core.GetFlagName(c.NS, constants.FlagTemplate); viper.IsSet(fn) {
-					tmplId, err := templates.Resolve(viper.GetString(constants.FlagTemplate))
+					tmplId, err := templates.Resolve(viper.GetString(fn))
 					if err != nil {
 						return err
 					}
@@ -188,61 +193,69 @@ func ClusterCreateCmd() *core.Command {
 			}
 
 			if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) {
-				cluster.DisplayName = pointer.From(viper.GetString(constants.FlagName))
+				cluster.DisplayName = pointer.From(viper.GetString(fn))
 			}
-			if fn := core.GetFlagName(c.NS, constants.FlagVersion); viper.IsSet(fn) {
-				cluster.MongoDBVersion = pointer.From(viper.GetString(constants.FlagVersion))
+			if fn := core.GetFlagName(c.NS, constants.FlagVersion); viper.GetString(fn) != "" {
+				cluster.MongoDBVersion = pointer.From(viper.GetString(fn))
 			}
 			if fn := core.GetFlagName(c.NS, constants.FlagLocation); viper.IsSet(fn) {
-				cluster.Location = pointer.From(viper.GetString(constants.FlagLocation))
+				cluster.Location = pointer.From(viper.GetString(fn))
 			}
 			if fn := core.GetFlagName(c.NS, constants.FlagInstances); viper.IsSet(fn) {
-				cluster.Instances = pointer.From(viper.GetInt32(constants.FlagInstances))
+				cluster.Instances = pointer.From(viper.GetInt32(fn))
 			}
 			if fn := core.GetFlagName(c.NS, constants.FlagShards); viper.IsSet(fn) {
-				cluster.Shards = pointer.From(viper.GetInt32(constants.FlagShards))
+				cluster.Shards = pointer.From(viper.GetInt32(fn))
 			}
 
 			cluster.MaintenanceWindow = &ionoscloud.MaintenanceWindow{}
 			if fn := core.GetFlagName(c.NS, constants.FlagMaintenanceDay); viper.IsSet(fn) {
 				cluster.MaintenanceWindow.DayOfTheWeek = (*ionoscloud.DayOfTheWeek)(pointer.From(
-					viper.GetString(constants.FlagMaintenanceDay)))
+					viper.GetString(fn)))
 			}
 			if fn := core.GetFlagName(c.NS, constants.FlagMaintenanceTime); viper.IsSet(fn) {
 				cluster.MaintenanceWindow.Time = pointer.From(
-					viper.GetString(constants.FlagMaintenanceTime))
+					viper.GetString(fn))
 			}
 
 			cluster.Connections = pointer.From(make([]ionoscloud.Connection, 1))
 			if fn := core.GetFlagName(c.NS, constants.FlagCidr); viper.IsSet(fn) {
 				(*cluster.Connections)[0].CidrList = pointer.From(
-					viper.GetStringSlice(constants.FlagCidr))
+					viper.GetStringSlice(fn))
 			}
 			if fn := core.GetFlagName(c.NS, constants.FlagDatacenterId); viper.IsSet(fn) {
 				(*cluster.Connections)[0].DatacenterId = pointer.From(
-					viper.GetString(constants.FlagDatacenterId))
+					viper.GetString(fn))
 			}
 			if fn := core.GetFlagName(c.NS, constants.FlagLanId); viper.IsSet(fn) {
 				(*cluster.Connections)[0].LanId = pointer.From(
-					viper.GetString(constants.FlagLanId))
+					viper.GetString(fn))
 			}
 
 			// Enterprise flags
 			if fn := core.GetFlagName(c.NS, constants.FlagCores); viper.IsSet(fn) {
-				cluster.Cores = pointer.From(viper.GetInt32(constants.FlagCores))
+				cluster.Cores = pointer.From(viper.GetInt32(fn))
 			}
 			if fn := core.GetFlagName(c.NS, constants.FlagStorageType); viper.IsSet(fn) {
-				cluster.StorageType = (*ionoscloud.StorageType)(pointer.From(viper.GetString(constants.FlagStorageType)))
+				cluster.StorageType = (*ionoscloud.StorageType)(pointer.From(viper.GetString(fn)))
 			}
 			if fn := core.GetFlagName(c.NS, constants.FlagStorageSize); viper.IsSet(fn) {
-				sizeInt64 := convbytes.ConvertStringToUnit(viper.GetString(constants.FlagStorageSize), convbytes.MB)
+				sizeInt64 := convbytes.ConvertStringToUnit(viper.GetString(fn), convbytes.MB)
 				cluster.StorageSize = pointer.From(int32(sizeInt64))
 			}
 			if fn := core.GetFlagName(c.NS, constants.FlagRam); viper.IsSet(fn) {
-				sizeInt64 := convbytes.ConvertStringToUnit(viper.GetString(constants.FlagRam), convbytes.MB)
+				sizeInt64 := convbytes.ConvertStringToUnit(viper.GetString(fn), convbytes.MB)
 				cluster.Ram = pointer.From(int32(sizeInt64))
 			}
-			return nil
+
+			createdCluster, _, err := client.Must().MongoClient.ClustersApi.ClustersPost(context.Background()).CreateClusterRequest(
+				ionoscloud.CreateClusterRequest{Properties: &cluster},
+			).Execute()
+			if err != nil {
+				return fmt.Errorf("failed creating cluster: %w", err)
+			}
+
+			return c.Printer.Print(getClusterPrint(c, &[]ionoscloud.ClusterResponse{createdCluster}))
 		},
 		InitClient: true,
 	})
