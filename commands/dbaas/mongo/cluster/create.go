@@ -10,8 +10,10 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/templates"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
+	"github.com/ionos-cloud/ionosctl/v6/internal/pointer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
 	ionoscloud "github.com/ionos-cloud/sdk-go-dbaas-mongo"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -165,7 +167,78 @@ func ClusterCreateCmd() *core.Command {
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
+			cluster := ionoscloud.CreateClusterProperties{}
+			if fn := core.GetFlagName(c.NS, constants.FlagEdition); viper.IsSet(fn) {
+				cluster.Edition = pointer.From(viper.GetString(constants.FlagEdition))
+			}
+			if fn := core.GetFlagName(c.NS, constants.FlagType); viper.IsSet(fn) {
+				cluster.Type = pointer.From(viper.GetString(constants.FlagType))
+			}
+			if fn := core.GetFlagName(c.NS, constants.FlagTemplateId); viper.IsSet(fn) {
+				// Old flag kept for backwards compatibility. Behaviour fully included in --template flag
+				cluster.TemplateID = pointer.From(viper.GetString(constants.FlagTemplateId))
+			} else {
+				if fn := core.GetFlagName(c.NS, constants.FlagTemplate); viper.IsSet(fn) {
+					tmplId, err := templates.Resolve(viper.GetString(constants.FlagTemplate))
+					if err != nil {
+						return err
+					}
+					cluster.TemplateID = pointer.From(tmplId)
+				}
+			}
 
+			if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) {
+				cluster.DisplayName = pointer.From(viper.GetString(constants.FlagName))
+			}
+			if fn := core.GetFlagName(c.NS, constants.FlagVersion); viper.IsSet(fn) {
+				cluster.MongoDBVersion = pointer.From(viper.GetString(constants.FlagVersion))
+			}
+			if fn := core.GetFlagName(c.NS, constants.FlagLocation); viper.IsSet(fn) {
+				cluster.Location = pointer.From(viper.GetString(constants.FlagLocation))
+			}
+			if fn := core.GetFlagName(c.NS, constants.FlagInstances); viper.IsSet(fn) {
+				cluster.Instances = pointer.From(viper.GetInt32(constants.FlagInstances))
+			}
+			if fn := core.GetFlagName(c.NS, constants.FlagShards); viper.IsSet(fn) {
+				cluster.Shards = pointer.From(viper.GetInt32(constants.FlagShards))
+			}
+
+			cluster.MaintenanceWindow = &ionoscloud.MaintenanceWindow{}
+			if fn := core.GetFlagName(c.NS, constants.FlagMaintenanceDay); viper.IsSet(fn) {
+				cluster.MaintenanceWindow.DayOfTheWeek = (*ionoscloud.DayOfTheWeek)(pointer.From(
+					viper.GetString(constants.FlagMaintenanceDay)))
+			}
+			if fn := core.GetFlagName(c.NS, constants.FlagMaintenanceTime); viper.IsSet(fn) {
+				cluster.MaintenanceWindow.Time = pointer.From(
+					viper.GetString(constants.FlagMaintenanceTime))
+			}
+
+			cluster.Connections = pointer.From(make([]ionoscloud.Connection, 1))
+			if fn := core.GetFlagName(c.NS, constants.FlagCidr); viper.IsSet(fn) {
+				(*cluster.Connections)[0].CidrList = pointer.From(
+					viper.GetStringSlice(constants.FlagCidr))
+			}
+			if fn := core.GetFlagName(c.NS, constants.FlagDatacenterId); viper.IsSet(fn) {
+				(*cluster.Connections)[0].DatacenterId = pointer.From(
+					viper.GetString(constants.FlagDatacenterId))
+			}
+			if fn := core.GetFlagName(c.NS, constants.FlagLanId); viper.IsSet(fn) {
+				(*cluster.Connections)[0].LanId = pointer.From(
+					viper.GetString(constants.FlagLanId))
+			}
+
+			// Enterprise flags
+			if fn := core.GetFlagName(c.NS, constants.FlagCores); viper.IsSet(fn) {
+				cluster.Cores = pointer.From(viper.GetInt32(constants.FlagCores))
+			}
+			if fn := core.GetFlagName(c.NS, constants.FlagStorageType); viper.IsSet(fn) {
+				cluster.StorageType = (*ionoscloud.StorageType)(pointer.From(viper.GetString(constants.FlagStorageType)))
+			}
+			if fn := core.GetFlagName(c.NS, constants.FlagStorageSize); viper.IsSet(fn) {
+				storageHuman := viper.GetString(constants.FlagStorageSize)
+				utils.ConvertToGB()
+				cluster.StorageSize = pointer.From()
+			}
 			return nil
 		},
 		InitClient: true,
