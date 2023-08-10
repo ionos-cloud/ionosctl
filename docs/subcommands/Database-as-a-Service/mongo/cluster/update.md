@@ -41,7 +41,7 @@ Update a Mongo Cluster by ID
       --cidr strings              The list of IPs and subnet for your cluster. Note the following unavailable IP ranges: 10.233.114.0/24 (required)
   -i, --cluster-id string         The unique ID of the cluster (required)
       --cols strings              Set of columns to be printed on output 
-                                  Available columns: [ClusterId Name URL State Instances MongoVersion MaintenanceWindow Location DatacenterId LanId Cidr TemplateId]
+                                  Available columns: [ClusterId Name URL Health State Instances MongoVersion MaintenanceWindow Location DatacenterId LanId Cidr TemplateId Cores RAM StorageSize StorageType]
   -c, --config string             Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --datacenter-id string      The datacenter to which your cluster will be connected. Must be in the same location as the cluster (required)
   -f, --force                     Force command to execute without user input

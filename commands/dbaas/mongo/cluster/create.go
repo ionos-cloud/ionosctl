@@ -274,6 +274,9 @@ func ClusterCreateCmd() *core.Command {
 	cmd.AddSetFlag(constants.FlagEdition, "e", "", enumEditions, "Cluster Edition", core.RequiredFlagOption())
 	cmd.AddSetFlag(constants.FlagType, "", "replicaset", enumTypes, "Cluster Type. Required for enterprise clusters. Not required (inferred) if using --shards or --instances")
 
+	cmd.AddStringFlag(constants.FlagTemplateId, "", "", "The ID of a Mongo Template. Please use --template instead (Required only for business edition)", core.RequiredFlagOption())
+	cmd.Command.Flags().MarkHidden(constants.FlagTemplateId)
+
 	// Template
 	cmd.AddStringFlag(constants.FlagTemplate, "", "", "The ID of a Mongo Template, or a word contained in the name of one. Templates specify the number of cores, storage size, and memory. (Required only for business edition)", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagTemplate, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
