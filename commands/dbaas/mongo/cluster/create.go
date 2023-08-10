@@ -130,9 +130,6 @@ func inferLocationByDatacenter(c *core.PreCommandConfig) error {
 }
 
 func ClusterCreateCmd() *core.Command {
-	flagBackupLocation := "backup-location"
-	flagBiconnector := "biconnector"
-
 	playgroundRequired, _ := getRequiredFlagsByEditionAndType("playground", "")
 	businessRequired, _ := getRequiredFlagsByEditionAndType("business", "")
 	enterpriseReplicasetRequired, _ := getRequiredFlagsByEditionAndType("enterprise", "replicaset")
@@ -359,7 +356,7 @@ func ClusterCreateCmd() *core.Command {
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagRam, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"1024MB", "2GB", "4GB", "8GB", "12GB", "16GB"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddSetFlag(constants.FlagStorageType, "", "", []string{"HDD", "SSD", "SSD Premium"},
+	cmd.AddSetFlag(constants.FlagStorageType, "", "", []string{"HDD", "SSD", "\"SSD Premium\""},
 		"Custom Storage Type. (required and only settable for enterprise edition)", core.RequiredFlagOption())
 	cmd.AddStringFlag(constants.FlagStorageSize, "", "", "Custom Storage: Greater performance for values greater than 100 GB. (required and only settable for enterprise edition)", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagStorageSize, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -381,7 +378,7 @@ func ClusterCreateCmd() *core.Command {
 	cmd.AddStringFlag(flagBackupLocation, "", "", "The location where the cluster backups will be stored. If not set, the backup is stored in the nearest location of the cluster")
 
 	// From Backup: Snapshot_ID,Recovery_Target_Time
-	// TODO
+	// TODO: How does this even work?
 
 	// Biconnector
 	cmd.AddStringFlag(flagBiconnector, "", "", "The host and port where this new BI Connector is installed. The MongoDB Connector for Business Intelligence allows you to query a MongoDB database using SQL commands. Example: r1.m-abcdefgh1234.mongodb.de-fra.ionos.com:27015")

@@ -16,8 +16,15 @@ import (
 	"github.com/spf13/viper"
 )
 
-var enumEditions = []string{"playground", "business", "enterprise"} // Remove whenever the SDK adds this as an actual type with enum vals
-var enumTypes = []string{"replicaset", "sharded-cluster"}           // Remove whenever the SDK adds this as an actual type with enum vals
+var (
+	enumEditions = []string{"playground", "business", "enterprise"} // Remove whenever the SDK adds this as an actual type with enum vals
+	enumTypes    = []string{"replicaset", "sharded-cluster"}        // Remove whenever the SDK adds this as an actual type with enum vals
+)
+
+const (
+	flagBackupLocation = "backup-location"
+	flagBiconnector    = "biconnector"
+)
 
 func ClusterCmd() *core.Command {
 	clusterCmd := &core.Command{
