@@ -8,6 +8,7 @@ import (
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/convbytes"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	ionoscloud "github.com/ionos-cloud/sdk-go-dbaas-mongo"
@@ -63,6 +64,7 @@ type ClusterPrint struct {
 	ClusterId         string `json:"ClusterId,omitempty"`
 	Name              string `json:"Name,omitempty"`
 	URL               string `json:"URL,omitempty"`
+	Health            string `json:"Health,omitempty"`
 	State             string `json:"State,omitempty"`
 	Instances         int32  `json:"Instances,omitempty"`
 	MongoVersion      string `json:"MongoVersion,omitempty"`
@@ -72,6 +74,10 @@ type ClusterPrint struct {
 	LanId             string `json:"LanId,omitempty"`
 	Cidr              string `json:"Cidr,omitempty"`
 	TemplateId        string `json:"TemplateId,omitempty"`
+	Cores             int32  `json:"Cores,omitempty"`
+	RAM               string `json:"RAM,omitempty"`
+	StorageSize       string `json:"StorageSize,omitempty"`
+	StorageType       string `json:"StorageType,omitempty"`
 }
 
 var allCols = structs.Names(ClusterPrint{})
@@ -121,10 +127,28 @@ func getClusterRows(clusters *[]ionoscloud.ClusterResponse) []map[string]interfa
 						fmt.Sprintf("%s %s", *maintenanceWindowOk.GetDayOfTheWeek(), *maintenanceWindowOk.GetTime())
 				}
 			}
+			if f := propertiesOk.Ram; f != nil {
+				clusterPrint.RAM = fmt.Sprintf("%d GB", convbytes.Convert(int64(*f), convbytes.MB, convbytes.GB))
+			}
+			if f := propertiesOk.StorageSize; f != nil {
+				clusterPrint.StorageSize = fmt.Sprintf("%d GB", convbytes.Convert(int64(*f), convbytes.MB, convbytes.GB))
+			}
+			if f := propertiesOk.StorageType; f != nil {
+				clusterPrint.StorageType = string(*f)
+			}
+			if f := propertiesOk.Cores; f != nil {
+				clusterPrint.Cores = *f
+			}
 		}
-		if cluster.GetMetadata() != nil && cluster.GetMetadata().GetState() != nil {
-			clusterPrint.State = string(*cluster.GetMetadata().GetState())
+		if md := cluster.Metadata; md != nil {
+			if state := md.State; state != nil {
+				clusterPrint.State = string(*state)
+			}
+			if health := md.Health; health != nil {
+				clusterPrint.Health = string(*health)
+			}
 		}
+
 		o := structs.Map(clusterPrint)
 		out = append(out, o)
 	}

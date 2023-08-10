@@ -107,7 +107,7 @@ func inferLocationByDatacenter(c *core.PreCommandConfig) error {
 		if dc.Properties == nil || dc.Properties.Location == nil {
 			return fmt.Errorf("failed inferring location via datacenter's ID: datacenter %s location is nil: %w", dcId, err)
 		}
-		viper.Set(fn, dcId)
+		viper.Set(fn, *dc.Properties.Location)
 	}
 	return nil
 }
