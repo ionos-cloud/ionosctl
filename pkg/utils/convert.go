@@ -1,11 +1,9 @@
 package utils
 
-// TODO: This file should not exist anymore. Replace me with convbytes pkg calls
-
 import (
 	"errors"
-
-	"github.com/ionos-cloud/ionosctl/v6/pkg/convbytes"
+	"strconv"
+	"strings"
 )
 
 const (
@@ -17,43 +15,90 @@ const (
 
 // ConvertSize converts the specified size to the unit specified
 // Right now, it has support for MB, GB
-//
-// DEPRECATED: This func now simply calls `convbytes` pkg
 func ConvertSize(sizeToConvert, unitToConvertTo string) (int, error) {
-	// TODO: Replace all calls with calls to convbytes
-	val, ok := convbytes.FromStringOk(sizeToConvert)
-	if !ok {
-		return 0, errors.New("invalid size string format")
+	for _, unit := range []string{MegaBytes, GigaBytes, PetaBytes, TerraBytes} {
+		if !strings.HasSuffix(sizeToConvert, unit) {
+			continue
+		}
+		sizeToConvert = strings.ReplaceAll(sizeToConvert, " ", "")
+		switch unitToConvertTo {
+		case MegaBytes:
+			return convertToMB(sizeToConvert, unit)
+		case GigaBytes:
+			return convertToGB(sizeToConvert, unit)
+		default:
+			return 0, errors.New("error converting to the specified unit")
+		}
 	}
-
-	switch unitToConvertTo {
-	case MegaBytes:
-		return int(convbytes.FromBytes(val, convbytes.MB)), nil
-	case GigaBytes:
-		return int(convbytes.FromBytes(val, convbytes.GB)), nil
-	default:
-		return 0, errors.New("error converting to the specified unit")
-	}
+	return strconv.Atoi(sizeToConvert)
 }
 
-// DEPRECATED: This func now simply calls `convbytes` pkg
 func ConvertToMB(size, unit string) (int, error) {
-	// TODO: Replace all calls with calls to convbytes
-
-	val, ok := convbytes.FromStringOk(size)
-	if !ok {
-		return 0, errors.New("invalid size string format")
-	}
-	return int(convbytes.FromBytes(val, convbytes.MB)), nil
+	return convertToMB(size, unit)
 }
 
-// DEPRECATED: This func now simply calls `convbytes` pkg
-func ConvertToGB(size, unit string) (int, error) {
-	// TODO: Replace all calls with calls to convbytes
-
-	val, ok := convbytes.FromStringOk(size)
-	if !ok {
-		return 0, errors.New("invalid size string format")
+func convertToMB(size, unit string) (int, error) {
+	switch unit {
+	case MegaBytes:
+		s := strings.ReplaceAll(size, unit, "")
+		return strconv.Atoi(s)
+	case GigaBytes:
+		s := strings.ReplaceAll(size, unit, "")
+		gb, err := strconv.Atoi(s)
+		if err != nil {
+			return 0, err
+		}
+		return gb * 1024, nil
+	case TerraBytes:
+		s := strings.ReplaceAll(size, unit, "")
+		tb, err := strconv.Atoi(s)
+		if err != nil {
+			return 0, err
+		}
+		return tb * 1024 * 1024, nil
+	case PetaBytes:
+		s := strings.ReplaceAll(size, unit, "")
+		pb, err := strconv.Atoi(s)
+		if err != nil {
+			return 0, err
+		}
+		return pb * 1024 * 1024 * 1024, nil
+	default:
+		return 0, errors.New("error converting in MB, no suffix: MB, GB, TB, PB matched")
 	}
-	return int(convbytes.FromBytes(val, convbytes.GB)), nil
+}
+
+func ConvertToGB(size, unit string) (int, error) {
+	return convertToGB(size, unit)
+}
+
+func convertToGB(size, unit string) (int, error) {
+	switch unit {
+	case MegaBytes:
+		s := strings.ReplaceAll(size, unit, "")
+		mb, err := strconv.Atoi(s)
+		if err != nil {
+			return 0, err
+		}
+		return mb / 1024, nil
+	case GigaBytes:
+		s := strings.ReplaceAll(size, unit, "")
+		return strconv.Atoi(s)
+	case TerraBytes:
+		s := strings.ReplaceAll(size, unit, "")
+		tb, err := strconv.Atoi(s)
+		if err != nil {
+			return 0, err
+		}
+		return tb * 1024, nil
+	case PetaBytes:
+		s := strings.ReplaceAll(size, unit, "")
+		pb, err := strconv.Atoi(s)
+		if err != nil {
+			return 0, err
+		}
+		return pb * 1024 * 1024, nil
+	default:
+		return 0, errors.New("error converting in GB, no suffix: MB, GB, TB, PB matched")
+	}
 }
