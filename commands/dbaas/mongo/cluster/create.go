@@ -12,8 +12,8 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
 	"github.com/ionos-cloud/ionosctl/v6/internal/pointer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/convbytes"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
 	ionoscloud "github.com/ionos-cloud/sdk-go-dbaas-mongo"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -235,9 +235,12 @@ func ClusterCreateCmd() *core.Command {
 				cluster.StorageType = (*ionoscloud.StorageType)(pointer.From(viper.GetString(constants.FlagStorageType)))
 			}
 			if fn := core.GetFlagName(c.NS, constants.FlagStorageSize); viper.IsSet(fn) {
-				storageHuman := viper.GetString(constants.FlagStorageSize)
-				utils.ConvertToGB()
-				cluster.StorageSize = pointer.From()
+				sizeInt64 := convbytes.ConvertStringToUnit(viper.GetString(constants.FlagStorageSize), convbytes.MB)
+				cluster.StorageSize = pointer.From(int32(sizeInt64))
+			}
+			if fn := core.GetFlagName(c.NS, constants.FlagRam); viper.IsSet(fn) {
+				sizeInt64 := convbytes.ConvertStringToUnit(viper.GetString(constants.FlagRam), convbytes.MB)
+				cluster.Ram = pointer.From(int32(sizeInt64))
 			}
 			return nil
 		},
@@ -287,7 +290,7 @@ func ClusterCreateCmd() *core.Command {
 
 	// Enterprise-specific
 	cmd.AddIntFlag(constants.FlagCores, "", 0, "The total number of cores for the Server, e.g. 4. (required and only settable for enterprise edition)", core.RequiredFlagOption())
-	cmd.AddStringFlag(constants.FlagRam, "", "", "Custom RAM: multiples of 256. e.g. --ram 256 or --ram 256MB or --ram 4GB (required and only settable for enterprise edition)", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagRam, "", "", "Custom RAM: multiples of 1024. e.g. --ram 1024 or --ram 1024MB or --ram 4GB (required and only settable for enterprise edition)", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagRam, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"256MB", "512MB", "1024MB", "2GB", "4GB", "8GB", "12GB", "16GB"}, cobra.ShellCompDirectiveNoFileComp
 	})
