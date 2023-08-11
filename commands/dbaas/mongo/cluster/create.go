@@ -4,7 +4,7 @@ import (
 	"context"
 	"os"
 
-	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
 	"github.com/spf13/viper"
 
@@ -98,18 +98,15 @@ func ClusterCreateCmd() *core.Command {
 			if *input.Properties.Location == "" {
 				// If location isn't set to Datacenter's Location, Mongo API throws an error. Location property is also marked as required
 				// To improve user experience we mark it as optional and now we set it to the datacenter's location implicitly (via connections datacenterID).
-				client, err := client2.Get()
-				if err != nil {
-					return err
-				}
-				dc, _, err := client.CloudClient.DataCentersApi.DatacentersFindById(c.Context, *createConn.DatacenterId).Execute()
+				dc, _, err := client.Must().CloudClient.DataCentersApi.DatacentersFindById(c.Context, *createConn.DatacenterId).Execute()
 				if err != nil {
 					return err
 				}
 				input.Properties.Location = dc.Properties.Location
 			}
 
-			cr, _, err := c.DbaasMongoServices.Clusters().Create(input)
+			cr, _, err := client.Must().MongoClient.ClustersApi.ClustersPost(context.Background()).CreateClusterRequest(input).Execute()
+
 			if err != nil {
 				return err
 			}

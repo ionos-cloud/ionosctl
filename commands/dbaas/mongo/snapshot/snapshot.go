@@ -38,14 +38,35 @@ type SnapshotPrint struct {
 var allCols = structs.Names(SnapshotPrint{})
 
 func MakeSnapshotPrintObject(snapshots *[]ionoscloud.SnapshotResponse) []map[string]interface{} {
+	if snapshots == nil {
+		return nil
+	}
+
 	out := make([]map[string]interface{}, 0, len(*snapshots))
 	for _, snapshot := range *snapshots {
 		var snapshotPrint SnapshotPrint
-		snapshotPrint.SnapshotId = *snapshot.GetId()
-		snapshotPrint.CreationTime = *snapshot.GetProperties().GetCreationTime()
-		snapshotPrint.Size = *snapshot.GetProperties().GetSize()
-		snapshotPrint.Version = *snapshot.GetProperties().GetVersion()
+
+		if snapshot.GetId() != nil {
+			snapshotPrint.SnapshotId = *snapshot.GetId()
+		}
+
+		properties := snapshot.GetProperties()
+		if properties != nil {
+			if properties.GetCreationTime() != nil {
+				snapshotPrint.CreationTime = *properties.GetCreationTime()
+			}
+			if properties.GetSize() != nil {
+				snapshotPrint.Size = *properties.GetSize()
+			}
+			if properties.GetVersion() != nil {
+				snapshotPrint.Version = *properties.GetVersion()
+			}
+		}
+
+		o := structs.Map(snapshotPrint)
+		out = append(out, o)
 	}
+
 	return out
 }
 

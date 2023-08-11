@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/cjrd/allocate"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/mmatczuk/anyflag"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/completer"
@@ -52,7 +53,8 @@ func UserCreateCmd() *core.Command {
 			c.Printer.Verbose("Creating users for cluster %s", clusterId)
 
 			userProperties.Roles = &roles
-			u, _, err := c.DbaasMongoServices.Users().Create(clusterId, sdkgo.User{Properties: &userProperties})
+			u, _, err := client.Must().MongoClient.UsersApi.ClustersUsersPost(context.Background(), clusterId).
+				User(sdkgo.User{Properties: &userProperties}).Execute()
 			if err != nil {
 				return err
 			}
