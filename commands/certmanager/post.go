@@ -40,9 +40,9 @@ func CertCreateCmd() *core.Command {
 	cmd.AddStringFlag(FlagCertChainPath, "", "", "Specify the certificate chain from a file (required either this or --certificate-chain)")
 	cmd.AddStringFlag(FlagPrivateKeyPath, "", "", "Specify the private key from a file (required either this or --private-key)")
 
-	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, printer.ColsMessage(allCertificateCols))
+	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, printer.ColsMessage(defaultCertificateCols))
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return allCertificateCols, cobra.ShellCompDirectiveNoFileComp
+		return defaultCertificateCols, cobra.ShellCompDirectiveNoFileComp
 	})
 
 	return cmd
@@ -115,7 +115,7 @@ func CmdPost(c *core.CommandConfig) error {
 		return err
 	}
 
-	out, err := jsontabwriter.GenerateOutput("", allCertificateJSONPaths, cert, allCertificateCols)
+	out, err := jsontabwriter.GenerateOutput("", allCertificateJSONPaths, cert, defaultCertificateCols)
 	if err != nil {
 		return err
 	}

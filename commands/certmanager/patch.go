@@ -36,9 +36,9 @@ func CertUpdateCmd() *core.Command {
 	})
 	cmd.AddStringFlag(FlagCertName, "n", "", "Provide new certificate name", core.RequiredFlagOption())
 
-	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, printer.ColsMessage(allCertificateCols))
+	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, printer.ColsMessage(defaultCertificateCols))
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return allCertificateCols, cobra.ShellCompDirectiveNoFileComp
+		return defaultCertificateCols, cobra.ShellCompDirectiveNoFileComp
 	})
 
 	return cmd
@@ -65,7 +65,7 @@ func CmdPatch(c *core.CommandConfig) error {
 		return err
 	}
 
-	out, err := jsontabwriter.GenerateOutput("", allCertificateJSONPaths, cert, allCertificateCols)
+	out, err := jsontabwriter.GenerateOutput("", allCertificateJSONPaths, cert, defaultCertificateCols)
 	if err != nil {
 		return err
 	}

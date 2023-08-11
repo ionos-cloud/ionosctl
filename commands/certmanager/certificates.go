@@ -20,7 +20,7 @@ var (
 		"DisplayName": "properties.name",
 	}
 
-	allCertificateCols = []string{"CertId", "DisplayName"}
+	defaultCertificateCols = []string{"CertId", "DisplayName"}
 )
 
 func CertCmd() *core.Command {

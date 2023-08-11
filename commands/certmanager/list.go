@@ -25,9 +25,9 @@ func CertListCmd() *core.Command {
 		InitClient: true,
 	})
 
-	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, printer.ColsMessage(allCertificateCols))
+	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, printer.ColsMessage(defaultCertificateCols))
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return allCertificateCols, cobra.ShellCompDirectiveNoFileComp
+		return defaultCertificateCols, cobra.ShellCompDirectiveNoFileComp
 	})
 	return cmd
 }
@@ -40,7 +40,7 @@ func CmdList(c *core.CommandConfig) error {
 		return err
 	}
 
-	out, err := jsontabwriter.GenerateOutput("items", allCertificateJSONPaths, certs, allCertificateCols)
+	out, err := jsontabwriter.GenerateOutput("items", allCertificateJSONPaths, certs, defaultCertificateCols)
 	if err != nil {
 		return err
 	}
