@@ -17,6 +17,31 @@ import (
 	"github.com/spf13/viper"
 )
 
+func confirmStringForCluster(c sdkgo.ClusterResponse) string {
+	askString := ""
+	if p := c.Properties; p != nil {
+		if edition := p.Edition; edition != nil {
+			askString = fmt.Sprintf("%s %s", askString, *edition)
+		}
+		if ctype := p.Type; ctype != nil {
+			askString = fmt.Sprintf("%s %s", askString, *ctype)
+		}
+		if c.Id != nil {
+			askString = fmt.Sprintf("%s cluster %s", askString, *c.Id)
+		}
+		if n := p.DisplayName; n != nil {
+			askString = fmt.Sprintf("%s (%s)", askString, *n)
+		}
+		if v := p.MongoDBVersion; v != nil {
+			askString = fmt.Sprintf("%s version v%s", askString, *v)
+		}
+		if l := p.Location; l != nil {
+			askString = fmt.Sprintf("%s located in %s", askString, *l)
+		}
+	}
+	return fmt.Sprintf("delete%s and its snapshots", askString)
+}
+
 func ClusterDeleteCmd() *core.Command {
 	cmd := core.NewCommand(context.TODO(), nil, core.CommandBuilder{
 		Namespace: "dbaas-mongo",
@@ -43,26 +68,7 @@ func ClusterDeleteCmd() *core.Command {
 				}
 			}
 
-			askString := ""
-			if p := chosenCluster.Properties; p != nil {
-				if edition := p.Edition; edition != nil {
-					askString = fmt.Sprintf("%s %s", askString, *edition)
-				}
-				if ctype := p.Type; ctype != nil {
-					askString = fmt.Sprintf("%s %s", askString, *ctype)
-				}
-				askString += clusterId
-				if n := p.DisplayName; n != nil {
-					askString = fmt.Sprintf("%s (%s)", askString, *n)
-				}
-				if v := p.MongoDBVersion; v != nil {
-					askString = fmt.Sprintf("%s version v%s", askString, *v)
-				}
-				if l := p.Location; l != nil {
-					askString = fmt.Sprintf("%s located in %s", askString, *l)
-				}
-			}
-			ok := confirm.Ask(fmt.Sprintf("delete %s and its snapshots", askString))
+			ok := confirm.Ask(confirmStringForCluster(chosenCluster), viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce)))
 			if !ok {
 				return fmt.Errorf("user denied confirmation")
 			}
@@ -99,7 +105,7 @@ func deleteAll(c *core.CommandConfig) error {
 	}
 
 	return functional.ApplyAndAggregateErrors(*xs.GetItems(), func(x sdkgo.ClusterResponse) error {
-		yes := confirm.Ask(fmt.Sprintf("delete cluster %s (%s) and its snapshots", *x.Id, *x.Properties.DisplayName), viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce)))
+		yes := confirm.Ask(confirmStringForCluster(x), viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce)))
 		if yes {
 			_, _, delErr := client.Must().MongoClient.ClustersApi.ClustersDelete(c.Context, *x.Id).Execute()
 			if delErr != nil {
