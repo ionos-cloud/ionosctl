@@ -39,8 +39,9 @@ Create DBaaS Mongo Replicaset or Sharded Clusters for your chosen edition
 ```text
   -u, --api-url string            Override default host url (default "https://api.ionos.com")
       --backup-location string    The location where the cluster backups will be stored. If not set, the backup is stored in the nearest location of the cluster
-      --biconnector string        The host and port where this new BI Connector is installed. The MongoDB Connector for Business Intelligence allows you to query a MongoDB database using SQL commands. Example: r1.m-abcdefgh1234.mongodb.de-fra.ionos.com:27015
-      --cidr strings              The list of IPs and subnet for your cluster. All IPs must be in a /24 network. Note the following unavailable IP range: 10.233.114.0/24 (required)
+      --biconnector string        BI Connector host & port. The MongoDB Connector for Business Intelligence allows you to query a MongoDB database using SQL commands. Example: r1.m-abcdefgh1234.mongodb.de-fra.ionos.com:27015
+      --biconnector-enabled       Enable or disable the biconnector. To disable it, use --biconnector-enabled=false (default true)
+      --cidr strings              The list of IPs and subnet for your cluster. All IPs must be in a /24 network (required)
       --cols strings              Set of columns to be printed on output 
                                   Available columns: [ClusterId Name Edition Type URL Instances Shards Health State MongoVersion MaintenanceWindow Location DatacenterId LanId Cidr TemplateId Cores RAM StorageSize StorageType]
   -c, --config string             Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")

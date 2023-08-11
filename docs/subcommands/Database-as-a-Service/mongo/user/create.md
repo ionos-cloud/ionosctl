@@ -50,6 +50,6 @@ Create MongoDB users.
 ## Examples
 
 ```text
-ionosctl dbaas mongo user create --cluster-id CLUSTER_ID --name USERNAME --password PASSWORD --database DATABASE
+ionosctl dbaas mongo user create --cluster-id CLUSTER_ID --name USERNAME --password PASSWORD --roles DATABASE=ROLE
 ```
 

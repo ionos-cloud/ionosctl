@@ -7,6 +7,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/cilium/fake"
 	cloudapiv6completer "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/templates"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
@@ -267,15 +268,23 @@ func ClusterCreateCmd() *core.Command {
 		return cloudapiv6completer.LansIds(os.Stderr, viper.GetString(core.GetFlagName(cmd.NS, constants.FlagDatacenterId))),
 			cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddStringSliceFlag(constants.FlagCidr, "", nil, "The list of IPs and subnet for your cluster. All IPs must be in a /24 network. Note the following unavailable IP range: 10.233.114.0/24", core.RequiredFlagOption())
+	cmd.AddStringSliceFlag(constants.FlagCidr, "", nil, "The list of IPs and subnet for your cluster. All IPs must be in a /24 network", core.RequiredFlagOption())
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagCidr, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		var cidrs []string
+		for i := 0; i < viper.GetInt(core.GetFlagName(cmd.NS, constants.FlagInstances)); i++ {
+			cidrs = append(cidrs, fake.IP(fake.WithIPv4(), fake.WithIPCIDR("192.168.1.128/25"))+"/24")
+		}
 
+		return []string{strings.Join(cidrs, ",")}, cobra.ShellCompDirectiveNoFileComp
+	})
 	cmd.AddStringFlag(flagBackupLocation, "", "", "The location where the cluster backups will be stored. If not set, the backup is stored in the nearest location of the cluster")
 
 	// From Backup: Snapshot_ID,Recovery_Target_Time
 	// TODO: How does this even work?
 
 	// Biconnector
-	cmd.AddStringFlag(flagBiconnector, "", "", "The host and port where this new BI Connector is installed. The MongoDB Connector for Business Intelligence allows you to query a MongoDB database using SQL commands. Example: r1.m-abcdefgh1234.mongodb.de-fra.ionos.com:27015")
+	cmd.AddStringFlag(flagBiconnector, "", "", "BI Connector host & port. The MongoDB Connector for Business Intelligence allows you to query a MongoDB database using SQL commands. Example: r1.m-abcdefgh1234.mongodb.de-fra.ionos.com:27015")
+	cmd.AddBoolFlag(flagBiconnectorEnabled, "", true, fmt.Sprintf("Enable or disable the biconnector. To disable it, use --%s=false", flagBiconnectorEnabled))
 
 	// Misc
 	cmd.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait, "Wait for the Request to be executed")

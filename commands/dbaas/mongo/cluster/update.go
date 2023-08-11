@@ -21,7 +21,6 @@ import (
 )
 
 func ClusterUpdateCmd() *core.Command {
-	flagBiconnectorEnabled := "biconnector-enabled"
 
 	cmd := core.NewCommand(context.TODO(), nil, core.CommandBuilder{
 		Namespace: "dbaas-mongo",

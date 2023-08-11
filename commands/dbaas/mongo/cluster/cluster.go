@@ -22,8 +22,9 @@ var (
 )
 
 const (
-	flagBackupLocation = "backup-location"
-	flagBiconnector    = "biconnector"
+	flagBackupLocation     = "backup-location"
+	flagBiconnector        = "biconnector"
+	flagBiconnectorEnabled = "biconnector-enabled"
 )
 
 func ClusterCmd() *core.Command {
