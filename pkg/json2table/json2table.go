@@ -53,7 +53,12 @@ func traverseJSONRoot(rootPath string, obj interface{}) ([]*gabs.Container, erro
 	}
 
 	if rootPath == "" {
-		return []*gabs.Container{parsedObj}, nil
+		switch obj.(type) {
+		case []interface{}:
+			return parsedObj.Children(), nil
+		default:
+			return []*gabs.Container{parsedObj}, nil
+		}
 	}
 
 	if !parsedObj.ExistsP(rootPath) {
