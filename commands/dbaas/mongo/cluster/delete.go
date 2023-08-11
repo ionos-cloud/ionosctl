@@ -49,7 +49,9 @@ func ClusterDeleteCmd() *core.Command {
 		Verb:      "delete",
 		Aliases:   []string{"del", "d"},
 		ShortDesc: "Delete a Mongo Cluster by ID",
-		Example:   "ionosctl dbaas mongo cluster delete --cluster-id <cluster-id>",
+		Example: `ionosctl dbaas mongo cluster delete --cluster-id <cluster-id>
+ionosctl db m c d --all
+ionosctl db m c d --all --name <name>`,
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return core.CheckRequiredFlagsSets(c.Command, c.NS, []string{constants.ArgAll}, []string{constants.FlagClusterId})
 		},
@@ -86,6 +88,7 @@ func ClusterDeleteCmd() *core.Command {
 	})
 	cmd.AddBoolFlag(constants.ArgNoHeaders, "", false, "When using text output, don't print headers")
 	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Delete all mongo clusters")
+	cmd.AddBoolFlag(constants.FlagName, "", false, "When deleting all clusters, filter the clusters by a name")
 	cmd.AddBoolFlag(constants.ArgForce, constants.ArgForceShort, false, "Skip yes/no verification")
 	cmd.AddStringSliceFlag(constants.ArgCols, "", nil, printer.ColsMessage(allCols))
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -93,13 +96,16 @@ func ClusterDeleteCmd() *core.Command {
 	})
 
 	cmd.Command.SilenceUsage = true
+	cmd.Command.Flags().SortFlags = false
 
 	return cmd
 }
 
 func deleteAll(c *core.CommandConfig) error {
 	c.Printer.Verbose("Deleting All Clusters!")
-	xs, _, err := client.Must().MongoClient.ClustersApi.ClustersGet(c.Context).Execute()
+	xs, err := Clusters(func(r sdkgo.ApiClustersGetRequest) sdkgo.ApiClustersGetRequest {
+		return r.FilterName(viper.GetString(core.GetFlagName(c.NS, constants.FlagName)))
+	})
 	if err != nil {
 		return err
 	}
