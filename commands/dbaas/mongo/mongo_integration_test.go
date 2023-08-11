@@ -30,10 +30,12 @@ var (
 
 // If your test is failing because your credentials env var seem empty, try running with `godotenv -f <config-file> go test <test>`
 func TestMongoCommands(t *testing.T) {
+	viper.Set("config", "")
 	var err error
 	client, err = client2.Get()
 	assert.NoError(t, err)
 	go testMongoClusterCreateIdentifyRequiredNotSet(t)
+	testMongoEeTemplateInference(t)
 	dcId, lanId, err := setupTestMongoCommands()
 	if err != nil {
 		t.Fatalf("Failed setting up Mongo required resources: %s", err)
@@ -97,6 +99,20 @@ func testMongoClusterCreate(t *testing.T, dcId, lanId string) {
 	assert.NoError(t, err)
 	assert.Equal(t, uniqueResourceName, *(*createdCluster.Items)[0].Properties.DisplayName)
 	assert.Equal(t, "de/fra", *(*createdCluster.Items)[0].Properties.Location)
+}
+
+func testMongoEeTemplateInference(t *testing.T) {
+	viper.Reset()
+
+	viper.Set(constants.ArgOutput, "text")
+	viper.Set(constants.ArgCols, "Name")
+	viper.Set(constants.ArgNoHeaders, true)
+
+	c := cluster.ClusterCreateCmd()
+	c.Command.Flags().Set(constants.FlagTemplate, "playground")
+
+	err := c.Command.Execute()
+	assert.ErrorContains(t, err, "not all playground edition flags are set")
 }
 
 func testMongoClusterCreateIdentifyRequiredNotSet(t *testing.T) {

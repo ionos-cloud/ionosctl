@@ -34,13 +34,41 @@ func ClusterDeleteCmd() *core.Command {
 			}
 
 			clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
-			ok := confirm.Ask(fmt.Sprintf("delete cluster %s and its snapshots", clusterId))
+			chosenCluster, _, err := client.Must().MongoClient.ClustersApi.ClustersFindById(context.Background(), clusterId).Execute()
+			if err != nil {
+				wrapped := fmt.Errorf("failed trying to find cluster by id: %w", err)
+				keepGoing := confirm.Ask(fmt.Sprintf("%s, try deleting %s anyways", wrapped.Error(), clusterId))
+				if !keepGoing {
+					return wrapped
+				}
+			}
+
+			askString := ""
+			if p := chosenCluster.Properties; p != nil {
+				if edition := p.Edition; edition != nil {
+					askString = fmt.Sprintf("%s %s", askString, *edition)
+				}
+				if ctype := p.Type; ctype != nil {
+					askString = fmt.Sprintf("%s %s", askString, *ctype)
+				}
+				askString += clusterId
+				if n := p.DisplayName; n != nil {
+					askString = fmt.Sprintf("%s (%s)", askString, *n)
+				}
+				if v := p.MongoDBVersion; v != nil {
+					askString = fmt.Sprintf("%s version v%s", askString, *v)
+				}
+				if l := p.Location; l != nil {
+					askString = fmt.Sprintf("%s located in %s", askString, *l)
+				}
+			}
+			ok := confirm.Ask(fmt.Sprintf("delete %s and its snapshots", askString))
 			if !ok {
 				return fmt.Errorf("user denied confirmation")
 			}
 			c.Printer.Verbose("Deleting cluster: %s", clusterId)
 
-			_, _, err := client.Must().MongoClient.ClustersApi.ClustersDelete(context.Background(), clusterId).Execute()
+			_, _, err = client.Must().MongoClient.ClustersApi.ClustersDelete(context.Background(), clusterId).Execute()
 			return err
 		},
 		InitClient: true,
