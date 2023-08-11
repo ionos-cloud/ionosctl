@@ -258,7 +258,7 @@ func ClusterCreateCmd() *core.Command {
 		"Custom Storage Type. (required and only settable for enterprise edition)", core.RequiredFlagOption())
 	cmd.AddStringFlag(constants.FlagStorageSize, "", "", "Custom Storage: Greater performance for values greater than 100 GB. (required and only settable for enterprise edition)", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagStorageSize, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return []string{"50GB", "100GB", "200GB", "1TB", "10TB", "100TB", "1000TB"}, cobra.ShellCompDirectiveNoFileComp
+		return []string{"2GB", "10GB", "50GB", "100GB", "200GB", "400GB", "800GB", "1TB", "2TB"}, cobra.ShellCompDirectiveNoFileComp
 	})
 
 	// Connections
