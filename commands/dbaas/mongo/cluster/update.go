@@ -153,7 +153,10 @@ func ClusterUpdateCmd() *core.Command {
 	})
 
 	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "The name of your cluster")
-	cmd.AddInt32Flag(constants.FlagInstances, "", 1, "The total number of instances in the replicaset cluster (one primary and n-1 secondaries). Setting this flag infers a replicaset type. Limited to at least 3 for business edition. (required for non-playground replicaset clusters)")
+	cmd.AddInt32Flag(constants.FlagInstances, "", 1, "The total number of instances of the cluster (one primary and n-1 secondaries). Minimum of 3 for business edition")
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagInstances, func(cmdCobra *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return []string{"1", "3", "5", "7"}, cobra.ShellCompDirectiveNoFileComp
+	})
 	cmd.AddInt32Flag(constants.FlagShards, "", 1, "The total number of shards in the sharded_cluster cluster. Setting this flag is only possible for enterprise clusters and infers a sharded_cluster type. Possible values: 2 - 32. (required for sharded_cluster enterprise clusters)")
 
 	// Maintenance
