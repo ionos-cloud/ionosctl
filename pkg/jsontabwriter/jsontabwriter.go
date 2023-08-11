@@ -23,7 +23,21 @@ func GenerateOutput(rootPath string, jsonPaths map[string]string, obj interface{
 	}
 
 	if outputFormat == "text" {
-		return generateTextOutput(rootPath, obj, jsonPaths, cols)
+		return generateTextOutput(rootPath, obj, jsonPaths, cols, false)
+	}
+
+	return "", fmt.Errorf(outputFormatErr, outputFormat)
+}
+
+func GenerateOutputPreconverted(obj interface{}, convertedObj []map[string]interface{}, cols []string) (string, error) {
+	outputFormat := viper.GetString(constants.ArgOutput)
+
+	if outputFormat == "json" {
+		return generateJSONOutput(obj)
+	}
+
+	if outputFormat == "text" {
+		return generateTextOutput("", convertedObj, nil, cols, true)
 	}
 
 	return "", fmt.Errorf(outputFormatErr, outputFormat)
@@ -38,10 +52,17 @@ func generateJSONOutput(obj interface{}) (string, error) {
 	return string(out) + "\n", nil
 }
 
-func generateTextOutput(rootPath string, obj interface{}, jsonPaths map[string]string, cols []string) (string, error) {
-	table, err := json2table.ConvertJSONToTable(rootPath, jsonPaths, obj)
-	if err != nil {
-		return "", err
+func generateTextOutput(rootPath string, obj interface{}, jsonPaths map[string]string, cols []string, skipConversion bool) (string, error) {
+	var table []map[string]interface{}
+	var err error
+
+	if skipConversion {
+		table = obj.([]map[string]interface{})
+	} else {
+		table, err = json2table.ConvertJSONToTable(rootPath, jsonPaths, obj)
+		if err != nil {
+			return "", err
+		}
 	}
 
 	var buff = new(bytes.Buffer)
