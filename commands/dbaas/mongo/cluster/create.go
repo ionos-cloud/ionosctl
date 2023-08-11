@@ -170,6 +170,9 @@ func ClusterCreateCmd() *core.Command {
 				cluster.BiConnector.Host = pointer.From(host)
 				cluster.BiConnector.Port = pointer.From(port)
 			}
+			if fn := core.GetFlagName(c.NS, flagBiconnectorEnabled); viper.GetBool(fn) == false && cluster.BiConnector != nil {
+				cluster.BiConnector.Enabled = pointer.From(false)
+			}
 			// Enterprise flags
 			if fn := core.GetFlagName(c.NS, constants.FlagCores); viper.IsSet(fn) {
 				cluster.Cores = pointer.From(viper.GetInt32(fn))
