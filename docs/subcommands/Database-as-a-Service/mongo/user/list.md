@@ -51,5 +51,7 @@ Retrieves a list of MongoDB users. You can either list users of a certain cluste
 
 ```text
 ionosctl dbaas mongo user list
+ionosctl dbaas mongo user list --cluster-name <cluster-name>,
+ionosctl dbaas mongo user list --cluster-id <cluster-id>
 ```
 

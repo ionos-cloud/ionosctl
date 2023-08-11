@@ -49,7 +49,7 @@ Create DBaaS Mongo Replicaset or Sharded Clusters for your chosen edition
   -e, --edition string            Cluster Edition. Can be one of: playground, business, enterprise (required)
   -f, --force                     Force command to execute without user input
   -h, --help                      Print usage
-      --instances int32           The total number of instances in the replicaset cluster (one primary and n-1 secondaries). Setting this flag infers a replicaset type. Limited to at least 3 for business edition. (required for non-playground replicaset clusters) (required) (default 1)
+      --instances int32           The total number of instances of the cluster (one primary and n-1 secondaries). Minimum of 3 for business edition (default 1)
       --lan-id string             The numeric LAN ID with which you connect your cluster (required)
   -l, --location string           The physical location where the cluster will be created. (defaults to the location of the connected datacenter)
       --maintenance-day string    Day for Maintenance. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur. e.g.: Saturday (required)

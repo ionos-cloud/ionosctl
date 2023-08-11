@@ -50,7 +50,7 @@ Update a Mongo Cluster by ID
       --datacenter-id string      The datacenter to which your cluster will be connected. Must be in the same location as the cluster
   -f, --force                     Force command to execute without user input
   -h, --help                      Print usage
-      --instances int32           The total number of instances in the replicaset cluster (one primary and n-1 secondaries). Setting this flag infers a replicaset type. Limited to at least 3 for business edition. (required for non-playground replicaset clusters) (default 1)
+      --instances int32           The total number of instances of the cluster (one primary and n-1 secondaries). Minimum of 3 for business edition (default 1)
       --lan-id string             The numeric LAN ID with which you connect your cluster
       --maintenance-day string    Day for Maintenance. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur. e.g.: Saturday
       --maintenance-time string   Time for the Maintenance. The MaintenanceWindow is a weekly 4 hour-long window, during which maintenance might occur. e.g.: 16:30:59

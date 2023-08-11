@@ -45,6 +45,7 @@ Delete a Mongo Cluster by ID
   -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -f, --force               Skip yes/no verification
   -h, --help                Print usage
+      --name                When deleting all clusters, filter the clusters by a name
       --no-headers          When using text output, don't print headers
   -o, --output string       Desired output format [text|json] (default "text")
   -q, --quiet               Quiet output
@@ -55,5 +56,7 @@ Delete a Mongo Cluster by ID
 
 ```text
 ionosctl dbaas mongo cluster delete --cluster-id <cluster-id>
+ionosctl db m c d --all
+ionosctl db m c d --all --name <name>
 ```
 

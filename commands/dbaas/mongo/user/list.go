@@ -28,7 +28,9 @@ func UserListCmd() *core.Command {
 			"You can either list users of a certain cluster (--%s), "+
 			"or all clusters with an optional partial-match name filter (--%s)",
 			constants.FlagClusterId, flagFilterByClusterNameWhenListAll),
-		Example:   "ionosctl dbaas mongo user list",
+		Example: `ionosctl dbaas mongo user list
+ionosctl dbaas mongo user list --cluster-name <cluster-name>,
+ionosctl dbaas mongo user list --cluster-id <cluster-id>`,
 		PreCmdRun: core.NoPreRun,
 		CmdRun: func(c *core.CommandConfig) error {
 			fnClusterId := core.GetFlagName(c.NS, constants.FlagClusterId)
@@ -85,7 +87,9 @@ func UserListCmd() *core.Command {
 
 func listAll(c *core.CommandConfig) error {
 	c.Printer.Verbose("Getting Users from all clusters...")
-	clusters, err := cluster.Clusters(cluster.FilterNameFlags(c))
+	clusters, err := cluster.Clusters(func(r sdkgo.ApiClustersGetRequest) sdkgo.ApiClustersGetRequest {
+		return r.FilterName(core.GetFlagName(c.NS, flagFilterByClusterNameWhenListAll))
+	})
 	if err != nil {
 		return fmt.Errorf("failed getting clusters: %w", err)
 	}

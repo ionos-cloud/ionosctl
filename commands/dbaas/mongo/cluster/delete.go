@@ -103,9 +103,7 @@ ionosctl db m c d --all --name <name>`,
 
 func deleteAll(c *core.CommandConfig) error {
 	c.Printer.Verbose("Deleting All Clusters!")
-	xs, err := Clusters(func(r sdkgo.ApiClustersGetRequest) sdkgo.ApiClustersGetRequest {
-		return r.FilterName(viper.GetString(core.GetFlagName(c.NS, constants.FlagName)))
-	})
+	xs, err := Clusters(FilterNameFlags(c))
 	if err != nil {
 		return err
 	}
