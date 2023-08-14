@@ -1,5 +1,15 @@
 # Changelog
 
+## [v6.6.7] (August 2023)
+### Added
+* Added support for MongoDB Enterprise Edition (#340)
+* Added support for completions helptext for Datacenter IDs, Lan IDs, Mongo resources (Templates, Clusters, Snapshots)
+* Added support for resolving DBaaS Mongo Templates via a full word of their name (e.g. `--template playground`, `--template XS` is valid)
+* Added default template for business edition: MongoDB Business XS (1 core, 50 GB storage, 2 GB RAM)
+* Added inferred flag values to make `dbaas mongo` commands easier to use. For instance, setting `--shards` infers `--type sharded-cluster`, etc.
+* Added defaults for DBaaS Mongo `--maintenance-day` and `--maintenance-window`: not setting these flags will result in a random day/time Monday-Friday between 10:00-16:00
+* Added context-aware completions for `dbaas mongo user create --roles` to make this flag easier to use
+
 ## [v6.6.6] (August 2023)
 ### Added
 * Added support for VCPU server type

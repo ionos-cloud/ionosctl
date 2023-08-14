@@ -46,17 +46,34 @@ func RequiredFlagOption() FlagOptionFunc {
 	}
 }
 
+// FlagAsVariable takes a flag name and returns it as a screaming camel case
+//
+// e.g. `FlagAsVariable("datacenter-id") -> "DATACENTER_ID"
+func FlagAsVariable(flag string) string {
+	return strings.ReplaceAll(strings.ToUpper(flag), "-", "_")
+}
+
+// FlagUsage ("datacenter-id") -> "--datacenter-id DATACENTER_ID"
+//
+// Used as a convenience func
+func FlagUsage(flag string) string {
+	return fmt.Sprintf("--%s %s", flag, FlagAsVariable(flag))
+}
+
+// FlagsUsage calls FlagUsage for every flag in the slice
+func FlagsUsage(flags ...string) string {
+	usage := ""
+	for _, flagName := range flags {
+		usage += FlagUsage(flagName) + " "
+	}
+	return usage
+}
+
 func RequiresMinOptionsErr(cmd *Command, flagNames ...string) error {
 	if cmd == nil || cmd.Command == nil {
 		return requiredFlagErr
 	}
-	var usage string
-	usage = cmd.CommandPath()
-	for _, flagName := range flagNames {
-		usage = fmt.Sprintf(flagNamePrintF, usage, flagName,
-			strings.ReplaceAll(strings.ToUpper(flagName), "-", "_"),
-		)
-	}
+	usage := fmt.Sprintf("%s %s", cmd.CommandPath(), FlagsUsage(flagNames...))
 	return errors.New(
 		fmt.Sprintf("%q requires at least %d %s.\n\nUsage: %s\n\nFor more details, see '%s --help'.",
 			cmd.CommandPath(),

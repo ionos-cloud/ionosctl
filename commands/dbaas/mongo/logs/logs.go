@@ -38,16 +38,29 @@ var allCols = structs.Names(LogsPrint{})
 var defaultCols = []string{"Instance", "Name", "MessageNumber", "Time"}
 
 func MakeLogsPrintObject(logs *[]ionoscloud.ClusterLogsInstances) []map[string]interface{} {
+	if logs == nil {
+		return nil
+	}
+
 	out := make([]map[string]interface{}, 0, len(*logs))
 	for idx, instance := range *logs {
+		if instance.GetMessages() == nil {
+			continue
+		}
 		for msgIdx, msg := range *instance.GetMessages() {
 			var logsPrint LogsPrint
 
 			logsPrint.Instance = idx
 			logsPrint.MessageNumber = msgIdx
-			logsPrint.Name = *instance.GetName()
-			logsPrint.Message = *msg.GetMessage()
-			logsPrint.Time = *msg.GetTime()
+			if instance.GetName() != nil {
+				logsPrint.Name = *instance.GetName()
+			}
+			if msg.GetMessage() != nil {
+				logsPrint.Message = *msg.GetMessage()
+			}
+			if msg.GetTime() != nil {
+				logsPrint.Time = *msg.GetTime()
+			}
 
 			o := structs.Map(logsPrint)
 			out = append(out, o)

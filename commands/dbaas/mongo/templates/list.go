@@ -3,6 +3,7 @@ package templates
 import (
 	"context"
 
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/spf13/viper"
 
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
@@ -23,17 +24,16 @@ func TemplatesListCmd() *core.Command {
 		PreCmdRun: core.NoPreRun,
 		CmdRun: func(c *core.CommandConfig) error {
 			c.Printer.Verbose("Getting Templates...")
-			var limitPtr *int32 = nil
+			req := client.Must().MongoClient.TemplatesApi.TemplatesGet(context.Background())
+
 			if f := core.GetFlagName(c.NS, constants.FlagMaxResults); viper.IsSet(f) {
-				limit := viper.GetInt32(f)
-				limitPtr = &limit
+				req = req.Limit(viper.GetInt32(f))
 			}
-			var offsetPtr *int32 = nil
 			if f := core.GetFlagName(c.NS, constants.FlagOffset); viper.IsSet(f) {
-				offset := viper.GetInt32(f)
-				offsetPtr = &offset
+				req = req.Offset(viper.GetInt32(f))
 			}
-			ls, _, err := c.DbaasMongoServices.Templates().List(limitPtr, offsetPtr)
+
+			ls, _, err := req.Execute()
 			if err != nil {
 				return err
 			}

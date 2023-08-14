@@ -137,7 +137,7 @@ Required values to run command:
 		return []string{"VIRTIO", "IDE"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddSetFlag(cloudapiv6.ArgLicenceType, "", "LINUX", constants.EnumLicenceType, "Licence Type of the Volume")
-	create.AddStringFlag(cloudapiv6.ArgType, "", "HDD", "Type of the Volume")
+	create.AddStringFlag(constants.FlagType, "", "HDD", "Type of the Volume")
 	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgLicenceType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"HDD", "SSD", "SSD Standard", "SSD Premium"}, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -459,7 +459,7 @@ func getNewVolume(c *core.CommandConfig) (*resources.Volume, error) {
 	proper := resources.VolumeProperties{}
 	name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
 	bus := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgBus))
-	volumeType := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgType))
+	volumeType := viper.GetString(core.GetFlagName(c.NS, constants.FlagType))
 	availabilityZone := viper.GetString(core.GetFlagName(c.NS, constants.FlagAvailabilityZone))
 	// It will get the default values, if flags not set
 	proper.SetName(name)

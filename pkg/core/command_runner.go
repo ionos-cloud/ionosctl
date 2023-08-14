@@ -8,8 +8,6 @@ import (
 
 	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"
 
-	dbaas_mongo "github.com/ionos-cloud/ionosctl/v6/services/dbaas-mongo"
-
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/utils/clierror"
@@ -144,10 +142,6 @@ func NewCommandCfg(ctx context.Context, in io.Reader, p printer.PrintService, in
 				return err
 			}
 
-			if err = c.DbaasMongoServices.InitServices(client); err != nil {
-				return err
-			}
-
 			if err = c.ContainerRegistryServices.InitServices(client); err != nil {
 				return err
 			}
@@ -188,7 +182,6 @@ type CommandConfig struct {
 	CloudApiV6Services         cloudapiv6.Services
 	AuthV1Services             authservice.Services
 	CloudApiDbaasPgsqlServices cloudapidbaaspgsql.Services
-	DbaasMongoServices         dbaas_mongo.Services
 	CertificateManagerServices certmanager.Services
 	ContainerRegistryServices  container_registry.Services
 

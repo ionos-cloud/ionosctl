@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/completer"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	ionoscloud "github.com/ionos-cloud/sdk-go-dbaas-mongo"
@@ -25,7 +26,7 @@ func ClusterGetCmd() *core.Command {
 		CmdRun: func(c *core.CommandConfig) error {
 			clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
 			c.Printer.Verbose("Getting Cluster by id: %s", clusterId)
-			cluster, _, err := c.DbaasMongoServices.Clusters().Get(clusterId)
+			cluster, _, err := client.Must().MongoClient.ClustersApi.ClustersFindById(context.Background(), clusterId).Execute()
 			if err != nil {
 				return err
 			}

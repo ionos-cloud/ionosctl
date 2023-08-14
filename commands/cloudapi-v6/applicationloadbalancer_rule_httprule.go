@@ -126,8 +126,8 @@ Required values to run command:
 	add.AddBoolFlag(cloudapiv6.ArgNegate, "", false, "Specifies whether the condition is negated or not")
 
 	add.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "", "The unique name of the Application Load Balancer HTTP rule.", core.RequiredFlagOption())
-	add.AddStringFlag(cloudapiv6.ArgType, "", "", "Type of the HTTP rule.", core.RequiredFlagOption())
-	_ = add.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	add.AddStringFlag(constants.FlagType, "", "", "Type of the HTTP rule.", core.RequiredFlagOption())
+	_ = add.Command.RegisterFlagCompletionFunc(constants.FlagType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"FORWARD", "STATIC", "REDIRECT"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	add.AddUUIDFlag(cloudapiv6.ArgTargetGroupId, "", "", "he ID of the target group; mandatory and only valid for FORWARD actions.")
@@ -200,7 +200,7 @@ Required values to run command:
 
 func PreRunApplicationLoadBalancerRuleHttpRule(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgDataCenterId,
-		cloudapiv6.ArgApplicationLoadBalancerId, cloudapiv6.ArgRuleId, cloudapiv6.ArgName, cloudapiv6.ArgType)
+		cloudapiv6.ArgApplicationLoadBalancerId, cloudapiv6.ArgRuleId, cloudapiv6.ArgName, constants.FlagType)
 }
 
 func PreRunApplicationLoadBalancerRuleHttpRuleDelete(c *core.PreCommandConfig) error {
@@ -414,13 +414,13 @@ func getRuleHttpRuleInfo(c *core.CommandConfig) resources.ApplicationLoadBalance
 	httprule := resources.ApplicationLoadBalancerHttpRule{}
 	httprule.SetName(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName)))
 	c.Printer.Verbose("Property Name set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName)))
-	httprule.SetType(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgType)))
-	c.Printer.Verbose("Property Type set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgType)))
-	if strings.EqualFold(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgType)), "FORWARD") {
+	httprule.SetType(viper.GetString(core.GetFlagName(c.NS, constants.FlagType)))
+	c.Printer.Verbose("Property Type set: %v", viper.GetString(core.GetFlagName(c.NS, constants.FlagType)))
+	if strings.EqualFold(viper.GetString(core.GetFlagName(c.NS, constants.FlagType)), "FORWARD") {
 		httprule.SetTargetGroup(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)))
 		c.Printer.Verbose("Property TargetGroup set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)))
 	}
-	if strings.EqualFold(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgType)), "REDIRECT") {
+	if strings.EqualFold(viper.GetString(core.GetFlagName(c.NS, constants.FlagType)), "REDIRECT") {
 		httprule.SetLocation(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLocation)))
 		c.Printer.Verbose("Property Location set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLocation)))
 		httprule.SetDropQuery(viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgQuery)))
@@ -428,7 +428,7 @@ func getRuleHttpRuleInfo(c *core.CommandConfig) resources.ApplicationLoadBalance
 		httprule.SetStatusCode(viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgStatusCode)))
 		c.Printer.Verbose("Property StatusCode set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgStatusCode)))
 	}
-	if strings.EqualFold(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgType)), "STATIC") {
+	if strings.EqualFold(viper.GetString(core.GetFlagName(c.NS, constants.FlagType)), "STATIC") {
 		httprule.SetResponseMessage(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgMessage)))
 		c.Printer.Verbose("Property ResponseMessage set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgMessage)))
 		httprule.SetContentType(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgContentType)))
