@@ -53,8 +53,8 @@ Create DBaaS Mongo Replicaset or Sharded Clusters for your chosen edition
       --instances int32           The total number of instances of the cluster (one primary and n-1 secondaries). Minimum of 3 for business edition (default 1)
       --lan-id string             The numeric LAN ID with which you connect your cluster (required)
   -l, --location string           The physical location where the cluster will be created. (defaults to the location of the connected datacenter)
-      --maintenance-day string    Day for Maintenance. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur. e.g.: Saturday (required)
-      --maintenance-time string   Time for the Maintenance. The MaintenanceWindow is a weekly 4 hour-long window, during which maintenance might occur. e.g.: 16:30:59 (required)
+      --maintenance-day string    Day Of the Week for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur. Defaults to a random day during Mon-Fri, during the hours 10:00-16:00 (default "Thursday")
+      --maintenance-time string   Time for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur. e.g.: 16:30:59Defaults to a random day of the week, during the hours 10:00-16:00 (default "12:00:00")
   -n, --name string               The name of your cluster (required)
       --no-headers                When using text output, don't print headers
   -o, --output string             Desired output format [text|json] (default "text")
@@ -74,14 +74,14 @@ Create DBaaS Mongo Replicaset or Sharded Clusters for your chosen edition
 ## Examples
 
 ```text
-ionosctl dbaas mongo cluster create --edition playground --name NAME --maintenance-day MAINTENANCE_DAY --maintenance-time MAINTENANCE_TIME --datacenter-id DATACENTER_ID --lan-id LAN_ID --cidr CIDR 
+ionosctl dbaas mongo cluster create --edition playground --name NAME --datacenter-id DATACENTER_ID --lan-id LAN_ID --cidr CIDR 
 
-ionosctl dbaas mongo cluster create --edition business --name NAME --maintenance-day MAINTENANCE_DAY --maintenance-time MAINTENANCE_TIME --datacenter-id DATACENTER_ID --lan-id LAN_ID --cidr CIDR --template TEMPLATE --instances INSTANCES 
+ionosctl dbaas mongo cluster create --edition business --name NAME --datacenter-id DATACENTER_ID --lan-id LAN_ID --cidr CIDR --template TEMPLATE --instances INSTANCES 
 
-ionosctl dbaas mongo cluster create --edition enterprise (--instances INSTANCES | --shards SHARDS) --name NAME --maintenance-day MAINTENANCE_DAY --maintenance-time MAINTENANCE_TIME --datacenter-id DATACENTER_ID --lan-id LAN_ID --cidr CIDR --cores CORES --storage-type STORAGE_TYPE --storage-size STORAGE_SIZE --ram RAM 
+ionosctl dbaas mongo cluster create --edition enterprise (--instances INSTANCES | --shards SHARDS) --name NAME --datacenter-id DATACENTER_ID --lan-id LAN_ID --cidr CIDR --cores CORES --storage-type STORAGE_TYPE --storage-size STORAGE_SIZE --ram RAM 
 
-ionosctl dbaas mongo cluster create --edition enterprise --type replicaset --name NAME --maintenance-day MAINTENANCE_DAY --maintenance-time MAINTENANCE_TIME --datacenter-id DATACENTER_ID --lan-id LAN_ID --cidr CIDR --cores CORES --storage-type STORAGE_TYPE --storage-size STORAGE_SIZE --ram RAM --instances INSTANCES 
+ionosctl dbaas mongo cluster create --edition enterprise --type replicaset --name NAME --datacenter-id DATACENTER_ID --lan-id LAN_ID --cidr CIDR --cores CORES --storage-type STORAGE_TYPE --storage-size STORAGE_SIZE --ram RAM --instances INSTANCES 
 
-ionosctl dbaas mongo cluster create --edition enterprise --type sharded-cluster --name NAME --maintenance-day MAINTENANCE_DAY --maintenance-time MAINTENANCE_TIME --datacenter-id DATACENTER_ID --lan-id LAN_ID --cidr CIDR --cores CORES --storage-type STORAGE_TYPE --storage-size STORAGE_SIZE --ram RAM --shards SHARDS 
+ionosctl dbaas mongo cluster create --edition enterprise --type sharded-cluster --name NAME --datacenter-id DATACENTER_ID --lan-id LAN_ID --cidr CIDR --cores CORES --storage-type STORAGE_TYPE --storage-size STORAGE_SIZE --ram RAM --shards SHARDS 
 ```
 
