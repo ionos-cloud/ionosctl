@@ -235,7 +235,7 @@ func ClusterCreateCmd() *core.Command {
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagLocation, func(cmdCobra *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return cloudapiv6completer.LocationIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddInt32Flag(constants.FlagInstances, "", 1, "The total number of instances of the cluster (one primary and n-1 secondaries). Minimum of 3 for business edition")
+	cmd.AddInt32Flag(constants.FlagInstances, "", 1, "The total number of instances of the cluster (one primary and n-1 secondaries). Minimum of 3 for enterprise edition")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagInstances, func(cmdCobra *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"1", "3", "5", "7"}, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -264,11 +264,14 @@ func ClusterCreateCmd() *core.Command {
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagRam, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"1024MB", "2GB", "4GB", "8GB", "12GB", "16GB"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddSetFlag(constants.FlagStorageType, "", "SSD", []string{"HDD", "SSD", "\"SSD Premium\""},
+	cmd.AddStringFlag(constants.FlagStorageType, "", "SSD",
 		"Custom Storage Type. (only settable for enterprise edition)")
-	cmd.AddStringFlag(constants.FlagStorageSize, "", "2GB", "Custom Storage: Greater performance for values greater than 100 GB. (only settable for enterprise edition)")
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagStorageType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return []string{"HDD", "SSD", "\"SSD Premium\""}, cobra.ShellCompDirectiveNoFileComp
+	})
+	cmd.AddStringFlag(constants.FlagStorageSize, "", "5GB", "Custom Storage: Minimum of 5GB, Greater performance for values greater than 100 GB. (only settable for enterprise edition)")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagStorageSize, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return []string{"2GB", "10GB", "50GB", "100GB", "200GB", "400GB", "800GB", "1TB", "2TB"}, cobra.ShellCompDirectiveNoFileComp
+		return []string{"5GB", "10GB", "50GB", "100GB", "200GB", "400GB", "800GB", "1TB", "2TB"}, cobra.ShellCompDirectiveNoFileComp
 	})
 
 	// Connections

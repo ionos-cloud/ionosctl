@@ -21,6 +21,7 @@ type StorageType string
 // List of StorageType
 const (
 	STORAGETYPE_HDD          StorageType = "HDD"
+	STORAGETYPE_SSD          StorageType = "SSD"
 	STORAGETYPE_SSD_STANDARD StorageType = "SSD Standard"
 	STORAGETYPE_SSD_PREMIUM  StorageType = "SSD Premium"
 )
@@ -32,7 +33,7 @@ func (v *StorageType) UnmarshalJSON(src []byte) error {
 		return err
 	}
 	enumTypeValue := StorageType(value)
-	for _, existing := range []StorageType{"HDD", "SSD Standard", "SSD Premium"} {
+	for _, existing := range []StorageType{"HDD", "SSD", "SSD Standard", "SSD Premium"} {
 		if existing == enumTypeValue {
 			*v = enumTypeValue
 			return nil
