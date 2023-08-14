@@ -141,6 +141,12 @@ func convertTableToText(cols []string, table map[string]interface{}) (format str
 			}
 
 			field = strings.Join(temp, ", ")
+		case float64:
+			temp := field.(float64)
+
+			if temp == float64(int64(temp)) {
+				field = int64(temp)
+			}
 		}
 
 		values = append(values, field)
