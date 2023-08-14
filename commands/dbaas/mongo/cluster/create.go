@@ -3,9 +3,11 @@ package cluster
 import (
 	"context"
 	"fmt"
+	"math/rand"
 	"net"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/cilium/fake"
 	cloudapiv6completer "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
@@ -123,11 +125,11 @@ func ClusterCreateCmd() *core.Command {
 			}
 
 			cluster.MaintenanceWindow = &ionoscloud.MaintenanceWindow{}
-			if fn := core.GetFlagName(c.NS, constants.FlagMaintenanceDay); viper.IsSet(fn) {
+			if fn := core.GetFlagName(c.NS, constants.FlagMaintenanceDay); viper.GetString(fn) != "" {
 				cluster.MaintenanceWindow.DayOfTheWeek = (*ionoscloud.DayOfTheWeek)(pointer.From(
 					viper.GetString(fn)))
 			}
-			if fn := core.GetFlagName(c.NS, constants.FlagMaintenanceTime); viper.IsSet(fn) {
+			if fn := core.GetFlagName(c.NS, constants.FlagMaintenanceTime); viper.GetString(fn) != "" {
 				cluster.MaintenanceWindow.Time = pointer.From(
 					viper.GetString(fn))
 			}
@@ -239,15 +241,22 @@ func ClusterCreateCmd() *core.Command {
 	cmd.AddInt32Flag(constants.FlagShards, "", 1, "The total number of shards in the sharded_cluster cluster. Setting this flag is only possible for enterprise clusters and infers a sharded_cluster type. Possible values: 2 - 32. (required for sharded_cluster enterprise clusters)", core.RequiredFlagOption())
 
 	// Maintenance
-	cmd.AddStringFlag(constants.FlagMaintenanceTime, "", "", "Time for the Maintenance. The MaintenanceWindow is a weekly 4 hour-long window, during which maintenance might occur. e.g.: 16:30:59", core.RequiredFlagOption())
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	hour := 10 + r.Intn(7) // Random hour 10-16
+	daysOfWeek := []string{"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"}
+
+	cmd.AddStringFlag(constants.FlagMaintenanceTime, "", fmt.Sprintf("%02d:00:00", hour),
+		"Time for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur. e.g.: 16:30:59"+
+			"Defaults to a random day of the week, during the hours 10:00-16:00")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagMaintenanceTime, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"00:00:00", "04:00:00", "08:00:00", "10:00:00", "12:00:00", "16:00:00", "20:00:00"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddStringFlag(constants.FlagMaintenanceDay, "", "", "Day for Maintenance. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur. e.g.: Saturday", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagMaintenanceDay, "", daysOfWeek[rand.Intn(len(daysOfWeek))],
+		"Day Of the Week for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur. "+
+			"Defaults to a random day of the week, during the hours 10:00-16:00")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagMaintenanceDay, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"}, cobra.ShellCompDirectiveNoFileComp
 	})
-
 	// Enterprise-specific
 	cmd.AddIntFlag(constants.FlagCores, "", 0, "The total number of cores for the Server, e.g. 4. (required and only settable for enterprise edition)", core.RequiredFlagOption())
 	cmd.AddStringFlag(constants.FlagRam, "", "", "Custom RAM: multiples of 1024. e.g. --ram 1024 or --ram 1024MB or --ram 4GB (required and only settable for enterprise edition)", core.RequiredFlagOption())
@@ -303,7 +312,6 @@ func ClusterCreateCmd() *core.Command {
 func getRequiredFlagsByEditionAndType(edition, cType string) ([]string, error) {
 	alwaysRequired := []string{
 		constants.FlagEdition, constants.FlagName,
-		constants.FlagMaintenanceDay, constants.FlagMaintenanceTime,
 		constants.FlagDatacenterId, constants.FlagLanId, constants.FlagCidr,
 	}
 	switch edition {
