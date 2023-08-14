@@ -45,7 +45,7 @@ Create DBaaS Mongo Replicaset or Sharded Clusters for your chosen edition
       --cols strings              Set of columns to be printed on output 
                                   Available columns: [ClusterId Name Edition Type URL Instances Shards Health State MongoVersion MaintenanceWindow Location DatacenterId LanId Cidr TemplateId Cores RAM StorageSize StorageType]
   -c, --config string             Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
-      --cores int                 The total number of cores for the Server, e.g. 4. (required and only settable for enterprise edition) (required)
+      --cores int32               The total number of cores for the Server, e.g. 4. (required and only settable for enterprise edition) (default 1)
       --datacenter-id string      The datacenter to which your cluster will be connected. Must be in the same location as the cluster (required)
   -e, --edition string            Cluster Edition. Can be one of: playground, business, enterprise (required)
   -f, --force                     Force command to execute without user input
@@ -53,17 +53,17 @@ Create DBaaS Mongo Replicaset or Sharded Clusters for your chosen edition
       --instances int32           The total number of instances of the cluster (one primary and n-1 secondaries). Minimum of 3 for business edition (default 1)
       --lan-id string             The numeric LAN ID with which you connect your cluster (required)
   -l, --location string           The physical location where the cluster will be created. (defaults to the location of the connected datacenter)
-      --maintenance-day string    Day Of the Week for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur. Defaults to a random day during Mon-Fri, during the hours 10:00-16:00 (default "Thursday")
-      --maintenance-time string   Time for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur. e.g.: 16:30:59Defaults to a random day of the week, during the hours 10:00-16:00 (default "12:00:00")
+      --maintenance-day string    Day Of the Week for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur. Defaults to a random day during Mon-Fri, during the hours 10:00-16:00 (default "Monday")
+      --maintenance-time string   Time for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur. e.g.: 16:30:59Defaults to a random day of the week, during the hours 10:00-16:00 (default "13:00:00")
   -n, --name string               The name of your cluster (required)
       --no-headers                When using text output, don't print headers
   -o, --output string             Desired output format [text|json] (default "text")
   -q, --quiet                     Quiet output
-      --ram string                Custom RAM: multiples of 1024. e.g. --ram 1024 or --ram 1024MB or --ram 4GB (required and only settable for enterprise edition) (required)
+      --ram string                Custom RAM: multiples of 1024. e.g. --ram 1024 or --ram 1024MB or --ram 4GB (required and only settable for enterprise edition) (default "2GB")
       --shards int32              The total number of shards in the sharded_cluster cluster. Setting this flag is only possible for enterprise clusters and infers a sharded_cluster type. Possible values: 2 - 32. (required for sharded_cluster enterprise clusters) (required) (default 1)
-      --storage-size string       Custom Storage: Greater performance for values greater than 100 GB. (required and only settable for enterprise edition) (required)
-      --storage-type string       Custom Storage Type. (required and only settable for enterprise edition). Can be one of: HDD, SSD, "SSD Premium" (required)
-      --template string           The ID of a Mongo Template, or a word contained in the name of one. Templates specify the number of cores, storage size, and memory. (Required only for business edition) (required)
+      --storage-size string       Custom Storage: Greater performance for values greater than 100 GB. (only settable for enterprise edition) (default "2GB")
+      --storage-type string       Custom Storage Type. (only settable for enterprise edition). Can be one of: HDD, SSD, "SSD Premium" (default "SSD")
+      --template string           The ID of a Mongo Template, or a word contained in the name of one. Templates specify the number of cores, storage size, and memory. Business editions default to XS template. Playground editions default to playground template.
   -t, --timeout int               Timeout option for Request [seconds] (default 60)
       --type string               Cluster Type. Required for enterprise clusters. Not required (inferred) if using --shards or --instances. Can be one of: replicaset, sharded-cluster (default "replicaset")
   -v, --verbose                   Print step-by-step process when running command
@@ -76,12 +76,12 @@ Create DBaaS Mongo Replicaset or Sharded Clusters for your chosen edition
 ```text
 ionosctl dbaas mongo cluster create --edition playground --name NAME --datacenter-id DATACENTER_ID --lan-id LAN_ID --cidr CIDR 
 
-ionosctl dbaas mongo cluster create --edition business --name NAME --datacenter-id DATACENTER_ID --lan-id LAN_ID --cidr CIDR --template TEMPLATE --instances INSTANCES 
+ionosctl dbaas mongo cluster create --edition business --name NAME --datacenter-id DATACENTER_ID --lan-id LAN_ID --cidr CIDR --instances INSTANCES 
 
-ionosctl dbaas mongo cluster create --edition enterprise (--instances INSTANCES | --shards SHARDS) --name NAME --datacenter-id DATACENTER_ID --lan-id LAN_ID --cidr CIDR --cores CORES --storage-type STORAGE_TYPE --storage-size STORAGE_SIZE --ram RAM 
+ionosctl dbaas mongo cluster create --edition enterprise (--instances INSTANCES | --shards SHARDS) --name NAME --datacenter-id DATACENTER_ID --lan-id LAN_ID --cidr CIDR 
 
-ionosctl dbaas mongo cluster create --edition enterprise --type replicaset --name NAME --datacenter-id DATACENTER_ID --lan-id LAN_ID --cidr CIDR --cores CORES --storage-type STORAGE_TYPE --storage-size STORAGE_SIZE --ram RAM --instances INSTANCES 
+ionosctl dbaas mongo cluster create --edition enterprise --type replicaset --name NAME --datacenter-id DATACENTER_ID --lan-id LAN_ID --cidr CIDR --instances INSTANCES 
 
-ionosctl dbaas mongo cluster create --edition enterprise --type sharded-cluster --name NAME --datacenter-id DATACENTER_ID --lan-id LAN_ID --cidr CIDR --cores CORES --storage-type STORAGE_TYPE --storage-size STORAGE_SIZE --ram RAM --shards SHARDS 
+ionosctl dbaas mongo cluster create --edition enterprise --type sharded-cluster --name NAME --datacenter-id DATACENTER_ID --lan-id LAN_ID --cidr CIDR --shards SHARDS 
 ```
 

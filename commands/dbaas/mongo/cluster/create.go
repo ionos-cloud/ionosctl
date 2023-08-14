@@ -176,17 +176,17 @@ func ClusterCreateCmd() *core.Command {
 				cluster.BiConnector.Enabled = pointer.From(false)
 			}
 			// Enterprise flags
-			if fn := core.GetFlagName(c.NS, constants.FlagCores); viper.IsSet(fn) {
+			if fn := core.GetFlagName(c.NS, constants.FlagCores); viper.GetString(fn) != "" {
 				cluster.Cores = pointer.From(viper.GetInt32(fn))
 			}
-			if fn := core.GetFlagName(c.NS, constants.FlagStorageType); viper.IsSet(fn) {
+			if fn := core.GetFlagName(c.NS, constants.FlagStorageType); viper.GetString(fn) != "" {
 				cluster.StorageType = (*ionoscloud.StorageType)(pointer.From(viper.GetString(fn)))
 			}
-			if fn := core.GetFlagName(c.NS, constants.FlagStorageSize); viper.IsSet(fn) {
+			if fn := core.GetFlagName(c.NS, constants.FlagStorageSize); viper.GetString(fn) != "" {
 				sizeInt64 := convbytes.ConvertStringToUnit(viper.GetString(fn), convbytes.MB)
 				cluster.StorageSize = pointer.From(int32(sizeInt64))
 			}
-			if fn := core.GetFlagName(c.NS, constants.FlagRam); viper.IsSet(fn) {
+			if fn := core.GetFlagName(c.NS, constants.FlagRam); viper.GetString(fn) != "" {
 				sizeInt64 := convbytes.ConvertStringToUnit(viper.GetString(fn), convbytes.MB)
 				cluster.Ram = pointer.From(int32(sizeInt64))
 			}
@@ -206,11 +206,12 @@ func ClusterCreateCmd() *core.Command {
 	cmd.AddSetFlag(constants.FlagEdition, "e", "", enumEditions, "Cluster Edition", core.RequiredFlagOption())
 	cmd.AddSetFlag(constants.FlagType, "", "replicaset", enumTypes, "Cluster Type. Required for enterprise clusters. Not required (inferred) if using --shards or --instances")
 
-	cmd.AddStringFlag(constants.FlagTemplateId, "", "", "The ID of a Mongo Template. Please use --template instead (Required only for business edition)", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagTemplateId, "", "", "The ID of a Mongo Template. Please use --template instead")
 	cmd.Command.Flags().MarkHidden(constants.FlagTemplateId)
 
 	// Template
-	cmd.AddStringFlag(constants.FlagTemplate, "", "", "The ID of a Mongo Template, or a word contained in the name of one. Templates specify the number of cores, storage size, and memory. (Required only for business edition)", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagTemplate, "", "", "The ID of a Mongo Template, or a word contained in the name of one. "+
+		"Templates specify the number of cores, storage size, and memory. Business editions default to XS template. Playground editions default to playground template.")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagTemplate, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		ts, err := templates.List()
 		if err != nil {
@@ -258,14 +259,14 @@ func ClusterCreateCmd() *core.Command {
 		return append(workingDaysOfWeek, "Satuday", "Sunday"), cobra.ShellCompDirectiveNoFileComp
 	})
 	// Enterprise-specific
-	cmd.AddIntFlag(constants.FlagCores, "", 0, "The total number of cores for the Server, e.g. 4. (required and only settable for enterprise edition)", core.RequiredFlagOption())
-	cmd.AddStringFlag(constants.FlagRam, "", "", "Custom RAM: multiples of 1024. e.g. --ram 1024 or --ram 1024MB or --ram 4GB (required and only settable for enterprise edition)", core.RequiredFlagOption())
+	cmd.AddInt32Flag(constants.FlagCores, "", 1, "The total number of cores for the Server, e.g. 4. (required and only settable for enterprise edition)")
+	cmd.AddStringFlag(constants.FlagRam, "", "2GB", "Custom RAM: multiples of 1024. e.g. --ram 1024 or --ram 1024MB or --ram 4GB (required and only settable for enterprise edition)")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagRam, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"1024MB", "2GB", "4GB", "8GB", "12GB", "16GB"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddSetFlag(constants.FlagStorageType, "", "", []string{"HDD", "SSD", "\"SSD Premium\""},
-		"Custom Storage Type. (required and only settable for enterprise edition)", core.RequiredFlagOption())
-	cmd.AddStringFlag(constants.FlagStorageSize, "", "", "Custom Storage: Greater performance for values greater than 100 GB. (required and only settable for enterprise edition)", core.RequiredFlagOption())
+	cmd.AddSetFlag(constants.FlagStorageType, "", "SSD", []string{"HDD", "SSD", "\"SSD Premium\""},
+		"Custom Storage Type. (only settable for enterprise edition)")
+	cmd.AddStringFlag(constants.FlagStorageSize, "", "2GB", "Custom Storage: Greater performance for values greater than 100 GB. (only settable for enterprise edition)")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagStorageSize, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"2GB", "10GB", "50GB", "100GB", "200GB", "400GB", "800GB", "1TB", "2TB"}, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -321,13 +322,15 @@ func getRequiredFlagsByEditionAndType(edition, cType string) ([]string, error) {
 	case "business":
 		// Type inferred as replicaset.
 		return append(alwaysRequired,
-			constants.FlagTemplate, constants.FlagInstances,
+			// constants.FlagTemplate, // Decided to be defaulted to XS
+			constants.FlagInstances,
 		), nil
 	case "enterprise":
-		enterpriseBaseFlags := append(alwaysRequired,
-			constants.FlagCores, constants.FlagStorageType,
-			constants.FlagStorageSize, constants.FlagRam,
-		)
+		enterpriseBaseFlags := alwaysRequired
+		// enterpriseBaseFlags := append(alwaysRequired, // Decided to be defaulted to lowest vals
+		// constants.FlagCores, constants.FlagStorageType,
+		// constants.FlagStorageSize, constants.FlagRam,
+		// )
 		switch cType {
 		case "replicaset":
 			return append(enterpriseBaseFlags, constants.FlagInstances), nil
@@ -405,6 +408,11 @@ func validateEdition(c *core.PreCommandConfig) error {
 			core.FlagsUsage(constants.FlagCores, constants.FlagRam, constants.FlagStorageType, constants.FlagStorageSize))
 	}
 
+	// Business edition: infer template as XS
+	if fn := core.GetFlagName(c.NS, constants.FlagTemplate); edition == "business" && !viper.IsSet(fn) {
+		viper.Set(fn, "XS")
+	}
+
 	// Special case for playground: infer that instances is 1
 	if flagInstances := core.GetFlagName(c.NS, constants.FlagInstances); edition == "playground" && !viper.IsSet(flagInstances) {
 		viper.Set(flagInstances, 1)
@@ -431,7 +439,6 @@ func inferTypeForEnterprise(c *core.PreCommandConfig) error {
 	}
 
 	viper.Set(fn, "replicaset")
-
 	if flagShards := core.GetFlagName(c.NS, constants.FlagShards); viper.IsSet(flagShards) {
 		viper.Set(fn, "sharded-cluster")
 	}
