@@ -125,6 +125,13 @@ func convertTableToText(cols []string, table map[string]interface{}) (format str
 
 	for _, col := range cols {
 		field := table[col]
+		formats = append(formats, "%v")
+
+		if field == nil {
+			values = append(values, "")
+
+			continue
+		}
 
 		switch field.(type) {
 		case []interface{}:
@@ -136,7 +143,6 @@ func convertTableToText(cols []string, table map[string]interface{}) (format str
 			field = strings.Join(temp, ", ")
 		}
 
-		formats = append(formats, "%v")
 		values = append(values, field)
 	}
 

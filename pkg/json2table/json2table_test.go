@@ -90,14 +90,21 @@ var (
 		"random": "random.path",
 		"path":   "path.random",
 	}
+
+	expectedResultWrongPaths = []map[string]interface{}{
+		{
+			"random": nil,
+			"path":   nil,
+		},
+	}
 )
 
 func TestConvertJSONToText(t *testing.T) {
 	t.Run("Convert JSON to TEXT with basic struct", testConvertJSONToTextWithBasicStruct)
 	t.Run("Convert JSON to TEXT with complex struct", testConvertJSONToTextWithComplexStruct)
 	t.Run("Convert JSON to TEXT with inner basic structs", testConvertJSONToTextWithInnerBasicStructs)
+	t.Run("Convert JSON to TEXT with wrong paths", testConvertJSONToTextWithWrongPaths)
 	t.Run("FAIL Convert JSON to TEXT with empty paths", testFailConvertJSONToTextWithEmptyPaths)
-	t.Run("FAIL Convert JSON to TEXT with wrong paths", testFailConvertJSONToTextWithWrongPaths)
 	t.Run("FAIL Convert JSON to TEXT with wrong root", testFailConvertJSONToTextWithWrongRoot)
 	t.Run("FAIL Convert JSON to TEXT with wrong root destination", testFailConvertJSONToTextWithWrongRootDestination)
 	t.Run("FAIL Convert JSON to TEXT with unsupported JSON value", testFailConvertJSONToTextWithUnsupportedJSONValue)
@@ -109,7 +116,6 @@ func testConvertJSONToTextWithBasicStruct(t *testing.T) {
 	res, err := json2table.ConvertJSONToTable("", innerStructJsonPaths, testInnerStruct)
 	assert.NoError(t, err)
 	assert.ElementsMatch(t, expectedResultBasicStruct, res)
-
 }
 
 func testConvertJSONToTextWithComplexStruct(t *testing.T) {
@@ -166,9 +172,8 @@ func testFailConvertJSONToTextWithEmptyPaths(t *testing.T) {
 	}
 }
 
-func testFailConvertJSONToTextWithWrongPaths(t *testing.T) {
-	_, err := json2table.ConvertJSONToTable("", wrongPaths, testInnerStruct)
-	if assert.Error(t, err) {
-		fmt.Println(err)
-	}
+func testConvertJSONToTextWithWrongPaths(t *testing.T) {
+	res, err := json2table.ConvertJSONToTable("", wrongPaths, testInnerStruct)
+	assert.NoError(t, err)
+	assert.ElementsMatch(t, expectedResultWrongPaths, res)
 }

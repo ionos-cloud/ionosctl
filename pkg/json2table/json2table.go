@@ -27,10 +27,6 @@ func ConvertJSONToTable(rootPath string, jsonPaths map[string]string, rootObj in
 		mappedObj := make(map[string]interface{}, 0)
 
 		for k, v := range jsonPaths {
-			if !obj.ExistsP(v) {
-				return nil, fmt.Errorf("wrong path provided: %s", v)
-			}
-
 			objData := obj.Path(v)
 			mappedObj[k] = objData.Data()
 		}
