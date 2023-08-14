@@ -1,5 +1,5 @@
 ---
-description: "List the logs of your Mongo Cluster"
+description: "List (and optionally filter) the logs of your Mongo Cluster. Use --cols message to see the logs messages."
 ---
 
 # DbaasMongoLogsList
@@ -26,7 +26,7 @@ For `list` command:
 
 ## Description
 
-List the logs of your Mongo Cluster
+List (and optionally filter) the logs of your Mongo Cluster. Use --cols message to see the logs messages.
 
 ## Options
 
@@ -53,6 +53,6 @@ List the logs of your Mongo Cluster
 ## Examples
 
 ```text
-ionosctl dbaas mongo logs list --cluster-id <cluster-id>
+ionosctl dbaas mongo logs list --cluster-id CLUSTER_ID --start -24h --end -20h --limit 1 --direction FORWARD --cols message
 ```
 

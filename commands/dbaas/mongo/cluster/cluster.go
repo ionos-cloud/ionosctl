@@ -8,11 +8,23 @@ import (
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/convbytes"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	ionoscloud "github.com/ionos-cloud/sdk-go-dbaas-mongo"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+)
+
+var (
+	enumEditions = []string{"playground", "business", "enterprise"} // Remove whenever the SDK adds this as an actual type with enum vals
+	enumTypes    = []string{"replicaset", "sharded-cluster"}        // Remove whenever the SDK adds this as an actual type with enum vals
+)
+
+const (
+	flagBackupLocation     = "backup-location"
+	flagBiconnector        = "biconnector"
+	flagBiconnectorEnabled = "biconnector-enabled"
 )
 
 func ClusterCmd() *core.Command {
@@ -50,17 +62,22 @@ func getClusterPrint(c *core.CommandConfig, dcs *[]ionoscloud.ClusterResponse) p
 	if c != nil && dcs != nil {
 		r.OutputJSON = dcs
 		r.KeyValue = getClusterRows(dcs)                            // map header -> rows
-		r.Columns = printer.GetHeaders(allCols, allCols[0:6], cols) // headers
+		r.Columns = printer.GetHeaders(allCols, allCols[0:9], cols) // headers
 	}
+
 	return r
 }
 
 type ClusterPrint struct {
 	ClusterId         string `json:"ClusterId,omitempty"`
 	Name              string `json:"Name,omitempty"`
+	Edition           string `json:"Edition,omitempty"`
+	Type              string `json:"Type,omitempty"`
 	URL               string `json:"URL,omitempty"`
-	State             string `json:"State,omitempty"`
 	Instances         int32  `json:"Instances,omitempty"`
+	Shards            int32  `json:"Shards,omitempty"`
+	Health            string `json:"Health,omitempty"`
+	State             string `json:"State,omitempty"`
 	MongoVersion      string `json:"MongoVersion,omitempty"`
 	MaintenanceWindow string `json:"MaintenanceWindow,omitempty"`
 	Location          string `json:"Location,omitempty"`
@@ -68,6 +85,10 @@ type ClusterPrint struct {
 	LanId             string `json:"LanId,omitempty"`
 	Cidr              string `json:"Cidr,omitempty"`
 	TemplateId        string `json:"TemplateId,omitempty"`
+	Cores             int32  `json:"Cores,omitempty"`
+	RAM               string `json:"RAM,omitempty"`
+	StorageSize       string `json:"StorageSize,omitempty"`
+	StorageType       string `json:"StorageType,omitempty"`
 }
 
 var allCols = structs.Names(ClusterPrint{})
@@ -82,6 +103,12 @@ func getClusterRows(clusters *[]ionoscloud.ClusterResponse) []map[string]interfa
 		if propertiesOk, ok := cluster.GetPropertiesOk(); ok && propertiesOk != nil {
 			if propertiesOk.DisplayName != nil {
 				clusterPrint.Name = *propertiesOk.GetDisplayName()
+			}
+			if propertiesOk.Edition != nil {
+				clusterPrint.Edition = *propertiesOk.Edition
+			}
+			if propertiesOk.Type != nil {
+				clusterPrint.Type = *propertiesOk.Type
 			}
 			if propertiesOk.GetLocation() != nil {
 				clusterPrint.Location = *propertiesOk.GetLocation()
@@ -111,16 +138,37 @@ func getClusterRows(clusters *[]ionoscloud.ClusterResponse) []map[string]interfa
 			if propertiesOk.GetInstances() != nil {
 				clusterPrint.Instances = *propertiesOk.GetInstances()
 			}
+			if propertiesOk.GetShards() != nil {
+				clusterPrint.Shards = *propertiesOk.GetShards()
+			}
 			if maintenanceWindowOk, ok := propertiesOk.GetMaintenanceWindowOk(); ok && maintenanceWindowOk != nil {
 				if maintenanceWindowOk.GetDayOfTheWeek() != nil && maintenanceWindowOk.GetTime() != nil {
 					clusterPrint.MaintenanceWindow =
 						fmt.Sprintf("%s %s", *maintenanceWindowOk.GetDayOfTheWeek(), *maintenanceWindowOk.GetTime())
 				}
 			}
+			if f := propertiesOk.Ram; f != nil {
+				clusterPrint.RAM = fmt.Sprintf("%d GB", convbytes.Convert(int64(*f), convbytes.MB, convbytes.GB))
+			}
+			if f := propertiesOk.StorageSize; f != nil {
+				clusterPrint.StorageSize = fmt.Sprintf("%d GB", convbytes.Convert(int64(*f), convbytes.MB, convbytes.GB))
+			}
+			if f := propertiesOk.StorageType; f != nil {
+				clusterPrint.StorageType = string(*f)
+			}
+			if f := propertiesOk.Cores; f != nil {
+				clusterPrint.Cores = *f
+			}
 		}
-		if cluster.GetMetadata() != nil && cluster.GetMetadata().GetState() != nil {
-			clusterPrint.State = string(*cluster.GetMetadata().GetState())
+		if md := cluster.Metadata; md != nil {
+			if state := md.State; state != nil {
+				clusterPrint.State = string(*state)
+			}
+			if health := md.Health; health != nil {
+				clusterPrint.Health = string(*health)
+			}
 		}
+
 		o := structs.Map(clusterPrint)
 		out = append(out, o)
 	}

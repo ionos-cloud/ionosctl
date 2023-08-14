@@ -29,8 +29,8 @@ func LogsListCmd() *core.Command {
 		Resource:  "cluster",
 		Verb:      "list",
 		Aliases:   []string{"ls"},
-		ShortDesc: "List the logs of your Mongo Cluster",
-		Example:   "ionosctl dbaas mongo logs list --cluster-id <cluster-id>",
+		ShortDesc: "List (and optionally filter) the logs of your Mongo Cluster. Use --cols message to see the logs messages.",
+		Example:   "ionosctl dbaas mongo logs list --cluster-id CLUSTER_ID --start -24h --end -20h --limit 1 --direction FORWARD --cols message",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			err := c.Command.Command.MarkFlagRequired(constants.FlagClusterId)
 			if err != nil {

@@ -11,8 +11,10 @@ const (
 	FlagIdShort         = "i"
 	FlagName            = "name"
 	FlagNameShort       = "n"
+	FlagTemplate        = "template"
 	FlagTemplateId      = "template-id"
 	FlagInstances       = "instances"
+	FlagShards          = "shards"
 	FlagMaintenanceTime = "maintenance-time"
 	FlagMaintenanceDay  = "maintenance-day"
 	FlagLocation        = "location"
@@ -22,6 +24,7 @@ const (
 	FlagMaxResultsShort = "M"
 	FlagCidr            = "cidr"
 	FlagLanId           = "lan-id"
+	FlagEdition         = "edition"
 
 	FlagCores                 = "cores"
 	FlagRam                   = "ram"
