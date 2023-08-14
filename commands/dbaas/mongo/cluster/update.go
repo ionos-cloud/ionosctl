@@ -126,11 +126,11 @@ func ClusterUpdateCmd() *core.Command {
 				cluster.StorageType = (*ionoscloud.StorageType)(pointer.From(viper.GetString(fn)))
 			}
 			if fn := core.GetFlagName(c.NS, constants.FlagStorageSize); viper.IsSet(fn) {
-				sizeInt64 := convbytes.ConvertStringToUnit(viper.GetString(fn), convbytes.MB)
+				sizeInt64 := convbytes.StrToUnit(viper.GetString(fn), convbytes.MB)
 				cluster.StorageSize = pointer.From(int32(sizeInt64))
 			}
 			if fn := core.GetFlagName(c.NS, constants.FlagRam); viper.IsSet(fn) {
-				sizeInt64 := convbytes.ConvertStringToUnit(viper.GetString(fn), convbytes.MB)
+				sizeInt64 := convbytes.StrToUnit(viper.GetString(fn), convbytes.MB)
 				cluster.Ram = pointer.From(int32(sizeInt64))
 			}
 

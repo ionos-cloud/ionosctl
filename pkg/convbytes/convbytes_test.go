@@ -209,8 +209,8 @@ func TestFromString(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := FromString(tt.args.s); got != tt.want {
-				t.Errorf("FromString() = %v, want %v", got, tt.want)
+			if got := StrToBytes(tt.args.s); got != tt.want {
+				t.Errorf("StrToBytes() = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -271,12 +271,12 @@ func TestFromStringOk(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, got1 := FromStringOk(tt.args.s)
+			got, got1 := StrToBytesOk(tt.args.s)
 			if got != tt.want {
-				t.Errorf("FromStringOk() got = %v, want %v", got, tt.want)
+				t.Errorf("StrToBytesOk() got = %v, want %v", got, tt.want)
 			}
 			if got1 != tt.want1 {
-				t.Errorf("FromStringOk() got1 = %v, want %v", got1, tt.want1)
+				t.Errorf("StrToBytesOk() got1 = %v, want %v", got1, tt.want1)
 			}
 		})
 	}
@@ -345,6 +345,74 @@ func TestToBytes(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := ToBytes(tt.args.value, tt.args.unit); got != tt.want {
 				t.Errorf("ToBytes() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestStrToUnit(t *testing.T) {
+	type args struct {
+		s          string
+		targetUnit int64
+	}
+	tests := []struct {
+		name string
+		args args
+		want int64
+	}{
+		{
+			name: "String without unit to MB",
+			args: args{
+				s:          "1024",
+				targetUnit: MB,
+			},
+			want: 1024,
+		},
+		{
+			name: "String with MB to GB",
+			args: args{
+				s:          "1024 MB",
+				targetUnit: GB,
+			},
+			want: 1,
+		},
+		{
+			name: "String with GB to TB",
+			args: args{
+				s:          "1024 GB",
+				targetUnit: TB,
+			},
+			want: 1,
+		},
+		{
+			name: "String with whitespace to GB",
+			args: args{
+				s:          "  1024   GB   ",
+				targetUnit: TB,
+			},
+			want: 1,
+		},
+		{
+			name: "String without unit to GB",
+			args: args{
+				s:          "1024",
+				targetUnit: GB,
+			},
+			want: 1024,
+		},
+		{
+			name: "String with invalid format",
+			args: args{
+				s:          "invalid",
+				targetUnit: GB,
+			},
+			want: 0, // or whatever your default/error return value is
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := StrToUnit(tt.args.s, tt.args.targetUnit); got != tt.want {
+				t.Errorf("StrToUnit() = %v, want %v", got, tt.want)
 			}
 		})
 	}

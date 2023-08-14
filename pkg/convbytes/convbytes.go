@@ -34,9 +34,15 @@ func Convert(value int64, fromUnit int64, toUnit int64) int64 {
 	return FromBytes(bytes, toUnit)
 }
 
-// FromStringOk converts your bytes string to bytes, for use with other convbytes pkg funcs
-func FromStringOk(s string) (int64, bool) {
+// StrToBytesOk converts your bytes string to bytes, for use with other convbytes pkg funcs
+func StrToBytesOk(s string) (int64, bool) {
 	s = strings.TrimSpace(s)
+
+	// If the string is just a number, return it as is
+	if num, err := strconv.ParseInt(s, 10, 64); err == nil {
+		return num, true
+	}
+
 	// Match numbers followed by optional spaces and a unit
 	r := regexp.MustCompile(`^(\d+)\s*([a-zA-Z]*)$`)
 	matches := r.FindStringSubmatch(s)
@@ -69,22 +75,29 @@ func FromStringOk(s string) (int64, bool) {
 	return value * unit, true
 }
 
-func FromString(s string) int64 {
-	f, _ := FromStringOk(s)
+func StrToBytes(s string) int64 {
+	f, _ := StrToBytesOk(s)
 	return f
 }
 
-// ConvertStringToUnitOk converts a size string to a target unit and returns the converted value and a boolean indicating if the conversion was successful.
-func ConvertStringToUnitOk(s string, targetUnit int64) (int64, bool) {
-	bytes, ok := FromStringOk(s)
+// StrToUnitOk converts a size string to a target unit and returns the converted value and a boolean indicating if the conversion was successful.
+func StrToUnitOk(s string, targetUnit int64) (int64, bool) {
+	s = strings.TrimSpace(s)
+
+	// If the string is just a number, assume it's in the target format
+	if num, err := strconv.ParseInt(s, 10, 64); err == nil {
+		return num, true
+	}
+
+	bytes, ok := StrToBytesOk(s)
 	if !ok {
 		return 0, false
 	}
 	return FromBytes(bytes, targetUnit), true
 }
 
-// ConvertStringToUnit converts a size string to a target unit and returns the converted value.
-func ConvertStringToUnit(s string, targetUnit int64) int64 {
-	val, _ := ConvertStringToUnitOk(s, targetUnit)
+// StrToUnit converts a size string to a target unit and returns the converted value.
+func StrToUnit(s string, targetUnit int64) int64 {
+	val, _ := StrToUnitOk(s, targetUnit)
 	return val
 }
