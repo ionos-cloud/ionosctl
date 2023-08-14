@@ -7,13 +7,12 @@ import (
 	"os"
 	"strings"
 
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
-
-	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
@@ -21,6 +20,23 @@ import (
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+)
+
+var (
+	allAlbHttpRuleJSONPaths = map[string]string{
+		"Name":            "name",
+		"Type":            "type",
+		"TargetGroupId":   "targetGroup",
+		"DropQuery":       "dropQuery",
+		"Location":        "location",
+		"StatusCode":      "statusCode",
+		"ResponseMessage": "responseMessage",
+		"ContentType":     "contentType",
+		"Condition":       "conditions",
+	}
+
+	defaultAlbRuleHttpRuleCols = []string{"Name", "Type", "TargetGroupId", "DropQuery", "Condition"}
+	allAlbRuleHttpRuleCols     = []string{"Name", "Type", "TargetGroupId", "DropQuery", "Location", "StatusCode", "ResponseMessage", "ContentType", "Condition"}
 )
 
 func AlbRuleHttpRuleCmd() *core.Command {
@@ -211,15 +227,26 @@ func PreRunApplicationLoadBalancerRuleHttpRuleDelete(c *core.PreCommandConfig) e
 }
 
 func RunAlbRuleHttpRuleList(c *core.CommandConfig) error {
+	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	if err != nil {
+		return err
+	}
+
 	listQueryParams, err := query.GetListQueryParams(c)
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
-	c.Printer.Verbose("Datacenter ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
-	c.Printer.Verbose("ApplicationLoadBalancer ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)))
-	c.Printer.Verbose("ForwardingRule ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)))
-	c.Printer.Verbose("Getting HttpRules")
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+		"Datacenter ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))))
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+		"ApplicationLoadBalancer ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId))))
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+		"ForwardingRule ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId))))
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Getting HttpRules"))
+
 	ng, resp, err := c.CloudApiV6Services.ApplicationLoadBalancers().GetForwardingRule(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
@@ -227,20 +254,31 @@ func RunAlbRuleHttpRuleList(c *core.CommandConfig) error {
 		queryParams,
 	)
 	if resp != nil {
-		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
-	if properties, ok := ng.GetPropertiesOk(); ok && properties != nil {
-		if httpRulesOk, ok := properties.GetHttpRulesOk(); ok && httpRulesOk != nil {
-			return c.Printer.Print(getAlbRuleHttpRulePrint(nil, c, getAlbRuleHttpRules(httpRulesOk)))
-		} else {
-			return errors.New("error getting rule http rules")
-		}
-	} else {
+
+	properties, ok := ng.GetPropertiesOk()
+	if !ok || properties == nil {
 		return errors.New("error getting rule properties")
 	}
+
+	httpRules, ok := properties.GetHttpRulesOk()
+	if !ok || httpRules == nil {
+		return errors.New("error getting rule http rules")
+	}
+
+	out, err := jsontabwriter.GenerateOutput("", allAlbHttpRuleJSONPaths, httpRules,
+		printer.GetHeaders(allAlbRuleHttpRuleCols, defaultAlbRuleHttpRuleCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, out)
+
+	return nil
 }
 
 func RunAlbRuleHttpRuleAdd(c *core.CommandConfig) error {
@@ -248,12 +286,19 @@ func RunAlbRuleHttpRuleAdd(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
 	var httpRuleItems []ionoscloud.ApplicationLoadBalancerHttpRule
-	c.Printer.Verbose("Datacenter ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
-	c.Printer.Verbose("ApplicationLoadBalancer ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)))
-	c.Printer.Verbose("ForwardingRule ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)))
-	c.Printer.Verbose("Getting HttpRules from ForwardingRule with ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)))
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+		"Datacenter ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))))
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+		"ApplicationLoadBalancer ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId))))
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+		"ForwardingRule ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId))))
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+		"Getting HttpRules from ForwardingRule with ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId))))
+
 	ngOld, resp, err := c.CloudApiV6Services.ApplicationLoadBalancers().GetForwardingRule(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
@@ -263,15 +308,19 @@ func RunAlbRuleHttpRuleAdd(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	if properties, ok := ngOld.GetPropertiesOk(); ok && properties != nil {
 		if httpRulesOk, ok := properties.GetHttpRulesOk(); ok && httpRulesOk != nil {
 			httpRuleItems = *httpRulesOk
 		}
 	}
+
 	httpRuleNew := getRuleHttpRuleInfo(c)
 	c.Printer.Verbose("Adding the new HttpRule to the existing HttpRules")
+
 	httpRuleItems = append(httpRuleItems, httpRuleNew.ApplicationLoadBalancerHttpRule)
 	c.Printer.Verbose("Updating ForwardingRule with the new HttpRules")
+
 	_, resp, err = c.CloudApiV6Services.ApplicationLoadBalancers().UpdateForwardingRule(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
@@ -284,15 +333,30 @@ func RunAlbRuleHttpRuleAdd(c *core.CommandConfig) error {
 		queryParams,
 	)
 	if resp != nil {
-		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
+
 	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 		return err
 	}
-	return c.Printer.Print(getAlbRuleHttpRulePrint(resp, c, []resources.ApplicationLoadBalancerHttpRule{httpRuleNew}))
+
+	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	if err != nil {
+		return err
+	}
+
+	out, err := jsontabwriter.GenerateOutput("", allAlbHttpRuleJSONPaths, httpRuleNew.ApplicationLoadBalancerHttpRule,
+		printer.GetHeaders(allAlbRuleHttpRuleCols, defaultAlbRuleHttpRuleCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, out)
+
+	return nil
 }
 
 func RunAlbRuleHttpRuleRemove(c *core.CommandConfig) error {
@@ -300,57 +364,82 @@ func RunAlbRuleHttpRuleRemove(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
+
 	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
-		c.Printer.Verbose("Datacenter ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
-		c.Printer.Verbose("ApplicationLoadBalancer ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)))
-		c.Printer.Verbose("ForwardingRule ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)))
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+			"Datacenter ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))))
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+			"ApplicationLoadBalancer ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId))))
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+			"ForwardingRule ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId))))
+
 		resp, err := RemoveAllHTTPRules(c)
 		if err != nil {
 			return err
 		}
-		return c.Printer.Print(getAlbRuleHttpRulePrint(resp, c, nil))
-	} else {
-		c.Printer.Verbose("Datacenter ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
-		c.Printer.Verbose("ApplicationLoadBalancer ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)))
-		c.Printer.Verbose("ForwardingRule ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)))
-		if err := utils.AskForConfirm(c.Stdin, c.Printer, "remove forwarding rule http rule"); err != nil {
-			return err
-		}
-		c.Printer.Verbose("Getting HttpRules")
-		frOld, resp, err := c.CloudApiV6Services.ApplicationLoadBalancers().GetForwardingRule(
-			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
-			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)),
-			queryParams,
-		)
-		if err != nil {
-			return err
-		}
-		c.Printer.Verbose("Removing the HTTP Rule from the existing HTTP Rules")
-		proper, err := getRuleHttpRulesRemove(c, frOld)
-		if err != nil {
-			return err
-		}
-		c.Printer.Verbose("Updating ForwardingRule with the new HTTP Rules")
-		_, resp, err = c.CloudApiV6Services.ApplicationLoadBalancers().UpdateForwardingRule(
-			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
-			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)),
-			proper,
-			queryParams,
-		)
-		if resp != nil {
-			c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
-		}
-		if err != nil {
-			return err
-		}
-		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-			return err
-		}
-		return c.Printer.Print(getAlbRuleHttpRulePrint(resp, c, nil))
+
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
+		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("Application Load Balancer HTTP Rules successfully deleted"))
+
+		return nil
 	}
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+		"Datacenter ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))))
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+		"ApplicationLoadBalancer ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId))))
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+		"ForwardingRule ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId))))
+
+	if err := utils.AskForConfirm(c.Stdin, c.Printer, "remove forwarding rule http rule"); err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Getting HttpRules"))
+
+	frOld, resp, err := c.CloudApiV6Services.ApplicationLoadBalancers().GetForwardingRule(
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)),
+		queryParams,
+	)
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Removing the HTTP Rule from the existing HTTP Rules"))
+
+	proper, err := getRuleHttpRulesRemove(c, frOld)
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Updating ForwardingRule with the new HTTP Rules"))
+
+	_, resp, err = c.CloudApiV6Services.ApplicationLoadBalancers().UpdateForwardingRule(
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)),
+		proper,
+		queryParams,
+	)
+	if resp != nil {
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+	}
+	if err != nil {
+		return err
+	}
+
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateLogOutput("Application Load Balancer HTTP Rule successfully deleted"))
+
+	return nil
+
 }
 
 func RemoveAllHTTPRules(c *core.CommandConfig) (*resources.Response, error) {
@@ -358,8 +447,11 @@ func RemoveAllHTTPRules(c *core.CommandConfig) (*resources.Response, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	queryParams := listQueryParams.QueryParams
-	_ = c.Printer.Warn("Forwarding Rule HTTP Rules to be deleted:")
+
+	fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("Forwarding Rule HTTP Rules to be deleted:"))
+
 	applicationLoadBalancerRules, resp, err := c.CloudApiV6Services.ApplicationLoadBalancers().GetForwardingRule(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
@@ -369,83 +461,121 @@ func RemoveAllHTTPRules(c *core.CommandConfig) (*resources.Response, error) {
 	if err != nil {
 		return nil, err
 	}
-	if propertiesOk, ok := applicationLoadBalancerRules.GetPropertiesOk(); ok && propertiesOk != nil {
-		if httpRulesOk, ok := propertiesOk.GetHttpRulesOk(); ok && httpRulesOk != nil {
-			for _, httpRuleOk := range *httpRulesOk {
-				if nameOk, ok := httpRuleOk.GetNameOk(); ok && nameOk != nil {
-					_ = c.Printer.Warn("Forwarding Rule HTTP Rule Name: " + *nameOk)
-				}
-				if typeOk, ok := httpRuleOk.GetTypeOk(); ok && typeOk != nil {
-					_ = c.Printer.Warn("Forwarding Rule HTTP Rule Type: " + *typeOk)
-				}
-			}
 
+	propertiesOk, ok := applicationLoadBalancerRules.GetPropertiesOk()
+	if !ok || propertiesOk == nil {
+		return nil, fmt.Errorf("could not get Application Load Balancer Forwarding Rule properties")
+	}
+
+	httpRulesOk, ok := propertiesOk.GetHttpRulesOk()
+	if !ok || httpRulesOk == nil {
+		return nil, fmt.Errorf("could not get Application Load Balancer HTTP Rules")
+	}
+
+	if len(*httpRulesOk) <= 0 {
+		return nil, fmt.Errorf("no Application Load Balancer HTTP Rules found")
+	}
+
+	for _, httpRuleOk := range *httpRulesOk {
+		if nameOk, ok := httpRuleOk.GetNameOk(); ok && nameOk != nil {
+			fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("Forwarding Rule HTTP Rule Name: %v", *nameOk))
 		}
-		if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Forwarding Rule HTTP Rules"); err != nil {
-			return nil, err
-		}
-		c.Printer.Verbose("Deleting all the Forwarding Rule HTTP Rules...")
-		propertiesOk.SetHttpRules([]ionoscloud.ApplicationLoadBalancerHttpRule{})
-		_, resp, err = c.CloudApiV6Services.ApplicationLoadBalancers().UpdateForwardingRule(
-			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
-			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)),
-			&resources.ApplicationLoadBalancerForwardingRuleProperties{
-				ApplicationLoadBalancerForwardingRuleProperties: *propertiesOk,
-			},
-			queryParams,
-		)
-		if resp != nil {
-			c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
-			c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
-		}
-		if err != nil {
-			return nil, err
-		}
-		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-			return nil, err
+
+		if typeOk, ok := httpRuleOk.GetTypeOk(); ok && typeOk != nil {
+			fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("Forwarding Rule HTTP Rule Type: %v", *typeOk))
 		}
 	}
+
+	if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Forwarding Rule HTTP Rules"); err != nil {
+		return nil, err
+	}
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Deleting all the Forwarding Rule HTTP Rules..."))
+
+	propertiesOk.SetHttpRules([]ionoscloud.ApplicationLoadBalancerHttpRule{})
+	_, resp, err = c.CloudApiV6Services.ApplicationLoadBalancers().UpdateForwardingRule(
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)),
+		&resources.ApplicationLoadBalancerForwardingRuleProperties{
+			ApplicationLoadBalancerForwardingRuleProperties: *propertiesOk,
+		},
+		queryParams,
+	)
+	if resp != nil {
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Request Id: %v", printer.GetId(resp)))
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+		return nil, err
+	}
+
 	return resp, err
 }
 
 func getRuleHttpRuleInfo(c *core.CommandConfig) resources.ApplicationLoadBalancerHttpRule {
 	// Set Application Load Balancer HTTP Rule Properties
 	httprule := resources.ApplicationLoadBalancerHttpRule{}
+
 	httprule.SetName(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName)))
-	c.Printer.Verbose("Property Name set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName)))
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+		"Property Name set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))))
+
 	httprule.SetType(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgType)))
-	c.Printer.Verbose("Property Type set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgType)))
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+		"Property Type set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgType))))
+
 	if strings.EqualFold(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgType)), "FORWARD") {
 		httprule.SetTargetGroup(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)))
-		c.Printer.Verbose("Property TargetGroup set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)))
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+			"Property TargetGroup set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId))))
 	}
+
 	if strings.EqualFold(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgType)), "REDIRECT") {
 		httprule.SetLocation(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLocation)))
-		c.Printer.Verbose("Property Location set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLocation)))
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+			"Property Location set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLocation))))
+
 		httprule.SetDropQuery(viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgQuery)))
-		c.Printer.Verbose("Property DropQuery set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgQuery)))
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+			"Property DropQuery set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgQuery))))
+
 		httprule.SetStatusCode(viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgStatusCode)))
-		c.Printer.Verbose("Property StatusCode set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgStatusCode)))
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+			"Property StatusCode set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgStatusCode))))
 	}
+
 	if strings.EqualFold(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgType)), "STATIC") {
 		httprule.SetResponseMessage(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgMessage)))
-		c.Printer.Verbose("Property ResponseMessage set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgMessage)))
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+			"Property ResponseMessage set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgMessage))))
+
 		httprule.SetContentType(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgContentType)))
-		c.Printer.Verbose("Property ContentType set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgContentType)))
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+			"Property ContentType set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgContentType))))
+
 		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgStatusCode)) {
 			httprule.SetStatusCode(viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgStatusCode)))
-			c.Printer.Verbose("Property StatusCode set: %v", viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgStatusCode)))
+			fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+				"Property StatusCode set: %v", viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgStatusCode))))
 		} else {
 			httprule.SetStatusCode(503)
-			c.Printer.Verbose("Property StatusCode set with the default value: %v", 503)
+			fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+				"Property StatusCode set with the default value: %v", 503))
 		}
 	}
+
 	httpRuleCondition := getRuleHttpRuleConditionInfo(c)
 	httprule.SetConditions([]ionoscloud.ApplicationLoadBalancerHttpRuleCondition{
 		httpRuleCondition.ApplicationLoadBalancerHttpRuleCondition,
 	})
-	c.Printer.Verbose("Setting Condition to HttpRule")
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Setting Condition to HttpRule"))
+
 	return httprule
 }
 
@@ -453,160 +583,81 @@ func getRuleHttpRuleConditionInfo(c *core.CommandConfig) resources.ApplicationLo
 	// Set Application Load Balancer HTTP Rule Condition Properties
 	httpRuleCondition := resources.ApplicationLoadBalancerHttpRuleCondition{}
 	httpRuleCondition.SetType(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgConditionType)))
-	c.Printer.Verbose("Property Condition Type set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgConditionType)))
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+		"Property Condition Type set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgConditionType))))
+
 	if !strings.EqualFold(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgConditionType)), "SOURCE_IP") {
 		httpRuleCondition.SetCondition(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgCondition)))
-		c.Printer.Verbose("Property Condition set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgCondition)))
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+			"Property Condition set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgCondition))))
 	}
+
 	httpRuleCondition.SetNegate(viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgNegate)))
-	c.Printer.Verbose("Property Condition Negate set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNegate)))
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+		"Property Condition Negate set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNegate))))
+
 	if strings.EqualFold(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgConditionType)), "COOKIES") ||
 		strings.EqualFold(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgConditionType)), "HEADER") ||
 		strings.EqualFold(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgConditionType)), "QUERY") {
 		httpRuleCondition.SetKey(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgConditionKey)))
-		c.Printer.Verbose("Property Condition Key set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgConditionKey)))
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+			"Property Condition Key set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgConditionKey))))
 	}
+
 	if !strings.EqualFold(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgCondition)), "EXISTS") {
 		httpRuleCondition.SetValue(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgConditionValue)))
-		c.Printer.Verbose("Property Condition Value set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgConditionValue)))
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+			"Property Condition Value set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgConditionValue))))
 	}
+
 	return httpRuleCondition
 }
 
 func getRuleHttpRulesRemove(c *core.CommandConfig, frOld *resources.ApplicationLoadBalancerForwardingRule) (*resources.ApplicationLoadBalancerForwardingRuleProperties, error) {
 	httpRuleItems := make([]ionoscloud.ApplicationLoadBalancerHttpRule, 0)
-	if properties, ok := frOld.GetPropertiesOk(); ok && properties != nil {
-		c.Printer.Verbose("Getting Properties from the Forwarding Rule")
-		if httpRules, ok := properties.GetHttpRulesOk(); ok && httpRules != nil {
-			c.Printer.Verbose("Getting HTTP Rules from the Forwarding Rule Properties")
-			for _, httpRuleItem := range *httpRules {
-				removeName := false
-				if nameOk, ok := httpRuleItem.GetNameOk(); ok && nameOk != nil {
-					if *nameOk == viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName)) {
-						removeName = true
-						c.Printer.Verbose("Found HTTP Rule with Name: %v", *nameOk)
-					}
-				}
-				// If the Http rule with the unique name is found, continue.
-				// If not, add it to the Forwarding Rule properties.
-				if removeName {
-					continue
-				} else {
-					httpRuleItems = append(httpRuleItems, httpRuleItem)
-				}
+
+	properties, ok := frOld.GetPropertiesOk()
+	if !ok || properties == nil {
+		return nil, fmt.Errorf("could not get Application Load Balancer Forwarding Rule properties")
+	}
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Getting Properties from the Forwarding Rule"))
+
+	httpRules, ok := properties.GetHttpRulesOk()
+	if !ok || httpRules == nil {
+		return nil, fmt.Errorf("coudl not get Application Load Balancer HTTP Rules")
+	}
+
+	if len(*httpRules) <= 0 {
+		return nil, fmt.Errorf("no Application Load Balancer HTTP Rules found")
+	}
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Getting HTTP Rules from the Forwarding Rule Properties"))
+
+	for _, httpRuleItem := range *httpRules {
+		removeName := false
+
+		if nameOk, ok := httpRuleItem.GetNameOk(); ok && nameOk != nil {
+			if *nameOk == viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName)) {
+				removeName = true
+				fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Found HTTP Rule with Name: %v", *nameOk))
 			}
 		}
+
+		// If the Http rule with the unique name is found, continue.
+		// If not, add it to the Forwarding Rule properties.
+		if removeName {
+			continue
+		} else {
+			httpRuleItems = append(httpRuleItems, httpRuleItem)
+		}
 	}
+
 	return &resources.ApplicationLoadBalancerForwardingRuleProperties{
 		ApplicationLoadBalancerForwardingRuleProperties: ionoscloud.ApplicationLoadBalancerForwardingRuleProperties{
 			HttpRules: &httpRuleItems,
 		},
 	}, nil
-}
-
-// Output Printing
-
-var (
-	defaultAlbRuleHttpRuleCols = []string{"Name", "Type", "TargetGroupId", "DropQuery", "Condition"}
-	allAlbRuleHttpRuleCols     = []string{"Name", "Type", "TargetGroupId", "DropQuery", "Location", "StatusCode", "ResponseMessage", "ContentType", "Condition"}
-)
-
-type AlbRuleHttpRulePrint struct {
-	Name            string   `json:"Name,omitempty"`
-	Type            string   `json:"Type,omitempty"`
-	TargetGroupId   string   `json:"TargetGroupId,omitempty"`
-	DropQuery       bool     `json:"DropQuery,omitempty"`
-	Location        string   `json:"Location,omitempty"`
-	StatusCode      int32    `json:"StatusCode,omitempty"`
-	ResponseMessage string   `json:"ResponseMessage,omitempty"`
-	ContentType     string   `json:"ContentType,omitempty"`
-	Condition       []string `json:"Condition,omitempty"`
-}
-
-func getAlbRuleHttpRulePrint(resp *resources.Response, c *core.CommandConfig, ss []resources.ApplicationLoadBalancerHttpRule) printer.Result {
-	r := printer.Result{}
-	if c != nil {
-		if resp != nil {
-			r.ApiResponse = resp
-			r.Resource = c.Resource
-			r.Verb = c.Verb
-			r.WaitForRequest = viper.GetBool(core.GetFlagName(c.NS, constants.ArgWaitForRequest))
-			r.WaitForState = viper.GetBool(core.GetFlagName(c.NS, constants.ArgWaitForState))
-		}
-		if ss != nil {
-			r.OutputJSON = ss
-			r.KeyValue = getAlbRuleHttpRulesKVMaps(ss)
-			r.Columns = printer.GetHeaders(allAlbRuleHttpRuleCols, defaultAlbRuleHttpRuleCols, viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)))
-		}
-	}
-	return r
-}
-
-func getAlbRuleHttpRules(httprules *[]ionoscloud.ApplicationLoadBalancerHttpRule) []resources.ApplicationLoadBalancerHttpRule {
-	ss := make([]resources.ApplicationLoadBalancerHttpRule, 0)
-	if httprules != nil {
-		for _, s := range *httprules {
-			ss = append(ss, resources.ApplicationLoadBalancerHttpRule{
-				ApplicationLoadBalancerHttpRule: s,
-			})
-		}
-	}
-	return ss
-}
-
-func getAlbRuleHttpRulesKVMaps(httprules []resources.ApplicationLoadBalancerHttpRule) []map[string]interface{} {
-	out := make([]map[string]interface{}, 0, len(httprules))
-	for _, httprule := range httprules {
-		var httpRulePrint AlbRuleHttpRulePrint
-		if nameOk, ok := httprule.GetNameOk(); ok && nameOk != nil {
-			httpRulePrint.Name = *nameOk
-		}
-		if typeOk, ok := httprule.GetTypeOk(); ok && typeOk != nil {
-			httpRulePrint.Type = *typeOk
-		}
-		if targetGroupOk, ok := httprule.GetTargetGroupOk(); ok && targetGroupOk != nil {
-			httpRulePrint.TargetGroupId = *targetGroupOk
-		}
-		if dropQueryOk, ok := httprule.GetDropQueryOk(); ok && dropQueryOk != nil {
-			httpRulePrint.DropQuery = *dropQueryOk
-		}
-		if locationOk, ok := httprule.GetLocationOk(); ok && locationOk != nil {
-			httpRulePrint.Location = *locationOk
-		}
-		if statusCodeOk, ok := httprule.GetStatusCodeOk(); ok && statusCodeOk != nil {
-			httpRulePrint.StatusCode = *statusCodeOk
-		}
-		if responseMessageOk, ok := httprule.GetResponseMessageOk(); ok && responseMessageOk != nil {
-			httpRulePrint.ResponseMessage = *responseMessageOk
-		}
-		if contentTypeOk, ok := httprule.GetContentTypeOk(); ok && contentTypeOk != nil {
-			httpRulePrint.ContentType = *contentTypeOk
-		}
-		if conditionsOk, ok := httprule.GetConditionsOk(); ok && conditionsOk != nil {
-			conditions := make([]string, 0)
-			for _, conditionOk := range *conditionsOk {
-				var condition string
-				if getConditionOk, ok := conditionOk.GetConditionOk(); ok && getConditionOk != nil {
-					condition = fmt.Sprintf("Condition: %s", *getConditionOk)
-				}
-				if getTypeOk, ok := conditionOk.GetTypeOk(); ok && getTypeOk != nil {
-					condition = fmt.Sprintf("%s Type: %s", condition, *getTypeOk)
-				}
-				if getNegateOk, ok := conditionOk.GetNegateOk(); ok && getNegateOk != nil {
-					condition = fmt.Sprintf("%s Negate: %v", condition, *getNegateOk)
-				}
-				if getKeyOk, ok := conditionOk.GetKeyOk(); ok && getKeyOk != nil {
-					condition = fmt.Sprintf("%s Key: %s", condition, *getKeyOk)
-				}
-				if getValueOk, ok := conditionOk.GetValueOk(); ok && getValueOk != nil {
-					condition = fmt.Sprintf("%s Value: %s", condition, *getValueOk)
-				}
-				conditions = append(conditions, condition)
-			}
-			httpRulePrint.Condition = conditions
-		}
-		o := structs.Map(httpRulePrint)
-		out = append(out, o)
-	}
-	return out
 }

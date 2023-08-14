@@ -2,17 +2,25 @@ package commands
 
 import (
 	"context"
+	"fmt"
 	"os"
 
-	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+)
+
+var (
+	allConsoleJSONPaths = map[string]string{
+		"RemoteConsoleUrl": "url",
+	}
+
+	defaultConsoleCols = []string{"RemoteConsoleUrl"}
 )
 
 func ServerConsoleCmd() *core.Command {
@@ -58,46 +66,30 @@ func ServerConsoleCmd() *core.Command {
 func RunServerConsoleGet(c *core.CommandConfig) error {
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
-	c.Printer.Verbose("Getting Consoler URL for Server with ID: %v from Datacenter with ID: %v...", serverId, dcId)
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+		"Getting Consoler URL for Server with ID: %v from Datacenter with ID: %v...", serverId, dcId))
+
 	t, resp, err := c.CloudApiV6Services.Servers().GetRemoteConsoleUrl(dcId, serverId)
 	if err != nil {
 		return err
 	}
 	if resp != nil {
-		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
-	return c.Printer.Print(getConsolePrint(c, []resources.RemoteConsoleUrl{t}))
-}
 
-// Output Printing
-
-var defaultConsoleCols = []string{"RemoteConsoleUrl"}
-
-type RemoteConsolePrint struct {
-	RemoteConsoleUrl string `json:"RemoteConsoleUrl,omitempty"`
-}
-
-func getConsolePrint(c *core.CommandConfig, ss []resources.RemoteConsoleUrl) printer.Result {
-	r := printer.Result{}
-	if c != nil {
-		if ss != nil {
-			r.OutputJSON = ss
-			r.KeyValue = getConsoleKVMaps(ss)
-			r.Columns = defaultConsoleCols
-		}
+	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	if err != nil {
+		return err
 	}
-	return r
-}
 
-func getConsoleKVMaps(ss []resources.RemoteConsoleUrl) []map[string]interface{} {
-	out := make([]map[string]interface{}, 0, len(ss))
-	for _, s := range ss {
-		var consolePrint RemoteConsolePrint
-		if t, ok := s.GetUrlOk(); ok && t != nil {
-			consolePrint.RemoteConsoleUrl = *t
-		}
-		o := structs.Map(consolePrint)
-		out = append(out, o)
+	out, err := jsontabwriter.GenerateOutput("", allConsoleJSONPaths, t.RemoteConsoleUrl,
+		printer.GetHeadersAllDefault(defaultImageCols, cols))
+	if err != nil {
+		return err
 	}
-	return out
+
+	fmt.Fprintf(c.Stdout, out)
+
+	return nil
 }

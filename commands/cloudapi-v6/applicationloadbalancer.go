@@ -352,7 +352,8 @@ func RunApplicationLoadBalancerList(c *core.CommandConfig) error {
 		alb["DatacenterId"] = dcId
 	}
 
-	out, err := jsontabwriter.GenerateOutputPreconverted(applicationloadbalancers, albs, printer.GetHeaders(allApplicationLoadBalancerCols, defaultApplicationLoadBalancerCols, cols))
+	out, err := jsontabwriter.GenerateOutputPreconverted(applicationloadbalancers, albs,
+		printer.GetHeadersAllDefault(defaultApplicationLoadBalancerCols, cols))
 	fmt.Fprintf(c.Stdout, out)
 
 	return nil

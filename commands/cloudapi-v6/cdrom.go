@@ -11,6 +11,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
@@ -215,15 +216,20 @@ func RunServerCdromAttach(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
 	cdRomId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgCdromId))
-	c.Printer.Verbose("CD-ROM with id: %v is attaching to server with id: %v from Datacenter with id: %v... ", cdRomId, serverId, dcId)
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+		"CD-ROM with id: %v is attaching to server with id: %v from Datacenter with id: %v... ", cdRomId, serverId, dcId))
+
 	attachedCdrom, resp, err := c.CloudApiV6Services.Servers().AttachCdrom(dcId, serverId, cdRomId, queryParams)
 	if resp != nil && printer.GetId(resp) != "" {
-		c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
 	}
+
 	if err != nil {
 		return err
 	}
@@ -231,7 +237,21 @@ func RunServerCdromAttach(c *core.CommandConfig) error {
 	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 		return err
 	}
-	return c.Printer.Print(getImagePrint(resp, c, getImage(attachedCdrom)))
+
+	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	if err != nil {
+		return err
+	}
+
+	out, err := jsontabwriter.GenerateOutput("", allImageJSONPaths, attachedCdrom.Image,
+		printer.GetHeaders(allImageCols, defaultImageCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, out)
+
+	return nil
 }
 
 func RunServerCdromsList(c *core.CommandConfig) error {
@@ -240,18 +260,33 @@ func RunServerCdromsList(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	attachedCdroms, resp, err := c.CloudApiV6Services.Servers().ListCdroms(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
 		listQueryParams,
 	)
 	if resp != nil {
-		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getImagePrint(nil, c, getCdroms(attachedCdroms)))
+
+	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	if err != nil {
+		return err
+	}
+
+	out, err := jsontabwriter.GenerateOutput("items", allImageJSONPaths, attachedCdroms.Cdroms,
+		printer.GetHeaders(allImageCols, defaultImageCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, out)
+
+	return nil
 }
 
 func RunServerCdromGet(c *core.CommandConfig) error {
@@ -259,8 +294,11 @@ func RunServerCdromGet(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
-	c.Printer.Verbose("CD-ROM with id: %v is getting... ", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgCdromId)))
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+		"CD-ROM with id: %v is getting... ", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgCdromId))))
+
 	attachedCdrom, resp, err := c.CloudApiV6Services.Servers().GetCdrom(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
@@ -268,12 +306,26 @@ func RunServerCdromGet(c *core.CommandConfig) error {
 		queryParams,
 	)
 	if resp != nil {
-		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getImagePrint(nil, c, getImage(attachedCdrom)))
+
+	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	if err != nil {
+		return err
+	}
+
+	out, err := jsontabwriter.GenerateOutput("", allImageJSONPaths, attachedCdrom.Image,
+		printer.GetHeaders(allImageCols, defaultImageCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, out)
+
+	return nil
 }
 
 func RunServerCdromDetach(c *core.CommandConfig) error {
@@ -281,34 +333,45 @@ func RunServerCdromDetach(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
 	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
 		if err := DetachAllCdRoms(c); err != nil {
 			return err
 		}
-		return c.Printer.Print(printer.Result{Resource: c.Resource, Verb: c.Verb})
-	} else {
-		if err := utils.AskForConfirm(c.Stdin, c.Printer, "detach cdrom from server"); err != nil {
-			return err
-		}
-		c.Printer.Verbose("CD-ROM with id: %v is detaching... ", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgCdromId)))
-		resp, err := c.CloudApiV6Services.Servers().DetachCdrom(
-			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
-			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgCdromId)),
-			queryParams,
-		)
-		if resp != nil && printer.GetId(resp) != "" {
-			c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
-		}
-		if err != nil {
-			return err
-		}
-		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-			return err
-		}
-		return c.Printer.Print(getImagePrint(resp, c, nil))
+
+		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("CD-ROMs successfully detached"))
+
+		return nil
 	}
+
+	if err := utils.AskForConfirm(c.Stdin, c.Printer, "detach cdrom from server"); err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+		"CD-ROM with id: %v is detaching... ", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgCdromId))))
+
+	resp, err := c.CloudApiV6Services.Servers().DetachCdrom(
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgCdromId)),
+		queryParams,
+	)
+	if resp != nil && printer.GetId(resp) != "" {
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
+	}
+	if err != nil {
+		return err
+	}
+
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("CD-ROM successfully detached"))
+
+	return nil
 }
 
 func DetachAllCdRoms(c *core.CommandConfig) error {
@@ -316,73 +379,79 @@ func DetachAllCdRoms(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
-	c.Printer.Verbose("Getting CD-ROMs...")
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Getting CD-ROMs..."))
+
 	cdRoms, resp, err := c.CloudApiV6Services.Servers().ListCdroms(dcId, serverId, cloudapiv6.ParentResourceListQueryParams)
 	if err != nil {
 		return err
 	}
-	if cdRomsItems, ok := cdRoms.GetItemsOk(); ok && cdRomsItems != nil {
-		if len(*cdRomsItems) > 0 {
-			_ = c.Printer.Warn("CD-ROMS to be detached:")
-			delIdAndName := ""
-			for _, cdRom := range *cdRomsItems {
-				if id, ok := cdRom.GetIdOk(); ok && id != nil {
-					delIdAndName += "CD-ROM Id: " + *id
-				}
-				if properties, ok := cdRom.GetPropertiesOk(); ok && properties != nil {
-					if name, ok := properties.GetNameOk(); ok && name != nil {
-						delIdAndName += " CD-ROM Name: " + *name
-					}
-				}
-				_ = c.Printer.Warn(delIdAndName)
-			}
-			if err := utils.AskForConfirm(c.Stdin, c.Printer, "detach all the CD-ROMS"); err != nil {
-				return err
-			}
-			c.Printer.Verbose("Detaching all the CD-ROM...")
-			var multiErr error
-			for _, cdRom := range *cdRomsItems {
-				if id, ok := cdRom.GetIdOk(); ok && id != nil {
-					c.Printer.Verbose("Starting detaching CD-ROM with id: %v...", *id)
-					resp, err = c.CloudApiV6Services.Servers().DetachCdrom(dcId, serverId, *id, queryParams)
-					if resp != nil && printer.GetId(resp) != "" {
-						c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
-					}
-					if err != nil {
-						multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
-						continue
-					} else {
-						_ = c.Printer.Warn(fmt.Sprintf(constants.MessageDeletingAll, c.Resource, *id))
-					}
-					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-						multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *id, err))
-						continue
-					}
-				}
-			}
-			if multiErr != nil {
-				return multiErr
-			}
-			return nil
-		} else {
-			return errors.New("no CD-ROMs found")
-		}
-	} else {
-		return errors.New("could not get items of CD-ROMs")
+
+	cdRomsItems, ok := cdRoms.GetItemsOk()
+	if !ok || cdRomsItems == nil {
+		return fmt.Errorf("could not get CD-ROM items")
 	}
-}
 
-// Output Printing
+	if len(*cdRomsItems) <= 0 {
+		return fmt.Errorf("no CD-ROMs found")
+	}
 
-func getCdroms(cdroms resources.Cdroms) []resources.Image {
-	imgs := make([]resources.Image, 0)
-	if items, ok := cdroms.GetItemsOk(); ok && items != nil {
-		for _, d := range *items {
-			imgs = append(imgs, resources.Image{Image: d})
+	fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("CD-ROMS to be detached:"))
+	delIdAndName := ""
+
+	for _, cdRom := range *cdRomsItems {
+		if id, ok := cdRom.GetIdOk(); ok && id != nil {
+			delIdAndName += "CD-ROM Id: " + *id
+		}
+
+		if properties, ok := cdRom.GetPropertiesOk(); ok && properties != nil {
+			if name, ok := properties.GetNameOk(); ok && name != nil {
+				delIdAndName += " CD-ROM Name: " + *name
+			}
+		}
+
+		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput(delIdAndName))
+	}
+
+	if err := utils.AskForConfirm(c.Stdin, c.Printer, "detach all the CD-ROMS"); err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Detaching all the CD-ROM..."))
+
+	var multiErr error
+	for _, cdRom := range *cdRomsItems {
+		id, ok := cdRom.GetIdOk()
+		if !ok || id == nil {
+			continue
+		}
+
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Starting detaching CD-ROM with id: %v...", *id))
+
+		resp, err = c.CloudApiV6Services.Servers().DetachCdrom(dcId, serverId, *id, queryParams)
+		if resp != nil && printer.GetId(resp) != "" {
+			fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
+		}
+		if err != nil {
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
+			continue
+		}
+
+		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput(constants.MessageDeletingAll, c.Resource, *id))
+
+		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *id, err))
+			continue
 		}
 	}
-	return imgs
+
+	if multiErr != nil {
+		return multiErr
+	}
+
+	return nil
 }

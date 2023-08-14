@@ -6,6 +6,7 @@ import (
 	"crypto/x509"
 	"errors"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"sort"
@@ -14,11 +15,11 @@ import (
 	"time"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"golang.org/x/exp/slices"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
 
-	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
@@ -33,6 +34,27 @@ import (
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 	"golang.org/x/sync/errgroup"
+)
+
+var (
+	allImageJSONPaths = map[string]string{
+		"ImageId":         "id",
+		"Name":            "properties.name",
+		"Description":     "properties.description",
+		"Location":        "properties.location",
+		"Size":            "properties.size",
+		"LicenceType":     "properties.licenceType",
+		"ImageType":       "properties.imageType",
+		"Public":          "properties.public",
+		"ImageAliases":    "properties.imageAliases",
+		"CloudInit":       "properties.cloudInit",
+		"CreatedBy":       "metadata.createdBy",
+		"CreatedByUserId": "metadata.createdByUserId",
+		"CreatedDate":     "metadata.createdDate",
+	}
+
+	defaultImageCols = []string{"ImageId", "Name", "ImageAliases", "Location", "LicenceType", "ImageType", "CloudInit", "CreatedDate"}
+	allImageCols     = []string{"ImageId", "Name", "ImageAliases", "Location", "Size", "LicenceType", "ImageType", "Description", "Public", "CloudInit", "CreatedDate", "CreatedBy", "CreatedByUserId"}
 )
 
 func ImageCmd() *core.Command {
@@ -233,47 +255,61 @@ func RunImageDelete(c *core.CommandConfig) error {
 		if err := DeleteAllNonPublicImages(c); err != nil {
 			return err
 		}
-		return c.Printer.Print(printer.Result{Resource: c.Resource, Verb: c.Verb})
-	} else {
-		listQueryParams, err := query.GetListQueryParams(c)
-		if err != nil {
-			return err
-		}
-		queryParams := listQueryParams.QueryParams
-		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete image"); err != nil {
-			return err
-		}
-		imgId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgImageId))
-		c.Printer.Verbose("Starting deletion on image with ID: %v...", imgId)
-		resp, err := c.CloudApiV6Services.Images().Delete(imgId, queryParams)
-		if resp != nil && printer.GetId(resp) != "" {
-			c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
-		}
-		if err != nil {
-			return err
-		}
-		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-			return err
-		}
-		return c.Printer.Print(getImagePrint(resp, c, nil))
+
+		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("Images deleted successfully"))
+
+		return nil
 	}
+
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+
+	queryParams := listQueryParams.QueryParams
+
+	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete image"); err != nil {
+		return err
+	}
+
+	imgId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgImageId))
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Starting deletion on image with ID: %v...", imgId))
+
+	resp, err := c.CloudApiV6Services.Images().Delete(imgId, queryParams)
+	if resp != nil && printer.GetId(resp) != "" {
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
+	}
+	if err != nil {
+		return err
+	}
+
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("Image deleted successfully"))
+
+	return nil
 }
 
 // Util func - Given a slice of public & non-public images, return only those images that are non-public.
 // If any image in the slice has null properties, or "Properties.Public" field is nil, the image is skipped (and a verbose message is shown)
-func getNonPublicImages(imgs []ionoscloud.Image, printService printer.PrintService) ([]ionoscloud.Image, error) {
+func getNonPublicImages(imgs []ionoscloud.Image, verboseOut io.Writer) ([]ionoscloud.Image, error) {
 	var nonPublicImgs []ionoscloud.Image
+
 	for _, i := range imgs {
 		properties, ok := i.GetPropertiesOk()
 		if !ok {
-			printService.Verbose("skipping %s: properties are nil\n", *i.GetId())
+			fmt.Fprintf(verboseOut, jsontabwriter.GenerateVerboseOutput("skipping %s: properties are nil\n", *i.GetId()))
 			continue
 		}
+
 		isPublic, ok := properties.GetPublicOk()
 		if !ok {
-			printService.Verbose("skipping %s: field `public` is nil\n", *i.GetId())
+			fmt.Fprintf(verboseOut, jsontabwriter.GenerateVerboseOutput("skipping %s: field `public` is nil\n", *i.GetId()))
 			continue
 		}
+
 		if !*isPublic {
 			nonPublicImgs = append(nonPublicImgs, i)
 		}
@@ -287,6 +323,7 @@ func DeleteAllNonPublicImages(c *core.CommandConfig) error {
 	images, resp, err := c.CloudApiV6Services.Images().List(
 		resources.ListQueryParams{QueryParams: resources.QueryParams{Depth: &depth}},
 	)
+
 	if err != nil {
 		return err
 	}
@@ -295,7 +332,7 @@ func DeleteAllNonPublicImages(c *core.CommandConfig) error {
 		return errors.New("could not retrieve images")
 	}
 
-	items, err := getNonPublicImages(*allItems, c.Printer)
+	items, err := getNonPublicImages(*allItems, c.Stderr)
 	if err != nil {
 		return err
 	}
@@ -303,30 +340,34 @@ func DeleteAllNonPublicImages(c *core.CommandConfig) error {
 		return errors.New("no non-public images found")
 	}
 
-	_ = c.Printer.Warn("Images to be deleted:")
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Images to be deleted:"))
 	// TODO: this is duplicated across all resources - refactor this (across all resources)
 	for _, img := range items {
 		delIdAndName := ""
 		if id, ok := img.GetIdOk(); ok && id != nil {
 			delIdAndName += "ID: `" + *id
 		}
+
 		if properties, ok := img.GetPropertiesOk(); ok && properties != nil {
 			if name, ok := properties.GetNameOk(); ok && name != nil {
 				delIdAndName += "`, Name: " + *name
 			}
 		}
-		_ = c.Printer.Warn(delIdAndName)
+
+		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
 
 	if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete all the images"); err != nil {
 		return err
 	}
-	c.Printer.Verbose("Deleting all the images...")
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Deleting all the images..."))
 
 	var multiErr error
 	for _, img := range items {
 		if id, ok := img.GetIdOk(); ok && id != nil {
-			c.Printer.Verbose("Starting deleting image with id: %v...", *id)
+			fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Starting deleting image with id: %v...", *id))
+
 			resp, err = c.CloudApiV6Services.Images().Delete(*id, resources.QueryParams{})
 			if resp != nil && printer.GetId(resp) != "" {
 				c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
@@ -334,15 +375,17 @@ func DeleteAllNonPublicImages(c *core.CommandConfig) error {
 			if err != nil {
 				multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
 				continue
-			} else {
-				_ = c.Printer.Warn(fmt.Sprintf(constants.MessageDeletingAll, c.Resource, *id))
 			}
+
+			fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput(constants.MessageDeletingAll, c.Resource, *id))
+
 			if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 				multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
 				continue
 			}
 		}
 	}
+
 	if multiErr != nil {
 		return multiErr
 	}
@@ -405,7 +448,8 @@ func getDesiredImageAfterPatch(c *core.CommandConfig) resources.ImageProperties 
 			// --image-id, verbose, filters, depth, etc
 			break
 		}
-		c.Printer.Verbose(fmt.Sprintf("Property %s set: %s", flag.Name, flag.Value))
+
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property %s set: %s", flag.Name, flag.Value))
 	})
 	return input
 }
@@ -424,15 +468,30 @@ func RunImageUpdate(c *core.CommandConfig) error {
 		queryParams,
 	)
 	if resp != nil && printer.GetId(resp) != "" {
-		c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
+
 	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 		return err
 	}
-	return c.Printer.Print(getImagePrint(resp, c, []resources.Image{*img}))
+
+	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	if err != nil {
+		return err
+	}
+
+	out, err := jsontabwriter.GenerateOutput("", allImageJSONPaths, img.Image,
+		printer.GetHeaders(allImageCols, defaultImageCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, out)
+
+	return nil
 }
 
 func PreRunImageUpload(c *core.PreCommandConfig) error {
@@ -496,12 +555,15 @@ func getCertificate(path string) (*x509.CertPool, error) {
 	if path == "" {
 		return nil, nil
 	}
+
 	caCert, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
+
 	caCertPool := x509.NewCertPool()
 	caCertPool.AppendCertsFromPEM(caCert)
+
 	return caCertPool, nil
 }
 
@@ -539,13 +601,13 @@ func getDiffUploadedImages(c *core.CommandConfig, names, locations []string) ([]
 			if err != nil {
 				return nil, fmt.Errorf("failed listing images")
 			}
-			c.Printer.Verbose("Got images by listing: %+v", *imgs.Items)
+			fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Got images by listing: %+v", *imgs.Items))
 
 			diffImgs = append(diffImgs, *imgs.Items...)
-			c.Printer.Verbose("Total images: %+v", diffImgs)
+			fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Total images: %+v", diffImgs))
 
 			if len(diffImgs) == len(names)*len(locations) {
-				c.Printer.Verbose("Success! All images found via API: %+v", diffImgs)
+				fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Success! All images found via API: %+v", diffImgs))
 				return diffImgs, nil
 			}
 
@@ -565,6 +627,7 @@ func RunImageUpload(c *core.CommandConfig) error {
 	aliases := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgImageAlias))
 	locations := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgLocation))
 	skipVerify := viper.GetBool(core.GetFlagName(c.NS, "skip-verify"))
+
 	ctx, cancel := context.WithTimeout(c.Context, time.Duration(viper.GetInt(core.GetFlagName(c.NS, constants.ArgTimeout)))*time.Second)
 	defer cancel()
 	c.Context = ctx
@@ -573,10 +636,11 @@ func RunImageUpload(c *core.CommandConfig) error {
 	for _, loc := range locations {
 		for imgIdx, img := range images {
 			url := viper.GetString(core.GetFlagName(c.NS, "ftp-url"))
+
 			if strings.Contains(url, "%s") {
 				url = fmt.Sprintf(url, loc) // Add the location modifier, if the URL supports it
 			}
-			c.Printer.Verbose("Uploading %s to %s", img, url)
+			fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Uploading %s to %s", img, url))
 
 			var isoOrHdd string
 			if ext := filepath.Ext(img); ext == ".iso" || ext == ".img" {
@@ -620,7 +684,7 @@ func RunImageUpload(c *core.CommandConfig) error {
 	}
 
 	if viper.GetBool(core.GetFlagName(c.NS, "skip-update")) {
-		c.Printer.Verbose("Successfully uploaded images")
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Successfully uploaded images"))
 		return nil
 	}
 
@@ -644,9 +708,23 @@ func RunImageUpload(c *core.CommandConfig) error {
 		return fmt.Errorf("failed updating image with given properties, but uploading to FTP sucessful: %w", err)
 	}
 
-	c.Printer.Verbose("Successfully uploaded and updated images")
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Successfully uploaded and updated images"))
 	// oh my lord, we need to get rid of the `resources` wrappers...
-	return c.Printer.Print(getImagePrint(nil, c, getImages(resources.Images{Images: ionoscloud.Images{Items: &imgs}})))
+
+	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	if err != nil {
+		return err
+	}
+
+	out, err := jsontabwriter.GenerateOutput("", allImageJSONPaths, imgs,
+		printer.GetHeaders(allImageCols, defaultImageCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, out)
+
+	return nil
 }
 
 func PreRunImageList(c *core.PreCommandConfig) error {
@@ -666,34 +744,55 @@ func RunImageList(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	images, resp, err := c.CloudApiV6Services.Images().List(listQueryParams)
 	if resp != nil {
-		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
+
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgLocation)) {
 		images = sortImagesByLocation(images, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLocation)))
 	}
+
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgLicenceType)) {
 		images = sortImagesByLicenceType(images, strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLicenceType))))
 	}
+
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgType)) {
 		images = sortImagesByType(images, strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgType))))
 	}
+
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgImageAlias)) {
 		images = sortImagesByAlias(images, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgImageAlias)))
 	}
+
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgLatest)) {
 		images = sortImagesByTime(images, viper.GetInt(core.GetFlagName(c.NS, cloudapiv6.ArgLatest)))
 	}
+
 	if itemsOk, ok := images.GetItemsOk(); ok && itemsOk != nil {
 		if len(*itemsOk) == 0 {
 			return errors.New("error getting images based on given criteria")
 		}
 	}
-	return c.Printer.Print(getImagePrint(nil, c, getImages(images)))
+
+	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	if err != nil {
+		return err
+	}
+
+	out, err := jsontabwriter.GenerateOutput("items", allImageJSONPaths, images.Images,
+		printer.GetHeaders(allImageCols, defaultImageCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, out)
+
+	return nil
 }
 
 func RunImageGet(c *core.CommandConfig) error {
@@ -701,132 +800,32 @@ func RunImageGet(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
-	c.Printer.Verbose("Image with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgImageId)))
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Image with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgImageId))))
+
 	img, resp, err := c.CloudApiV6Services.Images().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgImageId)), queryParams)
 	if resp != nil {
-		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getImagePrint(nil, c, getImage(img)))
-}
 
-// Output Printing
-
-var (
-	defaultImageCols = []string{"ImageId", "Name", "ImageAliases", "Location", "LicenceType", "ImageType", "CloudInit", "CreatedDate"}
-	allImageCols     = []string{"ImageId", "Name", "ImageAliases", "Location", "Size", "LicenceType", "ImageType", "Description", "Public", "CloudInit", "CreatedDate", "CreatedBy", "CreatedByUserId"}
-)
-
-type ImagePrint struct {
-	ImageId         string    `json:"ImageId,omitempty"`
-	Name            string    `json:"Name,omitempty"`
-	Description     string    `json:"Description,omitempty"`
-	Location        string    `json:"Location,omitempty"`
-	Size            string    `json:"Size,omitempty"`
-	LicenceType     string    `json:"LicenceType,omitempty"`
-	ImageType       string    `json:"ImageType,omitempty"`
-	Public          bool      `json:"Public,omitempty"`
-	ImageAliases    []string  `json:"ImageAliases,omitempty"`
-	CloudInit       string    `json:"CloudInit,omitempty"`
-	CreatedBy       string    `json:"CreatedBy,omitempty"`
-	CreatedByUserId string    `json:"CreatedByUserId,omitempty"`
-	CreatedDate     time.Time `json:"CreatedDate,omitempty"`
-}
-
-func getImagePrint(resp *resources.Response, c *core.CommandConfig, imgs []resources.Image) printer.Result {
-	r := printer.Result{}
-	if c != nil {
-		if resp != nil {
-			r.ApiResponse = resp
-			r.Resource = c.Resource
-			r.Verb = c.Verb
-			r.WaitForRequest = viper.GetBool(core.GetFlagName(c.NS, constants.ArgWaitForRequest))
-		}
-		if imgs != nil {
-			r.OutputJSON = imgs
-			r.KeyValue = getImagesKVMaps(imgs)
-			r.Columns = printer.GetHeaders(allImageCols, defaultImageCols, viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)))
-		}
+	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	if err != nil {
+		return err
 	}
-	return r
-}
 
-func getImages(images resources.Images) []resources.Image {
-	imgs := make([]resources.Image, 0)
-	if items, ok := images.GetItemsOk(); ok && items != nil {
-		for _, d := range *items {
-			imgs = append(imgs, resources.Image{Image: d})
-		}
+	out, err := jsontabwriter.GenerateOutput("", allImageJSONPaths, img.Image,
+		printer.GetHeaders(allImageCols, defaultImageCols, cols))
+	if err != nil {
+		return err
 	}
-	return imgs
-}
 
-func getImage(image *resources.Image) []resources.Image {
-	imgs := make([]resources.Image, 0)
-	if image != nil {
-		imgs = append(imgs, resources.Image{Image: image.Image})
-	}
-	return imgs
-}
+	fmt.Fprintf(c.Stdout, out)
 
-func getImagesKVMaps(imgs []resources.Image) []map[string]interface{} {
-	out := make([]map[string]interface{}, 0, len(imgs))
-	for _, img := range imgs {
-		o := getImageKVMap(img)
-		out = append(out, o)
-	}
-	return out
-}
-
-func getImageKVMap(img resources.Image) map[string]interface{} {
-	var imgPrint ImagePrint
-	if idOk, ok := img.GetIdOk(); ok && idOk != nil {
-		imgPrint.ImageId = *idOk
-	}
-	if propertiesOk, ok := img.GetPropertiesOk(); ok && propertiesOk != nil {
-		if name, ok := propertiesOk.GetNameOk(); ok && name != nil {
-			imgPrint.Name = *name
-		}
-		if description, ok := propertiesOk.GetDescriptionOk(); ok && description != nil {
-			imgPrint.Description = *description
-		}
-		if loc, ok := propertiesOk.GetLocationOk(); ok && loc != nil {
-			imgPrint.Location = *loc
-		}
-		if size, ok := propertiesOk.GetSizeOk(); ok && size != nil {
-			imgPrint.Size = fmt.Sprintf("%vGB", *size)
-		}
-		if licType, ok := propertiesOk.GetLicenceTypeOk(); ok && licType != nil {
-			imgPrint.LicenceType = *licType
-		}
-		if imgType, ok := propertiesOk.GetImageTypeOk(); ok && imgType != nil {
-			imgPrint.ImageType = *imgType
-		}
-		if public, ok := propertiesOk.GetPublicOk(); ok && public != nil {
-			imgPrint.Public = *public
-		}
-		if aliases, ok := propertiesOk.GetImageAliasesOk(); ok && aliases != nil {
-			imgPrint.ImageAliases = *aliases
-		}
-		if cloudInit, ok := propertiesOk.GetCloudInitOk(); ok && cloudInit != nil {
-			imgPrint.CloudInit = *cloudInit
-		}
-	}
-	if metadataOk, ok := img.GetMetadataOk(); ok && metadataOk != nil {
-		if createdDateOk, ok := metadataOk.GetCreatedDateOk(); ok && createdDateOk != nil {
-			imgPrint.CreatedDate = *createdDateOk
-		}
-		if createdByOk, ok := metadataOk.GetCreatedByOk(); ok && createdByOk != nil {
-			imgPrint.CreatedBy = *createdByOk
-		}
-		if createdByUserIdOk, ok := metadataOk.GetCreatedByUserIdOk(); ok && createdByUserIdOk != nil {
-			imgPrint.CreatedByUserId = *createdByUserIdOk
-		}
-	}
-	return structs.Map(imgPrint)
+	return nil
 }
 
 // Output Columns Sorting
