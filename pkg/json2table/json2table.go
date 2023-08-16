@@ -16,7 +16,7 @@ func ConvertJSONToTable(rootPath string, jsonPaths map[string]string, rootObj in
 
 	objs, err := traverseJSONRoot(rootPath, rootObj)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed traversing the root path %s: %w", rootPath, err)
 	}
 
 	if jsonPaths == nil || len(jsonPaths) == 0 {
