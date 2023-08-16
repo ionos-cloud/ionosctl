@@ -69,8 +69,8 @@ func ResourceCmd() *core.Command {
 		CmdRun:     RunResourceGet,
 		InitClient: true,
 	})
-	getRsc.AddStringFlag(cloudapiv6.ArgType, "", "", "The specific Type of Resources to retrieve information about", core.RequiredFlagOption())
-	_ = getRsc.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	getRsc.AddStringFlag(constants.FlagType, "", "", "The specific Type of Resources to retrieve information about", core.RequiredFlagOption())
+	_ = getRsc.Command.RegisterFlagCompletionFunc(constants.FlagType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"datacenter", "snapshot", "image", "ipblock", "pcc", "backupunit", "k8s"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	getRsc.AddUUIDFlag(cloudapiv6.ArgResourceId, cloudapiv6.ArgIdShort, "", "The ID of the specific Resource to retrieve information about")
@@ -83,7 +83,7 @@ func ResourceCmd() *core.Command {
 }
 
 func PreRunResourceType(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgType)
+	return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagType)
 }
 
 func RunResourceList(c *core.CommandConfig) error {
@@ -101,7 +101,7 @@ func RunResourceGet(c *core.CommandConfig) error {
 	c.Printer.Verbose("Resource with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceId)))
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgResourceId)) {
 		resourceListed, resp, err := c.CloudApiV6Services.Users().GetResourceByTypeAndId(
-			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgType)),
+			viper.GetString(core.GetFlagName(c.NS, constants.FlagType)),
 			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceId)),
 		)
 		if resp != nil {
@@ -112,7 +112,7 @@ func RunResourceGet(c *core.CommandConfig) error {
 		}
 		return c.Printer.Print(getResourcePrint(c, getResource(resourceListed)))
 	} else {
-		resourcesListed, resp, err := c.CloudApiV6Services.Users().GetResourcesByType(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgType)))
+		resourcesListed, resp, err := c.CloudApiV6Services.Users().GetResourcesByType(viper.GetString(core.GetFlagName(c.NS, constants.FlagType)))
 		if resp != nil {
 			c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
 		}

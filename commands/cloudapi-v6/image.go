@@ -93,8 +93,8 @@ func ImageCmd() *core.Command {
 
 	deprecatedMessage := "incompatible with --max-results. Use --filters --order-by --max-results options instead!"
 
-	list.AddStringFlag(cloudapiv6.ArgType, "", "", "The type of the Image", core.DeprecatedFlagOption(deprecatedMessage))
-	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	list.AddStringFlag(constants.FlagType, "", "", "The type of the Image", core.DeprecatedFlagOption(deprecatedMessage))
+	_ = list.Command.RegisterFlagCompletionFunc(constants.FlagType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"CDROM", "HDD"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	list.AddStringFlag(cloudapiv6.ArgLicenceType, "", "", "The licence type of the Image", core.DeprecatedFlagOption(deprecatedMessage))
@@ -761,8 +761,8 @@ func RunImageList(c *core.CommandConfig) error {
 		images = sortImagesByLicenceType(images, strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLicenceType))))
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgType)) {
-		images = sortImagesByType(images, strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgType))))
+	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagType)) {
+		images = sortImagesByType(images, strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, constants.FlagType))))
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgImageAlias)) {

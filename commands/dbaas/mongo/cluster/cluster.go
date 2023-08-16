@@ -1,15 +1,30 @@
 package cluster
 
 import (
+	"context"
 	"fmt"
 	"strings"
 
 	"github.com/fatih/structs"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/convbytes"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	ionoscloud "github.com/ionos-cloud/sdk-go-dbaas-mongo"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
+)
+
+var (
+	enumEditions = []string{"playground", "business", "enterprise"} // Remove whenever the SDK adds this as an actual type with enum vals
+	enumTypes    = []string{"replicaset", "sharded-cluster"}        // Remove whenever the SDK adds this as an actual type with enum vals
+)
+
+const (
+	flagBackupLocation     = "backup-location"
+	flagBiconnector        = "biconnector"
+	flagBiconnectorEnabled = "biconnector-enabled"
 )
 
 func ClusterCmd() *core.Command {
@@ -31,7 +46,7 @@ func ClusterCmd() *core.Command {
 
 	clusterCmd.AddCommand(ClusterListCmd())
 	clusterCmd.AddCommand(ClusterCreateCmd())
-	clusterCmd.AddCommand(ClusterUpdateCmd()) // TODO
+	clusterCmd.AddCommand(ClusterUpdateCmd())
 	clusterCmd.AddCommand(ClusterGetCmd())
 	clusterCmd.AddCommand(ClusterDeleteCmd())
 	clusterCmd.AddCommand(ClusterRestoreCmd())
@@ -47,17 +62,22 @@ func getClusterPrint(c *core.CommandConfig, dcs *[]ionoscloud.ClusterResponse) p
 	if c != nil && dcs != nil {
 		r.OutputJSON = dcs
 		r.KeyValue = getClusterRows(dcs)                            // map header -> rows
-		r.Columns = printer.GetHeaders(allCols, allCols[0:6], cols) // headers
+		r.Columns = printer.GetHeaders(allCols, allCols[0:9], cols) // headers
 	}
+
 	return r
 }
 
 type ClusterPrint struct {
 	ClusterId         string `json:"ClusterId,omitempty"`
 	Name              string `json:"Name,omitempty"`
+	Edition           string `json:"Edition,omitempty"`
+	Type              string `json:"Type,omitempty"`
 	URL               string `json:"URL,omitempty"`
-	State             string `json:"State,omitempty"`
 	Instances         int32  `json:"Instances,omitempty"`
+	Shards            int32  `json:"Shards,omitempty"`
+	Health            string `json:"Health,omitempty"`
+	State             string `json:"State,omitempty"`
 	MongoVersion      string `json:"MongoVersion,omitempty"`
 	MaintenanceWindow string `json:"MaintenanceWindow,omitempty"`
 	Location          string `json:"Location,omitempty"`
@@ -65,6 +85,10 @@ type ClusterPrint struct {
 	LanId             string `json:"LanId,omitempty"`
 	Cidr              string `json:"Cidr,omitempty"`
 	TemplateId        string `json:"TemplateId,omitempty"`
+	Cores             int32  `json:"Cores,omitempty"`
+	RAM               string `json:"RAM,omitempty"`
+	StorageSize       string `json:"StorageSize,omitempty"`
+	StorageType       string `json:"StorageType,omitempty"`
 }
 
 var allCols = structs.Names(ClusterPrint{})
@@ -77,27 +101,114 @@ func getClusterRows(clusters *[]ionoscloud.ClusterResponse) []map[string]interfa
 		clusterPrint.ClusterId = *cluster.GetId()
 
 		if propertiesOk, ok := cluster.GetPropertiesOk(); ok && propertiesOk != nil {
-			clusterPrint.Name = *propertiesOk.GetDisplayName()
-			clusterPrint.Location = *propertiesOk.GetLocation()
-			clusterPrint.TemplateId = *propertiesOk.GetTemplateID()
-			clusterPrint.URL = *propertiesOk.GetConnectionString()
+			if propertiesOk.DisplayName != nil {
+				clusterPrint.Name = *propertiesOk.GetDisplayName()
+			}
+			if propertiesOk.Edition != nil {
+				clusterPrint.Edition = *propertiesOk.Edition
+			}
+			if propertiesOk.Type != nil {
+				clusterPrint.Type = *propertiesOk.Type
+			}
+			if propertiesOk.GetLocation() != nil {
+				clusterPrint.Location = *propertiesOk.GetLocation()
+			}
+			if propertiesOk.GetTemplateID() != nil {
+				clusterPrint.TemplateId = *propertiesOk.GetTemplateID()
+			}
+			if propertiesOk.GetConnectionString() != nil {
+				clusterPrint.URL = *propertiesOk.GetConnectionString()
+			}
 			if vdcConnectionsOk, ok := propertiesOk.GetConnectionsOk(); ok && vdcConnectionsOk != nil {
 				for _, vdcConnection := range *vdcConnectionsOk {
-					clusterPrint.DatacenterId = *vdcConnection.GetDatacenterId()
-					clusterPrint.LanId = *vdcConnection.GetLanId()
-					clusterPrint.Cidr = strings.Join(*vdcConnection.GetCidrList(), ", ")
+					if vdcConnection.GetDatacenterId() != nil {
+						clusterPrint.DatacenterId = *vdcConnection.GetDatacenterId()
+					}
+					if vdcConnection.GetLanId() != nil {
+						clusterPrint.LanId = *vdcConnection.GetLanId()
+					}
+					if vdcConnection.GetCidrList() != nil {
+						clusterPrint.Cidr = strings.Join(*vdcConnection.GetCidrList(), ", ")
+					}
 				}
 			}
-			clusterPrint.MongoVersion = *propertiesOk.GetMongoDBVersion()
-			clusterPrint.Instances = *propertiesOk.GetInstances()
+			if propertiesOk.GetMongoDBVersion() != nil {
+				clusterPrint.MongoVersion = *propertiesOk.GetMongoDBVersion()
+			}
+			if propertiesOk.GetInstances() != nil {
+				clusterPrint.Instances = *propertiesOk.GetInstances()
+			}
+			if propertiesOk.GetShards() != nil {
+				clusterPrint.Shards = *propertiesOk.GetShards()
+			}
 			if maintenanceWindowOk, ok := propertiesOk.GetMaintenanceWindowOk(); ok && maintenanceWindowOk != nil {
-				clusterPrint.MaintenanceWindow =
-					fmt.Sprintf("%s %s", *maintenanceWindowOk.GetDayOfTheWeek(), *maintenanceWindowOk.GetTime())
+				if maintenanceWindowOk.GetDayOfTheWeek() != nil && maintenanceWindowOk.GetTime() != nil {
+					clusterPrint.MaintenanceWindow =
+						fmt.Sprintf("%s %s", *maintenanceWindowOk.GetDayOfTheWeek(), *maintenanceWindowOk.GetTime())
+				}
+			}
+			if f := propertiesOk.Ram; f != nil {
+				clusterPrint.RAM = fmt.Sprintf("%d GB", convbytes.Convert(int64(*f), convbytes.MB, convbytes.GB))
+			}
+			if f := propertiesOk.StorageSize; f != nil {
+				clusterPrint.StorageSize = fmt.Sprintf("%d GB", convbytes.Convert(int64(*f), convbytes.MB, convbytes.GB))
+			}
+			if f := propertiesOk.StorageType; f != nil {
+				clusterPrint.StorageType = string(*f)
+			}
+			if f := propertiesOk.Cores; f != nil {
+				clusterPrint.Cores = *f
 			}
 		}
-		clusterPrint.State = string(*cluster.GetMetadata().GetState())
+		if md := cluster.Metadata; md != nil {
+			if state := md.State; state != nil {
+				clusterPrint.State = string(*state)
+			}
+			if health := md.Health; health != nil {
+				clusterPrint.Health = string(*health)
+			}
+		}
+
 		o := structs.Map(clusterPrint)
 		out = append(out, o)
 	}
+
 	return out
+}
+
+func Clusters(fs ...Filter) (ionoscloud.ClusterList, error) {
+	req := client.Must().MongoClient.ClustersApi.ClustersGet(context.Background())
+
+	for _, f := range fs {
+		req = f(req)
+	}
+
+	clusters, _, err := req.Execute()
+	if err != nil {
+		return ionoscloud.ClusterList{}, fmt.Errorf("failed getting clusters: %w", err)
+	}
+	return clusters, err
+}
+
+type Filter func(ionoscloud.ApiClustersGetRequest) ionoscloud.ApiClustersGetRequest
+
+func FilterPaginationFlags(c *core.CommandConfig) Filter {
+	return func(req ionoscloud.ApiClustersGetRequest) ionoscloud.ApiClustersGetRequest {
+		if f := core.GetFlagName(c.NS, constants.FlagMaxResults); viper.IsSet(f) {
+			req = req.Limit(viper.GetInt32(f))
+		}
+		if f := core.GetFlagName(c.NS, constants.FlagOffset); viper.IsSet(f) {
+			req = req.Offset(viper.GetInt32(f))
+		}
+		return req
+	}
+}
+
+func FilterNameFlags(c *core.CommandConfig) Filter {
+	return func(req ionoscloud.ApiClustersGetRequest) ionoscloud.ApiClustersGetRequest {
+		if f := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(f) {
+			req = req.FilterName(viper.GetString(f))
+		}
+		return req
+	}
 }

@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
@@ -33,7 +33,16 @@ func UserDeleteCmd() *core.Command {
 				return deleteAll(c, clusterId)
 			}
 			user := viper.GetString(core.GetFlagName(c.NS, constants.FlagName))
-			u, _, err := c.DbaasMongoServices.Users().Delete(clusterId, user)
+
+			yes := confirm.Ask(fmt.Sprintf("delete user %s", user),
+				viper.GetBool(constants.ArgForce))
+			if !yes {
+				return fmt.Errorf("operation canceled by confirmation check")
+			}
+
+			u, _, err := client.Must().MongoClient.UsersApi.
+				ClustersUsersDelete(context.Background(), clusterId, user).Execute()
+
 			if err != nil {
 				return err
 			}
@@ -57,23 +66,20 @@ func UserDeleteCmd() *core.Command {
 }
 
 func deleteAll(c *core.CommandConfig, clusterId string) error {
-	client, err := client2.Get()
-	if err != nil {
-		return err
-	}
 	c.Printer.Verbose("Deleting all users")
-	xs, _, err := client.MongoClient.UsersApi.ClustersUsersGet(c.Context, clusterId).Execute()
+	xs, _, err := client.Must().MongoClient.UsersApi.ClustersUsersGet(c.Context, clusterId).Execute()
 	if err != nil {
 		return err
 	}
 
 	return functional.ApplyAndAggregateErrors(*xs.GetItems(), func(x sdkgo.User) error {
 		yes := confirm.Ask(fmt.Sprintf("delete user %s", *x.Properties.Username), viper.GetBool(constants.ArgForce))
-		if yes {
-			_, _, delErr := client.MongoClient.UsersApi.ClustersUsersDelete(c.Context, clusterId, *x.Properties.Username).Execute()
-			if delErr != nil {
-				return fmt.Errorf("failed deleting one of the resources: %w", delErr)
-			}
+		if !yes {
+			return fmt.Errorf("user %s skipped by confirmation check", *x.Properties.Username)
+		}
+		_, _, delErr := client.Must().MongoClient.UsersApi.ClustersUsersDelete(c.Context, clusterId, *x.Properties.Username).Execute()
+		if delErr != nil {
+			return fmt.Errorf("failed deleting one of the resources: %w", delErr)
 		}
 		return nil
 	})

@@ -253,6 +253,7 @@
             * [list](subcommands%2FDatabase-as-a-Service%2Fmongo%2Flogs%2Flist.md)
         * snapshot
             * [list](subcommands%2FDatabase-as-a-Service%2Fmongo%2Fsnapshot%2Flist.md)
+            * [restore](subcommands%2FDatabase-as-a-Service%2Fmongo%2Fsnapshot%2Frestore.md)
         * templates
             * [list](subcommands%2FDatabase-as-a-Service%2Fmongo%2Ftemplates%2Flist.md)
         * user

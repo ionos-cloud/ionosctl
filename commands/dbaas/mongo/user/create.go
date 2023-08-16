@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/cjrd/allocate"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/mmatczuk/anyflag"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/completer"
@@ -27,7 +28,7 @@ func UserCreateCmd() *core.Command {
 		Verb:      "create",
 		Aliases:   []string{"c"},
 		ShortDesc: "Create MongoDB users.",
-		Example:   "ionosctl dbaas mongo user create --cluster-id CLUSTER_ID --name USERNAME --password PASSWORD --database DATABASE",
+		Example:   "ionosctl dbaas mongo user create --cluster-id CLUSTER_ID --name USERNAME --password PASSWORD --roles DATABASE=ROLE",
 		PreCmdRun: func(c *core.PreCommandConfig) (err error) {
 			err = c.Command.Command.MarkFlagRequired(constants.FlagClusterId)
 			if err != nil {
@@ -52,7 +53,8 @@ func UserCreateCmd() *core.Command {
 			c.Printer.Verbose("Creating users for cluster %s", clusterId)
 
 			userProperties.Roles = &roles
-			u, _, err := c.DbaasMongoServices.Users().Create(clusterId, sdkgo.User{Properties: &userProperties})
+			u, _, err := client.Must().MongoClient.UsersApi.ClustersUsersPost(context.Background(), clusterId).
+				User(sdkgo.User{Properties: &userProperties}).Execute()
 			if err != nil {
 				return err
 			}
@@ -74,6 +76,21 @@ func UserCreateCmd() *core.Command {
 	sliceOfRolesFlag := anyflag.NewValue(nil, &roles, rolesParser)
 	cmd.Command.Flags().VarP(sliceOfRolesFlag, FlagRoles, FlagRolesShort, "User's role for each db. DB1=Role1,DB2=Role2. Roles: read, readWrite, readAnyDatabase, readWriteAnyDatabase, dbAdmin, dbAdminAnyDatabase, clusterMonitor")
 	_ = viper.BindPFlag(core.GetFlagName(cmd.NS, FlagRoles), cmd.Command.Flags().Lookup(FlagRoles))
+	_ = cmd.Command.RegisterFlagCompletionFunc(FlagRoles, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		if toComplete[len(toComplete)-1] != '=' {
+			toComplete += "="
+		}
+		return []string{
+			toComplete + "read",
+			toComplete + "readWrite",
+			toComplete + "readAnyDatabase",
+			toComplete + "readWriteAnyDatabase",
+			toComplete + "dbAdmin",
+			toComplete + "dbAdminAnyDatabase",
+			toComplete + "clusterMonitor",
+			toComplete + "enableSharding",
+		}, cobra.ShellCompDirectiveNoFileComp
+	})
 
 	cmd.Command.SilenceUsage = true
 
@@ -95,7 +112,7 @@ func rolesParser(val string) ([]sdkgo.UserRoles, error) {
 	for _, t := range tuples {
 		dbAndRole := strings.Split(t, "=")
 		if len(dbAndRole) != 2 {
-			return nil, fmt.Errorf("invalid input format: %s, need db=role\n", val)
+			return nil, fmt.Errorf("invalid input format: %s, need db=role1,db=role2\n", val)
 		}
 		r := sdkgo.UserRoles{Database: &dbAndRole[0], Role: &dbAndRole[1]}
 		rs = append(rs, r)
