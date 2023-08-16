@@ -23,7 +23,7 @@ func GenerateOutput(rootPath string, jsonPaths map[string]string, obj interface{
 	}
 
 	if outputFormat == "text" {
-		return generateTextOutput(rootPath, obj, jsonPaths, cols, false)
+		return generateTextOutputFromJSON(rootPath, obj, jsonPaths, cols)
 	}
 
 	return "", fmt.Errorf(outputFormatErr, outputFormat)
@@ -37,56 +37,10 @@ func GenerateOutputPreconverted(obj interface{}, convertedObj []map[string]inter
 	}
 
 	if outputFormat == "text" {
-		return generateTextOutput("", convertedObj, nil, cols, true)
+		return generateTextOutputFromTable(convertedObj, cols)
 	}
 
 	return "", fmt.Errorf(outputFormatErr, outputFormat)
-}
-
-func generateJSONOutput(obj interface{}) (string, error) {
-	out, err := json.MarshalIndent(obj, "", "\t")
-	if err != nil {
-		return "", err
-	}
-
-	return string(out) + "\n", nil
-}
-
-func generateTextOutput(rootPath string, obj interface{}, jsonPaths map[string]string, cols []string, skipConversion bool) (string, error) {
-	var table []map[string]interface{}
-	var err error
-
-	if skipConversion {
-		table = obj.([]map[string]interface{})
-	} else {
-		table, err = json2table.ConvertJSONToTable(rootPath, jsonPaths, obj)
-		if err != nil {
-			return "", err
-		}
-	}
-
-	var buff = new(bytes.Buffer)
-	var w = new(tabwriter.Writer)
-	w.Init(buff, 5, 0, 3, ' ', tabwriter.StripEscape)
-
-	if !viper.IsSet(constants.ArgNoHeaders) {
-		if _, err = fmt.Fprintln(w, strings.Join(cols, "\t")); err != nil {
-			return "", nil
-		}
-	}
-
-	for _, t := range table {
-		format, values := convertTableToText(cols, t)
-		if _, err = fmt.Fprintf(w, format+"\n", values...); err != nil {
-			return "", err
-		}
-	}
-
-	if err = w.Flush(); err != nil {
-		return "", err
-	}
-
-	return buff.String(), nil
 }
 
 func GenerateVerboseOutput(format string, a ...interface{}) string {
@@ -122,6 +76,48 @@ func GenerateRawOutput(a interface{}) string {
 	}
 
 	return ""
+}
+
+func generateJSONOutput(obj interface{}) (string, error) {
+	out, err := json.MarshalIndent(obj, "", "\t")
+	if err != nil {
+		return "", err
+	}
+
+	return string(out) + "\n", nil
+}
+
+func generateTextOutputFromJSON(rootPath string, obj interface{}, jsonPaths map[string]string, cols []string) (string, error) {
+	table, err := json2table.ConvertJSONToTable(rootPath, jsonPaths, obj)
+	if err != nil {
+		return "", fmt.Errorf("failed converting object to table using %+v: %w", jsonPaths, err)
+	}
+
+	return writeTableToText(table, cols), nil
+}
+
+func generateTextOutputFromTable(table []map[string]interface{}, cols []string) (string, error) {
+	return writeTableToText(table, cols), nil
+}
+
+func writeTableToText(table []map[string]interface{}, cols []string) string {
+	var buff = new(bytes.Buffer)
+	var w = new(tabwriter.Writer)
+
+	w.Init(buff, 5, 0, 3, ' ', tabwriter.StripEscape)
+
+	if !viper.IsSet(constants.ArgNoHeaders) {
+		fmt.Fprintln(w, strings.Join(cols, "\t"))
+	}
+
+	for _, t := range table {
+		format, values := convertTableToText(cols, t)
+		fmt.Fprintf(w, format+"\n", values...)
+	}
+
+	w.Flush()
+
+	return buff.String()
 }
 
 func convertTableToText(cols []string, table map[string]interface{}) (format string, values []interface{}) {
