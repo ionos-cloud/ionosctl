@@ -6,18 +6,31 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+)
+
+var (
+	allIpBlockJSONPaths = map[string]string{
+		"IpBlockId": "id",
+		"Name":      "properties.name",
+		"Location":  "properties.location",
+		"Size":      "properties.size",
+		"Ips":       "properties.ips",
+		"State":     "metadata.state",
+	}
+
+	defaultIpBlockCols = []string{"IpBlockId", "Name", "Location", "Size", "Ips", "State"}
 )
 
 func IpblockCmd() *core.Command {
@@ -201,14 +214,29 @@ func RunIpBlockList(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	ipblocks, resp, err := c.CloudApiV6Services.IpBlocks().List(listQueryParams)
 	if resp != nil {
-		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getIpBlockPrint(nil, c, getIpBlocks(ipblocks)))
+
+	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	if err != nil {
+		return err
+	}
+
+	out, err := jsontabwriter.GenerateOutput("items", allIpBlockJSONPaths, ipblocks.IpBlocks,
+		printer.GetHeadersAllDefault(defaultIpBlockCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, out)
+
+	return nil
 }
 
 func RunIpBlockGet(c *core.CommandConfig) error {
@@ -216,16 +244,33 @@ func RunIpBlockGet(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
-	c.Printer.Verbose("Ip block with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgIpBlockId)))
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+		"Ip block with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgIpBlockId))))
+
 	i, resp, err := c.CloudApiV6Services.IpBlocks().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgIpBlockId)), queryParams)
 	if resp != nil {
-		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getIpBlockPrint(nil, c, getIpBlock(i)))
+
+	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	if err != nil {
+		return err
+	}
+
+	out, err := jsontabwriter.GenerateOutput("", allIpBlockJSONPaths, i.IpBlock,
+		printer.GetHeadersAllDefault(defaultIpBlockCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, out)
+
+	return nil
 }
 
 func RunIpBlockCreate(c *core.CommandConfig) error {
@@ -233,22 +278,41 @@ func RunIpBlockCreate(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
 	name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
 	loc := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLocation))
 	size := viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgSize))
-	c.Printer.Verbose("Properties set for creating the Ip block: Name: %v, Location: %v, Size: %v", name, loc, size)
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+		"Properties set for creating the Ip block: Name: %v, Location: %v, Size: %v", name, loc, size))
+
 	i, resp, err := c.CloudApiV6Services.IpBlocks().Create(name, loc, size, queryParams)
 	if resp != nil && printer.GetId(resp) != "" {
-		c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
+
 	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 		return err
 	}
-	return c.Printer.Print(getIpBlockPrint(resp, c, getIpBlock(i)))
+
+	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	if err != nil {
+		return err
+	}
+
+	out, err := jsontabwriter.GenerateOutput("", allIpBlockJSONPaths, i.IpBlock,
+		printer.GetHeadersAllDefault(defaultIpBlockCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, out)
+
+	return nil
 }
 
 func RunIpBlockUpdate(c *core.CommandConfig) error {
@@ -256,24 +320,42 @@ func RunIpBlockUpdate(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
 	input := resources.IpBlockProperties{}
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgName)) {
 		name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
 		input.SetName(name)
-		c.Printer.Verbose("Property Name set: %v", name)
+
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property Name set: %v", name))
 	}
+
 	i, resp, err := c.CloudApiV6Services.IpBlocks().Update(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgIpBlockId)), input, queryParams)
 	if resp != nil && printer.GetId(resp) != "" {
-		c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
+
 	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 		return err
 	}
-	return c.Printer.Print(getIpBlockPrint(resp, c, getIpBlock(i)))
+
+	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	if err != nil {
+		return err
+	}
+
+	out, err := jsontabwriter.GenerateOutput("", allIpBlockJSONPaths, i.IpBlock,
+		printer.GetHeadersAllDefault(defaultIpBlockCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, out)
+
+	return nil
 }
 
 func RunIpBlockDelete(c *core.CommandConfig) error {
@@ -281,30 +363,39 @@ func RunIpBlockDelete(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
 	ipBlockId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgIpBlockId))
+
 	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
 		if err := DeleteAllIpBlocks(c); err != nil {
 			return err
 		}
-		return c.Printer.Print(printer.Result{Resource: c.Resource, Verb: c.Verb})
-	} else {
-		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete ipblock"); err != nil {
-			return err
-		}
-		c.Printer.Verbose("Starting deleting Ip block with ID: %v...", ipBlockId)
-		resp, err := c.CloudApiV6Services.IpBlocks().Delete(ipBlockId, queryParams)
-		if resp != nil && printer.GetId(resp) != "" {
-			c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
-		}
-		if err != nil {
-			return err
-		}
-		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-			return err
-		}
-		return c.Printer.Print(getIpBlockPrint(resp, c, nil))
+
+		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("Ip Blocks successfully deleted"))
+		return nil
 	}
+
+	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete ipblock"); err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Starting deleting Ip block with ID: %v...", ipBlockId))
+
+	resp, err := c.CloudApiV6Services.IpBlocks().Delete(ipBlockId, queryParams)
+	if resp != nil && printer.GetId(resp) != "" {
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
+	}
+	if err != nil {
+		return err
+	}
+
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("Ip Block successfully deleted"))
+	return nil
 }
 
 func DeleteAllIpBlocks(c *core.CommandConfig) error {
@@ -312,144 +403,78 @@ func DeleteAllIpBlocks(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
-	c.Printer.Verbose("Getting all IpBlocks...")
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Getting all Ip Blocks..."))
+
 	ipBlocks, resp, err := c.CloudApiV6Services.IpBlocks().List(cloudapiv6.ParentResourceListQueryParams)
 	if err != nil {
 		return err
 	}
-	if ipBlocksItems, ok := ipBlocks.GetItemsOk(); ok && ipBlocksItems != nil {
-		if len(*ipBlocksItems) > 0 {
-			_ = c.Printer.Warn("IpBlocks to be deleted:")
-			for _, dc := range *ipBlocksItems {
-				delIdAndName := ""
-				if id, ok := dc.GetIdOk(); ok && id != nil {
-					delIdAndName += "IpBlock Id: " + *id
-				}
-				if properties, ok := dc.GetPropertiesOk(); ok && properties != nil {
-					if name, ok := properties.GetNameOk(); ok && name != nil {
-						delIdAndName += " IpBlock Name: " + *name
-					}
-				}
-				_ = c.Printer.Warn(delIdAndName)
+
+	ipBlocksItems, ok := ipBlocks.GetItemsOk()
+	if !ok || ipBlocksItems == nil {
+		return fmt.Errorf("could not get items of Ip Blocks")
+	}
+
+	if len(*ipBlocksItems) <= 0 {
+		return fmt.Errorf("no Ip Blocks found")
+	}
+
+	fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("IpBlocks to be deleted:"))
+
+	for _, dc := range *ipBlocksItems {
+		delIdAndName := ""
+		if id, ok := dc.GetIdOk(); ok && id != nil {
+			delIdAndName += "IpBlock Id: " + *id
+		}
+
+		if properties, ok := dc.GetPropertiesOk(); ok && properties != nil {
+			if name, ok := properties.GetNameOk(); ok && name != nil {
+				delIdAndName += " IpBlock Name: " + *name
 			}
-			if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete all the IpBlocks"); err != nil {
-				return err
-			}
-			c.Printer.Verbose("Deleting all the IpBlocks...")
-			var multiErr error
-			for _, dc := range *ipBlocksItems {
-				if id, ok := dc.GetIdOk(); ok && id != nil {
-					c.Printer.Verbose("Starting deleting IpBlock with id: %v...", *id)
-					resp, err = c.CloudApiV6Services.IpBlocks().Delete(*id, queryParams)
-					if resp != nil && printer.GetId(resp) != "" {
-						c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
-					}
-					if err != nil {
-						multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
-						continue
-					} else {
-						_ = c.Printer.Warn(fmt.Sprintf(constants.MessageDeletingAll, c.Resource, *id))
-					}
-					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-						multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *id, err))
-						continue
-					}
-				}
-			}
-			if multiErr != nil {
-				return multiErr
-			}
-			return nil
-		} else {
-			return errors.New("no IpBlocks found")
 		}
-	} else {
-		return errors.New("could not get items of IpBlocks")
-	}
-}
 
-// Output Printing
-
-var defaultIpBlockCols = []string{"IpBlockId", "Name", "Location", "Size", "Ips", "State"}
-
-type IpBlockPrint struct {
-	IpBlockId string   `json:"IpBlockId,omitempty"`
-	Name      string   `json:"Name,omitempty"`
-	Location  string   `json:"Location,omitempty"`
-	Size      int32    `json:"Size,omitempty"`
-	Ips       []string `json:"Ips,omitempty"`
-	State     string   `json:"State,omitempty"`
-}
-
-func getIpBlockPrint(resp *resources.Response, c *core.CommandConfig, ipBlocks []resources.IpBlock) printer.Result {
-	r := printer.Result{}
-	if c != nil {
-		if resp != nil {
-			r.ApiResponse = resp
-			r.Resource = c.Resource
-			r.Verb = c.Verb
-			r.WaitForRequest = viper.GetBool(core.GetFlagName(c.NS, constants.ArgWaitForRequest))
-		}
-		if ipBlocks != nil {
-			r.OutputJSON = ipBlocks
-			r.KeyValue = getIpBlocksKVMaps(ipBlocks)
-			r.Columns = printer.GetHeadersAllDefault(defaultIpBlockCols, viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)))
-		}
+		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
-	return r
-}
 
-func getIpBlocks(ipBlocks resources.IpBlocks) []resources.IpBlock {
-	ss := make([]resources.IpBlock, 0)
-	if items, ok := ipBlocks.GetItemsOk(); ok && items != nil {
-		for _, item := range *items {
-			ss = append(ss, resources.IpBlock{IpBlock: item})
-		}
+	if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete all the IpBlocks"); err != nil {
+		return err
 	}
-	return ss
-}
 
-func getIpBlock(ipBlock *resources.IpBlock) []resources.IpBlock {
-	ss := make([]resources.IpBlock, 0)
-	if ipBlock != nil {
-		ss = append(ss, resources.IpBlock{IpBlock: ipBlock.IpBlock})
-	}
-	return ss
-}
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Deleting all the IpBlocks..."))
 
-func getIpBlocksKVMaps(ss []resources.IpBlock) []map[string]interface{} {
-	out := make([]map[string]interface{}, 0, len(ss))
-	for _, s := range ss {
-		o := getIpBlockKVMap(s)
-		out = append(out, o)
-	}
-	return out
-}
+	var multiErr error
+	for _, dc := range *ipBlocksItems {
+		id, ok := dc.GetIdOk()
+		if !ok || id == nil {
+			continue
+		}
 
-func getIpBlockKVMap(s resources.IpBlock) map[string]interface{} {
-	var ipblockPrint IpBlockPrint
-	if id, ok := s.GetIdOk(); ok && id != nil {
-		ipblockPrint.IpBlockId = *id
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Starting deleting IpBlock with id: %v...", *id))
+
+		resp, err = c.CloudApiV6Services.IpBlocks().Delete(*id, queryParams)
+		if resp != nil && printer.GetId(resp) != "" {
+			fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
+		}
+		if err != nil {
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
+			continue
+		}
+
+		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput(constants.MessageDeletingAll, c.Resource, *id))
+
+		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *id, err))
+			continue
+		}
+
 	}
-	if properties, ok := s.GetPropertiesOk(); ok && properties != nil {
-		if name, ok := properties.GetNameOk(); ok && name != nil {
-			ipblockPrint.Name = *name
-		}
-		if loc, ok := properties.GetLocationOk(); ok && loc != nil {
-			ipblockPrint.Location = *loc
-		}
-		if size, ok := properties.GetSizeOk(); ok && size != nil {
-			ipblockPrint.Size = *size
-		}
-		if ips, ok := properties.GetIpsOk(); ok && ips != nil {
-			ipblockPrint.Ips = *ips
-		}
+
+	if multiErr != nil {
+		return multiErr
 	}
-	if metadata, ok := s.GetMetadataOk(); ok && metadata != nil {
-		if state, ok := metadata.GetStateOk(); ok && state != nil {
-			ipblockPrint.State = *state
-		}
-	}
-	return structs.Map(ipblockPrint)
+
+	return nil
 }

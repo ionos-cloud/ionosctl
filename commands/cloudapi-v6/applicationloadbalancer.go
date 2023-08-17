@@ -265,8 +265,8 @@ func RunApplicationLoadBalancerListAll(c *core.CommandConfig) error {
 
 	allDcs := getDataCenters(datacenters)
 
-	var allApplicationLoadBalancersConverted []map[string]interface{}
-	var allApplicationLoadBalancers []ionoscloud.ApplicationLoadBalancers
+	var allApplicationLoadBalancersConverted = make([]map[string]interface{}, 0)
+	var allApplicationLoadBalancers = make([]ionoscloud.ApplicationLoadBalancers, 0)
 
 	totalTime := time.Duration(0)
 
@@ -277,21 +277,26 @@ func RunApplicationLoadBalancerListAll(c *core.CommandConfig) error {
 		}
 
 		dcId, ok := dc.GetIdOk()
-		if !ok {
-			return fmt.Errorf("datacenter id could not be obtained")
+		if !ok || dcId == nil {
+			return fmt.Errorf("could not retrieve Datacenter Id")
 		}
 
-		for _, alb := range *ApplicationLoadBalancers.Items {
+		albs, ok := ApplicationLoadBalancers.GetItemsOk()
+		if !ok || albs == nil {
+			continue
+		}
+
+		for _, alb := range *albs {
 			converted, err := json2table.ConvertJSONToTable("", allApplicationLoadBalancerJSONPaths, alb)
 			if err != nil {
-				return err
+				return fmt.Errorf("failed converting Application Load Balancer from JSON to table format: %w", err)
 			}
 
 			converted[0]["DatacenterId"] = *dcId
 			allApplicationLoadBalancersConverted = append(allApplicationLoadBalancersConverted, converted[0])
-			allApplicationLoadBalancers = append(allApplicationLoadBalancers, ApplicationLoadBalancers.ApplicationLoadBalancers)
 		}
 
+		allApplicationLoadBalancers = append(allApplicationLoadBalancers, ApplicationLoadBalancers.ApplicationLoadBalancers)
 		totalTime += resp.RequestTime
 	}
 
@@ -343,16 +348,7 @@ func RunApplicationLoadBalancerList(c *core.CommandConfig) error {
 		return err
 	}
 
-	albs, err := json2table.ConvertJSONToTable("items", allApplicationLoadBalancerJSONPaths, applicationloadbalancers.ApplicationLoadBalancers)
-	if err != nil {
-		return err
-	}
-
-	for _, alb := range albs {
-		alb["DatacenterId"] = dcId
-	}
-
-	out, err := jsontabwriter.GenerateOutputPreconverted(applicationloadbalancers, albs,
+	out, err := jsontabwriter.GenerateOutput("items", allApplicationLoadBalancerJSONPaths, applicationloadbalancers,
 		printer.GetHeadersAllDefault(defaultApplicationLoadBalancerCols, cols))
 	fmt.Fprintf(c.Stdout, out)
 

@@ -6,18 +6,35 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+)
+
+var (
+	allDatacenterJSONPaths = map[string]string{
+		"DatacenterId":      "id",
+		"Name":              "properties.name",
+		"Location":          "properties.location",
+		"Description":       "properties.description",
+		"Version":           "properties.version",
+		"State":             "metadata.state",
+		"Features":          "properties.features",
+		"CpuFamily":         "properties.cpuArchitecture",
+		"SecAuthProtection": "properties.secAuthProtection",
+	}
+
+	defaultDatacenterCols = []string{"DatacenterId", "Name", "Location", "CpuFamily", "State"}
+	allDatacenterCols     = []string{"DatacenterId", "Name", "Location", "State", "Description", "Version", "Features", "CpuFamily", "SecAuthProtection"}
 )
 
 func DatacenterCmd() *core.Command {
@@ -211,12 +228,26 @@ func RunDataCenterList(c *core.CommandConfig) error {
 
 	datacenters, resp, err := c.CloudApiV6Services.DataCenters().List(listQueryParams)
 	if resp != nil {
-		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getDataCenterPrint(nil, c, getDataCenters(datacenters)))
+
+	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	if err != nil {
+		return err
+	}
+
+	out, err := jsontabwriter.GenerateOutput("items", allDatacenterJSONPaths, datacenters.Datacenters,
+		printer.GetHeaders(allDatacenterCols, defaultDatacenterCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, out)
+
+	return nil
 }
 
 func RunDataCenterGet(c *core.CommandConfig) error {
@@ -224,16 +255,33 @@ func RunDataCenterGet(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
-	c.Printer.Verbose("Getting Datacenter with ID: %v...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+		"Getting Datacenter with ID: %v...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))))
+
 	dc, resp, err := c.CloudApiV6Services.DataCenters().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)), queryParams)
 	if resp != nil {
-		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getDataCenterPrint(nil, c, []resources.Datacenter{*dc}))
+
+	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	if err != nil {
+		return err
+	}
+
+	out, err := jsontabwriter.GenerateOutput("", allDatacenterJSONPaths, dc.Datacenter,
+		printer.GetHeaders(allDatacenterCols, defaultDatacenterCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, out)
+
+	return nil
 }
 
 func RunDataCenterCreate(c *core.CommandConfig) error {
@@ -241,22 +289,41 @@ func RunDataCenterCreate(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
 	name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
 	description := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDescription))
 	loc := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLocation))
-	c.Printer.Verbose("Properties set for creating the datacenter: Name: %v, Description: %v, Location: %v", name, description, loc)
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+		"Properties set for creating the datacenter: Name: %v, Description: %v, Location: %v", name, description, loc))
+
 	dc, resp, err := c.CloudApiV6Services.DataCenters().Create(name, description, loc, queryParams)
 	if resp != nil && printer.GetId(resp) != "" {
-		c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
+
 	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 		return err
 	}
-	return c.Printer.Print(getDataCenterPrint(resp, c, []resources.Datacenter{*dc}))
+
+	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	if err != nil {
+		return err
+	}
+
+	out, err := jsontabwriter.GenerateOutput("", allDatacenterJSONPaths, dc,
+		printer.GetHeaders(allDatacenterCols, defaultDatacenterCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, out)
+
+	return nil
 }
 
 func RunDataCenterUpdate(c *core.CommandConfig) error {
@@ -264,25 +331,29 @@ func RunDataCenterUpdate(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
 	input := resources.DatacenterProperties{}
+
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgName)) {
 		name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
 		input.SetName(name)
-		c.Printer.Verbose("Property Name set: %v", name)
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property Name set: %v", name))
 	}
+
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgDescription)) {
 		description := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDescription))
 		input.SetDescription(description)
-		c.Printer.Verbose("Property Description set: %v", description)
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property Description set: %v", description))
 	}
+
 	dc, resp, err := c.CloudApiV6Services.DataCenters().Update(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		input,
 		queryParams,
 	)
 	if resp != nil && printer.GetId(resp) != "" {
-		c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
 	}
 	if err != nil {
 		return err
@@ -290,7 +361,21 @@ func RunDataCenterUpdate(c *core.CommandConfig) error {
 	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 		return err
 	}
-	return c.Printer.Print(getDataCenterPrint(resp, c, []resources.Datacenter{*dc}))
+
+	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	if err != nil {
+		return err
+	}
+
+	out, err := jsontabwriter.GenerateOutput("", allDatacenterJSONPaths, dc,
+		printer.GetHeaders(allDatacenterCols, defaultDatacenterCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, out)
+
+	return nil
 }
 
 func RunDataCenterDelete(c *core.CommandConfig) error {
@@ -298,124 +383,115 @@ func RunDataCenterDelete(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
 	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
 		if err := DeleteAllDatacenters(c); err != nil {
 			return err
 		}
-		return c.Printer.Print(printer.Result{Resource: c.Resource, Verb: c.Verb})
-	} else {
-		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete data center"); err != nil {
-			return err
-		}
-		dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
-		c.Printer.Verbose("Starting deleting Datacenter with ID: %v...", dcId)
-		resp, err := c.CloudApiV6Services.DataCenters().Delete(dcId, queryParams)
-		if resp != nil && printer.GetId(resp) != "" {
-			c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
-		}
-		if err != nil {
-			return err
-		}
-		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-			return err
-		}
-		return c.Printer.Print(getDataCenterPrint(resp, c, nil))
+
+		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("Datacenters successfully deleted"))
+
+		return nil
 	}
+
+	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete data center"); err != nil {
+		return err
+	}
+
+	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Starting deleting Datacenter with ID: %v...", dcId))
+
+	resp, err := c.CloudApiV6Services.DataCenters().Delete(dcId, queryParams)
+	if resp != nil && printer.GetId(resp) != "" {
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
+	}
+	if err != nil {
+		return err
+	}
+
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("Datacenter successfully deleted"))
+
+	return nil
+
 }
 
 func DeleteAllDatacenters(c *core.CommandConfig) error {
-	c.Printer.Verbose("Getting Datacenters...")
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Getting Datacenters..."))
+
 	datacenters, resp, err := c.CloudApiV6Services.DataCenters().List(cloudapiv6.ParentResourceListQueryParams)
 	if err != nil {
 		return err
 	}
-	if datacentersItems, ok := datacenters.GetItemsOk(); ok && datacentersItems != nil {
-		if len(*datacentersItems) > 0 {
-			_ = c.Printer.Warn("Datacenters to be deleted:")
-			for _, dc := range *datacentersItems {
-				delIdAndName := ""
-				if id, ok := dc.GetIdOk(); ok && id != nil {
-					delIdAndName += "Datacenter Id: " + *id
-				}
-				if properties, ok := dc.GetPropertiesOk(); ok && properties != nil {
-					if name, ok := properties.GetNameOk(); ok && name != nil {
-						delIdAndName += " Datacenter Name: " + *name
-					}
-				}
-				_ = c.Printer.Warn(delIdAndName)
-			}
-			if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Datacenters"); err != nil {
-				return err
-			}
-			c.Printer.Verbose("Deleting all the Datacenters...")
-			var multiErr error
-			for _, dc := range *datacentersItems {
-				if id, ok := dc.GetIdOk(); ok && id != nil {
-					c.Printer.Verbose("Starting deleting Datacenter with id: %v...", *id)
-					resp, err = c.CloudApiV6Services.DataCenters().Delete(*id, resources.QueryParams{})
-					if resp != nil && printer.GetId(resp) != "" {
-						c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
-					}
-					if err != nil {
-						multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
-						continue
-					} else {
-						_ = c.Printer.Warn(fmt.Sprintf(constants.MessageDeletingAll, c.Resource, *id))
-					}
-					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-						multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
-						continue
-					}
-				}
-			}
-			if multiErr != nil {
-				return multiErr
-			}
-			return nil
-		} else {
-			return errors.New("no Datacenters found")
-		}
-	} else {
-		return errors.New("could not get items of Datacenters")
+
+	datacentersItems, ok := datacenters.GetItemsOk()
+	if !ok || datacentersItems == nil {
+		return fmt.Errorf("could not get items of Datacenters")
 	}
-}
 
-// Output Printing
+	if len(*datacentersItems) <= 0 {
+		return fmt.Errorf("no Datacenters found")
+	}
 
-var (
-	defaultDatacenterCols = []string{"DatacenterId", "Name", "Location", "CpuFamily", "State"}
-	allDatacenterCols     = []string{"DatacenterId", "Name", "Location", "State", "Description", "Version", "Features", "CpuFamily", "SecAuthProtection"}
-)
+	fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("Datacenters to be deleted:"))
 
-type DatacenterPrint struct {
-	DatacenterId      string   `json:"DatacenterId,omitempty"`
-	Name              string   `json:"Name,omitempty"`
-	Location          string   `json:"Location,omitempty"`
-	Description       string   `json:"Description,omitempty"`
-	Version           int32    `json:"Version,omitempty"`
-	State             string   `json:"State,omitempty"`
-	Features          []string `json:"Features,omitempty"`
-	CpuFamily         []string `json:"CpuFamily,omitempty"`
-	SecAuthProtection bool     `json:"SecAuthProtection,omitempty"`
-}
-
-func getDataCenterPrint(resp *resources.Response, c *core.CommandConfig, dcs []resources.Datacenter) printer.Result {
-	r := printer.Result{}
-	if c != nil {
-		if resp != nil {
-			r.ApiResponse = resp
-			r.Resource = c.Resource
-			r.Verb = c.Verb
-			r.WaitForRequest = viper.GetBool(core.GetFlagName(c.NS, constants.ArgWaitForRequest))
+	for _, dc := range *datacentersItems {
+		delIdAndName := ""
+		if id, ok := dc.GetIdOk(); ok && id != nil {
+			delIdAndName += "Datacenter Id: " + *id
 		}
-		if dcs != nil {
-			r.OutputJSON = dcs
-			r.KeyValue = getDataCentersKVMaps(dcs)
-			r.Columns = printer.GetHeaders(allDatacenterCols, defaultDatacenterCols, viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)))
+
+		if properties, ok := dc.GetPropertiesOk(); ok && properties != nil {
+			if name, ok := properties.GetNameOk(); ok && name != nil {
+				delIdAndName += " Datacenter Name: " + *name
+			}
+		}
+
+		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput(delIdAndName))
+	}
+
+	if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Datacenters"); err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Deleting all the Datacenters..."))
+
+	var multiErr error
+	for _, dc := range *datacentersItems {
+		id, ok := dc.GetIdOk()
+		if !ok || id == nil {
+			continue
+		}
+
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Starting deleting Datacenter with id: %v...", *id))
+
+		resp, err = c.CloudApiV6Services.DataCenters().Delete(*id, resources.QueryParams{})
+		if resp != nil && printer.GetId(resp) != "" {
+			fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
+		}
+		if err != nil {
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
+			continue
+		}
+
+		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput(constants.MessageDeletingAll, c.Resource, *id))
+
+		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
+			continue
 		}
 	}
-	return r
+
+	if multiErr != nil {
+		return multiErr
+	}
+	return nil
+
 }
 
 func getDataCenters(datacenters resources.Datacenters) []resources.Datacenter {
@@ -426,51 +502,4 @@ func getDataCenters(datacenters resources.Datacenters) []resources.Datacenter {
 		}
 	}
 	return dc
-}
-
-func getDataCentersKVMaps(dcs []resources.Datacenter) []map[string]interface{} {
-	out := make([]map[string]interface{}, 0, len(dcs))
-	for _, dc := range dcs {
-		var dcPrint DatacenterPrint
-		if dcid, ok := dc.GetIdOk(); ok && dcid != nil {
-			dcPrint.DatacenterId = *dcid
-		}
-		if properties, ok := dc.GetPropertiesOk(); ok && properties != nil {
-			if name, ok := properties.GetNameOk(); ok && name != nil {
-				dcPrint.Name = *name
-			}
-			if loc, ok := properties.GetLocationOk(); ok && loc != nil {
-				dcPrint.Location = *loc
-			}
-			if description, ok := properties.GetDescriptionOk(); ok && description != nil {
-				dcPrint.Description = *description
-			}
-			if ver, ok := properties.GetVersionOk(); ok && ver != nil {
-				dcPrint.Version = *ver
-			}
-			if feat, ok := properties.GetFeaturesOk(); ok && feat != nil {
-				dcPrint.Features = *feat
-			}
-			if secAuth, ok := properties.GetSecAuthProtectionOk(); ok && secAuth != nil {
-				dcPrint.SecAuthProtection = *secAuth
-			}
-			if cpuArhis, ok := properties.GetCpuArchitectureOk(); ok && cpuArhis != nil {
-				cpufamilies := make([]string, 0)
-				for _, cpuArhi := range *cpuArhis {
-					if cpuName, ok := cpuArhi.GetCpuFamilyOk(); ok && cpuName != nil {
-						cpufamilies = append(cpufamilies, *cpuName)
-					}
-				}
-				dcPrint.CpuFamily = cpufamilies
-			}
-		}
-		if metadata, ok := dc.GetMetadataOk(); ok && metadata != nil {
-			if state, ok := metadata.GetStateOk(); ok && state != nil {
-				dcPrint.State = *state
-			}
-		}
-		o := structs.Map(dcPrint)
-		out = append(out, o)
-	}
-	return out
 }

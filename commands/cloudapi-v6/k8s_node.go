@@ -6,18 +6,30 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+)
+
+var (
+	allK8sNodeJSONPaths = map[string]string{
+		"NodeId":     "id",
+		"Name":       "properties.name",
+		"K8sVersion": "properties.k8sVersion",
+		"PublicIP":   "properties.publicIP",
+		"PrivateIP":  "properties.privateIP",
+		"State":      "metadata.state",
+	}
+
+	defaultK8sNodeCols = []string{"NodeId", "Name", "K8sVersion", "PublicIP", "PrivateIP", "State"}
 )
 
 func K8sNodeCmd() *core.Command {
@@ -212,9 +224,10 @@ func PreRunK8sClusterNodesIdsAll(c *core.PreCommandConfig) error {
 }
 
 func RunK8sNodeList(c *core.CommandConfig) error {
-	c.Printer.Verbose("Listing Nodes from K8s NodePool ID: %v from K8s Cluster ID: %v",
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Listing Nodes from K8s NodePool ID: %v from K8s Cluster ID: %v",
 		viper.GetString(core.GetFlagName(c.NS, constants.FlagNodepoolId)),
-		viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)))
+		viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))))
+
 	// Add Query Parameters for GET Requests
 	listQueryParams, err := query.GetListQueryParams(c)
 	if err != nil {
@@ -226,12 +239,27 @@ func RunK8sNodeList(c *core.CommandConfig) error {
 		listQueryParams,
 	)
 	if resp != nil {
-		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
+
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getK8sNodePrint(c, getK8sNodes(k8ss)))
+
+	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	if err != nil {
+		return err
+	}
+
+	out, err := jsontabwriter.GenerateOutput("items", allK8sNodeJSONPaths, k8ss.KubernetesNodes,
+		printer.GetHeadersAllDefault(defaultK8sNodeCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, out)
+
+	return nil
 }
 
 func RunK8sNodeGet(c *core.CommandConfig) error {
@@ -239,14 +267,17 @@ func RunK8sNodeGet(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
 	if err := utils.WaitForState(c, waiter.K8sNodeStateInterrogator, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sNodeId))); err != nil {
 		return err
 	}
-	c.Printer.Verbose("Getting K8s Node with ID: %v from K8s NodePool ID: %v from K8s Cluster ID: %v......",
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Getting K8s Node with ID: %v from K8s NodePool ID: %v from K8s Cluster ID: %v......",
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sNodeId)),
 		viper.GetString(core.GetFlagName(c.NS, constants.FlagNodepoolId)),
-		viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)))
+		viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))))
+
 	u, resp, err := c.CloudApiV6Services.K8s().GetNode(
 		viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)),
 		viper.GetString(core.GetFlagName(c.NS, constants.FlagNodepoolId)),
@@ -254,12 +285,26 @@ func RunK8sNodeGet(c *core.CommandConfig) error {
 		queryParams,
 	)
 	if resp != nil {
-		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getK8sNodePrint(c, getK8sNode(u)))
+
+	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	if err != nil {
+		return err
+	}
+
+	out, err := jsontabwriter.GenerateOutput("", allK8sNodeJSONPaths, u.KubernetesNode,
+		printer.GetHeadersAllDefault(defaultK8sNodeCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, out)
+
+	return nil
 }
 
 func RunK8sNodeRecreate(c *core.CommandConfig) error {
@@ -267,24 +312,32 @@ func RunK8sNodeRecreate(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
+
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "recreate k8s node"); err != nil {
 		return err
 	}
+
 	k8sClusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
 	k8sNodePoolId := viper.GetString(core.GetFlagName(c.NS, constants.FlagNodepoolId))
 	k8sNodeId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sNodeId))
-	c.Printer.Verbose("K8sClusterId: %v, K8sNodePoolId: %v, K8sNodeId: %v",
-		k8sClusterId, k8sNodePoolId, k8sNodeId)
-	c.Printer.Verbose("Recreating Node...")
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("K8sClusterId: %v, K8sNodePoolId: %v, K8sNodeId: %v",
+		k8sClusterId, k8sNodePoolId, k8sNodeId))
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Recreating Node..."))
+
 	resp, err := c.CloudApiV6Services.K8s().RecreateNode(k8sClusterId, k8sNodePoolId, k8sNodeId, queryParams)
 	if resp != nil && printer.GetId(resp) != "" {
-		c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
-	return c.Printer.Warn("Status: Command node recreate has been successfully executed")
+
+	fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("Status: Command node recreate has been successfully executed"))
+
+	return nil
 }
 
 func RunK8sNodeDelete(c *core.CommandConfig) error {
@@ -292,29 +345,38 @@ func RunK8sNodeDelete(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
 	clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
 	nodepoolId := viper.GetString(core.GetFlagName(c.NS, constants.FlagNodepoolId))
 	nodeId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sNodeId))
+
 	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
 		if err := DeleteAllK8sNodes(c); err != nil {
 			return err
 		}
-		return c.Printer.Print(printer.Result{Resource: c.Resource, Verb: c.Verb})
-	} else {
-		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete k8s node"); err != nil {
-			return err
-		}
-		c.Printer.Verbose("Starting deleting Node with ID: %v from K8s NodePool ID: %v from K8s Cluster ID: %v...", nodeId, nodepoolId, clusterId)
-		resp, err := c.CloudApiV6Services.K8s().DeleteNode(clusterId, nodepoolId, nodeId, queryParams)
-		if resp != nil && printer.GetId(resp) != "" {
-			c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
-		}
-		if err != nil {
-			return err
-		}
-		return c.Printer.Print(printer.Result{Resource: c.Resource, Verb: c.Verb})
+
+		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("Kubernetes Nodes successfully deleted"))
+		return nil
 	}
+
+	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete k8s node"); err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+		"Starting deleting Node with ID: %v from K8s NodePool ID: %v from K8s Cluster ID: %v...", nodeId, nodepoolId, clusterId))
+
+	resp, err := c.CloudApiV6Services.K8s().DeleteNode(clusterId, nodepoolId, nodeId, queryParams)
+	if resp != nil && printer.GetId(resp) != "" {
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
+	}
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("Kubernetes Node successfully deleted"))
+	return nil
 }
 
 func DeleteAllK8sNodes(c *core.CommandConfig) error {
@@ -322,139 +384,84 @@ func DeleteAllK8sNodes(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
 	clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
 	nodepoolId := viper.GetString(core.GetFlagName(c.NS, constants.FlagNodepoolId))
-	c.Printer.Verbose("K8sCluster ID: %v", clusterId)
-	c.Printer.Verbose("K8sNodePool ID: %v", nodepoolId)
-	c.Printer.Verbose("Getting K8sNodes...")
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("K8sCluster ID: %v", clusterId))
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("K8sNodePool ID: %v", nodepoolId))
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Getting K8sNodes..."))
+
 	k8sNodes, resp, err := c.CloudApiV6Services.K8s().ListNodes(clusterId, nodepoolId, cloudapiv6.ParentResourceListQueryParams)
 	if err != nil {
 		return err
 	}
-	if k8sNodesItems, ok := k8sNodes.GetItemsOk(); ok && k8sNodesItems != nil {
-		if len(*k8sNodesItems) > 0 {
-			_ = c.Printer.Warn("K8sNodes to be deleted:")
-			for _, dc := range *k8sNodesItems {
-				delIdAndName := ""
-				if id, ok := dc.GetIdOk(); ok && id != nil {
-					delIdAndName += "K8sNodes Id: " + *id
-				}
-				if properties, ok := dc.GetPropertiesOk(); ok && properties != nil {
-					if name, ok := properties.GetNameOk(); ok && name != nil {
-						delIdAndName += " K8sNodes Name: " + *name
-					}
-				}
-				_ = c.Printer.Warn(delIdAndName)
-			}
-			if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete all the K8sNodes"); err != nil {
-				return err
-			}
-			c.Printer.Verbose("Deleting all the K8sNodes...")
-			var multiErr error
-			for _, dc := range *k8sNodesItems {
-				if id, ok := dc.GetIdOk(); ok && id != nil {
-					c.Printer.Verbose("Staring deleting Node with ID: %v from K8s NodePool ID: %v from K8s Cluster ID: %v...",
-						*id, nodepoolId, clusterId)
-					resp, err = c.CloudApiV6Services.K8s().DeleteNode(clusterId, nodepoolId, *id, queryParams)
-					if resp != nil && printer.GetId(resp) != "" {
-						c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
-					}
-					if err != nil {
-						multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
-						continue
-					} else {
-						_ = c.Printer.Warn(fmt.Sprintf(constants.MessageDeletingAll, c.Resource, *id))
-					}
-					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-						multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *id, err))
-						continue
-					}
-				}
-			}
-			if multiErr != nil {
-				return multiErr
-			}
-			return nil
-		} else {
-			return errors.New("no K8sNodes found")
-		}
-	} else {
-		return errors.New("could not get items of K8sNodes")
+
+	k8sNodesItems, ok := k8sNodes.GetItemsOk()
+	if !ok || k8sNodesItems == nil {
+		return fmt.Errorf("could not get items of Kubernetes Nodes")
 	}
-}
 
-// Output Printing
-
-var defaultK8sNodeCols = []string{"NodeId", "Name", "K8sVersion", "PublicIP", "PrivateIP", "State"}
-
-type K8sNodePrint struct {
-	NodeId     string `json:"NodeId,omitempty"`
-	Name       string `json:"Name,omitempty"`
-	K8sVersion string `json:"K8sVersion,omitempty"`
-	PublicIP   string `json:"PublicIP,omitempty"`
-	PrivateIP  string `json:"PrivateIP,omitempty"`
-	State      string `json:"State,omitempty"`
-}
-
-func getK8sNodePrint(c *core.CommandConfig, k8ss []resources.K8sNode) printer.Result {
-	r := printer.Result{}
-	if c != nil {
-		if k8ss != nil {
-			r.OutputJSON = k8ss
-			r.KeyValue = getK8sNodesKVMaps(k8ss)
-			r.Columns = printer.GetHeadersAllDefault(defaultK8sNodeCols, viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)))
-		}
+	if len(*k8sNodesItems) <= 0 {
+		return fmt.Errorf("no Kubernetes Nodes found")
 	}
-	return r
-}
 
-func getK8sNodes(k8ss resources.K8sNodes) []resources.K8sNode {
-	u := make([]resources.K8sNode, 0)
-	if items, ok := k8ss.GetItemsOk(); ok && items != nil {
-		for _, item := range *items {
-			u = append(u, resources.K8sNode{KubernetesNode: item})
+	fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("Kubernetes Nodes to be deleted:"))
+
+	for _, dc := range *k8sNodesItems {
+		delIdAndName := ""
+
+		if id, ok := dc.GetIdOk(); ok && id != nil {
+			delIdAndName += "K8sNodes Id: " + *id
 		}
-	}
-	return u
-}
 
-func getK8sNode(u *resources.K8sNode) []resources.K8sNode {
-	k8ss := make([]resources.K8sNode, 0)
-	if u != nil {
-		k8ss = append(k8ss, resources.K8sNode{KubernetesNode: u.KubernetesNode})
-	}
-	return k8ss
-}
-
-func getK8sNodesKVMaps(us []resources.K8sNode) []map[string]interface{} {
-	out := make([]map[string]interface{}, 0, len(us))
-	for _, u := range us {
-		var uPrint K8sNodePrint
-		if id, ok := u.GetIdOk(); ok && id != nil {
-			uPrint.NodeId = *id
-		}
-		if properties, ok := u.GetPropertiesOk(); ok && properties != nil {
+		if properties, ok := dc.GetPropertiesOk(); ok && properties != nil {
 			if name, ok := properties.GetNameOk(); ok && name != nil {
-				uPrint.Name = *name
-			}
-			if v, ok := properties.GetK8sVersionOk(); ok && v != nil {
-				uPrint.K8sVersion = *v
-			}
-			if v, ok := properties.GetPublicIPOk(); ok && v != nil {
-				uPrint.PublicIP = *v
-			}
-			if priv, ok := properties.GetPrivateIPOk(); ok && priv != nil {
-				uPrint.PrivateIP = *priv
+				delIdAndName += " K8sNodes Name: " + *name
 			}
 		}
-		if meta, ok := u.GetMetadataOk(); ok && meta != nil {
-			if state, ok := meta.GetStateOk(); ok && state != nil {
-				uPrint.State = *state
-			}
-		}
-		o := structs.Map(uPrint)
-		out = append(out, o)
+
+		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
-	return out
+
+	if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete all the K8sNodes"); err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Deleting all the K8sNodes..."))
+
+	var multiErr error
+	for _, dc := range *k8sNodesItems {
+		id, ok := dc.GetIdOk()
+		if !ok || id == nil {
+			continue
+		}
+
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+			"Staring deleting Node with ID: %v from K8s NodePool ID: %v from K8s Cluster ID: %v...", *id, nodepoolId, clusterId))
+
+		resp, err = c.CloudApiV6Services.K8s().DeleteNode(clusterId, nodepoolId, *id, queryParams)
+		if resp != nil && printer.GetId(resp) != "" {
+			fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
+		}
+		if err != nil {
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
+			continue
+		}
+
+		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput(constants.MessageDeletingAll, c.Resource, *id))
+
+		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *id, err))
+			continue
+
+		}
+	}
+
+	if multiErr != nil {
+		return multiErr
+	}
+
+	return nil
 }
