@@ -106,12 +106,14 @@ func writeTableToText(table []map[string]interface{}, cols []string) string {
 
 	w.Init(buff, 5, 0, 3, ' ', tabwriter.StripEscape)
 
+	updatedCols := eliminateEmptyCols(cols, table)
+
 	if !viper.IsSet(constants.ArgNoHeaders) {
-		fmt.Fprintln(w, strings.Join(cols, "\t"))
+		fmt.Fprintln(w, strings.Join(updatedCols, "\t"))
 	}
 
 	for _, t := range table {
-		format, values := convertTableToText(cols, t)
+		format, values := convertTableToText(updatedCols, t)
 		fmt.Fprintf(w, format+"\n", values...)
 	}
 
@@ -154,4 +156,19 @@ func convertTableToText(cols []string, table map[string]interface{}) (format str
 	}
 
 	return strings.Join(formats, "\t"), values
+}
+
+func eliminateEmptyCols(cols []string, table []map[string]interface{}) []string {
+	newCols := make([]string, 0)
+
+	for _, c := range cols {
+		for _, elem := range table {
+			if e, ok := elem[c]; ok && e != nil {
+				newCols = append(newCols, c)
+				break
+			}
+		}
+	}
+
+	return newCols
 }
