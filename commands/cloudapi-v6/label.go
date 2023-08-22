@@ -2,18 +2,29 @@ package commands
 
 import (
 	"context"
+	"fmt"
 	"os"
 
-	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+)
+
+var (
+	allLabelJSONPaths = map[string]string{
+		"Key":          "properties.key",
+		"Value":        "properties.value",
+		"ResourceType": "properties.resourceType",
+		"ResourceId":   "properties.resourceId",
+	}
+
+	defaultLabelCols = []string{"Key", "Value", "ResourceType", "ResourceId"}
 )
 
 func LabelCmd() *core.Command {
@@ -233,6 +244,7 @@ func generateFlagSets(c *core.PreCommandConfig, extraFlags ...string) []core.Fla
 		argResourceType := core.GetFlagName(c.NS, cloudapiv6.ArgResourceType)
 		return !viper.IsSet(argResourceType) || viper.GetString(argResourceType) == resource
 	}
+
 	return []core.FlagNameSetWithPredicate{
 		{
 			FlagNameSet:    append([]string{cloudapiv6.ArgResourceType, cloudapiv6.ArgDataCenterId}, extraFlags...),
@@ -297,6 +309,8 @@ func RunLabelList(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
+	var out string
 	switch viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceType)) {
 	case cloudapiv6.DatacenterResource:
 		return RunDataCenterLabelsList(c)
@@ -313,7 +327,21 @@ func RunLabelList(c *core.CommandConfig) error {
 		if err != nil {
 			return err
 		}
-		return c.Printer.Print(getLabelPrint(c, getLabels(labelDcs)))
+
+		cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+		if err != nil {
+			return err
+		}
+
+		out, err = jsontabwriter.GenerateOutput("items", allLabelJSONPaths, labelDcs.Labels,
+			printer.GetHeadersAllDefault(defaultLabelCols, cols))
+		if err != nil {
+			return err
+		}
+
+		fmt.Fprintf(c.Stdout, out)
+
+		return nil
 	}
 }
 
@@ -323,7 +351,10 @@ func RunLabelGet(c *core.CommandConfig) error {
 	resourceType := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceType))
 	labelKey := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelKey))
 	labelValue := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelValue))
-	c.Printer.Verbose("Getting label with label key: %v and label value: %v for %v...", labelKey, labelValue, resourceType)
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+		"Getting label with label key: %v and label value: %v for %v...", labelKey, labelValue, resourceType))
+
 	switch resourceType {
 	case cloudapiv6.DatacenterResource:
 		return RunDataCenterLabelGet(c)
@@ -336,18 +367,36 @@ func RunLabelGet(c *core.CommandConfig) error {
 	case cloudapiv6.SnapshotResource:
 		return RunSnapshotLabelGet(c)
 	default:
-		return c.Printer.Print(labelResourceWarning)
+		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput(labelResourceWarning))
+
+		return nil
 	}
 }
 
 func RunLabelGetByUrn(c *core.CommandConfig) error {
 	urn := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelUrn))
-	c.Printer.Verbose("Getting label with urn: %v", urn)
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Getting label with urn: %v", urn))
+
 	labelDc, _, err := c.CloudApiV6Services.Labels().GetByUrn(urn)
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getLabelPrint(c, getLabel(labelDc)))
+
+	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	if err != nil {
+		return err
+	}
+
+	out, err := jsontabwriter.GenerateOutput("", allLabelJSONPaths, labelDc.Label,
+		printer.GetHeadersAllDefault(defaultLabelCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, out)
+
+	return nil
 }
 
 func RunLabelAdd(c *core.CommandConfig) error {
@@ -363,13 +412,17 @@ func RunLabelAdd(c *core.CommandConfig) error {
 	case cloudapiv6.SnapshotResource:
 		return RunSnapshotLabelAdd(c)
 	default:
-		return c.Printer.Print(labelResourceWarning)
+		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput(labelResourceWarning))
+
+		return nil
 	}
 }
 
 func RunLabelRemove(c *core.CommandConfig) error {
 	resourceType := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceType))
-	c.Printer.Verbose("Label is removing from %v...", resourceType)
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Label is removing from %v...", resourceType))
+
 	switch resourceType {
 	case cloudapiv6.DatacenterResource:
 		return RunDataCenterLabelRemove(c)
@@ -382,75 +435,8 @@ func RunLabelRemove(c *core.CommandConfig) error {
 	case cloudapiv6.SnapshotResource:
 		return RunSnapshotLabelRemove(c)
 	default:
-		return c.Printer.Print(labelResourceWarning)
+		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput(labelResourceWarning))
+
+		return nil
 	}
-}
-
-// Output Printing
-
-var defaultLabelCols = []string{"Key", "Value", "ResourceType", "ResourceId"}
-
-type LabelPrint struct {
-	Key          string `json:"Key,omitempty"`
-	Value        string `json:"Value,omitempty"`
-	ResourceType string `json:"ResourceType,omitempty"`
-	ResourceId   string `json:"ResourceId,omitempty"`
-}
-
-func getLabelPrint(c *core.CommandConfig, s []resources.Label) printer.Result {
-	r := printer.Result{}
-	if c != nil {
-		if s != nil {
-			r.OutputJSON = s
-			r.KeyValue = getLabelKVMaps(s)
-			r.Columns = defaultLabelCols
-		}
-	}
-	return r
-}
-
-func getLabels(Labels resources.Labels) []resources.Label {
-	ss := make([]resources.Label, 0)
-	if items, ok := Labels.GetItemsOk(); ok && items != nil {
-		for _, s := range *items {
-			ss = append(ss, resources.Label{Label: s})
-		}
-	}
-	return ss
-}
-
-func getLabel(s *resources.Label) []resources.Label {
-	ss := make([]resources.Label, 0)
-	if s != nil {
-		ss = append(ss, resources.Label{Label: s.Label})
-	}
-	return ss
-}
-
-func getLabelKVMaps(ss []resources.Label) []map[string]interface{} {
-	out := make([]map[string]interface{}, 0, len(ss))
-	for _, s := range ss {
-		o := getLabelKVMap(s)
-		out = append(out, o)
-	}
-	return out
-}
-
-func getLabelKVMap(s resources.Label) map[string]interface{} {
-	var ssPrint LabelPrint
-	if properties, ok := s.GetPropertiesOk(); ok && properties != nil {
-		if key, ok := properties.GetKeyOk(); ok && key != nil {
-			ssPrint.Key = *key
-		}
-		if value, ok := properties.GetValueOk(); ok && value != nil {
-			ssPrint.Value = *value
-		}
-		if resourceType, ok := properties.GetResourceTypeOk(); ok && resourceType != nil {
-			ssPrint.ResourceType = *resourceType
-		}
-		if resourceId, ok := properties.GetResourceIdOk(); ok && resourceId != nil {
-			ssPrint.ResourceId = *resourceId
-		}
-	}
-	return structs.Map(ssPrint)
 }

@@ -5,21 +5,35 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"strings"
 	"time"
 
-	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/json2table"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
+	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+)
+
+var (
+	allLoadbalancerJSONPaths = map[string]string{
+		"LoadBalancerId": "id",
+		"Name":           "properties.name",
+		"Dhcp":           "properties.dhcp",
+		"Ip":             "properties.ip",
+		"State":          "metadata.state",
+	}
+
+	defaultLoadbalancerCols = []string{"LoadBalancerId", "Name", "Dhcp", "State"}
+	allLoadbalancerCols     = []string{"LoadBalancerId", "Name", "Dhcp", "State", "Ip", "DatacenterId"}
 )
 
 func LoadBalancerCmd() *core.Command {
@@ -235,46 +249,103 @@ func RunLoadBalancerListAll(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	datacenters, _, err := c.CloudApiV6Services.DataCenters().List(cloudapiv6.ParentResourceListQueryParams)
 	if err != nil {
 		return err
 	}
+
 	allDcs := getDataCenters(datacenters)
-	var allLoadbalancers []resources.Loadbalancer
+
+	var allLoadbalancers []ionoscloud.Loadbalancers
+	var allLoadbalancersConverted []map[string]interface{}
 	totalTime := time.Duration(0)
+
 	for _, dc := range allDcs {
-		LoadBalancers, resp, err := c.CloudApiV6Services.Loadbalancers().List(*dc.GetId(), listQueryParams)
+		id, ok := dc.GetIdOk()
+		if !ok || id == nil {
+			return fmt.Errorf("could not retrieve Datacenter Id")
+		}
+
+		loadBalancers, resp, err := c.CloudApiV6Services.Loadbalancers().List(*dc.GetId(), listQueryParams)
 		if err != nil {
 			return err
 		}
-		allLoadbalancers = append(allLoadbalancers, getLoadbalancers(LoadBalancers)...)
+
+		items, ok := loadBalancers.GetItemsOk()
+		if !ok || items == nil {
+			continue
+		}
+
+		for _, item := range *items {
+			temp, err := json2table.ConvertJSONToTable("", allLoadbalancerJSONPaths, item)
+			if err != nil {
+				return fmt.Errorf("could not convert from JSON to Table format: %w", err)
+			}
+
+			temp[0]["DatacenterId"] = *id
+			allLoadbalancersConverted = append(allLoadbalancersConverted, temp[0])
+		}
+
+		allLoadbalancers = append(allLoadbalancers, loadBalancers.Loadbalancers)
 		totalTime += resp.RequestTime
 	}
 
 	if totalTime != time.Duration(0) {
-		c.Printer.Verbose(constants.MessageRequestTime, totalTime)
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, totalTime))
 	}
 
-	return c.Printer.Print(getLoadbalancerPrint(nil, c, allLoadbalancers))
+	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	if err != nil {
+		return err
+	}
+
+	out, err := jsontabwriter.GenerateOutputPreconverted(allLoadbalancers, allLoadbalancersConverted,
+		printer.GetHeaders(allLoadbalancerCols, defaultLoadbalancerCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, out)
+
+	return nil
 }
 
 func RunLoadBalancerList(c *core.CommandConfig) error {
 	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
 		return RunLoadBalancerListAll(c)
 	}
-	c.Printer.Verbose("Getting LoadBalancers from Datacenter with ID: %v...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+		"Getting LoadBalancers from Datacenter with ID: %v...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))))
+
 	listQueryParams, err := query.GetListQueryParams(c)
 	if err != nil {
 		return err
 	}
+
 	lbs, resp, err := c.CloudApiV6Services.Loadbalancers().List(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)), listQueryParams)
 	if resp != nil {
-		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getLoadbalancerPrint(nil, c, getLoadbalancers(lbs)))
+
+	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	if err != nil {
+		return err
+	}
+
+	out, err := jsontabwriter.GenerateOutput("items", allLoadbalancerJSONPaths, lbs.Loadbalancers,
+		printer.GetHeaders(allLoadbalancerCols, defaultLoadbalancerCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, out)
+
+	return nil
 }
 
 func RunLoadBalancerGet(c *core.CommandConfig) error {
@@ -282,20 +353,38 @@ func RunLoadBalancerGet(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
-	c.Printer.Verbose("Load balancer with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLoadBalancerId)))
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+		"Load balancer with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLoadBalancerId))))
+
 	lb, resp, err := c.CloudApiV6Services.Loadbalancers().Get(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLoadBalancerId)),
 		queryParams,
 	)
 	if resp != nil {
-		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getLoadbalancerPrint(nil, c, []resources.Loadbalancer{*lb}))
+
+	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	if err != nil {
+		return err
+	}
+
+	out, err := jsontabwriter.GenerateOutput("", allLoadbalancerJSONPaths, lb.Loadbalancer,
+		printer.GetHeaders(allLoadbalancerCols, defaultLoadbalancerCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, out)
+
+	return nil
 }
 
 func RunLoadBalancerCreate(c *core.CommandConfig) error {
@@ -303,14 +392,18 @@ func RunLoadBalancerCreate(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
 	dhcp := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgDhcp))
-	c.Printer.Verbose("Properties set for creating the load balancer: Name: %v, Dhcp: %v", name, dhcp)
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+		"Properties set for creating the load balancer: Name: %v, Dhcp: %v", name, dhcp))
+
 	lb, resp, err := c.CloudApiV6Services.Loadbalancers().Create(dcId, name, dhcp, queryParams)
 	if resp != nil && printer.GetId(resp) != "" {
-		c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
 	}
 	if err != nil {
 		return err
@@ -319,7 +412,21 @@ func RunLoadBalancerCreate(c *core.CommandConfig) error {
 	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 		return err
 	}
-	return c.Printer.Print(getLoadbalancerPrint(resp, c, []resources.Loadbalancer{*lb}))
+
+	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	if err != nil {
+		return err
+	}
+
+	out, err := jsontabwriter.GenerateOutput("", allLoadbalancerJSONPaths, lb.Loadbalancer,
+		printer.GetHeaders(allLoadbalancerCols, defaultLoadbalancerCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, out)
+
+	return nil
 }
 
 func RunLoadBalancerUpdate(c *core.CommandConfig) error {
@@ -327,23 +434,31 @@ func RunLoadBalancerUpdate(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
 	input := resources.LoadbalancerProperties{}
+
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgName)) {
 		name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
 		input.SetName(name)
-		c.Printer.Verbose("Property Name set: %v", name)
+
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property Name set: %v", name))
 	}
+
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgIp)) {
 		ip := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgIp))
 		input.SetIp(ip)
-		c.Printer.Verbose("Property Ip set: %v", ip)
+
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property Ip set: %v", ip))
 	}
+
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgDhcp)) {
 		dhcp := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgDhcp))
 		input.SetDhcp(dhcp)
-		c.Printer.Verbose("Property Dhcp set: %v", dhcp)
+
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property Dhcp set: %v", dhcp))
 	}
+
 	lb, resp, err := c.CloudApiV6Services.Loadbalancers().Update(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLoadBalancerId)),
@@ -351,7 +466,7 @@ func RunLoadBalancerUpdate(c *core.CommandConfig) error {
 		queryParams,
 	)
 	if resp != nil && printer.GetId(resp) != "" {
-		c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
 	}
 	if err != nil {
 		return err
@@ -360,7 +475,21 @@ func RunLoadBalancerUpdate(c *core.CommandConfig) error {
 	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 		return err
 	}
-	return c.Printer.Print(getLoadbalancerPrint(resp, c, []resources.Loadbalancer{*lb}))
+
+	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	if err != nil {
+		return err
+	}
+
+	out, err := jsontabwriter.GenerateOutput("", allLoadbalancerJSONPaths, lb.Loadbalancer,
+		printer.GetHeaders(allLoadbalancerCols, defaultLoadbalancerCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, out)
+
+	return nil
 }
 
 func RunLoadBalancerDelete(c *core.CommandConfig) error {
@@ -368,31 +497,41 @@ func RunLoadBalancerDelete(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
 	dcid := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	loadBalancerId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLoadBalancerId))
+
 	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
 		if err := DeleteAllLoadBalancers(c); err != nil {
 			return err
 		}
+
+		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("Load Balancers successfully deleted"))
 		return c.Printer.Print(printer.Result{Resource: c.Resource, Verb: c.Verb})
-	} else {
-		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete loadbalancer"); err != nil {
-			return err
-		}
-		c.Printer.Verbose("Starting deleting Load balancer with id: %v is deleting...", loadBalancerId)
-		resp, err := c.CloudApiV6Services.Loadbalancers().Delete(dcid, loadBalancerId, queryParams)
-		if resp != nil && printer.GetId(resp) != "" {
-			c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
-		}
-		if err != nil {
-			return err
-		}
-		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-			return err
-		}
-		return c.Printer.Print(getLoadbalancerPrint(resp, c, nil))
 	}
+
+	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete loadbalancer"); err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+		"Starting deleting Load balancer with id: %v is deleting...", loadBalancerId))
+
+	resp, err := c.CloudApiV6Services.Loadbalancers().Delete(dcid, loadBalancerId, queryParams)
+	if resp != nil && printer.GetId(resp) != "" {
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
+	}
+	if err != nil {
+		return err
+	}
+
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("Load Balancer successfully deleted"))
+	return nil
 }
 
 func DeleteAllLoadBalancers(c *core.CommandConfig) error {
@@ -400,138 +539,79 @@ func DeleteAllLoadBalancers(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
 	dcid := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
-	c.Printer.Verbose("Datacenter ID: %v", dcid)
-	c.Printer.Verbose("Getting LoadBalancers...")
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Datacenter ID: %v", dcid))
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Getting LoadBalancers..."))
+
 	loadBalancers, resp, err := c.CloudApiV6Services.Loadbalancers().List(dcid, cloudapiv6.ParentResourceListQueryParams)
 	if err != nil {
 		return err
 	}
-	if loadBalancersItems, ok := loadBalancers.GetItemsOk(); ok && loadBalancersItems != nil {
-		if len(*loadBalancersItems) > 0 {
-			_ = c.Printer.Warn("LoadBalancers to be deleted:")
-			for _, lb := range *loadBalancersItems {
-				delIdAndName := ""
-				if id, ok := lb.GetIdOk(); ok && id != nil {
-					delIdAndName += "LoadBalancer Id: " + *id
-				}
-				if properties, ok := lb.GetPropertiesOk(); ok && properties != nil {
-					if name, ok := properties.GetNameOk(); ok && name != nil {
-						delIdAndName += " LoadBalancer Name: " + *name
-					}
-				}
-				_ = c.Printer.Warn(delIdAndName)
-			}
-			if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete all the LoadBalancers"); err != nil {
-				return err
-			}
-			c.Printer.Verbose("Deleting all the LoadBalancers...")
-			var multiErr error
-			for _, lb := range *loadBalancersItems {
-				if id, ok := lb.GetIdOk(); ok && id != nil {
-					c.Printer.Verbose("Starting deleting Load balancer with id: %v ...", *id)
-					resp, err = c.CloudApiV6Services.Loadbalancers().Delete(dcid, *id, queryParams)
-					if resp != nil && printer.GetId(resp) != "" {
-						c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
-					}
-					if err != nil {
-						multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
-						continue
-					} else {
-						_ = c.Printer.Warn(fmt.Sprintf(constants.MessageDeletingAll, c.Resource, *id))
-					}
-					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-						multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *id, err))
-						continue
-					}
-				}
-			}
-			if multiErr != nil {
-				return multiErr
-			}
-			return nil
-		} else {
-			return errors.New("no LoadBalancers found")
-		}
-	} else {
-		return errors.New("could not get items of LoadBalancers")
+
+	loadBalancersItems, ok := loadBalancers.GetItemsOk()
+	if !ok || loadBalancersItems == nil {
+		return fmt.Errorf("could not get items of Load Balancers")
 	}
-}
 
-// Output Printing
-
-var (
-	defaultLoadbalancerCols = []string{"LoadBalancerId", "Name", "Dhcp", "State"}
-	allLoadbalancerCols     = []string{"LoadBalancerId", "Name", "Dhcp", "State", "Ip", "DatacenterId"}
-)
-
-type LoadbalancerPrint struct {
-	LoadBalancerId string `json:"LoadBalancerId,omitempty"`
-	Name           string `json:"Name,omitempty"`
-	Dhcp           bool   `json:"Dhcp,omitempty"`
-	Ip             string `json:"Ip,omitempty"`
-	State          string `json:"State,omitempty"`
-	DatacenterId   string `json:"DatacenterId,omitempty"`
-}
-
-func getLoadbalancerPrint(resp *resources.Response, c *core.CommandConfig, lbs []resources.Loadbalancer) printer.Result {
-	r := printer.Result{}
-	if c != nil {
-		if resp != nil {
-			r.ApiResponse = resp
-			r.Resource = c.Resource
-			r.Verb = c.Verb
-			r.WaitForRequest = viper.GetBool(core.GetFlagName(c.NS, constants.ArgWaitForRequest))
-		}
-		if lbs != nil {
-			r.OutputJSON = lbs
-			r.KeyValue = getLoadbalancersKVMaps(lbs)
-			r.Columns = printer.GetHeadersListAll(allLoadbalancerCols, defaultLoadbalancerCols, "DatacenterId", viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)), viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)))
-		}
+	if len(*loadBalancersItems) <= 0 {
+		return fmt.Errorf("no Load Balancers found")
 	}
-	return r
-}
 
-func getLoadbalancers(loadbalancers resources.Loadbalancers) []resources.Loadbalancer {
-	lbObjs := make([]resources.Loadbalancer, 0)
-	if items, ok := loadbalancers.GetItemsOk(); ok && items != nil {
-		for _, loadbalancer := range *items {
-			lbObjs = append(lbObjs, resources.Loadbalancer{Loadbalancer: loadbalancer})
-		}
-	}
-	return lbObjs
-}
+	fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("Load Balancers to be deleted:"))
 
-func getLoadbalancersKVMaps(vs []resources.Loadbalancer) []map[string]interface{} {
-	out := make([]map[string]interface{}, 0, len(vs))
-	for _, v := range vs {
-		var loadbalancerPrint LoadbalancerPrint
-		if id, ok := v.GetIdOk(); ok && id != nil {
-			loadbalancerPrint.LoadBalancerId = *id
+	for _, lb := range *loadBalancersItems {
+		delIdAndName := ""
+
+		if id, ok := lb.GetIdOk(); ok && id != nil {
+			delIdAndName += "LoadBalancer Id: " + *id
 		}
-		if properties, ok := v.GetPropertiesOk(); ok && properties != nil {
+
+		if properties, ok := lb.GetPropertiesOk(); ok && properties != nil {
 			if name, ok := properties.GetNameOk(); ok && name != nil {
-				loadbalancerPrint.Name = *name
-			}
-			if dhcp, ok := properties.GetDhcpOk(); ok && dhcp != nil {
-				loadbalancerPrint.Dhcp = *dhcp
-			}
-			if ip, ok := properties.GetIpOk(); ok && ip != nil {
-				loadbalancerPrint.Ip = *ip
+				delIdAndName += " LoadBalancer Name: " + *name
 			}
 		}
-		if metadata, ok := v.GetMetadataOk(); ok && metadata != nil {
-			if state, ok := metadata.GetStateOk(); ok && state != nil {
-				loadbalancerPrint.State = *state
-			}
-		}
-		if hrefOk, ok := v.GetHrefOk(); ok && hrefOk != nil {
-			// Get parent resource ID using HREF: `.../datacenter/[PARENT_ID_WE_WANT]/loadbalancers/[LOADBALANCER_ID]`
-			loadbalancerPrint.DatacenterId = strings.Split(strings.Split(*hrefOk, "datacenter")[1], "/")[1]
-		}
-		o := structs.Map(loadbalancerPrint)
-		out = append(out, o)
+
+		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
-	return out
+
+	if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete all the LoadBalancers"); err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Deleting all the LoadBalancers..."))
+
+	var multiErr error
+	for _, lb := range *loadBalancersItems {
+		id, ok := lb.GetIdOk()
+		if !ok || id == nil {
+			continue
+		}
+
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Starting deleting Load balancer with id: %v ...", *id))
+
+		resp, err = c.CloudApiV6Services.Loadbalancers().Delete(dcid, *id, queryParams)
+		if resp != nil && printer.GetId(resp) != "" {
+			fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
+		}
+		if err != nil {
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
+			continue
+		}
+
+		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput(constants.MessageDeletingAll, c.Resource, *id))
+
+		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *id, err))
+		}
+	}
+
+	if multiErr != nil {
+		return multiErr
+	}
+
+	return nil
 }

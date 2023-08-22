@@ -438,7 +438,7 @@ func RunK8sNodePoolList(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("items", allK8sNodepoolJSONPaths, k8ss.KubernetesNodePools,
-		printer.GetHeadersAllDefault(defaultK8sNodePoolCols, cols))
+		printer.GetHeaders(allK8sNodePoolCols, defaultK8sNodePoolCols, cols))
 	if err != nil {
 		return err
 	}
@@ -479,7 +479,7 @@ func RunK8sNodePoolGet(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allK8sNodepoolJSONPaths, u.KubernetesNodePool,
-		printer.GetHeadersAllDefault(defaultK8sNodePoolCols, cols))
+		printer.GetHeaders(allK8sNodePoolCols, defaultK8sNodePoolCols, cols))
 	if err != nil {
 		return err
 	}
@@ -531,7 +531,7 @@ func RunK8sNodePoolCreate(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allK8sNodepoolJSONPaths, u.KubernetesNodePool,
-		printer.GetHeadersAllDefault(defaultK8sNodePoolCols, cols))
+		printer.GetHeaders(allK8sNodePoolCols, defaultK8sNodePoolCols, cols))
 	if err != nil {
 		return err
 	}
@@ -577,7 +577,7 @@ func RunK8sNodePoolUpdate(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allK8sNodepoolJSONPaths, newNodePoolUpdated.KubernetesNodePool,
-		printer.GetHeadersAllDefault(defaultK8sNodePoolCols, cols))
+		printer.GetHeaders(allK8sNodePoolCols, defaultK8sNodePoolCols, cols))
 	if err != nil {
 		return err
 	}

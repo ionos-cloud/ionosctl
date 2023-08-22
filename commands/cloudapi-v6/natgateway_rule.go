@@ -8,12 +8,12 @@ import (
 	"os"
 	"strings"
 
-	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/utils/clierror"
@@ -22,6 +22,24 @@ import (
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+)
+
+var (
+	allNatGatewayRuleJSONPaths = map[string]string{
+		"NatGatewayRuleId":     "id",
+		"Name":                 "properties.name",
+		"Type":                 "properties.type",
+		"Protocol":             "properties.protocol",
+		"SourceSubnet":         "properties.sourceSubnet",
+		"PublicIp":             "properties.publicIp",
+		"TargetSubnet":         "properties.targetSubnet",
+		"TargetPortRangeStart": "properties.targetPortRange.start",
+		"TargetPortRangeEnd":   "properties.targetPortRange.end",
+		"State":                "metadata.state",
+	}
+
+	defaultNatGatewayRuleCols = []string{"NatGatewayRuleId", "Name", "Protocol", "SourceSubnet", "PublicIp", "TargetSubnet", "State"}
+	allNatGatewayRuleCols     = []string{"NatGatewayRuleId", "Name", "Type", "Protocol", "SourceSubnet", "PublicIp", "TargetSubnet", "TargetPortRangeStart", "TargetPortRangeEnd", "State"}
 )
 
 func NatgatewayRuleCmd() *core.Command {
@@ -279,18 +297,33 @@ func RunNatGatewayRuleList(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	natgatewayRules, resp, err := c.CloudApiV6Services.NatGateways().ListRules(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNatGatewayId)),
 		listQueryParams,
 	)
 	if resp != nil {
-		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getNatGatewayRulePrint(nil, c, getNatGatewayRules(natgatewayRules)))
+
+	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	if err != nil {
+		return err
+	}
+
+	out, err := jsontabwriter.GenerateOutput("items", allNatGatewayRuleJSONPaths, natgatewayRules.NatGatewayRules,
+		printer.GetHeaders(allNatGatewayRuleCols, defaultNatGatewayRuleCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, out)
+
+	return nil
 }
 
 func RunNatGatewayRuleGet(c *core.CommandConfig) error {
@@ -298,8 +331,12 @@ func RunNatGatewayRuleGet(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
-	c.Printer.Verbose("atGatewayRule with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)))
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+		"atGatewayRule with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId))))
+
 	ng, resp, err := c.CloudApiV6Services.NatGateways().GetRule(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNatGatewayId)),
@@ -307,12 +344,26 @@ func RunNatGatewayRuleGet(c *core.CommandConfig) error {
 		queryParams,
 	)
 	if resp != nil {
-		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getNatGatewayRulePrint(nil, c, []resources.NatGatewayRule{*ng}))
+
+	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	if err != nil {
+		return err
+	}
+
+	out, err := jsontabwriter.GenerateOutput("", allNatGatewayRuleJSONPaths, ng.NatGatewayRule,
+		printer.GetHeaders(allNatGatewayRuleCols, defaultNatGatewayRuleCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, out)
+
+	return nil
 }
 
 func RunNatGatewayRuleCreate(c *core.CommandConfig) error {
@@ -320,16 +371,22 @@ func RunNatGatewayRuleCreate(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
 	proper := getNewNatGatewayRuleInfo(c)
+
 	if !proper.HasName() {
 		proper.SetName(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName)))
-		c.Printer.Verbose("Property Name set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName)))
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+			"Property Name set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))))
 	}
+
 	if !proper.HasProtocol() {
 		proper.SetProtocol(ionoscloud.NatGatewayRuleProtocol(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgProtocol))))
-		c.Printer.Verbose("Property Protocol set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgProtocol)))
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+			"Property Protocol set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgProtocol))))
 	}
+
 	ng, resp, err := c.CloudApiV6Services.NatGateways().CreateRule(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNatGatewayId)),
@@ -341,15 +398,30 @@ func RunNatGatewayRuleCreate(c *core.CommandConfig) error {
 		queryParams,
 	)
 	if resp != nil && printer.GetId(resp) != "" {
-		c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
+
 	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 		return err
 	}
-	return c.Printer.Print(getNatGatewayRulePrint(resp, c, []resources.NatGatewayRule{*ng}))
+
+	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	if err != nil {
+		return err
+	}
+
+	out, err := jsontabwriter.GenerateOutput("", allNatGatewayRuleJSONPaths, ng.NatGatewayRule,
+		printer.GetHeaders(allNatGatewayRuleCols, defaultNatGatewayRuleCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, out)
+
+	return nil
 }
 
 func RunNatGatewayRuleUpdate(c *core.CommandConfig) error {
@@ -357,6 +429,7 @@ func RunNatGatewayRuleUpdate(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
 	input := getNewNatGatewayRuleInfo(c)
 	ng, resp, err := c.CloudApiV6Services.NatGateways().UpdateRule(
@@ -367,15 +440,30 @@ func RunNatGatewayRuleUpdate(c *core.CommandConfig) error {
 		queryParams,
 	)
 	if resp != nil && printer.GetId(resp) != "" {
-		c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
+
 	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 		return err
 	}
-	return c.Printer.Print(getNatGatewayRulePrint(resp, c, []resources.NatGatewayRule{*ng}))
+
+	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	if err != nil {
+		return err
+	}
+
+	out, err := jsontabwriter.GenerateOutput("", allNatGatewayRuleJSONPaths, ng.NatGatewayRule,
+		printer.GetHeaders(allNatGatewayRuleCols, defaultNatGatewayRuleCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, out)
+
+	return nil
 }
 
 func RunNatGatewayRuleDelete(c *core.CommandConfig) error {
@@ -383,71 +471,96 @@ func RunNatGatewayRuleDelete(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	natGatewayId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNatGatewayId))
 	ruleId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId))
+
 	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
 		if err := DeleteAllNatgatewayRules(c); err != nil {
 			return err
 		}
-		return c.Printer.Print(printer.Result{Resource: c.Resource, Verb: c.Verb})
-	} else {
-		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete nat gateway rule"); err != nil {
-			return err
-		}
-		c.Printer.Verbose("Starting deleting NatGatewayRule with id: %v...", ruleId)
-		resp, err := c.CloudApiV6Services.NatGateways().DeleteRule(dcId, natGatewayId, ruleId, queryParams)
-		if resp != nil && printer.GetId(resp) != "" {
-			c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
-		}
-		if err != nil {
-			return err
-		}
-		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-			return err
-		}
-		return c.Printer.Print(getNatGatewayRulePrint(resp, c, nil))
+
+		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("NAT Gateway Rules successfully deleted"))
+		return nil
 	}
+
+	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete nat gateway rule"); err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Starting deleting NatGatewayRule with id: %v...", ruleId))
+
+	resp, err := c.CloudApiV6Services.NatGateways().DeleteRule(dcId, natGatewayId, ruleId, queryParams)
+	if resp != nil && printer.GetId(resp) != "" {
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
+	}
+	if err != nil {
+		return err
+	}
+
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("NAT Gateway Rule successfully deleted"))
+	return nil
 }
 
 func getNewNatGatewayRuleInfo(c *core.CommandConfig) *resources.NatGatewayRuleProperties {
 	input := ionoscloud.NatGatewayRuleProperties{}
+
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgName)) {
 		name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
 		input.SetName(name)
-		c.Printer.Verbose("Property Name set: %v", name)
+
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property Name set: %v", name))
 	}
+
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgIp)) {
 		publicIp := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgIp))
 		input.SetPublicIp(publicIp)
-		c.Printer.Verbose("Property PublicIp set: %v", publicIp)
+
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property PublicIp set: %v", publicIp))
 	}
+
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgProtocol)) {
 		protocol := strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgProtocol)))
 		input.SetProtocol(ionoscloud.NatGatewayRuleProtocol(protocol))
-		c.Printer.Verbose("Property Protocol set: %v", protocol)
+
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property Protocol set: %v", protocol))
 	}
+
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgSourceSubnet)) {
 		sourceSubnet := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSourceSubnet))
 		input.SetSourceSubnet(sourceSubnet)
-		c.Printer.Verbose("Property SourceSubnet set: %v", sourceSubnet)
+
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property SourceSubnet set: %v", sourceSubnet))
 	}
+
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgTargetSubnet)) {
 		targetSubnet := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetSubnet))
 		input.SetTargetSubnet(targetSubnet)
-		c.Printer.Verbose("Property Name set: %v", targetSubnet)
+
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property Name set: %v", targetSubnet))
 	}
+
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgPortRangeStart)) &&
 		viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgPortRangeEnd)) {
 		inputPortRange := ionoscloud.TargetPortRange{}
+
 		portRangeStart := viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgPortRangeStart))
 		portRangeStop := viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgPortRangeEnd))
+
 		inputPortRange.SetStart(portRangeStart)
 		inputPortRange.SetEnd(portRangeStop)
 		input.SetTargetPortRange(inputPortRange)
-		c.Printer.Verbose("Property TargetPortRang set with start: %v and stop: %v", portRangeStart, portRangeStop)
+
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+			"Property TargetPortRang set with start: %v and stop: %v", portRangeStart, portRangeStop))
 	}
+
 	return &resources.NatGatewayRuleProperties{
 		NatGatewayRuleProperties: input,
 	}
@@ -458,104 +571,81 @@ func DeleteAllNatgatewayRules(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	natGatewayId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNatGatewayId))
-	c.Printer.Verbose("Datacenter ID: %v", dcId)
-	c.Printer.Verbose("NatGateway ID: %v", natGatewayId)
-	c.Printer.Verbose("Getting NatGateway Rules...")
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Datacenter ID: %v", dcId))
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("NatGateway ID: %v", natGatewayId))
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Getting NatGateway Rules..."))
+
 	natGatewayRules, resp, err := c.CloudApiV6Services.NatGateways().ListRules(dcId, natGatewayId, cloudapiv6.ParentResourceListQueryParams)
 	if err != nil {
 		return err
 	}
-	if natGatewayRuleItems, ok := natGatewayRules.GetItemsOk(); ok && natGatewayRuleItems != nil {
-		if len(*natGatewayRuleItems) > 0 {
-			_ = c.Printer.Warn("NatGatewayRules to be deleted:")
-			for _, natGateway := range *natGatewayRuleItems {
-				delIdAndName := ""
-				if id, ok := natGateway.GetIdOk(); ok && id != nil {
-					delIdAndName += "NatGatewayRule Id: " + *id
-				}
-				if properties, ok := natGateway.GetPropertiesOk(); ok && properties != nil {
-					if name, ok := properties.GetNameOk(); ok && name != nil {
-						delIdAndName += " NatGatewayRule Name: " + *name
-					}
-				}
-				_ = c.Printer.Warn(delIdAndName)
-			}
-			if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete all the NatGatewayRules"); err != nil {
-				return err
-			}
-			c.Printer.Verbose("Deleting all the NatGatewayRules...")
-			var multiErr error
-			for _, natGateway := range *natGatewayRuleItems {
-				if id, ok := natGateway.GetIdOk(); ok && id != nil {
-					c.Printer.Verbose("Starting deleting NatGatewayRule with id: %v...", *id)
-					resp, err = c.CloudApiV6Services.NatGateways().DeleteRule(dcId, natGatewayId, *id, queryParams)
-					if resp != nil && printer.GetId(resp) != "" {
-						c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
-					}
-					if err != nil {
-						multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
-						continue
-					} else {
-						_ = c.Printer.Warn(fmt.Sprintf(constants.MessageDeletingAll, c.Resource, *id))
-					}
-					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-						multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
-						continue
-					}
-				}
-			}
-			if multiErr != nil {
-				return multiErr
-			}
-			return nil
-		} else {
-			return errors.New("no NatGatewayRules found")
-		}
-	} else {
-		return errors.New("could not get items of NatGatewayRules")
+
+	natGatewayRuleItems, ok := natGatewayRules.GetItemsOk()
+	if !ok || natGatewayRuleItems == nil {
+		return fmt.Errorf("could not get items of NAT Gateway Rules")
 	}
-}
 
-// Output Printing
+	if len(*natGatewayRuleItems) <= 0 {
+		return fmt.Errorf("no NAT Gateway Rules found")
+	}
 
-var (
-	defaultNatGatewayRuleCols = []string{"NatGatewayRuleId", "Name", "Protocol", "SourceSubnet", "PublicIp", "TargetSubnet", "State"}
-	allNatGatewayRuleCols     = []string{"NatGatewayRuleId", "Name", "Type", "Protocol", "SourceSubnet", "PublicIp", "TargetSubnet", "TargetPortRangeStart", "TargetPortRangeEnd", "State"}
-)
+	fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("NatGatewayRules to be deleted:"))
 
-type NatGatewayRulePrint struct {
-	NatGatewayRuleId     string `json:"NatGatewayRuleId,omitempty"`
-	Name                 string `json:"Name,omitempty"`
-	Type                 string `json:"Type,omitempty"`
-	Protocol             string `json:"Protocol,omitempty"`
-	SourceSubnet         string `json:"SourceSubnet,omitempty"`
-	PublicIp             string `json:"PublicIp,omitempty"`
-	TargetSubnet         string `json:"TargetSubnet,omitempty"`
-	TargetPortRangeStart int32  `json:"TargetPortRangeStart,omitempty"`
-	TargetPortRangeEnd   int32  `json:"TargetPortRangeEnd,omitempty"`
-	State                string `json:"State,omitempty"`
-}
+	for _, natGateway := range *natGatewayRuleItems {
+		delIdAndName := ""
 
-func getNatGatewayRulePrint(resp *resources.Response, c *core.CommandConfig, ss []resources.NatGatewayRule) printer.Result {
-	r := printer.Result{}
-	if c != nil {
-		if resp != nil {
-			r.ApiResponse = resp
-			r.Resource = c.Resource
-			r.Verb = c.Verb
-			r.WaitForRequest = viper.GetBool(core.GetFlagName(c.NS, constants.ArgWaitForRequest))
-			r.WaitForState = viper.GetBool(core.GetFlagName(c.NS, constants.ArgWaitForState))
+		if id, ok := natGateway.GetIdOk(); ok && id != nil {
+			delIdAndName += "NatGatewayRule Id: " + *id
 		}
-		if ss != nil {
-			r.OutputJSON = ss
-			r.KeyValue = getNatGatewayRulesKVMaps(ss)
-			r.Columns = printer.GetHeaders(allNatGatewayRuleCols, defaultNatGatewayRuleCols, viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)))
+
+		if properties, ok := natGateway.GetPropertiesOk(); ok && properties != nil {
+			if name, ok := properties.GetNameOk(); ok && name != nil {
+				delIdAndName += " NatGatewayRule Name: " + *name
+			}
+		}
+
+		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput(delIdAndName))
+	}
+
+	if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete all the NatGatewayRules"); err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Deleting all the NatGatewayRules..."))
+
+	var multiErr error
+	for _, natGateway := range *natGatewayRuleItems {
+		id, ok := natGateway.GetIdOk()
+		if !ok || id == nil {
+			continue
+		}
+
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Starting deleting NatGatewayRule with id: %v...", *id))
+		resp, err = c.CloudApiV6Services.NatGateways().DeleteRule(dcId, natGatewayId, *id, queryParams)
+		if resp != nil && printer.GetId(resp) != "" {
+			fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
+		}
+		if err != nil {
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
+		}
+
+		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput(constants.MessageDeletingAll, c.Resource, *id))
+
+		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
 		}
 	}
-	return r
+
+	if multiErr != nil {
+		return multiErr
+	}
+
+	return nil
 }
 
 func getNatGatewayRulesCols(flagName string, outErr io.Writer) []string {
@@ -588,60 +678,4 @@ func getNatGatewayRulesCols(flagName string, outErr io.Writer) []string {
 		}
 	}
 	return natgatewayRuleCols
-}
-
-func getNatGatewayRules(natgatewayRules resources.NatGatewayRules) []resources.NatGatewayRule {
-	ruleObjs := make([]resources.NatGatewayRule, 0)
-	if items, ok := natgatewayRules.GetItemsOk(); ok && items != nil {
-		for _, natGatewayRule := range *items {
-			ruleObjs = append(ruleObjs, resources.NatGatewayRule{NatGatewayRule: natGatewayRule})
-		}
-	}
-	return ruleObjs
-}
-
-func getNatGatewayRulesKVMaps(ss []resources.NatGatewayRule) []map[string]interface{} {
-	out := make([]map[string]interface{}, 0, len(ss))
-	for _, s := range ss {
-		var natgatewayRulePrint NatGatewayRulePrint
-		if id, ok := s.GetIdOk(); ok && id != nil {
-			natgatewayRulePrint.NatGatewayRuleId = *id
-		}
-		if properties, ok := s.GetPropertiesOk(); ok && properties != nil {
-			if name, ok := properties.GetNameOk(); ok && name != nil {
-				natgatewayRulePrint.Name = *name
-			}
-			if t, ok := properties.GetTypeOk(); ok && t != nil {
-				natgatewayRulePrint.Type = string(*t)
-			}
-			if protocol, ok := properties.GetProtocolOk(); ok && protocol != nil {
-				natgatewayRulePrint.Protocol = string(*protocol)
-			}
-			if ip, ok := properties.GetPublicIpOk(); ok && ip != nil {
-				natgatewayRulePrint.PublicIp = *ip
-			}
-			if ssubnet, ok := properties.GetSourceSubnetOk(); ok && ssubnet != nil {
-				natgatewayRulePrint.SourceSubnet = *ssubnet
-			}
-			if tsubnet, ok := properties.GetTargetSubnetOk(); ok && tsubnet != nil {
-				natgatewayRulePrint.TargetSubnet = *tsubnet
-			}
-			if portRange, ok := properties.GetTargetPortRangeOk(); ok && portRange != nil {
-				if portRangeStart, ok := portRange.GetStartOk(); ok && portRangeStart != nil {
-					natgatewayRulePrint.TargetPortRangeStart = *portRangeStart
-				}
-				if portRangeEnd, ok := portRange.GetEndOk(); ok && portRangeEnd != nil {
-					natgatewayRulePrint.TargetPortRangeEnd = *portRangeEnd
-				}
-			}
-		}
-		if metadata, ok := s.GetMetadataOk(); ok && metadata != nil {
-			if state, ok := metadata.GetStateOk(); ok && state != nil {
-				natgatewayRulePrint.State = *state
-			}
-		}
-		o := structs.Map(natgatewayRulePrint)
-		out = append(out, o)
-	}
-	return out
 }

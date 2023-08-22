@@ -2,24 +2,40 @@ package commands
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"os"
 	"sort"
 	"strings"
 	"time"
 
-	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/json2table"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+)
+
+var (
+	allRequestJSONPaths = map[string]string{
+		"RequestId": "id",
+		"Status":    "metadata.requestStatus.metadata.status",
+		"Message":   "metadata.requestStatus.metadata.message",
+		"Method":    "properties.method",
+		"Url":       "properties.url",
+		"Body":      "properties.body",
+		"CreatedBy": "metadata.createdBy",
+		"Targets":   "metadata.requestStatus.metadata.targets",
+	}
+
+	defaultRequestCols = []string{"RequestId", "CreatedDate", "Method", "Status", "Message", "Targets"}
+	allRequestCols     = []string{"RequestId", "CreatedDate", "CreatedBy", "Method", "Status", "Message", "Url", "Body", "Targets"}
 )
 
 func RequestCmd() *core.Command {
@@ -142,13 +158,15 @@ func RunRequestList(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	requests, resp, err := c.CloudApiV6Services.Requests().List(listQueryParams)
 	if resp != nil {
-		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
+
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgMethod)) {
 		switch strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgMethod))) {
 		case "CREATE":
@@ -173,16 +191,51 @@ func RunRequestList(c *core.CommandConfig) error {
 			requests = sortRequestsByMethod(requests, strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgMethod))))
 		}
 	}
+
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgLatest)) {
 		requests = sortRequestsByTime(requests, viper.GetInt(core.GetFlagName(c.NS, cloudapiv6.ArgLatest)))
 	}
 
-	if itemsOk, ok := requests.GetItemsOk(); ok && itemsOk != nil {
-		if len(*itemsOk) == 0 {
-			return errors.New("error getting requests based on given criteria")
+	itemsOk, ok := requests.GetItemsOk()
+	if !ok || itemsOk == nil {
+		return fmt.Errorf("error getting requests based on given criteria")
+
+	}
+
+	var allRequestsConverted []map[string]interface{}
+
+	for _, item := range *itemsOk {
+		temp, err := json2table.ConvertJSONToTable("", allRequestJSONPaths, item)
+		if err != nil {
+			return fmt.Errorf("failed to convert from JSON to Table format: %w", err)
+		}
+
+		metadataOk, ok := item.GetMetadataOk()
+		if !ok || metadataOk == nil {
+			return fmt.Errorf("failed to retrieve metadata from request")
+		}
+
+		if createdDateOk, ok := metadataOk.GetCreatedDateOk(); ok && createdDateOk != nil {
+			temp[0]["CreatedDate"] = createdDateOk.String()
+
+			allRequestsConverted = append(allRequestsConverted, temp[0])
 		}
 	}
-	return c.Printer.Print(getRequestPrint(c, getRequests(requests)))
+
+	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	if err != nil {
+		return err
+	}
+
+	out, err := jsontabwriter.GenerateOutputPreconverted(itemsOk, allRequestsConverted,
+		printer.GetHeaders(allRequestCols, defaultRequestCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, out)
+
+	return nil
 }
 
 func RunRequestGet(c *core.CommandConfig) error {
@@ -190,16 +243,48 @@ func RunRequestGet(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
-	c.Printer.Verbose("Request with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRequestId)))
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+		"Request with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRequestId))))
+
 	req, resp, err := c.CloudApiV6Services.Requests().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRequestId)), queryParams)
 	if resp != nil {
-		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getRequestPrint(c, []resources.Request{*req}))
+
+	metadataOk, ok := req.GetMetadataOk()
+	if !ok || metadataOk == nil {
+		return fmt.Errorf("failed to retrieve metadata from request")
+	}
+
+	reqConverted, err := json2table.ConvertJSONToTable("", allRequestJSONPaths, req)
+	if err != nil {
+		return fmt.Errorf("failed to convert from JSON to Table format: %w", err)
+	}
+
+	if createdDateOk, ok := metadataOk.GetCreatedDateOk(); ok && createdDateOk != nil {
+		reqConverted[0]["CreatedDate"] = createdDateOk.String()
+	}
+
+	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	if err != nil {
+		return err
+	}
+
+	out, err := jsontabwriter.GenerateOutputPreconverted(req, reqConverted,
+		printer.GetHeaders(allRequestCols, defaultRequestCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, out)
+
+	return nil
 }
 
 func RunRequestWait(c *core.CommandConfig) error {
@@ -207,6 +292,7 @@ func RunRequestWait(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
 	req, _, err := c.CloudApiV6Services.Requests().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRequestId)), queryParams)
 	if err != nil {
@@ -225,38 +311,35 @@ func RunRequestWait(c *core.CommandConfig) error {
 	if _, err = c.CloudApiV6Services.Requests().Wait(fmt.Sprintf("%s/status", *req.GetHref())); err != nil {
 		return err
 	}
-	return c.Printer.Print(getRequestPrint(c, []resources.Request{*req}))
-}
 
-// Output Printing
-
-var (
-	defaultRequestCols = []string{"RequestId", "CreatedDate", "Method", "Status", "Message", "Targets"}
-	allRequestCols     = []string{"RequestId", "CreatedDate", "CreatedBy", "Method", "Status", "Message", "Url", "Body", "Targets"}
-)
-
-type RequestPrint struct {
-	RequestId   string    `json:"RequestId,omitempty"`
-	Status      string    `json:"Status,omitempty"`
-	Message     string    `json:"Message,omitempty"`
-	Method      string    `json:"Method,omitempty"`
-	Url         string    `json:"Url,omitempty"`
-	Body        string    `json:"Body,omitempty"`
-	CreatedBy   string    `json:"CreatedBy,omitempty"`
-	CreatedDate time.Time `json:"CreatedDate,omitempty"`
-	Targets     []string  `json:"Targets,omitempty"`
-}
-
-func getRequestPrint(c *core.CommandConfig, reqs []resources.Request) printer.Result {
-	r := printer.Result{}
-	if c != nil {
-		if reqs != nil {
-			r.OutputJSON = reqs
-			r.KeyValue = getRequestsKVMaps(reqs)
-			r.Columns = printer.GetHeaders(allRequestCols, defaultRequestCols, viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgCols)))
-		}
+	metadataOk, ok := req.GetMetadataOk()
+	if !ok || metadataOk == nil {
+		return fmt.Errorf("failed to retrieve metadata from request")
 	}
-	return r
+
+	reqConverted, err := json2table.ConvertJSONToTable("", allRequestJSONPaths, req)
+	if err != nil {
+		return fmt.Errorf("failed to convert from JSON to Table format: %w", err)
+	}
+
+	if createdDateOk, ok := metadataOk.GetCreatedDateOk(); ok && createdDateOk != nil {
+		reqConverted[0]["CreatedDate"] = createdDateOk.String()
+	}
+
+	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	if err != nil {
+		return err
+	}
+
+	out, err := jsontabwriter.GenerateOutputPreconverted(req, reqConverted,
+		printer.GetHeaders(allRequestCols, defaultRequestCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, out)
+
+	return nil
 }
 
 func getRequests(requests resources.Requests) []resources.Request {
@@ -303,60 +386,4 @@ func sortRequestsByTime(requests resources.Requests, n int) resources.Requests {
 		sortedRequests.Items = &reqItems
 	}
 	return sortedRequests
-}
-
-func getRequestsKVMaps(requests []resources.Request) []map[string]interface{} {
-	out := make([]map[string]interface{}, 0, len(requests))
-	for _, req := range requests {
-		var reqPrint RequestPrint
-		if id, ok := req.GetIdOk(); ok && id != nil {
-			reqPrint.RequestId = *id
-		}
-		if propertiesOk, ok := req.GetPropertiesOk(); ok && propertiesOk != nil {
-			if method, ok := propertiesOk.GetMethodOk(); ok && method != nil {
-				reqPrint.Method = *method
-			}
-			if url, ok := propertiesOk.GetUrlOk(); ok && url != nil {
-				reqPrint.Url = *url
-			}
-			if bodyOk, ok := propertiesOk.GetBodyOk(); ok && bodyOk != nil {
-				reqPrint.Body = *bodyOk
-			}
-		}
-		if metadataOk, ok := req.GetMetadataOk(); ok && metadataOk != nil {
-			if createdDateOk, ok := metadataOk.GetCreatedDateOk(); ok && createdDateOk != nil {
-				reqPrint.CreatedDate = *createdDateOk
-			}
-			if createdByOk, ok := metadataOk.GetCreatedByOk(); ok && createdByOk != nil {
-				reqPrint.CreatedBy = *createdByOk
-			}
-			if requestStatusOk, ok := metadataOk.GetRequestStatusOk(); ok && requestStatusOk != nil {
-				if statusMetadata, ok := requestStatusOk.GetMetadataOk(); ok && statusMetadata != nil {
-					if statusOk, ok := statusMetadata.GetStatusOk(); ok && statusOk != nil {
-						reqPrint.Status = *statusOk
-					}
-					if messageOk, ok := statusMetadata.GetMessageOk(); ok && messageOk != nil {
-						reqPrint.Message = *messageOk
-					}
-					if targetsOk, ok := statusMetadata.GetTargetsOk(); ok && targetsOk != nil {
-						for _, target := range *targetsOk {
-							if targetOk, ok := target.GetTargetOk(); ok && targetOk != nil {
-								if typeOk, ok := targetOk.GetTypeOk(); ok && typeOk != nil {
-									reqPrint.Targets = append(reqPrint.Targets, string(*typeOk))
-									reqPrint.Targets = append(reqPrint.Targets, " ")
-								}
-								if idOk, ok := targetOk.GetIdOk(); ok && idOk != nil {
-									reqPrint.Targets = append(reqPrint.Targets, *idOk)
-									reqPrint.Targets = append(reqPrint.Targets, " ")
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-		o := structs.Map(reqPrint)
-		out = append(out, o)
-	}
-	return out
 }
