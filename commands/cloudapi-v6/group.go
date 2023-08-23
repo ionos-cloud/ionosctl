@@ -116,6 +116,10 @@ func GroupCmd() *core.Command {
 	create.AddBoolFlag(cloudapiv6.ArgCreateFlowLog, "", false, "The group will be allowed to create Flow Logs. E.g.: --create-flowlog=true, --create-flowlog=false")
 	create.AddBoolFlag(cloudapiv6.ArgAccessMonitoring, "", false, "Privilege for a group to access and manage monitoring related functionality using Monotoring-as-a-Service. E.g.: --access-monitoring=true, --access-monitoring=false")
 	create.AddBoolFlag(cloudapiv6.ArgAccessCerts, "", false, "Privilege for a group to access and manage certificates. E.g.: --access-certs=true, --access-certs=false")
+	create.AddBoolFlag(cloudapiv6.ArgAccessDNS, "", false, "Privilege for a group to access and manage dns records")
+	create.AddBoolFlag(cloudapiv6.ArgManageDbaas, "", false, "Privilege for a group to manage DBaaS related functionality")
+	create.AddBoolFlag(cloudapiv6.ArgManageDataplatform, "", false, "Privilege for a group to access and manage the Data Platform")
+	create.AddBoolFlag(cloudapiv6.ArgManageRegistry, "", false, "Privilege for group accessing container registry related functionality")
 	create.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait, "Wait for Request for Group creation to be executed")
 	create.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for Group creation [seconds]")
 	create.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultCreateDepth, cloudapiv6.ArgDepthDescription)
@@ -158,6 +162,10 @@ Required values to run command:
 	update.AddBoolFlag(cloudapiv6.ArgCreateFlowLog, "", false, "The group will be allowed to create Flow Logs. E.g.: --create-flowlog=true, --create-flowlog=false")
 	update.AddBoolFlag(cloudapiv6.ArgAccessMonitoring, "", false, "Privilege for a group to access and manage monitoring related functionality using Monotoring-as-a-Service. E.g.: --access-monitoring=true, --access-monitoring=false")
 	update.AddBoolFlag(cloudapiv6.ArgAccessCerts, "", false, "Privilege for a group to access and manage certificates. E.g.: --access-certs=true, --access-certs=false")
+	update.AddBoolFlag(cloudapiv6.ArgAccessDNS, "", false, "Privilege for a group to access and manage dns records")
+	update.AddBoolFlag(cloudapiv6.ArgManageDbaas, "", false, "Privilege for a group to manage DBaaS related functionality")
+	update.AddBoolFlag(cloudapiv6.ArgManageDataplatform, "", false, "Privilege for a group to access and manage the Data Platform")
+	update.AddBoolFlag(cloudapiv6.ArgManageRegistry, "", false, "Privilege for group accessing container registry related functionality")
 	update.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait, "Wait for Request for Group update to be executed")
 	update.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for Group update [seconds]")
 	update.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultUpdateDepth, cloudapiv6.ArgDepthDescription)
@@ -349,10 +357,16 @@ func getGroupCreateInfo(c *core.CommandConfig) *resources.GroupProperties {
 	createFlowLog := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgCreateFlowLog))
 	monitoring := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAccessMonitoring))
 	certs := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAccessCerts))
+	dns := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAccessDNS))
+	manageDb := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgManageDbaas))
+	manageReg := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgManageRegistry))
+	manageData := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgManageDataplatform))
 	c.Printer.Verbose("Properties set for creating the group: Name: %v, CreateDatacenter: %v, CreateSnapshot: %v, "+
 		"ReserveIp: %v, AccessActivityLog: %v, CreateBackupUnit: %v, CreatePcc: %v, CreateInternetAccess: %v, CreateK8sCluster: %v, "+
-		"S3Privilege: %v, CreateFlowLog: %v, AccessAndManageMonitoring: %v, AccessAndManageCertificates: %v",
-		name, createDc, createSnap, reserveIp, accessLog, createBackUp, createPcc, createNic, createK8s, s3, createFlowLog, monitoring, certs)
+		"S3Privilege: %v, CreateFlowLog: %v, AccessAndManageMonitoring: %v, AccessAndManageCertificates: %v, AccessAndManageDns: %v,"+
+		"ManageDBaaS: %v, ManageRegistry: %v, ManageDataplatform: %v",
+		name, createDc, createSnap, reserveIp, accessLog, createBackUp, createPcc, createNic, createK8s, s3, createFlowLog, monitoring, certs,
+		dns, manageDb, manageReg, manageData)
 	return &resources.GroupProperties{
 		GroupProperties: ionoscloud.GroupProperties{
 			Name:                        &name,
@@ -368,6 +382,10 @@ func getGroupCreateInfo(c *core.CommandConfig) *resources.GroupProperties {
 			CreateFlowLog:               &createFlowLog,
 			AccessAndManageMonitoring:   &monitoring,
 			AccessAndManageCertificates: &certs,
+			AccessAndManageDns:          &dns,
+			ManageDBaaS:                 &manageDb,
+			ManageRegistry:              &manageReg,
+			ManageDataplatform:          &manageData,
 		},
 	}
 }
@@ -376,7 +394,8 @@ func getGroupUpdateInfo(oldGroup *resources.Group, c *core.CommandConfig) *resou
 	var (
 		groupName                                                           string
 		createDc, createSnap, createPcc, createBackUp, createNic, createK8s bool
-		reserveIp, accessLog, s3, createFlowLog, monitoring, certs          bool
+		reserveIp, accessLog, s3, createFlowLog, monitoring, certs, dns     bool
+		manageReg, manageData, manageDb                                     bool
 	)
 	if properties, ok := oldGroup.GetPropertiesOk(); ok && properties != nil {
 		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgName)) {
@@ -483,6 +502,38 @@ func getGroupUpdateInfo(oldGroup *resources.Group, c *core.CommandConfig) *resou
 				certs = *accessCerts
 			}
 		}
+		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgAccessDNS)) {
+			dns = viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAccessDNS))
+			c.Printer.Verbose("Property AccessAndManageDNS set: %v", dns)
+		} else {
+			if accessDns, ok := properties.GetAccessAndManageDnsOk(); ok && accessDns != nil {
+				dns = *accessDns
+			}
+		}
+		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgManageDbaas)) {
+			manageDb = viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgManageDbaas))
+			c.Printer.Verbose("Property ManageDBaaS set: %v", manageDb)
+		} else {
+			if manageDBaaSOk, ok := properties.GetManageDBaaSOk(); ok && manageDBaaSOk != nil {
+				manageDb = *manageDBaaSOk
+			}
+		}
+		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgManageRegistry)) {
+			manageReg = viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgManageRegistry))
+			c.Printer.Verbose("Property ManageRegistry set: %v", manageReg)
+		} else {
+			if manageRegistry, ok := properties.GetManageRegistryOk(); ok && manageRegistry != nil {
+				manageReg = *manageRegistry
+			}
+		}
+		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgManageDataplatform)) {
+			manageData = viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgManageDataplatform))
+			c.Printer.Verbose("Property ManageDataplatform set: %v", manageData)
+		} else {
+			if manageDataplatform, ok := properties.GetManageDataplatformOk(); ok && manageDataplatform != nil {
+				manageData = *manageDataplatform
+			}
+		}
 	}
 	return &resources.GroupProperties{
 		GroupProperties: ionoscloud.GroupProperties{
@@ -499,6 +550,10 @@ func getGroupUpdateInfo(oldGroup *resources.Group, c *core.CommandConfig) *resou
 			CreateFlowLog:               &createFlowLog,
 			AccessAndManageMonitoring:   &monitoring,
 			AccessAndManageCertificates: &certs,
+			AccessAndManageDns:          &dns,
+			ManageDBaaS:                 &manageDb,
+			ManageRegistry:              &manageReg,
+			ManageDataplatform:          &manageData,
 		},
 	}
 }
@@ -570,7 +625,8 @@ func DeleteAllGroups(c *core.CommandConfig) error {
 var (
 	defaultGroupCols = []string{"GroupId", "Name", "CreateDataCenter", "CreateSnapshot", "CreatePcc", "CreateBackupUnit", "CreateInternetAccess", "CreateK8s", "ReserveIp"}
 	allGroupCols     = []string{"GroupId", "Name", "CreateDataCenter", "CreateSnapshot", "ReserveIp", "AccessActivityLog", "CreatePcc", "S3Privilege", "CreateBackupUnit",
-		"CreateInternetAccess", "CreateK8s", "CreateFlowLog", "AccessAndManageMonitoring", "AccessAndManageCertificates"}
+		"CreateInternetAccess", "CreateK8s", "CreateFlowLog", "AccessAndManageMonitoring", "AccessAndManageCertificates", "AccessAndManageDns", "ManageDBaaS", "ManageRegistry",
+		"ManageDataplatform"}
 )
 
 type groupPrint struct {
@@ -588,6 +644,10 @@ type groupPrint struct {
 	CreateFlowLog               bool   `json:"CreateFlowLog,omitempty"`
 	AccessAndManageMonitoring   bool   `json:"AccessAndManageMonitoring,omitempty"`
 	AccessAndManageCertificates bool   `json:"AccessAndManageCertificates,omitempty"`
+	AccessAndManageDns          bool   `json:"AccessAndManageDns,omitempty"`
+	ManageDBaaS                 bool   `json:"ManageDbaas,omitempty"`
+	ManageRegistry              bool   `json:"ManageRegistry,omitempty"`
+	ManageDataplatform          bool   `json:"ManageDataplatform,omitempty"`
 }
 
 func getGroupPrint(resp *resources.Response, c *core.CommandConfig, groups []resources.Group) printer.Result {
@@ -672,6 +732,18 @@ func getGroupsKVMaps(gs []resources.Group) []map[string]interface{} {
 			}
 			if accessCerts, ok := properties.GetAccessAndManageCertificatesOk(); ok && accessCerts != nil {
 				gPrint.AccessAndManageCertificates = *accessCerts
+			}
+			if accessDns, ok := properties.GetAccessAndManageDnsOk(); ok && accessDns != nil {
+				gPrint.AccessAndManageDns = *accessDns
+			}
+			if manageDbaas, ok := properties.GetManageDBaaSOk(); ok && manageDbaas != nil {
+				gPrint.ManageDBaaS = *manageDbaas
+			}
+			if manageRegistry, ok := properties.GetManageRegistryOk(); ok && manageRegistry != nil {
+				gPrint.ManageRegistry = *manageRegistry
+			}
+			if manageDataplatform, ok := properties.GetManageDataplatformOk(); ok && manageDataplatform != nil {
+				gPrint.ManageDataplatform = *manageDataplatform
 			}
 		}
 		o := structs.Map(gPrint)
