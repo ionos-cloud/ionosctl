@@ -1,5 +1,12 @@
 # Changelog
 
+## [v6.6.8] (August 2023)
+### Added
+* Added new flags for `group create` and `group update` commands: `--access-dns`, `--manage-dbaas`, `--manage-registry`, `--manage-dataplatform`
+
+### Fixed
+* Changed default for `dataplatform cluster create --version` to 23.7 as 23.4 is no longer supported
+
 ## [v6.6.7] (August 2023)
 ### Added
 * Added support for MongoDB Enterprise Edition (#340)
