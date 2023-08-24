@@ -163,10 +163,17 @@ func eliminateEmptyCols(cols []string, table []map[string]interface{}) []string 
 
 	for _, c := range cols {
 		for _, elem := range table {
-			if e, ok := elem[c]; ok && e != nil {
-				newCols = append(newCols, c)
-				break
+			e, ok := elem[c]
+			if !ok || e == nil {
+				continue
 			}
+
+			if s, ok := e.(string); ok && s == "" {
+				continue
+			}
+
+			newCols = append(newCols, c)
+			break
 		}
 	}
 
