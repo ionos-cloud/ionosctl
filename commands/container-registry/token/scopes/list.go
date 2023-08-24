@@ -2,10 +2,12 @@ package scopes
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/registry"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -53,12 +55,35 @@ func TokenScopesListCmd() *core.Command {
 func CmdGetTokenScopesList(c *core.CommandConfig) error {
 	reg_id := viper.GetString(core.GetFlagName(c.NS, FlagRegId))
 	token_id := viper.GetString(core.GetFlagName(c.NS, FlagTokenId))
+
 	token, _, err := c.ContainerRegistryServices.Token().Get(token_id, reg_id)
 	if err != nil {
 		return err
 	}
 
-	return c.Printer.Print(getTokenScopePrint(nil, c, &token, true))
+	properties, ok := token.GetPropertiesOk()
+	if !ok || properties == nil {
+		return fmt.Errorf("could not retrieve Container Registry Token properties")
+	}
+
+	scopes, ok := properties.GetScopesOk()
+	if !ok || scopes == nil {
+		return fmt.Errorf("could not retrieve Container Registry Token Scopes")
+	}
+
+	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	if err != nil {
+		return err
+	}
+
+	out, err := jsontabwriter.GenerateOutput("", allScopeJSONPaths, scopes,
+		printer.GetHeaders(allScopeCols, defaultScopeCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, out)
+	return nil
 }
 
 func PreCmdTokenScopesList(c *core.PreCommandConfig) error {

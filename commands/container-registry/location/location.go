@@ -2,14 +2,21 @@ package location
 
 import (
 	"context"
+	"fmt"
 
-	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
-	ionoscloud "github.com/ionos-cloud/sdk-go-container-registry"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
+)
+
+var (
+	allJSONPaths = map[string]string{
+		"LocationId": "id",
+	}
+
+	allCols = []string{"LocationId"}
 )
 
 func RegLocationsListCmd() *core.Command {
@@ -43,50 +50,17 @@ func CmdList(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	list := locs.GetItems()
-	return c.Printer.Print(getLocPrint(nil, c, list))
-}
 
-type LocPrint struct {
-	LocationId string `json:"RegistryId,omitempty"`
-}
-
-var allCols = structs.Names(LocPrint{})
-
-func getLocPrint(
-	resp *ionoscloud.APIResponse, c *core.CommandConfig, response *[]ionoscloud.Location,
-) printer.Result {
-	r := printer.Result{}
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-
-	if c != nil {
-		if resp != nil {
-			r.Resource = c.Resource
-			r.Verb = c.Verb
-			r.WaitForState = viper.GetBool(
-				core.GetFlagName(
-					c.NS, constants.ArgWaitForRequest,
-				),
-			) // this boolean is duplicated everywhere just to do an append of `& wait` to a verbose message
-		}
-		if response != nil {
-			r.OutputJSON = response
-			r.KeyValue = getLocRows(response)                       // map header -> rows
-			r.Columns = printer.GetHeadersAllDefault(allCols, cols) // headers
-		}
+	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	if err != nil {
+		return err
 	}
-	return r
-}
 
-func getLocRows(locs *[]ionoscloud.Location) []map[string]interface{} {
-	out := make([]map[string]interface{}, 0, len(*locs))
-	for _, loc := range *locs {
-		var locPrint LocPrint
-		if idOk, ok := loc.GetIdOk(); ok && idOk != nil {
-			locPrint.LocationId = *idOk
-		}
-		o := structs.Map(locPrint)
-		out = append(out, o)
+	out, err := jsontabwriter.GenerateOutput("items", allJSONPaths, locs, printer.GetHeadersAllDefault(allCols, cols))
+	if err != nil {
+		return err
 	}
-	return out
+
+	fmt.Fprintf(c.Stdout, out)
+	return nil
 }

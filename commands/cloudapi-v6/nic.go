@@ -6,12 +6,12 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
@@ -19,6 +19,25 @@ import (
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+)
+
+var (
+	allNicJSONPaths = map[string]string{
+		"NicId":          "id",
+		"Name":           "properties.name",
+		"Dhcp":           "properties.dhcp",
+		"LanId":          "properties.lan",
+		"Ips":            "properties.ips",
+		"FirewallActive": "properties.firewallActive",
+		"FirewallType":   "properties.firewallType",
+		"Mac":            "properties.mac",
+		"State":          "metadata.statue",
+		"DeviceNumber":   "properties.deviceNumber",
+		"PciSlot":        "properties.pciSlot",
+	}
+
+	defaultNicCols = []string{"NicId", "Name", "Dhcp", "LanId", "Ips", "State"}
+	allNicCols     = []string{"NicId", "Name", "Dhcp", "LanId", "Ips", "State", "FirewallActive", "FirewallType", "DeviceNumber", "PciSlot", "Mac"}
 )
 
 func NicCmd() *core.Command {
@@ -273,18 +292,32 @@ func RunNicList(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	nics, resp, err := c.CloudApiV6Services.Nics().List(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
 		listQueryParams,
 	)
 	if resp != nil {
-		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getNicPrint(nil, c, getNics(nics)))
+
+	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	if err != nil {
+		return err
+	}
+
+	out, err := jsontabwriter.GenerateOutput("items", allNicJSONPaths, nics.Nics,
+		printer.GetHeaders(allNicCols, defaultNicCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, out)
+	return nil
 }
 
 func RunNicGet(c *core.CommandConfig) error {
@@ -292,8 +325,12 @@ func RunNicGet(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
-	c.Printer.Verbose("Nic with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId)))
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+		"Nic with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId))))
+
 	n, resp, err := c.CloudApiV6Services.Nics().Get(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
@@ -301,12 +338,25 @@ func RunNicGet(c *core.CommandConfig) error {
 		queryParams,
 	)
 	if resp != nil {
-		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getNicPrint(nil, c, []resources.Nic{*n}))
+
+	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	if err != nil {
+		return err
+	}
+
+	out, err := jsontabwriter.GenerateOutput("", allNicJSONPaths, n.Nic,
+		printer.GetHeaders(allNicCols, defaultNicCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, out)
+	return nil
 }
 
 func RunNicCreate(c *core.CommandConfig) error {
@@ -314,7 +364,9 @@ func RunNicCreate(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
+
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
 	name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
@@ -324,9 +376,11 @@ func RunNicCreate(c *core.CommandConfig) error {
 	firewallActive := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgFirewallActive))
 	firewallType := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFirewallType))
 
-	c.Printer.Verbose("Creating Nic in DataCenterId: %v with ServerId: %v...", dcId, serverId)
-	c.Printer.Verbose("Properties set for creating the Nic: Name: %v, Ips: %v, Dhcp: %v, Lan: %v FirewallActive: %v, FirewallType: %v",
-		name, ips, dhcp, lanId, firewallActive, firewallType)
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+		"Creating Nic in DataCenterId: %v with ServerId: %v...", dcId, serverId))
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+		"Properties set for creating the Nic: Name: %v, Ips: %v, Dhcp: %v, Lan: %v FirewallActive: %v, FirewallType: %v",
+		name, ips, dhcp, lanId, firewallActive, firewallType))
 
 	inputProper := resources.NicProperties{}
 	inputProper.SetName(name)
@@ -335,14 +389,16 @@ func RunNicCreate(c *core.CommandConfig) error {
 	inputProper.SetLan(lanId)
 	inputProper.SetFirewallActive(firewallActive)
 	inputProper.SetFirewallType(firewallType)
+
 	input := resources.Nic{
 		Nic: ionoscloud.Nic{
 			Properties: &inputProper.NicProperties,
 		},
 	}
+
 	n, resp, err := c.CloudApiV6Services.Nics().Create(dcId, serverId, input, queryParams)
 	if resp != nil && printer.GetId(resp) != "" {
-		c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
 	}
 	if err != nil {
 		return err
@@ -351,7 +407,20 @@ func RunNicCreate(c *core.CommandConfig) error {
 	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 		return err
 	}
-	return c.Printer.Print(getNicPrint(resp, c, []resources.Nic{*n}))
+
+	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	if err != nil {
+		return err
+	}
+
+	out, err := jsontabwriter.GenerateOutput("", allNicJSONPaths, n.Nic,
+		printer.GetHeaders(allNicCols, defaultNicCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, out)
+	return nil
 }
 
 func RunNicUpdate(c *core.CommandConfig) error {
@@ -359,38 +428,52 @@ func RunNicUpdate(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
 	input := resources.NicProperties{}
+
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgName)) {
 		name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
 		input.NicProperties.SetName(name)
-		c.Printer.Verbose("Property Name set: %v", name)
+
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property Name set: %v", name))
 	}
+
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgDhcp)) {
 		dhcp := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgDhcp))
 		input.NicProperties.SetDhcp(dhcp)
-		c.Printer.Verbose("Property Dhcp set: %v", dhcp)
+
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property Dhcp set: %v", dhcp))
 	}
+
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgLanId)) {
 		lan := viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgLanId))
 		input.NicProperties.SetLan(lan)
-		c.Printer.Verbose("Property Lan set: %v", lan)
+
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property Lan set: %v", lan))
 	}
+
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgIps)) {
 		ips := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgIps))
 		input.NicProperties.SetIps(ips)
-		c.Printer.Verbose("Property Ips set: %v", ips)
+
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property Ips set: %v", ips))
 	}
+
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFirewallActive)) {
 		firewallActive := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgFirewallActive))
 		input.NicProperties.SetFirewallActive(firewallActive)
-		c.Printer.Verbose("Property FirewallActive set: %v", firewallActive)
+
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property FirewallActive set: %v", firewallActive))
 	}
+
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFirewallType)) {
 		firewallType := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFirewallType))
 		input.NicProperties.SetFirewallType(firewallType)
-		c.Printer.Verbose("Property FirewallType set: %v", firewallType)
+
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property FirewallType set: %v", firewallType))
 	}
+
 	nicUpd, resp, err := c.CloudApiV6Services.Nics().Update(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
@@ -399,7 +482,7 @@ func RunNicUpdate(c *core.CommandConfig) error {
 		queryParams,
 	)
 	if resp != nil && printer.GetId(resp) != "" {
-		c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
 	}
 	if err != nil {
 		return err
@@ -408,7 +491,20 @@ func RunNicUpdate(c *core.CommandConfig) error {
 	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 		return err
 	}
-	return c.Printer.Print(getNicPrint(resp, c, []resources.Nic{*nicUpd}))
+
+	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	if err != nil {
+		return err
+	}
+
+	out, err := jsontabwriter.GenerateOutput("", allNicJSONPaths, nicUpd.Nic,
+		printer.GetHeaders(allNicCols, defaultNicCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, out)
+	return nil
 }
 
 func RunNicDelete(c *core.CommandConfig) error {
@@ -416,32 +512,42 @@ func RunNicDelete(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
+
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
 	nicId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId))
+
 	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
 		if err := DeleteAllNics(c); err != nil {
 			return err
 		}
-		return c.Printer.Print(printer.Result{Resource: c.Resource, Verb: c.Verb})
-	} else {
-		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete nic"); err != nil {
-			return err
-		}
-		c.Printer.Verbose("Starting deleting Nic with id: %v...", nicId)
-		resp, err := c.CloudApiV6Services.Nics().Delete(dcId, serverId, nicId, queryParams)
-		if resp != nil && printer.GetId(resp) != "" {
-			c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
-		}
-		if err != nil {
-			return err
-		}
-		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-			return err
-		}
-		return c.Printer.Print(getNicPrint(resp, c, nil))
+
+		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("Nics successfully deleted"))
+		return nil
 	}
+
+	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete nic"); err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Starting deleting Nic with id: %v...", nicId))
+
+	resp, err := c.CloudApiV6Services.Nics().Delete(dcId, serverId, nicId, queryParams)
+	if resp != nil && printer.GetId(resp) != "" {
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
+	}
+	if err != nil {
+		return err
+	}
+
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("Nic successfully deleted"))
+	return nil
 }
 
 func DeleteAllNics(c *core.CommandConfig) error {
@@ -449,65 +555,84 @@ func DeleteAllNics(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
+
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
-	c.Printer.Verbose("Datacenter ID: %v", dcId)
-	c.Printer.Verbose("Server ID: %v", serverId)
-	c.Printer.Verbose("Getting NICs...")
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Datacenter ID: %v", dcId))
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Server ID: %v", serverId))
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Getting NICs..."))
+
 	nics, resp, err := c.CloudApiV6Services.Nics().List(dcId, serverId, cloudapiv6.ParentResourceListQueryParams)
 	if err != nil {
 		return err
 	}
-	if nicsItems, ok := nics.GetItemsOk(); ok && nicsItems != nil {
-		if len(*nicsItems) > 0 {
-			_ = c.Printer.Warn("NICs to be deleted:")
-			for _, nic := range *nicsItems {
-				delIdAndName := ""
-				if id, ok := nic.GetIdOk(); ok && id != nil {
-					delIdAndName += "Nic Id: " + *id
-				}
-				if properties, ok := nic.GetPropertiesOk(); ok && properties != nil {
-					if name, ok := properties.GetNameOk(); ok && name != nil {
-						delIdAndName += " Nic Name: " + *name
-					}
-				}
-				_ = c.Printer.Warn(delIdAndName)
-			}
-			if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Nics"); err != nil {
-				return err
-			}
-			c.Printer.Verbose("Deleting all the Nics...")
-			var multiErr error
-			for _, nic := range *nicsItems {
-				if id, ok := nic.GetIdOk(); ok && id != nil {
-					c.Printer.Verbose("Starting deleting Nic with id: %v...", *id)
-					resp, err = c.CloudApiV6Services.Nics().Delete(dcId, serverId, *id, queryParams)
-					if resp != nil && printer.GetId(resp) != "" {
-						c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
-					}
-					if err != nil {
-						multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
-						continue
-					} else {
-						_ = c.Printer.Warn(fmt.Sprintf(constants.MessageDeletingAll, c.Resource, *id))
-					}
-					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-						multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *id, err))
-						continue
-					}
-				}
-			}
-			if multiErr != nil {
-				return multiErr
-			}
-			return nil
-		} else {
-			return errors.New("no NICs found")
-		}
-	} else {
-		return errors.New("could not get items of NICs")
+
+	nicsItems, ok := nics.GetItemsOk()
+	if !ok || nicsItems == nil {
+		return fmt.Errorf("could not get items of NICs")
 	}
+
+	if len(*nicsItems) <= 0 {
+		return fmt.Errorf("no NICs found")
+	}
+
+	fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("NICs to be deleted:"))
+
+	for _, nic := range *nicsItems {
+		delIdAndName := ""
+
+		if id, ok := nic.GetIdOk(); ok && id != nil {
+			delIdAndName += "Nic Id: " + *id
+		}
+
+		if properties, ok := nic.GetPropertiesOk(); ok && properties != nil {
+			if name, ok := properties.GetNameOk(); ok && name != nil {
+				delIdAndName += " Nic Name: " + *name
+			}
+		}
+
+		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput(delIdAndName))
+	}
+
+	if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Nics"); err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Deleting all the Nics..."))
+
+	var multiErr error
+	for _, nic := range *nicsItems {
+		id, ok := nic.GetIdOk()
+		if !ok || id == nil {
+			continue
+		}
+
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Starting deleting Nic with id: %v...", *id))
+
+		resp, err = c.CloudApiV6Services.Nics().Delete(dcId, serverId, *id, queryParams)
+		if resp != nil && printer.GetId(resp) != "" {
+			c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
+		}
+		if err != nil {
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
+			continue
+		}
+
+		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput(constants.MessageDeletingAll, c.Resource, *id))
+
+		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *id, err))
+		}
+	}
+
+	if multiErr != nil {
+		return multiErr
+	}
+
+	return nil
 }
 
 // LoadBalancer Nic Commands
@@ -712,6 +837,7 @@ func RunLoadBalancerNicAttach(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
 	attachedNic, resp, err := c.CloudApiV6Services.Loadbalancers().AttachNic(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
@@ -722,10 +848,24 @@ func RunLoadBalancerNicAttach(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 		return err
 	}
-	return c.Printer.Print(getNicPrint(resp, c, getNic(attachedNic)))
+
+	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	if err != nil {
+		return err
+	}
+
+	out, err := jsontabwriter.GenerateOutput("", allNicJSONPaths, attachedNic.Nic,
+		printer.GetHeaders(allNicCols, defaultNicCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, out)
+	return nil
 }
 
 func RunLoadBalancerNicList(c *core.CommandConfig) error {
@@ -734,6 +874,7 @@ func RunLoadBalancerNicList(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	attachedNics, _, err := c.CloudApiV6Services.Loadbalancers().ListNics(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLoadBalancerId)),
@@ -742,7 +883,20 @@ func RunLoadBalancerNicList(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getNicPrint(nil, c, getAttachedNics(attachedNics)))
+
+	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	if err != nil {
+		return err
+	}
+
+	out, err := jsontabwriter.GenerateOutput("items", allNicJSONPaths, attachedNics.BalancedNics,
+		printer.GetHeaders(allNicCols, defaultNicCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, out)
+	return nil
 }
 
 func RunLoadBalancerNicGet(c *core.CommandConfig) error {
@@ -750,6 +904,7 @@ func RunLoadBalancerNicGet(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
 	n, _, err := c.CloudApiV6Services.Loadbalancers().GetNic(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
@@ -760,7 +915,20 @@ func RunLoadBalancerNicGet(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getNicPrint(nil, c, getNic(n)))
+
+	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	if err != nil {
+		return err
+	}
+
+	out, err := jsontabwriter.GenerateOutput("", allNicJSONPaths, n.Nic,
+		printer.GetHeaders(allNicCols, defaultNicCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, out)
+	return nil
 }
 
 func RunLoadBalancerNicDetach(c *core.CommandConfig) error {
@@ -768,30 +936,38 @@ func RunLoadBalancerNicDetach(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
+
 	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
 		if err := DetachAllNics(c); err != nil {
 			return err
 		}
-		return c.Printer.Print(printer.Result{Resource: c.Resource, Verb: c.Verb})
-	} else {
-		if err := utils.AskForConfirm(c.Stdin, c.Printer, "detach nic from loadbalancer"); err != nil {
-			return err
-		}
-		resp, err := c.CloudApiV6Services.Loadbalancers().DetachNic(
-			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLoadBalancerId)),
-			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId)),
-			queryParams,
-		)
-		if err != nil {
-			return err
-		}
-		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-			return err
-		}
-		return c.Printer.Print(getNicPrint(resp, c, nil))
+
+		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("Nics successfully detached from Load Balancer"))
+		return nil
 	}
+
+	if err := utils.AskForConfirm(c.Stdin, c.Printer, "detach nic from loadbalancer"); err != nil {
+		return err
+	}
+
+	resp, err := c.CloudApiV6Services.Loadbalancers().DetachNic(
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLoadBalancerId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId)),
+		queryParams,
+	)
+	if err != nil {
+		return err
+	}
+
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("Nic successfully detached from Load Balancer"))
+	return nil
 }
 
 func DetachAllNics(c *core.CommandConfig) error {
@@ -799,175 +975,82 @@ func DetachAllNics(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
+
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	lbId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLoadBalancerId))
-	c.Printer.Verbose("Datacenter ID: %v", dcId)
-	c.Printer.Verbose("LoadBalancer ID: %v", lbId)
-	c.Printer.Verbose("Getting NICs...")
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Datacenter ID: %v", dcId))
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("LoadBalancer ID: %v", lbId))
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Getting NICs..."))
+
 	nics, resp, err := c.CloudApiV6Services.Loadbalancers().ListNics(dcId, lbId, cloudapiv6.ParentResourceListQueryParams)
 	if err != nil {
 		return err
 	}
-	if nicsItems, ok := nics.GetItemsOk(); ok && nicsItems != nil {
-		if len(*nicsItems) > 0 {
-			_ = c.Printer.Warn("NICs to be detached:")
-			for _, nic := range *nicsItems {
-				delIdAndName := ""
-				if id, ok := nic.GetIdOk(); ok && id != nil {
-					delIdAndName += "Nic Id: " + *id
-				}
-				if properties, ok := nic.GetPropertiesOk(); ok && properties != nil {
-					if name, ok := properties.GetNameOk(); ok && name != nil {
-						delIdAndName += " Nic Name: " + *name
-					}
-				}
-				_ = c.Printer.Warn(delIdAndName)
-			}
-			if err := utils.AskForConfirm(c.Stdin, c.Printer, "detach all the Nics"); err != nil {
-				return err
-			}
-			c.Printer.Verbose("Detaching all the Nics...")
-			var multiErr error
-			for _, nic := range *nicsItems {
-				if id, ok := nic.GetIdOk(); ok && id != nil {
-					c.Printer.Verbose("Starting detaching Nic with id: %v...", *id)
-					resp, err = c.CloudApiV6Services.Loadbalancers().DetachNic(dcId, lbId, *id, queryParams)
-					if resp != nil && printer.GetId(resp) != "" {
-						c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
-					}
-					if err != nil {
-						multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
-						continue
-					} else {
-						_ = c.Printer.Print(fmt.Sprintf(constants.MessageRemovingAll, c.Resource, *id))
-					}
-					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-						multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *id, err))
-						continue
-					}
-				}
-			}
-			if multiErr != nil {
-				return multiErr
-			}
-			return nil
-		} else {
-			return errors.New("no NICs found")
-		}
-	} else {
-		return errors.New("could not get items of NICs")
+
+	nicsItems, ok := nics.GetItemsOk()
+	if !ok || nicsItems == nil {
+		return fmt.Errorf("could not get items of NICs")
 	}
-}
 
-// Output Printing
-
-var (
-	defaultNicCols = []string{"NicId", "Name", "Dhcp", "LanId", "Ips", "State"}
-	allNicCols     = []string{"NicId", "Name", "Dhcp", "LanId", "Ips", "State", "FirewallActive", "FirewallType", "DeviceNumber", "PciSlot", "Mac"}
-)
-
-type NicPrint struct {
-	NicId          string   `json:"NicId,omitempty"`
-	Name           string   `json:"Name,omitempty"`
-	Dhcp           bool     `json:"Dhcp,omitempty"`
-	LanId          int32    `json:"LanId,omitempty"`
-	Ips            []string `json:"Ips,omitempty"`
-	FirewallActive bool     `json:"FirewallActive,omitempty"`
-	FirewallType   string   `json:"FirewallType,omitempty"`
-	Mac            string   `json:"Mac,omitempty"`
-	State          string   `json:"State,omitempty"`
-	DeviceNumber   int32    `json:"DeviceNumber,omitempty"`
-	PciSlot        int32    `json:"PciSlot,omitempty"`
-}
-
-func getNicPrint(resp *resources.Response, c *core.CommandConfig, nics []resources.Nic) printer.Result {
-	r := printer.Result{}
-	if c != nil {
-		if resp != nil {
-			r.ApiResponse = resp
-			r.Resource = c.Resource
-			r.Verb = c.Verb
-			r.WaitForRequest = viper.GetBool(core.GetFlagName(c.NS, constants.ArgWaitForRequest))
-		}
-		if nics != nil {
-			r.OutputJSON = nics
-			r.KeyValue = getNicsKVMaps(nics)
-			r.Columns = printer.GetHeaders(allNicCols, defaultNicCols, viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)))
-		}
+	if len(*nicsItems) > 0 {
+		return fmt.Errorf("no NICs found")
 	}
-	return r
-}
 
-func getNics(nics resources.Nics) []resources.Nic {
-	nicObjs := make([]resources.Nic, 0)
-	if items, ok := nics.GetItemsOk(); ok && items != nil {
-		for _, nic := range *items {
-			nicObjs = append(nicObjs, resources.Nic{Nic: nic})
+	fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("NICs to be detached:"))
+
+	for _, nic := range *nicsItems {
+		delIdAndName := ""
+
+		if id, ok := nic.GetIdOk(); ok && id != nil {
+			delIdAndName += "Nic Id: " + *id
 		}
-	}
-	return nicObjs
-}
 
-func getNic(n *resources.Nic) []resources.Nic {
-	nics := make([]resources.Nic, 0)
-	if n != nil {
-		nics = append(nics, resources.Nic{Nic: n.Nic})
-	}
-	return nics
-}
-
-func getAttachedNics(nics resources.BalancedNics) []resources.Nic {
-	ns := make([]resources.Nic, 0)
-	for _, s := range *nics.BalancedNics.Items {
-		ns = append(ns, resources.Nic{Nic: s})
-	}
-	return ns
-}
-
-func getNicsKVMaps(ns []resources.Nic) []map[string]interface{} {
-	out := make([]map[string]interface{}, 0, len(ns))
-	for _, n := range ns {
-		var nicprint NicPrint
-		if id, ok := n.GetIdOk(); ok && id != nil {
-			nicprint.NicId = *id
-		}
-		if properties, ok := n.GetPropertiesOk(); ok && properties != nil {
+		if properties, ok := nic.GetPropertiesOk(); ok && properties != nil {
 			if name, ok := properties.GetNameOk(); ok && name != nil {
-				nicprint.Name = *name
-			}
-			if dhcp, ok := properties.GetDhcpOk(); ok && dhcp != nil {
-				nicprint.Dhcp = *dhcp
-			}
-			if lanId, ok := properties.GetLanOk(); ok && lanId != nil {
-				nicprint.LanId = *lanId
-			}
-			if factive, ok := properties.GetFirewallActiveOk(); ok && factive != nil {
-				nicprint.FirewallActive = *factive
-			}
-			if ftype, ok := properties.GetFirewallTypeOk(); ok && ftype != nil {
-				nicprint.FirewallType = *ftype
-			}
-			if no, ok := properties.GetDeviceNumberOk(); ok && no != nil {
-				nicprint.DeviceNumber = *no
-			}
-			if slot, ok := properties.GetPciSlotOk(); ok && slot != nil {
-				nicprint.PciSlot = *slot
-			}
-			if mac, ok := properties.GetMacOk(); ok && mac != nil {
-				nicprint.Mac = *mac
-			}
-			if ips, ok := properties.GetIpsOk(); ok && ips != nil {
-				nicprint.Ips = *ips
+				delIdAndName += " Nic Name: " + *name
 			}
 		}
-		if metadata, ok := n.GetMetadataOk(); ok && metadata != nil {
-			if state, ok := metadata.GetStateOk(); ok && state != nil {
-				nicprint.State = *state
-			}
-		}
-		o := structs.Map(nicprint)
-		out = append(out, o)
+
+		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
-	return out
+
+	if err := utils.AskForConfirm(c.Stdin, c.Printer, "detach all the Nics"); err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Detaching all the Nics..."))
+
+	var multiErr error
+	for _, nic := range *nicsItems {
+		id, ok := nic.GetIdOk()
+		if !ok || id == nil {
+			continue
+		}
+
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Starting detaching Nic with id: %v...", *id))
+
+		resp, err = c.CloudApiV6Services.Loadbalancers().DetachNic(dcId, lbId, *id, queryParams)
+		if resp != nil && printer.GetId(resp) != "" {
+			fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
+		}
+		if err != nil {
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
+			continue
+		}
+
+		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput(constants.MessageRemovingAll, c.Resource, *id))
+
+		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *id, err))
+		}
+	}
+
+	if multiErr != nil {
+		return multiErr
+	}
+
+	return nil
 }

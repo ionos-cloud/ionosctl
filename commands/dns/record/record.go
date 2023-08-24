@@ -12,12 +12,27 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
 	dns "github.com/ionos-cloud/sdk-go-dns"
 
-	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/spf13/cobra"
+)
+
+var (
+	allRecordJSONPaths = map[string]string{
+		"Id":      "id",
+		"Name":    "properties.name",
+		"Content": "properties.content",
+		"Type":    "properties.type",
+		"Enabled": "properties.name",
+		"FQDN":    "metadata.fqdn",
+		"State":   "metadata.state",
+		"ZoneId":  "zoneId",
+	}
+
+	allCols     = []string{"Id", "Name", "Content", "Type", "Enabled", "FQDN", "State", "ZoneId", "ZoneName"}
+	defaultCols = []string{"Id", "Name", "Content", "Type", "Enabled", "FQDN", "State"}
 )
 
 func RecordCommand() *core.Command {
@@ -41,71 +56,6 @@ func RecordCommand() *core.Command {
 	cmd.AddCommand(ZonesRecordsFindByIdCmd())
 	cmd.AddCommand(ZonesRecordsPutCmd())
 	return cmd
-}
-
-// Helper functions for printing record
-
-func getRecordsPrint(c *core.CommandConfig, data dns.RecordReadList) printer.Result {
-	r := printer.Result{}
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-
-	if c != nil {
-		r.OutputJSON = data.Items // TODO: See above comment. Remove `.Items` once JSON marshalling works as one would expect
-		r.KeyValue = makeRecordPrintObj(*data.Items...)
-		r.Columns = printer.GetHeaders(allCols, defaultCols, cols)
-	}
-	return r
-}
-
-func getRecordPrint(c *core.CommandConfig, data dns.RecordRead) printer.Result {
-	return getRecordsPrint(c, dns.RecordReadList{Items: &[]dns.RecordRead{data}})
-}
-
-type recordPrint struct {
-	Id       string `json:"ID,omitempty"`
-	Name     string `json:"Name,omitempty"`
-	Content  string `json:"Content,omitempty"`
-	Type     string `json:"Type,omitempty"`
-	Enabled  bool   `json:"Enabled,omitempty"`
-	FQDN     string `json:"FQDN,omitempty"`
-	State    string `json:"State,omitempty"`
-	ZoneId   string `json:"ZoneId,omitempty"`
-	ZoneName string `json:"ZoneName,omitempty"`
-}
-
-var allCols = structs.Names(recordPrint{})
-var defaultCols = allCols[:len(allCols)-2]
-
-func makeRecordPrintObj(data ...dns.RecordRead) []map[string]interface{} {
-	out := make([]map[string]interface{}, 0, len(data))
-
-	for _, item := range data {
-		var printObj recordPrint
-		printObj.Id = *item.GetId()
-
-		// Fill in the rest of the fields from the response object
-
-		if propertiesOk, ok := item.GetPropertiesOk(); ok && propertiesOk != nil {
-			printObj.Type = string(*propertiesOk.Type)
-
-			printObj.Enabled = *propertiesOk.Enabled
-			printObj.Content = *propertiesOk.Content
-			printObj.Name = *propertiesOk.Name
-		}
-		if m, ok := item.GetMetadataOk(); ok && m != nil {
-			printObj.FQDN = *m.Fqdn
-			printObj.State = string(*m.State)
-			printObj.ZoneId = *m.ZoneId
-			z, _, err := client.Must().DnsClient.ZonesApi.ZonesFindById(context.Background(), *m.ZoneId).Execute()
-			if err == nil && z.Properties != nil {
-				printObj.ZoneName = *z.Properties.ZoneName
-			}
-		}
-
-		o := structs.Map(printObj)
-		out = append(out, o)
-	}
-	return out
 }
 
 // RecordsProperty returns a list of properties of all records matching the given filters

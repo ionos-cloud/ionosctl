@@ -2,9 +2,11 @@ package registry
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	sdkgo "github.com/ionos-cloud/sdk-go-container-registry"
 	"github.com/spf13/cobra"
@@ -69,6 +71,7 @@ func CmdPut(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	location, err = c.Command.Command.Flags().GetString(FlagLocation)
 	if err != nil {
 		return err
@@ -78,16 +81,20 @@ func CmdPut(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	v := sdkgo.NewWeeklyScheduleWithDefaults()
 
 	if viper.IsSet(core.GetFlagName(c.NS, FlagRegGCDays)) {
 		days := viper.GetStringSlice(core.GetFlagName(c.NS, FlagRegGCDays))
 		var daysSdk = []sdkgo.Day{}
+
 		for _, day := range days {
 			daysSdk = append(daysSdk, sdkgo.Day(day))
 		}
+
 		v.SetDays(daysSdk)
 	}
+
 	if viper.IsSet(core.GetFlagName(c.NS, FlagRegGCTime)) {
 		*v.Time = viper.GetString(core.GetFlagName(c.NS, FlagRegGCTime))
 	} else {
@@ -109,7 +116,18 @@ func CmdPut(c *core.CommandConfig) error {
 	regPrint := sdkgo.NewRegistryResponseWithDefaults()
 	regPrint.SetProperties(*reg.GetProperties())
 
-	return c.Printer.Print(getRegistryPrint(nil, c, &[]sdkgo.RegistryResponse{}, false))
+	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	if err != nil {
+		return err
+	}
+
+	out, err := jsontabwriter.GenerateOutput("", allJSONPaths, reg, printer.GetHeadersAllDefault(allCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, out)
+	return nil
 }
 
 func PreCmdPut(c *core.PreCommandConfig) error {

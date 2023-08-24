@@ -2,11 +2,13 @@ package token
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/registry"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	sdkgo "github.com/ionos-cloud/sdk-go-container-registry"
 	"github.com/spf13/cobra"
@@ -54,11 +56,11 @@ func TokenUpdateCmd() *core.Command {
 			}, cobra.ShellCompDirectiveNoFileComp
 		},
 	)
-	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, printer.ColsMessage(allCols))
+	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, printer.ColsMessage(AllTokenCols))
 	_ = cmd.Command.RegisterFlagCompletionFunc(
 		constants.ArgCols,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-			return allCols, cobra.ShellCompDirectiveNoFileComp
+			return AllTokenCols, cobra.ShellCompDirectiveNoFileComp
 		},
 	)
 
@@ -72,6 +74,7 @@ func CmdPatchToken(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	tokenId, err := c.Command.Command.Flags().GetString(FlagTokenId)
 	if err != nil {
 		return err
@@ -79,38 +82,50 @@ func CmdPatchToken(c *core.CommandConfig) error {
 
 	if viper.IsSet(core.GetFlagName(c.NS, FlagExpiryDate)) {
 		var expiryDate time.Time
+
 		expiryDateString, err := c.Command.Command.Flags().GetString(FlagExpiryDate)
 		if err != nil {
 			return err
 		}
+
 		expiryDate, err = time.Parse(time.RFC3339, expiryDateString)
 		if err != nil {
 			return err
 		}
-		tokenInput.SetExpiryDate(expiryDate)
 
+		tokenInput.SetExpiryDate(expiryDate)
 	} else if viper.IsSet(core.GetFlagName(c.NS, FlagTimeUntilExpiry)) {
 		var timeUntilExpiry string
+
 		timeUntilExpiry, err = c.Command.Command.Flags().GetString(FlagTimeUntilExpiry)
 		if err != nil {
 			return err
 		}
+
 		timeNow := time.Now()
+
 		duration, err := ParseExpiryTime(timeUntilExpiry)
 		if err != nil {
 			return err
 		}
+
 		timeNow.Add(duration)
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, FlagStatus)) {
 		var status string
+
 		status, err = c.Command.Command.Flags().GetString(FlagStatus)
 		if err != nil {
 			return err
 		}
-		tokenInput.SetStatus(status)
 
+		tokenInput.SetStatus(status)
+	}
+
+	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	if err != nil {
+		return err
 	}
 
 	token, _, err := c.ContainerRegistryServices.Token().Patch(tokenId, *tokenInput, regId)
@@ -118,7 +133,18 @@ func CmdPatchToken(c *core.CommandConfig) error {
 		return err
 	}
 
-	return c.Printer.Print(getTokenPrint(nil, c, &[]sdkgo.TokenResponse{token}, false))
+	tokenConverted, err := ConvertTokenToTable(token)
+	if err != nil {
+		return err
+	}
+
+	out, err := jsontabwriter.GenerateOutputPreconverted(token, tokenConverted, printer.GetHeadersAllDefault(AllTokenCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, out)
+	return nil
 }
 
 func PreCmdPatchToken(c *core.PreCommandConfig) error {

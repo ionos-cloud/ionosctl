@@ -6,18 +6,30 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+)
+
+var (
+	allSnapshotJSONPaths = map[string]string{
+		"SnapshotId":  "id",
+		"Name":        "properties.name",
+		"LicenceType": "properties.licenseType",
+		"Size":        "properties.size",
+		"State":       "metadata.state",
+	}
+
+	defaultSnapshotCols = []string{"SnapshotId", "Name", "LicenceType", "Size", "State"}
 )
 
 func SnapshotCmd() *core.Command {
@@ -258,14 +270,28 @@ func RunSnapshotList(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	ss, resp, err := c.CloudApiV6Services.Snapshots().List(listQueryParams)
 	if resp != nil {
-		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getSnapshotPrint(nil, c, getSnapshots(ss)))
+
+	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	if err != nil {
+		return err
+	}
+
+	out, err := jsontabwriter.GenerateOutput("items", allSnapshotJSONPaths, ss.Snapshots,
+		printer.GetHeadersAllDefault(defaultSnapshotCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, out)
+	return nil
 }
 
 func RunSnapshotGet(c *core.CommandConfig) error {
@@ -273,16 +299,33 @@ func RunSnapshotGet(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
-	c.Printer.Verbose("Snapshot with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSnapshotId)))
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+		"Snapshot with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSnapshotId))))
+
 	s, resp, err := c.CloudApiV6Services.Snapshots().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSnapshotId)), queryParams)
 	if resp != nil {
-		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getSnapshotPrint(nil, c, getSnapshot(s)))
+
+	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	if err != nil {
+		return err
+	}
+
+	out, err := jsontabwriter.GenerateOutput("", allSnapshotJSONPaths, s.Snapshot,
+		printer.GetHeadersAllDefault(defaultSnapshotCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, out)
+	return nil
 }
 
 func RunSnapshotCreate(c *core.CommandConfig) error {
@@ -290,6 +333,7 @@ func RunSnapshotCreate(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	volumeId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeId))
@@ -297,12 +341,14 @@ func RunSnapshotCreate(c *core.CommandConfig) error {
 	description := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDescription))
 	licenseType := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLicenceType))
 	secAuthProtection := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgSecAuthProtection))
-	c.Printer.Verbose("Properties set for creating the Snapshot: DatacenterId: %v, VolumeId: %v, Name: %v, Description: %v, LicenseType: %v, SecAuthProtection: %v",
-		dcId, volumeId, name, description, licenseType, secAuthProtection)
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+		"Properties set for creating the Snapshot: DatacenterId: %v, VolumeId: %v, Name: %v, Description: %v, "+
+			"LicenseType: %v, SecAuthProtection: %v", dcId, volumeId, name, description, licenseType, secAuthProtection))
 
 	s, resp, err := c.CloudApiV6Services.Snapshots().Create(dcId, volumeId, name, description, licenseType, secAuthProtection, queryParams)
 	if resp != nil && printer.GetId(resp) != "" {
-		c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
 	}
 	if err != nil {
 		return err
@@ -311,7 +357,20 @@ func RunSnapshotCreate(c *core.CommandConfig) error {
 	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 		return err
 	}
-	return c.Printer.Print(getSnapshotPrint(resp, c, getSnapshot(s)))
+
+	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	if err != nil {
+		return err
+	}
+
+	out, err := jsontabwriter.GenerateOutput("", allSnapshotJSONPaths, s.Snapshot,
+		printer.GetHeadersAllDefault(defaultSnapshotCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, out)
+	return nil
 }
 
 func RunSnapshotUpdate(c *core.CommandConfig) error {
@@ -319,12 +378,16 @@ func RunSnapshotUpdate(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
-	c.Printer.Verbose("Updating Snapshot with id: %v...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSnapshotId)))
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+		"Updating Snapshot with id: %v...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSnapshotId))))
+
 	s, resp, err := c.CloudApiV6Services.Snapshots().Update(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSnapshotId)),
 		getSnapshotPropertiesSet(c), queryParams)
 	if resp != nil && printer.GetId(resp) != "" {
-		c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
 	}
 	if err != nil {
 		return err
@@ -333,7 +396,20 @@ func RunSnapshotUpdate(c *core.CommandConfig) error {
 	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 		return err
 	}
-	return c.Printer.Print(getSnapshotPrint(resp, c, getSnapshot(s)))
+
+	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	if err != nil {
+		return err
+	}
+
+	out, err := jsontabwriter.GenerateOutput("", allSnapshotJSONPaths, s.Snapshot,
+		printer.GetHeadersAllDefault(defaultSnapshotCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, out)
+	return nil
 }
 
 func RunSnapshotRestore(c *core.CommandConfig) error {
@@ -341,11 +417,15 @@ func RunSnapshotRestore(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "restore snapshot"); err != nil {
 		return err
 	}
-	c.Printer.Verbose("Snapshot with id: %v is restoring...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSnapshotId)))
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+		"Snapshot with id: %v is restoring...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSnapshotId))))
+
 	resp, err := c.CloudApiV6Services.Snapshots().Restore(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeId)),
@@ -353,15 +433,18 @@ func RunSnapshotRestore(c *core.CommandConfig) error {
 		queryParams,
 	)
 	if resp != nil {
-		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
+
 	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 		return err
 	}
-	return c.Printer.Print(getSnapshotPrint(resp, c, nil))
+
+	fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("Snapshot successfully restored"))
+	return nil
 }
 
 func RunSnapshotDelete(c *core.CommandConfig) error {
@@ -369,104 +452,142 @@ func RunSnapshotDelete(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
 	snapshotId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSnapshotId))
+
 	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
 		if err := DeleteAllSnapshots(c); err != nil {
 			return err
 		}
-		return c.Printer.Print(printer.Result{Resource: c.Resource, Verb: c.Verb})
-	} else {
-		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete snapshot"); err != nil {
-			return err
-		}
-		c.Printer.Verbose("Starting deleting Snapshot with id: %v...", snapshotId)
-		resp, err := c.CloudApiV6Services.Snapshots().Delete(snapshotId, queryParams)
-		if resp != nil && printer.GetId(resp) != "" {
-			c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
-		}
-		if err != nil {
-			return err
-		}
-		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-			return err
-		}
-		return c.Printer.Print(getSnapshotPrint(resp, c, nil))
+
+		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("Snapshots successfully deleted"))
+		return nil
 	}
+
+	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete snapshot"); err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Starting deleting Snapshot with id: %v...", snapshotId))
+
+	resp, err := c.CloudApiV6Services.Snapshots().Delete(snapshotId, queryParams)
+	if resp != nil && printer.GetId(resp) != "" {
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
+	}
+	if err != nil {
+		return err
+	}
+
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("Snapshot successfully deleted"))
+	return nil
 }
 
 func getSnapshotPropertiesSet(c *core.CommandConfig) resources.SnapshotProperties {
 	input := resources.SnapshotProperties{}
+
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgName)) {
 		name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
 		input.SetName(name)
-		c.Printer.Verbose("Property Name set: %v", name)
+
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property Name set: %v", name))
 	}
+
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgDescription)) {
 		description := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDescription))
 		input.SetDescription(description)
-		c.Printer.Verbose("Property Description set: %v", description)
+
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property Description set: %v", description))
 	}
+
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgLicenceType)) {
 		licenceType := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLicenceType))
 		input.SetLicenceType(licenceType)
-		c.Printer.Verbose("Property LicenceType set: %v", licenceType)
+
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property LicenceType set: %v", licenceType))
 	}
+
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgCpuHotPlug)) {
 		cpuHotPlug := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgCpuHotPlug))
 		input.SetCpuHotPlug(cpuHotPlug)
-		c.Printer.Verbose("Property CpuHotPlug set: %v", cpuHotPlug)
+
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property CpuHotPlug set: %v", cpuHotPlug))
 	}
+
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgCpuHotUnplug)) {
 		cpuHotUnplug := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgCpuHotUnplug))
 		input.SetCpuHotUnplug(cpuHotUnplug)
-		c.Printer.Verbose("Property CpuHotUnplug set: %v", cpuHotUnplug)
+
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property CpuHotUnplug set: %v", cpuHotUnplug))
 	}
+
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgRamHotPlug)) {
 		ramHotPlug := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgRamHotPlug))
 		input.SetRamHotPlug(ramHotPlug)
-		c.Printer.Verbose("Property RamHotPlug set: %v", ramHotPlug)
+
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property RamHotPlug set: %v", ramHotPlug))
 	}
+
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgRamHotUnplug)) {
 		ramHotUnplug := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgRamHotUnplug))
 		input.SetRamHotUnplug(ramHotUnplug)
-		c.Printer.Verbose("Property RamHotUnplug set: %v", ramHotUnplug)
+
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property RamHotUnplug set: %v", ramHotUnplug))
 	}
+
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgNicHotPlug)) {
 		nicHotPlug := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgNicHotPlug))
 		input.SetNicHotPlug(nicHotPlug)
-		c.Printer.Verbose("Property NicHotPlug set: %v", nicHotPlug)
+
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property NicHotPlug set: %v", nicHotPlug))
 	}
+
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgNicHotUnplug)) {
 		nicHotUnplug := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgNicHotUnplug))
 		input.SetNicHotUnplug(nicHotUnplug)
-		c.Printer.Verbose("Property nicHotUnplug set: %v", nicHotUnplug)
+
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property nicHotUnplug set: %v", nicHotUnplug))
 	}
+
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgDiscVirtioHotPlug)) {
 		discVirtioHotPlug := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgDiscVirtioHotPlug))
 		input.SetDiscVirtioHotPlug(discVirtioHotPlug)
-		c.Printer.Verbose("Property DiscVirtioHotPlug set: %v", discVirtioHotPlug)
+
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property DiscVirtioHotPlug set: %v", discVirtioHotPlug))
 	}
+
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgDiscVirtioHotUnplug)) {
 		discVirtioHotUnplug := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgDiscVirtioHotUnplug))
 		input.SetDiscVirtioHotUnplug(discVirtioHotUnplug)
-		c.Printer.Verbose("Property DiscVirtioHotUnplug set: %v", discVirtioHotUnplug)
+
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property DiscVirtioHotUnplug set: %v", discVirtioHotUnplug))
 	}
+
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgDiscScsiHotPlug)) {
 		discScsiHotPlug := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgDiscScsiHotPlug))
 		input.SetDiscScsiHotPlug(discScsiHotPlug)
-		c.Printer.Verbose("Property DiscScsiHotPlug set: %v", discScsiHotPlug)
+
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property DiscScsiHotPlug set: %v", discScsiHotPlug))
 	}
+
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgDiscScsiHotUnplug)) {
 		discScsiHotUnplug := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgDiscScsiHotUnplug))
 		input.SetDiscScsiHotUnplug(discScsiHotUnplug)
-		c.Printer.Verbose("Property DiscScsiHotUnplug set: %v", discScsiHotUnplug)
+
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property DiscScsiHotUnplug set: %v", discScsiHotUnplug))
 	}
+
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgSecAuthProtection)) {
 		secAuthProtection := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgSecAuthProtection))
 		input.SetSecAuthProtection(secAuthProtection)
-		c.Printer.Verbose("Property SecAuthProtection set: %v", secAuthProtection)
+
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property SecAuthProtection set: %v", secAuthProtection))
 	}
+
 	return input
 }
 
@@ -475,140 +596,76 @@ func DeleteAllSnapshots(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
-	c.Printer.Verbose("Getting Snapshots...")
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Getting Snapshots..."))
+
 	snapshots, resp, err := c.CloudApiV6Services.Snapshots().List(cloudapiv6.ParentResourceListQueryParams)
 	if err != nil {
 		return err
 	}
-	if snapshotsItems, ok := snapshots.GetItemsOk(); ok && snapshotsItems != nil {
-		if len(*snapshotsItems) > 0 {
-			_ = c.Printer.Warn("Snapshots to be deleted:")
-			for _, snapshot := range *snapshotsItems {
-				delIdAndName := ""
-				if id, ok := snapshot.GetIdOk(); ok && id != nil {
-					delIdAndName += "Snapshot Id: " + *id
-				}
-				if properties, ok := snapshot.GetPropertiesOk(); ok && properties != nil {
-					if name, ok := properties.GetNameOk(); ok && name != nil {
-						delIdAndName += " Snapshot Name: " + *name
-					}
-				}
-				_ = c.Printer.Warn(delIdAndName)
+
+	snapshotsItems, ok := snapshots.GetItemsOk()
+	if !ok || snapshotsItems == nil {
+		return fmt.Errorf("could not get items of Snapshots")
+	}
+
+	if len(*snapshotsItems) <= 0 {
+		return fmt.Errorf("no Snapshots found")
+	}
+
+	fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("Snapshots to be deleted:"))
+	for _, snapshot := range *snapshotsItems {
+		delIdAndName := ""
+
+		if id, ok := snapshot.GetIdOk(); ok && id != nil {
+			delIdAndName += "Snapshot Id: " + *id
+		}
+
+		if properties, ok := snapshot.GetPropertiesOk(); ok && properties != nil {
+			if name, ok := properties.GetNameOk(); ok && name != nil {
+				delIdAndName += " Snapshot Name: " + *name
 			}
-			if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Snapshots"); err != nil {
-				return err
-			}
-			c.Printer.Verbose("Deleting all the Snapshots...")
-			var multiErr error
-			for _, snapshot := range *snapshotsItems {
-				if id, ok := snapshot.GetIdOk(); ok && id != nil {
-					c.Printer.Verbose("Starting deleting Snapshot with id: %v...", *id)
-					resp, err = c.CloudApiV6Services.Snapshots().Delete(*id, queryParams)
-					if resp != nil && printer.GetId(resp) != "" {
-						c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
-					}
-					if err != nil {
-						multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
-						continue
-					} else {
-						_ = c.Printer.Warn(fmt.Sprintf(constants.MessageDeletingAll, c.Resource, *id))
-					}
-					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-						multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *id, err))
-						continue
-					}
-				}
-			}
-			if multiErr != nil {
-				return multiErr
-			}
-			return nil
-		} else {
-			return errors.New("no Snapshots found")
 		}
-	} else {
-		return errors.New("could not get items of Snapshots")
+
+		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
-}
 
-// Output Printing
+	if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Snapshots"); err != nil {
+		return err
+	}
 
-var defaultSnapshotCols = []string{"SnapshotId", "Name", "LicenceType", "Size", "State"}
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Deleting all the Snapshots..."))
 
-type SnapshotPrint struct {
-	SnapshotId  string  `json:"SnapshotId,omitempty"`
-	Name        string  `json:"Name,omitempty"`
-	LicenceType string  `json:"LicenceType,omitempty"`
-	Size        float32 `json:"Size,omitempty"`
-	State       string  `json:"State,omitempty"`
-}
-
-func getSnapshotPrint(resp *resources.Response, c *core.CommandConfig, s []resources.Snapshot) printer.Result {
-	r := printer.Result{}
-	if c != nil {
-		if resp != nil {
-			r.ApiResponse = resp
-			r.Resource = c.Resource
-			r.Verb = c.Verb
-			r.WaitForRequest = viper.GetBool(core.GetFlagName(c.NS, constants.ArgWaitForRequest))
+	var multiErr error
+	for _, snapshot := range *snapshotsItems {
+		id, ok := snapshot.GetIdOk()
+		if !ok || id == nil {
+			continue
 		}
-		if s != nil {
-			r.OutputJSON = s
-			r.KeyValue = getSnapshotsKVMaps(s)
-			r.Columns = printer.GetHeadersAllDefault(defaultSnapshotCols, viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)))
+
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Starting deleting Snapshot with id: %v...", *id))
+
+		resp, err = c.CloudApiV6Services.Snapshots().Delete(*id, queryParams)
+		if resp != nil && printer.GetId(resp) != "" {
+			fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
+		}
+		if err != nil {
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
+			continue
+		}
+
+		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput(constants.MessageDeletingAll, c.Resource, *id))
+
+		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *id, err))
 		}
 	}
-	return r
-}
 
-func getSnapshots(snapshots resources.Snapshots) []resources.Snapshot {
-	ss := make([]resources.Snapshot, 0)
-	if items, ok := snapshots.GetItemsOk(); ok && items != nil {
-		for _, s := range *items {
-			ss = append(ss, resources.Snapshot{Snapshot: s})
-		}
+	if multiErr != nil {
+		return multiErr
 	}
-	return ss
-}
 
-func getSnapshot(s *resources.Snapshot) []resources.Snapshot {
-	ss := make([]resources.Snapshot, 0)
-	if s != nil {
-		ss = append(ss, resources.Snapshot{Snapshot: s.Snapshot})
-	}
-	return ss
-}
-
-func getSnapshotsKVMaps(ss []resources.Snapshot) []map[string]interface{} {
-	out := make([]map[string]interface{}, 0, len(ss))
-	for _, s := range ss {
-		o := getSnapshotKVMap(s)
-		out = append(out, o)
-	}
-	return out
-}
-
-func getSnapshotKVMap(s resources.Snapshot) map[string]interface{} {
-	var ssPrint SnapshotPrint
-	if ssId, ok := s.GetIdOk(); ok && ssId != nil {
-		ssPrint.SnapshotId = *ssId
-	}
-	if properties, ok := s.GetPropertiesOk(); ok && properties != nil {
-		if name, ok := properties.GetNameOk(); ok && name != nil {
-			ssPrint.Name = *name
-		}
-		if licenceType, ok := properties.GetLicenceTypeOk(); ok && licenceType != nil {
-			ssPrint.LicenceType = *licenceType
-		}
-		if size, ok := properties.GetSizeOk(); ok && size != nil {
-			ssPrint.Size = *size
-		}
-	}
-	if metadata, ok := s.GetMetadataOk(); ok && metadata != nil {
-		if state, ok := metadata.GetStateOk(); ok && state != nil {
-			ssPrint.State = *state
-		}
-	}
-	return structs.Map(ssPrint)
+	return nil
 }

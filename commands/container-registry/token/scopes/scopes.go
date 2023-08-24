@@ -17,6 +17,19 @@ import (
 	"github.com/spf13/viper"
 )
 
+var (
+	allScopeJSONPaths = map[string]string{
+		"ScopeId":     "",
+		"DisplayName": "",
+		"TokenId":     "",
+		"Type":        "",
+		"Actions":     "",
+	}
+
+	defaultScopeCols = []string{"ScopeId", "DisplayName", "Type", "Actions"}
+	allScopeCols     = []string{"ScopeId", "TokenId", "DisplayName", "Type", "Actions"}
+)
+
 func TokenScopesCmd() *core.Command {
 	scopesCmd := &core.Command{
 		Command: &cobra.Command{
@@ -54,8 +67,8 @@ func getTokenScopePrint(
 		}
 		if response != nil {
 			r.OutputJSON = response
-			r.Columns = printer.GetHeadersListAll(allColsScopes, defaultScopeCols, "TokenId", nil, viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll))) // headers
-			r.KeyValue = getTokensScopeRows(response)                                                                                                       // map header -> rows
+			r.Columns = printer.GetHeadersListAll(allScopeCols, defaultScopeCols, "TokenId", nil, viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll))) // headers
+			r.KeyValue = getTokensScopeRows(response)                                                                                                      // map header -> rows
 		}
 	}
 	return r
@@ -94,8 +107,6 @@ func getTokensScopeRows(token *sdkgo.TokenResponse) []map[string]interface{} {
 	return out
 }
 
-var allColsScopes = structs.Names(TokenScopePrint{})
-
 func TokensIds(regId string) []string {
 	svcToken := resources.NewTokenService(client.Must(), context.Background())
 	var allTokens []sdkgo.TokenResponse
@@ -129,8 +140,3 @@ func TokensIds(regId string) []string {
 		},
 	)
 }
-
-var (
-	defaultScopeCols = []string{"ScopeId", "DisplayName", "Type", "Actions"}
-	allScopeCols     = []string{"ScopeId", "TokenId", "DisplayName", "Type", "Actions"}
-)

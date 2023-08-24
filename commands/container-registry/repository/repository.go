@@ -2,9 +2,11 @@ package repository
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/registry"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -40,18 +42,14 @@ func RegRepoDeleteCmd() *core.Command {
 func CmdDelete(c *core.CommandConfig) error {
 	regId := viper.GetString("registry-id")
 	repoName := viper.GetString("name")
+
 	res, _ := c.ContainerRegistryServices.Repository().Delete(regId, repoName)
 	if res.StatusCode == 204 {
-		err := c.Printer.Print("Repository is being deleted")
-		if err != nil {
-			return err
-		}
+		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("Repository is being deleted"))
 	} else {
-		err := c.Printer.Print("Repository could not be deleted")
-		if err != nil {
-			return err
-		}
+		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("Repository could not be deleted"))
 	}
+
 	return nil
 }
 

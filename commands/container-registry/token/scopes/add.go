@@ -2,7 +2,9 @@ package scopes
 
 import (
 	"context"
+	"fmt"
 
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	sdkgo "github.com/ionos-cloud/sdk-go-container-registry"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/registry"
@@ -69,12 +71,12 @@ func CmdTokenScopesAdd(c *core.CommandConfig) error {
 	var scope sdkgo.Scope
 	var err error
 
-	reg_id, err := c.Command.Command.Flags().GetString(FlagRegId)
+	regId, err := c.Command.Command.Flags().GetString(FlagRegId)
 	if err != nil {
 		return err
 	}
 
-	token_id, err := c.Command.Command.Flags().GetString(FlagTokenId)
+	tokenId, err := c.Command.Command.Flags().GetString(FlagTokenId)
 	if err != nil {
 		return err
 	}
@@ -89,16 +91,16 @@ func CmdTokenScopesAdd(c *core.CommandConfig) error {
 		return err
 	}
 
-	scope_type, err := c.Command.Command.Flags().GetString(FlagType)
+	scopeType, err := c.Command.Command.Flags().GetString(FlagType)
 	if err != nil {
 		return err
 	}
 
 	scope.SetName(name)
 	scope.SetActions(actions)
-	scope.SetType(scope_type)
+	scope.SetType(scopeType)
 
-	token, _, err := c.ContainerRegistryServices.Token().Get(token_id, reg_id)
+	token, _, err := c.ContainerRegistryServices.Token().Get(tokenId, regId)
 	if err != nil {
 		return err
 	}
@@ -114,10 +116,22 @@ func CmdTokenScopesAdd(c *core.CommandConfig) error {
 	scopes = append(scopes, scope)
 	updateToken.SetScopes(scopes)
 
-	tokenUp, _, err := c.ContainerRegistryServices.Token().Patch(token_id, *updateToken, reg_id)
+	tokenUp, _, err := c.ContainerRegistryServices.Token().Patch(tokenId, *updateToken, regId)
 	if err != nil {
 		return err
 	}
 
-	return c.Printer.Print(getTokenScopePrint(nil, c, &tokenUp, true))
+	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	if err != nil {
+		return err
+	}
+
+	out, err := jsontabwriter.GenerateOutput("properties.scopes", allScopeJSONPaths, tokenUp,
+		printer.GetHeaders(allScopeCols, defaultScopeCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, out)
+	return nil
 }

@@ -7,7 +7,6 @@ import (
 	"io"
 	"os"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/fatih/structs"
@@ -16,6 +15,8 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/json2table"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/utils/clierror"
@@ -30,6 +31,26 @@ const (
 	serverCubeType       = "CUBE"
 	serverEnterpriseType = "ENTERPRISE"
 	serverVCPUType       = "VCPU"
+)
+
+var (
+	allServerJSONPaths = map[string]string{
+		"ServerId":         "id",
+		"Name":             "properties.name",
+		"AvailabilityZone": "properties.availabilityZone",
+		"State":            "metadata.state",
+		"Cores":            "properties.cores",
+		"Ram":              "properties.ram",
+		"CpuFamily":        "properties.cpuFamily",
+		"VmState":          "properties.vmState",
+		"BootVolumeId":     "properties.bootVolume.id",
+		"BootCdromId":      "properties.bootCdrom.id",
+		"TemplateId":       "properties.templateUuid",
+		"Type":             "type",
+	}
+
+	defaultServerCols = []string{"ServerId", "Name", "Type", "AvailabilityZone", "Cores", "Ram", "CpuFamily", "VmState", "State"}
+	allServerCols     = []string{"ServerId", "DatacenterId", "Name", "AvailabilityZone", "Cores", "Ram", "CpuFamily", "VmState", "State", "TemplateId", "Type", "BootCdromId", "BootVolumeId"}
 )
 
 func ServerCmd() *core.Command {
@@ -565,41 +586,81 @@ func RunServerListAll(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	if !structs.IsZero(listQueryParams) {
 		if listQueryParams.Filters != nil {
 			filters := *listQueryParams.Filters
+
 			if val, ok := filters["ram"]; ok {
 				convertedSize, err := utils.ConvertSize(val[0], utils.MegaBytes)
 				if err != nil {
 					return err
 				}
+
 				filters["ram"] = []string{strconv.Itoa(convertedSize)}
 				listQueryParams.Filters = &filters
 			}
 		}
 	}
+
 	// Don't apply listQueryParams to parent resource, as it would have unexpected side effects on the results
 	datacenters, _, err := c.CloudApiV6Services.DataCenters().List(cloudapiv6.ParentResourceListQueryParams)
 	if err != nil {
 		return err
 	}
+
 	allDcs := getDataCenters(datacenters)
-	var allServers []resources.Server
+	var allServers []ionoscloud.Servers
+	var allServersConverted []map[string]interface{}
 	totalTime := time.Duration(0)
+
 	for _, dc := range allDcs {
+		id, ok := dc.GetIdOk()
+		if !ok || id == nil {
+			return fmt.Errorf("could not retrieve Datacenter Id")
+		}
+
 		servers, resp, err := c.CloudApiV6Services.Servers().List(*dc.GetId(), listQueryParams)
 		if err != nil {
 			return err
 		}
-		allServers = append(allServers, getServers(servers)...)
+
+		items, ok := servers.GetItemsOk()
+		if !ok || items == nil {
+			continue
+		}
+
+		for _, item := range *items {
+			temp, err := json2table.ConvertJSONToTable("", allServerJSONPaths, item)
+			if err != nil {
+				return fmt.Errorf("could not convert from JSON to Table format: %w", err)
+			}
+
+			temp[0]["DatacenterId"] = *id
+			allServersConverted = append(allServersConverted, temp[0])
+		}
+
+		allServers = append(allServers, servers.Servers)
 		totalTime += resp.RequestTime
 	}
 
 	if totalTime != time.Duration(0) {
-		c.Printer.Verbose(constants.MessageRequestTime, totalTime)
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, totalTime))
 	}
 
-	return c.Printer.Print(getServerPrint(nil, c, allServers))
+	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	if err != nil {
+		return err
+	}
+
+	out, err := jsontabwriter.GenerateOutputPreconverted(allServers, allServersConverted,
+		printer.GetHeaders(allServerCols, defaultServerCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, out)
+	return nil
 }
 
 func RunServerList(c *core.CommandConfig) error {
@@ -610,27 +671,44 @@ func RunServerList(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	if !structs.IsZero(listQueryParams) {
 		if listQueryParams.Filters != nil {
 			filters := *listQueryParams.Filters
+
 			if val, ok := filters["ram"]; ok {
 				convertedSize, err := utils.ConvertSize(val[0], utils.MegaBytes)
 				if err != nil {
 					return err
 				}
+
 				filters["ram"] = []string{strconv.Itoa(convertedSize)}
 				listQueryParams.Filters = &filters
 			}
 		}
 	}
+
 	servers, resp, err := c.CloudApiV6Services.Servers().List(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)), listQueryParams)
 	if resp != nil {
-		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getServerPrint(nil, c, getServers(servers)))
+
+	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	if err != nil {
+		return err
+	}
+
+	out, err := jsontabwriter.GenerateOutput("items", allServerJSONPaths, servers.Servers,
+		printer.GetHeaders(allServerCols, defaultServerCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, out)
+	return nil
 }
 
 func RunServerGet(c *core.CommandConfig) error {
@@ -638,8 +716,12 @@ func RunServerGet(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
-	c.Printer.Verbose("Server with id: %v is getting... ", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)))
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+		"Server with id: %v is getting... ", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))))
+
 	if err := utils.WaitForState(c, waiter.ServerStateInterrogator, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))); err != nil {
 		return err
 	}
@@ -649,12 +731,25 @@ func RunServerGet(c *core.CommandConfig) error {
 		queryParams,
 	)
 	if resp != nil {
-		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getServerPrint(nil, c, []resources.Server{*svr}))
+
+	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	if err != nil {
+		return err
+	}
+
+	out, err := jsontabwriter.GenerateOutput("", allServerJSONPaths, svr.Server,
+		printer.GetHeaders(allServerCols, defaultServerCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, out)
+	return nil
 }
 
 func RunServerCreate(c *core.CommandConfig) error {
@@ -662,11 +757,14 @@ func RunServerCreate(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
+
 	input, err := getNewServer(c)
 	if err != nil {
 		return err
 	}
+
 	// If Server is of type CUBE, it will create an attached Volume
 	if viper.GetString(core.GetFlagName(c.NS, constants.FlagType)) == serverCubeType {
 		// Volume Properties
@@ -674,6 +772,7 @@ func RunServerCreate(c *core.CommandConfig) error {
 		if err != nil {
 			return err
 		}
+
 		// Attach Storage
 		input.SetEntities(ionoscloud.ServerEntities{
 			Volumes: &ionoscloud.AttachedVolumes{
@@ -681,9 +780,10 @@ func RunServerCreate(c *core.CommandConfig) error {
 			},
 		})
 	}
+
 	svr, resp, err := c.CloudApiV6Services.Servers().Create(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)), *input, queryParams)
 	if resp != nil && printer.GetId(resp) != "" {
-		c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
 	}
 	if err != nil {
 		return err
@@ -692,11 +792,13 @@ func RunServerCreate(c *core.CommandConfig) error {
 	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 		return err
 	}
+
 	if viper.GetBool(core.GetFlagName(c.NS, constants.ArgWaitForState)) {
 		if id, ok := svr.GetIdOk(); ok && id != nil {
 			if err = utils.WaitForState(c, waiter.ServerStateInterrogator, *id); err != nil {
 				return err
 			}
+
 			if svr, _, err = c.CloudApiV6Services.Servers().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 				*id, queryParams); err != nil {
 				return err
@@ -705,7 +807,20 @@ func RunServerCreate(c *core.CommandConfig) error {
 			return errors.New("error getting new server id")
 		}
 	}
-	return c.Printer.Print(getServerPrint(resp, c, []resources.Server{*svr}))
+
+	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	if err != nil {
+		return err
+	}
+
+	out, err := jsontabwriter.GenerateOutput("", allServerJSONPaths, svr.Server,
+		printer.GetHeaders(allServerCols, defaultServerCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, out)
+	return nil
 }
 
 func RunServerUpdate(c *core.CommandConfig) error {
@@ -713,13 +828,18 @@ func RunServerUpdate(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
+
 	input, err := getUpdateServerInfo(c)
 	if err != nil {
 		return err
 	}
-	c.Printer.Verbose("Updating Server with ID: %v in Datacenter with ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+		"Updating Server with ID: %v in Datacenter with ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))))
+
 	svr, resp, err := c.CloudApiV6Services.Servers().Update(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
@@ -727,7 +847,7 @@ func RunServerUpdate(c *core.CommandConfig) error {
 		queryParams,
 	)
 	if resp != nil && printer.GetId(resp) != "" {
-		c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
 	}
 	if err != nil {
 		return err
@@ -736,16 +856,31 @@ func RunServerUpdate(c *core.CommandConfig) error {
 	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 		return err
 	}
+
 	if viper.GetBool(core.GetFlagName(c.NS, constants.ArgWaitForState)) {
 		if err = utils.WaitForState(c, waiter.ServerStateInterrogator, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))); err != nil {
 			return err
 		}
+
 		if svr, _, err = c.CloudApiV6Services.Servers().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)), queryParams); err != nil {
 			return err
 		}
 	}
-	return c.Printer.Print(getServerPrint(resp, c, []resources.Server{*svr}))
+
+	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	if err != nil {
+		return err
+	}
+
+	out, err := jsontabwriter.GenerateOutput("", allServerJSONPaths, svr.Server,
+		printer.GetHeaders(allServerCols, defaultServerCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, out)
+	return nil
 }
 
 func RunServerDelete(c *core.CommandConfig) error {
@@ -753,31 +888,41 @@ func RunServerDelete(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
+
 	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
 		if err := DeleteAllServers(c); err != nil {
 			return err
 		}
-		return c.Printer.Print(printer.Result{Resource: c.Resource, Verb: c.Verb})
-	} else {
-		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete server"); err != nil {
-			return err
-		}
-		c.Printer.Verbose("Starting deleting Server with id: %v from datacenter with id: %v... ", serverId, dcId)
-		resp, err := c.CloudApiV6Services.Servers().Delete(dcId, serverId, queryParams)
-		if resp != nil && printer.GetId(resp) != "" {
-			c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
-		}
-		if err != nil {
-			return err
-		}
-		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-			return err
-		}
-		return c.Printer.Print(getServerPrint(resp, c, nil))
+
+		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("Servers successfully deleted"))
+		return nil
 	}
+
+	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete server"); err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+		"Starting deleting Server with id: %v from datacenter with id: %v... ", serverId, dcId))
+
+	resp, err := c.CloudApiV6Services.Servers().Delete(dcId, serverId, queryParams)
+	if resp != nil && printer.GetId(resp) != "" {
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
+	}
+	if err != nil {
+		return err
+	}
+
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("Server successfully deleted"))
+	return nil
 }
 
 func RunServerStart(c *core.CommandConfig) error {
@@ -785,18 +930,21 @@ func RunServerStart(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "start server"); err != nil {
 		return err
 	}
-	c.Printer.Verbose("Server is starting... ")
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Server is starting... "))
+
 	resp, err := c.CloudApiV6Services.Servers().Start(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
 		queryParams,
 	)
 	if resp != nil {
-		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 	if err != nil {
 		return err
@@ -805,7 +953,9 @@ func RunServerStart(c *core.CommandConfig) error {
 	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 		return err
 	}
-	return c.Printer.Print(getServerPrint(resp, c, nil))
+
+	fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("Server successfully started"))
+	return nil
 }
 
 func RunServerStop(c *core.CommandConfig) error {
@@ -813,18 +963,22 @@ func RunServerStop(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
+
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "stop server"); err != nil {
 		return err
 	}
-	c.Printer.Verbose("Server is stopping... ")
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Server is stopping... "))
+
 	resp, err := c.CloudApiV6Services.Servers().Stop(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
 		queryParams,
 	)
 	if resp != nil {
-		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 	if err != nil {
 		return err
@@ -833,7 +987,9 @@ func RunServerStop(c *core.CommandConfig) error {
 	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 		return err
 	}
-	return c.Printer.Print(getServerPrint(resp, c, nil))
+
+	fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("Server successfully stopped"))
+	return nil
 }
 
 func RunServerSuspend(c *core.CommandConfig) error {
@@ -841,18 +997,22 @@ func RunServerSuspend(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
+
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "suspend cube server"); err != nil {
 		return err
 	}
-	c.Printer.Verbose("Server is Suspending... ")
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Server is Suspending... "))
+
 	resp, err := c.CloudApiV6Services.Servers().Suspend(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
 		queryParams,
 	)
 	if resp != nil {
-		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 	if err != nil {
 		return err
@@ -861,7 +1021,9 @@ func RunServerSuspend(c *core.CommandConfig) error {
 	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 		return err
 	}
-	return c.Printer.Print(getServerPrint(resp, c, nil))
+
+	fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("Server successfully suspended"))
+	return nil
 }
 
 func RunServerReboot(c *core.CommandConfig) error {
@@ -869,18 +1031,22 @@ func RunServerReboot(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
+
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "reboot server"); err != nil {
 		return err
 	}
-	c.Printer.Verbose("Server is rebooting... ")
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Server is rebooting... "))
+
 	resp, err := c.CloudApiV6Services.Servers().Reboot(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
 		queryParams,
 	)
 	if resp != nil {
-		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 	if err != nil {
 		return err
@@ -889,7 +1055,9 @@ func RunServerReboot(c *core.CommandConfig) error {
 	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 		return err
 	}
-	return c.Printer.Print(getServerPrint(resp, c, nil))
+
+	fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("Server successfully rebooted"))
+	return nil
 }
 
 func RunServerResume(c *core.CommandConfig) error {
@@ -897,18 +1065,22 @@ func RunServerResume(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
+
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "resume cube server"); err != nil {
 		return err
 	}
-	c.Printer.Verbose("Server is resuming... ")
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Server is resuming... "))
+
 	resp, err := c.CloudApiV6Services.Servers().Resume(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
 		queryParams,
 	)
 	if resp != nil {
-		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 	if err != nil {
 		return err
@@ -917,45 +1089,60 @@ func RunServerResume(c *core.CommandConfig) error {
 	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 		return err
 	}
-	return c.Printer.Print(getServerPrint(resp, c, nil))
+
+	fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("Server successfully resumed"))
+	return nil
 }
 
 func getUpdateServerInfo(c *core.CommandConfig) (*resources.ServerProperties, error) {
 	input := ionoscloud.ServerProperties{}
+
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgName)) {
 		name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
 		input.SetName(name)
-		c.Printer.Verbose("Property name set: %v ", name)
+
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property name set: %v ", name))
 	}
+
 	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagCpuFamily)) {
 		cpuFamily := viper.GetString(core.GetFlagName(c.NS, constants.FlagCpuFamily))
-		c.Printer.Verbose("Property CpuFamily set: %v ", cpuFamily)
 		input.SetCpuFamily(cpuFamily)
+
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property CpuFamily set: %v ", cpuFamily))
 	}
+
 	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagAvailabilityZone)) {
 		availabilityZone := viper.GetString(core.GetFlagName(c.NS, constants.FlagAvailabilityZone))
-		c.Printer.Verbose("Property AvailabilityZone set: %v ", availabilityZone)
 		input.SetAvailabilityZone(availabilityZone)
+
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property AvailabilityZone set: %v ", availabilityZone))
 	}
+
 	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagCores)) {
 		cores := viper.GetInt32(core.GetFlagName(c.NS, constants.FlagCores))
-		c.Printer.Verbose("Property Cores set: %v ", cores)
 		input.SetCores(cores)
+
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property Cores set: %v ", cores))
 	}
+
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeId)) {
 		volumeId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeId))
-		c.Printer.Verbose("Property BootVolume set: %v ", volumeId)
 		input.SetBootVolume(ionoscloud.ResourceReference{
 			Id: &volumeId,
 		})
+
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property BootVolume set: %v ", volumeId))
 	}
+
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgCdromId)) {
 		cdromId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgCdromId))
-		c.Printer.Verbose("Property BootCdrom set: %v ", cdromId)
 		input.SetBootCdrom(ionoscloud.ResourceReference{
 			Id: &cdromId,
 		})
+
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property BootCdrom set: %v ", cdromId))
 	}
+
 	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagRam)) {
 		size, err := utils.ConvertSize(
 			viper.GetString(core.GetFlagName(c.NS, constants.FlagRam)),
@@ -964,9 +1151,11 @@ func getUpdateServerInfo(c *core.CommandConfig) (*resources.ServerProperties, er
 		if err != nil {
 			return nil, err
 		}
-		c.Printer.Verbose("Property Ram set: %vMB ", int32(size))
 		input.SetRam(int32(size))
+
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property Ram set: %vMB ", int32(size)))
 	}
+
 	return &resources.ServerProperties{
 		ServerProperties: input,
 	}, nil
@@ -974,15 +1163,18 @@ func getUpdateServerInfo(c *core.CommandConfig) (*resources.ServerProperties, er
 
 func getNewServer(c *core.CommandConfig) (*resources.Server, error) {
 	input := resources.ServerProperties{}
+
 	serverType := viper.GetString(core.GetFlagName(c.NS, constants.FlagType))
 	availabilityZone := viper.GetString(core.GetFlagName(c.NS, constants.FlagAvailabilityZone))
 	name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
+
 	input.SetType(serverType)
 	input.SetAvailabilityZone(availabilityZone)
 	input.SetName(name)
-	c.Printer.Verbose("Property Type set: %v", serverType)
-	c.Printer.Verbose("Property AvailabilityZone set: %v", availabilityZone)
-	c.Printer.Verbose("Property Name set: %v", name)
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property Type set: %v", serverType))
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property AvailabilityZone set: %v", availabilityZone))
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property Name set: %v", name))
 
 	// CUBE Server Properties
 	if viper.GetString(core.GetFlagName(c.NS, constants.FlagType)) == serverCubeType {
@@ -1006,7 +1198,8 @@ func getNewServer(c *core.CommandConfig) (*resources.Server, error) {
 		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgTemplateId)) {
 			templateUuid := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTemplateId))
 			input.SetTemplateUuid(templateUuid)
-			c.Printer.Verbose("Property TemplateUuid set: %v", templateUuid)
+
+			fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property TemplateUuid set: %v", templateUuid))
 		}
 	}
 
@@ -1016,11 +1209,14 @@ func getNewServer(c *core.CommandConfig) (*resources.Server, error) {
 		if !input.HasName() {
 			input.SetName("Unnamed Server")
 		}
+
 		if viper.IsSet(core.GetFlagName(c.NS, constants.FlagCores)) {
 			cores := viper.GetInt32(core.GetFlagName(c.NS, constants.FlagCores))
 			input.SetCores(cores)
-			c.Printer.Verbose("Property Cores set: %v", cores)
+
+			fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property Cores set: %v", cores))
 		}
+
 		if viper.IsSet(core.GetFlagName(c.NS, constants.FlagRam)) {
 			size, err := utils.ConvertSize(
 				viper.GetString(core.GetFlagName(c.NS, constants.FlagRam)),
@@ -1029,8 +1225,10 @@ func getNewServer(c *core.CommandConfig) (*resources.Server, error) {
 			if err != nil {
 				return nil, err
 			}
+
 			input.SetRam(int32(size))
-			c.Printer.Verbose("Property Ram set: %vMB", int32(size))
+
+			fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property Ram set: %vMB", int32(size)))
 		}
 	}
 
@@ -1047,7 +1245,8 @@ func getNewServer(c *core.CommandConfig) (*resources.Server, error) {
 		if viper.IsSet(core.GetFlagName(c.NS, constants.FlagCores)) {
 			cores := viper.GetInt32(core.GetFlagName(c.NS, constants.FlagCores))
 			input.SetCores(cores)
-			c.Printer.Verbose("Property Cores set: %v", cores)
+
+			fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property Cores set: %v", cores))
 		}
 		if viper.IsSet(core.GetFlagName(c.NS, constants.FlagRam)) {
 			size, err := utils.ConvertSize(
@@ -1057,8 +1256,10 @@ func getNewServer(c *core.CommandConfig) (*resources.Server, error) {
 			if err != nil {
 				return nil, err
 			}
+
 			input.SetRam(int32(size))
-			c.Printer.Verbose("Property Ram set: %vMB", int32(size))
+
+			fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property Ram set: %vMB", int32(size)))
 		}
 	}
 
@@ -1071,33 +1272,44 @@ func getNewServer(c *core.CommandConfig) (*resources.Server, error) {
 
 func getNewDAS(c *core.CommandConfig) (*resources.Volume, error) {
 	volumeProper := resources.VolumeProperties{}
+
 	volumeProper.SetType("DAS")
 	volumeProper.SetName(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeName)))
 	volumeProper.SetBus(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgBus)))
+
 	if (!viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgImageId)) &&
 		!viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgImageAlias))) ||
 		viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgLicenceType)) {
 		volumeProper.SetLicenceType(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLicenceType)))
 	}
+
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgImageId)) {
 		volumeProper.SetImage(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgImageId)))
 	}
+
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgImageAlias)) {
 		volumeProper.SetImageAlias(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgImageAlias)))
 	}
+
 	if viper.IsSet(core.GetFlagName(c.NS, constants.ArgPassword)) {
 		volumeProper.SetImagePassword(viper.GetString(core.GetFlagName(c.NS, constants.ArgPassword)))
 	}
+
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgSshKeyPaths)) {
 		sshKeysPaths := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgSshKeyPaths))
-		c.Printer.Verbose("SSH Key Paths: %v", sshKeysPaths)
+
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("SSH Key Paths: %v", sshKeysPaths))
+
 		sshKeys, err := getSshKeysFromPaths(sshKeysPaths)
 		if err != nil {
 			return nil, err
 		}
+
 		volumeProper.SetSshKeys(sshKeys)
-		c.Printer.Verbose("Property SshKeys set")
+
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property SshKeys set"))
 	}
+
 	return &resources.Volume{
 		Volume: ionoscloud.Volume{
 			Properties: &volumeProper.VolumeProperties,
@@ -1110,105 +1322,81 @@ func DeleteAllServers(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
-	c.Printer.Verbose("Datacenter ID: %v", dcId)
-	c.Printer.Verbose("Getting Servers...")
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Datacenter ID: %v", dcId))
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Getting Servers..."))
+
 	servers, resp, err := c.CloudApiV6Services.Servers().List(dcId, cloudapiv6.ParentResourceListQueryParams)
 	if err != nil {
 		return err
 	}
-	if serversItems, ok := servers.GetItemsOk(); ok && serversItems != nil {
-		if len(*serversItems) > 0 {
-			_ = c.Printer.Warn("Servers to be deleted:")
-			for _, server := range *serversItems {
-				delIdAndName := ""
-				if id, ok := server.GetIdOk(); ok && id != nil {
-					delIdAndName += "Server Id: " + *id
-				}
-				if properties, ok := server.GetPropertiesOk(); ok && properties != nil {
-					if name, ok := properties.GetNameOk(); ok && name != nil {
-						delIdAndName += " Server Name: " + *name
-					}
-				}
-				_ = c.Printer.Warn(delIdAndName)
-			}
-			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Servers"); err != nil {
-				return err
-			}
-			c.Printer.Verbose("Deleting all the Servers...")
-			var multiErr error
-			for _, server := range *serversItems {
-				if id, ok := server.GetIdOk(); ok && id != nil {
-					c.Printer.Verbose("Starting deleting Server with id: %v from datacenter with id: %v... ", *id, dcId)
-					resp, err = c.CloudApiV6Services.Servers().Delete(dcId, *id, queryParams)
-					if resp != nil && printer.GetId(resp) != "" {
-						c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
-					}
-					if err != nil {
-						multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
-						continue
-					} else {
-						_ = c.Printer.Warn(fmt.Sprintf(constants.MessageDeletingAll, c.Resource, *id))
-					}
-					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-						multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *id, err))
-						continue
-					}
-				}
-			}
-			if multiErr != nil {
-				return multiErr
-			}
-			return nil
-		} else {
-			return errors.New("no Servers found")
-		}
-	} else {
-		return errors.New("could not get items of Servers")
+
+	serversItems, ok := servers.GetItemsOk()
+	if !ok || serversItems == nil {
+		return fmt.Errorf("could not get items of Servers")
 	}
-}
 
-// Output Printing
+	if len(*serversItems) <= 0 {
+		return fmt.Errorf("no Servers found")
+	}
 
-var (
-	defaultServerCols = []string{"ServerId", "Name", "Type", "AvailabilityZone", "Cores", "Ram", "CpuFamily", "VmState", "State"}
-	allServerCols     = []string{"ServerId", "DatacenterId", "Name", "AvailabilityZone", "Cores", "Ram", "CpuFamily", "VmState", "State", "TemplateId", "Type", "BootCdromId", "BootVolumeId"}
-)
+	fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("Servers to be deleted:"))
+	for _, server := range *serversItems {
+		delIdAndName := ""
 
-type ServerPrint struct {
-	ServerId         string `json:"ServerId,omitempty"`
-	DatacenterId     string `json:"DatacenterId,omitempty"`
-	Name             string `json:"Name,omitempty"`
-	AvailabilityZone string `json:"AvailabilityZone,omitempty"`
-	State            string `json:"State,omitempty"`
-	Cores            int32  `json:"Cores,omitempty"`
-	Ram              string `json:"Ram,omitempty"`
-	CpuFamily        string `json:"CpuFamily,omitempty"`
-	VmState          string `json:"VmState,omitempty"`
-	BootVolumeId     string `json:"BootVolumeId,omitempty"`
-	BootCdromId      string `json:"BootCdromId,omitempty"`
-	TemplateId       string `json:"TemplateId,omitempty"`
-	Type             string `json:"Type,omitempty"`
-}
-
-func getServerPrint(resp *resources.Response, c *core.CommandConfig, ss []resources.Server) printer.Result {
-	r := printer.Result{}
-	if c != nil {
-		if resp != nil {
-			r.ApiResponse = resp
-			r.Resource = c.Resource
-			r.Verb = c.Verb
-			r.WaitForRequest = viper.GetBool(core.GetFlagName(c.NS, constants.ArgWaitForRequest))
-			r.WaitForState = viper.GetBool(core.GetFlagName(c.NS, constants.ArgWaitForState))
+		if id, ok := server.GetIdOk(); ok && id != nil {
+			delIdAndName += "Server Id: " + *id
 		}
-		if ss != nil {
-			r.OutputJSON = ss
-			r.KeyValue = getServersKVMaps(ss)
-			r.Columns = printer.GetHeadersListAll(allServerCols, defaultServerCols, "DatacenterId", viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)), viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)))
+
+		if properties, ok := server.GetPropertiesOk(); ok && properties != nil {
+			if name, ok := properties.GetNameOk(); ok && name != nil {
+				delIdAndName += " Server Name: " + *name
+			}
+		}
+
+		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput(delIdAndName))
+	}
+
+	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Servers"); err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Deleting all the Servers..."))
+
+	var multiErr error
+	for _, server := range *serversItems {
+		id, ok := server.GetIdOk()
+		if !ok || id == nil {
+			continue
+		}
+
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+			"Starting deleting Server with id: %v from datacenter with id: %v... ", *id, dcId))
+
+		resp, err = c.CloudApiV6Services.Servers().Delete(dcId, *id, queryParams)
+		if resp != nil && printer.GetId(resp) != "" {
+			fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
+		}
+		if err != nil {
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
+			continue
+		}
+
+		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput(constants.MessageDeletingAll, c.Resource, *id))
+
+		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *id, err))
 		}
 	}
-	return r
+
+	if multiErr != nil {
+		return multiErr
+	}
+
+	return nil
 }
 
 func getServersCols(argCols string, argAll string, outErr io.Writer) []string {
@@ -1249,72 +1437,4 @@ func getServersCols(argCols string, argAll string, outErr io.Writer) []string {
 	} else {
 		return defaultServerCols
 	}
-}
-
-func getServers(servers resources.Servers) []resources.Server {
-	serverObjs := make([]resources.Server, 0)
-	if items, ok := servers.GetItemsOk(); ok && items != nil {
-		for _, server := range *items {
-			serverObjs = append(serverObjs, resources.Server{Server: server})
-		}
-	}
-	return serverObjs
-}
-
-func getServersKVMaps(ss []resources.Server) []map[string]interface{} {
-	out := make([]map[string]interface{}, 0, len(ss))
-	for _, s := range ss {
-		var serverPrint ServerPrint
-		if idOk, ok := s.GetIdOk(); ok && idOk != nil {
-			serverPrint.ServerId = *idOk
-		}
-		if properties, ok := s.GetPropertiesOk(); ok && properties != nil {
-			if nameOk, ok := properties.GetNameOk(); ok && nameOk != nil {
-				serverPrint.Name = *nameOk
-			}
-			if coresOk, ok := properties.GetCoresOk(); ok && coresOk != nil {
-				serverPrint.Cores = *coresOk
-			}
-			if ramOk, ok := properties.GetRamOk(); ok && ramOk != nil {
-				serverPrint.Ram = fmt.Sprintf("%vMB", *ramOk)
-			}
-			if cpuFamilyOk, ok := properties.GetCpuFamilyOk(); ok && cpuFamilyOk != nil {
-				serverPrint.CpuFamily = *cpuFamilyOk
-			}
-			if zoneOk, ok := properties.GetAvailabilityZoneOk(); ok && zoneOk != nil {
-				serverPrint.AvailabilityZone = *zoneOk
-			}
-			if vmStateOk, ok := properties.GetVmStateOk(); ok && vmStateOk != nil {
-				serverPrint.VmState = *vmStateOk
-			}
-			if templateUuidOk, ok := properties.GetTemplateUuidOk(); ok && templateUuidOk != nil {
-				serverPrint.TemplateId = *templateUuidOk
-			}
-			if typeOk, ok := properties.GetTypeOk(); ok && typeOk != nil {
-				serverPrint.Type = *typeOk
-			}
-			if bootVolumeOk, ok := properties.GetBootVolumeOk(); ok && bootVolumeOk != nil {
-				if idOk, ok := bootVolumeOk.GetIdOk(); ok && idOk != nil {
-					serverPrint.BootVolumeId = *idOk
-				}
-			}
-			if bootCdromOk, ok := properties.GetBootCdromOk(); ok && bootCdromOk != nil {
-				if idOk, ok := bootCdromOk.GetIdOk(); ok && idOk != nil {
-					serverPrint.BootCdromId = *idOk
-				}
-			}
-		}
-		if metadataOk, ok := s.GetMetadataOk(); ok && metadataOk != nil {
-			if stateOk, ok := metadataOk.GetStateOk(); ok && stateOk != nil {
-				serverPrint.State = *stateOk
-			}
-		}
-		if hrefOk, ok := s.GetHrefOk(); ok && hrefOk != nil {
-			// Get parent resource ID using HREF: `.../k8s/[PARENT_ID_WE_WANT]/nodepools/[NODEPOOL_ID]`
-			serverPrint.DatacenterId = strings.Split(strings.Split(*hrefOk, "datacenter")[1], "/")[1]
-		}
-		o := structs.Map(serverPrint)
-		out = append(out, o)
-	}
-	return out
 }

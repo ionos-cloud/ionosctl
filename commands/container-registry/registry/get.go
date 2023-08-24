@@ -2,11 +2,12 @@ package registry
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
-	ionoscloud "github.com/ionos-cloud/sdk-go-container-registry"
 	"github.com/spf13/cobra"
 )
 
@@ -48,11 +49,24 @@ func CmdGet(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	reg, _, err := c.ContainerRegistryServices.Registry().Get(id)
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getRegistryPrint(nil, c, &[]ionoscloud.RegistryResponse{reg}, false))
+
+	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	if err != nil {
+		return err
+	}
+
+	out, err := jsontabwriter.GenerateOutput("", allJSONPaths, reg, printer.GetHeadersAllDefault(allCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, out)
+	return nil
 }
 
 func PreCmdGet(c *core.PreCommandConfig) error {

@@ -207,12 +207,12 @@ func RunRequestList(c *core.CommandConfig) error {
 	for _, item := range *itemsOk {
 		temp, err := json2table.ConvertJSONToTable("", allRequestJSONPaths, item)
 		if err != nil {
-			return fmt.Errorf("failed to convert from JSON to Table format: %w", err)
+			return fmt.Errorf("could not convert from JSON to Table format: %w", err)
 		}
 
 		metadataOk, ok := item.GetMetadataOk()
 		if !ok || metadataOk == nil {
-			return fmt.Errorf("failed to retrieve metadata from request")
+			return fmt.Errorf("could not retrieve metadata from request")
 		}
 
 		if createdDateOk, ok := metadataOk.GetCreatedDateOk(); ok && createdDateOk != nil {
@@ -259,12 +259,12 @@ func RunRequestGet(c *core.CommandConfig) error {
 
 	metadataOk, ok := req.GetMetadataOk()
 	if !ok || metadataOk == nil {
-		return fmt.Errorf("failed to retrieve metadata from request")
+		return fmt.Errorf("could not retrieve metadata from request")
 	}
 
 	reqConverted, err := json2table.ConvertJSONToTable("", allRequestJSONPaths, req)
 	if err != nil {
-		return fmt.Errorf("failed to convert from JSON to Table format: %w", err)
+		return fmt.Errorf("could not convert from JSON to Table format: %w", err)
 	}
 
 	if createdDateOk, ok := metadataOk.GetCreatedDateOk(); ok && createdDateOk != nil {
@@ -314,12 +314,12 @@ func RunRequestWait(c *core.CommandConfig) error {
 
 	metadataOk, ok := req.GetMetadataOk()
 	if !ok || metadataOk == nil {
-		return fmt.Errorf("failed to retrieve metadata from request")
+		return fmt.Errorf("could not retrieve metadata from request")
 	}
 
 	reqConverted, err := json2table.ConvertJSONToTable("", allRequestJSONPaths, req)
 	if err != nil {
-		return fmt.Errorf("failed to convert from JSON to Table format: %w", err)
+		return fmt.Errorf("could not convert from JSON to Table format: %w", err)
 	}
 
 	if createdDateOk, ok := metadataOk.GetCreatedDateOk(); ok && createdDateOk != nil {

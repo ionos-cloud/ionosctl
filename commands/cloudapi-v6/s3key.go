@@ -7,8 +7,8 @@ import (
 	"os"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 
-	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
@@ -20,6 +20,15 @@ import (
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+)
+
+var (
+	allS3KeyJSONPaths = map[string]string{
+		"S3KeyId": "id",
+		"Active":  "properties.active",
+	}
+
+	defaultS3KeyCols = []string{"S3KeyId", "Active"}
 )
 
 func UserS3keyCmd() *core.Command {
@@ -204,14 +213,28 @@ func RunUserS3KeyList(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	ss, resp, err := c.CloudApiV6Services.S3Keys().List(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserId)), listQueryParams)
 	if resp != nil {
-		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getS3KeyPrint(nil, c, getS3Keys(ss)))
+
+	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	if err != nil {
+		return err
+	}
+
+	out, err := jsontabwriter.GenerateOutput("items", allS3KeyJSONPaths, ss.S3Keys,
+		printer.GetHeadersAllDefault(defaultS3KeyCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, out)
+	return nil
 }
 
 func RunUserS3KeyGet(c *core.CommandConfig) error {
@@ -219,18 +242,35 @@ func RunUserS3KeyGet(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
-	c.Printer.Verbose("S3 keys with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgS3KeyId)))
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+		"S3 keys with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgS3KeyId))))
+
 	s, resp, err := c.CloudApiV6Services.S3Keys().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgS3KeyId)), queryParams,
 	)
 	if resp != nil {
-		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getS3KeyPrint(nil, c, getS3Key(s)))
+
+	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	if err != nil {
+		return err
+	}
+
+	out, err := jsontabwriter.GenerateOutput("", allS3KeyJSONPaths, s.S3Key,
+		printer.GetHeadersAllDefault(defaultS3KeyCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, out)
+	return nil
 }
 
 func RunUserS3KeyCreate(c *core.CommandConfig) error {
@@ -238,12 +278,15 @@ func RunUserS3KeyCreate(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
 	userId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserId))
-	c.Printer.Verbose("Creating S3 Key for User with ID: %v", userId)
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Creating S3 Key for User with ID: %v", userId))
+
 	s, resp, err := c.CloudApiV6Services.S3Keys().Create(userId, queryParams)
 	if resp != nil && printer.GetId(resp) != "" {
-		c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
 	}
 	if err != nil {
 		return err
@@ -252,7 +295,20 @@ func RunUserS3KeyCreate(c *core.CommandConfig) error {
 	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 		return err
 	}
-	return c.Printer.Print(getS3KeyPrint(resp, c, getS3Key(s)))
+
+	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	if err != nil {
+		return err
+	}
+
+	out, err := jsontabwriter.GenerateOutput("", allS3KeyJSONPaths, s.S3Key,
+		printer.GetHeadersAllDefault(defaultS3KeyCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, out)
+	return nil
 }
 
 func RunUserS3KeyUpdate(c *core.CommandConfig) error {
@@ -260,9 +316,12 @@ func RunUserS3KeyUpdate(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
 	active := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgS3KeyActive))
-	c.Printer.Verbose("Property Active set: %v", active)
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property Active set: %v", active))
+
 	newKey := resources.S3Key{
 		S3Key: ionoscloud.S3Key{
 			Properties: &ionoscloud.S3KeyProperties{
@@ -270,12 +329,16 @@ func RunUserS3KeyUpdate(c *core.CommandConfig) error {
 			},
 		},
 	}
+
 	userId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserId))
 	keyId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgS3KeyId))
-	c.Printer.Verbose("Creating S3 Key with ID: %v for User with ID: %v", keyId, userId)
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+		"Creating S3 Key with ID: %v for User with ID: %v", keyId, userId))
+
 	s, resp, err := c.CloudApiV6Services.S3Keys().Update(userId, keyId, newKey, queryParams)
 	if resp != nil && printer.GetId(resp) != "" {
-		c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
 	}
 	if err != nil {
 		return err
@@ -284,7 +347,20 @@ func RunUserS3KeyUpdate(c *core.CommandConfig) error {
 	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 		return err
 	}
-	return c.Printer.Print(getS3KeyPrint(resp, c, getS3Key(s)))
+
+	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	if err != nil {
+		return err
+	}
+
+	out, err := jsontabwriter.GenerateOutput("", allS3KeyJSONPaths, s.S3Key,
+		printer.GetHeadersAllDefault(defaultS3KeyCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, out)
+	return nil
 }
 
 func RunUserS3KeyDelete(c *core.CommandConfig) error {
@@ -292,32 +368,41 @@ func RunUserS3KeyDelete(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
 	userId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserId))
 	s3KeyId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgS3KeyId))
+
 	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
 		if err := DeleteAllS3keys(c); err != nil {
 			return err
 		}
-		return c.Printer.Print(printer.Result{Resource: c.Resource, Verb: c.Verb})
-	} else {
-		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete s3key"); err != nil {
-			return err
-		}
-		c.Printer.Verbose("User ID: %v", userId)
-		c.Printer.Verbose("Starting deleting S3 Key with ID: %v...", s3KeyId)
-		resp, err := c.CloudApiV6Services.S3Keys().Delete(userId, s3KeyId, queryParams)
-		if resp != nil && printer.GetId(resp) != "" {
-			c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
-		}
-		if err != nil {
-			return err
-		}
-		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-			return err
-		}
-		return c.Printer.Print(getS3KeyPrint(resp, c, nil))
+
+		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("S3 Keys successfully deleted"))
+		return nil
 	}
+
+	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete s3key"); err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("User ID: %v", userId))
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Starting deleting S3 Key with ID: %v...", s3KeyId))
+
+	resp, err := c.CloudApiV6Services.S3Keys().Delete(userId, s3KeyId, queryParams)
+	if resp != nil && printer.GetId(resp) != "" {
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
+	}
+	if err != nil {
+		return err
+	}
+
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("S3 Key successfully deleted"))
+	return nil
 }
 
 func DeleteAllS3keys(c *core.CommandConfig) error {
@@ -325,125 +410,68 @@ func DeleteAllS3keys(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
 	userId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserId))
-	c.Printer.Verbose("User ID: %v", userId)
-	c.Printer.Verbose("Getting S3 Keys...")
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("User ID: %v", userId))
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Getting S3 Keys..."))
+
 	s3Keys, resp, err := c.CloudApiV6Services.S3Keys().List(userId, cloudapiv6.ParentResourceListQueryParams)
 	if err != nil {
 		return err
 	}
-	if s3KeysItems, ok := s3Keys.GetItemsOk(); ok && s3KeysItems != nil {
-		if len(*s3KeysItems) > 0 {
-			_ = c.Printer.Warn("S3 keys to be deleted:")
-			for _, s3Key := range *s3KeysItems {
-				if id, ok := s3Key.GetIdOk(); ok && id != nil {
-					_ = c.Printer.Warn("S3 key Id: " + *id)
-				}
-			}
-			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the S3Keys"); err != nil {
-				return err
-			}
-			c.Printer.Verbose("Deleting all the S3Keys...")
-			var multiErr error
-			for _, s3Key := range *s3KeysItems {
-				if id, ok := s3Key.GetIdOk(); ok && id != nil {
-					c.Printer.Verbose("Staring deleting S3 keys with id: %v...", *id)
-					resp, err = c.CloudApiV6Services.S3Keys().Delete(userId, *id, queryParams)
-					if resp != nil && printer.GetId(resp) != "" {
-						c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
-					}
-					if err != nil {
-						multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
-						continue
-					} else {
-						_ = c.Printer.Warn(fmt.Sprintf(constants.MessageDeletingAll, c.Resource, *id))
-					}
-					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-						multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *id, err))
-						continue
-					}
-				}
-			}
-			if multiErr != nil {
-				return multiErr
-			}
-			return nil
-		} else {
-			return errors.New("no S3 Keys found")
-		}
-	} else {
-		return errors.New("could not get items of S3 Keys")
+
+	s3KeysItems, ok := s3Keys.GetItemsOk()
+	if !ok || s3KeysItems == nil {
+		return fmt.Errorf("could not get items of S3 Keys")
 	}
-}
 
-// Output Printing
+	if len(*s3KeysItems) <= 0 {
+		return fmt.Errorf("no S3 Keys found")
+	}
 
-var defaultS3KeyCols = []string{"S3KeyId", "Active"}
-
-type S3KeyPrint struct {
-	S3KeyId   string `json:"S3KeyId,omitempty"`
-	Active    bool   `json:"Active,omitempty"`
-	SecretKey string `json:"SecretKey,omitempty"`
-}
-
-func getS3KeyPrint(resp *resources.Response, c *core.CommandConfig, s []resources.S3Key) printer.Result {
-	r := printer.Result{}
-	if c != nil {
-		if resp != nil {
-			r.ApiResponse = resp
-			r.Resource = c.Resource
-			r.Verb = c.Verb
-			r.WaitForRequest = viper.GetBool(core.GetFlagName(c.NS, constants.ArgWaitForRequest))
-		}
-		if s != nil {
-			r.OutputJSON = s
-			r.KeyValue = getS3KeysKVMaps(s)
-			r.Columns = printer.GetHeadersAllDefault(defaultS3KeyCols, viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)))
+	fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("S3 keys to be deleted:"))
+	for _, s3Key := range *s3KeysItems {
+		if id, ok := s3Key.GetIdOk(); ok && id != nil {
+			fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("S3 key Id: ", *id))
 		}
 	}
-	return r
-}
 
-func getS3Keys(S3Keys resources.S3Keys) []resources.S3Key {
-	ss := make([]resources.S3Key, 0)
-	if items, ok := S3Keys.GetItemsOk(); ok && items != nil {
-		for _, s := range *items {
-			ss = append(ss, resources.S3Key{S3Key: s})
+	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the S3Keys"); err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Deleting all the S3Keys..."))
+
+	var multiErr error
+	for _, s3Key := range *s3KeysItems {
+		id, ok := s3Key.GetIdOk()
+		if !ok || id == nil {
+			continue
+		}
+
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Staring deleting S3 keys with id: %v...", *id))
+
+		resp, err = c.CloudApiV6Services.S3Keys().Delete(userId, *id, queryParams)
+		if resp != nil && printer.GetId(resp) != "" {
+			fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
+		}
+		if err != nil {
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
+			continue
+		}
+
+		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput(constants.MessageDeletingAll, c.Resource, *id))
+
+		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *id, err))
 		}
 	}
-	return ss
-}
 
-func getS3Key(s *resources.S3Key) []resources.S3Key {
-	ss := make([]resources.S3Key, 0)
-	if s != nil {
-		ss = append(ss, resources.S3Key{S3Key: s.S3Key})
+	if multiErr != nil {
+		return multiErr
 	}
-	return ss
-}
 
-func getS3KeysKVMaps(ss []resources.S3Key) []map[string]interface{} {
-	out := make([]map[string]interface{}, 0, len(ss))
-	for _, s := range ss {
-		o := getS3KeyKVMap(s)
-		out = append(out, o)
-	}
-	return out
-}
-
-func getS3KeyKVMap(s resources.S3Key) map[string]interface{} {
-	var ssPrint S3KeyPrint
-	if ssId, ok := s.GetIdOk(); ok && ssId != nil {
-		ssPrint.S3KeyId = *ssId
-	}
-	if properties, ok := s.GetPropertiesOk(); ok && properties != nil {
-		if active, ok := properties.GetActiveOk(); ok && active != nil {
-			ssPrint.Active = *active
-		}
-		if secretKey, ok := properties.GetSecretKeyOk(); ok && secretKey != nil {
-			ssPrint.SecretKey = *secretKey
-		}
-	}
-	return structs.Map(ssPrint)
+	return nil
 }

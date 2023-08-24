@@ -60,6 +60,7 @@ func TokenScopesDeleteCmd() *core.Command {
 func CmdGetTokenScopesDelete(c *core.CommandConfig) error {
 	regId := viper.GetString(core.GetFlagName(c.NS, FlagRegId))
 	tokenId := viper.GetString(core.GetFlagName(c.NS, FlagTokenId))
+
 	token, _, err := c.ContainerRegistryServices.Token().Get(tokenId, regId)
 	if err != nil {
 		return err
@@ -72,19 +73,24 @@ func CmdGetTokenScopesDelete(c *core.CommandConfig) error {
 		if token.Properties.GetExpiryDate() != nil {
 			updateProp.SetExpiryDate(*token.Properties.GetExpiryDate())
 		}
+
 		if token.Properties.GetStatus() != nil {
 			updateProp.SetStatus(*token.Properties.GetStatus())
 		}
 		updateProp.SetName(*token.Properties.GetName())
 		updateToken.SetProperties(*updateProp)
+
 		msg := fmt.Sprintf("delete all scopes from Token: %s", *token.Id)
+
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, msg); err != nil {
 			return err
 		}
+
 		_, err = c.ContainerRegistryServices.Token().Delete(tokenId, regId)
 		if err != nil {
 			return err
 		}
+
 		_, _, err = c.ContainerRegistryServices.Token().Put(tokenId, *updateToken, regId)
 		if err != nil {
 			return err
@@ -104,6 +110,7 @@ func CmdGetTokenScopesDelete(c *core.CommandConfig) error {
 
 	scopes := *token.Properties.GetScopes()
 	scopes = append(scopes[:id], scopes[id+1:]...)
+
 	updateProp.SetExpiryDate(*token.Properties.GetExpiryDate())
 	updateProp.SetStatus(*token.Properties.GetStatus())
 	updateProp.SetName(*token.Properties.GetName())
@@ -111,13 +118,16 @@ func CmdGetTokenScopesDelete(c *core.CommandConfig) error {
 	updateToken.SetProperties(*updateProp)
 
 	msg := fmt.Sprintf("delete scope %d from Token: %s", id+1, *token.Id)
+
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, msg); err != nil {
 		return err
 	}
+
 	_, err = c.ContainerRegistryServices.Token().Delete(tokenId, regId)
 	if err != nil {
 		return err
 	}
+
 	_, _, err = c.ContainerRegistryServices.Token().Put(tokenId, *updateToken, regId)
 	if err != nil {
 		return err

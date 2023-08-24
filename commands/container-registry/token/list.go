@@ -2,10 +2,12 @@ package token
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/registry"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	ionoscloud "github.com/ionos-cloud/sdk-go-container-registry"
 	"github.com/spf13/cobra"
@@ -36,11 +38,11 @@ func TokenListCmd() *core.Command {
 		},
 	)
 
-	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, printer.ColsMessage(allCols))
+	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, printer.ColsMessage(AllTokenCols))
 	_ = cmd.Command.RegisterFlagCompletionFunc(
 		constants.ArgCols,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-			return allCols, cobra.ShellCompDirectiveNoFileComp
+			return AllTokenCols, cobra.ShellCompDirectiveNoFileComp
 		},
 	)
 	return cmd
@@ -48,28 +50,63 @@ func TokenListCmd() *core.Command {
 
 func CmdListToken(c *core.CommandConfig) error {
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll))
+	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	if err != nil {
+		return err
+	}
+
 	if !allFlag {
 		id := viper.GetString(core.GetFlagName(c.NS, FlagRegId))
+
 		tokens, _, err := c.ContainerRegistryServices.Token().List(id)
 		if err != nil {
 			return err
 		}
-		list := tokens.GetItems()
-		return c.Printer.Print(getTokenPrint(nil, c, list, false))
+
+		tokensConverted, err := ConvertTokensToTable(tokens)
+		if err != nil {
+			return err
+		}
+
+		out, err := jsontabwriter.GenerateOutputPreconverted(tokens, tokensConverted, printer.GetHeadersAllDefault(AllTokenCols, cols))
+		if err != nil {
+			return err
+		}
+
+		fmt.Fprintf(c.Stdout, out)
+		return nil
 	}
-	var list []ionoscloud.TokenResponse
+
+	var list []ionoscloud.TokensResponse
+	var listConverted []map[string]interface{}
+
 	regs, _, err := c.ContainerRegistryServices.Registry().List("")
 	if err != nil {
 		return err
 	}
+
 	for _, reg := range *regs.GetItems() {
 		tokens, _, err := c.ContainerRegistryServices.Token().List(*reg.Id)
 		if err != nil {
 			return err
 		}
-		list = append(list, *tokens.GetItems()...)
+
+		tokensConverted, err := ConvertTokensToTable(tokens)
+		if err != nil {
+			return err
+		}
+
+		list = append(list, tokens)
+		listConverted = append(listConverted, tokensConverted...)
 	}
-	return c.Printer.Print(getTokenPrint(nil, c, &list, false))
+
+	out, err := jsontabwriter.GenerateOutputPreconverted(list, listConverted, printer.GetHeadersAllDefault(AllTokenCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, out)
+	return nil
 }
 
 func PreCmdListToken(c *core.PreCommandConfig) error {

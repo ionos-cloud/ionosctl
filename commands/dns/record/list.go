@@ -5,6 +5,10 @@ import (
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dns/zone"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/json2table"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	dns "github.com/ionos-cloud/sdk-go-dns"
 	"github.com/spf13/cobra"
 
@@ -46,7 +50,40 @@ func RecordsGetCmd() *core.Command {
 				return fmt.Errorf("failed listing records: %w", err)
 			}
 
-			return c.Printer.Print(getRecordsPrint(c, ls))
+			items, ok := ls.GetItemsOk()
+			if !ok || items == nil {
+				return fmt.Errorf("could not retrieve Record items")
+			}
+
+			var lsConverted []map[string]interface{}
+			for _, item := range *items {
+				temp, err := json2table.ConvertJSONToTable("", allRecordJSONPaths, item)
+				if err != nil {
+					return fmt.Errorf("could not convert from JSON to Table format: %w", err)
+				}
+
+				if m, ok := item.GetMetadataOk(); ok && m != nil {
+					z, _, err := client.Must().DnsClient.ZonesApi.ZonesFindById(context.Background(), *m.ZoneId).Execute()
+					if err == nil && z.Properties != nil {
+						temp[0]["ZoneName"] = *z.Properties.ZoneName
+					}
+				}
+
+				lsConverted = append(lsConverted, temp[0])
+			}
+
+			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+			//if err != nil {
+			//	return err
+			//}
+
+			out, err := jsontabwriter.GenerateOutputPreconverted(ls, lsConverted, printer.GetHeaders(allCols, defaultCols, cols))
+			if err != nil {
+				return err
+			}
+
+			fmt.Fprintf(c.Stdout, out)
+			return nil
 		},
 		InitClient: true,
 	})

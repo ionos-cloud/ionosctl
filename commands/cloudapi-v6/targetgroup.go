@@ -6,12 +6,12 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
@@ -19,6 +19,29 @@ import (
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+)
+
+var (
+	allTargetGroupJSONPaths = map[string]string{
+		"TargetGroupId": "id",
+		"Name":          "properties.name",
+		"Algorithm":     "properties.algorithm",
+		"Protocol":      "properties.protocol",
+		"CheckTimeout":  "properties.healthCheck.timeout",
+		"CheckInterval": "properties.healthCheck.interval",
+		"Retries":       "properties.healthCheck.retries",
+		"Path":          "properties.httpHealthCheck.path",
+		"Method":        "properties.httpHealthCheck.method",
+		"MatchType":     "properties.httpHealthCheck.matchType",
+		"Response":      "properties.httpHealthCheck.response",
+		"Regex":         "properties.httpHealthCheck.regex",
+		"Negate":        "properties.httpHealthCheck.negate",
+		"State":         "metadata.state",
+	}
+
+	defaultTargetGroupCols = []string{"TargetGroupId", "Name", "Algorithm", "Protocol", "CheckTimeout", "CheckInterval", "State"}
+	allTargetGroupCols     = []string{"TargetGroupId", "Name", "Algorithm", "Protocol", "CheckTimeout", "CheckInterval", "Retries",
+		"Path", "Method", "MatchType", "Response", "Regex", "Negate", "State"}
 )
 
 func TargetGroupCmd() *core.Command {
@@ -231,15 +254,28 @@ func RunTargetGroupList(c *core.CommandConfig) error {
 		return err
 	}
 
-	c.Printer.Verbose("Getting TargetGroups")
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Getting TargetGroups"))
 	ss, resp, err := c.CloudApiV6Services.TargetGroups().List(listQueryParams)
 	if resp != nil {
-		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getTargetGroupPrint(nil, c, getTargetGroups(ss)))
+
+	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	if err != nil {
+		return err
+	}
+
+	out, err := jsontabwriter.GenerateOutput("items", allTargetGroupJSONPaths, ss.TargetGroups,
+		printer.GetHeaders(allTargetGroupCols, defaultTargetGroupCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, out)
+	return nil
 }
 
 func RunTargetGroupGet(c *core.CommandConfig) error {
@@ -247,17 +283,34 @@ func RunTargetGroupGet(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
-	c.Printer.Verbose("TargetGroup ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)))
-	c.Printer.Verbose("Getting TargetGroup")
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+		"TargetGroup ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId))))
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Getting TargetGroup"))
+
 	s, resp, err := c.CloudApiV6Services.TargetGroups().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)), queryParams)
 	if resp != nil {
-		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getTargetGroupPrint(nil, c, getTargetGroup(s)))
+
+	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	if err != nil {
+		return err
+	}
+
+	out, err := jsontabwriter.GenerateOutput("", allTargetGroupJSONPaths, s.TargetGroup,
+		printer.GetHeaders(allTargetGroupCols, defaultTargetGroupCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, out)
+	return nil
 }
 
 func RunTargetGroupCreate(c *core.CommandConfig) error {
@@ -265,19 +318,36 @@ func RunTargetGroupCreate(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
-	c.Printer.Verbose("Creating TargetGroup")
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Creating TargetGroup"))
+
 	s, resp, err := c.CloudApiV6Services.TargetGroups().Create(getTargetGroupNew(c), queryParams)
 	if resp != nil {
-		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
+
 	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 		return err
 	}
-	return c.Printer.Print(getTargetGroupPrint(resp, c, getTargetGroup(s)))
+
+	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	if err != nil {
+		return err
+	}
+
+	out, err := jsontabwriter.GenerateOutput("", allTargetGroupJSONPaths, s.TargetGroup,
+		printer.GetHeaders(allTargetGroupCols, defaultTargetGroupCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, out)
+	return nil
 }
 
 func RunTargetGroupUpdate(c *core.CommandConfig) error {
@@ -285,20 +355,38 @@ func RunTargetGroupUpdate(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
-	c.Printer.Verbose("TargetGroup ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)))
-	c.Printer.Verbose("Updating TargetGroup")
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+		"TargetGroup ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId))))
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Updating TargetGroup"))
+
 	s, resp, err := c.CloudApiV6Services.TargetGroups().Update(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)), getTargetGroupPropertiesSet(c), queryParams)
 	if resp != nil {
-		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
+
 	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 		return err
 	}
-	return c.Printer.Print(getTargetGroupPrint(resp, c, getTargetGroup(s)))
+
+	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	if err != nil {
+		return err
+	}
+
+	out, err := jsontabwriter.GenerateOutput("", allTargetGroupJSONPaths, s.TargetGroup,
+		printer.GetHeaders(allTargetGroupCols, defaultTargetGroupCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, out)
+	return nil
 }
 
 func RunTargetGroupDelete(c *core.CommandConfig) error {
@@ -306,34 +394,44 @@ func RunTargetGroupDelete(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
-	var (
-		resp *resources.Response
-	)
+	var resp *resources.Response
+
 	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
-		c.Printer.Verbose("TargetGroup ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)))
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+			"TargetGroup ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId))))
 		err = DeleteAllTargetGroup(c)
 		if err != nil {
 			return err
 		}
-	} else {
-		c.Printer.Verbose("TargetGroup ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)))
-		if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete target group"); err != nil {
-			return err
-		}
-		c.Printer.Verbose("Deleting TargetGroup")
-		resp, err = c.CloudApiV6Services.TargetGroups().Delete(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)), queryParams)
-		if resp != nil {
-			c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
-		}
-		if err != nil {
-			return err
-		}
-		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-			return err
-		}
+
+		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("Target Groups successfully deleted"))
+		return nil
 	}
-	return c.Printer.Print(getTargetGroupPrint(resp, c, nil))
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+		"TargetGroup ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId))))
+
+	if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete target group"); err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Deleting TargetGroup"))
+
+	resp, err = c.CloudApiV6Services.TargetGroups().Delete(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)), queryParams)
+	if resp != nil {
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+	}
+	if err != nil {
+		return err
+	}
+
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("Target Group successfully deleted"))
+	return nil
 }
 
 func DeleteAllTargetGroup(c *core.CommandConfig) error {
@@ -341,101 +439,142 @@ func DeleteAllTargetGroup(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
-	_ = c.Printer.Warn("Getting Target Groups...")
+
+	fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("Getting Target Groups..."))
+
 	targetGroups, resp, err := c.CloudApiV6Services.TargetGroups().List(cloudapiv6.ParentResourceListQueryParams)
 	if err != nil {
 		return err
 	}
-	if targetGroupItems, ok := targetGroups.GetItemsOk(); ok && targetGroupItems != nil {
-		if len(*targetGroupItems) > 0 {
-			for _, tg := range *targetGroupItems {
-				delIdAndName := ""
-				if id, ok := tg.GetIdOk(); ok && id != nil {
-					delIdAndName += "Target Group Id: " + *id
-				}
-				if properties, ok := tg.GetPropertiesOk(); ok && properties != nil {
-					if name, ok := properties.GetNameOk(); ok && name != nil {
-						delIdAndName += "Target Group Name: " + *name
-					}
-				}
-				_ = c.Printer.Warn(delIdAndName)
-			}
-			if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Target Groups"); err != nil {
-				return err
-			}
-			c.Printer.Verbose("Deleting all the Target Groups...")
-			var multiErr error
-			for _, tg := range *targetGroupItems {
-				if id, ok := tg.GetIdOk(); ok && id != nil {
-					c.Printer.Verbose("Starting deleting Target Group with id: %v...", *id)
-					resp, err = c.CloudApiV6Services.TargetGroups().Delete(*id, queryParams)
-					if resp != nil && printer.GetId(resp) != "" {
-						c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
-					}
-					if err != nil {
-						multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
-						continue
-					} else {
-						_ = c.Printer.Warn(fmt.Sprintf(constants.MessageDeletingAll, c.Resource, *id))
-					}
-					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-						multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
-						continue
-					}
-				}
-			}
-			if multiErr != nil {
-				return multiErr
-			}
-			return nil
-		} else {
-			return errors.New("no Target Groups found")
-		}
-	} else {
-		return errors.New("could not get items of Target Groups")
+
+	targetGroupItems, ok := targetGroups.GetItemsOk()
+	if !ok || targetGroupItems == nil {
+		return fmt.Errorf("could not get items of Target Groups")
 	}
+
+	if len(*targetGroupItems) <= 0 {
+		return fmt.Errorf("no Target Groups found")
+	}
+
+	for _, tg := range *targetGroupItems {
+		delIdAndName := ""
+
+		if id, ok := tg.GetIdOk(); ok && id != nil {
+			delIdAndName += "Target Group Id: " + *id
+		}
+
+		if properties, ok := tg.GetPropertiesOk(); ok && properties != nil {
+			if name, ok := properties.GetNameOk(); ok && name != nil {
+				delIdAndName += "Target Group Name: " + *name
+			}
+		}
+
+		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput(delIdAndName))
+	}
+
+	if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Target Groups"); err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Deleting all the Target Groups..."))
+
+	var multiErr error
+	for _, tg := range *targetGroupItems {
+		id, ok := tg.GetIdOk()
+		if !ok || id == nil {
+			continue
+		}
+
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Starting deleting Target Group with id: %v...", *id))
+
+		resp, err = c.CloudApiV6Services.TargetGroups().Delete(*id, queryParams)
+		if resp != nil && printer.GetId(resp) != "" {
+			fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
+		}
+		if err != nil {
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
+			continue
+		}
+
+		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput(constants.MessageDeletingAll, c.Resource, *id))
+
+		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
+		}
+	}
+
+	if multiErr != nil {
+		return multiErr
+	}
+
+	return nil
 }
 
 func getTargetGroupNew(c *core.CommandConfig) resources.TargetGroup {
 	input := resources.TargetGroupProperties{}
 	// Set Required Properties
 	input.SetName(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName)))
-	c.Printer.Verbose("Property Name set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName)))
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+		"Property Name set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))))
+
 	input.SetAlgorithm(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgAlgorithm)))
-	c.Printer.Verbose("Property Algorithm set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgAlgorithm)))
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+		"Property Algorithm set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgAlgorithm))))
+
 	input.SetProtocol(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgProtocol)))
-	c.Printer.Verbose("Property Protocol set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgProtocol)))
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+		"Property Protocol set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgProtocol))))
 
 	inputHealthCheck := resources.TargetGroupHealthCheck{}
+
 	// Set Properties for Health Check for Target Group
 	inputHealthCheck.SetCheckTimeout(viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgCheckTimeout)))
-	c.Printer.Verbose("Property CheckTimeout for HealthCheck set: %v", viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgCheckTimeout)))
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+		"Property CheckTimeout for HealthCheck set: %v", viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgCheckTimeout))))
+
 	inputHealthCheck.SetCheckInterval(viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgCheckInterval)))
-	c.Printer.Verbose("Property CheckInterval for HealthCheck set: %v", viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgCheckInterval)))
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+		"Property CheckInterval for HealthCheck set: %v", viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgCheckInterval))))
+
 	inputHealthCheck.SetRetries(viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgRetries)))
-	c.Printer.Verbose("Property Retries for HealthCheck set: %v", viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgRetries)))
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+		"Property Retries for HealthCheck set: %v", viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgRetries))))
+
 	// Set Health Check for Target Group
 	input.SetHealthCheck(inputHealthCheck.TargetGroupHealthCheck)
-	c.Printer.Verbose("Setting HealthCheck")
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Setting HealthCheck"))
 
 	inputHttpHealthCheck := resources.TargetGroupHttpHealthCheck{}
 	// Set Properties for Http Health Check for Target Group
 	inputHttpHealthCheck.SetPath(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgPath)))
-	c.Printer.Verbose("Property Path for HttpHealthCheck set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgPath)))
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+		"Property Path for HttpHealthCheck set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgPath))))
+
 	inputHttpHealthCheck.SetMethod(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgMethod)))
-	c.Printer.Verbose("Property Method for HttpHealthCheck set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgMethod)))
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+		"Property Method for HttpHealthCheck set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgMethod))))
+
 	inputHttpHealthCheck.SetMatchType(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgMatchType)))
-	c.Printer.Verbose("Property MatchType for HttpHealthCheck set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgMatchType)))
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+		"Property MatchType for HttpHealthCheck set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgMatchType))))
+
 	inputHttpHealthCheck.SetResponse(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResponse)))
-	c.Printer.Verbose("Property Response for HttpHealthCheck set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResponse)))
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+		"Property Response for HttpHealthCheck set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResponse))))
+
 	inputHttpHealthCheck.SetRegex(viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgRegex)))
-	c.Printer.Verbose("Property Regex for HttpHealthCheck set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRegex)))
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+		"Property Regex for HttpHealthCheck set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRegex))))
+
 	inputHttpHealthCheck.SetNegate(viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgNegate)))
-	c.Printer.Verbose("Property Negate for HttpHealthCheck set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNegate)))
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+		"Property Negate for HttpHealthCheck set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNegate))))
+
 	// Set Http Health Check for Target Group
 	input.SetHttpHealthCheck(inputHttpHealthCheck.TargetGroupHttpHealthCheck)
-	c.Printer.Verbose("Setting HttpHealthCheck")
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Setting HttpHealthCheck"))
 
 	return resources.TargetGroup{
 		TargetGroup: ionoscloud.TargetGroup{
@@ -449,193 +588,99 @@ func getTargetGroupPropertiesSet(c *core.CommandConfig) *resources.TargetGroupPr
 	// Set new values for Required Properties
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgName)) {
 		input.SetName(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName)))
-		c.Printer.Verbose("Property Name set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName)))
-	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgAlgorithm)) {
-		input.SetAlgorithm(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgAlgorithm)))
-		c.Printer.Verbose("Property Algorithm set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgAlgorithm)))
-	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgProtocol)) {
-		input.SetProtocol(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgProtocol)))
-		c.Printer.Verbose("Property Protocol set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgProtocol)))
+
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+			"Property Name set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))))
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgCheckTimeout)) || viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgCheckInterval)) || viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgRetries)) {
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgAlgorithm)) {
+		input.SetAlgorithm(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgAlgorithm)))
+
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+			"Property Algorithm set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgAlgorithm))))
+	}
+
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgProtocol)) {
+		input.SetProtocol(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgProtocol)))
+
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+			"Property Protocol set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgProtocol))))
+	}
+
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgCheckTimeout)) ||
+		viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgCheckInterval)) ||
+		viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgRetries)) {
 		inputHealthCheck := resources.TargetGroupHealthCheck{}
+
 		// Set new values for Health Check Properties
 		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgCheckTimeout)) {
 			inputHealthCheck.SetCheckTimeout(viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgCheckTimeout)))
-			c.Printer.Verbose("Property CheckTimeout for HealthCheck set: %v", viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgCheckTimeout)))
+
+			fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+				"Property CheckTimeout for HealthCheck set: %v", viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgCheckTimeout))))
 		}
+
 		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgCheckInterval)) {
 			inputHealthCheck.SetCheckInterval(viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgCheckInterval)))
-			c.Printer.Verbose("Property CheckInterval for HealthCheck set: %v", viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgCheckInterval)))
+			fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+				"Property CheckInterval for HealthCheck set: %v", viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgCheckInterval))))
 		}
+
 		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgRetries)) {
 			inputHealthCheck.SetRetries(viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgRetries)))
-			c.Printer.Verbose("Property Retries for HealthCheck set: %v", viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgRetries)))
+			fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+				"Property Retries for HealthCheck set: %v", viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgRetries))))
 		}
+
 		input.SetHealthCheck(inputHealthCheck.TargetGroupHealthCheck)
-		c.Printer.Verbose("Updating HealthCheck")
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Updating HealthCheck"))
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgPath)) || viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgMethod)) ||
 		viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgResponse)) || viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgRegex)) ||
 		viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgNegate)) || viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgMatchType)) {
 		inputHttpHealthCheck := resources.TargetGroupHttpHealthCheck{}
+
 		// Set new values for Health Check Properties
 		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgPath)) {
 			inputHttpHealthCheck.SetPath(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgPath)))
-			c.Printer.Verbose("Property Path for HttpHealthCheck set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgPath)))
+			fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+				"Property Path for HttpHealthCheck set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgPath))))
 		}
+
 		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgMethod)) {
 			inputHttpHealthCheck.SetMethod(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgMethod)))
-			c.Printer.Verbose("Property Method for HttpHealthCheck set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgMethod)))
+			fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+				"Property Method for HttpHealthCheck set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgMethod))))
 		}
+
 		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgResponse)) {
 			inputHttpHealthCheck.SetResponse(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResponse)))
-			c.Printer.Verbose("Property Response for HttpHealthCheck set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResponse)))
+			fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+				"Property Response for HttpHealthCheck set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResponse))))
 		}
+
 		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgMatchType)) {
 			inputHttpHealthCheck.SetMatchType(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgMatchType)))
-			c.Printer.Verbose("Property MatchType for HttpHealthCheck set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgMatchType)))
+			fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+				"Property MatchType for HttpHealthCheck set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgMatchType))))
 		}
+
 		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgRegex)) {
 			inputHttpHealthCheck.SetRegex(viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgRegex)))
-			c.Printer.Verbose("Property Regex for HttpHealthCheck set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRegex)))
+			fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+				"Property Regex for HttpHealthCheck set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRegex))))
 		}
+
 		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgNegate)) {
 			inputHttpHealthCheck.SetNegate(viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgNegate)))
-			c.Printer.Verbose("Property Negate for HttpHealthCheck set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNegate)))
+			fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+				"Property Negate for HttpHealthCheck set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNegate))))
 		}
+
 		input.SetHttpHealthCheck(inputHttpHealthCheck.TargetGroupHttpHealthCheck)
-		c.Printer.Verbose("Updating HttpHealthCheck")
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Updating HttpHealthCheck"))
 	}
 
 	return &input
-}
-
-// Output Printing
-
-var (
-	defaultTargetGroupCols = []string{"TargetGroupId", "Name", "Algorithm", "Protocol", "CheckTimeout", "CheckInterval", "State"}
-	allTargetGroupCols     = []string{"TargetGroupId", "Name", "Algorithm", "Protocol", "CheckTimeout", "CheckInterval", "Retries",
-		"Path", "Method", "MatchType", "Response", "Regex", "Negate", "State"}
-)
-
-type TargetGroupPrint struct {
-	TargetGroupId string `json:"TargetGroupId,omitempty"`
-	Name          string `json:"Name,omitempty"`
-	Algorithm     string `json:"Algorithm,omitempty"`
-	Protocol      string `json:"Protocol,omitempty"`
-	CheckTimeout  string `json:"CheckTimeout,omitempty"`
-	CheckInterval string `json:"CheckInterval,omitempty"`
-	Retries       int32  `json:"Retries,omitempty"`
-	Path          string `json:"Path,omitempty"`
-	Method        string `json:"Method,omitempty"`
-	MatchType     string `json:"MatchType,omitempty"`
-	Response      string `json:"Response,omitempty"`
-	Regex         bool   `json:"Regex,omitempty"`
-	Negate        bool   `json:"Negate,omitempty"`
-	State         string `json:"State,omitempty"`
-}
-
-func getTargetGroupPrint(resp *resources.Response, c *core.CommandConfig, s []resources.TargetGroup) printer.Result {
-	r := printer.Result{}
-	if c != nil {
-		if resp != nil {
-			r.ApiResponse = resp
-			r.Resource = c.Resource
-			r.Verb = c.Verb
-			r.WaitForRequest = viper.GetBool(core.GetFlagName(c.NS, constants.ArgWaitForRequest))
-		}
-		if s != nil {
-			r.OutputJSON = s
-			r.KeyValue = getTargetGroupsKVMaps(s)
-			r.Columns = printer.GetHeaders(allTargetGroupCols, defaultTargetGroupCols, viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)))
-		}
-	}
-	return r
-}
-
-func getTargetGroups(targetGroups resources.TargetGroups) []resources.TargetGroup {
-	ss := make([]resources.TargetGroup, 0)
-	if items, ok := targetGroups.GetItemsOk(); ok && items != nil {
-		for _, s := range *items {
-			ss = append(ss, resources.TargetGroup{TargetGroup: s})
-		}
-	}
-	return ss
-}
-
-func getTargetGroup(s *resources.TargetGroup) []resources.TargetGroup {
-	ss := make([]resources.TargetGroup, 0)
-	if s != nil {
-		ss = append(ss, resources.TargetGroup{TargetGroup: s.TargetGroup})
-	}
-	return ss
-}
-
-func getTargetGroupsKVMaps(ss []resources.TargetGroup) []map[string]interface{} {
-	out := make([]map[string]interface{}, 0, len(ss))
-	for _, s := range ss {
-		o := getTargetGroupKVMap(s)
-		out = append(out, o)
-	}
-	return out
-}
-
-func getTargetGroupKVMap(s resources.TargetGroup) map[string]interface{} {
-	var targetGroupPrint TargetGroupPrint
-	if ssId, ok := s.GetIdOk(); ok && ssId != nil {
-		targetGroupPrint.TargetGroupId = *ssId
-	}
-	if propertiesOk, ok := s.GetPropertiesOk(); ok && propertiesOk != nil {
-		if nameOk, ok := propertiesOk.GetNameOk(); ok && nameOk != nil {
-			targetGroupPrint.Name = *nameOk
-		}
-		if algorithmOk, ok := propertiesOk.GetAlgorithmOk(); ok && algorithmOk != nil {
-			targetGroupPrint.Algorithm = *algorithmOk
-		}
-		if protocolOk, ok := propertiesOk.GetProtocolOk(); ok && protocolOk != nil {
-			targetGroupPrint.Protocol = *protocolOk
-		}
-		if healthCheckOk, ok := propertiesOk.GetHealthCheckOk(); ok && healthCheckOk != nil {
-			if checkTimeoutOk, ok := healthCheckOk.GetCheckTimeoutOk(); ok && checkTimeoutOk != nil {
-				targetGroupPrint.CheckTimeout = fmt.Sprintf("%dms", *checkTimeoutOk)
-			}
-			if checkIntervalOk, ok := healthCheckOk.GetCheckIntervalOk(); ok && checkIntervalOk != nil {
-				targetGroupPrint.CheckInterval = fmt.Sprintf("%dms", *checkIntervalOk)
-			}
-			if retriesOk, ok := healthCheckOk.GetRetriesOk(); ok && retriesOk != nil {
-				targetGroupPrint.Retries = *retriesOk
-			}
-		}
-		if httpHealthCheckOk, ok := propertiesOk.GetHttpHealthCheckOk(); ok && httpHealthCheckOk != nil {
-			if pathOk, ok := httpHealthCheckOk.GetPathOk(); ok && pathOk != nil {
-				targetGroupPrint.Path = *pathOk
-			}
-			if methodOk, ok := httpHealthCheckOk.GetMethodOk(); ok && methodOk != nil {
-				targetGroupPrint.Method = *methodOk
-			}
-			if matchTypeOk, ok := httpHealthCheckOk.GetMatchTypeOk(); ok && matchTypeOk != nil {
-				targetGroupPrint.MatchType = *matchTypeOk
-			}
-			if responseOk, ok := httpHealthCheckOk.GetResponseOk(); ok && responseOk != nil {
-				targetGroupPrint.Response = *responseOk
-			}
-			if regexOk, ok := httpHealthCheckOk.GetRegexOk(); ok && regexOk != nil {
-				targetGroupPrint.Regex = *regexOk
-			}
-			if negateOk, ok := httpHealthCheckOk.GetNegateOk(); ok && negateOk != nil {
-				targetGroupPrint.Negate = *negateOk
-			}
-		}
-	}
-	if metadata, ok := s.GetMetadataOk(); ok && metadata != nil {
-		if state, ok := metadata.GetStateOk(); ok && state != nil {
-			targetGroupPrint.State = *state
-		}
-	}
-	return structs.Map(targetGroupPrint)
 }

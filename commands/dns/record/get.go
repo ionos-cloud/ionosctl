@@ -2,8 +2,11 @@ package record
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dns/zone"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 
 	dns "github.com/ionos-cloud/sdk-go-dns"
 	"github.com/spf13/cobra"
@@ -34,18 +37,32 @@ func ZonesRecordsFindByIdCmd() *core.Command {
 			if err != nil {
 				return err
 			}
+
 			recordId, err := Resolve(viper.GetString(core.GetFlagName(c.NS, constants.FlagRecord)))
 			if err != nil {
 				return err
 			}
+
 			r, _, err := client.Must().DnsClient.RecordsApi.ZonesRecordsFindById(context.Background(),
 				zoneId, recordId,
 			).Execute()
-
 			if err != nil {
 				return err
 			}
-			return c.Printer.Print(getRecordPrint(c, r))
+
+			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+			//if err != nil {
+			//	return err
+			//}
+
+			out, err := jsontabwriter.GenerateOutput("", allRecordJSONPaths, r,
+				printer.GetHeadersAllDefault(defaultCols, cols))
+			if err != nil {
+				return err
+			}
+
+			fmt.Fprintf(c.Stdout, out)
+			return nil
 		},
 		InitClient: true,
 	})

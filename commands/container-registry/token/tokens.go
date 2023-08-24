@@ -8,18 +8,30 @@ import (
 	"time"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/json2table"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
 
-	"github.com/fatih/structs"
 	scope "github.com/ionos-cloud/ionosctl/v6/commands/container-registry/token/scopes"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/v6/services/container-registry/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go-container-registry"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
+)
+
+var (
+	allJSONPaths = map[string]string{
+		"TokenId":     "id",
+		"DisplayName": "properties.name",
+		//"ExpiryDate":          "properties.expiryDate",
+		"CredentialsUsername": "properties.credentials.username",
+		"CredentialsPassword": "properties.credential.password",
+		"Status":              "properties.status",
+	}
+
+	postHeaders  = []string{"CredentialsPassword"}
+	AllTokenCols = []string{"TokenId", "DisplayName", "ExpiryDate", "CredentialsUsername", "CredentialsPassword", "Status"}
 )
 
 func TokenCmd() *core.Command {
@@ -49,85 +61,6 @@ func TokenCmd() *core.Command {
 
 	return tokenCmd
 }
-
-func getTokenPrint(
-	resp *ionoscloud.APIResponse, c *core.CommandConfig, response *[]ionoscloud.TokenResponse,
-	post bool,
-) printer.Result {
-	r := printer.Result{}
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-
-	if c != nil {
-		if resp != nil {
-			r.Resource = c.Resource
-			r.Verb = c.Verb
-			r.WaitForState = viper.GetBool(
-				core.GetFlagName(
-					c.NS, constants.ArgWaitForRequest,
-				),
-			) // this boolean is duplicated everywhere just to do an append of `& wait` to a verbose message
-		}
-		if response != nil {
-			if !post {
-				defaultHeaders := []string{"TokenId", "DisplayName", "ExpiryDate", "Status"}
-				r.OutputJSON = response
-				r.KeyValue = getTokensRows(response) // map header -> rows
-				r.Columns = printer.GetHeaders(
-					allCols, defaultHeaders, cols,
-				) // headers
-			} else {
-				r.OutputJSON = response
-				r.KeyValue = getTokensRows(response)
-				postHeaders := []string{"CredentialsPassword"}             // map header -> rows
-				r.Columns = printer.GetHeaders(allCols, postHeaders, cols) // headers
-			}
-		}
-	}
-	return r
-}
-
-type TokenPrint struct {
-	TokenId             string `json:"TokenId,omitempty"`
-	DisplayName         string `json:"DisplayName,omitempty"`
-	ExpiryDate          string `json:"ExpiryDate,omitempty"`
-	CredentialsUsername string `json:"CredentialsUsername,omitempty"`
-	CredentialsPassword string `json:"CredentialsPassword,omitempty"`
-	Status              string `json:"Status,omitempty"`
-}
-
-func getTokensRows(tokens *[]ionoscloud.TokenResponse) []map[string]interface{} {
-	out := make([]map[string]interface{}, 0, len(*tokens))
-	for _, token := range *tokens {
-		var tokenPrint TokenPrint
-		if idOk, ok := token.GetIdOk(); ok && idOk != nil {
-			tokenPrint.TokenId = *idOk
-		}
-		if propertiesOk, ok := token.GetPropertiesOk(); ok && propertiesOk != nil {
-			if displayNameOk, ok := propertiesOk.GetNameOk(); ok && displayNameOk != nil {
-				tokenPrint.DisplayName = *displayNameOk
-			}
-			if expiryDateOk, ok := propertiesOk.GetExpiryDateOk(); ok && expiryDateOk != nil {
-				tokenPrint.ExpiryDate = expiryDateOk.String()
-			}
-			if credentialsOk, ok := propertiesOk.GetCredentialsOk(); ok && credentialsOk != nil {
-				if usernameOk, ok := credentialsOk.GetUsernameOk(); ok && usernameOk != nil {
-					tokenPrint.CredentialsUsername = *usernameOk
-				}
-				if passwordOk, ok := credentialsOk.GetPasswordOk(); ok && passwordOk != nil {
-					tokenPrint.CredentialsPassword = *passwordOk
-				}
-			}
-			if statusOk, ok := propertiesOk.GetStatusOk(); ok && statusOk != nil {
-				tokenPrint.Status = *statusOk
-			}
-		}
-		o := structs.Map(tokenPrint)
-		out = append(out, o)
-	}
-	return out
-}
-
-var allCols = structs.Names(TokenPrint{})
 
 func TokensIds(regId string) []string {
 	svcToken := resources.NewTokenService(client.Must(), context.Background())
@@ -193,4 +126,43 @@ func ParseExpiryTime(expiryTime string) (time.Duration, error) {
 	}
 
 	return time.Duration(years)*time.Hour*24*365 + time.Duration(months)*time.Hour*24*30 + time.Duration(days)*time.Hour*24 + time.Duration(hours)*time.Hour, nil
+}
+
+func ConvertTokensToTable(tokens ionoscloud.TokensResponse) ([]map[string]interface{}, error) {
+	items, ok := tokens.GetItemsOk()
+	if !ok || items == nil {
+		return nil, fmt.Errorf("could not retrieve Container Registry Token items")
+	}
+
+	var tokensConverted []map[string]interface{}
+	for _, item := range *items {
+		temp, err := ConvertTokenToTable(item)
+		if err != nil {
+			return nil, err
+		}
+
+		tokensConverted = append(tokensConverted, temp...)
+	}
+
+	return tokensConverted, nil
+}
+
+func ConvertTokenToTable(token ionoscloud.TokenResponse) ([]map[string]interface{}, error) {
+	properties, ok := token.GetPropertiesOk()
+	if !ok || properties == nil {
+		return nil, fmt.Errorf("could not retrieve Container Registry Token properties")
+	}
+
+	expiryDate, ok := properties.GetExpiryDateOk()
+	if !ok || expiryDate == nil {
+		return nil, fmt.Errorf("could not retrieve Container Registry Token Expiry Date")
+	}
+
+	temp, err := json2table.ConvertJSONToTable("", allJSONPaths, token)
+	if err != nil {
+		return nil, fmt.Errorf("could not convert from JSON to Table format: %w", err)
+	}
+
+	temp[0]["ExpiryDate"] = expiryDate.String()
+	return temp, nil
 }

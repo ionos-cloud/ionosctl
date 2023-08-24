@@ -361,7 +361,7 @@ func RunK8sNodePoolListAll(c *core.CommandConfig) error {
 		for _, node := range *items {
 			temp, err := json2table.ConvertJSONToTable("", allK8sNodepoolJSONPaths, node)
 			if err != nil {
-				return fmt.Errorf("failed to convert from JSON to table format: %w", err)
+				return fmt.Errorf("failed to convert from JSON to Table format: %w", err)
 			}
 
 			clusterId, ok := cluster.GetIdOk()

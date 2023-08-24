@@ -2,9 +2,11 @@ package registry
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -42,12 +44,25 @@ func RegListCmd() *core.Command {
 
 func CmdList(c *core.CommandConfig) error {
 	if viper.IsSet(core.GetFlagName(c.NS, FlagName)) {
-		c.Printer.Verbose("Filtering after Registry Name: %v", viper.GetString(core.GetFlagName(c.NS, "name")))
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+			"Filtering after Registry Name: %v", viper.GetString(core.GetFlagName(c.NS, "name"))))
 	}
+
 	regs, _, err := c.ContainerRegistryServices.Registry().List(viper.GetString(core.GetFlagName(c.NS, "name")))
 	if err != nil {
 		return err
 	}
-	list := regs.GetItems()
-	return c.Printer.Print(getRegistryPrint(nil, c, list, false))
+
+	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	if err != nil {
+		return err
+	}
+
+	out, err := jsontabwriter.GenerateOutput("items", allJSONPaths, regs, printer.GetHeadersAllDefault(allCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, out)
+	return nil
 }

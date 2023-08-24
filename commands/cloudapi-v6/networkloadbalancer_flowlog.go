@@ -11,6 +11,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
@@ -284,18 +285,33 @@ func RunNetworkLoadBalancerFlowLogList(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	networkloadbalancerFlowLogs, resp, err := c.CloudApiV6Services.NetworkLoadBalancers().ListFlowLogs(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNetworkLoadBalancerId)),
 		listQueryParams,
 	)
 	if resp != nil {
-		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getFlowLogPrint(nil, c, getFlowLogs(networkloadbalancerFlowLogs)))
+
+	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	if err != nil {
+		return err
+	}
+
+	out, err := jsontabwriter.GenerateOutput("items", allFlowlogJSONPaths, networkloadbalancerFlowLogs.FlowLogs,
+		printer.GetHeadersAllDefault(defaultFlowLogCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, out)
+
+	return nil
 }
 
 func RunNetworkLoadBalancerFlowLogGet(c *core.CommandConfig) error {
@@ -303,8 +319,12 @@ func RunNetworkLoadBalancerFlowLogGet(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
-	c.Printer.Verbose("NetworkLoadBalancerFlowLog with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFlowLogId)))
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+		"Network Load Balancer FlowLog with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFlowLogId))))
+
 	ng, resp, err := c.CloudApiV6Services.NetworkLoadBalancers().GetFlowLog(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNetworkLoadBalancerId)),
@@ -312,12 +332,26 @@ func RunNetworkLoadBalancerFlowLogGet(c *core.CommandConfig) error {
 		queryParams,
 	)
 	if resp != nil {
-		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getFlowLogPrint(nil, c, []resources.FlowLog{*ng}))
+
+	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	if err != nil {
+		return err
+	}
+
+	out, err := jsontabwriter.GenerateOutput("", allFlowlogJSONPaths, ng.FlowLog,
+		printer.GetHeadersAllDefault(defaultFlowLogCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, out)
+
+	return nil
 }
 
 func RunNetworkLoadBalancerFlowLogCreate(c *core.CommandConfig) error {
@@ -325,11 +359,14 @@ func RunNetworkLoadBalancerFlowLogCreate(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
 	proper := getFlowLogPropertiesSet(c)
+
 	if !proper.HasAction() {
 		proper.SetAction(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgAction)))
 	}
+
 	ng, resp, err := c.CloudApiV6Services.NetworkLoadBalancers().CreateFlowLog(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNetworkLoadBalancerId)),
@@ -341,15 +378,30 @@ func RunNetworkLoadBalancerFlowLogCreate(c *core.CommandConfig) error {
 		queryParams,
 	)
 	if resp != nil && printer.GetId(resp) != "" {
-		c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
+
 	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 		return err
 	}
-	return c.Printer.Print(getFlowLogPrint(resp, c, []resources.FlowLog{*ng}))
+
+	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	if err != nil {
+		return err
+	}
+
+	out, err := jsontabwriter.GenerateOutput("", allFlowlogJSONPaths, ng.FlowLog,
+		printer.GetHeadersAllDefault(defaultFlowLogCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, out)
+
+	return nil
 }
 
 func RunNetworkLoadBalancerFlowLogUpdate(c *core.CommandConfig) error {
@@ -357,8 +409,10 @@ func RunNetworkLoadBalancerFlowLogUpdate(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
 	input := getFlowLogPropertiesUpdate(c)
+
 	ng, resp, err := c.CloudApiV6Services.NetworkLoadBalancers().UpdateFlowLog(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNetworkLoadBalancerId)),
@@ -367,15 +421,30 @@ func RunNetworkLoadBalancerFlowLogUpdate(c *core.CommandConfig) error {
 		queryParams,
 	)
 	if resp != nil && printer.GetId(resp) != "" {
-		c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
+
 	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 		return err
 	}
-	return c.Printer.Print(getFlowLogPrint(resp, c, []resources.FlowLog{*ng}))
+
+	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	if err != nil {
+		return err
+	}
+
+	out, err := jsontabwriter.GenerateOutput("", allFlowlogJSONPaths, ng.FlowLog,
+		printer.GetHeadersAllDefault(defaultFlowLogCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, out)
+
+	return nil
 }
 
 func RunNetworkLoadBalancerFlowLogDelete(c *core.CommandConfig) error {
@@ -383,32 +452,41 @@ func RunNetworkLoadBalancerFlowLogDelete(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	networkLoadBalancerId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNetworkLoadBalancerId))
 	flowLogId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFlowLogId))
+
 	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
 		if err := DeleteAllNetworkLoadBalancerFlowLogs(c); err != nil {
 			return err
 		}
-		return c.Printer.Print(printer.Result{Resource: c.Resource, Verb: c.Verb})
-	} else {
-		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete network load balancer flowlog"); err != nil {
-			return err
-		}
-		c.Printer.Verbose("Starting deleting NetworkLoadBalancerFlowLog with id: %v...", flowLogId)
-		resp, err := c.CloudApiV6Services.NetworkLoadBalancers().DeleteFlowLog(dcId, networkLoadBalancerId, flowLogId, queryParams)
-		if resp != nil && printer.GetId(resp) != "" {
-			c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
-		}
-		if err != nil {
-			return err
-		}
-		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-			return err
-		}
-		return c.Printer.Print(getFlowLogPrint(resp, c, nil))
+
+		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("Network Load Balancer FlowLogs successfully deleted"))
+		return nil
 	}
+
+	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete network load balancer flowlog"); err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Starting deleting Network Load Balancer FlowLog with id: %v...", flowLogId))
+
+	resp, err := c.CloudApiV6Services.NetworkLoadBalancers().DeleteFlowLog(dcId, networkLoadBalancerId, flowLogId, queryParams)
+	if resp != nil && printer.GetId(resp) != "" {
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
+	}
+	if err != nil {
+		return err
+	}
+
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("Network Load Balancer FlowLog successfully deleted"))
+	return nil
 }
 
 func DeleteAllNetworkLoadBalancerFlowLogs(c *core.CommandConfig) error {
@@ -416,63 +494,81 @@ func DeleteAllNetworkLoadBalancerFlowLogs(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	networkLoadBalancerId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNetworkLoadBalancerId))
-	c.Printer.Verbose("Datacenter ID: %v", dcId)
-	c.Printer.Verbose("NetworkLoadBalancer ID: %v", networkLoadBalancerId)
-	c.Printer.Verbose("Getting NetworkLoadBalancerFlowLogs...")
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Datacenter ID: %v", dcId))
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Network Load Balancer ID: %v", networkLoadBalancerId))
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Getting Network Load Balancer FlowLogs..."))
+
 	flowLogs, resp, err := c.CloudApiV6Services.NetworkLoadBalancers().ListFlowLogs(dcId, networkLoadBalancerId, cloudapiv6.ParentResourceListQueryParams)
 	if err != nil {
 		return err
 	}
-	if flowLogsItems, ok := flowLogs.GetItemsOk(); ok && flowLogsItems != nil {
-		if len(*flowLogsItems) > 0 {
-			_ = c.Printer.Warn("NetworkLoadBalancerFlowLogs to be deleted:")
-			for _, flowLog := range *flowLogsItems {
-				delIdAndName := ""
-				if id, ok := flowLog.GetIdOk(); ok && id != nil {
-					delIdAndName += "NetworkLoadBalancerFlowLog Id: " + *id
-				}
-				if properties, ok := flowLog.GetPropertiesOk(); ok && properties != nil {
-					if name, ok := properties.GetNameOk(); ok && name != nil {
-						delIdAndName += " NetworkLoadBalancerFlowLog Name: " + *name
-					}
-				}
-				_ = c.Printer.Warn(delIdAndName)
-			}
-			if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete all the NetworkLoadBalancerFlowLogs"); err != nil {
-				return err
-			}
-			c.Printer.Verbose("Deleting all the NetworkLoadBalancerFlowLogs...")
-			var multiErr error
-			for _, flowLog := range *flowLogsItems {
-				if id, ok := flowLog.GetIdOk(); ok && id != nil {
-					c.Printer.Verbose("Starting deleting NetworkLoadBalancerFlowLog with id: %v...", *id)
-					resp, err = c.CloudApiV6Services.NetworkLoadBalancers().DeleteFlowLog(dcId, networkLoadBalancerId, *id, queryParams)
-					if resp != nil && printer.GetId(resp) != "" {
-						c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
-					}
-					if err != nil {
-						multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
-						continue
-					} else {
-						_ = c.Printer.Warn(fmt.Sprintf(constants.MessageDeletingAll, c.Resource, *id))
-					}
-					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-						multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
-						continue
-					}
-				}
-			}
-			if multiErr != nil {
-				return multiErr
-			}
-			return nil
-		} else {
-			return errors.New("no NetworkLoadBalancerFlowLogs found")
-		}
-	} else {
-		return errors.New("could not get items of NetworkLoadBalancerFlowLogs")
+
+	flowLogsItems, ok := flowLogs.GetItemsOk()
+	if !ok || flowLogsItems == nil {
+		return fmt.Errorf("could not get items of Network Load Balancer FlowLogs")
 	}
+
+	if len(*flowLogsItems) <= 0 {
+		return fmt.Errorf("no Network Load Balancer FlowLogs found")
+	}
+
+	fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("Network Load BalancerFlowLogs to be deleted:"))
+
+	for _, flowLog := range *flowLogsItems {
+		delIdAndName := ""
+
+		if id, ok := flowLog.GetIdOk(); ok && id != nil {
+			delIdAndName += "Network Load Balancer FlowLog Id: " + *id
+		}
+
+		if properties, ok := flowLog.GetPropertiesOk(); ok && properties != nil {
+			if name, ok := properties.GetNameOk(); ok && name != nil {
+				delIdAndName += " Network Load Balancer FlowLog Name: " + *name
+			}
+		}
+
+		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput(delIdAndName))
+	}
+
+	if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Network Load Balancer FlowLogs"); err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Deleting all the Network Load Balancer FlowLogs..."))
+
+	var multiErr error
+	for _, flowLog := range *flowLogsItems {
+		id, ok := flowLog.GetIdOk()
+		if !ok || id == nil {
+			continue
+		}
+
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Starting deleting Network Load Balancer FlowLog with id: %v...", *id))
+
+		resp, err = c.CloudApiV6Services.NetworkLoadBalancers().DeleteFlowLog(dcId, networkLoadBalancerId, *id, queryParams)
+		if resp != nil && printer.GetId(resp) != "" {
+			fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
+		}
+		if err != nil {
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
+			continue
+		}
+
+		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput(constants.MessageDeletingAll, c.Resource, *id))
+
+		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
+		}
+	}
+
+	if multiErr != nil {
+		return multiErr
+	}
+
+	return nil
 }

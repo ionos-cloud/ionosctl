@@ -2,11 +2,13 @@ package token
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/registry"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	sdkgo "github.com/ionos-cloud/sdk-go-container-registry"
 	"github.com/spf13/cobra"
@@ -59,11 +61,11 @@ func TokenReplaceCmd() *core.Command {
 			}, cobra.ShellCompDirectiveNoFileComp
 		},
 	)
-	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, printer.ColsMessage(allCols))
+	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, printer.ColsMessage(AllTokenCols))
 	_ = cmd.Command.RegisterFlagCompletionFunc(
 		constants.ArgCols,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-			return allCols, cobra.ShellCompDirectiveNoFileComp
+			return AllTokenCols, cobra.ShellCompDirectiveNoFileComp
 		},
 	)
 
@@ -78,6 +80,7 @@ func CmdPutToken(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	tokenId, err := c.Command.Command.Flags().GetString("token-id")
 	if err != nil {
 		return err
@@ -92,39 +95,45 @@ func CmdPutToken(c *core.CommandConfig) error {
 
 	if viper.IsSet(core.GetFlagName(c.NS, FlagExpiryDate)) {
 		var expiryDate time.Time
+
 		expiryDateString, err := c.Command.Command.Flags().GetString(FlagExpiryDate)
 		if err != nil {
 			return err
 		}
+
 		expiryDate, err = time.Parse(time.RFC3339, expiryDateString)
 		if err != nil {
 			return err
 		}
-		tokenPutProperties.SetExpiryDate(expiryDate)
 
+		tokenPutProperties.SetExpiryDate(expiryDate)
 	} else if viper.IsSet(core.GetFlagName(c.NS, FlagTimeUntilExpiry)) {
 		var timeUntilExpiry string
+
 		timeUntilExpiry, err = c.Command.Command.Flags().GetString(FlagTimeUntilExpiry)
 		if err != nil {
 			return err
 		}
+
 		timeNow := time.Now()
 		duration, err := ParseExpiryTime(timeUntilExpiry)
 		if err != nil {
 			return err
 		}
+
 		timeNow = timeNow.Add(duration)
 		tokenPutProperties.SetExpiryDate(timeNow)
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, FlagStatus)) {
 		var status string
+
 		status, err = c.Command.Command.Flags().GetString(FlagStatus)
 		if err != nil {
 			return err
 		}
-		tokenPutProperties.SetStatus(status)
 
+		tokenPutProperties.SetStatus(status)
 	}
 
 	tokenInputPut := sdkgo.NewPutTokenInputWithDefaults()
@@ -138,7 +147,23 @@ func CmdPutToken(c *core.CommandConfig) error {
 	tokenPrint := sdkgo.NewTokenResponseWithDefaults()
 	tokenPrint.SetProperties(*token.GetProperties())
 
-	return c.Printer.Print(getTokenPrint(nil, c, &[]sdkgo.TokenResponse{*tokenPrint}, true))
+	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	if err != nil {
+		return err
+	}
+
+	tokenConverted, err := ConvertTokenToTable(*tokenPrint)
+	if err != nil {
+		return err
+	}
+
+	out, err := jsontabwriter.GenerateOutputPreconverted(token, tokenConverted, printer.GetHeaders(AllTokenCols, postHeaders, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, out)
+	return nil
 }
 
 func PreCmdPutToken(c *core.PreCommandConfig) error {

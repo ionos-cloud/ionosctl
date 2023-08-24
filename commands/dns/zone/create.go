@@ -2,7 +2,10 @@ package zone
 
 import (
 	"context"
+	"fmt"
 
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	dns "github.com/ionos-cloud/sdk-go-dns"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
@@ -31,12 +34,15 @@ func ZonesPostCmd() *core.Command {
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			input := dns.Zone{}
+
 			if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) {
 				input.ZoneName = pointer.From(viper.GetString(fn))
 			}
+
 			if fn := core.GetFlagName(c.NS, constants.FlagDescription); viper.IsSet(fn) {
 				input.Description = pointer.From(viper.GetString(fn))
 			}
+
 			if fn := core.GetFlagName(c.NS, constants.FlagEnabled); viper.IsSet(fn) {
 				input.Enabled = pointer.From(viper.GetBool(fn))
 			}
@@ -46,7 +52,19 @@ func ZonesPostCmd() *core.Command {
 			if err != nil {
 				return err
 			}
-			return c.Printer.Print(getZonePrint(c, z))
+
+			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+			//if err != nil {
+			//	return err
+			//}
+
+			out, err := jsontabwriter.GenerateOutput("", allZoneJSONPaths, z, printer.GetHeadersAllDefault(allCols, cols))
+			if err != nil {
+				return err
+			}
+
+			fmt.Fprintf(c.Stdout, out)
+			return nil
 		},
 		InitClient: true,
 	})

@@ -289,7 +289,7 @@ func RunApplicationLoadBalancerListAll(c *core.CommandConfig) error {
 		for _, alb := range *albs {
 			converted, err := json2table.ConvertJSONToTable("", allApplicationLoadBalancerJSONPaths, alb)
 			if err != nil {
-				return fmt.Errorf("failed converting Application Load Balancer from JSON to table format: %w", err)
+				return fmt.Errorf("could not convert from JSON to Table format: %w", err)
 			}
 
 			converted[0]["DatacenterId"] = *dcId

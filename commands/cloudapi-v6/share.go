@@ -251,7 +251,7 @@ func RunShareListAll(c *core.CommandConfig) error {
 		for _, item := range *items {
 			temp, err := json2table.ConvertJSONToTable("", allShareJSONPaths, item)
 			if err != nil {
-				return fmt.Errorf("failed converting Share from JSON to table format: %w", err)
+				return fmt.Errorf("failed converting Share from JSON to Table format: %w", err)
 			}
 
 			gid, ok := group.GetIdOk()

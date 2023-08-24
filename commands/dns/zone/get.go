@@ -2,7 +2,10 @@ package zone
 
 import (
 	"context"
+	"fmt"
 
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	dns "github.com/ionos-cloud/sdk-go-dns"
 
 	"github.com/spf13/cobra"
@@ -33,12 +36,25 @@ func ZonesFindByIdCmd() *core.Command {
 			if err != nil {
 				return err
 			}
+
 			z, _, err := client.Must().DnsClient.ZonesApi.ZonesFindById(context.Background(), zoneId).Execute()
 
 			if err != nil {
 				return err
 			}
-			return c.Printer.Print(getZonePrint(c, z))
+
+			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+			//if err != nil {
+			//	return err
+			//}
+
+			out, err := jsontabwriter.GenerateOutput("", allZoneJSONPaths, z, printer.GetHeadersAllDefault(allCols, cols))
+			if err != nil {
+				return err
+			}
+
+			fmt.Fprintf(c.Stdout, out)
+			return nil
 		},
 		InitClient: true,
 	})
