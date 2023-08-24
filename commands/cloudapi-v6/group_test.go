@@ -36,6 +36,10 @@ var (
 				CreateFlowLog:               &testGroupBoolVar,
 				AccessAndManageMonitoring:   &testGroupBoolVar,
 				AccessAndManageCertificates: &testGroupBoolVar,
+				AccessAndManageDns:          &testGroupBoolVar,
+				ManageRegistry:              &testGroupBoolVar,
+				ManageDBaaS:                 &testGroupBoolVar,
+				ManageDataplatform:          &testGroupBoolVar,
 			},
 		},
 	}
@@ -81,6 +85,10 @@ var (
 				CreateFlowLog:               &testGroupBoolNewVar,
 				AccessAndManageMonitoring:   &testGroupBoolNewVar,
 				AccessAndManageCertificates: &testGroupBoolNewVar,
+				AccessAndManageDns:          &testGroupBoolNewVar,
+				ManageRegistry:              &testGroupBoolNewVar,
+				ManageDBaaS:                 &testGroupBoolNewVar,
+				ManageDataplatform:          &testGroupBoolNewVar,
 			},
 		},
 	}

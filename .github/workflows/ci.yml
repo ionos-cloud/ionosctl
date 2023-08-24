@@ -38,8 +38,8 @@ jobs:
 
       - name: Run tests
         env:
-          IONOS_USERNAME: ${{ secrets.IONOS_USERNAME_V5 }}
-          IONOS_PASSWORD: ${{ secrets.IONOS_PASSWORD_V6 }}
+          IONOS_USERNAME: ${{ secrets.IONOS_USERNAME }}
+          IONOS_PASSWORD: ${{ secrets.IONOS_PASSWORD }}
         run: make test
 
       - name: Build
