@@ -614,7 +614,7 @@ func DeleteAllNics(c *core.CommandConfig) error {
 
 		resp, err = c.CloudApiV6Services.Nics().Delete(dcId, serverId, *id, queryParams)
 		if resp != nil && printer.GetId(resp) != "" {
-			c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
+			fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
 		}
 		if err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))

@@ -391,11 +391,11 @@ func RunApplicationLoadBalancerForwardingRuleCreate(c *core.CommandConfig) error
 	proper := getAlbForwardingRulePropertiesSet(c)
 	if !proper.HasProtocol() {
 		proper.SetProtocol(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgProtocol)))
-		c.Printer.Verbose("Property Protocol set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgProtocol)))
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property Protocol set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgProtocol))))
 	}
 	if !proper.HasName() {
 		proper.SetName(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName)))
-		c.Printer.Verbose("Property Name set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName)))
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property Name set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))))
 	}
 
 	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Creating ForwardingRule"))
@@ -643,32 +643,32 @@ func getAlbForwardingRulePropertiesSet(c *core.CommandConfig) *resources.Applica
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgName)) {
 		input.SetName(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName)))
-		c.Printer.Verbose("Property Name set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName)))
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property Name set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))))
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgProtocol)) {
 		input.SetProtocol(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgProtocol)))
-		c.Printer.Verbose("Property Protocol set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgProtocol)))
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property Protocol set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgProtocol))))
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgListenerIp)) {
 		input.SetListenerIp(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgListenerIp)))
-		c.Printer.Verbose("Property ListenerIp set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgListenerIp)))
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property ListenerIp set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgListenerIp))))
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgListenerPort)) {
 		input.SetListenerPort(viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgListenerPort)))
-		c.Printer.Verbose("Property ListenerPort set: %v", viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgListenerPort)))
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property ListenerPort set: %v", viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgListenerPort))))
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgServerCertificates)) {
 		input.SetServerCertificates(viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgServerCertificates)))
-		c.Printer.Verbose("Property ServerCertificates set: %v", viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgServerCertificates)))
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property ServerCertificates set: %v", viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgServerCertificates))))
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgClientTimeout)) {
 		input.SetClientTimeout(viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgClientTimeout)))
-		c.Printer.Verbose("Property Client Timeout set: %v", viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgClientTimeout)))
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property Client Timeout set: %v", viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgClientTimeout))))
 	}
 
 	return &resources.ApplicationLoadBalancerForwardingRuleProperties{

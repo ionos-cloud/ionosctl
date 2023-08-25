@@ -66,7 +66,7 @@ func ClusterDeleteCmd() *core.Command {
 }
 
 func deleteAll(c *core.CommandConfig) error {
-	c.Printer.Verbose("Deleting All Clusters!")
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Deleting All Clusters!"))
 	xs, _, err := client.Must().DataplatformClient.DataPlatformClusterApi.ClustersGet(c.Context).Execute()
 	if err != nil {
 		return err

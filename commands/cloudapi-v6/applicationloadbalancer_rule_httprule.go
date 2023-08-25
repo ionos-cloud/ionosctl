@@ -316,10 +316,10 @@ func RunAlbRuleHttpRuleAdd(c *core.CommandConfig) error {
 	}
 
 	httpRuleNew := getRuleHttpRuleInfo(c)
-	c.Printer.Verbose("Adding the new HttpRule to the existing HttpRules")
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Adding the new HttpRule to the existing HttpRules"))
 
 	httpRuleItems = append(httpRuleItems, httpRuleNew.ApplicationLoadBalancerHttpRule)
-	c.Printer.Verbose("Updating ForwardingRule with the new HttpRules")
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Updating ForwardingRule with the new HttpRules"))
 
 	_, resp, err = c.CloudApiV6Services.ApplicationLoadBalancers().UpdateForwardingRule(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),

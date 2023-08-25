@@ -508,7 +508,7 @@ func RunLoadBalancerDelete(c *core.CommandConfig) error {
 		}
 
 		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("Load Balancers successfully deleted"))
-		return c.Printer.Print(printer.Result{Resource: c.Resource, Verb: c.Verb})
+		return nil
 	}
 
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete loadbalancer"); err != nil {

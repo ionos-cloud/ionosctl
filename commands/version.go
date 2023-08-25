@@ -42,11 +42,7 @@ func VersionCmd() *core.Command {
 }
 
 func RunVersion(c *core.CommandConfig) error {
-	err := c.Printer.Print(rootCmd.Command.Version)
-	if err != nil {
-		return err
-	}
-
+	fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput(c.Command.Command.Version))
 	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("sdk-go "+sdkcompute.Version))
 	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("sdk-go-dbaas-postgres "+sdkpostgres.Version))
 	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("sdk-go-auth "+sdkauth.Version))

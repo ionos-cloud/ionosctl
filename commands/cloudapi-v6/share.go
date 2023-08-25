@@ -575,8 +575,8 @@ func DeleteAllShares(c *core.CommandConfig) error {
 	queryParams := listQueryParams.QueryParams
 	groupId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId))
 
-	c.Printer.Verbose("Group ID: %v", groupId)
-	c.Printer.Verbose("Getting Group Shares...")
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Group ID: %v", groupId))
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Getting Group Shares...")
 
 	groupShares, resp, err := c.CloudApiV6Services.Groups().ListShares(groupId, cloudapiv6.ParentResourceListQueryParams)
 	if err != nil {

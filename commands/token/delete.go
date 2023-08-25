@@ -157,7 +157,7 @@ func runTokenDeleteCurrent(c *core.CommandConfig) error {
 
 func runTokenDeleteById(c *core.CommandConfig) error {
 	tokenId := viper.GetString(core.GetFlagName(c.NS, authservice.ArgTokenId))
-	c.Printer.Verbose("Token ID: %s", tokenId)
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Token ID: %s", tokenId))
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, fmt.Sprintf("delete token with ID: %s", tokenId)); err != nil {
 		return err
 	}

@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	dns "github.com/ionos-cloud/sdk-go-dns"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
@@ -71,7 +72,7 @@ func ZonesDeleteCmd() *core.Command {
 }
 
 func deleteAll(c *core.CommandConfig) error {
-	c.Printer.Verbose("Deleting all zones!")
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Deleting all zones!"))
 	xs, _, err := client.Must().DnsClient.ZonesApi.ZonesGet(c.Context).Execute()
 	if err != nil {
 		return err

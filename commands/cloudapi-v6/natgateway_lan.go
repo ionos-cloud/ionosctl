@@ -269,7 +269,7 @@ func RunNatGatewayLanRemove(c *core.CommandConfig) error {
 		}
 
 		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("NAT Gateway Lans successfully deleted"))
-		return c.Printer.Print(printer.Result{Resource: c.Resource, Verb: c.Verb})
+		return nil
 	}
 
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "remove nat gateway lan"); err != nil {

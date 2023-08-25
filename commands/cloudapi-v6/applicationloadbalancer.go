@@ -647,23 +647,23 @@ func getNewApplicationLoadBalancerInfo(c *core.CommandConfig) *resources.Applica
 	input := ionoscloud.ApplicationLoadBalancerProperties{}
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgName)) {
 		input.SetName(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName)))
-		c.Printer.Verbose("Property Name set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName)))
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property Name set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))))
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgIps)) {
 		input.SetIps(viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgIps)))
-		c.Printer.Verbose("Property IPs set: %v", viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgIps)))
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property IPs set: %v", viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgIps))))
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgListenerLan)) {
 		input.SetListenerLan(viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgListenerLan)))
-		c.Printer.Verbose("Property ListenerLan set: %v", viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgListenerLan)))
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property ListenerLan set: %v", viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgListenerLan))))
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgTargetLan)) {
 		input.SetTargetLan(viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgTargetLan)))
-		c.Printer.Verbose("Property TargetLan set: %v", viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgTargetLan)))
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property TargetLan set: %v", viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgTargetLan))))
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgPrivateIps)) {
 		input.SetLbPrivateIps(viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgPrivateIps)))
-		c.Printer.Verbose("Property LbPrivateIps set: %v", viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgPrivateIps)))
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property LbPrivateIps set: %v", viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgPrivateIps))))
 	}
 	return &resources.ApplicationLoadBalancerProperties{
 		ApplicationLoadBalancerProperties: input,
