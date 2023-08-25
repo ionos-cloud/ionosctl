@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
@@ -39,11 +40,14 @@ func ClusterDeleteCmd() *core.Command {
 			if err != nil {
 				return err
 			}
-			c.Printer.Verbose("Deleting cluster: %s", clusterId)
+
+			fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Deleting cluster: %s", clusterId))
+
 			_, _, err = client.Must().DataplatformClient.DataPlatformClusterApi.ClustersDelete(c.Context, clusterId).Execute()
 			if err != nil {
 				return err
 			}
+
 			return err
 		},
 		InitClient: true,

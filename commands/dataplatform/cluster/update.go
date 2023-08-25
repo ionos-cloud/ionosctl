@@ -2,9 +2,12 @@ package cluster
 
 import (
 	"context"
+	"fmt"
 	"os"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 
 	"github.com/cilium/fake"
 	cloudapiv6completer "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
@@ -33,15 +36,18 @@ func ClusterUpdateCmd() *core.Command {
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
-			c.Printer.Verbose("Getting Cluster by id: %s", clusterId)
+
+			fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Getting Cluster by id: %s", clusterId))
 
 			updateProperties := sdkdataplatform.PatchClusterProperties{}
 			if viper.IsSet(core.GetFlagName(c.NS, constants.FlagName)) {
 				updateProperties.SetName(viper.GetString(core.GetFlagName(c.NS, constants.FlagName)))
 			}
+
 			if viper.IsSet(core.GetFlagName(c.NS, constants.FlagVersion)) {
 				updateProperties.SetDataPlatformVersion(viper.GetString(core.GetFlagName(c.NS, constants.FlagVersion)))
 			}
+
 			if viper.IsSet(core.GetFlagName(c.NS, constants.FlagMaintenanceDay)) &&
 				viper.IsSet(core.GetFlagName(c.NS, constants.FlagMaintenanceTime)) {
 				maintenanceWindow := sdkdataplatform.MaintenanceWindow{}
@@ -54,7 +60,17 @@ func ClusterUpdateCmd() *core.Command {
 			if err != nil {
 				return err
 			}
-			return c.Printer.Print(getClusterPrint(c, &[]sdkdataplatform.ClusterResponseData{cluster}))
+
+			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+
+			out, err := jsontabwriter.GenerateOutput("", allJSONPaths, cluster,
+				printer.GetHeadersAllDefault(allCols, cols))
+			if err != nil {
+				return err
+			}
+
+			fmt.Fprintf(c.Stdout, out)
+			return nil
 		},
 		InitClient: true,
 	})

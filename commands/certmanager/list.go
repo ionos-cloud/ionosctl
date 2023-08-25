@@ -40,7 +40,13 @@ func CmdList(c *core.CommandConfig) error {
 		return err
 	}
 
-	out, err := jsontabwriter.GenerateOutput("items", allCertificateJSONPaths, certs, defaultCertificateCols)
+	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	if err != nil {
+		return err
+	}
+
+	out, err := jsontabwriter.GenerateOutput("items", allCertificateJSONPaths, certs,
+		printer.GetHeadersAllDefault(defaultCertificateCols, cols))
 	if err != nil {
 		return err
 	}

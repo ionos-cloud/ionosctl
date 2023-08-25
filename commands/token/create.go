@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	authservice "github.com/ionos-cloud/ionosctl/v6/services/auth-v1"
 	"github.com/spf13/viper"
 )
@@ -29,18 +30,23 @@ func TokenPostCmd() *core.Command {
 }
 
 func runTokenCreate(c *core.CommandConfig) error {
-	c.Printer.Verbose("Generating new token..")
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Generating new token.."))
+
 	if viper.IsSet(core.GetFlagName(c.NS, authservice.ArgContractNo)) {
-		c.Printer.Verbose(contractNumberMessage, viper.GetInt32(core.GetFlagName(c.NS, authservice.ArgContractNo)))
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(contractNumberMessage,
+			viper.GetInt32(core.GetFlagName(c.NS, authservice.ArgContractNo))))
 	}
+
 	newJwt, _, err := c.AuthV1Services.Tokens().Create(viper.GetInt32(core.GetFlagName(c.NS, authservice.ArgContractNo)))
 	if err != nil {
 		return err
 	}
+
 	if newJwt != nil {
 		if token, ok := newJwt.GetTokenOk(); ok && token != nil {
-			_, err = fmt.Fprintln(c.Command.Command.OutOrStdout(), *token)
-			return err
+			fmt.Fprintf(c.Stdout, jsontabwriter.GenerateRawOutput(*token))
+
+			return nil
 		} else {
 			return errors.New("error getting generated token")
 		}

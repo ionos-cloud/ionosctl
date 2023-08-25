@@ -44,7 +44,7 @@ func testClusterOk(t *testing.T) {
 	viper.Set(constants.ArgOutput, "text")
 	viper.Set(constants.ArgCols, "Name")
 	viper.Set(constants.ArgNoHeaders, true)
-	fmt.Printf(viper.GetString(constants.ArgCols))
+	fmt.Println(viper.GetString(constants.ArgCols))
 
 	c := cluster.ClusterCreateCmd()
 	c.Command.Flags().Set(constants.FlagDatacenterId, createdDcId)

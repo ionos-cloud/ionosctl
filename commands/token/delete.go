@@ -11,6 +11,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/jwt"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
 	authservice "github.com/ionos-cloud/ionosctl/v6/services/auth-v1"
 	sdkgoauth "github.com/ionos-cloud/sdk-go-auth"
@@ -54,7 +55,8 @@ func preRunTokenDelete(c *core.PreCommandConfig) error {
 
 func runTokenDelete(c *core.CommandConfig) error {
 	if viper.IsSet(core.GetFlagName(c.NS, authservice.ArgContractNo)) {
-		c.Printer.Verbose(contractNumberMessage, viper.GetInt32(core.GetFlagName(c.NS, authservice.ArgContractNo)))
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(contractNumberMessage,
+			viper.GetInt32(core.GetFlagName(c.NS, authservice.ArgContractNo))))
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, authservice.ArgTokenId)) {
 		return runTokenDeleteById(c)
@@ -78,18 +80,23 @@ func runTokenDeleteAll(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, fmt.Sprintf("delete all tokens")); err != nil {
 		return err
 	}
-	c.Printer.Verbose("Deleting all tokens...")
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Deleting all tokens..."))
+
 	tokenResponse, _, err := c.AuthV1Services.Tokens().DeleteByCriteria("ALL", viper.GetInt32(core.GetFlagName(c.NS, authservice.ArgContractNo)))
 	if err != nil {
 		return err
 	}
+
 	if tokenResponse != nil {
 		if success, ok := tokenResponse.GetSuccessOk(); ok && success != nil {
 			if *success {
-				return c.Printer.Warn("Status: all tokens have been successfully deleted")
+				fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("Status: all tokens have been successfully deleted"))
+				return nil
 			}
 		}
 	}
+
 	return errors.New("error deleting all tokens")
 }
 
@@ -97,39 +104,51 @@ func runTokenDeleteExpired(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, fmt.Sprintf("delete expired tokens")); err != nil {
 		return err
 	}
-	c.Printer.Verbose("Deleting expired tokens...")
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Deleting expired tokens..."))
+
 	tokenResponse, _, err := c.AuthV1Services.Tokens().DeleteByCriteria("EXPIRED", viper.GetInt32(core.GetFlagName(c.NS, authservice.ArgContractNo)))
 	if err != nil {
 		return err
 	}
+
 	if tokenResponse != nil {
 		if success, ok := tokenResponse.GetSuccessOk(); ok && success != nil {
 			if *success {
-				return c.Printer.Warn("Status: expired tokens have been successfully deleted")
+				fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("Status: expired tokens have been successfully deleted"))
+				return nil
 			}
 		}
 	}
+
 	return errors.New("error deleting expired tokens")
 }
 
 func runTokenDeleteCurrent(c *core.CommandConfig) error {
-	c.Printer.Verbose("Note: This operation is based on Authorization Header for Bearer Token")
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+		"Note: This operation is based on Authorization Header for Bearer Token"))
+
 	if viper.GetString(constants.Token) == "" {
 		return errors.New(fmt.Sprintf("no token found. Please make sure you have exported the %s environment variable or you have token set in the config file",
 			sdkgoauth.IonosTokenEnvVar))
 	}
+
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, fmt.Sprintf("delete CURRENT token")); err != nil {
 		return err
 	}
-	c.Printer.Verbose("Deleting current token...")
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Deleting current token..."))
+
 	tokenResponse, _, err := c.AuthV1Services.Tokens().DeleteByCriteria("CURRENT", viper.GetInt32(core.GetFlagName(c.NS, authservice.ArgContractNo)))
 	if err != nil {
 		return err
 	}
+
 	if tokenResponse != nil {
 		if success, ok := tokenResponse.GetSuccessOk(); ok && success != nil {
 			if *success {
-				return c.Printer.Warn("Status: current token have been successfully deleted")
+				fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("Status: current token have been successfully deleted"))
+				return nil
 			}
 		}
 	}
@@ -158,7 +177,7 @@ func runTokenDeleteById(c *core.CommandConfig) error {
 
 func runTokenDeleteByToken(c *core.CommandConfig) error {
 	token := viper.GetString(core.GetFlagName(c.NS, authservice.ArgToken))
-	c.Printer.Verbose("Token content is: %s", token)
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Token content is: %s", token))
 
 	headers, err := jwt.Headers(token)
 	if err != nil {
@@ -182,7 +201,8 @@ func runTokenDeleteByToken(c *core.CommandConfig) error {
 	if tokenResponse != nil {
 		if success, ok := tokenResponse.GetSuccessOk(); ok && success != nil {
 			if *success {
-				return c.Printer.Warn("Status: token has been successfully deleted")
+				fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("Status: token has been successfully deleted"))
+				return nil
 			}
 		}
 	}

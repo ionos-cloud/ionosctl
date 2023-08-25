@@ -2,8 +2,11 @@ package nodepool
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dataplatform/completer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
@@ -40,7 +43,7 @@ func NodepoolUpdateCmd() *core.Command {
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			c.Printer.Verbose("Updating Nodepool...")
+			fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Updating Nodepool..."))
 
 			clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
 			npId := viper.GetString(core.GetFlagName(c.NS, constants.FlagNodepoolId))
@@ -70,7 +73,21 @@ func NodepoolUpdateCmd() *core.Command {
 			if err != nil {
 				return err
 			}
-			return c.Printer.Print(getNodepoolsPrint(c, &[]sdkdataplatform.NodePoolResponseData{cr}))
+
+			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+
+			crConverted, err := convertNodePoolToTable(cr)
+			if err != nil {
+				return err
+			}
+
+			out, err := jsontabwriter.GenerateOutputPreconverted(cr, crConverted, printer.GetHeaders(allCols, defaultCols, cols))
+			if err != nil {
+				return err
+			}
+
+			fmt.Fprintf(c.Stdout, out)
+			return nil
 		},
 		InitClient: true,
 	})

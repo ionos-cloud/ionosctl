@@ -2,11 +2,12 @@ package token
 
 import (
 	"context"
+	"fmt"
 
-	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/v6/internal/jwt"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	authservice "github.com/ionos-cloud/ionosctl/v6/services/auth-v1"
 	"github.com/spf13/viper"
@@ -41,6 +42,11 @@ func preRunTokenParse(c *core.PreCommandConfig) error {
 }
 
 func runTokenParse(c *core.CommandConfig) error {
+	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	if err != nil {
+		return err
+	}
+
 	token := viper.GetString(core.GetFlagName(c.NS, authservice.ArgToken))
 
 	if viper.IsSet(core.GetFlagName(c.NS, authservice.ArgPrivileges)) {
@@ -54,7 +60,16 @@ func runTokenParse(c *core.CommandConfig) error {
 			return err
 		}
 
-		return c.Printer.Print(getTokenPrivilegesPrint(c, privileges))
+		privilegesConverted := makeTokenPrivilegesPrintObject(privileges)
+
+		out, err := jsontabwriter.GenerateOutputPreconverted(privileges, privilegesConverted,
+			printer.GetHeadersAllDefault([]string{"Privileges"}, cols))
+		if err != nil {
+			return err
+		}
+
+		fmt.Fprintf(c.Stdout, out)
+		return nil
 	}
 
 	headers, err := jwt.Headers(token)
@@ -67,73 +82,54 @@ func runTokenParse(c *core.CommandConfig) error {
 		return err
 	}
 
-	var tokenInfo tokenInfoPrint
+	var info tokenInfo
 
-	tokenInfo.TokenId, err = jwt.Kid(headers)
+	info.TokenId, err = jwt.Kid(headers)
 	if err != nil {
 		return err
 	}
 
-	tokenInfo.UserId, err = jwt.Uuid(claims)
+	info.UserId, err = jwt.Uuid(claims)
 	if err != nil {
 		return err
 	}
 
-	tokenInfo.ContractNumber, err = jwt.ContractNumber(claims)
+	info.ContractNumber, err = jwt.ContractNumber(claims)
 	if err != nil {
 		return err
 	}
 
-	tokenInfo.Role, err = jwt.Role(claims)
+	info.Role, err = jwt.Role(claims)
 	if err != nil {
 		return err
 	}
 
-	return c.Printer.Print(getTokenInfoPrint(c, tokenInfo))
-}
-
-// Token info printing
-
-type tokenInfoPrint struct {
-	TokenId        string `json:"TokenId,omitempty"`
-	UserId         string `json:"UserId,omitempty"`
-	ContractNumber int64  `json:"ContractNumber,omitempty"`
-	Role           string `json:"Role,omitempty"`
-}
-
-var allCols = structs.Names(tokenInfoPrint{})
-
-func getTokenInfoPrint(c *core.CommandConfig, tokenInfo tokenInfoPrint) printer.Result {
-	r := printer.Result{}
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-
-	if c != nil {
-		r.OutputJSON = tokenInfo
-		r.Columns = printer.GetHeadersAllDefault(allCols, cols)
-		r.KeyValue = makeTokenInfoPrintObject(tokenInfo)
+	out, err := jsontabwriter.GenerateOutput("", allJSONPaths, info, printer.GetHeadersAllDefault(allCols, cols))
+	if err != nil {
+		return err
 	}
 
-	return r
+	fmt.Fprintf(c.Stdout, out)
+	return nil
 }
 
-func makeTokenInfoPrintObject(tokenInfo tokenInfoPrint) []map[string]interface{} {
-	var out = make([]map[string]interface{}, 0)
-
-	out = append(out, structs.Map(tokenInfo))
-	return out
+type tokenInfo struct {
+	TokenId        string `json:"tokenId,omitempty"`
+	UserId         string `json:"userId,omitempty"`
+	ContractNumber int64  `json:"contractNumber,omitempty"`
+	Role           string `json:"role,omitempty"`
 }
 
-func getTokenPrivilegesPrint(c *core.CommandConfig, privileges []string) printer.Result {
-	r := printer.Result{}
-
-	if c != nil {
-		r.OutputJSON = privileges
-		r.Columns = []string{"Privileges"}
-		r.KeyValue = makeTokenPrivilegesPrintObject(privileges)
+var (
+	allJSONPaths = map[string]string{
+		"TokenId":        "tokenId",
+		"UserId":         "userId",
+		"ContractNumber": "contractNumber",
+		"Role":           "role",
 	}
 
-	return r
-}
+	allCols = []string{"TokenId", "UserId", "ContractNumber", "Role"}
+)
 
 func makeTokenPrivilegesPrintObject(privileges []string) []map[string]interface{} {
 	var out = make([]map[string]interface{}, 0)

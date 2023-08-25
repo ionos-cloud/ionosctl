@@ -2,8 +2,11 @@ package cluster
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 
 	"github.com/cilium/fake"
 	"github.com/cjrd/allocate"
@@ -42,14 +45,17 @@ func ClusterCreateCmd() *core.Command {
 			return c.Command.Command.MarkFlagRequired(constants.FlagMaintenanceTime)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			c.Printer.Verbose("Creating Cluster...")
+			fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Creating Cluster..."))
+
 			day := viper.GetString(core.GetFlagName(c.NS, constants.FlagMaintenanceDay))
 			time := viper.GetString(core.GetFlagName(c.NS, constants.FlagMaintenanceTime))
 
 			maintenanceWindow := sdkdataplatform.MaintenanceWindow{}
+
 			maintenanceWindow.SetDayOfTheWeek(day)
 			maintenanceWindow.SetTime(time)
 			createProperties.SetMaintenanceWindow(maintenanceWindow)
+
 			input := sdkdataplatform.CreateClusterRequest{}
 			input.SetProperties(createProperties)
 
@@ -57,7 +63,17 @@ func ClusterCreateCmd() *core.Command {
 			if err != nil {
 				return err
 			}
-			return c.Printer.Print(getClusterPrint(c, &[]sdkdataplatform.ClusterResponseData{cr}))
+
+			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+
+			out, err := jsontabwriter.GenerateOutput("", allJSONPaths, cr,
+				printer.GetHeadersAllDefault(allCols, cols))
+			if err != nil {
+				return err
+			}
+
+			fmt.Fprintf(c.Stdout, out)
+			return nil
 		},
 		InitClient: true,
 	})
