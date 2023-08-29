@@ -8,7 +8,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 
 	sdk "github.com/ionos-cloud/sdk-go/v6"
-	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
@@ -166,32 +165,70 @@ func TestUsingJustUsernameAndPasswordConfig(t *testing.T) {
 }
 
 func TestGetServerUrl(t *testing.T) {
-	os.Clearenv()
-	viper.Reset()
+	tests := []struct {
+		name              string
+		flagVal           string
+		envVal            string
+		cfgVal            string
+		expectedServerUrl string
+	}{
+		{
+			name:              "Flag value is used and different from default",
+			flagVal:           "http://flag.url",
+			envVal:            "http://env.url",
+			cfgVal:            "http://cfg.url",
+			expectedServerUrl: "http://flag.url",
+		},
+		{
+			name:              "Flag value is DNS default, Env value is used",
+			flagVal:           "dns.de-fra.ionos.com",
+			envVal:            "http://env.url",
+			cfgVal:            "http://cfg.url",
+			expectedServerUrl: "http://env.url",
+		},
+		{
+			name:              "All values are DNS default or not set, return empty string",
+			flagVal:           "dns.de-fra.ionos.com",
+			envVal:            "",
+			cfgVal:            "",
+			expectedServerUrl: "",
+		},
+		{
+			name:              "Explicit flag URL is returned",
+			flagVal:           "http://explicit-url.com",
+			envVal:            "",
+			cfgVal:            "",
+			expectedServerUrl: "http://explicit-url.com",
+		},
+		{
+			name:              "Explicit flag URL is prefered over explicit env var",
+			flagVal:           "http://explicit-url.com",
+			envVal:            "http://env.url",
+			cfgVal:            "",
+			expectedServerUrl: "http://explicit-url.com",
+		},
+		{
+			name:              "Default API Url explicitly set is preferred over explicit env var",
+			flagVal:           constants.DefaultApiURL,
+			envVal:            "http://env.url",
+			cfgVal:            "",
+			expectedServerUrl: constants.DefaultApiURL,
+		},
+	}
 
-	// use env
-	assert.NoError(t, os.Setenv(sdk.IonosApiUrlEnvVar, "url"))
-	err := Load()
-	assert.Error(t, err) // Error because neither token nor user & pass set
-	assert.Equal(t, "url", viper.GetString(constants.ServerUrl))
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// Mock viper values
+			viper.Set(constants.ArgServerUrl, tt.flagVal)
+			viper.Set(constants.EnvServerUrl, tt.envVal)
+			viper.Set(constants.ServerUrl, tt.cfgVal)
 
-	// from config
-	os.Clearenv()
-	viper.Reset()
-	viper.SetConfigFile(filepath.Join("..", "testdata", "config.json")) // TODO: These files should be created and then destroyed by the tests
-	viper.Set(constants.ArgConfig, filepath.Join("..", "testdata", "config.json"))
-	assert.NoError(t, os.Chmod(filepath.Join("..", "testdata", "config.json"), 0600))
-	assert.NoError(t, Load())
-	assert.Equal(t, "https://api.ionos.com", GetServerUrl())
-
-	viper.Reset()
-	fs := pflag.NewFlagSet(constants.ArgServerUrl, pflag.ContinueOnError)
-	_ = fs.String(constants.ArgServerUrl, "default", "test flag")
-	viper.BindPFlags(fs)
-	assert.Equal(t, "default", GetServerUrl())
-
-	assert.NoError(t, fs.Parse([]string{"--" + constants.ArgServerUrl, "explicit"}))
-	assert.Equal(t, "explicit", GetServerUrl())
+			got := GetServerUrl()
+			if got != tt.expectedServerUrl {
+				t.Errorf("Expected %s but got %s", tt.expectedServerUrl, got)
+			}
+		})
+	}
 }
 
 func TestLoadFile(t *testing.T) {
