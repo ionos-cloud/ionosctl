@@ -49,7 +49,6 @@ func GetServerUrl() string {
 	}
 	if cfgVal := viper.GetString(constants.ServerUrl); viper.IsSet(constants.ServerUrl) {
 		// 3. Fallback to non-empty cfg field
-		fmt.Println("cfg val: " + cfgVal)
 		return cfgVal
 	}
 	// 4. Return empty string. SDKs should handle it, per docs
