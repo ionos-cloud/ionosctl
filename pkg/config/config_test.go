@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"os"
-	"runtime"
 	"testing"
 	"time"
 
@@ -36,15 +35,15 @@ func TestRead(t *testing.T) {
 			name:     "should return an error when the file does not exist",
 			filename: "non-existent-file",
 			wantErr:  true,
-			errMsg:   "failed getting config file info",
+			errMsg:   "no such file or directory",
 		},
 		{
 			name:     "should return an error when the file has invalid permissions",
 			filename: "bad-permissions.json",
 			data:     `{"key":"value"}`,
-			perm:     0777,
+			perm:     0700,
 			wantErr:  true,
-			errMsg:   "expected 600, got 777",
+			errMsg:   "expected 600, got 700",
 		},
 		{
 			name:     "should return an error when the file has invalid json",
@@ -66,11 +65,6 @@ func TestRead(t *testing.T) {
 
 				_, err = tmpfile.Write([]byte(tt.data))
 				assert.NoError(t, err)
-
-				if runtime.GOOS == "windows" && tt.perm != 0600 {
-					// Can't use chmod to test this functionality
-					t.SkipNow()
-				}
 
 				err = tmpfile.Chmod(tt.perm)
 				assert.NoError(t, err)
