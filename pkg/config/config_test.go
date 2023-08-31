@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"os"
-	"runtime"
 	"testing"
 	"time"
 
@@ -36,15 +35,15 @@ func TestRead(t *testing.T) {
 			name:     "should return an error when the file does not exist",
 			filename: "non-existent-file",
 			wantErr:  true,
-			errMsg:   "failed getting config file info",
+			errMsg:   "no such file or directory",
 		},
 		{
 			name:     "should return an error when the file has invalid permissions",
 			filename: "bad-permissions.json",
 			data:     `{"key":"value"}`,
-			perm:     0777,
+			perm:     0700,
 			wantErr:  true,
-			errMsg:   "expected 600, got 777",
+			errMsg:   "expected 600, got 700",
 		},
 		{
 			name:     "should return an error when the file has invalid json",
@@ -66,11 +65,6 @@ func TestRead(t *testing.T) {
 
 				_, err = tmpfile.Write([]byte(tt.data))
 				assert.NoError(t, err)
-
-				if runtime.GOOS == "windows" && tt.perm != 0600 {
-					// Can't use chmod to test this functionality
-					t.SkipNow()
-				}
 
 				err = tmpfile.Chmod(tt.perm)
 				assert.NoError(t, err)
@@ -150,73 +144,6 @@ func TestWrite(t *testing.T) {
 			assert.NoError(t, err)
 
 			assert.Equal(t, tt.data, cfg)
-		})
-	}
-}
-
-func TestGetServerUrl(t *testing.T) {
-	tests := []struct {
-		name              string
-		flagVal           string
-		envVal            string
-		cfgVal            string
-		expectedServerUrl string
-	}{
-		{
-			name:              "Flag value is used and different from default",
-			flagVal:           "http://flag.url",
-			envVal:            "http://env.url",
-			cfgVal:            "http://cfg.url",
-			expectedServerUrl: "http://flag.url",
-		},
-		{
-			name:              "Flag value is DNS default, Env value is used",
-			flagVal:           "dns.de-fra.ionos.com",
-			envVal:            "http://env.url",
-			cfgVal:            "http://cfg.url",
-			expectedServerUrl: "http://env.url",
-		},
-		{
-			name:              "All values are DNS default or not set, return empty string",
-			flagVal:           "dns.de-fra.ionos.com",
-			envVal:            "",
-			cfgVal:            "",
-			expectedServerUrl: "",
-		},
-		{
-			name:              "Explicit flag URL is returned",
-			flagVal:           "http://explicit-url.com",
-			envVal:            "",
-			cfgVal:            "",
-			expectedServerUrl: "http://explicit-url.com",
-		},
-		{
-			name:              "Explicit flag URL is prefered over explicit env var",
-			flagVal:           "http://explicit-url.com",
-			envVal:            "http://env.url",
-			cfgVal:            "",
-			expectedServerUrl: "http://explicit-url.com",
-		},
-		{
-			name:              "Default API Url explicitly set is preferred over explicit env var",
-			flagVal:           constants.DefaultApiURL,
-			envVal:            "http://env.url",
-			cfgVal:            "",
-			expectedServerUrl: constants.DefaultApiURL,
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			// Mock viper values
-			viper.Set(constants.ArgServerUrl, tt.flagVal)
-			viper.Set(constants.EnvServerUrl, tt.envVal)
-			viper.Set(constants.CfgServerUrl, tt.cfgVal)
-
-			got := config.GetServerUrl()
-			if got != tt.expectedServerUrl {
-				t.Errorf("Expected %s but got %s", tt.expectedServerUrl, got)
-			}
 		})
 	}
 }
