@@ -163,7 +163,6 @@ func initConfig() {
 // AddCommands adds sub commands to the base command.
 func addCommands() {
 	rootCmd.AddCommand(VersionCmd())
-
 	// cfg
 	rootCmd.AddCommand(cfg.ConfigCmd())
 	// Config namespace commands are also available via the root command, but are hidden
