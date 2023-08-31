@@ -47,7 +47,9 @@ func TestDNSCommands(t *testing.T) {
 func setup() error {
 	if GoodToken = os.Getenv("IONOS_TOKEN"); GoodToken != "" {
 		cl = client.NewClient("", "", GoodToken, "")
-		return nil
+		if cl.TestCreds() != nil {
+			return nil
+		}
 	}
 
 	// Otherwise, generate a token, since DNS doesn't function without it, only with username & password
@@ -72,7 +74,7 @@ func setup() error {
 	GoodToken = *tok.Token
 	tokCreationTime = time.Now().In(time.UTC).Add(-10 * time.Second)
 
-	cl = client.NewClient("", "", GoodToken, "")
+	cl = client.NewClient("", "", *tok.Token, "")
 
 	return nil
 }
@@ -81,7 +83,7 @@ func setup() error {
 func TestZone(t *testing.T) {
 	var err error
 	viper.Set(constants.ArgOutput, "text")
-	viper.Set(constants.CfgToken, GoodToken)
+	viper.Set(constants.ArgToken, GoodToken)
 
 	// === `ionosctl dns z create`
 	c := zone.ZonesPostCmd()
