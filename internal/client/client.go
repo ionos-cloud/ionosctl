@@ -22,7 +22,12 @@ func selectAuthLayer(layers []Layer) (values map[string]string, usedLayer Layer,
 		username := viper.GetString(layer.UsernameKey)
 		password := viper.GetString(layer.PasswordKey)
 
-		if token != "" || (username != "" && password != "") {
+		// TODO (Ask the team for feedback):
+		// If token is set and invalid, we could still try the user & pass here, and choose them over the invalid token.
+		// However this could be inconsistent with the Ansible / TF approach and could confuse the user.
+		// TODO END
+		if layer.TokenKey != "" && token != "" ||
+			layer.UsernameKey != "" && username != "" && layer.PasswordKey != "" && password != "" {
 			return map[string]string{
 				"token":    token,
 				"username": username,
