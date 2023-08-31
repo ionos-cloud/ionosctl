@@ -82,7 +82,7 @@ func setup() error {
 func TestZone(t *testing.T) {
 	var err error
 	viper.Set(constants.ArgOutput, "text")
-	viper.Set(constants.Token, GoodToken)
+	viper.Set(constants.CfgToken, GoodToken)
 
 	// === `ionosctl dns z create`
 	c := zone.ZonesPostCmd()
@@ -147,7 +147,7 @@ func TestZone(t *testing.T) {
 
 func TestRecord(t *testing.T) {
 	var err error
-	viper.Set(constants.Token, GoodToken)
+	viper.Set(constants.CfgToken, GoodToken)
 	viper.Set(constants.ArgOutput, "text")
 
 	// `ionosctl dns r create`
