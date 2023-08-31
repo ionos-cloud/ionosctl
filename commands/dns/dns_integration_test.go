@@ -47,7 +47,9 @@ func TestDNSCommands(t *testing.T) {
 func setup() error {
 	if GoodToken = os.Getenv("IONOS_TOKEN"); GoodToken != "" {
 		cl = client.NewClient("", "", GoodToken, "")
-		return nil
+		if cl.TestCreds() != nil {
+			return nil
+		}
 	}
 
 	// Otherwise, generate a token, since DNS doesn't function without it, only with username & password
@@ -61,9 +63,8 @@ func setup() error {
 
 	tempClNoToken := client.NewClient(GoodUsername, GoodPassword, "", "")
 	tok, _, err := tempClNoToken.AuthClient.TokensApi.TokensGenerate(context.Background()).Execute()
-
 	if err != nil {
-		return err
+		return fmt.Errorf("failed using username & password to generate a token for DNS tests: %w", err)
 	}
 
 	if tok.Token == nil {
@@ -73,7 +74,7 @@ func setup() error {
 	GoodToken = *tok.Token
 	tokCreationTime = time.Now().In(time.UTC).Add(-1 * time.Minute)
 
-	cl = client.NewClient("", "", GoodToken, "")
+	cl = client.NewClient("", "", *tok.Token, "")
 
 	return nil
 }
@@ -82,7 +83,7 @@ func setup() error {
 func TestZone(t *testing.T) {
 	var err error
 	viper.Set(constants.ArgOutput, "text")
-	viper.Set(constants.CfgToken, GoodToken)
+	viper.Set(constants.ArgToken, GoodToken)
 
 	// === `ionosctl dns z create`
 	c := zone.ZonesPostCmd()
@@ -101,6 +102,7 @@ func TestZone(t *testing.T) {
 
 	// Try to find the zone created by the command
 	zoneByName, _, err := client.Must().DnsClient.ZonesApi.ZonesGet(context.Background()).FilterZoneName(randName).Limit(1).Execute()
+
 	assert.NoError(t, err)
 	assert.NotEmpty(t, *zoneByName.Items)
 	sharedZ = (*zoneByName.Items)[0]
