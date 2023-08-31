@@ -46,7 +46,7 @@ func TestDNSCommands(t *testing.T) {
 // TODO: Improve me with the new config PR
 func setup() error {
 	if GoodToken = os.Getenv("IONOS_TOKEN"); GoodToken != "" {
-		cl, _ = client.NewTestClient("", "", GoodToken, "")
+		cl = client.NewClient("", "", GoodToken, "")
 		return nil
 	}
 
@@ -59,7 +59,7 @@ func setup() error {
 		return fmt.Errorf("empty user/pass")
 	}
 
-	tempClNoToken, _ := client.NewTestClient(GoodUsername, GoodPassword, "", "")
+	tempClNoToken := client.NewClient(GoodUsername, GoodPassword, "", "")
 	tok, _, err := tempClNoToken.AuthClient.TokensApi.TokensGenerate(context.Background()).Execute()
 
 	if err != nil {
@@ -73,7 +73,7 @@ func setup() error {
 	GoodToken = *tok.Token
 	tokCreationTime = time.Now().In(time.UTC).Add(-1 * time.Minute)
 
-	cl, _ = client.NewTestClient("", "", GoodToken, "")
+	cl = client.NewClient("", "", GoodToken, "")
 
 	return nil
 }
