@@ -163,9 +163,19 @@ func initConfig() {
 // AddCommands adds sub commands to the base command.
 func addCommands() {
 	rootCmd.AddCommand(VersionCmd())
-	rootCmd.AddCommand(LoginCmd())
 
+	// cfg
 	rootCmd.AddCommand(cfg.ConfigCmd())
+	// Config namespace commands are also available via the root command, but are hidden
+	for _, cmd := range cfg.ConfigCmd().SubCommands() {
+		if cmd.Name() == "location" {
+			// This one is confusing without `cfg` namespace;
+			// It also would override CPU Architecture locations command, so skip it.
+			continue
+		}
+		cmd.Command.Hidden = true
+		rootCmd.AddCommand(cmd)
+	}
 
 	// V6 Resources Commands
 	rootCmd.AddCommand(cloudapiv6.LocationCmd())
