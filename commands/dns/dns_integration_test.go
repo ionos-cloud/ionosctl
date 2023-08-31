@@ -72,7 +72,7 @@ func setup() error {
 	}
 
 	GoodToken = *tok.Token
-	tokCreationTime = time.Now().In(time.UTC).Add(-1 * time.Minute)
+	tokCreationTime = time.Now().In(time.UTC).Add(-10 * time.Second)
 
 	cl = client.NewClient("", "", *tok.Token, "")
 
@@ -215,11 +215,11 @@ func Cleanup() {
 		log.Printf("Failed deletion: %s", err.Error())
 	}
 
-	cleanupTokensCreatedBeforeDate(tokCreationTime)
+	cleanupTokensCreatedAfterDate(tokCreationTime)
 }
 
 // TODO: Make some util func for me! It would also be useful for ionosctl users.
-func cleanupTokensCreatedBeforeDate(taym time.Time) {
+func cleanupTokensCreatedAfterDate(taym time.Time) {
 	toks, _, err := cl.AuthClient.TokensApi.TokensGet(context.Background()).Execute()
 
 	if err != nil {
@@ -240,10 +240,10 @@ func cleanupTokensCreatedBeforeDate(taym time.Time) {
 		// Delete the token if it was created after setup
 		if date.After(taym) {
 			_, _, err := cl.AuthClient.TokensApi.TokensDeleteById(context.Background(), *t.Id).Execute()
-
 			if err != nil {
 				panic(err)
 			}
+			break
 		}
 	}
 }
