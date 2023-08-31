@@ -162,7 +162,7 @@ func testGetClient(t *testing.T) {
 	})
 
 	t.Run("Client Get fails, bad token priority", func(t *testing.T) {
-		viper.Set("IONOS_TOKEN", "foobar") // Bad token still has priority
+		viper.Set("IONOS_TOKEN", "foobar") // Bad token still has priority. See TODO in client.go#24 if want to change this!
 		viper.Set("IONOS_USERNAME", GoodUsername)
 		viper.Set("IONOS_PASSWORD", GoodPassword)
 
