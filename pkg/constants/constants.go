@@ -101,6 +101,7 @@ const (
 // Defaults
 const (
 	DefaultApiURL         = "https://api.ionos.com"
+	DefaultDnsApiURL      = "dns.de-fra.ionos.com"
 	DefaultConfigFileName = "/config.json"
 	DefaultOutputFormat   = "text"
 	DefaultWait           = false
