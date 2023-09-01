@@ -211,9 +211,9 @@ func TestGetServerUrl(t *testing.T) {
 			// Mock viper values
 			viper.Set(constants.ArgServerUrl, tt.flagVal)
 			viper.Set(constants.EnvServerUrl, tt.envVal)
-			viper.Set(constants.ServerUrl, tt.cfgVal)
+			viper.Set(constants.CfgServerUrl, tt.cfgVal)
 
-			got := GetServerUrl()
+			got := config.GetServerUrl()
 			if got != tt.expectedServerUrl {
 				t.Errorf("Expected %s but got %s", tt.expectedServerUrl, got)
 			}
