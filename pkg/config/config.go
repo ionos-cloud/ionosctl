@@ -11,7 +11,6 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/die"
 
-	"github.com/ionos-cloud/ionosctl/v6/internal/die"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 
 	"github.com/spf13/viper"
