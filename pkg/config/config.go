@@ -9,9 +9,9 @@ import (
 	"path/filepath"
 	"runtime"
 	"strconv"
+	"strings"
 
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
-
 	cloudv6 "github.com/ionos-cloud/sdk-go/v6"
 
 	"github.com/spf13/viper"
@@ -38,7 +38,7 @@ func GetServerUrl() string {
 	viper.AutomaticEnv()
 	if flagVal := viper.GetString(constants.ArgServerUrl); viper.IsSet(constants.ArgServerUrl) {
 		// 1. Above all, use global flag val
-		if flagVal != "dns.de-fra.ionos.com" {
+		if !strings.Contains(flagVal, constants.DefaultDnsApiURL) {
 			// Workaround for changing the default for dns namepsace and still allowing this to be customized via env var / cfg
 			return flagVal
 		}

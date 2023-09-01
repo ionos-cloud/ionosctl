@@ -221,7 +221,7 @@ func addCommands() {
 		return command
 	}
 
-	rootCmd.AddCommand(funcChangeDefaultApiUrl(dns.DNSCommand(), dns.DefaultApiURL))
+	rootCmd.AddCommand(funcChangeDefaultApiUrl(dns.DNSCommand(), constants.DefaultDnsApiURL))
 }
 
 const helpTemplate = `USAGE: {{if .Runnable}}
