@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
@@ -24,7 +25,7 @@ func WhoamiCmd() *core.Command {
 		Verb:      "whoami",
 		ShortDesc: "Tells you who you are logged in as. Use `--provenance` to debug where your credentials are being used from",
 		LongDesc: fmt.Sprintf(`This command will tell you the email of the user you are logged in as.
-You can use '--provenance' flag to see which of these sources are being used.
+You can use '--provenance' flag to see which of these sources are being used. Note that If authentication fails, this flag is set by default.
 If using a token, it will use the JWT's claims payload to find out your user UUID, then use the Users API on that UUID to find out your e-mail address.
 If no token is present, the command will fall back to using the username and password for authentication.
 
@@ -36,8 +37,13 @@ ionosctl cfg whoami --provenance`,
 			cl, err := client.Get()
 
 			// Does user want to see provenance of his configuration? i.e. where does each key get its value from.
-			if fn := core.GetFlagName(c.NS, FlagProvenance); viper.GetBool(fn) {
-				out := "Authentication layers, in order of priority:\n"
+			// Also, if failed getting client, print provenance.
+			if fn := core.GetFlagName(c.NS, FlagProvenance); err != nil || viper.GetBool(fn) {
+				var out string
+				if err != nil {
+					out = "Note: Authentication failed!\n"
+				}
+				out += "Authentication layers, in order of priority:\n"
 				for i, layer := range client.ConfigurationPriorityRules {
 					if layer == cl.UsedLayer {
 						out += fmt.Sprintf("* [%d] %s (USED)\n", i+1, layer.Description)
@@ -46,16 +52,12 @@ ionosctl cfg whoami --provenance`,
 						} else {
 							out += "    - Using username and password for authentication.\n"
 						}
+						out += fmt.Sprintf("    - Using %s as the API URL.\n", config.GetServerUrlOrApiIonos())
 					} else {
 						out += fmt.Sprintf("  [%d] %s\n", i+1, layer.Description)
 					}
 				}
 				_, err = fmt.Fprintln(c.Command.Command.OutOrStdout(), out)
-				return err
-			}
-
-			// Get Client error. Intentionally handled after provenance rule prints
-			if err != nil {
 				return err
 			}
 

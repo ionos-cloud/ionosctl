@@ -43,6 +43,14 @@ func GetServerUrl() string {
 	return ""
 }
 
+// GetServerUrlOrApiIonos calls GetServerUrl and returns https://api.ionos.com if empty
+func GetServerUrlOrApiIonos() string {
+	if val := GetServerUrl(); val != "" {
+		return val
+	}
+	return constants.DefaultApiURL
+}
+
 func GetConfigFile() string {
 	if fn := constants.ArgConfig; viper.IsSet(fn) {
 		return viper.GetString(fn)
