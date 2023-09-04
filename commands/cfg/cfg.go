@@ -17,5 +17,6 @@ func ConfigCmd() *core.Command {
 	cmd.AddCommand(LocationCmd())
 	cmd.AddCommand(LoginCmd())
 	cmd.AddCommand(LogoutCmd())
+	cmd.AddCommand(WhoamiCmd())
 	return cmd
 }
