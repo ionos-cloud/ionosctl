@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cfg"
+	"github.com/spf13/viper"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
@@ -33,6 +34,8 @@ func TestAuthCmds(t *testing.T) {
 		t.Fatalf("Failed setting up auth tests: %s", err)
 	}
 	t.Cleanup(teardown)
+
+	viper.Set(constants.ArgOutput, "text")
 
 	assert.NotEmpty(t, GoodUsername)
 	assert.NotEmpty(t, GoodPassword)
