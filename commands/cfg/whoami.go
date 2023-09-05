@@ -63,10 +63,8 @@ ionosctl cfg whoami --provenance`,
 
 			// -- Below this point, we are 100% certain the client is using valid credentials. --
 
-			token := cl.CloudClient.GetConfig().Token
-			if client.TestCreds("", "", token) != nil {
-				// Valid token
-				usernameViaToken, err := jwt.Username(token)
+			if cl.IsTokenAuth() {
+				usernameViaToken, err := jwt.Username(cl.CloudClient.GetConfig().Token)
 				if err != nil {
 					return fmt.Errorf("failed getting username via token: %w", err)
 				}
