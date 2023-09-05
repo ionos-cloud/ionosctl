@@ -34,13 +34,13 @@ If no token is present, the command will fall back to using the username and pas
 ionosctl cfg whoami --provenance`,
 		PreCmdRun: core.NoPreRun,
 		CmdRun: func(c *core.CommandConfig) error {
-			cl, err := client.Get()
+			cl, authErr := client.Get()
 
 			// Does user want to see provenance of his configuration? i.e. where does each key get its value from.
 			// Also, if failed getting client, print provenance.
-			if fn := core.GetFlagName(c.NS, FlagProvenance); err != nil || viper.GetBool(fn) {
+			if fn := core.GetFlagName(c.NS, FlagProvenance); authErr != nil || viper.GetBool(fn) {
 				var out string
-				if err != nil {
+				if authErr != nil {
 					out = "Note: Authentication failed!\n"
 				}
 				out += "Authentication layers, in order of priority:\n"
@@ -57,7 +57,7 @@ ionosctl cfg whoami --provenance`,
 						out += fmt.Sprintf("  [%d] %s\n", i+1, layer.Description)
 					}
 				}
-				_, err = fmt.Fprintln(c.Command.Command.OutOrStdout(), out)
+				_, err := fmt.Fprintln(c.Command.Command.OutOrStdout(), out)
 				return err
 			}
 
@@ -76,7 +76,7 @@ ionosctl cfg whoami --provenance`,
 
 			// -- Below this point, we are 100% certain the client is using valid username & password. --
 
-			_, err = fmt.Fprintln(c.Command.Command.OutOrStdout(), cl.CloudClient.GetConfig().Username)
+			_, err := fmt.Fprintln(c.Command.Command.OutOrStdout(), cl.CloudClient.GetConfig().Username)
 			return err
 
 		},
