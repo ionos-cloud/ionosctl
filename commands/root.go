@@ -5,6 +5,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/ionos-cloud/ionosctl/v6/commands/cfg"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dns"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 
@@ -164,6 +165,9 @@ func initConfig() {
 func addCommands() {
 	rootCmd.AddCommand(VersionCmd())
 	rootCmd.AddCommand(LoginCmd())
+
+	rootCmd.AddCommand(cfg.ConfigCmd())
+
 	// V6 Resources Commands
 	rootCmd.AddCommand(cloudapiv6.LocationCmd())
 	rootCmd.AddCommand(cloudapiv6.DatacenterCmd())
