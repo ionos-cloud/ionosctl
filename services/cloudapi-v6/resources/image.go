@@ -42,11 +42,12 @@ type FTPServerProperties struct {
 	Port              int
 	SkipVerify        bool           // Skip FTP server certificate verification. WARNING man-in-the-middle attack possible
 	ServerCertificate *x509.CertPool // If FTP server uses self signed certificates, put this in tlsConfig. IONOS FTP Servers in prod DON'T need this
+	Username          string
+	Password          string
 }
 
 // ImagesService is a wrapper around ionoscloud.Image
 type ImagesService interface {
-	Upload(ctx context.Context, properties UploadProperties) error
 	List(params ListQueryParams) (Images, *Response, error)
 	Get(imageId string, params QueryParams) (*Image, *Response, error)
 	Update(imageId string, imgProp ImageProperties, params QueryParams) (*Image, *Response, error)
@@ -67,7 +68,7 @@ func NewImageService(client *client.Client, ctx context.Context) ImagesService {
 	}
 }
 
-func (s *imagesService) Upload(ctx context.Context, p UploadProperties) error {
+func FtpUpload(ctx context.Context, p UploadProperties) error {
 	tlsConfig := tls.Config{
 		InsecureSkipVerify: p.SkipVerify,
 		ServerName:         p.Url,
@@ -78,38 +79,48 @@ func (s *imagesService) Upload(ctx context.Context, p UploadProperties) error {
 	dialOptions := ftps.DialOptions{
 		Host:        p.Url,
 		Port:        p.Port,
-		Username:    s.client.GetConfig().Username,
-		Passowrd:    s.client.GetConfig().Password,
+		Username:    p.Username,
+		Passowrd:    p.Password,
 		ExplicitTLS: true,
 		TLSConfig:   &tlsConfig,
 	}
 
 	c, err := ftps.Dial(ctx, dialOptions)
 	if err != nil {
-		return err
+		return fmt.Errorf("dialing FTP server failed. Check username & password. FTP server doesn't support usage of JWT token: %w", err)
 	}
 
 	err = c.Chdir(filepath.Dir(p.Path))
 	if err != nil {
-		return err
+		return fmt.Errorf("failed while changing directory within FTP server: %w", err)
 	}
 
 	files, err := c.List(ctx)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed while listing files within FTP server: %w", err)
 	}
 
 	// Check if there already exists an image with the given name at the location
 	desiredFileName := filepath.Base(p.Path)
+	var errExists error
 	for _, f := range files {
 		if f.Name == desiredFileName {
-			return fmt.Errorf("%s already exists at %s", desiredFileName, p.Url)
+			errExists = fmt.Errorf("%s already exists at %s. Please contact support at support@cloud.ionos.com to delete the old image. We're sorry for the inconvenience", desiredFileName, p.Url)
 		}
 	}
 
 	err = c.Upload(ctx, desiredFileName, p.DataBuffer)
 	if err != nil {
+		err = fmt.Errorf("failed while uploading %s to FTP server: %w", desiredFileName, err)
+		if errExists != nil {
+			/*
+			 * Error: failed while uploading go.iso to FTP server: upload data: cmd failed read expected code 1 with message "": failed to read code, got code 550 and message go.iso: Operation not permitted: 550 go.iso: Operation not permitted
+			 * Note, your error could be because of: `go.iso already exists at ftp-fra.ionos.com. Please contact support at support@cloud.ionos.com to delete the old image. We're sorry for the inconvenience`
+			 */
+			err = fmt.Errorf("%w\nNote: %w", err, errExists)
+		}
 		return err
+
 	}
 
 	return c.Close()
