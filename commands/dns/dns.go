@@ -7,12 +7,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-const (
-	DefaultApiURL = "dns.de-fra.ionos.com"
-)
-
-// NOTE: cols flag does not work properly within this command
-
 func DNSCommand() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{

@@ -1,5 +1,9 @@
 # Changelog
 
+## [v6.6.9] (September 2023)
+### Fixed
+* Fixed #349: IONOS_API_URL env var value being overriden by default values of flags
+
 ## [v6.6.8] (August 2023)
 ### Added
 * Added new flags for `group create` and `group update` commands: `--access-dns`, `--manage-dbaas`, `--manage-registry`, `--manage-dataplatform`
