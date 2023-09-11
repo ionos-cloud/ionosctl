@@ -9,9 +9,9 @@ import (
 	"path/filepath"
 	"runtime"
 	"strconv"
+	"strings"
 
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
-
 	cloudv6 "github.com/ionos-cloud/sdk-go/v6"
 
 	"github.com/spf13/viper"
@@ -36,15 +36,18 @@ func GetUserData() map[string]string {
 //	  so, a very natural reaction to this is checking the next chain variables yourself or leaving it blank - which creates a ton of technical debt and code duplication, or unpredictable behaviour for the user
 func GetServerUrl() string {
 	viper.AutomaticEnv()
-	if flagVal := viper.GetString(constants.ArgServerUrl); flagVal != "" {
-		// 1. Above all, use if the global flag is set
-		return flagVal
+	if flagVal := viper.GetString(constants.ArgServerUrl); viper.IsSet(constants.ArgServerUrl) {
+		// 1. Above all, use global flag val
+		if !strings.Contains(flagVal, constants.DefaultDnsApiURL) {
+			// Workaround for changing the default for dns namepsace and still allowing this to be customized via env var / cfg
+			return flagVal
+		}
 	}
-	if envVal := viper.GetString(constants.EnvServerUrl); envVal != "" {
+	if envVal := viper.GetString(constants.EnvServerUrl); viper.IsSet(constants.EnvServerUrl) {
 		// 2. Fallback to non-empty env vars
 		return envVal
 	}
-	if cfgVal := viper.GetString(constants.ServerUrl); cfgVal != "" {
+	if cfgVal := viper.GetString(constants.ServerUrl); viper.IsSet(constants.ServerUrl) {
 		// 3. Fallback to non-empty cfg field
 		return cfgVal
 	}

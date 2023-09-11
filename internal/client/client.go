@@ -7,6 +7,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/die"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
+
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	sdkgoauth "github.com/ionos-cloud/sdk-go-auth"
 	certmanager "github.com/ionos-cloud/sdk-go-cert-manager"
