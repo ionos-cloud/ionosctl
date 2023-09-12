@@ -86,7 +86,7 @@ func RunLoginUser(c *core.CommandConfig) error {
 
 	if token != "" {
 		// If token is set, use only token
-		viper.Set(constants.Token, token)
+		viper.Set(constants.CfgToken, token)
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Token is set."))
 	} else {
 		// If token and username are not set, display messages
@@ -119,15 +119,15 @@ func RunLoginUser(c *core.CommandConfig) error {
 			pwd = string(bytesPwd)
 		}
 
-		viper.Set(constants.Username, username)
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Username is set %s", viper.GetString(constants.Username)))
+		viper.Set(constants.CfgUsername, username)
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Username is set %s", viper.GetString(constants.CfgUsername)))
 
-		viper.Set(constants.Password, pwd)
+		viper.Set(constants.CfgPassword, pwd)
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Password is set"))
-	}
 
+	}
+	viper.Set(constants.CfgServerUrl, viper.GetString(constants.ArgServerUrl))
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("ServerUrl: %s", config.GetServerUrl()))
-	viper.Set(constants.ServerUrl, viper.GetString(constants.ArgServerUrl))
 
 	client, err := client2.Get()
 	if err != nil {
@@ -145,7 +145,7 @@ func RunLoginUser(c *core.CommandConfig) error {
 	// Store credentials
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
 		"Storing credentials to the configuration file: %v", viper.GetString(constants.ArgConfig)))
-	err = config.WriteFile()
+	// err = config.WriteFile() // TODO: Replace me in a separate PR
 	if err != nil {
 		return err
 	}

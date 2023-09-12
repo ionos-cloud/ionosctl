@@ -126,7 +126,7 @@ func runTokenDeleteCurrent(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
 		"Note: This operation is based on Authorization Header for Bearer Token"))
 
-	if viper.GetString(constants.Token) == "" {
+	if viper.GetString(constants.CfgToken) == "" {
 		return errors.New(fmt.Sprintf("no token found. Please make sure you have exported the %s environment variable or you have token set in the config file",
 			sdkgoauth.IonosTokenEnvVar))
 	}
