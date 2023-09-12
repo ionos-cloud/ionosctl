@@ -52,7 +52,7 @@ func setup() error {
 
 	var err error
 
-	cl, err = client.NewTestClient(username, password, "", "")
+	cl = client.NewClient(username, password, "", "")
 	if err != nil {
 		return err
 	}

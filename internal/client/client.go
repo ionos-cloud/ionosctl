@@ -1,6 +1,7 @@
 package client
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"sync"
@@ -9,91 +10,63 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
 
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
-	sdkgoauth "github.com/ionos-cloud/sdk-go-auth"
-	certmanager "github.com/ionos-cloud/sdk-go-cert-manager"
-	registry "github.com/ionos-cloud/sdk-go-container-registry"
-	dataplatform "github.com/ionos-cloud/sdk-go-dataplatform"
-	mongo "github.com/ionos-cloud/sdk-go-dbaas-mongo"
-	postgres "github.com/ionos-cloud/sdk-go-dbaas-postgres"
-	dns "github.com/ionos-cloud/sdk-go-dns"
-	cloudv6 "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
 )
-
-type Client struct {
-	CloudClient        *cloudv6.APIClient
-	AuthClient         *sdkgoauth.APIClient
-	CertManagerClient  *certmanager.APIClient
-	PostgresClient     *postgres.APIClient
-	MongoClient        *mongo.APIClient
-	DataplatformClient *dataplatform.APIClient
-	RegistryClient     *registry.APIClient
-	DnsClient          *dns.APIClient
-}
-
-func appendUserAgent(userAgent string) string {
-	return fmt.Sprintf("%v_%v", viper.GetString(constants.CLIHttpUserAgent), userAgent)
-}
-
-func newClient(name, pwd, token, hostUrl string) (*Client, error) {
-	if token == "" && (name == "" || pwd == "") {
-		return nil, errors.New("username, password or token incorrect")
-	}
-
-	clientConfig := cloudv6.NewConfiguration(name, pwd, token, hostUrl)
-	clientConfig.UserAgent = appendUserAgent(clientConfig.UserAgent)
-	// Set Depth Query Parameter globally
-	clientConfig.SetDepth(1)
-
-	authConfig := sdkgoauth.NewConfiguration(name, pwd, token, hostUrl)
-	authConfig.UserAgent = appendUserAgent(authConfig.UserAgent)
-
-	certManagerConfig := certmanager.NewConfiguration(name, pwd, token, hostUrl)
-	certManagerConfig.UserAgent = appendUserAgent(certManagerConfig.UserAgent)
-
-	postgresConfig := postgres.NewConfiguration(name, pwd, token, hostUrl)
-	postgresConfig.UserAgent = appendUserAgent(postgresConfig.UserAgent)
-
-	mongoConfig := mongo.NewConfiguration(name, pwd, token, hostUrl)
-	mongoConfig.UserAgent = appendUserAgent(mongoConfig.UserAgent)
-
-	dpConfig := dataplatform.NewConfiguration(name, pwd, token, hostUrl)
-	dpConfig.UserAgent = appendUserAgent(dpConfig.UserAgent)
-
-	registryConfig := registry.NewConfiguration(name, pwd, token, hostUrl)
-	registryConfig.UserAgent = appendUserAgent(registryConfig.UserAgent)
-
-	dnsConfig := dns.NewConfiguration(name, pwd, token, hostUrl)
-	dnsConfig.UserAgent = appendUserAgent(dnsConfig.UserAgent)
-
-	return &Client{
-			CloudClient:        cloudv6.NewAPIClient(clientConfig),
-			AuthClient:         sdkgoauth.NewAPIClient(authConfig),
-			CertManagerClient:  certmanager.NewAPIClient(certManagerConfig),
-			PostgresClient:     postgres.NewAPIClient(postgresConfig),
-			MongoClient:        mongo.NewAPIClient(mongoConfig),
-			DataplatformClient: dataplatform.NewAPIClient(dpConfig),
-			RegistryClient:     registry.NewAPIClient(registryConfig),
-			DnsClient:          dns.NewAPIClient(dnsConfig),
-		},
-		nil
-}
 
 var once sync.Once
 var instance *Client
 
-// Get a client and possibly fail
+func selectAuthLayer(layers []Layer) (values map[string]string, usedLayer Layer, err error) {
+	for _, layer := range layers {
+		token := viper.GetString(layer.TokenKey)
+		username := viper.GetString(layer.UsernameKey)
+		password := viper.GetString(layer.PasswordKey)
+
+		if token != "" || (username != "" && password != "") {
+			return map[string]string{
+				"token":    token,
+				"username": username,
+				"password": password,
+			}, layer, nil
+		}
+	}
+	return nil, Layer{}, fmt.Errorf("none of the layers provided a value for either token or username & password. use `ionosctl whoami --provenance` for help")
+}
+
+// Get a client and possibly fail. Uses viper to get the credentials and API URL.
+// The returned client is guaranteed to have working credentials
+// Order:
+// Explicit flags ( e.g. --token )
+// Environment Variables ( e.g. IONOS_TOKEN )
+// Config File ( e.g. userdata.token )
 func Get() (*Client, error) {
 	var getClientErr error
 
 	once.Do(func() {
 		var err error
-		err = config.Load()
-		if err != nil {
-			getClientErr = errors.Join(getClientErr, fmt.Errorf("failed loading config: %w", err))
+
+		// Read config file, if available
+		data, err := config.Read()
+		if err == nil {
+			for k, v := range data {
+				if !viper.IsSet(k) {
+					viper.Set(k, v)
+				}
+			}
 		}
-		instance, err = newClient(viper.GetString(constants.Username), viper.GetString(constants.Password), viper.GetString(constants.Token), config.GetServerUrl())
+
+		viper.AutomaticEnv()
+
+		values, usedLayer, err := selectAuthLayer(ConfigurationPriorityRules)
 		if err != nil {
+			getClientErr = errors.Join(getClientErr, fmt.Errorf("failed selecting an auth layer: %w", err))
+			return
+		}
+
+		instance = newClient(values["username"], values["password"], values["token"], values["serverUrl"])
+		instance.UsedLayer = usedLayer
+
+		if err := instance.TestCreds(); err != nil {
 			getClientErr = errors.Join(getClientErr, fmt.Errorf("failed creating client: %w", err))
 		}
 	})
@@ -102,17 +75,43 @@ func Get() (*Client, error) {
 }
 
 // Must gets the client obj or fatally dies
-func Must() *Client {
+// You can provide some optional custom error handlers as params. The err is sent to each error handler in order.
+// The default error handler is die.Die which exits with code 1 and violently terminates the program
+func Must(ehs ...func(error)) *Client {
 	client, err := Get()
 	if err != nil {
-		die.Die(fmt.Errorf("failed getting client: %w", err).Error())
+		if len(ehs) == 0 {
+			// Default error handler if none set
+			die.Die(fmt.Errorf("failed getting client: %w", err).Error())
+		} else {
+			// Developer set custom err handlers (e.g. don't die, simply warn, etc)
+			for _, eh := range ehs {
+				eh(err)
+			}
+		}
 	}
 	return client
 }
 
-// NewTestClient - function used only for tests.
-// Bypasses the singleton check, not recommended for normal use.
-// TO BE REMOVED ONCE TESTS ARE REFACTORED
-func NewTestClient(name, pwd, token, hostUrl string) (*Client, error) {
+// NewClient bypasses the singleton check, not recommended for normal use.
+func NewClient(name, pwd, token, hostUrl string) *Client {
 	return newClient(name, pwd, token, hostUrl)
+}
+
+func TestCreds(user, pass, token string) error {
+	cl := newClient(user, pass, token, constants.DefaultApiURL)
+	return cl.TestCreds()
+}
+
+func (c *Client) TestCreds() error {
+	_, _, err := c.CloudClient.DataCentersApi.DatacentersGet(context.Background()).Execute()
+	if err != nil {
+		usedScheme := "used token"
+		if c.CloudClient.GetConfig().Token == "" {
+			usedScheme = fmt.Sprintf("used username '%s' and password", c.CloudClient.GetConfig().Username)
+		}
+		return fmt.Errorf("credentials test failed. %s: %w", usedScheme, err)
+	}
+
+	return nil
 }

@@ -82,7 +82,7 @@ func RunLoginUser(c *core.CommandConfig) error {
 
 	if token != "" {
 		// If token is set, use only token
-		viper.Set(constants.Token, token)
+		viper.Set(constants.CfgToken, token)
 		c.Printer.Verbose("Token is set.")
 	} else {
 		// If token and username are not set, display messages
@@ -109,13 +109,13 @@ func RunLoginUser(c *core.CommandConfig) error {
 			}
 			pwd = string(bytesPwd)
 		}
-		viper.Set(constants.Username, username)
-		c.Printer.Verbose("Username is set %s", viper.GetString(constants.Username))
-		viper.Set(constants.Password, pwd)
+		viper.Set(constants.CfgUsername, username)
+		c.Printer.Verbose("Username is set %s", viper.GetString(constants.CfgUsername))
+		viper.Set(constants.CfgPassword, pwd)
 		c.Printer.Verbose("Password is set.")
 	}
 	c.Printer.Verbose("ServerUrl: %s", config.GetServerUrl())
-	viper.Set(constants.ServerUrl, viper.GetString(constants.ArgServerUrl))
+	viper.Set(constants.CfgServerUrl, viper.GetString(constants.ArgServerUrl))
 	client, err := client2.Get()
 	if err != nil {
 		return err
@@ -130,7 +130,7 @@ func RunLoginUser(c *core.CommandConfig) error {
 
 	// Store credentials
 	c.Printer.Verbose("Storing credentials to the configuration file: %v", viper.GetString(constants.ArgConfig))
-	err = config.WriteFile()
+	// err = config.WriteFile() // TODO: Replace me in a separate PR
 	if err != nil {
 		return err
 	}
