@@ -30,10 +30,8 @@ var (
 
 // If your test is failing because your credentials env var seem empty, try running with `godotenv -f <config-file> go test <test>`
 func TestDataplatformCmd(t *testing.T) {
-	var err error
-	assert.NoError(t, err)
 	go testClusterIdentifyRequiredNotSet(t)
-	if setup() != nil {
+	if err := setup(); err != nil {
 		t.Fatalf("Failed setting up Dataplatform required resources: %s", err)
 	}
 	t.Cleanup(teardown)
@@ -54,10 +52,10 @@ func testClusterOk(t *testing.T) {
 	c.Command.Flags().Set(constants.FlagMaintenanceTime, "10:00:00")
 
 	err := c.Command.Execute()
-	assert.NoError(t, err)
+	assert.NoError(t, err, fmt.Errorf("failed executing cluster create: %w", err).Error())
 
 	ls, resp, err := client.Must().DataplatformClient.DataPlatformClusterApi.ClustersGet(context.Background()).Name(uniqueResourceName).Execute()
-	assert.NoError(t, err)
+	assert.NoError(t, err, fmt.Errorf("failed verifying created cluster via SDK: %w", err).Error())
 	assert.False(t, resp.HttpNotFound())
 	items := *ls.Items
 	assert.Len(t, items, 1)
@@ -69,12 +67,11 @@ func testNodepoolOk(t *testing.T) {
 	viper.Set(constants.ArgOutput, "text")
 	viper.Set(constants.ArgCols, "Name")
 	viper.Set(constants.ArgNoHeaders, true)
-	fmt.Printf(viper.GetString(constants.ArgCols))
 
 	c := nodepool.NodepoolCreateCmd()
 	c.Command.Flags().Set(constants.FlagClusterId, createdClusterId)
 	c.Command.Flags().Set(constants.FlagName, uniqueResourceName)
-	c.Command.Flags().Set(constants.FlagNodeCount, "2")
+	c.Command.Flags().Set(constants.FlagNodeCount, "1")
 
 	err := c.Command.Execute()
 	assert.NoError(t, err)
@@ -83,14 +80,18 @@ func testNodepoolOk(t *testing.T) {
 	assert.NoError(t, err)
 	assert.False(t, resp.HttpNotFound())
 	var foundNodepool ionoscloud.NodePoolResponseData
-	assert.True(t, functional.Fold(*ls.GetItems(), func(found bool, x ionoscloud.NodePoolResponseData) bool {
-		if *x.Properties.Name == uniqueResourceName {
-			foundNodepool = x
-			return true
-		}
-		return found
-	}, false))
-	assert.Equal(t, 2, foundNodepool.Properties.NodeCount)
+	// Filter by name, as API doesn't support this :(
+	assert.True(t,
+		functional.Fold(*ls.GetItems(), func(found bool, x ionoscloud.NodePoolResponseData) bool {
+			if *x.Properties.Name == uniqueResourceName {
+				foundNodepool = x
+				return true
+			}
+			return found
+		}, false),
+		fmt.Sprintf("Couldn't filter the dataplatform nodepool by name (%s) that was supposed to be created by the tested command", uniqueResourceName),
+	)
+	assert.Equal(t, 1, foundNodepool.Properties.NodeCount)
 }
 
 func testClusterIdentifyRequiredNotSet(t *testing.T) {
