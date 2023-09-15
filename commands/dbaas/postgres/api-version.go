@@ -74,7 +74,7 @@ func APIVersionCmd() *core.Command {
 }
 
 func RunAPIVersionList(c *core.CommandConfig) error {
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Getting all available API Versions..."))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting all available API Versions..."))
 
 	versionList, _, err := c.CloudApiDbaasPgsqlServices.Infos().List()
 	if err != nil {
@@ -99,12 +99,12 @@ func RunAPIVersionList(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Stdout, out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
 	return nil
 }
 
 func RunAPIVersionGet(c *core.CommandConfig) error {
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Getting the current API Version..."))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting the current API Version..."))
 
 	apiVersion, _, err := c.CloudApiDbaasPgsqlServices.Infos().Get()
 	if err != nil {
@@ -124,7 +124,7 @@ func RunAPIVersionGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Stdout, out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
 	return nil
 }
 

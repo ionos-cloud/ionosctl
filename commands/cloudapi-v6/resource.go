@@ -100,7 +100,7 @@ func PreRunResourceType(c *core.PreCommandConfig) error {
 func RunResourceList(c *core.CommandConfig) error {
 	resourcesListed, resp, err := c.CloudApiV6Services.Users().ListResources()
 	if resp != nil {
-		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 	if err != nil {
 		return err
@@ -117,12 +117,12 @@ func RunResourceList(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Stdout, out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
 	return nil
 }
 
 func RunResourceGet(c *core.CommandConfig) error {
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
 		"Resource with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceId))))
 
 	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
@@ -136,7 +136,7 @@ func RunResourceGet(c *core.CommandConfig) error {
 			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceId)),
 		)
 		if resp != nil {
-			fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 		}
 		if err != nil {
 			return err
@@ -148,13 +148,13 @@ func RunResourceGet(c *core.CommandConfig) error {
 			return err
 		}
 
-		fmt.Fprintf(c.Stdout, out)
+		fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
 		return nil
 	}
 
 	resourcesListed, resp, err := c.CloudApiV6Services.Users().GetResourcesByType(viper.GetString(core.GetFlagName(c.NS, constants.FlagType)))
 	if resp != nil {
-		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 	if err != nil {
 		return err
@@ -166,7 +166,7 @@ func RunResourceGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Stdout, out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
 	return nil
 }
 
@@ -219,12 +219,12 @@ func RunGroupResourceList(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
 		"Listing Resources from Group with ID: %v...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId))))
 
 	resourcesListed, resp, err := c.CloudApiV6Services.Groups().ListResources(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)), listQueryParams)
 	if resp != nil {
-		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 	if err != nil {
 		return err
@@ -241,6 +241,6 @@ func RunGroupResourceList(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Stdout, out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
 	return nil
 }

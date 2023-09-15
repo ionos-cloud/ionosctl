@@ -274,7 +274,7 @@ func RunSnapshotList(c *core.CommandConfig) error {
 
 	ss, resp, err := c.CloudApiV6Services.Snapshots().List(listQueryParams)
 	if resp != nil {
-		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 	if err != nil {
 		return err
@@ -291,7 +291,7 @@ func RunSnapshotList(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Stdout, out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
 	return nil
 }
 
@@ -303,12 +303,12 @@ func RunSnapshotGet(c *core.CommandConfig) error {
 
 	queryParams := listQueryParams.QueryParams
 
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
 		"Snapshot with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSnapshotId))))
 
 	s, resp, err := c.CloudApiV6Services.Snapshots().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSnapshotId)), queryParams)
 	if resp != nil {
-		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 	if err != nil {
 		return err
@@ -325,7 +325,7 @@ func RunSnapshotGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Stdout, out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
 	return nil
 }
 
@@ -343,13 +343,13 @@ func RunSnapshotCreate(c *core.CommandConfig) error {
 	licenseType := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLicenceType))
 	secAuthProtection := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgSecAuthProtection))
 
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
 		"Properties set for creating the Snapshot: DatacenterId: %v, VolumeId: %v, Name: %v, Description: %v, "+
 			"LicenseType: %v, SecAuthProtection: %v", dcId, volumeId, name, description, licenseType, secAuthProtection))
 
 	s, resp, err := c.CloudApiV6Services.Snapshots().Create(dcId, volumeId, name, description, licenseType, secAuthProtection, queryParams)
 	if resp != nil && printer.GetId(resp) != "" {
-		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
 	}
 	if err != nil {
 		return err
@@ -370,7 +370,7 @@ func RunSnapshotCreate(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Stdout, out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
 	return nil
 }
 
@@ -382,13 +382,13 @@ func RunSnapshotUpdate(c *core.CommandConfig) error {
 
 	queryParams := listQueryParams.QueryParams
 
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
 		"Updating Snapshot with id: %v...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSnapshotId))))
 
 	s, resp, err := c.CloudApiV6Services.Snapshots().Update(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSnapshotId)),
 		getSnapshotPropertiesSet(c), queryParams)
 	if resp != nil && printer.GetId(resp) != "" {
-		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
 	}
 	if err != nil {
 		return err
@@ -409,7 +409,7 @@ func RunSnapshotUpdate(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Stdout, out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
 	return nil
 }
 
@@ -424,7 +424,7 @@ func RunSnapshotRestore(c *core.CommandConfig) error {
 		return nil
 	}
 
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
 		"Snapshot with id: %v is restoring...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSnapshotId))))
 
 	resp, err := c.CloudApiV6Services.Snapshots().Restore(
@@ -434,7 +434,7 @@ func RunSnapshotRestore(c *core.CommandConfig) error {
 		queryParams,
 	)
 	if resp != nil {
-		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 	if err != nil {
 		return err
@@ -444,7 +444,7 @@ func RunSnapshotRestore(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("Snapshot successfully restored"))
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Snapshot successfully restored"))
 	return nil
 }
 
@@ -462,7 +462,7 @@ func RunSnapshotDelete(c *core.CommandConfig) error {
 			return err
 		}
 
-		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("Snapshots successfully deleted"))
+		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Snapshots successfully deleted"))
 		return nil
 	}
 
@@ -470,11 +470,11 @@ func RunSnapshotDelete(c *core.CommandConfig) error {
 		return nil
 	}
 
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Starting deleting Snapshot with id: %v...", snapshotId))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Starting deleting Snapshot with id: %v...", snapshotId))
 
 	resp, err := c.CloudApiV6Services.Snapshots().Delete(snapshotId, queryParams)
 	if resp != nil && printer.GetId(resp) != "" {
-		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
 	}
 	if err != nil {
 		return err
@@ -484,7 +484,7 @@ func RunSnapshotDelete(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("Snapshot successfully deleted"))
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Snapshot successfully deleted"))
 	return nil
 }
 
@@ -495,98 +495,98 @@ func getSnapshotPropertiesSet(c *core.CommandConfig) resources.SnapshotPropertie
 		name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
 		input.SetName(name)
 
-		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property Name set: %v", name))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property Name set: %v", name))
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgDescription)) {
 		description := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDescription))
 		input.SetDescription(description)
 
-		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property Description set: %v", description))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property Description set: %v", description))
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgLicenceType)) {
 		licenceType := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLicenceType))
 		input.SetLicenceType(licenceType)
 
-		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property LicenceType set: %v", licenceType))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property LicenceType set: %v", licenceType))
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgCpuHotPlug)) {
 		cpuHotPlug := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgCpuHotPlug))
 		input.SetCpuHotPlug(cpuHotPlug)
 
-		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property CpuHotPlug set: %v", cpuHotPlug))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property CpuHotPlug set: %v", cpuHotPlug))
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgCpuHotUnplug)) {
 		cpuHotUnplug := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgCpuHotUnplug))
 		input.SetCpuHotUnplug(cpuHotUnplug)
 
-		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property CpuHotUnplug set: %v", cpuHotUnplug))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property CpuHotUnplug set: %v", cpuHotUnplug))
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgRamHotPlug)) {
 		ramHotPlug := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgRamHotPlug))
 		input.SetRamHotPlug(ramHotPlug)
 
-		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property RamHotPlug set: %v", ramHotPlug))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property RamHotPlug set: %v", ramHotPlug))
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgRamHotUnplug)) {
 		ramHotUnplug := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgRamHotUnplug))
 		input.SetRamHotUnplug(ramHotUnplug)
 
-		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property RamHotUnplug set: %v", ramHotUnplug))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property RamHotUnplug set: %v", ramHotUnplug))
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgNicHotPlug)) {
 		nicHotPlug := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgNicHotPlug))
 		input.SetNicHotPlug(nicHotPlug)
 
-		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property NicHotPlug set: %v", nicHotPlug))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property NicHotPlug set: %v", nicHotPlug))
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgNicHotUnplug)) {
 		nicHotUnplug := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgNicHotUnplug))
 		input.SetNicHotUnplug(nicHotUnplug)
 
-		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property nicHotUnplug set: %v", nicHotUnplug))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property nicHotUnplug set: %v", nicHotUnplug))
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgDiscVirtioHotPlug)) {
 		discVirtioHotPlug := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgDiscVirtioHotPlug))
 		input.SetDiscVirtioHotPlug(discVirtioHotPlug)
 
-		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property DiscVirtioHotPlug set: %v", discVirtioHotPlug))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property DiscVirtioHotPlug set: %v", discVirtioHotPlug))
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgDiscVirtioHotUnplug)) {
 		discVirtioHotUnplug := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgDiscVirtioHotUnplug))
 		input.SetDiscVirtioHotUnplug(discVirtioHotUnplug)
 
-		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property DiscVirtioHotUnplug set: %v", discVirtioHotUnplug))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property DiscVirtioHotUnplug set: %v", discVirtioHotUnplug))
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgDiscScsiHotPlug)) {
 		discScsiHotPlug := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgDiscScsiHotPlug))
 		input.SetDiscScsiHotPlug(discScsiHotPlug)
 
-		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property DiscScsiHotPlug set: %v", discScsiHotPlug))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property DiscScsiHotPlug set: %v", discScsiHotPlug))
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgDiscScsiHotUnplug)) {
 		discScsiHotUnplug := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgDiscScsiHotUnplug))
 		input.SetDiscScsiHotUnplug(discScsiHotUnplug)
 
-		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property DiscScsiHotUnplug set: %v", discScsiHotUnplug))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property DiscScsiHotUnplug set: %v", discScsiHotUnplug))
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgSecAuthProtection)) {
 		secAuthProtection := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgSecAuthProtection))
 		input.SetSecAuthProtection(secAuthProtection)
 
-		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property SecAuthProtection set: %v", secAuthProtection))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property SecAuthProtection set: %v", secAuthProtection))
 	}
 
 	return input
@@ -600,7 +600,7 @@ func DeleteAllSnapshots(c *core.CommandConfig) error {
 
 	queryParams := listQueryParams.QueryParams
 
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Getting Snapshots..."))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting Snapshots..."))
 
 	snapshots, resp, err := c.CloudApiV6Services.Snapshots().List(cloudapiv6.ParentResourceListQueryParams)
 	if err != nil {
@@ -616,7 +616,7 @@ func DeleteAllSnapshots(c *core.CommandConfig) error {
 		return fmt.Errorf("no Snapshots found")
 	}
 
-	fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("Snapshots to be deleted:"))
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Snapshots to be deleted:"))
 	for _, snapshot := range *snapshotsItems {
 		delIdAndName := ""
 
@@ -630,14 +630,14 @@ func DeleteAllSnapshots(c *core.CommandConfig) error {
 			}
 		}
 
-		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput(delIdAndName))
+		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
 
 	if !confirm.Ask("delete all the Snapshots", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
 		return nil
 	}
 
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Deleting all the Snapshots..."))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the Snapshots..."))
 
 	var multiErr error
 	for _, snapshot := range *snapshotsItems {
@@ -646,18 +646,18 @@ func DeleteAllSnapshots(c *core.CommandConfig) error {
 			continue
 		}
 
-		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Starting deleting Snapshot with id: %v...", *id))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Starting deleting Snapshot with id: %v...", *id))
 
 		resp, err = c.CloudApiV6Services.Snapshots().Delete(*id, queryParams)
 		if resp != nil && printer.GetId(resp) != "" {
-			fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
 		}
 		if err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
 			continue
 		}
 
-		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput(constants.MessageDeletingAll, c.Resource, *id))
+		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(constants.MessageDeletingAll, c.Resource, *id))
 
 		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *id, err))

@@ -89,6 +89,6 @@ func partiallyUpdateRecordAndPrint(c *core.CommandConfig, r dns.RecordRead) erro
 		return err
 	}
 
-	fmt.Fprintf(c.Stdout, out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
 	return nil
 }

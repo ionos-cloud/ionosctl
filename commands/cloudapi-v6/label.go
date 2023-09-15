@@ -339,7 +339,7 @@ func RunLabelList(c *core.CommandConfig) error {
 			return err
 		}
 
-		fmt.Fprintf(c.Stdout, out)
+		fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
 
 		return nil
 	}
@@ -352,7 +352,7 @@ func RunLabelGet(c *core.CommandConfig) error {
 	labelKey := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelKey))
 	labelValue := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelValue))
 
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
 		"Getting label with label key: %v and label value: %v for %v...", labelKey, labelValue, resourceType))
 
 	switch resourceType {
@@ -367,7 +367,7 @@ func RunLabelGet(c *core.CommandConfig) error {
 	case cloudapiv6.SnapshotResource:
 		return RunSnapshotLabelGet(c)
 	default:
-		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput(labelResourceWarning))
+		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(labelResourceWarning))
 
 		return nil
 	}
@@ -376,7 +376,7 @@ func RunLabelGet(c *core.CommandConfig) error {
 func RunLabelGetByUrn(c *core.CommandConfig) error {
 	urn := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelUrn))
 
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Getting label with urn: %v", urn))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting label with urn: %v", urn))
 
 	labelDc, _, err := c.CloudApiV6Services.Labels().GetByUrn(urn)
 	if err != nil {
@@ -394,7 +394,7 @@ func RunLabelGetByUrn(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Stdout, out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
 
 	return nil
 }
@@ -412,7 +412,7 @@ func RunLabelAdd(c *core.CommandConfig) error {
 	case cloudapiv6.SnapshotResource:
 		return RunSnapshotLabelAdd(c)
 	default:
-		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput(labelResourceWarning))
+		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(labelResourceWarning))
 
 		return nil
 	}
@@ -421,7 +421,7 @@ func RunLabelAdd(c *core.CommandConfig) error {
 func RunLabelRemove(c *core.CommandConfig) error {
 	resourceType := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceType))
 
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Label is removing from %v...", resourceType))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Label is removing from %v...", resourceType))
 
 	switch resourceType {
 	case cloudapiv6.DatacenterResource:
@@ -435,7 +435,7 @@ func RunLabelRemove(c *core.CommandConfig) error {
 	case cloudapiv6.SnapshotResource:
 		return RunSnapshotLabelRemove(c)
 	default:
-		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput(labelResourceWarning))
+		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(labelResourceWarning))
 
 		return nil
 	}

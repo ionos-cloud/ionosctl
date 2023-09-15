@@ -46,7 +46,7 @@ func NodepoolDeleteCmd() *core.Command {
 				return fmt.Errorf("canceled deletion: invalid input")
 			}
 
-			fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Deleting nodepool: %s", nodepoolId))
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting nodepool: %s", nodepoolId))
 			_, _, err = client.Must().DataplatformClient.DataPlatformNodePoolApi.ClustersNodepoolsDelete(c.Context, clusterId, nodepoolId).Execute()
 			return err
 		},
@@ -70,7 +70,7 @@ func NodepoolDeleteCmd() *core.Command {
 }
 
 func deleteAll(c *core.CommandConfig, clusterId string) error {
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Deleting all nodepools!"))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all nodepools!"))
 	if clusterId != "" {
 		// Both --all and --cluster-id provided, so delete only the nodepools of the given cluster.
 		return deleteNodePools(c, clusterId)

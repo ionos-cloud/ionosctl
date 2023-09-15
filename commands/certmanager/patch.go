@@ -45,7 +45,7 @@ func CertUpdateCmd() *core.Command {
 }
 
 func CmdPatch(c *core.CommandConfig) error {
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Patching Certificate..."))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Patching Certificate..."))
 
 	id, err := c.Command.Command.Flags().GetString(FlagCertId)
 	if err != nil {
@@ -76,7 +76,7 @@ func CmdPatch(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Stdout, out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
 
 	return nil
 }

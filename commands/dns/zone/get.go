@@ -53,7 +53,7 @@ func ZonesFindByIdCmd() *core.Command {
 				return err
 			}
 
-			fmt.Fprintf(c.Stdout, out)
+			fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
 			return nil
 		},
 		InitClient: true,

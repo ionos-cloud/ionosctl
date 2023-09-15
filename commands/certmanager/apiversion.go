@@ -45,7 +45,7 @@ func CertGetApiVersionCmd() *core.Command {
 }
 
 func CmdGetApiVersion(c *core.CommandConfig) error {
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Getting Api Version..."))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting Api Version..."))
 
 	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 	if err != nil {
@@ -62,7 +62,7 @@ func CmdGetApiVersion(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Stdout, out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
 
 	return nil
 }

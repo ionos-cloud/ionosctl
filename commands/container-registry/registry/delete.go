@@ -55,7 +55,7 @@ func CmdDelete(c *core.CommandConfig) error {
 	}
 
 	if allFlag {
-		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Deleting all Container Registries..."))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all Container Registries..."))
 
 		regs, _, err := c.ContainerRegistryServices.Registry().List("")
 		if err != nil {

@@ -76,7 +76,7 @@ func GetPropertyWithFallback(c *core.CommandConfig, property string, propertyPat
 }
 
 func CmdPost(c *core.CommandConfig) error {
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Adding Certificate..."))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Adding Certificate..."))
 
 	var name, certificate, certificateChain, privateKey string
 	//fmt.Println(viper.GetString(FlagCertName)) // NOTE: ask about why this is printed
@@ -126,7 +126,7 @@ func CmdPost(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Stdout, out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
 
 	return nil
 }

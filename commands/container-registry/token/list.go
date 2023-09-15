@@ -67,7 +67,7 @@ func CmdListToken(c *core.CommandConfig) error {
 			return err
 		}
 
-		fmt.Fprintf(c.Stdout, out)
+		fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
 		return nil
 	}
 
@@ -92,7 +92,7 @@ func CmdListToken(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Stdout, out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
 	return nil
 }
 

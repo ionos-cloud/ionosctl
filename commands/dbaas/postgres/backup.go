@@ -82,7 +82,7 @@ func PreRunBackupId(c *core.PreCommandConfig) error {
 }
 
 func RunBackupList(c *core.CommandConfig) error {
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Getting Backups..."))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting Backups..."))
 
 	backups, _, err := c.CloudApiDbaasPgsqlServices.Backups().List()
 	if err != nil {
@@ -97,13 +97,13 @@ func RunBackupList(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Stdout, out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
 	return nil
 }
 
 func RunBackupGet(c *core.CommandConfig) error {
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Backup ID: %v", viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgBackupId))))
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Getting Backup..."))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Backup ID: %v", viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgBackupId))))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting Backup..."))
 
 	backup, _, err := c.CloudApiDbaasPgsqlServices.Backups().Get(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgBackupId)))
 	if err != nil {
@@ -118,7 +118,7 @@ func RunBackupGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Stdout, out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
 	return nil
 }
 
@@ -163,8 +163,8 @@ func ClusterBackupCmd() *core.Command {
 }
 
 func RunClusterBackupList(c *core.CommandConfig) error {
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Cluster ID: %v", viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))))
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Getting Backups from Cluster..."))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Cluster ID: %v", viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting Backups from Cluster..."))
 
 	backups, _, err := c.CloudApiDbaasPgsqlServices.Backups().ListBackups(viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)))
 	if err != nil {
@@ -178,7 +178,7 @@ func RunClusterBackupList(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Stdout, out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
 	return nil
 }
 

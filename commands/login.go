@@ -74,9 +74,9 @@ func PreRunLoginCmd(c *core.PreCommandConfig) error {
 }
 
 func RunLoginUser(c *core.CommandConfig) error {
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
 		"Note: The login command will save the credentials in a configuration file after the authentication is successful!"))
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
 		"Note: As an alternative to this, ionosctl offers support for environment variables: $%s, $%s or $%s.",
 		sdk.IonosUsernameEnvVar, sdk.IonosPasswordEnvVar, sdk.IonosTokenEnvVar))
 
@@ -87,16 +87,16 @@ func RunLoginUser(c *core.CommandConfig) error {
 	if token != "" {
 		// If token is set, use only token
 		viper.Set(constants.Token, token)
-		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Token is set."))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Token is set."))
 	} else {
 		// If token and username are not set, display messages
 		if username == "" {
-			_, err := fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("Enter your username:"))
+			_, err := fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Enter your username:"))
 			if err != nil {
 				return err
 			}
 
-			in := bufio.NewReader(c.Stdin)
+			in := bufio.NewReader(c.Command.Command.InOrStdin())
 			username, err = in.ReadString('\n')
 			if err != nil {
 				return err
@@ -106,7 +106,7 @@ func RunLoginUser(c *core.CommandConfig) error {
 		}
 
 		if pwd == "" {
-			_, err := fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("Enter your password:"))
+			_, err := fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Enter your password:"))
 			if err != nil {
 				return err
 			}
@@ -120,13 +120,13 @@ func RunLoginUser(c *core.CommandConfig) error {
 		}
 
 		viper.Set(constants.Username, username)
-		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Username is set %s", viper.GetString(constants.Username)))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Username is set %s", viper.GetString(constants.Username)))
 
 		viper.Set(constants.Password, pwd)
-		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Password is set"))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Password is set"))
 	}
 
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("ServerUrl: %s", config.GetServerUrl()))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("ServerUrl: %s", config.GetServerUrl()))
 	viper.Set(constants.ServerUrl, viper.GetString(constants.ArgServerUrl))
 
 	client, err := client2.Get()
@@ -135,7 +135,7 @@ func RunLoginUser(c *core.CommandConfig) error {
 	}
 
 	// Check the auth is correct
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Checking authentication..."))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Checking authentication..."))
 	dcsSvc := resources.NewDataCenterService(client, context.TODO())
 	_, _, err = dcsSvc.List(resources.ListQueryParams{})
 	if err != nil {
@@ -143,14 +143,14 @@ func RunLoginUser(c *core.CommandConfig) error {
 	}
 
 	// Store credentials
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
 		"Storing credentials to the configuration file: %v", viper.GetString(constants.ArgConfig)))
 	err = config.WriteFile()
 	if err != nil {
 		return err
 	}
 
-	fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("Authentication successful!"))
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Authentication successful!"))
 
 	return nil
 }

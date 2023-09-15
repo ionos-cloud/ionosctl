@@ -379,7 +379,7 @@ func RunK8sNodePoolListAll(c *core.CommandConfig) error {
 	}
 
 	if totalTime != time.Duration(0) {
-		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, totalTime))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, totalTime))
 	}
 
 	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
@@ -390,7 +390,7 @@ func RunK8sNodePoolListAll(c *core.CommandConfig) error {
 	out, err := jsontabwriter.GenerateOutputPreconverted(allNodePools, allNodePoolsConverted,
 		printer.GetHeaders(allK8sNodePoolCols, defaultK8sNodePoolCols, cols))
 
-	fmt.Fprintf(c.Stdout, out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
 
 	return nil
 }
@@ -400,7 +400,7 @@ func RunK8sNodePoolList(c *core.CommandConfig) error {
 		return RunK8sNodePoolListAll(c)
 	}
 
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
 		"Getting K8s NodePools from K8s Cluster with ID: %v", viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))))
 
 	// Add Query Parameters for GET Requests
@@ -427,7 +427,7 @@ func RunK8sNodePoolList(c *core.CommandConfig) error {
 
 	k8ss, resp, err := c.CloudApiV6Services.K8s().ListNodePools(viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)), listQueryParams)
 	if resp != nil {
-		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 	if err != nil {
 		return err
@@ -444,7 +444,7 @@ func RunK8sNodePoolList(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Stdout, out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
 
 	return nil
 }
@@ -463,12 +463,12 @@ func RunK8sNodePoolGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
 		"K8s node pool with id: %v from K8s Cluster with id: %v is getting...", k8sNodePoolId, k8sClusterId))
 
 	u, resp, err := c.CloudApiV6Services.K8s().GetNodePool(k8sClusterId, k8sNodePoolId, queryParams)
 	if resp != nil {
-		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 	if err != nil {
 		return err
@@ -485,7 +485,7 @@ func RunK8sNodePoolGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Stdout, out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
 
 	return nil
 }
@@ -502,12 +502,12 @@ func RunK8sNodePoolCreate(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
 		"Creating K8s NodePool in K8s Cluster with ID: %v", viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))))
 
 	u, resp, err := c.CloudApiV6Services.K8s().CreateNodePool(viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)), *newNodePool, queryParams)
 	if resp != nil && printer.GetId(resp) != "" {
-		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
 	}
 	if err != nil {
 		return err
@@ -537,7 +537,7 @@ func RunK8sNodePoolCreate(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Stdout, out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
 
 	return nil
 }
@@ -559,7 +559,7 @@ func RunK8sNodePoolUpdate(c *core.CommandConfig) error {
 	_, resp, err := c.CloudApiV6Services.K8s().UpdateNodePool(viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)),
 		viper.GetString(core.GetFlagName(c.NS, constants.FlagNodepoolId)), newNodePool, queryParams)
 	if resp != nil && printer.GetId(resp) != "" {
-		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
 	}
 	if err != nil {
 		return err
@@ -583,7 +583,7 @@ func RunK8sNodePoolUpdate(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Stdout, out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
 
 	return nil
 }
@@ -603,7 +603,7 @@ func RunK8sNodePoolDelete(c *core.CommandConfig) error {
 			return err
 		}
 
-		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("Kubernetes Nodepools successfully deleted"))
+		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Kubernetes Nodepools successfully deleted"))
 		return nil
 	}
 
@@ -611,18 +611,18 @@ func RunK8sNodePoolDelete(c *core.CommandConfig) error {
 		return nil
 	}
 
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
 		"Starting deleting K8s node pool with id: %v from K8s Cluster with id: %v...", k8sNodePoolId, k8sClusterId))
 
 	resp, err := c.CloudApiV6Services.K8s().DeleteNodePool(k8sClusterId, k8sNodePoolId, queryParams)
 	if resp != nil && printer.GetId(resp) != "" {
-		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
 
-	fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("Kubernetes Nodepool successfully deleted"))
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Kubernetes Nodepool successfully deleted"))
 	return nil
 }
 
@@ -661,47 +661,47 @@ func getNewK8sNodePool(c *core.CommandConfig) (*resources.K8sNodePoolForPost, er
 	// Set Properties
 	nodePoolProperties := ionoscloud.KubernetesNodePoolPropertiesForPost{}
 	nodePoolProperties.SetName(name)
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property Name set: %v", name))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property Name set: %v", name))
 
 	nodePoolProperties.SetK8sVersion(k8sversion)
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property K8sVersion set: %v", k8sversion))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property K8sVersion set: %v", k8sversion))
 
 	nodePoolProperties.SetNodeCount(nodeCount)
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property NodeCount set: %v", nodeCount))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property NodeCount set: %v", nodeCount))
 
 	nodePoolProperties.SetDatacenterId(dcId)
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property DatacenterId set: %v", dcId))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property DatacenterId set: %v", dcId))
 
 	nodePoolProperties.SetCpuFamily(cpuFamily)
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property CPU Family set: %v", cpuFamily))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property CPU Family set: %v", cpuFamily))
 
 	nodePoolProperties.SetCoresCount(cores)
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property CoresCount set: %v", cores))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property CoresCount set: %v", cores))
 
 	nodePoolProperties.SetRamSize(int32(ramSize))
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property RAM Size set: %vMB", int32(ramSize)))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property RAM Size set: %vMB", int32(ramSize)))
 
 	nodePoolProperties.SetAvailabilityZone(availabilityZone)
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property Availability Zone set: %v", availabilityZone))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property Availability Zone set: %v", availabilityZone))
 
 	nodePoolProperties.SetStorageSize(int32(storageSize))
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property Storage Size set: %vGB", int32(storageSize)))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property Storage Size set: %vGB", int32(storageSize)))
 
 	nodePoolProperties.SetStorageType(storageType)
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property Storage Type set: %v", storageType))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property Storage Type set: %v", storageType))
 
 	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagLabels)) {
 		keyValueMapLabels := viper.GetStringMapString(core.GetFlagName(c.NS, constants.FlagLabels))
 		nodePoolProperties.SetLabels(keyValueMapLabels)
 
-		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property Labels set: %v", keyValueMapLabels))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property Labels set: %v", keyValueMapLabels))
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagAnnotations)) {
 		keyValueMapAnnotations := viper.GetStringMapString(core.GetFlagName(c.NS, constants.FlagAnnotations))
 		nodePoolProperties.SetAnnotations(keyValueMapAnnotations)
 
-		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property Annotations set: %v", keyValueMapAnnotations))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property Annotations set: %v", keyValueMapAnnotations))
 	}
 
 	// Add LANs
@@ -713,8 +713,8 @@ func getNewK8sNodePool(c *core.CommandConfig) (*resources.K8sNodePoolForPost, er
 		for _, lanId := range lanIds {
 			id := int32(lanId)
 
-			fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property Lan ID set: %v", id))
-			fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property Dhcp set: %v", dhcp))
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property Lan ID set: %v", id))
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property Dhcp set: %v", dhcp))
 
 			newLans = append(newLans, ionoscloud.KubernetesNodePoolLan{
 				Id:   &id,
@@ -740,7 +740,7 @@ func getNewK8sNodePoolUpdated(oldUser *resources.K8sNodePool, c *core.CommandCon
 			vers := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sVersion))
 			propertiesUpdated.SetK8sVersion(vers)
 
-			fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property K8sVersion set: %v", vers))
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property K8sVersion set: %v", vers))
 		} else {
 			if vers, ok := properties.GetK8sVersionOk(); ok && vers != nil {
 				propertiesUpdated.SetK8sVersion(*vers)
@@ -751,7 +751,7 @@ func getNewK8sNodePoolUpdated(oldUser *resources.K8sNodePool, c *core.CommandCon
 			nodeCount := viper.GetInt32(core.GetFlagName(c.NS, constants.FlagNodeCount))
 			propertiesUpdated.SetNodeCount(nodeCount)
 
-			fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property NodeCount set: %v", nodeCount))
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property NodeCount set: %v", nodeCount))
 		} else {
 			if n, ok := properties.GetNodeCountOk(); ok && n != nil {
 				propertiesUpdated.SetNodeCount(*n)
@@ -766,7 +766,7 @@ func getNewK8sNodePoolUpdated(oldUser *resources.K8sNodePool, c *core.CommandCon
 			if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgK8sMinNodeCount)) {
 				minCount = viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgK8sMinNodeCount))
 
-				fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property MinNodeCount set: %v", minCount))
+				fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property MinNodeCount set: %v", minCount))
 			} else {
 				if m, ok := autoScaling.GetMinNodeCountOk(); ok && m != nil {
 					minCount = *m
@@ -776,7 +776,7 @@ func getNewK8sNodePoolUpdated(oldUser *resources.K8sNodePool, c *core.CommandCon
 			if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgK8sMaxNodeCount)) {
 				maxCount = viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgK8sMaxNodeCount))
 
-				fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property MaxNodeCount set: %v", maxCount))
+				fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property MaxNodeCount set: %v", maxCount))
 			} else {
 				if m, ok := autoScaling.GetMaxNodeCountOk(); ok && m != nil {
 					maxCount = *m
@@ -808,7 +808,7 @@ func getNewK8sNodePoolUpdated(oldUser *resources.K8sNodePool, c *core.CommandCon
 				key: value,
 			})
 
-			fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property Annotations set: key: %v, value: %v", key, value))
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property Annotations set: key: %v, value: %v", key, value))
 		}
 
 		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgLabelKey)) &&
@@ -819,20 +819,20 @@ func getNewK8sNodePoolUpdated(oldUser *resources.K8sNodePool, c *core.CommandCon
 				key: value,
 			})
 
-			fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property Labels set: key: %v, value: %v", key, value))
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property Labels set: key: %v, value: %v", key, value))
 		}
 
 		if viper.IsSet(core.GetFlagName(c.NS, constants.FlagLabels)) {
 			keyValueMapLabels := viper.GetStringMapString(core.GetFlagName(c.NS, constants.FlagLabels))
 			propertiesUpdated.SetLabels(keyValueMapLabels)
 
-			fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property Labels set: %v", keyValueMapLabels))
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property Labels set: %v", keyValueMapLabels))
 		}
 
 		if viper.IsSet(core.GetFlagName(c.NS, constants.FlagAnnotations)) {
 			keyValueMapAnnotations := viper.GetStringMapString(core.GetFlagName(c.NS, constants.FlagAnnotations))
 			propertiesUpdated.SetAnnotations(keyValueMapAnnotations)
-			fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property Annotations set: %v", keyValueMapAnnotations))
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property Annotations set: %v", keyValueMapAnnotations))
 		}
 
 		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgLanIds)) {
@@ -855,7 +855,7 @@ func getNewK8sNodePoolUpdated(oldUser *resources.K8sNodePool, c *core.CommandCon
 					Dhcp: &dhcp,
 				})
 
-				fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property Lans set: %v", id))
+				fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property Lans set: %v", id))
 			}
 
 			propertiesUpdated.SetLans(newLans)
@@ -865,7 +865,7 @@ func getNewK8sNodePoolUpdated(oldUser *resources.K8sNodePool, c *core.CommandCon
 			publicIps := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgPublicIps))
 			propertiesUpdated.SetPublicIps(publicIps)
 
-			fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property PublicIps set: %v", publicIps))
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property PublicIps set: %v", publicIps))
 		}
 	}
 
@@ -885,8 +885,8 @@ func DeleteAllK8sNodepools(c *core.CommandConfig) error {
 	queryParams := listQueryParams.QueryParams
 	k8sClusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
 
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("K8sCluster ID: %v", k8sClusterId))
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Getting K8sNodePools..."))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("K8sCluster ID: %v", k8sClusterId))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting K8sNodePools..."))
 
 	k8sNodePools, resp, err := c.CloudApiV6Services.K8s().ListNodePools(k8sClusterId, cloudapiv6.ParentResourceListQueryParams)
 	if err != nil {
@@ -902,7 +902,7 @@ func DeleteAllK8sNodepools(c *core.CommandConfig) error {
 		return fmt.Errorf("no Kubernetes Nodepools found")
 	}
 
-	fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("K8sNodePools to be deleted:"))
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("K8sNodePools to be deleted:"))
 
 	for _, dc := range *k8sNodePoolsItems {
 		delIdAndName := ""
@@ -917,14 +917,14 @@ func DeleteAllK8sNodepools(c *core.CommandConfig) error {
 			}
 		}
 
-		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput(delIdAndName))
+		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
 
 	if !confirm.Ask("delete all the K8sNodePools") {
 		return nil
 	}
 
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Deleting all the K8sNodePools"))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the K8sNodePools"))
 
 	var multiErr error
 	for _, dc := range *k8sNodePoolsItems {
@@ -933,11 +933,11 @@ func DeleteAllK8sNodepools(c *core.CommandConfig) error {
 			continue
 		}
 
-		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Starting deleting K8sNodePool with id: %v...", *id))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Starting deleting K8sNodePool with id: %v...", *id))
 
 		resp, err = c.CloudApiV6Services.K8s().DeleteNodePool(k8sClusterId, *id, queryParams)
 		if resp != nil && printer.GetId(resp) != "" {
-			fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
 		}
 
 		if err != nil {
@@ -945,7 +945,7 @@ func DeleteAllK8sNodepools(c *core.CommandConfig) error {
 			continue
 		}
 
-		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput(constants.MessageDeletingAll, c.Resource, *id))
+		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(constants.MessageDeletingAll, c.Resource, *id))
 
 		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *id, err))

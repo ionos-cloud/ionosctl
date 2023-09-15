@@ -67,7 +67,7 @@ func RunServerConsoleGet(c *core.CommandConfig) error {
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
 
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
 		"Getting Consoler URL for Server with ID: %v from Datacenter with ID: %v...", serverId, dcId))
 
 	t, resp, err := c.CloudApiV6Services.Servers().GetRemoteConsoleUrl(dcId, serverId)
@@ -75,7 +75,7 @@ func RunServerConsoleGet(c *core.CommandConfig) error {
 		return err
 	}
 	if resp != nil {
-		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 
 	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
@@ -89,7 +89,7 @@ func RunServerConsoleGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Stdout, out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
 
 	return nil
 }

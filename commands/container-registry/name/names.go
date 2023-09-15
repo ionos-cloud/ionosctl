@@ -36,19 +36,19 @@ func CmdCheck(c *core.CommandConfig) error {
 
 	res, _ := c.ContainerRegistryServices.Name().Head(name)
 	if res.StatusCode == 404 {
-		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("Name is available"))
+		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Name is available"))
 		return nil
 	}
 
 	if res.StatusCode == 400 {
-		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput(
+		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(
 			"Name must use only the characters \"a-z\", \"0-9\", or \"-\" "+
 				"and starts with a letter and ends with a letter or number "+
 				"and is between 3 to 63 characters in length."))
 		return nil
 	}
 
-	fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("Name is already being used."))
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Name is already being used."))
 	return nil
 }
 

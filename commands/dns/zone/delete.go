@@ -72,7 +72,7 @@ func ZonesDeleteCmd() *core.Command {
 }
 
 func deleteAll(c *core.CommandConfig) error {
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Deleting all zones!"))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all zones!"))
 	xs, _, err := client.Must().DnsClient.ZonesApi.ZonesGet(c.Context).Execute()
 	if err != nil {
 		return err

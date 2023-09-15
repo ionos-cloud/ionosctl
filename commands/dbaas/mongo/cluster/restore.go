@@ -34,7 +34,7 @@ func ClusterRestoreCmd() *core.Command {
 			clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
 			snapshotId := viper.GetString(core.GetFlagName(c.NS, constants.FlagSnapshotId))
 
-			fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Restoring Cluster %s with snapshot %s",
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Restoring Cluster %s with snapshot %s",
 				clusterId, snapshotId))
 
 			_, err := client.Must().MongoClient.RestoresApi.ClustersRestorePost(context.Background(), clusterId).

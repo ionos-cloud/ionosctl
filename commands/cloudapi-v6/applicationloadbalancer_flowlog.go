@@ -274,9 +274,9 @@ func RunApplicationLoadBalancerFlowLogList(c *core.CommandConfig) error {
 		return nil
 	}
 
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
 		"Datacenter ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))))
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
 		"ApplicationLoadBalancer ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId))))
 
 	// Add Query Parameters for GET Requests
@@ -284,7 +284,7 @@ func RunApplicationLoadBalancerFlowLogList(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Getting FlowLogs"))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting FlowLogs"))
 
 	applicationloadbalancerFlowLogs, resp, err := c.CloudApiV6Services.ApplicationLoadBalancers().ListFlowLogs(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
@@ -292,7 +292,7 @@ func RunApplicationLoadBalancerFlowLogList(c *core.CommandConfig) error {
 		listQueryParams,
 	)
 	if resp != nil {
-		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 	if err != nil {
 		return err
@@ -304,7 +304,7 @@ func RunApplicationLoadBalancerFlowLogList(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Stdout, out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
 
 	return nil
 }
@@ -322,11 +322,11 @@ func RunApplicationLoadBalancerFlowLogGet(c *core.CommandConfig) error {
 
 	queryParams := listQueryParams.QueryParams
 
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
 		"Datacenter ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))))
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
 		"ApplicationLoadBalancer ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId))))
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
 		"Getting FlowLog with ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFlowLogId))))
 
 	ng, resp, err := c.CloudApiV6Services.ApplicationLoadBalancers().GetFlowLog(
@@ -336,7 +336,7 @@ func RunApplicationLoadBalancerFlowLogGet(c *core.CommandConfig) error {
 		queryParams,
 	)
 	if resp != nil {
-		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 	if err != nil {
 		return err
@@ -348,7 +348,7 @@ func RunApplicationLoadBalancerFlowLogGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Stdout, out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
 
 	return nil
 }
@@ -366,34 +366,34 @@ func RunApplicationLoadBalancerFlowLogCreate(c *core.CommandConfig) error {
 
 	queryParams := listQueryParams.QueryParams
 
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
 		"Datacenter ID: %v ", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))))
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
 		"ApplicationLoadBalancer ID: %v ", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId))))
 
 	proper := getFlowLogPropertiesSet(c)
 	if !proper.HasName() {
 		proper.SetName(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName)))
 
-		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
 			"Property Name set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))))
 	}
 
 	if !proper.HasDirection() {
 		proper.SetDirection(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDirection)))
 
-		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
 			"Property Direction set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDirection))))
 	}
 
 	if !proper.HasAction() {
 		proper.SetAction(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgAction)))
 
-		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
 			"Property Action set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgAction))))
 	}
 
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Creating FlowLog"))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Creating FlowLog"))
 
 	ng, resp, err := c.CloudApiV6Services.ApplicationLoadBalancers().CreateFlowLog(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
@@ -406,7 +406,7 @@ func RunApplicationLoadBalancerFlowLogCreate(c *core.CommandConfig) error {
 		queryParams,
 	)
 	if resp != nil {
-		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 	if err != nil {
 		return err
@@ -421,7 +421,7 @@ func RunApplicationLoadBalancerFlowLogCreate(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Stdout, out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
 
 	return nil
 }
@@ -439,16 +439,16 @@ func RunApplicationLoadBalancerFlowLogUpdate(c *core.CommandConfig) error {
 
 	queryParams := listQueryParams.QueryParams
 
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
 		"Datacenter ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))))
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
 		"ApplicationLoadBalancer ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId))))
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
 		"FlowLog ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFlowLogId))))
 
 	input := getFlowLogPropertiesUpdate(c)
 
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Updating FlowLog"))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Updating FlowLog"))
 
 	ng, resp, err := c.CloudApiV6Services.ApplicationLoadBalancers().UpdateFlowLog(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
@@ -458,7 +458,7 @@ func RunApplicationLoadBalancerFlowLogUpdate(c *core.CommandConfig) error {
 		queryParams,
 	)
 	if resp != nil {
-		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 	if err != nil {
 		return err
@@ -474,7 +474,7 @@ func RunApplicationLoadBalancerFlowLogUpdate(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Stdout, out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
 
 	return nil
 }
@@ -489,9 +489,9 @@ func RunApplicationLoadBalancerFlowLogDelete(c *core.CommandConfig) error {
 	queryParams := listQueryParams.QueryParams
 
 	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
-		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
 			"Datacenter ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))))
-		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
 			"ApplicationLoadBalancer ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId))))
 
 		err = DeleteAllApplicationLoadBalancerFlowLog(c)
@@ -499,23 +499,23 @@ func RunApplicationLoadBalancerFlowLogDelete(c *core.CommandConfig) error {
 			return err
 		}
 
-		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("Application Load Balancers Flowlogs successfully deleted"))
+		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Application Load Balancers Flowlogs successfully deleted"))
 
 		return nil
 	}
 
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
 		"Datacenter ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))))
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
 		"ApplicationLoadBalancer ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId))))
-	fmt.Fprintf(c.Stdout, jsontabwriter.GenerateVerboseOutput(
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateVerboseOutput(
 		"FlowLog ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFlowLogId))))
 
 	if !confirm.Ask("delete application load balancer flowlog", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
 		return nil
 	}
 
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Deleting FlowLog"))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting FlowLog"))
 
 	resp, err = c.CloudApiV6Services.ApplicationLoadBalancers().DeleteFlowLog(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
@@ -524,7 +524,7 @@ func RunApplicationLoadBalancerFlowLogDelete(c *core.CommandConfig) error {
 		queryParams,
 	)
 	if resp != nil {
-		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 	if err != nil {
 		return err
@@ -534,7 +534,7 @@ func RunApplicationLoadBalancerFlowLogDelete(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("Application Load Balancers Flowlog successfully deleted"))
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Application Load Balancers Flowlog successfully deleted"))
 
 	return nil
 }
@@ -547,7 +547,7 @@ func DeleteAllApplicationLoadBalancerFlowLog(c *core.CommandConfig) error {
 
 	queryParams := listQueryParams.QueryParams
 
-	fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("Getting Application Load Balancer FlowLogs..."))
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Getting Application Load Balancer FlowLogs..."))
 
 	applicationLoadBalancerFlowlogs, resp, err := c.CloudApiV6Services.ApplicationLoadBalancers().ListFlowLogs(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
@@ -580,14 +580,14 @@ func DeleteAllApplicationLoadBalancerFlowLog(c *core.CommandConfig) error {
 			}
 		}
 
-		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput(delIdAndName))
+		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
 
 	if !confirm.Ask("delete all the Application Load Balancer FlowLogs", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
 		return nil
 	}
 
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Deleting all the Application Load Balancer FlowLogs..."))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the Application Load Balancer FlowLogs..."))
 
 	var multiErr error
 	for _, fl := range *albFlowLogItems {
@@ -596,7 +596,7 @@ func DeleteAllApplicationLoadBalancerFlowLog(c *core.CommandConfig) error {
 			continue
 		}
 
-		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
 			"Starting deleting Application Load Balancer FlowLog with id: %v...", *id))
 
 		resp, err = c.CloudApiV6Services.ApplicationLoadBalancers().DeleteFlowLog(
@@ -605,14 +605,14 @@ func DeleteAllApplicationLoadBalancerFlowLog(c *core.CommandConfig) error {
 			queryParams,
 		)
 		if resp != nil && printer.GetId(resp) != "" {
-			fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
 		}
 		if err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
 			continue
 		}
 
-		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput(constants.MessageDeletingAll, c.Resource, *id))
+		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(constants.MessageDeletingAll, c.Resource, *id))
 
 		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))

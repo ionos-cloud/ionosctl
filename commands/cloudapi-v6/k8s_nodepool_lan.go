@@ -172,7 +172,7 @@ func RunK8sNodePoolLanList(c *core.CommandConfig) error {
 		resources.QueryParams{},
 	)
 	if resp != nil {
-		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 	if err != nil {
 		return err
@@ -199,7 +199,7 @@ func RunK8sNodePoolLanList(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Stdout, out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
 
 	return nil
 }
@@ -228,7 +228,7 @@ func RunK8sNodePoolLanAdd(c *core.CommandConfig) error {
 		queryParams,
 	)
 	if resp != nil && printer.GetId(resp) != "" {
-		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
 	}
 	if err != nil {
 		return err
@@ -245,7 +245,7 @@ func RunK8sNodePoolLanAdd(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Stdout, out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
 
 	return nil
 }
@@ -262,7 +262,7 @@ func RunK8sNodePoolLanRemove(c *core.CommandConfig) error {
 			return err
 		}
 
-		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("Kubernetes Node Pool Lans successfully deleted"))
+		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Kubernetes Node Pool Lans successfully deleted"))
 		return nil
 	}
 
@@ -281,13 +281,13 @@ func RunK8sNodePoolLanRemove(c *core.CommandConfig) error {
 	input := removeK8sNodePoolLanInfo(c, ng)
 	_, resp, err := c.CloudApiV6Services.K8s().UpdateNodePool(clusterId, nodePoolId, input, queryParams)
 	if resp != nil && printer.GetId(resp) != "" {
-		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
 
-	fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("Kubernetes Node Pool Lan successfully deleted"))
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Kubernetes Node Pool Lan successfully deleted"))
 	return nil
 }
 
@@ -301,9 +301,9 @@ func RemoveAllK8sNodePoolsLans(c *core.CommandConfig) error {
 	clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
 	nodePoolId := viper.GetString(core.GetFlagName(c.NS, constants.FlagNodepoolId))
 
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("K8sCluster ID: %v", clusterId))
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("K8sNodePool ID: %v", nodePoolId))
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Getting K8sNodePool Lans..."))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("K8sCluster ID: %v", clusterId))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("K8sNodePool ID: %v", nodePoolId))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting K8sNodePool Lans..."))
 
 	k8sNodepool, resp, err := c.CloudApiV6Services.K8s().GetNodePool(clusterId, nodePoolId, cloudapiv6.ParentResourceQueryParams)
 	if err != nil {
@@ -324,10 +324,10 @@ func RemoveAllK8sNodePoolsLans(c *core.CommandConfig) error {
 		return fmt.Errorf("no Lans found")
 	}
 
-	fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("K8s NodePool Lans to be removed:"))
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("K8s NodePool Lans to be removed:"))
 	for _, lan := range *lans {
 		if id, ok := lan.GetIdOk(); ok && id != nil {
-			fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("K8s NodePool Lan Id: "+string(*id)))
+			fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("K8s NodePool Lan Id: "+string(*id)))
 		}
 	}
 
@@ -335,7 +335,7 @@ func RemoveAllK8sNodePoolsLans(c *core.CommandConfig) error {
 		return nil
 	}
 
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Removing all the K8sNodePool Lans..."))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Removing all the K8sNodePool Lans..."))
 
 	propertiesUpdated := resources.K8sNodePoolPropertiesForPut{}
 	if n, ok := nodePoolProperties.GetNodeCountOk(); ok && n != nil {
@@ -364,7 +364,7 @@ func RemoveAllK8sNodePoolsLans(c *core.CommandConfig) error {
 
 	_, resp, err = c.CloudApiV6Services.K8s().UpdateNodePool(clusterId, nodePoolId, k8sNodePoolUpdated, queryParams)
 	if resp != nil {
-		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 	if err != nil {
 		return err
@@ -410,14 +410,14 @@ func getNewK8sNodePoolLanInfo(c *core.CommandConfig, oldNg *resources.K8sNodePoo
 				Dhcp: &dhcp,
 			}
 
-			fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Adding a Kubernetes NodePool LAN with id: %v and dhcp: %v", lanId, dhcp))
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Adding a Kubernetes NodePool LAN with id: %v and dhcp: %v", lanId, dhcp))
 
 			if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgNetwork)) {
 				network := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgNetwork))
 				gatewayIp := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgGatewayIp))
 
-				fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property Network set: %v", network))
-				fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property GatewayIp set: %v", gatewayIp))
+				fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property Network set: %v", network))
+				fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property GatewayIp set: %v", gatewayIp))
 
 				if len(network) != len(gatewayIp) {
 					die.Die(fmt.Sprintf("Flags %s, %s have different number of arguments, must be the same", cloudapiv6.ArgNetwork, cloudapiv6.ArgGatewayIp))
@@ -472,7 +472,7 @@ func removeK8sNodePoolLanInfo(c *core.CommandConfig, oldNg *resources.K8sNodePoo
 			lanId := viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgLanId))
 			newLans := make([]ionoscloud.KubernetesNodePoolLan, 0)
 
-			fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Removing a Kubernetes NodePool LAN with id: %v", lanId))
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Removing a Kubernetes NodePool LAN with id: %v", lanId))
 
 			if existingLans, ok := properties.GetLansOk(); ok && existingLans != nil {
 				for _, existingLan := range *existingLans {

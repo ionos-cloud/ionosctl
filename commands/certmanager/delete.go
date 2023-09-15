@@ -55,7 +55,7 @@ func CmdDelete(c *core.CommandConfig) error {
 	}
 
 	if allFlag {
-		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Deleting all Certificates..."))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all Certificates..."))
 
 		certs, _, err := c.CertificateManagerServices.Certs().List()
 		if err != nil {

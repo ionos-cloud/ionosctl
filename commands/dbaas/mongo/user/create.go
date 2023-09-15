@@ -52,7 +52,7 @@ func UserCreateCmd() *core.Command {
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
-			fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Creating users for cluster %s", clusterId))
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Creating users for cluster %s", clusterId))
 
 			userProperties.Roles = &roles
 			u, _, err := client.Must().MongoClient.UsersApi.ClustersUsersPost(context.Background(), clusterId).
@@ -73,7 +73,7 @@ func UserCreateCmd() *core.Command {
 				return err
 			}
 
-			fmt.Fprintf(c.Stdout, out)
+			fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
 			return nil
 		},
 		InitClient: true,

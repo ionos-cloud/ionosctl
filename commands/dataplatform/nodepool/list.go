@@ -33,7 +33,7 @@ func NodepoolListCmd() *core.Command {
 				return listAll(c)
 			}
 
-			fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Getting Nodepools..."))
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting Nodepools..."))
 
 			clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
 
@@ -54,7 +54,7 @@ func NodepoolListCmd() *core.Command {
 				return err
 			}
 
-			fmt.Fprintf(c.Stdout, out)
+			fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
 			return nil
 		},
 		InitClient: true,
@@ -74,7 +74,7 @@ func NodepoolListCmd() *core.Command {
 }
 
 func listAll(c *core.CommandConfig) error {
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Getting all nodepools..."))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting all nodepools..."))
 
 	ls, _, err := client.Must().DataplatformClient.DataPlatformClusterApi.ClustersGet(context.Background()).Execute()
 	if err != nil {
@@ -108,6 +108,6 @@ func listAll(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Stdout, out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
 	return nil
 }

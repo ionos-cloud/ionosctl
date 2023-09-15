@@ -269,7 +269,7 @@ func RunShareListAll(c *core.CommandConfig) error {
 	}
 
 	if totalTime != time.Duration(0) {
-		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, totalTime))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, totalTime))
 	}
 
 	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
@@ -283,7 +283,7 @@ func RunShareListAll(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Stdout, out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
 
 	return nil
 }
@@ -300,7 +300,7 @@ func RunShareList(c *core.CommandConfig) error {
 
 	shares, resp, err := c.CloudApiV6Services.Groups().ListShares(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)), listQueryParams)
 	if resp != nil {
-		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 	if err != nil {
 		return err
@@ -317,7 +317,7 @@ func RunShareList(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Stdout, out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
 
 	return nil
 }
@@ -345,7 +345,7 @@ func RunShareGet(c *core.CommandConfig) error {
 
 	queryParams := listQueryParams.QueryParams
 
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Getting Share with Resource ID: %v from Group with ID: %v...",
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting Share with Resource ID: %v from Group with ID: %v...",
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId))))
 
@@ -355,7 +355,7 @@ func RunShareGet(c *core.CommandConfig) error {
 		queryParams,
 	)
 	if resp != nil {
-		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 	if err != nil {
 		return err
@@ -372,7 +372,7 @@ func RunShareGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Stdout, out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
 
 	return nil
 }
@@ -396,9 +396,9 @@ func RunShareCreate(c *core.CommandConfig) error {
 		},
 	}
 
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
 		"Properties set for creating the Share: EditPrivilege: %v, SharePrivilege: %v", editPrivilege, sharePrivilege))
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Adding Share for Resource ID: %v from Group with ID: %v...",
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Adding Share for Resource ID: %v from Group with ID: %v...",
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId))))
 
@@ -409,7 +409,7 @@ func RunShareCreate(c *core.CommandConfig) error {
 		queryParams,
 	)
 	if resp != nil && printer.GetId(resp) != "" {
-		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
 	}
 	if err != nil {
 		return err
@@ -430,7 +430,7 @@ func RunShareCreate(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Stdout, out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
 
 	return nil
 }
@@ -455,7 +455,7 @@ func RunShareUpdate(c *core.CommandConfig) error {
 		},
 	}
 
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Updating Share for Resource ID: %v from Group with ID: %v...",
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Updating Share for Resource ID: %v from Group with ID: %v...",
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId))))
 
@@ -466,7 +466,7 @@ func RunShareUpdate(c *core.CommandConfig) error {
 		queryParams,
 	)
 	if resp != nil && printer.GetId(resp) != "" {
-		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
 	}
 	if err != nil {
 		return err
@@ -487,7 +487,7 @@ func RunShareUpdate(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Stdout, out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
 
 	return nil
 }
@@ -507,7 +507,7 @@ func RunShareDelete(c *core.CommandConfig) error {
 			return err
 		}
 
-		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("Group Shares successfully deleted"))
+		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Group Shares successfully deleted"))
 		return nil
 	}
 
@@ -515,12 +515,12 @@ func RunShareDelete(c *core.CommandConfig) error {
 		return nil
 	}
 
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
 		"Starting deleting Share with Resource ID: %v from Group with ID: %v...", shareId, groupId))
 
 	resp, err := c.CloudApiV6Services.Groups().RemoveShare(groupId, shareId, queryParams)
 	if resp != nil && printer.GetId(resp) != "" {
-		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
 	}
 	if err != nil {
 		return err
@@ -530,7 +530,7 @@ func RunShareDelete(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("Group Share successfully deleted"))
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Group Share successfully deleted"))
 	return nil
 }
 
@@ -541,7 +541,7 @@ func getShareUpdateInfo(oldShare *resources.GroupShare, c *core.CommandConfig) *
 		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgEditPrivilege)) {
 			editPrivilege = viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgEditPrivilege))
 
-			fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property EditPrivilege set: %v", editPrivilege))
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property EditPrivilege set: %v", editPrivilege))
 		} else {
 			if e, ok := properties.GetEditPrivilegeOk(); ok && e != nil {
 				editPrivilege = *e
@@ -551,7 +551,7 @@ func getShareUpdateInfo(oldShare *resources.GroupShare, c *core.CommandConfig) *
 		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgSharePrivilege)) {
 			sharePrivilege = viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgSharePrivilege))
 
-			fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Property SharePrivilege set: %v", sharePrivilege))
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property SharePrivilege set: %v", sharePrivilege))
 		} else {
 			if e, ok := properties.GetSharePrivilegeOk(); ok && e != nil {
 				sharePrivilege = *e
@@ -576,8 +576,8 @@ func DeleteAllShares(c *core.CommandConfig) error {
 	queryParams := listQueryParams.QueryParams
 	groupId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId))
 
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Group ID: %v", groupId))
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Getting Group Shares..."))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Group ID: %v", groupId))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting Group Shares..."))
 
 	groupShares, resp, err := c.CloudApiV6Services.Groups().ListShares(groupId, cloudapiv6.ParentResourceListQueryParams)
 	if err != nil {
@@ -593,11 +593,11 @@ func DeleteAllShares(c *core.CommandConfig) error {
 		return fmt.Errorf("no Group Shares found")
 	}
 
-	fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("GroupShares to be deleted:"))
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("GroupShares to be deleted:"))
 
 	for _, share := range *groupSharesItems {
 		if id, ok := share.GetIdOk(); ok && id != nil {
-			fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("GroupShare Id: ", *id))
+			fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("GroupShare Id: ", *id))
 		}
 	}
 
@@ -605,7 +605,7 @@ func DeleteAllShares(c *core.CommandConfig) error {
 		return nil
 	}
 
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Deleting all the GroupShares..."))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the GroupShares..."))
 
 	var multiErr error
 	for _, share := range *groupSharesItems {
@@ -614,19 +614,19 @@ func DeleteAllShares(c *core.CommandConfig) error {
 			continue
 		}
 
-		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
 			"Starting deleting Share with Resource ID: %v from Group with ID: %v...", *id, groupId))
 
 		resp, err = c.CloudApiV6Services.Groups().RemoveShare(groupId, *id, queryParams)
 		if resp != nil && printer.GetId(resp) != "" {
-			fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
 		}
 		if err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
 			continue
 		}
 
-		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput(constants.MessageDeletingAll, c.Resource, *id))
+		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(constants.MessageDeletingAll, c.Resource, *id))
 
 		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *id, err))

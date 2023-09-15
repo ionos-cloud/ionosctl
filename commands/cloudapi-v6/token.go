@@ -64,7 +64,7 @@ func ServerTokenCmd() *core.Command {
 }
 
 func RunServerTokenGet(c *core.CommandConfig) error {
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
 		"ServerToken with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))))
 
 	t, _, err := c.CloudApiV6Services.Servers().GetToken(
@@ -85,7 +85,7 @@ func RunServerTokenGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Stdout, out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
 
 	return nil
 }

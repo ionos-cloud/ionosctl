@@ -27,14 +27,14 @@ func ClustersKubeConfigCmd() *core.Command {
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
-			fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Getting Cluster by id: %s", clusterId))
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting Cluster by id: %s", clusterId))
 
 			kubeconfig, _, err := client.Must().DataplatformClient.DataPlatformClusterApi.ClustersKubeconfigFindByClusterId(c.Context, clusterId).Execute()
 			if err != nil {
 				return err
 			}
 
-			fmt.Fprintf(c.Stdout, jsontabwriter.GenerateRawOutput(kubeconfig))
+			fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateRawOutput(kubeconfig))
 			return nil
 		},
 		InitClient: true,

@@ -30,10 +30,10 @@ func TokenPostCmd() *core.Command {
 }
 
 func runTokenCreate(c *core.CommandConfig) error {
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Generating new token.."))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Generating new token.."))
 
 	if viper.IsSet(core.GetFlagName(c.NS, authservice.ArgContractNo)) {
-		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(contractNumberMessage,
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(contractNumberMessage,
 			viper.GetInt32(core.GetFlagName(c.NS, authservice.ArgContractNo))))
 	}
 
@@ -44,7 +44,7 @@ func runTokenCreate(c *core.CommandConfig) error {
 
 	if newJwt != nil {
 		if token, ok := newJwt.GetTokenOk(); ok && token != nil {
-			fmt.Fprintf(c.Stdout, jsontabwriter.GenerateRawOutput(*token))
+			fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateRawOutput(*token))
 
 			return nil
 		} else {

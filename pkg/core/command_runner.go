@@ -1,24 +1,18 @@
 package core
 
 import (
-	"bytes"
 	"context"
 	"io"
-	"os"
 
 	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/die"
 
-	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/utils/clierror"
 	authservice "github.com/ionos-cloud/ionosctl/v6/services/auth-v1"
 	"github.com/ionos-cloud/ionosctl/v6/services/certmanager"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	container_registry "github.com/ionos-cloud/ionosctl/v6/services/container-registry"
 	cloudapidbaaspgsql "github.com/ionos-cloud/ionosctl/v6/services/dbaas-postgres"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 func NewCommand(ctx context.Context, parent *Command, info CommandBuilder) *Command {
@@ -91,13 +85,6 @@ type PreCommandConfig struct {
 	Resource string
 	// Verb is the 3rd level of the Command. e.g. [ionosctl server volume] attach
 	Verb string
-
-	Stdin  io.Reader
-	Stdout io.Writer
-	Stderr io.Writer
-
-	// Printer used in output formatting
-	Printer printer.PrintService
 }
 
 func NewPreCommandCfg(info CommandBuilder) *PreCommandConfig {
@@ -107,9 +94,6 @@ func NewPreCommandCfg(info CommandBuilder) *PreCommandConfig {
 		Namespace: info.Namespace,
 		Resource:  info.Resource,
 		Verb:      info.Verb,
-		Stdin:     info.Command.Command.InOrStdin(),
-		Stdout:    info.Command.Command.OutOrStdout(),
-		Stderr:    info.Command.Command.ErrOrStderr(),
 	}
 }
 
@@ -121,8 +105,6 @@ func NewCommandCfg(ctx context.Context, info CommandBuilder) (*CommandConfig, er
 		Resource:  info.Resource,
 		Verb:      info.Verb,
 		Stdin:     info.Command.Command.InOrStdin(),
-		Stdout:    info.Command.Command.OutOrStdout(),
-		Stderr:    info.Command.Command.ErrOrStderr(),
 		Context:   ctx,
 		// Define cmd Command Config function for Command
 		initCfg: func(c *CommandConfig) error {
@@ -179,9 +161,6 @@ type CommandConfig struct {
 	// Verb is the 3rd level of the Command. e.g. [ionosctl server volume] attach
 	Verb    string
 	Stdin   io.Reader
-	Stdout  io.Writer
-	Stderr  io.Writer
-	Printer printer.PrintService
 	initCfg func(commandConfig *CommandConfig) error
 
 	// Services
@@ -193,22 +172,4 @@ type CommandConfig struct {
 
 	// Context
 	Context context.Context
-}
-
-// TODO: Seems like there's no better way to Verbose print outside of 'commands' pkg, other than instantiating a PrintService as so. PrintService merits a refactor. It seems like without this exported func, I can only make Verbose prints if I am inside of a `commands` command object.
-func GetPrinter(noHeaders bool) printer.PrintService {
-	return getPrinter(noHeaders)
-}
-
-func getPrinter(noHeaders bool) printer.PrintService {
-	var out io.Writer
-	if viper.GetBool(constants.ArgQuiet) {
-		var execOut bytes.Buffer
-		out = &execOut
-	} else {
-		out = os.Stdout // lol we should either not allow CommandBuilder to customize out buffer at all, or find a way for it to influence this line. I can't change command output in tests because of this
-	}
-	printReg, err := printer.NewPrinterRegistry(out, os.Stderr, noHeaders)
-	clierror.CheckError(err, os.Stderr)
-	return printReg[viper.GetString(constants.ArgOutput)]
 }

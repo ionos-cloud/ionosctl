@@ -44,7 +44,7 @@ func ClusterCreateCmd() *core.Command {
 			return c.Command.Command.MarkFlagRequired(constants.FlagMaintenanceTime)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Creating Cluster..."))
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Creating Cluster..."))
 
 			day := viper.GetString(core.GetFlagName(c.NS, constants.FlagMaintenanceDay))
 			time := viper.GetString(core.GetFlagName(c.NS, constants.FlagMaintenanceTime))
@@ -71,7 +71,7 @@ func ClusterCreateCmd() *core.Command {
 				return err
 			}
 
-			fmt.Fprintf(c.Stdout, out)
+			fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
 			return nil
 		},
 		InitClient: true,

@@ -33,7 +33,7 @@ func CertListCmd() *core.Command {
 }
 
 func CmdList(c *core.CommandConfig) error {
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Getting Certificates..."))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting Certificates..."))
 
 	certs, _, err := c.CertificateManagerServices.Certs().List()
 	if err != nil {
@@ -51,7 +51,7 @@ func CmdList(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Stdout, out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
 
 	return nil
 }

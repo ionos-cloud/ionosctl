@@ -225,7 +225,7 @@ func PreRunK8sClusterNodesIdsAll(c *core.PreCommandConfig) error {
 }
 
 func RunK8sNodeList(c *core.CommandConfig) error {
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Listing Nodes from K8s NodePool ID: %v from K8s Cluster ID: %v",
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Listing Nodes from K8s NodePool ID: %v from K8s Cluster ID: %v",
 		viper.GetString(core.GetFlagName(c.NS, constants.FlagNodepoolId)),
 		viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))))
 
@@ -240,7 +240,7 @@ func RunK8sNodeList(c *core.CommandConfig) error {
 		listQueryParams,
 	)
 	if resp != nil {
-		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 
 	if err != nil {
@@ -258,7 +258,7 @@ func RunK8sNodeList(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Stdout, out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
 
 	return nil
 }
@@ -274,7 +274,7 @@ func RunK8sNodeGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Getting K8s Node with ID: %v from K8s NodePool ID: %v from K8s Cluster ID: %v......",
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting K8s Node with ID: %v from K8s NodePool ID: %v from K8s Cluster ID: %v......",
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sNodeId)),
 		viper.GetString(core.GetFlagName(c.NS, constants.FlagNodepoolId)),
 		viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))))
@@ -286,7 +286,7 @@ func RunK8sNodeGet(c *core.CommandConfig) error {
 		queryParams,
 	)
 	if resp != nil {
-		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 	if err != nil {
 		return err
@@ -303,7 +303,7 @@ func RunK8sNodeGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Stdout, out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
 
 	return nil
 }
@@ -324,19 +324,19 @@ func RunK8sNodeRecreate(c *core.CommandConfig) error {
 	k8sNodePoolId := viper.GetString(core.GetFlagName(c.NS, constants.FlagNodepoolId))
 	k8sNodeId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sNodeId))
 
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("K8sClusterId: %v, K8sNodePoolId: %v, K8sNodeId: %v",
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("K8sClusterId: %v, K8sNodePoolId: %v, K8sNodeId: %v",
 		k8sClusterId, k8sNodePoolId, k8sNodeId))
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Recreating Node..."))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Recreating Node..."))
 
 	resp, err := c.CloudApiV6Services.K8s().RecreateNode(k8sClusterId, k8sNodePoolId, k8sNodeId, queryParams)
 	if resp != nil && printer.GetId(resp) != "" {
-		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
 
-	fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("Status: Command node recreate has been successfully executed"))
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Status: Command node recreate has been successfully executed"))
 
 	return nil
 }
@@ -357,7 +357,7 @@ func RunK8sNodeDelete(c *core.CommandConfig) error {
 			return err
 		}
 
-		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("Kubernetes Nodes successfully deleted"))
+		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Kubernetes Nodes successfully deleted"))
 		return nil
 	}
 
@@ -365,18 +365,18 @@ func RunK8sNodeDelete(c *core.CommandConfig) error {
 		return nil
 	}
 
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
 		"Starting deleting Node with ID: %v from K8s NodePool ID: %v from K8s Cluster ID: %v...", nodeId, nodepoolId, clusterId))
 
 	resp, err := c.CloudApiV6Services.K8s().DeleteNode(clusterId, nodepoolId, nodeId, queryParams)
 	if resp != nil && printer.GetId(resp) != "" {
-		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
 
-	fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("Kubernetes Node successfully deleted"))
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Kubernetes Node successfully deleted"))
 	return nil
 }
 
@@ -390,9 +390,9 @@ func DeleteAllK8sNodes(c *core.CommandConfig) error {
 	clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
 	nodepoolId := viper.GetString(core.GetFlagName(c.NS, constants.FlagNodepoolId))
 
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("K8sCluster ID: %v", clusterId))
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("K8sNodePool ID: %v", nodepoolId))
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Getting K8sNodes..."))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("K8sCluster ID: %v", clusterId))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("K8sNodePool ID: %v", nodepoolId))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting K8sNodes..."))
 
 	k8sNodes, resp, err := c.CloudApiV6Services.K8s().ListNodes(clusterId, nodepoolId, cloudapiv6.ParentResourceListQueryParams)
 	if err != nil {
@@ -408,7 +408,7 @@ func DeleteAllK8sNodes(c *core.CommandConfig) error {
 		return fmt.Errorf("no Kubernetes Nodes found")
 	}
 
-	fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("Kubernetes Nodes to be deleted:"))
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Kubernetes Nodes to be deleted:"))
 
 	for _, dc := range *k8sNodesItems {
 		delIdAndName := ""
@@ -423,14 +423,14 @@ func DeleteAllK8sNodes(c *core.CommandConfig) error {
 			}
 		}
 
-		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput(delIdAndName))
+		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
 
 	if !confirm.Ask("delete all the K8sNodes", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
 		return nil
 	}
 
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Deleting all the K8sNodes..."))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the K8sNodes..."))
 
 	var multiErr error
 	for _, dc := range *k8sNodesItems {
@@ -439,19 +439,19 @@ func DeleteAllK8sNodes(c *core.CommandConfig) error {
 			continue
 		}
 
-		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
 			"Staring deleting Node with ID: %v from K8s NodePool ID: %v from K8s Cluster ID: %v...", *id, nodepoolId, clusterId))
 
 		resp, err = c.CloudApiV6Services.K8s().DeleteNode(clusterId, nodepoolId, *id, queryParams)
 		if resp != nil && printer.GetId(resp) != "" {
-			fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
 		}
 		if err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
 			continue
 		}
 
-		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput(constants.MessageDeletingAll, c.Resource, *id))
+		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(constants.MessageDeletingAll, c.Resource, *id))
 
 		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *id, err))

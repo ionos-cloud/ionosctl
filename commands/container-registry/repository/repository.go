@@ -45,9 +45,9 @@ func CmdDelete(c *core.CommandConfig) error {
 
 	res, _ := c.ContainerRegistryServices.Repository().Delete(regId, repoName)
 	if res.StatusCode == 204 {
-		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("Repository is being deleted"))
+		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Repository is being deleted"))
 	} else {
-		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("Repository could not be deleted"))
+		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Repository could not be deleted"))
 	}
 
 	return nil

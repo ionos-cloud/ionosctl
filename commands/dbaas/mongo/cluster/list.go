@@ -21,7 +21,7 @@ func ClusterListCmd() *core.Command {
 		Example:   "ionosctl dbaas mongo cluster list",
 		PreCmdRun: core.NoPreRun,
 		CmdRun: func(c *core.CommandConfig) error {
-			fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Getting Clusters..."))
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting Clusters..."))
 
 			clusters, err := Clusters(FilterPaginationFlags(c), FilterNameFlags(c))
 			if err != nil {
@@ -41,7 +41,7 @@ func ClusterListCmd() *core.Command {
 				return err
 			}
 
-			fmt.Fprintf(c.Stdout, out)
+			fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
 			return nil
 		},
 		InitClient: true,

@@ -57,7 +57,7 @@ func CmdGet(c *core.CommandConfig) error {
 		getCertOrChain = true
 	}
 
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Getting Certificates..."))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting Certificates..."))
 
 	id, err := c.Command.Command.Flags().GetString(FlagCertId)
 	if err != nil {
@@ -70,7 +70,7 @@ func CmdGet(c *core.CommandConfig) error {
 	}
 
 	if certFlag || certChainFlag {
-		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput(printProperties(&cert, getCertOrChain)))
+		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(printProperties(&cert, getCertOrChain)))
 
 		return nil
 	}
@@ -86,7 +86,7 @@ func CmdGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Stdout, out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
 
 	return nil
 }

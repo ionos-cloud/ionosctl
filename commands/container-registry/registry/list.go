@@ -44,7 +44,7 @@ func RegListCmd() *core.Command {
 
 func CmdList(c *core.CommandConfig) error {
 	if viper.IsSet(core.GetFlagName(c.NS, FlagName)) {
-		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
 			"Filtering after Registry Name: %v", viper.GetString(core.GetFlagName(c.NS, "name"))))
 	}
 
@@ -63,6 +63,6 @@ func CmdList(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Stdout, out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
 	return nil
 }

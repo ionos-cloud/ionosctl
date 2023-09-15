@@ -45,7 +45,7 @@ ionosctl dbaas mongo user list --cluster-id <cluster-id>`,
 			clusterId := viper.GetString(fnClusterId)
 
 			req := client.Must().MongoClient.UsersApi.ClustersUsersGet(context.Background(), clusterId)
-			fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Getting Users from all cluster %s", clusterId))
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting Users from all cluster %s", clusterId))
 
 			if f := core.GetFlagName(c.NS, constants.FlagMaxResults); viper.IsSet(f) {
 				req = req.Limit(viper.GetInt32(f))
@@ -71,7 +71,7 @@ ionosctl dbaas mongo user list --cluster-id <cluster-id>`,
 				return err
 			}
 
-			fmt.Fprintf(c.Stdout, out)
+			fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
 			return nil
 		},
 		InitClient: true,
@@ -101,7 +101,7 @@ ionosctl dbaas mongo user list --cluster-id <cluster-id>`,
 }
 
 func listAll(c *core.CommandConfig) error {
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Getting Users from all clusters..."))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting Users from all clusters..."))
 	clusters, err := cluster.Clusters(func(r sdkgo.ApiClustersGetRequest) sdkgo.ApiClustersGetRequest {
 		return r.FilterName(core.GetFlagName(c.NS, flagFilterByClusterNameWhenListAll))
 	})
@@ -139,6 +139,6 @@ func listAll(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Stdout, out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
 	return nil
 }
