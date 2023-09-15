@@ -12,6 +12,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
@@ -312,7 +313,7 @@ func RunNicList(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("items", allNicJSONPaths, nics.Nics,
-		printer.GetHeaders(allNicCols, defaultNicCols, cols))
+		tabheaders.GetHeaders(allNicCols, defaultNicCols, cols))
 	if err != nil {
 		return err
 	}
@@ -351,7 +352,7 @@ func RunNicGet(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allNicJSONPaths, n.Nic,
-		printer.GetHeaders(allNicCols, defaultNicCols, cols))
+		tabheaders.GetHeaders(allNicCols, defaultNicCols, cols))
 	if err != nil {
 		return err
 	}
@@ -415,7 +416,7 @@ func RunNicCreate(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allNicJSONPaths, n.Nic,
-		printer.GetHeaders(allNicCols, defaultNicCols, cols))
+		tabheaders.GetHeaders(allNicCols, defaultNicCols, cols))
 	if err != nil {
 		return err
 	}
@@ -499,7 +500,7 @@ func RunNicUpdate(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allNicJSONPaths, nicUpd.Nic,
-		printer.GetHeaders(allNicCols, defaultNicCols, cols))
+		tabheaders.GetHeaders(allNicCols, defaultNicCols, cols))
 	if err != nil {
 		return err
 	}
@@ -860,7 +861,7 @@ func RunLoadBalancerNicAttach(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allNicJSONPaths, attachedNic.Nic,
-		printer.GetHeaders(allNicCols, defaultNicCols, cols))
+		tabheaders.GetHeaders(allNicCols, defaultNicCols, cols))
 	if err != nil {
 		return err
 	}
@@ -891,7 +892,7 @@ func RunLoadBalancerNicList(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("items", allNicJSONPaths, attachedNics.BalancedNics,
-		printer.GetHeaders(allNicCols, defaultNicCols, cols))
+		tabheaders.GetHeaders(allNicCols, defaultNicCols, cols))
 	if err != nil {
 		return err
 	}
@@ -923,7 +924,7 @@ func RunLoadBalancerNicGet(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allNicJSONPaths, n.Nic,
-		printer.GetHeaders(allNicCols, defaultNicCols, cols))
+		tabheaders.GetHeaders(allNicCols, defaultNicCols, cols))
 	if err != nil {
 		return err
 	}

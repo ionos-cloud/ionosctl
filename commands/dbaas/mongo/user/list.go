@@ -10,6 +10,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	sdkgo "github.com/ionos-cloud/sdk-go-dbaas-mongo"
@@ -66,7 +67,7 @@ ionosctl dbaas mongo user list --cluster-id <cluster-id>`,
 				return err
 			}
 
-			out, err := jsontabwriter.GenerateOutputPreconverted(ls, lsConverted, printer.GetHeadersAllDefault(allCols, cols))
+			out, err := jsontabwriter.GenerateOutputPreconverted(ls, lsConverted, tabheaders.GetHeadersAllDefault(allCols, cols))
 			if err != nil {
 				return err
 			}
@@ -134,7 +135,7 @@ func listAll(c *core.CommandConfig) error {
 
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-	out, err := jsontabwriter.GenerateOutputPreconverted(ls, lsConverted, printer.GetHeadersAllDefault(allCols, cols))
+	out, err := jsontabwriter.GenerateOutputPreconverted(ls, lsConverted, tabheaders.GetHeadersAllDefault(allCols, cols))
 	if err != nil {
 		return err
 	}

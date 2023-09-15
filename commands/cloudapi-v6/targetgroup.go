@@ -12,6 +12,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
@@ -270,7 +271,7 @@ func RunTargetGroupList(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("items", allTargetGroupJSONPaths, ss.TargetGroups,
-		printer.GetHeaders(allTargetGroupCols, defaultTargetGroupCols, cols))
+		tabheaders.GetHeaders(allTargetGroupCols, defaultTargetGroupCols, cols))
 	if err != nil {
 		return err
 	}
@@ -305,7 +306,7 @@ func RunTargetGroupGet(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allTargetGroupJSONPaths, s.TargetGroup,
-		printer.GetHeaders(allTargetGroupCols, defaultTargetGroupCols, cols))
+		tabheaders.GetHeaders(allTargetGroupCols, defaultTargetGroupCols, cols))
 	if err != nil {
 		return err
 	}
@@ -342,7 +343,7 @@ func RunTargetGroupCreate(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allTargetGroupJSONPaths, s.TargetGroup,
-		printer.GetHeaders(allTargetGroupCols, defaultTargetGroupCols, cols))
+		tabheaders.GetHeaders(allTargetGroupCols, defaultTargetGroupCols, cols))
 	if err != nil {
 		return err
 	}
@@ -381,7 +382,7 @@ func RunTargetGroupUpdate(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allTargetGroupJSONPaths, s.TargetGroup,
-		printer.GetHeaders(allTargetGroupCols, defaultTargetGroupCols, cols))
+		tabheaders.GetHeaders(allTargetGroupCols, defaultTargetGroupCols, cols))
 	if err != nil {
 		return err
 	}

@@ -13,6 +13,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/json2table"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
@@ -302,7 +303,7 @@ func RunLoadBalancerListAll(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutputPreconverted(allLoadbalancers, allLoadbalancersConverted,
-		printer.GetHeaders(allLoadbalancerCols, defaultLoadbalancerCols, cols))
+		tabheaders.GetHeaders(allLoadbalancerCols, defaultLoadbalancerCols, cols))
 	if err != nil {
 		return err
 	}
@@ -339,7 +340,7 @@ func RunLoadBalancerList(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("items", allLoadbalancerJSONPaths, lbs.Loadbalancers,
-		printer.GetHeaders(allLoadbalancerCols, defaultLoadbalancerCols, cols))
+		tabheaders.GetHeaders(allLoadbalancerCols, defaultLoadbalancerCols, cols))
 	if err != nil {
 		return err
 	}
@@ -378,7 +379,7 @@ func RunLoadBalancerGet(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allLoadbalancerJSONPaths, lb.Loadbalancer,
-		printer.GetHeaders(allLoadbalancerCols, defaultLoadbalancerCols, cols))
+		tabheaders.GetHeaders(allLoadbalancerCols, defaultLoadbalancerCols, cols))
 	if err != nil {
 		return err
 	}
@@ -420,7 +421,7 @@ func RunLoadBalancerCreate(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allLoadbalancerJSONPaths, lb.Loadbalancer,
-		printer.GetHeaders(allLoadbalancerCols, defaultLoadbalancerCols, cols))
+		tabheaders.GetHeaders(allLoadbalancerCols, defaultLoadbalancerCols, cols))
 	if err != nil {
 		return err
 	}
@@ -483,7 +484,7 @@ func RunLoadBalancerUpdate(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allLoadbalancerJSONPaths, lb.Loadbalancer,
-		printer.GetHeaders(allLoadbalancerCols, defaultLoadbalancerCols, cols))
+		tabheaders.GetHeaders(allLoadbalancerCols, defaultLoadbalancerCols, cols))
 	if err != nil {
 		return err
 	}

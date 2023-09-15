@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
@@ -126,7 +127,7 @@ func CmdPost(c *core.CommandConfig) error {
 		return err
 	}
 
-	out, err := jsontabwriter.GenerateOutput("", allJSONPaths, reg, printer.GetHeaders(allCols, postCols, cols))
+	out, err := jsontabwriter.GenerateOutput("", allJSONPaths, reg, tabheaders.GetHeaders(allCols, postCols, cols))
 	if err != nil {
 		return err
 	}

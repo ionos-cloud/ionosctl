@@ -10,6 +10,7 @@ import (
 
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/json2table"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/spf13/cobra"
@@ -388,7 +389,7 @@ func RunK8sNodePoolListAll(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutputPreconverted(allNodePools, allNodePoolsConverted,
-		printer.GetHeaders(allK8sNodePoolCols, defaultK8sNodePoolCols, cols))
+		tabheaders.GetHeaders(allK8sNodePoolCols, defaultK8sNodePoolCols, cols))
 
 	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
 
@@ -439,7 +440,7 @@ func RunK8sNodePoolList(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("items", allK8sNodepoolJSONPaths, k8ss.KubernetesNodePools,
-		printer.GetHeaders(allK8sNodePoolCols, defaultK8sNodePoolCols, cols))
+		tabheaders.GetHeaders(allK8sNodePoolCols, defaultK8sNodePoolCols, cols))
 	if err != nil {
 		return err
 	}
@@ -480,7 +481,7 @@ func RunK8sNodePoolGet(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allK8sNodepoolJSONPaths, u.KubernetesNodePool,
-		printer.GetHeaders(allK8sNodePoolCols, defaultK8sNodePoolCols, cols))
+		tabheaders.GetHeaders(allK8sNodePoolCols, defaultK8sNodePoolCols, cols))
 	if err != nil {
 		return err
 	}
@@ -532,7 +533,7 @@ func RunK8sNodePoolCreate(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allK8sNodepoolJSONPaths, u.KubernetesNodePool,
-		printer.GetHeaders(allK8sNodePoolCols, defaultK8sNodePoolCols, cols))
+		tabheaders.GetHeaders(allK8sNodePoolCols, defaultK8sNodePoolCols, cols))
 	if err != nil {
 		return err
 	}
@@ -578,7 +579,7 @@ func RunK8sNodePoolUpdate(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allK8sNodepoolJSONPaths, newNodePoolUpdated.KubernetesNodePool,
-		printer.GetHeaders(allK8sNodePoolCols, defaultK8sNodePoolCols, cols))
+		tabheaders.GetHeaders(allK8sNodePoolCols, defaultK8sNodePoolCols, cols))
 	if err != nil {
 		return err
 	}

@@ -9,6 +9,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
@@ -129,7 +130,7 @@ func RunTemplateList(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("items", allTemplateJSONPaths, templates,
-		printer.GetHeadersAllDefault(defaultTemplateCols, cols))
+		tabheaders.GetHeadersAllDefault(defaultTemplateCols, cols))
 	if err != nil {
 		return err
 	}
@@ -162,7 +163,7 @@ func RunTemplateGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	out, err := jsontabwriter.GenerateOutput("", allTemplateJSONPaths, tpl, printer.GetHeadersAllDefault(defaultTemplateCols, cols))
+	out, err := jsontabwriter.GenerateOutput("", allTemplateJSONPaths, tpl, tabheaders.GetHeadersAllDefault(defaultTemplateCols, cols))
 	if err != nil {
 		return err
 	}

@@ -8,8 +8,8 @@ import (
 
 	"github.com/cjrd/allocate"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/mmatczuk/anyflag"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/completer"
@@ -68,7 +68,7 @@ func UserCreateCmd() *core.Command {
 				return err
 			}
 
-			out, err := jsontabwriter.GenerateOutputPreconverted(u, uConverted, printer.GetHeadersAllDefault(allCols, cols))
+			out, err := jsontabwriter.GenerateOutputPreconverted(u, uConverted, tabheaders.GetHeadersAllDefault(allCols, cols))
 			if err != nil {
 				return err
 			}

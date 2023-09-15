@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/spf13/viper"
 
@@ -48,7 +49,7 @@ func TemplatesListCmd() *core.Command {
 			}
 
 			out, err := jsontabwriter.GenerateOutputPreconverted(ls, lsConverted,
-				printer.GetHeadersAllDefault(allCols, cols))
+				tabheaders.GetHeadersAllDefault(allCols, cols))
 			if err != nil {
 				return err
 			}

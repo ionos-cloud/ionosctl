@@ -12,6 +12,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
@@ -270,7 +271,7 @@ func RunK8sClusterList(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("items", allK8sClusterJSONPaths, k8ss.KubernetesClusters,
-		printer.GetHeaders(allK8sClusterCols, defaultK8sClusterCols, cols))
+		tabheaders.GetHeaders(allK8sClusterCols, defaultK8sClusterCols, cols))
 	if err != nil {
 		return err
 	}
@@ -308,7 +309,7 @@ func RunK8sClusterGet(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allK8sClusterJSONPaths, u.KubernetesCluster,
-		printer.GetHeaders(allK8sClusterCols, defaultK8sClusterCols, cols))
+		tabheaders.GetHeaders(allK8sClusterCols, defaultK8sClusterCols, cols))
 	if err != nil {
 		return err
 	}
@@ -366,7 +367,7 @@ func RunK8sClusterCreate(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allK8sClusterJSONPaths, u.KubernetesCluster,
-		printer.GetHeaders(allK8sClusterCols, defaultK8sClusterCols, cols))
+		tabheaders.GetHeaders(allK8sClusterCols, defaultK8sClusterCols, cols))
 	if err != nil {
 		return err
 	}
@@ -416,7 +417,7 @@ func RunK8sClusterUpdate(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allK8sClusterJSONPaths, k8sUpd.KubernetesCluster,
-		printer.GetHeaders(allK8sClusterCols, defaultK8sClusterCols, cols))
+		tabheaders.GetHeaders(allK8sClusterCols, defaultK8sClusterCols, cols))
 	if err != nil {
 		return err
 	}

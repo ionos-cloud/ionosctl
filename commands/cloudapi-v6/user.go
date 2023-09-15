@@ -12,6 +12,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
@@ -238,7 +239,7 @@ func RunUserList(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("items", allUserJSONPaths, users.Users,
-		printer.GetHeadersAllDefault(defaultUserCols, cols))
+		tabheaders.GetHeadersAllDefault(defaultUserCols, cols))
 	if err != nil {
 		return err
 	}
@@ -272,7 +273,7 @@ func RunUserGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	out, err := jsontabwriter.GenerateOutput("", allUserJSONPaths, u.User, printer.GetHeadersAllDefault(defaultUserCols, cols))
+	out, err := jsontabwriter.GenerateOutput("", allUserJSONPaths, u.User, tabheaders.GetHeadersAllDefault(defaultUserCols, cols))
 	if err != nil {
 		return err
 	}
@@ -327,7 +328,7 @@ func RunUserCreate(c *core.CommandConfig) error {
 		return err
 	}
 
-	out, err := jsontabwriter.GenerateOutput("", allUserJSONPaths, u.User, printer.GetHeadersAllDefault(defaultUserCols, cols))
+	out, err := jsontabwriter.GenerateOutput("", allUserJSONPaths, u.User, tabheaders.GetHeadersAllDefault(defaultUserCols, cols))
 	if err != nil {
 		return err
 	}
@@ -367,7 +368,7 @@ func RunUserUpdate(c *core.CommandConfig) error {
 		return err
 	}
 
-	out, err := jsontabwriter.GenerateOutput("", allUserJSONPaths, userUpd.User, printer.GetHeadersAllDefault(defaultUserCols, cols))
+	out, err := jsontabwriter.GenerateOutput("", allUserJSONPaths, userUpd.User, tabheaders.GetHeadersAllDefault(defaultUserCols, cols))
 	if err != nil {
 		return err
 	}
@@ -705,7 +706,7 @@ func RunGroupUserList(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("items", allUserJSONPaths, users.GroupMembers,
-		printer.GetHeadersAllDefault(defaultUserCols, cols))
+		tabheaders.GetHeadersAllDefault(defaultUserCols, cols))
 	if err != nil {
 		return err
 	}
@@ -753,7 +754,7 @@ func RunGroupUserAdd(c *core.CommandConfig) error {
 		return err
 	}
 
-	out, err := jsontabwriter.GenerateOutput("", allUserJSONPaths, userAdded.User, printer.GetHeadersAllDefault(defaultUserCols, cols))
+	out, err := jsontabwriter.GenerateOutput("", allUserJSONPaths, userAdded.User, tabheaders.GetHeadersAllDefault(defaultUserCols, cols))
 	if err != nil {
 		return err
 	}

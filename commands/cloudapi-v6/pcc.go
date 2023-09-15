@@ -12,6 +12,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
@@ -230,7 +231,7 @@ func RunPccList(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("items", allPccJSONPaths, pccs.PrivateCrossConnects,
-		printer.GetHeadersAllDefault(defaultPccCols, cols))
+		tabheaders.GetHeadersAllDefault(defaultPccCols, cols))
 	if err != nil {
 		return err
 	}
@@ -264,7 +265,7 @@ func RunPccGet(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allPccJSONPaths, u.PrivateCrossConnect,
-		printer.GetHeadersAllDefault(defaultPccCols, cols))
+		tabheaders.GetHeadersAllDefault(defaultPccCols, cols))
 	if err != nil {
 		return err
 	}
@@ -314,7 +315,7 @@ func RunPccCreate(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allPccJSONPaths, u.PrivateCrossConnect,
-		printer.GetHeadersAllDefault(defaultPccCols, cols))
+		tabheaders.GetHeadersAllDefault(defaultPccCols, cols))
 	if err != nil {
 		return err
 	}
@@ -354,7 +355,7 @@ func RunPccUpdate(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allPccJSONPaths, pccUpd.PrivateCrossConnect,
-		printer.GetHeadersAllDefault(defaultPccCols, cols))
+		tabheaders.GetHeadersAllDefault(defaultPccCols, cols))
 	if err != nil {
 		return err
 	}
@@ -586,7 +587,7 @@ func RunPccPeersList(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allPccPeerJSONPaths, peers,
-		printer.GetHeadersAllDefault(defaultPccPeersCols, cols))
+		tabheaders.GetHeadersAllDefault(defaultPccPeersCols, cols))
 	if err != nil {
 		return err
 	}

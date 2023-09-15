@@ -16,6 +16,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/convbytes"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/json2table"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
@@ -361,7 +362,7 @@ func RunClusterList(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutputPreconverted(clusters, clustersConverted,
-		printer.GetHeaders(allClusterCols, defaultClusterCols, cols))
+		tabheaders.GetHeaders(allClusterCols, defaultClusterCols, cols))
 	if err != nil {
 		return err
 	}
@@ -391,7 +392,7 @@ func RunClusterGet(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutputPreconverted(cluster, clusterConverted,
-		printer.GetHeaders(allClusterCols, defaultClusterCols, cols))
+		tabheaders.GetHeaders(allClusterCols, defaultClusterCols, cols))
 	if err != nil {
 		return err
 	}
@@ -435,7 +436,7 @@ func RunClusterCreate(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutputPreconverted(cluster, clusterConverted,
-		printer.GetHeaders(allClusterCols, defaultClusterCols, cols))
+		tabheaders.GetHeaders(allClusterCols, defaultClusterCols, cols))
 	if err != nil {
 		return err
 	}
@@ -479,7 +480,7 @@ func RunClusterUpdate(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutputPreconverted(item, clusterConverted,
-		printer.GetHeaders(allClusterCols, defaultClusterCols, cols))
+		tabheaders.GetHeaders(allClusterCols, defaultClusterCols, cols))
 	if err != nil {
 		return err
 	}

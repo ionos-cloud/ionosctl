@@ -10,6 +10,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
@@ -103,7 +104,7 @@ func RunLocationCpuList(c *core.CommandConfig) error {
 		return err
 	}
 
-	out, err := jsontabwriter.GenerateOutput("", allCpuJSONPaths, cpus, printer.GetHeadersAllDefault(defaultCpuCols, cols))
+	out, err := jsontabwriter.GenerateOutput("", allCpuJSONPaths, cpus, tabheaders.GetHeadersAllDefault(defaultCpuCols, cols))
 	if err != nil {
 		return err
 	}

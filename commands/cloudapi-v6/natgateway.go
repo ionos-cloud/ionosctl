@@ -13,6 +13,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/json2table"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
@@ -308,7 +309,7 @@ func RunNatGatewayListAll(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutputPreconverted(allNatGateways, allNatGatewaysConverted,
-		printer.GetHeaders(allNatGatewayCols, defaultNatGatewayCols, cols))
+		tabheaders.GetHeaders(allNatGatewayCols, defaultNatGatewayCols, cols))
 	if err != nil {
 		return err
 	}
@@ -341,7 +342,7 @@ func RunNatGatewayList(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("items", allNatGatewayJSONPaths, natgateways.NatGateways,
-		printer.GetHeadersAllDefault(defaultNatGatewayCols, cols))
+		tabheaders.GetHeadersAllDefault(defaultNatGatewayCols, cols))
 	if err != nil {
 		return err
 	}
@@ -384,7 +385,7 @@ func RunNatGatewayGet(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allNatGatewayJSONPaths, ng.NatGateway,
-		printer.GetHeadersAllDefault(defaultNatGatewayCols, cols))
+		tabheaders.GetHeadersAllDefault(defaultNatGatewayCols, cols))
 	if err != nil {
 		return err
 	}
@@ -434,7 +435,7 @@ func RunNatGatewayCreate(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allNatGatewayJSONPaths, ng.NatGateway,
-		printer.GetHeadersAllDefault(defaultNatGatewayCols, cols))
+		tabheaders.GetHeadersAllDefault(defaultNatGatewayCols, cols))
 	if err != nil {
 		return err
 	}
@@ -476,7 +477,7 @@ func RunNatGatewayUpdate(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allNatGatewayJSONPaths, ng.NatGateway,
-		printer.GetHeadersAllDefault(defaultNatGatewayCols, cols))
+		tabheaders.GetHeadersAllDefault(defaultNatGatewayCols, cols))
 	if err != nil {
 		return err
 	}

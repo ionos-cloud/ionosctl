@@ -15,6 +15,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/json2table"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
@@ -373,7 +374,7 @@ func RunVolumeListAll(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutputPreconverted(allVolumes, allVolumesConverted,
-		printer.GetHeaders(allVolumeCols, defaultVolumeCols, cols))
+		tabheaders.GetHeaders(allVolumeCols, defaultVolumeCols, cols))
 	if err != nil {
 		return err
 	}
@@ -425,7 +426,7 @@ func RunVolumeList(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("items", allVolumeJSONPaths, volumes.Volumes,
-		printer.GetHeaders(allVolumeCols, defaultVolumeCols, cols))
+		tabheaders.GetHeaders(allVolumeCols, defaultVolumeCols, cols))
 	if err != nil {
 		return err
 	}
@@ -465,7 +466,7 @@ func RunVolumeGet(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allVolumeJSONPaths, vol.Volume,
-		printer.GetHeaders(allVolumeCols, defaultVolumeCols, cols))
+		tabheaders.GetHeaders(allVolumeCols, defaultVolumeCols, cols))
 	if err != nil {
 		return err
 	}
@@ -505,7 +506,7 @@ func RunVolumeCreate(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allVolumeJSONPaths, vol.Volume,
-		printer.GetHeaders(allVolumeCols, defaultVolumeCols, cols))
+		tabheaders.GetHeaders(allVolumeCols, defaultVolumeCols, cols))
 	if err != nil {
 		return err
 	}
@@ -546,7 +547,7 @@ func RunVolumeUpdate(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allVolumeJSONPaths, vol.Volume,
-		printer.GetHeaders(allVolumeCols, defaultVolumeCols, cols))
+		tabheaders.GetHeaders(allVolumeCols, defaultVolumeCols, cols))
 	if err != nil {
 		return err
 	}
@@ -1120,7 +1121,7 @@ func RunServerVolumeAttach(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allVolumeJSONPaths, attachedVol.Volume,
-		printer.GetHeaders(allVolumeCols, defaultVolumeCols, cols))
+		tabheaders.GetHeaders(allVolumeCols, defaultVolumeCols, cols))
 	if err != nil {
 		return err
 	}
@@ -1172,7 +1173,7 @@ func RunServerVolumesList(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("items", allVolumeJSONPaths, attachedVols.AttachedVolumes,
-		printer.GetHeaders(allVolumeCols, defaultVolumeCols, cols))
+		tabheaders.GetHeaders(allVolumeCols, defaultVolumeCols, cols))
 	if err != nil {
 		return err
 	}
@@ -1210,7 +1211,7 @@ func RunServerVolumeGet(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allVolumeJSONPaths, attachedVol.Volume,
-		printer.GetHeaders(allVolumeCols, defaultVolumeCols, cols))
+		tabheaders.GetHeaders(allVolumeCols, defaultVolumeCols, cols))
 	if err != nil {
 		return err
 	}

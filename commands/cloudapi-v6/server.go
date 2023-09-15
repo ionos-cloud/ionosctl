@@ -16,6 +16,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/json2table"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
@@ -655,7 +656,7 @@ func RunServerListAll(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutputPreconverted(allServers, allServersConverted,
-		printer.GetHeaders(allServerCols, defaultServerCols, cols))
+		tabheaders.GetHeaders(allServerCols, defaultServerCols, cols))
 	if err != nil {
 		return err
 	}
@@ -703,7 +704,7 @@ func RunServerList(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("items", allServerJSONPaths, servers.Servers,
-		printer.GetHeaders(allServerCols, defaultServerCols, cols))
+		tabheaders.GetHeaders(allServerCols, defaultServerCols, cols))
 	if err != nil {
 		return err
 	}
@@ -744,7 +745,7 @@ func RunServerGet(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allServerJSONPaths, svr.Server,
-		printer.GetHeaders(allServerCols, defaultServerCols, cols))
+		tabheaders.GetHeaders(allServerCols, defaultServerCols, cols))
 	if err != nil {
 		return err
 	}
@@ -815,7 +816,7 @@ func RunServerCreate(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allServerJSONPaths, svr.Server,
-		printer.GetHeaders(allServerCols, defaultServerCols, cols))
+		tabheaders.GetHeaders(allServerCols, defaultServerCols, cols))
 	if err != nil {
 		return err
 	}
@@ -875,7 +876,7 @@ func RunServerUpdate(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allServerJSONPaths, svr.Server,
-		printer.GetHeaders(allServerCols, defaultServerCols, cols))
+		tabheaders.GetHeaders(allServerCols, defaultServerCols, cols))
 	if err != nil {
 		return err
 	}

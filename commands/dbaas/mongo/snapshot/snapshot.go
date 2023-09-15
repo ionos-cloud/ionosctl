@@ -5,6 +5,7 @@ import (
 
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/cluster"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	ionoscloud "github.com/ionos-cloud/sdk-go-dbaas-mongo"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -86,8 +87,8 @@ func getSnapshotPrint(c *core.CommandConfig, dcs *[]ionoscloud.SnapshotResponse)
 	r := printer.Result{}
 	if c != nil && dcs != nil {
 		r.OutputJSON = dcs
-		r.KeyValue = MakeSnapshotPrintObject(dcs)                                                                                                 // map header -> rows
-		r.Columns = printer.GetHeadersAllDefault(structs.Names(SnapshotPrint{}), viper.GetStringSlice(core.GetFlagName(c.NS, constants.ArgCols))) // headers
+		r.KeyValue = MakeSnapshotPrintObject(dcs)                                                                                                    // map header -> rows
+		r.Columns = tabheaders.GetHeadersAllDefault(structs.Names(SnapshotPrint{}), viper.GetStringSlice(core.GetFlagName(c.NS, constants.ArgCols))) // headers
 	}
 	return r
 }

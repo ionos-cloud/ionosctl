@@ -13,6 +13,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/json2table"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
@@ -312,7 +313,7 @@ func RunNetworkLoadBalancerListAll(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutputPreconverted(allNetworkLoadBalancers, allNetworkLoadBalancersConverted,
-		printer.GetHeadersAllDefault(defaultNetworkLoadBalancerCols, cols))
+		tabheaders.GetHeadersAllDefault(defaultNetworkLoadBalancerCols, cols))
 	if err != nil {
 		return err
 	}
@@ -349,7 +350,7 @@ func RunNetworkLoadBalancerList(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("items", allNetworkLoadBalancerJSONPaths, networkloadbalancers.NetworkLoadBalancers,
-		printer.GetHeaders(allNetworkLoadBalancerCols, defaultNetworkLoadBalancerCols, cols))
+		tabheaders.GetHeaders(allNetworkLoadBalancerCols, defaultNetworkLoadBalancerCols, cols))
 	if err != nil {
 		return err
 	}
@@ -392,7 +393,7 @@ func RunNetworkLoadBalancerGet(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allNetworkLoadBalancerJSONPaths, ng.NetworkLoadBalancer,
-		printer.GetHeaders(allNetworkLoadBalancerCols, defaultNetworkLoadBalancerCols, cols))
+		tabheaders.GetHeaders(allNetworkLoadBalancerCols, defaultNetworkLoadBalancerCols, cols))
 	if err != nil {
 		return err
 	}
@@ -449,7 +450,7 @@ func RunNetworkLoadBalancerCreate(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allNetworkLoadBalancerJSONPaths, ng.NetworkLoadBalancer,
-		printer.GetHeaders(allNetworkLoadBalancerCols, defaultNetworkLoadBalancerCols, cols))
+		tabheaders.GetHeaders(allNetworkLoadBalancerCols, defaultNetworkLoadBalancerCols, cols))
 	if err != nil {
 		return err
 	}
@@ -491,7 +492,7 @@ func RunNetworkLoadBalancerUpdate(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allNetworkLoadBalancerJSONPaths, ng.NetworkLoadBalancer,
-		printer.GetHeaders(allNetworkLoadBalancerCols, defaultNetworkLoadBalancerCols, cols))
+		tabheaders.GetHeaders(allNetworkLoadBalancerCols, defaultNetworkLoadBalancerCols, cols))
 	if err != nil {
 		return err
 	}

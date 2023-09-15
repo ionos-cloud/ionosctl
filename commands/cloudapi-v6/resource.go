@@ -9,6 +9,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
@@ -112,7 +113,7 @@ func RunResourceList(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("items", allResourceJSONPaths, resourcesListed.Resources,
-		printer.GetHeadersAllDefault(defaultResourceCols, cols))
+		tabheaders.GetHeadersAllDefault(defaultResourceCols, cols))
 	if err != nil {
 		return err
 	}
@@ -143,7 +144,7 @@ func RunResourceGet(c *core.CommandConfig) error {
 		}
 
 		out, err := jsontabwriter.GenerateOutput("", allResourceJSONPaths, resourceListed.Resource,
-			printer.GetHeadersAllDefault(defaultResourceCols, cols))
+			tabheaders.GetHeadersAllDefault(defaultResourceCols, cols))
 		if err != nil {
 			return err
 		}
@@ -161,7 +162,7 @@ func RunResourceGet(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("items", allResourceJSONPaths, resourcesListed.Resources,
-		printer.GetHeadersAllDefault(defaultResourceCols, cols))
+		tabheaders.GetHeadersAllDefault(defaultResourceCols, cols))
 	if err != nil {
 		return err
 	}
@@ -236,7 +237,7 @@ func RunGroupResourceList(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("items", allResourceJSONPaths, resourcesListed.ResourceGroups,
-		printer.GetHeadersAllDefault(defaultResourceCols, cols))
+		tabheaders.GetHeadersAllDefault(defaultResourceCols, cols))
 	if err != nil {
 		return err
 	}

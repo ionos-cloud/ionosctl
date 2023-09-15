@@ -8,8 +8,8 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -37,7 +37,7 @@ func ClusterGetCmd() *core.Command {
 			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 			out, err := jsontabwriter.GenerateOutput("", allJSONPaths, cluster,
-				printer.GetHeadersAllDefault(allCols, cols))
+				tabheaders.GetHeadersAllDefault(allCols, cols))
 			if err != nil {
 				return err
 			}

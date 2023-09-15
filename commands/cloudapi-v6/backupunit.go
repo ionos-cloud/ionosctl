@@ -12,6 +12,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
@@ -264,7 +265,7 @@ func RunBackupUnitList(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("items", allBackupUnitJSONPaths, backupUnits.BackupUnits,
-		printer.GetHeadersAllDefault(defaultAlbRuleHttpRuleCols, cols))
+		tabheaders.GetHeadersAllDefault(defaultAlbRuleHttpRuleCols, cols))
 	if err != nil {
 		return err
 	}
@@ -299,7 +300,7 @@ func RunBackupUnitGet(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allBackupUnitJSONPaths, u.BackupUnit,
-		printer.GetHeadersAllDefault(defaultBackupUnitCols, cols))
+		tabheaders.GetHeadersAllDefault(defaultBackupUnitCols, cols))
 	if err != nil {
 		return err
 	}
@@ -334,7 +335,7 @@ func RunBackupUnitGetSsoUrl(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allBackupUnitSSOUrlJsonPaths, u.BackupUnitSSO,
-		printer.GetHeadersAllDefault(defaultBackupUnitSSOUrl, cols))
+		tabheaders.GetHeadersAllDefault(defaultBackupUnitSSOUrl, cols))
 	if err != nil {
 		return err
 	}
@@ -388,7 +389,7 @@ func RunBackupUnitCreate(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allBackupUnitJSONPaths, u.BackupUnit,
-		printer.GetHeadersAllDefault(defaultBackupUnitCols, cols))
+		tabheaders.GetHeadersAllDefault(defaultBackupUnitCols, cols))
 
 	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
 
@@ -422,7 +423,7 @@ func RunBackupUnitUpdate(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allBackupUnitJSONPaths, backupUnitUpd.BackupUnit,
-		printer.GetHeadersAllDefault(defaultBackupUnitCols, cols))
+		tabheaders.GetHeadersAllDefault(defaultBackupUnitCols, cols))
 
 	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
 

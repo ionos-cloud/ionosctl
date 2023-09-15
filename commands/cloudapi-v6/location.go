@@ -11,6 +11,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
@@ -134,7 +135,7 @@ func RunLocationList(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("items", allLocationJSONPaths, locations,
-		printer.GetHeaders(allLocationCols, defaultLocationCols, cols))
+		tabheaders.GetHeaders(allLocationCols, defaultLocationCols, cols))
 	if err != nil {
 		return err
 	}
@@ -174,7 +175,7 @@ func RunLocationGet(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allLocationJSONPaths, loc,
-		printer.GetHeaders(allLocationCols, defaultLocationCols, cols))
+		tabheaders.GetHeaders(allLocationCols, defaultLocationCols, cols))
 	if err != nil {
 		return err
 	}

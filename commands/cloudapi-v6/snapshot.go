@@ -12,6 +12,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
@@ -286,7 +287,7 @@ func RunSnapshotList(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("items", allSnapshotJSONPaths, ss.Snapshots,
-		printer.GetHeadersAllDefault(defaultSnapshotCols, cols))
+		tabheaders.GetHeadersAllDefault(defaultSnapshotCols, cols))
 	if err != nil {
 		return err
 	}
@@ -320,7 +321,7 @@ func RunSnapshotGet(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allSnapshotJSONPaths, s.Snapshot,
-		printer.GetHeadersAllDefault(defaultSnapshotCols, cols))
+		tabheaders.GetHeadersAllDefault(defaultSnapshotCols, cols))
 	if err != nil {
 		return err
 	}
@@ -365,7 +366,7 @@ func RunSnapshotCreate(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allSnapshotJSONPaths, s.Snapshot,
-		printer.GetHeadersAllDefault(defaultSnapshotCols, cols))
+		tabheaders.GetHeadersAllDefault(defaultSnapshotCols, cols))
 	if err != nil {
 		return err
 	}
@@ -404,7 +405,7 @@ func RunSnapshotUpdate(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allSnapshotJSONPaths, s.Snapshot,
-		printer.GetHeadersAllDefault(defaultSnapshotCols, cols))
+		tabheaders.GetHeadersAllDefault(defaultSnapshotCols, cols))
 	if err != nil {
 		return err
 	}

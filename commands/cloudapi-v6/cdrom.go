@@ -12,6 +12,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
@@ -245,7 +246,7 @@ func RunServerCdromAttach(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allImageJSONPaths, attachedCdrom.Image,
-		printer.GetHeaders(allImageCols, defaultImageCols, cols))
+		tabheaders.GetHeaders(allImageCols, defaultImageCols, cols))
 	if err != nil {
 		return err
 	}
@@ -280,7 +281,7 @@ func RunServerCdromsList(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("items", allImageJSONPaths, attachedCdroms.Cdroms,
-		printer.GetHeaders(allImageCols, defaultImageCols, cols))
+		tabheaders.GetHeaders(allImageCols, defaultImageCols, cols))
 	if err != nil {
 		return err
 	}
@@ -319,7 +320,7 @@ func RunServerCdromGet(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allImageJSONPaths, attachedCdrom.Image,
-		printer.GetHeaders(allImageCols, defaultImageCols, cols))
+		tabheaders.GetHeaders(allImageCols, defaultImageCols, cols))
 	if err != nil {
 		return err
 	}

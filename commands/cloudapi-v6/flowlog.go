@@ -14,6 +14,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
@@ -288,7 +289,7 @@ func RunFlowLogList(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("items", allFlowlogJSONPaths, flowLogs.FlowLogs,
-		printer.GetHeadersAllDefault(defaultFlowLogCols, cols))
+		tabheaders.GetHeadersAllDefault(defaultFlowLogCols, cols))
 	if err != nil {
 		return err
 	}
@@ -326,7 +327,7 @@ func RunFlowLogGet(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allFlowlogJSONPaths, flowLog.FlowLog,
-		printer.GetHeadersAllDefault(defaultFlowLogCols, cols))
+		tabheaders.GetHeadersAllDefault(defaultFlowLogCols, cols))
 	if err != nil {
 		return err
 	}
@@ -374,7 +375,7 @@ func RunFlowLogCreate(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allFlowlogJSONPaths, flowLog.FlowLog,
-		printer.GetHeadersAllDefault(defaultFlowLogCols, cols))
+		tabheaders.GetHeadersAllDefault(defaultFlowLogCols, cols))
 	if err != nil {
 		return err
 	}
@@ -597,7 +598,7 @@ func getFlowLogPrint(resp *resources.Response, c *core.CommandConfig, rule []res
 		if rule != nil {
 			r.OutputJSON = rule
 			r.KeyValue = getFlowLogsKVMaps(rule)
-			r.Columns = printer.GetHeadersAllDefault(defaultFlowLogCols, viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)))
+			r.Columns = tabheaders.GetHeadersAllDefault(defaultFlowLogCols, viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)))
 		}
 	}
 	return r

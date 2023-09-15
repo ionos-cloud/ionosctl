@@ -9,6 +9,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
@@ -230,7 +231,7 @@ func RunNlbRuleTargetList(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allNetworkLoadBalancerRuleTargetJSONPaths, targets,
-		printer.GetHeadersAllDefault(defaultRuleTargetCols, cols))
+		tabheaders.GetHeadersAllDefault(defaultRuleTargetCols, cols))
 	if err != nil {
 		return err
 	}
@@ -298,7 +299,7 @@ func RunNlbRuleTargetAdd(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allNetworkLoadBalancerRuleTargetJSONPaths,
-		targetNew.NetworkLoadBalancerForwardingRuleTarget, printer.GetHeadersAllDefault(defaultRuleTargetCols, cols))
+		targetNew.NetworkLoadBalancerForwardingRuleTarget, tabheaders.GetHeadersAllDefault(defaultRuleTargetCols, cols))
 	if err != nil {
 		return err
 	}

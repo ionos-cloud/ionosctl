@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"testing"
 
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -73,7 +74,7 @@ func TestGetHeaders(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			assert.Equalf(t, tt.want, GetHeaders(tt.args.allColumns, tt.args.defaultColumns, tt.args.customColumns), "GetHeaders(%v, %v, %v)", tt.args.allColumns, tt.args.defaultColumns, tt.args.customColumns)
+			assert.Equalf(t, tt.want, tabheaders.GetHeaders(tt.args.allColumns, tt.args.defaultColumns, tt.args.customColumns), "GetHeaders(%v, %v, %v)", tt.args.allColumns, tt.args.defaultColumns, tt.args.customColumns)
 		})
 	}
 }

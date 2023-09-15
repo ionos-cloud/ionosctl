@@ -8,6 +8,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
@@ -229,7 +230,7 @@ func RunUserS3KeyList(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("items", allS3KeyJSONPaths, ss.S3Keys,
-		printer.GetHeadersAllDefault(defaultS3KeyCols, cols))
+		tabheaders.GetHeadersAllDefault(defaultS3KeyCols, cols))
 	if err != nil {
 		return err
 	}
@@ -265,7 +266,7 @@ func RunUserS3KeyGet(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allS3KeyJSONPaths, s.S3Key,
-		printer.GetHeadersAllDefault(defaultS3KeyCols, cols))
+		tabheaders.GetHeadersAllDefault(defaultS3KeyCols, cols))
 	if err != nil {
 		return err
 	}
@@ -303,7 +304,7 @@ func RunUserS3KeyCreate(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allS3KeyJSONPaths, s.S3Key,
-		printer.GetHeadersAllDefault(defaultS3KeyCols, cols))
+		tabheaders.GetHeadersAllDefault(defaultS3KeyCols, cols))
 	if err != nil {
 		return err
 	}
@@ -355,7 +356,7 @@ func RunUserS3KeyUpdate(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allS3KeyJSONPaths, s.S3Key,
-		printer.GetHeadersAllDefault(defaultS3KeyCols, cols))
+		tabheaders.GetHeadersAllDefault(defaultS3KeyCols, cols))
 	if err != nil {
 		return err
 	}

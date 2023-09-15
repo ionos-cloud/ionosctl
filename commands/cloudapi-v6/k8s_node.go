@@ -12,6 +12,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
@@ -253,7 +254,7 @@ func RunK8sNodeList(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("items", allK8sNodeJSONPaths, k8ss.KubernetesNodes,
-		printer.GetHeadersAllDefault(defaultK8sNodeCols, cols))
+		tabheaders.GetHeadersAllDefault(defaultK8sNodeCols, cols))
 	if err != nil {
 		return err
 	}
@@ -298,7 +299,7 @@ func RunK8sNodeGet(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allK8sNodeJSONPaths, u.KubernetesNode,
-		printer.GetHeadersAllDefault(defaultK8sNodeCols, cols))
+		tabheaders.GetHeadersAllDefault(defaultK8sNodeCols, cols))
 	if err != nil {
 		return err
 	}

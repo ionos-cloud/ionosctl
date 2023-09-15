@@ -8,6 +8,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/registry"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	sdkgo "github.com/ionos-cloud/sdk-go-container-registry"
@@ -152,7 +153,7 @@ func CmdPutToken(c *core.CommandConfig) error {
 		return err
 	}
 
-	out, err := jsontabwriter.GenerateOutput("", allJSONPaths, token, printer.GetHeaders(AllTokenCols, postHeaders, cols))
+	out, err := jsontabwriter.GenerateOutput("", allJSONPaths, token, tabheaders.GetHeaders(AllTokenCols, postHeaders, cols))
 	if err != nil {
 		return err
 	}

@@ -6,8 +6,8 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 )
 
 func ClusterListCmd() *core.Command {
@@ -36,7 +36,7 @@ func ClusterListCmd() *core.Command {
 			}
 
 			out, err := jsontabwriter.GenerateOutputPreconverted(clusters, clustersConverted,
-				printer.GetHeaders(allCols, defaultCols, cols))
+				tabheaders.GetHeaders(allCols, defaultCols, cols))
 			if err != nil {
 				return err
 			}

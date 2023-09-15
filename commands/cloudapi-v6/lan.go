@@ -13,6 +13,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/json2table"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
@@ -304,7 +305,7 @@ func RunLanListAll(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutputPreconverted(allLans, allLansConverted,
-		printer.GetHeaders(allLanCols, defaultLanCols, cols))
+		tabheaders.GetHeaders(allLanCols, defaultLanCols, cols))
 	if err != nil {
 		return err
 	}
@@ -338,7 +339,7 @@ func RunLanList(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("items", allLanJSONPaths, lans.Lans,
-		printer.GetHeadersAllDefault(defaultLanCols, cols))
+		tabheaders.GetHeadersAllDefault(defaultLanCols, cols))
 	if err != nil {
 		return err
 	}
@@ -377,7 +378,7 @@ func RunLanGet(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allLanJSONPaths, l.Lan,
-		printer.GetHeadersAllDefault(defaultLanCols, cols))
+		tabheaders.GetHeadersAllDefault(defaultLanCols, cols))
 	if err != nil {
 		return err
 	}
@@ -438,7 +439,7 @@ func RunLanCreate(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allLanJSONPaths, l.LanPost,
-		printer.GetHeadersAllDefault(defaultLanCols, cols))
+		tabheaders.GetHeadersAllDefault(defaultLanCols, cols))
 	if err != nil {
 		return err
 	}
@@ -504,7 +505,7 @@ func RunLanUpdate(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allLanJSONPaths, lanUpdated.Lan,
-		printer.GetHeadersAllDefault(defaultLanCols, cols))
+		tabheaders.GetHeadersAllDefault(defaultLanCols, cols))
 	if err != nil {
 		return err
 	}

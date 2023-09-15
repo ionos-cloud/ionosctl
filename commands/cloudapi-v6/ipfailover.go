@@ -7,6 +7,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
@@ -225,7 +226,7 @@ func RunIpFailoverList(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allIpFailoverJSONPaths, ipsFailovers,
-		printer.GetHeadersAllDefault(defaultIpFailoverCols, cols))
+		tabheaders.GetHeadersAllDefault(defaultIpFailoverCols, cols))
 	if err != nil {
 		return err
 	}
@@ -281,7 +282,7 @@ func RunIpFailoverAdd(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allIpFailoverJSONPaths, ipsFailovers,
-		printer.GetHeadersAllDefault(defaultIpFailoverCols, cols))
+		tabheaders.GetHeadersAllDefault(defaultIpFailoverCols, cols))
 	if err != nil {
 		return err
 	}

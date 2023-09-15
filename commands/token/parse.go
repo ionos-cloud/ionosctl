@@ -8,7 +8,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	authservice "github.com/ionos-cloud/ionosctl/v6/services/auth-v1"
 	"github.com/spf13/viper"
 )
@@ -63,7 +63,7 @@ func runTokenParse(c *core.CommandConfig) error {
 		privilegesConverted := makeTokenPrivilegesPrintObject(privileges)
 
 		out, err := jsontabwriter.GenerateOutputPreconverted(privileges, privilegesConverted,
-			printer.GetHeadersAllDefault([]string{"Privileges"}, cols))
+			tabheaders.GetHeadersAllDefault([]string{"Privileges"}, cols))
 		if err != nil {
 			return err
 		}
@@ -104,7 +104,7 @@ func runTokenParse(c *core.CommandConfig) error {
 		return err
 	}
 
-	out, err := jsontabwriter.GenerateOutput("", allJSONPaths, info, printer.GetHeadersAllDefault(allCols, cols))
+	out, err := jsontabwriter.GenerateOutput("", allJSONPaths, info, tabheaders.GetHeadersAllDefault(allCols, cols))
 	if err != nil {
 		return err
 	}

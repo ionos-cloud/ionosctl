@@ -16,6 +16,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"golang.org/x/exp/slices"
 
@@ -485,7 +486,7 @@ func RunImageUpdate(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allImageJSONPaths, img.Image,
-		printer.GetHeaders(allImageCols, defaultImageCols, cols))
+		tabheaders.GetHeaders(allImageCols, defaultImageCols, cols))
 	if err != nil {
 		return err
 	}
@@ -718,7 +719,7 @@ func RunImageUpload(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allImageJSONPaths, imgs,
-		printer.GetHeaders(allImageCols, defaultImageCols, cols))
+		tabheaders.GetHeaders(allImageCols, defaultImageCols, cols))
 	if err != nil {
 		return err
 	}
@@ -786,7 +787,7 @@ func RunImageList(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("items", allImageJSONPaths, images.Images,
-		printer.GetHeaders(allImageCols, defaultImageCols, cols))
+		tabheaders.GetHeaders(allImageCols, defaultImageCols, cols))
 	if err != nil {
 		return err
 	}
@@ -819,7 +820,7 @@ func RunImageGet(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allImageJSONPaths, img.Image,
-		printer.GetHeaders(allImageCols, defaultImageCols, cols))
+		tabheaders.GetHeaders(allImageCols, defaultImageCols, cols))
 	if err != nil {
 		return err
 	}

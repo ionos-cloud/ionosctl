@@ -12,6 +12,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
@@ -299,7 +300,7 @@ func RunApplicationLoadBalancerFlowLogList(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("items", allFlowlogJSONPaths, applicationloadbalancerFlowLogs,
-		printer.GetHeadersAllDefault(defaultFlowLogCols, cols))
+		tabheaders.GetHeadersAllDefault(defaultFlowLogCols, cols))
 	if err != nil {
 		return err
 	}
@@ -343,7 +344,7 @@ func RunApplicationLoadBalancerFlowLogGet(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allFlowlogJSONPaths, ng.FlowLog,
-		printer.GetHeadersAllDefault(defaultFlowLogCols, cols))
+		tabheaders.GetHeadersAllDefault(defaultFlowLogCols, cols))
 	if err != nil {
 		return err
 	}
@@ -416,7 +417,7 @@ func RunApplicationLoadBalancerFlowLogCreate(c *core.CommandConfig) error {
 		return err
 	}
 
-	out, err := jsontabwriter.GenerateOutput("", allFlowlogJSONPaths, ng.FlowLog, printer.GetHeadersAllDefault(defaultFlowLogCols, cols))
+	out, err := jsontabwriter.GenerateOutput("", allFlowlogJSONPaths, ng.FlowLog, tabheaders.GetHeadersAllDefault(defaultFlowLogCols, cols))
 	if err != nil {
 		return err
 	}
@@ -469,7 +470,7 @@ func RunApplicationLoadBalancerFlowLogUpdate(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allFlowlogJSONPaths, ng.FlowLog,
-		printer.GetHeadersAllDefault(defaultFlowLogCols, cols))
+		tabheaders.GetHeadersAllDefault(defaultFlowLogCols, cols))
 	if err != nil {
 		return err
 	}

@@ -13,6 +13,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
@@ -321,7 +322,7 @@ func RunNetworkLoadBalancerForwardingRuleList(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("items", allNetworkLoadBalancerRuleJSONPaths,
-		nlbForwardingRules.NetworkLoadBalancerForwardingRules, printer.GetHeaders(allForwardingRuleCols, defaultForwardingRuleCols, cols))
+		nlbForwardingRules.NetworkLoadBalancerForwardingRules, tabheaders.GetHeaders(allForwardingRuleCols, defaultForwardingRuleCols, cols))
 
 	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
 
@@ -358,7 +359,7 @@ func RunNetworkLoadBalancerForwardingRuleGet(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allNetworkLoadBalancerRuleJSONPaths,
-		ng.NetworkLoadBalancerForwardingRule, printer.GetHeaders(allForwardingRuleCols, defaultForwardingRuleCols, cols))
+		ng.NetworkLoadBalancerForwardingRule, tabheaders.GetHeaders(allForwardingRuleCols, defaultForwardingRuleCols, cols))
 
 	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
 
@@ -418,7 +419,7 @@ func RunNetworkLoadBalancerForwardingRuleCreate(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allNetworkLoadBalancerRuleJSONPaths,
-		ng.NetworkLoadBalancerForwardingRule, printer.GetHeaders(allForwardingRuleCols, defaultForwardingRuleCols, cols))
+		ng.NetworkLoadBalancerForwardingRule, tabheaders.GetHeaders(allForwardingRuleCols, defaultForwardingRuleCols, cols))
 
 	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
 
@@ -462,7 +463,7 @@ func RunNetworkLoadBalancerForwardingRuleUpdate(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allNetworkLoadBalancerRuleJSONPaths,
-		ng.NetworkLoadBalancerForwardingRule, printer.GetHeaders(allForwardingRuleCols, defaultForwardingRuleCols, cols))
+		ng.NetworkLoadBalancerForwardingRule, tabheaders.GetHeaders(allForwardingRuleCols, defaultForwardingRuleCols, cols))
 
 	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
 

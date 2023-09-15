@@ -7,6 +7,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/internal/pointer"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/die"
@@ -194,7 +195,7 @@ func RunK8sNodePoolLanList(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("items", allK8sNodePoolLanJSONPaths, lans,
-		printer.GetHeadersAllDefault(defaultK8sNodePoolLanCols, cols))
+		tabheaders.GetHeadersAllDefault(defaultK8sNodePoolLanCols, cols))
 	if err != nil {
 		return err
 	}
@@ -240,7 +241,7 @@ func RunK8sNodePoolLanAdd(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allK8sNodePoolLanJSONPaths, getK8sNodePoolLansForPut(ngNew),
-		printer.GetHeadersAllDefault(defaultK8sNodePoolLanCols, cols))
+		tabheaders.GetHeadersAllDefault(defaultK8sNodePoolLanCols, cols))
 	if err != nil {
 		return err
 	}

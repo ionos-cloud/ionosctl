@@ -12,6 +12,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
@@ -309,7 +310,7 @@ func RunNatGatewayFlowLogList(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("items", allFlowlogJSONPaths, natgatewayFlowLogs.FlowLogs,
-		printer.GetHeadersAllDefault(defaultFlowLogCols, cols))
+		tabheaders.GetHeadersAllDefault(defaultFlowLogCols, cols))
 	if err != nil {
 		return err
 	}
@@ -349,7 +350,7 @@ func RunNatGatewayFlowLogGet(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allFlowlogJSONPaths, ng.FlowLog,
-		printer.GetHeadersAllDefault(defaultFlowLogCols, cols))
+		tabheaders.GetHeadersAllDefault(defaultFlowLogCols, cols))
 	if err != nil {
 		return err
 	}
@@ -395,7 +396,7 @@ func RunNatGatewayFlowLogCreate(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allFlowlogJSONPaths, ng.FlowLog,
-		printer.GetHeadersAllDefault(defaultFlowLogCols, cols))
+		tabheaders.GetHeadersAllDefault(defaultFlowLogCols, cols))
 	if err != nil {
 		return err
 	}
@@ -438,7 +439,7 @@ func RunNatGatewayFlowLogUpdate(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allFlowlogJSONPaths, ng.FlowLog,
-		printer.GetHeadersAllDefault(defaultFlowLogCols, cols))
+		tabheaders.GetHeadersAllDefault(defaultFlowLogCols, cols))
 	if err != nil {
 		return err
 	}

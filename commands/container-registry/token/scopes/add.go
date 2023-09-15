@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	sdkgo "github.com/ionos-cloud/sdk-go-container-registry"
 
@@ -127,7 +128,7 @@ func CmdTokenScopesAdd(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("properties.scopes", allScopeJSONPaths, tokenUp,
-		printer.GetHeaders(allScopeCols, defaultScopeCols, cols))
+		tabheaders.GetHeaders(allScopeCols, defaultScopeCols, cols))
 	if err != nil {
 		return err
 	}

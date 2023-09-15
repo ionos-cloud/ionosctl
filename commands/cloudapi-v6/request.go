@@ -12,6 +12,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
@@ -202,7 +203,7 @@ func RunRequestList(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("items", allRequestJSONPaths, requests.Requests,
-		printer.GetHeaders(allRequestCols, defaultRequestCols, cols))
+		tabheaders.GetHeaders(allRequestCols, defaultRequestCols, cols))
 	if err != nil {
 		return err
 	}
@@ -237,7 +238,7 @@ func RunRequestGet(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allRequestJSONPaths, req.Request,
-		printer.GetHeaders(allRequestCols, defaultRequestCols, cols))
+		tabheaders.GetHeaders(allRequestCols, defaultRequestCols, cols))
 	if err != nil {
 		return err
 	}
@@ -278,7 +279,7 @@ func RunRequestWait(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allRequestJSONPaths, req.Request,
-		printer.GetHeaders(allRequestCols, defaultRequestCols, cols))
+		tabheaders.GetHeaders(allRequestCols, defaultRequestCols, cols))
 	if err != nil {
 		return err
 	}

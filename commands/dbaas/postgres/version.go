@@ -10,6 +10,7 @@ import (
 	pgsqlcompleter "github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres/completer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/utils/clierror"
@@ -86,7 +87,7 @@ func RunPgsqlVersionList(c *core.CommandConfig) error {
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", allPgsqlVersionJSONPaths, versionList.PostgresVersionList,
-		printer.GetHeadersAllDefault(defaultPgsqlVersionCols, cols))
+		tabheaders.GetHeadersAllDefault(defaultPgsqlVersionCols, cols))
 	if err != nil {
 		return err
 	}
@@ -106,7 +107,7 @@ func RunPgsqlVersionGet(c *core.CommandConfig) error {
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", allPgsqlVersionJSONPaths, versionList.PostgresVersionList,
-		printer.GetHeadersAllDefault(defaultPgsqlVersionCols, cols))
+		tabheaders.GetHeadersAllDefault(defaultPgsqlVersionCols, cols))
 	if err != nil {
 		return err
 	}

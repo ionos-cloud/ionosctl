@@ -13,6 +13,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
@@ -316,7 +317,7 @@ func RunApplicationLoadBalancerForwardingRuleList(c *core.CommandConfig) error {
 
 	out, err := jsontabwriter.GenerateOutput("items", allAlbForwardingRuleJSONPaths,
 		albForwardingRules.ApplicationLoadBalancerForwardingRules,
-		printer.GetHeaders(allAlbForwardingRuleCols, defaultAlbForwardingRuleCols, cols))
+		tabheaders.GetHeaders(allAlbForwardingRuleCols, defaultAlbForwardingRuleCols, cols))
 	if err != nil {
 		return err
 	}
@@ -361,7 +362,7 @@ func RunApplicationLoadBalancerForwardingRuleGet(c *core.CommandConfig) error {
 
 	out, err := jsontabwriter.GenerateOutput("", allAlbForwardingRuleJSONPaths,
 		applicationLoadBalancerForwardingRule.ApplicationLoadBalancerForwardingRule,
-		printer.GetHeaders(allAlbForwardingRuleCols, defaultAlbForwardingRuleCols, cols))
+		tabheaders.GetHeaders(allAlbForwardingRuleCols, defaultAlbForwardingRuleCols, cols))
 	if err != nil {
 		return err
 	}
@@ -424,7 +425,7 @@ func RunApplicationLoadBalancerForwardingRuleCreate(c *core.CommandConfig) error
 
 	out, err := jsontabwriter.GenerateOutput("", allAlbForwardingRuleJSONPaths,
 		applicationLoadBalancerForwardingRule.ApplicationLoadBalancerForwardingRule,
-		printer.GetHeaders(allAlbForwardingRuleCols, defaultAlbForwardingRuleCols, cols))
+		tabheaders.GetHeaders(allAlbForwardingRuleCols, defaultAlbForwardingRuleCols, cols))
 	if err != nil {
 		return err
 	}
@@ -478,7 +479,7 @@ func RunApplicationLoadBalancerForwardingRuleUpdate(c *core.CommandConfig) error
 
 	out, err := jsontabwriter.GenerateOutput("", allAlbForwardingRuleJSONPaths,
 		applicationLoadBalancerForwardingRule.ApplicationLoadBalancerForwardingRule,
-		printer.GetHeaders(allAlbForwardingRuleCols, defaultAlbForwardingRuleCols, cols))
+		tabheaders.GetHeaders(allAlbForwardingRuleCols, defaultAlbForwardingRuleCols, cols))
 	if err != nil {
 		return err
 	}

@@ -13,6 +13,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
@@ -376,7 +377,7 @@ func RunFirewallRuleList(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("items", allFirewallRuleJSONPaths, firewallRules.FirewallRules,
-		printer.GetHeaders(allFirewallRuleCols, defaultFirewallRuleCols, cols))
+		tabheaders.GetHeaders(allFirewallRuleCols, defaultFirewallRuleCols, cols))
 	if err != nil {
 		return err
 	}
@@ -417,7 +418,7 @@ func RunFirewallRuleGet(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allFirewallRuleJSONPaths, firewallRule.FirewallRule,
-		printer.GetHeaders(allFirewallRuleCols, defaultFirewallRuleCols, cols))
+		tabheaders.GetHeaders(allFirewallRuleCols, defaultFirewallRuleCols, cols))
 	if err != nil {
 		return err
 	}
@@ -473,7 +474,7 @@ func RunFirewallRuleCreate(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allFirewallRuleJSONPaths, firewallRule.FirewallRule,
-		printer.GetHeaders(allFirewallRuleCols, defaultFirewallRuleCols, cols))
+		tabheaders.GetHeaders(allFirewallRuleCols, defaultFirewallRuleCols, cols))
 	if err != nil {
 		return err
 	}
@@ -515,7 +516,7 @@ func RunFirewallRuleUpdate(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allFirewallRuleJSONPaths, firewallRule.FirewallRule,
-		printer.GetHeaders(allFirewallRuleCols, defaultFirewallRuleCols, cols))
+		tabheaders.GetHeaders(allFirewallRuleCols, defaultFirewallRuleCols, cols))
 	if err != nil {
 		return err
 	}

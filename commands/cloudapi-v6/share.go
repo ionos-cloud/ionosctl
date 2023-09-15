@@ -9,6 +9,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/json2table"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 
@@ -278,7 +279,7 @@ func RunShareListAll(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutputPreconverted(allShares, allSharesConverted,
-		printer.GetHeaders(allGroupShareCols, defaultGroupShareCols, cols))
+		tabheaders.GetHeaders(allGroupShareCols, defaultGroupShareCols, cols))
 	if err != nil {
 		return err
 	}
@@ -312,7 +313,7 @@ func RunShareList(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("items", allShareJSONPaths, shares.GroupShares,
-		printer.GetHeadersAllDefault(defaultGroupShareCols, cols))
+		tabheaders.GetHeadersAllDefault(defaultGroupShareCols, cols))
 	if err != nil {
 		return err
 	}
@@ -367,7 +368,7 @@ func RunShareGet(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allShareJSONPaths, s.GroupShare,
-		printer.GetHeadersAllDefault(defaultGroupShareCols, cols))
+		tabheaders.GetHeadersAllDefault(defaultGroupShareCols, cols))
 	if err != nil {
 		return err
 	}
@@ -425,7 +426,7 @@ func RunShareCreate(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allShareJSONPaths, shareAdded.GroupShare,
-		printer.GetHeadersAllDefault(defaultGroupShareCols, cols))
+		tabheaders.GetHeadersAllDefault(defaultGroupShareCols, cols))
 	if err != nil {
 		return err
 	}
@@ -482,7 +483,7 @@ func RunShareUpdate(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allShareJSONPaths, shareUpdated.GroupShare,
-		printer.GetHeadersAllDefault(defaultGroupShareCols, cols))
+		tabheaders.GetHeadersAllDefault(defaultGroupShareCols, cols))
 	if err != nil {
 		return err
 	}

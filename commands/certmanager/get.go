@@ -6,6 +6,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/spf13/cobra"
@@ -81,7 +82,7 @@ func CmdGet(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allCertificateJSONPaths, cert,
-		printer.GetHeadersAllDefault(defaultCertificateCols, cols))
+		tabheaders.GetHeadersAllDefault(defaultCertificateCols, cols))
 	if err != nil {
 		return err
 	}

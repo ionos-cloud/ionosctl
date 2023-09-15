@@ -12,6 +12,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
@@ -241,7 +242,7 @@ func RunDataCenterList(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("items", allDatacenterJSONPaths, datacenters.Datacenters,
-		printer.GetHeaders(allDatacenterCols, defaultDatacenterCols, cols))
+		tabheaders.GetHeaders(allDatacenterCols, defaultDatacenterCols, cols))
 	if err != nil {
 		return err
 	}
@@ -275,7 +276,7 @@ func RunDataCenterGet(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allDatacenterJSONPaths, dc.Datacenter,
-		printer.GetHeaders(allDatacenterCols, defaultDatacenterCols, cols))
+		tabheaders.GetHeaders(allDatacenterCols, defaultDatacenterCols, cols))
 	if err != nil {
 		return err
 	}
@@ -317,7 +318,7 @@ func RunDataCenterCreate(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allDatacenterJSONPaths, dc,
-		printer.GetHeaders(allDatacenterCols, defaultDatacenterCols, cols))
+		tabheaders.GetHeaders(allDatacenterCols, defaultDatacenterCols, cols))
 	if err != nil {
 		return err
 	}
@@ -369,7 +370,7 @@ func RunDataCenterUpdate(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allDatacenterJSONPaths, dc,
-		printer.GetHeaders(allDatacenterCols, defaultDatacenterCols, cols))
+		tabheaders.GetHeaders(allDatacenterCols, defaultDatacenterCols, cols))
 	if err != nil {
 		return err
 	}

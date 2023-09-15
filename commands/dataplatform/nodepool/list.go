@@ -6,8 +6,8 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	ionoscloud "github.com/ionos-cloud/sdk-go-dataplatform"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dataplatform/completer"
@@ -49,7 +49,7 @@ func NodepoolListCmd() *core.Command {
 				return err
 			}
 
-			out, err := jsontabwriter.GenerateOutputPreconverted(np, npConverted, printer.GetHeaders(allCols, defaultCols, cols))
+			out, err := jsontabwriter.GenerateOutputPreconverted(np, npConverted, tabheaders.GetHeaders(allCols, defaultCols, cols))
 			if err != nil {
 				return err
 			}
@@ -103,7 +103,7 @@ func listAll(c *core.CommandConfig) error {
 
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-	out, err := jsontabwriter.GenerateOutputPreconverted(nps, npsConverted, printer.GetHeaders(allCols, defaultCols, cols))
+	out, err := jsontabwriter.GenerateOutputPreconverted(nps, npsConverted, tabheaders.GetHeaders(allCols, defaultCols, cols))
 	if err != nil {
 		return err
 	}

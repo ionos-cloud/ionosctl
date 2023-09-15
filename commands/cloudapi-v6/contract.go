@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
@@ -152,7 +153,7 @@ func RunContractGet(c *core.CommandConfig) error {
 		}
 	} else {
 		out, err = jsontabwriter.GenerateOutput("items", allContractJSONPaths, contractResource.Contracts,
-			printer.GetHeaders(allContractCols, defaultContractCols, cols))
+			tabheaders.GetHeaders(allContractCols, defaultContractCols, cols))
 	}
 	if err != nil {
 		return err

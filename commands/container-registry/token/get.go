@@ -7,6 +7,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/registry"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/spf13/cobra"
@@ -67,7 +68,7 @@ func CmdGetToken(c *core.CommandConfig) error {
 		return err
 	}
 
-	out, err := jsontabwriter.GenerateOutput("", allJSONPaths, token, printer.GetHeadersAllDefault(AllTokenCols, cols))
+	out, err := jsontabwriter.GenerateOutput("", allJSONPaths, token, tabheaders.GetHeadersAllDefault(AllTokenCols, cols))
 	if err != nil {
 		return err
 	}

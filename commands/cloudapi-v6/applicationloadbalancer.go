@@ -13,6 +13,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/json2table"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
@@ -311,7 +312,7 @@ func RunApplicationLoadBalancerListAll(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutputPreconverted(allApplicationLoadBalancers, allApplicationLoadBalancersConverted,
-		printer.GetHeaders(allApplicationLoadBalancerCols, defaultApplicationLoadBalancerCols, cols))
+		tabheaders.GetHeaders(allApplicationLoadBalancerCols, defaultApplicationLoadBalancerCols, cols))
 	if err != nil {
 		return err
 	}
@@ -350,7 +351,7 @@ func RunApplicationLoadBalancerList(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("items", allApplicationLoadBalancerJSONPaths, applicationloadbalancers,
-		printer.GetHeadersAllDefault(defaultApplicationLoadBalancerCols, cols))
+		tabheaders.GetHeadersAllDefault(defaultApplicationLoadBalancerCols, cols))
 	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
 
 	return nil
@@ -392,7 +393,7 @@ func RunApplicationLoadBalancerGet(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allApplicationLoadBalancerJSONPaths, ng.ApplicationLoadBalancer,
-		printer.GetHeadersAllDefault(defaultApplicationLoadBalancerCols, cols))
+		tabheaders.GetHeadersAllDefault(defaultApplicationLoadBalancerCols, cols))
 
 	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
 
@@ -456,7 +457,7 @@ func RunApplicationLoadBalancerCreate(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allApplicationLoadBalancerJSONPaths, ng.ApplicationLoadBalancer,
-		printer.GetHeadersAllDefault(defaultApplicationLoadBalancerCols, cols))
+		tabheaders.GetHeadersAllDefault(defaultApplicationLoadBalancerCols, cols))
 	if err != nil {
 		return err
 	}
@@ -503,7 +504,7 @@ func RunApplicationLoadBalancerUpdate(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allApplicationLoadBalancerJSONPaths, ng.ApplicationLoadBalancer,
-		printer.GetHeadersAllDefault(defaultApplicationLoadBalancerCols, cols))
+		tabheaders.GetHeadersAllDefault(defaultApplicationLoadBalancerCols, cols))
 
 	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
 

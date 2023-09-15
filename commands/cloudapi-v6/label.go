@@ -9,6 +9,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
@@ -334,7 +335,7 @@ func RunLabelList(c *core.CommandConfig) error {
 		}
 
 		out, err = jsontabwriter.GenerateOutput("items", allLabelJSONPaths, labelDcs.Labels,
-			printer.GetHeadersAllDefault(defaultLabelCols, cols))
+			tabheaders.GetHeadersAllDefault(defaultLabelCols, cols))
 		if err != nil {
 			return err
 		}
@@ -389,7 +390,7 @@ func RunLabelGetByUrn(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allLabelJSONPaths, labelDc.Label,
-		printer.GetHeadersAllDefault(defaultLabelCols, cols))
+		tabheaders.GetHeadersAllDefault(defaultLabelCols, cols))
 	if err != nil {
 		return err
 	}

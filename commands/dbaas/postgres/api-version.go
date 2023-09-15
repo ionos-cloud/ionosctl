@@ -9,6 +9,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/json2table"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
@@ -94,7 +95,7 @@ func RunAPIVersionList(c *core.CommandConfig) error {
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutputPreconverted(versionList.Versions, versionListConverted,
-		printer.GetHeadersAllDefault(defaultAPIVersionCols, cols))
+		tabheaders.GetHeadersAllDefault(defaultAPIVersionCols, cols))
 	if err != nil {
 		return err
 	}
@@ -119,7 +120,7 @@ func RunAPIVersionGet(c *core.CommandConfig) error {
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutputPreconverted(apiVersion.APIVersion, apiVersionConverted,
-		printer.GetHeadersAllDefault(defaultAPIVersionCols, cols))
+		tabheaders.GetHeadersAllDefault(defaultAPIVersionCols, cols))
 	if err != nil {
 		return err
 	}

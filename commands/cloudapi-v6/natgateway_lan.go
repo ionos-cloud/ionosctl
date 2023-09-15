@@ -7,6 +7,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
@@ -200,7 +201,7 @@ func RunNatGatewayLanList(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("properties.lans", allNatGatewayLanJSONPaths, ng.NatGateway,
-		printer.GetHeadersAllDefault(defaultNatGatewayLanCols, cols))
+		tabheaders.GetHeadersAllDefault(defaultNatGatewayLanCols, cols))
 	if err != nil {
 		return err
 	}
@@ -247,7 +248,7 @@ func RunNatGatewayLanAdd(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("properties.lans", allNatGatewayLanJSONPaths, ng.NatGateway,
-		printer.GetHeadersAllDefault(defaultNatGatewayLanCols, cols))
+		tabheaders.GetHeadersAllDefault(defaultNatGatewayLanCols, cols))
 	if err != nil {
 		return err
 	}

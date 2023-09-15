@@ -9,6 +9,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
@@ -177,7 +178,7 @@ func RunTargetGroupTargetList(c *core.CommandConfig) error {
 			}
 
 			out, err := jsontabwriter.GenerateOutput("", allTargetGroupTargetJSONPaths, targets,
-				printer.GetHeadersAllDefault(defaultTargetGroupTargetCols, cols))
+				tabheaders.GetHeadersAllDefault(defaultTargetGroupTargetCols, cols))
 			if err != nil {
 				return err
 			}
@@ -254,7 +255,7 @@ func RunTargetGroupTargetAdd(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allTargetGroupTargetJSONPaths, targetNew.TargetGroupTarget,
-		printer.GetHeadersAllDefault(defaultTargetGroupTargetCols, cols))
+		tabheaders.GetHeadersAllDefault(defaultTargetGroupTargetCols, cols))
 	if err != nil {
 		return err
 	}

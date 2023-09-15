@@ -8,10 +8,6 @@ import (
 	"strings"
 	"text/tabwriter"
 
-	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
-	"golang.org/x/exp/slices"
-
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
 )
@@ -31,50 +27,6 @@ type Result struct {
 	OutputJSON     interface{}
 
 	ApiResponse *resources.Response
-}
-
-// GetHeadersAllDefault is like GetHeaders, but defaultColumns is same as allColumns.
-// Useful for resources with small print table
-func GetHeadersAllDefault(allColumns []string, customColumns []string) []string {
-	return GetHeaders(allColumns, allColumns, customColumns)
-}
-
-// GetHeaders takes all columns of a resource and the value of the columns flag,
-// returns the headers of the table. (Some legacy code might refer to these headers as "Columns")
-// allColumns can be found by using structs.Names on a Print struct (i.e. structs.Names(DatacenterPrint{}))
-func GetHeaders(allColumns []string, defaultColumns []string, customColumns []string) []string {
-	if len(customColumns) > 0 && customColumns[0] == "all" {
-		return GetHeaders(allColumns, defaultColumns, allColumns)
-	}
-
-	if customColumns == nil {
-		return defaultColumns
-	}
-
-	allColumnsLowercase := functional.Map(allColumns, func(x string) string {
-		return strings.ToLower(x)
-	})
-
-	var validCustomColumns []string
-	for _, c := range customColumns {
-		if idx := slices.Index(allColumnsLowercase, strings.ToLower(c)); idx != -1 {
-			validCustomColumns = append(validCustomColumns, allColumns[idx])
-		}
-	}
-
-	if len(validCustomColumns) == 0 {
-		return defaultColumns
-	}
-
-	return validCustomColumns
-}
-
-func GetHeadersListAll(allColumns []string, defaultColumns []string, parentCol string, customColumns []string, argAll bool) []string {
-	if argAll {
-		defaultColumns = append(defaultColumns[:constants.DefaultParentIndex+1], defaultColumns[constants.DefaultParentIndex:]...)
-		defaultColumns[constants.DefaultParentIndex] = parentCol
-	}
-	return GetHeaders(allColumns, defaultColumns, customColumns)
 }
 
 // TODO: identical name to printText. Hard to decipher behaviour
