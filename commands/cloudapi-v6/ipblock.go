@@ -9,6 +9,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
+	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
@@ -376,8 +377,8 @@ func RunIpBlockDelete(c *core.CommandConfig) error {
 		return nil
 	}
 
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete ipblock"); err != nil {
-		return err
+	if !confirm.Ask("delete ipblock") {
+		return nil
 	}
 
 	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Starting deleting Ip block with ID: %v...", ipBlockId))
@@ -439,8 +440,8 @@ func DeleteAllIpBlocks(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
 
-	if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete all the IpBlocks"); err != nil {
-		return err
+	if !confirm.Ask("delete all the IpBlocks") {
+		return nil
 	}
 
 	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Deleting all the IpBlocks..."))

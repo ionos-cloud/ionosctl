@@ -12,6 +12,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
+	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/json2table"
@@ -573,8 +574,8 @@ func RunVolumeDelete(c *core.CommandConfig) error {
 		return nil
 	}
 
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete volume"); err != nil {
-		return err
+	if !confirm.Ask("delete volume", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+		return nil
 	}
 
 	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Starting deleting Volume with id: %v...", volumeId))
@@ -851,8 +852,8 @@ func DeleteAllVolumes(c *core.CommandConfig) error {
 		}
 	}
 
-	if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Volumes"); err != nil {
-		return err
+	if !confirm.Ask("delete all the Volumes", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+		return nil
 	}
 
 	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Deleting all the Volumes..."))
@@ -1234,8 +1235,8 @@ func RunServerVolumeDetach(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("Volumes successfully detached"))
 		return nil
 	}
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "detach volume from server"); err != nil {
-		return err
+	if !confirm.Ask("detach volume from server", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+		return nil
 	}
 
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
@@ -1307,8 +1308,8 @@ func DetachAllServerVolumes(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
 
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "detach all the Volumes"); err != nil {
-		return err
+	if !confirm.Ask("detach all the Volumes", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+		return nil
 	}
 
 	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Detaching all the Volumes..."))

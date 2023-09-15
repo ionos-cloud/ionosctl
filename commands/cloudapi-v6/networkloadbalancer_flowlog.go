@@ -9,6 +9,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
+	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
@@ -467,8 +468,8 @@ func RunNetworkLoadBalancerFlowLogDelete(c *core.CommandConfig) error {
 		return nil
 	}
 
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete network load balancer flowlog"); err != nil {
-		return err
+	if !confirm.Ask("delete network load balancer flowlog") {
+		return nil
 	}
 
 	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Starting deleting Network Load Balancer FlowLog with id: %v...", flowLogId))
@@ -535,8 +536,8 @@ func DeleteAllNetworkLoadBalancerFlowLogs(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
 
-	if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Network Load Balancer FlowLogs"); err != nil {
-		return err
+	if !confirm.Ask("delete all the Network Load Balancer FlowLogs") {
+		return nil
 	}
 
 	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Deleting all the Network Load Balancer FlowLogs..."))

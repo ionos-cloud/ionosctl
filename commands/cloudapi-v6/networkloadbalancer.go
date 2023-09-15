@@ -10,6 +10,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
+	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/json2table"
@@ -519,8 +520,8 @@ func RunNetworkLoadBalancerDelete(c *core.CommandConfig) error {
 		return nil
 	}
 
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete network load balancer"); err != nil {
-		return err
+	if !confirm.Ask("delete network load balancer", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+		return nil
 	}
 
 	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Starting deleting Network Load Balancer with id: %v...", nlbId))
@@ -628,8 +629,8 @@ func DeleteAllNetworkLoadBalancers(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
 
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Network Load Balancers"); err != nil {
-		return err
+	if !confirm.Ask("delete all the Network Load Balancers", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+		return nil
 	}
 
 	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Deleting all the Network Load Balancers..."))

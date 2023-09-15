@@ -10,6 +10,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
+	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/json2table"
@@ -504,8 +505,8 @@ func RunNatGatewayDelete(c *core.CommandConfig) error {
 		return nil
 	}
 
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete nat gateway"); err != nil {
-		return err
+	if !confirm.Ask("delete nat gateway", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+		return nil
 	}
 
 	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Starring deleting NAT Gateway with id: %v...", natGatewayId))
@@ -592,8 +593,8 @@ func DeleteAllNatgateways(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
 
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the NAT Gateways"); err != nil {
-		return err
+	if !confirm.Ask("delete all the NAT Gateways", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+		return nil
 	}
 
 	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Deleting all the NAT Gateways..."))

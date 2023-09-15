@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
@@ -74,7 +75,7 @@ ionosctl db m c d --all --name <name>`,
 			if !ok {
 				return fmt.Errorf("user denied confirmation")
 			}
-			c.Printer.Verbose("Deleting cluster: %s", clusterId)
+			fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Deleting cluster: %s", clusterId))
 
 			_, _, err = client.Must().MongoClient.ClustersApi.ClustersDelete(context.Background(), clusterId).Execute()
 			return err
@@ -102,7 +103,7 @@ ionosctl db m c d --all --name <name>`,
 }
 
 func deleteAll(c *core.CommandConfig) error {
-	c.Printer.Verbose("Deleting All Clusters!")
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Deleting All Clusters!"))
 	xs, err := Clusters(FilterNameFlags(c))
 	if err != nil {
 		return err

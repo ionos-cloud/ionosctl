@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
+	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/json2table"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 
@@ -510,8 +511,8 @@ func RunShareDelete(c *core.CommandConfig) error {
 		return nil
 	}
 
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete share from group"); err != nil {
-		return err
+	if !confirm.Ask("delete share from group", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+		return nil
 	}
 
 	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
@@ -576,7 +577,7 @@ func DeleteAllShares(c *core.CommandConfig) error {
 	groupId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId))
 
 	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Group ID: %v", groupId))
-	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Getting Group Shares...")
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Getting Group Shares..."))
 
 	groupShares, resp, err := c.CloudApiV6Services.Groups().ListShares(groupId, cloudapiv6.ParentResourceListQueryParams)
 	if err != nil {
@@ -600,8 +601,8 @@ func DeleteAllShares(c *core.CommandConfig) error {
 		}
 	}
 
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the GroupShares"); err != nil {
-		return err
+	if !confirm.Ask("delete all the GroupShares", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+		return nil
 	}
 
 	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Deleting all the GroupShares..."))

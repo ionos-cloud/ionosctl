@@ -9,6 +9,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
+	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
@@ -426,8 +427,8 @@ func RunGroupDelete(c *core.CommandConfig) error {
 		return nil
 	}
 
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete group"); err != nil {
-		return err
+	if !confirm.Ask("delete group", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+		return nil
 	}
 
 	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Starting deleting Group with id: %v...", groupId))
@@ -744,8 +745,8 @@ func DeleteAllGroups(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
 
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Groups"); err != nil {
-		return err
+	if !confirm.Ask("delete all the Groups", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+		return nil
 	}
 
 	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Deleting all the Groups..."))

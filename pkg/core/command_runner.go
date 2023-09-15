@@ -7,6 +7,7 @@ import (
 	"os"
 
 	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/internal/die"
 
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
@@ -27,35 +28,37 @@ func NewCommand(ctx context.Context, parent *Command, info CommandBuilder) *Comm
 	}
 
 	cc := &cobra.Command{
-		Use:     info.Verb,
-		Short:   info.ShortDesc,
-		Long:    info.LongDesc,
-		Aliases: info.Aliases,
-		Example: info.Example,
+		Use:              info.Verb,
+		Short:            info.ShortDesc,
+		Long:             info.LongDesc,
+		Aliases:          info.Aliases,
+		Example:          info.Example,
+		TraverseChildren: true,
 		PreRun: func(cmd *cobra.Command, args []string) {
-			// Set Printer in sync with the Output Flag
-			noHeaders, _ := cmd.Flags().GetBool(constants.ArgNoHeaders)
-			p := getPrinter(noHeaders)
 			// Set Command to Command Builder
 			// The cmd is passed to the PreCommandCfg
 			info.Command = &Command{Command: cmd}
 			// Create New PreCommandCfg
-			preCmdConfig := NewPreCommandCfg(p, info)
+			preCmdConfig := NewPreCommandCfg(info)
 			err := info.PreCmdRun(preCmdConfig)
-			clierror.CheckError(err, p.GetStderr())
+			if err != nil {
+				die.Die(err.Error())
+			}
 		},
 		Run: func(cmd *cobra.Command, args []string) {
-			// Set Printer in sync with the Output Flag
-			noHeaders, _ := cmd.Flags().GetBool(constants.ArgNoHeaders)
-			p := getPrinter(noHeaders)
 			// Set Command to Command Builder
 			// The cmd is passed to the CommandCfg
 			info.Command = &Command{Command: cmd}
 			// Create New CommandCfg
-			cmdConfig, err := NewCommandCfg(ctx, p, info)
-			clierror.CheckError(err, p.GetStderr())
+			cmdConfig, err := NewCommandCfg(ctx, info)
+			if err != nil {
+				die.Die(err.Error())
+			}
+
 			err = info.CmdRun(cmdConfig)
-			clierror.CheckError(err, p.GetStderr())
+			if err != nil {
+				die.Die(err.Error())
+			}
 		},
 	}
 	c := &Command{
@@ -97,23 +100,20 @@ type PreCommandConfig struct {
 	Printer printer.PrintService
 }
 
-func NewPreCommandCfg(p printer.PrintService, info CommandBuilder) *PreCommandConfig {
+func NewPreCommandCfg(info CommandBuilder) *PreCommandConfig {
 	return &PreCommandConfig{
 		Command:   info.Command,
 		NS:        info.GetNS(),
 		Namespace: info.Namespace,
 		Resource:  info.Resource,
 		Verb:      info.Verb,
-		Printer:   p,
 		Stdin:     info.Command.Command.InOrStdin(),
 		Stdout:    info.Command.Command.OutOrStdout(),
 		Stderr:    info.Command.Command.ErrOrStderr(),
 	}
 }
 
-func NewCommandCfg(ctx context.Context, p printer.PrintService, info CommandBuilder) (
-	*CommandConfig, error,
-) {
+func NewCommandCfg(ctx context.Context, info CommandBuilder) (*CommandConfig, error) {
 	cmdConfig := &CommandConfig{
 		Command:   info.Command,
 		NS:        info.GetNS(),
@@ -123,7 +123,6 @@ func NewCommandCfg(ctx context.Context, p printer.PrintService, info CommandBuil
 		Stdin:     info.Command.Command.InOrStdin(),
 		Stdout:    info.Command.Command.OutOrStdout(),
 		Stderr:    info.Command.Command.ErrOrStderr(),
-		Printer:   p,
 		Context:   ctx,
 		// Define cmd Command Config function for Command
 		initCfg: func(c *CommandConfig) error {

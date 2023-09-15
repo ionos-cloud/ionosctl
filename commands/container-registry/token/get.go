@@ -67,12 +67,7 @@ func CmdGetToken(c *core.CommandConfig) error {
 		return err
 	}
 
-	tokenConverted, err := ConvertTokenToTable(token)
-	if err != nil {
-		return err
-	}
-
-	out, err := jsontabwriter.GenerateOutputPreconverted(token, tokenConverted, printer.GetHeadersAllDefault(AllTokenCols, cols))
+	out, err := jsontabwriter.GenerateOutput("", allJSONPaths, token, printer.GetHeadersAllDefault(AllTokenCols, cols))
 	if err != nil {
 		return err
 	}

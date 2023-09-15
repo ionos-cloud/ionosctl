@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/internal/pointer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 
@@ -16,7 +17,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
@@ -269,8 +269,8 @@ func RunK8sNodePoolLanRemove(c *core.CommandConfig) error {
 	clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
 	nodePoolId := viper.GetString(core.GetFlagName(c.NS, constants.FlagNodepoolId))
 
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "remove node pool lan"); err != nil {
-		return err
+	if !confirm.Ask("remove node pool lan") {
+		return nil
 	}
 
 	ng, _, err := c.CloudApiV6Services.K8s().GetNodePool(clusterId, nodePoolId, queryParams)
@@ -331,8 +331,8 @@ func RemoveAllK8sNodePoolsLans(c *core.CommandConfig) error {
 		}
 	}
 
-	if err = utils.AskForConfirm(c.Stdin, c.Printer, "remove all the K8sNodePool Lans"); err != nil {
-		return err
+	if !confirm.Ask("remove all the K8sNodePool Lans") {
+		return nil
 	}
 
 	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Removing all the K8sNodePool Lans..."))

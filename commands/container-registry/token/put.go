@@ -152,12 +152,7 @@ func CmdPutToken(c *core.CommandConfig) error {
 		return err
 	}
 
-	tokenConverted, err := ConvertTokenToTable(*tokenPrint)
-	if err != nil {
-		return err
-	}
-
-	out, err := jsontabwriter.GenerateOutputPreconverted(token, tokenConverted, printer.GetHeaders(AllTokenCols, postHeaders, cols))
+	out, err := jsontabwriter.GenerateOutput("", allJSONPaths, token, printer.GetHeaders(AllTokenCols, postHeaders, cols))
 	if err != nil {
 		return err
 	}

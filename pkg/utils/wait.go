@@ -2,11 +2,13 @@ package utils
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/cheggaaa/pb/v3"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	core2 "github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/spf13/viper"
 )
@@ -57,13 +59,13 @@ func WaitForRequest(c *core2.CommandConfig, interrogator InterrogateRequestFunc,
 			}
 			progress.SetTemplateString(requestProgressCircleTpl + " " + done)
 		} else {
-			c.Printer.Warn(waitingForRequestMsg)
+			fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput(waitingForRequestMsg))
 			_, errCh := WatchRequestProgress(ctxTimeout, c, interrogator, requestId)
 			if err := <-errCh; err != nil {
-				c.Printer.Warn(failed)
+				fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput(failed))
 				return err
 			}
-			c.Printer.Warn(done)
+			fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput(done))
 		}
 		return nil
 	}
@@ -99,13 +101,13 @@ func WaitForState(c *core2.CommandConfig, interrogator InterrogateStateFunc, res
 			}
 			progress.SetTemplateString(stateProgressCircleTpl + " " + done)
 		} else {
-			c.Printer.Warn(waitingForStateMsg)
+			fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput(waitingForStateMsg))
 			_, errCh := WatchStateProgress(ctxTimeout, c, interrogator, resourceId)
 			if err := <-errCh; err != nil {
-				c.Printer.Warn(failed)
+				fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput(failed))
 				return err
 			}
-			c.Printer.Warn(done)
+			fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput(done))
 		}
 		return nil
 	}
@@ -142,13 +144,13 @@ func WaitForDelete(c *core2.CommandConfig, interrogator InterrogateDeletionFunc,
 			}
 			progress.SetTemplateString(deleteProgressCircleTpl + " " + done)
 		} else {
-			c.Printer.Warn(waitingForStateMsg)
+			fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput(waitingForStateMsg))
 			_, errCh := WatchDeletionProgress(ctxTimeout, c, interrogator, resourceId)
 			if err := <-errCh; err != nil {
-				c.Printer.Warn(failed)
+				fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput(failed))
 				return err
 			}
-			c.Printer.Warn(done)
+			fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput(done))
 		}
 		return nil
 	}

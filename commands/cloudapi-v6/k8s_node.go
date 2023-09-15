@@ -9,6 +9,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
+	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
@@ -315,8 +316,8 @@ func RunK8sNodeRecreate(c *core.CommandConfig) error {
 
 	queryParams := listQueryParams.QueryParams
 
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "recreate k8s node"); err != nil {
-		return err
+	if !confirm.Ask("recreate k8s node", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+		return nil
 	}
 
 	k8sClusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
@@ -360,8 +361,8 @@ func RunK8sNodeDelete(c *core.CommandConfig) error {
 		return nil
 	}
 
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete k8s node"); err != nil {
-		return err
+	if !confirm.Ask("delete k8s node", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+		return nil
 	}
 
 	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
@@ -425,8 +426,8 @@ func DeleteAllK8sNodes(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
 
-	if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete all the K8sNodes"); err != nil {
-		return err
+	if !confirm.Ask("delete all the K8sNodes", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+		return nil
 	}
 
 	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Deleting all the K8sNodes..."))

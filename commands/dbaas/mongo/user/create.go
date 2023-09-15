@@ -8,6 +8,8 @@ import (
 
 	"github.com/cjrd/allocate"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/mmatczuk/anyflag"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/completer"
@@ -50,7 +52,7 @@ func UserCreateCmd() *core.Command {
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
-			c.Printer.Verbose("Creating users for cluster %s", clusterId)
+			fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Creating users for cluster %s", clusterId))
 
 			userProperties.Roles = &roles
 			u, _, err := client.Must().MongoClient.UsersApi.ClustersUsersPost(context.Background(), clusterId).
@@ -58,7 +60,21 @@ func UserCreateCmd() *core.Command {
 			if err != nil {
 				return err
 			}
-			return c.Printer.Print(getUserPrint(c, &[]sdkgo.User{u}))
+
+			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+
+			uConverted, err := convertUserToTable(u)
+			if err != nil {
+				return err
+			}
+
+			out, err := jsontabwriter.GenerateOutputPreconverted(u, uConverted, printer.GetHeadersAllDefault(allCols, cols))
+			if err != nil {
+				return err
+			}
+
+			fmt.Fprintf(c.Stdout, out)
+			return nil
 		},
 		InitClient: true,
 	})

@@ -73,9 +73,6 @@ func RecordsGetCmd() *core.Command {
 			}
 
 			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-			//if err != nil {
-			//	return err
-			//}
 
 			out, err := jsontabwriter.GenerateOutputPreconverted(ls, lsConverted, printer.GetHeaders(allCols, defaultCols, cols))
 			if err != nil {

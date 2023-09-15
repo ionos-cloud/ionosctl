@@ -2,9 +2,12 @@ package cluster
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 )
 
 func ClusterListCmd() *core.Command {
@@ -18,12 +21,28 @@ func ClusterListCmd() *core.Command {
 		Example:   "ionosctl dbaas mongo cluster list",
 		PreCmdRun: core.NoPreRun,
 		CmdRun: func(c *core.CommandConfig) error {
-			c.Printer.Verbose("Getting Clusters...")
+			fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Getting Clusters..."))
+
 			clusters, err := Clusters(FilterPaginationFlags(c), FilterNameFlags(c))
 			if err != nil {
 				return err
 			}
-			return c.Printer.Print(getClusterPrint(c, clusters.GetItems()))
+
+			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+
+			clustersConverted, err := convertClustersToTable(clusters)
+			if err != nil {
+				return err
+			}
+
+			out, err := jsontabwriter.GenerateOutputPreconverted(clusters, clustersConverted,
+				printer.GetHeaders(allCols, defaultCols, cols))
+			if err != nil {
+				return err
+			}
+
+			fmt.Fprintf(c.Stdout, out)
+			return nil
 		},
 		InitClient: true,
 	})

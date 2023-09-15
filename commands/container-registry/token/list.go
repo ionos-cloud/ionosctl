@@ -62,13 +62,7 @@ func CmdListToken(c *core.CommandConfig) error {
 		if err != nil {
 			return err
 		}
-
-		tokensConverted, err := ConvertTokensToTable(tokens)
-		if err != nil {
-			return err
-		}
-
-		out, err := jsontabwriter.GenerateOutputPreconverted(tokens, tokensConverted, printer.GetHeadersAllDefault(AllTokenCols, cols))
+		out, err := jsontabwriter.GenerateOutput("items", allJSONPaths, tokens, printer.GetHeadersAllDefault(AllTokenCols, cols))
 		if err != nil {
 			return err
 		}
@@ -78,7 +72,6 @@ func CmdListToken(c *core.CommandConfig) error {
 	}
 
 	var list []ionoscloud.TokensResponse
-	var listConverted []map[string]interface{}
 
 	regs, _, err := c.ContainerRegistryServices.Registry().List("")
 	if err != nil {
@@ -91,16 +84,10 @@ func CmdListToken(c *core.CommandConfig) error {
 			return err
 		}
 
-		tokensConverted, err := ConvertTokensToTable(tokens)
-		if err != nil {
-			return err
-		}
-
 		list = append(list, tokens)
-		listConverted = append(listConverted, tokensConverted...)
 	}
 
-	out, err := jsontabwriter.GenerateOutputPreconverted(list, listConverted, printer.GetHeadersAllDefault(AllTokenCols, cols))
+	out, err := jsontabwriter.GenerateOutput("*.items", allJSONPaths, list, printer.GetHeadersAllDefault(AllTokenCols, cols))
 	if err != nil {
 		return err
 	}

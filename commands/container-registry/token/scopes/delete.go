@@ -5,10 +5,10 @@ import (
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/registry"
+	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
 	sdkgo "github.com/ionos-cloud/sdk-go-container-registry"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -82,8 +82,8 @@ func CmdGetTokenScopesDelete(c *core.CommandConfig) error {
 
 		msg := fmt.Sprintf("delete all scopes from Token: %s", *token.Id)
 
-		if err := utils.AskForConfirm(c.Stdin, c.Printer, msg); err != nil {
-			return err
+		if !confirm.Ask(msg, viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+			return nil
 		}
 
 		_, err = c.ContainerRegistryServices.Token().Delete(tokenId, regId)
@@ -119,8 +119,8 @@ func CmdGetTokenScopesDelete(c *core.CommandConfig) error {
 
 	msg := fmt.Sprintf("delete scope %d from Token: %s", id+1, *token.Id)
 
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, msg); err != nil {
-		return err
+	if !confirm.Ask(msg, viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+		return nil
 	}
 
 	_, err = c.ContainerRegistryServices.Token().Delete(tokenId, regId)

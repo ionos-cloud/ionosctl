@@ -1,15 +1,12 @@
 package logs
 
 import (
-	"time"
+	"fmt"
 
-	"github.com/fatih/structs"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/json2table"
 	ionoscloud "github.com/ionos-cloud/sdk-go-dbaas-mongo"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 func LogsCmd() *core.Command {
@@ -26,20 +23,19 @@ func LogsCmd() *core.Command {
 	return cmd
 }
 
-type LogsPrint struct {
-	Instance      int       `json:"Instance,omitempty"`
-	Name          string    `json:"Name,omitempty"`
-	MessageNumber int       `json:"MessageNumber,omitempty"`
-	Message       string    `json:"Message,omitempty"`
-	Time          time.Time `json:"Time,omitempty"`
-}
+var (
+	allLogsMessageJSONPaths = map[string]string{
+		"Message": "message",
+		"Time":    "time",
+	}
 
-var allCols = structs.Names(LogsPrint{})
-var defaultCols = []string{"Instance", "Name", "MessageNumber", "Time"}
+	allCols     = []string{"Instance", "Name", "MessageNumber", "Message", "Time"}
+	defaultCols = []string{"Instance", "Name", "MessageNumber", "Time"}
+)
 
-func MakeLogsPrintObject(logs *[]ionoscloud.ClusterLogsInstances) []map[string]interface{} {
+func convertLogsToTable(logs *[]ionoscloud.ClusterLogsInstances) ([]map[string]interface{}, error) {
 	if logs == nil {
-		return nil
+		return nil, fmt.Errorf("no logs to process")
 	}
 
 	out := make([]map[string]interface{}, 0, len(*logs))
@@ -48,34 +44,20 @@ func MakeLogsPrintObject(logs *[]ionoscloud.ClusterLogsInstances) []map[string]i
 			continue
 		}
 		for msgIdx, msg := range *instance.GetMessages() {
-			var logsPrint LogsPrint
+			o, err := json2table.ConvertJSONToTable("", allLogsMessageJSONPaths, msg)
+			if err != nil {
+				return nil, fmt.Errorf("could not convert from JSON to Table format: %w", err)
+			}
 
-			logsPrint.Instance = idx
-			logsPrint.MessageNumber = msgIdx
+			o[0]["Instance"] = idx
+			o[0]["MessageNumber"] = msgIdx
 			if instance.GetName() != nil {
-				logsPrint.Name = *instance.GetName()
-			}
-			if msg.GetMessage() != nil {
-				logsPrint.Message = *msg.GetMessage()
-			}
-			if msg.GetTime() != nil {
-				logsPrint.Time = *msg.GetTime()
+				o[0]["Name"] = *instance.GetName()
 			}
 
-			o := structs.Map(logsPrint)
-			out = append(out, o)
+			out = append(out, o...)
 		}
 	}
 
-	return out
-}
-
-func getLogsPrint(c *core.CommandConfig, dcs *[]ionoscloud.ClusterLogsInstances) printer.Result {
-	r := printer.Result{}
-	if c != nil && dcs != nil {
-		r.OutputJSON = dcs
-		r.KeyValue = MakeLogsPrintObject(dcs)                                                                                 // map header -> rows
-		r.Columns = printer.GetHeaders(allCols, defaultCols, viper.GetStringSlice(core.GetFlagName(c.NS, constants.ArgCols))) // headers
-	}
-	return r
+	return out, nil
 }

@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
+	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
@@ -272,8 +273,8 @@ func RunNatGatewayLanRemove(c *core.CommandConfig) error {
 		return nil
 	}
 
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "remove nat gateway lan"); err != nil {
-		return err
+	if !confirm.Ask("remove nat gateway lan") {
+		return nil
 	}
 
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
@@ -344,8 +345,8 @@ func RemoveAllNatGatewayLans(c *core.CommandConfig) error {
 		}
 	}
 
-	if err = utils.AskForConfirm(c.Stdin, c.Printer, "remove all the NAT Gateways Lans"); err != nil {
-		return err
+	if !confirm.Ask("remove all the NAT Gateways Lans") {
+		return nil
 	}
 
 	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Removing all the NAT Gateways Lans..."))

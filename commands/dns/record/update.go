@@ -5,11 +5,10 @@ import (
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dns/zone"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
-
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	dns "github.com/ionos-cloud/sdk-go-dns"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"

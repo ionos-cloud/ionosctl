@@ -7,12 +7,12 @@ import (
 	"io"
 	"strings"
 
-	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/json2table"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/utils/clierror"
-	pgsqlresources "github.com/ionos-cloud/ionosctl/v6/services/dbaas-postgres/resources"
 	sdkgo "github.com/ionos-cloud/sdk-go-dbaas-postgres"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -74,52 +74,91 @@ func APIVersionCmd() *core.Command {
 }
 
 func RunAPIVersionList(c *core.CommandConfig) error {
-	c.Printer.Verbose("Getting all available API Versions...")
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Getting all available API Versions..."))
+
 	versionList, _, err := c.CloudApiDbaasPgsqlServices.Infos().List()
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getAPIVersionPrint(c, getAPIVersion(&versionList)))
+
+	var versionListConverted []map[string]interface{}
+	for _, v := range versionList.Versions {
+		temp, err := convertAPIVersionToTable(v)
+		if err != nil {
+			return err
+		}
+
+		versionListConverted = append(versionListConverted, temp...)
+	}
+
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+
+	out, err := jsontabwriter.GenerateOutputPreconverted(versionList.Versions, versionListConverted,
+		printer.GetHeadersAllDefault(defaultAPIVersionCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, out)
+	return nil
 }
 
 func RunAPIVersionGet(c *core.CommandConfig) error {
-	c.Printer.Verbose("Getting the current API Version...")
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Getting the current API Version..."))
+
 	apiVersion, _, err := c.CloudApiDbaasPgsqlServices.Infos().Get()
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getAPIVersionPrint(c, &[]pgsqlresources.APIVersion{apiVersion}))
+
+	apiVersionConverted, err := convertAPIVersionToTable(apiVersion.APIVersion)
+	if err != nil {
+		return err
+	}
+
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+
+	out, err := jsontabwriter.GenerateOutputPreconverted(apiVersion.APIVersion, apiVersionConverted,
+		printer.GetHeadersAllDefault(defaultAPIVersionCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, out)
+	return nil
 }
 
 // Output Printing
 
-var defaultAPIVersionCols = []string{"Version", "SwaggerUrl"}
-
-type APIVersionPrint struct {
-	Version    string `json:"Version,omitempty"`
-	SwaggerUrl string `json:"SwaggerUrl,omitempty"`
-}
-
-func getAPIVersion(a *pgsqlresources.APIVersionList) *[]pgsqlresources.APIVersion {
-	u := make([]pgsqlresources.APIVersion, 0)
-	if a != nil {
-		for _, item := range a.Versions {
-			u = append(u, pgsqlresources.APIVersion{APIVersion: item})
-		}
+var (
+	allAPIVersionJSONPaths = map[string]string{
+		"Version": "name",
 	}
-	return &u
-}
 
-func getAPIVersionPrint(c *core.CommandConfig, postgresVersionList *[]pgsqlresources.APIVersion) printer.Result {
-	r := printer.Result{}
-	if c != nil {
-		if postgresVersionList != nil {
-			r.OutputJSON = postgresVersionList
-			r.KeyValue = getAPIVersionsKVMaps(postgresVersionList)
-			r.Columns = getAPIVersionCols(core.GetFlagName(c.Resource, constants.ArgCols), c.Printer.GetStderr())
-		}
+	defaultAPIVersionCols = []string{"Version", "SwaggerUrl"}
+)
+
+func convertAPIVersionToTable(apiVersion sdkgo.APIVersion) ([]map[string]interface{}, error) {
+	swaggerUrlOk, ok := apiVersion.GetSwaggerUrlOk()
+	if !ok || swaggerUrlOk == nil {
+		return nil, fmt.Errorf("could not retrieve PostgreSQL API Version swagger URL")
 	}
-	return r
+
+	if strings.HasPrefix(*swaggerUrlOk, "appserver:8181/postgresql") {
+		*swaggerUrlOk = strings.TrimPrefix(*swaggerUrlOk, "appserver:8181/postgresql")
+	}
+	if !strings.HasPrefix(*swaggerUrlOk, sdkgo.DefaultIonosServerUrl) {
+		*swaggerUrlOk = fmt.Sprintf("%s%s", sdkgo.DefaultIonosServerUrl, *swaggerUrlOk)
+	}
+
+	temp, err := json2table.ConvertJSONToTable("", allAPIVersionJSONPaths, apiVersion)
+	if err != nil {
+		return nil, fmt.Errorf("could not convert from JSON to Table format: %w", err)
+	}
+
+	temp[0]["SwaggerUrl"] = *swaggerUrlOk
+
+	return temp, nil
 }
 
 func getAPIVersionCols(flagName string, outErr io.Writer) []string {
@@ -141,28 +180,4 @@ func getAPIVersionCols(flagName string, outErr io.Writer) []string {
 	} else {
 		return defaultAPIVersionCols
 	}
-}
-
-func getAPIVersionsKVMaps(apiVersions *[]pgsqlresources.APIVersion) []map[string]interface{} {
-	out := make([]map[string]interface{}, 0, 0)
-	if apiVersions != nil {
-		for _, apiVersion := range *apiVersions {
-			var uPrint APIVersionPrint
-			if versionOk, ok := apiVersion.GetNameOk(); ok && versionOk != nil {
-				uPrint.Version = *versionOk
-			}
-			if swaggerUrlOk, ok := apiVersion.GetSwaggerUrlOk(); ok && swaggerUrlOk != nil {
-				if strings.HasPrefix(*swaggerUrlOk, "appserver:8181/postgresql") {
-					*swaggerUrlOk = strings.TrimPrefix(*swaggerUrlOk, "appserver:8181/postgresql")
-				}
-				if !strings.HasPrefix(*swaggerUrlOk, sdkgo.DefaultIonosServerUrl) {
-					*swaggerUrlOk = fmt.Sprintf("%s%s", sdkgo.DefaultIonosServerUrl, *swaggerUrlOk)
-				}
-				uPrint.SwaggerUrl = *swaggerUrlOk
-			}
-			o := structs.Map(uPrint)
-			out = append(out, o)
-		}
-	}
-	return out
 }

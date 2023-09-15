@@ -38,7 +38,16 @@ type SnapshotPrint struct {
 	Version      string    `json:"Version,omitempty"`
 }
 
-var allCols = structs.Names(SnapshotPrint{})
+var (
+	allJSONPaths = map[string]string{
+		"SnapshotId":   "id",
+		"CreationTime": "properties.creationTime",
+		"Size":         "properties.size",
+		"Version":      "properties.version",
+	}
+
+	allCols = []string{"SnapshotId", "CreationTime", "Size", "Version"}
+)
 
 func MakeSnapshotPrintObject(snapshots *[]ionoscloud.SnapshotResponse) []map[string]interface{} {
 	if snapshots == nil {

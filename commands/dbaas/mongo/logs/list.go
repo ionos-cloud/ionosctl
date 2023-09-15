@@ -9,6 +9,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -44,7 +45,7 @@ func LogsListCmd() *core.Command {
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
-			c.Printer.Verbose("Getting logs of Cluster %s", clusterId)
+			fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Getting logs of Cluster %s", clusterId))
 
 			req := client.Must().MongoClient.LogsApi.ClustersLogsGet(context.Background(), clusterId)
 			if fn := core.GetFlagName(c.NS, flagStart); viper.IsSet(fn) {
@@ -85,7 +86,22 @@ func LogsListCmd() *core.Command {
 			if err != nil {
 				return err
 			}
-			return c.Printer.Print(getLogsPrint(c, logs.GetInstances()))
+
+			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+
+			logsConverted, err := convertLogsToTable(logs.Instances)
+			if err != nil {
+				return err
+			}
+
+			out, err := jsontabwriter.GenerateOutputPreconverted(logs, logsConverted,
+				printer.GetHeaders(allCols, defaultCols, cols))
+			if err != nil {
+				return err
+			}
+
+			fmt.Fprintf(c.Stdout, out)
+			return nil
 		},
 		InitClient: true,
 	})

@@ -4,12 +4,13 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 func CertDeleteCmd() *core.Command {
@@ -63,8 +64,8 @@ func CmdDelete(c *core.CommandConfig) error {
 
 		for _, cert := range *certs.Items {
 			msg := fmt.Sprintf("delete Certificate ID: %s", *cert.Id)
-			if err := utils.AskForConfirm(c.Stdin, c.Printer, msg); err != nil {
-				return err
+			if !confirm.Ask(msg, viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+				return nil
 			}
 
 			_, err = c.CertificateManagerServices.Certs().Delete(*cert.Id)
@@ -79,8 +80,8 @@ func CmdDelete(c *core.CommandConfig) error {
 		}
 
 		msg := fmt.Sprintf("delete Certificate ID: %s", id)
-		if err := utils.AskForConfirm(c.Stdin, c.Printer, msg); err != nil {
-			return err
+		if !confirm.Ask(msg, viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+			return nil
 		}
 
 		_, err = c.CertificateManagerServices.Certs().Delete(id)

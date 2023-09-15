@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/fatih/structs"
+	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/json2table"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/spf13/cobra"
@@ -606,9 +607,8 @@ func RunK8sNodePoolDelete(c *core.CommandConfig) error {
 		return nil
 	}
 
-	err = utils.AskForConfirm(c.Stdin, c.Printer, "delete k8s node pool")
-	if err != nil {
-		return err
+	if !confirm.Ask("delete k8s node pool") {
+		return nil
 	}
 
 	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
@@ -920,8 +920,8 @@ func DeleteAllK8sNodepools(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
 
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the K8sNodePools"); err != nil {
-		return err
+	if !confirm.Ask("delete all the K8sNodePools") {
+		return nil
 	}
 
 	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Deleting all the K8sNodePools"))

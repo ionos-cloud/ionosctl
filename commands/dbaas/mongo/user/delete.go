@@ -4,13 +4,14 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/ionos-cloud/ionosctl/v6/internal/client"
-
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/completer"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	sdkgo "github.com/ionos-cloud/sdk-go-dbaas-mongo"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -42,11 +43,24 @@ func UserDeleteCmd() *core.Command {
 
 			u, _, err := client.Must().MongoClient.UsersApi.
 				ClustersUsersDelete(context.Background(), clusterId, user).Execute()
-
 			if err != nil {
 				return err
 			}
-			return c.Printer.Print(getUserPrint(c, &[]sdkgo.User{u}))
+
+			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+
+			uConverted, err := convertUserToTable(u)
+			if err != nil {
+				return err
+			}
+
+			out, err := jsontabwriter.GenerateOutputPreconverted(u, uConverted, printer.GetHeadersAllDefault(allCols, cols))
+			if err != nil {
+				return err
+			}
+
+			fmt.Fprintf(c.Stdout, out)
+			return nil
 		},
 		InitClient: true,
 	})
@@ -66,7 +80,7 @@ func UserDeleteCmd() *core.Command {
 }
 
 func deleteAll(c *core.CommandConfig, clusterId string) error {
-	c.Printer.Verbose("Deleting all users")
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Deleting all users"))
 	xs, _, err := client.Must().MongoClient.UsersApi.ClustersUsersGet(c.Context, clusterId).Execute()
 	if err != nil {
 		return err

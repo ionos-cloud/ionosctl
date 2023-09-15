@@ -11,6 +11,8 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/pointer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/convbytes"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/spf13/viper"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/completer"
@@ -141,7 +143,21 @@ func ClusterUpdateCmd() *core.Command {
 				return fmt.Errorf("failed creating cluster: %w", err)
 			}
 
-			return c.Printer.Print(getClusterPrint(c, &[]ionoscloud.ClusterResponse{createdCluster}))
+			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+
+			clusterConverted, err := convertClusterToTable(createdCluster)
+			if err != nil {
+				return err
+			}
+
+			out, err := jsontabwriter.GenerateOutputPreconverted(createdCluster, clusterConverted,
+				printer.GetHeaders(allCols, defaultCols, cols))
+			if err != nil {
+				return err
+			}
+
+			fmt.Fprintf(c.Stdout, out)
+			return nil
 		},
 		InitClient: true,
 	})

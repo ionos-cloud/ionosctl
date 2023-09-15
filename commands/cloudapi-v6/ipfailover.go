@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
+	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
@@ -312,8 +313,8 @@ func RunIpFailoverRemove(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Stdout, jsontabwriter.GenerateVerboseOutput(
 		"Removing IP Failover group from LAN with ID: %v from Datacenter with ID: %v...", lanId, dcId))
 
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "remove ip failover group from lan"); err != nil {
-		return err
+	if !confirm.Ask("remove ip failover group from lan", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+		return nil
 	}
 
 	oldLan, _, err := c.CloudApiV6Services.Lans().Get(dcId, lanId, queryParams)
@@ -399,8 +400,8 @@ func RemoveAllIpFailovers(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
 
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "remove all the IP Failovers"); err != nil {
-		return err
+	if !confirm.Ask("remove all the IP Failovers", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+		return nil
 	}
 
 	oldLan, _, err := c.CloudApiV6Services.Lans().Get(dcId, lanId, queryParams)

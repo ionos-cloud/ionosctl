@@ -2,12 +2,14 @@ package cluster
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
-	ionoscloud "github.com/ionos-cloud/sdk-go-dbaas-mongo"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -25,12 +27,29 @@ func ClusterGetCmd() *core.Command {
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
-			c.Printer.Verbose("Getting Cluster by id: %s", clusterId)
+
+			fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Getting Cluster by id: %s", clusterId))
+
 			cluster, _, err := client.Must().MongoClient.ClustersApi.ClustersFindById(context.Background(), clusterId).Execute()
 			if err != nil {
 				return err
 			}
-			return c.Printer.Print(getClusterPrint(c, &[]ionoscloud.ClusterResponse{cluster}))
+
+			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+
+			clusterConverted, err := convertClusterToTable(cluster)
+			if err != nil {
+				return err
+			}
+
+			out, err := jsontabwriter.GenerateOutputPreconverted(cluster, clusterConverted,
+				printer.GetHeaders(allCols, defaultCols, cols))
+			if err != nil {
+				return err
+			}
+
+			fmt.Fprintf(c.Stdout, out)
+			return nil
 		},
 		InitClient: true,
 	})

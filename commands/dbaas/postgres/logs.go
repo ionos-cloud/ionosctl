@@ -10,14 +10,16 @@ import (
 	"strings"
 	"time"
 
-	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres/completer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/json2table"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/utils/clierror"
 	dbaaspg "github.com/ionos-cloud/ionosctl/v6/services/dbaas-postgres"
 	"github.com/ionos-cloud/ionosctl/v6/services/dbaas-postgres/resources"
+	ionoscloud "github.com/ionos-cloud/sdk-go-dbaas-postgres"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -94,17 +96,35 @@ func PreRunClusterLogsList(c *core.PreCommandConfig) error {
 }
 
 func RunClusterLogsList(c *core.CommandConfig) error {
-	c.Printer.Verbose("Cluster ID: %v", viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)))
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Cluster ID: %v", viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))))
+
 	queryParams, err := getLogsQueryParams(c)
 	if err != nil {
 		return err
 	}
-	c.Printer.Verbose("Getting Logs for the specified Cluster...")
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Getting Logs for the specified Cluster..."))
+
 	clusterLogs, _, err := c.CloudApiDbaasPgsqlServices.Logs().Get(viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)), queryParams)
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getClusterLogsPrint(c, clusterLogs))
+
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+
+	logsConverted, err := convertLogsToTable(clusterLogs.Instances)
+	if err != nil {
+		return err
+	}
+
+	out, err := jsontabwriter.GenerateOutputPreconverted(clusterLogs, logsConverted,
+		printer.GetHeaders(allClusterCols, defaultClusterCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, out)
+	return nil
 }
 
 func getLogsQueryParams(c *core.CommandConfig) (*resources.LogsQueryParams, error) {
@@ -112,8 +132,10 @@ func getLogsQueryParams(c *core.CommandConfig) (*resources.LogsQueryParams, erro
 		startTime, endTime time.Time
 		err                error
 	)
+
 	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgSince)) && !viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgStartTime)) {
 		since := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgSince))
+
 		if strings.Contains(since, hourSuffix) {
 			noHours, err := strconv.Atoi(strings.TrimSuffix(since, hourSuffix))
 			if err != nil {
@@ -122,6 +144,7 @@ func getLogsQueryParams(c *core.CommandConfig) (*resources.LogsQueryParams, erro
 			startTime = time.Now().UTC()
 			startTime = startTime.Add(-time.Hour * time.Duration(noHours))
 		}
+
 		if strings.Contains(since, minuteSuffix) {
 			noMinutes, err := strconv.Atoi(strings.TrimSuffix(since, minuteSuffix))
 			if err != nil {
@@ -130,10 +153,13 @@ func getLogsQueryParams(c *core.CommandConfig) (*resources.LogsQueryParams, erro
 			startTime = time.Now().UTC()
 			startTime = startTime.Add(-time.Minute * time.Duration(noMinutes))
 		}
-		c.Printer.Verbose("Since: %v. StartTime [RFC3339 format]: %v", since, startTime)
+
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Since: %v. StartTime [RFC3339 format]: %v", since, startTime))
 	}
+
 	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgUntil)) && !viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgEndTime)) {
 		until := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgUntil))
+
 		if strings.Contains(until, hourSuffix) {
 			noHours, err := strconv.Atoi(strings.TrimSuffix(until, hourSuffix))
 			if err != nil {
@@ -142,6 +168,7 @@ func getLogsQueryParams(c *core.CommandConfig) (*resources.LogsQueryParams, erro
 			endTime = time.Now().UTC()
 			endTime = endTime.Add(-time.Hour * time.Duration(noHours))
 		}
+
 		if strings.Contains(until, minuteSuffix) {
 			noMinutes, err := strconv.Atoi(strings.TrimSuffix(until, minuteSuffix))
 			if err != nil {
@@ -150,24 +177,31 @@ func getLogsQueryParams(c *core.CommandConfig) (*resources.LogsQueryParams, erro
 			endTime = time.Now().UTC()
 			endTime = endTime.Add(-time.Minute * time.Duration(noMinutes))
 		}
-		c.Printer.Verbose("Until: %v. End Time [RFC3339 format]: %v", until, endTime)
+
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Until: %v. End Time [RFC3339 format]: %v", until, endTime))
 	}
+
 	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgStartTime)) {
-		c.Printer.Verbose("Start Time [RFC3339 format]: %v", viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgStartTime)))
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Start Time [RFC3339 format]: %v", viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgStartTime))))
+
 		startTime, err = time.Parse(time.RFC3339, viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgStartTime)))
 		if err != nil {
 			return nil, err
 		}
 	}
+
 	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgEndTime)) {
-		c.Printer.Verbose("End Time [RFC3339 format]: %v", viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgEndTime)))
+		fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("End Time [RFC3339 format]: %v", viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgEndTime))))
+
 		endTime, err = time.Parse(time.RFC3339, viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgEndTime)))
 		if err != nil {
 			return nil, err
 		}
 	}
-	c.Printer.Verbose("Direction: %v", strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgDirection))))
-	c.Printer.Verbose("Limit: %v", viper.GetInt32(core.GetFlagName(c.NS, dbaaspg.ArgLimit)))
+
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Direction: %v", strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgDirection)))))
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Limit: %v", viper.GetInt32(core.GetFlagName(c.NS, dbaaspg.ArgLimit))))
+
 	return &resources.LogsQueryParams{
 		Direction: strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgDirection))),
 		Limit:     viper.GetInt32(core.GetFlagName(c.NS, dbaaspg.ArgLimit)),
@@ -179,27 +213,43 @@ func getLogsQueryParams(c *core.CommandConfig) (*resources.LogsQueryParams, erro
 // Output Printing
 
 var (
+	allLogsMessageJSONPaths = map[string]string{
+		"Message": "message",
+		"Time":    "time",
+	}
+
 	defaultClusterLogsCols = []string{"Logs"}
 	allClusterLogsCols     = []string{"Name", "Message", "Time", "Logs"}
 )
 
-type ClusterLogsPrint struct {
-	Name    string `json:"Name,omitempty"`
-	Logs    string `json:"Logs,omitempty"`
-	Message string `json:"Message,omitempty"`
-	Time    string `json:"Time,omitempty"`
-}
+func convertLogsToTable(logs *[]ionoscloud.ClusterLogsInstances) ([]map[string]interface{}, error) {
+	if logs == nil {
+		return nil, fmt.Errorf("no logs to process")
+	}
 
-func getClusterLogsPrint(c *core.CommandConfig, logs *resources.ClusterLogs) printer.Result {
-	r := printer.Result{}
-	if c != nil {
-		if logs != nil {
-			r.OutputJSON = logs
-			r.KeyValue = getClusterLogsKVMaps(*logs)
-			r.Columns = getClusterLogsCols(core.GetFlagName(c.Resource, constants.ArgCols), c.Printer.GetStderr())
+	out := make([]map[string]interface{}, 0, len(*logs))
+	for idx, instance := range *logs {
+		if instance.GetMessages() == nil {
+			continue
+		}
+
+		for msgIdx, msg := range *instance.GetMessages() {
+			o, err := json2table.ConvertJSONToTable("", allLogsMessageJSONPaths, msg)
+			if err != nil {
+				return nil, fmt.Errorf("could not convert from JSON to Table format: %w", err)
+			}
+
+			o[0]["Instance"] = idx
+			o[0]["MessageNumber"] = msgIdx
+			if instance.GetName() != nil {
+				o[0]["Name"] = *instance.GetName()
+			}
+
+			out = append(out, o...)
 		}
 	}
-	return r
+
+	return out, nil
 }
 
 func getClusterLogsCols(flagName string, outErr io.Writer) []string {
@@ -225,37 +275,4 @@ func getClusterLogsCols(flagName string, outErr io.Writer) []string {
 		}
 	}
 	return clusterCols
-}
-
-func getClusterLogsKVMaps(clusterLogs resources.ClusterLogs) []map[string]interface{} {
-	out := make([]map[string]interface{}, 0, 0)
-	if instances, ok := clusterLogs.GetInstancesOk(); ok && instances != nil {
-		for _, instance := range *instances {
-			var clusterPrint ClusterLogsPrint
-			if nameOk, ok := instance.GetNameOk(); ok && nameOk != nil {
-				clusterPrint.Name = *nameOk
-			}
-			if messagesOk, ok := instance.GetMessagesOk(); ok && messagesOk != nil {
-				var messages, times string
-				var logs string
-				for _, msg := range *messagesOk {
-					if messageOk, ok := msg.GetMessageOk(); ok && messageOk != nil {
-						messages = fmt.Sprintf("%s%s\n", messages, *messageOk)
-						logs = fmt.Sprintf("%sMessage: %s ", logs, *messageOk)
-					}
-					if timeOk, ok := msg.GetTimeOk(); ok && timeOk != nil {
-						timeOkRFC := timeOk.Format(time.RFC3339)
-						times = fmt.Sprintf("%s%s\n", times, timeOkRFC)
-						logs = fmt.Sprintf("%sTime: %s\n", logs, timeOkRFC)
-					}
-				}
-				clusterPrint.Logs = strings.TrimSuffix(logs, "\n")
-				clusterPrint.Message = strings.TrimSuffix(messages, "\n")
-				clusterPrint.Time = strings.TrimSuffix(times, "\n")
-			}
-			o := structs.Map(clusterPrint)
-			out = append(out, o)
-		}
-	}
-	return out
 }

@@ -13,6 +13,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
+	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/json2table"
@@ -902,8 +903,8 @@ func RunServerDelete(c *core.CommandConfig) error {
 		return nil
 	}
 
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete server"); err != nil {
-		return err
+	if !confirm.Ask("delete server", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+		return nil
 	}
 
 	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
@@ -932,8 +933,8 @@ func RunServerStart(c *core.CommandConfig) error {
 	}
 
 	queryParams := listQueryParams.QueryParams
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "start server"); err != nil {
-		return err
+	if !confirm.Ask("start server", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+		return nil
 	}
 
 	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Server is starting... "))
@@ -966,8 +967,8 @@ func RunServerStop(c *core.CommandConfig) error {
 
 	queryParams := listQueryParams.QueryParams
 
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "stop server"); err != nil {
-		return err
+	if !confirm.Ask("stop server", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+		return nil
 	}
 
 	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Server is stopping... "))
@@ -1000,8 +1001,8 @@ func RunServerSuspend(c *core.CommandConfig) error {
 
 	queryParams := listQueryParams.QueryParams
 
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "suspend cube server"); err != nil {
-		return err
+	if !confirm.Ask("suspend cube server", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+		return nil
 	}
 
 	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Server is Suspending... "))
@@ -1034,8 +1035,8 @@ func RunServerReboot(c *core.CommandConfig) error {
 
 	queryParams := listQueryParams.QueryParams
 
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "reboot server"); err != nil {
-		return err
+	if !confirm.Ask("reboot server", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+		return nil
 	}
 
 	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Server is rebooting... "))
@@ -1068,8 +1069,8 @@ func RunServerResume(c *core.CommandConfig) error {
 
 	queryParams := listQueryParams.QueryParams
 
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "resume cube server"); err != nil {
-		return err
+	if !confirm.Ask("resume cube server", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+		return nil
 	}
 
 	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Server is resuming... "))
@@ -1360,8 +1361,8 @@ func DeleteAllServers(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
 
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Servers"); err != nil {
-		return err
+	if !confirm.Ask("delete all the Servers", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+		return nil
 	}
 
 	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Deleting all the Servers..."))

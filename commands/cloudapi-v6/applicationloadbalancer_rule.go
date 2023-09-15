@@ -10,6 +10,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
+	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
@@ -519,8 +520,8 @@ func RunApplicationLoadBalancerForwardingRuleDelete(c *core.CommandConfig) error
 	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
 		"ForwardingRule ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId))))
 
-	if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete application load balancer forwarding rule"); err != nil {
-		return err
+	if !confirm.Ask("delete application load balancer forwarding rule") {
+		return nil
 	}
 
 	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
@@ -592,8 +593,8 @@ func DeleteAllApplicationLoadBalancerForwardingRule(c *core.CommandConfig) error
 		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
 
-	if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Forwarding Rules"); err != nil {
-		return err
+	if !confirm.Ask("delete all the Forwarding Rules") {
+		return nil
 	}
 
 	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(

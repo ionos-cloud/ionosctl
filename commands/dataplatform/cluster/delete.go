@@ -14,7 +14,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/dataplatform/completer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -36,14 +35,13 @@ func ClusterDeleteCmd() *core.Command {
 			}
 
 			clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
-			err := utils.AskForConfirm(c.Stdin, c.Printer, fmt.Sprintf("delete cluster %s", clusterId))
-			if err != nil {
-				return err
+			if !confirm.Ask(fmt.Sprintf("delete cluster %s", clusterId), viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+				return nil
 			}
 
 			fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Deleting cluster: %s", clusterId))
 
-			_, _, err = client.Must().DataplatformClient.DataPlatformClusterApi.ClustersDelete(c.Context, clusterId).Execute()
+			_, _, err := client.Must().DataplatformClient.DataPlatformClusterApi.ClustersDelete(c.Context, clusterId).Execute()
 			if err != nil {
 				return err
 			}

@@ -8,6 +8,7 @@ import (
 	"strconv"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
+	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
@@ -323,8 +324,8 @@ func RunNlbRuleTargetRemove(c *core.CommandConfig) error {
 		return nil
 	}
 
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete forwarding rule target"); err != nil {
-		return err
+	if !confirm.Ask("delete forwarding rule target") {
+		return nil
 	}
 
 	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
@@ -418,8 +419,8 @@ func RemoveAllNlbRuleTarget(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
 
-	if err = utils.AskForConfirm(c.Stdin, c.Printer, "remove all the Forwarding Rule Targets"); err != nil {
-		return err
+	if !confirm.Ask("remove all the Forwarding Rule Targets") {
+		return nil
 	}
 
 	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Removing all the Forwarding Rule Targets..."))

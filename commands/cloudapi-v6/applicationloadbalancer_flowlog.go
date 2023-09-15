@@ -9,6 +9,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
+	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
@@ -510,8 +511,8 @@ func RunApplicationLoadBalancerFlowLogDelete(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Stdout, jsontabwriter.GenerateVerboseOutput(
 		"FlowLog ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFlowLogId))))
 
-	if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete application load balancer flowlog"); err != nil {
-		return err
+	if !confirm.Ask("delete application load balancer flowlog", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+		return nil
 	}
 
 	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Deleting FlowLog"))
@@ -582,8 +583,8 @@ func DeleteAllApplicationLoadBalancerFlowLog(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
 
-	if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Application Load Balancer FlowLogs"); err != nil {
-		return err
+	if !confirm.Ask("delete all the Application Load Balancer FlowLogs", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+		return nil
 	}
 
 	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Deleting all the Application Load Balancer FlowLogs..."))

@@ -8,6 +8,7 @@ import (
 	"strconv"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
+	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
@@ -291,8 +292,8 @@ func RunTargetGroupTargetRemove(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput(
 		"Target Port: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgPort))))
 
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "remove target from target group"); err != nil {
-		return err
+	if !confirm.Ask("remove target from target group", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+		return nil
 	}
 
 	var propertiesUpdated resources.TargetGroupProperties
@@ -340,7 +341,7 @@ func RunTargetGroupTargetRemove(c *core.CommandConfig) error {
 }
 
 func RemoveAllTargetGroupTarget(c *core.CommandConfig) (*resources.Response, error) {
-	_ = c.Printer.Warn("Target Group Targets to be deleted:")
+	fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput("Target Group Targets to be deleted:"))
 
 	applicationLoadBalancerRules, resp, err := c.CloudApiV6Services.TargetGroups().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)), cloudapiv6.ParentResourceQueryParams)
 	if err != nil {
@@ -364,8 +365,8 @@ func RemoveAllTargetGroupTarget(c *core.CommandConfig) (*resources.Response, err
 		}
 	}
 
-	if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Targets from Target Group"); err != nil {
-		return nil, err
+	if !confirm.Ask("delete all the Targets from Target Group", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+		return nil, nil
 	}
 
 	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Deleting all the Target Group Targets..."))

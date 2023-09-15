@@ -2,8 +2,10 @@ package templates
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/spf13/viper"
 
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
@@ -23,7 +25,7 @@ func TemplatesListCmd() *core.Command {
 		Example:   "ionosctl dbaas mongo templates list",
 		PreCmdRun: core.NoPreRun,
 		CmdRun: func(c *core.CommandConfig) error {
-			c.Printer.Verbose("Getting Templates...")
+			fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Getting Templates..."))
 			req := client.Must().MongoClient.TemplatesApi.TemplatesGet(context.Background())
 
 			if f := core.GetFlagName(c.NS, constants.FlagMaxResults); viper.IsSet(f) {
@@ -37,7 +39,22 @@ func TemplatesListCmd() *core.Command {
 			if err != nil {
 				return err
 			}
-			return c.Printer.Print(getTemplatesPrint(c, ls.GetItems()))
+
+			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+
+			lsConverted, err := convertTemplatesToTable(ls)
+			if err != nil {
+				return err
+			}
+
+			out, err := jsontabwriter.GenerateOutputPreconverted(ls, lsConverted,
+				printer.GetHeadersAllDefault(allCols, cols))
+			if err != nil {
+				return err
+			}
+
+			fmt.Fprintf(c.Stdout, out)
+			return nil
 		},
 		InitClient: true,
 	})

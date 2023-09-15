@@ -8,8 +8,6 @@ import (
 	"time"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/json2table"
-
 	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
 
 	scope "github.com/ionos-cloud/ionosctl/v6/commands/container-registry/token/scopes"
@@ -22,11 +20,11 @@ import (
 
 var (
 	allJSONPaths = map[string]string{
-		"TokenId":     "id",
-		"DisplayName": "properties.name",
-		//"ExpiryDate":          "properties.expiryDate",
+		"TokenId":             "id",
+		"DisplayName":         "properties.name",
+		"ExpiryDate":          "properties.expiryDate",
 		"CredentialsUsername": "properties.credentials.username",
-		"CredentialsPassword": "properties.credential.password",
+		"CredentialsPassword": "properties.credentials.password",
 		"Status":              "properties.status",
 	}
 
@@ -126,43 +124,4 @@ func ParseExpiryTime(expiryTime string) (time.Duration, error) {
 	}
 
 	return time.Duration(years)*time.Hour*24*365 + time.Duration(months)*time.Hour*24*30 + time.Duration(days)*time.Hour*24 + time.Duration(hours)*time.Hour, nil
-}
-
-func ConvertTokensToTable(tokens ionoscloud.TokensResponse) ([]map[string]interface{}, error) {
-	items, ok := tokens.GetItemsOk()
-	if !ok || items == nil {
-		return nil, fmt.Errorf("could not retrieve Container Registry Token items")
-	}
-
-	var tokensConverted []map[string]interface{}
-	for _, item := range *items {
-		temp, err := ConvertTokenToTable(item)
-		if err != nil {
-			return nil, err
-		}
-
-		tokensConverted = append(tokensConverted, temp...)
-	}
-
-	return tokensConverted, nil
-}
-
-func ConvertTokenToTable(token ionoscloud.TokenResponse) ([]map[string]interface{}, error) {
-	properties, ok := token.GetPropertiesOk()
-	if !ok || properties == nil {
-		return nil, fmt.Errorf("could not retrieve Container Registry Token properties")
-	}
-
-	expiryDate, ok := properties.GetExpiryDateOk()
-	if !ok || expiryDate == nil {
-		return nil, fmt.Errorf("could not retrieve Container Registry Token Expiry Date")
-	}
-
-	temp, err := json2table.ConvertJSONToTable("", allJSONPaths, token)
-	if err != nil {
-		return nil, fmt.Errorf("could not convert from JSON to Table format: %w", err)
-	}
-
-	temp[0]["ExpiryDate"] = expiryDate.String()
-	return temp, nil
 }

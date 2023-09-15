@@ -15,6 +15,7 @@ import (
 	"time"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"golang.org/x/exp/slices"
 
@@ -268,8 +269,8 @@ func RunImageDelete(c *core.CommandConfig) error {
 
 	queryParams := listQueryParams.QueryParams
 
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete image"); err != nil {
-		return err
+	if !confirm.Ask("delete image") {
+		return nil
 	}
 
 	imgId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgImageId))
@@ -357,8 +358,8 @@ func DeleteAllNonPublicImages(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
 
-	if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete all the images"); err != nil {
-		return err
+	if !confirm.Ask("delete all the images") {
+		return nil
 	}
 
 	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Deleting all the images..."))

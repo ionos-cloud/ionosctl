@@ -12,7 +12,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/json2table"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
@@ -24,14 +23,15 @@ import (
 
 var (
 	allRequestJSONPaths = map[string]string{
-		"RequestId": "id",
-		"Status":    "metadata.requestStatus.metadata.status",
-		"Message":   "metadata.requestStatus.metadata.message",
-		"Method":    "properties.method",
-		"Url":       "properties.url",
-		"Body":      "properties.body",
-		"CreatedBy": "metadata.createdBy",
-		"Targets":   "metadata.requestStatus.metadata.targets",
+		"RequestId":   "id",
+		"Status":      "metadata.requestStatus.metadata.status",
+		"Message":     "metadata.requestStatus.metadata.message",
+		"Method":      "properties.method",
+		"Url":         "properties.url",
+		"Body":        "properties.body",
+		"CreatedBy":   "metadata.createdBy",
+		"CreatedDate": "metadata.createdDate",
+		"Targets":     "metadata.requestStatus.metadata.targets",
 	}
 
 	defaultRequestCols = []string{"RequestId", "CreatedDate", "Method", "Status", "Message", "Targets"}
@@ -196,38 +196,12 @@ func RunRequestList(c *core.CommandConfig) error {
 		requests = sortRequestsByTime(requests, viper.GetInt(core.GetFlagName(c.NS, cloudapiv6.ArgLatest)))
 	}
 
-	itemsOk, ok := requests.GetItemsOk()
-	if !ok || itemsOk == nil {
-		return fmt.Errorf("error getting requests based on given criteria")
-
-	}
-
-	var allRequestsConverted []map[string]interface{}
-
-	for _, item := range *itemsOk {
-		temp, err := json2table.ConvertJSONToTable("", allRequestJSONPaths, item)
-		if err != nil {
-			return fmt.Errorf("could not convert from JSON to Table format: %w", err)
-		}
-
-		metadataOk, ok := item.GetMetadataOk()
-		if !ok || metadataOk == nil {
-			return fmt.Errorf("could not retrieve metadata from request")
-		}
-
-		if createdDateOk, ok := metadataOk.GetCreatedDateOk(); ok && createdDateOk != nil {
-			temp[0]["CreatedDate"] = createdDateOk.String()
-
-			allRequestsConverted = append(allRequestsConverted, temp[0])
-		}
-	}
-
 	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 	if err != nil {
 		return err
 	}
 
-	out, err := jsontabwriter.GenerateOutputPreconverted(itemsOk, allRequestsConverted,
+	out, err := jsontabwriter.GenerateOutput("items", allRequestJSONPaths, requests.Requests,
 		printer.GetHeaders(allRequestCols, defaultRequestCols, cols))
 	if err != nil {
 		return err
@@ -257,26 +231,12 @@ func RunRequestGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	metadataOk, ok := req.GetMetadataOk()
-	if !ok || metadataOk == nil {
-		return fmt.Errorf("could not retrieve metadata from request")
-	}
-
-	reqConverted, err := json2table.ConvertJSONToTable("", allRequestJSONPaths, req)
-	if err != nil {
-		return fmt.Errorf("could not convert from JSON to Table format: %w", err)
-	}
-
-	if createdDateOk, ok := metadataOk.GetCreatedDateOk(); ok && createdDateOk != nil {
-		reqConverted[0]["CreatedDate"] = createdDateOk.String()
-	}
-
 	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 	if err != nil {
 		return err
 	}
 
-	out, err := jsontabwriter.GenerateOutputPreconverted(req, reqConverted,
+	out, err := jsontabwriter.GenerateOutput("", allRequestJSONPaths, req.Request,
 		printer.GetHeaders(allRequestCols, defaultRequestCols, cols))
 	if err != nil {
 		return err
@@ -312,26 +272,12 @@ func RunRequestWait(c *core.CommandConfig) error {
 		return err
 	}
 
-	metadataOk, ok := req.GetMetadataOk()
-	if !ok || metadataOk == nil {
-		return fmt.Errorf("could not retrieve metadata from request")
-	}
-
-	reqConverted, err := json2table.ConvertJSONToTable("", allRequestJSONPaths, req)
-	if err != nil {
-		return fmt.Errorf("could not convert from JSON to Table format: %w", err)
-	}
-
-	if createdDateOk, ok := metadataOk.GetCreatedDateOk(); ok && createdDateOk != nil {
-		reqConverted[0]["CreatedDate"] = createdDateOk.String()
-	}
-
 	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 	if err != nil {
 		return err
 	}
 
-	out, err := jsontabwriter.GenerateOutputPreconverted(req, reqConverted,
+	out, err := jsontabwriter.GenerateOutput("", allRequestJSONPaths, req.Request,
 		printer.GetHeaders(allRequestCols, defaultRequestCols, cols))
 	if err != nil {
 		return err

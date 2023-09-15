@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
@@ -40,7 +41,7 @@ func NodepoolDeleteCmd() *core.Command {
 				return fmt.Errorf("couldn't find nodepool: %w", err)
 			}
 
-			ok := confirm.Ask(fmt.Sprintf("delete nodepool %s (%s)", nodepoolId, *np.Properties.Name))
+			ok := confirm.Ask(fmt.Sprintf("delete nodepool %s (%s)", nodepoolId, *np.Properties.Name), viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce)))
 			if !ok {
 				return fmt.Errorf("canceled deletion: invalid input")
 			}
@@ -48,7 +49,6 @@ func NodepoolDeleteCmd() *core.Command {
 			fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Deleting nodepool: %s", nodepoolId))
 			_, _, err = client.Must().DataplatformClient.DataPlatformNodePoolApi.ClustersNodepoolsDelete(c.Context, clusterId, nodepoolId).Execute()
 			return err
-
 		},
 		InitClient: true,
 	})

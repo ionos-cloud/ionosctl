@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 
@@ -183,8 +184,8 @@ func RemoveAllDatacenterLabels(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
 
-	if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Labels from Datacenter with Id: "+dcId); err != nil {
-		return err
+	if !confirm.Ask("delete all the Labels from Datacenter with Id: " + dcId) {
+		return nil
 	}
 
 	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Deleting all the Labels from Datacenter with Id: %v...", dcId))
@@ -398,8 +399,8 @@ func RemoveAllServerLabels(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
 
-	if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Labels from Server with Id: "+serverId); err != nil {
-		return err
+	if !confirm.Ask("delete all the Labels from Server with Id: " + serverId) {
+		return nil
 	}
 
 	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Deleting all the Labels from Server with Id: %v...", serverId))
@@ -607,8 +608,8 @@ func RemoveAllVolumeLabels(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
 
-	if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Labels from Volume with Id: "+volumeId); err != nil {
-		return err
+	if !confirm.Ask("delete all the Labels from Volume with Id: " + volumeId) {
+		return nil
 	}
 
 	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Deleting all the Labels from Volume with Id: %v...", volumeId))
@@ -808,8 +809,8 @@ func RemoveAllIpBlockLabels(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
 
-	if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Labels from IpBlock with Id: "+ipBlockId); err != nil {
-		return err
+	if !confirm.Ask("delete all the Labels from IpBlock with Id: " + ipBlockId) {
+		return nil
 	}
 
 	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Deleting all the Labels from IpBlock with Id: %v...", ipBlockId))
@@ -1009,8 +1010,8 @@ func RemoveAllSnapshotLabels(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Stdout, jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
 
-	if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Labels from Snapshot with Id: "+snapshotId); err != nil {
-		return err
+	if !confirm.Ask("delete all the Labels from Snapshot with Id: " + snapshotId) {
+		return nil
 	}
 
 	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Deleting all the Labels from Snapshot with Id: %v...", snapshotId))

@@ -10,6 +10,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	sdkgo "github.com/ionos-cloud/sdk-go-dbaas-mongo"
 	"github.com/spf13/cobra"
@@ -44,7 +45,7 @@ ionosctl dbaas mongo user list --cluster-id <cluster-id>`,
 			clusterId := viper.GetString(fnClusterId)
 
 			req := client.Must().MongoClient.UsersApi.ClustersUsersGet(context.Background(), clusterId)
-			c.Printer.Verbose("Getting Users from all cluster %s", clusterId)
+			fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Getting Users from all cluster %s", clusterId))
 
 			if f := core.GetFlagName(c.NS, constants.FlagMaxResults); viper.IsSet(f) {
 				req = req.Limit(viper.GetInt32(f))
@@ -57,7 +58,21 @@ ionosctl dbaas mongo user list --cluster-id <cluster-id>`,
 			if err != nil {
 				return err
 			}
-			return c.Printer.Print(getUserPrint(c, ls.GetItems()))
+
+			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+
+			lsConverted, err := convertUsersToTable(ls)
+			if err != nil {
+				return err
+			}
+
+			out, err := jsontabwriter.GenerateOutputPreconverted(ls, lsConverted, printer.GetHeadersAllDefault(allCols, cols))
+			if err != nil {
+				return err
+			}
+
+			fmt.Fprintf(c.Stdout, out)
+			return nil
 		},
 		InitClient: true,
 	})
@@ -86,7 +101,7 @@ ionosctl dbaas mongo user list --cluster-id <cluster-id>`,
 }
 
 func listAll(c *core.CommandConfig) error {
-	c.Printer.Verbose("Getting Users from all clusters...")
+	fmt.Fprintf(c.Stderr, jsontabwriter.GenerateVerboseOutput("Getting Users from all clusters..."))
 	clusters, err := cluster.Clusters(func(r sdkgo.ApiClustersGetRequest) sdkgo.ApiClustersGetRequest {
 		return r.FilterName(core.GetFlagName(c.NS, flagFilterByClusterNameWhenListAll))
 	})
@@ -94,18 +109,36 @@ func listAll(c *core.CommandConfig) error {
 		return fmt.Errorf("failed getting clusters: %w", err)
 	}
 
-	var ls []sdkgo.User
+	var ls []sdkgo.UsersList
+	var lsConverted []map[string]interface{}
 	var multiErr error
+
 	for _, c := range *clusters.GetItems() {
 		l, _, err := client.Must().MongoClient.UsersApi.ClustersUsersGet(context.Background(), *c.Id).Execute()
 		if err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf("failed listing users of cluster %s: %w", *c.Properties.DisplayName, err))
 		}
-		ls = append(ls, *l.GetItems()...)
+
+		temp, err := convertUsersToTable(l)
+		if err != nil {
+			multiErr = errors.Join(multiErr, fmt.Errorf("failed converting users of cluster %s: %w", *c.Properties.DisplayName, err))
+			continue
+		}
+
+		ls = append(ls, l)
+		lsConverted = append(lsConverted, temp...)
 	}
 	if multiErr != nil {
 		return fmt.Errorf("failed getting users of at least one cluster: %w", err)
 	}
 
-	return c.Printer.Print(getUserPrint(c, &ls))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+
+	out, err := jsontabwriter.GenerateOutputPreconverted(ls, lsConverted, printer.GetHeadersAllDefault(allCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Stdout, out)
+	return nil
 }
