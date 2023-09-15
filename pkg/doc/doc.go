@@ -17,6 +17,7 @@ import (
 	"strings"
 
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/spf13/pflag"
 )
 
 const rootCmdName = "ionosctl"
@@ -178,7 +179,6 @@ func writeDoc(cmd *core.Command, w io.Writer) error {
 	defer func() {
 		if r := recover(); r != nil {
 			fmt.Printf("Panic occurred for command path: %s\n", cmd.Command.CommandPath())
-			//err := fmt.Errorf("panic: %v", r)
 		}
 	}()
 
@@ -194,8 +194,8 @@ func writeDoc(cmd *core.Command, w io.Writer) error {
 
 	// Customize title
 	title := strings.Title(strings.ReplaceAll(cmd.Command.CommandPath(), rootCmdName+" ", ""))
-	title = customizeTitle(title, "-", "")
-	title = customizeTitle(title, " ", "")
+	title = StrReplaceIfContains(title, "-", "")
+	title = StrReplaceIfContains(title, " ", "")
 
 	buf.WriteString(fmt.Sprintf("# %s\n\n", title))
 
@@ -230,13 +230,22 @@ func writeDoc(cmd *core.Command, w io.Writer) error {
 	if flags.HasAvailableFlags() {
 		buf.WriteString("## Options\n\n```text\n")
 		flags.SortFlags = true
-		// create new buffer to replace user info
+
+		// Create new buffer to replace user info
 		newbuf := new(bytes.Buffer)
 		flags.SetOutput(newbuf)
+		flags.VisitAll(func(flag *pflag.Flag) {
+			handler := getStrategyForFlag(flag.Name)
+			// If a custom default value handler is specified, use it to modify the default of this flag for docs
+			if handler != nil {
+				flag.DefValue = handler(flag.Usage, flag.DefValue)
+			}
+		})
 		flags.PrintDefaults()
-		// get $XDG_CONFIG_HOME from environment
+
+		// Get $XDG_CONFIG_HOME from environment
 		xdgConfig, _ := os.UserConfigDir()
-		// replace with constant $XDG_CONFIG_HOME
+		// Replace with constant $XDG_CONFIG_HOME
 		buf.Write(bytes.ReplaceAll(newbuf.Bytes(), []byte(xdgConfig), []byte("$XDG_CONFIG_HOME")))
 		buf.WriteString("```\n\n")
 	}
@@ -281,7 +290,7 @@ func writeCmdAliases(cmd *core.Command, buf *bytes.Buffer) {
 	return
 }
 
-func customizeTitle(title, old, new string) string {
+func StrReplaceIfContains(title, old, new string) string {
 	if strings.Contains(title, old) {
 		title = strings.ReplaceAll(title, old, new)
 	}
