@@ -178,7 +178,7 @@ func determineSubdir(name string, nonComputeNamespaces map[string]string) string
 func writeDoc(cmd *core.Command, w io.Writer) error {
 	defer func() {
 		if r := recover(); r != nil {
-			fmt.Printf("Panic occurred for command path: %s\n", cmd.Command.CommandPath())
+			fmt.Printf("Panic occurred for command path %s: %+v\n", cmd.Command.CommandPath(), r)
 		}
 	}()
 
