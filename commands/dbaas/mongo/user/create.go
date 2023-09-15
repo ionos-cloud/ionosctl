@@ -8,8 +8,8 @@ import (
 
 	"github.com/cjrd/allocate"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"github.com/mmatczuk/anyflag"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/completer"
