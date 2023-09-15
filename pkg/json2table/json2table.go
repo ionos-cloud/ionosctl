@@ -24,7 +24,7 @@ func ConvertJSONToTable(rootPath string, jsonPaths map[string]string, rootObj in
 	}
 
 	for _, obj := range objs {
-		mappedObj := make(map[string]interface{}, 0)
+		mappedObj := make(map[string]interface{})
 
 		for k, v := range jsonPaths {
 			objData := obj.Path(v)
@@ -62,10 +62,27 @@ func traverseJSONRoot(rootPath string, obj interface{}) ([]*gabs.Container, erro
 	}
 
 	parsedObj = parsedObj.Path(rootPath)
-	children := parsedObj.Children()
 
-	if children == nil {
+	tempChildren := parsedObj.Children()
+
+	if tempChildren == nil {
 		return nil, fmt.Errorf("root path does not lead to an array in object: %s", rootPath)
+	}
+
+	children := make([]*gabs.Container, 0)
+	needsFlatten := true
+	for _, child := range tempChildren {
+		switch child.Data().(type) {
+		case []interface{}:
+			children = append(children, child.Children()...)
+		default:
+			needsFlatten = false
+		}
+
+		if !needsFlatten {
+			children = tempChildren
+			break
+		}
 	}
 
 	return children, nil
