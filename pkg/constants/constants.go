@@ -54,6 +54,8 @@ const (
 	FlagTtl         = "ttl"
 	FlagPriority    = "priority"
 	FlagType        = "type"
+
+	FlagCloudInit = "cloud-init"
 )
 
 // Flag descriptions. Prefixed with "Desc" for easy find and replace
