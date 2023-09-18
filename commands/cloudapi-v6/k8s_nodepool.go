@@ -43,7 +43,6 @@ var (
 		"RamSize":                  "properties.ramSize",
 		"AvailabilityZone":         "properties.availabilityZone",
 		"StorageSize":              "properties.storageSize",
-		"MaintenanceWindow":        "properties.maintenanceWindow",
 		"AutoScaling":              "properties.autoScaling",
 		"PublicIps":                "properties.publicIps",
 		"AvailableUpgradeVersions": "properties.availableUpgradeVersions",
@@ -360,15 +359,15 @@ func RunK8sNodePoolListAll(c *core.CommandConfig) error {
 			continue
 		}
 
+		clusterId, ok := cluster.GetIdOk()
+		if !ok || clusterId == nil {
+			continue
+		}
+
 		for _, node := range *items {
-			temp, err := json2table.ConvertJSONToTable("", allK8sNodepoolJSONPaths, node)
+			temp, err := convertK8sNodepoolToTable(node)
 			if err != nil {
 				return fmt.Errorf("failed to convert from JSON to Table format: %w", err)
-			}
-
-			clusterId, ok := cluster.GetIdOk()
-			if !ok || clusterId == nil {
-				continue
 			}
 
 			temp[0]["ClusterId"] = clusterId
@@ -434,12 +433,17 @@ func RunK8sNodePoolList(c *core.CommandConfig) error {
 		return err
 	}
 
+	k8ssConverted, err := convertK8sNodepoolsToTable(k8ss.KubernetesNodePools)
+	if err != nil {
+		return err
+	}
+
 	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 	if err != nil {
 		return err
 	}
 
-	out, err := jsontabwriter.GenerateOutput("items", allK8sNodepoolJSONPaths, k8ss.KubernetesNodePools,
+	out, err := jsontabwriter.GenerateOutputPreconverted(k8ss.KubernetesNodePools, k8ssConverted,
 		tabheaders.GetHeaders(allK8sNodePoolCols, defaultK8sNodePoolCols, cols))
 	if err != nil {
 		return err
@@ -475,12 +479,17 @@ func RunK8sNodePoolGet(c *core.CommandConfig) error {
 		return err
 	}
 
+	uConverted, err := convertK8sNodepoolToTable(u.KubernetesNodePool)
+	if err != nil {
+		return err
+	}
+
 	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 	if err != nil {
 		return err
 	}
 
-	out, err := jsontabwriter.GenerateOutput("", allK8sNodepoolJSONPaths, u.KubernetesNodePool,
+	out, err := jsontabwriter.GenerateOutputPreconverted(u.KubernetesNodePool, uConverted,
 		tabheaders.GetHeaders(allK8sNodePoolCols, defaultK8sNodePoolCols, cols))
 	if err != nil {
 		return err
@@ -514,6 +523,11 @@ func RunK8sNodePoolCreate(c *core.CommandConfig) error {
 		return err
 	}
 
+	uConverted, err := convertK8sNodepoolToTable(u.KubernetesNodePool)
+	if err != nil {
+		return err
+	}
+
 	if viper.GetBool(core.GetFlagName(c.NS, constants.ArgWaitForState)) {
 		if id, ok := u.GetIdOk(); ok && id != nil {
 			if err = utils.WaitForState(c, waiter.K8sNodePoolStateInterrogator, *id); err != nil {
@@ -532,7 +546,7 @@ func RunK8sNodePoolCreate(c *core.CommandConfig) error {
 		return err
 	}
 
-	out, err := jsontabwriter.GenerateOutput("", allK8sNodepoolJSONPaths, u.KubernetesNodePool,
+	out, err := jsontabwriter.GenerateOutputPreconverted(u.KubernetesNodePool, uConverted,
 		tabheaders.GetHeaders(allK8sNodePoolCols, defaultK8sNodePoolCols, cols))
 	if err != nil {
 		return err
@@ -573,12 +587,17 @@ func RunK8sNodePoolUpdate(c *core.CommandConfig) error {
 	newNodePoolUpdated, _, err := c.CloudApiV6Services.K8s().GetNodePool(viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)),
 		viper.GetString(core.GetFlagName(c.NS, constants.FlagNodepoolId)), queryParams)
 
+	newNodePoolUpdatedConverted, err := convertK8sNodepoolToTable(newNodePoolUpdated.KubernetesNodePool)
+	if err != nil {
+		return err
+	}
+
 	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 	if err != nil {
 		return err
 	}
 
-	out, err := jsontabwriter.GenerateOutput("", allK8sNodepoolJSONPaths, newNodePoolUpdated.KubernetesNodePool,
+	out, err := jsontabwriter.GenerateOutputPreconverted(newNodePoolUpdated.KubernetesNodePool, newNodePoolUpdatedConverted,
 		tabheaders.GetHeaders(allK8sNodePoolCols, defaultK8sNodePoolCols, cols))
 	if err != nil {
 		return err
@@ -959,4 +978,54 @@ func DeleteAllK8sNodepools(c *core.CommandConfig) error {
 	}
 
 	return nil
+}
+
+func convertK8sNodepoolToTable(nodepool ionoscloud.KubernetesNodePool) ([]map[string]interface{}, error) {
+	properties, ok := nodepool.GetPropertiesOk()
+	if !ok || properties == nil {
+		return nil, fmt.Errorf("could not retrieve K8s Nodepool properties")
+	}
+
+	maintenanceWindow, ok := properties.GetMaintenanceWindowOk()
+	if !ok || maintenanceWindow == nil {
+		return nil, fmt.Errorf("could not retrieve K8s Nodepool maintenance window")
+	}
+
+	day, ok := maintenanceWindow.GetDayOfTheWeekOk()
+	if !ok || day == nil {
+		return nil, fmt.Errorf("could not retrieve K8s Nodepool maintenance window day")
+	}
+
+	tyme, ok := maintenanceWindow.GetTimeOk()
+	if !ok || tyme == nil {
+		return nil, fmt.Errorf("could not retrieve K8s Nodepool maintenance window time")
+	}
+
+	temp, err := json2table.ConvertJSONToTable("", allK8sNodepoolJSONPaths, nodepool)
+	if err != nil {
+		return nil, fmt.Errorf("could not convert from JSON to Table format: %w", err)
+	}
+
+	temp[0]["MaintenanceWindow"] = fmt.Sprintf("%s %s", *day, *tyme)
+
+	return temp, nil
+}
+
+func convertK8sNodepoolsToTable(nodepools ionoscloud.KubernetesNodePools) ([]map[string]interface{}, error) {
+	items, ok := nodepools.GetItemsOk()
+	if !ok || items == nil {
+		return nil, fmt.Errorf("could not retrieve K8s Nodepools items")
+	}
+
+	var clustersConverted []map[string]interface{}
+	for _, item := range *items {
+		temp, err := convertK8sNodepoolToTable(item)
+		if err != nil {
+			return nil, err
+		}
+
+		clustersConverted = append(clustersConverted, temp...)
+	}
+
+	return clustersConverted, nil
 }

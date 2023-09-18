@@ -534,7 +534,7 @@ func RunLanDelete(c *core.CommandConfig) error {
 		return nil
 	}
 
-	if !confirm.Ask("delete lan", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+	if !confirm.Ask("delete lan", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -600,7 +600,7 @@ func DeleteAllLans(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
 
-	if !confirm.Ask("delete all the Lans", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+	if !confirm.Ask("delete all the Lans", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 

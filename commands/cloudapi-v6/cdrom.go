@@ -347,7 +347,7 @@ func RunServerCdromDetach(c *core.CommandConfig) error {
 		return nil
 	}
 
-	if !confirm.Ask("detach cdrom from server", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+	if !confirm.Ask("detach cdrom from server", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -419,7 +419,7 @@ func DetachAllCdRoms(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
 
-	if !confirm.Ask("detach all the CD-ROMS", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+	if !confirm.Ask("detach all the CD-ROMS", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 

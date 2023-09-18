@@ -512,7 +512,7 @@ func RunApplicationLoadBalancerFlowLogDelete(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateVerboseOutput(
 		"FlowLog ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFlowLogId))))
 
-	if !confirm.Ask("delete application load balancer flowlog", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+	if !confirm.Ask("delete application load balancer flowlog", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -584,7 +584,7 @@ func DeleteAllApplicationLoadBalancerFlowLog(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
 
-	if !confirm.Ask("delete all the Application Load Balancer FlowLogs", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+	if !confirm.Ask("delete all the Application Load Balancer FlowLogs", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 

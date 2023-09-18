@@ -490,7 +490,7 @@ func RunNetworkLoadBalancerForwardingRuleDelete(c *core.CommandConfig) error {
 		return nil
 	}
 
-	if !confirm.Ask("delete network load balancer forwarding rule", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+	if !confirm.Ask("delete network load balancer forwarding rule", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -619,7 +619,7 @@ func DeleteAllNetworkLoadBalancerForwardingRules(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
 
-	if !confirm.Ask("delete all the Network Load Balancer Forwarding Rules", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+	if !confirm.Ask("delete all the Network Load Balancer Forwarding Rules", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 

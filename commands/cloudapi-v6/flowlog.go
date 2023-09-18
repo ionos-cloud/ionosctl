@@ -407,7 +407,7 @@ func RunFlowLogDelete(c *core.CommandConfig) error {
 		return nil
 	}
 
-	if !confirm.Ask("delete flow log", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+	if !confirm.Ask("delete flow log", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -535,7 +535,7 @@ func DeleteAllFlowlogs(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
 
-	if !confirm.Ask("delete all the flow logs", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+	if !confirm.Ask("delete all the flow logs", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 

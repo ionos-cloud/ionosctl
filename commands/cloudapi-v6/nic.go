@@ -530,7 +530,7 @@ func RunNicDelete(c *core.CommandConfig) error {
 		return nil
 	}
 
-	if !confirm.Ask("delete nic", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+	if !confirm.Ask("delete nic", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -599,7 +599,7 @@ func DeleteAllNics(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
 
-	if !confirm.Ask("delete all the Nics", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+	if !confirm.Ask("delete all the Nics", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -950,7 +950,7 @@ func RunLoadBalancerNicDetach(c *core.CommandConfig) error {
 		return nil
 	}
 
-	if !confirm.Ask("detach nic from loadbalancer", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+	if !confirm.Ask("detach nic from loadbalancer", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -1019,7 +1019,7 @@ func DetachAllNics(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
 
-	if !confirm.Ask("detach all the Nics", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+	if !confirm.Ask("detach all the Nics", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 

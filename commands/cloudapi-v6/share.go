@@ -512,7 +512,7 @@ func RunShareDelete(c *core.CommandConfig) error {
 		return nil
 	}
 
-	if !confirm.Ask("delete share from group", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+	if !confirm.Ask("delete share from group", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -598,11 +598,11 @@ func DeleteAllShares(c *core.CommandConfig) error {
 
 	for _, share := range *groupSharesItems {
 		if id, ok := share.GetIdOk(); ok && id != nil {
-			fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("GroupShare Id: ", *id))
+			fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("GroupShare Id: %v", *id))
 		}
 	}
 
-	if !confirm.Ask("delete all the GroupShares", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+	if !confirm.Ask("delete all the GroupShares", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 

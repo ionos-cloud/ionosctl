@@ -428,7 +428,7 @@ func RunGroupDelete(c *core.CommandConfig) error {
 		return nil
 	}
 
-	if !confirm.Ask("delete group", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+	if !confirm.Ask("delete group", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -746,7 +746,7 @@ func DeleteAllGroups(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
 
-	if !confirm.Ask("delete all the Groups", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+	if !confirm.Ask("delete all the Groups", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 

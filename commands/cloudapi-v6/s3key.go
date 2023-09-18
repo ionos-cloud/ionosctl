@@ -384,7 +384,7 @@ func RunUserS3KeyDelete(c *core.CommandConfig) error {
 		return nil
 	}
 
-	if !confirm.Ask("delete s3key", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+	if !confirm.Ask("delete s3key", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -436,11 +436,11 @@ func DeleteAllS3keys(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("S3 keys to be deleted:"))
 	for _, s3Key := range *s3KeysItems {
 		if id, ok := s3Key.GetIdOk(); ok && id != nil {
-			fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("S3 key Id: ", *id))
+			fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("S3 key Id: %v", *id))
 		}
 	}
 
-	if !confirm.Ask("delete all the S3Keys", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+	if !confirm.Ask("delete all the S3Keys", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 

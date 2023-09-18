@@ -293,7 +293,7 @@ func RunTargetGroupTargetRemove(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
 		"Target Port: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgPort))))
 
-	if !confirm.Ask("remove target from target group", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+	if !confirm.Ask("remove target from target group", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -357,16 +357,16 @@ func RemoveAllTargetGroupTarget(c *core.CommandConfig) (*resources.Response, err
 	if httpRulesOk, ok := propertiesOk.GetTargetsOk(); ok && httpRulesOk != nil {
 		for _, httpRuleOk := range *httpRulesOk {
 			if nameOk, ok := httpRuleOk.GetIpOk(); ok && nameOk != nil {
-				fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Target IP: ", *nameOk))
+				fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Target IP: %v", *nameOk))
 			}
 
 			if typeOk, ok := httpRuleOk.GetPortOk(); ok && typeOk != nil {
-				fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Target Port: ", strconv.Itoa(int(*typeOk))))
+				fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Target Port: %v", strconv.Itoa(int(*typeOk))))
 			}
 		}
 	}
 
-	if !confirm.Ask("delete all the Targets from Target Group", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+	if !confirm.Ask("delete all the Targets from Target Group", viper.GetBool(constants.ArgForce)) {
 		return nil, nil
 	}
 

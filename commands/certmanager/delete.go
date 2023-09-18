@@ -64,7 +64,7 @@ func CmdDelete(c *core.CommandConfig) error {
 
 		for _, cert := range *certs.Items {
 			msg := fmt.Sprintf("delete Certificate ID: %s", *cert.Id)
-			if !confirm.Ask(msg, viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+			if !confirm.Ask(msg, viper.GetBool(constants.ArgForce)) {
 				return nil
 			}
 
@@ -80,7 +80,7 @@ func CmdDelete(c *core.CommandConfig) error {
 		}
 
 		msg := fmt.Sprintf("delete Certificate ID: %s", id)
-		if !confirm.Ask(msg, viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+		if !confirm.Ask(msg, viper.GetBool(constants.ArgForce)) {
 			return nil
 		}
 

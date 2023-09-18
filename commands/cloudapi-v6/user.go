@@ -397,7 +397,7 @@ func RunUserDelete(c *core.CommandConfig) error {
 		return nil
 	}
 
-	if !confirm.Ask("delete user", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+	if !confirm.Ask("delete user", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -542,7 +542,7 @@ func DeleteAllUsers(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
 
-	if !confirm.Ask("delete all the Users", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+	if !confirm.Ask("delete all the Users", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -781,7 +781,7 @@ func RunGroupUserRemove(c *core.CommandConfig) error {
 		return nil
 	}
 
-	if !confirm.Ask("remove user from group", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+	if !confirm.Ask("remove user from group", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -852,7 +852,7 @@ func RemoveAllUsers(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
 
-	if !confirm.Ask("remove all the Users", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+	if !confirm.Ask("remove all the Users", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 

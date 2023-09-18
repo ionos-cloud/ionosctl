@@ -65,7 +65,7 @@ func CmdDelete(c *core.CommandConfig) error {
 		for _, reg := range *regs.Items {
 			msg := fmt.Sprintf("delete Container Registry: %s", *reg.Id)
 
-			if !confirm.Ask(msg, viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+			if !confirm.Ask(msg, viper.GetBool(constants.ArgForce)) {
 				return nil
 			}
 
@@ -82,7 +82,7 @@ func CmdDelete(c *core.CommandConfig) error {
 
 		msg := fmt.Sprintf("delete Container Registry: %s", id)
 
-		if !confirm.Ask(msg, viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+		if !confirm.Ask(msg, viper.GetBool(constants.ArgForce)) {
 			return nil
 		}
 

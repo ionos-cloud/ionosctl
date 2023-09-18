@@ -904,7 +904,7 @@ func RunServerDelete(c *core.CommandConfig) error {
 		return nil
 	}
 
-	if !confirm.Ask("delete server", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+	if !confirm.Ask("delete server", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -934,7 +934,7 @@ func RunServerStart(c *core.CommandConfig) error {
 	}
 
 	queryParams := listQueryParams.QueryParams
-	if !confirm.Ask("start server", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+	if !confirm.Ask("start server", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -968,7 +968,7 @@ func RunServerStop(c *core.CommandConfig) error {
 
 	queryParams := listQueryParams.QueryParams
 
-	if !confirm.Ask("stop server", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+	if !confirm.Ask("stop server", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -1002,7 +1002,7 @@ func RunServerSuspend(c *core.CommandConfig) error {
 
 	queryParams := listQueryParams.QueryParams
 
-	if !confirm.Ask("suspend cube server", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+	if !confirm.Ask("suspend cube server", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -1036,7 +1036,7 @@ func RunServerReboot(c *core.CommandConfig) error {
 
 	queryParams := listQueryParams.QueryParams
 
-	if !confirm.Ask("reboot server", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+	if !confirm.Ask("reboot server", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -1070,7 +1070,7 @@ func RunServerResume(c *core.CommandConfig) error {
 
 	queryParams := listQueryParams.QueryParams
 
-	if !confirm.Ask("resume cube server", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+	if !confirm.Ask("resume cube server", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -1362,7 +1362,7 @@ func DeleteAllServers(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
 
-	if !confirm.Ask("delete all the Servers", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+	if !confirm.Ask("delete all the Servers", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 

@@ -71,10 +71,7 @@ func runTokenGetById(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("", allTokenJSONPaths, token.Token,
 		tabheaders.GetHeaders(allTokenCols, defaultTokenCols, cols))
@@ -110,10 +107,7 @@ func runTokenGetByToken(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("", allTokenJSONPaths, tokenObj.Token,
 		tabheaders.GetHeaders(allTokenCols, defaultTokenCols, cols))

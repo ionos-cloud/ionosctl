@@ -575,7 +575,7 @@ func RunVolumeDelete(c *core.CommandConfig) error {
 		return nil
 	}
 
-	if !confirm.Ask("delete volume", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+	if !confirm.Ask("delete volume", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -843,17 +843,17 @@ func DeleteAllVolumes(c *core.CommandConfig) error {
 
 	for _, volume := range *volumesItems {
 		if id, ok := volume.GetIdOk(); ok && id != nil {
-			fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Volume Id: ", *id))
+			fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Volume Id: %v", *id))
 		}
 
 		if properties, ok := volume.GetPropertiesOk(); ok && properties != nil {
 			if name, ok := properties.GetNameOk(); ok && name != nil {
-				fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Volume Name: ", *name))
+				fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Volume Name: %v", *name))
 			}
 		}
 	}
 
-	if !confirm.Ask("delete all the Volumes", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+	if !confirm.Ask("delete all the Volumes", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -1236,7 +1236,7 @@ func RunServerVolumeDetach(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Volumes successfully detached"))
 		return nil
 	}
-	if !confirm.Ask("detach volume from server", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+	if !confirm.Ask("detach volume from server", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -1309,7 +1309,7 @@ func DetachAllServerVolumes(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
 
-	if !confirm.Ask("detach all the Volumes", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+	if !confirm.Ask("detach all the Volumes", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 

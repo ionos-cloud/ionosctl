@@ -314,7 +314,7 @@ func RunIpFailoverRemove(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateVerboseOutput(
 		"Removing IP Failover group from LAN with ID: %v from Datacenter with ID: %v...", lanId, dcId))
 
-	if !confirm.Ask("remove ip failover group from lan", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+	if !confirm.Ask("remove ip failover group from lan", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -401,7 +401,7 @@ func RemoveAllIpFailovers(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
 
-	if !confirm.Ask("remove all the IP Failovers", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+	if !confirm.Ask("remove all the IP Failovers", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 

@@ -421,7 +421,7 @@ func RunSnapshotRestore(c *core.CommandConfig) error {
 	}
 
 	queryParams := listQueryParams.QueryParams
-	if !confirm.Ask("restore snapshot", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+	if !confirm.Ask("restore snapshot", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -467,7 +467,7 @@ func RunSnapshotDelete(c *core.CommandConfig) error {
 		return nil
 	}
 
-	if !confirm.Ask("delete snapshot", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+	if !confirm.Ask("delete snapshot", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -634,7 +634,7 @@ func DeleteAllSnapshots(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
 
-	if !confirm.Ask("delete all the Snapshots", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+	if !confirm.Ask("delete all the Snapshots", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 

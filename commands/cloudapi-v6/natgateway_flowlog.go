@@ -469,7 +469,7 @@ func RunNatGatewayFlowLogDelete(c *core.CommandConfig) error {
 		return nil
 	}
 
-	if !confirm.Ask("delete nat gateway flowlog", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+	if !confirm.Ask("delete nat gateway flowlog", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -537,7 +537,7 @@ func DeleteAllNatGatewayFlowLogs(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
 
-	if !confirm.Ask("delete all the NatGatewayFlowLogs", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+	if !confirm.Ask("delete all the NatGatewayFlowLogs", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 

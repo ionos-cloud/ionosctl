@@ -71,7 +71,7 @@ ionosctl db m c d --all --name <name>`,
 				}
 			}
 
-			ok := confirm.Ask(confirmStringForCluster(chosenCluster), viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce)))
+			ok := confirm.Ask(confirmStringForCluster(chosenCluster), viper.GetBool(constants.ArgForce))
 			if !ok {
 				return fmt.Errorf("user denied confirmation")
 			}
@@ -90,7 +90,6 @@ ionosctl db m c d --all --name <name>`,
 	cmd.AddBoolFlag(constants.ArgNoHeaders, "", false, "When using text output, don't print headers")
 	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Delete all mongo clusters")
 	cmd.AddBoolFlag(constants.FlagName, "", false, "When deleting all clusters, filter the clusters by a name")
-	cmd.AddBoolFlag(constants.ArgForce, constants.ArgForceShort, false, "Skip yes/no verification")
 	cmd.AddStringSliceFlag(constants.ArgCols, "", nil, printer.ColsMessage(allCols))
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allCols, cobra.ShellCompDirectiveNoFileComp
@@ -110,7 +109,7 @@ func deleteAll(c *core.CommandConfig) error {
 	}
 
 	return functional.ApplyAndAggregateErrors(*xs.GetItems(), func(x sdkgo.ClusterResponse) error {
-		yes := confirm.Ask(confirmStringForCluster(x), viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce)))
+		yes := confirm.Ask(confirmStringForCluster(x), viper.GetBool(constants.ArgForce))
 		if yes {
 			_, _, delErr := client.Must().MongoClient.ClustersApi.ClustersDelete(c.Context, *x.Id).Execute()
 			if delErr != nil {

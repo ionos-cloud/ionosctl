@@ -317,7 +317,7 @@ func RunK8sNodeRecreate(c *core.CommandConfig) error {
 
 	queryParams := listQueryParams.QueryParams
 
-	if !confirm.Ask("recreate k8s node", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+	if !confirm.Ask("recreate k8s node", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -362,7 +362,7 @@ func RunK8sNodeDelete(c *core.CommandConfig) error {
 		return nil
 	}
 
-	if !confirm.Ask("delete k8s node", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+	if !confirm.Ask("delete k8s node", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -427,7 +427,7 @@ func DeleteAllK8sNodes(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
 
-	if !confirm.Ask("delete all the K8sNodes", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+	if !confirm.Ask("delete all the K8sNodes", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 

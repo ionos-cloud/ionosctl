@@ -539,7 +539,7 @@ func RunApplicationLoadBalancerDelete(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
 		"ApplicationLoadBalancer ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId))))
 
-	if !confirm.Ask("delete application load balancer", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+	if !confirm.Ask("delete application load balancer", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -604,7 +604,7 @@ func DeleteAllApplicationLoadBalancer(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
 
-	if !confirm.Ask("delete all the Application Load Balancers", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+	if !confirm.Ask("delete all the Application Load Balancers", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 

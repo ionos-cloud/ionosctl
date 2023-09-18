@@ -513,7 +513,7 @@ func RunLoadBalancerDelete(c *core.CommandConfig) error {
 		return nil
 	}
 
-	if !confirm.Ask("delete loadbalancer", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+	if !confirm.Ask("delete loadbalancer", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -580,7 +580,7 @@ func DeleteAllLoadBalancers(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
 
-	if !confirm.Ask("delete all the LoadBalancers", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+	if !confirm.Ask("delete all the LoadBalancers", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 

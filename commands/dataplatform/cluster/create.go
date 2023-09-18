@@ -63,9 +63,14 @@ func ClusterCreateCmd() *core.Command {
 				return err
 			}
 
+			crConverted, err := convertClusterToTable(cr)
+			if err != nil {
+				return err
+			}
+
 			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-			out, err := jsontabwriter.GenerateOutput("", allJSONPaths, cr,
+			out, err := jsontabwriter.GenerateOutputPreconverted(cr, crConverted,
 				tabheaders.GetHeadersAllDefault(allCols, cols))
 			if err != nil {
 				return err

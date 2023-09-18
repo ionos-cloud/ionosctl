@@ -43,7 +43,7 @@ func ZonesDeleteCmd() *core.Command {
 				return fmt.Errorf("failed getting zone by id %s: %w", zoneId, err)
 			}
 			yes := confirm.Ask(fmt.Sprintf("Are you sure you want to delete zone %s (desc: '%s')", *z.Properties.ZoneName, *z.Properties.Description),
-				viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce)))
+				viper.GetBool(constants.ArgForce))
 			if !yes {
 				return nil
 			}
@@ -62,7 +62,6 @@ func ZonesDeleteCmd() *core.Command {
 		}), cobra.ShellCompDirectiveNoFileComp
 	})
 
-	cmd.AddBoolFlag(constants.ArgForce, constants.ArgForceShort, false, "Skip yes/no confirmation")
 	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, fmt.Sprintf("Delete all zones. Required or -%s", constants.FlagZoneShort))
 
 	cmd.Command.SilenceUsage = true
@@ -80,7 +79,7 @@ func deleteAll(c *core.CommandConfig) error {
 
 	err = functional.ApplyAndAggregateErrors(*xs.GetItems(), func(z dns.ZoneRead) error {
 		yes := confirm.Ask(fmt.Sprintf("Are you sure you want to delete zone %s (desc: '%s')", *z.Properties.ZoneName, *z.Properties.Description),
-			viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce)))
+			viper.GetBool(constants.ArgForce))
 		if yes {
 			_, delErr := client.Must().DnsClient.ZonesApi.ZonesDelete(c.Context, *z.Id).Execute()
 			if delErr != nil {

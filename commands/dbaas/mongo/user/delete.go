@@ -72,7 +72,6 @@ func UserDeleteCmd() *core.Command {
 	cmd.AddStringFlag(FlagDatabase, FlagDatabaseShort, "", "The authentication database")
 	cmd.AddStringFlag(constants.FlagName, "", "", "The authentication username")
 	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Delete all users in a cluster")
-	cmd.AddBoolFlag(constants.ArgForce, constants.ArgForceShort, false, "Skip y/n checks")
 
 	cmd.Command.SilenceUsage = true
 

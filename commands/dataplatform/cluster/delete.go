@@ -35,7 +35,7 @@ func ClusterDeleteCmd() *core.Command {
 			}
 
 			clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
-			if !confirm.Ask(fmt.Sprintf("delete cluster %s", clusterId), viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+			if !confirm.Ask(fmt.Sprintf("delete cluster %s", clusterId), viper.GetBool(constants.ArgForce)) {
 				return nil
 			}
 
@@ -56,7 +56,6 @@ func ClusterDeleteCmd() *core.Command {
 		return completer.DataplatformClusterIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Delete all clusters")
-	cmd.AddBoolFlag(constants.ArgForce, constants.ArgForceShort, false, "Skip yes/no verification")
 
 	cmd.Command.SilenceUsage = true
 
@@ -71,7 +70,7 @@ func deleteAll(c *core.CommandConfig) error {
 	}
 
 	err = functional.ApplyAndAggregateErrors(*xs.GetItems(), func(x ionoscloud.ClusterResponseData) error {
-		yes := confirm.Ask(fmt.Sprintf("delete cluster %s (%s)", *x.Id, *x.Properties.Name), viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce)))
+		yes := confirm.Ask(fmt.Sprintf("delete cluster %s (%s)", *x.Id, *x.Properties.Name), viper.GetBool(constants.ArgForce))
 		if yes {
 			_, _, delErr := client.Must().DataplatformClient.DataPlatformClusterApi.ClustersDelete(c.Context, *x.Id).Execute()
 			if delErr != nil {

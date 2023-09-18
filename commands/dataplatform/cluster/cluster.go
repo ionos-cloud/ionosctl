@@ -1,20 +1,23 @@
 package cluster
 
 import (
+	"fmt"
+
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/json2table"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
+	ionoscloud "github.com/ionos-cloud/sdk-go-dataplatform"
 	"github.com/spf13/cobra"
 )
 
 var (
 	allJSONPaths = map[string]string{
-		"Id":                "id",
-		"Name":              "properties.name",
-		"Version":           "properties.dataPlatformVersion",
-		"MaintenanceWindow": "properties.maintenanceWindow",
-		"DatacenterId":      "properties.datacenterId",
-		"State":             "metadata.state",
+		"Id":           "id",
+		"Name":         "properties.name",
+		"Version":      "properties.dataPlatformVersion",
+		"DatacenterId": "properties.datacenterId",
+		"State":        "metadata.state",
 	}
 
 	allCols = []string{"Id", "Name", "Version", "MaintenanceWindow", "DatacenterId", "State"}
@@ -45,4 +48,54 @@ func ClusterCmd() *core.Command {
 	clusterCmd.AddCommand(ClustersKubeConfigCmd())
 
 	return clusterCmd
+}
+
+func convertClusterToTable(cluster ionoscloud.ClusterResponseData) ([]map[string]interface{}, error) {
+	properties, ok := cluster.GetPropertiesOk()
+	if !ok || properties == nil {
+		return nil, fmt.Errorf("could not retrieve Dataplatform Cluster properties")
+	}
+
+	maintenanceWindow, ok := properties.GetMaintenanceWindowOk()
+	if !ok || maintenanceWindow == nil {
+		return nil, fmt.Errorf("could not retrieve Dataplatform Cluster maintenance window")
+	}
+
+	day, ok := maintenanceWindow.GetDayOfTheWeekOk()
+	if !ok || day == nil {
+		return nil, fmt.Errorf("could not retrieve Dataplatform Cluster maintenance window day")
+	}
+
+	tyme, ok := maintenanceWindow.GetTimeOk()
+	if !ok || tyme == nil {
+		return nil, fmt.Errorf("could not retrieve Dataplatform Cluster maintenance window time")
+	}
+
+	temp, err := json2table.ConvertJSONToTable("", allJSONPaths, cluster)
+	if err != nil {
+		return nil, fmt.Errorf("could not convert from JSON to Table format: %w", err)
+	}
+
+	temp[0]["MaintenanceWindow"] = fmt.Sprintf("%s %s", *day, *tyme)
+
+	return temp, nil
+}
+
+func convertClustersToTable(clusters ionoscloud.ClusterListResponseData) ([]map[string]interface{}, error) {
+	items, ok := clusters.GetItemsOk()
+	if !ok || items == nil {
+		return nil, fmt.Errorf("could not retrieve Dataplatform Clusters items")
+	}
+
+	var clustersConverted []map[string]interface{}
+	for _, item := range *items {
+		temp, err := convertClusterToTable(item)
+		if err != nil {
+			return nil, err
+		}
+
+		clustersConverted = append(clustersConverted, temp...)
+	}
+
+	return clustersConverted, nil
 }

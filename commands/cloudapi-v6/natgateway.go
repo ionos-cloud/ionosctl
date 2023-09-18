@@ -506,7 +506,7 @@ func RunNatGatewayDelete(c *core.CommandConfig) error {
 		return nil
 	}
 
-	if !confirm.Ask("delete nat gateway", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+	if !confirm.Ask("delete nat gateway", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -594,7 +594,7 @@ func DeleteAllNatgateways(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
 
-	if !confirm.Ask("delete all the NAT Gateways", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+	if !confirm.Ask("delete all the NAT Gateways", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 

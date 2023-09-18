@@ -112,6 +112,7 @@ func testMongoEeTemplateInference(t *testing.T) {
 	c.Command.Flags().Set(constants.FlagTemplate, "playground")
 
 	err := c.Command.Execute()
+	fmt.Println("yeet")
 	assert.ErrorContains(t, err, "not all playground edition flags are set")
 }
 

@@ -99,11 +99,6 @@ func convertClusterToTable(cluster ionoscloud.ClusterResponse) ([]map[string]int
 		return nil, fmt.Errorf("could not retrieve Mongo Cluster maintenance window time")
 	}
 
-	connections, ok := properties.GetConnectionsOk()
-	if !ok || connections == nil {
-		return nil, fmt.Errorf("could not retrieve Mongo Cluster connections")
-	}
-
 	storage, ok := properties.GetStorageSizeOk()
 	if !ok || storage == nil {
 		return nil, fmt.Errorf("could not retrieve Mongo Cluster storage size")
@@ -119,31 +114,33 @@ func convertClusterToTable(cluster ionoscloud.ClusterResponse) ([]map[string]int
 		return nil, fmt.Errorf("could not convert from JSON to Table format: %w", err)
 	}
 
-	temp[0]["MaintenanceWindow"] = fmt.Sprintf("%s %s", day, tyme)
+	temp[0]["MaintenanceWindow"] = fmt.Sprintf("%s %s", *day, *tyme)
 	temp[0]["RAM"] = fmt.Sprintf("%d GB", convbytes.Convert(int64(*ram), convbytes.MB, convbytes.GB))
 	temp[0]["StorageSize"] = fmt.Sprintf("%d GB", convbytes.Convert(int64(*storage), convbytes.MB, convbytes.GB))
 
-	for _, con := range *connections {
-		dcId, ok := con.GetDatacenterIdOk()
-		if !ok || dcId == nil {
-			return nil, fmt.Errorf("could not retrieve Mongo Cluster datacenter ID")
-		}
+	connections, ok := properties.GetConnectionsOk()
+	if ok && connections != nil {
+		for _, con := range *connections {
+			dcId, ok := con.GetDatacenterIdOk()
+			if !ok || dcId == nil {
+				return nil, fmt.Errorf("could not retrieve Mongo Cluster datacenter ID")
+			}
 
-		lanId, ok := con.GetLanIdOk()
-		if !ok || lanId == nil {
-			return nil, fmt.Errorf("could not retrieve Mongo Cluster lan ID")
-		}
+			lanId, ok := con.GetLanIdOk()
+			if !ok || lanId == nil {
+				return nil, fmt.Errorf("could not retrieve Mongo Cluster lan ID")
+			}
 
-		cidr, ok := con.GetCidrListOk()
-		if !ok || cidr == nil {
-			return nil, fmt.Errorf("could not retrieve Mongo Cluster CIDRs")
-		}
+			cidr, ok := con.GetCidrListOk()
+			if !ok || cidr == nil {
+				return nil, fmt.Errorf("could not retrieve Mongo Cluster CIDRs")
+			}
 
-		temp[0]["DatacenterId"] = *dcId
-		temp[0]["LanId"] = *lanId
-		temp[0]["Cidr"] = *cidr
+			temp[0]["DatacenterId"] = *dcId
+			temp[0]["LanId"] = *lanId
+			temp[0]["Cidr"] = *cidr
+		}
 	}
-
 	return temp, nil
 }
 

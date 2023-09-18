@@ -496,7 +496,7 @@ func RunClusterRestore(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Cluster ID: %v", clusterId))
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Backup ID: %v", backupId))
 
-	if !confirm.Ask(fmt.Sprintf("restore cluster with id: %v from backup: %v", clusterId, backupId), viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+	if !confirm.Ask(fmt.Sprintf("restore cluster with id: %v from backup: %v", clusterId, backupId), viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -545,7 +545,7 @@ func RunClusterDelete(c *core.CommandConfig) error {
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Cluster ID: %v", clusterId))
 
-	if !confirm.Ask(fmt.Sprintf("delete cluster with id: %v", clusterId), viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+	if !confirm.Ask(fmt.Sprintf("delete cluster with id: %v", clusterId), viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -600,7 +600,7 @@ func ClusterDeleteAll(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(log))
 	}
 
-	if !confirm.Ask("delete ALL clusters", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+	if !confirm.Ask("delete ALL clusters", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -887,7 +887,7 @@ func getPatchClusterRequest(c *core.CommandConfig) (*resources.PatchClusterReque
 		}
 
 		if !confirm.Ask(fmt.Sprintf("remove connection with: %v", getConnectionMessage(connection)),
-			viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
+			viper.GetBool(constants.ArgForce)) {
 			return nil, nil
 		}
 
@@ -982,11 +982,6 @@ func convertClusterToTable(cluster sdkgo.ClusterResponse) ([]map[string]interfac
 		return nil, fmt.Errorf("could not retrieve PostgreSQL Cluster maintenance window time")
 	}
 
-	connections, ok := properties.GetConnectionsOk()
-	if !ok || connections == nil {
-		return nil, fmt.Errorf("could not retrieve PostgreSQL Cluster connections")
-	}
-
 	storage, ok := properties.GetStorageSizeOk()
 	if !ok || storage == nil {
 		return nil, fmt.Errorf("could not retrieve PostgreSQL Cluster storage size")
@@ -1002,29 +997,32 @@ func convertClusterToTable(cluster sdkgo.ClusterResponse) ([]map[string]interfac
 		return nil, fmt.Errorf("could not convert from JSON to Table format: %w", err)
 	}
 
-	temp[0]["MaintenanceWindow"] = fmt.Sprintf("%s %s", day, tyme)
+	temp[0]["MaintenanceWindow"] = fmt.Sprintf("%v %v", *day, *tyme)
 	temp[0]["RAM"] = fmt.Sprintf("%d GB", convbytes.Convert(int64(*ram), convbytes.MB, convbytes.GB))
 	temp[0]["StorageSize"] = fmt.Sprintf("%d GB", convbytes.Convert(int64(*storage), convbytes.MB, convbytes.GB))
 
-	for _, con := range *connections {
-		dcId, ok := con.GetDatacenterIdOk()
-		if !ok || dcId == nil {
-			return nil, fmt.Errorf("could not retrieve PostgreSQL Cluster datacenter ID")
-		}
+	connections, ok := properties.GetConnectionsOk()
+	if ok && connections != nil {
+		for _, con := range *connections {
+			dcId, ok := con.GetDatacenterIdOk()
+			if !ok || dcId == nil {
+				return nil, fmt.Errorf("could not retrieve PostgreSQL Cluster datacenter ID")
+			}
 
-		lanId, ok := con.GetLanIdOk()
-		if !ok || lanId == nil {
-			return nil, fmt.Errorf("could not retrieve PostgreSQL Cluster lan ID")
-		}
+			lanId, ok := con.GetLanIdOk()
+			if !ok || lanId == nil {
+				return nil, fmt.Errorf("could not retrieve PostgreSQL Cluster lan ID")
+			}
 
-		cidr, ok := con.GetCidrOk()
-		if !ok || cidr == nil {
-			return nil, fmt.Errorf("could not retrieve PostgreSQL Cluster CIDRs")
-		}
+			cidr, ok := con.GetCidrOk()
+			if !ok || cidr == nil {
+				return nil, fmt.Errorf("could not retrieve PostgreSQL Cluster CIDRs")
+			}
 
-		temp[0]["DatacenterId"] = *dcId
-		temp[0]["LanId"] = *lanId
-		temp[0]["Cidr"] = *cidr
+			temp[0]["DatacenterId"] = *dcId
+			temp[0]["LanId"] = *lanId
+			temp[0]["Cidr"] = *cidr
+		}
 	}
 
 	return temp, nil
