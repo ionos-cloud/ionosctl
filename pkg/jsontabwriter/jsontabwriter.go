@@ -16,6 +16,10 @@ var outputFormatErr = "invalid format: %s"
 
 // TODO: remove cols as function parameter once --cols flag fix is ready
 func GenerateOutput(rootPath string, jsonPaths map[string]string, obj interface{}, cols []string) (string, error) {
+	if viper.IsSet(constants.ArgQuiet) {
+		return "", nil
+	}
+
 	outputFormat := viper.GetString(constants.ArgOutput)
 
 	if outputFormat == "json" {
@@ -30,6 +34,10 @@ func GenerateOutput(rootPath string, jsonPaths map[string]string, obj interface{
 }
 
 func GenerateOutputPreconverted(obj interface{}, convertedObj []map[string]interface{}, cols []string) (string, error) {
+	if viper.IsSet(constants.ArgQuiet) {
+		return "", nil
+	}
+
 	outputFormat := viper.GetString(constants.ArgOutput)
 
 	if outputFormat == "json" {
@@ -44,6 +52,10 @@ func GenerateOutputPreconverted(obj interface{}, convertedObj []map[string]inter
 }
 
 func GenerateVerboseOutput(format string, a ...interface{}) string {
+	if viper.IsSet(constants.ArgQuiet) {
+		return ""
+	}
+
 	if !viper.IsSet(constants.ArgVerbose) {
 		return ""
 	}
@@ -60,6 +72,10 @@ func GenerateLogOutput(format string, a ...interface{}) string {
 }
 
 func GenerateRawOutput(a interface{}) string {
+	if viper.IsSet(constants.ArgQuiet) {
+		return ""
+	}
+
 	outputFormat := viper.GetString(constants.ArgOutput)
 
 	if outputFormat == "json" {

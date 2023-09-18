@@ -171,7 +171,7 @@ func ImageCmd() *core.Command {
 		command.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "", "Name of the Image")
 		command.AddStringFlag(cloudapiv6.ArgDescription, cloudapiv6.ArgDescriptionShort, "", "Description of the Image")
 		command.AddSetFlag(cloudapiv6.ArgLicenceType, "", "UNKNOWN", constants.EnumLicenceType, "The OS type of this image")
-		command.AddSetFlag("cloud-init", "", "V1", []string{"V1", "NONE"}, "Cloud init compatibility")
+		command.AddSetFlag(constants.FlagCloudInit, "", "V1", []string{"V1", "NONE"}, "Cloud init compatibility")
 		command.AddBoolFlag(cloudapiv6.ArgCpuHotPlug, "", true, "'Hot-Plug' CPU. It is not possible to have a hot-unplug CPU which you previously did not hot-plug")
 		command.AddBoolFlag(cloudapiv6.ArgRamHotPlug, "", true, "'Hot-Plug' RAM")
 		command.AddBoolFlag(cloudapiv6.ArgNicHotPlug, "", true, "'Hot-Plug' NIC")
@@ -395,9 +395,17 @@ func DeleteAllNonPublicImages(c *core.CommandConfig) error {
 }
 
 // returns an ImageProperties object which reflects the currently set flags
-func getDesiredImageAfterPatch(c *core.CommandConfig) resources.ImageProperties {
+func getDesiredImageAfterPatch(c *core.CommandConfig, useUnsetFlags bool) resources.ImageProperties {
 	input := resources.ImageProperties{}
-	c.Command.Command.Flags().VisitAll(func(flag *pflag.Flag) {
+
+	// flagTraverser is a reference to the pflag function that traverses the flags.
+	// The specific function (either `Visit` or `VisitAll`) is determined by the `useUnsetFlags` argument.
+	flagTraverser := c.Command.Command.Flags().Visit
+	if useUnsetFlags {
+		flagTraverser = c.Command.Command.Flags().VisitAll
+	}
+
+	flagTraverser(func(flag *pflag.Flag) {
 		val := flag.Value.String()
 		if val == "" {
 			return
@@ -463,7 +471,7 @@ func RunImageUpdate(c *core.CommandConfig) error {
 	}
 	queryParams := listQueryParams.QueryParams
 
-	input := getDesiredImageAfterPatch(c)
+	input := getDesiredImageAfterPatch(c, false)
 	img, resp, err := c.CloudApiV6Services.Images().Update(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgImageId)),
 		input,
@@ -704,7 +712,7 @@ func RunImageUpload(c *core.CommandConfig) error {
 		return fmt.Errorf("failed updating image with given properties, but uploading to FTP sucessful: %w", err)
 	}
 
-	properties := getDesiredImageAfterPatch(c)
+	properties := getDesiredImageAfterPatch(c, true)
 	imgs, err := updateImagesAfterUpload(c, diffImgs, properties)
 	if err != nil {
 		return fmt.Errorf("failed updating image with given properties, but uploading to FTP sucessful: %w", err)

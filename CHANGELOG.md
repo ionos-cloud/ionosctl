@@ -1,5 +1,11 @@
 # Changelog
 
+## [v6.6.10] (September 2023)
+### Fixed
+* Fixed #359: `image update` using unset flags.
+* Fixed empty columns on `request list` by increasing the default request depth to 2.
+
+
 ## [v6.6.9] (September 2023)
 ### Fixed
 * Fixed #349: IONOS_API_URL env var value being overriden by default values of flags
