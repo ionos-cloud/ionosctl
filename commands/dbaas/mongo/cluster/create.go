@@ -177,17 +177,17 @@ func ClusterCreateCmd() *core.Command {
 				cluster.BiConnector.Enabled = pointer.From(false)
 			}
 			// Enterprise flags
-			if fn := core.GetFlagName(c.NS, constants.FlagCores); viper.GetString(fn) != "" {
+			if fn := core.GetFlagName(c.NS, constants.FlagCores); viper.IsSet(fn) && viper.GetString(fn) != "" {
 				cluster.Cores = pointer.From(viper.GetInt32(fn))
 			}
-			if fn := core.GetFlagName(c.NS, constants.FlagStorageType); viper.GetString(fn) != "" {
+			if fn := core.GetFlagName(c.NS, constants.FlagStorageType); viper.IsSet(fn) && viper.GetString(fn) != "" {
 				cluster.StorageType = (*ionoscloud.StorageType)(pointer.From(viper.GetString(fn)))
 			}
-			if fn := core.GetFlagName(c.NS, constants.FlagStorageSize); viper.GetString(fn) != "" {
+			if fn := core.GetFlagName(c.NS, constants.FlagStorageSize); viper.IsSet(fn) && viper.GetString(fn) != "" {
 				sizeInt64 := convbytes.StrToUnit(viper.GetString(fn), convbytes.MB)
 				cluster.StorageSize = pointer.From(int32(sizeInt64))
 			}
-			if fn := core.GetFlagName(c.NS, constants.FlagRam); viper.GetString(fn) != "" {
+			if fn := core.GetFlagName(c.NS, constants.FlagRam); viper.IsSet(fn) && viper.GetString(fn) != "" {
 				sizeInt64 := convbytes.StrToUnit(viper.GetString(fn), convbytes.MB)
 				cluster.Ram = pointer.From(int32(sizeInt64))
 			}
@@ -282,7 +282,7 @@ func ClusterCreateCmd() *core.Command {
 	cmd.AddStringFlag(constants.FlagStorageType, "", "SSD",
 		"Custom Storage Type. (only settable for enterprise edition)")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagStorageType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return []string{"HDD", "SSD", "\"SSD Premium\""}, cobra.ShellCompDirectiveNoFileComp
+		return []string{"HDD", "\"SSD Standard\"", "\"SSD Premium\""}, cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddStringFlag(constants.FlagStorageSize, "", "5GB", "Custom Storage: Minimum of 5GB, Greater performance for values greater than 100 GB. (only settable for enterprise edition)")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagStorageSize, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
