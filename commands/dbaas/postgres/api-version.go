@@ -2,9 +2,7 @@ package postgres
 
 import (
 	"context"
-	"errors"
 	"fmt"
-	"io"
 	"strings"
 
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
@@ -13,7 +11,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/utils/clierror"
 	sdkgo "github.com/ionos-cloud/sdk-go-dbaas-postgres"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -160,25 +157,4 @@ func convertAPIVersionToTable(apiVersion sdkgo.APIVersion) ([]map[string]interfa
 	temp[0]["SwaggerUrl"] = *swaggerUrlOk
 
 	return temp, nil
-}
-
-func getAPIVersionCols(flagName string, outErr io.Writer) []string {
-	if viper.IsSet(flagName) {
-		var pgsqlVersionCols []string
-		columnsMap := map[string]string{
-			"Version":    "Version",
-			"SwaggerUrl": "SwaggerUrl",
-		}
-		for _, k := range viper.GetStringSlice(flagName) {
-			col := columnsMap[k]
-			if col != "" {
-				pgsqlVersionCols = append(pgsqlVersionCols, col)
-			} else {
-				clierror.CheckError(errors.New("unknown column "+k), outErr)
-			}
-		}
-		return pgsqlVersionCols
-	} else {
-		return defaultAPIVersionCols
-	}
 }

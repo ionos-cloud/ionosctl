@@ -5,9 +5,9 @@ import (
 	"bytes"
 	"testing"
 
+	"github.com/ionos-cloud/ionosctl/v6/internal/die"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/utils/clierror"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
@@ -23,22 +23,22 @@ func TestRunVersion(t *testing.T) {
 }
 
 func TestGetGithubLatestReleaseErr(t *testing.T) {
-	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
-	clierror.ErrAction = func() { return }
+	defer func(a func()) { die.ErrAction = a }(die.ErrAction)
+	die.ErrAction = func() { return }
 	_, err := getGithubLatestRelease("")
 	assert.Error(t, err)
 }
 
 func TestGetGithubLatestReleaseJsonErr(t *testing.T) {
-	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
-	clierror.ErrAction = func() { return }
+	defer func(a func()) { die.ErrAction = a }(die.ErrAction)
+	die.ErrAction = func() { return }
 	_, err := getGithubLatestRelease(latestGhReleaseUrl)
 	assert.Error(t, err)
 }
 
 func TestGetGithubLatestReleaseTagErr(t *testing.T) {
-	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
-	clierror.ErrAction = func() { return }
+	defer func(a func()) { die.ErrAction = a }(die.ErrAction)
+	die.ErrAction = func() { return }
 	_, err := getGithubLatestRelease("https://api.github.com/ionos-cloud/ionosctl/releases/latest")
 	assert.Error(t, err)
 }

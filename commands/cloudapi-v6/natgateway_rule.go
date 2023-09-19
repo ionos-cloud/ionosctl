@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io"
 	"os"
 	"strings"
 
@@ -18,7 +17,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/utils/clierror"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
@@ -648,36 +646,4 @@ func DeleteAllNatgatewayRules(c *core.CommandConfig) error {
 	}
 
 	return nil
-}
-
-func getNatGatewayRulesCols(flagName string, outErr io.Writer) []string {
-	var cols []string
-	if viper.IsSet(flagName) {
-		cols = viper.GetStringSlice(flagName)
-	} else {
-		return defaultNatGatewayRuleCols
-	}
-
-	columnsMap := map[string]string{
-		"NatGatewayId":         "NatGatewayId",
-		"Name":                 "Name",
-		"PublicIp":             "PublicIp",
-		"Type":                 "Type",
-		"Protocol":             "Protocol",
-		"SourceSubnet":         "SourceSubnet",
-		"TargetSubnet":         "TargetSubnet",
-		"TargetPortRangeStart": "TargetPortRangeStart",
-		"TargetPortRangeEnd":   "TargetPortRangeEnd",
-		"State":                "State",
-	}
-	var natgatewayRuleCols []string
-	for _, k := range cols {
-		col := columnsMap[k]
-		if col != "" {
-			natgatewayRuleCols = append(natgatewayRuleCols, col)
-		} else {
-			clierror.CheckError(errors.New("unknown column "+k), outErr)
-		}
-	}
-	return natgatewayRuleCols
 }

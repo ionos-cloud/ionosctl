@@ -2,9 +2,7 @@ package postgres
 
 import (
 	"context"
-	"errors"
 	"fmt"
-	"io"
 	"os"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres/completer"
@@ -13,7 +11,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/utils/clierror"
 	dbaaspg "github.com/ionos-cloud/ionosctl/v6/services/dbaas-postgres"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -199,31 +196,3 @@ var (
 	defaultBackupCols = []string{"BackupId", "ClusterId", "CreatedDate", "EarliestRecoveryTargetTime", "Active", "State"}
 	allBackupCols     = []string{"BackupId", "ClusterId", "Active", "CreatedDate", "EarliestRecoveryTargetTime", "Version", "State"}
 )
-
-func getBackupCols(flagName string, outErr io.Writer) []string {
-	var cols []string
-	if viper.IsSet(flagName) {
-		cols = viper.GetStringSlice(flagName)
-	} else {
-		return defaultBackupCols
-	}
-	columnsMap := map[string]string{
-		"BackupId":                   "BackupId",
-		"ClusterId":                  "ClusterId",
-		"EarliestRecoveryTargetTime": "EarliestRecoveryTargetTime",
-		"CreatedDate":                "CreatedDate",
-		"Version":                    "Version",
-		"Active":                     "Active",
-		"State":                      "State",
-	}
-	var backupCols []string
-	for _, k := range cols {
-		col := columnsMap[k]
-		if col != "" {
-			backupCols = append(backupCols, col)
-		} else {
-			clierror.CheckError(errors.New("unknown column "+k), outErr)
-		}
-	}
-	return backupCols
-}

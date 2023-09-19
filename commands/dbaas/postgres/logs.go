@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io"
 	"os"
 	"strconv"
 	"strings"
@@ -17,7 +16,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/utils/clierror"
 	dbaaspg "github.com/ionos-cloud/ionosctl/v6/services/dbaas-postgres"
 	"github.com/ionos-cloud/ionosctl/v6/services/dbaas-postgres/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go-dbaas-postgres"
@@ -251,29 +249,4 @@ func convertLogsToTable(logs *[]ionoscloud.ClusterLogsInstances) ([]map[string]i
 	}
 
 	return out, nil
-}
-
-func getClusterLogsCols(flagName string, outErr io.Writer) []string {
-	var cols []string
-	if viper.IsSet(flagName) {
-		cols = viper.GetStringSlice(flagName)
-	} else {
-		return defaultClusterLogsCols
-	}
-	columnsMap := map[string]string{
-		"Name":    "Name",
-		"Message": "Message",
-		"Time":    "Time",
-		"Logs":    "Logs",
-	}
-	var clusterCols []string
-	for _, k := range cols {
-		col := columnsMap[k]
-		if col != "" {
-			clusterCols = append(clusterCols, col)
-		} else {
-			clierror.CheckError(errors.New("unknown column "+k), outErr)
-		}
-	}
-	return clusterCols
 }

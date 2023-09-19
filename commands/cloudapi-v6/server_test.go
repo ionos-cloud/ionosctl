@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"regexp"
 	"strconv"
 	"testing"
 
@@ -15,7 +14,6 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/utils/clierror"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
@@ -1322,28 +1320,4 @@ func TestRunServerResumeAskForConfirmErr(t *testing.T) {
 		err := RunServerResume(cfg)
 		assert.Error(t, err)
 	})
-}
-
-func TestGetServersCols(t *testing.T) {
-	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
-	var b bytes.Buffer
-	clierror.ErrAction = func() { return }
-	w := bufio.NewWriter(&b)
-	viper.Set(core.GetFlagName("server", constants.ArgCols), []string{"Name"})
-	getServersCols(core.GetFlagName("server", constants.ArgCols), core.GetFlagName("server", cloudapiv6.ArgAll), w)
-	err := w.Flush()
-	assert.NoError(t, err)
-}
-
-func TestGetServersColsErr(t *testing.T) {
-	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
-	var b bytes.Buffer
-	clierror.ErrAction = func() { return }
-	w := bufio.NewWriter(&b)
-	viper.Set(core.GetFlagName("server", constants.ArgCols), []string{"Unknown"})
-	getServersCols(core.GetFlagName("server", constants.ArgCols), core.GetFlagName("server", cloudapiv6.ArgAll), w)
-	err := w.Flush()
-	assert.NoError(t, err)
-	re := regexp.MustCompile(`unknown column Unknown`)
-	assert.True(t, re.Match(b.Bytes()))
 }

@@ -6,7 +6,7 @@ require (
 	github.com/cheggaaa/pb/v3 v3.1.4
 	github.com/cilium/fake v0.4.0
 	github.com/cjrd/allocate v0.0.0-20220510215731-986f24f0fb18
-	github.com/fatih/color v1.15.0
+	github.com/fatih/color v1.15.0 // indirect
 	github.com/fatih/structs v1.1.0
 	github.com/gofrs/uuid/v5 v5.0.0
 	github.com/golang/mock v1.6.0

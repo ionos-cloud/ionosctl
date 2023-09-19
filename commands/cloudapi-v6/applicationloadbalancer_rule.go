@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io"
 	"os"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
@@ -17,7 +16,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/utils/clierror"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
@@ -676,34 +674,4 @@ func getAlbForwardingRulePropertiesSet(c *core.CommandConfig) *resources.Applica
 	return &resources.ApplicationLoadBalancerForwardingRuleProperties{
 		ApplicationLoadBalancerForwardingRuleProperties: input,
 	}
-}
-
-func getAlbForwardingRulesCols(flagName string, outErr io.Writer) []string {
-	var cols []string
-	if viper.IsSet(flagName) {
-		cols = viper.GetStringSlice(flagName)
-	} else {
-		return defaultAlbForwardingRuleCols
-	}
-
-	columnsMap := map[string]string{
-		"ForwardingRuleId":   "ForwardingRuleId",
-		"Name":               "Name",
-		"Protocol":           "Protocol",
-		"ListenerIp":         "ListenerIp",
-		"ListenerPort":       "ListenerPort",
-		"ClientTimeout":      "ClientTimeout",
-		"ServerCertificates": "ServerCertificates",
-		"State":              "State",
-	}
-	var forwardingRuleCols []string
-	for _, k := range cols {
-		col := columnsMap[k]
-		if col != "" {
-			forwardingRuleCols = append(forwardingRuleCols, col)
-		} else {
-			clierror.CheckError(errors.New("unknown column "+k), outErr)
-		}
-	}
-	return forwardingRuleCols
 }

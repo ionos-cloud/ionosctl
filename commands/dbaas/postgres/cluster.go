@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io"
 	"os"
 	"strings"
 	"time"
@@ -21,7 +20,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/utils/clierror"
 	cloudapiv6resources "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
 	dbaaspg "github.com/ionos-cloud/ionosctl/v6/services/dbaas-postgres"
 	"github.com/ionos-cloud/ionosctl/v6/services/dbaas-postgres/resources"
@@ -1045,43 +1043,4 @@ func convertClustersToTable(clusters sdkgo.ClusterList) ([]map[string]interface{
 	}
 
 	return clustersConverted, nil
-}
-
-func getClusterCols(flagName string, outErr io.Writer) []string {
-	var cols []string
-	if viper.IsSet(flagName) {
-		cols = viper.GetStringSlice(flagName)
-	} else {
-		return defaultClusterCols
-	}
-
-	// TODO: this binds a key to itself... not to mention, all the keys are just the ClusterPrint slice values?
-	columnsMap := map[string]string{
-		"ClusterId":           "ClusterId",
-		"DisplayName":         "DisplayName",
-		"BackupLocation":      "BackupLocation",
-		"Location":            "Location",
-		"PostgresVersion":     "PostgresVersion",
-		"State":               "State",
-		"Ram":                 "Ram",
-		"Instances":           "Instances",
-		"Cores":               "Cores",
-		"StorageSize":         "StorageSize",
-		"StorageType":         "StorageType",
-		"DatacenterId":        "DatacenterId",
-		"LanId":               "LanId",
-		"Cidr":                "Cidr",
-		"MaintenanceWindow":   "MaintenanceWindow",
-		"SynchronizationMode": "SynchronizationMode",
-	}
-	var clusterCols []string
-	for _, k := range cols {
-		col := columnsMap[k]
-		if col != "" {
-			clusterCols = append(clusterCols, col)
-		} else {
-			clierror.CheckError(errors.New("unknown column "+k), outErr)
-		}
-	}
-	return clusterCols
 }

@@ -2,9 +2,7 @@ package postgres
 
 import (
 	"context"
-	"errors"
 	"fmt"
-	"io"
 	"os"
 
 	pgsqlcompleter "github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres/completer"
@@ -13,7 +11,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/utils/clierror"
 	dbaaspg "github.com/ionos-cloud/ionosctl/v6/services/dbaas-postgres"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -125,23 +122,3 @@ var (
 
 	defaultPgsqlVersionCols = []string{"PostgresVersions"}
 )
-
-func getPgsqlVersionCols(flagName string, outErr io.Writer) []string {
-	if viper.IsSet(flagName) {
-		var pgsqlVersionCols []string
-		columnsMap := map[string]string{
-			"PostgresVersions": "PostgresVersions",
-		}
-		for _, k := range viper.GetStringSlice(flagName) {
-			col := columnsMap[k]
-			if col != "" {
-				pgsqlVersionCols = append(pgsqlVersionCols, col)
-			} else {
-				clierror.CheckError(errors.New("unknown column "+k), outErr)
-			}
-		}
-		return pgsqlVersionCols
-	} else {
-		return defaultPgsqlVersionCols
-	}
-}

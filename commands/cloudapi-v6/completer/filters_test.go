@@ -1,12 +1,8 @@
 package completer
 
 import (
-	"bufio"
-	"bytes"
 	"testing"
 
-	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/utils/clierror"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -223,16 +219,4 @@ type testStruct struct {
 	TestSliceString *[]string
 	testSliceInt    *[]int
 	TestSliceStruct *[]testStruct
-}
-
-func TestGetPropertiesName(t *testing.T) {
-	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
-	var b bytes.Buffer
-	clierror.ErrAction = func() { return }
-	w := bufio.NewWriter(&b)
-	result := getPropertiesName(testStruct{})
-	err := w.Flush()
-	assert.NoError(t, err)
-	expectedResult := []string{"a", "test", "testSliceString"}
-	assert.True(t, utils.StringSlicesEqual(result, expectedResult))
 }
