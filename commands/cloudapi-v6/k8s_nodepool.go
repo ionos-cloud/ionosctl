@@ -35,7 +35,7 @@ var (
 		"K8sVersion":               "properties.k8sVersion",
 		"DatacenterId":             "properties.datacenterId",
 		"NodeCount":                "properties.nodeCount",
-		"CpuFamily":                "properties.cpuArchitecture",
+		"CpuFamily":                "properties.cpuFamily",
 		"StorageType":              "properties.storageType",
 		"State":                    "metadata.state",
 		"LanIds":                   "properties.lan.*.id",

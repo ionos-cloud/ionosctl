@@ -31,7 +31,7 @@ var (
 		"Version":           "properties.version",
 		"State":             "metadata.state",
 		"Features":          "properties.features",
-		"CpuFamily":         "properties.cpuArchitecture",
+		"CpuFamily":         "properties.cpuArchitecture.*.cpuFamily",
 		"SecAuthProtection": "properties.secAuthProtection",
 	}
 
