@@ -45,6 +45,8 @@ func PreCmdConfigTest(t *testing.T, writer io.Writer, preRunner PreCmdRunTest) {
 		Resource:  testConst,
 		Verb:      testConst,
 	}
+
+	preCmdCfg.Command.Command.SetOut(writer)
 	preRunner(preCmdCfg)
 }
 
@@ -117,6 +119,8 @@ func CmdConfigTest(t *testing.T, writer io.Writer, runner CmdRunnerTest) {
 		Context:   context.TODO(),
 		initCfg:   func(c *CommandConfig) error { return nil },
 	}
+
+	cmdConfig.Command.Command.SetOut(writer)
 	cmdConfig = initMockServices(cmdConfig, testMocks)
 	runner(cmdConfig, testMocks)
 }
