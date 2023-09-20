@@ -7,7 +7,6 @@ import (
 	"os"
 	"strings"
 
-	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
@@ -563,81 +562,4 @@ func DeleteAllFlowlogs(c *core.CommandConfig) error {
 
 	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Flowlogs successfully deleted"))
 	return nil
-}
-
-// Output Printing
-
-type FlowLogPrint struct {
-	FlowLogId string `json:"FlowLogId,omitempty"`
-	Name      string `json:"Name,omitempty"`
-	Action    string `json:"Action,omitempty"`
-	Direction string `json:"Direction,omitempty"`
-	Bucket    string `json:"Bucket,omitempty"`
-	State     string `json:"State,omitempty"`
-}
-
-func getFlowLogPrint(resp *resources.Response, c *core.CommandConfig, rule []resources.FlowLog) printer.Result {
-	var r printer.Result
-	if c != nil {
-		if resp != nil {
-			r.ApiResponse = resp
-			r.Resource = c.Resource
-			r.Verb = c.Verb
-			r.WaitForRequest = viper.GetBool(core.GetFlagName(c.NS, constants.ArgWaitForRequest))
-		}
-		if rule != nil {
-			r.OutputJSON = rule
-			r.KeyValue = getFlowLogsKVMaps(rule)
-			r.Columns = tabheaders.GetHeadersAllDefault(defaultFlowLogCols, viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)))
-		}
-	}
-	return r
-}
-
-func getFlowLogs(flowLogs resources.FlowLogs) []resources.FlowLog {
-	ls := make([]resources.FlowLog, 0)
-	if items, ok := flowLogs.GetItemsOk(); ok && items != nil {
-		for _, s := range *items {
-			ls = append(ls, resources.FlowLog{FlowLog: s})
-		}
-	}
-	return ls
-}
-
-func getFlowLogsKVMaps(ls []resources.FlowLog) []map[string]interface{} {
-	out := make([]map[string]interface{}, 0, len(ls))
-	if len(ls) > 0 {
-		for _, l := range ls {
-			o := getFlowLogKVMap(l)
-			out = append(out, o)
-		}
-	}
-	return out
-}
-
-func getFlowLogKVMap(l resources.FlowLog) map[string]interface{} {
-	var flowLogPrint FlowLogPrint
-	if id, ok := l.GetIdOk(); ok && id != nil {
-		flowLogPrint.FlowLogId = *id
-	}
-	if properties, ok := l.GetPropertiesOk(); ok && properties != nil {
-		if name, ok := properties.GetNameOk(); ok && name != nil {
-			flowLogPrint.Name = *name
-		}
-		if action, ok := properties.GetActionOk(); ok && action != nil {
-			flowLogPrint.Action = *action
-		}
-		if direction, ok := properties.GetDirectionOk(); ok && direction != nil {
-			flowLogPrint.Direction = *direction
-		}
-		if bucket, ok := properties.GetBucketOk(); ok && bucket != nil {
-			flowLogPrint.Bucket = *bucket
-		}
-	}
-	if metadata, ok := l.GetMetadataOk(); ok && metadata != nil {
-		if state, ok := metadata.GetStateOk(); ok && state != nil {
-			flowLogPrint.State = *state
-		}
-	}
-	return structs.Map(flowLogPrint)
 }
