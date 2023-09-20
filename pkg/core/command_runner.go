@@ -46,7 +46,7 @@ func NewCommand(ctx context.Context, parent *Command, info CommandBuilder) *Comm
 			if err != nil {
 				return fmt.Errorf("prerun error: %w", err)
 			}
-			clierror.CheckErrorAndDie(err, p.GetStderr())
+			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			// Set Printer in sync with the Output Flag
