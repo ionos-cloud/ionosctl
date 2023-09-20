@@ -35,6 +35,7 @@ func NewCommand(ctx context.Context, parent *Command, info CommandBuilder) *Comm
 		Example: info.Example,
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			cmd.SilenceUsage = true
+
 			// Set Printer in sync with the Output Flag
 			noHeaders, _ := cmd.Flags().GetBool(constants.ArgNoHeaders)
 			p := getPrinter(noHeaders)
