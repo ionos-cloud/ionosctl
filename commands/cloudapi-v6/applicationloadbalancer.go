@@ -15,7 +15,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/json2table"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
@@ -52,7 +51,7 @@ func ApplicationLoadBalancerCmd() *core.Command {
 		},
 	}
 	globalFlags := applicationloadbalancerCmd.GlobalFlags()
-	globalFlags.StringSliceP(constants.ArgCols, "", defaultApplicationLoadBalancerCols, printer.ColsMessage(defaultApplicationLoadBalancerCols))
+	globalFlags.StringSliceP(constants.ArgCols, "", defaultApplicationLoadBalancerCols, tabheaders.ColsMessage(defaultApplicationLoadBalancerCols))
 	_ = viper.BindPFlag(core.GetFlagName(applicationloadbalancerCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = applicationloadbalancerCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allApplicationLoadBalancerCols, cobra.ShellCompDirectiveNoFileComp
@@ -440,7 +439,7 @@ func RunApplicationLoadBalancerCreate(c *core.CommandConfig) error {
 		return err
 	}
 
-	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, utils.GetId(resp)); err != nil {
 		return err
 	}
 
@@ -484,7 +483,7 @@ func RunApplicationLoadBalancerUpdate(c *core.CommandConfig) error {
 		return err
 	}
 
-	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, utils.GetId(resp)); err != nil {
 		return err
 	}
 
@@ -537,7 +536,7 @@ func RunApplicationLoadBalancerDelete(c *core.CommandConfig) error {
 		return err
 	}
 
-	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, utils.GetId(resp)); err != nil {
 		return err
 	}
 
@@ -604,9 +603,9 @@ func DeleteAllApplicationLoadBalancer(c *core.CommandConfig) error {
 			"Starting deleting Application Load Balancer with id: %v...", *id))
 
 		resp, err = c.CloudApiV6Services.ApplicationLoadBalancers().Delete(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)), *id, queryParams)
-		if resp != nil && printer.GetId(resp) != "" {
+		if resp != nil && utils.GetId(resp) != "" {
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
-				constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
+				constants.MessageRequestInfo, utils.GetId(resp), resp.RequestTime))
 		}
 		if err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
@@ -615,7 +614,7 @@ func DeleteAllApplicationLoadBalancer(c *core.CommandConfig) error {
 
 		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(constants.MessageDeletingAll, c.Resource, *id))
 
-		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, utils.GetId(resp)); err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
 			continue
 		}

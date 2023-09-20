@@ -21,7 +21,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
@@ -68,7 +67,7 @@ func K8sNodePoolCmd() *core.Command {
 		},
 	}
 	globalFlags := k8sCmd.GlobalFlags()
-	globalFlags.StringSliceP(constants.ArgCols, "", defaultK8sNodePoolCols, printer.ColsMessage(allK8sNodePoolCols))
+	globalFlags.StringSliceP(constants.ArgCols, "", defaultK8sNodePoolCols, tabheaders.ColsMessage(allK8sNodePoolCols))
 	_ = viper.BindPFlag(core.GetFlagName(k8sCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = k8sCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allK8sNodePoolCols, cobra.ShellCompDirectiveNoFileComp
@@ -507,8 +506,8 @@ func RunK8sNodePoolCreate(c *core.CommandConfig) error {
 		"Creating K8s NodePool in K8s Cluster with ID: %v", viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))))
 
 	u, resp, err := c.CloudApiV6Services.K8s().CreateNodePool(viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)), *newNodePool, queryParams)
-	if resp != nil && printer.GetId(resp) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
+	if resp != nil && utils.GetId(resp) != "" {
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, utils.GetId(resp), resp.RequestTime))
 	}
 	if err != nil {
 		return err
@@ -561,8 +560,8 @@ func RunK8sNodePoolUpdate(c *core.CommandConfig) error {
 	newNodePool := getNewK8sNodePoolUpdated(oldNodePool, c)
 	_, resp, err := c.CloudApiV6Services.K8s().UpdateNodePool(viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)),
 		viper.GetString(core.GetFlagName(c.NS, constants.FlagNodepoolId)), newNodePool, queryParams)
-	if resp != nil && printer.GetId(resp) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
+	if resp != nil && utils.GetId(resp) != "" {
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, utils.GetId(resp), resp.RequestTime))
 	}
 	if err != nil {
 		return err
@@ -619,8 +618,8 @@ func RunK8sNodePoolDelete(c *core.CommandConfig) error {
 		"Starting deleting K8s node pool with id: %v from K8s Cluster with id: %v...", k8sNodePoolId, k8sClusterId))
 
 	resp, err := c.CloudApiV6Services.K8s().DeleteNodePool(k8sClusterId, k8sNodePoolId, queryParams)
-	if resp != nil && printer.GetId(resp) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
+	if resp != nil && utils.GetId(resp) != "" {
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, utils.GetId(resp), resp.RequestTime))
 	}
 	if err != nil {
 		return err
@@ -940,8 +939,8 @@ func DeleteAllK8sNodepools(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Starting deleting K8sNodePool with id: %v...", *id))
 
 		resp, err = c.CloudApiV6Services.K8s().DeleteNodePool(k8sClusterId, *id, queryParams)
-		if resp != nil && printer.GetId(resp) != "" {
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
+		if resp != nil && utils.GetId(resp) != "" {
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, utils.GetId(resp), resp.RequestTime))
 		}
 
 		if err != nil {
@@ -951,7 +950,7 @@ func DeleteAllK8sNodepools(c *core.CommandConfig) error {
 
 		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(constants.MessageDeletingAll, c.Resource, *id))
 
-		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, utils.GetId(resp)); err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *id, err))
 			continue
 		}

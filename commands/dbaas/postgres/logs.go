@@ -14,7 +14,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/json2table"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	dbaaspg "github.com/ionos-cloud/ionosctl/v6/services/dbaas-postgres"
 	"github.com/ionos-cloud/ionosctl/v6/services/dbaas-postgres/resources"
@@ -39,7 +38,7 @@ func LogsCmd() *core.Command {
 		},
 	}
 	globalFlags := clusterCmd.GlobalFlags()
-	globalFlags.StringSliceP(constants.ArgCols, "", defaultClusterLogsCols, printer.ColsMessage(allClusterLogsCols))
+	globalFlags.StringSliceP(constants.ArgCols, "", defaultClusterLogsCols, tabheaders.ColsMessage(allClusterLogsCols))
 	_ = viper.BindPFlag(core.GetFlagName(clusterCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = clusterCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allClusterLogsCols, cobra.ShellCompDirectiveNoFileComp

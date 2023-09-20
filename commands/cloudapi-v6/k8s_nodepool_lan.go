@@ -9,6 +9,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/pointer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/die"
 
@@ -17,7 +18,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
@@ -70,7 +70,7 @@ func K8sNodePoolLanCmd() *core.Command {
 	_ = list.Command.RegisterFlagCompletionFunc(constants.FlagNodepoolId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.K8sNodePoolsIds(os.Stderr, viper.GetString(core.GetFlagName(list.NS, constants.FlagClusterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	list.AddStringSliceFlag(constants.ArgCols, "", defaultK8sNodePoolLanCols, printer.ColsMessage(defaultK8sNodePoolLanCols))
+	list.AddStringSliceFlag(constants.ArgCols, "", defaultK8sNodePoolLanCols, tabheaders.ColsMessage(defaultK8sNodePoolLanCols))
 	_ = list.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultK8sNodePoolLanCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -113,7 +113,7 @@ Required values to run a command:
 	add.AddBoolFlag(cloudapiv6.ArgDhcp, "", true, "Indicates if the Kubernetes Node Pool LAN will reserve an IP using DHCP. E.g.: --dhcp=true, --dhcp=false")
 	add.AddStringSliceFlag(cloudapiv6.ArgNetwork, "", nil, "Slice of IPv4 or IPv6 CIDRs to be routed via the interface. Must contain same number of arguments as --gateway-ip flag")
 	add.AddStringSliceFlag(cloudapiv6.ArgGatewayIp, "", nil, "Slice of IPv4 or IPv6 Gateway IPs for the routes. Must contain same number of arguments as --network flag")
-	add.AddStringSliceFlag(cloudapiv6.ArgCols, "", defaultK8sNodePoolLanCols, printer.ColsMessage(defaultK8sNodePoolLanCols))
+	add.AddStringSliceFlag(cloudapiv6.ArgCols, "", defaultK8sNodePoolLanCols, tabheaders.ColsMessage(defaultK8sNodePoolLanCols))
 	_ = add.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultK8sNodePoolLanCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -225,8 +225,8 @@ func RunK8sNodePoolLanAdd(c *core.CommandConfig) error {
 		input,
 		queryParams,
 	)
-	if resp != nil && printer.GetId(resp) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
+	if resp != nil && utils.GetId(resp) != "" {
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, utils.GetId(resp), resp.RequestTime))
 	}
 	if err != nil {
 		return err
@@ -274,8 +274,8 @@ func RunK8sNodePoolLanRemove(c *core.CommandConfig) error {
 
 	input := removeK8sNodePoolLanInfo(c, ng)
 	_, resp, err := c.CloudApiV6Services.K8s().UpdateNodePool(clusterId, nodePoolId, input, queryParams)
-	if resp != nil && printer.GetId(resp) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
+	if resp != nil && utils.GetId(resp) != "" {
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, utils.GetId(resp), resp.RequestTime))
 	}
 	if err != nil {
 		return err

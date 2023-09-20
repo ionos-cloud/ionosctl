@@ -13,7 +13,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
@@ -54,7 +53,7 @@ func NicCmd() *core.Command {
 		},
 	}
 	globalFlags := nicCmd.GlobalFlags()
-	globalFlags.StringSliceP(constants.ArgCols, "", defaultNicCols, printer.ColsMessage(allNicCols))
+	globalFlags.StringSliceP(constants.ArgCols, "", defaultNicCols, tabheaders.ColsMessage(allNicCols))
 	_ = viper.BindPFlag(core.GetFlagName(nicCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = nicCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allNicCols, cobra.ShellCompDirectiveNoFileComp
@@ -393,14 +392,14 @@ func RunNicCreate(c *core.CommandConfig) error {
 	}
 
 	n, resp, err := c.CloudApiV6Services.Nics().Create(dcId, serverId, input, queryParams)
-	if resp != nil && printer.GetId(resp) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
+	if resp != nil && utils.GetId(resp) != "" {
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, utils.GetId(resp), resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
 
-	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, utils.GetId(resp)); err != nil {
 		return err
 	}
 
@@ -474,14 +473,14 @@ func RunNicUpdate(c *core.CommandConfig) error {
 		input,
 		queryParams,
 	)
-	if resp != nil && printer.GetId(resp) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
+	if resp != nil && utils.GetId(resp) != "" {
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, utils.GetId(resp), resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
 
-	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, utils.GetId(resp)); err != nil {
 		return err
 	}
 
@@ -524,14 +523,14 @@ func RunNicDelete(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Starting deleting Nic with id: %v...", nicId))
 
 	resp, err := c.CloudApiV6Services.Nics().Delete(dcId, serverId, nicId, queryParams)
-	if resp != nil && printer.GetId(resp) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
+	if resp != nil && utils.GetId(resp) != "" {
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, utils.GetId(resp), resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
 
-	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, utils.GetId(resp)); err != nil {
 		return err
 	}
 
@@ -602,8 +601,8 @@ func DeleteAllNics(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Starting deleting Nic with id: %v...", *id))
 
 		resp, err = c.CloudApiV6Services.Nics().Delete(dcId, serverId, *id, queryParams)
-		if resp != nil && printer.GetId(resp) != "" {
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
+		if resp != nil && utils.GetId(resp) != "" {
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, utils.GetId(resp), resp.RequestTime))
 		}
 		if err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
@@ -612,7 +611,7 @@ func DeleteAllNics(c *core.CommandConfig) error {
 
 		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(constants.MessageDeletingAll, c.Resource, *id))
 
-		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, utils.GetId(resp)); err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *id, err))
 		}
 	}
@@ -662,7 +661,7 @@ Required values to run command:
 		CmdRun:     RunLoadBalancerNicAttach,
 		InitClient: true,
 	})
-	attachNic.AddStringSliceFlag(constants.ArgCols, "", defaultNicCols, printer.ColsMessage(allNicCols))
+	attachNic.AddStringSliceFlag(constants.ArgCols, "", defaultNicCols, tabheaders.ColsMessage(allNicCols))
 	_ = attachNic.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allNicCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -701,7 +700,7 @@ Required values to run command:
 		CmdRun:     RunLoadBalancerNicList,
 		InitClient: true,
 	})
-	listNics.AddStringSliceFlag(constants.ArgCols, "", defaultNicCols, printer.ColsMessage(allNicCols))
+	listNics.AddStringSliceFlag(constants.ArgCols, "", defaultNicCols, tabheaders.ColsMessage(allNicCols))
 	_ = listNics.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allNicCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -735,7 +734,7 @@ Required values to run command:
 		CmdRun:     RunLoadBalancerNicGet,
 		InitClient: true,
 	})
-	getNicCmd.AddStringSliceFlag(constants.ArgCols, "", defaultNicCols, printer.ColsMessage(allNicCols))
+	getNicCmd.AddStringSliceFlag(constants.ArgCols, "", defaultNicCols, tabheaders.ColsMessage(allNicCols))
 	_ = getNicCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allNicCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -777,7 +776,7 @@ Required values to run command:
 		CmdRun:     RunLoadBalancerNicDetach,
 		InitClient: true,
 	})
-	detachNic.AddStringSliceFlag(constants.ArgCols, "", defaultNicCols, printer.ColsMessage(allNicCols))
+	detachNic.AddStringSliceFlag(constants.ArgCols, "", defaultNicCols, tabheaders.ColsMessage(allNicCols))
 	_ = detachNic.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allNicCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -839,7 +838,7 @@ func RunLoadBalancerNicAttach(c *core.CommandConfig) error {
 		return err
 	}
 
-	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, utils.GetId(resp)); err != nil {
 		return err
 	}
 
@@ -942,7 +941,7 @@ func RunLoadBalancerNicDetach(c *core.CommandConfig) error {
 		return err
 	}
 
-	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, utils.GetId(resp)); err != nil {
 		return err
 	}
 
@@ -1013,8 +1012,8 @@ func DetachAllNics(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Starting detaching Nic with id: %v...", *id))
 
 		resp, err = c.CloudApiV6Services.Loadbalancers().DetachNic(dcId, lbId, *id, queryParams)
-		if resp != nil && printer.GetId(resp) != "" {
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
+		if resp != nil && utils.GetId(resp) != "" {
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, utils.GetId(resp), resp.RequestTime))
 		}
 		if err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
@@ -1023,7 +1022,7 @@ func DetachAllNics(c *core.CommandConfig) error {
 
 		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(constants.MessageRemovingAll, c.Resource, *id))
 
-		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, utils.GetId(resp)); err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *id, err))
 		}
 	}

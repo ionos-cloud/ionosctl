@@ -13,7 +13,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
@@ -58,7 +57,7 @@ func ApplicationLoadBalancerFlowLogCmd() *core.Command {
 	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgApplicationLoadBalancerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.ApplicationLoadBalancersIds(os.Stderr, viper.GetString(core.GetFlagName(list.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	list.AddStringSliceFlag(constants.ArgCols, "", defaultFlowLogCols, printer.ColsMessage(defaultFlowLogCols))
+	list.AddStringSliceFlag(constants.ArgCols, "", defaultFlowLogCols, tabheaders.ColsMessage(defaultFlowLogCols))
 	_ = list.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultFlowLogCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -101,7 +100,7 @@ func ApplicationLoadBalancerFlowLogCmd() *core.Command {
 		return completer.ApplicationLoadBalancerFlowLogsIds(os.Stderr, viper.GetString(core.GetFlagName(get.NS, cloudapiv6.ArgDataCenterId)),
 			viper.GetString(core.GetFlagName(get.NS, cloudapiv6.ArgApplicationLoadBalancerId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	get.AddStringSliceFlag(constants.ArgCols, "", defaultFlowLogCols, printer.ColsMessage(defaultFlowLogCols))
+	get.AddStringSliceFlag(constants.ArgCols, "", defaultFlowLogCols, tabheaders.ColsMessage(defaultFlowLogCols))
 	_ = get.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultFlowLogCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -150,7 +149,7 @@ Required values to run command:
 	create.AddStringFlag(cloudapiv6.ArgS3Bucket, cloudapiv6.ArgS3BucketShort, "", "S3 bucket name of an existing IONOS Cloud S3 bucket.", core.RequiredFlagOption())
 	create.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait, "Wait for the Request for Application Load Balancer FlowLog creation to be executed")
 	create.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, cloudapiv6.LbTimeoutSeconds, "Timeout option for Request for Application Load Balancer FlowLog creation [seconds]")
-	create.AddStringSliceFlag(constants.ArgCols, "", defaultFlowLogCols, printer.ColsMessage(defaultFlowLogCols))
+	create.AddStringSliceFlag(constants.ArgCols, "", defaultFlowLogCols, tabheaders.ColsMessage(defaultFlowLogCols))
 	_ = create.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultFlowLogCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -204,7 +203,7 @@ Required values to run command:
 	update.AddStringFlag(cloudapiv6.ArgS3Bucket, cloudapiv6.ArgS3BucketShort, "", "S3 bucket name of an existing IONOS Cloud S3 bucket.")
 	update.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait, "Wait for the Request for Application Load Balancer FlowLog update to be executed")
 	update.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, cloudapiv6.LbTimeoutSeconds, "Timeout option for Request for Application Load Balancer FlowLog update [seconds]")
-	update.AddStringSliceFlag(constants.ArgCols, "", defaultFlowLogCols, printer.ColsMessage(defaultFlowLogCols))
+	update.AddStringSliceFlag(constants.ArgCols, "", defaultFlowLogCols, tabheaders.ColsMessage(defaultFlowLogCols))
 	_ = update.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultFlowLogCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -404,7 +403,7 @@ func RunApplicationLoadBalancerFlowLogCreate(c *core.CommandConfig) error {
 		return err
 	}
 
-	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, utils.GetId(resp)); err != nil {
 		return err
 	}
 
@@ -453,7 +452,7 @@ func RunApplicationLoadBalancerFlowLogUpdate(c *core.CommandConfig) error {
 		return err
 	}
 
-	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, utils.GetId(resp)); err != nil {
 		return err
 	}
 
@@ -517,7 +516,7 @@ func RunApplicationLoadBalancerFlowLogDelete(c *core.CommandConfig) error {
 		return err
 	}
 
-	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, utils.GetId(resp)); err != nil {
 		return err
 	}
 
@@ -591,8 +590,8 @@ func DeleteAllApplicationLoadBalancerFlowLog(c *core.CommandConfig) error {
 			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)), *id,
 			queryParams,
 		)
-		if resp != nil && printer.GetId(resp) != "" {
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
+		if resp != nil && utils.GetId(resp) != "" {
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, utils.GetId(resp), resp.RequestTime))
 		}
 		if err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
@@ -601,7 +600,7 @@ func DeleteAllApplicationLoadBalancerFlowLog(c *core.CommandConfig) error {
 
 		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(constants.MessageDeletingAll, c.Resource, *id))
 
-		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, utils.GetId(resp)); err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
 			continue
 		}

@@ -1,6 +1,7 @@
 package tabheaders
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
@@ -40,4 +41,8 @@ func GetHeaders(allColumns []string, defaultColumns []string, customColumns []st
 	}
 
 	return validCustomColumns
+}
+
+func ColsMessage(cols []string) string {
+	return fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", cols)
 }

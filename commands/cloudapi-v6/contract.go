@@ -11,7 +11,6 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -74,7 +73,7 @@ func ContractCmd() *core.Command {
 		},
 	}
 	globalFlags := contractCmd.GlobalFlags()
-	globalFlags.StringSliceP(constants.ArgCols, "", defaultContractCols, printer.ColsMessage(allContractCols))
+	globalFlags.StringSliceP(constants.ArgCols, "", defaultContractCols, tabheaders.ColsMessage(allContractCols))
 	_ = viper.BindPFlag(core.GetFlagName(contractCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = contractCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allContractCols, cobra.ShellCompDirectiveNoFileComp

@@ -9,7 +9,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	dbaaspg "github.com/ionos-cloud/ionosctl/v6/services/dbaas-postgres"
 	"github.com/spf13/cobra"
@@ -28,7 +27,7 @@ func BackupCmd() *core.Command {
 		},
 	}
 	globalFlags := backupCmd.GlobalFlags()
-	globalFlags.StringSliceP(constants.ArgCols, "", defaultBackupCols, printer.ColsMessage(allBackupCols))
+	globalFlags.StringSliceP(constants.ArgCols, "", defaultBackupCols, tabheaders.ColsMessage(allBackupCols))
 	_ = viper.BindPFlag(core.GetFlagName(backupCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = backupCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allBackupCols, cobra.ShellCompDirectiveNoFileComp
@@ -151,7 +150,7 @@ func ClusterBackupCmd() *core.Command {
 	_ = list.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.ClustersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	list.AddStringSliceFlag(constants.ArgCols, "", defaultBackupCols, printer.ColsMessage(allBackupCols))
+	list.AddStringSliceFlag(constants.ArgCols, "", defaultBackupCols, tabheaders.ColsMessage(allBackupCols))
 	_ = list.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allBackupCols, cobra.ShellCompDirectiveNoFileComp
 	})

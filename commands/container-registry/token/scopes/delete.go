@@ -8,7 +8,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	sdkgo "github.com/ionos-cloud/sdk-go-container-registry"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -47,7 +47,7 @@ func TokenScopesDeleteCmd() *core.Command {
 	cmd.AddIntFlag(FlagScopeId, "n", -1, "Scope id")
 	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "List all scopes of all tokens of a registry.")
 
-	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, printer.ColsMessage(allScopeCols))
+	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, tabheaders.ColsMessage(allScopeCols))
 	_ = cmd.Command.RegisterFlagCompletionFunc(
 		constants.ArgCols,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {

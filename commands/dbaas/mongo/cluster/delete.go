@@ -6,13 +6,13 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	sdkgo "github.com/ionos-cloud/sdk-go-dbaas-mongo"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -90,7 +90,7 @@ ionosctl db m c d --all --name <name>`,
 	cmd.AddBoolFlag(constants.ArgNoHeaders, "", false, "When using text output, don't print headers")
 	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Delete all mongo clusters")
 	cmd.AddBoolFlag(constants.FlagName, "", false, "When deleting all clusters, filter the clusters by a name")
-	cmd.AddStringSliceFlag(constants.ArgCols, "", nil, printer.ColsMessage(allCols))
+	cmd.AddStringSliceFlag(constants.ArgCols, "", nil, tabheaders.ColsMessage(allCols))
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allCols, cobra.ShellCompDirectiveNoFileComp
 	})

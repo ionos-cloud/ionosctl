@@ -11,7 +11,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
@@ -41,7 +40,7 @@ func CpuCmd() *core.Command {
 		},
 	}
 	globalFlags := cpuCmd.GlobalFlags()
-	globalFlags.StringSliceP(constants.ArgCols, "", defaultCpuCols, printer.ColsMessage(defaultCpuCols))
+	globalFlags.StringSliceP(constants.ArgCols, "", defaultCpuCols, tabheaders.ColsMessage(defaultCpuCols))
 	_ = viper.BindPFlag(core.GetFlagName(cpuCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = cpuCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultCpuCols, cobra.ShellCompDirectiveNoFileComp

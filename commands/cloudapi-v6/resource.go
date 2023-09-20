@@ -10,7 +10,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/spf13/cobra"
@@ -41,7 +40,7 @@ func ResourceCmd() *core.Command {
 		},
 	}
 	globalFlags := resourceCmd.GlobalFlags()
-	globalFlags.StringSliceP(constants.ArgCols, "", defaultResourceCols, printer.ColsMessage(defaultResourceCols))
+	globalFlags.StringSliceP(constants.ArgCols, "", defaultResourceCols, tabheaders.ColsMessage(defaultResourceCols))
 	_ = viper.BindPFlag(core.GetFlagName(resourceCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = resourceCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultResourceCols, cobra.ShellCompDirectiveNoFileComp
@@ -195,7 +194,7 @@ func GroupResourceCmd() *core.Command {
 		InitClient: true,
 	})
 	listResources.AddInt32Flag(constants.FlagMaxResults, constants.FlagMaxResultsShort, cloudapiv6.DefaultMaxResults, constants.DescMaxResults)
-	listResources.AddStringSliceFlag(constants.ArgCols, "", defaultResourceCols, printer.ColsMessage(defaultResourceCols))
+	listResources.AddStringSliceFlag(constants.ArgCols, "", defaultResourceCols, tabheaders.ColsMessage(defaultResourceCols))
 	_ = listResources.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultResourceCols, cobra.ShellCompDirectiveNoFileComp
 	})

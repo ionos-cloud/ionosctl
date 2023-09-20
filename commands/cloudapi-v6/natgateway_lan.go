@@ -14,7 +14,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
@@ -71,7 +70,7 @@ Required values to run command:
 	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgNatGatewayId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.NatGatewaysIds(os.Stderr, viper.GetString(core.GetFlagName(list.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	list.AddStringSliceFlag(constants.ArgCols, "", defaultNatGatewayLanCols, printer.ColsMessage(defaultNatGatewayLanCols))
+	list.AddStringSliceFlag(constants.ArgCols, "", defaultNatGatewayLanCols, tabheaders.ColsMessage(defaultNatGatewayLanCols))
 	_ = list.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultNatGatewayLanCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -118,7 +117,7 @@ Required values to run command:
 	add.AddStringSliceFlag(cloudapiv6.ArgIps, "", nil, "Collection of Gateway IPs. If not set, it will automatically reserve public IPs")
 	add.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait, "Wait for the Request for NAT Gateway Lan addition to be executed")
 	add.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for NAT Gateway Lan addition [seconds]")
-	add.AddStringSliceFlag(constants.ArgCols, "", defaultNatGatewayLanCols, printer.ColsMessage(defaultNatGatewayLanCols))
+	add.AddStringSliceFlag(constants.ArgCols, "", defaultNatGatewayLanCols, tabheaders.ColsMessage(defaultNatGatewayLanCols))
 	_ = add.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultNatGatewayLanCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -161,7 +160,7 @@ Required values to run command:
 	})
 	removeCmd.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait, "Wait for the Request for NAT Gateway Lan deletion to be executed")
 	removeCmd.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for NAT Gateway Lan deletion [seconds]")
-	removeCmd.AddStringSliceFlag(constants.ArgCols, "", defaultNatGatewayLanCols, printer.ColsMessage(defaultNatGatewayLanCols))
+	removeCmd.AddStringSliceFlag(constants.ArgCols, "", defaultNatGatewayLanCols, tabheaders.ColsMessage(defaultNatGatewayLanCols))
 	_ = removeCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultNatGatewayLanCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -228,14 +227,14 @@ func RunNatGatewayLanAdd(c *core.CommandConfig) error {
 
 	input := getNewNatGatewayLanInfo(c, ng)
 	ng, resp, err := c.CloudApiV6Services.NatGateways().Update(dcId, natGatewayId, *input, queryParams)
-	if resp != nil && printer.GetId(resp) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
+	if resp != nil && utils.GetId(resp) != "" {
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, utils.GetId(resp), resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
 
-	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, utils.GetId(resp)); err != nil {
 		return err
 	}
 
@@ -284,14 +283,14 @@ func RunNatGatewayLanRemove(c *core.CommandConfig) error {
 
 	input := removeNatGatewayLanInfo(c, ng)
 	ng, resp, err := c.CloudApiV6Services.NatGateways().Update(dcId, natGatewayId, *input, queryParams)
-	if resp != nil && printer.GetId(resp) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
+	if resp != nil && utils.GetId(resp) != "" {
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, utils.GetId(resp), resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
 
-	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, utils.GetId(resp)); err != nil {
 		return err
 	}
 
@@ -355,14 +354,14 @@ func RemoveAllNatGatewayLans(c *core.CommandConfig) error {
 			}
 
 			natGateway, resp, err = c.CloudApiV6Services.NatGateways().Update(dcId, natGatewayId, *natGatewaysProps, queryParams)
-			if resp != nil && printer.GetId(resp) != "" {
-				fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
+			if resp != nil && utils.GetId(resp) != "" {
+				fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, utils.GetId(resp), resp.RequestTime))
 			}
 			if err != nil {
 				return err
 			}
 
-			if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+			if err = utils.WaitForRequest(c, waiter.RequestInterrogator, utils.GetId(resp)); err != nil {
 				return err
 			}
 		}

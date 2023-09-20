@@ -10,7 +10,6 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	sdkgo "github.com/ionos-cloud/sdk-go-container-registry"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -34,7 +33,7 @@ func RegPostCmd() *core.Command {
 		},
 	)
 
-	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, printer.ColsMessage(allCols))
+	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, tabheaders.ColsMessage(allCols))
 	_ = cmd.Command.RegisterFlagCompletionFunc(
 		constants.ArgCols,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {

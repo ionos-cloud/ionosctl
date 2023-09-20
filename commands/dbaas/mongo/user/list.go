@@ -11,7 +11,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	sdkgo "github.com/ionos-cloud/sdk-go-dbaas-mongo"
 	"github.com/spf13/cobra"
@@ -86,7 +85,7 @@ ionosctl dbaas mongo user list --cluster-id <cluster-id>`,
 		return completer.MongoClusterIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddBoolFlag(constants.ArgNoHeaders, "", false, "When using text output, don't print headers")
-	cmd.AddStringSliceFlag(constants.ArgCols, "", nil, printer.ColsMessage(allCols))
+	cmd.AddStringSliceFlag(constants.ArgCols, "", nil, tabheaders.ColsMessage(allCols))
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allCols, cobra.ShellCompDirectiveNoFileComp
 	})

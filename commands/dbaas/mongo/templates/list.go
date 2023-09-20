@@ -11,7 +11,6 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/spf13/cobra"
 )
 
@@ -61,7 +60,7 @@ func TemplatesListCmd() *core.Command {
 	})
 
 	cmd.AddBoolFlag(constants.ArgNoHeaders, "", false, "When using text output, don't print headers")
-	cmd.AddStringSliceFlag(constants.ArgCols, "", allCols, printer.ColsMessage(allCols))
+	cmd.AddStringSliceFlag(constants.ArgCols, "", allCols, tabheaders.ColsMessage(allCols))
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allCols, cobra.ShellCompDirectiveNoFileComp
 	})

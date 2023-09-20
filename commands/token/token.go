@@ -3,7 +3,7 @@ package token
 import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -18,7 +18,7 @@ func TokenCmd() *core.Command {
 		},
 	}
 	globalFlags := tokenCmd.GlobalFlags()
-	globalFlags.StringSliceP(constants.ArgCols, "", nil, printer.ColsMessage(allTokenCols))
+	globalFlags.StringSliceP(constants.ArgCols, "", nil, tabheaders.ColsMessage(allTokenCols))
 	_ = viper.BindPFlag(core.GetFlagName(tokenCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = tokenCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allTokenCols, cobra.ShellCompDirectiveNoFileComp

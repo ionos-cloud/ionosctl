@@ -9,7 +9,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	dbaaspg "github.com/ionos-cloud/ionosctl/v6/services/dbaas-postgres"
 	"github.com/spf13/cobra"
@@ -28,7 +27,7 @@ func PgsqlVersionCmd() *core.Command {
 		},
 	}
 	globalFlags := pgsqlversionCmd.GlobalFlags()
-	globalFlags.StringSliceP(constants.ArgCols, "", defaultPgsqlVersionCols, printer.ColsMessage(defaultPgsqlVersionCols))
+	globalFlags.StringSliceP(constants.ArgCols, "", defaultPgsqlVersionCols, tabheaders.ColsMessage(defaultPgsqlVersionCols))
 	_ = viper.BindPFlag(core.GetFlagName(pgsqlversionCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = pgsqlversionCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultPgsqlVersionCols, cobra.ShellCompDirectiveNoFileComp

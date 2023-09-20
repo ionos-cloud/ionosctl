@@ -4,17 +4,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"regexp"
 	"strings"
 	"text/tabwriter"
 
 	"github.com/fatih/structs"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
 )
-
-func ColsMessage(cols []string) string {
-	return fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", cols)
-}
 
 type Result struct {
 	Message        string
@@ -38,7 +34,7 @@ func (prt *Result) PrintText(out io.Writer, noHeaders bool) error {
 		resultPrint.Message = prt.Message
 	}
 	if prt.ApiResponse != nil {
-		requestId, err := GetRequestId(GetRequestPath(prt.ApiResponse))
+		requestId, err := utils.GetRequestId(utils.GetRequestPath(prt.ApiResponse))
 		if err != nil {
 			return err
 		}
@@ -67,7 +63,7 @@ func (prt *Result) PrintJSON(out io.Writer) error {
 		resultPrint.Message = prt.Message
 	}
 	if prt.ApiResponse != nil {
-		requestId, err := GetRequestId(GetRequestPath(prt.ApiResponse))
+		requestId, err := utils.GetRequestId(utils.GetRequestPath(prt.ApiResponse))
 		if err != nil {
 			return err
 		}
@@ -168,27 +164,4 @@ func printText(out io.Writer, cols []string, keyValueMap []map[string]interface{
 	}
 
 	return w.Flush()
-}
-
-var requestPathRegex = regexp.MustCompile(`https?://[a-zA-Z0-9./-]+/requests/([a-z0-9-]+)/status`)
-
-func GetRequestId(path string) (string, error) {
-	if !requestPathRegex.MatchString(path) {
-		return "", fmt.Errorf("%s does not contain requestId", path)
-	}
-	return requestPathRegex.FindStringSubmatch(path)[1], nil
-}
-
-func GetId(r *resources.Response) string {
-	if id, err := GetRequestId(GetRequestPath(r)); err == nil {
-		return id
-	}
-	return ""
-}
-
-func GetRequestPath(r *resources.Response) string {
-	if r != nil && r.Header != nil && len(r.Header) > 0 {
-		return r.Header.Get("location")
-	}
-	return ""
 }

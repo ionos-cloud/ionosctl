@@ -14,7 +14,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
@@ -53,7 +52,7 @@ func AlbRuleHttpRuleCmd() *core.Command {
 		},
 	}
 	globalFlags := albRuleHttpRuleCmd.GlobalFlags()
-	globalFlags.StringSliceP(constants.ArgCols, "", defaultAlbRuleHttpRuleCols, printer.ColsMessage(allAlbRuleHttpRuleCols))
+	globalFlags.StringSliceP(constants.ArgCols, "", defaultAlbRuleHttpRuleCols, tabheaders.ColsMessage(allAlbRuleHttpRuleCols))
 	_ = viper.BindPFlag(core.GetFlagName(albRuleHttpRuleCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = albRuleHttpRuleCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allAlbRuleHttpRuleCols, cobra.ShellCompDirectiveNoFileComp
@@ -338,7 +337,7 @@ func RunAlbRuleHttpRuleAdd(c *core.CommandConfig) error {
 		return err
 	}
 
-	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, utils.GetId(resp)); err != nil {
 		return err
 	}
 
@@ -376,7 +375,7 @@ func RunAlbRuleHttpRuleRemove(c *core.CommandConfig) error {
 			return err
 		}
 		if resp != nil {
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, utils.GetId(resp), resp.RequestTime))
 		}
 
 		return nil
@@ -428,7 +427,7 @@ func RunAlbRuleHttpRuleRemove(c *core.CommandConfig) error {
 		return err
 	}
 
-	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, utils.GetId(resp)); err != nil {
 		return err
 	}
 
@@ -499,14 +498,14 @@ func RemoveAllHTTPRules(c *core.CommandConfig) (*resources.Response, error) {
 		queryParams,
 	)
 	if resp != nil {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Request Id: %v", printer.GetId(resp)))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Request Id: %v", utils.GetId(resp)))
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 	if err != nil {
 		return nil, err
 	}
 
-	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, utils.GetId(resp)); err != nil {
 		return nil, err
 	}
 

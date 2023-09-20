@@ -12,7 +12,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/spf13/cobra"
@@ -44,7 +43,7 @@ func LocationCmd() *core.Command {
 		},
 	}
 	globalFlags := locationCmd.GlobalFlags()
-	globalFlags.StringSliceP(constants.ArgCols, "", defaultLocationCols, printer.ColsMessage(allLocationCols))
+	globalFlags.StringSliceP(constants.ArgCols, "", defaultLocationCols, tabheaders.ColsMessage(allLocationCols))
 	_ = viper.BindPFlag(core.GetFlagName(locationCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = locationCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allLocationCols, cobra.ShellCompDirectiveNoFileComp

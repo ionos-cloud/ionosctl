@@ -9,7 +9,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/json2table"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	sdkgo "github.com/ionos-cloud/sdk-go-dbaas-postgres"
 	"github.com/spf13/cobra"
@@ -28,7 +27,7 @@ func APIVersionCmd() *core.Command {
 		},
 	}
 	globalFlags := apiversionCmd.GlobalFlags()
-	globalFlags.StringSliceP(constants.ArgCols, "", defaultAPIVersionCols, printer.ColsMessage(defaultAPIVersionCols))
+	globalFlags.StringSliceP(constants.ArgCols, "", defaultAPIVersionCols, tabheaders.ColsMessage(defaultAPIVersionCols))
 	_ = viper.BindPFlag(core.GetFlagName(apiversionCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = apiversionCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultAPIVersionCols, cobra.ShellCompDirectiveNoFileComp

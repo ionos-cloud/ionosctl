@@ -16,7 +16,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
@@ -68,7 +67,7 @@ func TargetGroupTargetCmd() *core.Command {
 	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgTargetGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.TargetGroupIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	list.AddStringSliceFlag(constants.ArgCols, "", defaultTargetGroupTargetCols, printer.ColsMessage(defaultTargetGroupTargetCols))
+	list.AddStringSliceFlag(constants.ArgCols, "", defaultTargetGroupTargetCols, tabheaders.ColsMessage(defaultTargetGroupTargetCols))
 	_ = list.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultTargetGroupTargetCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -109,7 +108,7 @@ Required values to run command:
 	add.AddBoolFlag(cloudapiv6.ArgMaintenanceEnabled, cloudapiv6.ArgMaintenanceShort, false, "Maintenance mode prevents the target from receiving balanced traffic.")
 	add.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait, "Wait for the Request for Target Group Target addition to be executed")
 	add.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for Target Group Target addition [seconds]")
-	add.AddStringSliceFlag(constants.ArgCols, "", defaultTargetGroupTargetCols, printer.ColsMessage(defaultTargetGroupTargetCols))
+	add.AddStringSliceFlag(constants.ArgCols, "", defaultTargetGroupTargetCols, tabheaders.ColsMessage(defaultTargetGroupTargetCols))
 	_ = add.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultTargetGroupTargetCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -138,7 +137,7 @@ Required values to run command:
 	remove.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete all Target Group Targets")
 	remove.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait, "Wait for the Request for Target Group Target deletion to be executed")
 	remove.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for Target Group Target deletion [seconds]")
-	remove.AddStringSliceFlag(constants.ArgCols, "", defaultTargetGroupTargetCols, printer.ColsMessage(defaultTargetGroupTargetCols))
+	remove.AddStringSliceFlag(constants.ArgCols, "", defaultTargetGroupTargetCols, tabheaders.ColsMessage(defaultTargetGroupTargetCols))
 	_ = remove.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultTargetGroupTargetCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -242,7 +241,7 @@ func RunTargetGroupTargetAdd(c *core.CommandConfig) error {
 		return err
 	}
 
-	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, utils.GetId(resp)); err != nil {
 		return err
 	}
 
@@ -326,7 +325,7 @@ func RunTargetGroupTargetRemove(c *core.CommandConfig) error {
 		return err
 	}
 
-	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, utils.GetId(resp)); err != nil {
 		return err
 	}
 
@@ -373,14 +372,14 @@ func RemoveAllTargetGroupTarget(c *core.CommandConfig) (*resources.Response, err
 		resources.QueryParams{},
 	)
 	if resp != nil {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Request Id: %v", printer.GetId(resp)))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Request Id: %v", utils.GetId(resp)))
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 	if err != nil {
 		return nil, err
 	}
 
-	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, utils.GetId(resp)); err != nil {
 		return nil, err
 	}
 

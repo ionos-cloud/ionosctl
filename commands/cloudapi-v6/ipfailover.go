@@ -14,7 +14,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
@@ -44,7 +43,7 @@ func IpfailoverCmd() *core.Command {
 		},
 	}
 	globalFlags := ipfailoverCmd.GlobalFlags()
-	globalFlags.StringSliceP(constants.ArgCols, "", defaultIpFailoverCols, printer.ColsMessage(defaultIpFailoverCols))
+	globalFlags.StringSliceP(constants.ArgCols, "", defaultIpFailoverCols, tabheaders.ColsMessage(defaultIpFailoverCols))
 	_ = viper.BindPFlag(core.GetFlagName(ipfailoverCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = ipfailoverCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultIpFailoverCols, cobra.ShellCompDirectiveNoFileComp
@@ -248,14 +247,14 @@ func RunIpFailoverAdd(c *core.CommandConfig) error {
 
 	ipsFailovers := make([]ionoscloud.IPFailover, 0)
 	lanUpdated, resp, err := c.CloudApiV6Services.Lans().Update(dcId, lanId, getIpFailoverInfo(c), queryParams)
-	if resp != nil && printer.GetId(resp) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
+	if resp != nil && utils.GetId(resp) != "" {
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, utils.GetId(resp), resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
 
-	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, utils.GetId(resp)); err != nil {
 		return err
 	}
 
@@ -327,14 +326,14 @@ func RunIpFailoverRemove(c *core.CommandConfig) error {
 	}
 
 	_, resp, err := c.CloudApiV6Services.Lans().Update(dcId, lanId, removeIpFailoverInfo(c, ipfailovers), queryParams)
-	if resp != nil && printer.GetId(resp) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
+	if resp != nil && utils.GetId(resp) != "" {
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, utils.GetId(resp), resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
 
-	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, utils.GetId(resp)); err != nil {
 		return err
 	}
 
@@ -409,14 +408,14 @@ func RemoveAllIpFailovers(c *core.CommandConfig) error {
 		if ipfailovers, ok := properties.GetIpFailoverOk(); ok && ipfailovers != nil {
 			_, resp, err = c.CloudApiV6Services.Lans().Update(dcId, lanId, lanProperties, queryParams)
 			if resp != nil {
-				fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Request Id: %v", printer.GetId(resp)))
+				fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Request Id: %v", utils.GetId(resp)))
 				fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 			}
 			if err != nil {
 				return err
 			}
 
-			if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+			if err = utils.WaitForRequest(c, waiter.RequestInterrogator, utils.GetId(resp)); err != nil {
 				return err
 			}
 		}

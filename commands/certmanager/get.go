@@ -7,7 +7,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"github.com/spf13/cobra"
 )
@@ -33,7 +32,7 @@ func CertGetCmd() *core.Command {
 	cmd.AddBoolFlag(FlagCert, "", false, "Print the certificate")
 	cmd.AddBoolFlag(FlagCertChain, "", false, "Print the certificate chain")
 
-	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, printer.ColsMessage(defaultCertificateCols))
+	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, tabheaders.ColsMessage(defaultCertificateCols))
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultCertificateCols, cobra.ShellCompDirectiveNoFileComp
 	})

@@ -9,7 +9,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	sdkgo "github.com/ionos-cloud/sdk-go-container-registry"
 	"github.com/spf13/cobra"
@@ -62,7 +61,7 @@ func TokenReplaceCmd() *core.Command {
 			}, cobra.ShellCompDirectiveNoFileComp
 		},
 	)
-	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, printer.ColsMessage(AllTokenCols))
+	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, tabheaders.ColsMessage(AllTokenCols))
 	_ = cmd.Command.RegisterFlagCompletionFunc(
 		constants.ArgCols,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {

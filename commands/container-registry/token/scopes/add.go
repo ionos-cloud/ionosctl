@@ -11,7 +11,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/registry"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -50,7 +49,7 @@ func TokenScopesAddCmd() *core.Command {
 	cmd.AddStringFlag(FlagType, "y", "", "Scope type", core.RequiredFlagOption())
 	cmd.AddStringSliceFlag(FlagActions, "a", []string{}, "Scope actions", core.RequiredFlagOption())
 
-	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, printer.ColsMessage(allScopeCols))
+	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, tabheaders.ColsMessage(allScopeCols))
 	_ = cmd.Command.RegisterFlagCompletionFunc(
 		constants.ArgCols,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {

@@ -7,6 +7,7 @@ import (
 	"github.com/gofrs/uuid/v5"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dns/zone"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"github.com/spf13/viper"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
@@ -15,7 +16,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/spf13/cobra"
 )
 
@@ -44,7 +44,7 @@ func RecordCommand() *core.Command {
 			TraverseChildren: true,
 		},
 	}
-	cmd.Command.PersistentFlags().StringSlice(constants.ArgCols, nil, printer.ColsMessage(allCols))
+	cmd.Command.PersistentFlags().StringSlice(constants.ArgCols, nil, tabheaders.ColsMessage(allCols))
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allCols, cobra.ShellCompDirectiveNoFileComp
 	})
