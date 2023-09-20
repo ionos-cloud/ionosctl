@@ -368,10 +368,7 @@ func RunVolumeListAll(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, totalTime))
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutputPreconverted(allVolumes, allVolumesConverted,
 		tabheaders.GetHeaders(allVolumeCols, defaultVolumeCols, cols))
@@ -420,10 +417,7 @@ func RunVolumeList(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("items", allVolumeJSONPaths, volumes.Volumes,
 		tabheaders.GetHeaders(allVolumeCols, defaultVolumeCols, cols))
@@ -460,10 +454,7 @@ func RunVolumeGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("", allVolumeJSONPaths, vol.Volume,
 		tabheaders.GetHeaders(allVolumeCols, defaultVolumeCols, cols))
@@ -500,10 +491,7 @@ func RunVolumeCreate(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("", allVolumeJSONPaths, vol.Volume,
 		tabheaders.GetHeaders(allVolumeCols, defaultVolumeCols, cols))
@@ -541,10 +529,7 @@ func RunVolumeUpdate(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("", allVolumeJSONPaths, vol.Volume,
 		tabheaders.GetHeaders(allVolumeCols, defaultVolumeCols, cols))
@@ -571,11 +556,10 @@ func RunVolumeDelete(c *core.CommandConfig) error {
 			return err
 		}
 
-		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Volumes successfully deleted"))
 		return nil
 	}
 
-	if !confirm.Ask("delete volume", viper.GetBool(constants.ArgForce)) {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete volume", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -853,7 +837,7 @@ func DeleteAllVolumes(c *core.CommandConfig) error {
 		}
 	}
 
-	if !confirm.Ask("delete all the Volumes", viper.GetBool(constants.ArgForce)) {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete all the Volumes", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -888,6 +872,7 @@ func DeleteAllVolumes(c *core.CommandConfig) error {
 		return multiErr
 	}
 
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Volumes successfully deleted"))
 	return nil
 }
 
@@ -1115,10 +1100,7 @@ func RunServerVolumeAttach(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("", allVolumeJSONPaths, attachedVol.Volume,
 		tabheaders.GetHeaders(allVolumeCols, defaultVolumeCols, cols))
@@ -1131,6 +1113,7 @@ func RunServerVolumeAttach(c *core.CommandConfig) error {
 }
 
 func RunServerVolumesList(c *core.CommandConfig) error {
+	fmt.Println(viper.GetString(constants.ArgOutput), "yas")
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
 
@@ -1167,10 +1150,7 @@ func RunServerVolumesList(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("items", allVolumeJSONPaths, attachedVols.AttachedVolumes,
 		tabheaders.GetHeaders(allVolumeCols, defaultVolumeCols, cols))
@@ -1205,10 +1185,7 @@ func RunServerVolumeGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("", allVolumeJSONPaths, attachedVol.Volume,
 		tabheaders.GetHeaders(allVolumeCols, defaultVolumeCols, cols))
@@ -1233,10 +1210,9 @@ func RunServerVolumeDetach(c *core.CommandConfig) error {
 			return err
 		}
 
-		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Volumes successfully detached"))
 		return nil
 	}
-	if !confirm.Ask("detach volume from server", viper.GetBool(constants.ArgForce)) {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "detach volume from server", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -1309,7 +1285,7 @@ func DetachAllServerVolumes(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
 
-	if !confirm.Ask("detach all the Volumes", viper.GetBool(constants.ArgForce)) {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "detach all the Volumes", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -1344,6 +1320,7 @@ func DetachAllServerVolumes(c *core.CommandConfig) error {
 		return multiErr
 	}
 
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Volumes successfully detached"))
 	return nil
 }
 

@@ -5,7 +5,6 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"os"
 	"testing"
 
 	"github.com/golang/mock/gomock"
@@ -580,7 +579,7 @@ func TestRunBackupUnitDeleteAskForConfirm(t *testing.T) {
 		viper.Set(constants.ArgQuiet, false)
 		viper.Set(constants.ArgForce, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgBackupUnitId), testBackupUnitVar)
-		cfg.Stdin = bytes.NewReader([]byte("YES\n"))
+		cfg.Command.Command.SetIn(bytes.NewReader([]byte("YES\n")))
 		rm.CloudApiV6Mocks.BackupUnit.EXPECT().Delete(testBackupUnitVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(nil, nil)
 		err := RunBackupUnitDelete(cfg)
 		assert.NoError(t, err)
@@ -596,8 +595,8 @@ func TestRunBackupUnitDeleteAskForConfirmErr(t *testing.T) {
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(constants.ArgForce, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgBackupUnitId), testBackupUnitVar)
-		cfg.Stdin = os.Stdin
+		cfg.Command.Command.SetIn(bytes.NewReader([]byte("\n")))
 		err := RunBackupUnitDelete(cfg)
-		assert.Error(t, err)
+		assert.NoError(t, err)
 	})
 }

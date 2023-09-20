@@ -270,10 +270,7 @@ func RunFlowLogList(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return nil
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	flowLogs, resp, err := c.CloudApiV6Services.FlowLogs().List(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
@@ -300,10 +297,7 @@ func RunFlowLogList(c *core.CommandConfig) error {
 }
 
 func RunFlowLogGet(c *core.CommandConfig) error {
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return nil
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	listQueryParams, err := query.GetListQueryParams(c)
 	if err != nil {
@@ -338,10 +332,7 @@ func RunFlowLogGet(c *core.CommandConfig) error {
 }
 
 func RunFlowLogCreate(c *core.CommandConfig) error {
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return nil
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	listQueryParams, err := query.GetListQueryParams(c)
 	if err != nil {
@@ -402,12 +393,10 @@ func RunFlowLogDelete(c *core.CommandConfig) error {
 			return err
 		}
 
-		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Flowlogs successfully deleted"))
-
 		return nil
 	}
 
-	if !confirm.Ask("delete flow log", viper.GetBool(constants.ArgForce)) {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete flow log", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -535,7 +524,7 @@ func DeleteAllFlowlogs(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
 
-	if !confirm.Ask("delete all the flow logs", viper.GetBool(constants.ArgForce)) {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete all the flow logs", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -572,6 +561,7 @@ func DeleteAllFlowlogs(c *core.CommandConfig) error {
 		return multiErr
 	}
 
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Flowlogs successfully deleted"))
 	return nil
 }
 

@@ -51,10 +51,7 @@ func TokenListCmd() *core.Command {
 
 func CmdListToken(c *core.CommandConfig) error {
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll))
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	if !allFlag {
 		id := viper.GetString(core.GetFlagName(c.NS, FlagRegId))

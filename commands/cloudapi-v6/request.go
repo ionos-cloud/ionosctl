@@ -197,10 +197,13 @@ func RunRequestList(c *core.CommandConfig) error {
 		requests = sortRequestsByTime(requests, viper.GetInt(core.GetFlagName(c.NS, cloudapiv6.ArgLatest)))
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
+	if itemsOk, ok := requests.GetItemsOk(); ok && itemsOk != nil {
+		if len(*itemsOk) == 0 {
+			return fmt.Errorf("error getting requests based on given criteria")
+		}
 	}
+
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("items", allRequestJSONPaths, requests.Requests,
 		tabheaders.GetHeaders(allRequestCols, defaultRequestCols, cols))
@@ -232,10 +235,7 @@ func RunRequestGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("", allRequestJSONPaths, req.Request,
 		tabheaders.GetHeaders(allRequestCols, defaultRequestCols, cols))
@@ -273,10 +273,7 @@ func RunRequestWait(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("", allRequestJSONPaths, req.Request,
 		tabheaders.GetHeaders(allRequestCols, defaultRequestCols, cols))

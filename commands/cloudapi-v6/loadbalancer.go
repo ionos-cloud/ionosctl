@@ -297,10 +297,7 @@ func RunLoadBalancerListAll(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, totalTime))
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutputPreconverted(allLoadbalancers, allLoadbalancersConverted,
 		tabheaders.GetHeaders(allLoadbalancerCols, defaultLoadbalancerCols, cols))
@@ -334,10 +331,7 @@ func RunLoadBalancerList(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("items", allLoadbalancerJSONPaths, lbs.Loadbalancers,
 		tabheaders.GetHeaders(allLoadbalancerCols, defaultLoadbalancerCols, cols))
@@ -373,10 +367,7 @@ func RunLoadBalancerGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("", allLoadbalancerJSONPaths, lb.Loadbalancer,
 		tabheaders.GetHeaders(allLoadbalancerCols, defaultLoadbalancerCols, cols))
@@ -415,10 +406,7 @@ func RunLoadBalancerCreate(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("", allLoadbalancerJSONPaths, lb.Loadbalancer,
 		tabheaders.GetHeaders(allLoadbalancerCols, defaultLoadbalancerCols, cols))
@@ -478,10 +466,7 @@ func RunLoadBalancerUpdate(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("", allLoadbalancerJSONPaths, lb.Loadbalancer,
 		tabheaders.GetHeaders(allLoadbalancerCols, defaultLoadbalancerCols, cols))
@@ -509,11 +494,10 @@ func RunLoadBalancerDelete(c *core.CommandConfig) error {
 			return err
 		}
 
-		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Load Balancers successfully deleted"))
 		return nil
 	}
 
-	if !confirm.Ask("delete loadbalancer", viper.GetBool(constants.ArgForce)) {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete loadbalancer", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -580,7 +564,7 @@ func DeleteAllLoadBalancers(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
 
-	if !confirm.Ask("delete all the LoadBalancers", viper.GetBool(constants.ArgForce)) {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete all the LoadBalancers", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -615,5 +599,6 @@ func DeleteAllLoadBalancers(c *core.CommandConfig) error {
 		return multiErr
 	}
 
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Load Balancers successfully deleted"))
 	return nil
 }

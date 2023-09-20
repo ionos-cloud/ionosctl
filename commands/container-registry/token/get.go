@@ -58,10 +58,7 @@ func CmdGetToken(c *core.CommandConfig) error {
 	regId := viper.GetString(core.GetFlagName(c.NS, FlagRegId))
 	tokenId := viper.GetString(core.GetFlagName(c.NS, FlagTokenId))
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	token, _, err := c.ContainerRegistryServices.Token().Get(tokenId, regId)
 	if err != nil {

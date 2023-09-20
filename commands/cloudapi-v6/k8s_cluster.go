@@ -270,10 +270,7 @@ func RunK8sClusterList(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutputPreconverted(k8ss.KubernetesClusters, k8ssConverted,
 		tabheaders.GetHeaders(allK8sClusterCols, defaultK8sClusterCols, cols))
@@ -313,10 +310,7 @@ func RunK8sClusterGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutputPreconverted(u.KubernetesCluster, uConverted,
 		tabheaders.GetHeaders(allK8sClusterCols, defaultK8sClusterCols, cols))
@@ -376,10 +370,7 @@ func RunK8sClusterCreate(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutputPreconverted(u.KubernetesCluster, uConverted,
 		tabheaders.GetHeaders(allK8sClusterCols, defaultK8sClusterCols, cols))
@@ -431,10 +422,7 @@ func RunK8sClusterUpdate(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutputPreconverted(k8sUpd.KubernetesCluster, k8sUpdConverted,
 		tabheaders.GetHeaders(allK8sClusterCols, defaultK8sClusterCols, cols))
@@ -461,11 +449,10 @@ func RunK8sClusterDelete(c *core.CommandConfig) error {
 			return err
 		}
 
-		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Kubernetes Clusters successfully deleted"))
 		return nil
 	}
 
-	if !confirm.Ask("delete k8s cluster") {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete k8s cluster", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -649,7 +636,7 @@ func DeleteAllK8sClusters(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
 
-	if !confirm.Ask("delete all the K8sClusters") {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete all the K8sClusters", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -685,6 +672,7 @@ func DeleteAllK8sClusters(c *core.CommandConfig) error {
 		return multiErr
 	}
 
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Kubernetes Clusters successfully deleted"))
 	return nil
 }
 
@@ -736,27 +724,25 @@ func convertK8sClusterToTable(cluster ionoscloud.KubernetesCluster) ([]map[strin
 		return nil, fmt.Errorf("could not retrieve K8s Cluster properties")
 	}
 
-	maintenanceWindow, ok := properties.GetMaintenanceWindowOk()
-	if !ok || maintenanceWindow == nil {
-		return nil, fmt.Errorf("could not retrieve K8s Cluster maintenance window")
-	}
-
-	day, ok := maintenanceWindow.GetDayOfTheWeekOk()
-	if !ok || day == nil {
-		return nil, fmt.Errorf("could not retrieve K8s Cluster maintenance window day")
-	}
-
-	tyme, ok := maintenanceWindow.GetTimeOk()
-	if !ok || tyme == nil {
-		return nil, fmt.Errorf("could not retrieve K8s Cluster maintenance window time")
-	}
-
 	temp, err := json2table.ConvertJSONToTable("", allK8sClusterJSONPaths, cluster)
 	if err != nil {
 		return nil, fmt.Errorf("could not convert from JSON to Table format: %w", err)
 	}
 
-	temp[0]["MaintenanceWindow"] = fmt.Sprintf("%s %s", *day, *tyme)
+	maintenanceWindow, ok := properties.GetMaintenanceWindowOk()
+	if ok && maintenanceWindow != nil {
+		day, ok := maintenanceWindow.GetDayOfTheWeekOk()
+		if !ok || day == nil {
+			return nil, fmt.Errorf("could not retrieve K8s Cluster maintenance window day")
+		}
+
+		tyme, ok := maintenanceWindow.GetTimeOk()
+		if !ok || tyme == nil {
+			return nil, fmt.Errorf("could not retrieve K8s Cluster maintenance window time")
+		}
+
+		temp[0]["MaintenanceWindow"] = fmt.Sprintf("%s %s", *day, *tyme)
+	}
 
 	return temp, nil
 }

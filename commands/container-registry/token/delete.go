@@ -66,7 +66,7 @@ func CmdDeleteToken(c *core.CommandConfig) error {
 
 			msg := fmt.Sprintf("delete Token: %s", tokenId)
 
-			if !confirm.Ask(msg, viper.GetBool(constants.ArgForce)) {
+			if !confirm.FAsk(c.Command.Command.InOrStdin(), msg, viper.GetBool(constants.ArgForce)) {
 				return nil
 			}
 
@@ -86,7 +86,7 @@ func CmdDeleteToken(c *core.CommandConfig) error {
 		for _, token := range *tokens.GetItems() {
 			msg := fmt.Sprintf("delete Token: %s", *token.Id)
 
-			if !confirm.Ask(msg, viper.GetBool(constants.ArgForce)) {
+			if !confirm.FAsk(c.Command.Command.InOrStdin(), msg, viper.GetBool(constants.ArgForce)) {
 				return nil
 			}
 
@@ -113,7 +113,7 @@ func CmdDeleteToken(c *core.CommandConfig) error {
 		for _, token := range *tokens.GetItems() {
 			msg := fmt.Sprintf("delete Token: %s", *token.Id)
 
-			if !confirm.Ask(msg, viper.GetBool(constants.ArgForce)) {
+			if !confirm.FAsk(c.Command.Command.InOrStdin(), msg, viper.GetBool(constants.ArgForce)) {
 				return nil
 			}
 

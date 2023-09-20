@@ -59,7 +59,7 @@ func TestFAsk(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			in := bytes.NewBufferString(tt.input)
-			actual := FAsk("Test", in, tt.overrides...)
+			actual := FAsk(in, "Test", tt.overrides...)
 			if actual != tt.expected {
 				t.Errorf("FAsk() = %v; want %v", actual, tt.expected)
 			}

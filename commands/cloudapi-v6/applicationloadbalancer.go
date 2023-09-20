@@ -306,10 +306,7 @@ func RunApplicationLoadBalancerListAll(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, totalTime))
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutputPreconverted(allApplicationLoadBalancers, allApplicationLoadBalancersConverted,
 		tabheaders.GetHeaders(allApplicationLoadBalancerCols, defaultApplicationLoadBalancerCols, cols))
@@ -333,10 +330,7 @@ func RunApplicationLoadBalancerList(c *core.CommandConfig) error {
 	}
 
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return nil
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
 		"Getting ApplicationLoadBalancers from Datacenter with ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))))
@@ -363,10 +357,7 @@ func RunApplicationLoadBalancerGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return nil
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	queryParams := listQueryParams.QueryParams
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(),
@@ -406,10 +397,7 @@ func RunApplicationLoadBalancerCreate(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return nil
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	queryParams := listQueryParams.QueryParams
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
@@ -473,10 +461,7 @@ func RunApplicationLoadBalancerUpdate(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return nil
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	queryParams := listQueryParams.QueryParams
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
@@ -529,8 +514,6 @@ func RunApplicationLoadBalancerDelete(c *core.CommandConfig) error {
 			return err
 		}
 
-		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Application Load Balancers successfully deleted"))
-
 		return nil
 	}
 
@@ -539,7 +522,7 @@ func RunApplicationLoadBalancerDelete(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
 		"ApplicationLoadBalancer ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId))))
 
-	if !confirm.Ask("delete application load balancer", viper.GetBool(constants.ArgForce)) {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete application load balancer", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -604,7 +587,7 @@ func DeleteAllApplicationLoadBalancer(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
 
-	if !confirm.Ask("delete all the Application Load Balancers", viper.GetBool(constants.ArgForce)) {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete all the Application Load Balancers", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -642,6 +625,7 @@ func DeleteAllApplicationLoadBalancer(c *core.CommandConfig) error {
 		return multiErr
 	}
 
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Application Load Balancers successfully deleted"))
 	return nil
 }
 

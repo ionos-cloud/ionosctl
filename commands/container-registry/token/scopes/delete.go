@@ -82,7 +82,7 @@ func CmdGetTokenScopesDelete(c *core.CommandConfig) error {
 
 		msg := fmt.Sprintf("delete all scopes from Token: %s", *token.Id)
 
-		if !confirm.Ask(msg, viper.GetBool(constants.ArgForce)) {
+		if !confirm.FAsk(c.Command.Command.InOrStdin(), msg, viper.GetBool(constants.ArgForce)) {
 			return nil
 		}
 
@@ -119,7 +119,7 @@ func CmdGetTokenScopesDelete(c *core.CommandConfig) error {
 
 	msg := fmt.Sprintf("delete scope %d from Token: %s", id+1, *token.Id)
 
-	if !confirm.Ask(msg, viper.GetBool(constants.ArgForce)) {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), msg, viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 

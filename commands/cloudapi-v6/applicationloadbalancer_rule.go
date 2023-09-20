@@ -283,10 +283,7 @@ func PreRunDcApplicationLoadBalancerForwardingRuleIds(c *core.PreCommandConfig) 
 }
 
 func RunApplicationLoadBalancerForwardingRuleList(c *core.CommandConfig) error {
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
 		"Datacenter ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))))
@@ -326,10 +323,7 @@ func RunApplicationLoadBalancerForwardingRuleList(c *core.CommandConfig) error {
 }
 
 func RunApplicationLoadBalancerForwardingRuleGet(c *core.CommandConfig) error {
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	listQueryParams, err := query.GetListQueryParams(c)
 	if err != nil {
@@ -371,10 +365,7 @@ func RunApplicationLoadBalancerForwardingRuleGet(c *core.CommandConfig) error {
 }
 
 func RunApplicationLoadBalancerForwardingRuleCreate(c *core.CommandConfig) error {
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	listQueryParams, err := query.GetListQueryParams(c)
 	if err != nil {
@@ -434,10 +425,7 @@ func RunApplicationLoadBalancerForwardingRuleCreate(c *core.CommandConfig) error
 }
 
 func RunApplicationLoadBalancerForwardingRuleUpdate(c *core.CommandConfig) error {
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	listQueryParams, err := query.GetListQueryParams(c)
 	if err != nil {
@@ -507,8 +495,6 @@ func RunApplicationLoadBalancerForwardingRuleDelete(c *core.CommandConfig) error
 			return err
 		}
 
-		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Application Load Balancer Forwarding Rules successfully deleted"))
-
 		return nil
 	}
 
@@ -519,7 +505,7 @@ func RunApplicationLoadBalancerForwardingRuleDelete(c *core.CommandConfig) error
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
 		"ForwardingRule ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId))))
 
-	if !confirm.Ask("delete application load balancer forwarding rule") {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete application load balancer forwarding rule", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -592,7 +578,7 @@ func DeleteAllApplicationLoadBalancerForwardingRule(c *core.CommandConfig) error
 		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
 
-	if !confirm.Ask("delete all the Forwarding Rules") {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete all the Forwarding Rules", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -635,6 +621,7 @@ func DeleteAllApplicationLoadBalancerForwardingRule(c *core.CommandConfig) error
 		return multiErr
 	}
 
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Application Load Balancer Forwarding Rules successfully deleted"))
 	return nil
 }
 

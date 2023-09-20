@@ -5,7 +5,6 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"os"
 	"testing"
 
 	"github.com/golang/mock/gomock"
@@ -436,6 +435,7 @@ func TestRunApplicationLoadBalancerForwardingRuleDelete(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgApplicationLoadBalancerId), testAlbForwardingRuleVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRuleId), testAlbForwardingRuleVar)
 		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().DeleteForwardingRule(testAlbForwardingRuleVar, testAlbForwardingRuleVar, testAlbForwardingRuleVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(nil, nil)
+		cfg.Command.Command.SetIn(bytes.NewReader([]byte("YES\n")))
 		err := RunApplicationLoadBalancerForwardingRuleDelete(cfg)
 		assert.NoError(t, err)
 	})
@@ -454,6 +454,7 @@ func TestRunApplicationLoadBalancerForwardingRuleDeleteAll(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
 		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().ListForwardingRules(testAlbForwardingRuleVar, testAlbForwardingRuleVar, gomock.AssignableToTypeOf(testListQueryParam)).Return(testAlbForwardingRules, nil, nil)
 		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().DeleteForwardingRule(testAlbForwardingRuleVar, testAlbForwardingRuleVar, testAlbForwardingRuleVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(nil, nil)
+		cfg.Command.Command.SetIn(bytes.NewReader([]byte("YES\n")))
 		err := RunApplicationLoadBalancerForwardingRuleDelete(cfg)
 		assert.NoError(t, err)
 	})
@@ -472,6 +473,7 @@ func TestRunApplicationLoadBalancerForwardingRuleDeleteAllErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
 		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().ListForwardingRules(testAlbForwardingRuleVar, testAlbForwardingRuleVar, gomock.AssignableToTypeOf(testListQueryParam)).Return(testAlbForwardingRules, nil, nil)
 		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().DeleteForwardingRule(testAlbForwardingRuleVar, testAlbForwardingRuleVar, testAlbForwardingRuleVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&testResponse, testApplicationLoadBalancerForwardingRuleErr)
+		cfg.Command.Command.SetIn(bytes.NewReader([]byte("YES\n")))
 		err := RunApplicationLoadBalancerForwardingRuleDelete(cfg)
 		assert.Error(t, err)
 	})
@@ -489,6 +491,7 @@ func TestRunApplicationLoadBalancerForwardingRuleDeleteAllListErr(t *testing.T) 
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgApplicationLoadBalancerId), testAlbForwardingRuleVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
 		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().ListForwardingRules(testAlbForwardingRuleVar, testAlbForwardingRuleVar, gomock.AssignableToTypeOf(testListQueryParam)).Return(testAlbForwardingRules, nil, testApplicationLoadBalancerForwardingRuleErr)
+		cfg.Command.Command.SetIn(bytes.NewReader([]byte("\n")))
 		err := RunApplicationLoadBalancerForwardingRuleDelete(cfg)
 		assert.Error(t, err)
 	})
@@ -506,6 +509,7 @@ func TestRunApplicationLoadBalancerForwardingRuleDeleteErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgApplicationLoadBalancerId), testAlbForwardingRuleVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRuleId), testAlbForwardingRuleVar)
 		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().DeleteForwardingRule(testAlbForwardingRuleVar, testAlbForwardingRuleVar, testAlbForwardingRuleVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(nil, testApplicationLoadBalancerForwardingRuleErr)
+		cfg.Command.Command.SetIn(bytes.NewReader([]byte("YES\n")))
 		err := RunApplicationLoadBalancerForwardingRuleDelete(cfg)
 		assert.Error(t, err)
 	})
@@ -525,6 +529,7 @@ func TestRunApplicationLoadBalancerForwardingRuleDeleteWaitErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), true)
 		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().DeleteForwardingRule(testAlbForwardingRuleVar, testAlbForwardingRuleVar, testAlbForwardingRuleVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&testResponse, nil)
 		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testRequestIdVar).Return(&testRequestStatus, nil, testRequestErr)
+		cfg.Command.Command.SetIn(bytes.NewReader([]byte("YES\n")))
 		err := RunApplicationLoadBalancerForwardingRuleDelete(cfg)
 		assert.Error(t, err)
 	})
@@ -541,7 +546,7 @@ func TestRunApplicationLoadBalancerForwardingRuleDeleteAskForConfirm(t *testing.
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testAlbForwardingRuleVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgApplicationLoadBalancerId), testAlbForwardingRuleVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRuleId), testAlbForwardingRuleVar)
-		cfg.Stdin = bytes.NewReader([]byte("YES\n"))
+		cfg.Command.Command.SetIn(bytes.NewReader([]byte("YES\n")))
 		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().DeleteForwardingRule(testAlbForwardingRuleVar, testAlbForwardingRuleVar, testAlbForwardingRuleVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(nil, nil)
 		err := RunApplicationLoadBalancerForwardingRuleDelete(cfg)
 		assert.NoError(t, err)
@@ -559,8 +564,8 @@ func TestRunApplicationLoadBalancerForwardingRuleDeleteAskForConfirmErr(t *testi
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testAlbForwardingRuleVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgApplicationLoadBalancerId), testAlbForwardingRuleVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRuleId), testAlbForwardingRuleVar)
-		cfg.Stdin = os.Stdin
+		cfg.Command.Command.SetIn(bytes.NewReader([]byte("\n")))
 		err := RunApplicationLoadBalancerForwardingRuleDelete(cfg)
-		assert.Error(t, err)
+		assert.NoError(t, err)
 	})
 }

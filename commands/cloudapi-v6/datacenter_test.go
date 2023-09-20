@@ -5,7 +5,6 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"os"
 	"testing"
 
 	"github.com/golang/mock/gomock"
@@ -487,7 +486,7 @@ func TestRunDataCenterDeleteAskForConfirm(t *testing.T) {
 		viper.Set(constants.ArgForce, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testDatacenterVar)
 		viper.Set(core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), false)
-		cfg.Stdin = bytes.NewReader([]byte("YES\n"))
+		cfg.Command.Command.SetIn(bytes.NewReader([]byte("YES\n")))
 		rm.CloudApiV6Mocks.Datacenter.EXPECT().Delete(testDatacenterVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(nil, nil)
 		err := RunDataCenterDelete(cfg)
 		assert.NoError(t, err)
@@ -504,8 +503,8 @@ func TestRunDataCenterDeleteAskForConfirmErr(t *testing.T) {
 		viper.Set(constants.ArgForce, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testDatacenterVar)
 		viper.Set(core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), false)
-		cfg.Stdin = os.Stdin
+		cfg.Command.Command.SetIn(bytes.NewReader([]byte("\n")))
 		err := RunDataCenterDelete(cfg)
-		assert.Error(t, err)
+		assert.NoError(t, err)
 	})
 }

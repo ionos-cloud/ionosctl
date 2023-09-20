@@ -78,13 +78,8 @@ func RunServerConsoleGet(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
-
 	out, err := jsontabwriter.GenerateOutput("", allConsoleJSONPaths, t.RemoteConsoleUrl,
-		tabheaders.GetHeadersAllDefault(defaultImageCols, cols))
+		tabheaders.GetHeadersAllDefault(defaultImageCols, nil))
 	if err != nil {
 		return err
 	}

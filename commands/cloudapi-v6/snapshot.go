@@ -281,10 +281,7 @@ func RunSnapshotList(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("items", allSnapshotJSONPaths, ss.Snapshots,
 		tabheaders.GetHeadersAllDefault(defaultSnapshotCols, cols))
@@ -315,10 +312,7 @@ func RunSnapshotGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("", allSnapshotJSONPaths, s.Snapshot,
 		tabheaders.GetHeadersAllDefault(defaultSnapshotCols, cols))
@@ -360,10 +354,7 @@ func RunSnapshotCreate(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("", allSnapshotJSONPaths, s.Snapshot,
 		tabheaders.GetHeadersAllDefault(defaultSnapshotCols, cols))
@@ -399,10 +390,7 @@ func RunSnapshotUpdate(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("", allSnapshotJSONPaths, s.Snapshot,
 		tabheaders.GetHeadersAllDefault(defaultSnapshotCols, cols))
@@ -421,7 +409,7 @@ func RunSnapshotRestore(c *core.CommandConfig) error {
 	}
 
 	queryParams := listQueryParams.QueryParams
-	if !confirm.Ask("restore snapshot", viper.GetBool(constants.ArgForce)) {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "restore snapshot", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -463,11 +451,10 @@ func RunSnapshotDelete(c *core.CommandConfig) error {
 			return err
 		}
 
-		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Snapshots successfully deleted"))
 		return nil
 	}
 
-	if !confirm.Ask("delete snapshot", viper.GetBool(constants.ArgForce)) {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete snapshot", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -634,7 +621,7 @@ func DeleteAllSnapshots(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
 
-	if !confirm.Ask("delete all the Snapshots", viper.GetBool(constants.ArgForce)) {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete all the Snapshots", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -669,5 +656,6 @@ func DeleteAllSnapshots(c *core.CommandConfig) error {
 		return multiErr
 	}
 
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Snapshots successfully deleted"))
 	return nil
 }

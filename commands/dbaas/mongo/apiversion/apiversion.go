@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
@@ -34,10 +33,8 @@ func ApiVersionCmd() *core.Command {
 				return err
 			}
 
-			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-
 			out, err := jsontabwriter.GenerateOutput("", allJSONPaths, list,
-				tabheaders.GetHeadersAllDefault(allCols, cols))
+				tabheaders.GetHeadersAllDefault(allCols, nil))
 			if err != nil {
 				return err
 			}

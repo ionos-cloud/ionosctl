@@ -5,7 +5,6 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"os"
 	"testing"
 
 	"github.com/golang/mock/gomock"
@@ -592,7 +591,7 @@ func TestRunNatGatewayRuleDeleteAskForConfirm(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNatGatewayRuleVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNatGatewayId), testNatGatewayRuleVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRuleId), testNatGatewayRuleVar)
-		cfg.Stdin = bytes.NewReader([]byte("YES\n"))
+		cfg.Command.Command.SetIn(bytes.NewReader([]byte("YES\n")))
 		rm.CloudApiV6Mocks.NatGateway.EXPECT().DeleteRule(testNatGatewayRuleVar, testNatGatewayRuleVar, testNatGatewayRuleVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(nil, nil)
 		err := RunNatGatewayRuleDelete(cfg)
 		assert.NoError(t, err)
@@ -610,8 +609,8 @@ func TestRunNatGatewayRuleDeleteAskForConfirmErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNatGatewayRuleVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNatGatewayId), testNatGatewayRuleVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRuleId), testNatGatewayRuleVar)
-		cfg.Stdin = os.Stdin
+		cfg.Command.Command.SetIn(bytes.NewReader([]byte("\n")))
 		err := RunNatGatewayRuleDelete(cfg)
-		assert.Error(t, err)
+		assert.NoError(t, err)
 	})
 }

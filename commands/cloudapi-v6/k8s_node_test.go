@@ -5,7 +5,6 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"os"
 	"testing"
 
 	"github.com/golang/mock/gomock"
@@ -307,7 +306,7 @@ func TestRunK8sNodeRecreateAskForConfirm(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sNodeId), testNodeVar)
 		viper.Set(core.GetFlagName(cfg.NS, constants.FlagNodepoolId), testNodeVar)
 		viper.Set(core.GetFlagName(cfg.NS, constants.FlagClusterId), testNodeVar)
-		cfg.Stdin = bytes.NewReader([]byte("YES\n"))
+		cfg.Command.Command.SetIn(bytes.NewReader([]byte("YES\n")))
 		rm.CloudApiV6Mocks.K8s.EXPECT().RecreateNode(testNodeVar, testNodeVar, testNodeVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(nil, nil)
 		err := RunK8sNodeRecreate(cfg)
 		assert.NoError(t, err)
@@ -325,9 +324,9 @@ func TestRunK8sNodeRecreateAskForConfirmErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sNodeId), testNodeVar)
 		viper.Set(core.GetFlagName(cfg.NS, constants.FlagNodepoolId), testNodeVar)
 		viper.Set(core.GetFlagName(cfg.NS, constants.FlagClusterId), testNodeVar)
-		cfg.Stdin = os.Stdin
+		cfg.Command.Command.SetIn(bytes.NewReader([]byte("\n")))
 		err := RunK8sNodeRecreate(cfg)
-		assert.Error(t, err)
+		assert.NoError(t, err)
 	})
 }
 
@@ -467,7 +466,7 @@ func TestRunK8sNodeDeleteAskForConfirm(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sNodeId), testNodeVar)
 		viper.Set(core.GetFlagName(cfg.NS, constants.FlagNodepoolId), testNodeVar)
 		viper.Set(core.GetFlagName(cfg.NS, constants.FlagClusterId), testNodeVar)
-		cfg.Stdin = bytes.NewReader([]byte("YES\n"))
+		cfg.Command.Command.SetIn(bytes.NewReader([]byte("YES\n")))
 		rm.CloudApiV6Mocks.K8s.EXPECT().DeleteNode(testNodeVar, testNodeVar, testNodeVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(nil, nil)
 		err := RunK8sNodeDelete(cfg)
 		assert.NoError(t, err)
@@ -485,8 +484,8 @@ func TestRunK8sNodeDeleteAskForConfirmErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sNodeId), testNodeVar)
 		viper.Set(core.GetFlagName(cfg.NS, constants.FlagNodepoolId), testNodeVar)
 		viper.Set(core.GetFlagName(cfg.NS, constants.FlagClusterId), testNodeVar)
-		cfg.Stdin = os.Stdin
+		cfg.Command.Command.SetIn(bytes.NewReader([]byte("\n")))
 		err := RunK8sNodeDelete(cfg)
-		assert.Error(t, err)
+		assert.NoError(t, err)
 	})
 }

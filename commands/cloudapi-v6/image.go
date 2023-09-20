@@ -258,8 +258,6 @@ func RunImageDelete(c *core.CommandConfig) error {
 			return err
 		}
 
-		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Images deleted successfully"))
-
 		return nil
 	}
 
@@ -270,7 +268,7 @@ func RunImageDelete(c *core.CommandConfig) error {
 
 	queryParams := listQueryParams.QueryParams
 
-	if !confirm.Ask("delete image") {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete image", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -359,7 +357,7 @@ func DeleteAllNonPublicImages(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
 
-	if !confirm.Ask("delete all the images") {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete all the images", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -391,6 +389,8 @@ func DeleteAllNonPublicImages(c *core.CommandConfig) error {
 	if multiErr != nil {
 		return multiErr
 	}
+
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Images deleted successfully"))
 	return nil
 }
 
@@ -488,10 +488,7 @@ func RunImageUpdate(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("", allImageJSONPaths, img.Image,
 		tabheaders.GetHeaders(allImageCols, defaultImageCols, cols))
@@ -721,10 +718,7 @@ func RunImageUpload(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Successfully uploaded and updated images"))
 	// oh my lord, we need to get rid of the `resources` wrappers...
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("", allImageJSONPaths, imgs,
 		tabheaders.GetHeaders(allImageCols, defaultImageCols, cols))
@@ -789,10 +783,7 @@ func RunImageList(c *core.CommandConfig) error {
 		}
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("items", allImageJSONPaths, images.Images,
 		tabheaders.GetHeaders(allImageCols, defaultImageCols, cols))
@@ -822,10 +813,7 @@ func RunImageGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("", allImageJSONPaths, img.Image,
 		tabheaders.GetHeaders(allImageCols, defaultImageCols, cols))

@@ -5,7 +5,6 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"os"
 	"testing"
 
 	"github.com/golang/mock/gomock"
@@ -261,7 +260,12 @@ func TestRunK8sClusterListQueryParams(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgFilters), []string{fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar)})
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgOrderBy), testQueryParamVar)
 		viper.Set(core.GetFlagName(cfg.NS, constants.FlagMaxResults), testMaxResultsVar)
-		rm.CloudApiV6Mocks.K8s.EXPECT().ListClusters(gomock.AssignableToTypeOf(testListQueryParam)).Return(resources.K8sClusters{}, &testResponse, nil)
+		rm.CloudApiV6Mocks.K8s.EXPECT().ListClusters(gomock.AssignableToTypeOf(testListQueryParam)).Return(
+			resources.K8sClusters{
+				KubernetesClusters: ionoscloud.KubernetesClusters{
+					Items: &[]ionoscloud.KubernetesCluster{},
+				},
+			}, &testResponse, nil)
 		err := RunK8sClusterList(cfg)
 		assert.NoError(t, err)
 	})
@@ -797,7 +801,7 @@ func TestRunK8sClusterDeleteAskForConfirm(t *testing.T) {
 		viper.Set(constants.ArgForce, false)
 		viper.Set(core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), false)
 		viper.Set(core.GetFlagName(cfg.NS, constants.FlagClusterId), testClusterVar)
-		cfg.Stdin = bytes.NewReader([]byte("YES\n"))
+		cfg.Command.Command.SetIn(bytes.NewReader([]byte("YES\n")))
 		rm.CloudApiV6Mocks.K8s.EXPECT().DeleteCluster(testClusterVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(nil, nil)
 		err := RunK8sClusterDelete(cfg)
 		assert.NoError(t, err)
@@ -814,8 +818,8 @@ func TestRunK8sClusterDeleteAskForConfirmErr(t *testing.T) {
 		viper.Set(constants.ArgForce, false)
 		viper.Set(core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), false)
 		viper.Set(core.GetFlagName(cfg.NS, constants.FlagClusterId), testClusterVar)
-		cfg.Stdin = os.Stdin
+		cfg.Command.Command.SetIn(bytes.NewReader([]byte("\n")))
 		err := RunK8sClusterDelete(cfg)
-		assert.Error(t, err)
+		assert.NoError(t, err)
 	})
 }

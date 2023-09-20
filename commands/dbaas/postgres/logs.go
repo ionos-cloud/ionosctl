@@ -109,7 +109,7 @@ func RunClusterLogsList(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	logsConverted, err := convertLogsToTable(clusterLogs.Instances)
 	if err != nil {

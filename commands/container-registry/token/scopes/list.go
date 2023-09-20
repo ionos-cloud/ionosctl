@@ -72,10 +72,7 @@ func CmdGetTokenScopesList(c *core.CommandConfig) error {
 		return fmt.Errorf("could not retrieve Container Registry Token Scopes")
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", allScopeJSONPaths, scopes,
 		tabheaders.GetHeaders(allScopeCols, defaultScopeCols, cols))

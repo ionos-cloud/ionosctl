@@ -307,10 +307,7 @@ func RunNetworkLoadBalancerListAll(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, totalTime))
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutputPreconverted(allNetworkLoadBalancers, allNetworkLoadBalancersConverted,
 		tabheaders.GetHeadersAllDefault(defaultNetworkLoadBalancerCols, cols))
@@ -344,10 +341,7 @@ func RunNetworkLoadBalancerList(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("items", allNetworkLoadBalancerJSONPaths, networkloadbalancers.NetworkLoadBalancers,
 		tabheaders.GetHeaders(allNetworkLoadBalancerCols, defaultNetworkLoadBalancerCols, cols))
@@ -387,10 +381,7 @@ func RunNetworkLoadBalancerGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("", allNetworkLoadBalancerJSONPaths, ng.NetworkLoadBalancer,
 		tabheaders.GetHeaders(allNetworkLoadBalancerCols, defaultNetworkLoadBalancerCols, cols))
@@ -444,10 +435,7 @@ func RunNetworkLoadBalancerCreate(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("", allNetworkLoadBalancerJSONPaths, ng.NetworkLoadBalancer,
 		tabheaders.GetHeaders(allNetworkLoadBalancerCols, defaultNetworkLoadBalancerCols, cols))
@@ -486,10 +474,7 @@ func RunNetworkLoadBalancerUpdate(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("", allNetworkLoadBalancerJSONPaths, ng.NetworkLoadBalancer,
 		tabheaders.GetHeaders(allNetworkLoadBalancerCols, defaultNetworkLoadBalancerCols, cols))
@@ -517,11 +502,10 @@ func RunNetworkLoadBalancerDelete(c *core.CommandConfig) error {
 			return err
 		}
 
-		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Network Load Balancers successfully deleted"))
 		return nil
 	}
 
-	if !confirm.Ask("delete network load balancer", viper.GetBool(constants.ArgForce)) {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete network load balancer", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -630,7 +614,7 @@ func DeleteAllNetworkLoadBalancers(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
 
-	if !confirm.Ask("delete all the Network Load Balancers", viper.GetBool(constants.ArgForce)) {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete all the Network Load Balancers", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -665,5 +649,6 @@ func DeleteAllNetworkLoadBalancers(c *core.CommandConfig) error {
 		return multiErr
 	}
 
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Network Load Balancers successfully deleted"))
 	return nil
 }

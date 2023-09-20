@@ -5,7 +5,6 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"os"
 	"testing"
 
 	"github.com/golang/mock/gomock"
@@ -443,7 +442,7 @@ func TestRunCdromDetachAskForConfirm(t *testing.T) {
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(constants.ArgQuiet, false)
 		viper.Set(constants.ArgForce, false)
-		cfg.Stdin = bytes.NewReader([]byte("YES\n"))
+		cfg.Command.Command.SetIn(bytes.NewReader([]byte("YES\n")))
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testCdromVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testCdromVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgCdromId), testCdromVar)
@@ -462,12 +461,12 @@ func TestRunServerCdromDetachAskForConfirmErr(t *testing.T) {
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(constants.ArgQuiet, false)
 		viper.Set(constants.ArgForce, false)
-		cfg.Stdin = os.Stdin
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testCdromVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testCdromVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgCdromId), testCdromVar)
 		viper.Set(core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), false)
+		cfg.Command.Command.SetIn(bytes.NewReader([]byte("\n")))
 		err := RunServerCdromDetach(cfg)
-		assert.Error(t, err)
+		assert.NoError(t, err)
 	})
 }

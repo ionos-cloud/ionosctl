@@ -303,10 +303,7 @@ func RunNatGatewayListAll(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, totalTime))
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutputPreconverted(allNatGateways, allNatGatewaysConverted,
 		tabheaders.GetHeaders(allNatGatewayCols, defaultNatGatewayCols, cols))
@@ -336,10 +333,7 @@ func RunNatGatewayList(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("items", allNatGatewayJSONPaths, natgateways.NatGateways,
 		tabheaders.GetHeadersAllDefault(defaultNatGatewayCols, cols))
@@ -379,10 +373,7 @@ func RunNatGatewayGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("", allNatGatewayJSONPaths, ng.NatGateway,
 		tabheaders.GetHeadersAllDefault(defaultNatGatewayCols, cols))
@@ -429,10 +420,7 @@ func RunNatGatewayCreate(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("", allNatGatewayJSONPaths, ng.NatGateway,
 		tabheaders.GetHeadersAllDefault(defaultNatGatewayCols, cols))
@@ -471,10 +459,7 @@ func RunNatGatewayUpdate(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("", allNatGatewayJSONPaths, ng.NatGateway,
 		tabheaders.GetHeadersAllDefault(defaultNatGatewayCols, cols))
@@ -502,11 +487,10 @@ func RunNatGatewayDelete(c *core.CommandConfig) error {
 			return err
 		}
 
-		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("NAT Gateways successfully deleted"))
 		return nil
 	}
 
-	if !confirm.Ask("delete nat gateway", viper.GetBool(constants.ArgForce)) {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete nat gateway", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -594,7 +578,7 @@ func DeleteAllNatgateways(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
 
-	if !confirm.Ask("delete all the NAT Gateways", viper.GetBool(constants.ArgForce)) {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete all the NAT Gateways", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -629,5 +613,6 @@ func DeleteAllNatgateways(c *core.CommandConfig) error {
 		return multiErr
 	}
 
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("NAT Gateways successfully deleted"))
 	return nil
 }

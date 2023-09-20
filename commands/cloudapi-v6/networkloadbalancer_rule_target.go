@@ -225,10 +225,7 @@ func RunNlbRuleTargetList(c *core.CommandConfig) error {
 		return fmt.Errorf("error getting rule targets")
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("", allNetworkLoadBalancerRuleTargetJSONPaths, targets,
 		tabheaders.GetHeadersAllDefault(defaultRuleTargetCols, cols))
@@ -293,10 +290,7 @@ func RunNlbRuleTargetAdd(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("", allNetworkLoadBalancerRuleTargetJSONPaths,
 		targetNew.NetworkLoadBalancerForwardingRuleTarget, tabheaders.GetHeadersAllDefault(defaultRuleTargetCols, cols))
@@ -321,11 +315,10 @@ func RunNlbRuleTargetRemove(c *core.CommandConfig) error {
 			return err
 		}
 
-		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Network Load Balancer Forwarding Rule Targets successfully deleted"))
 		return nil
 	}
 
-	if !confirm.Ask("delete forwarding rule target") {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete forwarding rule target", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -420,7 +413,7 @@ func RemoveAllNlbRuleTarget(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
 
-	if !confirm.Ask("remove all the Forwarding Rule Targets") {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "remove all the Forwarding Rule Targets", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -445,6 +438,7 @@ func RemoveAllNlbRuleTarget(c *core.CommandConfig) error {
 		return err
 	}
 
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Network Load Balancer Forwarding Rule Targets successfully deleted"))
 	return nil
 }
 

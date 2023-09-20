@@ -648,10 +648,7 @@ func RunServerListAll(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, totalTime))
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutputPreconverted(allServers, allServersConverted,
 		tabheaders.GetHeaders(allServerCols, defaultServerCols, cols))
@@ -696,10 +693,7 @@ func RunServerList(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("items", allServerJSONPaths, servers.Servers,
 		tabheaders.GetHeaders(allServerCols, defaultServerCols, cols))
@@ -737,10 +731,7 @@ func RunServerGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("", allServerJSONPaths, svr.Server,
 		tabheaders.GetHeaders(allServerCols, defaultServerCols, cols))
@@ -808,10 +799,7 @@ func RunServerCreate(c *core.CommandConfig) error {
 		}
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("", allServerJSONPaths, svr.Server,
 		tabheaders.GetHeaders(allServerCols, defaultServerCols, cols))
@@ -868,10 +856,7 @@ func RunServerUpdate(c *core.CommandConfig) error {
 		}
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("", allServerJSONPaths, svr.Server,
 		tabheaders.GetHeaders(allServerCols, defaultServerCols, cols))
@@ -898,11 +883,10 @@ func RunServerDelete(c *core.CommandConfig) error {
 			return err
 		}
 
-		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Servers successfully deleted"))
 		return nil
 	}
 
-	if !confirm.Ask("delete server", viper.GetBool(constants.ArgForce)) {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete server", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -932,7 +916,7 @@ func RunServerStart(c *core.CommandConfig) error {
 	}
 
 	queryParams := listQueryParams.QueryParams
-	if !confirm.Ask("start server", viper.GetBool(constants.ArgForce)) {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "start server", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -966,7 +950,7 @@ func RunServerStop(c *core.CommandConfig) error {
 
 	queryParams := listQueryParams.QueryParams
 
-	if !confirm.Ask("stop server", viper.GetBool(constants.ArgForce)) {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "stop server", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -1000,7 +984,7 @@ func RunServerSuspend(c *core.CommandConfig) error {
 
 	queryParams := listQueryParams.QueryParams
 
-	if !confirm.Ask("suspend cube server", viper.GetBool(constants.ArgForce)) {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "suspend cube server", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -1034,7 +1018,7 @@ func RunServerReboot(c *core.CommandConfig) error {
 
 	queryParams := listQueryParams.QueryParams
 
-	if !confirm.Ask("reboot server", viper.GetBool(constants.ArgForce)) {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "reboot server", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -1068,7 +1052,7 @@ func RunServerResume(c *core.CommandConfig) error {
 
 	queryParams := listQueryParams.QueryParams
 
-	if !confirm.Ask("resume cube server", viper.GetBool(constants.ArgForce)) {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "resume cube server", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -1360,7 +1344,7 @@ func DeleteAllServers(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
 
-	if !confirm.Ask("delete all the Servers", viper.GetBool(constants.ArgForce)) {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete all the Servers", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -1396,5 +1380,6 @@ func DeleteAllServers(c *core.CommandConfig) error {
 		return multiErr
 	}
 
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Servers successfully deleted"))
 	return nil
 }

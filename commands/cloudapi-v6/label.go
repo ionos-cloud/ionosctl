@@ -329,10 +329,7 @@ func RunLabelList(c *core.CommandConfig) error {
 			return err
 		}
 
-		cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-		if err != nil {
-			return err
-		}
+		cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 		out, err = jsontabwriter.GenerateOutput("items", allLabelJSONPaths, labelDcs.Labels,
 			tabheaders.GetHeadersAllDefault(defaultLabelCols, cols))
@@ -384,10 +381,7 @@ func RunLabelGetByUrn(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("", allLabelJSONPaths, labelDc.Label,
 		tabheaders.GetHeadersAllDefault(defaultLabelCols, cols))

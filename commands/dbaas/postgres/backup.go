@@ -87,7 +87,7 @@ func RunBackupList(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("items", allBackupJSONPaths, backups.ClusterBackupList,
 		tabheaders.GetHeaders(allBackupCols, defaultBackupCols, cols))
@@ -108,7 +108,7 @@ func RunBackupGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("", allBackupJSONPaths, backup.BackupResponse,
 		tabheaders.GetHeaders(allBackupCols, defaultBackupCols, cols))
@@ -168,7 +168,7 @@ func RunClusterBackupList(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("items", allBackupJSONPaths, backups.ClusterBackupList,
 		tabheaders.GetHeaders(allBackupCols, defaultBackupCols, cols))

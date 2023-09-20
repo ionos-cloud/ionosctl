@@ -35,7 +35,7 @@ func UserDeleteCmd() *core.Command {
 			}
 			user := viper.GetString(core.GetFlagName(c.NS, constants.FlagName))
 
-			yes := confirm.Ask(fmt.Sprintf("delete user %s", user),
+			yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("delete user %s", user),
 				viper.GetBool(constants.ArgForce))
 			if !yes {
 				return fmt.Errorf("operation canceled by confirmation check")
@@ -86,7 +86,7 @@ func deleteAll(c *core.CommandConfig, clusterId string) error {
 	}
 
 	return functional.ApplyAndAggregateErrors(*xs.GetItems(), func(x sdkgo.User) error {
-		yes := confirm.Ask(fmt.Sprintf("delete user %s", *x.Properties.Username), viper.GetBool(constants.ArgForce))
+		yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("delete user %s", *x.Properties.Username), viper.GetBool(constants.ArgForce))
 		if !yes {
 			return fmt.Errorf("user %s skipped by confirmation check", *x.Properties.Username)
 		}

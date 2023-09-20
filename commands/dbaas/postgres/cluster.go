@@ -494,7 +494,7 @@ func RunClusterRestore(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Cluster ID: %v", clusterId))
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Backup ID: %v", backupId))
 
-	if !confirm.Ask(fmt.Sprintf("restore cluster with id: %v from backup: %v", clusterId, backupId), viper.GetBool(constants.ArgForce)) {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("restore cluster with id: %v from backup: %v", clusterId, backupId), viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -543,7 +543,7 @@ func RunClusterDelete(c *core.CommandConfig) error {
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Cluster ID: %v", clusterId))
 
-	if !confirm.Ask(fmt.Sprintf("delete cluster with id: %v", clusterId), viper.GetBool(constants.ArgForce)) {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("delete cluster with id: %v", clusterId), viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -598,7 +598,7 @@ func ClusterDeleteAll(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(log))
 	}
 
-	if !confirm.Ask("delete ALL clusters", viper.GetBool(constants.ArgForce)) {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete ALL clusters", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -884,13 +884,10 @@ func getPatchClusterRequest(c *core.CommandConfig) (*resources.PatchClusterReque
 			return nil, err
 		}
 
-		if !confirm.Ask(fmt.Sprintf("remove connection with: %v", getConnectionMessage(connection)),
-			viper.GetBool(constants.ArgForce)) {
-			return nil, nil
-		}
-
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Removing Connection..."))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
+			"Removing Connection with: %v...", getConnectionMessage(connection)))
 		input.SetConnections([]sdkgo.Connection{})
+
 	}
 
 	inputCluster.SetProperties(input)

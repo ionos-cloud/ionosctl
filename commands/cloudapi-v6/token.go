@@ -75,12 +75,7 @@ func RunServerTokenGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
-
-	out, err := jsontabwriter.GenerateOutput("", allTokenJSONPaths, t.Token, tabheaders.GetHeadersAllDefault(defaultTokenCols, cols))
+	out, err := jsontabwriter.GenerateOutput("", allTokenJSONPaths, t.Token, tabheaders.GetHeadersAllDefault(defaultTokenCols, nil))
 	if err != nil {
 		return err
 	}

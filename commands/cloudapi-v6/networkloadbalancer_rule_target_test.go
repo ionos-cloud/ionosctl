@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
-	"os"
 	"testing"
 
 	"github.com/golang/mock/gomock"
@@ -468,7 +467,7 @@ func TestRunNlbRuleTargetRemoveAskForConfirm(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRuleId), testNlbRuleTargetVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIp), testNlbRuleTargetVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPort), testNlbRuleTargetIntVar)
-		cfg.Stdin = bytes.NewReader([]byte("YES\n"))
+		cfg.Command.Command.SetIn(bytes.NewReader([]byte("YES\n")))
 		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().GetForwardingRule(testNlbRuleTargetVar, testNlbRuleTargetVar, testNlbRuleTargetVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&testNlbRuleTargetGetUpdated, nil, nil)
 		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().UpdateForwardingRule(testNlbRuleTargetVar, testNlbRuleTargetVar, testNlbRuleTargetVar,
 			&resources.NetworkLoadBalancerForwardingRuleProperties{
@@ -496,8 +495,8 @@ func TestRunNlbRuleTargetRemoveAskForConfirmErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRuleId), testNlbRuleTargetVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIp), testNlbRuleTargetVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPort), testNlbRuleTargetIntVar)
-		cfg.Stdin = os.Stdin
+		cfg.Command.Command.SetIn(bytes.NewReader([]byte("\n")))
 		err := RunNlbRuleTargetRemove(cfg)
-		assert.Error(t, err)
+		assert.NoError(t, err)
 	})
 }

@@ -265,10 +265,7 @@ func RunTargetGroupList(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("items", allTargetGroupJSONPaths, ss.TargetGroups,
 		tabheaders.GetHeaders(allTargetGroupCols, defaultTargetGroupCols, cols))
@@ -300,10 +297,7 @@ func RunTargetGroupGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("", allTargetGroupJSONPaths, s.TargetGroup,
 		tabheaders.GetHeaders(allTargetGroupCols, defaultTargetGroupCols, cols))
@@ -337,10 +331,7 @@ func RunTargetGroupCreate(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("", allTargetGroupJSONPaths, s.TargetGroup,
 		tabheaders.GetHeaders(allTargetGroupCols, defaultTargetGroupCols, cols))
@@ -376,10 +367,7 @@ func RunTargetGroupUpdate(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("", allTargetGroupJSONPaths, s.TargetGroup,
 		tabheaders.GetHeaders(allTargetGroupCols, defaultTargetGroupCols, cols))
@@ -408,13 +396,12 @@ func RunTargetGroupDelete(c *core.CommandConfig) error {
 			return err
 		}
 
-		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Target Groups successfully deleted"))
 		return nil
 	}
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
 		"TargetGroup ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId))))
 
-	if !confirm.Ask("delete target group") {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete target group", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -476,7 +463,7 @@ func DeleteAllTargetGroup(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
 
-	if !confirm.Ask("delete all the Target Groups") {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete all the Target Groups", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -511,6 +498,7 @@ func DeleteAllTargetGroup(c *core.CommandConfig) error {
 		return multiErr
 	}
 
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Target Groups successfully deleted"))
 	return nil
 }
 

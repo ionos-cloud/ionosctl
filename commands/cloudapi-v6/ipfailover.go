@@ -220,10 +220,7 @@ func RunIpFailoverList(c *core.CommandConfig) error {
 		ipsFailovers = append(ipsFailovers, ip)
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("", allIpFailoverJSONPaths, ipsFailovers,
 		tabheaders.GetHeadersAllDefault(defaultIpFailoverCols, cols))
@@ -276,10 +273,7 @@ func RunIpFailoverAdd(c *core.CommandConfig) error {
 		ipsFailovers = append(ipsFailovers, ip)
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("", allIpFailoverJSONPaths, ipsFailovers,
 		tabheaders.GetHeadersAllDefault(defaultIpFailoverCols, cols))
@@ -304,7 +298,6 @@ func RunIpFailoverRemove(c *core.CommandConfig) error {
 			return err
 		}
 
-		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Ip Failovers successfully deleted"))
 		return nil
 	}
 
@@ -314,7 +307,7 @@ func RunIpFailoverRemove(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateVerboseOutput(
 		"Removing IP Failover group from LAN with ID: %v from Datacenter with ID: %v...", lanId, dcId))
 
-	if !confirm.Ask("remove ip failover group from lan", viper.GetBool(constants.ArgForce)) {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "remove ip failover group from lan", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -401,7 +394,7 @@ func RemoveAllIpFailovers(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
 
-	if !confirm.Ask("remove all the IP Failovers", viper.GetBool(constants.ArgForce)) {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "remove all the IP Failovers", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -429,6 +422,7 @@ func RemoveAllIpFailovers(c *core.CommandConfig) error {
 		}
 	}
 
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Ip Failovers successfully deleted"))
 	return nil
 }
 

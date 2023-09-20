@@ -42,7 +42,7 @@ func ZonesDeleteCmd() *core.Command {
 			if err != nil {
 				return fmt.Errorf("failed getting zone by id %s: %w", zoneId, err)
 			}
-			yes := confirm.Ask(fmt.Sprintf("Are you sure you want to delete zone %s (desc: '%s')", *z.Properties.ZoneName, *z.Properties.Description),
+			yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Are you sure you want to delete zone %s (desc: '%s')", *z.Properties.ZoneName, *z.Properties.Description),
 				viper.GetBool(constants.ArgForce))
 			if !yes {
 				return nil
@@ -78,7 +78,7 @@ func deleteAll(c *core.CommandConfig) error {
 	}
 
 	err = functional.ApplyAndAggregateErrors(*xs.GetItems(), func(z dns.ZoneRead) error {
-		yes := confirm.Ask(fmt.Sprintf("Are you sure you want to delete zone %s (desc: '%s')", *z.Properties.ZoneName, *z.Properties.Description),
+		yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Are you sure you want to delete zone %s (desc: '%s')", *z.Properties.ZoneName, *z.Properties.Description),
 			viper.GetBool(constants.ArgForce))
 		if yes {
 			_, delErr := client.Must().DnsClient.ZonesApi.ZonesDelete(c.Context, *z.Id).Execute()

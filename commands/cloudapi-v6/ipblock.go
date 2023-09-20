@@ -225,10 +225,7 @@ func RunIpBlockList(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("items", allIpBlockJSONPaths, ipblocks.IpBlocks,
 		tabheaders.GetHeadersAllDefault(defaultIpBlockCols, cols))
@@ -259,10 +256,7 @@ func RunIpBlockGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("", allIpBlockJSONPaths, i.IpBlock,
 		tabheaders.GetHeadersAllDefault(defaultIpBlockCols, cols))
@@ -301,10 +295,7 @@ func RunIpBlockCreate(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("", allIpBlockJSONPaths, i.IpBlock,
 		tabheaders.GetHeadersAllDefault(defaultIpBlockCols, cols))
@@ -344,10 +335,7 @@ func RunIpBlockUpdate(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("", allIpBlockJSONPaths, i.IpBlock,
 		tabheaders.GetHeadersAllDefault(defaultIpBlockCols, cols))
@@ -374,11 +362,10 @@ func RunIpBlockDelete(c *core.CommandConfig) error {
 			return err
 		}
 
-		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Ip Blocks successfully deleted"))
 		return nil
 	}
 
-	if !confirm.Ask("delete ipblock") {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete ipblock", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -441,7 +428,7 @@ func DeleteAllIpBlocks(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
 
-	if !confirm.Ask("delete all the IpBlocks") {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete all the IpBlocks", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -471,12 +458,12 @@ func DeleteAllIpBlocks(c *core.CommandConfig) error {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *id, err))
 			continue
 		}
-
 	}
 
 	if multiErr != nil {
 		return multiErr
 	}
 
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Ip Blocks successfully deleted"))
 	return nil
 }

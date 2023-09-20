@@ -122,10 +122,7 @@ func CmdPost(c *core.CommandConfig) error {
 	regPrint := sdkgo.NewRegistryResponseWithDefaults()
 	regPrint.SetProperties(*reg.GetProperties())
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", allJSONPaths, reg, tabheaders.GetHeaders(allCols, postCols, cols))
 	if err != nil {

@@ -172,10 +172,7 @@ func RunTargetGroupTargetList(c *core.CommandConfig) error {
 
 	if properties, ok := targetGroups.GetPropertiesOk(); ok && properties != nil {
 		if targets, ok := properties.GetTargetsOk(); ok && targets != nil {
-			cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-			if err != nil {
-				return err
-			}
+			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 			out, err := jsontabwriter.GenerateOutput("", allTargetGroupTargetJSONPaths, targets,
 				tabheaders.GetHeadersAllDefault(defaultTargetGroupTargetCols, cols))
@@ -249,10 +246,7 @@ func RunTargetGroupTargetAdd(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", allTargetGroupTargetJSONPaths, targetNew.TargetGroupTarget,
 		tabheaders.GetHeadersAllDefault(defaultTargetGroupTargetCols, cols))
@@ -282,7 +276,6 @@ func RunTargetGroupTargetRemove(c *core.CommandConfig) error {
 			return err
 		}
 
-		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Target Group Targets successfully deleted"))
 		return nil
 	}
 
@@ -293,7 +286,7 @@ func RunTargetGroupTargetRemove(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
 		"Target Port: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgPort))))
 
-	if !confirm.Ask("remove target from target group", viper.GetBool(constants.ArgForce)) {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "remove target from target group", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -366,7 +359,7 @@ func RemoveAllTargetGroupTarget(c *core.CommandConfig) (*resources.Response, err
 		}
 	}
 
-	if !confirm.Ask("delete all the Targets from Target Group", viper.GetBool(constants.ArgForce)) {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete all the Targets from Target Group", viper.GetBool(constants.ArgForce)) {
 		return nil, nil
 	}
 
@@ -391,6 +384,7 @@ func RemoveAllTargetGroupTarget(c *core.CommandConfig) (*resources.Response, err
 		return nil, err
 	}
 
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Target Group Targets successfully deleted"))
 	return resp, err
 }
 

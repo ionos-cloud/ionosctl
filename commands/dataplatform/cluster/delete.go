@@ -35,7 +35,7 @@ func ClusterDeleteCmd() *core.Command {
 			}
 
 			clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
-			if !confirm.Ask(fmt.Sprintf("delete cluster %s", clusterId), viper.GetBool(constants.ArgForce)) {
+			if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("delete cluster %s", clusterId), viper.GetBool(constants.ArgForce)) {
 				return nil
 			}
 
@@ -70,7 +70,7 @@ func deleteAll(c *core.CommandConfig) error {
 	}
 
 	err = functional.ApplyAndAggregateErrors(*xs.GetItems(), func(x ionoscloud.ClusterResponseData) error {
-		yes := confirm.Ask(fmt.Sprintf("delete cluster %s (%s)", *x.Id, *x.Properties.Name), viper.GetBool(constants.ArgForce))
+		yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("delete cluster %s (%s)", *x.Id, *x.Properties.Name), viper.GetBool(constants.ArgForce))
 		if yes {
 			_, _, delErr := client.Must().DataplatformClient.DataPlatformClusterApi.ClustersDelete(c.Context, *x.Id).Execute()
 			if delErr != nil {

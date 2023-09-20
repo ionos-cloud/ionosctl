@@ -5,7 +5,6 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"os"
 	"testing"
 
 	"github.com/golang/mock/gomock"
@@ -433,7 +432,7 @@ func TestRunIpBlockDeleteAskForConfirm(t *testing.T) {
 		viper.Set(constants.ArgForce, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIpBlockId), testIpBlockVar)
 		viper.Set(core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), false)
-		cfg.Stdin = bytes.NewReader([]byte("YES\n"))
+		cfg.Command.Command.SetIn(bytes.NewReader([]byte("YES\n")))
 		rm.CloudApiV6Mocks.IpBlocks.EXPECT().Delete(testIpBlockVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(nil, nil)
 		err := RunIpBlockDelete(cfg)
 		assert.NoError(t, err)
@@ -450,8 +449,8 @@ func TestRunIpBlockDeleteAskForConfirmErr(t *testing.T) {
 		viper.Set(constants.ArgForce, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIpBlockId), testIpBlockVar)
 		viper.Set(core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), false)
-		cfg.Stdin = os.Stdin
+		cfg.Command.Command.SetIn(bytes.NewReader([]byte("\n")))
 		err := RunIpBlockDelete(cfg)
-		assert.Error(t, err)
+		assert.NoError(t, err)
 	})
 }

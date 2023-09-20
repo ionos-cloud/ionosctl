@@ -124,10 +124,7 @@ func CmdPatchToken(c *core.CommandConfig) error {
 		tokenInput.SetStatus(status)
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	token, _, err := c.ContainerRegistryServices.Token().Patch(tokenId, *tokenInput, regId)
 	if err != nil {

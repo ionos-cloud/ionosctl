@@ -300,10 +300,7 @@ func RunNetworkLoadBalancerFlowLogList(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("items", allFlowlogJSONPaths, networkloadbalancerFlowLogs.FlowLogs,
 		tabheaders.GetHeadersAllDefault(defaultFlowLogCols, cols))
@@ -340,10 +337,7 @@ func RunNetworkLoadBalancerFlowLogGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", allFlowlogJSONPaths, ng.FlowLog,
 		tabheaders.GetHeadersAllDefault(defaultFlowLogCols, cols))
@@ -390,10 +384,7 @@ func RunNetworkLoadBalancerFlowLogCreate(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", allFlowlogJSONPaths, ng.FlowLog,
 		tabheaders.GetHeadersAllDefault(defaultFlowLogCols, cols))
@@ -433,10 +424,7 @@ func RunNetworkLoadBalancerFlowLogUpdate(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", allFlowlogJSONPaths, ng.FlowLog,
 		tabheaders.GetHeadersAllDefault(defaultFlowLogCols, cols))
@@ -465,11 +453,10 @@ func RunNetworkLoadBalancerFlowLogDelete(c *core.CommandConfig) error {
 			return err
 		}
 
-		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Network Load Balancer FlowLogs successfully deleted"))
 		return nil
 	}
 
-	if !confirm.Ask("delete network load balancer flowlog") {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete network load balancer flowlog", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -537,7 +524,7 @@ func DeleteAllNetworkLoadBalancerFlowLogs(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
 
-	if !confirm.Ask("delete all the Network Load Balancer FlowLogs") {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete all the Network Load Balancer FlowLogs", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -572,5 +559,6 @@ func DeleteAllNetworkLoadBalancerFlowLogs(c *core.CommandConfig) error {
 		return multiErr
 	}
 
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Network Load Balancer FlowLogs successfully deleted"))
 	return nil
 }

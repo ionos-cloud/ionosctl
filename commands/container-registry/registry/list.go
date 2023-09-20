@@ -54,10 +54,7 @@ func CmdList(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("items", allJSONPaths, regs, tabheaders.GetHeadersAllDefault(allCols, cols))
 	if err != nil {

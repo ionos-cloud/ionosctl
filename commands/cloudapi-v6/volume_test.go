@@ -5,7 +5,6 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"os"
 	"testing"
 
 	"github.com/golang/mock/gomock"
@@ -778,7 +777,7 @@ func TestRunVolumeDeleteAskForConfirm(t *testing.T) {
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(constants.ArgQuiet, false)
 		viper.Set(constants.ArgForce, false)
-		cfg.Stdin = bytes.NewReader([]byte("YES\n"))
+		cfg.Command.Command.SetIn(bytes.NewReader([]byte("YES\n")))
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testVolumeVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgVolumeId), testVolumeVar)
 		viper.Set(core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), false)
@@ -796,12 +795,12 @@ func TestRunVolumeDeleteAskForConfirmErr(t *testing.T) {
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(constants.ArgQuiet, false)
 		viper.Set(constants.ArgForce, false)
-		cfg.Stdin = os.Stdin
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testVolumeVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgVolumeId), testVolumeVar)
 		viper.Set(core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), false)
+		cfg.Command.Command.SetIn(bytes.NewReader([]byte("\n")))
 		err := RunVolumeDelete(cfg)
-		assert.Error(t, err)
+		assert.NoError(t, err)
 	})
 }
 
@@ -1217,8 +1216,8 @@ func TestServerVolumeDetach(t *testing.T) {
 				Calls: func(...*gomock.Call) {
 					gomock.InOrder()
 				},
-				UserInput:   os.Stdin,
-				ExpectedErr: true,
+				UserInput:   bytes.NewReader([]byte("\n")),
+				ExpectedErr: false,
 			},
 		}
 		core.ExecuteTestCases(t, funcToTest, tests, cfg)

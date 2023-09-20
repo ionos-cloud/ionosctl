@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
-	"os"
 	"testing"
 
 	"github.com/golang/mock/gomock"
@@ -391,7 +390,7 @@ func TestRunK8sNodePoolLanRemoveAsk(t *testing.T) {
 		viper.Set(constants.ArgQuiet, false)
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(constants.ArgForce, false)
-		cfg.Stdin = bytes.NewReader([]byte("YES\n"))
+		cfg.Command.Command.SetIn(bytes.NewReader([]byte("YES\n")))
 		viper.Set(core.GetFlagName(cfg.NS, constants.FlagClusterId), testK8sNodePoolLanVar)
 		viper.Set(core.GetFlagName(cfg.NS, constants.FlagNodepoolId), testK8sNodePoolLanVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLanId), testK8sNodePoolLanIntVar)
@@ -410,12 +409,12 @@ func TestRunK8sNodePoolLanRemoveAskErr(t *testing.T) {
 		viper.Set(constants.ArgQuiet, false)
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(constants.ArgForce, false)
-		cfg.Stdin = os.Stdin
 		viper.Set(core.GetFlagName(cfg.NS, constants.FlagClusterId), testK8sNodePoolLanVar)
 		viper.Set(core.GetFlagName(cfg.NS, constants.FlagNodepoolId), testK8sNodePoolLanVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLanId), testK8sNodePoolLanIntVar)
+		cfg.Command.Command.SetIn(bytes.NewReader([]byte("\n")))
 		err := RunK8sNodePoolLanRemove(cfg)
-		assert.Error(t, err)
+		assert.NoError(t, err)
 	})
 }
 

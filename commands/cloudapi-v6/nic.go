@@ -307,10 +307,7 @@ func RunNicList(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("items", allNicJSONPaths, nics.Nics,
 		tabheaders.GetHeaders(allNicCols, defaultNicCols, cols))
@@ -346,10 +343,7 @@ func RunNicGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("", allNicJSONPaths, n.Nic,
 		tabheaders.GetHeaders(allNicCols, defaultNicCols, cols))
@@ -410,10 +404,7 @@ func RunNicCreate(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("", allNicJSONPaths, n.Nic,
 		tabheaders.GetHeaders(allNicCols, defaultNicCols, cols))
@@ -494,10 +485,7 @@ func RunNicUpdate(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("", allNicJSONPaths, nicUpd.Nic,
 		tabheaders.GetHeaders(allNicCols, defaultNicCols, cols))
@@ -526,11 +514,10 @@ func RunNicDelete(c *core.CommandConfig) error {
 			return err
 		}
 
-		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Nics successfully deleted"))
 		return nil
 	}
 
-	if !confirm.Ask("delete nic", viper.GetBool(constants.ArgForce)) {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete nic", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -599,7 +586,7 @@ func DeleteAllNics(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
 
-	if !confirm.Ask("delete all the Nics", viper.GetBool(constants.ArgForce)) {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete all the Nics", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -634,6 +621,7 @@ func DeleteAllNics(c *core.CommandConfig) error {
 		return multiErr
 	}
 
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Nics successfully deleted"))
 	return nil
 }
 
@@ -855,10 +843,7 @@ func RunLoadBalancerNicAttach(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("", allNicJSONPaths, attachedNic.Nic,
 		tabheaders.GetHeaders(allNicCols, defaultNicCols, cols))
@@ -886,10 +871,7 @@ func RunLoadBalancerNicList(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("items", allNicJSONPaths, attachedNics.BalancedNics,
 		tabheaders.GetHeaders(allNicCols, defaultNicCols, cols))
@@ -918,10 +900,7 @@ func RunLoadBalancerNicGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("", allNicJSONPaths, n.Nic,
 		tabheaders.GetHeaders(allNicCols, defaultNicCols, cols))
@@ -946,11 +925,10 @@ func RunLoadBalancerNicDetach(c *core.CommandConfig) error {
 			return err
 		}
 
-		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Nics successfully detached from Load Balancer"))
 		return nil
 	}
 
-	if !confirm.Ask("detach nic from loadbalancer", viper.GetBool(constants.ArgForce)) {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "detach nic from loadbalancer", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -997,7 +975,7 @@ func DetachAllNics(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get items of NICs")
 	}
 
-	if len(*nicsItems) > 0 {
+	if len(*nicsItems) <= 0 {
 		return fmt.Errorf("no NICs found")
 	}
 
@@ -1019,7 +997,7 @@ func DetachAllNics(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
 
-	if !confirm.Ask("detach all the Nics", viper.GetBool(constants.ArgForce)) {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "detach all the Nics", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -1054,5 +1032,6 @@ func DetachAllNics(c *core.CommandConfig) error {
 		return multiErr
 	}
 
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Nics successfully detached from Load Balancer"))
 	return nil
 }

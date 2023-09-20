@@ -240,10 +240,7 @@ func RunServerCdromAttach(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("", allImageJSONPaths, attachedCdrom.Image,
 		tabheaders.GetHeaders(allImageCols, defaultImageCols, cols))
@@ -275,10 +272,7 @@ func RunServerCdromsList(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("items", allImageJSONPaths, attachedCdroms.Cdroms,
 		tabheaders.GetHeaders(allImageCols, defaultImageCols, cols))
@@ -314,10 +308,7 @@ func RunServerCdromGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("", allImageJSONPaths, attachedCdrom.Image,
 		tabheaders.GetHeaders(allImageCols, defaultImageCols, cols))
@@ -342,12 +333,10 @@ func RunServerCdromDetach(c *core.CommandConfig) error {
 			return err
 		}
 
-		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("CD-ROMs successfully detached"))
-
 		return nil
 	}
 
-	if !confirm.Ask("detach cdrom from server", viper.GetBool(constants.ArgForce)) {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "detach cdrom from server", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -419,7 +408,7 @@ func DetachAllCdRoms(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
 
-	if !confirm.Ask("detach all the CD-ROMS", viper.GetBool(constants.ArgForce)) {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "detach all the CD-ROMS", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -455,5 +444,6 @@ func DetachAllCdRoms(c *core.CommandConfig) error {
 		return multiErr
 	}
 
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("CD-ROMs successfully detached"))
 	return nil
 }

@@ -41,7 +41,7 @@ func NodepoolDeleteCmd() *core.Command {
 				return fmt.Errorf("couldn't find nodepool: %w", err)
 			}
 
-			ok := confirm.Ask(fmt.Sprintf("delete nodepool %s (%s)", nodepoolId, *np.Properties.Name), viper.GetBool(constants.ArgForce))
+			ok := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("delete nodepool %s (%s)", nodepoolId, *np.Properties.Name), viper.GetBool(constants.ArgForce))
 			if !ok {
 				return fmt.Errorf("canceled deletion: invalid input")
 			}
@@ -93,7 +93,7 @@ func deleteNodePools(c *core.CommandConfig, clusterId string) error {
 		return err
 	}
 	return functional.ApplyAndAggregateErrors(*xs.GetItems(), func(x ionoscloud.NodePoolResponseData) error {
-		ok := confirm.Ask(fmt.Sprintf("delete nodepool %s (%s)", *x.Id, *x.Properties.Name), viper.GetBool(constants.ArgForce))
+		ok := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("delete nodepool %s (%s)", *x.Id, *x.Properties.Name), viper.GetBool(constants.ArgForce))
 		if !ok {
 			return fmt.Errorf("canceled deletion for %s (%s): invalid input", *x.Id, *x.Properties.Name)
 		}

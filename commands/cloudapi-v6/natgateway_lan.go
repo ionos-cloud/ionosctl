@@ -195,10 +195,7 @@ func RunNatGatewayLanList(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("properties.lans", allNatGatewayLanJSONPaths, ng.NatGateway,
 		tabheaders.GetHeadersAllDefault(defaultNatGatewayLanCols, cols))
@@ -242,10 +239,7 @@ func RunNatGatewayLanAdd(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("properties.lans", allNatGatewayLanJSONPaths, ng.NatGateway,
 		tabheaders.GetHeadersAllDefault(defaultNatGatewayLanCols, cols))
@@ -270,11 +264,10 @@ func RunNatGatewayLanRemove(c *core.CommandConfig) error {
 			return err
 		}
 
-		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("NAT Gateway Lans successfully deleted"))
 		return nil
 	}
 
-	if !confirm.Ask("remove nat gateway lan") {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "remove nat gateway lan", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -346,7 +339,7 @@ func RemoveAllNatGatewayLans(c *core.CommandConfig) error {
 		}
 	}
 
-	if !confirm.Ask("remove all the NAT Gateways Lans") {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "remove all the NAT Gateways Lans", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -375,6 +368,7 @@ func RemoveAllNatGatewayLans(c *core.CommandConfig) error {
 		}
 	}
 
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("NAT Gateway Lans successfully deleted"))
 	return nil
 }
 

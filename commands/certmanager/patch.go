@@ -66,10 +66,7 @@ func CmdPatch(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", allCertificateJSONPaths, cert,
 		tabheaders.GetHeadersAllDefault(defaultCertificateCols, cols))

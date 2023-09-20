@@ -229,10 +229,7 @@ func PreRunApplicationLoadBalancerRuleHttpRuleDelete(c *core.PreCommandConfig) e
 }
 
 func RunAlbRuleHttpRuleList(c *core.CommandConfig) error {
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	listQueryParams, err := query.GetListQueryParams(c)
 	if err != nil {
@@ -345,10 +342,7 @@ func RunAlbRuleHttpRuleAdd(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("", allAlbHttpRuleJSONPaths, httpRuleNew.ApplicationLoadBalancerHttpRule,
 		tabheaders.GetHeaders(allAlbRuleHttpRuleCols, defaultAlbRuleHttpRuleCols, cols))
@@ -381,9 +375,9 @@ func RunAlbRuleHttpRuleRemove(c *core.CommandConfig) error {
 		if err != nil {
 			return err
 		}
-
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
-		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Application Load Balancer HTTP Rules successfully deleted"))
+		if resp != nil {
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime))
+		}
 
 		return nil
 	}
@@ -395,7 +389,7 @@ func RunAlbRuleHttpRuleRemove(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
 		"ForwardingRule ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId))))
 
-	if !confirm.Ask("remove forwarding rule http rule", viper.GetBool(constants.ArgForce)) {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "remove forwarding rule http rule", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -488,7 +482,7 @@ func RemoveAllHTTPRules(c *core.CommandConfig) (*resources.Response, error) {
 		}
 	}
 
-	if !confirm.Ask("delete all the Forwarding Rule HTTP Rules", viper.GetBool(constants.ArgForce)) {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete all the Forwarding Rule HTTP Rules", viper.GetBool(constants.ArgForce)) {
 		return nil, nil
 	}
 
@@ -516,6 +510,7 @@ func RemoveAllHTTPRules(c *core.CommandConfig) (*resources.Response, error) {
 		return nil, err
 	}
 
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Application Load Balancer HTTP Rules successfully deleted"))
 	return resp, err
 }
 
@@ -630,10 +625,6 @@ func getRuleHttpRulesRemove(c *core.CommandConfig, frOld *resources.ApplicationL
 	httpRules, ok := properties.GetHttpRulesOk()
 	if !ok || httpRules == nil {
 		return nil, fmt.Errorf("coudl not get Application Load Balancer HTTP Rules")
-	}
-
-	if len(*httpRules) <= 0 {
-		return nil, fmt.Errorf("no Application Load Balancer HTTP Rules found")
 	}
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting HTTP Rules from the Forwarding Rule Properties"))

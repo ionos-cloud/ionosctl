@@ -189,10 +189,7 @@ func RunK8sNodePoolLanList(c *core.CommandConfig) error {
 		return fmt.Errorf("error getting node pool lans")
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("items", allK8sNodePoolLanJSONPaths, lans,
 		tabheaders.GetHeadersAllDefault(defaultK8sNodePoolLanCols, cols))
@@ -235,10 +232,7 @@ func RunK8sNodePoolLanAdd(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", allK8sNodePoolLanJSONPaths, getK8sNodePoolLansForPut(ngNew),
 		tabheaders.GetHeadersAllDefault(defaultK8sNodePoolLanCols, cols))
@@ -263,14 +257,13 @@ func RunK8sNodePoolLanRemove(c *core.CommandConfig) error {
 			return err
 		}
 
-		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Kubernetes Node Pool Lans successfully deleted"))
 		return nil
 	}
 
 	clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
 	nodePoolId := viper.GetString(core.GetFlagName(c.NS, constants.FlagNodepoolId))
 
-	if !confirm.Ask("remove node pool lan") {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "remove node pool lan", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -332,7 +325,7 @@ func RemoveAllK8sNodePoolsLans(c *core.CommandConfig) error {
 		}
 	}
 
-	if !confirm.Ask("remove all the K8sNodePool Lans") {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "remove all the K8sNodePool Lans", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -371,6 +364,7 @@ func RemoveAllK8sNodePoolsLans(c *core.CommandConfig) error {
 		return err
 	}
 
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Kubernetes Node Pool Lans successfully deleted"))
 	return nil
 }
 

@@ -5,7 +5,6 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"os"
 	"testing"
 
 	"github.com/golang/mock/gomock"
@@ -486,10 +485,10 @@ func TestRunApplicationLoadBalancerDeleteAllAskForConfirmErr(t *testing.T) {
 		viper.Set(constants.ArgForce, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testApplicationLoadBalancerVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
-		cfg.Stdin = os.Stdin
 		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().List(testApplicationLoadBalancerVar, gomock.AssignableToTypeOf(testListQueryParam)).Return(applicationloadbalancers, &testResponse, nil)
+		cfg.Command.Command.SetIn(bytes.NewReader([]byte("\n")))
 		err := RunApplicationLoadBalancerDelete(cfg)
-		assert.Error(t, err)
+		assert.NoError(t, err)
 	})
 }
 
@@ -537,7 +536,7 @@ func TestRunApplicationLoadBalancerDeleteAskForConfirm(t *testing.T) {
 		viper.Set(constants.ArgForce, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testApplicationLoadBalancerVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgApplicationLoadBalancerId), testApplicationLoadBalancerVar)
-		cfg.Stdin = bytes.NewReader([]byte("YES\n"))
+		cfg.Command.Command.SetIn(bytes.NewReader([]byte("YES\n")))
 		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().Delete(testApplicationLoadBalancerVar, testApplicationLoadBalancerVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(nil, nil)
 		err := RunApplicationLoadBalancerDelete(cfg)
 		assert.NoError(t, err)
@@ -554,8 +553,8 @@ func TestRunApplicationLoadBalancerDeleteAskForConfirmErr(t *testing.T) {
 		viper.Set(constants.ArgForce, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testApplicationLoadBalancerVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgApplicationLoadBalancerId), testApplicationLoadBalancerVar)
-		cfg.Stdin = os.Stdin
+		cfg.Command.Command.SetIn(bytes.NewReader([]byte("\n")))
 		err := RunApplicationLoadBalancerDelete(cfg)
-		assert.Error(t, err)
+		assert.NoError(t, err)
 	})
 }

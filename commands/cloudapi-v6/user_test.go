@@ -5,7 +5,6 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"os"
 	"testing"
 
 	"github.com/golang/mock/gomock"
@@ -532,7 +531,7 @@ func TestRunUserDeleteAskForConfirm(t *testing.T) {
 		viper.Set(constants.ArgQuiet, false)
 		viper.Set(constants.ArgForce, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgUserId), testUserVar)
-		cfg.Stdin = bytes.NewReader([]byte("YES\n"))
+		cfg.Command.Command.SetIn(bytes.NewReader([]byte("YES\n")))
 		rm.CloudApiV6Mocks.User.EXPECT().Delete(testUserVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(nil, nil)
 		err := RunUserDelete(cfg)
 		assert.NoError(t, err)
@@ -548,9 +547,9 @@ func TestRunUserDeleteAskForConfirmErr(t *testing.T) {
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(constants.ArgForce, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgUserId), testUserVar)
-		cfg.Stdin = os.Stdin
+		cfg.Command.Command.SetIn(bytes.NewReader([]byte("\n")))
 		err := RunUserDelete(cfg)
-		assert.Error(t, err)
+		assert.NoError(t, err)
 	})
 }
 
@@ -781,7 +780,7 @@ func TestRunGroupUserRemoveAskForConfirm(t *testing.T) {
 		viper.Set(constants.ArgForce, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgUserId), testUserVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgGroupId), testGroupVar)
-		cfg.Stdin = bytes.NewReader([]byte("YES\n"))
+		cfg.Command.Command.SetIn(bytes.NewReader([]byte("YES\n")))
 		rm.CloudApiV6Mocks.Group.EXPECT().RemoveUser(testGroupVar, testUserVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(nil, nil)
 		err := RunGroupUserRemove(cfg)
 		assert.NoError(t, err)
@@ -798,8 +797,8 @@ func TestRunGroupUserRemoveAskForConfirmErr(t *testing.T) {
 		viper.Set(constants.ArgForce, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgUserId), testUserVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgGroupId), testGroupVar)
-		cfg.Stdin = os.Stdin
+		cfg.Command.Command.SetIn(bytes.NewReader([]byte("\n")))
 		err := RunGroupUserRemove(cfg)
-		assert.Error(t, err)
+		assert.NoError(t, err)
 	})
 }

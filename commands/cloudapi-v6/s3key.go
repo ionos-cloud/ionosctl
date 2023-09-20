@@ -224,10 +224,7 @@ func RunUserS3KeyList(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("items", allS3KeyJSONPaths, ss.S3Keys,
 		tabheaders.GetHeadersAllDefault(defaultS3KeyCols, cols))
@@ -260,10 +257,7 @@ func RunUserS3KeyGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("", allS3KeyJSONPaths, s.S3Key,
 		tabheaders.GetHeadersAllDefault(defaultS3KeyCols, cols))
@@ -298,10 +292,7 @@ func RunUserS3KeyCreate(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("", allS3KeyJSONPaths, s.S3Key,
 		tabheaders.GetHeadersAllDefault(defaultS3KeyCols, cols))
@@ -350,10 +341,7 @@ func RunUserS3KeyUpdate(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("", allS3KeyJSONPaths, s.S3Key,
 		tabheaders.GetHeadersAllDefault(defaultS3KeyCols, cols))
@@ -380,11 +368,10 @@ func RunUserS3KeyDelete(c *core.CommandConfig) error {
 			return err
 		}
 
-		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("S3 Keys successfully deleted"))
 		return nil
 	}
 
-	if !confirm.Ask("delete s3key", viper.GetBool(constants.ArgForce)) {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete s3key", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -440,7 +427,7 @@ func DeleteAllS3keys(c *core.CommandConfig) error {
 		}
 	}
 
-	if !confirm.Ask("delete all the S3Keys", viper.GetBool(constants.ArgForce)) {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete all the S3Keys", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -475,5 +462,6 @@ func DeleteAllS3keys(c *core.CommandConfig) error {
 		return multiErr
 	}
 
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("S3 Keys successfully deleted"))
 	return nil
 }

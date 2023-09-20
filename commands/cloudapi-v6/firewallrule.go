@@ -371,10 +371,7 @@ func RunFirewallRuleList(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("items", allFirewallRuleJSONPaths, firewallRules.FirewallRules,
 		tabheaders.GetHeaders(allFirewallRuleCols, defaultFirewallRuleCols, cols))
@@ -412,10 +409,7 @@ func RunFirewallRuleGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("", allFirewallRuleJSONPaths, firewallRule.FirewallRule,
 		tabheaders.GetHeaders(allFirewallRuleCols, defaultFirewallRuleCols, cols))
@@ -468,10 +462,7 @@ func RunFirewallRuleCreate(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("", allFirewallRuleJSONPaths, firewallRule.FirewallRule,
 		tabheaders.GetHeaders(allFirewallRuleCols, defaultFirewallRuleCols, cols))
@@ -510,10 +501,7 @@ func RunFirewallRuleUpdate(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("", allFirewallRuleJSONPaths, firewallRule.FirewallRule,
 		tabheaders.GetHeaders(allFirewallRuleCols, defaultFirewallRuleCols, cols))
@@ -543,12 +531,10 @@ func RunFirewallRuleDelete(c *core.CommandConfig) error {
 			return err
 		}
 
-		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Firewall Rules successfully deleted"))
-
 		return nil
 	}
 
-	if !confirm.Ask("delete firewall rule", viper.GetBool(constants.ArgForce)) {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete firewall rule", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -697,7 +683,7 @@ func DeleteAllFirewallRuses(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
 
-	if !confirm.Ask("delete all the Firewall Rules", viper.GetBool(constants.ArgForce)) {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete all the Firewall Rules", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -733,5 +719,7 @@ func DeleteAllFirewallRuses(c *core.CommandConfig) error {
 	if multiErr != nil {
 		return multiErr
 	}
+
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Firewall Rules successfully deleted"))
 	return nil
 }

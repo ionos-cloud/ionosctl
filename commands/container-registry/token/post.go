@@ -146,10 +146,7 @@ func CmdPostToken(c *core.CommandConfig) error {
 	tokenPrint := sdkgo.NewTokenResponseWithDefaults()
 	tokenPrint.SetProperties(*token.GetProperties())
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", allJSONPaths, token, tabheaders.GetHeaders(AllTokenCols, postHeaders, cols))
 	if err != nil {

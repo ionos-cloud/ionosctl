@@ -42,10 +42,7 @@ func RunDataCenterLabelsList(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("items", allLabelResourceJSONPaths, labelDcs.LabelResources,
 		tabheaders.GetHeadersAllDefault(defaultLabelResourceCols, cols))
@@ -72,10 +69,7 @@ func RunDataCenterLabelGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("", allLabelResourceJSONPaths, labelDc.LabelResource,
 		tabheaders.GetHeadersAllDefault(defaultLabelResourceCols, cols))
@@ -104,10 +98,7 @@ func RunDataCenterLabelAdd(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("", allLabelResourceJSONPaths, labelDc.LabelResource,
 		tabheaders.GetHeadersAllDefault(defaultLabelResourceCols, cols))
@@ -126,7 +117,6 @@ func RunDataCenterLabelRemove(c *core.CommandConfig) error {
 			return err
 		}
 
-		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Datacenter Labels successfully deleted"))
 		return nil
 	}
 
@@ -185,7 +175,7 @@ func RemoveAllDatacenterLabels(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
 
-	if !confirm.Ask("delete all the Labels from Datacenter with Id: " + dcId) {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete all the Labels from Datacenter with Id: "+dcId, viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -225,6 +215,7 @@ func RemoveAllDatacenterLabels(c *core.CommandConfig) error {
 		return multiErr
 	}
 
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Datacenter Labels successfully deleted"))
 	return nil
 }
 
@@ -246,10 +237,7 @@ func RunServerLabelsList(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("items", allLabelResourceJSONPaths, labelDcs.LabelResources,
 		tabheaders.GetHeadersAllDefault(defaultLabelResourceCols, cols))
@@ -277,10 +265,7 @@ func RunServerLabelGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("", allLabelResourceJSONPaths, labelDc.LabelResource,
 		tabheaders.GetHeadersAllDefault(defaultLabelResourceCols, cols))
@@ -310,10 +295,7 @@ func RunServerLabelAdd(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("", allLabelResourceJSONPaths, labelDc.LabelResource,
 		tabheaders.GetHeadersAllDefault(defaultLabelResourceCols, cols))
@@ -332,7 +314,6 @@ func RunServerLabelRemove(c *core.CommandConfig) error {
 			return err
 		}
 
-		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Server Labels successfully deleted"))
 		return nil
 	}
 
@@ -400,7 +381,7 @@ func RemoveAllServerLabels(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
 
-	if !confirm.Ask("delete all the Labels from Server with Id: " + serverId) {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete all the Labels from Server with Id: "+serverId, viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -440,6 +421,7 @@ func RemoveAllServerLabels(c *core.CommandConfig) error {
 		return multiErr
 	}
 
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Server Labels successfully deleted"))
 	return nil
 }
 
@@ -461,10 +443,7 @@ func RunVolumeLabelsList(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("items", allLabelResourceJSONPaths, labelDcs.LabelResources,
 		tabheaders.GetHeadersAllDefault(defaultLabelResourceCols, cols))
@@ -492,10 +471,7 @@ func RunVolumeLabelGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("", allLabelResourceJSONPaths, labelDc.LabelResource,
 		tabheaders.GetHeadersAllDefault(defaultLabelResourceCols, cols))
@@ -525,10 +501,7 @@ func RunVolumeLabelAdd(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("", allLabelResourceJSONPaths, labelDc.LabelResource,
 		tabheaders.GetHeadersAllDefault(defaultLabelResourceCols, cols))
@@ -547,7 +520,6 @@ func RunVolumeLabelRemove(c *core.CommandConfig) error {
 			return err
 		}
 
-		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Volume Labels successfully deleted"))
 		return nil
 	}
 
@@ -609,7 +581,7 @@ func RemoveAllVolumeLabels(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
 
-	if !confirm.Ask("delete all the Labels from Volume with Id: " + volumeId) {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete all the Labels from Volume with Id: "+volumeId, viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -649,6 +621,7 @@ func RemoveAllVolumeLabels(c *core.CommandConfig) error {
 		return multiErr
 	}
 
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Volume Labels successfully deleted"))
 	return nil
 }
 
@@ -666,10 +639,7 @@ func RunIpBlockLabelsList(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("items", allLabelResourceJSONPaths, labelDcs.LabelResources,
 		tabheaders.GetHeadersAllDefault(defaultLabelResourceCols, cols))
@@ -697,10 +667,7 @@ func RunIpBlockLabelGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("", allLabelResourceJSONPaths, labelDc.LabelResource,
 		tabheaders.GetHeadersAllDefault(defaultLabelResourceCols, cols))
@@ -729,10 +696,7 @@ func RunIpBlockLabelAdd(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("", allLabelResourceJSONPaths, labelDc.LabelResource,
 		tabheaders.GetHeadersAllDefault(defaultLabelResourceCols, cols))
@@ -751,7 +715,6 @@ func RunIpBlockLabelRemove(c *core.CommandConfig) error {
 			return err
 		}
 
-		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("IP Block Labels successfully deleted"))
 		return nil
 	}
 
@@ -810,7 +773,7 @@ func RemoveAllIpBlockLabels(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
 
-	if !confirm.Ask("delete all the Labels from IpBlock with Id: " + ipBlockId) {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete all the Labels from IpBlock with Id: "+ipBlockId, viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -850,6 +813,7 @@ func RemoveAllIpBlockLabels(c *core.CommandConfig) error {
 		return multiErr
 	}
 
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("IP Block Labels successfully deleted"))
 	return nil
 }
 
@@ -867,10 +831,7 @@ func RunSnapshotLabelsList(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("items", allLabelResourceJSONPaths, labelDcs.LabelResources,
 		tabheaders.GetHeadersAllDefault(defaultLabelResourceCols, cols))
@@ -898,10 +859,7 @@ func RunSnapshotLabelGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("", allLabelResourceJSONPaths, labelDc.LabelResource,
 		tabheaders.GetHeadersAllDefault(defaultLabelResourceCols, cols))
@@ -930,10 +888,7 @@ func RunSnapshotLabelAdd(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("", allLabelResourceJSONPaths, labelDc.LabelResource,
 		tabheaders.GetHeadersAllDefault(defaultLabelResourceCols, cols))
@@ -952,7 +907,6 @@ func RunSnapshotLabelRemove(c *core.CommandConfig) error {
 			return err
 		}
 
-		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Snapshot Labels successfully deleted"))
 		return nil
 	}
 
@@ -1011,7 +965,7 @@ func RemoveAllSnapshotLabels(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
 
-	if !confirm.Ask("delete all the Labels from Snapshot with Id: " + snapshotId) {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete all the Labels from Snapshot with Id: "+snapshotId, viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -1051,5 +1005,6 @@ func RemoveAllSnapshotLabels(c *core.CommandConfig) error {
 		return multiErr
 	}
 
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Snapshot Labels successfully deleted"))
 	return nil
 }

@@ -80,7 +80,6 @@ func CmdPost(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Adding Certificate..."))
 
 	var name, certificate, certificateChain, privateKey string
-	//fmt.Println(viper.GetString(FlagCertName)) // NOTE: ask about why this is printed
 
 	name, err := c.Command.Command.Flags().GetString(FlagCertName)
 	if err != nil {
@@ -116,10 +115,7 @@ func CmdPost(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", allCertificateJSONPaths, cert,
 		tabheaders.GetHeadersAllDefault(defaultCertificateCols, cols))

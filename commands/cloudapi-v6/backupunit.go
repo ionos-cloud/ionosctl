@@ -245,10 +245,7 @@ func PreRunBackupUnitNameEmailPwd(c *core.PreCommandConfig) error {
 }
 
 func RunBackupUnitList(c *core.CommandConfig) error {
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	// Add Query Parameters for GET Requests
 	listQueryParams, err := query.GetListQueryParams(c)
@@ -276,10 +273,7 @@ func RunBackupUnitList(c *core.CommandConfig) error {
 }
 
 func RunBackupUnitGet(c *core.CommandConfig) error {
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	listQueryParams, err := query.GetListQueryParams(c)
 	if err != nil {
@@ -329,10 +323,7 @@ func RunBackupUnitGetSsoUrl(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("", allBackupUnitSSOUrlJsonPaths, u.BackupUnitSSO,
 		tabheaders.GetHeadersAllDefault(defaultBackupUnitSSOUrl, cols))
@@ -383,10 +374,7 @@ func RunBackupUnitCreate(c *core.CommandConfig) error {
 
 	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(backupUnitNote))
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("", allBackupUnitJSONPaths, u.BackupUnit,
 		tabheaders.GetHeadersAllDefault(defaultBackupUnitCols, cols))
@@ -417,10 +405,7 @@ func RunBackupUnitUpdate(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("", allBackupUnitJSONPaths, backupUnitUpd.BackupUnit,
 		tabheaders.GetHeadersAllDefault(defaultBackupUnitCols, cols))
@@ -443,14 +428,12 @@ func RunBackupUnitDelete(c *core.CommandConfig) error {
 			return err
 		}
 
-		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Backup Units successfully deleted"))
-
 		return nil
 	}
 
 	backupunitId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgBackupUnitId))
 
-	if !confirm.Ask("delete backup unit", viper.GetBool(constants.ArgForce)) {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete backup unit", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -534,7 +517,7 @@ func DeleteAllBackupUnits(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
 
-	if !confirm.Ask("delete all the Backup Units", viper.GetBool(constants.ArgForce)) {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete all the Backup Units", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -570,6 +553,6 @@ func DeleteAllBackupUnits(c *core.CommandConfig) error {
 		return multiErr
 	}
 
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Backup Units successfully deleted"))
 	return nil
-
 }

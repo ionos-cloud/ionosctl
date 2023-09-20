@@ -9,7 +9,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	core2 "github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/spf13/viper"
 )
 
@@ -45,7 +44,7 @@ func WaitForRequest(c *core2.CommandConfig, interrogator InterrogateRequestFunc,
 		defer cancel()
 
 		// Check the output format
-		if viper.GetString(constants.ArgOutput) == printer.TypeText.String() {
+		if viper.GetString(constants.ArgOutput) == jsontabwriter.TextFormat {
 			progress := pb.New(1)
 			progress.SetWriter(c.Command.Command.OutOrStdout())
 			progress.SetTemplateString(requestProgressCircleTpl)
@@ -87,7 +86,7 @@ func WaitForState(c *core2.CommandConfig, interrogator InterrogateStateFunc, res
 		defer cancel()
 
 		// Check the output format
-		if viper.GetString(constants.ArgOutput) == printer.TypeText.String() {
+		if viper.GetString(constants.ArgOutput) == jsontabwriter.TextFormat {
 			progress := pb.New(1)
 			progress.SetWriter(c.Command.Command.OutOrStdout())
 			progress.SetTemplateString(stateProgressCircleTpl)
@@ -129,7 +128,7 @@ func WaitForDelete(c *core2.CommandConfig, interrogator InterrogateDeletionFunc,
 		defer cancel()
 
 		// Check the output format
-		if viper.GetString(constants.ArgOutput) == printer.TypeText.String() {
+		if viper.GetString(constants.ArgOutput) == jsontabwriter.TextFormat {
 			progress := pb.New(1)
 			progress.SetWriter(c.Command.Command.OutOrStdout())
 			progress.SetTemplateString(deleteProgressCircleTpl)

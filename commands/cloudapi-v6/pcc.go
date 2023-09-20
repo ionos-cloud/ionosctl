@@ -225,10 +225,7 @@ func RunPccList(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("items", allPccJSONPaths, pccs.PrivateCrossConnects,
 		tabheaders.GetHeadersAllDefault(defaultPccCols, cols))
@@ -259,10 +256,7 @@ func RunPccGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("", allPccJSONPaths, u.PrivateCrossConnect,
 		tabheaders.GetHeadersAllDefault(defaultPccCols, cols))
@@ -309,10 +303,7 @@ func RunPccCreate(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("", allPccJSONPaths, u.PrivateCrossConnect,
 		tabheaders.GetHeadersAllDefault(defaultPccCols, cols))
@@ -349,10 +340,7 @@ func RunPccUpdate(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("", allPccJSONPaths, pccUpd.PrivateCrossConnect,
 		tabheaders.GetHeadersAllDefault(defaultPccCols, cols))
@@ -378,11 +366,10 @@ func RunPccDelete(c *core.CommandConfig) error {
 			return err
 		}
 
-		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Private Cross Connects successfully deleted"))
 		return nil
 	}
 
-	if !confirm.Ask("delete private cross-connect") {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete private cross-connect", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -480,7 +467,7 @@ func DeleteAllPccs(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
 
-	if !confirm.Ask("delete all the private cross-connects") {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete all the private cross-connects", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -516,6 +503,7 @@ func DeleteAllPccs(c *core.CommandConfig) error {
 		return multiErr
 	}
 
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Private Cross Connects successfully deleted"))
 	return nil
 }
 
@@ -581,10 +569,7 @@ func RunPccPeersList(c *core.CommandConfig) error {
 		}
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("", allPccPeerJSONPaths, peers,
 		tabheaders.GetHeadersAllDefault(defaultPccPeersCols, cols))

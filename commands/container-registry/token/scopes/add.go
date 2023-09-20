@@ -122,10 +122,7 @@ func CmdTokenScopesAdd(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("properties.scopes", allScopeJSONPaths, tokenUp,
 		tabheaders.GetHeaders(allScopeCols, defaultScopeCols, cols))

@@ -65,13 +65,13 @@ ionosctl db m c d --all --name <name>`,
 			chosenCluster, _, err := client.Must().MongoClient.ClustersApi.ClustersFindById(context.Background(), clusterId).Execute()
 			if err != nil {
 				wrapped := fmt.Errorf("failed trying to find cluster by id: %w", err)
-				keepGoing := confirm.Ask(fmt.Sprintf("%s, try deleting %s anyways", wrapped.Error(), clusterId))
+				keepGoing := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("%s, try deleting %s anyways", wrapped.Error(), clusterId))
 				if !keepGoing {
 					return wrapped
 				}
 			}
 
-			ok := confirm.Ask(confirmStringForCluster(chosenCluster), viper.GetBool(constants.ArgForce))
+			ok := confirm.FAsk(c.Command.Command.InOrStdin(), confirmStringForCluster(chosenCluster), viper.GetBool(constants.ArgForce))
 			if !ok {
 				return fmt.Errorf("user denied confirmation")
 			}
@@ -109,7 +109,7 @@ func deleteAll(c *core.CommandConfig) error {
 	}
 
 	return functional.ApplyAndAggregateErrors(*xs.GetItems(), func(x sdkgo.ClusterResponse) error {
-		yes := confirm.Ask(confirmStringForCluster(x), viper.GetBool(constants.ArgForce))
+		yes := confirm.FAsk(c.Command.Command.InOrStdin(), confirmStringForCluster(x), viper.GetBool(constants.ArgForce))
 		if yes {
 			_, _, delErr := client.Must().MongoClient.ClustersApi.ClustersDelete(c.Context, *x.Id).Execute()
 			if delErr != nil {

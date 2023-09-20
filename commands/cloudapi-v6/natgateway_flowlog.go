@@ -304,10 +304,7 @@ func RunNatGatewayFlowLogList(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return nil
-	}
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("items", allFlowlogJSONPaths, natgatewayFlowLogs.FlowLogs,
 		tabheaders.GetHeadersAllDefault(defaultFlowLogCols, cols))
@@ -344,10 +341,7 @@ func RunNatGatewayFlowLogGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return nil
-	}
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", allFlowlogJSONPaths, ng.FlowLog,
 		tabheaders.GetHeadersAllDefault(defaultFlowLogCols, cols))
@@ -390,10 +384,7 @@ func RunNatGatewayFlowLogCreate(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return nil
-	}
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", allFlowlogJSONPaths, ng.FlowLog,
 		tabheaders.GetHeadersAllDefault(defaultFlowLogCols, cols))
@@ -433,10 +424,7 @@ func RunNatGatewayFlowLogUpdate(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return nil
-	}
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", allFlowlogJSONPaths, ng.FlowLog,
 		tabheaders.GetHeadersAllDefault(defaultFlowLogCols, cols))
@@ -465,11 +453,10 @@ func RunNatGatewayFlowLogDelete(c *core.CommandConfig) error {
 			return err
 		}
 
-		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("NAT Gateway Flowlogs successfully deleted"))
 		return nil
 	}
 
-	if !confirm.Ask("delete nat gateway flowlog", viper.GetBool(constants.ArgForce)) {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete nat gateway flowlog", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -537,7 +524,7 @@ func DeleteAllNatGatewayFlowLogs(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
 
-	if !confirm.Ask("delete all the NatGatewayFlowLogs", viper.GetBool(constants.ArgForce)) {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete all the NatGatewayFlowLogs", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -571,5 +558,6 @@ func DeleteAllNatGatewayFlowLogs(c *core.CommandConfig) error {
 		return multiErr
 	}
 
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("NAT Gateway Flowlogs successfully deleted"))
 	return nil
 }

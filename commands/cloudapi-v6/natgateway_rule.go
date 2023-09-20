@@ -310,10 +310,7 @@ func RunNatGatewayRuleList(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("items", allNatGatewayRuleJSONPaths, natgatewayRules.NatGatewayRules,
 		tabheaders.GetHeaders(allNatGatewayRuleCols, defaultNatGatewayRuleCols, cols))
@@ -350,10 +347,7 @@ func RunNatGatewayRuleGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("", allNatGatewayRuleJSONPaths, ng.NatGatewayRule,
 		tabheaders.GetHeaders(allNatGatewayRuleCols, defaultNatGatewayRuleCols, cols))
@@ -408,10 +402,7 @@ func RunNatGatewayRuleCreate(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("", allNatGatewayRuleJSONPaths, ng.NatGatewayRule,
 		tabheaders.GetHeaders(allNatGatewayRuleCols, defaultNatGatewayRuleCols, cols))
@@ -450,10 +441,7 @@ func RunNatGatewayRuleUpdate(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("", allNatGatewayRuleJSONPaths, ng.NatGatewayRule,
 		tabheaders.GetHeaders(allNatGatewayRuleCols, defaultNatGatewayRuleCols, cols))
@@ -482,11 +470,10 @@ func RunNatGatewayRuleDelete(c *core.CommandConfig) error {
 			return err
 		}
 
-		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("NAT Gateway Rules successfully deleted"))
 		return nil
 	}
 
-	if !confirm.Ask("delete nat gateway rule") {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete nat gateway rule", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -612,7 +599,7 @@ func DeleteAllNatgatewayRules(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
 
-	if !confirm.Ask("delete all the NatGatewayRules") {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete all the NatGatewayRules", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -645,5 +632,6 @@ func DeleteAllNatgatewayRules(c *core.CommandConfig) error {
 		return multiErr
 	}
 
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("NAT Gateway Rules successfully deleted"))
 	return nil
 }

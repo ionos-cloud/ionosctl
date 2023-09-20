@@ -236,10 +236,7 @@ func RunDataCenterList(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("items", allDatacenterJSONPaths, datacenters.Datacenters,
 		tabheaders.GetHeaders(allDatacenterCols, defaultDatacenterCols, cols))
@@ -270,10 +267,7 @@ func RunDataCenterGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("", allDatacenterJSONPaths, dc.Datacenter,
 		tabheaders.GetHeaders(allDatacenterCols, defaultDatacenterCols, cols))
@@ -312,10 +306,7 @@ func RunDataCenterCreate(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("", allDatacenterJSONPaths, dc,
 		tabheaders.GetHeaders(allDatacenterCols, defaultDatacenterCols, cols))
@@ -364,10 +355,7 @@ func RunDataCenterUpdate(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("", allDatacenterJSONPaths, dc,
 		tabheaders.GetHeaders(allDatacenterCols, defaultDatacenterCols, cols))
@@ -392,12 +380,10 @@ func RunDataCenterDelete(c *core.CommandConfig) error {
 			return err
 		}
 
-		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Datacenters successfully deleted"))
-
 		return nil
 	}
 
-	if !confirm.Ask("delete data center") {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete data center", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -457,7 +443,7 @@ func DeleteAllDatacenters(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
 
-	if !confirm.Ask("delete all the Datacenters") {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete all the Datacenters", viper.IsSet(constants.ArgForce)) {
 		return nil
 	}
 
@@ -492,8 +478,9 @@ func DeleteAllDatacenters(c *core.CommandConfig) error {
 	if multiErr != nil {
 		return multiErr
 	}
-	return nil
 
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Datacenters successfully deleted"))
+	return nil
 }
 
 func getDataCenters(datacenters resources.Datacenters) []resources.Datacenter {

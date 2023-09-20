@@ -76,12 +76,13 @@ func ExecuteTestCases(t *testing.T, funcToTest func(c *CommandConfig) error, tes
 	for _, tc := range testCases {
 		t.Run(tc.Name, func(t *testing.T) {
 			viper.Reset()
+			viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 			for _, argPair := range tc.Args {
 				viper.Set(argPair.Flag, argPair.Value)
 			}
 
 			if tc.UserInput != nil {
-				cfg.Stdin = tc.UserInput
+				cfg.Command.Command.SetIn(tc.UserInput)
 			}
 
 			// Expected gomock calls, call order, call counts and returned values

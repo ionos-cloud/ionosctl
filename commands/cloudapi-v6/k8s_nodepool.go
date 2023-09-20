@@ -382,10 +382,7 @@ func RunK8sNodePoolListAll(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, totalTime))
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutputPreconverted(allNodePools, allNodePoolsConverted,
 		tabheaders.GetHeaders(allK8sNodePoolCols, defaultK8sNodePoolCols, cols))
@@ -438,10 +435,7 @@ func RunK8sNodePoolList(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutputPreconverted(k8ss.KubernetesNodePools, k8ssConverted,
 		tabheaders.GetHeaders(allK8sNodePoolCols, defaultK8sNodePoolCols, cols))
@@ -484,10 +478,7 @@ func RunK8sNodePoolGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutputPreconverted(u.KubernetesNodePool, uConverted,
 		tabheaders.GetHeaders(allK8sNodePoolCols, defaultK8sNodePoolCols, cols))
@@ -541,10 +532,7 @@ func RunK8sNodePoolCreate(c *core.CommandConfig) error {
 		}
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutputPreconverted(u.KubernetesNodePool, uConverted,
 		tabheaders.GetHeaders(allK8sNodePoolCols, defaultK8sNodePoolCols, cols))
@@ -592,10 +580,7 @@ func RunK8sNodePoolUpdate(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutputPreconverted(newNodePoolUpdated.KubernetesNodePool, newNodePoolUpdatedConverted,
 		tabheaders.GetHeaders(allK8sNodePoolCols, defaultK8sNodePoolCols, cols))
@@ -623,11 +608,10 @@ func RunK8sNodePoolDelete(c *core.CommandConfig) error {
 			return err
 		}
 
-		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Kubernetes Nodepools successfully deleted"))
 		return nil
 	}
 
-	if !confirm.Ask("delete k8s node pool") {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete k8s node pool", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -940,7 +924,7 @@ func DeleteAllK8sNodepools(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
 
-	if !confirm.Ask("delete all the K8sNodePools") {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete all the K8sNodePools", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -977,6 +961,7 @@ func DeleteAllK8sNodepools(c *core.CommandConfig) error {
 		return multiErr
 	}
 
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Kubernetes Nodepools successfully deleted"))
 	return nil
 }
 
@@ -986,27 +971,25 @@ func convertK8sNodepoolToTable(nodepool ionoscloud.KubernetesNodePool) ([]map[st
 		return nil, fmt.Errorf("could not retrieve K8s Nodepool properties")
 	}
 
-	maintenanceWindow, ok := properties.GetMaintenanceWindowOk()
-	if !ok || maintenanceWindow == nil {
-		return nil, fmt.Errorf("could not retrieve K8s Nodepool maintenance window")
-	}
-
-	day, ok := maintenanceWindow.GetDayOfTheWeekOk()
-	if !ok || day == nil {
-		return nil, fmt.Errorf("could not retrieve K8s Nodepool maintenance window day")
-	}
-
-	tyme, ok := maintenanceWindow.GetTimeOk()
-	if !ok || tyme == nil {
-		return nil, fmt.Errorf("could not retrieve K8s Nodepool maintenance window time")
-	}
-
 	temp, err := json2table.ConvertJSONToTable("", allK8sNodepoolJSONPaths, nodepool)
 	if err != nil {
 		return nil, fmt.Errorf("could not convert from JSON to Table format: %w", err)
 	}
 
-	temp[0]["MaintenanceWindow"] = fmt.Sprintf("%s %s", *day, *tyme)
+	maintenanceWindow, ok := properties.GetMaintenanceWindowOk()
+	if ok && maintenanceWindow != nil {
+		day, ok := maintenanceWindow.GetDayOfTheWeekOk()
+		if !ok || day == nil {
+			return nil, fmt.Errorf("could not retrieve K8s Nodepool maintenance window day")
+		}
+
+		tyme, ok := maintenanceWindow.GetTimeOk()
+		if !ok || tyme == nil {
+			return nil, fmt.Errorf("could not retrieve K8s Nodepool maintenance window time")
+		}
+
+		temp[0]["MaintenanceWindow"] = fmt.Sprintf("%s %s", *day, *tyme)
+	}
 
 	return temp, nil
 }

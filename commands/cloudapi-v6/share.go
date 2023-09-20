@@ -273,10 +273,7 @@ func RunShareListAll(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, totalTime))
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutputPreconverted(allShares, allSharesConverted,
 		tabheaders.GetHeaders(allGroupShareCols, defaultGroupShareCols, cols))
@@ -307,10 +304,7 @@ func RunShareList(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("items", allShareJSONPaths, shares.GroupShares,
 		tabheaders.GetHeadersAllDefault(defaultGroupShareCols, cols))
@@ -362,10 +356,7 @@ func RunShareGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("", allShareJSONPaths, s.GroupShare,
 		tabheaders.GetHeadersAllDefault(defaultGroupShareCols, cols))
@@ -420,10 +411,7 @@ func RunShareCreate(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("", allShareJSONPaths, shareAdded.GroupShare,
 		tabheaders.GetHeadersAllDefault(defaultGroupShareCols, cols))
@@ -477,10 +465,7 @@ func RunShareUpdate(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("", allShareJSONPaths, shareUpdated.GroupShare,
 		tabheaders.GetHeadersAllDefault(defaultGroupShareCols, cols))
@@ -508,11 +493,10 @@ func RunShareDelete(c *core.CommandConfig) error {
 			return err
 		}
 
-		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Group Shares successfully deleted"))
 		return nil
 	}
 
-	if !confirm.Ask("delete share from group", viper.GetBool(constants.ArgForce)) {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete share from group", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -602,7 +586,7 @@ func DeleteAllShares(c *core.CommandConfig) error {
 		}
 	}
 
-	if !confirm.Ask("delete all the GroupShares", viper.GetBool(constants.ArgForce)) {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete all the GroupShares", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -639,5 +623,6 @@ func DeleteAllShares(c *core.CommandConfig) error {
 		return multiErr
 	}
 
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Group Shares successfully deleted"))
 	return nil
 }

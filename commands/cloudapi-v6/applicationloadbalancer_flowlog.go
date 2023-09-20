@@ -270,10 +270,7 @@ func PreRunDcApplicationLoadBalancerFlowLogIds(c *core.PreCommandConfig) error {
 }
 
 func RunApplicationLoadBalancerFlowLogList(c *core.CommandConfig) error {
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return nil
-	}
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
 		"Datacenter ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))))
@@ -311,10 +308,7 @@ func RunApplicationLoadBalancerFlowLogList(c *core.CommandConfig) error {
 }
 
 func RunApplicationLoadBalancerFlowLogGet(c *core.CommandConfig) error {
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return nil
-	}
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	listQueryParams, err := query.GetListQueryParams(c)
 	if err != nil {
@@ -355,10 +349,7 @@ func RunApplicationLoadBalancerFlowLogGet(c *core.CommandConfig) error {
 }
 
 func RunApplicationLoadBalancerFlowLogCreate(c *core.CommandConfig) error {
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return nil
-	}
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	listQueryParams, err := query.GetListQueryParams(c)
 	if err != nil {
@@ -428,10 +419,7 @@ func RunApplicationLoadBalancerFlowLogCreate(c *core.CommandConfig) error {
 }
 
 func RunApplicationLoadBalancerFlowLogUpdate(c *core.CommandConfig) error {
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return nil
-	}
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	listQueryParams, err := query.GetListQueryParams(c)
 	if err != nil {
@@ -500,8 +488,6 @@ func RunApplicationLoadBalancerFlowLogDelete(c *core.CommandConfig) error {
 			return err
 		}
 
-		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Application Load Balancers Flowlogs successfully deleted"))
-
 		return nil
 	}
 
@@ -512,7 +498,7 @@ func RunApplicationLoadBalancerFlowLogDelete(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateVerboseOutput(
 		"FlowLog ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFlowLogId))))
 
-	if !confirm.Ask("delete application load balancer flowlog", viper.GetBool(constants.ArgForce)) {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete application load balancer flowlog", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -584,7 +570,7 @@ func DeleteAllApplicationLoadBalancerFlowLog(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
 
-	if !confirm.Ask("delete all the Application Load Balancer FlowLogs", viper.GetBool(constants.ArgForce)) {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete all the Application Load Balancer FlowLogs", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -625,6 +611,7 @@ func DeleteAllApplicationLoadBalancerFlowLog(c *core.CommandConfig) error {
 		return multiErr
 	}
 
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Application Load Balancers Flowlogs successfully deleted"))
 	return nil
 
 }

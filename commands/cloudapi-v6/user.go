@@ -233,10 +233,7 @@ func RunUserList(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("items", allUserJSONPaths, users.Users,
 		tabheaders.GetHeadersAllDefault(defaultUserCols, cols))
@@ -268,10 +265,7 @@ func RunUserGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", allUserJSONPaths, u.User, tabheaders.GetHeadersAllDefault(defaultUserCols, cols))
 	if err != nil {
@@ -323,10 +317,7 @@ func RunUserCreate(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", allUserJSONPaths, u.User, tabheaders.GetHeadersAllDefault(defaultUserCols, cols))
 	if err != nil {
@@ -363,10 +354,7 @@ func RunUserUpdate(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", allUserJSONPaths, userUpd.User, tabheaders.GetHeadersAllDefault(defaultUserCols, cols))
 	if err != nil {
@@ -392,12 +380,10 @@ func RunUserDelete(c *core.CommandConfig) error {
 			return err
 		}
 
-		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Users successfully deleted"))
-
 		return nil
 	}
 
-	if !confirm.Ask("delete user", viper.GetBool(constants.ArgForce)) {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete user", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -542,7 +528,7 @@ func DeleteAllUsers(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
 
-	if !confirm.Ask("delete all the Users", viper.GetBool(constants.ArgForce)) {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete all the Users", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -575,6 +561,7 @@ func DeleteAllUsers(c *core.CommandConfig) error {
 		return multiErr
 	}
 
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Users successfully deleted"))
 	return nil
 }
 
@@ -700,10 +687,7 @@ func RunGroupUserList(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("items", allUserJSONPaths, users.GroupMembers,
 		tabheaders.GetHeadersAllDefault(defaultUserCols, cols))
@@ -749,10 +733,7 @@ func RunGroupUserAdd(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols, err := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	if err != nil {
-		return err
-	}
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", allUserJSONPaths, userAdded.User, tabheaders.GetHeadersAllDefault(defaultUserCols, cols))
 	if err != nil {
@@ -781,7 +762,7 @@ func RunGroupUserRemove(c *core.CommandConfig) error {
 		return nil
 	}
 
-	if !confirm.Ask("remove user from group", viper.GetBool(constants.ArgForce)) {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "remove user from group", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
@@ -852,7 +833,7 @@ func RemoveAllUsers(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
 
-	if !confirm.Ask("remove all the Users", viper.GetBool(constants.ArgForce)) {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "remove all the Users", viper.GetBool(constants.ArgForce)) {
 		return nil
 	}
 
