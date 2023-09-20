@@ -12,7 +12,14 @@ import (
 	"github.com/spf13/viper"
 )
 
-var outputFormatErr = "invalid format: %s"
+const (
+	outputFormatErr = "invalid format: %s"
+
+	// JSONFormat defines the JSON format.
+	JSONFormat = "json"
+	// TextFormat defines a human-readable format.
+	TextFormat = "text"
+)
 
 // TODO: remove cols as function parameter once --cols flag fix is ready
 func GenerateOutput(rootPath string, jsonPaths map[string]string, obj interface{}, cols []string) (string, error) {
@@ -22,11 +29,11 @@ func GenerateOutput(rootPath string, jsonPaths map[string]string, obj interface{
 
 	outputFormat := viper.GetString(constants.ArgOutput)
 
-	if outputFormat == "json" {
+	if outputFormat == JSONFormat {
 		return generateJSONOutput(obj)
 	}
 
-	if outputFormat == "text" {
+	if outputFormat == TextFormat {
 		return generateTextOutputFromJSON(rootPath, obj, jsonPaths, cols)
 	}
 
