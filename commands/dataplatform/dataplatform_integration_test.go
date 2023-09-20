@@ -24,8 +24,9 @@ import (
 
 var (
 	uniqueResourceName = "ionosctl-dataplatform-cluster-test-" + fake.AlphaNum(8)
-	createdClusterId   string
 	createdDcId        string
+	createdClusterId   string
+	createdNodepoolId  string
 )
 
 // If your test is failing because your credentials env var seem empty, try running with `godotenv -f <config-file> go test <test>`
@@ -43,7 +44,6 @@ func testClusterOk(t *testing.T) {
 	viper.Set(constants.ArgOutput, "text")
 	viper.Set(constants.ArgCols, "Name")
 	viper.Set(constants.ArgNoHeaders, true)
-	fmt.Printf(viper.GetString(constants.ArgCols))
 
 	c := cluster.ClusterCreateCmd()
 	c.Command.Flags().Set(constants.FlagDatacenterId, createdDcId)
@@ -91,14 +91,15 @@ func testNodepoolOk(t *testing.T) {
 		}, false),
 		fmt.Sprintf("Couldn't filter the dataplatform nodepool by name (%s) that was supposed to be created by the tested command", uniqueResourceName),
 	)
-	assert.Equal(t, 1, foundNodepool.Properties.NodeCount)
+	assert.Equal(t, int32(1), *(foundNodepool.Properties.NodeCount))
+	createdNodepoolId = *foundNodepool.Id
+
 }
 
 func testClusterIdentifyRequiredNotSet(t *testing.T) {
 	viper.Set(constants.ArgOutput, "text")
 	viper.Set(constants.ArgCols, "Name")
 	viper.Set(constants.ArgNoHeaders, true)
-	fmt.Printf(viper.GetString(constants.ArgCols))
 
 	c := cluster.ClusterCreateCmd()
 	c.Command.Flags().Set(constants.FlagName, uniqueResourceName)
@@ -113,7 +114,7 @@ func setup() error {
 	// make sure datacenter exists
 	dcs, resp, err := client.Must().CloudClient.DataCentersApi.DatacentersGet(context.Background()).Filter("name", uniqueResourceName).Depth(1).Execute()
 	if resp.HttpNotFound() || len(*dcs.Items) < 1 {
-		dc, _, err := client.Must().CloudClient.DataCentersApi.DatacentersPost(context.Background()).Datacenter(sdkcompute.Datacenter{Properties: &sdkcompute.DatacenterProperties{Name: sdkcompute.PtrString(uniqueResourceName), Location: sdkcompute.PtrString("de/fra")}}).Execute()
+		dc, _, err := client.Must().CloudClient.DataCentersApi.DatacentersPost(context.Background()).Datacenter(sdkcompute.Datacenter{Properties: &sdkcompute.DatacenterProperties{Name: sdkcompute.PtrString(uniqueResourceName), Location: sdkcompute.PtrString("fr/par")}}).Execute()
 		if err != nil {
 			return fmt.Errorf("failed creating dc %w", err)
 		}
@@ -129,7 +130,15 @@ func setup() error {
 }
 
 func teardown() {
-	_, _, err := client.Must().DataplatformClient.DataPlatformClusterApi.ClustersDelete(context.Background(), createdClusterId).Execute()
+	_, _, err := client.Must().DataplatformClient.DataPlatformNodePoolApi.ClustersNodepoolsDelete(context.Background(),
+		createdClusterId, createdNodepoolId).Execute()
+	if err != nil {
+		fmt.Printf("failed deleting nodepool: %v\n", err)
+	}
+
+	time.Sleep(30 * time.Second)
+
+	_, _, err = client.Must().DataplatformClient.DataPlatformClusterApi.ClustersDelete(context.Background(), createdClusterId).Execute()
 	if err != nil {
 		fmt.Printf("failed deleting cluster: %v\n", err)
 	}
