@@ -585,7 +585,7 @@ func getAlbForwardingRulesCols(flagName string, outErr io.Writer) []string {
 		if col != "" {
 			forwardingRuleCols = append(forwardingRuleCols, col)
 		} else {
-			clierror.CheckError(errors.New("unknown column "+k), outErr)
+			clierror.CheckErrorAndDie(errors.New("unknown column "+k), outErr)
 		}
 	}
 	return forwardingRuleCols

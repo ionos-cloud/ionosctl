@@ -119,7 +119,7 @@ func ServerCmd() *core.Command {
 		Verb:      "create",
 		Aliases:   []string{"c"},
 		ShortDesc: "Create a Server",
-		LongDesc: `Use this command to create an ENTERPRISE, CUBE or VCPU Server in a specified Virtual Data Center. 
+		LongDesc: `Use this command to create an ENTERPRISE, CUBE or VCPU Server in a specified Virtual Data Center.
 
 1. For ENTERPRISE Servers:
 
@@ -1237,7 +1237,7 @@ func getServersCols(argCols string, argAll string, outErr io.Writer) []string {
 			if col != "" {
 				serverCols = append(serverCols, col)
 			} else {
-				clierror.CheckError(errors.New("unknown column "+k), outErr)
+				clierror.CheckErrorAndDie(errors.New("unknown column "+k), outErr)
 			}
 		}
 		return serverCols

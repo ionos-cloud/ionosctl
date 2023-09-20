@@ -221,7 +221,7 @@ func getClusterLogsCols(flagName string, outErr io.Writer) []string {
 		if col != "" {
 			clusterCols = append(clusterCols, col)
 		} else {
-			clierror.CheckError(errors.New("unknown column "+k), outErr)
+			clierror.CheckErrorAndDie(errors.New("unknown column "+k), outErr)
 		}
 	}
 	return clusterCols

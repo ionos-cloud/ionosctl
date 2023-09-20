@@ -123,7 +123,7 @@ func getCpuCols(flagName string, outErr io.Writer) []string {
 		if col != "" {
 			cpusCols = append(cpusCols, col)
 		} else {
-			clierror.CheckError(errors.New("unknown column "+k), outErr)
+			clierror.CheckErrorAndDie(errors.New("unknown column "+k), outErr)
 		}
 	}
 	return cpusCols

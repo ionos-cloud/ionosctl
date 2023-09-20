@@ -27,7 +27,7 @@ func TestCheckErrorText(t *testing.T) {
 	ErrAction = func() { return }
 
 	viper.Set(constants.ArgOutput, "text")
-	CheckError(errChecking, w)
+	CheckErrorAndDie(errChecking, w)
 	err := w.Flush()
 	assert.NoError(t, err)
 
@@ -46,7 +46,7 @@ func TestCheckErrorNilText(t *testing.T) {
 	ErrAction = func() { return }
 
 	viper.Set(constants.ArgOutput, "text")
-	CheckError(nil, w)
+	CheckErrorAndDie(nil, w)
 	err := w.Flush()
 	assert.NoError(t, err)
 
@@ -65,7 +65,7 @@ func TestCheckErrorDefault(t *testing.T) {
 	ErrAction = func() { return }
 
 	viper.Set(constants.ArgOutput, "dummy")
-	CheckError(errChecking, w)
+	CheckErrorAndDie(errChecking, w)
 	err := w.Flush()
 	assert.NoError(t, err)
 
@@ -84,7 +84,7 @@ func TestCheckErrorNilDefault(t *testing.T) {
 	ErrAction = func() { return }
 
 	viper.Set(constants.ArgOutput, "dummy")
-	CheckError(nil, w)
+	CheckErrorAndDie(nil, w)
 	err := w.Flush()
 	assert.NoError(t, err)
 
@@ -110,7 +110,7 @@ func TestCheckErrorJSON(t *testing.T) {
 	ErrAction = func() { return }
 
 	viper.Set(constants.ArgOutput, "json")
-	CheckError(errChecking, w)
+	CheckErrorAndDie(errChecking, w)
 	err := w.Flush()
 	assert.NoError(t, err)
 
@@ -129,7 +129,7 @@ func TestCheckErrorNilJSON(t *testing.T) {
 	ErrAction = func() { return }
 
 	viper.Set(constants.ArgOutput, "json")
-	CheckError(nil, w)
+	CheckErrorAndDie(nil, w)
 	err := w.Flush()
 	assert.NoError(t, err)
 

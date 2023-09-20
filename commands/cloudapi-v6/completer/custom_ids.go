@@ -16,10 +16,10 @@ import (
 
 func ImagesIdsCustom(outErr io.Writer, params resources.ListQueryParams) []string {
 	client, err := client2.Get()
-	clierror.CheckError(err, outErr)
+	clierror.CheckErrorAndDie(err, outErr)
 	imageSvc := resources.NewImageService(client, context.TODO())
 	images, _, err := imageSvc.List(params)
-	clierror.CheckError(err, outErr)
+	clierror.CheckErrorAndDie(err, outErr)
 	imgsIds := make([]string, 0)
 	if items, ok := images.Images.GetItemsOk(); ok && items != nil {
 		for _, item := range *items {
@@ -35,10 +35,10 @@ func ImagesIdsCustom(outErr io.Writer, params resources.ListQueryParams) []strin
 
 func ServersIdsCustom(outErr io.Writer, datacenterId string, params resources.ListQueryParams) []string {
 	client, err := client2.Get()
-	clierror.CheckError(err, outErr)
+	clierror.CheckErrorAndDie(err, outErr)
 	serverSvc := resources.NewServerService(client, context.TODO())
 	servers, _, err := serverSvc.List(datacenterId, params)
-	clierror.CheckError(err, outErr)
+	clierror.CheckErrorAndDie(err, outErr)
 	ssIds := make([]string, 0)
 	if items, ok := servers.Servers.GetItemsOk(); ok && items != nil {
 		for _, item := range *items {

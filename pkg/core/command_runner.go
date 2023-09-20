@@ -3,6 +3,7 @@ package core
 import (
 	"bytes"
 	"context"
+	"fmt"
 	"io"
 	"os"
 
@@ -32,7 +33,7 @@ func NewCommand(ctx context.Context, parent *Command, info CommandBuilder) *Comm
 		Long:    info.LongDesc,
 		Aliases: info.Aliases,
 		Example: info.Example,
-		PreRun: func(cmd *cobra.Command, args []string) {
+		PreRunE: func(cmd *cobra.Command, args []string) error {
 			// Set Printer in sync with the Output Flag
 			noHeaders, _ := cmd.Flags().GetBool(constants.ArgNoHeaders)
 			p := getPrinter(noHeaders)
@@ -42,9 +43,12 @@ func NewCommand(ctx context.Context, parent *Command, info CommandBuilder) *Comm
 			// Create New PreCommandCfg
 			preCmdConfig := NewPreCommandCfg(p, info)
 			err := info.PreCmdRun(preCmdConfig)
-			clierror.CheckError(err, p.GetStderr())
+			if err != nil {
+				return fmt.Errorf("prerun error: %w", err)
+			}
+			clierror.CheckErrorAndDie(err, p.GetStderr())
 		},
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			// Set Printer in sync with the Output Flag
 			noHeaders, _ := cmd.Flags().GetBool(constants.ArgNoHeaders)
 			p := getPrinter(noHeaders)
@@ -57,9 +61,14 @@ func NewCommand(ctx context.Context, parent *Command, info CommandBuilder) *Comm
 			info.Command = &Command{Command: cmd}
 			// Create New CommandCfg
 			cmdConfig, err := NewCommandCfg(ctx, os.Stdin, p, info)
-			clierror.CheckError(err, p.GetStderr())
+			if err != nil {
+				return fmt.Errorf("error: %w", err)
+			}
 			err = info.CmdRun(cmdConfig)
-			clierror.CheckError(err, p.GetStderr())
+			if err != nil {
+				return fmt.Errorf("error: %w", err)
+			}
+			return nil
 		},
 	}
 	c := &Command{
@@ -203,6 +212,6 @@ func getPrinter(noHeaders bool) printer.PrintService {
 		out = os.Stdout // lol we should either not allow CommandBuilder to customize out buffer at all, or find a way for it to influence this line. I can't change command output in tests because of this
 	}
 	printReg, err := printer.NewPrinterRegistry(out, os.Stderr, noHeaders)
-	clierror.CheckError(err, os.Stderr)
+	clierror.CheckErrorAndDie(err, os.Stderr)
 	return printReg[viper.GetString(constants.ArgOutput)]
 }

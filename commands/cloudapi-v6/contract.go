@@ -197,7 +197,7 @@ func getContractCols(flagName string, outErr io.Writer) []string {
 			if col != "" {
 				contractCols = append(contractCols, col)
 			} else {
-				clierror.CheckError(errors.New("unknown column "+k), outErr)
+				clierror.CheckErrorAndDie(errors.New("unknown column "+k), outErr)
 			}
 		}
 		return contractCols

@@ -12,10 +12,10 @@ import (
 
 func TokensIds(outErr io.Writer) []string {
 	client, err := client2.Get()
-	clierror.CheckError(err, outErr)
+	clierror.CheckErrorAndDie(err, outErr)
 	tokenSvc := resources.NewTokenService(client, context.TODO())
 	tokens, _, err := tokenSvc.List(0)
-	clierror.CheckError(err, outErr)
+	clierror.CheckErrorAndDie(err, outErr)
 	tokenIds := make([]string, 0)
 	if items, ok := tokens.Tokens.GetTokensOk(); ok && items != nil {
 		for _, item := range *items {

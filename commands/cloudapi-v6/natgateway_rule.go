@@ -584,7 +584,7 @@ func getNatGatewayRulesCols(flagName string, outErr io.Writer) []string {
 		if col != "" {
 			natgatewayRuleCols = append(natgatewayRuleCols, col)
 		} else {
-			clierror.CheckError(errors.New("unknown column "+k), outErr)
+			clierror.CheckErrorAndDie(errors.New("unknown column "+k), outErr)
 		}
 	}
 	return natgatewayRuleCols

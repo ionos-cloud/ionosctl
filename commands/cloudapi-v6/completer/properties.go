@@ -17,10 +17,10 @@ func DatacenterCPUFamilies(ctx context.Context, outErr io.Writer, datacenterId s
 		return []string{"AMD_OPTERON", "INTEL_XEON", "INTEL_SKYLAKE"}
 	}
 	client, err := client2.Get()
-	clierror.CheckError(err, outErr)
+	clierror.CheckErrorAndDie(err, outErr)
 	dcSvc := resources.NewDataCenterService(client, ctx)
 	dc, _, err := dcSvc.Get(datacenterId, resources.QueryParams{})
-	clierror.CheckError(err, outErr)
+	clierror.CheckErrorAndDie(err, outErr)
 	if dc.Properties == nil || dc.Properties.CpuArchitecture == nil {
 		return nil
 	}

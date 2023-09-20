@@ -126,7 +126,7 @@ func getPgsqlVersionCols(flagName string, outErr io.Writer) []string {
 			if col != "" {
 				pgsqlVersionCols = append(pgsqlVersionCols, col)
 			} else {
-				clierror.CheckError(errors.New("unknown column "+k), outErr)
+				clierror.CheckErrorAndDie(errors.New("unknown column "+k), outErr)
 			}
 		}
 		return pgsqlVersionCols
