@@ -34,6 +34,7 @@ func NewCommand(ctx context.Context, parent *Command, info CommandBuilder) *Comm
 		Aliases: info.Aliases,
 		Example: info.Example,
 		PreRunE: func(cmd *cobra.Command, args []string) error {
+			cmd.SilenceUsage = true
 			// Set Printer in sync with the Output Flag
 			noHeaders, _ := cmd.Flags().GetBool(constants.ArgNoHeaders)
 			p := getPrinter(noHeaders)
@@ -44,11 +45,13 @@ func NewCommand(ctx context.Context, parent *Command, info CommandBuilder) *Comm
 			preCmdConfig := NewPreCommandCfg(p, info)
 			err := info.PreCmdRun(preCmdConfig)
 			if err != nil {
-				return fmt.Errorf("prerun error: %w", err)
+				return err
 			}
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
+			cmd.SilenceUsage = true
+
 			// Set Printer in sync with the Output Flag
 			noHeaders, _ := cmd.Flags().GetBool(constants.ArgNoHeaders)
 			p := getPrinter(noHeaders)
@@ -62,11 +65,11 @@ func NewCommand(ctx context.Context, parent *Command, info CommandBuilder) *Comm
 			// Create New CommandCfg
 			cmdConfig, err := NewCommandCfg(ctx, os.Stdin, p, info)
 			if err != nil {
-				return fmt.Errorf("error: %w", err)
+				return fmt.Errorf("failed building command cfg: %w", err)
 			}
 			err = info.CmdRun(cmdConfig)
 			if err != nil {
-				return fmt.Errorf("error: %w", err)
+				return err
 			}
 			return nil
 		},
