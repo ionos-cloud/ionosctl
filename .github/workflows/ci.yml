@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
   workflow_call:
   push:
-    branches: [ master ]
+    branches: [master]
   pull_request:
-    types: [ opened, synchronize, reopened, ready_for_review ]
+    types: [opened, synchronize, reopened, ready_for_review]
 
 jobs:
   test:
@@ -16,7 +16,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ ubuntu-latest, windows-latest ]
+        os: [ubuntu-latest, windows-latest]
     runs-on: ${{ matrix.os }}
     outputs:
       package-name: ${{ env.package-name }}
@@ -36,11 +36,23 @@ jobs:
         run: make gofmt_check
         if: matrix.os == 'ubuntu-latest'
 
-      - name: Run tests
+      - name: Run all tests on Ubuntu
         env:
           IONOS_USERNAME: ${{ secrets.IONOS_USERNAME }}
           IONOS_PASSWORD: ${{ secrets.IONOS_PASSWORD }}
-        run: make test
+        run: |
+          if [ "${{ matrix.os }}" == "ubuntu-latest" ]; then
+            make test
+          fi
+
+      - name: Run only unit tests on Windows
+        env:
+          IONOS_USERNAME: ${{ secrets.IONOS_USERNAME }}
+          IONOS_PASSWORD: ${{ secrets.IONOS_PASSWORD }}
+        run: |
+          if [ "${{ matrix.os }}" == "windows-latest" ]; then
+            make utest
+          fi
 
       - name: Build
         run: make build
