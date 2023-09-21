@@ -32,7 +32,7 @@ func BackupUnitsIds(outErr io.Writer) []string {
 	return backupUnitsIds
 }
 
-func AttachedCdromsIds(outErr io.Writer, datacenterId, serverId string) []string {
+func AttachedCdromsIds(datacenterId, serverId string) []string {
 	serverSvc := resources.NewServerService(client.Must(), context.Background())
 	cdroms, _, err := serverSvc.ListCdroms(datacenterId, serverId, resources.ListQueryParams{})
 	if err != nil {
@@ -83,7 +83,7 @@ func DataCentersIds(outErr io.Writer) []string {
 	return dcIds
 }
 
-func FirewallRulesIds(outErr io.Writer, datacenterId, serverId, nicId string) []string {
+func FirewallRulesIds(datacenterId, serverId, nicId string) []string {
 	firewallRuleSvc := resources.NewFirewallRuleService(client.Must(), context.Background())
 	firewallRules, _, err := firewallRuleSvc.List(datacenterId, serverId, nicId, resources.ListQueryParams{})
 	if err != nil {
@@ -102,7 +102,7 @@ func FirewallRulesIds(outErr io.Writer, datacenterId, serverId, nicId string) []
 	return firewallRulesIds
 }
 
-func FlowLogsIds(outErr io.Writer, datacenterId, serverId, nicId string) []string {
+func FlowLogsIds(datacenterId, serverId, nicId string) []string {
 	flowLogSvc := resources.NewFlowLogService(client.Must(), context.Background())
 	flowLogs, _, err := flowLogSvc.List(datacenterId, serverId, nicId, resources.ListQueryParams{})
 	if err != nil {
@@ -206,7 +206,7 @@ func K8sVersionsIds(outErr io.Writer) []string {
 	return k8ss
 }
 
-func K8sNodesIds(outErr io.Writer, clusterId, nodepoolId string) []string {
+func K8sNodesIds(clusterId, nodepoolId string) []string {
 	k8sSvc := resources.NewK8sService(client.Must(), context.Background())
 	k8ss, _, err := k8sSvc.ListNodes(clusterId, nodepoolId, resources.ListQueryParams{})
 	if err != nil {
@@ -225,7 +225,7 @@ func K8sNodesIds(outErr io.Writer, clusterId, nodepoolId string) []string {
 	return k8ssIds
 }
 
-func K8sNodePoolsIds(outErr io.Writer, clusterId string) []string {
+func K8sNodePoolsIds(clusterId string) []string {
 	k8sSvc := resources.NewK8sService(client.Must(), context.Background())
 	k8ss, _, err := k8sSvc.ListNodePools(clusterId, resources.ListQueryParams{})
 	if err != nil {
@@ -244,7 +244,7 @@ func K8sNodePoolsIds(outErr io.Writer, clusterId string) []string {
 	return k8ssIds
 }
 
-func LansIds(outErr io.Writer, datacenterId string) []string {
+func LansIds(datacenterId string) []string {
 	lanSvc := resources.NewLanService(client.Must(), context.Background())
 	lans, _, err := lanSvc.List(datacenterId, resources.ListQueryParams{})
 	if err != nil {
@@ -280,7 +280,7 @@ func LansIds(outErr io.Writer, datacenterId string) []string {
 	return lansIds
 }
 
-func LoadbalancersIds(outErr io.Writer, datacenterId string) []string {
+func LoadbalancersIds(datacenterId string) []string {
 	loadbalancerSvc := resources.NewLoadbalancerService(client.Must(), context.Background())
 	loadbalancers, _, err := loadbalancerSvc.List(datacenterId, resources.ListQueryParams{})
 	if err != nil {
@@ -318,7 +318,7 @@ func LocationIds(outErr io.Writer) []string {
 	return lcIds
 }
 
-func NatGatewaysIds(outErr io.Writer, datacenterId string) []string {
+func NatGatewaysIds(datacenterId string) []string {
 	natgatewaySvc := resources.NewNatGatewayService(client.Must(), context.Background())
 	natgateways, _, err := natgatewaySvc.List(datacenterId, resources.ListQueryParams{})
 	if err != nil {
@@ -337,7 +337,7 @@ func NatGatewaysIds(outErr io.Writer, datacenterId string) []string {
 	return ssIds
 }
 
-func NatGatewayFlowLogsIds(outErr io.Writer, datacenterId, natgatewayId string) []string {
+func NatGatewayFlowLogsIds(datacenterId, natgatewayId string) []string {
 	natgatewaySvc := resources.NewNatGatewayService(client.Must(), context.Background())
 	natFlowLogs, _, err := natgatewaySvc.ListFlowLogs(datacenterId, natgatewayId, resources.ListQueryParams{})
 	if err != nil {
@@ -356,7 +356,7 @@ func NatGatewayFlowLogsIds(outErr io.Writer, datacenterId, natgatewayId string) 
 	return ssIds
 }
 
-func NatGatewayRulesIds(outErr io.Writer, datacenterId, natgatewayId string) []string {
+func NatGatewayRulesIds(datacenterId, natgatewayId string) []string {
 	natgatewaySvc := resources.NewNatGatewayService(client.Must(), context.Background())
 	natgateways, _, err := natgatewaySvc.ListRules(datacenterId, natgatewayId, resources.ListQueryParams{})
 	if err != nil {
@@ -375,7 +375,7 @@ func NatGatewayRulesIds(outErr io.Writer, datacenterId, natgatewayId string) []s
 	return ssIds
 }
 
-func NetworkLoadBalancersIds(outErr io.Writer, datacenterId string) []string {
+func NetworkLoadBalancersIds(datacenterId string) []string {
 	networkloadbalancerSvc := resources.NewNetworkLoadBalancerService(client.Must(), context.Background())
 	networkloadbalancers, _, err := networkloadbalancerSvc.List(datacenterId, resources.ListQueryParams{})
 	if err != nil {
@@ -394,7 +394,7 @@ func NetworkLoadBalancersIds(outErr io.Writer, datacenterId string) []string {
 	return ssIds
 }
 
-func NetworkLoadBalancerFlowLogsIds(outErr io.Writer, datacenterId, networkloadbalancerId string) []string {
+func NetworkLoadBalancerFlowLogsIds(datacenterId, networkloadbalancerId string) []string {
 	networkloadbalancerSvc := resources.NewNetworkLoadBalancerService(client.Must(), context.Background())
 	natFlowLogs, _, err := networkloadbalancerSvc.ListFlowLogs(datacenterId, networkloadbalancerId, resources.ListQueryParams{})
 	if err != nil {
@@ -413,7 +413,7 @@ func NetworkLoadBalancerFlowLogsIds(outErr io.Writer, datacenterId, networkloadb
 	return ssIds
 }
 
-func ForwardingRulesIds(outErr io.Writer, datacenterId, nlbId string) []string {
+func ForwardingRulesIds(datacenterId, nlbId string) []string {
 	nlbSvc := resources.NewNetworkLoadBalancerService(client.Must(), context.Background())
 	natForwardingRules, _, err := nlbSvc.ListForwardingRules(datacenterId, nlbId, resources.ListQueryParams{})
 	if err != nil {
@@ -432,7 +432,7 @@ func ForwardingRulesIds(outErr io.Writer, datacenterId, nlbId string) []string {
 	return ssIds
 }
 
-func NicsIds(outErr io.Writer, datacenterId, serverId string) []string {
+func NicsIds(datacenterId, serverId string) []string {
 	nicSvc := resources.NewNicService(client.Must(), context.Background())
 	nics, _, err := nicSvc.List(datacenterId, serverId, resources.ListQueryParams{})
 	if err != nil {
@@ -451,7 +451,7 @@ func NicsIds(outErr io.Writer, datacenterId, serverId string) []string {
 	return nicsIds
 }
 
-func AttachedNicsIds(outErr io.Writer, datacenterId, loadbalancerId string) []string {
+func AttachedNicsIds(datacenterId, loadbalancerId string) []string {
 	nicSvc := resources.NewLoadbalancerService(client.Must(), context.Background())
 	nics, _, err := nicSvc.ListNics(datacenterId, loadbalancerId, resources.ListQueryParams{})
 	if err != nil {
@@ -527,7 +527,7 @@ func ResourcesIds(outErr io.Writer) []string {
 	return resIds
 }
 
-func S3KeyIds(outErr io.Writer, userId string) []string {
+func S3KeyIds(userId string) []string {
 	S3KeySvc := resources.NewS3KeyService(client.Must(), context.TODO())
 	S3Keys, _, err := S3KeySvc.List(userId, resources.ListQueryParams{})
 	if err != nil {
@@ -546,7 +546,7 @@ func S3KeyIds(outErr io.Writer, userId string) []string {
 	return ssIds
 }
 
-func ServersIds(outErr io.Writer, datacenterId string) []string {
+func ServersIds(datacenterId string) []string {
 	serverSvc := resources.NewServerService(client.Must(), context.Background())
 	servers, _, err := serverSvc.List(datacenterId, resources.ListQueryParams{})
 	if err != nil {
@@ -565,7 +565,7 @@ func ServersIds(outErr io.Writer, datacenterId string) []string {
 	return ssIds
 }
 
-func GroupResourcesIds(outErr io.Writer, groupId string) []string {
+func GroupResourcesIds(groupId string) []string {
 	groupSvc := resources.NewGroupService(client.Must(), context.Background())
 	res, _, err := groupSvc.ListResources(groupId, resources.ListQueryParams{})
 	if err != nil {
@@ -641,7 +641,7 @@ func UsersIds(outErr io.Writer) []string {
 	return usersIds
 }
 
-func GroupUsersIds(outErr io.Writer, groupId string) []string {
+func GroupUsersIds(groupId string) []string {
 	groupSvc := resources.NewGroupService(client.Must(), context.Background())
 	users, _, err := groupSvc.ListUsers(groupId, resources.ListQueryParams{})
 	if err != nil {
@@ -660,7 +660,7 @@ func GroupUsersIds(outErr io.Writer, groupId string) []string {
 	return usersIds
 }
 
-func VolumesIds(outErr io.Writer, datacenterId string) []string {
+func VolumesIds(datacenterId string) []string {
 	volumeSvc := resources.NewVolumeService(client.Must(), context.Background())
 	volumes, _, err := volumeSvc.List(datacenterId, resources.ListQueryParams{})
 	if err != nil {
@@ -679,7 +679,7 @@ func VolumesIds(outErr io.Writer, datacenterId string) []string {
 	return volumesIds
 }
 
-func AttachedVolumesIds(outErr io.Writer, datacenterId, serverId string) []string {
+func AttachedVolumesIds(datacenterId, serverId string) []string {
 	serverSvc := resources.NewServerService(client.Must(), context.Background())
 	volumes, _, err := serverSvc.ListVolumes(datacenterId, serverId, resources.ListQueryParams{})
 	if err != nil {
@@ -698,7 +698,7 @@ func AttachedVolumesIds(outErr io.Writer, datacenterId, serverId string) []strin
 	return attachedVolumesIds
 }
 
-func ApplicationLoadBalancersIds(outErr io.Writer, datacenterId string) []string {
+func ApplicationLoadBalancersIds(datacenterId string) []string {
 	applicationloadbalancerSvc := resources.NewApplicationLoadBalancerService(client.Must(), context.Background())
 	applicationloadbalancers, _, err := applicationloadbalancerSvc.List(datacenterId, resources.ListQueryParams{})
 	if err != nil {
@@ -717,7 +717,7 @@ func ApplicationLoadBalancersIds(outErr io.Writer, datacenterId string) []string
 	return albIds
 }
 
-func ApplicationLoadBalancerFlowLogsIds(outErr io.Writer, datacenterId, applicationloadbalancerId string) []string {
+func ApplicationLoadBalancerFlowLogsIds(datacenterId, applicationloadbalancerId string) []string {
 	applicationloadbalancerSvc := resources.NewApplicationLoadBalancerService(client.Must(), context.Background())
 	natFlowLogs, _, err := applicationloadbalancerSvc.ListFlowLogs(datacenterId, applicationloadbalancerId, resources.ListQueryParams{})
 	if err != nil {
@@ -736,7 +736,7 @@ func ApplicationLoadBalancerFlowLogsIds(outErr io.Writer, datacenterId, applicat
 	return ssIds
 }
 
-func AlbForwardingRulesIds(outErr io.Writer, datacenterId, albId string) []string {
+func AlbForwardingRulesIds(datacenterId, albId string) []string {
 	albSvc := resources.NewApplicationLoadBalancerService(client.Must(), context.Background())
 	natForwardingRules, _, err := albSvc.ListForwardingRules(datacenterId, albId, resources.ListQueryParams{})
 	if err != nil {

@@ -27,7 +27,7 @@ func BackupsIds(outErr io.Writer) []string {
 	return ids
 }
 
-func BackupsIdsForCluster(outErr io.Writer, clusterId string) []string {
+func BackupsIdsForCluster(clusterId string) []string {
 	clustersService := resources.NewBackupsService(client.Must(), context.Background())
 	backupList, _, err := clustersService.ListBackups(clusterId)
 	if err != nil {
