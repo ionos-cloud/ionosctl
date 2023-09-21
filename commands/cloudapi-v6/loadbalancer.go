@@ -528,7 +528,7 @@ func DeleteAllLoadBalancers(c *core.CommandConfig) error {
 	queryParams := listQueryParams.QueryParams
 	dcid := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Datacenter ID: %v", dcid))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.DatacenterId, dcid))
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting LoadBalancers..."))
 
 	loadBalancers, resp, err := c.CloudApiV6Services.Loadbalancers().List(dcid, cloudapiv6.ParentResourceListQueryParams)

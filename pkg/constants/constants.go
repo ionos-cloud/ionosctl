@@ -136,3 +136,12 @@ const (
 	ServerUrl        = "userdata.api-url"
 	CLIHttpUserAgent = "cli-user-agent"
 )
+
+// Resource info
+const (
+	DatacenterId              = "Datacenter ID: %v"
+	ApplicationLoadBalancerId = "Application Load Balancer ID: %v"
+	TargetGroupId             = "Target Group ID: %v"
+	ClusterId                 = "Cluster ID: %v"
+	ForwardingRuleId          = "Forwarding Rule ID: %v"
+)

@@ -94,7 +94,7 @@ func PreRunClusterLogsList(c *core.PreCommandConfig) error {
 }
 
 func RunClusterLogsList(c *core.CommandConfig) error {
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Cluster ID: %v", viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.ClusterId, viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))))
 
 	queryParams, err := getLogsQueryParams(c)
 	if err != nil {
