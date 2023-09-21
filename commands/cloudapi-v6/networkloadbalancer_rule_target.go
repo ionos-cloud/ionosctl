@@ -66,8 +66,7 @@ func NlbRuleTargetCmd() *core.Command {
 	})
 	list.AddUUIDFlag(cloudapiv6.ArgRuleId, "", "", cloudapiv6.ForwardingRuleId, core.RequiredFlagOption())
 	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgRuleId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.ForwardingRulesIds(os.Stderr,
-			viper.GetString(core.GetFlagName(list.NS, cloudapiv6.ArgDataCenterId)),
+		return completer.ForwardingRulesIds(viper.GetString(core.GetFlagName(list.NS, cloudapiv6.ArgDataCenterId)),
 			viper.GetString(core.GetFlagName(list.NS, cloudapiv6.ArgNetworkLoadBalancerId)),
 		), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -112,8 +111,7 @@ Required values to run command:
 	})
 	add.AddStringFlag(cloudapiv6.ArgRuleId, "", "", cloudapiv6.ForwardingRuleId, core.RequiredFlagOption())
 	_ = add.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgRuleId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.ForwardingRulesIds(os.Stderr,
-			viper.GetString(core.GetFlagName(add.NS, cloudapiv6.ArgDataCenterId)),
+		return completer.ForwardingRulesIds(viper.GetString(core.GetFlagName(add.NS, cloudapiv6.ArgDataCenterId)),
 			viper.GetString(core.GetFlagName(add.NS, cloudapiv6.ArgNetworkLoadBalancerId)),
 		), cobra.ShellCompDirectiveNoFileComp
 	})

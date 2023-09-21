@@ -98,8 +98,7 @@ func K8sNodeCmd() *core.Command {
 	})
 	get.AddUUIDFlag(cloudapiv6.ArgK8sNodeId, cloudapiv6.ArgIdShort, "", cloudapiv6.K8sNodeId, core.RequiredFlagOption())
 	_ = get.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgK8sNodeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.K8sNodesIds(os.Stderr,
-			viper.GetString(core.GetFlagName(get.NS, constants.FlagClusterId)),
+		return completer.K8sNodesIds(viper.GetString(core.GetFlagName(get.NS, constants.FlagClusterId)),
 			viper.GetString(core.GetFlagName(get.NS, constants.FlagNodepoolId)),
 		), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -141,8 +140,7 @@ Required values to run command:
 	})
 	recreate.AddUUIDFlag(cloudapiv6.ArgK8sNodeId, cloudapiv6.ArgIdShort, "", cloudapiv6.K8sNodeId, core.RequiredFlagOption())
 	_ = recreate.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgK8sNodeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.K8sNodesIds(os.Stderr,
-			viper.GetString(core.GetFlagName(recreate.NS, constants.FlagClusterId)),
+		return completer.K8sNodesIds(viper.GetString(core.GetFlagName(recreate.NS, constants.FlagClusterId)),
 			viper.GetString(core.GetFlagName(recreate.NS, constants.FlagNodepoolId)),
 		), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -179,8 +177,7 @@ Required values to run command:
 	})
 	deleteCmd.AddUUIDFlag(cloudapiv6.ArgK8sNodeId, "", "", cloudapiv6.K8sNodeId, core.RequiredFlagOption())
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgK8sNodeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.K8sNodesIds(os.Stderr,
-			viper.GetString(core.GetFlagName(deleteCmd.NS, constants.FlagClusterId)),
+		return completer.K8sNodesIds(viper.GetString(core.GetFlagName(deleteCmd.NS, constants.FlagClusterId)),
 			viper.GetString(core.GetFlagName(deleteCmd.NS, constants.FlagNodepoolId)),
 		), cobra.ShellCompDirectiveNoFileComp
 	})

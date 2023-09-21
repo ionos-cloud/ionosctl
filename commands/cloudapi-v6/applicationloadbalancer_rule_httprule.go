@@ -66,8 +66,7 @@ func AlbRuleHttpRuleCmd() *core.Command {
 	})
 	list.AddUUIDFlag(cloudapiv6.ArgRuleId, "", "", cloudapiv6.ForwardingRuleId, core.RequiredFlagOption())
 	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgRuleId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.AlbForwardingRulesIds(os.Stderr,
-			viper.GetString(core.GetFlagName(list.NS, cloudapiv6.ArgDataCenterId)),
+		return completer.AlbForwardingRulesIds(viper.GetString(core.GetFlagName(list.NS, cloudapiv6.ArgDataCenterId)),
 			viper.GetString(core.GetFlagName(list.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
 		), cobra.ShellCompDirectiveNoFileComp
 	})
