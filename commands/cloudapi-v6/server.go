@@ -1211,6 +1211,7 @@ func getServerPrint(resp *resources.Response, c *core.CommandConfig, ss []resour
 	return r
 }
 
+// TODO: Remove this func, use the 'allCols' behaviour from e.g. dbaas/mongo/cluster.go
 func getServersCols(argCols string, argAll string, outErr io.Writer) []string {
 	var cols []string
 	if viper.IsSet(argCols) {

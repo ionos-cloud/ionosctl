@@ -161,6 +161,7 @@ func getContractPrint(c *core.CommandConfig, cs []resources.Contract, cols []str
 	return r
 }
 
+// TODO: Remove this func, use the 'allCols' behaviour from e.g. dbaas/mongo/cluster.go
 func getContractCols(flagName string, outErr io.Writer) []string {
 	if viper.IsSet(flagName) {
 		var contractCols []string
