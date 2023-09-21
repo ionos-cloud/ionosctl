@@ -4,16 +4,13 @@ import (
 	"context"
 	"io"
 
-	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"
-
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/utils/clierror"
 	"github.com/ionos-cloud/ionosctl/v6/services/auth-v1/resources"
 )
 
 func TokensIds(outErr io.Writer) []string {
-	client, err := client2.Get()
-	clierror.CheckErrorAndDie(err, outErr)
-	tokenSvc := resources.NewTokenService(client, context.TODO())
+	tokenSvc := resources.NewTokenService(client.Must(), context.Background())
 	tokens, _, err := tokenSvc.List(0)
 	clierror.CheckErrorAndDie(err, outErr)
 	tokenIds := make([]string, 0)

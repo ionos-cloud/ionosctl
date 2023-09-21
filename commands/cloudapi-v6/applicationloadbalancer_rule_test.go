@@ -13,7 +13,6 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/utils/clierror"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
@@ -568,9 +567,7 @@ func TestRunApplicationLoadBalancerForwardingRuleDeleteAskForConfirmErr(t *testi
 }
 
 func TestGetAlbForwardingRulesCols(t *testing.T) {
-	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
-	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
 	viper.Set(core.GetFlagName("forwardingrule", constants.ArgCols), []string{"Name"})
 	getAlbForwardingRulesCols(core.GetFlagName("forwardingrule", constants.ArgCols), w)
@@ -579,9 +576,7 @@ func TestGetAlbForwardingRulesCols(t *testing.T) {
 }
 
 func TestGetAlbForwardingRulesColsErr(t *testing.T) {
-	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
-	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
 	viper.Set(core.GetFlagName("forwardingrule", constants.ArgCols), []string{"Unknown"})
 	getAlbForwardingRulesCols(core.GetFlagName("forwardingrule", constants.ArgCols), w)

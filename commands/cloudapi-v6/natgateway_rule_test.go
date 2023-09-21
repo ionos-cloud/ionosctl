@@ -619,7 +619,6 @@ func TestRunNatGatewayRuleDeleteAskForConfirmErr(t *testing.T) {
 }
 
 func TestGetNatGatewayRulesCols(t *testing.T) {
-	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
@@ -630,7 +629,6 @@ func TestGetNatGatewayRulesCols(t *testing.T) {
 }
 
 func TestGetNatGatewayRulesColsErr(t *testing.T) {
-	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)

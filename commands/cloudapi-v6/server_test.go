@@ -15,7 +15,6 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/utils/clierror"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
@@ -1325,9 +1324,7 @@ func TestRunServerResumeAskForConfirmErr(t *testing.T) {
 }
 
 func TestGetServersCols(t *testing.T) {
-	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
-	clierror.ErrAction = func() { return }
 	w := bufio.NewWriter(&b)
 	viper.Set(core.GetFlagName("server", constants.ArgCols), []string{"Name"})
 	getServersCols(core.GetFlagName("server", constants.ArgCols), core.GetFlagName("server", cloudapiv6.ArgAll), w)
@@ -1336,9 +1333,7 @@ func TestGetServersCols(t *testing.T) {
 }
 
 func TestGetServersColsErr(t *testing.T) {
-	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
-	clierror.ErrAction = func() { return }
 	w := bufio.NewWriter(&b)
 	viper.Set(core.GetFlagName("server", constants.ArgCols), []string{"Unknown"})
 	getServersCols(core.GetFlagName("server", constants.ArgCols), core.GetFlagName("server", cloudapiv6.ArgAll), w)

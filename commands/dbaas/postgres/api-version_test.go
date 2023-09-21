@@ -100,7 +100,6 @@ func TestRunAPIVersionGetErr(t *testing.T) {
 }
 
 func TestGetAPIVersionsCols(t *testing.T) {
-	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
@@ -111,7 +110,6 @@ func TestGetAPIVersionsCols(t *testing.T) {
 }
 
 func TestGetAPIVersionsColsErr(t *testing.T) {
-	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)

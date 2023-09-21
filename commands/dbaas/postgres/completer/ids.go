@@ -4,16 +4,13 @@ import (
 	"context"
 	"io"
 
-	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"
-
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/utils/clierror"
 	"github.com/ionos-cloud/ionosctl/v6/services/dbaas-postgres/resources"
 )
 
 func BackupsIds(outErr io.Writer) []string {
-	client, err := client2.Get()
-	clierror.CheckErrorAndDie(err, outErr)
-	clustersService := resources.NewBackupsService(client, context.TODO())
+	clustersService := resources.NewBackupsService(client.Must(), context.Background())
 	backupList, _, err := clustersService.List()
 	clierror.CheckErrorAndDie(err, outErr)
 	ids := make([]string, 0)
@@ -30,9 +27,7 @@ func BackupsIds(outErr io.Writer) []string {
 }
 
 func BackupsIdsForCluster(outErr io.Writer, clusterId string) []string {
-	client, err := client2.Get()
-	clierror.CheckErrorAndDie(err, outErr)
-	clustersService := resources.NewBackupsService(client, context.TODO())
+	clustersService := resources.NewBackupsService(client.Must(), context.Background())
 	backupList, _, err := clustersService.ListBackups(clusterId)
 	clierror.CheckErrorAndDie(err, outErr)
 	ids := make([]string, 0)
@@ -49,9 +44,7 @@ func BackupsIdsForCluster(outErr io.Writer, clusterId string) []string {
 }
 
 func ClustersIds(outErr io.Writer) []string {
-	client, err := client2.Get()
-	clierror.CheckErrorAndDie(err, outErr)
-	clustersService := resources.NewClustersService(client, context.TODO())
+	clustersService := resources.NewClustersService(client.Must(), context.Background())
 	clusterList, _, err := clustersService.List("")
 	clierror.CheckErrorAndDie(err, outErr)
 	ids := make([]string, 0)
@@ -68,9 +61,7 @@ func ClustersIds(outErr io.Writer) []string {
 }
 
 func PostgresVersions(outErr io.Writer) []string {
-	client, err := client2.Get()
-	clierror.CheckErrorAndDie(err, outErr)
-	versionsService := resources.NewVersionsService(client, context.TODO())
+	versionsService := resources.NewVersionsService(client.Must(), context.Background())
 	versionList, _, err := versionsService.List()
 	clierror.CheckErrorAndDie(err, outErr)
 	versions := make([]string, 0)

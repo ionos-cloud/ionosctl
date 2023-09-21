@@ -12,7 +12,6 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/utils/clierror"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
@@ -55,9 +54,7 @@ func TestRunLocationCpuListErr(t *testing.T) {
 }
 
 func TestGetCpusCols(t *testing.T) {
-	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
-	clierror.ErrAction = func() { return }
 	w := bufio.NewWriter(&b)
 	viper.Set(core.GetFlagName("cpu", constants.ArgCols), []string{"Vendor"})
 	getCpuCols(core.GetFlagName("cpu", constants.ArgCols), w)
@@ -66,9 +63,7 @@ func TestGetCpusCols(t *testing.T) {
 }
 
 func TestGetCpusColsErr(t *testing.T) {
-	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
-	clierror.ErrAction = func() { return }
 	w := bufio.NewWriter(&b)
 	viper.Set(core.GetFlagName("cpu", constants.ArgCols), []string{"Unknown"})
 	getCpuCols(core.GetFlagName("cpu", constants.ArgCols), w)

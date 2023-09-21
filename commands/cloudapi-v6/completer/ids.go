@@ -9,15 +9,13 @@ import (
 	"fmt"
 	"io"
 
-	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/utils/clierror"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
 )
 
 func BackupUnitsIds(outErr io.Writer) []string {
-	client, err := client2.Get()
-	clierror.CheckErrorAndDie(err, outErr)
-	backupUnitSvc := resources.NewBackupUnitService(client, context.TODO())
+	backupUnitSvc := resources.NewBackupUnitService(client.Must(), context.Background())
 	backupUnits, _, err := backupUnitSvc.List(resources.ListQueryParams{})
 	clierror.CheckErrorAndDie(err, outErr)
 	backupUnitsIds := make([]string, 0)
@@ -34,9 +32,7 @@ func BackupUnitsIds(outErr io.Writer) []string {
 }
 
 func AttachedCdromsIds(outErr io.Writer, datacenterId, serverId string) []string {
-	client, err := client2.Get()
-	clierror.CheckErrorAndDie(err, outErr)
-	serverSvc := resources.NewServerService(client, context.TODO())
+	serverSvc := resources.NewServerService(client.Must(), context.Background())
 	cdroms, _, err := serverSvc.ListCdroms(datacenterId, serverId, resources.ListQueryParams{})
 	clierror.CheckErrorAndDie(err, outErr)
 	attachedCdromsIds := make([]string, 0)
@@ -53,9 +49,7 @@ func AttachedCdromsIds(outErr io.Writer, datacenterId, serverId string) []string
 }
 
 func DataCentersIds(outErr io.Writer) []string {
-	client, err := client2.Get()
-	clierror.CheckErrorAndDie(err, outErr)
-	datacenterSvc := resources.NewDataCenterService(client, context.TODO())
+	datacenterSvc := resources.NewDataCenterService(client.Must(), context.Background())
 	datacenters, _, err := datacenterSvc.List(resources.ListQueryParams{})
 	clierror.CheckErrorAndDie(err, outErr)
 	dcIds := make([]string, 0)
@@ -85,9 +79,7 @@ func DataCentersIds(outErr io.Writer) []string {
 }
 
 func FirewallRulesIds(outErr io.Writer, datacenterId, serverId, nicId string) []string {
-	client, err := client2.Get()
-	clierror.CheckErrorAndDie(err, outErr)
-	firewallRuleSvc := resources.NewFirewallRuleService(client, context.TODO())
+	firewallRuleSvc := resources.NewFirewallRuleService(client.Must(), context.Background())
 	firewallRules, _, err := firewallRuleSvc.List(datacenterId, serverId, nicId, resources.ListQueryParams{})
 	clierror.CheckErrorAndDie(err, outErr)
 	firewallRulesIds := make([]string, 0)
@@ -104,9 +96,7 @@ func FirewallRulesIds(outErr io.Writer, datacenterId, serverId, nicId string) []
 }
 
 func FlowLogsIds(outErr io.Writer, datacenterId, serverId, nicId string) []string {
-	client, err := client2.Get()
-	clierror.CheckErrorAndDie(err, outErr)
-	flowLogSvc := resources.NewFlowLogService(client, context.TODO())
+	flowLogSvc := resources.NewFlowLogService(client.Must(), context.Background())
 	flowLogs, _, err := flowLogSvc.List(datacenterId, serverId, nicId, resources.ListQueryParams{})
 	clierror.CheckErrorAndDie(err, outErr)
 	flowLogsIds := make([]string, 0)
@@ -123,9 +113,7 @@ func FlowLogsIds(outErr io.Writer, datacenterId, serverId, nicId string) []strin
 }
 
 func GroupsIds(outErr io.Writer) []string {
-	client, err := client2.Get()
-	clierror.CheckErrorAndDie(err, outErr)
-	groupSvc := resources.NewGroupService(client, context.TODO())
+	groupSvc := resources.NewGroupService(client.Must(), context.Background())
 	groups, _, err := groupSvc.List(resources.ListQueryParams{})
 	clierror.CheckErrorAndDie(err, outErr)
 	groupsIds := make([]string, 0)
@@ -142,9 +130,7 @@ func GroupsIds(outErr io.Writer) []string {
 }
 
 func ImageIds(outErr io.Writer) []string {
-	client, err := client2.Get()
-	clierror.CheckErrorAndDie(err, outErr)
-	imageSvc := resources.NewImageService(client, context.TODO())
+	imageSvc := resources.NewImageService(client.Must(), context.Background())
 	images, _, err := imageSvc.List(resources.ListQueryParams{})
 	clierror.CheckErrorAndDie(err, outErr)
 	imgsIds := make([]string, 0)
@@ -161,9 +147,7 @@ func ImageIds(outErr io.Writer) []string {
 }
 
 func IpBlocksIds(outErr io.Writer) []string {
-	client, err := client2.Get()
-	clierror.CheckErrorAndDie(err, outErr)
-	ipBlockSvc := resources.NewIpBlockService(client, context.TODO())
+	ipBlockSvc := resources.NewIpBlockService(client.Must(), context.Background())
 	ipBlocks, _, err := ipBlockSvc.List(resources.ListQueryParams{})
 	clierror.CheckErrorAndDie(err, outErr)
 	ssIds := make([]string, 0)
@@ -180,9 +164,7 @@ func IpBlocksIds(outErr io.Writer) []string {
 }
 
 func K8sClustersIds(outErr io.Writer) []string {
-	client, err := client2.Get()
-	clierror.CheckErrorAndDie(err, outErr)
-	k8sSvc := resources.NewK8sService(client, context.TODO())
+	k8sSvc := resources.NewK8sService(client.Must(), context.Background())
 	k8ss, _, err := k8sSvc.ListClusters(resources.ListQueryParams{})
 	clierror.CheckErrorAndDie(err, outErr)
 	k8ssIds := make([]string, 0)
@@ -199,18 +181,14 @@ func K8sClustersIds(outErr io.Writer) []string {
 }
 
 func K8sVersionsIds(outErr io.Writer) []string {
-	client, err := client2.Get()
-	clierror.CheckErrorAndDie(err, outErr)
-	k8sSvc := resources.NewK8sService(client, context.TODO())
+	k8sSvc := resources.NewK8sService(client.Must(), context.Background())
 	k8ss, _, err := k8sSvc.ListVersions()
 	clierror.CheckErrorAndDie(err, outErr)
 	return k8ss
 }
 
 func K8sNodesIds(outErr io.Writer, clusterId, nodepoolId string) []string {
-	client, err := client2.Get()
-	clierror.CheckErrorAndDie(err, outErr)
-	k8sSvc := resources.NewK8sService(client, context.TODO())
+	k8sSvc := resources.NewK8sService(client.Must(), context.Background())
 	k8ss, _, err := k8sSvc.ListNodes(clusterId, nodepoolId, resources.ListQueryParams{})
 	clierror.CheckErrorAndDie(err, outErr)
 	k8ssIds := make([]string, 0)
@@ -227,9 +205,7 @@ func K8sNodesIds(outErr io.Writer, clusterId, nodepoolId string) []string {
 }
 
 func K8sNodePoolsIds(outErr io.Writer, clusterId string) []string {
-	client, err := client2.Get()
-	clierror.CheckErrorAndDie(err, outErr)
-	k8sSvc := resources.NewK8sService(client, context.TODO())
+	k8sSvc := resources.NewK8sService(client.Must(), context.Background())
 	k8ss, _, err := k8sSvc.ListNodePools(clusterId, resources.ListQueryParams{})
 	clierror.CheckErrorAndDie(err, outErr)
 	k8ssIds := make([]string, 0)
@@ -246,9 +222,7 @@ func K8sNodePoolsIds(outErr io.Writer, clusterId string) []string {
 }
 
 func LansIds(outErr io.Writer, datacenterId string) []string {
-	client, err := client2.Get()
-	clierror.CheckErrorAndDie(err, outErr)
-	lanSvc := resources.NewLanService(client, context.TODO())
+	lanSvc := resources.NewLanService(client.Must(), context.Background())
 	lans, _, err := lanSvc.List(datacenterId, resources.ListQueryParams{})
 	clierror.CheckErrorAndDie(err, outErr)
 	lansIds := make([]string, 0)
@@ -282,9 +256,7 @@ func LansIds(outErr io.Writer, datacenterId string) []string {
 }
 
 func LoadbalancersIds(outErr io.Writer, datacenterId string) []string {
-	client, err := client2.Get()
-	clierror.CheckErrorAndDie(err, outErr)
-	loadbalancerSvc := resources.NewLoadbalancerService(client, context.TODO())
+	loadbalancerSvc := resources.NewLoadbalancerService(client.Must(), context.Background())
 	loadbalancers, _, err := loadbalancerSvc.List(datacenterId, resources.ListQueryParams{})
 	clierror.CheckErrorAndDie(err, outErr)
 	loadbalancersIds := make([]string, 0)
@@ -301,9 +273,7 @@ func LoadbalancersIds(outErr io.Writer, datacenterId string) []string {
 }
 
 func LocationIds(outErr io.Writer) []string {
-	client, err := client2.Get()
-	clierror.CheckErrorAndDie(err, outErr)
-	locationSvc := resources.NewLocationService(client, context.TODO())
+	locationSvc := resources.NewLocationService(client.Must(), context.Background())
 	locations, _, err := locationSvc.List(resources.ListQueryParams{})
 	clierror.CheckErrorAndDie(err, outErr)
 	lcIds := make([]string, 0)
@@ -320,9 +290,7 @@ func LocationIds(outErr io.Writer) []string {
 }
 
 func NatGatewaysIds(outErr io.Writer, datacenterId string) []string {
-	client, err := client2.Get()
-	clierror.CheckErrorAndDie(err, outErr)
-	natgatewaySvc := resources.NewNatGatewayService(client, context.TODO())
+	natgatewaySvc := resources.NewNatGatewayService(client.Must(), context.Background())
 	natgateways, _, err := natgatewaySvc.List(datacenterId, resources.ListQueryParams{})
 	clierror.CheckErrorAndDie(err, outErr)
 	ssIds := make([]string, 0)
@@ -339,9 +307,7 @@ func NatGatewaysIds(outErr io.Writer, datacenterId string) []string {
 }
 
 func NatGatewayFlowLogsIds(outErr io.Writer, datacenterId, natgatewayId string) []string {
-	client, err := client2.Get()
-	clierror.CheckErrorAndDie(err, outErr)
-	natgatewaySvc := resources.NewNatGatewayService(client, context.TODO())
+	natgatewaySvc := resources.NewNatGatewayService(client.Must(), context.Background())
 	natFlowLogs, _, err := natgatewaySvc.ListFlowLogs(datacenterId, natgatewayId, resources.ListQueryParams{})
 	clierror.CheckErrorAndDie(err, outErr)
 	ssIds := make([]string, 0)
@@ -358,9 +324,7 @@ func NatGatewayFlowLogsIds(outErr io.Writer, datacenterId, natgatewayId string) 
 }
 
 func NatGatewayRulesIds(outErr io.Writer, datacenterId, natgatewayId string) []string {
-	client, err := client2.Get()
-	clierror.CheckErrorAndDie(err, outErr)
-	natgatewaySvc := resources.NewNatGatewayService(client, context.TODO())
+	natgatewaySvc := resources.NewNatGatewayService(client.Must(), context.Background())
 	natgateways, _, err := natgatewaySvc.ListRules(datacenterId, natgatewayId, resources.ListQueryParams{})
 	clierror.CheckErrorAndDie(err, outErr)
 	ssIds := make([]string, 0)
@@ -377,9 +341,7 @@ func NatGatewayRulesIds(outErr io.Writer, datacenterId, natgatewayId string) []s
 }
 
 func NetworkLoadBalancersIds(outErr io.Writer, datacenterId string) []string {
-	client, err := client2.Get()
-	clierror.CheckErrorAndDie(err, outErr)
-	networkloadbalancerSvc := resources.NewNetworkLoadBalancerService(client, context.TODO())
+	networkloadbalancerSvc := resources.NewNetworkLoadBalancerService(client.Must(), context.Background())
 	networkloadbalancers, _, err := networkloadbalancerSvc.List(datacenterId, resources.ListQueryParams{})
 	clierror.CheckErrorAndDie(err, outErr)
 	ssIds := make([]string, 0)
@@ -396,9 +358,7 @@ func NetworkLoadBalancersIds(outErr io.Writer, datacenterId string) []string {
 }
 
 func NetworkLoadBalancerFlowLogsIds(outErr io.Writer, datacenterId, networkloadbalancerId string) []string {
-	client, err := client2.Get()
-	clierror.CheckErrorAndDie(err, outErr)
-	networkloadbalancerSvc := resources.NewNetworkLoadBalancerService(client, context.TODO())
+	networkloadbalancerSvc := resources.NewNetworkLoadBalancerService(client.Must(), context.Background())
 	natFlowLogs, _, err := networkloadbalancerSvc.ListFlowLogs(datacenterId, networkloadbalancerId, resources.ListQueryParams{})
 	clierror.CheckErrorAndDie(err, outErr)
 	ssIds := make([]string, 0)
@@ -415,9 +375,7 @@ func NetworkLoadBalancerFlowLogsIds(outErr io.Writer, datacenterId, networkloadb
 }
 
 func ForwardingRulesIds(outErr io.Writer, datacenterId, nlbId string) []string {
-	client, err := client2.Get()
-	clierror.CheckErrorAndDie(err, outErr)
-	nlbSvc := resources.NewNetworkLoadBalancerService(client, context.TODO())
+	nlbSvc := resources.NewNetworkLoadBalancerService(client.Must(), context.Background())
 	natForwardingRules, _, err := nlbSvc.ListForwardingRules(datacenterId, nlbId, resources.ListQueryParams{})
 	clierror.CheckErrorAndDie(err, outErr)
 	ssIds := make([]string, 0)
@@ -434,9 +392,7 @@ func ForwardingRulesIds(outErr io.Writer, datacenterId, nlbId string) []string {
 }
 
 func NicsIds(outErr io.Writer, datacenterId, serverId string) []string {
-	client, err := client2.Get()
-	clierror.CheckErrorAndDie(err, outErr)
-	nicSvc := resources.NewNicService(client, context.TODO())
+	nicSvc := resources.NewNicService(client.Must(), context.Background())
 	nics, _, err := nicSvc.List(datacenterId, serverId, resources.ListQueryParams{})
 	clierror.CheckErrorAndDie(err, outErr)
 	nicsIds := make([]string, 0)
@@ -453,9 +409,7 @@ func NicsIds(outErr io.Writer, datacenterId, serverId string) []string {
 }
 
 func AttachedNicsIds(outErr io.Writer, datacenterId, loadbalancerId string) []string {
-	client, err := client2.Get()
-	clierror.CheckErrorAndDie(err, outErr)
-	nicSvc := resources.NewLoadbalancerService(client, context.TODO())
+	nicSvc := resources.NewLoadbalancerService(client.Must(), context.Background())
 	nics, _, err := nicSvc.ListNics(datacenterId, loadbalancerId, resources.ListQueryParams{})
 	clierror.CheckErrorAndDie(err, outErr)
 	attachedNicsIds := make([]string, 0)
@@ -472,9 +426,7 @@ func AttachedNicsIds(outErr io.Writer, datacenterId, loadbalancerId string) []st
 }
 
 func PccsIds(outErr io.Writer) []string {
-	client, err := client2.Get()
-	clierror.CheckErrorAndDie(err, outErr)
-	pccSvc := resources.NewPrivateCrossConnectService(client, context.TODO())
+	pccSvc := resources.NewPrivateCrossConnectService(client.Must(), context.Background())
 	pccs, _, err := pccSvc.List(resources.ListQueryParams{})
 	clierror.CheckErrorAndDie(err, outErr)
 	pccsIds := make([]string, 0)
@@ -491,9 +443,7 @@ func PccsIds(outErr io.Writer) []string {
 }
 
 func RequestsIds(outErr io.Writer) []string {
-	client, err := client2.Get()
-	clierror.CheckErrorAndDie(err, outErr)
-	reqSvc := resources.NewRequestService(client, context.TODO())
+	reqSvc := resources.NewRequestService(client.Must(), context.Background())
 	requests, _, err := reqSvc.List(resources.ListQueryParams{})
 	clierror.CheckErrorAndDie(err, outErr)
 	reqIds := make([]string, 0)
@@ -510,9 +460,7 @@ func RequestsIds(outErr io.Writer) []string {
 }
 
 func ResourcesIds(outErr io.Writer) []string {
-	client, err := client2.Get()
-	clierror.CheckErrorAndDie(err, outErr)
-	userSvc := resources.NewUserService(client, context.TODO())
+	userSvc := resources.NewUserService(client.Must(), context.Background())
 	res, _, err := userSvc.ListResources()
 	clierror.CheckErrorAndDie(err, outErr)
 	resIds := make([]string, 0)
@@ -529,9 +477,7 @@ func ResourcesIds(outErr io.Writer) []string {
 }
 
 func S3KeyIds(outErr io.Writer, userId string) []string {
-	client, err := client2.Get()
-	clierror.CheckErrorAndDie(err, outErr)
-	S3KeySvc := resources.NewS3KeyService(client, context.TODO())
+	S3KeySvc := resources.NewS3KeyService(client.Must(), context.TODO())
 	S3Keys, _, err := S3KeySvc.List(userId, resources.ListQueryParams{})
 	clierror.CheckErrorAndDie(err, outErr)
 	ssIds := make([]string, 0)
@@ -548,9 +494,7 @@ func S3KeyIds(outErr io.Writer, userId string) []string {
 }
 
 func ServersIds(outErr io.Writer, datacenterId string) []string {
-	client, err := client2.Get()
-	clierror.CheckErrorAndDie(err, outErr)
-	serverSvc := resources.NewServerService(client, context.TODO())
+	serverSvc := resources.NewServerService(client.Must(), context.Background())
 	servers, _, err := serverSvc.List(datacenterId, resources.ListQueryParams{})
 	clierror.CheckErrorAndDie(err, outErr)
 	ssIds := make([]string, 0)
@@ -567,9 +511,7 @@ func ServersIds(outErr io.Writer, datacenterId string) []string {
 }
 
 func GroupResourcesIds(outErr io.Writer, groupId string) []string {
-	client, err := client2.Get()
-	clierror.CheckErrorAndDie(err, outErr)
-	groupSvc := resources.NewGroupService(client, context.TODO())
+	groupSvc := resources.NewGroupService(client.Must(), context.Background())
 	res, _, err := groupSvc.ListResources(groupId, resources.ListQueryParams{})
 	clierror.CheckErrorAndDie(err, outErr)
 	resIds := make([]string, 0)
@@ -586,9 +528,7 @@ func GroupResourcesIds(outErr io.Writer, groupId string) []string {
 }
 
 func SnapshotIds(outErr io.Writer) []string {
-	client, err := client2.Get()
-	clierror.CheckErrorAndDie(err, outErr)
-	snapshotSvc := resources.NewSnapshotService(client, context.TODO())
+	snapshotSvc := resources.NewSnapshotService(client.Must(), context.Background())
 	snapshots, _, err := snapshotSvc.List(resources.ListQueryParams{})
 	clierror.CheckErrorAndDie(err, outErr)
 	ssIds := make([]string, 0)
@@ -605,9 +545,7 @@ func SnapshotIds(outErr io.Writer) []string {
 }
 
 func TemplatesIds(outErr io.Writer) []string {
-	client, err := client2.Get()
-	clierror.CheckErrorAndDie(err, outErr)
-	tplSvc := resources.NewTemplateService(client, context.TODO())
+	tplSvc := resources.NewTemplateService(client.Must(), context.Background())
 	tpls, _, err := tplSvc.List(resources.ListQueryParams{})
 	clierror.CheckErrorAndDie(err, outErr)
 	tplsIds := make([]string, 0)
@@ -624,9 +562,7 @@ func TemplatesIds(outErr io.Writer) []string {
 }
 
 func UsersIds(outErr io.Writer) []string {
-	client, err := client2.Get()
-	clierror.CheckErrorAndDie(err, outErr)
-	userSvc := resources.NewUserService(client, context.TODO())
+	userSvc := resources.NewUserService(client.Must(), context.Background())
 	users, _, err := userSvc.List(resources.ListQueryParams{})
 	clierror.CheckErrorAndDie(err, outErr)
 	usersIds := make([]string, 0)
@@ -643,9 +579,7 @@ func UsersIds(outErr io.Writer) []string {
 }
 
 func GroupUsersIds(outErr io.Writer, groupId string) []string {
-	client, err := client2.Get()
-	clierror.CheckErrorAndDie(err, outErr)
-	groupSvc := resources.NewGroupService(client, context.TODO())
+	groupSvc := resources.NewGroupService(client.Must(), context.Background())
 	users, _, err := groupSvc.ListUsers(groupId, resources.ListQueryParams{})
 	clierror.CheckErrorAndDie(err, outErr)
 	usersIds := make([]string, 0)
@@ -662,9 +596,7 @@ func GroupUsersIds(outErr io.Writer, groupId string) []string {
 }
 
 func VolumesIds(outErr io.Writer, datacenterId string) []string {
-	client, err := client2.Get()
-	clierror.CheckErrorAndDie(err, outErr)
-	volumeSvc := resources.NewVolumeService(client, context.TODO())
+	volumeSvc := resources.NewVolumeService(client.Must(), context.Background())
 	volumes, _, err := volumeSvc.List(datacenterId, resources.ListQueryParams{})
 	clierror.CheckErrorAndDie(err, outErr)
 	volumesIds := make([]string, 0)
@@ -681,9 +613,7 @@ func VolumesIds(outErr io.Writer, datacenterId string) []string {
 }
 
 func AttachedVolumesIds(outErr io.Writer, datacenterId, serverId string) []string {
-	client, err := client2.Get()
-	clierror.CheckErrorAndDie(err, outErr)
-	serverSvc := resources.NewServerService(client, context.TODO())
+	serverSvc := resources.NewServerService(client.Must(), context.Background())
 	volumes, _, err := serverSvc.ListVolumes(datacenterId, serverId, resources.ListQueryParams{})
 	clierror.CheckErrorAndDie(err, outErr)
 	attachedVolumesIds := make([]string, 0)
@@ -700,9 +630,7 @@ func AttachedVolumesIds(outErr io.Writer, datacenterId, serverId string) []strin
 }
 
 func ApplicationLoadBalancersIds(outErr io.Writer, datacenterId string) []string {
-	client, err := client2.Get()
-	clierror.CheckErrorAndDie(err, outErr)
-	applicationloadbalancerSvc := resources.NewApplicationLoadBalancerService(client, context.TODO())
+	applicationloadbalancerSvc := resources.NewApplicationLoadBalancerService(client.Must(), context.Background())
 	applicationloadbalancers, _, err := applicationloadbalancerSvc.List(datacenterId, resources.ListQueryParams{})
 	clierror.CheckErrorAndDie(err, outErr)
 	albIds := make([]string, 0)
@@ -719,9 +647,7 @@ func ApplicationLoadBalancersIds(outErr io.Writer, datacenterId string) []string
 }
 
 func ApplicationLoadBalancerFlowLogsIds(outErr io.Writer, datacenterId, applicationloadbalancerId string) []string {
-	client, err := client2.Get()
-	clierror.CheckErrorAndDie(err, outErr)
-	applicationloadbalancerSvc := resources.NewApplicationLoadBalancerService(client, context.TODO())
+	applicationloadbalancerSvc := resources.NewApplicationLoadBalancerService(client.Must(), context.Background())
 	natFlowLogs, _, err := applicationloadbalancerSvc.ListFlowLogs(datacenterId, applicationloadbalancerId, resources.ListQueryParams{})
 	clierror.CheckErrorAndDie(err, outErr)
 	ssIds := make([]string, 0)
@@ -738,9 +664,7 @@ func ApplicationLoadBalancerFlowLogsIds(outErr io.Writer, datacenterId, applicat
 }
 
 func AlbForwardingRulesIds(outErr io.Writer, datacenterId, albId string) []string {
-	client, err := client2.Get()
-	clierror.CheckErrorAndDie(err, outErr)
-	albSvc := resources.NewApplicationLoadBalancerService(client, context.TODO())
+	albSvc := resources.NewApplicationLoadBalancerService(client.Must(), context.Background())
 	natForwardingRules, _, err := albSvc.ListForwardingRules(datacenterId, albId, resources.ListQueryParams{})
 	clierror.CheckErrorAndDie(err, outErr)
 	ssIds := make([]string, 0)
@@ -757,9 +681,7 @@ func AlbForwardingRulesIds(outErr io.Writer, datacenterId, albId string) []strin
 }
 
 func TargetGroupIds(outErr io.Writer) []string {
-	client, err := client2.Get()
-	clierror.CheckErrorAndDie(err, outErr)
-	targetGroupSvc := resources.NewTargetGroupService(client, context.TODO())
+	targetGroupSvc := resources.NewTargetGroupService(client.Must(), context.Background())
 	targetGroups, _, err := targetGroupSvc.List(resources.ListQueryParams{})
 	clierror.CheckErrorAndDie(err, outErr)
 	ssIds := make([]string, 0)

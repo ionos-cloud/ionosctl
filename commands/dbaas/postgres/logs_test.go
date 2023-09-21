@@ -166,7 +166,6 @@ func TestRunClusterLogsGetErr(t *testing.T) {
 }
 
 func TestGetClusterLogsCols(t *testing.T) {
-	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
@@ -177,7 +176,6 @@ func TestGetClusterLogsCols(t *testing.T) {
 }
 
 func TestGetLogsColsErr(t *testing.T) {
-	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)

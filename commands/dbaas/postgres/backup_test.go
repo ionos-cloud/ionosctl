@@ -183,7 +183,6 @@ func TestRunClusterBackupListErr(t *testing.T) {
 }
 
 func TestGetBackupsCols(t *testing.T) {
-	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
@@ -194,7 +193,6 @@ func TestGetBackupsCols(t *testing.T) {
 }
 
 func TestGetBackupsColsErr(t *testing.T) {
-	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)

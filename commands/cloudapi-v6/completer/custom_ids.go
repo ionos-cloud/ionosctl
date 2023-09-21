@@ -8,16 +8,13 @@ import (
 	"context"
 	"io"
 
-	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"
-
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/utils/clierror"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
 )
 
 func ImagesIdsCustom(outErr io.Writer, params resources.ListQueryParams) []string {
-	client, err := client2.Get()
-	clierror.CheckErrorAndDie(err, outErr)
-	imageSvc := resources.NewImageService(client, context.TODO())
+	imageSvc := resources.NewImageService(client.Must(), context.Background())
 	images, _, err := imageSvc.List(params)
 	clierror.CheckErrorAndDie(err, outErr)
 	imgsIds := make([]string, 0)
@@ -34,9 +31,7 @@ func ImagesIdsCustom(outErr io.Writer, params resources.ListQueryParams) []strin
 }
 
 func ServersIdsCustom(outErr io.Writer, datacenterId string, params resources.ListQueryParams) []string {
-	client, err := client2.Get()
-	clierror.CheckErrorAndDie(err, outErr)
-	serverSvc := resources.NewServerService(client, context.TODO())
+	serverSvc := resources.NewServerService(client.Must(), context.Background())
 	servers, _, err := serverSvc.List(datacenterId, params)
 	clierror.CheckErrorAndDie(err, outErr)
 	ssIds := make([]string, 0)

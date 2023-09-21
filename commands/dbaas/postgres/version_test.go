@@ -103,7 +103,6 @@ func TestRunPgsqlVersionListErr(t *testing.T) {
 }
 
 func TestGetPgsqlVersionColsNoSet(t *testing.T) {
-	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
@@ -113,7 +112,6 @@ func TestGetPgsqlVersionColsNoSet(t *testing.T) {
 }
 
 func TestGetPgsqlVersionCols(t *testing.T) {
-	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
@@ -124,7 +122,6 @@ func TestGetPgsqlVersionCols(t *testing.T) {
 }
 
 func TestGetPgsqlVersionColsErr(t *testing.T) {
-	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
