@@ -5,14 +5,15 @@ import (
 	"io"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/utils/clierror"
 	"github.com/ionos-cloud/ionosctl/v6/services/dbaas-postgres/resources"
 )
 
 func BackupsIds(outErr io.Writer) []string {
 	clustersService := resources.NewBackupsService(client.Must(), context.Background())
 	backupList, _, err := clustersService.List()
-	clierror.CheckErrorAndDie(err, outErr)
+	if err != nil {
+		return nil
+	}
 	ids := make([]string, 0)
 	if dataOk, ok := backupList.GetItemsOk(); ok && dataOk != nil {
 		for _, item := range *dataOk {
@@ -29,7 +30,9 @@ func BackupsIds(outErr io.Writer) []string {
 func BackupsIdsForCluster(outErr io.Writer, clusterId string) []string {
 	clustersService := resources.NewBackupsService(client.Must(), context.Background())
 	backupList, _, err := clustersService.ListBackups(clusterId)
-	clierror.CheckErrorAndDie(err, outErr)
+	if err != nil {
+		return nil
+	}
 	ids := make([]string, 0)
 	if dataOk, ok := backupList.GetItemsOk(); ok && dataOk != nil {
 		for _, item := range *dataOk {
@@ -46,7 +49,9 @@ func BackupsIdsForCluster(outErr io.Writer, clusterId string) []string {
 func ClustersIds(outErr io.Writer) []string {
 	clustersService := resources.NewClustersService(client.Must(), context.Background())
 	clusterList, _, err := clustersService.List("")
-	clierror.CheckErrorAndDie(err, outErr)
+	if err != nil {
+		return nil
+	}
 	ids := make([]string, 0)
 	if dataOk, ok := clusterList.ClusterList.GetItemsOk(); ok && dataOk != nil {
 		for _, item := range *dataOk {
@@ -63,7 +68,9 @@ func ClustersIds(outErr io.Writer) []string {
 func PostgresVersions(outErr io.Writer) []string {
 	versionsService := resources.NewVersionsService(client.Must(), context.Background())
 	versionList, _, err := versionsService.List()
-	clierror.CheckErrorAndDie(err, outErr)
+	if err != nil {
+		return nil
+	}
 	versions := make([]string, 0)
 	if dataOk, ok := versionList.GetDataOk(); ok && dataOk != nil {
 		for _, item := range *dataOk {
