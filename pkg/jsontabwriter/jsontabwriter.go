@@ -110,7 +110,7 @@ func GenerateRawOutput(a interface{}) string {
 	switch viper.GetString(constants.ArgOutput) {
 	case JSONFormat:
 		// Since generateJSONOutput will only error out if an unsupported JSON type (e.g. chan, function values,
-		// complex numbers or cyclic structs) or value (e.g. math.Inf()), which are not typically used in the API,
+		// complex numbers or cyclic structs) or value (e.g. math.Inf()), which are not typically used in the API/SDKs,
 		// I believe this error can be completely ignored in this use case.
 		out, _ := generateJSONOutput(a)
 
@@ -165,6 +165,9 @@ func writeTableToText(table []map[string]interface{}, cols []string) string {
 	w.Init(buff, 5, 0, 3, ' ', tabwriter.StripEscape)
 
 	updatedCols := eliminateEmptyCols(cols, table)
+	if updatedCols == nil {
+		return ""
+	}
 
 	if !viper.IsSet(constants.ArgNoHeaders) {
 		fmt.Fprintln(w, strings.Join(updatedCols, "\t"))
