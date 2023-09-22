@@ -15,13 +15,6 @@ import (
 
 var (
 	unknownTypeFormatErr = "unknown type format %s. Hint: use --output json|text"
-
-	// ErrAction is a NAUGHTY global variable called in `CheckErrorAndDie`! It is usually changed in tests!
-	// Be very wary of this func, especially if it is changed before CheckErrorAndDie is ran.
-	// TODO: We must get rid of this global variable! It is not safe to have such a side effect within CheckErrorAndDie!
-	ErrAction = func() {
-		os.Exit(1)
-	}
 )
 
 type CliError struct {
@@ -32,8 +25,6 @@ type CliError struct {
 // CheckErrorAndDie Standard error checking
 //
 // DEPRECATED: Use die.Die instead if you want to kill the execution, or return the errors in a go-ish fashion!
-//
-// This function dies by default, depending on the value of ErrAction, which is a global variable - it is NOT RECOMMENDED to keep using this func!!!
 func CheckErrorAndDie(err error, outErr io.Writer) {
 	if err == nil {
 		return
