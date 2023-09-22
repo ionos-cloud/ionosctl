@@ -33,7 +33,7 @@ test:
 .PHONY: mocks
 mocks:
 	@echo "--- Update mocks ---"
-	@echo "--- Ensure gomock is up to date. `go install github.com/golang/mock/mockgen@v1.6.0` ---"
+	@echo "--- Ensure gomock is up to date. Run: 'go install github.com/golang/mock/mockgen@v1.6.0' ---"
 	@tools/mocks.sh && echo "DONE"
 
 .PHONY: docs generate-docs
