@@ -115,6 +115,7 @@ func getPgsqlVersionPrint(c *core.CommandConfig, postgresVersionList *pgsqlresou
 	return r
 }
 
+// TODO: Remove this func, use the 'allCols' behaviour from e.g. dbaas/mongo/cluster.go
 func getPgsqlVersionCols(flagName string, outErr io.Writer) []string {
 	if viper.IsSet(flagName) {
 		var pgsqlVersionCols []string
@@ -126,7 +127,7 @@ func getPgsqlVersionCols(flagName string, outErr io.Writer) []string {
 			if col != "" {
 				pgsqlVersionCols = append(pgsqlVersionCols, col)
 			} else {
-				clierror.CheckError(errors.New("unknown column "+k), outErr)
+				clierror.CheckErrorAndDie(errors.New("unknown column "+k), outErr)
 			}
 		}
 		return pgsqlVersionCols

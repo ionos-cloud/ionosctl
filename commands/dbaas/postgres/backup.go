@@ -185,6 +185,7 @@ func getBackupPrint(c *core.CommandConfig, dcs []resources.BackupResponse) print
 	return r
 }
 
+// TODO: Remove this func, use the 'allCols' behaviour from e.g. dbaas/mongo/cluster.go
 func getBackupCols(flagName string, outErr io.Writer) []string {
 	var cols []string
 	if viper.IsSet(flagName) {
@@ -207,7 +208,7 @@ func getBackupCols(flagName string, outErr io.Writer) []string {
 		if col != "" {
 			backupCols = append(backupCols, col)
 		} else {
-			clierror.CheckError(errors.New("unknown column "+k), outErr)
+			clierror.CheckErrorAndDie(errors.New("unknown column "+k), outErr)
 		}
 	}
 	return backupCols

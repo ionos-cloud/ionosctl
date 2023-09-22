@@ -15,9 +15,6 @@ import (
 
 var (
 	unknownTypeFormatErr = "unknown type format %s. Hint: use --output json|text"
-	ErrAction            = func() {
-		os.Exit(1)
-	}
 )
 
 type CliError struct {
@@ -25,10 +22,10 @@ type CliError struct {
 	Detail string `json:"Detail,omitempty"`
 }
 
-// CheckError is Deprecated! - Use die.Die instead, this function doesn't only "Check" an error, it dies, and takes your precious error away with it :(
+// CheckErrorAndDie Standard error checking
 //
-// CheckError Standard error checking
-func CheckError(err error, outErr io.Writer) {
+// DEPRECATED: Use die.Die instead if you want to kill the execution, or return the errors in a go-ish fashion!
+func CheckErrorAndDie(err error, outErr io.Writer) {
 	if err == nil {
 		return
 	}
@@ -47,7 +44,7 @@ func CheckError(err error, outErr io.Writer) {
 		errorConfirm(outErr, err.Error())
 	}
 
-	ErrAction()
+	os.Exit(1)
 }
 
 func errorConfirm(writer io.Writer, msg string, args ...interface{}) {

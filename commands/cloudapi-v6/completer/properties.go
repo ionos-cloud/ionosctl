@@ -6,7 +6,6 @@ import (
 
 	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"
 
-	"github.com/ionos-cloud/ionosctl/v6/pkg/utils/clierror"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
 )
 
@@ -17,10 +16,14 @@ func DatacenterCPUFamilies(ctx context.Context, outErr io.Writer, datacenterId s
 		return []string{"AMD_OPTERON", "INTEL_XEON", "INTEL_SKYLAKE"}
 	}
 	client, err := client2.Get()
-	clierror.CheckError(err, outErr)
+	if err != nil {
+		return nil
+	}
 	dcSvc := resources.NewDataCenterService(client, ctx)
 	dc, _, err := dcSvc.Get(datacenterId, resources.QueryParams{})
-	clierror.CheckError(err, outErr)
+	if err != nil {
+		return nil
+	}
 	if dc.Properties == nil || dc.Properties.CpuArchitecture == nil {
 		return nil
 	}
