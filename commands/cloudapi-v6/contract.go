@@ -141,7 +141,7 @@ func RunContractGet(c *core.CommandConfig) error {
 		case "IPS":
 			out, err = jsontabwriter.GenerateOutput("items", allContractJSONPaths, contractResource.Contracts, contractIpsCols)
 		case "K8S":
-			out, err = jsontabwriter.GenerateOutput("items", allContractJSONPaths, contractResource.Contracts, contractIpsCols)
+			out, err = jsontabwriter.GenerateOutput("items", allContractJSONPaths, contractResource.Contracts, contractK8sCols)
 		case "NLB":
 			out, err = jsontabwriter.GenerateOutput("items", allContractJSONPaths, contractResource.Contracts, contractNlbCols)
 		case "NAT":

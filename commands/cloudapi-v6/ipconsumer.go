@@ -104,7 +104,7 @@ func RunIpConsumersList(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allIpBlockJSONPaths, ipsConsumers,
+	out, err := jsontabwriter.GenerateOutput("", allIpConsumerJSONPaths, ipsConsumers,
 		tabheaders.GetHeaders(allIpConsumerCols, defaultIpConsumerCols, cols))
 	if err != nil {
 		return err

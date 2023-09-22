@@ -42,7 +42,7 @@ var (
 	allJSONPaths = map[string]string{
 		"Id":               "id",
 		"Name":             "properties.name",
-		"Nodes":            "",
+		"Nodes":            "properties.nodeCount",
 		"Cores":            "properties.coresCount",
 		"CpuFamily":        "properties.cpuFamily",
 		"State":            "metadata.state",

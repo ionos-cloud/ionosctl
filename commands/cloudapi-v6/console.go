@@ -79,7 +79,7 @@ func RunServerConsoleGet(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("", allConsoleJSONPaths, t.RemoteConsoleUrl,
-		tabheaders.GetHeadersAllDefault(defaultImageCols, nil))
+		tabheaders.GetHeadersAllDefault(defaultConsoleCols, nil))
 	if err != nil {
 		return err
 	}
