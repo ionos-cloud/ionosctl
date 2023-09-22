@@ -20,7 +20,7 @@ jobs:
       - name: Check for differences
         run: |
           if ! git diff --quiet; then
-            echo "There are differences in the generated documentation. Run `make docs` to fix."
+            echo "There are differences in the generated documentation. Run 'make docs' to fix."
             git diff
             exit 1
           fi
