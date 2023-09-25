@@ -146,7 +146,7 @@ func generateJSONOutput(sourceData interface{}) (string, error) {
 func generateTextOutputFromJSON(columnPathMappingPrefix string, sourceData interface{}, columnPathMapping map[string]string, cols []string) (string, error) {
 	table, err := json2table.ConvertJSONToTable(columnPathMappingPrefix, columnPathMapping, sourceData)
 	if err != nil {
-		return "", fmt.Errorf("failed converting sourceDataect to table using %+v: %w", columnPathMapping, err)
+		return "", fmt.Errorf("failed converting source data to table using %+v: %w", columnPathMapping, err)
 	}
 
 	return writeTableToText(table, cols), nil
