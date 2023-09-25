@@ -3,11 +3,11 @@ package commands
 import (
 	"bufio"
 	"bytes"
+	"regexp"
 	"testing"
 
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/utils/clierror"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
@@ -22,23 +22,50 @@ func TestRunVersion(t *testing.T) {
 	})
 }
 
-func TestGetGithubLatestReleaseErr(t *testing.T) {
-	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
-	clierror.ErrAction = func() { return }
-	_, err := getGithubLatestRelease("")
-	assert.Error(t, err)
-}
+func TestGetGithubLatestRelease(t *testing.T) {
+	tests := []struct {
+		name      string
+		url       string
+		expected  string
+		shouldErr bool
+	}{
+		{
+			name:      "Empty URL",
+			url:       "",
+			expected:  "",
+			shouldErr: true,
+		},
+		{
+			name:      "Non-API URL",
+			url:       "https://github.com/user/repo/releases/latest",
+			expected:  "",
+			shouldErr: true,
+		},
+		{
+			name:      "Invalid Tag",
+			url:       "https://api.github.com/user/repo/releases/latest",
+			expected:  "",
+			shouldErr: true,
+		},
+		{
+			name: "Valid Tag",
+			url:  latestGhApiReleaseUrl,
+			// Regex pattern for semver
+			expected:  `^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$`,
+			shouldErr: false,
+		},
+	}
 
-func TestGetGithubLatestReleaseJsonErr(t *testing.T) {
-	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
-	clierror.ErrAction = func() { return }
-	_, err := getGithubLatestRelease(latestGhReleaseUrl)
-	assert.Error(t, err)
-}
-
-func TestGetGithubLatestReleaseTagErr(t *testing.T) {
-	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
-	clierror.ErrAction = func() { return }
-	_, err := getGithubLatestRelease("https://api.github.com/ionos-cloud/ionosctl/releases/latest")
-	assert.Error(t, err)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			latest, err := getGithubLatestRelease(tt.url)
+			if tt.shouldErr {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+				match, _ := regexp.MatchString(tt.expected, latest)
+				assert.True(t, match, "Expected a valid semver version")
+			}
+		})
+	}
 }

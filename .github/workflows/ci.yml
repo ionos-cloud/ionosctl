@@ -36,11 +36,19 @@ jobs:
         run: make gofmt_check
         if: matrix.os == 'ubuntu-latest'
 
-      - name: Run tests
+      - name: Run all tests on Ubuntu
         env:
           IONOS_USERNAME: ${{ secrets.IONOS_USERNAME }}
           IONOS_PASSWORD: ${{ secrets.IONOS_PASSWORD }}
         run: make test
+        if: matrix.os == 'ubuntu-latest'
+
+      - name: Run only unit tests on Windows
+        env:
+          IONOS_USERNAME: ${{ secrets.IONOS_USERNAME }}
+          IONOS_PASSWORD: ${{ secrets.IONOS_PASSWORD }}
+        run: make utest
+        if: matrix.os == 'windows-latest'
 
       - name: Build
         run: make build

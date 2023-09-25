@@ -103,6 +103,7 @@ type CpuPrint struct {
 	Vendor    string `json:"Vendor,omitempty"`
 }
 
+// TODO: Remove this func, use the 'allCols' behaviour from e.g. dbaas/mongo/cluster.go
 func getCpuCols(flagName string, outErr io.Writer) []string {
 	var cols []string
 	if viper.IsSet(flagName) {
@@ -123,7 +124,7 @@ func getCpuCols(flagName string, outErr io.Writer) []string {
 		if col != "" {
 			cpusCols = append(cpusCols, col)
 		} else {
-			clierror.CheckError(errors.New("unknown column "+k), outErr)
+			clierror.CheckErrorAndDie(errors.New("unknown column "+k), outErr)
 		}
 	}
 	return cpusCols
