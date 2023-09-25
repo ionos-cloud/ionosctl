@@ -5,7 +5,6 @@ import (
 	"io"
 
 	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"
-	"github.com/ionos-cloud/ionosctl/v6/internal/die"
 
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
 )
@@ -18,15 +17,13 @@ func DatacenterCPUFamilies(ctx context.Context, _ io.Writer, datacenterId string
 	}
 	client, err := client2.Get()
 	if err != nil {
-		die.Die(err.Error())
+		return nil
 	}
-
 	dcSvc := resources.NewDataCenterService(client, ctx)
 	dc, _, err := dcSvc.Get(datacenterId, resources.QueryParams{})
 	if err != nil {
-		die.Die(err.Error())
+		return nil
 	}
-
 	if dc.Properties == nil || dc.Properties.CpuArchitecture == nil {
 		return nil
 	}

@@ -4,24 +4,16 @@ import (
 	"context"
 	"io"
 
-	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"
-	"github.com/ionos-cloud/ionosctl/v6/internal/die"
-
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/services/dbaas-postgres/resources"
 )
 
-func BackupsIds(_ io.Writer) []string {
-	client, err := client2.Get()
-	if err != nil {
-		die.Die(err.Error())
-	}
-
-	clustersService := resources.NewBackupsService(client, context.TODO())
+func BackupsIds(outErr io.Writer) []string {
+	clustersService := resources.NewBackupsService(client.Must(), context.Background())
 	backupList, _, err := clustersService.List()
 	if err != nil {
-		die.Die(err.Error())
+		return nil
 	}
-
 	ids := make([]string, 0)
 	if dataOk, ok := backupList.GetItemsOk(); ok && dataOk != nil {
 		for _, item := range *dataOk {
@@ -35,18 +27,12 @@ func BackupsIds(_ io.Writer) []string {
 	return ids
 }
 
-func BackupsIdsForCluster(_ io.Writer, clusterId string) []string {
-	client, err := client2.Get()
-	if err != nil {
-		die.Die(err.Error())
-	}
-
-	clustersService := resources.NewBackupsService(client, context.TODO())
+func BackupsIdsForCluster(clusterId string) []string {
+	clustersService := resources.NewBackupsService(client.Must(), context.Background())
 	backupList, _, err := clustersService.ListBackups(clusterId)
 	if err != nil {
-		die.Die(err.Error())
+		return nil
 	}
-
 	ids := make([]string, 0)
 	if dataOk, ok := backupList.GetItemsOk(); ok && dataOk != nil {
 		for _, item := range *dataOk {
@@ -60,18 +46,12 @@ func BackupsIdsForCluster(_ io.Writer, clusterId string) []string {
 	return ids
 }
 
-func ClustersIds(_ io.Writer) []string {
-	client, err := client2.Get()
-	if err != nil {
-		die.Die(err.Error())
-	}
-
-	clustersService := resources.NewClustersService(client, context.TODO())
+func ClustersIds(outErr io.Writer) []string {
+	clustersService := resources.NewClustersService(client.Must(), context.Background())
 	clusterList, _, err := clustersService.List("")
 	if err != nil {
-		die.Die(err.Error())
+		return nil
 	}
-
 	ids := make([]string, 0)
 	if dataOk, ok := clusterList.ClusterList.GetItemsOk(); ok && dataOk != nil {
 		for _, item := range *dataOk {
@@ -85,18 +65,12 @@ func ClustersIds(_ io.Writer) []string {
 	return ids
 }
 
-func PostgresVersions(_ io.Writer) []string {
-	client, err := client2.Get()
-	if err != nil {
-		die.Die(err.Error())
-	}
-
-	versionsService := resources.NewVersionsService(client, context.TODO())
+func PostgresVersions(outErr io.Writer) []string {
+	versionsService := resources.NewVersionsService(client.Must(), context.Background())
 	versionList, _, err := versionsService.List()
 	if err != nil {
-		die.Die(err.Error())
+		return nil
 	}
-
 	versions := make([]string, 0)
 	if dataOk, ok := versionList.GetDataOk(); ok && dataOk != nil {
 		for _, item := range *dataOk {

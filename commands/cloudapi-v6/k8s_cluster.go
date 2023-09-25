@@ -181,7 +181,7 @@ Required values to run command:
 	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgK8sVersion,
 		func(*cobra.Command, []string, string) ([]string, cobra.ShellCompDirective) {
 			clusterId := viper.GetString(core.GetFlagName(update.NS, constants.FlagClusterId))
-			return completer.K8sClusterUpgradeVersions(os.Stderr, clusterId), cobra.ShellCompDirectiveNoFileComp
+			return completer.K8sClusterUpgradeVersions(clusterId), cobra.ShellCompDirectiveNoFileComp
 		})
 	update.AddStringFlag(cloudapiv6.ArgS3Bucket, "", "", "S3 Bucket name configured for K8s usage. It will overwrite the previous value")
 	update.AddStringSliceFlag(cloudapiv6.ArgApiSubnets, "", []string{""}, "Access to the K8s API server is restricted to these CIDRs. Cluster-internal traffic is not affected by this restriction. If no allowlist is specified, access is not restricted. If an IP without subnet mask is provided, the default value will be used: 32 for IPv4 and 128 for IPv6. This will overwrite the existing ones")

@@ -10,6 +10,6 @@ var ErrAction = func() {
 }
 
 func Die(x string) {
-	fmt.Fprintf(os.Stderr, x)
+	_, _ = fmt.Fprintf(os.Stderr, x)
 	os.Exit(1)
 }

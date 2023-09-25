@@ -6,26 +6,17 @@ package completer
 
 import (
 	"context"
-	"io"
 
-	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"
-	"github.com/ionos-cloud/ionosctl/v6/internal/die"
-
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
 )
 
-func ImagesIdsCustom(_ io.Writer, params resources.ListQueryParams) []string {
-	client, err := client2.Get()
-	if err != nil {
-		die.Die(err.Error())
-	}
-
-	imageSvc := resources.NewImageService(client, context.TODO())
+func ImagesIdsCustom(params resources.ListQueryParams) []string {
+	imageSvc := resources.NewImageService(client.Must(), context.Background())
 	images, _, err := imageSvc.List(params)
 	if err != nil {
-		die.Die(err.Error())
+		return nil
 	}
-
 	imgsIds := make([]string, 0)
 	if items, ok := images.Images.GetItemsOk(); ok && items != nil {
 		for _, item := range *items {
@@ -39,18 +30,12 @@ func ImagesIdsCustom(_ io.Writer, params resources.ListQueryParams) []string {
 	return imgsIds
 }
 
-func ServersIdsCustom(_ io.Writer, datacenterId string, params resources.ListQueryParams) []string {
-	client, err := client2.Get()
-	if err != nil {
-		die.Die(err.Error())
-	}
-
-	serverSvc := resources.NewServerService(client, context.TODO())
+func ServersIdsCustom(datacenterId string, params resources.ListQueryParams) []string {
+	serverSvc := resources.NewServerService(client.Must(), context.Background())
 	servers, _, err := serverSvc.List(datacenterId, params)
 	if err != nil {
-		die.Die(err.Error())
+		return nil
 	}
-
 	ssIds := make([]string, 0)
 	if items, ok := servers.Servers.GetItemsOk(); ok && items != nil {
 		for _, item := range *items {

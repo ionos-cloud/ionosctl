@@ -22,13 +22,14 @@ func NewCommand(ctx context.Context, parent *Command, info CommandBuilder) *Comm
 	}
 
 	cc := &cobra.Command{
-		Use:              info.Verb,
-		Short:            info.ShortDesc,
-		Long:             info.LongDesc,
-		Aliases:          info.Aliases,
-		Example:          info.Example,
-		TraverseChildren: true,
-		PreRun: func(cmd *cobra.Command, args []string) {
+		Use:     info.Verb,
+		Short:   info.ShortDesc,
+		Long:    info.LongDesc,
+		Aliases: info.Aliases,
+		Example: info.Example,
+		PreRunE: func(cmd *cobra.Command, args []string) error {
+			cmd.SilenceUsage = true
+
 			// Set Command to Command Builder
 			// The cmd is passed to the PreCommandCfg
 			info.Command = &Command{Command: cmd}
@@ -38,8 +39,11 @@ func NewCommand(ctx context.Context, parent *Command, info CommandBuilder) *Comm
 			if err != nil {
 				die.Die(err.Error())
 			}
+			return nil
 		},
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
+			cmd.SilenceUsage = true
+
 			// Set Command to Command Builder
 			// The cmd is passed to the CommandCfg
 			info.Command = &Command{Command: cmd}
@@ -53,6 +57,8 @@ func NewCommand(ctx context.Context, parent *Command, info CommandBuilder) *Comm
 			if err != nil {
 				die.Die(err.Error())
 			}
+
+			return nil
 		},
 	}
 	c := &Command{
