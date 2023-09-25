@@ -5,8 +5,6 @@ import (
 	"io"
 
 	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"
-	"github.com/ionos-cloud/ionosctl/v6/internal/die"
-
 	authservice "github.com/ionos-cloud/ionosctl/v6/services/auth-v1"
 	"github.com/ionos-cloud/ionosctl/v6/services/certmanager"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
@@ -37,7 +35,7 @@ func NewCommand(ctx context.Context, parent *Command, info CommandBuilder) *Comm
 			preCmdConfig := NewPreCommandCfg(info)
 			err := info.PreCmdRun(preCmdConfig)
 			if err != nil {
-				die.Die(err.Error())
+				return err
 			}
 			return nil
 		},
@@ -50,12 +48,12 @@ func NewCommand(ctx context.Context, parent *Command, info CommandBuilder) *Comm
 			// Create New CommandCfg
 			cmdConfig, err := NewCommandCfg(ctx, info)
 			if err != nil {
-				die.Die(err.Error())
+				return err
 			}
 
 			err = info.CmdRun(cmdConfig)
 			if err != nil {
-				die.Die(err.Error())
+				return err
 			}
 
 			return nil
