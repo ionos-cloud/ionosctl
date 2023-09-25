@@ -29,6 +29,8 @@ require (
 	golang.org/x/term v0.11.0
 )
 
+require github.com/Jeffail/gabs/v2 v2.7.0
+
 require github.com/fatih/color v1.15.0 // indirect
 
 require (

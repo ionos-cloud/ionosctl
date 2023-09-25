@@ -26,7 +26,7 @@ For `create` command:
 
 ## Description
 
-Use this command to create an ENTERPRISE, CUBE or VCPU Server in a specified Virtual Data Center. 
+Use this command to create an ENTERPRISE, CUBE or VCPU Server in a specified Virtual Data Center.
 
 1. For ENTERPRISE Servers:
 
