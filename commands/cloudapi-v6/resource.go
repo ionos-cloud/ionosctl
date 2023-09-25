@@ -3,7 +3,6 @@ package commands
 import (
 	"context"
 	"fmt"
-	"os"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
@@ -86,7 +85,7 @@ func ResourceCmd() *core.Command {
 	})
 	getRsc.AddUUIDFlag(cloudapiv6.ArgResourceId, cloudapiv6.ArgIdShort, "", "The ID of the specific Resource to retrieve information about")
 	_ = getRsc.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgResourceId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.ResourcesIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.ResourcesIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 	getRsc.AddBoolFlag(constants.ArgNoHeaders, "", false, cloudapiv6.ArgNoHeadersDescription)
 
@@ -200,7 +199,7 @@ func GroupResourceCmd() *core.Command {
 	})
 	listResources.AddUUIDFlag(cloudapiv6.ArgGroupId, "", "", cloudapiv6.GroupId, core.RequiredFlagOption())
 	_ = listResources.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.GroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.GroupsIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	return resourceCmd

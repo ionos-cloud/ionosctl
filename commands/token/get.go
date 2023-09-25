@@ -3,7 +3,6 @@ package token
 import (
 	"context"
 	"fmt"
-	"os"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/token/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/jwt"
@@ -32,7 +31,7 @@ func TokenGetCmd() *core.Command {
 
 	cmd.AddUUIDFlag(authservice.ArgTokenId, authservice.ArgIdShort, "", authservice.TokenId, core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(authservice.ArgTokenId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.TokensIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.TokensIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddStringFlag(authservice.ArgToken, authservice.ArgTokenShort, "", authservice.Token, core.RequiredFlagOption())
 	cmd.AddIntFlag(authservice.ArgContractNo, "", 0, "Users with multiple contracts must provide the contract number, for which the token information is displayed")

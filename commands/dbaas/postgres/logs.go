@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -70,7 +69,7 @@ func LogsCmd() *core.Command {
 	list.AddIntFlag(dbaaspg.ArgLimit, dbaaspg.ArgLimitShort, 100, "The maximal number of log lines to return. If the limit is reached then log lines will be cut at the end (respecting the scan direction). Minimum: 1. Maximum: 5000")
 	list.AddUUIDFlag(constants.FlagClusterId, dbaaspg.ArgIdShort, "", dbaaspg.ClusterId, core.RequiredFlagOption())
 	_ = list.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.ClustersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.ClustersIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 	list.AddBoolFlag(constants.ArgNoHeaders, "", false, "When using text output, don't print headers")
 
