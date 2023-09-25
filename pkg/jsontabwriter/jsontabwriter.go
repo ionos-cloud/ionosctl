@@ -124,7 +124,7 @@ func GenerateRawOutput(a interface{}) string {
 
 // generateJSONOutput marshals source data into JSON format, with indent.
 func generateJSONOutput(sourceData interface{}) (string, error) {
-	out, err := json.MarshalIndent(sourceData, "", "\t")
+	out, err := json.MarshalIndent(sourceData, "", "  ")
 	if err != nil {
 		return "", err
 	}
