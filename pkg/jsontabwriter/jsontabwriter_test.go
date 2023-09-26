@@ -41,8 +41,8 @@ var (
 		"int64":        "int64",
 		"float64":      "float64",
 		"strings":      "strings",
-		"innerStrings": "innerStructs.*.string",
-		"innerInts32":  "innerStructs.*.int32",
+		"innerStrings": "items.*.string",
+		"innerInts32":  "items.*.int32",
 	}
 
 	testInnerStruct = innerStruct{
@@ -133,7 +133,7 @@ func testGenerateTextOutputWithInnerBasicStructs(t *testing.T) {
 	viper.Reset()
 
 	viper.Set(constants.ArgOutput, jsontabwriter.TextFormat)
-	out, err := jsontabwriter.GenerateOutput("innerStructs", innerStructJsonPaths, testOuterStruct, []string{"int32", "string"})
+	out, err := jsontabwriter.GenerateOutput("items", innerStructJsonPaths, testOuterStruct, []string{"int32", "string"})
 	assert.NoError(t, err)
 
 	fmt.Println(out)
@@ -144,7 +144,7 @@ func testGenerateJSONOutputWithInnerBasicStructs(t *testing.T) {
 
 	viper.Set(constants.ArgOutput, jsontabwriter.APIFormat)
 
-	out, err := jsontabwriter.GenerateOutput("innerStructs", innerStructJsonPaths, testOuterStruct, []string{"int32", "string"})
+	out, err := jsontabwriter.GenerateOutput("items", innerStructJsonPaths, testOuterStruct, []string{"int32", "string"})
 	assert.NoError(t, err)
 
 	fmt.Println(out)
