@@ -91,7 +91,7 @@ func TestAuthCmds(t *testing.T) {
 		out := &bytes.Buffer{}
 		login.Command.SetOut(out)
 		err := login.Command.Execute()
-		assert.Contains(t, out.String(), "Authentication successful")
+		assert.Contains(t, out.String(), "Config file updated successfully")
 		assert.NoError(t, err)
 
 		// Read the configuration after login and assert that the token is valid

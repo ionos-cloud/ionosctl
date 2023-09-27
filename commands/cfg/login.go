@@ -64,9 +64,11 @@ Note: The IONOS Cloud CLI supports also authentication with environment variable
 
 func PreRunLoginCmd(c *core.PreCommandConfig) error {
 	if (viper.IsSet(core.GetFlagName(c.NS, constants.ArgUser)) || viper.IsSet(core.GetFlagName(c.NS, constants.ArgPassword))) && viper.IsSet(core.GetFlagName(c.NS, constants.ArgToken)) {
-		return fmt.Errorf("use either --%s and/or --%s, either --%s", constants.ArgUser, constants.ArgPassword, constants.ArgToken)
+		return fmt.Errorf("use either --%s and --%s, either --%s", constants.ArgUser, constants.ArgPassword, constants.ArgToken)
 	}
-	c.Command.Command.MarkFlagsRequiredTogether(constants.ArgForce, constants.ArgToken)
+	if viper.IsSet(core.GetFlagName(c.NS, constants.ArgForce)) {
+		return fmt.Errorf("--%s requires --%s to be set: ionosctl login %s", constants.ArgForce, constants.ArgToken, core.FlagsUsage(constants.ArgForce, constants.ArgToken))
+	}
 	return nil
 }
 
