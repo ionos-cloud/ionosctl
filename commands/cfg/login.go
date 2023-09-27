@@ -79,10 +79,8 @@ func RunLoginUser(c *core.CommandConfig) error {
 	data, err := buildConfigData(c)
 	if err != nil {
 		if !viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce)) {
-			fmt.Println("no force and err")
 			return fmt.Errorf("failed building config data: %w", err)
 		}
-		fmt.Println("force and err")
 		validCredentials = false
 	}
 
@@ -106,7 +104,7 @@ func RunLoginUser(c *core.CommandConfig) error {
 
 	var msg strings.Builder
 	if validCredentials {
-		msgActiveTokens := fmt.Sprintf("Note: Your account has %d active tokens.", len(*ls.Tokens))
+		msgActiveTokens := fmt.Sprintf("Note: Your account has %d active tokens. ", len(*ls.Tokens))
 		msg.WriteString(msgActiveTokens)
 	}
 
@@ -125,10 +123,10 @@ func buildConfigData(c *core.CommandConfig) (map[string]string, error) {
 
 	// API URL
 	c.Printer.Verbose("API Url: %s", config.GetServerUrl())
-	if explicitUrl := config.GetServerUrl(); strings.TrimLeft(explicitUrl, "https://") != strings.TrimLeft(constants.DefaultApiURL, "https://") {
-		// Don't save the API url to the config if it's the default, since we don't want to revert to that value if the user doesn't provide any.
+	if explicitUrl := config.GetServerUrl(); explicitUrl != "" {
+		// Don't save the API url to the config if it's the default, since we don't want to revert to it if the user doesn't provide any value.
 		// This was changed from old behaviour because some APIs (e.g. DNS API) [can] use a different server URL
-		c.Printer.Verbose("Saving API URL to config file")
+		c.Printer.Verbose(fmt.Sprintf("Saving API URL to config file: %s", explicitUrl))
 		configData[constants.CfgServerUrl] = explicitUrl
 	}
 
