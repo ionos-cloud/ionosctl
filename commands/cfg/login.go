@@ -8,12 +8,12 @@ import (
 	"strings"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	sdk "github.com/ionos-cloud/sdk-go/v6"
 	"golang.org/x/term"
 
 	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
-	sdk "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
 )
 
@@ -57,8 +57,7 @@ Note: The IONOS Cloud CLI supports also authentication with environment variable
 	loginCmd.AddStringFlag(constants.ArgUser, "", "", "Username to authenticate")
 	loginCmd.AddStringFlag(constants.ArgPassword, constants.ArgPasswordShort, "", "Password to authenticate")
 	loginCmd.AddStringFlag(constants.ArgToken, constants.ArgTokenShort, "", "Token to authenticate")
-	loginCmd.AddBoolFlag(loginFlagUseApiUrl, "", false, fmt.Sprintf(
-		"Use the default authentication URL (%s) for auth checking, even if you specify a different '--%s'", constants.DefaultApiURL, constants.ArgServerUrl))
+	loginCmd.AddBoolFlag(constants.ArgForce, constants.ArgForceShort, false, "Forcefully write the provided token to the config file without verifying if it is valid. Note: --token is required")
 
 	return loginCmd
 }
@@ -67,6 +66,7 @@ func PreRunLoginCmd(c *core.PreCommandConfig) error {
 	if (viper.IsSet(core.GetFlagName(c.NS, constants.ArgUser)) || viper.IsSet(core.GetFlagName(c.NS, constants.ArgPassword))) && viper.IsSet(core.GetFlagName(c.NS, constants.ArgToken)) {
 		return fmt.Errorf("use either --%s and/or --%s, either --%s", constants.ArgUser, constants.ArgPassword, constants.ArgToken)
 	}
+	c.Command.Command.MarkFlagsRequiredTogether(constants.ArgForce, constants.ArgToken)
 	return nil
 }
 
@@ -75,9 +75,15 @@ func RunLoginUser(c *core.CommandConfig) error {
 	c.Printer.Verbose("Note: As an alternative to this, ionosctl offers support for environment variables: $%s, $%s or $%s.",
 		sdk.IonosUsernameEnvVar, sdk.IonosPasswordEnvVar, sdk.IonosTokenEnvVar)
 
+	validCredentials := true
 	data, err := buildConfigData(c)
 	if err != nil {
-		return fmt.Errorf("failed building config data: %w", err)
+		if !viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce)) {
+			fmt.Println("no force and err")
+			return fmt.Errorf("failed building config data: %w", err)
+		}
+		fmt.Println("force and err")
+		validCredentials = false
 	}
 
 	// Store credentials
@@ -87,18 +93,29 @@ func RunLoginUser(c *core.CommandConfig) error {
 		return fmt.Errorf("failed writing config data: %w", err)
 	}
 
-	ls, _, err := client.Must().AuthClient.TokensApi.TokensGet(context.Background()).Execute()
-	if err != nil {
-		return err
+	errorHandlerAllowBadCredsIfForce := func(err error) {
+		if !validCredentials && viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce)) {
+			return
+		}
+		client.MustDefaultErrHandler(err)
+	}
+	ls, _, err := client.Must(errorHandlerAllowBadCredsIfForce).AuthClient.TokensApi.TokensGet(context.Background()).Execute()
+	if validCredentials && err != nil {
+		return fmt.Errorf("failed retrieving current tokens: %w", err)
 	}
 
-	// Go through data struct and blank out all credentials, including old ones (userdata.username, userdata.password)
-	msg := fmt.Sprintf("Authentication successful. Note: Your account has %d active tokens. Created the following fields in your config file:\n", len(*ls.Tokens))
-	for k, _ := range data {
-		msg += fmt.Sprintf(" • %s\n", strings.TrimPrefix(k, "userdata."))
+	var msg strings.Builder
+	if validCredentials {
+		msgActiveTokens := fmt.Sprintf("Note: Your account has %d active tokens.", len(*ls.Tokens))
+		msg.WriteString(msgActiveTokens)
 	}
 
-	_, err = fmt.Fprintln(c.Command.Command.OutOrStdout(), msg)
+	msg.WriteString(fmt.Sprintf("Config file updated successfully. Created the following fields in your config file:\n"))
+	for k := range data {
+		msg.WriteString(fmt.Sprintf(" • %s\n", strings.TrimPrefix(k, "userdata.")))
+	}
+
+	_, err = fmt.Fprintln(c.Command.Command.OutOrStdout(), msg.String())
 	return err
 }
 
