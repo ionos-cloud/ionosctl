@@ -31,7 +31,7 @@ var (
 
 // If your test is failing because your credentials env var seem empty, try running with `godotenv -f <config-file> go test <test>`
 func TestDataplatformCmd(t *testing.T) {
-	go testClusterIdentifyRequiredNotSet(t)
+	testClusterIdentifyRequiredNotSet(t)
 	if err := setup(); err != nil {
 		t.Fatalf("Failed setting up Dataplatform required resources: %s", err)
 	}
