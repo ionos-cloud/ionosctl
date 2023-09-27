@@ -52,7 +52,8 @@ var (
 			Method: &testRequestMethodPut,
 		},
 		Metadata: &ionoscloud.RequestMetadata{
-			CreatedDate: &testIonosTime,
+			CreatedDate:   &testIonosTime,
+			RequestStatus: &testRequestStatus.RequestStatus,
 		},
 	}
 	testRequestUpdatedPatch = ionoscloud.Request{
@@ -60,7 +61,8 @@ var (
 			Method: &testRequestMethodPatch,
 		},
 		Metadata: &ionoscloud.RequestMetadata{
-			CreatedDate: &testIonosTime,
+			CreatedDate:   &testIonosTime,
+			RequestStatus: &testRequestStatus.RequestStatus,
 		},
 	}
 	testRequestDeleted = ionoscloud.Request{
@@ -68,7 +70,8 @@ var (
 			Method: &testRequestMethodDelete,
 		},
 		Metadata: &ionoscloud.RequestMetadata{
-			CreatedDate: &testIonosTime,
+			CreatedDate:   &testIonosTime,
+			RequestStatus: &testRequestStatus.RequestStatus,
 		},
 	}
 	testRequestCreated = ionoscloud.Request{
@@ -76,7 +79,8 @@ var (
 			Method: &testRequestMethodPost,
 		},
 		Metadata: &ionoscloud.RequestMetadata{
-			CreatedDate: &testIonosTime,
+			CreatedDate:   &testIonosTime,
+			RequestStatus: &testRequestStatus.RequestStatus,
 		},
 	}
 	testRequestStatus = resources.RequestStatus{
@@ -85,6 +89,7 @@ var (
 			Metadata: &ionoscloud.RequestStatusMetadata{
 				Status:  &testRequestStatusVar,
 				Message: &testRequestVar,
+				Targets: &testRequestTargetsVar,
 			},
 		},
 	}
@@ -92,6 +97,14 @@ var (
 		Requests: ionoscloud.Requests{
 			Id:    &testRequestVar,
 			Items: &[]ionoscloud.Request{rq, testRequestUpdated, testRequestUpdatedPatch, testRequestDeleted, testRequestCreated},
+		},
+	}
+	testRequestTargetsVar = []ionoscloud.RequestTarget{
+		{
+			Target: &ionoscloud.ResourceReference{
+				Id:   &testRequestVar,
+				Type: &testTypeRequestVar,
+			},
 		},
 	}
 	testRequestStatusVar    = "DONE"
@@ -208,7 +221,7 @@ func TestRunRequestListQueryParams(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgFilters), []string{fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar)})
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgOrderBy), testQueryParamVar)
 		viper.Set(core.GetFlagName(cfg.NS, constants.FlagMaxResults), testMaxResultsVar)
-		rm.CloudApiV6Mocks.Request.EXPECT().List(gomock.AssignableToTypeOf(testListQueryParam)).Return(resources.Requests{}, &testResponse, nil)
+		rm.CloudApiV6Mocks.Request.EXPECT().List(gomock.AssignableToTypeOf(testListQueryParam)).Return(testRequests, &testResponse, nil)
 		err := RunRequestList(cfg)
 		assert.NoError(t, err)
 	})

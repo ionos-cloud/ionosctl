@@ -1111,7 +1111,6 @@ func RunServerVolumeAttach(c *core.CommandConfig) error {
 }
 
 func RunServerVolumesList(c *core.CommandConfig) error {
-	fmt.Println(viper.GetString(constants.ArgOutput), "yas")
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
 
