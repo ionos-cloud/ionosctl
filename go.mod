@@ -29,9 +29,15 @@ require (
 	golang.org/x/term v0.11.0
 )
 
-require github.com/Jeffail/gabs/v2 v2.7.0
+require (
+	github.com/Jeffail/gabs/v2 v2.7.0
+	github.com/itchyny/gojq v0.12.13
+)
 
-require github.com/fatih/color v1.15.0 // indirect
+require (
+	github.com/fatih/color v1.15.0 // indirect
+	github.com/itchyny/timefmt-go v0.1.5 // indirect
+)
 
 require (
 	github.com/VividCortex/ewma v1.2.0 // indirect
