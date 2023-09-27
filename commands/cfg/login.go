@@ -137,11 +137,11 @@ func buildConfigData(c *core.CommandConfig) (map[string]string, error) {
 
 	// Note: Because of the prerun checks, we know for sure the following:
 	// Either flags for token set, or username set, or password set, or username & password set.
-	if fn := core.GetFlagName(c.NS, constants.ArgUser); viper.IsSet(fn) {
+	if fn := core.GetFlagName(c.NS, constants.ArgUser); viper.IsSet(fn) && viper.GetString(fn) != "" {
 		username = viper.GetString(fn)
 	} else {
 		// Interactively ask for username
-		_, err := fmt.Fprintln(c.Command.Command.OutOrStdout(), "Enter your username: ")
+		fmt.Fprintln(c.Command.Command.OutOrStdout(), "Enter your username: ")
 		reader := bufio.NewReader(c.Command.Command.InOrStdin())
 		username, err = reader.ReadString('\n')
 		if err != nil {
@@ -150,11 +150,11 @@ func buildConfigData(c *core.CommandConfig) (map[string]string, error) {
 		username = strings.TrimSpace(username) // remove trailing newline
 	}
 
-	if fn := core.GetFlagName(c.NS, constants.ArgPassword); viper.IsSet(fn) {
+	if fn := core.GetFlagName(c.NS, constants.ArgPassword); viper.IsSet(fn) && viper.GetString(fn) != "" {
 		password = viper.GetString(fn)
 	} else {
 		// Interactively ask for password
-		fmt.Fprintf(c.Command.Command.OutOrStdout(), "Enter your password: ")
+		fmt.Fprintln(c.Command.Command.OutOrStdout(), "Enter your password: ")
 
 		if file, ok := c.Command.Command.InOrStdin().(*os.File); ok {
 			bytePassword, err := term.ReadPassword(int(file.Fd()))
