@@ -9,16 +9,20 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/json2table"
+	"github.com/itchyny/gojq"
 	"github.com/spf13/viper"
 )
 
 const (
 	outputFormatErr = "invalid format: %s"
 
-	// JSONFormat defines the JSON format.
+	// JSONFormat defines the legacy JSON format. It will eventually be removed and fully replaced by APIFormat
+	// (in terms of behavior, the name will be kept)
 	JSONFormat = "json"
 	// TextFormat defines a human-readable format.
 	TextFormat = "text"
+	// APIFormat defines the API matching JSON format. This will be removed once its behavior will be moved to JSONFormat
+	APIFormat = "api-json"
 )
 
 // GenerateOutput converts and formats source data into printable output.
@@ -43,10 +47,12 @@ func GenerateOutput(columnPathMappingPrefix string, columnPathMapping map[string
 
 	outputFormat := viper.GetString(constants.ArgOutput)
 	switch outputFormat {
-	case JSONFormat:
-		return generateJSONOutput(sourceData)
+	case APIFormat:
+		return generateJSONOutputAPI(sourceData)
 	case TextFormat:
 		return generateTextOutputFromJSON(columnPathMappingPrefix, sourceData, columnPathMapping, cols)
+	case JSONFormat:
+		return generateLegacyJSONOutput(sourceData)
 	default:
 		return "", fmt.Errorf(outputFormatErr, outputFormat)
 	}
@@ -70,10 +76,12 @@ func GenerateOutputPreconverted(rawSourceData interface{}, convertedSourceData [
 
 	outputFormat := viper.GetString(constants.ArgOutput)
 	switch outputFormat {
-	case JSONFormat:
-		return generateJSONOutput(rawSourceData)
+	case APIFormat:
+		return generateJSONOutputAPI(rawSourceData)
 	case TextFormat:
 		return writeTableToText(convertedSourceData, cols), nil
+	case JSONFormat:
+		return generateLegacyJSONOutput(rawSourceData)
 	default:
 		return "", fmt.Errorf(outputFormatErr, outputFormat)
 	}
@@ -89,6 +97,12 @@ func GenerateVerboseOutput(format string, a ...interface{}) string {
 	}
 
 	msg := fmt.Sprintf("[INFO] "+format, a...)
+
+	if viper.GetString(constants.ArgOutput) == JSONFormat {
+		out, _ := json.MarshalIndent(map[string]string{"Message": msg}, "", "  ")
+
+		return string(out)
+	}
 
 	return GenerateRawOutput(msg)
 }
@@ -108,11 +122,11 @@ func GenerateRawOutput(a interface{}) string {
 	}
 
 	switch viper.GetString(constants.ArgOutput) {
-	case JSONFormat:
-		// Since generateJSONOutput will only error out if an unsupported JSON type (e.g. chan, function values,
+	case APIFormat, JSONFormat:
+		// Since generateJSONOutputAPI will only error out if an unsupported JSON type (e.g. chan, function values,
 		// complex numbers or cyclic structs) or value (e.g. math.Inf()), which are not typically used in the API/SDKs,
 		// I believe this error can be completely ignored in this use case.
-		out, _ := generateJSONOutput(a)
+		out, _ := generateJSONOutputAPI(a)
 
 		return out
 	case TextFormat:
@@ -122,9 +136,9 @@ func GenerateRawOutput(a interface{}) string {
 	}
 }
 
-// generateJSONOutput marshals source data into JSON format, with indent.
-func generateJSONOutput(sourceData interface{}) (string, error) {
-	out, err := json.MarshalIndent(sourceData, "", "\t")
+// generateJSONOutputAPI marshals source data into JSON format, with indent.
+func generateJSONOutputAPI(sourceData interface{}) (string, error) {
+	out, err := json.MarshalIndent(sourceData, "", "  ")
 	if err != nil {
 		return "", err
 	}
@@ -250,4 +264,31 @@ func eliminateEmptyCols(cols []string, table []map[string]interface{}) []string 
 	}
 
 	return newCols
+}
+
+// generateLegacyJSONOutput modifies the source data so that the output generated still respects the legacy JSON format.
+func generateLegacyJSONOutput(sourceData interface{}) (string, error) {
+	apiOut, err := json.MarshalIndent(sourceData, "", "  ")
+	if err != nil {
+		return "", err
+	}
+
+	var temp interface{}
+	err = json.Unmarshal(apiOut, &temp)
+	if err != nil {
+		return "", err
+	}
+
+	query, err := gojq.Parse("{ items: [.[] | .items] | add }")
+	if err != nil {
+		return "", err
+	}
+
+	// I expect only one result from the query, so there is no need to loop through the results
+	queryResult, _ := query.Run(temp).Next()
+	if err, ok := queryResult.(error); ok && err != nil {
+		return string(apiOut), nil
+	}
+
+	return generateJSONOutputAPI(queryResult)
 }

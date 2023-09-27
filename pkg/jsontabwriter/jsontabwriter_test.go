@@ -21,7 +21,7 @@ type outerStruct struct {
 	Integer           *int64         `json:"int64,omitempty"`
 	FloatingPoint     *float64       `json:"float64,omitempty"`
 	Strs              *[]string      `json:"strings,omitempty"`
-	InnerStructs      *[]innerStruct `json:"innerStructs,omitempty"`
+	InnerStructs      *[]innerStruct `json:"items,omitempty"`
 	InnerStructSingle *innerStruct   `json:"innerStruct,omitempty"`
 }
 
@@ -41,8 +41,8 @@ var (
 		"int64":        "int64",
 		"float64":      "float64",
 		"strings":      "strings",
-		"innerStrings": "innerStructs.*.string",
-		"innerInts32":  "innerStructs.*.int32",
+		"innerStrings": "items.*.string",
+		"innerInts32":  "items.*.int32",
 	}
 
 	testInnerStruct = innerStruct{
@@ -97,7 +97,7 @@ func testGenerateTextOutputWithBasicStruct(t *testing.T) {
 func testGenerateJSONOutputWithBasicStruct(t *testing.T) {
 	viper.Reset()
 
-	viper.Set(constants.ArgOutput, jsontabwriter.JSONFormat)
+	viper.Set(constants.ArgOutput, jsontabwriter.APIFormat)
 
 	out, err := jsontabwriter.GenerateOutput("", innerStructJsonPaths, testInnerStruct, []string{"int32", "string"})
 	assert.NoError(t, err)
@@ -120,7 +120,7 @@ func testGenerateTextOutputWithComplexStruct(t *testing.T) {
 func testGenerateJSONOutputWithComplexStruct(t *testing.T) {
 	viper.Reset()
 
-	viper.Set(constants.ArgOutput, jsontabwriter.JSONFormat)
+	viper.Set(constants.ArgOutput, jsontabwriter.APIFormat)
 
 	out, err := jsontabwriter.GenerateOutput("", outerStructJsonPaths, testOuterStruct,
 		[]string{"int32", "string", "float64", "strings", "innerStrings", "innerInts32"})
@@ -133,7 +133,7 @@ func testGenerateTextOutputWithInnerBasicStructs(t *testing.T) {
 	viper.Reset()
 
 	viper.Set(constants.ArgOutput, jsontabwriter.TextFormat)
-	out, err := jsontabwriter.GenerateOutput("innerStructs", innerStructJsonPaths, testOuterStruct, []string{"int32", "string"})
+	out, err := jsontabwriter.GenerateOutput("items", innerStructJsonPaths, testOuterStruct, []string{"int32", "string"})
 	assert.NoError(t, err)
 
 	fmt.Println(out)
@@ -142,9 +142,9 @@ func testGenerateTextOutputWithInnerBasicStructs(t *testing.T) {
 func testGenerateJSONOutputWithInnerBasicStructs(t *testing.T) {
 	viper.Reset()
 
-	viper.Set(constants.ArgOutput, jsontabwriter.JSONFormat)
+	viper.Set(constants.ArgOutput, jsontabwriter.APIFormat)
 
-	out, err := jsontabwriter.GenerateOutput("innerStructs", innerStructJsonPaths, testOuterStruct, []string{"int32", "string"})
+	out, err := jsontabwriter.GenerateOutput("items", innerStructJsonPaths, testOuterStruct, []string{"int32", "string"})
 	assert.NoError(t, err)
 
 	fmt.Println(out)
@@ -166,7 +166,7 @@ func testGenerateJSONVerboseOutputSet(t *testing.T) {
 	viper.Reset()
 
 	viper.Set(constants.ArgVerbose, true)
-	viper.Set(constants.ArgOutput, jsontabwriter.JSONFormat)
+	viper.Set(constants.ArgOutput, jsontabwriter.APIFormat)
 	n, err := fmt.Printf(jsontabwriter.GenerateVerboseOutput(testFormatString, testInt32, testStr))
 	assert.NoError(t, err)
 	assert.Equal(t, len(string(j)+"\n"), n)
@@ -184,7 +184,7 @@ func testGenerateTextVerboseOutputNotSet(t *testing.T) {
 func testGenerateJSONVerboseOutputNotSet(t *testing.T) {
 	viper.Reset()
 
-	viper.Set(constants.ArgOutput, jsontabwriter.JSONFormat)
+	viper.Set(constants.ArgOutput, jsontabwriter.APIFormat)
 	n, err := fmt.Printf(jsontabwriter.GenerateVerboseOutput(testFormatString, testInt32, testStr))
 	assert.NoError(t, err)
 	assert.Equal(t, 0, n)
@@ -204,8 +204,19 @@ func testGenerateJSONLogOutput(t *testing.T) {
 
 	viper.Reset()
 
-	viper.Set(constants.ArgOutput, jsontabwriter.JSONFormat)
+	viper.Set(constants.ArgOutput, jsontabwriter.APIFormat)
 	n, err := fmt.Printf(jsontabwriter.GenerateLogOutput(testStr))
 	assert.NoError(t, err)
 	assert.Equal(t, len(string(j)+"\n"), n)
+}
+
+func TestGenerateLegacyJSONOutput(t *testing.T) {
+	viper.Reset()
+	viper.Set(constants.ArgOutput, jsontabwriter.JSONFormat)
+
+	out, err := jsontabwriter.GenerateOutput("", outerStructJsonPaths, []outerStruct{testOuterStruct,
+		testOuterStruct}, nil)
+	assert.NoError(t, err)
+
+	fmt.Println(out)
 }

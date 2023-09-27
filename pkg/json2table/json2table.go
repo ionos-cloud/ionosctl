@@ -3,6 +3,7 @@ package json2table
 import (
 	"encoding/json"
 	"fmt"
+	"reflect"
 
 	"github.com/Jeffail/gabs/v2"
 )
@@ -63,6 +64,9 @@ func traverseJSONRoot(columnPathMappingPrefix string, sourceData interface{}) ([
 	jsonObj, err := json.Marshal(sourceData)
 	if err != nil {
 		return nil, err
+	}
+	if reflect.DeepEqual(jsonObj, []byte{'[', ']'}) {
+		return []*gabs.Container{}, nil
 	}
 
 	parsedObj, err := gabs.ParseJSON(jsonObj)
