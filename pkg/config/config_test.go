@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"os"
+	"runtime"
 	"testing"
 	"time"
 
@@ -35,7 +36,7 @@ func TestRead(t *testing.T) {
 			name:     "should return an error when the file does not exist",
 			filename: "non-existent-file",
 			wantErr:  true,
-			errMsg:   "no such file or directory",
+			errMsg:   "failed getting config file info",
 		},
 		{
 			name:     "should return an error when the file has invalid permissions",
@@ -65,6 +66,13 @@ func TestRead(t *testing.T) {
 
 				_, err = tmpfile.Write([]byte(tt.data))
 				assert.NoError(t, err)
+
+				if runtime.GOOS == "windows" && tt.perm != 0600 {
+					// If using Windows, skip any tests related to invalid permissions.
+					// Refer to os.Chmod documentation: On Windows, can only set the "read" bit of the permissions.
+					// This would lead to the test 'should_return_an_error_when_the_file_has_invalid_permissions' breaking.
+					t.SkipNow()
+				}
 
 				err = tmpfile.Chmod(tt.perm)
 				assert.NoError(t, err)
