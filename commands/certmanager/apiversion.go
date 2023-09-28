@@ -35,7 +35,7 @@ func CertGetApiVersionCmd() *core.Command {
 		InitClient: true,
 	})
 
-	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, tabheaders.ColsMessage(defaultCertificateCols))
+	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, tabheaders.ColsMessage(allAPIVersionCols))
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allAPIVersionCols, cobra.ShellCompDirectiveNoFileComp
 	})

@@ -8,6 +8,6 @@ import (
 )
 
 func TestDatacenterCPUFamiliesDefault(t *testing.T) {
-	cpuFamilies := DatacenterCPUFamilies(context.Background(), nil, "")
+	cpuFamilies := DatacenterCPUFamilies(context.Background(), "")
 	assert.Equal(t, []string{"AMD_OPTERON", "INTEL_XEON", "INTEL_SKYLAKE"}, cpuFamilies)
 }
