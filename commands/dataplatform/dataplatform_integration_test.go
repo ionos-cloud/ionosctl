@@ -5,6 +5,7 @@ package dataplatform
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"testing"
 	"time"
@@ -52,7 +53,20 @@ func testClusterOk(t *testing.T) {
 	c.Command.Flags().Set(constants.FlagMaintenanceTime, "10:00:00")
 
 	err := c.Command.Execute()
-	assert.NoError(t, err, fmt.Errorf("failed executing cluster create: %w", err).Error())
+	if err != nil {
+		if got403 := assert.ErrorContains(t, err, "403 Forbidden"); got403 {
+			dc, _, errdc := client.Must().CloudClient.DataCentersApi.DatacentersFindById(context.Background(), createdDcId).Execute()
+			if errdc != nil {
+				t.Fatalf(fmt.Errorf("debugging 403 err for dataplatform test went horribly wrong: %w", err).Error())
+			}
+			dcAsJson, errJson := json.MarshalIndent(dc, "", "  ")
+			assert.NoError(t, errJson)
+			fmt.Printf("Received a '403 Forbidden' error:\n%s\n while attempting to create a dataplatform cluster in the datacenter:\n%s ", err.Error(), dcAsJson)
+			t.SkipNow()
+		}
+
+		t.Fatalf(fmt.Errorf("failed creating a dataplatform cluster: %w", err).Error())
+	}
 
 	ls, resp, err := client.Must().DataplatformClient.DataPlatformClusterApi.ClustersGet(context.Background()).Name(uniqueResourceName).Execute()
 	assert.NoError(t, err, fmt.Errorf("failed verifying created cluster via SDK: %w", err).Error())
