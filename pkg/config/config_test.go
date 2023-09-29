@@ -194,3 +194,70 @@ func TestConcurrency(t *testing.T) {
 	possibleResults := []map[string]string{data1, data2}
 	assert.Contains(t, possibleResults, cfg)
 }
+
+func TestGetServerUrl(t *testing.T) {
+	tests := []struct {
+		name              string
+		flagVal           string
+		envVal            string
+		cfgVal            string
+		expectedServerUrl string
+	}{
+		{
+			name:              "Flag value is used and different from default",
+			flagVal:           "http://flag.url",
+			envVal:            "http://env.url",
+			cfgVal:            "http://cfg.url",
+			expectedServerUrl: "http://flag.url",
+		},
+		{
+			name:              "Flag value is DNS default, Env value is used",
+			flagVal:           "dns.de-fra.ionos.com",
+			envVal:            "http://env.url",
+			cfgVal:            "http://cfg.url",
+			expectedServerUrl: "http://env.url",
+		},
+		{
+			name:              "All values are DNS default or not set, return empty string",
+			flagVal:           "dns.de-fra.ionos.com",
+			envVal:            "",
+			cfgVal:            "",
+			expectedServerUrl: "",
+		},
+		{
+			name:              "Explicit flag URL is returned",
+			flagVal:           "http://explicit-url.com",
+			envVal:            "",
+			cfgVal:            "",
+			expectedServerUrl: "http://explicit-url.com",
+		},
+		{
+			name:              "Explicit flag URL is prefered over explicit env var",
+			flagVal:           "http://explicit-url.com",
+			envVal:            "http://env.url",
+			cfgVal:            "",
+			expectedServerUrl: "http://explicit-url.com",
+		},
+		{
+			name:              "Default API Url explicitly set is preferred over explicit env var",
+			flagVal:           constants.DefaultApiURL,
+			envVal:            "http://env.url",
+			cfgVal:            "",
+			expectedServerUrl: constants.DefaultApiURL,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// Mock viper values
+			viper.Set(constants.ArgServerUrl, tt.flagVal)
+			viper.Set(constants.EnvServerUrl, tt.envVal)
+			viper.Set(constants.CfgServerUrl, tt.cfgVal)
+
+			got := config.GetServerUrl()
+			if got != tt.expectedServerUrl {
+				t.Errorf("Expected %s but got %s", tt.expectedServerUrl, got)
+			}
+		})
+	}
+}
