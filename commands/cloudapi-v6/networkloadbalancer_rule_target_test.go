@@ -497,6 +497,6 @@ func TestRunNlbRuleTargetRemoveAskForConfirmErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPort), testNlbRuleTargetIntVar)
 		cfg.Command.Command.SetIn(bytes.NewReader([]byte("\n")))
 		err := RunNlbRuleTargetRemove(cfg)
-		assert.NoError(t, err)
+		assert.Error(t, err)
 	})
 }

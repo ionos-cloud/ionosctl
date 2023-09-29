@@ -549,7 +549,7 @@ func TestRunUserDeleteAskForConfirmErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgUserId), testUserVar)
 		cfg.Command.Command.SetIn(bytes.NewReader([]byte("\n")))
 		err := RunUserDelete(cfg)
-		assert.NoError(t, err)
+		assert.Error(t, err)
 	})
 }
 
@@ -799,6 +799,6 @@ func TestRunGroupUserRemoveAskForConfirmErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgGroupId), testGroupVar)
 		cfg.Command.Command.SetIn(bytes.NewReader([]byte("\n")))
 		err := RunGroupUserRemove(cfg)
-		assert.NoError(t, err)
+		assert.Error(t, err)
 	})
 }

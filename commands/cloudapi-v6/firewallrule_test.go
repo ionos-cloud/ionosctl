@@ -738,6 +738,6 @@ func TestRunFirewallRuleDeleteAskForConfirmErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), false)
 		cfg.Command.Command.SetIn(bytes.NewReader([]byte("\n")))
 		err := RunFirewallRuleDelete(cfg)
-		assert.NoError(t, err)
+		assert.Error(t, err)
 	})
 }

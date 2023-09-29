@@ -414,7 +414,7 @@ func TestRunK8sNodePoolLanRemoveAskErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLanId), testK8sNodePoolLanIntVar)
 		cfg.Command.Command.SetIn(bytes.NewReader([]byte("\n")))
 		err := RunK8sNodePoolLanRemove(cfg)
-		assert.NoError(t, err)
+		assert.Error(t, err)
 	})
 }
 

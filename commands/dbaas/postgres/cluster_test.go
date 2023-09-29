@@ -1243,7 +1243,7 @@ func TestRunClusterRestoreAskConfirmErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgRecoveryTime), testTimeArgVar)
 		cfg.Command.Command.SetIn(bytes.NewReader([]byte("\n")))
 		err := RunClusterRestore(cfg)
-		assert.NoError(t, err)
+		assert.Error(t, err)
 	})
 }
 
@@ -1403,7 +1403,7 @@ func TestRunClusterDeleteAskConfirmErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, constants.FlagClusterId), testClusterVar)
 		cfg.Command.Command.SetIn(bytes.NewReader([]byte("\n")))
 		err := RunClusterDelete(cfg)
-		assert.NoError(t, err)
+		assert.Error(t, err)
 	})
 }
 

@@ -601,6 +601,6 @@ func TestRunNetworkLoadBalancerDeleteAskForConfirmErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNetworkLoadBalancerId), testNetworkLoadBalancerVar)
 		cfg.Command.Command.SetIn(bytes.NewReader([]byte("\n")))
 		err := RunNetworkLoadBalancerDelete(cfg)
-		assert.NoError(t, err)
+		assert.Error(t, err)
 	})
 }

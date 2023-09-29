@@ -967,7 +967,7 @@ func TestRunServerDeleteAskForConfirmErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), false)
 		cfg.Command.Command.SetIn(bytes.NewReader([]byte("\n")))
 		err := RunServerDelete(cfg)
-		assert.NoError(t, err)
+		assert.Error(t, err)
 	})
 }
 
@@ -1037,7 +1037,7 @@ func TestRunServerSuspendAskForConfirmErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), false)
 		cfg.Command.Command.SetIn(bytes.NewReader([]byte("\n")))
 		err := RunServerSuspend(cfg)
-		assert.NoError(t, err)
+		assert.Error(t, err)
 	})
 }
 
@@ -1107,7 +1107,7 @@ func TestRunServerStartAskForConfirmErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), false)
 		cfg.Command.Command.SetIn(bytes.NewReader([]byte("\n")))
 		err := RunServerStart(cfg)
-		assert.NoError(t, err)
+		assert.Error(t, err)
 	})
 }
 
@@ -1177,7 +1177,7 @@ func TestRunServerStopAskForConfirmErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), false)
 		cfg.Command.Command.SetIn(bytes.NewReader([]byte("\n")))
 		err := RunServerStop(cfg)
-		assert.NoError(t, err)
+		assert.Error(t, err)
 	})
 }
 
@@ -1247,7 +1247,7 @@ func TestRunServerRebootAskForConfirmErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), false)
 		cfg.Command.Command.SetIn(bytes.NewReader([]byte("\n")))
 		err := RunServerReboot(cfg)
-		assert.NoError(t, err)
+		assert.Error(t, err)
 	})
 }
 
@@ -1317,6 +1317,6 @@ func TestRunServerResumeAskForConfirmErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), false)
 		cfg.Command.Command.SetIn(bytes.NewReader([]byte("\n")))
 		err := RunServerResume(cfg)
-		assert.NoError(t, err)
+		assert.Error(t, err)
 	})
 }

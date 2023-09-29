@@ -611,6 +611,6 @@ func TestRunNatGatewayRuleDeleteAskForConfirmErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRuleId), testNatGatewayRuleVar)
 		cfg.Command.Command.SetIn(bytes.NewReader([]byte("\n")))
 		err := RunNatGatewayRuleDelete(cfg)
-		assert.NoError(t, err)
+		assert.Error(t, err)
 	})
 }

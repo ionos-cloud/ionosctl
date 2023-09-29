@@ -569,6 +569,6 @@ func TestRunPccDeleteAskForConfirmErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPccId), testPccVar)
 		cfg.Command.Command.SetIn(bytes.NewReader([]byte("\n")))
 		err := RunPccDelete(cfg)
-		assert.NoError(t, err)
+		assert.Error(t, err)
 	})
 }

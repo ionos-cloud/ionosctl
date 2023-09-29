@@ -1083,6 +1083,6 @@ func TestRunK8sNodePoolDeleteAskForConfirmErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, constants.FlagClusterId), testNodepoolVar)
 		cfg.Command.Command.SetIn(bytes.NewReader([]byte("\n")))
 		err := RunK8sNodePoolDelete(cfg)
-		assert.NoError(t, err)
+		assert.Error(t, err)
 	})
 }

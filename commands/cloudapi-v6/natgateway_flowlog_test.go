@@ -525,6 +525,6 @@ func TestRunNatGatewayFlowLogDeleteAskForConfirmErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgFlowLogId), testFlowLogVar)
 		cfg.Command.Command.SetIn(bytes.NewReader([]byte("\n")))
 		err := RunNatGatewayFlowLogDelete(cfg)
-		assert.NoError(t, err)
+		assert.Error(t, err)
 	})
 }

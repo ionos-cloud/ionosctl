@@ -675,6 +675,6 @@ func TestRunGroupRemoveGroupAskForConfirmErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgGroupId), testGroupVar)
 		cfg.Command.Command.SetIn(bytes.NewReader([]byte("\n")))
 		err := RunGroupDelete(cfg)
-		assert.NoError(t, err)
+		assert.Error(t, err)
 	})
 }

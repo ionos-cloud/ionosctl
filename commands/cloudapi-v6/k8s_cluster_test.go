@@ -820,6 +820,6 @@ func TestRunK8sClusterDeleteAskForConfirmErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, constants.FlagClusterId), testClusterVar)
 		cfg.Command.Command.SetIn(bytes.NewReader([]byte("\n")))
 		err := RunK8sClusterDelete(cfg)
-		assert.NoError(t, err)
+		assert.Error(t, err)
 	})
 }

@@ -326,7 +326,7 @@ func TestRunK8sNodeRecreateAskForConfirmErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, constants.FlagClusterId), testNodeVar)
 		cfg.Command.Command.SetIn(bytes.NewReader([]byte("\n")))
 		err := RunK8sNodeRecreate(cfg)
-		assert.NoError(t, err)
+		assert.Error(t, err)
 	})
 }
 
@@ -486,6 +486,6 @@ func TestRunK8sNodeDeleteAskForConfirmErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, constants.FlagClusterId), testNodeVar)
 		cfg.Command.Command.SetIn(bytes.NewReader([]byte("\n")))
 		err := RunK8sNodeDelete(cfg)
-		assert.NoError(t, err)
+		assert.Error(t, err)
 	})
 }

@@ -800,7 +800,7 @@ func TestRunVolumeDeleteAskForConfirmErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), false)
 		cfg.Command.Command.SetIn(bytes.NewReader([]byte("\n")))
 		err := RunVolumeDelete(cfg)
-		assert.NoError(t, err)
+		assert.Error(t, err)
 	})
 }
 
@@ -1217,7 +1217,7 @@ func TestServerVolumeDetach(t *testing.T) {
 					gomock.InOrder()
 				},
 				UserInput:   bytes.NewReader([]byte("\n")),
-				ExpectedErr: false,
+				ExpectedErr: true,
 			},
 		}
 		core.ExecuteTestCases(t, funcToTest, tests, cfg)

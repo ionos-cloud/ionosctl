@@ -624,6 +624,6 @@ func TestRunAlbRuleHttpRuleRemoveAskForConfirmErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgName), testAlbRuleHttpRuleVar)
 		cfg.Command.Command.SetIn(bytes.NewReader([]byte("\n")))
 		err := RunAlbRuleHttpRuleRemove(cfg)
-		assert.NoError(t, err)
+		assert.Error(t, err)
 	})
 }

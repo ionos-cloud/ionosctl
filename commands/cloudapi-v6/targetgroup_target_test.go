@@ -500,6 +500,6 @@ func TestRunTargetGroupTargetRemoveAskForConfirmErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPort), testTargetGroupTargetIntVar)
 		cfg.Command.Command.SetIn(bytes.NewReader([]byte("\n")))
 		err := RunTargetGroupTargetRemove(cfg)
-		assert.NoError(t, err)
+		assert.Error(t, err)
 	})
 }

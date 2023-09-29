@@ -456,6 +456,6 @@ func TestRunUserS3KeyDeleteAskForConfirmErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgUserId), testS3keyVar)
 		cfg.Command.Command.SetIn(bytes.NewReader([]byte("\n")))
 		err := RunUserS3KeyDelete(cfg)
-		assert.NoError(t, err)
+		assert.Error(t, err)
 	})
 }

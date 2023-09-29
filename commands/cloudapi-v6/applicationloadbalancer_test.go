@@ -488,7 +488,7 @@ func TestRunApplicationLoadBalancerDeleteAllAskForConfirmErr(t *testing.T) {
 		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().List(testApplicationLoadBalancerVar, gomock.AssignableToTypeOf(testListQueryParam)).Return(applicationloadbalancers, &testResponse, nil)
 		cfg.Command.Command.SetIn(bytes.NewReader([]byte("\n")))
 		err := RunApplicationLoadBalancerDelete(cfg)
-		assert.NoError(t, err)
+		assert.Error(t, err)
 	})
 }
 
@@ -555,6 +555,6 @@ func TestRunApplicationLoadBalancerDeleteAskForConfirmErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgApplicationLoadBalancerId), testApplicationLoadBalancerVar)
 		cfg.Command.Command.SetIn(bytes.NewReader([]byte("\n")))
 		err := RunApplicationLoadBalancerDelete(cfg)
-		assert.NoError(t, err)
+		assert.Error(t, err)
 	})
 }

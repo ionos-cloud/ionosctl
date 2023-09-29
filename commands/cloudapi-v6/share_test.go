@@ -516,6 +516,6 @@ func TestRunShareDeleteAskForConfirmErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgResourceId), testShareVar)
 		cfg.Command.Command.SetIn(bytes.NewReader([]byte("\n")))
 		err := RunShareDelete(cfg)
-		assert.NoError(t, err)
+		assert.Error(t, err)
 	})
 }
