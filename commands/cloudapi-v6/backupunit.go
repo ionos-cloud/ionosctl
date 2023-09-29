@@ -432,7 +432,7 @@ func RunBackupUnitDelete(c *core.CommandConfig) error {
 	backupunitId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgBackupUnitId))
 
 	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete backup unit", viper.GetBool(constants.ArgForce)) {
-		return nil
+		return fmt.Errorf(confirm.UserDenied)
 	}
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Starting deleting Backup unit with id: %v...", backupunitId))
@@ -516,7 +516,7 @@ func DeleteAllBackupUnits(c *core.CommandConfig) error {
 	}
 
 	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete all the Backup Units", viper.GetBool(constants.ArgForce)) {
-		return nil
+		return fmt.Errorf(confirm.UserDenied)
 	}
 
 	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Deleting all the BackupUnits..."))

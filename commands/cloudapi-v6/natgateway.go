@@ -489,7 +489,7 @@ func RunNatGatewayDelete(c *core.CommandConfig) error {
 	}
 
 	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete nat gateway", viper.GetBool(constants.ArgForce)) {
-		return nil
+		return fmt.Errorf(confirm.UserDenied)
 	}
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Starring deleting NAT Gateway with id: %v...", natGatewayId))
@@ -577,7 +577,7 @@ func DeleteAllNatgateways(c *core.CommandConfig) error {
 	}
 
 	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete all the NAT Gateways", viper.GetBool(constants.ArgForce)) {
-		return nil
+		return fmt.Errorf(confirm.UserDenied)
 	}
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the NAT Gateways..."))

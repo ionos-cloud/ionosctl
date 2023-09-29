@@ -306,7 +306,7 @@ func RunIpFailoverRemove(c *core.CommandConfig) error {
 		"Removing IP Failover group from LAN with ID: %v from Datacenter with ID: %v...", lanId, dcId))
 
 	if !confirm.FAsk(c.Command.Command.InOrStdin(), "remove ip failover group from lan", viper.GetBool(constants.ArgForce)) {
-		return nil
+		return fmt.Errorf(confirm.UserDenied)
 	}
 
 	oldLan, _, err := c.CloudApiV6Services.Lans().Get(dcId, lanId, queryParams)
@@ -393,7 +393,7 @@ func RemoveAllIpFailovers(c *core.CommandConfig) error {
 	}
 
 	if !confirm.FAsk(c.Command.Command.InOrStdin(), "remove all the IP Failovers", viper.GetBool(constants.ArgForce)) {
-		return nil
+		return fmt.Errorf(confirm.UserDenied)
 	}
 
 	oldLan, _, err := c.CloudApiV6Services.Lans().Get(dcId, lanId, queryParams)

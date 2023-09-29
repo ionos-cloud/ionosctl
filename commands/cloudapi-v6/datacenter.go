@@ -382,7 +382,7 @@ func RunDataCenterDelete(c *core.CommandConfig) error {
 	}
 
 	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete data center", viper.GetBool(constants.ArgForce)) {
-		return nil
+		return fmt.Errorf(confirm.UserDenied)
 	}
 
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
@@ -442,7 +442,7 @@ func DeleteAllDatacenters(c *core.CommandConfig) error {
 	}
 
 	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete all the Datacenters", viper.IsSet(constants.ArgForce)) {
-		return nil
+		return fmt.Errorf(confirm.UserDenied)
 	}
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the Datacenters..."))

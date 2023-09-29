@@ -175,7 +175,7 @@ func RemoveAllDatacenterLabels(c *core.CommandConfig) error {
 	}
 
 	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete all the Labels from Datacenter with Id: "+dcId, viper.GetBool(constants.ArgForce)) {
-		return nil
+		return fmt.Errorf(confirm.UserDenied)
 	}
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the Labels from Datacenter with Id: %v...", dcId))
@@ -381,7 +381,7 @@ func RemoveAllServerLabels(c *core.CommandConfig) error {
 	}
 
 	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete all the Labels from Server with Id: "+serverId, viper.GetBool(constants.ArgForce)) {
-		return nil
+		return fmt.Errorf(confirm.UserDenied)
 	}
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the Labels from Server with Id: %v...", serverId))
@@ -581,7 +581,7 @@ func RemoveAllVolumeLabels(c *core.CommandConfig) error {
 	}
 
 	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete all the Labels from Volume with Id: "+volumeId, viper.GetBool(constants.ArgForce)) {
-		return nil
+		return fmt.Errorf(confirm.UserDenied)
 	}
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the Labels from Volume with Id: %v...", volumeId))
@@ -773,7 +773,7 @@ func RemoveAllIpBlockLabels(c *core.CommandConfig) error {
 	}
 
 	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete all the Labels from IpBlock with Id: "+ipBlockId, viper.GetBool(constants.ArgForce)) {
-		return nil
+		return fmt.Errorf(confirm.UserDenied)
 	}
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the Labels from IpBlock with Id: %v...", ipBlockId))
@@ -965,7 +965,7 @@ func RemoveAllSnapshotLabels(c *core.CommandConfig) error {
 	}
 
 	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete all the Labels from Snapshot with Id: "+snapshotId, viper.GetBool(constants.ArgForce)) {
-		return nil
+		return fmt.Errorf(confirm.UserDenied)
 	}
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the Labels from Snapshot with Id: %v...", snapshotId))

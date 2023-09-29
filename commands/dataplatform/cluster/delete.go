@@ -36,7 +36,7 @@ func ClusterDeleteCmd() *core.Command {
 
 			clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
 			if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("delete cluster %s", clusterId), viper.GetBool(constants.ArgForce)) {
-				return nil
+				return fmt.Errorf(confirm.UserDenied)
 			}
 
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting cluster: %s", clusterId))

@@ -83,7 +83,7 @@ func CmdGetTokenScopesDelete(c *core.CommandConfig) error {
 		msg := fmt.Sprintf("delete all scopes from Token: %s", *token.Id)
 
 		if !confirm.FAsk(c.Command.Command.InOrStdin(), msg, viper.GetBool(constants.ArgForce)) {
-			return nil
+			return fmt.Errorf(confirm.UserDenied)
 		}
 
 		_, err = c.ContainerRegistryServices.Token().Delete(tokenId, regId)
@@ -120,7 +120,7 @@ func CmdGetTokenScopesDelete(c *core.CommandConfig) error {
 	msg := fmt.Sprintf("delete scope %d from Token: %s", id+1, *token.Id)
 
 	if !confirm.FAsk(c.Command.Command.InOrStdin(), msg, viper.GetBool(constants.ArgForce)) {
-		return nil
+		return fmt.Errorf(confirm.UserDenied)
 	}
 
 	_, err = c.ContainerRegistryServices.Token().Delete(tokenId, regId)

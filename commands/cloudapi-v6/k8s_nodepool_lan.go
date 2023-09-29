@@ -263,7 +263,7 @@ func RunK8sNodePoolLanRemove(c *core.CommandConfig) error {
 	nodePoolId := viper.GetString(core.GetFlagName(c.NS, constants.FlagNodepoolId))
 
 	if !confirm.FAsk(c.Command.Command.InOrStdin(), "remove node pool lan", viper.GetBool(constants.ArgForce)) {
-		return nil
+		return fmt.Errorf(confirm.UserDenied)
 	}
 
 	ng, _, err := c.CloudApiV6Services.K8s().GetNodePool(clusterId, nodePoolId, queryParams)
@@ -325,7 +325,7 @@ func RemoveAllK8sNodePoolsLans(c *core.CommandConfig) error {
 	}
 
 	if !confirm.FAsk(c.Command.Command.InOrStdin(), "remove all the K8sNodePool Lans", viper.GetBool(constants.ArgForce)) {
-		return nil
+		return fmt.Errorf(confirm.UserDenied)
 	}
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Removing all the K8sNodePool Lans..."))

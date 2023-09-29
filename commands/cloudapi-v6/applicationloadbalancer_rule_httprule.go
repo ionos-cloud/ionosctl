@@ -387,7 +387,7 @@ func RunAlbRuleHttpRuleRemove(c *core.CommandConfig) error {
 		constants.ForwardingRuleId, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId))))
 
 	if !confirm.FAsk(c.Command.Command.InOrStdin(), "remove forwarding rule http rule", viper.GetBool(constants.ArgForce)) {
-		return nil
+		return fmt.Errorf(confirm.UserDenied)
 	}
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting HttpRules"))
@@ -480,7 +480,7 @@ func RemoveAllHTTPRules(c *core.CommandConfig) (*resources.Response, error) {
 	}
 
 	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete all the Forwarding Rule HTTP Rules", viper.GetBool(constants.ArgForce)) {
-		return nil, nil
+		return nil, fmt.Errorf(confirm.UserDenied)
 	}
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the Forwarding Rule HTTP Rules..."))

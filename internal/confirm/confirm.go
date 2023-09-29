@@ -8,6 +8,10 @@ import (
 	"strings"
 )
 
+const (
+	UserDenied = "user denied confirmation"
+)
+
 // FAsk asks the user for confirmation on any Reader
 // If any of the arguments passed as `overrides` is true, it returns true.
 func FAsk(in io.Reader, s string, overrides ...bool) bool {

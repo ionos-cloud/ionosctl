@@ -66,7 +66,7 @@ func CmdDelete(c *core.CommandConfig) error {
 			msg := fmt.Sprintf("delete Container Registry: %s", *reg.Id)
 
 			if !confirm.FAsk(c.Command.Command.InOrStdin(), msg, viper.GetBool(constants.ArgForce)) {
-				return nil
+				return fmt.Errorf(confirm.UserDenied)
 			}
 
 			_, err = c.ContainerRegistryServices.Registry().Delete(*reg.Id)
@@ -83,7 +83,7 @@ func CmdDelete(c *core.CommandConfig) error {
 		msg := fmt.Sprintf("delete Container Registry: %s", id)
 
 		if !confirm.FAsk(c.Command.Command.InOrStdin(), msg, viper.GetBool(constants.ArgForce)) {
-			return nil
+			return fmt.Errorf(confirm.UserDenied)
 		}
 
 		_, err = c.ContainerRegistryServices.Registry().Delete(id)

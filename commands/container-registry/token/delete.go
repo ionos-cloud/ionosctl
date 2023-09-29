@@ -67,7 +67,7 @@ func CmdDeleteToken(c *core.CommandConfig) error {
 			msg := fmt.Sprintf("delete Token: %s", tokenId)
 
 			if !confirm.FAsk(c.Command.Command.InOrStdin(), msg, viper.GetBool(constants.ArgForce)) {
-				return nil
+				return fmt.Errorf(confirm.UserDenied)
 			}
 
 			_, err := c.ContainerRegistryServices.Token().Delete(tokenId, regId)
@@ -87,7 +87,7 @@ func CmdDeleteToken(c *core.CommandConfig) error {
 			msg := fmt.Sprintf("delete Token: %s", *token.Id)
 
 			if !confirm.FAsk(c.Command.Command.InOrStdin(), msg, viper.GetBool(constants.ArgForce)) {
-				return nil
+				return fmt.Errorf(confirm.UserDenied)
 			}
 
 			_, err := c.ContainerRegistryServices.Token().Delete(*token.Id, regId)
@@ -114,7 +114,7 @@ func CmdDeleteToken(c *core.CommandConfig) error {
 			msg := fmt.Sprintf("delete Token: %s", *token.Id)
 
 			if !confirm.FAsk(c.Command.Command.InOrStdin(), msg, viper.GetBool(constants.ArgForce)) {
-				return nil
+				return fmt.Errorf(confirm.UserDenied)
 			}
 
 			_, err := c.ContainerRegistryServices.Token().Delete(*token.Id, *reg.Id)

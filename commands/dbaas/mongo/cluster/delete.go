@@ -73,7 +73,7 @@ ionosctl db m c d --all --name <name>`,
 
 			ok := confirm.FAsk(c.Command.Command.InOrStdin(), confirmStringForCluster(chosenCluster), viper.GetBool(constants.ArgForce))
 			if !ok {
-				return fmt.Errorf("user denied confirmation")
+				return fmt.Errorf(confirm.UserDenied)
 			}
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting cluster: %s", clusterId))
 

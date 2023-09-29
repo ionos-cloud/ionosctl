@@ -504,7 +504,7 @@ func RunApplicationLoadBalancerForwardingRuleDelete(c *core.CommandConfig) error
 		constants.ForwardingRuleId, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId))))
 
 	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete application load balancer forwarding rule", viper.GetBool(constants.ArgForce)) {
-		return nil
+		return fmt.Errorf(confirm.UserDenied)
 	}
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
@@ -577,7 +577,7 @@ func DeleteAllApplicationLoadBalancerForwardingRule(c *core.CommandConfig) error
 	}
 
 	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete all the Forwarding Rules", viper.GetBool(constants.ArgForce)) {
-		return nil
+		return fmt.Errorf(confirm.UserDenied)
 	}
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(

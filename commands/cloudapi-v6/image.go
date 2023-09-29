@@ -268,7 +268,7 @@ func RunImageDelete(c *core.CommandConfig) error {
 	queryParams := listQueryParams.QueryParams
 
 	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete image", viper.GetBool(constants.ArgForce)) {
-		return nil
+		return fmt.Errorf(confirm.UserDenied)
 	}
 
 	imgId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgImageId))
@@ -357,7 +357,7 @@ func DeleteAllNonPublicImages(c *core.CommandConfig) error {
 	}
 
 	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete all the images", viper.GetBool(constants.ArgForce)) {
-		return nil
+		return fmt.Errorf(confirm.UserDenied)
 	}
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the images..."))

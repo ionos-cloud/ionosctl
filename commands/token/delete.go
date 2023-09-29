@@ -76,7 +76,7 @@ func runTokenDelete(c *core.CommandConfig) error {
 
 func runTokenDeleteAll(c *core.CommandConfig) error {
 	if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("delete all tokens"), viper.GetBool(constants.ArgForce)) {
-		return nil
+		return fmt.Errorf(confirm.UserDenied)
 	}
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all tokens..."))
@@ -100,7 +100,7 @@ func runTokenDeleteAll(c *core.CommandConfig) error {
 
 func runTokenDeleteExpired(c *core.CommandConfig) error {
 	if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("delete expired tokens"), viper.GetBool(constants.ArgForce)) {
-		return nil
+		return fmt.Errorf(confirm.UserDenied)
 	}
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting expired tokens..."))
@@ -132,7 +132,7 @@ func runTokenDeleteCurrent(c *core.CommandConfig) error {
 	}
 
 	if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("delete CURRENT token"), viper.GetBool(constants.ArgForce)) {
-		return nil
+		return fmt.Errorf(confirm.UserDenied)
 	}
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting current token..."))
@@ -157,7 +157,7 @@ func runTokenDeleteById(c *core.CommandConfig) error {
 	tokenId := viper.GetString(core.GetFlagName(c.NS, authservice.ArgTokenId))
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Token ID: %s", tokenId))
 	if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("delete token with ID: %s", tokenId), viper.GetBool(constants.ArgForce)) {
-		return nil
+		return fmt.Errorf(confirm.UserDenied)
 	}
 	tokenResponse, _, err := c.AuthV1Services.Tokens().DeleteByID(tokenId, viper.GetInt32(core.GetFlagName(c.NS, authservice.ArgContractNo)))
 	if err != nil {
@@ -189,7 +189,7 @@ func runTokenDeleteByToken(c *core.CommandConfig) error {
 	}
 
 	if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("delete token with ID: %s", tokenId), viper.GetBool(constants.ArgForce)) {
-		return nil
+		return fmt.Errorf(confirm.UserDenied)
 	}
 
 	tokenResponse, _, err := c.AuthV1Services.Tokens().DeleteByID(fmt.Sprintf("%v", tokenId), viper.GetInt32(core.GetFlagName(c.NS, authservice.ArgContractNo)))

@@ -285,7 +285,7 @@ func RunTargetGroupTargetRemove(c *core.CommandConfig) error {
 		"Target Port: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgPort))))
 
 	if !confirm.FAsk(c.Command.Command.InOrStdin(), "remove target from target group", viper.GetBool(constants.ArgForce)) {
-		return nil
+		return fmt.Errorf(confirm.UserDenied)
 	}
 
 	var propertiesUpdated resources.TargetGroupProperties
@@ -358,7 +358,7 @@ func RemoveAllTargetGroupTarget(c *core.CommandConfig) (*resources.Response, err
 	}
 
 	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete all the Targets from Target Group", viper.GetBool(constants.ArgForce)) {
-		return nil, nil
+		return nil, fmt.Errorf(confirm.UserDenied)
 	}
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the Target Group Targets..."))

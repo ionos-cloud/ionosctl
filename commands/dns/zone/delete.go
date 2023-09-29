@@ -45,7 +45,7 @@ func ZonesDeleteCmd() *core.Command {
 			yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Are you sure you want to delete zone %s (desc: '%s')", *z.Properties.ZoneName, *z.Properties.Description),
 				viper.GetBool(constants.ArgForce))
 			if !yes {
-				return nil
+				return fmt.Errorf(confirm.UserDenied)
 			}
 
 			_, err = client.Must().DnsClient.ZonesApi.ZonesDelete(context.Background(), zoneId).Execute()

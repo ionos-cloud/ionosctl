@@ -885,7 +885,7 @@ func RunServerDelete(c *core.CommandConfig) error {
 	}
 
 	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete server", viper.GetBool(constants.ArgForce)) {
-		return nil
+		return fmt.Errorf(confirm.UserDenied)
 	}
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
@@ -915,7 +915,7 @@ func RunServerStart(c *core.CommandConfig) error {
 
 	queryParams := listQueryParams.QueryParams
 	if !confirm.FAsk(c.Command.Command.InOrStdin(), "start server", viper.GetBool(constants.ArgForce)) {
-		return nil
+		return fmt.Errorf(confirm.UserDenied)
 	}
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Server is starting... "))
@@ -949,7 +949,7 @@ func RunServerStop(c *core.CommandConfig) error {
 	queryParams := listQueryParams.QueryParams
 
 	if !confirm.FAsk(c.Command.Command.InOrStdin(), "stop server", viper.GetBool(constants.ArgForce)) {
-		return nil
+		return fmt.Errorf(confirm.UserDenied)
 	}
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Server is stopping... "))
@@ -983,7 +983,7 @@ func RunServerSuspend(c *core.CommandConfig) error {
 	queryParams := listQueryParams.QueryParams
 
 	if !confirm.FAsk(c.Command.Command.InOrStdin(), "suspend cube server", viper.GetBool(constants.ArgForce)) {
-		return nil
+		return fmt.Errorf(confirm.UserDenied)
 	}
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Server is Suspending... "))
@@ -1017,7 +1017,7 @@ func RunServerReboot(c *core.CommandConfig) error {
 	queryParams := listQueryParams.QueryParams
 
 	if !confirm.FAsk(c.Command.Command.InOrStdin(), "reboot server", viper.GetBool(constants.ArgForce)) {
-		return nil
+		return fmt.Errorf(confirm.UserDenied)
 	}
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Server is rebooting... "))
@@ -1051,7 +1051,7 @@ func RunServerResume(c *core.CommandConfig) error {
 	queryParams := listQueryParams.QueryParams
 
 	if !confirm.FAsk(c.Command.Command.InOrStdin(), "resume cube server", viper.GetBool(constants.ArgForce)) {
-		return nil
+		return fmt.Errorf(confirm.UserDenied)
 	}
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Server is resuming... "))
@@ -1343,7 +1343,7 @@ func DeleteAllServers(c *core.CommandConfig) error {
 	}
 
 	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete all the Servers", viper.GetBool(constants.ArgForce)) {
-		return nil
+		return fmt.Errorf(confirm.UserDenied)
 	}
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the Servers..."))
