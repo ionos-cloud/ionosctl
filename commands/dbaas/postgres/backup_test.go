@@ -179,27 +179,3 @@ func TestRunClusterBackupListErr(t *testing.T) {
 		assert.Error(t, err)
 	})
 }
-
-func TestGetBackupsCols(t *testing.T) {
-	var b bytes.Buffer
-	//	clierror.ErrAction = func() {}
-	w := bufio.NewWriter(&b)
-	viper.Set(core.GetFlagName("backup", constants.ArgCols), []string{"BackupId"})
-	getBackupCols(core.GetFlagName("backup", constants.ArgCols), w)
-	err := w.Flush()
-	assert.NoError(t, err)
-}
-
-// Muted because of .ErrAction usage
-//
-// func TestGetBackupsColsErr(t *testing.T) {
-// 	var b bytes.Buffer
-// //	clierror.ErrAction = func() {}
-// 	w := bufio.NewWriter(&b)
-// 	viper.Set(core.GetFlagName("backup", constants.ArgCols), []string{"Unknown"})
-// 	getBackupCols(core.GetFlagName("backup", constants.ArgCols), w)
-// 	err := w.Flush()
-// 	assert.NoError(t, err)
-// 	re := regexp.MustCompile(`unknown column Unknown`)
-// 	assert.True(t, re.Match(b.Bytes()))
-// }

@@ -2,13 +2,14 @@ package nodepool
 
 import (
 	"context"
-
-	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dataplatform/completer"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
-	ionoscloud "github.com/ionos-cloud/sdk-go-dataplatform"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -32,13 +33,27 @@ func NodepoolGetCmd() *core.Command {
 		CmdRun: func(c *core.CommandConfig) error {
 			clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
 			npId := viper.GetString(core.GetFlagName(c.NS, constants.FlagNodepoolId))
-			c.Printer.Verbose("Getting Nodepool %s...", npId)
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting Nodepool %s...", npId))
 
 			np, _, err := client.Must().DataplatformClient.DataPlatformNodePoolApi.ClustersNodepoolsFindById(c.Context, clusterId, npId).Execute()
 			if err != nil {
 				return err
 			}
-			return c.Printer.Print(getNodepoolsPrint(c, &[]ionoscloud.NodePoolResponseData{np}))
+
+			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+
+			npConverted, err := convertNodePoolToTable(np)
+			if err != nil {
+				return err
+			}
+
+			out, err := jsontabwriter.GenerateOutputPreconverted(np, npConverted, tabheaders.GetHeaders(allCols, defaultCols, cols))
+			if err != nil {
+				return err
+			}
+
+			fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+			return nil
 		},
 		InitClient: true,
 	})

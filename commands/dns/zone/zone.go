@@ -3,19 +3,30 @@ package zone
 import (
 	"context"
 	"fmt"
-	"strings"
 
-	"github.com/fatih/structs"
 	"github.com/gofrs/uuid/v5"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	dns "github.com/ionos-cloud/sdk-go-dns"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+)
+
+var (
+	allZoneJSONPaths = map[string]string{
+		"Id":          "id",
+		"Name":        "properties.name",
+		"Description": "properties.description",
+		"NameServers": "metadata.nameServers",
+		"Enabled":     "properties.enabled",
+		"State":       "metadata.state",
+	}
+
+	allCols = []string{"Id", "Name", "Description", "NameServers", "Enabled", "State"}
 )
 
 func ZoneCommand() *core.Command {
@@ -28,7 +39,7 @@ func ZoneCommand() *core.Command {
 		},
 	}
 
-	cmd.Command.PersistentFlags().StringSlice(constants.ArgCols, nil, printer.ColsMessage(allCols))
+	cmd.Command.PersistentFlags().StringSlice(constants.ArgCols, nil, tabheaders.ColsMessage(allCols))
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -41,64 +52,6 @@ func ZoneCommand() *core.Command {
 	cmd.AddCommand(ZonesFindByIdCmd())
 
 	return cmd
-}
-
-// Helper functions for printing zone
-
-func getZonesPrint(c *core.CommandConfig, data dns.ZoneReadList) printer.Result {
-	r := printer.Result{}
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-
-	if c != nil {
-		// TODO for r.OutputJSON: This loses all kinds of information in `-o json`, like `limit`, `offset`, etc. See https://github.com/ionos-cloud/ionosctl/issues/249
-		// But we are forced to do this otherwise we'd have this JSON output:
-		// {
-		//  "items": {
-		//    "items": [
-		// ...
-		r.OutputJSON = data.Items // TODO: See above comment. Remove `.Items` once JSON marshalling works as one would expect
-		r.KeyValue = makeZonePrintObj(*data.Items...)
-		r.Columns = printer.GetHeadersAllDefault(allCols, cols)
-	}
-	return r
-}
-
-func getZonePrint(c *core.CommandConfig, data dns.ZoneRead) printer.Result {
-	return getZonesPrint(c, dns.ZoneReadList{Items: &[]dns.ZoneRead{data}})
-}
-
-type zonePrint struct {
-	Id          string `json:"ID,omitempty"`
-	Name        string `json:"Name,omitempty"`
-	Description string `json:"Content,omitempty"`
-	NameServers string `json:"NameServers,omitempty"`
-	Enabled     bool   `json:"Enabled,omitempty"`
-	State       string `json:"State,omitempty"`
-}
-
-var allCols = structs.Names(zonePrint{})
-
-func makeZonePrintObj(data ...dns.ZoneRead) []map[string]interface{} {
-	out := make([]map[string]interface{}, 0, len(data))
-
-	for _, item := range data {
-		var printObj zonePrint
-		printObj.Id = *item.GetId()
-
-		if p, ok := item.GetPropertiesOk(); ok {
-			printObj.Enabled = *p.Enabled
-			printObj.Description = *p.Description
-			printObj.Name = *p.ZoneName
-		}
-		if m, ok := item.GetMetadataOk(); ok && m != nil {
-			printObj.State = string(*m.State)
-			printObj.NameServers = strings.Join(*m.Nameservers, ", ")
-		}
-
-		o := structs.Map(printObj)
-		out = append(out, o)
-	}
-	return out
 }
 
 // Zones returns all zones matching the given filters

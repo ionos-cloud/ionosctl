@@ -2,22 +2,63 @@ package commands
 
 import (
 	"context"
-	"errors"
-	"io"
+	"fmt"
 	"strings"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 
-	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/utils/clierror"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+)
+
+var (
+	allContractJSONPaths = map[string]string{
+		"ContractNumber":         "properties.contractNumber",
+		"Owner":                  "properties.owner",
+		"Status":                 "properties.status",
+		"RegistrationDomain":     "properties.regDomain",
+		"CoresPerServer":         "properties.resourceLimits.coresPerServer",
+		"CoresPerContract":       "properties.resourceLimits.coresPerContract",
+		"CoresProvisioned":       "properties.resourceLimits.coresProvisioned",
+		"RamPerServer":           "properties.resourceLimits.ramPerServer",
+		"RamPerContract":         "properties.resourceLimits.ramPerContract",
+		"RamProvisioned":         "properties.resourceLimits.ramProvisioned",
+		"HddLimitPerVolume":      "properties.resourceLimits.hddLimitPerVolume",
+		"HddLimitPerContract":    "properties.resourceLimits.hddLimitPerContract",
+		"HddVolumeProvisioned":   "properties.resourceLimits.hddVolumeProvisioned",
+		"SsdLimitPerVolume":      "properties.resourceLimits.ssdLimitPerVolume",
+		"SsdLimitPerContract":    "properties.resourceLimits.ssdLimitPerContract",
+		"SsdVolumeProvisioned":   "properties.resourceLimits.ssdVolumeProvisioned",
+		"DasVolumeProvisioned":   "properties.resourceLimits.dasVolumeProvisioned",
+		"ReservableIps":          "properties.resourceLimits.reservableIps",
+		"ReservedIpsOnContract":  "properties.resourceLimits.reservedIpsOnContract",
+		"ReservedIpsInUse":       "properties.resourceLimits.reserverIpsInUse",
+		"K8sClusterLimitTotal":   "k8sClusterLimitTotal",
+		"K8sClustersProvisioned": "k8sClustersProvisioned",
+		"NlbLimitTotal":          "properties.resourceLimits.nlbLimitTotal",
+		"NlbProvisioned":         "properties.resourceLimits.nlbProvisioned",
+		"NatGatewayLimitTotal":   "properties.resourceLimits.natGatewayLimitTotal",
+		"NatGatewayProvisioned":  "properties.resourceLimits.natGatewayProvisioned",
+	}
+
+	defaultContractCols = []string{"ContractNumber", "Owner", "Status", "RegistrationDomain"}
+	contractCoresCols   = []string{"ContractNumber", "Owner", "Status", "RegistrationDomain", "CoresPerServer", "CoresPerContract", "CoresProvisioned"}
+	contractRamCols     = []string{"ContractNumber", "Owner", "Status", "RegistrationDomain", "RamPerServer", "RamPerContract", "RamProvisioned"}
+	contractHddCols     = []string{"ContractNumber", "Owner", "Status", "RegistrationDomain", "HddLimitPerVolume", "HddLimitPerContract", "HddVolumeProvisioned"}
+	contractSsdCols     = []string{"ContractNumber", "Owner", "Status", "RegistrationDomain", "SsdLimitPerVolume", "SsdLimitPerContract", "SsdVolumeProvisioned"}
+	contractDasCols     = []string{"ContractNumber", "Owner", "Status", "RegistrationDomain", "DasVolumeProvisioned"}
+	contractIpsCols     = []string{"ContractNumber", "Owner", "Status", "RegistrationDomain", "ReservableIps", "ReservedIpsOnContract", "ReservedIpsInUse"}
+	contractK8sCols     = []string{"ContractNumber", "Owner", "Status", "RegistrationDomain", "K8sClusterLimitTotal", "K8sClustersProvisioned"}
+	contractNatCols     = []string{"ContractNumber", "Owner", "Status", "RegistrationDomain", "NatGatewayLimitTotal", "NatGatewayProvisioned"}
+	contractNlbCols     = []string{"ContractNumber", "Owner", "Status", "RegistrationDomain", "NlbLimitTotal", "NlbProvisioned"}
+	allContractCols     = []string{"ContractNumber", "Owner", "Status", "RegistrationDomain", "CoresPerServer", "CoresPerContract", "CoresProvisioned", "RamPerServer", "RamPerContract", "RamProvisioned",
+		"HddLimitPerVolume", "HddLimitPerContract", "HddVolumeProvisioned", "SsdLimitPerVolume", "SsdLimitPerContract", "SsdVolumeProvisioned", "DasVolumeProvisioned", "ReservableIps", "ReservedIpsOnContract",
+		"ReservedIpsInUse", "K8sClusterLimitTotal", "K8sClustersProvisioned", "NlbLimitTotal", "NlbProvisioned", "NatGatewayLimitTotal", "NatGatewayProvisioned"}
 )
 
 func ContractCmd() *core.Command {
@@ -32,7 +73,7 @@ func ContractCmd() *core.Command {
 		},
 	}
 	globalFlags := contractCmd.GlobalFlags()
-	globalFlags.StringSliceP(constants.ArgCols, "", defaultContractCols, printer.ColsMessage(allContractCols))
+	globalFlags.StringSliceP(constants.ArgCols, "", defaultContractCols, tabheaders.ColsMessage(allContractCols))
 	_ = viper.BindPFlag(core.GetFlagName(contractCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = contractCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allContractCols, cobra.ShellCompDirectiveNoFileComp
@@ -67,298 +108,54 @@ func RunContractGet(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
-	c.Printer.Verbose("Contract with resource limits: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceLimits)))
+
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
+		"Contract with resource limits: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceLimits))))
+
 	contractResource, resp, err := c.CloudApiV6Services.Contracts().Get(queryParams)
 	if resp != nil {
-		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
+
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+
+	var out string
+
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgResourceLimits)) {
 		switch strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceLimits))) {
 		case "CORES":
-			return c.Printer.Print(getContractPrint(c, getContract(contractResource), contractCoresCols))
+			out, err = jsontabwriter.GenerateOutput("items", allContractJSONPaths, contractResource.Contracts, contractCoresCols)
 		case "RAM":
-			return c.Printer.Print(getContractPrint(c, getContract(contractResource), contractRamCols))
+			out, err = jsontabwriter.GenerateOutput("items", allContractJSONPaths, contractResource.Contracts, contractRamCols)
 		case "HDD":
-			return c.Printer.Print(getContractPrint(c, getContract(contractResource), contractHddCols))
+			out, err = jsontabwriter.GenerateOutput("items", allContractJSONPaths, contractResource.Contracts, contractHddCols)
 		case "SSD":
-			return c.Printer.Print(getContractPrint(c, getContract(contractResource), contractSsdCols))
+			out, err = jsontabwriter.GenerateOutput("items", allContractJSONPaths, contractResource.Contracts, contractSsdCols)
 		case "DAS":
-			return c.Printer.Print(getContractPrint(c, getContract(contractResource), contractDasCols))
+			out, err = jsontabwriter.GenerateOutput("items", allContractJSONPaths, contractResource.Contracts, contractDasCols)
 		case "IPS":
-			return c.Printer.Print(getContractPrint(c, getContract(contractResource), contractIpsCols))
+			out, err = jsontabwriter.GenerateOutput("items", allContractJSONPaths, contractResource.Contracts, contractIpsCols)
 		case "K8S":
-			return c.Printer.Print(getContractPrint(c, getContract(contractResource), contractK8sCols))
+			out, err = jsontabwriter.GenerateOutput("items", allContractJSONPaths, contractResource.Contracts, contractK8sCols)
 		case "NLB":
-			return c.Printer.Print(getContractPrint(c, getContract(contractResource), contractNlbCols))
+			out, err = jsontabwriter.GenerateOutput("items", allContractJSONPaths, contractResource.Contracts, contractNlbCols)
 		case "NAT":
-			return c.Printer.Print(getContractPrint(c, getContract(contractResource), contractNatCols))
+			out, err = jsontabwriter.GenerateOutput("items", allContractJSONPaths, contractResource.Contracts, contractNatCols)
 		}
-	}
-	return c.Printer.Print(getContractPrint(c, getContract(contractResource), getContractCols(core.GetFlagName(c.Resource, constants.ArgCols), c.Printer.GetStderr())))
-}
-
-// Output Printing
-
-var (
-	defaultContractCols = []string{"ContractNumber", "Owner", "Status", "RegistrationDomain"}
-	contractCoresCols   = []string{"ContractNumber", "Owner", "Status", "RegistrationDomain", "CoresPerServer", "CoresPerContract", "CoresProvisioned"}
-	contractRamCols     = []string{"ContractNumber", "Owner", "Status", "RegistrationDomain", "RamPerServer", "RamPerContract", "RamProvisioned"}
-	contractHddCols     = []string{"ContractNumber", "Owner", "Status", "RegistrationDomain", "HddLimitPerVolume", "HddLimitPerContract", "HddVolumeProvisioned"}
-	contractSsdCols     = []string{"ContractNumber", "Owner", "Status", "RegistrationDomain", "SsdLimitPerVolume", "SsdLimitPerContract", "SsdVolumeProvisioned"}
-	contractDasCols     = []string{"ContractNumber", "Owner", "Status", "RegistrationDomain", "DasVolumeProvisioned"}
-	contractIpsCols     = []string{"ContractNumber", "Owner", "Status", "RegistrationDomain", "ReservableIps", "ReservedIpsOnContract", "ReservedIpsInUse"}
-	contractK8sCols     = []string{"ContractNumber", "Owner", "Status", "RegistrationDomain", "K8sClusterLimitTotal", "K8sClustersProvisioned"}
-	contractNatCols     = []string{"ContractNumber", "Owner", "Status", "RegistrationDomain", "NatGatewayLimitTotal", "NatGatewayProvisioned"}
-	contractNlbCols     = []string{"ContractNumber", "Owner", "Status", "RegistrationDomain", "NlbLimitTotal", "NlbProvisioned"}
-	allContractCols     = []string{"ContractNumber", "Owner", "Status", "RegistrationDomain", "CoresPerServer", "CoresPerContract", "CoresProvisioned", "RamPerServer", "RamPerContract", "RamProvisioned",
-		"HddLimitPerVolume", "HddLimitPerContract", "HddVolumeProvisioned", "SsdLimitPerVolume", "SsdLimitPerContract", "SsdVolumeProvisioned", "DasVolumeProvisioned", "ReservableIps", "ReservedIpsOnContract",
-		"ReservedIpsInUse", "K8sClusterLimitTotal", "K8sClustersProvisioned", "NlbLimitTotal", "NlbProvisioned", "NatGatewayLimitTotal", "NatGatewayProvisioned"}
-)
-
-type ContractPrint struct {
-	ContractNumber     int64  `json:"ContractNumber,omitempty"`
-	Owner              string `json:"Owner,omitempty"`
-	Status             string `json:"Status,omitempty"`
-	RegistrationDomain string `json:"RegistrationDomain,omitempty"`
-	// Contract Resource Limits
-	CoresPerServer         int32 `json:"CoresPerServer,omitempty"`
-	CoresPerContract       int32 `json:"CoresPerContract,omitempty"`
-	CoresProvisioned       int32 `json:"CoresProvisioned,omitempty"`
-	RamPerServer           int32 `json:"RamPerServer,omitempty"`
-	RamPerContract         int32 `json:"RamPerContract,omitempty"`
-	RamProvisioned         int32 `json:"RamProvisioned,omitempty"`
-	HddLimitPerVolume      int64 `json:"HddLimitPerVolume,omitempty"`
-	HddLimitPerContract    int64 `json:"HddLimitPerContract,omitempty"`
-	HddVolumeProvisioned   int64 `json:"HddVolumeProvisioned,omitempty"`
-	SsdLimitPerVolume      int64 `json:"SsdLimitPerVolume,omitempty"`
-	SsdLimitPerContract    int64 `json:"SsdLimitPerContract,omitempty"`
-	SsdVolumeProvisioned   int64 `json:"SsdVolumeProvisioned,omitempty"`
-	DasVolumeProvisioned   int64 `json:"DasVolumeProvisioned,omitempty"`
-	ReservableIps          int32 `json:"ReservableIps,omitempty"`
-	ReservedIpsOnContract  int32 `json:"ReservedIpsOnContract,omitempty"`
-	ReservedIpsInUse       int32 `json:"ReservedIpsInUse,omitempty"`
-	K8sClusterLimitTotal   int32 `json:"K8sClusterLimitTotal,omitempty"`
-	K8sClustersProvisioned int32 `json:"K8sClustersProvisioned,omitempty"`
-	NlbLimitTotal          int32 `json:"NlbLimitTotal,omitempty"`
-	NlbProvisioned         int32 `json:"NlbProvisioned,omitempty"`
-	NatGatewayLimitTotal   int32 `json:"NatGatewayLimitTotal,omitempty"`
-	NatGatewayProvisioned  int32 `json:"NatGatewayProvisioned,omitempty"`
-}
-
-func getContractPrint(c *core.CommandConfig, cs []resources.Contract, cols []string) printer.Result {
-	r := printer.Result{}
-	if c != nil {
-		if cs != nil {
-			r.OutputJSON = cs
-			r.KeyValue = getContractsKVMaps(cs)
-			r.Columns = cols
-		}
-	}
-	return r
-}
-
-// TODO: Remove this func, use the 'allCols' behaviour from e.g. dbaas/mongo/cluster.go
-func getContractCols(flagName string, outErr io.Writer) []string {
-	if viper.IsSet(flagName) {
-		var contractCols []string
-		columnsMap := map[string]string{
-			"ContractNumber":         "ContractNumber",
-			"Owner":                  "Owner",
-			"Status":                 "Status",
-			"RegistrationDomain":     "RegistrationDomain",
-			"CoresPerServer":         "CoresPerServer",
-			"CoresPerContract":       "CoresPerContract",
-			"CoresProvisioned":       "CoresProvisioned",
-			"RamPerServer":           "RamPerServer",
-			"RamPerContract":         "RamPerContract",
-			"RamProvisioned":         "RamProvisioned",
-			"HddLimitPerVolume":      "HddLimitPerVolume",
-			"HddLimitPerContract":    "HddLimitPerContract",
-			"HddVolumeProvisioned":   "HddVolumeProvisioned",
-			"SsdLimitPerVolume":      "SsdLimitPerVolume",
-			"SsdLimitPerContract":    "SsdLimitPerContract",
-			"SsdVolumeProvisioned":   "SsdVolumeProvisioned",
-			"DasVolumeProvisioned":   "DasVolumeProvisioned",
-			"ReservableIps":          "ReservableIps",
-			"ReservedIpsOnContract":  "ReservedIpsOnContract",
-			"ReservedIpsInUse":       "ReservedIpsInUse",
-			"K8sClusterLimitTotal":   "K8sClusterLimitTotal",
-			"K8sClustersProvisioned": "K8sClustersProvisioned",
-			"NlbLimitTotal":          "NlbLimitTotal",
-			"NlbProvisioned":         "NlbProvisioned",
-			"NatGatewayLimitTotal":   "NatGatewayLimitTotal",
-			"NatGatewayProvisioned":  "NatGatewayProvisioned",
-		}
-		for _, k := range viper.GetStringSlice(flagName) {
-			col := columnsMap[k]
-			if col != "" {
-				contractCols = append(contractCols, col)
-			} else {
-				clierror.CheckErrorAndDie(errors.New("unknown column "+k), outErr)
-			}
-		}
-		return contractCols
 	} else {
-		return defaultContractCols
+		out, err = jsontabwriter.GenerateOutput("items", allContractJSONPaths, contractResource.Contracts,
+			tabheaders.GetHeaders(allContractCols, defaultContractCols, cols))
 	}
-}
+	if err != nil {
+		return err
+	}
 
-func getContract(c resources.Contracts) []resources.Contract {
-	cs := make([]resources.Contract, 0)
-	if items, ok := c.GetItemsOk(); ok && items != nil {
-		for _, item := range *items {
-			cs = append(cs, resources.Contract{Contract: item})
-		}
-	}
-	return cs
-}
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
 
-func getContractsKVMaps(cs []resources.Contract) []map[string]interface{} {
-	out := make([]map[string]interface{}, 0, len(cs))
-	for _, c := range cs {
-		o := getContractKVMap(c)
-		out = append(out, o)
-	}
-	return out
-}
-
-func getContractKVMap(c resources.Contract) map[string]interface{} {
-	var cPrint ContractPrint
-	if properties, ok := c.GetPropertiesOk(); ok && properties != nil {
-		if no, ok := properties.GetContractNumberOk(); ok && no != nil {
-			cPrint.ContractNumber = *no
-		}
-		if owner, ok := properties.GetOwnerOk(); ok && owner != nil {
-			cPrint.Owner = *owner
-		}
-		if status, ok := properties.GetStatusOk(); ok && status != nil {
-			cPrint.Status = *status
-		}
-		if regDomain, ok := properties.GetRegDomainOk(); ok && regDomain != nil {
-			cPrint.RegistrationDomain = *regDomain
-		}
-		if limits, ok := properties.GetResourceLimitsOk(); ok && limits != nil {
-			cPrint = getResourceLimits(limits, cPrint)
-		}
-	}
-	return structs.Map(cPrint)
-}
-
-func getResourceLimits(limits *ionoscloud.ResourceLimits, cPrint ContractPrint) ContractPrint {
-	cPrint = getResourceLimitsCores(limits, cPrint)
-	cPrint = getResourceLimitsRam(limits, cPrint)
-	cPrint = getResourceLimitsHDD(limits, cPrint)
-	cPrint = getResourceLimitsSSD(limits, cPrint)
-	cPrint = getResourceLimitsDAS(limits, cPrint)
-	cPrint = getResourceLimitsIPS(limits, cPrint)
-	cPrint = getResourceLimitsK8S(limits, cPrint)
-	cPrint = getResourceLimitsNatGateway(limits, cPrint)
-	cPrint = getResourceLimitsNlb(limits, cPrint)
-	return cPrint
-}
-
-func getResourceLimitsCores(limits *ionoscloud.ResourceLimits, cPrint ContractPrint) ContractPrint {
-	if coresServer, ok := limits.GetCoresPerServerOk(); ok && coresServer != nil {
-		cPrint.CoresPerServer = *coresServer
-	}
-	if coresContract, ok := limits.GetCoresPerContractOk(); ok && coresContract != nil {
-		cPrint.CoresPerContract = *coresContract
-	}
-	if coresProvisioned, ok := limits.GetCoresProvisionedOk(); ok && coresProvisioned != nil {
-		cPrint.CoresProvisioned = *coresProvisioned
-	}
-	return cPrint
-}
-
-func getResourceLimitsRam(limits *ionoscloud.ResourceLimits, cPrint ContractPrint) ContractPrint {
-	if ramServer, ok := limits.GetRamPerServerOk(); ok && ramServer != nil {
-		cPrint.RamPerServer = *ramServer
-	}
-	if ramContract, ok := limits.GetRamPerContractOk(); ok && ramContract != nil {
-		cPrint.RamPerContract = *ramContract
-	}
-	if ramProvisioned, ok := limits.GetRamProvisionedOk(); ok && ramProvisioned != nil {
-		cPrint.RamProvisioned = *ramProvisioned
-	}
-	return cPrint
-}
-
-func getResourceLimitsHDD(limits *ionoscloud.ResourceLimits, cPrint ContractPrint) ContractPrint {
-	if hddVolume, ok := limits.GetHddLimitPerVolumeOk(); ok && hddVolume != nil {
-		cPrint.HddLimitPerVolume = *hddVolume
-	}
-	if hddVolumeContract, ok := limits.GetHddLimitPerContractOk(); ok && hddVolumeContract != nil {
-		cPrint.HddLimitPerContract = *hddVolumeContract
-	}
-	if hddVolumeProvisioned, ok := limits.GetHddVolumeProvisionedOk(); ok && hddVolumeProvisioned != nil {
-		cPrint.HddVolumeProvisioned = *hddVolumeProvisioned
-	}
-	return cPrint
-}
-
-func getResourceLimitsSSD(limits *ionoscloud.ResourceLimits, cPrint ContractPrint) ContractPrint {
-	if ssdVolume, ok := limits.GetSsdLimitPerVolumeOk(); ok && ssdVolume != nil {
-		cPrint.SsdLimitPerVolume = *ssdVolume
-	}
-	if ssdVolumeContract, ok := limits.GetSsdLimitPerContractOk(); ok && ssdVolumeContract != nil {
-		cPrint.SsdLimitPerContract = *ssdVolumeContract
-	}
-	if ssdVolumeProvisioned, ok := limits.GetSsdVolumeProvisionedOk(); ok && ssdVolumeProvisioned != nil {
-		cPrint.SsdVolumeProvisioned = *ssdVolumeProvisioned
-	}
-	return cPrint
-}
-
-func getResourceLimitsDAS(limits *ionoscloud.ResourceLimits, cPrint ContractPrint) ContractPrint {
-	if dasVolume, ok := limits.GetDasVolumeProvisionedOk(); ok && dasVolume != nil {
-		cPrint.DasVolumeProvisioned = *dasVolume
-	}
-	return cPrint
-}
-
-func getResourceLimitsIPS(limits *ionoscloud.ResourceLimits, cPrint ContractPrint) ContractPrint {
-	if reservableIps, ok := limits.GetReservableIpsOk(); ok && reservableIps != nil {
-		cPrint.ReservableIps = *reservableIps
-	}
-	if reservedIpsContract, ok := limits.GetReservedIpsOnContractOk(); ok && reservedIpsContract != nil {
-		cPrint.ReservedIpsOnContract = *reservedIpsContract
-	}
-	if reservedIpsUse, ok := limits.GetReservedIpsInUseOk(); ok && reservedIpsUse != nil {
-		cPrint.ReservedIpsInUse = *reservedIpsUse
-	}
-	return cPrint
-}
-
-func getResourceLimitsK8S(limits *ionoscloud.ResourceLimits, cPrint ContractPrint) ContractPrint {
-	if clusterTotal, ok := limits.GetK8sClusterLimitTotalOk(); ok && clusterTotal != nil {
-		cPrint.K8sClusterLimitTotal = *clusterTotal
-	}
-	if clusterProvisioned, ok := limits.GetK8sClustersProvisionedOk(); ok && clusterProvisioned != nil {
-		cPrint.K8sClustersProvisioned = *clusterProvisioned
-	}
-	return cPrint
-}
-
-func getResourceLimitsNatGateway(limits *ionoscloud.ResourceLimits, cPrint ContractPrint) ContractPrint {
-	if natTotal, ok := limits.GetNatGatewayLimitTotalOk(); ok && natTotal != nil {
-		cPrint.NatGatewayLimitTotal = *natTotal
-	}
-	if natProvisioned, ok := limits.GetNatGatewayProvisionedOk(); ok && natProvisioned != nil {
-		cPrint.NatGatewayProvisioned = *natProvisioned
-	}
-	return cPrint
-}
-
-func getResourceLimitsNlb(limits *ionoscloud.ResourceLimits, cPrint ContractPrint) ContractPrint {
-	if nlbTotal, ok := limits.GetNlbLimitTotalOk(); ok && nlbTotal != nil {
-		cPrint.NlbLimitTotal = *nlbTotal
-	}
-	if nlbProvisioned, ok := limits.GetNlbProvisionedOk(); ok && nlbProvisioned != nil {
-		cPrint.NlbProvisioned = *nlbProvisioned
-	}
-	return cPrint
+	return nil
 }

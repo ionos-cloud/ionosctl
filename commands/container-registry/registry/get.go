@@ -2,11 +2,12 @@ package registry
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
-	ionoscloud "github.com/ionos-cloud/sdk-go-container-registry"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"github.com/spf13/cobra"
 )
 
@@ -33,7 +34,7 @@ func RegGetCmd() *core.Command {
 		},
 	)
 
-	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, printer.ColsMessage(allCols))
+	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, tabheaders.ColsMessage(allCols))
 	_ = cmd.Command.RegisterFlagCompletionFunc(
 		constants.ArgCols,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -48,11 +49,21 @@ func CmdGet(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	reg, _, err := c.ContainerRegistryServices.Registry().Get(id)
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getRegistryPrint(nil, c, &[]ionoscloud.RegistryResponse{reg}, false))
+
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+
+	out, err := jsontabwriter.GenerateOutput("", allJSONPaths, reg, tabheaders.GetHeadersAllDefault(allCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+	return nil
 }
 
 func PreCmdGet(c *core.PreCommandConfig) error {

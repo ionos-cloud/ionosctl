@@ -2,10 +2,12 @@ package registry
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -30,7 +32,7 @@ func RegListCmd() *core.Command {
 		"Response filter to list only the Registries that contain the specified name in the DisplayName field. The value is case insensitive",
 	)
 
-	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, printer.ColsMessage(allCols))
+	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, tabheaders.ColsMessage(allCols))
 	_ = cmd.Command.RegisterFlagCompletionFunc(
 		constants.ArgCols,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -42,12 +44,22 @@ func RegListCmd() *core.Command {
 
 func CmdList(c *core.CommandConfig) error {
 	if viper.IsSet(core.GetFlagName(c.NS, FlagName)) {
-		c.Printer.Verbose("Filtering after Registry Name: %v", viper.GetString(core.GetFlagName(c.NS, "name")))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
+			"Filtering after Registry Name: %v", viper.GetString(core.GetFlagName(c.NS, "name"))))
 	}
+
 	regs, _, err := c.ContainerRegistryServices.Registry().List(viper.GetString(core.GetFlagName(c.NS, "name")))
 	if err != nil {
 		return err
 	}
-	list := regs.GetItems()
-	return c.Printer.Print(getRegistryPrint(nil, c, list, false))
+
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+
+	out, err := jsontabwriter.GenerateOutput("items", allJSONPaths, regs, tabheaders.GetHeadersAllDefault(allCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+	return nil
 }

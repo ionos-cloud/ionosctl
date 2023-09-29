@@ -4,22 +4,43 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"os"
 	"strings"
 
-	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
+	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+)
+
+var (
+	allFirewallRuleJSONPaths = map[string]string{
+		"FirewallRuleId": "id",
+		"Name":           "properties.name",
+		"Protocol":       "properties.protocol",
+		"SourceMac":      "properties.sourceMac",
+		"SourceIP":       "properties.sourceIp",
+		"DestinationIP":  "properties.destinationIp",
+		"PortRangeStart": "properties.portRangeStart",
+		"PortRangeEnd":   "properties.portRangeEnd",
+		"IcmpCode":       "properties.icmpCode",
+		"IcmpType":       "properties.icmpType",
+		"Direction":      "properties.type",
+		"State":          "metadata.state",
+	}
+
+	defaultFirewallRuleCols = []string{"FirewallRuleId", "Name", "Protocol", "PortRangeStart", "PortRangeEnd", "Direction", "State"}
+	allFirewallRuleCols     = []string{"FirewallRuleId", "Name", "Protocol", "SourceMac", "SourceIP", "DestinationIP", "PortRangeStart", "PortRangeEnd",
+		"IcmpCode", "IcmpType", "Direction", "State"}
 )
 
 func FirewallruleCmd() *core.Command {
@@ -34,7 +55,7 @@ func FirewallruleCmd() *core.Command {
 		},
 	}
 	globalFlags := firewallRuleCmd.GlobalFlags()
-	globalFlags.StringSliceP(constants.ArgCols, "", defaultFirewallRuleCols, printer.ColsMessage(allFirewallRuleCols))
+	globalFlags.StringSliceP(constants.ArgCols, "", defaultFirewallRuleCols, tabheaders.ColsMessage(allFirewallRuleCols))
 	_ = viper.BindPFlag(core.GetFlagName(firewallRuleCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = firewallRuleCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allFirewallRuleCols, cobra.ShellCompDirectiveNoFileComp
@@ -57,7 +78,7 @@ func FirewallruleCmd() *core.Command {
 	})
 	list.AddUUIDFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
 	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.DataCentersIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 	list.AddUUIDFlag(cloudapiv6.ArgServerId, "", "", cloudapiv6.ServerId, core.RequiredFlagOption())
 	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -98,7 +119,7 @@ func FirewallruleCmd() *core.Command {
 	})
 	get.AddUUIDFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
 	_ = get.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.DataCentersIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 	get.AddUUIDFlag(cloudapiv6.ArgServerId, "", "", cloudapiv6.ServerId, core.RequiredFlagOption())
 	_ = get.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -165,7 +186,7 @@ Required values to run command:
 	create.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for Firewall Rule creation [seconds]")
 	create.AddUUIDFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
 	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.DataCentersIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddUUIDFlag(cloudapiv6.ArgServerId, "", "", cloudapiv6.ServerId, core.RequiredFlagOption())
 	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -225,7 +246,7 @@ Required values to run command:
 	update.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for Firewall Rule update [seconds]")
 	update.AddUUIDFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
 	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.DataCentersIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddUUIDFlag(cloudapiv6.ArgServerId, "", "", cloudapiv6.ServerId, core.RequiredFlagOption())
 	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -265,7 +286,7 @@ Required values to run command:
 	})
 	deleteCmd.AddUUIDFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.DataCentersIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddUUIDFlag(cloudapiv6.ArgServerId, "", "", cloudapiv6.ServerId, core.RequiredFlagOption())
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -326,6 +347,7 @@ func RunFirewallRuleList(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	firewallRules, resp, err := c.CloudApiV6Services.FirewallRules().List(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
@@ -333,12 +355,23 @@ func RunFirewallRuleList(c *core.CommandConfig) error {
 		listQueryParams,
 	)
 	if resp != nil {
-		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getFirewallRulePrint(nil, c, getFirewallRules(firewallRules)))
+
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+
+	out, err := jsontabwriter.GenerateOutput("items", allFirewallRuleJSONPaths, firewallRules.FirewallRules,
+		tabheaders.GetHeaders(allFirewallRuleCols, defaultFirewallRuleCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+
+	return nil
 }
 
 func RunFirewallRuleGet(c *core.CommandConfig) error {
@@ -346,8 +379,12 @@ func RunFirewallRuleGet(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
-	c.Printer.Verbose("Firewall Rule with id: %v is getting... ", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFirewallRuleId)))
+
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
+		"Firewall Rule with id: %v is getting... ", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFirewallRuleId))))
+
 	firewallRule, resp, err := c.CloudApiV6Services.FirewallRules().Get(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
@@ -356,12 +393,23 @@ func RunFirewallRuleGet(c *core.CommandConfig) error {
 		queryParams,
 	)
 	if resp != nil {
-		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getFirewallRulePrint(nil, c, getFirewallRule(firewallRule)))
+
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+
+	out, err := jsontabwriter.GenerateOutput("", allFirewallRuleJSONPaths, firewallRule.FirewallRule,
+		tabheaders.GetHeaders(allFirewallRuleCols, defaultFirewallRuleCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+
+	return nil
 }
 
 func RunFirewallRuleCreate(c *core.CommandConfig) error {
@@ -369,14 +417,18 @@ func RunFirewallRuleCreate(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
 	properties := getFirewallRulePropertiesSet(c)
+
 	if !properties.HasName() {
 		properties.SetName(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName)))
 	}
+
 	if !properties.HasType() {
 		properties.SetType(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDirection)))
 	}
+
 	input := resources.FirewallRule{
 		FirewallRule: ionoscloud.FirewallRule{
 			Properties: &properties.FirewallruleProperties,
@@ -389,16 +441,28 @@ func RunFirewallRuleCreate(c *core.CommandConfig) error {
 		input,
 		queryParams,
 	)
-	if resp != nil && printer.GetId(resp) != "" {
-		c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
+	if resp != nil && utils.GetId(resp) != "" {
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, utils.GetId(resp), resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
-	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, utils.GetId(resp)); err != nil {
 		return err
 	}
-	return c.Printer.Print(getFirewallRulePrint(resp, c, getFirewallRule(firewallRule)))
+
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+
+	out, err := jsontabwriter.GenerateOutput("", allFirewallRuleJSONPaths, firewallRule.FirewallRule,
+		tabheaders.GetHeaders(allFirewallRuleCols, defaultFirewallRuleCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+
+	return nil
 }
 
 func RunFirewallRuleUpdate(c *core.CommandConfig) error {
@@ -406,6 +470,7 @@ func RunFirewallRuleUpdate(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
 	firewallRule, resp, err := c.CloudApiV6Services.FirewallRules().Update(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
@@ -415,16 +480,28 @@ func RunFirewallRuleUpdate(c *core.CommandConfig) error {
 		getFirewallRulePropertiesSet(c),
 		queryParams,
 	)
-	if resp != nil && printer.GetId(resp) != "" {
-		c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
+	if resp != nil && utils.GetId(resp) != "" {
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, utils.GetId(resp), resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
-	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, utils.GetId(resp)); err != nil {
 		return err
 	}
-	return c.Printer.Print(getFirewallRulePrint(resp, c, getFirewallRule(firewallRule)))
+
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+
+	out, err := jsontabwriter.GenerateOutput("", allFirewallRuleJSONPaths, firewallRule.FirewallRule,
+		tabheaders.GetHeaders(allFirewallRuleCols, defaultFirewallRuleCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+
+	return nil
 }
 
 func RunFirewallRuleDelete(c *core.CommandConfig) error {
@@ -432,88 +509,119 @@ func RunFirewallRuleDelete(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
 	datacenterId := viper.GetString(core.GetFlagName(c.Resource, cloudapiv6.ArgDataCenterId))
 	serverId := viper.GetString(core.GetFlagName(c.Resource, cloudapiv6.ArgServerId))
 	nicId := viper.GetString(core.GetFlagName(c.Resource, cloudapiv6.ArgNicId))
 	fruleId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFirewallRuleId))
+
 	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
 		if err := DeleteAllFirewallRuses(c); err != nil {
 			return err
 		}
-		return c.Printer.Print(printer.Result{Resource: c.Resource, Verb: c.Verb})
-	} else {
-		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete firewall rule"); err != nil {
-			return err
-		}
-		c.Printer.Verbose("Starting deleting Firewall Rule with id: %v...", fruleId)
-		resp, err := c.CloudApiV6Services.FirewallRules().Delete(datacenterId, serverId, nicId, fruleId, queryParams)
-		if resp != nil && printer.GetId(resp) != "" {
-			c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
-		}
-		if err != nil {
-			return err
-		}
-		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-			return err
-		}
-		return c.Printer.Print(getFirewallRulePrint(resp, c, nil))
+
+		return nil
 	}
+
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete firewall rule", viper.GetBool(constants.ArgForce)) {
+		return fmt.Errorf(confirm.UserDenied)
+	}
+
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Starting deleting Firewall Rule with id: %v...", fruleId))
+
+	resp, err := c.CloudApiV6Services.FirewallRules().Delete(datacenterId, serverId, nicId, fruleId, queryParams)
+	if resp != nil && utils.GetId(resp) != "" {
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, utils.GetId(resp), resp.RequestTime))
+	}
+	if err != nil {
+		return err
+	}
+
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, utils.GetId(resp)); err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Firewall Rule successfully deleted"))
+
+	return nil
+
 }
 
 // Get Firewall Rule Properties set used for create and update commands
 func getFirewallRulePropertiesSet(c *core.CommandConfig) resources.FirewallRuleProperties {
 	properties := resources.FirewallRuleProperties{}
+
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgName)) {
 		name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
 		properties.SetName(name)
-		c.Printer.Verbose("Property Name set: %v", name)
+
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property Name set: %v", name))
 	}
+
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgProtocol)) {
 		protocol := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgProtocol))
 		properties.SetProtocol(protocol)
-		c.Printer.Verbose("Property Protocol set: %v", protocol)
+
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property Protocol set: %v", protocol))
 	}
+
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgSourceIp)) {
 		sourceIp := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSourceIp))
 		properties.SetSourceIp(sourceIp)
-		c.Printer.Verbose("Property SourceIp set: %v", sourceIp)
+
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property SourceIp set: %v", sourceIp))
 	}
+
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgSourceMac)) {
 		sourceMac := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSourceMac))
 		properties.SetSourceMac(sourceMac)
-		c.Printer.Verbose("Property SourceMac set: %v", sourceMac)
+
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property SourceMac set: %v", sourceMac))
 	}
+
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgDestinationIp)) {
 		targetIp := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDestinationIp))
 		properties.SetTargetIp(targetIp)
-		c.Printer.Verbose("Property TargetIp/DestinationIp set: %v", targetIp)
+
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property TargetIp/DestinationIp set: %v", targetIp))
 	}
+
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgIcmpCode)) {
 		icmpCode := viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgIcmpCode))
 		properties.SetIcmpCode(icmpCode)
-		c.Printer.Verbose("Property IcmpCode set: %v", icmpCode)
+
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property IcmpCode set: %v", icmpCode))
 	}
+
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgIcmpType)) {
 		icmpType := viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgIcmpType))
 		properties.SetIcmpType(icmpType)
-		c.Printer.Verbose("Property IcmpType set: %v", icmpType)
+
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property IcmpType set: %v", icmpType))
 	}
+
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgPortRangeStart)) {
 		portRangeStart := viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgPortRangeStart))
 		properties.SetPortRangeStart(portRangeStart)
-		c.Printer.Verbose("Property PortRangeStart set: %v", portRangeStart)
+
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property PortRangeStart set: %v", portRangeStart))
 	}
+
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgPortRangeEnd)) {
 		portRangeEnd := viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgPortRangeEnd))
 		properties.SetPortRangeEnd(portRangeEnd)
-		c.Printer.Verbose("Property PortRangeEnd set: %v", portRangeEnd)
+
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property PortRangeEnd set: %v", portRangeEnd))
 	}
+
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgDirection)) {
 		firewallruleType := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDirection))
 		properties.SetType(strings.ToUpper(firewallruleType))
-		c.Printer.Verbose("Property Type/Direction set: %v", firewallruleType)
+
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property Type/Direction set: %v", firewallruleType))
 	}
+
 	return properties
 }
 
@@ -522,180 +630,86 @@ func DeleteAllFirewallRuses(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
 	datacenterId := viper.GetString(core.GetFlagName(c.Resource, cloudapiv6.ArgDataCenterId))
 	serverId := viper.GetString(core.GetFlagName(c.Resource, cloudapiv6.ArgServerId))
 	nicId := viper.GetString(core.GetFlagName(c.Resource, cloudapiv6.ArgNicId))
-	c.Printer.Verbose("Datacenter ID: %v", datacenterId)
-	c.Printer.Verbose("Server ID: %v", serverId)
-	c.Printer.Verbose("NIC with ID: %v", nicId)
-	c.Printer.Verbose("Getting Firewall Rules...")
+
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.DatacenterId, datacenterId))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Server ID: %v", serverId))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("NIC with ID: %v", nicId))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting Firewall Rules..."))
+
 	firewallRules, resp, err := c.CloudApiV6Services.FirewallRules().List(datacenterId, serverId, nicId, cloudapiv6.ParentResourceListQueryParams)
 	if err != nil {
 		return err
 	}
-	if firewallRulesItems, ok := firewallRules.GetItemsOk(); ok && firewallRulesItems != nil {
-		if len(*firewallRulesItems) > 0 {
-			_ = c.Printer.Warn("Firewall Rules to be deleted:")
-			for _, firewall := range *firewallRulesItems {
-				delIdAndName := ""
-				if id, ok := firewall.GetIdOk(); ok && id != nil {
-					delIdAndName += "Firewall Rule Id: " + *id
-				}
-				if properties, ok := firewall.GetPropertiesOk(); ok && properties != nil {
-					if name, ok := properties.GetNameOk(); ok && name != nil {
-						delIdAndName += " Firewall Rule Name: " + *name
-					}
-				}
-				_ = c.Printer.Warn(delIdAndName)
+
+	firewallRulesItems, ok := firewallRules.GetItemsOk()
+	if !ok || firewallRulesItems == nil {
+		return fmt.Errorf("could not get items of Firewall Rules")
+	}
+
+	if len(*firewallRulesItems) <= 0 {
+		return fmt.Errorf("no Firewall Rule found")
+	}
+
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Firewall Rules to be deleted:"))
+
+	for _, firewall := range *firewallRulesItems {
+		delIdAndName := ""
+
+		if id, ok := firewall.GetIdOk(); ok && id != nil {
+			delIdAndName += "Firewall Rule Id: " + *id
+		}
+
+		if properties, ok := firewall.GetPropertiesOk(); ok && properties != nil {
+			if name, ok := properties.GetNameOk(); ok && name != nil {
+				delIdAndName += " Firewall Rule Name: " + *name
 			}
-			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Firewall Rules"); err != nil {
-				return err
-			}
-			c.Printer.Verbose("Deleting all the Firewall Rules...")
-			var multiErr error
-			for _, firewall := range *firewallRulesItems {
-				if id, ok := firewall.GetIdOk(); ok && id != nil {
-					c.Printer.Verbose("Starting deleting Firewall Rule with id: %v...", *id)
-					resp, err = c.CloudApiV6Services.FirewallRules().Delete(datacenterId, serverId, nicId, *id, queryParams)
-					if resp != nil && printer.GetId(resp) != "" {
-						c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
-					}
-					if err != nil {
-						multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
-						continue
-					} else {
-						_ = c.Printer.Warn(fmt.Sprintf(constants.MessageDeletingAll, c.Resource, *id))
-					}
-					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-						multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *id, err))
-						continue
-					}
-				}
-			}
-			if multiErr != nil {
-				return multiErr
-			}
-			return nil
-		} else {
-			return errors.New("no Firewall Rule found")
 		}
-	} else {
-		return errors.New("could not get items of Firewall Rules")
-	}
-}
 
-// Output Printing
-
-var (
-	defaultFirewallRuleCols = []string{"FirewallRuleId", "Name", "Protocol", "PortRangeStart", "PortRangeEnd", "Direction", "State"}
-	allFirewallRuleCols     = []string{"FirewallRuleId", "Name", "Protocol", "SourceMac", "SourceIP", "DestinationIP", "PortRangeStart", "PortRangeEnd",
-		"IcmpCode", "IcmpType", "Direction", "State"}
-)
-
-type FirewallRulePrint struct {
-	FirewallRuleId string `json:"FirewallRuleId,omitempty"`
-	Name           string `json:"Name,omitempty"`
-	Protocol       string `json:"Protocol,omitempty"`
-	SourceMac      string `json:"SourceMac,omitempty"`
-	SourceIP       string `json:"SourceIP,omitempty"`
-	DestinationIP  string `json:"DestinationIP,omitempty"`
-	PortRangeStart int32  `json:"PortRangeStart,omitempty"`
-	PortRangeEnd   int32  `json:"PortRangeEnd,omitempty"`
-	IcmpCode       int32  `json:"IcmpCode,omitempty"`
-	IcmpType       int32  `json:"IcmpType,omitempty"`
-	Direction      string `json:"Direction,omitempty"`
-	State          string `json:"State,omitempty"`
-}
-
-func getFirewallRulePrint(resp *resources.Response, c *core.CommandConfig, rule []resources.FirewallRule) printer.Result {
-	var r printer.Result
-	if c != nil {
-		if resp != nil {
-			r.ApiResponse = resp
-			r.Resource = c.Resource
-			r.Verb = c.Verb
-			r.WaitForRequest = viper.GetBool(core.GetFlagName(c.NS, constants.ArgWaitForRequest))
-		}
-		if rule != nil {
-			r.OutputJSON = rule
-			r.KeyValue = getFirewallRulesKVMaps(rule)
-			r.Columns = printer.GetHeaders(allFirewallRuleCols, defaultFirewallRuleCols, viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)))
-		}
+		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
-	return r
-}
 
-func getFirewallRules(firewallRules resources.FirewallRules) []resources.FirewallRule {
-	ls := make([]resources.FirewallRule, 0)
-	if items, ok := firewallRules.GetItemsOk(); ok && items != nil {
-		for _, s := range *items {
-			ls = append(ls, resources.FirewallRule{FirewallRule: s})
-		}
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete all the Firewall Rules", viper.GetBool(constants.ArgForce)) {
+		return fmt.Errorf(confirm.UserDenied)
 	}
-	return ls
-}
 
-func getFirewallRule(firewallRule *resources.FirewallRule) []resources.FirewallRule {
-	ss := make([]resources.FirewallRule, 0)
-	if firewallRule != nil {
-		ss = append(ss, resources.FirewallRule{FirewallRule: firewallRule.FirewallRule})
-	}
-	return ss
-}
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the Firewall Rules..."))
 
-func getFirewallRulesKVMaps(ls []resources.FirewallRule) []map[string]interface{} {
-	out := make([]map[string]interface{}, 0, len(ls))
-	if len(ls) > 0 {
-		for _, l := range ls {
-			o := getFirewallRuleKVMap(l)
-			out = append(out, o)
+	var multiErr error
+	for _, firewall := range *firewallRulesItems {
+		id, ok := firewall.GetIdOk()
+		if !ok || id == nil {
+			continue
 		}
-	}
-	return out
-}
 
-func getFirewallRuleKVMap(l resources.FirewallRule) map[string]interface{} {
-	var firewallRulePrint FirewallRulePrint
-	if id, ok := l.GetIdOk(); ok && id != nil {
-		firewallRulePrint.FirewallRuleId = *id
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Starting deleting Firewall Rule with id: %v...", *id))
+
+		resp, err = c.CloudApiV6Services.FirewallRules().Delete(datacenterId, serverId, nicId, *id, queryParams)
+		if resp != nil && utils.GetId(resp) != "" {
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, utils.GetId(resp), resp.RequestTime))
+		}
+		if err != nil {
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
+			continue
+		}
+
+		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(constants.MessageDeletingAll, c.Resource, *id))
+
+		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, utils.GetId(resp)); err != nil {
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *id, err))
+			continue
+		}
+
 	}
-	if properties, ok := l.GetPropertiesOk(); ok && properties != nil {
-		if name, ok := properties.GetNameOk(); ok && name != nil {
-			firewallRulePrint.Name = *name
-		}
-		if protocol, ok := properties.GetProtocolOk(); ok && protocol != nil {
-			firewallRulePrint.Protocol = *protocol
-		}
-		if portRangeStart, ok := properties.GetPortRangeStartOk(); ok && portRangeStart != nil {
-			firewallRulePrint.PortRangeStart = *portRangeStart
-		}
-		if portRangeEnd, ok := properties.GetPortRangeEndOk(); ok && portRangeEnd != nil {
-			firewallRulePrint.PortRangeEnd = *portRangeEnd
-		}
-		if sourceMac, ok := properties.GetSourceMacOk(); ok && sourceMac != nil {
-			firewallRulePrint.SourceMac = *sourceMac
-		}
-		if sourceIp, ok := properties.GetSourceIpOk(); ok && sourceIp != nil {
-			firewallRulePrint.SourceIP = *sourceIp
-		}
-		if targetIp, ok := properties.GetTargetIpOk(); ok && targetIp != nil {
-			firewallRulePrint.DestinationIP = *targetIp
-		}
-		if icmpType, ok := properties.GetIcmpTypeOk(); ok && icmpType != nil {
-			firewallRulePrint.IcmpType = *icmpType
-		}
-		if icmpCode, ok := properties.GetIcmpCodeOk(); ok && icmpCode != nil {
-			firewallRulePrint.IcmpCode = *icmpCode
-		}
-		if ruleType, ok := properties.GetTypeOk(); ok && ruleType != nil {
-			firewallRulePrint.Direction = *ruleType
-		}
+
+	if multiErr != nil {
+		return multiErr
 	}
-	if metadata, ok := l.GetMetadataOk(); ok && metadata != nil {
-		if state, ok := metadata.GetStateOk(); ok && state != nil {
-			firewallRulePrint.State = *state
-		}
-	}
-	return structs.Map(firewallRulePrint)
+
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Firewall Rules successfully deleted"))
+	return nil
 }

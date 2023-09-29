@@ -2,10 +2,12 @@ package nodepool
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
-
 	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	ionoscloud "github.com/ionos-cloud/sdk-go-dataplatform"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dataplatform/completer"
@@ -30,14 +32,30 @@ func NodepoolListCmd() *core.Command {
 			if viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)) {
 				return listAll(c)
 			}
-			c.Printer.Verbose("Getting Nodepools...")
+
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting Nodepools..."))
+
 			clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
 
 			np, _, err := client.Must().DataplatformClient.DataPlatformNodePoolApi.ClustersNodepoolsGet(c.Context, clusterId).Execute()
 			if err != nil {
 				return err
 			}
-			return c.Printer.Print(getNodepoolsPrint(c, np.GetItems()))
+
+			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+
+			npConverted, err := convertNodePoolsToTable(np)
+			if err != nil {
+				return err
+			}
+
+			out, err := jsontabwriter.GenerateOutputPreconverted(np, npConverted, tabheaders.GetHeaders(allCols, defaultCols, cols))
+			if err != nil {
+				return err
+			}
+
+			fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+			return nil
 		},
 		InitClient: true,
 	})
@@ -56,7 +74,7 @@ func NodepoolListCmd() *core.Command {
 }
 
 func listAll(c *core.CommandConfig) error {
-	c.Printer.Verbose("Getting all nodepools...")
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting all nodepools..."))
 
 	ls, _, err := client.Must().DataplatformClient.DataPlatformClusterApi.ClustersGet(context.Background()).Execute()
 	if err != nil {
@@ -67,13 +85,29 @@ func listAll(c *core.CommandConfig) error {
 	})
 
 	nps := make([]ionoscloud.NodePoolResponseData, 0)
+	npsConverted := make([]map[string]interface{}, 0)
 	for _, cID := range clusterIds {
 		np, _, err := client.Must().DataplatformClient.DataPlatformNodePoolApi.ClustersNodepoolsGet(c.Context, cID).Execute()
 		if err != nil {
 			return err
 		}
+
+		temp, err := convertNodePoolsToTable(np)
+		if err != nil {
+			return err
+		}
+
+		npsConverted = append(npsConverted, temp...)
 		nps = append(nps, *np.GetItems()...)
 	}
 
-	return c.Printer.Print(getNodepoolsPrint(c, &nps))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+
+	out, err := jsontabwriter.GenerateOutputPreconverted(nps, npsConverted, tabheaders.GetHeaders(allCols, defaultCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+	return nil
 }

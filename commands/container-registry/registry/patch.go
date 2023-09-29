@@ -2,10 +2,12 @@ package registry
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	sdkgo "github.com/ionos-cloud/sdk-go-container-registry"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -49,7 +51,7 @@ func RegUpdateCmd() *core.Command {
 	)
 	cmd.AddStringFlag(FlagRegGCTime, "", "", "Specify the garbage collection schedule time of day")
 
-	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, printer.ColsMessage(allCols))
+	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, tabheaders.ColsMessage(allCols))
 	_ = cmd.Command.RegisterFlagCompletionFunc(
 		constants.ArgCols,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -60,20 +62,23 @@ func RegUpdateCmd() *core.Command {
 }
 
 func CmdUpdate(c *core.CommandConfig) error {
+	v := sdkgo.NewWeeklyScheduleWithDefaults()
 	id, err := c.Command.Command.Flags().GetString(FlagRegId)
 	if err != nil {
 		return err
 	}
-	v := sdkgo.NewWeeklyScheduleWithDefaults()
 
 	if viper.IsSet(core.GetFlagName(c.NS, "garbage-collection-schedule-days")) {
 		days := viper.GetStringSlice(core.GetFlagName(c.NS, "garbage-collection-schedule-days"))
 		var daysSdk = []sdkgo.Day{}
+
 		for _, day := range days {
 			daysSdk = append(daysSdk, sdkgo.Day(day))
 		}
+
 		v.SetDays(daysSdk)
 	}
+
 	if viper.IsSet(core.GetFlagName(c.NS, "garbage-collection-schedule-time")) {
 		*v.Time = viper.GetString(core.GetFlagName(c.NS, "garbage-collection-schedule-time"))
 	} else {
@@ -81,11 +86,21 @@ func CmdUpdate(c *core.CommandConfig) error {
 	}
 
 	patchInput.SetGarbageCollectionSchedule(*v)
+
 	reg, _, err := c.ContainerRegistryServices.Registry().Patch(id, patchInput)
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getRegistryPrint(nil, c, &[]sdkgo.RegistryResponse{reg}, false))
+
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+
+	out, err := jsontabwriter.GenerateOutput("", allJSONPaths, reg, tabheaders.GetHeadersAllDefault(allCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+	return nil
 }
 
 func PreCmdUpdate(c *core.PreCommandConfig) error {

@@ -2,13 +2,15 @@ package nodepool
 
 import (
 	"context"
-
-	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"fmt"
 
 	"github.com/cilium/fake"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dataplatform/completer"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	sdkdataplatform "github.com/ionos-cloud/sdk-go-dataplatform"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -48,7 +50,7 @@ func NodepoolCreateCmd() *core.Command {
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			c.Printer.Verbose("Creating Nodepool...")
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Creating Nodepool..."))
 			clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
 
 			createProperties.Name = &name
@@ -94,7 +96,21 @@ func NodepoolCreateCmd() *core.Command {
 			if err != nil {
 				return err
 			}
-			return c.Printer.Print(getNodepoolsPrint(c, &[]sdkdataplatform.NodePoolResponseData{cr}))
+
+			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+
+			crConverted, err := convertNodePoolToTable(cr)
+			if err != nil {
+				return err
+			}
+
+			out, err := jsontabwriter.GenerateOutputPreconverted(cr, crConverted, tabheaders.GetHeaders(allCols, defaultCols, cols))
+			if err != nil {
+				return err
+			}
+
+			fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+			return nil
 		},
 		InitClient: true,
 	})

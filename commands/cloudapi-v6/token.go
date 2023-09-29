@@ -2,17 +2,24 @@ package commands
 
 import (
 	"context"
-	"os"
+	"fmt"
 
-	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+)
+
+var (
+	allTokenJSONPaths = map[string]string{
+		"Token": "token",
+	}
+
+	defaultTokenCols = []string{"Token"}
 )
 
 func ServerTokenCmd() *core.Command {
@@ -44,7 +51,7 @@ func ServerTokenCmd() *core.Command {
 	})
 	get.AddUUIDFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
 	_ = get.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.DataCentersIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 	get.AddUUIDFlag(cloudapiv6.ArgServerId, cloudapiv6.ArgIdShort, "", cloudapiv6.ServerId, core.RequiredFlagOption())
 	_ = get.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -56,7 +63,9 @@ func ServerTokenCmd() *core.Command {
 }
 
 func RunServerTokenGet(c *core.CommandConfig) error {
-	c.Printer.Verbose("ServerToken with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
+		"ServerToken with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))))
+
 	t, _, err := c.CloudApiV6Services.Servers().GetToken(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
@@ -64,38 +73,13 @@ func RunServerTokenGet(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getTokenPrint(c, []resources.Token{t}))
-}
 
-// Output Printing
-
-var defaultTokenCols = []string{"Token"}
-
-type TokenPrint struct {
-	Token string `json:"Token,omitempty"`
-}
-
-func getTokenPrint(c *core.CommandConfig, ss []resources.Token) printer.Result {
-	r := printer.Result{}
-	if c != nil {
-		if ss != nil {
-			r.OutputJSON = ss
-			r.KeyValue = getTokenKVMaps(ss)
-			r.Columns = defaultTokenCols
-		}
+	out, err := jsontabwriter.GenerateOutput("", allTokenJSONPaths, t.Token, tabheaders.GetHeadersAllDefault(defaultTokenCols, nil))
+	if err != nil {
+		return err
 	}
-	return r
-}
 
-func getTokenKVMaps(ss []resources.Token) []map[string]interface{} {
-	out := make([]map[string]interface{}, 0, len(ss))
-	for _, s := range ss {
-		var tokenPrint TokenPrint
-		if t, ok := s.GetTokenOk(); ok && t != nil {
-			tokenPrint.Token = *t
-		}
-		o := structs.Map(tokenPrint)
-		out = append(out, o)
-	}
-	return out
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+
+	return nil
 }

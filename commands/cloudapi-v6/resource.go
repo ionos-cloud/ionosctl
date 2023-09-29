@@ -2,19 +2,29 @@ package commands
 
 import (
 	"context"
-	"os"
+	"fmt"
 
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
-
-	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+)
+
+var (
+	allResourceJSONPaths = map[string]string{
+		"ResourceId":        "id",
+		"Name":              "properties.name",
+		"SecAuthProtection": "properties.secAuthProtection",
+		"Type":              "type",
+		"State":             "metadata.state",
+	}
+
+	defaultResourceCols = []string{"ResourceId", "Name", "SecAuthProtection", "Type", "State"}
 )
 
 func ResourceCmd() *core.Command {
@@ -29,7 +39,7 @@ func ResourceCmd() *core.Command {
 		},
 	}
 	globalFlags := resourceCmd.GlobalFlags()
-	globalFlags.StringSliceP(constants.ArgCols, "", defaultResourceCols, printer.ColsMessage(defaultResourceCols))
+	globalFlags.StringSliceP(constants.ArgCols, "", defaultResourceCols, tabheaders.ColsMessage(defaultResourceCols))
 	_ = viper.BindPFlag(core.GetFlagName(resourceCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = resourceCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultResourceCols, cobra.ShellCompDirectiveNoFileComp
@@ -75,7 +85,7 @@ func ResourceCmd() *core.Command {
 	})
 	getRsc.AddUUIDFlag(cloudapiv6.ArgResourceId, cloudapiv6.ArgIdShort, "", "The ID of the specific Resource to retrieve information about")
 	_ = getRsc.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgResourceId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.ResourcesIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.ResourcesIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 	getRsc.AddBoolFlag(constants.ArgNoHeaders, "", false, cloudapiv6.ArgNoHeadersDescription)
 
@@ -89,38 +99,68 @@ func PreRunResourceType(c *core.PreCommandConfig) error {
 func RunResourceList(c *core.CommandConfig) error {
 	resourcesListed, resp, err := c.CloudApiV6Services.Users().ListResources()
 	if resp != nil {
-		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getResourcePrint(c, getResources(resourcesListed)))
+
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+
+	out, err := jsontabwriter.GenerateOutput("items", allResourceJSONPaths, resourcesListed.Resources,
+		tabheaders.GetHeadersAllDefault(defaultResourceCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+	return nil
 }
 
 func RunResourceGet(c *core.CommandConfig) error {
-	c.Printer.Verbose("Resource with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceId)))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
+		"Resource with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceId))))
+
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgResourceId)) {
 		resourceListed, resp, err := c.CloudApiV6Services.Users().GetResourceByTypeAndId(
 			viper.GetString(core.GetFlagName(c.NS, constants.FlagType)),
 			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceId)),
 		)
 		if resp != nil {
-			c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 		}
 		if err != nil {
 			return err
 		}
-		return c.Printer.Print(getResourcePrint(c, getResource(resourceListed)))
-	} else {
-		resourcesListed, resp, err := c.CloudApiV6Services.Users().GetResourcesByType(viper.GetString(core.GetFlagName(c.NS, constants.FlagType)))
-		if resp != nil {
-			c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
-		}
+
+		out, err := jsontabwriter.GenerateOutput("", allResourceJSONPaths, resourceListed.Resource,
+			tabheaders.GetHeadersAllDefault(defaultResourceCols, cols))
 		if err != nil {
 			return err
 		}
-		return c.Printer.Print(getResourcePrint(c, getResources(resourcesListed)))
+
+		fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+		return nil
 	}
+
+	resourcesListed, resp, err := c.CloudApiV6Services.Users().GetResourcesByType(viper.GetString(core.GetFlagName(c.NS, constants.FlagType)))
+	if resp != nil {
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+	}
+	if err != nil {
+		return err
+	}
+
+	out, err := jsontabwriter.GenerateOutput("items", allResourceJSONPaths, resourcesListed.Resources,
+		tabheaders.GetHeadersAllDefault(defaultResourceCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+	return nil
 }
 
 // Group Resources Commands
@@ -153,13 +193,13 @@ func GroupResourceCmd() *core.Command {
 		InitClient: true,
 	})
 	listResources.AddInt32Flag(constants.FlagMaxResults, constants.FlagMaxResultsShort, cloudapiv6.DefaultMaxResults, constants.DescMaxResults)
-	listResources.AddStringSliceFlag(constants.ArgCols, "", defaultResourceCols, printer.ColsMessage(defaultResourceCols))
+	listResources.AddStringSliceFlag(constants.ArgCols, "", defaultResourceCols, tabheaders.ColsMessage(defaultResourceCols))
 	_ = listResources.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultResourceCols, cobra.ShellCompDirectiveNoFileComp
 	})
 	listResources.AddUUIDFlag(cloudapiv6.ArgGroupId, "", "", cloudapiv6.GroupId, core.RequiredFlagOption())
 	_ = listResources.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.GroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.GroupsIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	return resourceCmd
@@ -171,93 +211,26 @@ func RunGroupResourceList(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	c.Printer.Verbose("Listing Resources from Group with ID: %v...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)))
+
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
+		"Listing Resources from Group with ID: %v...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId))))
+
 	resourcesListed, resp, err := c.CloudApiV6Services.Groups().ListResources(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)), listQueryParams)
 	if resp != nil {
-		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getResourcePrint(c, getResourceGroups(resourcesListed)))
-}
 
-// Output Printing
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-var defaultResourceCols = []string{"ResourceId", "Name", "SecAuthProtection", "Type", "State"}
-
-type ResourcePrint struct {
-	ResourceId        string `json:"ResourceId,omitempty"`
-	Name              string `json:"Name,omitempty"`
-	SecAuthProtection bool   `json:"SecAuthProtection,omitempty"`
-	Type              string `json:"Type,omitempty"`
-	State             string `json:"State,omitempty"`
-}
-
-func getResourcePrint(c *core.CommandConfig, res []resources.Resource) printer.Result {
-	r := printer.Result{}
-	if c != nil {
-		if res != nil {
-			r.OutputJSON = res
-			r.KeyValue = getResourcesKVMaps(res)
-			r.Columns = printer.GetHeadersAllDefault(defaultResourceCols, viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)))
-		}
+	out, err := jsontabwriter.GenerateOutput("items", allResourceJSONPaths, resourcesListed.ResourceGroups,
+		tabheaders.GetHeadersAllDefault(defaultResourceCols, cols))
+	if err != nil {
+		return err
 	}
-	return r
-}
-func getResource(res *resources.Resource) []resources.Resource {
-	ress := make([]resources.Resource, 0)
-	if res != nil {
-		ress = append(ress, resources.Resource{Resource: res.Resource})
-	}
-	return ress
-}
 
-func getResources(groups resources.Resources) []resources.Resource {
-	u := make([]resources.Resource, 0)
-	if items, ok := groups.GetItemsOk(); ok && items != nil {
-		for _, item := range *items {
-			u = append(u, resources.Resource{Resource: item})
-		}
-	}
-	return u
-}
-
-func getResourceGroups(groups resources.ResourceGroups) []resources.Resource {
-	u := make([]resources.Resource, 0)
-	if items, ok := groups.GetItemsOk(); ok && items != nil {
-		for _, item := range *items {
-			u = append(u, resources.Resource{Resource: item})
-		}
-	}
-	return u
-}
-
-func getResourcesKVMaps(rs []resources.Resource) []map[string]interface{} {
-	out := make([]map[string]interface{}, 0, len(rs))
-	for _, r := range rs {
-		var rPrint ResourcePrint
-		if id, ok := r.GetIdOk(); ok && id != nil {
-			rPrint.ResourceId = *id
-		}
-		if properties, ok := r.GetPropertiesOk(); ok && properties != nil {
-			if name, ok := properties.GetNameOk(); ok && name != nil {
-				rPrint.Name = *name
-			}
-			if sh, ok := properties.GetSecAuthProtectionOk(); ok && sh != nil {
-				rPrint.SecAuthProtection = *sh
-			}
-		}
-		if typeResource, ok := r.GetTypeOk(); ok && typeResource != nil {
-			rPrint.Type = string(*typeResource)
-		}
-		if metadata, ok := r.GetMetadataOk(); ok && metadata != nil {
-			if state, ok := metadata.GetStateOk(); ok && state != nil {
-				rPrint.State = *state
-			}
-		}
-		o := structs.Map(rPrint)
-		out = append(out, o)
-	}
-	return out
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+	return nil
 }

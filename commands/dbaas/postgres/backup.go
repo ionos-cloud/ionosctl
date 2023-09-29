@@ -2,20 +2,14 @@ package postgres
 
 import (
 	"context"
-	"errors"
-	"io"
-	"os"
-	"strings"
-	"time"
+	"fmt"
 
-	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres/completer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/utils/clierror"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	dbaaspg "github.com/ionos-cloud/ionosctl/v6/services/dbaas-postgres"
-	"github.com/ionos-cloud/ionosctl/v6/services/dbaas-postgres/resources"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -32,7 +26,7 @@ func BackupCmd() *core.Command {
 		},
 	}
 	globalFlags := backupCmd.GlobalFlags()
-	globalFlags.StringSliceP(constants.ArgCols, "", defaultBackupCols, printer.ColsMessage(allBackupCols))
+	globalFlags.StringSliceP(constants.ArgCols, "", defaultBackupCols, tabheaders.ColsMessage(allBackupCols))
 	_ = viper.BindPFlag(core.GetFlagName(backupCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = backupCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allBackupCols, cobra.ShellCompDirectiveNoFileComp
@@ -72,7 +66,7 @@ func BackupCmd() *core.Command {
 	})
 	get.AddStringFlag(dbaaspg.ArgBackupId, dbaaspg.ArgIdShort, "", dbaaspg.BackupId, core.RequiredFlagOption())
 	_ = get.Command.RegisterFlagCompletionFunc(dbaaspg.ArgBackupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.BackupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.BackupsIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 	get.AddBoolFlag(constants.ArgNoHeaders, "", false, "When using text output, don't print headers")
 
@@ -84,22 +78,44 @@ func PreRunBackupId(c *core.PreCommandConfig) error {
 }
 
 func RunBackupList(c *core.CommandConfig) error {
-	c.Printer.Verbose("Getting Backups...")
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting Backups..."))
+
 	backups, _, err := c.CloudApiDbaasPgsqlServices.Backups().List()
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getBackupPrint(c, getBackups(backups)))
+
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+
+	out, err := jsontabwriter.GenerateOutput("items", allBackupJSONPaths, backups.ClusterBackupList,
+		tabheaders.GetHeaders(allBackupCols, defaultBackupCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+	return nil
 }
 
 func RunBackupGet(c *core.CommandConfig) error {
-	c.Printer.Verbose("Backup ID: %v", viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgBackupId)))
-	c.Printer.Verbose("Getting Backup...")
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Backup ID: %v", viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgBackupId))))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting Backup..."))
+
 	backup, _, err := c.CloudApiDbaasPgsqlServices.Backups().Get(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgBackupId)))
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getBackupPrint(c, []resources.BackupResponse{*backup}))
+
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+
+	out, err := jsontabwriter.GenerateOutput("", allBackupJSONPaths, backup.BackupResponse,
+		tabheaders.GetHeaders(allBackupCols, defaultBackupCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+	return nil
 }
 
 func ClusterBackupCmd() *core.Command {
@@ -131,9 +147,9 @@ func ClusterBackupCmd() *core.Command {
 	})
 	list.AddUUIDFlag(constants.FlagClusterId, dbaaspg.ArgIdShort, "", dbaaspg.ClusterId, core.RequiredFlagOption())
 	_ = list.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.ClustersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.ClustersIds(), cobra.ShellCompDirectiveNoFileComp
 	})
-	list.AddStringSliceFlag(constants.ArgCols, "", defaultBackupCols, printer.ColsMessage(allBackupCols))
+	list.AddStringSliceFlag(constants.ArgCols, "", defaultBackupCols, tabheaders.ColsMessage(allBackupCols))
 	_ = list.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allBackupCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -143,120 +159,38 @@ func ClusterBackupCmd() *core.Command {
 }
 
 func RunClusterBackupList(c *core.CommandConfig) error {
-	c.Printer.Verbose("Cluster ID: %v", viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)))
-	c.Printer.Verbose("Getting Backups from Cluster...")
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.ClusterId, viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting Backups from Cluster..."))
+
 	backups, _, err := c.CloudApiDbaasPgsqlServices.Backups().ListBackups(viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)))
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getBackupPrint(c, getBackups(backups)))
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+
+	out, err := jsontabwriter.GenerateOutput("items", allBackupJSONPaths, backups.ClusterBackupList,
+		tabheaders.GetHeaders(allBackupCols, defaultBackupCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+	return nil
 }
 
 // Output Printing
 
 var (
+	allBackupJSONPaths = map[string]string{
+		"BackupId":                   "id",
+		"ClusterId":                  "properties.clusterId",
+		"EarliestRecoveryTargetTime": "properties.earliestRecoveryTargetTime",
+		"Version":                    "properties.version",
+		"Active":                     "properties.active",
+		"CreatedDate":                "metadata.createdDate",
+		"State":                      "metadata.state",
+	}
+
 	defaultBackupCols = []string{"BackupId", "ClusterId", "CreatedDate", "EarliestRecoveryTargetTime", "Active", "State"}
 	allBackupCols     = []string{"BackupId", "ClusterId", "Active", "CreatedDate", "EarliestRecoveryTargetTime", "Version", "State"}
 )
-
-type BackupPrint struct {
-	BackupId                   string `json:"BackupId,omitempty"`
-	ClusterId                  string `json:"ClusterId,omitempty"`
-	EarliestRecoveryTargetTime string `json:"EarliestRecoveryTargetTime,omitempty"`
-	Version                    string `json:"Version,omitempty"`
-	Active                     bool   `json:"Active,omitempty"`
-	CreatedDate                string `json:"CreatedDate,omitempty"`
-	State                      string `json:"State,omitempty"`
-}
-
-func getBackupPrint(c *core.CommandConfig, dcs []resources.BackupResponse) printer.Result {
-	r := printer.Result{}
-	if c != nil {
-		if dcs != nil {
-			r.OutputJSON = dcs
-			r.KeyValue = getBackupsKVMaps(dcs)
-			if strings.Contains(c.Namespace, "cluster") {
-				r.Columns = getBackupCols(core.GetFlagName(c.NS, constants.ArgCols), c.Printer.GetStderr())
-			} else {
-				r.Columns = getBackupCols(core.GetFlagName(c.Resource, constants.ArgCols), c.Printer.GetStderr())
-			}
-		}
-	}
-	return r
-}
-
-// TODO: Remove this func, use the 'allCols' behaviour from e.g. dbaas/mongo/cluster.go
-func getBackupCols(flagName string, outErr io.Writer) []string {
-	var cols []string
-	if viper.IsSet(flagName) {
-		cols = viper.GetStringSlice(flagName)
-	} else {
-		return defaultBackupCols
-	}
-	columnsMap := map[string]string{
-		"BackupId":                   "BackupId",
-		"ClusterId":                  "ClusterId",
-		"EarliestRecoveryTargetTime": "EarliestRecoveryTargetTime",
-		"CreatedDate":                "CreatedDate",
-		"Version":                    "Version",
-		"Active":                     "Active",
-		"State":                      "State",
-	}
-	var backupCols []string
-	for _, k := range cols {
-		col := columnsMap[k]
-		if col != "" {
-			backupCols = append(backupCols, col)
-		} else {
-			clierror.CheckErrorAndDie(errors.New("unknown column "+k), outErr)
-		}
-	}
-	return backupCols
-}
-
-func getBackups(backups resources.ClusterBackupList) []resources.BackupResponse {
-	c := make([]resources.BackupResponse, 0)
-	if data, ok := backups.GetItemsOk(); ok && data != nil {
-		for _, d := range *data {
-			c = append(c, resources.BackupResponse{BackupResponse: d})
-		}
-	}
-	return c
-}
-
-func getBackupsKVMaps(backups []resources.BackupResponse) []map[string]interface{} {
-	out := make([]map[string]interface{}, 0, len(backups))
-	for _, backup := range backups {
-		var backupPrint BackupPrint
-		if idOk, ok := backup.GetIdOk(); ok && idOk != nil {
-			backupPrint.BackupId = *idOk
-		}
-		if propertiesOk, ok := backup.GetPropertiesOk(); ok && propertiesOk != nil {
-			if clusterIdOk, ok := propertiesOk.GetClusterIdOk(); ok && clusterIdOk != nil {
-				backupPrint.ClusterId = *clusterIdOk
-			}
-			if earliestTargetTimeOk, ok := propertiesOk.GetEarliestRecoveryTargetTimeOk(); ok && earliestTargetTimeOk != nil {
-				earliestTargetTimeRfc := earliestTargetTimeOk.Format(time.RFC3339)
-				backupPrint.EarliestRecoveryTargetTime = earliestTargetTimeRfc
-			}
-			if versionOk, ok := propertiesOk.GetVersionOk(); ok && versionOk != nil {
-				backupPrint.Version = *versionOk
-			}
-			if isActiveOk, ok := propertiesOk.GetIsActiveOk(); ok && isActiveOk != nil {
-				backupPrint.Active = *isActiveOk
-			}
-		}
-		if metadataOk, ok := backup.GetMetadataOk(); ok && metadataOk != nil {
-			if createdDateOk, ok := metadataOk.GetCreatedDateOk(); ok && createdDateOk != nil {
-				createdDateOkRfc := createdDateOk.Format(time.RFC3339)
-				backupPrint.CreatedDate = createdDateOkRfc
-			}
-			if stateOk, ok := metadataOk.GetStateOk(); ok && stateOk != nil {
-				backupPrint.State = string(*stateOk)
-			}
-		}
-		o := structs.Map(backupPrint)
-		out = append(out, o)
-	}
-	return out
-}

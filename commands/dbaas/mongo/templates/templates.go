@@ -3,20 +3,16 @@ package templates
 import (
 	"context"
 	"fmt"
-	"strconv"
 	"strings"
 
-	"github.com/fatih/structs"
 	"github.com/gofrs/uuid/v5"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/convbytes"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/json2table"
 	ionoscloud "github.com/ionos-cloud/sdk-go-dbaas-mongo"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 func TemplatesCmd() *core.Command {
@@ -34,66 +30,61 @@ func TemplatesCmd() *core.Command {
 	return cmd
 }
 
-func getTemplatesPrint(c *core.CommandConfig, ls *[]ionoscloud.TemplateResponse) printer.Result {
-	r := printer.Result{}
-	if c != nil && ls != nil {
-		r.OutputJSON = ls
-		r.KeyValue = getTemplateRows(ls)                                                                                   // map header -> rows
-		r.Columns = printer.GetHeadersAllDefault(allCols, viper.GetStringSlice(core.GetFlagName(c.NS, constants.ArgCols))) // headers
+var (
+	allJSONPaths = map[string]string{
+		"TemplateId": "id",
+		"Name":       "properties.name",
+		"Edition":    "properties.edition",
+		"Cores":      "properties.cores",
 	}
-	return r
+
+	allCols = []string{"TemplateId", "Name", "Edition", "Cores", "StorageSize", "Ram"}
+)
+
+func convertTemplateToTable(template ionoscloud.TemplateResponse) ([]map[string]interface{}, error) {
+	properties, ok := template.GetPropertiesOk()
+	if !ok || properties == nil {
+		return nil, fmt.Errorf("could not retrieve Mongo Template properties")
+	}
+
+	ram, ok := properties.GetRamOk()
+	if !ok || ram == nil {
+		return nil, fmt.Errorf("could not retrieve Mongo Template RAM")
+	}
+
+	storage, ok := properties.GetStorageSizeOk()
+	if !ok || storage == nil {
+		return nil, fmt.Errorf("could not retrieve Mongo Template storage")
+	}
+
+	temp, err := json2table.ConvertJSONToTable("", allJSONPaths, template)
+	if err != nil {
+		return nil, fmt.Errorf("could not convert from JSON to Table format: %w", err)
+	}
+
+	temp[0]["RAM"] = fmt.Sprintf("%d GB", convbytes.Convert(int64(*ram), convbytes.MB, convbytes.GB))
+	temp[0]["StorageSize"] = fmt.Sprintf("%d GB", convbytes.Convert(int64(*storage), convbytes.MB, convbytes.GB))
+
+	return temp, nil
 }
 
-type TemplatePrint struct {
-	TemplateId  string `json:"TemplateId,omitempty"`
-	Name        string `json:"Name,omitempty"`
-	Edition     string `json:"Edition,omitempty"`
-	Cores       int32  `json:"Cores,omitempty"`
-	StorageSize string `json:"StorageSize,omitempty"`
-	Ram         string `json:"Ram,omitempty"`
-}
-
-var allCols = structs.Names(TemplatePrint{})
-
-func getTemplateRows(ls *[]ionoscloud.TemplateResponse) []map[string]interface{} {
-	if ls == nil {
-		return nil
+func convertTemplatesToTable(templates ionoscloud.TemplateList) ([]map[string]interface{}, error) {
+	items, ok := templates.GetItemsOk()
+	if !ok || items == nil {
+		return nil, fmt.Errorf("could not retrieve Templates items")
 	}
 
-	out := make([]map[string]interface{}, 0, len(*ls))
-	for _, t := range *ls {
-		var cols TemplatePrint
-
-		if t.Id != nil {
-			cols.TemplateId = *t.Id
+	var templatesConverted []map[string]interface{}
+	for _, item := range *items {
+		temp, err := convertTemplateToTable(item)
+		if err != nil {
+			return nil, err
 		}
 
-		properties := t.Properties
-		if properties != nil {
-			if properties.Cores != nil {
-				cols.Cores = *properties.Cores
-			}
-			if properties.StorageSize != nil {
-				cols.StorageSize = fmt.Sprintf("%d GB", *properties.StorageSize)
-			}
-			if properties.Name != nil {
-				cols.Name = *properties.Name
-			}
-			if properties.Edition != nil {
-				cols.Edition = *properties.Edition
-			}
-			if properties.Ram != nil {
-				ramGb, err := utils.ConvertToGB(strconv.Itoa(int(*properties.Ram)), utils.MegaBytes)
-				if err == nil {
-					cols.Ram = fmt.Sprintf("%d GB", ramGb)
-				}
-			}
-		}
-
-		o := structs.Map(cols)
-		out = append(out, o)
+		templatesConverted = append(templatesConverted, temp...)
 	}
-	return out
+
+	return templatesConverted, nil
 }
 
 // List retrieves a list of templates, optionally filtered by a given funcs

@@ -99,34 +99,3 @@ func TestRunPgsqlVersionListErr(t *testing.T) {
 		assert.Error(t, err)
 	})
 }
-
-func TestGetPgsqlVersionColsNoSet(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	getPgsqlVersionCols(core.GetFlagName("version", constants.ArgCols), w)
-	err := w.Flush()
-	assert.NoError(t, err)
-}
-
-func TestGetPgsqlVersionCols(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	viper.Set(core.GetFlagName("version", constants.ArgCols), []string{"PostgresVersions"})
-	getPgsqlVersionCols(core.GetFlagName("version", constants.ArgCols), w)
-	err := w.Flush()
-	assert.NoError(t, err)
-}
-
-// Muted because of .ErrAction usage
-//
-// func TestGetPgsqlVersionColsErr(t *testing.T) {
-// 	var b bytes.Buffer
-// 	clierror.ErrAction = func() { panic("Panicked") }
-// 	w := bufio.NewWriter(&b)
-// 	viper.Set(core.GetFlagName("version", constants.ArgCols), []string{"Unknown"})
-// 	getPgsqlVersionCols(core.GetFlagName("version", constants.ArgCols), w)
-// 	err := w.Flush()
-// 	assert.NoError(t, err)
-// 	re := regexp.MustCompile(`unknown column Unknown`)
-// 	assert.True(t, re.Match(b.Bytes()))
-// }

@@ -4,13 +4,14 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/ionos-cloud/ionosctl/v6/internal/client"
-
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/completer"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	sdkgo "github.com/ionos-cloud/sdk-go-dbaas-mongo"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -34,7 +35,7 @@ func UserDeleteCmd() *core.Command {
 			}
 			user := viper.GetString(core.GetFlagName(c.NS, constants.FlagName))
 
-			yes := confirm.Ask(fmt.Sprintf("delete user %s", user),
+			yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("delete user %s", user),
 				viper.GetBool(constants.ArgForce))
 			if !yes {
 				return fmt.Errorf("operation canceled by confirmation check")
@@ -42,11 +43,24 @@ func UserDeleteCmd() *core.Command {
 
 			u, _, err := client.Must().MongoClient.UsersApi.
 				ClustersUsersDelete(context.Background(), clusterId, user).Execute()
-
 			if err != nil {
 				return err
 			}
-			return c.Printer.Print(getUserPrint(c, &[]sdkgo.User{u}))
+
+			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+
+			uConverted, err := convertUserToTable(u)
+			if err != nil {
+				return err
+			}
+
+			out, err := jsontabwriter.GenerateOutputPreconverted(u, uConverted, tabheaders.GetHeadersAllDefault(allCols, cols))
+			if err != nil {
+				return err
+			}
+
+			fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+			return nil
 		},
 		InitClient: true,
 	})
@@ -58,7 +72,6 @@ func UserDeleteCmd() *core.Command {
 	cmd.AddStringFlag(FlagDatabase, FlagDatabaseShort, "", "The authentication database")
 	cmd.AddStringFlag(constants.FlagName, "", "", "The authentication username")
 	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Delete all users in a cluster")
-	cmd.AddBoolFlag(constants.ArgForce, constants.ArgForceShort, false, "Skip y/n checks")
 
 	cmd.Command.SilenceUsage = true
 
@@ -66,14 +79,14 @@ func UserDeleteCmd() *core.Command {
 }
 
 func deleteAll(c *core.CommandConfig, clusterId string) error {
-	c.Printer.Verbose("Deleting all users")
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all users"))
 	xs, _, err := client.Must().MongoClient.UsersApi.ClustersUsersGet(c.Context, clusterId).Execute()
 	if err != nil {
 		return err
 	}
 
 	return functional.ApplyAndAggregateErrors(*xs.GetItems(), func(x sdkgo.User) error {
-		yes := confirm.Ask(fmt.Sprintf("delete user %s", *x.Properties.Username), viper.GetBool(constants.ArgForce))
+		yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("delete user %s", *x.Properties.Username), viper.GetBool(constants.ArgForce))
 		if !yes {
 			return fmt.Errorf("user %s skipped by confirmation check", *x.Properties.Username)
 		}

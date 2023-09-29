@@ -4,23 +4,35 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"os"
-	"strings"
 	"time"
 
-	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
+	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/json2table"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+)
+
+var (
+	allNatGatewayJSONPaths = map[string]string{
+		"NatGatewayId": "id",
+		"Name":         "properties.name",
+		"PublicIps":    "properties.publicIps",
+		"State":        "metadata.state",
+	}
+
+	defaultNatGatewayCols = []string{"NatGatewayId", "Name", "PublicIps", "State"}
+	allNatGatewayCols     = []string{"NatGatewayId", "Name", "PublicIps", "State", "DatacenterId"}
 )
 
 func NatgatewayCmd() *core.Command {
@@ -35,7 +47,7 @@ func NatgatewayCmd() *core.Command {
 		},
 	}
 	globalFlags := natgatewayCmd.GlobalFlags()
-	globalFlags.StringSliceP(constants.ArgCols, "", defaultNatGatewayCols, printer.ColsMessage(defaultNatGatewayCols))
+	globalFlags.StringSliceP(constants.ArgCols, "", defaultNatGatewayCols, tabheaders.ColsMessage(defaultNatGatewayCols))
 	_ = viper.BindPFlag(core.GetFlagName(natgatewayCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = natgatewayCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultNatGatewayCols, cobra.ShellCompDirectiveNoFileComp
@@ -58,7 +70,7 @@ func NatgatewayCmd() *core.Command {
 	})
 	list.AddUUIDFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
 	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.DataCentersIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 	list.AddInt32Flag(constants.FlagMaxResults, constants.FlagMaxResultsShort, cloudapiv6.DefaultMaxResults, constants.DescMaxResults)
 	list.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultListDepth, cloudapiv6.ArgDepthDescription)
@@ -90,7 +102,7 @@ func NatgatewayCmd() *core.Command {
 	})
 	get.AddUUIDFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
 	_ = get.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.DataCentersIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 	get.AddUUIDFlag(cloudapiv6.ArgNatGatewayId, cloudapiv6.ArgIdShort, "", cloudapiv6.NatGatewayId, core.RequiredFlagOption())
 	_ = get.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgNatGatewayId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -125,7 +137,7 @@ Required values to run command:
 	})
 	create.AddUUIDFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
 	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.DataCentersIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "NAT Gateway", "Name of the NAT Gateway")
 	create.AddStringSliceFlag(cloudapiv6.ArgIps, "", nil, "Collection of public reserved IP addresses of the NAT Gateway", core.RequiredFlagOption())
@@ -157,7 +169,7 @@ Required values to run command:
 	})
 	update.AddUUIDFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
 	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.DataCentersIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddUUIDFlag(cloudapiv6.ArgNatGatewayId, cloudapiv6.ArgIdShort, "", cloudapiv6.NatGatewayId, core.RequiredFlagOption())
 	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgNatGatewayId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -193,7 +205,7 @@ Required values to run command:
 	})
 	deleteCmd.AddUUIDFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.DataCentersIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddUUIDFlag(cloudapiv6.ArgNatGatewayId, cloudapiv6.ArgIdShort, "", cloudapiv6.NatGatewayId, core.RequiredFlagOption())
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgNatGatewayId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -244,27 +256,62 @@ func RunNatGatewayListAll(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	datacenters, _, err := c.CloudApiV6Services.DataCenters().List(cloudapiv6.ParentResourceListQueryParams)
 	if err != nil {
 		return err
 	}
+
 	allDcs := getDataCenters(datacenters)
-	var allNatGateways []resources.NatGateway
+	var allNatGateways []ionoscloud.NatGateways
+	var allNatGatewaysConverted []map[string]interface{}
 	totalTime := time.Duration(0)
+
 	for _, dc := range allDcs {
 		natGateways, resp, err := c.CloudApiV6Services.NatGateways().List(*dc.GetId(), listQueryParams)
 		if err != nil {
 			return err
 		}
-		allNatGateways = append(allNatGateways, getNatGateways(natGateways)...)
+
+		id, ok := dc.GetIdOk()
+		if !ok || id == nil {
+			return fmt.Errorf("could not retrieve Datacenter ID")
+		}
+
+		items, ok := natGateways.GetItemsOk()
+		if !ok || items == nil {
+			continue
+		}
+
+		for _, item := range *items {
+			temp, err := json2table.ConvertJSONToTable("", allNatGatewayJSONPaths, item)
+			if err != nil {
+				return fmt.Errorf("could not convert from JSON to Table format: %w", err)
+			}
+
+			temp[0]["DatacenterId"] = id
+			allNatGatewaysConverted = append(allNatGatewaysConverted, temp[0])
+		}
+
+		allNatGateways = append(allNatGateways, natGateways.NatGateways)
 		totalTime += resp.RequestTime
 	}
 
 	if totalTime != time.Duration(0) {
-		c.Printer.Verbose(constants.MessageRequestTime, totalTime)
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, totalTime))
 	}
 
-	return c.Printer.Print(getNatGatewayPrint(nil, c, allNatGateways))
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+
+	out, err := jsontabwriter.GenerateOutputPreconverted(allNatGateways, allNatGatewaysConverted,
+		tabheaders.GetHeaders(allNatGatewayCols, defaultNatGatewayCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+
+	return nil
 }
 
 func RunNatGatewayList(c *core.CommandConfig) error {
@@ -275,14 +322,26 @@ func RunNatGatewayList(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	natgateways, resp, err := c.CloudApiV6Services.NatGateways().List(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)), listQueryParams)
 	if resp != nil {
-		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getNatGatewayPrint(nil, c, getNatGateways(natgateways)))
+
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+
+	out, err := jsontabwriter.GenerateOutput("items", allNatGatewayJSONPaths, natgateways.NatGateways,
+		tabheaders.GetHeadersAllDefault(defaultNatGatewayCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+
+	return nil
 }
 
 func RunNatGatewayGet(c *core.CommandConfig) error {
@@ -290,23 +349,39 @@ func RunNatGatewayGet(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
+
 	if err := utils.WaitForState(c, waiter.NatGatewayStateInterrogator, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNatGatewayId))); err != nil {
 		return err
 	}
-	c.Printer.Verbose("NatGateway with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNatGatewayId)))
+
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
+		"NAT Gateway with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNatGatewayId))))
+
 	ng, resp, err := c.CloudApiV6Services.NatGateways().Get(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNatGatewayId)),
 		queryParams,
 	)
 	if resp != nil {
-		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getNatGatewayPrint(nil, c, []resources.NatGateway{*ng}))
+
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+
+	out, err := jsontabwriter.GenerateOutput("", allNatGatewayJSONPaths, ng.NatGateway,
+		tabheaders.GetHeadersAllDefault(defaultNatGatewayCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+
+	return nil
 }
 
 func RunNatGatewayCreate(c *core.CommandConfig) error {
@@ -314,11 +389,14 @@ func RunNatGatewayCreate(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
 	proper := getNewNatGatewayInfo(c)
+
 	if !proper.HasName() {
 		proper.SetName(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName)))
 	}
+
 	ng, resp, err := c.CloudApiV6Services.NatGateways().Create(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		resources.NatGateway{
@@ -328,16 +406,29 @@ func RunNatGatewayCreate(c *core.CommandConfig) error {
 		},
 		queryParams,
 	)
-	if resp != nil && printer.GetId(resp) != "" {
-		c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
+
+	if resp != nil && utils.GetId(resp) != "" {
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, utils.GetId(resp), resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
-	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, utils.GetId(resp)); err != nil {
 		return err
 	}
-	return c.Printer.Print(getNatGatewayPrint(resp, c, []resources.NatGateway{*ng}))
+
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+
+	out, err := jsontabwriter.GenerateOutput("", allNatGatewayJSONPaths, ng.NatGateway,
+		tabheaders.GetHeadersAllDefault(defaultNatGatewayCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+
+	return nil
 }
 
 func RunNatGatewayUpdate(c *core.CommandConfig) error {
@@ -345,24 +436,38 @@ func RunNatGatewayUpdate(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
 	input := getNewNatGatewayInfo(c)
+
 	ng, resp, err := c.CloudApiV6Services.NatGateways().Update(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNatGatewayId)),
 		*input,
 		queryParams,
 	)
-	if resp != nil && printer.GetId(resp) != "" {
-		c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
+	if resp != nil && utils.GetId(resp) != "" {
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, utils.GetId(resp), resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
-	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, utils.GetId(resp)); err != nil {
 		return err
 	}
-	return c.Printer.Print(getNatGatewayPrint(resp, c, []resources.NatGateway{*ng}))
+
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+
+	out, err := jsontabwriter.GenerateOutput("", allNatGatewayJSONPaths, ng.NatGateway,
+		tabheaders.GetHeadersAllDefault(defaultNatGatewayCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+
+	return nil
 }
 
 func RunNatGatewayDelete(c *core.CommandConfig) error {
@@ -370,45 +475,58 @@ func RunNatGatewayDelete(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	natGatewayId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNatGatewayId))
+
 	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
 		if err := DeleteAllNatgateways(c); err != nil {
 			return err
 		}
-		return c.Printer.Print(printer.Result{Resource: c.Resource, Verb: c.Verb})
-	} else {
-		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete nat gateway"); err != nil {
-			return err
-		}
-		c.Printer.Verbose("Starring deleting NatGateway with id: %v...", natGatewayId)
-		resp, err := c.CloudApiV6Services.NatGateways().Delete(dcId, natGatewayId, queryParams)
-		if resp != nil && printer.GetId(resp) != "" {
-			c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
-		}
-		if err != nil {
-			return err
-		}
-		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-			return err
-		}
-		return c.Printer.Print(getNatGatewayPrint(resp, c, nil))
+
+		return nil
 	}
+
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete nat gateway", viper.GetBool(constants.ArgForce)) {
+		return fmt.Errorf(confirm.UserDenied)
+	}
+
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Starring deleting NAT Gateway with id: %v...", natGatewayId))
+
+	resp, err := c.CloudApiV6Services.NatGateways().Delete(dcId, natGatewayId, queryParams)
+	if resp != nil && utils.GetId(resp) != "" {
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, utils.GetId(resp), resp.RequestTime))
+	}
+	if err != nil {
+		return err
+	}
+
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, utils.GetId(resp)); err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("NAT Gateway successfully deleted"))
+	return nil
 }
 
 func getNewNatGatewayInfo(c *core.CommandConfig) *resources.NatGatewayProperties {
 	input := ionoscloud.NatGatewayProperties{}
+
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgName)) {
 		name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
 		input.SetName(name)
-		c.Printer.Verbose("Property Name set: %v", name)
+
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property Name set: %v", name))
 	}
+
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgIps)) {
 		publicIps := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgIps))
 		input.SetPublicIps(publicIps)
-		c.Printer.Verbose("Property PublicIps set: %v", publicIps)
+
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property PublicIps set: %v", publicIps))
 	}
+
 	return &resources.NatGatewayProperties{
 		NatGatewayProperties: input,
 	}
@@ -419,133 +537,80 @@ func DeleteAllNatgateways(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
-	c.Printer.Verbose("Datacenter ID: %v", dcId)
-	c.Printer.Verbose("Getting NatGateways...")
+
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.DatacenterId, dcId))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting NatGateways..."))
+
 	natGateways, resp, err := c.CloudApiV6Services.NatGateways().List(dcId, cloudapiv6.ParentResourceListQueryParams)
 	if err != nil {
 		return err
 	}
-	if natGatewayItems, ok := natGateways.GetItemsOk(); ok && natGatewayItems != nil {
-		if len(*natGatewayItems) > 0 {
-			_ = c.Printer.Warn("NatGateway to be deleted:")
-			for _, natGateway := range *natGatewayItems {
-				delIdAndName := ""
-				if id, ok := natGateway.GetIdOk(); ok && id != nil {
-					delIdAndName += "NatGateway Id: " + *id
-				}
-				if properties, ok := natGateway.GetPropertiesOk(); ok && properties != nil {
-					if name, ok := properties.GetNameOk(); ok && name != nil {
-						delIdAndName += " NatGateway Name: " + *name
-					}
-				}
-				_ = c.Printer.Warn(delIdAndName)
-			}
-			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the NatGateways"); err != nil {
-				return err
-			}
-			c.Printer.Verbose("Deleting all the NatGateways...")
-			var multiErr error
-			for _, natGateway := range *natGatewayItems {
-				if id, ok := natGateway.GetIdOk(); ok && id != nil {
-					c.Printer.Verbose("Starting deleting NatGateway with id: %v...", *id)
-					resp, err = c.CloudApiV6Services.NatGateways().Delete(dcId, *id, queryParams)
-					if resp != nil && printer.GetId(resp) != "" {
-						c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
-					}
-					if err != nil {
-						multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
-						continue
-					} else {
-						_ = c.Printer.Warn(fmt.Sprintf(constants.MessageDeletingAll, c.Resource, *id))
-					}
-					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-						multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
-						continue
-					}
-				}
-			}
-			if multiErr != nil {
-				return multiErr
-			}
-			return nil
-		} else {
-			return errors.New("no NatGateways found")
-		}
-	} else {
-		return errors.New("could not get items of NatGateway")
+
+	natGatewayItems, ok := natGateways.GetItemsOk()
+	if !ok || natGatewayItems == nil {
+		return fmt.Errorf("could not get items of NAT Gateway")
 	}
-}
 
-// Output Printing
-
-var defaultNatGatewayCols = []string{"NatGatewayId", "Name", "PublicIps", "State"}
-var allNatGatewayCols = []string{"NatGatewayId", "Name", "PublicIps", "State", "DatacenterId"}
-
-type NatGatewayPrint struct {
-	NatGatewayId string   `json:"NatGatewayId,omitempty"`
-	Name         string   `json:"Name,omitempty"`
-	PublicIps    []string `json:"PublicIps,omitempty"`
-	State        string   `json:"State,omitempty"`
-	DatacenterId string   `json:"DatacenterId,omitempty"`
-}
-
-func getNatGatewayPrint(resp *resources.Response, c *core.CommandConfig, ss []resources.NatGateway) printer.Result {
-	r := printer.Result{}
-	if c != nil {
-		if resp != nil {
-			r.ApiResponse = resp
-			r.Resource = c.Resource
-			r.Verb = c.Verb
-			r.WaitForRequest = viper.GetBool(core.GetFlagName(c.NS, constants.ArgWaitForRequest))
-			r.WaitForState = viper.GetBool(core.GetFlagName(c.NS, constants.ArgWaitForState))
-		}
-		if ss != nil {
-			r.OutputJSON = ss
-			r.KeyValue = getNatGatewaysKVMaps(ss)
-			r.Columns = printer.GetHeadersListAll(allNatGatewayCols, defaultNatGatewayCols, "DatacenterId", viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)), viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)))
-		}
+	if len(*natGatewayItems) <= 0 {
+		return fmt.Errorf("no NAT Gateways found")
 	}
-	return r
-}
 
-func getNatGateways(natgateways resources.NatGateways) []resources.NatGateway {
-	natGatewayObjs := make([]resources.NatGateway, 0)
-	if items, ok := natgateways.GetItemsOk(); ok && items != nil {
-		for _, natGateway := range *items {
-			natGatewayObjs = append(natGatewayObjs, resources.NatGateway{NatGateway: natGateway})
-		}
-	}
-	return natGatewayObjs
-}
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("NAT Gateway to be deleted:"))
 
-func getNatGatewaysKVMaps(ss []resources.NatGateway) []map[string]interface{} {
-	out := make([]map[string]interface{}, 0, len(ss))
-	for _, s := range ss {
-		var natgatewayPrint NatGatewayPrint
-		if id, ok := s.GetIdOk(); ok && id != nil {
-			natgatewayPrint.NatGatewayId = *id
+	for _, natGateway := range *natGatewayItems {
+		delIdAndName := ""
+
+		if id, ok := natGateway.GetIdOk(); ok && id != nil {
+			delIdAndName += "NAT Gateway Id: " + *id
 		}
-		if properties, ok := s.GetPropertiesOk(); ok && properties != nil {
+
+		if properties, ok := natGateway.GetPropertiesOk(); ok && properties != nil {
 			if name, ok := properties.GetNameOk(); ok && name != nil {
-				natgatewayPrint.Name = *name
-			}
-			if ips, ok := properties.GetPublicIpsOk(); ok && ips != nil {
-				natgatewayPrint.PublicIps = *ips
+				delIdAndName += " NAT Gateway Name: " + *name
 			}
 		}
-		if metadata, ok := s.GetMetadataOk(); ok && metadata != nil {
-			if state, ok := metadata.GetStateOk(); ok && state != nil {
-				natgatewayPrint.State = *state
-			}
-		}
-		if hrefOk, ok := s.GetHrefOk(); ok && hrefOk != nil {
-			// Get parent resource ID using HREF: `.../datacenter/[PARENT_ID_WE_WANT]/natgateways/[ID]`
-			natgatewayPrint.DatacenterId = strings.Split(strings.Split(*hrefOk, "datacenter")[1], "/")[1]
-		}
-		o := structs.Map(natgatewayPrint)
-		out = append(out, o)
+
+		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
-	return out
+
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete all the NAT Gateways", viper.GetBool(constants.ArgForce)) {
+		return fmt.Errorf(confirm.UserDenied)
+	}
+
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the NAT Gateways..."))
+
+	var multiErr error
+	for _, natGateway := range *natGatewayItems {
+		id, ok := natGateway.GetIdOk()
+		if !ok || id == nil {
+			continue
+		}
+
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Starting deleting NAT Gateway with id: %v...", *id))
+
+		resp, err = c.CloudApiV6Services.NatGateways().Delete(dcId, *id, queryParams)
+		if resp != nil && utils.GetId(resp) != "" {
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, utils.GetId(resp), resp.RequestTime))
+		}
+		if err != nil {
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
+			continue
+		}
+
+		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(constants.MessageDeletingAll, c.Resource, *id))
+
+		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, utils.GetId(resp)); err != nil {
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
+		}
+	}
+
+	if multiErr != nil {
+		return multiErr
+	}
+
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("NAT Gateways successfully deleted"))
+	return nil
 }

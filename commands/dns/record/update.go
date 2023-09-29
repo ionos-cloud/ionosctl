@@ -5,9 +5,10 @@ import (
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dns/zone"
-
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	dns "github.com/ionos-cloud/sdk-go-dns"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -76,5 +77,18 @@ func partiallyUpdateRecordAndPrint(c *core.CommandConfig, r dns.RecordRead) erro
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getRecordPrint(c, rNew))
+
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	//if err != nil {
+	//	return err
+	//}
+
+	out, err := jsontabwriter.GenerateOutput("", allRecordJSONPaths, rNew,
+		tabheaders.GetHeadersAllDefault(defaultCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+	return nil
 }

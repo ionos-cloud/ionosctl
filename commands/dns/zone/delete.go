@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	dns "github.com/ionos-cloud/sdk-go-dns"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
@@ -41,10 +42,10 @@ func ZonesDeleteCmd() *core.Command {
 			if err != nil {
 				return fmt.Errorf("failed getting zone by id %s: %w", zoneId, err)
 			}
-			yes := confirm.Ask(fmt.Sprintf("Are you sure you want to delete zone %s (desc: '%s')", *z.Properties.ZoneName, *z.Properties.Description),
-				viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce)))
+			yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Are you sure you want to delete zone %s (desc: '%s')", *z.Properties.ZoneName, *z.Properties.Description),
+				viper.GetBool(constants.ArgForce))
 			if !yes {
-				return nil
+				return fmt.Errorf(confirm.UserDenied)
 			}
 
 			_, err = client.Must().DnsClient.ZonesApi.ZonesDelete(context.Background(), zoneId).Execute()
@@ -61,7 +62,6 @@ func ZonesDeleteCmd() *core.Command {
 		}), cobra.ShellCompDirectiveNoFileComp
 	})
 
-	cmd.AddBoolFlag(constants.ArgForce, constants.ArgForceShort, false, "Skip yes/no confirmation")
 	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, fmt.Sprintf("Delete all zones. Required or -%s", constants.FlagZoneShort))
 
 	cmd.Command.SilenceUsage = true
@@ -71,15 +71,15 @@ func ZonesDeleteCmd() *core.Command {
 }
 
 func deleteAll(c *core.CommandConfig) error {
-	c.Printer.Verbose("Deleting all zones!")
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all zones!"))
 	xs, _, err := client.Must().DnsClient.ZonesApi.ZonesGet(c.Context).Execute()
 	if err != nil {
 		return err
 	}
 
 	err = functional.ApplyAndAggregateErrors(*xs.GetItems(), func(z dns.ZoneRead) error {
-		yes := confirm.Ask(fmt.Sprintf("Are you sure you want to delete zone %s (desc: '%s')", *z.Properties.ZoneName, *z.Properties.Description),
-			viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce)))
+		yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Are you sure you want to delete zone %s (desc: '%s')", *z.Properties.ZoneName, *z.Properties.Description),
+			viper.GetBool(constants.ArgForce))
 		if yes {
 			_, delErr := client.Must().DnsClient.ZonesApi.ZonesDelete(c.Context, *z.Id).Execute()
 			if delErr != nil {

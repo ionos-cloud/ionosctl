@@ -2,12 +2,13 @@ package cluster
 
 import (
 	"context"
-	"os"
-
-	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"fmt"
 
 	"github.com/cilium/fake"
 	cloudapiv6completer "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"github.com/spf13/viper"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dataplatform/completer"
@@ -33,15 +34,18 @@ func ClusterUpdateCmd() *core.Command {
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
-			c.Printer.Verbose("Getting Cluster by id: %s", clusterId)
+
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting Cluster by id: %s", clusterId))
 
 			updateProperties := sdkdataplatform.PatchClusterProperties{}
 			if viper.IsSet(core.GetFlagName(c.NS, constants.FlagName)) {
 				updateProperties.SetName(viper.GetString(core.GetFlagName(c.NS, constants.FlagName)))
 			}
+
 			if viper.IsSet(core.GetFlagName(c.NS, constants.FlagVersion)) {
 				updateProperties.SetDataPlatformVersion(viper.GetString(core.GetFlagName(c.NS, constants.FlagVersion)))
 			}
+
 			if viper.IsSet(core.GetFlagName(c.NS, constants.FlagMaintenanceDay)) &&
 				viper.IsSet(core.GetFlagName(c.NS, constants.FlagMaintenanceTime)) {
 				maintenanceWindow := sdkdataplatform.MaintenanceWindow{}
@@ -54,7 +58,22 @@ func ClusterUpdateCmd() *core.Command {
 			if err != nil {
 				return err
 			}
-			return c.Printer.Print(getClusterPrint(c, &[]sdkdataplatform.ClusterResponseData{cluster}))
+
+			clusterConverted, err := convertClusterToTable(cluster)
+			if err != nil {
+				return err
+			}
+
+			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+
+			out, err := jsontabwriter.GenerateOutputPreconverted(cluster, clusterConverted,
+				tabheaders.GetHeadersAllDefault(allCols, cols))
+			if err != nil {
+				return err
+			}
+
+			fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+			return nil
 		},
 		InitClient: true,
 	})
@@ -80,7 +99,7 @@ func ClusterUpdateCmd() *core.Command {
 	// Connections
 	cmd.AddStringFlag(constants.FlagDatacenterId, "", "", "The datacenter to which your cluster will be connected. Must be in the same location as the cluster", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagDatacenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return cloudapiv6completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return cloudapiv6completer.DataCentersIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddStringFlag(constants.FlagLanId, "", "", "The numeric LAN ID with which you connect your cluster", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {

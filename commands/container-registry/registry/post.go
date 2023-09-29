@@ -2,12 +2,14 @@ package registry
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	sdkgo "github.com/ionos-cloud/sdk-go-container-registry"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -31,7 +33,7 @@ func RegPostCmd() *core.Command {
 		},
 	)
 
-	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, printer.ColsMessage(allCols))
+	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, tabheaders.ColsMessage(allCols))
 	_ = cmd.Command.RegisterFlagCompletionFunc(
 		constants.ArgCols,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -79,6 +81,7 @@ func CmdPost(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	location, err = c.Command.Command.Flags().GetString(FlagLocation)
 	if err != nil {
 		return err
@@ -89,9 +92,11 @@ func CmdPost(c *core.CommandConfig) error {
 	if viper.IsSet(core.GetFlagName(c.NS, FlagRegGCDays)) {
 		days := viper.GetStringSlice(core.GetFlagName(c.NS, FlagRegGCDays))
 		var daysSdk = []sdkgo.Day{}
+
 		for _, day := range days {
 			daysSdk = append(daysSdk, sdkgo.Day(day))
 		}
+
 		v.SetDays(daysSdk)
 	}
 
@@ -100,12 +105,12 @@ func CmdPost(c *core.CommandConfig) error {
 	} else {
 		v.SetTime("01:23:00+00:00")
 	}
+
 	regPostProperties.SetName(name)
 	regPostProperties.SetLocation(location)
 	regPostProperties.SetGarbageCollectionSchedule(*v)
 
 	regPostInput := sdkgo.NewPostRegistryInputWithDefaults()
-
 	regPostInput.SetProperties(regPostProperties)
 
 	reg, _, err := c.ContainerRegistryServices.Registry().Post(*regPostInput)
@@ -116,7 +121,15 @@ func CmdPost(c *core.CommandConfig) error {
 	regPrint := sdkgo.NewRegistryResponseWithDefaults()
 	regPrint.SetProperties(*reg.GetProperties())
 
-	return c.Printer.Print(getRegistryPrint(nil, c, &[]sdkgo.RegistryResponse{*regPrint}, true))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+
+	out, err := jsontabwriter.GenerateOutput("", allJSONPaths, reg, tabheaders.GetHeaders(allCols, postCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+	return nil
 }
 
 func getLocForAutoComplete() []string {

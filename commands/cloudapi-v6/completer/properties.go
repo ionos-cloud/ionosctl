@@ -2,7 +2,6 @@ package completer
 
 import (
 	"context"
-	"io"
 
 	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"
 
@@ -11,7 +10,7 @@ import (
 
 // DatacenterCPUFamilies returns the list of available CPU families in a given datacenter
 // If the datacenter ID is not provided returns a set of possible default values.
-func DatacenterCPUFamilies(ctx context.Context, outErr io.Writer, datacenterId string) []string {
+func DatacenterCPUFamilies(ctx context.Context, datacenterId string) []string {
 	if datacenterId == "" {
 		return []string{"AMD_OPTERON", "INTEL_XEON", "INTEL_SKYLAKE"}
 	}

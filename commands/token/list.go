@@ -2,9 +2,12 @@ package token
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	authservice "github.com/ionos-cloud/ionosctl/v6/services/auth-v1"
 	"github.com/spf13/viper"
 )
@@ -30,11 +33,23 @@ func TokenListCmd() *core.Command {
 
 func runTokenList(c *core.CommandConfig) error {
 	if viper.IsSet(core.GetFlagName(c.NS, authservice.ArgContractNo)) {
-		c.Printer.Verbose(contractNumberMessage, viper.GetInt32(core.GetFlagName(c.NS, authservice.ArgContractNo)))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
+			contractNumberMessage, viper.GetInt32(core.GetFlagName(c.NS, authservice.ArgContractNo))))
 	}
+
 	tokens, _, err := c.AuthV1Services.Tokens().List(viper.GetInt32(core.GetFlagName(c.NS, authservice.ArgContractNo)))
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getTokenPrint(c, getTokens(tokens)))
+
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+
+	out, err := jsontabwriter.GenerateOutput("tokens", allTokenJSONPaths, tokens.Tokens,
+		tabheaders.GetHeaders(allTokenCols, defaultTokenCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+	return nil
 }

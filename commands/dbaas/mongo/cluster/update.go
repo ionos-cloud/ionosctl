@@ -4,13 +4,14 @@ import (
 	"context"
 	"fmt"
 	"net"
-	"os"
 
 	cloudapiv6completer "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/templates"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/pointer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/convbytes"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"github.com/spf13/viper"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/completer"
@@ -141,7 +142,21 @@ func ClusterUpdateCmd() *core.Command {
 				return fmt.Errorf("failed creating cluster: %w", err)
 			}
 
-			return c.Printer.Print(getClusterPrint(c, &[]ionoscloud.ClusterResponse{createdCluster}))
+			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+
+			clusterConverted, err := convertClusterToTable(createdCluster)
+			if err != nil {
+				return err
+			}
+
+			out, err := jsontabwriter.GenerateOutputPreconverted(createdCluster, clusterConverted,
+				tabheaders.GetHeaders(allCols, defaultCols, cols))
+			if err != nil {
+				return err
+			}
+
+			fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+			return nil
 		},
 		InitClient: true,
 	})
@@ -184,7 +199,7 @@ func ClusterUpdateCmd() *core.Command {
 	// Connections
 	cmd.AddStringFlag(constants.FlagDatacenterId, "", "", "The datacenter to which your cluster will be connected. Must be in the same location as the cluster")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagDatacenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return cloudapiv6completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return cloudapiv6completer.DataCentersIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddStringFlag(constants.FlagLanId, "", "", "The numeric LAN ID with which you connect your cluster")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagLanId, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {

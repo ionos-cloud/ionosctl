@@ -4,22 +4,35 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"os"
 	"strings"
 
-	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
+	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+)
+
+var (
+	allFlowlogJSONPaths = map[string]string{
+		"FlowLogId": "id",
+		"Name":      "properties.name",
+		"Action":    "properties.action",
+		"Direction": "properties.direction",
+		"Bucket":    "properties.bucket",
+		"State":     "metadata.state",
+	}
+
+	defaultFlowLogCols = []string{"FlowLogId", "Name", "Action", "Direction", "Bucket", "State"}
 )
 
 func FlowlogCmd() *core.Command {
@@ -34,7 +47,7 @@ func FlowlogCmd() *core.Command {
 		},
 	}
 	globalFlags := flowLogCmd.GlobalFlags()
-	globalFlags.StringSliceP(constants.ArgCols, "", defaultFlowLogCols, printer.ColsMessage(defaultFlowLogCols))
+	globalFlags.StringSliceP(constants.ArgCols, "", defaultFlowLogCols, tabheaders.ColsMessage(defaultFlowLogCols))
 	_ = viper.BindPFlag(core.GetFlagName(flowLogCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = flowLogCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultFlowLogCols, cobra.ShellCompDirectiveNoFileComp
@@ -57,7 +70,7 @@ func FlowlogCmd() *core.Command {
 	})
 	list.AddUUIDFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
 	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.DataCentersIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 	list.AddUUIDFlag(cloudapiv6.ArgServerId, "", "", cloudapiv6.ServerId, core.RequiredFlagOption())
 	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -97,7 +110,7 @@ func FlowlogCmd() *core.Command {
 	})
 	get.AddUUIDFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
 	_ = get.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.DataCentersIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 	get.AddUUIDFlag(cloudapiv6.ArgServerId, "", "", cloudapiv6.ServerId, core.RequiredFlagOption())
 	_ = get.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -145,7 +158,7 @@ Required values to run command:
 	})
 	create.AddUUIDFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
 	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.DataCentersIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddUUIDFlag(cloudapiv6.ArgServerId, "", "", cloudapiv6.ServerId, core.RequiredFlagOption())
 	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -196,7 +209,7 @@ Required values to run command:
 	})
 	deleteCmd.AddUUIDFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.DataCentersIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddUUIDFlag(cloudapiv6.ArgServerId, "", "", cloudapiv6.ServerId, core.RequiredFlagOption())
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -252,6 +265,9 @@ func RunFlowLogList(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+
 	flowLogs, resp, err := c.CloudApiV6Services.FlowLogs().List(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
@@ -259,40 +275,66 @@ func RunFlowLogList(c *core.CommandConfig) error {
 		listQueryParams,
 	)
 	if resp != nil {
-		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getFlowLogPrint(nil, c, getFlowLogs(flowLogs)))
+
+	out, err := jsontabwriter.GenerateOutput("items", allFlowlogJSONPaths, flowLogs.FlowLogs,
+		tabheaders.GetHeadersAllDefault(defaultFlowLogCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+
+	return nil
 }
 
 func RunFlowLogGet(c *core.CommandConfig) error {
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+
 	listQueryParams, err := query.GetListQueryParams(c)
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
 	nicId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId))
 	flowLogId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFlowLogId))
-	c.Printer.Verbose("FlowLog with id: %v from Nic with id: %v is getting...", flowLogId, nicId)
+
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("FlowLog with id: %v from Nic with id: %v is getting...", flowLogId, nicId))
+
 	flowLog, resp, err := c.CloudApiV6Services.FlowLogs().Get(dcId, serverId, nicId, flowLogId, queryParams)
 	if resp != nil {
-		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getFlowLogPrint(nil, c, getFlowLog(flowLog)))
+
+	out, err := jsontabwriter.GenerateOutput("", allFlowlogJSONPaths, flowLog.FlowLog,
+		tabheaders.GetHeadersAllDefault(defaultFlowLogCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+
+	return nil
 }
 
 func RunFlowLogCreate(c *core.CommandConfig) error {
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+
 	listQueryParams, err := query.GetListQueryParams(c)
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
 	properties := getFlowLogPropertiesSet(c)
 	input := resources.FlowLog{
@@ -300,6 +342,7 @@ func RunFlowLogCreate(c *core.CommandConfig) error {
 			Properties: &properties.FlowLogProperties,
 		},
 	}
+
 	flowLog, resp, err := c.CloudApiV6Services.FlowLogs().Create(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
@@ -307,17 +350,26 @@ func RunFlowLogCreate(c *core.CommandConfig) error {
 		input,
 		queryParams,
 	)
-	if resp != nil && printer.GetId(resp) != "" {
-		c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
+	if resp != nil && utils.GetId(resp) != "" {
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, utils.GetId(resp), resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
 
-	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, utils.GetId(resp)); err != nil {
 		return err
 	}
-	return c.Printer.Print(getFlowLogPrint(resp, c, getFlowLog(flowLog)))
+
+	out, err := jsontabwriter.GenerateOutput("", allFlowlogJSONPaths, flowLog.FlowLog,
+		tabheaders.GetHeadersAllDefault(defaultFlowLogCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+
+	return nil
 }
 
 func RunFlowLogDelete(c *core.CommandConfig) error {
@@ -325,78 +377,98 @@ func RunFlowLogDelete(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	flowLogId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFlowLogId))
 	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
 	nicId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId))
+
 	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
 		if err := DeleteAllFlowlogs(c); err != nil {
 			return err
 		}
-		return c.Printer.Print(printer.Result{Resource: c.Resource, Verb: c.Verb})
-	} else {
-		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete flow log"); err != nil {
-			return err
-		}
-		c.Printer.Verbose("Starting deleting FlowLog with id: %v...", flowLogId)
-		resp, err := c.CloudApiV6Services.FlowLogs().Delete(dcId, serverId, nicId, flowLogId, queryParams)
-		if resp != nil && printer.GetId(resp) != "" {
-			c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
-		}
-		if err != nil {
-			return err
-		}
-		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-			return err
-		}
-		return c.Printer.Print(getFlowLogPrint(resp, c, nil))
+
+		return nil
 	}
+
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete flow log", viper.GetBool(constants.ArgForce)) {
+		return fmt.Errorf(confirm.UserDenied)
+	}
+
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Starting deleting FlowLog with id: %v...", flowLogId))
+
+	resp, err := c.CloudApiV6Services.FlowLogs().Delete(dcId, serverId, nicId, flowLogId, queryParams)
+	if resp != nil && utils.GetId(resp) != "" {
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, utils.GetId(resp), resp.RequestTime))
+	}
+	if err != nil {
+		return err
+	}
+
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, utils.GetId(resp)); err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Flowlog successfully deleted"))
+
+	return nil
+
 }
 
 // Get FlowLog Properties set used for create commands
 func getFlowLogPropertiesSet(c *core.CommandConfig) resources.FlowLogProperties {
 	properties := resources.FlowLogProperties{}
+
 	name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
 	properties.SetName(name)
-	c.Printer.Verbose("Property Name set: %v", name)
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property Name set: %v", name))
+
 	action := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgAction))
 	properties.SetAction(strings.ToUpper(action))
-	c.Printer.Verbose("Property Action set: %v", action)
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property Action set: %v", action))
+
 	direction := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDirection))
 	properties.SetDirection(strings.ToUpper(direction))
-	c.Printer.Verbose("Property Direction set: %v", direction)
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property Direction set: %v", direction))
+
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgS3Bucket)) {
 		bucketName := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgS3Bucket))
 		properties.SetBucket(bucketName)
-		c.Printer.Verbose("Property Bucket set: %v", bucketName)
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property Bucket set: %v", bucketName))
 	}
+
 	return properties
 }
 
 // Get FlowLog Properties set used for update commands
 func getFlowLogPropertiesUpdate(c *core.CommandConfig) resources.FlowLogProperties {
 	properties := resources.FlowLogProperties{}
+
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgName)) {
 		name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
 		properties.SetName(name)
-		c.Printer.Verbose("Property Name set: %v", name)
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property Name set: %v", name))
 	}
+
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgAction)) {
 		action := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgAction))
 		properties.SetAction(strings.ToUpper(action))
-		c.Printer.Verbose("Property Action set: %v", action)
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property Action set: %v", action))
 	}
+
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgDirection)) {
 		direction := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDirection))
 		properties.SetDirection(strings.ToUpper(direction))
-		c.Printer.Verbose("Property Direction set: %v", direction)
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property Direction set: %v", direction))
 	}
+
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgS3Bucket)) {
 		bucketName := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgS3Bucket))
 		properties.SetBucket(bucketName)
-		c.Printer.Verbose("Property Bucket set: %v", bucketName)
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property Bucket set: %v", bucketName))
 	}
+
 	return properties
 }
 
@@ -405,152 +477,86 @@ func DeleteAllFlowlogs(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
 	nicId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId))
-	c.Printer.Verbose("Datacenter ID: %v", dcId)
-	c.Printer.Verbose("Server ID: %v", serverId)
-	c.Printer.Verbose("NIC ID: %v", nicId)
-	c.Printer.Verbose("Getting Flowlogs...")
+
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.DatacenterId, dcId))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Server ID: %v", serverId))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("NIC ID: %v", nicId))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting Flowlogs..."))
+
 	flowlogs, resp, err := c.CloudApiV6Services.FlowLogs().List(dcId, serverId, nicId, cloudapiv6.ParentResourceListQueryParams)
 	if err != nil {
 		return err
 	}
-	if flowlogsItems, ok := flowlogs.GetItemsOk(); ok && flowlogsItems != nil {
-		if len(*flowlogsItems) > 0 {
-			_ = c.Printer.Warn("Flowlogs to be deleted:")
-			for _, backupUnit := range *flowlogsItems {
-				delIdAndName := ""
-				if id, ok := backupUnit.GetIdOk(); ok && id != nil {
-					delIdAndName += "Flowlog Id: " + *id
-				}
-				if properties, ok := backupUnit.GetPropertiesOk(); ok && properties != nil {
-					if name, ok := properties.GetNameOk(); ok && name != nil {
-						delIdAndName += " Flowlog Name: " + *name
-					}
-				}
-				_ = c.Printer.Warn(delIdAndName)
-			}
-			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the flow logs"); err != nil {
-				return err
-			}
-			c.Printer.Verbose("Deleting all the Flowlogs...")
-			var multiErr error
-			for _, flowlog := range *flowlogsItems {
-				if id, ok := flowlog.GetIdOk(); ok && id != nil {
-					c.Printer.Verbose("Starting deleting Flowlog with id: %v...", *id)
-					resp, err = c.CloudApiV6Services.FlowLogs().Delete(dcId, serverId, nicId, *id, queryParams)
-					if resp != nil && printer.GetId(resp) != "" {
-						c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
-					}
-					if err != nil {
-						multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
-						continue
-					} else {
-						_ = c.Printer.Warn(fmt.Sprintf(constants.MessageDeletingAll, c.Resource, *id))
-					}
-					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-						multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
-						continue
-					}
-				}
-			}
-			if multiErr != nil {
-				return multiErr
-			}
-			return nil
-		} else {
-			return errors.New("no Flowlogs found")
-		}
-	} else {
+
+	flowlogsItems, ok := flowlogs.GetItemsOk()
+	if !ok || flowlogsItems == nil {
 		return errors.New("could not get items of Flowlogs")
 	}
-}
 
-// Output Printing
-
-var defaultFlowLogCols = []string{"FlowLogId", "Name", "Action", "Direction", "Bucket", "State"}
-
-type FlowLogPrint struct {
-	FlowLogId string `json:"FlowLogId,omitempty"`
-	Name      string `json:"Name,omitempty"`
-	Action    string `json:"Action,omitempty"`
-	Direction string `json:"Direction,omitempty"`
-	Bucket    string `json:"Bucket,omitempty"`
-	State     string `json:"State,omitempty"`
-}
-
-func getFlowLogPrint(resp *resources.Response, c *core.CommandConfig, rule []resources.FlowLog) printer.Result {
-	var r printer.Result
-	if c != nil {
-		if resp != nil {
-			r.ApiResponse = resp
-			r.Resource = c.Resource
-			r.Verb = c.Verb
-			r.WaitForRequest = viper.GetBool(core.GetFlagName(c.NS, constants.ArgWaitForRequest))
-		}
-		if rule != nil {
-			r.OutputJSON = rule
-			r.KeyValue = getFlowLogsKVMaps(rule)
-			r.Columns = printer.GetHeadersAllDefault(defaultFlowLogCols, viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)))
-		}
+	if len(*flowlogsItems) <= 0 {
+		return errors.New("no Flowlogs found")
 	}
-	return r
-}
 
-func getFlowLogs(flowLogs resources.FlowLogs) []resources.FlowLog {
-	ls := make([]resources.FlowLog, 0)
-	if items, ok := flowLogs.GetItemsOk(); ok && items != nil {
-		for _, s := range *items {
-			ls = append(ls, resources.FlowLog{FlowLog: s})
-		}
-	}
-	return ls
-}
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Flowlogs to be deleted:"))
 
-func getFlowLog(flowLog *resources.FlowLog) []resources.FlowLog {
-	ss := make([]resources.FlowLog, 0)
-	if flowLog != nil {
-		ss = append(ss, resources.FlowLog{FlowLog: flowLog.FlowLog})
-	}
-	return ss
-}
+	for _, backupUnit := range *flowlogsItems {
+		delIdAndName := ""
 
-func getFlowLogsKVMaps(ls []resources.FlowLog) []map[string]interface{} {
-	out := make([]map[string]interface{}, 0, len(ls))
-	if len(ls) > 0 {
-		for _, l := range ls {
-			o := getFlowLogKVMap(l)
-			out = append(out, o)
+		if id, ok := backupUnit.GetIdOk(); ok && id != nil {
+			delIdAndName += "Flowlog Id: " + *id
 		}
-	}
-	return out
-}
 
-func getFlowLogKVMap(l resources.FlowLog) map[string]interface{} {
-	var flowLogPrint FlowLogPrint
-	if id, ok := l.GetIdOk(); ok && id != nil {
-		flowLogPrint.FlowLogId = *id
+		if properties, ok := backupUnit.GetPropertiesOk(); ok && properties != nil {
+			if name, ok := properties.GetNameOk(); ok && name != nil {
+				delIdAndName += " Flowlog Name: " + *name
+			}
+		}
+
+		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
-	if properties, ok := l.GetPropertiesOk(); ok && properties != nil {
-		if name, ok := properties.GetNameOk(); ok && name != nil {
-			flowLogPrint.Name = *name
-		}
-		if action, ok := properties.GetActionOk(); ok && action != nil {
-			flowLogPrint.Action = *action
-		}
-		if direction, ok := properties.GetDirectionOk(); ok && direction != nil {
-			flowLogPrint.Direction = *direction
-		}
-		if bucket, ok := properties.GetBucketOk(); ok && bucket != nil {
-			flowLogPrint.Bucket = *bucket
-		}
+
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete all the flow logs", viper.GetBool(constants.ArgForce)) {
+		return fmt.Errorf(confirm.UserDenied)
 	}
-	if metadata, ok := l.GetMetadataOk(); ok && metadata != nil {
-		if state, ok := metadata.GetStateOk(); ok && state != nil {
-			flowLogPrint.State = *state
+
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the Flowlogs..."))
+
+	var multiErr error
+	for _, flowlog := range *flowlogsItems {
+		id, ok := flowlog.GetIdOk()
+		if !ok || id == nil {
+			continue
 		}
+
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Starting deleting Flowlog with id: %v...", *id))
+
+		resp, err = c.CloudApiV6Services.FlowLogs().Delete(dcId, serverId, nicId, *id, queryParams)
+		if resp != nil && utils.GetId(resp) != "" {
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, utils.GetId(resp), resp.RequestTime))
+		}
+		if err != nil {
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
+			continue
+		}
+
+		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(constants.MessageDeletingAll, c.Resource, *id))
+
+		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, utils.GetId(resp)); err != nil {
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
+			continue
+		}
+
 	}
-	return structs.Map(flowLogPrint)
+
+	if multiErr != nil {
+		return multiErr
+	}
+
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Flowlogs successfully deleted"))
+	return nil
 }

@@ -7,13 +7,12 @@ package completer
 import (
 	"context"
 	"fmt"
-	"io"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
 )
 
-func BackupUnitsIds(outErr io.Writer) []string {
+func BackupUnitsIds() []string {
 	backupUnitSvc := resources.NewBackupUnitService(client.Must(), context.Background())
 	backupUnits, _, err := backupUnitSvc.List(resources.ListQueryParams{})
 	if err != nil {
@@ -51,7 +50,7 @@ func AttachedCdromsIds(datacenterId, serverId string) []string {
 	return attachedCdromsIds
 }
 
-func DataCentersIds(outErr io.Writer) []string {
+func DataCentersIds() []string {
 	datacenterSvc := resources.NewDataCenterService(client.Must(), context.Background())
 	datacenters, _, err := datacenterSvc.List(resources.ListQueryParams{})
 	if err != nil {
@@ -121,7 +120,7 @@ func FlowLogsIds(datacenterId, serverId, nicId string) []string {
 	return flowLogsIds
 }
 
-func GroupsIds(outErr io.Writer) []string {
+func GroupsIds() []string {
 	groupSvc := resources.NewGroupService(client.Must(), context.Background())
 	groups, _, err := groupSvc.List(resources.ListQueryParams{})
 	if err != nil {
@@ -140,7 +139,7 @@ func GroupsIds(outErr io.Writer) []string {
 	return groupsIds
 }
 
-func ImageIds(outErr io.Writer) []string {
+func ImageIds() []string {
 	imageSvc := resources.NewImageService(client.Must(), context.Background())
 	images, _, err := imageSvc.List(resources.ListQueryParams{})
 	if err != nil {
@@ -159,7 +158,7 @@ func ImageIds(outErr io.Writer) []string {
 	return imgsIds
 }
 
-func IpBlocksIds(outErr io.Writer) []string {
+func IpBlocksIds() []string {
 	ipBlockSvc := resources.NewIpBlockService(client.Must(), context.Background())
 	ipBlocks, _, err := ipBlockSvc.List(resources.ListQueryParams{})
 	if err != nil {
@@ -178,7 +177,7 @@ func IpBlocksIds(outErr io.Writer) []string {
 	return ssIds
 }
 
-func K8sClustersIds(outErr io.Writer) []string {
+func K8sClustersIds() []string {
 	k8sSvc := resources.NewK8sService(client.Must(), context.Background())
 	k8ss, _, err := k8sSvc.ListClusters(resources.ListQueryParams{})
 	if err != nil {
@@ -197,7 +196,7 @@ func K8sClustersIds(outErr io.Writer) []string {
 	return k8ssIds
 }
 
-func K8sVersionsIds(outErr io.Writer) []string {
+func K8sVersionsIds() []string {
 	k8sSvc := resources.NewK8sService(client.Must(), context.Background())
 	k8ss, _, err := k8sSvc.ListVersions()
 	if err != nil {
@@ -299,7 +298,7 @@ func LoadbalancersIds(datacenterId string) []string {
 	return loadbalancersIds
 }
 
-func LocationIds(outErr io.Writer) []string {
+func LocationIds() []string {
 	locationSvc := resources.NewLocationService(client.Must(), context.Background())
 	locations, _, err := locationSvc.List(resources.ListQueryParams{})
 	if err != nil {
@@ -470,7 +469,7 @@ func AttachedNicsIds(datacenterId, loadbalancerId string) []string {
 	return attachedNicsIds
 }
 
-func PccsIds(outErr io.Writer) []string {
+func PccsIds() []string {
 	pccSvc := resources.NewPrivateCrossConnectService(client.Must(), context.Background())
 	pccs, _, err := pccSvc.List(resources.ListQueryParams{})
 	if err != nil {
@@ -489,7 +488,7 @@ func PccsIds(outErr io.Writer) []string {
 	return pccsIds
 }
 
-func RequestsIds(outErr io.Writer) []string {
+func RequestsIds() []string {
 	reqSvc := resources.NewRequestService(client.Must(), context.Background())
 	requests, _, err := reqSvc.List(resources.ListQueryParams{})
 	if err != nil {
@@ -508,7 +507,7 @@ func RequestsIds(outErr io.Writer) []string {
 	return reqIds
 }
 
-func ResourcesIds(outErr io.Writer) []string {
+func ResourcesIds() []string {
 	userSvc := resources.NewUserService(client.Must(), context.Background())
 	res, _, err := userSvc.ListResources()
 	if err != nil {
@@ -584,7 +583,7 @@ func GroupResourcesIds(groupId string) []string {
 	return resIds
 }
 
-func SnapshotIds(outErr io.Writer) []string {
+func SnapshotIds() []string {
 	snapshotSvc := resources.NewSnapshotService(client.Must(), context.Background())
 	snapshots, _, err := snapshotSvc.List(resources.ListQueryParams{})
 	if err != nil {
@@ -603,7 +602,7 @@ func SnapshotIds(outErr io.Writer) []string {
 	return ssIds
 }
 
-func TemplatesIds(outErr io.Writer) []string {
+func TemplatesIds() []string {
 	tplSvc := resources.NewTemplateService(client.Must(), context.Background())
 	tpls, _, err := tplSvc.List(resources.ListQueryParams{})
 	if err != nil {
@@ -622,7 +621,7 @@ func TemplatesIds(outErr io.Writer) []string {
 	return tplsIds
 }
 
-func UsersIds(outErr io.Writer) []string {
+func UsersIds() []string {
 	userSvc := resources.NewUserService(client.Must(), context.Background())
 	users, _, err := userSvc.List(resources.ListQueryParams{})
 	if err != nil {
@@ -755,7 +754,7 @@ func AlbForwardingRulesIds(datacenterId, albId string) []string {
 	return ssIds
 }
 
-func TargetGroupIds(outErr io.Writer) []string {
+func TargetGroupIds() []string {
 	targetGroupSvc := resources.NewTargetGroupService(client.Must(), context.Background())
 	targetGroups, _, err := targetGroupSvc.List(resources.ListQueryParams{})
 	if err != nil {

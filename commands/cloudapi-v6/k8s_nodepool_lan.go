@@ -2,27 +2,37 @@ package commands
 
 import (
 	"context"
-	"errors"
 	"fmt"
-	"os"
 
+	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/internal/pointer"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/die"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 
-	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+)
+
+var (
+	allK8sNodePoolLanJSONPaths = map[string]string{
+		"LanId":           "id",
+		"Dhcp":            "dhcp",
+		"RoutesNetwork":   "routes.*.network",
+		"RoutesGatewayIp": "routes.*.gatewayIp",
+	}
+
+	defaultK8sNodePoolLanCols = []string{"LanId", "Dhcp", "RoutesNetwork", "RoutesGatewayIp"}
 )
 
 func K8sNodePoolLanCmd() *core.Command {
@@ -53,13 +63,13 @@ func K8sNodePoolLanCmd() *core.Command {
 	})
 	list.AddUUIDFlag(constants.FlagClusterId, "", "", cloudapiv6.K8sClusterId, core.RequiredFlagOption())
 	_ = list.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.K8sClustersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.K8sClustersIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 	list.AddUUIDFlag(constants.FlagNodepoolId, "", "", cloudapiv6.K8sNodePoolId, core.RequiredFlagOption())
 	_ = list.Command.RegisterFlagCompletionFunc(constants.FlagNodepoolId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.K8sNodePoolsIds(viper.GetString(core.GetFlagName(list.NS, constants.FlagClusterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	list.AddStringSliceFlag(constants.ArgCols, "", defaultK8sNodePoolLanCols, printer.ColsMessage(defaultK8sNodePoolLanCols))
+	list.AddStringSliceFlag(constants.ArgCols, "", defaultK8sNodePoolLanCols, tabheaders.ColsMessage(defaultK8sNodePoolLanCols))
 	_ = list.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultK8sNodePoolLanCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -92,7 +102,7 @@ Required values to run a command:
 	})
 	add.AddUUIDFlag(constants.FlagClusterId, "", "", cloudapiv6.K8sClusterId, core.RequiredFlagOption())
 	_ = add.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.K8sClustersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.K8sClustersIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 	add.AddUUIDFlag(constants.FlagNodepoolId, "", "", cloudapiv6.K8sNodePoolId, core.RequiredFlagOption())
 	_ = add.Command.RegisterFlagCompletionFunc(constants.FlagNodepoolId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -102,7 +112,7 @@ Required values to run a command:
 	add.AddBoolFlag(cloudapiv6.ArgDhcp, "", true, "Indicates if the Kubernetes Node Pool LAN will reserve an IP using DHCP. E.g.: --dhcp=true, --dhcp=false")
 	add.AddStringSliceFlag(cloudapiv6.ArgNetwork, "", nil, "Slice of IPv4 or IPv6 CIDRs to be routed via the interface. Must contain same number of arguments as --gateway-ip flag")
 	add.AddStringSliceFlag(cloudapiv6.ArgGatewayIp, "", nil, "Slice of IPv4 or IPv6 Gateway IPs for the routes. Must contain same number of arguments as --network flag")
-	add.AddStringSliceFlag(cloudapiv6.ArgCols, "", defaultK8sNodePoolLanCols, printer.ColsMessage(defaultK8sNodePoolLanCols))
+	add.AddStringSliceFlag(cloudapiv6.ArgCols, "", defaultK8sNodePoolLanCols, tabheaders.ColsMessage(defaultK8sNodePoolLanCols))
 	_ = add.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultK8sNodePoolLanCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -131,7 +141,7 @@ Required values to run command:
 	})
 	removeCmd.AddUUIDFlag(constants.FlagClusterId, "", "", cloudapiv6.K8sClusterId, core.RequiredFlagOption())
 	_ = removeCmd.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.K8sClustersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.K8sClustersIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 	removeCmd.AddUUIDFlag(constants.FlagNodepoolId, "", "", cloudapiv6.K8sNodePoolId, core.RequiredFlagOption())
 	_ = removeCmd.Command.RegisterFlagCompletionFunc(constants.FlagNodepoolId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -162,20 +172,33 @@ func RunK8sNodePoolLanList(c *core.CommandConfig) error {
 		resources.QueryParams{},
 	)
 	if resp != nil {
-		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
-	if properties, ok := k8ss.GetPropertiesOk(); ok && properties != nil {
-		if lans, ok := properties.GetLansOk(); ok && lans != nil {
-			return c.Printer.Print(getK8sNodePoolLanPrint(c, getK8sNodePoolLans(lans)))
-		} else {
-			return errors.New("error getting node pool lans")
-		}
-	} else {
-		return errors.New("error getting node pool properties")
+
+	properties, ok := k8ss.GetPropertiesOk()
+	if !ok || properties == nil {
+		return fmt.Errorf("error getting node pool properties")
 	}
+
+	lans, ok := properties.GetLansOk()
+	if !ok || lans == nil {
+		return fmt.Errorf("error getting node pool lans")
+	}
+
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+
+	out, err := jsontabwriter.GenerateOutput("items", allK8sNodePoolLanJSONPaths, lans,
+		tabheaders.GetHeadersAllDefault(defaultK8sNodePoolLanCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+
+	return nil
 }
 
 func RunK8sNodePoolLanAdd(c *core.CommandConfig) error {
@@ -183,6 +206,7 @@ func RunK8sNodePoolLanAdd(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
 	ng, _, err := c.CloudApiV6Services.K8s().GetNodePool(
 		viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)),
@@ -192,6 +216,7 @@ func RunK8sNodePoolLanAdd(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	input := getNewK8sNodePoolLanInfo(c, ng)
 	ngNew, resp, err := c.CloudApiV6Services.K8s().UpdateNodePool(
 		viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)),
@@ -199,13 +224,24 @@ func RunK8sNodePoolLanAdd(c *core.CommandConfig) error {
 		input,
 		queryParams,
 	)
-	if resp != nil && printer.GetId(resp) != "" {
-		c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
+	if resp != nil && utils.GetId(resp) != "" {
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, utils.GetId(resp), resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getK8sNodePoolLanPrint(c, getK8sNodePoolLansForPut(ngNew)))
+
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+
+	out, err := jsontabwriter.GenerateOutput("", allK8sNodePoolLanJSONPaths, getK8sNodePoolLansForPut(ngNew),
+		tabheaders.GetHeadersAllDefault(defaultK8sNodePoolLanCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+
+	return nil
 }
 
 func RunK8sNodePoolLanRemove(c *core.CommandConfig) error {
@@ -213,32 +249,39 @@ func RunK8sNodePoolLanRemove(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
 	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
 		if err := RemoveAllK8sNodePoolsLans(c); err != nil {
 			return err
 		}
-		return c.Printer.Print(printer.Result{Resource: c.Resource, Verb: c.Verb})
-	} else {
-		clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
-		nodePoolId := viper.GetString(core.GetFlagName(c.NS, constants.FlagNodepoolId))
-		if err := utils.AskForConfirm(c.Stdin, c.Printer, "remove node pool lan"); err != nil {
-			return err
-		}
-		ng, _, err := c.CloudApiV6Services.K8s().GetNodePool(clusterId, nodePoolId, queryParams)
-		if err != nil {
-			return err
-		}
-		input := removeK8sNodePoolLanInfo(c, ng)
-		_, resp, err := c.CloudApiV6Services.K8s().UpdateNodePool(clusterId, nodePoolId, input, queryParams)
-		if resp != nil && printer.GetId(resp) != "" {
-			c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
-		}
-		if err != nil {
-			return err
-		}
-		return c.Printer.Warn("Status: Command node pool lan remove has been successfully executed")
+
+		return nil
 	}
+
+	clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
+	nodePoolId := viper.GetString(core.GetFlagName(c.NS, constants.FlagNodepoolId))
+
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "remove node pool lan", viper.GetBool(constants.ArgForce)) {
+		return fmt.Errorf(confirm.UserDenied)
+	}
+
+	ng, _, err := c.CloudApiV6Services.K8s().GetNodePool(clusterId, nodePoolId, queryParams)
+	if err != nil {
+		return err
+	}
+
+	input := removeK8sNodePoolLanInfo(c, ng)
+	_, resp, err := c.CloudApiV6Services.K8s().UpdateNodePool(clusterId, nodePoolId, input, queryParams)
+	if resp != nil && utils.GetId(resp) != "" {
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, utils.GetId(resp), resp.RequestTime))
+	}
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Kubernetes Node Pool Lan successfully deleted"))
+	return nil
 }
 
 func RemoveAllK8sNodePoolsLans(c *core.CommandConfig) error {
@@ -246,83 +289,104 @@ func RemoveAllK8sNodePoolsLans(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
 	clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
 	nodePoolId := viper.GetString(core.GetFlagName(c.NS, constants.FlagNodepoolId))
-	c.Printer.Verbose("K8sCluster ID: %v", clusterId)
-	c.Printer.Verbose("K8sNodePool ID: %v", nodePoolId)
-	c.Printer.Verbose("Getting K8sNodePool Lans...")
+
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("K8sCluster ID: %v", clusterId))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("K8sNodePool ID: %v", nodePoolId))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting K8sNodePool Lans..."))
+
 	k8sNodepool, resp, err := c.CloudApiV6Services.K8s().GetNodePool(clusterId, nodePoolId, cloudapiv6.ParentResourceQueryParams)
 	if err != nil {
 		return err
 	}
-	if nodePoolProperties, ok := k8sNodepool.GetPropertiesOk(); ok && nodePoolProperties != nil {
-		if lans, ok := nodePoolProperties.GetLansOk(); ok && lans != nil {
-			if len(*lans) > 0 {
-				_ = c.Printer.Warn("K8s NodePool Lans to be removed:")
-				for _, lan := range *lans {
-					if id, ok := lan.GetIdOk(); ok && id != nil {
-						_ = c.Printer.Warn("K8s NodePool Lan Id: " + string(*id))
-					}
-				}
-			} else {
-				return errors.New("no Lans found")
-			}
-		} else {
-			return errors.New("could not get Lans items")
+
+	nodePoolProperties, ok := k8sNodepool.GetPropertiesOk()
+	if !ok || nodePoolProperties == nil {
+		return fmt.Errorf("could not get Node Pool properties")
+	}
+
+	lans, ok := nodePoolProperties.GetLansOk()
+	if !ok || lans == nil {
+		return fmt.Errorf("could not get Lans items")
+	}
+
+	if len(*lans) <= 0 {
+		return fmt.Errorf("no Lans found")
+	}
+
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("K8s NodePool Lans to be removed:"))
+	for _, lan := range *lans {
+		if id, ok := lan.GetIdOk(); ok && id != nil {
+			fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("K8s NodePool Lan Id: "+string(*id)))
 		}
 	}
-	if err = utils.AskForConfirm(c.Stdin, c.Printer, "remove all the K8sNodePool Lans"); err != nil {
+
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "remove all the K8sNodePool Lans", viper.GetBool(constants.ArgForce)) {
+		return fmt.Errorf(confirm.UserDenied)
+	}
+
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Removing all the K8sNodePool Lans..."))
+
+	propertiesUpdated := resources.K8sNodePoolPropertiesForPut{}
+	if n, ok := nodePoolProperties.GetNodeCountOk(); ok && n != nil {
+		propertiesUpdated.SetNodeCount(*n)
+	}
+
+	if n, ok := nodePoolProperties.GetAutoScalingOk(); ok && n != nil {
+		propertiesUpdated.SetAutoScaling(*n)
+	}
+
+	if n, ok := nodePoolProperties.GetMaintenanceWindowOk(); ok && n != nil {
+		propertiesUpdated.SetMaintenanceWindow(*n)
+	}
+
+	if n, ok := nodePoolProperties.GetK8sVersionOk(); ok && n != nil {
+		propertiesUpdated.SetK8sVersion(*n)
+	}
+
+	newLans := make([]ionoscloud.KubernetesNodePoolLan, 0)
+	propertiesUpdated.SetLans(newLans)
+	k8sNodePoolUpdated := resources.K8sNodePoolForPut{
+		KubernetesNodePoolForPut: ionoscloud.KubernetesNodePoolForPut{
+			Properties: &propertiesUpdated.KubernetesNodePoolPropertiesForPut,
+		},
+	}
+
+	_, resp, err = c.CloudApiV6Services.K8s().UpdateNodePool(clusterId, nodePoolId, k8sNodePoolUpdated, queryParams)
+	if resp != nil {
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+	}
+	if err != nil {
 		return err
 	}
-	c.Printer.Verbose("Removing all the K8sNodePool Lans...")
-	propertiesUpdated := resources.K8sNodePoolPropertiesForPut{}
-	if properties, ok := k8sNodepool.GetPropertiesOk(); ok && properties != nil {
-		if n, ok := properties.GetNodeCountOk(); ok && n != nil {
-			propertiesUpdated.SetNodeCount(*n)
-		}
-		if n, ok := properties.GetAutoScalingOk(); ok && n != nil {
-			propertiesUpdated.SetAutoScaling(*n)
-		}
-		if n, ok := properties.GetMaintenanceWindowOk(); ok && n != nil {
-			propertiesUpdated.SetMaintenanceWindow(*n)
-		}
-		if n, ok := properties.GetK8sVersionOk(); ok && n != nil {
-			propertiesUpdated.SetK8sVersion(*n)
-		}
-		newLans := make([]ionoscloud.KubernetesNodePoolLan, 0)
-		propertiesUpdated.SetLans(newLans)
-		k8sNodePoolUpdated := resources.K8sNodePoolForPut{
-			KubernetesNodePoolForPut: ionoscloud.KubernetesNodePoolForPut{
-				Properties: &propertiesUpdated.KubernetesNodePoolPropertiesForPut,
-			},
-		}
-		_, resp, err = c.CloudApiV6Services.K8s().UpdateNodePool(clusterId, nodePoolId, k8sNodePoolUpdated, queryParams)
-		if resp != nil {
-			c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
-		}
-		if err != nil {
-			return err
-		}
-	}
+
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Kubernetes Node Pool Lans successfully deleted"))
 	return nil
 }
 
 func getNewK8sNodePoolLanInfo(c *core.CommandConfig, oldNg *resources.K8sNodePool) resources.K8sNodePoolForPut {
 	propertiesUpdated := resources.K8sNodePoolPropertiesForPut{}
+
 	if properties, ok := oldNg.GetPropertiesOk(); ok && properties != nil {
 		if n, ok := properties.GetNodeCountOk(); ok && n != nil {
 			propertiesUpdated.SetNodeCount(*n)
 		}
+
 		if n, ok := properties.GetAutoScalingOk(); ok && n != nil {
 			propertiesUpdated.SetAutoScaling(*n)
 		}
+
 		if n, ok := properties.GetMaintenanceWindowOk(); ok && n != nil {
 			propertiesUpdated.SetMaintenanceWindow(*n)
 		}
+
 		if n, ok := properties.GetK8sVersionOk(); ok && n != nil {
 			propertiesUpdated.SetK8sVersion(*n)
 		}
+
 		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgLanId)) {
 			newLans := make([]ionoscloud.KubernetesNodePoolLan, 0)
 			// Append existing LANs
@@ -331,6 +395,7 @@ func getNewK8sNodePoolLanInfo(c *core.CommandConfig, oldNg *resources.K8sNodePoo
 					newLans = append(newLans, existingLan)
 				}
 			}
+
 			// Add new LANs
 			lanId := viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgLanId))
 			dhcp := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgDhcp))
@@ -338,13 +403,15 @@ func getNewK8sNodePoolLanInfo(c *core.CommandConfig, oldNg *resources.K8sNodePoo
 				Id:   &lanId,
 				Dhcp: &dhcp,
 			}
-			c.Printer.Verbose("Adding a Kubernetes NodePool LAN with id: %v and dhcp: %v", lanId, dhcp)
+
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Adding a Kubernetes NodePool LAN with id: %v and dhcp: %v", lanId, dhcp))
+
 			if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgNetwork)) {
 				network := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgNetwork))
 				gatewayIp := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgGatewayIp))
 
-				c.Printer.Verbose("Property Network set: %v", network)
-				c.Printer.Verbose("Property GatewayIp set: %v", gatewayIp)
+				fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property Network set: %v", network))
+				fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property GatewayIp set: %v", gatewayIp))
 
 				if len(network) != len(gatewayIp) {
 					die.Die(fmt.Sprintf("Flags %s, %s have different number of arguments, must be the same", cloudapiv6.ArgNetwork, cloudapiv6.ArgGatewayIp))
@@ -359,6 +426,7 @@ func getNewK8sNodePoolLanInfo(c *core.CommandConfig, oldNg *resources.K8sNodePoo
 						},
 					)
 				}
+
 				newLan.SetRoutes(routes)
 			}
 
@@ -366,6 +434,7 @@ func getNewK8sNodePoolLanInfo(c *core.CommandConfig, oldNg *resources.K8sNodePoo
 			propertiesUpdated.SetLans(newLans)
 		}
 	}
+
 	return resources.K8sNodePoolForPut{
 		KubernetesNodePoolForPut: ionoscloud.KubernetesNodePoolForPut{
 			Properties: &propertiesUpdated.KubernetesNodePoolPropertiesForPut,
@@ -375,23 +444,30 @@ func getNewK8sNodePoolLanInfo(c *core.CommandConfig, oldNg *resources.K8sNodePoo
 
 func removeK8sNodePoolLanInfo(c *core.CommandConfig, oldNg *resources.K8sNodePool) resources.K8sNodePoolForPut {
 	propertiesUpdated := resources.K8sNodePoolPropertiesForPut{}
+
 	if properties, ok := oldNg.GetPropertiesOk(); ok && properties != nil {
 		if n, ok := properties.GetNodeCountOk(); ok && n != nil {
 			propertiesUpdated.SetNodeCount(*n)
 		}
+
 		if n, ok := properties.GetAutoScalingOk(); ok && n != nil {
 			propertiesUpdated.SetAutoScaling(*n)
 		}
+
 		if n, ok := properties.GetMaintenanceWindowOk(); ok && n != nil {
 			propertiesUpdated.SetMaintenanceWindow(*n)
 		}
+
 		if n, ok := properties.GetK8sVersionOk(); ok && n != nil {
 			propertiesUpdated.SetK8sVersion(*n)
 		}
+
 		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgLanId)) {
 			lanId := viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgLanId))
 			newLans := make([]ionoscloud.KubernetesNodePoolLan, 0)
-			c.Printer.Verbose("Removing a Kubernetes NodePool LAN with id: %v", lanId)
+
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Removing a Kubernetes NodePool LAN with id: %v", lanId))
+
 			if existingLans, ok := properties.GetLansOk(); ok && existingLans != nil {
 				for _, existingLan := range *existingLans {
 					if id, ok := existingLan.GetIdOk(); ok && id != nil {
@@ -401,9 +477,11 @@ func removeK8sNodePoolLanInfo(c *core.CommandConfig, oldNg *resources.K8sNodePoo
 					}
 				}
 			}
+
 			propertiesUpdated.SetLans(newLans)
 		}
 	}
+
 	return resources.K8sNodePoolForPut{
 		KubernetesNodePoolForPut: ionoscloud.KubernetesNodePoolForPut{
 			Properties: &propertiesUpdated.KubernetesNodePoolPropertiesForPut,
@@ -411,81 +489,18 @@ func removeK8sNodePoolLanInfo(c *core.CommandConfig, oldNg *resources.K8sNodePoo
 	}
 }
 
-// Output Printing
+func getK8sNodePoolLansForPut(ng *resources.K8sNodePool) []ionoscloud.KubernetesNodePoolLan {
+	ss := make([]ionoscloud.KubernetesNodePoolLan, 0)
 
-var defaultK8sNodePoolLanCols = []string{"LanId", "Dhcp", "RoutesNetwork", "RoutesGatewayIp"}
-
-type K8sNodePoolLanPrint struct {
-	LanId           int32    `json:"LanId,omitempty"`
-	Dhcp            bool     `json:"Dhcp,omitempty"`
-	RoutesNetwork   []string `json:"RoutesNetwork,omitempty"`
-	RoutesGatewayIp []string `json:"RoutesGatewayIp,omitempty"`
-}
-
-func getK8sNodePoolLanPrint(c *core.CommandConfig, k8ss []resources.K8sNodePoolLan) printer.Result {
-	r := printer.Result{}
-	if c != nil {
-		if k8ss != nil {
-			r.OutputJSON = k8ss
-			r.KeyValue = getK8sNodePoolLansKVMaps(k8ss)
-			r.Columns = printer.GetHeadersAllDefault(defaultK8sNodePoolLanCols, viper.GetStringSlice(core.GetFlagName(c.NS, constants.ArgCols)))
-		}
-	}
-	return r
-}
-
-func getK8sNodePoolLansForPut(ng *resources.K8sNodePool) []resources.K8sNodePoolLan {
-	ss := make([]resources.K8sNodePoolLan, 0)
 	if ng != nil {
 		if properties, ok := ng.GetPropertiesOk(); ok && properties != nil {
 			if lans, ok := properties.GetLansOk(); ok && lans != nil {
 				for _, lanItem := range *lans {
-					ss = append(ss, resources.K8sNodePoolLan{
-						KubernetesNodePoolLan: lanItem,
-					})
+					ss = append(ss, lanItem)
 				}
 			}
 		}
 	}
+
 	return ss
-}
-
-func getK8sNodePoolLans(k8ss *[]ionoscloud.KubernetesNodePoolLan) []resources.K8sNodePoolLan {
-	u := make([]resources.K8sNodePoolLan, 0)
-	if k8ss != nil {
-		for _, item := range *k8ss {
-			u = append(u, resources.K8sNodePoolLan{KubernetesNodePoolLan: item})
-		}
-	}
-	return u
-}
-
-func getK8sNodePoolLansKVMaps(us []resources.K8sNodePoolLan) []map[string]interface{} {
-	out := make([]map[string]interface{}, 0, len(us))
-	for _, u := range us {
-		var uPrint K8sNodePoolLanPrint
-		if id, ok := u.GetIdOk(); ok && id != nil {
-			uPrint.LanId = *id
-		}
-		if dhcp, ok := u.GetDhcpOk(); ok && dhcp != nil {
-			uPrint.Dhcp = *dhcp
-		}
-		if routes, ok := u.GetRoutesOk(); ok && routes != nil {
-			newRoutesNetwork := make([]string, 0)
-			newRoutesGatewayIp := make([]string, 0)
-			for _, route := range *routes {
-				if net, ok := route.GetNetworkOk(); ok && net != nil {
-					newRoutesNetwork = append(newRoutesNetwork, *net)
-				}
-				if ip, ok := route.GetGatewayIpOk(); ok && ip != nil {
-					newRoutesGatewayIp = append(newRoutesGatewayIp, *ip)
-				}
-			}
-			uPrint.RoutesNetwork = newRoutesNetwork
-			uPrint.RoutesGatewayIp = newRoutesGatewayIp
-		}
-		o := structs.Map(uPrint)
-		out = append(out, o)
-	}
-	return out
 }

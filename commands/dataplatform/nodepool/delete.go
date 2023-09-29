@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
@@ -40,15 +41,14 @@ func NodepoolDeleteCmd() *core.Command {
 				return fmt.Errorf("couldn't find nodepool: %w", err)
 			}
 
-			ok := confirm.Ask(fmt.Sprintf("delete nodepool %s (%s)", nodepoolId, *np.Properties.Name))
+			ok := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("delete nodepool %s (%s)", nodepoolId, *np.Properties.Name), viper.GetBool(constants.ArgForce))
 			if !ok {
 				return fmt.Errorf("canceled deletion: invalid input")
 			}
 
-			c.Printer.Verbose("Deleting nodepool: %s", nodepoolId)
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting nodepool: %s", nodepoolId))
 			_, _, err = client.Must().DataplatformClient.DataPlatformNodePoolApi.ClustersNodepoolsDelete(c.Context, clusterId, nodepoolId).Execute()
 			return err
-
 		},
 		InitClient: true,
 	})
@@ -62,7 +62,6 @@ func NodepoolDeleteCmd() *core.Command {
 		return completer.DataplatformNodepoolsIds(viper.GetString(core.GetFlagName(cmd.NS, constants.FlagClusterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Delete all clusters. If cluster ID is provided, delete all nodepools in given cluster")
-	cmd.AddBoolFlag(constants.ArgForce, constants.ArgForceShort, false, "Skip yes/no verification")
 
 	cmd.Command.SilenceUsage = true
 
@@ -70,7 +69,7 @@ func NodepoolDeleteCmd() *core.Command {
 }
 
 func deleteAll(c *core.CommandConfig, clusterId string) error {
-	c.Printer.Verbose("Deleting all nodepools!")
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all nodepools!"))
 	if clusterId != "" {
 		// Both --all and --cluster-id provided, so delete only the nodepools of the given cluster.
 		return deleteNodePools(c, clusterId)
@@ -94,7 +93,7 @@ func deleteNodePools(c *core.CommandConfig, clusterId string) error {
 		return err
 	}
 	return functional.ApplyAndAggregateErrors(*xs.GetItems(), func(x ionoscloud.NodePoolResponseData) error {
-		ok := confirm.Ask(fmt.Sprintf("delete nodepool %s (%s)", *x.Id, *x.Properties.Name), viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce)))
+		ok := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("delete nodepool %s (%s)", *x.Id, *x.Properties.Name), viper.GetBool(constants.ArgForce))
 		if !ok {
 			return fmt.Errorf("canceled deletion for %s (%s): invalid input", *x.Id, *x.Properties.Name)
 		}

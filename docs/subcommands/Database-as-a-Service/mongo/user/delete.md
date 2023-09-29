@@ -44,7 +44,7 @@ Delete a MongoDB user
                             Available columns: [Username CreatedBy Roles]
   -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -d, --database string     The authentication database
-  -f, --force               Skip y/n checks
+  -f, --force               Force command to execute without user input
   -h, --help                Print usage
       --name string         The authentication username
       --no-headers          When using text output, don't print headers

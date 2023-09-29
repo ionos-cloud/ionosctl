@@ -96,27 +96,3 @@ func TestRunAPIVersionGetErr(t *testing.T) {
 		assert.Error(t, err)
 	})
 }
-
-func TestGetAPIVersionsCols(t *testing.T) {
-	var b bytes.Buffer
-	//	clierror.ErrAction = func() {}
-	w := bufio.NewWriter(&b)
-	viper.Set(core.GetFlagName("api-version", constants.ArgCols), []string{"SwaggerUrl"})
-	getAPIVersionCols(core.GetFlagName("api-version", constants.ArgCols), w)
-	err := w.Flush()
-	assert.NoError(t, err)
-}
-
-// Muted because of .ErrAction usage
-//
-// func TestGetAPIVersionsColsErr(t *testing.T) {
-// 	var b bytes.Buffer
-// //	clierror.ErrAction = func() {}
-// 	w := bufio.NewWriter(&b)
-// 	viper.Set(core.GetFlagName("api-version", constants.ArgCols), []string{"Unknown"})
-// 	getAPIVersionCols(core.GetFlagName("api-version", constants.ArgCols), w)
-// 	err := w.Flush()
-// 	assert.NoError(t, err)
-// 	re := regexp.MustCompile(`unknown column Unknown`)
-// 	assert.True(t, re.Match(b.Bytes()))
-// }

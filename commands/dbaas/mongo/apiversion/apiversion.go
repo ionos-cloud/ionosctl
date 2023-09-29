@@ -2,13 +2,21 @@ package apiversion
 
 import (
 	"context"
+	"fmt"
 
-	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
-	ionoscloud "github.com/ionos-cloud/sdk-go-dbaas-mongo"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
+)
+
+var (
+	allJSONPaths = map[string]string{
+		"Version": "name",
+		"Href":    "swaggerUrl",
+	}
+
+	allCols = []string{"Version", "Href"}
 )
 
 func ApiVersionCmd() *core.Command {
@@ -24,43 +32,18 @@ func ApiVersionCmd() *core.Command {
 			if err != nil {
 				return err
 			}
-			return c.Printer.Print(getApiVersionPrint(c, []ionoscloud.APIVersion{list}))
+
+			out, err := jsontabwriter.GenerateOutput("", allJSONPaths, list,
+				tabheaders.GetHeadersAllDefault(allCols, nil))
+			if err != nil {
+				return err
+			}
+
+			fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+			return nil
 		},
 		InitClient: true,
 	})
 
 	return cmd
-}
-
-type ApiVersionPrint struct {
-	Version string `json:"Name,omitempty"`
-	Href    string `json:"Href,omitempty"`
-}
-
-var allCols = structs.Names(ApiVersionPrint{})
-
-func MakeApiVersionPrintObject(objs []ionoscloud.APIVersion) []map[string]interface{} {
-	out := make([]map[string]interface{}, 0, len(objs))
-
-	for _, o := range objs {
-		var printObj ApiVersionPrint
-		printObj.Version = *o.GetName()
-		printObj.Href = *o.GetSwaggerUrl()
-		o := structs.Map(printObj)
-		out = append(out, o)
-	}
-
-	return out
-}
-
-func getApiVersionPrint(c *core.CommandConfig, dcs []ionoscloud.APIVersion) printer.Result {
-	r := printer.Result{}
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-
-	if c != nil && dcs != nil {
-		r.OutputJSON = dcs
-		r.KeyValue = MakeApiVersionPrintObject(dcs)             // map header -> rows
-		r.Columns = printer.GetHeadersAllDefault(allCols, cols) // headers
-	}
-	return r
 }

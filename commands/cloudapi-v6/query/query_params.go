@@ -11,6 +11,7 @@ import (
 
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
 	"golang.org/x/exp/slices"
 
@@ -45,7 +46,9 @@ func ValidateFilters(c *core.PreCommandConfig, availableFilters []string, usageF
 	if err != nil {
 		return err
 	}
-	c.Printer.Verbose("Validating %v filters...", len(filtersKV))
+
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Validating %v filters...", len(filtersKV)))
+
 	correctedFilters := make(map[string][]string, 0)
 	for key, vals := range filtersKV {
 		keyWithProperCaps, errValidFilter := getFirstValidFilter(key, availableFilters...)
@@ -53,8 +56,10 @@ func ValidateFilters(c *core.PreCommandConfig, availableFilters []string, usageF
 			err = errors.Join(err, errValidFilter)
 			continue
 		}
+
 		correctedFilters[keyWithProperCaps] = append(correctedFilters[keyWithProperCaps], vals...)
 	}
+
 	if err != nil {
 		return fmt.Errorf("encountered invalid filters:\n%w\n\n%s", err, usageFilters)
 	}
@@ -66,6 +71,7 @@ func ValidateFilters(c *core.PreCommandConfig, availableFilters []string, usageF
 			setString += fmt.Sprintf("%s%s%s ", k, FiltersPartitionChar, vals)
 		}
 	}
+
 	setString = fmt.Sprintf("%s", strings.TrimSuffix(setString, " "))
 	viper.Set(core.GetFlagName(c.NS, cloudapiv6.ArgFilters), setString)
 	_ = c.Command.Command.Flags().Set(cloudapiv6.ArgFilters, setString)
@@ -76,11 +82,13 @@ func ValidateFilters(c *core.PreCommandConfig, availableFilters []string, usageF
 
 func GetListQueryParams(c *core.CommandConfig) (resources.ListQueryParams, error) {
 	listQueryParams := resources.ListQueryParams{}
+
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
 		filters, err := getFilters(viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)), c.Command)
 		if err != nil {
 			return listQueryParams, err
 		}
+
 		if len(filters) > 0 {
 			listQueryParams = listQueryParams.SetFilters(filters)
 		}
@@ -101,7 +109,9 @@ func GetListQueryParams(c *core.CommandConfig) (resources.ListQueryParams, error
 	listQueryParams = listQueryParams.SetDepth(depth)
 
 	if !structs.IsZero(listQueryParams) || !structs.IsZero(listQueryParams.QueryParams) {
-		c.Printer.Verbose("Query Parameters set: %v, %v", utils.GetPropertiesKVSet(listQueryParams), utils.GetPropertiesKVSet(listQueryParams.QueryParams))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
+			"Query Parameters set: %v, %v",
+			utils.GetPropertiesKVSet(listQueryParams), utils.GetPropertiesKVSet(listQueryParams.QueryParams)))
 	}
 
 	return listQueryParams, nil
@@ -114,6 +124,7 @@ func getFilters(args []string, cmd *core.Command) (map[string][]string, error) {
 	if len(args) == 0 {
 		return filtersKV, errors.New("must provide at least one filter")
 	}
+
 	for _, arg := range args {
 		if strings.Contains(arg, FiltersPartitionChar) {
 			kv := strings.Split(arg, FiltersPartitionChar)
@@ -130,6 +141,7 @@ func getFilters(args []string, cmd *core.Command) (map[string][]string, error) {
 			)
 		}
 	}
+
 	return filtersKV, nil
 }
 
@@ -145,9 +157,11 @@ func getFirstValidFilter(filter string, availableFilters ...string) (string, err
 	idx := slices.IndexFunc(availableFilters, func(s string) bool {
 		return strings.EqualFold(filter, s)
 	})
+
 	if idx == -1 {
 		return "", fmt.Errorf("%s is not a valid filter", filter)
 	}
+
 	return availableFilters[idx], nil
 }
 

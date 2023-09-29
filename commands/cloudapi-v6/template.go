@@ -3,18 +3,28 @@ package commands
 import (
 	"context"
 	"fmt"
-	"os"
 
-	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
-	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+)
+
+var (
+	allTemplateJSONPaths = map[string]string{
+		"TemplateId":  "id",
+		"Name":        "properties.name",
+		"Cores":       "properties.cores",
+		"Ram":         "properties.ram",
+		"StorageSize": "properties.storageSize",
+	}
+
+	defaultTemplateCols = []string{"TemplateId", "Name", "Cores", "Ram", "StorageSize"}
 )
 
 func TemplateCmd() *core.Command {
@@ -29,7 +39,7 @@ func TemplateCmd() *core.Command {
 		},
 	}
 	globalFlags := templateCmd.GlobalFlags()
-	globalFlags.StringSliceP(constants.ArgCols, "", defaultTemplateCols, printer.ColsMessage(defaultTemplateCols))
+	globalFlags.StringSliceP(constants.ArgCols, "", defaultTemplateCols, tabheaders.ColsMessage(defaultTemplateCols))
 	_ = viper.BindPFlag(core.GetFlagName(templateCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = templateCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultTemplateCols, cobra.ShellCompDirectiveNoFileComp
@@ -79,7 +89,7 @@ func TemplateCmd() *core.Command {
 	})
 	get.AddUUIDFlag(cloudapiv6.ArgTemplateId, cloudapiv6.ArgIdShort, "", cloudapiv6.TemplateId, core.RequiredFlagOption())
 	_ = get.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgTemplateId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.TemplatesIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.TemplatesIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 	get.AddBoolFlag(constants.ArgNoHeaders, "", false, cloudapiv6.ArgNoHeadersDescription)
 	get.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultGetDepth, cloudapiv6.ArgDepthDescription)
@@ -103,14 +113,26 @@ func RunTemplateList(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	templates, resp, err := c.CloudApiV6Services.Templates().List(listQueryParams)
 	if resp != nil {
-		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getTemplatePrint(c, getTemplates(templates)))
+
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+
+	out, err := jsontabwriter.GenerateOutput("items", allTemplateJSONPaths, templates,
+		tabheaders.GetHeadersAllDefault(defaultTemplateCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+
+	return nil
 }
 
 func RunTemplateGet(c *core.CommandConfig) error {
@@ -118,87 +140,27 @@ func RunTemplateGet(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
-	c.Printer.Verbose("Template with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTemplateId)))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
+		"Template with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTemplateId))))
+
 	tpl, resp, err := c.CloudApiV6Services.Templates().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTemplateId)), queryParams)
 	if resp != nil {
-		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getTemplatePrint(c, getTemplate(tpl)))
-}
 
-// Output Printing
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-var defaultTemplateCols = []string{"TemplateId", "Name", "Cores", "Ram", "StorageSize"}
-
-type TemplatePrint struct {
-	TemplateId  string  `json:"TemplateId,omitempty"`
-	Name        string  `json:"Name,omitempty"`
-	Cores       float32 `json:"Cores,omitempty"`
-	Ram         string  `json:"Ram,omitempty"`
-	StorageSize string  `json:"StorageSize,omitempty"`
-}
-
-func getTemplatePrint(c *core.CommandConfig, tpls []resources.Template) printer.Result {
-	r := printer.Result{}
-	if c != nil {
-		if tpls != nil {
-			r.OutputJSON = tpls
-			r.KeyValue = getTemplatesKVMaps(tpls)
-			r.Columns = printer.GetHeadersAllDefault(defaultTemplateCols, viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgCols)))
-		}
+	out, err := jsontabwriter.GenerateOutput("", allTemplateJSONPaths, tpl, tabheaders.GetHeadersAllDefault(defaultTemplateCols, cols))
+	if err != nil {
+		return err
 	}
-	return r
-}
 
-func getTemplates(templates resources.Templates) []resources.Template {
-	tpls := make([]resources.Template, 0)
-	if items, ok := templates.GetItemsOk(); ok && items != nil {
-		for _, d := range *items {
-			tpls = append(tpls, resources.Template{Template: d})
-		}
-	}
-	return tpls
-}
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
 
-func getTemplate(template *resources.Template) []resources.Template {
-	tpls := make([]resources.Template, 0)
-	if template != nil {
-		tpls = append(tpls, resources.Template{Template: template.Template})
-	}
-	return tpls
-}
-
-func getTemplatesKVMaps(tpls []resources.Template) []map[string]interface{} {
-	out := make([]map[string]interface{}, 0, len(tpls))
-	for _, tpl := range tpls {
-		o := getTemplateKVMap(tpl)
-		out = append(out, o)
-	}
-	return out
-}
-
-func getTemplateKVMap(tpl resources.Template) map[string]interface{} {
-	var tplPrint TemplatePrint
-	if tplId, ok := tpl.GetIdOk(); ok && tplId != nil {
-		tplPrint.TemplateId = *tplId
-	}
-	if properties, ok := tpl.GetPropertiesOk(); ok && properties != nil {
-		if name, ok := properties.GetNameOk(); ok && name != nil {
-			tplPrint.Name = *name
-		}
-		if c, ok := properties.GetCoresOk(); ok && c != nil {
-			tplPrint.Cores = *c
-		}
-		if r, ok := properties.GetRamOk(); ok && r != nil {
-			tplPrint.Ram = fmt.Sprintf("%vMB", *r)
-		}
-		if storageSize, ok := properties.GetStorageSizeOk(); ok && storageSize != nil {
-			tplPrint.StorageSize = fmt.Sprintf("%vGB", *storageSize)
-		}
-	}
-	return structs.Map(tplPrint)
+	return nil
 }

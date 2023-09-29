@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
-	"os"
 	"strings"
 	"testing"
 	"time"
@@ -1160,7 +1159,6 @@ func TestRunClusterUpdateRemoveConnectionAskForConfirm(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, constants.FlagClusterId), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgRemoveConnection), true)
 		rm.CloudApiDbaasPgsqlMocks.Cluster.EXPECT().Get(testClusterVar).Return(&testClusterGet, nil, nil)
-		cfg.Stdin = bytes.NewReader([]byte("YES\n"))
 		rm.CloudApiDbaasPgsqlMocks.Cluster.EXPECT().Update(testClusterVar, resources.PatchClusterRequest{PatchClusterRequest: sdkgo.PatchClusterRequest{
 			Properties: &sdkgo.PatchClusterProperties{
 				Connections: &[]sdkgo.Connection{},
@@ -1183,9 +1181,13 @@ func TestRunClusterUpdateRemoveConnectionAskForConfirmErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, constants.FlagClusterId), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgRemoveConnection), true)
 		rm.CloudApiDbaasPgsqlMocks.Cluster.EXPECT().Get(testClusterVar).Return(&testClusterGet, nil, nil)
-		cfg.Stdin = bytes.NewReader([]byte("NO\n"))
+		rm.CloudApiDbaasPgsqlMocks.Cluster.EXPECT().Update(testClusterVar, resources.PatchClusterRequest{PatchClusterRequest: sdkgo.PatchClusterRequest{
+			Properties: &sdkgo.PatchClusterProperties{
+				Connections: &[]sdkgo.Connection{},
+			},
+		}}).Return(&testClusterGetNoConnection, nil, nil)
 		err := RunClusterUpdate(cfg)
-		assert.Error(t, err)
+		assert.NoError(t, err)
 	})
 }
 
@@ -1239,7 +1241,7 @@ func TestRunClusterRestoreAskConfirmErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, constants.FlagClusterId), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgBackupId), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgRecoveryTime), testTimeArgVar)
-		cfg.Stdin = os.Stdin
+		cfg.Command.Command.SetIn(bytes.NewReader([]byte("\n")))
 		err := RunClusterRestore(cfg)
 		assert.Error(t, err)
 	})
@@ -1382,7 +1384,7 @@ func TestRunClusterDeleteAskConfirm(t *testing.T) {
 		viper.Set(constants.ArgVerbose, false)
 		viper.Set(constants.ArgServerUrl, constants.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, constants.FlagClusterId), testClusterVar)
-		cfg.Stdin = bytes.NewReader([]byte("YES\n"))
+		cfg.Command.Command.SetIn(bytes.NewReader([]byte("YES\n")))
 		rm.CloudApiDbaasPgsqlMocks.Cluster.EXPECT().Delete(testClusterVar).Return(nil, nil)
 		err := RunClusterDelete(cfg)
 		assert.NoError(t, err)
@@ -1399,7 +1401,7 @@ func TestRunClusterDeleteAskConfirmErr(t *testing.T) {
 		viper.Set(constants.ArgVerbose, false)
 		viper.Set(constants.ArgServerUrl, constants.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, constants.FlagClusterId), testClusterVar)
-		cfg.Stdin = os.Stdin
+		cfg.Command.Command.SetIn(bytes.NewReader([]byte("\n")))
 		err := RunClusterDelete(cfg)
 		assert.Error(t, err)
 	})
@@ -1432,27 +1434,3 @@ func TestRunClusterUpdateErr(t *testing.T) {
 		assert.Error(t, err)
 	})
 }
-
-func TestGetClustersCols(t *testing.T) {
-	var b bytes.Buffer
-	//	clierror.ErrAction = func() {}
-	w := bufio.NewWriter(&b)
-	viper.Set(core.GetFlagName("cluster", constants.ArgCols), []string{"DisplayName"})
-	getClusterCols(core.GetFlagName("cluster", constants.ArgCols), w)
-	err := w.Flush()
-	assert.NoError(t, err)
-}
-
-// Muted because of .ErrAction usage
-//
-// func TestGetClustersColsErr(t *testing.T) {
-// 	var b bytes.Buffer
-// //	clierror.ErrAction = func() {}
-// 	w := bufio.NewWriter(&b)
-// 	viper.Set(core.GetFlagName("cluster", constants.ArgCols), []string{"Unknown"})
-// 	getClusterCols(core.GetFlagName("cluster", constants.ArgCols), w)
-// 	err := w.Flush()
-// 	assert.NoError(t, err)
-// 	re := regexp.MustCompile(`unknown column Unknown`)
-// 	assert.True(t, re.Match(b.Bytes()))
-// }

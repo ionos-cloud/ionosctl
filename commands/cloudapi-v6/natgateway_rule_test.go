@@ -5,7 +5,6 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"os"
 	"testing"
 
 	"github.com/golang/mock/gomock"
@@ -592,7 +591,7 @@ func TestRunNatGatewayRuleDeleteAskForConfirm(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNatGatewayRuleVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNatGatewayId), testNatGatewayRuleVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRuleId), testNatGatewayRuleVar)
-		cfg.Stdin = bytes.NewReader([]byte("YES\n"))
+		cfg.Command.Command.SetIn(bytes.NewReader([]byte("YES\n")))
 		rm.CloudApiV6Mocks.NatGateway.EXPECT().DeleteRule(testNatGatewayRuleVar, testNatGatewayRuleVar, testNatGatewayRuleVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(nil, nil)
 		err := RunNatGatewayRuleDelete(cfg)
 		assert.NoError(t, err)
@@ -610,32 +609,8 @@ func TestRunNatGatewayRuleDeleteAskForConfirmErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNatGatewayRuleVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNatGatewayId), testNatGatewayRuleVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRuleId), testNatGatewayRuleVar)
-		cfg.Stdin = os.Stdin
+		cfg.Command.Command.SetIn(bytes.NewReader([]byte("\n")))
 		err := RunNatGatewayRuleDelete(cfg)
 		assert.Error(t, err)
 	})
 }
-
-func TestGetNatGatewayRulesCols(t *testing.T) {
-	var b bytes.Buffer
-	//	clierror.ErrAction = func() {}
-	w := bufio.NewWriter(&b)
-	viper.Set(core.GetFlagName("rule", constants.ArgCols), []string{"Name"})
-	getNatGatewayRulesCols(core.GetFlagName("rule", constants.ArgCols), w)
-	err := w.Flush()
-	assert.NoError(t, err)
-}
-
-// // Muted because of .ErrAction usage
-//
-// func TestGetNatGatewayRulesColsErr(t *testing.T) {
-// 	var b bytes.Buffer
-// //	clierror.ErrAction = func() {}
-// 	w := bufio.NewWriter(&b)
-// 	viper.Set(core.GetFlagName("rule", constants.ArgCols), []string{"Unknown"})
-// 	getNatGatewayRulesCols(core.GetFlagName("rule", constants.ArgCols), w)
-// 	err := w.Flush()
-// 	assert.NoError(t, err)
-// 	re := regexp.MustCompile(`unknown column Unknown`)
-// 	assert.True(t, re.Match(b.Bytes()))
-// }

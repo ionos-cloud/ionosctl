@@ -4,24 +4,36 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"os"
-	"strings"
 	"time"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
+	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/json2table"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 
-	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+)
+
+var (
+	allShareJSONPaths = map[string]string{
+		"ShareId":        "id",
+		"EditPrivilege":  "properties.editPrivilege",
+		"SharePrivilege": "properties.sharePrivilege",
+		"Type":           "type",
+	}
+
+	defaultGroupShareCols = []string{"ShareId", "EditPrivilege", "SharePrivilege", "Type"}
+	allGroupShareCols     = []string{"ShareId", "EditPrivilege", "SharePrivilege", "Type", "GroupId"}
 )
 
 func ShareCmd() *core.Command {
@@ -35,7 +47,7 @@ func ShareCmd() *core.Command {
 		},
 	}
 	globalFlags := shareCmd.GlobalFlags()
-	globalFlags.StringSliceP(constants.ArgCols, "", defaultGroupShareCols, printer.ColsMessage(allGroupShareCols))
+	globalFlags.StringSliceP(constants.ArgCols, "", defaultGroupShareCols, tabheaders.ColsMessage(allGroupShareCols))
 	_ = viper.BindPFlag(core.GetFlagName(shareCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = shareCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allGroupShareCols, cobra.ShellCompDirectiveNoFileComp
@@ -59,7 +71,7 @@ func ShareCmd() *core.Command {
 	list.AddInt32Flag(constants.FlagMaxResults, constants.FlagMaxResultsShort, cloudapiv6.DefaultMaxResults, constants.DescMaxResults)
 	list.AddUUIDFlag(cloudapiv6.ArgGroupId, "", "", cloudapiv6.GroupId, core.RequiredFlagOption())
 	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.GroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.GroupsIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 	list.AddBoolFlag(constants.ArgNoHeaders, "", false, cloudapiv6.ArgNoHeadersDescription)
 	list.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultListDepth, cloudapiv6.ArgDepthDescription)
@@ -82,7 +94,7 @@ func ShareCmd() *core.Command {
 	})
 	get.AddUUIDFlag(cloudapiv6.ArgGroupId, "", "", cloudapiv6.GroupId, core.RequiredFlagOption())
 	_ = get.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.GroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.GroupsIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 	get.AddUUIDFlag(cloudapiv6.ArgResourceId, cloudapiv6.ArgIdShort, "", cloudapiv6.ResourceId, core.RequiredFlagOption())
 	_ = get.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgResourceId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -113,11 +125,11 @@ Required values to run a command:
 	})
 	create.AddUUIDFlag(cloudapiv6.ArgGroupId, "", "", cloudapiv6.GroupId, core.RequiredFlagOption())
 	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.GroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.GroupsIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddUUIDFlag(cloudapiv6.ArgResourceId, cloudapiv6.ArgIdShort, "", cloudapiv6.ResourceId, core.RequiredFlagOption())
 	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgResourceId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.ResourcesIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.ResourcesIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddBoolFlag(cloudapiv6.ArgEditPrivilege, "", false, "Set the group's permission to edit privileges on resource")
 	create.AddBoolFlag(cloudapiv6.ArgSharePrivilege, "", false, "Set the group's permission to share resource")
@@ -149,7 +161,7 @@ Required values to run command:
 	})
 	update.AddUUIDFlag(cloudapiv6.ArgGroupId, "", "", cloudapiv6.GroupId, core.RequiredFlagOption())
 	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.GroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.GroupsIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddUUIDFlag(cloudapiv6.ArgResourceId, cloudapiv6.ArgIdShort, "", cloudapiv6.ResourceId, core.RequiredFlagOption())
 	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgResourceId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -183,7 +195,7 @@ Required values to run command:
 	})
 	deleteCmd.AddUUIDFlag(cloudapiv6.ArgGroupId, "", "", cloudapiv6.GroupId, core.RequiredFlagOption())
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.GroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.GroupsIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddUUIDFlag(cloudapiv6.ArgResourceId, cloudapiv6.ArgIdShort, "", cloudapiv6.ResourceId, core.RequiredFlagOption())
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgResourceId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -213,45 +225,94 @@ func RunShareListAll(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	// Don't apply listQueryParams to parent resource, as it would have unexpected side effects on the results
 	groups, _, err := c.CloudApiV6Services.Groups().List(cloudapiv6.ParentResourceListQueryParams)
 	if err != nil {
 		return err
 	}
-	var allShares []resources.GroupShare
+
+	var allSharesConverted = make([]map[string]interface{}, 0)
+	var allShares = make([]ionoscloud.GroupShares, 0)
+
 	totalTime := time.Duration(0)
+
 	for _, group := range getGroups(groups) {
 		shares, resp, err := c.CloudApiV6Services.Groups().ListShares(*group.GetId(), listQueryParams)
 		if err != nil {
 			return err
 		}
-		allShares = append(allShares, getGroupShares(shares)...)
+
+		items, ok := shares.GetItemsOk()
+		if !ok || items == nil {
+			continue
+		}
+
+		for _, item := range *items {
+			temp, err := json2table.ConvertJSONToTable("", allShareJSONPaths, item)
+			if err != nil {
+				return fmt.Errorf("failed converting Share from JSON to Table format: %w", err)
+			}
+
+			gid, ok := group.GetIdOk()
+			if !ok || gid == nil {
+				return fmt.Errorf("could not retrieve Group Id")
+			}
+
+			temp[0]["GroupId"] = gid
+			allSharesConverted = append(allSharesConverted, temp[0])
+		}
+
+		allShares = append(allShares, shares.GroupShares)
 		totalTime += resp.RequestTime
 	}
 
 	if totalTime != time.Duration(0) {
-		c.Printer.Verbose(constants.MessageRequestTime, totalTime)
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, totalTime))
 	}
 
-	return c.Printer.Print(getGroupSharePrint(nil, c, allShares))
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+
+	out, err := jsontabwriter.GenerateOutputPreconverted(allShares, allSharesConverted,
+		tabheaders.GetHeaders(allGroupShareCols, defaultGroupShareCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+
+	return nil
 }
 
 func RunShareList(c *core.CommandConfig) error {
 	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
 		return RunShareListAll(c)
 	}
+
 	listQueryParams, err := query.GetListQueryParams(c)
 	if err != nil {
 		return err
 	}
+
 	shares, resp, err := c.CloudApiV6Services.Groups().ListShares(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)), listQueryParams)
 	if resp != nil {
-		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getGroupSharePrint(nil, c, getGroupShares(shares)))
+
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+
+	out, err := jsontabwriter.GenerateOutput("items", allShareJSONPaths, shares.GroupShares,
+		tabheaders.GetHeadersAllDefault(defaultGroupShareCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+
+	return nil
 }
 
 func PreRunShareList(c *core.PreCommandConfig) error {
@@ -261,9 +322,11 @@ func PreRunShareList(c *core.PreCommandConfig) error {
 	); err != nil {
 		return err
 	}
+
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
 		return query.ValidateFilters(c, completer.ServersFilters(), completer.ServersFiltersUsage())
 	}
+
 	return nil
 }
 
@@ -272,22 +335,36 @@ func RunShareGet(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
-	c.Printer.Verbose("Getting Share with Resource ID: %v from Group with ID: %v...",
+
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting Share with Resource ID: %v from Group with ID: %v...",
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)))
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId))))
+
 	s, resp, err := c.CloudApiV6Services.Groups().GetShare(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceId)),
 		queryParams,
 	)
 	if resp != nil {
-		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getGroupSharePrint(nil, c, getGroupShare(s)))
+
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+
+	out, err := jsontabwriter.GenerateOutput("", allShareJSONPaths, s.GroupShare,
+		tabheaders.GetHeadersAllDefault(defaultGroupShareCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+
+	return nil
 }
 
 func RunShareCreate(c *core.CommandConfig) error {
@@ -295,9 +372,11 @@ func RunShareCreate(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
 	editPrivilege := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgEditPrivilege))
 	sharePrivilege := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgSharePrivilege))
+
 	input := resources.GroupShare{
 		GroupShare: ionoscloud.GroupShare{
 			Properties: &ionoscloud.GroupShareProperties{
@@ -306,26 +385,41 @@ func RunShareCreate(c *core.CommandConfig) error {
 			},
 		},
 	}
-	c.Printer.Verbose("Properties set for creating the Share: EditPrivilege: %v, SharePrivilege: %v", editPrivilege, sharePrivilege)
-	c.Printer.Verbose("Adding Share for Resource ID: %v from Group with ID: %v...",
+
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
+		"Properties set for creating the Share: EditPrivilege: %v, SharePrivilege: %v", editPrivilege, sharePrivilege))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Adding Share for Resource ID: %v from Group with ID: %v...",
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)))
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId))))
+
 	shareAdded, resp, err := c.CloudApiV6Services.Groups().AddShare(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceId)),
 		input,
 		queryParams,
 	)
-	if resp != nil && printer.GetId(resp) != "" {
-		c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
+	if resp != nil && utils.GetId(resp) != "" {
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, utils.GetId(resp), resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
-	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, utils.GetId(resp)); err != nil {
 		return err
 	}
-	return c.Printer.Print(getGroupSharePrint(resp, c, getGroupShare(shareAdded)))
+
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+
+	out, err := jsontabwriter.GenerateOutput("", allShareJSONPaths, shareAdded.GroupShare,
+		tabheaders.GetHeadersAllDefault(defaultGroupShareCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+
+	return nil
 }
 
 func RunShareUpdate(c *core.CommandConfig) error {
@@ -333,37 +427,53 @@ func RunShareUpdate(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
 	s, _, err := c.CloudApiV6Services.Groups().GetShare(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceId)), queryParams)
 	if err != nil {
 		return err
 	}
+
 	properties := getShareUpdateInfo(s, c)
 	newShare := resources.GroupShare{
 		GroupShare: ionoscloud.GroupShare{
 			Properties: &properties.GroupShareProperties,
 		},
 	}
-	c.Printer.Verbose("Updating Share for Resource ID: %v from Group with ID: %v...",
+
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Updating Share for Resource ID: %v from Group with ID: %v...",
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)))
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId))))
+
 	shareUpdated, resp, err := c.CloudApiV6Services.Groups().UpdateShare(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceId)),
 		newShare,
 		queryParams,
 	)
-	if resp != nil && printer.GetId(resp) != "" {
-		c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
+	if resp != nil && utils.GetId(resp) != "" {
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, utils.GetId(resp), resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
-	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, utils.GetId(resp)); err != nil {
 		return err
 	}
-	return c.Printer.Print(getGroupSharePrint(resp, c, getGroupShare(shareUpdated)))
+
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+
+	out, err := jsontabwriter.GenerateOutput("", allShareJSONPaths, shareUpdated.GroupShare,
+		tabheaders.GetHeadersAllDefault(defaultGroupShareCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+
+	return nil
 }
 
 func RunShareDelete(c *core.CommandConfig) error {
@@ -371,53 +481,67 @@ func RunShareDelete(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
 	shareId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceId))
 	groupId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId))
+
 	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
 		if err := DeleteAllShares(c); err != nil {
 			return err
 		}
-		return c.Printer.Print(printer.Result{Resource: c.Resource, Verb: c.Verb})
-	} else {
-		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete share from group"); err != nil {
-			return err
-		}
-		c.Printer.Verbose("Starting deleting Share with Resource ID: %v from Group with ID: %v...", shareId, groupId)
-		resp, err := c.CloudApiV6Services.Groups().RemoveShare(groupId, shareId, queryParams)
-		if resp != nil && printer.GetId(resp) != "" {
-			c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
-		}
-		if err != nil {
-			return err
-		}
-		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-			return err
-		}
-		return c.Printer.Print(getGroupSharePrint(resp, c, nil))
+
+		return nil
 	}
+
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete share from group", viper.GetBool(constants.ArgForce)) {
+		return fmt.Errorf(confirm.UserDenied)
+	}
+
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
+		"Starting deleting Share with Resource ID: %v from Group with ID: %v...", shareId, groupId))
+
+	resp, err := c.CloudApiV6Services.Groups().RemoveShare(groupId, shareId, queryParams)
+	if resp != nil && utils.GetId(resp) != "" {
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, utils.GetId(resp), resp.RequestTime))
+	}
+	if err != nil {
+		return err
+	}
+
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, utils.GetId(resp)); err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Group Share successfully deleted"))
+	return nil
 }
 
 func getShareUpdateInfo(oldShare *resources.GroupShare, c *core.CommandConfig) *resources.GroupShareProperties {
 	var sharePrivilege, editPrivilege bool
+
 	if properties, ok := oldShare.GetPropertiesOk(); ok && properties != nil {
 		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgEditPrivilege)) {
 			editPrivilege = viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgEditPrivilege))
-			c.Printer.Verbose("Property EditPrivilege set: %v", editPrivilege)
+
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property EditPrivilege set: %v", editPrivilege))
 		} else {
 			if e, ok := properties.GetEditPrivilegeOk(); ok && e != nil {
 				editPrivilege = *e
 			}
 		}
+
 		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgSharePrivilege)) {
 			sharePrivilege = viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgSharePrivilege))
-			c.Printer.Verbose("Property SharePrivilege set: %v", sharePrivilege)
+
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property SharePrivilege set: %v", sharePrivilege))
 		} else {
 			if e, ok := properties.GetSharePrivilegeOk(); ok && e != nil {
 				sharePrivilege = *e
 			}
 		}
 	}
+
 	return &resources.GroupShareProperties{
 		GroupShareProperties: ionoscloud.GroupShareProperties{
 			EditPrivilege:  &editPrivilege,
@@ -431,132 +555,72 @@ func DeleteAllShares(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
 	groupId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId))
-	c.Printer.Verbose("Group ID: %v", groupId)
-	c.Printer.Verbose("Getting Group Shares...")
+
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Group ID: %v", groupId))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting Group Shares..."))
+
 	groupShares, resp, err := c.CloudApiV6Services.Groups().ListShares(groupId, cloudapiv6.ParentResourceListQueryParams)
 	if err != nil {
 		return err
 	}
-	if groupSharesItems, ok := groupShares.GetItemsOk(); ok && groupSharesItems != nil {
-		if len(*groupSharesItems) > 0 {
-			_ = c.Printer.Warn("GroupShares to be deleted:")
-			for _, share := range *groupSharesItems {
-				if id, ok := share.GetIdOk(); ok && id != nil {
-					_ = c.Printer.Warn("GroupShare Id: " + *id)
-				}
-			}
-			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the GroupShares"); err != nil {
-				return err
-			}
-			c.Printer.Verbose("Deleting all the GroupShares...")
-			var multiErr error
-			for _, share := range *groupSharesItems {
-				if id, ok := share.GetIdOk(); ok && id != nil {
-					c.Printer.Verbose("Starting deleting Share with Resource ID: %v from Group with ID: %v...",
-						*id, groupId)
-					resp, err = c.CloudApiV6Services.Groups().RemoveShare(groupId, *id, queryParams)
-					if resp != nil && printer.GetId(resp) != "" {
-						c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
-					}
-					if err != nil {
-						multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
-						continue
-					} else {
-						_ = c.Printer.Warn(fmt.Sprintf(constants.MessageDeletingAll, c.Resource, *id))
-					}
-					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-						multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *id, err))
-						continue
-					}
-				}
-			}
-			if multiErr != nil {
-				return multiErr
-			}
-			return nil
-		} else {
-			return errors.New("no Group Shares found")
-		}
-	} else {
-		return errors.New("could not get items of Group Shares")
+
+	groupSharesItems, ok := groupShares.GetItemsOk()
+	if !ok || groupSharesItems == nil {
+		return fmt.Errorf("could not get items of Group Shares")
 	}
-}
 
-// Output Printing
+	if len(*groupSharesItems) <= 0 {
+		return fmt.Errorf("no Group Shares found")
+	}
 
-var defaultGroupShareCols = []string{"ShareId", "EditPrivilege", "SharePrivilege", "Type"}
-var allGroupShareCols = []string{"ShareId", "EditPrivilege", "SharePrivilege", "Type", "GroupId"}
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("GroupShares to be deleted:"))
 
-type groupSharePrint struct {
-	ShareId        string `json:"ShareId,omitempty"`
-	EditPrivilege  bool   `json:"EditPrivilege,omitempty"`
-	SharePrivilege bool   `json:"SharePrivilege,omitempty"`
-	Type           string `json:"Type,omitempty"`
-	GroupId        string `json:"GroupId,omitempty"`
-}
-
-func getGroupSharePrint(resp *resources.Response, c *core.CommandConfig, groups []resources.GroupShare) printer.Result {
-	r := printer.Result{}
-	if c != nil {
-		if resp != nil {
-			r.ApiResponse = resp
-			r.Resource = c.Resource
-			r.Verb = c.Verb
-			r.WaitForRequest = viper.GetBool(core.GetFlagName(c.NS, constants.ArgWaitForRequest))
-		}
-		if groups != nil {
-			r.OutputJSON = groups
-			r.KeyValue = getGroupSharesKVMaps(groups)
-			r.Columns = printer.GetHeadersListAll(allGroupShareCols, defaultGroupShareCols, "GroupId", viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgCols)), viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)))
+	for _, share := range *groupSharesItems {
+		if id, ok := share.GetIdOk(); ok && id != nil {
+			fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("GroupShare Id: %v", *id))
 		}
 	}
-	return r
-}
 
-func getGroupShares(groups resources.GroupShares) []resources.GroupShare {
-	u := make([]resources.GroupShare, 0)
-	if items, ok := groups.GetItemsOk(); ok && items != nil {
-		for _, item := range *items {
-			u = append(u, resources.GroupShare{GroupShare: item})
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete all the GroupShares", viper.GetBool(constants.ArgForce)) {
+		return fmt.Errorf(confirm.UserDenied)
+	}
+
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the GroupShares..."))
+
+	var multiErr error
+	for _, share := range *groupSharesItems {
+		id, ok := share.GetIdOk()
+		if !ok || id == nil {
+			continue
+		}
+
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
+			"Starting deleting Share with Resource ID: %v from Group with ID: %v...", *id, groupId))
+
+		resp, err = c.CloudApiV6Services.Groups().RemoveShare(groupId, *id, queryParams)
+		if resp != nil && utils.GetId(resp) != "" {
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, utils.GetId(resp), resp.RequestTime))
+		}
+		if err != nil {
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
+			continue
+		}
+
+		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(constants.MessageDeletingAll, c.Resource, *id))
+
+		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, utils.GetId(resp)); err != nil {
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *id, err))
+			continue
 		}
 	}
-	return u
-}
 
-func getGroupShare(u *resources.GroupShare) []resources.GroupShare {
-	groups := make([]resources.GroupShare, 0)
-	if u != nil {
-		groups = append(groups, resources.GroupShare{GroupShare: u.GroupShare})
+	if multiErr != nil {
+		return multiErr
 	}
-	return groups
-}
 
-func getGroupSharesKVMaps(gs []resources.GroupShare) []map[string]interface{} {
-	out := make([]map[string]interface{}, 0, len(gs))
-	for _, g := range gs {
-		var gPrint groupSharePrint
-		if id, ok := g.GetIdOk(); ok && id != nil {
-			gPrint.ShareId = *id
-		}
-		if properties, ok := g.GetPropertiesOk(); ok && properties != nil {
-			if edit, ok := properties.GetEditPrivilegeOk(); ok && edit != nil {
-				gPrint.EditPrivilege = *edit
-			}
-			if sh, ok := properties.GetSharePrivilegeOk(); ok && sh != nil {
-				gPrint.SharePrivilege = *sh
-			}
-		}
-		if typeResource, ok := g.GetTypeOk(); ok && typeResource != nil {
-			gPrint.Type = string(*typeResource)
-		}
-		if hrefOk, ok := g.GetHrefOk(); ok && hrefOk != nil {
-			// Get parent resource ID using HREF: `.../um/groups/[PARENT_ID_WE_WANT]/shares/[SHARE_ID]`
-			gPrint.GroupId = strings.Split(strings.Split(*hrefOk, "groups")[1], "/")[1]
-		}
-		o := structs.Map(gPrint)
-		out = append(out, o)
-	}
-	return out
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Group Shares successfully deleted"))
+	return nil
 }

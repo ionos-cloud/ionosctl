@@ -7,7 +7,8 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	sdkgo "github.com/ionos-cloud/sdk-go-cert-manager"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -39,9 +40,9 @@ func CertCreateCmd() *core.Command {
 	cmd.AddStringFlag(FlagCertChainPath, "", "", "Specify the certificate chain from a file (required either this or --certificate-chain)")
 	cmd.AddStringFlag(FlagPrivateKeyPath, "", "", "Specify the private key from a file (required either this or --private-key)")
 
-	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, printer.ColsMessage(allCols))
+	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, tabheaders.ColsMessage(defaultCertificateCols))
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return allCols, cobra.ShellCompDirectiveNoFileComp
+		return defaultCertificateCols, cobra.ShellCompDirectiveNoFileComp
 	})
 
 	return cmd
@@ -52,40 +53,48 @@ func GetPropertyWithFallback(c *core.CommandConfig, property string, propertyPat
 	if err != nil {
 		return "", err
 	}
+
 	if propertyValue != "" {
 		return propertyValue, nil
 	}
+
 	propertyValuePath, err := c.Command.Command.Flags().GetString(propertyPath)
 	if err != nil {
 		return "", err
 	}
+
 	if propertyValuePath == "" {
 		return "", fmt.Errorf("either --%s or --%s must be set", property, propertyPath)
 	}
+
 	propertyBytes, err := os.ReadFile(propertyValuePath)
 	if err != nil {
 		return "", err
 	}
+
 	return string(propertyBytes), nil
 }
 
 func CmdPost(c *core.CommandConfig) error {
-	c.Printer.Verbose("Adding Certificate...")
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Adding Certificate..."))
+
 	var name, certificate, certificateChain, privateKey string
-	fmt.Println(viper.GetString(FlagCertName))
 
 	name, err := c.Command.Command.Flags().GetString(FlagCertName)
 	if err != nil {
 		return err
 	}
+
 	certificate, err = GetPropertyWithFallback(c, FlagCert, FlagCertPath)
 	if err != nil {
 		return err
 	}
+
 	certificateChain, err = GetPropertyWithFallback(c, FlagCertChain, FlagCertChainPath)
 	if err != nil {
 		return err
 	}
+
 	privateKey, err = GetPropertyWithFallback(c, FlagPrivateKey, FlagPrivateKeyPath)
 	if err != nil {
 		return err
@@ -105,7 +114,17 @@ func CmdPost(c *core.CommandConfig) error {
 		return err
 	}
 
-	return c.Printer.Print(getCertPrint(nil, c, &[]sdkgo.CertificateDto{cert}))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+
+	out, err := jsontabwriter.GenerateOutput("", allCertificateJSONPaths, cert,
+		tabheaders.GetHeadersAllDefault(defaultCertificateCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+
+	return nil
 }
 
 func PreCmdPost(c *core.PreCommandConfig) error {

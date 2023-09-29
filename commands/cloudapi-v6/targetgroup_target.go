@@ -3,23 +3,36 @@ package commands
 import (
 	"context"
 	"errors"
-	"os"
+	"fmt"
 	"strconv"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
+	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 
-	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+)
+
+var (
+	allTargetGroupTargetJSONPaths = map[string]string{
+		"TargetIp":           "ip",
+		"TargetPort":         "port",
+		"Weight":             "weight",
+		"HealthCheckEnabled": "healthCheckEnabled",
+		"MaintenanceEnabled": "maintenanceEnabled",
+	}
+
+	defaultTargetGroupTargetCols = []string{"TargetIp", "TargetPort", "Weight", "HealthCheckEnabled", "MaintenanceEnabled"}
 )
 
 func TargetGroupTargetCmd() *core.Command {
@@ -51,9 +64,9 @@ func TargetGroupTargetCmd() *core.Command {
 	})
 	list.AddUUIDFlag(cloudapiv6.ArgTargetGroupId, cloudapiv6.ArgIdShort, "", cloudapiv6.TargetGroupId, core.RequiredFlagOption())
 	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgTargetGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.TargetGroupIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.TargetGroupIds(), cobra.ShellCompDirectiveNoFileComp
 	})
-	list.AddStringSliceFlag(constants.ArgCols, "", defaultTargetGroupTargetCols, printer.ColsMessage(defaultTargetGroupTargetCols))
+	list.AddStringSliceFlag(constants.ArgCols, "", defaultTargetGroupTargetCols, tabheaders.ColsMessage(defaultTargetGroupTargetCols))
 	_ = list.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultTargetGroupTargetCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -85,7 +98,7 @@ Required values to run command:
 	})
 	add.AddUUIDFlag(cloudapiv6.ArgTargetGroupId, cloudapiv6.ArgIdShort, "", cloudapiv6.TargetGroupId, core.RequiredFlagOption())
 	_ = add.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgTargetGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.TargetGroupIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.TargetGroupIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 	add.AddIpFlag(cloudapiv6.ArgIp, "", nil, "The IP of the balanced target VM.", core.RequiredFlagOption())
 	add.AddIntFlag(cloudapiv6.ArgPort, cloudapiv6.ArgPortShort, 8080, "The port of the balanced target service; valid range is 1 to 65535.", core.RequiredFlagOption())
@@ -94,7 +107,7 @@ Required values to run command:
 	add.AddBoolFlag(cloudapiv6.ArgMaintenanceEnabled, cloudapiv6.ArgMaintenanceShort, false, "Maintenance mode prevents the target from receiving balanced traffic.")
 	add.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait, "Wait for the Request for Target Group Target addition to be executed")
 	add.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for Target Group Target addition [seconds]")
-	add.AddStringSliceFlag(constants.ArgCols, "", defaultTargetGroupTargetCols, printer.ColsMessage(defaultTargetGroupTargetCols))
+	add.AddStringSliceFlag(constants.ArgCols, "", defaultTargetGroupTargetCols, tabheaders.ColsMessage(defaultTargetGroupTargetCols))
 	_ = add.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultTargetGroupTargetCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -116,14 +129,14 @@ Required values to run command:
 	})
 	remove.AddUUIDFlag(cloudapiv6.ArgTargetGroupId, cloudapiv6.ArgIdShort, "", cloudapiv6.TargetGroupId, core.RequiredFlagOption())
 	_ = remove.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgTargetGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.TargetGroupIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.TargetGroupIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 	remove.AddIpFlag(cloudapiv6.ArgIp, "", nil, "IP of a balanced target VM", core.RequiredFlagOption())
 	remove.AddIntFlag(cloudapiv6.ArgPort, cloudapiv6.ArgPortShort, 8080, "Port of the balanced target service. (range: 1 to 65535)", core.RequiredFlagOption())
 	remove.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete all Target Group Targets")
 	remove.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait, "Wait for the Request for Target Group Target deletion to be executed")
 	remove.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for Target Group Target deletion [seconds]")
-	remove.AddStringSliceFlag(constants.ArgCols, "", defaultTargetGroupTargetCols, printer.ColsMessage(defaultTargetGroupTargetCols))
+	remove.AddStringSliceFlag(constants.ArgCols, "", defaultTargetGroupTargetCols, tabheaders.ColsMessage(defaultTargetGroupTargetCols))
 	_ = remove.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultTargetGroupTargetCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -143,18 +156,30 @@ func PreRunTargetGroupTargetRemove(c *core.PreCommandConfig) error {
 }
 
 func RunTargetGroupTargetList(c *core.CommandConfig) error {
-	c.Printer.Verbose("TargetGroup ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)))
-	c.Printer.Verbose("Getting Targets from TargetGroup")
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
+		constants.TargetGroupId, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId))))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting Targets from TargetGroup"))
+
 	targetGroups, resp, err := c.CloudApiV6Services.TargetGroups().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)), resources.QueryParams{})
 	if resp != nil {
-		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
+
 	if properties, ok := targetGroups.GetPropertiesOk(); ok && properties != nil {
 		if targets, ok := properties.GetTargetsOk(); ok && targets != nil {
-			return c.Printer.Print(getTargetGroupTargetPrint(nil, c, getTargetGroupsTarget(targets)))
+			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+
+			out, err := jsontabwriter.GenerateOutput("", allTargetGroupTargetJSONPaths, targets,
+				tabheaders.GetHeadersAllDefault(defaultTargetGroupTargetCols, cols))
+			if err != nil {
+				return err
+			}
+
+			fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+			return nil
 		} else {
 			return errors.New("error getting targets")
 		}
@@ -168,29 +193,38 @@ func RunTargetGroupTargetAdd(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
 	var targetItems []ionoscloud.TargetGroupTarget
 
 	// Get existing Targets from the specified Target Group
-	c.Printer.Verbose("TargetGroup ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)))
-	c.Printer.Verbose("Getting TargetGroup")
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
+		constants.TargetGroupId, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId))))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting TargetGroup"))
+
 	targetGroupOld, resp, err := c.CloudApiV6Services.TargetGroups().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)), queryParams)
 	if err != nil {
 		return err
 	}
+
 	if properties, ok := targetGroupOld.GetPropertiesOk(); ok && properties != nil {
-		c.Printer.Verbose("Getting Targets from TargetGroup")
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting Targets from TargetGroup"))
+
 		if targets, ok := properties.GetTargetsOk(); ok && targets != nil {
 			targetItems = *targets
 		}
 	}
+
 	targetNew := getTargetGroupTargetInfo(c)
+
 	// Add new Target to the existing Targets in a Target Group
-	c.Printer.Verbose("Adding new Target to existing Targets")
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Adding new Target to existing Targets"))
+
 	targetItems = append(targetItems, targetNew.TargetGroupTarget)
 
 	// Update Target Group with the new Targets
-	c.Printer.Verbose("Updating TargetGroup with the new Targets")
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Updating TargetGroup with the new Targets"))
+
 	_, resp, err = c.CloudApiV6Services.TargetGroups().Update(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)),
 		&resources.TargetGroupProperties{
 			TargetGroupProperties: ionoscloud.TargetGroupProperties{
@@ -200,15 +234,26 @@ func RunTargetGroupTargetAdd(c *core.CommandConfig) error {
 		queryParams,
 	)
 	if resp != nil {
-		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
-	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, utils.GetId(resp)); err != nil {
 		return err
 	}
-	return c.Printer.Print(getTargetGroupTargetPrint(resp, c, []resources.TargetGroupTarget{targetNew}))
+
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+
+	out, err := jsontabwriter.GenerateOutput("", allTargetGroupTargetJSONPaths, targetNew.TargetGroupTarget,
+		tabheaders.GetHeadersAllDefault(defaultTargetGroupTargetCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+	return nil
 }
 
 func RunTargetGroupTargetRemove(c *core.CommandConfig) error {
@@ -216,113 +261,154 @@ func RunTargetGroupTargetRemove(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
-	var (
-		resp *resources.Response
-	)
+	var resp *resources.Response
+
 	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
-		c.Printer.Verbose("TargetGroup ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
+			constants.TargetGroupId, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId))))
+
 		resp, err = RemoveAllTargetGroupTarget(c)
 		if err != nil {
 			return err
 		}
-	} else {
-		c.Printer.Verbose("TargetGroup ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)))
-		c.Printer.Verbose("Target IP: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgIp)))
-		c.Printer.Verbose("Target Port: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgPort)))
-		if err := utils.AskForConfirm(c.Stdin, c.Printer, "remove target from target group"); err != nil {
-			return err
-		}
-		var propertiesUpdated resources.TargetGroupProperties
 
-		// Get existing Targets from the specified Target Group
-		c.Printer.Verbose("Getting TargetGroup")
-		targetGroupOld, _, err := c.CloudApiV6Services.TargetGroups().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)), queryParams)
-		if err != nil {
-			return err
-		}
-		if propertiesOk, ok := targetGroupOld.GetPropertiesOk(); ok && propertiesOk != nil {
-			if itemsOk, ok := propertiesOk.GetTargetsOk(); ok && itemsOk != nil {
-				// Remove specified Target from Target Group
-				c.Printer.Verbose("Removing Target from existing Targets")
-				newTargets, err := getTargetGroupTargetsRemove(c, itemsOk)
-				if err != nil {
-					return err
-				}
-				// Set new Targets for Target Group
-				propertiesUpdated.SetTargets(*newTargets)
+		return nil
+	}
+
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
+		constants.TargetGroupId, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId))))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
+		"Target IP: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgIp))))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
+		"Target Port: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgPort))))
+
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "remove target from target group", viper.GetBool(constants.ArgForce)) {
+		return fmt.Errorf(confirm.UserDenied)
+	}
+
+	var propertiesUpdated resources.TargetGroupProperties
+
+	// Get existing Targets from the specified Target Group
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting TargetGroup"))
+
+	targetGroupOld, _, err := c.CloudApiV6Services.TargetGroups().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)), queryParams)
+	if err != nil {
+		return err
+	}
+
+	if propertiesOk, ok := targetGroupOld.GetPropertiesOk(); ok && propertiesOk != nil {
+		if itemsOk, ok := propertiesOk.GetTargetsOk(); ok && itemsOk != nil {
+			// Remove specified Target from Target Group
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Removing Target from existing Targets"))
+
+			newTargets, err := getTargetGroupTargetsRemove(c, itemsOk)
+			if err != nil {
+				return err
 			}
-		}
 
-		// Update Target Group with the new Targets
-		c.Printer.Verbose("Updating TargetGroup with the new Targets")
-		_, resp, err = c.CloudApiV6Services.TargetGroups().Update(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)), &propertiesUpdated, queryParams)
-		if resp != nil {
-			c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
-		}
-		if err != nil {
-			return err
-		}
-		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-			return err
+			// Set new Targets for Target Group
+			propertiesUpdated.SetTargets(*newTargets)
 		}
 	}
-	return c.Printer.Print(getTargetGroupPrint(resp, c, nil))
+
+	// Update Target Group with the new Targets
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Updating TargetGroup with the new Targets"))
+
+	_, resp, err = c.CloudApiV6Services.TargetGroups().Update(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)), &propertiesUpdated, queryParams)
+	if resp != nil {
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+	}
+	if err != nil {
+		return err
+	}
+
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, utils.GetId(resp)); err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Target Group Target successfully deleted"))
+	return nil
 }
 
 func RemoveAllTargetGroupTarget(c *core.CommandConfig) (*resources.Response, error) {
-	_ = c.Printer.Warn("Target Group Targets to be deleted:")
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Target Group Targets to be deleted:"))
+
 	applicationLoadBalancerRules, resp, err := c.CloudApiV6Services.TargetGroups().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)), cloudapiv6.ParentResourceQueryParams)
 	if err != nil {
 		return nil, err
 	}
-	if propertiesOk, ok := applicationLoadBalancerRules.GetPropertiesOk(); ok && propertiesOk != nil {
-		if httpRulesOk, ok := propertiesOk.GetTargetsOk(); ok && httpRulesOk != nil {
-			for _, httpRuleOk := range *httpRulesOk {
-				if nameOk, ok := httpRuleOk.GetIpOk(); ok && nameOk != nil {
-					_ = c.Printer.Warn("Target IP: " + *nameOk)
-				}
-				if typeOk, ok := httpRuleOk.GetPortOk(); ok && typeOk != nil {
-					_ = c.Printer.Warn("Target Port: " + strconv.Itoa(int(*typeOk)))
-				}
+
+	propertiesOk, ok := applicationLoadBalancerRules.GetPropertiesOk()
+	if !ok || propertiesOk == nil {
+		return nil, fmt.Errorf("could not retrieve Application Load Balancer properties")
+	}
+
+	if httpRulesOk, ok := propertiesOk.GetTargetsOk(); ok && httpRulesOk != nil {
+		for _, httpRuleOk := range *httpRulesOk {
+			if nameOk, ok := httpRuleOk.GetIpOk(); ok && nameOk != nil {
+				fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Target IP: %v", *nameOk))
+			}
+
+			if typeOk, ok := httpRuleOk.GetPortOk(); ok && typeOk != nil {
+				fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Target Port: %v", strconv.Itoa(int(*typeOk))))
 			}
 		}
-		if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Targets from Target Group"); err != nil {
-			return nil, err
-		}
-		c.Printer.Verbose("Deleting all the Target Group Targets...")
-		propertiesOk.SetTargets([]ionoscloud.TargetGroupTarget{})
-		_, resp, err = c.CloudApiV6Services.TargetGroups().Update(
-			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)),
-			&resources.TargetGroupProperties{TargetGroupProperties: *propertiesOk},
-			resources.QueryParams{},
-		)
-		if resp != nil {
-			c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
-			c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
-		}
-		if err != nil {
-			return nil, err
-		}
-		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-			return nil, err
-		}
 	}
+
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete all the Targets from Target Group", viper.GetBool(constants.ArgForce)) {
+		return nil, fmt.Errorf(confirm.UserDenied)
+	}
+
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the Target Group Targets..."))
+
+	propertiesOk.SetTargets([]ionoscloud.TargetGroupTarget{})
+
+	_, resp, err = c.CloudApiV6Services.TargetGroups().Update(
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)),
+		&resources.TargetGroupProperties{TargetGroupProperties: *propertiesOk},
+		resources.QueryParams{},
+	)
+	if resp != nil {
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Request Id: %v", utils.GetId(resp)))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, utils.GetId(resp)); err != nil {
+		return nil, err
+	}
+
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Target Group Targets successfully deleted"))
 	return resp, err
 }
 
 func getTargetGroupTargetInfo(c *core.CommandConfig) resources.TargetGroupTarget {
 	target := resources.TargetGroupTarget{}
+
 	target.SetIp(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgIp)))
-	c.Printer.Verbose("Property Ip for Target set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgIp)))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
+		"Property Ip for Target set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgIp))))
+
 	target.SetPort(viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgPort)))
-	c.Printer.Verbose("Property Port for Target set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgPort)))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
+		"Property Port for Target set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgPort))))
+
 	target.SetWeight(viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgWeight)))
-	c.Printer.Verbose("Property Weight for Target set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgWeight)))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
+		"Property Weight for Target set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgWeight))))
+
 	target.SetMaintenanceEnabled(viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgMaintenanceEnabled)))
-	c.Printer.Verbose("Property MaintenanceEnabled for Target set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgMaintenanceEnabled)))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
+		"Property MaintenanceEnabled for Target set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgMaintenanceEnabled))))
+
 	target.SetHealthCheckEnabled(viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgHealthCheckEnabled)))
-	c.Printer.Verbose("Property HealthCheckEnabled for Target set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgHealthCheckEnabled)))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
+		"Property HealthCheckEnabled for Target set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgHealthCheckEnabled))))
+
 	return target
 }
 
@@ -331,24 +417,28 @@ func getTargetGroupTargetsRemove(c *core.CommandConfig, targetsOld *[]ionoscloud
 		foundIp   = false
 		foundPort = false
 	)
+
 	targetItems := make([]ionoscloud.TargetGroupTarget, 0)
 	if targetsOld != nil {
 		for _, targetItem := range *targetsOld {
 			// Iterate trough all targets
 			removeIp := false
 			removePort := false
+
 			if ip, ok := targetItem.GetIpOk(); ok && ip != nil {
 				if *ip == viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgIp)) {
 					removeIp = true
 					foundIp = true
 				}
 			}
+
 			if port, ok := targetItem.GetPortOk(); ok && port != nil {
 				if *port == viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgPort)) {
 					removePort = true
 					foundPort = true
 				}
 			}
+
 			if removeIp && removePort {
 				continue
 			} else {
@@ -356,80 +446,13 @@ func getTargetGroupTargetsRemove(c *core.CommandConfig, targetsOld *[]ionoscloud
 			}
 		}
 	}
+
 	if !foundIp {
 		return nil, errors.New("no target with the specified IP found")
 	}
+
 	if !foundPort {
 		return nil, errors.New("no target with the specified port found")
 	}
 	return &targetItems, nil
-}
-
-// Output Printing
-
-var defaultTargetGroupTargetCols = []string{"TargetIp", "TargetPort", "Weight", "HealthCheckEnabled", "MaintenanceEnabled"}
-
-type TargetGroupTargetPrint struct {
-	TargetIp           string `json:"TargetIp,omitempty"`
-	TargetPort         int32  `json:"TargetPort,omitempty"`
-	Weight             int32  `json:"Weight,omitempty"`
-	HealthCheckEnabled bool   `json:"HealthCheckEnabled,omitempty"`
-	MaintenanceEnabled bool   `json:"MaintenanceEnabled,omitempty"`
-}
-
-func getTargetGroupTargetPrint(resp *resources.Response, c *core.CommandConfig, s []resources.TargetGroupTarget) printer.Result {
-	r := printer.Result{}
-	if c != nil {
-		if resp != nil {
-			r.ApiResponse = resp
-			r.Resource = c.Resource
-			r.Verb = c.Verb
-			r.WaitForRequest = viper.GetBool(core.GetFlagName(c.NS, constants.ArgWaitForRequest))
-		}
-		if s != nil {
-			r.OutputJSON = s
-			r.KeyValue = getTargetGroupsTargetKVMaps(s)
-			r.Columns = printer.GetHeadersAllDefault(defaultTargetGroupTargetCols, viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)))
-		}
-	}
-	return r
-}
-
-func getTargetGroupsTarget(targets *[]ionoscloud.TargetGroupTarget) []resources.TargetGroupTarget {
-	targetGroupTargets := make([]resources.TargetGroupTarget, 0)
-	if targets != nil {
-		for _, s := range *targets {
-			targetGroupTargets = append(targetGroupTargets, resources.TargetGroupTarget{TargetGroupTarget: s})
-		}
-	}
-	return targetGroupTargets
-}
-
-func getTargetGroupsTargetKVMaps(ss []resources.TargetGroupTarget) []map[string]interface{} {
-	out := make([]map[string]interface{}, 0, len(ss))
-	for _, s := range ss {
-		o := getTargetGroupTargetKVMap(s)
-		out = append(out, o)
-	}
-	return out
-}
-
-func getTargetGroupTargetKVMap(target resources.TargetGroupTarget) map[string]interface{} {
-	var targetPrint TargetGroupTargetPrint
-	if ip, ok := target.GetIpOk(); ok && ip != nil {
-		targetPrint.TargetIp = *ip
-	}
-	if port, ok := target.GetPortOk(); ok && port != nil {
-		targetPrint.TargetPort = *port
-	}
-	if weight, ok := target.GetWeightOk(); ok && weight != nil {
-		targetPrint.Weight = *weight
-	}
-	if healthCheckEnabled, ok := target.GetHealthCheckEnabledOk(); ok && healthCheckEnabled != nil {
-		targetPrint.HealthCheckEnabled = *healthCheckEnabled
-	}
-	if maintenanceEnabled, ok := target.GetMaintenanceEnabledOk(); ok && maintenanceEnabled != nil {
-		targetPrint.MaintenanceEnabled = *maintenanceEnabled
-	}
-	return structs.Map(targetPrint)
 }

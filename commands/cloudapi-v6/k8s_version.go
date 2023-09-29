@@ -2,9 +2,11 @@ package commands
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/spf13/cobra"
@@ -60,12 +62,16 @@ func K8sVersionCmd() *core.Command {
 func RunK8sVersionList(c *core.CommandConfig) error {
 	u, resp, err := c.CloudApiV6Services.K8s().ListVersions()
 	if resp != nil {
-		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
+
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(u)
+
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateRawOutput(u))
+
+	return nil
 }
 
 func RunK8sVersionGet(c *core.CommandConfig) error {
@@ -73,18 +79,23 @@ func RunK8sVersionGet(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(u)
+
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateRawOutput(u))
+
+	return nil
 }
 
 func getK8sVersion(c *core.CommandConfig) (string, error) {
-	if k8sversion, resp, err := c.CloudApiV6Services.K8s().GetVersion(); err == nil {
-		k8sversion = strings.ReplaceAll(k8sversion, "\"", "")
-		k8sversion = strings.ReplaceAll(k8sversion, "\n", "")
-		if resp != nil {
-			c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
-		}
-		return k8sversion, nil
-	} else {
+	k8sversion, resp, err := c.CloudApiV6Services.K8s().GetVersion()
+	if err != nil {
 		return "", err
 	}
+
+	k8sversion = strings.ReplaceAll(k8sversion, "\"", "")
+	k8sversion = strings.ReplaceAll(k8sversion, "\n", "")
+	if resp != nil {
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+	}
+
+	return k8sversion, nil
 }

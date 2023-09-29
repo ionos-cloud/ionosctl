@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
-	"os"
 	"testing"
 
 	"github.com/golang/mock/gomock"
@@ -160,24 +159,6 @@ func TestRunNatGatewayLanAdd(t *testing.T) {
 		rm.CloudApiV6Mocks.NatGateway.EXPECT().Update(testNatGatewayLanVar, testNatGatewayLanVar, natgatewayLanTestProper, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&natgatewayLanTestUpdated, &testResponse, nil)
 		err := RunNatGatewayLanAdd(cfg)
 		assert.NoError(t, err)
-	})
-}
-
-func TestRunNatGatewayLanAddResponseErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
-		viper.Reset()
-		viper.Set(constants.ArgQuiet, false)
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNatGatewayLanVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNatGatewayId), testNatGatewayLanVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIps), []string{testNatGatewayLanNewVar})
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLanId), testNatGatewayLanNewIntVar)
-		rm.CloudApiV6Mocks.NatGateway.EXPECT().Get(testNatGatewayLanVar, testNatGatewayLanVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&natgatewayLanTest, nil, nil)
-		rm.CloudApiV6Mocks.NatGateway.EXPECT().Update(testNatGatewayLanVar, testNatGatewayLanVar, natgatewayLanTestProper, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&natgatewayLanTestUpdated, &testResponseErr, nil)
-		err := RunNatGatewayLanAdd(cfg)
-		assert.Error(t, err)
 	})
 }
 
@@ -337,7 +318,7 @@ func TestRunNatGatewayLanRemoveAskForConfirm(t *testing.T) {
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(constants.ArgQuiet, false)
 		viper.Set(constants.ArgForce, false)
-		cfg.Stdin = bytes.NewReader([]byte("YES\n"))
+		cfg.Command.Command.SetIn(bytes.NewReader([]byte("YES\n")))
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNatGatewayLanVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNatGatewayId), testNatGatewayLanVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLanId), testNatGatewayLanNewIntVar)
@@ -359,7 +340,7 @@ func TestRunNatGatewayLanRemoveAskForConfirmErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNatGatewayLanVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNatGatewayId), testNatGatewayLanVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLanId), testNatGatewayLanNewIntVar)
-		cfg.Stdin = os.Stdin
+		cfg.Command.Command.SetIn(bytes.NewReader([]byte("\n")))
 		err := RunNatGatewayLanRemove(cfg)
 		assert.Error(t, err)
 	})

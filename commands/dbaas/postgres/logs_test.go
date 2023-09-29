@@ -162,27 +162,3 @@ func TestRunClusterLogsGetErr(t *testing.T) {
 		assert.Error(t, err)
 	})
 }
-
-func TestGetClusterLogsCols(t *testing.T) {
-	var b bytes.Buffer
-	//	clierror.ErrAction = func() {}
-	w := bufio.NewWriter(&b)
-	viper.Set(core.GetFlagName("logs", constants.ArgCols), []string{"Name"})
-	getClusterLogsCols(core.GetFlagName("logs", constants.ArgCols), w)
-	err := w.Flush()
-	assert.NoError(t, err)
-}
-
-// // Muted because of .ErrAction usage
-//
-// func TestGetLogsColsErr(t *testing.T) {
-// 	var b bytes.Buffer
-// //	clierror.ErrAction = func() {}
-// 	w := bufio.NewWriter(&b)
-// 	viper.Set(core.GetFlagName("logs", constants.ArgCols), []string{"Unknown"})
-// 	getClusterLogsCols(core.GetFlagName("logs", constants.ArgCols), w)
-// 	err := w.Flush()
-// 	assert.NoError(t, err)
-// 	re := regexp.MustCompile(`unknown column Unknown`)
-// 	assert.True(t, re.Match(b.Bytes()))
-// }

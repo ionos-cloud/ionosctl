@@ -2,11 +2,13 @@ package cluster
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
-
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"github.com/spf13/viper"
 )
 
@@ -20,18 +22,35 @@ func ClusterListCmd() *core.Command {
 		Example:   "ionosctl dataplatform cluster list",
 		PreCmdRun: core.NoPreRun,
 		CmdRun: func(c *core.CommandConfig) error {
-			c.Printer.Verbose("Getting Clusters...")
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting Clusters..."))
+
 			name := viper.GetString(core.GetFlagName(c.NS, constants.FlagName))
 
 			req := client.Must().DataplatformClient.DataPlatformClusterApi.ClustersGet(c.Context)
 			if name != "" {
 				req = req.Name(name)
 			}
+
 			clusters, _, err := req.Execute()
 			if err != nil {
 				return err
 			}
-			return c.Printer.Print(getClusterPrint(c, clusters.GetItems()))
+
+			clustersConverted, err := convertClustersToTable(clusters)
+			if err != nil {
+				return err
+			}
+
+			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+
+			out, err := jsontabwriter.GenerateOutputPreconverted(clusters, clustersConverted,
+				tabheaders.GetHeadersAllDefault(allCols, cols))
+			if err != nil {
+				return err
+			}
+
+			fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+			return nil
 		},
 		InitClient: true,
 	})

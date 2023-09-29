@@ -3,9 +3,11 @@ package core
 import (
 	"errors"
 	"fmt"
+	"os"
 	"strings"
 
 	"github.com/gofrs/uuid/v5"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/spf13/viper"
 )
 
@@ -218,7 +220,7 @@ func (u *uuidFlag) Set(p string) error {
 
 	if !IsValidUUID(p) {
 		// return fmt.Errorf("%s does not match UUID-4 format", p)
-		_ = getPrinter(true).Warn(fmt.Sprintf("WARNING: %s does not match UUID-4 format", p))
+		fmt.Fprintf(os.Stderr, jsontabwriter.GenerateLogOutput(fmt.Sprintf("WARNING: %s does not match UUID-4 format", p)))
 	}
 
 	// Valid UUID if passed above check

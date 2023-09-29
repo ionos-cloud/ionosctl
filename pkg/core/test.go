@@ -9,7 +9,6 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	authservice "github.com/ionos-cloud/ionosctl/v6/services/auth-v1"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	cloudapidbaaspgsql "github.com/ionos-cloud/ionosctl/v6/services/dbaas-postgres"
@@ -35,8 +34,6 @@ func PreCmdConfigTest(t *testing.T, writer io.Writer, preRunner PreCmdRunTest) {
 	if viper.GetString(constants.ArgOutput) == "" {
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 	}
-	p, _ := printer.NewPrinterRegistry(writer, writer, false)
-	prt := p[viper.GetString(constants.ArgOutput)]
 	preCmdCfg := &PreCommandConfig{
 		Command: &Command{
 			Command: &cobra.Command{
@@ -47,8 +44,9 @@ func PreCmdConfigTest(t *testing.T, writer io.Writer, preRunner PreCmdRunTest) {
 		Namespace: testConst,
 		Resource:  testConst,
 		Verb:      testConst,
-		Printer:   prt,
 	}
+
+	preCmdCfg.Command.Command.SetOut(writer)
 	preRunner(preCmdCfg)
 }
 
@@ -78,12 +76,13 @@ func ExecuteTestCases(t *testing.T, funcToTest func(c *CommandConfig) error, tes
 	for _, tc := range testCases {
 		t.Run(tc.Name, func(t *testing.T) {
 			viper.Reset()
+			viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 			for _, argPair := range tc.Args {
 				viper.Set(argPair.Flag, argPair.Value)
 			}
 
 			if tc.UserInput != nil {
-				cfg.Stdin = tc.UserInput
+				cfg.Command.Command.SetIn(tc.UserInput)
 			}
 
 			// Expected gomock calls, call order, call counts and returned values
@@ -106,8 +105,6 @@ func CmdConfigTest(t *testing.T, writer io.Writer, runner CmdRunnerTest) {
 	if viper.GetString(constants.ArgOutput) == "" {
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 	}
-	printReg, _ := printer.NewPrinterRegistry(writer, writer, false)
-	prt := printReg[viper.GetString(constants.ArgOutput)]
 	// Init Test Mock Resources and Services
 	testMocks := initMockResources(ctrl)
 	cmdConfig := &CommandConfig{
@@ -120,10 +117,11 @@ func CmdConfigTest(t *testing.T, writer io.Writer, runner CmdRunnerTest) {
 		Namespace: testConst,
 		Resource:  testConst,
 		Verb:      testConst,
-		Printer:   prt,
 		Context:   context.TODO(),
 		initCfg:   func(c *CommandConfig) error { return nil },
 	}
+
+	cmdConfig.Command.Command.SetOut(writer)
 	cmdConfig = initMockServices(cmdConfig, testMocks)
 	runner(cmdConfig, testMocks)
 }

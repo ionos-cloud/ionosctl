@@ -5,13 +5,14 @@ import (
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	sdkgo "github.com/ionos-cloud/sdk-go-dbaas-mongo"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -64,17 +65,17 @@ ionosctl db m c d --all --name <name>`,
 			chosenCluster, _, err := client.Must().MongoClient.ClustersApi.ClustersFindById(context.Background(), clusterId).Execute()
 			if err != nil {
 				wrapped := fmt.Errorf("failed trying to find cluster by id: %w", err)
-				keepGoing := confirm.Ask(fmt.Sprintf("%s, try deleting %s anyways", wrapped.Error(), clusterId))
+				keepGoing := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("%s, try deleting %s anyways", wrapped.Error(), clusterId))
 				if !keepGoing {
 					return wrapped
 				}
 			}
 
-			ok := confirm.Ask(confirmStringForCluster(chosenCluster), viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce)))
+			ok := confirm.FAsk(c.Command.Command.InOrStdin(), confirmStringForCluster(chosenCluster), viper.GetBool(constants.ArgForce))
 			if !ok {
-				return fmt.Errorf("user denied confirmation")
+				return fmt.Errorf(confirm.UserDenied)
 			}
-			c.Printer.Verbose("Deleting cluster: %s", clusterId)
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting cluster: %s", clusterId))
 
 			_, _, err = client.Must().MongoClient.ClustersApi.ClustersDelete(context.Background(), clusterId).Execute()
 			return err
@@ -89,8 +90,7 @@ ionosctl db m c d --all --name <name>`,
 	cmd.AddBoolFlag(constants.ArgNoHeaders, "", false, "When using text output, don't print headers")
 	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Delete all mongo clusters")
 	cmd.AddBoolFlag(constants.FlagName, "", false, "When deleting all clusters, filter the clusters by a name")
-	cmd.AddBoolFlag(constants.ArgForce, constants.ArgForceShort, false, "Skip yes/no verification")
-	cmd.AddStringSliceFlag(constants.ArgCols, "", nil, printer.ColsMessage(allCols))
+	cmd.AddStringSliceFlag(constants.ArgCols, "", nil, tabheaders.ColsMessage(allCols))
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -102,14 +102,14 @@ ionosctl db m c d --all --name <name>`,
 }
 
 func deleteAll(c *core.CommandConfig) error {
-	c.Printer.Verbose("Deleting All Clusters!")
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting All Clusters!"))
 	xs, err := Clusters(FilterNameFlags(c))
 	if err != nil {
 		return err
 	}
 
 	return functional.ApplyAndAggregateErrors(*xs.GetItems(), func(x sdkgo.ClusterResponse) error {
-		yes := confirm.Ask(confirmStringForCluster(x), viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce)))
+		yes := confirm.FAsk(c.Command.Command.InOrStdin(), confirmStringForCluster(x), viper.GetBool(constants.ArgForce))
 		if yes {
 			_, _, delErr := client.Must().MongoClient.ClustersApi.ClustersDelete(c.Context, *x.Id).Execute()
 			if delErr != nil {

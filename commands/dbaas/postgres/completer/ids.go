@@ -2,13 +2,12 @@ package completer
 
 import (
 	"context"
-	"io"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/services/dbaas-postgres/resources"
 )
 
-func BackupsIds(outErr io.Writer) []string {
+func BackupsIds() []string {
 	clustersService := resources.NewBackupsService(client.Must(), context.Background())
 	backupList, _, err := clustersService.List()
 	if err != nil {
@@ -46,7 +45,7 @@ func BackupsIdsForCluster(clusterId string) []string {
 	return ids
 }
 
-func ClustersIds(outErr io.Writer) []string {
+func ClustersIds() []string {
 	clustersService := resources.NewClustersService(client.Must(), context.Background())
 	clusterList, _, err := clustersService.List("")
 	if err != nil {
@@ -65,7 +64,7 @@ func ClustersIds(outErr io.Writer) []string {
 	return ids
 }
 
-func PostgresVersions(outErr io.Writer) []string {
+func PostgresVersions() []string {
 	versionsService := resources.NewVersionsService(client.Must(), context.Background())
 	versionList, _, err := versionsService.List()
 	if err != nil {

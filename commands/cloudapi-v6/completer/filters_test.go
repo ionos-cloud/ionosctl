@@ -1,11 +1,8 @@
 package completer
 
 import (
-	"bufio"
-	"bytes"
 	"testing"
 
-	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -222,14 +219,4 @@ type testStruct struct {
 	TestSliceString *[]string
 	testSliceInt    *[]int
 	TestSliceStruct *[]testStruct
-}
-
-func TestGetPropertiesName(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	result := getPropertiesName(testStruct{})
-	err := w.Flush()
-	assert.NoError(t, err)
-	expectedResult := []string{"a", "test", "testSliceString"}
-	assert.True(t, utils.StringSlicesEqual(result, expectedResult))
 }

@@ -5,11 +5,11 @@ import (
 	"strings"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/json2table"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 
-	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	ionoscloud "github.com/ionos-cloud/sdk-go-dbaas-mongo"
 	"github.com/spf13/cobra"
 )
@@ -31,7 +31,7 @@ func UserCmd() *core.Command {
 		},
 	}
 
-	cmd.Command.PersistentFlags().StringSlice(constants.ArgCols, nil, printer.ColsMessage(allCols))
+	cmd.Command.PersistentFlags().StringSlice(constants.ArgCols, nil, tabheaders.ColsMessage(allCols))
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -44,13 +44,54 @@ func UserCmd() *core.Command {
 	return cmd
 }
 
-type UserPrint struct {
-	Username  string `json:"Username,omitempty"`
-	CreatedBy string `json:"CreatedBy,omitempty"`
-	Roles     string `json:"Roles,omitempty"`
+var (
+	allJSONPaths = map[string]string{
+		"Username":  "properties.username",
+		"CreatedBy": "metadata.createdBy",
+	}
+
+	allCols = []string{"Username", "CreatedBy", "Roles"}
+)
+
+func convertUserToTable(user ionoscloud.User) ([]map[string]interface{}, error) {
+	properties, ok := user.GetPropertiesOk()
+	if !ok || properties == nil {
+		return nil, fmt.Errorf("could not retrieve Mongo User properties")
+	}
+
+	roles, ok := properties.GetRolesOk()
+	if !ok || roles == nil {
+		return nil, fmt.Errorf("could not retrieve Mongo User roles")
+	}
+
+	temp, err := json2table.ConvertJSONToTable("", allJSONPaths, user)
+	if err != nil {
+		return nil, fmt.Errorf("could not convert from JSON to Table format: %w", err)
+	}
+
+	temp[0]["Roles"] = strings.Join(functional.Map(*properties.GetRoles(), roleToString), ", ")
+
+	return temp, nil
 }
 
-var allCols = structs.Names(UserPrint{})
+func convertUsersToTable(users ionoscloud.UsersList) ([]map[string]interface{}, error) {
+	items, ok := users.GetItemsOk()
+	if !ok || items == nil {
+		return nil, fmt.Errorf("could not retrieve Mongo Users items")
+	}
+
+	var usersConverted []map[string]interface{}
+	for _, item := range *items {
+		temp, err := convertUserToTable(item)
+		if err != nil {
+			return nil, err
+		}
+
+		usersConverted = append(usersConverted, temp...)
+	}
+
+	return usersConverted, nil
+}
 
 // given a User DB/Role pair, return its string representation
 // Role: { "role": "read", "database": "db" } -> "db: read"
@@ -64,49 +105,4 @@ func roleToString(role ionoscloud.UserRoles) string {
 		return ""
 	}
 	return fmt.Sprintf("%s: %s", *db, *val)
-}
-
-func getUserRows(ls *[]ionoscloud.User) []map[string]interface{} {
-	if ls == nil {
-		return nil
-	}
-
-	out := make([]map[string]interface{}, 0, len(*ls))
-	for _, t := range *ls {
-		var cols UserPrint
-
-		properties, ok := t.GetPropertiesOk()
-		if ok && properties != nil {
-			if properties.GetRoles() != nil {
-				rolesAsStrings := functional.Map(*properties.GetRoles(), roleToString)
-				cols.Roles = strings.Join(rolesAsStrings, ", ") // "db1: read, db2: write, db3: abcd..."
-			}
-			if properties.GetUsername() != nil {
-				cols.Username = *properties.GetUsername()
-			}
-		}
-
-		metadata, ok := t.GetMetadataOk()
-		if ok && metadata != nil {
-			if metadata.GetCreatedBy() != nil {
-				cols.CreatedBy = *metadata.GetCreatedBy()
-			}
-		}
-
-		o := structs.Map(cols)
-		out = append(out, o)
-	}
-	return out
-}
-
-func getUserPrint(c *core.CommandConfig, ls *[]ionoscloud.User) printer.Result {
-	r := printer.Result{}
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-
-	if c != nil && ls != nil {
-		r.OutputJSON = ls
-		r.KeyValue = getUserRows(ls)                            // map header -> rows
-		r.Columns = printer.GetHeadersAllDefault(allCols, cols) // headers
-	}
-	return r
 }

@@ -2,8 +2,10 @@ package cluster
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dataplatform/completer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
@@ -25,13 +27,15 @@ func ClustersKubeConfigCmd() *core.Command {
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
-			c.Printer.Verbose("Getting Cluster by id: %s", clusterId)
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting Cluster by id: %s", clusterId))
 
 			kubeconfig, _, err := client.Must().DataplatformClient.DataPlatformClusterApi.ClustersKubeconfigFindByClusterId(c.Context, clusterId).Execute()
 			if err != nil {
 				return err
 			}
-			return c.Printer.Print(kubeconfig)
+
+			fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateRawOutput(kubeconfig))
+			return nil
 		},
 		InitClient: true,
 	})

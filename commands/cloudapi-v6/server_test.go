@@ -5,7 +5,6 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"os"
 	"strconv"
 	"testing"
 
@@ -945,7 +944,7 @@ func TestRunServerDeleteAskForConfirm(t *testing.T) {
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(constants.ArgQuiet, false)
 		viper.Set(constants.ArgForce, false)
-		cfg.Stdin = bytes.NewReader([]byte("YES\n"))
+		cfg.Command.Command.SetIn(bytes.NewReader([]byte("YES\n")))
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), false)
@@ -963,10 +962,10 @@ func TestRunServerDeleteAskForConfirmErr(t *testing.T) {
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(constants.ArgQuiet, false)
 		viper.Set(constants.ArgForce, false)
-		cfg.Stdin = os.Stdin
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), false)
+		cfg.Command.Command.SetIn(bytes.NewReader([]byte("\n")))
 		err := RunServerDelete(cfg)
 		assert.Error(t, err)
 	})
@@ -1033,10 +1032,10 @@ func TestRunServerSuspendAskForConfirmErr(t *testing.T) {
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(constants.ArgQuiet, false)
 		viper.Set(constants.ArgForce, false)
-		cfg.Stdin = os.Stdin
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), false)
+		cfg.Command.Command.SetIn(bytes.NewReader([]byte("\n")))
 		err := RunServerSuspend(cfg)
 		assert.Error(t, err)
 	})
@@ -1103,10 +1102,10 @@ func TestRunServerStartAskForConfirmErr(t *testing.T) {
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(constants.ArgQuiet, false)
 		viper.Set(constants.ArgForce, false)
-		cfg.Stdin = os.Stdin
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), false)
+		cfg.Command.Command.SetIn(bytes.NewReader([]byte("\n")))
 		err := RunServerStart(cfg)
 		assert.Error(t, err)
 	})
@@ -1173,10 +1172,10 @@ func TestRunServerStopAskForConfirmErr(t *testing.T) {
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(constants.ArgQuiet, false)
 		viper.Set(constants.ArgForce, false)
-		cfg.Stdin = os.Stdin
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), false)
+		cfg.Command.Command.SetIn(bytes.NewReader([]byte("\n")))
 		err := RunServerStop(cfg)
 		assert.Error(t, err)
 	})
@@ -1243,10 +1242,10 @@ func TestRunServerRebootAskForConfirmErr(t *testing.T) {
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(constants.ArgQuiet, false)
 		viper.Set(constants.ArgForce, false)
-		cfg.Stdin = os.Stdin
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), false)
+		cfg.Command.Command.SetIn(bytes.NewReader([]byte("\n")))
 		err := RunServerReboot(cfg)
 		assert.Error(t, err)
 	})
@@ -1313,33 +1312,11 @@ func TestRunServerResumeAskForConfirmErr(t *testing.T) {
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(constants.ArgQuiet, false)
 		viper.Set(constants.ArgForce, false)
-		cfg.Stdin = os.Stdin
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), false)
+		cfg.Command.Command.SetIn(bytes.NewReader([]byte("\n")))
 		err := RunServerResume(cfg)
 		assert.Error(t, err)
 	})
 }
-
-func TestGetServersCols(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	viper.Set(core.GetFlagName("server", constants.ArgCols), []string{"Name"})
-	getServersCols(core.GetFlagName("server", constants.ArgCols), core.GetFlagName("server", cloudapiv6.ArgAll), w)
-	err := w.Flush()
-	assert.NoError(t, err)
-}
-
-// Muted because of .ErrAction usage
-//
-// func TestGetServersColsErr(t *testing.T) {
-// 	var b bytes.Buffer
-// 	w := bufio.NewWriter(&b)
-// 	viper.Set(core.GetFlagName("server", constants.ArgCols), []string{"Unknown"})
-// 	getServersCols(core.GetFlagName("server", constants.ArgCols), core.GetFlagName("server", cloudapiv6.ArgAll), w)
-// 	err := w.Flush()
-// 	assert.NoError(t, err)
-// 	re := regexp.MustCompile(`unknown column Unknown`)
-// 	assert.True(t, re.Match(b.Bytes()))
-// }

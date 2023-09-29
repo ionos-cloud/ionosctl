@@ -4,21 +4,52 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"os"
 
-	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
+	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+)
+
+var (
+	allGroupJSONPaths = map[string]string{
+		"GroupId":                     "id",
+		"Name":                        "properties.name",
+		"CreateDataCenter":            "properties.createDataCenter",
+		"CreateSnapshot":              "properties.createSnapshot",
+		"ReserveIp":                   "properties.reserveIp",
+		"AccessActivityLog":           "properties.accessActivityLog",
+		"CreatePcc":                   "properties.createPcc",
+		"S3Privilege":                 "properties.s3Privilege",
+		"CreateBackupUnit":            "properties.createBackupUnit",
+		"CreateInternetAccess":        "properties.createInternetAccess",
+		"CreateK8s":                   "properties.createK8sCluster",
+		"CreateFlowLog":               "properties.createFlowLog",
+		"AccessAndManageMonitoring":   "properties.accessAndManageMonitoring",
+		"AccessAndManageCertificates": "properties.accessAndManageCertificates",
+		"AccessAndManageDns":          "properties.accessAndManageDns",
+		"ManageDBaaS":                 "properties.manageDBaaS",
+		"ManageRegistry":              "properties.manageRegistry",
+		"ManageDataplatform":          "properties.manageDataplatform",
+	}
+
+	defaultGroupCols = []string{"GroupId", "Name", "CreateDataCenter", "CreateSnapshot", "CreatePcc", "CreateBackupUnit",
+		"CreateInternetAccess", "CreateK8s", "ReserveIp"}
+	allGroupCols = []string{"GroupId", "Name", "CreateDataCenter", "CreateSnapshot", "ReserveIp", "AccessActivityLog",
+		"CreatePcc", "S3Privilege", "CreateBackupUnit", "CreateInternetAccess", "CreateK8s", "CreateFlowLog",
+		"AccessAndManageMonitoring", "AccessAndManageCertificates", "AccessAndManageDns", "ManageDBaaS", "ManageRegistry",
+		"ManageDataplatform",
+	}
 )
 
 func GroupCmd() *core.Command {
@@ -33,7 +64,7 @@ func GroupCmd() *core.Command {
 		},
 	}
 	globalFlags := groupCmd.GlobalFlags()
-	globalFlags.StringSliceP(constants.ArgCols, "", defaultGroupCols, printer.ColsMessage(allGroupCols))
+	globalFlags.StringSliceP(constants.ArgCols, "", defaultGroupCols, tabheaders.ColsMessage(allGroupCols))
 	_ = viper.BindPFlag(core.GetFlagName(groupCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = groupCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allGroupCols, cobra.ShellCompDirectiveNoFileComp
@@ -83,7 +114,7 @@ func GroupCmd() *core.Command {
 	})
 	get.AddUUIDFlag(cloudapiv6.ArgGroupId, cloudapiv6.ArgIdShort, "", cloudapiv6.GroupId, core.RequiredFlagOption())
 	_ = get.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.GroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.GroupsIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 	get.AddBoolFlag(constants.ArgNoHeaders, "", false, cloudapiv6.ArgNoHeadersDescription)
 	get.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultGetDepth, cloudapiv6.ArgDepthDescription)
@@ -147,7 +178,7 @@ Required values to run command:
 	})
 	update.AddUUIDFlag(cloudapiv6.ArgGroupId, cloudapiv6.ArgIdShort, "", cloudapiv6.GroupId, core.RequiredFlagOption())
 	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.GroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.GroupsIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "", "Name for the Group")
 	update.AddBoolFlag(cloudapiv6.ArgCreateDc, "", false, "The group will be allowed to create Data Centers. E.g.: --create-dc=true, --create-dc=false")
@@ -191,7 +222,7 @@ Required values to run command:
 	})
 	deleteCmd.AddUUIDFlag(cloudapiv6.ArgGroupId, cloudapiv6.ArgIdShort, "", cloudapiv6.GroupId, core.RequiredFlagOption())
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.GroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.GroupsIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait, "Wait for Request for Group deletion to be executed")
 	deleteCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete all Groups.")
@@ -231,14 +262,26 @@ func RunGroupList(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	groups, resp, err := c.CloudApiV6Services.Groups().List(listQueryParams)
 	if resp != nil {
-		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getGroupPrint(nil, c, getGroups(groups)))
+
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+
+	out, err := jsontabwriter.GenerateOutput("items", allGroupJSONPaths, groups.Groups,
+		tabheaders.GetHeaders(allGroupCols, defaultGroupCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+
+	return nil
 }
 
 func RunGroupGet(c *core.CommandConfig) error {
@@ -246,16 +289,30 @@ func RunGroupGet(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
-	c.Printer.Verbose("Group with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)))
+
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
+		"Group with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId))))
+
 	u, resp, err := c.CloudApiV6Services.Groups().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)), queryParams)
 	if resp != nil {
-		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getGroupPrint(nil, c, getGroup(u)))
+
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+
+	out, err := jsontabwriter.GenerateOutput("", allGroupJSONPaths, u.Group, tabheaders.GetHeaders(allGroupCols, allGroupCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+
+	return nil
 }
 
 func RunGroupCreate(c *core.CommandConfig) error {
@@ -263,24 +320,37 @@ func RunGroupCreate(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
 	properties := getGroupCreateInfo(c)
+
 	newGroup := resources.Group{
 		Group: ionoscloud.Group{
 			Properties: &properties.GroupProperties,
 		},
 	}
 	u, resp, err := c.CloudApiV6Services.Groups().Create(newGroup, queryParams)
-	if resp != nil && printer.GetId(resp) != "" {
-		c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
+	if resp != nil && utils.GetId(resp) != "" {
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, utils.GetId(resp), resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
-	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, utils.GetId(resp)); err != nil {
 		return err
 	}
-	return c.Printer.Print(getGroupPrint(nil, c, getGroup(u)))
+
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+
+	out, err := jsontabwriter.GenerateOutput("", allGroupJSONPaths, u.Group, tabheaders.GetHeaders(allGroupCols, allGroupCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+
+	return nil
 }
 
 func RunGroupUpdate(c *core.CommandConfig) error {
@@ -288,11 +358,13 @@ func RunGroupUpdate(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
 	u, resp, err := c.CloudApiV6Services.Groups().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)), queryParams)
 	if err != nil {
 		return err
 	}
+
 	properties := getGroupUpdateInfo(u, c)
 	newGroup := resources.Group{
 		Group: ionoscloud.Group{
@@ -300,16 +372,27 @@ func RunGroupUpdate(c *core.CommandConfig) error {
 		},
 	}
 	groupUpd, resp, err := c.CloudApiV6Services.Groups().Update(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)), newGroup, queryParams)
-	if resp != nil && printer.GetId(resp) != "" {
-		c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
+	if resp != nil && utils.GetId(resp) != "" {
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, utils.GetId(resp), resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
-	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, utils.GetId(resp)); err != nil {
 		return err
 	}
-	return c.Printer.Print(getGroupPrint(resp, c, getGroup(groupUpd)))
+
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+
+	out, err := jsontabwriter.GenerateOutput("", allGroupJSONPaths, groupUpd.Group, tabheaders.GetHeaders(allGroupCols, allGroupCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+
+	return nil
 }
 
 func RunGroupDelete(c *core.CommandConfig) error {
@@ -317,30 +400,40 @@ func RunGroupDelete(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
 	groupId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId))
+
 	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
 		if err := DeleteAllGroups(c); err != nil {
 			return err
 		}
-		return c.Printer.Print(printer.Result{Resource: c.Resource, Verb: c.Verb})
-	} else {
-		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete group"); err != nil {
-			return err
-		}
-		c.Printer.Verbose("Starting deleting Group with id: %v...", groupId)
-		resp, err := c.CloudApiV6Services.Groups().Delete(groupId, queryParams)
-		if resp != nil && printer.GetId(resp) != "" {
-			c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
-		}
-		if err != nil {
-			return err
-		}
-		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-			return err
-		}
-		return c.Printer.Print(getGroupPrint(resp, c, nil))
+
+		return nil
 	}
+
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete group", viper.GetBool(constants.ArgForce)) {
+		return fmt.Errorf(confirm.UserDenied)
+	}
+
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Starting deleting Group with id: %v...", groupId))
+
+	resp, err := c.CloudApiV6Services.Groups().Delete(groupId, queryParams)
+	if resp != nil && utils.GetId(resp) != "" {
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, utils.GetId(resp), resp.RequestTime))
+	}
+	if err != nil {
+		return err
+	}
+
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, utils.GetId(resp)); err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Group successfully deleted"))
+
+	return nil
+
 }
 
 func getGroupCreateInfo(c *core.CommandConfig) *resources.GroupProperties {
@@ -361,12 +454,15 @@ func getGroupCreateInfo(c *core.CommandConfig) *resources.GroupProperties {
 	manageDb := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgManageDbaas))
 	manageReg := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgManageRegistry))
 	manageData := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgManageDataplatform))
-	c.Printer.Verbose("Properties set for creating the group: Name: %v, CreateDatacenter: %v, CreateSnapshot: %v, "+
-		"ReserveIp: %v, AccessActivityLog: %v, CreateBackupUnit: %v, CreatePcc: %v, CreateInternetAccess: %v, CreateK8sCluster: %v, "+
-		"S3Privilege: %v, CreateFlowLog: %v, AccessAndManageMonitoring: %v, AccessAndManageCertificates: %v, AccessAndManageDns: %v,"+
-		"ManageDBaaS: %v, ManageRegistry: %v, ManageDataplatform: %v",
-		name, createDc, createSnap, reserveIp, accessLog, createBackUp, createPcc, createNic, createK8s, s3, createFlowLog, monitoring, certs,
-		dns, manageDb, manageReg, manageData)
+
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(),
+		jsontabwriter.GenerateVerboseOutput("Properties set for creating the group: Name: %v, CreateDatacenter: %v, CreateSnapshot: %v, "+
+			"ReserveIp: %v, AccessActivityLog: %v, CreateBackupUnit: %v, CreatePcc: %v, CreateInternetAccess: %v, CreateK8sCluster: %v, "+
+			"S3Privilege: %v, CreateFlowLog: %v, AccessAndManageMonitoring: %v, AccessAndManageCertificates: %v, AccessAndManageDns: %v,"+
+			"ManageDBaaS: %v, ManageRegistry: %v, ManageDataplatform: %v",
+			name, createDc, createSnap, reserveIp, accessLog, createBackUp, createPcc, createNic, createK8s, s3, createFlowLog, monitoring, certs,
+			dns, manageDb, manageReg, manageData))
+
 	return &resources.GroupProperties{
 		GroupProperties: ionoscloud.GroupProperties{
 			Name:                        &name,
@@ -397,144 +493,179 @@ func getGroupUpdateInfo(oldGroup *resources.Group, c *core.CommandConfig) *resou
 		reserveIp, accessLog, s3, createFlowLog, monitoring, certs, dns     bool
 		manageReg, manageData, manageDb                                     bool
 	)
+
 	if properties, ok := oldGroup.GetPropertiesOk(); ok && properties != nil {
 		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgName)) {
 			groupName = viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
-			c.Printer.Verbose("Property Name set: %v", groupName)
+
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property Name set: %v", groupName))
 		} else {
 			if name, ok := properties.GetNameOk(); ok && name != nil {
 				groupName = *name
 			}
 		}
+
 		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgCreateDc)) {
 			createDc = viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgCreateDc))
-			c.Printer.Verbose("Property CreateDataCenter set: %v", createDc)
+
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property CreateDataCenter set: %v", createDc))
 		} else {
 			if dc, ok := properties.GetCreateDataCenterOk(); ok && dc != nil {
 				createDc = *dc
 			}
 		}
+
 		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgCreateSnapshot)) {
 			createSnap = viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgCreateSnapshot))
-			c.Printer.Verbose("Property CreateSnapshot set: %v", createSnap)
+
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property CreateSnapshot set: %v", createSnap))
 		} else {
 			if s, ok := properties.GetCreateSnapshotOk(); ok && s != nil {
 				createSnap = *s
 			}
 		}
+
 		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgCreatePcc)) {
 			createPcc = viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgCreatePcc))
-			c.Printer.Verbose("Property CreatePcc set: %v", createPcc)
+
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property CreatePcc set: %v", createPcc))
 		} else {
 			if s, ok := properties.GetCreatePccOk(); ok && s != nil {
 				createPcc = *s
 			}
 		}
+
 		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgCreateK8s)) {
 			createK8s = viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgCreateK8s))
-			c.Printer.Verbose("Property CreateK8sCluster set: %v", createK8s)
+
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property CreateK8sCluster set: %v", createK8s))
 		} else {
 			if s, ok := properties.GetCreateK8sClusterOk(); ok && s != nil {
 				createK8s = *s
 			}
 		}
+
 		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgCreateNic)) {
 			createNic = viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgCreateNic))
-			c.Printer.Verbose("Property CreateInternetAccess set: %v", createNic)
+
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property CreateInternetAccess set: %v", createNic))
 		} else {
 			if s, ok := properties.GetCreateInternetAccessOk(); ok && s != nil {
 				createNic = *s
 			}
 		}
+
 		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgCreateBackUpUnit)) {
 			createBackUp = viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgCreateBackUpUnit))
-			c.Printer.Verbose("Property CreateBackupUnit set: %v", createBackUp)
+
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property CreateBackupUnit set: %v", createBackUp))
 		} else {
 			if s, ok := properties.GetCreateBackupUnitOk(); ok && s != nil {
 				createBackUp = *s
 			}
 		}
+
 		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgReserveIp)) {
 			reserveIp = viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgReserveIp))
-			c.Printer.Verbose("Property ReserveIp set: %v", reserveIp)
+
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property ReserveIp set: %v", reserveIp))
 		} else {
 			if ip, ok := properties.GetReserveIpOk(); ok && ip != nil {
 				reserveIp = *ip
 			}
 		}
+
 		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgAccessLog)) {
 			accessLog = viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAccessLog))
-			c.Printer.Verbose("Property AccessActivityLog set: %v", accessLog)
+
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property AccessActivityLog set: %v", accessLog))
 		} else {
 			if log, ok := properties.GetAccessActivityLogOk(); ok && log != nil {
 				accessLog = *log
 			}
 		}
+
 		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgS3Privilege)) {
 			s3 = viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgS3Privilege))
-			c.Printer.Verbose("Property S3Privilege set: %v", s3)
+
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property S3Privilege set: %v", s3))
 		} else {
 			if s, ok := properties.GetS3PrivilegeOk(); ok && s != nil {
 				s3 = *s
 			}
 		}
+
 		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgCreateFlowLog)) {
 			createFlowLog = viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgCreateFlowLog))
-			c.Printer.Verbose("Property CreateFlowLog set: %v", createFlowLog)
+
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property CreateFlowLog set: %v", createFlowLog))
 		} else {
 			if f, ok := properties.GetCreateFlowLogOk(); ok && f != nil {
 				createFlowLog = *f
 			}
 		}
+
 		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgAccessMonitoring)) {
 			monitoring = viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAccessMonitoring))
-			c.Printer.Verbose("Property AccessAndManageMonitoring set: %v", monitoring)
+
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property AccessAndManageMonitoring set: %v", monitoring))
 		} else {
 			if m, ok := properties.GetAccessAndManageMonitoringOk(); ok && m != nil {
 				monitoring = *m
 			}
 		}
+
 		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgAccessCerts)) {
 			certs = viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAccessCerts))
-			c.Printer.Verbose("Property AccessAndManageCertificates set: %v", certs)
+
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property AccessAndManageCertificates set: %v", certs))
 		} else {
 			if accessCerts, ok := properties.GetAccessAndManageCertificatesOk(); ok && accessCerts != nil {
 				certs = *accessCerts
 			}
 		}
+
 		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgAccessDNS)) {
 			dns = viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAccessDNS))
-			c.Printer.Verbose("Property AccessAndManageDNS set: %v", dns)
+
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property AccessAndManageDNS set: %v", dns))
 		} else {
 			if accessDns, ok := properties.GetAccessAndManageDnsOk(); ok && accessDns != nil {
 				dns = *accessDns
 			}
 		}
+
 		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgManageDbaas)) {
 			manageDb = viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgManageDbaas))
-			c.Printer.Verbose("Property ManageDBaaS set: %v", manageDb)
+
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property ManageDBaaS set: %v", manageDb))
 		} else {
 			if manageDBaaSOk, ok := properties.GetManageDBaaSOk(); ok && manageDBaaSOk != nil {
 				manageDb = *manageDBaaSOk
 			}
 		}
+
 		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgManageRegistry)) {
 			manageReg = viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgManageRegistry))
-			c.Printer.Verbose("Property ManageRegistry set: %v", manageReg)
+
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property ManageRegistry set: %v", manageReg))
 		} else {
 			if manageRegistry, ok := properties.GetManageRegistryOk(); ok && manageRegistry != nil {
 				manageReg = *manageRegistry
 			}
 		}
+
 		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgManageDataplatform)) {
 			manageData = viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgManageDataplatform))
-			c.Printer.Verbose("Property ManageDataplatform set: %v", manageData)
+
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property ManageDataplatform set: %v", manageData))
 		} else {
 			if manageDataplatform, ok := properties.GetManageDataplatformOk(); ok && manageDataplatform != nil {
 				manageData = *manageDataplatform
 			}
 		}
 	}
+
 	return &resources.GroupProperties{
 		GroupProperties: ionoscloud.GroupProperties{
 			Name:                        &groupName,
@@ -563,109 +694,81 @@ func DeleteAllGroups(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	queryParams := listQueryParams.QueryParams
-	c.Printer.Verbose("Getting Groups...")
+
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting Groups..."))
+
 	groups, resp, err := c.CloudApiV6Services.Groups().List(cloudapiv6.ParentResourceListQueryParams)
 	if err != nil {
 		return err
 	}
-	if groupsItems, ok := groups.GetItemsOk(); ok && groupsItems != nil {
-		if len(*groupsItems) > 0 {
-			_ = c.Printer.Warn("Groups to be deleted:")
-			for _, group := range *groupsItems {
-				delIdAndName := ""
-				if id, ok := group.GetIdOk(); ok && id != nil {
-					delIdAndName += "Group Id: " + *id
-				}
-				if properties, ok := group.GetPropertiesOk(); ok && properties != nil {
-					if name, ok := properties.GetNameOk(); ok && name != nil {
-						delIdAndName += " Group Name: " + *name
-					}
-				}
-				_ = c.Printer.Warn(delIdAndName)
-			}
-			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Groups"); err != nil {
-				return err
-			}
-			c.Printer.Verbose("Deleting all the Groups...")
-			var multiErr error
-			for _, group := range *groupsItems {
-				if id, ok := group.GetIdOk(); ok && id != nil {
-					c.Printer.Verbose("Starting deleting Group with id: %v...", *id)
-					resp, err = c.CloudApiV6Services.Groups().Delete(*id, queryParams)
-					if resp != nil && printer.GetId(resp) != "" {
-						c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
-					}
-					if err != nil {
-						multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
-						continue
-					} else {
-						_ = c.Printer.Warn(fmt.Sprintf(constants.MessageDeletingAll, c.Resource, *id))
-					}
-					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-						multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *id, err))
-						continue
-					}
-				}
-			}
-			if multiErr != nil {
-				return multiErr
-			}
-			return nil
-		} else {
-			return errors.New("no Groups found")
-		}
-	} else {
-		return errors.New("could not get items of Groups")
+
+	groupsItems, ok := groups.GetItemsOk()
+	if !ok || groupsItems == nil {
+		return fmt.Errorf("could not get items of Groups")
 	}
-}
 
-// Output Printing
-
-var (
-	defaultGroupCols = []string{"GroupId", "Name", "CreateDataCenter", "CreateSnapshot", "CreatePcc", "CreateBackupUnit", "CreateInternetAccess", "CreateK8s", "ReserveIp"}
-	allGroupCols     = []string{"GroupId", "Name", "CreateDataCenter", "CreateSnapshot", "ReserveIp", "AccessActivityLog", "CreatePcc", "S3Privilege", "CreateBackupUnit",
-		"CreateInternetAccess", "CreateK8s", "CreateFlowLog", "AccessAndManageMonitoring", "AccessAndManageCertificates", "AccessAndManageDns", "ManageDBaaS", "ManageRegistry",
-		"ManageDataplatform"}
-)
-
-type groupPrint struct {
-	GroupId                     string `json:"GroupId,omitempty"`
-	Name                        string `json:"Name,omitempty"`
-	CreateDataCenter            bool   `json:"CreateDataCenter,omitempty"`
-	CreateSnapshot              bool   `json:"CreateSnapshot,omitempty"`
-	ReserveIp                   bool   `json:"ReserveIp,omitempty"`
-	AccessActivityLog           bool   `json:"AccessActivityLog,omitempty"`
-	CreatePcc                   bool   `json:"CreatePcc,omitempty"`
-	S3Privilege                 bool   `json:"S3Privilege,omitempty"`
-	CreateBackupUnit            bool   `json:"CreateBackupUnit,omitempty"`
-	CreateInternetAccess        bool   `json:"CreateInternetAccess,omitempty"`
-	CreateK8s                   bool   `json:"CreateK8s,omitempty"`
-	CreateFlowLog               bool   `json:"CreateFlowLog,omitempty"`
-	AccessAndManageMonitoring   bool   `json:"AccessAndManageMonitoring,omitempty"`
-	AccessAndManageCertificates bool   `json:"AccessAndManageCertificates,omitempty"`
-	AccessAndManageDns          bool   `json:"AccessAndManageDns,omitempty"`
-	ManageDBaaS                 bool   `json:"ManageDbaas,omitempty"`
-	ManageRegistry              bool   `json:"ManageRegistry,omitempty"`
-	ManageDataplatform          bool   `json:"ManageDataplatform,omitempty"`
-}
-
-func getGroupPrint(resp *resources.Response, c *core.CommandConfig, groups []resources.Group) printer.Result {
-	r := printer.Result{}
-	if c != nil {
-		if resp != nil {
-			r.ApiResponse = resp
-			r.Resource = c.Resource
-			r.Verb = c.Verb
-			r.WaitForRequest = viper.GetBool(core.GetFlagName(c.NS, constants.ArgWaitForRequest))
-		}
-		if groups != nil {
-			r.OutputJSON = groups
-			r.KeyValue = getGroupsKVMaps(groups)
-			r.Columns = printer.GetHeaders(allGroupCols, defaultGroupCols, viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols)))
-		}
+	if len(*groupsItems) <= 0 {
+		return fmt.Errorf("no Groups found")
 	}
-	return r
+
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Groups to be deleted:"))
+
+	for _, group := range *groupsItems {
+		delIdAndName := ""
+		if id, ok := group.GetIdOk(); ok && id != nil {
+			delIdAndName += "Group Id: " + *id
+		}
+
+		if properties, ok := group.GetPropertiesOk(); ok && properties != nil {
+			if name, ok := properties.GetNameOk(); ok && name != nil {
+				delIdAndName += " Group Name: " + *name
+			}
+		}
+
+		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(delIdAndName))
+	}
+
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete all the Groups", viper.GetBool(constants.ArgForce)) {
+		return fmt.Errorf(confirm.UserDenied)
+	}
+
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the Groups..."))
+
+	var multiErr error
+	for _, group := range *groupsItems {
+		id, ok := group.GetIdOk()
+		if !ok || id == nil {
+			continue
+		}
+
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Starting deleting Group with id: %v...", *id))
+
+		resp, err = c.CloudApiV6Services.Groups().Delete(*id, queryParams)
+		if resp != nil && utils.GetId(resp) != "" {
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, utils.GetId(resp), resp.RequestTime))
+		}
+		if err != nil {
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
+			continue
+		}
+
+		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(constants.MessageDeletingAll, c.Resource, *id))
+
+		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, utils.GetId(resp)); err != nil {
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *id, err))
+			continue
+		}
+
+	}
+
+	if multiErr != nil {
+		return multiErr
+	}
+
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Groups successfully deleted"))
+	return nil
 }
 
 func getGroups(groups resources.Groups) []resources.Group {
@@ -676,78 +779,4 @@ func getGroups(groups resources.Groups) []resources.Group {
 		}
 	}
 	return u
-}
-
-func getGroup(u *resources.Group) []resources.Group {
-	groups := make([]resources.Group, 0)
-	if u != nil {
-		groups = append(groups, resources.Group{Group: u.Group})
-	}
-	return groups
-}
-
-func getGroupsKVMaps(gs []resources.Group) []map[string]interface{} {
-	out := make([]map[string]interface{}, 0, len(gs))
-	for _, g := range gs {
-		var gPrint groupPrint
-		if id, ok := g.GetIdOk(); ok && id != nil {
-			gPrint.GroupId = *id
-		}
-		if properties, ok := g.GetPropertiesOk(); ok && properties != nil {
-			if name, ok := properties.GetNameOk(); ok && name != nil {
-				gPrint.Name = *name
-			}
-			if createDc, ok := properties.GetCreateDataCenterOk(); ok && createDc != nil {
-				gPrint.CreateDataCenter = *createDc
-			}
-			if createSnapshot, ok := properties.GetCreateSnapshotOk(); ok && createSnapshot != nil {
-				gPrint.CreateSnapshot = *createSnapshot
-			}
-			if reserveIp, ok := properties.GetReserveIpOk(); ok && reserveIp != nil {
-				gPrint.ReserveIp = *reserveIp
-			}
-			if accessLog, ok := properties.GetAccessActivityLogOk(); ok && accessLog != nil {
-				gPrint.AccessActivityLog = *accessLog
-			}
-			if createPcc, ok := properties.GetCreatePccOk(); ok && createPcc != nil {
-				gPrint.CreatePcc = *createPcc
-			}
-			if s3, ok := properties.GetS3PrivilegeOk(); ok && s3 != nil {
-				gPrint.S3Privilege = *s3
-			}
-			if createBackup, ok := properties.GetCreateBackupUnitOk(); ok && createBackup != nil {
-				gPrint.CreateBackupUnit = *createBackup
-			}
-			if createNic, ok := properties.GetCreateInternetAccessOk(); ok && createNic != nil {
-				gPrint.CreateInternetAccess = *createNic
-			}
-			if createK8s, ok := properties.GetCreateK8sClusterOk(); ok && createK8s != nil {
-				gPrint.CreateK8s = *createK8s
-			}
-			if createFlowLogs, ok := properties.GetCreateFlowLogOk(); ok && createFlowLogs != nil {
-				gPrint.CreateFlowLog = *createFlowLogs
-			}
-			if accessMonitoring, ok := properties.GetAccessAndManageMonitoringOk(); ok && accessMonitoring != nil {
-				gPrint.AccessAndManageMonitoring = *accessMonitoring
-			}
-			if accessCerts, ok := properties.GetAccessAndManageCertificatesOk(); ok && accessCerts != nil {
-				gPrint.AccessAndManageCertificates = *accessCerts
-			}
-			if accessDns, ok := properties.GetAccessAndManageDnsOk(); ok && accessDns != nil {
-				gPrint.AccessAndManageDns = *accessDns
-			}
-			if manageDbaas, ok := properties.GetManageDBaaSOk(); ok && manageDbaas != nil {
-				gPrint.ManageDBaaS = *manageDbaas
-			}
-			if manageRegistry, ok := properties.GetManageRegistryOk(); ok && manageRegistry != nil {
-				gPrint.ManageRegistry = *manageRegistry
-			}
-			if manageDataplatform, ok := properties.GetManageDataplatformOk(); ok && manageDataplatform != nil {
-				gPrint.ManageDataplatform = *manageDataplatform
-			}
-		}
-		o := structs.Map(gPrint)
-		out = append(out, o)
-	}
-	return out
 }

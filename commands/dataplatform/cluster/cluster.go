@@ -3,12 +3,24 @@ package cluster
 import (
 	"fmt"
 
-	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/json2table"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	ionoscloud "github.com/ionos-cloud/sdk-go-dataplatform"
 	"github.com/spf13/cobra"
+)
+
+var (
+	allJSONPaths = map[string]string{
+		"Id":           "id",
+		"Name":         "properties.name",
+		"Version":      "properties.dataPlatformVersion",
+		"DatacenterId": "properties.datacenterId",
+		"State":        "metadata.state",
+	}
+
+	allCols = []string{"Id", "Name", "Version", "MaintenanceWindow", "DatacenterId", "State"}
 )
 
 func ClusterCmd() *core.Command {
@@ -22,7 +34,7 @@ func ClusterCmd() *core.Command {
 		},
 	}
 
-	clusterCmd.Command.PersistentFlags().StringSlice(constants.ArgCols, nil, printer.ColsMessage(allCols))
+	clusterCmd.Command.PersistentFlags().StringSlice(constants.ArgCols, nil, tabheaders.ColsMessage(allCols))
 	_ = clusterCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -38,48 +50,52 @@ func ClusterCmd() *core.Command {
 	return clusterCmd
 }
 
-func getClusterPrint(c *core.CommandConfig, dcs *[]ionoscloud.ClusterResponseData) printer.Result {
-	r := printer.Result{}
-	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-
-	if c != nil && dcs != nil {
-		r.OutputJSON = dcs
-		r.KeyValue = getClusterRows(dcs)                        // map header -> rows
-		r.Columns = printer.GetHeadersAllDefault(allCols, cols) // headers
+func convertClusterToTable(cluster ionoscloud.ClusterResponseData) ([]map[string]interface{}, error) {
+	properties, ok := cluster.GetPropertiesOk()
+	if !ok || properties == nil {
+		return nil, fmt.Errorf("could not retrieve Dataplatform Cluster properties")
 	}
-	return r
+
+	maintenanceWindow, ok := properties.GetMaintenanceWindowOk()
+	if !ok || maintenanceWindow == nil {
+		return nil, fmt.Errorf("could not retrieve Dataplatform Cluster maintenance window")
+	}
+
+	day, ok := maintenanceWindow.GetDayOfTheWeekOk()
+	if !ok || day == nil {
+		return nil, fmt.Errorf("could not retrieve Dataplatform Cluster maintenance window day")
+	}
+
+	tyme, ok := maintenanceWindow.GetTimeOk()
+	if !ok || tyme == nil {
+		return nil, fmt.Errorf("could not retrieve Dataplatform Cluster maintenance window time")
+	}
+
+	temp, err := json2table.ConvertJSONToTable("", allJSONPaths, cluster)
+	if err != nil {
+		return nil, fmt.Errorf("could not convert from JSON to Table format: %w", err)
+	}
+
+	temp[0]["MaintenanceWindow"] = fmt.Sprintf("%s %s", *day, *tyme)
+
+	return temp, nil
 }
 
-type ClusterPrint struct {
-	Id                string `json:"Id,omitempty"`
-	Name              string `json:"Name,omitempty"`
-	Version           string `json:"Version,omitempty"`
-	MaintenanceWindow string `json:"MaintenanceWindow,omitempty"`
-	DatacenterId      string `json:"DatacenterId,omitempty"`
-	State             string `json:"State,omitempty"`
-}
+func convertClustersToTable(clusters ionoscloud.ClusterListResponseData) ([]map[string]interface{}, error) {
+	items, ok := clusters.GetItemsOk()
+	if !ok || items == nil {
+		return nil, fmt.Errorf("could not retrieve Dataplatform Clusters items")
+	}
 
-var allCols = structs.Names(ClusterPrint{})
-
-func getClusterRows(clusters *[]ionoscloud.ClusterResponseData) []map[string]interface{} {
-	out := make([]map[string]interface{}, 0, len(*clusters))
-
-	for _, cluster := range *clusters {
-		var clusterPrint ClusterPrint
-		clusterPrint.Id = *cluster.GetId()
-
-		if propertiesOk, ok := cluster.GetPropertiesOk(); ok && propertiesOk != nil {
-			clusterPrint.Name = *propertiesOk.GetName()
-			clusterPrint.DatacenterId = *propertiesOk.GetDatacenterId()
-			clusterPrint.Version = *propertiesOk.GetDataPlatformVersion()
-			if maintenanceWindowOk, ok := propertiesOk.GetMaintenanceWindowOk(); ok && maintenanceWindowOk != nil {
-				clusterPrint.MaintenanceWindow =
-					fmt.Sprintf("%s %s", *maintenanceWindowOk.GetDayOfTheWeek(), *maintenanceWindowOk.GetTime())
-			}
+	var clustersConverted []map[string]interface{}
+	for _, item := range *items {
+		temp, err := convertClusterToTable(item)
+		if err != nil {
+			return nil, err
 		}
-		clusterPrint.State = string(*cluster.GetMetadata().GetState())
-		o := structs.Map(clusterPrint)
-		out = append(out, o)
+
+		clustersConverted = append(clustersConverted, temp...)
 	}
-	return out
+
+	return clustersConverted, nil
 }

@@ -2,13 +2,15 @@ package templates
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"github.com/spf13/viper"
 
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
 	"github.com/spf13/cobra"
 )
 
@@ -23,7 +25,7 @@ func TemplatesListCmd() *core.Command {
 		Example:   "ionosctl dbaas mongo templates list",
 		PreCmdRun: core.NoPreRun,
 		CmdRun: func(c *core.CommandConfig) error {
-			c.Printer.Verbose("Getting Templates...")
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting Templates..."))
 			req := client.Must().MongoClient.TemplatesApi.TemplatesGet(context.Background())
 
 			if f := core.GetFlagName(c.NS, constants.FlagMaxResults); viper.IsSet(f) {
@@ -37,13 +39,28 @@ func TemplatesListCmd() *core.Command {
 			if err != nil {
 				return err
 			}
-			return c.Printer.Print(getTemplatesPrint(c, ls.GetItems()))
+
+			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+
+			lsConverted, err := convertTemplatesToTable(ls)
+			if err != nil {
+				return err
+			}
+
+			out, err := jsontabwriter.GenerateOutputPreconverted(ls, lsConverted,
+				tabheaders.GetHeadersAllDefault(allCols, cols))
+			if err != nil {
+				return err
+			}
+
+			fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+			return nil
 		},
 		InitClient: true,
 	})
 
 	cmd.AddBoolFlag(constants.ArgNoHeaders, "", false, "When using text output, don't print headers")
-	cmd.AddStringSliceFlag(constants.ArgCols, "", allCols, printer.ColsMessage(allCols))
+	cmd.AddStringSliceFlag(constants.ArgCols, "", allCols, tabheaders.ColsMessage(allCols))
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allCols, cobra.ShellCompDirectiveNoFileComp
 	})

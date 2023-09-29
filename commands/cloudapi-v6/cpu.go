@@ -4,21 +4,28 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io"
-	"os"
 	"strings"
 
-	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/utils/clierror"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+)
+
+var (
+	allCpuJSONPaths = map[string]string{
+		"CpuFamily": "cpuFamily",
+		"MaxCores":  "maxCores",
+		"MaxRam":    "maxRam",
+		"Vendor":    "vendor",
+	}
+
+	defaultCpuCols = []string{"CpuFamily", "MaxCores", "MaxRam", "Vendor"}
 )
 
 func CpuCmd() *core.Command {
@@ -32,7 +39,7 @@ func CpuCmd() *core.Command {
 		},
 	}
 	globalFlags := cpuCmd.GlobalFlags()
-	globalFlags.StringSliceP(constants.ArgCols, "", defaultCpuCols, printer.ColsMessage(defaultCpuCols))
+	globalFlags.StringSliceP(constants.ArgCols, "", defaultCpuCols, tabheaders.ColsMessage(defaultCpuCols))
 	_ = viper.BindPFlag(core.GetFlagName(cpuCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = cpuCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultCpuCols, cobra.ShellCompDirectiveNoFileComp
@@ -55,7 +62,7 @@ func CpuCmd() *core.Command {
 	})
 	list.AddStringFlag(cloudapiv6.ArgLocationId, "", "", cloudapiv6.LocationId, core.RequiredFlagOption())
 	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgLocationId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.LocationIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.LocationIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 	list.AddBoolFlag(constants.ArgNoHeaders, "", false, cloudapiv6.ArgNoHeadersDescription)
 	list.AddInt32Flag(constants.FlagMaxResults, constants.FlagMaxResultsShort, cloudapiv6.DefaultMaxResults, constants.DescMaxResults)
@@ -66,98 +73,38 @@ func CpuCmd() *core.Command {
 
 func RunLocationCpuList(c *core.CommandConfig) error {
 	locId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLocationId))
+
 	ids := strings.Split(locId, "/")
 	if len(ids) != 2 {
 		return errors.New("error getting location id & region id")
 	}
+
 	loc, resp, err := c.CloudApiV6Services.Locations().GetByRegionAndLocationId(ids[0], ids[1], resources.QueryParams{})
 	if resp != nil {
-		c.Printer.Verbose(constants.MessageRequestTime, resp.RequestTime)
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
-	if properties, ok := loc.GetPropertiesOk(); ok && properties != nil {
-		if cpus, ok := properties.GetCpuArchitectureOk(); ok && cpus != nil {
-			return c.Printer.Print(printer.Result{
-				OutputJSON: cpus,
-				KeyValue:   getCpusKVMaps(getCpus(cpus)),
-				Columns:    getCpuCols(core.GetFlagName(c.Resource, constants.ArgCols), c.Printer.GetStderr()),
-			})
-		} else {
-			return errors.New("error getting cpu architectures")
-		}
-	} else {
-		return errors.New("error getting location properties")
-	}
-}
 
-// Output Printing
-
-var defaultCpuCols = []string{"CpuFamily", "MaxCores", "MaxRam", "Vendor"}
-
-type CpuPrint struct {
-	CpuFamily string `json:"CpuFamily,omitempty"`
-	MaxCores  int32  `json:"MaxCores,omitempty"`
-	MaxRam    string `json:"MaxRam,omitempty"`
-	Vendor    string `json:"Vendor,omitempty"`
-}
-
-// TODO: Remove this func, use the 'allCols' behaviour from e.g. dbaas/mongo/cluster.go
-func getCpuCols(flagName string, outErr io.Writer) []string {
-	var cols []string
-	if viper.IsSet(flagName) {
-		cols = viper.GetStringSlice(flagName)
-	} else {
-		return defaultCpuCols
+	properties, ok := loc.GetPropertiesOk()
+	if !ok || properties == nil {
+		return fmt.Errorf("error getting location properties")
 	}
 
-	columnsMap := map[string]string{
-		"CpuFamily": "CpuFamily",
-		"MaxCores":  "MaxCores",
-		"MaxRam":    "MaxRam",
-		"Vendor":    "Vendor",
+	cpus, ok := properties.GetCpuArchitectureOk()
+	if !ok || cpus == nil {
+		return fmt.Errorf("error getting cpu architectures")
 	}
-	var cpusCols []string
-	for _, k := range cols {
-		col := columnsMap[k]
-		if col != "" {
-			cpusCols = append(cpusCols, col)
-		} else {
-			clierror.CheckErrorAndDie(errors.New("unknown column "+k), outErr)
-		}
-	}
-	return cpusCols
-}
 
-func getCpus(cpus *[]ionoscloud.CpuArchitectureProperties) []resources.CpuArchitectureProperties {
-	cs := make([]resources.CpuArchitectureProperties, 0)
-	if cpus != nil {
-		for _, cpuItem := range *cpus {
-			cs = append(cs, resources.CpuArchitectureProperties{CpuArchitectureProperties: cpuItem})
-		}
-	}
-	return cs
-}
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-func getCpusKVMaps(cs []resources.CpuArchitectureProperties) []map[string]interface{} {
-	out := make([]map[string]interface{}, 0, len(cs))
-	for _, cpuItem := range cs {
-		var cpuPrint CpuPrint
-		if cpuFamily, ok := cpuItem.GetCpuFamilyOk(); ok && cpuFamily != nil {
-			cpuPrint.CpuFamily = *cpuFamily
-		}
-		if cpuCores, ok := cpuItem.GetMaxCoresOk(); ok && cpuCores != nil {
-			cpuPrint.MaxCores = *cpuCores
-		}
-		if cpuRam, ok := cpuItem.GetMaxRamOk(); ok && cpuRam != nil {
-			cpuPrint.MaxRam = fmt.Sprintf("%vMB", *cpuRam)
-		}
-		if cpuVendor, ok := cpuItem.GetVendorOk(); ok && cpuVendor != nil {
-			cpuPrint.Vendor = *cpuVendor
-		}
-		o := structs.Map(cpuPrint)
-		out = append(out, o)
+	out, err := jsontabwriter.GenerateOutput("", allCpuJSONPaths, cpus, tabheaders.GetHeadersAllDefault(defaultCpuCols, cols))
+	if err != nil {
+		return err
 	}
-	return out
+
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+
+	return nil
 }

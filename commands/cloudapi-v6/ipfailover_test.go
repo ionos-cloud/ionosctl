@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
-	"os"
 	"testing"
 
 	"github.com/golang/mock/gomock"
@@ -502,7 +501,7 @@ func TestRunIpFailoverRemoveAskForConfirm(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testIpFailoverVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNicId), testIpFailoverVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIp), testIpFailoverVar)
-		cfg.Stdin = bytes.NewReader([]byte("YES\n"))
+		cfg.Command.Command.SetIn(bytes.NewReader([]byte("YES\n")))
 		rm.CloudApiV6Mocks.Lan.EXPECT().Get(testIpFailoverVar, testIpFailoverVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&testLanIpFailover, nil, nil)
 		rm.CloudApiV6Mocks.Lan.EXPECT().Update(testIpFailoverVar, testIpFailoverVar, resources.LanProperties{
 			LanProperties: ionoscloud.LanProperties{
@@ -530,7 +529,7 @@ func TestRunIpFailoverRemoveAskForConfirmErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testIpFailoverVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNicId), testIpFailoverVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIp), testIpFailoverVar)
-		cfg.Stdin = os.Stdin
+		cfg.Command.Command.SetIn(bytes.NewReader([]byte("\n")))
 		err := RunIpFailoverRemove(cfg)
 		assert.Error(t, err)
 	})

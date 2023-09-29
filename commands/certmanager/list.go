@@ -2,10 +2,12 @@ package certmanager
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/printer"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"github.com/spf13/cobra"
 )
 
@@ -23,19 +25,30 @@ func CertListCmd() *core.Command {
 		InitClient: true,
 	})
 
-	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, printer.ColsMessage(allCols))
+	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, tabheaders.ColsMessage(defaultCertificateCols))
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return allCols, cobra.ShellCompDirectiveNoFileComp
+		return defaultCertificateCols, cobra.ShellCompDirectiveNoFileComp
 	})
 	return cmd
 }
 
 func CmdList(c *core.CommandConfig) error {
-	c.Printer.Verbose("Getting Certificates...")
-	cert, _, err := c.CertificateManagerServices.Certs().List()
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting Certificates..."))
+
+	certs, _, err := c.CertificateManagerServices.Certs().List()
 	if err != nil {
 		return err
 	}
-	list := cert.GetItems()
-	return c.Printer.Print(getCertPrint(nil, c, list))
+
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+
+	out, err := jsontabwriter.GenerateOutput("items", allCertificateJSONPaths, certs,
+		tabheaders.GetHeadersAllDefault(defaultCertificateCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+
+	return nil
 }
