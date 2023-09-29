@@ -8,6 +8,8 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
 	"time"
@@ -29,6 +31,8 @@ var (
 	GoodToken       = ""
 	cl              *client.Client
 	tokCreationTime time.Time
+
+	testDir string
 )
 
 func TestAuthCmds(t *testing.T) {
@@ -37,11 +41,28 @@ func TestAuthCmds(t *testing.T) {
 	}
 	t.Cleanup(teardown)
 
-	viper.Set(constants.ArgOutput, "text")
-
 	assert.NotEmpty(t, GoodUsername)
 	assert.NotEmpty(t, GoodPassword)
 	assert.NotEmpty(t, GoodToken)
+
+	viper.Set(constants.ArgOutput, "text")
+
+	_, filename, _, _ := runtime.Caller(0)
+	testDir = strings.Split(filepath.Dir(filename), "/ionosctl/")[0] + "/ionosctl/temp-login-tests"
+	err := os.MkdirAll(testDir, 0777)
+	if err != nil {
+		t.Fatalf("failed creating config dir: %s", err.Error())
+	}
+	viper.Set(constants.ArgConfig, testDir+"/"+fake.Adjective()+".json")
+	err = config.Write(map[string]string{
+		constants.CfgUsername:  "UsernameHere",
+		constants.CfgPassword:  "PasswordHere",
+		constants.CfgToken:     "TokenHere",
+		constants.CfgServerUrl: "sample-url.com",
+	})
+	if err != nil {
+		t.Fatalf("failed setting up a test config file: %s", err.Error())
+	}
 
 	t.Parallel()
 
@@ -142,6 +163,40 @@ func TestAuthCmds(t *testing.T) {
 		assert.Empty(t, cfg[constants.CfgToken])
 	})
 
+	t.Run("non existant config file should be created", func(t *testing.T) {
+		login := cfg.LoginCmd()
+		logout := cfg.LogoutCmd()
+
+		viper.Set(core.GetFlagName(login.NS, constants.ArgUser), GoodUsername)
+		viper.Set(core.GetFlagName(login.NS, constants.ArgPassword), GoodPassword)
+		newCfgFilePath := testDir + "/" + fake.Noun() + ".json"
+		viper.Set(constants.ArgConfig, newCfgFilePath)
+
+		out := &bytes.Buffer{}
+		login.Command.SetOut(out)
+		err := login.Command.Execute()
+		assert.NoError(t, err)
+
+		// Read the configuration after login and assert that the token is valid
+		cfg, err := config.Read()
+		assert.NoError(t, err)
+		assert.NoError(t, client.TestCreds("", "", cfg[constants.CfgToken]))
+
+		out = &bytes.Buffer{}
+		logout.Command.SetOut(out)
+		err = logout.Command.Execute()
+		assert.Contains(t, out.String(), "De-authentication successful")
+		assert.NoError(t, err)
+		cfg, err = config.Read()
+		assert.NoError(t, err)
+		assert.Empty(t, cfg[constants.CfgToken])
+
+		// err = os.Remove(newCfgFilePath)
+		// if err != nil {
+		// 	t.Fatalf("note: failed to remove file %s: %s, remove it manually\n", newCfgFilePath, err.Error())
+		// }
+	})
+
 	t.Run("Pre-rework config file logout - Username and password removed from config file", func(t *testing.T) {
 		logout := cfg.LogoutCmd()
 
@@ -173,6 +228,7 @@ func TestAuthCmds(t *testing.T) {
 		assert.Equal(t, before[constants.CfgServerUrl], after[constants.CfgServerUrl])
 	})
 
+	// TODO: Move to location_test
 	t.Run("cfg location cmd returns valid location", func(t *testing.T) {
 		cfgLocCmd := cfg.LocationCmd()
 		out := &bytes.Buffer{}
@@ -181,7 +237,6 @@ func TestAuthCmds(t *testing.T) {
 		assert.NoError(t, err)
 
 		assert.Equal(t, config.GetConfigFile(), out.String())
-
 	})
 }
 
@@ -211,7 +266,6 @@ func setup() error {
 }
 
 func teardown() {
-
 	toks, _, err := cl.AuthClient.TokensApi.TokensGet(context.Background()).Execute()
 
 	if err != nil {
@@ -237,6 +291,11 @@ func teardown() {
 				panic(err)
 			}
 		}
+	}
+
+	err = os.RemoveAll(testDir)
+	if err != nil {
+		fmt.Printf("failed cleaning up %s: %s", testDir, err.Error())
 	}
 
 }
