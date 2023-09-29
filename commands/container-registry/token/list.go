@@ -68,20 +68,22 @@ func CmdListToken(c *core.CommandConfig) error {
 		return nil
 	}
 
-	var list []ionoscloud.TokensResponse
+	var list = make([]ionoscloud.TokensResponse, 0)
 
 	regs, _, err := c.ContainerRegistryServices.Registry().List("")
 	if err != nil {
 		return err
 	}
 
-	for _, reg := range *regs.GetItems() {
-		tokens, _, err := c.ContainerRegistryServices.Token().List(*reg.Id)
-		if err != nil {
-			return err
-		}
+	if items, ok := regs.GetItemsOk(); ok && items != nil {
+		for _, reg := range *items {
+			tokens, _, err := c.ContainerRegistryServices.Token().List(*reg.Id)
+			if err != nil {
+				return err
+			}
 
-		list = append(list, tokens)
+			list = append(list, tokens)
+		}
 	}
 
 	out, err := jsontabwriter.GenerateOutput("*.items", allJSONPaths, list, tabheaders.GetHeadersAllDefault(AllTokenCols, cols))
