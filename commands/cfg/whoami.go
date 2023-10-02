@@ -3,6 +3,7 @@ package cfg
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
@@ -15,11 +16,6 @@ import (
 )
 
 func WhoamiCmd() *core.Command {
-
-	const (
-		FlagProvenance      = "provenance"
-		FlagProvenanceShort = "p"
-	)
 
 	cmd := core.NewCommand(context.Background(), nil, core.CommandBuilder{
 		Verb:      "whoami",
@@ -36,32 +32,34 @@ ionosctl cfg whoami --provenance`,
 		CmdRun: func(c *core.CommandConfig) error {
 			cl, authErr := client.Get()
 
+			// Use strings.Builder for efficient string building
+			var builder strings.Builder
+
 			// Does user want to see provenance of his configuration? i.e. where does each key get its value from.
 			// Also, if failed getting client, print provenance.
-			if fn := core.GetFlagName(c.NS, FlagProvenance); authErr != nil || viper.GetBool(fn) {
-				var out string
+			if fn := core.GetFlagName(c.NS, constants.FlagProvenance); authErr != nil || viper.GetBool(fn) {
 				if authErr != nil {
-					out = "Note: Authentication failed!"
+					builder.WriteString("Note: Authentication failed!")
 					if cl.UsedLayer() == nil {
-						out += " None of the authentication layers had a token, or both username & password set."
+						builder.WriteString(" None of the authentication layers had a token, or both username & password set.")
 					}
-					out += "\n"
+					builder.WriteString("\n")
 				}
-				out += "Authentication layers, in order of priority:\n"
+				builder.WriteString("Authentication layers, in order of priority:\n")
 				for i, layer := range client.ConfigurationPriorityRules {
 					if cl.UsedLayer() != nil && *cl.UsedLayer() == layer {
-						out += fmt.Sprintf("* [%d] %s (USED)\n", i+1, layer.Description)
+						builder.WriteString(fmt.Sprintf("* [%d] %s (USED)\n", i+1, layer.Description))
 						if cl.IsTokenAuth() {
-							out += "    - Using token for authentication.\n"
+							builder.WriteString("    - Using token for authentication.\n")
 						} else {
-							out += "    - Using username and password for authentication.\n"
+							builder.WriteString("    - Using username and password for authentication.\n")
 						}
-						out += fmt.Sprintf("    - Using %s as the API URL.\n", config.GetServerUrlOrApiIonos())
+						builder.WriteString(fmt.Sprintf("    - Using %s as the API URL.\n", config.GetServerUrlOrApiIonos()))
 					} else {
-						out += fmt.Sprintf("  [%d] %s\n", i+1, layer.Description)
+						builder.WriteString(fmt.Sprintf("  [%d] %s\n", i+1, layer.Description))
 					}
 				}
-				_, err := fmt.Fprintln(c.Command.Command.OutOrStdout(), out)
+				_, err := fmt.Fprintln(c.Command.Command.OutOrStdout(), builder.String())
 				return err
 			}
 
@@ -85,7 +83,7 @@ ionosctl cfg whoami --provenance`,
 		InitClient: false,
 	})
 
-	cmd.AddBoolFlag(FlagProvenance, FlagProvenanceShort, false, "If set, the command prints the layers of authentication sources, their order of priority, and which one was used. It also tells you if a token or username and password are being used for authentication.")
+	cmd.AddBoolFlag(constants.FlagProvenance, constants.FlagProvenanceShort, false, "If set, the command prints the layers of authentication sources, their order of priority, and which one was used. It also tells you if a token or username and password are being used for authentication.")
 
 	return cmd
 }

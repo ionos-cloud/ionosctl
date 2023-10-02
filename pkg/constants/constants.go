@@ -149,4 +149,7 @@ const (
 	CfgPassword  = "userdata.password"
 
 	CLIHttpUserAgent = "cli-user-agent"
+
+	FlagProvenance      = "provenance"
+	FlagProvenanceShort = "p"
 )
