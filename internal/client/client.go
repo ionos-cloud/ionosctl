@@ -22,7 +22,7 @@ func selectAuthLayer(layers []Layer) (values map[string]string, usedLayer Layer,
 		username := viper.GetString(layer.UsernameKey)
 		password := viper.GetString(layer.PasswordKey)
 
-		if token != "" || (username != "" && password != "") {
+		if token != "" || username != "" && password != "" {
 			return map[string]string{
 				"token":    token,
 				"username": username,
@@ -74,6 +74,10 @@ func Get() (*Client, error) {
 	return instance, getClientErr
 }
 
+var MustDefaultErrHandler = func(err error) {
+	die.Die(fmt.Errorf("failed getting client: %w", err).Error())
+}
+
 // Must gets the client obj or fatally dies
 // You can provide some optional custom error handlers as params. The err is sent to each error handler in order.
 // The default error handler is die.Die which exits with code 1 and violently terminates the program
@@ -82,7 +86,7 @@ func Must(ehs ...func(error)) *Client {
 	if err != nil {
 		if len(ehs) == 0 {
 			// Default error handler if none set
-			die.Die(fmt.Errorf("failed getting client: %w", err).Error())
+			MustDefaultErrHandler(err)
 		} else {
 			// Developer set custom err handlers (e.g. don't die, simply warn, etc)
 			for _, eh := range ehs {

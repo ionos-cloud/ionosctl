@@ -42,9 +42,9 @@ func TestRead(t *testing.T) {
 			name:     "should return an error when the file has invalid permissions",
 			filename: "bad-permissions.json",
 			data:     `{"key":"value"}`,
-			perm:     0777,
+			perm:     0700,
 			wantErr:  true,
-			errMsg:   "expected 600, got 777",
+			errMsg:   "expected 600, got 700",
 		},
 		{
 			name:     "should return an error when the file has invalid json",
@@ -68,7 +68,9 @@ func TestRead(t *testing.T) {
 				assert.NoError(t, err)
 
 				if runtime.GOOS == "windows" && tt.perm != 0600 {
-					// Can't use chmod to test this functionality
+					// If using Windows, skip any tests related to invalid permissions.
+					// Refer to os.Chmod documentation: On Windows, can only set the "read" bit of the permissions.
+					// This would lead to the test 'should_return_an_error_when_the_file_has_invalid_permissions' breaking.
 					t.SkipNow()
 				}
 
@@ -154,6 +156,45 @@ func TestWrite(t *testing.T) {
 	}
 }
 
+func TestConcurrency(t *testing.T) {
+	tmpfile, err := ioutil.TempFile("", "config.json")
+	assert.NoError(t, err)
+
+	defer os.Remove(tmpfile.Name())
+
+	if err := tmpfile.Close(); err != nil {
+		t.Fatal(err)
+	}
+
+	viper.Set(constants.ArgConfig, tmpfile.Name())
+
+	data1 := map[string]string{"key1": "value1"}
+	data2 := map[string]string{"key2": "value2"}
+
+	go func() {
+		for i := 0; i < 10; i++ {
+			err := config.Write(data1)
+			assert.NoError(t, err)
+		}
+	}()
+
+	go func() {
+		for i := 0; i < 10; i++ {
+			err := config.Write(data2)
+			assert.NoError(t, err)
+		}
+	}()
+
+	time.Sleep(1 * time.Second)
+
+	cfg, err := config.Read()
+	assert.NoError(t, err)
+
+	// we cannot predict which write will happen last
+	possibleResults := []map[string]string{data1, data2}
+	assert.Contains(t, possibleResults, cfg)
+}
+
 func TestGetServerUrl(t *testing.T) {
 	tests := []struct {
 		name              string
@@ -219,43 +260,4 @@ func TestGetServerUrl(t *testing.T) {
 			}
 		})
 	}
-}
-
-func TestConcurrency(t *testing.T) {
-	tmpfile, err := ioutil.TempFile("", "config.json")
-	assert.NoError(t, err)
-
-	defer os.Remove(tmpfile.Name())
-
-	if err := tmpfile.Close(); err != nil {
-		t.Fatal(err)
-	}
-
-	viper.Set(constants.ArgConfig, tmpfile.Name())
-
-	data1 := map[string]string{"key1": "value1"}
-	data2 := map[string]string{"key2": "value2"}
-
-	go func() {
-		for i := 0; i < 10; i++ {
-			err := config.Write(data1)
-			assert.NoError(t, err)
-		}
-	}()
-
-	go func() {
-		for i := 0; i < 10; i++ {
-			err := config.Write(data2)
-			assert.NoError(t, err)
-		}
-	}()
-
-	time.Sleep(1 * time.Second)
-
-	cfg, err := config.Read()
-	assert.NoError(t, err)
-
-	// we cannot predict which write will happen last
-	possibleResults := []map[string]string{data1, data2}
-	assert.Contains(t, possibleResults, cfg)
 }
