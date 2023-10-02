@@ -25,15 +25,16 @@ import (
 
 var (
 	allLanJSONPaths = map[string]string{
-		"LanId":  "id",
-		"Name":   "properties.name",
-		"Public": "properties.public",
-		"PccId":  "properties.pcc",
-		"State":  "metadata.state",
+		"LanId":         "id",
+		"Name":          "properties.name",
+		"Public":        "properties.public",
+		"PccId":         "properties.pcc",
+		"State":         "metadata.state",
+		"IPv6CidrBlock": "properties.ipv6CidrBlock",
 	}
 
-	defaultLanCols = []string{"LanId", "Name", "Public", "PccId", "State"}
-	allLanCols     = []string{"LanId", "Name", "Public", "PccId", "State", "DatacenterId"}
+	defaultLanCols = []string{"LanId", "Name", "Public", "PccId", "IPv6CidrBlock", "State"}
+	allLanCols     = []string{"LanId", "Name", "Public", "PccId", "IPv6CidrBlock", "State", "DatacenterId"}
 )
 
 func LanCmd() *core.Command {

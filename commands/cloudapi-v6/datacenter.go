@@ -31,10 +31,12 @@ var (
 		"Features":          "properties.features",
 		"CpuFamily":         "properties.cpuArchitecture.*.cpuFamily",
 		"SecAuthProtection": "properties.secAuthProtection",
+		"IPv6CidrBlock":     "properties.ipv6CidrBlock",
 	}
 
-	defaultDatacenterCols = []string{"DatacenterId", "Name", "Location", "CpuFamily", "State"}
-	allDatacenterCols     = []string{"DatacenterId", "Name", "Location", "State", "Description", "Version", "Features", "CpuFamily", "SecAuthProtection"}
+	defaultDatacenterCols = []string{"DatacenterId", "Name", "Location", "CpuFamily", "IPv6CidrBlock", "State"}
+	allDatacenterCols     = []string{"DatacenterId", "Name", "Location", "State", "Description", "Version",
+		"Features", "CpuFamily", "SecAuthProtection", "IPv6CidrBlock"}
 )
 
 func DatacenterCmd() *core.Command {

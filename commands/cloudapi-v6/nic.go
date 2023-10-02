@@ -34,10 +34,14 @@ var (
 		"State":          "metadata.statue",
 		"DeviceNumber":   "properties.deviceNumber",
 		"PciSlot":        "properties.pciSlot",
+		"IPv6Ips":        "properties.ipv6Ips",
+		"IPv6CidrBlock":  "properties.ipv6CidrBlock",
+		"DHCPv6":         "properties.dhcpv6",
 	}
 
-	defaultNicCols = []string{"NicId", "Name", "Dhcp", "LanId", "Ips", "State"}
-	allNicCols     = []string{"NicId", "Name", "Dhcp", "LanId", "Ips", "State", "FirewallActive", "FirewallType", "DeviceNumber", "PciSlot", "Mac"}
+	defaultNicCols = []string{"NicId", "Name", "Dhcp", "LanId", "Ips", "IPv6Ips", "State"}
+	allNicCols     = []string{"NicId", "Name", "Dhcp", "LanId", "Ips", "IPv6Ips", "State", "FirewallActive",
+		"FirewallType", "DeviceNumber", "PciSlot", "Mac", "DHCPv6", "IPv6CidrBlock"}
 )
 
 func NicCmd() *core.Command {

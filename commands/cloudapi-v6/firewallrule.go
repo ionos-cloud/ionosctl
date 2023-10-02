@@ -35,12 +35,13 @@ var (
 		"IcmpCode":       "properties.icmpCode",
 		"IcmpType":       "properties.icmpType",
 		"Direction":      "properties.type",
+		"IPVersion":      "properties.ipVersion",
 		"State":          "metadata.state",
 	}
 
-	defaultFirewallRuleCols = []string{"FirewallRuleId", "Name", "Protocol", "PortRangeStart", "PortRangeEnd", "Direction", "State"}
+	defaultFirewallRuleCols = []string{"FirewallRuleId", "Name", "Protocol", "PortRangeStart", "PortRangeEnd", "Direction", "IPVersion", "State"}
 	allFirewallRuleCols     = []string{"FirewallRuleId", "Name", "Protocol", "SourceMac", "SourceIP", "DestinationIP", "PortRangeStart", "PortRangeEnd",
-		"IcmpCode", "IcmpType", "Direction", "State"}
+		"IcmpCode", "IcmpType", "Direction", "IPVersion", "State"}
 )
 
 func FirewallruleCmd() *core.Command {
