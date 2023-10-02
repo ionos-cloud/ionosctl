@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/ionos-cloud/ionosctl/v6/internal/jwt"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
-	"github.com/ionos-cloud/ionosctl/v6/internal/jwt"
 	"github.com/spf13/viper"
 
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
@@ -30,53 +30,26 @@ If no token is present, the command will fall back to using the username and pas
 ionosctl cfg whoami --provenance`,
 		PreCmdRun: core.NoPreRun,
 		CmdRun: func(c *core.CommandConfig) error {
-			cl, authErr := client.Get()
+			cl, err := client.Get()
 
-			// Use strings.Builder for efficient string building
-			var builder strings.Builder
+			if fn := core.GetFlagName(c.NS, constants.FlagProvenance); err != nil || viper.GetBool(fn) {
+				return handleProvenance(c, cl, err)
+			}
 
-			// Does user want to see provenance of his configuration? i.e. where does each key get its value from.
-			// Also, if failed getting client, print provenance.
-			if fn := core.GetFlagName(c.NS, constants.FlagProvenance); authErr != nil || viper.GetBool(fn) {
-				if authErr != nil {
-					builder.WriteString("Note: Authentication failed!")
-					if cl.UsedLayer() == nil {
-						builder.WriteString(" None of the authentication layers had a token, or both username & password set.")
-					}
-					builder.WriteString("\n")
-				}
-				builder.WriteString("Authentication layers, in order of priority:\n")
-				for i, layer := range client.ConfigurationPriorityRules {
-					if cl.UsedLayer() != nil && *cl.UsedLayer() == layer {
-						builder.WriteString(fmt.Sprintf("* [%d] %s (USED)\n", i+1, layer.Description))
-						if cl.IsTokenAuth() {
-							builder.WriteString("    - Using token for authentication.\n")
-						} else {
-							builder.WriteString("    - Using username and password for authentication.\n")
-						}
-						builder.WriteString(fmt.Sprintf("    - Using %s as the API URL.\n", config.GetServerUrlOrApiIonos()))
-					} else {
-						builder.WriteString(fmt.Sprintf("  [%d] %s\n", i+1, layer.Description))
-					}
-				}
-				_, err := fmt.Fprintln(c.Command.Command.OutOrStdout(), builder.String())
+			// - - - Below this point, we are sure that client.Get() has returned a valid client object.
+
+			if !cl.IsTokenAuth() {
+				// Handle Username & Password Authentication
+				_, err = fmt.Fprintln(c.Command.Command.OutOrStdout(), cl.CloudClient.GetConfig().Username)
 				return err
 			}
 
-			// -- Below this point, we are 100% certain the client is using valid credentials. --
-
-			if cl.IsTokenAuth() {
-				usernameViaToken, err := jwt.Username(cl.CloudClient.GetConfig().Token)
-				if err != nil {
-					return fmt.Errorf("failed getting username via token: %w", err)
-				}
-				_, err = fmt.Fprintln(c.Command.Command.OutOrStdout(), usernameViaToken)
-				return err
+			// Handle token authentication
+			usernameViaToken, jwtParseErr := jwt.Username(cl.CloudClient.GetConfig().Token)
+			if jwtParseErr != nil {
+				return fmt.Errorf("failed getting username via token: %w", err)
 			}
-
-			// -- Below this point, we are 100% certain the client is using valid username & password. --
-
-			_, err := fmt.Fprintln(c.Command.Command.OutOrStdout(), cl.CloudClient.GetConfig().Username)
+			_, err = fmt.Fprintln(c.Command.Command.OutOrStdout(), usernameViaToken)
 			return err
 
 		},
@@ -86,4 +59,32 @@ ionosctl cfg whoami --provenance`,
 	cmd.AddBoolFlag(constants.FlagProvenance, constants.FlagProvenanceShort, false, "If set, the command prints the layers of authentication sources, their order of priority, and which one was used. It also tells you if a token or username and password are being used for authentication.")
 
 	return cmd
+}
+
+func handleProvenance(c *core.CommandConfig, cl *client.Client, authErr error) error {
+	var builder strings.Builder
+
+	if authErr != nil {
+		builder.WriteString("Note: Authentication failed!")
+		if cl.UsedLayer() == nil {
+			builder.WriteString(" None of the authentication layers had a token, or both username & password set.")
+		}
+		builder.WriteString("\n")
+	}
+
+	builder.WriteString("Authentication layers, in order of priority:\n")
+	for i, layer := range client.ConfigurationPriorityRules {
+		if cl.UsedLayer() != nil && *cl.UsedLayer() == layer {
+			builder.WriteString(fmt.Sprintf("* [%d] %s (USED)\n", i+1, layer.Description))
+			authType := "token"
+			if !cl.IsTokenAuth() {
+				authType = "username and password"
+			}
+			builder.WriteString(fmt.Sprintf("    - Using %s for authentication.\n    - Using %s as the API URL.\n", authType, config.GetServerUrlOrApiIonos()))
+		} else {
+			builder.WriteString(fmt.Sprintf("  [%d] %s\n", i+1, layer.Description))
+		}
+	}
+	_, err := fmt.Fprintln(c.Command.Command.OutOrStdout(), builder.String())
+	return err
 }
