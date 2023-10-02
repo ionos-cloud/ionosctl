@@ -49,6 +49,7 @@
         * [location](subcommands%2FCompute%20Engine%2Fconfig%2Flocation.md)
         * [login](subcommands%2FCompute%20Engine%2Fconfig%2Flogin.md)
         * [logout](subcommands%2FCompute%20Engine%2Fconfig%2Flogout.md)
+        * [whoami](subcommands%2FCompute%20Engine%2Fconfig%2Fwhoami.md)
     * contract
         * [get](subcommands%2FCompute%20Engine%2Fcontract%2Fget.md)
     * datacenter
