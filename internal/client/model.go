@@ -37,8 +37,15 @@ func (c *Client) IsTokenAuth() bool {
 	return c.CloudClient.GetConfig().Token != ""
 }
 
+func (c *Client) UsedLayer() *Layer {
+	if c == nil || c.usedLayer == nil {
+		return nil
+	}
+	return c.usedLayer
+}
+
 type Client struct {
-	UsedLayer Layer // i.e. which auth layer are we using. Flags / Env Vars / Config File
+	usedLayer *Layer // i.e. which auth layer are we using. Flags / Env Vars / Config File
 
 	CloudClient        *cloudv6.APIClient
 	AuthClient         *sdkgoauth.APIClient
@@ -54,7 +61,7 @@ func appendUserAgent(userAgent string) string {
 	return fmt.Sprintf("%v_%v", viper.GetString(constants.CLIHttpUserAgent), userAgent)
 }
 
-func newClient(name, pwd, token, hostUrl string) *Client {
+func newClient(name, pwd, token, hostUrl string, usedLayer *Layer) *Client {
 	clientConfig := cloudv6.NewConfiguration(name, pwd, token, hostUrl)
 	clientConfig.UserAgent = appendUserAgent(clientConfig.UserAgent)
 	// Set Depth Query Parameter globally
@@ -90,5 +97,6 @@ func newClient(name, pwd, token, hostUrl string) *Client {
 		DataplatformClient: dataplatform.NewAPIClient(dpConfig),
 		RegistryClient:     registry.NewAPIClient(registryConfig),
 		DnsClient:          dns.NewAPIClient(dnsConfig),
+		usedLayer:          usedLayer,
 	}
 }

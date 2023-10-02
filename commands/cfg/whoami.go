@@ -41,13 +41,15 @@ ionosctl cfg whoami --provenance`,
 			if fn := core.GetFlagName(c.NS, FlagProvenance); authErr != nil || viper.GetBool(fn) {
 				var out string
 				if authErr != nil {
-					out = "Note: Authentication failed!\n"
+					out = "Note: Authentication failed!"
+					if cl.UsedLayer() == nil {
+						out += " None of the authentication layers had a token, or both username & password set."
+					}
+					out += "\n"
 				}
 				out += "Authentication layers, in order of priority:\n"
 				for i, layer := range client.ConfigurationPriorityRules {
-					fmt.Println(cl.UsedLayer)
-					fmt.Println(layer)
-					if layer == cl.UsedLayer {
+					if cl.UsedLayer() != nil && *cl.UsedLayer() == layer {
 						out += fmt.Sprintf("* [%d] %s (USED)\n", i+1, layer.Description)
 						if cl.IsTokenAuth() {
 							out += "    - Using token for authentication.\n"

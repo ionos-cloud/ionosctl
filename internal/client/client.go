@@ -63,8 +63,7 @@ func Get() (*Client, error) {
 			return
 		}
 
-		instance = newClient(values["username"], values["password"], values["token"], values["serverUrl"])
-		instance.UsedLayer = usedLayer
+		instance = newClient(values["username"], values["password"], values["token"], values["serverUrl"], &usedLayer)
 
 		if err := instance.TestCreds(); err != nil {
 			getClientErr = errors.Join(getClientErr, fmt.Errorf("failed creating client: %w", err))
@@ -99,11 +98,11 @@ func Must(ehs ...func(error)) *Client {
 
 // NewClient bypasses the singleton check, not recommended for normal use.
 func NewClient(name, pwd, token, hostUrl string) *Client {
-	return newClient(name, pwd, token, hostUrl)
+	return newClient(name, pwd, token, hostUrl, nil)
 }
 
 func TestCreds(user, pass, token string) error {
-	cl := newClient(user, pass, token, constants.DefaultApiURL)
+	cl := newClient(user, pass, token, constants.DefaultApiURL, nil)
 	return cl.TestCreds()
 }
 
