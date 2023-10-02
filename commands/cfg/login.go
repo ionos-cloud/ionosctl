@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	sdk "github.com/ionos-cloud/sdk-go/v6"
 	"golang.org/x/term"
 
@@ -73,9 +74,10 @@ func PreRunLoginCmd(c *core.PreCommandConfig) error {
 }
 
 func RunLoginUser(c *core.CommandConfig) error {
-	c.Printer.Verbose("Note: The login command will save the credentials in a configuration file after the authentication is successful!")
-	c.Printer.Verbose("Note: As an alternative to this, ionosctl offers support for environment variables: $%s, $%s or $%s.",
-		sdk.IonosUsernameEnvVar, sdk.IonosPasswordEnvVar, sdk.IonosTokenEnvVar)
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
+		"Note: The login command will save the credentials in a configuration file after the authentication is successful!"))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
+		"Note: As an alternative to this, ionosctl offers support for environment variables: $%s, $%s or $%s.", sdk.IonosUsernameEnvVar, sdk.IonosPasswordEnvVar, sdk.IonosTokenEnvVar))
 
 	validCredentials := true
 	data, err := buildConfigData(c)
@@ -87,7 +89,7 @@ func RunLoginUser(c *core.CommandConfig) error {
 	}
 
 	// Store credentials
-	c.Printer.Verbose("Storing credentials to the configuration file: %s", viper.GetString(constants.ArgConfig))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Storing credentials to the configuration file: %s", viper.GetString(constants.ArgConfig)))
 	err = config.Write(data)
 	if err != nil {
 		return fmt.Errorf("failed writing config data: %w", err)
@@ -124,11 +126,11 @@ func buildConfigData(c *core.CommandConfig) (map[string]string, error) {
 	configData := map[string]string{} // This map is what we will write to the config file
 
 	// API URL
-	c.Printer.Verbose("API Url: %s", config.GetServerUrl())
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("API Url: %s", config.GetServerUrl()))
 	if explicitUrl := config.GetServerUrl(); explicitUrl != "" {
 		// Don't save the API url to the config if it's the default, since we don't want to revert to it if the user doesn't provide any value.
 		// This was changed from old behaviour because some APIs (e.g. DNS API) [can] use a different server URL
-		c.Printer.Verbose(fmt.Sprintf("Saving API URL to config file: %s", explicitUrl))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Saving API URL to config file: %s", explicitUrl))
 		configData[constants.CfgServerUrl] = explicitUrl
 	}
 
