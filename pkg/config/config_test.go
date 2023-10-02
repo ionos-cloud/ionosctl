@@ -42,9 +42,9 @@ func TestRead(t *testing.T) {
 			name:     "should return an error when the file has invalid permissions",
 			filename: "bad-permissions.json",
 			data:     `{"key":"value"}`,
-			perm:     0700,
+			perm:     0777,
 			wantErr:  true,
-			errMsg:   "expected 600, got 700",
+			errMsg:   "expected 600, got 777",
 		},
 		{
 			name:     "should return an error when the file has invalid json",

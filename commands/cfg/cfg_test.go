@@ -228,7 +228,7 @@ func TestAuthCmds(t *testing.T) {
 		assert.Equal(t, before[constants.CfgServerUrl], after[constants.CfgServerUrl])
 	})
 
-	// TODO: Move to location_test
+	// cfg location tests
 	t.Run("cfg location cmd returns valid location", func(t *testing.T) {
 		cfgLocCmd := cfg.LocationCmd()
 		out := &bytes.Buffer{}
@@ -238,6 +238,22 @@ func TestAuthCmds(t *testing.T) {
 
 		assert.Equal(t, config.GetConfigFile(), out.String())
 	})
+
+	// cfg whoami tests
+	t.Run("cfg whoami returns current user - Env Username & Password", func(t *testing.T) {
+		cmd := cfg.WhoamiCmd()
+
+		viper.Set(core.GetFlagName(cmd.NS, constants.ArgUser), GoodUsername)
+		viper.Set(core.GetFlagName(cmd.NS, constants.ArgPassword), GoodPassword)
+
+		out := &bytes.Buffer{}
+		cmd.Command.SetOut(out)
+		err := cmd.Command.Execute()
+		assert.NoError(t, err)
+
+		assert.Contains(t, out.String(), GoodUsername)
+	})
+
 }
 
 func setup() error {
