@@ -22,7 +22,7 @@ func selectAuthLayer(layers []Layer) (values map[string]string, usedLayer Layer,
 		username := viper.GetString(layer.UsernameKey)
 		password := viper.GetString(layer.PasswordKey)
 
-		if token != "" || username != "" && password != "" {
+		if token != "" || (username != "" && password != "") {
 			return map[string]string{
 				"token":    token,
 				"username": username,

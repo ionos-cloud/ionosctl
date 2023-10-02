@@ -45,6 +45,8 @@ ionosctl cfg whoami --provenance`,
 				}
 				out += "Authentication layers, in order of priority:\n"
 				for i, layer := range client.ConfigurationPriorityRules {
+					fmt.Println(cl.UsedLayer)
+					fmt.Println(layer)
 					if layer == cl.UsedLayer {
 						out += fmt.Sprintf("* [%d] %s (USED)\n", i+1, layer.Description)
 						if cl.IsTokenAuth() {
