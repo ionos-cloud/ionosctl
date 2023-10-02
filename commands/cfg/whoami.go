@@ -30,28 +30,27 @@ If no token is present, the command will fall back to using the username and pas
 ionosctl cfg whoami --provenance`,
 		PreCmdRun: core.NoPreRun,
 		CmdRun: func(c *core.CommandConfig) error {
-			cl, err := client.Get()
+			cl, authErr := client.Get()
 
-			if fn := core.GetFlagName(c.NS, constants.FlagProvenance); err != nil || viper.GetBool(fn) {
-				return handleProvenance(c, cl, err)
+			if fn := core.GetFlagName(c.NS, constants.FlagProvenance); authErr != nil || viper.GetBool(fn) {
+				return handleProvenance(c, cl, authErr)
 			}
 
 			// - - - Below this point, we are sure that client.Get() has returned a valid client object.
 
 			if !cl.IsTokenAuth() {
 				// Handle Username & Password Authentication
-				_, err = fmt.Fprintln(c.Command.Command.OutOrStdout(), cl.CloudClient.GetConfig().Username)
+				_, err := fmt.Fprintln(c.Command.Command.OutOrStdout(), cl.CloudClient.GetConfig().Username)
 				return err
 			}
 
 			// Handle token authentication
 			usernameViaToken, jwtParseErr := jwt.Username(cl.CloudClient.GetConfig().Token)
 			if jwtParseErr != nil {
-				return fmt.Errorf("failed getting username via token: %w", err)
+				return fmt.Errorf("failed getting username via token: %w", jwtParseErr)
 			}
-			_, err = fmt.Fprintln(c.Command.Command.OutOrStdout(), usernameViaToken)
+			_, err := fmt.Fprintln(c.Command.Command.OutOrStdout(), usernameViaToken)
 			return err
-
 		},
 		InitClient: false,
 	})
