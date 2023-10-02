@@ -44,6 +44,8 @@ func GetServerUrl() string {
 }
 
 // GetServerUrlOrApiIonos calls GetServerUrl and returns https://api.ionos.com if empty
+//
+// It is a useful func for informing the user of the behaviour of the SDKs - For the SDKs if the server URL is empty, they will default to https://api.ionos.com
 func GetServerUrlOrApiIonos() string {
 	if val := GetServerUrl(); val != "" {
 		return val
