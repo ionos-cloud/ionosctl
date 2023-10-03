@@ -62,11 +62,12 @@ func GetConfigFilePath() string {
 	}
 
 	// We don't perform an `isAbs` check before turning it into an absolute path
-	// because filepath.Abs will still try cleaning the input (i.e. reduce previous directory marks ../)
-	// which is a good practice.
+	// because it internally has this check and will perform filepath.Clean on it if so
+	// which is a great thing to have (sanitizes the path for multiple separators, path name elements, etc.)
 	absPath, err := filepath.Abs(path)
 	if err != nil {
-		// If error, it's probably a bad input by the user for --config flag. In this case, just return his bad input
+		// just use the given provided by the user if err. Read and Write can still handle relative paths,
+		// the only downside is annoyance for the user of not having his pwd prepended to `ionosctl location`
 		return path
 	}
 
