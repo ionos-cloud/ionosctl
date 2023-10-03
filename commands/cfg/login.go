@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	sdk "github.com/ionos-cloud/sdk-go/v6"
 	"golang.org/x/term"
@@ -77,6 +78,24 @@ func PreRunLoginCmd(c *core.PreCommandConfig) error {
 }
 
 func RunLoginUser(c *core.CommandConfig) error {
+
+	configPath := config.GetConfigFilePath()
+	if _, err := os.Stat(configPath); !os.IsNotExist(err) {
+		yes := confirm.FAsk(
+			c.Command.Command.InOrStdin(),
+			fmt.Sprintf("Config file %s exists. Do you want to replace it", configPath),
+			viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce)),
+		)
+
+		if !yes {
+			return fmt.Errorf(confirm.UserDenied)
+		}
+
+		if delErr := os.Remove(configPath); delErr != nil {
+			return fmt.Errorf("error deleting config file %s: %w", configPath, delErr)
+		}
+	}
+
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
 		"Note: The login command will save the credentials in a configuration file after the authentication is successful!"))
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(

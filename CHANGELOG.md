@@ -33,6 +33,7 @@
 
 ### Fixed
 * Fixed #297: `ionosctl login` not clearing previous credentials
+  * The command will ask for confirmation if a config file already exists at the set path. The user can skip this check by using `--force`
 * Fixed 404 on firewallrule delete command: flag values not properly sent to API
 * Fixed `password` or `sshkey-path` being required for private images
 
