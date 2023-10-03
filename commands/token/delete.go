@@ -89,7 +89,7 @@ func runTokenDeleteAll(c *core.CommandConfig) error {
 	if tokenResponse != nil {
 		if success, ok := tokenResponse.GetSuccessOk(); ok && success != nil {
 			if *success {
-				fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Status: all tokens have been successfully deleted"))
+				fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Status: all tokens have been successfully deleted"))
 				return nil
 			}
 		}
@@ -113,7 +113,7 @@ func runTokenDeleteExpired(c *core.CommandConfig) error {
 	if tokenResponse != nil {
 		if success, ok := tokenResponse.GetSuccessOk(); ok && success != nil {
 			if *success {
-				fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Status: expired tokens have been successfully deleted"))
+				fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Status: expired tokens have been successfully deleted"))
 				return nil
 			}
 		}
@@ -145,7 +145,7 @@ func runTokenDeleteCurrent(c *core.CommandConfig) error {
 	if tokenResponse != nil {
 		if success, ok := tokenResponse.GetSuccessOk(); ok && success != nil {
 			if *success {
-				fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Status: current token have been successfully deleted"))
+				fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Status: current token have been successfully deleted"))
 				return nil
 			}
 		}
@@ -166,7 +166,7 @@ func runTokenDeleteById(c *core.CommandConfig) error {
 	if tokenResponse != nil {
 		if success, ok := tokenResponse.GetSuccessOk(); ok && success != nil {
 			if *success {
-				fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Status: token has been successfully deleted"))
+				fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Status: token has been successfully deleted"))
 				return nil
 			}
 		}
@@ -200,7 +200,7 @@ func runTokenDeleteByToken(c *core.CommandConfig) error {
 	if tokenResponse != nil {
 		if success, ok := tokenResponse.GetSuccessOk(); ok && success != nil {
 			if *success {
-				fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Status: token has been successfully deleted"))
+				fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Status: token has been successfully deleted"))
 				return nil
 			}
 		}

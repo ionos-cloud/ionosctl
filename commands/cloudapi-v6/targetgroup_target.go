@@ -333,7 +333,7 @@ func RunTargetGroupTargetRemove(c *core.CommandConfig) error {
 }
 
 func RemoveAllTargetGroupTarget(c *core.CommandConfig) (*resources.Response, error) {
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Target Group Targets to be deleted:"))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Target Group Targets to be deleted:"))
 
 	applicationLoadBalancerRules, resp, err := c.CloudApiV6Services.TargetGroups().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)), cloudapiv6.ParentResourceQueryParams)
 	if err != nil {
@@ -348,11 +348,11 @@ func RemoveAllTargetGroupTarget(c *core.CommandConfig) (*resources.Response, err
 	if httpRulesOk, ok := propertiesOk.GetTargetsOk(); ok && httpRulesOk != nil {
 		for _, httpRuleOk := range *httpRulesOk {
 			if nameOk, ok := httpRuleOk.GetIpOk(); ok && nameOk != nil {
-				fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Target IP: %v", *nameOk))
+				fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Target IP: %v", *nameOk))
 			}
 
 			if typeOk, ok := httpRuleOk.GetPortOk(); ok && typeOk != nil {
-				fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Target Port: %v", strconv.Itoa(int(*typeOk))))
+				fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Target Port: %v", strconv.Itoa(int(*typeOk))))
 			}
 		}
 	}
