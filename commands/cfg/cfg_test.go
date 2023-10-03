@@ -236,7 +236,7 @@ func TestAuthCmds(t *testing.T) {
 		err := cfgLocCmd.Command.Execute()
 		assert.NoError(t, err)
 
-		assert.Equal(t, config.GetConfigFile(), out.String())
+		assert.Equal(t, config.GetConfigFilePath(), out.String())
 	})
 
 	// cfg whoami tests

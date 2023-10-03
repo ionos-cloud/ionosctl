@@ -53,11 +53,25 @@ func GetServerUrlOrApiIonos() string {
 	return constants.DefaultApiURL
 }
 
-func GetConfigFile() string {
+// GetConfigFilePath sanitizes the --config flag input and returns the path to the config file.
+// If none set, it returns the default config path.
+func GetConfigFilePath() string {
+	path := filepath.Join(getConfigHomeDir(), constants.DefaultConfigFileName)
 	if fn := constants.ArgConfig; viper.IsSet(fn) {
-		return viper.GetString(fn)
+		path = viper.GetString(fn)
 	}
-	return filepath.Join(getConfigHomeDir(), constants.DefaultConfigFileName)
+
+	// We don't perform an `isAbs` check before turning it into an absolute path
+	// because filepath.Abs will still try cleaning the input (i.e. reduce previous directory marks ../)
+	// which is a good practice.
+	absPath, err := filepath.Abs(path)
+	if err != nil {
+		// If error, it's probably a bad input by the user for --config flag. In this case, just return his bad input
+		return path
+	}
+
+	// Always prefer returning an absolute, cleaned path if possible.
+	return absPath
 }
 
 func getConfigHomeDir() string {
@@ -82,12 +96,9 @@ func checkFilePermissions(fileInfo os.FileInfo, path string) error {
 	return nil
 }
 
-// Read reads config file at getConfigPath() and returns its data as a map
+// Read reads the config file and returns its data as a map
 func Read() (map[string]string, error) {
-	path, err := getConfigPath()
-	if err != nil {
-		return nil, err
-	}
+	path := GetConfigFilePath()
 
 	fileInfo, err := os.Stat(path)
 	if err != nil {
@@ -111,22 +122,6 @@ func Read() (map[string]string, error) {
 	}
 
 	return result, nil
-}
-
-// getConfigPath retrieves the configuration file path and makes it absolute if it isn't.
-func getConfigPath() (string, error) {
-	path := GetConfigFile()
-
-	if !filepath.IsAbs(path) {
-		// TODO: What is the point of turning this into an abs path ?
-		absPath, err := filepath.Abs(path)
-		if err != nil {
-			return "", err
-		}
-		return absPath, nil
-	}
-
-	return path, nil
 }
 
 func Write(data map[string]string) error {

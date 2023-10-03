@@ -98,7 +98,7 @@ func init() {
 	rootPFlagSet.BoolP("help", "h", false, "Print usage")
 	// Add Custom Flags
 	rootPFlagSet.StringVarP(
-		&cfgFile, constants.ArgConfig, constants.ArgConfigShort, config.GetConfigFile(),
+		&cfgFile, constants.ArgConfig, constants.ArgConfigShort, config.GetConfigFilePath(),
 		"Configuration file used for authentication",
 	)
 	_ = viper.BindPFlag(constants.ArgConfig, rootPFlagSet.Lookup(constants.ArgConfig))
