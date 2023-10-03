@@ -99,7 +99,7 @@ func RunLocationCpuList(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allCpuJSONPaths, cpus, tabheaders.GetHeadersAllDefault(defaultCpuCols, cols))
+	out, err := jsontabwriter.GenerateOutput("", allCpuJSONPaths, *cpus, tabheaders.GetHeadersAllDefault(defaultCpuCols, cols))
 	if err != nil {
 		return err
 	}

@@ -223,7 +223,7 @@ func RunNlbRuleTargetList(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allNetworkLoadBalancerRuleTargetJSONPaths, targets,
+	out, err := jsontabwriter.GenerateOutput("", allNetworkLoadBalancerRuleTargetJSONPaths, *targets,
 		tabheaders.GetHeadersAllDefault(defaultRuleTargetCols, cols))
 	if err != nil {
 		return err

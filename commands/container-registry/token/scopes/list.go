@@ -73,7 +73,7 @@ func CmdGetTokenScopesList(c *core.CommandConfig) error {
 
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-	out, err := jsontabwriter.GenerateOutput("", allScopeJSONPaths, scopes,
+	out, err := jsontabwriter.GenerateOutput("", allScopeJSONPaths, *scopes,
 		tabheaders.GetHeaders(allScopeCols, defaultScopeCols, cols))
 	if err != nil {
 		return err
