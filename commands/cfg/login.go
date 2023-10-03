@@ -45,13 +45,15 @@ Enter your password:`
   1. Interactive mode: Just type 'ionosctl login' and you'll be prompted to enter your username and password.
   2. Use the '--user' and '--password' flags: Enter your credentials in the command.
   3. Use the '--token' flag: Provide an authentication token.
-Note: If using '--token', you can skip verifying the used token and force save it by using '--force'
+Note: If using '--token', you can skip verifying the used token with '--skip-verify'
 
 If you specify a custom '--api-url', the custom URL will also be saved to the config file when you login successfully and used for future API calls.
 
 If you use a username and password, this command will use these credentials to generate a token that will be saved in the config file. Please keep this token safe.
 
 To find your config file location, use 'ionosctl cfg location'. If you want to use a different config file, use the '--config' global option. Changing the permissions of the config file will cause it to no longer work.
+
+If a config file already exists, you will be asked to replace it. You can skip this verification with '--force'
 
 %s`, constants.DescAuthenticationOrder),
 		Example:    loginExamples,
@@ -62,7 +64,7 @@ To find your config file location, use 'ionosctl cfg location'. If you want to u
 	loginCmd.AddStringFlag(constants.ArgUser, "", "", "Username to authenticate")
 	loginCmd.AddStringFlag(constants.ArgPassword, constants.ArgPasswordShort, "", "Password to authenticate")
 	loginCmd.AddStringFlag(constants.ArgToken, constants.ArgTokenShort, "", "Token to authenticate")
-	loginCmd.AddBoolFlag(constants.ArgForce, constants.ArgForceShort, false, "Forcefully write the provided token to the config file without verifying if it is valid. Note: --token is required")
+	loginCmd.AddBoolFlag(constants.FlagSkipVerify, "", false, "Forcefully write the provided token to the config file without verifying if it is valid. Note: --token is required")
 
 	return loginCmd
 }
@@ -71,29 +73,18 @@ func PreRunLoginCmd(c *core.PreCommandConfig) error {
 	if (viper.IsSet(core.GetFlagName(c.NS, constants.ArgUser)) || viper.IsSet(core.GetFlagName(c.NS, constants.ArgPassword))) && viper.IsSet(core.GetFlagName(c.NS, constants.ArgToken)) {
 		return fmt.Errorf("use either --%s and --%s, either --%s", constants.ArgUser, constants.ArgPassword, constants.ArgToken)
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, constants.ArgForce)) {
-		return fmt.Errorf("--%s requires --%s to be set: ionosctl login %s", constants.ArgForce, constants.ArgToken, core.FlagsUsage(constants.ArgForce, constants.ArgToken))
+	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagSkipVerify)) && !viper.IsSet(core.GetFlagName(c.NS, constants.ArgToken)) {
+		return fmt.Errorf("--%s requires --%s to be set: ionosctl login %s", constants.FlagSkipVerify, constants.ArgToken, core.FlagsUsage(constants.FlagSkipVerify, constants.ArgToken))
 	}
 	return nil
 }
 
 func RunLoginUser(c *core.CommandConfig) error {
-
 	configPath := config.GetConfigFilePath()
-	if _, err := os.Stat(configPath); !os.IsNotExist(err) {
-		yes := confirm.FAsk(
-			c.Command.Command.InOrStdin(),
-			fmt.Sprintf("Config file %s exists. Do you want to replace it", configPath),
-			viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce)),
-		)
 
-		if !yes {
-			return fmt.Errorf(confirm.UserDenied)
-		}
-
-		if delErr := os.Remove(configPath); delErr != nil {
-			return fmt.Errorf("error deleting config file %s: %w", configPath, delErr)
-		}
+	err := handleExistingConfigFile(c, configPath)
+	if err != nil {
+		return fmt.Errorf("failed handling existing config file: %w", err)
 	}
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
@@ -104,7 +95,7 @@ func RunLoginUser(c *core.CommandConfig) error {
 	validCredentials := true
 	data, err := buildConfigData(c)
 	if err != nil {
-		if !viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce)) {
+		if !viper.GetBool(core.GetFlagName(c.NS, constants.FlagSkipVerify)) {
 			return fmt.Errorf("failed building config data: %w", err)
 		}
 		validCredentials = false
@@ -118,7 +109,7 @@ func RunLoginUser(c *core.CommandConfig) error {
 	}
 
 	errorHandlerAllowBadCredsIfForce := func(err error) {
-		if !validCredentials && viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce)) {
+		if !validCredentials && viper.GetBool(core.GetFlagName(c.NS, constants.FlagSkipVerify)) {
 			return
 		}
 		client.MustDefaultErrHandler(err)
@@ -141,6 +132,26 @@ func RunLoginUser(c *core.CommandConfig) error {
 
 	_, err = fmt.Fprintln(c.Command.Command.OutOrStdout(), msg.String())
 	return err
+}
+
+func handleExistingConfigFile(c *core.CommandConfig, configPath string) error {
+	if _, err := os.Stat(configPath); os.IsNotExist(err) {
+		return nil
+	}
+
+	if !confirm.FAsk(
+		c.Command.Command.InOrStdin(),
+		fmt.Sprintf("Config file %s exists. Do you want to replace it", configPath),
+		viper.GetBool(constants.ArgForce),
+	) {
+		return fmt.Errorf(confirm.UserDenied)
+	}
+
+	if err := os.Remove(configPath); err != nil {
+		return fmt.Errorf("error deleting config file %s: %w", configPath, err)
+	}
+
+	return nil
 }
 
 // buildConfigData returns map that will be written to config file, while also checking token is usable via testToken

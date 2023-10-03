@@ -1,6 +1,3 @@
-//go:build integration
-// +build integration
-
 package cfg_test
 
 import (
@@ -46,6 +43,7 @@ func TestAuthCmds(t *testing.T) {
 	assert.NotEmpty(t, GoodToken)
 
 	viper.Set(constants.ArgOutput, "text")
+	viper.Set(constants.ArgForce, "true")
 
 	_, filename, _, _ := runtime.Caller(0)
 	testDir = strings.Split(filepath.Dir(filename), "/ionosctl/")[0] + "/ionosctl/temp-login-tests"
@@ -152,6 +150,11 @@ func TestAuthCmds(t *testing.T) {
 		login.Command.SetOut(out)
 		err = login.Command.Execute()
 		assert.ErrorContains(t, err, "401 Unauthorized")
+
+		// Recreate file that is replaced by above login
+		config.Write(map[string]string{
+			constants.CfgToken: GoodToken,
+		})
 
 		out = &bytes.Buffer{}
 		logout.Command.SetOut(out)

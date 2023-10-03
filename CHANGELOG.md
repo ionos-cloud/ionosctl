@@ -21,7 +21,7 @@
   * If a username & password is provided, it will now use these credentials to generate a token, which will be stored in the config file instead of the username & password pair.
   * If you are unable to use the IONOS API to generate a token, you can use a pre-generated one with `login --token <JWT>`
   * The default API URL `api.ionos.com` is no longer saved to the config file if the user doesn't provide any API URL.
-  * If using `login --token <JWT>` to directly provide a JWT, it will be validated before being saved to the config file, however the user can set `--force` to skip this validation.
+  * If using `login --token <JWT>` to directly provide a JWT, it will be validated before being saved to the config file, however the user can set `--skip-verify` to skip this validation.
 * Reworked the authentication logic to be layer-based.
   * The authentication layers, in order of priority, are:
       1. Global Flags

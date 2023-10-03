@@ -153,6 +153,7 @@ const (
 
 	FlagProvenance      = "provenance"
 	FlagProvenanceShort = "p"
+	FlagSkipVerify      = "skip-verify"
 )
 
 // Resource info
