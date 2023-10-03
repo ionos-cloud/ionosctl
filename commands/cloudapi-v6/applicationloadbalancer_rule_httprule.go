@@ -266,7 +266,8 @@ func RunAlbRuleHttpRuleList(c *core.CommandConfig) error {
 		return errors.New("error getting rule http rules")
 	}
 
-	out, err := jsontabwriter.GenerateOutput("", allAlbHttpRuleJSONPaths, httpRules,
+	// TODO: HERE
+	out, err := jsontabwriter.GenerateOutput("", allAlbHttpRuleJSONPaths, *httpRules,
 		tabheaders.GetHeaders(allAlbRuleHttpRuleCols, defaultAlbRuleHttpRuleCols, cols))
 	if err != nil {
 		return err

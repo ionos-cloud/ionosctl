@@ -75,7 +75,7 @@ func traverseJSONRoot(columnPathMappingPrefix string, sourceData interface{}) ([
 	}
 
 	if columnPathMappingPrefix == "" {
-		if _, ok := sourceData.([]interface{}); ok {
+		if reflect.TypeOf(sourceData).Kind() == reflect.Slice {
 			return parsedObj.Children(), nil
 		} else {
 			return []*gabs.Container{parsedObj}, nil

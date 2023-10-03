@@ -172,7 +172,7 @@ func RunTargetGroupTargetList(c *core.CommandConfig) error {
 		if targets, ok := properties.GetTargetsOk(); ok && targets != nil {
 			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-			out, err := jsontabwriter.GenerateOutput("", allTargetGroupTargetJSONPaths, targets,
+			out, err := jsontabwriter.GenerateOutput("", allTargetGroupTargetJSONPaths, *targets,
 				tabheaders.GetHeadersAllDefault(defaultTargetGroupTargetCols, cols))
 			if err != nil {
 				return err
