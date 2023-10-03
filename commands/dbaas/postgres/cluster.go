@@ -580,7 +580,7 @@ func ClusterDeleteAll(c *core.CommandConfig) error {
 		return fmt.Errorf("no Clusters found")
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Clusters to be deleted:"))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Clusters to be deleted:"))
 	for _, cluster := range *dataOk {
 		var log string
 		if propertiesOk, ok := cluster.GetPropertiesOk(); ok && propertiesOk != nil {
@@ -593,7 +593,7 @@ func ClusterDeleteAll(c *core.CommandConfig) error {
 			log = fmt.Sprintf("%s; Cluster ID: %s", log, *idOk)
 		}
 
-		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(log))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput(log))
 	}
 
 	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete ALL clusters", viper.GetBool(constants.ArgForce)) {
@@ -618,7 +618,7 @@ func ClusterDeleteAll(c *core.CommandConfig) error {
 			continue
 		}
 
-		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(constants.MessageDeletingAll, c.Resource, *idOk))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput(constants.MessageDeletingAll, c.Resource, *idOk))
 
 		if err = utils.WaitForDelete(c, waiter.ClusterDeleteInterrogator, *idOk); err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *idOk, err))
