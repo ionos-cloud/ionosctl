@@ -25,6 +25,7 @@ You can use '--provenance' flag to see which of these sources are being used. No
 If using a token, it will use the JWT's claims payload to find out your user UUID, then use the Users API on that UUID to find out your e-mail address.
 If no token is present, the command will fall back to using the username and password for authentication.
 
+AUTHENTICATION ORDER
 ionosctl uses a layered approach for authentication, prioritizing sources in this order:
   1. Global flags
   2. Environment variables

@@ -1,5 +1,5 @@
 ---
-description: "Convenience command for deletion of config file credentials. To also remove your account's active tokens, use `ionosctl token delete --all`"
+description: "Convenience command for removing config file credentials"
 ---
 
 # ConfigLogout
@@ -20,7 +20,15 @@ For `config` command:
 
 ## Description
 
-Convenience command for deletion of config file credentials. To also remove your account's active tokens, use `ionosctl token delete --all`
+This command is a 'Quality of Life' command which will parse your config file for fields that contain sensitive data.
+If any such fields are found, their values will be replaced with an empty string.
+
+AUTHENTICATION ORDER
+ionosctl uses a layered approach for authentication, prioritizing sources in this order:
+  1. Global flags
+  2. Environment variables
+  3. Config file entries
+Within each layer, a token takes precedence over a username and password combination. For instance, if a token and a username/password pair are both defined in environment variables, ionosctl will prioritize the token. However, higher layers can override the use of a token from a lower layer. For example, username and password environment variables will supersede a token found in the config file.
 
 ## Options
 

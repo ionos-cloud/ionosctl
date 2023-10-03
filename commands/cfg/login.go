@@ -44,12 +44,15 @@ Enter your password:`
   1. Interactive mode: Just type 'ionosctl login' and you'll be prompted to enter your username and password.
   2. Use the '--user' and '--password' flags: Enter your credentials in the command.
   3. Use the '--token' flag: Provide an authentication token.
+Note: If using '--token', you can skip verifying the used token and force save it by using '--force'
 
-If you use a username and password, this command generates a token that's saved in the config file. Please keep this token safe. If you specify a custom '--api-url', it'll be saved to the config file when you login successfully and used for future API calls.
+If you specify a custom '--api-url', the custom URL will also be saved to the config file when you login successfully and used for future API calls.
+
+If you use a username and password, this command will use these credentials to generate a token that will be saved in the config file. Please keep this token safe.
 
 To find your config file location, use 'ionosctl cfg location'. If you want to use a different config file, use the '--config' global option. Changing the permissions of the config file will cause it to no longer work.
 
-Note: The IONOS Cloud CLI supports also authentication with environment variables: $IONOS_USERNAME, $IONOS_PASSWORD or $IONOS_TOKEN, these override the config file token.`),
+%s`, constants.DescAuthenticationOrder),
 		Example:    loginExamples,
 		PreCmdRun:  PreRunLoginCmd,
 		CmdRun:     RunLoginUser,
