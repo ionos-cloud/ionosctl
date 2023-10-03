@@ -47,9 +47,7 @@ func TestDNSCommands(t *testing.T) {
 func setup() error {
 	if GoodToken = os.Getenv("IONOS_TOKEN"); GoodToken != "" {
 		cl = client.NewClient("", "", GoodToken, "")
-		if cl.TestCreds() != nil {
-			return nil
-		}
+		return nil
 	}
 
 	// Otherwise, generate a token, since DNS doesn't function without it, only with username & password
