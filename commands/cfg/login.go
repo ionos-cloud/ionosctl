@@ -59,9 +59,9 @@ If a config file already exists, you will be asked to replace it. You can skip t
 		CmdRun:     RunLoginUser,
 		InitClient: false,
 	})
-	loginCmd.AddStringFlag(constants.ArgUser, "", "", "Username to authenticate")
-	loginCmd.AddStringFlag(constants.ArgPassword, constants.ArgPasswordShort, "", "Password to authenticate")
-	loginCmd.AddStringFlag(constants.ArgToken, constants.ArgTokenShort, "", "Token to authenticate")
+	loginCmd.AddStringFlag(constants.ArgUser, "", "", "Username to authenticate. Will be used to generate a token")
+	loginCmd.AddStringFlag(constants.ArgPassword, constants.ArgPasswordShort, "", "Password to authenticate. Will be used to generate a token")
+	loginCmd.AddStringFlag(constants.ArgToken, constants.ArgTokenShort, "", "Token to authenticate. If used, will be saved to the config file without generating a new token. Note: mutually exclusive with --user and --password")
 	loginCmd.AddBoolFlag(constants.FlagSkipVerify, "", false, "Forcefully write the provided token to the config file without verifying if it is valid. Note: --token is required")
 
 	return loginCmd

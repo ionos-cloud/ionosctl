@@ -55,11 +55,11 @@ Within each layer, a token takes precedence over a username and password combina
   -f, --force             Force command to execute without user input
   -h, --help              Print usage
   -o, --output string     Desired output format [text|json] (default "text")
-  -p, --password string   Password to authenticate
+  -p, --password string   Password to authenticate. Will be used to generate a token
   -q, --quiet             Quiet output
       --skip-verify       Forcefully write the provided token to the config file without verifying if it is valid. Note: --token is required
-  -t, --token string      Token to authenticate
-      --user string       Username to authenticate
+  -t, --token string      Token to authenticate. If used, will be saved to the config file without generating a new token. Note: mutually exclusive with --user and --password
+      --user string       Username to authenticate. Will be used to generate a token
   -v, --verbose           Print step-by-step process when running command
 ```
 
