@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"reflect"
 	"strings"
 	"text/tabwriter"
 
@@ -251,6 +252,10 @@ func eliminateEmptyCols(cols []string, table []map[string]interface{}) []string 
 		for _, elem := range table {
 			e, ok := elem[c]
 			if !ok || e == nil {
+				continue
+			}
+
+			if reflect.TypeOf(e).Kind() == reflect.Slice && len(e.([]interface{})) == 0 {
 				continue
 			}
 
