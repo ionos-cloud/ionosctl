@@ -4,11 +4,14 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"net"
+	"strings"
 	"time"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
@@ -149,6 +152,7 @@ Required values to run command:
 	create.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait, "Wait for the Request for LAN creation to be executed")
 	create.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for LAN creation [seconds]")
 	create.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultCreateDepth, cloudapiv6.ArgDepthDescription)
+	create.AddStringFlag(cloudapiv6.FlagIPv6CidrBlock, "", "DISABLE", fmt.Sprintf(cloudapiv6.FlagIPv6CidrBlockDescription, 64, "Datacenter"))
 
 	/*
 		Update Command
@@ -189,6 +193,7 @@ Required values to run command:
 	update.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait, "Wait for the Request for LAN update to be executed")
 	update.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for LAN update [seconds]")
 	update.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultUpdateDepth, cloudapiv6.ArgDepthDescription)
+	update.AddStringFlag(cloudapiv6.FlagIPv6CidrBlock, "", "disable", fmt.Sprintf(cloudapiv6.FlagIPv6CidrBlockDescription, 64, "Datacenter"))
 
 	/*
 		Delete Command
@@ -402,6 +407,27 @@ func RunLanCreate(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property Pcc set: %v", pcc))
 	}
 
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.FlagIPv6CidrBlock)) {
+		cidr := strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.FlagIPv6CidrBlock)))
+
+		switch cidr {
+		case "DISABLE":
+			properties.SetIpv6CidrBlockNil()
+		case "AUTO":
+			properties.SetIpv6CidrBlock(cidr)
+		default:
+			if err = validateIPv6CidrBlockForLAN(cidr, c); err != nil {
+				return err
+			}
+
+			properties.SetIpv6CidrBlock(cidr)
+		}
+
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property IPv6 Cidr Block set: %v", cidr))
+	} else {
+		properties.SetIpv6CidrBlockNil()
+	}
+
 	input := resources.LanPost{
 		LanPost: ionoscloud.LanPost{
 			Properties: &properties,
@@ -464,6 +490,23 @@ func RunLanUpdate(c *core.CommandConfig) error {
 		input.SetPcc(pcc)
 
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property Pcc set: %v", pcc))
+	}
+
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.FlagIPv6CidrBlock)) {
+		cidr := strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.FlagIPv6CidrBlock)))
+
+		switch cidr {
+		case "DISABLE":
+			input.SetIpv6CidrBlockNil()
+		case "AUTO":
+			input.SetIpv6CidrBlock(cidr)
+		default:
+			if err = validateIPv6CidrBlockForLAN(cidr, c); err != nil {
+				return err
+			}
+
+			input.SetIpv6CidrBlock(cidr)
+		}
 	}
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Updating LAN with ID: %v from Datacenter with ID: %v...",
@@ -619,5 +662,50 @@ func DeleteAllLans(c *core.CommandConfig) error {
 	}
 
 	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Lans successfully deleted"))
+	return nil
+}
+
+func validateIPv6CidrBlockForLAN(cidr string, c *core.CommandConfig) error {
+	ip, ipNet, err := net.ParseCIDR(cidr)
+	if err != nil {
+		return err
+	}
+
+	if ip.To4() != nil {
+		return fmt.Errorf("this is not an IPv6 Cidr Block")
+	}
+
+	if ones, _ := ipNet.Mask.Size(); ones != 64 {
+		return fmt.Errorf("invalid network mask for the provided IPv6 Cidr Block")
+	}
+
+	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
+	dc, _, err := client.Must().CloudClient.DataCentersApi.DatacentersFindById(context.Background(), dcId).Execute()
+	if err != nil {
+		return err
+	}
+
+	dcProperties, ok := dc.GetPropertiesOk()
+	if !ok || dcProperties == nil {
+		return fmt.Errorf("could not retrieve Datacenter properties")
+	}
+
+	dcIPv6CidrBlock, ok := dcProperties.GetIpv6CidrBlockOk()
+	if !ok {
+		return fmt.Errorf("could not retrieve Datacenter IPv6 Cidr Block")
+	}
+	if dcIPv6CidrBlock == nil {
+		return fmt.Errorf("IPv6 is not enabled on this Datacenter")
+	}
+
+	_, dcIPNet, err := net.ParseCIDR(*dcIPv6CidrBlock)
+	if err != nil {
+		return err
+	}
+
+	if !dcIPNet.Contains(ip) {
+		return fmt.Errorf("the provided LAN IPv6 Cidr Block is not within the Datacenter IPv6 Cidr Block")
+	}
+
 	return nil
 }
