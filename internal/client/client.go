@@ -24,9 +24,10 @@ func selectAuthLayer(layers []Layer) (values map[string]string, usedLayer Layer,
 
 		if token != "" || (username != "" && password != "") {
 			return map[string]string{
-				"token":    token,
-				"username": username,
-				"password": password,
+				"token":     token,
+				"username":  username,
+				"password":  password,
+				"serverUrl": config.GetServerUrl(),
 			}, layer, nil
 		}
 	}
