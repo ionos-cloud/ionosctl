@@ -72,7 +72,7 @@ func PreRunLoginCmd(c *core.PreCommandConfig) error {
 		return fmt.Errorf("use either --%s and --%s, either --%s", constants.ArgUser, constants.ArgPassword, constants.ArgToken)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagSkipVerify)) && !viper.IsSet(core.GetFlagName(c.NS, constants.ArgToken)) {
-		return fmt.Errorf("--%s requires --%s to be set: ionosctl login %s", constants.FlagSkipVerify, constants.ArgToken, core.FlagsUsage(constants.FlagSkipVerify, constants.ArgToken))
+		return fmt.Errorf("--%s requires --%s to be set", constants.FlagSkipVerify, constants.ArgToken)
 	}
 	return nil
 }
