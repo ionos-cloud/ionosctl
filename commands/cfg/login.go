@@ -141,7 +141,7 @@ func handleExistingConfigFile(c *core.CommandConfig, configPath string) error {
 
 	if !confirm.FAsk(
 		c.Command.Command.InOrStdin(),
-		fmt.Sprintf("Config file %s exists. Do you want to replace it", configPath),
+		fmt.Sprintf("Config file %s already exists. Do you want to replace it", configPath),
 		viper.GetBool(constants.ArgForce),
 	) {
 		return fmt.Errorf(confirm.UserDenied)
