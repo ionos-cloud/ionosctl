@@ -22,8 +22,6 @@ import (
 func LoginCmd() *core.Command {
 
 	const (
-		loginFlagUseApiUrl = "use-default-api-url"
-
 		loginExamples = `ionosctl login --user $IONOS_USERNAME --password $IONOS_PASSWORD
 
 ionosctl login --token $IONOS_TOKEN
