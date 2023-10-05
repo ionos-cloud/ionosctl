@@ -427,6 +427,10 @@ func RunNicCreate(c *core.CommandConfig) error {
 		}
 
 		inputProper.SetDhcpv6(dhcpv6)
+	} else if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.FlagIPv6CidrBlock)) ||
+		viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.FlagDHCPv6)) ||
+		viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.FlagIPv6IPs)) {
+		return fmt.Errorf("IPv6 is not enabled on the LAN that the NIC is on")
 	}
 
 	input := resources.Nic{
@@ -510,13 +514,55 @@ func RunNicUpdate(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property FirewallType set: %v", firewallType))
 	}
 
-	nicUpd, resp, err := c.CloudApiV6Services.Nics().Update(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId)),
-		input,
-		queryParams,
-	)
+	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
+	svId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
+	nicId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId))
+
+	oldNIc, _, err := client.Must().CloudClient.NetworkInterfacesApi.DatacentersServersNicsFindById(context.Background(), dcId, svId, nicId).Execute()
+	if err != nil {
+		return err
+	}
+
+	lan, _, err := client.Must().CloudClient.LANsApi.DatacentersLansFindById(context.Background(), dcId,
+		fmt.Sprintf("%d", *oldNIc.Properties.Lan)).Execute()
+	if err != nil {
+		return err
+	}
+
+	isIPv6, err := checkIPv6EnableForLAN(lan)
+	if err != nil {
+		return err
+	}
+
+	dhcpv6 := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.FlagDHCPv6))
+	ipv6Ips := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.FlagIPv6IPs))
+
+	if isIPv6 {
+		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.FlagIPv6CidrBlock)) {
+			cidr := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.FlagIPv6CidrBlock))
+
+			if err = validateIPv6CidrBlockForNIC(cidr, lan); err != nil {
+				return err
+			}
+
+			if err = validateIPv6IPs(cidr, ipv6Ips...); err != nil {
+				return err
+			}
+
+			input.NicProperties.SetIpv6CidrBlock(cidr)
+			input.NicProperties.SetIpv6Ips(ipv6Ips)
+		} else {
+			input.NicProperties.SetIpv6CidrBlockNil()
+		}
+
+		input.NicProperties.SetDhcpv6(dhcpv6)
+	} else if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.FlagIPv6CidrBlock)) ||
+		viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.FlagDHCPv6)) ||
+		viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.FlagIPv6IPs)) {
+		return fmt.Errorf("IPv6 is not enabled on the LAN that the NIC is on")
+	}
+
+	nicUpd, resp, err := c.CloudApiV6Services.Nics().Update(dcId, svId, nicId, input, queryParams)
 	if resp != nil && utils.GetId(resp) != "" {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, utils.GetId(resp), resp.RequestTime))
 	}

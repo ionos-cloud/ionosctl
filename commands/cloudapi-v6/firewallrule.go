@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"net"
 	"strings"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
@@ -200,6 +201,7 @@ Required values to run command:
 		), cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddInt32Flag(cloudapiv6.ArgDepth, "", cloudapiv6.DefaultCreateDepth, cloudapiv6.ArgDepthDescription)
+	create.AddSetFlag(cloudapiv6.FlagIPVersion, "", "", []string{"IPv4", "IPv6"}, "")
 
 	/*
 		Update Command
@@ -260,6 +262,7 @@ Required values to run command:
 		), cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddInt32Flag(cloudapiv6.ArgDepth, "", cloudapiv6.DefaultUpdateDepth, cloudapiv6.ArgDepthDescription)
+	update.AddSetFlag(cloudapiv6.FlagIPVersion, "", "", []string{"IPv4", "IPv6"}, "")
 
 	/*
 		Delete Command
@@ -420,6 +423,18 @@ func RunFirewallRuleCreate(c *core.CommandConfig) error {
 	}
 
 	queryParams := listQueryParams.QueryParams
+
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.FlagIPVersion)) {
+		ipVersion := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.FlagIPVersion))
+		sIp := net.ParseIP(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSourceIp)))
+		tIp := net.ParseIP(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDestinationIp)))
+
+		if (((sIp != nil && sIp.To4() == nil) || (tIp != nil && tIp.To4() == nil)) && ipVersion == "IPv4") ||
+			(((sIp != nil && sIp.To4() != nil) || (tIp != nil && tIp.To4() != nil)) && ipVersion == "IPv6") {
+			return fmt.Errorf("if source IP and destination IP are set, they must be the same version as IP version")
+		}
+	}
+
 	properties := getFirewallRulePropertiesSet(c)
 
 	if !properties.HasName() {
@@ -473,6 +488,18 @@ func RunFirewallRuleUpdate(c *core.CommandConfig) error {
 	}
 
 	queryParams := listQueryParams.QueryParams
+
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.FlagIPVersion)) {
+		ipVersion := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.FlagIPVersion))
+		sIp := net.ParseIP(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSourceIp)))
+		tIp := net.ParseIP(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDestinationIp)))
+
+		if (((sIp != nil && sIp.To4() == nil) || (tIp != nil && tIp.To4() == nil)) && ipVersion == "IPv4") ||
+			(((sIp != nil && sIp.To4() != nil) || (tIp != nil && tIp.To4() != nil)) && ipVersion == "IPv6") {
+			return fmt.Errorf("if source IP and destination IP are set, they must be the same version as IP version")
+		}
+	}
+
 	firewallRule, resp, err := c.CloudApiV6Services.FirewallRules().Update(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
@@ -621,6 +648,13 @@ func getFirewallRulePropertiesSet(c *core.CommandConfig) resources.FirewallRuleP
 		properties.SetType(strings.ToUpper(firewallruleType))
 
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property Type/Direction set: %v", firewallruleType))
+	}
+
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.FlagIPVersion)) {
+		ipVersion := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.FlagIPVersion))
+		properties.SetIpVersion(ipVersion)
+
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property IP Version set: %v", ipVersion))
 	}
 
 	return properties

@@ -200,6 +200,7 @@ const (
 	FlagIPv6CidrBlock            = "ipv6-cidr"
 	FlagDHCPv6                   = "dhcpv6"
 	FlagIPv6IPs                  = "ipv6-ips"
+	FlagIPVersion                = "ip-version"
 )
 
 // Descriptions for Flags Resources
