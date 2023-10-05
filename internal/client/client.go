@@ -108,7 +108,7 @@ func TestCreds(user, pass, token string) error {
 }
 
 func (c *Client) TestCreds() error {
-	_, _, err := c.CloudClient.DataCentersApi.DatacentersGet(context.Background()).Execute()
+	_, _, err := c.CloudClient.DefaultApi.ApiInfoGet(context.Background()).MaxResults(1).Depth(0).Execute()
 	if err != nil {
 		usedScheme := "used token"
 		if c.CloudClient.GetConfig().Token == "" {
