@@ -1,5 +1,9 @@
 # Changelog
 
+## [T.B.D]
+### Fixed
+* Fixed 404 on firewallrule delete command: flag values not properly sent to API
+
 ## [v6.6.10] (September 2023)
 ### Fixed
 * Fixed #359: `image update` using unset flags.
