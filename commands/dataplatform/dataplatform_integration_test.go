@@ -57,12 +57,11 @@ func testClusterOk(t *testing.T) {
 		if got403 := assert.ErrorContains(t, err, "403 Forbidden"); got403 {
 			dc, _, errdc := client.Must().CloudClient.DataCentersApi.DatacentersFindById(context.Background(), createdDcId).Execute()
 			if errdc != nil {
-				t.Fatalf(fmt.Errorf("debugging 403 err for dataplatform test went horribly wrong: %w", err).Error())
+				t.Fatalf(fmt.Errorf("debugging 403 Forbidden went wrong: failed finding datacenter by ID %s: %w", createdDcId, errdc).Error())
 			}
 			dcAsJson, errJson := json.MarshalIndent(dc, "", "  ")
 			assert.NoError(t, errJson)
-			fmt.Printf("Received a '403 Forbidden' error:\n%s\n while attempting to create a dataplatform cluster in the datacenter:\n%s ", err.Error(), dcAsJson)
-			t.SkipNow()
+			t.Fatalf(fmt.Sprintf("Received a '403 Forbidden' error:\n%s\n while attempting to create a dataplatform cluster in the datacenter:\n%s ", err.Error(), dcAsJson))
 		}
 
 		t.Fatalf(fmt.Errorf("failed creating a dataplatform cluster: %w", err).Error())
@@ -140,6 +139,7 @@ func setup() error {
 		createdDcId = *(*dcs.GetItems())[0].GetId()
 	}
 	fmt.Printf("dcId: %s\n", createdDcId)
+	time.Sleep(15 * time.Second)
 	return nil
 }
 
