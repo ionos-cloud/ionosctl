@@ -380,8 +380,6 @@ func RunNicCreate(c *core.CommandConfig) error {
 	lanId := viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgLanId))
 	firewallActive := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgFirewallActive))
 	firewallType := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFirewallType))
-	dhcpv6 := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.FlagDHCPv6))
-	ipv6Ips := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.FlagIPv6IPs))
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
 		"Creating Nic in DataCenterId: %v with ServerId: %v...", dcId, serverId))
@@ -408,22 +406,9 @@ func RunNicCreate(c *core.CommandConfig) error {
 	}
 
 	if isIPv6 {
-		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.FlagIPv6CidrBlock)) {
-			cidr := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.FlagIPv6CidrBlock))
-
-			if err = validateIPv6CidrBlockForNIC(cidr, lan.Lan); err != nil {
-				return err
-			}
-
-			if err = validateIPv6IPs(cidr, ipv6Ips...); err != nil {
-				return err
-			}
-
-			inputProper.SetIpv6CidrBlock(cidr)
-			inputProper.SetIpv6Ips(ipv6Ips)
+		if err = setIPv6Properties(c, inputProper.NicProperties, lan.Lan); err != nil {
+			return err
 		}
-
-		inputProper.SetDhcpv6(dhcpv6)
 	} else if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.FlagIPv6CidrBlock)) ||
 		viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.FlagDHCPv6)) ||
 		viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.FlagIPv6IPs)) {
@@ -467,50 +452,7 @@ func RunNicUpdate(c *core.CommandConfig) error {
 	}
 
 	queryParams := listQueryParams.QueryParams
-	input := resources.NicProperties{}
-
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgName)) {
-		name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
-		input.NicProperties.SetName(name)
-
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property Name set: %v", name))
-	}
-
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgDhcp)) {
-		dhcp := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgDhcp))
-		input.NicProperties.SetDhcp(dhcp)
-
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property Dhcp set: %v", dhcp))
-	}
-
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgLanId)) {
-		lan := viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgLanId))
-		input.NicProperties.SetLan(lan)
-
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property Lan set: %v", lan))
-	}
-
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgIps)) {
-		ips := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgIps))
-		input.NicProperties.SetIps(ips)
-
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property Ips set: %v", ips))
-	}
-
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFirewallActive)) {
-		firewallActive := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgFirewallActive))
-		input.NicProperties.SetFirewallActive(firewallActive)
-
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property FirewallActive set: %v", firewallActive))
-	}
-
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFirewallType)) {
-		firewallType := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFirewallType))
-		input.NicProperties.SetFirewallType(firewallType)
-
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property FirewallType set: %v", firewallType))
-	}
-
+	input := getNicProperties(c)
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	svId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
 	nicId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId))
@@ -530,26 +472,10 @@ func RunNicUpdate(c *core.CommandConfig) error {
 		return err
 	}
 
-	dhcpv6 := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.FlagDHCPv6))
-	ipv6Ips := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.FlagIPv6IPs))
-
 	if isIPv6 {
-		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.FlagIPv6CidrBlock)) {
-			cidr := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.FlagIPv6CidrBlock))
-
-			if err = validateIPv6CidrBlockForNIC(cidr, lan.Lan); err != nil {
-				return err
-			}
-
-			if err = validateIPv6IPs(cidr, ipv6Ips...); err != nil {
-				return err
-			}
-
-			input.NicProperties.SetIpv6CidrBlock(cidr)
-			input.NicProperties.SetIpv6Ips(ipv6Ips)
+		if err = setIPv6Properties(c, input.NicProperties, lan.Lan); err != nil {
+			return err
 		}
-
-		input.NicProperties.SetDhcpv6(dhcpv6)
 	} else if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.FlagIPv6CidrBlock)) ||
 		viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.FlagDHCPv6)) ||
 		viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.FlagIPv6IPs)) {
@@ -1194,4 +1120,75 @@ func checkIPv6EnableForLAN(lan ionoscloud.Lan) (bool, error) {
 	}
 
 	return true, nil
+}
+
+func setIPv6Properties(c *core.CommandConfig, inputProper ionoscloud.NicProperties, lan ionoscloud.Lan) error {
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.FlagIPv6CidrBlock)) {
+		cidr := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.FlagIPv6CidrBlock))
+		ipv6Ips := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.FlagIPv6IPs))
+
+		if err := validateIPv6CidrBlockForNIC(cidr, lan); err != nil {
+			return err
+		}
+
+		if err := validateIPv6IPs(cidr, ipv6Ips...); err != nil {
+			return err
+		}
+
+		inputProper.SetIpv6CidrBlock(cidr)
+		inputProper.SetIpv6Ips(ipv6Ips)
+	}
+
+	dhcpv6 := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.FlagDHCPv6))
+	inputProper.SetDhcpv6(dhcpv6)
+
+	return nil
+}
+
+func getNicProperties(c *core.CommandConfig) resources.NicProperties {
+	input := resources.NicProperties{}
+
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgName)) {
+		name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
+		input.NicProperties.SetName(name)
+
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property Name set: %v", name))
+	}
+
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgDhcp)) {
+		dhcp := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgDhcp))
+		input.NicProperties.SetDhcp(dhcp)
+
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property Dhcp set: %v", dhcp))
+	}
+
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgLanId)) {
+		lan := viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgLanId))
+		input.NicProperties.SetLan(lan)
+
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property Lan set: %v", lan))
+	}
+
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgIps)) {
+		ips := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgIps))
+		input.NicProperties.SetIps(ips)
+
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property Ips set: %v", ips))
+	}
+
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFirewallActive)) {
+		firewallActive := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgFirewallActive))
+		input.NicProperties.SetFirewallActive(firewallActive)
+
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property FirewallActive set: %v", firewallActive))
+	}
+
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFirewallType)) {
+		firewallType := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFirewallType))
+		input.NicProperties.SetFirewallType(firewallType)
+
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property FirewallType set: %v", firewallType))
+	}
+
+	return input
 }

@@ -425,12 +425,7 @@ func RunFirewallRuleCreate(c *core.CommandConfig) error {
 	queryParams := listQueryParams.QueryParams
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.FlagIPVersion)) {
-		ipVersion := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.FlagIPVersion))
-		sIp := net.ParseIP(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSourceIp)))
-		tIp := net.ParseIP(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDestinationIp)))
-
-		if (((sIp != nil && sIp.To4() == nil) || (tIp != nil && tIp.To4() == nil)) && ipVersion == "IPv4") ||
-			(((sIp != nil && sIp.To4() != nil) || (tIp != nil && tIp.To4() != nil)) && ipVersion == "IPv6") {
+		if checkSourceIPAndTargetIPVersions(c) {
 			return fmt.Errorf("if source IP and destination IP are set, they must be the same version as IP version")
 		}
 	}
@@ -490,12 +485,7 @@ func RunFirewallRuleUpdate(c *core.CommandConfig) error {
 	queryParams := listQueryParams.QueryParams
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.FlagIPVersion)) {
-		ipVersion := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.FlagIPVersion))
-		sIp := net.ParseIP(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSourceIp)))
-		tIp := net.ParseIP(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDestinationIp)))
-
-		if (((sIp != nil && sIp.To4() == nil) || (tIp != nil && tIp.To4() == nil)) && ipVersion == "IPv4") ||
-			(((sIp != nil && sIp.To4() != nil) || (tIp != nil && tIp.To4() != nil)) && ipVersion == "IPv6") {
+		if checkSourceIPAndTargetIPVersions(c) {
 			return fmt.Errorf("if source IP and destination IP are set, they must be the same version as IP version")
 		}
 	}
@@ -747,4 +737,13 @@ func DeleteAllFirewallRuses(c *core.CommandConfig) error {
 
 	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Firewall Rules successfully deleted"))
 	return nil
+}
+
+func checkSourceIPAndTargetIPVersions(c *core.CommandConfig) bool {
+	ipVersion := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.FlagIPVersion))
+	sIp := net.ParseIP(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSourceIp)))
+	tIp := net.ParseIP(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDestinationIp)))
+
+	return (((sIp != nil && sIp.To4() == nil) || (tIp != nil && tIp.To4() == nil)) && ipVersion == "IPv4") ||
+		(((sIp != nil && sIp.To4() != nil) || (tIp != nil && tIp.To4() != nil)) && ipVersion == "IPv6")
 }
