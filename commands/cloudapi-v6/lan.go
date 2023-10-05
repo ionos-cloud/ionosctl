@@ -424,8 +424,6 @@ func RunLanCreate(c *core.CommandConfig) error {
 		}
 
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property IPv6 Cidr Block set: %v", cidr))
-	} else {
-		properties.SetIpv6CidrBlockNil()
 	}
 
 	input := resources.LanPost{

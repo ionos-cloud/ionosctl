@@ -9,7 +9,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
@@ -398,12 +397,12 @@ func RunNicCreate(c *core.CommandConfig) error {
 	inputProper.SetFirewallActive(firewallActive)
 	inputProper.SetFirewallType(firewallType)
 
-	lan, _, err := client.Must().CloudClient.LANsApi.DatacentersLansFindById(context.Background(), dcId, fmt.Sprintf("%d", lanId)).Execute()
+	lan, _, err := c.CloudApiV6Services.Lans().Get(dcId, fmt.Sprintf("%d", lanId), queryParams)
 	if err != nil {
 		return err
 	}
 
-	isIPv6, err := checkIPv6EnableForLAN(lan)
+	isIPv6, err := checkIPv6EnableForLAN(lan.Lan)
 	if err != nil {
 		return err
 	}
@@ -412,7 +411,7 @@ func RunNicCreate(c *core.CommandConfig) error {
 		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.FlagIPv6CidrBlock)) {
 			cidr := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.FlagIPv6CidrBlock))
 
-			if err = validateIPv6CidrBlockForNIC(cidr, lan); err != nil {
+			if err = validateIPv6CidrBlockForNIC(cidr, lan.Lan); err != nil {
 				return err
 			}
 
@@ -422,8 +421,6 @@ func RunNicCreate(c *core.CommandConfig) error {
 
 			inputProper.SetIpv6CidrBlock(cidr)
 			inputProper.SetIpv6Ips(ipv6Ips)
-		} else {
-			inputProper.SetIpv6CidrBlockNil()
 		}
 
 		inputProper.SetDhcpv6(dhcpv6)
@@ -518,18 +515,17 @@ func RunNicUpdate(c *core.CommandConfig) error {
 	svId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
 	nicId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId))
 
-	oldNIc, _, err := client.Must().CloudClient.NetworkInterfacesApi.DatacentersServersNicsFindById(context.Background(), dcId, svId, nicId).Execute()
+	oldNIc, _, err := c.CloudApiV6Services.Nics().Get(dcId, svId, nicId, queryParams)
 	if err != nil {
 		return err
 	}
 
-	lan, _, err := client.Must().CloudClient.LANsApi.DatacentersLansFindById(context.Background(), dcId,
-		fmt.Sprintf("%d", *oldNIc.Properties.Lan)).Execute()
+	lan, _, err := c.CloudApiV6Services.Lans().Get(dcId, fmt.Sprintf("%d", *oldNIc.Properties.Lan), queryParams)
 	if err != nil {
 		return err
 	}
 
-	isIPv6, err := checkIPv6EnableForLAN(lan)
+	isIPv6, err := checkIPv6EnableForLAN(lan.Lan)
 	if err != nil {
 		return err
 	}
@@ -541,7 +537,7 @@ func RunNicUpdate(c *core.CommandConfig) error {
 		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.FlagIPv6CidrBlock)) {
 			cidr := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.FlagIPv6CidrBlock))
 
-			if err = validateIPv6CidrBlockForNIC(cidr, lan); err != nil {
+			if err = validateIPv6CidrBlockForNIC(cidr, lan.Lan); err != nil {
 				return err
 			}
 
@@ -551,8 +547,6 @@ func RunNicUpdate(c *core.CommandConfig) error {
 
 			input.NicProperties.SetIpv6CidrBlock(cidr)
 			input.NicProperties.SetIpv6Ips(ipv6Ips)
-		} else {
-			input.NicProperties.SetIpv6CidrBlockNil()
 		}
 
 		input.NicProperties.SetDhcpv6(dhcpv6)

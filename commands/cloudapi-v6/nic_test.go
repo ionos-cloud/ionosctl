@@ -19,12 +19,13 @@ import (
 )
 
 var (
-	lanNicId    = int32(1)
-	lanNewNicId = int32(2)
-	dhcpNic     = false
-	dhcpNewNic  = true
-	ipsNic      = []string{"x.x.x.x"}
-	n           = ionoscloud.Nic{
+	lanNicId       = int32(1)
+	lanNicIdString = fmt.Sprintf("%d", lanNicId)
+	lanNewNicId    = int32(2)
+	dhcpNic        = false
+	dhcpNewNic     = true
+	ipsNic         = []string{"x.x.x.x"}
+	n              = ionoscloud.Nic{
 		Id: &testNicVar,
 		Properties: &ionoscloud.NicProperties{
 			Name:           &testNicVar,
@@ -109,6 +110,13 @@ var (
 			Items: &[]ionoscloud.Nic{n},
 		},
 	}
+	lanNic = resources.Lan{
+		Lan: ionoscloud.Lan{
+			Id:         &lanNicIdString,
+			Properties: l.Properties,
+		},
+	}
+
 	testNicVar    = "test-nic"
 	testNicNewVar = "test-new-nic"
 	testNicErr    = errors.New("nic test: error occurred")
@@ -266,6 +274,7 @@ func TestRunNicCreate(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDhcp), dhcpNic)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLanId), lanNicId)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgFirewallType), testNicVar)
+		rm.CloudApiV6Mocks.Lan.EXPECT().Get(testNicVar, lanNicIdString, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&lanNic, &testResponse, nil)
 		rm.CloudApiV6Mocks.Nic.EXPECT().Create(testNicVar, testNicVar, testNicCreate, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&resources.Nic{Nic: n}, &testResponse, nil)
 		err := RunNicCreate(cfg)
 		assert.NoError(t, err)
@@ -287,6 +296,7 @@ func TestRunNicCreateErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDhcp), dhcpNic)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLanId), lanNicId)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgFirewallType), testNicVar)
+		rm.CloudApiV6Mocks.Lan.EXPECT().Get(testNicVar, lanNicIdString, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&lanNic, &testResponse, nil)
 		rm.CloudApiV6Mocks.Nic.EXPECT().Create(testNicVar, testNicVar, testNicCreate, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&resources.Nic{Nic: n}, nil, testNicErr)
 		err := RunNicCreate(cfg)
 		assert.Error(t, err)
@@ -308,6 +318,7 @@ func TestRunNicCreateWaitErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDhcp), dhcpNic)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLanId), lanNicId)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgFirewallType), testNicVar)
+		rm.CloudApiV6Mocks.Lan.EXPECT().Get(testNicVar, lanNicIdString, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&lanNic, &testResponse, nil)
 		rm.CloudApiV6Mocks.Nic.EXPECT().Create(testNicVar, testNicVar, testNicCreate, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&resources.Nic{Nic: n}, &testResponse, nil)
 		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testRequestIdVar).Return(&testRequestStatus, nil, testRequestErr)
 		err := RunNicCreate(cfg)
@@ -330,6 +341,8 @@ func TestRunNicUpdate(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgName), testNicNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDhcp), dhcpNewNic)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLanId), lanNewNicId)
+		rm.CloudApiV6Mocks.Nic.EXPECT().Get(testNicVar, testNicVar, testNicVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&resources.Nic{Nic: n}, &testResponse, nil)
+		rm.CloudApiV6Mocks.Lan.EXPECT().Get(testNicVar, lanNicIdString, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&lanNic, &testResponse, nil)
 		rm.CloudApiV6Mocks.Nic.EXPECT().Update(testNicVar, testNicVar, testNicVar, nicProperties, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&nicNew, &testResponse, nil)
 		err := RunNicUpdate(cfg)
 		assert.NoError(t, err)
@@ -350,6 +363,8 @@ func TestRunNicUpdateErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgName), testNicNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDhcp), dhcpNewNic)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLanId), lanNewNicId)
+		rm.CloudApiV6Mocks.Nic.EXPECT().Get(testNicVar, testNicVar, testNicVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&resources.Nic{Nic: n}, &testResponse, nil)
+		rm.CloudApiV6Mocks.Lan.EXPECT().Get(testNicVar, lanNicIdString, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&lanNic, &testResponse, nil)
 		rm.CloudApiV6Mocks.Nic.EXPECT().Update(testNicVar, testNicVar, testNicVar, nicProperties, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&nicNew, nil, testNicErr)
 		err := RunNicUpdate(cfg)
 		assert.Error(t, err)
@@ -370,6 +385,8 @@ func TestRunNicUpdateWaitErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgName), testNicNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDhcp), dhcpNewNic)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLanId), lanNewNicId)
+		rm.CloudApiV6Mocks.Nic.EXPECT().Get(testNicVar, testNicVar, testNicVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&resources.Nic{Nic: n}, &testResponse, nil)
+		rm.CloudApiV6Mocks.Lan.EXPECT().Get(testNicVar, lanNicIdString, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&lanNic, &testResponse, nil)
 		rm.CloudApiV6Mocks.Nic.EXPECT().Update(testNicVar, testNicVar, testNicVar, nicProperties, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&nicNew, &testResponse, nil)
 		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testRequestIdVar).Return(&testRequestStatus, nil, testRequestErr)
 		err := RunNicUpdate(cfg)

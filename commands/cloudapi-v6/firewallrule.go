@@ -201,7 +201,7 @@ Required values to run command:
 		), cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddInt32Flag(cloudapiv6.ArgDepth, "", cloudapiv6.DefaultCreateDepth, cloudapiv6.ArgDepthDescription)
-	create.AddSetFlag(cloudapiv6.FlagIPVersion, "", "", []string{"IPv4", "IPv6"}, "")
+	create.AddSetFlag(cloudapiv6.FlagIPVersion, "", "IPv4", []string{"IPv4", "IPv6"}, "The IP version for the Firewall Rule")
 
 	/*
 		Update Command
@@ -262,7 +262,7 @@ Required values to run command:
 		), cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddInt32Flag(cloudapiv6.ArgDepth, "", cloudapiv6.DefaultUpdateDepth, cloudapiv6.ArgDepthDescription)
-	update.AddSetFlag(cloudapiv6.FlagIPVersion, "", "", []string{"IPv4", "IPv6"}, "")
+	update.AddSetFlag(cloudapiv6.FlagIPVersion, "", "IPv4", []string{"IPv4", "IPv6"}, "The IP version for the Firewall Rule")
 
 	/*
 		Delete Command
