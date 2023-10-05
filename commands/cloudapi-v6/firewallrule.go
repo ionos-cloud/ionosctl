@@ -328,8 +328,8 @@ func PreRunDcServerNicIds(c *core.PreCommandConfig) error {
 
 func PreRunFirewallDelete(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlagsSets(c.Command, c.NS,
-		[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgServerId, cloudapiv6.ArgNicId},
-		[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgServerId, cloudapiv6.ArgAll},
+		[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgServerId, cloudapiv6.ArgNicId, cloudapiv6.ArgFirewallRuleId},
+		[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgServerId, cloudapiv6.ArgNicId, cloudapiv6.ArgAll},
 	)
 }
 
@@ -383,7 +383,7 @@ func RunFirewallRuleGet(c *core.CommandConfig) error {
 	queryParams := listQueryParams.QueryParams
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
-		"Firewall Rule with id: %v is getting... ", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFirewallRuleId))))
+		"Getting Firewall Rule with id: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFirewallRuleId))))
 
 	firewallRule, resp, err := c.CloudApiV6Services.FirewallRules().Get(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
@@ -511,13 +511,13 @@ func RunFirewallRuleDelete(c *core.CommandConfig) error {
 	}
 
 	queryParams := listQueryParams.QueryParams
-	datacenterId := viper.GetString(core.GetFlagName(c.Resource, cloudapiv6.ArgDataCenterId))
-	serverId := viper.GetString(core.GetFlagName(c.Resource, cloudapiv6.ArgServerId))
-	nicId := viper.GetString(core.GetFlagName(c.Resource, cloudapiv6.ArgNicId))
+	datacenterId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
+	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
+	nicId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId))
 	fruleId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFirewallRuleId))
 
 	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
-		if err := DeleteAllFirewallRuses(c); err != nil {
+		if err := DeleteAllFirewallRules(c); err != nil {
 			return err
 		}
 
@@ -625,16 +625,16 @@ func getFirewallRulePropertiesSet(c *core.CommandConfig) resources.FirewallRuleP
 	return properties
 }
 
-func DeleteAllFirewallRuses(c *core.CommandConfig) error {
+func DeleteAllFirewallRules(c *core.CommandConfig) error {
 	listQueryParams, err := query.GetListQueryParams(c)
 	if err != nil {
 		return err
 	}
 
 	queryParams := listQueryParams.QueryParams
-	datacenterId := viper.GetString(core.GetFlagName(c.Resource, cloudapiv6.ArgDataCenterId))
-	serverId := viper.GetString(core.GetFlagName(c.Resource, cloudapiv6.ArgServerId))
-	nicId := viper.GetString(core.GetFlagName(c.Resource, cloudapiv6.ArgNicId))
+	datacenterId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
+	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
+	nicId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId))
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.DatacenterId, datacenterId))
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Server ID: %v", serverId))
