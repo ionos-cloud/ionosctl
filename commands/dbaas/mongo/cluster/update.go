@@ -22,7 +22,6 @@ import (
 )
 
 func ClusterUpdateCmd() *core.Command {
-
 	cmd := core.NewCommand(context.TODO(), nil, core.CommandBuilder{
 		Namespace: "dbaas-mongo",
 		Resource:  "cluster",
@@ -189,7 +188,7 @@ func ClusterUpdateCmd() *core.Command {
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagRam, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"1024MB", "2GB", "4GB", "8GB", "12GB", "16GB"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddStringFlag(constants.FlagStorageType, "", "SSD",
+	cmd.AddStringFlag(constants.FlagStorageType, "", "\"SSD Standard\"",
 		"Custom Storage Type. (only settable for enterprise edition)")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagStorageType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"HDD", "\"SSD Standard\"", "\"SSD Premium\""}, cobra.ShellCompDirectiveNoFileComp

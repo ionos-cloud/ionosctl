@@ -62,7 +62,7 @@ Create DBaaS Mongo Replicaset or Sharded Clusters for your chosen edition
       --ram string                Custom RAM: multiples of 1024. e.g. --ram 1024 or --ram 1024MB or --ram 4GB (required and only settable for enterprise edition) (default "2GB")
       --shards int32              The total number of shards in the sharded_cluster cluster. Setting this flag is only possible for enterprise clusters and infers a sharded_cluster type. Possible values: 2 - 32. (required for sharded_cluster enterprise clusters) (required) (default 1)
       --storage-size string       Custom Storage: Minimum of 5GB, Greater performance for values greater than 100 GB. (only settable for enterprise edition) (default "5GB")
-      --storage-type string       Custom Storage Type. (only settable for enterprise edition) (default "SSD")
+      --storage-type string       Custom Storage Type. (only settable for enterprise edition) (default "\"SSD Standard\"")
       --template string           The ID of a Mongo Template, or a word contained in the name of one. Templates specify the number of cores, storage size, and memory. Business editions default to XS template. Playground editions default to playground template.
   -t, --timeout int               Timeout option for Request [seconds] (default 60)
       --type string               Cluster Type. Required for enterprise clusters. Not required (inferred) if using --shards or --instances. Can be one of: replicaset, sharded-cluster (default "replicaset")
