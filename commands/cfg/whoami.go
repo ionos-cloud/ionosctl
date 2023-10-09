@@ -10,14 +10,14 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
-	"github.com/spf13/viper"
-
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 )
 
 func WhoamiCmd() *core.Command {
 
 	cmd := core.NewCommand(context.Background(), nil, core.CommandBuilder{
+		Namespace: "whoami",
+		Resource:  "whoami",
 		Verb:      "whoami",
 		ShortDesc: "Tells you who you are logged in as. Use `--provenance` to debug where your credentials are being used from",
 		LongDesc: fmt.Sprintf(`This command will tell you the email of the user you are logged in as.
@@ -32,7 +32,7 @@ ionosctl cfg whoami --provenance`,
 		CmdRun: func(c *core.CommandConfig) error {
 			cl, authErr := client.Get()
 
-			if fn := core.GetFlagName(c.NS, constants.FlagProvenance); authErr != nil || viper.GetBool(fn) {
+			if showProv, _ := c.Command.Command.Flags().GetBool(constants.FlagProvenance); authErr != nil || showProv {
 				return handleProvenance(c, cl, authErr)
 			}
 
