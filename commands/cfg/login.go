@@ -224,5 +224,5 @@ func buildConfigData(c *core.CommandConfig) (map[string]string, error) {
 	}
 
 	configData[constants.CfgToken] = *tok.Token
-	return configData, client.TestCreds("", "", *tok.Token)
+	return configData, nil
 }
