@@ -24,9 +24,19 @@ func Claims(token string) (map[string]interface{}, error) {
 		return nil, fmt.Errorf("incorrect format of JWT token")
 	}
 
-	payload := strings.NewReader(parts[1])
-	payloadDecoded := base64.NewDecoder(base64.StdEncoding, payload)
-	decBytes, err := io.ReadAll(payloadDecoded)
+	// Properly handle base64url encoding
+	payload := parts[1]
+	payload = strings.ReplaceAll(payload, "-", "+")
+	payload = strings.ReplaceAll(payload, "_", "/")
+	// Handle potential padding
+	switch len(payload) % 4 {
+	case 2:
+		payload += "=="
+	case 3:
+		payload += "="
+	}
+
+	decBytes, err := base64.StdEncoding.DecodeString(payload)
 	if err != nil {
 		return nil, fmt.Errorf("failed to decode payload: %w", err)
 	}
