@@ -106,19 +106,12 @@ func RunLoginUser(c *core.CommandConfig) error {
 		return fmt.Errorf("failed writing config data: %w", err)
 	}
 
-	errorHandlerAllowBadCredsIfForce := func(err error) {
-		if !validCredentials && viper.GetBool(core.GetFlagName(c.NS, constants.FlagSkipVerify)) {
-			return
-		}
-		client.MustDefaultErrHandler(err)
-	}
-	ls, _, err := client.Must(errorHandlerAllowBadCredsIfForce).AuthClient.TokensApi.TokensGet(context.Background()).Execute()
-	if validCredentials && err != nil {
-		return fmt.Errorf("failed retrieving current tokens: %w", err)
-	}
-
 	var msg strings.Builder
 	if validCredentials {
+		ls, _, errTokens := client.NewClientFromCfgData(data).AuthClient.TokensApi.TokensGet(context.Background()).Execute()
+		if errTokens != nil {
+			return fmt.Errorf("failed retrieving current tokens: %w", err)
+		}
 		msgActiveTokens := fmt.Sprintf("Note: Your account has %d active tokens. ", len(*ls.Tokens))
 		msg.WriteString(msgActiveTokens)
 	}

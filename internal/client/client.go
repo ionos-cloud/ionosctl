@@ -102,6 +102,16 @@ func NewClient(name, pwd, token, hostUrl string) *Client {
 	return newClient(name, pwd, token, hostUrl, nil)
 }
 
+func NewClientFromCfgData(values map[string]string) *Client {
+	return newClient(
+		values[constants.CfgUsername],
+		values[constants.CfgPassword],
+		values[constants.CfgToken],
+		values[constants.CfgServerUrl],
+		nil,
+	)
+}
+
 func TestCreds(user, pass, token string) error {
 	cl := newClient(user, pass, token, constants.DefaultApiURL, nil)
 	return cl.TestCreds()
