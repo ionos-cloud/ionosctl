@@ -688,6 +688,8 @@ func GetIPv6CidrBlockFromLAN(lan ionoscloud.Lan) (string, error) {
 	if properties, ok := lan.GetPropertiesOk(); ok && properties != nil {
 		if ipv6CidrBlock, ok := properties.GetIpv6CidrBlockOk(); ok && ipv6CidrBlock != nil {
 			return *ipv6CidrBlock, nil
+		} else if ok && ipv6CidrBlock == nil {
+			return "", nil
 		}
 	}
 

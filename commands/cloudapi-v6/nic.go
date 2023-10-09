@@ -1067,9 +1067,12 @@ func validateIPv6IPs(cidr string, ips ...string) error {
 }
 
 func checkIPv6EnableForLAN(lan ionoscloud.Lan) (bool, error) {
-	_, err := GetIPv6CidrBlockFromLAN(lan)
+	cidr, err := GetIPv6CidrBlockFromLAN(lan)
 	if err != nil {
 		return false, err
+	}
+	if cidr == "" {
+		return false, nil
 	}
 
 	return true, nil
