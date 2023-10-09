@@ -407,7 +407,7 @@ func RunLanCreate(c *core.CommandConfig) error {
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.FlagIPv6CidrBlock)) {
-		cidr := strings.ToLower(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.FlagIPv6CidrBlock)))
+		cidr := strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.FlagIPv6CidrBlock)))
 
 		switch cidr {
 		case "DISABLE":
@@ -415,6 +415,7 @@ func RunLanCreate(c *core.CommandConfig) error {
 		case "AUTO":
 			properties.SetIpv6CidrBlock(cidr)
 		default:
+			cidr = strings.ToLower(cidr)
 			dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 			dc, _, err := client.Must().CloudClient.DataCentersApi.DatacentersFindById(context.Background(), dcId).Execute()
 			if err != nil {
@@ -501,7 +502,7 @@ func RunLanUpdate(c *core.CommandConfig) error {
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.FlagIPv6CidrBlock)) {
-		cidr := strings.ToLower(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.FlagIPv6CidrBlock)))
+		cidr := strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.FlagIPv6CidrBlock)))
 
 		switch cidr {
 		case "DISABLE":
@@ -509,6 +510,7 @@ func RunLanUpdate(c *core.CommandConfig) error {
 		case "AUTO":
 			input.SetIpv6CidrBlock(cidr)
 		default:
+			cidr = strings.ToLower(cidr)
 			dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 			dc, _, err := client.Must().CloudClient.DataCentersApi.DatacentersFindById(context.Background(), dcId).Execute()
 			if err != nil {
