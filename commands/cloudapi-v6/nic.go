@@ -1090,11 +1090,11 @@ func validateIPv6IPs(cidr string, ips ...string) error {
 	for _, ipString := range ips {
 		ip := net.ParseIP(ipString)
 		if ip == nil {
-			return fmt.Errorf("provided IP is invalid")
+			return fmt.Errorf("failed parsing \"%s\" as an IP", ipString)
 		}
 
 		if ip.To4() != nil {
-			return fmt.Errorf("this is not an IPv6 IP")
+			return fmt.Errorf("\"%s\" is not an IPv6 IP", ipString)
 		}
 
 		if !ipNet.Contains(ip) {
