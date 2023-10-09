@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net"
+	"strings"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
@@ -174,7 +175,7 @@ Required values to run a command:
 	create.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait, "Wait for the Request for NIC creation to be executed")
 	create.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for NIC creation [seconds]")
 	create.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultCreateDepth, cloudapiv6.ArgDepthDescription)
-	create.AddStringFlag(cloudapiv6.FlagIPv6CidrBlock, "", "disable", fmt.Sprintf(cloudapiv6.FlagIPv6CidrBlockDescription, 80, "LAN"))
+	create.AddStringFlag(cloudapiv6.FlagIPv6CidrBlock, "", "disable", cloudapiv6.FlagIPv6CidrBlockDescriptionForNIC)
 	create.AddBoolFlag(cloudapiv6.FlagDHCPv6, "", true, "Set to false if you wish to disable DHCPv6 on the NIC. E.g.: --dhcpv6=true, --dhcpv6=false")
 	create.AddStringSliceFlag(cloudapiv6.FlagIPv6IPs, "", nil, "IPv6 IPs assigned to the NIC. They need to be within the NIC IPv6 Cidr Block.")
 
@@ -232,9 +233,9 @@ Required values to run command:
 	update.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for NIC update [seconds]")
 	update.AddStringSliceFlag(cloudapiv6.ArgIps, "", nil, "IPs assigned to the NIC")
 	update.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultUpdateDepth, cloudapiv6.ArgDepthDescription)
-	update.AddStringFlag(cloudapiv6.FlagIPv6CidrBlock, "", "disable", fmt.Sprintf(cloudapiv6.FlagIPv6CidrBlockDescription, 80, "LAN"))
-	update.AddBoolFlag(cloudapiv6.FlagDHCPv6, "", false, "")
-	update.AddStringSliceFlag(cloudapiv6.FlagIPv6IPs, "", nil, "")
+	update.AddStringFlag(cloudapiv6.FlagIPv6CidrBlock, "", "disable", cloudapiv6.FlagIPv6CidrBlockDescriptionForNIC)
+	update.AddBoolFlag(cloudapiv6.FlagDHCPv6, "", true, "Set to false if you wish to disable DHCPv6 on the NIC. E.g.: --dhcpv6=true, --dhcpv6=false")
+	update.AddStringSliceFlag(cloudapiv6.FlagIPv6IPs, "", nil, "IPv6 IPs assigned to the NIC. They need to be within the NIC IPv6 Cidr Block.")
 
 	/*
 		Delete Command
@@ -1045,45 +1046,6 @@ func DetachAllNics(c *core.CommandConfig) error {
 	return nil
 }
 
-func validateIPv6CidrBlockForNIC(cidr string, lan ionoscloud.Lan) error {
-	ip, ipNet, err := net.ParseCIDR(cidr)
-	if err != nil {
-		return err
-	}
-
-	if ip.To4() != nil {
-		return fmt.Errorf("this is not an IPv6 Cidr Block")
-	}
-
-	if ones, _ := ipNet.Mask.Size(); ones != 80 {
-		return fmt.Errorf("invalid network mask for the provided IPv6 Cidr Block")
-	}
-
-	lanProperties, ok := lan.GetPropertiesOk()
-	if !ok || lanProperties == nil {
-		return fmt.Errorf("could not retrieve LAN properties")
-	}
-
-	lanIPv6CidrBlock, ok := lanProperties.GetIpv6CidrBlockOk()
-	if !ok {
-		return fmt.Errorf("could not retrieve LAN IPv6 Cidr Block")
-	}
-	if lanIPv6CidrBlock == nil {
-		return fmt.Errorf("IPv6 is not enabled on this LAN")
-	}
-
-	_, lanIPNet, err := net.ParseCIDR(*lanIPv6CidrBlock)
-	if err != nil {
-		return err
-	}
-
-	if !lanIPNet.Contains(ip) {
-		return fmt.Errorf("the provided LAN IPv6 Cidr Block is not within the LAN IPv6 Cidr Block")
-	}
-
-	return nil
-}
-
 func validateIPv6IPs(cidr string, ips ...string) error {
 	_, ipNet, _ := net.ParseCIDR(cidr)
 
@@ -1105,18 +1067,9 @@ func validateIPv6IPs(cidr string, ips ...string) error {
 }
 
 func checkIPv6EnableForLAN(lan ionoscloud.Lan) (bool, error) {
-	lanProperties, ok := lan.GetPropertiesOk()
-	if !ok || lanProperties == nil {
-		return false, fmt.Errorf("could not retrieve LAN properties")
-	}
-
-	lanIPv6CidrBlock, ok := lanProperties.GetIpv6CidrBlockOk()
-	if !ok {
-		return false, fmt.Errorf("could not retrieve LAN IPv6 Cidr Block")
-	}
-
-	if lanIPv6CidrBlock == nil || *lanIPv6CidrBlock == "" {
-		return false, nil
+	_, err := GetIPv6CidrBlockFromLAN(lan)
+	if err != nil {
+		return false, err
 	}
 
 	return true, nil
@@ -1124,10 +1077,15 @@ func checkIPv6EnableForLAN(lan ionoscloud.Lan) (bool, error) {
 
 func setIPv6Properties(c *core.CommandConfig, inputProper ionoscloud.NicProperties, lan ionoscloud.Lan) error {
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.FlagIPv6CidrBlock)) {
-		cidr := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.FlagIPv6CidrBlock))
+		cidr := strings.ToLower(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.FlagIPv6CidrBlock)))
 		ipv6Ips := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.FlagIPv6IPs))
 
-		if err := validateIPv6CidrBlockForNIC(cidr, lan); err != nil {
+		lanIPv6CidrBlock, err := GetIPv6CidrBlockFromLAN(lan)
+		if err != nil {
+			return err
+		}
+
+		if err := utils.ValidateIPv6CidrBlockAgainstParentCidrBlock(cidr, 80, lanIPv6CidrBlock); err != nil {
 			return err
 		}
 

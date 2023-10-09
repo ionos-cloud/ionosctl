@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"net"
 	"strings"
 	"time"
 
@@ -152,7 +151,7 @@ Required values to run command:
 	create.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait, "Wait for the Request for LAN creation to be executed")
 	create.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for LAN creation [seconds]")
 	create.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultCreateDepth, cloudapiv6.ArgDepthDescription)
-	create.AddStringFlag(cloudapiv6.FlagIPv6CidrBlock, "", "DISABLE", fmt.Sprintf(cloudapiv6.FlagIPv6CidrBlockDescription, 64, "Datacenter"))
+	create.AddStringFlag(cloudapiv6.FlagIPv6CidrBlock, "", "DISABLE", cloudapiv6.FlagIPv6CidrBlockDescriptionForLAN)
 
 	/*
 		Update Command
@@ -193,7 +192,7 @@ Required values to run command:
 	update.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait, "Wait for the Request for LAN update to be executed")
 	update.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for LAN update [seconds]")
 	update.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultUpdateDepth, cloudapiv6.ArgDepthDescription)
-	update.AddStringFlag(cloudapiv6.FlagIPv6CidrBlock, "", "disable", fmt.Sprintf(cloudapiv6.FlagIPv6CidrBlockDescription, 64, "Datacenter"))
+	update.AddStringFlag(cloudapiv6.FlagIPv6CidrBlock, "", "disable", cloudapiv6.FlagIPv6CidrBlockDescriptionForLAN)
 
 	/*
 		Delete Command
@@ -408,7 +407,7 @@ func RunLanCreate(c *core.CommandConfig) error {
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.FlagIPv6CidrBlock)) {
-		cidr := strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.FlagIPv6CidrBlock)))
+		cidr := strings.ToLower(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.FlagIPv6CidrBlock)))
 
 		switch cidr {
 		case "DISABLE":
@@ -416,7 +415,18 @@ func RunLanCreate(c *core.CommandConfig) error {
 		case "AUTO":
 			properties.SetIpv6CidrBlock(cidr)
 		default:
-			if err = validateIPv6CidrBlockForLAN(cidr, c); err != nil {
+			dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
+			dc, _, err := client.Must().CloudClient.DataCentersApi.DatacentersFindById(context.Background(), dcId).Execute()
+			if err != nil {
+				return err
+			}
+
+			dcIPv6CidrBlock, err := GetIPv6CidrBlockFromDatacenter(dc)
+			if err != nil {
+				return err
+			}
+
+			if err = utils.ValidateIPv6CidrBlockAgainstParentCidrBlock(cidr, 64, dcIPv6CidrBlock); err != nil {
 				return err
 			}
 
@@ -491,7 +501,7 @@ func RunLanUpdate(c *core.CommandConfig) error {
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.FlagIPv6CidrBlock)) {
-		cidr := strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.FlagIPv6CidrBlock)))
+		cidr := strings.ToLower(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.FlagIPv6CidrBlock)))
 
 		switch cidr {
 		case "DISABLE":
@@ -499,7 +509,18 @@ func RunLanUpdate(c *core.CommandConfig) error {
 		case "AUTO":
 			input.SetIpv6CidrBlock(cidr)
 		default:
-			if err = validateIPv6CidrBlockForLAN(cidr, c); err != nil {
+			dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
+			dc, _, err := client.Must().CloudClient.DataCentersApi.DatacentersFindById(context.Background(), dcId).Execute()
+			if err != nil {
+				return err
+			}
+
+			dcIPv6CidrBlock, err := GetIPv6CidrBlockFromDatacenter(dc)
+			if err != nil {
+				return err
+			}
+
+			if err = utils.ValidateIPv6CidrBlockAgainstParentCidrBlock(cidr, 64, dcIPv6CidrBlock); err != nil {
 				return err
 			}
 
@@ -663,47 +684,12 @@ func DeleteAllLans(c *core.CommandConfig) error {
 	return nil
 }
 
-func validateIPv6CidrBlockForLAN(cidr string, c *core.CommandConfig) error {
-	ip, ipNet, err := net.ParseCIDR(cidr)
-	if err != nil {
-		return err
+func GetIPv6CidrBlockFromLAN(lan ionoscloud.Lan) (string, error) {
+	if properties, ok := lan.GetPropertiesOk(); ok && properties != nil {
+		if ipv6CidrBlock, ok := properties.GetIpv6CidrBlockOk(); ok && ipv6CidrBlock != nil {
+			return *ipv6CidrBlock, nil
+		}
 	}
 
-	if ip.To4() != nil {
-		return fmt.Errorf("this is not an IPv6 Cidr Block")
-	}
-
-	if ones, _ := ipNet.Mask.Size(); ones != 64 {
-		return fmt.Errorf("invalid network mask for the provided IPv6 Cidr Block")
-	}
-
-	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
-	dc, _, err := client.Must().CloudClient.DataCentersApi.DatacentersFindById(context.Background(), dcId).Execute()
-	if err != nil {
-		return err
-	}
-
-	dcProperties, ok := dc.GetPropertiesOk()
-	if !ok || dcProperties == nil {
-		return fmt.Errorf("could not retrieve Datacenter properties")
-	}
-
-	dcIPv6CidrBlock, ok := dcProperties.GetIpv6CidrBlockOk()
-	if !ok {
-		return fmt.Errorf("could not retrieve Datacenter IPv6 Cidr Block")
-	}
-	if dcIPv6CidrBlock == nil {
-		return fmt.Errorf("IPv6 is not enabled on this Datacenter")
-	}
-
-	_, dcIPNet, err := net.ParseCIDR(*dcIPv6CidrBlock)
-	if err != nil {
-		return err
-	}
-
-	if !dcIPNet.Contains(ip) {
-		return fmt.Errorf("the provided LAN IPv6 Cidr Block is not within the Datacenter IPv6 Cidr Block")
-	}
-
-	return nil
+	return "", fmt.Errorf("could not retrieve IPv6 Cidr Block from LAN")
 }

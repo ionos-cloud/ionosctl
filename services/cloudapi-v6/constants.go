@@ -1,6 +1,8 @@
 package cloudapi_v6
 
 import (
+	"fmt"
+
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
 )
 
@@ -245,11 +247,8 @@ const (
 	ArgOrderByDescription = "Limits results to those containing a matching value for a specific property"
 	ArgFiltersDescription = "Limits results to those containing a matching value for a specific property. " +
 		"Use the following format to set filters: --filters KEY1=VALUE1,KEY2=VALUE2"
-	ArgNoHeadersDescription      = "When using text output, don't print headers"
-	ArgListAllDescription        = "List all resources without the need of specifying parent ID name."
-	FlagIPv6CidrBlockDescription = `The /%d IPv6 Cidr as defined in RFC 4291. It needs to be within the %s ` +
-		`IPv6 Cidr Block, but it can also be set to "AUTO" or "DISABLE".`
-	FlagIPv6IPsDescription = "A list of IPv6 IPs within the NIC IPv6 Cidr Block"
+	ArgNoHeadersDescription = "When using text output, don't print headers"
+	ArgListAllDescription   = "List all resources without the need of specifying parent ID name."
 )
 
 // Default values
@@ -283,4 +282,10 @@ var (
 	ParentResourceListDepth       = int32(0)
 	ParentResourceQueryParams     = resources.QueryParams{Depth: &ParentResourceListDepth}
 	ParentResourceListQueryParams = resources.ListQueryParams{QueryParams: ParentResourceQueryParams}
+
+	defaultIPv6CidrBlockDescription = `The /%d IPv6 Cidr as defined in RFC 4291. It needs to be within the %s ` +
+		`IPv6 Cidr Block, but it can also be set to "AUTO" or "DISABLE".`
+
+	FlagIPv6CidrBlockDescriptionForLAN = fmt.Sprintf(defaultIPv6CidrBlockDescription, 64, "Datacenter")
+	FlagIPv6CidrBlockDescriptionForNIC = fmt.Sprintf(defaultIPv6CidrBlockDescription, 80, "LAN")
 )

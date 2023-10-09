@@ -49,14 +49,14 @@ Required values to run command:
       --datacenter-id string   The unique Data Center Id (required)
   -D, --depth int32            Controls the detail depth of the response objects. Max depth is 10.
       --dhcp                   Boolean value that indicates if the NIC is using DHCP (true) or not (false). E.g.: --dhcp=true, --dhcp=false (default true)
-      --dhcpv6                 
+      --dhcpv6                 Set to false if you wish to disable DHCPv6 on the NIC. E.g.: --dhcpv6=true, --dhcpv6=false (default true)
       --firewall-active        Activate or deactivate the Firewall. E.g.: --firewall-active=true, --firewall-active=false
       --firewall-type string   The type of Firewall Rules that will be allowed on the NIC (default "INGRESS")
   -f, --force                  Force command to execute without user input
   -h, --help                   Print usage
       --ips strings            IPs assigned to the NIC
       --ipv6-cidr string       The /80 IPv6 Cidr as defined in RFC 4291. It needs to be within the LAN IPv6 Cidr Block, but it can also be set to "AUTO" or "DISABLE". (default "disable")
-      --ipv6-ips strings       
+      --ipv6-ips strings       IPv6 IPs assigned to the NIC. They need to be within the NIC IPv6 Cidr Block.
       --lan-id int             The LAN ID the NIC sits on (default 1)
   -n, --name string            The name of the NIC
   -i, --nic-id string          The unique NIC Id (required)

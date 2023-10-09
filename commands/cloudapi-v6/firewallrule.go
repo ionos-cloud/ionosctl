@@ -739,7 +739,7 @@ func DeleteAllFirewallRuses(c *core.CommandConfig) error {
 	return nil
 }
 
-// checkSourceIPAndTargetIPVersions returns true if the source and destination 
+// checkSourceIPAndTargetIPVersions returns true if the source and destination
 // IPs are of a different type (IPv4/IPv6) than the specified IP version.
 func checkSourceIPAndTargetIPVersions(c *core.CommandConfig) bool {
 	ipVersion := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.FlagIPVersion))
