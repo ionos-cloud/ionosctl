@@ -189,8 +189,11 @@ func ClusterUpdateCmd() *core.Command {
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagRam, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"1024MB", "2GB", "4GB", "8GB", "12GB", "16GB"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddSetFlag(constants.FlagStorageType, "", "", []string{"HDD", "SSD", "\"SSD Premium\""},
-		"Custom Storage Type. (required and only settable for enterprise edition)")
+	cmd.AddStringFlag(constants.FlagStorageType, "", "SSD",
+		"Custom Storage Type. (only settable for enterprise edition)")
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagStorageType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return []string{"HDD", "\"SSD Standard\"", "\"SSD Premium\""}, cobra.ShellCompDirectiveNoFileComp
+	})
 	cmd.AddStringFlag(constants.FlagStorageSize, "", "", "Custom Storage: Greater performance for values greater than 100 GB. (required and only settable for enterprise edition)")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagStorageSize, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"2GB", "10GB", "50GB", "100GB", "200GB", "400GB", "800GB", "1TB", "2TB"}, cobra.ShellCompDirectiveNoFileComp
