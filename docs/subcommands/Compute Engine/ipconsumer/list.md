@@ -45,7 +45,7 @@ Required values to run command:
       --ipblock-id string   The unique IpBlock Id (required)
   -M, --max-results int32   The maximum number of elements to return
       --no-headers          When using text output, don't print headers
-  -o, --output string       Desired output format [text|json] (default "text")
+  -o, --output string       Desired output format [text|json|api-json] (default "text")
   -q, --quiet               Quiet output
   -v, --verbose             Print step-by-step process when running command
 ```

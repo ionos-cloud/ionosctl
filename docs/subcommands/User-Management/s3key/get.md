@@ -50,7 +50,7 @@ Required values to run command:
   -f, --force             Force command to execute without user input
   -h, --help              Print usage
       --no-headers        When using text output, don't print headers
-  -o, --output string     Desired output format [text|json] (default "text")
+  -o, --output string     Desired output format [text|json|api-json] (default "text")
   -q, --quiet             Quiet output
   -i, --s3key-id string   The unique User S3Key Id (required)
       --user-id string    The unique User Id (required)

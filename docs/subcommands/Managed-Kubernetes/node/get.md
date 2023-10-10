@@ -48,7 +48,7 @@ Required values to run command:
       --no-headers           When using text output, don't print headers
   -i, --node-id string       The unique K8s Node Id (required)
       --nodepool-id string   The unique K8s Node Pool Id (required)
-  -o, --output string        Desired output format [text|json] (default "text")
+  -o, --output string        Desired output format [text|json|api-json] (default "text")
   -q, --quiet                Quiet output
   -t, --timeout int          Timeout option for waiting for Node to be in ACTIVE state [seconds] (default 600)
   -v, --verbose              Print step-by-step process when running command

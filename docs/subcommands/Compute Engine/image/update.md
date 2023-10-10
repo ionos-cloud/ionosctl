@@ -56,7 +56,7 @@ Required values to run command:
       --nic-hot-plug             'Hot-Plug' NIC (default true)
       --nic-hot-unplug           'Hot-Unplug' NIC
       --no-headers               When using text output, don't print headers
-  -o, --output string            Desired output format [text|json] (default "text")
+  -o, --output string            Desired output format [text|json|api-json] (default "text")
   -q, --quiet                    Quiet output
       --ram-hot-plug             'Hot-Plug' RAM (default true)
       --ram-hot-unplug           'Hot-Unplug' RAM

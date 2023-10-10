@@ -48,7 +48,7 @@ Required values to run command:
   -h, --help                 Print usage
       --node-id string       The unique K8s Node Id (required)
       --nodepool-id string   The unique K8s Node Pool Id (required)
-  -o, --output string        Desired output format [text|json] (default "text")
+  -o, --output string        Desired output format [text|json|api-json] (default "text")
   -q, --quiet                Quiet output
   -v, --verbose              Print step-by-step process when running command
 ```

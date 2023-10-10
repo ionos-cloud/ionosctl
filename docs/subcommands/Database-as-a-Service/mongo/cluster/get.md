@@ -45,7 +45,7 @@ Get a Mongo Cluster by ID
   -f, --force               Force command to execute without user input
   -h, --help                Print usage
       --no-headers          When using text output, don't print headers
-  -o, --output string       Desired output format [text|json] (default "text")
+  -o, --output string       Desired output format [text|json|api-json] (default "text")
   -q, --quiet               Quiet output
   -v, --verbose             Print step-by-step process when running command
 ```

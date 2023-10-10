@@ -32,7 +32,7 @@ Use this command to retrieve API Version.
   -f, --force            Force command to execute without user input
   -h, --help             Print usage
   -n, --no-headers       Response delete all certificates
-  -o, --output string    Desired output format [text|json] (default "text")
+  -o, --output string    Desired output format [text|json|api-json] (default "text")
   -q, --quiet            Quiet output
   -v, --verbose          Print step-by-step process when running command
 ```

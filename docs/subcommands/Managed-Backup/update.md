@@ -44,7 +44,7 @@ Required values to run command:
   -e, --email string           The e-mail address you want to update for the BackupUnit
   -f, --force                  Force command to execute without user input
   -h, --help                   Print usage
-  -o, --output string          Desired output format [text|json] (default "text")
+  -o, --output string          Desired output format [text|json|api-json] (default "text")
   -p, --password string        Alphanumeric password you want to update for the BackupUnit
   -q, --quiet                  Quiet output
   -t, --timeout int            Timeout option for Request for BackupUnit update [seconds] (default 60)

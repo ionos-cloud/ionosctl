@@ -45,7 +45,7 @@ List all managed container registries for your account
   -h, --help             Print usage
   -n, --name string      Response filter to list only the Registries that contain the specified name in the DisplayName field. The value is case insensitive
       --no-headers       When using text output, don't print headers
-  -o, --output string    Desired output format [text|json] (default "text")
+  -o, --output string    Desired output format [text|json|api-json] (default "text")
   -q, --quiet            Quiet output
   -v, --verbose          Print step-by-step process when running command
 ```

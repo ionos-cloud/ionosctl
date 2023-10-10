@@ -53,7 +53,7 @@ Required values to run command:
   -h, --help                            Print usage
       --networkloadbalancer-id string   The unique NetworkLoadBalancer Id (required)
       --no-headers                      When using text output, don't print headers
-  -o, --output string                   Desired output format [text|json] (default "text")
+  -o, --output string                   Desired output format [text|json|api-json] (default "text")
   -q, --quiet                           Quiet output
   -i, --rule-id string                  The unique ForwardingRule Id (required)
   -v, --verbose                         Print step-by-step process when running command

@@ -37,7 +37,7 @@ Use this command to add a Certificate.
   -f, --force                           Force command to execute without user input
   -h, --help                            Print usage
       --no-headers                      When using text output, don't print headers
-  -o, --output string                   Desired output format [text|json] (default "text")
+  -o, --output string                   Desired output format [text|json|api-json] (default "text")
       --private-key string              Specify the private key (required either this or --private-key-path)
       --private-key-path string         Specify the private key from a file (required either this or --private-key)
   -q, --quiet                           Quiet output

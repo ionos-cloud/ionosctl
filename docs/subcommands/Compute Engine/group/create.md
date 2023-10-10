@@ -53,7 +53,7 @@ Use this command to create a new Group and set Group privileges. You can specify
       --manage-dbaas          Privilege for a group to manage DBaaS related functionality
       --manage-registry       Privilege for group accessing container registry related functionality
   -n, --name string           Name for the Group (default "Unnamed Group")
-  -o, --output string         Desired output format [text|json] (default "text")
+  -o, --output string         Desired output format [text|json|api-json] (default "text")
   -q, --quiet                 Quiet output
       --reserve-ip            The group will be allowed to reserve IP addresses. E.g.: --reserve-ip=true, --reserve-ip=false
       --s3privilege           The group will be allowed to manage S3. E.g.: --s3privilege=true, --s3privilege=false

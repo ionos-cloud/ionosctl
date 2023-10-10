@@ -45,7 +45,7 @@ Use this command to delete a token scope of a container registry. If a name is p
   -f, --force                Force command to execute without user input
   -h, --help                 Print usage
       --no-headers           When using text output, don't print headers
-  -o, --output string        Desired output format [text|json] (default "text")
+  -o, --output string        Desired output format [text|json|api-json] (default "text")
   -q, --quiet                Quiet output
   -r, --registry-id string   Registry ID
   -n, --scope-id int         Scope id (default -1)

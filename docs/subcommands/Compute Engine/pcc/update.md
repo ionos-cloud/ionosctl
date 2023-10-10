@@ -38,7 +38,7 @@ Required values to run command:
   -f, --force                Force command to execute without user input
   -h, --help                 Print usage
   -n, --name string          The name for the Private Cross-Connect
-  -o, --output string        Desired output format [text|json] (default "text")
+  -o, --output string        Desired output format [text|json|api-json] (default "text")
   -i, --pcc-id string        The unique Private Cross-Connect Id (required)
   -q, --quiet                Quiet output
   -t, --timeout int          Timeout option for Request for Private Cross-Connect update [seconds] (default 60)

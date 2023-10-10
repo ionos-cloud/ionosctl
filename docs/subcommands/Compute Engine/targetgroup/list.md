@@ -41,7 +41,7 @@ Use this command to get a list of Target Groups.
   -h, --help                Print usage
   -M, --max-results int32   The maximum number of elements to return
       --order-by string     Limits results to those containing a matching value for a specific property
-  -o, --output string       Desired output format [text|json] (default "text")
+  -o, --output string       Desired output format [text|json|api-json] (default "text")
   -q, --quiet               Quiet output
   -v, --verbose             Print step-by-step process when running command
 ```

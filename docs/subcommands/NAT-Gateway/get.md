@@ -46,7 +46,7 @@ Required values to run command:
   -h, --help                   Print usage
   -i, --natgateway-id string   The unique NatGateway Id (required)
       --no-headers             When using text output, don't print headers
-  -o, --output string          Desired output format [text|json] (default "text")
+  -o, --output string          Desired output format [text|json|api-json] (default "text")
   -q, --quiet                  Quiet output
   -t, --timeout int            Timeout option for waiting for NAT Gateway to be in AVAILABLE state [seconds] (default 60)
   -v, --verbose                Print step-by-step process when running command

@@ -56,7 +56,7 @@ Required values to run command:
       --ip ip                  Public IP address of the NAT Gateway Rule
   -n, --name string            Name of the NAT Gateway Rule
       --natgateway-id string   The unique NatGateway Id (required)
-  -o, --output string          Desired output format [text|json] (default "text")
+  -o, --output string          Desired output format [text|json|api-json] (default "text")
       --port-range-end int     Target port range end associated with the NAT Gateway Rule (default 1)
       --port-range-start int   Target port range start associated with the NAT Gateway Rule (default 1)
   -p, --protocol string        Protocol of the NAT Gateway Rule. If protocol is 'ICMP' then targetPortRange start and end cannot be set

@@ -41,7 +41,7 @@ Partially modify a zone's properties. This command uses a combination of GET and
   -h, --help                 Print usage
   -n, --name string          The new name of the DNS zone, e.g. foo.com
       --no-headers           When using text output, don't print headers
-  -o, --output string        Desired output format [text|json] (default "text")
+  -o, --output string        Desired output format [text|json|api-json] (default "text")
   -q, --quiet                Quiet output
   -v, --verbose              Print step-by-step process when running command
   -z, --zone string          The name or ID of the DNS zone (required)

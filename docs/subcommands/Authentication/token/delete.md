@@ -39,7 +39,7 @@ Required values to run command:
   -E, --expired           Delete the Tokens that are currently expired (required)
   -f, --force             Force command to execute without user input
   -h, --help              Print usage
-  -o, --output string     Desired output format [text|json] (default "text")
+  -o, --output string     Desired output format [text|json|api-json] (default "text")
   -q, --quiet             Quiet output
   -t, --token string      The contents of a Token (required)
   -i, --token-id string   The unique Key ID of a Token (required)

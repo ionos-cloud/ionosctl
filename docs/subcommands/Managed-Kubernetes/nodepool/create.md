@@ -64,7 +64,7 @@ Required values to run a command (for Private Kubernetes Cluster):
       --lan-ids ints                 Collection of LAN Ids of existing LANs to be attached to worker Nodes
   -n, --name string                  The name for the K8s NodePool (default "UnnamedNodePool")
       --node-count int               The number of worker Nodes that the Node Pool should contain. Min 1, Max: Determined by the resource availability (default 1)
-  -o, --output string                Desired output format [text|json] (default "text")
+  -o, --output string                Desired output format [text|json|api-json] (default "text")
   -q, --quiet                        Quiet output
       --ram string                   RAM size for node, minimum size is 2048MB. Ram size must be set to multiple of 1024MB. e.g. --ram 2048 or --ram 2048MB (default "2048")
       --storage-size string          The size of the Storage in GB. e.g.: --size 10 or --size 10GB. The maximum Volume size is determined by your contract limit (default "10")

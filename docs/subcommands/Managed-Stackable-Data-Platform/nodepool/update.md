@@ -53,7 +53,7 @@ The following requests allows to alter the existing resources of the cluster
       --no-headers                   When using text output, don't print headers
   -n, --node-count int32             The number of nodes that make up the node pool (required)
   -i, --nodepool-id string           The UUID of the cluster the nodepool belongs to
-  -o, --output string                Desired output format [text|json] (default "text")
+  -o, --output string                Desired output format [text|json|api-json] (default "text")
   -q, --quiet                        Quiet output
   -t, --timeout int                  Timeout option for Request [seconds] (default 60)
   -v, --verbose                      Print step-by-step process when running command

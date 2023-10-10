@@ -41,7 +41,7 @@ Retrieve all records
       --name string         Filter used to fetch only the records that contain specified record name
       --no-headers          When using text output, don't print headers
       --offset int32        The first element (of the total list of elements) to include in the response. Use together with limit for pagination
-  -o, --output string       Desired output format [text|json] (default "text")
+  -o, --output string       Desired output format [text|json|api-json] (default "text")
   -q, --quiet               Quiet output
   -v, --verbose             Print step-by-step process when running command
   -z, --zone string         (UUID or Zone Name) Filter used to fetch only the records that contain specified zone.

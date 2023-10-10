@@ -44,7 +44,7 @@ Required values to run command:
   -f, --force                Force command to execute without user input
   -h, --help                 Print usage
       --no-headers           Don't print column headers
-  -o, --output string        Desired output format [text|json] (default "text")
+  -o, --output string        Desired output format [text|json|api-json] (default "text")
   -q, --quiet                Quiet output
   -i, --snapshot-id string   The unique Snapshot Id (required)
   -t, --timeout int          Timeout option for Request for Snapshot deletion [seconds] (default 60)

@@ -43,7 +43,7 @@ Required values to run command:
       --ipblock-id string      The unique IpBlock Id
       --label-key string       The unique Label Key (required)
       --label-value string     The unique Label Value (required)
-  -o, --output string          Desired output format [text|json] (default "text")
+  -o, --output string          Desired output format [text|json|api-json] (default "text")
   -q, --quiet                  Quiet output
       --resource-type string   Type of resource to add labels to. Can be one of: datacenter, volume, server, snapshot, ipblock (required)
       --server-id string       The unique Server Id

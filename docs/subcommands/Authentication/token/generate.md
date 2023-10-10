@@ -32,7 +32,7 @@ Use this command to generate a new Token. Only the JSON Web Token, associated wi
       --contract int     Users with multiple contracts can provide the contract number, for which the token is generated
   -f, --force            Force command to execute without user input
   -h, --help             Print usage
-  -o, --output string    Desired output format [text|json] (default "text")
+  -o, --output string    Desired output format [text|json|api-json] (default "text")
   -q, --quiet            Quiet output
   -v, --verbose          Print step-by-step process when running command
 ```

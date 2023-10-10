@@ -51,7 +51,7 @@ Required values to run command:
       --method string           [HTTP Health Check] The method for the HTTP health check. (default "GET")
   -n, --name string             The name of the target group. (default "Updated Target Group")
       --negate                  [HTTP Health Check] Negate for the HTTP health check.
-  -o, --output string           Desired output format [text|json] (default "text")
+  -o, --output string           Desired output format [text|json|api-json] (default "text")
       --path string             [HTTP Health Check] The path (destination URL) for the HTTP health check request; the default is /. (default "/.")
   -p, --protocol string         Balancing protocol (default "HTTP")
   -q, --quiet                   Quiet output

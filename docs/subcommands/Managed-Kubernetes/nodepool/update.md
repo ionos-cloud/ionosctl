@@ -63,7 +63,7 @@ Required values to run command:
       --min-node-count int           The minimum number of worker Nodes that the managed NodePool can scale in. Should be set together with --max-node-count (default 1)
       --node-count int               The number of worker Nodes that the NodePool should contain (default 1)
   -i, --nodepool-id string           The unique K8s Node Pool Id (required)
-  -o, --output string                Desired output format [text|json] (default "text")
+  -o, --output string                Desired output format [text|json|api-json] (default "text")
       --public-ips strings           Reserved public IP address to be used by the Nodes. IPs must be from same location as the Data Center used for the Node Pool. Usage: --public-ips IP1,IP2
   -q, --quiet                        Quiet output
   -t, --timeout int                  Timeout option for waiting for NodePool to be in ACTIVE state [seconds] (default 600)

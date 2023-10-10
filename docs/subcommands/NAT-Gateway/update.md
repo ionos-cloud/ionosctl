@@ -49,7 +49,7 @@ Required values to run command:
       --ips strings            Collection of public reserved IP addresses of the NAT Gateway. This will overwrite the current values
   -n, --name string            Name of the NAT Gateway
   -i, --natgateway-id string   The unique NatGateway Id (required)
-  -o, --output string          Desired output format [text|json] (default "text")
+  -o, --output string          Desired output format [text|json|api-json] (default "text")
   -q, --quiet                  Quiet output
   -t, --timeout int            Timeout option for Request for NAT Gateway update [seconds] (default 60)
   -v, --verbose                Print step-by-step process when running command

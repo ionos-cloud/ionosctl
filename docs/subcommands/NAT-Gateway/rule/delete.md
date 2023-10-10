@@ -55,7 +55,7 @@ Required values to run command:
   -f, --force                  Force command to execute without user input
   -h, --help                   Print usage
       --natgateway-id string   The unique NatGateway Id (required)
-  -o, --output string          Desired output format [text|json] (default "text")
+  -o, --output string          Desired output format [text|json|api-json] (default "text")
   -q, --quiet                  Quiet output
   -i, --rule-id string         The unique Rule Id (required)
   -t, --timeout int            Timeout option for Request for NAT Gateway Rule deletion [seconds] (default 60)

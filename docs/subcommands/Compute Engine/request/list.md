@@ -49,7 +49,7 @@ Available Filters:
       --method string       Show only the Requests with this method. E.g CREATE, UPDATE, DELETE (DEPRECATED: Use --filters --order-by --max-results options instead!)
       --no-headers          When using text output, don't print headers
       --order-by string     Limits results to those containing a matching value for a specific property
-  -o, --output string       Desired output format [text|json] (default "text")
+  -o, --output string       Desired output format [text|json|api-json] (default "text")
   -q, --quiet               Quiet output
   -v, --verbose             Print step-by-step process when running command
 ```

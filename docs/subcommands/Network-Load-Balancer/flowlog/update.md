@@ -58,7 +58,7 @@ Required values to run command:
   -h, --help                            Print usage
   -n, --name string                     Name of the Network Load Balancer FlowLog
       --networkloadbalancer-id string   The unique NetworkLoadBalancer Id (required)
-  -o, --output string                   Desired output format [text|json] (default "text")
+  -o, --output string                   Desired output format [text|json|api-json] (default "text")
   -q, --quiet                           Quiet output
   -b, --s3bucket string                 S3 Bucket name of an existing IONOS Cloud S3 Bucket
   -t, --timeout int                     Timeout option for Request for Network Load Balancer FlowLog update [seconds] (default 300)

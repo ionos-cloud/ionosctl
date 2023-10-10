@@ -48,7 +48,7 @@ The cluster will be provisioned in the datacenter matching the provided datacent
       --maintenance-time string   Time for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur. e.g.: 16:30:59 (required)
   -n, --name string               The name of your cluster
       --no-headers                When using text output, don't print headers
-  -o, --output string             Desired output format [text|json] (default "text")
+  -o, --output string             Desired output format [text|json|api-json] (default "text")
   -q, --quiet                     Quiet output
   -t, --timeout int               Timeout option for Request [seconds] (default 60)
   -v, --verbose                   Print step-by-step process when running command

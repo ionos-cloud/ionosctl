@@ -39,7 +39,7 @@ Note: The IONOS Cloud CLI supports also authentication with environment variable
   -c, --config string     Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -f, --force             Force command to execute without user input
   -h, --help              Print usage
-  -o, --output string     Desired output format [text|json] (default "text")
+  -o, --output string     Desired output format [text|json|api-json] (default "text")
   -p, --password string   Password to authenticate
   -q, --quiet             Quiet output
   -t, --token string      Token to authenticate

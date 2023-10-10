@@ -53,7 +53,7 @@ Required values to run a command:
   -f, --force              Force command to execute without user input
   -h, --help               Print usage
   -n, --name string        Alphanumeric name you want to assign to the BackupUnit (required)
-  -o, --output string      Desired output format [text|json] (default "text")
+  -o, --output string      Desired output format [text|json|api-json] (default "text")
   -p, --password string    Alphanumeric password you want to assign to the BackupUnit (required)
   -q, --quiet              Quiet output
   -t, --timeout int        Timeout option for Request for BackupUnit creation [seconds] (default 60)

@@ -43,7 +43,7 @@ You can wait for the Cluster to be in "ACTIVE" state using `--wait-for-state` fl
   -h, --help                  Print usage
       --k8s-version string    The K8s version for the Cluster. If not set, the default one will be used
   -n, --name string           The name for the K8s Cluster (default "UnnamedCluster")
-  -o, --output string         Desired output format [text|json] (default "text")
+  -o, --output string         Desired output format [text|json|api-json] (default "text")
   -q, --quiet                 Quiet output
       --s3bucket string       S3 Bucket name configured for K8s usage
   -t, --timeout int           Timeout option for waiting for Cluster/Request [seconds] (default 600)

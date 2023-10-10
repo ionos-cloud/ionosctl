@@ -36,7 +36,7 @@ Required values to run:
   -c, --config string    Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -f, --force            Force command to execute without user input
   -h, --help             Print usage
-  -o, --output string    Desired output format [text|json] (default "text")
+  -o, --output string    Desired output format [text|json|api-json] (default "text")
   -p, --privileges       Use to see the privileges that the user using this Token benefits from
   -q, --quiet            Quiet output
   -t, --token string     The contents of a Token (required)
