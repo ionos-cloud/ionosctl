@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dns"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 
 	container_registry "github.com/ionos-cloud/ionosctl/v6/commands/container-registry"
 
@@ -107,13 +108,13 @@ func init() {
 	_ = viper.BindPFlag(constants.ArgServerUrl, rootPFlagSet.Lookup(constants.ArgServerUrl))
 	rootPFlagSet.StringVarP(
 		&Output, constants.ArgOutput, constants.ArgOutputShort, constants.DefaultOutputFormat,
-		"Desired output format [text|json]",
+		"Desired output format [text|json|api-json]",
 	)
 	_ = viper.BindPFlag(constants.ArgOutput, rootPFlagSet.Lookup(constants.ArgOutput))
 	_ = rootCmd.Command.RegisterFlagCompletionFunc(
 		constants.ArgOutput,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-			return []string{"json", "text"}, cobra.ShellCompDirectiveNoFileComp
+			return []string{jsontabwriter.JSONFormat, jsontabwriter.TextFormat, jsontabwriter.APIFormat}, cobra.ShellCompDirectiveNoFileComp
 		},
 	)
 	rootPFlagSet.BoolVarP(&Quiet, constants.ArgQuiet, constants.ArgQuietShort, false, "Quiet output")
