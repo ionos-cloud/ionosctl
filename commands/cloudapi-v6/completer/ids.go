@@ -7,9 +7,11 @@ package completer
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
+	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
 
 func BackupUnitsIds() []string {
@@ -139,23 +141,69 @@ func GroupsIds() []string {
 	return groupsIds
 }
 
-func ImageIds() []string {
-	imageSvc := resources.NewImageService(client.Must(), context.Background())
-	images, _, err := imageSvc.List(resources.ListQueryParams{})
-	if err != nil {
+func ImageIds(customFilters ...func(ionoscloud.ApiImagesGetRequest) ionoscloud.ApiImagesGetRequest) []string {
+	ls, _, err := client.Must().CloudClient.ImagesApi.ImagesGet(context.Background()).
+		Depth(1).
+		OrderBy("public").
+		Execute()
+
+	fmt.Println("Made the call")
+
+	if err != nil || ls.Items == nil {
+		fmt.Println("Err: ", err)
+
 		return nil
 	}
-	imgsIds := make([]string, 0)
-	if items, ok := images.Images.GetItemsOk(); ok && items != nil {
-		for _, item := range *items {
-			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
-				imgsIds = append(imgsIds, *itemId)
+
+	fmt.Println("no err")
+
+	var completions []string
+	for _, image := range *ls.Items {
+		completion := *image.Id
+
+		if props := image.Properties; props == nil {
+			continue
+		}
+
+		fmt.Println("fine image properties")
+
+		if name := image.Properties.Name; name != nil {
+			fmt.Println("Name ptr: ", name, " , name: ", *name)
+			fmt.Println(name)
+			completion = fmt.Sprintf("%s\t%s", completion, *name)
+		}
+
+		if aliases := image.Properties.ImageAliases; aliases != nil && (*aliases)[0] != "" {
+			completion = fmt.Sprintf("%s (%s)", completion, strings.Join(*aliases, "/"))
+		}
+
+		if license := image.Properties.LicenceType; license != nil {
+			completion = fmt.Sprintf("%s %s", completion, *license)
+		}
+
+		if imgType := image.Properties.ImageType; imgType != nil {
+			completion = fmt.Sprintf("%s %s", completion, *imgType)
+		}
+
+		if loc := image.Properties.Location; loc != nil {
+			completion = fmt.Sprintf("%s - %s", completion, *loc)
+		}
+
+		if loc := image.Properties.Location; loc != nil {
+			completion = fmt.Sprintf("%s -  %s", completion, *loc)
+		}
+
+		if public, ok := image.Properties.GetPublicOk(); ok {
+			if *public {
+				completion = fmt.Sprintf("%s (public)", completion)
+			} else {
+				completion = fmt.Sprintf("%s (private)", completion)
 			}
 		}
-	} else {
-		return nil
+		fmt.Println("Completion is ", completion)
+		completions = append(completions, completion)
 	}
-	return imgsIds
+	return completions
 }
 
 func IpBlocksIds() []string {
