@@ -148,7 +148,7 @@ Required values to run a command:
 * Data Center Id
 * Server Id`,
 		Example:    createNicExample,
-		PreCmdRun:  PreRunDcServerIds,
+		PreCmdRun:  PreRunNicCreate,
 		CmdRun:     RunNicCreate,
 		InitClient: true,
 	})
@@ -298,6 +298,19 @@ func PreRunNicDelete(c *core.PreCommandConfig) error {
 	)
 }
 
+func PreRunNicCreate(c *core.PreCommandConfig) error {
+	if err := PreRunDcServerIds(c); err != nil {
+		return err
+	}
+
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.FlagIPv6IPs)) &&
+		!viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.FlagIPv6CidrBlock)) {
+		return fmt.Errorf("IPv6 IPs cannot be explicitly set unless a Cidr Block is also specified")
+	}
+
+	return nil
+}
+
 func RunNicList(c *core.CommandConfig) error {
 	// Add Query Parameters for GET Requests
 	listQueryParams, err := query.GetListQueryParams(c)
@@ -407,11 +420,6 @@ func RunNicCreate(c *core.CommandConfig) error {
 	}
 
 	if isIPv6 {
-		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.FlagIPv6IPs)) &&
-			!viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.FlagIPv6CidrBlock)) {
-			return fmt.Errorf("IPv6 IPs cannot be explicitly set unless a Cidr Block is also specified")
-		}
-
 		if err = setIPv6Properties(c, &inputProper.NicProperties, lan.Lan); err != nil {
 			return err
 		}
