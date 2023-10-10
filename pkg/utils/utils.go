@@ -3,6 +3,7 @@ package utils
 import (
 	"fmt"
 	"io/ioutil"
+	"net"
 	"regexp"
 
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
@@ -57,4 +58,34 @@ func GetRequestPath(r *resources.Response) string {
 		return r.Header.Get("location")
 	}
 	return ""
+}
+
+func ValidateIPv6CidrBlockAgainstParentCidrBlock(cidr string, expectedMask int, parentCidr string) error {
+	ip, ipNet, err := net.ParseCIDR(cidr)
+	if err != nil {
+		return err
+	}
+
+	if ip.To4() != nil {
+		return fmt.Errorf("this is not an IPv6 Cidr Block")
+	}
+
+	if ones, _ := ipNet.Mask.Size(); ones != expectedMask {
+		return fmt.Errorf("network mask is not the expected size: %d should be %d", ones, expectedMask)
+	}
+
+	if !ip.Equal(ip.Mask(ipNet.Mask)) {
+		return fmt.Errorf("network mask does not cover all IP bits set")
+	}
+
+	_, parentIPNet, err := net.ParseCIDR(parentCidr)
+	if err != nil {
+		return err
+	}
+
+	if !parentIPNet.Contains(ip) {
+		return fmt.Errorf("child Cidr Block (%s) is not inside parent Cidr Block range (%s)", cidr, parentCidr)
+	}
+
+	return nil
 }

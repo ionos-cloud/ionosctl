@@ -1,6 +1,8 @@
 package cloudapi_v6
 
 import (
+	"fmt"
+
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
 )
 
@@ -197,6 +199,10 @@ const (
 	ArgCdromId                   = "cdrom-id"
 	ArgTargetGroupId             = "targetgroup-id"
 	ArgTemplateId                = "template-id"
+	FlagIPv6CidrBlock            = "ipv6-cidr"
+	FlagDHCPv6                   = "dhcpv6"
+	FlagIPv6IPs                  = "ipv6-ips"
+	FlagIPVersion                = "ip-version"
 )
 
 // Descriptions for Flags Resources
@@ -276,4 +282,10 @@ var (
 	ParentResourceListDepth       = int32(0)
 	ParentResourceQueryParams     = resources.QueryParams{Depth: &ParentResourceListDepth}
 	ParentResourceListQueryParams = resources.ListQueryParams{QueryParams: ParentResourceQueryParams}
+
+	defaultIPv6CidrBlockDescription = `The /%d IPv6 Cidr as defined in RFC 4291. It needs to be within the %s ` +
+		`IPv6 Cidr Block range.`
+
+	FlagIPv6CidrBlockDescriptionForLAN = fmt.Sprintf(defaultIPv6CidrBlockDescription+` It can also be set to "AUTO" or "DISABLE".`, 64, "Datacenter")
+	FlagIPv6CidrBlockDescriptionForNIC = fmt.Sprintf(defaultIPv6CidrBlockDescription, 80, "LAN")
 )

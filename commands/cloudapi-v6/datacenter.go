@@ -16,6 +16,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
+	ionoscloud2 "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -31,10 +32,12 @@ var (
 		"Features":          "properties.features",
 		"CpuFamily":         "properties.cpuArchitecture.*.cpuFamily",
 		"SecAuthProtection": "properties.secAuthProtection",
+		"IPv6CidrBlock":     "properties.ipv6CidrBlock",
 	}
 
-	defaultDatacenterCols = []string{"DatacenterId", "Name", "Location", "CpuFamily", "State"}
-	allDatacenterCols     = []string{"DatacenterId", "Name", "Location", "State", "Description", "Version", "Features", "CpuFamily", "SecAuthProtection"}
+	defaultDatacenterCols = []string{"DatacenterId", "Name", "Location", "CpuFamily", "IPv6CidrBlock", "State"}
+	allDatacenterCols     = []string{"DatacenterId", "Name", "Location", "State", "Description", "Version",
+		"Features", "CpuFamily", "SecAuthProtection", "IPv6CidrBlock"}
 )
 
 func DatacenterCmd() *core.Command {
@@ -489,4 +492,14 @@ func getDataCenters(datacenters resources.Datacenters) []resources.Datacenter {
 		}
 	}
 	return dc
+}
+
+func GetIPv6CidrBlockFromDatacenter(dc ionoscloud2.Datacenter) (string, error) {
+	if properties, ok := dc.GetPropertiesOk(); ok && properties != nil {
+		if ipv6CidrBlock, ok := properties.GetIpv6CidrBlockOk(); ok && ipv6CidrBlock != nil {
+			return *ipv6CidrBlock, nil
+		}
+	}
+
+	return "", fmt.Errorf("could not get IPv6 Cidr Block from Datacenter")
 }

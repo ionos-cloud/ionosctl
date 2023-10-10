@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"net"
 	"strings"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
@@ -35,12 +36,13 @@ var (
 		"IcmpCode":       "properties.icmpCode",
 		"IcmpType":       "properties.icmpType",
 		"Direction":      "properties.type",
+		"IPVersion":      "properties.ipVersion",
 		"State":          "metadata.state",
 	}
 
-	defaultFirewallRuleCols = []string{"FirewallRuleId", "Name", "Protocol", "PortRangeStart", "PortRangeEnd", "Direction", "State"}
+	defaultFirewallRuleCols = []string{"FirewallRuleId", "Name", "Protocol", "PortRangeStart", "PortRangeEnd", "Direction", "IPVersion", "State"}
 	allFirewallRuleCols     = []string{"FirewallRuleId", "Name", "Protocol", "SourceMac", "SourceIP", "DestinationIP", "PortRangeStart", "PortRangeEnd",
-		"IcmpCode", "IcmpType", "Direction", "State"}
+		"IcmpCode", "IcmpType", "Direction", "IPVersion", "State"}
 )
 
 func FirewallruleCmd() *core.Command {
@@ -199,6 +201,7 @@ Required values to run command:
 		), cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddInt32Flag(cloudapiv6.ArgDepth, "", cloudapiv6.DefaultCreateDepth, cloudapiv6.ArgDepthDescription)
+	create.AddSetFlag(cloudapiv6.FlagIPVersion, "", "IPv4", []string{"IPv4", "IPv6"}, "The IP version for the Firewall Rule")
 
 	/*
 		Update Command
@@ -259,6 +262,7 @@ Required values to run command:
 		), cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddInt32Flag(cloudapiv6.ArgDepth, "", cloudapiv6.DefaultUpdateDepth, cloudapiv6.ArgDepthDescription)
+	update.AddSetFlag(cloudapiv6.FlagIPVersion, "", "IPv4", []string{"IPv4", "IPv6"}, "The IP version for the Firewall Rule")
 
 	/*
 		Delete Command
@@ -419,6 +423,13 @@ func RunFirewallRuleCreate(c *core.CommandConfig) error {
 	}
 
 	queryParams := listQueryParams.QueryParams
+
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.FlagIPVersion)) {
+		if checkSourceIPAndTargetIPVersions(c) {
+			return fmt.Errorf("if source IP and destination IP are set, they must be the same version as IP version")
+		}
+	}
+
 	properties := getFirewallRulePropertiesSet(c)
 
 	if !properties.HasName() {
@@ -472,6 +483,13 @@ func RunFirewallRuleUpdate(c *core.CommandConfig) error {
 	}
 
 	queryParams := listQueryParams.QueryParams
+
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.FlagIPVersion)) {
+		if checkSourceIPAndTargetIPVersions(c) {
+			return fmt.Errorf("if source IP and destination IP are set, they must be the same version as IP version")
+		}
+	}
+
 	firewallRule, resp, err := c.CloudApiV6Services.FirewallRules().Update(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
@@ -622,6 +640,13 @@ func getFirewallRulePropertiesSet(c *core.CommandConfig) resources.FirewallRuleP
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property Type/Direction set: %v", firewallruleType))
 	}
 
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.FlagIPVersion)) {
+		ipVersion := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.FlagIPVersion))
+		properties.SetIpVersion(ipVersion)
+
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property IP Version set: %v", ipVersion))
+	}
+
 	return properties
 }
 
@@ -712,4 +737,27 @@ func DeleteAllFirewallRules(c *core.CommandConfig) error {
 
 	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Firewall Rules successfully deleted"))
 	return nil
+}
+
+// checkSourceIPAndTargetIPVersions returns true if the source and destination
+// IPs are of a different type (IPv4/IPv6) than the specified IP version.
+func checkSourceIPAndTargetIPVersions(c *core.CommandConfig) bool {
+	ipVersion := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.FlagIPVersion))
+
+	sIp := net.ParseIP(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSourceIp)))
+	tIp := net.ParseIP(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDestinationIp)))
+
+	isIPv4 := func(ip net.IP) bool {
+		return ip != nil && ip.To4() != nil
+	}
+
+	if (isIPv4(sIp) || isIPv4(tIp)) && ipVersion == "IPv6" {
+		return true
+	}
+
+	if (!isIPv4(sIp) || !isIPv4(tIp)) && ipVersion == "IPv4" {
+		return true
+	}
+
+	return false
 }
