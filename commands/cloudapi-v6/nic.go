@@ -407,7 +407,12 @@ func RunNicCreate(c *core.CommandConfig) error {
 	}
 
 	if isIPv6 {
-		if err = setIPv6Properties(c, inputProper.NicProperties, lan.Lan); err != nil {
+		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.FlagIPv6IPs)) &&
+			!viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.FlagIPv6CidrBlock)) {
+			return fmt.Errorf("IPv6 IPs cannot be explicitly set unless a Cidr Block is also specified")
+		}
+
+		if err = setIPv6Properties(c, &inputProper.NicProperties, lan.Lan); err != nil {
 			return err
 		}
 	} else if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.FlagIPv6CidrBlock)) ||
@@ -474,7 +479,8 @@ func RunNicUpdate(c *core.CommandConfig) error {
 	}
 
 	if isIPv6 {
-		if err = setIPv6Properties(c, input.NicProperties, lan.Lan); err != nil {
+		input.NicProperties.SetIpv6CidrBlock(*oldNIc.Properties.Ipv6CidrBlock)
+		if err = setIPv6Properties(c, &input.NicProperties, lan.Lan); err != nil {
 			return err
 		}
 	} else if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.FlagIPv6CidrBlock)) ||
@@ -1078,11 +1084,9 @@ func checkIPv6EnableForLAN(lan ionoscloud.Lan) (bool, error) {
 	return true, nil
 }
 
-func setIPv6Properties(c *core.CommandConfig, inputProper ionoscloud.NicProperties, lan ionoscloud.Lan) error {
+func setIPv6Properties(c *core.CommandConfig, inputProper *ionoscloud.NicProperties, lan ionoscloud.Lan) error {
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.FlagIPv6CidrBlock)) {
 		cidr := strings.ToLower(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.FlagIPv6CidrBlock)))
-		ipv6Ips := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.FlagIPv6IPs))
-
 		lanIPv6CidrBlock, err := GetIPv6CidrBlockFromLAN(lan)
 		if err != nil {
 			return err
@@ -1092,11 +1096,16 @@ func setIPv6Properties(c *core.CommandConfig, inputProper ionoscloud.NicProperti
 			return err
 		}
 
+		inputProper.SetIpv6CidrBlock(cidr)
+	}
+
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.FlagIPv6IPs)) && inputProper.Ipv6CidrBlock != nil {
+		ipv6Ips, _ := c.Command.Command.Flags().GetStringSlice(cloudapiv6.FlagIPv6IPs)
+		cidr := *inputProper.Ipv6CidrBlock
 		if err := validateIPv6IPs(cidr, ipv6Ips...); err != nil {
 			return err
 		}
 
-		inputProper.SetIpv6CidrBlock(cidr)
 		inputProper.SetIpv6Ips(ipv6Ips)
 	}
 

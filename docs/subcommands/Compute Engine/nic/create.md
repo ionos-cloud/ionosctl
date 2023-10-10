@@ -51,7 +51,7 @@ Required values to run a command:
   -f, --force                  Force command to execute without user input
   -h, --help                   Print usage
       --ips strings            IPs assigned to the NIC. This can be a collection
-      --ipv6-cidr string       The /80 IPv6 Cidr as defined in RFC 4291. It needs to be within the LAN IPv6 Cidr Block. (default "disable")
+      --ipv6-cidr string       The /80 IPv6 Cidr as defined in RFC 4291. It needs to be within the LAN IPv6 Cidr Block range. (default "disable")
       --ipv6-ips strings       IPv6 IPs assigned to the NIC. They need to be within the NIC IPv6 Cidr Block.
       --lan-id int             The LAN ID the NIC will sit on. If the LAN ID does not exist it will be created (default 1)
   -n, --name string            The name of the NIC (default "Internet Access")
