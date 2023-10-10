@@ -84,14 +84,14 @@ var MustDefaultErrHandler = func(err error) {
 func Must(ehs ...func(error)) *Client {
 	client, err := Get()
 	if err != nil {
-		if len(ehs) == 0 {
-			// Default error handler if none set
-			MustDefaultErrHandler(err)
-		} else {
+		if len(ehs) > 0 {
 			// Developer set custom err handlers (e.g. don't die, simply warn, etc)
 			for _, eh := range ehs {
 				eh(err)
 			}
+		} else {
+			// Default error handler if none set
+			MustDefaultErrHandler(err)
 		}
 	}
 	return client
