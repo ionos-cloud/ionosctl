@@ -50,7 +50,7 @@ Required values to run command:
       --maintenance-day string    The day of the week for Maintenance Window has the English day format as following: Monday or Saturday
       --maintenance-time string   The time for Maintenance Window has the HH:mm:ss format as following: 08:00:00
   -n, --name string               The name for the K8s Cluster
-  -o, --output string             Desired output format [text|json] (default "text")
+  -o, --output string             Desired output format [text|json|api-json] (default "text")
   -q, --quiet                     Quiet output
       --s3bucket string           S3 Bucket name configured for K8s usage. It will overwrite the previous value
   -t, --timeout int               Timeout option for waiting for Cluster to be in ACTIVE state after updating [seconds] (default 600)

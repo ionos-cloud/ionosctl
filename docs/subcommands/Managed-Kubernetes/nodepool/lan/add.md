@@ -52,7 +52,7 @@ Required values to run a command:
   -i, --lan-id int           The unique LAN Id of existing LANs to be attached to worker Nodes (required)
       --network strings      Slice of IPv4 or IPv6 CIDRs to be routed via the interface. Must contain same number of arguments as --gateway-ip flag
       --nodepool-id string   The unique K8s Node Pool Id (required)
-  -o, --output string        Desired output format [text|json] (default "text")
+  -o, --output string        Desired output format [text|json|api-json] (default "text")
   -q, --quiet                Quiet output
   -v, --verbose              Print step-by-step process when running command
 ```

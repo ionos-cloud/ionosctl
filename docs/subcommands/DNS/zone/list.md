@@ -41,7 +41,7 @@ Retrieve zones
       --name string         Filter used to fetch only the zones that contain the specified zone name
       --no-headers          When using text output, don't print headers
       --offset int32        Pagination offset
-  -o, --output string       Desired output format [text|json] (default "text")
+  -o, --output string       Desired output format [text|json|api-json] (default "text")
   -q, --quiet               Quiet output
       --state string        Filter used to fetch all zones in a particular state (AVAILABLE, FAILED, PROVISIONING, DESTROYING)
   -v, --verbose             Print step-by-step process when running command

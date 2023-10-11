@@ -41,7 +41,7 @@ Partially modify a record's properties. This command uses a combination of GET a
   -h, --help             Print usage
   -n, --name \*          The name of the DNS record.  Provide a wildcard i.e. \* to match requests for non-existent names under your DNS Zone name. Note that some terminals require '*' to be escaped, e.g. '\*' (required)
       --no-headers       When using text output, don't print headers
-  -o, --output string    Desired output format [text|json] (default "text")
+  -o, --output string    Desired output format [text|json|api-json] (default "text")
       --priority int32   Priority value is between 0 and 65535. Priority is mandatory for MX, SRV and URI record types and ignored for all other types.
   -q, --quiet            Quiet output
   -r, --record string    The ID or name of the DNS record (required)

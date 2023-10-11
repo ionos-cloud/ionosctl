@@ -53,7 +53,7 @@ Required values to run command:
   -f, --force                               Force command to execute without user input
   -h, --help                                Print usage
   -M, --max-results int32                   The maximum number of elements to return
-  -o, --output string                       Desired output format [text|json] (default "text")
+  -o, --output string                       Desired output format [text|json|api-json] (default "text")
   -q, --quiet                               Quiet output
       --rule-id string                      The unique ForwardingRule Id (required)
   -v, --verbose                             Print step-by-step process when running command

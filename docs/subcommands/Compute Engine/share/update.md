@@ -41,7 +41,7 @@ Required values to run command:
   -f, --force                Force command to execute without user input
       --group-id string      The unique Group Id (required)
   -h, --help                 Print usage
-  -o, --output string        Desired output format [text|json] (default "text")
+  -o, --output string        Desired output format [text|json|api-json] (default "text")
   -q, --quiet                Quiet output
   -i, --resource-id string   The unique Resource Id (required)
       --share-privilege      Update the group's permission to share resource

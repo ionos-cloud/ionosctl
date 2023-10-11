@@ -47,7 +47,7 @@ You can wait for the Request to be executed using `--wait-for-request` or `-w` o
       --method string        [HTTP Health Check] The method for the HTTP health check. (default "GET")
   -n, --name string          The name of the target group. (default "Unnamed Target Group")
       --negate               [HTTP Health Check] Negate for the HTTP health check.
-  -o, --output string        Desired output format [text|json] (default "text")
+  -o, --output string        Desired output format [text|json|api-json] (default "text")
       --path string          [HTTP Health Check] The path (destination URL) for the HTTP health check request; the default is /. (default "/.")
   -p, --protocol string      Balancing protocol (default "HTTP")
   -q, --quiet                Quiet output

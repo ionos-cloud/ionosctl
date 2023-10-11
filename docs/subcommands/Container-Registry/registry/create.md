@@ -48,7 +48,7 @@ Create a registry to hold container images or OCI compliant artifacts
       --location string                            Specify the location of the registry (required)
   -n, --name string                                Specify the name of the registry (required)
       --no-headers                                 When using text output, don't print headers
-  -o, --output string                              Desired output format [text|json] (default "text")
+  -o, --output string                              Desired output format [text|json|api-json] (default "text")
   -q, --quiet                                      Quiet output
   -v, --verbose                                    Print step-by-step process when running command
 ```

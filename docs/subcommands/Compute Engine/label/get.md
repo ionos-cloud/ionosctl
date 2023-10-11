@@ -42,7 +42,7 @@ Required values to run command:
       --ipblock-id string      The unique IpBlock Id
       --label-key string       The unique Label Key (required)
       --no-headers             When using text output, don't print headers
-  -o, --output string          Desired output format [text|json] (default "text")
+  -o, --output string          Desired output format [text|json|api-json] (default "text")
   -q, --quiet                  Quiet output
       --resource-type string   Type of resource to get labels from. Can be one of: datacenter, volume, server, snapshot, ipblock (required)
       --server-id string       The unique Server Id

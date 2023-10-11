@@ -56,7 +56,7 @@ The following requests allows to alter the existing resources, add or remove new
   -n, --name string                  The name of your nodepool (required)
       --no-headers                   When using text output, don't print headers
       --node-count int32             The number of nodes that make up the node pool (required)
-  -o, --output string                Desired output format [text|json] (default "text")
+  -o, --output string                Desired output format [text|json|api-json] (default "text")
   -q, --quiet                        Quiet output
       --ram int32                    The RAM size for one node in MB. Must be set in multiples of 1024 MB, with a minimum size is of 2048 MB
       --storage-size int32           The size of the volume in GB. The size must be greater than 10GB

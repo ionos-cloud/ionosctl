@@ -54,7 +54,7 @@ Required values to run command:
   -h, --help                   Print usage
   -n, --name string            The name for the FlowLog (default "Unnamed FlowLog")
       --nic-id string          The unique NIC Id (required)
-  -o, --output string          Desired output format [text|json] (default "text")
+  -o, --output string          Desired output format [text|json|api-json] (default "text")
   -q, --quiet                  Quiet output
   -b, --s3bucket string        S3 Bucket name of an existing IONOS Cloud S3 Bucket (required)
       --server-id string       The unique Server Id (required)

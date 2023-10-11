@@ -58,7 +58,7 @@ Required values to run command:
   -f, --force                               Force command to execute without user input
   -h, --help                                Print usage
   -n, --name string                         The name of the Application Load Balancer FlowLog.
-  -o, --output string                       Desired output format [text|json] (default "text")
+  -o, --output string                       Desired output format [text|json|api-json] (default "text")
   -q, --quiet                               Quiet output
   -b, --s3bucket string                     S3 bucket name of an existing IONOS Cloud S3 bucket.
   -t, --timeout int                         Timeout option for Request for Application Load Balancer FlowLog update [seconds] (default 300)

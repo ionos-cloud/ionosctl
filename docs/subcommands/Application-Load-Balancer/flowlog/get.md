@@ -53,7 +53,7 @@ Required values to run command:
   -i, --flowlog-id string                   The unique FlowLog Id (required)
   -f, --force                               Force command to execute without user input
   -h, --help                                Print usage
-  -o, --output string                       Desired output format [text|json] (default "text")
+  -o, --output string                       Desired output format [text|json|api-json] (default "text")
   -q, --quiet                               Quiet output
   -v, --verbose                             Print step-by-step process when running command
 ```

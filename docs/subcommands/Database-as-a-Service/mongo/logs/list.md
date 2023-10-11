@@ -43,7 +43,7 @@ List (and optionally filter) the logs of your Mongo Cluster. Use --cols message 
   -h, --help                Print usage
       --limit int           The maximal number of log lines to return. If the limit is reached then log lines will be cut at the end (respecting the scan direction). Must be between 1 - 5000 (default 100)
       --no-headers          When using text output, don't print headers
-  -o, --output string       Desired output format [text|json] (default "text")
+  -o, --output string       Desired output format [text|json|api-json] (default "text")
   -q, --quiet               Quiet output
       --start duration      The start time, as a duration. This should be negative, i.e. -720h. Valid: h, m, s
       --startDate string    The start time for the query in RFC3339 format. Must not be greater than 30 days ago and less than the end parameter. The default value is 30 days ago.

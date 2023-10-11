@@ -57,7 +57,7 @@ Required values to run command:
   -f, --force                               Force command to execute without user input
   -h, --help                                Print usage
   -n, --name string                         A name of that Application Load Balancer Http Rule (required)
-  -o, --output string                       Desired output format [text|json] (default "text")
+  -o, --output string                       Desired output format [text|json|api-json] (default "text")
   -q, --quiet                               Quiet output
       --rule-id string                      The unique ForwardingRule Id (required)
   -t, --timeout int                         Timeout option for Request for Forwarding Rule Http Rule deletion [seconds] (default 300)

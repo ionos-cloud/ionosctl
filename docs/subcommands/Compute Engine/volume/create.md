@@ -59,7 +59,7 @@ Required values to run command:
   -n, --name string                Name of the Volume (default "Unnamed Volume")
       --nic-hot-plug               It is capable of nic hot plug (no reboot required). E.g.: --nic-hot-plug=true, --nic-hot-plug=false
       --nic-hot-unplug             It is capable of nic hot unplug (no reboot required). E.g.: --nic-hot-unplug=true, --nic-hot-unplug=false
-  -o, --output string              Desired output format [text|json] (default "text")
+  -o, --output string              Desired output format [text|json|api-json] (default "text")
   -p, --password string            Initial password to be set for installed OS. Works with public Images only. Not modifiable. Password rules allows all characters from a-z, A-Z, 0-9
   -q, --quiet                      Quiet output
       --ram-hot-plug               It is capable of memory hot plug (no reboot required). E.g.: --ram-hot-plug=true, --ram-hot-plug=false

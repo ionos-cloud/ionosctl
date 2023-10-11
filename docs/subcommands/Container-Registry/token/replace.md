@@ -47,7 +47,7 @@ Create or replace a token used to access a container registry
   -h, --help                 Print usage
       --name string          Name of the Token (required)
       --no-headers           Use --no-headers=false to show column headers (default true)
-  -o, --output string        Desired output format [text|json] (default "text")
+  -o, --output string        Desired output format [text|json|api-json] (default "text")
   -q, --quiet                Quiet output
   -r, --registry-id string   Registry ID
       --status string        Status of the Token

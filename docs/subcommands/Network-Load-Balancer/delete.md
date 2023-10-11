@@ -48,7 +48,7 @@ Required values to run command:
   -f, --force                           Force command to execute without user input
   -h, --help                            Print usage
   -i, --networkloadbalancer-id string   The unique NetworkLoadBalancer Id (required)
-  -o, --output string                   Desired output format [text|json] (default "text")
+  -o, --output string                   Desired output format [text|json|api-json] (default "text")
   -q, --quiet                           Quiet output
   -t, --timeout int                     Timeout option for Request for Network Load Balancer deletion [seconds] (default 300)
   -v, --verbose                         Print step-by-step process when running command

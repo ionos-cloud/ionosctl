@@ -60,7 +60,7 @@ Required values to run command:
       --listener-port string            Listening port number. Range: 1 to 65535 (required)
   -n, --name string                     The name for the Forwarding Rule
       --networkloadbalancer-id string   The unique NetworkLoadBalancer Id (required)
-  -o, --output string                   Desired output format [text|json] (default "text")
+  -o, --output string                   Desired output format [text|json|api-json] (default "text")
   -q, --quiet                           Quiet output
       --retries int                     [Health Check] Retries specifies the number of retries to perform on a target VM after a connection failure. Range: 0 to 65535 (default 3)
   -i, --rule-id string                  The unique ForwardingRule Id (required)

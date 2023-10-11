@@ -44,7 +44,7 @@ Required values to run command:
   -i, --group-id string   The unique Group Id (required)
   -h, --help              Print usage
       --no-headers        When using text output, don't print headers
-  -o, --output string     Desired output format [text|json] (default "text")
+  -o, --output string     Desired output format [text|json|api-json] (default "text")
   -q, --quiet             Quiet output
   -v, --verbose           Print step-by-step process when running command
 ```

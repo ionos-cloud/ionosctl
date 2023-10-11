@@ -292,7 +292,7 @@ func generateLegacyJSONOutput(sourceData interface{}) (string, error) {
 	// I expect only one result from the query, so there is no need to loop through the results
 	queryResult, _ := query.Run(temp).Next()
 	if err, ok := queryResult.(error); ok && err != nil {
-		return string(apiOut), nil
+		return string(apiOut) + "\n", nil
 	}
 
 	return generateJSONOutputAPI(queryResult)

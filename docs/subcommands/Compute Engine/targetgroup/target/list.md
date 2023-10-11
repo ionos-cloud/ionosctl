@@ -43,7 +43,7 @@ Use this command to get a list of Target Groups Targets.
   -c, --config string           Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -f, --force                   Force command to execute without user input
   -h, --help                    Print usage
-  -o, --output string           Desired output format [text|json] (default "text")
+  -o, --output string           Desired output format [text|json|api-json] (default "text")
   -q, --quiet                   Quiet output
   -i, --targetgroup-id string   The unique Target Group Id (required)
   -v, --verbose                 Print step-by-step process when running command

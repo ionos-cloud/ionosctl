@@ -46,7 +46,7 @@ Create MongoDB users.
   -h, --help                Print usage
   -n, --name string         The authentication username (required)
       --no-headers          When using text output, don't print headers
-  -o, --output string       Desired output format [text|json] (default "text")
+  -o, --output string       Desired output format [text|json|api-json] (default "text")
   -p, --password string     The authentication password (required)
   -q, --quiet               Quiet output
   -r, --roles               User's role for each db. DB1=Role1,DB2=Role2. Roles: read, readWrite, readAnyDatabase, readWriteAnyDatabase, dbAdmin, dbAdminAnyDatabase, clusterMonitor

@@ -57,7 +57,7 @@ Create DBaaS Mongo Replicaset or Sharded Clusters for your chosen edition
       --maintenance-time string   Time for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur. e.g.: 16:30:59. Defaults to a random day during Mon-Fri, during the hours 10:00-16:00 (default "Random (Mon-Fri 10:00-16:00)")
   -n, --name string               The name of your cluster (required)
       --no-headers                When using text output, don't print headers
-  -o, --output string             Desired output format [text|json] (default "text")
+  -o, --output string             Desired output format [text|json|api-json] (default "text")
   -q, --quiet                     Quiet output
       --ram string                Custom RAM: multiples of 1024. e.g. --ram 1024 or --ram 1024MB or --ram 4GB (required and only settable for enterprise edition) (default "2GB")
       --shards int32              The total number of shards in the sharded_cluster cluster. Setting this flag is only possible for enterprise clusters and infers a sharded_cluster type. Possible values: 2 - 32. (required for sharded_cluster enterprise clusters) (required) (default 1)

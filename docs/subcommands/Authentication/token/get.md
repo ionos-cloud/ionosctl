@@ -37,7 +37,7 @@ Required values to run command:
   -f, --force             Force command to execute without user input
   -h, --help              Print usage
       --no-headers        When using text output, don't print headers
-  -o, --output string     Desired output format [text|json] (default "text")
+  -o, --output string     Desired output format [text|json|api-json] (default "text")
   -q, --quiet             Quiet output
   -t, --token string      The contents of a Token (required)
   -i, --token-id string   The unique Key ID of a Token (required)

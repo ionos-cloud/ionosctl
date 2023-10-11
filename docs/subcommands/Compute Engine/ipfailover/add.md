@@ -56,7 +56,7 @@ Required values to run command:
       --ip ip                  IP address to be added to IP Failover Group (required)
       --lan-id string          The unique LAN Id (required)
       --nic-id string          The unique NIC Id (required)
-  -o, --output string          Desired output format [text|json] (default "text")
+  -o, --output string          Desired output format [text|json|api-json] (default "text")
   -q, --quiet                  Quiet output
       --server-id string       The unique Server Id (required)
   -t, --timeout int            Timeout option for Request for IP Failover creation [seconds] (default 60)

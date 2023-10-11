@@ -56,7 +56,7 @@ Update a Mongo Cluster by ID
       --maintenance-time string   Time for the Maintenance. The MaintenanceWindow is a weekly 4 hour-long window, during which maintenance might occur. e.g.: 16:30:59
   -n, --name string               The name of your cluster
       --no-headers                When using text output, don't print headers
-  -o, --output string             Desired output format [text|json] (default "text")
+  -o, --output string             Desired output format [text|json|api-json] (default "text")
   -q, --quiet                     Quiet output
       --ram string                Custom RAM: multiples of 1024. e.g. --ram 1024 or --ram 1024MB or --ram 4GB (required and only settable for enterprise edition)
       --shards int32              The total number of shards in the sharded_cluster cluster. Setting this flag is only possible for enterprise clusters and infers a sharded_cluster type. Possible values: 2 - 32. (required for sharded_cluster enterprise clusters) (default 1)

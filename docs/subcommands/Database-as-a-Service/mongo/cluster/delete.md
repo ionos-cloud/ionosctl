@@ -47,7 +47,7 @@ Delete a Mongo Cluster by ID
   -h, --help                Print usage
       --name                When deleting all clusters, filter the clusters by a name
       --no-headers          When using text output, don't print headers
-  -o, --output string       Desired output format [text|json] (default "text")
+  -o, --output string       Desired output format [text|json|api-json] (default "text")
   -q, --quiet               Quiet output
   -v, --verbose             Print step-by-step process when running command
 ```
