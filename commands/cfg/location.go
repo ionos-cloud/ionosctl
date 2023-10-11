@@ -6,7 +6,6 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/shellpath"
 )
 
 func LocationCmd() *core.Command {
@@ -17,7 +16,7 @@ func LocationCmd() *core.Command {
 		Example:   "ionosctl cfg loc",
 		PreCmdRun: core.NoPreRun,
 		CmdRun: func(c *core.CommandConfig) error {
-			_, err := fmt.Fprintf(c.Command.Command.OutOrStdout(), shellpath.EscapePathForShell(config.GetConfigFilePath()))
+			_, err := fmt.Fprintf(c.Command.Command.OutOrStdout(), config.GetConfigFilePath())
 			return err
 		},
 		InitClient: false,
