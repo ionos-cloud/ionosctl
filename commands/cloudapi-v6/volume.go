@@ -11,6 +11,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
@@ -176,6 +177,7 @@ Required values to run command:
 	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgImageId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.ImageIds(), cobra.ShellCompDirectiveNoFileComp
 	})
+
 	create.AddStringFlag(cloudapiv6.ArgImageAlias, cloudapiv6.ArgImageAliasShort, "", "The Image Alias to set instead of Image Id. A password or SSH Key need to be set")
 	create.AddStringFlag(cloudapiv6.ArgPassword, cloudapiv6.ArgPasswordShort, "", "Initial password to be set for installed OS. Works with public Images only. Not modifiable. Password rules allows all characters from a-z, A-Z, 0-9")
 	create.AddStringFlag(cloudapiv6.ArgUserData, "", "", "The cloud-init configuration for the Volume as base64 encoded string. It is mandatory to provide either 'public image' or 'imageAlias' that has cloud-init compatibility in conjunction with this property")
@@ -305,15 +307,40 @@ func PreRunVolumeCreate(c *core.PreCommandConfig) error {
 	if err != nil {
 		return err
 	}
-	// Validate flags
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgImageId)) || viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgImageAlias)) {
-		return core.CheckRequiredFlagsSets(c.Command, c.NS,
-			[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgImageId, cloudapiv6.ArgPassword},
-			[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgImageId, cloudapiv6.ArgSshKeyPaths},
-			[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgImageAlias, cloudapiv6.ArgPassword},
-			[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgImageAlias, cloudapiv6.ArgSshKeyPaths})
+
+	setRequiredFlagsPublicImage := [][]string{
+		{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgImageId, constants.ArgPassword},
+		{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgImageId, cloudapiv6.ArgSshKeyPaths},
+		{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgImageAlias, constants.ArgPassword},
+		{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgImageAlias, cloudapiv6.ArgSshKeyPaths},
+	}
+	publicImageAsImageId := false
+
+	// image-id and image-alias create more flag requirements
+	if fn := core.GetFlagName(c.NS, cloudapiv6.ArgImageId); viper.IsSet(fn) {
+		setRequiredFlagsPrivateImage := [][]string{
+			{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgImageId},
+			{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgImageAlias},
+		}
+
+		img, _, err := client.Must().CloudClient.ImagesApi.ImagesFindById(context.Background(),
+			viper.GetString(fn)).Execute()
+		if err != nil {
+			return fmt.Errorf("failed getting image %s: %w", viper.GetString(fn), err)
+		}
+
+		if !*img.Properties.Public {
+			return core.CheckRequiredFlagsSets(c.Command, c.NS, setRequiredFlagsPrivateImage...)
+		}
+		publicImageAsImageId = true
+	}
+
+	// Public image requirements. Private images cannot have aliases
+	if fn := core.GetFlagName(c.NS, cloudapiv6.ArgImageAlias); publicImageAsImageId || viper.IsSet(fn) {
+		return core.CheckRequiredFlagsSets(c.Command, c.NS, setRequiredFlagsPublicImage...)
 	}
 	return nil
+
 }
 
 func RunVolumeListAll(c *core.CommandConfig) error {

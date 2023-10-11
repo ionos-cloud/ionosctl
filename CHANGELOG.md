@@ -3,6 +3,7 @@
 ## [T.B.D]
 ### Fixed
 * Fixed 404 on firewallrule delete command: flag values not properly sent to API
+* Fixed `password` or `sshkey-path` being required for private images
 
 ## [v6.6.10] (September 2023)
 ### Fixed
