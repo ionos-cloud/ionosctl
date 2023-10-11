@@ -11,6 +11,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
@@ -542,29 +543,60 @@ func PreRunServerList(c *core.PreCommandConfig) error {
 }
 
 func PreRunServerCreate(c *core.PreCommandConfig) error {
-	err := core.CheckRequiredFlagsSets(c.Command, c.NS,
-		[]string{cloudapiv6.ArgDataCenterId, constants.FlagCores, constants.FlagRam},
-		[]string{cloudapiv6.ArgDataCenterId, constants.FlagType, cloudapiv6.ArgTemplateId})
+	baseRequiredFlags := [][]string{
+		{cloudapiv6.ArgDataCenterId, constants.FlagCores, constants.FlagRam},
+		{cloudapiv6.ArgDataCenterId, constants.FlagType, cloudapiv6.ArgTemplateId},
+	}
+
+	// Start by checking the base required flags.
+	err := core.CheckRequiredFlagsSets(c.Command, c.NS, baseRequiredFlags...)
 	if err != nil {
 		return err
 	}
 
-	// Validate flags
+	// If either image ID or alias is set, we'll need to modify the required flags.
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgImageId)) || viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgImageAlias)) {
-		err = core.CheckRequiredFlagsSets(c.Command, c.NS,
-			[]string{cloudapiv6.ArgDataCenterId, constants.FlagCores, constants.FlagRam, cloudapiv6.ArgImageId, cloudapiv6.ArgPassword},
-			[]string{cloudapiv6.ArgDataCenterId, constants.FlagCores, constants.FlagRam, cloudapiv6.ArgImageId, cloudapiv6.ArgSshKeyPaths},
-			[]string{cloudapiv6.ArgDataCenterId, constants.FlagCores, constants.FlagRam, cloudapiv6.ArgImageAlias, cloudapiv6.ArgPassword},
-			[]string{cloudapiv6.ArgDataCenterId, constants.FlagCores, constants.FlagRam, cloudapiv6.ArgImageAlias, cloudapiv6.ArgSshKeyPaths},
-			[]string{cloudapiv6.ArgDataCenterId, constants.FlagType, cloudapiv6.ArgTemplateId, cloudapiv6.ArgImageId, cloudapiv6.ArgPassword},
-			[]string{cloudapiv6.ArgDataCenterId, constants.FlagType, cloudapiv6.ArgTemplateId, cloudapiv6.ArgImageId, cloudapiv6.ArgSshKeyPaths},
-			[]string{cloudapiv6.ArgDataCenterId, constants.FlagType, cloudapiv6.ArgTemplateId, cloudapiv6.ArgImageAlias, cloudapiv6.ArgPassword},
-			[]string{cloudapiv6.ArgDataCenterId, constants.FlagType, cloudapiv6.ArgTemplateId, cloudapiv6.ArgImageAlias, cloudapiv6.ArgSshKeyPaths},
-		)
+		imageRequiredFlags := make([][]string, 0)
+
+		// If image-alias is set, it's a public image. Otherwise, we need to check.
+		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgImageAlias)) {
+			// Directly append public image flags.
+			for _, baseFlagSet := range baseRequiredFlags {
+				imageRequiredFlags = append(imageRequiredFlags,
+					append(baseFlagSet, cloudapiv6.ArgImageAlias, cloudapiv6.ArgPassword),
+					append(baseFlagSet, cloudapiv6.ArgImageAlias, cloudapiv6.ArgSshKeyPaths),
+				)
+			}
+		} else if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgImageId)) {
+			// is image public or private?
+			img, _, err := client.Must().CloudClient.ImagesApi.ImagesFindById(context.Background(),
+				viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgImageId))).Execute()
+			if err != nil {
+				return fmt.Errorf("failed getting image %s: %w", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgImageId)), err)
+			}
+
+			for _, baseFlagSet := range baseRequiredFlags {
+				if *img.Properties.Public {
+					// For public images, password or SSH key is required.
+					imageRequiredFlags = append(imageRequiredFlags,
+						append(baseFlagSet, cloudapiv6.ArgImageId, cloudapiv6.ArgPassword),
+						append(baseFlagSet, cloudapiv6.ArgImageId, cloudapiv6.ArgSshKeyPaths),
+					)
+				} else {
+					// For private images, no additional flags beyond image ID are required.
+					imageRequiredFlags = append(imageRequiredFlags,
+						append(baseFlagSet, cloudapiv6.ArgImageId),
+					)
+				}
+			}
+		}
+
+		err = core.CheckRequiredFlagsSets(c.Command, c.NS, imageRequiredFlags...)
 		if err != nil {
 			return err
 		}
 	}
+
 	return nil
 }
 
