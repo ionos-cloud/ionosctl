@@ -1,6 +1,11 @@
 # Changelog
 
 ## [T.B.D]
+### Added
+* Added completer descriptions for `--image-id` flag.
+  * Only relevant images are now completed (e.g. HDD images for `volume create --image-id`).
+  * Completed images will also be ordered so that private (user-uploaded) images are shown first.
+
 ### Fixed
 * Fixed 404 on firewallrule delete command: flag values not properly sent to API
 * Fixed `password` or `sshkey-path` being required for private images
