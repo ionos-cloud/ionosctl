@@ -142,39 +142,25 @@ func GroupsIds() []string {
 }
 
 func ImageIds(customFilters ...func(ionoscloud.ApiImagesGetRequest) ionoscloud.ApiImagesGetRequest) []string {
-	ls, _, err := client.Must().CloudClient.ImagesApi.ImagesGet(context.Background()).
+	req := client.Must().CloudClient.ImagesApi.ImagesGet(context.Background()).
 		Depth(1).
-		OrderBy("public").
-		Execute()
+		OrderBy("public")
 
-	fmt.Println("Made the call")
+	for _, cf := range customFilters {
+		req = cf(req)
+	}
 
+	ls, _, err := req.Execute()
 	if err != nil || ls.Items == nil {
-		fmt.Println("Err: ", err)
-
 		return nil
 	}
 
-	fmt.Println("no err")
-
 	var completions []string
 	for _, image := range *ls.Items {
-		completion := *image.Id
+		completion := *image.Id + "\t"
 
 		if props := image.Properties; props == nil {
 			continue
-		}
-
-		fmt.Println("fine image properties")
-
-		if name := image.Properties.Name; name != nil {
-			fmt.Println("Name ptr: ", name, " , name: ", *name)
-			fmt.Println(name)
-			completion = fmt.Sprintf("%s\t%s", completion, *name)
-		}
-
-		if aliases := image.Properties.ImageAliases; aliases != nil && (*aliases)[0] != "" {
-			completion = fmt.Sprintf("%s (%s)", completion, strings.Join(*aliases, "/"))
 		}
 
 		if license := image.Properties.LicenceType; license != nil {
@@ -185,22 +171,26 @@ func ImageIds(customFilters ...func(ionoscloud.ApiImagesGetRequest) ionoscloud.A
 			completion = fmt.Sprintf("%s %s", completion, *imgType)
 		}
 
-		if loc := image.Properties.Location; loc != nil {
-			completion = fmt.Sprintf("%s - %s", completion, *loc)
-		}
-
-		if loc := image.Properties.Location; loc != nil {
-			completion = fmt.Sprintf("%s -  %s", completion, *loc)
-		}
-
 		if public, ok := image.Properties.GetPublicOk(); ok {
 			if *public {
-				completion = fmt.Sprintf("%s (public)", completion)
+				completion = fmt.Sprintf("%s public", completion)
 			} else {
-				completion = fmt.Sprintf("%s (private)", completion)
+				completion = fmt.Sprintf("%s private", completion)
 			}
 		}
-		fmt.Println("Completion is ", completion)
+
+		if aliases := image.Properties.ImageAliases; aliases != nil && len(*aliases) > 0 && (*aliases)[0] != "" {
+			completion = fmt.Sprintf("%s [%s]", completion, strings.Join(*aliases, ","))
+		}
+
+		if name := image.Properties.Name; name != nil {
+			completion = fmt.Sprintf("%s (%s)", completion, *name)
+		}
+
+		if loc := image.Properties.Location; loc != nil {
+			completion = fmt.Sprintf("%s from %s", completion, *loc)
+		}
+
 		completions = append(completions, completion)
 	}
 	return completions
