@@ -392,15 +392,17 @@ func convertRequestToTable(request ionoscloud.Request) ([]map[string]interface{}
 			continue
 		}
 
-		if typeOk, ok := targetOk.GetTypeOk(); ok && typeOk != nil {
-			targetsInfo = append(targetsInfo, string(*typeOk))
-			targetsInfo = append(targetsInfo, " ")
+		idOk, ok := targetOk.GetIdOk()
+		if !ok || idOk == nil {
+			continue
 		}
 
-		if idOk, ok := targetOk.GetIdOk(); ok && idOk != nil {
-			targetsInfo = append(targetsInfo, *idOk)
-			targetsInfo = append(targetsInfo, " ")
+		typeOk, ok := targetOk.GetTypeOk()
+		if !ok || typeOk == nil {
+			continue
 		}
+
+		targetsInfo = append(targetsInfo, fmt.Sprintf("%s (%s)", *idOk, string(*typeOk)))
 	}
 
 	temp, err := json2table.ConvertJSONToTable("", allRequestJSONPaths, request)
