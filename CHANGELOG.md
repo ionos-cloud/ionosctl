@@ -12,8 +12,13 @@
   * A failed authentication will forcefully set `--provenance`.
 
 * Added completer descriptions for `--image-id` flag.
-  * Only relevant images are now completed (e.g. HDD images for `volume create --image-id`).
+  * Only relevant, usable images are now completed (e.g. HDD images for `volume create --image-id`).
   * Completed images will also be ordered so that private (user-uploaded) images are shown first.
+
+* Added `api-json` output type, which affects `list --all` outputs, which groups children resources by their parent resource.
+
+* Added IPv6 support for Datacenter, LAN, NIC and Firewall Rules.
+
 
 
 ### Changed
@@ -29,9 +34,11 @@
       3. Config File Entries
   * Within each layer, a token takes precedence over a username and password combination. For instance, if a token and a username/password pair are both defined in environment variables, ionosctl will prioritize the token. However, higher layers can override the use of a token from a lower layer. For example, username and password environment variables will supersede a token found in the config file.
 * Moved `login` command under the new `cfg` namespace.
-* All `cfg` namespace commands, with the exception of `cfg location`, are available as root-level commands (i.e. `ionosctl login`), however they are hidden within the help text.
+* All `cfg` namespace commands, except `cfg location`, are available as root-level commands (i.e. `ionosctl login`), however they are hidden within the help text.
+* Empty columns will now be removed from the output
 
 ### Fixed
+* Fixed #249: Added `-o json` missing fields (e.g. `_links`, `type`, `href`, etc)
 * Fixed #297: `ionosctl login` not clearing previous credentials
   * The command will ask for confirmation if a config file already exists at the set path. The user can skip this check by using `--force`
 * Fixed 404 on firewallrule delete command: flag values not properly sent to API
