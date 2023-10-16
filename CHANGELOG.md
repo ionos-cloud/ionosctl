@@ -1,9 +1,50 @@
 # Changelog
 
-## [T.B.D]
+## [v6.7.0] (October 2023)
+
+### Added
+* Added a new namespace, `cfg`, for commands related to the user's config file.
+* Added the `cfg logout` convenience command which deletes sensitive data in the config file
+* Added the `cfg location` convenience command which shows the location of the config file
+* Added the `cfg whoami` command which allows debugging authentication:
+  * If logged in (either with username & password or by JWT), it will print the current user's email
+  * If `--provenance` is set, it will show which api-url is used, the used authentication layer, as well as if using a JWT or username & password.
+  * A failed authentication will forcefully set `--provenance`.
+
+* Added completer descriptions for `--image-id` flag.
+  * Only relevant, usable images are now completed (e.g. HDD images for `volume create --image-id`).
+  * Completed images will also be ordered so that private (user-uploaded) images are shown first.
+
+* Added `api-json` output type, which affects `list --all` outputs, grouping children resources by their parent resource.
+
+* Added IPv6 support for Datacenter, LAN, NIC and Firewall Rules.
+
+
+
+### Changed
+* Changed the `ionosctl login` logic for generating config files:
+  * If a username & password is provided, it will now use these credentials to generate a token, which will be stored in the config file instead of the username & password pair.
+  * If you are unable to use the IONOS API to generate a token, you can use a pre-generated one with `login --token <JWT>`
+  * The default API URL `api.ionos.com` is no longer saved to the config file if the user doesn't provide any API URL.
+  * If using `login --token <JWT>` to directly provide a JWT, it will be validated before being saved to the config file, however the user can set `--skip-verify` to skip this validation.
+* Reworked the authentication logic to be layer-based.
+  * The authentication layers, in order of priority, are:
+      1. Global Flags
+      2. Environment Variables
+      3. Config File Entries
+  * Within each layer, a token takes precedence over a username and password combination. For instance, if a token and a username/password pair are both defined in environment variables, ionosctl will prioritize the token. However, higher layers can override the use of a token from a lower layer. For example, username and password environment variables will supersede a token found in the config file.
+* Moved `login` command under the new `cfg` namespace.
+  * Note that all `cfg` namespace commands except `cfg location`, are also available as root-level commands (i.e. `ionosctl login`) for backwards-compatibility reasons, however they are hidden within the help text.
+* Empty columns will now be removed from the output
+
 ### Fixed
+* Fixed #249: Added `-o json` missing fields (e.g. `_links`, `type`, `href`, etc)
+* Fixed #297: `ionosctl login` not clearing previous credentials
+  * The command will ask for confirmation if a config file already exists at the set path. The user can skip this check by using `--force`
 * Fixed 404 on firewallrule delete command: flag values not properly sent to API
 * Fixed `password` or `sshkey-path` being required for private images
+* Fixed 400 Bad Request by default on `dbaas mongo cluster create` due to `SSD` being the default storage type.
+
 
 ## [v6.6.10] (September 2023)
 ### Fixed

@@ -8,32 +8,20 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
-	"strconv"
 	"strings"
 
+	"github.com/ionos-cloud/ionosctl/v6/internal/die"
+
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
-	cloudv6 "github.com/ionos-cloud/sdk-go/v6"
 
 	"github.com/spf13/viper"
 )
 
-func GetUserData() map[string]string {
-	return map[string]string{
-		constants.Username:  viper.GetString(constants.Username),
-		constants.Password:  viper.GetString(constants.Password),
-		constants.Token:     viper.GetString(constants.Token),
-		constants.ServerUrl: viper.GetString(constants.ServerUrl),
-	}
+var FieldsWithSensitiveDataInConfigFile = []string{
+	constants.CfgUsername, constants.CfgPassword, constants.CfgToken,
 }
 
 // GetServerUrl returns the server URL the SDK should use, with support for layered fallbacks.
-//
-//	  ⚠️ WARNING: NEVER use viper.Get/os.Getenv to try to bypass this function! ⚠️
-//	- In older versions this env var was bound to Viper. Viper does not support case-sensitive keys.
-//	  This means someone could export `IoNoS_API_url` and it would work. So - don't try it. Would be breaking.
-//	- Using viper.Get instead of this func means you rely on non-deterministic global behaviour. Which is hard to debug.
-//	  You won't have the certainty that ArgServerUrl is bound to the chain (ArgServerUrl, EnvServerUrl, CfgServerUrl) when you call viper.Get(ArgServerUrl)
-//	  so, a very natural reaction to this is checking the next chain variables yourself or leaving it blank - which creates a ton of technical debt and code duplication, or unpredictable behaviour for the user
 func GetServerUrl() string {
 	viper.AutomaticEnv()
 	if flagVal := viper.GetString(constants.ArgServerUrl); viper.IsSet(constants.ArgServerUrl) {
@@ -47,7 +35,7 @@ func GetServerUrl() string {
 		// 2. Fallback to non-empty env vars
 		return envVal
 	}
-	if cfgVal := viper.GetString(constants.ServerUrl); viper.IsSet(constants.ServerUrl) {
+	if cfgVal := viper.GetString(constants.CfgServerUrl); viper.IsSet(constants.CfgServerUrl) {
 		// 3. Fallback to non-empty cfg field
 		return cfgVal
 	}
@@ -55,73 +43,89 @@ func GetServerUrl() string {
 	return ""
 }
 
-func GetConfigFile() string {
-	return filepath.Join(getConfigHomeDir(), constants.DefaultConfigFileName)
+// GetServerUrlOrApiIonos calls GetServerUrl and returns https://api.ionos.com if empty
+//
+// It is a useful func for informing the user of the behaviour of the SDKs - For the SDKs if the server URL is empty, they will default to https://api.ionos.com
+func GetServerUrlOrApiIonos() string {
+	if val := GetServerUrl(); val != "" {
+		return val
+	}
+	return constants.DefaultApiURL
+}
+
+// GetConfigFilePath sanitizes the --config flag input and returns the path to the config file.
+// If none set, it returns the default config path.
+func GetConfigFilePath() string {
+	path := filepath.Join(getConfigHomeDir(), constants.DefaultConfigFileName)
+	if fn := constants.ArgConfig; viper.IsSet(fn) {
+		path = viper.GetString(fn)
+	}
+
+	// We don't perform an `isAbs` check before turning it into an absolute path
+	// because it internally has this check and will perform filepath.Clean on it if so
+	// which is a great thing to have (sanitizes the path for multiple separators, path name elements, etc.)
+	absPath, err := filepath.Abs(path)
+	if err != nil {
+		// just use the given provided by the user if err. Read and Write can still handle relative paths,
+		// the only downside is annoyance for the user of not having his pwd prepended to `ionosctl location`
+		return path
+	}
+
+	// Always prefer returning an absolute, cleaned path if possible.
+	return absPath
 }
 
 func getConfigHomeDir() string {
 	configPath, err := os.UserConfigDir()
 	if err != nil {
-		return err.Error()
+		die.Die("is $HOME defined? couldn't get config dir: " + err.Error())
 	}
 	return filepath.Join(configPath, "ionosctl")
 }
 
-func getPermsByOS(os string) int {
-	if os == "windows" {
-		return 666
+func checkFilePermissions(fileInfo os.FileInfo, path string) error {
+	var requiredPerm os.FileMode
+	if runtime.GOOS == "windows" {
+		requiredPerm = 0666
 	} else {
-		return 600
+		requiredPerm = 0600
 	}
+
+	if fileInfo.Mode().Perm() != requiredPerm {
+		return fmt.Errorf("invalid permissions for %s: expected %o, got %o", path, requiredPerm, fileInfo.Mode().Perm())
+	}
+	return nil
 }
 
-func LoadFile() error {
-	path := viper.GetString(constants.ArgConfig)
-	if !filepath.IsAbs(path) {
-		path, _ = filepath.Abs(path)
-	}
-	fileInfo, statErr := os.Stat(path)
-	if statErr != nil {
-		return statErr
-	}
-	perm := fileInfo.Mode().Perm()
-	permNumberBase10 := int64(perm)
-	strBase10 := strconv.FormatInt(permNumberBase10, 8)
-	permNumber, _ := strconv.Atoi(strBase10)
+// Read reads the config file and returns its data as a map
+func Read() (map[string]string, error) {
+	path := GetConfigFilePath()
 
-	system := runtime.GOOS
-
-	permNumberExpected := getPermsByOS(system)
-	if permNumber != permNumberExpected {
-		return fmt.Errorf("config file %s has wrong permissions: %d, should be %d", path, permNumber, permNumberExpected)
+	fileInfo, err := os.Stat(path)
+	if err != nil {
+		return nil, fmt.Errorf("failed getting config file info: %w", err)
 	}
 
-	viper.SetConfigFile(viper.GetString(constants.ArgConfig))
-	return viper.ReadInConfig()
+	err = checkFilePermissions(fileInfo, path)
+	if err != nil {
+		return nil, fmt.Errorf("failed config file permissions check: %w", err)
+	}
+
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return nil, fmt.Errorf("failed reading config file: %w", err)
+	}
+
+	var result map[string]string
+	err = json.Unmarshal(data, &result)
+	if err != nil {
+		return nil, fmt.Errorf("failed unmarshalling config file data: %w", err)
+	}
+
+	return result, nil
 }
 
-// Load binds environment variables (IONOS_USERNAME, IONOS_PASSWORD) to viper, and attempts
-// to read config file for setting fallbacks for these newly-bound viper vars
-func Load() (err error) {
-	_ = viper.BindEnv(constants.Username, cloudv6.IonosUsernameEnvVar)
-	_ = viper.BindEnv(constants.Password, cloudv6.IonosPasswordEnvVar)
-	_ = viper.BindEnv(constants.Token, cloudv6.IonosTokenEnvVar)
-	_ = viper.BindEnv(constants.ServerUrl, cloudv6.IonosApiUrlEnvVar)
-
-	err = LoadFile() // Use config file as a fallback for any of the above variables. Could be used only for api-url
-
-	if viper.IsSet(constants.Token) || (viper.IsSet(constants.Username) && viper.IsSet(constants.Password)) {
-		// Error thrown by LoadFile is recoverable in this case.
-		// We don't want to throw an error e.g. if the user only uses the config file for api-url,
-		// or if he has IONOS_TOKEN, or IONOS_USERNAME and IONOS_PASSWORD exported as env vars and no config file at all
-		return nil
-	}
-
-	return fmt.Errorf("%w: Please export %s, or %s and %s, or do ionosctl login to generate a config file",
-		err, cloudv6.IonosTokenEnvVar, cloudv6.IonosUsernameEnvVar, cloudv6.IonosPasswordEnvVar)
-}
-
-func WriteFile() error {
+func Write(data map[string]string) error {
 	f, err := configFileWriter()
 	if err != nil {
 		return err
@@ -129,12 +133,13 @@ func WriteFile() error {
 
 	defer f.Close()
 
-	b, err := json.MarshalIndent(GetUserData(), "", "  ")
+	b, err := json.MarshalIndent(data, "", "  ")
 	if err != nil {
 		return errors.New("unable to encode configuration to JSON format")
 	}
 
 	_, err = f.Write(b)
+
 	if err != nil {
 		return errors.New("unable to write configuration")
 	}
@@ -142,19 +147,22 @@ func WriteFile() error {
 }
 
 func configFileWriter() (io.WriteCloser, error) {
-	if !viper.IsSet(constants.ArgConfig) {
+	var filePath string
+	if viper.IsSet(constants.ArgConfig) {
+		filePath = viper.GetString(constants.ArgConfig)
+	} else {
 		configPath := getConfigHomeDir()
-		err := os.MkdirAll(configPath, 0755)
+		err := os.MkdirAll(configPath, 0700) // Directory permissions are set to 0700
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("failed to create config directory: %w", err)
 		}
+		filePath = filepath.Join(configPath, constants.DefaultConfigFileName)
 	}
-	f, err := os.Create(viper.GetString(constants.ArgConfig))
+
+	f, err := os.OpenFile(filePath, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0600) // File is directly created with 0600 permissions
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to create config file: %w", err)
 	}
-	if err := os.Chmod(viper.GetString(constants.ArgConfig), 0600); err != nil {
-		return nil, err
-	}
+
 	return f, nil
 }

@@ -175,7 +175,16 @@ Required values to run command:
 	})
 	create.AddUUIDFlag(cloudapiv6.ArgImageId, "", "", "The Image Id or Snapshot Id to be used as template for the new Volume. A password or SSH Key need to be set")
 	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgImageId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.ImageIds(), cobra.ShellCompDirectiveNoFileComp
+		return completer.ImageIds(func(r ionoscloud.ApiImagesGetRequest) ionoscloud.ApiImagesGetRequest {
+			// Completer for HDD images that are in the same location as the datacenter
+			chosenDc, _, err := client.Must().CloudClient.DataCentersApi.DatacentersFindById(context.Background(),
+				viper.GetString(core.GetFlagName(create.NS, cloudapiv6.ArgDataCenterId))).Execute()
+			if err != nil || chosenDc.Properties == nil || chosenDc.Properties.Location == nil {
+				return ionoscloud.ApiImagesGetRequest{}
+			}
+
+			return r.Filter("location", *chosenDc.Properties.Location).Filter("imageType", "HDD")
+		}), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	create.AddStringFlag(cloudapiv6.ArgImageAlias, cloudapiv6.ArgImageAliasShort, "", "The Image Alias to set instead of Image Id. A password or SSH Key need to be set")
