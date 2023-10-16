@@ -43,6 +43,7 @@
   * The command will ask for confirmation if a config file already exists at the set path. The user can skip this check by using `--force`
 * Fixed 404 on firewallrule delete command: flag values not properly sent to API
 * Fixed `password` or `sshkey-path` being required for private images
+* Fixed 400 Bad Request by default on `dbaas mongo cluster create` due to `SSD` being the default storage type.
 
 
 ## [v6.6.10] (September 2023)
