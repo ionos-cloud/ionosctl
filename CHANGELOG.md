@@ -1,5 +1,11 @@
 # Changelog
 
+## [v6.7.1] (???)
+
+## Changed
+
+* Changed how `request targets` are printed for better readability
+
 ## [v6.7.0] (October 2023)
 
 ### Added
