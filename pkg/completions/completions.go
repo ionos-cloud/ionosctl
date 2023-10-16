@@ -3,49 +3,72 @@ package completions
 import (
 	"fmt"
 	"strings"
+
+	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
 )
 
-type Completer struct {
-	fmt.Stringer
-
-	primaryInfo   string
-	secondaryInfo []string
-	infoSrc       map[string]interface{}
+type completionInfo struct {
+	primary   string
+	secondary []string
 }
 
-func NewCompleter(infoSrc map[string]interface{}, primaryInfo string) Completer {
-	if _, ok := infoSrc[primaryInfo]; !ok {
-		return Completer{}
+type Completer struct {
+	hasSecondaryInfo bool
+
+	info     []completionInfo
+	infoSrcs []map[string]interface{}
+}
+
+func NewCompleter(infoSrcs []map[string]interface{}, primaryInfoKey string) Completer {
+	var info []completionInfo
+
+	for _, infoSrc := range infoSrcs {
+		temp, ok := infoSrc[primaryInfoKey]
+		if !ok {
+			return Completer{}
+		}
+
+		info = append(info, completionInfo{
+			primary:   fmt.Sprintf("%v", temp),
+			secondary: nil,
+		})
 	}
 
 	return Completer{
-		infoSrc:       infoSrc,
-		primaryInfo:   fmt.Sprintf("%v", infoSrc[primaryInfo]),
-		secondaryInfo: nil,
+		infoSrcs:         infoSrcs,
+		info:             info,
+		hasSecondaryInfo: false,
 	}
 }
 
-func (c Completer) String() string {
-	if c.secondaryInfo == nil {
-		return c.primaryInfo
+func (c Completer) ToString() []string {
+	if !c.hasSecondaryInfo {
+		return functional.Map(c.info, func(t completionInfo) string {
+			return t.primary
+		})
 	}
 
-	return fmt.Sprintf("%s\t %s", c.primaryInfo, strings.Join(c.secondaryInfo, " "))
+	return functional.Map(c.info, func(t completionInfo) string {
+		return fmt.Sprintf("%s\t %s", t.primary, strings.Join(t.secondary, " "))
+	})
 }
 
-func (c Completer) AddInfo(targetInfo string, additionalFormatting ...string) Completer {
-	infoRaw, ok := c.infoSrc[targetInfo]
-	if !ok {
-		return Completer{}
+func (c Completer) AddInfo(targetInfoKey string, additionalFormatting ...string) Completer {
+	for i, infoSrc := range c.infoSrcs {
+		infoRaw, ok := infoSrc[targetInfoKey]
+		if !ok {
+			return Completer{}
+		}
+
+		info := fmt.Sprintf("%v", infoRaw)
+		for _, format := range additionalFormatting {
+			info = fmt.Sprintf(format, info)
+		}
+
+		c.info[i].secondary = append(c.info[i].secondary, info)
 	}
 
-	info := fmt.Sprintf("%v", infoRaw)
-
-	for _, format := range additionalFormatting {
-		info = fmt.Sprintf(format, info)
-	}
-
-	c.secondaryInfo = append(c.secondaryInfo, info)
+	c.hasSecondaryInfo = true
 
 	return c
 }

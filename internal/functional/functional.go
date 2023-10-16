@@ -61,14 +61,14 @@ func Fold[T any, Acc any](xs []T, f func(Acc, T) Acc, acc Acc) Acc {
 }
 
 // Map applies a function to each element of a slice and returns the modified slice without considering the index of each element.
-func Map[T comparable, K any](s []T, f func(T) K) []K {
+func Map[T any, K any](s []T, f func(T) K) []K {
 	return MapIdx(s, func(_ int, t T) K {
 		return f(t)
 	})
 }
 
 // MapIdx applies a function to each element and index of a slice, returning the modified slice with consideration of the index.
-func MapIdx[V comparable, R any](s []V, f func(int, V) R) []R {
+func MapIdx[V any, R any](s []V, f func(int, V) R) []R {
 	sm := make([]R, len(s))
 	for i, v := range s {
 		sm[i] = f(i, v)
