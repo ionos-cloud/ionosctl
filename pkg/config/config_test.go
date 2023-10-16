@@ -1,167 +1,198 @@
-package config
+package config_test
 
 import (
+	"encoding/json"
+	"io/ioutil"
 	"os"
-	"path/filepath"
+	"runtime"
 	"testing"
+	"time"
+
+	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
+	"github.com/stretchr/testify/assert"
+
+	"github.com/spf13/viper"
 
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
-
-	sdk "github.com/ionos-cloud/sdk-go/v6"
-	"github.com/spf13/viper"
-	"github.com/stretchr/testify/assert"
 )
 
-func TestUsingJustTokenEnvVar(t *testing.T) {
-	os.Clearenv()
-	viper.Reset()
+func TestRead(t *testing.T) {
+	tests := []struct {
+		name     string
+		filename string
+		data     string
+		perm     os.FileMode
+		wantErr  bool
+		errMsg   string
+	}{
+		{
+			name:     "should read the configuration file successfully",
+			filename: "config.json",
+			data:     `{"key":"value", "key2": "value2", "key3": "value3"}`,
+			perm:     0600,
+			wantErr:  false,
+		},
+		{
+			name:     "should return an error when the file does not exist",
+			filename: "non-existent-file",
+			wantErr:  true,
+			errMsg:   "failed getting config file info",
+		},
+		{
+			name:     "should return an error when the file has invalid permissions",
+			filename: "bad-permissions.json",
+			data:     `{"key":"value"}`,
+			perm:     0777,
+			wantErr:  true,
+			errMsg:   "expected 600, got 777",
+		},
+		{
+			name:     "should return an error when the file has invalid json",
+			filename: "bad-json.json",
+			data:     `{"key":`,
+			perm:     0600,
+			wantErr:  true,
+			errMsg:   "failed unmarshalling config file data: unexpected end of JSON input",
+		},
+	}
 
-	viper.SetConfigFile(os.DevNull)
-	viper.Set(constants.ArgConfig, os.DevNull)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if tt.data != "" {
+				tmpfile, err := ioutil.TempFile("", tt.filename)
+				assert.NoError(t, err)
 
-	assert.NoError(t, os.Setenv(sdk.IonosTokenEnvVar, "tok"))
-	assert.NoError(t, Load())
-	assert.Equal(t, "tok", viper.GetString(constants.Token))
-	assert.Equal(t, "", viper.GetString(constants.Username))
-	assert.Equal(t, "", viper.GetString(constants.Password))
-	assert.Equal(t, "", viper.GetString(constants.ServerUrl))
+				defer os.Remove(tmpfile.Name())
+
+				_, err = tmpfile.Write([]byte(tt.data))
+				assert.NoError(t, err)
+
+				if runtime.GOOS == "windows" && tt.perm != 0600 {
+					// If using Windows, skip any tests related to invalid permissions.
+					// Refer to os.Chmod documentation: On Windows, can only set the "read" bit of the permissions.
+					// This would lead to the test 'should_return_an_error_when_the_file_has_invalid_permissions' breaking.
+					t.SkipNow()
+				}
+
+				err = tmpfile.Chmod(tt.perm)
+				assert.NoError(t, err)
+
+				err = tmpfile.Close()
+				assert.NoError(t, err)
+
+				viper.Set(constants.ArgConfig, tmpfile.Name())
+			} else {
+				viper.Set(constants.ArgConfig, tt.filename)
+			}
+
+			cfg, err := config.Read()
+
+			if tt.wantErr {
+				assert.Error(t, err)
+				assert.ErrorContains(t, err, tt.errMsg)
+			} else {
+				assert.NoError(t, err)
+				assert.Equal(t, "value", cfg["key"])
+				assert.Equal(t, "value2", cfg["key2"])
+				assert.Equal(t, "value3", cfg["key3"])
+			}
+		})
+	}
 }
 
-func TestTokEnvWithUserPassConfigBackup(t *testing.T) {
-	// Useful for API routes which don't accept bearer tokens, or custom IonosCTL commands (Image Upload)
-	os.Clearenv()
-	viper.Reset()
+func TestWrite(t *testing.T) {
+	tests := []struct {
+		name    string
+		data    map[string]string
+		wantErr bool
+		errMsg  string
+	}{
+		{
+			name:    "should write the configuration file successfully",
+			data:    map[string]string{"key": "value", "key2": "value2", "key3": "value3"},
+			wantErr: false,
+		},
+	}
 
-	assert.NoError(t, os.Setenv(sdk.IonosTokenEnvVar, "tok"))
-	path := filepath.Join("..", "testdata", "config_user_pass.json") // TODO: These files should be created and then destroyed by the tests
-	viper.SetConfigFile(path)
-	viper.Set(constants.ArgConfig, path)
-	assert.NoError(t, os.Chmod(path, 0600))
-	assert.NoError(t, Load())
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			tmpfile, err := ioutil.TempFile("", "config.json")
+			assert.NoError(t, err)
 
-	assert.Equal(t, "tok", viper.GetString(constants.Token))
-	assert.Equal(t, "test@ionos.com", viper.GetString(constants.Username))
-	assert.Equal(t, "test", viper.GetString(constants.Password))
-	assert.Equal(t, "", viper.GetString(constants.ServerUrl))
+			defer os.Remove(tmpfile.Name())
+
+			if err := tmpfile.Close(); err != nil {
+				t.Fatal(err)
+			}
+
+			viper.Set(constants.ArgConfig, tmpfile.Name())
+
+			err = config.Write(tt.data)
+
+			if tt.wantErr {
+				assert.Error(t, err)
+				assert.EqualError(t, err, tt.errMsg)
+				return
+			}
+
+			assert.NoError(t, err)
+
+			// Validate using ioutil.ReadFile
+			data, err := ioutil.ReadFile(tmpfile.Name())
+			assert.NoError(t, err)
+
+			var cfg map[string]string
+			err = json.Unmarshal(data, &cfg)
+			assert.NoError(t, err)
+
+			assert.Equal(t, tt.data, cfg)
+
+			// Validate using config.Read
+			cfg, err = config.Read()
+			assert.NoError(t, err)
+
+			assert.Equal(t, tt.data, cfg)
+		})
+	}
 }
 
-func TestTokEnvWithFullConfig(t *testing.T) {
-	// Config token should not override env var token
-	os.Clearenv()
-	viper.Reset()
+func TestConcurrency(t *testing.T) {
+	tmpfile, err := ioutil.TempFile("", "config.json")
+	assert.NoError(t, err)
 
-	assert.NoError(t, os.Setenv(sdk.IonosTokenEnvVar, "tok"))
-	path := filepath.Join("..", "testdata", "config.json") // TODO: These files should be created and then destroyed by the tests
-	viper.SetConfigFile(path)
-	viper.Set(constants.ArgConfig, path)
-	assert.NoError(t, os.Chmod(path, 0600))
-	assert.NoError(t, Load())
+	defer os.Remove(tmpfile.Name())
 
-	assert.Equal(t, "tok", viper.GetString(constants.Token))
-	assert.Equal(t, "test@ionos.com", viper.GetString(constants.Username))
-	assert.Equal(t, "test", viper.GetString(constants.Password))
-	assert.Equal(t, "https://api.ionos.com", viper.GetString(constants.ServerUrl))
-}
+	if err := tmpfile.Close(); err != nil {
+		t.Fatal(err)
+	}
 
-func TestEnvVarsHavePriority(t *testing.T) {
-	// Make sure env vars not overriden by config file
-	os.Clearenv()
-	viper.Reset()
+	viper.Set(constants.ArgConfig, tmpfile.Name())
 
-	assert.NoError(t, os.Setenv(sdk.IonosTokenEnvVar, "env_tok"))
-	assert.NoError(t, os.Setenv(sdk.IonosUsernameEnvVar, "env_user"))
-	assert.NoError(t, os.Setenv(sdk.IonosPasswordEnvVar, "env_pass"))
-	assert.NoError(t, os.Setenv(sdk.IonosApiUrlEnvVar, "env_url"))
-	path := filepath.Join("..", "testdata", "config.json") // TODO: These files should be created and then destroyed by the tests
-	viper.SetConfigFile(path)
-	viper.Set(constants.ArgConfig, path)
-	assert.NoError(t, os.Chmod(path, 0600))
-	assert.NoError(t, Load())
+	data1 := map[string]string{"key1": "value1"}
+	data2 := map[string]string{"key2": "value2"}
 
-	assert.Equal(t, "env_tok", viper.GetString(constants.Token))
-	assert.Equal(t, "env_user", viper.GetString(constants.Username))
-	assert.Equal(t, "env_pass", viper.GetString(constants.Password))
-	assert.Equal(t, "env_url", viper.GetString(constants.ServerUrl))
-}
+	go func() {
+		for i := 0; i < 10; i++ {
+			err := config.Write(data1)
+			assert.NoError(t, err)
+		}
+	}()
 
-func TestAuthErr(t *testing.T) {
-	os.Clearenv()
-	viper.Reset()
+	go func() {
+		for i := 0; i < 10; i++ {
+			err := config.Write(data2)
+			assert.NoError(t, err)
+		}
+	}()
 
-	viper.SetConfigFile(os.DevNull)
-	viper.Set(constants.ArgConfig, os.DevNull)
+	time.Sleep(1 * time.Second)
 
-	assert.NoError(t, os.Setenv(sdk.IonosUsernameEnvVar, "env_user"))
-	assert.NoError(t, os.Setenv(sdk.IonosApiUrlEnvVar, "env_url"))
+	cfg, err := config.Read()
+	assert.NoError(t, err)
 
-	assert.Error(t, Load()) // Need password or token
-
-	assert.Equal(t, "env_user", viper.GetString(constants.Username))
-	assert.Equal(t, "env_url", viper.GetString(constants.ServerUrl))
-}
-
-func TestUsingJustUsernameAndPasswordEnvVar(t *testing.T) {
-	os.Clearenv()
-	viper.Reset()
-
-	viper.SetConfigFile(os.DevNull)
-	viper.Set(constants.ArgConfig, os.DevNull)
-
-	assert.NoError(t, os.Setenv(sdk.IonosUsernameEnvVar, "user"))
-	assert.NoError(t, os.Setenv(sdk.IonosPasswordEnvVar, "pass"))
-	assert.NoError(t, Load())
-	assert.Equal(t, "", viper.GetString(constants.Token))
-	assert.Equal(t, "user", viper.GetString(constants.Username))
-	assert.Equal(t, "pass", viper.GetString(constants.Password))
-	assert.Equal(t, "", viper.GetString(constants.ServerUrl))
-}
-
-func TestBadConfigPerms(t *testing.T) {
-	os.Clearenv()
-	viper.Reset()
-
-	path := filepath.Join("..", "testdata", "config.json") // TODO: These files should be created and then destroyed by the tests
-	viper.SetConfigFile(path)
-	viper.Set(constants.ArgConfig, path)
-	assert.NoError(t, os.Chmod(path, 0000)) // no read perms
-	assert.Error(t, Load())
-
-	assert.Equal(t, "", viper.GetString(constants.Token))
-	assert.Equal(t, "", viper.GetString(constants.Username))
-	assert.Equal(t, "", viper.GetString(constants.Password))
-	assert.Equal(t, "", viper.GetString(constants.ServerUrl))
-}
-
-func TestUsingJustTokenConfig(t *testing.T) {
-	os.Clearenv()
-	viper.Reset()
-
-	path := filepath.Join("..", "testdata", "config_just_token.json") // TODO: These files should be created and then destroyed by the tests
-	viper.SetConfigFile(path)
-	viper.Set(constants.ArgConfig, path)
-	assert.NoError(t, os.Chmod(path, 0600))
-	assert.NoError(t, Load())
-
-	assert.Equal(t, "tok", viper.GetString(constants.Token))
-	assert.Equal(t, "", viper.GetString(constants.Username))
-	assert.Equal(t, "", viper.GetString(constants.Password))
-	assert.Equal(t, "", viper.GetString(constants.ServerUrl))
-}
-
-func TestUsingJustUsernameAndPasswordConfig(t *testing.T) {
-	os.Clearenv()
-	viper.Reset()
-
-	path := filepath.Join("..", "testdata", "config_user_pass.json") // TODO: These files should be created and then destroyed by the tests
-	viper.SetConfigFile(path)
-	viper.Set(constants.ArgConfig, path)
-	assert.NoError(t, os.Chmod(path, 0600))
-	assert.NoError(t, Load())
-
-	assert.Equal(t, "", viper.GetString(constants.Token))
-	assert.Equal(t, "test@ionos.com", viper.GetString(constants.Username))
-	assert.Equal(t, "test", viper.GetString(constants.Password))
-	assert.Equal(t, "", viper.GetString(constants.ServerUrl))
+	// we cannot predict which write will happen last
+	possibleResults := []map[string]string{data1, data2}
+	assert.Contains(t, possibleResults, cfg)
 }
 
 func TestGetServerUrl(t *testing.T) {
@@ -221,43 +252,12 @@ func TestGetServerUrl(t *testing.T) {
 			// Mock viper values
 			viper.Set(constants.ArgServerUrl, tt.flagVal)
 			viper.Set(constants.EnvServerUrl, tt.envVal)
-			viper.Set(constants.ServerUrl, tt.cfgVal)
+			viper.Set(constants.CfgServerUrl, tt.cfgVal)
 
-			got := GetServerUrl()
+			got := config.GetServerUrl()
 			if got != tt.expectedServerUrl {
 				t.Errorf("Expected %s but got %s", tt.expectedServerUrl, got)
 			}
 		})
 	}
-}
-
-func TestLoadFile(t *testing.T) {
-	os.Clearenv()
-	viper.Reset()
-
-	viper.SetConfigFile(filepath.Join("..", "testdata", "config.json")) // TODO: These files should be created and then destroyed by the tests
-	viper.Set(constants.ArgConfig, filepath.Join("..", "testdata", "config.json"))
-	assert.NoError(t, os.Chmod(filepath.Join("..", "testdata", "config.json"), 0600))
-	assert.NoError(t, LoadFile())
-	assert.Equal(t, "test@ionos.com", viper.GetString(constants.Username))
-	assert.Equal(t, "test", viper.GetString(constants.Password))
-	assert.Equal(t, "jwt-token", viper.GetString(constants.Token))
-	assert.Equal(t, "https://api.ionos.com", viper.GetString(constants.ServerUrl))
-}
-
-func TestLoadEnvFallback(t *testing.T) {
-	os.Clearenv()
-	viper.Reset()
-
-	viper.SetConfigFile(filepath.Join("..", "testdata", "config.json")) // TODO: These files should be created and then destroyed by the tests
-	viper.Set(constants.ArgConfig, filepath.Join("..", "testdata", "config.json"))
-	assert.NoError(t, os.Setenv(sdk.IonosUsernameEnvVar, "user"))
-	assert.NoError(t, os.Setenv(sdk.IonosPasswordEnvVar, "pass"))
-	assert.NoError(t, os.Setenv(sdk.IonosTokenEnvVar, "token"))
-	assert.NoError(t, os.Setenv(sdk.IonosApiUrlEnvVar, "url"))
-	assert.NoError(t, Load())
-	assert.Equal(t, "user", viper.GetString(constants.Username))
-	assert.Equal(t, "pass", viper.GetString(constants.Password))
-	assert.Equal(t, "token", viper.GetString(constants.Token))
-	assert.Equal(t, "url", viper.GetString(constants.ServerUrl))
 }

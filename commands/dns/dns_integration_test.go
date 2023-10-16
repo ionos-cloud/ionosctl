@@ -46,7 +46,7 @@ func TestDNSCommands(t *testing.T) {
 // TODO: Improve me with the new config PR
 func setup() error {
 	if GoodToken = os.Getenv("IONOS_TOKEN"); GoodToken != "" {
-		cl, _ = client.NewTestClient("", "", GoodToken, "")
+		cl = client.NewClient("", "", GoodToken, "")
 		return nil
 	}
 
@@ -59,11 +59,10 @@ func setup() error {
 		return fmt.Errorf("empty user/pass")
 	}
 
-	tempClNoToken, _ := client.NewTestClient(GoodUsername, GoodPassword, "", "")
+	tempClNoToken := client.NewClient(GoodUsername, GoodPassword, "", "")
 	tok, _, err := tempClNoToken.AuthClient.TokensApi.TokensGenerate(context.Background()).Execute()
-
 	if err != nil {
-		return err
+		return fmt.Errorf("failed using username & password to generate a token for DNS tests: %w", err)
 	}
 
 	if tok.Token == nil {
@@ -71,9 +70,9 @@ func setup() error {
 	}
 
 	GoodToken = *tok.Token
-	tokCreationTime = time.Now().In(time.UTC).Add(-1 * time.Minute)
+	tokCreationTime = time.Now().In(time.UTC).Add(-10 * time.Second)
 
-	cl, _ = client.NewTestClient("", "", GoodToken, "")
+	cl = client.NewClient("", "", *tok.Token, "")
 
 	return nil
 }
@@ -82,7 +81,7 @@ func setup() error {
 func TestZone(t *testing.T) {
 	var err error
 	viper.Set(constants.ArgOutput, "text")
-	viper.Set(constants.Token, GoodToken)
+	viper.Set(constants.ArgToken, GoodToken)
 
 	// === `ionosctl dns z create`
 	c := zone.ZonesPostCmd()
@@ -101,6 +100,7 @@ func TestZone(t *testing.T) {
 
 	// Try to find the zone created by the command
 	zoneByName, _, err := client.Must().DnsClient.ZonesApi.ZonesGet(context.Background()).FilterZoneName(randName).Limit(1).Execute()
+
 	assert.NoError(t, err)
 	assert.NotEmpty(t, *zoneByName.Items)
 	sharedZ = (*zoneByName.Items)[0]
@@ -147,7 +147,7 @@ func TestZone(t *testing.T) {
 
 func TestRecord(t *testing.T) {
 	var err error
-	viper.Set(constants.Token, GoodToken)
+	viper.Set(constants.CfgToken, GoodToken)
 	viper.Set(constants.ArgOutput, "text")
 
 	// `ionosctl dns r create`
@@ -213,11 +213,11 @@ func Cleanup() {
 		log.Printf("Failed deletion: %s", err.Error())
 	}
 
-	cleanupTokensCreatedBeforeDate(tokCreationTime)
+	cleanupTokensCreatedAfterDate(tokCreationTime)
 }
 
 // TODO: Make some util func for me! It would also be useful for ionosctl users.
-func cleanupTokensCreatedBeforeDate(taym time.Time) {
+func cleanupTokensCreatedAfterDate(taym time.Time) {
 	toks, _, err := cl.AuthClient.TokensApi.TokensGet(context.Background()).Execute()
 
 	if err != nil {
@@ -238,10 +238,10 @@ func cleanupTokensCreatedBeforeDate(taym time.Time) {
 		// Delete the token if it was created after setup
 		if date.After(taym) {
 			_, _, err := cl.AuthClient.TokensApi.TokensDeleteById(context.Background(), *t.Id).Execute()
-
 			if err != nil {
 				panic(err)
 			}
+			break
 		}
 	}
 }

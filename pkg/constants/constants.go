@@ -20,6 +20,13 @@ const (
 	FlagLocation        = "location"
 	FlagLocationShort   = "l"
 	FlagOffset          = "offset"
+	// DescAuthenticationOrder explains auth order. Embed this in any auth-related commands
+	DescAuthenticationOrder = `AUTHENTICATION ORDER
+ionosctl uses a layered approach for authentication, prioritizing sources in this order:
+  1. Global flags
+  2. Environment variables
+  3. Config file entries
+Within each layer, a token takes precedence over a username and password combination. For instance, if a token and a username/password pair are both defined in environment variables, ionosctl will prioritize the token. However, higher layers can override the use of a token from a lower layer. For example, username and password environment variables will supersede a token found in the config file.`
 	FlagMaxResults      = "max-results"
 	FlagMaxResultsShort = "M"
 	FlagCidr            = "cidr"
@@ -66,19 +73,15 @@ const (
 
 // legacy flags. TODO: Arg should be renamed to Flag.
 const (
-	ArgConfig              = "config"
-	ArgConfigShort         = "c"
-	ArgOutput              = "output"
-	ArgOutputShort         = "o"
-	ArgQuiet               = "quiet"
-	ArgQuietShort          = "q"
-	ArgVerbose             = "verbose"
-	ArgVerboseShort        = "v"
-	ArgDepth               = "depth"
-	ArgDepthShort          = "D"
-	ArgServerUrl           = "api-url"
-	EnvServerUrl           = "IONOS_API_URL"
-	ArgServerUrlShort      = "u"
+	ArgOutput       = "output"
+	ArgOutputShort  = "o"
+	ArgQuiet        = "quiet"
+	ArgQuietShort   = "q"
+	ArgVerbose      = "verbose"
+	ArgVerboseShort = "v"
+	ArgDepth        = "depth"
+	ArgDepthShort   = "D"
+
 	ArgAll                 = "all"
 	ArgAllShort            = "a"
 	ArgForce               = "force"
@@ -92,8 +95,6 @@ const (
 	ArgTimeoutShort        = "t"
 	ArgCols                = "cols"
 	ArgUpdates             = "updates"
-	ArgToken               = "token"
-	ArgTokenShort          = "t"
 	ArgUser                = "user"
 	ArgPassword            = "password"
 	ArgPasswordShort       = "p"
@@ -129,12 +130,30 @@ const (
 	ErrWaitDeleteAll = "error occurred waiting on removing %v with ID: %v. error: %w" // TODO: cleanup constant. reduce duplication
 )
 
+// Config
 const (
-	Username         = "userdata.name"
-	Password         = "userdata.password"
-	Token            = "userdata.token"
-	ServerUrl        = "userdata.api-url"
+	ArgConfig         = "config"
+	ArgConfigShort    = "c"
+	ArgServerUrl      = "api-url"
+	ArgServerUrlShort = "u"
+	ArgToken          = "token"
+	ArgTokenShort     = "t"
+
+	EnvUsername  = "IONOS_USERNAME"
+	EnvPassword  = "IONOS_PASSWORD"
+	EnvToken     = "IONOS_TOKEN"
+	EnvServerUrl = "IONOS_API_URL"
+
+	CfgToken     = "userdata.token"
+	CfgServerUrl = "userdata.api-url"
+	CfgUsername  = "userdata.name"
+	CfgPassword  = "userdata.password"
+
 	CLIHttpUserAgent = "cli-user-agent"
+
+	FlagProvenance      = "provenance"
+	FlagProvenanceShort = "p"
+	FlagSkipVerify      = "skip-verify"
 )
 
 // Resource info
