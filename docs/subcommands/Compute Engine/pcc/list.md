@@ -1,5 +1,5 @@
 ---
-description: "List Private Cross-Connects"
+description: "List Cross-Connects"
 ---
 
 # PccList
@@ -20,7 +20,7 @@ For `list` command:
 
 ## Description
 
-Use this command to get a list of existing Private Cross-Connects available on your account.
+Use this command to get a list of existing Cross-Connects available on your account.
 
 You can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.
 Available Filters:

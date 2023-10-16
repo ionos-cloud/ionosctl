@@ -1,5 +1,5 @@
 ---
-description: "Delete a Private Cross-Connect"
+description: "Delete a Cross-Connect"
 ---
 
 # PccDelete
@@ -20,7 +20,7 @@ For `delete` command:
 
 ## Description
 
-Use this command to delete a Private Cross-Connect.
+Use this command to delete a Cross-Connect.
 
 Required values to run command:
 
@@ -29,7 +29,7 @@ Required values to run command:
 ## Options
 
 ```text
-  -a, --all                Delete all Private Cross-Connects.
+  -a, --all                Delete all Cross-Connects.
   -u, --api-url string     Override default host url (default "https://api.ionos.com")
       --cols strings       Set of columns to be printed on output 
                            Available columns: [PccId Name Description State] (default [PccId,Name,Description,State])
@@ -38,11 +38,11 @@ Required values to run command:
   -f, --force              Force command to execute without user input
   -h, --help               Print usage
   -o, --output string      Desired output format [text|json|api-json] (default "text")
-  -i, --pcc-id string      The unique Private Cross-Connect Id (required)
+  -i, --pcc-id string      The unique Cross-Connect Id (required)
   -q, --quiet              Quiet output
-  -t, --timeout int        Timeout option for Request for Private Cross-Connect deletion [seconds] (default 60)
+  -t, --timeout int        Timeout option for Request for Cross-Connect deletion [seconds] (default 60)
   -v, --verbose            Print step-by-step process when running command
-  -w, --wait-for-request   Wait for the Request for Private Cross-Connect deletion to be executed
+  -w, --wait-for-request   Wait for the Request for Cross-Connect deletion to be executed
 ```
 
 ## Examples
