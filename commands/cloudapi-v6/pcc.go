@@ -46,6 +46,7 @@ func PccCmd() *core.Command {
 	pccCmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "pcc",
+			Aliases:          []string{"cc"},
 			Short:            "Cross-Connect Operations",
 			Long:             "The sub-commands of `ionosctl pcc` allow you to list, get, create, update, delete Cross-Connect. To add Cross-Connect to a Lan, check the `ionosctl lan update` command.",
 			TraverseChildren: true,

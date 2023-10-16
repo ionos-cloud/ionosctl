@@ -12,6 +12,12 @@ ionosctl pcc list [flags]
 
 ## Aliases
 
+For `pcc` command:
+
+```text
+[cc]
+```
+
 For `list` command:
 
 ```text

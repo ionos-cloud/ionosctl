@@ -12,6 +12,12 @@ ionosctl pcc create [flags]
 
 ## Aliases
 
+For `pcc` command:
+
+```text
+[cc]
+```
+
 For `create` command:
 
 ```text

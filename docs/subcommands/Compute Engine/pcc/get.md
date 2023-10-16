@@ -12,6 +12,12 @@ ionosctl pcc get [flags]
 
 ## Aliases
 
+For `pcc` command:
+
+```text
+[cc]
+```
+
 For `get` command:
 
 ```text

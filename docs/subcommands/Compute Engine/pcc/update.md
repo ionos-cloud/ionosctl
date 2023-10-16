@@ -12,6 +12,12 @@ ionosctl pcc update [flags]
 
 ## Aliases
 
+For `pcc` command:
+
+```text
+[cc]
+```
+
 For `update` command:
 
 ```text

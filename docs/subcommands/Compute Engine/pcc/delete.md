@@ -12,6 +12,12 @@ ionosctl pcc delete [flags]
 
 ## Aliases
 
+For `pcc` command:
+
+```text
+[cc]
+```
+
 For `delete` command:
 
 ```text
