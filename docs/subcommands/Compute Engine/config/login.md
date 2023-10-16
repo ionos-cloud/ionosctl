@@ -54,7 +54,7 @@ Within each layer, a token takes precedence over a username and password combina
   -c, --config string     Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -f, --force             Force command to execute without user input
   -h, --help              Print usage
-  -o, --output string     Desired output format [text|json] (default "text")
+  -o, --output string     Desired output format [text|json|api-json] (default "text")
   -p, --password string   Password to authenticate. Will be used to generate a token
   -q, --quiet             Quiet output
       --skip-verify       Forcefully write the provided token to the config file without verifying if it is valid. Note: --token is required
