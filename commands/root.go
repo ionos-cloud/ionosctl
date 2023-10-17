@@ -5,6 +5,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/ionos-cloud/ionosctl/v6/commands/cfg"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dns"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 
@@ -97,7 +98,7 @@ func init() {
 	rootPFlagSet.BoolP("help", "h", false, "Print usage")
 	// Add Custom Flags
 	rootPFlagSet.StringVarP(
-		&cfgFile, constants.ArgConfig, constants.ArgConfigShort, config.GetConfigFile(),
+		&cfgFile, constants.ArgConfig, constants.ArgConfigShort, config.GetConfigFilePath(),
 		"Configuration file used for authentication",
 	)
 	_ = viper.BindPFlag(constants.ArgConfig, rootPFlagSet.Lookup(constants.ArgConfig))
@@ -163,7 +164,19 @@ func initConfig() {
 // AddCommands adds sub commands to the base command.
 func addCommands() {
 	rootCmd.AddCommand(VersionCmd())
-	rootCmd.AddCommand(LoginCmd())
+	// cfg
+	rootCmd.AddCommand(cfg.ConfigCmd())
+	// Config namespace commands are also available via the root command, but are hidden
+	for _, cmd := range cfg.ConfigCmd().SubCommands() {
+		if cmd.Name() == "location" {
+			// This one is confusing without `cfg` namespace;
+			// It also would override CPU Architecture locations command, so skip it.
+			continue
+		}
+		cmd.Command.Hidden = true
+		rootCmd.AddCommand(cmd)
+	}
+
 	// V6 Resources Commands
 	rootCmd.AddCommand(cloudapiv6.LocationCmd())
 	rootCmd.AddCommand(cloudapiv6.DatacenterCmd())
