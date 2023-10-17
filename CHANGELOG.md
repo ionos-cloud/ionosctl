@@ -2,6 +2,10 @@
 
 ## [v6.7.1] (???)
 
+## Added
+
+* Added new `completions` package for dynamically generating descriptive completions
+
 ## Changed
 
 * Changed how `request targets` are printed for better readability

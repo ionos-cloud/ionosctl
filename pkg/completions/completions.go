@@ -68,7 +68,9 @@ func (c Completer) AddInfo(targetInfoKey string, additionalFormatting ...string)
 		c.info[i].secondary = append(c.info[i].secondary, info)
 	}
 
-	c.hasSecondaryInfo = true
+	if !c.hasSecondaryInfo {
+		c.hasSecondaryInfo = true
+	}
 
 	return c
 }
