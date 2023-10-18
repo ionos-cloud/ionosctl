@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/ionos-cloud/ionosctl/v6/internal/pointer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/completions"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/json2table"
 	"github.com/stretchr/testify/assert"
@@ -26,14 +27,10 @@ var (
 		"float64": "float64",
 	}
 
-	testStr     = "test-string"
-	testInt32   = int32(123)
-	testFloat64 = float64(12.5)
-
 	testInnerStruct = innerStruct{
-		Str:     &testStr,
-		Integer: &testInt32,
-		Float:   &testFloat64,
+		Str:     pointer.From("test-string"),
+		Integer: pointer.From(int32(123)),
+		Float:   pointer.From(float64(12.5)),
 	}
 
 	testOuterStruct = outerStruct{
@@ -41,6 +38,11 @@ var (
 	}
 
 	testConvertedStruct []map[string]interface{}
+
+	expectedOutputBasic             = []string{"123", "123"}
+	expectedOutputWithInfo          = []string{"123\t test-string", "123\t test-string"}
+	expectedOutputWithMoreInfo      = []string{"123\t test-string 12.5", "123\t test-string 12.5"}
+	expectedOutputWithFormattedInfo = []string{"123\t (test-string)", "123\t (test-string)"}
 )
 
 func TestCompleter(t *testing.T) {
@@ -61,6 +63,7 @@ func TestCompleter(t *testing.T) {
 func testNewCompleter(t *testing.T) {
 	completer := completions.NewCompleter(testConvertedStruct, "int32")
 	assert.NotEqual(t, completer, completions.Completer{})
+	assert.Equal(t, expectedOutputBasic, completer.ToString())
 
 	printCompleter(completer)
 }
@@ -73,6 +76,7 @@ func testNewCompleterFail(t *testing.T) {
 func testCompleterAddInfo(t *testing.T) {
 	completer := completions.NewCompleter(testConvertedStruct, "int32").AddInfo("string")
 	assert.NotEqual(t, completer, completions.Completer{})
+	assert.Equal(t, expectedOutputWithInfo, completer.ToString())
 
 	printCompleter(completer)
 }
@@ -85,13 +89,14 @@ func testCompleterAddInfoFail(t *testing.T) {
 func testCompleterAddInfoWithFormat(t *testing.T) {
 	completer := completions.NewCompleter(testConvertedStruct, "int32").AddInfo("string", "(%v)")
 	assert.NotEqual(t, completer, completions.Completer{})
-
+	assert.Equal(t, expectedOutputWithFormattedInfo, completer.ToString())
 	printCompleter(completer)
 }
 
 func testCompleterAddMoreInfo(t *testing.T) {
 	completer := completions.NewCompleter(testConvertedStruct, "int32").AddInfo("string").AddInfo("float64")
 	assert.NotEqual(t, completer, completions.Completer{})
+	assert.Equal(t, expectedOutputWithMoreInfo, completer.ToString())
 
 	printCompleter(completer)
 }
