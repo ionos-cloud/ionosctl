@@ -12,7 +12,9 @@ import (
 	postgres "github.com/ionos-cloud/sdk-go-dbaas-postgres"
 	dns "github.com/ionos-cloud/sdk-go-dns"
 	logsvc "github.com/ionos-cloud/sdk-go-logging"
+	vmasc "github.com/ionos-cloud/sdk-go-vmautoscaling"
 	cloudv6 "github.com/ionos-cloud/sdk-go/v6"
+
 	"github.com/spf13/viper"
 )
 
@@ -65,6 +67,7 @@ type Client struct {
 	RegistryClient       *registry.APIClient
 	DnsClient            *dns.APIClient
 	LoggingServiceClient *logsvc.APIClient
+	VMAscClient          *vmasc.APIClient
 }
 
 func appendUserAgent(userAgent string) string {
@@ -101,6 +104,9 @@ func newClient(name, pwd, token, hostUrl string, usedLayer *Layer) *Client {
 	logsConfig := logsvc.NewConfiguration(name, pwd, token, hostUrl)
 	logsConfig.UserAgent = appendUserAgent(logsConfig.UserAgent)
 
+	vmascConfig := vmasc.NewConfiguration(name, pwd, token, hostUrl)
+	vmascConfig.UserAgent = appendUserAgent(vmascConfig.UserAgent)
+
 	return &Client{
 		CloudClient:          cloudv6.NewAPIClient(clientConfig),
 		AuthClient:           sdkgoauth.NewAPIClient(authConfig),
@@ -111,6 +117,7 @@ func newClient(name, pwd, token, hostUrl string, usedLayer *Layer) *Client {
 		RegistryClient:       registry.NewAPIClient(registryConfig),
 		DnsClient:            dns.NewAPIClient(dnsConfig),
 		LoggingServiceClient: logsvc.NewAPIClient(logsConfig),
+		VMAscClient:          vmasc.NewAPIClient(vmascConfig),
 		usedLayer:            usedLayer,
 	}
 }

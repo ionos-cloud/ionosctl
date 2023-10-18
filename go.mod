@@ -34,6 +34,7 @@ require (
 	github.com/elk-language/go-prompt v1.1.5
 	github.com/ionos-cloud/sdk-go-logging v1.0.1
 	github.com/ionoscloudsdk/comptplus v1.0.4
+	github.com/ionos-cloud/sdk-go-vmautoscaling v0.0.0-00010101000000-000000000000
 	github.com/itchyny/gojq v0.12.13
 )
 
@@ -72,3 +73,5 @@ require (
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
+
+replace github.com/ionos-cloud/sdk-go-vmautoscaling => ./vendor/github.com/ionos-cloud/sdk-go-vmautoscaling
