@@ -3,6 +3,7 @@ module github.com/ionos-cloud/ionosctl/v6
 go 1.20
 
 require (
+	github.com/Jeffail/gabs/v2 v2.7.0
 	github.com/cheggaaa/pb/v3 v3.1.4
 	github.com/cilium/fake v0.4.0
 	github.com/cjrd/allocate v0.0.0-20220510215731-986f24f0fb18
@@ -16,6 +17,8 @@ require (
 	github.com/ionos-cloud/sdk-go-dbaas-postgres v1.1.1
 	github.com/ionos-cloud/sdk-go-dns v1.1.1
 	github.com/ionos-cloud/sdk-go/v6 v6.1.11
+	github.com/ionos-cloud/sdk-go-vmautoscaling v0.0.0-00010101000000-000000000000
+	github.com/itchyny/gojq v0.12.13
 	github.com/kardianos/ftps v1.0.3
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/mmatczuk/anyflag v0.0.0-20230209112147-9567d4cab866
@@ -48,11 +51,13 @@ require (
 require (
 	github.com/VividCortex/ewma v1.2.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/fatih/color v1.15.0 // indirect
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/ionos-cloud/sdk-go-cert-manager v1.0.1
+	github.com/itchyny/timefmt-go v0.1.5 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
@@ -74,4 +79,4 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
-replace github.com/ionos-cloud/sdk-go-vmautoscaling => ./vendor/github.com/ionos-cloud/sdk-go-vmautoscaling
+replace github.com/ionos-cloud/sdk-go-vmautoscaling => ./commands/autoscaling/temp-sdk-dir
