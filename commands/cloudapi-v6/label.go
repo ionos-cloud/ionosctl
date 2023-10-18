@@ -17,13 +17,14 @@ import (
 
 var (
 	allLabelJSONPaths = map[string]string{
+		"URN":          "id",
 		"Key":          "properties.key",
 		"Value":        "properties.value",
 		"ResourceType": "properties.resourceType",
 		"ResourceId":   "properties.resourceId",
 	}
 
-	defaultLabelCols = []string{"Key", "Value", "ResourceType", "ResourceId"}
+	defaultLabelCols = []string{"URN", "Key", "Value", "ResourceType", "ResourceId"}
 )
 
 func LabelCmd() *core.Command {
@@ -37,10 +38,10 @@ func LabelCmd() *core.Command {
 		},
 	}
 	globalFlags := labelCmd.GlobalFlags()
-	globalFlags.StringSliceP(constants.ArgCols, "", defaultLabelResourceCols, tabheaders.ColsMessage(defaultLabelResourceCols))
+	globalFlags.StringSliceP(constants.ArgCols, "", defaultLabelCols, tabheaders.ColsMessage(defaultLabelCols))
 	_ = viper.BindPFlag(core.GetFlagName(labelCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = labelCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return defaultLabelResourceCols, cobra.ShellCompDirectiveNoFileComp
+		return defaultLabelCols, cobra.ShellCompDirectiveNoFileComp
 	})
 
 	var (
