@@ -33,7 +33,7 @@ Required values to run command:
 ```text
   -u, --api-url string         Override default host url (default "https://api.ionos.com")
       --cols strings           Set of columns to be printed on output 
-                               Available columns: [Key Value] (default [Key,Value])
+                               Available columns: [URN Key Value ResourceType ResourceId] (default [URN,Key,Value,ResourceType,ResourceId])
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --datacenter-id string   The unique Data Center Id
   -D, --depth int32            Controls the detail depth of the response objects. Max depth is 10.
