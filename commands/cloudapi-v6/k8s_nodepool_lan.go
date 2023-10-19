@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/internal/pointer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
@@ -25,13 +26,6 @@ import (
 )
 
 var (
-	allK8sNodePoolLanJSONPaths = map[string]string{
-		"LanId":           "id",
-		"Dhcp":            "dhcp",
-		"RoutesNetwork":   "routes.*.network",
-		"RoutesGatewayIp": "routes.*.gatewayIp",
-	}
-
 	defaultK8sNodePoolLanCols = []string{"LanId", "Dhcp", "RoutesNetwork", "RoutesGatewayIp"}
 )
 
@@ -190,7 +184,7 @@ func RunK8sNodePoolLanList(c *core.CommandConfig) error {
 
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-	out, err := jsontabwriter.GenerateOutput("items", allK8sNodePoolLanJSONPaths, lans,
+	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.K8sNodePoolLan, lans,
 		tabheaders.GetHeadersAllDefault(defaultK8sNodePoolLanCols, cols))
 	if err != nil {
 		return err
@@ -233,7 +227,7 @@ func RunK8sNodePoolLanAdd(c *core.CommandConfig) error {
 
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-	out, err := jsontabwriter.GenerateOutput("", allK8sNodePoolLanJSONPaths, getK8sNodePoolLansForPut(ngNew),
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.K8sNodePoolLan, getK8sNodePoolLansForPut(ngNew),
 		tabheaders.GetHeadersAllDefault(defaultK8sNodePoolLanCols, cols))
 	if err != nil {
 		return err

@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
@@ -21,14 +22,6 @@ import (
 )
 
 var (
-	allSnapshotJSONPaths = map[string]string{
-		"SnapshotId":  "id",
-		"Name":        "properties.name",
-		"LicenceType": "properties.licenseType",
-		"Size":        "properties.size",
-		"State":       "metadata.state",
-	}
-
 	defaultSnapshotCols = []string{"SnapshotId", "Name", "LicenceType", "Size", "State"}
 )
 
@@ -281,7 +274,7 @@ func RunSnapshotList(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("items", allSnapshotJSONPaths, ss.Snapshots,
+	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.Snapshot, ss.Snapshots,
 		tabheaders.GetHeadersAllDefault(defaultSnapshotCols, cols))
 	if err != nil {
 		return err
@@ -312,7 +305,7 @@ func RunSnapshotGet(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allSnapshotJSONPaths, s.Snapshot,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Snapshot, s.Snapshot,
 		tabheaders.GetHeadersAllDefault(defaultSnapshotCols, cols))
 	if err != nil {
 		return err
@@ -354,7 +347,7 @@ func RunSnapshotCreate(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allSnapshotJSONPaths, s.Snapshot,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Snapshot, s.Snapshot,
 		tabheaders.GetHeadersAllDefault(defaultSnapshotCols, cols))
 	if err != nil {
 		return err
@@ -390,7 +383,7 @@ func RunSnapshotUpdate(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allSnapshotJSONPaths, s.Snapshot,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Snapshot, s.Snapshot,
 		tabheaders.GetHeadersAllDefault(defaultSnapshotCols, cols))
 	if err != nil {
 		return err

@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/token/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/token/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/jwt"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
@@ -72,7 +73,7 @@ func runTokenGetById(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allTokenJSONPaths, token.Token,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Token, token.Token,
 		tabheaders.GetHeaders(allTokenCols, defaultTokenCols, cols))
 	if err != nil {
 		return err
@@ -108,7 +109,7 @@ func runTokenGetByToken(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allTokenJSONPaths, tokenObj.Token,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Token, tokenObj.Token,
 		tabheaders.GetHeaders(allTokenCols, defaultTokenCols, cols))
 	if err != nil {
 		return err

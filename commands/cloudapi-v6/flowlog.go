@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
@@ -23,15 +24,6 @@ import (
 )
 
 var (
-	allFlowlogJSONPaths = map[string]string{
-		"FlowLogId": "id",
-		"Name":      "properties.name",
-		"Action":    "properties.action",
-		"Direction": "properties.direction",
-		"Bucket":    "properties.bucket",
-		"State":     "metadata.state",
-	}
-
 	defaultFlowLogCols = []string{"FlowLogId", "Name", "Action", "Direction", "Bucket", "State"}
 )
 
@@ -281,7 +273,7 @@ func RunFlowLogList(c *core.CommandConfig) error {
 		return err
 	}
 
-	out, err := jsontabwriter.GenerateOutput("items", allFlowlogJSONPaths, flowLogs.FlowLogs,
+	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.Flowlog, flowLogs.FlowLogs,
 		tabheaders.GetHeadersAllDefault(defaultFlowLogCols, cols))
 	if err != nil {
 		return err
@@ -316,7 +308,7 @@ func RunFlowLogGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	out, err := jsontabwriter.GenerateOutput("", allFlowlogJSONPaths, flowLog.FlowLog,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Flowlog, flowLog.FlowLog,
 		tabheaders.GetHeadersAllDefault(defaultFlowLogCols, cols))
 	if err != nil {
 		return err
@@ -361,7 +353,7 @@ func RunFlowLogCreate(c *core.CommandConfig) error {
 		return err
 	}
 
-	out, err := jsontabwriter.GenerateOutput("", allFlowlogJSONPaths, flowLog.FlowLog,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Flowlog, flowLog.FlowLog,
 		tabheaders.GetHeadersAllDefault(defaultFlowLogCols, cols))
 	if err != nil {
 		return err

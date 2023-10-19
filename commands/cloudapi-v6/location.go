@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
@@ -18,14 +19,6 @@ import (
 )
 
 var (
-	allLocationJSONPaths = map[string]string{
-		"LocationId":   "id",
-		"Name":         "properties.name",
-		"Features":     "properties.features",
-		"CpuFamily":    "properties.cpuFamily",
-		"ImageAliases": "properties.imageAliases",
-	}
-
 	defaultLocationCols = []string{"LocationId", "Name", "CpuFamily"}
 	allLocationCols     = []string{"LocationId", "Name", "Features", "ImageAliases", "CpuFamily"}
 )
@@ -129,7 +122,7 @@ func RunLocationList(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("items", allLocationJSONPaths, locations,
+	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.Location, locations,
 		tabheaders.GetHeaders(allLocationCols, defaultLocationCols, cols))
 	if err != nil {
 		return err
@@ -166,7 +159,7 @@ func RunLocationGet(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allLocationJSONPaths, loc,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Location, loc,
 		tabheaders.GetHeaders(allLocationCols, defaultLocationCols, cols))
 	if err != nil {
 		return err

@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
@@ -24,13 +25,6 @@ import (
 )
 
 var (
-	allNatGatewayJSONPaths = map[string]string{
-		"NatGatewayId": "id",
-		"Name":         "properties.name",
-		"PublicIps":    "properties.publicIps",
-		"State":        "metadata.state",
-	}
-
 	defaultNatGatewayCols = []string{"NatGatewayId", "Name", "PublicIps", "State"}
 	allNatGatewayCols     = []string{"NatGatewayId", "Name", "PublicIps", "State", "DatacenterId"}
 )
@@ -284,7 +278,7 @@ func RunNatGatewayListAll(c *core.CommandConfig) error {
 		}
 
 		for _, item := range *items {
-			temp, err := json2table.ConvertJSONToTable("", allNatGatewayJSONPaths, item)
+			temp, err := json2table.ConvertJSONToTable("", jsonpaths.NatGateway, item)
 			if err != nil {
 				return fmt.Errorf("could not convert from JSON to Table format: %w", err)
 			}
@@ -333,7 +327,7 @@ func RunNatGatewayList(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("items", allNatGatewayJSONPaths, natgateways.NatGateways,
+	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.NatGateway, natgateways.NatGateways,
 		tabheaders.GetHeadersAllDefault(defaultNatGatewayCols, cols))
 	if err != nil {
 		return err
@@ -373,7 +367,7 @@ func RunNatGatewayGet(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allNatGatewayJSONPaths, ng.NatGateway,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.NatGateway, ng.NatGateway,
 		tabheaders.GetHeadersAllDefault(defaultNatGatewayCols, cols))
 	if err != nil {
 		return err
@@ -420,7 +414,7 @@ func RunNatGatewayCreate(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allNatGatewayJSONPaths, ng.NatGateway,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.NatGateway, ng.NatGateway,
 		tabheaders.GetHeadersAllDefault(defaultNatGatewayCols, cols))
 	if err != nil {
 		return err
@@ -459,7 +453,7 @@ func RunNatGatewayUpdate(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allNatGatewayJSONPaths, ng.NatGateway,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.NatGateway, ng.NatGateway,
 		tabheaders.GetHeadersAllDefault(defaultNatGatewayCols, cols))
 	if err != nil {
 		return err

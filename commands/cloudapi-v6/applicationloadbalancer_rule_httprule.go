@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
@@ -23,18 +24,6 @@ import (
 )
 
 var (
-	allAlbHttpRuleJSONPaths = map[string]string{
-		"Name":            "name",
-		"Type":            "type",
-		"TargetGroupId":   "targetGroup",
-		"DropQuery":       "dropQuery",
-		"Location":        "location",
-		"StatusCode":      "statusCode",
-		"ResponseMessage": "responseMessage",
-		"ContentType":     "contentType",
-		"Condition":       "conditions",
-	}
-
 	defaultAlbRuleHttpRuleCols = []string{"Name", "Type", "TargetGroupId", "DropQuery", "Condition"}
 	allAlbRuleHttpRuleCols     = []string{"Name", "Type", "TargetGroupId", "DropQuery", "Location", "StatusCode", "ResponseMessage", "ContentType", "Condition"}
 )
@@ -266,7 +255,7 @@ func RunAlbRuleHttpRuleList(c *core.CommandConfig) error {
 		return errors.New("error getting rule http rules")
 	}
 
-	out, err := jsontabwriter.GenerateOutput("", allAlbHttpRuleJSONPaths, *httpRules,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.ApplicationLoadBalancerHTTPRule, *httpRules,
 		tabheaders.GetHeaders(allAlbRuleHttpRuleCols, defaultAlbRuleHttpRuleCols, cols))
 	if err != nil {
 		return err
@@ -341,7 +330,7 @@ func RunAlbRuleHttpRuleAdd(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allAlbHttpRuleJSONPaths, httpRuleNew.ApplicationLoadBalancerHttpRule,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.ApplicationLoadBalancerHTTPRule, httpRuleNew.ApplicationLoadBalancerHttpRule,
 		tabheaders.GetHeaders(allAlbRuleHttpRuleCols, defaultAlbRuleHttpRuleCols, cols))
 	if err != nil {
 		return err

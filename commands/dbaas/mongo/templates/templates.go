@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/gofrs/uuid/v5"
+	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/convbytes"
@@ -31,13 +32,6 @@ func TemplatesCmd() *core.Command {
 }
 
 var (
-	allJSONPaths = map[string]string{
-		"TemplateId": "id",
-		"Name":       "properties.name",
-		"Edition":    "properties.edition",
-		"Cores":      "properties.cores",
-	}
-
 	allCols = []string{"TemplateId", "Name", "Edition", "Cores", "StorageSize", "Ram"}
 )
 
@@ -57,7 +51,7 @@ func convertTemplateToTable(template ionoscloud.TemplateResponse) ([]map[string]
 		return nil, fmt.Errorf("could not retrieve Mongo Template storage")
 	}
 
-	temp, err := json2table.ConvertJSONToTable("", allJSONPaths, template)
+	temp, err := json2table.ConvertJSONToTable("", jsonpaths.Templates, template)
 	if err != nil {
 		return nil, fmt.Errorf("could not convert from JSON to Table format: %w", err)
 	}

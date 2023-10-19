@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/registry"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
@@ -149,7 +150,7 @@ func CmdPutToken(c *core.CommandConfig) error {
 
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-	out, err := jsontabwriter.GenerateOutput("", allJSONPaths, token, tabheaders.GetHeaders(AllTokenCols, postHeaders, cols))
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Token, token, tabheaders.GetHeaders(AllTokenCols, postHeaders, cols))
 	if err != nil {
 		return err
 	}

@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/convbytes"
@@ -54,23 +55,6 @@ func ClusterCmd() *core.Command {
 }
 
 var (
-	allJSONPaths = map[string]string{
-		"ClusterId":    "id",
-		"Name":         "properties.displayName",
-		"Edition":      "properties.edition",
-		"Type":         "properties.type",
-		"URL":          "properties.connectionString",
-		"Instances":    "properties.instances",
-		"Shards":       "properties.shards",
-		"Health":       "metadata.health",
-		"State":        "metadata.state",
-		"MongoVersion": "properties.mongoDBVersion",
-		"Location":     "properties.location",
-		"TemplateId":   "properties.templateID",
-		"Cores":        "properties.cores",
-		"StorageType":  "properties.storageType",
-	}
-
 	allCols = []string{"ClusterId", "Name", "Edition", "Type", "URL", "Instances", "Shards", "Health", "State",
 		"MongoVersion", "MaintenanceWindow", "Location", "DatacenterId", "LanId", "Cidr", "TemplateId", "Cores", "RAM",
 		"StorageSize", "StorageType"}
@@ -109,7 +93,7 @@ func convertClusterToTable(cluster ionoscloud.ClusterResponse) ([]map[string]int
 		return nil, fmt.Errorf("could not retrieve Mongo Cluster RAM")
 	}
 
-	temp, err := json2table.ConvertJSONToTable("", allJSONPaths, cluster)
+	temp, err := json2table.ConvertJSONToTable("", jsonpaths.Cluster, cluster)
 	if err != nil {
 		return nil, fmt.Errorf("could not convert from JSON to Table format: %w", err)
 	}

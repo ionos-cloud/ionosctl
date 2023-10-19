@@ -13,15 +13,6 @@ import (
 )
 
 var (
-	allJSONPaths = map[string]string{
-		"RegistryId":            "id",
-		"DisplayName":           "properties.name",
-		"Location":              "properties.location",
-		"Hostname":              "properties.hostname",
-		"GarbageCollectionDays": "properties.garbageCollectionSchedule.days",
-		"GarbageCollectionTime": "properties.garbageCollectionSchedule.time",
-	}
-
 	postCols = []string{"DisplayName", "Location"}
 	allCols  = []string{"RegistryId", "DisplayName", "Location", "Hostname", "GarbageCollectionDays", "GarbageCollectionTime"}
 )

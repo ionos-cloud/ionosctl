@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
@@ -22,17 +23,6 @@ import (
 )
 
 var (
-	allAlbForwardingRuleJSONPaths = map[string]string{
-		"ForwardingRuleId":   "id",
-		"Name":               "properties.name",
-		"Protocol":           "properties.protocol",
-		"ListenerIp":         "properties.listenerIp",
-		"ListenerPort":       "properties.listenerPort",
-		"ClientTimeout":      "properties.clientTimeout",
-		"ServerCertificates": "properties.serverCertificates",
-		"State":              "metadata.state",
-	}
-
 	defaultAlbForwardingRuleCols = []string{"ForwardingRuleId", "Name", "Protocol", "ListenerIp", "ListenerPort", "ServerCertificates", "State"}
 	allAlbForwardingRuleCols     = []string{"ForwardingRuleId", "Name", "Protocol", "ListenerIp", "ListenerPort", "ClientTimeout", "ServerCertificates", "State"}
 )
@@ -308,7 +298,7 @@ func RunApplicationLoadBalancerForwardingRuleList(c *core.CommandConfig) error {
 		return err
 	}
 
-	out, err := jsontabwriter.GenerateOutput("items", allAlbForwardingRuleJSONPaths,
+	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.ApplicationLoadBalancerForwardingRule,
 		albForwardingRules.ApplicationLoadBalancerForwardingRules,
 		tabheaders.GetHeaders(allAlbForwardingRuleCols, defaultAlbForwardingRuleCols, cols))
 	if err != nil {
@@ -350,7 +340,7 @@ func RunApplicationLoadBalancerForwardingRuleGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	out, err := jsontabwriter.GenerateOutput("", allAlbForwardingRuleJSONPaths,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.ApplicationLoadBalancerForwardingRule,
 		applicationLoadBalancerForwardingRule.ApplicationLoadBalancerForwardingRule,
 		tabheaders.GetHeaders(allAlbForwardingRuleCols, defaultAlbForwardingRuleCols, cols))
 	if err != nil {
@@ -410,7 +400,7 @@ func RunApplicationLoadBalancerForwardingRuleCreate(c *core.CommandConfig) error
 		return err
 	}
 
-	out, err := jsontabwriter.GenerateOutput("", allAlbForwardingRuleJSONPaths,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.ApplicationLoadBalancerForwardingRule,
 		applicationLoadBalancerForwardingRule.ApplicationLoadBalancerForwardingRule,
 		tabheaders.GetHeaders(allAlbForwardingRuleCols, defaultAlbForwardingRuleCols, cols))
 	if err != nil {
@@ -461,7 +451,7 @@ func RunApplicationLoadBalancerForwardingRuleUpdate(c *core.CommandConfig) error
 		return err
 	}
 
-	out, err := jsontabwriter.GenerateOutput("", allAlbForwardingRuleJSONPaths,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.ApplicationLoadBalancerForwardingRule,
 		applicationLoadBalancerForwardingRule.ApplicationLoadBalancerForwardingRule,
 		tabheaders.GetHeaders(allAlbForwardingRuleCols, defaultAlbForwardingRuleCols, cols))
 	if err != nil {

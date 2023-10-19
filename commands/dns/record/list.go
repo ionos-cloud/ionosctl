@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/ionos-cloud/ionosctl/v6/commands/dns/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dns/zone"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/json2table"
@@ -57,7 +58,7 @@ func RecordsGetCmd() *core.Command {
 
 			var lsConverted []map[string]interface{}
 			for _, item := range *items {
-				temp, err := json2table.ConvertJSONToTable("", allRecordJSONPaths, item)
+				temp, err := json2table.ConvertJSONToTable("", jsonpaths.Record, item)
 				if err != nil {
 					return fmt.Errorf("could not convert from JSON to Table format: %w", err)
 				}

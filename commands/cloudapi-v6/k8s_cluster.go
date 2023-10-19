@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
@@ -23,17 +24,6 @@ import (
 )
 
 var (
-	allK8sClusterJSONPaths = map[string]string{
-		"ClusterId":                "id",
-		"Name":                     "properties.name",
-		"K8sVersion":               "properties,k8sVersion",
-		"AvailableUpgradeVersions": "properties.availableUpgradeVersions",
-		"ViableNodePoolVersions":   "properties.viableNodePoolVersions",
-		"State":                    "metadata.State",
-		"S3Bucket":                 "properties.s3Buckets",
-		"ApiSubnetAllowList":       "properties.apiSubnetAllowList",
-	}
-
 	defaultK8sClusterCols = []string{"ClusterId", "Name", "K8sVersion", "State", "MaintenanceWindow"}
 	allK8sClusterCols     = []string{"ClusterId", "Name", "K8sVersion", "State", "MaintenanceWindow", "AvailableUpgradeVersions", "ViableNodePoolVersions", "S3Bucket", "ApiSubnetAllowList"}
 )
@@ -722,7 +712,7 @@ func convertK8sClusterToTable(cluster ionoscloud.KubernetesCluster) ([]map[strin
 		return nil, fmt.Errorf("could not retrieve K8s Cluster properties")
 	}
 
-	temp, err := json2table.ConvertJSONToTable("", allK8sClusterJSONPaths, cluster)
+	temp, err := json2table.ConvertJSONToTable("", jsonpaths.K8sCluster, cluster)
 	if err != nil {
 		return nil, fmt.Errorf("could not convert from JSON to Table format: %w", err)
 	}

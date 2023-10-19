@@ -3,6 +3,7 @@ package logs
 import (
 	"fmt"
 
+	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/json2table"
 	ionoscloud "github.com/ionos-cloud/sdk-go-dbaas-mongo"
@@ -24,11 +25,6 @@ func LogsCmd() *core.Command {
 }
 
 var (
-	allLogsMessageJSONPaths = map[string]string{
-		"Message": "message",
-		"Time":    "time",
-	}
-
 	allCols     = []string{"Instance", "Name", "MessageNumber", "Message", "Time"}
 	defaultCols = []string{"Instance", "Name", "MessageNumber", "Time"}
 )
@@ -44,7 +40,7 @@ func convertLogsToTable(logs *[]ionoscloud.ClusterLogsInstances) ([]map[string]i
 			continue
 		}
 		for msgIdx, msg := range *instance.GetMessages() {
-			o, err := json2table.ConvertJSONToTable("", allLogsMessageJSONPaths, msg)
+			o, err := json2table.ConvertJSONToTable("", jsonpaths.LogsMessage, msg)
 			if err != nil {
 				return nil, fmt.Errorf("could not convert from JSON to Table format: %w", err)
 			}

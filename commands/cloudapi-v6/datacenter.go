@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
@@ -22,19 +23,6 @@ import (
 )
 
 var (
-	allDatacenterJSONPaths = map[string]string{
-		"DatacenterId":      "id",
-		"Name":              "properties.name",
-		"Location":          "properties.location",
-		"Description":       "properties.description",
-		"Version":           "properties.version",
-		"State":             "metadata.state",
-		"Features":          "properties.features",
-		"CpuFamily":         "properties.cpuArchitecture.*.cpuFamily",
-		"SecAuthProtection": "properties.secAuthProtection",
-		"IPv6CidrBlock":     "properties.ipv6CidrBlock",
-	}
-
 	defaultDatacenterCols = []string{"DatacenterId", "Name", "Location", "CpuFamily", "IPv6CidrBlock", "State"}
 	allDatacenterCols     = []string{"DatacenterId", "Name", "Location", "State", "Description", "Version",
 		"Features", "CpuFamily", "SecAuthProtection", "IPv6CidrBlock"}
@@ -239,7 +227,7 @@ func RunDataCenterList(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("items", allDatacenterJSONPaths, datacenters.Datacenters,
+	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.Datacenter, datacenters.Datacenters,
 		tabheaders.GetHeaders(allDatacenterCols, defaultDatacenterCols, cols))
 	if err != nil {
 		return err
@@ -270,7 +258,7 @@ func RunDataCenterGet(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allDatacenterJSONPaths, dc.Datacenter,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Datacenter, dc.Datacenter,
 		tabheaders.GetHeaders(allDatacenterCols, defaultDatacenterCols, cols))
 	if err != nil {
 		return err
@@ -309,7 +297,7 @@ func RunDataCenterCreate(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allDatacenterJSONPaths, dc,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Datacenter, dc,
 		tabheaders.GetHeaders(allDatacenterCols, defaultDatacenterCols, cols))
 	if err != nil {
 		return err
@@ -358,7 +346,7 @@ func RunDataCenterUpdate(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allDatacenterJSONPaths, dc,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Datacenter, dc,
 		tabheaders.GetHeaders(allDatacenterCols, defaultDatacenterCols, cols))
 	if err != nil {
 		return err

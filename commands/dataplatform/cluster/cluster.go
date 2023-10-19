@@ -3,6 +3,7 @@ package cluster
 import (
 	"fmt"
 
+	"github.com/ionos-cloud/ionosctl/v6/commands/dataplatform/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/json2table"
@@ -12,14 +13,6 @@ import (
 )
 
 var (
-	allJSONPaths = map[string]string{
-		"Id":           "id",
-		"Name":         "properties.name",
-		"Version":      "properties.dataPlatformVersion",
-		"DatacenterId": "properties.datacenterId",
-		"State":        "metadata.state",
-	}
-
 	allCols = []string{"Id", "Name", "Version", "MaintenanceWindow", "DatacenterId", "State"}
 )
 
@@ -71,7 +64,7 @@ func convertClusterToTable(cluster ionoscloud.ClusterResponseData) ([]map[string
 		return nil, fmt.Errorf("could not retrieve Dataplatform Cluster maintenance window time")
 	}
 
-	temp, err := json2table.ConvertJSONToTable("", allJSONPaths, cluster)
+	temp, err := json2table.ConvertJSONToTable("", jsonpaths.Cluster, cluster)
 	if err != nil {
 		return nil, fmt.Errorf("could not convert from JSON to Table format: %w", err)
 	}

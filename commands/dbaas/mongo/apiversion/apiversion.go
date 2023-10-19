@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
@@ -11,11 +12,6 @@ import (
 )
 
 var (
-	allJSONPaths = map[string]string{
-		"Version": "name",
-		"Href":    "swaggerUrl",
-	}
-
 	allCols = []string{"Version", "Href"}
 )
 
@@ -33,7 +29,7 @@ func ApiVersionCmd() *core.Command {
 				return err
 			}
 
-			out, err := jsontabwriter.GenerateOutput("", allJSONPaths, list,
+			out, err := jsontabwriter.GenerateOutput("", jsonpaths.ApiVersion, list,
 				tabheaders.GetHeadersAllDefault(allCols, nil))
 			if err != nil {
 				return err

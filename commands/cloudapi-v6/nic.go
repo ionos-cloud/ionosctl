@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
@@ -24,23 +25,6 @@ import (
 )
 
 var (
-	allNicJSONPaths = map[string]string{
-		"NicId":          "id",
-		"Name":           "properties.name",
-		"Dhcp":           "properties.dhcp",
-		"LanId":          "properties.lan",
-		"Ips":            "properties.ips",
-		"FirewallActive": "properties.firewallActive",
-		"FirewallType":   "properties.firewallType",
-		"Mac":            "properties.mac",
-		"State":          "metadata.statue",
-		"DeviceNumber":   "properties.deviceNumber",
-		"PciSlot":        "properties.pciSlot",
-		"IPv6Ips":        "properties.ipv6Ips",
-		"IPv6CidrBlock":  "properties.ipv6CidrBlock",
-		"DHCPv6":         "properties.dhcpv6",
-	}
-
 	defaultNicCols = []string{"NicId", "Name", "Dhcp", "LanId", "Ips", "IPv6Ips", "State"}
 	allNicCols     = []string{"NicId", "Name", "Dhcp", "LanId", "Ips", "IPv6Ips", "State", "FirewallActive",
 		"FirewallType", "DeviceNumber", "PciSlot", "Mac", "DHCPv6", "IPv6CidrBlock"}
@@ -332,7 +316,7 @@ func RunNicList(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("items", allNicJSONPaths, nics.Nics,
+	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.Nic, nics.Nics,
 		tabheaders.GetHeaders(allNicCols, defaultNicCols, cols))
 	if err != nil {
 		return err
@@ -368,7 +352,7 @@ func RunNicGet(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allNicJSONPaths, n.Nic,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Nic, n.Nic,
 		tabheaders.GetHeaders(allNicCols, defaultNicCols, cols))
 	if err != nil {
 		return err
@@ -449,7 +433,7 @@ func RunNicCreate(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allNicJSONPaths, n.Nic,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Nic, n.Nic,
 		tabheaders.GetHeaders(allNicCols, defaultNicCols, cols))
 	if err != nil {
 		return err
@@ -511,7 +495,7 @@ func RunNicUpdate(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allNicJSONPaths, nicUpd.Nic,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Nic, nicUpd.Nic,
 		tabheaders.GetHeaders(allNicCols, defaultNicCols, cols))
 	if err != nil {
 		return err
@@ -869,7 +853,7 @@ func RunLoadBalancerNicAttach(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allNicJSONPaths, attachedNic.Nic,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Nic, attachedNic.Nic,
 		tabheaders.GetHeaders(allNicCols, defaultNicCols, cols))
 	if err != nil {
 		return err
@@ -897,7 +881,7 @@ func RunLoadBalancerNicList(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("items", allNicJSONPaths, attachedNics.BalancedNics,
+	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.Nic, attachedNics.BalancedNics,
 		tabheaders.GetHeaders(allNicCols, defaultNicCols, cols))
 	if err != nil {
 		return err
@@ -926,7 +910,7 @@ func RunLoadBalancerNicGet(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allNicJSONPaths, n.Nic,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Nic, n.Nic,
 		tabheaders.GetHeaders(allNicCols, defaultNicCols, cols))
 	if err != nil {
 		return err

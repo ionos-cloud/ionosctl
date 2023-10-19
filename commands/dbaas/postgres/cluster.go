@@ -9,6 +9,7 @@ import (
 
 	cloudapiv6completer "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
@@ -937,18 +938,6 @@ func getConnectionMessage(connection sdkgo.Connection) string {
 // Output Printing
 
 var (
-	allClusterJSONPaths = map[string]string{
-		"ClusterId":           "id",
-		"Location":            "properties.location",
-		"BackupLocation":      "properties.backupLocation",
-		"State":               "metadata.state",
-		"DisplayName":         "properties.displayName",
-		"PostgresVersion":     "properties.postgresName",
-		"Instances":           "properties.instances",
-		"StorageType":         "properties.storageType",
-		"SynchronizationMode": "properties.synchronizationMode",
-	}
-
 	defaultClusterCols = []string{"ClusterId", "DisplayName", "Location", "DatacenterId", "LanId", "Cidr", "Instances", "State"}
 	allClusterCols     = []string{"ClusterId", "DisplayName", "Location", "State", "PostgresVersion", "Instances", "Ram", "Cores",
 		"StorageSize", "StorageType", "DatacenterId", "LanId", "Cidr", "MaintenanceWindow", "SynchronizationMode", "BackupLocation"}
@@ -985,7 +974,7 @@ func convertClusterToTable(cluster sdkgo.ClusterResponse) ([]map[string]interfac
 		return nil, fmt.Errorf("could not retrieve PostgreSQL Cluster RAM")
 	}
 
-	temp, err := json2table.ConvertJSONToTable("", allClusterJSONPaths, cluster)
+	temp, err := json2table.ConvertJSONToTable("", jsonpaths.Cluster, cluster)
 	if err != nil {
 		return nil, fmt.Errorf("could not convert from JSON to Table format: %w", err)
 	}

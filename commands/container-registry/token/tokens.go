@@ -19,15 +19,6 @@ import (
 )
 
 var (
-	allJSONPaths = map[string]string{
-		"TokenId":             "id",
-		"DisplayName":         "properties.name",
-		"ExpiryDate":          "properties.expiryDate",
-		"CredentialsUsername": "properties.credentials.username",
-		"CredentialsPassword": "properties.credentials.password",
-		"Status":              "properties.status",
-	}
-
 	postHeaders  = []string{"CredentialsPassword"}
 	AllTokenCols = []string{"TokenId", "DisplayName", "ExpiryDate", "CredentialsUsername", "CredentialsPassword", "Status"}
 )

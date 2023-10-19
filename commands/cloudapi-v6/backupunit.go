@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
@@ -24,17 +25,6 @@ import (
 const backupUnitNote = "NOTE: To login with backup agent use: https://backup.ionos.com, with CONTRACT_NUMBER-BACKUP_UNIT_NAME and BACKUP_UNIT_PASSWORD!"
 
 var (
-	allBackupUnitJSONPaths = map[string]string{
-		"BackupUnitId": "id",
-		"Name":         "properties.name",
-		"Email":        "properties.email",
-		"State":        "metadata.state",
-	}
-
-	allBackupUnitSSOUrlJsonPaths = map[string]string{
-		"BackupUnitSsoUrl": "ssoUrl",
-	}
-
 	defaultBackupUnitCols   = []string{"BackupUnitId", "Name", "Email", "State"}
 	defaultBackupUnitSSOUrl = []string{"BackupUnitSsoUrl"}
 )
@@ -259,7 +249,7 @@ func RunBackupUnitList(c *core.CommandConfig) error {
 		return err
 	}
 
-	out, err := jsontabwriter.GenerateOutput("items", allBackupUnitJSONPaths, backupUnits.BackupUnits,
+	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.BackupUnit, backupUnits.BackupUnits,
 		tabheaders.GetHeadersAllDefault(defaultAlbRuleHttpRuleCols, cols))
 	if err != nil {
 		return err
@@ -291,7 +281,7 @@ func RunBackupUnitGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	out, err := jsontabwriter.GenerateOutput("", allBackupUnitJSONPaths, u.BackupUnit,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.BackupUnit, u.BackupUnit,
 		tabheaders.GetHeadersAllDefault(defaultBackupUnitCols, cols))
 	if err != nil {
 		return err
@@ -323,7 +313,7 @@ func RunBackupUnitGetSsoUrl(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allBackupUnitSSOUrlJsonPaths, u.BackupUnitSSO,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.BackupUnitSSOUrl, u.BackupUnitSSO,
 		tabheaders.GetHeadersAllDefault(defaultBackupUnitSSOUrl, cols))
 	if err != nil {
 		return err
@@ -374,7 +364,7 @@ func RunBackupUnitCreate(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allBackupUnitJSONPaths, u.BackupUnit,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.BackupUnit, u.BackupUnit,
 		tabheaders.GetHeadersAllDefault(defaultBackupUnitCols, cols))
 
 	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
@@ -405,7 +395,7 @@ func RunBackupUnitUpdate(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allBackupUnitJSONPaths, backupUnitUpd.BackupUnit,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.BackupUnit, backupUnitUpd.BackupUnit,
 		tabheaders.GetHeadersAllDefault(defaultBackupUnitCols, cols))
 
 	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)

@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
@@ -17,18 +18,6 @@ import (
 )
 
 var (
-	allIpConsumerJSONPaths = map[string]string{
-		"Ip":             "ip",
-		"Mac":            "mac",
-		"NicId":          "nicId",
-		"ServerId":       "serverId",
-		"ServerName":     "serverName",
-		"DatacenterId":   "datacenterId",
-		"DatacenterName": "datacenterName",
-		"K8sNodePoolId":  "k8sNodePoolUuid",
-		"K8sClusterId":   "k8sClusterUuid",
-	}
-
 	defaultIpConsumerCols = []string{"Ip", "NicId", "ServerId", "DatacenterId", "K8sNodePoolId", "K8sClusterId"}
 	allIpConsumerCols     = []string{"Ip", "Mac", "NicId", "ServerId", "ServerName", "DatacenterId", "DatacenterName", "K8sNodePoolId", "K8sClusterId"}
 )
@@ -103,7 +92,7 @@ func RunIpConsumersList(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allIpConsumerJSONPaths, ipsConsumers,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.IpConsumer, ipsConsumers,
 		tabheaders.GetHeaders(allIpConsumerCols, defaultIpConsumerCols, cols))
 	if err != nil {
 		return err

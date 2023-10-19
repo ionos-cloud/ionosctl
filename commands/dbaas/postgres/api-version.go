@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/json2table"
@@ -128,10 +129,6 @@ func RunAPIVersionGet(c *core.CommandConfig) error {
 // Output Printing
 
 var (
-	allAPIVersionJSONPaths = map[string]string{
-		"Version": "name",
-	}
-
 	defaultAPIVersionCols = []string{"Version", "SwaggerUrl"}
 )
 
@@ -148,7 +145,7 @@ func convertAPIVersionToTable(apiVersion sdkgo.APIVersion) ([]map[string]interfa
 		*swaggerUrlOk = fmt.Sprintf("%s%s", sdkgo.DefaultIonosServerUrl, *swaggerUrlOk)
 	}
 
-	temp, err := json2table.ConvertJSONToTable("", allAPIVersionJSONPaths, apiVersion)
+	temp, err := json2table.ConvertJSONToTable("", jsonpaths.ApiVersion, apiVersion)
 	if err != nil {
 		return nil, fmt.Errorf("could not convert from JSON to Table format: %w", err)
 	}

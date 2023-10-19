@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/json2table"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
@@ -45,11 +46,6 @@ func UserCmd() *core.Command {
 }
 
 var (
-	allJSONPaths = map[string]string{
-		"Username":  "properties.username",
-		"CreatedBy": "metadata.createdBy",
-	}
-
 	allCols = []string{"Username", "CreatedBy", "Roles"}
 )
 
@@ -64,7 +60,7 @@ func convertUserToTable(user ionoscloud.User) ([]map[string]interface{}, error) 
 		return nil, fmt.Errorf("could not retrieve Mongo User roles")
 	}
 
-	temp, err := json2table.ConvertJSONToTable("", allJSONPaths, user)
+	temp, err := json2table.ConvertJSONToTable("", jsonpaths.User, user)
 	if err != nil {
 		return nil, fmt.Errorf("could not convert from JSON to Table format: %w", err)
 	}

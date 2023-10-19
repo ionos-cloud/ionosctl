@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
@@ -22,17 +23,6 @@ import (
 )
 
 var (
-	allRequestJSONPaths = map[string]string{
-		"RequestId":   "id",
-		"Status":      "metadata.requestStatus.metadata.status",
-		"Message":     "metadata.requestStatus.metadata.message",
-		"Method":      "properties.method",
-		"Url":         "properties.url",
-		"Body":        "properties.body",
-		"CreatedBy":   "metadata.createdBy",
-		"CreatedDate": "metadata.createdDate",
-	}
-
 	defaultRequestCols = []string{"RequestId", "CreatedDate", "Method", "Status", "Message", "Targets"}
 	allRequestCols     = []string{"RequestId", "CreatedDate", "CreatedBy", "Method", "Status", "Message", "Url", "Body", "Targets"}
 )
@@ -405,7 +395,7 @@ func convertRequestToTable(request ionoscloud.Request) ([]map[string]interface{}
 		targetsInfo = append(targetsInfo, fmt.Sprintf("%s (%s)", *idOk, string(*typeOk)))
 	}
 
-	temp, err := json2table.ConvertJSONToTable("", allRequestJSONPaths, request)
+	temp, err := json2table.ConvertJSONToTable("", jsonpaths.Request, request)
 	if err != nil {
 		return nil, fmt.Errorf("failed to convert from JSON to Table format: %w", err)
 	}

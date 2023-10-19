@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/json2table"
@@ -210,11 +211,6 @@ func getLogsQueryParams(c *core.CommandConfig) (*resources.LogsQueryParams, erro
 // Output Printing
 
 var (
-	allLogsMessageJSONPaths = map[string]string{
-		"Message": "message",
-		"Time":    "time",
-	}
-
 	defaultClusterLogsCols = []string{"Logs"}
 	allClusterLogsCols     = []string{"Name", "Message", "Time", "Logs"}
 )
@@ -231,7 +227,7 @@ func convertLogsToTable(logs *[]ionoscloud.ClusterLogsInstances) ([]map[string]i
 		}
 
 		for msgIdx, msg := range *instance.GetMessages() {
-			o, err := json2table.ConvertJSONToTable("", allLogsMessageJSONPaths, msg)
+			o, err := json2table.ConvertJSONToTable("", jsonpaths.LogsMessage, msg)
 			if err != nil {
 				return nil, fmt.Errorf("could not convert from JSON to Table format: %w", err)
 			}

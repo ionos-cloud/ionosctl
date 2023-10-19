@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/ionos-cloud/ionosctl/v6/commands/dns/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dns/zone"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
@@ -83,7 +84,7 @@ func partiallyUpdateRecordAndPrint(c *core.CommandConfig, r dns.RecordRead) erro
 	//	return err
 	//}
 
-	out, err := jsontabwriter.GenerateOutput("", allRecordJSONPaths, rNew,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Record, rNew,
 		tabheaders.GetHeadersAllDefault(defaultCols, cols))
 	if err != nil {
 		return err

@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
@@ -304,7 +305,7 @@ func RunNatGatewayFlowLogList(c *core.CommandConfig) error {
 
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-	out, err := jsontabwriter.GenerateOutput("items", allFlowlogJSONPaths, natgatewayFlowLogs.FlowLogs,
+	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.Flowlog, natgatewayFlowLogs.FlowLogs,
 		tabheaders.GetHeadersAllDefault(defaultFlowLogCols, cols))
 	if err != nil {
 		return err
@@ -341,7 +342,7 @@ func RunNatGatewayFlowLogGet(c *core.CommandConfig) error {
 
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-	out, err := jsontabwriter.GenerateOutput("", allFlowlogJSONPaths, ng.FlowLog,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Flowlog, ng.FlowLog,
 		tabheaders.GetHeadersAllDefault(defaultFlowLogCols, cols))
 	if err != nil {
 		return err
@@ -384,7 +385,7 @@ func RunNatGatewayFlowLogCreate(c *core.CommandConfig) error {
 
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-	out, err := jsontabwriter.GenerateOutput("", allFlowlogJSONPaths, ng.FlowLog,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Flowlog, ng.FlowLog,
 		tabheaders.GetHeadersAllDefault(defaultFlowLogCols, cols))
 	if err != nil {
 		return err
@@ -424,7 +425,7 @@ func RunNatGatewayFlowLogUpdate(c *core.CommandConfig) error {
 
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-	out, err := jsontabwriter.GenerateOutput("", allFlowlogJSONPaths, ng.FlowLog,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Flowlog, ng.FlowLog,
 		tabheaders.GetHeadersAllDefault(defaultFlowLogCols, cols))
 	if err != nil {
 		return err

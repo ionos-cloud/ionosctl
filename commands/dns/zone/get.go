@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/ionos-cloud/ionosctl/v6/commands/dns/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	dns "github.com/ionos-cloud/sdk-go-dns"
@@ -48,7 +49,7 @@ func ZonesFindByIdCmd() *core.Command {
 			//	return err
 			//}
 
-			out, err := jsontabwriter.GenerateOutput("", allZoneJSONPaths, z, tabheaders.GetHeadersAllDefault(allCols, cols))
+			out, err := jsontabwriter.GenerateOutput("", jsonpaths.Zone, z, tabheaders.GetHeadersAllDefault(allCols, cols))
 			if err != nil {
 				return err
 			}

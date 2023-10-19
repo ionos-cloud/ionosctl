@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/fatih/structs"
+	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/json2table"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
@@ -27,27 +28,6 @@ import (
 )
 
 var (
-	allK8sNodepoolJSONPaths = map[string]string{
-		"NodePoolId":               "id",
-		"Name":                     "properties.name",
-		"K8sVersion":               "properties.k8sVersion",
-		"DatacenterId":             "properties.datacenterId",
-		"NodeCount":                "properties.nodeCount",
-		"CpuFamily":                "properties.cpuFamily",
-		"StorageType":              "properties.storageType",
-		"State":                    "metadata.state",
-		"LanIds":                   "properties.lan.*.id",
-		"CoresCount":               "properties.coresCount",
-		"RamSize":                  "properties.ramSize",
-		"AvailabilityZone":         "properties.availabilityZone",
-		"StorageSize":              "properties.storageSize",
-		"AutoScaling":              "properties.autoScaling",
-		"PublicIps":                "properties.publicIps",
-		"AvailableUpgradeVersions": "properties.availableUpgradeVersions",
-		"Annotations":              "properties.annotations",
-		"Labels":                   "properties.labels",
-	}
-
 	defaultK8sNodePoolCols = []string{"NodePoolId", "Name", "K8sVersion", "NodeCount", "DatacenterId", "State"}
 	allK8sNodePoolCols     = []string{"NodePoolId", "Name", "K8sVersion", "DatacenterId", "NodeCount", "CpuFamily", "StorageType", "State", "LanIds",
 		"CoresCount", "RamSize", "AvailabilityZone", "StorageSize", "MaintenanceWindow", "AutoScaling", "PublicIps", "AvailableUpgradeVersions",
@@ -969,7 +949,7 @@ func convertK8sNodepoolToTable(nodepool ionoscloud.KubernetesNodePool) ([]map[st
 		return nil, fmt.Errorf("could not retrieve K8s Nodepool properties")
 	}
 
-	temp, err := json2table.ConvertJSONToTable("", allK8sNodepoolJSONPaths, nodepool)
+	temp, err := json2table.ConvertJSONToTable("", jsonpaths.K8sNodepool, nodepool)
 	if err != nil {
 		return nil, fmt.Errorf("could not convert from JSON to Table format: %w", err)
 	}

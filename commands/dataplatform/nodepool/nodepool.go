@@ -3,6 +3,7 @@ package nodepool
 import (
 	"fmt"
 
+	"github.com/ionos-cloud/ionosctl/v6/commands/dataplatform/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/convbytes"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
@@ -39,18 +40,6 @@ func NodepoolCmd() *core.Command {
 }
 
 var (
-	allJSONPaths = map[string]string{
-		"Id":               "id",
-		"Name":             "properties.name",
-		"Nodes":            "properties.nodeCount",
-		"Cores":            "properties.coresCount",
-		"CpuFamily":        "properties.cpuFamily",
-		"State":            "metadata.state",
-		"AvailabilityZone": "properties.availabilityZone",
-		"Labels":           "properties.labels",
-		"Annotations":      "properties.annotations",
-	}
-
 	allCols = []string{"Id", "Name", "Nodes", "Cores", "CpuFamily", "Ram", "Storage", "MaintenanceWindow", "State",
 		"AvailabilityZone", "Labels", "Annotations"}
 	defaultCols = []string{"Id", "Name", "Nodes", "Cores", "CpuFamily", "Ram", "Storage", "MaintenanceWindow", "State"}
@@ -100,7 +89,7 @@ func convertNodePoolToTable(np ionoscloud.NodePoolResponseData) ([]map[string]in
 
 	maintenanceWindow := fmt.Sprintf("%v %v", *day, *time)
 
-	temp, err := json2table.ConvertJSONToTable("", allJSONPaths, np)
+	temp, err := json2table.ConvertJSONToTable("", jsonpaths.Nodepool, np)
 	if err != nil {
 		return nil, fmt.Errorf("could not convert from JSON to Table format: %w", err)
 	}

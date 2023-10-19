@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
@@ -23,11 +24,6 @@ import (
 )
 
 var (
-	allS3KeyJSONPaths = map[string]string{
-		"S3KeyId": "id",
-		"Active":  "properties.active",
-	}
-
 	defaultS3KeyCols = []string{"S3KeyId", "Active"}
 )
 
@@ -224,7 +220,7 @@ func RunUserS3KeyList(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("items", allS3KeyJSONPaths, ss.S3Keys,
+	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.S3Key, ss.S3Keys,
 		tabheaders.GetHeadersAllDefault(defaultS3KeyCols, cols))
 	if err != nil {
 		return err
@@ -257,7 +253,7 @@ func RunUserS3KeyGet(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allS3KeyJSONPaths, s.S3Key,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.S3Key, s.S3Key,
 		tabheaders.GetHeadersAllDefault(defaultS3KeyCols, cols))
 	if err != nil {
 		return err
@@ -292,7 +288,7 @@ func RunUserS3KeyCreate(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allS3KeyJSONPaths, s.S3Key,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.S3Key, s.S3Key,
 		tabheaders.GetHeadersAllDefault(defaultS3KeyCols, cols))
 	if err != nil {
 		return err
@@ -341,7 +337,7 @@ func RunUserS3KeyUpdate(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allS3KeyJSONPaths, s.S3Key,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.S3Key, s.S3Key,
 		tabheaders.GetHeadersAllDefault(defaultS3KeyCols, cols))
 	if err != nil {
 		return err

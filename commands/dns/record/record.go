@@ -20,17 +20,6 @@ import (
 )
 
 var (
-	allRecordJSONPaths = map[string]string{
-		"Id":      "id",
-		"Name":    "properties.name",
-		"Content": "properties.content",
-		"Type":    "properties.type",
-		"Enabled": "properties.name",
-		"FQDN":    "metadata.fqdn",
-		"State":   "metadata.state",
-		"ZoneId":  "zoneId",
-	}
-
 	allCols     = []string{"Id", "Name", "Content", "Type", "Enabled", "FQDN", "State", "ZoneId", "ZoneName"}
 	defaultCols = []string{"Id", "Name", "Content", "Type", "Enabled", "FQDN", "State"}
 )

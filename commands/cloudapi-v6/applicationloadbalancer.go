@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
@@ -24,16 +25,6 @@ import (
 )
 
 var (
-	allApplicationLoadBalancerJSONPaths = map[string]string{
-		"ApplicationLoadBalancerId": "id",
-		"Name":                      "properties.name",
-		"ListenerLan":               "properties.listenerLan",
-		"Ips":                       "properties.ips",
-		"TargetLan":                 "properties.targetLan",
-		"PrivateIps":                "properties.lbPrivateIps",
-		"State":                     "metadata.state",
-	}
-
 	defaultApplicationLoadBalancerCols = []string{"ApplicationLoadBalancerId", "Name", "ListenerLan", "Ips", "TargetLan", "PrivateIps", "State"}
 	allApplicationLoadBalancerCols     = []string{"ApplicationLoadBalancerId", "DatacenterId", "Name", "ListenerLan", "Ips", "TargetLan", "PrivateIps", "State"}
 )
@@ -287,7 +278,7 @@ func RunApplicationLoadBalancerListAll(c *core.CommandConfig) error {
 		}
 
 		for _, alb := range *albs {
-			converted, err := json2table.ConvertJSONToTable("", allApplicationLoadBalancerJSONPaths, alb)
+			converted, err := json2table.ConvertJSONToTable("", jsonpaths.ApplicationLoadBalancer, alb)
 			if err != nil {
 				return fmt.Errorf("could not convert from JSON to Table format: %w", err)
 			}
@@ -342,7 +333,7 @@ func RunApplicationLoadBalancerList(c *core.CommandConfig) error {
 		return err
 	}
 
-	out, err := jsontabwriter.GenerateOutput("items", allApplicationLoadBalancerJSONPaths, applicationloadbalancers,
+	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.ApplicationLoadBalancer, applicationloadbalancers,
 		tabheaders.GetHeadersAllDefault(defaultApplicationLoadBalancerCols, cols))
 	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
 
@@ -381,7 +372,7 @@ func RunApplicationLoadBalancerGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	out, err := jsontabwriter.GenerateOutput("", allApplicationLoadBalancerJSONPaths, ng.ApplicationLoadBalancer,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.ApplicationLoadBalancer, ng.ApplicationLoadBalancer,
 		tabheaders.GetHeadersAllDefault(defaultApplicationLoadBalancerCols, cols))
 
 	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
@@ -442,7 +433,7 @@ func RunApplicationLoadBalancerCreate(c *core.CommandConfig) error {
 		return err
 	}
 
-	out, err := jsontabwriter.GenerateOutput("", allApplicationLoadBalancerJSONPaths, ng.ApplicationLoadBalancer,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.ApplicationLoadBalancer, ng.ApplicationLoadBalancer,
 		tabheaders.GetHeadersAllDefault(defaultApplicationLoadBalancerCols, cols))
 	if err != nil {
 		return err
@@ -486,7 +477,7 @@ func RunApplicationLoadBalancerUpdate(c *core.CommandConfig) error {
 		return err
 	}
 
-	out, err := jsontabwriter.GenerateOutput("", allApplicationLoadBalancerJSONPaths, ng.ApplicationLoadBalancer,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.ApplicationLoadBalancer, ng.ApplicationLoadBalancer,
 		tabheaders.GetHeadersAllDefault(defaultApplicationLoadBalancerCols, cols))
 
 	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)

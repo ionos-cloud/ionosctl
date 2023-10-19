@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
@@ -22,27 +23,6 @@ import (
 )
 
 var (
-	allGroupJSONPaths = map[string]string{
-		"GroupId":                     "id",
-		"Name":                        "properties.name",
-		"CreateDataCenter":            "properties.createDataCenter",
-		"CreateSnapshot":              "properties.createSnapshot",
-		"ReserveIp":                   "properties.reserveIp",
-		"AccessActivityLog":           "properties.accessActivityLog",
-		"CreatePcc":                   "properties.createPcc",
-		"S3Privilege":                 "properties.s3Privilege",
-		"CreateBackupUnit":            "properties.createBackupUnit",
-		"CreateInternetAccess":        "properties.createInternetAccess",
-		"CreateK8s":                   "properties.createK8sCluster",
-		"CreateFlowLog":               "properties.createFlowLog",
-		"AccessAndManageMonitoring":   "properties.accessAndManageMonitoring",
-		"AccessAndManageCertificates": "properties.accessAndManageCertificates",
-		"AccessAndManageDns":          "properties.accessAndManageDns",
-		"ManageDBaaS":                 "properties.manageDBaaS",
-		"ManageRegistry":              "properties.manageRegistry",
-		"ManageDataplatform":          "properties.manageDataplatform",
-	}
-
 	defaultGroupCols = []string{"GroupId", "Name", "CreateDataCenter", "CreateSnapshot", "CreatePcc", "CreateBackupUnit",
 		"CreateInternetAccess", "CreateK8s", "ReserveIp"}
 	allGroupCols = []string{"GroupId", "Name", "CreateDataCenter", "CreateSnapshot", "ReserveIp", "AccessActivityLog",
@@ -273,7 +253,7 @@ func RunGroupList(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("items", allGroupJSONPaths, groups.Groups,
+	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.Group, groups.Groups,
 		tabheaders.GetHeaders(allGroupCols, defaultGroupCols, cols))
 	if err != nil {
 		return err
@@ -305,7 +285,7 @@ func RunGroupGet(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allGroupJSONPaths, u.Group, tabheaders.GetHeaders(allGroupCols, allGroupCols, cols))
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Group, u.Group, tabheaders.GetHeaders(allGroupCols, allGroupCols, cols))
 	if err != nil {
 		return err
 	}
@@ -343,7 +323,7 @@ func RunGroupCreate(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allGroupJSONPaths, u.Group, tabheaders.GetHeaders(allGroupCols, allGroupCols, cols))
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Group, u.Group, tabheaders.GetHeaders(allGroupCols, allGroupCols, cols))
 	if err != nil {
 		return err
 	}
@@ -385,7 +365,7 @@ func RunGroupUpdate(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allGroupJSONPaths, groupUpd.Group, tabheaders.GetHeaders(allGroupCols, allGroupCols, cols))
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Group, groupUpd.Group, tabheaders.GetHeaders(allGroupCols, allGroupCols, cols))
 	if err != nil {
 		return err
 	}

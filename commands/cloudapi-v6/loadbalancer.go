@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
@@ -24,14 +25,6 @@ import (
 )
 
 var (
-	allLoadbalancerJSONPaths = map[string]string{
-		"LoadBalancerId": "id",
-		"Name":           "properties.name",
-		"Dhcp":           "properties.dhcp",
-		"Ip":             "properties.ip",
-		"State":          "metadata.state",
-	}
-
 	defaultLoadbalancerCols = []string{"LoadBalancerId", "Name", "Dhcp", "State"}
 	allLoadbalancerCols     = []string{"LoadBalancerId", "Name", "Dhcp", "State", "Ip", "DatacenterId"}
 )
@@ -278,7 +271,7 @@ func RunLoadBalancerListAll(c *core.CommandConfig) error {
 		}
 
 		for _, item := range *items {
-			temp, err := json2table.ConvertJSONToTable("", allLoadbalancerJSONPaths, item)
+			temp, err := json2table.ConvertJSONToTable("", jsonpaths.LoadBalancer, item)
 			if err != nil {
 				return fmt.Errorf("could not convert from JSON to Table format: %w", err)
 			}
@@ -331,7 +324,7 @@ func RunLoadBalancerList(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("items", allLoadbalancerJSONPaths, lbs.Loadbalancers,
+	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.LoadBalancer, lbs.Loadbalancers,
 		tabheaders.GetHeaders(allLoadbalancerCols, defaultLoadbalancerCols, cols))
 	if err != nil {
 		return err
@@ -367,7 +360,7 @@ func RunLoadBalancerGet(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allLoadbalancerJSONPaths, lb.Loadbalancer,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.LoadBalancer, lb.Loadbalancer,
 		tabheaders.GetHeaders(allLoadbalancerCols, defaultLoadbalancerCols, cols))
 	if err != nil {
 		return err
@@ -406,7 +399,7 @@ func RunLoadBalancerCreate(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allLoadbalancerJSONPaths, lb.Loadbalancer,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.LoadBalancer, lb.Loadbalancer,
 		tabheaders.GetHeaders(allLoadbalancerCols, defaultLoadbalancerCols, cols))
 	if err != nil {
 		return err
@@ -466,7 +459,7 @@ func RunLoadBalancerUpdate(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allLoadbalancerJSONPaths, lb.Loadbalancer,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.LoadBalancer, lb.Loadbalancer,
 		tabheaders.GetHeaders(allLoadbalancerCols, defaultLoadbalancerCols, cols))
 	if err != nil {
 		return err

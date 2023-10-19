@@ -38,13 +38,6 @@ const contractNumberMessage = "Contract Number: %v"
 // Output Printing
 
 var (
-	allTokenJSONPaths = map[string]string{
-		"TokenId":        "id",
-		"CreatedDate":    "createdDate",
-		"ExpirationDate": "expirationDate",
-		"Href":           "href",
-	}
-
 	defaultTokenCols = []string{"TokenId", "CreatedDate", "ExpirationDate"}
 	allTokenCols     = []string{"TokenId", "CreatedDate", "ExpirationDate", "Href"}
 )
