@@ -2,6 +2,14 @@
 
 ## [v6.7.1] (???)
 
+## Added
+
+* Added `URN` column in `label` subcommands
+
+## Fixed
+
+* Fixed `ResourceId` and `ResourceType` columns not being printed in `label` subcommands
+
 ## Changed
 
 * Changed how `request targets` are printed for better readability
