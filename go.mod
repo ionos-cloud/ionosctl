@@ -79,4 +79,4 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
-replace github.com/ionos-cloud/sdk-go-vmautoscaling => ./commands/autoscaling/temp-sdk-dir
+replace github.com/ionos-cloud/sdk-go-vmautoscaling => ./commands/vm-autoscaling/temp-sdk-dir
