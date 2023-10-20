@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/ionos-cloud/ionosctl/v6/commands/dataplatform/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
@@ -36,7 +37,7 @@ func ClusterListCmd() *core.Command {
 				return err
 			}
 
-			clustersConverted, err := convertClustersToTable(clusters)
+			clustersConverted, err := jsonpaths.ConvertClustersToTable(clusters)
 			if err != nil {
 				return err
 			}

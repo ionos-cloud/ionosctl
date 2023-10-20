@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
@@ -30,7 +31,7 @@ func ClusterListCmd() *core.Command {
 
 			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-			clustersConverted, err := convertClustersToTable(clusters)
+			clustersConverted, err := jsonpaths.ConvertClustersToTable(clusters)
 			if err != nil {
 				return err
 			}

@@ -12,7 +12,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/json2table"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
@@ -253,7 +252,7 @@ func RunK8sClusterList(c *core.CommandConfig) error {
 		return err
 	}
 
-	k8ssConverted, err := convertK8sClustersToTable(k8ss.KubernetesClusters)
+	k8ssConverted, err := jsonpaths.ConvertK8sClustersToTable(k8ss.KubernetesClusters)
 	if err != nil {
 		return err
 	}
@@ -293,7 +292,7 @@ func RunK8sClusterGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	uConverted, err := convertK8sClusterToTable(u.KubernetesCluster)
+	uConverted, err := jsonpaths.ConvertK8sClusterToTable(u.KubernetesCluster)
 	if err != nil {
 		return err
 	}
@@ -353,7 +352,7 @@ func RunK8sClusterCreate(c *core.CommandConfig) error {
 
 	}
 
-	uConverted, err := convertK8sClusterToTable(u.KubernetesCluster)
+	uConverted, err := jsonpaths.ConvertK8sClusterToTable(u.KubernetesCluster)
 	if err != nil {
 		return err
 	}
@@ -405,7 +404,7 @@ func RunK8sClusterUpdate(c *core.CommandConfig) error {
 		}
 	}
 
-	k8sUpdConverted, err := convertK8sClusterToTable(k8sUpd.KubernetesCluster)
+	k8sUpdConverted, err := jsonpaths.ConvertK8sClusterToTable(k8sUpd.KubernetesCluster)
 	if err != nil {
 		return err
 	}
@@ -704,52 +703,4 @@ func getMaintenanceInfo(c *core.CommandConfig, maintenance *resources.K8sMainten
 			Time:         &time,
 		},
 	}
-}
-
-func convertK8sClusterToTable(cluster ionoscloud.KubernetesCluster) ([]map[string]interface{}, error) {
-	properties, ok := cluster.GetPropertiesOk()
-	if !ok || properties == nil {
-		return nil, fmt.Errorf("could not retrieve K8s Cluster properties")
-	}
-
-	temp, err := json2table.ConvertJSONToTable("", jsonpaths.K8sCluster, cluster)
-	if err != nil {
-		return nil, fmt.Errorf("could not convert from JSON to Table format: %w", err)
-	}
-
-	maintenanceWindow, ok := properties.GetMaintenanceWindowOk()
-	if ok && maintenanceWindow != nil {
-		day, ok := maintenanceWindow.GetDayOfTheWeekOk()
-		if !ok || day == nil {
-			return nil, fmt.Errorf("could not retrieve K8s Cluster maintenance window day")
-		}
-
-		tyme, ok := maintenanceWindow.GetTimeOk()
-		if !ok || tyme == nil {
-			return nil, fmt.Errorf("could not retrieve K8s Cluster maintenance window time")
-		}
-
-		temp[0]["MaintenanceWindow"] = fmt.Sprintf("%s %s", *day, *tyme)
-	}
-
-	return temp, nil
-}
-
-func convertK8sClustersToTable(clusters ionoscloud.KubernetesClusters) ([]map[string]interface{}, error) {
-	items, ok := clusters.GetItemsOk()
-	if !ok || items == nil {
-		return nil, fmt.Errorf("could not retrieve K8s Clusters items")
-	}
-
-	var clustersConverted []map[string]interface{}
-	for _, item := range *items {
-		temp, err := convertK8sClusterToTable(item)
-		if err != nil {
-			return nil, err
-		}
-
-		clustersConverted = append(clustersConverted, temp...)
-	}
-
-	return clustersConverted, nil
 }

@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
@@ -37,7 +38,7 @@ func ClusterGetCmd() *core.Command {
 
 			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-			clusterConverted, err := convertClusterToTable(cluster)
+			clusterConverted, err := jsonpaths.ConvertClusterToTable(cluster)
 			if err != nil {
 				return err
 			}

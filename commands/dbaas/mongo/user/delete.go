@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
@@ -49,7 +50,7 @@ func UserDeleteCmd() *core.Command {
 
 			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-			uConverted, err := convertUserToTable(u)
+			uConverted, err := jsonpaths.ConvertUserToTable(u)
 			if err != nil {
 				return err
 			}

@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/cjrd/allocate"
+	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
@@ -63,7 +64,7 @@ func UserCreateCmd() *core.Command {
 
 			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-			uConverted, err := convertUserToTable(u)
+			uConverted, err := jsonpaths.ConvertUserToTable(u)
 			if err != nil {
 				return err
 			}

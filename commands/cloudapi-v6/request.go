@@ -12,7 +12,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/json2table"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
@@ -193,7 +192,7 @@ func RunRequestList(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	convertedRequests, err := convertRequestsToTable(requests.Requests)
+	convertedRequests, err := jsonpaths.ConvertRequestsToTable(requests.Requests)
 	if err != nil {
 		return err
 	}
@@ -230,7 +229,7 @@ func RunRequestGet(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	convertedReq, err := convertRequestToTable(req.Request)
+	convertedReq, err := jsonpaths.ConvertRequestToTable(req.Request)
 	if err != nil {
 		return err
 	}
@@ -273,7 +272,7 @@ func RunRequestWait(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	convertedReq, err := convertRequestToTable(req.Request)
+	convertedReq, err := jsonpaths.ConvertRequestToTable(req.Request)
 	if err != nil {
 		return err
 	}
@@ -333,74 +332,4 @@ func sortRequestsByTime(requests resources.Requests, n int) resources.Requests {
 		sortedRequests.Items = &reqItems
 	}
 	return sortedRequests
-}
-
-func convertRequestsToTable(requests ionoscloud.Requests) ([]map[string]interface{}, error) {
-	items, ok := requests.GetItemsOk()
-	if !ok || items == nil {
-		return nil, fmt.Errorf("failed to retrieve Requests items")
-	}
-
-	res := make([]map[string]interface{}, 0)
-	for _, item := range *items {
-		temp, err := convertRequestToTable(item)
-		if err != nil {
-			return nil, err
-		}
-
-		res = append(res, temp...)
-	}
-
-	return res, nil
-}
-
-func convertRequestToTable(request ionoscloud.Request) ([]map[string]interface{}, error) {
-	metadata, ok := request.GetMetadataOk()
-	if !ok || metadata == nil {
-		return nil, fmt.Errorf("failed to retrieve Request metadata")
-	}
-
-	reqStatus, ok := metadata.GetRequestStatusOk()
-	if !ok || reqStatus == nil {
-		return nil, fmt.Errorf("failed to retrieve Request Status")
-	}
-
-	reqStatusMetadata, ok := reqStatus.GetMetadataOk()
-	if !ok || reqStatusMetadata == nil {
-		return nil, fmt.Errorf("failed to retrieve Request Status metadata")
-	}
-
-	targets, ok := reqStatusMetadata.GetTargetsOk()
-	if !ok || targets == nil {
-		return nil, fmt.Errorf("failed to retrieve Request Targets")
-	}
-
-	targetsInfo := make([]interface{}, 0)
-	for _, target := range *targets {
-		targetOk, ok := target.GetTargetOk()
-		if !ok || targetOk == nil {
-			continue
-		}
-
-		idOk, ok := targetOk.GetIdOk()
-		if !ok || idOk == nil {
-			continue
-		}
-
-		typeOk, ok := targetOk.GetTypeOk()
-		if !ok || typeOk == nil {
-			continue
-		}
-
-		targetsInfo = append(targetsInfo, fmt.Sprintf("%s (%s)", *idOk, string(*typeOk)))
-	}
-
-	temp, err := json2table.ConvertJSONToTable("", jsonpaths.Request, request)
-	if err != nil {
-		return nil, fmt.Errorf("failed to convert from JSON to Table format: %w", err)
-	}
-
-	temp[0]["Targets"] = targetsInfo
-
-	return temp, nil
 }

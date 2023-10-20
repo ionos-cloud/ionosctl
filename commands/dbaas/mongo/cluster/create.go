@@ -10,6 +10,7 @@ import (
 
 	"github.com/cilium/fake"
 	cloudapiv6completer "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/templates"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
@@ -201,7 +202,7 @@ func ClusterCreateCmd() *core.Command {
 
 			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-			clusterConverted, err := convertClusterToTable(createdCluster)
+			clusterConverted, err := jsonpaths.ConvertClusterToTable(createdCluster)
 			if err != nil {
 				return err
 			}

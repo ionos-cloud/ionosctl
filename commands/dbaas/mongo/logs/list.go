@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
@@ -89,7 +90,7 @@ func LogsListCmd() *core.Command {
 
 			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-			logsConverted, err := convertLogsToTable(logs.Instances)
+			logsConverted, err := jsonpaths.ConvertLogsToTable(logs.Instances)
 			if err != nil {
 				return err
 			}
