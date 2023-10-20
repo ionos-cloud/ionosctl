@@ -47,7 +47,6 @@ func BackupCmd() *core.Command {
 		CmdRun:     RunBackupList,
 		InitClient: true,
 	})
-	list.AddBoolFlag(constants.ArgNoHeaders, "", false, "When using text output, don't print headers")
 
 	/*
 		Get Command
@@ -68,7 +67,6 @@ func BackupCmd() *core.Command {
 	_ = get.Command.RegisterFlagCompletionFunc(dbaaspg.ArgBackupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.BackupsIds(), cobra.ShellCompDirectiveNoFileComp
 	})
-	get.AddBoolFlag(constants.ArgNoHeaders, "", false, "When using text output, don't print headers")
 
 	return backupCmd
 }
@@ -153,7 +151,6 @@ func ClusterBackupCmd() *core.Command {
 	_ = list.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allBackupCols, cobra.ShellCompDirectiveNoFileComp
 	})
-	list.AddBoolFlag(constants.ArgNoHeaders, "", false, "When using text output, don't print headers")
 
 	return clusterBackupCmd
 }

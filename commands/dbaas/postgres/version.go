@@ -47,7 +47,6 @@ func PgsqlVersionCmd() *core.Command {
 		CmdRun:     RunPgsqlVersionList,
 		InitClient: true,
 	})
-	list.AddBoolFlag(constants.ArgNoHeaders, "", false, "When using text output, don't print headers")
 
 	/*
 		Get Command
@@ -68,7 +67,6 @@ func PgsqlVersionCmd() *core.Command {
 	_ = get.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return pgsqlcompleter.ClustersIds(), cobra.ShellCompDirectiveNoFileComp
 	})
-	get.AddBoolFlag(constants.ArgNoHeaders, "", false, "When using text output, don't print headers")
 
 	return pgsqlversionCmd
 }

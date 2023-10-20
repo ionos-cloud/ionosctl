@@ -59,7 +59,6 @@ func TemplatesListCmd() *core.Command {
 		InitClient: true,
 	})
 
-	cmd.AddBoolFlag(constants.ArgNoHeaders, "", false, "When using text output, don't print headers")
 	cmd.AddStringSliceFlag(constants.ArgCols, "", allCols, tabheaders.ColsMessage(allCols))
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allCols, cobra.ShellCompDirectiveNoFileComp
