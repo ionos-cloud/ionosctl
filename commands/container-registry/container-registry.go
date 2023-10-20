@@ -6,7 +6,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/registry"
 	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/repository"
 	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/token"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/spf13/cobra"
 )
@@ -23,10 +22,6 @@ func ContainerRegistryCmd() *core.Command {
 			TraverseChildren: true,
 		},
 	}
-
-	contregCmd.Command.PersistentFlags().Bool(
-		constants.ArgNoHeaders, false, "When using text output, don't print headers",
-	)
 
 	contregCmd.AddCommand(registry.RegistryCmd())
 	contregCmd.AddCommand(token.TokenCmd())
