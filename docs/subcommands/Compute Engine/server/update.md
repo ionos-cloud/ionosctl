@@ -60,6 +60,7 @@ Required values to run command:
   -f, --force                      Force command to execute without user input
   -h, --help                       Print usage
   -n, --name string                Name of the Server
+      --no-headers                 Don't print table headers when table output is used
   -o, --output string              Desired output format [text|json|api-json] (default "text")
   -q, --quiet                      Quiet output
       --ram string                 The amount of memory for the Server. Size must be specified in multiples of 256. e.g. --ram 256 or --ram 256MB

@@ -45,6 +45,7 @@ You can wait for the Request to be executed using `--wait-for-request` option.
   -h, --help                 Print usage
   -l, --location string      Location for the Data Center (default "de/txl")
   -n, --name string          Name of the Data Center (default "Unnamed Data Center")
+      --no-headers           Don't print table headers when table output is used
   -o, --output string        Desired output format [text|json|api-json] (default "text")
   -q, --quiet                Quiet output
   -t, --timeout int          Timeout option for Request for Data Center creation [seconds] (default 60)

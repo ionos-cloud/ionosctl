@@ -58,6 +58,7 @@ Required values to run command:
       --listener-ip ip                      Listening (inbound) IP.
       --listener-port int                   Listening (inbound) port number; valid range is 1 to 65535. (default 8080)
   -n, --name string                         The name of the Application Load Balancer forwarding rule.
+      --no-headers                          Don't print table headers when table output is used
   -o, --output string                       Desired output format [text|json|api-json] (default "text")
   -q, --quiet                               Quiet output
   -i, --rule-id string                      The unique ForwardingRule Id (required)

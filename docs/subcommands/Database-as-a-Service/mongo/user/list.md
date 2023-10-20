@@ -46,7 +46,7 @@ Retrieves a list of MongoDB users. You can either list users of a certain cluste
   -f, --force                 Force command to execute without user input
   -h, --help                  Print usage
   -M, --max-results int32     The maximum number of elements to return
-      --no-headers            When using text output, don't print headers
+      --no-headers            Don't print table headers when table output is used
       --offset int32          Skip a certain number of results
   -o, --output string         Desired output format [text|json|api-json] (default "text")
   -q, --quiet                 Quiet output

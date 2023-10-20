@@ -5,7 +5,6 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/services/container-registry/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go-container-registry"
@@ -30,8 +29,6 @@ func RegistryCmd() *core.Command {
 		},
 	}
 
-	regCmd.Command.PersistentFlags().Bool(constants.ArgNoHeaders, false, "When using text output, don't print headers")
-
 	regCmd.AddCommand(RegListCmd())
 	regCmd.AddCommand(RegPostCmd())
 	regCmd.AddCommand(RegGetCmd())
@@ -43,7 +40,7 @@ func RegistryCmd() *core.Command {
 }
 
 func RegsIds() []string {
-	//client, _ := config.GetClient()
+	// client, _ := config.GetClient()
 	svc := resources.NewRegistriesService(client.Must(), context.Background())
 	regs, _, _ := svc.List("")
 	return functional.Map(

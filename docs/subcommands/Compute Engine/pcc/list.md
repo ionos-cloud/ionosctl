@@ -1,5 +1,5 @@
 ---
-description: "List Private Cross-Connects"
+description: "List Cross-Connects"
 ---
 
 # PccList
@@ -12,6 +12,12 @@ ionosctl pcc list [flags]
 
 ## Aliases
 
+For `pcc` command:
+
+```text
+[cc]
+```
+
 For `list` command:
 
 ```text
@@ -20,7 +26,7 @@ For `list` command:
 
 ## Description
 
-Use this command to get a list of existing Private Cross-Connects available on your account.
+Use this command to get a list of existing Cross-Connects available on your account.
 
 You can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.
 Available Filters:
@@ -39,7 +45,7 @@ Available Filters:
   -f, --force               Force command to execute without user input
   -h, --help                Print usage
   -M, --max-results int32   The maximum number of elements to return
-      --no-headers          When using text output, don't print headers
+      --no-headers          Don't print table headers when table output is used
       --order-by string     Limits results to those containing a matching value for a specific property
   -o, --output string       Desired output format [text|json|api-json] (default "text")
   -q, --quiet               Quiet output

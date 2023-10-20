@@ -57,6 +57,7 @@ Required values to run command:
       --ip ip                  Public IP address of the NAT Gateway Rule (required)
   -n, --name string            Name of the NAT Gateway Rule (default "Unnamed Rule")
       --natgateway-id string   The unique NatGateway Id (required)
+      --no-headers             Don't print table headers when table output is used
   -o, --output string          Desired output format [text|json|api-json] (default "text")
       --port-range-end int     Target port range end associated with the NAT Gateway Rule (default 1)
       --port-range-start int   Target port range start associated with the NAT Gateway Rule (default 1)

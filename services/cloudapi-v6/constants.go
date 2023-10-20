@@ -226,7 +226,7 @@ const (
 	ResourceId                = "The unique Resource Id"
 	S3KeyId                   = "The unique User S3Key Id"
 	BackupUnitId              = "The unique BackupUnit Id"
-	PccId                     = "The unique Private Cross-Connect Id"
+	PccId                     = "The unique Cross-Connect Id"
 	K8sClusterId              = "The unique K8s Cluster Id"
 	K8sNodePoolId             = "The unique K8s Node Pool Id"
 	K8sNodeId                 = "The unique K8s Node Id"

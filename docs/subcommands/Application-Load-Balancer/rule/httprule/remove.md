@@ -57,6 +57,7 @@ Required values to run command:
   -f, --force                               Force command to execute without user input
   -h, --help                                Print usage
   -n, --name string                         A name of that Application Load Balancer Http Rule (required)
+      --no-headers                          Don't print table headers when table output is used
   -o, --output string                       Desired output format [text|json|api-json] (default "text")
   -q, --quiet                               Quiet output
       --rule-id string                      The unique ForwardingRule Id (required)

@@ -39,7 +39,7 @@ Retrieve all records
   -h, --help                Print usage
       --max-results int32   The maximum number of elements to return
       --name string         Filter used to fetch only the records that contain specified record name
-      --no-headers          When using text output, don't print headers
+      --no-headers          Don't print table headers when table output is used
       --offset int32        The first element (of the total list of elements) to include in the response. Use together with limit for pagination
   -o, --output string       Desired output format [text|json|api-json] (default "text")
   -q, --quiet               Quiet output

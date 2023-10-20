@@ -45,7 +45,7 @@ Use this command to add scopes to a token of a container registry.
   -f, --force                Force command to execute without user input
   -h, --help                 Print usage
   -n, --name string          Scope name (required)
-      --no-headers           When using text output, don't print headers
+      --no-headers           Don't print table headers when table output is used
   -o, --output string        Desired output format [text|json|api-json] (default "text")
   -q, --quiet                Quiet output
   -r, --registry-id string   Registry ID (required)

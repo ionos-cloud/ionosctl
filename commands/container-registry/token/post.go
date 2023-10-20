@@ -35,9 +35,11 @@ func TokenPostCmd() *core.Command {
 		},
 	)
 
+	// This line is only used to override the help text for `--no-headers`!
 	cmd.Command.PersistentFlags().Bool(
 		constants.ArgNoHeaders, true, "Use --no-headers=false to show column headers",
 	)
+
 	cmd.AddStringFlag(FlagName, "", "", "Name of the Token", core.RequiredFlagOption())
 	cmd.AddStringFlag(FlagExpiryDate, "", "", "Expiry date of the Token")
 	cmd.AddStringFlag(FlagStatus, "", "", "Status of the Token")
@@ -77,6 +79,10 @@ func PreCmdPostToken(c *core.PreCommandConfig) error {
 }
 
 func CmdPostToken(c *core.CommandConfig) error {
+	if !viper.IsSet(constants.ArgNoHeaders) {
+		viper.Set(constants.ArgNoHeaders, true) // Change default to work as for `token create`
+	}
+
 	var err error
 
 	id, err := c.Command.Command.Flags().GetString("registry-id")

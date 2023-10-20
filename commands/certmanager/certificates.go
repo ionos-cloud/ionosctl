@@ -7,7 +7,6 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
 
-	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/services/certmanager/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go-cert-manager"
@@ -27,8 +26,6 @@ func CertCmd() *core.Command {
 			TraverseChildren: true,
 		},
 	}
-
-	certCmd.Command.PersistentFlags().Bool(constants.ArgNoHeaders, false, "When using text output, don't print headers")
 
 	certCmd.AddCommand(CertGetCmd())
 	certCmd.AddCommand(CertCreateCmd())

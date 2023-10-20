@@ -50,7 +50,7 @@ Modifies the specified DataPlatformCluster by its distinct cluster ID. The field
       --maintenance-day string    Day Of the Week for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur (required)
       --maintenance-time string   Time for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur. e.g.: 16:30:59 (required)
   -n, --name string               The name of the cluster
-      --no-headers                When using text output, don't print headers
+      --no-headers                Don't print table headers when table output is used
   -o, --output string             Desired output format [text|json|api-json] (default "text")
   -q, --quiet                     Quiet output
   -v, --verbose                   Print step-by-step process when running command

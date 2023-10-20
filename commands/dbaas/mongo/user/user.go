@@ -29,7 +29,6 @@ func UserCmd() *core.Command {
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allCols, cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.Command.PersistentFlags().Bool(constants.ArgNoHeaders, false, "When using text output, don't print headers")
 
 	cmd.AddCommand(UserListCmd())
 	cmd.AddCommand(UserCreateCmd())

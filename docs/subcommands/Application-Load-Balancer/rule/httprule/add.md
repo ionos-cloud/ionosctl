@@ -65,6 +65,7 @@ Required values to run command:
   -m, --message string                      The response message of the request; mandatory for STATIC actions. (default "Application Down")
   -n, --name string                         The unique name of the Application Load Balancer HTTP rule. (required)
       --negate                              Specifies whether the condition is negated or not
+      --no-headers                          Don't print table headers when table output is used
   -o, --output string                       Desired output format [text|json|api-json] (default "text")
   -Q, --query                               Default is false; valid only for REDIRECT actions.
   -q, --quiet                               Quiet output

@@ -45,7 +45,7 @@ Update the "garbageCollectionSchedule" time and days of the week for runs of a r
       --garbage-collection-schedule-days strings   Specify the garbage collection schedule days
       --garbage-collection-schedule-time string    Specify the garbage collection schedule time of day
   -h, --help                                       Print usage
-      --no-headers                                 When using text output, don't print headers
+      --no-headers                                 Don't print table headers when table output is used
   -o, --output string                              Desired output format [text|json|api-json] (default "text")
   -q, --quiet                                      Quiet output
   -i, --registry-id string                         Specify the Registry ID (required)

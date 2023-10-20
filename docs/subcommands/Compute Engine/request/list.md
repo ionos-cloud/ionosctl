@@ -47,7 +47,7 @@ Available Filters:
       --latest int          Show latest N Requests. If it is not set, all Requests will be printed (DEPRECATED: Use --filters --order-by --max-results options instead!)
   -M, --max-results int32   The maximum number of elements to return
       --method string       Show only the Requests with this method. E.g CREATE, UPDATE, DELETE (DEPRECATED: Use --filters --order-by --max-results options instead!)
-      --no-headers          When using text output, don't print headers
+      --no-headers          Don't print table headers when table output is used
       --order-by string     Limits results to those containing a matching value for a specific property
   -o, --output string       Desired output format [text|json|api-json] (default "text")
   -q, --quiet               Quiet output

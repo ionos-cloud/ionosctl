@@ -47,7 +47,7 @@ Create/replace a registry to hold container images or OCI compliant artifacts
   -h, --help                                       Print usage
       --location string                            Specify the location of the registry (required)
   -n, --name string                                Specify the name of the registry (required)
-      --no-headers                                 When using text output, don't print headers
+      --no-headers                                 Don't print table headers when table output is used
   -o, --output string                              Desired output format [text|json|api-json] (default "text")
   -q, --quiet                                      Quiet output
   -i, --registry-id string                         Specify the Registry ID (required)

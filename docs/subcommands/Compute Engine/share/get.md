@@ -38,7 +38,7 @@ Required values to run command:
   -f, --force                Force command to execute without user input
       --group-id string      The unique Group Id (required)
   -h, --help                 Print usage
-      --no-headers           When using text output, don't print headers
+      --no-headers           Don't print table headers when table output is used
   -o, --output string        Desired output format [text|json|api-json] (default "text")
   -q, --quiet                Quiet output
   -i, --resource-id string   The unique Resource Id (required)
