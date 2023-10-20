@@ -52,6 +52,7 @@ Required values to run command:
       --datacenter-id string   The unique Data Center Id (required)
   -f, --force                  Force command to execute without user input
   -h, --help                   Print usage
+      --no-headers             Don't print table headers when table output is used
   -o, --output string          Desired output format [text|json|api-json] (default "text")
   -q, --quiet                  Quiet output
       --server-id string       The unique Server Id (required)

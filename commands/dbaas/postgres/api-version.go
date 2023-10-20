@@ -48,7 +48,7 @@ func APIVersionCmd() *core.Command {
 		CmdRun:     RunAPIVersionList,
 		InitClient: true,
 	})
-	list.AddBoolFlag(constants.ArgNoHeaders, "", false, "When using text output, don't print headers")
+	_ = list // Actually used - added through "NewCommand" func. TODO: This is confusing!
 
 	/*
 		Get Command
@@ -65,7 +65,7 @@ func APIVersionCmd() *core.Command {
 		CmdRun:     RunAPIVersionGet,
 		InitClient: true,
 	})
-	get.AddBoolFlag(constants.ArgNoHeaders, "", false, "When using text output, don't print headers")
+	_ = get // Actually used - added through "NewCommand" func. TODO: This is confusing!
 
 	return apiversionCmd
 }

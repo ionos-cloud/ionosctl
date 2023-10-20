@@ -42,6 +42,7 @@ You can wait for the Request to be executed using `--wait-for-request` option.
   -h, --help               Print usage
   -l, --location string    Location of the IpBlock (default "de/txl")
   -n, --name string        Name of the IpBlock. If not set, it will automatically be set
+      --no-headers         Don't print table headers when table output is used
   -o, --output string      Desired output format [text|json|api-json] (default "text")
   -q, --quiet              Quiet output
       --size int           Size of the IpBlock (default 2)

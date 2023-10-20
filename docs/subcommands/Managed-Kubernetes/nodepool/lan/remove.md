@@ -47,6 +47,7 @@ Required values to run command:
   -f, --force                Force command to execute without user input
   -h, --help                 Print usage
   -i, --lan-id int           The unique LAN Id of existing LANs to be detached from worker Nodes (required)
+      --no-headers           Don't print table headers when table output is used
       --nodepool-id string   The unique K8s Node Pool Id (required)
   -o, --output string        Desired output format [text|json|api-json] (default "text")
   -q, --quiet                Quiet output

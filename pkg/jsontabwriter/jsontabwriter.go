@@ -184,7 +184,7 @@ func writeTableToText(table []map[string]interface{}, cols []string) string {
 		return ""
 	}
 
-	if !viper.IsSet(constants.ArgNoHeaders) {
+	if !viper.GetBool(constants.ArgNoHeaders) {
 		fmt.Fprintln(w, strings.Join(updatedCols, "\t"))
 	}
 

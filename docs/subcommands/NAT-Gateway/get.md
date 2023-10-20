@@ -45,7 +45,7 @@ Required values to run command:
   -f, --force                  Force command to execute without user input
   -h, --help                   Print usage
   -i, --natgateway-id string   The unique NatGateway Id (required)
-      --no-headers             When using text output, don't print headers
+      --no-headers             Don't print table headers when table output is used
   -o, --output string          Desired output format [text|json|api-json] (default "text")
   -q, --quiet                  Quiet output
   -t, --timeout int            Timeout option for waiting for NAT Gateway to be in AVAILABLE state [seconds] (default 60)

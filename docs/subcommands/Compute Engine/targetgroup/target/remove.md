@@ -51,6 +51,7 @@ Required values to run command:
   -f, --force                   Force command to execute without user input
   -h, --help                    Print usage
       --ip ip                   IP of a balanced target VM (required)
+      --no-headers              Don't print table headers when table output is used
   -o, --output string           Desired output format [text|json|api-json] (default "text")
   -P, --port int                Port of the balanced target service. (range: 1 to 65535) (required) (default 8080)
   -q, --quiet                   Quiet output

@@ -42,7 +42,7 @@ List (and optionally filter) the logs of your Mongo Cluster. Use --cols message 
   -f, --force               Force command to execute without user input
   -h, --help                Print usage
       --limit int           The maximal number of log lines to return. If the limit is reached then log lines will be cut at the end (respecting the scan direction). Must be between 1 - 5000 (default 100)
-      --no-headers          When using text output, don't print headers
+      --no-headers          Don't print table headers when table output is used
   -o, --output string       Desired output format [text|json|api-json] (default "text")
   -q, --quiet               Quiet output
       --start duration      The start time, as a duration. This should be negative, i.e. -720h. Valid: h, m, s

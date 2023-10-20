@@ -54,7 +54,6 @@ func ClusterCmd() *core.Command {
 		InitClient: true,
 	})
 	list.AddStringFlag(dbaaspg.ArgName, dbaaspg.ArgNameShort, "", "Response filter to list only the PostgreSQL Clusters that contain the specified name in the DisplayName field. The value is case insensitive")
-	list.AddBoolFlag(constants.ArgNoHeaders, "", false, "When using text output, don't print headers")
 	list.AddStringSliceFlag(constants.ArgCols, "", defaultClusterCols, tabheaders.ColsMessage(allClusterCols))
 	_ = list.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allClusterCols, cobra.ShellCompDirectiveNoFileComp
@@ -85,7 +84,6 @@ func ClusterCmd() *core.Command {
 	_ = get.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allClusterCols, cobra.ShellCompDirectiveNoFileComp
 	})
-	get.AddBoolFlag(constants.ArgNoHeaders, "", false, "When using text output, don't print headers")
 
 	/*
 		Create Command

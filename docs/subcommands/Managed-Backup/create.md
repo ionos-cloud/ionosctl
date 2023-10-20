@@ -53,6 +53,7 @@ Required values to run a command:
   -f, --force              Force command to execute without user input
   -h, --help               Print usage
   -n, --name string        Alphanumeric name you want to assign to the BackupUnit (required)
+      --no-headers         Don't print table headers when table output is used
   -o, --output string      Desired output format [text|json|api-json] (default "text")
   -p, --password string    Alphanumeric password you want to assign to the BackupUnit (required)
   -q, --quiet              Quiet output

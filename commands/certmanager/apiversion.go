@@ -39,7 +39,6 @@ func CertGetApiVersionCmd() *core.Command {
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allAPIVersionCols, cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddBoolFlag(constants.ArgNoHeaders, "n", false, "Response delete all certificates")
 
 	return cmd
 }

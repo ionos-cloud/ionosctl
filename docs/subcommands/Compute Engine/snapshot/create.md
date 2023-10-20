@@ -49,7 +49,7 @@ Required values to run command:
   -h, --help                   Print usage
       --licence-type string    Licence Type of the Snapshot. Can be one of: LINUX, RHEL, WINDOWS, WINDOWS2016, UNKNOWN, OTHER (default "LINUX")
   -n, --name string            Name of the Snapshot (default "Unnamed Snapshot")
-      --no-headers             Don't print column headers
+      --no-headers             Don't print table headers when table output is used
   -o, --output string          Desired output format [text|json|api-json] (default "text")
   -q, --quiet                  Quiet output
       --sec-auth-protection    Enable secure authentication protection. E.g.: --sec-auth-protection=true, --sec-auth-protection=false

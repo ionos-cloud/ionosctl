@@ -54,7 +54,7 @@ The following requests allows to alter the existing resources, add or remove new
       --maintenance-day string       Day Of the Week for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur
       --maintenance-time string      Time for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur. e.g.: 16:30:59
   -n, --name string                  The name of your nodepool (required)
-      --no-headers                   When using text output, don't print headers
+      --no-headers                   Don't print table headers when table output is used
       --node-count int32             The number of nodes that make up the node pool (required)
   -o, --output string                Desired output format [text|json|api-json] (default "text")
   -q, --quiet                        Quiet output

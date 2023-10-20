@@ -36,7 +36,7 @@ Use this command to add a Certificate.
   -c, --config string                   Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -f, --force                           Force command to execute without user input
   -h, --help                            Print usage
-      --no-headers                      When using text output, don't print headers
+      --no-headers                      Don't print table headers when table output is used
   -o, --output string                   Desired output format [text|json|api-json] (default "text")
       --private-key string              Specify the private key (required either this or --private-key-path)
       --private-key-path string         Specify the private key from a file (required either this or --private-key)

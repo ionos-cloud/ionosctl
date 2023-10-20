@@ -48,6 +48,7 @@ Required values to run command:
   -h, --help                   Print usage
       --ips strings            Collection of public reserved IP addresses of the NAT Gateway (required)
   -n, --name string            Name of the NAT Gateway (default "NAT Gateway")
+      --no-headers             Don't print table headers when table output is used
   -o, --output string          Desired output format [text|json|api-json] (default "text")
   -q, --quiet                  Quiet output
   -t, --timeout int            Timeout option for Request for NAT Gateway creation [seconds] (default 60)

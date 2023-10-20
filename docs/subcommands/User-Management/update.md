@@ -45,6 +45,7 @@ Required values to run command:
       --force-secure-auth   Indicates if secure (two-factor) authentication should be forced for the User. E.g.: --force-secure-auth=true, --force-secure-auth=false
   -h, --help                Print usage
       --last-name string    The last name for the User
+      --no-headers          Don't print table headers when table output is used
   -o, --output string       Desired output format [text|json|api-json] (default "text")
   -p, --password string     The password for the User (must be at least 5 characters long)
   -q, --quiet               Quiet output

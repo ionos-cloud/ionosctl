@@ -44,6 +44,7 @@ Required values to run command:
   -f, --force              Force command to execute without user input
   -i, --group-id string    The unique Group Id (required)
   -h, --help               Print usage
+      --no-headers         Don't print table headers when table output is used
   -o, --output string      Desired output format [text|json|api-json] (default "text")
   -q, --quiet              Quiet output
   -t, --timeout int        Timeout option for Request for Group deletion [seconds] (default 60)

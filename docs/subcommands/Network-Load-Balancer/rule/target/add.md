@@ -62,6 +62,7 @@ Required values to run command:
       --ip ip                           IP of a balanced target VM (required)
       --maintenance                     [Health Check]  Maintenance specifies if a target VM should be marked as down, even if it is not
       --networkloadbalancer-id string   The unique NetworkLoadBalancer Id (required)
+      --no-headers                      Don't print table headers when table output is used
   -o, --output string                   Desired output format [text|json|api-json] (default "text")
   -P, --port string                     Port of the balanced target service. Range: 1 to 65535 (required)
   -q, --quiet                           Quiet output

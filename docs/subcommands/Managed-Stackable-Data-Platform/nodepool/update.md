@@ -50,7 +50,7 @@ The following requests allows to alter the existing resources of the cluster
   -L, --labels stringToString        Labels to set on a NodePool. It will overwrite the existing labels, if there are any. Use the following format: --labels KEY=VALUE,KEY=VALUE (default [])
       --maintenance-day string       Day Of the Week for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur (required)
       --maintenance-time string      Time for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur. e.g.: 16:30:59 (required)
-      --no-headers                   When using text output, don't print headers
+      --no-headers                   Don't print table headers when table output is used
   -n, --node-count int32             The number of nodes that make up the node pool (required)
   -i, --nodepool-id string           The UUID of the cluster the nodepool belongs to
   -o, --output string                Desired output format [text|json|api-json] (default "text")

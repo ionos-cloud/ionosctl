@@ -34,10 +34,12 @@ func TokenReplaceCmd() *core.Command {
 		},
 	)
 
-	cmd.AddStringFlag(FlagName, "", "", "Name of the Token", core.RequiredFlagOption())
+	// This line is only used to override the help text for `--no-headers`!
 	cmd.Command.PersistentFlags().Bool(
 		constants.ArgNoHeaders, true, "Use --no-headers=false to show column headers",
 	)
+
+	cmd.AddStringFlag(FlagName, "", "", "Name of the Token", core.RequiredFlagOption())
 	cmd.AddStringFlag(FlagRegId, "r", "", "Registry ID")
 	_ = cmd.Command.RegisterFlagCompletionFunc(
 		FlagRegId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -74,6 +76,10 @@ func TokenReplaceCmd() *core.Command {
 }
 
 func CmdPutToken(c *core.CommandConfig) error {
+	if !viper.IsSet(constants.ArgNoHeaders) {
+		viper.Set(constants.ArgNoHeaders, true) // Change default to work as for `token create`
+	}
+
 	var err error
 
 	regId, err := c.Command.Command.Flags().GetString(FlagRegId)

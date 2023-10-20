@@ -36,7 +36,7 @@ Delete all repository contents. The registry V2 API allows manifests and blobs t
   -f, --force                Force command to execute without user input
   -h, --help                 Print usage
   -n, --name string          Name of the repository to delete
-      --no-headers           When using text output, don't print headers
+      --no-headers           Don't print table headers when table output is used
   -o, --output string        Desired output format [text|json|api-json] (default "text")
   -q, --quiet                Quiet output
   -r, --registry-id string   Registry ID

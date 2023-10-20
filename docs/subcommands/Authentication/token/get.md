@@ -36,7 +36,7 @@ Required values to run command:
       --contract int      Users with multiple contracts must provide the contract number, for which the token information is displayed
   -f, --force             Force command to execute without user input
   -h, --help              Print usage
-      --no-headers        When using text output, don't print headers
+      --no-headers        Don't print table headers when table output is used
   -o, --output string     Desired output format [text|json|api-json] (default "text")
   -q, --quiet             Quiet output
   -t, --token string      The contents of a Token (required)

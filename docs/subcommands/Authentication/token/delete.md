@@ -39,6 +39,7 @@ Required values to run command:
   -E, --expired           Delete the Tokens that are currently expired (required)
   -f, --force             Force command to execute without user input
   -h, --help              Print usage
+      --no-headers        Don't print table headers when table output is used
   -o, --output string     Desired output format [text|json|api-json] (default "text")
   -q, --quiet             Quiet output
   -t, --token string      The contents of a Token (required)

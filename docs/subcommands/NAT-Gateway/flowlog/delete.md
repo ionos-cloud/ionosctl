@@ -56,6 +56,7 @@ Required values to run command:
   -f, --force                  Force command to execute without user input
   -h, --help                   Print usage
       --natgateway-id string   The unique NatGateway Id (required)
+      --no-headers             Don't print table headers when table output is used
   -o, --output string          Desired output format [text|json|api-json] (default "text")
   -q, --quiet                  Quiet output
   -t, --timeout int            Timeout option for Request for NAT Gateway FlowLog deletion [seconds] (default 60)

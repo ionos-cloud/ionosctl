@@ -45,7 +45,7 @@ Create MongoDB users.
   -f, --force               Force command to execute without user input
   -h, --help                Print usage
   -n, --name string         The authentication username (required)
-      --no-headers          When using text output, don't print headers
+      --no-headers          Don't print table headers when table output is used
   -o, --output string       Desired output format [text|json|api-json] (default "text")
   -p, --password string     The authentication password (required)
   -q, --quiet               Quiet output

@@ -45,7 +45,7 @@ Delete a Dataplatform Cluster by ID
   -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -f, --force                Force command to execute without user input
   -h, --help                 Print usage
-      --no-headers           When using text output, don't print headers
+      --no-headers           Don't print table headers when table output is used
   -i, --nodepool-id string   The unique ID of the nodepool (required)
   -o, --output string        Desired output format [text|json|api-json] (default "text")
   -q, --quiet                Quiet output

@@ -48,6 +48,7 @@ Required values to run command:
       --ips strings            Collection of IP addresses of the Network Load Balancer
       --listener-lan int       Id of the listening LAN (default 2)
   -n, --name string            Name of the Network Load Balancer (default "Network Load Balancer")
+      --no-headers             Don't print table headers when table output is used
   -o, --output string          Desired output format [text|json|api-json] (default "text")
       --private-ips strings    Collection of private IP addresses with subnet mask of the Network Load Balancer
   -q, --quiet                  Quiet output
