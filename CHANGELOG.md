@@ -13,6 +13,7 @@
 ## Changed
 
 * Changed how `request targets` are printed for better readability
+* In help text & documentation, `Private Cross Connect` has been renamed to `Cross Connect`, and an alias of `cc` has been added to the `pcc` command
 
 ## [v6.7.0] (October 2023)
 

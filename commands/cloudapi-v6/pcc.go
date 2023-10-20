@@ -46,8 +46,9 @@ func PccCmd() *core.Command {
 	pccCmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "pcc",
-			Short:            "Private Cross-Connect Operations",
-			Long:             "The sub-commands of `ionosctl pcc` allow you to list, get, create, update, delete Private Cross-Connect. To add Private Cross-Connect to a Lan, check the `ionosctl lan update` command.",
+			Aliases:          []string{"cc"},
+			Short:            "Cross-Connect Operations",
+			Long:             "The sub-commands of `ionosctl pcc` allow you to list, get, create, update, delete Cross-Connect. To add Cross-Connect to a Lan, check the `ionosctl lan update` command.",
 			TraverseChildren: true,
 		},
 	}
@@ -66,8 +67,8 @@ func PccCmd() *core.Command {
 		Resource:   "pcc",
 		Verb:       "list",
 		Aliases:    []string{"l", "ls"},
-		ShortDesc:  "List Private Cross-Connects",
-		LongDesc:   "Use this command to get a list of existing Private Cross-Connects available on your account.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.PccsFiltersUsage(),
+		ShortDesc:  "List Cross-Connects",
+		LongDesc:   "Use this command to get a list of existing Cross-Connects available on your account.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.PccsFiltersUsage(),
 		Example:    listPccsExample,
 		PreCmdRun:  PreRunPccList,
 		CmdRun:     RunPccList,
@@ -93,8 +94,8 @@ func PccCmd() *core.Command {
 		Resource:   "pcc",
 		Verb:       "get",
 		Aliases:    []string{"g"},
-		ShortDesc:  "Get a Private Cross-Connect",
-		LongDesc:   "Use this command to retrieve details about a specific Private Cross-Connect.\n\nRequired values to run command:\n\n* Pcc Id",
+		ShortDesc:  "Get a Cross-Connect",
+		LongDesc:   "Use this command to retrieve details about a specific Cross-Connect.\n\nRequired values to run command:\n\n* Pcc Id",
 		Example:    getPccExample,
 		PreCmdRun:  PreRunPccId,
 		CmdRun:     RunPccGet,
@@ -115,17 +116,17 @@ func PccCmd() *core.Command {
 		Resource:   "pcc",
 		Verb:       "create",
 		Aliases:    []string{"c"},
-		ShortDesc:  "Create a Private Cross-Connect",
-		LongDesc:   "Use this command to create a Private Cross-Connect. You can specify the name and the description for the Private Cross-Connect.",
+		ShortDesc:  "Create a Cross-Connect",
+		LongDesc:   "Use this command to create a Cross-Connect. You can specify the name and the description for the Cross-Connect.",
 		Example:    createPccExample,
 		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunPccCreate,
 		InitClient: true,
 	})
-	create.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "Unnamed PrivateCrossConnect", "The name for the Private Cross-Connect")
-	create.AddStringFlag(cloudapiv6.ArgDescription, cloudapiv6.ArgDescriptionShort, "", "The description for the Private Cross-Connect")
-	create.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait, "Wait for the Request for Private Cross-Connect creation to be executed")
-	create.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for Private Cross-Connect creation [seconds]")
+	create.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "Unnamed PrivateCrossConnect", "The name for the Cross-Connect")
+	create.AddStringFlag(cloudapiv6.ArgDescription, cloudapiv6.ArgDescriptionShort, "", "The description for the Cross-Connect")
+	create.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait, "Wait for the Request for Cross-Connect creation to be executed")
+	create.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for Cross-Connect creation [seconds]")
 	create.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultCreateDepth, cloudapiv6.ArgDepthDescription)
 
 	/*
@@ -136,8 +137,8 @@ func PccCmd() *core.Command {
 		Resource:  "pcc",
 		Verb:      "update",
 		Aliases:   []string{"u", "up"},
-		ShortDesc: "Update a Private Cross-Connect",
-		LongDesc: `Use this command to update details about a specific Private Cross-Connect. Name and description can be updated.
+		ShortDesc: "Update a Cross-Connect",
+		LongDesc: `Use this command to update details about a specific Cross-Connect. Name and description can be updated.
 
 Required values to run command:
 
@@ -147,14 +148,14 @@ Required values to run command:
 		CmdRun:     RunPccUpdate,
 		InitClient: true,
 	})
-	update.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "", "The name for the Private Cross-Connect")
-	update.AddStringFlag(cloudapiv6.ArgDescription, cloudapiv6.ArgDescriptionShort, "", "The description for the Private Cross-Connect")
+	update.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "", "The name for the Cross-Connect")
+	update.AddStringFlag(cloudapiv6.ArgDescription, cloudapiv6.ArgDescriptionShort, "", "The description for the Cross-Connect")
 	update.AddUUIDFlag(cloudapiv6.ArgPccId, cloudapiv6.ArgIdShort, "", cloudapiv6.PccId, core.RequiredFlagOption())
 	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgPccId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.PccsIds(), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait, "Wait for the Request for Private Cross-Connect update to be executed")
-	update.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for Private Cross-Connect update [seconds]")
+	update.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait, "Wait for the Request for Cross-Connect update to be executed")
+	update.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for Cross-Connect update [seconds]")
 	update.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultUpdateDepth, cloudapiv6.ArgDepthDescription)
 
 	/*
@@ -165,8 +166,8 @@ Required values to run command:
 		Resource:  "pcc",
 		Verb:      "delete",
 		Aliases:   []string{"d"},
-		ShortDesc: "Delete a Private Cross-Connect",
-		LongDesc: `Use this command to delete a Private Cross-Connect.
+		ShortDesc: "Delete a Cross-Connect",
+		LongDesc: `Use this command to delete a Cross-Connect.
 
 Required values to run command:
 
@@ -180,9 +181,9 @@ Required values to run command:
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgPccId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.PccsIds(), cobra.ShellCompDirectiveNoFileComp
 	})
-	deleteCmd.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait, "Wait for the Request for Private Cross-Connect deletion to be executed")
-	deleteCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete all Private Cross-Connects.")
-	deleteCmd.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for Private Cross-Connect deletion [seconds]")
+	deleteCmd.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait, "Wait for the Request for Cross-Connect deletion to be executed")
+	deleteCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete all Cross-Connects.")
+	deleteCmd.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for Cross-Connect deletion [seconds]")
 	deleteCmd.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultDeleteDepth, cloudapiv6.ArgDepthDescription)
 
 	pccCmd.AddCommand(PeersCmd())
@@ -244,7 +245,7 @@ func RunPccGet(c *core.CommandConfig) error {
 	queryParams := listQueryParams.QueryParams
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
-		"Private cross connect with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgPccId))))
+		"Cross Connect with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgPccId))))
 
 	u, resp, err := c.CloudApiV6Services.Pccs().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgPccId)), queryParams)
 	if resp != nil {
@@ -287,7 +288,7 @@ func RunPccCreate(c *core.CommandConfig) error {
 	}
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
-		"Properties set for creating the private cross connect: Name: %v, Description: %v", name, description))
+		"Properties set for creating the Cross Connect: Name: %v, Description: %v", name, description))
 
 	u, resp, err := c.CloudApiV6Services.Pccs().Create(newUser, queryParams)
 	if resp != nil && utils.GetId(resp) != "" {
@@ -367,12 +368,12 @@ func RunPccDelete(c *core.CommandConfig) error {
 		return nil
 	}
 
-	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete private cross-connect", viper.GetBool(constants.ArgForce)) {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete Cross-Connect", viper.GetBool(constants.ArgForce)) {
 		return fmt.Errorf(confirm.UserDenied)
 	}
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
-		"Starting deleting Private cross connect with id: %v...", pccId))
+		"Starting deleting Cross Connect with id: %v...", pccId))
 
 	resp, err := c.CloudApiV6Services.Pccs().Delete(pccId, queryParams)
 	if resp != nil && utils.GetId(resp) != "" {
@@ -386,7 +387,7 @@ func RunPccDelete(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Private Cross Connect successfully deleted"))
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Cross Connect successfully deleted"))
 	return nil
 }
 
@@ -465,7 +466,7 @@ func DeleteAllPccs(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
 
-	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete all the private cross-connects", viper.GetBool(constants.ArgForce)) {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete all the Cross-Connects", viper.GetBool(constants.ArgForce)) {
 		return fmt.Errorf(confirm.UserDenied)
 	}
 
@@ -501,7 +502,7 @@ func DeleteAllPccs(c *core.CommandConfig) error {
 		return multiErr
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Private Cross Connects successfully deleted"))
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Cross Connects successfully deleted"))
 	return nil
 }
 
@@ -510,8 +511,8 @@ func PeersCmd() *core.Command {
 	peerCmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "peers",
-			Short:            "Private Cross-Connect Peers Operations",
-			Long:             "The sub-command of `ionosctl pcc peers` allows you to get a list of Peers from a Private Cross-Connect.",
+			Short:            "Cross-Connect Peers Operations",
+			Long:             "The sub-command of `ionosctl pcc peers` allows you to get a list of Peers from a Cross-Connect.",
 			TraverseChildren: true,
 		},
 	}
@@ -531,8 +532,8 @@ func PeersCmd() *core.Command {
 		Resource:   "peers",
 		Verb:       "list",
 		Aliases:    []string{"l", "ls"},
-		ShortDesc:  "Get a list of Peers from a Private Cross-Connect",
-		LongDesc:   "Use this command to get a list of Peers from a Private Cross-Connect.\n\nRequired values to run command:\n\n* Pcc Id",
+		ShortDesc:  "Get a list of Peers from a Cross-Connect",
+		LongDesc:   "Use this command to get a list of Peers from a Cross-Connect.\n\nRequired values to run command:\n\n* Pcc Id",
 		Example:    listPccPeersExample,
 		PreCmdRun:  PreRunPccId,
 		CmdRun:     RunPccPeersList,
@@ -549,7 +550,7 @@ func PeersCmd() *core.Command {
 
 func RunPccPeersList(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
-		"Getting Peers from Private Cross-Connect with ID: %v...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgPccId))))
+		"Getting Peers from Cross-Connect with ID: %v...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgPccId))))
 
 	u, resp, err := c.CloudApiV6Services.Pccs().GetPeers(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgPccId)))
 	if resp != nil {

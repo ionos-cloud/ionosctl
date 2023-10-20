@@ -1,5 +1,5 @@
 ---
-description: "Create a Private Cross-Connect"
+description: "Create a Cross-Connect"
 ---
 
 # PccCreate
@@ -12,6 +12,12 @@ ionosctl pcc create [flags]
 
 ## Aliases
 
+For `pcc` command:
+
+```text
+[cc]
+```
+
 For `create` command:
 
 ```text
@@ -20,7 +26,7 @@ For `create` command:
 
 ## Description
 
-Use this command to create a Private Cross-Connect. You can specify the name and the description for the Private Cross-Connect.
+Use this command to create a Cross-Connect. You can specify the name and the description for the Cross-Connect.
 
 ## Options
 
@@ -30,15 +36,15 @@ Use this command to create a Private Cross-Connect. You can specify the name and
                              Available columns: [PccId Name Description State] (default [PccId,Name,Description,State])
   -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -D, --depth int32          Controls the detail depth of the response objects. Max depth is 10.
-  -d, --description string   The description for the Private Cross-Connect
+  -d, --description string   The description for the Cross-Connect
   -f, --force                Force command to execute without user input
   -h, --help                 Print usage
-  -n, --name string          The name for the Private Cross-Connect (default "Unnamed PrivateCrossConnect")
+  -n, --name string          The name for the Cross-Connect (default "Unnamed PrivateCrossConnect")
   -o, --output string        Desired output format [text|json|api-json] (default "text")
   -q, --quiet                Quiet output
-  -t, --timeout int          Timeout option for Request for Private Cross-Connect creation [seconds] (default 60)
+  -t, --timeout int          Timeout option for Request for Cross-Connect creation [seconds] (default 60)
   -v, --verbose              Print step-by-step process when running command
-  -w, --wait-for-request     Wait for the Request for Private Cross-Connect creation to be executed
+  -w, --wait-for-request     Wait for the Request for Cross-Connect creation to be executed
 ```
 
 ## Examples

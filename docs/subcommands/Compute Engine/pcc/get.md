@@ -1,5 +1,5 @@
 ---
-description: "Get a Private Cross-Connect"
+description: "Get a Cross-Connect"
 ---
 
 # PccGet
@@ -12,6 +12,12 @@ ionosctl pcc get [flags]
 
 ## Aliases
 
+For `pcc` command:
+
+```text
+[cc]
+```
+
 For `get` command:
 
 ```text
@@ -20,7 +26,7 @@ For `get` command:
 
 ## Description
 
-Use this command to retrieve details about a specific Private Cross-Connect.
+Use this command to retrieve details about a specific Cross-Connect.
 
 Required values to run command:
 
@@ -38,7 +44,7 @@ Required values to run command:
   -h, --help             Print usage
       --no-headers       When using text output, don't print headers
   -o, --output string    Desired output format [text|json|api-json] (default "text")
-  -i, --pcc-id string    The unique Private Cross-Connect Id (required)
+  -i, --pcc-id string    The unique Cross-Connect Id (required)
   -q, --quiet            Quiet output
   -v, --verbose          Print step-by-step process when running command
 ```

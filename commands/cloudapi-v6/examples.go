@@ -224,7 +224,7 @@ ionosctl label add --resource-type datacenter --datacenter-id DATACENTER_ID --la
 	deleteBackupUnitExample = `ionosctl backupunit delete --backupunit-id BACKUPUNIT_ID`
 
 	/*
-		Private Cross-Connect Example
+		Cross-Connect Example
 	*/
 	listPccsExample     = `ionosctl pcc list`
 	getPccExample       = `ionosctl pcc get --pcc-id PCC_ID`
