@@ -48,6 +48,7 @@ func APIVersionCmd() *core.Command {
 		CmdRun:     RunAPIVersionList,
 		InitClient: true,
 	})
+	_ = list // Actually used - added through "NewCommand" func. TODO: This is confusing!
 
 	/*
 		Get Command
@@ -64,6 +65,7 @@ func APIVersionCmd() *core.Command {
 		CmdRun:     RunAPIVersionGet,
 		InitClient: true,
 	})
+	_ = get // Actually used - added through "NewCommand" func. TODO: This is confusing!
 
 	return apiversionCmd
 }

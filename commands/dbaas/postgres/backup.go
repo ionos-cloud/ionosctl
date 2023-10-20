@@ -47,6 +47,7 @@ func BackupCmd() *core.Command {
 		CmdRun:     RunBackupList,
 		InitClient: true,
 	})
+	_ = list // Actually used - added through "NewCommand" func. TODO: This is confusing!
 
 	/*
 		Get Command

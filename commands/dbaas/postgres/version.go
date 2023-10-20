@@ -47,6 +47,7 @@ func PgsqlVersionCmd() *core.Command {
 		CmdRun:     RunPgsqlVersionList,
 		InitClient: true,
 	})
+	_ = list // Actually used - added through "NewCommand" func. TODO: This is confusing!
 
 	/*
 		Get Command
