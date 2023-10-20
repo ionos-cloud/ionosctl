@@ -36,10 +36,11 @@ var (
 			TraverseChildren: true,
 		},
 	}
-	Output  string
-	Quiet   bool
-	Force   bool
-	Verbose bool
+	Output    string
+	Quiet     bool
+	Force     bool
+	Verbose   bool
+	NoHeaders bool
 
 	cfgFile string
 
@@ -129,6 +130,9 @@ func init() {
 		"Print step-by-step process when running command",
 	)
 	_ = viper.BindPFlag(constants.ArgVerbose, rootPFlagSet.Lookup(constants.ArgVerbose))
+
+	rootPFlagSet.Bool(constants.ArgNoHeaders, false, "Don't print table headers when table output is used")
+	_ = viper.BindPFlag(constants.ArgNoHeaders, rootPFlagSet.Lookup(constants.ArgNoHeaders))
 
 	// Add SubCommands to RootCmd
 	addCommands()
