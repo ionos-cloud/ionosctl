@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
@@ -16,14 +17,7 @@ import (
 )
 
 var (
-	allLabelJSONPaths = map[string]string{
-		"Key":          "properties.key",
-		"Value":        "properties.value",
-		"ResourceType": "properties.resourceType",
-		"ResourceId":   "properties.resourceId",
-	}
-
-	defaultLabelCols = []string{"Key", "Value", "ResourceType", "ResourceId"}
+	defaultLabelCols = []string{"URN", "Key", "Value", "ResourceType", "ResourceId"}
 )
 
 func LabelCmd() *core.Command {
@@ -37,10 +31,10 @@ func LabelCmd() *core.Command {
 		},
 	}
 	globalFlags := labelCmd.GlobalFlags()
-	globalFlags.StringSliceP(constants.ArgCols, "", defaultLabelResourceCols, tabheaders.ColsMessage(defaultLabelResourceCols))
+	globalFlags.StringSliceP(constants.ArgCols, "", defaultLabelCols, tabheaders.ColsMessage(defaultLabelCols))
 	_ = viper.BindPFlag(core.GetFlagName(labelCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = labelCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return defaultLabelResourceCols, cobra.ShellCompDirectiveNoFileComp
+		return defaultLabelCols, cobra.ShellCompDirectiveNoFileComp
 	})
 
 	var (
@@ -329,7 +323,7 @@ func RunLabelList(c *core.CommandConfig) error {
 
 		cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-		out, err = jsontabwriter.GenerateOutput("items", allLabelJSONPaths, labelDcs.Labels,
+		out, err = jsontabwriter.GenerateOutput("items", jsonpaths.Label, labelDcs.Labels,
 			tabheaders.GetHeadersAllDefault(defaultLabelCols, cols))
 		if err != nil {
 			return err
@@ -381,7 +375,7 @@ func RunLabelGetByUrn(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allLabelJSONPaths, labelDc.Label,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Label, labelDc.Label,
 		tabheaders.GetHeadersAllDefault(defaultLabelCols, cols))
 	if err != nil {
 		return err

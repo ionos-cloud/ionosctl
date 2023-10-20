@@ -233,11 +233,6 @@ var K8sNodePoolLan = map[string]string{
 	"RoutesGatewayIp": "routes.*.gatewayIp",
 }
 
-var LabelResource = map[string]string{
-	"Key":   "properties.key",
-	"Value": "properties.value",
-}
-
 var Lan = map[string]string{
 	"LanId":         "id",
 	"Name":          "properties.name",
@@ -455,4 +450,12 @@ var Volume = map[string]string{
 	"BackupunitId":     "properties.backupunitId",
 	"UserData":         "properties.userData",
 	"BootServerId":     "properties.bootServer",
+}
+
+var Label = map[string]string{
+	"URN":          "id",
+	"Key":          "properties.key",
+	"Value":        "properties.value",
+	"ResourceType": "properties.resourceType",
+	"ResourceId":   "properties.resourceId",
 }
