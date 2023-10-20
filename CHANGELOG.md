@@ -9,6 +9,7 @@
 ## Fixed
 
 * Fixed `ResourceId` and `ResourceType` columns not being printed in `label` subcommands
+* Fixed `--no-headers` flag value being ignored - now treated as a global flag
 
 ## Changed
 
