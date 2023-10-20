@@ -49,6 +49,7 @@ Required values to run command:
   -h, --help                   Print usage
       --ipv6-cidr string       The /64 IPv6 Cidr as defined in RFC 4291. It needs to be within the Datacenter IPv6 Cidr Block range. It can also be set to "AUTO" or "DISABLE". (default "DISABLE")
   -n, --name string            The name of the LAN (default "Unnamed LAN")
+      --no-headers             Don't print table headers when table output is used
   -o, --output string          Desired output format [text|json|api-json] (default "text")
       --pcc-id string          The unique Id of the Cross-Connect the LAN will connect to
   -p, --public                 Indicates if the LAN faces the public Internet (true) or not (false). E.g.: --public=true, --public=false

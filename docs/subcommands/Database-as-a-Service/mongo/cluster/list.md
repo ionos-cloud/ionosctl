@@ -45,7 +45,7 @@ Use this command to retrieve a list of Mongo Clusters provisioned under your acc
   -h, --help                Print usage
   -M, --max-results int32   The maximum number of elements to return
   -n, --name string         Response filter to list only the Mongo Clusters that contain the specified name in the DisplayName field. The value is case insensitive
-      --no-headers          When using text output, don't print headers
+      --no-headers          Don't print table headers when table output is used
       --offset int32        Skip a certain number of results
   -o, --output string       Desired output format [text|json|api-json] (default "text")
   -q, --quiet               Quiet output

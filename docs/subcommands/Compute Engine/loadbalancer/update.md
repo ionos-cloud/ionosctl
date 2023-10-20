@@ -50,6 +50,7 @@ Required values to run command:
       --ip ip                    The IP of the Load Balancer
   -i, --loadbalancer-id string   The unique Load Balancer Id (required)
   -n, --name string              Name of the Load Balancer
+      --no-headers               Don't print table headers when table output is used
   -o, --output string            Desired output format [text|json|api-json] (default "text")
   -q, --quiet                    Quiet output
   -t, --timeout int              Timeout option for Request for Load Balancer update [seconds] (default 60)

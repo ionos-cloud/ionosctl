@@ -60,6 +60,7 @@ Required values to run command:
       --lan-id int             The LAN ID the NIC sits on (default 1)
   -n, --name string            The name of the NIC
   -i, --nic-id string          The unique NIC Id (required)
+      --no-headers             Don't print table headers when table output is used
   -o, --output string          Desired output format [text|json|api-json] (default "text")
   -q, --quiet                  Quiet output
       --server-id string       The unique Server Id (required)

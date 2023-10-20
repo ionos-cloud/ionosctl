@@ -40,6 +40,7 @@ Use this command to create a Cross-Connect. You can specify the name and the des
   -f, --force                Force command to execute without user input
   -h, --help                 Print usage
   -n, --name string          The name for the Cross-Connect (default "Unnamed PrivateCrossConnect")
+      --no-headers           Don't print table headers when table output is used
   -o, --output string        Desired output format [text|json|api-json] (default "text")
   -q, --quiet                Quiet output
   -t, --timeout int          Timeout option for Request for Cross-Connect creation [seconds] (default 60)

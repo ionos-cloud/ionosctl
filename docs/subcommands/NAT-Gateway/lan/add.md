@@ -52,6 +52,7 @@ Required values to run command:
       --ips strings            Collection of Gateway IPs. If not set, it will automatically reserve public IPs
   -i, --lan-id int             The unique LAN Id (required) (default 1)
       --natgateway-id string   The unique NatGateway Id (required)
+      --no-headers             Don't print table headers when table output is used
   -o, --output string          Desired output format [text|json|api-json] (default "text")
   -q, --quiet                  Quiet output
   -t, --timeout int            Timeout option for Request for NAT Gateway Lan addition [seconds] (default 60)

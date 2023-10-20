@@ -41,7 +41,7 @@ Available Filters:
   -h, --help                   Print usage
       --ipblock-id string      The unique IpBlock Id
   -M, --max-results int32      The maximum number of elements to return
-      --no-headers             When using text output, don't print headers
+      --no-headers             Don't print table headers when table output is used
       --order-by string        Limits results to those containing a matching value for a specific property
   -o, --output string          Desired output format [text|json|api-json] (default "text")
   -q, --quiet                  Quiet output

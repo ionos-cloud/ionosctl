@@ -45,7 +45,7 @@ Get a MongoDB user
   -d, --database string     The authentication database
   -f, --force               Force command to execute without user input
   -h, --help                Print usage
-      --no-headers          When using text output, don't print headers
+      --no-headers          Don't print table headers when table output is used
   -o, --output string       Desired output format [text|json|api-json] (default "text")
   -q, --quiet               Quiet output
       --user string         The authentication username

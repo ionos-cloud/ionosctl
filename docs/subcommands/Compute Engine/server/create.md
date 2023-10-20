@@ -91,6 +91,7 @@ You can wait for the Request to be executed using `--wait-for-request` option. Y
       --image-id string            [CUBE Server] The Image Id or snapshot Id to be used as for the Direct Attached Storage
   -l, --licence-type string        [CUBE Server] Licence Type of the Direct Attached Storage. Can be one of: LINUX, RHEL, WINDOWS, WINDOWS2016, UNKNOWN, OTHER (default "LINUX")
   -n, --name string                Name of the Server (default "Unnamed Server")
+      --no-headers                 Don't print table headers when table output is used
   -o, --output string              Desired output format [text|json|api-json] (default "text")
   -p, --password string            [CUBE Server] Initial image password to be set for installed OS. Works with public Images only. Not modifiable. Password rules allows all characters from a-z, A-Z, 0-9
   -q, --quiet                      Quiet output

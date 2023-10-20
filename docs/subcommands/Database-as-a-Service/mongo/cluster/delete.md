@@ -46,7 +46,7 @@ Delete a Mongo Cluster by ID
   -f, --force               Force command to execute without user input
   -h, --help                Print usage
       --name                When deleting all clusters, filter the clusters by a name
-      --no-headers          When using text output, don't print headers
+      --no-headers          Don't print table headers when table output is used
   -o, --output string       Desired output format [text|json|api-json] (default "text")
   -q, --quiet               Quiet output
   -v, --verbose             Print step-by-step process when running command

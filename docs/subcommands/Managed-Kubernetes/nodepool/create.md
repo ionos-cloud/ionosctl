@@ -63,6 +63,7 @@ Required values to run a command (for Private Kubernetes Cluster):
   -L, --labels stringToString        Labels to set on a NodePool. It will overwrite the existing labels, if there are any. Use the following format: --labels KEY=VALUE,KEY=VALUE (default [])
       --lan-ids ints                 Collection of LAN Ids of existing LANs to be attached to worker Nodes
   -n, --name string                  The name for the K8s NodePool (default "UnnamedNodePool")
+      --no-headers                   Don't print table headers when table output is used
       --node-count int               The number of worker Nodes that the Node Pool should contain. Min 1, Max: Determined by the resource availability (default 1)
   -o, --output string                Desired output format [text|json|api-json] (default "text")
   -q, --quiet                        Quiet output

@@ -51,6 +51,7 @@ Required values to run a command:
   -h, --help                 Print usage
   -i, --lan-id int           The unique LAN Id of existing LANs to be attached to worker Nodes (required)
       --network strings      Slice of IPv4 or IPv6 CIDRs to be routed via the interface. Must contain same number of arguments as --gateway-ip flag
+      --no-headers           Don't print table headers when table output is used
       --nodepool-id string   The unique K8s Node Pool Id (required)
   -o, --output string        Desired output format [text|json|api-json] (default "text")
   -q, --quiet                Quiet output

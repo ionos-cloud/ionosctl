@@ -56,6 +56,7 @@ Required values to run command:
   -h, --help                    Print usage
       --ip ip                   The IP of the balanced target VM. (required)
   -m, --maintenance-enabled     Maintenance mode prevents the target from receiving balanced traffic.
+      --no-headers              Don't print table headers when table output is used
   -o, --output string           Desired output format [text|json|api-json] (default "text")
   -P, --port int                The port of the balanced target service; valid range is 1 to 65535. (required) (default 8080)
   -q, --quiet                   Quiet output

@@ -56,6 +56,7 @@ Required values to run command:
       --ip-version string        The IP version for the Firewall Rule. Can be one of: IPv4, IPv6 (default "IPv4")
   -n, --name string              The name for the Firewall Rule
       --nic-id string            The unique NIC Id (required)
+      --no-headers               Don't print table headers when table output is used
   -o, --output string            Desired output format [text|json|api-json] (default "text")
       --port-range-end int       Redefine the end range of the allowed port (from 1 to 65534) if the protocol TCP or UDP is chosen. Not setting portRangeStart and portRangeEnd allows all ports (default 1)
       --port-range-start int     Redefine the start range of the allowed port (from 1 to 65534) if protocol TCP or UDP is chosen. Not setting portRangeStart and portRangeEnd allows all ports (default 1)

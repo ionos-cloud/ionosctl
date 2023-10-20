@@ -39,7 +39,7 @@ Retrieve zones
   -h, --help                Print usage
       --max-results int32   Pagination limit
       --name string         Filter used to fetch only the zones that contain the specified zone name
-      --no-headers          When using text output, don't print headers
+      --no-headers          Don't print table headers when table output is used
       --offset int32        Pagination offset
   -o, --output string       Desired output format [text|json|api-json] (default "text")
   -q, --quiet               Quiet output

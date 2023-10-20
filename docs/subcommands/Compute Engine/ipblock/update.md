@@ -46,6 +46,7 @@ Required values to run command:
   -h, --help                Print usage
   -i, --ipblock-id string   The unique IpBlock Id (required)
   -n, --name string         Name of the IpBlock
+      --no-headers          Don't print table headers when table output is used
   -o, --output string       Desired output format [text|json|api-json] (default "text")
   -q, --quiet               Quiet output
   -t, --timeout int         Timeout option for Request for IpBlock update [seconds] (default 60)

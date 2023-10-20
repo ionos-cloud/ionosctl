@@ -38,7 +38,7 @@ Use this command to get information about the Contract Resources on your account
   -D, --depth int32              Controls the detail depth of the response objects. Max depth is 10.
   -f, --force                    Force command to execute without user input
   -h, --help                     Print usage
-      --no-headers               When using text output, don't print headers
+      --no-headers               Don't print table headers when table output is used
   -o, --output string            Desired output format [text|json|api-json] (default "text")
   -q, --quiet                    Quiet output
       --resource-limits string   Specify Resource Limits to see details about it

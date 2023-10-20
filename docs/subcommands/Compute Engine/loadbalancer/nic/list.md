@@ -52,6 +52,7 @@ Required values to run command:
   -h, --help                     Print usage
       --loadbalancer-id string   The unique Load Balancer Id (required)
   -M, --max-results int32        The maximum number of elements to return
+      --no-headers               Don't print table headers when table output is used
       --order-by string          Limits results to those containing a matching value for a specific property
   -o, --output string            Desired output format [text|json|api-json] (default "text")
   -q, --quiet                    Quiet output
