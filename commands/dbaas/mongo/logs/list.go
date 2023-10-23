@@ -6,11 +6,11 @@ import (
 	"time"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/completer"
-	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/resource2table"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/resource2table"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -90,7 +90,7 @@ func LogsListCmd() *core.Command {
 
 			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-			logsConverted, err := resource2table.ConvertLogsToTable(logs.Instances)
+			logsConverted, err := resource2table.ConvertMongoDbaasLogsToTable(logs.Instances)
 			if err != nil {
 				return err
 			}

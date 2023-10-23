@@ -4,10 +4,10 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/registry"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	ionoscloud "github.com/ionos-cloud/sdk-go-container-registry"
@@ -60,7 +60,7 @@ func CmdListToken(c *core.CommandConfig) error {
 		if err != nil {
 			return err
 		}
-		out, err := jsontabwriter.GenerateOutput("items", jsonpaths.Token, tokens, tabheaders.GetHeadersAllDefault(AllTokenCols, cols))
+		out, err := jsontabwriter.GenerateOutput("items", jsonpaths.ContainerRegistryToken, tokens, tabheaders.GetHeadersAllDefault(AllTokenCols, cols))
 		if err != nil {
 			return err
 		}
@@ -87,7 +87,7 @@ func CmdListToken(c *core.CommandConfig) error {
 		}
 	}
 
-	out, err := jsontabwriter.GenerateOutput("*.items", jsonpaths.Token, list, tabheaders.GetHeadersAllDefault(AllTokenCols, cols))
+	out, err := jsontabwriter.GenerateOutput("*.items", jsonpaths.ContainerRegistryToken, list, tabheaders.GetHeadersAllDefault(AllTokenCols, cols))
 	if err != nil {
 		return err
 	}

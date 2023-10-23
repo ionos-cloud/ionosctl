@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/ionos-cloud/ionosctl/v6/commands/token/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	authservice "github.com/ionos-cloud/ionosctl/v6/services/auth-v1"
@@ -44,7 +44,7 @@ func runTokenList(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("tokens", jsonpaths.Token, tokens.Tokens,
+	out, err := jsontabwriter.GenerateOutput("tokens", jsonpaths.AuthToken, tokens.Tokens,
 		tabheaders.GetHeaders(allTokenCols, defaultTokenCols, cols))
 	if err != nil {
 		return err

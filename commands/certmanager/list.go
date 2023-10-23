@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/ionos-cloud/ionosctl/v6/commands/certmanager/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"github.com/spf13/cobra"
@@ -43,7 +43,7 @@ func CmdList(c *core.CommandConfig) error {
 
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.Certificate, certs,
+	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.CertManagerCertificate, certs,
 		tabheaders.GetHeadersAllDefault(defaultCertificateCols, cols))
 	if err != nil {
 		return err

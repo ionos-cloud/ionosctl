@@ -7,11 +7,11 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/cluster"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/completer"
-	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/resource2table"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/resource2table"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	sdkgo "github.com/ionos-cloud/sdk-go-dbaas-mongo"
 	"github.com/spf13/cobra"
@@ -62,7 +62,7 @@ ionosctl dbaas mongo user list --cluster-id <cluster-id>`,
 
 			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-			lsConverted, err := resource2table.ConvertUsersToTable(ls)
+			lsConverted, err := resource2table.ConvertDbaasMongoUsersToTable(ls)
 			if err != nil {
 				return err
 			}
@@ -119,7 +119,7 @@ func listAll(c *core.CommandConfig) error {
 			multiErr = errors.Join(multiErr, fmt.Errorf("failed listing users of cluster %s: %w", *c.Properties.DisplayName, err))
 		}
 
-		temp, err := resource2table.ConvertUsersToTable(l)
+		temp, err := resource2table.ConvertDbaasMongoUsersToTable(l)
 		if err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf("failed converting users of cluster %s: %w", *c.Properties.DisplayName, err))
 			continue

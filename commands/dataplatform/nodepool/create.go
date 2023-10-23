@@ -6,11 +6,11 @@ import (
 
 	"github.com/cilium/fake"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dataplatform/completer"
-	"github.com/ionos-cloud/ionosctl/v6/commands/dataplatform/resource2table"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/resource2table"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	sdkdataplatform "github.com/ionos-cloud/sdk-go-dataplatform"
 	"github.com/spf13/cobra"
@@ -100,7 +100,7 @@ func NodepoolCreateCmd() *core.Command {
 
 			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-			crConverted, err := resource2table.ConvertNodePoolToTable(cr)
+			crConverted, err := resource2table.ConvertDataplatformNodePoolToTable(cr)
 			if err != nil {
 				return err
 			}

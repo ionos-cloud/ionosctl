@@ -3,13 +3,13 @@ package resource2table
 import (
 	"fmt"
 
-	"github.com/ionos-cloud/ionosctl/v6/commands/dataplatform/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/convbytes"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/json2table"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsonpaths"
 	"github.com/ionos-cloud/sdk-go-dataplatform"
 )
 
-func ConvertClusterToTable(cluster ionoscloud.ClusterResponseData) ([]map[string]interface{}, error) {
+func ConvertDataplatformClusterToTable(cluster ionoscloud.ClusterResponseData) ([]map[string]interface{}, error) {
 	properties, ok := cluster.GetPropertiesOk()
 	if !ok || properties == nil {
 		return nil, fmt.Errorf("could not retrieve Dataplatform Cluster properties")
@@ -30,7 +30,7 @@ func ConvertClusterToTable(cluster ionoscloud.ClusterResponseData) ([]map[string
 		return nil, fmt.Errorf("could not retrieve Dataplatform Cluster maintenance window time")
 	}
 
-	temp, err := json2table.ConvertJSONToTable("", jsonpaths.Cluster, cluster)
+	temp, err := json2table.ConvertJSONToTable("", jsonpaths.DataplatformCluster, cluster)
 	if err != nil {
 		return nil, fmt.Errorf("could not convert from JSON to Table format: %w", err)
 	}
@@ -40,7 +40,7 @@ func ConvertClusterToTable(cluster ionoscloud.ClusterResponseData) ([]map[string
 	return temp, nil
 }
 
-func ConvertClustersToTable(clusters ionoscloud.ClusterListResponseData) ([]map[string]interface{}, error) {
+func ConvertDataplatformClustersToTable(clusters ionoscloud.ClusterListResponseData) ([]map[string]interface{}, error) {
 	items, ok := clusters.GetItemsOk()
 	if !ok || items == nil {
 		return nil, fmt.Errorf("could not retrieve Dataplatform Clusters items")
@@ -48,7 +48,7 @@ func ConvertClustersToTable(clusters ionoscloud.ClusterListResponseData) ([]map[
 
 	var clustersConverted []map[string]interface{}
 	for _, item := range *items {
-		temp, err := ConvertClusterToTable(item)
+		temp, err := ConvertDataplatformClusterToTable(item)
 		if err != nil {
 			return nil, err
 		}
@@ -59,7 +59,7 @@ func ConvertClustersToTable(clusters ionoscloud.ClusterListResponseData) ([]map[
 	return clustersConverted, nil
 }
 
-func ConvertNodePoolToTable(np ionoscloud.NodePoolResponseData) ([]map[string]interface{}, error) {
+func ConvertDataplatformNodePoolToTable(np ionoscloud.NodePoolResponseData) ([]map[string]interface{}, error) {
 	properties, ok := np.GetPropertiesOk()
 	if !ok || properties == nil {
 		return nil, fmt.Errorf("could not retrieve Node Pool properties")
@@ -103,7 +103,7 @@ func ConvertNodePoolToTable(np ionoscloud.NodePoolResponseData) ([]map[string]in
 
 	maintenanceWindow := fmt.Sprintf("%v %v", *day, *time)
 
-	temp, err := json2table.ConvertJSONToTable("", jsonpaths.Nodepool, np)
+	temp, err := json2table.ConvertJSONToTable("", jsonpaths.DataplatformNodepool, np)
 	if err != nil {
 		return nil, fmt.Errorf("could not convert from JSON to Table format: %w", err)
 	}
@@ -115,7 +115,7 @@ func ConvertNodePoolToTable(np ionoscloud.NodePoolResponseData) ([]map[string]in
 	return temp, nil
 }
 
-func ConvertNodePoolsToTable(nps ionoscloud.NodePoolListResponseData) ([]map[string]interface{}, error) {
+func ConvertDataplatformNodePoolsToTable(nps ionoscloud.NodePoolListResponseData) ([]map[string]interface{}, error) {
 	var npsConverted = make([]map[string]interface{}, 0)
 
 	items, ok := nps.GetItemsOk()
@@ -124,7 +124,7 @@ func ConvertNodePoolsToTable(nps ionoscloud.NodePoolListResponseData) ([]map[str
 	}
 
 	for _, item := range *items {
-		temp, err := ConvertNodePoolToTable(item)
+		temp, err := ConvertDataplatformNodePoolToTable(item)
 		if err != nil {
 			return nil, err
 		}

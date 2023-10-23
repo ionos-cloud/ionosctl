@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/ionos-cloud/ionosctl/v6/commands/certmanager/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"github.com/spf13/cobra"
@@ -48,7 +48,7 @@ func CmdGetApiVersion(c *core.CommandConfig) error {
 		return err
 	}
 
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.APIVersion, APIVersion, tabheaders.GetHeadersAllDefault(allAPIVersionCols, cols))
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.CertManagerAPIVersion, APIVersion, tabheaders.GetHeadersAllDefault(allAPIVersionCols, cols))
 	if err != nil {
 		return err
 	}

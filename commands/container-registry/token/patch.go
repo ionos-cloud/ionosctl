@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/registry"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	sdkgo "github.com/ionos-cloud/sdk-go-container-registry"
@@ -130,7 +130,7 @@ func CmdPatchToken(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Token, token, tabheaders.GetHeadersAllDefault(AllTokenCols, cols))
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.ContainerRegistryToken, token, tabheaders.GetHeadersAllDefault(AllTokenCols, cols))
 	if err != nil {
 		return err
 	}

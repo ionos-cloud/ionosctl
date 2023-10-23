@@ -7,11 +7,11 @@ import (
 	"github.com/cilium/fake"
 	"github.com/cjrd/allocate"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
-	"github.com/ionos-cloud/ionosctl/v6/commands/dataplatform/resource2table"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/resource2table"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	sdkdataplatform "github.com/ionos-cloud/sdk-go-dataplatform"
 	"github.com/spf13/cobra"
@@ -64,7 +64,7 @@ func ClusterCreateCmd() *core.Command {
 				return err
 			}
 
-			crConverted, err := resource2table.ConvertClusterToTable(cr)
+			crConverted, err := resource2table.ConvertDataplatformClusterToTable(cr)
 			if err != nil {
 				return err
 			}
