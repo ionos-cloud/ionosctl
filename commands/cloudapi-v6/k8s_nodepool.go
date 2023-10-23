@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/fatih/structs"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/jsonpaths"
+	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/resource2table"
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
@@ -340,7 +340,7 @@ func RunK8sNodePoolListAll(c *core.CommandConfig) error {
 		}
 
 		for _, node := range *items {
-			temp, err := jsonpaths.ConvertK8sNodepoolToTable(node)
+			temp, err := resource2table.ConvertK8sNodepoolToTable(node)
 			if err != nil {
 				return fmt.Errorf("failed to convert from JSON to Table format: %w", err)
 			}
@@ -405,7 +405,7 @@ func RunK8sNodePoolList(c *core.CommandConfig) error {
 		return err
 	}
 
-	k8ssConverted, err := jsonpaths.ConvertK8sNodepoolsToTable(k8ss.KubernetesNodePools)
+	k8ssConverted, err := resource2table.ConvertK8sNodepoolsToTable(k8ss.KubernetesNodePools)
 	if err != nil {
 		return err
 	}
@@ -448,7 +448,7 @@ func RunK8sNodePoolGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	uConverted, err := jsonpaths.ConvertK8sNodepoolToTable(u.KubernetesNodePool)
+	uConverted, err := resource2table.ConvertK8sNodepoolToTable(u.KubernetesNodePool)
 	if err != nil {
 		return err
 	}
@@ -489,7 +489,7 @@ func RunK8sNodePoolCreate(c *core.CommandConfig) error {
 		return err
 	}
 
-	uConverted, err := jsonpaths.ConvertK8sNodepoolToTable(u.KubernetesNodePool)
+	uConverted, err := resource2table.ConvertK8sNodepoolToTable(u.KubernetesNodePool)
 	if err != nil {
 		return err
 	}
@@ -550,7 +550,7 @@ func RunK8sNodePoolUpdate(c *core.CommandConfig) error {
 	newNodePoolUpdated, _, err := c.CloudApiV6Services.K8s().GetNodePool(viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)),
 		viper.GetString(core.GetFlagName(c.NS, constants.FlagNodepoolId)), queryParams)
 
-	newNodePoolUpdatedConverted, err := jsonpaths.ConvertK8sNodepoolToTable(newNodePoolUpdated.KubernetesNodePool)
+	newNodePoolUpdatedConverted, err := resource2table.ConvertK8sNodepoolToTable(newNodePoolUpdated.KubernetesNodePool)
 	if err != nil {
 		return err
 	}

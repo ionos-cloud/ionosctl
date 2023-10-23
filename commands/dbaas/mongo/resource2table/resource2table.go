@@ -1,9 +1,10 @@
-package jsonpaths
+package resource2table
 
 import (
 	"fmt"
 	"strings"
 
+	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/convbytes"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/json2table"
@@ -41,7 +42,7 @@ func ConvertClusterToTable(cluster ionoscloud.ClusterResponse) ([]map[string]int
 		return nil, fmt.Errorf("could not retrieve Mongo Cluster RAM")
 	}
 
-	temp, err := json2table.ConvertJSONToTable("", Cluster, cluster)
+	temp, err := json2table.ConvertJSONToTable("", jsonpaths.Cluster, cluster)
 	if err != nil {
 		return nil, fmt.Errorf("could not convert from JSON to Table format: %w", err)
 	}
@@ -106,7 +107,7 @@ func ConvertLogsToTable(logs *[]ionoscloud.ClusterLogsInstances) ([]map[string]i
 			continue
 		}
 		for msgIdx, msg := range *instance.GetMessages() {
-			o, err := json2table.ConvertJSONToTable("", LogsMessage, msg)
+			o, err := json2table.ConvertJSONToTable("", jsonpaths.LogsMessage, msg)
 			if err != nil {
 				return nil, fmt.Errorf("could not convert from JSON to Table format: %w", err)
 			}
@@ -140,7 +141,7 @@ func ConvertTemplateToTable(template ionoscloud.TemplateResponse) ([]map[string]
 		return nil, fmt.Errorf("could not retrieve Mongo Template storage")
 	}
 
-	temp, err := json2table.ConvertJSONToTable("", Templates, template)
+	temp, err := json2table.ConvertJSONToTable("", jsonpaths.Templates, template)
 	if err != nil {
 		return nil, fmt.Errorf("could not convert from JSON to Table format: %w", err)
 	}
@@ -181,7 +182,7 @@ func ConvertUserToTable(user ionoscloud.User) ([]map[string]interface{}, error) 
 		return nil, fmt.Errorf("could not retrieve Mongo User roles")
 	}
 
-	temp, err := json2table.ConvertJSONToTable("", User, user)
+	temp, err := json2table.ConvertJSONToTable("", jsonpaths.User, user)
 	if err != nil {
 		return nil, fmt.Errorf("could not convert from JSON to Table format: %w", err)
 	}

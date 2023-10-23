@@ -1,8 +1,9 @@
-package jsonpaths
+package resource2table
 
 import (
 	"fmt"
 
+	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/json2table"
 	"github.com/ionos-cloud/sdk-go/v6"
 )
@@ -13,7 +14,7 @@ func ConvertK8sClusterToTable(cluster ionoscloud.KubernetesCluster) ([]map[strin
 		return nil, fmt.Errorf("could not retrieve K8s Cluster properties")
 	}
 
-	temp, err := json2table.ConvertJSONToTable("", K8sCluster, cluster)
+	temp, err := json2table.ConvertJSONToTable("", jsonpaths.K8sCluster, cluster)
 	if err != nil {
 		return nil, fmt.Errorf("could not convert from JSON to Table format: %w", err)
 	}
@@ -61,7 +62,7 @@ func ConvertK8sNodepoolToTable(nodepool ionoscloud.KubernetesNodePool) ([]map[st
 		return nil, fmt.Errorf("could not retrieve K8s Nodepool properties")
 	}
 
-	temp, err := json2table.ConvertJSONToTable("", K8sNodepool, nodepool)
+	temp, err := json2table.ConvertJSONToTable("", jsonpaths.K8sNodepool, nodepool)
 	if err != nil {
 		return nil, fmt.Errorf("could not convert from JSON to Table format: %w", err)
 	}
@@ -163,7 +164,7 @@ func ConvertRequestToTable(request ionoscloud.Request) ([]map[string]interface{}
 		targetsInfo = append(targetsInfo, fmt.Sprintf("%s (%s)", *idOk, string(*typeOk)))
 	}
 
-	temp, err := json2table.ConvertJSONToTable("", Request, request)
+	temp, err := json2table.ConvertJSONToTable("", jsonpaths.Request, request)
 	if err != nil {
 		return nil, fmt.Errorf("failed to convert from JSON to Table format: %w", err)
 	}

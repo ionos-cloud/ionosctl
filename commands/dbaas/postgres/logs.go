@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres/completer"
-	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres/jsonpaths"
+	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres/resource2table"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
@@ -107,7 +107,7 @@ func RunClusterLogsList(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	logsConverted, err := jsonpaths.ConvertLogsToTable(clusterLogs.Instances)
+	logsConverted, err := resource2table.ConvertLogsToTable(clusterLogs.Instances)
 	if err != nil {
 		return err
 	}

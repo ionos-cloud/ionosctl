@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres/jsonpaths"
+	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres/resource2table"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
@@ -78,7 +78,7 @@ func RunAPIVersionList(c *core.CommandConfig) error {
 
 	var versionListConverted []map[string]interface{}
 	for _, v := range versionList.Versions {
-		temp, err := jsonpaths.ConvertAPIVersionToTable(v)
+		temp, err := resource2table.ConvertAPIVersionToTable(v)
 		if err != nil {
 			return err
 		}
@@ -106,7 +106,7 @@ func RunAPIVersionGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	apiVersionConverted, err := jsonpaths.ConvertAPIVersionToTable(apiVersion.APIVersion)
+	apiVersionConverted, err := resource2table.ConvertAPIVersionToTable(apiVersion.APIVersion)
 	if err != nil {
 		return err
 	}

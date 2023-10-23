@@ -9,7 +9,7 @@ import (
 
 	cloudapiv6completer "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres/completer"
-	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres/jsonpaths"
+	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres/resource2table"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
@@ -349,7 +349,7 @@ func RunClusterList(c *core.CommandConfig) error {
 
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-	clustersConverted, err := jsonpaths.ConvertClustersToTable(clusters.ClusterList)
+	clustersConverted, err := resource2table.ConvertClustersToTable(clusters.ClusterList)
 	if err != nil {
 		return err
 	}
@@ -379,7 +379,7 @@ func RunClusterGet(c *core.CommandConfig) error {
 
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-	clusterConverted, err := jsonpaths.ConvertClusterToTable(cluster.ClusterResponse)
+	clusterConverted, err := resource2table.ConvertClusterToTable(cluster.ClusterResponse)
 	if err != nil {
 		return err
 	}
@@ -423,7 +423,7 @@ func RunClusterCreate(c *core.CommandConfig) error {
 
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-	clusterConverted, err := jsonpaths.ConvertClusterToTable(cluster.ClusterResponse)
+	clusterConverted, err := resource2table.ConvertClusterToTable(cluster.ClusterResponse)
 	if err != nil {
 		return err
 	}
@@ -467,7 +467,7 @@ func RunClusterUpdate(c *core.CommandConfig) error {
 
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-	clusterConverted, err := jsonpaths.ConvertClusterToTable(item.ClusterResponse)
+	clusterConverted, err := resource2table.ConvertClusterToTable(item.ClusterResponse)
 	if err != nil {
 		return err
 	}

@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dataplatform/completer"
-	"github.com/ionos-cloud/ionosctl/v6/commands/dataplatform/jsonpaths"
+	"github.com/ionos-cloud/ionosctl/v6/commands/dataplatform/resource2table"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
@@ -35,7 +35,7 @@ func ClusterGetCmd() *core.Command {
 				return err
 			}
 
-			clusterConverted, err := jsonpaths.ConvertClusterToTable(cluster)
+			clusterConverted, err := resource2table.ConvertClusterToTable(cluster)
 			if err != nil {
 				return err
 			}

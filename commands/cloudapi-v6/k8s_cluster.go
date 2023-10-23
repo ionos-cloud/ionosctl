@@ -6,8 +6,8 @@ import (
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
+	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/resource2table"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
@@ -250,7 +250,7 @@ func RunK8sClusterList(c *core.CommandConfig) error {
 		return err
 	}
 
-	k8ssConverted, err := jsonpaths.ConvertK8sClustersToTable(k8ss.KubernetesClusters)
+	k8ssConverted, err := resource2table.ConvertK8sClustersToTable(k8ss.KubernetesClusters)
 	if err != nil {
 		return err
 	}
@@ -290,7 +290,7 @@ func RunK8sClusterGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	uConverted, err := jsonpaths.ConvertK8sClusterToTable(u.KubernetesCluster)
+	uConverted, err := resource2table.ConvertK8sClusterToTable(u.KubernetesCluster)
 	if err != nil {
 		return err
 	}
@@ -350,7 +350,7 @@ func RunK8sClusterCreate(c *core.CommandConfig) error {
 
 	}
 
-	uConverted, err := jsonpaths.ConvertK8sClusterToTable(u.KubernetesCluster)
+	uConverted, err := resource2table.ConvertK8sClusterToTable(u.KubernetesCluster)
 	if err != nil {
 		return err
 	}
@@ -402,7 +402,7 @@ func RunK8sClusterUpdate(c *core.CommandConfig) error {
 		}
 	}
 
-	k8sUpdConverted, err := jsonpaths.ConvertK8sClusterToTable(k8sUpd.KubernetesCluster)
+	k8sUpdConverted, err := resource2table.ConvertK8sClusterToTable(k8sUpd.KubernetesCluster)
 	if err != nil {
 		return err
 	}

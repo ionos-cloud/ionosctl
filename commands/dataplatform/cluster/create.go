@@ -7,7 +7,7 @@ import (
 	"github.com/cilium/fake"
 	"github.com/cjrd/allocate"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
-	"github.com/ionos-cloud/ionosctl/v6/commands/dataplatform/jsonpaths"
+	"github.com/ionos-cloud/ionosctl/v6/commands/dataplatform/resource2table"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
@@ -64,7 +64,7 @@ func ClusterCreateCmd() *core.Command {
 				return err
 			}
 
-			crConverted, err := jsonpaths.ConvertClusterToTable(cr)
+			crConverted, err := resource2table.ConvertClusterToTable(cr)
 			if err != nil {
 				return err
 			}

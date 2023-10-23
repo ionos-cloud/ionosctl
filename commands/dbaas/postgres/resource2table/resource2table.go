@@ -1,9 +1,10 @@
-package jsonpaths
+package resource2table
 
 import (
 	"fmt"
 	"strings"
 
+	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/convbytes"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/json2table"
 	"github.com/ionos-cloud/sdk-go-dbaas-postgres"
@@ -22,7 +23,7 @@ func ConvertAPIVersionToTable(apiVersion ionoscloud.APIVersion) ([]map[string]in
 		*swaggerUrlOk = fmt.Sprintf("%s%s", ionoscloud.DefaultIonosServerUrl, *swaggerUrlOk)
 	}
 
-	temp, err := json2table.ConvertJSONToTable("", ApiVersion, apiVersion)
+	temp, err := json2table.ConvertJSONToTable("", jsonpaths.ApiVersion, apiVersion)
 	if err != nil {
 		return nil, fmt.Errorf("could not convert from JSON to Table format: %w", err)
 	}
@@ -63,7 +64,7 @@ func ConvertClusterToTable(cluster ionoscloud.ClusterResponse) ([]map[string]int
 		return nil, fmt.Errorf("could not retrieve PostgreSQL Cluster RAM")
 	}
 
-	temp, err := json2table.ConvertJSONToTable("", Cluster, cluster)
+	temp, err := json2table.ConvertJSONToTable("", jsonpaths.Cluster, cluster)
 	if err != nil {
 		return nil, fmt.Errorf("could not convert from JSON to Table format: %w", err)
 	}
@@ -130,7 +131,7 @@ func ConvertLogsToTable(logs *[]ionoscloud.ClusterLogsInstances) ([]map[string]i
 		}
 
 		for msgIdx, msg := range *instance.GetMessages() {
-			o, err := json2table.ConvertJSONToTable("", LogsMessage, msg)
+			o, err := json2table.ConvertJSONToTable("", jsonpaths.LogsMessage, msg)
 			if err != nil {
 				return nil, fmt.Errorf("could not convert from JSON to Table format: %w", err)
 			}

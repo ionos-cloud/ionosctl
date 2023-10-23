@@ -8,8 +8,8 @@ import (
 	"time"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
+	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/resource2table"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
@@ -190,7 +190,7 @@ func RunRequestList(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	convertedRequests, err := jsonpaths.ConvertRequestsToTable(requests.Requests)
+	convertedRequests, err := resource2table.ConvertRequestsToTable(requests.Requests)
 	if err != nil {
 		return err
 	}
@@ -227,7 +227,7 @@ func RunRequestGet(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	convertedReq, err := jsonpaths.ConvertRequestToTable(req.Request)
+	convertedReq, err := resource2table.ConvertRequestToTable(req.Request)
 	if err != nil {
 		return err
 	}
@@ -270,7 +270,7 @@ func RunRequestWait(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	convertedReq, err := jsonpaths.ConvertRequestToTable(req.Request)
+	convertedReq, err := resource2table.ConvertRequestToTable(req.Request)
 	if err != nil {
 		return err
 	}

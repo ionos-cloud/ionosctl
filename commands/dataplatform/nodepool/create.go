@@ -6,7 +6,7 @@ import (
 
 	"github.com/cilium/fake"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dataplatform/completer"
-	"github.com/ionos-cloud/ionosctl/v6/commands/dataplatform/jsonpaths"
+	"github.com/ionos-cloud/ionosctl/v6/commands/dataplatform/resource2table"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
@@ -100,7 +100,7 @@ func NodepoolCreateCmd() *core.Command {
 
 			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-			crConverted, err := jsonpaths.ConvertNodePoolToTable(cr)
+			crConverted, err := resource2table.ConvertNodePoolToTable(cr)
 			if err != nil {
 				return err
 			}

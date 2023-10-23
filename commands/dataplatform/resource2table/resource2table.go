@@ -1,8 +1,9 @@
-package jsonpaths
+package resource2table
 
 import (
 	"fmt"
 
+	"github.com/ionos-cloud/ionosctl/v6/commands/dataplatform/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/convbytes"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/json2table"
 	"github.com/ionos-cloud/sdk-go-dataplatform"
@@ -29,7 +30,7 @@ func ConvertClusterToTable(cluster ionoscloud.ClusterResponseData) ([]map[string
 		return nil, fmt.Errorf("could not retrieve Dataplatform Cluster maintenance window time")
 	}
 
-	temp, err := json2table.ConvertJSONToTable("", Cluster, cluster)
+	temp, err := json2table.ConvertJSONToTable("", jsonpaths.Cluster, cluster)
 	if err != nil {
 		return nil, fmt.Errorf("could not convert from JSON to Table format: %w", err)
 	}
@@ -102,7 +103,7 @@ func ConvertNodePoolToTable(np ionoscloud.NodePoolResponseData) ([]map[string]in
 
 	maintenanceWindow := fmt.Sprintf("%v %v", *day, *time)
 
-	temp, err := json2table.ConvertJSONToTable("", Nodepool, np)
+	temp, err := json2table.ConvertJSONToTable("", jsonpaths.Nodepool, np)
 	if err != nil {
 		return nil, fmt.Errorf("could not convert from JSON to Table format: %w", err)
 	}
