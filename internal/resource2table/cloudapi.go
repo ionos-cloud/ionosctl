@@ -3,8 +3,8 @@ package resource2table
 import (
 	"fmt"
 
+	"github.com/ionos-cloud/ionosctl/v6/internal/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/json2table"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/jsonpaths"
 	"github.com/ionos-cloud/sdk-go/v6"
 )
 
