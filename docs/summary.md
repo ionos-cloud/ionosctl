@@ -35,7 +35,11 @@
         * [list](subcommands%2FAuthentication%2Ftoken%2Flist.md)
         * [parse](subcommands%2FAuthentication%2Ftoken%2Fparse.md)
 * CLI Setup
+    * [location](subcommands%2FCLI%20Setup%2Flocation.md)
+    * [login](subcommands%2FCLI%20Setup%2Flogin.md)
+    * [logout](subcommands%2FCLI%20Setup%2Flogout.md)
     * [version](subcommands%2FCLI%20Setup%2Fversion.md)
+    * [whoami](subcommands%2FCLI%20Setup%2Fwhoami.md)
 * Certificate Manager
     * [add](subcommands%2FCertificate-Manager%2Fadd.md)
     * api
@@ -45,11 +49,6 @@
     * [list](subcommands%2FCertificate-Manager%2Flist.md)
     * [update](subcommands%2FCertificate-Manager%2Fupdate.md)
 * Compute Engine
-    * config
-        * [location](subcommands%2FCompute%20Engine%2Fconfig%2Flocation.md)
-        * [login](subcommands%2FCompute%20Engine%2Fconfig%2Flogin.md)
-        * [logout](subcommands%2FCompute%20Engine%2Fconfig%2Flogout.md)
-        * [whoami](subcommands%2FCompute%20Engine%2Fconfig%2Fwhoami.md)
     * contract
         * [get](subcommands%2FCompute%20Engine%2Fcontract%2Fget.md)
     * datacenter
