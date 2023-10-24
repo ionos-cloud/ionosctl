@@ -36,6 +36,7 @@ var nonComputeNamespaces = map[string]string{
 	"k8s":                     "Managed-Kubernetes",
 	"user":                    "User-Management",
 	"dns":                     "DNS",
+	"config":                  "CLI Setup",
 }
 
 func GenerateSummary(dir string) error {
@@ -149,10 +150,6 @@ func createStructure(cmd *core.Command, dir string) error {
 // determineSubdir is a hack to support the old tree structure...
 func determineSubdir(name string, nonComputeNamespaces map[string]string) string {
 	segments := strings.Split(name, "-")
-
-	if segments[0] == "config" {
-		return filepath.Join("CLI Setup", segments[len(segments)-1])
-	}
 
 	// Custom names depending on first level names
 	if segments[0] == "version" || segments[0] == "completion" {
