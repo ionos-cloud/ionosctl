@@ -150,7 +150,7 @@ func createStructure(cmd *core.Command, dir string) error {
 func determineSubdir(name string, nonComputeNamespaces map[string]string) string {
 	segments := strings.Split(name, "-")
 
-	if segments[len(segments)-1] == "login" || segments[len(segments)-1] == "location" || segments[len(segments)-1] == "logout" || segments[len(segments)-1] == "whoami" {
+	if segments[0] == "config" {
 		return filepath.Join("CLI Setup", segments[len(segments)-1])
 	}
 
