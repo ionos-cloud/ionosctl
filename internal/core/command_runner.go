@@ -35,6 +35,9 @@ func NewCommandWithJsonProperties(ctx context.Context, parent *Command, jsonExam
 		viper.BindPFlag(constants.FlagJsonPropertiesExample, cmd.Command.Flags().Lookup(constants.FlagJsonPropertiesExample))
 	}
 
+	viper.BindPFlag(constants.FlagJsonProperties, cmd.Command.Flags().Lookup(constants.FlagJsonProperties))
+	viper.BindPFlag(constants.FlagJsonPropertiesExample, cmd.Command.Flags().Lookup(constants.FlagJsonPropertiesExample))
+
 	return cmd
 }
 
@@ -242,7 +245,7 @@ func NewCommandCfg(ctx context.Context, info CommandBuilder) (*CommandConfig, er
 
 type CommandRun func(commandConfig *CommandConfig) error
 
-func WithJsonFile(example string, toUnmarshal interface{}, run CommandRun) CommandRun {
+func withJsonFile(example string, toUnmarshal interface{}, run CommandRun) CommandRun {
 	return func(c *CommandConfig) error {
 		if viper.GetBool(constants.FlagJsonPropertiesExample) {
 			fmt.Fprintf(c.Command.Command.OutOrStdout(), example)
