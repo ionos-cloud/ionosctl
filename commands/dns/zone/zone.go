@@ -17,15 +17,6 @@ import (
 )
 
 var (
-	allZoneJSONPaths = map[string]string{
-		"Id":          "id",
-		"Name":        "properties.zoneName",
-		"Description": "properties.description",
-		"NameServers": "metadata.nameServers",
-		"Enabled":     "properties.enabled",
-		"State":       "metadata.state",
-	}
-
 	allCols = []string{"Id", "Name", "Description", "NameServers", "Enabled", "State"}
 )
 

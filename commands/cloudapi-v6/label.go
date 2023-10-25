@@ -6,6 +6,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
+	"github.com/ionos-cloud/ionosctl/v6/internal/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
@@ -16,14 +17,6 @@ import (
 )
 
 var (
-	allLabelJSONPaths = map[string]string{
-		"URN":          "id",
-		"Key":          "properties.key",
-		"Value":        "properties.value",
-		"ResourceType": "properties.resourceType",
-		"ResourceId":   "properties.resourceId",
-	}
-
 	defaultLabelCols = []string{"URN", "Key", "Value", "ResourceType", "ResourceId"}
 )
 
@@ -327,7 +320,7 @@ func RunLabelList(c *core.CommandConfig) error {
 
 		cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-		out, err = jsontabwriter.GenerateOutput("items", allLabelJSONPaths, labelDcs.Labels,
+		out, err = jsontabwriter.GenerateOutput("items", jsonpaths.Label, labelDcs.Labels,
 			tabheaders.GetHeadersAllDefault(defaultLabelCols, cols))
 		if err != nil {
 			return err
@@ -379,7 +372,7 @@ func RunLabelGetByUrn(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allLabelJSONPaths, labelDc.Label,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Label, labelDc.Label,
 		tabheaders.GetHeadersAllDefault(defaultLabelCols, cols))
 	if err != nil {
 		return err

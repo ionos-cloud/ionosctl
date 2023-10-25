@@ -8,6 +8,7 @@ import (
 
 	"github.com/cjrd/allocate"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/internal/resource2table"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"github.com/mmatczuk/anyflag"
@@ -63,7 +64,7 @@ func UserCreateCmd() *core.Command {
 
 			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-			uConverted, err := convertUserToTable(u)
+			uConverted, err := resource2table.ConvertDbaasMongoUserToTable(u)
 			if err != nil {
 				return err
 			}

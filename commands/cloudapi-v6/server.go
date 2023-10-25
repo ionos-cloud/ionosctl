@@ -13,6 +13,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
+	"github.com/ionos-cloud/ionosctl/v6/internal/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/json2table"
@@ -33,21 +34,6 @@ const (
 )
 
 var (
-	allServerJSONPaths = map[string]string{
-		"ServerId":         "id",
-		"Name":             "properties.name",
-		"AvailabilityZone": "properties.availabilityZone",
-		"State":            "metadata.state",
-		"Cores":            "properties.cores",
-		"Ram":              "properties.ram",
-		"CpuFamily":        "properties.cpuFamily",
-		"VmState":          "properties.vmState",
-		"BootVolumeId":     "properties.bootVolume.id",
-		"BootCdromId":      "properties.bootCdrom.id",
-		"TemplateId":       "properties.templateUuid",
-		"Type":             "type",
-	}
-
 	defaultServerCols = []string{"ServerId", "Name", "Type", "AvailabilityZone", "Cores", "Ram", "CpuFamily", "VmState", "State"}
 	allServerCols     = []string{"ServerId", "DatacenterId", "Name", "AvailabilityZone", "Cores", "Ram", "CpuFamily", "VmState", "State", "TemplateId", "Type", "BootCdromId", "BootVolumeId"}
 )
@@ -675,7 +661,7 @@ func RunServerListAll(c *core.CommandConfig) error {
 		}
 
 		for _, item := range *items {
-			temp, err := json2table.ConvertJSONToTable("", allServerJSONPaths, item)
+			temp, err := json2table.ConvertJSONToTable("", jsonpaths.Server, item)
 			if err != nil {
 				return fmt.Errorf("could not convert from JSON to Table format: %w", err)
 			}
@@ -739,7 +725,7 @@ func RunServerList(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("items", allServerJSONPaths, servers.Servers,
+	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.Server, servers.Servers,
 		tabheaders.GetHeaders(allServerCols, defaultServerCols, cols))
 	if err != nil {
 		return err
@@ -777,7 +763,7 @@ func RunServerGet(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allServerJSONPaths, svr.Server,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Server, svr.Server,
 		tabheaders.GetHeaders(allServerCols, defaultServerCols, cols))
 	if err != nil {
 		return err
@@ -845,7 +831,7 @@ func RunServerCreate(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allServerJSONPaths, svr.Server,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Server, svr.Server,
 		tabheaders.GetHeaders(allServerCols, defaultServerCols, cols))
 	if err != nil {
 		return err
@@ -902,7 +888,7 @@ func RunServerUpdate(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allServerJSONPaths, svr.Server,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Server, svr.Server,
 		tabheaders.GetHeaders(allServerCols, defaultServerCols, cols))
 	if err != nil {
 		return err

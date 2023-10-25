@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/internal/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
@@ -18,13 +19,6 @@ import (
 )
 
 var (
-	allCpuJSONPaths = map[string]string{
-		"CpuFamily": "cpuFamily",
-		"MaxCores":  "maxCores",
-		"MaxRam":    "maxRam",
-		"Vendor":    "vendor",
-	}
-
 	defaultCpuCols = []string{"CpuFamily", "MaxCores", "MaxRam", "Vendor"}
 )
 
@@ -98,7 +92,7 @@ func RunLocationCpuList(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allCpuJSONPaths, *cpus, tabheaders.GetHeadersAllDefault(defaultCpuCols, cols))
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Cpu, *cpus, tabheaders.GetHeadersAllDefault(defaultCpuCols, cols))
 	if err != nil {
 		return err
 	}

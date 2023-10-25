@@ -7,6 +7,7 @@ import (
 	"github.com/cilium/fake"
 	cloudapiv6completer "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/internal/resource2table"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"github.com/spf13/viper"
@@ -59,7 +60,7 @@ func ClusterUpdateCmd() *core.Command {
 				return err
 			}
 
-			clusterConverted, err := convertClusterToTable(cluster)
+			clusterConverted, err := resource2table.ConvertDataplatformClusterToTable(cluster)
 			if err != nil {
 				return err
 			}

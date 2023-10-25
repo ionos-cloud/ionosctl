@@ -10,6 +10,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
+	"github.com/ionos-cloud/ionosctl/v6/internal/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/json2table"
@@ -24,16 +25,6 @@ import (
 )
 
 var (
-	allNetworkLoadBalancerJSONPaths = map[string]string{
-		"NetworkLoadBalancerId": "id",
-		"Name":                  "properties.name",
-		"ListenerLan":           "properties.listenerLan",
-		"Ips":                   "properties.ips",
-		"TargetLan":             "properties.targetLan",
-		"LbPrivateIps":          "properties.lbPrivateIps",
-		"State":                 "metadata.state",
-	}
-
 	defaultNetworkLoadBalancerCols = []string{"NetworkLoadBalancerId", "Name", "ListenerLan", "Ips", "TargetLan", "LbPrivateIps", "State"}
 	allNetworkLoadBalancerCols     = []string{"NetworkLoadBalancerId", "Name", "ListenerLan", "Ips", "TargetLan", "LbPrivateIps", "State", "DatacenterId"}
 )
@@ -287,7 +278,7 @@ func RunNetworkLoadBalancerListAll(c *core.CommandConfig) error {
 		}
 
 		for _, item := range *items {
-			temp, err := json2table.ConvertJSONToTable("", allNetworkLoadBalancerJSONPaths, item)
+			temp, err := json2table.ConvertJSONToTable("", jsonpaths.NetworkLoadBalancer, item)
 			if err != nil {
 				return fmt.Errorf("could not convert from JSON to Table format: %w", err)
 			}
@@ -339,7 +330,7 @@ func RunNetworkLoadBalancerList(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("items", allNetworkLoadBalancerJSONPaths, networkloadbalancers.NetworkLoadBalancers,
+	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.NetworkLoadBalancer, networkloadbalancers.NetworkLoadBalancers,
 		tabheaders.GetHeaders(allNetworkLoadBalancerCols, defaultNetworkLoadBalancerCols, cols))
 	if err != nil {
 		return err
@@ -379,7 +370,7 @@ func RunNetworkLoadBalancerGet(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allNetworkLoadBalancerJSONPaths, ng.NetworkLoadBalancer,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.NetworkLoadBalancer, ng.NetworkLoadBalancer,
 		tabheaders.GetHeaders(allNetworkLoadBalancerCols, defaultNetworkLoadBalancerCols, cols))
 	if err != nil {
 		return err
@@ -433,7 +424,7 @@ func RunNetworkLoadBalancerCreate(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allNetworkLoadBalancerJSONPaths, ng.NetworkLoadBalancer,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.NetworkLoadBalancer, ng.NetworkLoadBalancer,
 		tabheaders.GetHeaders(allNetworkLoadBalancerCols, defaultNetworkLoadBalancerCols, cols))
 	if err != nil {
 		return err
@@ -472,7 +463,7 @@ func RunNetworkLoadBalancerUpdate(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allNetworkLoadBalancerJSONPaths, ng.NetworkLoadBalancer,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.NetworkLoadBalancer, ng.NetworkLoadBalancer,
 		tabheaders.GetHeaders(allNetworkLoadBalancerCols, defaultNetworkLoadBalancerCols, cols))
 	if err != nil {
 		return err

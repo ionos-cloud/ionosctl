@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
+	"github.com/ionos-cloud/ionosctl/v6/internal/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
@@ -34,7 +35,7 @@ func RunDataCenterLabelsList(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("items", allLabelJSONPaths, labelDcs.LabelResources,
+	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.Label, labelDcs.LabelResources,
 		tabheaders.GetHeadersAllDefault(defaultLabelCols, cols))
 	if err != nil {
 		return err
@@ -61,7 +62,7 @@ func RunDataCenterLabelGet(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allLabelJSONPaths, labelDc.LabelResource,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Label, labelDc.LabelResource,
 		tabheaders.GetHeadersAllDefault(defaultLabelCols, cols))
 	if err != nil {
 		return err
@@ -90,7 +91,7 @@ func RunDataCenterLabelAdd(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allLabelJSONPaths, labelDc.LabelResource,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Label, labelDc.LabelResource,
 		tabheaders.GetHeadersAllDefault(defaultLabelCols, cols))
 	if err != nil {
 		return err
@@ -229,7 +230,7 @@ func RunServerLabelsList(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("items", allLabelJSONPaths, labelDcs.LabelResources,
+	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.Label, labelDcs.LabelResources,
 		tabheaders.GetHeadersAllDefault(defaultLabelCols, cols))
 	if err != nil {
 		return err
@@ -257,7 +258,7 @@ func RunServerLabelGet(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allLabelJSONPaths, labelDc.LabelResource,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Label, labelDc.LabelResource,
 		tabheaders.GetHeadersAllDefault(defaultLabelCols, cols))
 	if err != nil {
 		return err
@@ -287,7 +288,7 @@ func RunServerLabelAdd(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allLabelJSONPaths, labelDc.LabelResource,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Label, labelDc.LabelResource,
 		tabheaders.GetHeadersAllDefault(defaultLabelCols, cols))
 	if err != nil {
 		return err
@@ -435,7 +436,7 @@ func RunVolumeLabelsList(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("items", allLabelJSONPaths, labelDcs.LabelResources,
+	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.Label, labelDcs.LabelResources,
 		tabheaders.GetHeadersAllDefault(defaultLabelCols, cols))
 	if err != nil {
 		return err
@@ -463,7 +464,7 @@ func RunVolumeLabelGet(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allLabelJSONPaths, labelDc.LabelResource,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Label, labelDc.LabelResource,
 		tabheaders.GetHeadersAllDefault(defaultLabelCols, cols))
 	if err != nil {
 		return err
@@ -493,7 +494,7 @@ func RunVolumeLabelAdd(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allLabelJSONPaths, labelDc.LabelResource,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Label, labelDc.LabelResource,
 		tabheaders.GetHeadersAllDefault(defaultLabelCols, cols))
 	if err != nil {
 		return err
@@ -631,7 +632,7 @@ func RunIpBlockLabelsList(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("items", allLabelJSONPaths, labelDcs.LabelResources,
+	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.Label, labelDcs.LabelResources,
 		tabheaders.GetHeadersAllDefault(defaultLabelCols, cols))
 	if err != nil {
 		return err
@@ -659,7 +660,7 @@ func RunIpBlockLabelGet(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allLabelJSONPaths, labelDc.LabelResource,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Label, labelDc.LabelResource,
 		tabheaders.GetHeadersAllDefault(defaultLabelCols, cols))
 	if err != nil {
 		return err
@@ -688,7 +689,7 @@ func RunIpBlockLabelAdd(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allLabelJSONPaths, labelDc.LabelResource,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Label, labelDc.LabelResource,
 		tabheaders.GetHeadersAllDefault(defaultLabelCols, cols))
 	if err != nil {
 		return err
@@ -823,7 +824,7 @@ func RunSnapshotLabelsList(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("items", allLabelJSONPaths, labelDcs.LabelResources,
+	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.Label, labelDcs.LabelResources,
 		tabheaders.GetHeadersAllDefault(defaultLabelCols, cols))
 	if err != nil {
 		return err
@@ -851,7 +852,7 @@ func RunSnapshotLabelGet(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allLabelJSONPaths, labelDc.LabelResource,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Label, labelDc.LabelResource,
 		tabheaders.GetHeadersAllDefault(defaultLabelCols, cols))
 	if err != nil {
 		return err
@@ -880,7 +881,7 @@ func RunSnapshotLabelAdd(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allLabelJSONPaths, labelDc.LabelResource,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Label, labelDc.LabelResource,
 		tabheaders.GetHeadersAllDefault(defaultLabelCols, cols))
 	if err != nil {
 		return err

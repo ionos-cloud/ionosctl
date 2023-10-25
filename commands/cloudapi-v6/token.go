@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/internal/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
@@ -14,10 +15,6 @@ import (
 )
 
 var (
-	allTokenJSONPaths = map[string]string{
-		"Token": "token",
-	}
-
 	defaultTokenCols = []string{"Token"}
 )
 
@@ -72,7 +69,7 @@ func RunServerTokenGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	out, err := jsontabwriter.GenerateOutput("", allTokenJSONPaths, t.Token, tabheaders.GetHeadersAllDefault(defaultTokenCols, nil))
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Token, t.Token, tabheaders.GetHeadersAllDefault(defaultTokenCols, nil))
 	if err != nil {
 		return err
 	}

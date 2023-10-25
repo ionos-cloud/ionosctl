@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/ionos-cloud/ionosctl/v6/internal/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/jwt"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
@@ -79,7 +80,7 @@ func runTokenParse(c *core.CommandConfig) error {
 		return err
 	}
 
-	var info tokenInfo
+	var info TokenInfo
 
 	info.TokenId, err = jwt.Kid(headers)
 	if err != nil {
@@ -101,7 +102,7 @@ func runTokenParse(c *core.CommandConfig) error {
 		return err
 	}
 
-	out, err := jsontabwriter.GenerateOutput("", allJSONPaths, info, tabheaders.GetHeadersAllDefault(allCols, cols))
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.AuthTokenInfo, info, tabheaders.GetHeadersAllDefault(allCols, cols))
 	if err != nil {
 		return err
 	}
@@ -110,7 +111,7 @@ func runTokenParse(c *core.CommandConfig) error {
 	return nil
 }
 
-type tokenInfo struct {
+type TokenInfo struct {
 	TokenId        string `json:"tokenId,omitempty"`
 	UserId         string `json:"userId,omitempty"`
 	ContractNumber int64  `json:"contractNumber,omitempty"`
@@ -118,13 +119,6 @@ type tokenInfo struct {
 }
 
 var (
-	allJSONPaths = map[string]string{
-		"TokenId":        "tokenId",
-		"UserId":         "userId",
-		"ContractNumber": "contractNumber",
-		"Role":           "role",
-	}
-
 	allCols = []string{"TokenId", "UserId", "ContractNumber", "Role"}
 )
 

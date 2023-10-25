@@ -8,6 +8,7 @@ import (
 	"github.com/cjrd/allocate"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/internal/resource2table"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
@@ -63,7 +64,7 @@ func ClusterCreateCmd() *core.Command {
 				return err
 			}
 
-			crConverted, err := convertClusterToTable(cr)
+			crConverted, err := resource2table.ConvertDataplatformClusterToTable(cr)
 			if err != nil {
 				return err
 			}

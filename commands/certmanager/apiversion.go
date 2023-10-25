@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/ionos-cloud/ionosctl/v6/internal/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
@@ -12,12 +13,6 @@ import (
 )
 
 var (
-	APIVersionJSONPaths = map[string]string{
-		"Href":    "href",
-		"Name":    "name",
-		"Version": "version",
-	}
-
 	allAPIVersionCols = []string{"Name", "Href", "Version"}
 )
 
@@ -53,7 +48,7 @@ func CmdGetApiVersion(c *core.CommandConfig) error {
 		return err
 	}
 
-	out, err := jsontabwriter.GenerateOutput("", APIVersionJSONPaths, APIVersion, tabheaders.GetHeadersAllDefault(allAPIVersionCols, cols))
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.CertManagerAPIVersion, APIVersion, tabheaders.GetHeadersAllDefault(allAPIVersionCols, cols))
 	if err != nil {
 		return err
 	}

@@ -14,11 +14,6 @@ import (
 )
 
 var (
-	allCertificateJSONPaths = map[string]string{
-		"CertId":      "id",
-		"DisplayName": "properties.name",
-	}
-
 	defaultCertificateCols = []string{"CertId", "DisplayName"}
 )
 

@@ -10,6 +10,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
+	"github.com/ionos-cloud/ionosctl/v6/internal/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
@@ -23,20 +24,6 @@ import (
 )
 
 var (
-	allNetworkLoadBalancerRuleJSONPaths = map[string]string{
-		"ForwardingRuleId": "id",
-		"Name":             "properties.name",
-		"Algorithm":        "properties.algorithm",
-		"Protocol":         "properties.protocol",
-		"ListenerIp":       "properties.listenerIp",
-		"ListenerPort":     "properties.listenerPort",
-		"ClientTimeout":    "properties.healthCheck.clientTimeout",
-		"ConnectTimeout":   "properties.healthCheck.connectTimeout",
-		"TargetTimeout":    "properties.healthCheck.targetTimeout",
-		"Retries":          "properties.healthCheck.retries",
-		"State":            "metadata.state",
-	}
-
 	defaultForwardingRuleCols = []string{"ForwardingRuleId", "Name", "Algorithm", "Protocol", "ListenerIp", "ListenerPort", "State"}
 	allForwardingRuleCols     = []string{"ForwardingRuleId", "Name", "Algorithm", "Protocol", "ListenerIp", "ListenerPort", "State",
 		"ClientTimeout", "ConnectTimeout", "TargetTimeout", "Retries"}
@@ -314,7 +301,7 @@ func RunNetworkLoadBalancerForwardingRuleList(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("items", allNetworkLoadBalancerRuleJSONPaths,
+	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.NetworkLoadBalancerRule,
 		nlbForwardingRules.NetworkLoadBalancerForwardingRules, tabheaders.GetHeaders(allForwardingRuleCols, defaultForwardingRuleCols, cols))
 
 	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
@@ -348,7 +335,7 @@ func RunNetworkLoadBalancerForwardingRuleGet(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allNetworkLoadBalancerRuleJSONPaths,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.NetworkLoadBalancerRule,
 		ng.NetworkLoadBalancerForwardingRule, tabheaders.GetHeaders(allForwardingRuleCols, defaultForwardingRuleCols, cols))
 
 	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
@@ -405,7 +392,7 @@ func RunNetworkLoadBalancerForwardingRuleCreate(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allNetworkLoadBalancerRuleJSONPaths,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.NetworkLoadBalancerRule,
 		ng.NetworkLoadBalancerForwardingRule, tabheaders.GetHeaders(allForwardingRuleCols, defaultForwardingRuleCols, cols))
 
 	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
@@ -446,7 +433,7 @@ func RunNetworkLoadBalancerForwardingRuleUpdate(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allNetworkLoadBalancerRuleJSONPaths,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.NetworkLoadBalancerRule,
 		ng.NetworkLoadBalancerForwardingRule, tabheaders.GetHeaders(allForwardingRuleCols, defaultForwardingRuleCols, cols))
 
 	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)

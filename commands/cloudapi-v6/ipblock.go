@@ -9,6 +9,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
+	"github.com/ionos-cloud/ionosctl/v6/internal/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
@@ -21,15 +22,6 @@ import (
 )
 
 var (
-	allIpBlockJSONPaths = map[string]string{
-		"IpBlockId": "id",
-		"Name":      "properties.name",
-		"Location":  "properties.location",
-		"Size":      "properties.size",
-		"Ips":       "properties.ips",
-		"State":     "metadata.state",
-	}
-
 	defaultIpBlockCols = []string{"IpBlockId", "Name", "Location", "Size", "Ips", "State"}
 )
 
@@ -223,7 +215,7 @@ func RunIpBlockList(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("items", allIpBlockJSONPaths, ipblocks.IpBlocks,
+	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.IpBlock, ipblocks.IpBlocks,
 		tabheaders.GetHeadersAllDefault(defaultIpBlockCols, cols))
 	if err != nil {
 		return err
@@ -254,7 +246,7 @@ func RunIpBlockGet(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allIpBlockJSONPaths, i.IpBlock,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.IpBlock, i.IpBlock,
 		tabheaders.GetHeadersAllDefault(defaultIpBlockCols, cols))
 	if err != nil {
 		return err
@@ -293,7 +285,7 @@ func RunIpBlockCreate(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allIpBlockJSONPaths, i.IpBlock,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.IpBlock, i.IpBlock,
 		tabheaders.GetHeadersAllDefault(defaultIpBlockCols, cols))
 	if err != nil {
 		return err
@@ -333,7 +325,7 @@ func RunIpBlockUpdate(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allIpBlockJSONPaths, i.IpBlock,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.IpBlock, i.IpBlock,
 		tabheaders.GetHeadersAllDefault(defaultIpBlockCols, cols))
 	if err != nil {
 		return err

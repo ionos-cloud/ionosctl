@@ -3,14 +3,12 @@ package postgres
 import (
 	"context"
 	"fmt"
-	"strings"
 
+	"github.com/ionos-cloud/ionosctl/v6/internal/resource2table"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/json2table"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
-	sdkgo "github.com/ionos-cloud/sdk-go-dbaas-postgres"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -80,7 +78,7 @@ func RunAPIVersionList(c *core.CommandConfig) error {
 
 	var versionListConverted []map[string]interface{}
 	for _, v := range versionList.Versions {
-		temp, err := convertAPIVersionToTable(v)
+		temp, err := resource2table.ConvertDbaasPostgresAPIVersionToTable(v)
 		if err != nil {
 			return err
 		}
@@ -108,7 +106,7 @@ func RunAPIVersionGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	apiVersionConverted, err := convertAPIVersionToTable(apiVersion.APIVersion)
+	apiVersionConverted, err := resource2table.ConvertDbaasPostgresAPIVersionToTable(apiVersion.APIVersion)
 	if err != nil {
 		return err
 	}
@@ -128,32 +126,5 @@ func RunAPIVersionGet(c *core.CommandConfig) error {
 // Output Printing
 
 var (
-	allAPIVersionJSONPaths = map[string]string{
-		"Version": "name",
-	}
-
 	defaultAPIVersionCols = []string{"Version", "SwaggerUrl"}
 )
-
-func convertAPIVersionToTable(apiVersion sdkgo.APIVersion) ([]map[string]interface{}, error) {
-	swaggerUrlOk, ok := apiVersion.GetSwaggerUrlOk()
-	if !ok || swaggerUrlOk == nil {
-		return nil, fmt.Errorf("could not retrieve PostgreSQL API Version swagger URL")
-	}
-
-	if strings.HasPrefix(*swaggerUrlOk, "appserver:8181/postgresql") {
-		*swaggerUrlOk = strings.TrimPrefix(*swaggerUrlOk, "appserver:8181/postgresql")
-	}
-	if !strings.HasPrefix(*swaggerUrlOk, sdkgo.DefaultIonosServerUrl) {
-		*swaggerUrlOk = fmt.Sprintf("%s%s", sdkgo.DefaultIonosServerUrl, *swaggerUrlOk)
-	}
-
-	temp, err := json2table.ConvertJSONToTable("", allAPIVersionJSONPaths, apiVersion)
-	if err != nil {
-		return nil, fmt.Errorf("could not convert from JSON to Table format: %w", err)
-	}
-
-	temp[0]["SwaggerUrl"] = *swaggerUrlOk
-
-	return temp, nil
-}

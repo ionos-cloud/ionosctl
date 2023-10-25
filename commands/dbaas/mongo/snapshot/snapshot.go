@@ -24,12 +24,5 @@ func SnapshotCmd() *core.Command {
 }
 
 var (
-	allJSONPaths = map[string]string{
-		"SnapshotId":   "id",
-		"CreationTime": "properties.creationTime",
-		"Size":         "properties.size",
-		"Version":      "properties.version",
-	}
-
 	allCols = []string{"SnapshotId", "CreationTime", "Size", "Version"}
 )

@@ -6,6 +6,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
+	"github.com/ionos-cloud/ionosctl/v6/internal/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 
@@ -22,11 +23,6 @@ import (
 )
 
 var (
-	allIpFailoverJSONPaths = map[string]string{
-		"NicId": "nicUuid",
-		"Ip":    "ip",
-	}
-
 	defaultIpFailoverCols = []string{"NicId", "Ip"}
 )
 
@@ -219,7 +215,7 @@ func RunIpFailoverList(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allIpFailoverJSONPaths, ipsFailovers,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.IpFailover, ipsFailovers,
 		tabheaders.GetHeadersAllDefault(defaultIpFailoverCols, cols))
 	if err != nil {
 		return err
@@ -272,7 +268,7 @@ func RunIpFailoverAdd(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allIpFailoverJSONPaths, ipsFailovers,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.IpFailover, ipsFailovers,
 		tabheaders.GetHeadersAllDefault(defaultIpFailoverCols, cols))
 	if err != nil {
 		return err

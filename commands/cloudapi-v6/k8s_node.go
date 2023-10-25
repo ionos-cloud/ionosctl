@@ -9,6 +9,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
+	"github.com/ionos-cloud/ionosctl/v6/internal/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
@@ -20,15 +21,6 @@ import (
 )
 
 var (
-	allK8sNodeJSONPaths = map[string]string{
-		"NodeId":     "id",
-		"Name":       "properties.name",
-		"K8sVersion": "properties.k8sVersion",
-		"PublicIP":   "properties.publicIP",
-		"PrivateIP":  "properties.privateIP",
-		"State":      "metadata.state",
-	}
-
 	defaultK8sNodeCols = []string{"NodeId", "Name", "K8sVersion", "PublicIP", "PrivateIP", "State"}
 )
 
@@ -243,7 +235,7 @@ func RunK8sNodeList(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("items", allK8sNodeJSONPaths, k8ss.KubernetesNodes,
+	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.K8sNode, k8ss.KubernetesNodes,
 		tabheaders.GetHeadersAllDefault(defaultK8sNodeCols, cols))
 	if err != nil {
 		return err
@@ -285,7 +277,7 @@ func RunK8sNodeGet(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allK8sNodeJSONPaths, u.KubernetesNode,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.K8sNode, u.KubernetesNode,
 		tabheaders.GetHeadersAllDefault(defaultK8sNodeCols, cols))
 	if err != nil {
 		return err

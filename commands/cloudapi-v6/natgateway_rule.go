@@ -10,6 +10,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
+	"github.com/ionos-cloud/ionosctl/v6/internal/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
@@ -23,19 +24,6 @@ import (
 )
 
 var (
-	allNatGatewayRuleJSONPaths = map[string]string{
-		"NatGatewayRuleId":     "id",
-		"Name":                 "properties.name",
-		"Type":                 "properties.type",
-		"Protocol":             "properties.protocol",
-		"SourceSubnet":         "properties.sourceSubnet",
-		"PublicIp":             "properties.publicIp",
-		"TargetSubnet":         "properties.targetSubnet",
-		"TargetPortRangeStart": "properties.targetPortRange.start",
-		"TargetPortRangeEnd":   "properties.targetPortRange.end",
-		"State":                "metadata.state",
-	}
-
 	defaultNatGatewayRuleCols = []string{"NatGatewayRuleId", "Name", "Protocol", "SourceSubnet", "PublicIp", "TargetSubnet", "State"}
 	allNatGatewayRuleCols     = []string{"NatGatewayRuleId", "Name", "Type", "Protocol", "SourceSubnet", "PublicIp", "TargetSubnet", "TargetPortRangeStart", "TargetPortRangeEnd", "State"}
 )
@@ -308,7 +296,7 @@ func RunNatGatewayRuleList(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("items", allNatGatewayRuleJSONPaths, natgatewayRules.NatGatewayRules,
+	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.NatGatewayRule, natgatewayRules.NatGatewayRules,
 		tabheaders.GetHeaders(allNatGatewayRuleCols, defaultNatGatewayRuleCols, cols))
 	if err != nil {
 		return err
@@ -345,7 +333,7 @@ func RunNatGatewayRuleGet(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allNatGatewayRuleJSONPaths, ng.NatGatewayRule,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.NatGatewayRule, ng.NatGatewayRule,
 		tabheaders.GetHeaders(allNatGatewayRuleCols, defaultNatGatewayRuleCols, cols))
 	if err != nil {
 		return err
@@ -400,7 +388,7 @@ func RunNatGatewayRuleCreate(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allNatGatewayRuleJSONPaths, ng.NatGatewayRule,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.NatGatewayRule, ng.NatGatewayRule,
 		tabheaders.GetHeaders(allNatGatewayRuleCols, defaultNatGatewayRuleCols, cols))
 	if err != nil {
 		return err
@@ -439,7 +427,7 @@ func RunNatGatewayRuleUpdate(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allNatGatewayRuleJSONPaths, ng.NatGatewayRule,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.NatGatewayRule, ng.NatGatewayRule,
 		tabheaders.GetHeaders(allNatGatewayRuleCols, defaultNatGatewayRuleCols, cols))
 	if err != nil {
 		return err

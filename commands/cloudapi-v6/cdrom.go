@@ -10,6 +10,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
+	"github.com/ionos-cloud/ionosctl/v6/internal/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
@@ -246,7 +247,7 @@ func RunServerCdromAttach(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allImageJSONPaths, attachedCdrom.Image,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Image, attachedCdrom.Image,
 		tabheaders.GetHeaders(allImageCols, defaultImageCols, cols))
 	if err != nil {
 		return err
@@ -278,7 +279,7 @@ func RunServerCdromsList(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("items", allImageJSONPaths, attachedCdroms.Cdroms,
+	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.Image, attachedCdroms.Cdroms,
 		tabheaders.GetHeaders(allImageCols, defaultImageCols, cols))
 	if err != nil {
 		return err
@@ -314,7 +315,7 @@ func RunServerCdromGet(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allImageJSONPaths, attachedCdrom.Image,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Image, attachedCdrom.Image,
 		tabheaders.GetHeaders(allImageCols, defaultImageCols, cols))
 	if err != nil {
 		return err

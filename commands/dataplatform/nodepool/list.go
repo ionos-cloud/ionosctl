@@ -6,6 +6,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
+	"github.com/ionos-cloud/ionosctl/v6/internal/resource2table"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	ionoscloud "github.com/ionos-cloud/sdk-go-dataplatform"
@@ -44,7 +45,7 @@ func NodepoolListCmd() *core.Command {
 
 			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-			npConverted, err := convertNodePoolsToTable(np)
+			npConverted, err := resource2table.ConvertDataplatformNodePoolsToTable(np)
 			if err != nil {
 				return err
 			}
@@ -92,7 +93,7 @@ func listAll(c *core.CommandConfig) error {
 			return err
 		}
 
-		temp, err := convertNodePoolsToTable(np)
+		temp, err := resource2table.ConvertDataplatformNodePoolsToTable(np)
 		if err != nil {
 			return err
 		}

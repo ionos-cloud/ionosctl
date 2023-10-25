@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
+	"github.com/ionos-cloud/ionosctl/v6/internal/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 
@@ -17,35 +18,6 @@ import (
 )
 
 var (
-	allContractJSONPaths = map[string]string{
-		"ContractNumber":         "properties.contractNumber",
-		"Owner":                  "properties.owner",
-		"Status":                 "properties.status",
-		"RegistrationDomain":     "properties.regDomain",
-		"CoresPerServer":         "properties.resourceLimits.coresPerServer",
-		"CoresPerContract":       "properties.resourceLimits.coresPerContract",
-		"CoresProvisioned":       "properties.resourceLimits.coresProvisioned",
-		"RamPerServer":           "properties.resourceLimits.ramPerServer",
-		"RamPerContract":         "properties.resourceLimits.ramPerContract",
-		"RamProvisioned":         "properties.resourceLimits.ramProvisioned",
-		"HddLimitPerVolume":      "properties.resourceLimits.hddLimitPerVolume",
-		"HddLimitPerContract":    "properties.resourceLimits.hddLimitPerContract",
-		"HddVolumeProvisioned":   "properties.resourceLimits.hddVolumeProvisioned",
-		"SsdLimitPerVolume":      "properties.resourceLimits.ssdLimitPerVolume",
-		"SsdLimitPerContract":    "properties.resourceLimits.ssdLimitPerContract",
-		"SsdVolumeProvisioned":   "properties.resourceLimits.ssdVolumeProvisioned",
-		"DasVolumeProvisioned":   "properties.resourceLimits.dasVolumeProvisioned",
-		"ReservableIps":          "properties.resourceLimits.reservableIps",
-		"ReservedIpsOnContract":  "properties.resourceLimits.reservedIpsOnContract",
-		"ReservedIpsInUse":       "properties.resourceLimits.reserverIpsInUse",
-		"K8sClusterLimitTotal":   "k8sClusterLimitTotal",
-		"K8sClustersProvisioned": "k8sClustersProvisioned",
-		"NlbLimitTotal":          "properties.resourceLimits.nlbLimitTotal",
-		"NlbProvisioned":         "properties.resourceLimits.nlbProvisioned",
-		"NatGatewayLimitTotal":   "properties.resourceLimits.natGatewayLimitTotal",
-		"NatGatewayProvisioned":  "properties.resourceLimits.natGatewayProvisioned",
-	}
-
 	defaultContractCols = []string{"ContractNumber", "Owner", "Status", "RegistrationDomain"}
 	contractCoresCols   = []string{"ContractNumber", "Owner", "Status", "RegistrationDomain", "CoresPerServer", "CoresPerContract", "CoresProvisioned"}
 	contractRamCols     = []string{"ContractNumber", "Owner", "Status", "RegistrationDomain", "RamPerServer", "RamPerContract", "RamProvisioned"}
@@ -128,26 +100,26 @@ func RunContractGet(c *core.CommandConfig) error {
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgResourceLimits)) {
 		switch strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceLimits))) {
 		case "CORES":
-			out, err = jsontabwriter.GenerateOutput("items", allContractJSONPaths, contractResource.Contracts, contractCoresCols)
+			out, err = jsontabwriter.GenerateOutput("items", jsonpaths.Contract, contractResource.Contracts, contractCoresCols)
 		case "RAM":
-			out, err = jsontabwriter.GenerateOutput("items", allContractJSONPaths, contractResource.Contracts, contractRamCols)
+			out, err = jsontabwriter.GenerateOutput("items", jsonpaths.Contract, contractResource.Contracts, contractRamCols)
 		case "HDD":
-			out, err = jsontabwriter.GenerateOutput("items", allContractJSONPaths, contractResource.Contracts, contractHddCols)
+			out, err = jsontabwriter.GenerateOutput("items", jsonpaths.Contract, contractResource.Contracts, contractHddCols)
 		case "SSD":
-			out, err = jsontabwriter.GenerateOutput("items", allContractJSONPaths, contractResource.Contracts, contractSsdCols)
+			out, err = jsontabwriter.GenerateOutput("items", jsonpaths.Contract, contractResource.Contracts, contractSsdCols)
 		case "DAS":
-			out, err = jsontabwriter.GenerateOutput("items", allContractJSONPaths, contractResource.Contracts, contractDasCols)
+			out, err = jsontabwriter.GenerateOutput("items", jsonpaths.Contract, contractResource.Contracts, contractDasCols)
 		case "IPS":
-			out, err = jsontabwriter.GenerateOutput("items", allContractJSONPaths, contractResource.Contracts, contractIpsCols)
+			out, err = jsontabwriter.GenerateOutput("items", jsonpaths.Contract, contractResource.Contracts, contractIpsCols)
 		case "K8S":
-			out, err = jsontabwriter.GenerateOutput("items", allContractJSONPaths, contractResource.Contracts, contractK8sCols)
+			out, err = jsontabwriter.GenerateOutput("items", jsonpaths.Contract, contractResource.Contracts, contractK8sCols)
 		case "NLB":
-			out, err = jsontabwriter.GenerateOutput("items", allContractJSONPaths, contractResource.Contracts, contractNlbCols)
+			out, err = jsontabwriter.GenerateOutput("items", jsonpaths.Contract, contractResource.Contracts, contractNlbCols)
 		case "NAT":
-			out, err = jsontabwriter.GenerateOutput("items", allContractJSONPaths, contractResource.Contracts, contractNatCols)
+			out, err = jsontabwriter.GenerateOutput("items", jsonpaths.Contract, contractResource.Contracts, contractNatCols)
 		}
 	} else {
-		out, err = jsontabwriter.GenerateOutput("items", allContractJSONPaths, contractResource.Contracts,
+		out, err = jsontabwriter.GenerateOutput("items", jsonpaths.Contract, contractResource.Contracts,
 			tabheaders.GetHeaders(allContractCols, defaultContractCols, cols))
 	}
 	if err != nil {

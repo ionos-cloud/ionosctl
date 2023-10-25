@@ -9,6 +9,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
+	"github.com/ionos-cloud/ionosctl/v6/internal/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
@@ -22,23 +23,6 @@ import (
 )
 
 var (
-	allTargetGroupJSONPaths = map[string]string{
-		"TargetGroupId": "id",
-		"Name":          "properties.name",
-		"Algorithm":     "properties.algorithm",
-		"Protocol":      "properties.protocol",
-		"CheckTimeout":  "properties.healthCheck.timeout",
-		"CheckInterval": "properties.healthCheck.interval",
-		"Retries":       "properties.healthCheck.retries",
-		"Path":          "properties.httpHealthCheck.path",
-		"Method":        "properties.httpHealthCheck.method",
-		"MatchType":     "properties.httpHealthCheck.matchType",
-		"Response":      "properties.httpHealthCheck.response",
-		"Regex":         "properties.httpHealthCheck.regex",
-		"Negate":        "properties.httpHealthCheck.negate",
-		"State":         "metadata.state",
-	}
-
 	defaultTargetGroupCols = []string{"TargetGroupId", "Name", "Algorithm", "Protocol", "CheckTimeout", "CheckInterval", "State"}
 	allTargetGroupCols     = []string{"TargetGroupId", "Name", "Algorithm", "Protocol", "CheckTimeout", "CheckInterval", "Retries",
 		"Path", "Method", "MatchType", "Response", "Regex", "Negate", "State"}
@@ -265,7 +249,7 @@ func RunTargetGroupList(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("items", allTargetGroupJSONPaths, ss.TargetGroups,
+	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.TargetGroup, ss.TargetGroups,
 		tabheaders.GetHeaders(allTargetGroupCols, defaultTargetGroupCols, cols))
 	if err != nil {
 		return err
@@ -297,7 +281,7 @@ func RunTargetGroupGet(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allTargetGroupJSONPaths, s.TargetGroup,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.TargetGroup, s.TargetGroup,
 		tabheaders.GetHeaders(allTargetGroupCols, defaultTargetGroupCols, cols))
 	if err != nil {
 		return err
@@ -331,7 +315,7 @@ func RunTargetGroupCreate(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allTargetGroupJSONPaths, s.TargetGroup,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.TargetGroup, s.TargetGroup,
 		tabheaders.GetHeaders(allTargetGroupCols, defaultTargetGroupCols, cols))
 	if err != nil {
 		return err
@@ -367,7 +351,7 @@ func RunTargetGroupUpdate(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allTargetGroupJSONPaths, s.TargetGroup,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.TargetGroup, s.TargetGroup,
 		tabheaders.GetHeaders(allTargetGroupCols, defaultTargetGroupCols, cols))
 	if err != nil {
 		return err

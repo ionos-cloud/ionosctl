@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/internal/resource2table"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
@@ -36,7 +37,7 @@ func ClusterListCmd() *core.Command {
 				return err
 			}
 
-			clustersConverted, err := convertClustersToTable(clusters)
+			clustersConverted, err := resource2table.ConvertDataplatformClustersToTable(clusters)
 			if err != nil {
 				return err
 			}

@@ -6,6 +6,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
+	"github.com/ionos-cloud/ionosctl/v6/internal/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
@@ -16,14 +17,6 @@ import (
 )
 
 var (
-	allResourceJSONPaths = map[string]string{
-		"ResourceId":        "id",
-		"Name":              "properties.name",
-		"SecAuthProtection": "properties.secAuthProtection",
-		"Type":              "type",
-		"State":             "metadata.state",
-	}
-
 	defaultResourceCols = []string{"ResourceId", "Name", "SecAuthProtection", "Type", "State"}
 )
 
@@ -105,7 +98,7 @@ func RunResourceList(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("items", allResourceJSONPaths, resourcesListed.Resources,
+	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.Resource, resourcesListed.Resources,
 		tabheaders.GetHeadersAllDefault(defaultResourceCols, cols))
 	if err != nil {
 		return err
@@ -133,7 +126,7 @@ func RunResourceGet(c *core.CommandConfig) error {
 			return err
 		}
 
-		out, err := jsontabwriter.GenerateOutput("", allResourceJSONPaths, resourceListed.Resource,
+		out, err := jsontabwriter.GenerateOutput("", jsonpaths.Resource, resourceListed.Resource,
 			tabheaders.GetHeadersAllDefault(defaultResourceCols, cols))
 		if err != nil {
 			return err
@@ -151,7 +144,7 @@ func RunResourceGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	out, err := jsontabwriter.GenerateOutput("items", allResourceJSONPaths, resourcesListed.Resources,
+	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.Resource, resourcesListed.Resources,
 		tabheaders.GetHeadersAllDefault(defaultResourceCols, cols))
 	if err != nil {
 		return err
@@ -223,7 +216,7 @@ func RunGroupResourceList(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("items", allResourceJSONPaths, resourcesListed.ResourceGroups,
+	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.Resource, resourcesListed.ResourceGroups,
 		tabheaders.GetHeadersAllDefault(defaultResourceCols, cols))
 	if err != nil {
 		return err

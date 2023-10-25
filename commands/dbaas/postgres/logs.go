@@ -9,14 +9,13 @@ import (
 	"time"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres/completer"
+	"github.com/ionos-cloud/ionosctl/v6/internal/resource2table"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/json2table"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	dbaaspg "github.com/ionos-cloud/ionosctl/v6/services/dbaas-postgres"
 	"github.com/ionos-cloud/ionosctl/v6/services/dbaas-postgres/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go-dbaas-postgres"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -108,7 +107,7 @@ func RunClusterLogsList(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	logsConverted, err := convertLogsToTable(clusterLogs.Instances)
+	logsConverted, err := resource2table.ConvertDbaasPostgresLogsToTable(clusterLogs.Instances)
 	if err != nil {
 		return err
 	}
@@ -209,41 +208,6 @@ func getLogsQueryParams(c *core.CommandConfig) (*resources.LogsQueryParams, erro
 // Output Printing
 
 var (
-	allLogsMessageJSONPaths = map[string]string{
-		"Message": "message",
-		"Time":    "time",
-	}
-
 	defaultClusterLogsCols = []string{"Logs"}
 	allClusterLogsCols     = []string{"Name", "Message", "Time", "Logs"}
 )
-
-func convertLogsToTable(logs *[]ionoscloud.ClusterLogsInstances) ([]map[string]interface{}, error) {
-	if logs == nil {
-		return nil, fmt.Errorf("no logs to process")
-	}
-
-	out := make([]map[string]interface{}, 0, len(*logs))
-	for idx, instance := range *logs {
-		if instance.GetMessages() == nil {
-			continue
-		}
-
-		for msgIdx, msg := range *instance.GetMessages() {
-			o, err := json2table.ConvertJSONToTable("", allLogsMessageJSONPaths, msg)
-			if err != nil {
-				return nil, fmt.Errorf("could not convert from JSON to Table format: %w", err)
-			}
-
-			o[0]["Instance"] = idx
-			o[0]["MessageNumber"] = msgIdx
-			if instance.GetName() != nil {
-				o[0]["Name"] = *instance.GetName()
-			}
-
-			out = append(out, o...)
-		}
-	}
-
-	return out, nil
-}

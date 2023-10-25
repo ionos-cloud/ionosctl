@@ -9,6 +9,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
+	"github.com/ionos-cloud/ionosctl/v6/internal/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
@@ -22,18 +23,6 @@ import (
 )
 
 var (
-	allUserJSONPaths = map[string]string{
-		"UserId":            "id",
-		"Firstname":         "properties.firstName",
-		"Lastname":          "properties.lastName",
-		"Email":             "properties.email",
-		"Administrator":     "properties.administrator",
-		"ForceSecAuth":      "properties.forceSecAuth",
-		"SecAuthActive":     "properties.secAuthActive",
-		"S3CanonicalUserId": "properties.s3CanonicalUserId",
-		"Active":            "propeties.active",
-	}
-
 	defaultUserCols = []string{"UserId", "Firstname", "Lastname", "Email", "S3CanonicalUserId", "Administrator", "ForceSecAuth", "SecAuthActive", "Active"}
 )
 
@@ -231,7 +220,7 @@ func RunUserList(c *core.CommandConfig) error {
 
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-	out, err := jsontabwriter.GenerateOutput("items", allUserJSONPaths, users.Users,
+	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.User, users.Users,
 		tabheaders.GetHeadersAllDefault(defaultUserCols, cols))
 	if err != nil {
 		return err
@@ -263,7 +252,7 @@ func RunUserGet(c *core.CommandConfig) error {
 
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-	out, err := jsontabwriter.GenerateOutput("", allUserJSONPaths, u.User, tabheaders.GetHeadersAllDefault(defaultUserCols, cols))
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.User, u.User, tabheaders.GetHeadersAllDefault(defaultUserCols, cols))
 	if err != nil {
 		return err
 	}
@@ -315,7 +304,7 @@ func RunUserCreate(c *core.CommandConfig) error {
 
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-	out, err := jsontabwriter.GenerateOutput("", allUserJSONPaths, u.User, tabheaders.GetHeadersAllDefault(defaultUserCols, cols))
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.User, u.User, tabheaders.GetHeadersAllDefault(defaultUserCols, cols))
 	if err != nil {
 		return err
 	}
@@ -352,7 +341,7 @@ func RunUserUpdate(c *core.CommandConfig) error {
 
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-	out, err := jsontabwriter.GenerateOutput("", allUserJSONPaths, userUpd.User, tabheaders.GetHeadersAllDefault(defaultUserCols, cols))
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.User, userUpd.User, tabheaders.GetHeadersAllDefault(defaultUserCols, cols))
 	if err != nil {
 		return err
 	}
@@ -684,7 +673,7 @@ func RunGroupUserList(c *core.CommandConfig) error {
 
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-	out, err := jsontabwriter.GenerateOutput("items", allUserJSONPaths, users.GroupMembers,
+	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.User, users.GroupMembers,
 		tabheaders.GetHeadersAllDefault(defaultUserCols, cols))
 	if err != nil {
 		return err
@@ -730,7 +719,7 @@ func RunGroupUserAdd(c *core.CommandConfig) error {
 
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-	out, err := jsontabwriter.GenerateOutput("", allUserJSONPaths, userAdded.User, tabheaders.GetHeadersAllDefault(defaultUserCols, cols))
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.User, userAdded.User, tabheaders.GetHeadersAllDefault(defaultUserCols, cols))
 	if err != nil {
 		return err
 	}

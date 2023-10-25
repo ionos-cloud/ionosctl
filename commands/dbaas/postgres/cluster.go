@@ -11,10 +11,9 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
+	"github.com/ionos-cloud/ionosctl/v6/internal/resource2table"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/convbytes"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/json2table"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
@@ -350,7 +349,7 @@ func RunClusterList(c *core.CommandConfig) error {
 
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-	clustersConverted, err := convertClustersToTable(clusters.ClusterList)
+	clustersConverted, err := resource2table.ConvertDbaasPostgresClustersToTable(clusters.ClusterList)
 	if err != nil {
 		return err
 	}
@@ -380,7 +379,7 @@ func RunClusterGet(c *core.CommandConfig) error {
 
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-	clusterConverted, err := convertClusterToTable(cluster.ClusterResponse)
+	clusterConverted, err := resource2table.ConvertDbaasPostgresClusterToTable(cluster.ClusterResponse)
 	if err != nil {
 		return err
 	}
@@ -424,7 +423,7 @@ func RunClusterCreate(c *core.CommandConfig) error {
 
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-	clusterConverted, err := convertClusterToTable(cluster.ClusterResponse)
+	clusterConverted, err := resource2table.ConvertDbaasPostgresClusterToTable(cluster.ClusterResponse)
 	if err != nil {
 		return err
 	}
@@ -468,7 +467,7 @@ func RunClusterUpdate(c *core.CommandConfig) error {
 
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-	clusterConverted, err := convertClusterToTable(item.ClusterResponse)
+	clusterConverted, err := resource2table.ConvertDbaasPostgresClusterToTable(item.ClusterResponse)
 	if err != nil {
 		return err
 	}
@@ -935,105 +934,7 @@ func getConnectionMessage(connection sdkgo.Connection) string {
 // Output Printing
 
 var (
-	allClusterJSONPaths = map[string]string{
-		"ClusterId":           "id",
-		"Location":            "properties.location",
-		"BackupLocation":      "properties.backupLocation",
-		"State":               "metadata.state",
-		"DisplayName":         "properties.displayName",
-		"PostgresVersion":     "properties.postgresName",
-		"Instances":           "properties.instances",
-		"StorageType":         "properties.storageType",
-		"SynchronizationMode": "properties.synchronizationMode",
-	}
-
 	defaultClusterCols = []string{"ClusterId", "DisplayName", "Location", "DatacenterId", "LanId", "Cidr", "Instances", "State"}
 	allClusterCols     = []string{"ClusterId", "DisplayName", "Location", "State", "PostgresVersion", "Instances", "Ram", "Cores",
 		"StorageSize", "StorageType", "DatacenterId", "LanId", "Cidr", "MaintenanceWindow", "SynchronizationMode", "BackupLocation"}
 )
-
-func convertClusterToTable(cluster sdkgo.ClusterResponse) ([]map[string]interface{}, error) {
-	properties, ok := cluster.GetPropertiesOk()
-	if !ok || properties == nil {
-		return nil, fmt.Errorf("could not retrieve PostgreSQL Cluster properties")
-	}
-
-	maintenanceWindow, ok := properties.GetMaintenanceWindowOk()
-	if !ok || maintenanceWindow == nil {
-		return nil, fmt.Errorf("could not retrieve PostgreSQL Cluster maintenance window")
-	}
-
-	day, ok := maintenanceWindow.GetDayOfTheWeekOk()
-	if !ok || day == nil {
-		return nil, fmt.Errorf("could not retrieve PostgreSQL Cluster maintenance window day")
-	}
-
-	tyme, ok := maintenanceWindow.GetTimeOk()
-	if !ok || tyme == nil {
-		return nil, fmt.Errorf("could not retrieve PostgreSQL Cluster maintenance window time")
-	}
-
-	storage, ok := properties.GetStorageSizeOk()
-	if !ok || storage == nil {
-		return nil, fmt.Errorf("could not retrieve PostgreSQL Cluster storage size")
-	}
-
-	ram, ok := properties.GetRamOk()
-	if !ok || ram == nil {
-		return nil, fmt.Errorf("could not retrieve PostgreSQL Cluster RAM")
-	}
-
-	temp, err := json2table.ConvertJSONToTable("", allClusterJSONPaths, cluster)
-	if err != nil {
-		return nil, fmt.Errorf("could not convert from JSON to Table format: %w", err)
-	}
-
-	temp[0]["MaintenanceWindow"] = fmt.Sprintf("%v %v", *day, *tyme)
-	temp[0]["RAM"] = fmt.Sprintf("%d GB", convbytes.Convert(int64(*ram), convbytes.MB, convbytes.GB))
-	temp[0]["StorageSize"] = fmt.Sprintf("%d GB", convbytes.Convert(int64(*storage), convbytes.MB, convbytes.GB))
-
-	connections, ok := properties.GetConnectionsOk()
-	if ok && connections != nil {
-		for _, con := range *connections {
-			dcId, ok := con.GetDatacenterIdOk()
-			if !ok || dcId == nil {
-				return nil, fmt.Errorf("could not retrieve PostgreSQL Cluster datacenter ID")
-			}
-
-			lanId, ok := con.GetLanIdOk()
-			if !ok || lanId == nil {
-				return nil, fmt.Errorf("could not retrieve PostgreSQL Cluster lan ID")
-			}
-
-			cidr, ok := con.GetCidrOk()
-			if !ok || cidr == nil {
-				return nil, fmt.Errorf("could not retrieve PostgreSQL Cluster CIDRs")
-			}
-
-			temp[0]["DatacenterId"] = *dcId
-			temp[0]["LanId"] = *lanId
-			temp[0]["Cidr"] = *cidr
-		}
-	}
-
-	return temp, nil
-}
-
-func convertClustersToTable(clusters sdkgo.ClusterList) ([]map[string]interface{}, error) {
-	items, ok := clusters.GetItemsOk()
-	if !ok || items == nil {
-		return nil, fmt.Errorf("could not retrieve PostgreSQL Clusters items")
-	}
-
-	var clustersConverted []map[string]interface{}
-	for _, item := range *items {
-		temp, err := convertClusterToTable(item)
-		if err != nil {
-			return nil, err
-		}
-
-		clustersConverted = append(clustersConverted, temp...)
-	}
-
-	return clustersConverted, nil
-}

@@ -8,6 +8,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
+	"github.com/ionos-cloud/ionosctl/v6/internal/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 
@@ -24,14 +25,6 @@ import (
 )
 
 var (
-	allTargetGroupTargetJSONPaths = map[string]string{
-		"TargetIp":           "ip",
-		"TargetPort":         "port",
-		"Weight":             "weight",
-		"HealthCheckEnabled": "healthCheckEnabled",
-		"MaintenanceEnabled": "maintenanceEnabled",
-	}
-
 	defaultTargetGroupTargetCols = []string{"TargetIp", "TargetPort", "Weight", "HealthCheckEnabled", "MaintenanceEnabled"}
 )
 
@@ -172,7 +165,7 @@ func RunTargetGroupTargetList(c *core.CommandConfig) error {
 		if targets, ok := properties.GetTargetsOk(); ok && targets != nil {
 			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-			out, err := jsontabwriter.GenerateOutput("", allTargetGroupTargetJSONPaths, *targets,
+			out, err := jsontabwriter.GenerateOutput("", jsonpaths.TargetGroupTarget, *targets,
 				tabheaders.GetHeadersAllDefault(defaultTargetGroupTargetCols, cols))
 			if err != nil {
 				return err
@@ -246,7 +239,7 @@ func RunTargetGroupTargetAdd(c *core.CommandConfig) error {
 
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-	out, err := jsontabwriter.GenerateOutput("", allTargetGroupTargetJSONPaths, targetNew.TargetGroupTarget,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.TargetGroupTarget, targetNew.TargetGroupTarget,
 		tabheaders.GetHeadersAllDefault(defaultTargetGroupTargetCols, cols))
 	if err != nil {
 		return err

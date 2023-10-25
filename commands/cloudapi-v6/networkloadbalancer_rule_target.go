@@ -8,6 +8,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
+	"github.com/ionos-cloud/ionosctl/v6/internal/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 
@@ -24,15 +25,6 @@ import (
 )
 
 var (
-	allNetworkLoadBalancerRuleTargetJSONPaths = map[string]string{
-		"TargetIp":      "ip",
-		"TargetPort":    "port",
-		"Weight":        "weight",
-		"CheckInterval": "healthCheck.checkInterval",
-		"Check":         "healthCheck.check",
-		"Maintenance":   "healthCheck.maintenance",
-	}
-
 	defaultRuleTargetCols = []string{"TargetIp", "TargetPort", "Weight", "Check", "CheckInterval", "Maintenance"}
 )
 
@@ -222,7 +214,7 @@ func RunNlbRuleTargetList(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allNetworkLoadBalancerRuleTargetJSONPaths, *targets,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.NetworkLoadBalancerRuleTarget, *targets,
 		tabheaders.GetHeadersAllDefault(defaultRuleTargetCols, cols))
 	if err != nil {
 		return err
@@ -287,7 +279,7 @@ func RunNlbRuleTargetAdd(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allNetworkLoadBalancerRuleTargetJSONPaths,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.NetworkLoadBalancerRuleTarget,
 		targetNew.NetworkLoadBalancerForwardingRuleTarget, tabheaders.GetHeadersAllDefault(defaultRuleTargetCols, cols))
 	if err != nil {
 		return err

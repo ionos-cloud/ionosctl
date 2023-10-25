@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/internal/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
@@ -15,10 +16,6 @@ import (
 )
 
 var (
-	allConsoleJSONPaths = map[string]string{
-		"RemoteConsoleUrl": "url",
-	}
-
 	defaultConsoleCols = []string{"RemoteConsoleUrl"}
 )
 
@@ -76,7 +73,7 @@ func RunServerConsoleGet(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 	}
 
-	out, err := jsontabwriter.GenerateOutput("", allConsoleJSONPaths, t.RemoteConsoleUrl,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Console, t.RemoteConsoleUrl,
 		tabheaders.GetHeadersAllDefault(defaultConsoleCols, nil))
 	if err != nil {
 		return err

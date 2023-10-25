@@ -8,6 +8,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
+	"github.com/ionos-cloud/ionosctl/v6/internal/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/json2table"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
@@ -25,13 +26,6 @@ import (
 )
 
 var (
-	allShareJSONPaths = map[string]string{
-		"ShareId":        "id",
-		"EditPrivilege":  "properties.editPrivilege",
-		"SharePrivilege": "properties.sharePrivilege",
-		"Type":           "type",
-	}
-
 	defaultGroupShareCols = []string{"ShareId", "EditPrivilege", "SharePrivilege", "Type"}
 	allGroupShareCols     = []string{"ShareId", "EditPrivilege", "SharePrivilege", "Type", "GroupId"}
 )
@@ -247,7 +241,7 @@ func RunShareListAll(c *core.CommandConfig) error {
 		}
 
 		for _, item := range *items {
-			temp, err := json2table.ConvertJSONToTable("", allShareJSONPaths, item)
+			temp, err := json2table.ConvertJSONToTable("", jsonpaths.Share, item)
 			if err != nil {
 				return fmt.Errorf("failed converting Share from JSON to Table format: %w", err)
 			}
@@ -302,7 +296,7 @@ func RunShareList(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("items", allShareJSONPaths, shares.GroupShares,
+	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.Share, shares.GroupShares,
 		tabheaders.GetHeadersAllDefault(defaultGroupShareCols, cols))
 	if err != nil {
 		return err
@@ -354,7 +348,7 @@ func RunShareGet(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allShareJSONPaths, s.GroupShare,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Share, s.GroupShare,
 		tabheaders.GetHeadersAllDefault(defaultGroupShareCols, cols))
 	if err != nil {
 		return err
@@ -409,7 +403,7 @@ func RunShareCreate(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allShareJSONPaths, shareAdded.GroupShare,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Share, shareAdded.GroupShare,
 		tabheaders.GetHeadersAllDefault(defaultGroupShareCols, cols))
 	if err != nil {
 		return err
@@ -463,7 +457,7 @@ func RunShareUpdate(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allShareJSONPaths, shareUpdated.GroupShare,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Share, shareUpdated.GroupShare,
 		tabheaders.GetHeadersAllDefault(defaultGroupShareCols, cols))
 	if err != nil {
 		return err

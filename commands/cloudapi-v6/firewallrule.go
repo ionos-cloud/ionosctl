@@ -11,6 +11,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
+	"github.com/ionos-cloud/ionosctl/v6/internal/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
@@ -24,22 +25,6 @@ import (
 )
 
 var (
-	allFirewallRuleJSONPaths = map[string]string{
-		"FirewallRuleId": "id",
-		"Name":           "properties.name",
-		"Protocol":       "properties.protocol",
-		"SourceMac":      "properties.sourceMac",
-		"SourceIP":       "properties.sourceIp",
-		"DestinationIP":  "properties.destinationIp",
-		"PortRangeStart": "properties.portRangeStart",
-		"PortRangeEnd":   "properties.portRangeEnd",
-		"IcmpCode":       "properties.icmpCode",
-		"IcmpType":       "properties.icmpType",
-		"Direction":      "properties.type",
-		"IPVersion":      "properties.ipVersion",
-		"State":          "metadata.state",
-	}
-
 	defaultFirewallRuleCols = []string{"FirewallRuleId", "Name", "Protocol", "PortRangeStart", "PortRangeEnd", "Direction", "IPVersion", "State"}
 	allFirewallRuleCols     = []string{"FirewallRuleId", "Name", "Protocol", "SourceMac", "SourceIP", "DestinationIP", "PortRangeStart", "PortRangeEnd",
 		"IcmpCode", "IcmpType", "Direction", "IPVersion", "State"}
@@ -365,7 +350,7 @@ func RunFirewallRuleList(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("items", allFirewallRuleJSONPaths, firewallRules.FirewallRules,
+	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.FirewallRule, firewallRules.FirewallRules,
 		tabheaders.GetHeaders(allFirewallRuleCols, defaultFirewallRuleCols, cols))
 	if err != nil {
 		return err
@@ -403,7 +388,7 @@ func RunFirewallRuleGet(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allFirewallRuleJSONPaths, firewallRule.FirewallRule,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.FirewallRule, firewallRule.FirewallRule,
 		tabheaders.GetHeaders(allFirewallRuleCols, defaultFirewallRuleCols, cols))
 	if err != nil {
 		return err
@@ -463,7 +448,7 @@ func RunFirewallRuleCreate(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allFirewallRuleJSONPaths, firewallRule.FirewallRule,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.FirewallRule, firewallRule.FirewallRule,
 		tabheaders.GetHeaders(allFirewallRuleCols, defaultFirewallRuleCols, cols))
 	if err != nil {
 		return err
@@ -509,7 +494,7 @@ func RunFirewallRuleUpdate(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allFirewallRuleJSONPaths, firewallRule.FirewallRule,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.FirewallRule, firewallRule.FirewallRule,
 		tabheaders.GetHeaders(allFirewallRuleCols, defaultFirewallRuleCols, cols))
 	if err != nil {
 		return err

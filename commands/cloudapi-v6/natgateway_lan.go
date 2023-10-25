@@ -6,6 +6,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
+	"github.com/ionos-cloud/ionosctl/v6/internal/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 
@@ -22,11 +23,6 @@ import (
 )
 
 var (
-	allNatGatewayLanJSONPaths = map[string]string{
-		"NatGatewayLanId": "id",
-		"GatewayIps":      "gatewayIps",
-	}
-
 	defaultNatGatewayLanCols = []string{"NatGatewayLanId", "GatewayIps"}
 )
 
@@ -194,7 +190,7 @@ func RunNatGatewayLanList(c *core.CommandConfig) error {
 
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-	out, err := jsontabwriter.GenerateOutput("properties.lans", allNatGatewayLanJSONPaths, ng.NatGateway,
+	out, err := jsontabwriter.GenerateOutput("properties.lans", jsonpaths.NatGatewayLan, ng.NatGateway,
 		tabheaders.GetHeadersAllDefault(defaultNatGatewayLanCols, cols))
 	if err != nil {
 		return err
@@ -238,7 +234,7 @@ func RunNatGatewayLanAdd(c *core.CommandConfig) error {
 
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-	out, err := jsontabwriter.GenerateOutput("properties.lans", allNatGatewayLanJSONPaths, ng.NatGateway,
+	out, err := jsontabwriter.GenerateOutput("properties.lans", jsonpaths.NatGatewayLan, ng.NatGateway,
 		tabheaders.GetHeadersAllDefault(defaultNatGatewayLanCols, cols))
 	if err != nil {
 		return err

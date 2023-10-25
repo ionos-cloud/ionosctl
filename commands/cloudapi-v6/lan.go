@@ -12,6 +12,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
+	"github.com/ionos-cloud/ionosctl/v6/internal/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/json2table"
@@ -26,15 +27,6 @@ import (
 )
 
 var (
-	allLanJSONPaths = map[string]string{
-		"LanId":         "id",
-		"Name":          "properties.name",
-		"Public":        "properties.public",
-		"PccId":         "properties.pcc",
-		"State":         "metadata.state",
-		"IPv6CidrBlock": "properties.ipv6CidrBlock",
-	}
-
 	defaultLanCols = []string{"LanId", "Name", "Public", "PccId", "IPv6CidrBlock", "State"}
 	allLanCols     = []string{"LanId", "Name", "Public", "PccId", "IPv6CidrBlock", "State", "DatacenterId"}
 )
@@ -284,7 +276,7 @@ func RunLanListAll(c *core.CommandConfig) error {
 		}
 
 		for _, item := range *items {
-			temp, err := json2table.ConvertJSONToTable("", allLanJSONPaths, item)
+			temp, err := json2table.ConvertJSONToTable("", jsonpaths.Lan, item)
 			if err != nil {
 				return fmt.Errorf("failed to convert from JSON to Table format: %w", err)
 			}
@@ -334,7 +326,7 @@ func RunLanList(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("items", allLanJSONPaths, lans.Lans,
+	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.Lan, lans.Lans,
 		tabheaders.GetHeadersAllDefault(defaultLanCols, cols))
 	if err != nil {
 		return err
@@ -370,7 +362,7 @@ func RunLanGet(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allLanJSONPaths, l.Lan,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Lan, l.Lan,
 		tabheaders.GetHeadersAllDefault(defaultLanCols, cols))
 	if err != nil {
 		return err
@@ -459,7 +451,7 @@ func RunLanCreate(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allLanJSONPaths, l.LanPost,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Lan, l.LanPost,
 		tabheaders.GetHeadersAllDefault(defaultLanCols, cols))
 	if err != nil {
 		return err
@@ -551,7 +543,7 @@ func RunLanUpdate(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allLanJSONPaths, lanUpdated.Lan,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Lan, lanUpdated.Lan,
 		tabheaders.GetHeadersAllDefault(defaultLanCols, cols))
 	if err != nil {
 		return err

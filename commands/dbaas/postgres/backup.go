@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres/completer"
+	"github.com/ionos-cloud/ionosctl/v6/internal/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
@@ -86,7 +87,7 @@ func RunBackupList(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("items", allBackupJSONPaths, backups.ClusterBackupList,
+	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.DbaasPostgresBackup, backups.ClusterBackupList,
 		tabheaders.GetHeaders(allBackupCols, defaultBackupCols, cols))
 	if err != nil {
 		return err
@@ -107,7 +108,7 @@ func RunBackupGet(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allBackupJSONPaths, backup.BackupResponse,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.DbaasPostgresBackup, backup.BackupResponse,
 		tabheaders.GetHeaders(allBackupCols, defaultBackupCols, cols))
 	if err != nil {
 		return err
@@ -166,7 +167,7 @@ func RunClusterBackupList(c *core.CommandConfig) error {
 	}
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("items", allBackupJSONPaths, backups.ClusterBackupList,
+	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.DbaasPostgresBackup, backups.ClusterBackupList,
 		tabheaders.GetHeaders(allBackupCols, defaultBackupCols, cols))
 	if err != nil {
 		return err
@@ -179,16 +180,6 @@ func RunClusterBackupList(c *core.CommandConfig) error {
 // Output Printing
 
 var (
-	allBackupJSONPaths = map[string]string{
-		"BackupId":                   "id",
-		"ClusterId":                  "properties.clusterId",
-		"EarliestRecoveryTargetTime": "properties.earliestRecoveryTargetTime",
-		"Version":                    "properties.version",
-		"Active":                     "properties.active",
-		"CreatedDate":                "metadata.createdDate",
-		"State":                      "metadata.state",
-	}
-
 	defaultBackupCols = []string{"BackupId", "ClusterId", "CreatedDate", "EarliestRecoveryTargetTime", "Active", "State"}
 	allBackupCols     = []string{"BackupId", "ClusterId", "Active", "CreatedDate", "EarliestRecoveryTargetTime", "Version", "State"}
 )

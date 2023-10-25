@@ -8,9 +8,7 @@ import (
 	"github.com/gofrs/uuid/v5"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/convbytes"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/json2table"
 	ionoscloud "github.com/ionos-cloud/sdk-go-dbaas-mongo"
 	"github.com/spf13/cobra"
 )
@@ -31,61 +29,8 @@ func TemplatesCmd() *core.Command {
 }
 
 var (
-	allJSONPaths = map[string]string{
-		"TemplateId": "id",
-		"Name":       "properties.name",
-		"Edition":    "properties.edition",
-		"Cores":      "properties.cores",
-	}
-
 	allCols = []string{"TemplateId", "Name", "Edition", "Cores", "StorageSize", "Ram"}
 )
-
-func convertTemplateToTable(template ionoscloud.TemplateResponse) ([]map[string]interface{}, error) {
-	properties, ok := template.GetPropertiesOk()
-	if !ok || properties == nil {
-		return nil, fmt.Errorf("could not retrieve Mongo Template properties")
-	}
-
-	ram, ok := properties.GetRamOk()
-	if !ok || ram == nil {
-		return nil, fmt.Errorf("could not retrieve Mongo Template RAM")
-	}
-
-	storage, ok := properties.GetStorageSizeOk()
-	if !ok || storage == nil {
-		return nil, fmt.Errorf("could not retrieve Mongo Template storage")
-	}
-
-	temp, err := json2table.ConvertJSONToTable("", allJSONPaths, template)
-	if err != nil {
-		return nil, fmt.Errorf("could not convert from JSON to Table format: %w", err)
-	}
-
-	temp[0]["RAM"] = fmt.Sprintf("%d GB", convbytes.Convert(int64(*ram), convbytes.MB, convbytes.GB))
-	temp[0]["StorageSize"] = fmt.Sprintf("%d GB", convbytes.Convert(int64(*storage), convbytes.MB, convbytes.GB))
-
-	return temp, nil
-}
-
-func convertTemplatesToTable(templates ionoscloud.TemplateList) ([]map[string]interface{}, error) {
-	items, ok := templates.GetItemsOk()
-	if !ok || items == nil {
-		return nil, fmt.Errorf("could not retrieve Templates items")
-	}
-
-	var templatesConverted []map[string]interface{}
-	for _, item := range *items {
-		temp, err := convertTemplateToTable(item)
-		if err != nil {
-			return nil, err
-		}
-
-		templatesConverted = append(templatesConverted, temp...)
-	}
-
-	return templatesConverted, nil
-}
 
 // List retrieves a list of templates, optionally filtered by a given funcs
 func List(filters ...func(x ionoscloud.TemplateResponse) bool) ([]ionoscloud.TemplateResponse, error) {

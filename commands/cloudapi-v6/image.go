@@ -16,6 +16,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
+	"github.com/ionos-cloud/ionosctl/v6/internal/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
 	"golang.org/x/exp/slices"
@@ -38,22 +39,6 @@ import (
 )
 
 var (
-	allImageJSONPaths = map[string]string{
-		"ImageId":         "id",
-		"Name":            "properties.name",
-		"Description":     "properties.description",
-		"Location":        "properties.location",
-		"Size":            "properties.size",
-		"LicenceType":     "properties.licenceType",
-		"ImageType":       "properties.imageType",
-		"Public":          "properties.public",
-		"ImageAliases":    "properties.imageAliases",
-		"CloudInit":       "properties.cloudInit",
-		"CreatedBy":       "metadata.createdBy",
-		"CreatedByUserId": "metadata.createdByUserId",
-		"CreatedDate":     "metadata.createdDate",
-	}
-
 	defaultImageCols = []string{"ImageId", "Name", "ImageAliases", "Location", "LicenceType", "ImageType", "CloudInit", "CreatedDate"}
 	allImageCols     = []string{"ImageId", "Name", "ImageAliases", "Location", "Size", "LicenceType", "ImageType", "Description", "Public", "CloudInit", "CreatedDate", "CreatedBy", "CreatedByUserId"}
 )
@@ -489,7 +474,7 @@ func RunImageUpdate(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allImageJSONPaths, img.Image,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Image, img.Image,
 		tabheaders.GetHeaders(allImageCols, defaultImageCols, cols))
 	if err != nil {
 		return err
@@ -719,7 +704,7 @@ func RunImageUpload(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allImageJSONPaths, imgs,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Image, imgs,
 		tabheaders.GetHeaders(allImageCols, defaultImageCols, cols))
 	if err != nil {
 		return err
@@ -784,7 +769,7 @@ func RunImageList(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("items", allImageJSONPaths, images.Images,
+	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.Image, images.Images,
 		tabheaders.GetHeaders(allImageCols, defaultImageCols, cols))
 	if err != nil {
 		return err
@@ -814,7 +799,7 @@ func RunImageGet(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", allImageJSONPaths, img.Image,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Image, img.Image,
 		tabheaders.GetHeaders(allImageCols, defaultImageCols, cols))
 	if err != nil {
 		return err
