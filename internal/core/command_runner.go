@@ -242,6 +242,57 @@ func NewCommandCfg(ctx context.Context, info CommandBuilder) (*CommandConfig, er
 
 type CommandRun func(commandConfig *CommandConfig) error
 
+func WithJsonFile(example string, toUnmarshal interface{}, run CommandRun) CommandRun {
+	return func(c *CommandConfig) error {
+		if viper.GetBool(constants.FlagJsonPropertiesExample) {
+			fmt.Fprintf(c.Command.Command.OutOrStdout(), example)
+			return nil
+		}
+		jsonFile := viper.GetString(constants.FlagJsonProperties)
+
+		// Check if the json-properties flag is provided
+		if jsonFile == "" {
+			// No JSON properties file specified, directly run the command.
+			// The inner command can handle manual flag parsing.
+			return run(c)
+		}
+
+		// Check if the file actually exists
+		if _, err := os.Stat(jsonFile); os.IsNotExist(err) {
+			return fmt.Errorf("specified json properties file does not exist: %s", jsonFile)
+		}
+
+		v := viper.New()
+		v.SetConfigFile(jsonFile)
+		err := v.ReadInConfig()
+		if err != nil {
+			return fmt.Errorf("failed reading %s: %w", jsonFile, err)
+		}
+
+		// Unmarshal the config into a map
+		var configMap map[string]interface{}
+		err = v.Unmarshal(&configMap)
+		if err != nil {
+			return fmt.Errorf("failed unmarshalling config: %w", err)
+		}
+
+		// If properties key exists and is a map, promote its key-value pairs
+		if propValue, exists := configMap["properties"].(map[string]interface{}); exists {
+			delete(configMap, "properties") // Delete the properties key
+			for k, val := range propValue {
+				v.Set(k, val)
+			}
+		}
+
+		err = v.Unmarshal(toUnmarshal)
+		if err != nil {
+			return fmt.Errorf("failed unmarshalling json properties into object: %w", err)
+		}
+
+		return run(c)
+	}
+}
+
 // CommandConfig Properties and Services
 type CommandConfig struct {
 	// Command is a Wrapper around Cobra Command
