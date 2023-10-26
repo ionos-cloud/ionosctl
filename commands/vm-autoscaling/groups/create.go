@@ -15,7 +15,7 @@ import (
 
 func GroupCreateCmd() *core.Command {
 	var groupProperties vmasc.GroupProperties
-	cmd := core.NewCommandWithJsonProperties(context.Background(), nil, string(exampleJson), &groupProperties, core.CommandBuilder{
+	cmd := core.NewCommandWithJsonProperties(context.Background(), nil, exampleJson, &groupProperties, core.CommandBuilder{
 		Namespace: "vm-autoscaling",
 		Resource:  "groups",
 		Verb:      "create",
@@ -23,9 +23,7 @@ func GroupCreateCmd() *core.Command {
 		ShortDesc: "Create VM Autoscaling Groups",
 		Example: fmt.Sprintf("ionosctl vm-autoscaling group create %s",
 			core.FlagsUsage(constants.FlagDatacenterId, constants.FlagName)),
-		PreCmdRun: func(c *core.PreCommandConfig) error {
-			return nil
-		},
+		PreCmdRun: core.NoPreRun,
 		CmdRun: func(c *core.CommandConfig) error {
 			group, _, err := client.Must().VMAscClient.GroupsPost(context.Background()).GroupPost(vmasc.GroupPost{
 				Properties: &groupProperties,
