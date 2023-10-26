@@ -59,6 +59,8 @@ Required values to run a command (for Private Kubernetes Cluster):
       --dhcp                         Indicates if the Kubernetes Node Pool LANs will reserve an IP using DHCP. E.g.: --dhcp=true, --dhcp=false (default true)
   -f, --force                        Force command to execute without user input
   -h, --help                         Print usage
+      --json-properties string       Path to a JSON file containing the desired properties. If the 'properties' key exists, its key-value pairs will be promoted to the root of the JSON.
+      --json-properties-example      If set, prints a complete JSON which could be used for --json-properties and exits. Hint: Pipe me to a .json file
       --k8s-version string           The K8s version for the NodePool. If not set, the default one will be used
   -L, --labels stringToString        Labels to set on a NodePool. It will overwrite the existing labels, if there are any. Use the following format: --labels KEY=VALUE,KEY=VALUE (default [])
       --lan-ids ints                 Collection of LAN Ids of existing LANs to be attached to worker Nodes
