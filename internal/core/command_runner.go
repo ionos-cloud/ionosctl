@@ -7,7 +7,7 @@ import (
 	"os"
 
 	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	authservice "github.com/ionos-cloud/ionosctl/v6/services/auth-v1"
 	"github.com/ionos-cloud/ionosctl/v6/services/certmanager"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
@@ -19,13 +19,12 @@ import (
 
 func NewCommandWithJsonProperties(ctx context.Context, parent *Command, jsonExample string, toUnmarshal interface{}, info CommandBuilder) *Command {
 	newInfo := info
-	// Inject custom behaviour for the command run
 	newInfo.CmdRun = withJsonFile(jsonExample, toUnmarshal, info.CmdRun)
-	// Inject custom flags
 	cmd := NewCommand(ctx, parent, newInfo)
 
 	cmd.Command.Flags().String(constants.FlagJsonProperties, "",
-		"Path to a JSON file containing the desired properties. Overrides any other properties set.")
+		fmt.Sprintf("Path to a JSON file containing the desired properties. If the 'properties' key exists, "+
+			"its key-value pairs will be promoted to the root of the JSON."))
 	viper.BindPFlag(constants.FlagJsonProperties, cmd.Command.Flags().Lookup(constants.FlagJsonProperties))
 
 	if jsonExample != "" {
@@ -138,20 +137,20 @@ func withJsonFile(example string, toUnmarshal interface{}, run CommandRun) Comma
 			return fmt.Errorf("failed reading %s: %w", jsonFile, err)
 		}
 
-		// -- If properties key exists and is a map, promote its key-value pairs
 		// Unmarshal the config into a map
-		// var configMap map[string]interface{}
-		// err = v.Unmarshal(&configMap)
-		// if err != nil {
-		// 	return fmt.Errorf("failed unmarshalling config: %w", err)
-		// }
+		var configMap map[string]interface{}
+		err = v.Unmarshal(&configMap)
+		if err != nil {
+			return fmt.Errorf("failed unmarshalling config: %w", err)
+		}
 
-		// if propValue, exists := configMap["properties"].(map[string]interface{}); exists {
-		// 	delete(configMap, "properties") // Delete the properties key
-		// 	for k, val := range propValue {
-		// 		v.Set(k, val)
-		// 	}
-		// }
+		// If properties key exists and is a map, promote its key-value pairs
+		if propValue, exists := configMap["properties"].(map[string]interface{}); exists {
+			delete(configMap, "properties") // Delete the properties key
+			for k, val := range propValue {
+				v.Set(k, val)
+			}
+		}
 
 		err = v.Unmarshal(toUnmarshal)
 		if err != nil {
