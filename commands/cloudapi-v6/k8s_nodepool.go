@@ -293,7 +293,7 @@ Required values to run command:
 
 func RunK8sNodePoolCreateFromJSON(c *core.CommandConfig, propertiesFromJson ionoscloud.KubernetesNodePoolForPost) error {
 	np, _, err := client.Must().CloudClient.KubernetesApi.K8sNodepoolsPost(context.Background(),
-		viper.GetString(core.GetFlagName(c.NS, constants.ClusterId))).KubernetesNodePool(propertiesFromJson).Execute()
+		viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))).KubernetesNodePool(propertiesFromJson).Execute()
 	if err != nil {
 		return fmt.Errorf("failed creating nodepool from json properties: %w", err)
 	}
