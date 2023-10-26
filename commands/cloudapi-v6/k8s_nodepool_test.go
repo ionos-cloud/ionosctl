@@ -411,33 +411,6 @@ func TestPreRunK8sNodePoolsListErr(t *testing.T) {
 	})
 }
 
-func TestPreRunK8sClusterDcIds(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(constants.ArgQuiet, false)
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(core.GetFlagName(cfg.NS, constants.FlagClusterId), testNodepoolVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNodepoolVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgName), testNodepoolVar)
-		err := PreRunK8sClusterDcIds(cfg)
-		assert.NoError(t, err)
-	})
-}
-
-func TestPreRunK8sClusterDcIdsErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(constants.ArgQuiet, false)
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		err := PreRunK8sClusterDcIds(cfg)
-		assert.Error(t, err)
-	})
-}
-
 func TestRunK8sNodePoolListAll(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)

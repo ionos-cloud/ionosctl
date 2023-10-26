@@ -19,21 +19,6 @@ import (
 
 func NewCommandWithJsonProperties(ctx context.Context, parent *Command, jsonExample string, toUnmarshal interface{}, info CommandBuilder) *Command {
 	newInfo := info
-	// Inject custom behaviour for prerun
-	newInfo.PreCmdRun = func(c *PreCommandConfig) error {
-		// Our custom injected behaviour - if user is asking for JSON file behaviour, skip pre run
-		if viper.GetString(constants.FlagJsonProperties) != "" || viper.GetBool(constants.FlagJsonPropertiesExample) {
-			return nil
-		}
-
-		// Safeguard for nil pre runs (avoid panic)
-		if newInfo.PreCmdRun == nil {
-			newInfo.PreCmdRun = NoPreRun
-		}
-
-		// Continue with original pre run
-		return newInfo.PreCmdRun(c)
-	}
 	// Inject custom behaviour for the command run
 	newInfo.CmdRun = withJsonFile(jsonExample, toUnmarshal, info.CmdRun)
 	// Inject custom flags
