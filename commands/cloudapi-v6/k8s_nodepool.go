@@ -147,7 +147,7 @@ Required values to run a command (for Private Kubernetes Cluster):
 			if viper.IsSet(constants.FlagJsonProperties) {
 				return RunK8sNodePoolCreateFromJSON(c, nodepoolViaJsonPropertiesFlag)
 			}
-			return RunK8sClusterCreate(c)
+			return RunK8sNodePoolCreate(c)
 		},
 		InitClient: true,
 	})
