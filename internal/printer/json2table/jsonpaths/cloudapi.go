@@ -193,7 +193,7 @@ var (
 		"K8sVersion":               "properties,k8sVersion",
 		"AvailableUpgradeVersions": "properties.availableUpgradeVersions",
 		"ViableNodePoolVersions":   "properties.viableNodePoolVersions",
-		"State":                    "metadata.State",
+		"State":                    "metadata.state",
 		"S3Bucket":                 "properties.s3Buckets",
 		"ApiSubnetAllowList":       "properties.apiSubnetAllowList",
 	}
