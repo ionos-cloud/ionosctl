@@ -2,16 +2,40 @@ package core
 
 import (
 	"context"
+	"fmt"
 	"io"
+	"os"
 
 	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	authservice "github.com/ionos-cloud/ionosctl/v6/services/auth-v1"
 	"github.com/ionos-cloud/ionosctl/v6/services/certmanager"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	container_registry "github.com/ionos-cloud/ionosctl/v6/services/container-registry"
 	cloudapidbaaspgsql "github.com/ionos-cloud/ionosctl/v6/services/dbaas-postgres"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
+
+func NewCommandWithJsonProperties(ctx context.Context, parent *Command, jsonExample string, toUnmarshal interface{}, info CommandBuilder) *Command {
+	newInfo := info
+	newInfo.CmdRun = withJsonFile(jsonExample, toUnmarshal, info.CmdRun)
+	cmd := NewCommand(ctx, parent, newInfo)
+
+	cmd.Command.Flags().String(constants.FlagJsonProperties, "",
+		fmt.Sprintf("Path to a JSON file containing the desired properties. If the 'properties' key exists, "+
+			"its key-value pairs will be promoted to the root of the JSON."))
+	viper.BindPFlag(constants.FlagJsonProperties, cmd.Command.Flags().Lookup(constants.FlagJsonProperties))
+
+	if jsonExample != "" {
+		cmd.Command.Flags().Bool(constants.FlagJsonPropertiesExample, false,
+			fmt.Sprintf("If set, prints a complete JSON which could be used for --%s "+
+				"and exits. Hint: Pipe me to a .json file", constants.FlagJsonProperties))
+		viper.BindPFlag(constants.FlagJsonPropertiesExample, cmd.Command.Flags().Lookup(constants.FlagJsonPropertiesExample))
+	}
+
+	return cmd
+}
 
 func NewCommand(ctx context.Context, parent *Command, info CommandBuilder) *Command {
 	if info.PreCmdRun == nil {
@@ -68,6 +92,66 @@ func NewCommand(ctx context.Context, parent *Command, info CommandBuilder) *Comm
 	}
 
 	return c
+}
+
+// withJsonFile decorates your 'run' CommandRun to add functionality related to the --json-properties flag.
+// If the flag is provided, the json file is read and unmarshalled into the toUnmarshal interface
+// you should give a pointer to an SDK struct as a parameter to `toUnmarshal`
+//
+// 'example' is a string containing a JSON example of the struct you should pass to `toUnmarshal`,
+// which the user can print with --json-properties-example (and be able to pipe into a .json file, for instance)
+// if 'example' is empty, this functionality is omitted
+//
+// `run` is the CommandRun you want to decorate - if the flag is not provided, `run` will be called as usual
+func withJsonFile(example string, toUnmarshal interface{}, run CommandRun) CommandRun {
+	return func(c *CommandConfig) error {
+		if viper.GetBool(constants.FlagJsonPropertiesExample) {
+			fmt.Fprintf(c.Command.Command.OutOrStdout(), example)
+			return nil
+		}
+		jsonFile := viper.GetString(constants.FlagJsonProperties)
+
+		// Check if the json-properties flag is provided
+		if jsonFile == "" {
+			// No JSON properties file specified, directly run the command.
+			// The inner command can handle manual flag parsing.
+			return run(c)
+		}
+
+		// Check if the file actually exists
+		if _, err := os.Stat(jsonFile); os.IsNotExist(err) {
+			return fmt.Errorf("specified json properties file does not exist: %s", jsonFile)
+		}
+
+		v := viper.New()
+		v.SetConfigFile(jsonFile)
+		err := v.ReadInConfig()
+		if err != nil {
+			return fmt.Errorf("failed reading %s: %w", jsonFile, err)
+		}
+
+		// Unmarshal the config into a map
+		var configMap map[string]interface{}
+		err = v.Unmarshal(&configMap)
+		if err != nil {
+			return fmt.Errorf("failed unmarshalling config: %w", err)
+		}
+
+		// If properties key exists and is a map, promote its key-value pairs
+		if propValue, exists := configMap["properties"].(map[string]interface{}); exists {
+			delete(configMap, "properties") // Delete the properties key
+			for k, val := range propValue {
+				v.Set(k, val)
+			}
+		}
+
+		err = v.Unmarshal(toUnmarshal)
+		if err != nil {
+			return fmt.Errorf("failed unmarshalling json properties into object: %w", err)
+		}
+
+		return run(c)
+	}
 }
 
 // PreCommandRun will run in PreRun of Cobra Command structure, before running the actual Command.

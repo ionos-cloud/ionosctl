@@ -132,6 +132,9 @@ const (
 
 // Config
 const (
+	FlagJsonProperties        = "json-properties"
+	FlagJsonPropertiesExample = "json-properties-example"
+
 	ArgConfig         = "config"
 	ArgConfigShort    = "c"
 	ArgServerUrl      = "api-url"
