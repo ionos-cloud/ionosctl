@@ -118,7 +118,7 @@ func RequiresMultipleOptionsErr(cmd *Command, flagNamesSets ...[]string) error {
 
 func CheckRequiredFlags(cmd *Command, ns string, localFlagsName ...string) error {
 	for _, flagName := range localFlagsName {
-		if !viper.IsSet(GetFlagName(ns, flagName)) {
+		if !viper.IsSet(GetFlagName(ns, flagName)) && !viper.IsSet(flagName) {
 			return RequiresMinOptionsErr(cmd, localFlagsName...)
 		}
 	}
