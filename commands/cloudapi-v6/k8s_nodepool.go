@@ -114,7 +114,7 @@ func K8sNodePoolCmd() *core.Command {
 	/*
 		Create Command
 	*/
-	create := core.NewCommand(ctx, k8sCmd, core.CommandBuilder{
+	create := core.NewCommandWithJsonProperties(ctx, k8sCmd, "", ionoscloud.KubernetesCluster{}, core.CommandBuilder{
 		Namespace: "k8s",
 		Resource:  "nodepool",
 		Verb:      "create",
