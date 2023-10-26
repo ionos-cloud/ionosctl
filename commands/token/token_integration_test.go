@@ -4,6 +4,7 @@
 package token_test
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"os"
@@ -24,7 +25,8 @@ var (
 	cl                   *client.Client
 	tokFirstCreationTime time.Time
 	testToken            sdkgoauth.Token
-	tokenContent         sdkgoauth.Jwt
+	jwt                  sdkgoauth.Jwt
+	tokenContent         string
 )
 
 func TestTokenCommands(t *testing.T) {
@@ -35,11 +37,11 @@ func TestTokenCommands(t *testing.T) {
 
 	viper.Set(constants.ArgOutput, "text")
 
-	testCreateToken(t)
-	testListTokens(t)
-	testGetTokens(t)
-	testParseToken(t)
-	testDeleteTokens(t)
+	t.Run("create token", testCreateToken)
+	t.Run("list tokens", testListTokens)
+	t.Run("get tokens by id and by token content", testGetTokens)
+	t.Run("parse token content", testParseToken)
+	t.Run("delete tokens by id and by token content", testDeleteTokens)
 }
 
 func setup() error {
@@ -53,12 +55,6 @@ func setup() error {
 	var err error
 
 	cl = client.NewClient(username, password, "", "")
-	if err != nil {
-		return err
-	}
-
-	tokenContent, _, err = cl.AuthClient.TokensApi.TokensGenerate(context.Background()).Execute()
-	time.Sleep(2 * time.Second)
 
 	return err
 }
@@ -66,14 +62,14 @@ func setup() error {
 func testCreateToken(t *testing.T) {
 	var err error
 
-	tokFirstCreationTime = time.Now().In(time.UTC)
 	viper.Set(constants.ArgQuiet, true)
 
+	tokFirstCreationTime = time.Now().In(time.UTC)
 	c := token.TokenPostCmd()
 	err = c.Command.Execute()
 	assert.NoError(t, err)
 
-	time.Sleep(2 * time.Second)
+	time.Sleep(5 * time.Second)
 
 	tokens, _, err := client.Must().AuthClient.TokensApi.TokensGet(context.Background()).Execute()
 	assert.NoError(t, err)
@@ -101,12 +97,22 @@ func testCreateToken(t *testing.T) {
 			foundTokenViaSdk = &temp
 		}
 	}
-	assert.NotNil(t, foundTokenViaSdk)
+	if foundTokenViaSdk == nil {
+		assert.FailNow(t, "created token could not be found")
+	}
 
 	testToken = *foundTokenViaSdk
 
 	viper.Reset()
 	viper.Set(constants.ArgOutput, "text")
+
+	buff := bytes.NewBuffer([]byte{})
+	c = token.TokenPostCmd()
+	c.Command.SetOut(buff)
+	err = c.Command.Execute()
+	assert.NoError(t, err)
+
+	tokenContent = buff.String()
 }
 
 func testListTokens(t *testing.T) {
@@ -127,7 +133,7 @@ func testGetTokens(t *testing.T) {
 	assert.NoError(t, err)
 
 	c = token.TokenGetCmd()
-	c.Command.Flags().Set(authservice.ArgToken, *tokenContent.Token)
+	c.Command.Flags().Set(authservice.ArgToken, tokenContent)
 
 	err = c.Command.Execute()
 	assert.NoError(t, err)
@@ -137,7 +143,7 @@ func testParseToken(t *testing.T) {
 	var err error
 
 	c := token.TokenParseCmd()
-	c.Command.Flags().Set(authservice.ArgToken, *tokenContent.Token)
+	c.Command.Flags().Set(authservice.ArgToken, tokenContent)
 
 	err = c.Command.Execute()
 	assert.NoError(t, err)
@@ -158,7 +164,7 @@ func testDeleteTokens(t *testing.T) {
 	assert.NoError(t, err)
 
 	c = token.TokenDeleteCmd()
-	c.Command.Flags().Set(authservice.ArgToken, *tokenContent.Token)
+	c.Command.Flags().Set(authservice.ArgToken, tokenContent)
 
 	err = c.Command.Execute()
 	assert.NoError(t, err)
