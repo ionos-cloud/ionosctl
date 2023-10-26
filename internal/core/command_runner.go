@@ -132,20 +132,20 @@ func withJsonFile(example string, toUnmarshal interface{}, run CommandRun) Comma
 			return fmt.Errorf("failed reading %s: %w", jsonFile, err)
 		}
 
+		// -- If properties key exists and is a map, promote its key-value pairs
 		// Unmarshal the config into a map
-		var configMap map[string]interface{}
-		err = v.Unmarshal(&configMap)
-		if err != nil {
-			return fmt.Errorf("failed unmarshalling config: %w", err)
-		}
+		// var configMap map[string]interface{}
+		// err = v.Unmarshal(&configMap)
+		// if err != nil {
+		// 	return fmt.Errorf("failed unmarshalling config: %w", err)
+		// }
 
-		// If properties key exists and is a map, promote its key-value pairs
-		if propValue, exists := configMap["properties"].(map[string]interface{}); exists {
-			delete(configMap, "properties") // Delete the properties key
-			for k, val := range propValue {
-				v.Set(k, val)
-			}
-		}
+		// if propValue, exists := configMap["properties"].(map[string]interface{}); exists {
+		// 	delete(configMap, "properties") // Delete the properties key
+		// 	for k, val := range propValue {
+		// 		v.Set(k, val)
+		// 	}
+		// }
 
 		err = v.Unmarshal(toUnmarshal)
 		if err != nil {
