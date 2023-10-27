@@ -25,8 +25,7 @@ func NewCommandWithJsonProperties(ctx context.Context, parent *Command, jsonExam
 	cmd := NewCommand(ctx, parent, newInfo)
 
 	cmd.Command.Flags().String(constants.FlagJsonProperties, "",
-		fmt.Sprintf("Path to a JSON file containing the desired properties. If the 'properties' key exists, "+
-			"its key-value pairs will be promoted to the root of the JSON."))
+		"Path to a JSON file containing the desired properties. Overrides any other properties set.")
 	viper.BindPFlag(constants.FlagJsonProperties, cmd.Command.Flags().Lookup(constants.FlagJsonProperties))
 
 	if jsonExample != "" {
