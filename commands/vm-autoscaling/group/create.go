@@ -1,4 +1,4 @@
-package groups
+package group
 
 import (
 	"context"
@@ -14,20 +14,18 @@ import (
 )
 
 func GroupCreateCmd() *core.Command {
-	var groupProperties vmasc.GroupProperties
-	cmd := core.NewCommandWithJsonProperties(context.Background(), nil, exampleJson, &groupProperties, core.CommandBuilder{
+	var jsonStruct vmasc.GroupPost
+	cmd := core.NewCommandWithJsonProperties(context.Background(), nil, exampleJson, &jsonStruct, core.CommandBuilder{
 		Namespace: "vm-autoscaling",
 		Resource:  "groups",
 		Verb:      "create",
 		Aliases:   []string{"c"},
 		ShortDesc: "Create VM Autoscaling Groups",
 		Example: fmt.Sprintf("ionosctl vm-autoscaling group create %s",
-			core.FlagsUsage(constants.FlagDatacenterId, constants.FlagName)),
+			core.FlagsUsage(constants.FlagJsonProperties)),
 		PreCmdRun: core.NoPreRun,
 		CmdRun: func(c *core.CommandConfig) error {
-			group, _, err := client.Must().VMAscClient.GroupsPost(context.Background()).GroupPost(vmasc.GroupPost{
-				Properties: &groupProperties,
-			}).Execute()
+			group, _, err := client.Must().VMAscClient.GroupsPost(context.Background()).GroupPost(jsonStruct).Execute()
 			if err != nil {
 				return err
 			}
