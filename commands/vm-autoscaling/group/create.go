@@ -23,7 +23,12 @@ func GroupCreateCmd() *core.Command {
 		ShortDesc: "Create VM Autoscaling Groups",
 		Example: fmt.Sprintf("ionosctl vm-autoscaling group create %s",
 			core.FlagsUsage(constants.FlagJsonProperties)),
-		PreCmdRun: core.NoPreRun,
+		PreCmdRun: func(c *core.PreCommandConfig) error {
+			return core.CheckRequiredFlagsSets(c.Command, c.NS,
+				[]string{constants.FlagJsonProperties},
+				[]string{constants.FlagJsonPropertiesExample},
+			)
+		},
 		CmdRun: func(c *core.CommandConfig) error {
 			group, _, err := client.Must().VMAscClient.GroupsPost(context.Background()).GroupPost(jsonStruct).Execute()
 			if err != nil {
