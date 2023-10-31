@@ -11,14 +11,23 @@ import (
 	mongo "github.com/ionos-cloud/sdk-go-dbaas-mongo"
 	postgres "github.com/ionos-cloud/sdk-go-dbaas-postgres"
 	dns "github.com/ionos-cloud/sdk-go-dns"
+	logsvc "github.com/ionos-cloud/sdk-go-logging"
 	cloudv6 "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
 )
 
 var ConfigurationPriorityRules = []Layer{
 	{constants.ArgToken, "", "", fmt.Sprintf("Global Flags (--%s)", constants.ArgToken)},
-	{constants.EnvToken, constants.EnvUsername, constants.EnvPassword, fmt.Sprintf("Environment Variables (%s, %s, %s)", constants.EnvToken, constants.EnvUsername, constants.EnvPassword)},
-	{constants.CfgToken, constants.CfgUsername, constants.CfgPassword, fmt.Sprintf("Config file settings (%s, %s, %s)", constants.CfgToken, constants.CfgUsername, constants.CfgPassword)}, // Note: Username & Password are no longer generated in cfg file by `ionosctl login`, however we will keep this for backward compatibility.
+	{
+		constants.EnvToken, constants.EnvUsername, constants.EnvPassword, fmt.Sprintf(
+			"Environment Variables (%s, %s, %s)", constants.EnvToken, constants.EnvUsername, constants.EnvPassword,
+		),
+	},
+	{
+		constants.CfgToken, constants.CfgUsername, constants.CfgPassword, fmt.Sprintf(
+			"Config file settings (%s, %s, %s)", constants.CfgToken, constants.CfgUsername, constants.CfgPassword,
+		),
+	}, // Note: Username & Password are no longer generated in cfg file by `ionosctl login`, however we will keep this for backward compatibility.
 }
 
 // Layer represents an authentication layer. E.g., flags, env vars, config file.
@@ -47,14 +56,15 @@ func (c *Client) UsedLayer() *Layer {
 type Client struct {
 	usedLayer *Layer // i.e. which auth layer are we using. Flags / Env Vars / Config File
 
-	CloudClient        *cloudv6.APIClient
-	AuthClient         *sdkgoauth.APIClient
-	CertManagerClient  *certmanager.APIClient
-	PostgresClient     *postgres.APIClient
-	MongoClient        *mongo.APIClient
-	DataplatformClient *dataplatform.APIClient
-	RegistryClient     *registry.APIClient
-	DnsClient          *dns.APIClient
+	CloudClient          *cloudv6.APIClient
+	AuthClient           *sdkgoauth.APIClient
+	CertManagerClient    *certmanager.APIClient
+	PostgresClient       *postgres.APIClient
+	MongoClient          *mongo.APIClient
+	DataplatformClient   *dataplatform.APIClient
+	RegistryClient       *registry.APIClient
+	DnsClient            *dns.APIClient
+	LoggingServiceClient *logsvc.APIClient
 }
 
 func appendUserAgent(userAgent string) string {
@@ -88,15 +98,19 @@ func newClient(name, pwd, token, hostUrl string, usedLayer *Layer) *Client {
 	dnsConfig := dns.NewConfiguration(name, pwd, token, hostUrl)
 	dnsConfig.UserAgent = appendUserAgent(dnsConfig.UserAgent)
 
+	logsConfig := logsvc.NewConfiguration(name, pwd, token, hostUrl)
+	logsConfig.UserAgent = appendUserAgent(logsConfig.UserAgent)
+
 	return &Client{
-		CloudClient:        cloudv6.NewAPIClient(clientConfig),
-		AuthClient:         sdkgoauth.NewAPIClient(authConfig),
-		CertManagerClient:  certmanager.NewAPIClient(certManagerConfig),
-		PostgresClient:     postgres.NewAPIClient(postgresConfig),
-		MongoClient:        mongo.NewAPIClient(mongoConfig),
-		DataplatformClient: dataplatform.NewAPIClient(dpConfig),
-		RegistryClient:     registry.NewAPIClient(registryConfig),
-		DnsClient:          dns.NewAPIClient(dnsConfig),
-		usedLayer:          usedLayer,
+		CloudClient:          cloudv6.NewAPIClient(clientConfig),
+		AuthClient:           sdkgoauth.NewAPIClient(authConfig),
+		CertManagerClient:    certmanager.NewAPIClient(certManagerConfig),
+		PostgresClient:       postgres.NewAPIClient(postgresConfig),
+		MongoClient:          mongo.NewAPIClient(mongoConfig),
+		DataplatformClient:   dataplatform.NewAPIClient(dpConfig),
+		RegistryClient:       registry.NewAPIClient(registryConfig),
+		DnsClient:            dns.NewAPIClient(dnsConfig),
+		LoggingServiceClient: logsvc.NewAPIClient(logsConfig),
+		usedLayer:            usedLayer,
 	}
 }

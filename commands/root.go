@@ -7,6 +7,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cfg"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dns"
+	logging_service "github.com/ionos-cloud/ionosctl/v6/commands/logging-service"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 
 	container_registry "github.com/ionos-cloud/ionosctl/v6/commands/container-registry"
@@ -116,7 +117,9 @@ func init() {
 	_ = rootCmd.Command.RegisterFlagCompletionFunc(
 		constants.ArgOutput,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-			return []string{jsontabwriter.JSONFormat, jsontabwriter.TextFormat, jsontabwriter.APIFormat}, cobra.ShellCompDirectiveNoFileComp
+			return []string{
+				jsontabwriter.JSONFormat, jsontabwriter.TextFormat, jsontabwriter.APIFormat,
+			}, cobra.ShellCompDirectiveNoFileComp
 		},
 	)
 	rootPFlagSet.BoolVarP(&Quiet, constants.ArgQuiet, constants.ArgQuietShort, false, "Quiet output")
@@ -226,10 +229,16 @@ func addCommands() {
 	funcChangeDefaultApiUrl := func(command *core.Command, newDefault string) *core.Command {
 		// For some reason, this line only changes the help text
 		command.Command.PersistentFlags().StringP(
-			constants.ArgServerUrl, constants.ArgServerUrlShort, newDefault, "Override default host url")
+			constants.ArgServerUrl, constants.ArgServerUrlShort, newDefault, "Override default host url",
+		)
+
+		// We should still run the original PersistentPreRun
+		originalPreRun := command.Command.PersistentPreRun
 
 		// If unset, manually set the flag to the new default. SIDE EFFECT: Now, this flag will always be considered "set", within DNS sub commands. Can't find a better alternative
 		command.Command.PersistentPreRun = func(cmd *cobra.Command, args []string) {
+			originalPreRun(cmd, args)
+
 			setVal := newDefault
 			if val, _ := cmd.Flags().GetString(constants.ArgServerUrl); val != "" {
 				setVal = val
@@ -240,6 +249,12 @@ func addCommands() {
 	}
 
 	rootCmd.AddCommand(funcChangeDefaultApiUrl(dns.DNSCommand(), constants.DefaultDnsApiURL))
+	// Logging Service
+	rootCmd.AddCommand(
+		funcChangeDefaultApiUrl(
+			logging_service.LoggingServiceCmd(), constants.DefaultLoggingServiceApiURL,
+		),
+	)
 }
 
 const helpTemplate = `USAGE: {{if .Runnable}}
