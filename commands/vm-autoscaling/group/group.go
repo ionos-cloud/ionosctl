@@ -19,6 +19,8 @@ func GroupCmd() *core.Command {
 	}
 
 	cmd.AddCommand(GroupCreateCmd())
+	cmd.AddCommand(GroupListCmd())
+	cmd.AddCommand(GroupDeleteCmd())
 
 	cmd.Command.PersistentFlags().StringSlice(constants.ArgCols, nil, tabheaders.ColsMessage(allCols))
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
