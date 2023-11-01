@@ -1,6 +1,12 @@
 # Changelog
 
-## [v6.7.1] (???)
+## [v6.7.2] (November 2023)
+
+## Fixed
+- Fixed `backupunit list` columns
+- Fixed `backupunit get-sso-url` characters being treated as format placeholders
+
+## [v6.7.1] (October 2023)
 
 ## Added
 

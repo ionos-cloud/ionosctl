@@ -248,7 +248,7 @@ func RunBackupUnitList(c *core.CommandConfig) error {
 	}
 
 	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.BackupUnit, backupUnits.BackupUnits,
-		tabheaders.GetHeadersAllDefault(defaultAlbRuleHttpRuleCols, cols))
+		tabheaders.GetHeadersAllDefault(defaultBackupUnitCols, cols))
 	if err != nil {
 		return err
 	}
@@ -317,7 +317,7 @@ func RunBackupUnitGetSsoUrl(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), "%s", out)
 
 	return nil
 }
