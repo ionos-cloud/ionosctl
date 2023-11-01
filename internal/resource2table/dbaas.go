@@ -331,7 +331,7 @@ func ConvertDbaasPostgresClustersToTable(clusters sdkpsql.ClusterList) ([]map[st
 	return clustersConverted, nil
 }
 
-func ConvertDbaasPostgresLogsToTable(logs *[]sdkpsql.ClusterLogsInstances) ([]map[string]interface{}, error) {
+func ConvertDbaasPostgresLogsToTable(logs *[]sdkpsql.ClusterLogsInstancesInner) ([]map[string]interface{}, error) {
 	if logs == nil {
 		return nil, fmt.Errorf("no logs to process")
 	}
