@@ -435,7 +435,7 @@ var (
 		"ForceSecAuth":      "properties.forceSecAuth",
 		"SecAuthActive":     "properties.secAuthActive",
 		"S3CanonicalUserId": "properties.s3CanonicalUserId",
-		"Active":            "propeties.active",
+		"Active":            "properties.active",
 	}
 
 	Volume = map[string]string{
