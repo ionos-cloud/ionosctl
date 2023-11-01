@@ -7,8 +7,8 @@ import (
 
 	"github.com/cheggaaa/pb/v3"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
+	core2 "github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	core2 "github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/spf13/viper"
 )
 

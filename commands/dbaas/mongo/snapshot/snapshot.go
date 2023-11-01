@@ -2,7 +2,7 @@ package snapshot
 
 import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/cluster"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/spf13/cobra"
 )
 

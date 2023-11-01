@@ -15,7 +15,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/uuidgen"
 	"github.com/spf13/viper"
 
-	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 )
 
 func ZonesPostCmd() *core.Command {

@@ -9,8 +9,8 @@ import (
 	"strings"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
+	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	sdkauth "github.com/ionos-cloud/sdk-go-auth"
 	sdkcertmanager "github.com/ionos-cloud/sdk-go-cert-manager"
 	sdkpostgres "github.com/ionos-cloud/sdk-go-dbaas-postgres"

@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
@@ -90,16 +90,16 @@ func TestGetListQueryParams(t *testing.T) {
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(constants.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgFilters), []string{"name=test", "location=test"})
-		//cfg.Command.Command.Flags().Set(cloudapiv6.ArgOrderBy, testFilterVar)
-		//cfg.Command.Command.Flags().(constants.FlagMaxResults, testMaxResultsVar)
+		// cfg.Command.Command.Flags().Set(cloudapiv6.ArgOrderBy, testFilterVar)
+		// cfg.Command.Command.Flags().(constants.FlagMaxResults, testMaxResultsVar)
 		result, err := GetListQueryParams(cfg)
 		assert.NoError(t, err)
 		assert.True(t, result.Filters != nil)
 		filtersKV := *result.Filters
 		assert.True(t, filtersKV["name"][0] == "test")
 		assert.True(t, filtersKV["location"][0] == "test")
-		//assert.True(t, *result.OrderBy == testFilterVar) Muted temporarily due to viper pflag mapping removal
-		//assert.True(t, *result.MaxResults == testMaxResultsVar)
+		// assert.True(t, *result.OrderBy == testFilterVar) Muted temporarily due to viper pflag mapping removal
+		// assert.True(t, *result.MaxResults == testMaxResultsVar)
 	})
 }
 
