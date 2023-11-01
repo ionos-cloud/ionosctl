@@ -2,6 +2,11 @@
 
 ## [v6.7.2] (November 2023)
 
+## Added
+- Added `--json-properties` and `--json-properties-example` to `k8s nodepool create` which allows creation of nodepools using a JSON file. This is useful for creating nodepools with a large number of properties.
+  - `--json-properties` is used to specify the path to the JSON file containing the nodepool properties.
+  - `--json-properties-example` is used to generate a JSON file containing all the nodepool properties and their default values. This file can be used as a template for creating nodepools using JSON files.
+
 ## Fixed
 - Fixed `backupunit list` columns
 - Fixed `backupunit get-sso-url` characters being treated as format placeholders

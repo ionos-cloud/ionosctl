@@ -197,3 +197,8 @@ builds/
 
 # direnv config
 .envrc
+
+
+# Feel free to remove this. It was simply annoying that I kept adding this via `git add .` when using --json-properties and --json-properties-example flags.
+# Maybe you have a better way to handle this?
+properties.json
