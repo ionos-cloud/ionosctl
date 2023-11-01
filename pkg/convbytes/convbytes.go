@@ -15,6 +15,9 @@ const (
 	PB       = TB * 1024
 )
 
+// Forward declared to compile only once (rather than every time we need this)
+var sizePattern = regexp.MustCompile(`^(\d+)\s*([a-zA-Z]*)$`)
+
 // ToBytes converts a given value in a source unit to bytes.
 func ToBytes(value int64, unit int64) int64 {
 	return value * unit
@@ -44,8 +47,7 @@ func StrToBytesOk(s string) (int64, bool) {
 	}
 
 	// Match numbers followed by optional spaces and a unit
-	r := regexp.MustCompile(`^(\d+)\s*([a-zA-Z]*)$`)
-	matches := r.FindStringSubmatch(s)
+	matches := sizePattern.FindStringSubmatch(s)
 	if matches == nil {
 		return 0, false
 	}
@@ -89,6 +91,7 @@ func StrToUnitOk(s string, targetUnit int64) (int64, bool) {
 		return num, true
 	}
 
+	// Not just a number - convert to bytes first and back to target unit
 	bytes, ok := StrToBytesOk(s)
 	if !ok {
 		return 0, false
