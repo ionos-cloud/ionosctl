@@ -256,7 +256,7 @@ var (
 		"LocationId":   "id",
 		"Name":         "properties.name",
 		"Features":     "properties.features",
-		"CpuFamily":    "properties.cpuFamily",
+		"CpuFamily":    "properties.cpuArchitecture.*.cpuFamily",
 		"ImageAliases": "properties.imageAliases",
 	}
 
