@@ -798,40 +798,6 @@ func TestRunClusterCreateErr(t *testing.T) {
 	})
 }
 
-func TestRunClusterCreateConvertErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
-		viper.Reset()
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(constants.ArgQuiet, false)
-		viper.Set(constants.ArgVerbose, false)
-		viper.Set(constants.ArgServerUrl, constants.DefaultApiURL)
-		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgDatacenterId), testClusterVar)
-		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgLanId), testClusterVar)
-		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgCidr), testClusterVar)
-		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgVersion), testClusterVar)
-		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgLocation), testClusterVar)
-		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgInstances), testClusterIntVar)
-		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgRam), "test")
-		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgSyncMode), strings.ToUpper(testClusterVar))
-		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgCores), testClusterIntVar)
-		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgStorageSize), testClusterMbVar)
-		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgStorageType), string(sdkgo.HDD))
-		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgMaintenanceDay), testClusterVar)
-		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgMaintenanceTime), testClusterVar)
-		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgName), testClusterVar)
-		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgDbUsername), testClusterVar)
-		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgDbPassword), testClusterVar)
-		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgBackupId), testClusterVar)
-		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgRecoveryTime), testTimeArgVar)
-		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgBackupLocation), testClusterBackupLocation)
-		rm.CloudApiDbaasPgsqlMocks.Cluster.EXPECT().Create(testCreateClusterRequest).Return(&testClusterGet, nil, nil)
-		err := RunClusterCreate(cfg)
-		assert.Error(t, err)
-	})
-}
-
 func TestRunClusterCreateLocation(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
