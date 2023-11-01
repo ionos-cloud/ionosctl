@@ -327,7 +327,7 @@ var (
 		"FirewallActive": "properties.firewallActive",
 		"FirewallType":   "properties.firewallType",
 		"Mac":            "properties.mac",
-		"State":          "metadata.statue",
+		"State":          "metadata.state",
 		"DeviceNumber":   "properties.deviceNumber",
 		"PciSlot":        "properties.pciSlot",
 		"IPv6Ips":        "properties.ipv6Ips",
