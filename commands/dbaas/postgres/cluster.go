@@ -10,13 +10,14 @@ import (
 	cloudapiv6completer "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres/waiter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
-	"github.com/ionos-cloud/ionosctl/v6/internal/resource2table"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
+	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
+	"github.com/ionos-cloud/ionosctl/v6/internal/core"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/resource2table"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	utils2 "github.com/ionos-cloud/ionosctl/v6/internal/utils"
+	"github.com/ionos-cloud/ionosctl/v6/internal/waitfor"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	cloudapiv6resources "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
 	dbaaspg "github.com/ionos-cloud/ionosctl/v6/services/dbaas-postgres"
 	"github.com/ionos-cloud/ionosctl/v6/services/dbaas-postgres/resources"
@@ -368,7 +369,7 @@ func RunClusterGet(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.ClusterId, viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))))
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting Cluster..."))
 
-	if err := utils.WaitForState(c, waiter.ClusterStateInterrogator, viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))); err != nil {
+	if err := waitfor.WaitForState(c, waiter.ClusterStateInterrogator, viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))); err != nil {
 		return err
 	}
 
@@ -409,7 +410,7 @@ func RunClusterCreate(c *core.CommandConfig) error {
 
 	if viper.GetBool(core.GetFlagName(c.NS, constants.ArgWaitForState)) {
 		if id, ok := cluster.GetIdOk(); ok && id != nil {
-			if err = utils.WaitForState(c, waiter.ClusterStateInterrogator, *id); err != nil {
+			if err = waitfor.WaitForState(c, waiter.ClusterStateInterrogator, *id); err != nil {
 				return err
 			}
 
@@ -460,7 +461,7 @@ func RunClusterUpdate(c *core.CommandConfig) error {
 		// TODO: Sleeping 10 seconds to make sure the cluster is in BUSY state. This will be removed in future releases.
 		time.Sleep(10 * time.Second)
 
-		if err = utils.WaitForState(c, waiter.ClusterStateInterrogator, viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))); err != nil {
+		if err = waitfor.WaitForState(c, waiter.ClusterStateInterrogator, viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))); err != nil {
 			return err
 		}
 	}
@@ -516,7 +517,7 @@ func RunClusterRestore(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	if err = utils.WaitForState(c, waiter.ClusterStateInterrogator, viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))); err != nil {
+	if err = waitfor.WaitForState(c, waiter.ClusterStateInterrogator, viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))); err != nil {
 		return err
 	}
 
@@ -548,7 +549,7 @@ func RunClusterDelete(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	if err = utils.WaitForDelete(c, waiter.ClusterDeleteInterrogator, viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))); err != nil {
+	if err = waitfor.WaitForDelete(c, waiter.ClusterDeleteInterrogator, viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))); err != nil {
 		return err
 	}
 
@@ -617,7 +618,7 @@ func ClusterDeleteAll(c *core.CommandConfig) error {
 
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput(constants.MessageDeletingAll, c.Resource, *idOk))
 
-		if err = utils.WaitForDelete(c, waiter.ClusterDeleteInterrogator, *idOk); err != nil {
+		if err = waitfor.WaitForDelete(c, waiter.ClusterDeleteInterrogator, *idOk); err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *idOk, err))
 		}
 	}
@@ -651,7 +652,7 @@ func getCreateClusterRequest(c *core.CommandConfig) (*resources.CreateClusterReq
 	input.SetCores(cpuCoreCount)
 
 	// Convert Ram
-	size, err := utils.ConvertSize(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgRam)), utils.MegaBytes)
+	size, err := utils2.ConvertSize(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgRam)), utils2.MegaBytes)
 	if err != nil {
 		return nil, err
 	}
@@ -659,7 +660,7 @@ func getCreateClusterRequest(c *core.CommandConfig) (*resources.CreateClusterReq
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Ram: %v[MB]", int32(size)))
 
 	// Convert StorageSize
-	storageSize, err := utils.ConvertSize(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgStorageSize)), utils.MegaBytes)
+	storageSize, err := utils2.ConvertSize(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgStorageSize)), utils2.MegaBytes)
 	if err != nil {
 		return nil, err
 	}
@@ -795,7 +796,7 @@ func getPatchClusterRequest(c *core.CommandConfig) (*resources.PatchClusterReque
 
 	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgRam)) {
 		// Convert Ram
-		size, err := utils.ConvertSize(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgRam)), utils.MegaBytes)
+		size, err := utils2.ConvertSize(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgRam)), utils2.MegaBytes)
 		if err != nil {
 			return nil, err
 		}
@@ -806,7 +807,7 @@ func getPatchClusterRequest(c *core.CommandConfig) (*resources.PatchClusterReque
 
 	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgStorageSize)) {
 		// Convert StorageSize
-		storageSize, err := utils.ConvertSize(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgStorageSize)), utils.MegaBytes)
+		storageSize, err := utils2.ConvertSize(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgStorageSize)), utils2.MegaBytes)
 		if err != nil {
 			return nil, err
 		}

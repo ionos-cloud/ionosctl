@@ -7,7 +7,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/snapshot"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/templates"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/user"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/spf13/cobra"
 )
 

@@ -5,10 +5,10 @@ import (
 	"io"
 	"testing"
 
+	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/golang/mock/gomock"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	authservice "github.com/ionos-cloud/ionosctl/v6/services/auth-v1"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	cloudapidbaaspgsql "github.com/ionos-cloud/ionosctl/v6/services/dbaas-postgres"

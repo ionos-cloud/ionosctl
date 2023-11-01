@@ -11,12 +11,12 @@ import (
 	"time"
 
 	"github.com/cilium/fake"
+	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/registry"
 	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/token/scopes"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	ionoscloud "github.com/ionos-cloud/sdk-go-container-registry"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"

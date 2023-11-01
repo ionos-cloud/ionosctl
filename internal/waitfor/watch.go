@@ -1,4 +1,4 @@
-package utils
+package waitfor
 
 import (
 	"context"
@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
 

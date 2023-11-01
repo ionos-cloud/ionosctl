@@ -12,12 +12,12 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dataplatform/nodepool"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
-	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
+	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 	ionoscloud "github.com/ionos-cloud/sdk-go-dataplatform"
 
 	"github.com/cilium/fake"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dataplatform/cluster"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	sdkcompute "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
