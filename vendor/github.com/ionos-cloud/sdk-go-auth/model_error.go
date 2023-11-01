@@ -21,6 +21,24 @@ type Error struct {
 	Messages   *[]ErrorMessages `json:"messages,omitempty"`
 }
 
+// NewError instantiates a new Error object
+// This constructor will assign default values to properties that have it defined,
+// and makes sure properties required by API are set, but the set of arguments
+// will change when the set of required properties is changed
+func NewError() *Error {
+	this := Error{}
+
+	return &this
+}
+
+// NewErrorWithDefaults instantiates a new Error object
+// This constructor will only assign default values to properties that have it defined,
+// but it doesn't guarantee that properties required by API are set
+func NewErrorWithDefaults() *Error {
+	this := Error{}
+	return &this
+}
+
 // GetHttpStatus returns the HttpStatus field value
 // If the value is explicit nil, the zero value for int32 will be returned
 func (o *Error) GetHttpStatus() *int32 {
@@ -102,9 +120,11 @@ func (o Error) MarshalJSON() ([]byte, error) {
 	if o.HttpStatus != nil {
 		toSerialize["httpStatus"] = o.HttpStatus
 	}
+
 	if o.Messages != nil {
 		toSerialize["messages"] = o.Messages
 	}
+
 	return json.Marshal(toSerialize)
 }
 

@@ -13,12 +13,17 @@ package ionoscloud
 import (
 	"bytes"
 	"context"
+	"crypto/sha256"
+	"crypto/tls"
+	"crypto/x509"
+	"encoding/hex"
 	"encoding/json"
 	"encoding/xml"
 	"errors"
 	"fmt"
 	"io"
 	"mime/multipart"
+	"net"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
@@ -35,7 +40,7 @@ import (
 )
 
 var (
-	jsonCheck = regexp.MustCompile(`(?i:(?:application|text)/(?:vnd\.[^;]+\+)?json)`)
+	jsonCheck = regexp.MustCompile(`(?i:(?:application|text)\/(?:vnd\.[^;]+|problem\+)?json)`)
 	xmlCheck  = regexp.MustCompile(`(?i:(?:application|text)/xml)`)
 )
 
@@ -45,11 +50,8 @@ const (
 	RequestStatusFailed  = "FAILED"
 	RequestStatusDone    = "DONE"
 
-	Version = "1.0.6"
+	Version = "1.0.7"
 )
-
-// Constants for APIs
-const FormatStringErr = "%s %s"
 
 // APIClient manages communication with the Auth API API v1.0
 // In most cases there should be only one, shared, APIClient.
@@ -72,6 +74,13 @@ func NewAPIClient(cfg *Configuration) *APIClient {
 	if cfg.HTTPClient == nil {
 		cfg.HTTPClient = http.DefaultClient
 	}
+	//enable certificate pinning if the env variable is set
+	pkFingerprint := os.Getenv(IonosPinnedCertEnvVar)
+	if pkFingerprint != "" {
+		httpTransport := &http.Transport{}
+		AddPinnedCert(httpTransport, pkFingerprint)
+		cfg.HTTPClient.Transport = httpTransport
+	}
 
 	c := &APIClient{}
 	c.cfg = cfg
@@ -81,6 +90,63 @@ func NewAPIClient(cfg *Configuration) *APIClient {
 	c.TokensApi = (*TokensApiService)(&c.common)
 
 	return c
+}
+
+// AddPinnedCert - enables pinning of the sha256 public fingerprint to the http client's transport
+func AddPinnedCert(transport *http.Transport, pkFingerprint string) {
+	if pkFingerprint != "" {
+		transport.DialTLSContext = addPinnedCertVerification([]byte(pkFingerprint), new(tls.Config))
+	}
+}
+
+// TLSDial can be assigned to a http.Transport's DialTLS field.
+type TLSDial func(ctx context.Context, network, addr string) (net.Conn, error)
+
+// addPinnedCertVerification returns a TLSDial function which checks that
+// the remote server provides a certificate whose SHA256 fingerprint matches
+// the provided value.
+//
+// The returned dialer function can be plugged into a http.Transport's DialTLS
+// field to allow for certificate pinning.
+func addPinnedCertVerification(fingerprint []byte, tlsConfig *tls.Config) TLSDial {
+	return func(ctx context.Context, network, addr string) (net.Conn, error) {
+		//fingerprints can be added with ':', we need to trim
+		fingerprint = bytes.ReplaceAll(fingerprint, []byte(":"), []byte(""))
+		fingerprint = bytes.ReplaceAll(fingerprint, []byte(" "), []byte(""))
+		//we are manually checking a certificate, so we need to enable insecure
+		tlsConfig.InsecureSkipVerify = true
+
+		// Dial the connection to get certificates to check
+		conn, err := tls.Dial(network, addr, tlsConfig)
+		if err != nil {
+			return nil, err
+		}
+
+		if err := verifyPinnedCert(fingerprint, conn.ConnectionState().PeerCertificates); err != nil {
+			_ = conn.Close()
+			return nil, err
+		}
+
+		return conn, nil
+	}
+}
+
+// verifyPinnedCert iterates the list of peer certificates and attempts to
+// locate a certificate that is not a CA and whose public key fingerprint matches pkFingerprint.
+func verifyPinnedCert(pkFingerprint []byte, peerCerts []*x509.Certificate) error {
+	for _, cert := range peerCerts {
+		fingerprint := sha256.Sum256(cert.Raw)
+
+		var bytesFingerPrint = make([]byte, hex.EncodedLen(len(fingerprint[:])))
+		hex.Encode(bytesFingerPrint, fingerprint[:])
+
+		// we have a match, and it's not an authority certificate
+		if cert.IsCA == false && bytes.EqualFold(bytesFingerPrint, pkFingerprint) {
+			return nil
+		}
+	}
+
+	return fmt.Errorf("remote server presented a certificate which does not match the provided fingerprint")
 }
 
 func atoi(in string) (int, error) {
@@ -169,10 +235,11 @@ func parameterToJson(obj interface{}) (string, error) {
 }
 
 // callAPI do the request.
-func (c *APIClient) callAPI(request *http.Request) (*http.Response, error) {
+func (c *APIClient) callAPI(request *http.Request) (*http.Response, time.Duration, error) {
 	retryCount := 0
 
 	var resp *http.Response
+	var httpRequestTime time.Duration
 	var err error
 
 	for {
@@ -184,7 +251,7 @@ func (c *APIClient) callAPI(request *http.Request) (*http.Response, error) {
 		if request.Body != nil {
 			clonedRequest.Body, err = request.GetBody()
 			if err != nil {
-				return nil, err
+				return nil, httpRequestTime, err
 			}
 		}
 
@@ -198,10 +265,12 @@ func (c *APIClient) callAPI(request *http.Request) (*http.Response, error) {
 			c.cfg.Logger.Printf("\n try no: %d\n", retryCount)
 		}
 
+		httpRequestStartTime := time.Now()
 		clonedRequest.Close = true
 		resp, err = c.cfg.HTTPClient.Do(clonedRequest)
+		httpRequestTime = time.Since(httpRequestStartTime)
 		if err != nil {
-			return resp, err
+			return resp, httpRequestTime, err
 		}
 
 		if c.cfg.Debug || c.cfg.LogLevel.Satisfies(Trace) {
@@ -219,20 +288,23 @@ func (c *APIClient) callAPI(request *http.Request) (*http.Response, error) {
 		case http.StatusServiceUnavailable,
 			http.StatusGatewayTimeout,
 			http.StatusBadGateway:
+			if request.Method == http.MethodPost {
+				return resp, httpRequestTime, err
+			}
 			backoffTime = c.GetConfig().WaitTime
 
 		case http.StatusTooManyRequests:
 			if retryAfterSeconds := resp.Header.Get("Retry-After"); retryAfterSeconds != "" {
 				waitTime, err := time.ParseDuration(retryAfterSeconds + "s")
 				if err != nil {
-					return resp, err
+					return resp, httpRequestTime, err
 				}
 				backoffTime = waitTime
 			} else {
 				backoffTime = c.GetConfig().WaitTime
 			}
 		default:
-			return resp, err
+			return resp, httpRequestTime, err
 
 		}
 
@@ -242,21 +314,31 @@ func (c *APIClient) callAPI(request *http.Request) (*http.Response, error) {
 			}
 			break
 		} else {
-			c.backOff(backoffTime)
+			c.backOff(request.Context(), backoffTime)
 		}
 	}
 
-	return resp, err
+	return resp, httpRequestTime, err
 }
 
-func (c *APIClient) backOff(t time.Duration) {
+func (c *APIClient) backOff(ctx context.Context, t time.Duration) {
 	if t > c.GetConfig().MaxWaitTime {
 		t = c.GetConfig().MaxWaitTime
 	}
 	if c.cfg.Debug || c.cfg.LogLevel.Satisfies(Debug) {
 		c.cfg.Logger.Printf(" Sleeping %s before retrying request\n", t.String())
 	}
-	time.Sleep(t)
+	if t <= 0 {
+		return
+	}
+
+	timer := time.NewTimer(t)
+	defer timer.Stop()
+
+	select {
+	case <-ctx.Done():
+	case <-timer.C:
+	}
 }
 
 // Allow modification of underlying config for alternate implementations and testing
@@ -463,14 +545,14 @@ func (c *APIClient) decode(v interface{}, b []byte, contentType string) (err err
 					return err
 				}
 			} else {
-				return errors.New("Unknown type with GetActualInstance but no unmarshalObj.UnmarshalJSON defined")
+				return errors.New("unknown type with GetActualInstance but no unmarshalObj.UnmarshalJSON defined")
 			}
 		} else if err = json.Unmarshal(b, v); err != nil { // simple model
 			return err
 		}
 		return nil
 	}
-	return errors.New("undefined response type")
+	return fmt.Errorf("undefined response type for content %s", contentType)
 }
 
 // Add a file to the multipart request

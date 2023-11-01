@@ -26,6 +26,29 @@ type Token struct {
 	ExpirationDate *string `json:"expirationDate"`
 }
 
+// NewToken instantiates a new Token object
+// This constructor will assign default values to properties that have it defined,
+// and makes sure properties required by API are set, but the set of arguments
+// will change when the set of required properties is changed
+func NewToken(id string, href string, createdDate string, expirationDate string) *Token {
+	this := Token{}
+
+	this.Id = &id
+	this.Href = &href
+	this.CreatedDate = &createdDate
+	this.ExpirationDate = &expirationDate
+
+	return &this
+}
+
+// NewTokenWithDefaults instantiates a new Token object
+// This constructor will only assign default values to properties that have it defined,
+// but it doesn't guarantee that properties required by API are set
+func NewTokenWithDefaults() *Token {
+	this := Token{}
+	return &this
+}
+
 // GetId returns the Id field value
 // If the value is explicit nil, the zero value for string will be returned
 func (o *Token) GetId() *string {
@@ -183,15 +206,19 @@ func (o Token) MarshalJSON() ([]byte, error) {
 	if o.Id != nil {
 		toSerialize["id"] = o.Id
 	}
+
 	if o.Href != nil {
 		toSerialize["href"] = o.Href
 	}
+
 	if o.CreatedDate != nil {
 		toSerialize["createdDate"] = o.CreatedDate
 	}
+
 	if o.ExpirationDate != nil {
 		toSerialize["expirationDate"] = o.ExpirationDate
 	}
+
 	return json.Marshal(toSerialize)
 }
 

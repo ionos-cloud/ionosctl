@@ -11,13 +11,12 @@
 package ionoscloud
 
 import (
-	"fmt"
-	"strings"
-
 	_context "context"
+	"fmt"
 	_ioutil "io/ioutil"
 	_nethttp "net/http"
 	_neturl "net/url"
+	"strings"
 )
 
 // Linger please
@@ -90,7 +89,6 @@ func (a *TokensApiService) TokensDeleteByCriteriaExecute(r ApiTokensDeleteByCrit
 	}
 
 	localVarQueryParams.Add("criteria", parameterToString(*r.criteria, ""))
-
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
 
@@ -130,13 +128,14 @@ func (a *TokensApiService) TokensDeleteByCriteriaExecute(r ApiTokensDeleteByCrit
 		return localVarReturnValue, nil, err
 	}
 
-	localVarHTTPResponse, err := a.client.callAPI(req)
+	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
 	localVarAPIResponse := &APIResponse{
-		Response:   localVarHTTPResponse,
-		Method:     localVarHTTPMethod,
-		RequestURL: localVarPath,
-		Operation:  "TokensDeleteByCriteria",
+		Response:    localVarHTTPResponse,
+		Method:      localVarHTTPMethod,
+		RequestTime: httpRequestTime,
+		RequestURL:  localVarPath,
+		Operation:   "TokensDeleteByCriteria",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -154,13 +153,13 @@ func (a *TokensApiService) TokensDeleteByCriteriaExecute(r ApiTokensDeleteByCrit
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
 			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
-				newErr.error = fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, err.Error())
+				newErr.error = err.Error()
 				return localVarReturnValue, localVarAPIResponse, newErr
 			}
 			newErr.model = v
@@ -169,7 +168,7 @@ func (a *TokensApiService) TokensDeleteByCriteriaExecute(r ApiTokensDeleteByCrit
 			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
-				newErr.error = fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, err.Error())
+				newErr.error = err.Error()
 				return localVarReturnValue, localVarAPIResponse, newErr
 			}
 			newErr.model = v
@@ -178,7 +177,7 @@ func (a *TokensApiService) TokensDeleteByCriteriaExecute(r ApiTokensDeleteByCrit
 			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
-				newErr.error = fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, err.Error())
+				newErr.error = err.Error()
 				return localVarReturnValue, localVarAPIResponse, newErr
 			}
 			newErr.model = v
@@ -187,7 +186,7 @@ func (a *TokensApiService) TokensDeleteByCriteriaExecute(r ApiTokensDeleteByCrit
 			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
-				newErr.error = fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, err.Error())
+				newErr.error = err.Error()
 				return localVarReturnValue, localVarAPIResponse, newErr
 			}
 			newErr.model = v
@@ -304,13 +303,14 @@ func (a *TokensApiService) TokensDeleteByIdExecute(r ApiTokensDeleteByIdRequest)
 		return localVarReturnValue, nil, err
 	}
 
-	localVarHTTPResponse, err := a.client.callAPI(req)
+	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
 	localVarAPIResponse := &APIResponse{
-		Response:   localVarHTTPResponse,
-		Method:     localVarHTTPMethod,
-		RequestURL: localVarPath,
-		Operation:  "TokensDeleteById",
+		Response:    localVarHTTPResponse,
+		Method:      localVarHTTPMethod,
+		RequestTime: httpRequestTime,
+		RequestURL:  localVarPath,
+		Operation:   "TokensDeleteById",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -328,13 +328,13 @@ func (a *TokensApiService) TokensDeleteByIdExecute(r ApiTokensDeleteByIdRequest)
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
 			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
-				newErr.error = fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, err.Error())
+				newErr.error = err.Error()
 				return localVarReturnValue, localVarAPIResponse, newErr
 			}
 			newErr.model = v
@@ -343,7 +343,7 @@ func (a *TokensApiService) TokensDeleteByIdExecute(r ApiTokensDeleteByIdRequest)
 			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
-				newErr.error = fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, err.Error())
+				newErr.error = err.Error()
 				return localVarReturnValue, localVarAPIResponse, newErr
 			}
 			newErr.model = v
@@ -352,7 +352,7 @@ func (a *TokensApiService) TokensDeleteByIdExecute(r ApiTokensDeleteByIdRequest)
 			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
-				newErr.error = fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, err.Error())
+				newErr.error = err.Error()
 				return localVarReturnValue, localVarAPIResponse, newErr
 			}
 			newErr.model = v
@@ -361,7 +361,7 @@ func (a *TokensApiService) TokensDeleteByIdExecute(r ApiTokensDeleteByIdRequest)
 			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
-				newErr.error = fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, err.Error())
+				newErr.error = err.Error()
 				return localVarReturnValue, localVarAPIResponse, newErr
 			}
 			newErr.model = v
@@ -478,13 +478,14 @@ func (a *TokensApiService) TokensFindByIdExecute(r ApiTokensFindByIdRequest) (To
 		return localVarReturnValue, nil, err
 	}
 
-	localVarHTTPResponse, err := a.client.callAPI(req)
+	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
 	localVarAPIResponse := &APIResponse{
-		Response:   localVarHTTPResponse,
-		Method:     localVarHTTPMethod,
-		RequestURL: localVarPath,
-		Operation:  "TokensFindById",
+		Response:    localVarHTTPResponse,
+		Method:      localVarHTTPMethod,
+		RequestTime: httpRequestTime,
+		RequestURL:  localVarPath,
+		Operation:   "TokensFindById",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -502,13 +503,13 @@ func (a *TokensApiService) TokensFindByIdExecute(r ApiTokensFindByIdRequest) (To
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
 			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
-				newErr.error = fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, err.Error())
+				newErr.error = err.Error()
 				return localVarReturnValue, localVarAPIResponse, newErr
 			}
 			newErr.model = v
@@ -517,7 +518,7 @@ func (a *TokensApiService) TokensFindByIdExecute(r ApiTokensFindByIdRequest) (To
 			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
-				newErr.error = fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, err.Error())
+				newErr.error = err.Error()
 				return localVarReturnValue, localVarAPIResponse, newErr
 			}
 			newErr.model = v
@@ -526,7 +527,7 @@ func (a *TokensApiService) TokensFindByIdExecute(r ApiTokensFindByIdRequest) (To
 			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
-				newErr.error = fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, err.Error())
+				newErr.error = err.Error()
 				return localVarReturnValue, localVarAPIResponse, newErr
 			}
 			newErr.model = v
@@ -535,7 +536,7 @@ func (a *TokensApiService) TokensFindByIdExecute(r ApiTokensFindByIdRequest) (To
 			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
-				newErr.error = fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, err.Error())
+				newErr.error = err.Error()
 				return localVarReturnValue, localVarAPIResponse, newErr
 			}
 			newErr.model = v
@@ -544,7 +545,7 @@ func (a *TokensApiService) TokensFindByIdExecute(r ApiTokensFindByIdRequest) (To
 			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
-				newErr.error = fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, err.Error())
+				newErr.error = err.Error()
 				return localVarReturnValue, localVarAPIResponse, newErr
 			}
 			newErr.model = v
@@ -661,13 +662,14 @@ func (a *TokensApiService) TokensGenerateExecute(r ApiTokensGenerateRequest) (Jw
 		return localVarReturnValue, nil, err
 	}
 
-	localVarHTTPResponse, err := a.client.callAPI(req)
+	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
 	localVarAPIResponse := &APIResponse{
-		Response:   localVarHTTPResponse,
-		Method:     localVarHTTPMethod,
-		RequestURL: localVarPath,
-		Operation:  "TokensGenerate",
+		Response:    localVarHTTPResponse,
+		Method:      localVarHTTPMethod,
+		RequestTime: httpRequestTime,
+		RequestURL:  localVarPath,
+		Operation:   "TokensGenerate",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -685,13 +687,13 @@ func (a *TokensApiService) TokensGenerateExecute(r ApiTokensGenerateRequest) (Jw
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
 			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
-				newErr.error = fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, err.Error())
+				newErr.error = err.Error()
 				return localVarReturnValue, localVarAPIResponse, newErr
 			}
 			newErr.model = v
@@ -700,7 +702,7 @@ func (a *TokensApiService) TokensGenerateExecute(r ApiTokensGenerateRequest) (Jw
 			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
-				newErr.error = fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, err.Error())
+				newErr.error = err.Error()
 				return localVarReturnValue, localVarAPIResponse, newErr
 			}
 			newErr.model = v
@@ -709,7 +711,7 @@ func (a *TokensApiService) TokensGenerateExecute(r ApiTokensGenerateRequest) (Jw
 			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
-				newErr.error = fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, err.Error())
+				newErr.error = err.Error()
 				return localVarReturnValue, localVarAPIResponse, newErr
 			}
 			newErr.model = v
@@ -822,13 +824,14 @@ func (a *TokensApiService) TokensGetExecute(r ApiTokensGetRequest) (Tokens, *API
 		return localVarReturnValue, nil, err
 	}
 
-	localVarHTTPResponse, err := a.client.callAPI(req)
+	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
 	localVarAPIResponse := &APIResponse{
-		Response:   localVarHTTPResponse,
-		Method:     localVarHTTPMethod,
-		RequestURL: localVarPath,
-		Operation:  "TokensGet",
+		Response:    localVarHTTPResponse,
+		Method:      localVarHTTPMethod,
+		RequestTime: httpRequestTime,
+		RequestURL:  localVarPath,
+		Operation:   "TokensGet",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -846,13 +849,13 @@ func (a *TokensApiService) TokensGetExecute(r ApiTokensGetRequest) (Tokens, *API
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
 			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
-				newErr.error = fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, err.Error())
+				newErr.error = err.Error()
 				return localVarReturnValue, localVarAPIResponse, newErr
 			}
 			newErr.model = v
@@ -861,7 +864,7 @@ func (a *TokensApiService) TokensGetExecute(r ApiTokensGetRequest) (Tokens, *API
 			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
-				newErr.error = fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, err.Error())
+				newErr.error = err.Error()
 				return localVarReturnValue, localVarAPIResponse, newErr
 			}
 			newErr.model = v
@@ -870,7 +873,7 @@ func (a *TokensApiService) TokensGetExecute(r ApiTokensGetRequest) (Tokens, *API
 			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
-				newErr.error = fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, err.Error())
+				newErr.error = err.Error()
 				return localVarReturnValue, localVarAPIResponse, newErr
 			}
 			newErr.model = v
@@ -879,7 +882,7 @@ func (a *TokensApiService) TokensGetExecute(r ApiTokensGetRequest) (Tokens, *API
 			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
-				newErr.error = fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, err.Error())
+				newErr.error = err.Error()
 				return localVarReturnValue, localVarAPIResponse, newErr
 			}
 			newErr.model = v

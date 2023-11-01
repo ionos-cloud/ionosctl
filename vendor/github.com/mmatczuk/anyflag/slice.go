@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"reflect"
 	"strings"
+
+	"github.com/spf13/pflag"
 )
 
 // SliceValue is a generic pflag.SliceValue for a slice of T.
@@ -29,6 +31,17 @@ func NewSliceValueWithRedact[T any](val []T, p *[]T, parse func(val string) (T, 
 	sv := NewSliceValue(val, p, parse)
 	sv.redact = redact
 	return sv
+}
+
+// Unredacted returns a copy of SliceValue[T] without redact function.
+func (s *SliceValue[T]) Unredacted() pflag.Value {
+	if s.redact == nil {
+		return s
+	}
+
+	sv := *s
+	sv.redact = nil
+	return &sv
 }
 
 func (s *SliceValue[T]) Set(val string) error {
@@ -58,11 +71,7 @@ func (s *SliceValue[T]) Type() string {
 func (s *SliceValue[T]) String() string {
 	out := make([]string, len(*s.value))
 	for i, d := range *s.value {
-		if s.redact != nil {
-			out[i] = s.redact(d)
-		} else {
-			out[i] = fmt.Sprint(d)
-		}
+		out[i] = s.toString(d)
 	}
 	return "[" + strings.Join(out, ",") + "]"
 }
@@ -72,6 +81,10 @@ func (s *SliceValue[T]) fromString(val string) (T, error) {
 }
 
 func (s *SliceValue[T]) toString(val T) string {
+	if s.redact != nil {
+		return s.redact(val)
+	}
+
 	return fmt.Sprint(val)
 }
 

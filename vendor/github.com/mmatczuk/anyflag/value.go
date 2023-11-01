@@ -3,6 +3,8 @@ package anyflag
 import (
 	"fmt"
 	"reflect"
+
+	"github.com/spf13/pflag"
 )
 
 // Value is a generic pflag.Value for a T.
@@ -27,6 +29,17 @@ func NewValueWithRedact[T any](val T, p *T, parse func(val string) (T, error), r
 	v := NewValue(val, p, parse)
 	v.redact = redact
 	return v
+}
+
+// Unredacted returns a copy of Value[T] without redact function.
+func (v *Value[T]) Unredacted() pflag.Value {
+	if v.redact == nil {
+		return v
+	}
+
+	vv := *v
+	vv.redact = nil
+	return &vv
 }
 
 func (v *Value[T]) Set(val string) error {

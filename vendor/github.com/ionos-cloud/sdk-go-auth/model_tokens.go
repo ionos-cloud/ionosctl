@@ -20,6 +20,24 @@ type Tokens struct {
 	Tokens *[]Token `json:"tokens,omitempty"`
 }
 
+// NewTokens instantiates a new Tokens object
+// This constructor will assign default values to properties that have it defined,
+// and makes sure properties required by API are set, but the set of arguments
+// will change when the set of required properties is changed
+func NewTokens() *Tokens {
+	this := Tokens{}
+
+	return &this
+}
+
+// NewTokensWithDefaults instantiates a new Tokens object
+// This constructor will only assign default values to properties that have it defined,
+// but it doesn't guarantee that properties required by API are set
+func NewTokensWithDefaults() *Tokens {
+	this := Tokens{}
+	return &this
+}
+
 // GetTokens returns the Tokens field value
 // If the value is explicit nil, the zero value for []Token will be returned
 func (o *Tokens) GetTokens() *[]Token {
@@ -63,6 +81,7 @@ func (o Tokens) MarshalJSON() ([]byte, error) {
 	if o.Tokens != nil {
 		toSerialize["tokens"] = o.Tokens
 	}
+
 	return json.Marshal(toSerialize)
 }
 
