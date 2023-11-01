@@ -826,6 +826,7 @@ func TestRunClusterCreateConvertErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgBackupId), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgRecoveryTime), testTimeArgVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgBackupLocation), testClusterBackupLocation)
+		rm.CloudApiDbaasPgsqlMocks.Cluster.EXPECT().Create(testCreateClusterRequest).Return(&testClusterGet, nil, nil)
 		err := RunClusterCreate(cfg)
 		assert.Error(t, err)
 	})
