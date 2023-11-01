@@ -1,4 +1,4 @@
-package utils
+package waitfor
 
 import (
 	"context"
