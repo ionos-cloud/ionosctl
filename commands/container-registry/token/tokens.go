@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
-	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 
 	scope "github.com/ionos-cloud/ionosctl/v6/commands/container-registry/token/scopes"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"

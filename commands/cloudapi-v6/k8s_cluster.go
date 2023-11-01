@@ -8,13 +8,13 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
-	"github.com/ionos-cloud/ionosctl/v6/internal/resource2table"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
+	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/resource2table"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	utils2 "github.com/ionos-cloud/ionosctl/v6/internal/utils"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
@@ -275,7 +275,7 @@ func RunK8sClusterGet(c *core.CommandConfig) error {
 	}
 
 	queryParams := listQueryParams.QueryParams
-	if err := utils.WaitForState(c, waiter.K8sClusterStateInterrogator, viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))); err != nil {
+	if err := utils2.WaitForState(c, waiter.K8sClusterStateInterrogator, viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))); err != nil {
 		return err
 	}
 
@@ -323,14 +323,14 @@ func RunK8sClusterCreate(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Creating K8s Cluster..."))
 
 	u, resp, err := c.CloudApiV6Services.K8s().CreateCluster(*newCluster, queryParams)
-	if resp != nil && utils.GetId(resp) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, utils.GetId(resp), resp.RequestTime))
+	if resp != nil && utils2.GetId(resp) != "" {
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, utils2.GetId(resp), resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
 
-	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, utils.GetId(resp)); err != nil {
+	if err = utils2.WaitForRequest(c, waiter.RequestInterrogator, utils2.GetId(resp)); err != nil {
 		return err
 	}
 
@@ -340,7 +340,7 @@ func RunK8sClusterCreate(c *core.CommandConfig) error {
 			return fmt.Errorf("error getting new K8s Cluster id")
 		}
 
-		if err = utils.WaitForState(c, waiter.K8sClusterStateInterrogator, *id); err != nil {
+		if err = utils2.WaitForState(c, waiter.K8sClusterStateInterrogator, *id); err != nil {
 			return err
 		}
 
@@ -386,15 +386,15 @@ func RunK8sClusterUpdate(c *core.CommandConfig) error {
 		"Updating K8s cluster with ID: %v...", viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))))
 
 	k8sUpd, resp, err := c.CloudApiV6Services.K8s().UpdateCluster(viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)), newCluster, queryParams)
-	if resp != nil && utils.GetId(resp) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, utils.GetId(resp), resp.RequestTime))
+	if resp != nil && utils2.GetId(resp) != "" {
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, utils2.GetId(resp), resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
 
 	if viper.GetBool(core.GetFlagName(c.NS, constants.ArgWaitForState)) {
-		if err = utils.WaitForState(c, waiter.K8sClusterStateInterrogator, viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))); err != nil {
+		if err = utils2.WaitForState(c, waiter.K8sClusterStateInterrogator, viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))); err != nil {
 			return err
 		}
 		if k8sUpd, _, err = c.CloudApiV6Services.K8s().GetCluster(viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)), queryParams); err != nil {
@@ -444,14 +444,14 @@ func RunK8sClusterDelete(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Starting deleting K8s cluster with id: %v...", k8sClusterId))
 
 	resp, err := c.CloudApiV6Services.K8s().DeleteCluster(k8sClusterId, queryParams)
-	if resp != nil && utils.GetId(resp) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, utils.GetId(resp), resp.RequestTime))
+	if resp != nil && utils2.GetId(resp) != "" {
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, utils2.GetId(resp), resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
 
-	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, utils.GetId(resp)); err != nil {
+	if err = utils2.WaitForRequest(c, waiter.RequestInterrogator, utils2.GetId(resp)); err != nil {
 		return err
 	}
 
@@ -637,8 +637,8 @@ func DeleteAllK8sClusters(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Starting deleting K8sCluster with id: %v...", *id))
 
 		resp, err = c.CloudApiV6Services.K8s().DeleteCluster(*id, queryParams)
-		if resp != nil && utils.GetId(resp) != "" {
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, utils.GetId(resp), resp.RequestTime))
+		if resp != nil && utils2.GetId(resp) != "" {
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, utils2.GetId(resp), resp.RequestTime))
 		}
 		if err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
@@ -647,7 +647,7 @@ func DeleteAllK8sClusters(c *core.CommandConfig) error {
 
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput(constants.MessageDeletingAll, c.Resource, *id))
 
-		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, utils.GetId(resp)); err != nil {
+		if err = utils2.WaitForRequest(c, waiter.RequestInterrogator, utils2.GetId(resp)); err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *id, err))
 			continue
 		}

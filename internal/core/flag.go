@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/gofrs/uuid/v5"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/spf13/viper"
 )
 

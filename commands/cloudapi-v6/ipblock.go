@@ -8,13 +8,13 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
-	"github.com/ionos-cloud/ionosctl/v6/internal/jsonpaths"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
+	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	utils2 "github.com/ionos-cloud/ionosctl/v6/internal/utils"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
 	"github.com/spf13/cobra"
@@ -272,14 +272,14 @@ func RunIpBlockCreate(c *core.CommandConfig) error {
 		"Properties set for creating the Ip block: Name: %v, Location: %v, Size: %v", name, loc, size))
 
 	i, resp, err := c.CloudApiV6Services.IpBlocks().Create(name, loc, size, queryParams)
-	if resp != nil && utils.GetId(resp) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, utils.GetId(resp), resp.RequestTime))
+	if resp != nil && utils2.GetId(resp) != "" {
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, utils2.GetId(resp), resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
 
-	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, utils.GetId(resp)); err != nil {
+	if err = utils2.WaitForRequest(c, waiter.RequestInterrogator, utils2.GetId(resp)); err != nil {
 		return err
 	}
 
@@ -312,14 +312,14 @@ func RunIpBlockUpdate(c *core.CommandConfig) error {
 	}
 
 	i, resp, err := c.CloudApiV6Services.IpBlocks().Update(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgIpBlockId)), input, queryParams)
-	if resp != nil && utils.GetId(resp) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, utils.GetId(resp), resp.RequestTime))
+	if resp != nil && utils2.GetId(resp) != "" {
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, utils2.GetId(resp), resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
 
-	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, utils.GetId(resp)); err != nil {
+	if err = utils2.WaitForRequest(c, waiter.RequestInterrogator, utils2.GetId(resp)); err != nil {
 		return err
 	}
 
@@ -360,14 +360,14 @@ func RunIpBlockDelete(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Starting deleting Ip block with ID: %v...", ipBlockId))
 
 	resp, err := c.CloudApiV6Services.IpBlocks().Delete(ipBlockId, queryParams)
-	if resp != nil && utils.GetId(resp) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, utils.GetId(resp), resp.RequestTime))
+	if resp != nil && utils2.GetId(resp) != "" {
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, utils2.GetId(resp), resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
 
-	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, utils.GetId(resp)); err != nil {
+	if err = utils2.WaitForRequest(c, waiter.RequestInterrogator, utils2.GetId(resp)); err != nil {
 		return err
 	}
 
@@ -432,8 +432,8 @@ func DeleteAllIpBlocks(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Starting deleting IpBlock with id: %v...", *id))
 
 		resp, err = c.CloudApiV6Services.IpBlocks().Delete(*id, queryParams)
-		if resp != nil && utils.GetId(resp) != "" {
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, utils.GetId(resp), resp.RequestTime))
+		if resp != nil && utils2.GetId(resp) != "" {
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, utils2.GetId(resp), resp.RequestTime))
 		}
 		if err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
@@ -442,7 +442,7 @@ func DeleteAllIpBlocks(c *core.CommandConfig) error {
 
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput(constants.MessageDeletingAll, c.Resource, *id))
 
-		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, utils.GetId(resp)); err != nil {
+		if err = utils2.WaitForRequest(c, waiter.RequestInterrogator, utils2.GetId(resp)); err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *id, err))
 			continue
 		}

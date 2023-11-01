@@ -9,8 +9,8 @@ import (
 	"time"
 
 	"github.com/golang/mock/gomock"
+	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 
-	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	cloudapiv6resources "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
 	dbaaspg "github.com/ionos-cloud/ionosctl/v6/services/dbaas-postgres"

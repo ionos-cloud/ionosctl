@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 )
 
 func RegNamesCmd() *core.Command {

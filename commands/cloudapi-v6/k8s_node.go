@@ -8,13 +8,13 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
-	"github.com/ionos-cloud/ionosctl/v6/internal/jsonpaths"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
+	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	utils2 "github.com/ionos-cloud/ionosctl/v6/internal/utils"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -253,7 +253,7 @@ func RunK8sNodeGet(c *core.CommandConfig) error {
 	}
 
 	queryParams := listQueryParams.QueryParams
-	if err := utils.WaitForState(c, waiter.K8sNodeStateInterrogator, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sNodeId))); err != nil {
+	if err := utils2.WaitForState(c, waiter.K8sNodeStateInterrogator, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sNodeId))); err != nil {
 		return err
 	}
 
@@ -309,8 +309,8 @@ func RunK8sNodeRecreate(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Recreating Node..."))
 
 	resp, err := c.CloudApiV6Services.K8s().RecreateNode(k8sClusterId, k8sNodePoolId, k8sNodeId, queryParams)
-	if resp != nil && utils.GetId(resp) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, utils.GetId(resp), resp.RequestTime))
+	if resp != nil && utils2.GetId(resp) != "" {
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, utils2.GetId(resp), resp.RequestTime))
 	}
 	if err != nil {
 		return err
@@ -348,8 +348,8 @@ func RunK8sNodeDelete(c *core.CommandConfig) error {
 		"Starting deleting Node with ID: %v from K8s NodePool ID: %v from K8s Cluster ID: %v...", nodeId, nodepoolId, clusterId))
 
 	resp, err := c.CloudApiV6Services.K8s().DeleteNode(clusterId, nodepoolId, nodeId, queryParams)
-	if resp != nil && utils.GetId(resp) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, utils.GetId(resp), resp.RequestTime))
+	if resp != nil && utils2.GetId(resp) != "" {
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, utils2.GetId(resp), resp.RequestTime))
 	}
 	if err != nil {
 		return err
@@ -422,8 +422,8 @@ func DeleteAllK8sNodes(c *core.CommandConfig) error {
 			"Staring deleting Node with ID: %v from K8s NodePool ID: %v from K8s Cluster ID: %v...", *id, nodepoolId, clusterId))
 
 		resp, err = c.CloudApiV6Services.K8s().DeleteNode(clusterId, nodepoolId, *id, queryParams)
-		if resp != nil && utils.GetId(resp) != "" {
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, utils.GetId(resp), resp.RequestTime))
+		if resp != nil && utils2.GetId(resp) != "" {
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, utils2.GetId(resp), resp.RequestTime))
 		}
 		if err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
@@ -432,7 +432,7 @@ func DeleteAllK8sNodes(c *core.CommandConfig) error {
 
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput(constants.MessageDeletingAll, c.Resource, *id))
 
-		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, utils.GetId(resp)); err != nil {
+		if err = utils2.WaitForRequest(c, waiter.RequestInterrogator, utils2.GetId(resp)); err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *id, err))
 			continue
 

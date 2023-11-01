@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
+	"github.com/ionos-cloud/ionosctl/v6/internal/config"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 )
 

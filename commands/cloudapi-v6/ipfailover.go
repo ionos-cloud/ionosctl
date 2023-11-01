@@ -4,17 +4,16 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
-	"github.com/ionos-cloud/ionosctl/v6/internal/confirm"
-	"github.com/ionos-cloud/ionosctl/v6/internal/jsonpaths"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
-
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
+	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	utils2 "github.com/ionos-cloud/ionosctl/v6/internal/utils"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/utils"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
@@ -241,14 +240,14 @@ func RunIpFailoverAdd(c *core.CommandConfig) error {
 
 	ipsFailovers := make([]ionoscloud.IPFailover, 0)
 	lanUpdated, resp, err := c.CloudApiV6Services.Lans().Update(dcId, lanId, getIpFailoverInfo(c), queryParams)
-	if resp != nil && utils.GetId(resp) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, utils.GetId(resp), resp.RequestTime))
+	if resp != nil && utils2.GetId(resp) != "" {
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, utils2.GetId(resp), resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
 
-	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, utils.GetId(resp)); err != nil {
+	if err = utils2.WaitForRequest(c, waiter.RequestInterrogator, utils2.GetId(resp)); err != nil {
 		return err
 	}
 
@@ -320,14 +319,14 @@ func RunIpFailoverRemove(c *core.CommandConfig) error {
 	}
 
 	_, resp, err := c.CloudApiV6Services.Lans().Update(dcId, lanId, removeIpFailoverInfo(c, ipfailovers), queryParams)
-	if resp != nil && utils.GetId(resp) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, utils.GetId(resp), resp.RequestTime))
+	if resp != nil && utils2.GetId(resp) != "" {
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, utils2.GetId(resp), resp.RequestTime))
 	}
 	if err != nil {
 		return err
 	}
 
-	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, utils.GetId(resp)); err != nil {
+	if err = utils2.WaitForRequest(c, waiter.RequestInterrogator, utils2.GetId(resp)); err != nil {
 		return err
 	}
 
@@ -402,14 +401,14 @@ func RemoveAllIpFailovers(c *core.CommandConfig) error {
 		if ipfailovers, ok := properties.GetIpFailoverOk(); ok && ipfailovers != nil {
 			_, resp, err = c.CloudApiV6Services.Lans().Update(dcId, lanId, lanProperties, queryParams)
 			if resp != nil {
-				fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Request Id: %v", utils.GetId(resp)))
+				fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Request Id: %v", utils2.GetId(resp)))
 				fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
 			}
 			if err != nil {
 				return err
 			}
 
-			if err = utils.WaitForRequest(c, waiter.RequestInterrogator, utils.GetId(resp)); err != nil {
+			if err = utils2.WaitForRequest(c, waiter.RequestInterrogator, utils2.GetId(resp)); err != nil {
 				return err
 			}
 		}

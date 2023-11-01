@@ -5,11 +5,10 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/ionos-cloud/ionosctl/v6/internal/jwt"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/config"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
-
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/internal/config"
+	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
+	"github.com/ionos-cloud/ionosctl/v6/internal/jwt"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 )
 

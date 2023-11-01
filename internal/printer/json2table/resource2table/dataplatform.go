@@ -3,10 +3,10 @@ package resource2table
 import (
 	"fmt"
 
-	"github.com/ionos-cloud/ionosctl/v6/internal/jsonpaths"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/convbytes"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/json2table"
-	"github.com/ionos-cloud/sdk-go-dataplatform"
+	ionoscloud "github.com/ionos-cloud/sdk-go-dataplatform"
 )
 
 func ConvertDataplatformClusterToTable(cluster ionoscloud.ClusterResponseData) ([]map[string]interface{}, error) {

@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/ionos-cloud/ionosctl/v6/internal/pointer"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/completions"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/json2table"
+	"github.com/ionos-cloud/ionosctl/v6/internal/completions"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/pointer"
 	"github.com/stretchr/testify/assert"
 )
 

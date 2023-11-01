@@ -8,8 +8,8 @@ import (
 	"strings"
 	"text/tabwriter"
 
-	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/json2table"
+	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table"
 	"github.com/itchyny/gojq"
 	"github.com/spf13/viper"
 )

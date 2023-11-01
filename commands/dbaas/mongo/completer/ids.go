@@ -6,8 +6,8 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/convbytes"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 
-	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
 	sdkgo "github.com/ionos-cloud/sdk-go-dbaas-mongo"
 )
 

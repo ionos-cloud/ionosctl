@@ -10,11 +10,11 @@ import (
 	"time"
 
 	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 
 	"github.com/cilium/fake"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/cluster"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/user"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	sdkcompute "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"

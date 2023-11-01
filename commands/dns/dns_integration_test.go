@@ -14,13 +14,13 @@ import (
 	"time"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dns/record"
-	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
+	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 	dns "github.com/ionos-cloud/sdk-go-dns"
 
 	"github.com/cilium/fake"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dns/zone"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )

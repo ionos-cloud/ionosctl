@@ -10,9 +10,8 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/ionos-cloud/ionosctl/v6/internal/die"
-
-	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
+	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/die"
 
 	"github.com/spf13/viper"
 )

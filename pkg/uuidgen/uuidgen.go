@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/gofrs/uuid/v5"
-	"github.com/ionos-cloud/ionosctl/v6/internal/die"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/die"
 )
 
 const ns = "github.com/ionos-cloud/ionosctl"

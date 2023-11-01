@@ -6,7 +6,7 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
+	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/services/dbaas-postgres/resources"
 	sdkgo "github.com/ionos-cloud/sdk-go-dbaas-postgres"

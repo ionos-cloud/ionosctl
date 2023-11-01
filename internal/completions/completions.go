@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 )
 
 type completionInfo struct {

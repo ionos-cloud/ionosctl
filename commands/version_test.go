@@ -6,7 +6,7 @@ import (
 	"regexp"
 	"testing"
 
-	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
+	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"

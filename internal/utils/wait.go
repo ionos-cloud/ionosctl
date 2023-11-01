@@ -6,9 +6,9 @@ import (
 	"time"
 
 	"github.com/cheggaaa/pb/v3"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
+	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	core2 "github.com/ionos-cloud/ionosctl/v6/pkg/core"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
 	"github.com/spf13/viper"
 )
 

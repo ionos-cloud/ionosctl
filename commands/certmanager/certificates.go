@@ -4,8 +4,7 @@ import (
 	"context"
 
 	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"
-
-	"github.com/ionos-cloud/ionosctl/v6/internal/functional"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 
 	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
 	"github.com/ionos-cloud/ionosctl/v6/services/certmanager/resources"

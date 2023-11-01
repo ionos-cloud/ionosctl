@@ -5,7 +5,7 @@ import (
 	"math"
 	"testing"
 
-	"github.com/ionos-cloud/ionosctl/v6/pkg/json2table"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table"
 	"github.com/stretchr/testify/assert"
 )
 
