@@ -15,9 +15,9 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/resource2table"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
-	utils2 "github.com/ionos-cloud/ionosctl/v6/internal/utils"
 	"github.com/ionos-cloud/ionosctl/v6/internal/waitfor"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/convbytes"
 	cloudapiv6resources "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
 	dbaaspg "github.com/ionos-cloud/ionosctl/v6/services/dbaas-postgres"
 	"github.com/ionos-cloud/ionosctl/v6/services/dbaas-postgres/resources"
@@ -652,20 +652,16 @@ func getCreateClusterRequest(c *core.CommandConfig) (*resources.CreateClusterReq
 	input.SetCores(cpuCoreCount)
 
 	// Convert Ram
-	size, err := utils2.ConvertSize(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgRam)), utils2.MegaBytes)
-	if err != nil {
-		return nil, err
-	}
+	size := convbytes.StrToUnit(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgRam)), convbytes.MB)
 	input.SetRam(int32(size))
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Ram: %v[MB]", int32(size)))
 
 	// Convert StorageSize
-	storageSize, err := utils2.ConvertSize(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgStorageSize)), utils2.MegaBytes)
-	if err != nil {
-		return nil, err
-	}
+	storageSize := convbytes.StrToUnit(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgStorageSize)), convbytes.MB)
 	input.SetStorageSize(int32(storageSize))
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("StorageSize: %v[MB]", int32(storageSize)))
+
+	// Storage Type
 	storageType := strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgStorageType)))
 	if storageType == "SSD_PREMIUM" || storageType == "SSD PREMIUM" {
 		storageType = string(sdkgo.SSD_PREMIUM)
@@ -796,22 +792,14 @@ func getPatchClusterRequest(c *core.CommandConfig) (*resources.PatchClusterReque
 
 	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgRam)) {
 		// Convert Ram
-		size, err := utils2.ConvertSize(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgRam)), utils2.MegaBytes)
-		if err != nil {
-			return nil, err
-		}
-
+		size := convbytes.StrToUnit(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgRam)), convbytes.MB)
 		input.SetRam(int32(size))
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Ram: %vMB", int32(size)))
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgStorageSize)) {
 		// Convert StorageSize
-		storageSize, err := utils2.ConvertSize(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgStorageSize)), utils2.MegaBytes)
-		if err != nil {
-			return nil, err
-		}
-
+		storageSize := convbytes.StrToUnit(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgStorageSize)), convbytes.MB)
 		input.SetStorageSize(int32(storageSize))
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("StorageSize: %vMB", storageSize))
 	}

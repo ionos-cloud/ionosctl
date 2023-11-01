@@ -19,9 +19,9 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/internal/request"
-	utils2 "github.com/ionos-cloud/ionosctl/v6/internal/utils"
 	"github.com/ionos-cloud/ionosctl/v6/internal/waitfor"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/convbytes"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
@@ -624,12 +624,8 @@ func RunServerListAll(c *core.CommandConfig) error {
 			filters := *listQueryParams.Filters
 
 			if val, ok := filters["ram"]; ok {
-				convertedSize, err := utils2.ConvertSize(val[0], utils2.MegaBytes)
-				if err != nil {
-					return err
-				}
-
-				filters["ram"] = []string{strconv.Itoa(convertedSize)}
+				convertedSize := convbytes.StrToUnit(val[0], convbytes.MB)
+				filters["ram"] = []string{strconv.FormatInt(convertedSize, 10)}
 				listQueryParams.Filters = &filters
 			}
 		}
@@ -706,12 +702,8 @@ func RunServerList(c *core.CommandConfig) error {
 			filters := *listQueryParams.Filters
 
 			if val, ok := filters["ram"]; ok {
-				convertedSize, err := utils2.ConvertSize(val[0], utils2.MegaBytes)
-				if err != nil {
-					return err
-				}
-
-				filters["ram"] = []string{strconv.Itoa(convertedSize)}
+				convertedSize := convbytes.StrToUnit(val[0], convbytes.MB)
+				filters["ram"] = []string{strconv.FormatInt(convertedSize, 10)}
 				listQueryParams.Filters = &filters
 			}
 		}
@@ -1160,15 +1152,11 @@ func getUpdateServerInfo(c *core.CommandConfig) (*resources.ServerProperties, er
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagRam)) {
-		size, err := utils2.ConvertSize(
+		size := convbytes.StrToUnit(
 			viper.GetString(core.GetFlagName(c.NS, constants.FlagRam)),
-			utils2.MegaBytes,
+			convbytes.MB,
 		)
-		if err != nil {
-			return nil, err
-		}
 		input.SetRam(int32(size))
-
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property Ram set: %vMB ", int32(size)))
 	}
 
@@ -1234,16 +1222,12 @@ func getNewServer(c *core.CommandConfig) (*resources.Server, error) {
 		}
 
 		if viper.IsSet(core.GetFlagName(c.NS, constants.FlagRam)) {
-			size, err := utils2.ConvertSize(
-				viper.GetString(core.GetFlagName(c.NS, constants.FlagRam)),
-				utils2.MegaBytes,
-			)
-			if err != nil {
-				return nil, err
+			sizeStr := viper.GetString(core.GetFlagName(c.NS, constants.FlagRam))
+			size, ok := convbytes.StrToUnitOk(sizeStr, convbytes.MB)
+			if !ok {
+				return nil, fmt.Errorf("invalid size format: %s", sizeStr)
 			}
-
 			input.SetRam(int32(size))
-
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property Ram set: %vMB", int32(size)))
 		}
 	}
@@ -1265,13 +1249,10 @@ func getNewServer(c *core.CommandConfig) (*resources.Server, error) {
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property Cores set: %v", cores))
 		}
 		if viper.IsSet(core.GetFlagName(c.NS, constants.FlagRam)) {
-			size, err := utils2.ConvertSize(
+			size := convbytes.StrToUnit(
 				viper.GetString(core.GetFlagName(c.NS, constants.FlagRam)),
-				utils2.MegaBytes,
+				convbytes.MB,
 			)
-			if err != nil {
-				return nil, err
-			}
 
 			input.SetRam(int32(size))
 

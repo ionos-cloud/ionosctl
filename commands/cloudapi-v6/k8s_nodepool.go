@@ -13,9 +13,9 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/internal/request"
-	utils2 "github.com/ionos-cloud/ionosctl/v6/internal/utils"
 	"github.com/ionos-cloud/ionosctl/v6/internal/waitfor"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/convbytes"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
@@ -388,12 +388,8 @@ func RunK8sNodePoolList(c *core.CommandConfig) error {
 			filters := *listQueryParams.Filters
 
 			if val, ok := filters["ramSize"]; ok {
-				convertedSize, err := utils2.ConvertSize(val[0], utils2.MegaBytes)
-				if err != nil {
-					return err
-				}
-
-				filters["ramSize"] = []string{strconv.Itoa(convertedSize)}
+				convertedSize := convbytes.StrToUnit(val[0], convbytes.MB)
+				filters["ramSize"] = []string{strconv.FormatInt(convertedSize, 10)}
 				listQueryParams.Filters = &filters
 			}
 		}
@@ -621,15 +617,11 @@ func getNewK8sNodePool(c *core.CommandConfig) (*resources.K8sNodePoolForPost, er
 		}
 	}
 
-	ramSize, err := utils2.ConvertSize(viper.GetString(core.GetFlagName(c.NS, constants.FlagRam)), utils2.MegaBytes)
-	if err != nil {
-		return nil, err
-	}
+	ramSizeStr := viper.GetString(core.GetFlagName(c.NS, constants.FlagRam))
+	ramSize := convbytes.StrToUnit(ramSizeStr, convbytes.MB)
 
-	storageSize, err := utils2.ConvertSize(viper.GetString(core.GetFlagName(c.NS, constants.FlagStorageSize)), utils2.GigaBytes)
-	if err != nil {
-		return nil, err
-	}
+	storageSizeStr := viper.GetString(core.GetFlagName(c.NS, constants.FlagStorageSize))
+	storageSize := convbytes.StrToUnit(storageSizeStr, convbytes.GB)
 
 	name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
 	nodeCount := viper.GetInt32(core.GetFlagName(c.NS, constants.FlagNodeCount))

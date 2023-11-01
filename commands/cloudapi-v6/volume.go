@@ -22,6 +22,7 @@ import (
 	utils2 "github.com/ionos-cloud/ionosctl/v6/internal/utils"
 	"github.com/ionos-cloud/ionosctl/v6/internal/waitfor"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/convbytes"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
@@ -417,12 +418,8 @@ func RunVolumeList(c *core.CommandConfig) error {
 			filters := *listQueryParams.Filters
 
 			if val, ok := filters["size"]; ok {
-				convertedSize, err := utils2.ConvertSize(val[0], utils2.GigaBytes)
-				if err != nil {
-					return err
-				}
-
-				filters["size"] = []string{strconv.Itoa(convertedSize)}
+				convertedSize := convbytes.StrToUnit(val[0], convbytes.GB)
+				filters["size"] = []string{strconv.FormatInt(convertedSize, 10)}
 				listQueryParams.Filters = &filters
 			}
 		}
@@ -618,14 +615,10 @@ func getNewVolume(c *core.CommandConfig) (*resources.Volume, error) {
 		"Properties set for creating the Volume: Name: %v, Bus: %v, VolumeType: %v, AvailabilityZone: %v",
 		name, bus, volumeType, availabilityZone))
 
-	size, err := utils2.ConvertSize(
+	size := convbytes.StrToUnit(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSize)),
-		utils2.GigaBytes,
+		convbytes.GB,
 	)
-	if err != nil {
-		return nil, err
-	}
-
 	proper.SetSize(float32(size))
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property Size set: %vGB", float32(size)))
@@ -757,14 +750,10 @@ func getVolumeInfo(c *core.CommandConfig) (*resources.VolumeProperties, error) {
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgSize)) {
-		size, err := utils2.ConvertSize(
+		size := convbytes.StrToUnit(
 			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSize)),
-			utils2.GigaBytes,
+			convbytes.GB,
 		)
-		if err != nil {
-			return nil, err
-		}
-
 		input.SetSize(float32(size))
 
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property Size set: %vGB", float32(size)))
@@ -1148,12 +1137,8 @@ func RunServerVolumesList(c *core.CommandConfig) error {
 			filters := *listQueryParams.Filters
 
 			if val, ok := filters["size"]; ok {
-				convertedSize, err := utils2.ConvertSize(val[0], utils2.GigaBytes)
-				if err != nil {
-					return err
-				}
-
-				filters["size"] = []string{strconv.Itoa(convertedSize)}
+				convertedSize := convbytes.StrToUnit(val[0], convbytes.GB)
+				filters["size"] = []string{strconv.FormatInt(convertedSize, 10)}
 				listQueryParams.Filters = &filters
 			}
 		}
