@@ -1,4 +1,4 @@
-package group
+package server
 
 import (
 	"context"
@@ -12,21 +12,17 @@ import (
 	"github.com/spf13/viper"
 )
 
-func GroupDeleteCmd() *core.Command {
+func List() *core.Command {
 	cmd := core.NewCommand(context.Background(), nil, core.CommandBuilder{
 		Namespace: "vm-autoscaling",
-		Resource:  "groups",
-		Verb:      "delete",
-		Aliases:   []string{"d", "del", "rm"},
-		ShortDesc: "Delete VM Autoscaling Groups",
-		Example: fmt.Sprintf("ionosctl vm-autoscaling group delete (%s|--%s)",
+		Resource:  "server",
+		Verb:      "list",
+		Aliases:   []string{"l", "ls"},
+		ShortDesc: "List VM Autoscaling Servers",
+		Example: fmt.Sprintf(`ionosctl vm-autoscaling server list %s
+ionosctl vm-autoscaling server list %s`,
 			core.FlagUsage(constants.FlagGroupId), core.FlagUsage(constants.ArgAll)),
-		PreCmdRun: func(c *core.PreCommandConfig) error {
-			return core.CheckRequiredFlagsSets(c.Command, c.NS,
-				[]string{constants.FlagGroupId},
-				[]string{constants.ArgAll},
-			)
-		},
+		PreCmdRun: core.NoPreRun,
 		CmdRun: func(c *core.CommandConfig) error {
 			ls, _, err := client.Must().VMAscClient.GroupsGet(context.Background()).
 				Depth(float32(viper.GetFloat64(core.GetFlagName(c.NS, constants.ArgDepth)))).Execute()
@@ -46,6 +42,9 @@ func GroupDeleteCmd() *core.Command {
 			return nil
 		},
 	})
+
+	cmd.AddInt32Flag(constants.ArgDepth, constants.ArgDepthShort, 1, "Controls the detail depth of the response objects")
+	cmd.AddInt32Flag(ArgG, constants.ArgDepthShort, 1, "Controls the detail depth of the response objects")
 
 	return cmd
 }
