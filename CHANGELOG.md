@@ -10,6 +10,7 @@
 ## Fixed
 - Fixed `backupunit list` columns
 - Fixed `backupunit get-sso-url` characters being treated as format placeholders
+- Fixed various json paths (for certain columns extraction) for `user`, `location`, `nic`, `k8s cluster`
 
 ## [v6.7.1] (October 2023)
 
