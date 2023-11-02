@@ -256,7 +256,7 @@ var (
 		"LocationId":   "id",
 		"Name":         "properties.name",
 		"Features":     "properties.features",
-		"CpuFamily":    "properties.cpuFamily",
+		"CpuFamily":    "properties.cpuArchitecture.*.cpuFamily",
 		"ImageAliases": "properties.imageAliases",
 	}
 
@@ -327,7 +327,7 @@ var (
 		"FirewallActive": "properties.firewallActive",
 		"FirewallType":   "properties.firewallType",
 		"Mac":            "properties.mac",
-		"State":          "metadata.statue",
+		"State":          "metadata.state",
 		"DeviceNumber":   "properties.deviceNumber",
 		"PciSlot":        "properties.pciSlot",
 		"IPv6Ips":        "properties.ipv6Ips",
@@ -435,7 +435,7 @@ var (
 		"ForceSecAuth":      "properties.forceSecAuth",
 		"SecAuthActive":     "properties.secAuthActive",
 		"S3CanonicalUserId": "properties.s3CanonicalUserId",
-		"Active":            "propeties.active",
+		"Active":            "properties.active",
 	}
 
 	Volume = map[string]string{
