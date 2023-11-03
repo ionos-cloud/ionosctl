@@ -17,7 +17,6 @@ require (
 	github.com/ionos-cloud/sdk-go-dbaas-postgres v1.1.1
 	github.com/ionos-cloud/sdk-go-dns v1.1.1
 	github.com/ionos-cloud/sdk-go/v6 v6.1.11
-	github.com/ionos-cloud/sdk-go-vmautoscaling v0.0.0-00010101000000-000000000000
 	github.com/itchyny/gojq v0.12.13
 	github.com/kardianos/ftps v1.0.3
 	github.com/mitchellh/go-homedir v1.1.0
@@ -31,6 +30,8 @@ require (
 	golang.org/x/sync v0.3.0
 	golang.org/x/term v0.15.0
 )
+
+require github.com/ionos-cloud/sdk-go-vm-autoscaling v1.0.0
 
 require (
 	github.com/Jeffail/gabs/v2 v2.7.0
@@ -78,5 +79,3 @@ require (
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
-
-replace github.com/ionos-cloud/sdk-go-vmautoscaling => ./commands/vm-autoscaling/temp-sdk-dir

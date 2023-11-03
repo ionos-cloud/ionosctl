@@ -80,6 +80,7 @@ github.com/ionos-cloud/sdk-go-dbaas-postgres
 github.com/ionos-cloud/sdk-go-dns
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 # github.com/ionos-cloud/sdk-go-logging v1.0.1
 ## explicit; go 1.18
 github.com/ionos-cloud/sdk-go-logging
@@ -94,6 +95,11 @@ github.com/ionos-cloud/sdk-go-logging
 ## explicit; go 1.18
 github.com/ionos-cloud/sdk-go-vmautoscaling
 >>>>>>> 0026e439 (feat: add vmasc import)
+=======
+# github.com/ionos-cloud/sdk-go-vm-autoscaling v1.0.0
+## explicit; go 1.18
+github.com/ionos-cloud/sdk-go-vm-autoscaling
+>>>>>>> 0fe84d9b (feat: use released sdk)
 # github.com/ionos-cloud/sdk-go/v6 v6.1.8
 >>>>>>> 54fd3dd1 (feat: add vmasc import)
 ## explicit; go 1.19
@@ -264,4 +270,3 @@ gopkg.in/ini.v1
 # gopkg.in/yaml.v3 v3.0.1
 ## explicit
 gopkg.in/yaml.v3
-# github.com/ionos-cloud/sdk-go-vmautoscaling => ./commands/vm-autoscaling/temp-sdk-dir

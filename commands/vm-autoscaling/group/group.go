@@ -8,7 +8,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
-	vmasc "github.com/ionos-cloud/sdk-go-vmautoscaling"
+	vmasc "github.com/ionos-cloud/sdk-go-vm-autoscaling"
 	"github.com/spf13/cobra"
 )
 

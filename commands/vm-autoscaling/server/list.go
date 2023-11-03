@@ -10,7 +10,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
-	vmasc "github.com/ionos-cloud/sdk-go-vmautoscaling"
+	vmasc "github.com/ionos-cloud/sdk-go-vm-autoscaling"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )

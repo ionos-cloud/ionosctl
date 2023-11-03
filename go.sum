@@ -263,6 +263,8 @@ github.com/ionos-cloud/sdk-go-logging v1.0.1 h1:MB9jPoBUL3mZ+ois7kXYy67x0FopAw2a
 github.com/ionos-cloud/sdk-go-logging v1.0.1/go.mod h1:P2JQJpUgH3ZyfyJmv6jMwcB1NJIVVZSL+/bllhWpwc8=
 github.com/ionos-cloud/sdk-go/v6 v6.1.11 h1:J/uRN4UWO3wCyGOeDdMKv8LWRzKu6UIkLEaes38Kzh8=
 github.com/ionos-cloud/sdk-go/v6 v6.1.11/go.mod h1:EzEgRIDxBELvfoa/uBN0kOQaqovLjUWEB7iW4/Q+t4k=
+github.com/ionos-cloud/sdk-go/v6 v6.1.8 h1:493wE/BkZxJf7x79UCE0cYGPZoqQcPiEBALvt7uVGY0=
+github.com/ionos-cloud/sdk-go/v6 v6.1.8/go.mod h1:EzEgRIDxBELvfoa/uBN0kOQaqovLjUWEB7iW4/Q+t4k=
 github.com/ionoscloudsdk/comptplus v1.0.4 h1:1kq+lY17BZCiKLuR1gTJPVBYd1ro9Dqi0C24YKdE74M=
 github.com/ionoscloudsdk/comptplus v1.0.4/go.mod h1:ewCQmBfNTnYBFoQ/2+gTrxRlDNFOMreojByy/LDuyj4=
 github.com/itchyny/gojq v0.12.13 h1:IxyYlHYIlspQHHTE0f3cJF0NKDMfajxViuhBLnHd/QU=
