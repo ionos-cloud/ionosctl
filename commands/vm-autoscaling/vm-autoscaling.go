@@ -1,6 +1,7 @@
 package vm_autoscaling
 
 import (
+	"github.com/ionos-cloud/ionosctl/v6/commands/vm-autoscaling/action"
 	"github.com/ionos-cloud/ionosctl/v6/commands/vm-autoscaling/group"
 	"github.com/ionos-cloud/ionosctl/v6/commands/vm-autoscaling/server"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
@@ -19,6 +20,7 @@ func Root() *core.Command {
 
 	cmd.AddCommand(group.Root())
 	cmd.AddCommand(server.Root())
+	cmd.AddCommand(action.Root())
 
 	return cmd
 }

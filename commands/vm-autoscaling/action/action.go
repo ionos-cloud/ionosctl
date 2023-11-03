@@ -1,4 +1,4 @@
-package server
+package action
 
 import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
@@ -10,8 +10,8 @@ import (
 func Root() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "server",
-			Aliases:          []string{"s", "sv", "vm", "vms", "servers"},
+			Use:              "action",
+			Aliases:          []string{"act"},
 			Short:            "Autoscaling Servers Operations",
 			Long:             "The sub-commands of `ionosctl autoscaling server` allow you to manage the Autoscaling Servers under your account.",
 			TraverseChildren: true,
@@ -30,11 +30,11 @@ func Root() *core.Command {
 
 var (
 	allJSONPaths = map[string]string{
-		"ServerId": "id",
+		"ActionId": "id",
 	}
 
 	allCols = []string{
-		"ServerId",
+		"ActionId",
 	}
 
 	defaultCols = allCols
