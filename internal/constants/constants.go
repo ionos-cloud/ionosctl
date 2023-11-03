@@ -62,7 +62,8 @@ Within each layer, a token takes precedence over a username and password combina
 	FlagPriority    = "priority"
 	FlagType        = "type"
 
-	FlagCloudInit = "cloud-init"
+	FlagCloudInit         = "cloud-init"
+	FlagLoggingPipelineId = "pipeline-id"
 )
 
 // Flag descriptions. Prefixed with "Desc" for easy find and replace

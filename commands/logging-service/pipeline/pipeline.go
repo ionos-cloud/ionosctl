@@ -22,5 +22,7 @@ func PipelineCmd() *core.Command {
 	}
 
 	cmd.AddCommand(PipelineListCmd())
+	cmd.AddCommand(PipelineGetCmd())
+	cmd.AddCommand(PipelineDeleteCmd())
 	return cmd
 }

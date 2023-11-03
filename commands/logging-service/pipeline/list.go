@@ -4,8 +4,12 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	logsvc "github.com/ionos-cloud/sdk-go-logging"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 )
 
 func PipelineListCmd() *core.Command {
@@ -17,24 +21,31 @@ func PipelineListCmd() *core.Command {
 			Aliases:   []string{"ls"},
 			ShortDesc: "Retrieve logging pipelines",
 			Example:   "ionosctl logging-service pipeline list",
-			CmdRun:    run,
+			CmdRun:    runListCmd,
 		},
 	)
+	cmd.Command.Flags().StringSlice(constants.ArgCols, defaultCols, tabheaders.ColsMessage(defaultCols))
 
 	return cmd
 }
 
-func run(cmd *core.CommandConfig) error {
-	cfg := logsvc.NewConfigurationFromEnv()
-	cl := logsvc.NewAPIClient(cfg)
-	_, _, err := cl.PipelinesApi.PipelinesGet(context.Background()).Execute()
-	//_, _, err := client.Must().LoggingServiceClient.PipelinesApi.PipelinesGet(context.Background()).Execute()
-	// NOTE: why won't it work with Must() ????
+func runListCmd(c *core.CommandConfig) error {
+	pipelines, _, err := client.Must().LoggingServiceClient.PipelinesApi.PipelinesGet(context.Background()).Execute()
 	if err != nil {
 		return err
 	}
-	//client.Must()
 
-	fmt.Println("yey")
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+
+	out, err := jsontabwriter.GenerateOutput(
+		"items", jsonpaths.LoggingServicePipeline, pipelines,
+		tabheaders.GetHeaders(allCols, defaultCols, cols),
+	)
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+
 	return nil
 }

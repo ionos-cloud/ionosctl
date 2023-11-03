@@ -237,7 +237,9 @@ func addCommands() {
 
 		// If unset, manually set the flag to the new default. SIDE EFFECT: Now, this flag will always be considered "set", within DNS sub commands. Can't find a better alternative
 		command.Command.PersistentPreRun = func(cmd *cobra.Command, args []string) {
-			originalPreRun(cmd, args)
+			if originalPreRun != nil {
+				originalPreRun(cmd, args)
+			}
 
 			setVal := newDefault
 			if val, _ := cmd.Flags().GetString(constants.ArgServerUrl); val != "" {
