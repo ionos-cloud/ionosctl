@@ -22,10 +22,17 @@ func List() *core.Command {
 		Example: fmt.Sprintf(`ionosctl vm-autoscaling server list %s
 ionosctl vm-autoscaling server list %s`,
 			core.FlagUsage(constants.FlagGroupId), core.FlagUsage(constants.ArgAll)),
-		PreCmdRun: core.NoPreRun,
+		PreCmdRun: func(c *core.PreCommandConfig) error {
+			return core.CheckRequiredFlagsSets(c.Command, c.NS,
+				[]string{constants.FlagGroupId},
+				[]string{constants.ArgAll},
+			)
+		},
 		CmdRun: func(c *core.CommandConfig) error {
-			ls, _, err := client.Must().VMAscClient.GroupsGet(context.Background()).
-				Depth(float32(viper.GetFloat64(core.GetFlagName(c.NS, constants.ArgDepth)))).Execute()
+			ls, _, err := client.Must().VMAscClient.GroupsServersGet(context.Background(),
+				viper.GetString(core.GetFlagName(c.NS, constants.FlagGroupId))).
+				Depth(float32(viper.GetFloat64(core.GetFlagName(c.NS, constants.ArgDepth)))).
+				Execute()
 			if err != nil {
 				return err
 			}

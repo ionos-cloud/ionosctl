@@ -28,14 +28,14 @@ func GroupDeleteCmd() *core.Command {
 			)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			ls, _, err := client.Must().VMAscClient.GroupsGet(context.Background()).
-				Depth(float32(viper.GetFloat64(core.GetFlagName(c.NS, constants.ArgDepth)))).Execute()
+			group, err := client.Must().VMAscClient.GroupsDelete(context.Background(),
+				viper.GetString(core.GetFlagName(c.NS, constants.FlagGroupId))).Execute()
 			if err != nil {
 				return err
 			}
 
 			colsDesired := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
-			out, err := jsontabwriter.GenerateOutput("items", allJSONPaths, ls,
+			out, err := jsontabwriter.GenerateOutput("", allJSONPaths, group,
 				tabheaders.GetHeaders(allCols, defaultCols, colsDesired))
 			if err != nil {
 				return err
