@@ -3,7 +3,7 @@ package dataplatform
 import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/dataplatform/cluster"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dataplatform/nodepool"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/spf13/cobra"
 )
 

@@ -5,10 +5,10 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/ionos-cloud/ionosctl/v6/internal/die"
+	"github.com/ionos-cloud/ionosctl/v6/internal/core/doc"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/die"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/doc"
 )
 
 const (

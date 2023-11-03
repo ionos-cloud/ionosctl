@@ -18,11 +18,10 @@ import (
 	"time"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
-
-	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
 )
 
 // test values

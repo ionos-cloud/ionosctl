@@ -3,8 +3,8 @@ package logging_service
 import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/logging-service/pipeline"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
-	"github.com/ionos-cloud/ionosctl/v6/internal/die"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/internal/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/die"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )

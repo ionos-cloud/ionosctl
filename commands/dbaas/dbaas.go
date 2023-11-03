@@ -3,7 +3,7 @@ package dbaas
 import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/spf13/cobra"
 )
 

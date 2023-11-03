@@ -5,16 +5,16 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/ionos-cloud/ionosctl/v6/internal/jsonpaths"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	dns "github.com/ionos-cloud/sdk-go-dns"
 
 	"github.com/spf13/cobra"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/core"
+	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/spf13/viper"
 )
 
@@ -51,9 +51,9 @@ func ZonesGetCmd() *core.Command {
 			}
 
 			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-			//if err != nil {
+			// if err != nil {
 			//	return err
-			//}
+			// }
 
 			out, err := jsontabwriter.GenerateOutput("items", jsonpaths.DnsZone, ls,
 				tabheaders.GetHeadersAllDefault(allCols, cols))

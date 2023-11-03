@@ -14,7 +14,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/token"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/constants"
+	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	authservice "github.com/ionos-cloud/ionosctl/v6/services/auth-v1"
 	sdkgoauth "github.com/ionos-cloud/sdk-go-auth"
 	"github.com/spf13/viper"
