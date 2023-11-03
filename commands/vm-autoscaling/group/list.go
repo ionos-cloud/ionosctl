@@ -12,7 +12,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-func GroupListCmd() *core.Command {
+func List() *core.Command {
 	cmd := core.NewCommand(context.Background(), nil, core.CommandBuilder{
 		Namespace: "vm-autoscaling",
 		Resource:  "groups",

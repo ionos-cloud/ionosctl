@@ -14,7 +14,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-func GroupDeleteCmd() *core.Command {
+func Delete() *core.Command {
 	cmd := core.NewCommand(context.Background(), nil, core.CommandBuilder{
 		Namespace: "vm-autoscaling",
 		Resource:  "groups",

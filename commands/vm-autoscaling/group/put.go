@@ -13,13 +13,13 @@ import (
 	"github.com/spf13/viper"
 )
 
-func GroupCreateCmd() *core.Command {
+func Put() *core.Command {
 	var jsonStruct vmasc.GroupPost
 	cmd := core.NewCommandWithJsonProperties(context.Background(), nil, exampleJson, &jsonStruct, core.CommandBuilder{
 		Namespace: "vm-autoscaling",
 		Resource:  "groups",
-		Verb:      "create",
-		Aliases:   []string{"c"},
+		Verb:      "put",
+		Aliases:   []string{"create", "c"},
 		ShortDesc: "Create VM Autoscaling Groups",
 		Example: fmt.Sprintf("ionosctl vm-autoscaling group create %s",
 			core.FlagsUsage(constants.FlagJsonProperties)),
