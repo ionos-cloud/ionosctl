@@ -4,11 +4,14 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/ionos-cloud/ionosctl/v6/commands/vm-autoscaling/group"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	vmasc "github.com/ionos-cloud/sdk-go-vmautoscaling"
+	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
@@ -52,6 +55,12 @@ ionosctl vm-autoscaling server list %s`,
 
 	cmd.AddInt32Flag(constants.ArgDepth, constants.ArgDepthShort, 1, "Controls the detail depth of the response objects")
 	cmd.AddStringFlag(constants.FlagGroupId, constants.FlagIdShort, "", "ID of the autoscaling group to list servers from")
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		// get ID of all groups
+		return group.GroupsProperty(func(r vmasc.GroupResource) string {
+			return fmt.Sprintf(*r.Id) // + "\t" + *r.Properties.Name) // Commented because this SDK functionality currently broken
+		}), cobra.ShellCompDirectiveNoFileComp
+	})
 
 	return cmd
 }

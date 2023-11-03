@@ -9,6 +9,8 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	vmasc "github.com/ionos-cloud/sdk-go-vmautoscaling"
+	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
@@ -45,6 +47,14 @@ func GroupDeleteCmd() *core.Command {
 
 			return nil
 		},
+	})
+
+	cmd.AddStringFlag(constants.FlagGroupId, constants.FlagIdShort, "", "ID of the autoscaling group to list servers from")
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		// get ID of all groups
+		return GroupsProperty(func(r vmasc.GroupResource) string {
+			return fmt.Sprintf(*r.Id) // + "\t" + *r.Properties.Name) // Commented because this SDK functionality currently broken
+		}), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	return cmd
