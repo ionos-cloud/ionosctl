@@ -25,6 +25,7 @@ func LogsListCmd() *core.Command {
 			Aliases:   []string{"ls"},
 			ShortDesc: "Retrieve logging pipeline logs",
 			Example:   "ionosctl logging-service logs list --pipeline-id ID",
+			PreCmdRun: preRunListCmd,
 			CmdRun:    runListCmd,
 		},
 	)
@@ -44,10 +45,47 @@ func LogsListCmd() *core.Command {
 	return cmd
 }
 
+func preRunListCmd(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlagsSets(
+		c.Command, c.NS, []string{constants.ArgAll}, []string{constants.FlagLoggingPipelineId},
+	)
+}
+
 func runListCmd(c *core.CommandConfig) error {
 	if viper.IsSet(core.GetFlagName(c.NS, constants.ArgAll)) {
 		return listAll(c)
 	}
+
+	pipelineId, err := c.Command.Command.Flags().GetString(constants.FlagLoggingPipelineId)
+	if err != nil {
+		return err
+	}
+
+	pipeline, _, err := client.Must().LoggingServiceClient.PipelinesApi.PipelinesFindById(
+		context.Background(), pipelineId,
+	).Execute()
+	if err != nil {
+		return err
+	}
+
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+
+	logsConverted, err := resource2table.ConvertLoggingServicePipelineLogToTable(pipeline)
+	if err != nil {
+		return fmt.Errorf("could not convert Logging Service Pipeline Logs to table format: %w", err)
+	}
+
+	out, err := jsontabwriter.GenerateOutputPreconverted(
+		pipeline.Properties.Logs, logsConverted, tabheaders.GetHeaders(
+			allCols,
+			defaultCols, cols,
+		),
+	)
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
 
 	return nil
 }
