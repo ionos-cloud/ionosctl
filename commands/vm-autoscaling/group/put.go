@@ -29,6 +29,9 @@ func Put() *core.Command {
 			return core.CheckRequiredFlagsSets(c.Command, c.NS,
 				[]string{constants.FlagJsonProperties},
 				[]string{constants.FlagJsonPropertiesExample},
+				// The next two don't create any flag requirements, but helps the user see the update functionality of the put command
+				[]string{constants.FlagGroupId, constants.FlagJsonProperties},
+				[]string{constants.FlagGroupId, constants.FlagJsonPropertiesExample},
 			)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
