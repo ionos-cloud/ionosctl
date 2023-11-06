@@ -9,19 +9,21 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/uuidgen"
 	vmasc "github.com/ionos-cloud/sdk-go-vm-autoscaling"
+	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
 func Put() *core.Command {
-	var jsonStruct vmasc.GroupPost
+	var jsonStruct vmasc.GroupPut
 	cmd := core.NewCommandWithJsonProperties(context.Background(), nil, exampleJson, &jsonStruct, core.CommandBuilder{
 		Namespace: "vm-autoscaling",
 		Resource:  "groups",
 		Verb:      "put",
 		Aliases:   []string{"create", "c"},
-		ShortDesc: "Create VM Autoscaling Groups",
-		Example: fmt.Sprintf("ionosctl vm-autoscaling group create %s",
+		ShortDesc: "Guarantee existance of a VM Autoscaling Group. Can be used to either update or create a group.",
+		Example: fmt.Sprintf("ionosctl vm-autoscaling group put %s",
 			core.FlagsUsage(constants.FlagJsonProperties)),
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return core.CheckRequiredFlagsSets(c.Command, c.NS,
@@ -30,7 +32,12 @@ func Put() *core.Command {
 			)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			group, _, err := client.Must().VMAscClient.GroupsPost(context.Background()).GroupPost(jsonStruct).Execute()
+			wantedId := uuidgen.Must()
+			if viper.IsSet(core.GetFlagName(c.NS, constants.FlagGroupId)) {
+				wantedId = viper.GetString(core.GetFlagName(c.NS, constants.FlagGroupId))
+			}
+			group, _, err := client.Must().VMAscClient.GroupsPut(context.Background(), wantedId).
+				GroupPut(jsonStruct).Execute()
 			if err != nil {
 				return err
 			}
@@ -46,6 +53,14 @@ func Put() *core.Command {
 
 			return nil
 		},
+	})
+
+	cmd.AddStringFlag(constants.FlagGroupId, constants.FlagIdShort, "", "ID of the autoscaling group to create/modify. If not set, a random UUIDv5 will be generated.")
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		// get ID of all groups
+		return GroupsProperty(func(r vmasc.GroupResource) string {
+			return fmt.Sprintf(*r.Id) // + "\t" + *r.Properties.Name) // Commented because this SDK functionality currently broken
+		}), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	return cmd
