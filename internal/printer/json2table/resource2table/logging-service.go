@@ -58,7 +58,7 @@ func ConvertLoggingServicePipelineLogsToTable(pipelines ionoscloud.PipelineListR
 		}
 
 		for _, l := range logs {
-			l["PipelineId"] = *pipelines.GetId()
+			l["PipelineId"] = *pipeline.GetId()
 		}
 
 		logsConverted = append(logsConverted, logs...)
