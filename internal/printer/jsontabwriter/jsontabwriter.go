@@ -295,7 +295,7 @@ func generateLegacyJSONOutput(sourceData interface{}) (string, error) {
 		return "", err
 	}
 
-	query2, err := gojq.Parse("{ items: [.[] | select(.properties == null)] | add }")
+	query2, err := gojq.Parse(`map(select(has("properties") | not)) | { "items": . }`)
 	if err != nil {
 		return "", err
 	}

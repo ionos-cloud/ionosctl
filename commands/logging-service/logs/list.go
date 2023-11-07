@@ -98,9 +98,9 @@ func listAll(c *core.CommandConfig) error {
 		return err
 	}
 
-	var logs [][]ionoscloud.ResponsePipeline
+	var logs []ionoscloud.ResponsePipeline
 	for _, p := range *pipelines.Items {
-		logs = append(logs, *p.Properties.Logs)
+		logs = append(logs, *p.Properties.Logs...)
 	}
 
 	logsConverted, err := resource2table.ConvertLoggingServicePipelineLogsToTable(pipelines)
