@@ -12,6 +12,9 @@ const ns = "github.com/ionos-cloud/ionosctl"
 // Must returns an UUIDv5 namespaced to ionosctl repo, or fatally dies.
 // If given names as parameters, it will iterate through each of the names, using the previously generated IDv5 as a namespace
 func Must(names ...string) string {
+	// Convert the namespace string to a UUID
+	namespaceUUID := uuid.NewV5(uuid.NamespaceDNS, ns)
+
 	if len(names) == 0 {
 		v4, err := uuid.NewV4()
 		if err != nil {
@@ -20,12 +23,10 @@ func Must(names ...string) string {
 		names = append(names, v4.String())
 	}
 
-	ns := uuid.NewV5(uuid.NamespaceURL, ns)
-
 	for _, name := range names {
-		ns = uuid.NewV5(ns, name)
+		namespaceUUID = uuid.NewV5(namespaceUUID, name)
 	}
-	return ns.String()
+	return namespaceUUID.String()
 }
 
 // MustSingle generates an UUIDv5 namespaced to github.com/ionos-cloud/ionosctl while guaranteeing a single name is used
