@@ -75,9 +75,7 @@ func listAll(c *core.CommandConfig) error {
 		return fmt.Errorf("failed listing actions of all groups: %w", err)
 	}
 	colsDesired := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
-
-	fmt.Println(ls)
-	out, err := jsontabwriter.GenerateOutput("", allJSONPaths, ls,
+	out, err := jsontabwriter.GenerateOutput("items", allJSONPaths, ls,
 		tabheaders.GetHeaders(allCols, defaultCols, colsDesired))
 	if err != nil {
 		return err
