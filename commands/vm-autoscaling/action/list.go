@@ -31,7 +31,6 @@ ionosctl vm-autoscaling action list %s`,
 			)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			var ls vmasc.ActionCollection
 			if viper.IsSet(core.GetFlagName(c.NS, constants.ArgAll)) {
 				return listAll(c)
 			}
@@ -84,5 +83,4 @@ func listAll(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
 
 	return nil
-
 }

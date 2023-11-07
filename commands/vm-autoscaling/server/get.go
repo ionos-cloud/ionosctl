@@ -29,7 +29,7 @@ func Get() *core.Command {
 				constants.FlagGroupId, constants.FlagServerId)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			ls, _, err := client.Must().VMAscClient.GroupsActionsFindById(context.Background(),
+			ls, _, err := client.Must().VMAscClient.GroupsServersFindById(context.Background(),
 				viper.GetString(core.GetFlagName(c.NS, constants.FlagGroupId)),
 				viper.GetString(core.GetFlagName(c.NS, constants.FlagServerId))).
 				Depth(float32(viper.GetFloat64(core.GetFlagName(c.NS, constants.ArgDepth)))).
