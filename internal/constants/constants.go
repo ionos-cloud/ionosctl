@@ -72,7 +72,9 @@ Within each layer, a token takes precedence over a username and password combina
 	FlagLoggingPipelineLogType          = "log-type"
 	FlagLoggingPipelineLogRetentionTime = "log-retention-time"
 
-	FlagGroupId = "group-id"
+	FlagGroupId  = "group-id"
+	FlagServerId = "server-id"
+	FlagActionId = "action-id"
 )
 
 // Flag descriptions. Prefixed with "Desc" for easy find and replace

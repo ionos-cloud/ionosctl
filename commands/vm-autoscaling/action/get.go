@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/vm-autoscaling/group"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
@@ -14,34 +15,29 @@ import (
 	"github.com/spf13/viper"
 )
 
-func List() *core.Command {
+func Get() *core.Command {
 	cmd := core.NewCommand(context.Background(), nil, core.CommandBuilder{
 		Namespace: "vm-autoscaling",
-		Resource:  "action",
-		Verb:      "list",
-		Aliases:   []string{"l", "ls"},
-		ShortDesc: "List VM Autoscaling Actions",
-		Example: fmt.Sprintf(`ionosctl vm-autoscaling action list %s
-ionosctl vm-autoscaling action list %s`,
-			core.FlagUsage(constants.FlagGroupId), core.FlagUsage(constants.ArgAll)),
+		Resource:  "server",
+		Verb:      "get",
+		Aliases:   []string{"g"},
+		ShortDesc: "Get a VM Autoscaling Action",
+		Example: fmt.Sprintf("ionosctl vm-autoscaling action get %s",
+			core.FlagsUsage(constants.FlagGroupId, constants.FlagActionId)),
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			return core.CheckRequiredFlagsSets(c.Command, c.NS,
-				[]string{constants.FlagGroupId},
-				[]string{constants.ArgAll},
-			)
+			return core.CheckRequiredFlags(c.Command, c.NS,
+				constants.FlagGroupId, constants.FlagActionId)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			var ls vmasc.ActionCollection
-			if viper.IsSet(core.GetFlagName(c.NS, constants.ArgAll)) {
-				return listAll(c)
+			ls, _, err := client.Must().VMAscClient.GroupsActionsFindById(context.Background(),
+				viper.GetString(core.GetFlagName(c.NS, constants.FlagGroupId)),
+				viper.GetString(core.GetFlagName(c.NS, constants.FlagActionId))).
+				Depth(float32(viper.GetFloat64(core.GetFlagName(c.NS, constants.ArgDepth)))).
+				Execute()
+			if err != nil {
+				return err
 			}
 
-			// list actions of a group
-			ls, err := GroupActions(viper.GetString(core.GetFlagName(c.NS, constants.FlagGroupId)))
-			if err != nil {
-				return fmt.Errorf("failed listing actions of group %s: %w",
-					viper.GetString(core.GetFlagName(c.NS, constants.FlagGroupId)), err)
-			}
 			colsDesired := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 			out, err := jsontabwriter.GenerateOutput("items", allJSONPaths, ls,
 				tabheaders.GetHeaders(allCols, defaultCols, colsDesired))
@@ -55,7 +51,6 @@ ionosctl vm-autoscaling action list %s`,
 		},
 	})
 
-	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "If set, list all actions of all groups")
 	cmd.AddInt32Flag(constants.ArgDepth, constants.ArgDepthShort, 1, "Controls the detail depth of the response objects")
 	cmd.AddStringFlag(constants.FlagGroupId, constants.FlagIdShort, "", "ID of the autoscaling group to list servers from")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -66,25 +61,4 @@ ionosctl vm-autoscaling action list %s`,
 	})
 
 	return cmd
-}
-
-func listAll(c *core.CommandConfig) error {
-	// list actions of all groups
-	ls, err := Actions()
-	if err != nil {
-		return fmt.Errorf("failed listing actions of all groups: %w", err)
-	}
-	colsDesired := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
-
-	fmt.Println(ls)
-	out, err := jsontabwriter.GenerateOutput("", allJSONPaths, ls,
-		tabheaders.GetHeaders(allCols, defaultCols, colsDesired))
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
-
-	return nil
-
 }
