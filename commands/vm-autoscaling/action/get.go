@@ -39,7 +39,7 @@ func Get() *core.Command {
 			}
 
 			colsDesired := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
-			out, err := jsontabwriter.GenerateOutput("items", allJSONPaths, ls,
+			out, err := jsontabwriter.GenerateOutput("", allJSONPaths, ls,
 				tabheaders.GetHeaders(allCols, defaultCols, colsDesired))
 			if err != nil {
 				return err

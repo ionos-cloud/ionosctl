@@ -25,6 +25,7 @@ func Root() *core.Command {
 
 	cmd.AddCommand(Put())
 	cmd.AddCommand(List())
+	cmd.AddCommand(Get())
 	cmd.AddCommand(Delete())
 
 	cmd.Command.PersistentFlags().StringSlice(constants.ArgCols, nil, tabheaders.ColsMessage(allCols))

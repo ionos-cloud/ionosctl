@@ -1,10 +1,9 @@
-package server
+package group
 
 import (
 	"context"
 	"fmt"
 
-	"github.com/ionos-cloud/ionosctl/v6/commands/vm-autoscaling/group"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
@@ -18,20 +17,19 @@ import (
 func Get() *core.Command {
 	cmd := core.NewCommand(context.Background(), nil, core.CommandBuilder{
 		Namespace: "vm-autoscaling",
-		Resource:  "server",
+		Resource:  "group",
 		Verb:      "get",
 		Aliases:   []string{"g"},
-		ShortDesc: "Get a VM Autoscaling Server",
-		Example: fmt.Sprintf("ionosctl vm-autoscaling server get %s",
-			core.FlagsUsage(constants.FlagGroupId, constants.FlagServerId)),
+		ShortDesc: "Get a VM Autoscaling Group",
+		Example: fmt.Sprintf("ionosctl vm-autoscaling group get %s",
+			core.FlagsUsage(constants.FlagGroupId)),
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return core.CheckRequiredFlags(c.Command, c.NS,
 				constants.FlagGroupId, constants.FlagServerId)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			ls, _, err := client.Must().VMAscClient.GroupsServersFindById(context.Background(),
-				viper.GetString(core.GetFlagName(c.NS, constants.FlagGroupId)),
-				viper.GetString(core.GetFlagName(c.NS, constants.FlagServerId))).
+			ls, _, err := client.Must().VMAscClient.GroupsFindById(context.Background(),
+				viper.GetString(core.GetFlagName(c.NS, constants.FlagGroupId))).
 				Depth(float32(viper.GetFloat64(core.GetFlagName(c.NS, constants.ArgDepth)))).
 				Execute()
 			if err != nil {
@@ -52,15 +50,9 @@ func Get() *core.Command {
 	})
 
 	cmd.AddInt32Flag(constants.ArgDepth, constants.ArgDepthShort, 1, "Controls the detail depth of the response objects")
-	cmd.AddStringFlag(constants.FlagGroupId, "", "", "ID of the autoscaling group that the server is a part of")
+	cmd.AddStringFlag(constants.FlagGroupId, "", "", "ID of the autoscaling group")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return group.GroupsProperty(func(r vmasc.GroupResource) string {
-			return fmt.Sprintf(*r.Id) // + "\t" + *r.Properties.Name) // Commented because this SDK functionality currently broken
-		}), cobra.ShellCompDirectiveNoFileComp
-	})
-	cmd.AddStringFlag(constants.FlagServerId, constants.FlagIdShort, "", "ID of the autoscaling server")
-	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return ServersProperty(func(r vmasc.ServerResource) string {
+		return GroupsProperty(func(r vmasc.GroupResource) string {
 			return fmt.Sprintf(*r.Id) // + "\t" + *r.Properties.Name) // Commented because this SDK functionality currently broken
 		}), cobra.ShellCompDirectiveNoFileComp
 	})
