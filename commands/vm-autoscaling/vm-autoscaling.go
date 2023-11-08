@@ -12,7 +12,7 @@ func Root() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "vm-autoscaling",
-			Aliases:          []string{"vmasc", "vm-asc", "vmautoscaling"},
+			Aliases:          []string{"vmas", "vm-as", "vmasc", "vm-asc", "vmautoscaling"},
 			Short:            "VM Autoscaling Operations",
 			TraverseChildren: true,
 		},

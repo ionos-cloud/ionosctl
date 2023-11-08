@@ -21,7 +21,7 @@ func Put() *core.Command {
 		Namespace: "vm-autoscaling",
 		Resource:  "groups",
 		Verb:      "put",
-		Aliases:   []string{"create", "c"},
+		Aliases:   []string{"create", "c", "p"},
 		ShortDesc: "Guarantee existance of a VM Autoscaling Group. Can be used to either update or create a group.",
 		Example: fmt.Sprintf("ionosctl vm-autoscaling group put %s",
 			core.FlagsUsage(constants.FlagJsonProperties)),
