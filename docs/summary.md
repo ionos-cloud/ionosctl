@@ -215,6 +215,20 @@
     * template
         * [get](subcommands%2FCompute%20Engine%2Ftemplate%2Fget.md)
         * [list](subcommands%2FCompute%20Engine%2Ftemplate%2Flist.md)
+    * vm
+        * autoscaling
+            * action
+                * [get](subcommands%2FCompute%20Engine%2Fvm%2Fautoscaling%2Faction%2Fget.md)
+                * [list](subcommands%2FCompute%20Engine%2Fvm%2Fautoscaling%2Faction%2Flist.md)
+            * group
+                * [create](subcommands%2FCompute%20Engine%2Fvm%2Fautoscaling%2Fgroup%2Fcreate.md)
+                * [delete](subcommands%2FCompute%20Engine%2Fvm%2Fautoscaling%2Fgroup%2Fdelete.md)
+                * [get](subcommands%2FCompute%20Engine%2Fvm%2Fautoscaling%2Fgroup%2Fget.md)
+                * [list](subcommands%2FCompute%20Engine%2Fvm%2Fautoscaling%2Fgroup%2Flist.md)
+                * [put](subcommands%2FCompute%20Engine%2Fvm%2Fautoscaling%2Fgroup%2Fput.md)
+            * server
+                * [get](subcommands%2FCompute%20Engine%2Fvm%2Fautoscaling%2Fserver%2Fget.md)
+                * [list](subcommands%2FCompute%20Engine%2Fvm%2Fautoscaling%2Fserver%2Flist.md)
     * volume
         * [create](subcommands%2FCompute%20Engine%2Fvolume%2Fcreate.md)
         * [delete](subcommands%2FCompute%20Engine%2Fvolume%2Fdelete.md)
