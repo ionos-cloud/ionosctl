@@ -23,6 +23,7 @@ func Root() *core.Command {
 		},
 	}
 
+	cmd.AddCommand(Create())
 	cmd.AddCommand(Put())
 	cmd.AddCommand(List())
 	cmd.AddCommand(Get())
