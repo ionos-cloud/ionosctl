@@ -8,8 +8,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	vmasc "github.com/ionos-cloud/sdk-go-vm-autoscaling"
 	"github.com/spf13/cobra"
@@ -33,25 +31,10 @@ func Delete() *core.Command {
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			if viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)) {
-				return deleteAll(c)
+				return deleteGroups(c, getAllGroupIDs())
 			}
-
-			group, err := client.Must().VMAscClient.GroupsDelete(context.Background(),
-				viper.GetString(core.GetFlagName(c.NS, constants.FlagGroupId))).Execute()
-			if err != nil {
-				return err
-			}
-
-			colsDesired := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
-			out, err := jsontabwriter.GenerateOutput("", allJSONPaths, group,
-				tabheaders.GetHeaders(allCols, defaultCols, colsDesired))
-			if err != nil {
-				return err
-			}
-
-			fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
-
-			return nil
+			id := viper.GetString(core.GetFlagName(c.NS, constants.FlagGroupId))
+			return deleteGroups(c, []string{id})
 		},
 	})
 
@@ -89,6 +72,40 @@ func deleteAll(c *core.CommandConfig) error {
 		if err != nil {
 			return fmt.Errorf("failed deleting group %s: %w", id, err)
 		}
-
 	}
+
+	return nil
+}
+
+func deleteGroups(c *core.CommandConfig, ids []string) error {
+	var errs error
+	for _, id := range ids {
+		group, _, err := client.Must().VMAscClient.GroupsFindById(context.Background(), id).Execute()
+		if err != nil {
+			return fmt.Errorf("failed retrieving info about group %s: %w", id, err)
+		}
+
+		if shouldDeleteGroup(c, &group) {
+			_, err := client.Must().VMAscClient.GroupsDelete(context.Background(), id).Execute()
+			if err != nil {
+				return fmt.Errorf("failed deleting group %s: %w", id, err)
+			}
+		} else {
+			errs = errors.Join(errs, fmt.Errorf("%s for %s", confirm.UserDenied, *group.Id))
+		}
+	}
+
+	return errs
+}
+
+func shouldDeleteGroup(c *core.CommandConfig, group *vmasc.Group) bool {
+	return confirm.FAsk(c.Command.Command.InOrStdin(),
+		fmt.Sprintf("Do you really want to delete group %s from %s (%s)?", *group.Properties.Name, *group.Properties.Location, *group.Id),
+		viper.GetBool(constants.ArgForce))
+}
+
+func getAllGroupIDs() []string {
+	return GroupsProperty(func(r vmasc.GroupResource) string {
+		return *r.Id
+	})
 }
