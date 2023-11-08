@@ -20,7 +20,7 @@ func Create() *core.Command {
 		Resource:  "groups",
 		Verb:      "create",
 		Aliases:   []string{"c"},
-		ShortDesc: "Create a VM-Autoscaling group.",
+		ShortDesc: "Create a VM-Autoscaling group",
 		Example: fmt.Sprintf("ionosctl vm-autoscaling group create %s",
 			core.FlagsUsage(constants.FlagJsonProperties)),
 		PreCmdRun: func(c *core.PreCommandConfig) error {
