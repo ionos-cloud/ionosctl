@@ -22,7 +22,7 @@ func Delete() *core.Command {
 		Aliases:   []string{"d", "del", "rm"},
 		ShortDesc: "Delete VM Autoscaling Groups",
 		Example: fmt.Sprintf("ionosctl vm-autoscaling group delete (%s|--%s)",
-			core.FlagUsage(constants.FlagGroupId), core.FlagUsage(constants.ArgAll)),
+			core.FlagUsage(constants.FlagGroupId), constants.ArgAll),
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return core.CheckRequiredFlagsSets(c.Command, c.NS,
 				[]string{constants.FlagGroupId},
@@ -63,7 +63,7 @@ func deleteAll(c *core.CommandConfig) error {
 		}
 
 		if !confirm.FAsk(c.Command.Command.InOrStdin(),
-			fmt.Sprintf("Do you really want to delete group %s from %s (%s)?", *group.Properties.Name, *group.Properties.Location, *group.Id),
+			fmt.Sprintf("Do you really want to delete group %s from %s (%s)", *group.Properties.Name, *group.Properties.Location, *group.Id),
 			viper.GetBool(constants.ArgForce)) {
 			errs = errors.Join(errs, fmt.Errorf("%s for %s", confirm.UserDenied, *group.Id))
 		}
