@@ -41,10 +41,14 @@ You can wait for the Cluster to be in "ACTIVE" state using `--wait-for-state` fl
   -D, --depth int32           Controls the detail depth of the response objects. Max depth is 10.
   -f, --force                 Force command to execute without user input
   -h, --help                  Print usage
+      --ip string             Private K8s IP
       --k8s-version string    The K8s version for the Cluster. If not set, the default one will be used
+      --location string       Private K8s Location (default "us/las")
   -n, --name string           The name for the K8s Cluster (default "UnnamedCluster")
       --no-headers            Don't print table headers when table output is used
+      --node-subnet string    Private K8s Subnet
   -o, --output string         Desired output format [text|json|api-json] (default "text")
+      --public                Private K8s  (default true)
   -q, --quiet                 Quiet output
       --s3bucket string       S3 Bucket name configured for K8s usage
   -t, --timeout int           Timeout option for waiting for Cluster/Request [seconds] (default 600)

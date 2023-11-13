@@ -46,12 +46,16 @@ Required values to run command:
   -D, --depth int32               Controls the detail depth of the response objects. Max depth is 10.
   -f, --force                     Force command to execute without user input
   -h, --help                      Print usage
+      --ip string                 Private K8s IP
       --k8s-version string        The K8s version for the Cluster
+      --location string           Private K8s Location (default "us/las")
       --maintenance-day string    The day of the week for Maintenance Window has the English day format as following: Monday or Saturday
       --maintenance-time string   The time for Maintenance Window has the HH:mm:ss format as following: 08:00:00
   -n, --name string               The name for the K8s Cluster
       --no-headers                Don't print table headers when table output is used
+      --node-subnet string        Private K8s Subnet
   -o, --output string             Desired output format [text|json|api-json] (default "text")
+      --public                    Private K8s  (default true)
   -q, --quiet                     Quiet output
       --s3bucket string           S3 Bucket name configured for K8s usage. It will overwrite the previous value
   -t, --timeout int               Timeout option for waiting for Cluster to be in ACTIVE state after updating [seconds] (default 600)
