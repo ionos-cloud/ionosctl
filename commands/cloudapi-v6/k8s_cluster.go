@@ -589,6 +589,41 @@ func getK8sClusterInfo(oldUser *resources.K8sCluster, c *core.CommandConfig) res
 				propertiesUpdated.SetMaintenanceWindow(newMaintenanceWindow.KubernetesMaintenanceWindow)
 			}
 		}
+
+		/* Private K8s
+		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgPublic)) {
+			propertiesUpdated.SetPublic(viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgPublic)))
+		} else {
+			if subnetAllowListOk, ok := properties.GetPublicOk(); ok && subnetAllowListOk != nil {
+				propertiesUpdated.SetPublic(*subnetAllowListOk)
+			}
+		}
+
+		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgLocation)) {
+			propertiesUpdated.SetLocation(viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgLocation)))
+		} else {
+			if subnetAllowListOk, ok := properties.GetLocationOk(); ok && subnetAllowListOk != nil {
+				propertiesUpdated.SetLocation(*subnetAllowListOk)
+			}
+		}
+
+		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgIp)) {
+			propertiesUpdated.SetNatGatewayIp(viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgIp)))
+		} else {
+			if subnetAllowListOk, ok := properties.GetNatGatewayIpOk(); ok && subnetAllowListOk != nil {
+				propertiesUpdated.SetNatGatewayIp(*subnetAllowListOk)
+			}
+		}
+
+		if viper.IsSet(core.GetFlagName(c.NS, constants.FlagNodeSubnet)) {
+			propertiesUpdated.SetNodeSubnet(viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.FlagNodeSubnet)))
+		} else {
+			if subnetAllowListOk, ok := properties.GetNodeSubnetOk(); ok && subnetAllowListOk != nil {
+				propertiesUpdated.SetNodeSubnet(*subnetAllowListOk)
+			}
+		}
+		*/
+
 	}
 
 	return resources.K8sClusterForPut{
