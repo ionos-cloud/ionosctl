@@ -7,6 +7,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/completions"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/resource2table"
 )
 
 func LoggingServicePipelineIds() []string {
@@ -23,4 +24,21 @@ func LoggingServicePipelineIds() []string {
 	}
 
 	return completions.NewCompleter(pipelinesConverted, "Id").AddInfo("Name").ToString()
+}
+
+func LoggingServiceLogTags(pipelineId string) []string {
+	pipeline, _, err := client.Must().LoggingServiceClient.PipelinesApi.PipelinesFindById(
+		context.Background(),
+		pipelineId,
+	).Execute()
+	if err != nil {
+		return nil
+	}
+
+	logsConverted, err := resource2table.ConvertLoggingServicePipelineLogToTable(pipeline)
+	if err != nil {
+		return nil
+	}
+
+	return completions.NewCompleter(logsConverted, "Tag").AddInfo("Source").AddInfo("Protocol", "(%v)").ToString()
 }

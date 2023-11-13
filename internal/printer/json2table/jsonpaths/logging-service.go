@@ -8,14 +8,14 @@ var (
 		"HTTPAddress":    "properties.httpAddress",
 		"GrafanaAddress": "properties.grafanaAddress",
 		"CreatedDate":    "metadata.createdDate",
+		//"State":          "metadata.state",
 	}
 
 	LoggingServiceLogs = map[string]string{
 		"Protocol": "protocol",
 		"Source":   "source",
 		"Public":   "public",
-		//"Destinations": TYPE (RetentionInDays), TYPE (RetentionInDays), ...
-		"Tag":    "tag",
-		"Labels": "labels",
+		"Tag":      "tag",
+		"Labels":   "labels",
 	}
 )

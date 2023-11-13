@@ -1,13 +1,20 @@
 package pipeline
 
 import (
+	"fmt"
+
+	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	ionoscloud "github.com/ionos-cloud/sdk-go-logging"
 	"github.com/spf13/cobra"
 )
 
 var (
-	defaultCols = []string{"Id", "Name", "GrafanaAddress", "CreatedDate"}
-	allCols     = []string{"Id", "Name", "GrafanaAddress", "TCPAddress", "HTTPAddress", "CreatedDate"}
+	defaultCols = []string{"Id", "Name", "GrafanaAddress", "CreatedDate", "State"}
+	allCols     = []string{"Id", "Name", "GrafanaAddress", "TCPAddress", "HTTPAddress", "CreatedDate", "State"}
 )
 
 func PipelineCmd() *core.Command {
@@ -25,5 +32,20 @@ func PipelineCmd() *core.Command {
 	cmd.AddCommand(PipelineGetCmd())
 	cmd.AddCommand(PipelineDeleteCmd())
 	cmd.AddCommand(PipelineCreateCmd())
+	cmd.AddCommand(PipelineUpdateCmd())
 	return cmd
+}
+
+func handlePipelinePrint(p ionoscloud.Pipeline, c *core.CommandConfig) error {
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+
+	out, err := jsontabwriter.GenerateOutput(
+		"", jsonpaths.LoggingServicePipeline, p, tabheaders.GetHeaders(allCols, defaultCols, cols),
+	)
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+	return nil
 }
