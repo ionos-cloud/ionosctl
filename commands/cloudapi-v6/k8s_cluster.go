@@ -502,6 +502,24 @@ func getNewK8sCluster(c *core.CommandConfig) (*resources.K8sClusterForPost, erro
 			"Property ApiSubnetAllowList set: %v", viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgApiSubnets))))
 	}
 
+	/* Private K8s
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgPublic)) {
+		proper.SetPublic(viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgPublic)))
+	}
+
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgLocation)) {
+		proper.SetLocation(viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgLocation)))
+	}
+
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgIp)) {
+		proper.SetNatGatewayIp(viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgIp)))
+	}
+
+	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagNodeSubnet)) {
+		proper.SetNodeSubnet(viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.FlagNodeSubnet)))
+	}
+	*/
+
 	return &resources.K8sClusterForPost{
 		KubernetesClusterForPost: ionoscloud.KubernetesClusterForPost{
 			Properties: &proper.KubernetesClusterPropertiesForPost,
