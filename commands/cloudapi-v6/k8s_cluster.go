@@ -142,6 +142,11 @@ You can wait for the Cluster to be in "ACTIVE" state using ` + "`" + `--wait-for
 	create.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, cloudapiv6.K8sTimeoutSeconds, "Timeout option for waiting for Cluster/Request [seconds]")
 	create.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultCreateDepth, cloudapiv6.ArgDepthDescription)
 
+	create.AddBoolFlag(cloudapiv6.ArgPublic, "", true, "Private K8s ")
+	create.AddStringFlag(cloudapiv6.ArgLocation, "", "us/las", "Private K8s Location")
+	create.AddStringFlag(cloudapiv6.ArgIp, "", "", "Private K8s IP")
+	create.AddStringFlag(constants.FlagNodeSubnet, "", "", "Private K8s Subnet")
+
 	/*
 		Update Command
 	*/
@@ -184,6 +189,11 @@ Required values to run command:
 	update.AddBoolFlag(constants.ArgWaitForState, constants.ArgWaitForStateShort, constants.DefaultWait, "Wait for specified Cluster to be in ACTIVE state after updating")
 	update.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, cloudapiv6.K8sTimeoutSeconds, "Timeout option for waiting for Cluster to be in ACTIVE state after updating [seconds]")
 	update.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultUpdateDepth, cloudapiv6.ArgDepthDescription)
+
+	update.AddBoolFlag(cloudapiv6.ArgPublic, "", true, "Private K8s ")
+	update.AddStringFlag(cloudapiv6.ArgLocation, "", "us/las", "Private K8s Location")
+	update.AddStringFlag(cloudapiv6.ArgIp, "", "", "Private K8s IP")
+	update.AddStringFlag(constants.FlagNodeSubnet, "", "", "Private K8s Subnet")
 
 	/*
 		Delete Command
