@@ -3,7 +3,7 @@ module github.com/ionos-cloud/ionosctl/v6
 go 1.20
 
 require (
-	github.com/avirtopeanu-ionos/cobra-prompt v1.0.0-rc.3
+	github.com/avirtopeanu-ionos/cobra-prompt v1.0.0-rc.4
 	github.com/cheggaaa/pb/v3 v3.1.4
 	github.com/cilium/fake v0.4.0
 	github.com/cjrd/allocate v0.0.0-20220510215731-986f24f0fb18

@@ -2,8 +2,6 @@ package commands
 
 import (
 	"context"
-	"os"
-	"strings"
 
 	cobraprompt "github.com/avirtopeanu-ionos/cobra-prompt"
 	"github.com/c-bata/go-prompt"
@@ -22,20 +20,8 @@ var advancedPrompt = &cobraprompt.CobraPrompt{
 		prompt.OptionMaxSuggestion(10),
 	},
 	OnErrorFunc: func(err error) {
-		if strings.Contains(err.Error(), "unknown command") {
-			// Don't exit on unknown commands
-			rootCmd.Command.PrintErrln(err)
-			return
-		}
-
-		if strings.Contains(err.Error(), "401 Unauthorized") {
-			// Don't exit on unknown commands
-			rootCmd.Command.PrintErrln("Unauthorized. Please login. Use `ionosctl whoami` to debug your credentials")
-			return
-		}
-
 		rootCmd.Command.PrintErr(err)
-		os.Exit(1)
+		return
 	},
 }
 

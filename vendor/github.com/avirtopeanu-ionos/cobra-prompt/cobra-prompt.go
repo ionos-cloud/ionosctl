@@ -208,7 +208,8 @@ func getFlagValueSuggestions(cmd *cobra.Command, co *CobraPrompt, d prompt.Docum
 			completions, _ := compFunc(cmd, strings.Fields(d.CurrentLine()), currentFlag)
 			for _, completion := range completions {
 				if strings.HasPrefix(completion, partialValue) {
-					suggestions = append(suggestions, prompt.Suggest{Text: completion})
+					text, description, _ := strings.Cut(completion, "\t")
+					suggestions = append(suggestions, prompt.Suggest{Text: text, Description: description})
 				}
 			}
 		}
