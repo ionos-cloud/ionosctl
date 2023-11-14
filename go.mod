@@ -3,6 +3,7 @@ module github.com/ionos-cloud/ionosctl/v6
 go 1.20
 
 require (
+	github.com/avirtopeanu-ionos/cobra-prompt v1.0.0-rc.3
 	github.com/cheggaaa/pb/v3 v3.1.4
 	github.com/cilium/fake v0.4.0
 	github.com/cjrd/allocate v0.0.0-20220510215731-986f24f0fb18
@@ -19,7 +20,7 @@ require (
 	github.com/kardianos/ftps v1.0.3
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/mmatczuk/anyflag v0.0.0-20230209112147-9567d4cab866
-	github.com/spf13/cobra v1.7.0
+	github.com/spf13/cobra v1.8.0
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.16.0
 	github.com/stretchr/testify v1.8.4
@@ -31,12 +32,15 @@ require (
 
 require (
 	github.com/Jeffail/gabs/v2 v2.7.0
+	github.com/c-bata/go-prompt v0.2.6
 	github.com/itchyny/gojq v0.12.13
 )
 
 require (
 	github.com/fatih/color v1.15.0 // indirect
 	github.com/itchyny/timefmt-go v0.1.5 // indirect
+	github.com/mattn/go-tty v0.0.3 // indirect
+	github.com/pkg/term v1.2.0-beta.2 // indirect
 )
 
 require (
