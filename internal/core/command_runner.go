@@ -106,11 +106,18 @@ func NewCommand(ctx context.Context, parent *Command, info CommandBuilder) *Comm
 // `run` is the CommandRun you want to decorate - if the flag is not provided, `run` will be called as usual
 func withJsonFile(example string, toUnmarshal interface{}, run CommandRun) CommandRun {
 	return func(c *CommandConfig) error {
-		if viper.GetBool(constants.FlagJsonPropertiesExample) {
+		printExample, err := c.Command.Command.Flags().GetBool(constants.FlagJsonPropertiesExample)
+		if err != nil {
+			return err
+		}
+		if printExample {
 			fmt.Fprintf(c.Command.Command.OutOrStdout(), example)
 			return nil
 		}
-		jsonFile := viper.GetString(constants.FlagJsonProperties)
+		jsonFile, err := c.Command.Command.Flags().GetString(constants.FlagJsonProperties)
+		if err != nil {
+			return err
+		}
 
 		// Check if the json-properties flag is provided
 		if jsonFile == "" {
@@ -126,7 +133,7 @@ func withJsonFile(example string, toUnmarshal interface{}, run CommandRun) Comma
 
 		v := viper.New()
 		v.SetConfigFile(jsonFile)
-		err := v.ReadInConfig()
+		err = v.ReadInConfig()
 		if err != nil {
 			return fmt.Errorf("failed reading %s: %w", jsonFile, err)
 		}
