@@ -112,8 +112,10 @@ func RunClusterLogsList(c *core.CommandConfig) error {
 		return err
 	}
 
-	out, err := jsontabwriter.GenerateOutputPreconverted(clusterLogs, logsConverted,
-		tabheaders.GetHeaders(allClusterCols, defaultClusterCols, cols))
+	out, err := jsontabwriter.GenerateOutputPreconverted(
+		clusterLogs, logsConverted,
+		tabheaders.GetHeaders(allClusterLogsCols, defaultClusterLogsCols, cols),
+	)
 	if err != nil {
 		return err
 	}
