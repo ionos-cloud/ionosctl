@@ -96,14 +96,14 @@ func deleteAll(c *core.CommandConfig) error {
 		return fmt.Errorf("could not retrieve Logging-Service Pipelines items")
 	}
 
-	pipelinesConverted, err := json2table.ConvertJSONToTable("items", jsonpaths.LoggingServicePipeline, pipelines)
-	if err != nil {
-		return err
-	}
-
 	err = functional.ApplyAndAggregateErrors(
 		*items, func(p ionoscloud.Pipeline) error {
-			pInfo := completions.NewCompleter(pipelinesConverted, "Id").AddInfo("Name", "(%v)").ToString()[0]
+			pipelineConverted, err := json2table.ConvertJSONToTable("", jsonpaths.LoggingServicePipeline, p)
+			if err != nil {
+				return err
+			}
+
+			pInfo := completions.NewCompleter(pipelineConverted, "Id").AddInfo("Name", "(%v)").ToString()[0]
 			pInfo = strings.Replace(pInfo, "\t", "", 1)
 
 			yes := confirm.FAsk(
@@ -113,7 +113,10 @@ func deleteAll(c *core.CommandConfig) error {
 				viper.GetBool(constants.ArgForce),
 			)
 			if yes {
-				_, delErr := client.Must().DnsClient.ZonesApi.ZonesDelete(c.Context, *p.Id).Execute()
+				_, _, delErr := client.Must().LoggingServiceClient.PipelinesApi.PipelinesDelete(
+					c.Context,
+					*p.Id,
+				).Execute()
 				if delErr != nil {
 					return fmt.Errorf("failed deleting %s: %w", pInfo, delErr)
 				}

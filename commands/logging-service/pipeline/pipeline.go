@@ -33,6 +33,7 @@ func PipelineCmd() *core.Command {
 	cmd.AddCommand(PipelineDeleteCmd())
 	cmd.AddCommand(PipelineCreateCmd())
 	cmd.AddCommand(PipelineUpdateCmd())
+	cmd.AddCommand(PipelineKeyCmd())
 	return cmd
 }
 

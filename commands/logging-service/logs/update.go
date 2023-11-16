@@ -109,7 +109,7 @@ func runUpdateCmd(c *core.CommandConfig) error {
 	for _, log := range *patchPipeline.Properties.Logs {
 		if *log.Tag == tag {
 			newLog = fillOutEmptyFields(&log, newLog)
-			break
+			continue
 		}
 
 		newLogs = append(newLogs, log)
@@ -123,6 +123,9 @@ func runUpdateCmd(c *core.CommandConfig) error {
 	).Pipeline(
 		*patchPipeline,
 	).Execute()
+	if err != nil {
+		return err
+	}
 
 	return handleLogPrint(newPipeline, c)
 }

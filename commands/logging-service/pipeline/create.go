@@ -2,7 +2,6 @@ package pipeline
 
 import (
 	"context"
-	"fmt"
 	"strconv"
 	"strings"
 
@@ -78,9 +77,6 @@ func runCreateCmd(c *core.CommandConfig) error {
 }
 
 func preRunCreateCmd(c *core.PreCommandConfig) error {
-	fmt.Println(viper.GetString(constants.FlagJsonProperties))
-	fmt.Println(viper.GetBool(constants.FlagJsonPropertiesExample))
-
 	return core.CheckRequiredFlagsSets(
 		c.Command, c.NS, []string{constants.FlagJsonProperties}, []string{constants.FlagJsonPropertiesExample},
 		[]string{
