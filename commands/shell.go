@@ -8,7 +8,6 @@ import (
 	"github.com/c-bata/go-prompt"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/spf13/viper"
 )
 
 var advancedPrompt = &comptplus.CobraPrompt{
@@ -21,12 +20,13 @@ var advancedPrompt = &comptplus.CobraPrompt{
 		prompt.OptionTitle("ionosctl"),
 		prompt.OptionPrefix("> "),
 		prompt.OptionShowCompletionAtStart(),
-		prompt.OptionAddKeyBind(
-			prompt.KeyBind{Key: prompt.Enter, Fn: func(buf *prompt.Buffer) {
-				viper.Reset()
-			}},
-		),
 	},
+	HookBefore: func(_ string) {
+		// initConfig()
+	},
+	HookAfter: func(_ string) {
+	},
+
 	OnErrorFunc: func(err error) {
 		rootCmd.Command.PrintErr(err)
 		return
@@ -34,7 +34,7 @@ var advancedPrompt = &comptplus.CobraPrompt{
 }
 
 func Shell() *core.Command {
-	versionCmd := core.NewCommand(context.Background(), nil, core.CommandBuilder{
+	cmd := core.NewCommand(context.Background(), nil, core.CommandBuilder{
 		Namespace: "shell",
 		Resource:  "shell",
 		Verb:      "shell",
@@ -55,5 +55,7 @@ func Shell() *core.Command {
 		InitClient: false,
 	})
 
-	return versionCmd
+	cmd.Command.Flags().Bool(comptplus.PersistFlagValuesFlag, false, "Keep flag values between commands")
+
+	return cmd
 }
