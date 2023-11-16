@@ -132,6 +132,7 @@
         * service
             * logs
                 * [add](subcommands%2FCompute%20Engine%2Flogging%2Fservice%2Flogs%2Fadd.md)
+                * [get](subcommands%2FCompute%20Engine%2Flogging%2Fservice%2Flogs%2Fget.md)
                 * [list](subcommands%2FCompute%20Engine%2Flogging%2Fservice%2Flogs%2Flist.md)
                 * [remove](subcommands%2FCompute%20Engine%2Flogging%2Fservice%2Flogs%2Fremove.md)
                 * [update](subcommands%2FCompute%20Engine%2Flogging%2Fservice%2Flogs%2Fupdate.md)
