@@ -57,7 +57,17 @@ func preRunDeleteCmd(c *core.PreCommandConfig) error {
 
 func runDeleteCmd(c *core.CommandConfig) error {
 	if viper.IsSet(core.GetFlagName(c.NS, constants.ArgAll)) {
-		return deleteAll(c)
+		if err := deleteAll(c); err != nil {
+			return err
+		}
+
+		fmt.Fprintf(
+			c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput(
+				"Successfully deleted logging pipeline",
+			),
+		)
+
+		return nil
 	}
 
 	pipelineId, err := c.Command.Command.Flags().GetString(constants.FlagLoggingPipelineId)
@@ -94,6 +104,10 @@ func deleteAll(c *core.CommandConfig) error {
 	items, ok := pipelines.GetItemsOk()
 	if !ok || items == nil {
 		return fmt.Errorf("could not retrieve Logging-Service Pipelines items")
+	}
+
+	if len(*items) <= 0 {
+		return fmt.Errorf("no Logging-Service Pipelines to delete")
 	}
 
 	err = functional.ApplyAndAggregateErrors(
