@@ -3,7 +3,6 @@ module github.com/ionos-cloud/ionosctl/v6
 go 1.20
 
 require (
-	github.com/avirtopeanu-ionos/comptplus v1.0.0-rc.5
 	github.com/cheggaaa/pb/v3 v3.1.4
 	github.com/cilium/fake v0.4.0
 	github.com/cjrd/allocate v0.0.0-20220510215731-986f24f0fb18
@@ -32,6 +31,7 @@ require (
 
 require (
 	github.com/Jeffail/gabs/v2 v2.7.0
+	github.com/avirtopeanu-ionos/comptplus v1.0.0-rc.7
 	github.com/c-bata/go-prompt v0.2.6
 	github.com/itchyny/gojq v0.12.13
 )

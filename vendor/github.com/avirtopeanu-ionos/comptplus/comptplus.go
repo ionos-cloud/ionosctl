@@ -1,4 +1,4 @@
-package cobraprompt
+package comptplus
 
 import (
 	"context"
@@ -51,6 +51,12 @@ type CobraPrompt struct {
 	// OnErrorFunc handle error for command.Execute, if not set print error and exit
 	OnErrorFunc func(err error)
 
+	// HookAfter is a hook that will be executed after a command has been executed
+	HookAfter func(input string)
+
+	// HookBefore is a hook that will be executed before a command has been executed
+	HookBefore func(input string)
+
 	// InArgsParser adds a custom parser for the command line arguments (default: strings.Fields)
 	InArgsParser func(args string) []string
 
@@ -80,6 +86,7 @@ func (co *CobraPrompt) RunContext(ctx context.Context) {
 
 func (co *CobraPrompt) executeCommand(ctx context.Context) func(string) {
 	return func(input string) {
+		co.HookBefore(input)
 		args := co.parseInput(input)
 		os.Args = append([]string{os.Args[0]}, args...)
 		if err := co.RootCmd.ExecuteContext(ctx); err != nil {
@@ -90,6 +97,7 @@ func (co *CobraPrompt) executeCommand(ctx context.Context) func(string) {
 				os.Exit(1)
 			}
 		}
+		co.HookAfter(input)
 	}
 }
 
