@@ -3,7 +3,7 @@ module github.com/ionos-cloud/ionosctl/v6
 go 1.20
 
 require (
-	github.com/avirtopeanu-ionos/cobra-prompt v1.0.0-rc.4
+	github.com/avirtopeanu-ionos/comptplus v1.0.0-rc.5
 	github.com/cheggaaa/pb/v3 v3.1.4
 	github.com/cilium/fake v0.4.0
 	github.com/cjrd/allocate v0.0.0-20220510215731-986f24f0fb18
@@ -39,7 +39,7 @@ require (
 require (
 	github.com/fatih/color v1.15.0 // indirect
 	github.com/itchyny/timefmt-go v0.1.5 // indirect
-	github.com/mattn/go-tty v0.0.3 // indirect
+	github.com/mattn/go-tty v0.0.5 // indirect
 	github.com/pkg/term v1.2.0-beta.2 // indirect
 )
 
@@ -53,8 +53,8 @@ require (
 	github.com/ionos-cloud/sdk-go-cert-manager v1.0.1
 	github.com/magiconair/properties v1.8.7 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
-	github.com/mattn/go-isatty v0.0.19 // indirect
-	github.com/mattn/go-runewidth v0.0.14 // indirect
+	github.com/mattn/go-isatty v0.0.20 // indirect
+	github.com/mattn/go-runewidth v0.0.15 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.9 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
@@ -65,7 +65,7 @@ require (
 	github.com/subosito/gotenv v1.4.2 // indirect
 	golang.org/x/net v0.14.0 // indirect
 	golang.org/x/oauth2 v0.11.0 // indirect
-	golang.org/x/sys v0.11.0 // indirect
+	golang.org/x/sys v0.14.0 // indirect
 	golang.org/x/text v0.12.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/protobuf v1.31.0 // indirect

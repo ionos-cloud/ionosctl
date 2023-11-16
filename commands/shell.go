@@ -3,12 +3,12 @@ package commands
 import (
 	"context"
 
-	cobraprompt "github.com/avirtopeanu-ionos/cobra-prompt"
+	comptplus "github.com/avirtopeanu-ionos/comptplus"
 	"github.com/c-bata/go-prompt"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 )
 
-var advancedPrompt = &cobraprompt.CobraPrompt{
+var advancedPrompt = &comptplus.CobraPrompt{
 	RootCmd:                  rootCmd.Command,
 	PersistFlagValues:        true,
 	ShowHelpCommandAndFlags:  true,
@@ -17,7 +17,6 @@ var advancedPrompt = &cobraprompt.CobraPrompt{
 	GoPromptOptions: []prompt.Option{
 		prompt.OptionTitle("ionosctl"),
 		prompt.OptionPrefix("> "),
-		prompt.OptionMaxSuggestion(10),
 	},
 	OnErrorFunc: func(err error) {
 		rootCmd.Command.PrintErr(err)

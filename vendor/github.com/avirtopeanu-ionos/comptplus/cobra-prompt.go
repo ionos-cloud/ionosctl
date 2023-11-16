@@ -149,7 +149,7 @@ func getFlagSuggestions(cmd *cobra.Command, co *CobraPrompt, d prompt.Document) 
 	persistFlagValues, _ := cmd.Flags().GetBool(PersistFlagValuesFlag)
 
 	addFlags := func(flag *pflag.Flag) {
-		if flag.Changed && !persistFlagValues {
+		if len(d.Text) < 1 && flag.Changed && !persistFlagValues {
 			flag.Value.Set(flag.DefValue)
 		}
 		if flag.Hidden && !co.ShowHiddenFlags {
