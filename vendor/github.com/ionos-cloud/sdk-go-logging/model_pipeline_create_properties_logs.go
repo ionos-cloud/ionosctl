@@ -1,7 +1,7 @@
 /*
  * IONOS Logging REST API
  *
- * Logging Service is a service that provides a centralized logging system where users are able to push and aggregate their system or application logs. This service also provides a visualization platform where users are able to observe, search and filter the logs and also create dashboards and alerts for their data points. This service can be managed through a browser-based \"Data Center Designer\" (DCD) tool or via an API. The API allows you to create logging pipelines or modify existing ones. It is designed to allow users to leverage the same power and flexibility found within the DCD visual tool. Both tools are consistent with their concepts and lend well to making the experience smooth and intuitive.
+ * Logging as a Service (LaaS) is a service that provides a centralized logging system where users are able to push and aggregate their system or application logs. This service also provides a visualization platform where users are able to observe, search and filter the logs and also create dashboards and alerts for their data points. This service can be managed through a browser-based \"Data Center Designer\" (DCD) tool or via an API. The API allows you to create logging pipelines or modify existing ones. It is designed to allow users to leverage the same power and flexibility found within the DCD visual tool. Both tools are consistent with their concepts and lend well to making the experience smooth and intuitive.
  *
  * API version: 0.0.1
  */
@@ -14,9 +14,8 @@ import (
 	"encoding/json"
 )
 
-// ResponsePipeline struct for ResponsePipeline
-type ResponsePipeline struct {
-	Public *bool `json:"public,omitempty"`
+// PipelineCreatePropertiesLogs struct for PipelineCreatePropertiesLogs
+type PipelineCreatePropertiesLogs struct {
 	// The source parser to be used
 	Source *string `json:"source,omitempty"`
 	// Tag is to distinguish different pipelines. must be unique amongst the pipeline's array items.
@@ -24,69 +23,32 @@ type ResponsePipeline struct {
 	// Protocol to use as intake
 	Protocol *string `json:"protocol,omitempty"`
 	// Optional custom labels to filter and report logs
-	Labels       *[]string      `json:"labels,omitempty"`
+	Labels *[]string `json:"labels,omitempty"`
+	// The configuration of the logs datastore
 	Destinations *[]Destination `json:"destinations,omitempty"`
 }
 
-// NewResponsePipeline instantiates a new ResponsePipeline object
+// NewPipelineCreatePropertiesLogs instantiates a new PipelineCreatePropertiesLogs object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewResponsePipeline() *ResponsePipeline {
-	this := ResponsePipeline{}
+func NewPipelineCreatePropertiesLogs() *PipelineCreatePropertiesLogs {
+	this := PipelineCreatePropertiesLogs{}
 
 	return &this
 }
 
-// NewResponsePipelineWithDefaults instantiates a new ResponsePipeline object
+// NewPipelineCreatePropertiesLogsWithDefaults instantiates a new PipelineCreatePropertiesLogs object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewResponsePipelineWithDefaults() *ResponsePipeline {
-	this := ResponsePipeline{}
+func NewPipelineCreatePropertiesLogsWithDefaults() *PipelineCreatePropertiesLogs {
+	this := PipelineCreatePropertiesLogs{}
 	return &this
-}
-
-// GetPublic returns the Public field value
-// If the value is explicit nil, the zero value for bool will be returned
-func (o *ResponsePipeline) GetPublic() *bool {
-	if o == nil {
-		return nil
-	}
-
-	return o.Public
-
-}
-
-// GetPublicOk returns a tuple with the Public field value
-// and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *ResponsePipeline) GetPublicOk() (*bool, bool) {
-	if o == nil {
-		return nil, false
-	}
-
-	return o.Public, true
-}
-
-// SetPublic sets field value
-func (o *ResponsePipeline) SetPublic(v bool) {
-
-	o.Public = &v
-
-}
-
-// HasPublic returns a boolean if a field has been set.
-func (o *ResponsePipeline) HasPublic() bool {
-	if o != nil && o.Public != nil {
-		return true
-	}
-
-	return false
 }
 
 // GetSource returns the Source field value
 // If the value is explicit nil, the zero value for string will be returned
-func (o *ResponsePipeline) GetSource() *string {
+func (o *PipelineCreatePropertiesLogs) GetSource() *string {
 	if o == nil {
 		return nil
 	}
@@ -98,7 +60,7 @@ func (o *ResponsePipeline) GetSource() *string {
 // GetSourceOk returns a tuple with the Source field value
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *ResponsePipeline) GetSourceOk() (*string, bool) {
+func (o *PipelineCreatePropertiesLogs) GetSourceOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -107,14 +69,14 @@ func (o *ResponsePipeline) GetSourceOk() (*string, bool) {
 }
 
 // SetSource sets field value
-func (o *ResponsePipeline) SetSource(v string) {
+func (o *PipelineCreatePropertiesLogs) SetSource(v string) {
 
 	o.Source = &v
 
 }
 
 // HasSource returns a boolean if a field has been set.
-func (o *ResponsePipeline) HasSource() bool {
+func (o *PipelineCreatePropertiesLogs) HasSource() bool {
 	if o != nil && o.Source != nil {
 		return true
 	}
@@ -124,7 +86,7 @@ func (o *ResponsePipeline) HasSource() bool {
 
 // GetTag returns the Tag field value
 // If the value is explicit nil, the zero value for string will be returned
-func (o *ResponsePipeline) GetTag() *string {
+func (o *PipelineCreatePropertiesLogs) GetTag() *string {
 	if o == nil {
 		return nil
 	}
@@ -136,7 +98,7 @@ func (o *ResponsePipeline) GetTag() *string {
 // GetTagOk returns a tuple with the Tag field value
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *ResponsePipeline) GetTagOk() (*string, bool) {
+func (o *PipelineCreatePropertiesLogs) GetTagOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -145,14 +107,14 @@ func (o *ResponsePipeline) GetTagOk() (*string, bool) {
 }
 
 // SetTag sets field value
-func (o *ResponsePipeline) SetTag(v string) {
+func (o *PipelineCreatePropertiesLogs) SetTag(v string) {
 
 	o.Tag = &v
 
 }
 
 // HasTag returns a boolean if a field has been set.
-func (o *ResponsePipeline) HasTag() bool {
+func (o *PipelineCreatePropertiesLogs) HasTag() bool {
 	if o != nil && o.Tag != nil {
 		return true
 	}
@@ -162,7 +124,7 @@ func (o *ResponsePipeline) HasTag() bool {
 
 // GetProtocol returns the Protocol field value
 // If the value is explicit nil, the zero value for string will be returned
-func (o *ResponsePipeline) GetProtocol() *string {
+func (o *PipelineCreatePropertiesLogs) GetProtocol() *string {
 	if o == nil {
 		return nil
 	}
@@ -174,7 +136,7 @@ func (o *ResponsePipeline) GetProtocol() *string {
 // GetProtocolOk returns a tuple with the Protocol field value
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *ResponsePipeline) GetProtocolOk() (*string, bool) {
+func (o *PipelineCreatePropertiesLogs) GetProtocolOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -183,14 +145,14 @@ func (o *ResponsePipeline) GetProtocolOk() (*string, bool) {
 }
 
 // SetProtocol sets field value
-func (o *ResponsePipeline) SetProtocol(v string) {
+func (o *PipelineCreatePropertiesLogs) SetProtocol(v string) {
 
 	o.Protocol = &v
 
 }
 
 // HasProtocol returns a boolean if a field has been set.
-func (o *ResponsePipeline) HasProtocol() bool {
+func (o *PipelineCreatePropertiesLogs) HasProtocol() bool {
 	if o != nil && o.Protocol != nil {
 		return true
 	}
@@ -200,7 +162,7 @@ func (o *ResponsePipeline) HasProtocol() bool {
 
 // GetLabels returns the Labels field value
 // If the value is explicit nil, the zero value for []string will be returned
-func (o *ResponsePipeline) GetLabels() *[]string {
+func (o *PipelineCreatePropertiesLogs) GetLabels() *[]string {
 	if o == nil {
 		return nil
 	}
@@ -212,7 +174,7 @@ func (o *ResponsePipeline) GetLabels() *[]string {
 // GetLabelsOk returns a tuple with the Labels field value
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *ResponsePipeline) GetLabelsOk() (*[]string, bool) {
+func (o *PipelineCreatePropertiesLogs) GetLabelsOk() (*[]string, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -221,14 +183,14 @@ func (o *ResponsePipeline) GetLabelsOk() (*[]string, bool) {
 }
 
 // SetLabels sets field value
-func (o *ResponsePipeline) SetLabels(v []string) {
+func (o *PipelineCreatePropertiesLogs) SetLabels(v []string) {
 
 	o.Labels = &v
 
 }
 
 // HasLabels returns a boolean if a field has been set.
-func (o *ResponsePipeline) HasLabels() bool {
+func (o *PipelineCreatePropertiesLogs) HasLabels() bool {
 	if o != nil && o.Labels != nil {
 		return true
 	}
@@ -238,7 +200,7 @@ func (o *ResponsePipeline) HasLabels() bool {
 
 // GetDestinations returns the Destinations field value
 // If the value is explicit nil, the zero value for []Destination will be returned
-func (o *ResponsePipeline) GetDestinations() *[]Destination {
+func (o *PipelineCreatePropertiesLogs) GetDestinations() *[]Destination {
 	if o == nil {
 		return nil
 	}
@@ -250,7 +212,7 @@ func (o *ResponsePipeline) GetDestinations() *[]Destination {
 // GetDestinationsOk returns a tuple with the Destinations field value
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *ResponsePipeline) GetDestinationsOk() (*[]Destination, bool) {
+func (o *PipelineCreatePropertiesLogs) GetDestinationsOk() (*[]Destination, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -259,14 +221,14 @@ func (o *ResponsePipeline) GetDestinationsOk() (*[]Destination, bool) {
 }
 
 // SetDestinations sets field value
-func (o *ResponsePipeline) SetDestinations(v []Destination) {
+func (o *PipelineCreatePropertiesLogs) SetDestinations(v []Destination) {
 
 	o.Destinations = &v
 
 }
 
 // HasDestinations returns a boolean if a field has been set.
-func (o *ResponsePipeline) HasDestinations() bool {
+func (o *PipelineCreatePropertiesLogs) HasDestinations() bool {
 	if o != nil && o.Destinations != nil {
 		return true
 	}
@@ -274,12 +236,8 @@ func (o *ResponsePipeline) HasDestinations() bool {
 	return false
 }
 
-func (o ResponsePipeline) MarshalJSON() ([]byte, error) {
+func (o PipelineCreatePropertiesLogs) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
-	if o.Public != nil {
-		toSerialize["public"] = o.Public
-	}
-
 	if o.Source != nil {
 		toSerialize["source"] = o.Source
 	}
@@ -303,38 +261,38 @@ func (o ResponsePipeline) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-type NullableResponsePipeline struct {
-	value *ResponsePipeline
+type NullablePipelineCreatePropertiesLogs struct {
+	value *PipelineCreatePropertiesLogs
 	isSet bool
 }
 
-func (v NullableResponsePipeline) Get() *ResponsePipeline {
+func (v NullablePipelineCreatePropertiesLogs) Get() *PipelineCreatePropertiesLogs {
 	return v.value
 }
 
-func (v *NullableResponsePipeline) Set(val *ResponsePipeline) {
+func (v *NullablePipelineCreatePropertiesLogs) Set(val *PipelineCreatePropertiesLogs) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableResponsePipeline) IsSet() bool {
+func (v NullablePipelineCreatePropertiesLogs) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableResponsePipeline) Unset() {
+func (v *NullablePipelineCreatePropertiesLogs) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableResponsePipeline(val *ResponsePipeline) *NullableResponsePipeline {
-	return &NullableResponsePipeline{value: val, isSet: true}
+func NewNullablePipelineCreatePropertiesLogs(val *PipelineCreatePropertiesLogs) *NullablePipelineCreatePropertiesLogs {
+	return &NullablePipelineCreatePropertiesLogs{value: val, isSet: true}
 }
 
-func (v NullableResponsePipeline) MarshalJSON() ([]byte, error) {
+func (v NullablePipelineCreatePropertiesLogs) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableResponsePipeline) UnmarshalJSON(src []byte) error {
+func (v *NullablePipelineCreatePropertiesLogs) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

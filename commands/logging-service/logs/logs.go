@@ -34,18 +34,19 @@ func LogsCmd() *core.Command {
 	cmd.AddCommand(LogsAddCmd())
 	cmd.AddCommand(LogsUpdateCmd())
 	cmd.AddCommand(LogsRemoveCmd())
+	cmd.AddCommand(LogsGetCmd())
 	return cmd
 }
 
 func handleLogsPrint(pipelines ionoscloud.PipelineListResponse, c *core.CommandConfig) error {
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-	var logs []ionoscloud.ResponsePipeline
+	var logs []ionoscloud.PipelineResponse
 	for _, p := range *pipelines.Items {
 		logs = append(logs, *p.Properties.Logs...)
 	}
 
-	logsConverted, err := resource2table.ConvertLoggingServicePipelineLogsToTable(pipelines)
+	logsConverted, err := resource2table.ConvertLoggingServicePipelinesLogsToTable(pipelines)
 	if err != nil {
 		return fmt.Errorf("could not convert Logging Service Pipeline Logs to table format: %w", err)
 	}
@@ -67,7 +68,7 @@ func handleLogsPrint(pipelines ionoscloud.PipelineListResponse, c *core.CommandC
 func handleLogPrint(pipeline ionoscloud.Pipeline, c *core.CommandConfig) error {
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-	logsConverted, err := resource2table.ConvertLoggingServicePipelineLogToTable(pipeline)
+	logsConverted, err := resource2table.ConvertLoggingServicePipelineLogsToTable(pipeline)
 	if err != nil {
 		return fmt.Errorf("could not convert Logging Service Pipeline Logs to table format: %w", err)
 	}
@@ -87,7 +88,7 @@ func handleLogPrint(pipeline ionoscloud.Pipeline, c *core.CommandConfig) error {
 	return nil
 }
 
-func convertResponsePipelineToPatchRequest(pipeline ionoscloud.Pipeline) (*ionoscloud.PatchRequest, error) {
+func convertResponsePipelineToPatchRequest(pipeline ionoscloud.Pipeline) (*ionoscloud.PipelinePatch, error) {
 	properties, ok := pipeline.GetPropertiesOk()
 	if !ok || properties == nil {
 		return nil, fmt.Errorf("could not retrieve Logging Service Pipeline properties")
@@ -98,9 +99,9 @@ func convertResponsePipelineToPatchRequest(pipeline ionoscloud.Pipeline) (*ionos
 		return nil, fmt.Errorf("could not retrieve Logging Service Pipeline Logs")
 	}
 
-	var newLogs []ionoscloud.PatchRequestPipeline
+	var newLogs []ionoscloud.PipelineCreatePropertiesLogs
 	for _, log := range *logs {
-		l := ionoscloud.PatchRequestPipeline{
+		l := ionoscloud.PipelineCreatePropertiesLogs{
 			Tag:          log.Tag,
 			Source:       log.Source,
 			Protocol:     log.Protocol,
@@ -111,8 +112,8 @@ func convertResponsePipelineToPatchRequest(pipeline ionoscloud.Pipeline) (*ionos
 		newLogs = append(newLogs, l)
 	}
 
-	patch := ionoscloud.PatchRequest{
-		Properties: &ionoscloud.PatchRequestProperties{
+	patch := ionoscloud.PipelinePatch{
+		Properties: &ionoscloud.PipelinePatchProperties{
 			Name: properties.Name,
 			Logs: &newLogs,
 		},
@@ -121,13 +122,13 @@ func convertResponsePipelineToPatchRequest(pipeline ionoscloud.Pipeline) (*ionos
 	return &patch, nil
 }
 
-func generatePatchObject(c *core.CommandConfig) (*ionoscloud.PatchRequestPipeline, error) {
+func generatePatchObject(c *core.CommandConfig) (*ionoscloud.PipelineCreatePropertiesLogs, error) {
 	var newTag, source, protocol, typ, retentionTime string
 	var labels []string
 	var retentionTimeInt32 int32
 
 	dest := ionoscloud.Destination{}
-	newLog := ionoscloud.PatchRequestPipeline{}
+	newLog := ionoscloud.PipelineCreatePropertiesLogs{}
 
 	if viper.IsSet(core.GetFlagName(c.NS, "new-"+constants.FlagLoggingPipelineLogTag)) {
 		newTag = viper.GetString(core.GetFlagName(c.NS, "new-"+constants.FlagLoggingPipelineLogTag))
@@ -178,7 +179,7 @@ func generatePatchObject(c *core.CommandConfig) (*ionoscloud.PatchRequestPipelin
 	return &newLog, nil
 }
 
-func fillOutEmptyFields(oldLog, newLog *ionoscloud.PatchRequestPipeline) *ionoscloud.PatchRequestPipeline {
+func fillOutEmptyFields(oldLog, newLog *ionoscloud.PipelineCreatePropertiesLogs) *ionoscloud.PipelineCreatePropertiesLogs {
 	if newLog.Tag == nil {
 		newLog.Tag = oldLog.Tag
 	}

@@ -51,7 +51,7 @@ func runKeyCmd(c *core.CommandConfig) error {
 		return err
 	}
 
-	key, _, err := client.Must().LoggingServiceClient.PipelinesApi.PipelineKey(
+	key, _, err := client.Must().LoggingServiceClient.PipelinesApi.PipelinesKeyPost(
 		context.Background(), pipelineId,
 	).Execute()
 	if err != nil {

@@ -98,7 +98,7 @@ func runAddCmd(c *core.CommandConfig) error {
 		RetentionInDays: &retentionTimeInt32,
 	}
 
-	newLog := ionoscloud.PatchRequestPipeline{
+	newLog := ionoscloud.PipelineCreatePropertiesLogs{
 		Tag:          &tag,
 		Source:       &source,
 		Protocol:     &protocol,

@@ -105,10 +105,11 @@ func runUpdateCmd(c *core.CommandConfig) error {
 		return err
 	}
 
-	var newLogs []ionoscloud.PatchRequestPipeline
+	var newLogs []ionoscloud.PipelineCreatePropertiesLogs
 	for _, log := range *patchPipeline.Properties.Logs {
 		if *log.Tag == tag {
 			newLog = fillOutEmptyFields(&log, newLog)
+
 			continue
 		}
 

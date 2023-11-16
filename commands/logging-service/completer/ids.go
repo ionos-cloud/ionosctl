@@ -35,7 +35,7 @@ func LoggingServiceLogTags(pipelineId string) []string {
 		return nil
 	}
 
-	logsConverted, err := resource2table.ConvertLoggingServicePipelineLogToTable(pipeline)
+	logsConverted, err := resource2table.ConvertLoggingServicePipelineLogsToTable(pipeline)
 	if err != nil {
 		return nil
 	}
