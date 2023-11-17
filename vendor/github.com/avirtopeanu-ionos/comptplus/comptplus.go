@@ -4,6 +4,8 @@ import (
 	"context"
 	"os"
 	"strings"
+	"time"
+	"fmt"
 
 	"github.com/c-bata/go-prompt"
 	"github.com/spf13/cobra"
@@ -15,6 +17,8 @@ const DynamicSuggestionsAnnotation = "cobra-prompt-dynamic-suggestions"
 
 // PersistFlagValuesFlag the flag that will be available when PersistFlagValues is true
 const PersistFlagValuesFlag = "persist-flag-values"
+
+const CacheIntervalFlag = "cache-interval"
 
 // CobraPrompt given a Cobra command it will make every flag and sub commands available as suggestions.
 // Command.Short will be used as description for the suggestion.
@@ -62,6 +66,10 @@ type CobraPrompt struct {
 
 	// SuggestionFilter will be uses when filtering suggestions as typing
 	SuggestionFilter func(suggestions []prompt.Suggest, document *prompt.Document) []prompt.Suggest
+
+	lastFlagValueSuggestionsTime time.Time
+
+	lastFlagValueSuggestions []prompt.Suggest
 }
 
 // Run will automatically generate suggestions for all cobra commands and flags defined by RootCmd
@@ -138,11 +146,26 @@ func (co *CobraPrompt) findSuggestions(d prompt.Document) []prompt.Suggest {
 		command = found
 	}
 
+	interval, err := command.Flags().GetDuration(CacheIntervalFlag)
+	if err != nil || interval == 0 {
+		interval = 500 * time.Millisecond
+	}
+
 	var suggestions []prompt.Suggest
-	suggestions = append(suggestions, getFlagSuggestions(command, co, d)...)
-	suggestions = append(suggestions, getCommandSuggestions(command, co)...)
-	suggestions = append(suggestions, getFlagValueSuggestions(command, co, d)...)
-	suggestions = append(suggestions, getDynamicSuggestions(command, co, d)...)
+	currentFlag, partialValue, isFlagValueContext := getCurrentFlagAndValueContext(d, command)
+
+	if !isFlagValueContext {
+		suggestions = append(suggestions, getFlagSuggestions(command, co, d)...)
+		suggestions = append(suggestions, getCommandSuggestions(command, co)...)
+		suggestions = append(suggestions, getDynamicSuggestions(command, co, d)...)
+	} else {
+		suggestions = co.lastFlagValueSuggestions
+		if time.Since(co.lastFlagValueSuggestionsTime) > interval {
+			suggestions = getFlagValueSuggestions(command, d, currentFlag, partialValue)
+			co.lastFlagValueSuggestions = suggestions
+			co.lastFlagValueSuggestionsTime = time.Now()
+		}
+	}
 
 	if co.SuggestionFilter != nil {
 		return co.SuggestionFilter(suggestions, &d)
@@ -202,57 +225,68 @@ func getDynamicSuggestions(cmd *cobra.Command, co *CobraPrompt, d prompt.Documen
 }
 
 // getFlagValueSuggestions returns a slice of flag value suggestions.
-func getFlagValueSuggestions(cmd *cobra.Command, co *CobraPrompt, d prompt.Document) []prompt.Suggest {
+func getFlagValueSuggestions(cmd *cobra.Command, d prompt.Document, currentFlag, partialValue string) []prompt.Suggest {
 	var suggestions []prompt.Suggest
-	currentFlag, partialValue, isFlagValueContext := getCurrentFlagAndValueContext(d, cmd)
 
-	if isFlagValueContext && currentFlag != "" {
-		// Check if the current flag is boolean. If so, do not suggest values.
-		if flag := cmd.Flags().Lookup(currentFlag); flag != nil && flag.Value.Type() == "bool" {
-			return suggestions
-		}
+	// Check if the current flag is boolean. If so, do not suggest values.
+	if flag := cmd.Flags().Lookup(currentFlag); flag != nil && flag.Value.Type() == "bool" {
+		return suggestions
+	}
 
-		if compFunc, exists := cmd.GetFlagCompletionFunc(currentFlag); exists {
-			completions, _ := compFunc(cmd, strings.Fields(d.CurrentLine()), currentFlag)
-			for _, completion := range completions {
-				if strings.HasPrefix(completion, partialValue) {
-					text, description, _ := strings.Cut(completion, "\t")
-					suggestions = append(suggestions, prompt.Suggest{Text: text, Description: description})
-				}
+	if compFunc, exists := cmd.GetFlagCompletionFunc(currentFlag); exists {
+		completions, _ := compFunc(cmd, strings.Fields(d.CurrentLine()), currentFlag)
+		for _, completion := range completions {
+			if strings.HasPrefix(completion, partialValue) {
+				text, description, _ := strings.Cut(completion, "\t")
+				suggestions = append(suggestions, prompt.Suggest{Text: text, Description: description})
 			}
 		}
 	}
 	return suggestions
 }
 
-//  --- Flag utils. TODO: Export me to a standalone pkg
-
-// getCurrentFlagAndValueContext parses the document to find the current flag, its partial value, and whether the context is suitable for flag value suggestions.
+// getCurrentFlagAndValueContext parses the document to find:
+//   - current flag
+//   - partial value
+//   - and whether the context is suitable for flag value suggestions.
 func getCurrentFlagAndValueContext(d prompt.Document, cmd *cobra.Command) (string, string, bool) {
+	prevWords := strings.Fields(d.TextBeforeCursor())
 	textBeforeCursor := d.TextBeforeCursor()
-	args := strings.Fields(textBeforeCursor)
+	hasSpaceSuffix := strings.HasSuffix(textBeforeCursor, " ")
 
-	if len(args) == 0 {
+	lastWord := ""
+	secondLastWord := ""
+	if len(prevWords) > 0 {
+		lastWord = prevWords[len(prevWords)-1]
+		if len(prevWords) > 1 {
+			secondLastWord = prevWords[len(prevWords)-2]
+		}
+	}
+
+	fmt.Printf("(last, secondLast): (%s, %s)\n", lastWord, secondLastWord)
+
+	// Not done typing a flag -> not appropriate context
+	if !hasSpaceSuffix && len(lastWord) > 0 && !strings.HasPrefix(lastWord, "-") {
 		return "", "", false
 	}
 
-	lastArg := args[len(args)-1]
-	secondLastArg := ""
-	if len(args) > 1 {
-		secondLastArg = args[len(args)-2]
+	// Done with writing a flag value (`--arg MyArg `) -> not appropriate context
+	if hasSpaceSuffix && len(secondLastWord) > 0 && strings.HasPrefix(secondLastWord, "-") {
+		return "", "", false
 	}
 
-	// Determine if the last or second last argument is a flag
-	isLastArgFlag := strings.HasPrefix(lastArg, "-")
-	isSecondLastArgFlag := strings.HasPrefix(secondLastArg, "-")
+	// Case where the last word is a partial value -- second last word is a flag (non-bool)
+	if !hasSpaceSuffix && strings.HasPrefix(secondLastWord, "-") {
+		fmt.Println("case 1")
+		flagName := getFlagNameFromArg(secondLastWord, cmd)
+		if flag := cmd.Flags().Lookup(flagName); flag != nil && flag.Value.Type() != "bool" {
+			return flagName, lastWord, true
+		}
+	}
 
-	var currentFlag string
-	if isLastArgFlag {
-		currentFlag = getFlagNameFromArg(lastArg, cmd)
-		return currentFlag, "", true
-	} else if isSecondLastArgFlag {
-		currentFlag = getFlagNameFromArg(secondLastArg, cmd)
-		return currentFlag, lastArg, true
+	// Done with writing a flag (`--arg `) -> appropriate context
+	if hasSpaceSuffix && len(lastWord) > 0 && strings.HasPrefix(lastWord, "-") {
+		return getFlagNameFromArg(lastWord, cmd), "", true
 	}
 
 	return "", "", false
