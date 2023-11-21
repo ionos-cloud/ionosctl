@@ -16,10 +16,17 @@ var advancedPrompt = &comptplus.CobraPrompt{
 	ShowHelpCommandAndFlags:  true,
 	DisableCompletionCommand: true,
 	AddDefaultExitCommand:    true,
+	ShowHiddenCommands:       true,
+	ShowHiddenFlags:          true,
 	GoPromptOptions: []prompt.Option{
 		prompt.OptionTitle("ionosctl"),
 		prompt.OptionPrefix("> "),
 		prompt.OptionShowCompletionAtStart(),
+		prompt.OptionAddKeyBind(prompt.KeyBind{Key: prompt.ShiftLeft, Fn: prompt.GoLeftWord}),
+		prompt.OptionAddKeyBind(prompt.KeyBind{Key: prompt.ShiftRight, Fn: prompt.GoRightWord}),
+		prompt.OptionAddKeyBind(prompt.KeyBind{Key: prompt.ShiftDown, Fn: prompt.GoLineBeginning}),
+		prompt.OptionAddKeyBind(prompt.KeyBind{Key: prompt.ShiftUp, Fn: prompt.GoLineEnd}),
+		prompt.OptionAddKeyBind(prompt.KeyBind{Key: prompt.ShiftDelete, Fn: prompt.DeleteWord}),
 	},
 	HookBefore: func(_ string) {
 		// initConfig()
