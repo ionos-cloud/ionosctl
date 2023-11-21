@@ -22,11 +22,25 @@ var advancedPrompt = &comptplus.CobraPrompt{
 		prompt.OptionTitle("ionosctl"),
 		prompt.OptionPrefix("> "),
 		prompt.OptionShowCompletionAtStart(),
+
 		prompt.OptionAddKeyBind(prompt.KeyBind{Key: prompt.ShiftLeft, Fn: prompt.GoLeftWord}),
 		prompt.OptionAddKeyBind(prompt.KeyBind{Key: prompt.ShiftRight, Fn: prompt.GoRightWord}),
 		prompt.OptionAddKeyBind(prompt.KeyBind{Key: prompt.ShiftDown, Fn: prompt.GoLineBeginning}),
 		prompt.OptionAddKeyBind(prompt.KeyBind{Key: prompt.ShiftUp, Fn: prompt.GoLineEnd}),
 		prompt.OptionAddKeyBind(prompt.KeyBind{Key: prompt.ShiftDelete, Fn: prompt.DeleteWord}),
+
+		prompt.OptionDescriptionTextColor(prompt.Black),
+		prompt.OptionSuggestionTextColor(prompt.White),
+		prompt.OptionSuggestionBGColor(prompt.DarkBlue),
+		prompt.OptionDescriptionBGColor(prompt.Blue),
+
+		prompt.OptionSelectedDescriptionTextColor(prompt.White),
+		prompt.OptionSelectedSuggestionTextColor(prompt.Black),
+		prompt.OptionSelectedSuggestionBGColor(prompt.Blue),
+		prompt.OptionSelectedDescriptionBGColor(prompt.DarkBlue),
+
+		prompt.OptionScrollbarThumbColor(prompt.LightGray),
+		prompt.OptionScrollbarBGColor(prompt.DefaultColor),
 	},
 	HookBefore: func(_ string) {
 		// initConfig()
