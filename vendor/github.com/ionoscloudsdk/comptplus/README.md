@@ -2,9 +2,10 @@
 
 Comptplus is a fork of [Cobra Prompt](https://github.com/stromland/cobra-prompt) with added features:
   - Automatic Flag Value Completion: Extracts possible flag values and recommends them to the user.
-      - Works with descriptions registered via `RegisterFlagCompletionFunc` 
-      - This is only possible with Cobra 1.8.0 (specifically PRs [spf13/cobra#1943](https://github.com/spf13/cobra/pull/1943) and [spf13/cobra#2063](https://github.com/spf13/cobra/pull/2063))
-      - Flag descriptions are also added correctly (in Cobra `\t` is used to split the flag values vs. flag descriptions).
+    - Works with descriptions registered via `RegisterFlagCompletionFunc` 
+    - This is only possible with Cobra 1.8.0 (specifically PRs [spf13/cobra#1943](https://github.com/spf13/cobra/pull/1943) and [spf13/cobra#2063](https://github.com/spf13/cobra/pull/2063))
+    - Flag descriptions are also added correctly (in Cobra `\t` is used to split the flag values vs. flag descriptions).
+  - `HookBefore` and `HookAfter` custom hooks which can be used to specify custom behaviour before/after each command
   -  Refactor to use some stateless funcs
 
 ## Original README below

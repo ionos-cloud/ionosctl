@@ -4,10 +4,10 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/avirtopeanu-ionos/comptplus"
 	"github.com/c-bata/go-prompt"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
+	"github.com/ionoscloudsdk/comptplus"
 )
 
 var advancedPrompt = &comptplus.CobraPrompt{

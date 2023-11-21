@@ -5,7 +5,6 @@ import (
 	"os"
 	"strings"
 	"time"
-	"fmt"
 
 	"github.com/c-bata/go-prompt"
 	"github.com/spf13/cobra"
@@ -55,10 +54,10 @@ type CobraPrompt struct {
 	// OnErrorFunc handle error for command.Execute, if not set print error and exit
 	OnErrorFunc func(err error)
 
-	// HookAfter is a hook that will be executed after a command has been executed
+	// HookAfter is a hook that will be executed every time after a command has been executed
 	HookAfter func(input string)
 
-	// HookBefore is a hook that will be executed before a command has been executed
+	// HookBefore is a hook that will be executed every time  a command has been executed
 	HookBefore func(input string)
 
 	// InArgsParser adds a custom parser for the command line arguments (default: strings.Fields)
@@ -263,21 +262,8 @@ func getCurrentFlagAndValueContext(d prompt.Document, cmd *cobra.Command) (strin
 		}
 	}
 
-	fmt.Printf("(last, secondLast): (%s, %s)\n", lastWord, secondLastWord)
-
-	// Not done typing a flag -> not appropriate context
-	if !hasSpaceSuffix && len(lastWord) > 0 && !strings.HasPrefix(lastWord, "-") {
-		return "", "", false
-	}
-
-	// Done with writing a flag value (`--arg MyArg `) -> not appropriate context
-	if hasSpaceSuffix && len(secondLastWord) > 0 && strings.HasPrefix(secondLastWord, "-") {
-		return "", "", false
-	}
-
 	// Case where the last word is a partial value -- second last word is a flag (non-bool)
 	if !hasSpaceSuffix && strings.HasPrefix(secondLastWord, "-") {
-		fmt.Println("case 1")
 		flagName := getFlagNameFromArg(secondLastWord, cmd)
 		if flag := cmd.Flags().Lookup(flagName); flag != nil && flag.Value.Type() != "bool" {
 			return flagName, lastWord, true
@@ -287,6 +273,16 @@ func getCurrentFlagAndValueContext(d prompt.Document, cmd *cobra.Command) (strin
 	// Done with writing a flag (`--arg `) -> appropriate context
 	if hasSpaceSuffix && len(lastWord) > 0 && strings.HasPrefix(lastWord, "-") {
 		return getFlagNameFromArg(lastWord, cmd), "", true
+	}
+
+	// Not done typing a flag -> not appropriate context
+	if !hasSpaceSuffix && len(lastWord) > 0 && !strings.HasPrefix(lastWord, "-") {
+		return "", "", false
+	}
+
+	// Done with writing a flag value (`--arg MyArg `) -> not appropriate context
+	if hasSpaceSuffix && len(secondLastWord) > 0 && strings.HasPrefix(secondLastWord, "-") {
+		return "", "", false
 	}
 
 	return "", "", false
