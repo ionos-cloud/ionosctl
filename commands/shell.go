@@ -12,7 +12,7 @@ import (
 
 var advancedPrompt = &comptplus.CobraPrompt{
 	RootCmd:                  rootCmd.Command,
-	PersistFlagValues:        true,
+	PersistFlagValues:        true, // Adds flag which allows persisting flag values between commands
 	ShowHelpCommandAndFlags:  true,
 	DisableCompletionCommand: true,
 	AddDefaultExitCommand:    true,
@@ -49,13 +49,13 @@ func Shell() *core.Command {
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
+			fmt.Printf("ionosctl v%s\n", Version)
+			fmt.Println("Warning: This interactive shell is a BETA feature and may not work as expected.")
 			advancedPrompt.Run()
 			return nil
 		},
 		InitClient: false,
 	})
-
-	cmd.Command.Flags().Bool(comptplus.PersistFlagValuesFlag, false, "Keep flag values between commands")
 
 	return cmd
 }
