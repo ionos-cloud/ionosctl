@@ -78,12 +78,10 @@ github.com/ionos-cloud/sdk-go-dbaas-postgres
 # github.com/ionos-cloud/sdk-go-dns v1.1.1
 ## explicit; go 1.18
 github.com/ionos-cloud/sdk-go-dns
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 # github.com/ionos-cloud/sdk-go-logging v1.0.1
 ## explicit; go 1.18
 github.com/ionos-cloud/sdk-go-logging
+<<<<<<< HEAD
 <<<<<<< HEAD
 # github.com/ionos-cloud/sdk-go/v6 v6.1.11
 =======
@@ -97,9 +95,11 @@ github.com/ionos-cloud/sdk-go-vmautoscaling
 >>>>>>> 0026e439 (feat: add vmasc import)
 =======
 # github.com/ionos-cloud/sdk-go-vm-autoscaling v1.0.0
+=======
+# github.com/ionos-cloud/sdk-go-vm-autoscaling v1.0.1
+>>>>>>> f8df976e (deps: bump sdk 1.0.1)
 ## explicit; go 1.18
 github.com/ionos-cloud/sdk-go-vm-autoscaling
->>>>>>> 0fe84d9b (feat: use released sdk)
 # github.com/ionos-cloud/sdk-go/v6 v6.1.8
 >>>>>>> 54fd3dd1 (feat: add vmasc import)
 ## explicit; go 1.19
@@ -190,7 +190,11 @@ github.com/stretchr/testify/assert
 # github.com/subosito/gotenv v1.4.2
 ## explicit; go 1.18
 github.com/subosito/gotenv
+<<<<<<< HEAD
 # golang.org/x/crypto v0.16.0
+=======
+# golang.org/x/crypto v0.15.0
+>>>>>>> f8df976e (deps: bump sdk 1.0.1)
 ## explicit; go 1.18
 golang.org/x/crypto/blowfish
 golang.org/x/crypto/chacha20
@@ -218,7 +222,11 @@ golang.org/x/sys/cpu
 golang.org/x/sys/plan9
 golang.org/x/sys/unix
 golang.org/x/sys/windows
+<<<<<<< HEAD
 # golang.org/x/term v0.15.0
+=======
+# golang.org/x/term v0.14.0
+>>>>>>> f8df976e (deps: bump sdk 1.0.1)
 ## explicit; go 1.18
 golang.org/x/term
 # golang.org/x/text v0.14.0

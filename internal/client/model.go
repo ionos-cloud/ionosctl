@@ -12,7 +12,7 @@ import (
 	postgres "github.com/ionos-cloud/sdk-go-dbaas-postgres"
 	dns "github.com/ionos-cloud/sdk-go-dns"
 	logsvc "github.com/ionos-cloud/sdk-go-logging"
-	vmasc "github.com/ionos-cloud/sdk-go-vmautoscaling"
+	vmasc "github.com/ionos-cloud/sdk-go-vm-autoscaling"
 	cloudv6 "github.com/ionos-cloud/sdk-go/v6"
 
 	"github.com/spf13/viper"
