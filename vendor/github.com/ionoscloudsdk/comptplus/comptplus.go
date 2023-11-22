@@ -14,9 +14,6 @@ import (
 // DynamicSuggestionsAnnotation for dynamic suggestions.
 const DynamicSuggestionsAnnotation = "cobra-prompt-dynamic-suggestions"
 
-// PersistFlagValuesFlag the flag that will be available when PersistFlagValues is true
-const PersistFlagValuesFlag = "persist-flag-values"
-
 const CacheIntervalFlag = "cache-interval"
 
 // CobraPrompt given a Cobra command it will make every flag and sub commands available as suggestions.
@@ -81,6 +78,15 @@ func (co *CobraPrompt) RunContext(ctx context.Context) {
 	if co.RootCmd == nil {
 		panic("RootCmd is not set. Please set RootCmd")
 	}
+
+	if co.HookBefore == nil {
+		co.HookBefore = func(_ string) {}
+	}
+
+	if co.HookAfter == nil {
+		co.HookAfter = func(_ string) {}
+	}
+
 	co.prepareCommands()
 
 	p := prompt.New(
@@ -127,7 +133,7 @@ func (co *CobraPrompt) executeCommand(ctx context.Context) func(string) {
 				os.Exit(1)
 			}
 		}
-		if co.PersistFlagValues {
+		if !co.PersistFlagValues {
 			executedCmd, _, _ := co.RootCmd.Find(os.Args[1:])
 			co.resetFlagsToDefault(executedCmd)
 		}

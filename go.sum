@@ -260,8 +260,8 @@ github.com/ionos-cloud/sdk-go-dns v1.1.1 h1:Qdf5mXYt9ZeRl4zZQxGrvamFkKm1X9WeARyB
 github.com/ionos-cloud/sdk-go-dns v1.1.1/go.mod h1:l9gYdwtUshlBOiIi4nHn3RCX81XlV3VoNvLJrO2VfHg=
 github.com/ionos-cloud/sdk-go/v6 v6.1.8 h1:493wE/BkZxJf7x79UCE0cYGPZoqQcPiEBALvt7uVGY0=
 github.com/ionos-cloud/sdk-go/v6 v6.1.8/go.mod h1:EzEgRIDxBELvfoa/uBN0kOQaqovLjUWEB7iW4/Q+t4k=
-github.com/ionoscloudsdk/comptplus v1.0.0-rc.9.0.20231122104034-d90c97382518 h1:oQm6D0jdNi1W6bgvlY2C9LWhv/xEGlQgAMKlWQJQaVI=
-github.com/ionoscloudsdk/comptplus v1.0.0-rc.9.0.20231122104034-d90c97382518/go.mod h1:C9nAeb6J4O0O0LpEjTf/NMMVvstsGQpcCo2zIFIeblM=
+github.com/ionoscloudsdk/comptplus v1.0.0 h1:ZqANz6zU9oNYPK/BTOvOYp1Ia8rH9f21BDi/jilud6E=
+github.com/ionoscloudsdk/comptplus v1.0.0/go.mod h1:C9nAeb6J4O0O0LpEjTf/NMMVvstsGQpcCo2zIFIeblM=
 github.com/itchyny/gojq v0.12.13 h1:IxyYlHYIlspQHHTE0f3cJF0NKDMfajxViuhBLnHd/QU=
 github.com/itchyny/gojq v0.12.13/go.mod h1:JzwzAqenfhrPUuwbmEz3nu3JQmFLlQTQMUcOdnu/Sf4=
 github.com/itchyny/timefmt-go v0.1.5 h1:G0INE2la8S6ru/ZI5JecgyzbbJNs5lG1RcBqa7Jm6GE=
