@@ -160,6 +160,10 @@ func determineSubdir(name string, nonComputeNamespaces map[string]string) string
 		return filepath.Join("Authentication", filepath.Join(segments...))
 	}
 
+	if segments[0] == "shell" {
+		return filepath.Join("Interactive Shell", filepath.Join(segments...))
+	}
+
 	// Names for single names, eg certmanager in nonComputeNamespaces map
 	namespaceKey := segments[0]
 	if apiName, ok := nonComputeNamespaces[namespaceKey]; ok {

@@ -286,6 +286,8 @@
         * version
             * [get](subcommands%2FDatabase-as-a-Service%2Fpostgres%2Fversion%2Fget.md)
             * [list](subcommands%2FDatabase-as-a-Service%2Fpostgres%2Fversion%2Flist.md)
+* Interactive Shell
+    * [shell](subcommands%2FInteractive%20Shell%2Fshell.md)
 * Managed Backup
     * [create](subcommands%2FManaged-Backup%2Fcreate.md)
     * [delete](subcommands%2FManaged-Backup%2Fdelete.md)
