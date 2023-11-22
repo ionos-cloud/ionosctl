@@ -179,11 +179,7 @@ func setup() error {
 
 	temporaryToken = *tok.GetToken()
 
-	err = os.Setenv("IONOS_TOKEN", temporaryToken)
-	if err != nil {
-		return nil
-	}
-
+	client.EnforceClient("", "", temporaryToken, "")
 	return nil
 }
 

@@ -42,33 +42,37 @@ func selectAuthLayer(layers []Layer) (values map[string]string, usedLayer Layer,
 func Get() (*Client, error) {
 	var getClientErr error
 
-	once.Do(func() {
-		var err error
+	once.Do(
+		func() {
+			var err error
 
-		// Read config file, if available
-		data, err := config.Read()
-		if err == nil {
-			for k, v := range data {
-				if !viper.IsSet(k) {
-					viper.Set(k, v)
+			// Read config file, if available
+			data, err := config.Read()
+			if err == nil {
+				for k, v := range data {
+					if !viper.IsSet(k) {
+						viper.Set(k, v)
+					}
 				}
 			}
-		}
 
-		viper.AutomaticEnv()
+			viper.AutomaticEnv()
 
-		values, usedLayer, err := selectAuthLayer(ConfigurationPriorityRules)
-		if err != nil {
-			getClientErr = errors.Join(getClientErr, fmt.Errorf("failed selecting an auth layer: %w", err))
-			return
-		}
+			values, usedLayer, err := selectAuthLayer(ConfigurationPriorityRules)
+			if err != nil {
+				getClientErr = errors.Join(getClientErr, fmt.Errorf("failed selecting an auth layer: %w", err))
+				return
+			}
 
-		instance = newClient(values["username"], values["password"], values["token"], values["serverUrl"], &usedLayer)
+			instance = newClient(
+				values["username"], values["password"], values["token"], values["serverUrl"], &usedLayer,
+			)
 
-		if err := instance.TestCreds(); err != nil {
-			getClientErr = errors.Join(getClientErr, fmt.Errorf("failed creating client: %w", err))
-		}
-	})
+			if err := instance.TestCreds(); err != nil {
+				getClientErr = errors.Join(getClientErr, fmt.Errorf("failed creating client: %w", err))
+			}
+		},
+	)
 
 	return instance, getClientErr
 }
@@ -127,4 +131,10 @@ func (c *Client) TestCreds() error {
 	}
 
 	return nil
+}
+
+// EnforceClient sets the global client instance to a new client with the given credentials (
+// use only for testing/special cases)
+func EnforceClient(user, pass, token, hostUrl string) {
+	instance = newClient(user, pass, token, hostUrl, nil)
 }
