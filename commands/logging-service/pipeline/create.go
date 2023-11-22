@@ -2,6 +2,7 @@ package pipeline
 
 import (
 	"context"
+	"fmt"
 	"strconv"
 	"strings"
 
@@ -97,6 +98,7 @@ func createFromFlags(c *core.CommandConfig) error {
 
 	retentionTimeInt, err := strconv.ParseInt(retentionTime, 10, 32)
 	if err != nil {
+		fmt.Println("here?2")
 		return err
 	}
 
@@ -124,6 +126,7 @@ func createFromFlags(c *core.CommandConfig) error {
 		},
 	).Execute()
 	if err != nil {
+		fmt.Println("here?1")
 		return err
 	}
 

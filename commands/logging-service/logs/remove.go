@@ -71,7 +71,7 @@ func runRemoveCmd(c *core.CommandConfig) error {
 		return err
 	}
 
-	if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("delete %s", tag)) {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("delete %s", tag), viper.GetBool(constants.ArgForce)) {
 		return fmt.Errorf(confirm.UserDenied)
 	}
 

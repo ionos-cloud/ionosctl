@@ -70,16 +70,15 @@ func runDeleteCmd(c *core.CommandConfig) error {
 		return nil
 	}
 
-	pipelineId, err := c.Command.Command.Flags().GetString(constants.FlagLoggingPipelineId)
-	if err != nil {
-		return err
-	}
+	pipelineId := viper.GetString(core.GetFlagName(c.NS, constants.FlagLoggingPipelineId))
 
-	if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("delete %s", pipelineId)) {
+	if !confirm.FAsk(
+		c.Command.Command.InOrStdin(), fmt.Sprintf("delete %s", pipelineId), viper.GetBool(constants.ArgForce),
+	) {
 		return fmt.Errorf(confirm.UserDenied)
 	}
 
-	_, _, err = client.Must().LoggingServiceClient.PipelinesApi.PipelinesDelete(
+	_, _, err := client.Must().LoggingServiceClient.PipelinesApi.PipelinesDelete(
 		context.Background(), pipelineId,
 	).Execute()
 	if err != nil {

@@ -52,10 +52,7 @@ func runListCmd(c *core.CommandConfig) error {
 		return listAll(c)
 	}
 
-	pipelineId, err := c.Command.Command.Flags().GetString(constants.FlagLoggingPipelineId)
-	if err != nil {
-		return err
-	}
+	pipelineId := viper.GetString(core.GetFlagName(c.NS, constants.FlagLoggingPipelineId))
 
 	pipeline, _, err := client.Must().LoggingServiceClient.PipelinesApi.PipelinesFindById(
 		context.Background(), pipelineId,
