@@ -8,11 +8,11 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionoscloudsdk/comptplus"
+	"github.com/spf13/viper"
 )
 
 var advancedPrompt = &comptplus.CobraPrompt{
 	RootCmd:                  rootCmd.Command,
-	PersistFlagValues:        true, // Adds flag which allows persisting flag values between commands
 	ShowHelpCommandAndFlags:  true,
 	DisableCompletionCommand: true,
 	AddDefaultExitCommand:    true,
@@ -50,11 +50,14 @@ var advancedPrompt = &comptplus.CobraPrompt{
 }
 
 func Shell() *core.Command {
+	flagPersistFlagValues := "persist-flag-values"
+
 	cmd := core.NewCommand(context.Background(), nil, core.CommandBuilder{
 		Namespace: "shell",
 		Resource:  "shell",
 		Verb:      "shell",
 		ShortDesc: "Interactive shell - BETA",
+		LongDesc:  "The ionosctl shell command launches an interactive shell environment, enabling a more dynamic and intuitive way to interact with the ionosctl CLI.\nThis shell is designed to enhance your command-line experience with advanced features and customizations, powered by the comptplus library.",
 		Example:   "ionosctl shell",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			_, err := client.Get()
@@ -67,11 +70,14 @@ func Shell() *core.Command {
 		CmdRun: func(c *core.CommandConfig) error {
 			fmt.Printf("ionosctl v%s\n", Version)
 			fmt.Println("Warning: This interactive shell is a BETA feature and may not work as expected.")
+			advancedPrompt.PersistFlagValues = viper.GetBool(flagPersistFlagValues)
 			advancedPrompt.Run()
 			return nil
 		},
 		InitClient: false,
 	})
+
+	cmd.AddBoolFlag(flagPersistFlagValues, "p", false, "Persist flag values between commands")
 
 	return cmd
 }
