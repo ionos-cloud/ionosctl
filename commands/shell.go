@@ -42,14 +42,9 @@ var advancedPrompt = &comptplus.CobraPrompt{
 		prompt.OptionScrollbarThumbColor(prompt.LightGray),
 		prompt.OptionScrollbarBGColor(prompt.DefaultColor),
 	},
-	HookBefore: func(_ string) {
-		// initConfig()
-	},
-	HookAfter: func(_ string) {
-	},
 
 	OnErrorFunc: func(err error) {
-		rootCmd.Command.PrintErr(err)
+		// rootCmd.Command.PrintErr(err)
 		return
 	},
 }
