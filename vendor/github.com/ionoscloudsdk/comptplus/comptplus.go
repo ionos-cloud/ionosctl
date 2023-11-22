@@ -91,6 +91,29 @@ func (co *CobraPrompt) RunContext(ctx context.Context) {
 	p.Run()
 }
 
+func (co *CobraPrompt) resetFlagsToDefault(cmd *cobra.Command) {
+	// Define the resetFlags function within resetFlagsToDefault
+	resetFlags := func(c *cobra.Command) {
+		c.LocalFlags().VisitAll(func(flag *pflag.Flag) {
+			flag.Value.Set(flag.DefValue)
+		})
+		c.InheritedFlags().VisitAll(func(flag *pflag.Flag) {
+			flag.Value.Set(flag.DefValue)
+		})
+		c.Flags().VisitAll(func(flag *pflag.Flag) {
+			flag.Value.Set(flag.DefValue)
+		})
+	}
+
+	// Reset flags for the current command
+	resetFlags(cmd)
+
+	// Recursively reset flags for all subcommands
+	for _, subCmd := range cmd.Commands() {
+		co.resetFlagsToDefault(subCmd)
+	}
+}
+
 func (co *CobraPrompt) executeCommand(ctx context.Context) func(string) {
 	return func(input string) {
 		co.HookBefore(input)
@@ -103,6 +126,10 @@ func (co *CobraPrompt) executeCommand(ctx context.Context) func(string) {
 				co.RootCmd.PrintErrln(err)
 				os.Exit(1)
 			}
+		}
+		if co.PersistFlagValues {
+			executedCmd, _, _ := co.RootCmd.Find(os.Args[1:])
+			co.resetFlagsToDefault(executedCmd)
 		}
 		co.HookAfter(input)
 	}
@@ -130,9 +157,6 @@ func (co *CobraPrompt) prepareCommands() {
 				os.Exit(0)
 			},
 		})
-	}
-	if co.PersistFlagValues {
-		co.RootCmd.PersistentFlags().BoolP(PersistFlagValuesFlag, "", false, "Persist flag values")
 	}
 }
 
@@ -176,12 +200,8 @@ func (co *CobraPrompt) findSuggestions(d prompt.Document) []prompt.Suggest {
 // getFlagSuggestions returns a slice of flag suggestions.
 func getFlagSuggestions(cmd *cobra.Command, co *CobraPrompt, d prompt.Document) []prompt.Suggest {
 	var suggestions []prompt.Suggest
-	persistFlagValues, _ := cmd.Flags().GetBool(PersistFlagValuesFlag)
 
 	addFlags := func(flag *pflag.Flag) {
-		if len(d.Text) < 1 && flag.Changed && !persistFlagValues {
-			flag.Value.Set(flag.DefValue)
-		}
 		if flag.Hidden && !co.ShowHiddenFlags {
 			return
 		}
@@ -244,8 +264,7 @@ func getFlagValueSuggestions(cmd *cobra.Command, d prompt.Document, currentFlag 
 
 // getCurrentFlagAndValueContext parses the document to find:
 //   - current flag
-//   - partial value
-//   - and whether the context is suitable for flag value suggestions.
+//   - whether the context is suitable for flag value suggestions.
 func getCurrentFlagAndValueContext(d prompt.Document, cmd *cobra.Command) (string, bool) {
 	prevWords := strings.Fields(d.TextBeforeCursor())
 	textBeforeCursor := d.TextBeforeCursor()
@@ -275,7 +294,7 @@ func getCurrentFlagAndValueContext(d prompt.Document, cmd *cobra.Command) (strin
 
 	// Not done typing a flag -> not appropriate context
 	if !hasSpaceSuffix && len(lastWord) > 0 && !strings.HasPrefix(lastWord, "-") {
-		return "",  false
+		return "", false
 	}
 
 	// Done with writing a flag value (`--arg MyArg `) -> not appropriate context
