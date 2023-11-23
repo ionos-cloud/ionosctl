@@ -8,6 +8,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionoscloudsdk/comptplus"
+	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 )
 
@@ -46,6 +47,13 @@ var advancedPrompt = &comptplus.CobraPrompt{
 	OnErrorFunc: func(err error) {
 		// rootCmd.Command.PrintErr(err)
 		return
+	},
+	CustomFlagResetBehaviour: func(flag *pflag.Flag) {
+		if flag.Name == "cols" {
+			flag.Value.Set("")
+			return
+		}
+		flag.Value.Set(flag.DefValue)
 	},
 }
 

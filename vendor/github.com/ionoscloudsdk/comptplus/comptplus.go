@@ -33,6 +33,9 @@ type CobraPrompt struct {
 	// PersistFlagValues will persist flags. For example have verbose turned on every command.
 	PersistFlagValues bool
 
+	// CustomFlagResetBehaviour allows you to specify custom behaviour which will be ran after each command, if PersistFlagValues is false
+	CustomFlagResetBehaviour func(pflag *pflag.Flag)
+
 	// ShowHelpCommandAndFlags will make help command and flag for every command available.
 	ShowHelpCommandAndFlags bool
 
@@ -87,6 +90,12 @@ func (co *CobraPrompt) RunContext(ctx context.Context) {
 		co.HookAfter = func(_ string) {}
 	}
 
+	if co.CustomFlagResetBehaviour == nil {
+		co.CustomFlagResetBehaviour = func(flag *pflag.Flag) {
+			flag.Value.Set(flag.DefValue)
+		}
+	}
+
 	co.prepareCommands()
 
 	p := prompt.New(
@@ -100,14 +109,8 @@ func (co *CobraPrompt) RunContext(ctx context.Context) {
 func (co *CobraPrompt) resetFlagsToDefault(cmd *cobra.Command) {
 	// Define the resetFlags function within resetFlagsToDefault
 	resetFlags := func(c *cobra.Command) {
-		c.LocalFlags().VisitAll(func(flag *pflag.Flag) {
-			flag.Value.Set(flag.DefValue)
-		})
-		c.InheritedFlags().VisitAll(func(flag *pflag.Flag) {
-			flag.Value.Set(flag.DefValue)
-		})
 		c.Flags().VisitAll(func(flag *pflag.Flag) {
-			flag.Value.Set(flag.DefValue)
+			co.CustomFlagResetBehaviour(flag)
 		})
 	}
 
