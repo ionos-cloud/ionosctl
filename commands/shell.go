@@ -57,8 +57,14 @@ func Shell() *core.Command {
 		Resource:  "shell",
 		Verb:      "shell",
 		ShortDesc: "Interactive shell - BETA",
-		LongDesc:  "The ionosctl shell command launches an interactive shell environment, enabling a more dynamic and intuitive way to interact with the ionosctl CLI.\nThis shell is designed to enhance your command-line experience with advanced features and customizations, powered by the comptplus library.",
-		Example:   "ionosctl shell",
+		LongDesc: `The ionosctl shell command launches an interactive shell environment, enabling a more dynamic and intuitive way to interact with the ionosctl CLI.
+This shell is designed to enhance your command-line experience with advanced features and customizations, powered by the comptplus library.
+
+CUSTOM CONTROLS: (your usual shell controls might not work)
+- SHIFT + LEFT/RIGHT: Quickly navigate words left/right
+- SHIFT + UP/DOWN: Quickly navigate to the beginning/end of the line
+- SHIFT + DELETE: Delete previous word`,
+		Example: "ionosctl shell",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			_, err := client.Get()
 			if err != nil {
@@ -69,7 +75,7 @@ func Shell() *core.Command {
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			fmt.Printf("ionosctl v%s\n", Version)
-			fmt.Println("Warning: This interactive shell is a BETA feature and may not work as expected.")
+			fmt.Println("Warning: This interactive shell is a BETA feature. We recommend keeping usage and testing to non-production critical applications.")
 			advancedPrompt.PersistFlagValues = viper.GetBool(flagPersistFlagValues)
 			advancedPrompt.Run()
 			return nil

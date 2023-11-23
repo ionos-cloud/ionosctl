@@ -15,6 +15,11 @@ ionosctl shell [flags]
 The ionosctl shell command launches an interactive shell environment, enabling a more dynamic and intuitive way to interact with the ionosctl CLI.
 This shell is designed to enhance your command-line experience with advanced features and customizations, powered by the comptplus library.
 
+CUSTOM CONTROLS: (your usual shell controls might not work)
+- SHIFT + LEFT/RIGHT: Quickly navigate words left/right
+- SHIFT + UP/DOWN: Quickly navigate to the beginning/end of the line
+- SHIFT + DELETE: Delete previous word
+
 ## Options
 
 ```text
