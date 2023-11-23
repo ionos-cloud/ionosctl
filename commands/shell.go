@@ -32,15 +32,17 @@ var advancedPrompt = &comptplus.CobraPrompt{
 
 		prompt.OptionDescriptionTextColor(prompt.Black),
 		prompt.OptionSuggestionTextColor(prompt.White),
-		prompt.OptionSuggestionBGColor(prompt.DarkBlue),
-		prompt.OptionDescriptionBGColor(prompt.Blue),
+		prompt.OptionDescriptionBGColor(prompt.LightGray),
+		prompt.OptionSuggestionBGColor(prompt.DarkGray),
 
 		prompt.OptionSelectedDescriptionTextColor(prompt.White),
 		prompt.OptionSelectedSuggestionTextColor(prompt.Black),
-		prompt.OptionSelectedSuggestionBGColor(prompt.Blue),
-		prompt.OptionSelectedDescriptionBGColor(prompt.DarkBlue),
+		prompt.OptionSelectedDescriptionBGColor(prompt.DarkGray),
+		prompt.OptionSelectedSuggestionBGColor(prompt.LightGray),
 
-		prompt.OptionScrollbarThumbColor(prompt.LightGray),
+		prompt.OptionPreviewSuggestionTextColor(prompt.DarkBlue),
+		prompt.OptionPrefixTextColor(prompt.DefaultColor),
+		prompt.OptionScrollbarThumbColor(prompt.DarkGray),
 		prompt.OptionScrollbarBGColor(prompt.DefaultColor),
 	},
 
