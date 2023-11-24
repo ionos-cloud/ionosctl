@@ -3,10 +3,10 @@ package commands
 import (
 	"context"
 	"fmt"
-	"time"
 
 	"github.com/c-bata/go-prompt"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionoscloudsdk/comptplus"
 	"github.com/spf13/cobra"
@@ -48,12 +48,18 @@ var advancedPrompt = &comptplus.CobraPrompt{
 	},
 
 	HookBefore: func(cmd *cobra.Command, input string) {
-		if cmd.Flags().Lookup("force") != nil {
-			viper.Set("force", true)
+		forceExists := false
+		// TODO: Why forceExists is always true, even for commands that don't have --force?
+		cmd.Flags().VisitAll(func(flag *pflag.Flag) {
+			if flag.Name == constants.ArgForce {
+				forceExists = true
+			}
+		})
 
-			fmt.Println("DANGER: `--force` is always on while using the interactive shell!\nWaiting for 10 seconds before executing command...")
-
-			time.Sleep(10 * time.Second)
+		if forceSet, err := cmd.Flags().GetBool(constants.ArgForce); forceExists && (!forceSet || err != nil) {
+			fmt.Println("Warning: '--force' needs to be set for this command! Interactive shell does not support user inputs. Repeat this command with --force to continue.")
+			cmd = rootCmd.Command
+			cmd.SetArgs([]string{"helpgi"})
 		}
 	},
 
