@@ -23,28 +23,33 @@ import (
 
 const FiltersPartitionChar = "="
 
-// ValidateFilters is currently being used in PreRun to check if the user provided any invalid filters
-// availableFilters is set by the caller to be the properties of the struct (e.g. Name, Description, etc) with the first letter non-caps, by using the SDK generated structs.
-// usageFilters is the usage string printed to output if the usage is wrong
+// ValidateFilters checks for invalid user-provided filters in PreRun. It compares user input against a list of valid filters (`availableFilters`),
+// which are derived from struct properties (like 'Name', 'Description') with the first letter in lowercase, following the SDK struct naming conventions.
 //
-// WARNING: It just so happens that we can find the `availableFilters` by using the SDK structs namings with non-caps first letter,
-// but if the SDK struct fields naming were to change, then we would be forced to refactor the whole file commands/cloudapi/completer/filters.go
+// Usage:
+//   - `availableFilters`: List of valid filter keys (struct properties with lowercase first letter).
+//   - `usageFilters`: Usage information string displayed if an invalid filter is provided.
 //
-// HACKY WORKAROUND WARNING: To work around the fact that we don't have access to availableFilters after this func's
-// execution ends, and to keep support for 'any caps notation for properties is valid' rule e.g naME=myserver
-// is a valid input, this func 'corrects' the caps of all keys that are valid. For example,
+// IMPORTANT:
+//   - This function relies on the naming convention of SDK struct fields.
+//   - If these names change, a refactor of filters.go in commands/cloudapi/completer may be necessary.
 //
-//	'--filters NAME=myserver,NAME=otherserver,imagetype=LINUX'
+// WORKAROUND:
 //
-// would be corrected to
+//   - This function 'corrects' the capitalization of valid keys. For instance, it would adjust
 //
-//	'--filters name=myserver,name=otherserver,imageType=LINUX'
+//     '--filters NAME=myserver,NAME=otherserver,imagetype=LINUX' to
 //
-// by MANUALLY setting the flag values, as well as the viper (global config) values.
+//     '--filters name=myserver,name=otherserver,imageType=LINUX'
+//
+//   - This adjustment is done by manually setting both the flag and global config (viper) values.
+//
+// The function first retrieves and processes filter key-value pairs. If any invalid filters are found, it reports them and returns an error.
+// Otherwise, it applies the capitalization correction and updates the flag and viper settings accordingly.
 func ValidateFilters(c *core.PreCommandConfig, availableFilters []string, usageFilters string) error {
 	filters, err := c.Command.Command.Flags().GetStringSlice(cloudapiv6.ArgFilters)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed getting stringSlice: %w", err)
 	}
 	filtersKV, err := getFilters(filters, c.Command)
 	if err != nil {
