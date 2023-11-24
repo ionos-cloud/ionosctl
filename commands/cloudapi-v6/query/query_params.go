@@ -42,7 +42,11 @@ const FiltersPartitionChar = "="
 //
 // by MANUALLY setting the flag values, as well as the viper (global config) values.
 func ValidateFilters(c *core.PreCommandConfig, availableFilters []string, usageFilters string) error {
-	filtersKV, err := getFilters(viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)), c.Command)
+	filters, err := c.Command.Command.Flags().GetStringSlice(cloudapiv6.ArgFilters)
+	if err != nil {
+		return err
+	}
+	filtersKV, err := getFilters(filters, c.Command)
 	if err != nil {
 		return err
 	}
@@ -83,14 +87,18 @@ func ValidateFilters(c *core.PreCommandConfig, availableFilters []string, usageF
 func GetListQueryParams(c *core.CommandConfig) (resources.ListQueryParams, error) {
 	listQueryParams := resources.ListQueryParams{}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
-		filters, err := getFilters(viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)), c.Command)
+	if c.Command.Command.Flags().Changed(cloudapiv6.ArgFilters) {
+		filters, err := c.Command.Command.Flags().GetStringSlice(cloudapiv6.ArgFilters)
+		if err != nil {
+			return listQueryParams, err
+		}
+		mapFilters, err := getFilters(filters, c.Command)
 		if err != nil {
 			return listQueryParams, err
 		}
 
 		if len(filters) > 0 {
-			listQueryParams = listQueryParams.SetFilters(filters)
+			listQueryParams = listQueryParams.SetFilters(mapFilters)
 		}
 	}
 
@@ -121,18 +129,25 @@ func GetListQueryParams(c *core.CommandConfig) (resources.ListQueryParams, error
 // and return a map with the corresponding key values
 func getFilters(args []string, cmd *core.Command) (map[string][]string, error) {
 	filtersKV := map[string][]string{}
-	if len(args) == 0 {
-		return filtersKV, errors.New("must provide at least one filter")
-	}
+	// if len(args) == 0 {
+	// 	return filtersKV, errors.New("must provide at least one filter")
+	// }
 
 	for _, arg := range args {
+		if arg == "" {
+			// Workaround for interactive shell:
+			// further usages after resetting to an empty slice results in an empty string as the first value
+			continue
+		}
+
 		if strings.Contains(arg, FiltersPartitionChar) {
 			kv := strings.Split(arg, FiltersPartitionChar)
 			filtersKV[kv[0]] = append(filtersKV[kv[0]], kv[1])
 		} else {
 			return filtersKV, errors.New(
-				fmt.Sprintf("\"%s --filters\" option set incorrectly.\n\nUsage: %s --filters KEY1%sVALUE1,KEY2%sVALUE2\n\nFor more details, see '%s --help'.",
+				fmt.Sprintf("\"%s --filters\" option set incorrectly. %s \n\nUsage: %s --filters KEY1%sVALUE1,KEY2%sVALUE2\n\nFor more details, see '%s --help'.",
 					cmd.CommandPath(),
+					strings.Join(args, ","),
 					cmd.CommandPath(),
 					FiltersPartitionChar,
 					FiltersPartitionChar,

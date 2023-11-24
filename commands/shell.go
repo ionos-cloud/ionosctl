@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/c-bata/go-prompt"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
@@ -23,12 +24,6 @@ var advancedPrompt = &comptplus.CobraPrompt{
 		prompt.OptionTitle("ionosctl"),
 		prompt.OptionPrefix("> "),
 		prompt.OptionShowCompletionAtStart(),
-
-		prompt.OptionAddKeyBind(prompt.KeyBind{Key: prompt.ShiftLeft, Fn: prompt.GoLeftWord}),
-		prompt.OptionAddKeyBind(prompt.KeyBind{Key: prompt.ShiftRight, Fn: prompt.GoRightWord}),
-		prompt.OptionAddKeyBind(prompt.KeyBind{Key: prompt.ShiftDown, Fn: prompt.GoLineBeginning}),
-		prompt.OptionAddKeyBind(prompt.KeyBind{Key: prompt.ShiftUp, Fn: prompt.GoLineEnd}),
-		prompt.OptionAddKeyBind(prompt.KeyBind{Key: prompt.ShiftDelete, Fn: prompt.DeleteWord}),
 
 		prompt.OptionDescriptionTextColor(prompt.Black),
 		prompt.OptionSuggestionTextColor(prompt.White),
@@ -51,11 +46,23 @@ var advancedPrompt = &comptplus.CobraPrompt{
 		return
 	},
 	CustomFlagResetBehaviour: func(flag *pflag.Flag) {
-		if flag.Name == "cols" {
-			flag.Value.Set("")
+		sliceValue, ok := flag.Value.(pflag.SliceValue)
+		if !ok {
+			// For non-slice flags, just set to the default value
+			flag.Value.Set(flag.DefValue)
 			return
 		}
-		flag.Value.Set(flag.DefValue)
+
+		defValue := strings.Trim(flag.DefValue, "[]")
+		defaultSlice := strings.Split(defValue, ",")
+		err := sliceValue.Replace(defaultSlice)
+
+		if err != nil {
+			// If there's an error parsing, fall back to setting the default value directly
+			flag.Value.Set(flag.DefValue)
+			_ = sliceValue.Replace(defaultSlice)
+			return
+		}
 	},
 }
 
