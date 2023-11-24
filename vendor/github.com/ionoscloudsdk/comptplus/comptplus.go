@@ -92,7 +92,27 @@ func (co *CobraPrompt) RunContext(ctx context.Context) {
 
 	if co.CustomFlagResetBehaviour == nil {
 		co.CustomFlagResetBehaviour = func(flag *pflag.Flag) {
-			flag.Value.Set(flag.DefValue)
+			sliceValue, ok := flag.Value.(pflag.SliceValue)
+			if !ok {
+				// For non-slice flags, just set to the default value
+				flag.Value.Set(flag.DefValue)
+				return
+			}
+
+			defValue := strings.Trim(flag.DefValue, "[]")
+			defaultSlice := strings.Split(defValue, ",")
+			err := sliceValue.Replace(defaultSlice)
+
+			if err != nil {
+				// If there's an error parsing defaultSlice as a slice, try this workaround
+				errShouldNeverHappenButWeAreProfessionals := sliceValue.Replace([]string{})
+				if errShouldNeverHappenButWeAreProfessionals == nil {
+					// If this check wouldn't exist and we would have some error parsing the nil value,
+					// it would actually append the default value to the previous user's value
+					flag.Value.Set(flag.DefValue)
+				}
+				return
+			}
 		}
 	}
 

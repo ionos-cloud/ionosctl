@@ -3,13 +3,11 @@ package commands
 import (
 	"context"
 	"fmt"
-	"strings"
 
 	"github.com/c-bata/go-prompt"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionoscloudsdk/comptplus"
-	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 )
 
@@ -44,25 +42,6 @@ var advancedPrompt = &comptplus.CobraPrompt{
 	OnErrorFunc: func(err error) {
 		// rootCmd.Command.PrintErr(err)
 		return
-	},
-	CustomFlagResetBehaviour: func(flag *pflag.Flag) {
-		sliceValue, ok := flag.Value.(pflag.SliceValue)
-		if !ok {
-			// For non-slice flags, just set to the default value
-			flag.Value.Set(flag.DefValue)
-			return
-		}
-
-		defValue := strings.Trim(flag.DefValue, "[]")
-		defaultSlice := strings.Split(defValue, ",")
-		err := sliceValue.Replace(defaultSlice)
-
-		if err != nil {
-			// If there's an error parsing, fall back to setting the default value directly
-			flag.Value.Set(flag.DefValue)
-			_ = sliceValue.Replace(defaultSlice)
-			return
-		}
 	},
 }
 
