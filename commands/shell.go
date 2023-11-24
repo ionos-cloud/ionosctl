@@ -3,11 +3,13 @@ package commands
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/c-bata/go-prompt"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionoscloudsdk/comptplus"
+	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 )
@@ -43,6 +45,16 @@ var advancedPrompt = &comptplus.CobraPrompt{
 	OnErrorFunc: func(err error) {
 		// rootCmd.Command.PrintErr(err)
 		return
+	},
+
+	HookBefore: func(cmd *cobra.Command, input string) {
+		if cmd.Flags().Lookup("force") != nil {
+			viper.Set("force", true)
+
+			fmt.Println("DANGER: `--force` is always on while using the interactive shell!\nWaiting for 10 seconds before executing command...")
+
+			time.Sleep(10 * time.Second)
+		}
 	},
 
 	CustomFlagResetBehaviour: func(flag *pflag.Flag) {
@@ -95,7 +107,10 @@ Ctrl + L\tClear the screen`,
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			fmt.Printf("ionosctl v%s\n", Version)
-			fmt.Println("Warning: This interactive shell is a BETA feature. We recommend keeping usage and testing to non-production critical applications.")
+			fmt.Println("Warning: We recommend keeping usage of this interactive shell to non-production critical applications.")
+			fmt.Println("   - DANGER: '--force' will always be set! Deleting resources will not ask for confirmation!")
+			fmt.Println("   - DANGER: Certain commands that require user input may freeze the shell!")
+			fmt.Println("   - This is a BETA feature. Please report any bugs to github.com/ionos-cloud/ionosctl/issues/new/choose")
 			advancedPrompt.PersistFlagValues = viper.GetBool(flagPersistFlagValues)
 			advancedPrompt.Run()
 			return nil

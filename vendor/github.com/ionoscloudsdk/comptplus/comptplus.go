@@ -55,10 +55,10 @@ type CobraPrompt struct {
 	OnErrorFunc func(err error)
 
 	// HookAfter is a hook that will be executed every time after a command has been executed
-	HookAfter func(input string)
+	HookAfter func(cmd *cobra.Command, input string)
 
-	// HookBefore is a hook that will be executed every time  a command has been executed
-	HookBefore func(input string)
+	// HookBefore is a hook that will be executed every time before a command is executed
+	HookBefore func(cmd *cobra.Command, input string)
 
 	// InArgsParser adds a custom parser for the command line arguments (default: strings.Fields)
 	InArgsParser func(args string) []string
@@ -83,12 +83,13 @@ func (co *CobraPrompt) RunContext(ctx context.Context) {
 	}
 
 	if co.HookBefore == nil {
-		co.HookBefore = func(_ string) {}
+		co.HookBefore = func(_ *cobra.Command, _ string) {}
 	}
 
 	if co.HookAfter == nil {
-		co.HookAfter = func(_ string) {}
+		co.HookAfter = func(_ *cobra.Command, _ string) {}
 	}
+
 
 	if co.CustomFlagResetBehaviour == nil {
 		co.CustomFlagResetBehaviour = func(flag *pflag.Flag) {
@@ -145,9 +146,12 @@ func (co *CobraPrompt) resetFlagsToDefault(cmd *cobra.Command) {
 
 func (co *CobraPrompt) executeCommand(ctx context.Context) func(string) {
 	return func(input string) {
-		co.HookBefore(input)
 		args := co.parseInput(input)
 		os.Args = append([]string{os.Args[0]}, args...)
+		executedCmd, _, _ := co.RootCmd.Find(os.Args[1:])
+
+		co.HookBefore(executedCmd, input)
+
 		if err := co.RootCmd.ExecuteContext(ctx); err != nil {
 			if co.OnErrorFunc != nil {
 				co.OnErrorFunc(err)
@@ -157,10 +161,9 @@ func (co *CobraPrompt) executeCommand(ctx context.Context) func(string) {
 			}
 		}
 		if !co.PersistFlagValues {
-			executedCmd, _, _ := co.RootCmd.Find(os.Args[1:])
 			co.resetFlagsToDefault(executedCmd)
 		}
-		co.HookAfter(input)
+		co.HookAfter(executedCmd, input)
 	}
 }
 
