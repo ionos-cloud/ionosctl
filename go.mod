@@ -32,7 +32,7 @@ require (
 require (
 	github.com/Jeffail/gabs/v2 v2.7.0
 	github.com/c-bata/go-prompt v0.2.6
-	github.com/ionoscloudsdk/comptplus v1.0.2
+	github.com/ionoscloudsdk/comptplus v1.0.3-0.20231124152430-d9e3a353aaae
 	github.com/itchyny/gojq v0.12.13
 )
 

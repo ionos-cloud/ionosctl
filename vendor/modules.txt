@@ -81,7 +81,7 @@ github.com/ionos-cloud/sdk-go-dns
 # github.com/ionos-cloud/sdk-go/v6 v6.1.8
 ## explicit; go 1.19
 github.com/ionos-cloud/sdk-go/v6
-# github.com/ionoscloudsdk/comptplus v1.0.2
+# github.com/ionoscloudsdk/comptplus v1.0.3-0.20231124152430-d9e3a353aaae
 ## explicit; go 1.17
 github.com/ionoscloudsdk/comptplus
 # github.com/itchyny/gojq v0.12.13

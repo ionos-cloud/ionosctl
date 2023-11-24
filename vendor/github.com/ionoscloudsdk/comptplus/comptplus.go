@@ -33,8 +33,8 @@ type CobraPrompt struct {
 	// PersistFlagValues will persist flags. For example have verbose turned on every command.
 	PersistFlagValues bool
 
-	// CustomFlagResetBehaviour allows you to specify custom behaviour which will be ran after each command, if PersistFlagValues is false
-	CustomFlagResetBehaviour func(pflag *pflag.Flag)
+	// CustomFlagResetBehaviour allows you to specify custom behaviour which will be run after each command, if PersistFlagValues is false
+	CustomFlagResetBehaviour func(flag *pflag.Flag)
 
 	// ShowHelpCommandAndFlags will make help command and flag for every command available.
 	ShowHelpCommandAndFlags bool
@@ -90,7 +90,6 @@ func (co *CobraPrompt) RunContext(ctx context.Context) {
 		co.HookAfter = func(_ *cobra.Command, _ string) {}
 	}
 
-
 	if co.CustomFlagResetBehaviour == nil {
 		co.CustomFlagResetBehaviour = func(flag *pflag.Flag) {
 			sliceValue, ok := flag.Value.(pflag.SliceValue)
@@ -108,7 +107,7 @@ func (co *CobraPrompt) RunContext(ctx context.Context) {
 				// If there's an error parsing defaultSlice as a slice, try this workaround
 				errShouldNeverHappenButWeAreProfessionals := sliceValue.Replace([]string{})
 				if errShouldNeverHappenButWeAreProfessionals == nil {
-					// If this check wouldn't exist and we would have some error parsing the nil value,
+					// If this check wouldn't exist, and we would have some error parsing the nil value,
 					// it would actually append the default value to the previous user's value
 					flag.Value.Set(flag.DefValue)
 				}
