@@ -8,6 +8,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionoscloudsdk/comptplus"
+	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 )
 
@@ -42,6 +43,20 @@ var advancedPrompt = &comptplus.CobraPrompt{
 	OnErrorFunc: func(err error) {
 		// rootCmd.Command.PrintErr(err)
 		return
+	},
+
+	CustomFlagResetBehaviour: func(flag *pflag.Flag) {
+		sliceValue, ok := flag.Value.(pflag.SliceValue)
+		if !ok {
+			// For non-slice flags, just set to the default value
+			flag.Value.Set(flag.DefValue)
+			return
+		}
+
+		err := sliceValue.Replace([]string{})
+		if err != nil {
+			flag.Value.Set(flag.DefValue)
+		}
 	},
 }
 
