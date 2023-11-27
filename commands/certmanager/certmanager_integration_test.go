@@ -74,21 +74,24 @@ func TestCertificateManagerServiceCmd(t *testing.T) {
 			assert.NoError(t, err)
 
 			caPEM := new(bytes.Buffer)
-			pem.Encode(caPEM, &pem.Block{
-				Type:  "CERTIFICATE",
-				Bytes: caBytes,
-			})
+			pem.Encode(
+				caPEM, &pem.Block{
+					Type:  "CERTIFICATE",
+					Bytes: caBytes,
+				},
+			)
 
 			caPrivKeyPEM := new(bytes.Buffer)
-			pem.Encode(caPrivKeyPEM, &pem.Block{
-				Type:  "RSA PRIVATE KEY",
-				Bytes: x509.MarshalPKCS1PrivateKey(caPrivKey),
-			})
+			pem.Encode(
+				caPrivKeyPEM, &pem.Block{
+					Type:  "RSA PRIVATE KEY",
+					Bytes: x509.MarshalPKCS1PrivateKey(caPrivKey),
+				},
+			)
 
 			viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 			viper.Set(constants.ArgQuiet, false)
 			viper.Set(constants.ArgVerbose, false)
-			viper.Set(constants.ArgForce, true)
 
 			c := CertCreateCmd()
 			c.Command.Flags().Set(FlagCertName, "___test___certificate___test___")
@@ -119,6 +122,7 @@ func TestCertificateManagerServiceCmd(t *testing.T) {
 			assert.NoError(t, err)
 
 			d := CertDeleteCmd()
+			d.Command.Flags().Set(constants.ArgForce, "true")
 			d.Command.Flags().Set(FlagCertId, id)
 			err = d.Command.Execute()
 			assert.NoError(t, err)
@@ -137,16 +141,20 @@ func TestCertificateManagerServiceCmd(t *testing.T) {
 			assert.NoError(t, err)
 
 			caPEM := new(bytes.Buffer)
-			pem.Encode(caPEM, &pem.Block{
-				Type:  "CERTIFICATE",
-				Bytes: caBytes,
-			})
+			pem.Encode(
+				caPEM, &pem.Block{
+					Type:  "CERTIFICATE",
+					Bytes: caBytes,
+				},
+			)
 
 			caPrivKeyPEM := new(bytes.Buffer)
-			pem.Encode(caPrivKeyPEM, &pem.Block{
-				Type:  "RSA PRIVATE KEY",
-				Bytes: x509.MarshalPKCS1PrivateKey(caPrivKey),
-			})
+			pem.Encode(
+				caPrivKeyPEM, &pem.Block{
+					Type:  "RSA PRIVATE KEY",
+					Bytes: x509.MarshalPKCS1PrivateKey(caPrivKey),
+				},
+			)
 			certPath := filepath.Join(".", "cert.pem")
 			//os.Create(certPath)
 			err = os.WriteFile(certPath, caPEM.Bytes(), 0777)
@@ -160,7 +168,6 @@ func TestCertificateManagerServiceCmd(t *testing.T) {
 			viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 			viper.Set(constants.ArgQuiet, true)
 			viper.Set(constants.ArgVerbose, false)
-			viper.Set(constants.ArgForce, true)
 
 			c := CertCreateCmd()
 			c.Command.Flags().Set(FlagCertName, "test_certificate-files_test")
@@ -189,12 +196,15 @@ func TestCertificateManagerServiceCmd(t *testing.T) {
 			p.Command.Flags().Set(FlagCertName, "test_certificate-files-updated_test")
 			err = p.Command.Execute()
 
-			cert, _, err := svc.CertManagerClient.CertificatesApi.CertificatesGetById(context.Background(), id).Execute()
+			cert, _, err := svc.CertManagerClient.CertificatesApi.CertificatesGetById(
+				context.Background(), id,
+			).Execute()
 			assert.NoError(t, err)
 			assert.Equal(t, "test_certificate-files-updated_test", *cert.GetProperties().GetName())
 
 			d := CertDeleteCmd()
 			d.Command.Flags().Set(FlagCertId, id)
+			d.Command.Flags().Set(constants.ArgForce, "true")
 			err = d.Command.Execute()
 			assert.NoError(t, err)
 

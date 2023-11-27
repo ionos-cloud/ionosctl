@@ -115,15 +115,13 @@ func init() {
 	_ = rootCmd.Command.RegisterFlagCompletionFunc(
 		constants.ArgOutput,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-			return []string{jsontabwriter.JSONFormat, jsontabwriter.TextFormat, jsontabwriter.APIFormat}, cobra.ShellCompDirectiveNoFileComp
+			return []string{
+				jsontabwriter.JSONFormat, jsontabwriter.TextFormat, jsontabwriter.APIFormat,
+			}, cobra.ShellCompDirectiveNoFileComp
 		},
 	)
 	rootPFlagSet.BoolVarP(&Quiet, constants.ArgQuiet, constants.ArgQuietShort, false, "Quiet output")
 	_ = viper.BindPFlag(constants.ArgQuiet, rootPFlagSet.Lookup(constants.ArgQuiet))
-	rootPFlagSet.BoolVarP(
-		&Force, constants.ArgForce, constants.ArgForceShort, false, "Force command to execute without user input",
-	)
-	_ = viper.BindPFlag(constants.ArgForce, rootPFlagSet.Lookup(constants.ArgForce))
 	rootPFlagSet.BoolVarP(
 		&Verbose, constants.ArgVerbose, constants.ArgVerboseShort, false,
 		"Print step-by-step process when running command",
@@ -225,7 +223,8 @@ func addCommands() {
 	funcChangeDefaultApiUrl := func(command *core.Command, newDefault string) *core.Command {
 		// For some reason, this line only changes the help text
 		command.Command.PersistentFlags().StringP(
-			constants.ArgServerUrl, constants.ArgServerUrlShort, newDefault, "Override default host url")
+			constants.ArgServerUrl, constants.ArgServerUrlShort, newDefault, "Override default host url",
+		)
 
 		// If unset, manually set the flag to the new default. SIDE EFFECT: Now, this flag will always be considered "set", within DNS sub commands. Can't find a better alternative
 		command.Command.PersistentPreRun = func(cmd *cobra.Command, args []string) {

@@ -18,42 +18,60 @@ import (
 )
 
 func ClusterDeleteCmd() *core.Command {
-	cmd := core.NewCommand(context.TODO(), nil, core.CommandBuilder{
-		Namespace: "dataplatform",
-		Resource:  "cluster",
-		Verb:      "delete",
-		Aliases:   []string{"del", "d"},
-		ShortDesc: "Delete a Dataplatform Cluster by ID",
-		Example:   "ionosctl dataplatform cluster delete --cluster-id <cluster-id>",
-		PreCmdRun: func(c *core.PreCommandConfig) error {
-			return core.CheckRequiredFlagsSets(c.Command, c.NS, []string{constants.ArgAll}, []string{constants.FlagClusterId})
-		},
-		CmdRun: func(c *core.CommandConfig) error {
-			if all := viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)); all {
-				return deleteAll(c)
-			}
+	cmd := core.NewCommand(
+		context.TODO(), nil, core.CommandBuilder{
+			Namespace: "dataplatform",
+			Resource:  "cluster",
+			Verb:      "delete",
+			Aliases:   []string{"del", "d"},
+			ShortDesc: "Delete a Dataplatform Cluster by ID",
+			Example:   "ionosctl dataplatform cluster delete --cluster-id <cluster-id>",
+			PreCmdRun: func(c *core.PreCommandConfig) error {
+				return core.CheckRequiredFlagsSets(
+					c.Command, c.NS, []string{constants.ArgAll}, []string{constants.FlagClusterId},
+				)
+			},
+			CmdRun: func(c *core.CommandConfig) error {
+				if all := viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)); all {
+					return deleteAll(c)
+				}
 
-			clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
-			if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("delete cluster %s", clusterId), viper.GetBool(constants.ArgForce)) {
-				return fmt.Errorf(confirm.UserDenied)
-			}
+				clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
+				if !confirm.FAsk(
+					c.Command.Command.InOrStdin(), fmt.Sprintf("delete cluster %s", clusterId),
+					viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce)),
+				) {
+					return fmt.Errorf(confirm.UserDenied)
+				}
 
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting cluster: %s", clusterId))
+				fmt.Fprintf(
+					c.Command.Command.ErrOrStderr(),
+					jsontabwriter.GenerateVerboseOutput("Deleting cluster: %s", clusterId),
+				)
 
-			_, _, err := client.Must().DataplatformClient.DataPlatformClusterApi.ClustersDelete(c.Context, clusterId).Execute()
-			if err != nil {
+				_, _, err := client.Must().DataplatformClient.DataPlatformClusterApi.ClustersDelete(
+					c.Context, clusterId,
+				).Execute()
+				if err != nil {
+					return err
+				}
+
 				return err
-			}
-
-			return err
+			},
+			InitClient: true,
 		},
-		InitClient: true,
-	})
+	)
 
-	cmd.AddStringFlag(constants.FlagClusterId, constants.FlagIdShort, "", "The unique ID of the cluster", core.RequiredFlagOption())
-	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.DataplatformClusterIds(), cobra.ShellCompDirectiveNoFileComp
-	})
+	cmd.AddBoolFlag(constants.ArgForce, constants.ArgForceShort, false, constants.DescForce)
+	cmd.AddStringFlag(
+		constants.FlagClusterId, constants.FlagIdShort, "", "The unique ID of the cluster", core.RequiredFlagOption(),
+	)
+	_ = cmd.Command.RegisterFlagCompletionFunc(
+		constants.FlagClusterId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.DataplatformClusterIds(), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Delete all clusters")
 
 	cmd.Command.SilenceUsage = true
@@ -68,16 +86,23 @@ func deleteAll(c *core.CommandConfig) error {
 		return err
 	}
 
-	err = functional.ApplyAndAggregateErrors(*xs.GetItems(), func(x ionoscloud.ClusterResponseData) error {
-		yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("delete cluster %s (%s)", *x.Id, *x.Properties.Name), viper.GetBool(constants.ArgForce))
-		if yes {
-			_, _, delErr := client.Must().DataplatformClient.DataPlatformClusterApi.ClustersDelete(c.Context, *x.Id).Execute()
-			if delErr != nil {
-				return fmt.Errorf("failed deleting %s: %w", *x.Id, delErr)
+	err = functional.ApplyAndAggregateErrors(
+		*xs.GetItems(), func(x ionoscloud.ClusterResponseData) error {
+			yes := confirm.FAsk(
+				c.Command.Command.InOrStdin(), fmt.Sprintf("delete cluster %s (%s)", *x.Id, *x.Properties.Name),
+				viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce)),
+			)
+			if yes {
+				_, _, delErr := client.Must().DataplatformClient.DataPlatformClusterApi.ClustersDelete(
+					c.Context, *x.Id,
+				).Execute()
+				if delErr != nil {
+					return fmt.Errorf("failed deleting %s: %w", *x.Id, delErr)
+				}
 			}
-		}
-		return nil
-	})
+			return nil
+		},
+	)
 
 	return err
 }

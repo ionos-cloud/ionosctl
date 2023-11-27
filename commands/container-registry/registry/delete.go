@@ -29,6 +29,7 @@ func RegDeleteCmd() *core.Command {
 		},
 	)
 
+	cmd.AddBoolFlag(constants.ArgForce, constants.ArgForceShort, false, constants.DescForce)
 	cmd.AddStringFlag(FlagRegId, "i", "", "Specify the Registry ID", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(
 		FlagRegId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -55,7 +56,10 @@ func CmdDelete(c *core.CommandConfig) error {
 	}
 
 	if allFlag {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all Container Registries..."))
+		fmt.Fprintf(
+			c.Command.Command.ErrOrStderr(),
+			jsontabwriter.GenerateVerboseOutput("Deleting all Container Registries..."),
+		)
 
 		regs, _, err := c.ContainerRegistryServices.Registry().List("")
 		if err != nil {
@@ -65,7 +69,9 @@ func CmdDelete(c *core.CommandConfig) error {
 		for _, reg := range *regs.Items {
 			msg := fmt.Sprintf("delete Container Registry: %s", *reg.Id)
 
-			if !confirm.FAsk(c.Command.Command.InOrStdin(), msg, viper.GetBool(constants.ArgForce)) {
+			if !confirm.FAsk(
+				c.Command.Command.InOrStdin(), msg, viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce)),
+			) {
 				return fmt.Errorf(confirm.UserDenied)
 			}
 
@@ -82,7 +88,9 @@ func CmdDelete(c *core.CommandConfig) error {
 
 		msg := fmt.Sprintf("delete Container Registry: %s", id)
 
-		if !confirm.FAsk(c.Command.Command.InOrStdin(), msg, viper.GetBool(constants.ArgForce)) {
+		if !confirm.FAsk(
+			c.Command.Command.InOrStdin(), msg, viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce)),
+		) {
 			return fmt.Errorf(confirm.UserDenied)
 		}
 

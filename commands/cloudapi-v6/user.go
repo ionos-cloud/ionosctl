@@ -24,7 +24,10 @@ import (
 )
 
 var (
-	defaultUserCols = []string{"UserId", "Firstname", "Lastname", "Email", "S3CanonicalUserId", "Administrator", "ForceSecAuth", "SecAuthActive", "Active"}
+	defaultUserCols = []string{
+		"UserId", "Firstname", "Lastname", "Email", "S3CanonicalUserId", "Administrator", "ForceSecAuth",
+		"SecAuthActive", "Active",
+	}
 )
 
 func UserCmd() *core.Command {
@@ -42,64 +45,89 @@ func UserCmd() *core.Command {
 	/*
 		List Command
 	*/
-	list := core.NewCommand(ctx, userCmd, core.CommandBuilder{
-		Namespace:  "user",
-		Resource:   "user",
-		Verb:       "list",
-		Aliases:    []string{"l", "ls"},
-		ShortDesc:  "List Users",
-		LongDesc:   "Use this command to get a list of existing Users available on your account.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.UsersFiltersUsage(),
-		Example:    listUserExample,
-		PreCmdRun:  PreRunUserList,
-		CmdRun:     RunUserList,
-		InitClient: true,
-	})
-	list.AddInt32Flag(constants.FlagMaxResults, constants.FlagMaxResultsShort, cloudapiv6.DefaultMaxResults, constants.DescMaxResults)
-	list.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultListDepth, cloudapiv6.ArgDepthDescription)
+	list := core.NewCommand(
+		ctx, userCmd, core.CommandBuilder{
+			Namespace:  "user",
+			Resource:   "user",
+			Verb:       "list",
+			Aliases:    []string{"l", "ls"},
+			ShortDesc:  "List Users",
+			LongDesc:   "Use this command to get a list of existing Users available on your account.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.UsersFiltersUsage(),
+			Example:    listUserExample,
+			PreCmdRun:  PreRunUserList,
+			CmdRun:     RunUserList,
+			InitClient: true,
+		},
+	)
+	list.AddInt32Flag(
+		constants.FlagMaxResults, constants.FlagMaxResultsShort, cloudapiv6.DefaultMaxResults, constants.DescMaxResults,
+	)
+	list.AddInt32Flag(
+		cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultListDepth, cloudapiv6.ArgDepthDescription,
+	)
 	list.AddStringFlag(cloudapiv6.ArgOrderBy, "", "", cloudapiv6.ArgOrderByDescription)
-	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgOrderBy, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.UsersFilters(), cobra.ShellCompDirectiveNoFileComp
-	})
-	list.AddStringSliceFlag(cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, cloudapiv6.ArgFiltersDescription)
-	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgFilters, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.UsersFilters(), cobra.ShellCompDirectiveNoFileComp
-	})
+	_ = list.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgOrderBy,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.UsersFilters(), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	list.AddStringSliceFlag(
+		cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, cloudapiv6.ArgFiltersDescription,
+	)
+	_ = list.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgFilters,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.UsersFilters(), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 	list.AddStringSliceFlag(constants.ArgCols, "", defaultUserCols, tabheaders.ColsMessage(defaultUserCols))
-	_ = list.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return defaultUserCols, cobra.ShellCompDirectiveNoFileComp
-	})
+	_ = list.Command.RegisterFlagCompletionFunc(
+		constants.ArgCols,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return defaultUserCols, cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 
 	/*
 		Get Command
 	*/
-	get := core.NewCommand(ctx, userCmd, core.CommandBuilder{
-		Namespace:  "user",
-		Resource:   "user",
-		Verb:       "get",
-		Aliases:    []string{"g"},
-		ShortDesc:  "Get a User",
-		LongDesc:   "Use this command to retrieve details about a specific User.\n\nRequired values to run command:\n\n* User Id",
-		Example:    getUserExample,
-		PreCmdRun:  PreRunUserId,
-		CmdRun:     RunUserGet,
-		InitClient: true,
-	})
+	get := core.NewCommand(
+		ctx, userCmd, core.CommandBuilder{
+			Namespace:  "user",
+			Resource:   "user",
+			Verb:       "get",
+			Aliases:    []string{"g"},
+			ShortDesc:  "Get a User",
+			LongDesc:   "Use this command to retrieve details about a specific User.\n\nRequired values to run command:\n\n* User Id",
+			Example:    getUserExample,
+			PreCmdRun:  PreRunUserId,
+			CmdRun:     RunUserGet,
+			InitClient: true,
+		},
+	)
 	get.AddUUIDFlag(cloudapiv6.ArgUserId, cloudapiv6.ArgIdShort, "", cloudapiv6.UserId, core.RequiredFlagOption())
-	_ = get.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgUserId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.UsersIds(), cobra.ShellCompDirectiveNoFileComp
-	})
-	get.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultGetDepth, cloudapiv6.ArgDepthDescription)
+	_ = get.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgUserId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.UsersIds(), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	get.AddInt32Flag(
+		cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultGetDepth, cloudapiv6.ArgDepthDescription,
+	)
 
 	/*
 		Create Command
 	*/
-	create := core.NewCommand(ctx, userCmd, core.CommandBuilder{
-		Namespace: "user",
-		Resource:  "user",
-		Verb:      "create",
-		Aliases:   []string{"c"},
-		ShortDesc: "Create a User under a particular contract",
-		LongDesc: `Use this command to create a User under a particular contract. You need to specify the firstname, lastname, email and password for the new User.
+	create := core.NewCommand(
+		ctx, userCmd, core.CommandBuilder{
+			Namespace: "user",
+			Resource:  "user",
+			Verb:      "create",
+			Aliases:   []string{"c"},
+			ShortDesc: "Create a User under a particular contract",
+			LongDesc: `Use this command to create a User under a particular contract. You need to specify the firstname, lastname, email and password for the new User.
 
 Required values to run a command:
 
@@ -107,75 +135,110 @@ Required values to run a command:
 * Last Name
 * Email
 * Password`,
-		Example:    createUserExample,
-		PreCmdRun:  PreRunUserNameEmailPwd,
-		CmdRun:     RunUserCreate,
-		InitClient: true,
-	})
+			Example:    createUserExample,
+			PreCmdRun:  PreRunUserNameEmailPwd,
+			CmdRun:     RunUserCreate,
+			InitClient: true,
+		},
+	)
 	create.AddStringFlag(cloudapiv6.ArgFirstName, "", "", "The first name for the User", core.RequiredFlagOption())
 	create.AddStringFlag(cloudapiv6.ArgLastName, "", "", "The last name for the User", core.RequiredFlagOption())
-	create.AddStringFlag(cloudapiv6.ArgEmail, cloudapiv6.ArgEmailShort, "", "The email for the User", core.RequiredFlagOption())
-	create.AddStringFlag(cloudapiv6.ArgPassword, cloudapiv6.ArgPasswordShort, "", "The password for the User (must be at least 5 characters long)", core.RequiredFlagOption())
+	create.AddStringFlag(
+		cloudapiv6.ArgEmail, cloudapiv6.ArgEmailShort, "", "The email for the User", core.RequiredFlagOption(),
+	)
+	create.AddStringFlag(
+		cloudapiv6.ArgPassword, cloudapiv6.ArgPasswordShort, "",
+		"The password for the User (must be at least 5 characters long)", core.RequiredFlagOption(),
+	)
 	create.AddBoolFlag(cloudapiv6.ArgAdmin, "", false, "Assigns the User to have administrative rights")
-	create.AddBoolFlag(cloudapiv6.ArgForceSecAuth, "", false, "Indicates if secure (two-factor) authentication should be forced for the User")
-	create.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultCreateDepth, cloudapiv6.ArgDepthDescription)
+	create.AddBoolFlag(
+		cloudapiv6.ArgForceSecAuth, "", false,
+		"Indicates if secure (two-factor) authentication should be forced for the User",
+	)
+	create.AddInt32Flag(
+		cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultCreateDepth, cloudapiv6.ArgDepthDescription,
+	)
 
 	/*
 		Update Command
 	*/
-	update := core.NewCommand(ctx, userCmd, core.CommandBuilder{
-		Namespace: "user",
-		Resource:  "user",
-		Verb:      "update",
-		Aliases:   []string{"u", "up"},
-		ShortDesc: "Update a User",
-		LongDesc: `Use this command to update details about a specific User including their privileges.
+	update := core.NewCommand(
+		ctx, userCmd, core.CommandBuilder{
+			Namespace: "user",
+			Resource:  "user",
+			Verb:      "update",
+			Aliases:   []string{"u", "up"},
+			ShortDesc: "Update a User",
+			LongDesc: `Use this command to update details about a specific User including their privileges.
 
 Required values to run command:
 
 * User Id`,
-		Example:    updateUserExample,
-		PreCmdRun:  PreRunUserId,
-		CmdRun:     RunUserUpdate,
-		InitClient: true,
-	})
+			Example:    updateUserExample,
+			PreCmdRun:  PreRunUserId,
+			CmdRun:     RunUserUpdate,
+			InitClient: true,
+		},
+	)
 	update.AddStringFlag(cloudapiv6.ArgFirstName, "", "", "The first name for the User")
 	update.AddStringFlag(cloudapiv6.ArgLastName, "", "", "The last name for the User")
 	update.AddStringFlag(cloudapiv6.ArgEmail, cloudapiv6.ArgEmailShort, "", "The email for the User")
-	update.AddStringFlag(cloudapiv6.ArgPassword, cloudapiv6.ArgPasswordShort, "", "The password for the User (must be at least 5 characters long)")
-	update.AddBoolFlag(cloudapiv6.ArgAdmin, "", false, "Assigns the User to have administrative rights. E.g.: --admin=true, --admin=false")
-	update.AddBoolFlag(cloudapiv6.ArgForceSecAuth, "", false, "Indicates if secure (two-factor) authentication should be forced for the User. E.g.: --force-secure-auth=true, --force-secure-auth=false")
+	update.AddStringFlag(
+		cloudapiv6.ArgPassword, cloudapiv6.ArgPasswordShort, "",
+		"The password for the User (must be at least 5 characters long)",
+	)
+	update.AddBoolFlag(
+		cloudapiv6.ArgAdmin, "", false,
+		"Assigns the User to have administrative rights. E.g.: --admin=true, --admin=false",
+	)
+	update.AddBoolFlag(
+		cloudapiv6.ArgForceSecAuth, "", false,
+		"Indicates if secure (two-factor) authentication should be forced for the User. E.g.: --force-secure-auth=true, --force-secure-auth=false",
+	)
 	update.AddUUIDFlag(cloudapiv6.ArgUserId, cloudapiv6.ArgIdShort, "", cloudapiv6.UserId, core.RequiredFlagOption())
-	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgUserId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.UsersIds(), cobra.ShellCompDirectiveNoFileComp
-	})
-	update.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultUpdateDepth, cloudapiv6.ArgDepthDescription)
+	_ = update.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgUserId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.UsersIds(), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	update.AddInt32Flag(
+		cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultUpdateDepth, cloudapiv6.ArgDepthDescription,
+	)
 
 	/*
 		Delete Command
 	*/
-	deleteCmd := core.NewCommand(ctx, userCmd, core.CommandBuilder{
-		Namespace: "user",
-		Resource:  "user",
-		Verb:      "delete",
-		Aliases:   []string{"d"},
-		ShortDesc: "Blacklists the User, disabling them",
-		LongDesc: `This command blacklists the User, disabling them. The User is not completely purged, therefore if you anticipate needing to create a User with the same name in the future, we suggest renaming the User before you delete it.
+	deleteCmd := core.NewCommand(
+		ctx, userCmd, core.CommandBuilder{
+			Namespace: "user",
+			Resource:  "user",
+			Verb:      "delete",
+			Aliases:   []string{"d"},
+			ShortDesc: "Blacklists the User, disabling them",
+			LongDesc: `This command blacklists the User, disabling them. The User is not completely purged, therefore if you anticipate needing to create a User with the same name in the future, we suggest renaming the User before you delete it.
 
 Required values to run command:
 
 * User Id`,
-		Example:    deleteUserExample,
-		PreCmdRun:  PreRunUserDelete,
-		CmdRun:     RunUserDelete,
-		InitClient: true,
-	})
+			Example:    deleteUserExample,
+			PreCmdRun:  PreRunUserDelete,
+			CmdRun:     RunUserDelete,
+			InitClient: true,
+		},
+	)
+	deleteCmd.AddBoolFlag(constants.ArgForce, constants.ArgForceShort, false, constants.DescForce)
 	deleteCmd.AddUUIDFlag(cloudapiv6.ArgUserId, cloudapiv6.ArgIdShort, "", cloudapiv6.UserId, core.RequiredFlagOption())
-	_ = deleteCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgUserId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.UsersIds(), cobra.ShellCompDirectiveNoFileComp
-	})
+	_ = deleteCmd.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgUserId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.UsersIds(), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 	deleteCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete all the Users.")
-	deleteCmd.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultDeleteDepth, cloudapiv6.ArgDepthDescription)
+	deleteCmd.AddInt32Flag(
+		cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultDeleteDepth, cloudapiv6.ArgDepthDescription,
+	)
 
 	userCmd.AddCommand(UserS3keyCmd())
 
@@ -194,14 +257,17 @@ func PreRunUserId(c *core.PreCommandConfig) error {
 }
 
 func PreRunUserDelete(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlagsSets(c.Command, c.NS,
+	return core.CheckRequiredFlagsSets(
+		c.Command, c.NS,
 		[]string{cloudapiv6.ArgUserId},
 		[]string{cloudapiv6.ArgAll},
 	)
 }
 
 func PreRunUserNameEmailPwd(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgFirstName, cloudapiv6.ArgLastName, cloudapiv6.ArgEmail, cloudapiv6.ArgPassword)
+	return core.CheckRequiredFlags(
+		c.Command, c.NS, cloudapiv6.ArgFirstName, cloudapiv6.ArgLastName, cloudapiv6.ArgEmail, cloudapiv6.ArgPassword,
+	)
 }
 
 func RunUserList(c *core.CommandConfig) error {
@@ -213,7 +279,10 @@ func RunUserList(c *core.CommandConfig) error {
 
 	users, resp, err := c.CloudApiV6Services.Users().List(listQueryParams)
 	if resp != nil {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+		fmt.Fprintf(
+			c.Command.Command.ErrOrStderr(),
+			jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime),
+		)
 	}
 	if err != nil {
 		return err
@@ -221,8 +290,10 @@ func RunUserList(c *core.CommandConfig) error {
 
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.User, users.Users,
-		tabheaders.GetHeadersAllDefault(defaultUserCols, cols))
+	out, err := jsontabwriter.GenerateOutput(
+		"items", jsonpaths.User, users.Users,
+		tabheaders.GetHeadersAllDefault(defaultUserCols, cols),
+	)
 	if err != nil {
 		return err
 	}
@@ -240,12 +311,20 @@ func RunUserGet(c *core.CommandConfig) error {
 
 	queryParams := listQueryParams.QueryParams
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
-		"User with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserId))))
+	fmt.Fprintf(
+		c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
+			"User with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserId)),
+		),
+	)
 
-	u, resp, err := c.CloudApiV6Services.Users().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserId)), queryParams)
+	u, resp, err := c.CloudApiV6Services.Users().Get(
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserId)), queryParams,
+	)
 	if resp != nil {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+		fmt.Fprintf(
+			c.Command.Command.ErrOrStderr(),
+			jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime),
+		)
 	}
 	if err != nil {
 		return err
@@ -253,7 +332,9 @@ func RunUserGet(c *core.CommandConfig) error {
 
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.User, u.User, tabheaders.GetHeadersAllDefault(defaultUserCols, cols))
+	out, err := jsontabwriter.GenerateOutput(
+		"", jsonpaths.User, u.User, tabheaders.GetHeadersAllDefault(defaultUserCols, cols),
+	)
 	if err != nil {
 		return err
 	}
@@ -290,14 +371,20 @@ func RunUserCreate(c *core.CommandConfig) error {
 		},
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
-		"Properties set for creating the user: Firstname: %v, Lastname: %v, Email: %v, ForceSecAuth: %v, Administrator: %v",
-		firstname, lastname, email, secureAuth, admin))
+	fmt.Fprintf(
+		c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
+			"Properties set for creating the user: Firstname: %v, Lastname: %v, Email: %v, ForceSecAuth: %v, Administrator: %v",
+			firstname, lastname, email, secureAuth, admin,
+		),
+	)
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Creating User..."))
 
 	u, resp, err := c.CloudApiV6Services.Users().Create(newUser, queryParams)
 	if resp != nil && request.GetId(resp) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+		fmt.Fprintf(
+			c.Command.Command.ErrOrStderr(),
+			jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime),
+		)
 	}
 	if err != nil {
 		return err
@@ -305,7 +392,9 @@ func RunUserCreate(c *core.CommandConfig) error {
 
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.User, u.User, tabheaders.GetHeadersAllDefault(defaultUserCols, cols))
+	out, err := jsontabwriter.GenerateOutput(
+		"", jsonpaths.User, u.User, tabheaders.GetHeadersAllDefault(defaultUserCols, cols),
+	)
 	if err != nil {
 		return err
 	}
@@ -322,19 +411,37 @@ func RunUserUpdate(c *core.CommandConfig) error {
 	}
 
 	queryParams := listQueryParams.QueryParams
-	oldUser, resp, err := c.CloudApiV6Services.Users().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserId)), queryParams)
+	oldUser, resp, err := c.CloudApiV6Services.Users().Get(
+		viper.GetString(
+			core.GetFlagName(
+				c.NS, cloudapiv6.ArgUserId,
+			),
+		), queryParams,
+	)
 	if err != nil {
 		return err
 	}
 
 	newUser := getUserInfo(oldUser, c)
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
-		"Updating User with ID: %v...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserId))))
+	fmt.Fprintf(
+		c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
+			"Updating User with ID: %v...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserId)),
+		),
+	)
 
-	userUpd, resp, err := c.CloudApiV6Services.Users().Update(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserId)), *newUser, queryParams)
+	userUpd, resp, err := c.CloudApiV6Services.Users().Update(
+		viper.GetString(
+			core.GetFlagName(
+				c.NS, cloudapiv6.ArgUserId,
+			),
+		), *newUser, queryParams,
+	)
 	if resp != nil && request.GetId(resp) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+		fmt.Fprintf(
+			c.Command.Command.ErrOrStderr(),
+			jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime),
+		)
 	}
 	if err != nil {
 		return err
@@ -342,7 +449,9 @@ func RunUserUpdate(c *core.CommandConfig) error {
 
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.User, userUpd.User, tabheaders.GetHeadersAllDefault(defaultUserCols, cols))
+	out, err := jsontabwriter.GenerateOutput(
+		"", jsonpaths.User, userUpd.User, tabheaders.GetHeadersAllDefault(defaultUserCols, cols),
+	)
 	if err != nil {
 		return err
 	}
@@ -369,15 +478,23 @@ func RunUserDelete(c *core.CommandConfig) error {
 		return nil
 	}
 
-	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete user", viper.GetBool(constants.ArgForce)) {
+	if !confirm.FAsk(
+		c.Command.Command.InOrStdin(), "delete user", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce)),
+	) {
 		return fmt.Errorf(confirm.UserDenied)
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Starting deleting User with id: %v...", userId))
+	fmt.Fprintf(
+		c.Command.Command.ErrOrStderr(),
+		jsontabwriter.GenerateVerboseOutput("Starting deleting User with id: %v...", userId),
+	)
 
 	resp, err := c.CloudApiV6Services.Users().Delete(userId, queryParams)
 	if resp != nil && request.GetId(resp) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+		fmt.Fprintf(
+			c.Command.Command.ErrOrStderr(),
+			jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime),
+		)
 	}
 	if err != nil {
 		return err
@@ -396,7 +513,10 @@ func getUserInfo(oldUser *resources.User, c *core.CommandConfig) *resources.User
 		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFirstName)) {
 			firstName := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFirstName))
 
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property FirstName set: %v", firstName))
+			fmt.Fprintf(
+				c.Command.Command.ErrOrStderr(),
+				jsontabwriter.GenerateVerboseOutput("Property FirstName set: %v", firstName),
+			)
 
 			userPropertiesPut.SetFirstname(firstName)
 		} else {
@@ -408,7 +528,10 @@ func getUserInfo(oldUser *resources.User, c *core.CommandConfig) *resources.User
 		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgLastName)) {
 			lastName := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLastName))
 
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property LastName set: %v", lastName))
+			fmt.Fprintf(
+				c.Command.Command.ErrOrStderr(),
+				jsontabwriter.GenerateVerboseOutput("Property LastName set: %v", lastName),
+			)
 
 			userPropertiesPut.SetLastname(lastName)
 		} else {
@@ -420,7 +543,9 @@ func getUserInfo(oldUser *resources.User, c *core.CommandConfig) *resources.User
 		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgEmail)) {
 			email := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgEmail))
 
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property Email set: %v", email))
+			fmt.Fprintf(
+				c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property Email set: %v", email),
+			)
 
 			userPropertiesPut.SetEmail(email)
 		} else {
@@ -432,7 +557,10 @@ func getUserInfo(oldUser *resources.User, c *core.CommandConfig) *resources.User
 		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgPassword)) {
 			password := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgPassword))
 
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property Password set: %v", password))
+			fmt.Fprintf(
+				c.Command.Command.ErrOrStderr(),
+				jsontabwriter.GenerateVerboseOutput("Property Password set: %v", password),
+			)
 
 			userPropertiesPut.SetPassword(password)
 		}
@@ -440,7 +568,10 @@ func getUserInfo(oldUser *resources.User, c *core.CommandConfig) *resources.User
 		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgForceSecAuth)) {
 			forceSecureAuth := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgForceSecAuth))
 
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property ForceSecAuth set: %v", forceSecureAuth))
+			fmt.Fprintf(
+				c.Command.Command.ErrOrStderr(),
+				jsontabwriter.GenerateVerboseOutput("Property ForceSecAuth set: %v", forceSecureAuth),
+			)
 
 			userPropertiesPut.SetForceSecAuth(forceSecureAuth)
 		} else {
@@ -452,7 +583,10 @@ func getUserInfo(oldUser *resources.User, c *core.CommandConfig) *resources.User
 		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgAdmin)) {
 			admin := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAdmin))
 
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property Administrator set: %v", admin))
+			fmt.Fprintf(
+				c.Command.Command.ErrOrStderr(),
+				jsontabwriter.GenerateVerboseOutput("Property Administrator set: %v", admin),
+			)
 
 			userPropertiesPut.SetAdministrator(admin)
 		} else {
@@ -514,7 +648,9 @@ func DeleteAllUsers(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
 
-	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete all the Users", viper.GetBool(constants.ArgForce)) {
+	if !confirm.FAsk(
+		c.Command.Command.InOrStdin(), "delete all the Users", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce)),
+	) {
 		return fmt.Errorf(confirm.UserDenied)
 	}
 
@@ -527,7 +663,10 @@ func DeleteAllUsers(c *core.CommandConfig) error {
 			continue
 		}
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Starting deleting User with id: %v...", *id))
+		fmt.Fprintf(
+			c.Command.Command.ErrOrStderr(),
+			jsontabwriter.GenerateVerboseOutput("Starting deleting User with id: %v...", *id),
+		)
 
 		resp, err = c.CloudApiV6Services.Users().Delete(*id, queryParams)
 		if err != nil {
@@ -535,7 +674,10 @@ func DeleteAllUsers(c *core.CommandConfig) error {
 			continue
 		}
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput(constants.MessageDeletingAll, c.Resource, *id))
+		fmt.Fprintf(
+			c.Command.Command.ErrOrStderr(),
+			jsontabwriter.GenerateLogOutput(constants.MessageDeletingAll, c.Resource, *id),
+		)
 
 		if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *id, err))
@@ -566,92 +708,143 @@ func GroupUserCmd() *core.Command {
 	/*
 		List Users Command
 	*/
-	listUsers := core.NewCommand(ctx, groupUserCmd, core.CommandBuilder{
-		Namespace:  "group",
-		Resource:   "user",
-		Verb:       "list",
-		Aliases:    []string{"l", "ls"},
-		ShortDesc:  "List Users from a Group",
-		LongDesc:   "Use this command to get a list of Users from a specific Group.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.UsersFiltersUsage(),
-		Example:    listGroupUsersExample,
-		PreCmdRun:  PreRunGroupId,
-		CmdRun:     RunGroupUserList,
-		InitClient: true,
-	})
+	listUsers := core.NewCommand(
+		ctx, groupUserCmd, core.CommandBuilder{
+			Namespace:  "group",
+			Resource:   "user",
+			Verb:       "list",
+			Aliases:    []string{"l", "ls"},
+			ShortDesc:  "List Users from a Group",
+			LongDesc:   "Use this command to get a list of Users from a specific Group.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.UsersFiltersUsage(),
+			Example:    listGroupUsersExample,
+			PreCmdRun:  PreRunGroupId,
+			CmdRun:     RunGroupUserList,
+			InitClient: true,
+		},
+	)
 	listUsers.AddStringSliceFlag(constants.ArgCols, "", defaultUserCols, tabheaders.ColsMessage(defaultUserCols))
-	_ = listUsers.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return defaultUserCols, cobra.ShellCompDirectiveNoFileComp
-	})
+	_ = listUsers.Command.RegisterFlagCompletionFunc(
+		constants.ArgCols,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return defaultUserCols, cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 	listUsers.AddUUIDFlag(cloudapiv6.ArgGroupId, "", "", cloudapiv6.GroupId, core.RequiredFlagOption())
-	_ = listUsers.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.GroupsIds(), cobra.ShellCompDirectiveNoFileComp
-	})
-	listUsers.AddInt32Flag(constants.FlagMaxResults, constants.FlagMaxResultsShort, cloudapiv6.DefaultMaxResults, constants.DescMaxResults)
-	listUsers.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultListDepth, cloudapiv6.ArgDepthDescription)
+	_ = listUsers.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgGroupId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.GroupsIds(), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	listUsers.AddInt32Flag(
+		constants.FlagMaxResults, constants.FlagMaxResultsShort, cloudapiv6.DefaultMaxResults, constants.DescMaxResults,
+	)
+	listUsers.AddInt32Flag(
+		cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultListDepth, cloudapiv6.ArgDepthDescription,
+	)
 	listUsers.AddStringFlag(cloudapiv6.ArgOrderBy, "", "", cloudapiv6.ArgOrderByDescription)
-	_ = listUsers.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgOrderBy, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.UsersFilters(), cobra.ShellCompDirectiveNoFileComp
-	})
-	listUsers.AddStringSliceFlag(cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, cloudapiv6.ArgFiltersDescription)
-	_ = listUsers.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgFilters, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.UsersFilters(), cobra.ShellCompDirectiveNoFileComp
-	})
+	_ = listUsers.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgOrderBy,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.UsersFilters(), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	listUsers.AddStringSliceFlag(
+		cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, cloudapiv6.ArgFiltersDescription,
+	)
+	_ = listUsers.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgFilters,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.UsersFilters(), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 
 	/*
 		Add User Command
 	*/
-	addUser := core.NewCommand(ctx, groupUserCmd, core.CommandBuilder{
-		Namespace:  "group",
-		Resource:   "user",
-		Verb:       "add",
-		Aliases:    []string{"a"},
-		ShortDesc:  "Add User to a Group",
-		LongDesc:   "Use this command to add an existing User to a specific Group.\n\nRequired values to run command:\n\n* Group Id\n* User Id",
-		Example:    addGroupUserExample,
-		PreCmdRun:  PreRunGroupUserIds,
-		CmdRun:     RunGroupUserAdd,
-		InitClient: true,
-	})
+	addUser := core.NewCommand(
+		ctx, groupUserCmd, core.CommandBuilder{
+			Namespace:  "group",
+			Resource:   "user",
+			Verb:       "add",
+			Aliases:    []string{"a"},
+			ShortDesc:  "Add User to a Group",
+			LongDesc:   "Use this command to add an existing User to a specific Group.\n\nRequired values to run command:\n\n* Group Id\n* User Id",
+			Example:    addGroupUserExample,
+			PreCmdRun:  PreRunGroupUserIds,
+			CmdRun:     RunGroupUserAdd,
+			InitClient: true,
+		},
+	)
 	addUser.AddStringSliceFlag(constants.ArgCols, "", defaultUserCols, tabheaders.ColsMessage(defaultUserCols))
-	_ = addUser.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return defaultUserCols, cobra.ShellCompDirectiveNoFileComp
-	})
+	_ = addUser.Command.RegisterFlagCompletionFunc(
+		constants.ArgCols,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return defaultUserCols, cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 	addUser.AddUUIDFlag(cloudapiv6.ArgGroupId, "", "", cloudapiv6.GroupId, core.RequiredFlagOption())
-	_ = addUser.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.GroupsIds(), cobra.ShellCompDirectiveNoFileComp
-	})
+	_ = addUser.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgGroupId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.GroupsIds(), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 	addUser.AddUUIDFlag(cloudapiv6.ArgUserId, cloudapiv6.ArgIdShort, "", cloudapiv6.UserId, core.RequiredFlagOption())
-	_ = addUser.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgUserId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.UsersIds(), cobra.ShellCompDirectiveNoFileComp
-	})
+	_ = addUser.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgUserId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.UsersIds(), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 
 	/*
 		Remove User Command
 	*/
-	removeUser := core.NewCommand(ctx, groupUserCmd, core.CommandBuilder{
-		Namespace:  "group",
-		Resource:   "user",
-		Verb:       "remove",
-		Aliases:    []string{"r"},
-		ShortDesc:  "Remove User from a Group",
-		LongDesc:   "Use this command to remove a User from a Group.\n\nRequired values to run command:\n\n* Group Id\n* User Id",
-		Example:    removeGroupUserExample,
-		PreCmdRun:  PreRunGroupUserRemove,
-		CmdRun:     RunGroupUserRemove,
-		InitClient: true,
-	})
+	removeUser := core.NewCommand(
+		ctx, groupUserCmd, core.CommandBuilder{
+			Namespace:  "group",
+			Resource:   "user",
+			Verb:       "remove",
+			Aliases:    []string{"r"},
+			ShortDesc:  "Remove User from a Group",
+			LongDesc:   "Use this command to remove a User from a Group.\n\nRequired values to run command:\n\n* Group Id\n* User Id",
+			Example:    removeGroupUserExample,
+			PreCmdRun:  PreRunGroupUserRemove,
+			CmdRun:     RunGroupUserRemove,
+			InitClient: true,
+		},
+	)
+	removeUser.AddBoolFlag(constants.ArgForce, constants.ArgForceShort, false, constants.DescForce)
 	removeUser.AddStringSliceFlag(constants.ArgCols, "", defaultUserCols, tabheaders.ColsMessage(defaultUserCols))
-	_ = removeUser.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return defaultUserCols, cobra.ShellCompDirectiveNoFileComp
-	})
+	_ = removeUser.Command.RegisterFlagCompletionFunc(
+		constants.ArgCols,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return defaultUserCols, cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 	removeUser.AddUUIDFlag(cloudapiv6.ArgGroupId, "", "", cloudapiv6.GroupId, core.RequiredFlagOption())
-	_ = removeUser.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.GroupsIds(), cobra.ShellCompDirectiveNoFileComp
-	})
-	removeUser.AddUUIDFlag(cloudapiv6.ArgUserId, cloudapiv6.ArgIdShort, "", cloudapiv6.UserId, core.RequiredFlagOption())
-	_ = removeUser.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgUserId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.GroupUsersIds(viper.GetString(core.GetFlagName(removeUser.NS, cloudapiv6.ArgGroupId))), cobra.ShellCompDirectiveNoFileComp
-	})
+	_ = removeUser.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgGroupId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.GroupsIds(), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	removeUser.AddUUIDFlag(
+		cloudapiv6.ArgUserId, cloudapiv6.ArgIdShort, "", cloudapiv6.UserId, core.RequiredFlagOption(),
+	)
+	_ = removeUser.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgUserId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.GroupUsersIds(
+				viper.GetString(
+					core.GetFlagName(
+						removeUser.NS, cloudapiv6.ArgGroupId,
+					),
+				),
+			), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 	removeUser.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Remove all Users from a group.")
 
 	return groupUserCmd
@@ -664,9 +857,18 @@ func RunGroupUserList(c *core.CommandConfig) error {
 		return err
 	}
 
-	users, resp, err := c.CloudApiV6Services.Groups().ListUsers(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)), listQueryParams)
+	users, resp, err := c.CloudApiV6Services.Groups().ListUsers(
+		viper.GetString(
+			core.GetFlagName(
+				c.NS, cloudapiv6.ArgGroupId,
+			),
+		), listQueryParams,
+	)
 	if resp != nil {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+		fmt.Fprintf(
+			c.Command.Command.ErrOrStderr(),
+			jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime),
+		)
 	}
 	if err != nil {
 		return err
@@ -674,8 +876,10 @@ func RunGroupUserList(c *core.CommandConfig) error {
 
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.User, users.GroupMembers,
-		tabheaders.GetHeadersAllDefault(defaultUserCols, cols))
+	out, err := jsontabwriter.GenerateOutput(
+		"items", jsonpaths.User, users.GroupMembers,
+		tabheaders.GetHeadersAllDefault(defaultUserCols, cols),
+	)
 	if err != nil {
 		return err
 	}
@@ -686,7 +890,8 @@ func RunGroupUserList(c *core.CommandConfig) error {
 }
 
 func PreRunGroupUserRemove(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlagsSets(c.Command, c.NS,
+	return core.CheckRequiredFlagsSets(
+		c.Command, c.NS,
 		[]string{cloudapiv6.ArgGroupId, cloudapiv6.ArgUserId},
 		[]string{cloudapiv6.ArgGroupId, cloudapiv6.ArgAll},
 	)
@@ -702,7 +907,10 @@ func RunGroupUserAdd(c *core.CommandConfig) error {
 	id := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserId))
 	groupId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId))
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("User with id: %v is adding to group with id: %v...", id, groupId))
+	fmt.Fprintf(
+		c.Command.Command.ErrOrStderr(),
+		jsontabwriter.GenerateVerboseOutput("User with id: %v is adding to group with id: %v...", id, groupId),
+	)
 
 	u := resources.User{
 		User: ionoscloud.User{
@@ -712,7 +920,10 @@ func RunGroupUserAdd(c *core.CommandConfig) error {
 
 	userAdded, resp, err := c.CloudApiV6Services.Groups().AddUser(groupId, u, queryParams)
 	if resp != nil && request.GetId(resp) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+		fmt.Fprintf(
+			c.Command.Command.ErrOrStderr(),
+			jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime),
+		)
 	}
 	if err != nil {
 		return err
@@ -720,7 +931,9 @@ func RunGroupUserAdd(c *core.CommandConfig) error {
 
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.User, userAdded.User, tabheaders.GetHeadersAllDefault(defaultUserCols, cols))
+	out, err := jsontabwriter.GenerateOutput(
+		"", jsonpaths.User, userAdded.User, tabheaders.GetHeadersAllDefault(defaultUserCols, cols),
+	)
 	if err != nil {
 		return err
 	}
@@ -745,19 +958,28 @@ func RunGroupUserRemove(c *core.CommandConfig) error {
 		return nil
 	}
 
-	if !confirm.FAsk(c.Command.Command.InOrStdin(), "remove user from group", viper.GetBool(constants.ArgForce)) {
+	if !confirm.FAsk(
+		c.Command.Command.InOrStdin(), "remove user from group",
+		viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce)),
+	) {
 		return fmt.Errorf(confirm.UserDenied)
 	}
 
 	userId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserId))
 	groupId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId))
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
-		"User with id: %v is adding to group with id: %v...", userId, groupId))
+	fmt.Fprintf(
+		c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
+			"User with id: %v is adding to group with id: %v...", userId, groupId,
+		),
+	)
 
 	resp, err := c.CloudApiV6Services.Groups().RemoveUser(groupId, userId, queryParams)
 	if resp != nil && request.GetId(resp) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+		fmt.Fprintf(
+			c.Command.Command.ErrOrStderr(),
+			jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime),
+		)
 	}
 	if err != nil {
 		return err
@@ -816,7 +1038,9 @@ func RemoveAllUsers(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
 
-	if !confirm.FAsk(c.Command.Command.InOrStdin(), "remove all the Users", viper.GetBool(constants.ArgForce)) {
+	if !confirm.FAsk(
+		c.Command.Command.InOrStdin(), "remove all the Users", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce)),
+	) {
 		return fmt.Errorf(confirm.UserDenied)
 	}
 
@@ -829,18 +1053,27 @@ func RemoveAllUsers(c *core.CommandConfig) error {
 			continue
 		}
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Starting removing User with id: %v...", *id))
+		fmt.Fprintf(
+			c.Command.Command.ErrOrStderr(),
+			jsontabwriter.GenerateVerboseOutput("Starting removing User with id: %v...", *id),
+		)
 
 		resp, err = c.CloudApiV6Services.Groups().RemoveUser(groupId, *id, queryParams)
 		if resp != nil && request.GetId(resp) != "" {
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+			fmt.Fprintf(
+				c.Command.Command.ErrOrStderr(),
+				jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime),
+			)
 		}
 		if err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
 			continue
 		}
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput(constants.MessageDeletingAll, c.Resource, *id))
+		fmt.Fprintf(
+			c.Command.Command.ErrOrStderr(),
+			jsontabwriter.GenerateLogOutput(constants.MessageDeletingAll, c.Resource, *id),
+		)
 
 		if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
 			return err

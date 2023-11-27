@@ -28,7 +28,7 @@ func TokenDeleteCmd() *core.Command {
 			InitClient: true,
 		},
 	)
-
+	cmd.AddBoolFlag(constants.ArgForce, constants.ArgForceShort, false, constants.DescForce)
 	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Delete all tokens from all registries")
 	cmd.AddStringFlag(FlagRegId, "r", "", "Registry ID")
 	_ = cmd.Command.RegisterFlagCompletionFunc(
@@ -39,7 +39,8 @@ func TokenDeleteCmd() *core.Command {
 	cmd.AddBoolFlag(FlagAllTokens, "", false, "Delete all tokens from a registry")
 	cmd.AddStringFlag(FlagTokenId, "t", "", "Token ID")
 	_ = cmd.Command.RegisterFlagCompletionFunc(
-		FlagTokenId, func(cobracmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		FlagTokenId,
+		func(cobracmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 			return TokensIds(viper.GetString(core.GetFlagName(cmd.NS, FlagRegId))), cobra.ShellCompDirectiveNoFileComp
 		},
 	)
@@ -66,7 +67,9 @@ func CmdDeleteToken(c *core.CommandConfig) error {
 
 			msg := fmt.Sprintf("delete Token: %s", tokenId)
 
-			if !confirm.FAsk(c.Command.Command.InOrStdin(), msg, viper.GetBool(constants.ArgForce)) {
+			if !confirm.FAsk(
+				c.Command.Command.InOrStdin(), msg, viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce)),
+			) {
 				return fmt.Errorf(confirm.UserDenied)
 			}
 
@@ -86,7 +89,9 @@ func CmdDeleteToken(c *core.CommandConfig) error {
 		for _, token := range *tokens.GetItems() {
 			msg := fmt.Sprintf("delete Token: %s", *token.Id)
 
-			if !confirm.FAsk(c.Command.Command.InOrStdin(), msg, viper.GetBool(constants.ArgForce)) {
+			if !confirm.FAsk(
+				c.Command.Command.InOrStdin(), msg, viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce)),
+			) {
 				return fmt.Errorf(confirm.UserDenied)
 			}
 
@@ -113,7 +118,9 @@ func CmdDeleteToken(c *core.CommandConfig) error {
 		for _, token := range *tokens.GetItems() {
 			msg := fmt.Sprintf("delete Token: %s", *token.Id)
 
-			if !confirm.FAsk(c.Command.Command.InOrStdin(), msg, viper.GetBool(constants.ArgForce)) {
+			if !confirm.FAsk(
+				c.Command.Command.InOrStdin(), msg, viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce)),
+			) {
 				return fmt.Errorf(confirm.UserDenied)
 			}
 

@@ -30,7 +30,7 @@ func TokenScopesDeleteCmd() *core.Command {
 			InitClient: true,
 		},
 	)
-
+	cmd.AddBoolFlag(constants.ArgForce, constants.ArgForceShort, false, constants.DescForce)
 	cmd.AddStringFlag(FlagRegId, "r", "", "Registry ID")
 	_ = cmd.Command.RegisterFlagCompletionFunc(
 		FlagRegId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -39,7 +39,8 @@ func TokenScopesDeleteCmd() *core.Command {
 	)
 	cmd.AddStringFlag(FlagTokenId, "t", "", "Token ID")
 	_ = cmd.Command.RegisterFlagCompletionFunc(
-		FlagTokenId, func(cobracmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		FlagTokenId,
+		func(cobracmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 			return TokensIds(viper.GetString(core.GetFlagName(cmd.NS, FlagRegId))), cobra.ShellCompDirectiveNoFileComp
 		},
 	)
@@ -82,7 +83,9 @@ func CmdGetTokenScopesDelete(c *core.CommandConfig) error {
 
 		msg := fmt.Sprintf("delete all scopes from Token: %s", *token.Id)
 
-		if !confirm.FAsk(c.Command.Command.InOrStdin(), msg, viper.GetBool(constants.ArgForce)) {
+		if !confirm.FAsk(
+			c.Command.Command.InOrStdin(), msg, viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce)),
+		) {
 			return fmt.Errorf(confirm.UserDenied)
 		}
 
@@ -119,7 +122,7 @@ func CmdGetTokenScopesDelete(c *core.CommandConfig) error {
 
 	msg := fmt.Sprintf("delete scope %d from Token: %s", id+1, *token.Id)
 
-	if !confirm.FAsk(c.Command.Command.InOrStdin(), msg, viper.GetBool(constants.ArgForce)) {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), msg, viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce))) {
 		return fmt.Errorf(confirm.UserDenied)
 	}
 

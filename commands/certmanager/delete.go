@@ -28,11 +28,13 @@ func CertDeleteCmd() *core.Command {
 			InitClient: true,
 		},
 	)
-
+	cmd.AddBoolFlag(constants.ArgForce, constants.ArgForceShort, false, constants.DescForce)
 	cmd.AddStringFlag(FlagCertId, constants.FlagIdShort, "", "Response delete a single certificate (required)")
-	_ = cmd.Command.RegisterFlagCompletionFunc(FlagCertId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return CertificatesIds(), cobra.ShellCompDirectiveNoFileComp
-	})
+	_ = cmd.Command.RegisterFlagCompletionFunc(
+		FlagCertId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return CertificatesIds(), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Response delete all certificates")
 
 	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, tabheaders.ColsMessage(defaultCertificateCols))
@@ -55,7 +57,9 @@ func CmdDelete(c *core.CommandConfig) error {
 	}
 
 	if allFlag {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all Certificates..."))
+		fmt.Fprintf(
+			c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all Certificates..."),
+		)
 
 		certs, _, err := c.CertificateManagerServices.Certs().List()
 		if err != nil {
@@ -64,7 +68,9 @@ func CmdDelete(c *core.CommandConfig) error {
 
 		for _, cert := range *certs.Items {
 			msg := fmt.Sprintf("delete Certificate ID: %s", *cert.Id)
-			if !confirm.FAsk(c.Command.Command.InOrStdin(), msg, viper.GetBool(constants.ArgForce)) {
+			if !confirm.FAsk(
+				c.Command.Command.InOrStdin(), msg, viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce)),
+			) {
 				return fmt.Errorf(confirm.UserDenied)
 			}
 
@@ -80,7 +86,9 @@ func CmdDelete(c *core.CommandConfig) error {
 		}
 
 		msg := fmt.Sprintf("delete Certificate ID: %s", id)
-		if !confirm.FAsk(c.Command.Command.InOrStdin(), msg, viper.GetBool(constants.ArgForce)) {
+		if !confirm.FAsk(
+			c.Command.Command.InOrStdin(), msg, viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce)),
+		) {
 			return fmt.Errorf(confirm.UserDenied)
 		}
 

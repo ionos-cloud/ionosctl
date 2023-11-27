@@ -33,13 +33,15 @@ Enter your password:`
 	)
 
 	ctx := context.TODO()
-	loginCmd := core.NewCommand(ctx, nil, core.CommandBuilder{
-		Namespace: "login",
-		Resource:  "login",
-		Verb:      "login",
-		Aliases:   []string{"log", "auth"},
-		ShortDesc: "Use credentials to generate a config file in `ionosctl cfg location`",
-		LongDesc: fmt.Sprintf(`The 'login' command allows you to authenticate with the IONOS Cloud APIs. There are three ways you can use it:
+	loginCmd := core.NewCommand(
+		ctx, nil, core.CommandBuilder{
+			Namespace: "login",
+			Resource:  "login",
+			Verb:      "login",
+			Aliases:   []string{"log", "auth"},
+			ShortDesc: "Use credentials to generate a config file in `ionosctl cfg location`",
+			LongDesc: fmt.Sprintf(
+				`The 'login' command allows you to authenticate with the IONOS Cloud APIs. There are three ways you can use it:
   1. Interactive mode: Just type 'ionosctl login' and you'll be prompted to enter your username and password.
   2. Use the '--user' and '--password' flags: Enter your credentials in the command.
   3. Use the '--token' flag: Provide an authentication token.
@@ -53,25 +55,47 @@ To find your config file location, use 'ionosctl cfg location'. If you want to u
 
 If a config file already exists, you will be asked to replace it. You can skip this verification with '--force'
 
-%s`, constants.DescAuthenticationOrder),
-		Example:    loginExamples,
-		PreCmdRun:  PreRunLoginCmd,
-		CmdRun:     RunLoginUser,
-		InitClient: false,
-	})
+%s`, constants.DescAuthenticationOrder,
+			),
+			Example:    loginExamples,
+			PreCmdRun:  PreRunLoginCmd,
+			CmdRun:     RunLoginUser,
+			InitClient: false,
+		},
+	)
+	loginCmd.AddBoolFlag(constants.ArgForce, constants.ArgForceShort, false, constants.DescForce)
 	loginCmd.AddStringFlag(constants.ArgUser, "", "", "Username to authenticate. Will be used to generate a token")
-	loginCmd.AddStringFlag(constants.ArgPassword, constants.ArgPasswordShort, "", "Password to authenticate. Will be used to generate a token")
-	loginCmd.AddStringFlag(constants.ArgToken, constants.ArgTokenShort, "", "Token to authenticate. If used, will be saved to the config file without generating a new token. Note: mutually exclusive with --user and --password")
-	loginCmd.AddBoolFlag(constants.FlagSkipVerify, "", false, "Forcefully write the provided token to the config file without verifying if it is valid. Note: --token is required")
+	loginCmd.AddStringFlag(
+		constants.ArgPassword, constants.ArgPasswordShort, "",
+		"Password to authenticate. Will be used to generate a token",
+	)
+	loginCmd.AddStringFlag(
+		constants.ArgToken, constants.ArgTokenShort, "",
+		"Token to authenticate. If used, will be saved to the config file without generating a new token. Note: mutually exclusive with --user and --password",
+	)
+	loginCmd.AddBoolFlag(
+		constants.FlagSkipVerify, "", false,
+		"Forcefully write the provided token to the config file without verifying if it is valid. Note: --token is required",
+	)
 
 	return loginCmd
 }
 
 func PreRunLoginCmd(c *core.PreCommandConfig) error {
-	if (viper.IsSet(core.GetFlagName(c.NS, constants.ArgUser)) || viper.IsSet(core.GetFlagName(c.NS, constants.ArgPassword))) && viper.IsSet(core.GetFlagName(c.NS, constants.ArgToken)) {
-		return fmt.Errorf("use either --%s and --%s, either --%s", constants.ArgUser, constants.ArgPassword, constants.ArgToken)
+	if (viper.IsSet(core.GetFlagName(c.NS, constants.ArgUser)) || viper.IsSet(
+		core.GetFlagName(
+			c.NS, constants.ArgPassword,
+		),
+	)) && viper.IsSet(core.GetFlagName(c.NS, constants.ArgToken)) {
+		return fmt.Errorf(
+			"use either --%s and --%s, either --%s", constants.ArgUser, constants.ArgPassword, constants.ArgToken,
+		)
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagSkipVerify)) && !viper.IsSet(core.GetFlagName(c.NS, constants.ArgToken)) {
+	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagSkipVerify)) && !viper.IsSet(
+		core.GetFlagName(
+			c.NS, constants.ArgToken,
+		),
+	) {
 		return fmt.Errorf("--%s requires --%s to be set", constants.FlagSkipVerify, constants.ArgToken)
 	}
 	return nil
@@ -85,10 +109,17 @@ func RunLoginUser(c *core.CommandConfig) error {
 		return fmt.Errorf("failed handling existing config file: %w", err)
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
-		"Note: The login command will save the credentials in a configuration file after the authentication is successful!"))
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
-		"Note: As an alternative to this, ionosctl offers support for environment variables: $%s, $%s or $%s.", sdk.IonosUsernameEnvVar, sdk.IonosPasswordEnvVar, sdk.IonosTokenEnvVar))
+	fmt.Fprintf(
+		c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
+			"Note: The login command will save the credentials in a configuration file after the authentication is successful!",
+		),
+	)
+	fmt.Fprintf(
+		c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
+			"Note: As an alternative to this, ionosctl offers support for environment variables: $%s, $%s or $%s.",
+			sdk.IonosUsernameEnvVar, sdk.IonosPasswordEnvVar, sdk.IonosTokenEnvVar,
+		),
+	)
 
 	validCredentials := true
 	data, err := buildConfigData(c)
@@ -100,7 +131,11 @@ func RunLoginUser(c *core.CommandConfig) error {
 	}
 
 	// Store credentials
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Storing credentials to the configuration file: %s", viper.GetString(constants.ArgConfig)))
+	fmt.Fprintf(
+		c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
+			"Storing credentials to the configuration file: %s", viper.GetString(constants.ArgConfig),
+		),
+	)
 	err = config.Write(data)
 	if err != nil {
 		return fmt.Errorf("failed writing config data: %w", err)
@@ -133,7 +168,7 @@ func handleExistingConfigFile(c *core.CommandConfig, configPath string) error {
 	if !confirm.FAsk(
 		c.Command.Command.InOrStdin(),
 		fmt.Sprintf("Config file %s already exists. Do you want to replace it", configPath),
-		viper.GetBool(constants.ArgForce),
+		viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce)),
 	) {
 		return fmt.Errorf(confirm.UserDenied)
 	}
@@ -150,11 +185,16 @@ func buildConfigData(c *core.CommandConfig) (map[string]string, error) {
 	configData := map[string]string{} // This map is what we will write to the config file
 
 	// API URL
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("API Url: %s", config.GetServerUrl()))
+	fmt.Fprintf(
+		c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("API Url: %s", config.GetServerUrl()),
+	)
 	if explicitUrl := config.GetServerUrl(); explicitUrl != "" {
 		// Don't save the API url to the config if it's the default, since we don't want to revert to it if the user doesn't provide any value.
 		// This was changed from old behaviour because some APIs (e.g. DNS API) [can] use a different server URL
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Saving API URL to config file: %s", explicitUrl))
+		fmt.Fprintf(
+			c.Command.Command.ErrOrStderr(),
+			jsontabwriter.GenerateVerboseOutput("Saving API URL to config file: %s", explicitUrl),
+		)
 		configData[constants.CfgServerUrl] = explicitUrl
 	}
 

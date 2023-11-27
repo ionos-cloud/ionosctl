@@ -15,6 +15,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/token"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
+	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	authservice "github.com/ionos-cloud/ionosctl/v6/services/auth-v1"
 	sdkgoauth "github.com/ionos-cloud/sdk-go-auth"
 	"github.com/spf13/viper"
@@ -155,9 +156,9 @@ func testParseToken(t *testing.T) {
 
 func testDeleteTokens(t *testing.T) {
 	var err error
-	viper.Set(constants.ArgForce, true)
 
 	c := token.TokenDeleteCmd()
+	viper.Set(core.GetFlagName(c.NS, constants.ArgForce), true)
 	c.Command.Flags().Set(authservice.ArgTokenId, *testToken.Id)
 
 	err = c.Command.Execute()

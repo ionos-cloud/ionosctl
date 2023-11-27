@@ -43,102 +43,153 @@ func ShareCmd() *core.Command {
 	globalFlags := shareCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultGroupShareCols, tabheaders.ColsMessage(allGroupShareCols))
 	_ = viper.BindPFlag(core.GetFlagName(shareCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
-	_ = shareCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return allGroupShareCols, cobra.ShellCompDirectiveNoFileComp
-	})
+	_ = shareCmd.Command.RegisterFlagCompletionFunc(
+		constants.ArgCols,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return allGroupShareCols, cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 
 	/*
 		List Command
 	*/
-	list := core.NewCommand(ctx, shareCmd, core.CommandBuilder{
-		Namespace:  "share",
-		Resource:   "share",
-		Verb:       "list",
-		Aliases:    []string{"l", "ls"},
-		ShortDesc:  "List Resources Shares through a Group",
-		LongDesc:   "Use this command to get a full list of all the Resources that are shared through a specified Group.\n\nRequired values to run command:\n\n* Group Id",
-		Example:    listSharesExample,
-		PreCmdRun:  PreRunShareList,
-		CmdRun:     RunShareList,
-		InitClient: true,
-	})
-	list.AddInt32Flag(constants.FlagMaxResults, constants.FlagMaxResultsShort, cloudapiv6.DefaultMaxResults, constants.DescMaxResults)
+	list := core.NewCommand(
+		ctx, shareCmd, core.CommandBuilder{
+			Namespace:  "share",
+			Resource:   "share",
+			Verb:       "list",
+			Aliases:    []string{"l", "ls"},
+			ShortDesc:  "List Resources Shares through a Group",
+			LongDesc:   "Use this command to get a full list of all the Resources that are shared through a specified Group.\n\nRequired values to run command:\n\n* Group Id",
+			Example:    listSharesExample,
+			PreCmdRun:  PreRunShareList,
+			CmdRun:     RunShareList,
+			InitClient: true,
+		},
+	)
+	list.AddInt32Flag(
+		constants.FlagMaxResults, constants.FlagMaxResultsShort, cloudapiv6.DefaultMaxResults, constants.DescMaxResults,
+	)
 	list.AddUUIDFlag(cloudapiv6.ArgGroupId, "", "", cloudapiv6.GroupId, core.RequiredFlagOption())
-	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.GroupsIds(), cobra.ShellCompDirectiveNoFileComp
-	})
-	list.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultListDepth, cloudapiv6.ArgDepthDescription)
+	_ = list.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgGroupId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.GroupsIds(), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	list.AddInt32Flag(
+		cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultListDepth, cloudapiv6.ArgDepthDescription,
+	)
 	list.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, cloudapiv6.ArgListAllDescription)
 
 	/*
 		Get Command
 	*/
-	get := core.NewCommand(ctx, shareCmd, core.CommandBuilder{
-		Namespace:  "share",
-		Resource:   "share",
-		Verb:       "get",
-		Aliases:    []string{"g"},
-		ShortDesc:  "Get a Resource Share from a Group",
-		LongDesc:   "Use this command to retrieve the details of a specific Shared Resource available to a specified Group.\n\nRequired values to run command:\n\n* Group Id\n* Resource Id",
-		Example:    getShareExample,
-		PreCmdRun:  PreRunGroupResourceIds,
-		CmdRun:     RunShareGet,
-		InitClient: true,
-	})
+	get := core.NewCommand(
+		ctx, shareCmd, core.CommandBuilder{
+			Namespace:  "share",
+			Resource:   "share",
+			Verb:       "get",
+			Aliases:    []string{"g"},
+			ShortDesc:  "Get a Resource Share from a Group",
+			LongDesc:   "Use this command to retrieve the details of a specific Shared Resource available to a specified Group.\n\nRequired values to run command:\n\n* Group Id\n* Resource Id",
+			Example:    getShareExample,
+			PreCmdRun:  PreRunGroupResourceIds,
+			CmdRun:     RunShareGet,
+			InitClient: true,
+		},
+	)
 	get.AddUUIDFlag(cloudapiv6.ArgGroupId, "", "", cloudapiv6.GroupId, core.RequiredFlagOption())
-	_ = get.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.GroupsIds(), cobra.ShellCompDirectiveNoFileComp
-	})
-	get.AddUUIDFlag(cloudapiv6.ArgResourceId, cloudapiv6.ArgIdShort, "", cloudapiv6.ResourceId, core.RequiredFlagOption())
-	_ = get.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgResourceId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.GroupResourcesIds(viper.GetString(core.GetFlagName(get.NS, cloudapiv6.ArgGroupId))), cobra.ShellCompDirectiveNoFileComp
-	})
-	get.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultGetDepth, cloudapiv6.ArgDepthDescription)
+	_ = get.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgGroupId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.GroupsIds(), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	get.AddUUIDFlag(
+		cloudapiv6.ArgResourceId, cloudapiv6.ArgIdShort, "", cloudapiv6.ResourceId, core.RequiredFlagOption(),
+	)
+	_ = get.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgResourceId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.GroupResourcesIds(
+				viper.GetString(
+					core.GetFlagName(
+						get.NS, cloudapiv6.ArgGroupId,
+					),
+				),
+			), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	get.AddInt32Flag(
+		cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultGetDepth, cloudapiv6.ArgDepthDescription,
+	)
 
 	/*
 		Create Command
 	*/
-	create := core.NewCommand(ctx, shareCmd, core.CommandBuilder{
-		Namespace: "share",
-		Resource:  "share",
-		Verb:      "create",
-		Aliases:   []string{"c"},
-		ShortDesc: "Create a Resource Share for a Group",
-		LongDesc: `Use this command to create a specific Resource Share to a Group and optionally allow the setting of permissions for that Resource. As an example, you might use this to grant permissions to use an Image or Snapshot to a specific Group.
+	create := core.NewCommand(
+		ctx, shareCmd, core.CommandBuilder{
+			Namespace: "share",
+			Resource:  "share",
+			Verb:      "create",
+			Aliases:   []string{"c"},
+			ShortDesc: "Create a Resource Share for a Group",
+			LongDesc: `Use this command to create a specific Resource Share to a Group and optionally allow the setting of permissions for that Resource. As an example, you might use this to grant permissions to use an Image or Snapshot to a specific Group.
 
 Required values to run a command:
 
 * Group Id
 * Resource Id`,
-		Example:    createShareExample,
-		PreCmdRun:  PreRunGroupResourceIds,
-		CmdRun:     RunShareCreate,
-		InitClient: true,
-	})
+			Example:    createShareExample,
+			PreCmdRun:  PreRunGroupResourceIds,
+			CmdRun:     RunShareCreate,
+			InitClient: true,
+		},
+	)
 	create.AddUUIDFlag(cloudapiv6.ArgGroupId, "", "", cloudapiv6.GroupId, core.RequiredFlagOption())
-	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.GroupsIds(), cobra.ShellCompDirectiveNoFileComp
-	})
-	create.AddUUIDFlag(cloudapiv6.ArgResourceId, cloudapiv6.ArgIdShort, "", cloudapiv6.ResourceId, core.RequiredFlagOption())
-	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgResourceId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.ResourcesIds(), cobra.ShellCompDirectiveNoFileComp
-	})
-	create.AddBoolFlag(cloudapiv6.ArgEditPrivilege, "", false, "Set the group's permission to edit privileges on resource")
+	_ = create.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgGroupId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.GroupsIds(), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	create.AddUUIDFlag(
+		cloudapiv6.ArgResourceId, cloudapiv6.ArgIdShort, "", cloudapiv6.ResourceId, core.RequiredFlagOption(),
+	)
+	_ = create.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgResourceId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.ResourcesIds(), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	create.AddBoolFlag(
+		cloudapiv6.ArgEditPrivilege, "", false, "Set the group's permission to edit privileges on resource",
+	)
 	create.AddBoolFlag(cloudapiv6.ArgSharePrivilege, "", false, "Set the group's permission to share resource")
-	create.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait, "Wait for the Request for Resource share to executed")
-	create.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for Resource to be shared through a Group [seconds]")
-	create.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultCreateDepth, cloudapiv6.ArgDepthDescription)
+	create.AddBoolFlag(
+		constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait,
+		"Wait for the Request for Resource share to executed",
+	)
+	create.AddIntFlag(
+		constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds,
+		"Timeout option for Request for Resource to be shared through a Group [seconds]",
+	)
+	create.AddInt32Flag(
+		cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultCreateDepth, cloudapiv6.ArgDepthDescription,
+	)
 
 	/*
 		Update Command
 	*/
-	update := core.NewCommand(ctx, shareCmd, core.CommandBuilder{
-		Namespace: "share",
-		Resource:  "share",
-		Verb:      "update",
-		Aliases:   []string{"u", "up"},
-		ShortDesc: "Update a Resource Share from a Group",
-		LongDesc: `Use this command to update the permissions that a Group has for a specific Resource Share.
+	update := core.NewCommand(
+		ctx, shareCmd, core.CommandBuilder{
+			Namespace: "share",
+			Resource:  "share",
+			Verb:      "update",
+			Aliases:   []string{"u", "up"},
+			ShortDesc: "Update a Resource Share from a Group",
+			LongDesc: `Use this command to update the permissions that a Group has for a specific Resource Share.
 
 You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option.
 
@@ -146,57 +197,109 @@ Required values to run command:
 
 * Group Id
 * Resource Id`,
-		Example:    updateShareExample,
-		PreCmdRun:  PreRunGroupResourceIds,
-		CmdRun:     RunShareUpdate,
-		InitClient: true,
-	})
+			Example:    updateShareExample,
+			PreCmdRun:  PreRunGroupResourceIds,
+			CmdRun:     RunShareUpdate,
+			InitClient: true,
+		},
+	)
 	update.AddUUIDFlag(cloudapiv6.ArgGroupId, "", "", cloudapiv6.GroupId, core.RequiredFlagOption())
-	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.GroupsIds(), cobra.ShellCompDirectiveNoFileComp
-	})
-	update.AddUUIDFlag(cloudapiv6.ArgResourceId, cloudapiv6.ArgIdShort, "", cloudapiv6.ResourceId, core.RequiredFlagOption())
-	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgResourceId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.GroupResourcesIds(viper.GetString(core.GetFlagName(update.NS, cloudapiv6.ArgGroupId))), cobra.ShellCompDirectiveNoFileComp
-	})
-	update.AddBoolFlag(cloudapiv6.ArgEditPrivilege, "", false, "Update the group's permission to edit privileges on resource")
+	_ = update.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgGroupId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.GroupsIds(), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	update.AddUUIDFlag(
+		cloudapiv6.ArgResourceId, cloudapiv6.ArgIdShort, "", cloudapiv6.ResourceId, core.RequiredFlagOption(),
+	)
+	_ = update.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgResourceId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.GroupResourcesIds(
+				viper.GetString(
+					core.GetFlagName(
+						update.NS, cloudapiv6.ArgGroupId,
+					),
+				),
+			), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	update.AddBoolFlag(
+		cloudapiv6.ArgEditPrivilege, "", false, "Update the group's permission to edit privileges on resource",
+	)
 	update.AddBoolFlag(cloudapiv6.ArgSharePrivilege, "", false, "Update the group's permission to share resource")
-	update.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait, "Wait for the Request for Resource Share update to be executed")
-	update.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for Resource Share update [seconds]")
-	update.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultUpdateDepth, cloudapiv6.ArgDepthDescription)
+	update.AddBoolFlag(
+		constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait,
+		"Wait for the Request for Resource Share update to be executed",
+	)
+	update.AddIntFlag(
+		constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds,
+		"Timeout option for Request for Resource Share update [seconds]",
+	)
+	update.AddInt32Flag(
+		cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultUpdateDepth, cloudapiv6.ArgDepthDescription,
+	)
 
 	/*
 		Delete Command
 	*/
-	deleteCmd := core.NewCommand(ctx, shareCmd, core.CommandBuilder{
-		Namespace: "share",
-		Resource:  "share",
-		Verb:      "delete",
-		Aliases:   []string{"d"},
-		ShortDesc: "Delete a Resource Share from a Group",
-		LongDesc: `This command deletes a Resource Share from a specified Group.
+	deleteCmd := core.NewCommand(
+		ctx, shareCmd, core.CommandBuilder{
+			Namespace: "share",
+			Resource:  "share",
+			Verb:      "delete",
+			Aliases:   []string{"d"},
+			ShortDesc: "Delete a Resource Share from a Group",
+			LongDesc: `This command deletes a Resource Share from a specified Group.
 
 Required values to run command:
 
 * Resource Id
 * Group Id`,
-		Example:    deleteShareExample,
-		PreCmdRun:  PreRunGroupResourceDelete,
-		CmdRun:     RunShareDelete,
-		InitClient: true,
-	})
+			Example:    deleteShareExample,
+			PreCmdRun:  PreRunGroupResourceDelete,
+			CmdRun:     RunShareDelete,
+			InitClient: true,
+		},
+	)
+	deleteCmd.AddBoolFlag(constants.ArgForce, constants.ArgForceShort, false, constants.DescForce)
 	deleteCmd.AddUUIDFlag(cloudapiv6.ArgGroupId, "", "", cloudapiv6.GroupId, core.RequiredFlagOption())
-	_ = deleteCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.GroupsIds(), cobra.ShellCompDirectiveNoFileComp
-	})
-	deleteCmd.AddUUIDFlag(cloudapiv6.ArgResourceId, cloudapiv6.ArgIdShort, "", cloudapiv6.ResourceId, core.RequiredFlagOption())
-	_ = deleteCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgResourceId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.GroupResourcesIds(viper.GetString(core.GetFlagName(deleteCmd.NS, cloudapiv6.ArgGroupId))), cobra.ShellCompDirectiveNoFileComp
-	})
-	deleteCmd.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait, "Wait for the Request for Resource Share deletion to be executed")
-	deleteCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete all the Resources Share from a specified Group.")
-	deleteCmd.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for Resource Share deletion [seconds]")
-	deleteCmd.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultDeleteDepth, cloudapiv6.ArgDepthDescription)
+	_ = deleteCmd.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgGroupId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.GroupsIds(), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	deleteCmd.AddUUIDFlag(
+		cloudapiv6.ArgResourceId, cloudapiv6.ArgIdShort, "", cloudapiv6.ResourceId, core.RequiredFlagOption(),
+	)
+	_ = deleteCmd.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgResourceId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.GroupResourcesIds(
+				viper.GetString(
+					core.GetFlagName(
+						deleteCmd.NS, cloudapiv6.ArgGroupId,
+					),
+				),
+			), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	deleteCmd.AddBoolFlag(
+		constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait,
+		"Wait for the Request for Resource Share deletion to be executed",
+	)
+	deleteCmd.AddBoolFlag(
+		cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete all the Resources Share from a specified Group.",
+	)
+	deleteCmd.AddIntFlag(
+		constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds,
+		"Timeout option for Request for Resource Share deletion [seconds]",
+	)
+	deleteCmd.AddInt32Flag(
+		cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultDeleteDepth, cloudapiv6.ArgDepthDescription,
+	)
 
 	return shareCmd
 }
@@ -206,7 +309,8 @@ func PreRunGroupResourceIds(c *core.PreCommandConfig) error {
 }
 
 func PreRunGroupResourceDelete(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlagsSets(c.Command, c.NS,
+	return core.CheckRequiredFlagsSets(
+		c.Command, c.NS,
 		[]string{cloudapiv6.ArgGroupId, cloudapiv6.ArgResourceId},
 		[]string{cloudapiv6.ArgGroupId, cloudapiv6.ArgAll},
 	)
@@ -260,13 +364,18 @@ func RunShareListAll(c *core.CommandConfig) error {
 	}
 
 	if totalTime != time.Duration(0) {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, totalTime))
+		fmt.Fprintf(
+			c.Command.Command.ErrOrStderr(),
+			jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, totalTime),
+		)
 	}
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutputPreconverted(allShares, allSharesConverted,
-		tabheaders.GetHeaders(allGroupShareCols, defaultGroupShareCols, cols))
+	out, err := jsontabwriter.GenerateOutputPreconverted(
+		allShares, allSharesConverted,
+		tabheaders.GetHeaders(allGroupShareCols, defaultGroupShareCols, cols),
+	)
 	if err != nil {
 		return err
 	}
@@ -286,9 +395,18 @@ func RunShareList(c *core.CommandConfig) error {
 		return err
 	}
 
-	shares, resp, err := c.CloudApiV6Services.Groups().ListShares(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)), listQueryParams)
+	shares, resp, err := c.CloudApiV6Services.Groups().ListShares(
+		viper.GetString(
+			core.GetFlagName(
+				c.NS, cloudapiv6.ArgGroupId,
+			),
+		), listQueryParams,
+	)
 	if resp != nil {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+		fmt.Fprintf(
+			c.Command.Command.ErrOrStderr(),
+			jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime),
+		)
 	}
 	if err != nil {
 		return err
@@ -296,8 +414,10 @@ func RunShareList(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.Share, shares.GroupShares,
-		tabheaders.GetHeadersAllDefault(defaultGroupShareCols, cols))
+	out, err := jsontabwriter.GenerateOutput(
+		"items", jsonpaths.Share, shares.GroupShares,
+		tabheaders.GetHeadersAllDefault(defaultGroupShareCols, cols),
+	)
 	if err != nil {
 		return err
 	}
@@ -308,7 +428,8 @@ func RunShareList(c *core.CommandConfig) error {
 }
 
 func PreRunShareList(c *core.PreCommandConfig) error {
-	if err := core.CheckRequiredFlagsSets(c.Command, c.NS,
+	if err := core.CheckRequiredFlagsSets(
+		c.Command, c.NS,
 		[]string{cloudapiv6.ArgGroupId},
 		[]string{cloudapiv6.ArgAll},
 	); err != nil {
@@ -330,9 +451,13 @@ func RunShareGet(c *core.CommandConfig) error {
 
 	queryParams := listQueryParams.QueryParams
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting Share with Resource ID: %v from Group with ID: %v...",
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId))))
+	fmt.Fprintf(
+		c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
+			"Getting Share with Resource ID: %v from Group with ID: %v...",
+			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceId)),
+			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)),
+		),
+	)
 
 	s, resp, err := c.CloudApiV6Services.Groups().GetShare(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)),
@@ -340,7 +465,10 @@ func RunShareGet(c *core.CommandConfig) error {
 		queryParams,
 	)
 	if resp != nil {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+		fmt.Fprintf(
+			c.Command.Command.ErrOrStderr(),
+			jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime),
+		)
 	}
 	if err != nil {
 		return err
@@ -348,8 +476,10 @@ func RunShareGet(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Share, s.GroupShare,
-		tabheaders.GetHeadersAllDefault(defaultGroupShareCols, cols))
+	out, err := jsontabwriter.GenerateOutput(
+		"", jsonpaths.Share, s.GroupShare,
+		tabheaders.GetHeadersAllDefault(defaultGroupShareCols, cols),
+	)
 	if err != nil {
 		return err
 	}
@@ -378,11 +508,19 @@ func RunShareCreate(c *core.CommandConfig) error {
 		},
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
-		"Properties set for creating the Share: EditPrivilege: %v, SharePrivilege: %v", editPrivilege, sharePrivilege))
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Adding Share for Resource ID: %v from Group with ID: %v...",
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId))))
+	fmt.Fprintf(
+		c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
+			"Properties set for creating the Share: EditPrivilege: %v, SharePrivilege: %v", editPrivilege,
+			sharePrivilege,
+		),
+	)
+	fmt.Fprintf(
+		c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
+			"Adding Share for Resource ID: %v from Group with ID: %v...",
+			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceId)),
+			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)),
+		),
+	)
 
 	shareAdded, resp, err := c.CloudApiV6Services.Groups().AddShare(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)),
@@ -391,7 +529,10 @@ func RunShareCreate(c *core.CommandConfig) error {
 		queryParams,
 	)
 	if resp != nil && request.GetId(resp) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+		fmt.Fprintf(
+			c.Command.Command.ErrOrStderr(),
+			jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime),
+		)
 	}
 	if err != nil {
 		return err
@@ -403,8 +544,10 @@ func RunShareCreate(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Share, shareAdded.GroupShare,
-		tabheaders.GetHeadersAllDefault(defaultGroupShareCols, cols))
+	out, err := jsontabwriter.GenerateOutput(
+		"", jsonpaths.Share, shareAdded.GroupShare,
+		tabheaders.GetHeadersAllDefault(defaultGroupShareCols, cols),
+	)
 	if err != nil {
 		return err
 	}
@@ -421,8 +564,10 @@ func RunShareUpdate(c *core.CommandConfig) error {
 	}
 
 	queryParams := listQueryParams.QueryParams
-	s, _, err := c.CloudApiV6Services.Groups().GetShare(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceId)), queryParams)
+	s, _, err := c.CloudApiV6Services.Groups().GetShare(
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceId)), queryParams,
+	)
 	if err != nil {
 		return err
 	}
@@ -434,9 +579,13 @@ func RunShareUpdate(c *core.CommandConfig) error {
 		},
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Updating Share for Resource ID: %v from Group with ID: %v...",
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId))))
+	fmt.Fprintf(
+		c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
+			"Updating Share for Resource ID: %v from Group with ID: %v...",
+			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceId)),
+			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)),
+		),
+	)
 
 	shareUpdated, resp, err := c.CloudApiV6Services.Groups().UpdateShare(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)),
@@ -445,7 +594,10 @@ func RunShareUpdate(c *core.CommandConfig) error {
 		queryParams,
 	)
 	if resp != nil && request.GetId(resp) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+		fmt.Fprintf(
+			c.Command.Command.ErrOrStderr(),
+			jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime),
+		)
 	}
 	if err != nil {
 		return err
@@ -457,8 +609,10 @@ func RunShareUpdate(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Share, shareUpdated.GroupShare,
-		tabheaders.GetHeadersAllDefault(defaultGroupShareCols, cols))
+	out, err := jsontabwriter.GenerateOutput(
+		"", jsonpaths.Share, shareUpdated.GroupShare,
+		tabheaders.GetHeadersAllDefault(defaultGroupShareCols, cols),
+	)
 	if err != nil {
 		return err
 	}
@@ -486,16 +640,25 @@ func RunShareDelete(c *core.CommandConfig) error {
 		return nil
 	}
 
-	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete share from group", viper.GetBool(constants.ArgForce)) {
+	if !confirm.FAsk(
+		c.Command.Command.InOrStdin(), "delete share from group",
+		viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce)),
+	) {
 		return fmt.Errorf(confirm.UserDenied)
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
-		"Starting deleting Share with Resource ID: %v from Group with ID: %v...", shareId, groupId))
+	fmt.Fprintf(
+		c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
+			"Starting deleting Share with Resource ID: %v from Group with ID: %v...", shareId, groupId,
+		),
+	)
 
 	resp, err := c.CloudApiV6Services.Groups().RemoveShare(groupId, shareId, queryParams)
 	if resp != nil && request.GetId(resp) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+		fmt.Fprintf(
+			c.Command.Command.ErrOrStderr(),
+			jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime),
+		)
 	}
 	if err != nil {
 		return err
@@ -516,7 +679,10 @@ func getShareUpdateInfo(oldShare *resources.GroupShare, c *core.CommandConfig) *
 		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgEditPrivilege)) {
 			editPrivilege = viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgEditPrivilege))
 
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property EditPrivilege set: %v", editPrivilege))
+			fmt.Fprintf(
+				c.Command.Command.ErrOrStderr(),
+				jsontabwriter.GenerateVerboseOutput("Property EditPrivilege set: %v", editPrivilege),
+			)
 		} else {
 			if e, ok := properties.GetEditPrivilegeOk(); ok && e != nil {
 				editPrivilege = *e
@@ -526,7 +692,10 @@ func getShareUpdateInfo(oldShare *resources.GroupShare, c *core.CommandConfig) *
 		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgSharePrivilege)) {
 			sharePrivilege = viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgSharePrivilege))
 
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property SharePrivilege set: %v", sharePrivilege))
+			fmt.Fprintf(
+				c.Command.Command.ErrOrStderr(),
+				jsontabwriter.GenerateVerboseOutput("Property SharePrivilege set: %v", sharePrivilege),
+			)
 		} else {
 			if e, ok := properties.GetSharePrivilegeOk(); ok && e != nil {
 				sharePrivilege = *e
@@ -554,7 +723,9 @@ func DeleteAllShares(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Group ID: %v", groupId))
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting Group Shares..."))
 
-	groupShares, resp, err := c.CloudApiV6Services.Groups().ListShares(groupId, cloudapiv6.ParentResourceListQueryParams)
+	groupShares, resp, err := c.CloudApiV6Services.Groups().ListShares(
+		groupId, cloudapiv6.ParentResourceListQueryParams,
+	)
 	if err != nil {
 		return err
 	}
@@ -576,7 +747,10 @@ func DeleteAllShares(c *core.CommandConfig) error {
 		}
 	}
 
-	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete all the GroupShares", viper.GetBool(constants.ArgForce)) {
+	if !confirm.FAsk(
+		c.Command.Command.InOrStdin(), "delete all the GroupShares",
+		viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce)),
+	) {
 		return fmt.Errorf(confirm.UserDenied)
 	}
 
@@ -589,19 +763,28 @@ func DeleteAllShares(c *core.CommandConfig) error {
 			continue
 		}
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
-			"Starting deleting Share with Resource ID: %v from Group with ID: %v...", *id, groupId))
+		fmt.Fprintf(
+			c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
+				"Starting deleting Share with Resource ID: %v from Group with ID: %v...", *id, groupId,
+			),
+		)
 
 		resp, err = c.CloudApiV6Services.Groups().RemoveShare(groupId, *id, queryParams)
 		if resp != nil && request.GetId(resp) != "" {
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+			fmt.Fprintf(
+				c.Command.Command.ErrOrStderr(),
+				jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime),
+			)
 		}
 		if err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
 			continue
 		}
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput(constants.MessageDeletingAll, c.Resource, *id))
+		fmt.Fprintf(
+			c.Command.Command.ErrOrStderr(),
+			jsontabwriter.GenerateLogOutput(constants.MessageDeletingAll, c.Resource, *id),
+		)
 
 		if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *id, err))

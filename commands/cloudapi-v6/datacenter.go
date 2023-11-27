@@ -25,8 +25,10 @@ import (
 
 var (
 	defaultDatacenterCols = []string{"DatacenterId", "Name", "Location", "CpuFamily", "IPv6CidrBlock", "State"}
-	allDatacenterCols     = []string{"DatacenterId", "Name", "Location", "State", "Description", "Version",
-		"Features", "CpuFamily", "SecAuthProtection", "IPv6CidrBlock"}
+	allDatacenterCols     = []string{
+		"DatacenterId", "Name", "Location", "State", "Description", "Version",
+		"Features", "CpuFamily", "SecAuthProtection", "IPv6CidrBlock",
+	}
 )
 
 func DatacenterCmd() *core.Command {
@@ -43,150 +45,226 @@ func DatacenterCmd() *core.Command {
 	}
 	globalFlags := datacenterCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultDatacenterCols, tabheaders.ColsMessage(allDatacenterCols))
-	_ = viper.BindPFlag(core.GetFlagName(datacenterCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
-	_ = datacenterCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return allDatacenterCols, cobra.ShellCompDirectiveNoFileComp
-	})
+	_ = viper.BindPFlag(
+		core.GetFlagName(datacenterCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols),
+	)
+	_ = datacenterCmd.Command.RegisterFlagCompletionFunc(
+		constants.ArgCols,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return allDatacenterCols, cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 
 	/*
 		List Command
 	*/
-	list := core.NewCommand(ctx, datacenterCmd, core.CommandBuilder{
-		Namespace: "datacenter",
-		Resource:  "datacenter",
-		Verb:      "list",
-		Aliases:   []string{"l", "ls"},
-		ShortDesc: "List Data Centers",
-		LongDesc: `Use this command to retrieve a complete list of Virtual Data Centers provisioned under your account. You can setup multiple query parameters.
+	list := core.NewCommand(
+		ctx, datacenterCmd, core.CommandBuilder{
+			Namespace: "datacenter",
+			Resource:  "datacenter",
+			Verb:      "list",
+			Aliases:   []string{"l", "ls"},
+			ShortDesc: "List Data Centers",
+			LongDesc: `Use this command to retrieve a complete list of Virtual Data Centers provisioned under your account. You can setup multiple query parameters.
 
 You can filter the results using ` + "`" + `--filters` + "`" + ` option. Use the following format to set filters: ` + "`" + `--filters KEY1=VALUE1,KEY2=VALUE2` + "`" + `
 ` + completer.DataCentersFiltersUsage(),
-		Example:    listDatacenterExample,
-		PreCmdRun:  PreRunDataCenterList,
-		CmdRun:     RunDataCenterList,
-		InitClient: true,
-	})
-	list.AddInt32Flag(constants.FlagMaxResults, constants.FlagMaxResultsShort, cloudapiv6.DefaultMaxResults, constants.DescMaxResults)
-	list.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultListDepth, cloudapiv6.ArgDepthDescription)
+			Example:    listDatacenterExample,
+			PreCmdRun:  PreRunDataCenterList,
+			CmdRun:     RunDataCenterList,
+			InitClient: true,
+		},
+	)
+	list.AddInt32Flag(
+		constants.FlagMaxResults, constants.FlagMaxResultsShort, cloudapiv6.DefaultMaxResults, constants.DescMaxResults,
+	)
+	list.AddInt32Flag(
+		cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultListDepth, cloudapiv6.ArgDepthDescription,
+	)
 	list.AddStringFlag(cloudapiv6.ArgOrderBy, "", "", cloudapiv6.ArgOrderByDescription)
-	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgOrderBy, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.DataCentersFilters(), cobra.ShellCompDirectiveNoFileComp
-	})
-	list.AddStringSliceFlag(cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, cloudapiv6.ArgFiltersDescription)
-	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgFilters, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.DataCentersFilters(), cobra.ShellCompDirectiveNoFileComp
-	})
+	_ = list.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgOrderBy,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.DataCentersFilters(), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	list.AddStringSliceFlag(
+		cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, cloudapiv6.ArgFiltersDescription,
+	)
+	_ = list.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgFilters,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.DataCentersFilters(), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 
 	/*
 		Get Command
 	*/
-	get := core.NewCommand(ctx, datacenterCmd, core.CommandBuilder{
-		Namespace:  "datacenter",
-		Resource:   "datacenter",
-		Verb:       "get",
-		Aliases:    []string{"g"},
-		ShortDesc:  "Get a Data Center",
-		LongDesc:   "Use this command to retrieve details about a Virtual Data Center by using its ID.\n\nRequired values to run command:\n\n* Data Center Id",
-		Example:    getDatacenterExample,
-		PreCmdRun:  PreRunDataCenterId,
-		CmdRun:     RunDataCenterGet,
-		InitClient: true,
-	})
-	get.AddUUIDFlag(cloudapiv6.ArgDataCenterId, cloudapiv6.ArgIdShort, "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
-	_ = get.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.DataCentersIds(), cobra.ShellCompDirectiveNoFileComp
-	})
-	get.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultGetDepth, cloudapiv6.ArgDepthDescription)
+	get := core.NewCommand(
+		ctx, datacenterCmd, core.CommandBuilder{
+			Namespace:  "datacenter",
+			Resource:   "datacenter",
+			Verb:       "get",
+			Aliases:    []string{"g"},
+			ShortDesc:  "Get a Data Center",
+			LongDesc:   "Use this command to retrieve details about a Virtual Data Center by using its ID.\n\nRequired values to run command:\n\n* Data Center Id",
+			Example:    getDatacenterExample,
+			PreCmdRun:  PreRunDataCenterId,
+			CmdRun:     RunDataCenterGet,
+			InitClient: true,
+		},
+	)
+	get.AddUUIDFlag(
+		cloudapiv6.ArgDataCenterId, cloudapiv6.ArgIdShort, "", cloudapiv6.DatacenterId, core.RequiredFlagOption(),
+	)
+	_ = get.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgDataCenterId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.DataCentersIds(), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	get.AddInt32Flag(
+		cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultGetDepth, cloudapiv6.ArgDepthDescription,
+	)
 
 	/*
 		Create Command
 	*/
-	create := core.NewCommand(ctx, datacenterCmd, core.CommandBuilder{
-		Namespace: "datacenter",
-		Resource:  "datacenter",
-		Verb:      "create",
-		Aliases:   []string{"c"},
-		ShortDesc: "Create a Data Center",
-		LongDesc: `Use this command to create a Virtual Data Center. You can specify the name, description or location for the object.
+	create := core.NewCommand(
+		ctx, datacenterCmd, core.CommandBuilder{
+			Namespace: "datacenter",
+			Resource:  "datacenter",
+			Verb:      "create",
+			Aliases:   []string{"c"},
+			ShortDesc: "Create a Data Center",
+			LongDesc: `Use this command to create a Virtual Data Center. You can specify the name, description or location for the object.
 
 Virtual Data Centers are the foundation of the IONOS platform. VDCs act as logical containers for all other objects you will be creating, e.g. servers. You can provision as many Data Centers as you want. Data Centers have their own private network and are logically segmented from each other to create isolation.
 
 You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option.`,
-		Example:    createDatacenterExample,
-		PreCmdRun:  core.NoPreRun,
-		CmdRun:     RunDataCenterCreate,
-		InitClient: true,
-	})
+			Example:    createDatacenterExample,
+			PreCmdRun:  core.NoPreRun,
+			CmdRun:     RunDataCenterCreate,
+			InitClient: true,
+		},
+	)
 	create.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "Unnamed Data Center", "Name of the Data Center")
-	create.AddStringFlag(cloudapiv6.ArgDescription, cloudapiv6.ArgDescriptionShort, "", "Description of the Data Center")
+	create.AddStringFlag(
+		cloudapiv6.ArgDescription, cloudapiv6.ArgDescriptionShort, "", "Description of the Data Center",
+	)
 	create.AddStringFlag(cloudapiv6.ArgLocation, cloudapiv6.ArgLocationShort, "de/txl", "Location for the Data Center")
-	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgLocation, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.LocationIds(), cobra.ShellCompDirectiveNoFileComp
-	})
-	create.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait, "Wait for the Request for Data Center creation to be executed")
-	create.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for Data Center creation [seconds]")
-	create.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultCreateDepth, cloudapiv6.ArgDepthDescription)
+	_ = create.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgLocation,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.LocationIds(), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	create.AddBoolFlag(
+		constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait,
+		"Wait for the Request for Data Center creation to be executed",
+	)
+	create.AddIntFlag(
+		constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds,
+		"Timeout option for Request for Data Center creation [seconds]",
+	)
+	create.AddInt32Flag(
+		cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultCreateDepth, cloudapiv6.ArgDepthDescription,
+	)
 
 	/*
 		Update Command
 	*/
-	update := core.NewCommand(ctx, datacenterCmd, core.CommandBuilder{
-		Namespace: "datacenter",
-		Resource:  "datacenter",
-		Verb:      "update",
-		Aliases:   []string{"u", "up"},
-		ShortDesc: "Update a Data Center",
-		LongDesc: `Use this command to change a Virtual Data Center's name, description.
+	update := core.NewCommand(
+		ctx, datacenterCmd, core.CommandBuilder{
+			Namespace: "datacenter",
+			Resource:  "datacenter",
+			Verb:      "update",
+			Aliases:   []string{"u", "up"},
+			ShortDesc: "Update a Data Center",
+			LongDesc: `Use this command to change a Virtual Data Center's name, description.
 
 You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option.
 
 Required values to run command:
 
 * Data Center Id`,
-		Example:    updateDatacenterExample,
-		PreCmdRun:  PreRunDataCenterId,
-		CmdRun:     RunDataCenterUpdate,
-		InitClient: true,
-	})
-	update.AddUUIDFlag(cloudapiv6.ArgDataCenterId, cloudapiv6.ArgIdShort, "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
-	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.DataCentersIds(), cobra.ShellCompDirectiveNoFileComp
-	})
+			Example:    updateDatacenterExample,
+			PreCmdRun:  PreRunDataCenterId,
+			CmdRun:     RunDataCenterUpdate,
+			InitClient: true,
+		},
+	)
+	update.AddUUIDFlag(
+		cloudapiv6.ArgDataCenterId, cloudapiv6.ArgIdShort, "", cloudapiv6.DatacenterId, core.RequiredFlagOption(),
+	)
+	_ = update.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgDataCenterId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.DataCentersIds(), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 	update.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "", "Name of the Data Center")
-	update.AddStringFlag(cloudapiv6.ArgDescription, cloudapiv6.ArgDescriptionShort, "", "Description of the Data Center")
-	update.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait, "Wait for the Request for Data Center update to be executed")
-	update.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for Data Center update [seconds]")
-	update.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultUpdateDepth, cloudapiv6.ArgDepthDescription)
+	update.AddStringFlag(
+		cloudapiv6.ArgDescription, cloudapiv6.ArgDescriptionShort, "", "Description of the Data Center",
+	)
+	update.AddBoolFlag(
+		constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait,
+		"Wait for the Request for Data Center update to be executed",
+	)
+	update.AddIntFlag(
+		constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds,
+		"Timeout option for Request for Data Center update [seconds]",
+	)
+	update.AddInt32Flag(
+		cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultUpdateDepth, cloudapiv6.ArgDepthDescription,
+	)
 
 	/*
 		Delete Command
 	*/
-	deleteCmd := core.NewCommand(ctx, datacenterCmd, core.CommandBuilder{
-		Namespace: "datacenter",
-		Resource:  "datacenter",
-		Verb:      "delete",
-		Aliases:   []string{"d"},
-		ShortDesc: "Delete a Data Center",
-		LongDesc: `Use this command to delete a specified Virtual Data Center from your account. This will remove all objects within the VDC and remove the VDC object itself.
+	deleteCmd := core.NewCommand(
+		ctx, datacenterCmd, core.CommandBuilder{
+			Namespace: "datacenter",
+			Resource:  "datacenter",
+			Verb:      "delete",
+			Aliases:   []string{"d"},
+			ShortDesc: "Delete a Data Center",
+			LongDesc: `Use this command to delete a specified Virtual Data Center from your account. This will remove all objects within the VDC and remove the VDC object itself.
 
 NOTE: This is a highly destructive operation which should be used with extreme caution!
 
 Required values to run command:
 
 * Data Center Id`,
-		Example:    deleteDatacenterExample,
-		PreCmdRun:  PreRunDataCenterDelete,
-		CmdRun:     RunDataCenterDelete,
-		InitClient: true,
-	})
-	deleteCmd.AddUUIDFlag(cloudapiv6.ArgDataCenterId, cloudapiv6.ArgIdShort, "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
-	_ = deleteCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.DataCentersIds(), cobra.ShellCompDirectiveNoFileComp
-	})
-	deleteCmd.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait, "Wait for the Request for Data Center deletion")
+			Example:    deleteDatacenterExample,
+			PreCmdRun:  PreRunDataCenterDelete,
+			CmdRun:     RunDataCenterDelete,
+			InitClient: true,
+		},
+	)
+	deleteCmd.AddBoolFlag(constants.ArgForce, constants.ArgForceShort, false, constants.DescForce)
+	deleteCmd.AddUUIDFlag(
+		cloudapiv6.ArgDataCenterId, cloudapiv6.ArgIdShort, "", cloudapiv6.DatacenterId, core.RequiredFlagOption(),
+	)
+	_ = deleteCmd.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgDataCenterId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.DataCentersIds(), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	deleteCmd.AddBoolFlag(
+		constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait,
+		"Wait for the Request for Data Center deletion",
+	)
 	deleteCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete all the Datacenters.")
-	deleteCmd.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for Data Center deletion [seconds]")
-	deleteCmd.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultDeleteDepth, cloudapiv6.ArgDepthDescription)
+	deleteCmd.AddIntFlag(
+		constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds,
+		"Timeout option for Request for Data Center deletion [seconds]",
+	)
+	deleteCmd.AddInt32Flag(
+		cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultDeleteDepth, cloudapiv6.ArgDepthDescription,
+	)
 
 	return datacenterCmd
 }
@@ -196,7 +274,8 @@ func PreRunDataCenterId(c *core.PreCommandConfig) error {
 }
 
 func PreRunDataCenterDelete(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlagsSets(c.Command, c.NS,
+	return core.CheckRequiredFlagsSets(
+		c.Command, c.NS,
 		[]string{cloudapiv6.ArgDataCenterId},
 		[]string{cloudapiv6.ArgAll},
 	)
@@ -218,7 +297,10 @@ func RunDataCenterList(c *core.CommandConfig) error {
 
 	datacenters, resp, err := c.CloudApiV6Services.DataCenters().List(listQueryParams)
 	if resp != nil {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+		fmt.Fprintf(
+			c.Command.Command.ErrOrStderr(),
+			jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime),
+		)
 	}
 	if err != nil {
 		return err
@@ -226,8 +308,10 @@ func RunDataCenterList(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.Datacenter, datacenters.Datacenters,
-		tabheaders.GetHeaders(allDatacenterCols, defaultDatacenterCols, cols))
+	out, err := jsontabwriter.GenerateOutput(
+		"items", jsonpaths.Datacenter, datacenters.Datacenters,
+		tabheaders.GetHeaders(allDatacenterCols, defaultDatacenterCols, cols),
+	)
 	if err != nil {
 		return err
 	}
@@ -244,12 +328,24 @@ func RunDataCenterGet(c *core.CommandConfig) error {
 	}
 
 	queryParams := listQueryParams.QueryParams
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
-		"Getting Datacenter with ID: %v...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))))
+	fmt.Fprintf(
+		c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
+			"Getting Datacenter with ID: %v...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
+		),
+	)
 
-	dc, resp, err := c.CloudApiV6Services.DataCenters().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)), queryParams)
+	dc, resp, err := c.CloudApiV6Services.DataCenters().Get(
+		viper.GetString(
+			core.GetFlagName(
+				c.NS, cloudapiv6.ArgDataCenterId,
+			),
+		), queryParams,
+	)
 	if resp != nil {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+		fmt.Fprintf(
+			c.Command.Command.ErrOrStderr(),
+			jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime),
+		)
 	}
 	if err != nil {
 		return err
@@ -257,8 +353,10 @@ func RunDataCenterGet(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Datacenter, dc.Datacenter,
-		tabheaders.GetHeaders(allDatacenterCols, defaultDatacenterCols, cols))
+	out, err := jsontabwriter.GenerateOutput(
+		"", jsonpaths.Datacenter, dc.Datacenter,
+		tabheaders.GetHeaders(allDatacenterCols, defaultDatacenterCols, cols),
+	)
 	if err != nil {
 		return err
 	}
@@ -279,12 +377,19 @@ func RunDataCenterCreate(c *core.CommandConfig) error {
 	description := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDescription))
 	loc := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLocation))
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
-		"Properties set for creating the datacenter: Name: %v, Description: %v, Location: %v", name, description, loc))
+	fmt.Fprintf(
+		c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
+			"Properties set for creating the datacenter: Name: %v, Description: %v, Location: %v", name, description,
+			loc,
+		),
+	)
 
 	dc, resp, err := c.CloudApiV6Services.DataCenters().Create(name, description, loc, queryParams)
 	if resp != nil && request.GetId(resp) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+		fmt.Fprintf(
+			c.Command.Command.ErrOrStderr(),
+			jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime),
+		)
 	}
 	if err != nil {
 		return err
@@ -296,8 +401,10 @@ func RunDataCenterCreate(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Datacenter, dc,
-		tabheaders.GetHeaders(allDatacenterCols, defaultDatacenterCols, cols))
+	out, err := jsontabwriter.GenerateOutput(
+		"", jsonpaths.Datacenter, dc,
+		tabheaders.GetHeaders(allDatacenterCols, defaultDatacenterCols, cols),
+	)
 	if err != nil {
 		return err
 	}
@@ -325,7 +432,10 @@ func RunDataCenterUpdate(c *core.CommandConfig) error {
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgDescription)) {
 		description := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDescription))
 		input.SetDescription(description)
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property Description set: %v", description))
+		fmt.Fprintf(
+			c.Command.Command.ErrOrStderr(),
+			jsontabwriter.GenerateVerboseOutput("Property Description set: %v", description),
+		)
 	}
 
 	dc, resp, err := c.CloudApiV6Services.DataCenters().Update(
@@ -334,7 +444,10 @@ func RunDataCenterUpdate(c *core.CommandConfig) error {
 		queryParams,
 	)
 	if resp != nil && request.GetId(resp) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+		fmt.Fprintf(
+			c.Command.Command.ErrOrStderr(),
+			jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime),
+		)
 	}
 	if err != nil {
 		return err
@@ -345,8 +458,10 @@ func RunDataCenterUpdate(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Datacenter, dc,
-		tabheaders.GetHeaders(allDatacenterCols, defaultDatacenterCols, cols))
+	out, err := jsontabwriter.GenerateOutput(
+		"", jsonpaths.Datacenter, dc,
+		tabheaders.GetHeaders(allDatacenterCols, defaultDatacenterCols, cols),
+	)
 	if err != nil {
 		return err
 	}
@@ -371,17 +486,25 @@ func RunDataCenterDelete(c *core.CommandConfig) error {
 		return nil
 	}
 
-	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete data center", viper.GetBool(constants.ArgForce)) {
+	if !confirm.FAsk(
+		c.Command.Command.InOrStdin(), "delete data center", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce)),
+	) {
 		return fmt.Errorf(confirm.UserDenied)
 	}
 
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Starting deleting Datacenter with ID: %v...", dcId))
+	fmt.Fprintf(
+		c.Command.Command.ErrOrStderr(),
+		jsontabwriter.GenerateVerboseOutput("Starting deleting Datacenter with ID: %v...", dcId),
+	)
 
 	resp, err := c.CloudApiV6Services.DataCenters().Delete(dcId, queryParams)
 	if resp != nil && request.GetId(resp) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+		fmt.Fprintf(
+			c.Command.Command.ErrOrStderr(),
+			jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime),
+		)
 	}
 	if err != nil {
 		return err
@@ -444,18 +567,27 @@ func DeleteAllDatacenters(c *core.CommandConfig) error {
 			continue
 		}
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Starting deleting Datacenter with id: %v...", *id))
+		fmt.Fprintf(
+			c.Command.Command.ErrOrStderr(),
+			jsontabwriter.GenerateVerboseOutput("Starting deleting Datacenter with id: %v...", *id),
+		)
 
 		resp, err = c.CloudApiV6Services.DataCenters().Delete(*id, resources.QueryParams{})
 		if resp != nil && request.GetId(resp) != "" {
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+			fmt.Fprintf(
+				c.Command.Command.ErrOrStderr(),
+				jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime),
+			)
 		}
 		if err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
 			continue
 		}
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput(constants.MessageDeletingAll, c.Resource, *id))
+		fmt.Fprintf(
+			c.Command.Command.ErrOrStderr(),
+			jsontabwriter.GenerateLogOutput(constants.MessageDeletingAll, c.Resource, *id),
+		)
 
 		if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))

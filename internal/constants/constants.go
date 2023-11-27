@@ -86,6 +86,7 @@ const (
 	ArgAllShort            = "a"
 	ArgForce               = "force"
 	ArgForceShort          = "f"
+	DescForce              = "Force command to execute without user input"
 	ArgWaitForRequest      = "wait-for-request"
 	ArgWaitForRequestShort = "w"
 	ArgWaitForState        = "wait-for-state"

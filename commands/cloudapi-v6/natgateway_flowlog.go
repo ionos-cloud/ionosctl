@@ -38,85 +38,139 @@ func NatgatewayFlowLogCmd() *core.Command {
 	/*
 		List Command
 	*/
-	list := core.NewCommand(ctx, natgatewayFlowLogCmd, core.CommandBuilder{
-		Namespace:  "natgateway",
-		Resource:   "flowlog",
-		Verb:       "list",
-		Aliases:    []string{"l", "ls"},
-		ShortDesc:  "List NAT Gateway FlowLogs",
-		LongDesc:   "Use this command to list NAT Gateway FlowLogs from a specified NAT Gateway.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.FlowLogsFiltersUsage() + "\n\nRequired values to run command:\n\n* Data Center Id\n* NAT Gateway Id",
-		Example:    listNatGatewayFlowLogExample,
-		PreCmdRun:  PreRunNATGatewayFlowLogList,
-		CmdRun:     RunNatGatewayFlowLogList,
-		InitClient: true,
-	})
+	list := core.NewCommand(
+		ctx, natgatewayFlowLogCmd, core.CommandBuilder{
+			Namespace:  "natgateway",
+			Resource:   "flowlog",
+			Verb:       "list",
+			Aliases:    []string{"l", "ls"},
+			ShortDesc:  "List NAT Gateway FlowLogs",
+			LongDesc:   "Use this command to list NAT Gateway FlowLogs from a specified NAT Gateway.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.FlowLogsFiltersUsage() + "\n\nRequired values to run command:\n\n* Data Center Id\n* NAT Gateway Id",
+			Example:    listNatGatewayFlowLogExample,
+			PreCmdRun:  PreRunNATGatewayFlowLogList,
+			CmdRun:     RunNatGatewayFlowLogList,
+			InitClient: true,
+		},
+	)
 	list.AddUUIDFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
-	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.DataCentersIds(), cobra.ShellCompDirectiveNoFileComp
-	})
+	_ = list.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgDataCenterId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.DataCentersIds(), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 	list.AddUUIDFlag(cloudapiv6.ArgNatGatewayId, "", "", cloudapiv6.NatGatewayId, core.RequiredFlagOption())
-	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgNatGatewayId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.NatGatewaysIds(viper.GetString(core.GetFlagName(list.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
-	})
+	_ = list.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgNatGatewayId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.NatGatewaysIds(
+				viper.GetString(
+					core.GetFlagName(
+						list.NS, cloudapiv6.ArgDataCenterId,
+					),
+				),
+			), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 	list.AddStringSliceFlag(constants.ArgCols, "", defaultFlowLogCols, tabheaders.ColsMessage(defaultFlowLogCols))
-	_ = list.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return defaultFlowLogCols, cobra.ShellCompDirectiveNoFileComp
-	})
-	list.AddInt32Flag(constants.FlagMaxResults, constants.FlagMaxResultsShort, cloudapiv6.DefaultMaxResults, constants.DescMaxResults)
-	list.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultListDepth, cloudapiv6.ArgDepthDescription)
+	_ = list.Command.RegisterFlagCompletionFunc(
+		constants.ArgCols,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return defaultFlowLogCols, cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	list.AddInt32Flag(
+		constants.FlagMaxResults, constants.FlagMaxResultsShort, cloudapiv6.DefaultMaxResults, constants.DescMaxResults,
+	)
+	list.AddInt32Flag(
+		cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultListDepth, cloudapiv6.ArgDepthDescription,
+	)
 	list.AddStringFlag(cloudapiv6.ArgOrderBy, "", "", cloudapiv6.ArgOrderByDescription)
-	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgOrderBy, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.FlowLogsFilters(), cobra.ShellCompDirectiveNoFileComp
-	})
-	list.AddStringSliceFlag(cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, cloudapiv6.ArgFiltersDescription)
-	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgFilters, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.FlowLogsFilters(), cobra.ShellCompDirectiveNoFileComp
-	})
+	_ = list.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgOrderBy,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.FlowLogsFilters(), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	list.AddStringSliceFlag(
+		cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, cloudapiv6.ArgFiltersDescription,
+	)
+	_ = list.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgFilters,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.FlowLogsFilters(), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 
 	/*
 		Get Command
 	*/
-	get := core.NewCommand(ctx, natgatewayFlowLogCmd, core.CommandBuilder{
-		Namespace:  "natgateway",
-		Resource:   "flowlog",
-		Verb:       "get",
-		Aliases:    []string{"g"},
-		ShortDesc:  "Get a NAT Gateway FlowLog",
-		LongDesc:   "Use this command to get information about a specified NAT Gateway FlowLog from a NAT Gateway.\n\nRequired values to run command:\n\n* Data Center Id\n* NAT Gateway Id\n* NAT Gateway FlowLog Id",
-		Example:    getNatGatewayFlowLogExample,
-		PreCmdRun:  PreRunDcNatGatewayFlowLogIds,
-		CmdRun:     RunNatGatewayFlowLogGet,
-		InitClient: true,
-	})
+	get := core.NewCommand(
+		ctx, natgatewayFlowLogCmd, core.CommandBuilder{
+			Namespace:  "natgateway",
+			Resource:   "flowlog",
+			Verb:       "get",
+			Aliases:    []string{"g"},
+			ShortDesc:  "Get a NAT Gateway FlowLog",
+			LongDesc:   "Use this command to get information about a specified NAT Gateway FlowLog from a NAT Gateway.\n\nRequired values to run command:\n\n* Data Center Id\n* NAT Gateway Id\n* NAT Gateway FlowLog Id",
+			Example:    getNatGatewayFlowLogExample,
+			PreCmdRun:  PreRunDcNatGatewayFlowLogIds,
+			CmdRun:     RunNatGatewayFlowLogGet,
+			InitClient: true,
+		},
+	)
 	get.AddUUIDFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
-	_ = get.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.DataCentersIds(), cobra.ShellCompDirectiveNoFileComp
-	})
+	_ = get.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgDataCenterId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.DataCentersIds(), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 	get.AddUUIDFlag(cloudapiv6.ArgNatGatewayId, "", "", cloudapiv6.NatGatewayId, core.RequiredFlagOption())
-	_ = get.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgNatGatewayId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.NatGatewaysIds(viper.GetString(core.GetFlagName(get.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
-	})
+	_ = get.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgNatGatewayId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.NatGatewaysIds(
+				viper.GetString(
+					core.GetFlagName(
+						get.NS, cloudapiv6.ArgDataCenterId,
+					),
+				),
+			), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 	get.AddUUIDFlag(cloudapiv6.ArgFlowLogId, cloudapiv6.ArgIdShort, "", cloudapiv6.FlowLogId, core.RequiredFlagOption())
-	_ = get.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgFlowLogId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.NatGatewayFlowLogsIds(viper.GetString(core.GetFlagName(get.NS, cloudapiv6.ArgDataCenterId)),
-			viper.GetString(core.GetFlagName(get.NS, cloudapiv6.ArgNatGatewayId))), cobra.ShellCompDirectiveNoFileComp
-	})
+	_ = get.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgFlowLogId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.NatGatewayFlowLogsIds(
+				viper.GetString(core.GetFlagName(get.NS, cloudapiv6.ArgDataCenterId)),
+				viper.GetString(core.GetFlagName(get.NS, cloudapiv6.ArgNatGatewayId)),
+			), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 	get.AddStringSliceFlag(constants.ArgCols, "", defaultFlowLogCols, tabheaders.ColsMessage(defaultFlowLogCols))
-	_ = get.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return defaultFlowLogCols, cobra.ShellCompDirectiveNoFileComp
-	})
-	get.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultGetDepth, cloudapiv6.ArgDepthDescription)
+	_ = get.Command.RegisterFlagCompletionFunc(
+		constants.ArgCols,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return defaultFlowLogCols, cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	get.AddInt32Flag(
+		cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultGetDepth, cloudapiv6.ArgDepthDescription,
+	)
 
 	/*
 		Create Command
 	*/
-	create := core.NewCommand(ctx, natgatewayFlowLogCmd, core.CommandBuilder{
-		Namespace: "natgateway",
-		Resource:  "flowlog",
-		Verb:      "create",
-		Aliases:   []string{"c"},
-		ShortDesc: "Create a NAT Gateway FlowLog",
-		LongDesc: `Use this command to create a NAT Gateway FlowLog in a specified NAT Gateway.
+	create := core.NewCommand(
+		ctx, natgatewayFlowLogCmd, core.CommandBuilder{
+			Namespace: "natgateway",
+			Resource:  "flowlog",
+			Verb:      "create",
+			Aliases:   []string{"c"},
+			ShortDesc: "Create a NAT Gateway FlowLog",
+			LongDesc: `Use this command to create a NAT Gateway FlowLog in a specified NAT Gateway.
 
 You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option.
 
@@ -125,47 +179,84 @@ Required values to run command:
 * Data Center Id
 * NAT Gateway Id
 * Bucket Name`,
-		Example:    createNatGatewayFlowLogExample,
-		PreCmdRun:  PreRunNatGatewayFlowLogCreate,
-		CmdRun:     RunNatGatewayFlowLogCreate,
-		InitClient: true,
-	})
+			Example:    createNatGatewayFlowLogExample,
+			PreCmdRun:  PreRunNatGatewayFlowLogCreate,
+			CmdRun:     RunNatGatewayFlowLogCreate,
+			InitClient: true,
+		},
+	)
 	create.AddUUIDFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
-	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.DataCentersIds(), cobra.ShellCompDirectiveNoFileComp
-	})
+	_ = create.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgDataCenterId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.DataCentersIds(), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 	create.AddUUIDFlag(cloudapiv6.ArgNatGatewayId, "", "", cloudapiv6.NatGatewayId, core.RequiredFlagOption())
-	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgNatGatewayId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.NatGatewaysIds(viper.GetString(core.GetFlagName(create.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
-	})
+	_ = create.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgNatGatewayId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.NatGatewaysIds(
+				viper.GetString(
+					core.GetFlagName(
+						create.NS, cloudapiv6.ArgDataCenterId,
+					),
+				),
+			), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 	create.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "Unnamed FlowLog", "The name for the FlowLog")
 	create.AddStringFlag(cloudapiv6.ArgAction, cloudapiv6.ArgActionShort, "ALL", "Specifies the traffic Action pattern")
-	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgAction, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return []string{"ALL", "REJECTED", "ACCEPTED"}, cobra.ShellCompDirectiveNoFileComp
-	})
-	create.AddStringFlag(cloudapiv6.ArgDirection, cloudapiv6.ArgDirectionShort, "BIDIRECTIONAL", "Specifies the traffic Direction pattern")
-	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDirection, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return []string{"BIDIRECTIONAL", "INGRESS", "EGRESS"}, cobra.ShellCompDirectiveNoFileComp
-	})
-	create.AddStringFlag(cloudapiv6.ArgS3Bucket, cloudapiv6.ArgS3BucketShort, "", "S3 Bucket name of an existing IONOS Cloud S3 Bucket", core.RequiredFlagOption())
-	create.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait, "Wait for the Request for NAT Gateway FlowLog creation to be executed")
-	create.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for NAT Gateway FlowLog creation [seconds]")
+	_ = create.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgAction,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return []string{"ALL", "REJECTED", "ACCEPTED"}, cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	create.AddStringFlag(
+		cloudapiv6.ArgDirection, cloudapiv6.ArgDirectionShort, "BIDIRECTIONAL",
+		"Specifies the traffic Direction pattern",
+	)
+	_ = create.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgDirection,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return []string{"BIDIRECTIONAL", "INGRESS", "EGRESS"}, cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	create.AddStringFlag(
+		cloudapiv6.ArgS3Bucket, cloudapiv6.ArgS3BucketShort, "", "S3 Bucket name of an existing IONOS Cloud S3 Bucket",
+		core.RequiredFlagOption(),
+	)
+	create.AddBoolFlag(
+		constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait,
+		"Wait for the Request for NAT Gateway FlowLog creation to be executed",
+	)
+	create.AddIntFlag(
+		constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds,
+		"Timeout option for Request for NAT Gateway FlowLog creation [seconds]",
+	)
 	create.AddStringSliceFlag(constants.ArgCols, "", defaultFlowLogCols, tabheaders.ColsMessage(defaultFlowLogCols))
-	_ = create.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return defaultFlowLogCols, cobra.ShellCompDirectiveNoFileComp
-	})
-	create.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultCreateDepth, cloudapiv6.ArgDepthDescription)
+	_ = create.Command.RegisterFlagCompletionFunc(
+		constants.ArgCols,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return defaultFlowLogCols, cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	create.AddInt32Flag(
+		cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultCreateDepth, cloudapiv6.ArgDepthDescription,
+	)
 
 	/*
 		Update Command
 	*/
-	update := core.NewCommand(ctx, natgatewayFlowLogCmd, core.CommandBuilder{
-		Namespace: "natgateway",
-		Resource:  "flowlog",
-		Verb:      "update",
-		Aliases:   []string{"u", "up"},
-		ShortDesc: "Update a NAT Gateway FlowLog",
-		LongDesc: `Use this command to update a specified NAT Gateway FlowLog from a NAT Gateway.
+	update := core.NewCommand(
+		ctx, natgatewayFlowLogCmd, core.CommandBuilder{
+			Namespace: "natgateway",
+			Resource:  "flowlog",
+			Verb:      "update",
+			Aliases:   []string{"u", "up"},
+			ShortDesc: "Update a NAT Gateway FlowLog",
+			LongDesc: `Use this command to update a specified NAT Gateway FlowLog from a NAT Gateway.
 
 You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option.
 
@@ -174,52 +265,94 @@ Required values to run command:
 * Data Center Id
 * NAT Gateway Id
 * NAT Gateway FlowLog Id`,
-		Example:    updateNatGatewayFlowLogExample,
-		PreCmdRun:  PreRunDcNatGatewayFlowLogIds,
-		CmdRun:     RunNatGatewayFlowLogUpdate,
-		InitClient: true,
-	})
+			Example:    updateNatGatewayFlowLogExample,
+			PreCmdRun:  PreRunDcNatGatewayFlowLogIds,
+			CmdRun:     RunNatGatewayFlowLogUpdate,
+			InitClient: true,
+		},
+	)
 	update.AddUUIDFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
-	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.DataCentersIds(), cobra.ShellCompDirectiveNoFileComp
-	})
+	_ = update.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgDataCenterId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.DataCentersIds(), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 	update.AddUUIDFlag(cloudapiv6.ArgNatGatewayId, "", "", cloudapiv6.NatGatewayId, core.RequiredFlagOption())
-	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgNatGatewayId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.NatGatewaysIds(viper.GetString(core.GetFlagName(update.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
-	})
-	update.AddUUIDFlag(cloudapiv6.ArgFlowLogId, cloudapiv6.ArgIdShort, "", cloudapiv6.FlowLogId, core.RequiredFlagOption())
-	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgFlowLogId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.NatGatewayFlowLogsIds(viper.GetString(core.GetFlagName(update.NS, cloudapiv6.ArgDataCenterId)),
-			viper.GetString(core.GetFlagName(update.NS, cloudapiv6.ArgNatGatewayId))), cobra.ShellCompDirectiveNoFileComp
-	})
+	_ = update.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgNatGatewayId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.NatGatewaysIds(
+				viper.GetString(
+					core.GetFlagName(
+						update.NS, cloudapiv6.ArgDataCenterId,
+					),
+				),
+			), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	update.AddUUIDFlag(
+		cloudapiv6.ArgFlowLogId, cloudapiv6.ArgIdShort, "", cloudapiv6.FlowLogId, core.RequiredFlagOption(),
+	)
+	_ = update.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgFlowLogId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.NatGatewayFlowLogsIds(
+				viper.GetString(core.GetFlagName(update.NS, cloudapiv6.ArgDataCenterId)),
+				viper.GetString(core.GetFlagName(update.NS, cloudapiv6.ArgNatGatewayId)),
+			), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 	update.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "", "Name of the NAT Gateway FlowLog")
 	update.AddStringFlag(cloudapiv6.ArgAction, cloudapiv6.ArgActionShort, "", "Specifies the traffic Action pattern")
-	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgAction, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return []string{"ALL", "REJECTED", "ACCEPTED"}, cobra.ShellCompDirectiveNoFileComp
-	})
-	update.AddStringFlag(cloudapiv6.ArgDirection, cloudapiv6.ArgDirectionShort, "", "Specifies the traffic Direction pattern")
-	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDirection, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return []string{"BIDIRECTIONAL", "INGRESS", "EGRESS"}, cobra.ShellCompDirectiveNoFileComp
-	})
-	update.AddStringFlag(cloudapiv6.ArgS3Bucket, cloudapiv6.ArgS3BucketShort, "", "S3 Bucket name of an existing IONOS Cloud S3 Bucket")
-	update.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait, "Wait for the Request for NAT Gateway FlowLog update to be executed")
-	update.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for NAT Gateway FlowLog update [seconds]")
+	_ = update.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgAction,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return []string{"ALL", "REJECTED", "ACCEPTED"}, cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	update.AddStringFlag(
+		cloudapiv6.ArgDirection, cloudapiv6.ArgDirectionShort, "", "Specifies the traffic Direction pattern",
+	)
+	_ = update.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgDirection,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return []string{"BIDIRECTIONAL", "INGRESS", "EGRESS"}, cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	update.AddStringFlag(
+		cloudapiv6.ArgS3Bucket, cloudapiv6.ArgS3BucketShort, "", "S3 Bucket name of an existing IONOS Cloud S3 Bucket",
+	)
+	update.AddBoolFlag(
+		constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait,
+		"Wait for the Request for NAT Gateway FlowLog update to be executed",
+	)
+	update.AddIntFlag(
+		constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds,
+		"Timeout option for Request for NAT Gateway FlowLog update [seconds]",
+	)
 	update.AddStringSliceFlag(constants.ArgCols, "", defaultFlowLogCols, tabheaders.ColsMessage(defaultFlowLogCols))
-	_ = update.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return defaultFlowLogCols, cobra.ShellCompDirectiveNoFileComp
-	})
-	update.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultUpdateDepth, cloudapiv6.ArgDepthDescription)
+	_ = update.Command.RegisterFlagCompletionFunc(
+		constants.ArgCols,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return defaultFlowLogCols, cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	update.AddInt32Flag(
+		cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultUpdateDepth, cloudapiv6.ArgDepthDescription,
+	)
 
 	/*
 		Delete Command
 	*/
-	deleteCmd := core.NewCommand(ctx, natgatewayFlowLogCmd, core.CommandBuilder{
-		Namespace: "natgateway",
-		Resource:  "flowlog",
-		Verb:      "delete",
-		Aliases:   []string{"d"},
-		ShortDesc: "Delete a NAT Gateway FlowLog",
-		LongDesc: `Use this command to delete a specified NAT Gateway FlowLog from a NAT Gateway.
+	deleteCmd := core.NewCommand(
+		ctx, natgatewayFlowLogCmd, core.CommandBuilder{
+			Namespace: "natgateway",
+			Resource:  "flowlog",
+			Verb:      "delete",
+			Aliases:   []string{"d"},
+			ShortDesc: "Delete a NAT Gateway FlowLog",
+			LongDesc: `Use this command to delete a specified NAT Gateway FlowLog from a NAT Gateway.
 
 You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option. You can force the command to execute without user input using ` + "`" + `--force` + "`" + ` option.
 
@@ -228,38 +361,72 @@ Required values to run command:
 * Data Center Id
 * NAT Gateway Id
 * NAT Gateway FlowLog Id`,
-		Example:    deleteNatGatewayFlowLogExample,
-		PreCmdRun:  PreRunNatGatewayFlowlogDelete,
-		CmdRun:     RunNatGatewayFlowLogDelete,
-		InitClient: true,
-	})
+			Example:    deleteNatGatewayFlowLogExample,
+			PreCmdRun:  PreRunNatGatewayFlowlogDelete,
+			CmdRun:     RunNatGatewayFlowLogDelete,
+			InitClient: true,
+		},
+	)
+	deleteCmd.AddBoolFlag(constants.ArgForce, constants.ArgForceShort, false, constants.DescForce)
 	deleteCmd.AddUUIDFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
-	_ = deleteCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.DataCentersIds(), cobra.ShellCompDirectiveNoFileComp
-	})
+	_ = deleteCmd.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgDataCenterId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.DataCentersIds(), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 	deleteCmd.AddUUIDFlag(cloudapiv6.ArgNatGatewayId, "", "", cloudapiv6.NatGatewayId, core.RequiredFlagOption())
-	_ = deleteCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgNatGatewayId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.NatGatewaysIds(viper.GetString(core.GetFlagName(deleteCmd.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
-	})
-	deleteCmd.AddUUIDFlag(cloudapiv6.ArgFlowLogId, cloudapiv6.ArgIdShort, "", cloudapiv6.FlowLogId, core.RequiredFlagOption())
-	_ = deleteCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgFlowLogId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.NatGatewayFlowLogsIds(viper.GetString(core.GetFlagName(deleteCmd.NS, cloudapiv6.ArgDataCenterId)),
-			viper.GetString(core.GetFlagName(deleteCmd.NS, cloudapiv6.ArgNatGatewayId))), cobra.ShellCompDirectiveNoFileComp
-	})
+	_ = deleteCmd.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgNatGatewayId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.NatGatewaysIds(
+				viper.GetString(
+					core.GetFlagName(
+						deleteCmd.NS, cloudapiv6.ArgDataCenterId,
+					),
+				),
+			), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	deleteCmd.AddUUIDFlag(
+		cloudapiv6.ArgFlowLogId, cloudapiv6.ArgIdShort, "", cloudapiv6.FlowLogId, core.RequiredFlagOption(),
+	)
+	_ = deleteCmd.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgFlowLogId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.NatGatewayFlowLogsIds(
+				viper.GetString(core.GetFlagName(deleteCmd.NS, cloudapiv6.ArgDataCenterId)),
+				viper.GetString(core.GetFlagName(deleteCmd.NS, cloudapiv6.ArgNatGatewayId)),
+			), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 	deleteCmd.AddStringSliceFlag(constants.ArgCols, "", defaultFlowLogCols, tabheaders.ColsMessage(defaultFlowLogCols))
-	_ = deleteCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return defaultFlowLogCols, cobra.ShellCompDirectiveNoFileComp
-	})
-	deleteCmd.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait, "Wait for the Request for NAT Gateway FlowLog deletion to be executed")
+	_ = deleteCmd.Command.RegisterFlagCompletionFunc(
+		constants.ArgCols,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return defaultFlowLogCols, cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	deleteCmd.AddBoolFlag(
+		constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait,
+		"Wait for the Request for NAT Gateway FlowLog deletion to be executed",
+	)
 	deleteCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete all Natgateway flowlogs.")
-	deleteCmd.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for NAT Gateway FlowLog deletion [seconds]")
-	deleteCmd.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultDeleteDepth, cloudapiv6.ArgDepthDescription)
+	deleteCmd.AddIntFlag(
+		constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds,
+		"Timeout option for Request for NAT Gateway FlowLog deletion [seconds]",
+	)
+	deleteCmd.AddInt32Flag(
+		cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultDeleteDepth, cloudapiv6.ArgDepthDescription,
+	)
 
 	return natgatewayFlowLogCmd
 }
 
 func PreRunNATGatewayFlowLogList(c *core.PreCommandConfig) error {
-	if err := core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgDataCenterId, cloudapiv6.ArgNatGatewayId); err != nil {
+	if err := core.CheckRequiredFlags(
+		c.Command, c.NS, cloudapiv6.ArgDataCenterId, cloudapiv6.ArgNatGatewayId,
+	); err != nil {
 		return err
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
@@ -269,18 +436,23 @@ func PreRunNATGatewayFlowLogList(c *core.PreCommandConfig) error {
 }
 
 func PreRunNatGatewayFlowLogCreate(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgDataCenterId, cloudapiv6.ArgNatGatewayId, cloudapiv6.ArgS3Bucket)
+	return core.CheckRequiredFlags(
+		c.Command, c.NS, cloudapiv6.ArgDataCenterId, cloudapiv6.ArgNatGatewayId, cloudapiv6.ArgS3Bucket,
+	)
 }
 
 func PreRunNatGatewayFlowlogDelete(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlagsSets(c.Command, c.NS,
+	return core.CheckRequiredFlagsSets(
+		c.Command, c.NS,
 		[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgNatGatewayId, cloudapiv6.ArgFlowLogId},
 		[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgNatGatewayId, cloudapiv6.ArgAll},
 	)
 }
 
 func PreRunDcNatGatewayFlowLogIds(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgDataCenterId, cloudapiv6.ArgNatGatewayId, cloudapiv6.ArgFlowLogId)
+	return core.CheckRequiredFlags(
+		c.Command, c.NS, cloudapiv6.ArgDataCenterId, cloudapiv6.ArgNatGatewayId, cloudapiv6.ArgFlowLogId,
+	)
 }
 
 func RunNatGatewayFlowLogList(c *core.CommandConfig) error {
@@ -296,7 +468,10 @@ func RunNatGatewayFlowLogList(c *core.CommandConfig) error {
 		listQueryParams,
 	)
 	if resp != nil {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+		fmt.Fprintf(
+			c.Command.Command.ErrOrStderr(),
+			jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime),
+		)
 	}
 	if err != nil {
 		return err
@@ -304,8 +479,10 @@ func RunNatGatewayFlowLogList(c *core.CommandConfig) error {
 
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.Flowlog, natgatewayFlowLogs.FlowLogs,
-		tabheaders.GetHeadersAllDefault(defaultFlowLogCols, cols))
+	out, err := jsontabwriter.GenerateOutput(
+		"items", jsonpaths.Flowlog, natgatewayFlowLogs.FlowLogs,
+		tabheaders.GetHeadersAllDefault(defaultFlowLogCols, cols),
+	)
 	if err != nil {
 		return err
 	}
@@ -323,8 +500,12 @@ func RunNatGatewayFlowLogGet(c *core.CommandConfig) error {
 
 	queryParams := listQueryParams.QueryParams
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
-		"NatGatewayFlowLogGet with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFlowLogId))))
+	fmt.Fprintf(
+		c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
+			"NatGatewayFlowLogGet with id: %v is getting...",
+			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFlowLogId)),
+		),
+	)
 
 	ng, resp, err := c.CloudApiV6Services.NatGateways().GetFlowLog(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
@@ -333,7 +514,10 @@ func RunNatGatewayFlowLogGet(c *core.CommandConfig) error {
 		queryParams,
 	)
 	if resp != nil {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+		fmt.Fprintf(
+			c.Command.Command.ErrOrStderr(),
+			jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime),
+		)
 	}
 	if err != nil {
 		return err
@@ -341,8 +525,10 @@ func RunNatGatewayFlowLogGet(c *core.CommandConfig) error {
 
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Flowlog, ng.FlowLog,
-		tabheaders.GetHeadersAllDefault(defaultFlowLogCols, cols))
+	out, err := jsontabwriter.GenerateOutput(
+		"", jsonpaths.Flowlog, ng.FlowLog,
+		tabheaders.GetHeadersAllDefault(defaultFlowLogCols, cols),
+	)
 	if err != nil {
 		return err
 	}
@@ -372,7 +558,10 @@ func RunNatGatewayFlowLogCreate(c *core.CommandConfig) error {
 		queryParams,
 	)
 	if resp != nil && request.GetId(resp) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+		fmt.Fprintf(
+			c.Command.Command.ErrOrStderr(),
+			jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime),
+		)
 	}
 	if err != nil {
 		return err
@@ -384,8 +573,10 @@ func RunNatGatewayFlowLogCreate(c *core.CommandConfig) error {
 
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Flowlog, ng.FlowLog,
-		tabheaders.GetHeadersAllDefault(defaultFlowLogCols, cols))
+	out, err := jsontabwriter.GenerateOutput(
+		"", jsonpaths.Flowlog, ng.FlowLog,
+		tabheaders.GetHeadersAllDefault(defaultFlowLogCols, cols),
+	)
 	if err != nil {
 		return err
 	}
@@ -412,7 +603,10 @@ func RunNatGatewayFlowLogUpdate(c *core.CommandConfig) error {
 		queryParams,
 	)
 	if resp != nil && request.GetId(resp) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+		fmt.Fprintf(
+			c.Command.Command.ErrOrStderr(),
+			jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime),
+		)
 	}
 	if err != nil {
 		return err
@@ -424,8 +618,10 @@ func RunNatGatewayFlowLogUpdate(c *core.CommandConfig) error {
 
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Flowlog, ng.FlowLog,
-		tabheaders.GetHeadersAllDefault(defaultFlowLogCols, cols))
+	out, err := jsontabwriter.GenerateOutput(
+		"", jsonpaths.Flowlog, ng.FlowLog,
+		tabheaders.GetHeadersAllDefault(defaultFlowLogCols, cols),
+	)
 	if err != nil {
 		return err
 	}
@@ -454,15 +650,24 @@ func RunNatGatewayFlowLogDelete(c *core.CommandConfig) error {
 		return nil
 	}
 
-	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete nat gateway flowlog", viper.GetBool(constants.ArgForce)) {
+	if !confirm.FAsk(
+		c.Command.Command.InOrStdin(), "delete nat gateway flowlog",
+		viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce)),
+	) {
 		return fmt.Errorf(confirm.UserDenied)
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Starting deleting NatGatewayFlowLog with id: %v...", flowlogId))
+	fmt.Fprintf(
+		c.Command.Command.ErrOrStderr(),
+		jsontabwriter.GenerateVerboseOutput("Starting deleting NatGatewayFlowLog with id: %v...", flowlogId),
+	)
 
 	resp, err := c.CloudApiV6Services.NatGateways().DeleteFlowLog(dcId, natgatewayId, flowlogId, queryParams)
 	if resp != nil && request.GetId(resp) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+		fmt.Fprintf(
+			c.Command.Command.ErrOrStderr(),
+			jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime),
+		)
 	}
 	if err != nil {
 		return err
@@ -472,7 +677,9 @@ func RunNatGatewayFlowLogDelete(c *core.CommandConfig) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("NAT Gateway Flowlog successfully deleted"))
+	fmt.Fprintf(
+		c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("NAT Gateway Flowlog successfully deleted"),
+	)
 	return nil
 }
 
@@ -490,7 +697,9 @@ func DeleteAllNatGatewayFlowLogs(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("NatGateway ID: %v", natgatewayId))
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting NatGatewayFlowLogs..."))
 
-	flowlogs, resp, err := c.CloudApiV6Services.NatGateways().ListFlowLogs(dcId, natgatewayId, cloudapiv6.ParentResourceListQueryParams)
+	flowlogs, resp, err := c.CloudApiV6Services.NatGateways().ListFlowLogs(
+		dcId, natgatewayId, cloudapiv6.ParentResourceListQueryParams,
+	)
 	if err != nil {
 		return err
 	}
@@ -522,11 +731,16 @@ func DeleteAllNatGatewayFlowLogs(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
 
-	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete all the NatGatewayFlowLogs", viper.GetBool(constants.ArgForce)) {
+	if !confirm.FAsk(
+		c.Command.Command.InOrStdin(), "delete all the NatGatewayFlowLogs",
+		viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce)),
+	) {
 		return fmt.Errorf(confirm.UserDenied)
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the NatGatewayFlowLogs..."))
+	fmt.Fprintf(
+		c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the NatGatewayFlowLogs..."),
+	)
 
 	var multiErr error
 	for _, natgateway := range *natgatewaysItems {
@@ -535,17 +749,26 @@ func DeleteAllNatGatewayFlowLogs(c *core.CommandConfig) error {
 			continue
 		}
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Starting deleting NatGatewayFlowLog with id: %v...", *id))
+		fmt.Fprintf(
+			c.Command.Command.ErrOrStderr(),
+			jsontabwriter.GenerateVerboseOutput("Starting deleting NatGatewayFlowLog with id: %v...", *id),
+		)
 
 		resp, err = c.CloudApiV6Services.NatGateways().DeleteFlowLog(dcId, natgatewayId, *id, queryParams)
 		if resp != nil && request.GetId(resp) != "" {
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+			fmt.Fprintf(
+				c.Command.Command.ErrOrStderr(),
+				jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime),
+			)
 		}
 		if err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
 		}
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput(constants.MessageDeletingAll, c.Resource, *id))
+		fmt.Fprintf(
+			c.Command.Command.ErrOrStderr(),
+			jsontabwriter.GenerateLogOutput(constants.MessageDeletingAll, c.Resource, *id),
+		)
 
 		if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
@@ -556,6 +779,8 @@ func DeleteAllNatGatewayFlowLogs(c *core.CommandConfig) error {
 		return multiErr
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("NAT Gateway Flowlogs successfully deleted"))
+	fmt.Fprintf(
+		c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("NAT Gateway Flowlogs successfully deleted"),
+	)
 	return nil
 }

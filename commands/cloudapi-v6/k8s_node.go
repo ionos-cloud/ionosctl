@@ -39,87 +39,143 @@ func K8sNodeCmd() *core.Command {
 	globalFlags := k8sCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultK8sNodeCols, tabheaders.ColsMessage(defaultK8sNodeCols))
 	_ = viper.BindPFlag(core.GetFlagName(k8sCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
-	_ = k8sCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return defaultK8sNodeCols, cobra.ShellCompDirectiveNoFileComp
-	})
+	_ = k8sCmd.Command.RegisterFlagCompletionFunc(
+		constants.ArgCols,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return defaultK8sNodeCols, cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 
 	/*
 		List Command
 	*/
-	list := core.NewCommand(ctx, k8sCmd, core.CommandBuilder{
-		Namespace:  "k8s",
-		Resource:   "node",
-		Verb:       "list",
-		Aliases:    []string{"l", "ls"},
-		ShortDesc:  "List Kubernetes Nodes",
-		LongDesc:   "Use this command to get a list of existing Kubernetes Nodes.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.K8sNodesFiltersUsage() + "\n\nRequired values to run command:\n\n* K8s Cluster Id\n* K8s NodePool Id",
-		Example:    listK8sNodesExample,
-		PreCmdRun:  PreRunK8sNodesList,
-		CmdRun:     RunK8sNodeList,
-		InitClient: true,
-	})
+	list := core.NewCommand(
+		ctx, k8sCmd, core.CommandBuilder{
+			Namespace:  "k8s",
+			Resource:   "node",
+			Verb:       "list",
+			Aliases:    []string{"l", "ls"},
+			ShortDesc:  "List Kubernetes Nodes",
+			LongDesc:   "Use this command to get a list of existing Kubernetes Nodes.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.K8sNodesFiltersUsage() + "\n\nRequired values to run command:\n\n* K8s Cluster Id\n* K8s NodePool Id",
+			Example:    listK8sNodesExample,
+			PreCmdRun:  PreRunK8sNodesList,
+			CmdRun:     RunK8sNodeList,
+			InitClient: true,
+		},
+	)
 	list.AddUUIDFlag(constants.FlagClusterId, "", "", cloudapiv6.K8sClusterId, core.RequiredFlagOption())
-	_ = list.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.K8sClustersIds(), cobra.ShellCompDirectiveNoFileComp
-	})
+	_ = list.Command.RegisterFlagCompletionFunc(
+		constants.FlagClusterId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.K8sClustersIds(), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 	list.AddUUIDFlag(constants.FlagNodepoolId, "", "", cloudapiv6.K8sNodePoolId, core.RequiredFlagOption())
-	_ = list.Command.RegisterFlagCompletionFunc(constants.FlagNodepoolId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.K8sNodePoolsIds(viper.GetString(core.GetFlagName(list.NS, constants.FlagClusterId))), cobra.ShellCompDirectiveNoFileComp
-	})
-	list.AddInt32Flag(constants.FlagMaxResults, constants.FlagMaxResultsShort, cloudapiv6.DefaultMaxResults, constants.DescMaxResults)
-	list.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultListDepth, cloudapiv6.ArgDepthDescription)
+	_ = list.Command.RegisterFlagCompletionFunc(
+		constants.FlagNodepoolId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.K8sNodePoolsIds(
+				viper.GetString(
+					core.GetFlagName(
+						list.NS, constants.FlagClusterId,
+					),
+				),
+			), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	list.AddInt32Flag(
+		constants.FlagMaxResults, constants.FlagMaxResultsShort, cloudapiv6.DefaultMaxResults, constants.DescMaxResults,
+	)
+	list.AddInt32Flag(
+		cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultListDepth, cloudapiv6.ArgDepthDescription,
+	)
 	list.AddStringFlag(cloudapiv6.ArgOrderBy, "", "", cloudapiv6.ArgOrderByDescription)
-	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgOrderBy, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.K8sNodesFilters(), cobra.ShellCompDirectiveNoFileComp
-	})
-	list.AddStringSliceFlag(cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, cloudapiv6.ArgFiltersDescription)
-	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgFilters, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.K8sNodesFilters(), cobra.ShellCompDirectiveNoFileComp
-	})
+	_ = list.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgOrderBy,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.K8sNodesFilters(), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	list.AddStringSliceFlag(
+		cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, cloudapiv6.ArgFiltersDescription,
+	)
+	_ = list.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgFilters,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.K8sNodesFilters(), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 
 	/*
 		Get Command
 	*/
-	get := core.NewCommand(ctx, k8sCmd, core.CommandBuilder{
-		Namespace:  "k8s",
-		Resource:   "node",
-		Verb:       "get",
-		Aliases:    []string{"g"},
-		ShortDesc:  "Get a Kubernetes Node",
-		LongDesc:   "Use this command to retrieve details about a specific Kubernetes Node.You can wait for the Node to be in \"ACTIVE\" state using `--wait-for-state` flag together with `--timeout` option.\n\nRequired values to run command:\n\n* K8s Cluster Id\n* K8s NodePool Id\n* K8s Node Id",
-		Example:    getK8sNodeExample,
-		PreCmdRun:  PreRunK8sClusterNodesIds,
-		CmdRun:     RunK8sNodeGet,
-		InitClient: true,
-	})
+	get := core.NewCommand(
+		ctx, k8sCmd, core.CommandBuilder{
+			Namespace:  "k8s",
+			Resource:   "node",
+			Verb:       "get",
+			Aliases:    []string{"g"},
+			ShortDesc:  "Get a Kubernetes Node",
+			LongDesc:   "Use this command to retrieve details about a specific Kubernetes Node.You can wait for the Node to be in \"ACTIVE\" state using `--wait-for-state` flag together with `--timeout` option.\n\nRequired values to run command:\n\n* K8s Cluster Id\n* K8s NodePool Id\n* K8s Node Id",
+			Example:    getK8sNodeExample,
+			PreCmdRun:  PreRunK8sClusterNodesIds,
+			CmdRun:     RunK8sNodeGet,
+			InitClient: true,
+		},
+	)
 	get.AddUUIDFlag(constants.FlagClusterId, "", "", cloudapiv6.K8sClusterId, core.RequiredFlagOption())
-	_ = get.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.K8sClustersIds(), cobra.ShellCompDirectiveNoFileComp
-	})
+	_ = get.Command.RegisterFlagCompletionFunc(
+		constants.FlagClusterId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.K8sClustersIds(), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 	get.AddUUIDFlag(constants.FlagNodepoolId, "", "", cloudapiv6.K8sNodePoolId, core.RequiredFlagOption())
-	_ = get.Command.RegisterFlagCompletionFunc(constants.FlagNodepoolId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.K8sNodePoolsIds(viper.GetString(core.GetFlagName(get.NS, constants.FlagClusterId))), cobra.ShellCompDirectiveNoFileComp
-	})
+	_ = get.Command.RegisterFlagCompletionFunc(
+		constants.FlagNodepoolId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.K8sNodePoolsIds(
+				viper.GetString(
+					core.GetFlagName(
+						get.NS, constants.FlagClusterId,
+					),
+				),
+			), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 	get.AddUUIDFlag(cloudapiv6.ArgK8sNodeId, cloudapiv6.ArgIdShort, "", cloudapiv6.K8sNodeId, core.RequiredFlagOption())
-	_ = get.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgK8sNodeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.K8sNodesIds(viper.GetString(core.GetFlagName(get.NS, constants.FlagClusterId)),
-			viper.GetString(core.GetFlagName(get.NS, constants.FlagNodepoolId)),
-		), cobra.ShellCompDirectiveNoFileComp
-	})
-	get.AddBoolFlag(constants.ArgWaitForState, constants.ArgWaitForStateShort, constants.DefaultWait, "Wait for specified Node to be in ACTIVE state")
-	get.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, cloudapiv6.K8sTimeoutSeconds, "Timeout option for waiting for Node to be in ACTIVE state [seconds]")
-	get.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultGetDepth, cloudapiv6.ArgDepthDescription)
+	_ = get.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgK8sNodeId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.K8sNodesIds(
+				viper.GetString(core.GetFlagName(get.NS, constants.FlagClusterId)),
+				viper.GetString(core.GetFlagName(get.NS, constants.FlagNodepoolId)),
+			), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	get.AddBoolFlag(
+		constants.ArgWaitForState, constants.ArgWaitForStateShort, constants.DefaultWait,
+		"Wait for specified Node to be in ACTIVE state",
+	)
+	get.AddIntFlag(
+		constants.ArgTimeout, constants.ArgTimeoutShort, cloudapiv6.K8sTimeoutSeconds,
+		"Timeout option for waiting for Node to be in ACTIVE state [seconds]",
+	)
+	get.AddInt32Flag(
+		cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultGetDepth, cloudapiv6.ArgDepthDescription,
+	)
 
 	/*
 		Recreate Command
 	*/
-	recreate := core.NewCommand(ctx, k8sCmd, core.CommandBuilder{
-		Namespace: "k8s",
-		Resource:  "node",
-		Verb:      "recreate",
-		Aliases:   []string{"r"},
-		ShortDesc: "Recreate a Kubernetes Node",
-		LongDesc: `You can recreate a single Kubernetes Node.
+	recreate := core.NewCommand(
+		ctx, k8sCmd, core.CommandBuilder{
+			Namespace: "k8s",
+			Resource:  "node",
+			Verb:      "recreate",
+			Aliases:   []string{"r"},
+			ShortDesc: "Recreate a Kubernetes Node",
+			LongDesc: `You can recreate a single Kubernetes Node.
 
 Managed Kubernetes starts a process which based on the NodePool's template creates & configures a new Node, waits for status "ACTIVE", and migrates all the Pods from the faulty Node, deleting it once empty. While this operation occurs, the NodePool will have an extra billable "ACTIVE" Node.
 
@@ -128,64 +184,110 @@ Required values to run command:
 * K8s Cluster Id
 * K8s NodePool Id
 * K8s Node Id`,
-		Example:    recreateK8sNodeExample,
-		PreCmdRun:  PreRunK8sClusterNodesIds,
-		CmdRun:     RunK8sNodeRecreate,
-		InitClient: true,
-	})
+			Example:    recreateK8sNodeExample,
+			PreCmdRun:  PreRunK8sClusterNodesIds,
+			CmdRun:     RunK8sNodeRecreate,
+			InitClient: true,
+		},
+	)
+	recreate.AddBoolFlag(constants.ArgForce, constants.ArgForceShort, false, constants.DescForce)
 	recreate.AddUUIDFlag(constants.FlagClusterId, "", "", cloudapiv6.K8sClusterId, core.RequiredFlagOption())
-	_ = recreate.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.K8sClustersIds(), cobra.ShellCompDirectiveNoFileComp
-	})
+	_ = recreate.Command.RegisterFlagCompletionFunc(
+		constants.FlagClusterId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.K8sClustersIds(), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 	recreate.AddUUIDFlag(constants.FlagNodepoolId, "", "", cloudapiv6.K8sNodePoolId, core.RequiredFlagOption())
-	_ = recreate.Command.RegisterFlagCompletionFunc(constants.FlagNodepoolId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.K8sNodePoolsIds(viper.GetString(core.GetFlagName(recreate.NS, constants.FlagClusterId))), cobra.ShellCompDirectiveNoFileComp
-	})
-	recreate.AddUUIDFlag(cloudapiv6.ArgK8sNodeId, cloudapiv6.ArgIdShort, "", cloudapiv6.K8sNodeId, core.RequiredFlagOption())
-	_ = recreate.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgK8sNodeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.K8sNodesIds(viper.GetString(core.GetFlagName(recreate.NS, constants.FlagClusterId)),
-			viper.GetString(core.GetFlagName(recreate.NS, constants.FlagNodepoolId)),
-		), cobra.ShellCompDirectiveNoFileComp
-	})
-	recreate.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultCreateDepth, cloudapiv6.ArgDepthDescription)
+	_ = recreate.Command.RegisterFlagCompletionFunc(
+		constants.FlagNodepoolId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.K8sNodePoolsIds(
+				viper.GetString(
+					core.GetFlagName(
+						recreate.NS, constants.FlagClusterId,
+					),
+				),
+			), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	recreate.AddUUIDFlag(
+		cloudapiv6.ArgK8sNodeId, cloudapiv6.ArgIdShort, "", cloudapiv6.K8sNodeId, core.RequiredFlagOption(),
+	)
+	_ = recreate.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgK8sNodeId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.K8sNodesIds(
+				viper.GetString(core.GetFlagName(recreate.NS, constants.FlagClusterId)),
+				viper.GetString(core.GetFlagName(recreate.NS, constants.FlagNodepoolId)),
+			), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	recreate.AddInt32Flag(
+		cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultCreateDepth, cloudapiv6.ArgDepthDescription,
+	)
 
 	/*
 		Delete Command
 	*/
-	deleteCmd := core.NewCommand(ctx, k8sCmd, core.CommandBuilder{
-		Namespace: "k8s",
-		Resource:  "node",
-		Verb:      "delete",
-		Aliases:   []string{"d"},
-		ShortDesc: "Delete a Kubernetes Node",
-		LongDesc: `This command deletes a Kubernetes Node within an existing Kubernetes NodePool in a Cluster.
+	deleteCmd := core.NewCommand(
+		ctx, k8sCmd, core.CommandBuilder{
+			Namespace: "k8s",
+			Resource:  "node",
+			Verb:      "delete",
+			Aliases:   []string{"d"},
+			ShortDesc: "Delete a Kubernetes Node",
+			LongDesc: `This command deletes a Kubernetes Node within an existing Kubernetes NodePool in a Cluster.
 
 Required values to run command:
 
 * K8s Cluster Id
 * K8s NodePool Id
 * K8s Node Id`,
-		Example:    deleteK8sNodeExample,
-		PreCmdRun:  PreRunK8sClusterNodesIdsAll,
-		CmdRun:     RunK8sNodeDelete,
-		InitClient: true,
-	})
+			Example:    deleteK8sNodeExample,
+			PreCmdRun:  PreRunK8sClusterNodesIdsAll,
+			CmdRun:     RunK8sNodeDelete,
+			InitClient: true,
+		},
+	)
+	deleteCmd.AddBoolFlag(constants.ArgForce, constants.ArgForceShort, false, constants.DescForce)
 	deleteCmd.AddUUIDFlag(constants.FlagClusterId, "", "", cloudapiv6.K8sClusterId, core.RequiredFlagOption())
-	_ = deleteCmd.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.K8sClustersIds(), cobra.ShellCompDirectiveNoFileComp
-	})
+	_ = deleteCmd.Command.RegisterFlagCompletionFunc(
+		constants.FlagClusterId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.K8sClustersIds(), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 	deleteCmd.AddUUIDFlag(constants.FlagNodepoolId, "", "", cloudapiv6.K8sNodePoolId, core.RequiredFlagOption())
-	_ = deleteCmd.Command.RegisterFlagCompletionFunc(constants.FlagNodepoolId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.K8sNodePoolsIds(viper.GetString(core.GetFlagName(deleteCmd.NS, constants.FlagClusterId))), cobra.ShellCompDirectiveNoFileComp
-	})
+	_ = deleteCmd.Command.RegisterFlagCompletionFunc(
+		constants.FlagNodepoolId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.K8sNodePoolsIds(
+				viper.GetString(
+					core.GetFlagName(
+						deleteCmd.NS, constants.FlagClusterId,
+					),
+				),
+			), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 	deleteCmd.AddUUIDFlag(cloudapiv6.ArgK8sNodeId, "", "", cloudapiv6.K8sNodeId, core.RequiredFlagOption())
-	_ = deleteCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgK8sNodeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.K8sNodesIds(viper.GetString(core.GetFlagName(deleteCmd.NS, constants.FlagClusterId)),
-			viper.GetString(core.GetFlagName(deleteCmd.NS, constants.FlagNodepoolId)),
-		), cobra.ShellCompDirectiveNoFileComp
-	})
-	deleteCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete all the Kubernetes Nodes within an existing Kubernetes NodePool in a Cluster.")
-	deleteCmd.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultDeleteDepth, cloudapiv6.ArgDepthDescription)
+	_ = deleteCmd.Command.RegisterFlagCompletionFunc(
+		cloudapiv6.ArgK8sNodeId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.K8sNodesIds(
+				viper.GetString(core.GetFlagName(deleteCmd.NS, constants.FlagClusterId)),
+				viper.GetString(core.GetFlagName(deleteCmd.NS, constants.FlagNodepoolId)),
+			), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+	deleteCmd.AddBoolFlag(
+		cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false,
+		"Delete all the Kubernetes Nodes within an existing Kubernetes NodePool in a Cluster.",
+	)
+	deleteCmd.AddInt32Flag(
+		cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultDeleteDepth, cloudapiv6.ArgDepthDescription,
+	)
 
 	return k8sCmd
 }
@@ -201,20 +303,27 @@ func PreRunK8sNodesList(c *core.PreCommandConfig) error {
 }
 
 func PreRunK8sClusterNodesIds(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagClusterId, constants.FlagNodepoolId, cloudapiv6.ArgK8sNodeId)
+	return core.CheckRequiredFlags(
+		c.Command, c.NS, constants.FlagClusterId, constants.FlagNodepoolId, cloudapiv6.ArgK8sNodeId,
+	)
 }
 
 func PreRunK8sClusterNodesIdsAll(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlagsSets(c.Command, c.NS,
+	return core.CheckRequiredFlagsSets(
+		c.Command, c.NS,
 		[]string{constants.FlagClusterId, constants.FlagNodepoolId, cloudapiv6.ArgAll},
 		[]string{constants.FlagClusterId, constants.FlagNodepoolId, cloudapiv6.ArgK8sNodeId},
 	)
 }
 
 func RunK8sNodeList(c *core.CommandConfig) error {
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Listing Nodes from K8s NodePool ID: %v from K8s Cluster ID: %v",
-		viper.GetString(core.GetFlagName(c.NS, constants.FlagNodepoolId)),
-		viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))))
+	fmt.Fprintf(
+		c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
+			"Listing Nodes from K8s NodePool ID: %v from K8s Cluster ID: %v",
+			viper.GetString(core.GetFlagName(c.NS, constants.FlagNodepoolId)),
+			viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)),
+		),
+	)
 
 	// Add Query Parameters for GET Requests
 	listQueryParams, err := query.GetListQueryParams(c)
@@ -227,7 +336,10 @@ func RunK8sNodeList(c *core.CommandConfig) error {
 		listQueryParams,
 	)
 	if resp != nil {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+		fmt.Fprintf(
+			c.Command.Command.ErrOrStderr(),
+			jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime),
+		)
 	}
 
 	if err != nil {
@@ -236,8 +348,10 @@ func RunK8sNodeList(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.K8sNode, k8ss.KubernetesNodes,
-		tabheaders.GetHeadersAllDefault(defaultK8sNodeCols, cols))
+	out, err := jsontabwriter.GenerateOutput(
+		"items", jsonpaths.K8sNode, k8ss.KubernetesNodes,
+		tabheaders.GetHeadersAllDefault(defaultK8sNodeCols, cols),
+	)
 	if err != nil {
 		return err
 	}
@@ -254,14 +368,20 @@ func RunK8sNodeGet(c *core.CommandConfig) error {
 	}
 
 	queryParams := listQueryParams.QueryParams
-	if err := waitfor.WaitForState(c, waiter.K8sNodeStateInterrogator, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sNodeId))); err != nil {
+	if err := waitfor.WaitForState(
+		c, waiter.K8sNodeStateInterrogator, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sNodeId)),
+	); err != nil {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting K8s Node with ID: %v from K8s NodePool ID: %v from K8s Cluster ID: %v......",
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sNodeId)),
-		viper.GetString(core.GetFlagName(c.NS, constants.FlagNodepoolId)),
-		viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))))
+	fmt.Fprintf(
+		c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
+			"Getting K8s Node with ID: %v from K8s NodePool ID: %v from K8s Cluster ID: %v......",
+			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sNodeId)),
+			viper.GetString(core.GetFlagName(c.NS, constants.FlagNodepoolId)),
+			viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)),
+		),
+	)
 
 	u, resp, err := c.CloudApiV6Services.K8s().GetNode(
 		viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)),
@@ -270,7 +390,10 @@ func RunK8sNodeGet(c *core.CommandConfig) error {
 		queryParams,
 	)
 	if resp != nil {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime))
+		fmt.Fprintf(
+			c.Command.Command.ErrOrStderr(),
+			jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, resp.RequestTime),
+		)
 	}
 	if err != nil {
 		return err
@@ -278,8 +401,10 @@ func RunK8sNodeGet(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.K8sNode, u.KubernetesNode,
-		tabheaders.GetHeadersAllDefault(defaultK8sNodeCols, cols))
+	out, err := jsontabwriter.GenerateOutput(
+		"", jsonpaths.K8sNode, u.KubernetesNode,
+		tabheaders.GetHeadersAllDefault(defaultK8sNodeCols, cols),
+	)
 	if err != nil {
 		return err
 	}
@@ -297,7 +422,9 @@ func RunK8sNodeRecreate(c *core.CommandConfig) error {
 
 	queryParams := listQueryParams.QueryParams
 
-	if !confirm.FAsk(c.Command.Command.InOrStdin(), "recreate k8s node", viper.GetBool(constants.ArgForce)) {
+	if !confirm.FAsk(
+		c.Command.Command.InOrStdin(), "recreate k8s node", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce)),
+	) {
 		return fmt.Errorf(confirm.UserDenied)
 	}
 
@@ -305,19 +432,29 @@ func RunK8sNodeRecreate(c *core.CommandConfig) error {
 	k8sNodePoolId := viper.GetString(core.GetFlagName(c.NS, constants.FlagNodepoolId))
 	k8sNodeId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sNodeId))
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("K8sClusterId: %v, K8sNodePoolId: %v, K8sNodeId: %v",
-		k8sClusterId, k8sNodePoolId, k8sNodeId))
+	fmt.Fprintf(
+		c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
+			"K8sClusterId: %v, K8sNodePoolId: %v, K8sNodeId: %v",
+			k8sClusterId, k8sNodePoolId, k8sNodeId,
+		),
+	)
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Recreating Node..."))
 
 	resp, err := c.CloudApiV6Services.K8s().RecreateNode(k8sClusterId, k8sNodePoolId, k8sNodeId, queryParams)
 	if resp != nil && request.GetId(resp) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+		fmt.Fprintf(
+			c.Command.Command.ErrOrStderr(),
+			jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime),
+		)
 	}
 	if err != nil {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Status: Command node recreate has been successfully executed"))
+	fmt.Fprintf(
+		c.Command.Command.ErrOrStderr(),
+		jsontabwriter.GenerateLogOutput("Status: Command node recreate has been successfully executed"),
+	)
 
 	return nil
 }
@@ -341,22 +478,33 @@ func RunK8sNodeDelete(c *core.CommandConfig) error {
 		return nil
 	}
 
-	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete k8s node", viper.GetBool(constants.ArgForce)) {
+	if !confirm.FAsk(
+		c.Command.Command.InOrStdin(), "delete k8s node", viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce)),
+	) {
 		return fmt.Errorf(confirm.UserDenied)
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
-		"Starting deleting Node with ID: %v from K8s NodePool ID: %v from K8s Cluster ID: %v...", nodeId, nodepoolId, clusterId))
+	fmt.Fprintf(
+		c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
+			"Starting deleting Node with ID: %v from K8s NodePool ID: %v from K8s Cluster ID: %v...", nodeId,
+			nodepoolId, clusterId,
+		),
+	)
 
 	resp, err := c.CloudApiV6Services.K8s().DeleteNode(clusterId, nodepoolId, nodeId, queryParams)
 	if resp != nil && request.GetId(resp) != "" {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+		fmt.Fprintf(
+			c.Command.Command.ErrOrStderr(),
+			jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime),
+		)
 	}
 	if err != nil {
 		return err
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Kubernetes Node successfully deleted"))
+	fmt.Fprintf(
+		c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Kubernetes Node successfully deleted"),
+	)
 	return nil
 }
 
@@ -374,7 +522,9 @@ func DeleteAllK8sNodes(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("K8sNodePool ID: %v", nodepoolId))
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting K8sNodes..."))
 
-	k8sNodes, resp, err := c.CloudApiV6Services.K8s().ListNodes(clusterId, nodepoolId, cloudapiv6.ParentResourceListQueryParams)
+	k8sNodes, resp, err := c.CloudApiV6Services.K8s().ListNodes(
+		clusterId, nodepoolId, cloudapiv6.ParentResourceListQueryParams,
+	)
 	if err != nil {
 		return err
 	}
@@ -406,7 +556,10 @@ func DeleteAllK8sNodes(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
 
-	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete all the K8sNodes", viper.GetBool(constants.ArgForce)) {
+	if !confirm.FAsk(
+		c.Command.Command.InOrStdin(), "delete all the K8sNodes",
+		viper.GetBool(core.GetFlagName(c.NS, constants.ArgForce)),
+	) {
 		return fmt.Errorf(confirm.UserDenied)
 	}
 
@@ -419,19 +572,29 @@ func DeleteAllK8sNodes(c *core.CommandConfig) error {
 			continue
 		}
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
-			"Staring deleting Node with ID: %v from K8s NodePool ID: %v from K8s Cluster ID: %v...", *id, nodepoolId, clusterId))
+		fmt.Fprintf(
+			c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
+				"Staring deleting Node with ID: %v from K8s NodePool ID: %v from K8s Cluster ID: %v...", *id,
+				nodepoolId, clusterId,
+			),
+		)
 
 		resp, err = c.CloudApiV6Services.K8s().DeleteNode(clusterId, nodepoolId, *id, queryParams)
 		if resp != nil && request.GetId(resp) != "" {
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
+			fmt.Fprintf(
+				c.Command.Command.ErrOrStderr(),
+				jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime),
+			)
 		}
 		if err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
 			continue
 		}
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput(constants.MessageDeletingAll, c.Resource, *id))
+		fmt.Fprintf(
+			c.Command.Command.ErrOrStderr(),
+			jsontabwriter.GenerateLogOutput(constants.MessageDeletingAll, c.Resource, *id),
+		)
 
 		if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *id, err))
@@ -444,6 +607,8 @@ func DeleteAllK8sNodes(c *core.CommandConfig) error {
 		return multiErr
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Kubernetes Nodes successfully deleted"))
+	fmt.Fprintf(
+		c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Kubernetes Nodes successfully deleted"),
+	)
 	return nil
 }
