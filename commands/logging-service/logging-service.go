@@ -10,9 +10,10 @@ import (
 func LoggingServiceCmd() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "logging-service",
-			Aliases:          []string{"log-svc"},
-			Short:            "LaaS Operations. Manage and centralize your application/infrastructure's logs",
+			Use:     "logging-service",
+			Aliases: []string{"log-svc"},
+			Short: "Logging Service Operations. " +
+				"Manage and centralize your application/infrastructure's logs",
 			TraverseChildren: true,
 		},
 	}
