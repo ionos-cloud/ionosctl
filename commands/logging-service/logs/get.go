@@ -80,7 +80,7 @@ func runGetCmd(c *core.CommandConfig) error {
 		}
 	}
 
-	logConverted, err := resource2table.ConvertLoggingServicePipelineLogToTale(log)
+	logConverted, err := resource2table.ConvertLoggingServicePipelineLogToTable(log)
 	if err != nil {
 		return err
 	}

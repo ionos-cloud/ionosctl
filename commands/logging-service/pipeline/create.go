@@ -41,11 +41,11 @@ LOG_PROTOCOL --log-retention-time LOG_RETENTION_TIMES`,
 		constants.FlagLoggingPipelineLogTag, "", "", "Sets the tag for the pipeline log",
 	)
 	cmd.AddSetFlag(
-		constants.FlagLoggingPipelineLogSource, "", "", []string{"docker", "systemd", "generic", "kubernetes"},
+		constants.FlagLoggingPipelineLogSource, "", "", constants.EnumLogSources,
 		"Sets the source for the pipeline log",
 	)
 	cmd.AddSetFlag(
-		constants.FlagLoggingPipelineLogProtocol, "", "", []string{"http", "tcp"},
+		constants.FlagLoggingPipelineLogProtocol, "", "", constants.EnumLogProtocols,
 		"Sets the protocol for the pipeline log",
 	)
 	cmd.AddStringSliceFlag(constants.FlagLoggingPipelineLogLabels, "", nil, "Sets the labels for the pipeline log")
@@ -54,7 +54,7 @@ LOG_PROTOCOL --log-retention-time LOG_RETENTION_TIMES`,
 		"Sets the destination type for the pipeline log",
 	)
 	cmd.AddSetFlag(
-		constants.FlagLoggingPipelineLogRetentionTime, "", "30", []string{"7", "14", "30"},
+		constants.FlagLoggingPipelineLogRetentionTime, "", "30", constants.EnumLogRetentionTime,
 		"Sets the retention time in days for the pipeline log",
 	)
 
@@ -62,18 +62,18 @@ LOG_PROTOCOL --log-retention-time LOG_RETENTION_TIMES`,
 }
 
 func runCreateCmd(c *core.CommandConfig) error {
-	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagName)) {
-		return createFromFlags(c)
+	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagJsonProperties)) {
+		pipeline, _, err := client.Must().LoggingServiceClient.PipelinesApi.PipelinesPost(context.Background()).Pipeline(
+			pipelineToCreate,
+		).Execute()
+		if err != nil {
+			return err
+		}
+
+		return handlePipelinePrint(pipeline, c)
 	}
 
-	pipeline, _, err := client.Must().LoggingServiceClient.PipelinesApi.PipelinesPost(context.Background()).Pipeline(
-		pipelineToCreate,
-	).Execute()
-	if err != nil {
-		return err
-	}
-
-	return handlePipelinePrint(pipeline, c)
+	return createFromFlags(c)
 }
 
 func preRunCreateCmd(c *core.PreCommandConfig) error {

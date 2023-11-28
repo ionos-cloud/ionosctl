@@ -43,11 +43,11 @@ func LogsAddCmd() *core.Command {
 		constants.FlagLoggingPipelineLogTag, "", "", "Sets the tag for the pipeline log", core.RequiredFlagOption(),
 	)
 	cmd.AddSetFlag(
-		constants.FlagLoggingPipelineLogSource, "", "", []string{"docker", "systemd", "generic", "kubernetes"},
+		constants.FlagLoggingPipelineLogSource, "", "", constants.EnumLogSources,
 		"Sets the source for the pipeline log", core.RequiredFlagOption(),
 	)
 	cmd.AddSetFlag(
-		constants.FlagLoggingPipelineLogProtocol, "", "", []string{"http", "tcp"},
+		constants.FlagLoggingPipelineLogProtocol, "", "", constants.EnumLogProtocols,
 		"Sets the protocol for the pipeline log", core.RequiredFlagOption(),
 	)
 	cmd.AddStringSliceFlag(constants.FlagLoggingPipelineLogLabels, "", nil, "Sets the labels for the pipeline log")
@@ -56,7 +56,7 @@ func LogsAddCmd() *core.Command {
 		"Sets the destination type for the pipeline log",
 	)
 	cmd.AddSetFlag(
-		constants.FlagLoggingPipelineLogRetentionTime, "", "30", []string{"7", "14", "30"},
+		constants.FlagLoggingPipelineLogRetentionTime, "", "30", constants.EnumLogRetentionTime,
 		"Sets the retention time in days for the pipeline log",
 	)
 

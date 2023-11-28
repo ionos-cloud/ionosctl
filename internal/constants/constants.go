@@ -122,7 +122,10 @@ const (
 
 // enum values. TODO: ideally i'd like these handled by the SDK
 var (
-	EnumLicenceType = []string{"LINUX", "RHEL", "WINDOWS", "WINDOWS2016", "UNKNOWN", "OTHER"}
+	EnumLicenceType      = []string{"LINUX", "RHEL", "WINDOWS", "WINDOWS2016", "UNKNOWN", "OTHER"}
+	EnumLogProtocols     = []string{"http", "tcp"}
+	EnumLogSources       = []string{"docker", "systemd", "generic", "kubernetes"}
+	EnumLogRetentionTime = []string{"7", "14", "30"}
 )
 
 // Some legacy messages, which might need looking into

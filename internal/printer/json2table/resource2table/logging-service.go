@@ -9,7 +9,7 @@ import (
 	ionoscloud "github.com/ionos-cloud/sdk-go-logging"
 )
 
-func ConvertLoggingServicePipelineLogToTale(log ionoscloud.PipelineResponse) ([]map[string]interface{}, error) {
+func ConvertLoggingServicePipelineLogToTable(log ionoscloud.PipelineResponse) ([]map[string]interface{}, error) {
 	dests, ok := log.GetDestinationsOk()
 	if !ok || dests == nil {
 		return nil, fmt.Errorf("could not retrive Logging Service Pipeline Logs destination")
