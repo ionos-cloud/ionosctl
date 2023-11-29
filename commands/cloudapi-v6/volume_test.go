@@ -1196,7 +1196,7 @@ func TestServerVolumeDetach(t *testing.T) {
 						{core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar},
 						{core.GetFlagName(cfg.NS, cloudapiv6.ArgVolumeId), testServerVar},
 						{core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), false},
-						{constants.ArgForce, true},
+						{core.GetFlagName(cfg.NS, constants.ArgForce), true},
 					},
 					Calls: func(...*gomock.Call) {
 						gomock.InOrder(
@@ -1215,7 +1215,7 @@ func TestServerVolumeDetach(t *testing.T) {
 						{core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar},
 						{core.GetFlagName(cfg.NS, cloudapiv6.ArgVolumeId), testServerVar},
 						{core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), false},
-						{constants.ArgForce, true},
+						{core.GetFlagName(cfg.NS, constants.ArgForce), true},
 					},
 					Calls: func(...*gomock.Call) {
 						gomock.InOrder(
@@ -1234,7 +1234,7 @@ func TestServerVolumeDetach(t *testing.T) {
 						{core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar},
 						{core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), false},
 						{core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true},
-						{constants.ArgForce, true},
+						{core.GetFlagName(cfg.NS, constants.ArgForce), true},
 					},
 					Calls: func(...*gomock.Call) {
 						gomock.InOrder(
@@ -1260,7 +1260,7 @@ func TestServerVolumeDetach(t *testing.T) {
 						{core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar},
 						{core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), false},
 						{core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true},
-						{constants.ArgForce, true},
+						{core.GetFlagName(cfg.NS, constants.ArgForce), true},
 					},
 					Calls: func(...*gomock.Call) {
 						rm.CloudApiV6Mocks.Server.EXPECT().ListVolumes(
@@ -1282,7 +1282,7 @@ func TestServerVolumeDetach(t *testing.T) {
 						{core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar},
 						{core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), false},
 						{core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true},
-						{constants.ArgForce, true},
+						{core.GetFlagName(cfg.NS, constants.ArgForce), true},
 					},
 					Calls: func(...*gomock.Call) {
 						gomock.InOrder(
@@ -1306,7 +1306,7 @@ func TestServerVolumeDetach(t *testing.T) {
 						{core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar},
 						{core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), false},
 						{core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true},
-						{constants.ArgForce, true},
+						{core.GetFlagName(cfg.NS, constants.ArgForce), true},
 					},
 					Calls: func(...*gomock.Call) {
 						gomock.InOrder(
@@ -1330,7 +1330,7 @@ func TestServerVolumeDetach(t *testing.T) {
 						{core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar},
 						{core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), false},
 						{core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true},
-						{constants.ArgForce, true},
+						{core.GetFlagName(cfg.NS, constants.ArgForce), true},
 					},
 					Calls: func(...*gomock.Call) {
 						gomock.InOrder(
@@ -1354,7 +1354,7 @@ func TestServerVolumeDetach(t *testing.T) {
 						{core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar},
 						{core.GetFlagName(cfg.NS, cloudapiv6.ArgVolumeId), testServerVar},
 						{core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), false},
-						{constants.ArgForce, false},
+						{core.GetFlagName(cfg.NS, constants.ArgForce), false},
 					},
 					Calls: func(...*gomock.Call) {
 						gomock.InOrder(
@@ -1379,7 +1379,7 @@ func TestServerVolumeDetach(t *testing.T) {
 						{core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar},
 						{core.GetFlagName(cfg.NS, cloudapiv6.ArgVolumeId), testServerVar},
 						{core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), true},
-						{constants.ArgForce, true},
+						{core.GetFlagName(cfg.NS, constants.ArgForce), true},
 					},
 					Calls: func(...*gomock.Call) {
 						gomock.InOrder(
@@ -1401,7 +1401,7 @@ func TestServerVolumeDetach(t *testing.T) {
 						{core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar},
 						{core.GetFlagName(cfg.NS, cloudapiv6.ArgVolumeId), testServerVar},
 						{core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), false},
-						{constants.ArgForce, false},
+						{core.GetFlagName(cfg.NS, constants.ArgForce), false},
 					},
 					Calls: func(...*gomock.Call) {
 						gomock.InOrder()
