@@ -50,7 +50,6 @@ Required values to run a command:
   -c, --config string      Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -D, --depth int32        Controls the detail depth of the response objects. Max depth is 10.
   -e, --email string       The e-mail address you want to assign to the BackupUnit (required)
-  -f, --force              Force command to execute without user input
   -h, --help               Print usage
   -n, --name string        Alphanumeric name you want to assign to the BackupUnit (required)
       --no-headers         Don't print table headers when table output is used

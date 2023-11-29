@@ -48,7 +48,6 @@ Required values to run a command:
       --dhcpv6                 Set to false if you wish to disable DHCPv6 on the NIC. E.g.: --dhcpv6=true, --dhcpv6=false (default true)
       --firewall-active        Activate or deactivate the Firewall. E.g.: --firewall-active=true, --firewall-active=false
       --firewall-type string   The type of Firewall Rules that will be allowed on the NIC (default "INGRESS")
-  -f, --force                  Force command to execute without user input
   -h, --help                   Print usage
       --ips strings            IPs assigned to the NIC. This can be a collection
       --ipv6-cidr string       The /80 IPv6 Cidr as defined in RFC 4291. It needs to be within the LAN IPv6 Cidr Block range. (default "disable")

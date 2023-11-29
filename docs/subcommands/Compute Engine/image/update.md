@@ -48,7 +48,6 @@ Required values to run command:
       --disc-scsi-hot-unplug     'Hot-Unplug' SCSI drive
       --disc-virtio-hot-plug     'Hot-Plug' Virt-IO drive (default true)
       --disc-virtio-hot-unplug   'Hot-Unplug' Virt-IO drive
-  -f, --force                    Force command to execute without user input
   -h, --help                     Print usage
   -i, --image-id string          The unique Image Id (required)
       --licence-type string      The OS type of this image. Can be one of: LINUX, RHEL, WINDOWS, WINDOWS2016, UNKNOWN, OTHER (default "UNKNOWN")

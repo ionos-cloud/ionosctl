@@ -54,7 +54,6 @@ Required values to run command:
   -c, --config string                       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --datacenter-id string                The unique Data Center Id (required)
   -D, --depth int32                         Controls the detail depth of the response objects. Max depth is 10.
-  -f, --force                               Force command to execute without user input
   -h, --help                                Print usage
       --listener-ip ip                      Listening (inbound) IP. It must be assigned to the listener NIC of Application Load Balancer. (required)
       --listener-port int                   Listening (inbound) port number; valid range is 1 to 65535. (required) (default 8080)

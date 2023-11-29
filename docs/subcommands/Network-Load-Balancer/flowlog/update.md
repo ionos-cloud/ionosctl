@@ -54,7 +54,6 @@ Required values to run command:
   -D, --depth int32                     Controls the detail depth of the response objects. Max depth is 10.
   -d, --direction string                Specifies the traffic Direction pattern
   -i, --flowlog-id string               The unique FlowLog Id (required)
-  -f, --force                           Force command to execute without user input
   -h, --help                            Print usage
   -n, --name string                     Name of the Network Load Balancer FlowLog
       --networkloadbalancer-id string   The unique NetworkLoadBalancer Id (required)

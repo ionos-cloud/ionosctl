@@ -45,7 +45,6 @@ Required values to run command:
       --datacenter-id string     The unique Data Center Id (required)
   -D, --depth int32              Controls the detail depth of the response objects. Max depth is 10.
       --dhcp                     Indicates if the Load Balancer will reserve an IP using DHCP. E.g.: --dhcp=true, --dhcp=false (default true)
-  -f, --force                    Force command to execute without user input
   -h, --help                     Print usage
       --ip ip                    The IP of the Load Balancer
   -i, --loadbalancer-id string   The unique Load Balancer Id (required)

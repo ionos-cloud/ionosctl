@@ -39,7 +39,6 @@ List (and optionally filter) the logs of your Mongo Cluster. Use --cols message 
       --direction string    The direction in which to scan through the logs. The logs are returned in order of the direction. Can be one of: BACKWARD, FORWARD
       --end duration        The end time, as a duration. This should be negative and greater than the start time, i.e. -24h. Valid: h, m, s
       --endDate string      The end time for the query in RFC3339 format. Must not be greater than the start parameter. The default value is the current timestamp.
-  -f, --force               Force command to execute without user input
   -h, --help                Print usage
       --limit int           The maximal number of log lines to return. If the limit is reached then log lines will be cut at the end (respecting the scan direction). Must be between 1 - 5000 (default 100)
       --no-headers          Don't print table headers when table output is used

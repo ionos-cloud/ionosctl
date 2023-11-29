@@ -40,7 +40,6 @@ Required values to run command:
                           Available columns: [GroupId Name CreateDataCenter CreateSnapshot ReserveIp AccessActivityLog CreatePcc S3Privilege CreateBackupUnit CreateInternetAccess CreateK8s CreateFlowLog AccessAndManageMonitoring AccessAndManageCertificates AccessAndManageDns ManageDBaaS ManageRegistry ManageDataplatform] (default [GroupId,Name,CreateDataCenter,CreateSnapshot,CreatePcc,CreateBackupUnit,CreateInternetAccess,CreateK8s,ReserveIp])
   -c, --config string     Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -D, --depth int32       Controls the detail depth of the response objects. Max depth is 10.
-  -f, --force             Force command to execute without user input
   -i, --group-id string   The unique Group Id (required)
   -h, --help              Print usage
       --no-headers        Don't print table headers when table output is used

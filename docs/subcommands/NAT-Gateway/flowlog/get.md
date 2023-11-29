@@ -50,7 +50,6 @@ Required values to run command:
       --datacenter-id string   The unique Data Center Id (required)
   -D, --depth int32            Controls the detail depth of the response objects. Max depth is 10.
   -i, --flowlog-id string      The unique FlowLog Id (required)
-  -f, --force                  Force command to execute without user input
   -h, --help                   Print usage
       --natgateway-id string   The unique NatGateway Id (required)
       --no-headers             Don't print table headers when table output is used

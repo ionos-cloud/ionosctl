@@ -53,7 +53,6 @@ Required values to run command:
       --datacenter-id string            The unique Data Center Id (required)
   -D, --depth int32                     Controls the detail depth of the response objects. Max depth is 10.
   -d, --direction string                Specifies the traffic Direction pattern (default "BIDIRECTIONAL")
-  -f, --force                           Force command to execute without user input
   -h, --help                            Print usage
   -n, --name string                     The name for the FlowLog (default "Unnamed FlowLog")
       --networkloadbalancer-id string   The unique NetworkLoadBalancer Id (required)

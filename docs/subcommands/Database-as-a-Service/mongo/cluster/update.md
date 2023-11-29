@@ -48,7 +48,6 @@ Update a Mongo Cluster by ID
   -c, --config string             Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --cores int                 The total number of cores for the Server, e.g. 4. (required and only settable for enterprise edition)
       --datacenter-id string      The datacenter to which your cluster will be connected. Must be in the same location as the cluster
-  -f, --force                     Force command to execute without user input
   -h, --help                      Print usage
       --instances int32           The total number of instances of the cluster (one primary and n-1 secondaries). Minimum of 3 for business edition (default 1)
       --lan-id string             The numeric LAN ID with which you connect your cluster

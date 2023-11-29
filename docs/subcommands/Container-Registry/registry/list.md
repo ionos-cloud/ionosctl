@@ -41,7 +41,6 @@ List all managed container registries for your account
       --cols strings     Set of columns to be printed on output 
                          Available columns: [RegistryId DisplayName Location Hostname GarbageCollectionDays GarbageCollectionTime]
   -c, --config string    Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
-  -f, --force            Force command to execute without user input
   -h, --help             Print usage
   -n, --name string      Response filter to list only the Registries that contain the specified name in the DisplayName field. The value is case insensitive
       --no-headers       Don't print table headers when table output is used

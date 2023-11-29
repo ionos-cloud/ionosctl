@@ -48,7 +48,6 @@ Required values to run command:
   -c, --config string            Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --datacenter-id string     The unique Data Center Id (required)
   -F, --filters strings          cloudapiv6.ArgOrderByDescription. Use the following format to set filters: --filters KEY1=VALUE1,KEY2=VALUE2.
-  -f, --force                    Force command to execute without user input
   -h, --help                     Print usage
       --loadbalancer-id string   The unique Load Balancer Id (required)
   -M, --max-results int32        The maximum number of elements to return

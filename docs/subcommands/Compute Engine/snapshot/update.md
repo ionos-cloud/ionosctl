@@ -49,7 +49,6 @@ Required values to run command:
       --disc-scsi-hot-unplug     This volume is capable of SCSI drive hot unplug (no reboot required). E.g.: --disc-scsi-unplug=true, --disc-scsi-unplug=false
       --disc-virtio-hot-plug     This volume is capable of VirtIO drive hot plug (no reboot required). E.g.: --disc-virtio-plug=true, --disc-virtio-plug=false
       --disc-virtio-hot-unplug   This volume is capable of VirtIO drive hot unplug (no reboot required). E.g.: --disc-virtio-unplug=true, --disc-virtio-unplug=false
-  -f, --force                    Force command to execute without user input
   -h, --help                     Print usage
       --licence-type string      Licence Type of the Snapshot. Can be one of: LINUX, RHEL, WINDOWS, WINDOWS2016, UNKNOWN, OTHER
   -n, --name string              Name of the Snapshot

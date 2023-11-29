@@ -50,7 +50,6 @@ Required values to run command:
   -D, --depth int32              Controls the detail depth of the response objects. Max depth is 10.
       --disc-virtio-hot-plug     It is capable of Virt-IO drive hot plug (no reboot required). E.g.: --disc-virtio-plug=true, --disc-virtio-plug=false
       --disc-virtio-hot-unplug   It is capable of Virt-IO drive hot unplug (no reboot required). This works only for non-Windows virtual Machines. E.g.: --disc-virtio-unplug=true, --disc-virtio-unplug=false
-  -f, --force                    Force command to execute without user input
   -h, --help                     Print usage
   -n, --name string              Name of the Volume
       --nic-hot-plug             It is capable of nic hot plug (no reboot required). E.g.: --nic-hot-plug=true, --nic-hot-plug=false

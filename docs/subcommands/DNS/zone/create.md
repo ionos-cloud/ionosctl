@@ -37,7 +37,6 @@ Create a zone
   -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --description string   The description of the DNS zone
       --enabled              Activate or deactivate the DNS zone (default true)
-  -f, --force                Force command to execute without user input
   -h, --help                 Print usage
   -n, --name string          The name of the DNS zone, e.g. foo.com
       --no-headers           Don't print table headers when table output is used

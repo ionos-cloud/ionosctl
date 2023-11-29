@@ -44,7 +44,6 @@ Modifies the specified DataPlatformCluster by its distinct cluster ID. The field
                                   Available columns: [Id Name Version MaintenanceWindow DatacenterId State]
   -c, --config string             Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --datacenter-id string      The datacenter to which your cluster will be connected. Must be in the same location as the cluster (required)
-  -f, --force                     Force command to execute without user input
   -h, --help                      Print usage
       --lan-id string             The numeric LAN ID with which you connect your cluster (required)
       --maintenance-day string    Day Of the Week for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur (required)

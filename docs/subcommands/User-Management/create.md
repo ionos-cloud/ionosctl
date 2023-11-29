@@ -44,7 +44,6 @@ Required values to run a command:
   -D, --depth int32         Controls the detail depth of the response objects. Max depth is 10.
   -e, --email string        The email for the User (required)
       --first-name string   The first name for the User (required)
-  -f, --force               Force command to execute without user input
       --force-secure-auth   Indicates if secure (two-factor) authentication should be forced for the User
   -h, --help                Print usage
       --last-name string    The last name for the User (required)

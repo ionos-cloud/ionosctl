@@ -30,7 +30,6 @@ Use this command to generate a new Token. Only the JSON Web Token, associated wi
                          Available columns: [TokenId CreatedDate ExpirationDate Href]
   -c, --config string    Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --contract int     Users with multiple contracts can provide the contract number, for which the token is generated
-  -f, --force            Force command to execute without user input
   -h, --help             Print usage
       --no-headers       Don't print table headers when table output is used
   -o, --output string    Desired output format [text|json|api-json] (default "text")

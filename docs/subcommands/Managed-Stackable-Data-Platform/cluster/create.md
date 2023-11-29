@@ -42,7 +42,6 @@ The cluster will be provisioned in the datacenter matching the provided datacent
                                   Available columns: [Id Name Version MaintenanceWindow DatacenterId State]
   -c, --config string             Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -i, --datacenter-id string      The ID of the connected datacenter
-  -f, --force                     Force command to execute without user input
   -h, --help                      Print usage
       --maintenance-day string    Day Of the Week for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur (required)
       --maintenance-time string   Time for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur. e.g.: 16:30:59 (required)

@@ -85,7 +85,6 @@ You can wait for the Request to be executed using `--wait-for-request` option. Y
       --cpu-family string          CPU Family for the Server. For CUBE Servers, the CPU Family is INTEL_SKYLAKE (default "AMD_OPTERON")
       --datacenter-id string       The unique Data Center Id (required)
   -D, --depth int32                Controls the detail depth of the response objects. Max depth is 10.
-  -f, --force                      Force command to execute without user input
   -h, --help                       Print usage
   -a, --image-alias string         [CUBE Server] The Image Alias to use instead of Image Id for the Direct Attached Storage
       --image-id string            [CUBE Server] The Image Id or snapshot Id to be used as for the Direct Attached Storage

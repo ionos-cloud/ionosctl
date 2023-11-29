@@ -49,7 +49,6 @@ Required values to run command:
   -c, --config string             Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --cores int                 The number of CPU cores per instance
   -D, --datacenter-id string      The unique ID of the Datacenter to connect to your cluster. It has to be in the same location as the current datacenter
-  -f, --force                     Force command to execute without user input
   -h, --help                      Print usage
   -I, --instances int             The number of instances in your cluster. Minimum: 0. Maximum: 5
   -L, --lan-id string             The unique ID of the LAN to connect your cluster to

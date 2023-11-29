@@ -43,7 +43,6 @@ Retrieves a list of MongoDB users. You can either list users of a certain cluste
       --cols strings          Set of columns to be printed on output 
                               Available columns: [Username CreatedBy Roles]
   -c, --config string         Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
-  -f, --force                 Force command to execute without user input
   -h, --help                  Print usage
   -M, --max-results int32     The maximum number of elements to return
       --no-headers            Don't print table headers when table output is used

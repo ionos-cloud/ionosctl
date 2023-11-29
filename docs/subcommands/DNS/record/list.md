@@ -35,7 +35,6 @@ Retrieve all records
       --cols strings        Set of columns to be printed on output 
                             Available columns: [Id Name Content Type Enabled FQDN State ZoneId ZoneName]
   -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
-  -f, --force               Force command to execute without user input
   -h, --help                Print usage
       --max-results int32   The maximum number of elements to return
       --name string         Filter used to fetch only the records that contain specified record name

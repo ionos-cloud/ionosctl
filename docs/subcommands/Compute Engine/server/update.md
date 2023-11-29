@@ -57,7 +57,6 @@ Required values to run command:
       --cpu-family string          CPU Family of the Server (default "AMD_OPTERON")
       --datacenter-id string       The unique Data Center Id (required)
   -D, --depth int32                Controls the detail depth of the response objects. Max depth is 10.
-  -f, --force                      Force command to execute without user input
   -h, --help                       Print usage
   -n, --name string                Name of the Server
       --no-headers                 Don't print table headers when table output is used

@@ -44,7 +44,6 @@ Required values to run command:
   -i, --datacenter-id string   The unique Data Center Id (required)
   -D, --depth int32            Controls the detail depth of the response objects. Max depth is 10.
   -d, --description string     Description of the Data Center
-  -f, --force                  Force command to execute without user input
   -h, --help                   Print usage
   -n, --name string            Name of the Data Center
       --no-headers             Don't print table headers when table output is used

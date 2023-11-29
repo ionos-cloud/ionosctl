@@ -46,7 +46,6 @@ Required values to run a command:
   -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -D, --depth int32          Controls the detail depth of the response objects. Max depth is 10.
       --dhcp                 Indicates if the Kubernetes Node Pool LAN will reserve an IP using DHCP. E.g.: --dhcp=true, --dhcp=false (default true)
-  -f, --force                Force command to execute without user input
       --gateway-ip strings   Slice of IPv4 or IPv6 Gateway IPs for the routes. Must contain same number of arguments as --network flag
   -h, --help                 Print usage
   -i, --lan-id int           The unique LAN Id of existing LANs to be attached to worker Nodes (required)

@@ -44,7 +44,6 @@ Required values to run command:
                                   Available columns: [ClusterId Name K8sVersion State MaintenanceWindow AvailableUpgradeVersions ViableNodePoolVersions S3Bucket ApiSubnetAllowList] (default [ClusterId,Name,K8sVersion,State,MaintenanceWindow])
   -c, --config string             Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -D, --depth int32               Controls the detail depth of the response objects. Max depth is 10.
-  -f, --force                     Force command to execute without user input
   -h, --help                      Print usage
       --k8s-version string        The K8s version for the Cluster
       --maintenance-day string    The day of the week for Maintenance Window has the English day format as following: Monday or Saturday

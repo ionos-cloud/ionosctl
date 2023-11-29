@@ -38,7 +38,6 @@ Required values to run command:
   -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -D, --depth int32          Controls the detail depth of the response objects. Max depth is 10.
       --edit-privilege       Update the group's permission to edit privileges on resource
-  -f, --force                Force command to execute without user input
       --group-id string      The unique Group Id (required)
   -h, --help                 Print usage
       --no-headers           Don't print table headers when table output is used

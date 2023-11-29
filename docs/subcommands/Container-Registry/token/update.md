@@ -43,7 +43,6 @@ Use this command to update a token's properties. You can update the token's expi
   -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --expiry-date string   Expiry date of the Token
       --expiry-time string   Time until the Token expires (ex: 1y2d)
-  -f, --force                Force command to execute without user input
   -h, --help                 Print usage
       --no-headers           Don't print table headers when table output is used
   -o, --output string        Desired output format [text|json|api-json] (default "text")

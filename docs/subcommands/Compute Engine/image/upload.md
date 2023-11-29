@@ -49,7 +49,6 @@ Required values to run command:
       --disc-scsi-hot-unplug     'Hot-Unplug' SCSI drive
       --disc-virtio-hot-plug     'Hot-Plug' Virt-IO drive (default true)
       --disc-virtio-hot-unplug   'Hot-Unplug' Virt-IO drive
-  -f, --force                    Force command to execute without user input
       --ftp-url string           URL of FTP server, with %s flag if location is embedded into url (default "ftp-%s.ionos.com")
   -h, --help                     Print usage
   -i, --image strings            Slice of paths to images, can be absolute path or relative to current working directory (required)

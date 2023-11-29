@@ -46,7 +46,6 @@ Required values to run command:
                             Available columns: [S3KeyId Active] (default [S3KeyId,Active])
   -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -D, --depth int32         Controls the detail depth of the response objects. Max depth is 10. (default 1)
-  -f, --force               Force command to execute without user input
   -h, --help                Print usage
   -M, --max-results int32   The maximum number of elements to return
       --no-headers          Don't print table headers when table output is used

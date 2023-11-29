@@ -41,7 +41,6 @@ You can wait for the Request to be executed using `--wait-for-request` option.
   -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -D, --depth int32          Controls the detail depth of the response objects. Max depth is 10.
   -d, --description string   Description of the Data Center
-  -f, --force                Force command to execute without user input
   -h, --help                 Print usage
   -l, --location string      Location for the Data Center (default "de/txl")
   -n, --name string          Name of the Data Center (default "Unnamed Data Center")

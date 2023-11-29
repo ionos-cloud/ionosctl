@@ -43,7 +43,6 @@ Get a MongoDB user
                             Available columns: [Username CreatedBy Roles]
   -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -d, --database string     The authentication database
-  -f, --force               Force command to execute without user input
   -h, --help                Print usage
       --no-headers          Don't print table headers when table output is used
   -o, --output string       Desired output format [text|json|api-json] (default "text")

@@ -47,7 +47,6 @@ Use this command to create a new Group and set Group privileges. You can specify
       --create-pcc            The group will be allowed to create PCCs. E.g.: --create-pcc=true, --create-pcc=false
       --create-snapshot       The group will be allowed to create Snapshots. E.g.: --create-snapshot=true, --create-snapshot=false
   -D, --depth int32           Controls the detail depth of the response objects. Max depth is 10.
-  -f, --force                 Force command to execute without user input
   -h, --help                  Print usage
       --manage-dataplatform   Privilege for a group to access and manage the Data Platform
       --manage-dbaas          Privilege for a group to manage DBaaS related functionality

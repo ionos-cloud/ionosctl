@@ -37,7 +37,6 @@ Create a record. Wiki: https://docs.ionos.com/dns-as-a-service/readme/api-how-to
   -c, --config string    Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --content string   The content (Record Data) for your chosen record type. For example, if --type A, --content should be an IPv4 IP. (required)
       --enabled          When true - the record is visible for lookup (default true)
-  -f, --force            Force command to execute without user input
   -h, --help             Print usage
   -n, --name \*          The name of the DNS record.  Provide a wildcard i.e. \* to match requests for non-existent names under your DNS Zone name. Note that some terminals require '*' to be escaped, e.g. '\*' (required)
       --no-headers       Don't print table headers when table output is used

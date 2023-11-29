@@ -38,7 +38,6 @@ You can wait for the Request to be executed using `--wait-for-request` option.
                            Available columns: [IpBlockId Name Location Size Ips State] (default [IpBlockId,Name,Location,Size,Ips,State])
   -c, --config string      Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -D, --depth int32        Controls the detail depth of the response objects. Max depth is 10.
-  -f, --force              Force command to execute without user input
   -h, --help               Print usage
   -l, --location string    Location of the IpBlock (default "de/txl")
   -n, --name string        Name of the IpBlock. If not set, it will automatically be set

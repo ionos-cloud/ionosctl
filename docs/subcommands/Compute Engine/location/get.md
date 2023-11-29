@@ -40,7 +40,6 @@ Required values to run command:
                              Available columns: [LocationId Name Features ImageAliases CpuFamily] (default [LocationId,Name,CpuFamily])
   -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -D, --depth int32          Controls the detail depth of the response objects. Max depth is 10.
-  -f, --force                Force command to execute without user input
   -h, --help                 Print usage
   -i, --location-id string   The unique Location Id (required)
       --no-headers           Don't print table headers when table output is used

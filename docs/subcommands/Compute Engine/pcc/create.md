@@ -37,7 +37,6 @@ Use this command to create a Cross-Connect. You can specify the name and the des
   -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -D, --depth int32          Controls the detail depth of the response objects. Max depth is 10.
   -d, --description string   The description for the Cross-Connect
-  -f, --force                Force command to execute without user input
   -h, --help                 Print usage
   -n, --name string          The name for the Cross-Connect (default "Unnamed PrivateCrossConnect")
       --no-headers           Don't print table headers when table output is used

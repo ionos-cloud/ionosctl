@@ -57,7 +57,6 @@ Required values to run command:
   -c, --config string                   Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --datacenter-id string            The unique Data Center Id (required)
   -D, --depth int32                     Controls the detail depth of the response objects. Max depth is 10.
-  -f, --force                           Force command to execute without user input
   -h, --help                            Print usage
       --ip ip                           IP of a balanced target VM (required)
       --maintenance                     [Health Check]  Maintenance specifies if a target VM should be marked as down, even if it is not

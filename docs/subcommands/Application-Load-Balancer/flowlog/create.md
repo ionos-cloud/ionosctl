@@ -54,7 +54,6 @@ Required values to run command:
       --datacenter-id string                The unique Data Center Id (required)
   -D, --depth int32                         Controls the detail depth of the response objects. Max depth is 10.
   -d, --direction string                    Specifies the traffic direction pattern. (default "INGRESS")
-  -f, --force                               Force command to execute without user input
   -h, --help                                Print usage
   -n, --name string                         The name of the Application Load Balancer FlowLog. (default "Unnamed ALB Flow Log")
       --no-headers                          Don't print table headers when table output is used

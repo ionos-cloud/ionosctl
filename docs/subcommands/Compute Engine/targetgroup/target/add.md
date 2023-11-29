@@ -51,7 +51,6 @@ Required values to run command:
       --cols strings            Set of columns to be printed on output 
                                 Available columns: [TargetIp TargetPort Weight HealthCheckEnabled MaintenanceEnabled] (default [TargetIp,TargetPort,Weight,HealthCheckEnabled,MaintenanceEnabled])
   -c, --config string           Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
-  -f, --force                   Force command to execute without user input
       --health-check-enabled    Makes the target available only if it accepts periodic health check TCP connection attempts; when turned off, the target is considered always available. The health check only consists of a connection attempt to the address and port of the target. Default is True. (default true)
   -h, --help                    Print usage
       --ip ip                   The IP of the balanced target VM. (required)

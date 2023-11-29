@@ -45,7 +45,6 @@ Required values to run command:
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --datacenter-id string   The unique Data Center Id (required)
   -D, --depth int32            Controls the detail depth of the response objects. Max depth is 10.
-  -f, --force                  Force command to execute without user input
   -h, --help                   Print usage
       --ipv6-cidr string       The /64 IPv6 Cidr as defined in RFC 4291. It needs to be within the Datacenter IPv6 Cidr Block range. It can also be set to "AUTO" or "DISABLE". (default "DISABLE")
   -n, --name string            The name of the LAN (default "Unnamed LAN")

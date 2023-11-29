@@ -48,7 +48,6 @@ Required values to run the command:
                                  Available columns: [NicId Name Dhcp LanId Ips IPv6Ips State FirewallActive FirewallType DeviceNumber PciSlot Mac DHCPv6 IPv6CidrBlock] (default [NicId,Name,Dhcp,LanId,Ips,IPv6Ips,State])
   -c, --config string            Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --datacenter-id string     The unique Data Center Id (required)
-  -f, --force                    Force command to execute without user input
   -h, --help                     Print usage
       --loadbalancer-id string   The unique Load Balancer Id (required)
   -i, --nic-id string            The unique NIC Id (required)

@@ -43,7 +43,6 @@ Create a new token used to access a container registry
   -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --expiry-date string   Expiry date of the Token
       --expiry-time string   Time until the Token expires (ex: 1y2d)
-  -f, --force                Force command to execute without user input
   -h, --help                 Print usage
       --name string          Name of the Token (required)
       --no-headers           Use --no-headers=false to show column headers (default true)

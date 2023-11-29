@@ -57,7 +57,6 @@ Required values to run a command (for Private Kubernetes Cluster):
       --datacenter-id string         The unique Data Center Id (required)
   -D, --depth int32                  Controls the detail depth of the response objects. Max depth is 10.
       --dhcp                         Indicates if the Kubernetes Node Pool LANs will reserve an IP using DHCP. E.g.: --dhcp=true, --dhcp=false (default true)
-  -f, --force                        Force command to execute without user input
   -h, --help                         Print usage
       --json-properties string       Path to a JSON file containing the desired properties. Overrides any other properties set.
       --json-properties-example      If set, prints a complete JSON which could be used for --json-properties and exits. Hint: Pipe me to a .json file

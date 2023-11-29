@@ -59,7 +59,6 @@ Required values to run command:
       --content-type string                 Valid only for STATIC actions. (default "application/json")
       --datacenter-id string                The unique Data Center Id (required)
   -D, --depth int32                         Controls the detail depth of the response objects. Max depth is 10.
-  -f, --force                               Force command to execute without user input
   -h, --help                                Print usage
   -l, --location string                     The location for redirecting; mandatory and valid only for REDIRECT actions. (default "www.ionos.com")
   -m, --message string                      The response message of the request; mandatory for STATIC actions. (default "Application Down")
