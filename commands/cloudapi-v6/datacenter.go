@@ -554,7 +554,10 @@ func DeleteAllDatacenters(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
 
-	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete all the Datacenters", viper.IsSet(constants.ArgForce)) {
+	if !confirm.FAsk(
+		c.Command.Command.InOrStdin(), "delete all the Datacenters",
+		viper.IsSet(core.GetFlagName(c.NS, constants.ArgForce)),
+	) {
 		return fmt.Errorf(confirm.UserDenied)
 	}
 
@@ -576,7 +579,9 @@ func DeleteAllDatacenters(c *core.CommandConfig) error {
 		if resp != nil && request.GetId(resp) != "" {
 			fmt.Fprintf(
 				c.Command.Command.ErrOrStderr(),
-				jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime),
+				jsontabwriter.GenerateVerboseOutput(
+					constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime,
+				),
 			)
 		}
 		if err != nil {
