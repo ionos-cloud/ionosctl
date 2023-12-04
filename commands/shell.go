@@ -3,11 +3,12 @@ package commands
 import (
 	"context"
 	"fmt"
+	"io"
 
 	"github.com/c-bata/go-prompt"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	"github.com/ionoscloudsdk/comptplus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
@@ -50,18 +51,7 @@ var advancedPrompt = &comptplus.CobraPrompt{
 	},
 
 	HookBefore: func(cmd *cobra.Command, input string) error {
-		// hasInteractiveUserInput := slices.Contains(
-		// 	[]string{"delete", "stop", "start", "suspend", "resume", "reboot"},
-		// 	cmd.Name(),
-		// )
-
-		if forceSet := viper.GetBool(constants.ArgForce); cmd.Name() == "delete" && !forceSet {
-			fmt.Println(forceSet)
-			err := fmt.Errorf("'--force' needs to be set for this command! Repeat this command with --force to continue. Interactive shell does not support user inputs")
-			// TODO: Get rid of this println when the error is properly handled, i.e. OnErrorFunc can print the error
-			fmt.Println(err.Error())
-			return err
-		}
+		confirm.SetStrategy(pleaseUseForceInsteadConfirmer{})
 		return nil
 	},
 
@@ -78,6 +68,21 @@ var advancedPrompt = &comptplus.CobraPrompt{
 			flag.Value.Set(flag.DefValue)
 		}
 	},
+}
+
+type pleaseUseForceInsteadConfirmer struct {
+}
+
+func (d pleaseUseForceInsteadConfirmer) Ask(_ io.Reader, s string, overrides ...bool) bool {
+	for _, o := range overrides {
+		if o {
+			return true
+		}
+	}
+
+	fmt.Printf("%s? [to confirm, please use --force]\n", s)
+
+	return false
 }
 
 func Shell() *core.Command {
