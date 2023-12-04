@@ -182,12 +182,6 @@ func RunRequestList(c *core.CommandConfig) error {
 		requests = sortRequestsByTime(requests, viper.GetInt(core.GetFlagName(c.NS, cloudapiv6.ArgLatest)))
 	}
 
-	if itemsOk, ok := requests.GetItemsOk(); ok && itemsOk != nil {
-		if len(*itemsOk) == 0 {
-			return fmt.Errorf("error getting requests based on given criteria")
-		}
-	}
-
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	convertedRequests, err := resource2table.ConvertRequestsToTable(requests.Requests)

@@ -761,12 +761,6 @@ func RunImageList(c *core.CommandConfig) error {
 		images = sortImagesByTime(images, viper.GetInt(core.GetFlagName(c.NS, cloudapiv6.ArgLatest)))
 	}
 
-	if itemsOk, ok := images.GetItemsOk(); ok && itemsOk != nil {
-		if len(*itemsOk) == 0 {
-			return errors.New("error getting images based on given criteria")
-		}
-	}
-
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.Image, images.Images,
