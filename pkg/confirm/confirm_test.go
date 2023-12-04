@@ -1,8 +1,11 @@
-package confirm
+package confirm_test
 
 import (
 	"bytes"
+	"io"
 	"testing"
+
+	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 )
 
 func TestFAsk(t *testing.T) {
@@ -59,10 +62,31 @@ func TestFAsk(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			in := bytes.NewBufferString(tt.input)
-			actual := FAsk(in, "Test", tt.overrides...)
+			actual := confirm.FAsk(in, "Test", tt.overrides...)
 			if actual != tt.expected {
 				t.Errorf("FAsk() = %v; want %v", actual, tt.expected)
 			}
 		})
 	}
+
+}
+
+type customConfirmer struct {
+}
+
+func (c customConfirmer) Ask(_ io.Reader, _ string, _ ...bool) bool {
+	return true
+}
+
+func TestFAskCustom(t *testing.T) {
+	t.Run("Test with custom strategy", func(t *testing.T) {
+
+		confirm.SetStrategy(customConfirmer{})
+		defer confirm.SetStrategy(nil) // Reset to default after test
+
+		in := bytes.NewBufferString("no\n")
+		if !confirm.FAsk(in, "Test") {
+			t.Errorf("FAsk() with custom strategy should always return true")
+		}
+	})
 }

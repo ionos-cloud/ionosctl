@@ -8,18 +8,23 @@ import (
 	"strings"
 )
 
-const (
-	UserDenied = "user denied confirmation"
-)
+const UserDenied = "user denied confirmation"
 
-// FAsk asks the user for confirmation on any Reader
-// If any of the arguments passed as `overrides` is true, it returns true.
-func FAsk(in io.Reader, s string, overrides ...bool) bool {
+// Confirmer is an interface for different confirmation strategies.
+type Confirmer interface {
+	Ask(in io.Reader, s string, overrides ...bool) bool
+}
+
+// defaultConfirmer is the default behavior used by FAsk.
+type defaultConfirmer struct{}
+
+func (d defaultConfirmer) Ask(in io.Reader, s string, overrides ...bool) bool {
 	for _, o := range overrides {
 		if o {
 			return true
 		}
 	}
+
 	rr := bufio.NewReader(in)
 	fmt.Printf("%s? [y/n]: ", s)
 
@@ -30,8 +35,23 @@ func FAsk(in io.Reader, s string, overrides ...bool) bool {
 
 	resp = strings.ToLower(strings.TrimSpace(resp))
 
-	if resp == "y" || resp == "yes" {
-		return true
+	return resp == "y" || resp == "yes"
+}
+
+// currentStrategy holds the current confirmation strategy.
+// If nil, default behavior is used.
+var currentStrategy Confirmer
+
+// SetStrategy sets the current confirmation strategy.
+func SetStrategy(strategy Confirmer) {
+	currentStrategy = strategy
+}
+
+// FAsk asks the user for confirmation using the current strategy
+// or the default behavior if no strategy is set.
+func FAsk(in io.Reader, s string, overrides ...bool) bool {
+	if currentStrategy != nil {
+		return currentStrategy.Ask(in, s, overrides...)
 	}
-	return false
+	return defaultConfirmer{}.Ask(in, s, overrides...)
 }

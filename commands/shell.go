@@ -50,9 +50,14 @@ var advancedPrompt = &comptplus.CobraPrompt{
 	},
 
 	HookBefore: func(cmd *cobra.Command, input string) error {
+		// hasInteractiveUserInput := slices.Contains(
+		// 	[]string{"delete", "stop", "start", "suspend", "resume", "reboot"},
+		// 	cmd.Name(),
+		// )
+
 		if forceSet := viper.GetBool(constants.ArgForce); cmd.Name() == "delete" && !forceSet {
 			fmt.Println(forceSet)
-			err := fmt.Errorf("'--force' needs to be set for this command! Interactive shell does not support user inputs. Repeat this command with --force to continue")
+			err := fmt.Errorf("'--force' needs to be set for this command! Repeat this command with --force to continue. Interactive shell does not support user inputs")
 			// TODO: Get rid of this println when the error is properly handled, i.e. OnErrorFunc can print the error
 			fmt.Println(err.Error())
 			return err
