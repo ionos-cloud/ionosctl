@@ -43,24 +43,21 @@ var advancedPrompt = &comptplus.CobraPrompt{
 	},
 
 	OnErrorFunc: func(err error) {
+		// Printing this would lead to duplicated errors
+		// TODO: Fix me
 		// rootCmd.Command.PrintErr(err)
 		return
 	},
 
-	HookBefore: func(cmd *cobra.Command, input string) {
-		forceExists := false
-		// TODO: Why forceExists is always true, even for commands that don't have --force?
-		cmd.Flags().VisitAll(func(flag *pflag.Flag) {
-			if flag.Name == constants.ArgForce {
-				forceExists = true
-			}
-		})
-
-		if forceSet, err := cmd.Flags().GetBool(constants.ArgForce); forceExists && (!forceSet || err != nil) {
-			fmt.Println("Warning: '--force' needs to be set for this command! Interactive shell does not support user inputs. Repeat this command with --force to continue.")
-			cmd = rootCmd.Command
-			cmd.SetArgs([]string{"helpgi"})
+	HookBefore: func(cmd *cobra.Command, input string) error {
+		if forceSet := viper.GetBool(constants.ArgForce); cmd.Name() == "delete" && !forceSet {
+			fmt.Println(forceSet)
+			err := fmt.Errorf("'--force' needs to be set for this command! Interactive shell does not support user inputs. Repeat this command with --force to continue")
+			// TODO: Get rid of this println when the error is properly handled, i.e. OnErrorFunc can print the error
+			fmt.Println(err.Error())
+			return err
 		}
+		return nil
 	},
 
 	CustomFlagResetBehaviour: func(flag *pflag.Flag) {
