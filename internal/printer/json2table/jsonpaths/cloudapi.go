@@ -190,7 +190,7 @@ var (
 	K8sCluster = map[string]string{
 		"ClusterId":                "id",
 		"Name":                     "properties.name",
-		"K8sVersion":               "properties,k8sVersion",
+		"K8sVersion":               "properties.k8sVersion",
 		"AvailableUpgradeVersions": "properties.availableUpgradeVersions",
 		"ViableNodePoolVersions":   "properties.viableNodePoolVersions",
 		"State":                    "metadata.state",
