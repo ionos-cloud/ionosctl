@@ -62,7 +62,14 @@ Within each layer, a token takes precedence over a username and password combina
 	FlagPriority    = "priority"
 	FlagType        = "type"
 
-	FlagCloudInit = "cloud-init"
+	FlagCloudInit                       = "cloud-init"
+	FlagLoggingPipelineId               = "pipeline-id"
+	FlagLoggingPipelineLogTag           = "log-tag"
+	FlagLoggingPipelineLogSource        = "log-source"
+	FlagLoggingPipelineLogProtocol      = "log-protocol"
+	FlagLoggingPipelineLogLabels        = "log-labels"
+	FlagLoggingPipelineLogType          = "log-type"
+	FlagLoggingPipelineLogRetentionTime = "log-retention-time"
 )
 
 // Flag descriptions. Prefixed with "Desc" for easy find and replace
@@ -103,18 +110,22 @@ const (
 
 // Defaults
 const (
-	DefaultApiURL         = "https://api.ionos.com"
-	DefaultDnsApiURL      = "dns.de-fra.ionos.com"
-	DefaultConfigFileName = "/config.json"
-	DefaultOutputFormat   = "text"
-	DefaultWait           = false
-	DefaultTimeoutSeconds = int(60)
-	DefaultParentIndex    = int(1)
+	DefaultApiURL               = "https://api.ionos.com"
+	DefaultDnsApiURL            = "dns.de-fra.ionos.com"
+	DefaultLoggingServiceApiURL = "logging.de-txl.ionos.com"
+	DefaultConfigFileName       = "/config.json"
+	DefaultOutputFormat         = "text"
+	DefaultWait                 = false
+	DefaultTimeoutSeconds       = int(60)
+	DefaultParentIndex          = int(1)
 )
 
 // enum values. TODO: ideally i'd like these handled by the SDK
 var (
-	EnumLicenceType = []string{"LINUX", "RHEL", "WINDOWS", "WINDOWS2016", "UNKNOWN", "OTHER"}
+	EnumLicenceType      = []string{"LINUX", "RHEL", "WINDOWS", "WINDOWS2016", "UNKNOWN", "OTHER"}
+	EnumLogProtocols     = []string{"http", "tcp"}
+	EnumLogSources       = []string{"docker", "systemd", "generic", "kubernetes"}
+	EnumLogRetentionTime = []string{"7", "14", "30"}
 )
 
 // Some legacy messages, which might need looking into

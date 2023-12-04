@@ -128,6 +128,21 @@
             * [list](subcommands%2FCompute%20Engine%2Flocation%2Fcpu%2Flist.md)
         * [get](subcommands%2FCompute%20Engine%2Flocation%2Fget.md)
         * [list](subcommands%2FCompute%20Engine%2Flocation%2Flist.md)
+    * logging
+        * service
+            * logs
+                * [add](subcommands%2FCompute%20Engine%2Flogging%2Fservice%2Flogs%2Fadd.md)
+                * [get](subcommands%2FCompute%20Engine%2Flogging%2Fservice%2Flogs%2Fget.md)
+                * [list](subcommands%2FCompute%20Engine%2Flogging%2Fservice%2Flogs%2Flist.md)
+                * [remove](subcommands%2FCompute%20Engine%2Flogging%2Fservice%2Flogs%2Fremove.md)
+                * [update](subcommands%2FCompute%20Engine%2Flogging%2Fservice%2Flogs%2Fupdate.md)
+            * pipeline
+                * [create](subcommands%2FCompute%20Engine%2Flogging%2Fservice%2Fpipeline%2Fcreate.md)
+                * [delete](subcommands%2FCompute%20Engine%2Flogging%2Fservice%2Fpipeline%2Fdelete.md)
+                * [get](subcommands%2FCompute%20Engine%2Flogging%2Fservice%2Fpipeline%2Fget.md)
+                * [key](subcommands%2FCompute%20Engine%2Flogging%2Fservice%2Fpipeline%2Fkey.md)
+                * [list](subcommands%2FCompute%20Engine%2Flogging%2Fservice%2Fpipeline%2Flist.md)
+                * [update](subcommands%2FCompute%20Engine%2Flogging%2Fservice%2Fpipeline%2Fupdate.md)
     * nic
         * [create](subcommands%2FCompute%20Engine%2Fnic%2Fcreate.md)
         * [delete](subcommands%2FCompute%20Engine%2Fnic%2Fdelete.md)

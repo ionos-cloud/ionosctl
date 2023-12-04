@@ -41,7 +41,9 @@ const (
 // Returns a ready-to-print string, which has the source data in either human-readable/table or JSON format
 //
 // TODO: remove cols as function parameter once --cols flag fix is ready
-func GenerateOutput(columnPathMappingPrefix string, columnPathMapping map[string]string, sourceData interface{}, cols []string) (string, error) {
+func GenerateOutput(
+	columnPathMappingPrefix string, columnPathMapping map[string]string, sourceData interface{}, cols []string,
+) (string, error) {
 	if viper.IsSet(constants.ArgQuiet) {
 		return "", nil
 	}
@@ -70,7 +72,9 @@ func GenerateOutput(columnPathMappingPrefix string, columnPathMapping map[string
 // cols: The columns that need to be printed
 //
 // Returns a ready-to-print string, which has the source data in either human-readable/table or JSON format
-func GenerateOutputPreconverted(rawSourceData interface{}, convertedSourceData []map[string]interface{}, cols []string) (string, error) {
+func GenerateOutputPreconverted(
+	rawSourceData interface{}, convertedSourceData []map[string]interface{}, cols []string,
+) (string, error) {
 	if viper.IsSet(constants.ArgQuiet) {
 		return "", nil
 	}
@@ -158,7 +162,9 @@ func generateJSONOutputAPI(sourceData interface{}) (string, error) {
 // sourceData: JSON or struct from which data should be extracted, converted and formatted.
 //
 // cols: The columns that need to be in the table.
-func generateTextOutputFromJSON(columnPathMappingPrefix string, sourceData interface{}, columnPathMapping map[string]string, cols []string) (string, error) {
+func generateTextOutputFromJSON(
+	columnPathMappingPrefix string, sourceData interface{}, columnPathMapping map[string]string, cols []string,
+) (string, error) {
 	table, err := json2table.ConvertJSONToTable(columnPathMappingPrefix, columnPathMapping, sourceData)
 	if err != nil {
 		return "", fmt.Errorf("failed converting source data to table using %+v: %w", columnPathMapping, err)
@@ -284,15 +290,31 @@ func generateLegacyJSONOutput(sourceData interface{}) (string, error) {
 		return "", err
 	}
 
-	query, err := gojq.Parse("{ items: [.[] | .items] | add }")
+	query1, err := gojq.Parse("{ items: [.[] | .items] | add }")
+	if err != nil {
+		return "", err
+	}
+
+	query2, err := gojq.Parse(`map(select(has("properties") | not)) | { "items": . }`)
 	if err != nil {
 		return "", err
 	}
 
 	// I expect only one result from the query, so there is no need to loop through the results
-	queryResult, _ := query.Run(temp).Next()
+	queryResult, _ := query1.Run(temp).Next()
 	if err, ok := queryResult.(error); ok && err != nil {
 		return string(apiOut) + "\n", nil
+	}
+
+	// fixes null output for embedded objects
+	mappedQueryResult := queryResult.(map[string]any)
+	if mappedQueryResult["items"] == nil {
+		queryResult, _ = query2.Run(temp).Next()
+		if err, ok := queryResult.(error); ok && err != nil {
+			fmt.Println(err.Error())
+
+			return string(apiOut) + "\n", nil
+		}
 	}
 
 	return generateJSONOutputAPI(queryResult)

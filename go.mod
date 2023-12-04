@@ -31,6 +31,7 @@ require (
 
 require (
 	github.com/Jeffail/gabs/v2 v2.7.0
+	github.com/ionos-cloud/sdk-go-logging v1.0.1
 	github.com/itchyny/gojq v0.12.13
 )
 
