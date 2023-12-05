@@ -1,5 +1,15 @@
 # Changelog
 
+## [v6.7.3] (December 2023)
+
+## Added
+- Added support for Logging Service API
+
+## Fixed
+- ionosctl will now exit with code 0 when no resources found for `image list`, `request list`.
+- fix cluster k8sVersion column extraction JSON path by @printminion in #407
+- fix DBaaS Postgres logs not being printed
+
 ## [v6.7.2] (November 2023)
 
 ## Added
