@@ -121,9 +121,9 @@ Ctrl + L\tClear the screen`,
 		CmdRun: func(c *core.CommandConfig) error {
 			fmt.Printf("ionosctl v%s\n", Version)
 			fmt.Println("Warning: We recommend keeping usage of this interactive shell to non-production critical applications.")
-			fmt.Println("   - DANGER: '--force' will always be set! Deleting resources will not ask for confirmation!")
-			fmt.Println("   - DANGER: Certain commands that require user input may freeze the shell!")
-			fmt.Println("   - This is a BETA feature. Please report any bugs to github.com/ionos-cloud/ionosctl/issues/new/choose")
+			fmt.Println("   - DANGER:\tCertain commands that require user input may freeze the shell!")
+			fmt.Println("   - NOTE:\tCommands such as 'delete' that require user confirmation will always fail and will instead ask for '--force' to be set.")
+			fmt.Println("   - NOTE:\tThis is a BETA feature. Please report any bugs to github.com/ionos-cloud/ionosctl/issues/new/choose")
 			advancedPrompt.PersistFlagValues = viper.GetBool(flagPersistFlagValues)
 			advancedPrompt.Run()
 			return nil
