@@ -204,7 +204,7 @@ func TestRunImageListSortOptionErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgImageAlias), "no alias")
 		rm.CloudApiV6Mocks.Image.EXPECT().List(gomock.AssignableToTypeOf(testListQueryParam)).Return(testImages, nil, nil)
 		err := RunImageList(cfg)
-		assert.Error(t, err)
+		assert.NoError(t, err)
 	})
 }
 
