@@ -9,20 +9,22 @@
 
 ## Features unique to this fork
 ### Flag Value Completions and Persistence
-- **Flag Completions**: Added completions for flag values, facilitating easier and more intuitive command usage.
-    - Default cache duration for responses is set to 500ms, reducing latency in user interaction.
+- **Flag Completions**: Added completions for flag values, for easier and more intuitive command usage.
+    - Default cache duration for refreshing flag value completions is set to 500ms, to avoid lag in user interaction.
     - Support for flag descriptions by splitting on `\t`.
 
 ### Customizable Flag Reset Behaviors
 - **Custom Flag Reset Behaviors**: Ability to set custom behaviors for resetting flag values.
-    - The default flag reset behaviour has also been changed to reset flags to their default values after each command execution, improving consistency and predictability of the shell environment.
+    - The default flag reset behaviour has also been changed to reset flags to their default values after each command execution (rather than on each typed character).
     - A bug in the original repo caused slice/array flags to be reset incorrectly, by appending the default values to the previous execution's values. This has been fixed in this fork.
 
 ### Pre and Post Execution Hooks
-- **Execution Hooks**: Added `HookBefore` and `HookAfter` for performing actions before and after command execution.
+- **Execution Hooks**: Ability to use `HookBefore` and `HookAfter` for performing actions before and after command execution.
 
-### Enhanced Flag Persistence
-- **Persist Flag Values**: Refined behavior of `PersistFlagValues` to offer more seamless flag value persistence across shell sessions.
+### elk-language/go-prompt
+- **Bump go-prompt**: Switched to an actively maintained fork of go-prompt with more features and bug fixes: https://github.com/elk-language/go-prompt. Sadly this involves some breaking changes.
+    - This fixes a bug which would disallow usage of CTRL + C in after usage of go-prompt.  
+
 
 ## Original README below
 
