@@ -134,9 +134,6 @@ func GetListQueryParams(c *core.CommandConfig) (resources.ListQueryParams, error
 // and return a map with the corresponding key values
 func getFilters(args []string, cmd *core.Command) (map[string][]string, error) {
 	filtersKV := map[string][]string{}
-	// if len(args) == 0 {
-	// 	return filtersKV, errors.New("must provide at least one filter")
-	// }
 
 	for _, arg := range args {
 		if arg == "" {
@@ -150,9 +147,8 @@ func getFilters(args []string, cmd *core.Command) (map[string][]string, error) {
 			filtersKV[kv[0]] = append(filtersKV[kv[0]], kv[1])
 		} else {
 			return filtersKV, errors.New(
-				fmt.Sprintf("\"%s --filters\" option set incorrectly. %s \n\nUsage: %s --filters KEY1%sVALUE1,KEY2%sVALUE2\n\nFor more details, see '%s --help'.",
+				fmt.Sprintf("\"%s --filters\" option set incorrectly. \n\nUsage: %s --filters KEY1%sVALUE1,KEY2%sVALUE2\n\nFor more details, see '%s --help'.",
 					cmd.CommandPath(),
-					strings.Join(args, ","),
 					cmd.CommandPath(),
 					FiltersPartitionChar,
 					FiltersPartitionChar,
