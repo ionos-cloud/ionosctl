@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/c-bata/go-prompt"
+	"github.com/elk-language/go-prompt"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
@@ -23,24 +23,23 @@ var advancedPrompt = &comptplus.CobraPrompt{
 	ShowHiddenCommands:       true,
 	ShowHiddenFlags:          true,
 	GoPromptOptions: []prompt.Option{
-		prompt.OptionTitle("ionosctl"),
-		prompt.OptionPrefix("> "),
-		prompt.OptionShowCompletionAtStart(),
+		prompt.WithTitle("ionosctl"),
+		prompt.WithPrefix("> "),
+		prompt.WithShowCompletionAtStart(),
 
-		prompt.OptionDescriptionTextColor(prompt.Black),
-		prompt.OptionSuggestionTextColor(prompt.White),
-		prompt.OptionDescriptionBGColor(prompt.LightGray),
-		prompt.OptionSuggestionBGColor(prompt.DarkGray),
+		prompt.WithDescriptionTextColor(prompt.Black),
+		prompt.WithSuggestionTextColor(prompt.White),
+		prompt.WithDescriptionBGColor(prompt.LightGray),
+		prompt.WithSuggestionBGColor(prompt.DarkGray),
 
-		prompt.OptionSelectedDescriptionTextColor(prompt.White),
-		prompt.OptionSelectedSuggestionTextColor(prompt.Black),
-		prompt.OptionSelectedDescriptionBGColor(prompt.DarkGray),
-		prompt.OptionSelectedSuggestionBGColor(prompt.LightGray),
+		prompt.WithSelectedDescriptionTextColor(prompt.White),
+		prompt.WithSelectedSuggestionTextColor(prompt.Black),
+		prompt.WithSelectedDescriptionBGColor(prompt.DarkGray),
+		prompt.WithSelectedSuggestionBGColor(prompt.LightGray),
 
-		prompt.OptionPreviewSuggestionTextColor(prompt.DarkBlue),
-		prompt.OptionPrefixTextColor(prompt.DefaultColor),
-		prompt.OptionScrollbarThumbColor(prompt.DarkGray),
-		prompt.OptionScrollbarBGColor(prompt.DefaultColor),
+		prompt.WithPrefixTextColor(prompt.DefaultColor),
+		prompt.WithScrollbarThumbColor(prompt.DarkGray),
+		prompt.WithScrollbarBGColor(prompt.DefaultColor),
 	},
 
 	OnErrorFunc: func(err error) {

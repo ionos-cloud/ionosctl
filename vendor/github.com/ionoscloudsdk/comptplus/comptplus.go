@@ -6,7 +6,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/c-bata/go-prompt"
+	"github.com/elk-language/go-prompt"
+	istrings "github.com/elk-language/go-prompt/strings"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 )
@@ -120,9 +121,14 @@ func (co *CobraPrompt) RunContext(ctx context.Context) {
 
 	p := prompt.New(
 		co.executeCommand(ctx),
-		co.findSuggestions,
-		co.GoPromptOptions...,
+		append(
+			[]prompt.Option{
+				prompt.WithCompleter(co.findSuggestions),
+			},
+			co.GoPromptOptions...,
+		)...,
 	)
+
 	p.Run()
 }
 
@@ -206,9 +212,13 @@ func (co *CobraPrompt) prepareCommands() {
 }
 
 // findSuggestions generates command and flag suggestions for the prompt.
-func (co *CobraPrompt) findSuggestions(d prompt.Document) []prompt.Suggest {
+func (co *CobraPrompt) findSuggestions(d prompt.Document) ([]prompt.Suggest, istrings.RuneNumber, istrings.RuneNumber) {
 	command := co.RootCmd
 	args := strings.Fields(d.CurrentLine())
+	w := d.GetWordBeforeCursor()
+
+	endIndex := d.CurrentRuneIndex()
+	startIndex := endIndex - istrings.RuneCount([]byte(w))
 
 	if found, _, err := command.Find(args); err == nil {
 		command = found
@@ -236,10 +246,10 @@ func (co *CobraPrompt) findSuggestions(d prompt.Document) []prompt.Suggest {
 	}
 
 	if co.SuggestionFilter != nil {
-		return co.SuggestionFilter(suggestions, &d)
+		return co.SuggestionFilter(suggestions, &d), startIndex, endIndex
 	}
 
-	return prompt.FilterHasPrefix(suggestions, d.GetWordBeforeCursor(), true)
+	return prompt.FilterHasPrefix(suggestions, w, true), startIndex, endIndex
 }
 
 // getFlagSuggestions returns a slice of flag suggestions.

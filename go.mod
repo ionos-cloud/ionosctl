@@ -24,15 +24,15 @@ require (
 	github.com/spf13/viper v1.16.0
 	github.com/stretchr/testify v1.8.4
 	golang.org/x/crypto v0.12.0
-	golang.org/x/exp v0.0.0-20230713183714-613f0c0eb8a1
+	golang.org/x/exp v0.0.0-20231127185646-65229373498e
 	golang.org/x/sync v0.3.0
 	golang.org/x/term v0.11.0
 )
 
 require (
 	github.com/Jeffail/gabs/v2 v2.7.0
-	github.com/c-bata/go-prompt v0.2.6
-	github.com/ionoscloudsdk/comptplus v1.0.3
+	github.com/elk-language/go-prompt v1.1.5
+	github.com/ionoscloudsdk/comptplus v1.0.4-0.20231206155123-936da93a8340
 	github.com/itchyny/gojq v0.12.13
 )
 

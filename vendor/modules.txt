@@ -4,13 +4,6 @@ github.com/Jeffail/gabs/v2
 # github.com/VividCortex/ewma v1.2.0
 ## explicit; go 1.12
 github.com/VividCortex/ewma
-# github.com/c-bata/go-prompt v0.2.6
-## explicit; go 1.14
-github.com/c-bata/go-prompt
-github.com/c-bata/go-prompt/internal/bisect
-github.com/c-bata/go-prompt/internal/debug
-github.com/c-bata/go-prompt/internal/strings
-github.com/c-bata/go-prompt/internal/term
 # github.com/cheggaaa/pb/v3 v3.1.4
 ## explicit; go 1.17
 github.com/cheggaaa/pb/v3
@@ -24,6 +17,13 @@ github.com/cjrd/allocate
 # github.com/davecgh/go-spew v1.1.1
 ## explicit
 github.com/davecgh/go-spew/spew
+# github.com/elk-language/go-prompt v1.1.5
+## explicit; go 1.19
+github.com/elk-language/go-prompt
+github.com/elk-language/go-prompt/bisect
+github.com/elk-language/go-prompt/debug
+github.com/elk-language/go-prompt/strings
+github.com/elk-language/go-prompt/term
 # github.com/fatih/color v1.15.0
 ## explicit; go 1.17
 github.com/fatih/color
@@ -81,7 +81,7 @@ github.com/ionos-cloud/sdk-go-dns
 # github.com/ionos-cloud/sdk-go/v6 v6.1.8
 ## explicit; go 1.19
 github.com/ionos-cloud/sdk-go/v6
-# github.com/ionoscloudsdk/comptplus v1.0.3
+# github.com/ionoscloudsdk/comptplus v1.0.4-0.20231206155123-936da93a8340
 ## explicit; go 1.17
 github.com/ionoscloudsdk/comptplus
 # github.com/itchyny/gojq v0.12.13
@@ -178,10 +178,11 @@ golang.org/x/crypto/internal/alias
 golang.org/x/crypto/internal/poly1305
 golang.org/x/crypto/ssh
 golang.org/x/crypto/ssh/internal/bcrypt_pbkdf
-# golang.org/x/exp v0.0.0-20230713183714-613f0c0eb8a1
+# golang.org/x/exp v0.0.0-20231127185646-65229373498e
 ## explicit; go 1.20
 golang.org/x/exp/constraints
 golang.org/x/exp/slices
+golang.org/x/exp/utf8string
 # golang.org/x/net v0.14.0
 ## explicit; go 1.17
 golang.org/x/net/context
