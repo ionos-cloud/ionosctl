@@ -283,7 +283,7 @@ func TestRunRequestListSortedErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgMethod), "no method")
 		rm.CloudApiV6Mocks.Request.EXPECT().List(gomock.AssignableToTypeOf(testListQueryParam)).Return(testRequests, nil, nil)
 		err := RunRequestList(cfg)
-		assert.Error(t, err)
+		assert.NoError(t, err)
 	})
 }
 

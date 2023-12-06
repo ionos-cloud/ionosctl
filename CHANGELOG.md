@@ -1,16 +1,19 @@
 # Changelog
 
-## [v6.7.2] (November 2023)
+## [v6.7.2] (December 2023)
 
 ## Added
+- Added support for Logging Service API
 - Added `--json-properties` and `--json-properties-example` to `k8s nodepool create` which allows creation of nodepools using a JSON file. This is useful for creating nodepools with a large number of properties.
   - `--json-properties` is used to specify the path to the JSON file containing the nodepool properties.
   - `--json-properties-example` is used to generate a JSON file containing all the nodepool properties and their default values. This file can be used as a template for creating nodepools using JSON files.
 
 ## Fixed
+- ionosctl will now exit with code 0 when no resources found for `image list`, `request list`.
+- fix cluster k8sVersion column extraction JSON path by @printminion in #407
 - Fixed `backupunit list` columns
 - Fixed `backupunit get-sso-url` characters being treated as format placeholders
-- Fixed various json paths (for certain columns extraction) for `user`, `location`, `nic`, `k8s cluster`
+- Fixed various json paths (for certain columns extraction) for `user`, `location`, `nic`, `k8s cluster`, `dbaas postgres logs`
 
 ## [v6.7.1] (October 2023)
 

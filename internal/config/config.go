@@ -25,7 +25,9 @@ func GetServerUrl() string {
 	viper.AutomaticEnv()
 	if flagVal := viper.GetString(constants.ArgServerUrl); viper.IsSet(constants.ArgServerUrl) {
 		// 1. Above all, use global flag val
-		if !strings.Contains(flagVal, constants.DefaultDnsApiURL) {
+		if !strings.Contains(flagVal, constants.DefaultDnsApiURL) && !strings.Contains(
+			flagVal, constants.DefaultLoggingServiceApiURL,
+		) {
 			// Workaround for changing the default for dns namepsace and still allowing this to be customized via env var / cfg
 			return flagVal
 		}
@@ -158,7 +160,9 @@ func configFileWriter() (io.WriteCloser, error) {
 		filePath = filepath.Join(configPath, constants.DefaultConfigFileName)
 	}
 
-	f, err := os.OpenFile(filePath, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0600) // File is directly created with 0600 permissions
+	f, err := os.OpenFile(
+		filePath, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0600,
+	) // File is directly created with 0600 permissions
 	if err != nil {
 		return nil, fmt.Errorf("failed to create config file: %w", err)
 	}

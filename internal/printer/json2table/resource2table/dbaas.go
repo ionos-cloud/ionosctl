@@ -337,25 +337,29 @@ func ConvertDbaasPostgresLogsToTable(logs *[]sdkpsql.ClusterLogsInstances) ([]ma
 	}
 
 	out := make([]map[string]interface{}, 0, len(*logs))
-	for idx, instance := range *logs {
+	for _, instance := range *logs {
 		if instance.GetMessages() == nil {
 			continue
 		}
 
-		for msgIdx, msg := range *instance.GetMessages() {
+		var ls, messages, times string
+		var temp = make(map[string]interface{})
+		for _, msg := range *instance.GetMessages() {
 			o, err := json2table.ConvertJSONToTable("", jsonpaths.DbaasLogsMessage, msg)
 			if err != nil {
 				return nil, fmt.Errorf("could not convert from JSON to Table format: %w", err)
 			}
 
-			o[0]["Instance"] = idx
-			o[0]["MessageNumber"] = msgIdx
-			if instance.GetName() != nil {
-				o[0]["Name"] = *instance.GetName()
-			}
-
-			out = append(out, o...)
+			messages = fmt.Sprintf("%v%v\n", messages, o[0]["Message"])
+			times = fmt.Sprintf("%v%v\n", times, o[0]["Time"])
+			ls = fmt.Sprintf("%vMessage: %v Time:%v\n", ls, o[0]["Message"], o[0]["Time"])
 		}
+
+		temp["Message"] = messages
+		temp["Time"] = times
+		temp["Logs"] = ls
+		temp["Name"] = *instance.Name
+		out = append(out, temp)
 	}
 
 	return out, nil
