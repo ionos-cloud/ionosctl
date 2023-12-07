@@ -7,6 +7,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	vmasc "github.com/ionos-cloud/sdk-go-vm-autoscaling"
@@ -37,7 +38,7 @@ func Get() *core.Command {
 			}
 
 			colsDesired := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
-			out, err := jsontabwriter.GenerateOutput("", allJSONPaths, ls,
+			out, err := jsontabwriter.GenerateOutput("", jsonpaths.VmAutoscalingGroup, ls,
 				tabheaders.GetHeaders(allCols, defaultCols, colsDesired))
 			if err != nil {
 				return err
@@ -52,7 +53,7 @@ func Get() *core.Command {
 	cmd.AddInt32Flag(constants.ArgDepth, constants.ArgDepthShort, 1, "Controls the detail depth of the response objects")
 	cmd.AddStringFlag(constants.FlagGroupId, "", "", "ID of the autoscaling group")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return GroupsProperty(func(r vmasc.GroupResource) string {
+		return GroupsProperty(func(r vmasc.Group) string {
 			return fmt.Sprintf(*r.Id) // + "\t" + *r.Properties.Name) // Commented because this SDK functionality currently broken
 		}), cobra.ShellCompDirectiveNoFileComp
 	})

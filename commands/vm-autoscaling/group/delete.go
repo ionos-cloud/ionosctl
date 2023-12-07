@@ -42,7 +42,7 @@ func Delete() *core.Command {
 	cmd.AddStringFlag(constants.FlagGroupId, constants.FlagIdShort, "", "ID of the autoscaling group to list servers from")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		// get ID of all groups
-		return GroupsProperty(func(r vmasc.GroupResource) string {
+		return GroupsProperty(func(r vmasc.Group) string {
 			return fmt.Sprintf(*r.Id) // + "\t" + *r.Properties.Name) // Commented because this SDK functionality currently broken
 		}), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -53,7 +53,7 @@ func Delete() *core.Command {
 func deleteAll(c *core.CommandConfig) error {
 
 	var errs error
-	for _, id := range GroupsProperty(func(r vmasc.GroupResource) string {
+	for _, id := range GroupsProperty(func(r vmasc.Group) string {
 		return *r.Id
 	}) {
 		// find group by ID and ask the user if he is sure he wants to delete it
@@ -105,7 +105,7 @@ func shouldDeleteGroup(c *core.CommandConfig, group *vmasc.Group) bool {
 }
 
 func getAllGroupIDs() []string {
-	return GroupsProperty(func(r vmasc.GroupResource) string {
+	return GroupsProperty(func(r vmasc.Group) string {
 		return *r.Id
 	})
 }

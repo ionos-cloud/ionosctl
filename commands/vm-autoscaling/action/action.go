@@ -49,7 +49,7 @@ var (
 )
 
 func Actions(fs ...Filter) (vmasc.ActionCollection, error) {
-	groupIds := group.GroupsProperty(func(r vmasc.GroupResource) string {
+	groupIds := group.GroupsProperty(func(r vmasc.Group) string {
 		if r.Id == nil {
 			return ""
 		}
@@ -58,7 +58,7 @@ func Actions(fs ...Filter) (vmasc.ActionCollection, error) {
 
 	// for each group, get actions
 	var allActions vmasc.ActionCollection
-	allActions.Items = pointer.From(make([]vmasc.ActionResource, 0))
+	allActions.Items = pointer.From(make([]vmasc.Action, 0))
 	for _, groupId := range groupIds {
 		actions, err := GroupActions(groupId, fs...)
 		if err != nil {
@@ -89,7 +89,7 @@ func GroupActions(groupId string, fs ...Filter) (vmasc.ActionCollection, error) 
 	return ls, nil
 }
 
-func ActionsProperty[V any](f func(resource vmasc.ActionResource) V, fs ...Filter) []V {
+func ActionsProperty[V any](f func(resource vmasc.Action) V, fs ...Filter) []V {
 	recs, err := Actions(fs...)
 	if err != nil {
 		return nil

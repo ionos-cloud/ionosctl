@@ -7,6 +7,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/resource2table"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/spf13/viper"
@@ -18,7 +19,7 @@ func List() *core.Command {
 		Resource:  "groups",
 		Verb:      "list",
 		Aliases:   []string{"l", "ls"},
-		ShortDesc: "List VM Autoscaling Groups",
+		ShortDesc: "List VM Autoscaling Groups. Use a greater '--depth' to see current replica count",
 		Example:   "ionosctl vm-autoscaling group list",
 		PreCmdRun: core.NoPreRun,
 		CmdRun: func(c *core.CommandConfig) error {
@@ -28,8 +29,13 @@ func List() *core.Command {
 				return err
 			}
 
+			table, err := resource2table.ConvertVmAutoscalingGroupsToTable(ls)
+			if err != nil {
+				return err
+			}
+
 			colsDesired := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
-			out, err := jsontabwriter.GenerateOutput("items", allJSONPaths, ls,
+			out, err := jsontabwriter.GenerateOutputPreconverted(ls, table,
 				tabheaders.GetHeaders(allCols, defaultCols, colsDesired))
 			if err != nil {
 				return err

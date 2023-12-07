@@ -49,7 +49,7 @@ var (
 )
 
 func Servers(fs ...Filter) (vmasc.ServerCollection, error) {
-	groupIds := group.GroupsProperty(func(r vmasc.GroupResource) string {
+	groupIds := group.GroupsProperty(func(r vmasc.Group) string {
 		if r.Id == nil {
 			return ""
 		}
@@ -58,7 +58,7 @@ func Servers(fs ...Filter) (vmasc.ServerCollection, error) {
 
 	// for each group, get actions
 	var allActions vmasc.ServerCollection
-	allActions.Items = pointer.From(make([]vmasc.ServerResource, 0))
+	allActions.Items = pointer.From(make([]vmasc.Server, 0))
 	for _, groupId := range groupIds {
 		actions, err := GroupServers(groupId, fs...)
 		if err != nil {
@@ -88,7 +88,7 @@ func GroupServers(groupId string, fs ...Filter) (vmasc.ServerCollection, error) 
 	return ls, nil
 }
 
-func ServersProperty[V any](f func(resource vmasc.ServerResource) V, fs ...Filter) []V {
+func ServersProperty[V any](f func(resource vmasc.Server) V, fs ...Filter) []V {
 	recs, err := Servers(fs...)
 	if err != nil {
 		return nil
