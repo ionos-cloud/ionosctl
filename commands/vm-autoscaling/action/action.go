@@ -19,8 +19,8 @@ func Root() *core.Command {
 		Command: &cobra.Command{
 			Use:              "action",
 			Aliases:          []string{"act"},
-			Short:            "Autoscaling Servers Operations",
-			Long:             "The sub-commands of `ionosctl autoscaling server` allow you to manage the Autoscaling Servers under your account.",
+			Short:            "Autoscaling Actions Operations",
+			Long:             "The sub-commands of `ionosctl autoscaling action` allow you to manage the Autoscaling Actions under your account.",
 			TraverseChildren: true,
 		},
 	}

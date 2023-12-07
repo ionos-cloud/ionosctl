@@ -67,7 +67,7 @@ type Client struct {
 	RegistryClient       *registry.APIClient
 	DnsClient            *dns.APIClient
 	LoggingServiceClient *logsvc.APIClient
-	VMAscClient          *vmasc.APIClient
+	VMAscClient          *vmasc.AutoScalingGroupsApiService
 }
 
 func appendUserAgent(userAgent string) string {
@@ -117,7 +117,7 @@ func newClient(name, pwd, token, hostUrl string, usedLayer *Layer) *Client {
 		RegistryClient:       registry.NewAPIClient(registryConfig),
 		DnsClient:            dns.NewAPIClient(dnsConfig),
 		LoggingServiceClient: logsvc.NewAPIClient(logsConfig),
-		VMAscClient:          vmasc.NewAPIClient(vmascConfig),
+		VMAscClient:          vmasc.NewAPIClient(vmascConfig).AutoScalingGroupsApi,
 		usedLayer:            usedLayer,
 	}
 }
