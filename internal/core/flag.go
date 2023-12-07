@@ -3,11 +3,9 @@ package core
 import (
 	"errors"
 	"fmt"
-	"os"
 	"strings"
 
 	"github.com/gofrs/uuid/v5"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/spf13/viper"
 )
 
@@ -221,8 +219,10 @@ func (u *uuidFlag) Set(p string) error {
 	}
 
 	if !IsValidUUID(p) {
-		// return fmt.Errorf("%s does not match UUID-4 format", p)
-		fmt.Fprintf(os.Stderr, jsontabwriter.GenerateLogOutput(fmt.Sprintf("WARNING: %s does not match UUID-4 format", p)))
+		// TODO: In the past, this has been downgraded from throwing an error to simply printing a warning
+		// However, printing warnings in Set funcs is not a good practice.
+		// Set is the only way for us to interact with these flag values and we don't want side effects
+		// In this case I think this UUIDFlag should be removed.
 	}
 
 	// Valid UUID if passed above check

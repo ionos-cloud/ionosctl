@@ -170,6 +170,7 @@ func initConfig() {
 
 // AddCommands adds sub commands to the base command.
 func addCommands() {
+	rootCmd.AddCommand(Shell())
 	rootCmd.AddCommand(VersionCmd())
 	// cfg
 	rootCmd.AddCommand(cfg.ConfigCmd())

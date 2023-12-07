@@ -17,6 +17,13 @@ github.com/cjrd/allocate
 # github.com/davecgh/go-spew v1.1.1
 ## explicit
 github.com/davecgh/go-spew/spew
+# github.com/elk-language/go-prompt v1.1.5
+## explicit; go 1.19
+github.com/elk-language/go-prompt
+github.com/elk-language/go-prompt/bisect
+github.com/elk-language/go-prompt/debug
+github.com/elk-language/go-prompt/strings
+github.com/elk-language/go-prompt/term
 # github.com/fatih/color v1.15.0
 ## explicit; go 1.17
 github.com/fatih/color
@@ -77,6 +84,9 @@ github.com/ionos-cloud/sdk-go-logging
 # github.com/ionos-cloud/sdk-go/v6 v6.1.8
 ## explicit; go 1.19
 github.com/ionos-cloud/sdk-go/v6
+# github.com/ionoscloudsdk/comptplus v1.0.4
+## explicit; go 1.17
+github.com/ionoscloudsdk/comptplus
 # github.com/itchyny/gojq v0.12.13
 ## explicit; go 1.18
 github.com/itchyny/gojq
@@ -92,12 +102,15 @@ github.com/magiconair/properties
 # github.com/mattn/go-colorable v0.1.13
 ## explicit; go 1.15
 github.com/mattn/go-colorable
-# github.com/mattn/go-isatty v0.0.19
+# github.com/mattn/go-isatty v0.0.20
 ## explicit; go 1.15
 github.com/mattn/go-isatty
-# github.com/mattn/go-runewidth v0.0.14
+# github.com/mattn/go-runewidth v0.0.15
 ## explicit; go 1.9
 github.com/mattn/go-runewidth
+# github.com/mattn/go-tty v0.0.5
+## explicit; go 1.14
+github.com/mattn/go-tty
 # github.com/mitchellh/go-homedir v1.1.0
 ## explicit
 github.com/mitchellh/go-homedir
@@ -114,6 +127,9 @@ github.com/pelletier/go-toml/v2/internal/characters
 github.com/pelletier/go-toml/v2/internal/danger
 github.com/pelletier/go-toml/v2/internal/tracker
 github.com/pelletier/go-toml/v2/unstable
+# github.com/pkg/term v1.2.0-beta.2
+## explicit; go 1.14
+github.com/pkg/term/termios
 # github.com/pmezard/go-difflib v1.0.0
 ## explicit
 github.com/pmezard/go-difflib/difflib
@@ -128,7 +144,7 @@ github.com/spf13/afero/mem
 # github.com/spf13/cast v1.5.1
 ## explicit; go 1.18
 github.com/spf13/cast
-# github.com/spf13/cobra v1.7.0
+# github.com/spf13/cobra v1.8.0
 ## explicit; go 1.15
 github.com/spf13/cobra
 # github.com/spf13/jwalterweatherman v1.1.0
@@ -165,10 +181,11 @@ golang.org/x/crypto/internal/alias
 golang.org/x/crypto/internal/poly1305
 golang.org/x/crypto/ssh
 golang.org/x/crypto/ssh/internal/bcrypt_pbkdf
-# golang.org/x/exp v0.0.0-20230713183714-613f0c0eb8a1
+# golang.org/x/exp v0.0.0-20231127185646-65229373498e
 ## explicit; go 1.20
 golang.org/x/exp/constraints
 golang.org/x/exp/slices
+golang.org/x/exp/utf8string
 # golang.org/x/net v0.14.0
 ## explicit; go 1.17
 golang.org/x/net/context
@@ -179,10 +196,9 @@ golang.org/x/oauth2/internal
 # golang.org/x/sync v0.3.0
 ## explicit; go 1.17
 golang.org/x/sync/errgroup
-# golang.org/x/sys v0.11.0
-## explicit; go 1.17
+# golang.org/x/sys v0.15.0
+## explicit; go 1.18
 golang.org/x/sys/cpu
-golang.org/x/sys/internal/unsafeheader
 golang.org/x/sys/plan9
 golang.org/x/sys/unix
 golang.org/x/sys/windows
