@@ -1,5 +1,5 @@
 ---
-description: "Create a VM-Autoscaling group."
+description: "Create a VM-Autoscaling group"
 ---
 
 # VmAutoscalingGroupCreate
@@ -32,14 +32,14 @@ For `create` command:
 
 ## Description
 
-Create a VM-Autoscaling group.
+Create a VM-Autoscaling group
 
 ## Options
 
 ```text
   -u, --api-url string            Override default host url (default "https://api.ionos.com")
       --cols strings              Set of columns to be printed on output 
-                                  Available columns: [GroupId Name MinReplicas MaxReplicas DatacenterId Location State Metric Range ScaleInActionAmount ScaleInActionAmountType ScaleInActionCooldownPeriod ScaleInActionTerminationPolicy ScaleInActionDeleteVolumes ScaleInThreshold ScaleOutActionAmount ScaleOutActionAmountType ScaleOutActionCooldownPeriod ScaleOutThreshold Unit AvailabilityZone Cores CPUFamily RAM]
+                                  Available columns: [GroupId DatacenterId Name MinReplicas Replicas MaxReplicas Location State Metric Range ScaleInActionAmount ScaleInActionAmountType ScaleInActionCooldownPeriod ScaleInActionTerminationPolicy ScaleInActionDeleteVolumes ScaleInThreshold ScaleOutActionAmount ScaleOutActionAmountType ScaleOutActionCooldownPeriod ScaleOutThreshold Unit AvailabilityZone Cores CPUFamily RAM]
   -c, --config string             Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -f, --force                     Force command to execute without user input
   -h, --help                      Print usage
