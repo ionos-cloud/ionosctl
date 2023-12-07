@@ -8,6 +8,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/resource2table"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	vmasc "github.com/ionos-cloud/sdk-go-vm-autoscaling"
@@ -44,8 +45,14 @@ ionosctl vm-autoscaling server list %s`,
 				return err
 			}
 
+			table, err := resource2table.ConvertVmAutoscalingServersToTable(ls,
+				viper.GetInt32(core.GetFlagName(c.NS, constants.ArgDepth)))
+			if err != nil {
+				return err
+			}
+
 			colsDesired := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
-			out, err := jsontabwriter.GenerateOutput("items", allJSONPaths, ls,
+			out, err := jsontabwriter.GenerateOutputPreconverted(ls, table,
 				tabheaders.GetHeaders(allCols, defaultCols, colsDesired))
 			if err != nil {
 				return err
@@ -71,12 +78,21 @@ ionosctl vm-autoscaling server list %s`,
 }
 
 func listAll(c *core.CommandConfig) error {
-	ls, err := Servers()
+	ls, err := Servers(func(request vmasc.ApiGroupsServersGetRequest) (vmasc.ApiGroupsServersGetRequest, error) {
+		return request.Depth(float32(viper.GetFloat64(core.GetFlagName(c.NS, constants.ArgDepth)))), nil
+	})
 	if err != nil {
 		return fmt.Errorf("failed listing servers of all groups: %w", err)
 	}
+
+	table, err := resource2table.ConvertVmAutoscalingServersToTable(ls,
+		viper.GetInt32(core.GetFlagName(c.NS, constants.ArgDepth)))
+	if err != nil {
+		return err
+	}
+
 	colsDesired := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
-	out, err := jsontabwriter.GenerateOutput("items", allJSONPaths, ls,
+	out, err := jsontabwriter.GenerateOutputPreconverted(ls, table,
 		tabheaders.GetHeaders(allCols, defaultCols, colsDesired))
 	if err != nil {
 		return err

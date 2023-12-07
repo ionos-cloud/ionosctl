@@ -36,8 +36,8 @@ const (
 )
 
 var (
-	defaultServerCols = []string{"ServerId", "Name", "Type", "AvailabilityZone", "Cores", "Ram", "CpuFamily", "VmState", "State"}
-	allServerCols     = []string{"ServerId", "DatacenterId", "Name", "AvailabilityZone", "Cores", "Ram", "CpuFamily", "VmState", "State", "TemplateId", "Type", "BootCdromId", "BootVolumeId"}
+	DefaultServerCols = []string{"ServerId", "Name", "Type", "AvailabilityZone", "Cores", "Ram", "CpuFamily", "VmState", "State"}
+	AllServerCols     = []string{"ServerId", "DatacenterId", "Name", "AvailabilityZone", "Cores", "Ram", "CpuFamily", "VmState", "State", "TemplateId", "Type", "BootCdromId", "BootVolumeId"}
 )
 
 func ServerCmd() *core.Command {
@@ -52,10 +52,10 @@ func ServerCmd() *core.Command {
 		},
 	}
 	globalFlags := serverCmd.GlobalFlags()
-	globalFlags.StringSliceP(constants.ArgCols, "", defaultServerCols, tabheaders.ColsMessage(allServerCols))
+	globalFlags.StringSliceP(constants.ArgCols, "", DefaultServerCols, tabheaders.ColsMessage(AllServerCols))
 	_ = viper.BindPFlag(core.GetFlagName(serverCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = serverCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return allServerCols, cobra.ShellCompDirectiveNoFileComp
+		return AllServerCols, cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -683,7 +683,7 @@ func RunServerListAll(c *core.CommandConfig) error {
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutputPreconverted(allServers, allServersConverted,
-		tabheaders.GetHeaders(allServerCols, defaultServerCols, cols))
+		tabheaders.GetHeaders(AllServerCols, DefaultServerCols, cols))
 	if err != nil {
 		return err
 	}
@@ -728,7 +728,7 @@ func RunServerList(c *core.CommandConfig) error {
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.Server, servers.Servers,
-		tabheaders.GetHeaders(allServerCols, defaultServerCols, cols))
+		tabheaders.GetHeaders(AllServerCols, DefaultServerCols, cols))
 	if err != nil {
 		return err
 	}
@@ -766,7 +766,7 @@ func RunServerGet(c *core.CommandConfig) error {
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Server, svr.Server,
-		tabheaders.GetHeaders(allServerCols, defaultServerCols, cols))
+		tabheaders.GetHeaders(AllServerCols, DefaultServerCols, cols))
 	if err != nil {
 		return err
 	}
@@ -834,7 +834,7 @@ func RunServerCreate(c *core.CommandConfig) error {
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Server, svr.Server,
-		tabheaders.GetHeaders(allServerCols, defaultServerCols, cols))
+		tabheaders.GetHeaders(AllServerCols, DefaultServerCols, cols))
 	if err != nil {
 		return err
 	}
@@ -891,7 +891,7 @@ func RunServerUpdate(c *core.CommandConfig) error {
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Server, svr.Server,
-		tabheaders.GetHeaders(allServerCols, defaultServerCols, cols))
+		tabheaders.GetHeaders(AllServerCols, DefaultServerCols, cols))
 	if err != nil {
 		return err
 	}

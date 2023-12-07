@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 
+	commands "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/commands/vm-autoscaling/group"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
@@ -12,6 +13,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/pointer"
 	vmasc "github.com/ionos-cloud/sdk-go-vm-autoscaling"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 func Root() *core.Command {
@@ -28,7 +30,9 @@ func Root() *core.Command {
 	cmd.AddCommand(List())
 	cmd.AddCommand(Get())
 
-	cmd.Command.PersistentFlags().StringSlice(constants.ArgCols, nil, tabheaders.ColsMessage(allCols))
+	globalFlags := cmd.GlobalFlags()
+	globalFlags.StringSliceP(constants.ArgCols, "", defaultCols, tabheaders.ColsMessage(defaultCols))
+	_ = viper.BindPFlag(core.GetFlagName(cmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -37,13 +41,7 @@ func Root() *core.Command {
 }
 
 var (
-	allJSONPaths = map[string]string{
-		"ServerId": "id",
-	}
-
-	allCols = []string{
-		"ServerId",
-	}
+	allCols = append([]string{"GroupServerId"}, commands.AllServerCols...)
 
 	defaultCols = allCols
 )
