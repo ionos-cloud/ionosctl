@@ -60,7 +60,14 @@ ionosctl vm-autoscaling action list %s`,
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		// get ID of all groups
 		return group.GroupsProperty(func(r vmasc.Group) string {
-			return fmt.Sprintf(*r.Id) // + "\t" + *r.Properties.Name) // Commented because this SDK functionality currently broken
+			completion := *r.Id
+			if r.Properties == nil || r.Properties.Name == nil {
+				return completion
+			}
+			completion += "\t" + *r.Properties.Name
+			return completion
+		}, func(r vmasc.ApiGroupsGetRequest) (vmasc.ApiGroupsGetRequest, error) {
+			return r.Depth(1), nil
 		}), cobra.ShellCompDirectiveNoFileComp
 	})
 

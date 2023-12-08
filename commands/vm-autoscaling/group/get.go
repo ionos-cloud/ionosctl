@@ -54,7 +54,7 @@ func Get() *core.Command {
 	cmd.AddStringFlag(constants.FlagGroupId, "", "", "ID of the autoscaling group")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return GroupsProperty(func(r vmasc.Group) string {
-			return fmt.Sprintf(*r.Id) // + "\t" + *r.Properties.Name) // Commented because this SDK functionality currently broken
+			return fmt.Sprintf(*r.Id + "\t" + *r.Properties.Name)
 		}), cobra.ShellCompDirectiveNoFileComp
 	})
 

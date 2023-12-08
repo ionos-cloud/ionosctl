@@ -56,7 +56,7 @@ func Put() *core.Command {
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		// get ID of all groups
 		return GroupsProperty(func(r vmasc.Group) string {
-			return fmt.Sprintf(*r.Id) // + "\t" + *r.Properties.Name) // Commented because this SDK functionality currently broken
+			return fmt.Sprintf(*r.Id + "\t" + *r.Properties.Name)
 		}), cobra.ShellCompDirectiveNoFileComp
 	})
 

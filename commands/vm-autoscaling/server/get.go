@@ -62,13 +62,20 @@ func Get() *core.Command {
 	cmd.AddStringFlag(constants.FlagGroupId, "", "", "ID of the autoscaling group that the server is a part of")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return group.GroupsProperty(func(r vmasc.Group) string {
-			return fmt.Sprintf(*r.Id) // + "\t" + *r.Properties.Name) // Commented because this SDK functionality currently broken
+			completion := *r.Id
+			if r.Properties == nil || r.Properties.Name == nil {
+				return completion
+			}
+			completion += "\t" + *r.Properties.Name
+			return completion
+		}, func(r vmasc.ApiGroupsGetRequest) (vmasc.ApiGroupsGetRequest, error) {
+			return r.Depth(1), nil
 		}), cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddStringFlag(constants.FlagServerId, constants.FlagIdShort, "", "ID of the autoscaling server")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return ServersProperty(func(r vmasc.Server) string {
-			return fmt.Sprintf(*r.Id) // + "\t" + *r.Properties.Name) // Commented because this SDK functionality currently broken
+			return fmt.Sprintf(*r.Id + "\t" + *r.Properties.Name)
 		}), cobra.ShellCompDirectiveNoFileComp
 	})
 

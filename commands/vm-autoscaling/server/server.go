@@ -54,18 +54,17 @@ func Servers(fs ...Filter) (vmasc.ServerCollection, error) {
 		return *r.Id
 	})
 
-	// for each group, get actions
-	var allActions vmasc.ServerCollection
-	allActions.Items = pointer.From(make([]vmasc.Server, 0))
+	var ls vmasc.ServerCollection
+	ls.Items = pointer.From(make([]vmasc.Server, 0))
 	for _, groupId := range groupIds {
 		actions, err := GroupServers(groupId, fs...)
 		if err != nil {
 			return vmasc.ServerCollection{}, err
 		}
-		allActions.Items = pointer.From(append(*allActions.Items, *actions.Items...))
+		ls.Items = pointer.From(append(*ls.Items, *actions.Items...))
 	}
 
-	return allActions, nil
+	return ls, nil
 }
 
 func GroupServers(groupId string, fs ...Filter) (vmasc.ServerCollection, error) {

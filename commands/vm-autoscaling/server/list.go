@@ -22,7 +22,7 @@ func List() *core.Command {
 		Resource:  "server",
 		Verb:      "list",
 		Aliases:   []string{"l", "ls"},
-		ShortDesc: "List VM Autoscaling Servers",
+		ShortDesc: "List Servers that are managed by VM-Autoscaling Groups",
 		Example: fmt.Sprintf(`ionosctl vm-autoscaling server list %s
 ionosctl vm-autoscaling server list %s`,
 			core.FlagUsage(constants.FlagGroupId), core.FlagUsage(constants.ArgAll)),
@@ -70,7 +70,14 @@ ionosctl vm-autoscaling server list %s`,
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		// get ID of all groups
 		return group.GroupsProperty(func(r vmasc.Group) string {
-			return fmt.Sprintf(*r.Id) // + "\t" + *r.Properties.Name) // Commented because this SDK functionality currently broken
+			completion := *r.Id
+			if r.Properties == nil || r.Properties.Name == nil {
+				return completion
+			}
+			completion += "\t" + *r.Properties.Name
+			return completion
+		}, func(r vmasc.ApiGroupsGetRequest) (vmasc.ApiGroupsGetRequest, error) {
+			return r.Depth(1), nil
 		}), cobra.ShellCompDirectiveNoFileComp
 	})
 
