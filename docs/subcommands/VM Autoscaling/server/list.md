@@ -1,5 +1,5 @@
 ---
-description: "List VM Autoscaling Servers"
+description: "List Servers that are managed by VM-Autoscaling Groups"
 ---
 
 # VmAutoscalingServerList
@@ -32,7 +32,7 @@ For `list` command:
 
 ## Description
 
-List VM Autoscaling Servers
+List Servers that are managed by VM-Autoscaling Groups
 
 ## Options
 

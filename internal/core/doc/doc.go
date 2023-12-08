@@ -37,6 +37,7 @@ var nonComputeNamespaces = map[string]string{
 	"user":                    "User-Management",
 	"dns":                     "DNS",
 	"config":                  "CLI Setup",
+	"vm-autoscaling":          "VM Autoscaling",
 }
 
 func GenerateSummary(dir string) error {
