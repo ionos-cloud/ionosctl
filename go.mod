@@ -7,7 +7,6 @@ require (
 	github.com/cheggaaa/pb/v3 v3.1.4
 	github.com/cilium/fake v0.4.0
 	github.com/cjrd/allocate v0.0.0-20220510215731-986f24f0fb18
-	github.com/elk-language/go-prompt v1.1.5
 	github.com/fatih/structs v1.1.0
 	github.com/gofrs/uuid/v5 v5.0.0
 	github.com/golang/mock v1.6.0
@@ -21,7 +20,6 @@ require (
 	github.com/ionos-cloud/sdk-go-logging v1.0.1
 	github.com/ionos-cloud/sdk-go-vm-autoscaling v1.0.1
 	github.com/ionos-cloud/sdk-go/v6 v6.1.8
-	github.com/ionoscloudsdk/comptplus v1.0.4
 	github.com/itchyny/gojq v0.12.13
 	github.com/kardianos/ftps v1.0.3
 	github.com/mitchellh/go-homedir v1.1.0
@@ -49,8 +47,11 @@ require (
 	golang.org/x/term v0.14.0
 )
 
+// `ionosctl shell` requirements
 require (
+	github.com/elk-language/go-prompt v1.1.5
 	github.com/fatih/color v1.15.0 // indirect
+	github.com/ionoscloudsdk/comptplus v1.0.4
 	github.com/itchyny/timefmt-go v0.1.5 // indirect
 	github.com/mattn/go-tty v0.0.5 // indirect
 	github.com/pkg/term v1.2.0-beta.2 // indirect
