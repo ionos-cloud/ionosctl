@@ -244,12 +244,16 @@ CUSTOM URLs:
 		CmdRun:     RunImageUpload,
 		InitClient: true,
 	})
-	upload.AddStringSliceFlag(cloudapiv6.ArgLocation, cloudapiv6.ArgLocationShort, nil, "Location to upload to. Must be an array containing only fra, fkb, txl, lhr, las, ewr, vit", core.RequiredFlagOption())
-	upload.AddStringSliceFlag("image", "i", nil, "Slice of paths to images, can be absolute path or relative to current working directory", core.RequiredFlagOption())
-	upload.AddStringFlag("ftp-url", "", "ftp-%s.ionos.com", "URL of FTP server, with %s flag if location is embedded into url")
-	upload.AddBoolFlag(constants.FlagSkipVerify, "", false, "Skip verification of server certificate, useful if using a custom ftp-url. WARNING: You can be the target of a man-in-the-middle attack!")
-	upload.AddBoolFlag("skip-update", "", false, "After the image is uploaded to the FTP server, send a PATCH to the API with the contents of the image properties flags and emulate a \"create\" command.")
-	upload.AddStringFlag("crt-path", "", "", "(Unneeded for IONOS FTP Servers) Path to file containing server certificate. If your FTP server is self-signed, you need to add the server certificate to the list of certificate authorities trusted by the client.")
+
+	upload.AddStringFlag(FlagFtpUser, "", "", "Override username for FTP server")
+	upload.AddStringFlag(FlagFtpPass, "", "", "Override password for FTP server")
+
+	upload.AddStringSliceFlag(cloudapiv6.ArgLocation, cloudapiv6.ArgLocationShort, nil, fmt.Sprintf("Location to upload to. Must be an array containing only fra, fkb, txl, lhr, las, ewr, vit if not using --%s", FlagFtpUrl), core.RequiredFlagOption())
+	upload.AddStringSliceFlag(FlagImage, "i", nil, "Slice of paths to images, can be absolute path or relative to current working directory", core.RequiredFlagOption())
+	upload.AddStringFlag(FlagFtpUrl, "", "ftp-%s.ionos.com", "URL of FTP server, with %s flag if location is embedded into url")
+	upload.AddBoolFlag(FlagSkipVerify, "", false, "Skip verification of server certificate, useful if using a custom ftp-url. WARNING: You can be the target of a man-in-the-middle attack!")
+	upload.AddBoolFlag(FlagSkipUpdate, "", false, "After the image is uploaded to the FTP server, send a PATCH to the API with the contents of the image properties flags and emulate a \"create\" command.")
+	upload.AddStringFlag(FlagCertificatePath, "", "", "(Not needed for IONOS FTP Servers) Path to file containing server certificate. If your FTP server is self-signed, you need to add the server certificate to the list of certificate authorities trusted by the client.")
 	upload.AddStringSliceFlag(cloudapiv6.ArgImageAlias, cloudapiv6.ArgImageAliasShort, nil, "Rename the uploaded images. These names should not contain any extension. By default, this is the base of the image path")
 	upload.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, 300, "(seconds) Context Deadline. FTP connection will time out after this many seconds")
 
