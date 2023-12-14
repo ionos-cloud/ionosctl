@@ -54,7 +54,14 @@ func Get() *core.Command {
 	cmd.AddStringFlag(constants.FlagGroupId, "", "", "ID of the autoscaling group")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return GroupsProperty(func(r vmasc.Group) string {
-			return fmt.Sprintf(*r.Id + "\t" + *r.Properties.Name)
+			completion := *r.Id
+			if r.Properties == nil || r.Properties.Name == nil {
+				return completion
+			}
+			completion += "\t" + *r.Properties.Name
+			return completion
+		}, func(r vmasc.ApiGroupsGetRequest) (vmasc.ApiGroupsGetRequest, error) {
+			return r.Depth(1), nil
 		}), cobra.ShellCompDirectiveNoFileComp
 	})
 
