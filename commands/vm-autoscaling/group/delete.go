@@ -31,7 +31,9 @@ func Delete() *core.Command {
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			if viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)) {
-				return deleteGroups(c, getAllGroupIDs())
+				return deleteGroups(c, GroupsProperty(func(r vmasc.Group) string {
+					return *r.Id
+				}))
 			}
 			id := viper.GetString(core.GetFlagName(c.NS, constants.FlagGroupId))
 			return deleteGroups(c, []string{id})
@@ -56,34 +58,6 @@ func Delete() *core.Command {
 
 	return cmd
 }
-
-func deleteAll(c *core.CommandConfig) error {
-
-	var errs error
-	for _, id := range GroupsProperty(func(r vmasc.Group) string {
-		return *r.Id
-	}) {
-		// find group by ID and ask the user if he is sure he wants to delete it
-		group, _, err := client.Must().VMAscClient.GroupsFindById(context.Background(), id).Execute()
-		if err != nil {
-			return fmt.Errorf("failed retrieving info about group %s: %w", id, err)
-		}
-
-		if !confirm.FAsk(c.Command.Command.InOrStdin(),
-			fmt.Sprintf("Do you really want to delete group %s from %s (%s)", *group.Properties.Name, *group.Properties.Location, *group.Id),
-			viper.GetBool(constants.ArgForce)) {
-			errs = errors.Join(errs, fmt.Errorf("%s for %s", confirm.UserDenied, *group.Id))
-		}
-
-		_, err = client.Must().VMAscClient.GroupsDelete(context.Background(), id).Execute()
-		if err != nil {
-			return fmt.Errorf("failed deleting group %s: %w", id, err)
-		}
-	}
-
-	return nil
-}
-
 func deleteGroups(c *core.CommandConfig, ids []string) error {
 	var errs error
 	for _, id := range ids {
@@ -107,12 +81,6 @@ func deleteGroups(c *core.CommandConfig, ids []string) error {
 
 func shouldDeleteGroup(c *core.CommandConfig, group *vmasc.Group) bool {
 	return confirm.FAsk(c.Command.Command.InOrStdin(),
-		fmt.Sprintf("Do you really want to delete group %s from %s (%s)?", *group.Properties.Name, *group.Properties.Location, *group.Id),
+		fmt.Sprintf("Do you really want to delete group %s from %s (%s)", *group.Properties.Name, *group.Properties.Location, *group.Id),
 		viper.GetBool(constants.ArgForce))
-}
-
-func getAllGroupIDs() []string {
-	return GroupsProperty(func(r vmasc.Group) string {
-		return *r.Id
-	})
 }
