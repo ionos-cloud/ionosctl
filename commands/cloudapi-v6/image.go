@@ -6,6 +6,7 @@ import (
 	"crypto/x509"
 	"errors"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"sort"
@@ -351,7 +352,8 @@ func PreRunImageUpload(c *core.PreCommandConfig) error {
 		},
 	)
 	if len(invalidLocs) > 0 {
-		c.Printer.Verbose("WARN: %s is an invalid location. Valid IONOS locations are: %s", strings.Join(invalidLocs, ","), locs)
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
+			"WARN: %s is an invalid location. Valid IONOS locations are: %s", strings.Join(invalidLocs, ","), locs))
 	}
 
 	aliases := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgImageAlias))
@@ -428,7 +430,8 @@ func RunImageUpload(c *core.CommandConfig) error {
 			if strings.Contains(url, "%s") {
 				url = fmt.Sprintf(url, loc) // Add the location modifier, if the URL supports it
 			}
-			c.Printer.Verbose("Uploading %s to %s", img, url)
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
+				"Uploading %s to %s", img, url))
 
 			var isoOrHdd string
 			if ext := filepath.Ext(img); ext == ".iso" || ext == ".img" {
@@ -450,8 +453,6 @@ func RunImageUpload(c *core.CommandConfig) error {
 			}
 
 			data := bufio.NewReader(file)
-			// Catching error from goroutines. https://stackoverflow.com/questions/62387307/how-to-catch-errors-from-goroutines
-			// Uploads each image to each location.
 			eg.Go(func() error {
 				err := resources.FtpUpload(
 					c.Context,
@@ -482,7 +483,8 @@ func RunImageUpload(c *core.CommandConfig) error {
 	}
 
 	if viper.GetBool(core.GetFlagName(c.NS, FlagSkipUpdate)) {
-		c.Printer.Verbose("Successfully uploaded images")
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
+			"Successfully uploaded images"))
 		return nil
 	}
 
@@ -509,15 +511,23 @@ func RunImageUpload(c *core.CommandConfig) error {
 		return fmt.Errorf("failed updating image with given properties, but uploading to FTP sucessful: %w", err)
 	}
 
-	properties := getDesiredImageAfterPatch(c)
+	properties := getDesiredImageAfterPatch(c, true)
 	imgs, err := updateImagesAfterUpload(c, diffImgs, properties)
 	if err != nil {
 		return fmt.Errorf("failed updating image with given properties, but uploading to FTP sucessful: %w", err)
 	}
 
-	c.Printer.Verbose("Successfully uploaded and updated images")
-	// oh my lord, we need to get rid of the `resources` wrappers...
-	return c.Printer.Print(getImagePrint(nil, c, getImages(resources.Images{Images: ionoscloud.Images{Items: &imgs}})))
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Image, imgs,
+		tabheaders.GetHeaders(allImageCols, defaultImageCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+
+	return nil
 }
 
 // getDiffUploadedImages will keep querying /images endpoint until the images with the given names and locations show up.
@@ -541,13 +551,13 @@ func getDiffUploadedImages(c *core.CommandConfig, names, locations []string) ([]
 			if err != nil {
 				return nil, fmt.Errorf("failed listing images")
 			}
-			c.Printer.Verbose("Got images by listing: %+v", *imgs.Items)
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Got images by listing: %+v", *imgs.Items))
 
 			diffImgs = append(diffImgs, *imgs.Items...)
-			c.Printer.Verbose("Total images: %+v", diffImgs)
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Total images: %+v", diffImgs))
 
 			if len(diffImgs) == len(names)*len(locations) {
-				c.Printer.Verbose("Success! All images found via API: %+v", diffImgs)
+				fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Success! All images found via API: %+v", diffImgs))
 				return diffImgs, nil
 			}
 
@@ -571,7 +581,7 @@ func DeleteAllNonPublicImages(c *core.CommandConfig) error {
 		return errors.New("could not retrieve images")
 	}
 
-	items, err := getNonPublicImages(*allItems, c.Printer)
+	items, err := getNonPublicImages(*allItems, c.Command.Command.ErrOrStderr())
 	if err != nil {
 		return err
 	}
@@ -579,7 +589,7 @@ func DeleteAllNonPublicImages(c *core.CommandConfig) error {
 		return errors.New("no non-public images found")
 	}
 
-	_ = c.Printer.Warn("Images to be deleted:")
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Images to be deleted:"))
 	// TODO: this is duplicated across all resources - refactor this (across all resources)
 	for _, img := range items {
 		delIdAndName := ""
@@ -591,29 +601,35 @@ func DeleteAllNonPublicImages(c *core.CommandConfig) error {
 				delIdAndName += "`, Name: " + *name
 			}
 		}
-		_ = c.Printer.Warn(delIdAndName)
+
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
 
-	if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete all the images"); err != nil {
-		return err
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete all the images", viper.GetBool(constants.ArgForce)) {
+		return fmt.Errorf(confirm.UserDenied)
 	}
-	c.Printer.Verbose("Deleting all the images...")
+
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the images..."))
 
 	var multiErr error
 	for _, img := range items {
 		if id, ok := img.GetIdOk(); ok && id != nil {
-			c.Printer.Verbose("Starting deleting image with id: %v...", *id)
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Starting deleting image with id: %v...", *id))
+
 			resp, err = c.CloudApiV6Services.Images().Delete(*id, resources.QueryParams{})
-			if resp != nil && printer.GetId(resp) != "" {
-				c.Printer.Verbose(constants.MessageRequestInfo, printer.GetId(resp), resp.RequestTime)
+			if resp != nil && request.GetId(resp) != "" {
+				fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
 			}
 			if err != nil {
 				multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
 				continue
 			} else {
-				_ = c.Printer.Warn(fmt.Sprintf(constants.MessageDeletingAll, c.Resource, *id))
+				_ = jsontabwriter.GenerateLogOutput(fmt.Sprintf(constants.MessageDeletingAll, c.Resource, *id))
 			}
-			if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput(constants.MessageDeletingAll, c.Resource, *id))
+
+			if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
 				multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
 				continue
 			}
@@ -627,19 +643,21 @@ func DeleteAllNonPublicImages(c *core.CommandConfig) error {
 
 // Util func - Given a slice of public & non-public images, return only those images that are non-public.
 // If any image in the slice has null properties, or "Properties.Public" field is nil, the image is skipped (and a verbose message is shown)
-func getNonPublicImages(imgs []ionoscloud.Image, printService printer.PrintService) ([]ionoscloud.Image, error) {
+func getNonPublicImages(imgs []ionoscloud.Image, verboseOut io.Writer) ([]ionoscloud.Image, error) {
 	var nonPublicImgs []ionoscloud.Image
 	for _, i := range imgs {
 		properties, ok := i.GetPropertiesOk()
 		if !ok {
-			printService.Verbose("skipping %s: properties are nil\n", *i.GetId())
+			fmt.Fprintf(verboseOut, jsontabwriter.GenerateVerboseOutput("skipping %s: properties are nil\n", *i.GetId()))
 			continue
 		}
+
 		isPublic, ok := properties.GetPublicOk()
 		if !ok {
-			printService.Verbose("skipping %s: field `public` is nil\n", *i.GetId())
+			fmt.Fprintf(verboseOut, jsontabwriter.GenerateVerboseOutput("skipping %s: field `public` is nil\n", *i.GetId()))
 			continue
 		}
+
 		if !*isPublic {
 			nonPublicImgs = append(nonPublicImgs, i)
 		}
