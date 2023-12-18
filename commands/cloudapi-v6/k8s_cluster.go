@@ -24,8 +24,8 @@ import (
 )
 
 var (
-	defaultK8sClusterCols = []string{"ClusterId", "Name", "K8sVersion", "State", "MaintenanceWindow"}
-	allK8sClusterCols     = []string{"ClusterId", "Name", "K8sVersion", "State", "MaintenanceWindow", "AvailableUpgradeVersions", "ViableNodePoolVersions", "S3Bucket", "ApiSubnetAllowList"}
+	defaultK8sClusterCols = []string{"ClusterId", "Name", "K8sVersion", "State", "MaintenanceWindow", "Public"}
+	allK8sClusterCols     = []string{"ClusterId", "Name", "K8sVersion", "State", "MaintenanceWindow", "Public", "Location", "NatGatewayIp", "NodeSubnet", "AvailableUpgradeVersions", "ViableNodePoolVersions", "S3Bucket", "ApiSubnetAllowList"}
 )
 
 func K8sCmd() *core.Command {
@@ -144,7 +144,10 @@ You can wait for the Cluster to be in "ACTIVE" state using ` + "`" + `--wait-for
 
 	create.AddBoolFlag(cloudapiv6.ArgPublic, "", true, "The indicator whether the cluster is public or private")
 	create.AddStringFlag(cloudapiv6.ArgLocation, "", "us/las", "This attribute is mandatory if the cluster is private. The location must be enabled for your contract, or you must have a data center at that location. This property is not adjustable")
-	create.AddStringFlag(cloudapiv6.ArgNatGatewayIp, "", "", "The nat gateway IP of the cluster if the cluster is private. This property is immutable. Must be a reserved IP in the same location as the cluster's location. This attribute is mandatory if the cluster is private")
+	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgLocation, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.LocationIds(), cobra.ShellCompDirectiveNoFileComp
+	})
+	create.AddStringFlag(cloudapiv6.ArgNatGatewayIp, "", "", "A reserved IP in the given location if using a private cluster. This is the nat gateway IP of the cluster if the cluster is private. This property is immutable. Must be a reserved IP in the same location as the cluster's location. This attribute is mandatory if the cluster is private")
 	create.AddStringFlag(constants.FlagNodeSubnet, "", "", "The node subnet of the cluster, if the cluster is private. This property is optional and immutable. Must be a valid CIDR notation for an IPv4 network prefix of 16 bits length")
 
 	/*
@@ -517,8 +520,8 @@ func getNewK8sCluster(c *core.CommandConfig) (*resources.K8sClusterForPost, erro
 		proper.SetLocation(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLocation)))
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgIp)) {
-		proper.SetNatGatewayIp(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgIp)))
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgNatGatewayIp)) {
+		proper.SetNatGatewayIp(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNatGatewayIp)))
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagNodeSubnet)) {
