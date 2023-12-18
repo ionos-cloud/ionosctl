@@ -142,10 +142,10 @@ You can wait for the Cluster to be in "ACTIVE" state using ` + "`" + `--wait-for
 	create.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, cloudapiv6.K8sTimeoutSeconds, "Timeout option for waiting for Cluster/Request [seconds]")
 	create.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultCreateDepth, cloudapiv6.ArgDepthDescription)
 
-	create.AddBoolFlag(cloudapiv6.ArgPublic, "", true, "Private K8s ")
-	create.AddStringFlag(cloudapiv6.ArgLocation, "", "us/las", "Private K8s Location")
-	create.AddStringFlag(cloudapiv6.ArgIp, "", "", "Private K8s IP")
-	create.AddStringFlag(constants.FlagNodeSubnet, "", "", "Private K8s Subnet")
+	create.AddBoolFlag(cloudapiv6.ArgPublic, "", true, "The indicator whether the cluster is public or private")
+	create.AddStringFlag(cloudapiv6.ArgLocation, "", "us/las", "This attribute is mandatory if the cluster is private. The location must be enabled for your contract, or you must have a data center at that location. This property is not adjustable.")
+	create.AddStringFlag(cloudapiv6.ArgNatGatewayIp, "", "", "The nat gateway IP of the cluster if the cluster is private. This property is immutable. Must be a reserved IP in the same location as the cluster's location. This attribute is mandatory if the cluster is private.\",")
+	create.AddStringFlag(constants.FlagNodeSubnet, "", "", "The node subnet of the cluster, if the cluster is private. This property is optional and immutable. Must be a valid CIDR notation for an IPv4 network prefix of 16 bits length.")
 
 	/*
 		Update Command
@@ -190,10 +190,7 @@ Required values to run command:
 	update.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, cloudapiv6.K8sTimeoutSeconds, "Timeout option for waiting for Cluster to be in ACTIVE state after updating [seconds]")
 	update.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultUpdateDepth, cloudapiv6.ArgDepthDescription)
 
-	update.AddBoolFlag(cloudapiv6.ArgPublic, "", true, "Private K8s ")
-	update.AddStringFlag(cloudapiv6.ArgLocation, "", "us/las", "Private K8s Location")
-	update.AddStringFlag(cloudapiv6.ArgIp, "", "", "Private K8s IP")
-	update.AddStringFlag(constants.FlagNodeSubnet, "", "", "Private K8s Subnet")
+	update.AddBoolFlag(cloudapiv6.ArgPublic, "", true, "The indicator whether the cluster is public or private")
 
 	/*
 		Delete Command
@@ -512,23 +509,21 @@ func getNewK8sCluster(c *core.CommandConfig) (*resources.K8sClusterForPost, erro
 			"Property ApiSubnetAllowList set: %v", viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgApiSubnets))))
 	}
 
-	/* Private K8s
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgPublic)) {
 		proper.SetPublic(viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgPublic)))
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgLocation)) {
-		proper.SetLocation(viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgLocation)))
+		proper.SetLocation(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLocation)))
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgIp)) {
-		proper.SetNatGatewayIp(viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgIp)))
+		proper.SetNatGatewayIp(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgIp)))
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagNodeSubnet)) {
-		proper.SetNodeSubnet(viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.FlagNodeSubnet)))
+		proper.SetNodeSubnet(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.FlagNodeSubnet)))
 	}
-	*/
 
 	return &resources.K8sClusterForPost{
 		KubernetesClusterForPost: ionoscloud.KubernetesClusterForPost{
@@ -599,41 +594,6 @@ func getK8sClusterInfo(oldUser *resources.K8sCluster, c *core.CommandConfig) res
 				propertiesUpdated.SetMaintenanceWindow(newMaintenanceWindow.KubernetesMaintenanceWindow)
 			}
 		}
-
-		/* Private K8s
-		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgPublic)) {
-			propertiesUpdated.SetPublic(viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgPublic)))
-		} else {
-			if subnetAllowListOk, ok := properties.GetPublicOk(); ok && subnetAllowListOk != nil {
-				propertiesUpdated.SetPublic(*subnetAllowListOk)
-			}
-		}
-
-		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgLocation)) {
-			propertiesUpdated.SetLocation(viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgLocation)))
-		} else {
-			if subnetAllowListOk, ok := properties.GetLocationOk(); ok && subnetAllowListOk != nil {
-				propertiesUpdated.SetLocation(*subnetAllowListOk)
-			}
-		}
-
-		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgIp)) {
-			propertiesUpdated.SetNatGatewayIp(viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgIp)))
-		} else {
-			if subnetAllowListOk, ok := properties.GetNatGatewayIpOk(); ok && subnetAllowListOk != nil {
-				propertiesUpdated.SetNatGatewayIp(*subnetAllowListOk)
-			}
-		}
-
-		if viper.IsSet(core.GetFlagName(c.NS, constants.FlagNodeSubnet)) {
-			propertiesUpdated.SetNodeSubnet(viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.FlagNodeSubnet)))
-		} else {
-			if subnetAllowListOk, ok := properties.GetNodeSubnetOk(); ok && subnetAllowListOk != nil {
-				propertiesUpdated.SetNodeSubnet(*subnetAllowListOk)
-			}
-		}
-		*/
-
 	}
 
 	return resources.K8sClusterForPut{
