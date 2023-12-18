@@ -41,7 +41,7 @@ Required values to run command:
   -u, --api-url string      Override default host url (default "https://api.ionos.com")
   -i, --cluster-id string   The unique K8s Cluster Id (required)
       --cols strings        Set of columns to be printed on output 
-                            Available columns: [ClusterId Name K8sVersion State MaintenanceWindow AvailableUpgradeVersions ViableNodePoolVersions S3Bucket ApiSubnetAllowList] (default [ClusterId,Name,K8sVersion,State,MaintenanceWindow])
+                            Available columns: [ClusterId Name K8sVersion State MaintenanceWindow Public Location NatGatewayIp NodeSubnet AvailableUpgradeVersions ViableNodePoolVersions S3Bucket ApiSubnetAllowList] (default [ClusterId,Name,K8sVersion,State,MaintenanceWindow,Public])
   -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -D, --depth int32         Controls the detail depth of the response objects. Max depth is 10.
   -f, --force               Force command to execute without user input
