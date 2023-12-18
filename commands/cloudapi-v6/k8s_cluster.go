@@ -143,9 +143,9 @@ You can wait for the Cluster to be in "ACTIVE" state using ` + "`" + `--wait-for
 	create.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultCreateDepth, cloudapiv6.ArgDepthDescription)
 
 	create.AddBoolFlag(cloudapiv6.ArgPublic, "", true, "The indicator whether the cluster is public or private")
-	create.AddStringFlag(cloudapiv6.ArgLocation, "", "us/las", "This attribute is mandatory if the cluster is private. The location must be enabled for your contract, or you must have a data center at that location. This property is not adjustable.")
-	create.AddStringFlag(cloudapiv6.ArgNatGatewayIp, "", "", "The nat gateway IP of the cluster if the cluster is private. This property is immutable. Must be a reserved IP in the same location as the cluster's location. This attribute is mandatory if the cluster is private.\",")
-	create.AddStringFlag(constants.FlagNodeSubnet, "", "", "The node subnet of the cluster, if the cluster is private. This property is optional and immutable. Must be a valid CIDR notation for an IPv4 network prefix of 16 bits length.")
+	create.AddStringFlag(cloudapiv6.ArgLocation, "", "us/las", "This attribute is mandatory if the cluster is private. The location must be enabled for your contract, or you must have a data center at that location. This property is not adjustable")
+	create.AddStringFlag(cloudapiv6.ArgNatGatewayIp, "", "", "The nat gateway IP of the cluster if the cluster is private. This property is immutable. Must be a reserved IP in the same location as the cluster's location. This attribute is mandatory if the cluster is private")
+	create.AddStringFlag(constants.FlagNodeSubnet, "", "", "The node subnet of the cluster, if the cluster is private. This property is optional and immutable. Must be a valid CIDR notation for an IPv4 network prefix of 16 bits length")
 
 	/*
 		Update Command
@@ -522,7 +522,7 @@ func getNewK8sCluster(c *core.CommandConfig) (*resources.K8sClusterForPost, erro
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagNodeSubnet)) {
-		proper.SetNodeSubnet(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.FlagNodeSubnet)))
+		proper.SetNodeSubnet(viper.GetString(core.GetFlagName(c.NS, constants.FlagNodeSubnet)))
 	}
 
 	return &resources.K8sClusterForPost{
