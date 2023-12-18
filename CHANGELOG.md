@@ -1,5 +1,6 @@
 # Changelog
 
+
 ## [v6.7.3] (December 2023)
 
 ## Added
@@ -7,6 +8,12 @@
   - The shell is context-aware and will offer suggestions based on the current command.
   - This shell supports autocompletion for commands, flags, and flag values.
   - User input is currently unsupported, and commands with user input will fail and ask for `--force` to be set.
+
+## Changed
+- Improved help text, error handling & examples for `image upload`
+- Deprecated `--image-alias` in favor of `--rename` for `image upload`
+  - setting `--image-alias` will simply set `--rename`.
+
 
 ## [v6.7.2] (November 2023)
 
