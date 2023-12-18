@@ -22,7 +22,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/request"
 	"github.com/ionos-cloud/ionosctl/v6/internal/waitfor"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/die"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 	"golang.org/x/exp/slices"
 
@@ -47,8 +46,6 @@ var (
 const (
 	FlagRenameImages    = "rename"
 	FlagImage           = "image"
-	FlagFtpUser         = "ftp-user"
-	FlagFtpPass         = "ftp-pass"
 	FlagSkipUpdate      = "skip-update"
 	FlagSkipVerify      = "skip-verify"
 	FlagFtpUrl          = "ftp-url"
@@ -223,7 +220,6 @@ func ImageCmd() *core.Command {
 		ShortDesc: "Upload an image to FTP server using FTP over TLS (FTPS)",
 		LongDesc: fmt.Sprintf(`OVERVIEW:
   Use this command to securely upload one or more HDD or ISO images to the specified FTP server using FTP over TLS (FTPS). This command supports a variety of options to provide flexibility during the upload process:
-  - To override your client's (API) credentials, you can use '--%s' and '--%s', note that if only using only these and not standard auth methods ('ionosctl login'), you may only use this command for FTP uploads.
   - The command supports renaming the uploaded images with the '--%s' flag. If uploading multiple images, you must provide an alias for each image.
   - Specify the context deadline for the FTP connection using the '--%s' flag. The operation as a whole will terminate after the specified number of seconds, i.e. if the FTP upload had finished but your PATCH operation did not, only the PATCH operation will be intrerrupted.
 POST-UPLOAD OPERATIONS:
@@ -237,7 +233,7 @@ CUSTOM URLs:
   - Use the '--%s' flag to skip the verification of the server certificate. This can be useful when using a custom ftp-url,
   but be warned that this could expose you to a man-in-the-middle attack.
   - If you're using a self-signed FTP server, you can provide the path to the server certificate file in base64 PEM format using the '--%s' flag.
-`, FlagFtpUser, FlagFtpPass, cloudapiv6.ArgImageAlias, constants.ArgTimeout, FlagSkipUpdate, cloudapiv6.ArgLocation, FlagFtpUrl, FlagSkipVerify, FlagCertificatePath),
+`, cloudapiv6.ArgImageAlias, constants.ArgTimeout, FlagSkipUpdate, cloudapiv6.ArgLocation, FlagFtpUrl, FlagSkipVerify, FlagCertificatePath),
 		Example: `- 'ionosctl img u -i kolibri.iso -l fkb,fra,vit --skip-update': Simply upload the image 'kolibri.iso' from the current directory to IONOS FTP servers 'ftp://ftp-fkb.ionos.com/iso-images', 'ftp://ftp-fra.ionos.com/iso-images', 'ftp://ftp-vit.ionos.com/iso-images'.
 - 'ionosctl img u -i kolibri.iso -l fra': Upload the image 'kolibri.iso' from the current directory to IONOS FTP server 'ftp://ftp-fra.ionos.com/iso-images'. Once the upload has finished, start querying 'GET /images' with a filter for 'kolibri', to get the UUID of the image as seen by the Images API. When UUID is found, perform a 'PATCH /images/<UUID>' to set the default flag values.
 - 'ionosctl img u -i kolibri.iso --skip-update --skip-verify --ftp-url ftp://12.34.56.78': Use your own custom server. Use skip verify to skip checking server's identity
@@ -247,9 +243,6 @@ CUSTOM URLs:
 		CmdRun:     RunImageUpload,
 		InitClient: true,
 	})
-
-	upload.AddStringFlag(FlagFtpUser, "", "", "Override username for FTP server")
-	upload.AddStringFlag(FlagFtpPass, "", "", "Override password for FTP server")
 
 	upload.AddStringSliceFlag(cloudapiv6.ArgLocation, cloudapiv6.ArgLocationShort, nil, fmt.Sprintf("Location to upload to. Must be an array containing only fra, fkb, txl, lhr, las, ewr, vit if not using --%s", FlagFtpUrl), core.RequiredFlagOption())
 	upload.AddStringSliceFlag(FlagRenameImages, "", nil, "Rename the uploaded images before trying to upload. These names should not contain any extension. By default, this is the base of the image path")
@@ -407,22 +400,6 @@ func RunImageUpload(c *core.CommandConfig) error {
 	aliases := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgImageAlias))
 	locations := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgLocation))
 	skipVerify := viper.GetBool(core.GetFlagName(c.NS, FlagSkipVerify))
-	ftpUser := viper.GetString(core.GetFlagName(c.NS, FlagFtpUser))
-	ftpPass := viper.GetString(core.GetFlagName(c.NS, FlagFtpPass))
-
-	errHandler := func(err error) {
-		errMsg := fmt.Errorf(
-			"failed trying to get client in order to fall back to standard client credentials for FTP server: %w",
-			err,
-		)
-		die.Die(errMsg.Error())
-	}
-	if ftpUser == "" {
-		ftpUser = client.Must(errHandler).CloudClient.GetConfig().Username
-	}
-	if ftpPass == "" {
-		ftpPass = client.Must(errHandler).CloudClient.GetConfig().Password
-	}
 
 	ctx, cancel := context.WithTimeout(c.Context, time.Duration(viper.GetInt(core.GetFlagName(c.NS, constants.ArgTimeout)))*time.Second)
 	defer cancel()
@@ -467,8 +444,8 @@ func RunImageUpload(c *core.CommandConfig) error {
 							Port:              21,
 							SkipVerify:        skipVerify,
 							ServerCertificate: certPool,
-							Username:          ftpUser,
-							Password:          ftpPass,
+							Username:          client.Must().CloudClient.GetConfig().Username,
+							Password:          client.Must().CloudClient.GetConfig().Password,
 						},
 						ImageFileProperties: resources.ImageFileProperties{
 							Path:       serverFilePath,
@@ -487,26 +464,17 @@ func RunImageUpload(c *core.CommandConfig) error {
 		return err
 	}
 
+	// If --skip-update is set, we are done
 	if viper.GetBool(core.GetFlagName(c.NS, FlagSkipUpdate)) {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
 			"Successfully uploaded images"))
 		return nil
 	}
 
-	// End of the ride for those users who used --ftp-user and --ftp-pass, but no valid API credentials
-	client.Must(func(err error) {
-		if err != nil {
-			err = fmt.Errorf("you did not provide valid API credentials and did not use --%s. "+
-				"FTP Upload successful, but cannot query 'GET /images' for your uploaded image: %w", FlagSkipUpdate, err)
-			die.Die("Error: " + err.Error())
-		}
-	})
-
+	// Below, we query that the images have been uploaded, and then PATCH them with the given properties
 	names := images
 	if len(aliases) != 0 {
 		// Returns a slice containing `alias[i] + filepath.Ext(images[i])`
-		// (i.e it gets the extensions from `images` flag, and appends them to each elem `image-alias`)
-		// Resulting slice is the full image names, as returned by `ionosctl image list` on the Name column
 		names = functional.MapIdx(aliases, func(k int, v string) string {
 			return v + filepath.Ext(images[k])
 		})
