@@ -52,6 +52,7 @@ const (
 	ArgPublicShort         = "p"
 	ArgIps                 = "ips"
 	ArgIp                  = "ip"
+	ArgNatGatewayIp        = "nat-gateway-ip"
 	ArgDhcp                = "dhcp"
 	ArgNetwork             = "network"
 	ArgListenerLan         = "listener-lan"

@@ -30,7 +30,7 @@ Use this command to get a list of existing Kubernetes Clusters.
 
 You can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.
 Available Filters:
-* filter by property: [apiSubnetAllowList availableUpgradeVersions k8sVersion maintenanceWindow name viableNodePoolVersions]
+* filter by property: [apiSubnetAllowList availableUpgradeVersions k8sVersion location maintenanceWindow name natGatewayIp nodeSubnet public viableNodePoolVersions]
 * filter by metadata: [createdBy createdByUserId createdDate etag lastModifiedBy lastModifiedByUserId lastModifiedDate state]
 
 ## Options
@@ -38,7 +38,7 @@ Available Filters:
 ```text
   -u, --api-url string      Override default host url (default "https://api.ionos.com")
       --cols strings        Set of columns to be printed on output 
-                            Available columns: [ClusterId Name K8sVersion State MaintenanceWindow AvailableUpgradeVersions ViableNodePoolVersions S3Bucket ApiSubnetAllowList] (default [ClusterId,Name,K8sVersion,State,MaintenanceWindow])
+                            Available columns: [ClusterId Name K8sVersion State MaintenanceWindow Public Location NatGatewayIp NodeSubnet AvailableUpgradeVersions ViableNodePoolVersions S3Bucket ApiSubnetAllowList] (default [ClusterId,Name,K8sVersion,State,MaintenanceWindow,Public,Location])
   -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -D, --depth int32         Controls the detail depth of the response objects. Max depth is 10. (default 1)
   -F, --filters strings     Limits results to those containing a matching value for a specific property. Use the following format to set filters: --filters KEY1=VALUE1,KEY2=VALUE2

@@ -3,6 +3,8 @@
 ## [v6.7.3] (December 2023)
 
 ## Added
+- Added support for private Kubernetes clusters
+  - Use `--public=false` when creating a Kubernetes Cluster to use this feature
 - Added `shell` command for an interactive shell powered by [go-prompt](https://github.com/elk-language/go-prompt) via [comptplus](https://github.com/ionoscloudsdk/comptplus/) offering a new layer of interactivity and ease-of-use.
   - The shell is context-aware and will offer suggestions based on the current command.
   - This shell supports autocompletion for commands, flags, and flag values.

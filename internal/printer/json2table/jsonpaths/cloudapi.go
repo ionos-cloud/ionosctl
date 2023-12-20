@@ -196,6 +196,10 @@ var (
 		"State":                    "metadata.state",
 		"S3Bucket":                 "properties.s3Buckets",
 		"ApiSubnetAllowList":       "properties.apiSubnetAllowList",
+		"Public":                   "properties.public",
+		"Location":                 "properties.location",
+		"NatGatewayIp":             "properties.natGatewayIp",
+		"NodeSubnet":               "properties.nodeSubnet",
 	}
 
 	K8sNode = map[string]string{
