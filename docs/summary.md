@@ -409,6 +409,19 @@
         * [list](subcommands%2FUser-Management%2Fs3key%2Flist.md)
         * [update](subcommands%2FUser-Management%2Fs3key%2Fupdate.md)
     * [update](subcommands%2FUser-Management%2Fupdate.md)
+* VM Autoscaling
+    * action
+        * [get](subcommands%2FVM%20Autoscaling%2Faction%2Fget.md)
+        * [list](subcommands%2FVM%20Autoscaling%2Faction%2Flist.md)
+    * group
+        * [create](subcommands%2FVM%20Autoscaling%2Fgroup%2Fcreate.md)
+        * [delete](subcommands%2FVM%20Autoscaling%2Fgroup%2Fdelete.md)
+        * [get](subcommands%2FVM%20Autoscaling%2Fgroup%2Fget.md)
+        * [list](subcommands%2FVM%20Autoscaling%2Fgroup%2Flist.md)
+        * [put](subcommands%2FVM%20Autoscaling%2Fgroup%2Fput.md)
+    * server
+        * [get](subcommands%2FVM%20Autoscaling%2Fserver%2Fget.md)
+        * [list](subcommands%2FVM%20Autoscaling%2Fserver%2Flist.md)
 
 
 ## Legal
