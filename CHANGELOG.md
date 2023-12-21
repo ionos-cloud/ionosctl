@@ -3,7 +3,7 @@
 
 ## [v6.7.3] (December 2023)
 
-## Added
+### Added
 - Added support for private Kubernetes clusters
   - Use `--public=false` when creating a Kubernetes Cluster to use this feature
 - Added support for VM Autoscaling API
@@ -12,20 +12,20 @@
   - This shell supports autocompletion for commands, flags, and flag values.
   - User input is currently unsupported, and commands with user input will fail and ask for `--force` to be set.
 
-## Changed
+### Changed
 - Improved help text, error handling & examples for `image upload`
 - Deprecated `--image-alias` in favor of `--rename` for `image upload`
   - setting `--image-alias` will simply set `--rename`.
 
 ## [v6.7.2] (November 2023)
 
-## Added
+### Added
 - Added support for Logging Service API
 - Added `--json-properties` and `--json-properties-example` to `k8s nodepool create` which allows creation of nodepools using a JSON file. This is useful for creating nodepools with a large number of properties.
   - `--json-properties` is used to specify the path to the JSON file containing the nodepool properties.
   - `--json-properties-example` is used to generate a JSON file containing all the nodepool properties and their default values. This file can be used as a template for creating nodepools using JSON files.
 
-## Fixed
+### Fixed
 - ionosctl will now exit with code 0 when no resources found for `image list`, `request list`.
 - fix cluster k8sVersion column extraction JSON path by @printminion in #407
 - Fixed `backupunit list` columns
@@ -34,16 +34,16 @@
 
 ## [v6.7.1] (October 2023)
 
-## Added
+### Added
 
 * Added `URN` column in `label` subcommands
 
-## Fixed
+### Fixed
 
 * Fixed `ResourceId` and `ResourceType` columns not being printed in `label` subcommands
 * Fixed `--no-headers` flag value being ignored - now treated as a global flag
 
-## Changed
+### Changed
 
 * Changed how `request targets` are printed for better readability
 * In help text & documentation, `Private Cross Connect` has been renamed to `Cross Connect`, and an alias of `cc` has been added to the `pcc` command
