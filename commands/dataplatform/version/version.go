@@ -62,7 +62,7 @@ func Latest(versions []string) string {
 
 func VersionsE() ([]string, error) {
 	ls, _, err := client.Must().DataplatformClient.DataPlatformMetaDataApi.VersionsGet(context.Background()).Execute()
-	if ls.Items == nil || len(*ls.Items) > 0 {
+	if ls.Items == nil || len(*ls.Items) == 0 {
 		return nil, fmt.Errorf("retrieved no versions")
 	}
 
