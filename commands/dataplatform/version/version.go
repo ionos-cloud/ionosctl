@@ -3,6 +3,7 @@ package version
 import (
 	"context"
 	"sort"
+	"strconv"
 	"strings"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
@@ -30,10 +31,22 @@ func Root() *core.Command {
 func compareVersions(v1, v2 string) bool {
 	parts1 := strings.Split(v1, ".")
 	parts2 := strings.Split(v2, ".")
-	if parts1[0] == parts2[0] {
-		return parts1[1] < parts2[1]
+	for i := 0; i < len(parts1) && i < len(parts2); i++ {
+		num1, err1 := strconv.Atoi(parts1[i])
+		num2, err2 := strconv.Atoi(parts2[i])
+
+		// fall back to string comparison
+		if err1 != nil || err2 != nil {
+			return parts1[i] < parts2[i]
+		}
+
+		if num1 != num2 {
+			return num1 < num2
+		}
 	}
-	return parts1[0] < parts2[0]
+
+	// if all parts equal, the version with fewer parts is considered older
+	return len(parts1) < len(parts2)
 }
 
 func Latest(versions []string) string {
@@ -48,7 +61,13 @@ func Latest(versions []string) string {
 
 func VersionsE() ([]string, error) {
 	ls, _, err := client.Must().DataplatformClient.DataPlatformMetaDataApi.VersionsGet(context.Background()).Execute()
-	return ls, err
+
+	var versions []string
+	if ls.Items != nil && len(*ls.Items) > 0 {
+		versions = *(ls.Items)
+	}
+
+	return versions, err
 }
 
 func Versions() []string {

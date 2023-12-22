@@ -12,7 +12,7 @@ require (
 	github.com/golang/mock v1.6.0
 	github.com/ionos-cloud/sdk-go-auth v1.0.6
 	github.com/ionos-cloud/sdk-go-container-registry v1.0.1
-	github.com/ionos-cloud/sdk-go-dataplatform v1.0.1
+	github.com/ionos-cloud/sdk-go-dataplatform v1.0.2
 	github.com/ionos-cloud/sdk-go-dbaas-mongo v1.3.1
 	github.com/ionos-cloud/sdk-go-dbaas-postgres v1.1.1
 	github.com/ionos-cloud/sdk-go-dns v1.1.1
@@ -36,8 +36,6 @@ require (
 require (
 	github.com/elk-language/go-prompt v1.1.5
 	github.com/ionoscloudsdk/comptplus v1.0.4
-	github.com/ionos-cloud/sdk-go-logging v1.0.1
-	github.com/itchyny/gojq v0.12.13
 )
 
 // `ionosctl shell` requirements
