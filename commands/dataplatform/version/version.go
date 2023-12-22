@@ -2,6 +2,7 @@ package version
 
 import (
 	"context"
+	"fmt"
 	"sort"
 	"strconv"
 	"strings"
@@ -61,13 +62,11 @@ func Latest(versions []string) string {
 
 func VersionsE() ([]string, error) {
 	ls, _, err := client.Must().DataplatformClient.DataPlatformMetaDataApi.VersionsGet(context.Background()).Execute()
-
-	var versions []string
-	if ls.Items != nil && len(*ls.Items) > 0 {
-		versions = *(ls.Items)
+	if ls.Items == nil || len(*ls.Items) > 0 {
+		return nil, fmt.Errorf("retrieved no versions")
 	}
 
-	return versions, err
+	return *(ls.Items), err
 }
 
 func Versions() []string {
