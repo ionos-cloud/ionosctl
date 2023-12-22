@@ -91,7 +91,7 @@ func ClusterCreateCmd() *core.Command {
 		return fake.Names(10), cobra.ShellCompDirectiveNoFileComp
 	})
 	latestVers := version.Latest(version.Versions())
-	cmd.AddStringVarFlag(createProperties.DataPlatformVersion, constants.FlagVersion, "", latestVers, "The version of your cluster")
+	cmd.AddStringVarFlag(createProperties.DataPlatformVersion, constants.FlagVersion, "", latestVers, "The version of your dataplatform cluster")
 	cmd.AddStringVarFlag(createProperties.DatacenterId, constants.FlagDatacenterId, constants.FlagIdShort, "", "The ID of the connected datacenter")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagDatacenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.DataCentersIds(), cobra.ShellCompDirectiveNoFileComp
