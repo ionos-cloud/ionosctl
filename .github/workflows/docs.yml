@@ -15,6 +15,9 @@ jobs:
           fetch-depth: 0
 
       - name: Run make docs
+        env:
+          IONOS_USERNAME: ${{ secrets.IONOS_USERNAME }}
+          IONOS_PASSWORD: ${{ secrets.IONOS_PASSWORD }}
         run: make docs
 
       - name: Check for differences
