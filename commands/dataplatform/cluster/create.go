@@ -57,6 +57,12 @@ func ClusterCreateCmd() *core.Command {
 			maintenanceWindow.SetTime(time)
 			createProperties.SetMaintenanceWindow(maintenanceWindow)
 
+			v := viper.GetString(core.GetFlagName(c.NS, constants.FlagVersion))
+			if v == "latest" {
+				v = version.Latest(version.Versions())
+			}
+			createProperties.SetDataPlatformVersion(v)
+
 			input := sdkdataplatform.CreateClusterRequest{}
 			input.SetProperties(createProperties)
 
@@ -90,8 +96,7 @@ func ClusterCreateCmd() *core.Command {
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagName, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return fake.Names(10), cobra.ShellCompDirectiveNoFileComp
 	})
-	latestVers := version.Latest(version.Versions())
-	cmd.AddStringVarFlag(createProperties.DataPlatformVersion, constants.FlagVersion, "", latestVers, "The version of your dataplatform cluster")
+	cmd.AddStringFlag(constants.FlagVersion, "", "latest", "The version of your dataplatform cluster")
 	cmd.AddStringVarFlag(createProperties.DatacenterId, constants.FlagDatacenterId, constants.FlagIdShort, "", "The ID of the connected datacenter")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagDatacenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.DataCentersIds(), cobra.ShellCompDirectiveNoFileComp
