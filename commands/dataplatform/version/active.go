@@ -13,7 +13,7 @@ func Active() *core.Command {
 		Namespace: "dataplatform",
 		Resource:  "version",
 		Verb:      "active",
-		Aliases:   []string{"latest"},
+		Aliases:   []string{"latest", "last"},
 		ShortDesc: "Returns latest Dataplatform Cluster version, which you can use in cluster creation.",
 		PreCmdRun: core.NoPreRun,
 		CmdRun: func(c *core.CommandConfig) error {
