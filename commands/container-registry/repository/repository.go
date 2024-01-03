@@ -5,8 +5,11 @@ import (
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/registry"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
+	ionoscloud "github.com/ionos-cloud/sdk-go-container-registry"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -60,4 +63,20 @@ func PreCmdDelete(c *core.PreCommandConfig) error {
 	}
 
 	return nil
+}
+
+func RepositoryNames(registryId string) []string {
+	repos, _, err := client.Must().RegistryClient.RepositoriesApi.RegistriesRepositoriesGet(
+		context.Background(),
+		registryId,
+	).Execute()
+	if err != nil {
+		return nil
+	}
+
+	return functional.Map(
+		*repos.Items, func(repo ionoscloud.RepositoryRead) string {
+			return *repo.Properties.Name
+		},
+	)
 }

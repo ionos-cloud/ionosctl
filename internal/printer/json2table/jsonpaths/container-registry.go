@@ -36,4 +36,17 @@ var (
 		"FixableVulnerabilities": "metadata.vulnFixableCount",
 		"URN":                    "metadata.resourceURN",
 	}
+
+	ContainerRegistryVulnerability = map[string]string{
+		"Id":              "id",
+		"Href":            "href",
+		"Score":           "properties.score",
+		"Severity":        "properties.severity",
+		"Fixable":         "properties.fixable",
+		"PublishedAt":     "metadata.publishedAt",
+		"UpdatedAt":       "metadata.updatedAt",
+		"Description":     "properties.description",
+		"Recommendations": "properties.recommendations",
+		"References":      "properties.references",
+	}
 )

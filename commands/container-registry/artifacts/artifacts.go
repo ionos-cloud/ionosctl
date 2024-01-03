@@ -1,7 +1,12 @@
 package artifacts
 
 import (
+	"context"
+
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
+	ionoscloud "github.com/ionos-cloud/sdk-go-container-registry"
 	"github.com/spf13/cobra"
 )
 
@@ -29,4 +34,19 @@ func ArtifactsCmd() *core.Command {
 	cmd.AddCommand(ArtifactsGetCmd())
 
 	return cmd
+}
+
+func ArtifactsIds(registryId string, repositoryName string) []string {
+	artifacts, _, err := client.Must().RegistryClient.ArtifactsApi.RegistriesRepositoriesArtifactsGet(
+		context.Background(), registryId, repositoryName,
+	).Execute()
+	if err != nil {
+		return nil
+	}
+
+	return functional.Map(
+		*artifacts.Items, func(artifact ionoscloud.ArtifactRead) string {
+			return *artifact.Id
+		},
+	)
 }

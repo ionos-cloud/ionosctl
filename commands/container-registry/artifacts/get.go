@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/registry"
+	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/repository"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
@@ -16,7 +17,7 @@ import (
 )
 
 func ArtifactsGetCmd() *core.Command {
-	cmd := core.NewCommand(
+	c := core.NewCommand(
 		context.TODO(), nil, core.CommandBuilder{
 			Namespace:  "container-registry",
 			Resource:   "artifacts",
@@ -30,25 +31,41 @@ func ArtifactsGetCmd() *core.Command {
 		},
 	)
 
-	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, tabheaders.ColsMessage(allCols))
-	_ = cmd.Command.RegisterFlagCompletionFunc(
+	c.Command.Flags().StringSlice(constants.ArgCols, nil, tabheaders.ColsMessage(allCols))
+	_ = c.Command.RegisterFlagCompletionFunc(
 		constants.ArgCols,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 			return allCols, cobra.ShellCompDirectiveNoFileComp
 		},
 	)
 
-	cmd.AddStringFlag("registry-id", "r", "", "Registry ID")
-	_ = cmd.Command.RegisterFlagCompletionFunc(
+	c.AddStringFlag("registry-id", "r", "", "Registry ID")
+	_ = c.Command.RegisterFlagCompletionFunc(
 		"registry-id", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 			return registry.RegsIds(), cobra.ShellCompDirectiveNoFileComp
 		},
 	)
 
-	cmd.AddStringFlag("repository", "", "", "Name of the repository to retrieve artifact from")
-	cmd.AddStringFlag("artifact-id", "", "", "ID/digest of the artifact")
+	c.AddStringFlag("repository", "", "", "Name of the repository to retrieve artifact from")
+	_ = c.Command.RegisterFlagCompletionFunc(
+		"repository", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return repository.RepositoryNames(viper.GetString(core.GetFlagName(c.NS, "registry-id"))),
+				cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 
-	return cmd
+	c.AddStringFlag("artifact-id", "", "", "ID/digest of the artifact")
+	_ = c.Command.RegisterFlagCompletionFunc(
+		"artifact-id", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return ArtifactsIds(
+					viper.GetString(core.GetFlagName(c.NS, "registry-id")),
+					viper.GetString(core.GetFlagName(c.NS, "repository")),
+				),
+				cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+
+	return c
 }
 
 func PreCmdGet(c *core.PreCommandConfig) error {
