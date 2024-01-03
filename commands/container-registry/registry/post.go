@@ -61,6 +61,7 @@ func RegPostCmd() *core.Command {
 		},
 	)
 	cmd.AddStringFlag(FlagRegGCTime, "", "", "Specify the garbage collection schedule time of day using RFC3339 format")
+	cmd.AddBoolFlag(FlagRegVulnScan, "", true, "Enable/disable (?) vulnerability scanning (this is a paid add-on)")
 
 	return cmd
 }
@@ -106,9 +107,14 @@ func CmdPost(c *core.CommandConfig) error {
 		v.SetTime("01:23:00+00:00")
 	}
 
+	feat := sdkgo.NewRegistryFeaturesWithDefaults()
+	featEnabled := viper.GetBool(core.GetFlagName(c.NS, FlagRegVulnScan))
+	feat.SetVulnerabilityScanning(sdkgo.FeatureVulnerabilityScanning{Enabled: &featEnabled})
+
 	regPostProperties.SetName(name)
 	regPostProperties.SetLocation(location)
 	regPostProperties.SetGarbageCollectionSchedule(*v)
+	regPostProperties.SetFeatures(*feat)
 
 	regPostInput := sdkgo.NewPostRegistryInputWithDefaults()
 	regPostInput.SetProperties(regPostProperties)
@@ -123,7 +129,9 @@ func CmdPost(c *core.CommandConfig) error {
 
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.ContainerRegistryRegistry, reg, tabheaders.GetHeaders(allCols, postCols, cols))
+	out, err := jsontabwriter.GenerateOutput(
+		"", jsonpaths.ContainerRegistryRegistry, reg, tabheaders.GetHeaders(allCols, postCols, cols),
+	)
 	if err != nil {
 		return err
 	}
