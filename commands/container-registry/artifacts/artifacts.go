@@ -4,9 +4,10 @@ import (
 	"context"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/internal/completions"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
-	ionoscloud "github.com/ionos-cloud/sdk-go-container-registry"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/spf13/cobra"
 )
 
@@ -44,9 +45,10 @@ func ArtifactsIds(registryId string, repositoryName string) []string {
 		return nil
 	}
 
-	return functional.Map(
-		*artifacts.Items, func(artifact ionoscloud.ArtifactRead) string {
-			return *artifact.Id
-		},
-	)
+	artifactsConverted, err := json2table.ConvertJSONToTable("items", jsonpaths.ContainerRegistryArtifact, artifacts)
+	if err != nil {
+		return nil
+	}
+
+	return completions.NewCompleter(artifactsConverted, "Id").AddInfo("MediaType").ToString()
 }
