@@ -1,13 +1,13 @@
 ---
-description: "Get Properties of a Registry"
+description: "Delete all repository contents."
 ---
 
-# ContainerRegistryRegistryGet
+# ContainerRegistryRepositoryDelete
 
 ## Usage
 
 ```text
-ionosctl container-registry registry get [flags]
+ionosctl container-registry repository delete [flags]
 ```
 
 ## Aliases
@@ -18,41 +18,40 @@ For `container-registry` command:
 [cr contreg cont-reg]
 ```
 
-For `registry` command:
+For `repository` command:
 
 ```text
-[reg registries r]
+[rd del repo rep-del repository-delete]
 ```
 
-For `get` command:
+For `delete` command:
 
 ```text
-[g]
+[d del]
 ```
 
 ## Description
 
-Get Properties of a single Registry
+Delete all repository contents. The registry V2 API allows manifests and blobs to be deleted individually but it is not possible to remove an entire repository. This operation is provided for convenience
 
 ## Options
 
 ```text
   -u, --api-url string       Override default host url (default "https://api.ionos.com")
-      --cols strings         Set of columns to be printed on output 
-                             Available columns: [RegistryId DisplayName Location Hostname VulnerabilityScanning GarbageCollectionDays GarbageCollectionTime]
   -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -f, --force                Force command to execute without user input
   -h, --help                 Print usage
+  -n, --name string          Name of the repository to delete
       --no-headers           Don't print table headers when table output is used
   -o, --output string        Desired output format [text|json|api-json] (default "text")
   -q, --quiet                Quiet output
-  -i, --registry-id string   Registry ID (required)
+  -r, --registry-id string   Registry ID
   -v, --verbose              Print step-by-step process when running command
 ```
 
 ## Examples
 
 ```text
-ionosctl container-registry registry get --id [REGISTRY_ID]
+ionosctl container-registry delete --registry-id [REGISTRY-ID], --name [REPOSITORY-NAME]
 ```
 

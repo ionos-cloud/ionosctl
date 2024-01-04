@@ -1,5 +1,6 @@
 ---
-description: "Delete all repository contents."
+description: "NOTE: This command's behavior will be replaced by `ionosctl container-registry repository delete` in the future. Please use that command instead.
+Delete all repository contents."
 ---
 
 # ContainerRegistryRepository
@@ -8,6 +9,10 @@ description: "Delete all repository contents."
 
 ```text
 ionosctl container-registry repository [flags]
+```
+
+```text
+ionosctl container-registry repository [command]
 ```
 
 ## Aliases
@@ -26,6 +31,7 @@ For `repository` command:
 
 ## Description
 
+NOTE: This command's behavior will be replaced by `ionosctl container-registry repository delete` in the future. Please use that command instead.
 Delete all repository contents. The registry V2 API allows manifests and blobs to be deleted individually but it is not possible to remove an entire repository. This operation is provided for convenience
 
 ## Options
@@ -48,4 +54,12 @@ Delete all repository contents. The registry V2 API allows manifests and blobs t
 ```text
 ionosctl container-registry repository-delete --registry-id [REGISTRY-ID], --name [REPOSITORY-NAME]
 ```
+
+## Related commands
+
+| Command | Description |
+| :--- | :--- |
+| [ionosctl container-registry repository delete](delete.md) | Delete all repository contents. |
+| [ionosctl container-registry repository get](get.md) | Retrieve a repository. |
+| [ionosctl container-registry repository list](list.md) | Retrieve all repositories. |
 
