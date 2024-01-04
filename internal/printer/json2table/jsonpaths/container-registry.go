@@ -49,4 +49,16 @@ var (
 		"Recommendations": "properties.recommendations",
 		"References":      "properties.references",
 	}
+
+	ContainerRegistryRepository = map[string]string{
+		"Id":            "id",
+		"Name":          "properties.name",
+		"ArtifactCount": "metadata.artifactCount",
+		"PullCount":     "metadata.pullCount",
+		"PushCount":     "metadata.pushCount",
+		"LastPushedAt":  "metadata.lastPushedAt",
+		"LastPulledAt":  "metadata.lastPulledAt",
+		"URN":           "metadata.resourceURN",
+		"LastSeverity":  "metadata.lastSeverity",
+	}
 )

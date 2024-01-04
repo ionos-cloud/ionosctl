@@ -152,12 +152,15 @@ func buildListRequest(
 	}
 
 	if queryParams.Filters != nil {
-		req = req.FilterSeverity((*queryParams.Filters)["severity"][0])
+		severity, ok := (*queryParams.Filters)["severity"]
+		if ok {
+			req = req.FilterSeverity(severity[0])
+		}
 
-		fixable := (*queryParams.Filters)["fixable"][0]
-		if fixable == "true" {
+		fixable, ok := (*queryParams.Filters)["fixable"]
+		if ok && fixable[0] == "true" {
 			req = req.FilterFixable(true)
-		} else if fixable == "false" {
+		} else if ok && fixable[0] == "false" {
 			req = req.FilterFixable(false)
 		}
 	}

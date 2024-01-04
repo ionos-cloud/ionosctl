@@ -156,7 +156,10 @@ func buildListAllRequest(
 	}
 
 	if queryParams.Filters != nil {
-		req = req.FilterVulnerabilityId((*queryParams.Filters)["vulnerabilityId"][0])
+		vulnId, ok := (*queryParams.Filters)["vulnerabilityId"]
+		if ok {
+			req = req.FilterVulnerabilityId(vulnId[0])
+		}
 	}
 
 	return req
