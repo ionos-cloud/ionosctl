@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/fatih/structs"
+	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/artifacts"
 	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/registry"
 	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/repository"
@@ -13,6 +15,9 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/resource2table"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
+	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
+	ionoscloud "github.com/ionos-cloud/sdk-go-container-registry"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -66,11 +71,26 @@ func VulnerabilitiesListCmd() *core.Command {
 		},
 	)
 
+	c.AddSetFlag(
+		cloudapiv6.ArgOrderBy, "", "-score", []string{
+			"-score", "-severity", "-publishedAt", "-updatedAt", "-fixable", "score",
+			"severity", "publishedAt", "updatedAt", "fixable",
+		}, cloudapiv6.ArgOrderByDescription,
+	)
+	c.AddStringSliceFlag(
+		cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, cloudapiv6.ArgFiltersDescription,
+	)
+	c.AddInt32Flag(constants.FlagMaxResults, constants.FlagMaxResultsShort, 100, "Maximum number of results to display")
+
 	return c
 }
 
 func PreCmdList(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.Command, c.NS, "registry-id", "repository", "artifact-id")
+	if err := core.CheckRequiredFlags(c.Command, c.NS, "registry-id", "repository", "artifact-id"); err != nil {
+		return err
+	}
+
+	return query.ValidateFilters(c, []string{"severity", "fixable"}, "Filters available: severity, fixable")
 }
 
 func CmdList(c *core.CommandConfig) error {
@@ -79,10 +99,12 @@ func CmdList(c *core.CommandConfig) error {
 	repository := viper.GetString(core.GetFlagName(c.NS, "repository"))
 	artifactId := viper.GetString(core.GetFlagName(c.NS, "artifact-id"))
 
-	vulnerabilities, _, err := client.Must().RegistryClient.ArtifactsApi.
-		RegistriesRepositoriesArtifactsVulnerabilitiesGet(
-			context.Background(), registryId, repository, artifactId,
-		).Execute()
+	queryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+
+	vulnerabilities, _, err := buildListRequest(registryId, repository, artifactId, queryParams).Execute()
 	if err != nil {
 		return err
 	}
@@ -105,4 +127,40 @@ func CmdList(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
 
 	return nil
+}
+
+func buildListRequest(
+	registryId string, repository string, artifactId string, queryParams resources.ListQueryParams,
+) ionoscloud.ApiRegistriesRepositoriesArtifactsVulnerabilitiesGetRequest {
+	if structs.IsZero(queryParams) {
+		return client.Must().RegistryClient.ArtifactsApi.
+			RegistriesRepositoriesArtifactsVulnerabilitiesGet(
+				context.Background(), registryId, repository, artifactId,
+			)
+	}
+
+	req := client.Must().RegistryClient.ArtifactsApi.RegistriesRepositoriesArtifactsVulnerabilitiesGet(
+		context.Background(), registryId, repository, artifactId,
+	)
+
+	if queryParams.OrderBy != nil {
+		req = req.OrderBy(*queryParams.OrderBy)
+	}
+
+	if queryParams.MaxResults != nil {
+		req = req.Limit(*queryParams.MaxResults)
+	}
+
+	if queryParams.Filters != nil {
+		req = req.FilterSeverity((*queryParams.Filters)["severity"][0])
+
+		fixable := (*queryParams.Filters)["fixable"][0]
+		if fixable == "true" {
+			req = req.FilterFixable(true)
+		} else if fixable == "false" {
+			req = req.FilterFixable(false)
+		}
+	}
+
+	return req
 }

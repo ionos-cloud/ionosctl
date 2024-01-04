@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/fatih/structs"
+	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/registry"
 	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/repository"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
@@ -12,6 +14,9 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
+	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
+	ionoscloud "github.com/ionos-cloud/sdk-go-container-registry"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -56,15 +61,38 @@ func ArtifactsListCmd() *core.Command {
 	)
 
 	c.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "List all artifacts in the registry")
+	c.AddSetFlag(
+		cloudapiv6.ArgOrderBy, "", "-pullcount", []string{
+			"-pullcount", "-pushcount", "-lastPush",
+			"-lastPull", "-lastScan", "-vulnTotalCount", "-vulnFixableCount", "pullCount", "pushCount", "lastPush",
+			"lastPull", "lastScan", "vulnTotalCount", "vulnFixableCount",
+		}, cloudapiv6.ArgOrderByDescription,
+	)
+	c.AddStringSliceFlag(
+		cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, cloudapiv6.ArgFiltersDescription,
+	)
+	c.AddInt32Flag(constants.FlagMaxResults, constants.FlagMaxResultsShort, 100, "Maximum number of results to display")
 
 	return c
 }
 
 func PreCmdList(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlagsSets(
+	if err := core.CheckRequiredFlagsSets(
 		c.Command, c.NS, []string{"registry-id", "repository"},
 		[]string{"registry-id", constants.ArgAll},
-	)
+	); err != nil {
+		return err
+	}
+
+	if !viper.IsSet(core.GetFlagName(c.NS, constants.ArgAll)) && viper.IsSet(
+		core.GetFlagName(
+			c.NS, cloudapiv6.ArgFilters,
+		),
+	) {
+		return fmt.Errorf("flag --%s can only be used with --%s", cloudapiv6.ArgFilters, constants.ArgAll)
+	}
+
+	return query.ValidateFilters(c, []string{"vulnerabilityId"}, "Filters available: vulnerabilityId")
 }
 
 func CmdList(c *core.CommandConfig) error {
@@ -74,9 +102,14 @@ func CmdList(c *core.CommandConfig) error {
 
 	var arts interface{}
 	var err error
+
+	queryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+
 	if viper.IsSet(core.GetFlagName(c.NS, constants.ArgAll)) {
-		fmt.Println("Listing all artifacts in registry")
-		arts, _, err = client.Must().RegistryClient.ArtifactsApi.RegistriesArtifactsGet(c.Context, regId).Execute()
+		arts, _, err = buildListAllRequest(regId, queryParams).Execute()
 		if err != nil {
 			return err
 		}
@@ -85,9 +118,7 @@ func CmdList(c *core.CommandConfig) error {
 	} else {
 		repo := viper.GetString(core.GetFlagName(c.NS, "repository"))
 
-		arts, _, err = client.Must().RegistryClient.ArtifactsApi.RegistriesRepositoriesArtifactsGet(
-			c.Context, regId, repo,
-		).Execute()
+		arts, _, err = buildListRequest(regId, repo, queryParams).Execute()
 		if err != nil {
 			return err
 		}
@@ -103,4 +134,54 @@ func CmdList(c *core.CommandConfig) error {
 
 	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
 	return nil
+}
+
+func buildListAllRequest(
+	regId string, queryParams resources.ListQueryParams,
+) ionoscloud.ApiRegistriesArtifactsGetRequest {
+	if structs.IsZero(queryParams) {
+		return client.Must().RegistryClient.ArtifactsApi.RegistriesArtifactsGet(
+			context.Background(), regId,
+		)
+	}
+
+	req := client.Must().RegistryClient.ArtifactsApi.RegistriesArtifactsGet(context.Background(), regId)
+
+	if queryParams.OrderBy != nil {
+		req = req.OrderBy(*queryParams.OrderBy)
+	}
+
+	if queryParams.MaxResults != nil {
+		req = req.Limit(*queryParams.MaxResults)
+	}
+
+	if queryParams.Filters != nil {
+		req = req.FilterVulnerabilityId((*queryParams.Filters)["vulnerabilityId"][0])
+	}
+
+	return req
+}
+
+func buildListRequest(
+	regId string, repo string, queryParams resources.ListQueryParams,
+) ionoscloud.ApiRegistriesRepositoriesArtifactsGetRequest {
+	if structs.IsZero(queryParams) {
+		return client.Must().RegistryClient.ArtifactsApi.RegistriesRepositoriesArtifactsGet(
+			context.Background(), regId, repo,
+		)
+	}
+
+	req := client.Must().RegistryClient.ArtifactsApi.RegistriesRepositoriesArtifactsGet(
+		context.Background(), regId, repo,
+	)
+
+	if queryParams.OrderBy != nil {
+		req = req.OrderBy(*queryParams.OrderBy)
+	}
+
+	if queryParams.MaxResults != nil {
+		req = req.Limit(*queryParams.MaxResults)
+	}
+
+	return req
 }
