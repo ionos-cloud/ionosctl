@@ -41,7 +41,7 @@ Required values to run command:
   -u, --api-url string            Override default host url (default "https://api.ionos.com")
   -i, --cluster-id string         The unique K8s Cluster Id (required)
       --cols strings              Set of columns to be printed on output 
-                                  Available columns: [ClusterId Name K8sVersion State MaintenanceWindow AvailableUpgradeVersions ViableNodePoolVersions S3Bucket ApiSubnetAllowList] (default [ClusterId,Name,K8sVersion,State,MaintenanceWindow])
+                                  Available columns: [ClusterId Name K8sVersion State MaintenanceWindow Public Location NatGatewayIp NodeSubnet AvailableUpgradeVersions ViableNodePoolVersions S3Bucket ApiSubnetAllowList] (default [ClusterId,Name,K8sVersion,State,MaintenanceWindow,Public,Location])
   -c, --config string             Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -D, --depth int32               Controls the detail depth of the response objects. Max depth is 10.
   -f, --force                     Force command to execute without user input
@@ -52,6 +52,7 @@ Required values to run command:
   -n, --name string               The name for the K8s Cluster
       --no-headers                Don't print table headers when table output is used
   -o, --output string             Desired output format [text|json|api-json] (default "text")
+      --public                    The indicator whether the cluster is public or private (default true)
   -q, --quiet                     Quiet output
       --s3bucket string           S3 Bucket name configured for K8s usage. It will overwrite the previous value
   -t, --timeout int               Timeout option for waiting for Cluster to be in ACTIVE state after updating [seconds] (default 600)

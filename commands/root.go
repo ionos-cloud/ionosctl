@@ -6,19 +6,19 @@ import (
 	"strings"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cfg"
-
-	container_registry "github.com/ionos-cloud/ionosctl/v6/commands/container-registry"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dns"
-	logging_service "github.com/ionos-cloud/ionosctl/v6/commands/logging-service"
-	"github.com/ionos-cloud/ionosctl/v6/internal/config"
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
+	vm_autoscaling "github.com/ionos-cloud/ionosctl/v6/commands/vm-autoscaling"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 
 	certificates "github.com/ionos-cloud/ionosctl/v6/commands/certmanager"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
+	container_registry "github.com/ionos-cloud/ionosctl/v6/commands/container-registry"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dataplatform"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas"
+	logging_service "github.com/ionos-cloud/ionosctl/v6/commands/logging-service"
 	"github.com/ionos-cloud/ionosctl/v6/commands/token"
+	"github.com/ionos-cloud/ionosctl/v6/internal/config"
+	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
@@ -221,12 +221,14 @@ func addCommands() {
 	rootCmd.AddCommand(dbaas.DataBaseServiceCmd())
 	// Add Certificate Manager Commands
 	rootCmd.AddCommand(certificates.CertCmd())
-	// dp commands
+	// Dataplatform commands
 	rootCmd.AddCommand(dataplatform.DataplatformCmd())
 	// Add Container Registry Commands
 	rootCmd.AddCommand(container_registry.ContainerRegistryCmd())
-	// DNS
+	// VM-Autoscaling commands
+	rootCmd.AddCommand(vm_autoscaling.Root())
 
+	// DNS ---
 	funcChangeDefaultApiUrl := func(command *core.Command, newDefault string) *core.Command {
 		// For some reason, this line only changes the help text
 		command.Command.PersistentFlags().StringP(

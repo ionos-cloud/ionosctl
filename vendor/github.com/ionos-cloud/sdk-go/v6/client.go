@@ -22,7 +22,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"mime/multipart"
 	"net"
 	"net/http"
@@ -53,7 +52,7 @@ const (
 	RequestStatusFailed  = "FAILED"
 	RequestStatusDone    = "DONE"
 
-	Version = "6.1.8"
+	Version = "6.1.11"
 )
 
 // Constants for APIs
@@ -444,6 +443,15 @@ func (c *APIClient) prepareRequest(
 
 	var body *bytes.Buffer
 
+	val, isSetInEnv := os.LookupEnv(IonosContractNumber)
+	_, isSetInMap := headerParams["X-Contract-Number"]
+	if headerParams == nil {
+		headerParams = make(map[string]string)
+	}
+	if !isSetInMap && isSetInEnv {
+		headerParams["X-Contract-Number"] = val
+	}
+
 	// Detect postBody type and post.
 	if postBody != nil {
 		contentType := headerParams["Content-Type"]
@@ -650,7 +658,7 @@ func (c *APIClient) GetRequestStatus(ctx context.Context, path string) (*Request
 	var responseBody = make([]byte, 0)
 	if resp != nil {
 		var errRead error
-		responseBody, errRead = ioutil.ReadAll(resp.Body)
+		responseBody, errRead = io.ReadAll(resp.Body)
 		_ = resp.Body.Close()
 		if errRead != nil {
 			return nil, nil, errRead
@@ -920,7 +928,7 @@ func (c *APIClient) WaitForRequest(ctx context.Context, path string) (*APIRespon
 		var localVarBody = make([]byte, 0)
 		if resp != nil {
 			var errRead error
-			localVarBody, errRead = ioutil.ReadAll(resp.Body)
+			localVarBody, errRead = io.ReadAll(resp.Body)
 			_ = resp.Body.Close()
 			if errRead != nil {
 				return nil, errRead
@@ -949,7 +957,8 @@ func (c *APIClient) WaitForRequest(ctx context.Context, path string) (*APIRespon
 		}
 
 		if resp.StatusCode != http.StatusOK {
-			return localVarAPIResponse, fmt.Errorf("WaitForRequest failed; received status code %d from API", resp.StatusCode)
+			msg := fmt.Sprintf("WaitForRequest failed; received status code %d from API", resp.StatusCode)
+			return localVarAPIResponse, NewGenericOpenAPIError(msg, localVarBody, nil, resp.StatusCode)
 		}
 		if status.Metadata != nil && status.Metadata.Status != nil {
 			switch *status.Metadata.Status {
@@ -964,9 +973,7 @@ func (c *APIClient) WaitForRequest(ctx context.Context, path string) (*APIRespon
 				if status.Metadata.Message != nil {
 					message = *status.Metadata.Message
 				}
-				return localVarAPIResponse, errors.New(
-					fmt.Sprintf("Request %s failed: %s", id, message),
-				)
+				return localVarAPIResponse, fmt.Errorf("Request %s failed: %s", id, message)
 			}
 		}
 		select {
@@ -1106,7 +1113,7 @@ func strlen(s string) int {
 	return utf8.RuneCountInString(s)
 }
 
-// GenericOpenAPIError Provides access to the body, error and model on returned errors.
+// GenericOpenAPIError provides access to the body, error and model on returned errors.
 type GenericOpenAPIError struct {
 	statusCode int
 	body       []byte

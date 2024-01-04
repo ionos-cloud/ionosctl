@@ -44,6 +44,7 @@ Within each layer, a token takes precedence over a username and password combina
 	FlagClusterId        = "cluster-id"
 	FlagNodepoolId       = "nodepool-id"
 	FlagNodeCount        = "node-count"
+	FlagNodeSubnet       = "node-subnet"
 	FlagLabels           = "labels"
 	FlagLabelsShort      = "L"
 	FlagAnnotations      = "annotations"
@@ -70,6 +71,10 @@ Within each layer, a token takes precedence over a username and password combina
 	FlagLoggingPipelineLogLabels        = "log-labels"
 	FlagLoggingPipelineLogType          = "log-type"
 	FlagLoggingPipelineLogRetentionTime = "log-retention-time"
+
+	FlagGroupId  = "group-id"
+	FlagServerId = "server-id"
+	FlagActionId = "action-id"
 )
 
 // Flag descriptions. Prefixed with "Desc" for easy find and replace

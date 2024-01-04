@@ -2,6 +2,9 @@ package core
 
 import (
 	"fmt"
+
+	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
+	"github.com/spf13/viper"
 )
 
 // CommandBuilder contains information about
@@ -37,4 +40,18 @@ type CommandBuilder struct {
 
 func (c *CommandBuilder) GetNS() string {
 	return fmt.Sprintf("%s.%s.%s", c.Namespace, c.Resource, c.Verb)
+}
+
+// PreRunWithDeprecatedFlags is a decorator for using a command with deprecated flags
+// The value of the first flag in the Tuple is set as the value of the second flag of the Tuple
+func PreRunWithDeprecatedFlags(f PreCommandRun, flags ...functional.Tuple[string]) PreCommandRun {
+	return func(c *PreCommandConfig) error {
+		for _, f := range flags {
+			if fn := GetFlagName(c.NS, f.First); viper.IsSet(fn) {
+				val := viper.Get(fn)
+				viper.Set(GetFlagName(c.NS, f.Second), val)
+			}
+		}
+		return f(c)
+	}
 }
