@@ -21,7 +21,7 @@ func VulnerabilitiesGetCmd() *core.Command {
 			Resource:   "vulnerabilities",
 			Verb:       "get",
 			ShortDesc:  "Retrieve a vulnerability",
-			LongDesc:   "Retrieve an vulnerability",
+			LongDesc:   "Retrieve a vulnerability",
 			Example:    "ionosctl container-registry vulnerabilities get",
 			PreCmdRun:  PreCmdGet,
 			CmdRun:     CmdGet,

@@ -26,7 +26,7 @@ For `vulnerabilities` command:
 
 ## Description
 
-Retrieve an vulnerability
+Retrieve a vulnerability
 
 ## Options
 
@@ -41,7 +41,7 @@ Retrieve an vulnerability
   -o, --output string             Desired output format [text|json|api-json] (default "text")
   -q, --quiet                     Quiet output
   -v, --verbose                   Print step-by-step process when running command
-  -r, --vulnerability-id string   Vulnerability ID
+      --vulnerability-id string   Vulnerability ID
 ```
 
 ## Examples
