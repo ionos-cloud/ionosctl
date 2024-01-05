@@ -1,6 +1,14 @@
 # Changelog
 
 
+## [v6.7.4] (TBD)
+
+### Added
+- Added support for Container-Registry Vulnerabilities
+  - New `--vulnerability-scanning` flag added to `registry create` and `registry update` commands 
+  - New `artifacts` and `vulnerabilities` commands under `container-registry`
+  - `repository` command functionality will eventually be moved to `repository delete`. For the time being, both commands are available.
+
 ## [v6.7.3] (December 2023)
 
 ### Added
