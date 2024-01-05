@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/registry"
+	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/spf13/cobra"
@@ -30,10 +31,11 @@ func RepositoryDeleteCmd() *core.Command {
 		},
 	)
 
-	cmd.AddStringFlag("name", "n", "", "Name of the repository to delete")
-	cmd.AddStringFlag("registry-id", "r", "", "Registry ID")
+	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Name of the repository to delete")
+	cmd.AddStringFlag(constants.FlagRegistryId, constants.FlagRegistryIdShort, "", "Registry ID")
 	_ = cmd.Command.RegisterFlagCompletionFunc(
-		"registry-id", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		constants.FlagRegistryId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 			return registry.RegsIds(), cobra.ShellCompDirectiveNoFileComp
 		},
 	)
@@ -42,8 +44,8 @@ func RepositoryDeleteCmd() *core.Command {
 }
 
 func CmdDelete(c *core.CommandConfig) error {
-	regId := viper.GetString("registry-id")
-	repoName := viper.GetString("name")
+	regId := viper.GetString(core.GetFlagName(c.NS, constants.FlagRegistryId))
+	repoName := viper.GetString(core.GetFlagName(c.NS, constants.FlagName))
 
 	res, _ := c.ContainerRegistryServices.Repository().Delete(regId, repoName)
 	if res.StatusCode == 204 {
@@ -56,7 +58,7 @@ func CmdDelete(c *core.CommandConfig) error {
 }
 
 func PreCmdDelete(c *core.PreCommandConfig) error {
-	err := core.CheckRequiredFlags(c.Command, c.NS, "name", "registry-id")
+	err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagName, constants.FlagRegistryId)
 	if err != nil {
 		return err
 	}

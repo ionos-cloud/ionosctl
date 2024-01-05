@@ -45,9 +45,10 @@ func VulnerabilitiesListCmd() *core.Command {
 		},
 	)
 
-	c.AddStringFlag("registry-id", "r", "", "Registry ID")
+	c.AddStringFlag(constants.FlagRegistryId, constants.FlagRegistryIdShort, "", "Registry ID")
 	_ = c.Command.RegisterFlagCompletionFunc(
-		"registry-id", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		constants.FlagRegistryId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 			return registry.RegsIds(), cobra.ShellCompDirectiveNoFileComp
 		},
 	)
@@ -55,16 +56,17 @@ func VulnerabilitiesListCmd() *core.Command {
 	c.AddStringFlag("repository", "", "", "Name of the repository to retrieve artifact from")
 	_ = c.Command.RegisterFlagCompletionFunc(
 		"repository", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-			return repository.RepositoryNames(viper.GetString(core.GetFlagName(c.NS, "registry-id"))),
+			return repository.RepositoryNames(viper.GetString(core.GetFlagName(c.NS, constants.FlagRegistryId))),
 				cobra.ShellCompDirectiveNoFileComp
 		},
 	)
 
-	c.AddStringFlag("artifact-id", "", "", "ID/digest of the artifact")
+	c.AddStringFlag(constants.FlagArtifactId, "", "", "ID/digest of the artifact")
 	_ = c.Command.RegisterFlagCompletionFunc(
-		"artifact-id", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		constants.FlagArtifactId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 			return artifacts.ArtifactsIds(
-					viper.GetString(core.GetFlagName(c.NS, "registry-id")),
+					viper.GetString(core.GetFlagName(c.NS, constants.FlagRegistryId)),
 					viper.GetString(core.GetFlagName(c.NS, "repository")),
 				),
 				cobra.ShellCompDirectiveNoFileComp
@@ -86,7 +88,9 @@ func VulnerabilitiesListCmd() *core.Command {
 }
 
 func PreCmdList(c *core.PreCommandConfig) error {
-	if err := core.CheckRequiredFlags(c.Command, c.NS, "registry-id", "repository", "artifact-id"); err != nil {
+	if err := core.CheckRequiredFlags(
+		c.Command, c.NS, constants.FlagRegistryId, "repository", constants.FlagArtifactId,
+	); err != nil {
 		return err
 	}
 
@@ -95,9 +99,9 @@ func PreCmdList(c *core.PreCommandConfig) error {
 
 func CmdList(c *core.CommandConfig) error {
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	registryId := viper.GetString(core.GetFlagName(c.NS, "registry-id"))
+	registryId := viper.GetString(core.GetFlagName(c.NS, constants.FlagRegistryId))
 	repository := viper.GetString(core.GetFlagName(c.NS, "repository"))
-	artifactId := viper.GetString(core.GetFlagName(c.NS, "artifact-id"))
+	artifactId := viper.GetString(core.GetFlagName(c.NS, constants.FlagArtifactId))
 
 	queryParams, err := query.GetListQueryParams(c)
 	if err != nil {

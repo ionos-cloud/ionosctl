@@ -43,9 +43,10 @@ func RepositoryListCmd() *core.Command {
 		},
 	)
 
-	c.AddStringFlag("registry-id", "r", "", "Registry ID")
+	c.AddStringFlag(constants.FlagRegistryId, constants.FlagRegistryIdShort, "", "Registry ID")
 	_ = c.Command.RegisterFlagCompletionFunc(
-		"registry-id", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		constants.FlagRegistryId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 			return registry.RegsIds(), cobra.ShellCompDirectiveNoFileComp
 		},
 	)
@@ -65,7 +66,7 @@ func RepositoryListCmd() *core.Command {
 }
 
 func PreCmdList(c *core.PreCommandConfig) error {
-	if err := core.CheckRequiredFlags(c.Command, c.NS, "registry-id"); err != nil {
+	if err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagRegistryId); err != nil {
 		return err
 	}
 
@@ -76,7 +77,7 @@ func PreCmdList(c *core.PreCommandConfig) error {
 
 func CmdList(c *core.CommandConfig) error {
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	regId := viper.GetString(core.GetFlagName(c.NS, "registry-id"))
+	regId := viper.GetString(core.GetFlagName(c.NS, constants.FlagRegistryId))
 
 	queryParams, err := query.GetListQueryParams(c)
 	if err != nil {

@@ -37,18 +37,18 @@ func VulnerabilitiesGetCmd() *core.Command {
 		},
 	)
 
-	cmd.AddStringFlag("vulnerability-id", "r", "", "Vulnerability ID")
+	cmd.AddStringFlag(constants.FlagVulnerabilityId, "", "", "Vulnerability ID")
 
 	return cmd
 }
 
 func PreCmdGet(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.Command, c.NS, "vulnerability-id")
+	return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagVulnerabilityId)
 }
 
 func CmdGet(c *core.CommandConfig) error {
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	vulnId := viper.GetString(core.GetFlagName(c.NS, "vulnerability-id"))
+	vulnId := viper.GetString(core.GetFlagName(c.NS, constants.FlagVulnerabilityId))
 
 	vulnerability, _, err := client.Must().RegistryClient.VulnerabilitiesApi.VulnerabilitiesFindByID(
 		context.

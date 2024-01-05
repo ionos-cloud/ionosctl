@@ -30,17 +30,25 @@ func TokenDeleteCmd() *core.Command {
 	)
 
 	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Delete all tokens from all registries")
-	cmd.AddStringFlag(FlagRegId, "r", "", "Registry ID")
+	cmd.AddStringFlag(constants.FlagRegistryId, constants.FlagRegistryIdShort, "", "Registry ID")
 	_ = cmd.Command.RegisterFlagCompletionFunc(
-		FlagRegId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		constants.FlagRegistryId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 			return registry.RegsIds(), cobra.ShellCompDirectiveNoFileComp
 		},
 	)
 	cmd.AddBoolFlag(FlagAllTokens, "", false, "Delete all tokens from a registry")
 	cmd.AddStringFlag(FlagTokenId, "t", "", "Token ID")
 	_ = cmd.Command.RegisterFlagCompletionFunc(
-		FlagTokenId, func(cobracmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-			return TokensIds(viper.GetString(core.GetFlagName(cmd.NS, FlagRegId))), cobra.ShellCompDirectiveNoFileComp
+		FlagTokenId,
+		func(cobracmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return TokensIds(
+				viper.GetString(
+					core.GetFlagName(
+						cmd.NS, constants.FlagRegistryId,
+					),
+				),
+			), cobra.ShellCompDirectiveNoFileComp
 		},
 	)
 
@@ -58,7 +66,7 @@ func CmdDeleteToken(c *core.CommandConfig) error {
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll))
 
 	if !allFlag {
-		regId := viper.GetString(core.GetFlagName(c.NS, FlagRegId))
+		regId := viper.GetString(core.GetFlagName(c.NS, constants.FlagRegistryId))
 		allTokensFlag := viper.GetBool(core.GetFlagName(c.NS, FlagAllTokens))
 
 		if !allTokensFlag {
@@ -133,8 +141,8 @@ func CmdDeleteToken(c *core.CommandConfig) error {
 func PreCmdDeleteToken(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlagsSets(
 		c.Command, c.NS,
-		[]string{FlagRegId, FlagTokenId},
-		[]string{FlagRegId, FlagAllTokens},
+		[]string{constants.FlagRegistryId, FlagTokenId},
+		[]string{constants.FlagRegistryId, FlagAllTokens},
 		[]string{constants.ArgAll},
 	)
 }

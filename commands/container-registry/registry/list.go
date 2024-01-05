@@ -29,7 +29,8 @@ func RegListCmd() *core.Command {
 		},
 	)
 
-	cmd.AddStringFlag(FlagName, "n", "",
+	cmd.AddStringFlag(
+		constants.FlagName, constants.FlagNameShort, "",
 		"Response filter to list only the Registries that contain the specified name in the DisplayName field. The value is case insensitive",
 	)
 
@@ -44,19 +45,30 @@ func RegListCmd() *core.Command {
 }
 
 func CmdList(c *core.CommandConfig) error {
-	if viper.IsSet(core.GetFlagName(c.NS, FlagName)) {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
-			"Filtering after Registry Name: %v", viper.GetString(core.GetFlagName(c.NS, "name"))))
+	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagName)) {
+		fmt.Fprintf(
+			c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
+				"Filtering after Registry Name: %v", viper.GetString(core.GetFlagName(c.NS, constants.FlagName)),
+			),
+		)
 	}
 
-	regs, _, err := c.ContainerRegistryServices.Registry().List(viper.GetString(core.GetFlagName(c.NS, "name")))
+	regs, _, err := c.ContainerRegistryServices.Registry().List(
+		viper.GetString(
+			core.GetFlagName(
+				c.NS, constants.FlagName,
+			),
+		),
+	)
 	if err != nil {
 		return err
 	}
 
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.ContainerRegistryRegistry, regs, tabheaders.GetHeadersAllDefault(allCols, cols))
+	out, err := jsontabwriter.GenerateOutput(
+		"items", jsonpaths.ContainerRegistryRegistry, regs, tabheaders.GetHeadersAllDefault(allCols, cols),
+	)
 	if err != nil {
 		return err
 	}

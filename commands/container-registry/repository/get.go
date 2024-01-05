@@ -37,18 +37,20 @@ func RepositoryGetCmd() *core.Command {
 		},
 	)
 
-	c.AddStringFlag("registry-id", "r", "", "Registry ID")
+	c.AddStringFlag(constants.FlagRegistryId, constants.FlagRegistryIdShort, "", "Registry ID")
 	_ = c.Command.RegisterFlagCompletionFunc(
-		"registry-id", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		constants.FlagRegistryId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 			return registry.RegsIds(), cobra.ShellCompDirectiveNoFileComp
 		},
 	)
 
-	c.AddStringFlag("name", "n", "", "Name of the repository to get")
+	c.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Name of the repository to get")
 	_ = c.Command.RegisterFlagCompletionFunc(
-		"name", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		constants.FlagName,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 			return RepositoryNames(
-				viper.GetString(core.GetFlagName(c.NS, "registry-id")),
+				viper.GetString(core.GetFlagName(c.NS, constants.FlagRegistryId)),
 			), cobra.ShellCompDirectiveNoFileComp
 		},
 	)
@@ -57,13 +59,13 @@ func RepositoryGetCmd() *core.Command {
 }
 
 func PreCmdGet(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.Command, c.NS, "registry-id", "name")
+	return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagRegistryId, constants.FlagName)
 }
 
 func CmdGet(c *core.CommandConfig) error {
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	regId := viper.GetString(core.GetFlagName(c.NS, "registry-id"))
-	name := viper.GetString(core.GetFlagName(c.NS, "name"))
+	regId := viper.GetString(core.GetFlagName(c.NS, constants.FlagRegistryId))
+	name := viper.GetString(core.GetFlagName(c.NS, constants.FlagName))
 
 	repo, _, err := client.Must().RegistryClient.RepositoriesApi.RegistriesRepositoriesFindByName(
 		context.

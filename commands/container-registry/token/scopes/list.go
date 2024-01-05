@@ -29,16 +29,24 @@ func TokenScopesListCmd() *core.Command {
 		},
 	)
 
-	cmd.AddStringFlag(FlagRegId, "r", "", "Registry ID")
+	cmd.AddStringFlag(constants.FlagRegistryId, constants.FlagRegistryIdShort, "", "Registry ID")
 	_ = cmd.Command.RegisterFlagCompletionFunc(
-		FlagRegId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		constants.FlagRegistryId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 			return registry.RegsIds(), cobra.ShellCompDirectiveNoFileComp
 		},
 	)
 	cmd.AddStringFlag(FlagTokenId, "t", "", "Token ID")
 	_ = cmd.Command.RegisterFlagCompletionFunc(
-		FlagTokenId, func(cobracmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-			return TokensIds(viper.GetString(core.GetFlagName(cmd.NS, FlagRegId))), cobra.ShellCompDirectiveNoFileComp
+		FlagTokenId,
+		func(cobracmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return TokensIds(
+				viper.GetString(
+					core.GetFlagName(
+						cmd.NS, constants.FlagRegistryId,
+					),
+				),
+			), cobra.ShellCompDirectiveNoFileComp
 		},
 	)
 
@@ -53,7 +61,7 @@ func TokenScopesListCmd() *core.Command {
 }
 
 func CmdGetTokenScopesList(c *core.CommandConfig) error {
-	reg_id := viper.GetString(core.GetFlagName(c.NS, FlagRegId))
+	reg_id := viper.GetString(core.GetFlagName(c.NS, constants.FlagRegistryId))
 	token_id := viper.GetString(core.GetFlagName(c.NS, FlagTokenId))
 
 	token, _, err := c.ContainerRegistryServices.Token().Get(token_id, reg_id)
@@ -73,8 +81,10 @@ func CmdGetTokenScopesList(c *core.CommandConfig) error {
 
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-	out, err := jsontabwriter.GenerateOutput("", allScopeJSONPaths, *scopes,
-		tabheaders.GetHeaders(allScopeCols, defaultScopeCols, cols))
+	out, err := jsontabwriter.GenerateOutput(
+		"", allScopeJSONPaths, *scopes,
+		tabheaders.GetHeaders(allScopeCols, defaultScopeCols, cols),
+	)
 	if err != nil {
 		return err
 	}
@@ -84,7 +94,7 @@ func CmdGetTokenScopesList(c *core.CommandConfig) error {
 }
 
 func PreCmdTokenScopesList(c *core.PreCommandConfig) error {
-	err := core.CheckRequiredFlags(c.Command, c.NS, FlagTokenId, FlagRegId)
+	err := core.CheckRequiredFlags(c.Command, c.NS, FlagTokenId, constants.FlagRegistryId)
 	if err != nil {
 		return err
 	}

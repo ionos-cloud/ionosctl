@@ -32,20 +32,30 @@ func TokenScopesAddCmd() *core.Command {
 		},
 	)
 
-	cmd.AddStringFlag(FlagRegId, "r", "", "Registry ID", core.RequiredFlagOption())
+	cmd.AddStringFlag(
+		constants.FlagRegistryId, constants.FlagRegistryIdShort, "", "Registry ID", core.RequiredFlagOption(),
+	)
 	_ = cmd.Command.RegisterFlagCompletionFunc(
-		FlagRegId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		constants.FlagRegistryId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 			return registry.RegsIds(), cobra.ShellCompDirectiveNoFileComp
 		},
 	)
 	cmd.AddStringFlag(FlagTokenId, "t", "", "Token ID")
 	_ = cmd.Command.RegisterFlagCompletionFunc(
-		FlagTokenId, func(cobracmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-			return TokensIds(viper.GetString(core.GetFlagName(cmd.NS, FlagRegId))), cobra.ShellCompDirectiveNoFileComp
+		FlagTokenId,
+		func(cobracmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return TokensIds(
+				viper.GetString(
+					core.GetFlagName(
+						cmd.NS, constants.FlagRegistryId,
+					),
+				),
+			), cobra.ShellCompDirectiveNoFileComp
 		},
 	)
 
-	cmd.AddStringFlag(FlagName, "n", "", "Scope name", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Scope name", core.RequiredFlagOption())
 	cmd.AddStringFlag(FlagType, "y", "", "Scope type", core.RequiredFlagOption())
 	cmd.AddStringSliceFlag(FlagActions, "a", []string{}, "Scope actions", core.RequiredFlagOption())
 
@@ -60,7 +70,9 @@ func TokenScopesAddCmd() *core.Command {
 }
 
 func PreCmdTokenScopesAdd(c *core.PreCommandConfig) error {
-	err := core.CheckRequiredFlags(c.Command, c.NS, FlagTokenId, FlagRegId, FlagName, FlagActions, FlagType)
+	err := core.CheckRequiredFlags(
+		c.Command, c.NS, FlagTokenId, constants.FlagRegistryId, constants.FlagName, FlagActions, FlagType,
+	)
 	if err != nil {
 		return err
 	}
@@ -71,7 +83,7 @@ func CmdTokenScopesAdd(c *core.CommandConfig) error {
 	var scope sdkgo.Scope
 	var err error
 
-	regId, err := c.Command.Command.Flags().GetString(FlagRegId)
+	regId, err := c.Command.Command.Flags().GetString(constants.FlagRegistryId)
 	if err != nil {
 		return err
 	}
@@ -81,7 +93,7 @@ func CmdTokenScopesAdd(c *core.CommandConfig) error {
 		return err
 	}
 
-	name, err := c.Command.Command.Flags().GetString(FlagName)
+	name, err := c.Command.Command.Flags().GetString(constants.FlagName)
 	if err != nil {
 		return err
 	}
@@ -123,8 +135,10 @@ func CmdTokenScopesAdd(c *core.CommandConfig) error {
 
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-	out, err := jsontabwriter.GenerateOutput("properties.scopes", allScopeJSONPaths, tokenUp,
-		tabheaders.GetHeaders(allScopeCols, defaultScopeCols, cols))
+	out, err := jsontabwriter.GenerateOutput(
+		"properties.scopes", allScopeJSONPaths, tokenUp,
+		tabheaders.GetHeaders(allScopeCols, defaultScopeCols, cols),
+	)
 	if err != nil {
 		return err
 	}

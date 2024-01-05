@@ -40,7 +40,7 @@ func TokenPostCmd() *core.Command {
 		constants.ArgNoHeaders, true, "Use --no-headers=false to show column headers",
 	)
 
-	cmd.AddStringFlag(FlagName, "", "", "Name of the Token", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagName, "", "", "Name of the Token", core.RequiredFlagOption())
 	cmd.AddStringFlag(FlagExpiryDate, "", "", "Expiry date of the Token")
 	cmd.AddStringFlag(FlagStatus, "", "", "Status of the Token")
 	_ = cmd.Command.RegisterFlagCompletionFunc(
@@ -51,9 +51,12 @@ func TokenPostCmd() *core.Command {
 		},
 	)
 	cmd.AddStringFlag(FlagTimeUntilExpiry, "", "", "Time until the Token expires (ex: 1y2d)")
-	cmd.AddStringFlag(FlagRegId, "r", "", "Registry ID", core.RequiredFlagOption())
+	cmd.AddStringFlag(
+		constants.FlagRegistryId, constants.FlagRegistryIdShort, "", "Registry ID", core.RequiredFlagOption(),
+	)
 	_ = cmd.Command.RegisterFlagCompletionFunc(
-		"registry-id", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		constants.FlagRegistryId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 			return registry.RegsIds(), cobra.ShellCompDirectiveNoFileComp
 		},
 	)
@@ -70,7 +73,7 @@ func TokenPostCmd() *core.Command {
 }
 
 func PreCmdPostToken(c *core.PreCommandConfig) error {
-	err := core.CheckRequiredFlags(c.Command, c.NS, FlagName, FlagRegId)
+	err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagName, constants.FlagRegistryId)
 	if err != nil {
 		return err
 	}
@@ -85,12 +88,12 @@ func CmdPostToken(c *core.CommandConfig) error {
 
 	var err error
 
-	id, err := c.Command.Command.Flags().GetString("registry-id")
+	id, err := c.Command.Command.Flags().GetString(constants.FlagRegistryId)
 	if err != nil {
 		return err
 	}
 
-	name, err := c.Command.Command.Flags().GetString(FlagName)
+	name, err := c.Command.Command.Flags().GetString(constants.FlagName)
 	if err != nil {
 		return err
 	}
@@ -154,7 +157,9 @@ func CmdPostToken(c *core.CommandConfig) error {
 
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.ContainerRegistryToken, token, tabheaders.GetHeaders(AllTokenCols, postHeaders, cols))
+	out, err := jsontabwriter.GenerateOutput(
+		"", jsonpaths.ContainerRegistryToken, token, tabheaders.GetHeaders(AllTokenCols, postHeaders, cols),
+	)
 	if err != nil {
 		return err
 	}

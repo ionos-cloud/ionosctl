@@ -39,9 +39,10 @@ func ArtifactsGetCmd() *core.Command {
 		},
 	)
 
-	c.AddStringFlag("registry-id", "r", "", "Registry ID")
+	c.AddStringFlag(constants.FlagRegistryId, constants.FlagRegistryIdShort, "", "Registry ID")
 	_ = c.Command.RegisterFlagCompletionFunc(
-		"registry-id", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		constants.FlagRegistryId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 			return registry.RegsIds(), cobra.ShellCompDirectiveNoFileComp
 		},
 	)
@@ -49,16 +50,17 @@ func ArtifactsGetCmd() *core.Command {
 	c.AddStringFlag("repository", "", "", "Name of the repository to retrieve artifact from")
 	_ = c.Command.RegisterFlagCompletionFunc(
 		"repository", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-			return repository.RepositoryNames(viper.GetString(core.GetFlagName(c.NS, "registry-id"))),
+			return repository.RepositoryNames(viper.GetString(core.GetFlagName(c.NS, constants.FlagRegistryId))),
 				cobra.ShellCompDirectiveNoFileComp
 		},
 	)
 
-	c.AddStringFlag("artifact-id", "", "", "ID/digest of the artifact")
+	c.AddStringFlag(constants.FlagArtifactId, "", "", "ID/digest of the artifact")
 	_ = c.Command.RegisterFlagCompletionFunc(
-		"artifact-id", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		constants.FlagArtifactId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 			return ArtifactsIds(
-					viper.GetString(core.GetFlagName(c.NS, "registry-id")),
+					viper.GetString(core.GetFlagName(c.NS, constants.FlagRegistryId)),
 					viper.GetString(core.GetFlagName(c.NS, "repository")),
 				),
 				cobra.ShellCompDirectiveNoFileComp
@@ -69,14 +71,14 @@ func ArtifactsGetCmd() *core.Command {
 }
 
 func PreCmdGet(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.Command, c.NS, "registry-id", "repository", "artifact-id")
+	return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagRegistryId, "repository", constants.FlagArtifactId)
 }
 
 func CmdGet(c *core.CommandConfig) error {
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-	regId := viper.GetString(core.GetFlagName(c.NS, "registry-id"))
+	regId := viper.GetString(core.GetFlagName(c.NS, constants.FlagRegistryId))
 	repo := viper.GetString(core.GetFlagName(c.NS, "repository"))
-	artId := viper.GetString(core.GetFlagName(c.NS, "artifact-id"))
+	artId := viper.GetString(core.GetFlagName(c.NS, constants.FlagArtifactId))
 
 	var arts interface{}
 	var err error
