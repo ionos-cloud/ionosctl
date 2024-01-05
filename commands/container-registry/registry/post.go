@@ -58,7 +58,7 @@ func RegPostCmd() *core.Command {
 		FlagRegGCDays,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 			return []string{
-				"Modnday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday",
+				"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday",
 			}, cobra.ShellCompDirectiveNoFileComp
 		},
 	)
