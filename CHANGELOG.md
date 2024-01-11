@@ -1,5 +1,9 @@
 # Changelog
 
+## [v6.7.4] (January 2024)
+
+### Fixed
+- Fixed `--cols` for server: `server.cols` Viper variable being used both by `server` and `vm-autoscaling server` commands.
 
 ## [v6.7.3] (December 2023)
 
