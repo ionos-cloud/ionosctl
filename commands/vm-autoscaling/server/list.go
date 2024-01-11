@@ -51,7 +51,7 @@ ionosctl vm-autoscaling server list %s`,
 				return err
 			}
 
-			colsDesired := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+			colsDesired := viper.GetStringSlice(core.GetFlagName("autoscaling"+c.Resource, constants.ArgCols))
 			out, err := jsontabwriter.GenerateOutputPreconverted(ls, table,
 				tabheaders.GetHeaders(allCols, defaultCols, colsDesired))
 			if err != nil {
