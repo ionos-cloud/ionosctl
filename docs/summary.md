@@ -222,6 +222,9 @@
         * [list](subcommands%2FCompute%20Engine%2Fvolume%2Flist.md)
         * [update](subcommands%2FCompute%20Engine%2Fvolume%2Fupdate.md)
 * Container Registry
+    * artifacts
+        * [get](subcommands%2FContainer-Registry%2Fartifacts%2Fget.md)
+        * [list](subcommands%2FContainer-Registry%2Fartifacts%2Flist.md)
     * [locations](subcommands%2FContainer-Registry%2Flocations.md)
     * [names](subcommands%2FContainer-Registry%2Fnames.md)
     * registry
@@ -231,6 +234,10 @@
         * [list](subcommands%2FContainer-Registry%2Fregistry%2Flist.md)
         * [replace](subcommands%2FContainer-Registry%2Fregistry%2Freplace.md)
         * [update](subcommands%2FContainer-Registry%2Fregistry%2Fupdate.md)
+    * repository
+        * [delete](subcommands%2FContainer-Registry%2Frepository%2Fdelete.md)
+        * [get](subcommands%2FContainer-Registry%2Frepository%2Fget.md)
+        * [list](subcommands%2FContainer-Registry%2Frepository%2Flist.md)
     * [repository](subcommands%2FContainer-Registry%2Frepository.md)
     * token
         * [create](subcommands%2FContainer-Registry%2Ftoken%2Fcreate.md)
@@ -243,6 +250,9 @@
             * [delete](subcommands%2FContainer-Registry%2Ftoken%2Fscope%2Fdelete.md)
             * [list](subcommands%2FContainer-Registry%2Ftoken%2Fscope%2Flist.md)
         * [update](subcommands%2FContainer-Registry%2Ftoken%2Fupdate.md)
+    * vulnerabilities
+        * [get](subcommands%2FContainer-Registry%2Fvulnerabilities%2Fget.md)
+        * [list](subcommands%2FContainer-Registry%2Fvulnerabilities%2Flist.md)
 * DNS
     * record
         * [create](subcommands%2FDNS%2Frecord%2Fcreate.md)

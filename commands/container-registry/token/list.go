@@ -32,9 +32,10 @@ func TokenListCmd() *core.Command {
 	)
 
 	cmd.AddBoolFlag(constants.ArgAll, "a", false, "List all tokens, including expired ones")
-	cmd.AddStringFlag(FlagRegId, "r", "", "Registry ID")
+	cmd.AddStringFlag(constants.FlagRegistryId, constants.FlagRegistryIdShort, "", "Registry ID")
 	_ = cmd.Command.RegisterFlagCompletionFunc(
-		FlagRegId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		constants.FlagRegistryId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 			return registry.RegsIds(), cobra.ShellCompDirectiveNoFileComp
 		},
 	)
@@ -54,13 +55,15 @@ func CmdListToken(c *core.CommandConfig) error {
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	if !allFlag {
-		id := viper.GetString(core.GetFlagName(c.NS, FlagRegId))
+		id := viper.GetString(core.GetFlagName(c.NS, constants.FlagRegistryId))
 
 		tokens, _, err := c.ContainerRegistryServices.Token().List(id)
 		if err != nil {
 			return err
 		}
-		out, err := jsontabwriter.GenerateOutput("items", jsonpaths.ContainerRegistryToken, tokens, tabheaders.GetHeadersAllDefault(AllTokenCols, cols))
+		out, err := jsontabwriter.GenerateOutput(
+			"items", jsonpaths.ContainerRegistryToken, tokens, tabheaders.GetHeadersAllDefault(AllTokenCols, cols),
+		)
 		if err != nil {
 			return err
 		}
@@ -87,7 +90,9 @@ func CmdListToken(c *core.CommandConfig) error {
 		}
 	}
 
-	out, err := jsontabwriter.GenerateOutput("*.items", jsonpaths.ContainerRegistryToken, list, tabheaders.GetHeadersAllDefault(AllTokenCols, cols))
+	out, err := jsontabwriter.GenerateOutput(
+		"*.items", jsonpaths.ContainerRegistryToken, list, tabheaders.GetHeadersAllDefault(AllTokenCols, cols),
+	)
 	if err != nil {
 		return err
 	}
@@ -99,7 +104,7 @@ func CmdListToken(c *core.CommandConfig) error {
 func PreCmdListToken(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlagsSets(
 		c.Command, c.NS,
-		[]string{FlagRegId},
+		[]string{constants.FlagRegistryId},
 		[]string{constants.ArgAll},
 	)
 }

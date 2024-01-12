@@ -40,17 +40,25 @@ func TokenReplaceCmd() *core.Command {
 		constants.ArgNoHeaders, true, "Use --no-headers=false to show column headers",
 	)
 
-	cmd.AddStringFlag(FlagName, "", "", "Name of the Token", core.RequiredFlagOption())
-	cmd.AddStringFlag(FlagRegId, "r", "", "Registry ID")
+	cmd.AddStringFlag(constants.FlagName, "", "", "Name of the Token", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagRegistryId, constants.FlagRegistryIdShort, "", "Registry ID")
 	_ = cmd.Command.RegisterFlagCompletionFunc(
-		FlagRegId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		constants.FlagRegistryId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 			return registry.RegsIds(), cobra.ShellCompDirectiveNoFileComp
 		},
 	)
 	cmd.AddStringFlag(FlagTokenId, "t", "", "Token ID")
 	_ = cmd.Command.RegisterFlagCompletionFunc(
-		FlagTokenId, func(cobracmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-			return TokensIds(viper.GetString(core.GetFlagName(cmd.NS, FlagRegId))), cobra.ShellCompDirectiveNoFileComp
+		FlagTokenId,
+		func(cobracmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return TokensIds(
+				viper.GetString(
+					core.GetFlagName(
+						cmd.NS, constants.FlagRegistryId,
+					),
+				),
+			), cobra.ShellCompDirectiveNoFileComp
 		},
 	)
 
@@ -83,7 +91,7 @@ func CmdPutToken(c *core.CommandConfig) error {
 
 	var err error
 
-	regId, err := c.Command.Command.Flags().GetString(FlagRegId)
+	regId, err := c.Command.Command.Flags().GetString(constants.FlagRegistryId)
 	if err != nil {
 		return err
 	}
@@ -93,7 +101,7 @@ func CmdPutToken(c *core.CommandConfig) error {
 		return err
 	}
 
-	name, err := c.Command.Command.Flags().GetString(FlagName)
+	name, err := c.Command.Command.Flags().GetString(constants.FlagName)
 	if err != nil {
 		return err
 	}
@@ -156,7 +164,9 @@ func CmdPutToken(c *core.CommandConfig) error {
 
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.ContainerRegistryToken, token, tabheaders.GetHeaders(AllTokenCols, postHeaders, cols))
+	out, err := jsontabwriter.GenerateOutput(
+		"", jsonpaths.ContainerRegistryToken, token, tabheaders.GetHeaders(AllTokenCols, postHeaders, cols),
+	)
 	if err != nil {
 		return err
 	}
@@ -166,7 +176,7 @@ func CmdPutToken(c *core.CommandConfig) error {
 }
 
 func PreCmdPutToken(c *core.PreCommandConfig) error {
-	err := core.CheckRequiredFlags(c.Command, c.NS, "token-id", FlagRegId, FlagName)
+	err := core.CheckRequiredFlags(c.Command, c.NS, "token-id", constants.FlagRegistryId, constants.FlagName)
 	if err != nil {
 		return err
 	}

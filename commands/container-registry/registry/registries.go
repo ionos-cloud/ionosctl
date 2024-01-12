@@ -13,7 +13,10 @@ import (
 
 var (
 	postCols = []string{"DisplayName", "Location"}
-	allCols  = []string{"RegistryId", "DisplayName", "Location", "Hostname", "GarbageCollectionDays", "GarbageCollectionTime"}
+	allCols  = []string{
+		"RegistryId", "DisplayName", "Location", "Hostname", "VulnerabilityScanning",
+		"GarbageCollectionDays", "GarbageCollectionTime",
+	}
 )
 
 func RegistryCmd() *core.Command {

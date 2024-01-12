@@ -32,9 +32,10 @@ func RegUpdateCmd() *core.Command {
 		},
 	)
 
-	cmd.AddStringFlag(FlagRegId, "i", "", "Specify the Registry ID", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagRegistryId, "i", "", "Specify the Registry ID", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(
-		FlagRegId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		constants.FlagRegistryId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 			return RegsIds(), cobra.ShellCompDirectiveNoFileComp
 		},
 	)
@@ -64,7 +65,7 @@ func RegUpdateCmd() *core.Command {
 
 func CmdUpdate(c *core.CommandConfig) error {
 	v := sdkgo.NewWeeklyScheduleWithDefaults()
-	id, err := c.Command.Command.Flags().GetString(FlagRegId)
+	id, err := c.Command.Command.Flags().GetString(constants.FlagRegistryId)
 	if err != nil {
 		return err
 	}
@@ -95,7 +96,9 @@ func CmdUpdate(c *core.CommandConfig) error {
 
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.ContainerRegistryRegistry, reg, tabheaders.GetHeadersAllDefault(allCols, cols))
+	out, err := jsontabwriter.GenerateOutput(
+		"", jsonpaths.ContainerRegistryRegistry, reg, tabheaders.GetHeadersAllDefault(allCols, cols),
+	)
 	if err != nil {
 		return err
 	}
@@ -105,7 +108,7 @@ func CmdUpdate(c *core.CommandConfig) error {
 }
 
 func PreCmdUpdate(c *core.PreCommandConfig) error {
-	err := core.CheckRequiredFlags(c.Command, c.NS, FlagRegId)
+	err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagRegistryId)
 	if err != nil {
 		return err
 	}

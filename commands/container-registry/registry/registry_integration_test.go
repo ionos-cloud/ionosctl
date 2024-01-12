@@ -35,71 +35,78 @@ func teardown() {
 }
 
 func TestRegistryService(t *testing.T) {
-	t.Run("registry functions", func(t *testing.T) {
-		t.Cleanup(teardown)
-		viper.Reset()
-		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
-		viper.Set(constants.ArgQuiet, false)
-		viper.Set(constants.ArgVerbose, false)
-		viper.Set(constants.ArgForce, true)
+	t.Run(
+		"registry functions", func(t *testing.T) {
+			t.Cleanup(teardown)
+			viper.Reset()
+			viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
+			viper.Set(constants.ArgQuiet, false)
+			viper.Set(constants.ArgVerbose, false)
+			viper.Set(constants.ArgForce, true)
 
-		name := "ionosctl-crreg-test-" + fake.AlphaNum(8)
-		c := RegPostCmd()
-		c.Command.Flags().Set(FlagName, name)
-		c.Command.Flags().Set(FlagLocation, "de/fra")
+			name := "ionosctl-crreg-test-" + fake.AlphaNum(8)
+			c := RegPostCmd()
+			c.Command.Flags().Set(constants.FlagName, name)
+			c.Command.Flags().Set(constants.FlagLocation, "de/fra")
 
-		err := c.Command.Execute()
-		assert.NoError(t, err)
+			err := c.Command.Execute()
+			assert.NoError(t, err)
 
-		registries, _, err := client.Must().RegistryClient.RegistriesApi.RegistriesGet(context.Background()).Execute()
-		assert.NoError(t, err)
+			registries, _, err := client.Must().RegistryClient.RegistriesApi.RegistriesGet(context.Background()).Execute()
+			assert.NoError(t, err)
 
-		var newRegistry *ionoscloud.RegistryResponse
-		for _, registry := range *registries.GetItems() {
-			if *registry.GetProperties().GetName() == name {
-				newRegistry = &registry
+			var newRegistry *ionoscloud.RegistryResponse
+			for _, registry := range *registries.GetItems() {
+				if *registry.GetProperties().GetName() == name {
+					newRegistry = &registry
+				}
 			}
-		}
 
-		g := RegGetCmd()
-		g.Command.Flags().Set(FlagRegId, *newRegistry.GetId())
-		assert.NoError(t, err)
+			g := RegGetCmd()
+			g.Command.Flags().Set(constants.FlagRegistryId, *newRegistry.GetId())
+			assert.NoError(t, err)
 
-		err = g.Command.Execute()
-		assert.NoError(t, err)
+			err = g.Command.Execute()
+			assert.NoError(t, err)
 
-		patch := RegUpdateCmd()
-		patch.Command.Flags().Set(FlagRegId, *newRegistry.GetId())
-		patch.Command.Flags().Set(FlagRegGCDays, "Tuesday")
-		assert.NoError(t, err)
+			patch := RegUpdateCmd()
+			patch.Command.Flags().Set(constants.FlagRegistryId, *newRegistry.GetId())
+			patch.Command.Flags().Set(FlagRegGCDays, "Tuesday")
+			assert.NoError(t, err)
 
-		err = patch.Command.Execute()
-		assert.NoError(t, err)
+			err = patch.Command.Execute()
+			assert.NoError(t, err)
 
-		checkRegistry, _, err := client.Must().RegistryClient.RegistriesApi.RegistriesFindById(context.Background(), *newRegistry.GetId()).Execute()
-		assert.NoError(t, err)
-		assert.Equal(t, []ionoscloud.Day([]ionoscloud.Day{"Tuesday"}), *checkRegistry.GetProperties().GetGarbageCollectionSchedule().GetDays())
+			checkRegistry, _, err := client.Must().RegistryClient.RegistriesApi.RegistriesFindById(
+				context.Background(), *newRegistry.GetId(),
+			).Execute()
+			assert.NoError(t, err)
+			assert.Equal(
+				t, []ionoscloud.Day([]ionoscloud.Day{"Tuesday"}),
+				*checkRegistry.GetProperties().GetGarbageCollectionSchedule().GetDays(),
+			)
 
-		d := RegDeleteCmd()
-		d.Command.Flags().Set(FlagRegId, *newRegistry.GetId())
-		assert.NoError(t, err)
+			d := RegDeleteCmd()
+			d.Command.Flags().Set(constants.FlagRegistryId, *newRegistry.GetId())
+			assert.NoError(t, err)
 
-		err = d.Command.Execute()
-		assert.NoError(t, err)
+			err = d.Command.Execute()
+			assert.NoError(t, err)
 
-		replace := RegReplaceCmd()
-		name = "ionosctl-crreg-test-" + fake.AlphaNum(8)
-		replace.Command.Flags().Set(FlagRegId, *newRegistry.GetId())
-		replace.Command.Flags().Set(FlagName, name)
-		replace.Command.Flags().Set(FlagLocation, "de/fra")
-		replace.Command.Flags().Set(FlagRegGCDays, "Tuesday")
+			replace := RegReplaceCmd()
+			name = "ionosctl-crreg-test-" + fake.AlphaNum(8)
+			replace.Command.Flags().Set(constants.FlagRegistryId, *newRegistry.GetId())
+			replace.Command.Flags().Set(constants.FlagName, name)
+			replace.Command.Flags().Set(constants.FlagLocation, "de/fra")
+			replace.Command.Flags().Set(FlagRegGCDays, "Tuesday")
 
-		err = replace.Command.Execute()
-		assert.NoError(t, err)
+			err = replace.Command.Execute()
+			assert.NoError(t, err)
 
-		d.Command.Flags().Set(FlagRegId, *newRegistry.GetId())
+			d.Command.Flags().Set(constants.FlagRegistryId, *newRegistry.GetId())
 
-		err = d.Command.Execute()
-		assert.NoError(t, err)
-	})
+			err = d.Command.Execute()
+			assert.NoError(t, err)
+		},
+	)
 }

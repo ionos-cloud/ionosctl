@@ -39,7 +39,7 @@ Update the "garbageCollectionSchedule" time and days of the week for runs of a r
 ```text
   -u, --api-url string                             Override default host url (default "https://api.ionos.com")
       --cols strings                               Set of columns to be printed on output 
-                                                   Available columns: [RegistryId DisplayName Location Hostname GarbageCollectionDays GarbageCollectionTime]
+                                                   Available columns: [RegistryId DisplayName Location Hostname VulnerabilityScanning GarbageCollectionDays GarbageCollectionTime]
   -c, --config string                              Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -f, --force                                      Force command to execute without user input
       --garbage-collection-schedule-days strings   Specify the garbage collection schedule days
