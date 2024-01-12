@@ -15,10 +15,19 @@ func MaintenanceHandler(flagDescription, defaultValue string) string {
 	return defaultValue
 }
 
+func DataplatformUsesLatestVersion(flagDescription, defaultValue string) string {
+	if strings.Contains(flagDescription, "dataplatform") {
+		return "same as 'dataplatform version active'"
+	}
+	return defaultValue
+}
+
 func getStrategyForFlag(flagName string) FlagDefaultHandler {
 	switch flagName {
 	case "maintenance-day", "maintenance-time":
 		return MaintenanceHandler
+	case "version":
+		return DataplatformUsesLatestVersion
 	default:
 		return nil
 	}

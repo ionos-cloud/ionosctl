@@ -1,5 +1,12 @@
 # Changelog
 
+## [v6.7.4] (December 2023)
+
+### Added
+- Added `version` resource for Dataplatform API, with `list` and `latest` subcommands
+
+### Changed
+- When creating a Dataplatform cluster, now the latest version will be used by default
 
 ## [v6.7.3] (December 2023)
 

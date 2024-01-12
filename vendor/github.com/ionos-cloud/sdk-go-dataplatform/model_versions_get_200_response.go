@@ -11,63 +11,243 @@
 package ionoscloud
 
 import (
-	"log"
-	"net/http"
-	"time"
+	"encoding/json"
 )
 
-// APIResponse stores the API response returned by the server.
-type APIResponse struct {
-	*http.Response `json:"-"`
-	Message        string `json:"message,omitempty"`
-	// Operation is the name of the OpenAPI operation.
-	Operation string `json:"operation,omitempty"`
-	// RequestURL is the request URL. This value is always available, even if the
-	// embedded *http.Response is nil.
-	RequestURL string `json:"url,omitempty"`
-	// RequestTime is the time duration from the moment the APIClient sends
-	// the HTTP request to the moment it receives an HTTP response.
-	RequestTime time.Duration `json:"duration,omitempty"`
-	// Method is the HTTP method used for the request.  This value is always
-	// available, even if the embedded *http.Response is nil.
-	Method string `json:"method,omitempty"`
-	// Payload holds the contents of the response body (which may be nil or empty).
-	// This is provided here as the raw response.Body() reader will have already
-	// been drained.
-	Payload []byte `json:"-"`
+// VersionsGet200Response struct for VersionsGet200Response
+type VersionsGet200Response struct {
+	// The ID of a list of resources.
+	Id    *string   `json:"id,omitempty"`
+	Type  *string   `json:"type,omitempty"`
+	Href  *string   `json:"href,omitempty"`
+	Items *[]string `json:"items"`
 }
 
-// NewAPIResponse returns a new APIResponse object.
-func NewAPIResponse(r *http.Response) *APIResponse {
+// NewVersionsGet200Response instantiates a new VersionsGet200Response object
+// This constructor will assign default values to properties that have it defined,
+// and makes sure properties required by API are set, but the set of arguments
+// will change when the set of required properties is changed
+func NewVersionsGet200Response(items []string) *VersionsGet200Response {
+	this := VersionsGet200Response{}
 
-	response := &APIResponse{Response: r}
-	return response
+	this.Items = &items
+
+	return &this
 }
 
-// NewAPIResponseWithError returns a new APIResponse object with the provided error message.
-func NewAPIResponseWithError(errorMessage string) *APIResponse {
-
-	response := &APIResponse{Message: errorMessage}
-	return response
+// NewVersionsGet200ResponseWithDefaults instantiates a new VersionsGet200Response object
+// This constructor will only assign default values to properties that have it defined,
+// but it doesn't guarantee that properties required by API are set
+func NewVersionsGet200ResponseWithDefaults() *VersionsGet200Response {
+	this := VersionsGet200Response{}
+	return &this
 }
 
-// HttpNotFound - returns true if a 404 status code was returned
-// returns false for nil APIResponse values
-func (resp *APIResponse) HttpNotFound() bool {
-	if resp != nil && resp.Response != nil && resp.StatusCode == http.StatusNotFound {
+// GetId returns the Id field value
+// If the value is explicit nil, the zero value for string will be returned
+func (o *VersionsGet200Response) GetId() *string {
+	if o == nil {
+		return nil
+	}
+
+	return o.Id
+
+}
+
+// GetIdOk returns a tuple with the Id field value
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *VersionsGet200Response) GetIdOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+
+	return o.Id, true
+}
+
+// SetId sets field value
+func (o *VersionsGet200Response) SetId(v string) {
+
+	o.Id = &v
+
+}
+
+// HasId returns a boolean if a field has been set.
+func (o *VersionsGet200Response) HasId() bool {
+	if o != nil && o.Id != nil {
 		return true
 	}
+
 	return false
 }
 
-// LogInfo - logs APIResponse values like RequestTime, Operation and StatusCode
-// does not print anything for nil APIResponse values
-func (resp *APIResponse) LogInfo() {
-	if resp != nil {
-		log.Printf("[DEBUG] Request time : %s for operation : %s",
-			resp.RequestTime, resp.Operation)
-		if resp.Response != nil {
-			log.Printf("[DEBUG] response status code : %d\n", resp.StatusCode)
-		}
+// GetType returns the Type field value
+// If the value is explicit nil, the zero value for string will be returned
+func (o *VersionsGet200Response) GetType() *string {
+	if o == nil {
+		return nil
 	}
+
+	return o.Type
+
+}
+
+// GetTypeOk returns a tuple with the Type field value
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *VersionsGet200Response) GetTypeOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+
+	return o.Type, true
+}
+
+// SetType sets field value
+func (o *VersionsGet200Response) SetType(v string) {
+
+	o.Type = &v
+
+}
+
+// HasType returns a boolean if a field has been set.
+func (o *VersionsGet200Response) HasType() bool {
+	if o != nil && o.Type != nil {
+		return true
+	}
+
+	return false
+}
+
+// GetHref returns the Href field value
+// If the value is explicit nil, the zero value for string will be returned
+func (o *VersionsGet200Response) GetHref() *string {
+	if o == nil {
+		return nil
+	}
+
+	return o.Href
+
+}
+
+// GetHrefOk returns a tuple with the Href field value
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *VersionsGet200Response) GetHrefOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+
+	return o.Href, true
+}
+
+// SetHref sets field value
+func (o *VersionsGet200Response) SetHref(v string) {
+
+	o.Href = &v
+
+}
+
+// HasHref returns a boolean if a field has been set.
+func (o *VersionsGet200Response) HasHref() bool {
+	if o != nil && o.Href != nil {
+		return true
+	}
+
+	return false
+}
+
+// GetItems returns the Items field value
+// If the value is explicit nil, the zero value for []string will be returned
+func (o *VersionsGet200Response) GetItems() *[]string {
+	if o == nil {
+		return nil
+	}
+
+	return o.Items
+
+}
+
+// GetItemsOk returns a tuple with the Items field value
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *VersionsGet200Response) GetItemsOk() (*[]string, bool) {
+	if o == nil {
+		return nil, false
+	}
+
+	return o.Items, true
+}
+
+// SetItems sets field value
+func (o *VersionsGet200Response) SetItems(v []string) {
+
+	o.Items = &v
+
+}
+
+// HasItems returns a boolean if a field has been set.
+func (o *VersionsGet200Response) HasItems() bool {
+	if o != nil && o.Items != nil {
+		return true
+	}
+
+	return false
+}
+
+func (o VersionsGet200Response) MarshalJSON() ([]byte, error) {
+	toSerialize := map[string]interface{}{}
+	if o.Id != nil {
+		toSerialize["id"] = o.Id
+	}
+
+	if o.Type != nil {
+		toSerialize["type"] = o.Type
+	}
+
+	if o.Href != nil {
+		toSerialize["href"] = o.Href
+	}
+
+	if o.Items != nil {
+		toSerialize["items"] = o.Items
+	}
+
+	return json.Marshal(toSerialize)
+}
+
+type NullableVersionsGet200Response struct {
+	value *VersionsGet200Response
+	isSet bool
+}
+
+func (v NullableVersionsGet200Response) Get() *VersionsGet200Response {
+	return v.value
+}
+
+func (v *NullableVersionsGet200Response) Set(val *VersionsGet200Response) {
+	v.value = val
+	v.isSet = true
+}
+
+func (v NullableVersionsGet200Response) IsSet() bool {
+	return v.isSet
+}
+
+func (v *NullableVersionsGet200Response) Unset() {
+	v.value = nil
+	v.isSet = false
+}
+
+func NewNullableVersionsGet200Response(val *VersionsGet200Response) *NullableVersionsGet200Response {
+	return &NullableVersionsGet200Response{value: val, isSet: true}
+}
+
+func (v NullableVersionsGet200Response) MarshalJSON() ([]byte, error) {
+	return json.Marshal(v.value)
+}
+
+func (v *NullableVersionsGet200Response) UnmarshalJSON(src []byte) error {
+	v.isSet = true
+	return json.Unmarshal(src, &v.value)
 }
