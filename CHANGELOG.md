@@ -2,8 +2,15 @@
 
 ## [v6.7.4] (January 2024)
 
+### Added
+- Added `version` resource for Dataplatform API, with `list` and `latest` subcommands
+
+### Changed
+- When creating a Dataplatform cluster, now the latest version will be used by default
+
 ### Fixed
 - Fixed `--cols` for server: `server.cols` Viper variable being used both by `server` and `vm-autoscaling server` commands.
+
 
 ## [v6.7.3] (December 2023)
 
