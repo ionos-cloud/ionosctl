@@ -32,7 +32,8 @@ func Root() *core.Command {
 
 	globalFlags := cmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultCols, tabheaders.ColsMessage(defaultCols))
-	_ = viper.BindPFlag(core.GetFlagName(cmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
+	// TODO: This is a hacky workaround for #415. Remove "autoscaling" when --cols behaviour is refactored.
+	_ = viper.BindPFlag(core.GetFlagName("autoscaling"+cmd.Command.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allCols, cobra.ShellCompDirectiveNoFileComp
 	})

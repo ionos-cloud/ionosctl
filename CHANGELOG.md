@@ -1,20 +1,19 @@
 # Changelog
 
-## [v6.7.4] (December 2023)
+## [v6.7.4] (January 2024)
 
 ### Added
 - Added `version` resource for Dataplatform API, with `list` and `latest` subcommands
-
-### Changed
-- When creating a Dataplatform cluster, now the latest version will be used by default
-
-## [v6.7.4] (TBD)
-
-### Added
 - Added support for Container-Registry Vulnerabilities
   - New `--vulnerability-scanning` flag added to `registry create` and `registry update` commands 
   - New `artifacts` and `vulnerabilities` commands under `container-registry`
   - `repository` command functionality will eventually be moved to `repository delete`. For the time being, both commands are available.
+
+### Changed
+- When creating a Dataplatform cluster, now the latest version will be used by default
+
+### Fixed
+- Fixed `--cols` for server: `server.cols` Viper variable being used both by `server` and `vm-autoscaling server` commands.
 
 ## [v6.7.3] (December 2023)
 
