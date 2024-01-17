@@ -29,9 +29,10 @@ func RegDeleteCmd() *core.Command {
 		},
 	)
 
-	cmd.AddStringFlag(FlagRegId, "i", "", "Specify the Registry ID", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagRegistryId, "i", "", "Specify the Registry ID", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(
-		FlagRegId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		constants.FlagRegistryId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 			return RegsIds(), cobra.ShellCompDirectiveNoFileComp
 		},
 	)
@@ -55,7 +56,9 @@ func CmdDelete(c *core.CommandConfig) error {
 	}
 
 	if allFlag {
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all Container Registries..."))
+		fmt.Fprintf(
+			c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all Container Registries..."),
+		)
 
 		regs, _, err := c.ContainerRegistryServices.Registry().List("")
 		if err != nil {
@@ -75,7 +78,7 @@ func CmdDelete(c *core.CommandConfig) error {
 			}
 		}
 	} else {
-		id, err := c.Command.Command.Flags().GetString(FlagRegId)
+		id, err := c.Command.Command.Flags().GetString(constants.FlagRegistryId)
 		if err != nil {
 			return err
 		}
@@ -98,7 +101,7 @@ func CmdDelete(c *core.CommandConfig) error {
 func PreCmdDelete(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlagsSets(
 		c.Command, c.NS,
-		[]string{FlagRegId},
+		[]string{constants.FlagRegistryId},
 		[]string{constants.ArgAll},
 	)
 }

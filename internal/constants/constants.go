@@ -75,6 +75,12 @@ Within each layer, a token takes precedence over a username and password combina
 	FlagGroupId  = "group-id"
 	FlagServerId = "server-id"
 	FlagActionId = "action-id"
+
+	FlagRegistryId       = "registry-id"
+	FlagRegistryIdShort  = "r"
+	FlagArtifactId       = "artifact-id"
+	FlagVulnerabilityId  = "vulnerability-id"
+	FlagRegistryVulnScan = "vulnerability-scanning"
 )
 
 // Flag descriptions. Prefixed with "Desc" for easy find and replace

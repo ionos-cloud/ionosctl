@@ -30,17 +30,25 @@ func TokenGetCmd() *core.Command {
 		},
 	)
 
-	cmd.AddStringFlag(FlagRegId, "r", "", "Registry ID")
+	cmd.AddStringFlag(constants.FlagRegistryId, constants.FlagRegistryIdShort, "", "Registry ID")
 	_ = cmd.Command.RegisterFlagCompletionFunc(
-		FlagRegId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		constants.FlagRegistryId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 			return registry.RegsIds(), cobra.ShellCompDirectiveNoFileComp
 		},
 	)
 
 	cmd.AddStringFlag(FlagTokenId, "t", "", "Token ID")
 	_ = cmd.Command.RegisterFlagCompletionFunc(
-		FlagTokenId, func(cobracmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-			return TokensIds(viper.GetString(core.GetFlagName(cmd.NS, FlagRegId))), cobra.ShellCompDirectiveNoFileComp
+		FlagTokenId,
+		func(cobracmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return TokensIds(
+				viper.GetString(
+					core.GetFlagName(
+						cmd.NS, constants.FlagRegistryId,
+					),
+				),
+			), cobra.ShellCompDirectiveNoFileComp
 		},
 	)
 
@@ -55,7 +63,7 @@ func TokenGetCmd() *core.Command {
 }
 
 func CmdGetToken(c *core.CommandConfig) error {
-	regId := viper.GetString(core.GetFlagName(c.NS, FlagRegId))
+	regId := viper.GetString(core.GetFlagName(c.NS, constants.FlagRegistryId))
 	tokenId := viper.GetString(core.GetFlagName(c.NS, FlagTokenId))
 
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
@@ -65,7 +73,9 @@ func CmdGetToken(c *core.CommandConfig) error {
 		return err
 	}
 
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.ContainerRegistryToken, token, tabheaders.GetHeadersAllDefault(AllTokenCols, cols))
+	out, err := jsontabwriter.GenerateOutput(
+		"", jsonpaths.ContainerRegistryToken, token, tabheaders.GetHeadersAllDefault(AllTokenCols, cols),
+	)
 	if err != nil {
 		return err
 	}
@@ -75,7 +85,7 @@ func CmdGetToken(c *core.CommandConfig) error {
 }
 
 func PreCmdGetToken(c *core.PreCommandConfig) error {
-	err := core.CheckRequiredFlags(c.Command, c.NS, FlagTokenId, FlagRegId)
+	err := core.CheckRequiredFlags(c.Command, c.NS, FlagTokenId, constants.FlagRegistryId)
 	if err != nil {
 		return err
 	}

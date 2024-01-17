@@ -32,12 +32,15 @@ func RegReplaceCmd() *core.Command {
 		},
 	)
 
-	cmd.AddStringFlag(FlagName, "n", "", "Specify the name of the registry", core.RequiredFlagOption())
-	cmd.AddStringFlag(FlagLocation, "", "", "Specify the location of the registry", core.RequiredFlagOption())
+	cmd.AddStringFlag(
+		constants.FlagName, constants.FlagNameShort, "", "Specify the name of the registry", core.RequiredFlagOption(),
+	)
+	cmd.AddStringFlag(constants.FlagLocation, "", "", "Specify the location of the registry", core.RequiredFlagOption())
 
-	cmd.AddStringFlag(FlagRegId, "i", "", "Specify the Registry ID", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagRegistryId, "i", "", "Specify the Registry ID", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(
-		FlagRegId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		constants.FlagRegistryId,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 			return RegsIds(), cobra.ShellCompDirectiveNoFileComp
 		},
 	)
@@ -54,6 +57,9 @@ func RegReplaceCmd() *core.Command {
 		},
 	)
 	cmd.AddStringFlag(FlagRegGCTime, "", "", "Specify the garbage collection schedule time of day")
+	cmd.AddBoolFlag(
+		constants.FlagRegistryVulnScan, "", true, "Enable/disable (?) vulnerability scanning (this is a paid add-on)",
+	)
 
 	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, tabheaders.ColsMessage(allCols))
 	_ = cmd.Command.RegisterFlagCompletionFunc(
@@ -68,17 +74,17 @@ func RegReplaceCmd() *core.Command {
 func CmdPut(c *core.CommandConfig) error {
 	var name, location string
 
-	name, err := c.Command.Command.Flags().GetString(FlagName)
+	name, err := c.Command.Command.Flags().GetString(constants.FlagName)
 	if err != nil {
 		return err
 	}
 
-	location, err = c.Command.Command.Flags().GetString(FlagLocation)
+	location, err = c.Command.Command.Flags().GetString(constants.FlagLocation)
 	if err != nil {
 		return err
 	}
 
-	id, err := c.Command.Command.Flags().GetString(FlagRegId)
+	id, err := c.Command.Command.Flags().GetString(constants.FlagRegistryId)
 	if err != nil {
 		return err
 	}
@@ -102,9 +108,14 @@ func CmdPut(c *core.CommandConfig) error {
 		v.SetTime("01:23:00+00:00")
 	}
 
+	feat := sdkgo.NewRegistryFeaturesWithDefaults()
+	featEnabled := viper.GetBool(core.GetFlagName(c.NS, constants.FlagRegistryVulnScan))
+	feat.SetVulnerabilityScanning(sdkgo.FeatureVulnerabilityScanning{Enabled: &featEnabled})
+
 	regPutProperties.SetName(name)
 	regPutProperties.SetLocation(location)
 	regPutProperties.SetGarbageCollectionSchedule(*v)
+	regPostProperties.SetFeatures(*feat)
 
 	var putInput = sdkgo.PutRegistryInput{}
 	putInput.SetProperties(regPutProperties)
@@ -119,7 +130,9 @@ func CmdPut(c *core.CommandConfig) error {
 
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.ContainerRegistryRegistry, reg, tabheaders.GetHeadersAllDefault(allCols, cols))
+	out, err := jsontabwriter.GenerateOutput(
+		"", jsonpaths.ContainerRegistryRegistry, reg, tabheaders.GetHeadersAllDefault(allCols, cols),
+	)
 	if err != nil {
 		return err
 	}
@@ -129,7 +142,9 @@ func CmdPut(c *core.CommandConfig) error {
 }
 
 func PreCmdPut(c *core.PreCommandConfig) error {
-	err := core.CheckRequiredFlags(c.Command, c.NS, FlagRegId, FlagName, FlagLocation)
+	err := core.CheckRequiredFlags(
+		c.Command, c.NS, constants.FlagRegistryId, constants.FlagName, constants.FlagLocation,
+	)
 	if err != nil {
 		return err
 	}

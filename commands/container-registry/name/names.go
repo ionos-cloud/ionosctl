@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 )
@@ -24,12 +25,12 @@ func RegNamesCmd() *core.Command {
 		},
 	)
 
-	cmd.AddStringFlag("name", "", "", "Name to check availability for", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagName, "", "", "Name to check availability for", core.RequiredFlagOption())
 	return cmd
 }
 
 func CmdCheck(c *core.CommandConfig) error {
-	name, err := c.Command.Command.Flags().GetString("name")
+	name, err := c.Command.Command.Flags().GetString(constants.FlagName)
 	if err != nil {
 		return err
 	}
@@ -41,10 +42,13 @@ func CmdCheck(c *core.CommandConfig) error {
 	}
 
 	if res.StatusCode == 400 {
-		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(
-			"Name must use only the characters \"a-z\", \"0-9\", or \"-\" "+
-				"and starts with a letter and ends with a letter or number "+
-				"and is between 3 to 63 characters in length."))
+		fmt.Fprintf(
+			c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(
+				"Name must use only the characters \"a-z\", \"0-9\", or \"-\" "+
+					"and starts with a letter and ends with a letter or number "+
+					"and is between 3 to 63 characters in length.",
+			),
+		)
 		return nil
 	}
 
@@ -53,7 +57,7 @@ func CmdCheck(c *core.CommandConfig) error {
 }
 
 func PreCmdCheck(c *core.PreCommandConfig) error {
-	err := core.CheckRequiredFlags(c.Command, c.NS, "name")
+	err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagName)
 	if err != nil {
 		return err
 	}

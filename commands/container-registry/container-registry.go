@@ -1,11 +1,13 @@
 package container_registry
 
 import (
+	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/artifacts"
 	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/location"
 	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/name"
 	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/registry"
 	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/repository"
 	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/token"
+	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/vulnerabilities"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/spf13/cobra"
 )
@@ -28,6 +30,8 @@ func ContainerRegistryCmd() *core.Command {
 	contregCmd.AddCommand(location.RegLocationsListCmd())
 	contregCmd.AddCommand(name.RegNamesCmd())
 	contregCmd.AddCommand(repository.RegRepoDeleteCmd())
+	contregCmd.AddCommand(artifacts.ArtifactsCmd())
+	contregCmd.AddCommand(vulnerabilities.VulnerabilitiesCmd())
 
 	return contregCmd
 }
