@@ -251,7 +251,7 @@ You can wait for the Request to be executed using ` + "`" + `--wait-for-request`
 		},
 	)
 	create.AddStringFlag(
-		constants.FlagCpuFamily, "", "AUTO",
+		constants.FlagCpuFamily, "", cloudapiv6.DefaultServerCPUFamily,
 		"CPU Family for the Server. For CUBE Servers, the CPU Family is INTEL_SKYLAKE. If the flag is not set, "+
 			"the CPU Family will be chosen based on the location of the Datacenter. "+
 			"It will always be the first CPU Family available, as returned by the API",
@@ -456,7 +456,7 @@ Required values to run command:
 		},
 	)
 	update.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "", "Name of the Server")
-	update.AddStringFlag(constants.FlagCpuFamily, "", cloudapiv6.DefaultServerCPUFamily, "CPU Family of the Server")
+	update.AddStringFlag(constants.FlagCpuFamily, "", "", "CPU Family of the Server")
 	_ = update.Command.RegisterFlagCompletionFunc(
 		constants.FlagCpuFamily, func(*cobra.Command, []string, string) ([]string, cobra.ShellCompDirective) {
 			datacenterId := viper.GetString(core.GetFlagName(update.NS, cloudapiv6.ArgDataCenterId))
