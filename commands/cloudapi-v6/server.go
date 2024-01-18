@@ -265,7 +265,8 @@ You can wait for the Request to be executed using ` + "`" + `--wait-for-request`
 		},
 	)
 	create.AddStringFlag(
-		constants.FlagAvailabilityZone, constants.FlagAvailabilityZoneShort, "AUTO", "Availability zone of the Server",
+		constants.FlagAvailabilityZone, constants.FlagAvailabilityZoneShort, cloudapiv6.DefaultServerCPUFamily,
+		"Availability zone of the Server",
 	)
 	_ = create.Command.RegisterFlagCompletionFunc(
 		constants.FlagAvailabilityZone,
@@ -1673,10 +1674,10 @@ func getNewServer(c *core.CommandConfig) (*resources.Server, error) {
 	// ENTERPRISE Server Properties
 	if viper.GetString(core.GetFlagName(c.NS, constants.FlagType)) == serverEnterpriseType {
 		if viper.IsSet(core.GetFlagName(c.NS, constants.FlagCpuFamily)) &&
-			viper.GetString(core.GetFlagName(c.NS, constants.FlagCpuFamily)) != "AUTO" {
+			viper.GetString(core.GetFlagName(c.NS, constants.FlagCpuFamily)) != cloudapiv6.DefaultServerCPUFamily {
 			input.SetCpuFamily(viper.GetString(core.GetFlagName(c.NS, constants.FlagCpuFamily)))
 		} else {
-			cpuFamily, err := defaultCpuFamily(c)
+			cpuFamily, err := DefaultCpuFamily(c)
 			if err != nil {
 				return nil, err
 			}
@@ -1901,7 +1902,7 @@ func DeleteAllServers(c *core.CommandConfig) error {
 	return nil
 }
 
-func defaultCpuFamily(c *core.CommandConfig) (string, error) {
+func DefaultCpuFamily(c *core.CommandConfig) (string, error) {
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 
 	dc, _, err := client.Must().CloudClient.DataCentersApi.DatacentersFindById(context.Background(), dcId).Execute()
