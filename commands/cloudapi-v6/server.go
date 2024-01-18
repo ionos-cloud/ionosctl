@@ -254,8 +254,7 @@ You can wait for the Request to be executed using ` + "`" + `--wait-for-request`
 		constants.FlagCpuFamily, "", "AUTO",
 		"CPU Family for the Server. For CUBE Servers, the CPU Family is INTEL_SKYLAKE. If the flag is not set, "+
 			"the CPU Family will be chosen based on the location of the Datacenter. "+
-			"It will always be the first CPU Family available, "+
-			"as returned by the API or the `ionosctl location cpu list` command",
+			"It will always be the first CPU Family available, as returned by the API",
 	)
 	_ = create.Command.RegisterFlagCompletionFunc(
 		constants.FlagCpuFamily, func(*cobra.Command, []string, string) ([]string, cobra.ShellCompDirective) {
