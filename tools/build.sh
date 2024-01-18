@@ -23,5 +23,9 @@ if [[ $1 == "install" ]]; then
   go install -ldflags "$ldflags"
 else
   mkdir -p "${OUT_D}"
-  go build -ldflags "$ldflags" -o "${OUT_D}/${BINARY_NAME}_${GOOS}_${GOARCH}"
+  if [ "${SIMPLE_NAME:-}" = "true" ]; then
+    go build -ldflags "$ldflags" -o "${OUT_D}/${BINARY_NAME}"
+  else
+    go build -ldflags "$ldflags" -o "${OUT_D}/${BINARY_NAME}_${GOOS}_${GOARCH}"
+  fi
 fi
