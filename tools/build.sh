@@ -10,7 +10,16 @@ VERSION="$(git tag -l | sort --version-sort | tail -n1 | cut -c 2-)"
 GIT_COMMIT="$(git rev-parse --short HEAD)"
 [[ -n $(git status -s) ]] && echo 'modified and/or untracked diff' && GIT_COMMIT="${GIT_COMMIT}+"
 
-ldflags="-X github.com/ionos-cloud/ionosctl/v6/commands.Version=${VERSION} -X github.com/ionos-cloud/ionosctl/v6/commands.GitCommit=${GIT_COMMIT}"
+label=""
+if [ "${RELEASE_BUILD:-}" = "true" ]; then
+  label="release"
+fi
+
+ldflags_base="-X github.com/ionos-cloud/ionosctl/v6/commands.Version=${VERSION} -X github.com/ionos-cloud/ionosctl/v6/commands.GitCommit=${GIT_COMMIT}"
+ldflags="${ldflags_base}"
+if [ -n "${label}" ]; then
+  ldflags="${ldflags} -X github.com/ionos-cloud/ionosctl/v6/commands.Label=${label}"
+fi
 
 echo "VERSION: ${VERSION}"
 echo "GIT_COMMIT: ${GIT_COMMIT}"

@@ -49,7 +49,7 @@ parts:
         *) echo "Unsupported architecture: $SNAPCRAFT_ARCH_TRIPLET" && exit 1 ;;
       esac
       
-      OUT_D=$SNAPCRAFT_PART_INSTALL/bin GOARCH=$GOARCH GOOS=linux SIMPLE_NAME=true tools/build.sh build
+      OUT_D=$SNAPCRAFT_PART_INSTALL/bin GOARCH=$GOARCH GOOS=linux RELEASE_BUILD=true SIMPLE_NAME=true tools/build.sh build
     build-snaps:
     - go
     build-packages:
