@@ -75,35 +75,35 @@ You can wait for the Request to be executed using `--wait-for-request` option. Y
 ## Options
 
 ```text
-  -u, --api-url string             Override default host url (default "https://api.ionos.com")
-  -z, --availability-zone string   Availability zone of the Server (default "AUTO")
-      --bus string                 [CUBE Server] The bus type of the Direct Attached Storage (default "VIRTIO")
-      --cols strings               Set of columns to be printed on output 
-                                   Available columns: [ServerId DatacenterId Name AvailabilityZone Cores Ram CpuFamily VmState State TemplateId Type BootCdromId BootVolumeId] (default [ServerId,Name,Type,AvailabilityZone,Cores,Ram,CpuFamily,VmState,State])
-  -c, --config string              Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
-      --cores int                  The total number of cores for the Server, e.g. 4. Maximum: depends on contract resource limits (required) (default 2)
-      --cpu-family string          CPU Family for the Server. For CUBE Servers, the CPU Family is INTEL_SKYLAKE (default "AMD_OPTERON")
-      --datacenter-id string       The unique Data Center Id (required)
-  -D, --depth int32                Controls the detail depth of the response objects. Max depth is 10.
-  -f, --force                      Force command to execute without user input
-  -h, --help                       Print usage
-  -a, --image-alias string         [CUBE Server] The Image Alias to use instead of Image Id for the Direct Attached Storage
-      --image-id string            [CUBE Server] The Image Id or snapshot Id to be used as for the Direct Attached Storage
-  -l, --licence-type string        [CUBE Server] Licence Type of the Direct Attached Storage. Can be one of: LINUX, RHEL, WINDOWS, WINDOWS2016, UNKNOWN, OTHER (default "LINUX")
-  -n, --name string                Name of the Server (default "Unnamed Server")
-      --no-headers                 Don't print table headers when table output is used
-  -o, --output string              Desired output format [text|json|api-json] (default "text")
-  -p, --password string            [CUBE Server] Initial image password to be set for installed OS. Works with public Images only. Not modifiable. Password rules allows all characters from a-z, A-Z, 0-9
-  -q, --quiet                      Quiet output
-      --ram string                 The amount of memory for the Server. Size must be specified in multiples of 256. e.g. --ram 256 or --ram 256MB (required)
-  -k, --ssh-key-paths strings      [CUBE Server] Absolute paths for the SSH Keys of the Direct Attached Storage
-      --template-id string         [CUBE Server] The unique Template Id (required)
-  -t, --timeout int                Timeout option for Request for Server creation/for Server to be in AVAILABLE state [seconds] (default 60)
-      --type string                Type usages for the Server. Can be one of: ENTERPRISE, CUBE, VCPU (default "ENTERPRISE")
-  -v, --verbose                    Print step-by-step process when running command
-  -N, --volume-name string         [CUBE Server] Name of the Direct Attached Storage (default "Unnamed Direct Attached Storage")
-  -w, --wait-for-request           Wait for the Request for Server creation to be executed
-  -W, --wait-for-state             Wait for new Server to be in AVAILABLE state
+  -u, --api-url string                          Override default host url (default "https://api.ionos.com")
+  -z, --availability-zone string                Availability zone of the Server (default "AUTO")
+      --bus string                              [CUBE Server] The bus type of the Direct Attached Storage (default "VIRTIO")
+      --cols strings                            Set of columns to be printed on output 
+                                                Available columns: [ServerId DatacenterId Name AvailabilityZone Cores Ram CpuFamily VmState State TemplateId Type BootCdromId BootVolumeId] (default [ServerId,Name,Type,AvailabilityZone,Cores,Ram,CpuFamily,VmState,State])
+  -c, --config string                           Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+      --cores int                               The total number of cores for the Server, e.g. 4. Maximum: depends on contract resource limits (required) (default 2)
+      --cpu-family ionosctl location cpu list   CPU Family for the Server. For CUBE Servers, the CPU Family is INTEL_SKYLAKE. If the flag is not set, the CPU Family will be chosen based on the location of the Datacenter. It will always be the first CPU Family available, as returned by the API or the ionosctl location cpu list command (default "AUTO")
+      --datacenter-id string                    The unique Data Center Id (required)
+  -D, --depth int32                             Controls the detail depth of the response objects. Max depth is 10.
+  -f, --force                                   Force command to execute without user input
+  -h, --help                                    Print usage
+  -a, --image-alias string                      [CUBE Server] The Image Alias to use instead of Image Id for the Direct Attached Storage
+      --image-id string                         [CUBE Server] The Image Id or snapshot Id to be used as for the Direct Attached Storage
+  -l, --licence-type string                     [CUBE Server] Licence Type of the Direct Attached Storage. Can be one of: LINUX, RHEL, WINDOWS, WINDOWS2016, UNKNOWN, OTHER (default "LINUX")
+  -n, --name string                             Name of the Server (default "Unnamed Server")
+      --no-headers                              Don't print table headers when table output is used
+  -o, --output string                           Desired output format [text|json|api-json] (default "text")
+  -p, --password string                         [CUBE Server] Initial image password to be set for installed OS. Works with public Images only. Not modifiable. Password rules allows all characters from a-z, A-Z, 0-9
+  -q, --quiet                                   Quiet output
+      --ram string                              The amount of memory for the Server. Size must be specified in multiples of 256. e.g. --ram 256 or --ram 256MB (required)
+  -k, --ssh-key-paths strings                   [CUBE Server] Absolute paths for the SSH Keys of the Direct Attached Storage
+      --template-id string                      [CUBE Server] The unique Template Id (required)
+  -t, --timeout int                             Timeout option for Request for Server creation/for Server to be in AVAILABLE state [seconds] (default 60)
+      --type string                             Type usages for the Server. Can be one of: ENTERPRISE, CUBE, VCPU (default "ENTERPRISE")
+  -v, --verbose                                 Print step-by-step process when running command
+  -N, --volume-name string                      [CUBE Server] Name of the Direct Attached Storage (default "Unnamed Direct Attached Storage")
+  -w, --wait-for-request                        Wait for the Request for Server creation to be executed
+  -W, --wait-for-state                          Wait for new Server to be in AVAILABLE state
 ```
 
 ## Examples

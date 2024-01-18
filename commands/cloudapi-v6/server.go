@@ -252,7 +252,10 @@ You can wait for the Request to be executed using ` + "`" + `--wait-for-request`
 	)
 	create.AddStringFlag(
 		constants.FlagCpuFamily, "", "AUTO",
-		"CPU Family for the Server. For CUBE Servers, the CPU Family is INTEL_SKYLAKE",
+		"CPU Family for the Server. For CUBE Servers, the CPU Family is INTEL_SKYLAKE. If the flag is not set, "+
+			"the CPU Family will be chosen based on the location of the Datacenter. "+
+			"It will always be the first CPU Family available, "+
+			"as returned by the API or the `ionosctl location cpu list` command",
 	)
 	_ = create.Command.RegisterFlagCompletionFunc(
 		constants.FlagCpuFamily, func(*cobra.Command, []string, string) ([]string, cobra.ShellCompDirective) {
@@ -1670,12 +1673,8 @@ func getNewServer(c *core.CommandConfig) (*resources.Server, error) {
 
 	// ENTERPRISE Server Properties
 	if viper.GetString(core.GetFlagName(c.NS, constants.FlagType)) == serverEnterpriseType {
-		if viper.IsSet(core.GetFlagName(c.NS, constants.FlagCpuFamily)) && viper.GetString(
-			core.GetFlagName(
-				c.NS,
-				constants.FlagCpuFamily,
-			),
-		) != "AUTO" {
+		if viper.IsSet(core.GetFlagName(c.NS, constants.FlagCpuFamily)) &&
+			viper.GetString(core.GetFlagName(c.NS, constants.FlagCpuFamily)) != "AUTO" {
 			input.SetCpuFamily(viper.GetString(core.GetFlagName(c.NS, constants.FlagCpuFamily)))
 		} else {
 			cpuFamily, err := defaultCpuFamily(c)
