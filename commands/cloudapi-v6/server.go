@@ -1910,6 +1910,10 @@ func DefaultCpuFamily(c *core.CommandConfig) (string, error) {
 		return "", err
 	}
 
+	if dc.Properties == nil {
+		return "", fmt.Errorf("could not retrieve Datacenter Properties")
+	}
+
 	if dc.Properties.CpuArchitecture == nil {
 		return "", errors.New("could not retrieve CpuArchitecture")
 	}
