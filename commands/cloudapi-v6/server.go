@@ -186,9 +186,9 @@ You can wait for the Request to be executed using ` + "`" + `--wait-for-request`
 		return []string{"256MB", "512MB", "1024MB", "2GB", "3GB", "4GB", "5GB", "10GB", "16GB"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddStringFlag(constants.FlagCpuFamily, "", cloudapiv6.DefaultServerCPUFamily,
-		"CPU Family for the Server. For CUBE Servers, the CPU Family is INTEL_SKYLAKE. " +
-		"If the flag is not set, the CPU Family will be chosen based on the location of the Datacenter. " +
-		"It will always be the first CPU Family available, as returned by the API")
+		"CPU Family for the Server. For CUBE Servers, the CPU Family is INTEL_SKYLAKE. "+
+			"If the flag is not set, the CPU Family will be chosen based on the location of the Datacenter. "+
+			"It will always be the first CPU Family available, as returned by the API")
 	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagCpuFamily, func(*cobra.Command, []string, string) ([]string, cobra.ShellCompDirective) {
 		datacenterId := viper.GetString(core.GetFlagName(create.NS, cloudapiv6.ArgDataCenterId))
 		return completer.DatacenterCPUFamilies(create.Command.Context(), datacenterId), cobra.ShellCompDirectiveNoFileComp

@@ -177,8 +177,8 @@ Required values to run a command (for Private Kubernetes Cluster):
 		return []string{"2048MB", "3GB", "4GB", "5GB", "10GB", "50GB", "100GB"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddStringFlag(constants.FlagCpuFamily, "", cloudapiv6.DefaultServerCPUFamily,
-		"CPU Type. If the flag is not set, the CPU Family will be chosen based on the location of the Datacenter. " +
-		"It will always be the first CPU Family available, as returned by the API")
+		"CPU Type. If the flag is not set, the CPU Family will be chosen based on the location of the Datacenter. "+
+			"It will always be the first CPU Family available, as returned by the API")
 	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagCpuFamily, func(*cobra.Command, []string, string) ([]string, cobra.ShellCompDirective) {
 		datacenterId := viper.GetString(core.GetFlagName(create.NS, cloudapiv6.ArgDataCenterId))
 		return completer.DatacenterCPUFamilies(create.Command.Context(), datacenterId), cobra.ShellCompDirectiveNoFileComp
