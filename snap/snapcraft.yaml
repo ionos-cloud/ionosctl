@@ -1,6 +1,6 @@
 name: ionosctl # registered name
 summary: IONOS Cloud CLI tool.
-base: core18
+base: core20
 description: |
   The IONOS Cloud CLI (ionosctl) gives the ability to manage IONOS Cloud infrastructure directly from Command Line.
 
@@ -37,13 +37,19 @@ parts:
         git checkout "${last_committed_tag}"
       fi
       snapcraftctl set-version "$(git describe --tags | sed 's/v//')"
-      override-build: |
+    override-build: |
       export GOPATH=$PWD
-      env CGO_ENABLED=0 GOOS=linux \
-      go build --ldflags "-s -w \
-        -X 'github.com/ionos-cloud/ionosctl/v6/commands.Version=$(git describe --tags --abbrev=0)' \
-        -X 'github.com/ionos-cloud/ionosctl/v6/commands.Label=release'" \
-        -a -installsuffix cgo -o $SNAPCRAFT_PART_INSTALL/bin/ionosctl
+      cd src/github.com/ionos-cloud/ionosctl
+      
+      case "$SNAPCRAFT_ARCH_TRIPLET" in
+        "x86_64-linux-gnu") GOARCH=amd64 ;;
+        "arm-linux-gnueabihf") GOARCH=arm ;;
+        "aarch64-linux-gnu") GOARCH=arm64 ;;
+        "i386-linux-gnu") GOARCH=386 ;;
+        *) echo "Unsupported architecture: $SNAPCRAFT_ARCH_TRIPLET" && exit 1 ;;
+      esac
+      
+      OUT_D=$SNAPCRAFT_PART_INSTALL/bin GOARCH=$GOARCH GOOS=linux RELEASE_BUILD=true SIMPLE_NAME=true tools/build.sh build
     build-snaps:
     - go
     build-packages:
