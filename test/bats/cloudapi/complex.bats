@@ -12,14 +12,16 @@ setup() {
     ssh_pub_key=$(cat "${ssh_key_path}.pub")
 }
 
-# teardown() {
-#     rm -f "${ssh_key_path}" "${ssh_key_path}.pub"
-#     ionosctl datacenter delete --datacenter-id "$datacenter_id" -f
-#     ionosctl ipblock delete --ipblock_id "$ipblock_id" -f
-# }
+teardown() {
+    rm -f "${ssh_key_path}" "${ssh_key_path}.pub"
+    echo "cleaning up datacenter $datacenter_id and ipblock $ipblock_id"
+    ionosctl datacenter delete --datacenter-id "$datacenter_id" -f -w
+    sleep 10
+    retry_command ionosctl ipblock delete --ipblock_id "$ipblock_id" -f -w
+}
 
 @test "Create a server with internet access, attach a volume, and verify SSH connection" {
-    run ionosctl ipblock create --location de/txl -o json -w -t 300
+    run ionosctl ipblock create --location de/txl --size 1 -o json -w -t 300
     assert_success
     ipblock_id=$(echo "$output" | jq -r '.id')
     assert_regex "$ipblock_id" "$uuid_v4_regex"
@@ -43,7 +45,6 @@ setup() {
     run ionosctl ipblock list -F location=de/txl -M 1 -o json
     assert_success
     found_ip=$(echo "$output" | jq -r '.items[] | .properties.ips[0]')
-    echo "found ip $found_ip"
 
     # Create a LAN. Use --cols to extract its ID.
     run ionosctl lan create --datacenter-id "$datacenter_id" --cols LanId --no-headers --public
@@ -69,7 +70,6 @@ setup() {
     # Validate the IPBlock IP matches
     nic_ip=$(echo "$output" | jq -r '.properties.ips[0]')
     assert_equal "$nic_ip" "$found_ip"
-    echo "Server Connection IP same as IPBlock IP $nic_ip"
 
     # Create a volume with SSH Key and User Data
     run ionosctl volume create --datacenter-id "$datacenter_id" --size 50 --image-alias ubuntu:latest --ssh-key-paths "${ssh_key_path}.pub" -o json -w -t 300
