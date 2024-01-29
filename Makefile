@@ -29,7 +29,7 @@ utest:
 test:
 	@echo "--- Run bats-core, integration and unit tests ---"
 	@go test $(TEST_FLAGS) -tags=integration $(TEST_DIRS)
-	@find test/bats/ -name "*.bats" -exec bats {} +
+	@test/run.sh # bats-core tests and other
 
 .PHONY: mocks
 mocks:

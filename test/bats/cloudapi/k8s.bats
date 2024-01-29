@@ -35,7 +35,7 @@ teardown() {
 }
 
 @test "Create public K8s Nodepool and assert that the exposed IP of the node is reachable" {
-    run ionosctl k8s nodepool create --name "$(randStr 8)" --cluster-id "$cluster_id" --datacenter-id "$datacenter_id" -o json -w -t 600
+    run ionosctl k8s nodepool create --name "$(randStr 8)" --cluster-id "$cluster_id" --datacenter-id "$datacenter_id" -o json -W -t 600
     assert_success
     nodepool_id=$(echo "$output" | jq -r '.id')
     assert_regex "nodepool_id" "$uuid_v4_regex"
