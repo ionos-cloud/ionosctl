@@ -1,5 +1,7 @@
 #!/usr/bin/env bats
 
+# tags: cloudapi-v6, datacenter, server, lan, nic, ipblock, volume
+
 load '../libs/bats-assert/load'
 load '../libs/bats-support/load'
 load '../setup.bats'
