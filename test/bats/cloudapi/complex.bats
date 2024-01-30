@@ -7,9 +7,6 @@ load '../libs/bats-support/load'
 load '../setup.bats'
 
 setup() {
-    uuid_v4_regex='^[0-9a-f]{8}-[0-9a-f]{4}-[4][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
-    ip_regex='^([0-9]{1,3}\.){3}[0-9]{1,3}(\/[0-9]{1,2})?$'
-
     ssh_key_path=$(generate_ssh_key)
     ssh_pub_key=$(cat "${ssh_key_path}.pub")
 }
