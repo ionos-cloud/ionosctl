@@ -28,8 +28,8 @@ utest:
 .PHONY: test
 test:
 	@echo "--- Run bats-core, integration and unit tests ---"
-	@go test $(TEST_FLAGS) -tags=integration $(TEST_DIRS)
 	@test/run.sh # bats-core tests and other
+	@go test $(TEST_FLAGS) -tags=integration $(TEST_DIRS)
 
 .PHONY: mocks
 mocks:
