@@ -14,6 +14,14 @@
 
 # IONOSCTL CLI
 
+---
+### Warning: API Basic Authentication Deprecation Notice
+Effective March 15, 2024, IONOS account holders using 2-Factor Authentication will no longer be able to utilize Basic Authentication for accessing our APIs, SDKs, and all related tools. Token creation and deletion via APIs and ionosCTL will also be restricted.
+
+Affected users are required to switch to token-based authorization. These tokens will be accessible through our new Token Manager in the Data Center Designer, launching at the beginning of February 2024.
+
+---
+
 ## Overview
 
 IonosCTL is a tool to help you manage your Ionos Cloud resources directly from your terminal.
