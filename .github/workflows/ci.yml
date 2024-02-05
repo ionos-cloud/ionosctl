@@ -38,6 +38,7 @@ jobs:
 
       - name: Run all tests on Ubuntu
         env:
+          BASE_BRANCH: ${{ github.base_ref }}
           IONOS_USERNAME: ${{ secrets.IONOS_USERNAME }}
           IONOS_PASSWORD: ${{ secrets.IONOS_PASSWORD }}
         run: make test

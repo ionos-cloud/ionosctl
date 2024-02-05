@@ -2,11 +2,11 @@
 
 # Get the absolute directory where this script is located
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
-
+BASE_BRANCH=${BASE_BRANCH:-master}
 BATS_FILES=$(find "${SCRIPT_DIR}/bats" -path "${SCRIPT_DIR}/bats/libs" -prune -o -name '*.bats' -print)
 
-# Get a list of modified files compared to the master branch
-MODIFIED_FILES=$(git diff --name-only master)
+# Get a list of modified files compared to the base
+MODIFIED_FILES=$(git diff --name-only $BASE_BRANCH)
 
 contains_tag() {
     tag=$1
