@@ -185,7 +185,10 @@ You can wait for the Request to be executed using ` + "`" + `--wait-for-request`
 	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagRam, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"256MB", "512MB", "1024MB", "2GB", "3GB", "4GB", "5GB", "10GB", "16GB"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(constants.FlagCpuFamily, "", cloudapiv6.DefaultServerCPUFamily, "CPU Family for the Server. For CUBE Servers, the CPU Family is INTEL_SKYLAKE")
+	create.AddStringFlag(constants.FlagCpuFamily, "", cloudapiv6.DefaultServerCPUFamily,
+		"CPU Family for the Server. For CUBE Servers, the CPU Family is INTEL_SKYLAKE. "+
+			"If the flag is not set, the CPU Family will be chosen based on the location of the Datacenter. "+
+			"It will always be the first CPU Family available, as returned by the API")
 	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagCpuFamily, func(*cobra.Command, []string, string) ([]string, cobra.ShellCompDirective) {
 		datacenterId := viper.GetString(core.GetFlagName(create.NS, cloudapiv6.ArgDataCenterId))
 		return completer.DatacenterCPUFamilies(create.Command.Context(), datacenterId), cobra.ShellCompDirectiveNoFileComp
@@ -288,7 +291,7 @@ Required values to run command:
 		}), cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "", "Name of the Server")
-	update.AddStringFlag(constants.FlagCpuFamily, "", cloudapiv6.DefaultServerCPUFamily, "CPU Family of the Server")
+	update.AddStringFlag(constants.FlagCpuFamily, "", "", "CPU Family of the Server")
 	_ = update.Command.RegisterFlagCompletionFunc(constants.FlagCpuFamily, func(*cobra.Command, []string, string) ([]string, cobra.ShellCompDirective) {
 		datacenterId := viper.GetString(core.GetFlagName(update.NS, cloudapiv6.ArgDataCenterId))
 		return completer.DatacenterCPUFamilies(update.Command.Context(), datacenterId), cobra.ShellCompDirectiveNoFileComp
@@ -1221,7 +1224,18 @@ func getNewServer(c *core.CommandConfig) (*resources.Server, error) {
 
 	// ENTERPRISE Server Properties
 	if viper.GetString(core.GetFlagName(c.NS, constants.FlagType)) == serverEnterpriseType {
-		input.SetCpuFamily(viper.GetString(core.GetFlagName(c.NS, constants.FlagCpuFamily)))
+		if viper.IsSet(core.GetFlagName(c.NS, constants.FlagCpuFamily)) &&
+			viper.GetString(core.GetFlagName(c.NS, constants.FlagCpuFamily)) != cloudapiv6.DefaultServerCPUFamily {
+			input.SetCpuFamily(viper.GetString(core.GetFlagName(c.NS, constants.FlagCpuFamily)))
+		} else {
+			cpuFamily, err := DefaultCpuFamily(c)
+			if err != nil {
+				return nil, err
+			}
+
+			input.SetCpuFamily(cpuFamily)
+		}
+
 		if !input.HasName() {
 			input.SetName("Unnamed Server")
 		}
@@ -1414,4 +1428,29 @@ func DeleteAllServers(c *core.CommandConfig) error {
 
 	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Servers successfully deleted"))
 	return nil
+}
+
+func DefaultCpuFamily(c *core.CommandConfig) (string, error) {
+	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
+
+	dc, _, err := client.Must().CloudClient.DataCentersApi.DatacentersFindById(context.Background(), dcId).Execute()
+	if err != nil {
+		return "", err
+	}
+
+	if dc.Properties == nil {
+		return "", fmt.Errorf("could not retrieve Datacenter Properties")
+	}
+
+	if dc.Properties.CpuArchitecture == nil {
+		return "", errors.New("could not retrieve CpuArchitecture")
+	}
+
+	cpuArch := (*dc.Properties.CpuArchitecture)[0]
+
+	if cpuArch.CpuFamily == nil {
+		return "", errors.New("could not retrieve CpuFamily")
+	}
+
+	return *cpuArch.CpuFamily, nil
 }
