@@ -44,10 +44,17 @@ jobs:
           cd bats-core
           sudo ./install.sh /usr/local
         shell: bash
+        if: matrix.os == 'ubuntu-latest'
 
       - name: Check code format
         run: make gofmt_check
         if: matrix.os == 'ubuntu-latest'
+
+      - name: Build
+        run: make build
+
+      - name: Install
+        run: make install
 
       - name: Run all tests on Ubuntu
         env:
@@ -63,12 +70,6 @@ jobs:
           IONOS_PASSWORD: ${{ secrets.IONOS_PASSWORD }}
         run: make utest
         if: matrix.os == 'windows-latest'
-
-      - name: Build
-        run: make build
-
-      - name: Install
-        run: make install
 
       - name: Version
         run: ionosctl version
