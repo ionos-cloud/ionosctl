@@ -28,8 +28,8 @@ jobs:
           fetch-depth: 0
 
       - name: Fetch Base Branch
-        run: |
-          git fetch --depth=1 origin +refs/heads/$BASE_BRANCH:$BASE_BRANCH
+        run: git fetch --depth=1 origin +refs/heads/${{ env.BASE_BRANCH }}:${{ env.BASE_BRANCH }}
+        shell: bash
         env:
           BASE_BRANCH: ${{ github.base_ref }}
 
@@ -37,6 +37,13 @@ jobs:
         uses: actions/setup-go@v3
         with:
           go-version-file: 'go.mod'
+
+      - name: Install bats-core
+        run: |
+          git clone https://github.com/bats-core/bats-core.git
+          cd bats-core
+          sudo ./install.sh /usr/local
+        shell: bash
 
       - name: Check code format
         run: make gofmt_check
