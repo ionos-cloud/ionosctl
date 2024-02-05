@@ -27,6 +27,12 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Fetch Base Branch
+        run: |
+          git fetch --depth=1 origin +refs/heads/$BASE_BRANCH:$BASE_BRANCH
+        env:
+          BASE_BRANCH: ${{ github.base_ref }}
+
       - name: Set up Go
         uses: actions/setup-go@v3
         with:
