@@ -1,14 +1,13 @@
-package cluster
+package backup
 
 import (
-	"context"
 	"fmt"
+
+	ionoscloud "github.com/ionos-cloud/sdk-go-dbaas-mongo"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
-	ionoscloud "github.com/ionos-cloud/sdk-go-dbaas-mongo"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -24,28 +23,18 @@ func Root() *core.Command {
 		},
 	}
 
-	cmd.Command.PersistentFlags().StringSlice(constants.ArgCols, nil, tabheaders.ColsMessage(allCols))
-	_ = cmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return allCols, cobra.ShellCompDirectiveNoFileComp
-	})
-
 	cmd.AddCommand(List())
-	cmd.AddCommand(Create())
-	cmd.AddCommand(Update())
-	cmd.AddCommand(Get())
-	cmd.AddCommand(Delete())
 
-	return cmd
 }
 
 var (
-	allCols = []string{"ClusterId"}
+	allCols = []string{"BackupId"}
 
 	defaultCols = allCols[0:0]
 )
 
-func Clusters(fs ...Filter) (ionoscloud.ClusterList, error) {
-	req := client.Must().MongoClient.ClustersApi.ClustersGet(context.Background())
+func Backups(fs ...Filter) (ionoscloud.ClusterList, error) {
+	req := client.Must().MongoClient.BackupsApi.ClustersRestorePost()
 
 	for _, f := range fs {
 		req = f(req)
