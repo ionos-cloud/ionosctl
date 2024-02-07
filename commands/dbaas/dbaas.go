@@ -1,6 +1,7 @@
 package dbaas
 
 import (
+	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mariadb"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
@@ -19,5 +20,6 @@ func DataBaseServiceCmd() *core.Command {
 	}
 	dbaasCmd.AddCommand(postgres.DBaaSPostgresCmd())
 	dbaasCmd.AddCommand(mongo.DBaaSMongoCmd())
+	dbaasCmd.AddCommand(mariadb.Root())
 	return dbaasCmd
 }
