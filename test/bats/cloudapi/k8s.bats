@@ -2,8 +2,9 @@
 
 # tags: k8s, k8s_cluster, k8s_nodepool, k8s_node
 
-load '../libs/bats-assert/load'
-load '../libs/bats-support/load'
+BATS_LIBS_PATH="${LIBS_PATH:-../libs}" # fallback to relative path if not set
+load "${BATS_LIBS_PATH}/bats-assert/load"
+load "${BATS_LIBS_PATH}/bats-support/load"
 load '../setup.bats'
 
 teardown_file() {

@@ -1,7 +1,8 @@
 #!/usr/bin/env bats
 
-load '../libs/bats-assert/load'
-load '../libs/bats-support/load'
+BATS_LIBS_PATH="${LIBS_PATH:-../libs}" # fallback to relative path if not set
+load "${BATS_LIBS_PATH}/bats-assert/load"
+load "${BATS_LIBS_PATH}/bats-support/load"
 
 setup_file() {
     uuid_v4_regex='^[0-9a-f]{8}-[0-9a-f]{4}-[4][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
