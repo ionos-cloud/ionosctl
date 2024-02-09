@@ -15,9 +15,9 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/pointer"
 	"github.com/spf13/viper"
 
+	ionoscloud "github.com/avirtopeanu-ionos/alpha-sdk-go-dbaas-mariadb"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	ionoscloud "github.com/ionos-cloud/sdk-go-dbaas-mongo"
 	"github.com/spf13/cobra"
 )
 

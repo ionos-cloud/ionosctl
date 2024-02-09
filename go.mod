@@ -38,13 +38,16 @@ require (
 	github.com/ionoscloudsdk/comptplus v1.0.4
 )
 
+require github.com/avirtopeanu-ionos/alpha-sdk-go-dbaas-mariadb v0.0.0-20240208092100-6669e0062c4a
+
+require github.com/pkg/term v1.2.0-beta.2 // indirect
+
 // `ionosctl shell` requirements
 require (
 	github.com/fatih/color v1.15.0 // indirect
 	github.com/itchyny/timefmt-go v0.1.5 // indirect
 	github.com/mattn/go-tty v0.0.5 // indirect
-	github.com/pkg/term v1.2.0-beta.2 // indirect
-	google.golang.org/protobuf v1.31.0 // indirect
+	google.golang.org/protobuf v1.32.0 // indirect
 )
 
 require (
@@ -67,7 +70,7 @@ require (
 	github.com/spf13/cast v1.5.1 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/subosito/gotenv v1.4.2 // indirect
-	golang.org/x/oauth2 v0.15.0 // indirect
+	golang.org/x/oauth2 v0.16.0 // indirect
 	golang.org/x/sys v0.15.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 	google.golang.org/appengine v1.6.8 // indirect
