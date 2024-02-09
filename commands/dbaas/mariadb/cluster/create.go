@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	ionoscloud "github.com/avirtopeanu-ionos/alpha-sdk-go-dbaas-mariadb"
 	"github.com/cilium/fake"
 	cloudapiv6completer "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/templates"
@@ -19,7 +20,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/convbytes"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/pointer"
-	ionoscloud "github.com/ionos-cloud/sdk-go-dbaas-mongo"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -37,47 +37,16 @@ func Create() *core.Command {
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			cluster := ionoscloud.CreateClusterProperties{}
-			if fn := core.GetFlagName(c.NS, constants.FlagEdition); viper.IsSet(fn) {
-				cluster.Edition = pointer.From(viper.GetString(fn))
-			}
-			if fn := core.GetFlagName(c.NS, constants.FlagType); viper.IsSet(fn) {
-				cluster.Type = pointer.From(viper.GetString(fn))
-			}
-			if fn := core.GetFlagName(c.NS, constants.FlagTemplateId); viper.IsSet(fn) {
-				// Old flag kept for backwards compatibility. Behaviour fully included in --template flag
-				cluster.TemplateID = pointer.From(viper.GetString(fn))
-			} else {
-				if fn := core.GetFlagName(c.NS, constants.FlagTemplate); viper.IsSet(fn) {
-					tmplId, err := templates.Resolve(viper.GetString(fn))
-					if err != nil {
-						return err
-					}
-					cluster.TemplateID = pointer.From(tmplId)
-				}
-			}
-
 			if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) {
 				cluster.DisplayName = pointer.From(viper.GetString(fn))
 			}
-			if fn := core.GetFlagName(c.NS, constants.FlagVersion); viper.GetString(fn) != "" {
-				cluster.MongoDBVersion = pointer.From(viper.GetString(fn))
-			}
-			if fn := core.GetFlagName(c.NS, constants.FlagLocation); viper.IsSet(fn) {
-				cluster.Location = pointer.From(viper.GetString(fn))
-			}
 			if fn := core.GetFlagName(c.NS, constants.FlagInstances); viper.IsSet(fn) {
 				cluster.Instances = pointer.From(viper.GetInt32(fn))
-			}
-			if fn := core.GetFlagName(c.NS, constants.FlagShards); viper.IsSet(fn) {
-				cluster.Shards = pointer.From(viper.GetInt32(fn))
 			}
 
 			// Enterprise flags
 			if fn := core.GetFlagName(c.NS, constants.FlagCores); viper.IsSet(fn) && viper.GetString(fn) != "" {
 				cluster.Cores = pointer.From(viper.GetInt32(fn))
-			}
-			if fn := core.GetFlagName(c.NS, constants.FlagStorageType); viper.IsSet(fn) && viper.GetString(fn) != "" {
-				cluster.StorageType = (*ionoscloud.StorageType)(pointer.From(viper.GetString(fn)))
 			}
 			if fn := core.GetFlagName(c.NS, constants.FlagStorageSize); viper.IsSet(fn) && viper.GetString(fn) != "" {
 				sizeInt64 := convbytes.StrToUnit(viper.GetString(fn), convbytes.MB)
@@ -88,7 +57,7 @@ func Create() *core.Command {
 				cluster.Ram = pointer.From(int32(sizeInt64))
 			}
 
-			createdCluster, _, err := client.Must().MongoClient.ClustersApi.ClustersPost(context.Background()).CreateClusterRequest(
+			createdCluster, _, err := client.Must().M.ClustersApi.ClustersPost(context.Background()).CreateClusterRequest(
 				ionoscloud.CreateClusterRequest{Properties: &cluster},
 			).Execute()
 			if err != nil {

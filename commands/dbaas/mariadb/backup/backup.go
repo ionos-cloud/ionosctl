@@ -3,7 +3,7 @@ package backup
 import (
 	"fmt"
 
-	ionoscloud "github.com/ionos-cloud/sdk-go-dbaas-mongo"
+	ionoscloud "github.com/avirtopeanu-ionos/alpha-sdk-go-dbaas-mariadb"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
