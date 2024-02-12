@@ -6,7 +6,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/resource2table"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 )
@@ -31,12 +31,7 @@ func List() *core.Command {
 
 			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-			clustersConverted, err := resource2table.ConvertDbaasMongoClustersToTable(clusters)
-			if err != nil {
-				return err
-			}
-
-			out, err := jsontabwriter.GenerateOutputPreconverted(clusters, clustersConverted,
+			out, err := jsontabwriter.GenerateOutput("items", jsonpaths.DbaasMongoCluster, clusters,
 				tabheaders.GetHeaders(allCols, defaultCols, cols))
 			if err != nil {
 				return err

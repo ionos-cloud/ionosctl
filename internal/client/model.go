@@ -3,6 +3,7 @@ package client
 import (
 	"fmt"
 
+	maria "github.com/avirtopeanu-ionos/alpha-sdk-go-dbaas-mariadb"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	sdkgoauth "github.com/ionos-cloud/sdk-go-auth"
 	certmanager "github.com/ionos-cloud/sdk-go-cert-manager"
@@ -61,13 +62,15 @@ type Client struct {
 	CloudClient          *cloudv6.APIClient
 	AuthClient           *sdkgoauth.APIClient
 	CertManagerClient    *certmanager.APIClient
-	PostgresClient       *postgres.APIClient
-	MongoClient          *mongo.APIClient
 	DataplatformClient   *dataplatform.APIClient
 	RegistryClient       *registry.APIClient
 	DnsClient            *dns.APIClient
 	LoggingServiceClient *logsvc.APIClient
 	VMAscClient          *vmasc.AutoScalingGroupsApiService
+
+	PostgresClient *postgres.APIClient
+	MongoClient    *mongo.APIClient
+	MariaClient    *maria.APIClient
 }
 
 func appendUserAgent(userAgent string) string {
@@ -86,12 +89,6 @@ func newClient(name, pwd, token, hostUrl string, usedLayer *Layer) *Client {
 	certManagerConfig := certmanager.NewConfiguration(name, pwd, token, hostUrl)
 	certManagerConfig.UserAgent = appendUserAgent(certManagerConfig.UserAgent)
 
-	postgresConfig := postgres.NewConfiguration(name, pwd, token, hostUrl)
-	postgresConfig.UserAgent = appendUserAgent(postgresConfig.UserAgent)
-
-	mongoConfig := mongo.NewConfiguration(name, pwd, token, hostUrl)
-	mongoConfig.UserAgent = appendUserAgent(mongoConfig.UserAgent)
-
 	dpConfig := dataplatform.NewConfiguration(name, pwd, token, hostUrl)
 	dpConfig.UserAgent = appendUserAgent(dpConfig.UserAgent)
 
@@ -106,18 +103,30 @@ func newClient(name, pwd, token, hostUrl string, usedLayer *Layer) *Client {
 
 	vmascConfig := vmasc.NewConfiguration(name, pwd, token, hostUrl)
 	vmascConfig.UserAgent = appendUserAgent(vmascConfig.UserAgent)
+	// DBAAS
+	postgresConfig := postgres.NewConfiguration(name, pwd, token, hostUrl)
+	postgresConfig.UserAgent = appendUserAgent(postgresConfig.UserAgent)
+
+	mongoConfig := mongo.NewConfiguration(name, pwd, token, hostUrl)
+	mongoConfig.UserAgent = appendUserAgent(mongoConfig.UserAgent)
+
+	mariaConfig := maria.NewConfiguration(name, pwd, token, hostUrl)
+	mariaConfig.UserAgent = appendUserAgent(mariaConfig.UserAgent)
 
 	return &Client{
 		CloudClient:          cloudv6.NewAPIClient(clientConfig),
 		AuthClient:           sdkgoauth.NewAPIClient(authConfig),
 		CertManagerClient:    certmanager.NewAPIClient(certManagerConfig),
-		PostgresClient:       postgres.NewAPIClient(postgresConfig),
-		MongoClient:          mongo.NewAPIClient(mongoConfig),
 		DataplatformClient:   dataplatform.NewAPIClient(dpConfig),
 		RegistryClient:       registry.NewAPIClient(registryConfig),
 		DnsClient:            dns.NewAPIClient(dnsConfig),
 		LoggingServiceClient: logsvc.NewAPIClient(logsConfig),
 		VMAscClient:          vmasc.NewAPIClient(vmascConfig).AutoScalingGroupsApi,
-		usedLayer:            usedLayer,
+
+		PostgresClient: postgres.NewAPIClient(postgresConfig),
+		MongoClient:    mongo.NewAPIClient(mongoConfig),
+		MariaClient:    maria.NewAPIClient(mariaConfig),
+
+		usedLayer: usedLayer,
 	}
 }

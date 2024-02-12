@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	sdkgo "github.com/avirtopeanu-ionos/alpha-sdk-go-dbaas-mariadb"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
@@ -12,7 +13,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
-	sdkgo "github.com/ionos-cloud/sdk-go-dbaas-mongo"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -20,23 +20,14 @@ import (
 func confirmStringForCluster(c sdkgo.ClusterResponse) string {
 	askString := ""
 	if p := c.Properties; p != nil {
-		if edition := p.Edition; edition != nil {
-			askString = fmt.Sprintf("%s %s", askString, *edition)
-		}
-		if ctype := p.Type; ctype != nil {
-			askString = fmt.Sprintf("%s %s", askString, *ctype)
-		}
 		if c.Id != nil {
 			askString = fmt.Sprintf("%s cluster %s", askString, *c.Id)
 		}
 		if n := p.DisplayName; n != nil {
 			askString = fmt.Sprintf("%s (%s)", askString, *n)
 		}
-		if v := p.MongoDBVersion; v != nil {
+		if v := p.MariadbVersion; v != nil {
 			askString = fmt.Sprintf("%s version v%s", askString, *v)
-		}
-		if l := p.Location; l != nil {
-			askString = fmt.Sprintf("%s located in %s", askString, *l)
 		}
 	}
 	return fmt.Sprintf("delete%s and its snapshots", askString)
@@ -61,7 +52,7 @@ ionosctl db mar c d --all --name <name>`,
 			}
 
 			clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
-			chosenCluster, _, err := client.Must().MongoClient.ClustersApi.ClustersFindById(context.Background(), clusterId).Execute()
+			chosenCluster, _, err := client.Must().MariaClient.ClustersApi.ClustersFindById(context.Background(), clusterId).Execute()
 			if err != nil {
 				wrapped := fmt.Errorf("failed trying to find cluster by id: %w", err)
 				keepGoing := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("%s, try deleting %s anyways", wrapped.Error(), clusterId))
@@ -76,7 +67,7 @@ ionosctl db mar c d --all --name <name>`,
 			}
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting cluster: %s", clusterId))
 
-			_, _, err = client.Must().MongoClient.ClustersApi.ClustersDelete(context.Background(), clusterId).Execute()
+			_, _, err = client.Must().MariaClient.ClustersApi.ClustersDelete(context.Background(), clusterId).Execute()
 			return err
 		},
 		InitClient: true,
