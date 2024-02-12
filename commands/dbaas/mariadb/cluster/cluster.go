@@ -31,7 +31,7 @@ func Root() *core.Command {
 
 	cmd.AddCommand(List())
 	cmd.AddCommand(Create())
-	cmd.AddCommand(Update())
+	// cmd.AddCommand(Update())
 	cmd.AddCommand(Get())
 	cmd.AddCommand(Delete())
 
@@ -45,7 +45,7 @@ var (
 )
 
 func Clusters(fs ...Filter) (ionoscloud.ClusterList, error) {
-	req := client.Must().MongoClient.ClustersApi.ClustersGet(context.Background())
+	req := client.Must().MariaClient.ClustersApi.ClustersGet(context.Background())
 
 	for _, f := range fs {
 		req = f(req)

@@ -1,9 +1,10 @@
 package backup
 
 import (
-	"fmt"
+	"context"
 
 	ionoscloud "github.com/avirtopeanu-ionos/alpha-sdk-go-dbaas-mariadb"
+	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/cluster"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
@@ -25,6 +26,8 @@ func Root() *core.Command {
 
 	cmd.AddCommand(List())
 
+	return cmd
+
 }
 
 var (
@@ -33,38 +36,32 @@ var (
 	defaultCols = allCols[0:0]
 )
 
-func Backups(fs ...Filter) (ionoscloud.ClusterList, error) {
-	req := client.Must().MongoClient.BackupsApi.ClustersRestorePost()
+func Backups(fs ...Filter) (ionoscloud.BackupList, error) {
+	cs, err := cluster.Clusters()
 
+	if cs.Items == nil || len(*cs.Items) == 0 {
+		return ionoscloud.BackupList{}, nil // no clusters -> empty response with no error
+	}
+
+	req := client.Must().MariaClient.BackupsApi.BackupsGet(context.Background())
 	for _, f := range fs {
 		req = f(req)
 	}
 
-	clusters, _, err := req.Execute()
-	if err != nil {
-		return ionoscloud.ClusterList{}, fmt.Errorf("failed getting clusters: %w", err)
-	}
-	return clusters, err
+	bs, _, err := req.Execute()
+
+	return bs, err
 }
 
-type Filter func(ionoscloud.ApiClustersGetRequest) ionoscloud.ApiClustersGetRequest
+type Filter func(request ionoscloud.ApiBackupsGetRequest) ionoscloud.ApiBackupsGetRequest
 
 func FilterPaginationFlags(c *core.CommandConfig) Filter {
-	return func(req ionoscloud.ApiClustersGetRequest) ionoscloud.ApiClustersGetRequest {
+	return func(req ionoscloud.ApiBackupsGetRequest) ionoscloud.ApiBackupsGetRequest {
 		if f := core.GetFlagName(c.NS, constants.FlagMaxResults); viper.IsSet(f) {
 			req = req.Limit(viper.GetInt32(f))
 		}
 		if f := core.GetFlagName(c.NS, constants.FlagOffset); viper.IsSet(f) {
 			req = req.Offset(viper.GetInt32(f))
-		}
-		return req
-	}
-}
-
-func FilterNameFlags(c *core.CommandConfig) Filter {
-	return func(req ionoscloud.ApiClustersGetRequest) ionoscloud.ApiClustersGetRequest {
-		if f := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(f) {
-			req = req.FilterName(viper.GetString(f))
 		}
 		return req
 	}

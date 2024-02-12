@@ -10,15 +10,13 @@ import (
 	ionoscloud "github.com/avirtopeanu-ionos/alpha-sdk-go-dbaas-mariadb"
 	"github.com/cilium/fake"
 	cloudapiv6completer "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
-	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/templates"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/resource2table"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/convbytes"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/pointer"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -57,7 +55,17 @@ func Create() *core.Command {
 				cluster.Ram = pointer.From(int32(sizeInt64))
 			}
 
-			createdCluster, _, err := client.Must().M.ClustersApi.ClustersPost(context.Background()).CreateClusterRequest(
+			cluster.MaintenanceWindow = &ionoscloud.MaintenanceWindow{}
+			if fn := core.GetFlagName(c.NS, constants.FlagMaintenanceDay); viper.IsSet(fn) {
+				cluster.MaintenanceWindow.DayOfTheWeek = (*ionoscloud.DayOfTheWeek)(pointer.From(
+					viper.GetString(fn)))
+			}
+			if fn := core.GetFlagName(c.NS, constants.FlagMaintenanceTime); viper.IsSet(fn) {
+				cluster.MaintenanceWindow.Time = pointer.From(
+					viper.GetString(fn))
+			}
+
+			createdCluster, _, err := client.Must().MariaClient.ClustersApi.ClustersPost(context.Background()).CreateClusterRequest(
 				ionoscloud.CreateClusterRequest{Properties: &cluster},
 			).Execute()
 			if err != nil {
@@ -66,13 +74,8 @@ func Create() *core.Command {
 
 			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-			clusterConverted, err := resource2table.ConvertDbaasMongoClusterToTable(createdCluster)
-			if err != nil {
-				return err
-			}
-
-			out, err := jsontabwriter.GenerateOutputPreconverted(createdCluster, clusterConverted,
-				tabheaders.GetHeaders(allCols, defaultCols, cols))
+			out, err := jsontabwriter.GenerateOutput("items", jsonpaths.DbaasMongoCluster,
+				createdCluster, tabheaders.GetHeaders(allCols, defaultCols, cols))
 			if err != nil {
 				return err
 			}
@@ -85,26 +88,6 @@ func Create() *core.Command {
 
 	cmd.AddStringFlag(constants.FlagTemplateId, "", "", "The ID of a MariaDB Template. Please use --template instead")
 	cmd.Command.Flags().MarkHidden(constants.FlagTemplateId)
-
-	// Template
-	cmd.AddStringFlag(constants.FlagTemplate, "", "", "The ID of a MariaDB Template, or a word contained in the name of one. "+
-		"Templates specify the number of cores, storage size, and memory. Business editions default to XS template. Playground editions default to playground template.")
-	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagTemplate, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		ts, err := templates.List()
-		if err != nil {
-			return nil, cobra.ShellCompDirectiveError
-		}
-		names := functional.Fold(ts, func(acc []string, t ionoscloud.TemplateResponse) []string {
-			if t.Properties == nil || t.Properties.Name == nil {
-				return acc
-			}
-			wordsInTemplateName := strings.Split(*t.Properties.Name, " ")
-			// Add only the last words of templates (e.g. 4XL, L, S, XS, Playground) since completions dont support spaces and they have multiple words in their names
-			return append(acc, wordsInTemplateName[len(wordsInTemplateName)-1])
-		}, nil)
-
-		return names, cobra.ShellCompDirectiveNoFileComp
-	})
 
 	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "The name of your cluster", core.RequiredFlagOption())
 	cmd.AddStringFlag(constants.FlagVersion, "", "6.0", "The MongoDB version of your cluster", core.RequiredFlagOption())
