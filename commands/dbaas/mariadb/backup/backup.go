@@ -16,15 +16,16 @@ import (
 func Root() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "cluster",
-			Aliases:          []string{"c"},
-			Short:            "MariaDB Cluster Operations",
-			Long:             "The sub-commands of `ionosctl dbaas mariadb cluster` allow you to manage the MariaDB Clusters under your account.",
+			Use:              "backup",
+			Aliases:          []string{"b"},
+			Short:            "MariaDB Backup Operations",
+			Long:             "The sub-commands of `ionosctl dbaas mariadb backup` allow you to manage the MariaDB Cluster Backups under your account.",
 			TraverseChildren: true,
 		},
 	}
 
 	cmd.AddCommand(List())
+	cmd.AddCommand(Restore())
 
 	return cmd
 

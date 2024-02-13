@@ -31,6 +31,21 @@ func Create() *core.Command {
 		ShortDesc: "Create DBaaS MariaDB clusters",
 		Example:   "", // TODO:
 		PreCmdRun: func(c *core.PreCommandConfig) error {
+			c.Command.Command.MarkFlagRequired(constants.FlagName)
+			c.Command.Command.MarkFlagRequired(constants.FlagVersion)
+
+			c.Command.Command.MarkFlagRequired(constants.FlagInstances)
+			c.Command.Command.MarkFlagRequired(constants.FlagCores)
+			c.Command.Command.MarkFlagRequired(constants.FlagRam)
+			c.Command.Command.MarkFlagRequired(constants.FlagStorageSize)
+
+			c.Command.Command.MarkFlagRequired(constants.FlagDatacenterId)
+			c.Command.Command.MarkFlagRequired(constants.FlagLanId)
+			c.Command.Command.MarkFlagRequired(constants.FlagCidr)
+
+			c.Command.Command.MarkFlagRequired("username")
+			c.Command.Command.MarkFlagRequired("password")
+
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
@@ -86,20 +101,12 @@ func Create() *core.Command {
 		InitClient: true,
 	})
 
-	cmd.AddStringFlag(constants.FlagTemplateId, "", "", "The ID of a MariaDB Template. Please use --template instead")
-	cmd.Command.Flags().MarkHidden(constants.FlagTemplateId)
-
 	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "The name of your cluster", core.RequiredFlagOption())
 	cmd.AddStringFlag(constants.FlagVersion, "", "6.0", "The MongoDB version of your cluster", core.RequiredFlagOption())
-	cmd.AddStringFlag(constants.FlagLocation, constants.FlagLocationShort, "", "The physical location where the cluster will be created. (defaults to the location of the connected datacenter)")
-	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagLocation, func(cmdCobra *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return cloudapiv6completer.LocationIds(), cobra.ShellCompDirectiveNoFileComp
-	})
 	cmd.AddInt32Flag(constants.FlagInstances, "", 1, "The total number of instances of the cluster (one primary and n-1 secondaries). Minimum of 3 for enterprise edition")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagInstances, func(cmdCobra *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"1", "3", "5", "7"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddInt32Flag(constants.FlagShards, "", 1, "The total number of shards in the sharded_cluster cluster. Setting this flag is only possible for enterprise clusters and infers a sharded_cluster type. Possible values: 2 - 32. (required for sharded_cluster enterprise clusters)", core.RequiredFlagOption())
 
 	// Maintenance
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
@@ -136,6 +143,17 @@ func Create() *core.Command {
 		}
 
 		return []string{strings.Join(cidrs, ",")}, cobra.ShellCompDirectiveNoFileComp
+	})
+
+	// credentials / DBUser
+	cmd.AddStringFlag("username", "", "", "The initial username", core.RequiredFlagOption())
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagDatacenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return cloudapiv6completer.DataCentersIds(), cobra.ShellCompDirectiveNoFileComp
+	})
+	cmd.AddStringFlag("password", "", "", "The password", core.RequiredFlagOption())
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagLanId, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return cloudapiv6completer.LansIds(viper.GetString(core.GetFlagName(cmd.NS, constants.FlagDatacenterId))),
+			cobra.ShellCompDirectiveNoFileComp
 	})
 
 	// Misc
