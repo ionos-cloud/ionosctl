@@ -1,6 +1,9 @@
 package mongo
 
 import (
+	"os"
+	"strings"
+
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/apiversion"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/cluster"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/logs"
@@ -12,6 +15,8 @@ import (
 )
 
 func DBaaSMongoCmd() *core.Command {
+	nonDeprecatedAliases := []string{"mongodb", "mdb"}
+
 	mongoCmd := &core.Command{
 		Command: &cobra.Command{
 			Use:     "mongo",
@@ -22,6 +27,17 @@ With IONOS Cloud Database as a Service (DBaaS) MongoDB, you can quickly set up a
 			TraverseChildren: true,
 		},
 	}
+
+	mongoCmd.Command.PersistentPreRun = func(cmd *cobra.Command, args []string) {
+		aliasUsed := os.Args[2]
+		if aliasUsed == "m" {
+			cmd.PrintErrf("WARNING: 'm' is deprecated and will be removed in a future release, "+
+				"please use any of '%s' instead.\n",
+				strings.Join(append([]string{mongoCmd.Command.Use}, nonDeprecatedAliases...), "', '"),
+			)
+		}
+	}
+
 	mongoCmd.AddCommand(cluster.ClusterCmd())
 	mongoCmd.AddCommand(templates.TemplatesCmd())
 	mongoCmd.AddCommand(user.UserCmd())
