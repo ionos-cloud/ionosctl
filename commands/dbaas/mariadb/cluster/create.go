@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"math/rand"
+	"strconv"
 	"strings"
 	"time"
 
@@ -18,6 +19,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/convbytes"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/pointer"
+	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -31,13 +33,10 @@ func Create() *core.Command {
 		ShortDesc: "Create DBaaS MariaDB clusters",
 		Example:   "", // TODO:
 		PreCmdRun: func(c *core.PreCommandConfig) error {
+			// core.CheckRequiredFlags(c, []string{})
+
 			c.Command.Command.MarkFlagRequired(constants.FlagName)
 			c.Command.Command.MarkFlagRequired(constants.FlagVersion)
-
-			c.Command.Command.MarkFlagRequired(constants.FlagInstances)
-			c.Command.Command.MarkFlagRequired(constants.FlagCores)
-			c.Command.Command.MarkFlagRequired(constants.FlagRam)
-			c.Command.Command.MarkFlagRequired(constants.FlagStorageSize)
 
 			c.Command.Command.MarkFlagRequired(constants.FlagDatacenterId)
 			c.Command.Command.MarkFlagRequired(constants.FlagLanId)
@@ -107,7 +106,15 @@ func Create() *core.Command {
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagInstances, func(cmdCobra *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"1", "3", "5", "7"}, cobra.ShellCompDirectiveNoFileComp
 	})
-
+	cmd.AddInt32Flag(constants.FlagCores, "", 1, "Core count")
+	cmd.AddStringFlag(constants.FlagRam, "", "2GB", "Custom RAM: multiples of 1024. e.g. --ram 1024 or --ram 1024MB or --ram 4GB (required and only settable for enterprise edition)")
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagRam, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return []string{"1024MB", "2GB", "4GB", "8GB", "12GB", "16GB"}, cobra.ShellCompDirectiveNoFileComp
+	})
+	cmd.AddStringFlag(constants.FlagStorageSize, "", strconv.Itoa(cloudapiv6.DefaultVolumeSize), "The size of the Storage in GB. e.g.: --size 10 or --size 10GB. The maximum Volume size is determined by your contract limit")
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagStorageSize, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return []string{"10GB", "20GB", "50GB", "100GB", "1TB"}, cobra.ShellCompDirectiveNoFileComp
+	})
 	// Maintenance
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	hour := 10 + r.Intn(7) // Random hour 10-16
@@ -146,11 +153,11 @@ func Create() *core.Command {
 	})
 
 	// credentials / DBUser
-	cmd.AddStringFlag("username", "", "", "The initial username", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.ArgUser, "", "", "The initial username", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagDatacenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return cloudapiv6completer.DataCentersIds(), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddStringFlag("password", "", "", "The password", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.ArgPassword, "", "", "The password", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagLanId, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return cloudapiv6completer.LansIds(viper.GetString(core.GetFlagName(cmd.NS, constants.FlagDatacenterId))),
 			cobra.ShellCompDirectiveNoFileComp
