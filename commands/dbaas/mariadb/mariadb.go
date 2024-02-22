@@ -11,7 +11,7 @@ func Root() *core.Command {
 	mongoCmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "mariadb",
-			Aliases:          []string{"maria", "mar"},
+			Aliases:          []string{"maria", "mar", "ma"},
 			Short:            "DBaaS MariaDB Operations",
 			TraverseChildren: true,
 		},

@@ -1,5 +1,14 @@
 # Changelog
 
+## Upcoming
+
+### Added
+- Added support for 'dbaas mariadb'
+- Added 'mg' alias for 'dbaas mongo'
+
+### Deprecated
+- Deprecated 'm' and 'mdb' aliases for 'dbaas mongo'. Using this alias will print a warning to stderr
+
 ## [v6.7.5] (March 2024)
 
 ### Added
