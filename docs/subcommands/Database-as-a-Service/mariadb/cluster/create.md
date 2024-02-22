@@ -1,0 +1,72 @@
+---
+description: "Create DBaaS MariaDB clusters"
+---
+
+# DbaasMariadbClusterCreate
+
+## Usage
+
+```text
+ionosctl dbaas mariadb cluster create [flags]
+```
+
+## Aliases
+
+For `mariadb` command:
+
+```text
+[maria mar]
+```
+
+For `cluster` command:
+
+```text
+[c]
+```
+
+For `create` command:
+
+```text
+[c]
+```
+
+## Description
+
+Create DBaaS MariaDB clusters
+
+## Options
+
+```text
+  -u, --api-url string            Override default host url (default "https://api.ionos.com")
+      --cidr string               The IP and subnet for your cluster. All IPs must be in a /24 network (required)
+      --cols strings              Set of columns to be printed on output 
+                                  Available columns: [ClusterId]
+  -c, --config string             Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+      --cores int32               Core count (default 1)
+      --datacenter-id string      The datacenter to which your cluster will be connected. Must be in the same location as the cluster (required)
+  -f, --force                     Force command to execute without user input
+  -h, --help                      Print usage
+      --instances int32           The total number of instances of the cluster (one primary and n-1 secondaries). Minimum of 3 for enterprise edition (default 1)
+      --lan-id string             The numeric LAN ID with which you connect your cluster (required)
+      --maintenance-day string    Day Of the Week for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur. Defaults to a random day during Mon-Fri, during the hours 10:00-16:00 (default "Random (Mon-Fri 10:00-16:00)")
+      --maintenance-time string   Time for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur. e.g.: 16:30:59. Defaults to a random day during Mon-Fri, during the hours 10:00-16:00 (default "Random (Mon-Fri 10:00-16:00)")
+  -n, --name string               The name of your cluster (required)
+      --no-headers                Don't print table headers when table output is used
+  -o, --output string             Desired output format [text|json|api-json] (default "text")
+      --password string           The password (required)
+  -q, --quiet                     Quiet output
+      --ram string                Custom RAM: multiples of 1024. e.g. --ram 1024 or --ram 1024MB or --ram 4GB (required and only settable for enterprise edition) (default "2GB")
+      --storage-size string       The size of the Storage in GB. e.g.: --size 10 or --size 10GB. The maximum Volume size is determined by your contract limit (default "10")
+  -t, --timeout int               Timeout option for Request [seconds] (default 60)
+      --user string               The initial username (required)
+  -v, --verbose                   Print step-by-step process when running command
+      --version string            The MongoDB version of your cluster (required) (default "6.0")
+  -w, --wait-for-request          Wait for the Request to be executed
+```
+
+## Examples
+
+```text
+i db mariadb cluster create --name NAME --version VERSION --datacenter-id DATACENTER_ID --lan-id LAN_ID --cidr CIDR --user USER --password PASSWORD 
+```
+

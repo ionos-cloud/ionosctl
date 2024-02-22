@@ -267,6 +267,15 @@
         * [list](subcommands%2FDNS%2Fzone%2Flist.md)
         * [update](subcommands%2FDNS%2Fzone%2Fupdate.md)
 * Database as a Service
+    * mariadb
+        * backup
+            * [list](subcommands%2FDatabase-as-a-Service%2Fmariadb%2Fbackup%2Flist.md)
+            * [restore](subcommands%2FDatabase-as-a-Service%2Fmariadb%2Fbackup%2Frestore.md)
+        * cluster
+            * [create](subcommands%2FDatabase-as-a-Service%2Fmariadb%2Fcluster%2Fcreate.md)
+            * [delete](subcommands%2FDatabase-as-a-Service%2Fmariadb%2Fcluster%2Fdelete.md)
+            * [get](subcommands%2FDatabase-as-a-Service%2Fmariadb%2Fcluster%2Fget.md)
+            * [list](subcommands%2FDatabase-as-a-Service%2Fmariadb%2Fcluster%2Flist.md)
     * mongo
         * api
             * [versions](subcommands%2FDatabase-as-a-Service%2Fmongo%2Fapi%2Fversions.md)
