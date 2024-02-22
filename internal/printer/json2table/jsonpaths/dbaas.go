@@ -2,6 +2,23 @@ package jsonpaths
 
 // DBaaS json paths
 var (
+	/*
+		"properties":{"connections":[{"cidr":"192.168.1.209/24","datacenterId":"5ed7be83-9fc5-44ea-9c4d-f15f1fc83345","lanId":"1"}],"cores":1,"displayName":"asdfasdf","dnsName":"ma-redlvpvg74vj6qjc.mariadb.de-txl.ionos.com","instances":1,"maintenanceWindow":{"dayOfTheWeek":"Monday","time":"16:00:00"},"mariadbVersion":"10.11","ram":2048,"storageSize":10}}
+	*/
+	DbaasMariadbCluster = map[string]string{
+		"ClusterId": "id",
+		"Name":      "properties.displayName",
+		"DNS":       "properties.dnsName",
+		"Instances": "properties.instances",
+		"Version":   "properties.mariadbVersion",
+		"State":     "metadata.state",
+
+		"Cores":       "properties.cores",
+		"Ram":         "properties.ram",
+		"StorageSize": "properties.storageSize",
+		"StorageType": "properties.storageType",
+	}
+
 	DbaasMongoCluster = map[string]string{
 		"ClusterId":    "id",
 		"Name":         "properties.displayName",

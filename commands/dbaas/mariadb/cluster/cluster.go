@@ -39,9 +39,9 @@ func Root() *core.Command {
 }
 
 var (
-	allCols = []string{"ClusterId"}
+	allCols = []string{"Id", "Name", "DNS", "Instances", "Version", "State", "Cores", "RAM", "StorageSize", "StorageType"}
 
-	defaultCols = allCols[0:0]
+	defaultCols = allCols[0:6]
 )
 
 func Clusters(fs ...Filter) (ionoscloud.ClusterList, error) {
