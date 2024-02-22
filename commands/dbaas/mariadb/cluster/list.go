@@ -31,7 +31,7 @@ func List() *core.Command {
 
 			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-			out, err := jsontabwriter.GenerateOutput("items", jsonpaths.DbaasMongoCluster, clusters,
+			out, err := jsontabwriter.GenerateOutput("items", jsonpaths.DbaasMariadbCluster, clusters,
 				tabheaders.GetHeaders(allCols, defaultCols, cols))
 			if err != nil {
 				return err

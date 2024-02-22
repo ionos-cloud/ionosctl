@@ -11,8 +11,12 @@ import (
 	ionoscloud "github.com/avirtopeanu-ionos/alpha-sdk-go-dbaas-mariadb"
 	"github.com/cilium/fake"
 	cloudapiv6completer "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/convbytes"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/pointer"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
@@ -45,7 +49,7 @@ func Create() *core.Command {
 			if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) {
 				cluster.DisplayName = pointer.From(viper.GetString(fn))
 			}
-			if fn := core.GetFlagName(c.NS, constants.FlagInstances); viper.IsSet(fn) {
+			if fn := core.GetFlagName(c.NS, constants.FlagInstances); viper.GetString(fn) != "" {
 				cluster.Instances = pointer.From(viper.GetInt32(fn))
 			}
 			if fn := core.GetFlagName(c.NS, constants.FlagVersion); viper.IsSet(fn) {
@@ -99,29 +103,31 @@ func Create() *core.Command {
 			}
 			fmt.Printf("%#v\n", cluster)
 
-			// createdCluster, _, err := client.Must().MariaClient.ClustersApi.ClustersPost(context.Background()).CreateClusterRequest(
-			// 	ionoscloud.CreateClusterRequest{Properties: &cluster},
-			// ).Execute()
-			// if err != nil {
-			// 	return fmt.Errorf("failed creating cluster: %w", err)
-			// }
+			createdCluster, _, err := client.Must().MariaClient.ClustersApi.ClustersPost(context.Background()).CreateClusterRequest(
+				ionoscloud.CreateClusterRequest{Properties: &cluster},
+			).Execute()
+			if err != nil {
+				return fmt.Errorf("failed creating cluster: %w", err)
+			}
 
-			// cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+			out, err := jsontabwriter.GenerateOutput("items", jsonpaths.DbaasMariadbCluster,
+				createdCluster, tabheaders.GetHeaders(allCols, defaultCols, cols))
+			if err != nil {
+				return err
+			}
 
-			// out, err := jsontabwriter.GenerateOutput("items", jsonpaths.DbaasMongoCluster,
-			// 	createdCluster, tabheaders.GetHeaders(allCols, defaultCols, cols))
-			// if err != nil {
-			// 	return err
-			// }
-
-			// fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+			fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
 			return nil
 		},
 		InitClient: true,
 	})
 
 	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "The name of your cluster", core.RequiredFlagOption())
-	cmd.AddStringFlag(constants.FlagVersion, "", "6.0", "The MongoDB version of your cluster", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagVersion, "", "10.6", "The MongoDB version of your cluster", core.RequiredFlagOption())
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagInstances, func(cmdCobra *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return []string{"10.6", "10.11"}, cobra.ShellCompDirectiveNoFileComp
+	})
 
 	cmd.AddInt32Flag(constants.FlagInstances, "", 1, "The total number of instances of the cluster (one primary and n-1 secondaries). Minimum of 3 for enterprise edition")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagInstances, func(cmdCobra *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
