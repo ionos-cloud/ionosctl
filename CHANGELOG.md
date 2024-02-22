@@ -3,8 +3,14 @@
 ## Upcoming
 
 ### Fixed
-
 - Fixed a bug for `image upload` where using a custom `--ftp-url` and no `--location` would silently fail the operation
+
+### Added
+- Added support for 'dbaas mariadb'
+- Added 'mg' alias for 'dbaas mongo'
+
+### Deprecated
+- Deprecated 'm' and 'mdb' aliases for 'dbaas mongo'. Using this alias will print a warning to stderr
 
 ## [v6.7.5] (March 2024)
 
