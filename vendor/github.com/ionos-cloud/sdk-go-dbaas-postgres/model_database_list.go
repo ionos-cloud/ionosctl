@@ -14,39 +14,45 @@ import (
 	"encoding/json"
 )
 
-// ClusterBackupList List of backups.
-type ClusterBackupList struct {
+// DatabaseList struct for DatabaseList
+type DatabaseList struct {
 	// The offset specified in the request (if none was specified, the default offset is 0).
 	Offset *int32 `json:"offset,omitempty"`
 	// The limit specified in the request (if none was specified, the default limit is 100).
 	Limit *int32           `json:"limit,omitempty"`
-	Links *PaginationLinks `json:"links,omitempty"`
-	Type  *ResourceType    `json:"type,omitempty"`
+	Links *PaginationLinks `json:"_links,omitempty"`
+	Type  *ResourceType    `json:"type"`
 	// The unique ID of the resource.
-	Id    *string           `json:"id,omitempty"`
-	Items *[]BackupResponse `json:"items,omitempty"`
+	Id *string `json:"id"`
+	// Absolute URL of the resource.
+	Href  *string             `json:"href"`
+	Items *[]DatabaseResource `json:"items"`
 }
 
-// NewClusterBackupList instantiates a new ClusterBackupList object
+// NewDatabaseList instantiates a new DatabaseList object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewClusterBackupList() *ClusterBackupList {
-	this := ClusterBackupList{}
+func NewDatabaseList(type_ ResourceType, id string, href string, items []DatabaseResource) *DatabaseList {
+	this := DatabaseList{}
 
 	var offset int32 = 0
 	this.Offset = &offset
 	var limit int32 = 100
 	this.Limit = &limit
+	this.Type = &type_
+	this.Id = &id
+	this.Href = &href
+	this.Items = &items
 
 	return &this
 }
 
-// NewClusterBackupListWithDefaults instantiates a new ClusterBackupList object
+// NewDatabaseListWithDefaults instantiates a new DatabaseList object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewClusterBackupListWithDefaults() *ClusterBackupList {
-	this := ClusterBackupList{}
+func NewDatabaseListWithDefaults() *DatabaseList {
+	this := DatabaseList{}
 	var offset int32 = 0
 	this.Offset = &offset
 	var limit int32 = 100
@@ -56,7 +62,7 @@ func NewClusterBackupListWithDefaults() *ClusterBackupList {
 
 // GetOffset returns the Offset field value
 // If the value is explicit nil, the zero value for int32 will be returned
-func (o *ClusterBackupList) GetOffset() *int32 {
+func (o *DatabaseList) GetOffset() *int32 {
 	if o == nil {
 		return nil
 	}
@@ -68,7 +74,7 @@ func (o *ClusterBackupList) GetOffset() *int32 {
 // GetOffsetOk returns a tuple with the Offset field value
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *ClusterBackupList) GetOffsetOk() (*int32, bool) {
+func (o *DatabaseList) GetOffsetOk() (*int32, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -77,14 +83,14 @@ func (o *ClusterBackupList) GetOffsetOk() (*int32, bool) {
 }
 
 // SetOffset sets field value
-func (o *ClusterBackupList) SetOffset(v int32) {
+func (o *DatabaseList) SetOffset(v int32) {
 
 	o.Offset = &v
 
 }
 
 // HasOffset returns a boolean if a field has been set.
-func (o *ClusterBackupList) HasOffset() bool {
+func (o *DatabaseList) HasOffset() bool {
 	if o != nil && o.Offset != nil {
 		return true
 	}
@@ -94,7 +100,7 @@ func (o *ClusterBackupList) HasOffset() bool {
 
 // GetLimit returns the Limit field value
 // If the value is explicit nil, the zero value for int32 will be returned
-func (o *ClusterBackupList) GetLimit() *int32 {
+func (o *DatabaseList) GetLimit() *int32 {
 	if o == nil {
 		return nil
 	}
@@ -106,7 +112,7 @@ func (o *ClusterBackupList) GetLimit() *int32 {
 // GetLimitOk returns a tuple with the Limit field value
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *ClusterBackupList) GetLimitOk() (*int32, bool) {
+func (o *DatabaseList) GetLimitOk() (*int32, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -115,14 +121,14 @@ func (o *ClusterBackupList) GetLimitOk() (*int32, bool) {
 }
 
 // SetLimit sets field value
-func (o *ClusterBackupList) SetLimit(v int32) {
+func (o *DatabaseList) SetLimit(v int32) {
 
 	o.Limit = &v
 
 }
 
 // HasLimit returns a boolean if a field has been set.
-func (o *ClusterBackupList) HasLimit() bool {
+func (o *DatabaseList) HasLimit() bool {
 	if o != nil && o.Limit != nil {
 		return true
 	}
@@ -132,7 +138,7 @@ func (o *ClusterBackupList) HasLimit() bool {
 
 // GetLinks returns the Links field value
 // If the value is explicit nil, the zero value for PaginationLinks will be returned
-func (o *ClusterBackupList) GetLinks() *PaginationLinks {
+func (o *DatabaseList) GetLinks() *PaginationLinks {
 	if o == nil {
 		return nil
 	}
@@ -144,7 +150,7 @@ func (o *ClusterBackupList) GetLinks() *PaginationLinks {
 // GetLinksOk returns a tuple with the Links field value
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *ClusterBackupList) GetLinksOk() (*PaginationLinks, bool) {
+func (o *DatabaseList) GetLinksOk() (*PaginationLinks, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -153,14 +159,14 @@ func (o *ClusterBackupList) GetLinksOk() (*PaginationLinks, bool) {
 }
 
 // SetLinks sets field value
-func (o *ClusterBackupList) SetLinks(v PaginationLinks) {
+func (o *DatabaseList) SetLinks(v PaginationLinks) {
 
 	o.Links = &v
 
 }
 
 // HasLinks returns a boolean if a field has been set.
-func (o *ClusterBackupList) HasLinks() bool {
+func (o *DatabaseList) HasLinks() bool {
 	if o != nil && o.Links != nil {
 		return true
 	}
@@ -170,7 +176,7 @@ func (o *ClusterBackupList) HasLinks() bool {
 
 // GetType returns the Type field value
 // If the value is explicit nil, the zero value for ResourceType will be returned
-func (o *ClusterBackupList) GetType() *ResourceType {
+func (o *DatabaseList) GetType() *ResourceType {
 	if o == nil {
 		return nil
 	}
@@ -182,7 +188,7 @@ func (o *ClusterBackupList) GetType() *ResourceType {
 // GetTypeOk returns a tuple with the Type field value
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *ClusterBackupList) GetTypeOk() (*ResourceType, bool) {
+func (o *DatabaseList) GetTypeOk() (*ResourceType, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -191,14 +197,14 @@ func (o *ClusterBackupList) GetTypeOk() (*ResourceType, bool) {
 }
 
 // SetType sets field value
-func (o *ClusterBackupList) SetType(v ResourceType) {
+func (o *DatabaseList) SetType(v ResourceType) {
 
 	o.Type = &v
 
 }
 
 // HasType returns a boolean if a field has been set.
-func (o *ClusterBackupList) HasType() bool {
+func (o *DatabaseList) HasType() bool {
 	if o != nil && o.Type != nil {
 		return true
 	}
@@ -208,7 +214,7 @@ func (o *ClusterBackupList) HasType() bool {
 
 // GetId returns the Id field value
 // If the value is explicit nil, the zero value for string will be returned
-func (o *ClusterBackupList) GetId() *string {
+func (o *DatabaseList) GetId() *string {
 	if o == nil {
 		return nil
 	}
@@ -220,7 +226,7 @@ func (o *ClusterBackupList) GetId() *string {
 // GetIdOk returns a tuple with the Id field value
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *ClusterBackupList) GetIdOk() (*string, bool) {
+func (o *DatabaseList) GetIdOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -229,14 +235,14 @@ func (o *ClusterBackupList) GetIdOk() (*string, bool) {
 }
 
 // SetId sets field value
-func (o *ClusterBackupList) SetId(v string) {
+func (o *DatabaseList) SetId(v string) {
 
 	o.Id = &v
 
 }
 
 // HasId returns a boolean if a field has been set.
-func (o *ClusterBackupList) HasId() bool {
+func (o *DatabaseList) HasId() bool {
 	if o != nil && o.Id != nil {
 		return true
 	}
@@ -244,9 +250,47 @@ func (o *ClusterBackupList) HasId() bool {
 	return false
 }
 
+// GetHref returns the Href field value
+// If the value is explicit nil, the zero value for string will be returned
+func (o *DatabaseList) GetHref() *string {
+	if o == nil {
+		return nil
+	}
+
+	return o.Href
+
+}
+
+// GetHrefOk returns a tuple with the Href field value
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *DatabaseList) GetHrefOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+
+	return o.Href, true
+}
+
+// SetHref sets field value
+func (o *DatabaseList) SetHref(v string) {
+
+	o.Href = &v
+
+}
+
+// HasHref returns a boolean if a field has been set.
+func (o *DatabaseList) HasHref() bool {
+	if o != nil && o.Href != nil {
+		return true
+	}
+
+	return false
+}
+
 // GetItems returns the Items field value
-// If the value is explicit nil, the zero value for []BackupResponse will be returned
-func (o *ClusterBackupList) GetItems() *[]BackupResponse {
+// If the value is explicit nil, the zero value for []DatabaseResource will be returned
+func (o *DatabaseList) GetItems() *[]DatabaseResource {
 	if o == nil {
 		return nil
 	}
@@ -258,7 +302,7 @@ func (o *ClusterBackupList) GetItems() *[]BackupResponse {
 // GetItemsOk returns a tuple with the Items field value
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *ClusterBackupList) GetItemsOk() (*[]BackupResponse, bool) {
+func (o *DatabaseList) GetItemsOk() (*[]DatabaseResource, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -267,14 +311,14 @@ func (o *ClusterBackupList) GetItemsOk() (*[]BackupResponse, bool) {
 }
 
 // SetItems sets field value
-func (o *ClusterBackupList) SetItems(v []BackupResponse) {
+func (o *DatabaseList) SetItems(v []DatabaseResource) {
 
 	o.Items = &v
 
 }
 
 // HasItems returns a boolean if a field has been set.
-func (o *ClusterBackupList) HasItems() bool {
+func (o *DatabaseList) HasItems() bool {
 	if o != nil && o.Items != nil {
 		return true
 	}
@@ -282,7 +326,7 @@ func (o *ClusterBackupList) HasItems() bool {
 	return false
 }
 
-func (o ClusterBackupList) MarshalJSON() ([]byte, error) {
+func (o DatabaseList) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 	if o.Offset != nil {
 		toSerialize["offset"] = o.Offset
@@ -293,7 +337,7 @@ func (o ClusterBackupList) MarshalJSON() ([]byte, error) {
 	}
 
 	if o.Links != nil {
-		toSerialize["links"] = o.Links
+		toSerialize["_links"] = o.Links
 	}
 
 	if o.Type != nil {
@@ -304,6 +348,10 @@ func (o ClusterBackupList) MarshalJSON() ([]byte, error) {
 		toSerialize["id"] = o.Id
 	}
 
+	if o.Href != nil {
+		toSerialize["href"] = o.Href
+	}
+
 	if o.Items != nil {
 		toSerialize["items"] = o.Items
 	}
@@ -311,38 +359,38 @@ func (o ClusterBackupList) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-type NullableClusterBackupList struct {
-	value *ClusterBackupList
+type NullableDatabaseList struct {
+	value *DatabaseList
 	isSet bool
 }
 
-func (v NullableClusterBackupList) Get() *ClusterBackupList {
+func (v NullableDatabaseList) Get() *DatabaseList {
 	return v.value
 }
 
-func (v *NullableClusterBackupList) Set(val *ClusterBackupList) {
+func (v *NullableDatabaseList) Set(val *DatabaseList) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableClusterBackupList) IsSet() bool {
+func (v NullableDatabaseList) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableClusterBackupList) Unset() {
+func (v *NullableDatabaseList) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableClusterBackupList(val *ClusterBackupList) *NullableClusterBackupList {
-	return &NullableClusterBackupList{value: val, isSet: true}
+func NewNullableDatabaseList(val *DatabaseList) *NullableDatabaseList {
+	return &NullableDatabaseList{value: val, isSet: true}
 }
 
-func (v NullableClusterBackupList) MarshalJSON() ([]byte, error) {
+func (v NullableDatabaseList) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableClusterBackupList) UnmarshalJSON(src []byte) error {
+func (v *NullableDatabaseList) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
