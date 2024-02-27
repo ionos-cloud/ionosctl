@@ -3,6 +3,26 @@ package jsonpaths
 // DBaaS json paths
 var (
 	/*
+			{
+		      "id": "498ae72f-411f-11eb-9d07-046c59cc737e",
+		      "properties": {
+		        "clusterId": "498ae72f-411f-11eb-9d07-046c59cc737e",
+		        "items": [
+		          {
+		            "created": "2020-12-10T13:37:50+01:00",
+		            "size": 543
+		          }
+		        ]
+		      }
+			}
+	*/
+	DbaasMariadbBackup = map[string]string{
+		"BackupId": "id",
+		// TODO
+
+	}
+
+	/*
 		"properties":{"connections":[{"cidr":"192.168.1.209/24","datacenterId":"5ed7be83-9fc5-44ea-9c4d-f15f1fc83345","lanId":"1"}],"cores":1,"displayName":"asdfasdf","dnsName":"ma-redlvpvg74vj6qjc.mariadb.de-txl.ionos.com","instances":1,"maintenanceWindow":{"dayOfTheWeek":"Monday","time":"16:00:00"},"mariadbVersion":"10.11","ram":2048,"storageSize":10}}
 	*/
 	DbaasMariadbCluster = map[string]string{

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	sdkmariadb "github.com/avirtopeanu-ionos/alpha-sdk-go-dbaas-mariadb"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/convbytes"
@@ -11,6 +12,25 @@ import (
 	sdkmongo "github.com/ionos-cloud/sdk-go-dbaas-mongo"
 	sdkpsql "github.com/ionos-cloud/sdk-go-dbaas-postgres"
 )
+
+func ConvertDbaasMariadbBackupToTable(backup sdkmariadb.BackupResponse) ([]map[string]interface{}, error) {
+	properties, ok := backup.GetPropertiesOk()
+	if !ok || properties == nil {
+		return nil, fmt.Errorf("could not retrieve MariaDB Backup properties")
+	}
+
+	meta, ok := backup.GetMetadataOk()
+	if !ok || meta == nil {
+		return nil, fmt.Errorf("could not retrieve MariaDB metadata")
+	}
+
+	id, ok := properties.GetIdOk()
+	if !ok || id == nil {
+		return nil, fmt.Errorf("could not retrieve MariaDB metadata")
+	}
+
+	return nil, nil
+}
 
 func ConvertDbaasMongoClusterToTable(cluster sdkmongo.ClusterResponse) ([]map[string]interface{}, error) {
 	properties, ok := cluster.GetPropertiesOk()

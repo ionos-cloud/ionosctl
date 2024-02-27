@@ -6,9 +6,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 )
 
 func List() *core.Command {
@@ -29,15 +27,15 @@ func List() *core.Command {
 				return err
 			}
 
-			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+			// cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-			out, err := jsontabwriter.GenerateOutput("items", jsonpaths.DbaasPostgresBackup,
-				backups, tabheaders.GetHeaders(allCols, defaultCols, cols))
-			if err != nil {
-				return err
-			}
-
-			fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+			// out, err := jsontabwriter.GenerateOutput("items", jsonpaths.DbaasPostgresBackup,
+			// 	backups, tabheaders.GetHeaders(allCols, defaultCols, cols))
+			// if err != nil {
+			// 	return err
+			// }
+			j, err := backups.MarshalJSON()
+			fmt.Fprintf(c.Command.Command.OutOrStdout(), string(j))
 			return nil
 		},
 		InitClient: true,
