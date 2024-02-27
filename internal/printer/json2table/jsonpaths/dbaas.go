@@ -73,4 +73,15 @@ var (
 		"StorageType":         "properties.storageType",
 		"SynchronizationMode": "properties.synchronizationMode",
 	}
+
+	DbaasPostgresUser = map[string]string{
+		"Id":       "id",
+		"Username": "properties.username",
+		"System":   "properties.system",
+	}
+
+	DbaasPostgresDatabase = map[string]string{
+		"Name":  "properties.name",
+		"Owner": "properties.owner",
+	}
 )

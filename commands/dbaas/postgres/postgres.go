@@ -1,6 +1,7 @@
 package postgres
 
 import (
+	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres/user"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/spf13/cobra"
 )
@@ -20,5 +21,6 @@ func DBaaSPostgresCmd() *core.Command {
 	pgsqlCmd.AddCommand(BackupCmd())
 	pgsqlCmd.AddCommand(PgsqlVersionCmd())
 	pgsqlCmd.AddCommand(APIVersionCmd())
+	pgsqlCmd.AddCommand(user.UserCmd())
 	return pgsqlCmd
 }
