@@ -17,9 +17,8 @@ var (
 			}
 	*/
 	DbaasMariadbBackup = map[string]string{
-		"BackupId": "id",
-		// TODO
-
+		"BackupId":  "id",
+		"ClusterId": "properties.clusterId",
 	}
 
 	/*

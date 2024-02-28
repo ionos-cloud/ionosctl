@@ -9,6 +9,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -56,6 +57,14 @@ func Clusters(fs ...Filter) (ionoscloud.ClusterList, error) {
 		return ionoscloud.ClusterList{}, fmt.Errorf("failed getting clusters: %w", err)
 	}
 	return clusters, err
+}
+
+func ClustersProperty[V any](f func(c ionoscloud.ClusterResponse) V, fs ...Filter) []V {
+	recs, err := Clusters(fs...)
+	if err != nil {
+		return nil
+	}
+	return functional.Map(*recs.Items, f)
 }
 
 type Filter func(ionoscloud.ApiClustersGetRequest) ionoscloud.ApiClustersGetRequest

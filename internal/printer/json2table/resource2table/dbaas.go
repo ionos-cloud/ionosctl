@@ -11,6 +11,8 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 	sdkmongo "github.com/ionos-cloud/sdk-go-dbaas-mongo"
 	sdkpsql "github.com/ionos-cloud/sdk-go-dbaas-postgres"
+
+	"github.com/dustin/go-humanize"
 )
 
 func ConvertDbaasMariadbBackupToTable(backup sdkmariadb.BackupResponse) ([]map[string]interface{}, error) {
@@ -19,14 +21,28 @@ func ConvertDbaasMariadbBackupToTable(backup sdkmariadb.BackupResponse) ([]map[s
 		return nil, fmt.Errorf("could not retrieve MariaDB Backup properties")
 	}
 
-	meta, ok := backup.GetMetadataOk()
-	if !ok || meta == nil {
-		return nil, fmt.Errorf("could not retrieve MariaDB metadata")
+	out, err := json2table.ConvertJSONToTable("", jsonpaths.DbaasMariadbBackup, backup)
+	if err != nil {
+		return nil, fmt.Errorf("could not convert from JSON to Table format: %w", err)
 	}
 
-	id, ok := properties.GetIdOk()
-	if !ok || id == nil {
-		return nil, fmt.Errorf("could not retrieve MariaDB metadata")
+	items, ok := properties.GetItemsOk()
+	if !ok || items == nil || len(*items) == 0 {
+		return out, nil // can be empty if no backups
+	}
+
+	for _, i := range *items {
+		// converts i.Created from Time to string "x (time) ago"
+		created, ok := i.GetCreatedOk()
+		if !ok || created == nil {
+			continue
+		}
+
+		size, ok := i.GetSizeOk()
+		if !ok || created == nil {
+			continue
+		}
+		out[0]["Items"] = fmt.Sprintf("%s (%d MiB)\n", humanize.Time(*created), *size)
 	}
 
 	return nil, nil

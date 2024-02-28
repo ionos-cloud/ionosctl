@@ -16,10 +16,9 @@ import (
 
 // Backup A backup object.
 type Backup struct {
-	// The unique ID of the resource.
-	Id *string `json:"id,omitempty"`
-	// The unique ID of the cluster.
-	ClusterId *string `json:"clusterId,omitempty"`
+	// The unique ID of the cluster that was backed up.
+	ClusterId *string       `json:"clusterId,omitempty"`
+	Items     *[]BackupItem `json:"items,omitempty"`
 }
 
 // NewBackup instantiates a new Backup object
@@ -38,44 +37,6 @@ func NewBackup() *Backup {
 func NewBackupWithDefaults() *Backup {
 	this := Backup{}
 	return &this
-}
-
-// GetId returns the Id field value
-// If the value is explicit nil, the zero value for string will be returned
-func (o *Backup) GetId() *string {
-	if o == nil {
-		return nil
-	}
-
-	return o.Id
-
-}
-
-// GetIdOk returns a tuple with the Id field value
-// and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *Backup) GetIdOk() (*string, bool) {
-	if o == nil {
-		return nil, false
-	}
-
-	return o.Id, true
-}
-
-// SetId sets field value
-func (o *Backup) SetId(v string) {
-
-	o.Id = &v
-
-}
-
-// HasId returns a boolean if a field has been set.
-func (o *Backup) HasId() bool {
-	if o != nil && o.Id != nil {
-		return true
-	}
-
-	return false
 }
 
 // GetClusterId returns the ClusterId field value
@@ -116,14 +77,52 @@ func (o *Backup) HasClusterId() bool {
 	return false
 }
 
-func (o Backup) MarshalJSON() ([]byte, error) {
-	toSerialize := map[string]interface{}{}
-	if o.Id != nil {
-		toSerialize["id"] = o.Id
+// GetItems returns the Items field value
+// If the value is explicit nil, the zero value for []BackupItem will be returned
+func (o *Backup) GetItems() *[]BackupItem {
+	if o == nil {
+		return nil
 	}
 
+	return o.Items
+
+}
+
+// GetItemsOk returns a tuple with the Items field value
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *Backup) GetItemsOk() (*[]BackupItem, bool) {
+	if o == nil {
+		return nil, false
+	}
+
+	return o.Items, true
+}
+
+// SetItems sets field value
+func (o *Backup) SetItems(v []BackupItem) {
+
+	o.Items = &v
+
+}
+
+// HasItems returns a boolean if a field has been set.
+func (o *Backup) HasItems() bool {
+	if o != nil && o.Items != nil {
+		return true
+	}
+
+	return false
+}
+
+func (o Backup) MarshalJSON() ([]byte, error) {
+	toSerialize := map[string]interface{}{}
 	if o.ClusterId != nil {
 		toSerialize["clusterId"] = o.ClusterId
+	}
+
+	if o.Items != nil {
+		toSerialize["items"] = o.Items
 	}
 
 	return json.Marshal(toSerialize)
