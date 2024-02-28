@@ -32,9 +32,9 @@ func Root() *core.Command {
 }
 
 var (
-	allCols = []string{"BackupId"}
+	allCols = []string{"BackupId", "ClusterId", "Items"}
 
-	defaultCols = allCols[0:0]
+	defaultCols = allCols
 )
 
 func Backups(fs ...Filter) (ionoscloud.BackupList, error) {
