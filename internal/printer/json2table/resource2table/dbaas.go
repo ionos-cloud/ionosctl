@@ -32,7 +32,6 @@ func ConvertDbaasMariadbBackupToTable(backup sdkmariadb.BackupResponse) ([]map[s
 	}
 
 	for _, i := range *items {
-		// converts i.Created from Time to string "x (time) ago"
 		created, ok := i.GetCreatedOk()
 		if !ok || created == nil {
 			continue
@@ -42,10 +41,14 @@ func ConvertDbaasMariadbBackupToTable(backup sdkmariadb.BackupResponse) ([]map[s
 		if !ok || created == nil {
 			continue
 		}
-		out[0]["Items"] = fmt.Sprintf("%s (%d MiB)\n", humanize.Time(*created), *size)
-	}
 
-	return nil, nil
+		// appends "x (time-unit) ago (y MiB)"
+		out[0]["Items"] = fmt.Sprintf("%s%s (%d MiB),", out[0]["Items"], humanize.Time(*created), *size)
+	}
+	// remove last comma
+	out[0]["Items"] = strings.TrimSuffix(out[0]["Items"].(string), ",")
+
+	return out, nil
 }
 
 func ConvertDbaasMariadbBackupsToTable(backups sdkmariadb.BackupList) ([]map[string]interface{}, error) {
