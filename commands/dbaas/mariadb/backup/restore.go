@@ -2,14 +2,14 @@ package backup
 
 import (
 	"context"
-	"fmt"
 
+	ionoscloud "github.com/avirtopeanu-ionos/alpha-sdk-go-dbaas-mariadb"
+	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mariadb/cluster"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 func Restore() *core.Command {
@@ -22,21 +22,26 @@ func Restore() *core.Command {
 		Example:   "ionosctl dbaas mariadb backup restore --cluster-id CLUSTER_ID --backup-id BACKUP_ID",
 		PreCmdRun: core.NoPreRun,
 		CmdRun: func(c *core.CommandConfig) error {
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting Clusters..."))
+			clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
 
-			client.Must().MariaClient.BackupsApi.ClusterBackupsPost().Execute()
-			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-
-			out, err := jsontabwriter.GenerateOutput("items", jsonpaths.DbaasPostgresBackup,
-				backups, tabheaders.GetHeaders(allCols, defaultCols, cols))
+			_, err := client.Must().MariaClient.BackupsApi.ClusterBackupsPost(context.Background(), clusterId).Execute()
 			if err != nil {
 				return err
 			}
 
-			fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
 			return nil
 		},
 		InitClient: true,
+	})
+
+	cmd.AddStringFlag(constants.FlagClusterId, constants.FlagIdShort, "", "The unique ID of the cluster", core.RequiredFlagOption())
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return cluster.ClustersProperty(func(c ionoscloud.ClusterResponse) string {
+			if c.Id == nil {
+				return ""
+			}
+			return *c.Id
+		}), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Response filter to list only the MariaDB Clusters that contain the specified name in the DisplayName field. The value is case insensitive")
