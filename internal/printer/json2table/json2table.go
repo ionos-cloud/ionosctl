@@ -31,7 +31,7 @@ func ConvertJSONToTable(columnPathMappingPrefix string, columnPathMapping map[st
 
 	objs, err := traverseJSONRoot(columnPathMappingPrefix, sourceData)
 	if err != nil {
-		return nil, fmt.Errorf("failed traversing the root path %s: %w", columnPathMappingPrefix, err)
+		return nil, fmt.Errorf("failed traversing JSON to root path: %w", err)
 	}
 
 	if columnPathMapping == nil || len(columnPathMapping) == 0 {
