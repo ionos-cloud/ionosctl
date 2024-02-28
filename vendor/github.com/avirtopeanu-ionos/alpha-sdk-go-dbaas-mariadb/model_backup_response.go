@@ -17,9 +17,8 @@ import (
 // BackupResponse A database backup.
 type BackupResponse struct {
 	// The unique ID of the resource.
-	Id         *string         `json:"id,omitempty"`
-	Metadata   *BackupMetadata `json:"metadata,omitempty"`
-	Properties *Backup         `json:"properties,omitempty"`
+	Id         *string `json:"id,omitempty"`
+	Properties *Backup `json:"properties,omitempty"`
 }
 
 // NewBackupResponse instantiates a new BackupResponse object
@@ -78,44 +77,6 @@ func (o *BackupResponse) HasId() bool {
 	return false
 }
 
-// GetMetadata returns the Metadata field value
-// If the value is explicit nil, the zero value for BackupMetadata will be returned
-func (o *BackupResponse) GetMetadata() *BackupMetadata {
-	if o == nil {
-		return nil
-	}
-
-	return o.Metadata
-
-}
-
-// GetMetadataOk returns a tuple with the Metadata field value
-// and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *BackupResponse) GetMetadataOk() (*BackupMetadata, bool) {
-	if o == nil {
-		return nil, false
-	}
-
-	return o.Metadata, true
-}
-
-// SetMetadata sets field value
-func (o *BackupResponse) SetMetadata(v BackupMetadata) {
-
-	o.Metadata = &v
-
-}
-
-// HasMetadata returns a boolean if a field has been set.
-func (o *BackupResponse) HasMetadata() bool {
-	if o != nil && o.Metadata != nil {
-		return true
-	}
-
-	return false
-}
-
 // GetProperties returns the Properties field value
 // If the value is explicit nil, the zero value for Backup will be returned
 func (o *BackupResponse) GetProperties() *Backup {
@@ -158,10 +119,6 @@ func (o BackupResponse) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 	if o.Id != nil {
 		toSerialize["id"] = o.Id
-	}
-
-	if o.Metadata != nil {
-		toSerialize["metadata"] = o.Metadata
 	}
 
 	if o.Properties != nil {

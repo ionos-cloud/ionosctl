@@ -38,10 +38,10 @@ func (r ApiBackupsFindByIdRequest) Execute() (BackupResponse, *APIResponse, erro
 }
 
 /*
-  - BackupsFindById Fetch a cluster backup
-  - Retrieve a MariaDB cluster backup by using its ID. This value can be
+  - BackupsFindById Fetch a cluster's backups
+  - Retrieve a MariaDB cluster's backups by using its ID. This value can be
 
-found when you GET a list of MariaDB cluster backups.
+found when you GET the list of MariaDB cluster backups.
 
   - @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
   - @param backupId The unique ID of the backup.
@@ -271,8 +271,8 @@ func (r ApiBackupsGetRequest) Execute() (BackupList, *APIResponse, error) {
 }
 
 /*
-* BackupsGet List backups.
-* Retrieves a list of all MariaDB cluster backups.
+* BackupsGet List of cluster's backups.
+* Retrieves all lists of backups for all MariaDB clusters in this contract.
 
 * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
 * @return ApiBackupsGetRequest
@@ -488,20 +488,9 @@ type ApiClusterBackupsGetRequest struct {
 	ctx        _context.Context
 	ApiService *BackupsApiService
 	clusterId  string
-	limit      *int32
-	offset     *int32
 }
 
-func (r ApiClusterBackupsGetRequest) Limit(limit int32) ApiClusterBackupsGetRequest {
-	r.limit = &limit
-	return r
-}
-func (r ApiClusterBackupsGetRequest) Offset(offset int32) ApiClusterBackupsGetRequest {
-	r.offset = &offset
-	return r
-}
-
-func (r ApiClusterBackupsGetRequest) Execute() (BackupList, *APIResponse, error) {
+func (r ApiClusterBackupsGetRequest) Execute() (BackupResponse, *APIResponse, error) {
 	return r.ApiService.ClusterBackupsGetExecute(r)
 }
 
@@ -523,16 +512,16 @@ func (a *BackupsApiService) ClusterBackupsGet(ctx _context.Context, clusterId st
 
 /*
  * Execute executes the request
- * @return BackupList
+ * @return BackupResponse
  */
-func (a *BackupsApiService) ClusterBackupsGetExecute(r ApiClusterBackupsGetRequest) (BackupList, *APIResponse, error) {
+func (a *BackupsApiService) ClusterBackupsGetExecute(r ApiClusterBackupsGetRequest) (BackupResponse, *APIResponse, error) {
 	var (
 		localVarHTTPMethod   = _nethttp.MethodGet
 		localVarPostBody     interface{}
 		localVarFormFileName string
 		localVarFileName     string
 		localVarFileBytes    []byte
-		localVarReturnValue  BackupList
+		localVarReturnValue  BackupResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "BackupsApiService.ClusterBackupsGet")
@@ -547,12 +536,6 @@ func (a *BackupsApiService) ClusterBackupsGetExecute(r ApiClusterBackupsGetReque
 	localVarQueryParams := _neturl.Values{}
 	localVarFormParams := _neturl.Values{}
 
-	if r.limit != nil {
-		localVarQueryParams.Add("limit", parameterToString(*r.limit, ""))
-	}
-	if r.offset != nil {
-		localVarQueryParams.Add("offset", parameterToString(*r.offset, ""))
-	}
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
 

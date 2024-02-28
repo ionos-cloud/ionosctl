@@ -4,7 +4,7 @@ github.com/Jeffail/gabs/v2
 # github.com/VividCortex/ewma v1.2.0
 ## explicit; go 1.12
 github.com/VividCortex/ewma
-# github.com/avirtopeanu-ionos/alpha-sdk-go-dbaas-mariadb v0.0.0-20240208092100-6669e0062c4a
+# github.com/avirtopeanu-ionos/alpha-sdk-go-dbaas-mariadb v0.0.0-20240228100836-a3918168d706
 ## explicit; go 1.18
 github.com/avirtopeanu-ionos/alpha-sdk-go-dbaas-mariadb
 # github.com/cheggaaa/pb/v3 v3.1.4
@@ -20,6 +20,9 @@ github.com/cjrd/allocate
 # github.com/davecgh/go-spew v1.1.1
 ## explicit
 github.com/davecgh/go-spew/spew
+# github.com/dustin/go-humanize v0.0.0-20171111073723-bb3d318650d4
+## explicit
+github.com/dustin/go-humanize
 # github.com/elk-language/go-prompt v1.1.5
 ## explicit; go 1.19
 github.com/elk-language/go-prompt
@@ -191,7 +194,7 @@ golang.org/x/crypto/ssh/internal/bcrypt_pbkdf
 golang.org/x/exp/constraints
 golang.org/x/exp/slices
 golang.org/x/exp/utf8string
-# golang.org/x/oauth2 v0.16.0
+# golang.org/x/oauth2 v0.17.0
 ## explicit; go 1.18
 golang.org/x/oauth2
 golang.org/x/oauth2/internal

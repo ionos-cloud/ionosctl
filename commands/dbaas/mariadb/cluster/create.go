@@ -111,7 +111,7 @@ func Create() *core.Command {
 			}
 
 			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-			out, err := jsontabwriter.GenerateOutput("items", jsonpaths.DbaasMariadbCluster,
+			out, err := jsontabwriter.GenerateOutput("", jsonpaths.DbaasMariadbCluster,
 				createdCluster, tabheaders.GetHeaders(allCols, defaultCols, cols))
 			if err != nil {
 				return err

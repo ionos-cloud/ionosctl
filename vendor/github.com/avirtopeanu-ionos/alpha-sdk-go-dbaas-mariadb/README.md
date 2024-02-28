@@ -68,8 +68,8 @@ All URIs are relative to *https://mariadb.de-txl.ionos.com*
 
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
-*BackupsApi* | [**BackupsFindById**](docs/api/BackupsApi.md#backupsfindbyid) | **Get** /backups/{backupId} | Fetch a cluster backup
-*BackupsApi* | [**BackupsGet**](docs/api/BackupsApi.md#backupsget) | **Get** /backups | List backups.
+*BackupsApi* | [**BackupsFindById**](docs/api/BackupsApi.md#backupsfindbyid) | **Get** /backups/{backupId} | Fetch a cluster&#39;s backups
+*BackupsApi* | [**BackupsGet**](docs/api/BackupsApi.md#backupsget) | **Get** /backups | List of cluster&#39;s backups.
 *BackupsApi* | [**ClusterBackupsGet**](docs/api/BackupsApi.md#clusterbackupsget) | **Get** /clusters/{clusterId}/backups | List backups of cluster
 *BackupsApi* | [**ClusterBackupsPost**](docs/api/BackupsApi.md#clusterbackupspost) | **Post** /clusters/{clusterId}/backups | Trigger an ad-hoc backup
 *ClustersApi* | [**ClustersDelete**](docs/api/ClustersApi.md#clustersdelete) | **Delete** /clusters/{clusterId} | Delete a cluster
@@ -81,9 +81,9 @@ Class | Method | HTTP request | Description
 ## Documentation For Models
 
  - [Backup](docs/models/Backup.md)
+ - [BackupItem](docs/models/BackupItem.md)
  - [BackupList](docs/models/BackupList.md)
  - [BackupListAllOf](docs/models/BackupListAllOf.md)
- - [BackupMetadata](docs/models/BackupMetadata.md)
  - [BackupResponse](docs/models/BackupResponse.md)
  - [ClusterList](docs/models/ClusterList.md)
  - [ClusterListAllOf](docs/models/ClusterListAllOf.md)
