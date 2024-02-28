@@ -25,7 +25,7 @@ func Root() *core.Command {
 	}
 
 	cmd.AddCommand(List())
-	cmd.AddCommand(Restore())
+	cmd.AddCommand(Create())
 
 	return cmd
 

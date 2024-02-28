@@ -15,7 +15,7 @@ ionosctl dbaas mongo snapshot restore [flags]
 For `mongo` command:
 
 ```text
-[mongodb mdb m]
+[mongodb mg mdb m]
 ```
 
 For `snapshot` command:
