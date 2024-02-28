@@ -48,6 +48,25 @@ func ConvertDbaasMariadbBackupToTable(backup sdkmariadb.BackupResponse) ([]map[s
 	return nil, nil
 }
 
+func ConvertDbaasMariadbBackupsToTable(backups sdkmariadb.BackupList) ([]map[string]interface{}, error) {
+	items, ok := backups.GetItemsOk()
+	if !ok || items == nil || len(*items) == 0 {
+		return nil, nil
+	}
+
+	var clustersConverted []map[string]interface{}
+	for _, item := range *items {
+		temp, err := ConvertDbaasMariadbBackupToTable(item)
+		if err != nil {
+			return nil, err
+		}
+
+		clustersConverted = append(clustersConverted, temp...)
+	}
+
+	return clustersConverted, nil
+}
+
 func ConvertDbaasMongoClusterToTable(cluster sdkmongo.ClusterResponse) ([]map[string]interface{}, error) {
 	properties, ok := cluster.GetPropertiesOk()
 	if !ok || properties == nil {

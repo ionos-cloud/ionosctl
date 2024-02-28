@@ -6,7 +6,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/resource2table"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 )
@@ -22,8 +22,6 @@ func List() *core.Command {
 		Example:   "ionosctl dbaas mariadb backup list",
 		PreCmdRun: core.NoPreRun,
 		CmdRun: func(c *core.CommandConfig) error {
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting Clusters..."))
-
 			backups, err := Backups(FilterPaginationFlags(c))
 			if err != nil {
 				return err
@@ -31,11 +29,17 @@ func List() *core.Command {
 
 			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-			out, err := jsontabwriter.GenerateOutput("items", jsonpaths.DbaasPostgresBackup,
-				backups, tabheaders.GetHeaders(allCols, defaultCols, cols))
+			rows, err := resource2table.ConvertDbaasMariadbBackupsToTable(backups)
 			if err != nil {
 				return err
 			}
+
+			out, err := jsontabwriter.GenerateOutputPreconverted(backups, rows,
+				tabheaders.GetHeaders(allCols, defaultCols, cols))
+			if err != nil {
+				return err
+			}
+
 			fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
 			return nil
 		},
