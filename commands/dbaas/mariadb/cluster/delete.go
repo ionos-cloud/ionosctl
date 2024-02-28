@@ -74,7 +74,12 @@ ionosctl db mar c d --all --name <name>`,
 
 	cmd.AddStringFlag(constants.FlagClusterId, constants.FlagIdShort, "", "The unique ID of the cluster", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return Clusters(), cobra.ShellCompDirectiveNoFileComp
+		return ClustersProperty(func(c sdkgo.ClusterResponse) string {
+			if c.Id == nil {
+				return ""
+			}
+			return *c.Id
+		}), cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Delete all mariadb clusters")
 	cmd.AddBoolFlag(constants.FlagName, "", false, "When deleting all clusters, filter the clusters by a name")
@@ -99,7 +104,7 @@ func deleteAll(c *core.CommandConfig) error {
 	return functional.ApplyAndAggregateErrors(*xs.GetItems(), func(x sdkgo.ClusterResponse) error {
 		yes := confirm.FAsk(c.Command.Command.InOrStdin(), confirmStringForCluster(x), viper.GetBool(constants.ArgForce))
 		if yes {
-			_, _, delErr := client.Must().MongoClient.ClustersApi.ClustersDelete(c.Context, *x.Id).Execute()
+			_, _, delErr := client.Must().MariaClient.ClustersApi.ClustersDelete(c.Context, *x.Id).Execute()
 			if delErr != nil {
 				return fmt.Errorf("failed deleting cluster %s: %w", *x.Properties.DisplayName, delErr)
 			}
