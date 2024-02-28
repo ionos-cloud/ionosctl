@@ -12,15 +12,22 @@ import (
 	"github.com/spf13/viper"
 )
 
-func Restore() *core.Command {
+func Create() *core.Command {
 	cmd := core.NewCommand(context.TODO(), nil, core.CommandBuilder{
 		Namespace: "dbaas-mariadb",
 		Resource:  "backup",
-		Verb:      "restore",
-		Aliases:   []string{"r", "rs"},
-		ShortDesc: "Use a MariaDB Backup to restore the cluster to its previous state",
-		Example:   "ionosctl dbaas mariadb backup restore --cluster-id CLUSTER_ID --backup-id BACKUP_ID",
-		PreCmdRun: core.NoPreRun,
+		Verb:      "create",
+		Aliases:   []string{"c"},
+		ShortDesc: "Create an ad-hoc MariaDB Backup",
+		Example:   "ionosctl dbaas mariadb backup create --cluster-id CLUSTER_ID",
+		PreCmdRun: func(c *core.PreCommandConfig) error {
+			err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagClusterId)
+			if err != nil {
+				return err
+			}
+
+			return nil
+		},
 		CmdRun: func(c *core.CommandConfig) error {
 			clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
 
@@ -43,10 +50,6 @@ func Restore() *core.Command {
 			return *c.Id
 		}), cobra.ShellCompDirectiveNoFileComp
 	})
-
-	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Response filter to list only the MariaDB Clusters that contain the specified name in the DisplayName field. The value is case insensitive")
-	cmd.AddInt32Flag(constants.FlagMaxResults, constants.FlagMaxResultsShort, 0, constants.DescMaxResults)
-	cmd.AddInt32Flag(constants.FlagOffset, "", 0, "Skip a certain number of results")
 
 	return cmd
 }

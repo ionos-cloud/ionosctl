@@ -15,7 +15,7 @@ ionosctl dbaas mariadb cluster delete [flags]
 For `mariadb` command:
 
 ```text
-[maria mar]
+[maria mar ma]
 ```
 
 For `cluster` command:
@@ -41,7 +41,7 @@ Delete a MariaDB Cluster by ID
   -u, --api-url string      Override default host url (default "https://api.ionos.com")
   -i, --cluster-id string   The unique ID of the cluster (required)
       --cols strings        Set of columns to be printed on output 
-                            Available columns: [ClusterId]
+                            Available columns: [ClusterId Name DNS Instances Version State Cores RAM StorageSize StorageType]
   -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -f, --force               Force command to execute without user input
   -h, --help                Print usage

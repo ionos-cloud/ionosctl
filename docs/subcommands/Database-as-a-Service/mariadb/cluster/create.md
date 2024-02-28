@@ -15,7 +15,7 @@ ionosctl dbaas mariadb cluster create [flags]
 For `mariadb` command:
 
 ```text
-[maria mar]
+[maria mar ma]
 ```
 
 For `cluster` command:
@@ -40,7 +40,7 @@ Create DBaaS MariaDB clusters
   -u, --api-url string            Override default host url (default "https://api.ionos.com")
       --cidr string               The IP and subnet for your cluster. All IPs must be in a /24 network (required)
       --cols strings              Set of columns to be printed on output 
-                                  Available columns: [ClusterId]
+                                  Available columns: [ClusterId Name DNS Instances Version State Cores RAM StorageSize StorageType]
   -c, --config string             Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --cores int32               Core count (default 1)
       --datacenter-id string      The datacenter to which your cluster will be connected. Must be in the same location as the cluster (required)
@@ -60,7 +60,7 @@ Create DBaaS MariaDB clusters
   -t, --timeout int               Timeout option for Request [seconds] (default 60)
       --user string               The initial username (required)
   -v, --verbose                   Print step-by-step process when running command
-      --version string            The MongoDB version of your cluster (required) (default "6.0")
+      --version string            The MongoDB version of your cluster (required) (default "10.6")
   -w, --wait-for-request          Wait for the Request to be executed
 ```
 

@@ -15,7 +15,7 @@ ionosctl dbaas mariadb backup list [flags]
 For `mariadb` command:
 
 ```text
-[maria mar]
+[maria mar ma]
 ```
 
 For `backup` command:

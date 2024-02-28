@@ -15,7 +15,7 @@ ionosctl dbaas mariadb cluster list [flags]
 For `mariadb` command:
 
 ```text
-[maria mar]
+[maria mar ma]
 ```
 
 For `cluster` command:
@@ -39,7 +39,7 @@ Use this command to retrieve a list of MariaDB Clusters provisioned under your a
 ```text
   -u, --api-url string      Override default host url (default "https://api.ionos.com")
       --cols strings        Set of columns to be printed on output 
-                            Available columns: [ClusterId]
+                            Available columns: [ClusterId Name DNS Instances Version State Cores RAM StorageSize StorageType]
   -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -f, --force               Force command to execute without user input
   -h, --help                Print usage

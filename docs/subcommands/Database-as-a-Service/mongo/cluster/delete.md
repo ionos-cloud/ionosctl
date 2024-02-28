@@ -15,7 +15,7 @@ ionosctl dbaas mongo cluster delete [flags]
 For `mongo` command:
 
 ```text
-[mongodb mdb m]
+[mongodb mg mdb m]
 ```
 
 For `cluster` command:
