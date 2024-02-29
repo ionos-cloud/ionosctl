@@ -46,7 +46,7 @@ Create DBaaS MariaDB clusters
       --datacenter-id string      The datacenter to which your cluster will be connected. Must be in the same location as the cluster (required)
   -f, --force                     Force command to execute without user input
   -h, --help                      Print usage
-      --instances int32           The total number of instances of the cluster (one primary and n-1 secondaries). Minimum of 3 for enterprise edition (default 1)
+      --instances int32           The total number of instances of the cluster (one primary and n-1 secondaries) (default 1)
       --lan-id string             The numeric LAN ID with which you connect your cluster (required)
       --maintenance-day string    Day Of the Week for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur. Defaults to a random day during Mon-Fri, during the hours 10:00-16:00 (default "Random (Mon-Fri 10:00-16:00)")
       --maintenance-time string   Time for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur. e.g.: 16:30:59. Defaults to a random day during Mon-Fri, during the hours 10:00-16:00 (default "Random (Mon-Fri 10:00-16:00)")
@@ -55,7 +55,7 @@ Create DBaaS MariaDB clusters
   -o, --output string             Desired output format [text|json|api-json] (default "text")
       --password string           The password (required)
   -q, --quiet                     Quiet output
-      --ram string                Custom RAM: multiples of 1024. e.g. --ram 1024 or --ram 1024MB or --ram 4GB (required and only settable for enterprise edition) (default "2GB")
+      --ram string                Custom RAM: multiples of 1024. e.g. --ram 1024 or --ram 1024MB or --ram 4GB (default "2GB")
       --storage-size string       The size of the Storage in GB. e.g.: --size 10 or --size 10GB. The maximum Volume size is determined by your contract limit (default "10")
   -t, --timeout int               Timeout option for Request [seconds] (default 60)
       --user string               The initial username (required)
