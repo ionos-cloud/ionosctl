@@ -5,12 +5,11 @@ import (
 	"fmt"
 	"math/rand"
 	"strconv"
-	"strings"
 	"time"
 
 	ionoscloud "github.com/avirtopeanu-ionos/alpha-sdk-go-dbaas-mariadb"
-	"github.com/cilium/fake"
 	cloudapiv6completer "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
@@ -170,17 +169,7 @@ func Create() *core.Command {
 			cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddStringFlag(constants.FlagCidr, "", "", "The IP and subnet for your cluster. All IPs must be in a /24 network", core.RequiredFlagOption())
-	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagCidr, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		databaseIp := "192.168.1.128" // fallback in case of no servers / errs
-		ip, err := getNicIp(cmd)
-		if err != nil || ip == "" {
-			ip = databaseIp
-		}
-		instances := viper.GetInt(core.GetFlagName(cmd.NS, constants.FlagInstances))
-		cidrs := generateCidrs(ip, instances)
-		return []string{strings.Join(cidrs, ",")}, cobra.ShellCompDirectiveNoFileComp
-	})
-
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagCidr, completer.GetCidrCompletionFunc(cmd))
 	// credentials / DBUser
 	cmd.AddStringFlag(constants.ArgUser, "", "", "The initial username", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagDatacenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -200,39 +189,4 @@ func Create() *core.Command {
 	cmd.Command.Flags().SortFlags = false
 
 	return cmd
-}
-
-func getNicIp(cmd *core.Command) (string, error) {
-	ls, _, err := client.Must().CloudClient.ServersApi.DatacentersServersGet(context.Background(),
-		viper.GetString(core.GetFlagName(cmd.NS, constants.FlagDatacenterId))).Execute()
-	if err != nil || ls.Items == nil || len(*ls.Items) == 0 {
-		return "", fmt.Errorf("failed getting servers %w", err)
-	}
-
-	for _, server := range *ls.Items {
-		if server.Id == nil {
-			return "", fmt.Errorf("failed getting ID")
-		}
-
-		nics, _, err := client.Must().CloudClient.NetworkInterfacesApi.DatacentersServersNicsGet(context.Background(),
-			viper.GetString(core.GetFlagName(cmd.NS, constants.FlagDatacenterId)), *server.Id).Execute()
-		if err != nil || nics.Items == nil || len(*nics.Items) == 0 {
-			return "", fmt.Errorf("failed getting nics %w", err)
-		}
-		// Find the first nic with IPs not empty and return it
-		for _, nic := range *nics.Items {
-			if nic.Properties != nil && nic.Properties.Ips != nil && len(*nic.Properties.Ips) > 0 {
-				return (*nic.Properties.Ips)[0], nil
-			}
-		}
-	}
-	return "", fmt.Errorf("no NIC with IP")
-}
-
-func generateCidrs(ip string, instances int) []string {
-	var cidrs []string
-	for i := 0; i < instances; i++ {
-		cidrs = append(cidrs, fake.IP(fake.WithIPv4(), fake.WithIPCIDR(ip+"/24"))+"/24")
-	}
-	return cidrs
 }
