@@ -42,11 +42,14 @@ func ConvertDbaasMariadbBackupToTable(backup sdkmariadb.BackupResponse) ([]map[s
 			continue
 		}
 
-		// appends "x (time-unit) ago (y MiB)"
-		out[0]["Items"] = fmt.Sprintf("%s%s (%d MiB),", out[0]["Items"], humanize.Time(*created), *size)
+		// appends "x time-unit ago (y MiB)"
+		if out[0]["Items"] == nil {
+			out[0]["Items"] = ""
+		}
+		out[0]["Items"] = fmt.Sprintf("%s%s (%d MiB), ", out[0]["Items"], humanize.Time(*created), *size)
 	}
 	// remove last comma
-	out[0]["Items"] = strings.TrimSuffix(out[0]["Items"].(string), ",")
+	out[0]["Items"] = strings.TrimSuffix(out[0]["Items"].(string), ", ")
 
 	return out, nil
 }
