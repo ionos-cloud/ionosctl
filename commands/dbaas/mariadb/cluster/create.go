@@ -129,12 +129,12 @@ func Create() *core.Command {
 		return []string{"10.6", "10.11"}, cobra.ShellCompDirectiveNoFileComp
 	})
 
-	cmd.AddInt32Flag(constants.FlagInstances, "", 1, "The total number of instances of the cluster (one primary and n-1 secondaries). Minimum of 3 for enterprise edition")
+	cmd.AddInt32Flag(constants.FlagInstances, "", 1, "The total number of instances of the cluster (one primary and n-1 secondaries)")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagInstances, func(cmdCobra *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"1", "3", "5", "7"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddInt32Flag(constants.FlagCores, "", 1, "Core count")
-	cmd.AddStringFlag(constants.FlagRam, "", "2GB", "Custom RAM: multiples of 1024. e.g. --ram 1024 or --ram 1024MB or --ram 4GB (required and only settable for enterprise edition)")
+	cmd.AddStringFlag(constants.FlagRam, "", "2GB", "Custom RAM: multiples of 1024. e.g. --ram 1024 or --ram 1024MB or --ram 4GB")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagRam, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"1024MB", "2GB", "4GB", "8GB", "12GB", "16GB"}, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -171,11 +171,13 @@ func Create() *core.Command {
 	})
 	cmd.AddStringFlag(constants.FlagCidr, "", "", "The IP and subnet for your cluster. All IPs must be in a /24 network", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagCidr, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		var cidrs []string
-		for i := 0; i < viper.GetInt(core.GetFlagName(cmd.NS, constants.FlagInstances)); i++ {
-			cidrs = append(cidrs, fake.IP(fake.WithIPv4(), fake.WithIPCIDR("192.168.1.128/25"))+"/24")
+		databaseIp := "192.168.1.128" // fallback in case of no servers / errs
+		ip, err := getNicIp(cmd)
+		if err != nil || ip == "" {
+			ip = databaseIp
 		}
-
+		instances := viper.GetInt(core.GetFlagName(cmd.NS, constants.FlagInstances))
+		cidrs := generateCidrs(ip, instances)
 		return []string{strings.Join(cidrs, ",")}, cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -198,4 +200,39 @@ func Create() *core.Command {
 	cmd.Command.Flags().SortFlags = false
 
 	return cmd
+}
+
+func getNicIp(cmd *core.Command) (string, error) {
+	ls, _, err := client.Must().CloudClient.ServersApi.DatacentersServersGet(context.Background(),
+		viper.GetString(core.GetFlagName(cmd.NS, constants.FlagDatacenterId))).Execute()
+	if err != nil || ls.Items == nil || len(*ls.Items) == 0 {
+		return "", fmt.Errorf("failed getting servers %w", err)
+	}
+
+	for _, server := range *ls.Items {
+		if server.Id == nil {
+			return "", fmt.Errorf("failed getting ID")
+		}
+
+		nics, _, err := client.Must().CloudClient.NetworkInterfacesApi.DatacentersServersNicsGet(context.Background(),
+			viper.GetString(core.GetFlagName(cmd.NS, constants.FlagDatacenterId)), *server.Id).Execute()
+		if err != nil || nics.Items == nil || len(*nics.Items) == 0 {
+			return "", fmt.Errorf("failed getting nics %w", err)
+		}
+		// Find the first nic with IPs not empty and return it
+		for _, nic := range *nics.Items {
+			if nic.Properties != nil && nic.Properties.Ips != nil && len(*nic.Properties.Ips) > 0 {
+				return (*nic.Properties.Ips)[0], nil
+			}
+		}
+	}
+	return "", fmt.Errorf("no NIC with IP")
+}
+
+func generateCidrs(ip string, instances int) []string {
+	var cidrs []string
+	for i := 0; i < instances; i++ {
+		cidrs = append(cidrs, fake.IP(fake.WithIPv4(), fake.WithIPCIDR(ip+"/24"))+"/24")
+	}
+	return cidrs
 }
