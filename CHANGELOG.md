@@ -1,5 +1,10 @@
 # Changelog
 
+## Upcoming
+
+### Fixed
+- Kubernetes node pool auto scaling can be disabled by setting `--min-node-count` and `--max-node-count` to 0.
+
 ## [v6.7.4] (January 2024)
 
 ### Added

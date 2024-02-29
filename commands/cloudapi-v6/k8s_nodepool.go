@@ -31,9 +31,11 @@ import (
 
 var (
 	defaultK8sNodePoolCols = []string{"NodePoolId", "Name", "K8sVersion", "NodeCount", "DatacenterId", "State"}
-	allK8sNodePoolCols     = []string{"NodePoolId", "Name", "K8sVersion", "DatacenterId", "NodeCount", "CpuFamily", "StorageType", "State", "LanIds",
+	allK8sNodePoolCols     = []string{
+		"NodePoolId", "Name", "K8sVersion", "DatacenterId", "NodeCount", "CpuFamily", "StorageType", "State", "LanIds",
 		"CoresCount", "RamSize", "AvailabilityZone", "StorageSize", "MaintenanceWindow", "AutoScaling", "PublicIps", "AvailableUpgradeVersions",
-		"Annotations", "Labels", "ClusterId"}
+		"Annotations", "Labels", "ClusterId",
+	}
 )
 
 func K8sNodePoolCmd() *core.Command {
@@ -233,8 +235,8 @@ Required values to run command:
 			return completer.K8sNodePoolUpgradeVersions(clusterId, nodepoolId), cobra.ShellCompDirectiveNoFileComp
 		})
 	update.AddIntFlag(constants.FlagNodeCount, "", 1, "The number of worker Nodes that the NodePool should contain")
-	update.AddIntFlag(cloudapiv6.ArgK8sMinNodeCount, "", 1, "The minimum number of worker Nodes that the managed NodePool can scale in. Should be set together with --max-node-count")
-	update.AddIntFlag(cloudapiv6.ArgK8sMaxNodeCount, "", 1, "The maximum number of worker Nodes that the managed NodePool can scale out. Should be set together with --min-node-count")
+	update.AddIntFlag(cloudapiv6.ArgK8sMinNodeCount, "", 1, "The minimum number of worker Nodes that the managed NodePool can scale in. Should be set together with --max-node-count. Set to 0 to disable autoscaling.")
+	update.AddIntFlag(cloudapiv6.ArgK8sMaxNodeCount, "", 1, "The maximum number of worker Nodes that the managed NodePool can scale out. Should be set together with --min-node-count. Set to 0 to disable autoscaling")
 	update.AddStringToStringFlag(constants.FlagLabels, constants.FlagLabelsShort, map[string]string{}, "Labels to set on a NodePool. It will overwrite the existing labels, if there are any. Use the following format: --labels KEY=VALUE,KEY=VALUE")
 	update.AddStringToStringFlag(constants.FlagAnnotations, constants.FlagAnnotationsShort, map[string]string{}, "Annotations to set on a NodePool. It will overwrite the existing annotations, if there are any. Use the following format: --annotations KEY=VALUE,KEY=VALUE")
 	update.AddStringFlag(cloudapiv6.ArgLabelKey, "", "", "Label key. Must be set together with --label-value", core.DeprecatedFlagOption("Use --labels, --annotations options instead!"))
@@ -751,10 +753,10 @@ func getNewK8sNodePool(c *core.CommandConfig) (*resources.K8sNodePoolForPost, er
 	}, nil
 }
 
-func getNewK8sNodePoolUpdated(oldUser *resources.K8sNodePool, c *core.CommandConfig) resources.K8sNodePoolForPut {
+func getNewK8sNodePoolUpdated(oldNodePool *resources.K8sNodePool, c *core.CommandConfig) resources.K8sNodePoolForPut {
 	propertiesUpdated := resources.K8sNodePoolPropertiesForPut{}
 
-	if properties, ok := oldUser.GetPropertiesOk(); ok && properties != nil {
+	if properties, ok := oldNodePool.GetPropertiesOk(); ok && properties != nil {
 		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgK8sVersion)) {
 			vers := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sVersion))
 			propertiesUpdated.SetK8sVersion(vers)
@@ -802,10 +804,14 @@ func getNewK8sNodePoolUpdated(oldUser *resources.K8sNodePool, c *core.CommandCon
 				}
 			}
 
-			propertiesUpdated.SetAutoScaling(ionoscloud.KubernetesAutoScaling{
-				MinNodeCount: &minCount,
-				MaxNodeCount: &maxCount,
-			})
+			if minCount == 0 && maxCount == 0 {
+				propertiesUpdated.SetAutoScaling(ionoscloud.KubernetesAutoScaling{})
+			} else {
+				propertiesUpdated.SetAutoScaling(ionoscloud.KubernetesAutoScaling{
+					MinNodeCount: &minCount,
+					MaxNodeCount: &maxCount,
+				})
+			}
 		}
 
 		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgK8sMaintenanceDay)) ||

@@ -59,8 +59,8 @@ Required values to run command:
       --lan-ids ints                 Collection of LAN Ids of existing LANs to be attached to worker Nodes. It will be added to the existing LANs attached
       --maintenance-day string       The day of the week for Maintenance Window has the English day format as following: Monday or Saturday
       --maintenance-time string      The time for Maintenance Window has the HH:mm:ss format as following: 08:00:00
-      --max-node-count int           The maximum number of worker Nodes that the managed NodePool can scale out. Should be set together with --min-node-count (default 1)
-      --min-node-count int           The minimum number of worker Nodes that the managed NodePool can scale in. Should be set together with --max-node-count (default 1)
+      --max-node-count int           The maximum number of worker Nodes that the managed NodePool can scale out. Should be set together with --min-node-count. Set to 0 to disable autoscaling (default 1)
+      --min-node-count int           The minimum number of worker Nodes that the managed NodePool can scale in. Should be set together with --max-node-count. Set to 0 to disable autoscaling. (default 1)
       --no-headers                   Don't print table headers when table output is used
       --node-count int               The number of worker Nodes that the NodePool should contain (default 1)
   -i, --nodepool-id string           The unique K8s Node Pool Id (required)
