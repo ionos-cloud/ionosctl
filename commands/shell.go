@@ -8,6 +8,7 @@ import (
 	"github.com/elk-language/go-prompt"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
+	"github.com/ionos-cloud/ionosctl/v6/internal/version"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	"github.com/ionoscloudsdk/comptplus"
 	"github.com/spf13/cobra"
@@ -118,7 +119,7 @@ Ctrl + L\tClear the screen`,
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			fmt.Printf("ionosctl v%s\n", Version)
+			fmt.Printf("ionosctl v%s\n", version.Get())
 			fmt.Println("Warning: We recommend keeping usage of this interactive shell to non-production critical applications.")
 			fmt.Println("   - DANGER:\tCertain commands that require user input may freeze the shell!")
 			fmt.Println("   - NOTE:\tCommands such as 'delete' that require user confirmation will always fail and will instead ask for '--force' to be set.")

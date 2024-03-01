@@ -15,10 +15,10 @@ if [ "${RELEASE_BUILD:-}" = "true" ]; then
   label="release"
 fi
 
-ldflags_base="-X github.com/ionos-cloud/ionosctl/v6/commands.Version=${VERSION} -X github.com/ionos-cloud/ionosctl/v6/commands.GitCommit=${GIT_COMMIT}"
+ldflags_base="-X github.com/ionos-cloud/ionosctl/v6/internal/version.Version=${VERSION} -X github.com/ionos-cloud/ionosctl/v6/internal/version.GitCommit=${GIT_COMMIT}"
 ldflags="${ldflags_base}"
 if [ -n "${label}" ]; then
-  ldflags="${ldflags} -X github.com/ionos-cloud/ionosctl/v6/commands.Label=${label}"
+  ldflags="${ldflags} -X github.com/ionos-cloud/ionosctl/v6/internal/version.Label=${label}"
 fi
 
 echo "VERSION: ${VERSION}"
