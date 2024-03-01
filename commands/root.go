@@ -3,6 +3,7 @@ package commands
 import (
 	"fmt"
 	"os"
+	"regexp"
 	"strings"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cfg"
@@ -262,30 +263,57 @@ func addCommands() {
 	)
 }
 
-const helpTemplate = `USAGE: {{if .Runnable}}
-  {{.UseLine}}{{end}}{{if .HasAvailableSubCommands}}
-  {{.CommandPath}} [command]{{end}}{{if gt (len .Aliases) 0}}
-
-ALIASES:
-  {{.NameAndAliases}}{{end}}{{if .HasExample}}
-
-EXAMPLES:
-{{.Example}}{{end}}{{if .HasAvailableSubCommands}}
-
+const (
+	availableCommands = `{{if .HasAvailableSubCommands}}
 AVAILABLE COMMANDS:{{range .Commands}}{{if (or .IsAvailableCommand (eq .Name "help"))}}
-  {{rpad .Name .NamePadding }} {{.Short}}{{end}}{{end}}{{end}}{{if .HasAvailableLocalFlags}}
+  {{rpad .Name .NamePadding }} {{.Short | trimTrailingWhitespaces}}{{end}}{{end}}{{end}}`
 
-FLAGS:
-{{.LocalFlags.FlagUsages | trimTrailingWhitespaces}}{{end}}{{if .HasAvailableInheritedFlags}}
-
-GLOBAL FLAGS:
-{{.InheritedFlags.FlagUsages | trimTrailingWhitespaces}}{{end}}{{if .HasHelpSubCommands}}
-
+	seeAlso = `{{if .HasHelpSubCommands}}
 SEE ALSO:
-{{.Annotations.SeeAlsos}}{{end}}{{if .HasHelpSubCommands}}
+{{.Annotations.SeeAlsos | trimTrailingWhitespaces}}{{end}}`
 
+	additionalHelpTopics = `{{if .HasHelpSubCommands}}
 Additional help topics:{{range .Commands}}{{if .IsAdditionalHelpTopicCommand}}
-  {{rpad .CommandPath .CommandPathPadding}} {{.Short}}{{end}}{{end}}{{end}}{{if .HasAvailableSubCommands}}
+  {{rpad .CommandPath .CommandPathPadding}} {{.Short | trimTrailingWhitespaces}}{{end}}{{end}}{{end}}`
 
-Use "{{.CommandPath}} [command] --help" for more information about a command.{{end}}
-`
+	localFlags = `{{if .HasAvailableLocalFlags}}
+FLAGS:
+{{.LocalFlags.FlagUsages | trimTrailingWhitespaces}}{{end}}`
+
+	globalFlags = `{{if .HasAvailableInheritedFlags}}
+GLOBAL FLAGS:
+{{.InheritedFlags.FlagUsages | trimTrailingWhitespaces}}{{end}}`
+
+	usage = `{{if .Runnable}}
+USAGE:
+  {{.UseLine | trimTrailingWhitespaces}}{{end}}`
+
+	aliases = `{{if gt (len .Aliases) 0}}
+ALIASES:
+  {{.NameAndAliases | trimTrailingWhitespaces}}{{end}}`
+
+	examples = `{{if .HasExample}}
+EXAMPLES:
+{{.Example | trimTrailingWhitespaces}}{{end}}`
+
+	moreInfo = `{{if .HasAvailableSubCommands}}
+Use "{{.CommandPath}} [command] --help" for more information about a command.{{end}}`
+)
+
+var helpTemplate = func() string {
+	result := strings.Join([]string{
+		seeAlso,
+		additionalHelpTopics,
+		globalFlags,
+		localFlags,
+		aliases,
+		examples,
+		usage,
+		availableCommands,
+		moreInfo,
+	}, "\n")
+
+	// Use a regular expression to replace any occurrence of more than one newline with a single newline
+	re := regexp.MustCompile(`\n{2,}`)
+	return re.ReplaceAllString(result, "\n")
+}()
