@@ -43,6 +43,7 @@ Within each layer, a token takes precedence over a username and password combina
 
 	FlagClusterId        = "cluster-id"
 	FlagNodepoolId       = "nodepool-id"
+	FlagBackupId         = "backup-id"
 	FlagNodeCount        = "node-count"
 	FlagNodeSubnet       = "node-subnet"
 	FlagLabels           = "labels"
