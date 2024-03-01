@@ -29,7 +29,7 @@ func ListCmd() *core.Command {
 			LongDesc:  "List all users in the given database cluster",
 			Example:   "ionosctl dbaas-postgres user list --cluster-id <cluster-id>",
 			PreCmdRun: core.NoPreRun,
-			CmdRun:    RunCmd,
+			CmdRun:    runListCmd,
 		},
 	)
 	cmd.Command.Flags().StringSlice(constants.ArgCols, []string{}, tabheaders.ColsMessage(allCols))
@@ -53,7 +53,7 @@ func ListCmd() *core.Command {
 	return cmd
 }
 
-func RunCmd(c *core.CommandConfig) error {
+func runListCmd(c *core.CommandConfig) error {
 	if !viper.IsSet(core.GetFlagName(c.NS, constants.FlagClusterId)) {
 		return listAll(c)
 	}

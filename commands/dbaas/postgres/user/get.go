@@ -2,12 +2,17 @@ package user
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/postgres/completer"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 func GetCmd() *core.Command {
@@ -19,8 +24,8 @@ func GetCmd() *core.Command {
 			ShortDesc: "Get user",
 			LongDesc:  "Get the specified user in the given database cluster",
 			Example:   "ionosctl dbaas-postgres user get --cluster-id <cluster-id> --user <user>",
-			PreCmdRun: core.NoPreRun,
-			CmdRun:    RunCmd,
+			PreCmdRun: preRunGetCmd,
+			CmdRun:    runGetCmd,
 		},
 	)
 	c.Command.Flags().StringSlice(constants.ArgCols, []string{}, tabheaders.ColsMessage(allCols))
@@ -44,7 +49,29 @@ func GetCmd() *core.Command {
 		return completer.UserNames(c), cobra.ShellCompDirectiveDefault
 	})
 
-	c.AddBoolFlag("system", "", false, "List system users along with regular users")
-
 	return c
+}
+
+func preRunGetCmd(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagClusterId, constants.ArgUser)
+}
+
+func runGetCmd(c *core.CommandConfig) error {
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+	clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
+	username := viper.GetString(core.GetFlagName(c.NS, constants.ArgUser))
+
+	user, _, err := client.Must().PostgresClient.UsersApi.UsersGet(context.Background(), clusterId, username).Execute()
+	if err != nil {
+		return err
+	}
+
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.DbaasPostgresUser, user,
+		tabheaders.GetHeadersAllDefault(allCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+	return nil
 }
