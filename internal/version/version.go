@@ -21,7 +21,14 @@ func Get() string {
 
 	info, ok := debug.ReadBuildInfo()
 	if ok {
-		return info.Main.Version
+		versionParts := strings.Split(info.Main.Version, "-")
+		if len(versionParts) >= 3 {
+			commitHash := versionParts[2]
+			if len(commitHash) > 7 {
+				commitHash = commitHash[:7]
+			}
+			return fmt.Sprintf("DEV-%s", commitHash)
+		}
 	}
 
 	return "unknown"
