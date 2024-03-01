@@ -3,7 +3,6 @@ package commands
 import (
 	"fmt"
 	"os"
-	"regexp"
 	"strings"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cfg"
@@ -264,56 +263,50 @@ func addCommands() {
 }
 
 const (
-	availableCommands = `{{if .HasAvailableSubCommands}}
+	availableCommands = `{{- if .HasAvailableSubCommands}}
 AVAILABLE COMMANDS:{{range .Commands}}{{if (or .IsAvailableCommand (eq .Name "help"))}}
-  {{rpad .Name .NamePadding }} {{.Short | trimTrailingWhitespaces}}{{end}}{{end}}{{end}}`
+  {{rpad .Name .NamePadding }} {{.Short | trim}}{{end}}{{end}}{{print "\n"}}{{end}}`
 
-	seeAlso = `{{if .HasHelpSubCommands}}
+	seeAlso = `{{- if .HasHelpSubCommands}}
 SEE ALSO:
-{{.Annotations.SeeAlsos | trimTrailingWhitespaces}}{{end}}`
+{{.Annotations.SeeAlsos | trim}}{{print "\n"}}{{end}}`
 
-	additionalHelpTopics = `{{if .HasHelpSubCommands}}
+	additionalHelpTopics = `{{- if .HasHelpSubCommands}}
 Additional help topics:{{range .Commands}}{{if .IsAdditionalHelpTopicCommand}}
-  {{rpad .CommandPath .CommandPathPadding}} {{.Short | trimTrailingWhitespaces}}{{end}}{{end}}{{end}}`
+  {{rpad .CommandPath .CommandPathPadding}} {{.Short | trim}}{{end}}{{end}}{{print "\n"}}{{end}}`
 
-	localFlags = `{{if .HasAvailableLocalFlags}}
+	localFlags = `{{- if .HasAvailableLocalFlags}}
 FLAGS:
-{{.LocalFlags.FlagUsages | trimTrailingWhitespaces}}{{end}}`
+{{.LocalFlags.FlagUsages}}{{end}}`
 
-	globalFlags = `{{if .HasAvailableInheritedFlags}}
+	globalFlags = `{{- if .HasAvailableInheritedFlags}}
 GLOBAL FLAGS:
-{{.InheritedFlags.FlagUsages | trimTrailingWhitespaces}}{{end}}`
+{{.InheritedFlags.FlagUsages}}{{end}}`
 
-	usage = `{{if .Runnable}}
+	usage = `{{- if .Runnable}}
 USAGE:
-  {{.UseLine | trimTrailingWhitespaces}}{{end}}`
+  {{.UseLine | trim}}{{print "\n"}}{{end}}`
 
-	aliases = `{{if gt (len .Aliases) 0}}
+	aliases = `{{- if gt (len .Aliases) 0}}
 ALIASES:
-  {{.NameAndAliases | trimTrailingWhitespaces}}{{end}}`
+  {{.NameAndAliases | trim}}{{print "\n"}}{{end}}`
 
-	examples = `{{if .HasExample}}
+	examples = `{{- if .HasExample}}
 EXAMPLES:
-{{.Example | trimTrailingWhitespaces}}{{end}}`
+{{.Example | trim}}{{print "\n"}}{{end}}`
 
-	moreInfo = `{{if .HasAvailableSubCommands}}
-Use "{{.CommandPath}} [command] --help" for more information about a command.{{end}}`
+	moreInfo = `{{- if .HasAvailableSubCommands}}
+Use "{{.CommandPath}} [command] --help" for more information about a command.{{print "\n"}}{{end}}`
 )
 
-var helpTemplate = func() string {
-	result := strings.Join([]string{
-		seeAlso,
-		additionalHelpTopics,
-		globalFlags,
-		localFlags,
-		aliases,
-		examples,
-		usage,
-		availableCommands,
-		moreInfo,
-	}, "\n")
-
-	// Use a regular expression to replace any occurrence of more than one newline with a single newline
-	re := regexp.MustCompile(`\n{2,}`)
-	return re.ReplaceAllString(result, "\n")
-}()
+var helpTemplate = strings.Join([]string{
+	seeAlso,
+	additionalHelpTopics,
+	globalFlags,
+	localFlags,
+	aliases,
+	examples,
+	usage,
+	availableCommands,
+	moreInfo,
+}, "")
