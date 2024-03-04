@@ -26,7 +26,7 @@ func Get() string {
 		if len(versionParts) >= 3 {
 			versionOrHash := versionParts[2]
 			if isSemanticVersion(versionOrHash) {
-				return versionOrHash
+				return "v" + strings.TrimLeft(versionOrHash, "v ")
 			}
 			if len(versionOrHash) > 7 {
 				versionOrHash = versionOrHash[:7]
