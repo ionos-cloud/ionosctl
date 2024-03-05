@@ -23,7 +23,7 @@ func DeleteCmd() *core.Command {
 			Resource:  "user",
 			ShortDesc: "Delete user",
 			LongDesc:  "Delete the specified user from the given database cluster",
-			Example:   "ionosctl dbaas-postgres user delete --cluster-id <cluster-id> --user <user>",
+			Example:   "ionosctl dbaas postgres user delete --cluster-id <cluster-id> --user <user>",
 			PreCmdRun: preRunDeleteCmd,
 			CmdRun:    runDeleteCmd,
 		},

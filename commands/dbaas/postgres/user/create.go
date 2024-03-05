@@ -23,7 +23,7 @@ func CreateCmd() *core.Command {
 			Resource:  "user",
 			ShortDesc: "Create a user",
 			LongDesc:  "Create a new user in the given database cluster",
-			Example:   "ionosctl dbaas-postgres user create --cluster-id <cluster-id> --user <user> --password <password>",
+			Example:   "ionosctl dbaas postgres user create --cluster-id <cluster-id> --user <user> --password <password>",
 			PreCmdRun: preRunCreateCmd,
 			CmdRun:    runCreateCmd,
 		},

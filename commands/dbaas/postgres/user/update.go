@@ -24,7 +24,7 @@ func UpdateCmd() *core.Command {
 			ShortDesc: "Update a user",
 			LongDesc:  "Update a new user in the given database cluster",
 			Example:
-				"ionosctl dbaas-postgres user update --cluster-id <cluster-id> --user <user> --password <password>",
+				"ionosctl dbaas postgres user update --cluster-id <cluster-id> --user <user> --password <password>",
 			PreCmdRun: preRunUpdateCmd,
 			CmdRun:    runUpdateCmd,
 		},

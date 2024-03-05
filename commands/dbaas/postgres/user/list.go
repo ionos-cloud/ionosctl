@@ -27,7 +27,7 @@ func ListCmd() *core.Command {
 			Resource:  "user",
 			ShortDesc: "List users",
 			LongDesc:  "List all users in the given database cluster",
-			Example:   "ionosctl dbaas-postgres user list --cluster-id <cluster-id>",
+			Example:   "ionosctl dbaas postgres user list --cluster-id <cluster-id>",
 			PreCmdRun: core.NoPreRun,
 			CmdRun:    runListCmd,
 		},
