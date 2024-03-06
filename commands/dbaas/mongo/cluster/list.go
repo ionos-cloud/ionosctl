@@ -8,7 +8,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/resource2table"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 )
 
 func ClusterListCmd() *core.Command {
@@ -29,15 +28,14 @@ func ClusterListCmd() *core.Command {
 				return err
 			}
 
-			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-
 			clustersConverted, err := resource2table.ConvertDbaasMongoClustersToTable(clusters)
 			if err != nil {
 				return err
 			}
 
-			out, err := jsontabwriter.GenerateOutputPreconverted(clusters, clustersConverted,
-				tabheaders.GetHeaders(allCols, defaultCols, cols))
+			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+
+			out, err := jsontabwriter.GenerateOutputPreconverted(clusters, clustersConverted, cols)
 			if err != nil {
 				return err
 			}
