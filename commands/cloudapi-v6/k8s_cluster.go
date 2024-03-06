@@ -266,7 +266,7 @@ func RunK8sClusterList(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutputPreconverted(k8ss.KubernetesClusters, k8ssConverted,
 		tabheaders.GetHeaders(allK8sClusterCols, defaultK8sClusterCols, cols))
@@ -306,7 +306,7 @@ func RunK8sClusterGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutputPreconverted(u.KubernetesCluster, uConverted,
 		tabheaders.GetHeaders(allK8sClusterCols, defaultK8sClusterCols, cols))
@@ -366,7 +366,7 @@ func RunK8sClusterCreate(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutputPreconverted(u.KubernetesCluster, uConverted,
 		tabheaders.GetHeaders(allK8sClusterCols, defaultK8sClusterCols, cols))
@@ -418,7 +418,7 @@ func RunK8sClusterUpdate(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutputPreconverted(k8sUpd.KubernetesCluster, k8sUpdConverted,
 		tabheaders.GetHeaders(allK8sClusterCols, defaultK8sClusterCols, cols))

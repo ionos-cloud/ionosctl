@@ -43,7 +43,7 @@ func preRunTokenParse(c *core.PreCommandConfig) error {
 }
 
 func runTokenParse(c *core.CommandConfig) error {
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	token := viper.GetString(core.GetFlagName(c.NS, authservice.ArgToken))
 

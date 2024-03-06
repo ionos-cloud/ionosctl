@@ -300,7 +300,7 @@ func RunNetworkLoadBalancerForwardingRuleList(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.NetworkLoadBalancerRule,
 		nlbForwardingRules.NetworkLoadBalancerForwardingRules, tabheaders.GetHeaders(allForwardingRuleCols, defaultForwardingRuleCols, cols))
@@ -334,7 +334,7 @@ func RunNetworkLoadBalancerForwardingRuleGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.NetworkLoadBalancerRule,
 		ng.NetworkLoadBalancerForwardingRule, tabheaders.GetHeaders(allForwardingRuleCols, defaultForwardingRuleCols, cols))
@@ -391,7 +391,7 @@ func RunNetworkLoadBalancerForwardingRuleCreate(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.NetworkLoadBalancerRule,
 		ng.NetworkLoadBalancerForwardingRule, tabheaders.GetHeaders(allForwardingRuleCols, defaultForwardingRuleCols, cols))
@@ -432,7 +432,7 @@ func RunNetworkLoadBalancerForwardingRuleUpdate(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.NetworkLoadBalancerRule,
 		ng.NetworkLoadBalancerForwardingRule, tabheaders.GetHeaders(allForwardingRuleCols, defaultForwardingRuleCols, cols))

@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
+	"strings"
 	"testing"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
@@ -44,7 +45,7 @@ func TestRunPgsqlVersionGet(t *testing.T) {
 		viper.Set(constants.ArgQuiet, false)
 		viper.Set(constants.ArgVerbose, false)
 		viper.Set(constants.ArgServerUrl, constants.DefaultApiURL)
-		viper.Set(core.GetFlagName(cfg.NS, constants.ArgCols), defaultPgsqlVersionCols)
+		cfg.Command.Command.Flags().Set(constants.ArgCols, strings.Join(defaultPgsqlVersionCols, ","))
 		viper.Set(core.GetFlagName(cfg.NS, constants.FlagClusterId), testVersionVar)
 		rm.CloudApiDbaasPgsqlMocks.Version.EXPECT().Get(testVersionVar).Return(testVersions, nil, nil)
 		err := RunPgsqlVersionGet(cfg)
@@ -61,7 +62,7 @@ func TestRunPgsqlVersionGetErr(t *testing.T) {
 		viper.Set(constants.ArgQuiet, false)
 		viper.Set(constants.ArgVerbose, false)
 		viper.Set(constants.ArgServerUrl, constants.DefaultApiURL)
-		viper.Set(core.GetFlagName(cfg.NS, constants.ArgCols), defaultPgsqlVersionCols)
+		cfg.Command.Command.Flags().Set(constants.ArgCols, strings.Join(defaultPgsqlVersionCols, ","))
 		viper.Set(core.GetFlagName(cfg.NS, constants.FlagClusterId), testVersionVar)
 		rm.CloudApiDbaasPgsqlMocks.Version.EXPECT().Get(testVersionVar).Return(testVersions, nil, testVersionErr)
 		err := RunPgsqlVersionGet(cfg)
@@ -78,7 +79,7 @@ func TestRunPgsqlVersionList(t *testing.T) {
 		viper.Set(constants.ArgQuiet, false)
 		viper.Set(constants.ArgVerbose, false)
 		viper.Set(constants.ArgServerUrl, constants.DefaultApiURL)
-		viper.Set(core.GetFlagName(cfg.NS, constants.ArgCols), defaultPgsqlVersionCols)
+		cfg.Command.Command.Flags().Set(constants.ArgCols, strings.Join(defaultPgsqlVersionCols, ","))
 		rm.CloudApiDbaasPgsqlMocks.Version.EXPECT().List().Return(testVersions, nil, nil)
 		err := RunPgsqlVersionList(cfg)
 		assert.NoError(t, err)

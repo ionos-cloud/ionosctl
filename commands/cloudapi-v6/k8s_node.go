@@ -234,7 +234,7 @@ func RunK8sNodeList(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.K8sNode, k8ss.KubernetesNodes,
 		tabheaders.GetHeadersAllDefault(defaultK8sNodeCols, cols))
@@ -276,7 +276,7 @@ func RunK8sNodeGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.K8sNode, u.KubernetesNode,
 		tabheaders.GetHeadersAllDefault(defaultK8sNodeCols, cols))

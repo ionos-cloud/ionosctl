@@ -105,7 +105,7 @@ func RunClusterLogsList(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	logsConverted, err := resource2table.ConvertDbaasPostgresLogsToTable(clusterLogs.Instances)
 	if err != nil {

@@ -295,7 +295,7 @@ func RunNetworkLoadBalancerListAll(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, totalTime))
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutputPreconverted(allNetworkLoadBalancers, allNetworkLoadBalancersConverted,
 		tabheaders.GetHeadersAllDefault(defaultNetworkLoadBalancerCols, cols))
@@ -329,7 +329,7 @@ func RunNetworkLoadBalancerList(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.NetworkLoadBalancer, networkloadbalancers.NetworkLoadBalancers,
 		tabheaders.GetHeaders(allNetworkLoadBalancerCols, defaultNetworkLoadBalancerCols, cols))
@@ -369,7 +369,7 @@ func RunNetworkLoadBalancerGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.NetworkLoadBalancer, ng.NetworkLoadBalancer,
 		tabheaders.GetHeaders(allNetworkLoadBalancerCols, defaultNetworkLoadBalancerCols, cols))
@@ -423,7 +423,7 @@ func RunNetworkLoadBalancerCreate(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.NetworkLoadBalancer, ng.NetworkLoadBalancer,
 		tabheaders.GetHeaders(allNetworkLoadBalancerCols, defaultNetworkLoadBalancerCols, cols))
@@ -462,7 +462,7 @@ func RunNetworkLoadBalancerUpdate(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.NetworkLoadBalancer, ng.NetworkLoadBalancer,
 		tabheaders.GetHeaders(allNetworkLoadBalancerCols, defaultNetworkLoadBalancerCols, cols))

@@ -214,7 +214,7 @@ func RunIpBlockList(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.IpBlock, ipblocks.IpBlocks,
 		tabheaders.GetHeadersAllDefault(defaultIpBlockCols, cols))
@@ -245,7 +245,7 @@ func RunIpBlockGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.IpBlock, i.IpBlock,
 		tabheaders.GetHeadersAllDefault(defaultIpBlockCols, cols))
@@ -284,7 +284,7 @@ func RunIpBlockCreate(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.IpBlock, i.IpBlock,
 		tabheaders.GetHeadersAllDefault(defaultIpBlockCols, cols))
@@ -324,7 +324,7 @@ func RunIpBlockUpdate(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.IpBlock, i.IpBlock,
 		tabheaders.GetHeadersAllDefault(defaultIpBlockCols, cols))

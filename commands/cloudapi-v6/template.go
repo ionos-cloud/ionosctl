@@ -113,7 +113,7 @@ func RunTemplateList(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.Template, templates,
 		tabheaders.GetHeadersAllDefault(defaultTemplateCols, cols))
@@ -144,7 +144,7 @@ func RunTemplateGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Template, tpl, tabheaders.GetHeadersAllDefault(defaultTemplateCols, cols))
 	if err != nil {

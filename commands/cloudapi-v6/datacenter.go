@@ -224,7 +224,7 @@ func RunDataCenterList(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.Datacenter, datacenters.Datacenters,
 		tabheaders.GetHeaders(allDatacenterCols, defaultDatacenterCols, cols))
@@ -255,7 +255,7 @@ func RunDataCenterGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Datacenter, dc.Datacenter,
 		tabheaders.GetHeaders(allDatacenterCols, defaultDatacenterCols, cols))
@@ -294,7 +294,7 @@ func RunDataCenterCreate(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Datacenter, dc,
 		tabheaders.GetHeaders(allDatacenterCols, defaultDatacenterCols, cols))
@@ -343,7 +343,7 @@ func RunDataCenterUpdate(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Datacenter, dc,
 		tabheaders.GetHeaders(allDatacenterCols, defaultDatacenterCols, cols))

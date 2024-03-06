@@ -33,7 +33,7 @@ func RunDataCenterLabelsList(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.Label, labelDcs.LabelResources,
 		tabheaders.GetHeadersAllDefault(defaultLabelCols, cols))
@@ -60,7 +60,7 @@ func RunDataCenterLabelGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Label, labelDc.LabelResource,
 		tabheaders.GetHeadersAllDefault(defaultLabelCols, cols))
@@ -89,7 +89,7 @@ func RunDataCenterLabelAdd(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Label, labelDc.LabelResource,
 		tabheaders.GetHeadersAllDefault(defaultLabelCols, cols))
@@ -228,7 +228,7 @@ func RunServerLabelsList(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.Label, labelDcs.LabelResources,
 		tabheaders.GetHeadersAllDefault(defaultLabelCols, cols))
@@ -256,7 +256,7 @@ func RunServerLabelGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Label, labelDc.LabelResource,
 		tabheaders.GetHeadersAllDefault(defaultLabelCols, cols))
@@ -286,7 +286,7 @@ func RunServerLabelAdd(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Label, labelDc.LabelResource,
 		tabheaders.GetHeadersAllDefault(defaultLabelCols, cols))
@@ -434,7 +434,7 @@ func RunVolumeLabelsList(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.Label, labelDcs.LabelResources,
 		tabheaders.GetHeadersAllDefault(defaultLabelCols, cols))
@@ -462,7 +462,7 @@ func RunVolumeLabelGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Label, labelDc.LabelResource,
 		tabheaders.GetHeadersAllDefault(defaultLabelCols, cols))
@@ -492,7 +492,7 @@ func RunVolumeLabelAdd(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Label, labelDc.LabelResource,
 		tabheaders.GetHeadersAllDefault(defaultLabelCols, cols))
@@ -630,7 +630,7 @@ func RunIpBlockLabelsList(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.Label, labelDcs.LabelResources,
 		tabheaders.GetHeadersAllDefault(defaultLabelCols, cols))
@@ -658,7 +658,7 @@ func RunIpBlockLabelGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Label, labelDc.LabelResource,
 		tabheaders.GetHeadersAllDefault(defaultLabelCols, cols))
@@ -687,7 +687,7 @@ func RunIpBlockLabelAdd(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Label, labelDc.LabelResource,
 		tabheaders.GetHeadersAllDefault(defaultLabelCols, cols))
@@ -822,7 +822,7 @@ func RunSnapshotLabelsList(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.Label, labelDcs.LabelResources,
 		tabheaders.GetHeadersAllDefault(defaultLabelCols, cols))
@@ -850,7 +850,7 @@ func RunSnapshotLabelGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Label, labelDc.LabelResource,
 		tabheaders.GetHeadersAllDefault(defaultLabelCols, cols))
@@ -879,7 +879,7 @@ func RunSnapshotLabelAdd(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Label, labelDc.LabelResource,
 		tabheaders.GetHeadersAllDefault(defaultLabelCols, cols))

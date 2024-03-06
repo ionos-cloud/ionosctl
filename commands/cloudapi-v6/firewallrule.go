@@ -349,7 +349,7 @@ func RunFirewallRuleList(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.FirewallRule, firewallRules.FirewallRules,
 		tabheaders.GetHeaders(allFirewallRuleCols, defaultFirewallRuleCols, cols))
@@ -387,7 +387,7 @@ func RunFirewallRuleGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.FirewallRule, firewallRule.FirewallRule,
 		tabheaders.GetHeaders(allFirewallRuleCols, defaultFirewallRuleCols, cols))
@@ -447,7 +447,7 @@ func RunFirewallRuleCreate(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.FirewallRule, firewallRule.FirewallRule,
 		tabheaders.GetHeaders(allFirewallRuleCols, defaultFirewallRuleCols, cols))
@@ -493,7 +493,7 @@ func RunFirewallRuleUpdate(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.FirewallRule, firewallRule.FirewallRule,
 		tabheaders.GetHeaders(allFirewallRuleCols, defaultFirewallRuleCols, cols))

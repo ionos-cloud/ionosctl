@@ -267,7 +267,7 @@ func RunSnapshotList(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.Snapshot, ss.Snapshots,
 		tabheaders.GetHeadersAllDefault(defaultSnapshotCols, cols))
@@ -298,7 +298,7 @@ func RunSnapshotGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Snapshot, s.Snapshot,
 		tabheaders.GetHeadersAllDefault(defaultSnapshotCols, cols))
@@ -340,7 +340,7 @@ func RunSnapshotCreate(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Snapshot, s.Snapshot,
 		tabheaders.GetHeadersAllDefault(defaultSnapshotCols, cols))
@@ -376,7 +376,7 @@ func RunSnapshotUpdate(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Snapshot, s.Snapshot,
 		tabheaders.GetHeadersAllDefault(defaultSnapshotCols, cols))

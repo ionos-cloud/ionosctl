@@ -294,7 +294,7 @@ func RunNatGatewayListAll(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, totalTime))
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutputPreconverted(allNatGateways, allNatGatewaysConverted,
 		tabheaders.GetHeaders(allNatGatewayCols, defaultNatGatewayCols, cols))
@@ -324,7 +324,7 @@ func RunNatGatewayList(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.NatGateway, natgateways.NatGateways,
 		tabheaders.GetHeadersAllDefault(defaultNatGatewayCols, cols))
@@ -364,7 +364,7 @@ func RunNatGatewayGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.NatGateway, ng.NatGateway,
 		tabheaders.GetHeadersAllDefault(defaultNatGatewayCols, cols))
@@ -411,7 +411,7 @@ func RunNatGatewayCreate(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.NatGateway, ng.NatGateway,
 		tabheaders.GetHeadersAllDefault(defaultNatGatewayCols, cols))
@@ -450,7 +450,7 @@ func RunNatGatewayUpdate(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.NatGateway, ng.NatGateway,
 		tabheaders.GetHeadersAllDefault(defaultNatGatewayCols, cols))

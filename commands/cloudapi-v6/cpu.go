@@ -90,7 +90,7 @@ func RunLocationCpuList(c *core.CommandConfig) error {
 		return fmt.Errorf("error getting cpu architectures")
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Cpu, *cpus, tabheaders.GetHeadersAllDefault(defaultCpuCols, cols))
 	if err != nil {

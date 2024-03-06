@@ -257,7 +257,7 @@ func RunFlowLogList(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	flowLogs, resp, err := c.CloudApiV6Services.FlowLogs().List(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
@@ -284,7 +284,7 @@ func RunFlowLogList(c *core.CommandConfig) error {
 }
 
 func RunFlowLogGet(c *core.CommandConfig) error {
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	listQueryParams, err := query.GetListQueryParams(c)
 	if err != nil {
@@ -319,7 +319,7 @@ func RunFlowLogGet(c *core.CommandConfig) error {
 }
 
 func RunFlowLogCreate(c *core.CommandConfig) error {
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	listQueryParams, err := query.GetListQueryParams(c)
 	if err != nil {

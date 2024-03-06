@@ -287,7 +287,7 @@ func RunLoadBalancerListAll(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, totalTime))
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutputPreconverted(allLoadbalancers, allLoadbalancersConverted,
 		tabheaders.GetHeaders(allLoadbalancerCols, defaultLoadbalancerCols, cols))
@@ -321,7 +321,7 @@ func RunLoadBalancerList(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.LoadBalancer, lbs.Loadbalancers,
 		tabheaders.GetHeaders(allLoadbalancerCols, defaultLoadbalancerCols, cols))
@@ -357,7 +357,7 @@ func RunLoadBalancerGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.LoadBalancer, lb.Loadbalancer,
 		tabheaders.GetHeaders(allLoadbalancerCols, defaultLoadbalancerCols, cols))
@@ -396,7 +396,7 @@ func RunLoadBalancerCreate(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.LoadBalancer, lb.Loadbalancer,
 		tabheaders.GetHeaders(allLoadbalancerCols, defaultLoadbalancerCols, cols))
@@ -456,7 +456,7 @@ func RunLoadBalancerUpdate(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.LoadBalancer, lb.Loadbalancer,
 		tabheaders.GetHeaders(allLoadbalancerCols, defaultLoadbalancerCols, cols))

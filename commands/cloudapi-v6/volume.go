@@ -387,7 +387,7 @@ func RunVolumeListAll(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, totalTime))
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutputPreconverted(allVolumes, allVolumesConverted,
 		tabheaders.GetHeaders(allVolumeCols, defaultVolumeCols, cols))
@@ -436,7 +436,7 @@ func RunVolumeList(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.Volume, volumes.Volumes,
 		tabheaders.GetHeaders(allVolumeCols, defaultVolumeCols, cols))
@@ -473,7 +473,7 @@ func RunVolumeGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Volume, vol.Volume,
 		tabheaders.GetHeaders(allVolumeCols, defaultVolumeCols, cols))
@@ -510,7 +510,7 @@ func RunVolumeCreate(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Volume, vol.Volume,
 		tabheaders.GetHeaders(allVolumeCols, defaultVolumeCols, cols))
@@ -548,7 +548,7 @@ func RunVolumeUpdate(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Volume, vol.Volume,
 		tabheaders.GetHeaders(allVolumeCols, defaultVolumeCols, cols))
@@ -1118,7 +1118,7 @@ func RunServerVolumeAttach(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Volume, attachedVol.Volume,
 		tabheaders.GetHeaders(allVolumeCols, defaultVolumeCols, cols))
@@ -1167,7 +1167,7 @@ func RunServerVolumesList(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.Volume, attachedVols.AttachedVolumes,
 		tabheaders.GetHeaders(allVolumeCols, defaultVolumeCols, cols))
@@ -1202,7 +1202,7 @@ func RunServerVolumeGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Volume, attachedVol.Volume,
 		tabheaders.GetHeaders(allVolumeCols, defaultVolumeCols, cols))

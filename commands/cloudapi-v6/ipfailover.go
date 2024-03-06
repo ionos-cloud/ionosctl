@@ -213,7 +213,7 @@ func RunIpFailoverList(c *core.CommandConfig) error {
 		ipsFailovers = append(ipsFailovers, ip)
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.IpFailover, ipsFailovers,
 		tabheaders.GetHeadersAllDefault(defaultIpFailoverCols, cols))
@@ -266,7 +266,7 @@ func RunIpFailoverAdd(c *core.CommandConfig) error {
 		ipsFailovers = append(ipsFailovers, ip)
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.IpFailover, ipsFailovers,
 		tabheaders.GetHeadersAllDefault(defaultIpFailoverCols, cols))

@@ -295,7 +295,7 @@ func RunLanListAll(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, totalTime))
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutputPreconverted(allLans, allLansConverted,
 		tabheaders.GetHeaders(allLanCols, defaultLanCols, cols))
@@ -326,7 +326,7 @@ func RunLanList(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.Lan, lans.Lans,
 		tabheaders.GetHeadersAllDefault(defaultLanCols, cols))
@@ -362,7 +362,7 @@ func RunLanGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Lan, l.Lan,
 		tabheaders.GetHeadersAllDefault(defaultLanCols, cols))
@@ -451,7 +451,7 @@ func RunLanCreate(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Lan, l.LanPost,
 		tabheaders.GetHeadersAllDefault(defaultLanCols, cols))
@@ -543,7 +543,7 @@ func RunLanUpdate(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Lan, lanUpdated.Lan,
 		tabheaders.GetHeadersAllDefault(defaultLanCols, cols))

@@ -232,7 +232,7 @@ func PreRunBackupUnitNameEmailPwd(c *core.PreCommandConfig) error {
 }
 
 func RunBackupUnitList(c *core.CommandConfig) error {
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	// Add Query Parameters for GET Requests
 	listQueryParams, err := query.GetListQueryParams(c)
@@ -260,7 +260,7 @@ func RunBackupUnitList(c *core.CommandConfig) error {
 }
 
 func RunBackupUnitGet(c *core.CommandConfig) error {
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	listQueryParams, err := query.GetListQueryParams(c)
 	if err != nil {
@@ -310,7 +310,7 @@ func RunBackupUnitGetSsoUrl(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.BackupUnitSSOUrl, u.BackupUnitSSO,
 		tabheaders.GetHeadersAllDefault(defaultBackupUnitSSOUrl, cols))
@@ -361,7 +361,7 @@ func RunBackupUnitCreate(c *core.CommandConfig) error {
 
 	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(backupUnitNote))
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.BackupUnit, u.BackupUnit,
 		tabheaders.GetHeadersAllDefault(defaultBackupUnitCols, cols))
@@ -392,7 +392,7 @@ func RunBackupUnitUpdate(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.BackupUnit, backupUnitUpd.BackupUnit,
 		tabheaders.GetHeadersAllDefault(defaultBackupUnitCols, cols))

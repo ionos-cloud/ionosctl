@@ -86,7 +86,7 @@ func RunAPIVersionList(c *core.CommandConfig) error {
 		versionListConverted = append(versionListConverted, temp...)
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutputPreconverted(versionList.Versions, versionListConverted,
 		tabheaders.GetHeadersAllDefault(defaultAPIVersionCols, cols))
@@ -111,7 +111,7 @@ func RunAPIVersionGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutputPreconverted(apiVersion.APIVersion, apiVersionConverted,
 		tabheaders.GetHeadersAllDefault(defaultAPIVersionCols, cols))

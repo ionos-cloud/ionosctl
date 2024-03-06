@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
+	"strings"
 	"testing"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
@@ -47,7 +48,7 @@ func TestRunAPIVersionList(t *testing.T) {
 		viper.Set(constants.ArgQuiet, false)
 		viper.Set(constants.ArgVerbose, false)
 		viper.Set(constants.ArgServerUrl, constants.DefaultApiURL)
-		viper.Set(core.GetFlagName(cfg.NS, constants.ArgCols), defaultAPIVersionCols)
+		cfg.Command.Command.Flags().Set(constants.ArgCols, strings.Join(defaultAPIVersionCols, ","))
 		rm.CloudApiDbaasPgsqlMocks.Info.EXPECT().List().Return(testAPIVersions, nil, nil)
 		err := RunAPIVersionList(cfg)
 		assert.NoError(t, err)

@@ -85,7 +85,7 @@ func RunBackupList(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.DbaasPostgresBackup, backups.ClusterBackupList,
 		tabheaders.GetHeaders(allBackupCols, defaultBackupCols, cols))
@@ -106,7 +106,7 @@ func RunBackupGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.DbaasPostgresBackup, backup.BackupResponse,
 		tabheaders.GetHeaders(allBackupCols, defaultBackupCols, cols))
@@ -165,7 +165,7 @@ func RunClusterBackupList(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.DbaasPostgresBackup, backups.ClusterBackupList,
 		tabheaders.GetHeaders(allBackupCols, defaultBackupCols, cols))

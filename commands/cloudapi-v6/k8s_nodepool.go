@@ -357,7 +357,7 @@ func handleApiResponseK8sNodepoolCreate(c *core.CommandConfig, pool ionoscloud.K
 		}
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutputPreconverted(pool, uConverted,
 		tabheaders.GetHeaders(allK8sNodePoolCols, defaultK8sNodePoolCols, cols))
@@ -443,7 +443,7 @@ func RunK8sNodePoolListAll(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, totalTime))
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutputPreconverted(allNodePools, allNodePoolsConverted,
 		tabheaders.GetHeaders(allK8sNodePoolCols, defaultK8sNodePoolCols, cols))
@@ -496,7 +496,7 @@ func RunK8sNodePoolList(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutputPreconverted(k8ss.KubernetesNodePools, k8ssConverted,
 		tabheaders.GetHeaders(allK8sNodePoolCols, defaultK8sNodePoolCols, cols))
@@ -539,7 +539,7 @@ func RunK8sNodePoolGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutputPreconverted(u.KubernetesNodePool, uConverted,
 		tabheaders.GetHeaders(allK8sNodePoolCols, defaultK8sNodePoolCols, cols))
@@ -587,7 +587,7 @@ func RunK8sNodePoolUpdate(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutputPreconverted(newNodePoolUpdated.KubernetesNodePool, newNodePoolUpdatedConverted,
 		tabheaders.GetHeaders(allK8sNodePoolCols, defaultK8sNodePoolCols, cols))

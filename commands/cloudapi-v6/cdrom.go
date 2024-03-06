@@ -246,7 +246,7 @@ func RunServerCdromAttach(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Image, attachedCdrom.Image,
 		tabheaders.GetHeaders(allImageCols, defaultImageCols, cols))
@@ -278,7 +278,7 @@ func RunServerCdromsList(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.Image, attachedCdroms.Cdroms,
 		tabheaders.GetHeaders(allImageCols, defaultImageCols, cols))
@@ -314,7 +314,7 @@ func RunServerCdromGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Image, attachedCdrom.Image,
 		tabheaders.GetHeaders(allImageCols, defaultImageCols, cols))

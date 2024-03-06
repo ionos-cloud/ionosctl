@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
+	"strings"
 	"testing"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
@@ -96,7 +97,7 @@ func TestRunBackupList(t *testing.T) {
 		viper.Set(constants.ArgQuiet, false)
 		viper.Set(constants.ArgVerbose, false)
 		viper.Set(constants.ArgServerUrl, constants.DefaultApiURL)
-		viper.Set(core.GetFlagName(cfg.NS, constants.ArgCols), defaultBackupCols)
+		cfg.Command.Command.Flags().Set(constants.ArgCols, strings.Join(defaultBackupCols, ","))
 		rm.CloudApiDbaasPgsqlMocks.Backup.EXPECT().List().Return(testBackups, nil, nil)
 		err := RunBackupList(cfg)
 		assert.NoError(t, err)
@@ -157,7 +158,7 @@ func TestRunClusterBackupList(t *testing.T) {
 		viper.Set(constants.ArgQuiet, false)
 		viper.Set(constants.ArgVerbose, false)
 		viper.Set(constants.ArgServerUrl, constants.DefaultApiURL)
-		viper.Set(core.GetFlagName(cfg.NS, constants.ArgCols), defaultBackupCols)
+		cfg.Command.Command.Flags().Set(constants.ArgCols, strings.Join(defaultBackupCols, ","))
 		viper.Set(core.GetFlagName(cfg.NS, constants.FlagClusterId), testBackupVar)
 		rm.CloudApiDbaasPgsqlMocks.Backup.EXPECT().ListBackups(testBackupVar).Return(testBackups, nil, nil)
 		err := RunClusterBackupList(cfg)

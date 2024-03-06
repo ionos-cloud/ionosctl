@@ -78,7 +78,7 @@ func RunPgsqlVersionList(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", allPgsqlVersionJSONPaths, versionList.PostgresVersionList,
 		tabheaders.GetHeadersAllDefault(defaultPgsqlVersionCols, cols))
@@ -98,7 +98,7 @@ func RunPgsqlVersionGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", allPgsqlVersionJSONPaths, versionList.PostgresVersionList,
 		tabheaders.GetHeadersAllDefault(defaultPgsqlVersionCols, cols))

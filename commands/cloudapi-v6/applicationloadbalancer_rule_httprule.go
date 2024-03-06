@@ -216,7 +216,7 @@ func PreRunApplicationLoadBalancerRuleHttpRuleDelete(c *core.PreCommandConfig) e
 }
 
 func RunAlbRuleHttpRuleList(c *core.CommandConfig) error {
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	listQueryParams, err := query.GetListQueryParams(c)
 	if err != nil {
@@ -329,7 +329,7 @@ func RunAlbRuleHttpRuleAdd(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.ApplicationLoadBalancerHTTPRule, httpRuleNew.ApplicationLoadBalancerHttpRule,
 		tabheaders.GetHeaders(allAlbRuleHttpRuleCols, defaultAlbRuleHttpRuleCols, cols))

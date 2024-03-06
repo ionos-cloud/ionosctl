@@ -96,7 +96,7 @@ func RunResourceList(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.Resource, resourcesListed.Resources,
 		tabheaders.GetHeadersAllDefault(defaultResourceCols, cols))
@@ -112,7 +112,7 @@ func RunResourceGet(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
 		"Resource with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceId))))
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgResourceId)) {
 		resourceListed, resp, err := c.CloudApiV6Services.Users().GetResourceByTypeAndId(
@@ -214,7 +214,7 @@ func RunGroupResourceList(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.Resource, resourcesListed.ResourceGroups,
 		tabheaders.GetHeadersAllDefault(defaultResourceCols, cols))

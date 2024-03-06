@@ -248,7 +248,7 @@ func RunTargetGroupList(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.TargetGroup, ss.TargetGroups,
 		tabheaders.GetHeaders(allTargetGroupCols, defaultTargetGroupCols, cols))
@@ -280,7 +280,7 @@ func RunTargetGroupGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.TargetGroup, s.TargetGroup,
 		tabheaders.GetHeaders(allTargetGroupCols, defaultTargetGroupCols, cols))
@@ -314,7 +314,7 @@ func RunTargetGroupCreate(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.TargetGroup, s.TargetGroup,
 		tabheaders.GetHeaders(allTargetGroupCols, defaultTargetGroupCols, cols))
@@ -350,7 +350,7 @@ func RunTargetGroupUpdate(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.TargetGroup, s.TargetGroup,
 		tabheaders.GetHeaders(allTargetGroupCols, defaultTargetGroupCols, cols))

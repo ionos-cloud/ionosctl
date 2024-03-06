@@ -118,7 +118,7 @@ func RunLocationList(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.Location, locations,
 		tabheaders.GetHeaders(allLocationCols, defaultLocationCols, cols))
@@ -155,7 +155,7 @@ func RunLocationGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Location, loc,
 		tabheaders.GetHeaders(allLocationCols, defaultLocationCols, cols))

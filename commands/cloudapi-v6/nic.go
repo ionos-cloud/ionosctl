@@ -314,7 +314,7 @@ func RunNicList(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.Nic, nics.Nics,
 		tabheaders.GetHeaders(allNicCols, defaultNicCols, cols))
@@ -350,7 +350,7 @@ func RunNicGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Nic, n.Nic,
 		tabheaders.GetHeaders(allNicCols, defaultNicCols, cols))
@@ -431,7 +431,7 @@ func RunNicCreate(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Nic, n.Nic,
 		tabheaders.GetHeaders(allNicCols, defaultNicCols, cols))
@@ -493,7 +493,7 @@ func RunNicUpdate(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Nic, nicUpd.Nic,
 		tabheaders.GetHeaders(allNicCols, defaultNicCols, cols))
@@ -851,7 +851,7 @@ func RunLoadBalancerNicAttach(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Nic, attachedNic.Nic,
 		tabheaders.GetHeaders(allNicCols, defaultNicCols, cols))
@@ -879,7 +879,7 @@ func RunLoadBalancerNicList(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.Nic, attachedNics.BalancedNics,
 		tabheaders.GetHeaders(allNicCols, defaultNicCols, cols))
@@ -908,7 +908,7 @@ func RunLoadBalancerNicGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Nic, n.Nic,
 		tabheaders.GetHeaders(allNicCols, defaultNicCols, cols))
