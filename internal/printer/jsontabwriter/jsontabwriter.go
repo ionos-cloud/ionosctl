@@ -26,6 +26,24 @@ const (
 	APIFormat = "api-json"
 )
 
+func generateOutput(rawData interface{}, textDataFunc func() (string, error)) (string, error) {
+	if viper.IsSet(constants.ArgQuiet) {
+		return "", nil
+	}
+
+	outputFormat := viper.GetString(constants.ArgOutput)
+	switch outputFormat {
+	case APIFormat:
+		return generateJSONOutputAPI(rawData)
+	case TextFormat:
+		return textDataFunc()
+	case JSONFormat:
+		return generateLegacyJSONOutput(rawData)
+	default:
+		return "", fmt.Errorf(outputFormatErr, outputFormat)
+	}
+}
+
 // GenerateOutput converts and formats source data into printable output.
 //
 // columnPathMappingPrefix: Points to a specific location in the JSON or struct object from where
@@ -39,26 +57,11 @@ const (
 // cols: The columns that need to be printed
 //
 // Returns a ready-to-print string, which has the source data in either human-readable/table or JSON format
-//
-// TODO: remove cols as function parameter once --cols flag fix is ready
-func GenerateOutput(
-	columnPathMappingPrefix string, columnPathMapping map[string]string, sourceData interface{}, cols []string,
-) (string, error) {
-	if viper.IsSet(constants.ArgQuiet) {
-		return "", nil
-	}
-
-	outputFormat := viper.GetString(constants.ArgOutput)
-	switch outputFormat {
-	case APIFormat:
-		return generateJSONOutputAPI(sourceData)
-	case TextFormat:
+func GenerateOutput(columnPathMappingPrefix string, columnPathMapping map[string]string, sourceData interface{}, cols []string) (string, error) {
+	textDataFunc := func() (string, error) {
 		return generateTextOutputFromJSON(columnPathMappingPrefix, sourceData, columnPathMapping, cols)
-	case JSONFormat:
-		return generateLegacyJSONOutput(sourceData)
-	default:
-		return "", fmt.Errorf(outputFormatErr, outputFormat)
 	}
+	return generateOutput(sourceData, textDataFunc)
 }
 
 // GenerateOutputPreconverted is just like GenerateOutput, but it assumes that the source data has already been converted
@@ -72,24 +75,11 @@ func GenerateOutput(
 // cols: The columns that need to be printed
 //
 // Returns a ready-to-print string, which has the source data in either human-readable/table or JSON format
-func GenerateOutputPreconverted(
-	rawSourceData interface{}, convertedSourceData []map[string]interface{}, cols []string,
-) (string, error) {
-	if viper.IsSet(constants.ArgQuiet) {
-		return "", nil
-	}
-
-	outputFormat := viper.GetString(constants.ArgOutput)
-	switch outputFormat {
-	case APIFormat:
-		return generateJSONOutputAPI(rawSourceData)
-	case TextFormat:
+func GenerateOutputPreconverted(rawSourceData interface{}, convertedSourceData []map[string]interface{}, cols []string) (string, error) {
+	textDataFunc := func() (string, error) {
 		return writeTableToText(convertedSourceData, cols), nil
-	case JSONFormat:
-		return generateLegacyJSONOutput(rawSourceData)
-	default:
-		return "", fmt.Errorf(outputFormatErr, outputFormat)
 	}
+	return generateOutput(rawSourceData, textDataFunc)
 }
 
 func GenerateVerboseOutput(format string, a ...interface{}) string {
