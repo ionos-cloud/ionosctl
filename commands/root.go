@@ -262,30 +262,51 @@ func addCommands() {
 	)
 }
 
-const helpTemplate = `USAGE: {{if .Runnable}}
-  {{.UseLine}}{{end}}{{if .HasAvailableSubCommands}}
-  {{.CommandPath}} [command]{{end}}{{if gt (len .Aliases) 0}}
-
-ALIASES:
-  {{.NameAndAliases}}{{end}}{{if .HasExample}}
-
-EXAMPLES:
-{{.Example}}{{end}}{{if .HasAvailableSubCommands}}
-
+const (
+	availableCommands = `{{- if .HasAvailableSubCommands}}
 AVAILABLE COMMANDS:{{range .Commands}}{{if (or .IsAvailableCommand (eq .Name "help"))}}
-  {{rpad .Name .NamePadding }} {{.Short}}{{end}}{{end}}{{end}}{{if .HasAvailableLocalFlags}}
+  {{rpad .Name .NamePadding }} {{.Short | trim}}{{end}}{{end}}{{print "\n"}}{{end}}`
 
-FLAGS:
-{{.LocalFlags.FlagUsages | trimTrailingWhitespaces}}{{end}}{{if .HasAvailableInheritedFlags}}
-
-GLOBAL FLAGS:
-{{.InheritedFlags.FlagUsages | trimTrailingWhitespaces}}{{end}}{{if .HasHelpSubCommands}}
-
+	seeAlso = `{{- if .HasHelpSubCommands}}
 SEE ALSO:
-{{.Annotations.SeeAlsos}}{{end}}{{if .HasHelpSubCommands}}
+{{.Annotations.SeeAlsos | trim}}{{print "\n"}}{{end}}`
 
+	additionalHelpTopics = `{{- if .HasHelpSubCommands}}
 Additional help topics:{{range .Commands}}{{if .IsAdditionalHelpTopicCommand}}
-  {{rpad .CommandPath .CommandPathPadding}} {{.Short}}{{end}}{{end}}{{end}}{{if .HasAvailableSubCommands}}
+  {{rpad .CommandPath .CommandPathPadding}} {{.Short | trim}}{{end}}{{end}}{{print "\n"}}{{end}}`
 
-Use "{{.CommandPath}} [command] --help" for more information about a command.{{end}}
-`
+	localFlags = `{{- if .HasAvailableLocalFlags}}
+FLAGS:
+{{.LocalFlags.FlagUsages}}{{end}}`
+
+	globalFlags = `{{- if .HasAvailableInheritedFlags}}
+GLOBAL FLAGS:
+{{.InheritedFlags.FlagUsages}}{{end}}`
+
+	usage = `{{- if .Runnable}}
+USAGE:
+  {{.UseLine | trim}}{{print "\n"}}{{end}}`
+
+	aliases = `{{- if gt (len .Aliases) 0}}
+ALIASES:
+  {{.NameAndAliases | trim}}{{print "\n"}}{{end}}`
+
+	examples = `{{- if .HasExample}}
+EXAMPLES:
+{{.Example | trim}}{{print "\n"}}{{end}}`
+
+	moreInfo = `{{- if .HasAvailableSubCommands}}
+Use "{{.CommandPath}} [command] --help" for more information about a command.{{print "\n"}}{{end}}`
+)
+
+var helpTemplate = strings.Join([]string{
+	seeAlso,
+	additionalHelpTopics,
+	globalFlags,
+	localFlags,
+	aliases,
+	examples,
+	usage,
+	availableCommands,
+	moreInfo,
+}, "")

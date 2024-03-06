@@ -2,6 +2,10 @@
 
 ## Upcoming
 
+## Changed
+- Changed help text order to match terminal reading patterns: command-specific information moved lower, global/general help moved higher.
+
+
 ### Fixed
 - Kubernetes node pool auto scaling can be disabled by setting `--min-node-count` and `--max-node-count` to 0.
 
