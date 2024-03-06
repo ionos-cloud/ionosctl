@@ -41,7 +41,6 @@ func NlbRuleTargetCmd() *core.Command {
 	}
 	globalFlags := nlbRuleTargetCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultRuleTargetCols, tabheaders.ColsMessage(defaultRuleTargetCols))
-	_ = viper.BindPFlag(core.GetFlagName(nlbRuleTargetCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = nlbRuleTargetCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultRuleTargetCols, cobra.ShellCompDirectiveNoFileComp
 	})

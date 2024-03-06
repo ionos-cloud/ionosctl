@@ -42,7 +42,6 @@ func TargetGroupCmd() *core.Command {
 	}
 	globalFlags := targetGroupCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultTargetGroupCols, tabheaders.ColsMessage(allTargetGroupCols))
-	_ = viper.BindPFlag(core.GetFlagName(targetGroupCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = targetGroupCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allTargetGroupCols, cobra.ShellCompDirectiveNoFileComp
 	})

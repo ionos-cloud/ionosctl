@@ -55,7 +55,6 @@ func PccCmd() *core.Command {
 	}
 	globalFlags := pccCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultPccCols, tabheaders.ColsMessage(defaultPccCols))
-	_ = viper.BindPFlag(core.GetFlagName(pccCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = pccCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultPccCols, cobra.ShellCompDirectiveNoFileComp
 	})

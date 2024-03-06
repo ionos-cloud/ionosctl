@@ -33,7 +33,6 @@ func ResourceCmd() *core.Command {
 	}
 	globalFlags := resourceCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultResourceCols, tabheaders.ColsMessage(defaultResourceCols))
-	_ = viper.BindPFlag(core.GetFlagName(resourceCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = resourceCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultResourceCols, cobra.ShellCompDirectiveNoFileComp
 	})

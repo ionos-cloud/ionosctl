@@ -65,7 +65,6 @@ func ImageCmd() *core.Command {
 	}
 	globalFlags := imageCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultImageCols, tabheaders.ColsMessage(allImageCols))
-	_ = viper.BindPFlag(core.GetFlagName(imageCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = imageCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allImageCols, cobra.ShellCompDirectiveNoFileComp
 	})

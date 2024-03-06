@@ -39,7 +39,6 @@ func IpblockCmd() *core.Command {
 	}
 	globalFlags := ipblockCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultIpBlockCols, tabheaders.ColsMessage(defaultIpBlockCols))
-	_ = viper.BindPFlag(core.GetFlagName(ipblockCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = ipblockCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultIpBlockCols, cobra.ShellCompDirectiveNoFileComp
 	})

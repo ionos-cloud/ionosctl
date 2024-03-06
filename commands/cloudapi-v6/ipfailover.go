@@ -39,7 +39,6 @@ func IpfailoverCmd() *core.Command {
 	}
 	globalFlags := ipfailoverCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultIpFailoverCols, tabheaders.ColsMessage(defaultIpFailoverCols))
-	_ = viper.BindPFlag(core.GetFlagName(ipfailoverCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = ipfailoverCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultIpFailoverCols, cobra.ShellCompDirectiveNoFileComp
 	})

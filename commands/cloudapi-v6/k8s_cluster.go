@@ -59,7 +59,6 @@ func K8sClusterCmd() *core.Command {
 	}
 	globalFlags := k8sCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultK8sClusterCols, tabheaders.ColsMessage(allK8sClusterCols))
-	_ = viper.BindPFlag(core.GetFlagName(k8sCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = k8sCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allK8sClusterCols, cobra.ShellCompDirectiveNoFileComp
 	})

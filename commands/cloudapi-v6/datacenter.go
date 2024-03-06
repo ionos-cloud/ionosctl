@@ -43,7 +43,6 @@ func DatacenterCmd() *core.Command {
 	}
 	globalFlags := datacenterCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultDatacenterCols, tabheaders.ColsMessage(allDatacenterCols))
-	_ = viper.BindPFlag(core.GetFlagName(datacenterCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = datacenterCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allDatacenterCols, cobra.ShellCompDirectiveNoFileComp
 	})

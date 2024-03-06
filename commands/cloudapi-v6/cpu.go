@@ -34,7 +34,6 @@ func CpuCmd() *core.Command {
 	}
 	globalFlags := cpuCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultCpuCols, tabheaders.ColsMessage(defaultCpuCols))
-	_ = viper.BindPFlag(core.GetFlagName(cpuCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = cpuCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultCpuCols, cobra.ShellCompDirectiveNoFileComp
 	})

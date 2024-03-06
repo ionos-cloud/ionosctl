@@ -44,7 +44,6 @@ func FirewallruleCmd() *core.Command {
 	}
 	globalFlags := firewallRuleCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultFirewallRuleCols, tabheaders.ColsMessage(allFirewallRuleCols))
-	_ = viper.BindPFlag(core.GetFlagName(firewallRuleCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = firewallRuleCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allFirewallRuleCols, cobra.ShellCompDirectiveNoFileComp
 	})

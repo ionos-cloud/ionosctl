@@ -28,7 +28,6 @@ func BackupCmd() *core.Command {
 	}
 	globalFlags := backupCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultBackupCols, tabheaders.ColsMessage(allBackupCols))
-	_ = viper.BindPFlag(core.GetFlagName(backupCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = backupCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allBackupCols, cobra.ShellCompDirectiveNoFileComp
 	})

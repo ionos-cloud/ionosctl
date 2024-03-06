@@ -45,7 +45,6 @@ func NicCmd() *core.Command {
 	}
 	globalFlags := nicCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultNicCols, tabheaders.ColsMessage(allNicCols))
-	_ = viper.BindPFlag(core.GetFlagName(nicCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = nicCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allNicCols, cobra.ShellCompDirectiveNoFileComp
 	})

@@ -42,7 +42,6 @@ func NatgatewayRuleCmd() *core.Command {
 	}
 	globalFlags := natgatewayRuleCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultNatGatewayRuleCols, tabheaders.ColsMessage(allNatGatewayRuleCols))
-	_ = viper.BindPFlag(core.GetFlagName(natgatewayRuleCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = natgatewayRuleCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allNatGatewayRuleCols, cobra.ShellCompDirectiveNoFileComp
 	})

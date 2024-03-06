@@ -42,7 +42,6 @@ func AlbRuleHttpRuleCmd() *core.Command {
 	}
 	globalFlags := albRuleHttpRuleCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultAlbRuleHttpRuleCols, tabheaders.ColsMessage(allAlbRuleHttpRuleCols))
-	_ = viper.BindPFlag(core.GetFlagName(albRuleHttpRuleCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = albRuleHttpRuleCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allAlbRuleHttpRuleCols, cobra.ShellCompDirectiveNoFileComp
 	})

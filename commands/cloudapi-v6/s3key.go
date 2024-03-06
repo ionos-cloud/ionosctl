@@ -40,7 +40,6 @@ func UserS3keyCmd() *core.Command {
 	}
 	globalFlags := s3keyCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultS3KeyCols, tabheaders.ColsMessage(defaultS3KeyCols))
-	_ = viper.BindPFlag(core.GetFlagName(s3keyCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = s3keyCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultS3KeyCols, cobra.ShellCompDirectiveNoFileComp
 	})

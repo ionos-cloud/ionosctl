@@ -36,7 +36,6 @@ func LocationCmd() *core.Command {
 	}
 	globalFlags := locationCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultLocationCols, tabheaders.ColsMessage(allLocationCols))
-	_ = viper.BindPFlag(core.GetFlagName(locationCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = locationCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allLocationCols, cobra.ShellCompDirectiveNoFileComp
 	})

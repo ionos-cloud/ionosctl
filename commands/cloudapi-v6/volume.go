@@ -48,7 +48,6 @@ func VolumeCmd() *core.Command {
 	}
 	globalFlags := volumeCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultVolumeCols, tabheaders.ColsMessage(allVolumeCols))
-	_ = viper.BindPFlag(core.GetFlagName(volumeCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = volumeCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allVolumeCols, cobra.ShellCompDirectiveNoFileComp
 	})

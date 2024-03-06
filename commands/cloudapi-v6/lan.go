@@ -46,7 +46,6 @@ func LanCmd() *core.Command {
 	}
 	globalFlags := lanCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultLanCols, tabheaders.ColsMessage(allLanCols))
-	_ = viper.BindPFlag(core.GetFlagName(lanCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = lanCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allLanCols, cobra.ShellCompDirectiveNoFileComp
 	})

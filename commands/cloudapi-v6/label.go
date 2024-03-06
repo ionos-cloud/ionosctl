@@ -32,7 +32,6 @@ func LabelCmd() *core.Command {
 	}
 	globalFlags := labelCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultLabelCols, tabheaders.ColsMessage(defaultLabelCols))
-	_ = viper.BindPFlag(core.GetFlagName(labelCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = labelCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultLabelCols, cobra.ShellCompDirectiveNoFileComp
 	})

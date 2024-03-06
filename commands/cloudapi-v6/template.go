@@ -33,7 +33,6 @@ func TemplateCmd() *core.Command {
 	}
 	globalFlags := templateCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultTemplateCols, tabheaders.ColsMessage(defaultTemplateCols))
-	_ = viper.BindPFlag(core.GetFlagName(templateCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = templateCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultTemplateCols, cobra.ShellCompDirectiveNoFileComp
 	})

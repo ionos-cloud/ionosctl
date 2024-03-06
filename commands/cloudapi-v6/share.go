@@ -42,7 +42,6 @@ func ShareCmd() *core.Command {
 	}
 	globalFlags := shareCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultGroupShareCols, tabheaders.ColsMessage(allGroupShareCols))
-	_ = viper.BindPFlag(core.GetFlagName(shareCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = shareCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allGroupShareCols, cobra.ShellCompDirectiveNoFileComp
 	})
