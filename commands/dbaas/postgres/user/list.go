@@ -36,7 +36,7 @@ func ListCmd() *core.Command {
 	_ = cmd.Command.RegisterFlagCompletionFunc(
 		constants.ArgCols,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-			return allCols, cobra.ShellCompDirectiveDefault
+			return allCols, cobra.ShellCompDirectiveNoFileComp
 		},
 	)
 
@@ -44,7 +44,7 @@ func ListCmd() *core.Command {
 	_ = cmd.Command.RegisterFlagCompletionFunc(
 		constants.FlagClusterId,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-			return completer.ClustersIds(), cobra.ShellCompDirectiveDefault
+			return completer.ClustersIds(), cobra.ShellCompDirectiveNoFileComp
 		},
 	)
 

@@ -32,7 +32,7 @@ func GetCmd() *core.Command {
 	_ = c.Command.RegisterFlagCompletionFunc(
 		constants.ArgCols,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-			return allCols, cobra.ShellCompDirectiveDefault
+			return allCols, cobra.ShellCompDirectiveNoFileComp
 		},
 	)
 
@@ -40,13 +40,13 @@ func GetCmd() *core.Command {
 	_ = c.Command.RegisterFlagCompletionFunc(
 		constants.FlagClusterId,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-			return completer.ClustersIds(), cobra.ShellCompDirectiveDefault
+			return completer.ClustersIds(), cobra.ShellCompDirectiveNoFileComp
 		},
 	)
 
 	c.AddStringFlag(constants.ArgUser, "", "", "The name of the user to retrieve")
 	_ = c.Command.RegisterFlagCompletionFunc(constants.ArgUser, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.UserNames(c), cobra.ShellCompDirectiveDefault
+		return completer.UserNames(c), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	return c

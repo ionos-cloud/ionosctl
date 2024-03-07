@@ -32,7 +32,7 @@ func DeleteCmd() *core.Command {
 	_ = c.Command.RegisterFlagCompletionFunc(
 		constants.FlagClusterId,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-			return completer.ClustersIds(), cobra.ShellCompDirectiveDefault
+			return completer.ClustersIds(), cobra.ShellCompDirectiveNoFileComp
 		},
 	)
 
@@ -40,7 +40,7 @@ func DeleteCmd() *core.Command {
 	_ = c.Command.RegisterFlagCompletionFunc(
 		constants.ArgUser,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-			return completer.UserNames(c), cobra.ShellCompDirectiveDefault
+			return completer.UserNames(c), cobra.ShellCompDirectiveNoFileComp
 		},
 	)
 
@@ -67,7 +67,7 @@ func runDeleteCmd(c *core.CommandConfig) error {
 		return err
 	}
 
-	out := jsontabwriter.GenerateLogOutput("DbaaS Postgres User successfully deleted")
+	out := jsontabwriter.GenerateLogOutput("DbaaS Postgres User %v successfully deleted", username)
 
 	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
 	return nil

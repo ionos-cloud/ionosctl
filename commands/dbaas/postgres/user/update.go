@@ -34,7 +34,7 @@ func UpdateCmd() *core.Command {
 	_ = c.Command.RegisterFlagCompletionFunc(
 		constants.FlagClusterId,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-			return completer.ClustersIds(), cobra.ShellCompDirectiveDefault
+			return completer.ClustersIds(), cobra.ShellCompDirectiveNoFileComp
 		},
 	)
 
@@ -42,7 +42,7 @@ func UpdateCmd() *core.Command {
 	_ = c.Command.RegisterFlagCompletionFunc(
 		constants.ArgUser,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-			return completer.UserNames(c), cobra.ShellCompDirectiveDefault
+			return completer.UserNames(c), cobra.ShellCompDirectiveNoFileComp
 		},
 	)
 
