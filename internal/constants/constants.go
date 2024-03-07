@@ -81,6 +81,9 @@ Within each layer, a token takes precedence over a username and password combina
 	FlagArtifactId       = "artifact-id"
 	FlagVulnerabilityId  = "vulnerability-id"
 	FlagRegistryVulnScan = "vulnerability-scanning"
+
+	FlagDatabase   = "database"
+	FlagOwner      = "owner"
 )
 
 // Flag descriptions. Prefixed with "Desc" for easy find and replace

@@ -106,3 +106,21 @@ func UserNames(c *core.Command) []string {
 
 	return completions.NewCompleter(convertedUserList, "Username").ToString()
 }
+
+func DatabaseNames(c *core.Command) []string {
+	clusterId := viper.GetString(core.GetFlagName(c.NS, "cluster-id"))
+
+	databaseList, _, err := client.Must().PostgresClient.DatabasesApi.DatabasesList(context.Background(), clusterId).Execute()
+	if err != nil {
+		return nil
+	}
+
+	convertedDatabaseList, err := json2table.ConvertJSONToTable(
+		"items", jsonpaths.DbaasPostgresDatabase, databaseList,
+	)
+	if err != nil {
+		return nil
+	}
+
+	return completions.NewCompleter(convertedDatabaseList, "Name").ToString()
+}

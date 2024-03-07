@@ -81,6 +81,7 @@ var (
 	}
 
 	DbaasPostgresDatabase = map[string]string{
+		"Id":    "id",
 		"Name":  "properties.name",
 		"Owner": "properties.owner",
 	}
