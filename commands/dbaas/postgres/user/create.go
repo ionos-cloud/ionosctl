@@ -22,14 +22,14 @@ func CreateCmd() *core.Command {
 			Namespace: "dbaas-postgres",
 			Resource:  "user",
 			ShortDesc: "Create a user",
-			LongDesc:  "Create a new user in the given database cluster",
-			Example:   "ionosctl dbaas postgres user create --cluster-id <cluster-id> --user <user> --password <password>",
+			LongDesc:  `Create a new user in the given cluster`,
+			Example:   `ionosctl dbaas postgres user create --cluster-id <cluster-id> --user <user> --password <password>`,
 			PreCmdRun: preRunCreateCmd,
 			CmdRun:    runCreateCmd,
 		},
 	)
 
-	c.AddStringFlag(constants.FlagClusterId, constants.FlagIdShort, "", "")
+	c.AddStringFlag(constants.FlagClusterId, constants.FlagIdShort, "", "The ID of the Postgres cluster")
 	_ = c.Command.RegisterFlagCompletionFunc(
 		constants.FlagClusterId,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -37,8 +37,8 @@ func CreateCmd() *core.Command {
 		},
 	)
 
-	c.AddStringFlag(constants.ArgUser, "", "", "The name of the new user")
-	c.AddStringFlag(constants.ArgPassword, constants.ArgPasswordShort, "", "The password of the new user")
+	c.AddStringFlag(constants.ArgUser, "", "", "The name of the user")
+	c.AddStringFlag(constants.ArgPassword, constants.ArgPasswordShort, "", "The password for the user")
 
 	return c
 }

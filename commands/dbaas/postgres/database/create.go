@@ -22,13 +22,13 @@ func CreateCmd() *core.Command {
 			Namespace: "dbaas-postgres",
 			Resource:  "database",
 			ShortDesc: "Create database",
-			LongDesc:  `Create a new database in the specified cluster.`,
+			LongDesc:  `Create a new database in the specified cluster`,
 			Example:   `ionosctl dbaas postgres database create --cluster-id <cluster-id> --database <database> --owner <owner>`,
 			PreCmdRun: preRunCreateCmd,
 			CmdRun:    runCreateCmd,
 		},
 	)
-	c.AddStringFlag(constants.FlagClusterId, "", "", "The ID of the cluster")
+	c.AddStringFlag(constants.FlagClusterId, "", "", "The ID of the Postgres cluster")
 	_ = c.Command.RegisterFlagCompletionFunc(
 		constants.FlagClusterId,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -44,7 +44,7 @@ func CreateCmd() *core.Command {
 		},
 	)
 
-	c.AddStringFlag(constants.FlagDatabase, "", "", "The name of the database to create")
+	c.AddStringFlag(constants.FlagDatabase, "", "", "The name of the database")
 
 	return c
 }

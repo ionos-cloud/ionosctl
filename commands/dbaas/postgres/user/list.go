@@ -26,8 +26,8 @@ func ListCmd() *core.Command {
 			Namespace: "dbaas-postgres",
 			Resource:  "user",
 			ShortDesc: "List users",
-			LongDesc:  "List all users in the given database cluster",
-			Example:   "ionosctl dbaas postgres user list --cluster-id <cluster-id>",
+			LongDesc:  `List all users in the given cluster`,
+			Example:   `ionosctl dbaas postgres user list --cluster-id <cluster-id>`,
 			PreCmdRun: core.NoPreRun,
 			CmdRun:    runListCmd,
 		},
@@ -40,7 +40,7 @@ func ListCmd() *core.Command {
 		},
 	)
 
-	cmd.AddStringFlag(constants.FlagClusterId, constants.FlagIdShort, "", "")
+	cmd.AddStringFlag(constants.FlagClusterId, constants.FlagIdShort, "", "The ID of the Postgres cluster")
 	_ = cmd.Command.RegisterFlagCompletionFunc(
 		constants.FlagClusterId,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {

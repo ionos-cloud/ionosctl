@@ -21,14 +21,14 @@ func DeleteCmd() *core.Command {
 			Namespace: "dbaas-postgres",
 			Resource:  "database",
 			ShortDesc: "Delete database",
-			LongDesc:  `Delete the specified database in the given cluster`,
-			Example:   "ionosctl dbaas postgres database delete --cluster-id <cluster-id> --database <database>",
+			LongDesc:  `Delete the specified database from the given cluster`,
+			Example:   `ionosctl dbaas postgres database delete --cluster-id <cluster-id> --database <database>`,
 			PreCmdRun: preRunDeleteCmd,
 			CmdRun:    runDeleteCmd,
 		},
 	)
 
-	c.AddStringFlag(constants.FlagClusterId, constants.FlagIdShort, "", "")
+	c.AddStringFlag(constants.FlagClusterId, constants.FlagIdShort, "", "The ID of the Postgres cluster")
 	_ = c.Command.RegisterFlagCompletionFunc(
 		constants.FlagClusterId,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -36,7 +36,7 @@ func DeleteCmd() *core.Command {
 		},
 	)
 
-	c.AddStringFlag(constants.FlagDatabase, "", "", "The name of the database to delete")
+	c.AddStringFlag(constants.FlagDatabase, "", "", "The name of the database")
 	_ = c.Command.RegisterFlagCompletionFunc(
 		constants.FlagDatabase,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {

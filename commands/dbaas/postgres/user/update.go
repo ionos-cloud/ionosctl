@@ -22,15 +22,14 @@ func UpdateCmd() *core.Command {
 			Namespace: "dbaas-postgres",
 			Resource:  "user",
 			ShortDesc: "Update a user",
-			LongDesc:  "Update a new user in the given database cluster",
-			Example:
-				"ionosctl dbaas postgres user update --cluster-id <cluster-id> --user <user> --password <password>",
+			LongDesc:  `Update the specified user from the given cluster. Only changing their password is supported. System users cannot be patched.`,
+			Example:   `ionosctl dbaas postgres user update --cluster-id <cluster-id> --user <user> --password <password>`,
 			PreCmdRun: preRunUpdateCmd,
 			CmdRun:    runUpdateCmd,
 		},
 	)
 
-	c.AddStringFlag(constants.FlagClusterId, constants.FlagIdShort, "", "")
+	c.AddStringFlag(constants.FlagClusterId, constants.FlagIdShort, "", "The ID of the Postgres cluster")
 	_ = c.Command.RegisterFlagCompletionFunc(
 		constants.FlagClusterId,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -38,7 +37,7 @@ func UpdateCmd() *core.Command {
 		},
 	)
 
-	c.AddStringFlag(constants.ArgUser, "", "", "The name of the new user")
+	c.AddStringFlag(constants.ArgUser, "", "", "The name of the user")
 	_ = c.Command.RegisterFlagCompletionFunc(
 		constants.ArgUser,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -46,7 +45,7 @@ func UpdateCmd() *core.Command {
 		},
 	)
 
-	c.AddStringFlag(constants.ArgPassword, constants.ArgPasswordShort, "", "The password of the new user")
+	c.AddStringFlag(constants.ArgPassword, constants.ArgPasswordShort, "", "The password for the user")
 
 	return c
 }
