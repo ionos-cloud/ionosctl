@@ -17,7 +17,7 @@ import (
 var (
 	testVersions = resources.PostgresVersionList{
 		PostgresVersionList: sdkgo.PostgresVersionList{
-			Data: &[]sdkgo.PostgresVersionListData{{
+			Data: &[]sdkgo.PostgresVersionListDataInner{{
 				Name: &testVersionVar,
 			}},
 		},

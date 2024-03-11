@@ -182,7 +182,7 @@ var (
 					DayOfTheWeek: (*sdkgo.DayOfTheWeek)(&testClusterNewVar),
 				},
 			},
-			Metadata: &sdkgo.Metadata{
+			Metadata: &sdkgo.ClusterMetadata{
 				State: (*sdkgo.State)(&testClusterStateVar),
 			},
 		},
@@ -213,7 +213,7 @@ var (
 					DayOfTheWeek: (*sdkgo.DayOfTheWeek)(&testClusterVar),
 				},
 			},
-			Metadata: &sdkgo.Metadata{
+			Metadata: &sdkgo.ClusterMetadata{
 				State: (*sdkgo.State)(&testClusterStateVar),
 			},
 		},
@@ -244,7 +244,7 @@ var (
 					DayOfTheWeek: (*sdkgo.DayOfTheWeek)(&testClusterVar),
 				},
 			},
-			Metadata: &sdkgo.Metadata{
+			Metadata: &sdkgo.ClusterMetadata{
 				State: (*sdkgo.State)(&testClusterStateVar),
 			},
 		},
@@ -275,7 +275,7 @@ var (
 					DayOfTheWeek: (*sdkgo.DayOfTheWeek)(&testClusterVar),
 				},
 			},
-			Metadata: &sdkgo.Metadata{
+			Metadata: &sdkgo.ClusterMetadata{
 				State: (*sdkgo.State)(&testClusterStateVar),
 			},
 		},
@@ -298,7 +298,7 @@ var (
 					DayOfTheWeek: (*sdkgo.DayOfTheWeek)(&testClusterVar),
 				},
 			},
-			Metadata: &sdkgo.Metadata{
+			Metadata: &sdkgo.ClusterMetadata{
 				State: (*sdkgo.State)(&testClusterStateVar),
 			},
 		},
@@ -329,7 +329,7 @@ var (
 					DayOfTheWeek: (*sdkgo.DayOfTheWeek)(&testClusterVar),
 				},
 			},
-			Metadata: &sdkgo.Metadata{
+			Metadata: &sdkgo.ClusterMetadata{
 				State: (*sdkgo.State)(&testClusterStateFailedVar),
 			},
 		},
