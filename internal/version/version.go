@@ -23,6 +23,11 @@ var (
 )
 
 // Get returns the current CLI version, preferring the value set via ldflags
+// Examples:
+//   - v1.0.0
+//   - DEV-abcdef1
+//   - DEV-abcdef1+ (if installed via `make install` with uncommitted changes)
+//   - unknown
 func Get(options ...Option) string {
 	cfg := Config{
 		ReadBuildInfo: debug.ReadBuildInfo, // Default fetcher
