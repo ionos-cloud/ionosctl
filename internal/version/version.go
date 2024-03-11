@@ -22,6 +22,13 @@ func Get() string {
 
 	info, ok := debug.ReadBuildInfo()
 	if ok {
+		// If installed via a known tag using `go install`, return the version directly
+		if isSemanticVersion(info.Main.Version) {
+			return "v" + strings.TrimLeft(info.Main.Version, "v ")
+		}
+
+		// Installed via `go install` with a commit hash, return a dev version
+		// Example: v0.0.0-20210101000000-abcdef123456 -> DEV-abcdef1
 		versionParts := strings.Split(info.Main.Version, "-")
 		if len(versionParts) >= 3 {
 			versionOrHash := versionParts[2]
