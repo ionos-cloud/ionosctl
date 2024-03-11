@@ -119,7 +119,7 @@ Ctrl + L\tClear the screen`,
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			fmt.Printf("ionosctl v%s\n", version.Get())
+			fmt.Printf("ionosctl %s\n", version.Get())
 			fmt.Println("Warning: We recommend keeping usage of this interactive shell to non-production critical applications.")
 			fmt.Println("   - DANGER:\tCertain commands that require user input may freeze the shell!")
 			fmt.Println("   - NOTE:\tCommands such as 'delete' that require user confirmation will always fail and will instead ask for '--force' to be set.")
