@@ -6,7 +6,7 @@ import (
 )
 
 var (
-	allCols = []string{"Id", "Username", "System", "ClusterId"}
+	allCols     = []string{"Id", "Username", "System", "ClusterId"}
 	defaultCols = []string{"Id", "Username", "System"}
 )
 
