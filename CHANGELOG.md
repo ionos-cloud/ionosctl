@@ -2,19 +2,20 @@
 
 ## Upcoming
 
-## Changed
+### Changed
 - Changed help text order to match terminal reading patterns: command-specific information moved lower, global/general help moved higher.
 
 
 ### Fixed
 - Kubernetes node pool auto scaling can be disabled by setting `--min-node-count` and `--max-node-count` to 0.
+- Fixed missing version in `ionosctl version` output when installed via 'go install'.
 
 ## [v6.7.4] (January 2024)
 
 ### Added
 - Added `version` resource for Dataplatform API, with `list` and `latest` subcommands
 - Added support for Container-Registry Vulnerabilities
-  - New `--vulnerability-scanning` flag added to `registry create` and `registry update` commands 
+  - New `--vulnerability-scanning` flag added to `registry create` and `registry update` commands
   - New `artifacts` and `vulnerabilities` commands under `container-registry`
   - `repository` command functionality will eventually be moved to `repository delete`. For the time being, both commands are available.
 
