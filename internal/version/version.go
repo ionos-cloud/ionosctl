@@ -7,6 +7,14 @@ import (
 	"strings"
 )
 
+type Option func(Config) Config
+type Config struct {
+	ReadBuildInfo BuildInfoFetcher
+}
+
+// BuildInfoFetcher specifies a custom build info fetcher, only really exists for testing
+type BuildInfoFetcher func() (*debug.BuildInfo, bool)
+
 // Variables sent at link time via ldflags
 var (
 	Version   string
@@ -15,12 +23,19 @@ var (
 )
 
 // Get returns the current CLI version, preferring the value set via ldflags
-func Get() string {
+func Get(options ...Option) string {
+	cfg := Config{
+		ReadBuildInfo: debug.ReadBuildInfo, // Default fetcher
+	}
+	for _, option := range options {
+		cfg = option(cfg)
+	}
+
 	if Version != "" || GitCommit != "" {
 		return getVersionViaLdFlags()
 	}
 
-	info, ok := debug.ReadBuildInfo()
+	info, ok := cfg.ReadBuildInfo()
 	if ok {
 		// If installed via a known tag using `go install`, return the version directly
 		if isSemanticVersion(info.Main.Version) {
@@ -55,4 +70,14 @@ func isSemanticVersion(version string) bool {
 	semanticVersionPattern := `^v\d+\.\d+\.\d+$`
 	matched, _ := regexp.MatchString(semanticVersionPattern, version)
 	return matched
+}
+
+// WithFetcher allows setting a custom fetcher for build info
+func WithFetcher(fetcher BuildInfoFetcher) Option {
+	return func(c Config) Config {
+		if fetcher != nil {
+			c.ReadBuildInfo = fetcher
+		}
+		return c
+	}
 }
