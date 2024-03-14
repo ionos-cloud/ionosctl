@@ -9,6 +9,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/dns"
 	vm_autoscaling "github.com/ionos-cloud/ionosctl/v6/commands/vm-autoscaling"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
+	"github.com/ionos-cloud/ionosctl/v6/internal/version"
 
 	certificates "github.com/ionos-cloud/ionosctl/v6/commands/certmanager"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
@@ -24,8 +25,6 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
-
-const CLIVersionDev = "DEV"
 
 var (
 	// RootCmd is the root level command that all other commands attach to
@@ -44,12 +43,6 @@ var (
 	NoHeaders bool
 
 	cfgFile string
-
-	Version string
-	// Label - If label is not set, the version will be: DEV
-	// If label is set as `release`, it will show the version released
-	Label     string
-	GitCommit string
 )
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -84,12 +77,7 @@ func init() {
 	rootCmd.Command.SetUsageTemplate(helpTemplate)
 	rootCmd.Command.SetHelpCommand(helpCommand)
 
-	// Init version
-	if Label == "release" {
-		rootCmd.Command.Version = "v" + strings.TrimLeft(Version, "v ")
-	} else {
-		rootCmd.Command.Version = fmt.Sprintf("%s-%s", CLIVersionDev, GitCommit)
-	}
+	rootCmd.Command.Version = version.Get() // Send the current version to Cobra
 	viper.Set(constants.CLIHttpUserAgent, fmt.Sprintf("ionosctl/%v", rootCmd.Command.Version))
 
 	// Here you will define your flags and configuration settings.
