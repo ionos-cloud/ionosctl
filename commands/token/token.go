@@ -17,7 +17,7 @@ func TokenCmd() *core.Command {
 		},
 	}
 	globalFlags := tokenCmd.GlobalFlags()
-	globalFlags.StringSliceP(constants.ArgCols, "", nil, tabheaders.ColsMessage(allTokenCols))
+	globalFlags.StringSliceP(constants.ArgCols, "", defaultTokenCols, tabheaders.ColsMessage(allTokenCols))
 	_ = tokenCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allTokenCols, cobra.ShellCompDirectiveNoFileComp
 	})
