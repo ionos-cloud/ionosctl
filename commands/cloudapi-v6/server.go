@@ -53,7 +53,6 @@ func ServerCmd() *core.Command {
 	}
 	globalFlags := serverCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", DefaultServerCols, tabheaders.ColsMessage(AllServerCols))
-	_ = viper.BindPFlag(core.GetFlagName(serverCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = serverCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return AllServerCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -683,7 +682,7 @@ func RunServerListAll(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestTime, totalTime))
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutputPreconverted(allServers, allServersConverted,
 		tabheaders.GetHeaders(AllServerCols, DefaultServerCols, cols))
@@ -728,7 +727,7 @@ func RunServerList(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.Server, servers.Servers,
 		tabheaders.GetHeaders(AllServerCols, DefaultServerCols, cols))
@@ -766,7 +765,7 @@ func RunServerGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Server, svr.Server,
 		tabheaders.GetHeaders(AllServerCols, DefaultServerCols, cols))
@@ -834,7 +833,7 @@ func RunServerCreate(c *core.CommandConfig) error {
 		}
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Server, svr.Server,
 		tabheaders.GetHeaders(AllServerCols, DefaultServerCols, cols))
@@ -891,7 +890,7 @@ func RunServerUpdate(c *core.CommandConfig) error {
 		}
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Server, svr.Server,
 		tabheaders.GetHeaders(AllServerCols, DefaultServerCols, cols))

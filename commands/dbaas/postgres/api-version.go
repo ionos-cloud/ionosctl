@@ -10,7 +10,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 func APIVersionCmd() *core.Command {
@@ -26,7 +25,6 @@ func APIVersionCmd() *core.Command {
 	}
 	globalFlags := apiversionCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultAPIVersionCols, tabheaders.ColsMessage(defaultAPIVersionCols))
-	_ = viper.BindPFlag(core.GetFlagName(apiversionCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = apiversionCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultAPIVersionCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -86,7 +84,7 @@ func RunAPIVersionList(c *core.CommandConfig) error {
 		versionListConverted = append(versionListConverted, temp...)
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutputPreconverted(versionList.Versions, versionListConverted,
 		tabheaders.GetHeadersAllDefault(defaultAPIVersionCols, cols))
@@ -111,7 +109,7 @@ func RunAPIVersionGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutputPreconverted(apiVersion.APIVersion, apiVersionConverted,
 		tabheaders.GetHeadersAllDefault(defaultAPIVersionCols, cols))

@@ -574,7 +574,7 @@ func TestRunClusterList(t *testing.T) {
 		viper.Set(constants.ArgQuiet, false)
 		viper.Set(constants.ArgVerbose, false)
 		viper.Set(constants.ArgServerUrl, constants.DefaultApiURL)
-		viper.Set(core.GetFlagName(cfg.NS, constants.ArgCols), defaultClusterCols)
+		cfg.Command.Command.Flags().Set(constants.ArgCols, strings.Join(defaultClusterCols, ","))
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgName), testClusterVar)
 		rm.CloudApiDbaasPgsqlMocks.Cluster.EXPECT().List(testClusterVar).Return(testClusters, nil, nil)
 		err := RunClusterList(cfg)

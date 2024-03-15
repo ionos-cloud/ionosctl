@@ -39,7 +39,6 @@ func IpfailoverCmd() *core.Command {
 	}
 	globalFlags := ipfailoverCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultIpFailoverCols, tabheaders.ColsMessage(defaultIpFailoverCols))
-	_ = viper.BindPFlag(core.GetFlagName(ipfailoverCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = ipfailoverCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultIpFailoverCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -213,7 +212,7 @@ func RunIpFailoverList(c *core.CommandConfig) error {
 		ipsFailovers = append(ipsFailovers, ip)
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.IpFailover, ipsFailovers,
 		tabheaders.GetHeadersAllDefault(defaultIpFailoverCols, cols))
@@ -266,7 +265,7 @@ func RunIpFailoverAdd(c *core.CommandConfig) error {
 		ipsFailovers = append(ipsFailovers, ip)
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.IpFailover, ipsFailovers,
 		tabheaders.GetHeadersAllDefault(defaultIpFailoverCols, cols))

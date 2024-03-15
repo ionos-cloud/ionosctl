@@ -27,7 +27,7 @@ Use this command to retrieve a complete list of Tokens under your account, to li
 ```text
   -u, --api-url string   Override default host url (default "https://api.ionos.com")
       --cols strings     Set of columns to be printed on output 
-                         Available columns: [TokenId CreatedDate ExpirationDate Href]
+                         Available columns: [TokenId CreatedDate ExpirationDate Href] (default [TokenId,CreatedDate,ExpirationDate])
   -c, --config string    Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --contract int     Users with multiple contracts must provide the contract number, for which the tokens are listed
   -f, --force            Force command to execute without user input

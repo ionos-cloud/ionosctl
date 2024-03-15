@@ -39,7 +39,6 @@ func RequestCmd() *core.Command {
 	}
 	globalFlags := reqCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultRequestCols, tabheaders.ColsMessage(allRequestCols))
-	_ = viper.BindPFlag(core.GetFlagName(reqCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = reqCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allRequestCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -186,7 +185,7 @@ func RunRequestList(c *core.CommandConfig) error {
 		return nil
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	convertedRequests, err := resource2table.ConvertRequestsToTable(requests.Requests)
 	if err != nil {
@@ -223,7 +222,7 @@ func RunRequestGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	convertedReq, err := resource2table.ConvertRequestToTable(req.Request)
 	if err != nil {
@@ -266,7 +265,7 @@ func RunRequestWait(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	convertedReq, err := resource2table.ConvertRequestToTable(req.Request)
 	if err != nil {

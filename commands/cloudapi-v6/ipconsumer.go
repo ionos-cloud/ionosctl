@@ -35,7 +35,6 @@ func IpconsumerCmd() *core.Command {
 	}
 	globalFlags := resourceCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultIpConsumerCols, tabheaders.ColsMessage(allIpConsumerCols))
-	_ = viper.BindPFlag(core.GetFlagName(resourceCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = resourceCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allIpConsumerCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -89,7 +88,7 @@ func RunIpConsumersList(c *core.CommandConfig) error {
 		ipsConsumers = append(ipsConsumers, ip)
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.IpConsumer, ipsConsumers,
 		tabheaders.GetHeaders(allIpConsumerCols, defaultIpConsumerCols, cols))

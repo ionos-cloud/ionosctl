@@ -41,7 +41,6 @@ func NlbRuleTargetCmd() *core.Command {
 	}
 	globalFlags := nlbRuleTargetCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultRuleTargetCols, tabheaders.ColsMessage(defaultRuleTargetCols))
-	_ = viper.BindPFlag(core.GetFlagName(nlbRuleTargetCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = nlbRuleTargetCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultRuleTargetCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -212,7 +211,7 @@ func RunNlbRuleTargetList(c *core.CommandConfig) error {
 		return fmt.Errorf("error getting rule targets")
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.NetworkLoadBalancerRuleTarget, *targets,
 		tabheaders.GetHeadersAllDefault(defaultRuleTargetCols, cols))
@@ -277,7 +276,7 @@ func RunNlbRuleTargetAdd(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.NetworkLoadBalancerRuleTarget,
 		targetNew.NetworkLoadBalancerForwardingRuleTarget, tabheaders.GetHeadersAllDefault(defaultRuleTargetCols, cols))

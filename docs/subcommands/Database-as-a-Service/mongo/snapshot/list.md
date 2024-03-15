@@ -40,7 +40,7 @@ List the snapshots of your Mongo Cluster
   -u, --api-url string      Override default host url (default "https://api.ionos.com")
   -i, --cluster-id string   The unique ID of the cluster (required)
       --cols strings        Set of columns to be printed on output 
-                            Available columns: [SnapshotId CreationTime Size Version]
+                            Available columns: [SnapshotId CreationTime Size Version] (default [SnapshotId,CreationTime,Size,Version])
   -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -f, --force               Force command to execute without user input
   -h, --help                Print usage

@@ -46,7 +46,6 @@ func GroupCmd() *core.Command {
 	}
 	globalFlags := groupCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultGroupCols, tabheaders.ColsMessage(allGroupCols))
-	_ = viper.BindPFlag(core.GetFlagName(groupCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = groupCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allGroupCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -250,7 +249,7 @@ func RunGroupList(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.Group, groups.Groups,
 		tabheaders.GetHeaders(allGroupCols, defaultGroupCols, cols))
@@ -282,7 +281,7 @@ func RunGroupGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Group, u.Group, tabheaders.GetHeaders(allGroupCols, allGroupCols, cols))
 	if err != nil {
@@ -320,7 +319,7 @@ func RunGroupCreate(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Group, u.Group, tabheaders.GetHeaders(allGroupCols, allGroupCols, cols))
 	if err != nil {
@@ -362,7 +361,7 @@ func RunGroupUpdate(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Group, groupUpd.Group, tabheaders.GetHeaders(allGroupCols, allGroupCols, cols))
 	if err != nil {

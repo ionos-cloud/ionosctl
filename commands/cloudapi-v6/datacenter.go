@@ -43,7 +43,6 @@ func DatacenterCmd() *core.Command {
 	}
 	globalFlags := datacenterCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultDatacenterCols, tabheaders.ColsMessage(allDatacenterCols))
-	_ = viper.BindPFlag(core.GetFlagName(datacenterCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = datacenterCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allDatacenterCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -224,7 +223,7 @@ func RunDataCenterList(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.Datacenter, datacenters.Datacenters,
 		tabheaders.GetHeaders(allDatacenterCols, defaultDatacenterCols, cols))
@@ -255,7 +254,7 @@ func RunDataCenterGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Datacenter, dc.Datacenter,
 		tabheaders.GetHeaders(allDatacenterCols, defaultDatacenterCols, cols))
@@ -294,7 +293,7 @@ func RunDataCenterCreate(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Datacenter, dc,
 		tabheaders.GetHeaders(allDatacenterCols, defaultDatacenterCols, cols))
@@ -343,7 +342,7 @@ func RunDataCenterUpdate(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Datacenter, dc,
 		tabheaders.GetHeaders(allDatacenterCols, defaultDatacenterCols, cols))

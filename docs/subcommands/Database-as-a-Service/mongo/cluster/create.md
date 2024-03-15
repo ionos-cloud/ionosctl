@@ -43,7 +43,7 @@ Create DBaaS Mongo Replicaset or Sharded Clusters for your chosen edition
       --biconnector-enabled       Enable or disable the biconnector. To disable it, use --biconnector-enabled=false (default true)
       --cidr strings              The list of IPs and subnet for your cluster. All IPs must be in a /24 network (required)
       --cols strings              Set of columns to be printed on output 
-                                  Available columns: [ClusterId Name Edition Type URL Instances Shards Health State MongoVersion MaintenanceWindow Location DatacenterId LanId Cidr TemplateId Cores RAM StorageSize StorageType]
+                                  Available columns: [ClusterId Name Edition Type URL Instances Shards Health State MongoVersion MaintenanceWindow Location DatacenterId LanId Cidr TemplateId Cores RAM StorageSize StorageType] (default [ClusterId,Name,Edition,Type,URL,Instances,Shards,Health,State])
   -c, --config string             Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --cores int32               The total number of cores for the Server, e.g. 4. (required and only settable for enterprise edition) (default 1)
       --datacenter-id string      The datacenter to which your cluster will be connected. Must be in the same location as the cluster (required)

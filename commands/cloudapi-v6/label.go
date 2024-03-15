@@ -32,7 +32,6 @@ func LabelCmd() *core.Command {
 	}
 	globalFlags := labelCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultLabelCols, tabheaders.ColsMessage(defaultLabelCols))
-	_ = viper.BindPFlag(core.GetFlagName(labelCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = labelCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultLabelCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -318,7 +317,7 @@ func RunLabelList(c *core.CommandConfig) error {
 			return err
 		}
 
-		cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+		cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 		out, err = jsontabwriter.GenerateOutput("items", jsonpaths.Label, labelDcs.Labels,
 			tabheaders.GetHeadersAllDefault(defaultLabelCols, cols))
@@ -370,7 +369,7 @@ func RunLabelGetByUrn(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Label, labelDc.Label,
 		tabheaders.GetHeadersAllDefault(defaultLabelCols, cols))

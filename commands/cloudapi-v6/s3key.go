@@ -40,7 +40,6 @@ func UserS3keyCmd() *core.Command {
 	}
 	globalFlags := s3keyCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultS3KeyCols, tabheaders.ColsMessage(defaultS3KeyCols))
-	_ = viper.BindPFlag(core.GetFlagName(s3keyCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = s3keyCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultS3KeyCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -216,7 +215,7 @@ func RunUserS3KeyList(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.S3Key, ss.S3Keys,
 		tabheaders.GetHeadersAllDefault(defaultS3KeyCols, cols))
@@ -249,7 +248,7 @@ func RunUserS3KeyGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.S3Key, s.S3Key,
 		tabheaders.GetHeadersAllDefault(defaultS3KeyCols, cols))
@@ -284,7 +283,7 @@ func RunUserS3KeyCreate(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.S3Key, s.S3Key,
 		tabheaders.GetHeadersAllDefault(defaultS3KeyCols, cols))
@@ -333,7 +332,7 @@ func RunUserS3KeyUpdate(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.S3Key, s.S3Key,
 		tabheaders.GetHeadersAllDefault(defaultS3KeyCols, cols))

@@ -39,7 +39,6 @@ func SnapshotCmd() *core.Command {
 	}
 	globalFlags := snapshotCmd.GlobalFlags()
 	globalFlags.StringSliceP(constants.ArgCols, "", defaultSnapshotCols, tabheaders.ColsMessage(defaultSnapshotCols))
-	_ = viper.BindPFlag(core.GetFlagName(snapshotCmd.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
 	_ = snapshotCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultSnapshotCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -267,7 +266,7 @@ func RunSnapshotList(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.Snapshot, ss.Snapshots,
 		tabheaders.GetHeadersAllDefault(defaultSnapshotCols, cols))
@@ -298,7 +297,7 @@ func RunSnapshotGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Snapshot, s.Snapshot,
 		tabheaders.GetHeadersAllDefault(defaultSnapshotCols, cols))
@@ -340,7 +339,7 @@ func RunSnapshotCreate(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Snapshot, s.Snapshot,
 		tabheaders.GetHeadersAllDefault(defaultSnapshotCols, cols))
@@ -376,7 +375,7 @@ func RunSnapshotUpdate(c *core.CommandConfig) error {
 		return err
 	}
 
-	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Snapshot, s.Snapshot,
 		tabheaders.GetHeadersAllDefault(defaultSnapshotCols, cols))
