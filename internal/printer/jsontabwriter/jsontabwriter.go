@@ -251,8 +251,14 @@ func eliminateEmptyCols(cols []string, table []map[string]interface{}) []string 
 				continue
 			}
 
-			if reflect.TypeOf(e).Kind() == reflect.Slice && len(e.([]interface{})) == 0 {
-				continue
+			if reflect.TypeOf(e).Kind() == reflect.Slice {
+				if reflect.TypeOf(e).Elem().Kind() == reflect.String {
+					if len(e.([]string)) == 0 {
+						continue
+					}
+				} else if len(e.([]interface{})) == 0 {
+					continue
+				}
 			}
 
 			if s, ok := e.(string); ok && s == "" {
