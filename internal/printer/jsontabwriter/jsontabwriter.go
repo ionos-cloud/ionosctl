@@ -224,19 +224,19 @@ func convertTableToText(cols []string, table map[string]interface{}) (formats st
 			continue
 		}
 
-		switch fieldType := field.(type) {
-		case []interface{}:
+		switch fieldType := reflect.TypeOf(field).Kind(); fieldType {
+		case reflect.Slice:
 			temp := make([]string, 0)
-			for _, val := range fieldType {
-				temp = append(temp, fmt.Sprintf("%v", val))
+			for i := 0; i < reflect.ValueOf(field).Len(); i++ {
+				temp = append(temp, fmt.Sprintf("%v", reflect.ValueOf(field).Index(i)))
 			}
 
 			field = strings.Join(temp, ", ")
-		case float64:
-
-			if fieldType == float64(int64(fieldType)) {
-				field = int64(fieldType)
+		case reflect.Float64:
+			if field == float64(int64(field.(float64))) {
+				field = int64(field.(float64))
 			}
+		default:
 		}
 
 		values = append(values, field)
@@ -261,7 +261,7 @@ func eliminateEmptyCols(cols []string, table []map[string]interface{}) []string 
 				continue
 			}
 
-			if reflect.TypeOf(e).Kind() == reflect.Slice && len(e.([]interface{})) == 0 {
+			if reflect.TypeOf(e).Kind() == reflect.Slice && reflect.ValueOf(e).Len() == 0 {
 				continue
 			}
 
