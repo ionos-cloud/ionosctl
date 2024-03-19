@@ -14,36 +14,43 @@ import (
 	"encoding/json"
 )
 
-// ClusterResponse A database cluster.
-type ClusterResponse struct {
-	Type *ResourceType `json:"type,omitempty"`
+// UserResource struct for UserResource
+type UserResource struct {
+	Type *ResourceType `json:"type"`
 	// The unique ID of the resource.
-	Id         *string            `json:"id,omitempty"`
-	Metadata   *ClusterMetadata   `json:"metadata,omitempty"`
-	Properties *ClusterProperties `json:"properties,omitempty"`
+	Id *string `json:"id"`
+	// Absolute URL of the resource.
+	Href       *string         `json:"href"`
+	Metadata   *Metadata       `json:"metadata,omitempty"`
+	Properties *UserProperties `json:"properties"`
 }
 
-// NewClusterResponse instantiates a new ClusterResponse object
+// NewUserResource instantiates a new UserResource object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewClusterResponse() *ClusterResponse {
-	this := ClusterResponse{}
+func NewUserResource(type_ ResourceType, id string, href string, properties UserProperties) *UserResource {
+	this := UserResource{}
+
+	this.Type = &type_
+	this.Id = &id
+	this.Href = &href
+	this.Properties = &properties
 
 	return &this
 }
 
-// NewClusterResponseWithDefaults instantiates a new ClusterResponse object
+// NewUserResourceWithDefaults instantiates a new UserResource object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewClusterResponseWithDefaults() *ClusterResponse {
-	this := ClusterResponse{}
+func NewUserResourceWithDefaults() *UserResource {
+	this := UserResource{}
 	return &this
 }
 
 // GetType returns the Type field value
 // If the value is explicit nil, the zero value for ResourceType will be returned
-func (o *ClusterResponse) GetType() *ResourceType {
+func (o *UserResource) GetType() *ResourceType {
 	if o == nil {
 		return nil
 	}
@@ -55,7 +62,7 @@ func (o *ClusterResponse) GetType() *ResourceType {
 // GetTypeOk returns a tuple with the Type field value
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *ClusterResponse) GetTypeOk() (*ResourceType, bool) {
+func (o *UserResource) GetTypeOk() (*ResourceType, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -64,14 +71,14 @@ func (o *ClusterResponse) GetTypeOk() (*ResourceType, bool) {
 }
 
 // SetType sets field value
-func (o *ClusterResponse) SetType(v ResourceType) {
+func (o *UserResource) SetType(v ResourceType) {
 
 	o.Type = &v
 
 }
 
 // HasType returns a boolean if a field has been set.
-func (o *ClusterResponse) HasType() bool {
+func (o *UserResource) HasType() bool {
 	if o != nil && o.Type != nil {
 		return true
 	}
@@ -81,7 +88,7 @@ func (o *ClusterResponse) HasType() bool {
 
 // GetId returns the Id field value
 // If the value is explicit nil, the zero value for string will be returned
-func (o *ClusterResponse) GetId() *string {
+func (o *UserResource) GetId() *string {
 	if o == nil {
 		return nil
 	}
@@ -93,7 +100,7 @@ func (o *ClusterResponse) GetId() *string {
 // GetIdOk returns a tuple with the Id field value
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *ClusterResponse) GetIdOk() (*string, bool) {
+func (o *UserResource) GetIdOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -102,14 +109,14 @@ func (o *ClusterResponse) GetIdOk() (*string, bool) {
 }
 
 // SetId sets field value
-func (o *ClusterResponse) SetId(v string) {
+func (o *UserResource) SetId(v string) {
 
 	o.Id = &v
 
 }
 
 // HasId returns a boolean if a field has been set.
-func (o *ClusterResponse) HasId() bool {
+func (o *UserResource) HasId() bool {
 	if o != nil && o.Id != nil {
 		return true
 	}
@@ -117,9 +124,47 @@ func (o *ClusterResponse) HasId() bool {
 	return false
 }
 
+// GetHref returns the Href field value
+// If the value is explicit nil, the zero value for string will be returned
+func (o *UserResource) GetHref() *string {
+	if o == nil {
+		return nil
+	}
+
+	return o.Href
+
+}
+
+// GetHrefOk returns a tuple with the Href field value
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *UserResource) GetHrefOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+
+	return o.Href, true
+}
+
+// SetHref sets field value
+func (o *UserResource) SetHref(v string) {
+
+	o.Href = &v
+
+}
+
+// HasHref returns a boolean if a field has been set.
+func (o *UserResource) HasHref() bool {
+	if o != nil && o.Href != nil {
+		return true
+	}
+
+	return false
+}
+
 // GetMetadata returns the Metadata field value
-// If the value is explicit nil, the zero value for ClusterMetadata will be returned
-func (o *ClusterResponse) GetMetadata() *ClusterMetadata {
+// If the value is explicit nil, the zero value for Metadata will be returned
+func (o *UserResource) GetMetadata() *Metadata {
 	if o == nil {
 		return nil
 	}
@@ -131,7 +176,7 @@ func (o *ClusterResponse) GetMetadata() *ClusterMetadata {
 // GetMetadataOk returns a tuple with the Metadata field value
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *ClusterResponse) GetMetadataOk() (*ClusterMetadata, bool) {
+func (o *UserResource) GetMetadataOk() (*Metadata, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -140,14 +185,14 @@ func (o *ClusterResponse) GetMetadataOk() (*ClusterMetadata, bool) {
 }
 
 // SetMetadata sets field value
-func (o *ClusterResponse) SetMetadata(v ClusterMetadata) {
+func (o *UserResource) SetMetadata(v Metadata) {
 
 	o.Metadata = &v
 
 }
 
 // HasMetadata returns a boolean if a field has been set.
-func (o *ClusterResponse) HasMetadata() bool {
+func (o *UserResource) HasMetadata() bool {
 	if o != nil && o.Metadata != nil {
 		return true
 	}
@@ -156,8 +201,8 @@ func (o *ClusterResponse) HasMetadata() bool {
 }
 
 // GetProperties returns the Properties field value
-// If the value is explicit nil, the zero value for ClusterProperties will be returned
-func (o *ClusterResponse) GetProperties() *ClusterProperties {
+// If the value is explicit nil, the zero value for UserProperties will be returned
+func (o *UserResource) GetProperties() *UserProperties {
 	if o == nil {
 		return nil
 	}
@@ -169,7 +214,7 @@ func (o *ClusterResponse) GetProperties() *ClusterProperties {
 // GetPropertiesOk returns a tuple with the Properties field value
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *ClusterResponse) GetPropertiesOk() (*ClusterProperties, bool) {
+func (o *UserResource) GetPropertiesOk() (*UserProperties, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -178,14 +223,14 @@ func (o *ClusterResponse) GetPropertiesOk() (*ClusterProperties, bool) {
 }
 
 // SetProperties sets field value
-func (o *ClusterResponse) SetProperties(v ClusterProperties) {
+func (o *UserResource) SetProperties(v UserProperties) {
 
 	o.Properties = &v
 
 }
 
 // HasProperties returns a boolean if a field has been set.
-func (o *ClusterResponse) HasProperties() bool {
+func (o *UserResource) HasProperties() bool {
 	if o != nil && o.Properties != nil {
 		return true
 	}
@@ -193,7 +238,7 @@ func (o *ClusterResponse) HasProperties() bool {
 	return false
 }
 
-func (o ClusterResponse) MarshalJSON() ([]byte, error) {
+func (o UserResource) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 	if o.Type != nil {
 		toSerialize["type"] = o.Type
@@ -201,6 +246,10 @@ func (o ClusterResponse) MarshalJSON() ([]byte, error) {
 
 	if o.Id != nil {
 		toSerialize["id"] = o.Id
+	}
+
+	if o.Href != nil {
+		toSerialize["href"] = o.Href
 	}
 
 	if o.Metadata != nil {
@@ -214,38 +263,38 @@ func (o ClusterResponse) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-type NullableClusterResponse struct {
-	value *ClusterResponse
+type NullableUserResource struct {
+	value *UserResource
 	isSet bool
 }
 
-func (v NullableClusterResponse) Get() *ClusterResponse {
+func (v NullableUserResource) Get() *UserResource {
 	return v.value
 }
 
-func (v *NullableClusterResponse) Set(val *ClusterResponse) {
+func (v *NullableUserResource) Set(val *UserResource) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableClusterResponse) IsSet() bool {
+func (v NullableUserResource) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableClusterResponse) Unset() {
+func (v *NullableUserResource) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableClusterResponse(val *ClusterResponse) *NullableClusterResponse {
-	return &NullableClusterResponse{value: val, isSet: true}
+func NewNullableUserResource(val *UserResource) *NullableUserResource {
+	return &NullableUserResource{value: val, isSet: true}
 }
 
-func (v NullableClusterResponse) MarshalJSON() ([]byte, error) {
+func (v NullableUserResource) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableClusterResponse) UnmarshalJSON(src []byte) error {
+func (v *NullableUserResource) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

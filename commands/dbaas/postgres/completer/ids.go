@@ -4,7 +4,12 @@ import (
 	"context"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/internal/completions"
+	"github.com/ionos-cloud/ionosctl/v6/internal/core"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/services/dbaas-postgres/resources"
+	"github.com/spf13/viper"
 )
 
 func BackupsIds() []string {
@@ -51,17 +56,18 @@ func ClustersIds() []string {
 	if err != nil {
 		return nil
 	}
-	ids := make([]string, 0)
-	if dataOk, ok := clusterList.ClusterList.GetItemsOk(); ok && dataOk != nil {
-		for _, item := range *dataOk {
-			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
-				ids = append(ids, *itemId)
-			}
-		}
-	} else {
+
+	convertedClusterList, err := json2table.ConvertJSONToTable(
+		"items", jsonpaths.DbaasPostgresCluster, clusterList.ClusterList,
+	)
+	if err != nil {
 		return nil
 	}
-	return ids
+
+	return completions.NewCompleter(convertedClusterList, "ClusterId").AddInfo("DisplayName").AddInfo(
+		"Location",
+		"(%v)",
+	).ToString()
 }
 
 func PostgresVersions() []string {
@@ -81,4 +87,40 @@ func PostgresVersions() []string {
 		return nil
 	}
 	return versions
+}
+
+func UserNames(c *core.Command) []string {
+	clusterId := viper.GetString(core.GetFlagName(c.NS, "cluster-id"))
+
+	userList, _, err := client.Must().PostgresClient.UsersApi.UsersList(context.Background(), clusterId).Execute()
+	if err != nil {
+		return nil
+	}
+
+	convertedUserList, err := json2table.ConvertJSONToTable(
+		"items", jsonpaths.DbaasPostgresUser, userList,
+	)
+	if err != nil {
+		return nil
+	}
+
+	return completions.NewCompleter(convertedUserList, "Username").ToString()
+}
+
+func DatabaseNames(c *core.Command) []string {
+	clusterId := viper.GetString(core.GetFlagName(c.NS, "cluster-id"))
+
+	databaseList, _, err := client.Must().PostgresClient.DatabasesApi.DatabasesList(context.Background(), clusterId).Execute()
+	if err != nil {
+		return nil
+	}
+
+	convertedDatabaseList, err := json2table.ConvertJSONToTable(
+		"items", jsonpaths.DbaasPostgresDatabase, databaseList,
+	)
+	if err != nil {
+		return nil
+	}
+
+	return completions.NewCompleter(convertedDatabaseList, "Name").ToString()
 }

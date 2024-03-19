@@ -306,8 +306,19 @@
             * [list](subcommands%2FDatabase-as-a-Service%2Fpostgres%2Fcluster%2Flist.md)
             * [restore](subcommands%2FDatabase-as-a-Service%2Fpostgres%2Fcluster%2Frestore.md)
             * [update](subcommands%2FDatabase-as-a-Service%2Fpostgres%2Fcluster%2Fupdate.md)
+        * database
+            * [create](subcommands%2FDatabase-as-a-Service%2Fpostgres%2Fdatabase%2Fcreate.md)
+            * [delete](subcommands%2FDatabase-as-a-Service%2Fpostgres%2Fdatabase%2Fdelete.md)
+            * [get](subcommands%2FDatabase-as-a-Service%2Fpostgres%2Fdatabase%2Fget.md)
+            * [list](subcommands%2FDatabase-as-a-Service%2Fpostgres%2Fdatabase%2Flist.md)
         * logs
             * [list](subcommands%2FDatabase-as-a-Service%2Fpostgres%2Flogs%2Flist.md)
+        * user
+            * [create](subcommands%2FDatabase-as-a-Service%2Fpostgres%2Fuser%2Fcreate.md)
+            * [delete](subcommands%2FDatabase-as-a-Service%2Fpostgres%2Fuser%2Fdelete.md)
+            * [get](subcommands%2FDatabase-as-a-Service%2Fpostgres%2Fuser%2Fget.md)
+            * [list](subcommands%2FDatabase-as-a-Service%2Fpostgres%2Fuser%2Flist.md)
+            * [update](subcommands%2FDatabase-as-a-Service%2Fpostgres%2Fuser%2Fupdate.md)
         * version
             * [get](subcommands%2FDatabase-as-a-Service%2Fpostgres%2Fversion%2Fget.md)
             * [list](subcommands%2FDatabase-as-a-Service%2Fpostgres%2Fversion%2Flist.md)
