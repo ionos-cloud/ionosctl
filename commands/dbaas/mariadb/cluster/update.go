@@ -7,9 +7,7 @@ import (
 	"strconv"
 	"time"
 
-	ionoscloud "github.com/avirtopeanu-ionos/alpha-sdk-go-dbaas-mariadb"
-	cloudapiv6completer "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
-	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/completer"
+	sdkgo "github.com/avirtopeanu-ionos/alpha-sdk-go-dbaas-mariadb"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
@@ -23,36 +21,36 @@ import (
 	"github.com/spf13/viper"
 )
 
-func Create() *core.Command {
-	baseReqFlags := []string{
-		constants.FlagName, constants.FlagVersion, constants.FlagDatacenterId, constants.FlagLanId, constants.FlagCidr,
-		constants.ArgUser, constants.ArgPassword,
-	}
+/*
+   - instances can only be increased (3, 5, 7),
+   - storageSize can only be increased,
+   - ram and cores can be both increased and decreased.
+*/
+
+func Update() *core.Command {
 	cmd := core.NewCommand(context.TODO(), nil, core.CommandBuilder{
 		Namespace: "dbaas-mariadb",
 		Resource:  "cluster",
-		Verb:      "create", // used in AVAILABLE COMMANDS in help
-		Aliases:   []string{"c"},
-		ShortDesc: "Create DBaaS MariaDB clusters",
-		Example:   fmt.Sprintf("i db mariadb cluster create %s", core.FlagsUsage(baseReqFlags...)),
+		Verb:      "update",
+		Aliases:   []string{"u"},
+		ShortDesc: "Update a MariaDB Cluster",
+		LongDesc: `This will update the MariaDB Cluster with the provided parameters.
+The following parameters can be updated:
+- instances can only be increased (3, 5, 7),
+- storageSize can only be increased,
+- ram and cores can be both increased and decreased.`,
+		Example: "ionosctl dbaas mariadb cluster update --cluster-id CLUSTER_ID --cores 4 --ram 16",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			err := core.CheckRequiredFlags(c.Command, c.NS, baseReqFlags...)
-			if err != nil {
-				return err
-			}
-
-			return nil
+			return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagClusterId)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			cluster := ionoscloud.CreateClusterProperties{}
+
+			cluster := sdkgo.CreateClusterProperties{}
 			if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) {
 				cluster.DisplayName = pointer.From(viper.GetString(fn))
 			}
 			if fn := core.GetFlagName(c.NS, constants.FlagInstances); viper.GetString(fn) != "" {
 				cluster.Instances = pointer.From(viper.GetInt32(fn))
-			}
-			if fn := core.GetFlagName(c.NS, constants.FlagVersion); viper.IsSet(fn) {
-				cluster.MariadbVersion = (*ionoscloud.MariadbVersion)(pointer.From(viper.GetString(fn)))
 			}
 
 			if fn := core.GetFlagName(c.NS, constants.FlagCores); viper.GetString(fn) != "" {
@@ -67,9 +65,9 @@ func Create() *core.Command {
 				cluster.Ram = pointer.From(int32(sizeInt64))
 			}
 
-			cluster.MaintenanceWindow = &ionoscloud.MaintenanceWindow{}
+			cluster.MaintenanceWindow = &sdkgo.MaintenanceWindow{}
 			if fn := core.GetFlagName(c.NS, constants.FlagMaintenanceDay); viper.GetString(fn) != "" {
-				cluster.MaintenanceWindow.DayOfTheWeek = (*ionoscloud.DayOfTheWeek)(pointer.From(
+				cluster.MaintenanceWindow.DayOfTheWeek = (*sdkgo.DayOfTheWeek)(pointer.From(
 					viper.GetString(fn)))
 			}
 			if fn := core.GetFlagName(c.NS, constants.FlagMaintenanceTime); viper.GetString(fn) != "" {
@@ -77,32 +75,8 @@ func Create() *core.Command {
 					viper.GetString(fn))
 			}
 
-			cluster.Connections = pointer.From(make([]ionoscloud.Connection, 1))
-			if fn := core.GetFlagName(c.NS, constants.FlagCidr); viper.IsSet(fn) {
-				(*cluster.Connections)[0].Cidr = pointer.From(
-					viper.GetString(fn))
-			}
-			if fn := core.GetFlagName(c.NS, constants.FlagDatacenterId); viper.IsSet(fn) {
-				(*cluster.Connections)[0].DatacenterId = pointer.From(
-					viper.GetString(fn))
-			}
-			if fn := core.GetFlagName(c.NS, constants.FlagLanId); viper.IsSet(fn) {
-				(*cluster.Connections)[0].LanId = pointer.From(
-					viper.GetString(fn))
-			}
-
-			cluster.Credentials = &ionoscloud.DBUser{}
-			if fn := core.GetFlagName(c.NS, constants.ArgUser); viper.IsSet(fn) {
-				(*cluster.Credentials).Username = pointer.From(
-					viper.GetString(fn))
-			}
-			if fn := core.GetFlagName(c.NS, constants.ArgPassword); viper.IsSet(fn) {
-				(*cluster.Credentials).Password = pointer.From(
-					viper.GetString(fn))
-			}
-
 			createdCluster, _, err := client.Must().MariaClient.ClustersApi.ClustersPost(context.Background()).CreateClusterRequest(
-				ionoscloud.CreateClusterRequest{Properties: &cluster},
+				sdkgo.CreateClusterRequest{Properties: &cluster},
 			).Execute()
 			if err != nil {
 				return fmt.Errorf("failed creating cluster: %w", err)
@@ -118,14 +92,19 @@ func Create() *core.Command {
 			fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
 			return nil
 		},
-		InitClient: true,
 	})
 
-	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "The name of your cluster", core.RequiredFlagOption())
-	cmd.AddStringFlag(constants.FlagVersion, "", "10.6", "The MongoDB version of your cluster", core.RequiredFlagOption())
-	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagInstances, func(cmdCobra *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return []string{"10.6", "10.11"}, cobra.ShellCompDirectiveNoFileComp
+	cmd.AddStringFlag(constants.FlagClusterId, constants.FlagIdShort, "", "The unique ID of the cluster", core.RequiredFlagOption())
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return ClustersProperty(func(c sdkgo.ClusterResponse) string {
+			if c.Id == nil {
+				return ""
+			}
+			return *c.Id
+		}), cobra.ShellCompDirectiveNoFileComp
 	})
+
+	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "The name of your cluster")
 
 	cmd.AddInt32Flag(constants.FlagInstances, "", 1, "The total number of instances of the cluster (one primary and n-1 secondaries)")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagInstances, func(cmdCobra *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -140,6 +119,7 @@ func Create() *core.Command {
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagStorageSize, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"10GB", "20GB", "50GB", "100GB", "1TB"}, cobra.ShellCompDirectiveNoFileComp
 	})
+
 	// Maintenance
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	hour := 10 + r.Intn(7) // Random hour 10-16
@@ -157,35 +137,6 @@ func Create() *core.Command {
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagMaintenanceDay, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return append(workingDaysOfWeek, "Satuday", "Sunday"), cobra.ShellCompDirectiveNoFileComp
 	})
-	// Connections
-	cmd.AddStringFlag(constants.FlagDatacenterId, "", "", "The datacenter to which your cluster will be connected. Must be in the same location as the cluster", core.RequiredFlagOption())
-	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagDatacenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return cloudapiv6completer.DataCentersIds(), cobra.ShellCompDirectiveNoFileComp
-	})
-	cmd.AddStringFlag(constants.FlagLanId, "", "", "The numeric LAN ID with which you connect your cluster", core.RequiredFlagOption())
-	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagLanId, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return cloudapiv6completer.LansIds(viper.GetString(core.GetFlagName(cmd.NS, constants.FlagDatacenterId))),
-			cobra.ShellCompDirectiveNoFileComp
-	})
-	cmd.AddStringFlag(constants.FlagCidr, "", "", "The IP and subnet for your cluster. All IPs must be in a /24 network", core.RequiredFlagOption())
-	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagCidr, completer.GetCidrCompletionFunc(cmd))
-	// credentials / DBUser
-	cmd.AddStringFlag(constants.ArgUser, "", "", "The initial username", core.RequiredFlagOption())
-	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagDatacenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return cloudapiv6completer.DataCentersIds(), cobra.ShellCompDirectiveNoFileComp
-	})
-	cmd.AddStringFlag(constants.ArgPassword, "", "", "The password", core.RequiredFlagOption())
-	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagLanId, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return cloudapiv6completer.LansIds(viper.GetString(core.GetFlagName(cmd.NS, constants.FlagDatacenterId))),
-			cobra.ShellCompDirectiveNoFileComp
-	})
-
-	// Misc
-	cmd.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait, "Wait for the Request to be executed")
-	cmd.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request [seconds]")
-
-	cmd.Command.SilenceUsage = true
-	cmd.Command.Flags().SortFlags = false
 
 	return cmd
 }
