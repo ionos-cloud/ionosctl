@@ -1,14 +1,18 @@
 # Changelog
 
-## Upcoming
+## [v6.7.5] (March 2024)
+
+### Added
+- Added user and database commands to Postgres
 
 ### Changed
 - Changed help text order to match terminal reading patterns: command-specific information moved lower, global/general help moved higher.
-
+- Changed `--cpu-family` flag to always use the first valid CPU_FAMILY for the chosen location, previously it would always try using `AMD_OPTERON` family.
 
 ### Fixed
-- Kubernetes node pool auto scaling can be disabled by setting `--min-node-count` and `--max-node-count` to 0.
-- Fixed missing version in `ionosctl version` output when installed via 'go install'.
+- Kubernetes node pool auto-scaling can be disabled by setting `--min-node-count` and `--max-node-count` to 0.
+- Fixed missing version in `ionosctl version` output when installed via `go install`.
+- Fixed a bug where explicit slices of strings would fail to be converted to slices of `interface{}` causing a panic for certain `--cols`
 
 ## [v6.7.4] (January 2024)
 
