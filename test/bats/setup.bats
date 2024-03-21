@@ -45,7 +45,6 @@ find_or_create_resource() {
     run bash -c "$find_command"
     if [ "$status" -eq 0 ] && [ -n "$output" ]; then
         local resource_id=$(echo "$output")
-        assert_regex "$resource_id" "$uuid_v4_regex"
         echo "$resource_id"
         return 0
     fi
@@ -53,6 +52,5 @@ find_or_create_resource() {
     run bash -c "$create_command"
     assert_success
     local new_resource_id=$(echo "$output")
-    assert_regex "$new_resource_id" "$uuid_v4_regex"
     echo "$new_resource_id"
 }

@@ -17,11 +17,13 @@ teardown_file() {
         "ionosctl datacenter list -M 1 -F location=us/las -o json | jq -r '.items[] | .id'" \
         "ionosctl datacenter create --name \"CLI-Test-$(randStr 8)\" --location us/las -o json | jq -r '.id'")
     [ -n "$datacenter_id" ] || fail "$datacenter_id is empty"
+    assert_regex "$datacenter_id" "$uuid_v4_regex"
 
     cluster_id=$(find_or_create_resource \
         "ionosctl k8s cluster list -F public=true -M 1 -o json | jq -r '.items[] | .id'" \
         "ionosctl k8s cluster create --name \"CLI-Test-$(randStr 8)\" -o json | jq -r '.id'")
     [ -n "$cluster_id" ] || fail "$cluster_id is empty"
+    assert_regex "cluster_id" "$uuid_v4_regex"
 
     sleep 120
 
