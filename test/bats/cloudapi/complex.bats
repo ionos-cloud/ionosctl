@@ -21,13 +21,13 @@ teardown() {
 }
 
 @test "Create a server with internet access, attach a volume, and verify SSH connection" {
-    run ionosctl ipblock create --location de/txl --size 1 -o json -w -t 300
+    run ionosctl ipblock create --location es/vit --size 1 -o json -w -t 300
     assert_success
     ipblock_id=$(echo "$output" | jq -r '.id')
     assert_regex "$ipblock_id" "$uuid_v4_regex"
     echo "created ipblock $ipblock_id"
 
-    run ionosctl datacenter create --name "$(randStr 8)" --location de/txl -o json -w -t 300
+    run ionosctl datacenter create --name "$(randStr 8)" --location es/vit -o json -w -t 300
     assert_success
     datacenter_id=$(echo "$output" | jq -r '.id')
     assert_regex "$datacenter_id" "$uuid_v4_regex"
@@ -42,7 +42,7 @@ teardown() {
     echo "created server $server_id"
 
     # Try getting the already created ipblock ID via a filtered list this time
-    run ionosctl ipblock list -F location=de/txl -M 1 -o json
+    run ionosctl ipblock list -F location=es/vit -M 1 -o json
     assert_success
     found_ip=$(echo "$output" | jq -r '.items[] | .properties.ips[0]')
 
