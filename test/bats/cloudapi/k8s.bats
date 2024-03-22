@@ -16,21 +16,21 @@ setup_file() {
 
 @test "Create K8s Nodepool" {
     datacenter_id=$(find_or_create_resource \
-        "ionosctl datacenter list -M 1 -F location=${location} -o json | jq -r '.items[] | .id'" \
-        "ionosctl datacenter create --name \"CLI-Test-$(randStr 8)\" --location ${location} -o json | jq -r '.id'")
+        "ionosctl datacenter list -M 1 -F location=${location},state=available -o json 2> /dev/null | jq -r '.items[] | .id'" \
+        "ionosctl datacenter create --name \"CLI-Test-$(randStr 8)\" --location ${location} -o json 2> /dev/null | jq -r '.id'")
     [ -n "$datacenter_id" ] || fail "$datacenter_id is empty"
     assert_regex "$datacenter_id" "$uuid_v4_regex"
 
     cluster_id=$(find_or_create_resource \
-        "ionosctl k8s cluster list -F public=true -M 1 -o json | jq -r '.items[] | .id'" \
-        "ionosctl k8s cluster create --name \"CLI-Test-$(randStr 8)\" -o json | jq -r '.id'")
+        "ionosctl k8s cluster list -F public=true,state=available -M 1 -o json 2> /dev/null | jq -r '.items[] | .id'" \
+        "ionosctl k8s cluster create --name \"CLI-Test-$(randStr 8)\" -o json 2> /dev/null | jq -r '.id'")
     [ -n "$cluster_id" ] || fail "$cluster_id is empty"
     assert_regex "cluster_id" "$uuid_v4_regex"
 
     sleep 120
 
     echo "Trying to create k8s nodepool in cluster $cluster_id and datacenter $datacenter_id"
-    run ionosctl k8s nodepool create --name "CLI-Test-$(randStr 8)" --cluster-id "$cluster_id" --datacenter-id "$datacenter_id" -o json -W -t 600
+    run ionosctl k8s nodepool create --name "CLI-Test-$(randStr 8)" --cluster-id "$cluster_id" --datacenter-id "$datacenter_id" -o json 2> /dev/null -W -t 600
     assert_success
     nodepool_id=$(echo "$output" | jq -r '.id')
     assert_regex "nodepool_id" "$uuid_v4_regex"

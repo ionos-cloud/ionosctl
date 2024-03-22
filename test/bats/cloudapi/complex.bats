@@ -46,42 +46,42 @@ teardown_file() {
 
 @test "Create a server with internet access, attach a volume, and verify SSH connection" {
     ipblock_id=$(find_or_create_resource \
-        "ionosctl ipblock list -F location=${location} -M 1 -o json | jq -r '.items[] | .properties.ips[0]'" \
-        "ionosctl ipblock create --location ${location} --size 1 -o json -w -t 300 | jq -r '.id'")
+        "ionosctl ipblock list -F location=${location} -M 1 -o json 2> /dev/null | jq -r '.items[] | .properties.ips[0]'" \
+        "ionosctl ipblock create --location ${location} --size 1 -o json 2> /dev/null -w -t 300 | jq -r '.id'")
     [ -n "$ipblock_id" ] || fail "ipblock_id is empty"
     assert_regex "$ipblock_id" "$uuid_v4_regex"
     echo "created/found ipblock $ipblock_id"
 
     datacenter_id=$(find_or_create_resource \
-        "ionosctl datacenter list -F location=${location} -M 1 -o json | jq -r '.items[] | .id'" \
-        "ionosctl datacenter create --name \"$(randStr 8)\" --location ${location} -o json -w -t 300 | jq -r '.id'")
+        "ionosctl datacenter list -F location=${location} -M 1 -o json 2> /dev/null | jq -r '.items[] | .id'" \
+        "ionosctl datacenter create --name \"$(randStr 8)\" --location ${location} -o json 2> /dev/null -w -t 300 | jq -r '.id'")
     [ -n "$datacenter_id" ] || fail "datacenter_id is empty"
     assert_regex "$datacenter_id" "$uuid_v4_regex"
     echo "created/found datacenter $datacenter_id"
 
     # Assuming create server is always a new operation
-    run ionosctl server create --datacenter-id "$datacenter_id" --cpu-family INTEL_SKYLAKE --cores 1 --ram 4GB -o json -w -t 300
+    run ionosctl server create --datacenter-id "$datacenter_id" --cpu-family INTEL_SKYLAKE --cores 1 --ram 4GB -o json 2> /dev/null -w -t 300
     assert_success
     server_id=$(echo "$output" | jq -r '.id')
     assert_regex "$server_id" "$uuid_v4_regex"
     echo "created server $server_id"
 
     # Assuming create LAN is always a new operation
-    run ionosctl lan create --datacenter-id "$datacenter_id" --public -o json -w -t 300
+    run ionosctl lan create --datacenter-id "$datacenter_id" --public -o json 2> /dev/null -w -t 300
     assert_success
     lan_id=$(echo "$output" | jq -r '.id')
     assert_regex "$lan_id" "^[0-9]+$"
     echo "created lan $lan_id"
 
     # Assuming create NIC is always a new operation
-    run ionosctl nic create --datacenter-id "$datacenter_id" --server-id "$server_id" --lan-id "$lan_id" --ips "$(echo "$ipblock_id" | jq -r '.properties.ips[0]')" -o json -w -t 300
+    run ionosctl nic create --datacenter-id "$datacenter_id" --server-id "$server_id" --lan-id "$lan_id" --ips "$(echo "$ipblock_id" | jq -r '.properties.ips[0]')" -o json 2> /dev/null -w -t 300
     assert_success
     nic_id=$(echo "$output" | jq -r '.id')
     assert_regex "$nic_id" "$uuid_v4_regex"
     echo "created nic $nic_id"
 
     # Assuming create volume is always a new operation
-    run ionosctl volume create --datacenter-id "$datacenter_id" --size 50 --image-alias ubuntu:latest --ssh-key-paths "${ssh_key_path}.pub" -o json -w -t 300
+    run ionosctl volume create --datacenter-id "$datacenter_id" --size 50 --image-alias ubuntu:latest --ssh-key-paths "${ssh_key_path}.pub" -o json 2> /dev/null -w -t 300
     assert_success
     vol_id=$(echo "$output" | jq -r '.id')
     assert_regex "$vol_id" "$uuid_v4_regex"
