@@ -7,15 +7,17 @@ load "${BATS_LIBS_PATH}/bats-assert/load"
 load "${BATS_LIBS_PATH}/bats-support/load"
 load '../setup.bats'
 
-teardown_file() {
+location="es/vit"
+
+setup_file() {
     uuid_v4_regex='^[0-9a-f]{8}-[0-9a-f]{4}-[4][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
     ip_regex='^([0-9]{1,3}\.){3}[0-9]{1,3}(\/[0-9]{1,2})?$'
 }
 
 @test "Create K8s Nodepool" {
     datacenter_id=$(find_or_create_resource \
-        "ionosctl datacenter list -M 1 -F location=us/las -o json | jq -r '.items[] | .id'" \
-        "ionosctl datacenter create --name \"CLI-Test-$(randStr 8)\" --location us/las -o json | jq -r '.id'")
+        "ionosctl datacenter list -M 1 -F location=${location} -o json | jq -r '.items[] | .id'" \
+        "ionosctl datacenter create --name \"CLI-Test-$(randStr 8)\" --location ${location} -o json | jq -r '.id'")
     [ -n "$datacenter_id" ] || fail "$datacenter_id is empty"
     assert_regex "$datacenter_id" "$uuid_v4_regex"
 
@@ -36,8 +38,6 @@ teardown_file() {
 
     run ionosctl k8s node list --cluster-id "$cluster_id" --nodepool-id "$nodepool_id" --cols PublicIP --no-headers
     assert_success
-    # TODO: Perhaps we could add a setup util which repeats the last command with '-o json' and verifies jq filtered output matches this output,
-    # TODO: as well as verifying there are no columns (or other invalid things such as status reports) in the output
     node_ip=$(echo "$output")
     assert_regex "nodepool_id" "$ip_regex"
     echo "Found IP"
