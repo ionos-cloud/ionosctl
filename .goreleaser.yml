@@ -14,8 +14,8 @@ builds:
       - -trimpath
       - -mod=vendor
     ldflags:
-      - "-X github.com/ionos-cloud/ionosctl/v6/commands.Version={{ .Version }}"
-      - "-X github.com/ionos-cloud/ionosctl/v6/commands.Label=release"
+      - "-X github.com/ionos-cloud/ionosctl/v6/internal/version.Version={{ .Version }}"
+      - "-X github.com/ionos-cloud/ionosctl/v6/internal/version.Label=release"
     goos:
       - windows
       - linux
