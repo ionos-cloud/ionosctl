@@ -40,7 +40,7 @@ func Root() *core.Command {
 }
 
 var (
-	allCols = []string{"ClusterId", "Name", "DNS", "Instances", "Version", "State", "Cores", "RAM", "StorageSize", "StorageType"}
+	allCols = []string{"ClusterId", "Name", "DNS", "Instances", "Version", "State", "Cores", "RAM", "StorageSize", "MaintenanceDay", "MaintenanceTime"}
 
 	defaultCols = allCols[0:6]
 )
