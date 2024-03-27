@@ -54,25 +54,6 @@ func ConvertDbaasMariadbBackupToTable(backup sdkmariadb.BackupResponse) ([]map[s
 	return out, nil
 }
 
-func ConvertDbaasMariadbBackupsToTable(backups sdkmariadb.BackupList) ([]map[string]interface{}, error) {
-	items, ok := backups.GetItemsOk()
-	if !ok || items == nil || len(*items) == 0 {
-		return nil, nil
-	}
-
-	var clustersConverted []map[string]interface{}
-	for _, item := range *items {
-		temp, err := ConvertDbaasMariadbBackupToTable(item)
-		if err != nil {
-			return nil, err
-		}
-
-		clustersConverted = append(clustersConverted, temp...)
-	}
-
-	return clustersConverted, nil
-}
-
 func ConvertDbaasMongoClusterToTable(cluster sdkmongo.ClusterResponse) ([]map[string]interface{}, error) {
 	properties, ok := cluster.GetPropertiesOk()
 	if !ok || properties == nil {
@@ -137,6 +118,56 @@ func ConvertDbaasMongoClusterToTable(cluster sdkmongo.ClusterResponse) ([]map[st
 		}
 	}
 	return temp, nil
+}
+
+func ConvertDbaasMariadbBackupsToTable(backups sdkmariadb.BackupList) ([]map[string]interface{}, error) {
+	items, ok := backups.GetItemsOk()
+	if !ok || items == nil || len(*items) == 0 {
+		return nil, nil
+	}
+
+	var clustersConverted []map[string]interface{}
+	for _, item := range *items {
+		temp, err := ConvertDbaasMariadbBackupToTable(item)
+		if err != nil {
+			return nil, err
+		}
+
+		clustersConverted = append(clustersConverted, temp...)
+	}
+
+	return clustersConverted, nil
+}
+
+func ConvertDbaasMariaDBClusterToTable(cluster sdkmariadb.ClusterResponse) ([]map[string]interface{}, error) {
+	table, err := json2table.ConvertJSONToTable("", jsonpaths.DbaasMariadbCluster, cluster)
+	if err != nil {
+		return nil, fmt.Errorf("failed getting table representation of cluster: %w", err)
+	}
+
+	table[0]["RAM"] = fmt.Sprintf("%d GB", int(table[0]["RAM"].(float64)))
+
+	return table, nil
+}
+
+func ConvertDbaasMariaDBClustersToTable(clusters sdkmariadb.ClusterList) ([]map[string]interface{}, error) {
+	items, ok := clusters.GetItemsOk()
+	if !ok || items == nil || len(*items) == 0 {
+		return nil, nil
+	}
+
+	var clustersConverted []map[string]interface{}
+	for _, item := range *items {
+		temp, err := ConvertDbaasMariaDBClusterToTable(item)
+		if err != nil {
+			return nil, err
+		}
+		fmt.Println("temp", temp)
+
+		clustersConverted = append(clustersConverted, temp...)
+	}
+
+	return clustersConverted, nil
 }
 
 func ConvertDbaasMongoClustersToTable(clusters sdkmongo.ClusterList) ([]map[string]interface{}, error) {

@@ -13,9 +13,8 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/resource2table"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/convbytes"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/pointer"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
@@ -63,7 +62,7 @@ func Create() *core.Command {
 				cluster.StorageSize = pointer.From(int32(sizeInt64))
 			}
 			if fn := core.GetFlagName(c.NS, constants.FlagRam); viper.GetString(fn) != "" {
-				sizeInt64 := convbytes.StrToUnit(viper.GetString(fn), convbytes.MB)
+				sizeInt64 := convbytes.StrToUnit(viper.GetString(fn), convbytes.GB)
 				cluster.Ram = pointer.From(int32(sizeInt64))
 			}
 
@@ -108,9 +107,17 @@ func Create() *core.Command {
 				return fmt.Errorf("failed creating cluster: %w", err)
 			}
 
+			converted, err := resource2table.ConvertDbaasMariaDBClusterToTable(createdCluster)
+			if err != nil {
+				return fmt.Errorf("failed converting cluster to table: %w", err)
+			}
+
 			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-			out, err := jsontabwriter.GenerateOutput("", jsonpaths.DbaasMariadbCluster,
-				createdCluster, tabheaders.GetHeaders(allCols, defaultCols, cols))
+			out, err := jsontabwriter.GenerateOutputPreconverted(
+				createdCluster,
+				converted,
+				cols,
+			)
 			if err != nil {
 				return err
 			}
@@ -132,9 +139,9 @@ func Create() *core.Command {
 		return []string{"1", "3", "5", "7"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddInt32Flag(constants.FlagCores, "", 1, "Core count")
-	cmd.AddStringFlag(constants.FlagRam, "", "2GB", "Custom RAM: multiples of 1024. e.g. --ram 1024 or --ram 1024MB or --ram 4GB")
+	cmd.AddStringFlag(constants.FlagRam, "", "4GB", "RAM size. e.g.: --ram 4GB. Minimum of 4GB. The maximum RAM size is determined by your contract limit")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagRam, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return []string{"1024MB", "2GB", "4GB", "8GB", "12GB", "16GB"}, cobra.ShellCompDirectiveNoFileComp
+		return []string{"4GB", "8GB", "12GB", "16GB", "32GB", "64GB"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddStringFlag(constants.FlagStorageSize, "", strconv.Itoa(cloudapiv6.DefaultVolumeSize), "The size of the Storage in GB. e.g.: --size 10 or --size 10GB. The maximum Volume size is determined by your contract limit")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagStorageSize, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -171,14 +178,7 @@ func Create() *core.Command {
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagCidr, completer.GetCidrCompletionFunc(cmd))
 	// credentials / DBUser
 	cmd.AddStringFlag(constants.ArgUser, "", "", "The initial username", core.RequiredFlagOption())
-	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagDatacenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return cloudapiv6completer.DataCentersIds(), cobra.ShellCompDirectiveNoFileComp
-	})
 	cmd.AddStringFlag(constants.ArgPassword, "", "", "The password", core.RequiredFlagOption())
-	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagLanId, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return cloudapiv6completer.LansIds(viper.GetString(core.GetFlagName(cmd.NS, constants.FlagDatacenterId))),
-			cobra.ShellCompDirectiveNoFileComp
-	})
 
 	// Misc
 	cmd.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait, "Wait for the Request to be executed")

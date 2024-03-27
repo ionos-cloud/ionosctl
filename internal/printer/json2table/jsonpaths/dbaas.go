@@ -16,9 +16,11 @@ var (
 		"State":     "metadata.state",
 
 		"Cores":       "properties.cores",
-		"Ram":         "properties.ram",
+		"RAM":         "properties.ram",
 		"StorageSize": "properties.storageSize",
-		"StorageType": "properties.storageType",
+
+		"MaintenanceDay":  "properties.maintenanceWindow.dayOfTheWeek",
+		"MaintenanceTime": "properties.maintenanceWindow.time",
 	}
 
 	DbaasMongoCluster = map[string]string{
