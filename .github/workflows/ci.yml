@@ -23,21 +23,42 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - name: Fetch Base Branch
+        run: git fetch --depth=1 origin +refs/heads/${{ env.BASE_BRANCH }}:${{ env.BASE_BRANCH }}
+        shell: bash
+        env:
+          BASE_BRANCH: ${{ github.base_ref }}
 
       - name: Set up Go
         uses: actions/setup-go@v3
         with:
           go-version-file: 'go.mod'
 
+      - name: Install bats-core
+        run: |
+          git clone https://github.com/bats-core/bats-core.git
+          cd bats-core
+          sudo ./install.sh /usr/local
+        shell: bash
+        if: matrix.os == 'ubuntu-latest'
+
       - name: Check code format
         run: make gofmt_check
         if: matrix.os == 'ubuntu-latest'
 
+      - name: Build
+        run: make build
+
+      - name: Install
+        run: make install
+
       - name: Run all tests on Ubuntu
         env:
+          BASE_BRANCH: ${{ github.base_ref }}
           IONOS_USERNAME: ${{ secrets.IONOS_USERNAME }}
           IONOS_PASSWORD: ${{ secrets.IONOS_PASSWORD }}
         run: make test
@@ -49,12 +70,6 @@ jobs:
           IONOS_PASSWORD: ${{ secrets.IONOS_PASSWORD }}
         run: make utest
         if: matrix.os == 'windows-latest'
-
-      - name: Build
-        run: make build
-
-      - name: Install
-        run: make install
 
       - name: Version
         run: ionosctl version
