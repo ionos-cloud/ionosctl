@@ -2,6 +2,27 @@ package jsonpaths
 
 // DBaaS json paths
 var (
+	DbaasMariadbBackup = map[string]string{
+		"BackupId":  "id",
+		"ClusterId": "properties.clusterId",
+	}
+
+	DbaasMariadbCluster = map[string]string{
+		"ClusterId": "id",
+		"Name":      "properties.displayName",
+		"DNS":       "properties.dnsName",
+		"Instances": "properties.instances",
+		"Version":   "properties.mariadbVersion",
+		"State":     "metadata.state",
+
+		"Cores":       "properties.cores",
+		"RAM":         "properties.ram",
+		"StorageSize": "properties.storageSize",
+
+		"MaintenanceDay":  "properties.maintenanceWindow.dayOfTheWeek",
+		"MaintenanceTime": "properties.maintenanceWindow.time",
+	}
+
 	DbaasMongoCluster = map[string]string{
 		"ClusterId":    "id",
 		"Name":         "properties.displayName",

@@ -21,7 +21,7 @@ For `dbaas` command:
 For `mongo` command:
 
 ```text
-[mongodb mdb m]
+[mongodb mg mdb m]
 ```
 
 For `api-versions` command:

@@ -4,8 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"reflect"
+	"strings"
 
 	"github.com/Jeffail/gabs/v2"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 )
 
 // ConvertJSONToTable extracts data from a JSON or struct object using specified paths.
@@ -29,7 +31,7 @@ func ConvertJSONToTable(columnPathMappingPrefix string, columnPathMapping map[st
 
 	objs, err := traverseJSONRoot(columnPathMappingPrefix, sourceData)
 	if err != nil {
-		return nil, fmt.Errorf("failed traversing the root path %s: %w", columnPathMappingPrefix, err)
+		return nil, fmt.Errorf("failed traversing JSON to root path: %w", err)
 	}
 
 	if columnPathMapping == nil || len(columnPathMapping) == 0 {
@@ -83,7 +85,9 @@ func traverseJSONRoot(columnPathMappingPrefix string, sourceData interface{}) ([
 	}
 
 	if !parsedObj.ExistsP(columnPathMappingPrefix) {
-		return nil, fmt.Errorf("root path does not exist in object: %s", columnPathMappingPrefix)
+		return nil, fmt.Errorf("'%s' does not exist in [%s]",
+			columnPathMappingPrefix,
+			strings.Join(functional.KeysOfMap(parsedObj.ChildrenMap()), ", "))
 	}
 
 	parsedObj = parsedObj.Path(columnPathMappingPrefix)
