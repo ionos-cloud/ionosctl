@@ -38,7 +38,7 @@ func Root() *core.Command {
 }
 
 var (
-	allCols = []string{"BackupId", "ClusterId", "Items"}
+	allCols = []string{"BackupId", "ClusterId", "Size", "Items"}
 
 	defaultCols = allCols
 )
