@@ -1,5 +1,10 @@
 # Changelog
 
+## Upcoming
+
+### Fixed
+- Fixed Logging-Service tests and `--json-properties` flag check in `logging-service pipeline create` command.
+
 ## [v6.7.5] (March 2024)
 
 ### Added

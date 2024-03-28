@@ -86,6 +86,15 @@ func WaitForState(c *core2.CommandConfig, interrogator InterrogateStateFunc, res
 		defer cancel()
 
 		// Check the output format
+		if viper.IsSet(constants.ArgQuiet) {
+			_, errCh := WatchStateProgress(ctxTimeout, c, interrogator, resourceId)
+			if err := <-errCh; err != nil {
+				return err
+			}
+
+			return nil
+		}
+
 		if viper.GetString(constants.ArgOutput) == jsontabwriter.TextFormat {
 			progress := pb.New(1)
 			progress.SetWriter(c.Command.Command.OutOrStdout())

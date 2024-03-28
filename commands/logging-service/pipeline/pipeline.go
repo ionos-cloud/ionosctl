@@ -1,8 +1,10 @@
 package pipeline
 
 import (
+	"context"
 	"fmt"
 
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
@@ -49,4 +51,17 @@ func handlePipelinePrint(p ionoscloud.Pipeline, c *core.CommandConfig) error {
 
 	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
 	return nil
+}
+
+func PipelineStateInterrogator(_ *core.CommandConfig, objId string) (*string, error) {
+	obj, _, err := client.Must().LoggingServiceClient.PipelinesApi.PipelinesFindById(context.Background(), objId).Execute()
+	if err != nil {
+		return nil, err
+	}
+	if metadata, ok := obj.GetMetadataOk(); ok && metadata != nil {
+		if state, ok := metadata.GetStateOk(); ok && state != nil {
+			return state, nil
+		}
+	}
+	return nil, nil
 }

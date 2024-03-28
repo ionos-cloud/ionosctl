@@ -28,7 +28,7 @@ utest:
 .PHONY: test
 test:
 	@echo "--- Run integration and unit tests ---"
-	@go test $(TEST_FLAGS) -tags=integration $(TEST_DIRS)
+	@go test $(TEST_FLAGS) -timeout 30m -tags=integration $(TEST_DIRS)
 
 .PHONY: mocks
 mocks:

@@ -11,7 +11,6 @@ import (
 	"os"
 	"regexp"
 	"testing"
-	"time"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/logging-service/logs"
 	"github.com/ionos-cloud/ionosctl/v6/commands/logging-service/pipeline"
@@ -20,6 +19,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/jwt"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
+	"github.com/ionos-cloud/ionosctl/v6/internal/waitfor"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
@@ -60,6 +60,15 @@ func testPipeline(t *testing.T) {
 			assert.NoError(t, err)
 
 			pipelineId = uuidRegex.FindStringSubmatch(outBuff.String())[0]
+
+			viper.Set(core.GetFlagName(cmd.NS, constants.ArgWaitForState), true)
+			viper.Set(core.GetFlagName(cmd.NS, constants.ArgTimeout), constants.DefaultTimeoutSeconds*20)
+			err = waitfor.WaitForState(
+				&core.CommandConfig{Command: cmd, NS: cmd.NS, Context: context.Background()},
+				pipeline.PipelineStateInterrogator,
+				pipelineId,
+			)
+			assert.NoError(t, err)
 		},
 	)
 
@@ -92,19 +101,24 @@ func testLogs(t *testing.T) {
 	viper.Set(constants.ArgOutput, jsontabwriter.TextFormat)
 	viper.Set(constants.ArgQuiet, true)
 
-	// this wastes a lot of time, but pipelines take around 5 minutes to provision (at least at the moment)
-	time.Sleep(300 * time.Second)
-
 	t.Run(
 		"test logs add", func(t *testing.T) {
 			cmd := logs.LogsAddCmd()
-			fmt.Println(pipelineId)
 			viper.Set(core.GetFlagName(cmd.NS, constants.FlagLoggingPipelineId), pipelineId)
 			viper.Set(core.GetFlagName(cmd.NS, constants.FlagLoggingPipelineLogTag), "new"+logTag)
 			viper.Set(core.GetFlagName(cmd.NS, constants.FlagLoggingPipelineLogSource), "kubernetes")
 			viper.Set(core.GetFlagName(cmd.NS, constants.FlagLoggingPipelineLogProtocol), "http")
 
 			err := cmd.Command.Execute()
+			assert.NoError(t, err)
+
+			viper.Set(core.GetFlagName(cmd.NS, constants.ArgWaitForState), true)
+			viper.Set(core.GetFlagName(cmd.NS, constants.ArgTimeout), constants.DefaultTimeoutSeconds*20)
+			err = waitfor.WaitForState(
+				&core.CommandConfig{Command: cmd, NS: cmd.NS, Context: context.Background()},
+				pipeline.PipelineStateInterrogator,
+				pipelineId,
+			)
 			assert.NoError(t, err)
 		},
 	)
@@ -143,6 +157,15 @@ func testLogs(t *testing.T) {
 
 			err := cmd.Command.Execute()
 			assert.NoError(t, err)
+
+			viper.Set(core.GetFlagName(cmd.NS, constants.ArgWaitForState), true)
+			viper.Set(core.GetFlagName(cmd.NS, constants.ArgTimeout), constants.DefaultTimeoutSeconds*20)
+			err = waitfor.WaitForState(
+				&core.CommandConfig{Command: cmd, NS: cmd.NS, Context: context.Background()},
+				pipeline.PipelineStateInterrogator,
+				pipelineId,
+			)
+			assert.NoError(t, err)
 		},
 	)
 
@@ -154,6 +177,15 @@ func testLogs(t *testing.T) {
 			viper.Set(core.GetFlagName(cmd.NS, constants.FlagLoggingPipelineLogSource), "systemd")
 
 			err := cmd.Command.Execute()
+			assert.NoError(t, err)
+
+			viper.Set(core.GetFlagName(cmd.NS, constants.ArgWaitForState), true)
+			viper.Set(core.GetFlagName(cmd.NS, constants.ArgTimeout), constants.DefaultTimeoutSeconds*20)
+			err = waitfor.WaitForState(
+				&core.CommandConfig{Command: cmd, NS: cmd.NS, Context: context.Background()},
+				pipeline.PipelineStateInterrogator,
+				pipelineId,
+			)
 			assert.NoError(t, err)
 		},
 	)

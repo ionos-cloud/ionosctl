@@ -62,7 +62,7 @@ LOG_PROTOCOL --log-retention-time LOG_RETENTION_TIMES`,
 }
 
 func runCreateCmd(c *core.CommandConfig) error {
-	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagJsonProperties)) {
+	if f, err := c.Command.Command.Flags().GetString(constants.FlagJsonProperties); err == nil && f != "" {
 		pipeline, _, err := client.Must().LoggingServiceClient.PipelinesApi.PipelinesPost(context.Background()).Pipeline(
 			pipelineToCreate,
 		).Execute()
