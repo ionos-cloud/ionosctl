@@ -26,7 +26,14 @@ func ConvertDbaasMariadbBackupToTable(backup sdkmariadb.BackupResponse) ([]map[s
 		return nil, fmt.Errorf("could not convert from JSON to Table format: %w", err)
 	}
 
-	items, ok := properties.GetItemsOk()
+	size, ok := properties.GetSizeOk()
+	if !ok || size == nil {
+		return nil, fmt.Errorf("could not retrieve MariaDB Backup properties")
+	}
+
+	out[0]["Size"] = fmt.Sprintf("%d MiB", *size)
+
+	items, ok := properties.GetBaseBackupsOk()
 	if !ok || items == nil || len(*items) == 0 {
 		return out, nil // can be empty if no backups
 	}
@@ -38,7 +45,7 @@ func ConvertDbaasMariadbBackupToTable(backup sdkmariadb.BackupResponse) ([]map[s
 		}
 
 		size, ok := i.GetSizeOk()
-		if !ok || created == nil {
+		if !ok || size == nil {
 			continue
 		}
 
