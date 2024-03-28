@@ -71,20 +71,20 @@ Class | Method | HTTP request | Description
 *BackupsApi* | [**BackupsFindById**](docs/api/BackupsApi.md#backupsfindbyid) | **Get** /backups/{backupId} | Fetch a cluster&#39;s backups
 *BackupsApi* | [**BackupsGet**](docs/api/BackupsApi.md#backupsget) | **Get** /backups | List of cluster&#39;s backups.
 *BackupsApi* | [**ClusterBackupsGet**](docs/api/BackupsApi.md#clusterbackupsget) | **Get** /clusters/{clusterId}/backups | List backups of cluster
-*BackupsApi* | [**ClusterBackupsPost**](docs/api/BackupsApi.md#clusterbackupspost) | **Post** /clusters/{clusterId}/backups | Trigger an ad-hoc backup
 *ClustersApi* | [**ClustersDelete**](docs/api/ClustersApi.md#clustersdelete) | **Delete** /clusters/{clusterId} | Delete a cluster
 *ClustersApi* | [**ClustersFindById**](docs/api/ClustersApi.md#clustersfindbyid) | **Get** /clusters/{clusterId} | Fetch a cluster
 *ClustersApi* | [**ClustersGet**](docs/api/ClustersApi.md#clustersget) | **Get** /clusters | List clusters
+*ClustersApi* | [**ClustersPatch**](docs/api/ClustersApi.md#clusterspatch) | **Patch** /clusters/{clusterId} | Update a cluster
 *ClustersApi* | [**ClustersPost**](docs/api/ClustersApi.md#clusterspost) | **Post** /clusters | Create a cluster
 
 
 ## Documentation For Models
 
  - [Backup](docs/models/Backup.md)
- - [BackupItem](docs/models/BackupItem.md)
  - [BackupList](docs/models/BackupList.md)
  - [BackupListAllOf](docs/models/BackupListAllOf.md)
  - [BackupResponse](docs/models/BackupResponse.md)
+ - [BaseBackup](docs/models/BaseBackup.md)
  - [ClusterList](docs/models/ClusterList.md)
  - [ClusterListAllOf](docs/models/ClusterListAllOf.md)
  - [ClusterMetadata](docs/models/ClusterMetadata.md)
@@ -110,6 +110,8 @@ Class | Method | HTTP request | Description
  - [MariadbVersion](docs/models/MariadbVersion.md)
  - [Pagination](docs/models/Pagination.md)
  - [PaginationLinks](docs/models/PaginationLinks.md)
+ - [PatchClusterProperties](docs/models/PatchClusterProperties.md)
+ - [PatchClusterRequest](docs/models/PatchClusterRequest.md)
  - [State](docs/models/State.md)
 
 

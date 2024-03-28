@@ -17,12 +17,13 @@ func Get() *core.Command {
 	cmd := core.NewCommand(context.TODO(), nil, core.CommandBuilder{
 		Namespace: "dbaas-mariadb",
 		Resource:  "backup",
-		Verb:      "list",
-		Aliases:   []string{"l", "ls"},
-		ShortDesc: "List MariaDB Backups",
-		LongDesc:  "List all MariaDB Backups, or optionally provide a Cluster ID to list those of a certain cluster",
+		Verb:      "get",
+		Aliases:   []string{"g"},
+		ShortDesc: "Get a MariaDB Backup",
 		Example:   "ionosctl dbaas mariadb backup get --backup-id BACKUP_ID",
-		PreCmdRun: core.NoPreRun,
+		PreCmdRun: func(c *core.PreCommandConfig) error {
+			return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagBackupId)
+		},
 		CmdRun: func(c *core.CommandConfig) error {
 			backup, _, err := client.Must().MariaClient.BackupsApi.BackupsFindById(context.Background(),
 				viper.GetString(core.GetFlagName(c.NS, constants.FlagBackupId))).Execute()

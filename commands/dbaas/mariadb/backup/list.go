@@ -5,11 +5,13 @@ import (
 	"fmt"
 
 	ionoscloud "github.com/avirtopeanu-ionos/alpha-sdk-go-dbaas-mariadb"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/resource2table"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/spf13/viper"
 )
 
 func List() *core.Command {
@@ -27,11 +29,11 @@ func List() *core.Command {
 			var err error
 
 			// TODO: Uncomment when swagger fixed
-			// if clusterId != "" {
-			// 	backups, _, err = client.Must().MariaClient.BackupsApi.ClusterBackupsGet(context.Background(), clusterId).Execute()
-			// } else {
-			backups, err = Backups(FilterPaginationFlags(c))
-			// }
+			if clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)); clusterId != "" {
+				backups, _, err = client.Must().MariaClient.BackupsApi.ClusterBackupsGet(context.Background(), clusterId).Execute()
+			} else {
+				backups, err = Backups(FilterPaginationFlags(c))
+			}
 
 			if err != nil {
 				return err
@@ -44,7 +46,7 @@ func List() *core.Command {
 			}
 
 			out, err := jsontabwriter.GenerateOutputPreconverted(backups, rows,
-				tabheaders.GetHeaders(allCols, defaultCols, cols))
+				tabheaders.GetHeadersAllDefault(allCols, cols))
 			if err != nil {
 				return err
 			}
@@ -55,8 +57,7 @@ func List() *core.Command {
 		InitClient: true,
 	})
 
-	// TODO: Uncomment when swagger fixed
-	// cmd.AddStringFlag(constants.FlagClusterId, constants.FlagIdShort, "", "Optionally limit shown backups to those of a certain cluster")
+	cmd.AddStringFlag(constants.FlagClusterId, constants.FlagIdShort, "", "Optionally limit shown backups to those of a certain cluster")
 	cmd.AddInt32Flag(constants.FlagMaxResults, constants.FlagMaxResultsShort, 0, constants.DescMaxResults)
 	cmd.AddInt32Flag(constants.FlagOffset, "", 0, "Skip a certain number of results")
 

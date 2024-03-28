@@ -16,7 +16,6 @@ import (
 
 // CreateClusterRequest Request payload with all data needed to create a new MariaDB cluster.
 type CreateClusterRequest struct {
-	Metadata   *ClusterMetadata         `json:"metadata,omitempty"`
 	Properties *CreateClusterProperties `json:"properties,omitempty"`
 }
 
@@ -36,44 +35,6 @@ func NewCreateClusterRequest() *CreateClusterRequest {
 func NewCreateClusterRequestWithDefaults() *CreateClusterRequest {
 	this := CreateClusterRequest{}
 	return &this
-}
-
-// GetMetadata returns the Metadata field value
-// If the value is explicit nil, the zero value for ClusterMetadata will be returned
-func (o *CreateClusterRequest) GetMetadata() *ClusterMetadata {
-	if o == nil {
-		return nil
-	}
-
-	return o.Metadata
-
-}
-
-// GetMetadataOk returns a tuple with the Metadata field value
-// and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *CreateClusterRequest) GetMetadataOk() (*ClusterMetadata, bool) {
-	if o == nil {
-		return nil, false
-	}
-
-	return o.Metadata, true
-}
-
-// SetMetadata sets field value
-func (o *CreateClusterRequest) SetMetadata(v ClusterMetadata) {
-
-	o.Metadata = &v
-
-}
-
-// HasMetadata returns a boolean if a field has been set.
-func (o *CreateClusterRequest) HasMetadata() bool {
-	if o != nil && o.Metadata != nil {
-		return true
-	}
-
-	return false
 }
 
 // GetProperties returns the Properties field value
@@ -116,10 +77,6 @@ func (o *CreateClusterRequest) HasProperties() bool {
 
 func (o CreateClusterRequest) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
-	if o.Metadata != nil {
-		toSerialize["metadata"] = o.Metadata
-	}
-
 	if o.Properties != nil {
 		toSerialize["properties"] = o.Properties
 	}
