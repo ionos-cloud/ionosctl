@@ -12,13 +12,18 @@ package ionoscloud
 
 import (
 	"encoding/json"
+	"time"
 )
 
 // Backup A backup object.
 type Backup struct {
 	// The unique ID of the cluster that was backed up.
-	ClusterId *string       `json:"clusterId,omitempty"`
-	Items     *[]BackupItem `json:"items,omitempty"`
+	ClusterId *string `json:"clusterId,omitempty"`
+	// The oldest available timestamp to which you can restore.
+	EarliestRecoveryTargetTime *IonosTime `json:"earliestRecoveryTargetTime,omitempty"`
+	// Size of all base backups in MiB. This is at least the sum of all base backup sizes.
+	Size        *int32        `json:"size,omitempty"`
+	BaseBackups *[]BaseBackup `json:"baseBackups,omitempty"`
 }
 
 // NewBackup instantiates a new Backup object
@@ -77,38 +82,121 @@ func (o *Backup) HasClusterId() bool {
 	return false
 }
 
-// GetItems returns the Items field value
-// If the value is explicit nil, the zero value for []BackupItem will be returned
-func (o *Backup) GetItems() *[]BackupItem {
+// GetEarliestRecoveryTargetTime returns the EarliestRecoveryTargetTime field value
+// If the value is explicit nil, the zero value for time.Time will be returned
+func (o *Backup) GetEarliestRecoveryTargetTime() *time.Time {
 	if o == nil {
 		return nil
 	}
 
-	return o.Items
+	if o.EarliestRecoveryTargetTime == nil {
+		return nil
+	}
+	return &o.EarliestRecoveryTargetTime.Time
 
 }
 
-// GetItemsOk returns a tuple with the Items field value
+// GetEarliestRecoveryTargetTimeOk returns a tuple with the EarliestRecoveryTargetTime field value
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *Backup) GetItemsOk() (*[]BackupItem, bool) {
+func (o *Backup) GetEarliestRecoveryTargetTimeOk() (*time.Time, bool) {
 	if o == nil {
 		return nil, false
 	}
 
-	return o.Items, true
-}
-
-// SetItems sets field value
-func (o *Backup) SetItems(v []BackupItem) {
-
-	o.Items = &v
+	if o.EarliestRecoveryTargetTime == nil {
+		return nil, false
+	}
+	return &o.EarliestRecoveryTargetTime.Time, true
 
 }
 
-// HasItems returns a boolean if a field has been set.
-func (o *Backup) HasItems() bool {
-	if o != nil && o.Items != nil {
+// SetEarliestRecoveryTargetTime sets field value
+func (o *Backup) SetEarliestRecoveryTargetTime(v time.Time) {
+
+	o.EarliestRecoveryTargetTime = &IonosTime{v}
+
+}
+
+// HasEarliestRecoveryTargetTime returns a boolean if a field has been set.
+func (o *Backup) HasEarliestRecoveryTargetTime() bool {
+	if o != nil && o.EarliestRecoveryTargetTime != nil {
+		return true
+	}
+
+	return false
+}
+
+// GetSize returns the Size field value
+// If the value is explicit nil, the zero value for int32 will be returned
+func (o *Backup) GetSize() *int32 {
+	if o == nil {
+		return nil
+	}
+
+	return o.Size
+
+}
+
+// GetSizeOk returns a tuple with the Size field value
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *Backup) GetSizeOk() (*int32, bool) {
+	if o == nil {
+		return nil, false
+	}
+
+	return o.Size, true
+}
+
+// SetSize sets field value
+func (o *Backup) SetSize(v int32) {
+
+	o.Size = &v
+
+}
+
+// HasSize returns a boolean if a field has been set.
+func (o *Backup) HasSize() bool {
+	if o != nil && o.Size != nil {
+		return true
+	}
+
+	return false
+}
+
+// GetBaseBackups returns the BaseBackups field value
+// If the value is explicit nil, the zero value for []BaseBackup will be returned
+func (o *Backup) GetBaseBackups() *[]BaseBackup {
+	if o == nil {
+		return nil
+	}
+
+	return o.BaseBackups
+
+}
+
+// GetBaseBackupsOk returns a tuple with the BaseBackups field value
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *Backup) GetBaseBackupsOk() (*[]BaseBackup, bool) {
+	if o == nil {
+		return nil, false
+	}
+
+	return o.BaseBackups, true
+}
+
+// SetBaseBackups sets field value
+func (o *Backup) SetBaseBackups(v []BaseBackup) {
+
+	o.BaseBackups = &v
+
+}
+
+// HasBaseBackups returns a boolean if a field has been set.
+func (o *Backup) HasBaseBackups() bool {
+	if o != nil && o.BaseBackups != nil {
 		return true
 	}
 
@@ -121,8 +209,16 @@ func (o Backup) MarshalJSON() ([]byte, error) {
 		toSerialize["clusterId"] = o.ClusterId
 	}
 
-	if o.Items != nil {
-		toSerialize["items"] = o.Items
+	if o.EarliestRecoveryTargetTime != nil {
+		toSerialize["earliestRecoveryTargetTime"] = o.EarliestRecoveryTargetTime
+	}
+
+	if o.Size != nil {
+		toSerialize["size"] = o.Size
+	}
+
+	if o.BaseBackups != nil {
+		toSerialize["baseBackups"] = o.BaseBackups
 	}
 
 	return json.Marshal(toSerialize)

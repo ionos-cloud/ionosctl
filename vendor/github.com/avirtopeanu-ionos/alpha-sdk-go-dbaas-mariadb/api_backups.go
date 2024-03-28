@@ -488,9 +488,20 @@ type ApiClusterBackupsGetRequest struct {
 	ctx        _context.Context
 	ApiService *BackupsApiService
 	clusterId  string
+	limit      *int32
+	offset     *int32
 }
 
-func (r ApiClusterBackupsGetRequest) Execute() (BackupResponse, *APIResponse, error) {
+func (r ApiClusterBackupsGetRequest) Limit(limit int32) ApiClusterBackupsGetRequest {
+	r.limit = &limit
+	return r
+}
+func (r ApiClusterBackupsGetRequest) Offset(offset int32) ApiClusterBackupsGetRequest {
+	r.offset = &offset
+	return r
+}
+
+func (r ApiClusterBackupsGetRequest) Execute() (BackupList, *APIResponse, error) {
 	return r.ApiService.ClusterBackupsGetExecute(r)
 }
 
@@ -512,16 +523,16 @@ func (a *BackupsApiService) ClusterBackupsGet(ctx _context.Context, clusterId st
 
 /*
  * Execute executes the request
- * @return BackupResponse
+ * @return BackupList
  */
-func (a *BackupsApiService) ClusterBackupsGetExecute(r ApiClusterBackupsGetRequest) (BackupResponse, *APIResponse, error) {
+func (a *BackupsApiService) ClusterBackupsGetExecute(r ApiClusterBackupsGetRequest) (BackupList, *APIResponse, error) {
 	var (
 		localVarHTTPMethod   = _nethttp.MethodGet
 		localVarPostBody     interface{}
 		localVarFormFileName string
 		localVarFileName     string
 		localVarFileBytes    []byte
-		localVarReturnValue  BackupResponse
+		localVarReturnValue  BackupList
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "BackupsApiService.ClusterBackupsGet")
@@ -536,6 +547,12 @@ func (a *BackupsApiService) ClusterBackupsGetExecute(r ApiClusterBackupsGetReque
 	localVarQueryParams := _neturl.Values{}
 	localVarFormParams := _neturl.Values{}
 
+	if r.limit != nil {
+		localVarQueryParams.Add("limit", parameterToString(*r.limit, ""))
+	}
+	if r.offset != nil {
+		localVarQueryParams.Add("offset", parameterToString(*r.offset, ""))
+	}
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
 
@@ -703,215 +720,4 @@ func (a *BackupsApiService) ClusterBackupsGetExecute(r ApiClusterBackupsGetReque
 	}
 
 	return localVarReturnValue, localVarAPIResponse, nil
-}
-
-type ApiClusterBackupsPostRequest struct {
-	ctx        _context.Context
-	ApiService *BackupsApiService
-	clusterId  string
-}
-
-func (r ApiClusterBackupsPostRequest) Execute() (*APIResponse, error) {
-	return r.ApiService.ClusterBackupsPostExecute(r)
-}
-
-/*
-  - ClusterBackupsPost Trigger an ad-hoc backup
-  - Triggers the immediate creation of a backup.
-
-Request and response bodies are left empty.
-
-  - @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-  - @param clusterId The unique ID of the cluster.
-  - @return ApiClusterBackupsPostRequest
-*/
-func (a *BackupsApiService) ClusterBackupsPost(ctx _context.Context, clusterId string) ApiClusterBackupsPostRequest {
-	return ApiClusterBackupsPostRequest{
-		ApiService: a,
-		ctx:        ctx,
-		clusterId:  clusterId,
-	}
-}
-
-/*
- * Execute executes the request
- */
-func (a *BackupsApiService) ClusterBackupsPostExecute(r ApiClusterBackupsPostRequest) (*APIResponse, error) {
-	var (
-		localVarHTTPMethod   = _nethttp.MethodPost
-		localVarPostBody     interface{}
-		localVarFormFileName string
-		localVarFileName     string
-		localVarFileBytes    []byte
-	)
-
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "BackupsApiService.ClusterBackupsPost")
-	if err != nil {
-		return nil, GenericOpenAPIError{error: err.Error()}
-	}
-
-	localVarPath := localBasePath + "/clusters/{clusterId}/backups"
-	localVarPath = strings.Replace(localVarPath, "{"+"clusterId"+"}", _neturl.PathEscape(parameterToString(r.clusterId, "")), -1)
-
-	localVarHeaderParams := make(map[string]string)
-	localVarQueryParams := _neturl.Values{}
-	localVarFormParams := _neturl.Values{}
-
-	// to determine the Content-Type header
-	localVarHTTPContentTypes := []string{}
-
-	// set Content-Type header
-	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
-	if localVarHTTPContentType != "" {
-		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
-	}
-
-	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json"}
-
-	// set Accept header
-	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
-	if localVarHTTPHeaderAccept != "" {
-		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
-	}
-	if r.ctx != nil {
-		// API Key Authentication
-		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
-			if apiKey, ok := auth["tokenAuth"]; ok {
-				var key string
-				if apiKey.Prefix != "" {
-					key = apiKey.Prefix + " " + apiKey.Key
-				} else {
-					key = apiKey.Key
-				}
-				localVarHeaderParams["Authorization"] = key
-			}
-		}
-	}
-	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFormFileName, localVarFileName, localVarFileBytes)
-	if err != nil {
-		return nil, err
-	}
-
-	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
-
-	localVarAPIResponse := &APIResponse{
-		Response:    localVarHTTPResponse,
-		Method:      localVarHTTPMethod,
-		RequestTime: httpRequestTime,
-		RequestURL:  localVarPath,
-		Operation:   "ClusterBackupsPost",
-	}
-
-	if err != nil || localVarHTTPResponse == nil {
-		return localVarAPIResponse, err
-	}
-
-	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
-	localVarHTTPResponse.Body.Close()
-	localVarAPIResponse.Payload = localVarBody
-	if err != nil {
-		return localVarAPIResponse, err
-	}
-
-	if localVarHTTPResponse.StatusCode >= 300 {
-		newErr := GenericOpenAPIError{
-			statusCode: localVarHTTPResponse.StatusCode,
-			body:       localVarBody,
-			error:      fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
-		}
-		if localVarHTTPResponse.StatusCode == 400 {
-			var v ClustersGet400Response
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarAPIResponse, newErr
-			}
-			newErr.model = v
-		}
-		if localVarHTTPResponse.StatusCode == 401 {
-			var v ClustersGet401Response
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarAPIResponse, newErr
-			}
-			newErr.model = v
-		}
-		if localVarHTTPResponse.StatusCode == 403 {
-			var v ClustersGet403Response
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarAPIResponse, newErr
-			}
-			newErr.model = v
-		}
-		if localVarHTTPResponse.StatusCode == 404 {
-			var v ClustersGet404Response
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarAPIResponse, newErr
-			}
-			newErr.model = v
-		}
-		if localVarHTTPResponse.StatusCode == 405 {
-			var v ClustersGet405Response
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarAPIResponse, newErr
-			}
-			newErr.model = v
-		}
-		if localVarHTTPResponse.StatusCode == 415 {
-			var v ClustersGet415Response
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarAPIResponse, newErr
-			}
-			newErr.model = v
-		}
-		if localVarHTTPResponse.StatusCode == 422 {
-			var v ClustersGet422Response
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarAPIResponse, newErr
-			}
-			newErr.model = v
-		}
-		if localVarHTTPResponse.StatusCode == 429 {
-			var v ClustersGet429Response
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarAPIResponse, newErr
-			}
-			newErr.model = v
-		}
-		if localVarHTTPResponse.StatusCode == 500 {
-			var v ClustersGet500Response
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarAPIResponse, newErr
-			}
-			newErr.model = v
-		}
-		if localVarHTTPResponse.StatusCode == 503 {
-			var v ClustersGet503Response
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarAPIResponse, newErr
-			}
-			newErr.model = v
-		}
-		return localVarAPIResponse, newErr
-	}
-
-	return localVarAPIResponse, nil
 }

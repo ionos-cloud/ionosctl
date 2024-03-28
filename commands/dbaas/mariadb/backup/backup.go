@@ -4,7 +4,8 @@ import (
 	"context"
 
 	ionoscloud "github.com/avirtopeanu-ionos/alpha-sdk-go-dbaas-mariadb"
-	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/cluster"
+	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mariadb/cluster"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
@@ -23,6 +24,11 @@ func Root() *core.Command {
 			TraverseChildren: true,
 		},
 	}
+
+	cmd.Command.PersistentFlags().StringSlice(constants.ArgCols, defaultCols, tabheaders.ColsMessage(allCols))
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return allCols, cobra.ShellCompDirectiveNoFileComp
+	})
 
 	cmd.AddCommand(List())
 	cmd.AddCommand(Get())
