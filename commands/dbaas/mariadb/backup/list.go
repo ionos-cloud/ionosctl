@@ -28,7 +28,6 @@ func List() *core.Command {
 			var backups ionoscloud.BackupList
 			var err error
 
-			// TODO: Uncomment when swagger fixed
 			if clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)); clusterId != "" {
 				backups, _, err = client.Must().MariaClient.BackupsApi.ClusterBackupsGet(context.Background(), clusterId).Execute()
 			} else {
