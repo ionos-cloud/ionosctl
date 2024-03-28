@@ -162,7 +162,6 @@ func ConvertDbaasMariaDBClustersToTable(clusters sdkmariadb.ClusterList) ([]map[
 		if err != nil {
 			return nil, err
 		}
-		fmt.Println("temp", temp)
 
 		clustersConverted = append(clustersConverted, temp...)
 	}
