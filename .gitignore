@@ -195,6 +195,7 @@ modules.xml
 
 # Contains built binaries
 builds/
+dist/
 
 # direnv config
 .envrc
