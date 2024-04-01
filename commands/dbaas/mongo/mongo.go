@@ -2,7 +2,6 @@ package mongo
 
 import (
 	"os"
-	"strings"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/apiversion"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/cluster"
@@ -16,12 +15,12 @@ import (
 )
 
 func DBaaSMongoCmd() *core.Command {
-	deprecatedAliases := []string{"mongodb", "mg"}
+	deprecatedAliases := []string{"m", "mdb"}
 
 	mongoCmd := &core.Command{
 		Command: &cobra.Command{
 			Use:     "mongo",
-			Aliases: append(deprecatedAliases, "mdb", "m"),
+			Aliases: append(deprecatedAliases, "mongodb", "mg"),
 			Short:   "DBaaS Mongo Operations",
 			Long: `DBaaS Mongo Operations. Wiki: https://docs.ionos.com/cloud/managed-services/database-as-a-service/mongodb
 With IONOS Cloud Database as a Service (DBaaS) MongoDB, you can quickly set up and manage MongoDB database clusters. It is an open-source, NoSQL database solution that does not require a relational Database Management System (DBMS). The feature offers flexible data schemas, managed MongoDB solution with deployment and monitoring of your databases. To cater to your workload use cases, IONOS provides MongoDB editions such as Playground, Business, and Enterprise models.`,
@@ -29,13 +28,13 @@ With IONOS Cloud Database as a Service (DBaaS) MongoDB, you can quickly set up a
 		},
 	}
 
+	// warn about deprecated aliases
 	mongoCmd.Command.PersistentPreRun = func(cmd *cobra.Command, args []string) {
 		aliasUsed := os.Args[2]
 		if slices.Contains(deprecatedAliases, aliasUsed) {
 			cmd.PrintErrf("WARNING: '%s' is deprecated and will be removed in a future release, "+
-				"please use any of '%s' instead.\n",
+				"please use 'mongo', 'mongodb' or 'mg' instead.\n",
 				aliasUsed,
-				strings.Join(append([]string{mongoCmd.Command.Use}, deprecatedAliases...), "', '"),
 			)
 		}
 	}
