@@ -5,12 +5,14 @@ import (
 	"fmt"
 
 	ionoscloud "github.com/avirtopeanu-ionos/alpha-sdk-go-dbaas-mariadb"
+	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mariadb/cluster"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/resource2table"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
@@ -57,6 +59,14 @@ func List() *core.Command {
 	})
 
 	cmd.AddStringFlag(constants.FlagClusterId, constants.FlagIdShort, "", "Optionally limit shown backups to those of a certain cluster")
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return cluster.ClustersProperty(func(c ionoscloud.ClusterResponse) string {
+			if c.Id == nil {
+				return ""
+			}
+			return *c.Id
+		}), cobra.ShellCompDirectiveNoFileComp
+	})
 	cmd.AddInt32Flag(constants.FlagMaxResults, constants.FlagMaxResultsShort, 0, constants.DescMaxResults)
 	cmd.AddInt32Flag(constants.FlagOffset, "", 0, "Skip a certain number of results")
 
