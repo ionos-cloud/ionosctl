@@ -20,6 +20,26 @@ generate_ssh_key() {
     echo $ssh_key_path
 }
 
+# Bash function to check if an IP is in a CIDR
+# First argument: IP
+# Second argument: CIDR
+# Returns status 0 if IP is in CIDR, 1 otherwise
+ip_in_cidr() {
+    local ip ip_num cidr cidr_ip cidr_num cidr_mask
+    ip=$(echo $1 | tr '.' ' ')
+    ip_num=$(printf '%02X%02X%02X%02X\n' $ip)
+    cidr=(${2//\// })
+    cidr_ip=$(echo ${cidr[0]} | tr '.' ' ')
+    cidr_num=$(printf '%08X\n' $(printf '%d\n' $((0x$(printf '%02X%02X%02X%02X\n' $cidr_ip) & $(printf '%d\n' $((0xFFFFFFFF << (32 - ${cidr[1]}))))))))
+    cidr_mask=$(printf '%08X\n' $((0xFFFFFFFF << (32 - ${cidr[1]}))))
+
+    if [ $((0x$ip_num & 0x$cidr_mask)) == $cidr_num ]; then
+        return 0
+    else
+        return 1
+    fi
+}
+
 retry_command() {
     local max=6
     local delay=30

@@ -42,7 +42,44 @@ setup_file() {
     sleep 10
 
     run ionosctl db mariadb cluster list -n CLI --cols version --no-headers 2> /dev/null
+    assert_success
     assert_output "10.6"
+}
+
+@test "Backup Listing is successful" {
+    # Sadly cannot really assert backups output as this is a new cluster and no backups are available.
+    # This is a stateful operation and its output cannot really be tested...
+    # TODO: Improve me if possible
+
+    run ionosctl db mariadb backup list 2> /dev/null
+    assert_success
+
+    run ionosctl db mariadb backup list --cluster-id "${cluster_id}" 2> /dev/null
+    assert_success
+}
+
+@test "Assert DNS resolves to CIDR" {
+    # Extract the DNS and CIDR from the JSON output
+    clusters_json=$(ionosctl db mariadb cluster list -o json)
+    dns_name=$(echo "$clusters_json" | jq -r '.items[0].properties.dnsName')
+    cidr=$(echo "$clusters_json" | jq -r '.items[0].properties.connections[0].cidr')
+
+    # Use nslookup to resolve the DNS name to an IP address
+    resolved_ips=$(nslookup "$dns_name" | awk '/^Address: / { print $2 }' | tail -n +2) # Skip the first line which is the DNS server
+
+    echo "Resolved IPs: $resolved_ips"
+    echo "CIDR: $cidr"
+
+    # Assert that at least one resolved IP is within the CIDR range
+    cidr_match_found=false
+    for ip in $resolved_ips; do
+        if ip_in_cidr $ip $cidr; then
+            cidr_match_found=true
+            break
+        fi
+    done
+
+    [ "$cidr_match_found" = true ] || fail "No resolved IP matches the CIDR $cidr"
 }
 
 teardown_file() {
