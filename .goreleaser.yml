@@ -14,8 +14,8 @@ builds:
       - -trimpath
       - -mod=vendor
     ldflags:
-      - "-X github.com/ionos-cloud/ionosctl/v6/commands.Version={{ .Version }}"
-      - "-X github.com/ionos-cloud/ionosctl/v6/commands.Label=release"
+      - "-X github.com/ionos-cloud/ionosctl/v6/internal/version.Version={{ .Version }}"
+      - "-X github.com/ionos-cloud/ionosctl/v6/internal/version.Label=release"
     goos:
       - windows
       - linux
@@ -42,20 +42,19 @@ archives:
       - CHANGELOG.md
     wrap_in_directory: false
 
-scoop:
-#  folder: Scoops
-  bucket:
-    owner: ionos-cloud
-    name: scoop-bucket
-  homepage: https://github.com/ionos-cloud/ionosctl
-  description: IonosCTL is a tool to help you manage your Ionos Cloud resources directly from your terminal.
-  license: Apache-2.0
+scoops:
+  - repository:
+      owner: ionos-cloud
+      name: scoop-bucket
+    homepage: https://github.com/ionos-cloud/ionosctl
+    description: IonosCTL is a tool to help you manage your Ionos Cloud resources directly from your terminal.
+    license: Apache-2.0
 
 brews:
   - name: ionosctl
     ids:
       - ionosctl
-    tap:
+    repository:
       owner: ionos-cloud
       name: homebrew-ionos-cloud
     folder: Formula
@@ -92,4 +91,4 @@ changelog:
       - '^dep:'
       - '^deps:'
       - '^dependencies:'
-  skip: false
+  disable: false
