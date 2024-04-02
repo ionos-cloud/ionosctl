@@ -21,9 +21,10 @@ generate_ssh_key() {
 }
 
 retry_command() {
+    local max=6
+    local delay=30
+
     local n=1
-    local max=3
-    local delay=10
     while true; do
         "$@" && break || {
             if [[ $n -lt $max ]]; then

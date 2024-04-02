@@ -26,22 +26,28 @@ setup_file() {
         "sleep 30 && ionosctl lan create --datacenter-id ${datacenter_id} --public=false -o json 2> /dev/null | jq -r '.id'")
     [ -n "$lan_id" ] || fail "lan_id is empty"
 
-    sleep 120
+    sleep 60
 
     echo "Trying to create mariadb cluster in datacenter $datacenter_id"
-    run ionosctl db mariadb cluster create --name "CLI-Test-$(randStr 8)" --version 10.6 \
-      --user $(randStr 8) --password $(randStr 8) json 2> /dev/null -W -t 600
+    run ionosctl db mariadb cluster create --name "CLI-Test-$(randStr 6)" --version 10.6 \
+      --user $(randStr 12) --password $(randStr 12) --datacenter-id ${datacenter_id} --lan-id 1 --cidr 192.168.1.127/24 -o json 2> /dev/null
     assert_success
+
     cluster_id=$(echo "$output" | jq -r '.id')
     assert_regex "$cluster_id" "$uuid_v4_regex"
     echo "created mariadb cluster $cluster_id"
 }
 
+@test "Find MariaDB Cluster" {
+    sleep 10
+
+    run ionosctl db mariadb cluster list -n CLI --cols version --no-headers 2> /dev/null
+    assert_output "10.6"
+}
+
 teardown_file() {
     echo "cleaning up datacenter $datacenter_id and mariadb cluster $cluster_id"
-    retry_command run ionosctl k8s nodepool delete --cluster-id "$cluster_id" --nodepool-id "$nodepool_id" -f -w -t 1200
-    sleep 30
-    retry_command run ionosctl k8s cluster delete --cluster-id "$cluster_id" -f -w -t 1200
-    sleep 30
+    retry_command run ionosctl dbaas mariadb cluster delete --cluster-id "$cluster_id" -f
+    sleep 120
     retry_command run ionosctl datacenter delete --datacenter_id "$datacenter_id" -f -w -t 1200
 }
