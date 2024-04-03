@@ -1,6 +1,6 @@
 #!/usr/bin/env bats
 
-# tags: maria
+# tags: maria, mariadb
 
 BATS_LIBS_PATH="${LIBS_PATH:-../libs}" # fallback to relative path if not set
 load "${BATS_LIBS_PATH}/bats-assert/load"
@@ -12,6 +12,7 @@ location="de/txl"
 setup_file() {
     uuid_v4_regex='^[0-9a-f]{8}-[0-9a-f]{4}-[4][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
     ip_regex='^([0-9]{1,3}\.){3}[0-9]{1,3}(\/[0-9]{1,2})?$'
+    export IONOS_TOKEN=$(ionosctl token generate)
 
     mkdir -p /tmp/bats_test
 }
@@ -121,6 +122,8 @@ teardown_file() {
     retry_command run ionosctl dbaas mariadb cluster delete --cluster-id "$cluster_id" -f
     sleep 120
     retry_command run ionosctl datacenter delete --datacenter_id "$datacenter_id" -f -w -t 1200
+
+    unset IONOS_TOKEN
 
     rm -rf /tmp/bats_test
 }
