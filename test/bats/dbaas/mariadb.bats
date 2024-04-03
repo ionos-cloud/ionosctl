@@ -12,6 +12,22 @@ location="de/txl"
 setup_file() {
     uuid_v4_regex='^[0-9a-f]{8}-[0-9a-f]{4}-[4][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
     ip_regex='^([0-9]{1,3}\.){3}[0-9]{1,3}(\/[0-9]{1,2})?$'
+
+    mkdir -p /tmp/bats_test
+}
+
+@test "Ensure no previous MariaDB Clusters" {
+    run ionosctl db mariadb cluster list 2> /dev/null
+    [ "$status" -eq 0 ] || fail "Failed to list mariadb clusters"
+
+    if [ "$output" ]; then
+        echo "Deleting clusters..."
+        run ionosctl db mariadb cluster delete --all -f
+        sleep 30
+    fi
+
+    echo "Waiting for clusters to be deleted..."
+    retry_command bash -c "[ -z \"\$(ionosctl db mariadb cluster list)\" ]"
 }
 
 @test "Create MariaDB Cluster" {
@@ -29,24 +45,37 @@ setup_file() {
     sleep 60
 
     echo "Trying to create mariadb cluster in datacenter $datacenter_id"
-    run ionosctl db mariadb cluster create --name "CLI-Test-$(randStr 6)" --version 10.6 \
-      --user $(randStr 12) --password $(randStr 12) --datacenter-id ${datacenter_id} --lan-id 1 --cidr 192.168.1.127/24 -o json 2> /dev/null
+    run ionosctl db mariadb cluster create --name "CLI-Test-$(randStr 6)" --version 10.6 --user testuser1234 \
+       --password "$(randStr 12)" --datacenter-id ${datacenter_id} --lan-id 1 --cidr 192.168.1.127/24 -o json 2> /dev/null
     assert_success
 
     cluster_id=$(echo "$output" | jq -r '.id')
     assert_regex "$cluster_id" "$uuid_v4_regex"
     echo "created mariadb cluster $cluster_id"
+
+    echo "$datacenter_id" > /tmp/bats_test/datacenter_id
+    echo "$cluster_id" > /tmp/bats_test/cluster_id
 }
 
 @test "Find MariaDB Cluster" {
+    cluster_id=$(cat /tmp/bats_test/cluster_id)
     sleep 10
 
-    run ionosctl db mariadb cluster list -n CLI --cols version --no-headers 2> /dev/null
+    run ionosctl db mariadb cluster get -i "${cluster_id}" -o json 2> /dev/null
     assert_success
-    assert_output "10.6"
+    json=$output
+    version=$(echo "$json" | jq -r '.properties.version')
+    assert_equals "$version" "10.6"
+
+    cluster_name=$(echo "$json" | jq -r '.properties.name')
+    run ionosctl db mariadb cluster list -n "${cluster_name}" -M 1 --cols ClusterId --no-headers 2> /dev/null
+    assert_success
+    assert_output "$cluster_id"
 }
 
 @test "Backup Listing is successful" {
+    cluster_id=$(cat /tmp/bats_test/cluster_id)
+
     # Sadly cannot really assert backups output as this is a new cluster and no backups are available.
     # This is a stateful operation and its output cannot really be tested...
     # TODO: Improve me if possible
@@ -59,13 +88,15 @@ setup_file() {
 }
 
 @test "Assert DNS resolves to CIDR" {
+    cluster_id=$(cat /tmp/bats_test/cluster_id)
+
     # Extract the DNS and CIDR from the JSON output
-    clusters_json=$(ionosctl db mariadb cluster list -o json)
-    dns_name=$(echo "$clusters_json" | jq -r '.items[0].properties.dnsName')
-    cidr=$(echo "$clusters_json" | jq -r '.items[0].properties.connections[0].cidr')
+    clusters_json=$(ionosctl db mariadb cluster get -i "${cluster_id}" -o json)
+    dns_name=$(echo "$clusters_json" | jq -r '.properties.dnsName')
+    cidr=$(echo "$clusters_json" | jq -r '.properties.connections[0].cidr')
 
     # Use nslookup to resolve the DNS name to an IP address
-    resolved_ips=$(nslookup "$dns_name" | awk '/^Address: / { print $2 }' | tail -n +2) # Skip the first line which is the DNS server
+    resolved_ips=$(nslookup "$dns_name" | awk '/^Name:/{getline; print $2}')
 
     echo "Resolved IPs: $resolved_ips"
     echo "CIDR: $cidr"
@@ -83,8 +114,13 @@ setup_file() {
 }
 
 teardown_file() {
+    datacenter_id=$(cat /tmp/bats_test/datacenter_id)
+    cluster_id=$(cat /tmp/bats_test/cluster_id)
+
     echo "cleaning up datacenter $datacenter_id and mariadb cluster $cluster_id"
     retry_command run ionosctl dbaas mariadb cluster delete --cluster-id "$cluster_id" -f
     sleep 120
     retry_command run ionosctl datacenter delete --datacenter_id "$datacenter_id" -f -w -t 1200
+
+    rm -rf /tmp/bats_test
 }

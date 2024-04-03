@@ -25,7 +25,7 @@ setup_file() {
         "ionosctl k8s cluster list -F public=true,state=available -M 1 -o json 2> /dev/null | jq -r '.items[] | .id'" \
         "ionosctl k8s cluster create --name \"CLI-Test-$(randStr 8)\" -o json 2> /dev/null | jq -r '.id'")
     [ -n "$cluster_id" ] || fail "$cluster_id is empty"
-    assert_regex "$cluster_id" "$uuid_v4_regex"
+    assert_regex "cluster_id" "$uuid_v4_regex"
 
     sleep 120
 
@@ -33,13 +33,13 @@ setup_file() {
     run ionosctl k8s nodepool create --name "CLI-Test-$(randStr 8)" --cluster-id "$cluster_id" --datacenter-id "$datacenter_id" -o json 2> /dev/null -W -t 600
     assert_success
     nodepool_id=$(echo "$output" | jq -r '.id')
-    assert_regex "$nodepool_id" "$uuid_v4_regex"
+    assert_regex "nodepool_id" "$uuid_v4_regex"
     echo "created k8s nodepool $nodepool_id"
 
     run ionosctl k8s node list --cluster-id "$cluster_id" --nodepool-id "$nodepool_id" --cols PublicIP --no-headers
     assert_success
     node_ip=$(echo "$output")
-    assert_regex "$nodepool_id" "$ip_regex"
+    assert_regex "nodepool_id" "$ip_regex"
     echo "Found IP"
 
     run ssh -o StrictHostKeyChecking=no "$node_ip"
