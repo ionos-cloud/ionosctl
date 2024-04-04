@@ -269,7 +269,7 @@
 * Database as a Service
     * mariadb
         * backup
-            * [create](subcommands%2FDatabase-as-a-Service%2Fmariadb%2Fbackup%2Fcreate.md)
+            * [get](subcommands%2FDatabase-as-a-Service%2Fmariadb%2Fbackup%2Fget.md)
             * [list](subcommands%2FDatabase-as-a-Service%2Fmariadb%2Fbackup%2Flist.md)
         * cluster
             * [create](subcommands%2FDatabase-as-a-Service%2Fmariadb%2Fcluster%2Fcreate.md)

@@ -40,7 +40,7 @@ Create DBaaS MariaDB clusters
   -u, --api-url string            Override default host url (default "https://api.ionos.com")
       --cidr string               The IP and subnet for your cluster. All IPs must be in a /24 network (required)
       --cols strings              Set of columns to be printed on output 
-                                  Available columns: [ClusterId Name DNS Instances Version State Cores RAM StorageSize StorageType]
+                                  Available columns: [ClusterId Name DNS Instances Version State Cores RAM StorageSize MaintenanceDay MaintenanceTime] (default [ClusterId,Name,DNS,Instances,Version,State])
   -c, --config string             Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --cores int32               Core count (default 1)
       --datacenter-id string      The datacenter to which your cluster will be connected. Must be in the same location as the cluster (required)
@@ -55,7 +55,7 @@ Create DBaaS MariaDB clusters
   -o, --output string             Desired output format [text|json|api-json] (default "text")
       --password string           The password (required)
   -q, --quiet                     Quiet output
-      --ram string                Custom RAM: multiples of 1024. e.g. --ram 1024 or --ram 1024MB or --ram 4GB (default "2GB")
+      --ram string                RAM size. e.g.: --ram 4GB. Minimum of 4GB. The maximum RAM size is determined by your contract limit (default "4GB")
       --storage-size string       The size of the Storage in GB. e.g.: --size 10 or --size 10GB. The maximum Volume size is determined by your contract limit (default "10")
   -t, --timeout int               Timeout option for Request [seconds] (default 60)
       --user string               The initial username (required)

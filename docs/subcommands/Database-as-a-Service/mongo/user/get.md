@@ -15,7 +15,7 @@ ionosctl dbaas mongo user get [flags]
 For `mongo` command:
 
 ```text
-[mongodb mg mdb m]
+[m mdb mongodb mg]
 ```
 
 For `user` command:

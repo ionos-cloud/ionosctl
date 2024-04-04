@@ -32,17 +32,19 @@ For `list` command:
 
 ## Description
 
-Use this command to retrieve a list of MariaDB Backups provisioned under your account.
+List all MariaDB Backups, or optionally provide a Cluster ID to list those of a certain cluster
 
 ## Options
 
 ```text
   -u, --api-url string      Override default host url (default "https://api.ionos.com")
+  -i, --cluster-id string   Optionally limit shown backups to those of a certain cluster
+      --cols strings        Set of columns to be printed on output 
+                            Available columns: [BackupId ClusterId Size Items] (default [BackupId,ClusterId,Size,Items])
   -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -f, --force               Force command to execute without user input
   -h, --help                Print usage
   -M, --max-results int32   The maximum number of elements to return
-  -n, --name string         Response filter to list only the MariaDB Clusters that contain the specified name in the DisplayName field. The value is case insensitive
       --no-headers          Don't print table headers when table output is used
       --offset int32        Skip a certain number of results
   -o, --output string       Desired output format [text|json|api-json] (default "text")
