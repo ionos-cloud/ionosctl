@@ -23,21 +23,33 @@ generate_ssh_key() {
 # Bash function to check if an IP is in a CIDR
 # First argument: IP
 # Second argument: CIDR
-# Returns status 0 if IP is in CIDR, 1 otherwise
+# Returns: 0 if IP is in CIDR, 1 otherwise
 ip_in_cidr() {
-    local ip ip_num cidr cidr_ip cidr_num cidr_mask
-    ip=$(echo $1 | tr '.' ' ')
-    ip_num=$(printf '%02X%02X%02X%02X\n' $ip)
-    cidr=(${2//\// })
-    cidr_ip=$(echo ${cidr[0]} | tr '.' ' ')
-    cidr_num=$(printf '%08X\n' $(printf '%d\n' $((0x$(printf '%02X%02X%02X%02X\n' $cidr_ip) & $(printf '%d\n' $((0xFFFFFFFF << (32 - ${cidr[1]}))))))))
-    cidr_mask=$(printf '%08X\n' $((0xFFFFFFFF << (32 - ${cidr[1]}))))
+    local ip=$1
+    local cidr=$2
 
-    if [ $((0x$ip_num & 0x$cidr_mask)) == $cidr_num ]; then
+    local ip_dec=$(ip_to_dec "$ip")
+    local cidr_ip=$(echo $cidr | cut -d '/' -f 1)
+    local cidr_ip_dec=$(ip_to_dec "$cidr_ip")
+
+    local prefix=$(echo $cidr | cut -d '/' -f 2)
+    local mask=$((0xffffffff << (32 - prefix) & 0xffffffff))
+
+    # Check if IP is within the CIDR block
+    if (( (ip_dec & mask) == (cidr_ip_dec & mask) )); then
         return 0
     else
         return 1
     fi
+}
+
+# Helper function to convert IP address to decimal
+ip_to_dec() {
+    local ip=$1
+    local a b c d
+
+    IFS='.' read -r a b c d <<< "$ip"
+    echo $(( (a << 24) + (b << 16) + (c << 8) + d ))
 }
 
 retry_command() {
