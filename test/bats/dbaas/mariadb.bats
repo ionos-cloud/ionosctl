@@ -28,7 +28,7 @@ setup_file() {
     fi
 
     echo "Waiting for clusters to be deleted..."
-    retry_command bash -c "[ -z \"\$(ionosctl db mariadb cluster list)\" ]"
+    echo "[ -z \"\$(ionosctl db mariadb cluster list 2>/dev/null)\" ]" | retry_command bash
 }
 
 @test "Create MariaDB Cluster" {
