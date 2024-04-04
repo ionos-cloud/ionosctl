@@ -8,7 +8,7 @@ import (
 )
 
 func Root() *core.Command {
-	mongoCmd := &core.Command{
+	cmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "mariadb",
 			Aliases:          []string{"maria", "mar", "ma"},
@@ -16,7 +16,7 @@ func Root() *core.Command {
 			TraverseChildren: true,
 		},
 	}
-	mongoCmd.AddCommand(cluster.Root())
-	mongoCmd.AddCommand(backup.Root())
-	return mongoCmd
+	cmd.AddCommand(cluster.Root())
+	cmd.AddCommand(backup.Root())
+	return cmd
 }

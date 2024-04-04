@@ -60,7 +60,7 @@ Create DBaaS MariaDB clusters
   -t, --timeout int               Timeout option for Request [seconds] (default 60)
       --user string               The initial username (required)
   -v, --verbose                   Print step-by-step process when running command
-      --version string            The MongoDB version of your cluster (required) (default "10.6")
+      --version string            The MariaDB version of your cluster (required) (default "10.6")
   -w, --wait-for-request          Wait for the Request to be executed
 ```
 

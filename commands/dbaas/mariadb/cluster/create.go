@@ -129,7 +129,7 @@ func Create() *core.Command {
 	})
 
 	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "The name of your cluster", core.RequiredFlagOption())
-	cmd.AddStringFlag(constants.FlagVersion, "", "10.6", "The MongoDB version of your cluster", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagVersion, "", "10.6", "The MariaDB version of your cluster", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagInstances, func(cmdCobra *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"10.6", "10.11"}, cobra.ShellCompDirectiveNoFileComp
 	})
