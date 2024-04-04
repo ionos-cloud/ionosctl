@@ -72,7 +72,7 @@ setup_file() {
     assert_success
 }
 
-@test "Find MariaDB Cluster" {
+@test "Find MariaDB Cluster and wait until it is available" {
     cluster_id=$(cat /tmp/bats_test/cluster_id)
     echo "Finding mariadb cluster $cluster_id"
 
@@ -84,6 +84,12 @@ setup_file() {
     run ionosctl db mariadb cluster list -n "${cluster_name}" -M 1 --cols ClusterId --no-headers 2> /dev/null
     assert_success
     assert_output "$cluster_id"
+
+    sleep 60
+
+    # Use retry_until to check if the cluster is in "available" state
+    retry_until "ionosctl db mariadb cluster get --cluster-id $cluster_id -o json 2> /dev/null | jq -r '.metadata.state'" \
+        "[[ \$output == \"AVAILABLE\" ]]" 10 60
 }
 
 @test "Assert DNS resolves to CIDR" {
