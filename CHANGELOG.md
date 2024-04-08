@@ -1,5 +1,11 @@
 # Changelog
 
+## Upcoming
+
+### Fixed
+
+- Fixed a bug for `image upload` where using a custom `--ftp-url` and no `--location` would silently fail the operation
+
 ## [v6.7.5] (March 2024)
 
 ### Added
