@@ -57,8 +57,6 @@ github.com/armon/circbuf v0.0.0-20150827004946-bbbad097214e/go.mod h1:3U/XgcO3hC
 github.com/armon/go-metrics v0.0.0-20180917152333-f0300d1749da/go.mod h1:Q73ZrmVTwzkszR9V5SSuryQ31EELlFMUz1kKyl939pY=
 github.com/armon/go-radix v0.0.0-20180808171621-7fddfc383310/go.mod h1:ufUuZ+zHj4x4TnLV4JWEpy2hxWSpsRywHrMgIH9cCH8=
 github.com/aryann/difflib v0.0.0-20170710044230-e206f873d14a/go.mod h1:DAHtR1m6lCRdSC2Tm3DSWRPvIPr6xNKyeHdqDQSQT+A=
-github.com/avirtopeanu-ionos/alpha-sdk-go-dbaas-mariadb v0.0.0-20240328120231-78481ec05c45 h1:suLb2tDTCY6e70xD7AymGXcnzhTgX0AfSrD6OhqFo1Q=
-github.com/avirtopeanu-ionos/alpha-sdk-go-dbaas-mariadb v0.0.0-20240328120231-78481ec05c45/go.mod h1:XbIHrOmLfHuPfobqoM8847vKIhvlcyonojg0iVXsL9E=
 github.com/aws/aws-lambda-go v1.13.3/go.mod h1:4UKl9IzQMoD+QF79YdCuzCwp8VbmG4VAQwij/eHl5CU=
 github.com/aws/aws-sdk-go v1.27.0/go.mod h1:KmX6BPdI08NWTb3/sm4ZGu5ShLoqVDhKgpiN924inxo=
 github.com/aws/aws-sdk-go-v2 v0.18.0/go.mod h1:JWVYvqSMppoMJC0x5wdwiImzgXTI9FuZwxzkQq9wy+g=
@@ -256,6 +254,8 @@ github.com/ionos-cloud/sdk-go-container-registry v1.1.0 h1:H92gzx9oj0vvbozbXwn2R
 github.com/ionos-cloud/sdk-go-container-registry v1.1.0/go.mod h1:woBP1+A4N0KXiRj9jG4y/hEXgrVjJv0CUlAvc24mCeo=
 github.com/ionos-cloud/sdk-go-dataplatform v1.0.2 h1:/KEm54/8WC8bXKAqUKLgoTvk1g9x/EOUYOUnRkf4un0=
 github.com/ionos-cloud/sdk-go-dataplatform v1.0.2/go.mod h1:LXJGnUwLLiJhKgApv7TIPGy7WOuGbYIzBPFxGpNfqN0=
+github.com/ionos-cloud/sdk-go-dbaas-mariadb v1.0.0 h1:zTfeV4lwp7c8xkjoJH50oz96cuaUVgbypbG7U3dVi5c=
+github.com/ionos-cloud/sdk-go-dbaas-mariadb v1.0.0/go.mod h1:627dsH56YGQD7x0g2FGdVsxNtBySvQ3QU0uG+d6/Evk=
 github.com/ionos-cloud/sdk-go-dbaas-mongo v1.3.1 h1:+tDoZ8IEPxYwJd6fDIpWksNJs9Zzw7Pu5A39jTew058=
 github.com/ionos-cloud/sdk-go-dbaas-mongo v1.3.1/go.mod h1:rxOAeyAU6BTfghJibSRDdRNrKm2cIXMpSMe7JIWewJ8=
 github.com/ionos-cloud/sdk-go-dbaas-postgres v1.1.2 h1:AaKbci+kVS6/k43VwJwmXxCJ7pzj9jwuOPqO8Wd5560=

@@ -29,7 +29,7 @@ go get golang.org/x/net/context
 Put the package under your project folder and add the following in import:
 
 ```golang
-import ionoscloud "github.com/ionos-cloud/go"
+import ionoscloud "github.com/ionos-cloud/sdk-go-dbaas-mariadb"
 ```
 
 To use a proxy, set the environment variable `HTTP_PROXY`:
@@ -74,7 +74,6 @@ Class | Method | HTTP request | Description
 *ClustersApi* | [**ClustersDelete**](docs/api/ClustersApi.md#clustersdelete) | **Delete** /clusters/{clusterId} | Delete a cluster
 *ClustersApi* | [**ClustersFindById**](docs/api/ClustersApi.md#clustersfindbyid) | **Get** /clusters/{clusterId} | Fetch a cluster
 *ClustersApi* | [**ClustersGet**](docs/api/ClustersApi.md#clustersget) | **Get** /clusters | List clusters
-*ClustersApi* | [**ClustersPatch**](docs/api/ClustersApi.md#clusterspatch) | **Patch** /clusters/{clusterId} | Update a cluster
 *ClustersApi* | [**ClustersPost**](docs/api/ClustersApi.md#clusterspost) | **Post** /clusters | Create a cluster
 
 
@@ -110,8 +109,6 @@ Class | Method | HTTP request | Description
  - [MariadbVersion](docs/models/MariadbVersion.md)
  - [Pagination](docs/models/Pagination.md)
  - [PaginationLinks](docs/models/PaginationLinks.md)
- - [PatchClusterProperties](docs/models/PatchClusterProperties.md)
- - [PatchClusterRequest](docs/models/PatchClusterRequest.md)
  - [State](docs/models/State.md)
 
 

@@ -7,7 +7,6 @@ import (
 	"strconv"
 	"time"
 
-	ionoscloud "github.com/avirtopeanu-ionos/alpha-sdk-go-dbaas-mariadb"
 	cloudapiv6completer "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
@@ -18,6 +17,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/convbytes"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/pointer"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
+	ionoscloud "github.com/ionos-cloud/sdk-go-dbaas-mariadb"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )

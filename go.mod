@@ -39,8 +39,8 @@ require (
 )
 
 require (
-	github.com/avirtopeanu-ionos/alpha-sdk-go-dbaas-mariadb v0.0.0-20240328120231-78481ec05c45
 	github.com/dustin/go-humanize v0.0.0-20171111073723-bb3d318650d4
+	github.com/ionos-cloud/sdk-go-dbaas-mariadb v1.0.0
 )
 
 require github.com/pkg/term v1.2.0-beta.2 // indirect

@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	sdkgo "github.com/avirtopeanu-ionos/alpha-sdk-go-dbaas-mariadb"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
@@ -12,6 +11,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
+	sdkgo "github.com/ionos-cloud/sdk-go-dbaas-mariadb"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )

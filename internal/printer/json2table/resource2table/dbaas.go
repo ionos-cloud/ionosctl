@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"strings"
 
-	sdkmariadb "github.com/avirtopeanu-ionos/alpha-sdk-go-dbaas-mariadb"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/convbytes"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
+	sdkmariadb "github.com/ionos-cloud/sdk-go-dbaas-mariadb"
 	sdkmongo "github.com/ionos-cloud/sdk-go-dbaas-mongo"
 	sdkpsql "github.com/ionos-cloud/sdk-go-dbaas-postgres"
 

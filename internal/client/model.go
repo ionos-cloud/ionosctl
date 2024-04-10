@@ -3,12 +3,12 @@ package client
 import (
 	"fmt"
 
-	maria "github.com/avirtopeanu-ionos/alpha-sdk-go-dbaas-mariadb"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	sdkgoauth "github.com/ionos-cloud/sdk-go-auth"
 	certmanager "github.com/ionos-cloud/sdk-go-cert-manager"
 	registry "github.com/ionos-cloud/sdk-go-container-registry"
 	dataplatform "github.com/ionos-cloud/sdk-go-dataplatform"
+	maria "github.com/ionos-cloud/sdk-go-dbaas-mariadb"
 	mongo "github.com/ionos-cloud/sdk-go-dbaas-mongo"
 	postgres "github.com/ionos-cloud/sdk-go-dbaas-postgres"
 	dns "github.com/ionos-cloud/sdk-go-dns"

@@ -3,9 +3,9 @@ package backup
 import (
 	"context"
 
-	ionoscloud "github.com/avirtopeanu-ionos/alpha-sdk-go-dbaas-mariadb"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mariadb/cluster"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	ionoscloud "github.com/ionos-cloud/sdk-go-dbaas-mariadb"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
