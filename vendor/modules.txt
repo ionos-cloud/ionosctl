@@ -17,6 +17,9 @@ github.com/cjrd/allocate
 # github.com/davecgh/go-spew v1.1.1
 ## explicit
 github.com/davecgh/go-spew/spew
+# github.com/dustin/go-humanize v0.0.0-20171111073723-bb3d318650d4
+## explicit
+github.com/dustin/go-humanize
 # github.com/elk-language/go-prompt v1.1.5
 ## explicit; go 1.19
 github.com/elk-language/go-prompt
@@ -39,8 +42,8 @@ github.com/gofrs/uuid/v5
 # github.com/golang/mock v1.6.0
 ## explicit; go 1.11
 github.com/golang/mock/gomock
-# github.com/golang/protobuf v1.5.3
-## explicit; go 1.9
+# github.com/golang/protobuf v1.5.4
+## explicit; go 1.17
 github.com/golang/protobuf/proto
 # github.com/hashicorp/hcl v1.0.0
 ## explicit
@@ -69,6 +72,9 @@ github.com/ionos-cloud/sdk-go-container-registry
 # github.com/ionos-cloud/sdk-go-dataplatform v1.0.2
 ## explicit; go 1.18
 github.com/ionos-cloud/sdk-go-dataplatform
+# github.com/ionos-cloud/sdk-go-dbaas-mariadb v1.0.0
+## explicit; go 1.18
+github.com/ionos-cloud/sdk-go-dbaas-mariadb
 # github.com/ionos-cloud/sdk-go-dbaas-mongo v1.3.1
 ## explicit; go 1.18
 github.com/ionos-cloud/sdk-go-dbaas-mongo
@@ -188,7 +194,7 @@ golang.org/x/crypto/ssh/internal/bcrypt_pbkdf
 golang.org/x/exp/constraints
 golang.org/x/exp/slices
 golang.org/x/exp/utf8string
-# golang.org/x/oauth2 v0.15.0
+# golang.org/x/oauth2 v0.18.0
 ## explicit; go 1.18
 golang.org/x/oauth2
 golang.org/x/oauth2/internal
@@ -218,13 +224,14 @@ google.golang.org/appengine/internal/log
 google.golang.org/appengine/internal/remote_api
 google.golang.org/appengine/internal/urlfetch
 google.golang.org/appengine/urlfetch
-# google.golang.org/protobuf v1.31.0
-## explicit; go 1.11
+# google.golang.org/protobuf v1.33.0
+## explicit; go 1.17
 google.golang.org/protobuf/encoding/prototext
 google.golang.org/protobuf/encoding/protowire
 google.golang.org/protobuf/internal/descfmt
 google.golang.org/protobuf/internal/descopts
 google.golang.org/protobuf/internal/detrand
+google.golang.org/protobuf/internal/editiondefaults
 google.golang.org/protobuf/internal/encoding/defval
 google.golang.org/protobuf/internal/encoding/messageset
 google.golang.org/protobuf/internal/encoding/tag
@@ -247,6 +254,7 @@ google.golang.org/protobuf/reflect/protoregistry
 google.golang.org/protobuf/runtime/protoiface
 google.golang.org/protobuf/runtime/protoimpl
 google.golang.org/protobuf/types/descriptorpb
+google.golang.org/protobuf/types/gofeaturespb
 # gopkg.in/ini.v1 v1.67.0
 ## explicit
 gopkg.in/ini.v1

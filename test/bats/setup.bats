@@ -20,22 +20,74 @@ generate_ssh_key() {
     echo $ssh_key_path
 }
 
-retry_command() {
+# Bash function to check if an IP is in a CIDR
+# First argument: IP
+# Second argument: CIDR
+# Returns: 0 if IP is in CIDR, 1 otherwise
+ip_in_cidr() {
+    local ip=$1
+    local cidr=$2
+
+    local ip_dec=$(ip_to_dec "$ip")
+    local cidr_ip=$(echo $cidr | cut -d '/' -f 1)
+    local cidr_ip_dec=$(ip_to_dec "$cidr_ip")
+
+    local prefix=$(echo $cidr | cut -d '/' -f 2)
+    local mask=$((0xffffffff << (32 - prefix) & 0xffffffff))
+
+    # Check if IP is within the CIDR block
+    if (( (ip_dec & mask) == (cidr_ip_dec & mask) )); then
+        return 0
+    else
+        return 1
+    fi
+}
+
+# Helper function to convert IP address to decimal
+ip_to_dec() {
+    local ip=$1
+    local a b c d
+
+    IFS='.' read -r a b c d <<< "$ip"
+    echo $(( (a << 24) + (b << 16) + (c << 8) + d ))
+}
+
+# retry_until retries a command until a condition is met
+# First argument: command to run
+# Second argument: condition to check
+# Third argument: max retries (default: 6)
+# Fourth argument: delay between retries (default: 30)
+# Returns: 0 if condition is met, 1 otherwise
+retry_until() {
+    local command="$1"
+    local condition="$2"
+    local max_retries=${3:-6}
+    local delay=${4:-20}
     local n=1
-    local max=3
-    local delay=10
+
     while true; do
-        "$@" && break || {
-            if [[ $n -lt $max ]]; then
+        output=$(eval "$command")
+        if eval "$condition"; then
+            return 0
+        else
+            echo "$output"
+            if [[ $n -lt $max_retries ]]; then
                 ((n++))
-                echo "Command failed. Attempt $n/$max:"
-                sleep $delay;
+                sleep $delay
             else
-                fail "$n attempts exhausted for command: $*"
-                break
+                fail "$n attempts exhausted for command: $command, condition: $condition"
+                return 1
             fi
-        }
+        fi
     done
+}
+
+# Old func which simply calls retry_until expecting status code 0
+retry_command() {
+    local cmd_to_run="$*"
+    local command_condition='[ $? -eq 0 ]'
+
+    retry_until "\"$cmd_to_run\"" "$command_condition"
 }
 
 find_or_create_resource() {

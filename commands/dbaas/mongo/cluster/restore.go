@@ -16,7 +16,7 @@ import (
 
 func ClusterRestoreCmd() *core.Command {
 	cmd := core.NewCommand(context.TODO(), nil, core.CommandBuilder{
-		Namespace: "dbaas-mongo",
+		Namespace: "dbaas-mongodb",
 		Resource:  "cluster",
 		Verb:      "restore",
 		Aliases:   []string{"r"},

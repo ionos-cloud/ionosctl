@@ -15,7 +15,7 @@ ionosctl dbaas mongo snapshot list [flags]
 For `mongo` command:
 
 ```text
-[mongodb mdb m]
+[m mdb mongodb mg]
 ```
 
 For `snapshot` command:

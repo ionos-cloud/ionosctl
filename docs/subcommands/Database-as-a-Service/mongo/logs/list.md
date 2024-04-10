@@ -15,7 +15,7 @@ ionosctl dbaas mongo logs list [flags]
 For `mongo` command:
 
 ```text
-[mongodb mdb m]
+[m mdb mongodb mg]
 ```
 
 For `list` command:

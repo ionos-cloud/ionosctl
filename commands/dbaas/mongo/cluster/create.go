@@ -56,7 +56,6 @@ func ClusterCreateCmd() *core.Command {
 		ShortDesc: "Create DBaaS Mongo Replicaset or Sharded Clusters for your chosen edition",
 		Example:   strings.Join(examples, "\n\n"),
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-
 			/*
 			 * For edition playground, only replica-set, =1 instance and playground template (33457e53-1f8b-4ed2-8a12-2d42355aa759, 1 core, 50 GB Storage, 2 GB RAM).
 			 * For edition business, only replica-set, >1 instance and any template.

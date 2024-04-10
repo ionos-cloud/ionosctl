@@ -8,9 +8,58 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/convbytes"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
+	sdkmariadb "github.com/ionos-cloud/sdk-go-dbaas-mariadb"
 	sdkmongo "github.com/ionos-cloud/sdk-go-dbaas-mongo"
 	sdkpsql "github.com/ionos-cloud/sdk-go-dbaas-postgres"
+
+	"github.com/dustin/go-humanize"
 )
+
+func ConvertDbaasMariadbBackupToTable(backup sdkmariadb.BackupResponse) ([]map[string]interface{}, error) {
+	properties, ok := backup.GetPropertiesOk()
+	if !ok || properties == nil {
+		return nil, fmt.Errorf("could not retrieve MariaDB Backup properties")
+	}
+
+	out, err := json2table.ConvertJSONToTable("", jsonpaths.DbaasMariadbBackup, backup)
+	if err != nil {
+		return nil, fmt.Errorf("could not convert from JSON to Table format: %w", err)
+	}
+
+	size, ok := properties.GetSizeOk()
+	if !ok || size == nil {
+		return nil, fmt.Errorf("could not retrieve MariaDB Backup properties")
+	}
+
+	out[0]["Size"] = fmt.Sprintf("%d MiB", *size)
+
+	items, ok := properties.GetBaseBackupsOk()
+	if !ok || items == nil || len(*items) == 0 {
+		return out, nil // can be empty if no backups
+	}
+
+	for _, i := range *items {
+		created, ok := i.GetCreatedOk()
+		if !ok || created == nil {
+			continue
+		}
+
+		size, ok := i.GetSizeOk()
+		if !ok || size == nil {
+			continue
+		}
+
+		// appends "x time-unit ago (y MiB)"
+		if out[0]["Items"] == nil {
+			out[0]["Items"] = ""
+		}
+		out[0]["Items"] = fmt.Sprintf("%s%s (%d MiB), ", out[0]["Items"], humanize.Time(*created), *size)
+	}
+	// remove last comma
+	out[0]["Items"] = strings.TrimSuffix(out[0]["Items"].(string), ", ")
+
+	return out, nil
+}
 
 func ConvertDbaasMongoClusterToTable(cluster sdkmongo.ClusterResponse) ([]map[string]interface{}, error) {
 	properties, ok := cluster.GetPropertiesOk()
@@ -76,6 +125,55 @@ func ConvertDbaasMongoClusterToTable(cluster sdkmongo.ClusterResponse) ([]map[st
 		}
 	}
 	return temp, nil
+}
+
+func ConvertDbaasMariadbBackupsToTable(backups sdkmariadb.BackupList) ([]map[string]interface{}, error) {
+	items, ok := backups.GetItemsOk()
+	if !ok || items == nil || len(*items) == 0 {
+		return nil, nil
+	}
+
+	var clustersConverted []map[string]interface{}
+	for _, item := range *items {
+		temp, err := ConvertDbaasMariadbBackupToTable(item)
+		if err != nil {
+			return nil, err
+		}
+
+		clustersConverted = append(clustersConverted, temp...)
+	}
+
+	return clustersConverted, nil
+}
+
+func ConvertDbaasMariaDBClusterToTable(cluster sdkmariadb.ClusterResponse) ([]map[string]interface{}, error) {
+	table, err := json2table.ConvertJSONToTable("", jsonpaths.DbaasMariadbCluster, cluster)
+	if err != nil {
+		return nil, fmt.Errorf("failed getting table representation of cluster: %w", err)
+	}
+
+	table[0]["RAM"] = fmt.Sprintf("%d GB", int(table[0]["RAM"].(float64)))
+
+	return table, nil
+}
+
+func ConvertDbaasMariaDBClustersToTable(clusters sdkmariadb.ClusterList) ([]map[string]interface{}, error) {
+	items, ok := clusters.GetItemsOk()
+	if !ok || items == nil || len(*items) == 0 {
+		return nil, nil
+	}
+
+	var clustersConverted []map[string]interface{}
+	for _, item := range *items {
+		temp, err := ConvertDbaasMariaDBClusterToTable(item)
+		if err != nil {
+			return nil, err
+		}
+
+		clustersConverted = append(clustersConverted, temp...)
+	}
+
+	return clustersConverted, nil
 }
 
 func ConvertDbaasMongoClustersToTable(clusters sdkmongo.ClusterList) ([]map[string]interface{}, error) {
