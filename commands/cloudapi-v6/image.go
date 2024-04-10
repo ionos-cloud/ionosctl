@@ -396,6 +396,7 @@ func RunImageUpload(c *core.CommandConfig) error {
 		return err
 	}
 
+	url := viper.GetString(core.GetFlagName(c.NS, FlagFtpUrl))
 	images := viper.GetStringSlice(core.GetFlagName(c.NS, FlagImage))
 	aliases := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgImageAlias))
 	locations := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgLocation))
@@ -405,10 +406,16 @@ func RunImageUpload(c *core.CommandConfig) error {
 	defer cancel()
 	c.Context = ctx
 
+	// just a simple patch to force entry into the `for` loop below if no locations are provided
+	if !strings.Contains(url, "%s") &&
+		(locations == nil || len(locations) == 0) {
+		sentinel := []string{"dummy"}
+		locations = sentinel
+	}
+
 	var eg errgroup.Group
 	for _, loc := range locations {
 		for imgIdx, img := range images {
-			url := viper.GetString(core.GetFlagName(c.NS, FlagFtpUrl))
 			if strings.Contains(url, "%s") {
 				url = fmt.Sprintf(url, loc) // Add the location modifier, if the URL supports it
 			}
