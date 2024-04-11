@@ -271,7 +271,7 @@ func ClusterCreateCmd() *core.Command {
 		"Day Of the Week for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur. "+
 			"Defaults to a random day during Mon-Fri, during the hours 10:00-16:00")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagMaintenanceDay, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return append(workingDaysOfWeek, "Satuday", "Sunday"), cobra.ShellCompDirectiveNoFileComp
+		return append(workingDaysOfWeek, "Saturday", "Sunday"), cobra.ShellCompDirectiveNoFileComp
 	})
 	// Enterprise-specific
 	cmd.AddInt32Flag(constants.FlagCores, "", 1, "The total number of cores for the Server, e.g. 4. (required and only settable for enterprise edition)")
@@ -320,6 +320,11 @@ func ClusterCreateCmd() *core.Command {
 	// Misc
 	cmd.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait, "Wait for the Request to be executed")
 	cmd.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request [seconds]")
+
+	// They do nothing... but we can't outright remove them in case some user already uses them in their scripts
+	// would cause ('unknown flag: -w')
+	cmd.Command.Flags().MarkHidden(constants.ArgWaitForRequest)
+	cmd.Command.Flags().MarkHidden(constants.ArgTimeout)
 
 	cmd.Command.SilenceUsage = true
 	cmd.Command.Flags().SortFlags = false

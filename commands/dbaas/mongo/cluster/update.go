@@ -220,6 +220,11 @@ func ClusterUpdateCmd() *core.Command {
 	cmd.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait, "Wait for the Request to be executed")
 	cmd.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request [seconds]")
 
+	// They do nothing... but we can't outright remove them in case some user already uses them in their scripts
+	// would cause ('unknown flag: -w')
+	cmd.Command.Flags().MarkHidden(constants.ArgWaitForRequest)
+	cmd.Command.Flags().MarkHidden(constants.ArgTimeout)
+
 	cmd.Command.SilenceUsage = true
 
 	return cmd
