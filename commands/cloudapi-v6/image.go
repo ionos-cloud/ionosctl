@@ -409,7 +409,7 @@ func RunImageUpload(c *core.CommandConfig) error {
 	// just a simple patch to force entry into the `for` loop below if no locations are provided
 	if !strings.Contains(url, "%s") &&
 		(locations == nil || len(locations) == 0) {
-		sentinel := []string{"dummy"}
+		sentinel := []string{""}
 		locations = sentinel
 	}
 
