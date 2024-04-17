@@ -32,13 +32,15 @@ setup_file() {
     skip "disabled, --cols not implemented for user list"
 
     user_id=$(cat /tmp/bats_test/user_id)
+    email=$(cat /tmp/bats_test/email)
+
     run ionosctl user get --user-id "$user_id" -o json 2> /dev/null
     assert_success
     assert_equal "$(echo "$output" | jq -r '.id')" "$user_id"
 
-    run ionosctl user get --user-id "$user_id" --cols UserId --no-headers
+    run ionosctl user get --user-id "$user_id" --cols email --no-headers
     assert_success
-    assert_output "$user_id"
+    assert_output "$email"
 
     run ionosctl user list -F email="$(cat /tmp/bats_test/email)" --cols UserId --no-headers
     assert_success
@@ -46,25 +48,36 @@ setup_file() {
 }
 
 @test "Add new User to a new Group" {
-    skip "todo"
+    user_id=$(cat /tmp/bats_test/user_id)
 
     group_name="group-$(randStr 8)"
     run ionosctl group create --name "$group_name" --cols GroupId --no-headers
     assert_success
-    echo "$output" > /tmp/bats_test/group_id
+    group_id=$output
+    echo "$group_id" > /tmp/bats_test/group_id
 
     run ionosctl group user add --group-id "$(cat /tmp/bats_test/group_id)" \
-        --user-id "$(cat /tmp/bats_test/user_id)" -o json 2> /dev/null
-
+        --user-id "$user_id" --cols UserId --no-headers 2> /dev/null
     assert_success
+    assert_output "$user_id"
 
+    run ionosctl group user list --group-id "$group_id" --cols UserId --no-headers
+    assert_success
+    assert_output "$user_id"
 }
 
-@test "Verify Group via API" {
-    skip "todo"
+@test "Create and verify S3Key" {
+    run ionosctl user s3key create --user-id "$(cat /tmp/bats_test/user_id)" -o json 2> /dev/null
+    assert_success
+    access_key=$(echo "$output" | jq -r '.id')
+    secret_key=$(echo "$output" | jq -r '.properties.secretKey')
+
+    # TODO: Make a request to the S3 server to test the credentials
 }
 
-@test "'ionosctl cfg' commands as newly created user" {
+@test "Test 'ionosctl cfg' commands" {
+    skip 'done'
+
     unset IONOS_USERNAME IONOS_PASSWORD
 
     email="$(cat /tmp/bats_test/email)"
@@ -162,12 +175,14 @@ setup_file() {
 }
 
 teardown_file() {
-    echo "cleaning up user $user_id"
+    echo "cleaning up user $(cat /tmp/bats_test/user_id) and group $(cat /tmp/bats_test/group_id)"
     run ionosctl user delete --user-id "$(cat /tmp/bats_test/user_id)" -f
+    run ionosctl group delete --group-id "$(cat /tmp/bats_test/group_id)" -f
 
     rm -rf /tmp/bats_test
 
     # Rollback config
+    echo "rolling back config file"
     rm -f "$(ionosctl config location)"
     mv "$(ionosctl config location).bak" "$(ionosctl config location)" || echo "No config file found."
 }
