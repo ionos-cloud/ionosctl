@@ -359,8 +359,9 @@ var (
 	}
 
 	S3Key = map[string]string{
-		"S3KeyId": "id",
-		"Active":  "properties.active",
+		"S3KeyId":   "id",
+		"Active":    "properties.active",
+		"SecretKey": "properties.secretKey",
 	}
 
 	Server = map[string]string{
