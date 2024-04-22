@@ -1,6 +1,6 @@
 #!/usr/bin/env bats
 
-# tags: user, group, resource, whoami, login, logout, config, root
+# tags: user, group, token, whoami, login, logout, config, root
 
 BATS_LIBS_PATH="${LIBS_PATH:-../libs}" # fallback to relative path if not set
 load "${BATS_LIBS_PATH}/bats-assert/load"
@@ -83,6 +83,40 @@ setup_file() {
 
     run ionosctl user s3key delete --user-id "$(cat /tmp/bats_test/user_id)" --s3key-id "$access_key" -f
     assert_success
+}
+
+@test "Test 'ionosctl token' commands" {
+    unset IONOS_USERNAME IONOS_PASSWORD
+
+    email="$(cat /tmp/bats_test/email)"
+    password="$(cat /tmp/bats_test/password)"
+    user_id=$(cat /tmp/bats_test/user_id)
+
+    run ionosctl login --user "$(cat /tmp/bats_test/email)" --password "$(cat /tmp/bats_test/password)" --force
+    assert_success
+
+    # Generate a token and ensure it belongs to this user
+    run ionosctl token generate
+    assert_success
+    jwt="$output"
+
+    # Parse JWT to get the UserId
+    run ionosctl token parse --token "$jwt" --cols UserId --no-headers
+    assert_output "$user_id"
+
+    run ionosctl token list --cols TokenId --no-headers
+    assert_success
+    assert_output -p "$uuid_v4_regex"
+
+    # delete JWT
+    run ionosctl token delete --token "$jwt" -f
+    assert_success
+
+    # ensure JWT no longer works
+    run ionosctl login --token "$jwt" -f
+    assert_failure
+    assert_output -p "401 Unauthorized"
+
 }
 
 @test "Test 'ionosctl cfg' commands" {
