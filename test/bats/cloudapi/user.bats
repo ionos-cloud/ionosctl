@@ -71,6 +71,18 @@ setup_file() {
     secret_key=$(echo "$output" | jq -r '.properties.secretKey')
 
     # TODO: Make a request to the S3 server to test the credentials
+
+    run ionosctl user s3key list --user-id "$(cat /tmp/bats_test/user_id)" --cols S3KeyId --no-headers
+    assert_output -p "$access_key"
+    assert_success
+
+    run ionosctl user s3key get --user-id "$(cat /tmp/bats_test/user_id)" --s3key-id "$access_key" -o json 2> /dev/null
+    assert_success
+    assert_equal "$access_key" "$(echo "$output" | jq -r '.id')"
+    assert_equal "$secret_key" "$(echo "$output" | jq -r '.properties.secretKey')"
+
+    run ionosctl user s3key delete --user-id "$(cat /tmp/bats_test/user_id)" --s3key-id "$access_key" -f
+    assert_success
 }
 
 @test "Test 'ionosctl cfg' commands" {
@@ -170,15 +182,15 @@ setup_file() {
     rm "$(ionosctl cfg location)"
 }
 
-teardown_file() {
-    echo "cleaning up user $(cat /tmp/bats_test/user_id) and group $(cat /tmp/bats_test/group_id)"
-    run ionosctl user delete --user-id "$(cat /tmp/bats_test/user_id)" -f
-    run ionosctl group delete --group-id "$(cat /tmp/bats_test/group_id)" -f
-
-    rm -rf /tmp/bats_test
-
-    # Rollback config
-    echo "rolling back config file"
-    rm -f "$(ionosctl config location)"
-    mv "$(ionosctl config location).bak" "$(ionosctl config location)" || echo "No config file found."
-}
+#teardown_file() {
+#    echo "cleaning up user $(cat /tmp/bats_test/user_id) and group $(cat /tmp/bats_test/group_id)"
+#    run ionosctl user delete --user-id "$(cat /tmp/bats_test/user_id)" -f
+#    run ionosctl group delete --group-id "$(cat /tmp/bats_test/group_id)" -f
+#
+#    rm -rf /tmp/bats_test
+#
+#    # Rollback config
+#    echo "rolling back config file"
+#    rm -f "$(ionosctl config location)"
+#    mv "$(ionosctl config location).bak" "$(ionosctl config location)" || echo "No config file found."
+#}
