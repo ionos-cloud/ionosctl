@@ -29,8 +29,6 @@ setup_file() {
 }
 
 @test "Verify User via API" {
-    skip "disabled, --cols not implemented for user list"
-
     user_id=$(cat /tmp/bats_test/user_id)
     email=$(cat /tmp/bats_test/email)
 
@@ -76,8 +74,6 @@ setup_file() {
 }
 
 @test "Test 'ionosctl cfg' commands" {
-    skip 'done'
-
     unset IONOS_USERNAME IONOS_PASSWORD
 
     email="$(cat /tmp/bats_test/email)"
