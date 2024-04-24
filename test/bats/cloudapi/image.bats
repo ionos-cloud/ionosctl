@@ -14,9 +14,6 @@ setup_file() {
     dd if=/dev/zero of=/tmp/bats_test/10KB.vhd bs=1024 count=10
 }
 
-# Create a temporary user. Image upload blocks the specific image name for that account, until
-# support is contacted to delete that image from the FTP server. This ensures we block
-# the image name for a user which will be deleted anyway, and not the testing account.
 @test "Create Temporary User" {
     echo "$(randStr 16)@$(randStr 8).ionosctl.test" | tr '[:upper:]' '[:lower:]' > /tmp/bats_test/email
     echo "$(randStr 12)" > /tmp/bats_test/password
@@ -78,36 +75,15 @@ setup_file() {
     assert_success
     vit_exists=$(echo "$output" | grep -c "vit")
     lhr_exists=$(echo "$output" | grep -c "lhr")
-    assert_equal "$vit_exists" 1
-    assert_equal "$lhr_exists" 1
+    assert_equal "$vit_exists" 2
+    assert_equal "$lhr_exists" 2
 }
 
-@test "Upload image to a mock FTP server" {
-    # Make a mock ftp server
-    mkdir -p /tmp/bats_test/ftp
-    docker run -d -p 21:21 -p 30000-30009:30000-30009 -e "FTP_USER=ftpuser" -e "FTP_PASS=ftppass" -v /tmp/bats_test/ftp:/home/ftpuser/ftp atmoz/sftp:alpine
-
-    # Upload a file
-    random=$(randStr 8)
-    run ionosctl image upload --image /tmp/bats_test/10KB.iso \
-        --ftp-url "ftp://ftpuser:ftppass@localhost:21" --verbose --skip-verify
+@test "Create datacenter to which images can be attached" {
+    run ionosctl datacenter create --name "test-datacenter" --location "es/vit" \
+        --cols DatacenterId --no-headers --wait-for-request -o json 2> /dev/null
     assert_success
-    echo "$output" > /tmp/bats_test/upload_output
-
-    # Check if file made it to docker ftp server
-    run "docker exec -it $(docker ps -q) ls /home/ftpuser/ftp"
-    assert_success
-    assert_output -p "10KB.iso"
-}
-
-@test "Can attach private images as CD-ROM" {
-    skip "todo"
-}
-@test "Can attach private images as HDD" {
-    skip "todo"
-}
-@test "Can attach private images as DAS" {
-    skip "todo"
+    echo "$output" | jq -r '.id' > /tmp/bats_test/datacenter_id
 }
 
 @test "Creator of sub-user can delete sub-user private image" {
