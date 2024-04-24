@@ -104,7 +104,7 @@ func FtpUpload(ctx context.Context, p UploadProperties) error {
 	var errExists error
 	for _, f := range files {
 		if f.Name == desiredFileName {
-			errExists = fmt.Errorf("%s already exists at %s. Please contact support at support@cloud.ionos.com to delete the old image. We're sorry for the inconvenience", desiredFileName, p.Url)
+			errExists = fmt.Errorf("%s might already exist at %s. Please contact support at support@cloud.ionos.com to delete the old image - or choose a different image name. We're sorry for the inconvenience", desiredFileName, p.Url)
 		}
 	}
 
