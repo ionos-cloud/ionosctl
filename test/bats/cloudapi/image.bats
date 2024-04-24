@@ -111,3 +111,40 @@ setup_file() {
 @test "Can attach private images as DAS" {
     skip "todo"
 }
+
+@test "Creator of sub-user can delete sub-user private image" {
+    run ionosctl image list -F public=false --cols ImageId --no-headers
+    assert_success
+    num=$(echo "$output" | wc -l)
+    image_to_delete=$(echo "$output" | head -n 1)
+
+    run ionosctl image delete --image-id "$image_to_delete" --force --wait-for-request
+    assert_success
+
+    # num has decreased
+    run ionosctl image list -F public=false --cols ImageId --no-headers
+    assert_success
+    assert_equal "$((num-1)) $(echo "$output" | wc -l)"
+}
+
+@test "Can delete all private images" {
+    unset IONOS_USERNAME IONOS_PASSWORD IONOS_TOKEN
+    export IONOS_USERNAME="$(cat /tmp/bats_test/email)"
+    export IONOS_PASSWORD="$(cat /tmp/bats_test/password)"
+
+    run ionosctl image delete -af
+    assert_success
+
+    run ionosctl image list -F public=false --cols ImageId --no-headers
+    assert_success
+    assert_equal "0 $(echo "$output" | wc -l)"
+}
+
+@test "Can delete sub-user" {
+    run ionosctl user delete --user-id "$(cat /tmp/bats_test/user_id)" --force
+    assert_success
+}
+
+#teardown_file() {
+#    rm -rf /tmp/bats_test
+#}
