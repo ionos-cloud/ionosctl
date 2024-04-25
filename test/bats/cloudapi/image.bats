@@ -1,6 +1,6 @@
 #!/usr/bin/env bats
 
-# tags: user, group, token, whoami, login, logout, config, root
+# tags: image, upload, user, ftp
 
 BATS_LIBS_PATH="${LIBS_PATH:-../libs}" # fallback to relative path if not set
 load "${BATS_LIBS_PATH}/bats-assert/load"
