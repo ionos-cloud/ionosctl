@@ -79,13 +79,6 @@ setup_file() {
     assert_equal "$lhr_exists" 2
 }
 
-@test "Create datacenter to which images can be attached" {
-    run ionosctl datacenter create --name "test-datacenter" --location "es/vit" \
-        --cols DatacenterId --no-headers --wait-for-request -o json 2> /dev/null
-    assert_success
-    echo "$output" | jq -r '.id' > /tmp/bats_test/datacenter_id
-}
-
 @test "Creator of sub-user can delete sub-user private image" {
     run ionosctl image list -F public=false --cols ImageId --no-headers
     assert_success
