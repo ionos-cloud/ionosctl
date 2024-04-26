@@ -99,7 +99,7 @@ setup_file() {
     export IONOS_USERNAME="$(cat /tmp/bats_test/email)"
     export IONOS_PASSWORD="$(cat /tmp/bats_test/password)"
 
-    run ionosctl image delete -af --wait-for-request
+    run ionosctl image delete -af
     assert_success
 
 #    run ionosctl image list -F public=false --cols ImageId --no-headers
@@ -114,5 +114,8 @@ setup_file() {
 }
 
 teardown_file() {
+    ionosctl user delete --user-id "$(cat /tmp/bats_test/user_id)" --force
+    ionosctl image delete -af
+
     rm -rf /tmp/bats_test
 }
