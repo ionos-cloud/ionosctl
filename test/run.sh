@@ -17,11 +17,26 @@ contains_tag() {
         file_base_name=$(basename "$file")
         file_dir_name=$(dirname "$file")
 
-        # Use regex for full word match, avoiding partial matches
-        if [[ $file_base_name =~ (^|/)${tag//./\\.}(_|$) || $file_dir_name =~ (^|/)${tag//./\\.}($|/) ]]; then
+        # Check if the tag matches the file name
+        if [[ "$file_base_name" == "$tag" || "$file_base_name" == "$tag".* ]]; then
             echo "$tag $file"
             return 0
         fi
+
+        # Check if the tag matches the base name without extension
+        if [[ "${file_base_name%.*}" == "$tag" ]]; then
+            echo "$tag $file"
+            return 0
+        fi
+
+        # Check if any directory in the path matches the tag
+        while [[ "$file_dir_name" != "." ]]; do
+            if [[ "$(basename "$file_dir_name")" == "$tag" ]]; then
+                echo "$tag $file"
+                return 0
+            fi
+            file_dir_name=$(dirname "$file_dir_name")
+        done
     done
     return 1
 }
