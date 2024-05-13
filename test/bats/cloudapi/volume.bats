@@ -8,6 +8,7 @@ load "${BATS_LIBS_PATH}/bats-support/load"
 load '../setup.bats'
 
 setup_file() {
+    rm -rf /tmp/bats_test # Setup could hang if already exists
     mkdir -p /tmp/bats_test
 
     ssh-keygen -t rsa -b 4096 -N "" -f /tmp/bats_test/id_rsa
@@ -58,7 +59,7 @@ setup_file() {
     echo "$output" | jq -r '.id' > /tmp/bats_test/server_id
 }
 
-@test "Make servers accessible via NIC and attach IP. Verify LAN is created" {
+@test "Reserve IP. Create NIC" {
     export IONOS_USERNAME="$(cat /tmp/bats_test/email)"
     export IONOS_PASSWORD="$(cat /tmp/bats_test/password)"
 
@@ -70,7 +71,7 @@ setup_file() {
     run ionosctl ipblock create --location "es/vit" --size 1 --name "bats-test-$(randStr 8)" -w -o json 2> /dev/null
     assert_success
     echo "$output" | jq -r '.properties.ips[0]' > /tmp/bats_test/ip
-
+    echo "$output" | jq -r '.id' > /tmp/bats_test/ipblock_id
     run ionosctl nic create --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" --server-id "$(cat /tmp/bats_test/server_id)" \
      --lan-id "$(cat /tmp/bats_test/lan_id)" --name "bats-test-$(randStr 8)" --ips "$(cat /tmp/bats_test/ip)" -w -o json 2> /dev/null
     assert_success
@@ -78,12 +79,15 @@ setup_file() {
 }
 
 @test "Creating a nic with a non-existent LAN ID will create a LAN" {
-    skip "todo"
+    run ionosctl nic create --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" --server-id "$(cat /tmp/bats_test/server_id)" \
+     --lan-id 123 -w -o json 2> /dev/null
+    assert_success
+    sleep 5
 
     # A LAN is created by default
-    run ionosctl lan list --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" --no-headers --cols LanId
+    run ionosctl lan get --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" --lan-id 123 --no-headers --cols Public
     assert_success
-    assert_output "1"
+    assert_output "false"
 }
 
 @test "Attach a volume with an HDD image" {
@@ -106,7 +110,22 @@ setup_file() {
     assert_success
 }
 
-@test "Server Console is accessible" {
+@test "Attach a CD-ROM with an ISO image" {
+    export IONOS_USERNAME="$(cat /tmp/bats_test/email)"
+    export IONOS_PASSWORD="$(cat /tmp/bats_test/password)"
+
+    # Find a suitable image
+    run ionosctl image list -F imageAliases=ubuntu:20 -F location="es/vit" -F imageType=iso --cols ImageId --no-headers
+    assert_success
+    echo "$output" | head -n 1 > /tmp/bats_test/image_id
+
+    run ionosctl server cdrom attach --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
+     --cdrom-id "$(cat /tmp/bats_test/image_id)" --server-id "$(cat /tmp/bats_test/server_id)" -w -o json 2> /dev/null
+    assert_success
+    echo "$output" | jq -r '.id' > /tmp/bats_test/cdrom_id
+}
+
+@test "Server Console is accessible. Token is valid." {
     run ionosctl server console get --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
      --server-id "$(cat /tmp/bats_test/server_id)" --no-headers
     assert_success
@@ -114,11 +133,55 @@ setup_file() {
     run curl "$output"
     assert_success
     assert_output --partial "<title>Remote Console</title>"
+
+    # ionosctl server token get returns a token that is included in the Console URL as a parameter
+    run ionosctl server token get --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
+     --server-id "$(cat /tmp/bats_test/server_id)" --no-headers
+    assert_success
+    token="$(echo "$output" | tr -d '\n')"
+    run ionosctl server console get --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
+     --server-id "$(cat /tmp/bats_test/server_id)" --no-headers
+    assert_success
+    assert_output --partial "$token"
+
 }
 
 @test "ssh into the server" {
     run ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i /tmp/bats_test/id_rsa \
      root@"$(cat /tmp/bats_test/ip)" "echo 'SSH into the server successful'"
+    assert_success
+}
+
+@test "Delete IPBlock" {
+    export IONOS_USERNAME="$(cat /tmp/bats_test/email)"
+    export IONOS_PASSWORD="$(cat /tmp/bats_test/password)"
+
+    run ionosctl ipblock delete -i "$(cat /tmp/bats_test/ipblock_id)" -f
+    assert_success
+}
+
+@test "Detach Volume, CD-ROM" {
+    export IONOS_USERNAME="$(cat /tmp/bats_test/email)"
+    export IONOS_PASSWORD="$(cat /tmp/bats_test/password)"
+
+    run ionosctl server volume detach --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
+     --server-id "$(cat /tmp/bats_test/server_id)" --volume-id "$(cat /tmp/bats_test/volume_id)" -w
+    assert_success
+
+    run ionosctl server cdrom detach --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
+     --server-id "$(cat /tmp/bats_test/server_id)" --cdrom-id "$(cat /tmp/bats_test/cdrom_id)" -w
+    assert_success
+}
+
+@test "Delete NIC, LAN" {
+    export IONOS_USERNAME="$(cat /tmp/bats_test/email)"
+    export IONOS_PASSWORD="$(cat /tmp/bats_test/password)"
+
+    run ionosctl nic delete --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
+     --server-id "$(cat /tmp/bats_test/server_id)" --nic-id "$(cat /tmp/bats_test/nic_id)" -f
+    assert_success
+
+    run ionosctl lan delete --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" --lan-id "$(cat /tmp/bats_test/lan_id)" -f
     assert_success
 }
 
