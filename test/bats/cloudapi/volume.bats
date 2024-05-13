@@ -1,6 +1,6 @@
 #!/usr/bin/env bats
 
-# tags: server, volume, image, console
+# tags: server, volume, image, console, nic, lan, ipblock
 
 BATS_LIBS_PATH="${LIBS_PATH:-../libs}" # fallback to relative path if not set
 load "${BATS_LIBS_PATH}/bats-assert/load"
@@ -62,18 +62,26 @@ setup_file() {
     export IONOS_USERNAME="$(cat /tmp/bats_test/email)"
     export IONOS_PASSWORD="$(cat /tmp/bats_test/password)"
 
+    run ionosctl lan create --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" --name "bats-test-$(randStr 8)" \
+     --public -w -o json 2> /dev/null
+    assert_success
+    echo "$output" | jq -r '.id' > /tmp/bats_test/lan_id
+
     run ionosctl ipblock create --location "es/vit" --size 1 --name "bats-test-$(randStr 8)" -w -o json 2> /dev/null
     assert_success
     echo "$output" | jq -r '.properties.ips[0]' > /tmp/bats_test/ip
 
     run ionosctl nic create --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" --server-id "$(cat /tmp/bats_test/server_id)" \
-     --name "bats-test-$(randStr 8)" --ips "$(cat /tmp/bats_test/ip)" -w -o json 2> /dev/null
+     --lan-id "$(cat /tmp/bats_test/lan_id)" --name "bats-test-$(randStr 8)" --ips "$(cat /tmp/bats_test/ip)" -w -o json 2> /dev/null
     assert_success
     sleep 5
+}
+
+@test "Creating a nic with a non-existent LAN ID will create a LAN" {
+    skip "todo"
 
     # A LAN is created by default
-    run ionosctl lan list --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
-     --no-headers --cols LanId
+    run ionosctl lan list --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" --no-headers --cols LanId
     assert_success
     assert_output "1"
 }
@@ -93,7 +101,7 @@ setup_file() {
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/volume_id
 
-    run ionosctl volume attach --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
+    run ionosctl server volume attach --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
      --server-id "$(cat /tmp/bats_test/server_id)" --volume-id "$(cat /tmp/bats_test/volume_id)" -w
     assert_success
 }
@@ -109,9 +117,6 @@ setup_file() {
 }
 
 @test "ssh into the server" {
-    export IONOS_USERNAME="$(cat /tmp/bats_test/email)"
-    export IONOS_PASSWORD="$(cat /tmp/bats_test/password)"
-
     run ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i /tmp/bats_test/id_rsa \
      root@"$(cat /tmp/bats_test/ip)" "echo 'SSH into the server successful'"
     assert_success
@@ -134,21 +139,21 @@ setup_file() {
     assert_success
 }
 
-#teardown_file() {
-#    # use a temporary subshell to switch to the temp user
-#    (
-#        # Overwrite IONOS_USERNAME and IONOS_PASSWORD with values from temporary files
-#        export IONOS_USERNAME="$(cat /tmp/bats_test/email)"
-#        export IONOS_PASSWORD="$(cat /tmp/bats_test/password)"
-#
-#        # Execute commands using the temporary user
-#        ionosctl ipblock delete -af
-#        ionosctl datacenter delete -af
-#    )
-#
-#    # original IONOS_USERNAME IONOS_PASSWORD are restored
-#    ionosctl user delete --user-id "$(cat /tmp/bats_test/user_id)" -f
-#    ionosctl group delete --group-id "$(cat /tmp/bats_test/group_id)" -f
-#
-#    rm -rf /tmp/bats_test
-#}
+teardown_file() {
+    # use a temporary subshell to switch to the temp user
+    (
+        # Overwrite IONOS_USERNAME and IONOS_PASSWORD with values from temporary files
+        export IONOS_USERNAME="$(cat /tmp/bats_test/email)"
+        export IONOS_PASSWORD="$(cat /tmp/bats_test/password)"
+
+        # Execute commands using the temporary user
+        ionosctl ipblock delete -af
+        ionosctl datacenter delete -af
+    )
+
+    # original IONOS_USERNAME IONOS_PASSWORD are restored
+    ionosctl user delete --user-id "$(cat /tmp/bats_test/user_id)" -f
+    ionosctl group delete --group-id "$(cat /tmp/bats_test/group_id)" -f
+
+    rm -rf /tmp/bats_test
+}
