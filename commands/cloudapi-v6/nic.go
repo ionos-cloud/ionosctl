@@ -393,24 +393,28 @@ func RunNicCreate(c *core.CommandConfig) error {
 	inputProper.SetFirewallActive(firewallActive)
 	inputProper.SetFirewallType(firewallType)
 
-	lan, _, err := c.CloudApiV6Services.Lans().Get(dcId, fmt.Sprintf("%d", lanId), queryParams)
-	if err != nil {
+	lan, resp, err := c.CloudApiV6Services.Lans().Get(dcId, fmt.Sprintf("%d", lanId), queryParams)
+	if err != nil && resp != nil && resp.StatusCode != 404 {
+		// Only non-404 errors are returned.
+		// If the LAN does not exist, it will be created when the NIC is created.
 		return err
 	}
-
-	isIPv6, err := checkIPv6EnableForLAN(lan.Lan)
-	if err != nil {
-		return err
-	}
-
-	if isIPv6 {
-		if err = setIPv6Properties(c, &inputProper.NicProperties, lan.Lan); err != nil {
+	// If LAN exists, check if IPv6 is enabled
+	if err == nil {
+		isIPv6, err := checkIPv6EnableForLAN(lan.Lan)
+		if err != nil {
 			return err
 		}
-	} else if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.FlagIPv6CidrBlock)) ||
-		viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.FlagDHCPv6)) ||
-		viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.FlagIPv6IPs)) {
-		return fmt.Errorf("IPv6 is not enabled on the LAN that the NIC is on")
+
+		if isIPv6 {
+			if err = setIPv6Properties(c, &inputProper.NicProperties, lan.Lan); err != nil {
+				return err
+			}
+		} else if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.FlagIPv6CidrBlock)) ||
+			viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.FlagDHCPv6)) ||
+			viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.FlagIPv6IPs)) {
+			return fmt.Errorf("IPv6 is not enabled on the LAN that the NIC is on")
+		}
 	}
 
 	input := resources.Nic{
