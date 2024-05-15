@@ -1,6 +1,6 @@
 #!/usr/bin/env bats
 
-# tags: server, volume, image, console, nic, lan, ipblock
+# tags: server, volume, cdrom, image, console, nic, lan, ipblock, backupunit
 
 BATS_LIBS_PATH="${LIBS_PATH:-../libs}" # fallback to relative path if not set
 load "${BATS_LIBS_PATH}/bats-assert/load"
@@ -29,7 +29,7 @@ setup_file() {
     echo "$output" | jq -r '.id' > /tmp/bats_test/user_id
 
     run ionosctl group create --name "test-volumes-$(randStr 4)" \
-     --create-dc --create-nic --reserve-ip -o json 2> /dev/null
+     --create-dc --create-nic --create-backup --reserve-ip -o json 2> /dev/null
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/group_id
 
@@ -75,6 +75,7 @@ setup_file() {
     run ionosctl nic create --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" --server-id "$(cat /tmp/bats_test/server_id)" \
      --lan-id "$(cat /tmp/bats_test/lan_id)" --name "bats-test-$(randStr 8)" --ips "$(cat /tmp/bats_test/ip)" -w -o json 2> /dev/null
     assert_success
+    echo "$output" | jq -r '.id' > /tmp/bats_test/nic_id
     sleep 5
 }
 
@@ -95,13 +96,15 @@ setup_file() {
     export IONOS_PASSWORD="$(cat /tmp/bats_test/password)"
 
     # Find a suitable image
-    run ionosctl image list -F imageAliases=ubuntu:20 -F location="es/vit" -F imageType=hdd --cols ImageId --no-headers
+    run ionosctl image list -F imageAliases=ubuntu:latest -F location="es/vit" -F imageType=hdd --cols ImageId --no-headers
     assert_success
     echo "$output" | head -n 1 > /tmp/bats_test/image_id
 
+    # Create a volume with a custom b64-encoded userdata cloud config script
+    echo -e "#cloud-config\nruncmd:\n - [ mkdir, -p, \"/root/test\" ]\n" | base64 -w 0 > /tmp/bats_test/userdata
     run ionosctl volume create --type "SSD Premium" --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
      --name "bats-test-$(randStr 8)" --size 50 --image-id "$(cat /tmp/bats_test/image_id)" \
-     --ssh-key-paths /tmp/bats_test/id_rsa.pub -w -o json 2> /dev/null
+     --ssh-key-paths /tmp/bats_test/id_rsa.pub --user-data "$(cat /tmp/bats_test/userdata)" -w -o json 2> /dev/null
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/volume_id
 
@@ -115,7 +118,7 @@ setup_file() {
     export IONOS_PASSWORD="$(cat /tmp/bats_test/password)"
 
     # Find a suitable image
-    run ionosctl image list -F imageAliases=ubuntu:20 -F location="es/vit" -F imageType=iso --cols ImageId --no-headers
+    run ionosctl image list -F imageAliases=ubuntu:latest -F location="es/vit" -F imageType=CDROM --cols ImageId --no-headers
     assert_success
     echo "$output" | head -n 1 > /tmp/bats_test/image_id
 
@@ -125,38 +128,57 @@ setup_file() {
     echo "$output" | jq -r '.id' > /tmp/bats_test/cdrom_id
 }
 
-@test "Server Console is accessible. Token is valid." {
-    run ionosctl server console get --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
-     --server-id "$(cat /tmp/bats_test/server_id)" --no-headers
+@test "Attach a volume with a backupunit public image" {
+    run ionosctl backupunit create --name "test" --email "$(cat /tmp/bats_test/email)" \
+     --password "$(cat /tmp/bats_test/password)" -w -o json 2> /dev/null
     assert_success
-    # Use curl to fetch the HTML content of the URL
-    run curl "$output"
-    assert_success
-    assert_output --partial "<title>Remote Console</title>"
+    echo "$output" | jq -r '.id' > /tmp/bats_test/backupunit_id
 
-    # ionosctl server token get returns a token that is included in the Console URL as a parameter
+    run ionosctl image list -F location="es/vit" -F cloudInit=V1 -F imageType=hdd -F imageAliases=centos:latest --cols ImageId --no-headers
+    assert_success
+
+    run ionosctl volume create --type "HDD" --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
+     --name "bats-test-$(randStr 8)" --size 50 --image-id "$(cat /tmp/bats_test/image_id)" \
+     --ssh-key-paths /tmp/bats_test/id_rsa.pub --userdata /tmp/bats_test/userdata -w -o json 2> /dev/null
+    assert_success
+    echo "$output" | jq -r '.id' > /tmp/bats_test/volume_id
+}
+
+@test "Server Console is accessible. Token is valid." {
+    # Get the token from ionosctl server token get command
     run ionosctl server token get --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
      --server-id "$(cat /tmp/bats_test/server_id)" --no-headers
     assert_success
     token="$(echo "$output" | tr -d '\n')"
+    IFS='.' read -r header payload signature <<< "$token"
+    payload_decoded="$(echo "$payload" | base64 -d 2>/dev/null)"
+
+    # Fetch the HTML content of the URL
     run ionosctl server console get --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
      --server-id "$(cat /tmp/bats_test/server_id)" --no-headers
     assert_success
-    assert_output --partial "$token"
 
-}
+    # Use curl to fetch the HTML content of the URL
+    run curl "$(echo "$output" | grep -o 'https://[^ ]*')"
+    assert_success
+    assert_output --partial "<title>Remote Console</title>"
 
-@test "ssh into the server" {
-    run ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i /tmp/bats_test/id_rsa \
-     root@"$(cat /tmp/bats_test/ip)" "echo 'SSH into the server successful'"
+    # Check if the payload is included in the output
+    run echo "$output" | grep -qF "$payload_decoded"
     assert_success
 }
 
-@test "Delete IPBlock" {
+@test "SSH into the server. Userdata created a directory" {
+    # test userdata worked too
+    run ssh -o StrictHostKeyChecking=no -i /tmp/bats_test/id_rsa root@"$(cat /tmp/bats_test/ip)" 'ls /root/test'
+    assert_success
+}
+
+@test "Delete Backupunit" {
     export IONOS_USERNAME="$(cat /tmp/bats_test/email)"
     export IONOS_PASSWORD="$(cat /tmp/bats_test/password)"
 
-    run ionosctl ipblock delete -i "$(cat /tmp/bats_test/ipblock_id)" -f
+    run ionosctl backupunit delete --backupunit-id "$(cat /tmp/bats_test/backupunit_id)" -f
     assert_success
 }
 
@@ -165,11 +187,11 @@ setup_file() {
     export IONOS_PASSWORD="$(cat /tmp/bats_test/password)"
 
     run ionosctl server volume detach --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
-     --server-id "$(cat /tmp/bats_test/server_id)" --volume-id "$(cat /tmp/bats_test/volume_id)" -w
+     --server-id "$(cat /tmp/bats_test/server_id)" --volume-id "$(cat /tmp/bats_test/volume_id)" -w -f
     assert_success
 
     run ionosctl server cdrom detach --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
-     --server-id "$(cat /tmp/bats_test/server_id)" --cdrom-id "$(cat /tmp/bats_test/cdrom_id)" -w
+     --server-id "$(cat /tmp/bats_test/server_id)" --cdrom-id "$(cat /tmp/bats_test/cdrom_id)" -w -f
     assert_success
 }
 
@@ -178,10 +200,10 @@ setup_file() {
     export IONOS_PASSWORD="$(cat /tmp/bats_test/password)"
 
     run ionosctl nic delete --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
-     --server-id "$(cat /tmp/bats_test/server_id)" --nic-id "$(cat /tmp/bats_test/nic_id)" -f
+     --server-id "$(cat /tmp/bats_test/server_id)" --nic-id "$(cat /tmp/bats_test/nic_id)" -w -f
     assert_success
 
-    run ionosctl lan delete --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" --lan-id "$(cat /tmp/bats_test/lan_id)" -f
+    run ionosctl lan delete --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" --lan-id "$(cat /tmp/bats_test/lan_id)" -w -f
     assert_success
 }
 
@@ -190,7 +212,7 @@ setup_file() {
     export IONOS_PASSWORD="$(cat /tmp/bats_test/password)"
 
     run ionosctl server delete \
-     --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" --server-id "$(cat /tmp/bats_test/server_id)" -f
+     --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" --server-id "$(cat /tmp/bats_test/server_id)" -w -f
     assert_success
 }
 
@@ -198,7 +220,17 @@ setup_file() {
     export IONOS_USERNAME="$(cat /tmp/bats_test/email)"
     export IONOS_PASSWORD="$(cat /tmp/bats_test/password)"
 
-    run ionosctl datacenter delete --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" -f
+    run ionosctl datacenter delete --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" -f -w
+    assert_success
+}
+
+@test "Delete IPBlock" {
+    sleep 10
+
+    export IONOS_USERNAME="$(cat /tmp/bats_test/email)"
+    export IONOS_PASSWORD="$(cat /tmp/bats_test/password)"
+
+    run ionosctl ipblock delete -i "$(cat /tmp/bats_test/ipblock_id)" -f -w
     assert_success
 }
 
