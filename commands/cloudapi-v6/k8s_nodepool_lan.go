@@ -181,7 +181,7 @@ func RunK8sNodePoolLanList(c *core.CommandConfig) error {
 
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.K8sNodePoolLan, lans,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.K8sNodePoolLan, *lans,
 		tabheaders.GetHeadersAllDefault(defaultK8sNodePoolLanCols, cols))
 	if err != nil {
 		return err
