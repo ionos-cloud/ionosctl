@@ -13,7 +13,11 @@ DOCS_OUT?=$(shell pwd)/docs/subcommands
 # Want to test verbosely? (i.e. see what test is failing?) Run like:
 # make test TEST_FLAGS="-v [optionally other flags]"
 
-TEST_DIRS := $(shell go list ./... | grep -v /commands/container-registry | grep -v /commands/dbaas/mongo | grep -v /commands/logging-service) # All commands except ...
+TEST_DIRS := $(shell go list ./... | \
+				grep -v /commands/container-registry | \
+				grep -v /commands/dbaas/mongo | \
+				grep -v /commands/logging-service | \
+				grep -v /commands/dataplatform) # All commands except ...
 TEST_FLAGS := "-cover"
 .PHONY: utest
 utest:
