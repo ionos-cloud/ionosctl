@@ -14,6 +14,16 @@ randStr() {
     cat /dev/urandom | tr -dc 'a-zA-Z0-9' | head -c "$size"
 }
 
+# Function to add padding to base64url encoded strings
+add_padding() {
+    local input=$1
+    local padded=$input
+    while [ $(( ${#padded} % 4 )) -ne 0 ]; do
+        padded="${padded}="
+    done
+    echo "$padded"
+}
+
 generate_ssh_key() {
     ssh_key_path="id_rsa_$(randStr 8)"
     ssh-keygen -t rsa -b 4096 -f "$ssh_key_path" -N "" >/dev/null 2>&1

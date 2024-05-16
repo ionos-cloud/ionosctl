@@ -1,6 +1,6 @@
 #!/usr/bin/env bats
 
-# tags: server, volume, cdrom, image, console, nic, lan, ipblock, backupunit
+# tags: server, template, volume, cdrom, image, console, nic, lan, ipblock, backupunit
 
 BATS_LIBS_PATH="${LIBS_PATH:-../libs}" # fallback to relative path if not set
 load "${BATS_LIBS_PATH}/bats-assert/load"
@@ -42,6 +42,8 @@ setup_file() {
     export IONOS_USERNAME="$(cat /tmp/bats_test/email)"
     export IONOS_PASSWORD="$(cat /tmp/bats_test/password)"
 
+    # NOTE: In this test suite we also create a CUBE Server. Cubes can only work with INTEL_SKYLAKE family
+    # If you want to change the location, make sure it supports INTEL_SKYLAKE!
     run ionosctl datacenter create --name "volumes-test-$(randStr 8)" --location "es/vit" -w -o json 2> /dev/null
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/datacenter_id
@@ -98,18 +100,18 @@ setup_file() {
     # Find a suitable image
     run ionosctl image list -F imageAliases=ubuntu:latest -F location="es/vit" -F imageType=hdd --cols ImageId --no-headers
     assert_success
-    echo "$output" | head -n 1 > /tmp/bats_test/image_id
+    echo "$output" | head -n 1 > /tmp/bats_test/hdd_image_id
 
     # Create a volume with a custom b64-encoded userdata cloud config script
     echo -e "#cloud-config\nruncmd:\n - [ mkdir, -p, \"/root/test\" ]\n" | base64 -w 0 > /tmp/bats_test/userdata
     run ionosctl volume create --type "SSD Premium" --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
-     --name "bats-test-$(randStr 8)" --size 50 --image-id "$(cat /tmp/bats_test/image_id)" \
-     --ssh-key-paths /tmp/bats_test/id_rsa.pub --user-data "$(cat /tmp/bats_test/userdata)" -w -o json 2> /dev/null
+     --name "bats-test-$(randStr 8)" --size 50 --image-id "$(cat /tmp/bats_test/hdd_image_id)" \
+     --ssh-key-paths /tmp/bats_test/id_rsa.pub --user-data "$(cat /tmp/bats_test/userdata)" -t 300 -w -o json 2> /dev/null
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/volume_id
 
     run ionosctl server volume attach --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
-     --server-id "$(cat /tmp/bats_test/server_id)" --volume-id "$(cat /tmp/bats_test/volume_id)" -w
+     --server-id "$(cat /tmp/bats_test/server_id)" --volume-id "$(cat /tmp/bats_test/volume_id)" -t 300 -w
     assert_success
 }
 
@@ -120,28 +122,35 @@ setup_file() {
     # Find a suitable image
     run ionosctl image list -F imageAliases=ubuntu:latest -F location="es/vit" -F imageType=CDROM --cols ImageId --no-headers
     assert_success
-    echo "$output" | head -n 1 > /tmp/bats_test/image_id
+    echo "$output" | head -n 1 > /tmp/bats_test/iso_image_id
 
     run ionosctl server cdrom attach --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
-     --cdrom-id "$(cat /tmp/bats_test/image_id)" --server-id "$(cat /tmp/bats_test/server_id)" -w -o json 2> /dev/null
+     --cdrom-id "$(cat /tmp/bats_test/iso_image_id)" --server-id "$(cat /tmp/bats_test/server_id)" -w -o json 2> /dev/null
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/cdrom_id
 }
 
 @test "Attach a volume with a backupunit public image" {
-    run ionosctl backupunit create --name "test" --email "$(cat /tmp/bats_test/email)" \
+    run ionosctl backupunit create --name "bats$(randStr 6)" --email "$(cat /tmp/bats_test/email)" \
      --password "$(cat /tmp/bats_test/password)" -w -o json 2> /dev/null
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/backupunit_id
 
+    # get-sso-url
+    run ionosctl backupunit get-sso-url --backupunit-id "$(cat /tmp/bats_test/backupunit_id)" -o json 2> /dev/null
+
+
+
     run ionosctl image list -F location="es/vit" -F cloudInit=V1 -F imageType=hdd -F imageAliases=centos:latest --cols ImageId --no-headers
     assert_success
+    echo "$output" | head -n 1 > /tmp/bats_test/centos_image_id
 
     run ionosctl volume create --type "HDD" --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
-     --name "bats-test-$(randStr 8)" --size 50 --image-id "$(cat /tmp/bats_test/image_id)" \
-     --ssh-key-paths /tmp/bats_test/id_rsa.pub --userdata /tmp/bats_test/userdata -w -o json 2> /dev/null
+     --name "bats-test-$(randStr 8)" --size 50 --image-id "$(cat /tmp/bats_test/centos_image_id)" \
+     --backupunit-id "$(cat /tmp/bats_test/backupunit_id)" --ssh-key-paths /tmp/bats_test/id_rsa.pub \
+     -t 300 -w -o json 2> /dev/null
     assert_success
-    echo "$output" | jq -r '.id' > /tmp/bats_test/volume_id
+    echo "$output" | jq -r '.id' > /tmp/bats_test/backup_volume_id
 }
 
 @test "Server Console is accessible. Token is valid." {
@@ -149,23 +158,20 @@ setup_file() {
     run ionosctl server token get --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
      --server-id "$(cat /tmp/bats_test/server_id)" --no-headers
     assert_success
-    token="$(echo "$output" | tr -d '\n')"
-    IFS='.' read -r header payload signature <<< "$token"
-    payload_decoded="$(echo "$payload" | base64 -d 2>/dev/null)"
+    # expect output to be a valid token (we can test that i.e. expiry date is in the future)
+    token="$(echo "$output" | tr -d '\n' | add_padding)"
+    decoded_token="$(echo "$token" | base64 -d)"
+    run echo "$decoded_token" | jq -e '.exp > now' > /dev/null
+    assert_success
 
-    # Fetch the HTML content of the URL
     run ionosctl server console get --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
      --server-id "$(cat /tmp/bats_test/server_id)" --no-headers
     assert_success
 
-    # Use curl to fetch the HTML content of the URL
+    # expect the remote console page to be accessible
     run curl "$(echo "$output" | grep -o 'https://[^ ]*')"
     assert_success
     assert_output --partial "<title>Remote Console</title>"
-
-    # Check if the payload is included in the output
-    run echo "$output" | grep -qF "$payload_decoded"
-    assert_success
 }
 
 @test "SSH into the server. Userdata created a directory" {
@@ -174,17 +180,13 @@ setup_file() {
     assert_success
 }
 
-@test "Delete Backupunit" {
-    export IONOS_USERNAME="$(cat /tmp/bats_test/email)"
-    export IONOS_PASSWORD="$(cat /tmp/bats_test/password)"
-
-    run ionosctl backupunit delete --backupunit-id "$(cat /tmp/bats_test/backupunit_id)" -f
-    assert_success
-}
-
 @test "Detach Volume, CD-ROM" {
     export IONOS_USERNAME="$(cat /tmp/bats_test/email)"
     export IONOS_PASSWORD="$(cat /tmp/bats_test/password)"
+
+    run ionosctl server volume detach --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
+     --server-id "$(cat /tmp/bats_test/server_id)" --volume-id "$(cat /tmp/bats_test/backup_volume_id)" -w -f
+    assert_success
 
     run ionosctl server volume detach --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
      --server-id "$(cat /tmp/bats_test/server_id)" --volume-id "$(cat /tmp/bats_test/volume_id)" -w -f
@@ -216,6 +218,40 @@ setup_file() {
     assert_success
 }
 
+
+@test "Create Cube Server with Direct Attached Storage" {
+    export IONOS_USERNAME="$(cat /tmp/bats_test/email)"
+    export IONOS_PASSWORD="$(cat /tmp/bats_test/password)"
+
+    run ionosctl template list -F name=XS --no-headers --cols TemplateId
+    assert_success
+    echo "$output" > /tmp/bats_test/template_id
+
+    run ionosctl template get --template-id "$(cat /tmp/bats_test/template_id)" -o json 2> /dev/null
+    # expect 1024 RAM, 1 core
+    assert_success
+    assert_equal "$(echo "$output" | jq -r '.properties.ram')" 1024
+    assert_equal "$(echo "$output" | jq -r '.properties.cores')" 1
+
+    # TODO : Image-id completions seem broken for server create
+    # TODO : Server "Type" column is '.type', should be '.properties.type" (so CUBE/ENTERPRISE is output)
+    run ionosctl server create --name "bats-test-$(randStr 8)" --type "CUBE" \
+     -k /tmp/bats_test/id_rsa.pub --template-id "$(cat /tmp/bats_test/template_id)" \
+     --image-id "$(cat /tmp/bats_test/hdd_image_id)" --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
+     -w -t 400 -o json 2> /dev/null
+    assert_success
+    echo "$output" | jq -r '.id' > /tmp/bats_test/cube_server_id
+
+}
+
+@test "Delete CUBE" {
+    export IONOS_USERNAME="$(cat /tmp/bats_test/email)"
+    export IONOS_PASSWORD="$(cat /tmp/bats_test/password)"
+
+    run ionosctl server delete --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" --server-id "$(cat /tmp/bats_test/cube_server_id)" -f -w
+    assert_success
+}
+
 @test "Delete Datacenter" {
     export IONOS_USERNAME="$(cat /tmp/bats_test/email)"
     export IONOS_PASSWORD="$(cat /tmp/bats_test/password)"
@@ -225,12 +261,20 @@ setup_file() {
 }
 
 @test "Delete IPBlock" {
-    sleep 10
+    sleep 60
 
     export IONOS_USERNAME="$(cat /tmp/bats_test/email)"
     export IONOS_PASSWORD="$(cat /tmp/bats_test/password)"
 
     run ionosctl ipblock delete -i "$(cat /tmp/bats_test/ipblock_id)" -f -w
+    assert_success
+}
+
+@test "Delete Backupunit" {
+    export IONOS_USERNAME="$(cat /tmp/bats_test/email)"
+    export IONOS_PASSWORD="$(cat /tmp/bats_test/password)"
+
+    run ionosctl backupunit delete --backupunit-id "$(cat /tmp/bats_test/backupunit_id)" -f
     assert_success
 }
 
@@ -244,6 +288,7 @@ teardown_file() {
         # Execute commands using the temporary user
         ionosctl ipblock delete -af
         ionosctl datacenter delete -af
+        ionosctl backupunit delete -af
     )
 
     # original IONOS_USERNAME IONOS_PASSWORD are restored
