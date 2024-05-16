@@ -244,7 +244,12 @@ setup_file() {
      -w -t 400 -o json 2> /dev/null
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/cube_server_id
+    assert_equal "$(echo "$output" | jq -r '.properties.type')" "CUBE"
 
+    run ionosctl server get --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
+     --server-id "$(cat /tmp_bats_test/cube_server_id)" --no-headers --cols Type
+    assert_success
+    assert_output -p "CUBE"
 }
 
 @test "Delete CUBE" {
