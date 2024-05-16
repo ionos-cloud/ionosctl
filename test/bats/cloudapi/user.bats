@@ -220,6 +220,7 @@ teardown_file() {
     echo "cleaning up user $(cat /tmp/bats_test/user_id) and group $(cat /tmp/bats_test/group_id)"
     run ionosctl user delete --user-id "$(cat /tmp/bats_test/user_id)" -f
     run ionosctl group delete --group-id "$(cat /tmp/bats_test/group_id)" -f
+    run ionosctl token delete -af
 
     rm -rf /tmp/bats_test
 
