@@ -238,8 +238,6 @@ setup_file() {
     assert_equal "$(echo "$output" | jq -r '.properties.ram')" 1024
     assert_equal "$(echo "$output" | jq -r '.properties.cores')" 1
 
-    # TODO : Image-id completions seem broken for server create
-    # TODO : Server "Type" column is '.type', should be '.properties.type" (so CUBE/ENTERPRISE is output)
     run ionosctl server create --name "bats-test-$(randStr 8)" --type "CUBE" \
      -k /tmp/bats_test/id_rsa.pub --template-id "$(cat /tmp/bats_test/template_id)" \
      --image-id "$(cat /tmp/bats_test/hdd_image_id)" --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
