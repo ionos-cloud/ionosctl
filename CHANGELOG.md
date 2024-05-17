@@ -3,6 +3,13 @@
 ## Upcoming
 
 ### Fixed
+- Fixed the column path mapping for 'server' resource to display the actual server's type ('CUBE'/'ENTERPRISE'),
+  not the CloudAPI resource type ('server').
+
+
+## [v6.7.6] (April 2024)
+
+### Fixed
 - Fixed a bug for `image upload` where using a custom `--ftp-url` and no `--location` would silently fail the operation
 
 ### Added
