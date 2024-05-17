@@ -33,7 +33,7 @@ setup_file() {
     # Upload all files at once to a single location
     random=$(randStr 8)
     run ionosctl image upload --image /tmp/bats_test/10KB.iso,/tmp/bats_test/10KB.vhd \
-        --rename "$random-10KB,$random-10KB" --location vit --timeout 800 --verbose
+        --rename "$random-10KB,$random-10KB" --location vit --timeout 1800 --verbose
     assert_success
     echo "$output" > /tmp/bats_test/upload_output
 
@@ -60,7 +60,7 @@ setup_file() {
 
     random=$(randStr 8)
     run ionosctl image upload --image /tmp/bats_test/10KB.iso,/tmp/bats_test/10KB.vhd \
-        --rename "$random-10KB,$random-10KB" --location vit,lhr --timeout 800 --cols ImageId --no-headers
+        --rename "$random-10KB,$random-10KB" --location vit,lhr --timeout 3600 --cols ImageId --no-headers
     assert_success
     imageIds=$output
     assert_equal "$(echo "$imageIds" | wc -l)" 4
