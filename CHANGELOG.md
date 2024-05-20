@@ -3,6 +3,11 @@
 ## Upcoming
 
 ### Fixed
+- Fixed a bug with 'nic create' not creating the LAN when missing and instead returning a 404
+
+## [v6.7.6] (April 2024)
+
+### Fixed
 - Fixed a bug for `image upload` where using a custom `--ftp-url` and no `--location` would silently fail the operation
 
 ### Added
