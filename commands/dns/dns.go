@@ -1,6 +1,7 @@
 package dns
 
 import (
+	"github.com/ionos-cloud/ionosctl/v6/commands/dns/quota"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dns/record"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dns/zone"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
@@ -11,12 +12,13 @@ func DNSCommand() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "dns",
-			Short:            "The sub-commands of `ionosctl dns` allow you to manage your DNS Zones (domains) and Records (where the traffic should be redirected)",
+			Short:            "The sub-commands of `ionosctl dns` allows you to manage DNS Zone and Record",
 			TraverseChildren: true,
 		},
 	}
 	cmd.AddCommand(zone.ZoneCommand())
 	cmd.AddCommand(record.RecordCommand())
+	cmd.AddCommand(quota.Root())
 
 	return cmd
 }

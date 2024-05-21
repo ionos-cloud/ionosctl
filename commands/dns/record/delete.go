@@ -84,7 +84,7 @@ ionosctl dns r delete --record PARTIAL_NAME --zone ZONE`,
 				return fmt.Errorf("user cancelled deletion")
 			}
 
-			_, err = client.Must().DnsClient.RecordsApi.ZonesRecordsDelete(context.Background(),
+			_, _, err = client.Must().DnsClient.RecordsApi.ZonesRecordsDelete(context.Background(),
 				*r.Metadata.ZoneId,
 				*r.Id,
 			).Execute()
@@ -130,7 +130,7 @@ func deleteAll(c *core.CommandConfig) error {
 			viper.GetBool(constants.ArgForce))
 
 		if yes {
-			_, delErr := client.Must().DnsClient.RecordsApi.ZonesRecordsDelete(c.Context, *r.Metadata.ZoneId, *r.Id).Execute()
+			_, _, delErr := client.Must().DnsClient.RecordsApi.ZonesRecordsDelete(c.Context, *r.Metadata.ZoneId, *r.Id).Execute()
 			if delErr != nil {
 				return fmt.Errorf("failed deleting %s (name: %s): %w", *r.Id, *r.Properties.Name, delErr)
 			}
