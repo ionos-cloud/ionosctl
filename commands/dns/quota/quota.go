@@ -19,7 +19,7 @@ func Root() *core.Command {
 		Command: &cobra.Command{
 			Use:              "quota",
 			Aliases:          []string{"q"},
-			Short:            "The sub-commands of `ionosctl dns quota` allow you to see your DNS Quotas",
+			Short:            "The sub-commands of 'ionosctl dns quota' allow you to see your DNS Quotas",
 			TraverseChildren: true,
 		},
 	}

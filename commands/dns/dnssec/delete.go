@@ -8,24 +8,19 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/resource2table"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	dns "github.com/ionos-cloud/sdk-go-dns"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
-func Get() *core.Command {
+func Delete() *core.Command {
 	cmd := core.NewCommand(context.Background(), nil, core.CommandBuilder{
 		Namespace: "dns",
 		Resource:  "dnssec",
-		Verb:      "list",
-		Aliases:   []string{"l", "ls", "get", "g"},
-		ShortDesc: "Retrieve your zone's DNSSEC keys",
-		Example: `ionosctl dns keys list --zone ZONE
-ionosctl dns keys list --zone ZONE --cols ComposedKeyData --no-headers
-ionosctl dns keys list --zone ZONE --cols PubKey --no-headers`,
+		Verb:      "delete",
+		Aliases:   []string{"del", "rm", "remove"},
+		ShortDesc: "Removes ALL associated DNSKEY records for your DNS zone and disables DNSSEC keys.",
+		Example:   `ionosctl dns keys delete --zone ZONE`,
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			if err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagZone); err != nil {
 				return err
@@ -34,28 +29,18 @@ ionosctl dns keys list --zone ZONE --cols PubKey --no-headers`,
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			zoneId, err := zone.Resolve(viper.GetString(core.GetFlagName(c.NS, constants.FlagZone)))
+			zoneName := viper.GetString(core.GetFlagName(c.NS, constants.FlagZone))
+			zoneId, err := zone.Resolve(zoneName)
 			if err != nil {
 				return err
 			}
 
-			key, _, err := client.Must().DnsClient.DNSSECApi.ZonesKeysGet(context.Background(), zoneId).Execute()
+			_, _, err = client.Must().DnsClient.DNSSECApi.ZonesKeysDelete(context.Background(), zoneId).Execute()
 			if err != nil {
 				return err
 			}
 
-			table, err := resource2table.ConvertDNSSECToTable(key)
-			if err != nil {
-				return fmt.Errorf("could not convert from JSON to Table format: %w", err)
-			}
-			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-			out, err := jsontabwriter.GenerateOutputPreconverted(key, table,
-				tabheaders.GetHeadersAllDefault(allCols, cols))
-			if err != nil {
-				return err
-			}
-
-			fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+			fmt.Fprintf(c.Command.Command.OutOrStdout(), "DNSKEY records deleted and DNSSEC keys disabled for zone %s\n", zoneName)
 			return nil
 		},
 		InitClient: true,

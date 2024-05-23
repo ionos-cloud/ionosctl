@@ -8,8 +8,10 @@ import (
 )
 
 var (
-	allCols = []string{"ID", "KeyTag", "DigestAlgorithmMnemonic", "Digest",
+	allCols = []string{"Id", "KeyTag", "DigestAlgorithmMnemonic", "Digest",
 		"Flags", "PubKey", "ComposedKeyData", "Algorithm", "NsecMode"}
+
+	defaultCols = []string{"Id", "KeyTag", "DigestAlgorithmMnemonic", "Digest"}
 )
 
 func Root() *core.Command {
@@ -17,17 +19,19 @@ func Root() *core.Command {
 		Command: &cobra.Command{
 			Use:              "dnssec",
 			Aliases:          []string{"sec", "dnskey", "key", "keys"},
-			Short:            "The sub-commands of `ionosctl dns dnssec` allow you to manage your DNSSEC Keys",
+			Short:            "The sub-commands of 'ionosctl dns dnssec' allow you to manage your DNSSEC Keys",
 			TraverseChildren: true,
 		},
 	}
 
-	cmd.Command.PersistentFlags().StringSlice(constants.ArgCols, nil, tabheaders.ColsMessage(allCols))
+	cmd.Command.PersistentFlags().StringSlice(constants.ArgCols, defaultCols, tabheaders.ColsMessage(allCols))
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allCols, cobra.ShellCompDirectiveNoFileComp
 	})
 
 	cmd.AddCommand(Get())
+	cmd.AddCommand(Create())
+	cmd.AddCommand(Delete())
 
 	return cmd
 }
