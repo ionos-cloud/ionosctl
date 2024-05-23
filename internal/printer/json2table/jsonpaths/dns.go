@@ -34,14 +34,8 @@ var (
 	}
 
 	DnsSecKey = map[string]string{
-		"ID":                      "id",
-		"KeyTag":                  "metadata.items.keyTag",
-		"DigestAlgorithmMnemonic": "metadata.items.digestAlgorithmMnemonic",
-		"Digest":                  "metadata.items.digest",
-		"Flags":                   "metadata.items.keyData.flags",
-		"PubKey":                  "metadata.items.keyData.pubKey",
-		"ComposedKeyData":         "metadata.items.composedKeyData",
-		"Algorithm":               "properties.keyParameters.algorithm",
-		"NsecMode":                "properties.nsecParameters.nsecMode",
+		"ID":        "id",
+		"Algorithm": "properties.keyParameters.algorithm",
+		"NsecMode":  "properties.nsecParameters.nsecMode",
 	}
 )
