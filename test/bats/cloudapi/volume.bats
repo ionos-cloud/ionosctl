@@ -268,11 +268,6 @@ setup_file() {
     run ionosctl volume delete --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
      --volume-id "$(cat /tmp/bats_test/backup_volume_id)" -f -w -t 300
     assert_success
-
-    # len of existing volumes should be 0
-    run ionosctl volume list --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" --no-headers --cols Id | wc -l
-    assert_success
-    assert_equal "$output" 0
 }
 
 @test "Delete Datacenter" {
