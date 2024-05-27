@@ -205,7 +205,7 @@ func Cleanup() {
 
 	err = functional.ApplyAndAggregateErrors(*ls.Items,
 		func(z dns.ZoneRead) error {
-			_, err2 := cl.DnsClient.ZonesApi.ZonesDelete(context.Background(), *z.Id).Execute()
+			_, _, err2 := cl.DnsClient.ZonesApi.ZonesDelete(context.Background(), *z.Id).Execute()
 			return err2
 		},
 	)
