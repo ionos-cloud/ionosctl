@@ -9,7 +9,7 @@ import (
 )
 
 func ConvertDNSSECToTable(keys dns.DnssecKeyReadList) ([]map[string]interface{}, error) {
-	table, err := json2table.ConvertJSONToTable("", jsonpaths.K8sCluster, keys)
+	table, err := json2table.ConvertJSONToTable("", jsonpaths.DnsSecKey, keys)
 	if err != nil {
 		return nil, fmt.Errorf("could not convert from JSON to Table format: %w", err)
 	}

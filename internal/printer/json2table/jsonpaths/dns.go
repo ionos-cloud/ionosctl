@@ -34,8 +34,13 @@ var (
 	}
 
 	DnsSecKey = map[string]string{
-		"ID":        "id",
-		"Algorithm": "properties.keyParameters.algorithm",
-		"NsecMode":  "properties.nsecParameters.nsecMode",
+		"Id":              "id",
+		"Algorithm":       "properties.keyParameters.algorithm",
+		"KskBits":         "properties.keyParameters.kskBits",
+		"ZskBits":         "properties.keyParameters.zskBits",
+		"NsecMode":        "properties.nsecParameters.nsecMode",
+		"Nsec3Iterations": "properties.nsecParameters.nsec3Iterations",
+		"Nsec3SaltBits":   "properties.nsecParameters.nsec3SaltBits",
+		"Validity":        "properties.validity",
 	}
 )

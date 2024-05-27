@@ -8,10 +8,10 @@ import (
 )
 
 var (
-	allCols = []string{"Id", "KeyTag", "DigestAlgorithmMnemonic", "Digest",
-		"Flags", "PubKey", "ComposedKeyData", "Algorithm", "NsecMode"}
+	allCols = []string{"Id", "KeyTag", "DigestAlgorithmMnemonic", "Digest", "Validity",
+		"Flags", "PubKey", "ComposedKeyData", "Algorithm", "KskBits", "ZskBits", "NsecMode", "Nsec3Iterations", "Nsec3SaltBits"}
 
-	defaultCols = []string{"Id", "KeyTag", "DigestAlgorithmMnemonic", "Digest"}
+	defaultCols = []string{"Id", "KeyTag", "DigestAlgorithmMnemonic", "Digest", "Validity"}
 )
 
 func Root() *core.Command {
