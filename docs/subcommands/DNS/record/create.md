@@ -1,5 +1,5 @@
 ---
-description: "Create a record. Wiki: https://docs.ionos.com/dns-as-a-service/readme/api-how-tos/create-a-new-dns-record"
+description: "Create a record. Wiki: https://docs.ionos.com/cloud/network-services/cloud-dns/api-how-tos/create-dns-record"
 ---
 
 # DnsRecordCreate
@@ -26,7 +26,7 @@ For `create` command:
 
 ## Description
 
-Create a record. Wiki: https://docs.ionos.com/dns-as-a-service/readme/api-how-tos/create-a-new-dns-record
+Create a record. Wiki: https://docs.ionos.com/cloud/network-services/cloud-dns/api-how-tos/create-dns-record
 
 ## Options
 
