@@ -38,7 +38,7 @@ Create a record. Wiki: https://docs.ionos.com/cloud/network-services/cloud-dns/a
       --description string   Description stored along with the reverse DNS record to describe its usage
   -f, --force                Force command to execute without user input
   -h, --help                 Print usage
-      --ips strings          [IPv4/IPv6] Specifies for which IP address the reverse record should be created. The IP addresses needs to be owned by the contract (required)
+      --ip string            [IPv4/IPv6] Specifies for which IP address the reverse record should be created. The IP addresses needs to be owned by the contract (required)
   -n, --name string          The name of the DNS Reverse Record. (required)
       --no-headers           Don't print table headers when table output is used
   -o, --output string        Desired output format [text|json|api-json] (default "text")
@@ -49,6 +49,6 @@ Create a record. Wiki: https://docs.ionos.com/cloud/network-services/cloud-dns/a
 ## Examples
 
 ```text
-ionosctl dns rr create --name mail.example.com --ips 5.6.7.8
+ionosctl dns rr create --name mail.example.com --ip 5.6.7.8
 ```
 
