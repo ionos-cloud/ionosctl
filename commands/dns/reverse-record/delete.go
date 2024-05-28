@@ -37,7 +37,6 @@ func Delete() *core.Command {
 			}
 
 			return deleteSingle(c, viper.GetString(core.GetFlagName(c.NS, constants.FlagRecord)))
-
 		},
 		InitClient: true,
 	})
@@ -47,7 +46,6 @@ func Delete() *core.Command {
 	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Delete all records if set", core.RequiredFlagOption())
 
 	cmd.Command.SilenceUsage = true
-
 	return cmd
 }
 
