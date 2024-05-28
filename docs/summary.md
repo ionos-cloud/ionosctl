@@ -268,6 +268,7 @@
         * [update](subcommands%2FDNS%2Frecord%2Fupdate.md)
     * reverse
         * record
+            * [create](subcommands%2FDNS%2Freverse%2Frecord%2Fcreate.md)
             * [list](subcommands%2FDNS%2Freverse%2Frecord%2Flist.md)
     * zone
         * [create](subcommands%2FDNS%2Fzone%2Fcreate.md)
