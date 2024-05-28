@@ -266,6 +266,9 @@
         * [get](subcommands%2FDNS%2Frecord%2Fget.md)
         * [list](subcommands%2FDNS%2Frecord%2Flist.md)
         * [update](subcommands%2FDNS%2Frecord%2Fupdate.md)
+    * reverse
+        * record
+            * [list](subcommands%2FDNS%2Freverse%2Frecord%2Flist.md)
     * zone
         * [create](subcommands%2FDNS%2Fzone%2Fcreate.md)
         * [delete](subcommands%2FDNS%2Fzone%2Fdelete.md)

@@ -2,6 +2,13 @@ package jsonpaths
 
 // DNS json paths
 var (
+	DnsReverseRecord = map[string]string{
+		"Id":          "id",
+		"Name":        "properties.name",
+		"Description": "properties.description",
+		"IP":          "properties.ip",
+	}
+
 	DnsRecord = map[string]string{
 		"Id":      "id",
 		"Name":    "properties.name",

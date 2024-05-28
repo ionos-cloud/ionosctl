@@ -19,25 +19,24 @@ import (
 )
 
 var (
-	allCols     = []string{"Id", "Name", "Content", "Type", "Enabled", "FQDN", "State", "ZoneId", "ZoneName"}
-	defaultCols = []string{"Id", "Name", "Content", "Type", "Enabled", "FQDN", "State"}
+	allCols = []string{"Id", "Name", "IP", "Description"}
 )
 
-func RecordCommand() *core.Command {
+func Root() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "reverse-record",
-			Short:            "The sub-commands of 'ionosctl dns record' allow you to manage DNS records. Records allow directing traffic for a domain to its correct location.",
+			Short:            "The sub-commands of 'ionosctl dns reverse-record' allow you to manage DNS reverse records.",
 			Aliases:          []string{"rr"},
 			TraverseChildren: true,
 		},
 	}
-	cmd.Command.PersistentFlags().StringSlice(constants.ArgCols, defaultCols, tabheaders.ColsMessage(allCols))
+	cmd.Command.PersistentFlags().StringSlice(constants.ArgCols, allCols, tabheaders.ColsMessage(allCols))
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allCols, cobra.ShellCompDirectiveNoFileComp
 	})
 
-	// cmd.AddCommand(Create())
+	cmd.AddCommand(List())
 	return cmd
 }
 
@@ -95,10 +94,23 @@ func Resolve(ipOrId string) (string, error) {
 
 type Filter func(request dns.ApiReverserecordsGetRequest) (dns.ApiReverserecordsGetRequest, error)
 
-func FilterRecordsByZoneAndRecordFlags(cmdNs string) Filter {
+func FilterRecordsByIp(cmdNs string) Filter {
 	return func(req dns.ApiReverserecordsGetRequest) (dns.ApiReverserecordsGetRequest, error) {
 		if fn := core.GetFlagName(cmdNs, constants.FlagIps); viper.IsSet(fn) {
 			req = req.FilterRecordIp(viper.GetStringSlice(fn))
+		}
+
+		return req, nil
+	}
+}
+
+func FilterLimitOffset(cmdNs string) Filter {
+	return func(req dns.ApiReverserecordsGetRequest) (dns.ApiReverserecordsGetRequest, error) {
+		if fn := core.GetFlagName(cmdNs, constants.FlagOffset); viper.IsSet(fn) {
+			req = req.Offset(viper.GetInt32(fn))
+		}
+		if fn := core.GetFlagName(cmdNs, constants.FlagMaxResults); viper.IsSet(fn) {
+			req = req.Limit(viper.GetInt32(fn))
 		}
 
 		return req, nil
