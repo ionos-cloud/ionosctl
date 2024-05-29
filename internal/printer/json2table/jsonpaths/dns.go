@@ -14,7 +14,7 @@ var (
 		"Name":    "properties.name",
 		"Content": "properties.content",
 		"Type":    "properties.type",
-		"Enabled": "properties.name",
+		"Enabled": "properties.enabled",
 		"FQDN":    "metadata.fqdn",
 		"State":   "metadata.state",
 		"ZoneId":  "zoneId",
