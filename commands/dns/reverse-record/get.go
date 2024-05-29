@@ -10,22 +10,23 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/pointer"
 	ionoscloud "github.com/ionos-cloud/sdk-go-dns"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
-func Update() *core.Command {
+func Get() *core.Command {
 	cmd := core.NewCommand(context.Background(), nil, core.CommandBuilder{
 		Namespace: "dns",
 		Resource:  "reverse-record",
-		Verb:      "update",
-		Aliases:   []string{"u", "up"},
-		ShortDesc: "Update a record",
-		Example:   "ionosctl dns rr update --record OLD_RECORD_IP --name mail.example.com --ip 5.6.7.8",
+		Verb:      "get",
+		Aliases:   []string{"g"},
+		ShortDesc: "Find a record by IP or ID",
+		Example: "ionosctl dns rr get --record RECORD_IP\n" +
+			"ionosctl dns rr get --record RECORD_ID",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			if err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagRecord); err != nil {
+			if err := core.CheckRequiredFlagsSets(c.Command, c.NS,
+				[]string{constants.FlagRecord}, []string{constants.ArgAll}); err != nil {
 				return err
 			}
 
@@ -37,23 +38,9 @@ func Update() *core.Command {
 				return fmt.Errorf("can't resolve IP to a record ID: %s", err)
 			}
 
-			r, _, err := client.Must().DnsClient.ReverseRecordsApi.ReverserecordsFindById(context.Background(), id).Execute()
+			rec, _, err := client.Must().DnsClient.ReverseRecordsApi.ReverserecordsFindById(context.Background(), id).Execute()
 			if err != nil {
 				return fmt.Errorf("failed querying for reverse record ID %s: %s", id, err)
-			}
-
-			r.Properties.Name = pointer.From(viper.GetString(core.GetFlagName(c.NS, constants.FlagName)))
-			r.Properties.Ip = pointer.From(viper.GetString(core.GetFlagName(c.NS, constants.FlagIp)))
-			r.Properties.Description = pointer.From(viper.GetString(core.GetFlagName(c.NS, constants.FlagDescription)))
-
-			rec, _, err := client.Must().DnsClient.ReverseRecordsApi.ReverserecordsPut(context.Background(), *r.Id).
-				ReverseRecordEnsure(
-					ionoscloud.ReverseRecordEnsure{
-						Properties: r.Properties,
-					}).
-				Execute()
-			if err != nil {
-				return fmt.Errorf("failed updating record: %w", err)
 			}
 
 			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
@@ -76,22 +63,6 @@ func Update() *core.Command {
 		})
 		return ips, cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddStringFlag(constants.FlagIp, "", "", "The new IP")
-	cmd.Command.RegisterFlagCompletionFunc(constants.FlagIp, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		ipblocks, _, err := client.Must().CloudClient.IPBlocksApi.IpblocksGet(context.Background()).Execute()
-		if err != nil || ipblocks.Items == nil || len(*ipblocks.Items) == 0 {
-			return nil, cobra.ShellCompDirectiveError
-		}
-		var ips []string
-		for _, ipblock := range *ipblocks.Items {
-			if ipblock.Properties.Ips != nil {
-				ips = append(ips, *ipblock.Properties.Ips...)
-			}
-		}
-		return ips, cobra.ShellCompDirectiveNoFileComp
-	})
-	cmd.AddStringFlag(constants.FlagName, "", "", "The new record name")
-	cmd.AddStringFlag(constants.FlagDescription, "", "", "The new description of the record")
 
 	cmd.Command.SilenceUsage = true
 	return cmd
