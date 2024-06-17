@@ -3,6 +3,8 @@
 ## Upcoming
 
 ### Fixed
+- Fixed the column path mapping for 'server' resource to display the actual server's type ('CUBE'/'ENTERPRISE'),
+  not the CloudAPI resource type ('server').
 - Fixed a bug with 'nic create' not creating the LAN when missing and instead returning a 404
 
 ## [v6.7.6] (April 2024)

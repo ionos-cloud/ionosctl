@@ -375,7 +375,7 @@ var (
 		"BootVolumeId":     "properties.bootVolume.id",
 		"BootCdromId":      "properties.bootCdrom.id",
 		"TemplateId":       "properties.templateUuid",
-		"Type":             "type",
+		"Type":             "properties.type",
 	}
 
 	Share = map[string]string{
