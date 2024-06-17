@@ -41,6 +41,7 @@ contains_tag() {
     return 1
 }
 
+exit_code=0
 for file in $BATS_FILES; do
     # relative path to absolute path
     file_absolute_path=$(realpath "$file")
@@ -66,7 +67,12 @@ for file in $BATS_FILES; do
     if $should_run; then
         echo "Running $file_absolute_path due to modified file: $matched_file (matched tag: $matched_tag)"
         bats "$file_absolute_path"
+        if [ $? -ne 0 ]; then
+            exit_code=1
+        fi
     else
         echo "Skipping $file_absolute_path because none of its tags match any modified files."
     fi
 done
+
+exit $exit_code
