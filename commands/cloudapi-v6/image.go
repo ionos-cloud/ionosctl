@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"context"
 	"crypto/x509"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -414,10 +415,15 @@ func RunImageUpload(c *core.CommandConfig) error {
 	}
 
 	var eg errgroup.Group
+
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
+		"Uploading %+v to %+v", images, locations))
+
+	originalURL := url
 	for _, loc := range locations {
 		for imgIdx, img := range images {
-			if strings.Contains(url, "%s") {
-				url = fmt.Sprintf(url, loc) // Add the location modifier, if the URL supports it
+			if strings.Contains(originalURL, "%s") {
+				url = fmt.Sprintf(originalURL, loc) // Add the location modifier, if the URL supports it
 			}
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
 				"Uploading %s to %s", img, url))
@@ -531,7 +537,10 @@ func getDiffUploadedImages(c *core.CommandConfig, names, locations []string) ([]
 			if err != nil {
 				return nil, fmt.Errorf("failed listing images")
 			}
-			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Got images by listing: %+v", *imgs.Items))
+			j, err := json.Marshal(*imgs.Items)
+			if err == nil {
+				fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Got images by listing: %s", string(j)))
+			}
 
 			diffImgs = append(diffImgs, *imgs.Items...)
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Total images: %+v", diffImgs))
