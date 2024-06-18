@@ -11,6 +11,7 @@
 
 ### Fixed
 - Fixed a bug for `image upload` where using a custom `--ftp-url` and no `--location` would silently fail the operation
+- Fixed json to table conversion error for `k8s nodepool lan list`
 
 ### Added
 - Added support for 'dbaas mariadb'
