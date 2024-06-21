@@ -110,7 +110,7 @@ func RunLoginUser(c *core.CommandConfig) error {
 	if validCredentials {
 		ls, _, errTokens := client.NewClientFromCfgData(data).AuthClient.TokensApi.TokensGet(context.Background()).Execute()
 		if errTokens != nil {
-			return fmt.Errorf("failed retrieving current tokens: %w", err)
+			return fmt.Errorf("failed retrieving current tokens: %w", errTokens)
 		}
 		msgActiveTokens := fmt.Sprintf("Note: Your account has %d active tokens. ", len(*ls.Tokens))
 		msg.WriteString(msgActiveTokens)
