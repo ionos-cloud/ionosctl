@@ -1,17 +1,18 @@
 # Changelog
 
-## Upcoming
+## [v6.7.7] (June 2024)
 
 ### Fixed
 - Fixed the column path mapping for 'server' resource to display the actual server's type ('CUBE'/'ENTERPRISE'),
   not the CloudAPI resource type ('server').
 - Fixed a bug with 'nic create' not creating the LAN when missing and instead returning a 404
+- Fixed json to table conversion error for `k8s nodepool lan list`
+- Fixed error message on failed tokens API call by @avorima in #449
 
 ## [v6.7.6] (April 2024)
 
 ### Fixed
 - Fixed a bug for `image upload` where using a custom `--ftp-url` and no `--location` would silently fail the operation
-- Fixed json to table conversion error for `k8s nodepool lan list`
 
 ### Added
 - Added support for 'dbaas mariadb'
