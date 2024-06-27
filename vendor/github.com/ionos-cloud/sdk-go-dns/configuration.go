@@ -1,9 +1,9 @@
 /*
  * IONOS Cloud - DNS API
  *
- * DNS API Specification
+ * Cloud DNS service helps IONOS Cloud customers to automate DNS Zone and Record management.
  *
- * API version: 1.2.0
+ * API version: 1.15.4
  * Contact: support@cloud.ionos.com
  */
 
@@ -129,7 +129,7 @@ func NewConfiguration(username, password, token, hostUrl string) *Configuration 
 	cfg := &Configuration{
 		DefaultHeader:      make(map[string]string),
 		DefaultQueryParams: url.Values{},
-		UserAgent:          "ionos-cloud-sdk-go-dns/vv1.1.1",
+		UserAgent:          "ionos-cloud-sdk-go-dns/v1.2.0",
 		Debug:              false,
 		Username:           username,
 		Password:           password,

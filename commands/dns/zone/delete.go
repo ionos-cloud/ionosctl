@@ -48,7 +48,7 @@ func ZonesDeleteCmd() *core.Command {
 				return fmt.Errorf(confirm.UserDenied)
 			}
 
-			_, err = client.Must().DnsClient.ZonesApi.ZonesDelete(context.Background(), zoneId).Execute()
+			_, _, err = client.Must().DnsClient.ZonesApi.ZonesDelete(context.Background(), zoneId).Execute()
 
 			return err
 		},
@@ -81,7 +81,7 @@ func deleteAll(c *core.CommandConfig) error {
 		yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Are you sure you want to delete zone %s (desc: '%s')", *z.Properties.ZoneName, *z.Properties.Description),
 			viper.GetBool(constants.ArgForce))
 		if yes {
-			_, delErr := client.Must().DnsClient.ZonesApi.ZonesDelete(c.Context, *z.Id).Execute()
+			_, _, delErr := client.Must().DnsClient.ZonesApi.ZonesDelete(c.Context, *z.Id).Execute()
 			if delErr != nil {
 				return fmt.Errorf("failed deleting %s (name: %s): %w", *z.Id, *z.Properties.ZoneName, delErr)
 			}

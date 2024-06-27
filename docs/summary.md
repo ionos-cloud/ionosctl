@@ -254,6 +254,12 @@
         * [get](subcommands%2FContainer-Registry%2Fvulnerabilities%2Fget.md)
         * [list](subcommands%2FContainer-Registry%2Fvulnerabilities%2Flist.md)
 * DNS
+    * dnssec
+        * [create](subcommands%2FDNS%2Fdnssec%2Fcreate.md)
+        * [delete](subcommands%2FDNS%2Fdnssec%2Fdelete.md)
+        * [list](subcommands%2FDNS%2Fdnssec%2Flist.md)
+    * quota
+        * [get](subcommands%2FDNS%2Fquota%2Fget.md)
     * record
         * [create](subcommands%2FDNS%2Frecord%2Fcreate.md)
         * [delete](subcommands%2FDNS%2Frecord%2Fdelete.md)

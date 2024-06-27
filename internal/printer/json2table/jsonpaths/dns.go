@@ -21,4 +21,26 @@ var (
 		"Enabled":     "properties.enabled",
 		"State":       "metadata.state",
 	}
+
+	DnsQuota = map[string]string{
+		"ZonesUsed":           "quotaUsage.zones",
+		"ZonesLimit":          "quotaLimits.zones",
+		"SecondaryZonesUsed":  "quotaUsage.secondaryZones",
+		"SecondaryZonesLimit": "quotaLimits.secondaryZones",
+		"RecordsUsed":         "quotaUsage.records",
+		"RecordsLimit":        "quotaLimits.records",
+		"ReverseRecordsUsed":  "quotaUsage.reverseRecords",
+		"ReverseRecordsLimit": "quotaLimits.reverseRecords",
+	}
+
+	DnsSecKey = map[string]string{
+		"Id":              "id",
+		"Algorithm":       "properties.keyParameters.algorithm",
+		"KskBits":         "properties.keyParameters.kskBits",
+		"ZskBits":         "properties.keyParameters.zskBits",
+		"NsecMode":        "properties.nsecParameters.nsecMode",
+		"Nsec3Iterations": "properties.nsecParameters.nsec3Iterations",
+		"Nsec3SaltBits":   "properties.nsecParameters.nsec3SaltBits",
+		"Validity":        "properties.validity",
+	}
 )

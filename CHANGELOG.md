@@ -2,6 +2,11 @@
 
 ## [v6.7.7] (June 2024)
 
+### Added
+- Added support for DNS resources:
+  - `ionosctl dns keys` commands which allows you to enable/disable DNSSEC and manage DNSKEY records
+  - `ionosctl dns quota` commands which allows you to get the DNS quota for your account
+
 ### Fixed
 - Fixed the column path mapping for 'server' resource to display the actual server's type ('CUBE'/'ENTERPRISE'),
   not the CloudAPI resource type ('server').
