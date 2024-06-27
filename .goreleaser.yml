@@ -1,8 +1,10 @@
+version: 2
 project_name: ionosctl
 
 before:
   hooks:
     - go mod tidy
+
 builds:
   - id: ionosctl
     main: ./main.go
@@ -57,7 +59,7 @@ brews:
     repository:
       owner: ionos-cloud
       name: homebrew-ionos-cloud
-    folder: Formula
+    directory: Formula
     goarm: "7"
     homepage: https://github.com/ionos-cloud/ionosctl
     description: IonosCTL is a tool to help you manage your Ionos Cloud resources directly from your terminal.
@@ -78,7 +80,7 @@ release:
   header: |
     ## [{{ .Tag }}] ({{ .Date }})
 
-# If you want to manually examine the release before its live, uncomment this line:
+# If you want to manually examine the release before it's live, uncomment this line:
 # draft: true
 changelog:
   sort: asc
