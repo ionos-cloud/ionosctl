@@ -28,7 +28,7 @@ func ZonesRecordsPostCmd() *core.Command {
 		Resource:  "record",
 		Verb:      "create",
 		Aliases:   []string{"c", "post"},
-		ShortDesc: "Create a record. Wiki: https://docs.ionos.com/dns-as-a-service/readme/api-how-tos/create-a-new-dns-record",
+		ShortDesc: "Create a record. Wiki: https://docs.ionos.com/cloud/network-services/cloud-dns/api-how-tos/create-dns-record",
 		Example:   "ionosctl dns r create --zone foo-bar.com --type A --content 1.2.3.4 --name \\*",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			if err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagName, constants.FlagZone, constants.FlagContent, constants.FlagType); err != nil {

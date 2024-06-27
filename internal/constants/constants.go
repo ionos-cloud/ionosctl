@@ -30,6 +30,8 @@ Within each layer, a token takes precedence over a username and password combina
 	FlagMaxResults      = "max-results"
 	FlagMaxResultsShort = "M"
 	FlagCidr            = "cidr"
+	FlagIp              = "ip"
+	FlagIps             = "ips"
 	FlagLanId           = "lan-id"
 	FlagEdition         = "edition"
 
