@@ -156,7 +156,7 @@ Enter your password:
 You can also authenticate via `--token` flag exclusively:
 
 ```text
-ionosctl login --token IONOS_TOKEN
+ionosctl login --token $IONOS_TOKEN
 ```
 
 After providing credentials, you will be notified if you logged in successfully or not:
