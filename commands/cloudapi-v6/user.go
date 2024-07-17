@@ -39,6 +39,12 @@ func UserCmd() *core.Command {
 		},
 	}
 
+	globalFlags := userCmd.GlobalFlags()
+	globalFlags.StringSliceP(constants.ArgCols, "", defaultUserCols, tabheaders.ColsMessage(defaultUserCols))
+	_ = userCmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return defaultUserCols, cobra.ShellCompDirectiveNoFileComp
+	})
+
 	/*
 		List Command
 	*/
