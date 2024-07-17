@@ -49,7 +49,7 @@ setup_file() {
     user_id=$(cat /tmp/bats_test/user_id)
 
     group_name="group-$(randStr 8)"
-    run ionosctl group create --name "$group_name" --cols GroupId --no-headers
+    run ionosctl group create --s3privilege --name "$group_name" --cols GroupId --no-headers
     assert_success
     group_id=$output
     echo "$group_id" > /tmp/bats_test/group_id
