@@ -77,7 +77,7 @@ CUSTOM URLs:
       --ram-hot-plug             'Hot-Plug' RAM (default true)
       --ram-hot-unplug           'Hot-Unplug' RAM
       --rename strings           Rename the uploaded images before trying to upload. These names should not contain any extension. By default, this is the base of the image path
-      --skip-update              After the image is uploaded to the FTP server, send a PATCH to the API with the contents of the image properties flags and emulate a "create" command.
+      --skip-update              Skip setting image properties after it has been uploaded. Normal behavior is to send a PATCH to the API, after the image has been uploaded, with the contents of the image properties flags and emulate a "create" command.
       --skip-verify              Skip verification of server certificate, useful if using a custom ftp-url. WARNING: You can be the target of a man-in-the-middle attack!
   -t, --timeout int              (seconds) Context Deadline. FTP connection will time out after this many seconds (default 300)
   -v, --verbose                  Print step-by-step process when running command
