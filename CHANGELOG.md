@@ -1,5 +1,13 @@
 # Changelog
 
+## [v6.7.8] (?)
+
+### Changed
+- Added authentication warning to `image upload` help text
+
+### Fixed
+- Fixed examples for `image upload`
+
 ## [v6.7.7] (June 2024)
 
 ### Added
