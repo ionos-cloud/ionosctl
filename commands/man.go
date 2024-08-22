@@ -2,7 +2,6 @@ package commands
 
 import (
 	"compress/gzip"
-	"context"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -20,48 +19,32 @@ import (
 func Man() *core.Command {
 	manCmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "man",
-			Aliases:          []string{"manpages"},
-			Short:            "Manpages operations for ionosctl",
-			Long:             "The subcommands of `ionosctl man` allow you to generate manpages for ionosctl.",
+			Use:     "man",
+			Aliases: []string{"manpages"},
+			Short:   "Generate manpages for ionosctl",
+			Long: `WARNING: This command is only supported on Linux.
+
+The 'man' command allows you to generate manpages for ionosctl in a given directory. By default, the manpages will be compressed using gzip, but you can skip this step by using the '--skip-compression' flag.`,
 			TraverseChildren: true,
-			PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+			Example:          `ionosctl man --target-dir /tmp/ionosctl-man`,
+			PreRunE: func(cmd *cobra.Command, args []string) error {
 				if runtime.GOOS != "linux" {
-					return fmt.Errorf("manpages are only supported on Linux")
+					return fmt.Errorf("manpages generation is only supported on Linux")
 				}
 
-				return nil
-			},
-		},
-	}
-
-	manCmd.AddCommand(manGenerateCmd())
-
-	return manCmd
-}
-
-func manGenerateCmd() *core.Command {
-	cmd := core.NewCommand(
-		context.Background(), nil, core.CommandBuilder{
-			Verb:      "generate",
-			Aliases:   []string{"gen", "g"},
-			ShortDesc: "Generate manpages for ionosctl",
-			LongDesc: "The `generate` command allows you to generate manpages for ionosctl in a given directory. By default, the manpages will be compressed using gzip, but" +
-				"you can skip this step by using the `--skip-compression` flag.",
-			PreCmdRun: func(c *core.PreCommandConfig) error {
-				targetDir, _ := c.Command.Command.Flags().GetString(constants.FlagTargetDir)
+				targetDir, _ := cmd.Flags().GetString(constants.FlagTargetDir)
 				if !filepath.IsAbs(targetDir) {
 					return fmt.Errorf("target-dir must be an absolute path")
 				}
 
 				return nil
 			},
-			CmdRun: func(c *core.CommandConfig) error {
-				targetDir, _ := c.Command.Command.Flags().GetString(constants.FlagTargetDir)
-				skipCompression, _ := c.Command.Command.Flags().GetBool(constants.FlagSkipCompression)
+			RunE: func(cmd *cobra.Command, args []string) error {
+				targetDir, _ := cmd.Flags().GetString(constants.FlagTargetDir)
+				skipCompression, _ := cmd.Flags().GetBool(constants.FlagSkipCompression)
 
-				_, _ = fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateVerboseOutput("Checking if target directory for generation already exists"))
-				if err := handleExistingManpagesTargetDir(c, targetDir); err != nil {
+				_, _ = fmt.Fprintf(cmd.OutOrStdout(), jsontabwriter.GenerateVerboseOutput("Checking if target directory for generation already exists"))
+				if err := handleExistingManpagesTargetDir(cmd, targetDir); err != nil {
 					return err
 				}
 
@@ -69,13 +52,13 @@ func manGenerateCmd() *core.Command {
 					return fmt.Errorf("error creating target directory %s: %w", targetDir, err)
 				}
 
-				_, _ = fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateVerboseOutput("Generating manpages"))
-				if err := doc.GenManTree(c.Command.Command.Root(), nil, targetDir); err != nil {
+				_, _ = fmt.Fprintf(cmd.OutOrStdout(), jsontabwriter.GenerateVerboseOutput("Generating manpages"))
+				if err := doc.GenManTree(cmd.Root(), nil, targetDir); err != nil {
 					return fmt.Errorf("error generating manpages: %v", err)
 				}
 
 				if skipCompression {
-					_, _ = fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Manpages successfully generated."))
+					_, _ = fmt.Fprintf(cmd.OutOrStdout(), jsontabwriter.GenerateLogOutput("Manpages successfully generated."))
 					return nil
 				}
 
@@ -83,26 +66,25 @@ func manGenerateCmd() *core.Command {
 					return fmt.Errorf("error compressing manpages: %v", err)
 				}
 
-				_, _ = fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Manpages successfully generated and compressed."))
+				_, _ = fmt.Fprintf(cmd.OutOrStdout(), jsontabwriter.GenerateLogOutput("Manpages successfully generated and compressed."))
 				return nil
 			},
 		},
-	)
+	}
 
-	cmd.Command.Flags().String(constants.FlagTargetDir, "/tmp/ionosctl-man", "Target directory where manpages will be generated. Must be an absolute path")
-	_ = cmd.Command.MarkFlagRequired(constants.FlagTargetDir)
-	cmd.Command.Flags().Bool(constants.FlagSkipCompression, false, "Skip compressing manpages with gzip, just generate them")
+	manCmd.Command.Flags().String(constants.FlagTargetDir, "/tmp/ionosctl-man", "Target directory where manpages will be generated. Must be an absolute path")
+	manCmd.Command.Flags().Bool(constants.FlagSkipCompression, false, "Skip compressing manpages with gzip, just generate them")
 
-	return cmd
+	return manCmd
 }
 
-func handleExistingManpagesTargetDir(c *core.CommandConfig, targetDir string) error {
+func handleExistingManpagesTargetDir(c *cobra.Command, targetDir string) error {
 	if _, err := os.Stat(targetDir); os.IsNotExist(err) {
 		return nil
 	}
 
 	if !confirm.FAsk(
-		c.Command.Command.InOrStdin(),
+		c.InOrStdin(),
 		fmt.Sprintf("Target directory %s already exists. Do you want to replace it", targetDir),
 		viper.GetBool(constants.ArgForce),
 	) {

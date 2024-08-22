@@ -2,12 +2,12 @@
 description: "Generate manpages for ionosctl"
 ---
 
-# ManGenerate
+# Man
 
 ## Usage
 
 ```text
-ionosctl man generate [flags]
+ionosctl man [flags]
 ```
 
 ## Aliases
@@ -18,15 +18,11 @@ For `man` command:
 [manpages]
 ```
 
-For `generate` command:
-
-```text
-[gen g]
-```
-
 ## Description
 
-The `generate` command allows you to generate manpages for ionosctl in a given directory. By default, the manpages will be compressed using gzip, butyou can skip this step by using the `--skip-compression` flag.
+WARNING: This command is only supported on Linux.
+
+The 'man' command allows you to generate manpages for ionosctl in a given directory. By default, the manpages will be compressed using gzip, but you can skip this step by using the '--skip-compression' flag.
 
 ## Options
 
@@ -41,5 +37,11 @@ The `generate` command allows you to generate manpages for ionosctl in a given d
       --skip-compression    Skip compressing manpages with gzip, just generate them
       --target-dir string   Target directory where manpages will be generated. Must be an absolute path (default "/tmp/ionosctl-man")
   -v, --verbose             Print step-by-step process when running command
+```
+
+## Examples
+
+```text
+ionosctl man --target-dir /tmp/ionosctl-man
 ```
 

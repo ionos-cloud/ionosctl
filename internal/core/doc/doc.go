@@ -38,6 +38,7 @@ var nonComputeNamespaces = map[string]string{
 	"dns":                     "DNS",
 	"config":                  "CLI Setup",
 	"vm-autoscaling":          "VM Autoscaling",
+	"logging-service":         "Logging-Service",
 }
 
 func GenerateSummary(dir string) error {
@@ -153,7 +154,7 @@ func determineSubdir(name string, nonComputeNamespaces map[string]string) string
 	segments := strings.Split(name, "-")
 
 	// Custom names depending on first level names
-	if segments[0] == "version" || segments[0] == "completion" {
+	if segments[0] == "version" || segments[0] == "completion" || segments[0] == "man" {
 		return filepath.Join("CLI Setup", filepath.Join(segments...))
 	}
 
@@ -240,13 +241,15 @@ func writeDoc(cmd *core.Command, w io.Writer) error {
 		// Create new buffer to replace user info
 		newbuf := new(bytes.Buffer)
 		flags.SetOutput(newbuf)
-		flags.VisitAll(func(flag *pflag.Flag) {
-			handler := getStrategyForFlag(flag.Name)
-			// If a custom default value handler is specified, use it to modify the default of this flag for docs
-			if handler != nil {
-				flag.DefValue = handler(flag.Usage, flag.DefValue)
-			}
-		})
+		flags.VisitAll(
+			func(flag *pflag.Flag) {
+				handler := getStrategyForFlag(flag.Name)
+				// If a custom default value handler is specified, use it to modify the default of this flag for docs
+				if handler != nil {
+					flag.DefValue = handler(flag.Usage, flag.DefValue)
+				}
+			},
+		)
 		flags.PrintDefaults()
 
 		// Get $XDG_CONFIG_HOME from environment
