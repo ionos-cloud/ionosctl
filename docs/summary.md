@@ -143,6 +143,8 @@
                 * [key](subcommands%2FCompute%20Engine%2Flogging%2Fservice%2Fpipeline%2Fkey.md)
                 * [list](subcommands%2FCompute%20Engine%2Flogging%2Fservice%2Fpipeline%2Flist.md)
                 * [update](subcommands%2FCompute%20Engine%2Flogging%2Fservice%2Fpipeline%2Fupdate.md)
+    * man
+        * [generate](subcommands%2FCompute%20Engine%2Fman%2Fgenerate.md)
     * nic
         * [create](subcommands%2FCompute%20Engine%2Fnic%2Fcreate.md)
         * [delete](subcommands%2FCompute%20Engine%2Fnic%2Fdelete.md)
