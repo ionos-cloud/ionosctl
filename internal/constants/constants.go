@@ -187,6 +187,12 @@ const (
 	FlagSkipVerify      = "skip-verify"
 )
 
+// Manpages
+const (
+	FlagTargetDir       = "target-dir"
+	FlagSkipCompression = "skip-compression"
+)
+
 // Resource info
 const (
 	DatacenterId              = "Datacenter ID: %v"

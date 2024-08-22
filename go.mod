@@ -23,7 +23,7 @@ require (
 	github.com/kardianos/ftps v1.0.3
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/mmatczuk/anyflag v0.0.0-20230209112147-9567d4cab866
-	github.com/spf13/cobra v1.8.0
+	github.com/spf13/cobra v1.8.1
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.16.0
 	github.com/stretchr/testify v1.8.4
@@ -43,7 +43,11 @@ require (
 	github.com/ionos-cloud/sdk-go-dbaas-mariadb v1.0.0
 )
 
-require github.com/pkg/term v1.2.0-beta.2 // indirect
+require (
+	github.com/cpuguy83/go-md2man/v2 v2.0.4 // indirect
+	github.com/pkg/term v1.2.0-beta.2 // indirect
+	github.com/russross/blackfriday/v2 v2.1.0 // indirect
+)
 
 // `ionosctl shell` requirements
 require (
