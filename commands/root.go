@@ -5,22 +5,21 @@ import (
 	"os"
 	"strings"
 
-	"github.com/ionos-cloud/ionosctl/v6/commands/cfg"
-	"github.com/ionos-cloud/ionosctl/v6/commands/dns"
-	vm_autoscaling "github.com/ionos-cloud/ionosctl/v6/commands/vm-autoscaling"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/version"
-
 	certificates "github.com/ionos-cloud/ionosctl/v6/commands/certmanager"
+	"github.com/ionos-cloud/ionosctl/v6/commands/cfg"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
 	container_registry "github.com/ionos-cloud/ionosctl/v6/commands/container-registry"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dataplatform"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas"
+	"github.com/ionos-cloud/ionosctl/v6/commands/dns"
 	logging_service "github.com/ionos-cloud/ionosctl/v6/commands/logging-service"
 	"github.com/ionos-cloud/ionosctl/v6/commands/token"
+	vm_autoscaling "github.com/ionos-cloud/ionosctl/v6/commands/vm-autoscaling"
 	"github.com/ionos-cloud/ionosctl/v6/internal/config"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
+	"github.com/ionos-cloud/ionosctl/v6/internal/version"
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -160,6 +159,8 @@ func initConfig() {
 func addCommands() {
 	rootCmd.AddCommand(Shell())
 	rootCmd.AddCommand(VersionCmd())
+	rootCmd.AddCommand(Man())
+
 	// cfg
 	rootCmd.AddCommand(cfg.ConfigCmd())
 	// Config namespace commands are also available via the root command, but are hidden
@@ -287,14 +288,16 @@ EXAMPLES:
 Use "{{.CommandPath}} [command] --help" for more information about a command.{{print "\n"}}{{end}}`
 )
 
-var helpTemplate = strings.Join([]string{
-	seeAlso,
-	additionalHelpTopics,
-	globalFlags,
-	localFlags,
-	aliases,
-	examples,
-	usage,
-	availableCommands,
-	moreInfo,
-}, "")
+var helpTemplate = strings.Join(
+	[]string{
+		seeAlso,
+		additionalHelpTopics,
+		globalFlags,
+		localFlags,
+		aliases,
+		examples,
+		usage,
+		availableCommands,
+		moreInfo,
+	}, "",
+)
