@@ -2,6 +2,9 @@
 
 ## [v6.7.8] (?)
 
+### Added
+- Added support for `manpages` generation via `ionosctl man` command
+
 ### Changed
 - Added authentication warning to `image upload` help text
 
