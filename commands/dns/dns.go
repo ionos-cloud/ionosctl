@@ -5,6 +5,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/dns/quota"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dns/record"
 	reverse_record "github.com/ionos-cloud/ionosctl/v6/commands/dns/reverse-record"
+	secondary_zones "github.com/ionos-cloud/ionosctl/v6/commands/dns/secondary-zones"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dns/zone"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/spf13/cobra"
@@ -23,6 +24,7 @@ func DNSCommand() *core.Command {
 	cmd.AddCommand(reverse_record.Root())
 	cmd.AddCommand(quota.Root())
 	cmd.AddCommand(dnssec.Root())
+	cmd.AddCommand(secondary_zones.Root())
 
 	return cmd
 }

@@ -1,0 +1,50 @@
+package transfer
+
+import (
+	"context"
+	"fmt"
+
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
+	"github.com/ionos-cloud/ionosctl/v6/internal/core"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+)
+
+func getCmd() *core.Command {
+	c := core.NewCommand(
+		context.Background(), nil, core.CommandBuilder{
+			Verb:      "get",
+			Aliases:   []string{"g"},
+			ShortDesc: "Get the transfer status for a secondary zone",
+			LongDesc:  "",
+			PreCmdRun: func(c *core.PreCommandConfig) error {
+				return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagZone)
+			},
+			CmdRun: func(c *core.CommandConfig) error {
+				zoneID, _ := c.Command.Command.Flags().GetString(constants.FlagZone)
+
+				transferStatuses, _, err := client.Must().DnsClient.SecondaryZonesApi.SecondaryzonesAxfrGet(context.Background(), zoneID).Execute()
+				if err != nil {
+					return err
+				}
+
+				cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+				out, err := jsontabwriter.GenerateOutput(
+					"items", jsonpaths.DnsSecondaryZoneTransfer, transferStatuses, tabheaders.GetHeadersAllDefault(allCols, cols),
+				)
+				if err != nil {
+					return err
+				}
+
+				fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+				return nil
+			},
+		},
+	)
+
+	c.Command.Flags().StringP(constants.FlagZone, constants.FlagZoneShort, "", constants.DescZone)
+
+	return c
+}

@@ -50,4 +50,18 @@ var (
 		"Nsec3SaltBits":   "properties.nsecParameters.nsec3SaltBits",
 		"Validity":        "properties.validity",
 	}
+
+	DnsSecondaryZone = map[string]string{
+		"Id":          "id",
+		"Name":        "properties.zoneName",
+		"Description": "properties.description",
+		"PrimaryIPs":  "properties.primaryIps",
+		"State":       "metadata.state",
+	}
+
+	DnsSecondaryZoneTransfer = map[string]string{
+		"PrimaryIP":    "primaryIp",
+		"Status":       "status",
+		"ErrorMessage": "errorMessage",
+	}
 )
