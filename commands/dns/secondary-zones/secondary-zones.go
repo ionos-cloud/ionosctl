@@ -1,12 +1,7 @@
 package secondary_zones
 
 import (
-	"context"
-	"fmt"
-
-	"github.com/gofrs/uuid/v5"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dns/secondary-zones/transfer"
-	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
@@ -40,20 +35,4 @@ func Root() *core.Command {
 	cmd.AddCommand(updateCmd())
 
 	return cmd
-}
-
-func resolve(nameOrID string) (string, error) {
-	if _, err := uuid.FromString(nameOrID); err == nil {
-		return nameOrID, nil
-	}
-
-	secZones, _, err := client.Must().DnsClient.SecondaryZonesApi.SecondaryzonesGet(context.Background()).FilterZoneName(nameOrID).Execute()
-	if err != nil {
-		return "", fmt.Errorf("failed to retrieve zones by name %s: %w", nameOrID, err)
-	}
-	if secZones.Items == nil || len(*secZones.Items) < 1 {
-		return "", fmt.Errorf("no zones found with name %s", nameOrID)
-	}
-
-	return *(*secZones.Items)[0].Id, nil
 }

@@ -17,7 +17,7 @@ var (
 		"Enabled": "properties.enabled",
 		"FQDN":    "metadata.fqdn",
 		"State":   "metadata.state",
-		"ZoneId":  "zoneId",
+		"ZoneId":  "metadata.zoneId",
 	}
 
 	DnsZone = map[string]string{

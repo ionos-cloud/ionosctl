@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/ionos-cloud/ionosctl/v6/commands/dns/utils"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
@@ -23,8 +24,8 @@ func getCmd() *core.Command {
 				return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagZone)
 			},
 			CmdRun: func(c *core.CommandConfig) error {
-				zone, _ := c.Command.Command.Flags().GetString(constants.FlagZone)
-				zoneID, err := resolve(zone)
+				zoneNameOrID, _ := c.Command.Command.Flags().GetString(constants.FlagZone)
+				zoneID, err := utils.SecondaryZoneResolve(zoneNameOrID)
 				if err != nil {
 					return err
 				}
@@ -49,6 +50,7 @@ func getCmd() *core.Command {
 	)
 
 	c.Command.Flags().StringP(constants.FlagZone, constants.FlagZoneShort, "", constants.DescZone)
+	c.Command.RegisterFlagCompletionFunc(constants.FlagZone, utils.CompleteSecondaryZones)
 
 	return c
 }

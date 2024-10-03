@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/ionos-cloud/ionosctl/v6/commands/dns/utils"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
@@ -32,7 +33,7 @@ func deleteCmd() *core.Command {
 				}
 
 				zone, _ := c.Command.Command.Flags().GetString(constants.FlagZone)
-				zoneID, err := resolve(zone)
+				zoneID, err := utils.SecondaryZoneResolve(zone)
 				if err != nil {
 					return err
 				}

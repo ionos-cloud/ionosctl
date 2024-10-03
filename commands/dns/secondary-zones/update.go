@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net"
 
+	"github.com/ionos-cloud/ionosctl/v6/commands/dns/utils"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
@@ -46,20 +47,20 @@ func updateCmd() *core.Command {
 				return nil
 			},
 			CmdRun: func(c *core.CommandConfig) error {
-				zone, _ := c.Command.Command.Flags().GetString(constants.FlagZone)
-				zoneID, err := resolve(zone)
+				zoneNameOrID, _ := c.Command.Command.Flags().GetString(constants.FlagZone)
+				zoneID, err := utils.SecondaryZoneResolve(zoneNameOrID)
 				if err != nil {
 					return err
 				}
 
-				zoneProps, err := setSecondaryZoneProperties(c, zoneID)
+				secZoneProps, err := setSecondaryZoneProperties(c, zoneID)
 				if err != nil {
 					return err
 				}
 
 				secZone, _, err := client.Must().DnsClient.SecondaryZonesApi.SecondaryzonesPut(
 					context.Background(), zoneID,
-				).SecondaryZoneEnsure(*dns.NewSecondaryZoneEnsure(zoneProps)).Execute()
+				).SecondaryZoneEnsure(*dns.NewSecondaryZoneEnsure(secZoneProps)).Execute()
 				if err != nil {
 					return err
 				}

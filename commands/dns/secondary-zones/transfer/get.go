@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/ionos-cloud/ionosctl/v6/commands/dns/utils"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
@@ -23,7 +24,11 @@ func getCmd() *core.Command {
 				return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagZone)
 			},
 			CmdRun: func(c *core.CommandConfig) error {
-				zoneID, _ := c.Command.Command.Flags().GetString(constants.FlagZone)
+				zoneNameOrID, _ := c.Command.Command.Flags().GetString(constants.FlagZone)
+				zoneID, err := utils.SecondaryZoneResolve(zoneNameOrID)
+				if err != nil {
+					return err
+				}
 
 				transferStatuses, _, err := client.Must().DnsClient.SecondaryZonesApi.SecondaryzonesAxfrGet(context.Background(), zoneID).Execute()
 				if err != nil {

@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/ionos-cloud/ionosctl/v6/commands/dns/zone"
+	"github.com/ionos-cloud/ionosctl/v6/commands/dns/utils"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table"
@@ -29,7 +29,7 @@ func RecordsGetCmd() *core.Command {
 		CmdRun: func(c *core.CommandConfig) error {
 			ls, err := Records(func(req dns.ApiRecordsGetRequest) (dns.ApiRecordsGetRequest, error) {
 				if fn := core.GetFlagName(c.NS, constants.FlagZone); viper.IsSet(fn) {
-					zoneId, err := zone.Resolve(viper.GetString(fn))
+					zoneId, err := utils.ZoneResolve(viper.GetString(fn))
 					if err != nil {
 						return req, err
 					}
@@ -88,7 +88,7 @@ func RecordsGetCmd() *core.Command {
 
 	cmd.AddStringFlag(constants.FlagZone, constants.FlagZoneShort, "", "(UUID or Zone Name) Filter used to fetch only the records that contain specified zone.")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagZone, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return zone.ZonesProperty(func(t dns.ZoneRead) string {
+		return utils.ZonesProperty(func(t dns.ZoneRead) string {
 			return *t.Properties.ZoneName
 		}), cobra.ShellCompDirectiveNoFileComp
 	})

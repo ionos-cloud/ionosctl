@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/gofrs/uuid/v5"
-	"github.com/ionos-cloud/ionosctl/v6/commands/dns/zone"
+	"github.com/ionos-cloud/ionosctl/v6/commands/dns/utils"
 	"github.com/ionos-cloud/ionosctl/v6/internal/config"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
@@ -103,7 +103,7 @@ type Filter func(dns.ApiRecordsGetRequest) (dns.ApiRecordsGetRequest, error)
 func FilterRecordsByZoneAndRecordFlags(cmdNs string) Filter {
 	return func(req dns.ApiRecordsGetRequest) (dns.ApiRecordsGetRequest, error) {
 		if fn := core.GetFlagName(cmdNs, constants.FlagZone); viper.IsSet(fn) {
-			zoneId, err := zone.Resolve(viper.GetString(fn))
+			zoneId, err := utils.ZoneResolve(viper.GetString(fn))
 			if err != nil {
 				return req, err
 			}
