@@ -20,7 +20,10 @@ func createCmd() *core.Command {
 			Verb:      "create",
 			Aliases:   []string{"c"},
 			ShortDesc: "Create a secondary zone",
-			LongDesc:  "Create a secondary zone",
+			LongDesc:  `Create a new secondary zone with default NS and SOA records. Note that Cloud DNS relies on the following Anycast addresses for sending DNS notify messages. Make sure to whitelist on your end:
+
+IPv4: 212.227.123.25
+IPv6: 2001:8d8:fe:53::5cd:25`,
 			Example: "ionosctl dns secondary-zone create --name ZONE_NAME --description DESCRIPTION --primary-ips 1.2.3.4,5.6.7.8",
 			PreCmdRun: func(c *core.PreCommandConfig) error {
 				if err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagName, constants.FlagPrimaryIPs); err != nil {

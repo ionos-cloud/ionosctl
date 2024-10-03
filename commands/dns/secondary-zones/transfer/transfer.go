@@ -14,7 +14,7 @@ func Root() *core.Command {
 		Command: &cobra.Command{
 			Use:              "transfer",
 			Aliases:          []string{"t"},
-			Short:            "",
+			Short:            "Manage secondary zone transfers",
 			TraverseChildren: true,
 		},
 	}

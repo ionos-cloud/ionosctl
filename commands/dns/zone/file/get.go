@@ -4,10 +4,14 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/ionos-cloud/ionosctl/v6/commands/dns/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
+	"github.com/spf13/cobra"
+
+	dns "github.com/ionos-cloud/sdk-go-dns"
 )
 
 func getCmd() *core.Command {
@@ -35,6 +39,15 @@ func getCmd() *core.Command {
 	)
 
 	c.Command.Flags().StringP(constants.FlagZone, constants.FlagZoneShort, "", constants.DescZone)
+	_ = c.Command.RegisterFlagCompletionFunc(
+		constants.FlagZone, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.ZonesProperty(
+				func(t dns.ZoneRead) string {
+					return *t.Properties.ZoneName
+				},
+			), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 
 	return c
 }

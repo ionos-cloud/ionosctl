@@ -6,12 +6,6 @@ import (
 
 	"github.com/gofrs/uuid/v5"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
-	"github.com/ionos-cloud/ionosctl/v6/internal/config"
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
-	"github.com/ionos-cloud/sdk-go-dns"
-
-	"github.com/spf13/viper"
 )
 
 // SecondaryZoneResolve resolves nameOrId (the name of a zone, or the ID of a zone) - to the ID of the secondary zone.
@@ -50,37 +44,3 @@ func ZoneResolve(nameOrId string) (string, error) {
 	}
 	return zId, nil
 }
-
-// Zones returns all zones matching the given filters
-func Zones(fs ...Filter) (ionoscloud.ZoneReadList, error) {
-	// Hack to enforce the dns-level flag default for API URL on the completions too
-	if url := config.GetServerUrl(); url == constants.DefaultApiURL {
-		viper.Set(constants.ArgServerUrl, "")
-	}
-
-	req := client.Must().DnsClient.ZonesApi.ZonesGet(context.Background())
-
-	for _, f := range fs {
-		var err error
-		req, err = f(req)
-		if err != nil {
-			return ionoscloud.ZoneReadList{}, err
-		}
-	}
-
-	ls, _, err := req.Execute()
-	if err != nil {
-		return ionoscloud.ZoneReadList{}, err
-	}
-	return ls, nil
-}
-
-func ZonesProperty[V any](f func(ionoscloud.ZoneRead) V, fs ...Filter) []V {
-	recs, err := Zones(fs...)
-	if err != nil {
-		return nil
-	}
-	return functional.Map(*recs.Items, f)
-}
-
-type Filter func(request ionoscloud.ApiZonesGetRequest) (ionoscloud.ApiZonesGetRequest, error)
