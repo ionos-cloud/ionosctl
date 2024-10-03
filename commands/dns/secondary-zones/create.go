@@ -76,5 +76,8 @@ IPv6: 2001:8d8:fe:53::5cd:25`,
 	c.Command.Flags().String(constants.FlagDescription, "", "Description of the secondary zone")
 	c.Command.Flags().StringSlice(constants.FlagPrimaryIPs, []string{}, "Primary DNS server IP addresses")
 
+	c.Command.SilenceUsage = true
+	c.Command.Flags().SortFlags = false
+
 	return c
 }

@@ -63,5 +63,8 @@ func updateCmd() *core.Command {
 
 	c.Command.Flags().String(constants.FlagZoneFile, "", "Path to the zone file")
 
+	c.Command.SilenceUsage = true
+	c.Command.Flags().SortFlags = false
+
 	return c
 }

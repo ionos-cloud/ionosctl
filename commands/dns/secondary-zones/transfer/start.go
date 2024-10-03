@@ -48,5 +48,8 @@ func startCmd() *core.Command {
 		},
 	)
 
+	c.Command.SilenceUsage = true
+	c.Command.Flags().SortFlags = false
+
 	return c
 }
