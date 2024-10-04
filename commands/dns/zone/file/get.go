@@ -20,7 +20,7 @@ func getCmd() *core.Command {
 			Verb:      "get",
 			Aliases:   []string{"g"},
 			ShortDesc: "Get a specific zone file",
-			LongDesc:  "",
+			LongDesc:  "Get the exported zone file in BIND format (RFC 1035)",
 			PreCmdRun: func(c *core.PreCommandConfig) error {
 				return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagZone)
 			},

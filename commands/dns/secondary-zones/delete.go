@@ -50,7 +50,7 @@ func deleteCmd() *core.Command {
 		},
 	)
 
-	c.Command.Flags().Bool(constants.ArgAll, false, "Delete all secondary zones")
+	c.Command.Flags().BoolP(constants.ArgAll, constants.ArgAllShort, false, "Delete all secondary zones")
 
 	c.Command.Flags().StringP(constants.FlagZone, constants.FlagZoneShort, "", constants.DescZone)
 	_ = c.Command.RegisterFlagCompletionFunc(
