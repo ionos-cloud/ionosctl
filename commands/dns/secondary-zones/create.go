@@ -20,7 +20,7 @@ func createCmd() *core.Command {
 			Verb:      "create",
 			Aliases:   []string{"c"},
 			ShortDesc: "Create a secondary zone",
-			LongDesc:  `Create a new secondary zone with default NS and SOA records. Note that Cloud DNS relies on the following Anycast addresses for sending DNS notify messages. Make sure to whitelist on your end:
+			LongDesc: `Create a new secondary zone with default NS and SOA records. Note that Cloud DNS relies on the following Anycast addresses for sending DNS notify messages. Make sure to whitelist on your end:
 
 IPv4: 212.227.123.25
 IPv6: 2001:8d8:fe:53::5cd:25`,
