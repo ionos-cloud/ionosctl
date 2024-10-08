@@ -20,7 +20,7 @@ import (
 )
 
 var (
-	allCols     = []string{"Id", "Name", "Content", "Type", "Enabled", "FQDN", "State", "ZoneId", "ZoneName"}
+	allCols     = []string{"Id", "Name", "Content", "Type", "Enabled", "FQDN", "ZoneId", "ZoneName", "State"}
 	defaultCols = []string{"Id", "Name", "Content", "Type", "Enabled", "FQDN", "State"}
 )
 

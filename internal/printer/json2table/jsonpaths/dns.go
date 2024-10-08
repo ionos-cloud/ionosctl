@@ -16,8 +16,13 @@ var (
 		"Type":    "properties.type",
 		"Enabled": "properties.enabled",
 		"FQDN":    "metadata.fqdn",
-		"State":   "metadata.state",
 		"ZoneId":  "metadata.zoneId",
+
+		// State is only in Zone Records
+		"State": "metadata.state",
+
+		// RootName is only in Secondary Zone Records
+		"RootName": "metadata.rootName",
 	}
 
 	DnsZone = map[string]string{
