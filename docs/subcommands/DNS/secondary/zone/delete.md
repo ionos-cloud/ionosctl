@@ -1,46 +1,46 @@
 ---
-description: "Retrieve a record"
+description: "Delete a secondary zone"
 ---
 
-# DnsRecordGet
+# DnsSecondaryZoneDelete
 
 ## Usage
 
 ```text
-ionosctl dns record get [flags]
+ionosctl dns secondary-zone delete [flags]
 ```
 
 ## Aliases
 
-For `record` command:
+For `secondary-zone` command:
 
 ```text
-[r]
+[secondary-zones sz]
 ```
 
-For `get` command:
+For `delete` command:
 
 ```text
-[g]
+[d del]
 ```
 
 ## Description
 
-Retrieve a record
+Delete a secondary zone
 
 ## Options
 
 ```text
+  -a, --all              Delete all secondary zones
   -u, --api-url string   Override default host url (default "dns.de-fra.ionos.com")
       --cols strings     Set of columns to be printed on output 
-                         Available columns: [Id Name Content Type Enabled FQDN ZoneId ZoneName State]
+                         Available columns: [Id Name Description PrimaryIPs State] (default [Id,Name,Description,PrimaryIPs,State])
   -c, --config string    Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -f, --force            Force command to execute without user input
   -h, --help             Print usage
       --no-headers       Don't print table headers when table output is used
   -o, --output string    Desired output format [text|json|api-json] (default "text")
   -q, --quiet            Quiet output
-      --record string    The ID or name of the DNS record
   -v, --verbose          Print step-by-step process when running command
   -z, --zone string      The name or ID of the DNS zone
 ```
@@ -48,6 +48,6 @@ Retrieve a record
 ## Examples
 
 ```text
-ionosctl dns r get --zone ZONE --record RECORD
+ionosctl dns secondary-zone delete --zone ZONE_ID
 ```
 

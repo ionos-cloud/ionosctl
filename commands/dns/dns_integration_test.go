@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dns/record"
+	"github.com/ionos-cloud/ionosctl/v6/commands/dns/utils"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 	dns "github.com/ionos-cloud/sdk-go-dns"
@@ -107,9 +108,9 @@ func TestZone(t *testing.T) {
 	assert.NotEmpty(t, sharedZ.Properties)
 	assert.Equal(t, randDesc, *sharedZ.Properties.Description)
 
-	resolvedId, err := zone.Resolve(randName)
+	resolvedId, err := utils.ZoneResolve(randName)
 	assert.NoError(t, err)
-	assert.Equal(t, *sharedZ.Id, resolvedId) // I added these 3 lines later - to test zone.Resolve too
+	assert.Equal(t, *sharedZ.Id, resolvedId) // I added these 3 lines later - to test zone.ZoneResolve too
 
 	// === `ionosctl dns z get`
 	c = zone.ZonesFindByIdCmd()
@@ -140,7 +141,7 @@ func TestZone(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, randDesc, *zoneThroughSdk.Properties.Description)
 
-	resolvedId, err = zone.Resolve(randName)
+	resolvedId, err = utils.ZoneResolve(randName)
 	assert.NoError(t, err)
 	assert.Equal(t, *sharedZ.Id, resolvedId)
 }
@@ -175,7 +176,7 @@ func TestRecord(t *testing.T) {
 	assert.NotEmpty(t, r.Properties)
 	assert.Equal(t, randIp, *r.Properties.Content)
 
-	// also test record.Resolve
+	// also test record.ZoneResolve
 	resolvedId, err := record.Resolve(randName)
 	assert.NoError(t, err)
 	assert.Equal(t, *r.Id, resolvedId)

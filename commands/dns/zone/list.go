@@ -51,9 +51,6 @@ func ZonesGetCmd() *core.Command {
 			}
 
 			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-			// if err != nil {
-			//	return err
-			// }
 
 			out, err := jsontabwriter.GenerateOutput("items", jsonpaths.DnsZone, ls,
 				tabheaders.GetHeadersAllDefault(allCols, cols))
