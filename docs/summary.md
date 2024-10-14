@@ -259,9 +259,22 @@
             * [get](subcommands%2FDNS%2Freverse%2Frecord%2Fget.md)
             * [list](subcommands%2FDNS%2Freverse%2Frecord%2Flist.md)
             * [update](subcommands%2FDNS%2Freverse%2Frecord%2Fupdate.md)
+    * secondary
+        * zone
+            * [create](subcommands%2FDNS%2Fsecondary%2Fzone%2Fcreate.md)
+            * [delete](subcommands%2FDNS%2Fsecondary%2Fzone%2Fdelete.md)
+            * [get](subcommands%2FDNS%2Fsecondary%2Fzone%2Fget.md)
+            * [list](subcommands%2FDNS%2Fsecondary%2Fzone%2Flist.md)
+            * transfer
+                * [get](subcommands%2FDNS%2Fsecondary%2Fzone%2Ftransfer%2Fget.md)
+                * [start](subcommands%2FDNS%2Fsecondary%2Fzone%2Ftransfer%2Fstart.md)
+            * [update](subcommands%2FDNS%2Fsecondary%2Fzone%2Fupdate.md)
     * zone
         * [create](subcommands%2FDNS%2Fzone%2Fcreate.md)
         * [delete](subcommands%2FDNS%2Fzone%2Fdelete.md)
+        * file
+            * [get](subcommands%2FDNS%2Fzone%2Ffile%2Fget.md)
+            * [update](subcommands%2FDNS%2Fzone%2Ffile%2Fupdate.md)
         * [get](subcommands%2FDNS%2Fzone%2Fget.md)
         * [list](subcommands%2FDNS%2Fzone%2Flist.md)
         * [update](subcommands%2FDNS%2Fzone%2Fupdate.md)

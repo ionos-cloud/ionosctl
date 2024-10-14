@@ -4,7 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/ionos-cloud/ionosctl/v6/commands/dns/zone"
+	"github.com/ionos-cloud/ionosctl/v6/commands/dns/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/dns/utils"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
@@ -30,7 +31,7 @@ func Delete() *core.Command {
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			zoneName := viper.GetString(core.GetFlagName(c.NS, constants.FlagZone))
-			zoneId, err := zone.Resolve(zoneName)
+			zoneId, err := utils.ZoneResolve(zoneName)
 			if err != nil {
 				return err
 			}
@@ -48,7 +49,7 @@ func Delete() *core.Command {
 
 	cmd.AddStringFlag(constants.FlagZone, constants.FlagZoneShort, "", constants.DescZone)
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagZone, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return zone.ZonesProperty(func(t dns.ZoneRead) string {
+		return completer.ZonesProperty(func(t dns.ZoneRead) string {
 			return *t.Properties.ZoneName
 		}), cobra.ShellCompDirectiveNoFileComp
 	})
