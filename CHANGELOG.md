@@ -4,6 +4,7 @@
 
 ### Added
 - Added support for `manpages` generation via `ionosctl man` command
+- Added support for DNS `secondary-zones` and `zone files`
 
 ### Changed
 - Added authentication warning to `image upload` help text
