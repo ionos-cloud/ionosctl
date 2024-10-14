@@ -1,6 +1,6 @@
 # Changelog
 
-## [v6.7.8] (?)
+## [v6.7.8] (October 2024)
 
 ### Added
 - Added support for `manpages` generation via `ionosctl man` command
