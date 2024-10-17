@@ -24,7 +24,7 @@ import (
 )
 
 var (
-	defaultS3KeyCols = []string{"S3KeyId", "Active"}
+	defaultS3KeyCols = []string{"S3KeyId", "Active", "SecretKey"}
 )
 
 func UserS3keyCmd() *core.Command {
