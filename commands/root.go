@@ -17,6 +17,7 @@ import (
 	logging_service "github.com/ionos-cloud/ionosctl/v6/commands/logging-service"
 	"github.com/ionos-cloud/ionosctl/v6/commands/token"
 	vm_autoscaling "github.com/ionos-cloud/ionosctl/v6/commands/vm-autoscaling"
+	"github.com/ionos-cloud/ionosctl/v6/commands/vpn"
 	"github.com/ionos-cloud/ionosctl/v6/internal/config"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
@@ -224,11 +225,7 @@ func addCommands() {
 	rootCmd.AddCommand(dns.Root())
 	rootCmd.AddCommand(logging_service.Root())
 
-	// CDN
-	rootCmd.AddCommand(cdn.Command())
-
-	// Kafka
-	rootCmd.AddCommand(kafka.Command())
+	rootCmd.AddCommand(vpn.Root())
 }
 
 const (
