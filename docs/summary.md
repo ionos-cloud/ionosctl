@@ -50,6 +50,15 @@
     * [list](subcommands%2FCertificate-Manager%2Flist.md)
     * [update](subcommands%2FCertificate-Manager%2Fupdate.md)
 * Compute Engine
+    * cdn
+        * distribution
+            * [create](subcommands%2FCompute%20Engine%2Fcdn%2Fdistribution%2Fcreate.md)
+            * [delete](subcommands%2FCompute%20Engine%2Fcdn%2Fdistribution%2Fdelete.md)
+            * [get](subcommands%2FCompute%20Engine%2Fcdn%2Fdistribution%2Fget.md)
+            * [list](subcommands%2FCompute%20Engine%2Fcdn%2Fdistribution%2Flist.md)
+            * routingrules
+                * [get](subcommands%2FCompute%20Engine%2Fcdn%2Fdistribution%2Froutingrules%2Fget.md)
+            * [update](subcommands%2FCompute%20Engine%2Fcdn%2Fdistribution%2Fupdate.md)
     * contract
         * [get](subcommands%2FCompute%20Engine%2Fcontract%2Fget.md)
     * datacenter
