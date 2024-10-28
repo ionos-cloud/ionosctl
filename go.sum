@@ -268,6 +268,8 @@ github.com/ionos-cloud/sdk-go-logging v1.0.1 h1:MB9jPoBUL3mZ+ois7kXYy67x0FopAw2a
 github.com/ionos-cloud/sdk-go-logging v1.0.1/go.mod h1:P2JQJpUgH3ZyfyJmv6jMwcB1NJIVVZSL+/bllhWpwc8=
 github.com/ionos-cloud/sdk-go-vm-autoscaling v1.0.1 h1:KABL25MC7DrIHn9lQzKSPkwXhqvRkPYtFd+1HEogmAE=
 github.com/ionos-cloud/sdk-go-vm-autoscaling v1.0.1/go.mod h1:Q5d1R6silarsX5jWLPBHd/1PSC5zZNf2ONvXB+fygC0=
+github.com/ionos-cloud/sdk-go-vpn v1.0.1 h1:SsHNozjTGUfRZdQRxLsy/PX1Yp/J7ssJfk36HIgYJxE=
+github.com/ionos-cloud/sdk-go-vpn v1.0.1/go.mod h1:d0OyuDsIvEQV65h8DaGvsZy4BJcLq7tTWnscULodtIc=
 github.com/ionos-cloud/sdk-go/v6 v6.1.11 h1:J/uRN4UWO3wCyGOeDdMKv8LWRzKu6UIkLEaes38Kzh8=
 github.com/ionos-cloud/sdk-go/v6 v6.1.11/go.mod h1:EzEgRIDxBELvfoa/uBN0kOQaqovLjUWEB7iW4/Q+t4k=
 github.com/ionoscloudsdk/comptplus v1.0.4 h1:1kq+lY17BZCiKLuR1gTJPVBYd1ro9Dqi0C24YKdE74M=
