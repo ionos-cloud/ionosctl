@@ -34,7 +34,7 @@ func Create() *core.Command {
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			var input *cdn.DistributionProperties
+			input := &cdn.DistributionProperties{}
 			if err := setPropertiesFromFlags(c, input); err != nil {
 				return err
 			}
@@ -67,22 +67,28 @@ func addDistributionCreateFlags(cmd *core.Command) *core.Command {
 }
 
 func setPropertiesFromFlags(c *core.CommandConfig, p *cdn.DistributionProperties) error {
-	p.Domain = pointer.From(viper.GetString(core.GetFlagName(c.NS, constants.FlagCDNDistributionDomain)))
+	if fn := core.GetFlagName(c.NS, constants.FlagCDNDistributionDomain); viper.IsSet(fn) {
+		p.Domain = pointer.From(viper.GetString(fn))
+	}
+
 	if fn := core.GetFlagName(c.NS, constants.FlagCDNDistributionCertificateID); viper.IsSet(fn) {
 		p.CertificateId = pointer.From(viper.GetString(fn))
 	}
 
-	rr := viper.GetString(core.GetFlagName(c.NS, constants.FlagCDNDistributionRoutingRules))
-	data, err := getRoutingRulesData(rr)
-	if err != nil {
-		return fmt.Errorf("error reading routing rules file: %s", err)
+	if fn := core.GetFlagName(c.NS, constants.FlagCDNDistributionRoutingRules); viper.IsSet(fn) {
+		rr := viper.GetString(fn)
+		data, err := getRoutingRulesData(rr)
+		if err != nil {
+			return fmt.Errorf("error reading routing rules file: %s", err)
+		}
+
+		rules, err := getRoutingRulesFromJSON(data)
+		if err != nil {
+			return fmt.Errorf("error parsing routing rules: %s", err)
+		}
+		p.RoutingRules = rules
 	}
 
-	rules, err := getRoutingRulesFromJSON(data)
-	if err != nil {
-		return fmt.Errorf("error parsing routing rules: %s", err)
-	}
-	p.RoutingRules = rules
 	return nil
 }
 

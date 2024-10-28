@@ -31,7 +31,7 @@ Retrieve a distribution
 ## Options
 
 ```text
-  -u, --api-url string           Override default host url (default "https://api.ionos.com")
+  -u, --api-url string           Override default host url (default "https://cdn.de-fra.ionos.com")
       --cols strings             Set of columns to be printed on output 
                                  Available columns: [Id Domain CertificateId State]
   -c, --config string            Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")

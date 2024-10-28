@@ -36,6 +36,7 @@ var nonComputeNamespaces = map[string]string{
 	"k8s":                     "Managed-Kubernetes",
 	"user":                    "User-Management",
 	"dns":                     "DNS",
+	"cdn":                     "CDN",
 	"config":                  "CLI Setup",
 	"vm-autoscaling":          "VM Autoscaling",
 	"logging-service":         "Logging-Service",

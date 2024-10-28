@@ -139,6 +139,7 @@ const (
 // Defaults
 const (
 	DefaultApiURL               = "https://api.ionos.com"
+	DefaultCDNApiURL            = "https://cdn.de-fra.ionos.com"
 	DefaultDnsApiURL            = "dns.de-fra.ionos.com"
 	DefaultLoggingServiceApiURL = "logging.de-txl.ionos.com"
 	DefaultConfigFileName       = "/config.json"

@@ -69,7 +69,7 @@ func updateDistribution(c *core.CommandConfig, d cdn.Distribution) (cdn.Distribu
 	}
 
 	rNew, _, err := client.Must().CDNClient.DistributionsApi.DistributionsPut(context.Background(), *d.Id).
-		DistributionUpdate(cdn.DistributionUpdate{Properties: input}).Execute()
+		DistributionUpdate(cdn.DistributionUpdate{Id: d.Id, Properties: input}).Execute()
 	if err != nil {
 		return cdn.Distribution{}, err
 	}
