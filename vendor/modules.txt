@@ -63,6 +63,9 @@ github.com/inconshreveable/mousetrap
 # github.com/ionos-cloud/sdk-go-auth v1.0.6
 ## explicit; go 1.19
 github.com/ionos-cloud/sdk-go-auth
+# github.com/ionos-cloud/sdk-go-cdn v1.1.0
+## explicit; go 1.18
+github.com/ionos-cloud/sdk-go-cdn
 # github.com/ionos-cloud/sdk-go-cert-manager v1.0.1
 ## explicit; go 1.19
 github.com/ionos-cloud/sdk-go-cert-manager
@@ -198,7 +201,7 @@ golang.org/x/crypto/ssh/internal/bcrypt_pbkdf
 golang.org/x/exp/constraints
 golang.org/x/exp/slices
 golang.org/x/exp/utf8string
-# golang.org/x/oauth2 v0.20.0
+# golang.org/x/oauth2 v0.21.0
 ## explicit; go 1.18
 golang.org/x/oauth2
 golang.org/x/oauth2/internal

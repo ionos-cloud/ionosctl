@@ -20,6 +20,7 @@ const (
 	FlagLocation        = "location"
 	FlagLocationShort   = "l"
 	FlagOffset          = "offset"
+	FlagLimit           = "limit"
 	// DescAuthenticationOrder explains auth order. Embed this in any auth-related commands
 	DescAuthenticationOrder = `AUTHENTICATION ORDER
 ionosctl uses a layered approach for authentication, prioritizing sources in this order:
@@ -77,6 +78,13 @@ Within each layer, a token takes precedence over a username and password combina
 	FlagLoggingPipelineLogLabels        = "log-labels"
 	FlagLoggingPipelineLogType          = "log-type"
 	FlagLoggingPipelineLogRetentionTime = "log-retention-time"
+
+	FlagCDNDistributionFilterDomain  = "filter.domain"
+	FlagCDNDistributionFilterState   = "filter.state"
+	FlagCDNDistributionID            = "distribution-id"
+	FlagCDNDistributionDomain        = "domain"
+	FlagCDNDistributionCertificateID = "certificate-id"
+	FlagCDNDistributionRoutingRules  = "routing-rules"
 
 	FlagGroupId  = "group-id"
 	FlagServerId = "server-id"
