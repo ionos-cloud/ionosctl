@@ -31,7 +31,7 @@ Create a CDN distribution. Wiki: https://docs.ionos.com/cloud/network-services/c
 ## Options
 
 ```text
-  -u, --api-url string          Override default host url (default "https://cdn.de-fra.ionos.com")
+  -u, --api-url string          Override default host url (default "https://api.ionos.com")
       --certificate-id string   The ID of the certificate
       --cols strings            Set of columns to be printed on output 
                                 Available columns: [Id Domain CertificateId State]
