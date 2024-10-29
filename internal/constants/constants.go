@@ -35,6 +35,12 @@ Within each layer, a token takes precedence over a username and password combina
 	FlagLanId           = "lan-id"
 	FlagEdition         = "edition"
 
+	FlagGatewayIP    = "gateway-ip"
+	FlagInterfaceIP  = "interface-ip"
+	FlagConnectionIP = "connection-ip"
+	FlagPrivateKey   = "private-key"
+	FlagPort         = "port"
+
 	FlagCores                 = "cores"
 	FlagRam                   = "ram"
 	FlagAvailabilityZone      = "availability-zone"
