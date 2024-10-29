@@ -147,6 +147,7 @@ const (
 	DefaultApiURL               = "https://api.ionos.com"
 	DefaultDnsApiURL            = "dns.de-fra.ionos.com"
 	DefaultLoggingServiceApiURL = "logging.de-txl.ionos.com"
+	DefaultVPNApiURL            = "vpn.de-txl.ionos.com"
 	DefaultConfigFileName       = "/config.json"
 	DefaultOutputFormat         = "text"
 	DefaultWait                 = false
