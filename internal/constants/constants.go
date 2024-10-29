@@ -24,7 +24,7 @@ const (
 	DescAuthenticationOrder = `AUTHENTICATION ORDER
 ionosctl uses a layered approach for authentication, prioritizing sources in this order:
   1. Global flags
-  2. Environment variables
+  2. Environment variables credentials test failed
   3. Config file entries
 Within each layer, a token takes precedence over a username and password combination. For instance, if a token and a username/password pair are both defined in environment variables, ionosctl will prioritize the token. However, higher layers can override the use of a token from a lower layer. For example, username and password environment variables will supersede a token found in the config file.`
 	FlagMaxResults      = "max-results"
@@ -138,7 +138,6 @@ const (
 // Defaults
 const (
 	DefaultApiURL               = "https://api.ionos.com"
-	DefaultCDNApiURL            = "https://cdn.de-fra.ionos.com"
 	DefaultDnsApiURL            = "dns.de-fra.ionos.com"
 	DefaultLoggingServiceApiURL = "logging.de-txl.ionos.com"
 	DefaultConfigFileName       = "/config.json"

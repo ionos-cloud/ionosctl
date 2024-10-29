@@ -252,7 +252,7 @@ func addCommands() {
 	)
 
 	// CDN
-	rootCmd.AddCommand(funcChangeDefaultApiUrl(cdn.Command(), constants.DefaultCDNApiURL))
+	rootCmd.AddCommand(cdn.Command())
 }
 
 const (
