@@ -39,6 +39,8 @@ Within each layer, a token takes precedence over a username and password combina
 	FlagInterfaceIP  = "interface-ip"
 	FlagConnectionIP = "connection-ip"
 	FlagPrivateKey   = "private-key"
+	FlagPublicKey    = "public-key"
+	FlagHost         = "host"
 	FlagPort         = "port"
 
 	FlagCores                 = "cores"

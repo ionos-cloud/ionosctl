@@ -24,7 +24,7 @@ func Create() *core.Command {
 		Verb:      "create",
 		Aliases:   []string{"c", "post"},
 		ShortDesc: "Create a WireGuard Gateway",
-		Example:   "ionosctl ",
+		Example:   "", // TODO: Probably best if I don't forget this
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return core.CheckRequiredFlags(c.Command, c.NS,
 				constants.FlagName,
@@ -113,6 +113,19 @@ func Create() *core.Command {
 	cmd.AddStringFlag(constants.FlagDescription, "", "", "Description of the WireGuard Gateway")
 	cmd.AddStringFlag(constants.FlagGatewayIP, "", "", "Public IP address to be assigned to the gateway. Note: This must be an IP address in the same datacenter as the connections", core.RequiredFlagOption())
 	cmd.AddStringFlag(constants.FlagInterfaceIP, "", "", "The IPv4 or IPv6 address (with CIDR mask) to be assigned to the WireGuard interface", core.RequiredFlagOption())
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagInterfaceIP, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		ipblocks, _, err := client.Must().CloudClient.IPBlocksApi.IpblocksGet(context.Background()).Execute()
+		if err != nil || ipblocks.Items == nil || len(*ipblocks.Items) == 0 {
+			return nil, cobra.ShellCompDirectiveError
+		}
+		var ips []string
+		for _, ipblock := range *ipblocks.Items {
+			if ipblock.Properties.Ips != nil {
+				ips = append(ips, *ipblock.Properties.Ips...)
+			}
+		}
+		return ips, cobra.ShellCompDirectiveNoFileComp
+	})
 	cmd.AddStringFlag(constants.FlagDatacenterId, "", "", "The datacenter to connect your VPN Gateway to", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagDatacenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return cloudapiv6completer.DataCentersIds(), cobra.ShellCompDirectiveNoFileComp
