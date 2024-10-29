@@ -10,11 +10,11 @@ func Root() *core.Command {
 		Command: &cobra.Command{
 			Use:              "gateway",
 			Short:            "Manage Wireguard VPN Gateways",
-			Aliases:          []string{"g"},
+			Aliases:          []string{"g", "gw"},
 			TraverseChildren: true,
 		},
 	}
-	// cmd.AddCommand()
+	cmd.AddCommand(Create())
 
 	return cmd
 }

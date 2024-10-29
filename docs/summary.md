@@ -501,6 +501,10 @@
     * server
         * [get](subcommands%2FVM%20Autoscaling%2Fserver%2Fget.md)
         * [list](subcommands%2FVM%20Autoscaling%2Fserver%2Flist.md)
+* VPN Gateway
+    * wireguard
+        * gateway
+            * [create](subcommands%2FVPN%20Gateway%2Fwireguard%2Fgateway%2Fcreate.md)
 
 
 ## Legal

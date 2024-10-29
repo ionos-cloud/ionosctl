@@ -226,42 +226,44 @@ func addCommands() {
 	rootCmd.AddCommand(logging_service.Root())
 
 	rootCmd.AddCommand(vpn.Root())
+
+	rootCmd.Command.HasAvailableSubCommands()
 }
 
 const (
-	availableCommands = `{{- if .HasAvailableSubCommands}}
+	availableCommands = `{{- if .Commands}}
 AVAILABLE COMMANDS:{{range .Commands}}{{if (or .IsAvailableCommand (eq .Name "help"))}}
   {{rpad .Name .NamePadding }} {{.Short | trim}}{{end}}{{end}}{{print "\n"}}{{end}}`
 
-	seeAlso = `{{- if .HasHelpSubCommands}}
+	seeAlso = `{{- if .Annotations.SeeAlsos}}
 SEE ALSO:
 {{.Annotations.SeeAlsos | trim}}{{print "\n"}}{{end}}`
 
-	additionalHelpTopics = `{{- if .HasHelpSubCommands}}
+	additionalHelpTopics = `{{- if .Commands}}
 Additional help topics:{{range .Commands}}{{if .IsAdditionalHelpTopicCommand}}
   {{rpad .CommandPath .CommandPathPadding}} {{.Short | trim}}{{end}}{{end}}{{print "\n"}}{{end}}`
 
-	localFlags = `{{- if .HasAvailableLocalFlags}}
+	localFlags = `{{- if .LocalFlags}}
 FLAGS:
 {{.LocalFlags.FlagUsages}}{{end}}`
 
-	globalFlags = `{{- if .HasAvailableInheritedFlags}}
+	globalFlags = `{{- if .InheritedFlags}}
 GLOBAL FLAGS:
 {{.InheritedFlags.FlagUsages}}{{end}}`
 
-	usage = `{{- if .Runnable}}
+	usage = `{{- if .UseLine}}
 USAGE:
   {{.UseLine | trim}}{{print "\n"}}{{end}}`
 
-	aliases = `{{- if gt (len .Aliases) 0}}
+	aliases = `{{- if .Aliases}}
 ALIASES:
   {{.NameAndAliases | trim}}{{print "\n"}}{{end}}`
 
-	examples = `{{- if .HasExample}}
+	examples = `{{- if .Example}}
 EXAMPLES:
 {{.Example | trim}}{{print "\n"}}{{end}}`
 
-	moreInfo = `{{- if .HasAvailableSubCommands}}
+	moreInfo = `{{- if .Commands}}
 Use "{{.CommandPath}} [command] --help" for more information about a command.{{print "\n"}}{{end}}`
 )
 

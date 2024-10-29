@@ -2,10 +2,12 @@ package gateway
 
 import (
 	"context"
+	"fmt"
 	"net"
 
 	cloudapiv6completer "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/completer"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/pointer"
 	vpn "github.com/ionos-cloud/sdk-go-vpn"
@@ -88,6 +90,21 @@ func Create() *core.Command {
 					(*input.Connections)[0].Ipv6CIDR = pointer.From(ip)
 				}
 			}
+
+			createdGateway, _, err := client.Must().VPNClient.WireguardGatewaysApi.WireguardgatewaysPost(context.Background()).
+				WireguardGatewayCreate(vpn.WireguardGatewayCreate{Properties: input}).Execute()
+			if err != nil {
+				return err
+			}
+
+			json, err := createdGateway.MarshalJSON()
+			if err != nil {
+				return err
+			}
+
+			fmt.Println(string(json))
+
+			return nil
 		},
 		InitClient: true,
 	})
@@ -113,4 +130,6 @@ func Create() *core.Command {
 
 	cmd.Command.SilenceUsage = true
 	cmd.Command.Flags().SortFlags = false
+
+	return cmd
 }
