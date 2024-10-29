@@ -4,18 +4,14 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"os"
-
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
+	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/pointer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/uuidgen"
-
 	cdn "github.com/ionos-cloud/sdk-go-cdn"
-
-	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/spf13/viper"
-
-	"github.com/ionos-cloud/ionosctl/v6/internal/core"
+	"os"
 )
 
 func Create() *core.Command {
@@ -27,13 +23,20 @@ func Create() *core.Command {
 		ShortDesc: "Create a CDN distribution. Wiki: https://docs.ionos.com/cloud/network-services/cdn/dcd-how-tos/create-cdn-distribution",
 		Example:   "ionosctl cdn ds create --domain foo-bar.com --certificate-id id --routing-rules rules.json",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			if err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagCDNDistributionDomain, constants.FlagCDNDistributionRoutingRules); err != nil {
+			if err := core.CheckRequiredFlagsSets(c.Command, c.NS,
+				[]string{constants.FlagCDNDistributionDomain, constants.FlagCDNDistributionRoutingRules},
+				[]string{constants.FlagCDNDistributionRoutingRulesExample}); err != nil {
 				return err
 			}
 
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
+			if viper.GetBool(core.GetFlagName(c.NS, constants.FlagCDNDistributionRoutingRulesExample)) {
+				fmt.Fprintf(c.Command.Command.OutOrStdout(), RoutingRuleExample)
+				return nil
+			}
+
 			input := &cdn.DistributionProperties{}
 			if err := setPropertiesFromFlags(c, input); err != nil {
 				return err
@@ -63,6 +66,7 @@ func addDistributionCreateFlags(cmd *core.Command) *core.Command {
 	cmd.AddStringFlag(constants.FlagCDNDistributionDomain, "", "", "The domain of the distribution")
 	cmd.AddStringFlag(constants.FlagCDNDistributionCertificateID, "", "", "The ID of the certificate")
 	cmd.AddStringFlag(constants.FlagCDNDistributionRoutingRules, "", "", "The routing rules of the distribution. JSON string or file path of routing rules")
+	cmd.AddBoolFlag(constants.FlagCDNDistributionRoutingRulesExample, "", false, "Print an example of routing rules")
 	return cmd
 }
 
@@ -111,3 +115,36 @@ func getRoutingRulesData(input string) ([]byte, error) {
 		return nil, err
 	}
 }
+
+const RoutingRuleExample = `
+[
+	{
+	  "prefix": "/api",
+	  "scheme": "http/https",
+	  "upstream": {
+		"caching": true,
+		"geoRestrictions": {
+		  "allowList": ["CN", "RU"]
+		},
+		"host": "clitest.example.com",
+		"rateLimitClass": "R500",
+		"sniMode": "distribution",
+		"waf": true
+	  }
+	},
+    {
+	  "prefix": "/api2",
+	  "scheme": "http/https",
+	  "upstream": {
+		"caching": false,
+		"geoRestrictions": {
+		  "blockList": ["CN", "RU"]
+		},
+		"host": "server2.example.com",
+		"rateLimitClass": "R10",
+		"sniMode": "origin",
+		"waf": false
+      }
+   }
+]
+`
