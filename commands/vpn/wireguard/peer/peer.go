@@ -21,7 +21,7 @@ func Root() *core.Command {
 			TraverseChildren: true,
 		},
 	}
-	// cmd.AddCommand()
+	cmd.AddCommand(Create())
 
 	return cmd
 }
