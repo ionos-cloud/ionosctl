@@ -225,9 +225,7 @@ func addCommands() {
 	rootCmd.AddCommand(dns.Root())
 	rootCmd.AddCommand(logging_service.Root())
 
-	rootCmd.AddCommand(vpn.Root())
-
-	rootCmd.Command.HasAvailableSubCommands()
+	rootCmd.AddCommand(funcChangeDefaultApiUrl(vpn.Root(), constants.DefaultVpnApiURL))
 }
 
 const (
