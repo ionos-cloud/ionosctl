@@ -4,7 +4,7 @@ var VPNWireguardGateway = map[string]string{
 	"ID":             "id",
 	"Name":           "properties.name",
 	"Description":    "properties.description",
-	"IP":             "properties.gateway_ip",
+	"GatewayIP":      "properties.gateway_ip",
 	"InterfaceIPv4":  "properties.interface_ipv4_cidr",
 	"InterfaceIPv6":  "properties.interface_ipv6_cidr",
 	"DatacenterId":   "properties.connections[0].datacenter_id",

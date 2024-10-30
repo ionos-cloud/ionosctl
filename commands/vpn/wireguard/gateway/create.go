@@ -9,6 +9,9 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/pointer"
 	vpn "github.com/ionos-cloud/sdk-go-vpn"
 	"github.com/spf13/cobra"
@@ -97,13 +100,14 @@ func Create() *core.Command {
 				return err
 			}
 
-			json, err := createdGateway.MarshalJSON()
+			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+
+			out, err := jsontabwriter.GenerateOutput("", jsonpaths.VPNWireguardGateway, createdGateway, tabheaders.GetHeaders(allCols, defaultCols, cols))
 			if err != nil {
 				return err
 			}
 
-			fmt.Println(string(json))
-
+			fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
 			return nil
 		},
 		InitClient: true,
