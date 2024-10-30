@@ -15,3 +15,14 @@ var VPNWireguardGateway = map[string]string{
 	"ListenPort":     "properties.listen_port",
 	"Status":         "metadata.status",
 }
+
+var VPNWireguardPeer = map[string]string{
+	"ID":           "id",
+	"Name":         "properties.name",
+	"Description":  "properties.description",
+	"Host":         "properties.endpoint.host",
+	"Port":         "properties.endpoint.port",
+	"WhitelistIPs": "properties.allowedIPs",
+	"PublicKey":    "properties.publicKey",
+	"Status":       "metadata.status",
+}
