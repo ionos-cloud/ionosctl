@@ -14,6 +14,7 @@ func Root() *core.Command {
 			TraverseChildren: true,
 		},
 	}
+
 	cmd.AddCommand(wireguard.Root())
 
 	return cmd
