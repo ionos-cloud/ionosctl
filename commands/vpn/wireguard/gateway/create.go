@@ -118,10 +118,16 @@ func Create() *core.Command {
 
 	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Name of the WireGuard Gateway", core.RequiredFlagOption())
 	cmd.AddStringFlag(constants.FlagDescription, "", "", "Description of the WireGuard Gateway")
-	cmd.AddStringFlag(constants.FlagGatewayIP, "", "", "Public IP address to be assigned to the gateway. Note: This must be an IP address in the same datacenter as the --datacenter-id", core.RequiredFlagOption())
-	cmd.AddStringFlag(constants.FlagInterfaceIP, "", "", "The IPv4 or IPv6 address (with CIDR mask) to be assigned to the WireGuard interface", core.RequiredFlagOption())
-	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagInterfaceIP, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		ipblocks, _, err := client.Must().CloudClient.IPBlocksApi.IpblocksGet(context.Background()).Execute()
+	cmd.AddStringFlag(constants.FlagGatewayIP, "", "", "The IP of an IPBlock in the same location as the provided datacenter", core.RequiredFlagOption())
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagGatewayIP, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		dc, _, _ := client.Must().CloudClient.DataCentersApi.
+			DatacentersFindById(context.Background(), viper.GetString(core.GetFlagName(cmd.NS, constants.FlagDatacenterId))).
+			Execute()
+
+		ipblocks, _, err := client.Must().CloudClient.IPBlocksApi.
+			IpblocksGet(context.Background()).
+			Filter("location", *dc.Properties.Location).
+			Execute()
 		if err != nil || ipblocks.Items == nil || len(*ipblocks.Items) == 0 {
 			return nil, cobra.ShellCompDirectiveError
 		}
@@ -133,6 +139,8 @@ func Create() *core.Command {
 		}
 		return ips, cobra.ShellCompDirectiveNoFileComp
 	})
+	cmd.AddStringFlag(constants.FlagInterfaceIP, "", "", "The IPv4 or IPv6 address (with CIDR mask) to be assigned to the WireGuard interface", core.RequiredFlagOption())
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagInterfaceIP, completer.GetCidrCompletionFunc(cmd))
 	cmd.AddStringFlag(constants.FlagDatacenterId, "", "", "The datacenter to connect your VPN Gateway to", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagDatacenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return cloudapiv6completer.DataCentersIds(), cobra.ShellCompDirectiveNoFileComp
