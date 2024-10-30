@@ -8,12 +8,13 @@ var CDNDistribution = map[string]string{
 }
 
 var CDNRoutingRule = map[string]string{
-	"Scheme":          "scheme",
-	"Prefix":          "prefix",
-	"Host":            "upstream.host",
-	"Caching":         "upstream.caching",
-	"Waf":             "upstream.waf",
-	"SniMode":         "upstream.sniMode",
-	"GeoRestrictions": "upstream.geoRestrictions",
-	"RateLimitClass":  "upstream.rateLimitClass",
+	"Scheme":                   "scheme",
+	"Prefix":                   "prefix",
+	"Host":                     "upstream.host",
+	"Caching":                  "upstream.caching",
+	"Waf":                      "upstream.waf",
+	"SniMode":                  "upstream.sniMode",
+	"GeoRestrictionsAllowList": "upstream.geoRestrictions.allowList",
+	"GeoRestrictionsBlockList": "upstream.geoRestrictions.blockList",
+	"RateLimitClass":           "upstream.rateLimitClass",
 }

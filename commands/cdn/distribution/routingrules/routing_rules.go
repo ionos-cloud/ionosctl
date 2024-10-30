@@ -17,7 +17,7 @@ import (
 )
 
 var (
-	allRoutingRulesColumns     = []string{"Scheme", "Prefix", "Host", "Caching", "Waf", "RateLimitClass", "SniMode", "GeoRestrictions"}
+	allRoutingRulesColumns     = []string{"Scheme", "Prefix", "Host", "Caching", "Waf", "RateLimitClass", "SniMode", "GeoRestrictionsAllowList", "GeoRestrictionsBlockList"}
 	defaultRoutingRulesColumns = []string{"Scheme", "Prefix", "Host", "RateLimitClass", "SniMode"}
 )
 

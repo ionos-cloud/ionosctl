@@ -78,8 +78,8 @@ Within each layer, a token takes precedence over a username and password combina
 	FlagLoggingPipelineLogType          = "log-type"
 	FlagLoggingPipelineLogRetentionTime = "log-retention-time"
 
-	FlagCDNDistributionFilterDomain        = "filter.domain"
-	FlagCDNDistributionFilterState         = "filter.state"
+	FlagCDNDistributionFilterDomain        = "domain"
+	FlagCDNDistributionFilterState         = "state"
 	FlagCDNDistributionID                  = "distribution-id"
 	FlagCDNDistributionDomain              = "domain"
 	FlagCDNDistributionCertificateID       = "certificate-id"
