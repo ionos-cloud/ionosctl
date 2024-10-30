@@ -74,6 +74,9 @@ func Create() *core.Command {
 			// and pass it to the API as the correct field (ipv4 or ipv6)
 
 			isIPv4 := func(ip string) bool {
+				if _, _, err := net.ParseCIDR(ip); err == nil {
+					return net.ParseIP(ip).To4() != nil
+				}
 				return net.ParseIP(ip).To4() != nil
 			}
 			if fn := core.GetFlagName(c.NS, constants.FlagInterfaceIP); viper.IsSet(fn) {
@@ -115,7 +118,7 @@ func Create() *core.Command {
 
 	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Name of the WireGuard Gateway", core.RequiredFlagOption())
 	cmd.AddStringFlag(constants.FlagDescription, "", "", "Description of the WireGuard Gateway")
-	cmd.AddStringFlag(constants.FlagGatewayIP, "", "", "Public IP address to be assigned to the gateway. Note: This must be an IP address in the same datacenter as the connections", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagGatewayIP, "", "", "Public IP address to be assigned to the gateway. Note: This must be an IP address in the same datacenter as the --datacenter-id", core.RequiredFlagOption())
 	cmd.AddStringFlag(constants.FlagInterfaceIP, "", "", "The IPv4 or IPv6 address (with CIDR mask) to be assigned to the WireGuard interface", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagInterfaceIP, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		ipblocks, _, err := client.Must().CloudClient.IPBlocksApi.IpblocksGet(context.Background()).Execute()
