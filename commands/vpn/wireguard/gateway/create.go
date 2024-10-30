@@ -37,7 +37,6 @@ func Create() *core.Command {
 				constants.FlagLanId,
 				constants.FlagConnectionIP,
 				constants.FlagPrivateKey,
-				constants.FlagPort,
 			)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
@@ -96,6 +95,8 @@ func Create() *core.Command {
 					(*input.Connections)[0].Ipv6CIDR = pointer.From(ip)
 				}
 			}
+
+			fmt.Println(client.Must().VPNClient.GetConfig().Host)
 
 			createdGateway, _, err := client.Must().VPNClient.WireguardGatewaysApi.WireguardgatewaysPost(context.Background()).
 				WireguardGatewayCreate(vpn.WireguardGatewayCreate{Properties: input}).Execute()
