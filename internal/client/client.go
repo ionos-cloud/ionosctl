@@ -121,6 +121,7 @@ func TestCreds(user, pass, token string) error {
 }
 
 func (c *Client) TestCreds() error {
+	c.CloudClient.GetConfig().Host = constants.DefaultApiURL[8:]
 	_, _, err := c.CloudClient.DefaultApi.ApiInfoGet(context.Background()).MaxResults(1).Depth(0).Execute()
 	if err != nil {
 		usedScheme := "used token"
