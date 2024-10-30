@@ -2,6 +2,7 @@ package commands
 
 import (
 	"fmt"
+	"github.com/ionos-cloud/ionosctl/v6/commands/cdn"
 	"os"
 	"strings"
 
@@ -249,6 +250,9 @@ func addCommands() {
 			logging_service.LoggingServiceCmd(), constants.DefaultLoggingServiceApiURL,
 		),
 	)
+
+	// CDN
+	rootCmd.AddCommand(cdn.Command())
 }
 
 const (

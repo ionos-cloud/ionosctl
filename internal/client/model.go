@@ -2,6 +2,7 @@ package client
 
 import (
 	"fmt"
+	cdn "github.com/ionos-cloud/sdk-go-cdn"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	sdkgoauth "github.com/ionos-cloud/sdk-go-auth"
@@ -71,6 +72,7 @@ type Client struct {
 	PostgresClient *postgres.APIClient
 	MongoClient    *mongo.APIClient
 	MariaClient    *maria.APIClient
+	CDNClient      *cdn.APIClient
 }
 
 func appendUserAgent(userAgent string) string {
@@ -113,6 +115,9 @@ func newClient(name, pwd, token, hostUrl string, usedLayer *Layer) *Client {
 	mariaConfig := maria.NewConfiguration(name, pwd, token, hostUrl)
 	mariaConfig.UserAgent = appendUserAgent(mariaConfig.UserAgent)
 
+	cdnConfig := cdn.NewConfiguration(name, pwd, token, hostUrl)
+	cdnConfig.UserAgent = appendUserAgent(cdnConfig.UserAgent)
+
 	return &Client{
 		CloudClient:          cloudv6.NewAPIClient(clientConfig),
 		AuthClient:           sdkgoauth.NewAPIClient(authConfig),
@@ -126,6 +131,7 @@ func newClient(name, pwd, token, hostUrl string, usedLayer *Layer) *Client {
 		PostgresClient: postgres.NewAPIClient(postgresConfig),
 		MongoClient:    mongo.NewAPIClient(mongoConfig),
 		MariaClient:    maria.NewAPIClient(mariaConfig),
+		CDNClient:      cdn.NewAPIClient(cdnConfig),
 
 		usedLayer: usedLayer,
 	}

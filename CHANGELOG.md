@@ -1,5 +1,8 @@
 # Changelog
 
+## [v6.8.0]
+- Added support for CDN operations
+
 ## [v6.7.8] (October 2024)
 
 ### Added

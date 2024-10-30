@@ -34,6 +34,15 @@
         * [get](subcommands%2FAuthentication%2Ftoken%2Fget.md)
         * [list](subcommands%2FAuthentication%2Ftoken%2Flist.md)
         * [parse](subcommands%2FAuthentication%2Ftoken%2Fparse.md)
+* CDN
+    * distribution
+        * [create](subcommands%2FCDN%2Fdistribution%2Fcreate.md)
+        * [delete](subcommands%2FCDN%2Fdistribution%2Fdelete.md)
+        * [get](subcommands%2FCDN%2Fdistribution%2Fget.md)
+        * [list](subcommands%2FCDN%2Fdistribution%2Flist.md)
+        * routingrules
+            * [get](subcommands%2FCDN%2Fdistribution%2Froutingrules%2Fget.md)
+        * [update](subcommands%2FCDN%2Fdistribution%2Fupdate.md)
 * CLI Setup
     * [location](subcommands%2FCLI%20Setup%2Flocation.md)
     * [login](subcommands%2FCLI%20Setup%2Flogin.md)
