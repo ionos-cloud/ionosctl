@@ -13,6 +13,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/pointer"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/uuidgen"
 	vpn "github.com/ionos-cloud/sdk-go-vpn"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -98,8 +99,13 @@ func Create() *core.Command {
 
 			fmt.Println(client.Must().VPNClient.GetConfig().Host)
 
-			createdGateway, _, err := client.Must().VPNClient.WireguardGatewaysApi.WireguardgatewaysPost(context.Background()).
-				WireguardGatewayCreate(vpn.WireguardGatewayCreate{Properties: input}).Execute()
+			id := uuidgen.Must()
+			createdGateway, _, err := client.Must().VPNClient.WireguardGatewaysApi.
+				WireguardgatewaysPut(context.Background(), id).
+				WireguardGatewayEnsure(vpn.WireguardGatewayEnsure{
+					Id:         &id,
+					Properties: input,
+				}).Execute()
 			if err != nil {
 				return err
 			}
