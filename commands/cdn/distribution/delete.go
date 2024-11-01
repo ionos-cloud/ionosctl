@@ -7,6 +7,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 	cdn "github.com/ionos-cloud/sdk-go-cdn"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -23,27 +24,19 @@ func Delete() *core.Command {
 		ShortDesc: "Delete a distribution",
 		Example:   `ionosctl cdn ds delete --distribution-id ID`,
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			if err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagCDNDistributionID); err != nil {
+			if err := core.CheckRequiredFlagsSets(c.Command, c.NS,
+				[]string{constants.FlagCDNDistributionID}, []string{constants.ArgAll}); err != nil {
 				return err
 			}
 
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			distributionID := viper.GetString(core.GetFlagName(c.NS, constants.FlagCDNDistributionID))
-			d, _, err := client.Must().CDNClient.DistributionsApi.DistributionsFindById(context.Background(), distributionID).Execute()
-			if err != nil {
-				return fmt.Errorf("distribution not found: %w", err)
+			if all := viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)); all {
+				return deleteAll(c)
 			}
 
-			yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Are you sure you want to delete distribution %s for domain %s", *d.Id, *d.Properties.Domain),
-				viper.GetBool(constants.ArgForce))
-			if !yes {
-				return fmt.Errorf("user cancelled deletion")
-			}
-
-			_, err = client.Must().CDNClient.DistributionsApi.DistributionsDelete(context.Background(), *d.Id).Execute()
-			return err
+			return deleteSingle(c, viper.GetString(core.GetFlagName(c.NS, constants.FlagCDNDistributionID)))
 		},
 		InitClient: true,
 	})
@@ -54,9 +47,37 @@ func Delete() *core.Command {
 			return *r.Id
 		}), cobra.ShellCompDirectiveNoFileComp
 	})
+	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Delete all records if set", core.RequiredFlagOption())
 
 	cmd.Command.SilenceUsage = true
 	cmd.Command.Flags().SortFlags = false
 
 	return cmd
+}
+
+func deleteAll(c *core.CommandConfig) error {
+	records, err := completer.Distributions()
+	if err != nil {
+		return fmt.Errorf("failed getting all distributions: %w", err)
+	}
+
+	return functional.ApplyAndAggregateErrors(*records.GetItems(), func(d cdn.Distribution) error {
+		return deleteSingle(c, *d.Id)
+	})
+}
+
+func deleteSingle(c *core.CommandConfig, id string) error {
+	d, _, err := client.Must().CDNClient.DistributionsApi.DistributionsFindById(context.Background(), id).Execute()
+	if err != nil {
+		return fmt.Errorf("distribution not found: %w", err)
+	}
+
+	yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Are you sure you want to delete distribution %s for domain %s", *d.Id, *d.Properties.Domain),
+		viper.GetBool(constants.ArgForce))
+	if !yes {
+		return fmt.Errorf("user cancelled deletion")
+	}
+
+	_, err = client.Must().CDNClient.DistributionsApi.DistributionsDelete(context.Background(), *d.Id).Execute()
+	return err
 }
