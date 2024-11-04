@@ -31,14 +31,18 @@ func Create() *core.Command {
 		ShortDesc: "Create a WireGuard Gateway",
 		Example:   "", // TODO: Probably best if I don't forget this
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			return core.CheckRequiredFlags(c.Command, c.NS,
+			baseReq := []string{
 				constants.FlagName,
 				constants.FlagDatacenterId,
 				constants.FlagLanId,
 				constants.FlagConnectionIP,
 				constants.FlagGatewayIP,
 				constants.FlagInterfaceIP,
-				constants.FlagPrivateKey,
+			}
+			return core.CheckRequiredFlagsSets(c.Command, c.NS,
+				// either privateKey or privateKeyPath are required
+				append(baseReq, constants.FlagPrivateKey),
+				append(baseReq, constants.FlagPrivateKeyPath),
 			)
 		},
 		CmdRun: func(c *core.CommandConfig) error {

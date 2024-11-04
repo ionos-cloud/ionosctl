@@ -30,6 +30,8 @@ func FlagUsage(flag string) string {
 }
 
 // FlagsUsage calls FlagUsage for every flag in the slice
+//
+// FlagsUsage ("datacenter-id") -> "--datacenter-id DATACENTER_ID"
 func FlagsUsage(flags ...string) string {
 	usage := ""
 	for _, flagName := range flags {
