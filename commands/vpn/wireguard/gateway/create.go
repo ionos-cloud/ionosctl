@@ -32,11 +32,11 @@ func Create() *core.Command {
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return core.CheckRequiredFlags(c.Command, c.NS,
 				constants.FlagName,
-				constants.FlagGatewayIP,
-				constants.FlagInterfaceIP,
 				constants.FlagDatacenterId,
 				constants.FlagLanId,
 				constants.FlagConnectionIP,
+				constants.FlagGatewayIP,
+				constants.FlagInterfaceIP,
 				constants.FlagPrivateKey,
 			)
 		},
