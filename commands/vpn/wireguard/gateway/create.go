@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net"
+	"os"
 
 	cloudapiv6completer "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/completer"
@@ -57,6 +58,15 @@ func Create() *core.Command {
 				input.PrivateKey = pointer.From(viper.GetString(fn))
 			}
 
+			if fn := core.GetFlagName(c.NS, constants.FlagPrivateKeyPath); viper.IsSet(fn) {
+				// read the file
+				keyBytes, err := os.ReadFile(viper.GetString(fn))
+				if err != nil {
+					return fmt.Errorf("failed to read private key file: %w", err)
+				}
+				input.PrivateKey = pointer.From(string(keyBytes))
+			}
+
 			if fn := core.GetFlagName(c.NS, constants.FlagPort); viper.IsSet(fn) {
 				input.ListenPort = pointer.From(viper.GetInt32(fn))
 			}
@@ -69,22 +79,26 @@ func Create() *core.Command {
 				(*input.Connections)[0].LanId = pointer.From(viper.GetString(fn))
 			}
 
+			if fn := core.GetFlagName(c.NS, constants.FlagGatewayIP); viper.IsSet(fn) {
+				input.GatewayIP = pointer.From(viper.GetString(fn))
+			}
+
 			// Note: VPN Gateway handles IPv4 and IPv6 addresses separately for both InterfaceIP and Connections.IP
 			// We will use the same flag for both ipv4 and ipv6 for both of them, work out what type (v4 or v6) it is,
 			// and pass it to the API as the correct field (ipv4 or ipv6)
-
 			isIPv4 := func(ip string) bool {
-				if _, _, err := net.ParseCIDR(ip); err == nil {
-					return net.ParseIP(ip).To4() != nil
+				if ipAddr, _, err := net.ParseCIDR(ip); err == nil {
+					return ipAddr.To4() != nil
 				}
 				return net.ParseIP(ip).To4() != nil
 			}
+
 			if fn := core.GetFlagName(c.NS, constants.FlagInterfaceIP); viper.IsSet(fn) {
 				ip := viper.GetString(fn)
 				if isIPv4(ip) {
 					input.InterfaceIPv4CIDR = pointer.From(ip)
 				} else {
-					input.InterfaceIPv4CIDR = pointer.From(ip)
+					input.InterfaceIPv6CIDR = pointer.From(ip)
 				}
 			}
 
@@ -160,7 +174,9 @@ func Create() *core.Command {
 	cmd.AddStringFlag(constants.FlagConnectionIP, "", "", "A LAN IPv4 or IPv6 address in CIDR notation that will be assigned to the VPN Gateway", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagConnectionIP, completer.GetCidrCompletionFunc(cmd))
 
-	cmd.AddStringFlag(constants.FlagPrivateKey, "k", "", "The private key to be used by the WireGuard Gateway", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagPrivateKey, "K", "", fmt.Sprintf("Specify the private key (required or --%s)", constants.FlagPrivateKeyPath))
+	cmd.AddStringFlag(constants.FlagPrivateKeyPath, "k", "", fmt.Sprintf("Specify the private key from a file (required or --%s)", constants.FlagPrivateKey))
+
 	cmd.AddIntFlag(constants.FlagPort, "", 51820, "Port that WireGuard Server will listen on")
 
 	cmd.Command.SilenceUsage = true
