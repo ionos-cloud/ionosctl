@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/ionos-cloud/ionosctl/v6/commands/vpn/wireguard/gateway"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
@@ -78,6 +79,11 @@ func Create() *core.Command {
 	})
 
 	cmd.AddStringFlag(constants.FlagGatewayIP, constants.FlagIdShort, "", "The ID of the WireGuard Gateway", core.RequiredFlagOption())
+	cmd.Command.RegisterFlagCompletionFunc(constants.FlagGatewayIP, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return gateway.GatewaysProperty(func(gateway vpn.WireguardGatewayRead) string {
+			return *gateway.Id
+		}), cobra.ShellCompDirectiveNoFileComp
+	})
 
 	cmd.AddStringFlag(constants.FlagName, "", "", "Name of the WireGuard Peer", core.RequiredFlagOption())
 	cmd.AddStringFlag(constants.FlagDescription, "", "", "Description of the WireGuard Peer")
@@ -87,7 +93,7 @@ func Create() *core.Command {
 	})
 	cmd.AddStringFlag(constants.FlagPublicKey, "", "", "Public key of the connecting peer", core.RequiredFlagOption())
 	cmd.AddStringFlag(constants.FlagHost, "", "", "Hostname or IPV4 address that the WireGuard Server will connect to", core.RequiredFlagOption())
-	cmd.AddIntFlag(constants.FlagPort, "", 0, "Port that the WireGuard Server will connect to")
+	cmd.AddIntFlag(constants.FlagPort, "", 51820, "Port that the WireGuard Server will connect to")
 
 	cmd.Command.SilenceUsage = true
 	cmd.Command.Flags().SortFlags = false
