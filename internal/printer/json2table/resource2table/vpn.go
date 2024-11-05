@@ -36,8 +36,12 @@ func ConvertVPNWireguardGatewayToTable(gateway vpn.WireguardGatewayRead) ([]map[
 	for _, connection := range *gateway.Properties.Connections {
 		table[0]["DatacenterId"] = *connection.DatacenterId
 		table[0]["LanId"] = *connection.LanId
-		table[0]["ConnectionIPv4"] = *connection.Ipv4CIDR
-		table[0]["ConnectionIPv6"] = *connection.Ipv6CIDR
+		if connection.Ipv4CIDR != nil {
+			table[0]["ConnectionIPv4"] = *connection.Ipv4CIDR
+		}
+		if connection.Ipv6CIDR != nil {
+			table[0]["ConnectionIPv6"] = *connection.Ipv6CIDR
+		}
 	}
 
 	return table, nil
