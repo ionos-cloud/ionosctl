@@ -1,9 +1,14 @@
 package peer
 
 import (
+	"context"
+
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
+	vpn "github.com/ionos-cloud/sdk-go-vpn"
 	"github.com/spf13/cobra"
 )
 
@@ -15,18 +20,6 @@ There is no session or tunnel establishment process like in IPsec. Instead, Wire
 */
 
 var (
-	/*
-		var VPNWireguardPeer = map[string]string{
-			"ID":           "id",
-			"Name":         "properties.name",
-			"Description":  "properties.description",
-			"Host":         "properties.endpoint.host",
-			"Port":         "properties.endpoint.port",
-			"WhitelistIPs": "properties.allowedIPs",
-			"PublicKey":    "properties.publicKey",
-			"Status":       "metadata.status",
-		}
-	*/
 	allCols = []string{"ID", "Name", "Description", "Host", "Port", "WhitelistIPs", "PublicKey", "Status"}
 )
 
@@ -46,6 +39,36 @@ func Root() *core.Command {
 	})
 
 	cmd.AddCommand(Create())
+	cmd.AddCommand(List())
 
 	return cmd
 }
+
+// PeersProperty returns a list of properties of all peers matching the given filters
+func PeersProperty[V any](gatewayID string, f func(peer vpn.WireguardPeerRead) V, fs ...Filter) []V {
+	recs, err := Peers(gatewayID, fs...)
+	if err != nil {
+		return nil
+	}
+	return functional.Map(*recs.Items, f)
+}
+
+// Peers returns all distributions matching the given filters
+func Peers(gatewayID string, fs ...Filter) (vpn.WireguardPeerReadList, error) {
+	req := client.Must().VPNClient.WireguardPeersApi.WireguardgatewaysPeersGet(context.Background(), gatewayID)
+	for _, f := range fs {
+		var err error
+		req, err = f(req)
+		if err != nil {
+			return vpn.WireguardPeerReadList{}, err
+		}
+	}
+
+	ls, _, err := req.Execute()
+	if err != nil {
+		return vpn.WireguardPeerReadList{}, err
+	}
+	return ls, nil
+}
+
+type Filter func(request vpn.ApiWireguardgatewaysPeersGetRequest) (vpn.ApiWireguardgatewaysPeersGetRequest, error)
