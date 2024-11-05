@@ -31,6 +31,7 @@ Delete a distribution
 ## Options
 
 ```text
+  -a, --all                      Delete all records if set (required)
   -u, --api-url string           Override default host url (default "https://api.ionos.com")
       --cols strings             Set of columns to be printed on output 
                                  Available columns: [Id Domain CertificateId State]
