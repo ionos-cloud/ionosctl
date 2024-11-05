@@ -67,7 +67,7 @@ func deleteAll(c *core.CommandConfig) error {
 	}
 
 	err = functional.ApplyAndAggregateErrors(*xs.GetItems(), func(g vpn.WireguardGatewayRead) error {
-		yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Are you sure you want to delete gateway %s (desc: '%s')", *g.Properties.Name, *g.Properties.Description),
+		yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Are you sure you want to delete gateway %s at %s", *g.Properties.Name, *g.Properties.GatewayIP),
 			viper.GetBool(constants.ArgForce))
 		if yes {
 			_, delErr := client.Must().VPNClient.WireguardGatewaysApi.WireguardgatewaysDelete(context.Background(), *g.Id).Execute()

@@ -6,7 +6,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/resource2table"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	vpn "github.com/ionos-cloud/sdk-go-vpn"
@@ -40,18 +40,13 @@ func List() *core.Command {
 				return fmt.Errorf("failed listing gateways: %w", err)
 			}
 
-			items, ok := ls.GetItemsOk()
-			if !ok || items == nil {
-				return fmt.Errorf("could not retrieve gateway items")
+			table, err := resource2table.ConvertVPNWireguardGatewaysToTable(ls)
+			if err != nil {
+				return fmt.Errorf("could not convert from JSON to Table format: %w", err)
 			}
-
 			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-			out, err := jsontabwriter.GenerateOutput(
-				"items",
-				jsonpaths.VPNWireguardGateway,
-				ls,
-				tabheaders.GetHeaders(allCols, defaultCols, cols),
-			)
+			out, err := jsontabwriter.GenerateOutputPreconverted(ls, table,
+				tabheaders.GetHeaders(allCols, defaultCols, cols))
 			if err != nil {
 				return err
 			}
