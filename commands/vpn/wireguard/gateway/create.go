@@ -10,11 +10,11 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/resource2table"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/pointer"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/uuidgen"
+	// "github.com/ionos-cloud/ionosctl/v6/pkg/uuidgen"
 	vpn "github.com/ionos-cloud/sdk-go-vpn"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -115,22 +115,20 @@ func Create() *core.Command {
 				}
 			}
 
-			fmt.Println(client.Must().VPNClient.GetConfig().Host)
-
-			id := uuidgen.Must()
 			createdGateway, _, err := client.Must().VPNClient.WireguardGatewaysApi.
-				WireguardgatewaysPut(context.Background(), id).
-				WireguardGatewayEnsure(vpn.WireguardGatewayEnsure{
-					Id:         &id,
-					Properties: input,
-				}).Execute()
+				WireguardgatewaysPost(context.Background()).
+				WireguardGatewayCreate(vpn.WireguardGatewayCreate{Properties: input}).Execute()
 			if err != nil {
 				return err
 			}
 
+			table, err := resource2table.ConvertVPNWireguardGatewayToTable(createdGateway)
+			if err != nil {
+				return fmt.Errorf("could not convert from JSON to Table format: %w", err)
+			}
 			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-
-			out, err := jsontabwriter.GenerateOutput("", jsonpaths.VPNWireguardGateway, createdGateway, tabheaders.GetHeaders(allCols, defaultCols, cols))
+			out, err := jsontabwriter.GenerateOutputPreconverted(createdGateway, table,
+				tabheaders.GetHeaders(allCols, defaultCols, cols))
 			if err != nil {
 				return err
 			}
