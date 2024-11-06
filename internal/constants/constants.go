@@ -36,6 +36,7 @@ Within each layer, a token takes precedence over a username and password combina
 	FlagEdition         = "edition"
 
 	FlagGatewayID      = "gateway-id"
+	FlagPeerID         = "peer-id"
 	FlagGatewayIP      = "gateway-ip"
 	FlagInterfaceIP    = "interface-ip"
 	FlagConnectionIP   = "connection-ip"
