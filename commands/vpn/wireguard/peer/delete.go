@@ -17,18 +17,18 @@ import (
 	"github.com/spf13/viper"
 )
 
-func Create() *core.Command {
+func Delete() *core.Command {
 	cmd := core.NewCommand(context.Background(), nil, core.CommandBuilder{
 		Namespace: "vpn",
 		Resource:  "wireguard peer",
-		Verb:      "create",
-		Aliases:   []string{"c", "post"},
-		ShortDesc: "Create a WireGuard Peer",
-		LongDesc:  "Create WireGuard Peers. There is a limit to the total number of peers. Please refer to product documentation",
+		Verb:      "delete",
+		Aliases:   []string{"d", "del", "rm"},
+		ShortDesc: "Remove a WireGuard Peer",
 		Example:   "", // TODO: Probably best if I don't forget this
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			return core.CheckRequiredFlags(c.Command, c.NS,
-				constants.FlagGatewayIP, constants.FlagName, constants.FlagIps, constants.FlagPublicKey, constants.FlagHost,
+			return core.CheckRequiredFlagsSets(c.Command, c.NS,
+				[]string{constants.FlagGatewayID, constants.FlagPeerID},
+				[]string{constants.FlagGatewayID, constants.ArgAll},
 			)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
@@ -80,21 +80,17 @@ func Create() *core.Command {
 	})
 
 	cmd.AddStringFlag(constants.FlagGatewayID, constants.FlagIdShort, "", "The ID of the WireGuard Gateway", core.RequiredFlagOption())
-	cmd.Command.RegisterFlagCompletionFunc(constants.FlagGatewayID, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	cmd.Command.RegisterFlagCompletionFunc(constants.FlagGatewayID, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return gateway.GatewaysProperty(func(gateway vpn.WireguardGatewayRead) string {
 			return *gateway.Id
 		}), cobra.ShellCompDirectiveNoFileComp
 	})
-
-	cmd.AddStringFlag(constants.FlagName, "", "", "Name of the WireGuard Peer", core.RequiredFlagOption())
-	cmd.AddStringFlag(constants.FlagDescription, "", "", "Description of the WireGuard Peer")
-	cmd.AddStringSliceFlag(constants.FlagIps, "", []string{}, "Comma separated subnets of CIDRs that are allowed to connect to the WireGuard Gateway. Specify \"a.b.c.d/32\" for an individual IP address. Specify \"0.0.0.0/0\" or \"::/0\" for all addresses", core.RequiredFlagOption())
-	cmd.Command.RegisterFlagCompletionFunc(constants.FlagIps, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return []string{"::/0"}, cobra.ShellCompDirectiveNoFileComp
+	cmd.AddStringFlag(constants.FlagPeerID, "", "", "The ID of the WireGuard Peer you want to delete", core.RequiredFlagOption())
+	cmd.Command.RegisterFlagCompletionFunc(constants.FlagGatewayID, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return PeersProperty(viper.GetString(core.GetFlagName(cmd.NS, constants.FlagGatewayID)), func(p vpn.WireguardPeerRead) string {
+			return *p.Id
+		}), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddStringFlag(constants.FlagPublicKey, "", "", "Public key of the connecting peer", core.RequiredFlagOption())
-	cmd.AddStringFlag(constants.FlagHost, "", "", "Hostname or IPV4 address that the WireGuard Server will connect to", core.RequiredFlagOption())
-	cmd.AddIntFlag(constants.FlagPort, "", 51820, "Port that the WireGuard Server will connect to")
 
 	cmd.Command.SilenceUsage = true
 	cmd.Command.Flags().SortFlags = false
