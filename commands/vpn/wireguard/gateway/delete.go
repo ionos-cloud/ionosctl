@@ -57,7 +57,7 @@ func Delete() *core.Command {
 		}), cobra.ShellCompDirectiveNoFileComp
 	})
 
-	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, fmt.Sprintf("Delete all zones. Required or -%s", constants.FlagZoneShort))
+	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, fmt.Sprintf("Delete all gateways. Required or --%s", constants.FlagGatewayID))
 
 	cmd.Command.SilenceUsage = true
 	cmd.Command.Flags().SortFlags = false
