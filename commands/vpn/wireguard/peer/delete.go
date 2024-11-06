@@ -8,10 +8,9 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/pointer"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 	vpn "github.com/ionos-cloud/sdk-go-vpn"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -32,68 +31,70 @@ func Delete() *core.Command {
 			)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			input := &vpn.WireguardPeer{}
-
-			if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) {
-				input.Name = pointer.From(viper.GetString(fn))
+			if all := viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)); all {
+				return deleteAll(c)
 			}
 
-			if fn := core.GetFlagName(c.NS, constants.FlagDescription); viper.IsSet(fn) {
-				input.Description = pointer.From(viper.GetString(fn))
-			}
-
-			if fn := core.GetFlagName(c.NS, constants.FlagIps); viper.IsSet(fn) {
-				input.AllowedIPs = pointer.From(viper.GetStringSlice(fn))
-			}
-
-			if fn := core.GetFlagName(c.NS, constants.FlagPublicKey); viper.IsSet(fn) {
-				input.PublicKey = pointer.From(viper.GetString(fn))
-			}
-
-			input.Endpoint = &vpn.WireguardEndpoint{}
-			if fn := core.GetFlagName(c.NS, constants.FlagHost); viper.IsSet(fn) {
-				input.Endpoint.Host = pointer.From(viper.GetString(fn))
-			}
-
-			if fn := core.GetFlagName(c.NS, constants.FlagPort); viper.IsSet(fn) {
-				input.Endpoint.Port = pointer.From(viper.GetInt32(fn))
-			}
-
-			peer, _, err := client.Must().VPNClient.WireguardPeersApi.
-				WireguardgatewaysPeersPost(context.Background(), viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayIP))).
-				WireguardPeerCreate(vpn.WireguardPeerCreate{Properties: input}).Execute()
+			gatewayId := viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayID))
+			id := viper.GetString(core.GetFlagName(c.NS, constants.FlagPeerID))
+			p, _, err := client.Must().VPNClient.WireguardPeersApi.WireguardgatewaysPeersFindById(context.Background(), gatewayId, id).Execute()
 			if err != nil {
-				return err
+				return fmt.Errorf("failed getting peer by id %s: %w", id, err)
+			}
+			yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Are you sure you want to delete peer %s"+
+				" (host: '%s')", *p.Properties.Name, *p.Properties.Endpoint.Host),
+				viper.GetBool(constants.ArgForce))
+			if !yes {
+				return fmt.Errorf(confirm.UserDenied)
 			}
 
-			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-
-			out, err := jsontabwriter.GenerateOutput("", jsonpaths.VPNWireguardPeer, peer, tabheaders.GetHeadersAllDefault(allCols, cols))
-			if err != nil {
-				return err
-			}
-
-			fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+			_, err = client.Must().VPNClient.WireguardPeersApi.WireguardgatewaysPeersDelete(context.Background(), gatewayId, id).Execute()
 
 			return nil
 		},
 	})
 
-	cmd.AddStringFlag(constants.FlagGatewayID, constants.FlagIdShort, "", "The ID of the WireGuard Gateway", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagGatewayID, "", "", "The ID of the WireGuard Gateway", core.RequiredFlagOption())
 	cmd.Command.RegisterFlagCompletionFunc(constants.FlagGatewayID, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return gateway.GatewaysProperty(func(gateway vpn.WireguardGatewayRead) string {
 			return *gateway.Id
 		}), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddStringFlag(constants.FlagPeerID, "", "", "The ID of the WireGuard Peer you want to delete", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagPeerID, constants.FlagIdShort, "", "The ID of the WireGuard Peer you want to delete", core.RequiredFlagOption())
 	cmd.Command.RegisterFlagCompletionFunc(constants.FlagGatewayID, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return PeersProperty(viper.GetString(core.GetFlagName(cmd.NS, constants.FlagGatewayID)), func(p vpn.WireguardPeerRead) string {
 			return *p.Id
 		}), cobra.ShellCompDirectiveNoFileComp
 	})
 
+	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, fmt.Sprintf("Delete all peers. Required or --%s", constants.FlagPeerID))
+
 	cmd.Command.SilenceUsage = true
 	cmd.Command.Flags().SortFlags = false
 
 	return cmd
+}
+
+func deleteAll(c *core.CommandConfig) error {
+	gatewayId := viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayID))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all peers from gateway %s!", gatewayId))
+
+	xs, _, err := client.Must().VPNClient.WireguardPeersApi.WireguardgatewaysPeersGet(context.Background(), gatewayId).Execute()
+	if err != nil {
+		return err
+	}
+
+	err = functional.ApplyAndAggregateErrors(*xs.GetItems(), func(p vpn.WireguardPeerRead) error {
+		yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Are you sure you want to delete peer %s at %s", *p.Properties.Name, *p.Properties.Endpoint.Host),
+			viper.GetBool(constants.ArgForce))
+		if yes {
+			_, delErr := client.Must().VPNClient.WireguardGatewaysApi.WireguardgatewaysDelete(context.Background(), *p.Id).Execute()
+			if delErr != nil {
+				return fmt.Errorf("failed deleting %s (name: %s): %w", *p.Id, *p.Properties.Name, delErr)
+			}
+		}
+		return nil
+	})
+
+	return err
 }
