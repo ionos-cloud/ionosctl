@@ -28,7 +28,7 @@ func Create() *core.Command {
 		Example:   "", // TODO: Probably best if I don't forget this
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return core.CheckRequiredFlags(c.Command, c.NS,
-				constants.FlagGatewayIP, constants.FlagName, constants.FlagIps, constants.FlagPublicKey, constants.FlagHost,
+				constants.FlagGatewayID, constants.FlagName, constants.FlagIps, constants.FlagPublicKey, constants.FlagHost,
 			)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
@@ -60,7 +60,7 @@ func Create() *core.Command {
 			}
 
 			peer, _, err := client.Must().VPNClient.WireguardPeersApi.
-				WireguardgatewaysPeersPost(context.Background(), viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayIP))).
+				WireguardgatewaysPeersPost(context.Background(), viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayID))).
 				WireguardPeerCreate(vpn.WireguardPeerCreate{Properties: input}).Execute()
 			if err != nil {
 				return err

@@ -50,7 +50,7 @@ func Get() *core.Command {
 		InitClient: true,
 	})
 
-	cmd.AddStringFlag(constants.FlagGatewayID, constants.FlagIdShort, "", "The ID of the WireGuard Gateway", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagGatewayID, "", "", "The ID of the WireGuard Gateway", core.RequiredFlagOption())
 	cmd.Command.RegisterFlagCompletionFunc(constants.FlagGatewayID, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return gateway.GatewaysProperty(func(gateway vpn.WireguardGatewayRead) string {
 			return *gateway.Id
