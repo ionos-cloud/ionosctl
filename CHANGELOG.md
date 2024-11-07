@@ -1,7 +1,12 @@
 # Changelog
 
-## [v6.8.0]
+## [v6.8.0] (???)
+
+### Added
 - Added support for CDN operations
+
+### Fixed
+- Removed Viper binding for `json-properties` and `json-properties-example` (fixes [463](https://github.com/ionos-cloud/ionosctl/issues/463))
 
 ## [v6.7.8] (October 2024)
 
