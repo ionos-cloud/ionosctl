@@ -57,8 +57,8 @@ func Get() *core.Command {
 		}), cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddStringFlag(constants.FlagPeerID, constants.FlagIdShort, "", "The ID of the WireGuard Peer you want to delete", core.RequiredFlagOption())
-	cmd.Command.RegisterFlagCompletionFunc(constants.FlagGatewayID, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return PeersProperty(viper.GetString(core.GetFlagName(cmd.NS, constants.FlagGatewayID)), func(p vpn.WireguardPeerRead) string {
+	cmd.Command.RegisterFlagCompletionFunc(constants.FlagPeerID, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return PeersProperty(viper.GetString(core.GetFlagName(cmd.NS, constants.FlagPeerID)), func(p vpn.WireguardPeerRead) string {
 			return *p.Id
 		}), cobra.ShellCompDirectiveNoFileComp
 	})
