@@ -4,11 +4,13 @@ import (
 	"context"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/internal/config"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 
 	vpn "github.com/ionos-cloud/sdk-go-vpn"
 )
@@ -54,6 +56,10 @@ func GatewaysProperty[V any](f func(gateway vpn.WireguardGatewayRead) V, fs ...F
 
 // Gateways returns all distributions matching the given filters
 func Gateways(fs ...Filter) (vpn.WireguardGatewayReadList, error) {
+	if url := config.GetServerUrl(); url == constants.DefaultApiURL {
+		viper.Set(constants.ArgServerUrl, "")
+	}
+
 	req := client.Must().VPNClient.WireguardGatewaysApi.WireguardgatewaysGet(context.Background())
 	for _, f := range fs {
 		var err error
