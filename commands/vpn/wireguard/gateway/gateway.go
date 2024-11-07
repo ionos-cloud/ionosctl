@@ -56,8 +56,8 @@ func GatewaysProperty[V any](f func(gateway vpn.WireguardGatewayRead) V, fs ...F
 
 // Gateways returns all distributions matching the given filters
 func Gateways(fs ...Filter) (vpn.WireguardGatewayReadList, error) {
-	if url := config.GetServerUrl(); url == constants.DefaultApiURL {
-		viper.Set(constants.ArgServerUrl, "")
+	if url := config.GetServerUrl(); url == constants.DefaultApiURL || url == "" {
+		viper.Set(constants.ArgServerUrl, constants.DefaultVPNApiURL)
 	}
 
 	req := client.Must().VPNClient.WireguardGatewaysApi.WireguardgatewaysGet(context.Background())
