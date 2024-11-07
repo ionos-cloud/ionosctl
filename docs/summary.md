@@ -505,6 +505,16 @@
     * wireguard
         * gateway
             * [create](subcommands%2FVPN%20Gateway%2Fwireguard%2Fgateway%2Fcreate.md)
+            * [delete](subcommands%2FVPN%20Gateway%2Fwireguard%2Fgateway%2Fdelete.md)
+            * [get](subcommands%2FVPN%20Gateway%2Fwireguard%2Fgateway%2Fget.md)
+            * [list](subcommands%2FVPN%20Gateway%2Fwireguard%2Fgateway%2Flist.md)
+            * [update](subcommands%2FVPN%20Gateway%2Fwireguard%2Fgateway%2Fupdate.md)
+        * peer
+            * [create](subcommands%2FVPN%20Gateway%2Fwireguard%2Fpeer%2Fcreate.md)
+            * [delete](subcommands%2FVPN%20Gateway%2Fwireguard%2Fpeer%2Fdelete.md)
+            * [get](subcommands%2FVPN%20Gateway%2Fwireguard%2Fpeer%2Fget.md)
+            * [list](subcommands%2FVPN%20Gateway%2Fwireguard%2Fpeer%2Flist.md)
+            * [update](subcommands%2FVPN%20Gateway%2Fwireguard%2Fpeer%2Fupdate.md)
 
 
 ## Legal

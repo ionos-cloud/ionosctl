@@ -1,13 +1,13 @@
 ---
-description: "Create a WireGuard Gateway"
+description: "Update a WireGuard Gateway"
 ---
 
-# VpnWireguardGatewayCreate
+# VpnWireguardGatewayUpdate
 
 ## Usage
 
 ```text
-ionosctl vpn wireguard gateway create [flags]
+ionosctl vpn wireguard gateway update [flags]
 ```
 
 ## Aliases
@@ -24,15 +24,15 @@ For `gateway` command:
 [g gw]
 ```
 
-For `create` command:
+For `update` command:
 
 ```text
-[c post]
+[u put patch]
 ```
 
 ## Description
 
-Create a WireGuard Gateway
+Update a WireGuard Gateway
 
 ## Options
 
@@ -45,6 +45,7 @@ Create a WireGuard Gateway
       --datacenter-id string      The datacenter to connect your VPN Gateway to (required)
       --description string        Description of the WireGuard Gateway
   -f, --force                     Force command to execute without user input
+  -i, --gateway-id string         The ID of the WireGuard Gateway (required)
       --gateway-ip string         The IP of an IPBlock in the same location as the provided datacenter (required)
   -h, --help                      Print usage
       --interface-ip string       The IPv4 or IPv6 address (with CIDR mask) to be assigned to the WireGuard interface (required)
