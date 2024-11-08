@@ -26,13 +26,11 @@ func NewCommandWithJsonProperties(ctx context.Context, parent *Command, jsonExam
 
 	cmd.Command.Flags().String(constants.FlagJsonProperties, "",
 		"Path to a JSON file containing the desired properties. Overrides any other properties set.")
-	viper.BindPFlag(constants.FlagJsonProperties, cmd.Command.Flags().Lookup(constants.FlagJsonProperties))
 
 	if jsonExample != "" {
 		cmd.Command.Flags().Bool(constants.FlagJsonPropertiesExample, false,
 			fmt.Sprintf("If set, prints a complete JSON which could be used for --%s "+
 				"and exits. Hint: Pipe me to a .json file", constants.FlagJsonProperties))
-		viper.BindPFlag(constants.FlagJsonPropertiesExample, cmd.Command.Flags().Lookup(constants.FlagJsonPropertiesExample))
 	}
 
 	return cmd

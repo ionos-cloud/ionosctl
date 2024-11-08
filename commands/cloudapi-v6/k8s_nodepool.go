@@ -150,9 +150,10 @@ Required values to run a command (for Private Kubernetes Cluster):
 			)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			if viper.IsSet(constants.FlagJsonProperties) {
+			if c.Command.Command.Flags().Changed(constants.FlagJsonProperties) {
 				return RunK8sNodePoolCreateFromJSON(c, nodepoolViaJsonPropertiesFlag)
 			}
+
 			return RunK8sNodePoolCreate(c)
 		},
 		InitClient: true,
