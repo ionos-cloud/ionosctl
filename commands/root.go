@@ -2,6 +2,8 @@ package commands
 
 import (
 	"fmt"
+	"github.com/ionos-cloud/ionosctl/v6/commands/cdn"
+	"github.com/ionos-cloud/ionosctl/v6/commands/kafka"
 	"os"
 	"strings"
 

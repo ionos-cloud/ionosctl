@@ -53,6 +53,7 @@ Within each layer, a token takes precedence over a username and password combina
 	FlagAnnotations      = "annotations"
 	FlagAnnotationsShort = "A"
 	FlagVersion          = "version"
+	FlagSize             = "size"
 
 	FlagZone          = "zone"
 	FlagZoneShort     = "z"
@@ -85,6 +86,11 @@ Within each layer, a token takes precedence over a username and password combina
 	FlagCDNDistributionCertificateID       = "certificate-id"
 	FlagCDNDistributionRoutingRules        = "routing-rules"
 	FlagCDNDistributionRoutingRulesExample = "routing-rules-example"
+
+	FlagFilterName  = "name"
+	FlagFilterState = "state"
+
+	FlagKafkaBrokerAddresses = "broker-addresses"
 
 	FlagGroupId  = "group-id"
 	FlagServerId = "server-id"
