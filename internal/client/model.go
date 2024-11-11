@@ -3,6 +3,7 @@ package client
 import (
 	"fmt"
 	cdn "github.com/ionos-cloud/sdk-go-cdn"
+	kafka "github.com/ionos-cloud/sdk-go-kafka"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	sdkgoauth "github.com/ionos-cloud/sdk-go-auth"
@@ -73,6 +74,7 @@ type Client struct {
 	MongoClient    *mongo.APIClient
 	MariaClient    *maria.APIClient
 	CDNClient      *cdn.APIClient
+	Kafka          *kafka.APIClient
 }
 
 func appendUserAgent(userAgent string) string {
@@ -118,6 +120,9 @@ func newClient(name, pwd, token, hostUrl string, usedLayer *Layer) *Client {
 	cdnConfig := cdn.NewConfiguration(name, pwd, token, hostUrl)
 	cdnConfig.UserAgent = appendUserAgent(cdnConfig.UserAgent)
 
+	kafkaConfig := kafka.NewConfiguration(name, pwd, token, hostUrl)
+	kafkaConfig.UserAgent = appendUserAgent(kafkaConfig.UserAgent)
+
 	return &Client{
 		CloudClient:          cloudv6.NewAPIClient(clientConfig),
 		AuthClient:           sdkgoauth.NewAPIClient(authConfig),
@@ -132,6 +137,7 @@ func newClient(name, pwd, token, hostUrl string, usedLayer *Layer) *Client {
 		MongoClient:    mongo.NewAPIClient(mongoConfig),
 		MariaClient:    maria.NewAPIClient(mariaConfig),
 		CDNClient:      cdn.NewAPIClient(cdnConfig),
+		Kafka:          kafka.NewAPIClient(kafkaConfig),
 
 		usedLayer: usedLayer,
 	}
