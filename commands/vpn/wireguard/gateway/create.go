@@ -140,16 +140,6 @@ func Create() *core.Command {
 		InitClient: true,
 	})
 
-	cmd.AddStringFlag(constants.FlagLocation, "", "de/txl", "The location of the gateway", core.RequiredFlagOption())
-	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagLocation, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		var locations []string
-		for k := range locationToURL {
-			locations = append(locations, k)
-		}
-
-		return locations, cobra.ShellCompDirectiveNoFileComp
-	})
-
 	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Name of the WireGuard Gateway", core.RequiredFlagOption())
 	cmd.AddStringFlag(constants.FlagDescription, "", "", "Description of the WireGuard Gateway")
 	cmd.AddStringFlag(constants.FlagGatewayIP, "", "", "The IP of an IPBlock in the same location as the provided datacenter", core.RequiredFlagOption())
@@ -177,18 +167,8 @@ func Create() *core.Command {
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagInterfaceIP, completer.GetCidrCompletionFunc(cmd))
 	cmd.AddStringFlag(constants.FlagDatacenterId, "", "", "The datacenter to connect your VPN Gateway to", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagDatacenterId, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		dcs, _, err := client.Must().CloudClient.DataCentersApi.DatacentersGet(context.Background()).
-			Filter("location", viper.GetString(core.GetFlagName(cmd.NS, constants.FlagLocation))).Execute()
-		if err != nil {
-			return nil, cobra.ShellCompDirectiveError
-		}
-
-		var ids []string
-		for _, dc := range *dcs.Items {
-			ids = append(ids, *dc.Id)
-		}
-
-		return ids, cobra.ShellCompDirectiveNoFileComp
+		loc, _ := c.Flags().GetString(constants.FlagLocation)
+		return cloudapiv6completer.DatacenterIdsFilterLocation(loc), cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddStringFlag(constants.FlagLanId, "", "", "The numeric LAN ID to connect your VPN Gateway to", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagLanId, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -207,19 +187,4 @@ func Create() *core.Command {
 	cmd.Command.Flags().SortFlags = false
 
 	return cmd
-}
-
-var locationToURL = map[string]string{
-	"de/fra": "https://vpn.de-fra.ionos.com",
-	"de/txl": "https://vpn.de-txl.ionos.com",
-}
-
-func changeLocation(client *vpn.APIClient, location string) {
-	cfg := client.GetConfig()
-	cfg.Servers = vpn.ServerConfigurations{
-		{
-			URL: locationToURL[location],
-		},
-	}
-	return
 }
