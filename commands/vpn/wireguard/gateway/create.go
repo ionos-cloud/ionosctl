@@ -30,7 +30,7 @@ func Create() *core.Command {
 		Verb:      "create",
 		Aliases:   []string{"c", "post"},
 		ShortDesc: "Create a WireGuard Gateway",
-		Example:   "", // TODO: Probably best if I don't forget this
+		Example:   "ionosctl vpn wireguard gateway create " + core.FlagsUsage(constants.FlagName, constants.FlagDatacenterId, constants.FlagLanId, constants.FlagConnectionIP, constants.FlagGatewayIP, constants.FlagInterfaceIP, constants.FlagPrivateKey),
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			baseReq := []string{
 				constants.FlagName,
