@@ -3,6 +3,7 @@ package commands
 import (
 	"fmt"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cdn"
+	"github.com/ionos-cloud/ionosctl/v6/commands/kafka"
 	"os"
 	"strings"
 
@@ -253,6 +254,9 @@ func addCommands() {
 
 	// CDN
 	rootCmd.AddCommand(cdn.Command())
+
+	// Kafka
+	rootCmd.AddCommand(kafka.Command())
 }
 
 const (
