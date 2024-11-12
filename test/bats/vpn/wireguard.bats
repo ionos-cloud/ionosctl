@@ -14,7 +14,7 @@ setup_file() {
     mkdir -p /tmp/bats_test
 }
 
-@test "Ensure connection datacenter & lan" {
+@test "Ensure ipblock, and connection datacenter & lan" {
       datacenter_id=$(find_or_create_resource \
           "ionosctl datacenter list -M 1 -F location=${location},state=available -o json 2> /dev/null | jq -r '.items[] | .id'" \
           "ionosctl datacenter create --name \"CLI-Test-$(randStr 8)\" --location ${location} -o json 2> /dev/null | jq -r '.id'")
@@ -28,7 +28,17 @@ setup_file() {
       [ -n "$lan_id" ] || fail "lan_id is empty"
       echo "$lan_id" > /tmp/bats_test/lan_id
 
-      sleep 60
+      ipblock_id=$(find_or_create_resource \
+          "ionosctl ipblock list -M 1 -F location=${location},size=1 -o json 2> /dev/null | jq -r '.items[] | .id'" \
+          "ionosctl ipblock create --location ${location} --size 1 -o json 2> /dev/null | jq -r '.id'")
+      [ -n "$ipblock_id" ] || fail "ipblock_id is empty"
+      echo "$ipblock_id" > /tmp/bats_test/ipblock_id
+
+      sleep 30
+
+      ipblock_ip=$(ionosctl ipblock get --ipblock-id "$ipblock_id" -o json 2> /dev/null | jq -r '.ips[0]')
+      [ -n "$ipblock_ip" ] || fail "ipblock_ip is empty"
+      echo "$ipblock_ip" > /tmp/bats_test/ipblock_ip
 }
 
 @test "Create Wireguard Gateway" {
@@ -41,6 +51,9 @@ setup_file() {
       -o json 2> /dev/null
     assert_success
 
-    id=$(echo "$output" | jq -r '.id')
-    assert_regex "id" "$uuid_v4_regex"
+    gateway_id=$(echo "$output" | jq -r '.id')
+    assert_regex "$gateway_id" "$uuid_v4_regex"
+
+    echo "created wireguard gateway id"
+    echo "$gateway_id" > /tmp/bats_test/gateway_id
 }
