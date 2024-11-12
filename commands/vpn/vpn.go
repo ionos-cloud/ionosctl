@@ -6,6 +6,7 @@ import (
 	"slices"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/vpn/wireguard"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	vpn "github.com/ionos-cloud/sdk-go-vpn"
@@ -18,6 +19,10 @@ func Root() *core.Command {
 			Use:              "vpn",
 			Short:            "VPN Operations",
 			TraverseChildren: true,
+			PersistentPreRun: func(cmd *cobra.Command, args []string) {
+				location, _ := cmd.Flags().GetString(constants.FlagLocation)
+				changeLocation(client.Must().VPNClient, location)
+			},
 		},
 	}
 
