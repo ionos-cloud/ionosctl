@@ -60,7 +60,7 @@ func Gateways(fs ...Filter) (vpn.IPSecGatewayReadList, error) {
 		viper.Set(constants.ArgServerUrl, constants.DefaultVPNApiURL)
 	}
 
-	req := client.Must().VPNClient.IPSecGatewaysApi.IPSecgatewaysGet(context.Background())
+	req := client.Must().VPNClient.IPSecGatewaysApi.IpsecgatewaysGet(context.Background())
 	for _, f := range fs {
 		var err error
 		req, err = f(req)
@@ -76,4 +76,4 @@ func Gateways(fs ...Filter) (vpn.IPSecGatewayReadList, error) {
 	return ls, nil
 }
 
-type Filter func(request vpn.ApiIPSecgatewaysGetRequest) (vpn.ApiIPSecgatewaysGetRequest, error)
+type Filter func(request vpn.ApiIpsecgatewaysGetRequest) (vpn.ApiIpsecgatewaysGetRequest, error)
