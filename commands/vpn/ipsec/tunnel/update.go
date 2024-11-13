@@ -3,15 +3,15 @@ package tunnel
 import (
 	"context"
 	"fmt"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/pointer"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/vpn/ipsec/gateway"
-	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/pointer"
 	vpn "github.com/ionos-cloud/sdk-go-vpn"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -29,44 +29,74 @@ func Update() *core.Command {
 			return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagGatewayID, constants.FlagTunnelID)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			gatewayId := viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayID))
 			id := viper.GetString(core.GetFlagName(c.NS, constants.FlagTunnelID))
-			p, _, err := client.Must().VPNClient.IPSecTunnelsApi.IPSecgatewaysTunnelsFindById(context.Background(), gatewayId, id).Execute()
+			input := &vpn.IPSecTunnel{}
 
 			if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) {
-				p.Properties.Name = pointer.From(viper.GetString(fn))
+				input.Name = pointer.From(viper.GetString(fn))
 			}
 
 			if fn := core.GetFlagName(c.NS, constants.FlagDescription); viper.IsSet(fn) {
-				p.Properties.Description = pointer.From(viper.GetString(fn))
+				input.Description = pointer.From(viper.GetString(fn))
 			}
 
-			if fn := core.GetFlagName(c.NS, constants.FlagIps); viper.IsSet(fn) {
-				p.Properties.AllowedIPs = pointer.From(viper.GetStringSlice(fn))
-			}
-
-			if fn := core.GetFlagName(c.NS, constants.FlagPublicKey); viper.IsSet(fn) {
-				p.Properties.PublicKey = pointer.From(viper.GetString(fn))
-			}
-
-			p.Properties.Endpoint = &vpn.IPSecEndpoint{}
 			if fn := core.GetFlagName(c.NS, constants.FlagHost); viper.IsSet(fn) {
-				p.Properties.Endpoint.Host = pointer.From(viper.GetString(fn))
+				input.RemoteHost = pointer.From(viper.GetString(fn))
 			}
 
-			if fn := core.GetFlagName(c.NS, constants.FlagPort); viper.IsSet(fn) {
-				p.Properties.Endpoint.Port = pointer.From(viper.GetInt32(fn))
+			if fn := core.GetFlagName(c.NS, constants.FlagAuthMethod); viper.IsSet(fn) {
+				input.Auth = &vpn.IPSecTunnelAuth{}
+				input.Auth.Method = pointer.From(viper.GetString(fn))
+			}
+
+			if fn := core.GetFlagName(c.NS, constants.FlagPSKKey); viper.IsSet(fn) {
+				input.Auth.Psk = &vpn.IPSecPSK{}
+				input.Auth.Psk.Key = pointer.From(viper.GetString(fn))
+			}
+
+			input.Ike = &vpn.IKEEncryption{}
+			if fn := core.GetFlagName(c.NS, constants.FlagIKEDiffieHellmanGroup); viper.IsSet(fn) {
+				input.Ike.DiffieHellmanGroup = pointer.From(viper.GetString(fn))
+			}
+			if fn := core.GetFlagName(c.NS, constants.FlagIKEEncryptionAlgorithm); viper.IsSet(fn) {
+				input.Ike.EncryptionAlgorithm = pointer.From(viper.GetString(fn))
+			}
+			if fn := core.GetFlagName(c.NS, constants.FlagIKEIntegrityAlgorithm); viper.IsSet(fn) {
+				input.Ike.IntegrityAlgorithm = pointer.From(viper.GetString(fn))
+			}
+			if fn := core.GetFlagName(c.NS, constants.FlagIKELifetime); viper.IsSet(fn) {
+				input.Ike.Lifetime = pointer.From(int32(viper.GetInt(fn)))
+			}
+
+			input.Esp = &vpn.ESPEncryption{}
+			if fn := core.GetFlagName(c.NS, constants.FlagESPDiffieHellmanGroup); viper.IsSet(fn) {
+				input.Esp.DiffieHellmanGroup = pointer.From(viper.GetString(fn))
+			}
+			if fn := core.GetFlagName(c.NS, constants.FlagESPEncryptionAlgorithm); viper.IsSet(fn) {
+				input.Esp.EncryptionAlgorithm = pointer.From(viper.GetString(fn))
+			}
+			if fn := core.GetFlagName(c.NS, constants.FlagESPIntegrityAlgorithm); viper.IsSet(fn) {
+				input.Esp.IntegrityAlgorithm = pointer.From(viper.GetString(fn))
+			}
+			if fn := core.GetFlagName(c.NS, constants.FlagESPLifetime); viper.IsSet(fn) {
+				input.Esp.Lifetime = pointer.From(int32(viper.GetInt(fn)))
+			}
+
+			if fn := core.GetFlagName(c.NS, constants.FlagCloudNetworkCIDRs); viper.IsSet(fn) {
+				input.CloudNetworkCIDRs = pointer.From(viper.GetStringSlice(fn))
+			}
+			if fn := core.GetFlagName(c.NS, constants.FlagPeerNetworkCIDRs); viper.IsSet(fn) {
+				input.PeerNetworkCIDRs = pointer.From(viper.GetStringSlice(fn))
 			}
 
 			tunnel, _, err := client.Must().VPNClient.IPSecTunnelsApi.
-				IPSecgatewaysTunnelsPut(context.Background(), gatewayId, id).
-				IPSecTunnelEnsure(vpn.IPSecTunnelEnsure{Id: &id, Properties: p.Properties}).Execute()
+				IpsecgatewaysTunnelsPut(context.Background(), viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayID)), id).
+				IPSecTunnelEnsure(vpn.IPSecTunnelEnsure{Properties: input}).Execute()
 			if err != nil {
 				return err
 			}
 
 			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-
 			out, err := jsontabwriter.GenerateOutput("", jsonpaths.VPNIPSecTunnel, tunnel, tabheaders.GetHeaders(allCols, defaultCols, cols))
 			if err != nil {
 				return err
