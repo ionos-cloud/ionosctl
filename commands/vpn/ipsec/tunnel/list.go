@@ -29,7 +29,7 @@ func List() *core.Command {
 		CmdRun: func(c *core.CommandConfig) error {
 			ls, err := Tunnels(
 				viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayID)),
-				func(req vpn.ApiIPSecgatewaysTunnelsGetRequest) (vpn.ApiIPSecgatewaysTunnelsGetRequest, error) {
+				func(req vpn.ApiIpsecgatewaysTunnelsGetRequest) (vpn.ApiIpsecgatewaysTunnelsGetRequest, error) {
 					if fn := core.GetFlagName(c.NS, constants.FlagOffset); viper.IsSet(fn) {
 						req = req.Offset(viper.GetInt32(fn))
 					}
