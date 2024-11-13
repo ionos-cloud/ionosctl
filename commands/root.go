@@ -229,17 +229,17 @@ func addCommands() {
 }
 
 const (
-	availableCommands = `{{- if .Commands}}
+	availableCommands = `{{- if .HasAvailableSubCommands}}
 AVAILABLE COMMANDS:{{range .Commands}}{{if (or .IsAvailableCommand (eq .Name "help"))}}
-  {{rpad .Name .NamePadding }} {{.Short | trim}}{{end}}{{end}}{{- print "\n"}}{{end}}`
+  {{rpad .Name .NamePadding }} {{.Short | trim}}{{end}}{{end}}{{print "\n"}}{{end}}`
 
-	seeAlso = `{{- if .Annotations.SeeAlsos}}
+	seeAlso = `{{- if .HasHelpSubCommands}}
 SEE ALSO:
-{{.Annotations.SeeAlsos | trim}}{{- print "\n"}}{{end}}`
+{{.Annotations.SeeAlsos | trim}}{{print "\n"}}{{end}}`
 
 	additionalHelpTopics = `{{- if .HasHelpSubCommands}}
 Additional help topics:{{range .Commands}}{{if .IsAdditionalHelpTopicCommand}}
-  {{rpad .CommandPath .CommandPathPadding}} {{.Short | trim}}{{end}}{{end}}{{- print "\n"}}{{end}}`
+  {{rpad .CommandPath .CommandPathPadding}} {{.Short | trim}}{{end}}{{end}}{{print "\n"}}{{end}}`
 
 	localFlags = `{{- if .HasAvailableLocalFlags}}
 FLAGS:
@@ -249,20 +249,20 @@ FLAGS:
 GLOBAL FLAGS:
 {{.InheritedFlags.FlagUsages}}{{end}}`
 
-	usage = `{{- if .UseLine}}
+	usage = `{{- if .Runnable}}
 USAGE:
-  {{.UseLine | trim}}{{- print "\n"}}{{end}}`
+  {{.UseLine | trim}}{{print "\n"}}{{end}}`
 
-	aliases = `{{- if .Aliases}}
+	aliases = `{{- if gt (len .Aliases) 0}}
 ALIASES:
-  {{.NameAndAliases | trim}}{{- print "\n"}}{{end}}`
+  {{.NameAndAliases | trim}}{{print "\n"}}{{end}}`
 
 	examples = `{{- if .HasExample}}
 EXAMPLES:
-{{.Example | trim}}{{- print "\n"}}{{end}}`
+{{.Example | trim}}{{print "\n"}}{{end}}`
 
-	moreInfo = `
-Use "{{.CommandPath}} [command] --help" for more information about a command.{{- print "\n"}}`
+	moreInfo = `{{- if .HasAvailableSubCommands}}
+Use "{{.CommandPath}} [command] --help" for more information about a command.{{print "\n"}}{{end}}`
 )
 
 var helpTemplate = strings.Join(

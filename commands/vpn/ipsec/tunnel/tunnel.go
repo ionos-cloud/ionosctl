@@ -21,8 +21,32 @@ IPSec is stateless: no persistent state is stored between connections, and packe
 There is no session or tunnel establishment process like in IPsec. Instead, IPSec Tunnels exchange packets as needed without keeping an active session.
 */
 
+/*
+	var VPNIPSecTunnel = map[string]string{
+		"ID":                     "id",
+		"Name":                   "properties.name",
+		"Description":            "properties.description",
+		"RemoteHost":             "properties.remoteHost",
+		"AuthMethod":             "properties.auth.method",
+		"PSKKey":                 "properties.auth.psk.key",
+		"IKEDiffieHellmanGroup":  "properties.ike.diffieHellmanGroup",
+		"IKEEncryptionAlgorithm": "properties.ike.encryptionAlgorithm",
+		"IKEIntegrityAlgorithm":  "properties.ike.integrityAlgorithm",
+		"IKELifetime":            "properties.ike.lifetime",
+		"ESPDiffieHellmanGroup":  "properties.esp.diffieHellmanGroup",
+		"ESPEncryptionAlgorithm": "properties.esp.encryptionAlgorithm",
+		"ESPIntegrityAlgorithm":  "properties.esp.integrityAlgorithm",
+		"ESPLifetime":            "properties.esp.lifetime",
+		"CloudNetworkCIDRs":      "properties.cloudNetworkCIDRs",
+		"PeerNetworkCIDRs":       "properties.peerNetworkCIDRs",
+	}
+*/
 var (
-	allCols = []string{"ID", "Name", "Description", "Host", "Port", "WhitelistIPs", "PublicKey", "Status"}
+	allCols = []string{"ID", "Name", "Description", "RemoteHost", "AuthMethod", "PSKKey",
+		"IKEDiffieHellmanGroup", "IKEEncryptionAlgorithm", "IKEIntegrityAlgorithm", "IKELifetime",
+		"ESPDiffieHellmanGroup", "ESPEncryptionAlgorithm", "ESPIntegrityAlgorithm", "ESPLifetime",
+		"CloudNetworkCIDRs", "PeerNetworkCIDRs", "Status", "StatusMessage"}
+	defaultCols = []string{"ID", "Name", "Description", "RemoteHost", "AuthMethod", "PSKKey", "Status"}
 )
 
 func Root() *core.Command {
@@ -64,7 +88,7 @@ func Tunnels(gatewayID string, fs ...Filter) (vpn.IPSecTunnelReadList, error) {
 		viper.Set(constants.ArgServerUrl, constants.DefaultVPNApiURL)
 	}
 
-	req := client.Must().VPNClient.IPSecTunnelsApi.IPSecgatewaysTunnelsGet(context.Background(), gatewayID)
+	req := client.Must().VPNClient.IPSecTunnelsApi.IpsecgatewaysTunnelsGet(context.Background(), gatewayID)
 	for _, f := range fs {
 		var err error
 		req, err = f(req)
@@ -80,4 +104,4 @@ func Tunnels(gatewayID string, fs ...Filter) (vpn.IPSecTunnelReadList, error) {
 	return ls, nil
 }
 
-type Filter func(request vpn.ApiIPSecgatewaysTunnelsGetRequest) (vpn.ApiIPSecgatewaysTunnelsGetRequest, error)
+type Filter func(request vpn.ApiIpsecgatewaysTunnelsGetRequest) (vpn.ApiIpsecgatewaysTunnelsGetRequest, error)

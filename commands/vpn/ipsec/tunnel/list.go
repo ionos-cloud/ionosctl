@@ -45,7 +45,7 @@ func List() *core.Command {
 
 			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 			out, err := jsontabwriter.GenerateOutput("items", jsonpaths.VPNIPSecTunnel, ls,
-				tabheaders.GetHeadersAllDefault(allCols, cols))
+				tabheaders.GetHeaders(allCols, defaultCols, cols))
 			if err != nil {
 				return err
 			}

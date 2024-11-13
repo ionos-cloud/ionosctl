@@ -3,9 +3,6 @@ package gateway
 import (
 	"context"
 	"fmt"
-	"net"
-	"os"
-
 	cloudapiv6completer "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
@@ -14,8 +11,8 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/pointer"
+	"net"
 
-	// "github.com/ionos-cloud/ionosctl/v6/pkg/uuidgen"
 	vpn "github.com/ionos-cloud/sdk-go-vpn"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -32,18 +29,14 @@ func Create() *core.Command {
 		ShortDesc: "Create a IPSec Gateway",
 		Example:   "ionosctl vpn ipsec gateway create " + core.FlagsUsage(constants.FlagName, constants.FlagDatacenterId, constants.FlagLanId, constants.FlagConnectionIP, constants.FlagGatewayIP, constants.FlagInterfaceIP, constants.FlagPrivateKey),
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			baseReq := []string{
+			return core.CheckRequiredFlags(c.Command, c.NS,
 				constants.FlagName,
 				constants.FlagDatacenterId,
 				constants.FlagLanId,
 				constants.FlagConnectionIP,
 				constants.FlagGatewayIP,
 				constants.FlagInterfaceIP,
-			}
-			return core.CheckRequiredFlagsSets(c.Command, c.NS,
-				// either privateKey or privateKeyPath are required
-				append(baseReq, constants.FlagPrivateKey),
-				append(baseReq, constants.FlagPrivateKeyPath),
+				constants.FlagPrivateKey,
 			)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
@@ -57,23 +50,6 @@ func Create() *core.Command {
 			}
 			if fn := core.GetFlagName(c.NS, constants.FlagIp); viper.IsSet(fn) {
 				input.GatewayIP = pointer.From(viper.GetString(fn))
-			}
-
-			if fn := core.GetFlagName(c.NS, constants.FlagPrivateKey); viper.IsSet(fn) {
-				input.PrivateKey = pointer.From(viper.GetString(fn))
-			}
-
-			if fn := core.GetFlagName(c.NS, constants.FlagPrivateKeyPath); viper.IsSet(fn) {
-				// read the file
-				keyBytes, err := os.ReadFile(viper.GetString(fn))
-				if err != nil {
-					return fmt.Errorf("failed to read private key file: %w", err)
-				}
-				input.PrivateKey = pointer.From(string(keyBytes))
-			}
-
-			if fn := core.GetFlagName(c.NS, constants.FlagPort); viper.IsSet(fn) {
-				input.ListenPort = pointer.From(viper.GetInt32(fn))
 			}
 
 			input.Connections = pointer.From(make([]vpn.Connection, 1))
@@ -98,15 +74,6 @@ func Create() *core.Command {
 				return net.ParseIP(ip).To4() != nil
 			}
 
-			if fn := core.GetFlagName(c.NS, constants.FlagInterfaceIP); viper.IsSet(fn) {
-				ip := viper.GetString(fn)
-				if isIPv4(ip) {
-					input.InterfaceIPv4CIDR = pointer.From(ip)
-				} else {
-					input.InterfaceIPv6CIDR = pointer.From(ip)
-				}
-			}
-
 			if fn := core.GetFlagName(c.NS, constants.FlagConnectionIP); viper.IsSet(fn) {
 				ip := viper.GetString(fn)
 				if isIPv4(ip) {
@@ -117,7 +84,7 @@ func Create() *core.Command {
 			}
 
 			createdGateway, _, err := client.Must().VPNClient.IPSecGatewaysApi.
-				IPSecgatewaysPost(context.Background()).
+				IpsecgatewaysPost(context.Background()).
 				IPSecGatewayCreate(vpn.IPSecGatewayCreate{Properties: input}).Execute()
 			if err != nil {
 				return err
@@ -163,8 +130,6 @@ func Create() *core.Command {
 		}
 		return ips, cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddStringFlag(constants.FlagInterfaceIP, "", "", "The IPv4 or IPv6 address (with CIDR mask) to be assigned to the IPSec interface", core.RequiredFlagOption())
-	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagInterfaceIP, completer.GetCidrCompletionFunc(cmd))
 	cmd.AddStringFlag(constants.FlagDatacenterId, "", "", "The datacenter to connect your VPN Gateway to", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagDatacenterId, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		loc, _ := c.Flags().GetString(constants.FlagLocation)
@@ -177,11 +142,10 @@ func Create() *core.Command {
 	})
 	cmd.AddStringFlag(constants.FlagConnectionIP, "", "", "A LAN IPv4 or IPv6 address in CIDR notation that will be assigned to the VPN Gateway", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagConnectionIP, completer.GetCidrCompletionFunc(cmd))
-
-	cmd.AddStringFlag(constants.FlagPrivateKey, "K", "", fmt.Sprintf("Specify the private key (required or --%s)", constants.FlagPrivateKeyPath))
-	cmd.AddStringFlag(constants.FlagPrivateKeyPath, "k", "", fmt.Sprintf("Specify the private key from a file (required or --%s)", constants.FlagPrivateKey))
-
-	cmd.AddIntFlag(constants.FlagPort, "", 51820, "Port that IPSec Server will listen on")
+	cmd.AddStringFlag(constants.FlagVersion, "", "IKEv2", "The IKE version that is permitted for the VPN tunnels")
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagVersion, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return []string{"IKEv2"}, cobra.ShellCompDirectiveNoFileComp
+	})
 
 	cmd.Command.SilenceUsage = true
 	cmd.Command.Flags().SortFlags = false
