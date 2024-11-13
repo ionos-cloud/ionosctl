@@ -23,7 +23,7 @@ func Get() *core.Command {
 		Verb:      "get",
 		Aliases:   []string{"g"},
 		ShortDesc: "Find a tunnel by ID",
-		Example:   "ionosctl vpn wg g delete ...", // TODO: Probably best if I don't forget this
+		Example:   "ionosctl vpn ipsec tunnel get " + core.FlagsUsage(constants.FlagGatewayID, constants.FlagTunnelID),
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagGatewayID, constants.FlagTunnelID)
 		},
@@ -31,14 +31,14 @@ func Get() *core.Command {
 			gatewayId := viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayID))
 			id := viper.GetString(core.GetFlagName(c.NS, constants.FlagTunnelID))
 
-			p, _, err := client.Must().VPNClient.IPSecTunnelsApi.IPSecgatewaysTunnelsFindById(context.Background(), gatewayId, id).Execute()
+			p, _, err := client.Must().VPNClient.IPSecTunnelsApi.IpsecgatewaysTunnelsFindById(context.Background(), gatewayId, id).Execute()
 			if err != nil {
 				return fmt.Errorf("failed getting tunnel by id %s: %w", id, err)
 			}
 
 			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 			out, err := jsontabwriter.GenerateOutput("", jsonpaths.VPNIPSecTunnel, p,
-				tabheaders.GetHeadersAllDefault(allCols, cols))
+				tabheaders.GetHeaders(allCols, defaultCols, cols))
 			if err != nil {
 				return err
 			}
