@@ -2,6 +2,7 @@ package vpn
 
 import (
 	"fmt"
+	"github.com/ionos-cloud/ionosctl/v6/commands/vpn/ipsec"
 	"maps"
 	"slices"
 
@@ -27,6 +28,7 @@ func Root() *core.Command {
 	}
 
 	cmd.AddCommand(wireguard.Root())
+	cmd.AddCommand(ipsec.Root())
 
 	cmd.Command.PersistentFlags().String(constants.FlagLocation, "de/txl", fmt.Sprintf("The location your resources are hosted in. Possible values: %s", slices.Collect(maps.Keys(locationToURL))))
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagLocation, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
