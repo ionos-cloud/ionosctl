@@ -3,11 +3,12 @@ package gateway
 import (
 	"context"
 	"fmt"
+	"github.com/ionos-cloud/ionosctl/v6/commands/vpn/wireguard/completer"
 	"net"
 	"os"
 
 	cloudapiv6completer "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
-	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/completer"
+	dbaascompleter "github.com/ionos-cloud/ionosctl/v6/commands/dbaas/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/resource2table"
@@ -134,10 +135,8 @@ func Update() *core.Command {
 	})
 
 	cmd.AddStringFlag(constants.FlagGatewayID, constants.FlagIdShort, "", "The ID of the WireGuard Gateway", core.RequiredFlagOption())
-	cmd.Command.RegisterFlagCompletionFunc(constants.FlagGatewayID, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return GatewaysProperty(func(gateway vpn.WireguardGatewayRead) string {
-			return *gateway.Id
-		}), cobra.ShellCompDirectiveNoFileComp
+	cmd.Command.RegisterFlagCompletionFunc(constants.FlagGatewayID, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.GatewayIDs(), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Name of the WireGuard Gateway", core.RequiredFlagOption())
@@ -164,7 +163,7 @@ func Update() *core.Command {
 		return ips, cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddStringFlag(constants.FlagInterfaceIP, "", "", "The IPv4 or IPv6 address (with CIDR mask) to be assigned to the WireGuard interface", core.RequiredFlagOption())
-	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagInterfaceIP, completer.GetCidrCompletionFunc(cmd))
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagInterfaceIP, dbaascompleter.GetCidrCompletionFunc(cmd))
 	cmd.AddStringFlag(constants.FlagDatacenterId, "", "", "The datacenter to connect your VPN Gateway to", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagDatacenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return cloudapiv6completer.DataCentersIds(), cobra.ShellCompDirectiveNoFileComp
@@ -175,7 +174,7 @@ func Update() *core.Command {
 			cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddStringFlag(constants.FlagConnectionIP, "", "", "A LAN IPv4 or IPv6 address in CIDR notation that will be assigned to the VPN Gateway", core.RequiredFlagOption())
-	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagConnectionIP, completer.GetCidrCompletionFunc(cmd))
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagConnectionIP, dbaascompleter.GetCidrCompletionFunc(cmd))
 
 	cmd.AddStringFlag(constants.FlagPrivateKey, "K", "", fmt.Sprintf("Specify the private key (required or --%s)", constants.FlagPrivateKeyPath))
 	cmd.AddStringFlag(constants.FlagPrivateKeyPath, "k", "", fmt.Sprintf("Specify the private key from a file (required or --%s)", constants.FlagPrivateKey))
