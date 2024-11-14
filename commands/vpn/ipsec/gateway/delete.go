@@ -22,7 +22,7 @@ func Delete() *core.Command {
 		Verb:      "delete",
 		Aliases:   []string{"del", "d"},
 		ShortDesc: "Delete a gateway",
-		Example:   "ionosctl vpn wg g delete ...", // TODO: Probably best if I don't forget this
+		Example:   "ionosctl vpn ipsec gateway " + core.FlagsUsage(constants.FlagGatewayID),
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return core.CheckRequiredFlagsSets(c.Command, c.NS, []string{constants.ArgAll}, []string{constants.FlagGatewayID})
 		},
@@ -33,7 +33,7 @@ func Delete() *core.Command {
 
 			id := viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayID))
 
-			g, _, err := client.Must().VPNClient.IPSecGatewaysApi.IPSecgatewaysFindById(context.Background(), id).Execute()
+			g, _, err := client.Must().VPNClient.IPSecGatewaysApi.IpsecgatewaysFindById(context.Background(), id).Execute()
 			if err != nil {
 				return fmt.Errorf("failed getting gateway by id %s: %w", id, err)
 			}
@@ -43,7 +43,7 @@ func Delete() *core.Command {
 				return fmt.Errorf(confirm.UserDenied)
 			}
 
-			_, err = client.Must().VPNClient.IPSecGatewaysApi.IPSecgatewaysDelete(context.Background(), id).Execute()
+			_, err = client.Must().VPNClient.IPSecGatewaysApi.IpsecgatewaysDelete(context.Background(), id).Execute()
 
 			return err
 		},
@@ -67,7 +67,7 @@ func Delete() *core.Command {
 
 func deleteAll(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all gateways!"))
-	xs, _, err := client.Must().VPNClient.IPSecGatewaysApi.IPSecgatewaysGet(context.Background()).Execute()
+	xs, _, err := client.Must().VPNClient.IPSecGatewaysApi.IpsecgatewaysGet(context.Background()).Execute()
 	if err != nil {
 		return err
 	}
@@ -76,7 +76,7 @@ func deleteAll(c *core.CommandConfig) error {
 		yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Are you sure you want to delete gateway %s at %s", *g.Properties.Name, *g.Properties.GatewayIP),
 			viper.GetBool(constants.ArgForce))
 		if yes {
-			_, delErr := client.Must().VPNClient.IPSecGatewaysApi.IPSecgatewaysDelete(context.Background(), *g.Id).Execute()
+			_, delErr := client.Must().VPNClient.IPSecGatewaysApi.IpsecgatewaysDelete(context.Background(), *g.Id).Execute()
 			if delErr != nil {
 				return fmt.Errorf("failed deleting %s (name: %s): %w", *g.Id, *g.Properties.Name, delErr)
 			}

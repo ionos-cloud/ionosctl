@@ -30,22 +30,9 @@ func Update() *core.Command {
 		Verb:      "update",
 		Aliases:   []string{"u", "put", "patch"},
 		ShortDesc: "Update a WireGuard Gateway",
-		Example:   "", // TODO: Probably best if I don't forget this
+		Example:   "ionosctl vpn wireguard gateway update " + core.FlagsUsage(constants.FlagGatewayID, constants.FlagName, constants.FlagDatacenterId, constants.FlagLanId, constants.FlagConnectionIP, constants.FlagGatewayIP, constants.FlagInterfaceIP),
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			baseReq := []string{
-				constants.FlagGatewayID,
-				constants.FlagName,
-				constants.FlagDatacenterId,
-				constants.FlagLanId,
-				constants.FlagConnectionIP,
-				constants.FlagGatewayIP,
-				constants.FlagInterfaceIP,
-			}
-			return core.CheckRequiredFlagsSets(c.Command, c.NS,
-				// either privateKey or privateKeyPath are required
-				append(baseReq, constants.FlagPrivateKey),
-				append(baseReq, constants.FlagPrivateKeyPath),
-			)
+			return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagGatewayID)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			id := viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayID))

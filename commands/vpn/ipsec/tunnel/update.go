@@ -143,8 +143,11 @@ func putFromProperties(c *core.CommandConfig) error {
 	}
 	tunnel, _, err := client.Must().VPNClient.IPSecTunnelsApi.
 		IpsecgatewaysTunnelsPut(context.Background(),
-			viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayID)), viper.GetString(constants.FlagTunnelID)).
-		IPSecTunnelEnsure(vpn.IPSecTunnelEnsure{Properties: input}).Execute()
+			viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayID)), viper.GetString(core.GetFlagName(c.NS, constants.FlagTunnelID))).
+		IPSecTunnelEnsure(vpn.IPSecTunnelEnsure{
+			Id:         pointer.From(viper.GetString(core.GetFlagName(c.NS, constants.FlagTunnelID))),
+			Properties: input,
+		}).Execute()
 	if err != nil {
 		return err
 	}
