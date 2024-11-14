@@ -29,7 +29,7 @@ func Get() *core.Command {
 		CmdRun: func(c *core.CommandConfig) error {
 			id := viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayID))
 
-			g, _, err := client.Must().VPNClient.IPSecGatewaysApi.IPSecgatewaysFindById(context.Background(), id).Execute()
+			g, _, err := client.Must().VPNClient.IPSecGatewaysApi.IpsecgatewaysFindById(context.Background(), id).Execute()
 			if err != nil {
 				return fmt.Errorf("failed getting gateway by id %s: %w", id, err)
 			}
