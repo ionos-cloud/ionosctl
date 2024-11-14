@@ -3,8 +3,8 @@ package peer
 import (
 	"context"
 	"fmt"
+	"github.com/ionos-cloud/ionosctl/v6/commands/vpn/wireguard/completer"
 
-	"github.com/ionos-cloud/ionosctl/v6/commands/vpn/wireguard/gateway"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
@@ -24,7 +24,7 @@ func Update() *core.Command {
 		Verb:      "update",
 		Aliases:   []string{"u", "patch", "put"},
 		ShortDesc: "Update a WireGuard Peer",
-		Example:   "", // TODO: Probably best if I don't forget this
+		Example:   "ionosctl vpn wireguard peer update " + core.FlagsUsage(constants.FlagGatewayID, constants.FlagPeerID, constants.FlagName, constants.FlagDescription, constants.FlagIps, constants.FlagPublicKey, constants.FlagHost, constants.FlagPort),
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagGatewayID, constants.FlagPeerID)
 		},
@@ -80,15 +80,11 @@ func Update() *core.Command {
 
 	cmd.AddStringFlag(constants.FlagGatewayID, "", "", "The ID of the WireGuard Gateway", core.RequiredFlagOption())
 	cmd.Command.RegisterFlagCompletionFunc(constants.FlagGatewayID, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return gateway.GatewaysProperty(func(gateway vpn.WireguardGatewayRead) string {
-			return *gateway.Id
-		}), cobra.ShellCompDirectiveNoFileComp
+		return completer.GatewayIDs(), cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddStringFlag(constants.FlagPeerID, constants.FlagIdShort, "", "The ID of the WireGuard Peer you want to delete", core.RequiredFlagOption())
 	cmd.Command.RegisterFlagCompletionFunc(constants.FlagPeerID, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return PeersProperty(viper.GetString(core.GetFlagName(cmd.NS, constants.FlagPeerID)), func(p vpn.WireguardPeerRead) string {
-			return *p.Id
-		}), cobra.ShellCompDirectiveNoFileComp
+		return completer.PeerIDs(viper.GetString(core.GetFlagName(cmd.NS, constants.FlagGatewayID))), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	cmd.AddStringFlag(constants.FlagName, "", "", "Name of the WireGuard Peer", core.RequiredFlagOption())
