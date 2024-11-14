@@ -3,6 +3,7 @@ package peer
 import (
 	"context"
 	"fmt"
+	"github.com/ionos-cloud/ionosctl/v6/commands/vpn/wireguard/completer"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/vpn/wireguard/gateway"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
@@ -62,9 +63,7 @@ func Delete() *core.Command {
 	})
 	cmd.AddStringFlag(constants.FlagPeerID, constants.FlagIdShort, "", "The ID of the WireGuard Peer you want to delete", core.RequiredFlagOption())
 	cmd.Command.RegisterFlagCompletionFunc(constants.FlagPeerID, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return PeersProperty(viper.GetString(core.GetFlagName(cmd.NS, constants.FlagPeerID)), func(p vpn.WireguardPeerRead) string {
-			return *p.Id
-		}), cobra.ShellCompDirectiveNoFileComp
+		return completer.PeerIDs(viper.GetString(core.GetFlagName(cmd.NS, constants.FlagGatewayID))), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, fmt.Sprintf("Delete all peers. Required or --%s", constants.FlagPeerID))
