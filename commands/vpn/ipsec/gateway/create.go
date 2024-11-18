@@ -27,7 +27,7 @@ func Create() *core.Command {
 		Verb:      "create",
 		Aliases:   []string{"c", "post"},
 		ShortDesc: "Create a IPSec Gateway",
-		Example:   "ionosctl vpn ipsec gateway create " + core.FlagsUsage(constants.FlagName, constants.FlagDatacenterId, constants.FlagLanId, constants.FlagConnectionIP, constants.FlagGatewayIP, constants.FlagInterfaceIP, constants.FlagPrivateKey),
+		Example:   "ionosctl vpn ipsec gateway create " + core.FlagsUsage(constants.FlagName, constants.FlagDatacenterId, constants.FlagLanId, constants.FlagConnectionIP, constants.FlagGatewayIP, constants.FlagInterfaceIP),
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return core.CheckRequiredFlags(c.Command, c.NS,
 				constants.FlagName,
@@ -35,8 +35,6 @@ func Create() *core.Command {
 				constants.FlagLanId,
 				constants.FlagConnectionIP,
 				constants.FlagGatewayIP,
-				constants.FlagInterfaceIP,
-				constants.FlagPrivateKey,
 			)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
@@ -81,6 +79,10 @@ func Create() *core.Command {
 				} else {
 					(*input.Connections)[0].Ipv6CIDR = pointer.From(ip)
 				}
+			}
+
+			if fn := core.GetFlagName(c.NS, constants.FlagVersion); viper.IsSet(fn) {
+				input.Version = pointer.From(viper.GetString(fn))
 			}
 
 			createdGateway, _, err := client.Must().VPNClient.IPSecGatewaysApi.
