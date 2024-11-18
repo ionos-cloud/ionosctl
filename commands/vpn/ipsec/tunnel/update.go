@@ -105,31 +105,53 @@ func putFromProperties(c *core.CommandConfig) error {
 		input.Auth.Psk.Key = pointer.From(viper.GetString(fn))
 	}
 
-	input.Ike = &vpn.IKEEncryption{}
 	if fn := core.GetFlagName(c.NS, constants.FlagIKEDiffieHellmanGroup); viper.IsSet(fn) {
+		if input.Ike == nil {
+			input.Ike = &vpn.IKEEncryption{}
+		}
 		input.Ike.DiffieHellmanGroup = pointer.From(viper.GetString(fn))
 	}
 	if fn := core.GetFlagName(c.NS, constants.FlagIKEEncryptionAlgorithm); viper.IsSet(fn) {
+		if input.Ike == nil {
+			input.Ike = &vpn.IKEEncryption{}
+		}
 		input.Ike.EncryptionAlgorithm = pointer.From(viper.GetString(fn))
 	}
 	if fn := core.GetFlagName(c.NS, constants.FlagIKEIntegrityAlgorithm); viper.IsSet(fn) {
+		if input.Ike == nil {
+			input.Ike = &vpn.IKEEncryption{}
+		}
 		input.Ike.IntegrityAlgorithm = pointer.From(viper.GetString(fn))
 	}
 	if fn := core.GetFlagName(c.NS, constants.FlagIKELifetime); viper.IsSet(fn) {
+		if input.Ike == nil {
+			input.Ike = &vpn.IKEEncryption{}
+		}
 		input.Ike.Lifetime = pointer.From(int32(viper.GetInt(fn)))
 	}
 
-	input.Esp = &vpn.ESPEncryption{}
 	if fn := core.GetFlagName(c.NS, constants.FlagESPDiffieHellmanGroup); viper.IsSet(fn) {
+		if input.Esp == nil {
+			input.Esp = &vpn.ESPEncryption{}
+		}
 		input.Esp.DiffieHellmanGroup = pointer.From(viper.GetString(fn))
 	}
 	if fn := core.GetFlagName(c.NS, constants.FlagESPEncryptionAlgorithm); viper.IsSet(fn) {
+		if input.Esp == nil {
+			input.Esp = &vpn.ESPEncryption{}
+		}
 		input.Esp.EncryptionAlgorithm = pointer.From(viper.GetString(fn))
 	}
 	if fn := core.GetFlagName(c.NS, constants.FlagESPIntegrityAlgorithm); viper.IsSet(fn) {
+		if input.Esp == nil {
+			input.Esp = &vpn.ESPEncryption{}
+		}
 		input.Esp.IntegrityAlgorithm = pointer.From(viper.GetString(fn))
 	}
 	if fn := core.GetFlagName(c.NS, constants.FlagESPLifetime); viper.IsSet(fn) {
+		if input.Esp == nil {
+			input.Esp = &vpn.ESPEncryption{}
+		}
 		input.Esp.Lifetime = pointer.From(int32(viper.GetInt(fn)))
 	}
 
