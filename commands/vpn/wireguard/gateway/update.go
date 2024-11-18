@@ -2,6 +2,7 @@ package gateway
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"github.com/ionos-cloud/ionosctl/v6/commands/vpn/wireguard/completer"
 	"net"
@@ -43,6 +44,12 @@ func Update() *core.Command {
 				return err
 			}
 
+			j, err := json.MarshalIndent(g, "", "  ")
+			if err != nil {
+				return err
+			}
+			fmt.Println(string(j))
+
 			if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) {
 				g.Properties.Name = pointer.From(viper.GetString(fn))
 			}
@@ -70,11 +77,16 @@ func Update() *core.Command {
 				g.Properties.ListenPort = pointer.From(viper.GetInt32(fn))
 			}
 
-			g.Properties.Connections = pointer.From(make([]vpn.Connection, 1))
 			if fn := core.GetFlagName(c.NS, constants.FlagDatacenterId); viper.IsSet(fn) {
+				if g.Properties.Connections == nil {
+					g.Properties.Connections = pointer.From(make([]vpn.Connection, 1))
+				}
 				(*g.Properties.Connections)[0].DatacenterId = pointer.From(viper.GetString(fn))
 			}
 			if fn := core.GetFlagName(c.NS, constants.FlagLanId); viper.IsSet(fn) {
+				if g.Properties.Connections == nil {
+					g.Properties.Connections = pointer.From(make([]vpn.Connection, 1))
+				}
 				(*g.Properties.Connections)[0].LanId = pointer.From(viper.GetString(fn))
 			}
 
@@ -102,6 +114,9 @@ func Update() *core.Command {
 			}
 
 			if fn := core.GetFlagName(c.NS, constants.FlagConnectionIP); viper.IsSet(fn) {
+				if g.Properties.Connections == nil {
+					g.Properties.Connections = pointer.From(make([]vpn.Connection, 1))
+				}
 				ip := viper.GetString(fn)
 				if isIPv4(ip) {
 					(*g.Properties.Connections)[0].Ipv4CIDR = pointer.From(ip)
