@@ -49,11 +49,17 @@ func Update() *core.Command {
 				input.GatewayIP = pointer.From(viper.GetString(fn))
 			}
 
-			input.Connections = pointer.From(make([]vpn.Connection, 1))
 			if fn := core.GetFlagName(c.NS, constants.FlagDatacenterId); viper.IsSet(fn) {
+				// initialize connections if not already set
+				if input.Connections == nil {
+					input.Connections = pointer.From(make([]vpn.Connection, 1))
+				}
 				(*input.Connections)[0].DatacenterId = pointer.From(viper.GetString(fn))
 			}
 			if fn := core.GetFlagName(c.NS, constants.FlagLanId); viper.IsSet(fn) {
+				if input.Connections == nil {
+					input.Connections = pointer.From(make([]vpn.Connection, 1))
+				}
 				(*input.Connections)[0].LanId = pointer.From(viper.GetString(fn))
 			}
 
@@ -72,6 +78,9 @@ func Update() *core.Command {
 			}
 
 			if fn := core.GetFlagName(c.NS, constants.FlagConnectionIP); viper.IsSet(fn) {
+				if input.Connections == nil {
+					input.Connections = pointer.From(make([]vpn.Connection, 1))
+				}
 				ip := viper.GetString(fn)
 				if isIPv4(ip) {
 					(*input.Connections)[0].Ipv4CIDR = pointer.From(ip)

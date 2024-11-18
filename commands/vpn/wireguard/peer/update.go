@@ -49,12 +49,17 @@ func Update() *core.Command {
 				p.Properties.PublicKey = pointer.From(viper.GetString(fn))
 			}
 
-			p.Properties.Endpoint = &vpn.WireguardEndpoint{}
 			if fn := core.GetFlagName(c.NS, constants.FlagHost); viper.IsSet(fn) {
+				if p.Properties.Endpoint == nil {
+					p.Properties.Endpoint = &vpn.WireguardEndpoint{}
+				}
 				p.Properties.Endpoint.Host = pointer.From(viper.GetString(fn))
 			}
 
 			if fn := core.GetFlagName(c.NS, constants.FlagPort); viper.IsSet(fn) {
+				if p.Properties.Endpoint == nil {
+					p.Properties.Endpoint = &vpn.WireguardEndpoint{}
+				}
 				p.Properties.Endpoint.Port = pointer.From(viper.GetInt32(fn))
 			}
 
