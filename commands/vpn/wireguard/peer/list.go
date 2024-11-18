@@ -27,7 +27,7 @@ func List() *core.Command {
 			return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagGatewayID)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			ls, err := Peers(
+			ls, err := completer.Peers(
 				viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayID)),
 				func(req vpn.ApiWireguardgatewaysPeersGetRequest) (vpn.ApiWireguardgatewaysPeersGetRequest, error) {
 					if fn := core.GetFlagName(c.NS, constants.FlagOffset); viper.IsSet(fn) {

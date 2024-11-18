@@ -3,6 +3,7 @@ package gateway
 import (
 	"context"
 	"fmt"
+	"github.com/ionos-cloud/ionosctl/v6/commands/vpn/wireguard/completer"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
@@ -25,7 +26,7 @@ func List() *core.Command {
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			ls, err := Gateways(
+			ls, err := completer.Gateways(
 				func(req vpn.ApiWireguardgatewaysGetRequest) (vpn.ApiWireguardgatewaysGetRequest, error) {
 					if fn := core.GetFlagName(c.NS, constants.FlagOffset); viper.IsSet(fn) {
 						req = req.Offset(viper.GetInt32(fn))
