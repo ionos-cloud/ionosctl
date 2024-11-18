@@ -10,7 +10,7 @@ import (
 var (
 	allCols = []string{"ID", "Name", "Description", "GatewayIP", "DatacenterId", "LanId", "ConnectionIPv4", "ConnectionIPv6", "Version", "Status"}
 	// we can safely include both InterfaceIPv4 and InterfaceIPv6 cols because if the respective column empty, it won't be shown
-	defaultCols = []string{"ID", "Name", "Description", "GatewayIP", "Version", "Status"}
+	defaultCols = []string{"ID", "Name", "Description", "GatewayIP", "Version", "DatacenterId", "Status"}
 )
 
 func Root() *core.Command {
