@@ -3,15 +3,14 @@ package tunnel
 import (
 	"context"
 	"fmt"
+	"github.com/ionos-cloud/ionosctl/v6/commands/vpn/ipsec/completer"
 
-	"github.com/ionos-cloud/ionosctl/v6/commands/vpn/ipsec/gateway"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
-	vpn "github.com/ionos-cloud/sdk-go-vpn"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -51,16 +50,12 @@ func Get() *core.Command {
 	})
 
 	cmd.AddStringFlag(constants.FlagGatewayID, "", "", "The ID of the IPSec Gateway", core.RequiredFlagOption())
-	cmd.Command.RegisterFlagCompletionFunc(constants.FlagGatewayID, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return gateway.GatewaysProperty(func(gateway vpn.IPSecGatewayRead) string {
-			return *gateway.Id
-		}), cobra.ShellCompDirectiveNoFileComp
+	cmd.Command.RegisterFlagCompletionFunc(constants.FlagGatewayID, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.GatewayIDs(), cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddStringFlag(constants.FlagTunnelID, constants.FlagIdShort, "", "The ID of the IPSec Tunnel you want to delete", core.RequiredFlagOption())
-	cmd.Command.RegisterFlagCompletionFunc(constants.FlagTunnelID, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return TunnelsProperty(viper.GetString(core.GetFlagName(cmd.NS, constants.FlagTunnelID)), func(p vpn.IPSecTunnelRead) string {
-			return *p.Id
-		}), cobra.ShellCompDirectiveNoFileComp
+	cmd.Command.RegisterFlagCompletionFunc(constants.FlagGatewayID, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.TunnelIDs(viper.GetString(core.GetFlagName(cmd.NS, constants.FlagGatewayID))), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	cmd.Command.SilenceUsage = true
