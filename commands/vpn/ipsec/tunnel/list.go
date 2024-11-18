@@ -3,8 +3,8 @@ package tunnel
 import (
 	"context"
 	"fmt"
+	"github.com/ionos-cloud/ionosctl/v6/commands/vpn/ipsec/completer"
 
-	"github.com/ionos-cloud/ionosctl/v6/commands/vpn/ipsec/gateway"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
@@ -27,7 +27,7 @@ func List() *core.Command {
 			return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagGatewayID)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			ls, err := Tunnels(
+			ls, err := completer.Tunnels(
 				viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayID)),
 				func(req vpn.ApiIpsecgatewaysTunnelsGetRequest) (vpn.ApiIpsecgatewaysTunnelsGetRequest, error) {
 					if fn := core.GetFlagName(c.NS, constants.FlagOffset); viper.IsSet(fn) {
@@ -56,10 +56,8 @@ func List() *core.Command {
 	})
 
 	cmd.AddStringFlag(constants.FlagGatewayID, constants.FlagIdShort, "", "The ID of the IPSec Gateway", core.RequiredFlagOption())
-	cmd.Command.RegisterFlagCompletionFunc(constants.FlagGatewayID, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return gateway.GatewaysProperty(func(gateway vpn.IPSecGatewayRead) string {
-			return *gateway.Id
-		}), cobra.ShellCompDirectiveNoFileComp
+	cmd.Command.RegisterFlagCompletionFunc(constants.FlagGatewayID, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.GatewayIDs(), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	cmd.AddInt32Flag(constants.FlagMaxResults, constants.FlagMaxResultsShort, 0, constants.DescMaxResults)

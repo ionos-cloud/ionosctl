@@ -4,7 +4,8 @@ import (
 	"context"
 	"fmt"
 	cloudapiv6completer "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
-	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/completer"
+	dbcompleter "github.com/ionos-cloud/ionosctl/v6/commands/dbaas/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/vpn/ipsec/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/resource2table"
@@ -114,10 +115,8 @@ func Update() *core.Command {
 	})
 
 	cmd.AddStringFlag(constants.FlagGatewayID, constants.FlagIdShort, "", "The ID of the IPSec Gateway", core.RequiredFlagOption())
-	cmd.Command.RegisterFlagCompletionFunc(constants.FlagGatewayID, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return GatewaysProperty(func(gateway vpn.IPSecGatewayRead) string {
-			return *gateway.Id
-		}), cobra.ShellCompDirectiveNoFileComp
+	cmd.Command.RegisterFlagCompletionFunc(constants.FlagGatewayID, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.GatewayIDs(), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Name of the IPSec Gateway", core.RequiredFlagOption())
@@ -154,7 +153,7 @@ func Update() *core.Command {
 			cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddStringFlag(constants.FlagConnectionIP, "", "", "A LAN IPv4 or IPv6 address in CIDR notation that will be assigned to the VPN Gateway", core.RequiredFlagOption())
-	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagConnectionIP, completer.GetCidrCompletionFunc(cmd))
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagConnectionIP, dbcompleter.GetCidrCompletionFunc(cmd))
 	cmd.AddStringFlag(constants.FlagVersion, "", "IKEv2", "The IKE version that is permitted for the VPN tunnels")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagVersion, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"IKEv2"}, cobra.ShellCompDirectiveNoFileComp

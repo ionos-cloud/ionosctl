@@ -2,7 +2,7 @@ package tunnel
 
 import (
 	"context"
-	"github.com/ionos-cloud/ionosctl/v6/commands/vpn/wireguard/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/vpn/ipsec/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/pointer"
 
@@ -43,10 +43,8 @@ func Update() *core.Command {
 		return completer.GatewayIDs(), cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddStringFlag(constants.FlagTunnelID, constants.FlagIdShort, "", "The ID of the IPSec Tunnel you want to delete", core.RequiredFlagOption())
-	cmd.Command.RegisterFlagCompletionFunc(constants.FlagTunnelID, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return TunnelsProperty(viper.GetString(core.GetFlagName(cmd.NS, constants.FlagTunnelID)), func(p vpn.IPSecTunnelRead) string {
-			return *p.Id
-		}), cobra.ShellCompDirectiveNoFileComp
+	cmd.Command.RegisterFlagCompletionFunc(constants.FlagGatewayID, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.TunnelIDs(viper.GetString(core.GetFlagName(cmd.NS, constants.FlagGatewayID))), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	cmd.AddStringFlag(constants.FlagName, "", "", "Name of the IPSec Tunnel")
