@@ -8,9 +8,9 @@ import (
 )
 
 var (
-	allCols = []string{"ID", "Name", "Description", "GatewayIP", "InterfaceIPv4", "InterfaceIPv6", "DatacenterId", "LanId", "ConnectionIPv4", "ConnectionIPv6", "InterfaceIP", "ListenPort", "Status"}
+	allCols = []string{"ID", "Name", "PublicKey", "Description", "GatewayIP", "InterfaceIPv4", "InterfaceIPv6", "DatacenterId", "LanId", "ConnectionIPv4", "ConnectionIPv6", "InterfaceIP", "ListenPort", "Status"}
 	// we can safely include both InterfaceIPv4 and InterfaceIPv6 cols because if the respective column empty, it won't be shown
-	defaultCols = []string{"ID", "Name", "Description", "GatewayIP", "InterfaceIPv4", "InterfaceIPv6", "DatacenterId", "ListenPort", "Status"}
+	defaultCols = []string{"ID", "Name", "PublicKey", "Description", "GatewayIP", "InterfaceIPv4", "InterfaceIPv6", "DatacenterId", "ListenPort", "Status"}
 )
 
 func Root() *core.Command {
