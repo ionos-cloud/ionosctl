@@ -2,11 +2,11 @@ package gateway
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
-	"github.com/ionos-cloud/ionosctl/v6/commands/vpn/wireguard/completer"
 	"net"
 	"os"
+
+	"github.com/ionos-cloud/ionosctl/v6/commands/vpn/wireguard/completer"
 
 	cloudapiv6completer "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	dbaascompleter "github.com/ionos-cloud/ionosctl/v6/commands/dbaas/completer"
@@ -32,9 +32,13 @@ func Update() *core.Command {
 		Verb:      "update",
 		Aliases:   []string{"u", "put", "patch"},
 		ShortDesc: "Update a WireGuard Gateway",
+		LongDesc:  "Update a WireGuard Gateway. Note: The private key MUST be provided again (or changed) on updates.",
 		Example:   "ionosctl vpn wireguard gateway update " + core.FlagsUsage(constants.FlagGatewayID, constants.FlagName, constants.FlagDatacenterId, constants.FlagLanId, constants.FlagConnectionIP, constants.FlagGatewayIP, constants.FlagInterfaceIP),
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagGatewayID)
+			return core.CheckRequiredFlagsSets(c.Command, c.NS,
+				[]string{constants.FlagGatewayID, constants.FlagPrivateKey},
+				[]string{constants.FlagGatewayID, constants.FlagPrivateKeyPath},
+			)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			id := viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayID))
@@ -43,12 +47,6 @@ func Update() *core.Command {
 			if err != nil {
 				return err
 			}
-
-			j, err := json.MarshalIndent(g, "", "  ")
-			if err != nil {
-				return err
-			}
-			fmt.Println(string(j))
 
 			if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) {
 				g.Properties.Name = pointer.From(viper.GetString(fn))
