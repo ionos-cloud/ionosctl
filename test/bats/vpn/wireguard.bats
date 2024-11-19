@@ -14,40 +14,41 @@ setup_file() {
     mkdir -p /tmp/bats_test
 }
 
-@test "Ensure ipblock, and connection datacenter & lan" {
-      datacenter_id=$(find_or_create_resource \
-          "ionosctl datacenter list -M 1 -F location=${location},state=available -o json 2> /dev/null | jq -r '.items[] | .id'" \
-          "ionosctl datacenter create --name \"CLI-Test-$(randStr 8)\" --location ${location} -o json 2> /dev/null | jq -r '.id'")
-      [ -n "$datacenter_id" ] || [ "$datacenter_id" = "null" ] || fail "datacenter_id is empty"
-      assert_regex "$datacenter_id" "$uuid_v4_regex"
-      echo "$datacenter_id" > /tmp/bats_test/datacenter_id
+@test "Create datacenter, LAN, and IP block" {
+    datacenter_id=$(ionosctl datacenter create --name "CLI-Test-$(randStr 8)" --location "${location}" -o json 2> /dev/null | jq -r '.id')
+    [ -n "$datacenter_id" ] || fail "Failed to create datacenter"
+    echo "$datacenter_id" > /tmp/bats_test/datacenter_id
 
-      lan_id=$(find_or_create_resource \
-          "ionosctl lan list -M 1 --datacenter-id ${datacenter_id} -F public=false-o json 2> /dev/null | jq -r '.items[] | .id'" \
-          "sleep 30 && ionosctl lan create --datacenter-id ${datacenter_id} --public=false -o json 2> /dev/null | jq -r '.id'")
-      [ -n "$lan_id" ] || [ "$lan_id" = "null" ] || fail "lan_id is empty"
-      echo "$lan_id" > /tmp/bats_test/lan_id
+    sleep 60
 
-      ipblock_id=$(find_or_create_resource \
-          "ionosctl ipblock list -M 1 -F location=${location},size=1 -o json 2> /dev/null | jq -r '.items[] | .id'" \
-          "ionosctl ipblock create --location ${location} --size 1 -o json 2> /dev/null | jq -r '.id'")
-      # same chefck above but also if null string
-      [ -n "$ipblock_id" ] || [ "$ipblock_id" = "null" ] || fail "ipblock_id is empty"
+    lan_id=$(ionosctl lan create --datacenter-id "$datacenter_id" --public=false -o json 2> /dev/null | jq -r '.id')
+    [ -n "$lan_id" ] || fail "Failed to create LAN"
+    echo "$lan_id" > /tmp/bats_test/lan_id
 
-      echo "$ipblock_id" > /tmp/bats_test/ipblock_id
+    ipblock_id=$(ionosctl ipblock create --location "$location" --size 1 -o json 2> /dev/null | jq -r '.id')
+    [ -n "$ipblock_id" ] || fail "Failed to create IP block"
+    echo "$ipblock_id" > /tmp/bats_test/ipblock_id
 
-      sleep 30
+    ipblock_ip=$(ionosctl ipblock get --ipblock-id "$ipblock_id" -o json 2> /dev/null | jq -r '.properties.ips[0]')
+    [ -n "$ipblock_ip" ] || fail "Failed to retrieve IP block IP"
+    echo "$ipblock_ip" > /tmp/bats_test/ipblock_ip
 
-      ipblock_ip=$(ionosctl ipblock get --ipblock-id "$ipblock_id" -o json 2> /dev/null | jq -r '.properties.ips[0]')
-      [ -n "$ipblock_ip" ] || [ "$ipblock_ip" = "null" ] || fail "ipblock_ip is empty"
-      echo "$ipblock_ip" > /tmp/bats_test/ipblock_ip
+    lan_status=""
+    i=0
+    while [ "$lan_status" != "AVAILABLE" ] && [ $i -lt 30 ]; do
+        lan_status=$(ionosctl lan get --lan-id "$lan_id" --datacenter-id "$datacenter_id" -o json 2> /dev/null | jq -r '.metadata.state')
+        sleep 10
+        i=$((i+1))
+    done
+    [ "$lan_status" = "AVAILABLE" ] || fail "LAN is not available"
+
 }
 
 @test "Create Wireguard Gateway" {
     # generate private key
     run ionosctl vpn wireguard gateway create --name "cli-test-$(randStr 6)" \
       --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" --lan-id 1 --connection-ip 10.7.222.239/24 \
-      --gateway-ip 87.106.32.247 --interface-ip 10.7.222.97/24 --private-key "$(openssl rand -base64 32)" \
+      --gateway-ip "$(cat /tmp/bats_test/ipblock_ip)" --interface-ip 10.7.222.97/24 --private-key "$(openssl rand -base64 32)" \
       -o json 2> /dev/null
     assert_success
 
@@ -69,9 +70,10 @@ setup_file() {
 @test "Update name of Wireguard Gateway with cols flag" {
     new_name="cli-test-$(randStr 6)"
 
-    run ionosctl vpn wireguard gateway update --gateway-id "$(cat /tmp/bats_test/gateway_id)" --name "$new_name" --cols ID --no-headers 2> /dev/null
+    run ionosctl vpn wireguard gateway update --gateway-id "$(cat /tmp/bats_test/gateway_id)" \
+       --private-key "$(openssl rand -base64 32)" --name "$new_name" --cols ID --no-headers 2> /dev/null
     assert_success
-    assert_equal "$(echo "$output" | jq -r '.id')" "$(cat /tmp/bats_test/gateway_id)"
+    assert_output "$(cat /tmp/bats_test/gateway_id)"
 
     run ionosctl vpn wireguard gateway get --gateway-id "$(cat /tmp/bats_test/gateway_id)" --cols name --no-headers 2> /dev/null
     assert_success
@@ -80,8 +82,19 @@ setup_file() {
     # Not using no-headers shows the header and the value
     run ionosctl vpn wireguard gateway get --gateway-id "$(cat /tmp/bats_test/gateway_id)" --cols name 2> /dev/null
     assert_success
-    assert_output "Name"
-    assert_output "$new_name"
+    assert_output -p "Name"
+    assert_output -p "$new_name"
+}
+
+@test "Can use --private-key-path flag for updating private key" {
+    new_key=$(openssl rand -base64 32)
+    echo "$new_key" > /tmp/bats_test/new_key
+
+    run ionosctl vpn wireguard gateway update --gateway-id "$(cat /tmp/bats_test/gateway_id)" \
+      --private-key-path /tmp/bats_test/new_key -f
+    assert_success
+
+    rm /tmp/bats_test/new_key
 }
 
 @test "Create Wireguard Peer" {
@@ -108,9 +121,9 @@ setup_file() {
     new_name="cli-test-$(randStr 6)"
 
     run ionosctl vpn wireguard peer update --gateway-id "$(cat /tmp/bats_test/gateway_id)" \
-      --peer-id "$(cat /tmp/bats_test/peer_id)" --name "$new_name" --private-key  --cols ID --no-headers 2> /dev/null
+      --peer-id "$(cat /tmp/bats_test/peer_id)" --name "$new_name" --cols ID --no-headers 2> /dev/null
     assert_success
-    assert_equal "$(echo "$output" | jq -r '.id')" "$(cat /tmp/bats_test/peer_id)"
+    assert_output "$(cat /tmp/bats_test/peer_id)"
 
     run ionosctl vpn wireguard peer get --gateway-id "$(cat /tmp/bats_test/gateway_id)" --peer-id "$(cat /tmp/bats_test/peer_id)" --cols name --no-headers 2> /dev/null
     assert_success
@@ -119,8 +132,8 @@ setup_file() {
     # Not using no-headers shows the header and the value
     run ionosctl vpn wireguard peer get --gateway-id "$(cat /tmp/bats_test/gateway_id)" --peer-id "$(cat /tmp/bats_test/peer_id)" --cols name 2> /dev/null
     assert_success
-    assert_output "Name"
-    assert_output "$new_name"
+    assert_output -p "Name"
+    assert_output -p "$new_name"
 }
 
 @test "Delete Wireguard Peer" {
@@ -134,6 +147,11 @@ setup_file() {
 
 teardown_file() {
     ionosctl vpn wireguard gateway delete -af
+
+    ionosctl datacenter delete --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" -f
+    ionosctl ipblock delete --ipblock-id "$(cat /tmp/bats_test/ipblock_id)" -f
+
+    ionosctl token delete --token "$IONOS_TOKEN"
 
     rm -rf /tmp/bats_test
 }
