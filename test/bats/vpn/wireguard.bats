@@ -12,49 +12,35 @@ location="de/txl"
 setup_file() {
     export IONOS_TOKEN=$(ionosctl token generate)
     mkdir -p /tmp/bats_test
-
-    # if openssl doesn't exist just alias it to a random 32 b64 string "w7X5hj3jgj+DhS5pZmR7K2wU1zL3Oluy6lDfW5JcHtU="
-    if ! command -v openssl &> /dev/null
-    then
-        alias openssl="echo w7X5hj3jgj+DhS5pZmR7K2wU1zL3Oluy6lDfW5JcHtU="
-    fi
 }
 
-#@test "Ensure ipblock, and connection datacenter & lan" {
-#      datacenter_id=$(find_or_create_resource \
-#          "ionosctl datacenter list -M 1 -F location=${location},state=available -o json 2> /dev/null | jq -r '.items[] | .id'" \
-#          "ionosctl datacenter create --name \"CLI-Test-$(randStr 8)\" --location ${location} -o json 2> /dev/null | jq -r '.id'")
-#      [ -n "$datacenter_id" ] || [ "$datacenter_id" = "null" ] || fail "datacenter_id is empty"
-#      assert_regex "$datacenter_id" "$uuid_v4_regex"
-#      echo "$datacenter_id" > /tmp/bats_test/datacenter_id
-#
-#      lan_id=$(find_or_create_resource \
-#          "ionosctl lan list -M 1 --datacenter-id ${datacenter_id} -F public=false-o json 2> /dev/null | jq -r '.items[] | .id'" \
-#          "sleep 30 && ionosctl lan create --datacenter-id ${datacenter_id} --public=false -o json 2> /dev/null | jq -r '.id'")
-#      [ -n "$lan_id" ] || [ "$lan_id" = "null" ] || fail "lan_id is empty"
-#      echo "$lan_id" > /tmp/bats_test/lan_id
-#
-#      ipblock_id=$(find_or_create_resource \
-#          "ionosctl ipblock list -M 1 -F location=${location},size=1 -o json 2> /dev/null | jq -r '.items[] | .id'" \
-#          "ionosctl ipblock create --location ${location} --size 1 -o json 2> /dev/null | jq -r '.id'")
-#      # same chefck above but also if null string
-#      [ -n "$ipblock_id" ] || [ "$ipblock_id" = "null" ] || fail "ipblock_id is empty"
-#
-#      echo "$ipblock_id" > /tmp/bats_test/ipblock_id
-#
-#      sleep 30
-#
-#      ipblock_ip=$(ionosctl ipblock get --ipblock-id "$ipblock_id" -o json 2> /dev/null | jq -r '.properties.ips[0]')
-#      [ -n "$ipblock_ip" ] || [ "$ipblock_ip" = "null" ] || fail "ipblock_ip is empty"
-#      echo "$ipblock_ip" > /tmp/bats_test/ipblock_ip
-#}
-
 @test "Ensure ipblock, and connection datacenter & lan" {
-    # place holder
-    echo "2ecec754-f7f9-418a-8dfc-2824e10ac0ac" > /tmp/bats_test/datacenter_id
-    echo "2" > /tmp/bats_test/lan_id
-    echo "cb622374-217f-49f8-98bf-831e8c9d2e8a" > /tmp/bats_test/ipblock_id
-    echo "85.215.151.14" > /tmp/bats_test/ipblock_ip
+      datacenter_id=$(find_or_create_resource \
+          "ionosctl datacenter list -M 1 -F location=${location},state=available -o json 2> /dev/null | jq -r '.items[] | .id'" \
+          "ionosctl datacenter create --name \"CLI-Test-$(randStr 8)\" --location ${location} -o json 2> /dev/null | jq -r '.id'")
+      [ -n "$datacenter_id" ] || [ "$datacenter_id" = "null" ] || fail "datacenter_id is empty"
+      assert_regex "$datacenter_id" "$uuid_v4_regex"
+      echo "$datacenter_id" > /tmp/bats_test/datacenter_id
+
+      lan_id=$(find_or_create_resource \
+          "ionosctl lan list -M 1 --datacenter-id ${datacenter_id} -F public=false-o json 2> /dev/null | jq -r '.items[] | .id'" \
+          "sleep 30 && ionosctl lan create --datacenter-id ${datacenter_id} --public=false -o json 2> /dev/null | jq -r '.id'")
+      [ -n "$lan_id" ] || [ "$lan_id" = "null" ] || fail "lan_id is empty"
+      echo "$lan_id" > /tmp/bats_test/lan_id
+
+      ipblock_id=$(find_or_create_resource \
+          "ionosctl ipblock list -M 1 -F location=${location},size=1 -o json 2> /dev/null | jq -r '.items[] | .id'" \
+          "ionosctl ipblock create --location ${location} --size 1 -o json 2> /dev/null | jq -r '.id'")
+      # same chefck above but also if null string
+      [ -n "$ipblock_id" ] || [ "$ipblock_id" = "null" ] || fail "ipblock_id is empty"
+
+      echo "$ipblock_id" > /tmp/bats_test/ipblock_id
+
+      sleep 30
+
+      ipblock_ip=$(ionosctl ipblock get --ipblock-id "$ipblock_id" -o json 2> /dev/null | jq -r '.properties.ips[0]')
+      [ -n "$ipblock_ip" ] || [ "$ipblock_ip" = "null" ] || fail "ipblock_ip is empty"
+      echo "$ipblock_ip" > /tmp/bats_test/ipblock_ip
 }
 
 @test "Create Wireguard Gateway" {
@@ -121,7 +107,8 @@ setup_file() {
 @test "Update name of Wireguard Peer with cols flag" {
     new_name="cli-test-$(randStr 6)"
 
-    run ionosctl vpn wireguard peer update --gateway-id "$(cat /tmp/bats_test/gateway_id)" --peer-id "$(cat /tmp/bats_test/peer_id)" --name "$new_name" --cols ID --no-headers 2> /dev/null
+    run ionosctl vpn wireguard peer update --gateway-id "$(cat /tmp/bats_test/gateway_id)" \
+      --peer-id "$(cat /tmp/bats_test/peer_id)" --name "$new_name" --private-key  --cols ID --no-headers 2> /dev/null
     assert_success
     assert_equal "$(echo "$output" | jq -r '.id')" "$(cat /tmp/bats_test/peer_id)"
 
