@@ -104,15 +104,12 @@ find_or_create_resource() {
     local find_command="$1"
     local create_command="$2"
 
-    run bash -c "$find_command"
+    bash -c "$find_command"
     if [ "$status" -eq 0 ] && [ -n "$output" ]; then
-        local resource_id=$(echo "$output")
-        echo "$resource_id"
+        echo "$output"
         return 0
     fi
 
-    run bash -c "$create_command"
-    assert_success
-    local new_resource_id=$(echo "$output")
-    echo "$new_resource_id"
+    bash -c "$create_command"
+    echo "$output"
 }
