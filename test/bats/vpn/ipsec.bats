@@ -137,7 +137,7 @@ teardown_file() {
     ionosctl datacenter delete --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" -f
     ionosctl ipblock delete --ipblock-id "$(cat /tmp/bats_test/ipblock_id)" -f
 
-    ionosctl token delete --token "$IONOS_TOKEN"
+    ionosctl token delete --token "$IONOS_TOKEN" --f
 
-#    rm -rf /tmp/bats_test
+    rm -rf /tmp/bats_test
 }
