@@ -223,6 +223,8 @@ func addCommands() {
 	rootCmd.AddCommand(dns.Root())
 	rootCmd.AddCommand(logging_service.Root())
 
+	rootCmd.AddCommand(cdn.Command())
+
 	rootCmd.AddCommand(funcChangeDefaultApiUrl(vpn.Root(), constants.DefaultVPNApiURL))
 }
 

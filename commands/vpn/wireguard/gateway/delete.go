@@ -3,6 +3,7 @@ package gateway
 import (
 	"context"
 	"fmt"
+
 	"github.com/ionos-cloud/ionosctl/v6/commands/vpn/wireguard/completer"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
