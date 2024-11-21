@@ -41,7 +41,6 @@ setup_file() {
         i=$((i+1))
     done
     [ "$lan_status" = "AVAILABLE" ] || fail "LAN is not available"
-
 }
 
 @test "Create IPSec Gateway" {
@@ -58,10 +57,21 @@ setup_file() {
     [ -n "$gateway_id" ] || fail "Failed to create IPSec Gateway"
     echo "$gateway_id" > /tmp/bats_test/ipsec_gateway_id
 
-    # Verify the gateway was created
     run ionosctl vpn ipsec gateway get --gateway-id "$gateway_id" -o json 2> /dev/null
     assert_success
     assert_equal "$gateway_id" "$(echo "$output" | jq -r '.id')"
+}
+
+@test "Update IPSec Gateway name" {
+    gateway_id=$(cat /tmp/bats_test/ipsec_gateway_id)
+    new_name="cli-test-updated-$(randStr 6)"
+
+    run ionosctl vpn ipsec gateway update --gateway-id "$gateway_id" --name "$new_name" -o json 2> /dev/null
+    assert_success
+
+    run ionosctl vpn ipsec gateway get --gateway-id "$gateway_id" -o json 2> /dev/null
+    assert_success
+    assert_equal "$new_name" "$(echo "$output" | jq -r '.properties.name')"
 }
 
 @test "Create IPSec Tunnel" {
@@ -78,57 +88,25 @@ setup_file() {
     [ -n "$tunnel_id" ] || fail "Failed to create IPSec Tunnel"
     echo "$tunnel_id" > /tmp/bats_test/ipsec_tunnel_id
 
-    # Verify the tunnel was created
     run ionosctl vpn ipsec tunnel get --gateway-id "$gateway_id" --tunnel-id "$tunnel_id" -o json 2> /dev/null
     assert_success
     assert_equal "$tunnel_id" "$(echo "$output" | jq -r '.id')"
 }
 
-@test "Create IPSec Tunnel with JSON properties file" {
+@test "Update IPSec Tunnel" {
     gateway_id=$(cat /tmp/bats_test/ipsec_gateway_id)
+    tunnel_id=$(cat /tmp/bats_test/ipsec_tunnel_id)
+    new_name="cli-tunnel-updated-$(randStr 6)"
+    new_psk="$(openssl rand -base64 32)"
 
-    json=$(cat <<EOF
-{
-  "properties": {
-    "name": "$name",
-    "description": "Allows local subnet X to connect to virtual network Y.",
-    "remoteHost": "vpn.mycompany.com",
-    "auth": {
-      "method": "PSK",
-      "psk": {
-        "key": "X2wosbaw74M8hQGbK3jCCaEusR6CCFRa"
-      }
-    },
-    "ike": {
-      "diffieHellmanGroup": "16-MODP4096",
-      "encryptionAlgorithm": "AES256",
-      "integrityAlgorithm": "SHA256",
-      "lifetime": 86400
-    },
-    "esp": {
-      "diffieHellmanGroup": "16-MODP4096",
-      "encryptionAlgorithm": "AES256",
-      "integrityAlgorithm": "SHA256",
-      "lifetime": 3600
-    },
-    "cloudNetworkCIDRs": [
-      "192.168.1.100/24"
-    ],
-    "peerNetworkCIDRs": [
-      "1.2.3.4/32"
-    ]
-  }
-}
-EOF
-    )
-    printf "%s\n" "$json" > /tmp/bats_test/tunnel_properties.json
-
-    run ionosctl vpn ipsec tunnel create --gateway-id "$gateway_id" --json-properties /tmp/bats_test/tunnel_properties.json -o json
+    run ionosctl vpn ipsec tunnel update --gateway-id "$gateway_id" --tunnel-id "$tunnel_id" \
+      --name "$new_name" --psk-key "$new_psk" -o json 2> /dev/null
     assert_success
 
-    tunnel_id=$(echo "$output" | jq -r '.id')
-    [ -n "$tunnel_id" ] || fail "Failed to create IPSec Tunnel with JSON properties"
-    echo "$tunnel_id" > /tmp/bats_test/ipsec_json_tunnel_id
+    run ionosctl vpn ipsec tunnel get --gateway-id "$gateway_id" --tunnel-id "$tunnel_id" -o json 2> /dev/null
+    assert_success
+    assert_equal "$new_name" "$(echo "$output" | jq -r '.properties.name')"
+    assert_equal "$new_psk" "$(echo "$output" | jq -r '.properties.auth.psk.key')"
 }
 
 teardown_file() {
