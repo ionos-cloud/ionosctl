@@ -48,6 +48,6 @@ Find a gateway by ID
 ## Examples
 
 ```text
-ionosctl vpn wg g delete ...
+ionosctl vpn ipsec gateway get --gateway-id GATEWAY_ID 
 ```
 

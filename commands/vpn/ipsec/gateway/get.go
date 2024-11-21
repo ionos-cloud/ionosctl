@@ -23,7 +23,7 @@ func Get() *core.Command {
 		Verb:      "get",
 		Aliases:   []string{"g"},
 		ShortDesc: "Find a gateway by ID",
-		Example:   "ionosctl vpn wg g delete ...", // TODO: Probably best if I don't forget this
+		Example:   "ionosctl vpn ipsec gateway get " + core.FlagsUsage(constants.FlagGatewayID),
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return core.CheckRequiredFlags(c.Command, c.NS, constants.FlagGatewayID)
 		},
