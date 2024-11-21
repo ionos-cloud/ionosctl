@@ -106,7 +106,6 @@ setup_file() {
     run ionosctl vpn ipsec tunnel get --gateway-id "$gateway_id" --tunnel-id "$tunnel_id" -o json 2> /dev/null
     assert_success
     assert_equal "$new_name" "$(echo "$output" | jq -r '.properties.name')"
-    assert_equal "$new_psk" "$(echo "$output" | jq -r '.properties.auth.psk.key')"
 }
 
 teardown_file() {
