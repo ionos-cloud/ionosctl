@@ -126,7 +126,7 @@ setup_file() {
     assert_output "$(cat /tmp/bats_test/peer_id)"
 
     run ionosctl vpn wireguard peer get --gateway-id "$(cat /tmp/bats_test/gateway_id)" --peer-id "$(cat /tmp/bats_test/peer_id)" --cols name --no-headers 2> /dev/null
-    assert_success
+    asserWt_success
     assert_output "$new_name"
 
     # Not using no-headers shows the header and the value
@@ -147,6 +147,8 @@ setup_file() {
 
 teardown_file() {
     ionosctl vpn wireguard gateway delete -af
+
+    sleep 30
 
     ionosctl datacenter delete --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" -f
     ionosctl ipblock delete --ipblock-id "$(cat /tmp/bats_test/ipblock_id)" -f
