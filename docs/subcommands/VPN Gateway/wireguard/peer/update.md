@@ -47,6 +47,7 @@ Update a WireGuard Peer
   -h, --help                 Print usage
       --host string          Hostname or IPV4 address that the WireGuard Server will connect to (required)
       --ips strings          Comma separated subnets of CIDRs that are allowed to connect to the WireGuard Gateway. Specify "a.b.c.d/32" for an individual IP address. Specify "0.0.0.0/0" or "::/0" for all addresses (required)
+      --location string      The location your resources are hosted in. Possible values: [de/fra de/txl] (default "de/txl")
       --name string          Name of the WireGuard Peer (required)
       --no-headers           Don't print table headers when table output is used
   -o, --output string        Desired output format [text|json|api-json] (default "text")
@@ -55,5 +56,11 @@ Update a WireGuard Peer
       --public-key string    Public key of the connecting peer (required)
   -q, --quiet                Quiet output
   -v, --verbose              Print step-by-step process when running command
+```
+
+## Examples
+
+```text
+ionosctl vpn wireguard peer update --gateway-id GATEWAY_ID --peer-id PEER_ID --name NAME --description DESCRIPTION --ips IPS --public-key PUBLIC_KEY --host HOST --port PORT 
 ```
 
