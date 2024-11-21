@@ -3,6 +3,8 @@ package gateway
 import (
 	"context"
 	"fmt"
+	"net"
+
 	cloudapiv6completer "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
@@ -11,7 +13,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/pointer"
-	"net"
 
 	vpn "github.com/ionos-cloud/sdk-go-vpn"
 	"github.com/spf13/cobra"
