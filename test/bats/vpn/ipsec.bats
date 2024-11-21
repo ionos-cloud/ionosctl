@@ -112,6 +112,8 @@ setup_file() {
 teardown_file() {
     ionosctl vpn ipsec gateway delete -af
 
+    sleep 30
+
     ionosctl datacenter delete --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" -f
     ionosctl ipblock delete --ipblock-id "$(cat /tmp/bats_test/ipblock_id)" -f
 
