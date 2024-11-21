@@ -59,8 +59,8 @@ func Delete() *core.Command {
 		return completer.GatewayIDs(), cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddStringFlag(constants.FlagTunnelID, constants.FlagIdShort, "", "The ID of the IPSec Tunnel you want to delete", core.RequiredFlagOption())
-	cmd.Command.RegisterFlagCompletionFunc(constants.FlagGatewayID, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.TunnelIDs(viper.GetString(core.GetFlagName(cmd.NS, constants.FlagGatewayID))), cobra.ShellCompDirectiveNoFileComp
+	cmd.Command.RegisterFlagCompletionFunc(constants.FlagTunnelID, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.TunnelIDs(viper.GetString(core.GetFlagName(cmd.NS, constants.FlagTunnelID))), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, fmt.Sprintf("Delete all tunnels. Required or --%s", constants.FlagTunnelID))
