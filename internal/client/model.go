@@ -2,6 +2,7 @@ package client
 
 import (
 	"fmt"
+
 	cdn "github.com/ionos-cloud/sdk-go-cdn"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
@@ -116,6 +117,9 @@ func newClient(name, pwd, token, hostUrl string, usedLayer *Layer) *Client {
 
 	mariaConfig := maria.NewConfiguration(name, pwd, token, hostUrl)
 	mariaConfig.UserAgent = appendUserAgent(mariaConfig.UserAgent)
+
+	cdnConfig := cdn.NewConfiguration(name, pwd, token, hostUrl)
+	cdnConfig.UserAgent = appendUserAgent(cdnConfig.UserAgent)
 
 	vpnConfig := vpn.NewConfiguration(name, pwd, token, hostUrl)
 	vpnConfig.UserAgent = appendUserAgent(vpnConfig.UserAgent)

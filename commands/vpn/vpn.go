@@ -2,9 +2,10 @@ package vpn
 
 import (
 	"fmt"
-	"github.com/ionos-cloud/ionosctl/v6/commands/vpn/ipsec"
 	"maps"
 	"slices"
+
+	"github.com/ionos-cloud/ionosctl/v6/commands/vpn/ipsec"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/vpn/wireguard"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"

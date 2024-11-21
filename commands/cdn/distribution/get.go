@@ -3,6 +3,7 @@ package distribution
 import (
 	"context"
 	"fmt"
+
 	"github.com/ionos-cloud/ionosctl/v6/commands/cdn/completer"
 	cdn "github.com/ionos-cloud/sdk-go-cdn"
 	"github.com/spf13/cobra"
