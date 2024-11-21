@@ -1,53 +1,48 @@
 ---
-description: "Find a peer by ID"
+description: "List IPSec Tunnels"
 ---
 
-# VpnWireguardPeerGet
+# VpnIpsecTunnelList
 
 ## Usage
 
 ```text
-ionosctl vpn wireguard peer get [flags]
+ionosctl vpn ipsec tunnel list [flags]
 ```
 
 ## Aliases
 
-For `wireguard` command:
-
-```text
-[wg]
-```
-
-For `peer` command:
+For `tunnel` command:
 
 ```text
 [p]
 ```
 
-For `get` command:
+For `list` command:
 
 ```text
-[g]
+[l ls]
 ```
 
 ## Description
 
-Find a peer by ID
+List IPSec Tunnels
 
 ## Options
 
 ```text
   -u, --api-url string      Override default host url (default "vpn.de-txl.ionos.com")
       --cols strings        Set of columns to be printed on output 
-                            Available columns: [ID Name Description Host Port WhitelistIPs PublicKey Status]
+                            Available columns: [ID Name Description RemoteHost AuthMethod PSKKey IKEDiffieHellmanGroup IKEEncryptionAlgorithm IKEIntegrityAlgorithm IKELifetime ESPDiffieHellmanGroup ESPEncryptionAlgorithm ESPIntegrityAlgorithm ESPLifetime CloudNetworkCIDRs PeerNetworkCIDRs Status StatusMessage]
   -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -f, --force               Force command to execute without user input
-      --gateway-id string   The ID of the WireGuard Gateway (required)
+  -i, --gateway-id string   The ID of the IPSec Gateway (required)
   -h, --help                Print usage
       --location string     The location your resources are hosted in. Possible values: [de/fra de/txl] (default "de/txl")
+  -M, --max-results int32   The maximum number of elements to return
       --no-headers          Don't print table headers when table output is used
+      --offset int32        Skip a certain number of results
   -o, --output string       Desired output format [text|json|api-json] (default "text")
-  -i, --peer-id string      The ID of the WireGuard Peer you want to delete (required)
   -q, --quiet               Quiet output
   -v, --verbose             Print step-by-step process when running command
 ```
@@ -55,6 +50,6 @@ Find a peer by ID
 ## Examples
 
 ```text
-ionosctl vpn wg peer get --gateway-id GATEWAY_ID --peer-id PEER_ID 
+ionosctl vpn ipsec tunnel list --gateway-id GATEWAY_ID 
 ```
 

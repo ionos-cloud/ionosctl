@@ -1,53 +1,47 @@
 ---
-description: "Find a peer by ID"
+description: "Delete a gateway"
 ---
 
-# VpnWireguardPeerGet
+# VpnIpsecGatewayDelete
 
 ## Usage
 
 ```text
-ionosctl vpn wireguard peer get [flags]
+ionosctl vpn ipsec gateway delete [flags]
 ```
 
 ## Aliases
 
-For `wireguard` command:
+For `gateway` command:
 
 ```text
-[wg]
+[g gw]
 ```
 
-For `peer` command:
+For `delete` command:
 
 ```text
-[p]
-```
-
-For `get` command:
-
-```text
-[g]
+[del d]
 ```
 
 ## Description
 
-Find a peer by ID
+Delete a gateway
 
 ## Options
 
 ```text
+  -a, --all                 Delete all gateways. Required or --gateway-id
   -u, --api-url string      Override default host url (default "vpn.de-txl.ionos.com")
       --cols strings        Set of columns to be printed on output 
-                            Available columns: [ID Name Description Host Port WhitelistIPs PublicKey Status]
+                            Available columns: [ID Name Description GatewayIP DatacenterId LanId ConnectionIPv4 ConnectionIPv6 Version Status]
   -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -f, --force               Force command to execute without user input
-      --gateway-id string   The ID of the WireGuard Gateway (required)
+  -i, --gateway-id string   The ID of the IPSec Gateway (required)
   -h, --help                Print usage
       --location string     The location your resources are hosted in. Possible values: [de/fra de/txl] (default "de/txl")
       --no-headers          Don't print table headers when table output is used
   -o, --output string       Desired output format [text|json|api-json] (default "text")
-  -i, --peer-id string      The ID of the WireGuard Peer you want to delete (required)
   -q, --quiet               Quiet output
   -v, --verbose             Print step-by-step process when running command
 ```
@@ -55,6 +49,6 @@ Find a peer by ID
 ## Examples
 
 ```text
-ionosctl vpn wg peer get --gateway-id GATEWAY_ID --peer-id PEER_ID 
+ionosctl vpn ipsec gateway --gateway-id GATEWAY_ID 
 ```
 

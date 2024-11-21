@@ -44,6 +44,7 @@ List WireGuard Peers
   -f, --force               Force command to execute without user input
   -i, --gateway-id string   The ID of the WireGuard Gateway (required)
   -h, --help                Print usage
+      --location string     The location your resources are hosted in. Possible values: [de/fra de/txl] (default "de/txl")
   -M, --max-results int32   The maximum number of elements to return
       --no-headers          Don't print table headers when table output is used
       --offset int32        Skip a certain number of results
