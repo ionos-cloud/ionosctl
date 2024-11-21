@@ -24,7 +24,7 @@ func Delete() *core.Command {
 		Verb:      "delete",
 		Aliases:   []string{"d", "del", "rm"},
 		ShortDesc: "Remove a WireGuard Peer",
-		Example:   "", // TODO: Probably best if I don't forget this
+		Example:   "ionosctl vpn wireguard peer delete " + core.FlagsUsage(constants.FlagGatewayID, constants.FlagPeerID),
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return core.CheckRequiredFlagsSets(c.Command, c.NS,
 				[]string{constants.FlagGatewayID, constants.FlagPeerID},

@@ -57,3 +57,9 @@ Create WireGuard Peers. There is a limit to the total number of peers. Please re
   -v, --verbose              Print step-by-step process when running command
 ```
 
+## Examples
+
+```text
+ionosctl vpn wireguard peer create --gateway-id GATEWAY_ID --name NAME --ips IPS --public-key PUBLIC_KEY --host HOST 
+```
+
