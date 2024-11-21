@@ -26,6 +26,7 @@ func Update() *core.Command {
 		Example:   "ionosctl vpn ipsec tunnel update " + core.FlagsUsage(constants.FlagGatewayID, constants.FlagTunnelID, constants.FlagName),
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return core.CheckRequiredFlagsSets(c.Command, c.NS,
+				[]string{constants.FlagGatewayID, constants.FlagTunnelID},
 				[]string{constants.FlagJsonProperties, constants.FlagGatewayID, constants.FlagTunnelID},
 				[]string{constants.FlagJsonPropertiesExample},
 			)
@@ -89,6 +90,9 @@ func putFromProperties(c *core.CommandConfig) error {
 	original, _, err := client.Must().VPNClient.IPSecTunnelsApi.IpsecgatewaysTunnelsFindById(context.Background(),
 		viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayID)), viper.GetString(constants.FlagTunnelID)).
 		Execute()
+	if err != nil {
+		return err
+	}
 	input := original.Properties
 
 	if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) {
