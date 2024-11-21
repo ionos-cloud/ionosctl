@@ -53,3 +53,9 @@ Remove a WireGuard Peer
   -v, --verbose             Print step-by-step process when running command
 ```
 
+## Examples
+
+```text
+ionosctl vpn wireguard peer delete --gateway-id GATEWAY_ID --peer-id PEER_ID 
+```
+

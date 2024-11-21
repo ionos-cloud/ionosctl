@@ -126,7 +126,7 @@ setup_file() {
     assert_output "$(cat /tmp/bats_test/peer_id)"
 
     run ionosctl vpn wireguard peer get --gateway-id "$(cat /tmp/bats_test/gateway_id)" --peer-id "$(cat /tmp/bats_test/peer_id)" --cols name --no-headers 2> /dev/null
-    asserWt_success
+    assert_success
     assert_output "$new_name"
 
     # Not using no-headers shows the header and the value
