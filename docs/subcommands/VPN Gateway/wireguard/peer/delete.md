@@ -45,6 +45,7 @@ Remove a WireGuard Peer
   -f, --force               Force command to execute without user input
       --gateway-id string   The ID of the WireGuard Gateway (required)
   -h, --help                Print usage
+      --location string     The location your resources are hosted in. Possible values: [de/fra de/txl] (default "de/txl")
       --no-headers          Don't print table headers when table output is used
   -o, --output string       Desired output format [text|json|api-json] (default "text")
   -i, --peer-id string      The ID of the WireGuard Peer you want to delete (required)
