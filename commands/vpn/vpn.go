@@ -21,17 +21,5 @@ func Root() *core.Command {
 	cmd.AddCommand(wireguard.Root())
 	cmd.AddCommand(ipsec.Root())
 
-	return core.WithRegionalFlags(cmd, constants.DefaultVPNApiURL, LocationToURL)
-}
-
-var LocationToURL = map[string]string{
-	"de/fra": "https://vpn.de-fra.ionos.com",
-	"de/txl": "https://vpn.de-txl.ionos.com",
-	"es/vit": "https://vpn.es-vit.ionos.com",
-	"gb/bhx": "https://vpn.gb-bhx.ionos.com",
-	"gb/lhr": "https://vpn.gb-lhr.ionos.com",
-	"us/ewr": "https://vpn.us-ewr.ionos.com",
-	"us/las": "https://vpn.us-las.ionos.com",
-	"us/mci": "https://vpn.us-mci.ionos.com",
-	"fr/par": "https://vpn.fr-par.ionos.com",
+	return core.WithRegionalFlags(cmd, constants.DefaultVPNApiURL, constants.VPNLocationToURL)
 }

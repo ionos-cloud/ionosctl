@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"github.com/gofrs/uuid/v5"
-	"github.com/ionos-cloud/ionosctl/v6/internal/config"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -57,12 +56,18 @@ func WithCompletionComplex(
 	return func(cmdToRegister *Command, flagName string) {
 		cmdToRegister.Command.RegisterFlagCompletionFunc(flagName,
 			func(passedCmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+				fmt.Println("Completions For Flag: ", flagName)
+
+				viper.AutomaticEnv()
+
 				// Check if ArgServerURL is already set manually
-				if serverURL := config.GetServerUrl(); serverURL != "" {
+				if viper.IsSet(constants.ArgServerUrl) || viper.IsSet(constants.EnvServerUrl) {
 					fmt.Println("Server URL is set manually")
 					// If manually set, do nothing and directly call completionFunc
 					return completionFunc(passedCmd, args, toComplete)
 				}
+
+				fmt.Println("Server URL is not set manually")
 
 				// handle location-based logic if ArgServerURL is not set manually
 				if location, _ := passedCmd.Flags().GetString(constants.FlagLocation); location != "" {
@@ -72,9 +77,6 @@ func WithCompletionComplex(
 						// Return an error directive if location is invalid
 						return nil, cobra.ShellCompDirectiveError
 					}
-					// } else {
-					// 	Set default URL for completions if no location is provided
-					// 	viper.Set(constants.ArgServerUrl, defaultURL)
 				}
 
 				return completionFunc(passedCmd, args, toComplete)

@@ -4,15 +4,13 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/ionos-cloud/ionosctl/v6/commands/vpn/wireguard/completer"
-
+	"github.com/ionos-cloud/ionosctl/v6/commands/vpn/ipsec/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/resource2table"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
-	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
@@ -53,11 +51,10 @@ func Get() *core.Command {
 		InitClient: true,
 	})
 
-	cmd.AddStringFlag(constants.FlagGatewayID, constants.FlagIdShort, "", "The ID of the WireGuard Gateway", core.RequiredFlagOption())
-	cmd.Command.RegisterFlagCompletionFunc(constants.FlagGatewayID, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.GatewayIDs(), cobra.ShellCompDirectiveNoFileComp
-	})
-
+	cmd.AddStringFlag(constants.FlagGatewayID, constants.FlagIdShort, "", "The ID of the WireGuard Gateway",
+		// core.RequiredFlagOption(), core.WithCompletion(completer.GatewayIDs, nil))
+		core.RequiredFlagOption(),
+		core.WithCompletion(completer.GatewayIDs, constants.VPNLocationToURL))
 	cmd.Command.SilenceUsage = true
 	cmd.Command.Flags().SortFlags = false
 

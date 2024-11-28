@@ -176,6 +176,18 @@ const (
 	DefaultParentIndex          = int(1)
 )
 
+var VPNLocationToURL = map[string]string{
+	"de/fra": "https://vpn.de-fra.ionos.com",
+	"de/txl": "https://vpn.de-txl.ionos.com",
+	"es/vit": "https://vpn.es-vit.ionos.com",
+	"gb/bhx": "https://vpn.gb-bhx.ionos.com",
+	"gb/lhr": "https://vpn.gb-lhr.ionos.com",
+	"us/ewr": "https://vpn.us-ewr.ionos.com",
+	"us/las": "https://vpn.us-las.ionos.com",
+	"us/mci": "https://vpn.us-mci.ionos.com",
+	"fr/par": "https://vpn.fr-par.ionos.com",
+}
+
 // enum values. TODO: ideally i'd like these handled by the SDK
 var (
 	EnumLicenceType      = []string{"LINUX", "RHEL", "WINDOWS", "WINDOWS2016", "UNKNOWN", "OTHER"}
