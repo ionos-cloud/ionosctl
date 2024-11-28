@@ -222,26 +222,26 @@ func addCommands() {
 
 	// DNS ---
 	funcChangeDefaultApiUrl := func(command *core.Command, newDefault string) *core.Command {
-		// For some reason, this line only changes the help text
-		command.Command.PersistentFlags().StringP(
-			constants.ArgServerUrl, constants.ArgServerUrlShort, newDefault, "Override default host url",
-		)
-
-		// We should still run the original PersistentPreRun
-		originalPreRun := command.Command.PersistentPreRun
-
-		// If unset, manually set the flag to the new default. SIDE EFFECT: Now, this flag will always be considered "set", within DNS sub commands. Can't find a better alternative
-		command.Command.PersistentPreRun = func(cmd *cobra.Command, args []string) {
-			if originalPreRun != nil {
-				originalPreRun(cmd, args)
-			}
-
-			setVal := newDefault
-			if val, _ := cmd.Flags().GetString(constants.ArgServerUrl); val != "" {
-				setVal = val
-			}
-			viper.Set(constants.ArgServerUrl, setVal)
-		}
+		// // For some reason, this line only changes the help text
+		// command.Command.PersistentFlags().StringP(
+		// 	constants.ArgServerUrl, constants.ArgServerUrlShort, newDefault, "Override default host url",
+		// )
+		//
+		// // We should still run the original PersistentPreRun
+		// originalPreRun := command.Command.PersistentPreRun
+		//
+		// // If unset, manually set the flag to the new default. SIDE EFFECT: Now, this flag will always be considered "set", within DNS sub commands. Can't find a better alternative
+		// command.Command.PersistentPreRun = func(cmd *cobra.Command, args []string) {
+		// 	if originalPreRun != nil {
+		// 		originalPreRun(cmd, args)
+		// 	}
+		//
+		// 	setVal := newDefault
+		// 	if val, _ := cmd.Flags().GetString(constants.ArgServerUrl); val != "" {
+		// 		setVal = val
+		// 	}
+		// 	viper.Set(constants.ArgServerUrl, setVal)
+		// }
 		return command
 	}
 
@@ -254,7 +254,6 @@ func addCommands() {
 	)
 
 	rootCmd.AddCommand(cdn.Command())
-
 	rootCmd.AddCommand(vpn.Root())
 }
 

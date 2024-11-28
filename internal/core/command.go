@@ -25,10 +25,17 @@ func WithRegionalFlags(c *Command, defaultUrl string, locationsToUrl map[string]
 	c.Command.PersistentFlags().StringP(
 		constants.ArgServerUrl, constants.ArgServerUrlShort, defaultUrl, "Override default host url",
 	)
+	viper.BindPFlag(constants.ArgServerUrl, c.Command.PersistentFlags().Lookup(constants.ArgServerUrl))
 
 	possibleLocations := functional.KeysOfMap(locationsToUrl)
 	c.Command.PersistentFlags().StringP(
 		constants.FlagLocation, constants.FlagLocationShort, "", "Location of the resource to operate on. Can be one of: "+strings.Join(possibleLocations, ", "),
+	)
+	viper.BindPFlag(constants.FlagLocation, c.Command.PersistentFlags().Lookup(constants.FlagLocation))
+	c.Command.RegisterFlagCompletionFunc(constants.FlagLocation,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return possibleLocations, cobra.ShellCompDirectiveNoFileComp
+		},
 	)
 
 	originalPreRun := c.Command.PersistentPreRunE
@@ -40,23 +47,18 @@ func WithRegionalFlags(c *Command, defaultUrl string, locationsToUrl map[string]
 			}
 		}
 
-		setVal := defaultUrl // if nothing else works, use the default
-
-		if val, _ := cmd.Flags().GetString(constants.ArgServerUrl); val != "" {
-			setVal = val // if the user has set the flag, use that
-		}
+		// mark the flags as mutually exclusive
+		c.Command.MarkFlagsMutuallyExclusive(constants.ArgServerUrl, constants.FlagLocation)
 
 		// if the user has set the location flag, use the corresponding URL
 		if location, _ := cmd.Flags().GetString(constants.FlagLocation); location != "" {
 			if url, ok := locationsToUrl[location]; ok {
-				setVal = url
+				viper.Set(constants.ArgServerUrl, url)
 			} else {
 				return fmt.Errorf("Location %s is not valid. Valid locations are: %s\n", location, strings.Join(possibleLocations, ", "))
 			}
 		}
 
-		// set the value in viper
-		viper.Set(constants.ArgServerUrl, setVal)
 		return nil
 	}
 
