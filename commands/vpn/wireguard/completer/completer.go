@@ -2,7 +2,6 @@ package completer
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/config"
@@ -28,8 +27,6 @@ func Gateways(fs ...GatewayFilter) (vpn.WireguardGatewayReadList, error) {
 	if url := config.GetServerUrl(); url == constants.DefaultApiURL || url == "" {
 		viper.Set(constants.ArgServerUrl, constants.DefaultVPNApiURL)
 	}
-
-	fmt.Println("URL", config.GetServerUrl())
 
 	req := client.Must().VPNClient.WireguardGatewaysApi.WireguardgatewaysGet(context.Background())
 	for _, f := range fs {
