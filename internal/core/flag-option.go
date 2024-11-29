@@ -1,0 +1,109 @@
+package core
+
+import (
+	"fmt"
+	"strings"
+
+	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
+)
+
+const (
+	RequiredFlagsAnnotation   = "RequiredFlags"
+	DeprecatedFlagsAnnotation = "DeprecatedFlags"
+)
+
+type FlagOptionFunc func(cmd *Command, flagName string)
+
+func DeprecatedFlagOption(help string) FlagOptionFunc {
+	return func(cmd *Command, flagName string) {
+		cmd.Command.Flag(flagName).Deprecated = help
+		// For documentation purposes, add flag to command Annotation
+		if len(cmd.Command.Annotations) > 0 {
+			cmd.Command.Annotations[DeprecatedFlagsAnnotation] = fmt.Sprintf(flagNamePrintF, cmd.Command.Annotations[DeprecatedFlagsAnnotation], flagName, strings.ToUpper(strings.ReplaceAll(flagName, "-", "_")))
+		} else {
+			cmd.Command.Annotations = map[string]string{DeprecatedFlagsAnnotation: fmt.Sprintf(flagNamePrintF, cmd.Command.Annotations[DeprecatedFlagsAnnotation], flagName, strings.ToUpper(strings.ReplaceAll(flagName, "-", "_")))}
+		}
+	}
+}
+
+func RequiredFlagOption() FlagOptionFunc {
+	return func(cmd *Command, flagName string) {
+		cmd.Command.Flag(flagName).Usage = fmt.Sprintf("%s (required)", cmd.Command.Flag(flagName).Usage)
+		// For documentation purposes, add flag to command Annotation
+		if len(cmd.Command.Annotations) > 0 {
+			cmd.Command.Annotations[RequiredFlagsAnnotation] = fmt.Sprintf(flagNamePrintF, cmd.Command.Annotations[RequiredFlagsAnnotation], flagName, strings.ToUpper(strings.ReplaceAll(flagName, "-", "_")))
+		} else {
+			cmd.Command.Annotations = map[string]string{RequiredFlagsAnnotation: fmt.Sprintf(flagNamePrintF, cmd.Command.Annotations[RequiredFlagsAnnotation], flagName, strings.ToUpper(strings.ReplaceAll(flagName, "-", "_")))}
+		}
+	}
+}
+
+func WithCompletionComplex(
+	completionFunc func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective),
+	baseURL string,
+	allowedLocations []string,
+) FlagOptionFunc {
+	// Pre-generate the map only if allowedLocations is provided
+	var locationToURL map[string]string
+	if allowedLocations != nil {
+		locationToURL = make(map[string]string, len(allowedLocations))
+		for _, loc := range allowedLocations {
+			normalizedLoc := strings.ReplaceAll(loc, "/", "-") // Replace `/` with `-`
+			locationToURL[normalizedLoc] = fmt.Sprintf(baseURL, normalizedLoc)
+		}
+	}
+
+	return func(cmdToRegister *Command, flagName string) {
+		cmdToRegister.Command.RegisterFlagCompletionFunc(flagName,
+			func(passedCmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+				fmt.Println("Completions For Flag: ", flagName)
+
+				viper.AutomaticEnv()
+
+				// Check if ArgServerURL is already set manually
+				if viper.IsSet(constants.ArgServerUrl) || viper.IsSet(constants.EnvServerUrl) {
+					fmt.Println("Server URL is set manually")
+					// If manually set, do nothing and directly call completionFunc
+					return completionFunc(passedCmd, args, toComplete)
+				}
+
+				fmt.Println("Server URL is not set manually")
+
+				// Handle location-based logic if allowedLocations is provided
+				if locationToURL != nil {
+					if location, _ := passedCmd.Flags().GetString(constants.FlagLocation); location != "" {
+						if url, ok := locationToURL[location]; ok {
+							viper.Set(constants.ArgServerUrl, url)
+						} else {
+							// Return an error directive if location is invalid
+							return nil, cobra.ShellCompDirectiveError
+						}
+					}
+				} else {
+					// Use the baseURL directly if no locations are provided
+					viper.Set(constants.ArgServerUrl, baseURL)
+				}
+
+				return completionFunc(passedCmd, args, toComplete)
+			},
+		)
+	}
+}
+
+func WithCompletionE(completionFunc func() ([]string, error), baseURL string, allowedLocations []string) FlagOptionFunc {
+	return WithCompletionComplex(func(_ *cobra.Command, _ []string, _ string) ([]string, cobra.ShellCompDirective) {
+		results, err := completionFunc()
+		if err != nil {
+			return nil, cobra.ShellCompDirectiveError
+		}
+		return results, cobra.ShellCompDirectiveNoFileComp
+	}, baseURL, allowedLocations)
+}
+
+func WithCompletion(completionFunc func() []string, baseURL string, allowedLocations []string) FlagOptionFunc {
+	return WithCompletionComplex(func(_ *cobra.Command, _ []string, _ string) ([]string, cobra.ShellCompDirective) {
+		return completionFunc(), cobra.ShellCompDirectiveNoFileComp
+	}, baseURL, allowedLocations)
+}
