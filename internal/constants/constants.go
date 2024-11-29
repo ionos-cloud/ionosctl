@@ -139,17 +139,13 @@ const (
 // Defaults
 const (
 	DefaultApiURL               = "https://api.ionos.com"
-	DNSApiURL                   = "https://dns.%s.ionos.com"
+	DefaultDnsApiURL            = "dns.de-fra.ionos.com"
 	DefaultLoggingServiceApiURL = "logging.de-txl.ionos.com"
 	DefaultConfigFileName       = "/config.json"
 	DefaultOutputFormat         = "text"
 	DefaultWait                 = false
 	DefaultTimeoutSeconds       = int(60)
 	DefaultParentIndex          = int(1)
-)
-
-var (
-	DNSApiLocations = []string{"de/fra"}
 )
 
 // enum values. TODO: ideally i'd like these handled by the SDK

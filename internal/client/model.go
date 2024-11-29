@@ -2,7 +2,6 @@ package client
 
 import (
 	"fmt"
-
 	cdn "github.com/ionos-cloud/sdk-go-cdn"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
