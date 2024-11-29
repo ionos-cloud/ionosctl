@@ -42,45 +42,37 @@ func RequiredFlagOption() FlagOptionFunc {
 
 // WithCompletionComplex is a FlagOptionFunc that allows for more complex completion logic.
 // It is recommended to use one of the simpler helper functions WithCompletion or WithCompletionE instead.
-// Only use this complex function if you need to handle more complex logic, like args-based completion, or custom filtering based on already typed keys (from toComplete)
+// Only use this complex function if you need to handle more complex logic, like args-based completion, or custom filtering based on already typed keys (from toComplete).
+//
+// If the baseURL does not contain a placeholder (e.g., "%s"), it will be used directly.
+// If the baseURL contains a placeholder and a location is provided, the location will be used to construct the URL
 func WithCompletionComplex(
 	completionFunc func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective),
 	baseURL string,
-	allowedLocations []string,
 ) FlagOptionFunc {
-	// Pre-generate the map only if allowedLocations is provided
-	var locationToURL map[string]string
-	if allowedLocations != nil {
-		locationToURL = make(map[string]string, len(allowedLocations))
-		for _, loc := range allowedLocations {
-			normalizedLoc := strings.ReplaceAll(loc, "/", "-") // Replace `/` with `-`
-			locationToURL[normalizedLoc] = fmt.Sprintf(baseURL, normalizedLoc)
-		}
-	}
-
 	return func(cmdToRegister *Command, flagName string) {
 		cmdToRegister.Command.RegisterFlagCompletionFunc(flagName,
 			func(passedCmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 				viper.AutomaticEnv()
 
-				// Check if ArgServerURL is already set manually
 				if viper.IsSet(constants.ArgServerUrl) || viper.IsSet(constants.EnvServerUrl) {
 					// If manually set, do nothing and directly call completionFunc
 					return completionFunc(passedCmd, args, toComplete)
 				}
 
-				// Handle location-based logic if allowedLocations is provided
-				if locationToURL != nil {
-					if location, _ := passedCmd.Flags().GetString(constants.FlagLocation); location != "" {
-						if url, ok := locationToURL[location]; ok {
-							viper.Set(constants.ArgServerUrl, url)
-						} else {
-							// Return an error directive if location is invalid
-							return nil, cobra.ShellCompDirectiveError
-						}
+				// Handle location-based logic
+				location, _ := passedCmd.Flags().GetString(constants.FlagLocation)
+				if location != "" {
+					// Normalize the location and construct the URL if the baseURL contains a placeholder
+					normalizedLoc := strings.ReplaceAll(location, "/", "-")
+					if strings.Contains(baseURL, "%s") {
+						viper.Set(constants.ArgServerUrl, fmt.Sprintf(baseURL, normalizedLoc))
+					} else {
+						// If baseURL does not contain a placeholder, use it directly
+						viper.Set(constants.ArgServerUrl, baseURL)
 					}
 				} else {
-					// Use the baseURL directly if no locations are provided
+					// Use the baseURL directly if no location is provided
 					viper.Set(constants.ArgServerUrl, baseURL)
 				}
 
@@ -94,28 +86,28 @@ func WithCompletionComplex(
 //
 // Usage:
 //
-// - WithCompletionE(completionFuncE, "api.%s.ionos.com", allowedLocations) for a regional API
+// - WithCompletionE(completionFuncE, "api.%s.ionos.com") for a regional API
 //
-// - WithCompletionE(completionFuncE, "api.ionos.com", nil) for an API with a single endpoint
-func WithCompletionE(completionFunc func() ([]string, error), baseURL string, allowedLocations []string) FlagOptionFunc {
+// - WithCompletionE(completionFuncE, "api.ionos.com") for an API with a single endpoint
+func WithCompletionE(completionFunc func() ([]string, error), baseURL string) FlagOptionFunc {
 	return WithCompletionComplex(func(_ *cobra.Command, _ []string, _ string) ([]string, cobra.ShellCompDirective) {
 		results, err := completionFunc()
 		if err != nil {
 			return nil, cobra.ShellCompDirectiveError
 		}
 		return results, cobra.ShellCompDirectiveNoFileComp
-	}, baseURL, allowedLocations)
+	}, baseURL)
 }
 
 // WithCompletion is a FlagOptionFunc that allows for a completion function that returns a list of strings.
 //
 // Usage:
 //
-// - WithCompletion(completionFunc, "api.%s.ionos.com", allowedLocations) for a regional API
+// - WithCompletion(completionFunc, "api.%s.ionos.com") for a regional API
 //
-// - WithCompletion(completionFunc, "api.ionos.com", nil) for an API with a single endpoint
-func WithCompletion(completionFunc func() []string, baseURL string, allowedLocations []string) FlagOptionFunc {
+// - WithCompletion(completionFunc, "api.ionos.com") for an API with a single endpoint
+func WithCompletion(completionFunc func() []string, baseURL string) FlagOptionFunc {
 	return WithCompletionComplex(func(_ *cobra.Command, _ []string, _ string) ([]string, cobra.ShellCompDirective) {
 		return completionFunc(), cobra.ShellCompDirectiveNoFileComp
-	}, baseURL, allowedLocations)
+	}, baseURL)
 }
