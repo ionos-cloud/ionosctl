@@ -27,5 +27,5 @@ func Root() *core.Command {
 	cmd.AddCommand(dnssec.Root())
 	cmd.AddCommand(secondary_zones.Root())
 
-	return core.WithRegionalFlags(cmd, "https://dns.%s.ionos.com", []string{"de/fra"})
+	return core.WithRegionalFlags(cmd, constants.DNSApiURL, []string{"de/fra"})
 }

@@ -5,6 +5,10 @@ import (
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cdn/completer"
+	cdn "github.com/ionos-cloud/sdk-go-cdn"
+	"github.com/spf13/cobra"
+
+	"github.com/ionos-cloud/ionosctl/v6/commands/cdn/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"

@@ -5,22 +5,14 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/completions"
-	"github.com/ionos-cloud/ionosctl/v6/internal/config"
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 
 	ionoscloud "github.com/ionos-cloud/sdk-go-dns"
-	"github.com/spf13/viper"
 )
 
 func SecondaryZonesIDs() []string {
-	// Hack to enforce the dns-level flag default for API URL on the completions too
-	if url := config.GetServerUrl(); url == constants.DefaultApiURL {
-		viper.Set(constants.ArgServerUrl, "")
-	}
-
 	secondaryZones, _, err := client.Must().DnsClient.SecondaryZonesApi.SecondaryzonesGet(context.Background()).Execute()
 	if err != nil {
 		return nil
@@ -38,11 +30,6 @@ func SecondaryZonesIDs() []string {
 
 // Zones returns all zones matching the given filters
 func Zones(fs ...Filter) (ionoscloud.ZoneReadList, error) {
-	// Hack to enforce the dns-level flag default for API URL on the completions too
-	if url := config.GetServerUrl(); url == constants.DefaultApiURL {
-		viper.Set(constants.ArgServerUrl, "")
-	}
-
 	req := client.Must().DnsClient.ZonesApi.ZonesGet(context.Background())
 
 	for _, f := range fs {
