@@ -3,7 +3,6 @@ package distribution
 import (
 	"context"
 	"fmt"
-
 	"github.com/ionos-cloud/ionosctl/v6/commands/cdn/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"

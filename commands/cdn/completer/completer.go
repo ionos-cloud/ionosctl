@@ -2,7 +2,6 @@ package completer
 
 import (
 	"context"
-
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 	cdn "github.com/ionos-cloud/sdk-go-cdn"

@@ -72,8 +72,12 @@ ionosctl dns r list --zone ZONE_ID`,
 	cmd.AddInt32Flag(constants.FlagOffset, "", 0, "The first element (of the total list of elements) to include in the response. Use together with limit for pagination")
 	cmd.AddInt32Flag(constants.FlagMaxResults, "", 0, constants.DescMaxResults)
 
-	cmd.AddStringFlag(constants.FlagSecondaryZone, "", "", "The name or ID of the secondary zone to fetch records from",
-		core.WithCompletion(completer.SecondaryZonesIDs, constants.DNSApiURL, constants.DNSApiLocations))
+	cmd.Command.Flags().String(constants.FlagSecondaryZone, "", "The name or ID of the secondary zone to fetch records from")
+	_ = cmd.Command.RegisterFlagCompletionFunc(
+		constants.FlagSecondaryZone, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completer.SecondaryZonesIDs(), cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 
 	cmd.Command.PersistentFlags().StringSlice(
 		constants.ArgCols, nil,
