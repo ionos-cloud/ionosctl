@@ -224,7 +224,7 @@ func addCommands() {
 		return command
 	}
 
-	rootCmd.AddCommand(dns.DNSCommand())
+	rootCmd.AddCommand(dns.Root())
 	// Logging Service
 	rootCmd.AddCommand(
 		funcChangeDefaultApiUrl(

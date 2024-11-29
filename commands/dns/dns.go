@@ -11,7 +11,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func DNSCommand() *core.Command {
+func Root() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "dns",
@@ -26,5 +26,5 @@ func DNSCommand() *core.Command {
 	cmd.AddCommand(dnssec.Root())
 	cmd.AddCommand(secondary_zones.Root())
 
-	return cmd
+	return core.WithRegionalFlags(cmd, "https://dns.%s.ionos.com", []string{"de/fra"})
 }

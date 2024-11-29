@@ -6,6 +6,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/spf13/cobra"
 	flag "github.com/spf13/pflag"
 	"github.com/spf13/viper"
@@ -34,6 +36,62 @@ func (c *Command) Name() string {
 	} else {
 		return ""
 	}
+}
+
+func WithRegionalFlags(c *Command, baseURL string, allowedLocations []string) *Command {
+	locationsToUrl := make(map[string]string, len(allowedLocations))
+	for _, loc := range allowedLocations {
+		// de/fra -> de-fra
+		normalizedLoc := strings.ReplaceAll(loc, "/", "-")
+		locationsToUrl[normalizedLoc] = fmt.Sprintf(baseURL, normalizedLoc)
+	}
+
+	// generate the default URL as the first provided location
+	defaultLocation := allowedLocations[0]
+	defaultUrl := fmt.Sprintf(baseURL, strings.ReplaceAll(defaultLocation, "/", "-"))
+
+	// add the server URL flag
+	c.Command.PersistentFlags().StringP(
+		constants.ArgServerUrl, constants.ArgServerUrlShort, defaultUrl, "Override default host url",
+	)
+	viper.BindPFlag(constants.ArgServerUrl, c.Command.PersistentFlags().Lookup(constants.ArgServerUrl))
+
+	// Add the location flag
+	c.Command.PersistentFlags().StringP(
+		constants.FlagLocation, constants.FlagLocationShort, "", "Location of the resource to operate on. Can be one of: "+strings.Join(allowedLocations, ", "),
+	)
+	viper.BindPFlag(constants.FlagLocation, c.Command.PersistentFlags().Lookup(constants.FlagLocation))
+	c.Command.RegisterFlagCompletionFunc(constants.FlagLocation,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return allowedLocations, cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+
+	// wrap the pre-run logic to handle mutually exclusive flags
+	originalPreRun := c.Command.PersistentPreRunE
+	c.Command.PersistentPreRunE = func(cmd *cobra.Command, args []string) error {
+		if originalPreRun != nil {
+			if err := originalPreRun(cmd, args); err != nil {
+				return err
+			}
+		}
+
+		c.Command.MarkFlagsMutuallyExclusive(constants.ArgServerUrl, constants.FlagLocation)
+
+		if location, _ := cmd.Flags().GetString(constants.FlagLocation); location != "" {
+			if url, ok := locationsToUrl[location]; ok {
+				viper.Set(constants.ArgServerUrl, url)
+			} else {
+				fmt.Fprintf(c.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput(
+					"WARN: %s is an invalid location. Valid locations are: %s",
+					location, allowedLocations))
+			}
+		}
+
+		return nil
+	}
+
+	return c
 }
 
 func (c *Command) CommandPath() string {
