@@ -13,8 +13,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/pointer"
 	dns "github.com/ionos-cloud/sdk-go-dns"
 
-	"github.com/spf13/cobra"
-
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/spf13/viper"
@@ -75,12 +73,13 @@ func ZonesPutCmd() *core.Command {
 		InitClient: true,
 	})
 
-	cmd.AddStringFlag(constants.FlagZone, constants.FlagZoneShort, "", constants.DescZone, core.RequiredFlagOption())
-	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagZone, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.ZonesProperty(func(t dns.ZoneRead) string {
-			return *t.Properties.ZoneName
-		}), cobra.ShellCompDirectiveNoFileComp
-	})
+	cmd.AddStringFlag(constants.FlagZone, constants.FlagZoneShort, "", constants.DescZone, core.RequiredFlagOption(),
+		core.WithCompletion(func() []string {
+			return completer.ZonesProperty(func(t dns.ZoneRead) string {
+				return *t.Properties.ZoneName
+			})
+		}, constants.PlaceholderDnsApiURL),
+	)
 	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "The new name of the DNS zone, e.g. foo.com")
 	cmd.AddStringFlag(constants.FlagDescription, "", "", "The new description of the DNS zone")
 	cmd.AddBoolFlag(constants.FlagEnabled, "", true, "Activate or deactivate the DNS zone")

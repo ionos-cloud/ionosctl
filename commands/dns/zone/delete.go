@@ -13,7 +13,6 @@ import (
 	dns "github.com/ionos-cloud/sdk-go-dns"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
-	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
@@ -57,12 +56,13 @@ func ZonesDeleteCmd() *core.Command {
 		InitClient: true,
 	})
 
-	cmd.AddStringFlag(constants.FlagZone, constants.FlagZoneShort, "", fmt.Sprintf("%s. Required or -%s", constants.DescZone, constants.ArgAllShort))
-	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagZone, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.ZonesProperty(func(t dns.ZoneRead) string {
-			return *t.Properties.ZoneName
-		}), cobra.ShellCompDirectiveNoFileComp
-	})
+	cmd.AddStringFlag(constants.FlagZone, constants.FlagZoneShort, "", fmt.Sprintf("%s. Required or -%s", constants.DescZone, constants.ArgAllShort),
+		core.WithCompletion(func() []string {
+			return completer.ZonesProperty(func(t dns.ZoneRead) string {
+				return *t.Properties.ZoneName
+			})
+		}, constants.PlaceholderDnsApiURL),
+	)
 
 	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, fmt.Sprintf("Delete all zones. Required or -%s", constants.FlagZoneShort))
 

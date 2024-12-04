@@ -12,7 +12,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
-	"github.com/spf13/cobra"
 )
 
 func getCmd() *core.Command {
@@ -51,11 +50,8 @@ func getCmd() *core.Command {
 		},
 	)
 
-	c.Command.Flags().StringP(constants.FlagZone, constants.FlagZoneShort, "", constants.DescZone)
-	_ = c.Command.RegisterFlagCompletionFunc(
-		constants.FlagZone, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-			return completer.SecondaryZonesIDs(), cobra.ShellCompDirectiveNoFileComp
-		},
+	c.AddStringFlag(constants.FlagZone, constants.FlagZoneShort, "", constants.DescZone,
+		core.WithCompletion(completer.SecondaryZonesIDs, constants.PlaceholderDnsApiURL),
 	)
 
 	c.Command.SilenceUsage = true
