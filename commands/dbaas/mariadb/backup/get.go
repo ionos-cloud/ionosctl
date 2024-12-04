@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 
+	ionoscloud "github.com/ionos-cloud/sdk-go-dbaas-mariadb"
+
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
@@ -46,7 +48,17 @@ func Get() *core.Command {
 		InitClient: true,
 	})
 
-	cmd.AddStringFlag(constants.FlagBackupId, "", "", "The ID of the Backup to be retrieved")
-
+	cmd.AddStringFlag(constants.FlagBackupId, "", "", "The ID of the Backup to be retrieved",
+		core.RequiredFlagOption(),
+		core.WithCompletion(
+			func() []string {
+				return BackupsProperty(func(c ionoscloud.BackupResponse) string {
+					if c.Id == nil {
+						return ""
+					}
+					return *c.Id + "\t" + fmt.Sprintf("(%d MiB)", *c.Properties.Size)
+				})
+			}, constants.MariaDBApiRegionalURL),
+	)
 	return cmd
 }

@@ -10,7 +10,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
-	"github.com/spf13/cobra"
 )
 
 func PipelineKeyCmd() *core.Command {
@@ -29,13 +28,8 @@ func PipelineKeyCmd() *core.Command {
 	cmd.Command.Flags().StringSlice(constants.ArgCols, defaultCols, tabheaders.ColsMessage(defaultCols))
 	cmd.AddStringFlag(
 		constants.FlagLoggingPipelineId, constants.FlagIdShort, "",
-		"The ID of the logging pipeline you want to retrieve", core.RequiredFlagOption(),
-	)
-	_ = cmd.Command.RegisterFlagCompletionFunc(
-		constants.FlagLoggingPipelineId,
-		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-			return completer.LoggingServicePipelineIds(), cobra.ShellCompDirectiveNoFileComp
-		},
+		"The ID of the logging pipeline you want to generate a key for", core.RequiredFlagOption(),
+		core.WithCompletion(completer.LoggingServicePipelineIds, constants.LoggingApiRegionalURL),
 	)
 
 	return cmd

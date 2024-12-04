@@ -5,6 +5,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mariadb/cluster"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 	ionoscloud "github.com/ionos-cloud/sdk-go-dbaas-mariadb"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
@@ -72,4 +73,12 @@ func FilterPaginationFlags(c *core.CommandConfig) Filter {
 		}
 		return req
 	}
+}
+
+func BackupsProperty[V any](f func(c ionoscloud.BackupResponse) V, fs ...Filter) []V {
+	recs, err := Backups(fs...)
+	if err != nil {
+		return nil
+	}
+	return functional.Map(*recs.Items, f)
 }

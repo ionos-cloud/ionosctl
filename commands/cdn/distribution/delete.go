@@ -3,13 +3,13 @@ package distribution
 import (
 	"context"
 	"fmt"
+
 	"github.com/ionos-cloud/ionosctl/v6/commands/cdn/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 	cdn "github.com/ionos-cloud/sdk-go-cdn"
-	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
@@ -41,12 +41,14 @@ func Delete() *core.Command {
 		InitClient: true,
 	})
 
-	cmd.AddStringFlag(constants.FlagCDNDistributionID, constants.FlagIdShort, "", "The ID of the distribution you want to retrieve", core.RequiredFlagOption())
-	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagCDNDistributionID, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.DistributionsProperty(func(r cdn.Distribution) string {
-			return *r.Id
-		}), cobra.ShellCompDirectiveNoFileComp
-	})
+	cmd.AddStringFlag(constants.FlagCDNDistributionID, constants.FlagIdShort, "", "The ID of the distribution you want to delete",
+		core.RequiredFlagOption(),
+		core.WithCompletion(func() []string {
+			return completer.DistributionsProperty(func(r cdn.Distribution) string {
+				return *r.Id
+			})
+		}, constants.CDNApiRegionalURL),
+	)
 	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Delete all records if set", core.RequiredFlagOption())
 
 	cmd.Command.SilenceUsage = true

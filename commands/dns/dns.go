@@ -7,11 +7,12 @@ import (
 	reverse_record "github.com/ionos-cloud/ionosctl/v6/commands/dns/reverse-record"
 	secondary_zones "github.com/ionos-cloud/ionosctl/v6/commands/dns/secondary-zones"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dns/zone"
+	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/spf13/cobra"
 )
 
-func DNSCommand() *core.Command {
+func Root() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "dns",
@@ -26,5 +27,5 @@ func DNSCommand() *core.Command {
 	cmd.AddCommand(dnssec.Root())
 	cmd.AddCommand(secondary_zones.Root())
 
-	return cmd
+	return core.WithRegionalFlags(cmd, constants.DNSApiRegionalURL, constants.DNSLocations)
 }

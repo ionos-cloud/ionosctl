@@ -138,14 +138,26 @@ const (
 
 // Defaults
 const (
-	DefaultApiURL               = "https://api.ionos.com"
-	DefaultDnsApiURL            = "dns.de-fra.ionos.com"
-	DefaultLoggingServiceApiURL = "logging.de-txl.ionos.com"
-	DefaultConfigFileName       = "/config.json"
-	DefaultOutputFormat         = "text"
-	DefaultWait                 = false
-	DefaultTimeoutSeconds       = int(60)
-	DefaultParentIndex          = int(1)
+	DefaultConfigFileName = "/config.json"
+	DefaultOutputFormat   = "text"
+	DefaultWait           = false
+	DefaultTimeoutSeconds = int(60)
+	DefaultParentIndex    = int(1)
+)
+
+const (
+	DefaultApiURL         = "https://api.ionos.com"
+	DNSApiRegionalURL     = "https://dns.%s.ionos.com"
+	LoggingApiRegionalURL = "https://logging.%s.ionos.com"
+	CDNApiRegionalURL     = "https://cdn.%s.ionos.com"
+	MariaDBApiRegionalURL = "https://mariadb.%s.ionos.com"
+)
+
+var (
+	DNSLocations        = []string{"de/fra"}
+	LoggingAPILocations = []string{"de/txl", "de/fra", "gb/lhr", "fr/par", "es/vit"}
+	CDNLocations        = []string{"de/fra"}
+	MariaDBLocations    = []string{"de/txl", "de/fra", "es/vit", "fr/par", "gb/lhr", "us/ewr", "us/las", "us/mci"}
 )
 
 // enum values. TODO: ideally i'd like these handled by the SDK

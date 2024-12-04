@@ -37,13 +37,14 @@ Get a MariaDB Backup
 ## Options
 
 ```text
-  -u, --api-url string     Override default host url (default "https://api.ionos.com")
-      --backup-id string   The ID of the Backup to be retrieved
+  -u, --api-url string     Override default host URL (default "https://mariadb.de-txl.ionos.com")
+      --backup-id string   The ID of the Backup to be retrieved (required)
       --cols strings       Set of columns to be printed on output 
                            Available columns: [BackupId ClusterId Size Items] (default [BackupId,ClusterId,Size,Items])
   -c, --config string      Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -f, --force              Force command to execute without user input
   -h, --help               Print usage
+  -l, --location string    Location of the resource to operate on. Can be one of: de/txl, de/fra, es/vit, fr/par, gb/lhr, us/ewr, us/las, us/mci
       --no-headers         Don't print table headers when table output is used
   -o, --output string      Desired output format [text|json|api-json] (default "text")
   -q, --quiet              Quiet output

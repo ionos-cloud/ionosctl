@@ -11,8 +11,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/spf13/cobra"
-
 	dns "github.com/ionos-cloud/sdk-go-dns"
 )
 
@@ -50,17 +48,13 @@ func updateCmd() *core.Command {
 		},
 	)
 
-	c.Command.Flags().StringP(constants.FlagZone, constants.FlagZoneShort, "", constants.DescZone)
-	_ = c.Command.RegisterFlagCompletionFunc(
-		constants.FlagZone, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-			return completer.ZonesProperty(
-				func(t dns.ZoneRead) string {
-					return *t.Properties.ZoneName
-				},
-			), cobra.ShellCompDirectiveNoFileComp
-		},
+	c.AddStringFlag(constants.FlagZone, constants.FlagZoneShort, "", constants.DescZone, core.RequiredFlagOption(),
+		core.WithCompletion(func() []string {
+			return completer.ZonesProperty(func(t dns.ZoneRead) string {
+				return *t.Properties.ZoneName
+			})
+		}, constants.DNSApiRegionalURL),
 	)
-
 	c.Command.Flags().String(constants.FlagZoneFile, "", "Path to the zone file")
 
 	c.Command.SilenceUsage = true

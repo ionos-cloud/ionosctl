@@ -9,7 +9,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	ionoscloud "github.com/ionos-cloud/sdk-go-logging"
-	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
@@ -34,13 +33,8 @@ func PipelineUpdateCmd() *core.Command {
 	cmd.Command.Flags().StringSlice(constants.ArgCols, defaultCols, tabheaders.ColsMessage(defaultCols))
 	cmd.AddStringFlag(
 		constants.FlagLoggingPipelineId, constants.FlagIdShort, "",
-		"The ID of the logging pipeline", core.RequiredFlagOption(),
-	)
-	_ = cmd.Command.RegisterFlagCompletionFunc(
-		constants.FlagLoggingPipelineId,
-		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-			return completer.LoggingServicePipelineIds(), cobra.ShellCompDirectiveNoFileComp
-		},
+		"The ID of the logging pipeline you want to delete", core.RequiredFlagOption(),
+		core.WithCompletion(completer.LoggingServicePipelineIds, constants.LoggingApiRegionalURL),
 	)
 
 	return cmd

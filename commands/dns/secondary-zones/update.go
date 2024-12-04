@@ -13,8 +13,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
-	"github.com/spf13/cobra"
-
 	dns "github.com/ionos-cloud/sdk-go-dns"
 )
 
@@ -84,11 +82,8 @@ func updateCmd() *core.Command {
 	c.Command.Flags().String(constants.FlagDescription, "", "Description of the secondary zone")
 	c.Command.Flags().StringSlice(constants.FlagPrimaryIPs, []string{}, "Primary DNS server IP addresses")
 
-	c.Command.Flags().StringP(constants.FlagZone, constants.FlagZoneShort, "", constants.DescZone)
-	_ = c.Command.RegisterFlagCompletionFunc(
-		constants.FlagZone, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-			return completer.SecondaryZonesIDs(), cobra.ShellCompDirectiveNoFileComp
-		},
+	c.AddStringFlag(constants.FlagZone, constants.FlagZoneShort, "", constants.DescZone,
+		core.WithCompletion(completer.SecondaryZonesIDs, constants.DNSApiRegionalURL),
 	)
 
 	c.Command.SilenceUsage = true

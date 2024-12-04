@@ -41,19 +41,20 @@ Here, PARTIAL_NAME is a part of the name of the DNS record you want to delete. I
 ## Options
 
 ```text
-  -a, --all              Delete all records. You can optionally filter the deleted records using --zone (full name / ID) and --record (partial name)
-  -u, --api-url string   Override default host url (default "dns.de-fra.ionos.com")
-      --cols strings     Set of columns to be printed on output 
-                         Available columns: [Id Name Content Type Enabled FQDN ZoneId ZoneName State]
-  -c, --config string    Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
-  -f, --force            Force command to execute without user input
-  -h, --help             Print usage
-      --no-headers       Don't print table headers when table output is used
-  -o, --output string    Desired output format [text|json|api-json] (default "text")
-  -q, --quiet            Quiet output
-  -r, --record string    The ID, or full name of the DNS record. Required together with --zone. Can also provide partial names, but must narrow down to a single record result if not using --all. If using it, will however delete all records that match.
-  -v, --verbose          Print step-by-step process when running command
-  -z, --zone string      The full name or ID of the zone of the containing the target record. If --all is set this is applied as a filter - limiting to records within this zone
+  -a, --all               Delete all records. You can optionally filter the deleted records using --zone (full name / ID) and --record (partial name)
+  -u, --api-url string    Override default host URL (default "https://dns.de-fra.ionos.com")
+      --cols strings      Set of columns to be printed on output 
+                          Available columns: [Id Name Content Type Enabled FQDN ZoneId ZoneName State]
+  -c, --config string     Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+  -f, --force             Force command to execute without user input
+  -h, --help              Print usage
+  -l, --location string   Location of the resource to operate on. Can be one of: de/fra
+      --no-headers        Don't print table headers when table output is used
+  -o, --output string     Desired output format [text|json|api-json] (default "text")
+  -q, --quiet             Quiet output
+  -r, --record string     The ID, or full name of the DNS record. Required together with --zone. Can also provide partial names, but must narrow down to a single record result if not using --all. If using it, will however delete all records that match.
+  -v, --verbose           Print step-by-step process when running command
+  -z, --zone string       The full name or ID of the zone of the containing the target record. If --all is set this is applied as a filter - limiting to records within this zone
 ```
 
 ## Examples
