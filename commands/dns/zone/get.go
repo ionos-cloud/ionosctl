@@ -62,7 +62,7 @@ func ZonesFindByIdCmd() *core.Command {
 			return completer.ZonesProperty(func(t dns.ZoneRead) string {
 				return *t.Properties.ZoneName
 			})
-		}, constants.DNSApiRegionalURL),
+		}, constants.PlaceholderDnsApiURL),
 	)
 
 	cmd.Command.SilenceUsage = true

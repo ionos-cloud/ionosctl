@@ -70,7 +70,7 @@ func (c *Command) Name() string {
 //   - The '--location' flag allows users to specify a region, which replaces the '%s' placeholder in the 'baseURL'.
 //   - If '--location' is used and is valid (from 'allowedLocations'), the 'baseURL' is formatted with the normalized location.
 //   - If '--location' is invalid or unsupported, a warning is logged, but the constructed URL is still attempted.
-//   - If 'allowedLocations' is empty, the function panics, as this is considered a programming error.//
+//   - If 'allowedLocations' is empty, the function panics, as this is considered a programming error.
 //   - If an unsupported location is provided, a warning is logged:
 //     'WARN: <location> is an invalid location. Valid locations are: <allowedLocations>'
 //   - This also marks '--api-url' and '--location' flags as mutually exclusive.
