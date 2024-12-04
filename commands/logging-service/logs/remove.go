@@ -12,7 +12,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	ionoscloud "github.com/ionos-cloud/sdk-go-logging"
-	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
@@ -33,28 +32,16 @@ func LogsRemoveCmd() *core.Command {
 	cmd.AddStringFlag(
 		constants.FlagLoggingPipelineId, constants.FlagIdShort, "",
 		"The ID of the logging pipeline", core.RequiredFlagOption(),
-	)
-	_ = cmd.Command.RegisterFlagCompletionFunc(
-		constants.FlagLoggingPipelineId,
-		func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-			return completer.LoggingServicePipelineIds(), cobra.ShellCompDirectiveNoFileComp
-		},
+		core.WithCompletion(completer.LoggingServicePipelineIds, constants.PlaceholderLoggingApiURL),
 	)
 	cmd.AddStringFlag(
-		constants.FlagLoggingPipelineLogTag, "", "", "The tag of the pipeline log that you want to remove",
+		constants.FlagLoggingPipelineLogTag, "", "", "The tag of the pipeline log that you want to delete",
 		core.RequiredFlagOption(),
-	)
-	_ = cmd.Command.RegisterFlagCompletionFunc(
-		constants.FlagLoggingPipelineLogTag,
-		func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		core.WithCompletion(func() []string {
 			return completer.LoggingServiceLogTags(
-				viper.GetString(
-					core.GetFlagName(
-						cmd.NS, constants.FlagLoggingPipelineId,
-					),
-				),
-			), cobra.ShellCompDirectiveNoFileComp
-		},
+				viper.GetString(core.GetFlagName(cmd.NS, constants.FlagLoggingPipelineId)),
+			)
+		}, constants.PlaceholderLoggingApiURL),
 	)
 
 	return cmd
