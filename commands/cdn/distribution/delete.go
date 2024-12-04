@@ -3,6 +3,7 @@ package distribution
 import (
 	"context"
 	"fmt"
+
 	"github.com/ionos-cloud/ionosctl/v6/commands/cdn/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
@@ -46,7 +47,7 @@ func Delete() *core.Command {
 			return completer.DistributionsProperty(func(r cdn.Distribution) string {
 				return *r.Id
 			})
-		}, constants.CDNApiRegionalURL),
+		}, constants.PlaceholderCdnApiURL),
 	)
 	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Delete all records if set", core.RequiredFlagOption())
 

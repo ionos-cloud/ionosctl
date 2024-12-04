@@ -3,6 +3,7 @@ package routingrules
 import (
 	"context"
 	"fmt"
+
 	"github.com/ionos-cloud/ionosctl/v6/commands/cdn/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
@@ -84,7 +85,7 @@ func GetDistributionRoutingRules() *core.Command {
 			return completer.DistributionsProperty(func(r cdn.Distribution) string {
 				return *r.Id
 			})
-		}, constants.CDNApiRegionalURL),
+		}, constants.PlaceholderCdnApiURL),
 	)
 	cmd.Command.SilenceUsage = true
 	cmd.Command.Flags().SortFlags = false

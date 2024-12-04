@@ -3,8 +3,6 @@ package distribution
 import (
 	"context"
 	"fmt"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cdn/completer"
-	"github.com/spf13/cobra"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cdn/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
@@ -56,7 +54,7 @@ func Update() *core.Command {
 			return completer.DistributionsProperty(func(r cdn.Distribution) string {
 				return *r.Id
 			})
-		}, constants.CDNApiRegionalURL),
+		}, constants.PlaceholderCdnApiURL),
 	)
 	cmd.Command.SilenceUsage = true
 	cmd.Command.Flags().SortFlags = false
