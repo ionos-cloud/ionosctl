@@ -13,7 +13,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	dns "github.com/ionos-cloud/sdk-go-dns"
-	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
@@ -62,12 +61,13 @@ ionosctl dns keys list --zone ZONE --cols PubKey --no-headers`,
 		InitClient: true,
 	})
 
-	cmd.AddStringFlag(constants.FlagZone, constants.FlagZoneShort, "", constants.DescZone)
-	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagZone, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.ZonesProperty(func(t dns.ZoneRead) string {
-			return *t.Properties.ZoneName
-		}), cobra.ShellCompDirectiveNoFileComp
-	})
+	cmd.AddStringFlag(constants.FlagZone, constants.FlagZoneShort, "", constants.DescZone, core.RequiredFlagOption(),
+		core.WithCompletion(func() []string {
+			return completer.ZonesProperty(func(t dns.ZoneRead) string {
+				return *t.Properties.ZoneName
+			})
+		}, constants.PlaceholderDnsApiURL),
+	)
 
 	cmd.Command.SilenceUsage = true
 	cmd.Command.Flags().SortFlags = false

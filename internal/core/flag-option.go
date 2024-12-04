@@ -89,6 +89,8 @@ func WithCompletionComplex(
 // - WithCompletionE(completionFuncE, "api.%s.ionos.com") for a regional API
 //
 // - WithCompletionE(completionFuncE, "api.ionos.com") for an API with a single endpoint
+//
+// - WithCompletionE(completionFuncE, "") to let the SDK choose the API endpoint
 func WithCompletionE(completionFunc func() ([]string, error), baseURL string) FlagOptionFunc {
 	return WithCompletionComplex(func(_ *cobra.Command, _ []string, _ string) ([]string, cobra.ShellCompDirective) {
 		results, err := completionFunc()
@@ -106,6 +108,8 @@ func WithCompletionE(completionFunc func() ([]string, error), baseURL string) Fl
 // - WithCompletion(completionFunc, "api.%s.ionos.com") for a regional API
 //
 // - WithCompletion(completionFunc, "api.ionos.com") for an API with a single endpoint
+//
+// - WithCompletion(completionFunc, "") to let the SDKs choose the API endpoint
 func WithCompletion(completionFunc func() []string, baseURL string) FlagOptionFunc {
 	return WithCompletionComplex(func(_ *cobra.Command, _ []string, _ string) ([]string, cobra.ShellCompDirective) {
 		return completionFunc(), cobra.ShellCompDirectiveNoFileComp
