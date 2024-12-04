@@ -10,7 +10,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 	ionoscloud "github.com/ionos-cloud/sdk-go-dns"
-	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
@@ -42,14 +41,15 @@ func Delete() *core.Command {
 		InitClient: true,
 	})
 
-	cmd.AddStringFlag(constants.FlagRecord, "", "", "The record ID or IP which you want to delete", core.RequiredFlagOption())
-	// Completions: all current IPs
-	cmd.Command.RegisterFlagCompletionFunc(constants.FlagRecord, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		ips := RecordsProperty(func(read ionoscloud.ReverseRecordRead) string {
-			return *read.Properties.Ip
-		})
-		return ips, cobra.ShellCompDirectiveNoFileComp
-	})
+	cmd.AddStringFlag(constants.FlagRecord, "", "", "The record ID or IP which you want to delete",
+		core.RequiredFlagOption(),
+		core.WithCompletion(func() []string {
+			return RecordsProperty(func(read ionoscloud.ReverseRecordRead) string {
+				return *read.Properties.Ip
+			})
+		}, constants.PlaceholderDnsApiURL),
+	)
+
 	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Delete all records if set", core.RequiredFlagOption())
 
 	cmd.Command.SilenceUsage = true
