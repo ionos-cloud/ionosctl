@@ -252,7 +252,7 @@ func TestGetServerUrl(t *testing.T) {
 			expectedServerUrl: constants.DefaultApiURL,
 		},
 		{
-			name:              "CFG value is returned",
+			name:              "CFG value is preferred over defaults",
 			flagVal:           "",
 			envVal:            "",
 			cfgVal:            "cfg-url",
