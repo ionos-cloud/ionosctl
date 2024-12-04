@@ -210,18 +210,25 @@ func TestGetServerUrl(t *testing.T) {
 			expectedServerUrl: "http://flag.url",
 		},
 		{
-			name:              "Flag value is DNS default, Env value is used",
+			name:              "Flag value is DNS Default, return flag value",
 			flagVal:           "dns.de-fra.ionos.com",
 			envVal:            "http://env.url",
 			cfgVal:            "http://cfg.url",
-			expectedServerUrl: "http://env.url",
+			expectedServerUrl: "dns.de-fra.ionos.com",
 		},
 		{
-			name:              "All values are DNS default or not set, return empty string",
+			name:              "Flag value is DNS default, all other empty, return flag value",
 			flagVal:           "dns.de-fra.ionos.com",
 			envVal:            "",
 			cfgVal:            "",
-			expectedServerUrl: "",
+			expectedServerUrl: "dns.de-fra.ionos.com",
+		},
+		{
+			name:              "Flag value is empty, env and cfg set, return env value",
+			flagVal:           "",
+			envVal:            "dns.de-fra.ionos.com",
+			cfgVal:            "dns.de-txl.ionos.com",
+			expectedServerUrl: "dns.de-fra.ionos.com",
 		},
 		{
 			name:              "Explicit flag URL is returned",
@@ -243,6 +250,13 @@ func TestGetServerUrl(t *testing.T) {
 			envVal:            "http://env.url",
 			cfgVal:            "",
 			expectedServerUrl: constants.DefaultApiURL,
+		},
+		{
+			name:              "CFG value is preferred over defaults",
+			flagVal:           "",
+			envVal:            "",
+			cfgVal:            "cfg-url",
+			expectedServerUrl: "cfg-url",
 		},
 	}
 
