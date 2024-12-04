@@ -31,13 +31,14 @@ Retrieve all records from either a primary or secondary zone
 ## Options
 
 ```text
-  -u, --api-url string          Override default host url (default "dns.de-fra.ionos.com")
+  -u, --api-url string          Override default host URL (default "https://dns.de-fra.ionos.com")
       --cols strings            Set of columns to be printed on output 
                                 Available columns for primary zones: [Id Name Content Type Enabled FQDN ZoneId ZoneName State]
                                 Available columns for secondary zones: [Id Name Content Type Enabled FQDN ZoneId ZoneName RootName]
   -c, --config string           Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -f, --force                   Force command to execute without user input
   -h, --help                    Print usage
+  -l, --location string         Location of the resource to operate on. Can be one of: de/fra
       --max-results int32       The maximum number of elements to return
       --name string             Filter used to fetch only the records that contain specified record name. NOTE: Only available for zone records.
       --no-headers              Don't print table headers when table output is used
