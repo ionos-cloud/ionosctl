@@ -74,7 +74,7 @@ func Update() *core.Command {
 			return RecordsProperty(func(read ionoscloud.ReverseRecordRead) string {
 				return *read.Properties.Ip
 			})
-		}, constants.DNSApiRegionalURL),
+		}, constants.PlaceholderDnsApiURL),
 	)
 
 	cmd.AddStringFlag(constants.FlagIp, "", "", "The new IP", core.WithCompletionE(
