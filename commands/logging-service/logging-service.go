@@ -3,11 +3,12 @@ package logging_service
 import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/logging-service/logs"
 	"github.com/ionos-cloud/ionosctl/v6/commands/logging-service/pipeline"
+	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/spf13/cobra"
 )
 
-func LoggingServiceCmd() *core.Command {
+func Root() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{
 			Use:     "logging-service",
@@ -20,5 +21,6 @@ func LoggingServiceCmd() *core.Command {
 
 	cmd.AddCommand(pipeline.PipelineCmd())
 	cmd.AddCommand(logs.LogsCmd())
-	return cmd
+
+	return core.WithRegionalFlags(cmd, constants.PlaceholderLoggingApiURL, constants.LoggingAPILocations)
 }

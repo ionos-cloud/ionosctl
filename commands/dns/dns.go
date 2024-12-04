@@ -12,7 +12,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func DNSCommand() *core.Command {
+func Root() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "dns",
