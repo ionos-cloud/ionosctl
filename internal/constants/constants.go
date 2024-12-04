@@ -149,18 +149,19 @@ const (
 
 // Defaults
 const (
-	DefaultApiURL               = "https://api.ionos.com"
-	PlaceholderDnsApiURL        = "https://dns.%s.ionos.com"
-	DefaultLoggingServiceApiURL = "logging.de-txl.ionos.com"
-	DefaultConfigFileName       = "/config.json"
-	DefaultOutputFormat         = "text"
-	DefaultWait                 = false
-	DefaultTimeoutSeconds       = int(60)
-	DefaultParentIndex          = int(1)
+	DefaultApiURL            = "https://api.ionos.com"
+	PlaceholderDnsApiURL     = "https://dns.%s.ionos.com"
+	PlaceholderLoggingApiURL = "https://logging.%s.ionos.com"
+	DefaultConfigFileName    = "/config.json"
+	DefaultOutputFormat      = "text"
+	DefaultWait              = false
+	DefaultTimeoutSeconds    = int(60)
+	DefaultParentIndex       = int(1)
 )
 
 var (
-	DNSLocations = []string{"de/fra"}
+	DNSLocations        = []string{"de/fra"}
+	LoggingAPILocations = []string{"de/txl", "de/fra", "gb/lhr", "fr/par", "es/vit"}
 )
 
 // enum values. TODO: ideally i'd like these handled by the SDK

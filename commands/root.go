@@ -221,18 +221,8 @@ func addCommands() {
 	// VM-Autoscaling commands
 	rootCmd.AddCommand(vm_autoscaling.Root())
 
-	// DNS ---
-	funcChangeDefaultApiUrl := func(command *core.Command, newDefault string) *core.Command {
-		return command
-	}
-
-	rootCmd.AddCommand(dns.DNSCommand())
-	// Logging Service
-	rootCmd.AddCommand(
-		funcChangeDefaultApiUrl(
-			logging_service.LoggingServiceCmd(), constants.DefaultLoggingServiceApiURL,
-		),
-	)
+	rootCmd.AddCommand(dns.Root())
+	rootCmd.AddCommand(logging_service.Root())
 
 	// CDN
 	rootCmd.AddCommand(cdn.Command())
