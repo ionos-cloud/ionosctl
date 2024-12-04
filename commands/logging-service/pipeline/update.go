@@ -34,7 +34,7 @@ func PipelineUpdateCmd() *core.Command {
 	cmd.AddStringFlag(
 		constants.FlagLoggingPipelineId, constants.FlagIdShort, "",
 		"The ID of the logging pipeline you want to delete", core.RequiredFlagOption(),
-		core.WithCompletion(completer.LoggingServicePipelineIds, constants.LoggingApiRegionalURL),
+		core.WithCompletion(completer.LoggingServicePipelineIds, constants.PlaceholderLoggingApiURL),
 	)
 
 	return cmd
