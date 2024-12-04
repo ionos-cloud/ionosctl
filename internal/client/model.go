@@ -2,6 +2,7 @@ package client
 
 import (
 	"fmt"
+
 	cdn "github.com/ionos-cloud/sdk-go-cdn"
 	kafka "github.com/ionos-cloud/sdk-go-kafka"
 

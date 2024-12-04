@@ -4,6 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"os"
+
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
@@ -11,7 +13,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/uuidgen"
 	cdn "github.com/ionos-cloud/sdk-go-cdn"
 	"github.com/spf13/viper"
-	"os"
 )
 
 func Create() *core.Command {
