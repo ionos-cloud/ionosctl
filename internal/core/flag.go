@@ -9,42 +9,11 @@ import (
 	"github.com/spf13/viper"
 )
 
-const (
-	RequiredFlagsAnnotation   = "RequiredFlags"
-	DeprecatedFlagsAnnotation = "DeprecatedFlags"
-)
-
 var (
 	flagNamePrintF     = "%s --%s %s"
 	flagNameBoolPrintF = "%s --%s"
 	requiredFlagErr    = errors.New("error checking required flags on command")
 )
-
-type FlagOptionFunc func(cmd *Command, flagName string)
-
-func DeprecatedFlagOption(help string) FlagOptionFunc {
-	return func(cmd *Command, flagName string) {
-		cmd.Command.Flag(flagName).Deprecated = help
-		// For documentation purposes, add flag to command Annotation
-		if len(cmd.Command.Annotations) > 0 {
-			cmd.Command.Annotations[DeprecatedFlagsAnnotation] = fmt.Sprintf(flagNamePrintF, cmd.Command.Annotations[DeprecatedFlagsAnnotation], flagName, strings.ToUpper(strings.ReplaceAll(flagName, "-", "_")))
-		} else {
-			cmd.Command.Annotations = map[string]string{DeprecatedFlagsAnnotation: fmt.Sprintf(flagNamePrintF, cmd.Command.Annotations[DeprecatedFlagsAnnotation], flagName, strings.ToUpper(strings.ReplaceAll(flagName, "-", "_")))}
-		}
-	}
-}
-
-func RequiredFlagOption() FlagOptionFunc {
-	return func(cmd *Command, flagName string) {
-		cmd.Command.Flag(flagName).Usage = fmt.Sprintf("%s (required)", cmd.Command.Flag(flagName).Usage)
-		// For documentation purposes, add flag to command Annotation
-		if len(cmd.Command.Annotations) > 0 {
-			cmd.Command.Annotations[RequiredFlagsAnnotation] = fmt.Sprintf(flagNamePrintF, cmd.Command.Annotations[RequiredFlagsAnnotation], flagName, strings.ToUpper(strings.ReplaceAll(flagName, "-", "_")))
-		} else {
-			cmd.Command.Annotations = map[string]string{RequiredFlagsAnnotation: fmt.Sprintf(flagNamePrintF, cmd.Command.Annotations[RequiredFlagsAnnotation], flagName, strings.ToUpper(strings.ReplaceAll(flagName, "-", "_")))}
-		}
-	}
-}
 
 // FlagAsVariable takes a flag name and returns it as a screaming camel case
 //
