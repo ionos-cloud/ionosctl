@@ -2,6 +2,7 @@ package cdn
 
 import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/cdn/distribution"
+	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/spf13/cobra"
 )
@@ -15,5 +16,6 @@ func Command() *core.Command {
 		},
 	}
 	cmd.AddCommand(distribution.Command())
-	return cmd
+
+	return core.WithRegionalFlags(cmd, constants.PlaceholderCdnApiURL, constants.CDNLocations)
 }
