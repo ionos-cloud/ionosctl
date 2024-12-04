@@ -66,7 +66,7 @@ ionosctl dns keys list --zone ZONE --cols PubKey --no-headers`,
 			return completer.ZonesProperty(func(t dns.ZoneRead) string {
 				return *t.Properties.ZoneName
 			})
-		}, constants.PlaceholderDnsApiURL),
+		}, constants.DNSApiRegionalURL),
 	)
 
 	cmd.Command.SilenceUsage = true

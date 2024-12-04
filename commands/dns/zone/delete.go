@@ -61,7 +61,7 @@ func ZonesDeleteCmd() *core.Command {
 			return completer.ZonesProperty(func(t dns.ZoneRead) string {
 				return *t.Properties.ZoneName
 			})
-		}, constants.PlaceholderDnsApiURL),
+		}, constants.DNSApiRegionalURL),
 	)
 
 	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, fmt.Sprintf("Delete all zones. Required or -%s", constants.FlagZoneShort))

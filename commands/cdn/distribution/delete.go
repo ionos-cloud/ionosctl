@@ -47,7 +47,7 @@ func Delete() *core.Command {
 			return completer.DistributionsProperty(func(r cdn.Distribution) string {
 				return *r.Id
 			})
-		}, constants.PlaceholderCdnApiURL),
+		}, constants.CDNApiRegionalURL),
 	)
 	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Delete all records if set", core.RequiredFlagOption())
 

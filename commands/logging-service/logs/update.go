@@ -29,7 +29,7 @@ func LogsUpdateCmd() *core.Command {
 	cmd.AddStringFlag(
 		constants.FlagLoggingPipelineId, constants.FlagIdShort, "",
 		"The ID of the logging pipeline", core.RequiredFlagOption(),
-		core.WithCompletion(completer.LoggingServicePipelineIds, constants.PlaceholderLoggingApiURL),
+		core.WithCompletion(completer.LoggingServicePipelineIds, constants.LoggingApiRegionalURL),
 	)
 	cmd.AddStringFlag(
 		constants.FlagLoggingPipelineLogTag, "", "", "The tag of the pipeline log that you want to update",
@@ -38,7 +38,7 @@ func LogsUpdateCmd() *core.Command {
 			return completer.LoggingServiceLogTags(
 				viper.GetString(core.GetFlagName(cmd.NS, constants.FlagLoggingPipelineId)),
 			)
-		}, constants.PlaceholderLoggingApiURL),
+		}, constants.LoggingApiRegionalURL),
 	)
 
 	cmd.AddStringFlag(

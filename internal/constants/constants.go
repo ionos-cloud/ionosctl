@@ -149,15 +149,18 @@ const (
 
 // Defaults
 const (
-	DefaultApiURL            = "https://api.ionos.com"
-	PlaceholderDnsApiURL     = "https://dns.%s.ionos.com"
-	PlaceholderLoggingApiURL = "https://logging.%s.ionos.com"
-	PlaceholderCdnApiURL     = "https://cdn.%s.ionos.com"
-	DefaultConfigFileName    = "/config.json"
-	DefaultOutputFormat      = "text"
-	DefaultWait              = false
-	DefaultTimeoutSeconds    = int(60)
-	DefaultParentIndex       = int(1)
+	DefaultConfigFileName = "/config.json"
+	DefaultOutputFormat   = "text"
+	DefaultWait           = false
+	DefaultTimeoutSeconds = int(60)
+	DefaultParentIndex    = int(1)
+)
+
+const (
+	DefaultApiURL         = "https://api.ionos.com"
+	DNSApiRegionalURL     = "https://dns.%s.ionos.com"
+	LoggingApiRegionalURL = "https://logging.%s.ionos.com"
+	CDNApiRegionalURL     = "https://cdn.%s.ionos.com"
 )
 
 var (

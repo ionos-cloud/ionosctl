@@ -61,7 +61,7 @@ func Get() *core.Command {
 			return RecordsProperty(func(read ionoscloud.ReverseRecordRead) string {
 				return *read.Properties.Ip
 			})
-		}, constants.PlaceholderDnsApiURL),
+		}, constants.DNSApiRegionalURL),
 	)
 
 	cmd.Command.SilenceUsage = true

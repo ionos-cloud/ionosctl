@@ -78,7 +78,7 @@ func ZonesPutCmd() *core.Command {
 			return completer.ZonesProperty(func(t dns.ZoneRead) string {
 				return *t.Properties.ZoneName
 			})
-		}, constants.PlaceholderDnsApiURL),
+		}, constants.DNSApiRegionalURL),
 	)
 	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "The new name of the DNS zone, e.g. foo.com")
 	cmd.AddStringFlag(constants.FlagDescription, "", "", "The new description of the DNS zone")

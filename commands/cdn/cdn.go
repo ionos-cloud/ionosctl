@@ -17,5 +17,5 @@ func Command() *core.Command {
 	}
 	cmd.AddCommand(distribution.Command())
 
-	return core.WithRegionalFlags(cmd, constants.PlaceholderCdnApiURL, constants.CDNLocations)
+	return core.WithRegionalFlags(cmd, constants.CDNApiRegionalURL, constants.CDNLocations)
 }
