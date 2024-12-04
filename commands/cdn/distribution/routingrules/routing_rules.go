@@ -3,6 +3,7 @@ package routingrules
 import (
 	"context"
 	"fmt"
+
 	"github.com/ionos-cloud/ionosctl/v6/commands/cdn/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
@@ -78,12 +79,14 @@ func GetDistributionRoutingRules() *core.Command {
 		},
 		InitClient: true,
 	})
-	cmd.AddStringFlag(constants.FlagCDNDistributionID, constants.FlagIdShort, "", "The ID of the distribution you want to retrieve", core.RequiredFlagOption())
-	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagCDNDistributionID, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.DistributionsProperty(func(r cdn.Distribution) string {
-			return *r.Id
-		}), cobra.ShellCompDirectiveNoFileComp
-	})
+	cmd.AddStringFlag(constants.FlagCDNDistributionID, constants.FlagIdShort, "", "The ID of the distribution",
+		core.RequiredFlagOption(),
+		core.WithCompletion(func() []string {
+			return completer.DistributionsProperty(func(r cdn.Distribution) string {
+				return *r.Id
+			})
+		}, constants.PlaceholderCdnApiURL),
+	)
 	cmd.Command.SilenceUsage = true
 	cmd.Command.Flags().SortFlags = false
 	return cmd
