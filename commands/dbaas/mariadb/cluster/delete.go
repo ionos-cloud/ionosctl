@@ -72,15 +72,18 @@ ionosctl db mar c d --all --name <name>`,
 		InitClient: true,
 	})
 
-	cmd.AddStringFlag(constants.FlagClusterId, constants.FlagIdShort, "", "The unique ID of the cluster", core.RequiredFlagOption())
-	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return ClustersProperty(func(c sdkgo.ClusterResponse) string {
-			if c.Id == nil {
-				return ""
-			}
-			return *c.Id
-		}), cobra.ShellCompDirectiveNoFileComp
-	})
+	cmd.AddStringFlag(constants.FlagClusterId, constants.FlagIdShort, "", "The unique ID of the cluster",
+		core.RequiredFlagOption(),
+		core.WithCompletion(
+			func() []string {
+				return ClustersProperty(func(c sdkgo.ClusterResponse) string {
+					if c.Id == nil {
+						return ""
+					}
+					return *c.Id
+				})
+			}, constants.MariaDBApiRegionalURL),
+	)
 	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Delete all mariadb clusters")
 	cmd.AddBoolFlag(constants.FlagName, "", false, "When deleting all clusters, filter the clusters by a name")
 	cmd.AddStringSliceFlag(constants.ArgCols, "", nil, tabheaders.ColsMessage(allCols))
