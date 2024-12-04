@@ -47,7 +47,7 @@ func Delete() *core.Command {
 			return RecordsProperty(func(read ionoscloud.ReverseRecordRead) string {
 				return *read.Properties.Ip
 			})
-		}, constants.DNSApiRegionalURL),
+		}, constants.PlaceholderDnsApiURL),
 	)
 
 	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Delete all records if set", core.RequiredFlagOption())
