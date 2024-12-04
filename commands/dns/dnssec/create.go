@@ -87,21 +87,21 @@ func Create() *core.Command {
 			return completer.ZonesProperty(func(t dns.ZoneRead) string {
 				return *t.Properties.ZoneName
 			})
-		}, constants.PlaceholderDnsApiURL),
+		}, constants.DNSApiRegionalURL),
 	)
 	cmd.AddStringFlag(FlagAlgorithm, "", "RSASHA256", "Algorithm used to generate signing keys (both Key Signing Keys and Zone Signing Keys)")
 	cmd.AddIntFlag(FlagKskBits, "", 1024, "Key signing key length in bits. kskBits >= zskBits: [1024/2048/4096]",
 		core.WithCompletion(
 			func() []string {
 				return []string{"1024", "2048", "4096"}
-			}, constants.PlaceholderDnsApiURL,
+			}, constants.DNSApiRegionalURL,
 		),
 	)
 	cmd.AddIntFlag(FlagZskBits, "", 1024, "Zone signing key length in bits. zskBits <= kskBits: [1024/2048/4096]",
 		core.WithCompletion(
 			func() []string {
 				return []string{"1024", "2048", "4096"}
-			}, constants.PlaceholderDnsApiURL,
+			}, constants.DNSApiRegionalURL,
 		),
 	)
 	cmd.AddSetFlag(FlagNsecMode, "", "NSEC", []string{"NSEC", "NSEC3"}, "NSEC mode.")
@@ -110,7 +110,7 @@ func Create() *core.Command {
 		core.WithCompletion(
 			func() []string {
 				return []string{"64", "72", "80", "88", "96", "104", "112", "120", "128"}
-			}, constants.PlaceholderDnsApiURL,
+			}, constants.DNSApiRegionalURL,
 		),
 	)
 	cmd.AddIntFlag(FlagValidity, "", 90, "Signature validity in days [90..365]")

@@ -85,7 +85,7 @@ func GetDistributionRoutingRules() *core.Command {
 			return completer.DistributionsProperty(func(r cdn.Distribution) string {
 				return *r.Id
 			})
-		}, constants.PlaceholderCdnApiURL),
+		}, constants.CDNApiRegionalURL),
 	)
 	cmd.Command.SilenceUsage = true
 	cmd.Command.Flags().SortFlags = false

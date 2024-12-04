@@ -41,7 +41,7 @@ func startCmd() *core.Command {
 	)
 
 	c.AddStringFlag(constants.FlagZone, constants.FlagZoneShort, "", constants.DescZone,
-		core.WithCompletion(completer.SecondaryZonesIDs, constants.PlaceholderDnsApiURL),
+		core.WithCompletion(completer.SecondaryZonesIDs, constants.DNSApiRegionalURL),
 	)
 
 	c.Command.SilenceUsage = true

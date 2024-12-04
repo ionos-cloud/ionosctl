@@ -29,7 +29,7 @@ func LogsListCmd() *core.Command {
 	cmd.AddStringFlag(
 		constants.FlagLoggingPipelineId, constants.FlagIdShort, "",
 		"The ID of the logging pipeline", core.RequiredFlagOption(),
-		core.WithCompletion(completer.LoggingServicePipelineIds, constants.PlaceholderLoggingApiURL),
+		core.WithCompletion(completer.LoggingServicePipelineIds, constants.LoggingApiRegionalURL),
 	)
 
 	return cmd

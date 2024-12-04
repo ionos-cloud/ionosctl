@@ -49,7 +49,7 @@ func List() *core.Command {
 			return RecordsProperty(func(t dns.ReverseRecordRead) string {
 				return *t.Properties.Ip
 			})
-		}, constants.PlaceholderDnsApiURL),
+		}, constants.DNSApiRegionalURL),
 	)
 	cmd.AddInt32Flag(constants.FlagOffset, "", 0, "The first element (of the total list of elements) to include in the response. Use together with limit for pagination")
 	cmd.AddInt32Flag(constants.FlagMaxResults, "", 0, constants.DescMaxResults)
