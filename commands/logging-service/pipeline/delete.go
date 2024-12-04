@@ -17,7 +17,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 	ionoscloud "github.com/ionos-cloud/sdk-go-logging"
-	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
@@ -38,12 +37,7 @@ func PipelineDeleteCmd() *core.Command {
 	cmd.AddStringFlag(
 		constants.FlagLoggingPipelineId, constants.FlagIdShort, "",
 		"The ID of the logging pipeline you want to delete", core.RequiredFlagOption(),
-	)
-	_ = cmd.Command.RegisterFlagCompletionFunc(
-		constants.FlagLoggingPipelineId,
-		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-			return completer.LoggingServicePipelineIds(), cobra.ShellCompDirectiveNoFileComp
-		},
+		core.WithCompletion(completer.LoggingServicePipelineIds, constants.PlaceholderLoggingApiURL),
 	)
 
 	return cmd
