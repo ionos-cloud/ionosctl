@@ -55,7 +55,9 @@ func WithCompletionComplex(
 			func(passedCmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 				viper.AutomaticEnv()
 
-				if viper.IsSet(constants.ArgServerUrl) || viper.IsSet(constants.EnvServerUrl) {
+				if viper.IsSet(constants.ArgServerUrl) ||
+					viper.IsSet(constants.EnvServerUrl) ||
+					viper.IsSet(constants.CfgServerUrl) {
 					// If manually set, do nothing and directly call completionFunc
 					return completionFunc(passedCmd, args, toComplete)
 				}
