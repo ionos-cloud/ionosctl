@@ -12,7 +12,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	vpn "github.com/ionos-cloud/sdk-go-vpn"
-	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
@@ -56,11 +55,10 @@ func List() *core.Command {
 		},
 	})
 
-	cmd.AddStringFlag(constants.FlagGatewayID, constants.FlagIdShort, "", "The ID of the WireGuard Gateway", core.RequiredFlagOption())
-	cmd.Command.RegisterFlagCompletionFunc(constants.FlagGatewayID, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.GatewayIDs(), cobra.ShellCompDirectiveNoFileComp
-	})
-
+	cmd.AddStringFlag(constants.FlagGatewayID, constants.FlagIdShort, "", "The ID of the Wireguard Gateway",
+		core.RequiredFlagOption(),
+		core.WithCompletion(completer.GatewayIDs, constants.VPNApiRegionalURL),
+	)
 	cmd.AddInt32Flag(constants.FlagMaxResults, constants.FlagMaxResultsShort, 0, constants.DescMaxResults)
 	cmd.AddInt32Flag(constants.FlagOffset, "", 0, "Skip a certain number of results")
 

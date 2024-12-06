@@ -80,10 +80,10 @@ func Create() *core.Command {
 		},
 	})
 
-	cmd.AddStringFlag(constants.FlagGatewayID, constants.FlagIdShort, "", "The ID of the WireGuard Gateway", core.RequiredFlagOption())
-	cmd.Command.RegisterFlagCompletionFunc(constants.FlagGatewayID, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.GatewayIDs(), cobra.ShellCompDirectiveNoFileComp
-	})
+	cmd.AddStringFlag(constants.FlagGatewayID, constants.FlagIdShort, "", "The ID of the WireGuard Gateway",
+		core.RequiredFlagOption(),
+		core.WithCompletion(completer.GatewayIDs, constants.VPNApiRegionalURL),
+	)
 
 	cmd.AddStringFlag(constants.FlagName, "", "", "Name of the WireGuard Peer", core.RequiredFlagOption())
 	cmd.AddStringFlag(constants.FlagDescription, "", "", "Description of the WireGuard Peer")
