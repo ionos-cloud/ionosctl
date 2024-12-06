@@ -35,6 +35,33 @@ Within each layer, a token takes precedence over a username and password combina
 	FlagLanId           = "lan-id"
 	FlagEdition         = "edition"
 
+	FlagGatewayID      = "gateway-id"
+	FlagTunnelID       = "tunnel-id"
+	FlagPeerID         = "peer-id"
+	FlagGatewayIP      = "gateway-ip"
+	FlagInterfaceIP    = "interface-ip"
+	FlagConnectionIP   = "connection-ip"
+	FlagPrivateKey     = "private-key"
+	FlagPrivateKeyPath = "private-key-path"
+	FlagPublicKey      = "public-key"
+	FlagHost           = "host"
+	FlagPort           = "port"
+	FlagAuthMethod     = "auth-method"
+	FlagPSKKey         = "psk-key"
+
+	FlagIKEDiffieHellmanGroup  = "ike-diffie-hellman-group"
+	FlagIKEEncryptionAlgorithm = "ike-encryption-algorithm"
+	FlagIKEIntegrityAlgorithm  = "ike-integrity-algorithm"
+	FlagIKELifetime            = "ike-lifetime"
+
+	FlagESPDiffieHellmanGroup  = "esp-diffie-hellman-group"
+	FlagESPIntegrityAlgorithm  = "esp-integrity-algorithm"
+	FlagESPEncryptionAlgorithm = "esp-encryption-algorithm"
+	FlagESPLifetime            = "esp-lifetime"
+
+	FlagCloudNetworkCIDRs = "cloud-network-cidrs"
+	FlagPeerNetworkCIDRs  = "peer-network-cidrs"
+
 	FlagCores                 = "cores"
 	FlagRam                   = "ram"
 	FlagAvailabilityZone      = "availability-zone"
@@ -141,6 +168,7 @@ const (
 	DefaultApiURL               = "https://api.ionos.com"
 	DefaultDnsApiURL            = "dns.de-fra.ionos.com"
 	DefaultLoggingServiceApiURL = "logging.de-txl.ionos.com"
+	DefaultVPNApiURL            = "vpn.de-txl.ionos.com"
 	DefaultConfigFileName       = "/config.json"
 	DefaultOutputFormat         = "text"
 	DefaultWait                 = false

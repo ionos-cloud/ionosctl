@@ -2,9 +2,10 @@ package commands
 
 import (
 	"fmt"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cdn"
 	"os"
 	"strings"
+
+	"github.com/ionos-cloud/ionosctl/v6/commands/cdn"
 
 	certificates "github.com/ionos-cloud/ionosctl/v6/commands/certmanager"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cfg"
@@ -16,6 +17,7 @@ import (
 	logging_service "github.com/ionos-cloud/ionosctl/v6/commands/logging-service"
 	"github.com/ionos-cloud/ionosctl/v6/commands/token"
 	vm_autoscaling "github.com/ionos-cloud/ionosctl/v6/commands/vm-autoscaling"
+	"github.com/ionos-cloud/ionosctl/v6/commands/vpn"
 	"github.com/ionos-cloud/ionosctl/v6/internal/config"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
@@ -251,8 +253,9 @@ func addCommands() {
 		),
 	)
 
-	// CDN
 	rootCmd.AddCommand(cdn.Command())
+
+	rootCmd.AddCommand(funcChangeDefaultApiUrl(vpn.Root(), constants.DefaultVPNApiURL))
 }
 
 const (

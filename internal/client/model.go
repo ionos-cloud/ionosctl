@@ -2,6 +2,7 @@ package client
 
 import (
 	"fmt"
+
 	cdn "github.com/ionos-cloud/sdk-go-cdn"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
@@ -15,6 +16,7 @@ import (
 	dns "github.com/ionos-cloud/sdk-go-dns"
 	logsvc "github.com/ionos-cloud/sdk-go-logging"
 	vmasc "github.com/ionos-cloud/sdk-go-vm-autoscaling"
+	vpn "github.com/ionos-cloud/sdk-go-vpn"
 	cloudv6 "github.com/ionos-cloud/sdk-go/v6"
 
 	"github.com/spf13/viper"
@@ -68,6 +70,7 @@ type Client struct {
 	DnsClient            *dns.APIClient
 	LoggingServiceClient *logsvc.APIClient
 	VMAscClient          *vmasc.AutoScalingGroupsApiService
+	VPNClient            *vpn.APIClient
 
 	PostgresClient *postgres.APIClient
 	MongoClient    *mongo.APIClient
@@ -118,6 +121,9 @@ func newClient(name, pwd, token, hostUrl string, usedLayer *Layer) *Client {
 	cdnConfig := cdn.NewConfiguration(name, pwd, token, hostUrl)
 	cdnConfig.UserAgent = appendUserAgent(cdnConfig.UserAgent)
 
+	vpnConfig := vpn.NewConfiguration(name, pwd, token, hostUrl)
+	vpnConfig.UserAgent = appendUserAgent(vpnConfig.UserAgent)
+
 	return &Client{
 		CloudClient:          cloudv6.NewAPIClient(clientConfig),
 		AuthClient:           sdkgoauth.NewAPIClient(authConfig),
@@ -127,6 +133,7 @@ func newClient(name, pwd, token, hostUrl string, usedLayer *Layer) *Client {
 		DnsClient:            dns.NewAPIClient(dnsConfig),
 		LoggingServiceClient: logsvc.NewAPIClient(logsConfig),
 		VMAscClient:          vmasc.NewAPIClient(vmascConfig).AutoScalingGroupsApi,
+		VPNClient:            vpn.NewAPIClient(vpnConfig),
 
 		PostgresClient: postgres.NewAPIClient(postgresConfig),
 		MongoClient:    mongo.NewAPIClient(mongoConfig),
