@@ -14,7 +14,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/pointer"
 	vpn "github.com/ionos-cloud/sdk-go-vpn"
-	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
@@ -64,10 +63,10 @@ func Create() *core.Command {
 			},
 		})
 
-	cmd.AddStringFlag(constants.FlagGatewayID, constants.FlagIdShort, "", "The ID of the IPSec Gateway", core.RequiredFlagOption())
-	cmd.Command.RegisterFlagCompletionFunc(constants.FlagGatewayID, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.GatewayIDs(), cobra.ShellCompDirectiveNoFileComp
-	})
+	cmd.AddStringFlag(constants.FlagGatewayID, constants.FlagIdShort, "", "The ID of the IPSec Gateway",
+		core.RequiredFlagOption(),
+		core.WithCompletion(completer.GatewayIDs, constants.VPNApiRegionalURL),
+	)
 
 	cmd.AddStringFlag(constants.FlagName, "", "", "Name of the IPSec Tunnel", core.RequiredFlagOption())
 	cmd.AddStringFlag(constants.FlagDescription, "", "", "Description of the IPSec Tunnel")
