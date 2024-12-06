@@ -34,6 +34,19 @@ const (
 	defaultMaxWaitTime    = time.Duration(2000) * time.Millisecond
 )
 
+var (
+	IonosServerUrls = []string{
+		"https://mariadb.de-txl.ionos.com",
+		"https://mariadb.de-fra.ionos.com",
+		"https://mariadb.es-vit.ionos.com",
+		"https://mariadb.fr-par.ionos.com",
+		"https://mariadb.gb-lhr.ionos.com",
+		"https://mariadb.us-ewr.ionos.com",
+		"https://mariadb.us-las.ionos.com",
+		"https://mariadb.us-mci.ionos.com",
+	}
+)
+
 // contextKeys are used to identify the type of value in the context.
 // Since these are string, it is possible to get a short description of the
 // context key for logging and debugging using key.String().
@@ -128,7 +141,7 @@ func NewConfiguration(username, password, token, hostUrl string) *Configuration 
 	cfg := &Configuration{
 		DefaultHeader:      make(map[string]string),
 		DefaultQueryParams: url.Values{},
-		UserAgent:          "ionos-cloud-sdk-go-dbaas-mariadb/v1.0.0",
+		UserAgent:          "ionos-cloud-sdk-go-dbaas-mariadb/v1.1.1",
 		Debug:              false,
 		Username:           username,
 		Password:           password,
@@ -142,6 +155,34 @@ func NewConfiguration(username, password, token, hostUrl string) *Configuration 
 			{
 				URL:         getServerUrl(hostUrl),
 				Description: "Berlin, Germany",
+			},
+			{
+				URL:         getServerUrl(hostUrl),
+				Description: "Frankfurt, Germany",
+			},
+			{
+				URL:         getServerUrl(hostUrl),
+				Description: "Logroño, Spain",
+			},
+			{
+				URL:         getServerUrl(hostUrl),
+				Description: "Paris, France",
+			},
+			{
+				URL:         getServerUrl(hostUrl),
+				Description: "London, Great Britain",
+			},
+			{
+				URL:         getServerUrl(hostUrl),
+				Description: "Newark, USA",
+			},
+			{
+				URL:         getServerUrl(hostUrl),
+				Description: "Las Vegas, USA",
+			},
+			{
+				URL:         getServerUrl(hostUrl),
+				Description: "Lenexa, USA",
 			},
 		},
 		OperationServers: map[string]ServerConfigurations{},
