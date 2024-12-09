@@ -50,7 +50,7 @@ func Topics(clusterID string) []string {
 		return nil
 	}
 
-	topicsConverted, err := json2table.ConvertJSONToTable("", jsonpaths.KafkaTopic, topicsList)
+	topicsConverted, err := json2table.ConvertJSONToTable("items", jsonpaths.KafkaTopic, topicsList)
 	if err != nil {
 		return nil
 	}

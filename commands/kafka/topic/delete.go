@@ -37,7 +37,7 @@ func deleteCmd() *core.Command {
 						return err
 					}
 
-					fmt.Fprintf(cmd.Command.Command.OutOrStdout(), "All topics deleted")
+					fmt.Fprintf(cmd.Command.Command.OutOrStdout(), "All topics deleted\n")
 					return nil
 				}
 
@@ -58,7 +58,7 @@ func deleteCmd() *core.Command {
 					return err
 				}
 
-				fmt.Fprintf(cmd.Command.Command.OutOrStdout(), "Topic %v deleted", topicID)
+				fmt.Fprintf(cmd.Command.Command.OutOrStdout(), "Topic %v deleted\n", topicID)
 				return nil
 			},
 			InitClient: true,
@@ -103,7 +103,7 @@ func deleteAll(cmd *core.CommandConfig) error {
 	return functional.ApplyAndAggregateErrors(
 		*topics.Items, func(topic kafka.TopicRead) error {
 			if !confirm.FAsk(
-				cmd.Command.Command.InOrStdin(), fmt.Sprintf("delete topic %v", *topic.Id),
+				cmd.Command.Command.InOrStdin(), fmt.Sprintf("delete topic %v (%v)", *topic.Id, *topic.Properties.Name),
 				viper.GetBool(constants.ArgForce),
 			) {
 				return fmt.Errorf(confirm.UserDenied)
