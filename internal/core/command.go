@@ -6,6 +6,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/spf13/cobra"
 	flag "github.com/spf13/pflag"
 	"github.com/spf13/viper"
@@ -34,6 +36,105 @@ func (c *Command) Name() string {
 	} else {
 		return ""
 	}
+}
+
+// WithRegionalFlags adds regional flag support to a command, allowing users to specify a location or override the server URL.
+// To use this function, wrap the root command of your API and specify the baseURL and allowed locations.
+//
+// Example:
+//
+// ```
+//
+//	func DNSCommand() *core.Command {
+//		cmd := &core.Command{
+//			Command: &cobra.Command{
+//				Use:              "dns",
+//				Short:            "The sub-commands of the 'dns' resource help automate DNS Zone and Record management",
+//				TraverseChildren: true,
+//			},
+//		}
+//
+//		// Add regional flags
+//		return core.WithRegionalFlags(cmd, "https://dns.%s.ionos.com", []string{"de/fra", "de/txl"})
+//	}
+//
+// ```
+//
+//   - 'baseURL': The base URL for the API, with an optional '%s' placeholder for the location (e.g., '"https://dns.%s.ionos.com"').
+//   - 'allowedLocations': A slice of allowed locations (e.g., '[]string{"de/fra", "de/txl"}'). These will populate the '--location' flag completion.
+//
+// # Notes
+//
+//   - The '--server-url' flag allows users to override the API host URL manually.
+//   - The '--location' flag allows users to specify a region, which replaces the '%s' placeholder in the 'baseURL'.
+//   - If '--location' is used and is valid (from 'allowedLocations'), the 'baseURL' is formatted with the normalized location.
+//   - If '--location' is invalid or unsupported, a warning is logged, but the constructed URL is still attempted.
+//   - If 'allowedLocations' is empty, the function panics, as this is considered a programming error.//
+//   - If an unsupported location is provided, a warning is logged:
+//     'WARN: <location> is an invalid location. Valid locations are: <allowedLocations>'
+//   - This also marks '--api-url' and '--location' flags as mutually exclusive.
+//   - The first location in 'allowedLocations' is used as the default URL if no location is provided.
+func WithRegionalFlags(c *Command, baseURL string, allowedLocations []string) *Command {
+	// Generate the default URL using the first provided location, if available
+	var defaultUrl string
+	if len(allowedLocations) > 0 {
+		// if baseURL does not contain a placeholder, throw a panic, as this is a programming error
+		if !strings.Contains(baseURL, "%s") {
+			panic(fmt.Errorf("baseURL %s does not contain a placeholder for location", baseURL))
+		}
+
+		defaultLocation := allowedLocations[0]
+		defaultUrl = fmt.Sprintf(baseURL, strings.ReplaceAll(defaultLocation, "/", "-"))
+	} else {
+		// If no locations are provided, panic, this is a programming error
+		panic(fmt.Errorf("no allowedLocations provided for %s", c.Command.Name()))
+	}
+
+	// Add the server URL flag
+	c.Command.PersistentFlags().StringP(
+		constants.ArgServerUrl, constants.ArgServerUrlShort, defaultUrl, "Override default host URL",
+	)
+	viper.BindPFlag(constants.ArgServerUrl, c.Command.PersistentFlags().Lookup(constants.ArgServerUrl))
+
+	// Add the location flag
+	c.Command.PersistentFlags().StringP(
+		constants.FlagLocation, constants.FlagLocationShort, "", "Location of the resource to operate on. Can be one of: "+strings.Join(allowedLocations, ", "),
+	)
+	viper.BindPFlag(constants.FlagLocation, c.Command.PersistentFlags().Lookup(constants.FlagLocation))
+	c.Command.RegisterFlagCompletionFunc(constants.FlagLocation,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return allowedLocations, cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+
+	// Wrap the pre-run logic to handle mutually exclusive flags
+	originalPreRun := c.Command.PersistentPreRunE
+	c.Command.PersistentPreRunE = func(cmd *cobra.Command, args []string) error {
+		if originalPreRun != nil {
+			if err := originalPreRun(cmd, args); err != nil {
+				return err
+			}
+		}
+
+		// Mark the flags as mutually exclusive
+		c.Command.MarkFlagsMutuallyExclusive(constants.ArgServerUrl, constants.FlagLocation)
+
+		// Handle the location flag
+		if location, _ := cmd.Flags().GetString(constants.FlagLocation); location != "" {
+			normalizedLoc := strings.ReplaceAll(location, "/", "-")
+			if strings.Contains(baseURL, "%s") {
+				viper.Set(constants.ArgServerUrl, fmt.Sprintf(baseURL, normalizedLoc))
+			} else {
+				// Log a warning if trying to use location with a non-placeholder URL
+				fmt.Fprintf(c.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput(
+					"WARN: Ignoring location %s because this API does not support region-based URLs", location))
+			}
+		}
+
+		return nil
+	}
+
+	return c
 }
 
 func (c *Command) CommandPath() string {
