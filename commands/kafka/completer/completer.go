@@ -2,7 +2,11 @@ package completer
 
 import (
 	"context"
+
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/internal/completions"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 	kafka "github.com/ionos-cloud/sdk-go-kafka"
 )
@@ -36,3 +40,20 @@ func Clusters(fs ...Filter) (kafka.ClusterReadList, error) {
 }
 
 type Filter func(request kafka.ApiClustersGetRequest) (kafka.ApiClustersGetRequest, error)
+
+// Topics returns all topics in the given cluster
+func Topics(clusterID string) []string {
+	topicsList, _, err := client.Must().Kafka.TopicsApi.ClustersTopicsGet(
+		context.Background(), clusterID,
+	).Execute()
+	if err != nil {
+		return nil
+	}
+
+	topicsConverted, err := json2table.ConvertJSONToTable("", jsonpaths.KafkaTopic, topicsList)
+	if err != nil {
+		return nil
+	}
+
+	return completions.NewCompleter(topicsConverted, "Id").AddInfo("Name").ToString()
+}

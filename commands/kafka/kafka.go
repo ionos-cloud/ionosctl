@@ -2,6 +2,8 @@ package kafka
 
 import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/kafka/cluster"
+	"github.com/ionos-cloud/ionosctl/v6/commands/kafka/topic"
+	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/spf13/cobra"
 )
@@ -14,6 +16,9 @@ func Command() *core.Command {
 			TraverseChildren: true,
 		},
 	}
+
 	cmd.AddCommand(cluster.Command())
-	return cmd
+	cmd.AddCommand(topic.Command())
+
+	return core.WithRegionalFlags(cmd, constants.KafkaApiRegionalURL, constants.KafkaLocations)
 }

@@ -3,8 +3,8 @@ package cluster
 import (
 	"context"
 	"fmt"
+
 	"github.com/ionos-cloud/ionosctl/v6/commands/kafka/completer"
-	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table"
@@ -12,7 +12,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	kafka "github.com/ionos-cloud/sdk-go-kafka"
-	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
@@ -40,20 +39,10 @@ func List() *core.Command {
 	)
 
 	cmd.AddStringFlag(constants.FlagFilterName, "", "", "Filter used to fetch only the records that contain specified name.")
-	cmd.AddSetFlag(constants.FlagFilterState, "", "", []string{"AVAILABLE", "BUSY", "DEPLOYING", "UPDATING", "FAILED_UPDATING", "FAILED", "DESTROYING"}, "Filter used to fetch only the records that contain specified state.")
-	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagFilterState, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return []string{"AVAILABLE", "BUSY", "DEPLOYING", "UPDATING", "FAILED_UPDATING", "FAILED", "DESTROYING"}, cobra.ShellCompDirectiveNoFileComp
-	})
-
-	cmd.AddStringFlag(constants.FlagLocation, "", "", "The datacenter location", core.RequiredFlagOption())
-	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagLocation, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		var locations []string
-		for k := range locationToURL {
-			locations = append(locations, k)
-		}
-
-		return locations, cobra.ShellCompDirectiveNoFileComp
-	})
+	cmd.AddSetFlag(
+		constants.FlagFilterState, "", "", []string{"AVAILABLE", "BUSY", "DEPLOYING", "UPDATING", "FAILED_UPDATING", "FAILED", "DESTROYING"},
+		"Filter used to fetch only the records that contain specified state.",
+	)
 
 	cmd.Command.PersistentFlags().StringSlice(
 		constants.ArgCols, nil,
@@ -67,7 +56,6 @@ func List() *core.Command {
 }
 
 func listClusters(c *core.CommandConfig) error {
-	changeLocation(client.Must().Kafka, viper.GetString(core.GetFlagName(c.NS, constants.FlagLocation)))
 	ls, err := completer.Clusters(
 		func(req kafka.ApiClustersGetRequest) (kafka.ApiClustersGetRequest, error) {
 			if fn := core.GetFlagName(c.NS, constants.FlagFilterState); viper.IsSet(fn) {
