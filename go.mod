@@ -42,6 +42,7 @@ require (
 	github.com/dustin/go-humanize v0.0.0-20171111073723-bb3d318650d4
 	github.com/ionos-cloud/sdk-go-cdn v1.1.0
 	github.com/ionos-cloud/sdk-go-dbaas-mariadb v1.1.1
+	github.com/ionos-cloud/sdk-go-kafka v1.1.0
 )
 
 require (
