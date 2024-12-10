@@ -12,7 +12,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/pointer"
 	ionoscloud "github.com/ionos-cloud/sdk-go-dns"
-	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
@@ -69,27 +68,30 @@ func Update() *core.Command {
 		InitClient: true,
 	})
 
-	cmd.AddStringFlag(constants.FlagRecord, "", "", "The record ID or IP, for identifying which record you want to update", core.RequiredFlagOption())
-	cmd.Command.RegisterFlagCompletionFunc(constants.FlagRecord, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		ips := RecordsProperty(func(read ionoscloud.ReverseRecordRead) string {
-			return *read.Properties.Ip
-		})
-		return ips, cobra.ShellCompDirectiveNoFileComp
-	})
-	cmd.AddStringFlag(constants.FlagIp, "", "", "The new IP")
-	cmd.Command.RegisterFlagCompletionFunc(constants.FlagIp, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		ipblocks, _, err := client.Must().CloudClient.IPBlocksApi.IpblocksGet(context.Background()).Execute()
-		if err != nil || ipblocks.Items == nil || len(*ipblocks.Items) == 0 {
-			return nil, cobra.ShellCompDirectiveError
-		}
-		var ips []string
-		for _, ipblock := range *ipblocks.Items {
-			if ipblock.Properties.Ips != nil {
-				ips = append(ips, *ipblock.Properties.Ips...)
+	cmd.AddStringFlag(constants.FlagRecord, "", "", "The record ID or IP which you want to update",
+		core.RequiredFlagOption(),
+		core.WithCompletion(func() []string {
+			return RecordsProperty(func(read ionoscloud.ReverseRecordRead) string {
+				return *read.Properties.Ip
+			})
+		}, constants.DNSApiRegionalURL),
+	)
+
+	cmd.AddStringFlag(constants.FlagIp, "", "", "The new IP", core.WithCompletionE(
+		func() ([]string, error) {
+			ipblocks, _, err := client.Must().CloudClient.IPBlocksApi.IpblocksGet(context.Background()).Execute()
+			if err != nil || ipblocks.Items == nil || len(*ipblocks.Items) == 0 {
+				return nil, fmt.Errorf("failed to get IP blocks: %s", err)
 			}
-		}
-		return ips, cobra.ShellCompDirectiveNoFileComp
-	})
+			var ips []string
+			for _, ipblock := range *ipblocks.Items {
+				if ipblock.Properties.Ips != nil {
+					ips = append(ips, *ipblock.Properties.Ips...)
+				}
+			}
+			return ips, nil
+		}, ""),
+	)
 	cmd.AddStringFlag(constants.FlagName, "", "", "The new record name")
 	cmd.AddStringFlag(constants.FlagDescription, "", "", "The new description of the record")
 

@@ -8,7 +8,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
-	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
@@ -29,13 +28,8 @@ func LogsListCmd() *core.Command {
 	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Use this flag to list all logging pipeline logs")
 	cmd.AddStringFlag(
 		constants.FlagLoggingPipelineId, constants.FlagIdShort, "",
-		"The ID of the logging pipeline you want to list logs for", core.RequiredFlagOption(),
-	)
-	_ = cmd.Command.RegisterFlagCompletionFunc(
-		constants.FlagLoggingPipelineId,
-		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-			return completer.LoggingServicePipelineIds(), cobra.ShellCompDirectiveNoFileComp
-		},
+		"The ID of the logging pipeline", core.RequiredFlagOption(),
+		core.WithCompletion(completer.LoggingServicePipelineIds, constants.LoggingApiRegionalURL),
 	)
 
 	return cmd

@@ -14,7 +14,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/pointer"
 	dns "github.com/ionos-cloud/sdk-go-dns"
-	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
@@ -83,28 +82,37 @@ func Create() *core.Command {
 		InitClient: true,
 	})
 
-	cmd.AddStringFlag(constants.FlagZone, constants.FlagZoneShort, "", constants.DescZone)
-	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagZone, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.ZonesProperty(func(t dns.ZoneRead) string {
-			return *t.Properties.ZoneName
-		}), cobra.ShellCompDirectiveNoFileComp
-	})
-
+	cmd.AddStringFlag(constants.FlagZone, constants.FlagZoneShort, "", constants.DescZone, core.RequiredFlagOption(),
+		core.WithCompletion(func() []string {
+			return completer.ZonesProperty(func(t dns.ZoneRead) string {
+				return *t.Properties.ZoneName
+			})
+		}, constants.DNSApiRegionalURL),
+	)
 	cmd.AddStringFlag(FlagAlgorithm, "", "RSASHA256", "Algorithm used to generate signing keys (both Key Signing Keys and Zone Signing Keys)")
-	cmd.AddIntFlag(FlagKskBits, "", 1024, "Key signing key length in bits. kskBits >= zskBits: [1024/2048/4096]")
-	_ = cmd.Command.RegisterFlagCompletionFunc(FlagKskBits, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return []string{"1024", "2048", "4096"}, cobra.ShellCompDirectiveNoFileComp
-	})
-	cmd.AddIntFlag(FlagZskBits, "", 1024, "Zone signing key length in bits. zskBits <= kskBits: [1024/2048/4096]")
-	_ = cmd.Command.RegisterFlagCompletionFunc(FlagZskBits, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return []string{"1024", "2048", "4096"}, cobra.ShellCompDirectiveNoFileComp
-	})
+	cmd.AddIntFlag(FlagKskBits, "", 1024, "Key signing key length in bits. kskBits >= zskBits: [1024/2048/4096]",
+		core.WithCompletion(
+			func() []string {
+				return []string{"1024", "2048", "4096"}
+			}, constants.DNSApiRegionalURL,
+		),
+	)
+	cmd.AddIntFlag(FlagZskBits, "", 1024, "Zone signing key length in bits. zskBits <= kskBits: [1024/2048/4096]",
+		core.WithCompletion(
+			func() []string {
+				return []string{"1024", "2048", "4096"}
+			}, constants.DNSApiRegionalURL,
+		),
+	)
 	cmd.AddSetFlag(FlagNsecMode, "", "NSEC", []string{"NSEC", "NSEC3"}, "NSEC mode.")
 	cmd.AddIntFlag(FlagNsec3Iterations, "", 0, "Number of iterations for NSEC3. [0..50]")
-	cmd.AddIntFlag(FlagNsec3SaltBits, "", 64, "Salt length in bits for NSEC3. [64..128], multiples of 8")
-	_ = cmd.Command.RegisterFlagCompletionFunc(FlagNsec3SaltBits, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return []string{"64", "72", "80", "88", "96", "104", "112", "120", "128"}, cobra.ShellCompDirectiveNoFileComp
-	})
+	cmd.AddIntFlag(FlagNsec3SaltBits, "", 64, "Salt length in bits for NSEC3. [64..128], multiples of 8",
+		core.WithCompletion(
+			func() []string {
+				return []string{"64", "72", "80", "88", "96", "104", "112", "120", "128"}
+			}, constants.DNSApiRegionalURL,
+		),
+	)
 	cmd.AddIntFlag(FlagValidity, "", 90, "Signature validity in days [90..365]")
 
 	cmd.Command.SilenceUsage = true

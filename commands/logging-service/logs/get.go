@@ -12,7 +12,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	ionoscloud "github.com/ionos-cloud/sdk-go-logging"
-	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
@@ -32,28 +31,17 @@ func LogsGetCmd() *core.Command {
 	cmd.AddStringFlag(
 		constants.FlagLoggingPipelineId, constants.FlagIdShort, "",
 		"The ID of the logging pipeline", core.RequiredFlagOption(),
+		core.WithCompletion(completer.LoggingServicePipelineIds, constants.LoggingApiRegionalURL),
 	)
-	_ = cmd.Command.RegisterFlagCompletionFunc(
-		constants.FlagLoggingPipelineId,
-		func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-			return completer.LoggingServicePipelineIds(), cobra.ShellCompDirectiveNoFileComp
-		},
-	)
+
 	cmd.AddStringFlag(
 		constants.FlagLoggingPipelineLogTag, "", "", "The tag of the pipeline log that you want to retrieve",
 		core.RequiredFlagOption(),
-	)
-	_ = cmd.Command.RegisterFlagCompletionFunc(
-		constants.FlagLoggingPipelineLogTag,
-		func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		core.WithCompletion(func() []string {
 			return completer.LoggingServiceLogTags(
-				viper.GetString(
-					core.GetFlagName(
-						cmd.NS, constants.FlagLoggingPipelineId,
-					),
-				),
-			), cobra.ShellCompDirectiveNoFileComp
-		},
+				viper.GetString(core.GetFlagName(cmd.NS, constants.FlagLoggingPipelineId)),
+			)
+		}, constants.LoggingApiRegionalURL),
 	)
 
 	return cmd

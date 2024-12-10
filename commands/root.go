@@ -2,9 +2,10 @@ package commands
 
 import (
 	"fmt"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cdn"
 	"os"
 	"strings"
+
+	"github.com/ionos-cloud/ionosctl/v6/commands/cdn"
 
 	certificates "github.com/ionos-cloud/ionosctl/v6/commands/certmanager"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cfg"
@@ -218,38 +219,8 @@ func addCommands() {
 	// VM-Autoscaling commands
 	rootCmd.AddCommand(vm_autoscaling.Root())
 
-	// DNS ---
-	funcChangeDefaultApiUrl := func(command *core.Command, newDefault string) *core.Command {
-		// For some reason, this line only changes the help text
-		command.Command.PersistentFlags().StringP(
-			constants.ArgServerUrl, constants.ArgServerUrlShort, newDefault, "Override default host url",
-		)
-
-		// We should still run the original PersistentPreRun
-		originalPreRun := command.Command.PersistentPreRun
-
-		// If unset, manually set the flag to the new default. SIDE EFFECT: Now, this flag will always be considered "set", within DNS sub commands. Can't find a better alternative
-		command.Command.PersistentPreRun = func(cmd *cobra.Command, args []string) {
-			if originalPreRun != nil {
-				originalPreRun(cmd, args)
-			}
-
-			setVal := newDefault
-			if val, _ := cmd.Flags().GetString(constants.ArgServerUrl); val != "" {
-				setVal = val
-			}
-			viper.Set(constants.ArgServerUrl, setVal)
-		}
-		return command
-	}
-
-	rootCmd.AddCommand(funcChangeDefaultApiUrl(dns.DNSCommand(), constants.DefaultDnsApiURL))
-	// Logging Service
-	rootCmd.AddCommand(
-		funcChangeDefaultApiUrl(
-			logging_service.LoggingServiceCmd(), constants.DefaultLoggingServiceApiURL,
-		),
-	)
+	rootCmd.AddCommand(dns.Root())
+	rootCmd.AddCommand(logging_service.Root())
 
 	// CDN
 	rootCmd.AddCommand(cdn.Command())

@@ -10,7 +10,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/spf13/cobra"
 )
 
 func startCmd() *core.Command {
@@ -41,11 +40,8 @@ func startCmd() *core.Command {
 		},
 	)
 
-	c.Command.Flags().StringP(constants.FlagZone, constants.FlagZoneShort, "", constants.DescZone)
-	_ = c.Command.RegisterFlagCompletionFunc(
-		constants.FlagZone, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-			return completer.SecondaryZonesIDs(), cobra.ShellCompDirectiveNoFileComp
-		},
+	c.AddStringFlag(constants.FlagZone, constants.FlagZoneShort, "", constants.DescZone,
+		core.WithCompletion(completer.SecondaryZonesIDs, constants.DNSApiRegionalURL),
 	)
 
 	c.Command.SilenceUsage = true

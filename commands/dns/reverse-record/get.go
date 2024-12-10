@@ -11,7 +11,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	ionoscloud "github.com/ionos-cloud/sdk-go-dns"
-	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
@@ -56,13 +55,14 @@ func Get() *core.Command {
 		InitClient: true,
 	})
 
-	cmd.AddStringFlag(constants.FlagRecord, "", "", "The record ID or IP, for identifying which record you want to update", core.RequiredFlagOption())
-	cmd.Command.RegisterFlagCompletionFunc(constants.FlagRecord, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		ips := RecordsProperty(func(read ionoscloud.ReverseRecordRead) string {
-			return *read.Properties.Ip
-		})
-		return ips, cobra.ShellCompDirectiveNoFileComp
-	})
+	cmd.AddStringFlag(constants.FlagRecord, "", "", "The record ID or IP which you want to get",
+		core.RequiredFlagOption(),
+		core.WithCompletion(func() []string {
+			return RecordsProperty(func(read ionoscloud.ReverseRecordRead) string {
+				return *read.Properties.Ip
+			})
+		}, constants.DNSApiRegionalURL),
+	)
 
 	cmd.Command.SilenceUsage = true
 	return cmd

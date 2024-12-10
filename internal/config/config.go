@@ -8,7 +8,6 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
-	"strings"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/die"
@@ -23,22 +22,17 @@ var FieldsWithSensitiveDataInConfigFile = []string{
 // GetServerUrl returns the server URL the SDK should use, with support for layered fallbacks.
 func GetServerUrl() string {
 	viper.AutomaticEnv()
-	if flagVal := viper.GetString(constants.ArgServerUrl); viper.IsSet(constants.ArgServerUrl) {
+	if val := viper.GetString(constants.ArgServerUrl); viper.IsSet(constants.ArgServerUrl) {
 		// 1. Above all, use global flag val
-		if !strings.Contains(flagVal, constants.DefaultDnsApiURL) && !strings.Contains(
-			flagVal, constants.DefaultLoggingServiceApiURL,
-		) {
-			// Workaround for changing the default for dns namepsace and still allowing this to be customized via env var / cfg
-			return flagVal
-		}
+		return val
 	}
-	if envVal := viper.GetString(constants.EnvServerUrl); viper.IsSet(constants.EnvServerUrl) {
+	if val := viper.GetString(constants.EnvServerUrl); viper.IsSet(constants.EnvServerUrl) {
 		// 2. Fallback to non-empty env vars
-		return envVal
+		return val
 	}
-	if cfgVal := viper.GetString(constants.CfgServerUrl); viper.IsSet(constants.CfgServerUrl) {
+	if val := viper.GetString(constants.CfgServerUrl); viper.IsSet(constants.CfgServerUrl) {
 		// 3. Fallback to non-empty cfg field
-		return cfgVal
+		return val
 	}
 	// 4. Return empty string. SDKs should handle it, per docs
 	return ""

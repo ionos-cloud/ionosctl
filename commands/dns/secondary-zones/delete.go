@@ -12,8 +12,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
-	"github.com/spf13/cobra"
-
 	dns "github.com/ionos-cloud/sdk-go-dns"
 	"github.com/spf13/viper"
 )
@@ -52,11 +50,8 @@ func deleteCmd() *core.Command {
 
 	c.Command.Flags().BoolP(constants.ArgAll, constants.ArgAllShort, false, "Delete all secondary zones")
 
-	c.Command.Flags().StringP(constants.FlagZone, constants.FlagZoneShort, "", constants.DescZone)
-	_ = c.Command.RegisterFlagCompletionFunc(
-		constants.FlagZone, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-			return completer.SecondaryZonesIDs(), cobra.ShellCompDirectiveNoFileComp
-		},
+	c.AddStringFlag(constants.FlagZone, constants.FlagZoneShort, "", constants.DescZone,
+		core.WithCompletion(completer.SecondaryZonesIDs, constants.DNSApiRegionalURL),
 	)
 
 	c.Command.SilenceUsage = true

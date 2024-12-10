@@ -121,6 +121,11 @@ func TestCreds(user, pass, token string) error {
 }
 
 func (c *Client) TestCreds() error {
+	if config.GetServerUrlOrApiIonos() != constants.DefaultApiURL {
+		// TODO: Remove this if we can somehow reliably test credentials on all APIs.
+		// TODO: This currently skips if the server URL is manually overwritten. (i.e. staging environment, or regional APIs)
+		return nil
+	}
 	_, _, err := c.CloudClient.DefaultApi.ApiInfoGet(context.Background()).MaxResults(1).Depth(0).Execute()
 	if err != nil {
 		usedScheme := "used token"
