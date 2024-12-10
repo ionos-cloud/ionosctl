@@ -107,20 +107,28 @@ func WithRegionalFlags(c *Command, baseURL string, allowedLocations []string) *C
 		},
 	)
 
+	// Modify the 'location' flag to include option 'all' for 'list' commands
+	for _, subCmd := range GetSubcommandsByName(c.Command, "list") {
+		subCmd.PersistentFlags().StringP(
+			constants.FlagLocation, constants.FlagLocationShort, "all",
+			"Location of the resource to operate on. Can be one of: "+strings.Join(append(allowedLocations, "all"), ", "),
+		)
+		viper.BindPFlag(constants.FlagLocation, c.Command.PersistentFlags().Lookup(constants.FlagLocation))
+		subCmd.RegisterFlagCompletionFunc(constants.FlagLocation,
+			func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+				return append(allowedLocations, "all"), cobra.ShellCompDirectiveNoFileComp
+			},
+		)
+	}
+
 	// Wrap the pre-run logic to handle mutually exclusive flags
 	originalPreRun := c.Command.PersistentPreRunE
 	c.Command.PersistentPreRunE = func(cmd *cobra.Command, args []string) error {
-		if originalPreRun != nil {
-			if err := originalPreRun(cmd, args); err != nil {
-				return err
-			}
-		}
-
 		// Mark the flags as mutually exclusive
 		c.Command.MarkFlagsMutuallyExclusive(constants.ArgServerUrl, constants.FlagLocation)
 
-		// Handle the location flag
-		if location, _ := cmd.Flags().GetString(constants.FlagLocation); location != "" {
+		// Set the server URL based on the provided location. NOTE: 'all' must currently be manually handled by the command
+		if location, _ := cmd.Flags().GetString(constants.FlagLocation); location != "" && location != "all" {
 			normalizedLoc := strings.ReplaceAll(location, "/", "-")
 			if strings.Contains(baseURL, "%s") {
 				viper.Set(constants.ArgServerUrl, fmt.Sprintf(baseURL, normalizedLoc))
@@ -131,10 +139,24 @@ func WithRegionalFlags(c *Command, baseURL string, allowedLocations []string) *C
 			}
 		}
 
+		if originalPreRun != nil {
+			return originalPreRun(cmd, args)
+		}
 		return nil
 	}
 
 	return c
+}
+
+func GetSubcommandsByName(cmd *cobra.Command, name string) []*cobra.Command {
+	var result []*cobra.Command
+	if cmd.Use == name {
+		result = append(result, cmd)
+	}
+	for _, subCmd := range cmd.Commands() {
+		result = append(result, GetSubcommandsByName(subCmd, name)...)
+	}
+	return result
 }
 
 func (c *Command) CommandPath() string {
