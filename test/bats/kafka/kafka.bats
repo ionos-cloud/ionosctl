@@ -14,19 +14,19 @@ setup_file() {
     run ionosctl datacenter create --location "de/fra" --name "cli-test-$(randStr 6)" -o json 2> /dev/null
     assert_success
 
-    datacenter_id=$(find_or_create_resource \
-        "ionosctl datacenter list -M 1 -F location=de/fra,state=available -o json 2> /dev/null | jq -r '.items[] | .id'" \
-        "ionosctl datacenter create --name \"CLI-Test-$(randStr 8)\" --location de/fra -o json 2> /dev/null | jq -r '.id'")
+    run ionosctl datacenter create --name \"cli-test-$(randStr 8)\" --location de/fra -o json 2> /dev/null
+    datacenter_id=$(echo "$output" | jq -r '.id')
     [ -n "$datacenter_id" ] || fail "datacenter_id is empty"
     assert_regex "$datacenter_id" "$uuid_v4_regex"
     echo "$datacenter_id" > /tmp/bats_test/datacenter_id
+
     retry_until "ionosctl datacenter get --datacenter-id ${datacenter_id} -o json 2> /dev/null | jq -r '.metadata.state'" \
         "[[ \$output == \"AVAILABLE\" ]]" 10 60
 
-    lan_id=$(find_or_create_resource \
-        "ionosctl lan list -M 1 --datacenter-id ${datacenter_id} -F public=false-o json 2> /dev/null | jq -r '.items[] | .id'" \
-        "sleep 30 && ionosctl lan create --datacenter-id ${datacenter_id} --public=false -o json 2> /dev/null | jq -r '.id'")
+    run ionosctl lan create --datacenter-id ${datacenter_id} --public=false -o json 2> /dev/null
+    lan_id=$(echo "$output" | jq -r '.id')
     [ -n "$lan_id" ] || fail "lan_id is empty"
+
     retry_until "ionosctl lan get --datacenter-id ${datacenter_id} --lan-id ${lan_id} -o json 2> /dev/null | jq -r '.metadata.state'" \
         "[[ \$output == \"AVAILABLE\" ]]" 10 60
 
