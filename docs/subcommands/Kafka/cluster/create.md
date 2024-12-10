@@ -31,7 +31,7 @@ Create a kafka cluster. Wiki: https://docs.ionos.com/cloud/data-analytics/kafka/
 ## Options
 
 ```text
-  -u, --api-url string             Override default host url (default "https://api.ionos.com")
+  -u, --api-url string             Override default host URL (default "https://kafka.de-fra.ionos.com")
       --broker-addresses strings   The list of broker addresses (required)
       --cols strings               Set of columns to be printed on output 
                                    Available columns: [Id Name Version Size DatacenterId LanId BrokerAddresses State]
@@ -40,7 +40,7 @@ Create a kafka cluster. Wiki: https://docs.ionos.com/cloud/data-analytics/kafka/
   -f, --force                      Force command to execute without user input
   -h, --help                       Print usage
       --lan-id string              The ID of the LAN (required)
-      --location string            The location of the kafka cluster (required)
+  -l, --location string            Location of the resource to operate on. Can be one of: de/fra, de/txl
       --name string                The name of the kafka cluster (required)
       --no-headers                 Don't print table headers when table output is used
   -o, --output string              Desired output format [text|json|api-json] (default "text")
@@ -53,6 +53,6 @@ Create a kafka cluster. Wiki: https://docs.ionos.com/cloud/data-analytics/kafka/
 ## Examples
 
 ```text
-ionosctl kafka cl create --name my-cluster --version 1.0 --size S --location de/txl --datacenter-id DATACENTER_ID --lan-id LAN_ID --broker-addresses 127.0.0.1,127.0.0.2
+ionosctl kafka cl create --name my-cluster --version 3.7.0 --size S --location de/txl --datacenter-id DATACENTER_ID --lan-id LAN_ID --broker-addresses 127.0.0.1/24,127.0.0.2/24,127.0.0.3/24
 ```
 

@@ -1,40 +1,40 @@
 ---
-description: "Retrieve a cluster"
+description: "List all kafka topics"
 ---
 
-# KafkaClusterGet
+# KafkaTopicList
 
 ## Usage
 
 ```text
-ionosctl kafka cluster get [flags]
+ionosctl kafka topic list [flags]
 ```
 
 ## Aliases
 
-For `cluster` command:
+For `topic` command:
 
 ```text
 [cl]
 ```
 
-For `get` command:
+For `list` command:
 
 ```text
-[g]
+[ls]
 ```
 
 ## Description
 
-Retrieve a cluster
+List all kafka topics
 
 ## Options
 
 ```text
   -u, --api-url string      Override default host URL (default "https://kafka.de-fra.ionos.com")
-  -i, --cluster-id string   The ID of the cluster you want to retrieve (required)
+      --cluster-id string   The ID of the cluster (required)
       --cols strings        Set of columns to be printed on output 
-                            Available columns: [Id Name Version Size DatacenterId LanId BrokerAddresses State]
+                            Available columns: [Id Name ReplicationFactor NumberOfPartitions RetentionTime SegmentByes State]
   -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -f, --force               Force command to execute without user input
   -h, --help                Print usage
@@ -48,6 +48,7 @@ Retrieve a cluster
 ## Examples
 
 ```text
-ionosctl kafka cl get --cluster-id ID
+ionosctl kafka topic list --location LOCATION
+ionosctl kafka topic list --location LOCATION --cluster-id CLUSTER_ID
 ```
 

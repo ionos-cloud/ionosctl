@@ -360,6 +360,11 @@
         * [delete](subcommands%2FKafka%2Fcluster%2Fdelete.md)
         * [get](subcommands%2FKafka%2Fcluster%2Fget.md)
         * [list](subcommands%2FKafka%2Fcluster%2Flist.md)
+    * topic
+        * [create](subcommands%2FKafka%2Ftopic%2Fcreate.md)
+        * [delete](subcommands%2FKafka%2Ftopic%2Fdelete.md)
+        * [get](subcommands%2FKafka%2Ftopic%2Fget.md)
+        * [list](subcommands%2FKafka%2Ftopic%2Flist.md)
 * Logging Service
     * logs
         * [add](subcommands%2FLogging-Service%2Flogs%2Fadd.md)
