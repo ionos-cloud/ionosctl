@@ -15,8 +15,8 @@ setup_file() {
     assert_success
 
     datacenter_id=$(find_or_create_resource \
-        "ionosctl datacenter list -M 1 -F location=${location},state=available -o json 2> /dev/null | jq -r '.items[] | .id'" \
-        "ionosctl datacenter create --name \"CLI-Test-$(randStr 8)\" --location ${location} -o json 2> /dev/null | jq -r '.id'")
+        "ionosctl datacenter list -M 1 -F location=de/fra,state=available -o json 2> /dev/null | jq -r '.items[] | .id'" \
+        "ionosctl datacenter create --name \"CLI-Test-$(randStr 8)\" --location de/fra -o json 2> /dev/null | jq -r '.id'")
     [ -n "$datacenter_id" ] || fail "datacenter_id is empty"
     assert_regex "$datacenter_id" "$uuid_v4_regex"
     echo "$datacenter_id" > /tmp/bats_test/datacenter_id
@@ -45,7 +45,7 @@ setup_file() {
     assert_regex "$cluster_id" "$uuid_v4_regex"
 
     retry_until "ionosctl kafka cluster get --location \"de/fra\" --cluster-id ${cluster_id} -o json 2> /dev/null | jq -r '.metadata.state'" \
-        "[[ \$output == \"AVAILABLE\" ]]" 10 60
+        "[[ \$output == \"AVAILABLE\" ]]" 10 120
 
     echo "created kafka cluster $cluster_id"
     echo "$cluster_id" > /tmp/bats_test/cluster_id
@@ -100,7 +100,7 @@ teardown_file() {
     run ionosctl kafka cluster delete --location "de/fra" --cluster-id "${cluster_id}" -f
     assert_success
     retry_until "ionosctl kafka cluster get --location \"de/fra\" --cluster-id ${cluster_id} -o json 2> /dev/null | jq -r '.metadata.state'" \
-        "[[ \$output != \"DESTROYING\" ]]" 10 60
+        "[[ \$output != \"DESTROYING\" ]]" 10 120
 
     run ionosctl datacenter delete --datacenter-id "${datacenter_id}" -f
     assert_success
