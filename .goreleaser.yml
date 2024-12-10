@@ -70,6 +70,15 @@ brews:
     install: |-
       bin.install "ionosctl"
 
+snapcrafts:
+  - id: ionosctl
+    title: ionosctl
+    summary: IONOS Cloud CLI tool
+    description: |
+      The IONOS Cloud CLI (ionosctl) gives the ability to manage IONOS Cloud infrastructure directly from Command Line.
+    grade: stable
+    publish: true
+
 checksum:
   name_template: '{{ .ProjectName }}-{{ .Version }}-SHA256SUMS'
   algorithm: sha256
