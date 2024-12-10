@@ -1,12 +1,19 @@
 # Changelog
 
-## [v6.8.0] (???)
+## [v6.7.9] (December 2024)
 
 ### Added
 - Added support for CDN operations
 
 ### Fixed
 - Removed Viper binding for `json-properties` and `json-properties-example` (fixes [463](https://github.com/ionos-cloud/ionosctl/issues/463))
+- Fixed '--api-url' flag being overriden in certain cases
+- Fixed MariaDB commands failing if a cluster is in the new "CREATING" state
+- Regional APIs are now more robust (db mariadb, dns, cdn, logging service)
+  - Missing locations to all of these APIs have been added
+  - Added a '--location' flag which changes the '--api-url' accordingly
+  - You can now force a specific location for these APIs even if it is not marked as supported by the `--location` flag
+  - You cannot set both '--api-url' and '--location' at the same time
 
 ## [v6.7.8] (October 2024)
 
