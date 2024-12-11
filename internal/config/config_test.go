@@ -252,7 +252,7 @@ func TestGetServerUrl(t *testing.T) {
 			expectedServerUrl: constants.DefaultApiURL,
 		},
 		{
-			name:              "CFG value is preferred over defaults",
+			name:              "CFG value is returned",
 			flagVal:           "",
 			envVal:            "",
 			cfgVal:            "cfg-url",
@@ -263,9 +263,15 @@ func TestGetServerUrl(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// Mock viper values
-			viper.Set(constants.ArgServerUrl, tt.flagVal)
-			viper.Set(constants.EnvServerUrl, tt.envVal)
-			viper.Set(constants.CfgServerUrl, tt.cfgVal)
+			if tt.flagVal != "" {
+				viper.Set(constants.ArgServerUrl, tt.flagVal)
+			}
+			if tt.envVal != "" {
+				viper.Set(constants.EnvServerUrl, tt.envVal)
+			}
+			if tt.cfgVal != "" {
+				viper.Set(constants.CfgServerUrl, tt.cfgVal)
+			}
 
 			got := config.GetServerUrl()
 			if got != tt.expectedServerUrl {
