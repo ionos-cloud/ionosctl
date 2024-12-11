@@ -36,6 +36,12 @@ jobs:
         run: make test
         if: github.event_name == 'push' || github.event.inputs.runTests == 'yes'
 
+      - name: Install Snapcraft
+        run: |
+          sudo apt update
+          sudo apt install -y snapd
+          sudo snap install snapcraft --classic
+
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v3
         with:
