@@ -107,7 +107,7 @@ func RunLoginUser(c *core.CommandConfig) error {
 	}
 
 	var msg strings.Builder
-	if validCredentials {
+	if validCredentials && !viper.GetBool(core.GetFlagName(c.NS, constants.FlagSkipVerify)) {
 		ls, _, errTokens := client.NewClientFromCfgData(data).AuthClient.TokensApi.TokensGet(context.Background()).Execute()
 		if errTokens != nil {
 			return fmt.Errorf("failed retrieving current tokens: %w", errTokens)
@@ -150,8 +150,8 @@ func buildConfigData(c *core.CommandConfig) (map[string]string, error) {
 	configData := map[string]string{} // This map is what we will write to the config file
 
 	// API URL
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("API Url: %s", config.GetServerUrl()))
-	if explicitUrl := config.GetServerUrl(); explicitUrl != "" {
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("API Url: %s", viper.GetString(constants.ArgServerUrl)))
+	if explicitUrl := viper.GetString(constants.ArgServerUrl); explicitUrl != "" && explicitUrl != constants.DefaultApiURL {
 		// Don't save the API url to the config if it's the default, since we don't want to revert to it if the user doesn't provide any value.
 		// This was changed from old behaviour because some APIs (e.g. DNS API) [can] use a different server URL
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Saving API URL to config file: %s", explicitUrl))

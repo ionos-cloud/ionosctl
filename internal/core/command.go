@@ -3,6 +3,7 @@ package core
 import (
 	"fmt"
 	"net"
+	"os"
 	"strings"
 	"time"
 
@@ -94,7 +95,6 @@ func WithRegionalFlags(c *Command, baseURL string, allowedLocations []string) *C
 	c.Command.PersistentFlags().StringP(
 		constants.ArgServerUrl, constants.ArgServerUrlShort, defaultUrl, "Override default host URL",
 	)
-	viper.BindPFlag(constants.ArgServerUrl, c.Command.PersistentFlags().Lookup(constants.ArgServerUrl))
 
 	// Add the location flag
 	c.Command.PersistentFlags().StringP(
@@ -129,6 +129,17 @@ func WithRegionalFlags(c *Command, baseURL string, allowedLocations []string) *C
 				fmt.Fprintf(c.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput(
 					"WARN: Ignoring location %s because this API does not support region-based URLs", location))
 			}
+		}
+
+		// Because Viper has issues with binding to the same flag multiple times, we need to manually set the value
+		if c.Command.PersistentFlags().Changed(constants.ArgServerUrl) {
+			customURL, _ := c.Command.PersistentFlags().GetString(constants.ArgServerUrl)
+			viper.Set(constants.ArgServerUrl, customURL)
+		}
+
+		// Because Viper has issues with binding to the same env var multiple times, we need to manually set the value
+		if envURL := os.Getenv(constants.EnvServerUrl); envURL != "" {
+			viper.Set(constants.EnvServerUrl, envURL)
 		}
 
 		return nil

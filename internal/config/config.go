@@ -22,13 +22,12 @@ var FieldsWithSensitiveDataInConfigFile = []string{
 // GetServerUrl returns the server URL the SDK should use, with support for layered fallbacks.
 func GetServerUrl() string {
 	viper.AutomaticEnv()
+
 	if val := viper.GetString(constants.ArgServerUrl); viper.IsSet(constants.ArgServerUrl) && val != "" {
-		fmt.Println("arg", val)
 		// 1. Above all, use global flag val
 		return val
 	}
 	if val := viper.GetString(constants.EnvServerUrl); viper.IsSet(constants.EnvServerUrl) && val != "" {
-		fmt.Println("env", val)
 		// 2. Fallback to non-empty env vars
 		return val
 	}
@@ -104,7 +103,6 @@ func checkFilePermissions(fileInfo os.FileInfo, path string) error {
 // Read reads the config file and returns its data as a map
 func Read() (map[string]string, error) {
 	path := GetConfigFilePath()
-	fmt.Println("path", path)
 
 	fileInfo, err := os.Stat(path)
 	if err != nil {
@@ -126,8 +124,6 @@ func Read() (map[string]string, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed unmarshalling config file data: %w", err)
 	}
-
-	fmt.Println("result", result)
 
 	return result, nil
 }

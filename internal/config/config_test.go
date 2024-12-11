@@ -260,6 +260,8 @@ func TestGetServerUrl(t *testing.T) {
 		},
 	}
 
+	oldConfig, errConfig := config.Read()
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// Mock viper values
@@ -270,7 +272,8 @@ func TestGetServerUrl(t *testing.T) {
 				viper.Set(constants.EnvServerUrl, tt.envVal)
 			}
 			if tt.cfgVal != "" {
-				viper.Set(constants.CfgServerUrl, tt.cfgVal)
+				err := config.Write(map[string]string{constants.CfgServerUrl: tt.cfgVal})
+				assert.NoError(t, err, "failed to write config")
 			}
 
 			got := config.GetServerUrl()
@@ -279,4 +282,14 @@ func TestGetServerUrl(t *testing.T) {
 			}
 		})
 	}
+
+	t.Cleanup(func() {
+		viper.Reset()
+
+		if errConfig != nil {
+			config.Write(oldConfig)
+		} else {
+			config.Write(map[string]string{})
+		}
+	})
 }

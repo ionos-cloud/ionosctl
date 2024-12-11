@@ -93,11 +93,6 @@ func init() {
 		"Configuration file used for authentication",
 	)
 	_ = viper.BindPFlag(constants.ArgConfig, rootPFlagSet.Lookup(constants.ArgConfig))
-	rootPFlagSet.StringP(
-		constants.ArgServerUrl, constants.ArgServerUrlShort, constants.DefaultApiURL,
-		"Override default host url",
-	)
-	_ = viper.BindPFlag(constants.ArgServerUrl, rootPFlagSet.Lookup(constants.ArgServerUrl))
 	rootPFlagSet.StringVarP(
 		&Output, constants.ArgOutput, constants.ArgOutputShort, constants.DefaultOutputFormat,
 		"Desired output format [text|json|api-json]",
@@ -110,6 +105,10 @@ func init() {
 				jsontabwriter.JSONFormat, jsontabwriter.TextFormat, jsontabwriter.APIFormat,
 			}, cobra.ShellCompDirectiveNoFileComp
 		},
+	)
+	rootCmd.GlobalFlags().StringP(
+		constants.ArgServerUrl, constants.ArgServerUrlShort, constants.DefaultApiURL,
+		"Override default host url",
 	)
 	rootPFlagSet.BoolVarP(&Quiet, constants.ArgQuiet, constants.ArgQuietShort, false, "Quiet output")
 	_ = viper.BindPFlag(constants.ArgQuiet, rootPFlagSet.Lookup(constants.ArgQuiet))
@@ -128,6 +127,9 @@ func init() {
 
 	// Add SubCommands to RootCmd
 	addCommands()
+
+	// because of Viper Shenanigans, we have to bind it last, after any commands, to avoid overwriting the default...
+	_ = viper.BindPFlag(constants.ArgServerUrl, rootCmd.GlobalFlags().Lookup(constants.ArgServerUrl))
 
 	cobra.OnInitialize(initConfig)
 }
