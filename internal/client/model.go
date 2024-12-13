@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
+	"github.com/ionos-cloud/sdk-go-bundle/shared"
 
 	sdkgoauth "github.com/ionos-cloud/sdk-go-bundle/products/auth/v2"
 	cdn "github.com/ionos-cloud/sdk-go-bundle/products/cdn/v2"
@@ -24,14 +25,12 @@ import (
 var ConfigurationPriorityRules = []Layer{
 	{constants.ArgToken, "", "", fmt.Sprintf("Global Flags (--%s)", constants.ArgToken)},
 	{
-		constants.EnvToken, constants.EnvUsername, constants.EnvPassword, fmt.Sprintf(
-			"Environment Variables (%s, %s, %s)", constants.EnvToken, constants.EnvUsername, constants.EnvPassword,
-		),
+		constants.EnvToken, constants.EnvUsername, constants.EnvPassword,
+		fmt.Sprintf("Environment Variables (%s, %s, %s)", constants.EnvToken, constants.EnvUsername, constants.EnvPassword),
 	},
 	{
-		constants.CfgToken, constants.CfgUsername, constants.CfgPassword, fmt.Sprintf(
-			"Config file settings (%s, %s, %s)", constants.CfgToken, constants.CfgUsername, constants.CfgPassword,
-		),
+		constants.CfgToken, constants.CfgUsername, constants.CfgPassword,
+		fmt.Sprintf("Config file settings (%s, %s, %s)", constants.CfgToken, constants.CfgUsername, constants.CfgPassword),
 	}, // Note: Username & Password are no longer generated in cfg file by `ionosctl login`, however we will keep this for backward compatibility.
 }
 
@@ -81,58 +80,29 @@ func appendUserAgent(userAgent string) string {
 }
 
 func newClient(name, pwd, token, hostUrl string, usedLayer *Layer) *Client {
-	clientConfig := cloudv6.NewConfiguration(name, pwd, token, hostUrl)
+	clientConfig := shared.NewConfiguration(name, pwd, token, hostUrl)
 	clientConfig.UserAgent = appendUserAgent(clientConfig.UserAgent)
-	// Set Depth Query Parameter globally
-	clientConfig.SetDepth(1)
-
-	authConfig := sdkgoauth.NewConfiguration(name, pwd, token, hostUrl)
-	authConfig.UserAgent = appendUserAgent(authConfig.UserAgent)
-
-	certManagerConfig := certmanager.NewConfiguration(name, pwd, token, hostUrl)
-	certManagerConfig.UserAgent = appendUserAgent(certManagerConfig.UserAgent)
-
-	dpConfig := dataplatform.NewConfiguration(name, pwd, token, hostUrl)
-	dpConfig.UserAgent = appendUserAgent(dpConfig.UserAgent)
-
-	registryConfig := registry.NewConfiguration(name, pwd, token, hostUrl)
-	registryConfig.UserAgent = appendUserAgent(registryConfig.UserAgent)
-
-	dnsConfig := dns.NewConfiguration(name, pwd, token, hostUrl)
-	dnsConfig.UserAgent = appendUserAgent(dnsConfig.UserAgent)
-
-	logsConfig := logsvc.NewConfiguration(name, pwd, token, hostUrl)
-	logsConfig.UserAgent = appendUserAgent(logsConfig.UserAgent)
-
-	vmascConfig := vmasc.NewConfiguration(name, pwd, token, hostUrl)
-	vmascConfig.UserAgent = appendUserAgent(vmascConfig.UserAgent)
-	// DBAAS
-	postgresConfig := postgres.NewConfiguration(name, pwd, token, hostUrl)
-	postgresConfig.UserAgent = appendUserAgent(postgresConfig.UserAgent)
-
-	mongoConfig := mongo.NewConfiguration(name, pwd, token, hostUrl)
-	mongoConfig.UserAgent = appendUserAgent(mongoConfig.UserAgent)
 
 	mariaConfig := maria.NewConfiguration(name, pwd, token, hostUrl)
 	mariaConfig.UserAgent = appendUserAgent(mariaConfig.UserAgent)
 
-	cdnConfig := cdn.NewConfiguration(name, pwd, token, hostUrl)
-	cdnConfig.UserAgent = appendUserAgent(cdnConfig.UserAgent)
+	vmascConfig := vmasc.NewConfiguration(name, pwd, token, hostUrl)
+	vmascConfig.UserAgent = appendUserAgent(vmascConfig.UserAgent)
 
 	return &Client{
 		CloudClient:          cloudv6.NewAPIClient(clientConfig),
-		AuthClient:           sdkgoauth.NewAPIClient(authConfig),
-		CertManagerClient:    certmanager.NewAPIClient(certManagerConfig),
-		DataplatformClient:   dataplatform.NewAPIClient(dpConfig),
-		RegistryClient:       registry.NewAPIClient(registryConfig),
-		DnsClient:            dns.NewAPIClient(dnsConfig),
-		LoggingServiceClient: logsvc.NewAPIClient(logsConfig),
+		AuthClient:           sdkgoauth.NewAPIClient(clientConfig),
+		CertManagerClient:    certmanager.NewAPIClient(clientConfig),
+		DataplatformClient:   dataplatform.NewAPIClient(clientConfig),
+		RegistryClient:       registry.NewAPIClient(clientConfig),
+		DnsClient:            dns.NewAPIClient(clientConfig),
+		LoggingServiceClient: logsvc.NewAPIClient(clientConfig),
 		VMAscClient:          vmasc.NewAPIClient(vmascConfig).AutoScalingGroupsApi,
 
-		PostgresClient: postgres.NewAPIClient(postgresConfig),
-		MongoClient:    mongo.NewAPIClient(mongoConfig),
+		PostgresClient: postgres.NewAPIClient(clientConfig),
+		MongoClient:    mongo.NewAPIClient(clientConfig),
 		MariaClient:    maria.NewAPIClient(mariaConfig),
-		CDNClient:      cdn.NewAPIClient(cdnConfig),
+		CDNClient:      cdn.NewAPIClient(clientConfig),
 
 		usedLayer: usedLayer,
 	}

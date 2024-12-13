@@ -47,7 +47,7 @@ require (
 
 require (
 	github.com/cpuguy83/go-md2man/v2 v2.0.4 // indirect
-	github.com/ionos-cloud/sdk-go-bundle/shared v0.1.1 // indirect
+	github.com/ionos-cloud/sdk-go-bundle/shared v0.1.1
 	github.com/pkg/term v1.2.0-beta.2 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 )
