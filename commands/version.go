@@ -11,10 +11,10 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	sdkauth "github.com/ionos-cloud/sdk-go-auth"
-	sdkcertmanager "github.com/ionos-cloud/sdk-go-cert-manager"
-	sdkpostgres "github.com/ionos-cloud/sdk-go-dbaas-postgres"
-	sdkcompute "github.com/ionos-cloud/sdk-go/v6"
+	sdkauth "github.com/ionos-cloud/sdk-go-bundle/products/auth/v2"
+	sdkcertmanager "github.com/ionos-cloud/sdk-go-bundle/products/cert/v2"
+	sdkcompute "github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
+	sdkpostgres "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v2"
 	"github.com/spf13/viper"
 )
 

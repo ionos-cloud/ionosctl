@@ -6,7 +6,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
-	ionoscloud "github.com/ionos-cloud/sdk-go-logging"
+	ionoscloud "github.com/ionos-cloud/sdk-go-bundle/products/logging/v2"
 )
 
 func ConvertLoggingServicePipelineLogToTable(log ionoscloud.PipelineResponse) ([]map[string]interface{}, error) {

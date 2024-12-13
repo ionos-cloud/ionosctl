@@ -7,7 +7,7 @@ import (
 
 	"github.com/fatih/structs"
 
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	ionoscloud "github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
 )
 
 type Label struct {

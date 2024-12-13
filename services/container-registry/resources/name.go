@@ -5,7 +5,7 @@ import (
 
 	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"
 
-	sdkgo "github.com/ionos-cloud/sdk-go-container-registry"
+	sdkgo "github.com/ionos-cloud/sdk-go-bundle/products/containerregistry/v2"
 )
 
 // NameService is a contract for the name service.

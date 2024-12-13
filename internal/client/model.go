@@ -3,20 +3,20 @@ package client
 import (
 	"fmt"
 
-	cdn "github.com/ionos-cloud/sdk-go-cdn"
-
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
-	sdkgoauth "github.com/ionos-cloud/sdk-go-auth"
-	certmanager "github.com/ionos-cloud/sdk-go-cert-manager"
-	registry "github.com/ionos-cloud/sdk-go-container-registry"
-	dataplatform "github.com/ionos-cloud/sdk-go-dataplatform"
+
+	sdkgoauth "github.com/ionos-cloud/sdk-go-bundle/products/auth/v2"
+	cdn "github.com/ionos-cloud/sdk-go-bundle/products/cdn/v2"
+	certmanager "github.com/ionos-cloud/sdk-go-bundle/products/cert/v2"
+	cloudv6 "github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
+	registry "github.com/ionos-cloud/sdk-go-bundle/products/containerregistry/v2"
+	dataplatform "github.com/ionos-cloud/sdk-go-bundle/products/dataplatform/v2"
+	mongo "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo/v2"
+	postgres "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v2"
+	dns "github.com/ionos-cloud/sdk-go-bundle/products/dns/v2"
+	logsvc "github.com/ionos-cloud/sdk-go-bundle/products/logging/v2"
 	maria "github.com/ionos-cloud/sdk-go-dbaas-mariadb"
-	mongo "github.com/ionos-cloud/sdk-go-dbaas-mongo"
-	postgres "github.com/ionos-cloud/sdk-go-dbaas-postgres"
-	dns "github.com/ionos-cloud/sdk-go-dns"
-	logsvc "github.com/ionos-cloud/sdk-go-logging"
 	vmasc "github.com/ionos-cloud/sdk-go-vm-autoscaling"
-	cloudv6 "github.com/ionos-cloud/sdk-go/v6"
 
 	"github.com/spf13/viper"
 )

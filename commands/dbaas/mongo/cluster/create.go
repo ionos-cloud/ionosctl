@@ -20,7 +20,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/convbytes"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/pointer"
-	ionoscloud "github.com/ionos-cloud/sdk-go-dbaas-mongo"
+	ionoscloud "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"golang.org/x/exp/slices"

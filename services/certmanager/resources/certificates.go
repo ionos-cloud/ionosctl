@@ -5,7 +5,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
-	sdkgo "github.com/ionos-cloud/sdk-go-cert-manager"
+	sdkgo "github.com/ionos-cloud/sdk-go-bundle/products/cert/v2"
 )
 
 type Response struct {

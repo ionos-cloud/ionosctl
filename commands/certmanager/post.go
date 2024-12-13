@@ -10,7 +10,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
-	sdkgo "github.com/ionos-cloud/sdk-go-cert-manager"
+	sdkgo "github.com/ionos-cloud/sdk-go-bundle/products/cert/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )

@@ -16,7 +16,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	authservice "github.com/ionos-cloud/ionosctl/v6/services/auth-v1"
-	sdkgoauth "github.com/ionos-cloud/sdk-go-auth"
+	sdkgoauth "github.com/ionos-cloud/sdk-go-bundle/products/auth/v2"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
