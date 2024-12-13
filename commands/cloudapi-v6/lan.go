@@ -277,7 +277,7 @@ func RunLanListAll(c *core.CommandConfig) error {
 			continue
 		}
 
-		for _, item := range *items {
+		for _, item := range items {
 			temp, err := json2table.ConvertJSONToTable("", jsonpaths.Lan, item)
 			if err != nil {
 				return fmt.Errorf("failed to convert from JSON to Table format: %w", err)

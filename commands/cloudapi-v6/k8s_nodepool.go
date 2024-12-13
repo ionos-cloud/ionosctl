@@ -426,7 +426,7 @@ func RunK8sNodePoolListAll(c *core.CommandConfig) error {
 			continue
 		}
 
-		for _, node := range *items {
+		for _, node := range items {
 			temp, err := resource2table.ConvertK8sNodepoolToTable(node)
 			if err != nil {
 				return fmt.Errorf("failed to convert from JSON to Table format: %w", err)

@@ -72,7 +72,7 @@ func ConvertLoggingServicePipelinesLogsToTable(pipelines ionoscloud.PipelineList
 
 	var logsConverted []map[string]interface{}
 
-	for _, pipeline := range *items {
+	for _, pipeline := range items {
 		logs, err := ConvertLoggingServicePipelineLogsToTable(pipeline)
 		if err != nil {
 			return nil, err

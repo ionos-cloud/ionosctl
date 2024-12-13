@@ -17,7 +17,7 @@ func ConvertContainerRegistryVulnerabilitiesToTable(vulnerabilities ionoscloud.A
 	}
 
 	var convertedVulnerabilities []map[string]interface{}
-	for _, vulnerability := range *items {
+	for _, vulnerability := range items {
 		convertedVulnerability, err := ConvertContainerRegistryVulnerabilityToTable(vulnerability)
 		if err != nil {
 			return nil, err

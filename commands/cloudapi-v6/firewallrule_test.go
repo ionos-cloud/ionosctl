@@ -77,7 +77,7 @@ var (
 	}
 	testRequestIdVar = "f2354da4-83e3-4e92-9d23-f3cb1ffecc31"
 	testResponse     = resources.Response{
-		APIResponse: ionoscloud.APIResponse{
+		APIResponse: shared.APIResponse{
 			Response: &http.Response{
 				Header: map[string][]string{
 					"Location": {"https://api.ionos.com/cloudapi/v6/requests/f2354da4-83e3-4e92-9d23-f3cb1ffecc31/status"},
@@ -87,7 +87,7 @@ var (
 		},
 	}
 	testResponseErr = resources.Response{
-		APIResponse: ionoscloud.APIResponse{
+		APIResponse: shared.APIResponse{
 			Response: &http.Response{
 				Header: map[string][]string{
 					"Location": {""},

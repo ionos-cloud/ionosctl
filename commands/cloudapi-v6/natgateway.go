@@ -276,7 +276,7 @@ func RunNatGatewayListAll(c *core.CommandConfig) error {
 			continue
 		}
 
-		for _, item := range *items {
+		for _, item := range items {
 			temp, err := json2table.ConvertJSONToTable("", jsonpaths.NatGateway, item)
 			if err != nil {
 				return fmt.Errorf("could not convert from JSON to Table format: %w", err)

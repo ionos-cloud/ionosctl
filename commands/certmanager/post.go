@@ -106,7 +106,7 @@ func CmdPost(c *core.CommandConfig) error {
 	createProperties.SetCertificateChain(certificateChain)
 	createProperties.SetPrivateKey(privateKey)
 
-	Dto := sdkgo.NewCertificatePostDtoWithDefaults()
+	Dto := sdkgo.NewCertificateCreateWithDefaults()
 
 	Dto.SetProperties(createProperties)
 

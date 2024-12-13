@@ -35,10 +35,10 @@ func (m *MockRegistriesService) EXPECT() *MockRegistriesServiceMockRecorder {
 }
 
 // Delete mocks base method.
-func (m *MockRegistriesService) Delete(id string) (*ionoscloud.APIResponse, error) {
+func (m *MockRegistriesService) Delete(id string) (*shared.APIResponse, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Delete", id)
-	ret0, _ := ret[0].(*ionoscloud.APIResponse)
+	ret0, _ := ret[0].(*shared.APIResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -50,11 +50,11 @@ func (mr *MockRegistriesServiceMockRecorder) Delete(id interface{}) *gomock.Call
 }
 
 // Get mocks base method.
-func (m *MockRegistriesService) Get(id string) (ionoscloud.RegistryResponse, *ionoscloud.APIResponse, error) {
+func (m *MockRegistriesService) Get(id string) (ionoscloud.RegistryResponse, *shared.APIResponse, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Get", id)
 	ret0, _ := ret[0].(ionoscloud.RegistryResponse)
-	ret1, _ := ret[1].(*ionoscloud.APIResponse)
+	ret1, _ := ret[1].(*shared.APIResponse)
 	ret2, _ := ret[2].(error)
 	return ret0, ret1, ret2
 }
@@ -66,11 +66,11 @@ func (mr *MockRegistriesServiceMockRecorder) Get(id interface{}) *gomock.Call {
 }
 
 // List mocks base method.
-func (m *MockRegistriesService) List(filterName string) (ionoscloud.RegistriesResponse, *ionoscloud.APIResponse, error) {
+func (m *MockRegistriesService) List(filterName string) (ionoscloud.RegistriesResponse, *shared.APIResponse, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "List", filterName)
 	ret0, _ := ret[0].(ionoscloud.RegistriesResponse)
-	ret1, _ := ret[1].(*ionoscloud.APIResponse)
+	ret1, _ := ret[1].(*shared.APIResponse)
 	ret2, _ := ret[2].(error)
 	return ret0, ret1, ret2
 }
@@ -82,11 +82,11 @@ func (mr *MockRegistriesServiceMockRecorder) List(filterName interface{}) *gomoc
 }
 
 // Patch mocks base method.
-func (m *MockRegistriesService) Patch(id string, input ionoscloud.PatchRegistryInput) (ionoscloud.RegistryResponse, *ionoscloud.APIResponse, error) {
+func (m *MockRegistriesService) Patch(id string, input ionoscloud.PatchRegistryInput) (ionoscloud.RegistryResponse, *shared.APIResponse, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Patch", id, input)
 	ret0, _ := ret[0].(ionoscloud.RegistryResponse)
-	ret1, _ := ret[1].(*ionoscloud.APIResponse)
+	ret1, _ := ret[1].(*shared.APIResponse)
 	ret2, _ := ret[2].(error)
 	return ret0, ret1, ret2
 }
@@ -98,11 +98,11 @@ func (mr *MockRegistriesServiceMockRecorder) Patch(id, input interface{}) *gomoc
 }
 
 // Post mocks base method.
-func (m *MockRegistriesService) Post(input ionoscloud.PostRegistryInput) (ionoscloud.PostRegistryOutput, *ionoscloud.APIResponse, error) {
+func (m *MockRegistriesService) Post(input ionoscloud.PostRegistryInput) (ionoscloud.PostRegistryOutput, *shared.APIResponse, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Post", input)
 	ret0, _ := ret[0].(ionoscloud.PostRegistryOutput)
-	ret1, _ := ret[1].(*ionoscloud.APIResponse)
+	ret1, _ := ret[1].(*shared.APIResponse)
 	ret2, _ := ret[2].(error)
 	return ret0, ret1, ret2
 }
@@ -114,11 +114,11 @@ func (mr *MockRegistriesServiceMockRecorder) Post(input interface{}) *gomock.Cal
 }
 
 // Put mocks base method.
-func (m *MockRegistriesService) Put(id string, input ionoscloud.PutRegistryInput) (ionoscloud.PutRegistryOutput, *ionoscloud.APIResponse, error) {
+func (m *MockRegistriesService) Put(id string, input ionoscloud.PutRegistryInput) (ionoscloud.PutRegistryOutput, *shared.APIResponse, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Put", id, input)
 	ret0, _ := ret[0].(ionoscloud.PutRegistryOutput)
-	ret1, _ := ret[1].(*ionoscloud.APIResponse)
+	ret1, _ := ret[1].(*shared.APIResponse)
 	ret2, _ := ret[2].(error)
 	return ret0, ret1, ret2
 }

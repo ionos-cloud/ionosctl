@@ -80,7 +80,7 @@ func CmdListToken(c *core.CommandConfig) error {
 	}
 
 	if items, ok := regs.GetItemsOk(); ok && items != nil {
-		for _, reg := range *items {
+		for _, reg := range items {
 			tokens, _, err := c.ContainerRegistryServices.Token().List(*reg.Id)
 			if err != nil {
 				return err

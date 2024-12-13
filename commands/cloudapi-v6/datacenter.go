@@ -474,7 +474,7 @@ func DeleteAllDatacenters(c *core.CommandConfig) error {
 func getDataCenters(datacenters resources.Datacenters) []resources.Datacenter {
 	dc := make([]resources.Datacenter, 0)
 	if items, ok := datacenters.GetItemsOk(); ok && items != nil {
-		for _, datacenter := range *items {
+		for _, datacenter := range items {
 			dc = append(dc, resources.Datacenter{Datacenter: datacenter})
 		}
 	}

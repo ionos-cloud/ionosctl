@@ -131,7 +131,7 @@ func listRecordsCmd(c *core.CommandConfig) error {
 	}
 
 	var lsConverted []map[string]interface{}
-	for _, item := range *items {
+	for _, item := range items {
 		temp, err := json2table.ConvertJSONToTable("", jsonpaths.DnsRecord, item)
 		if err != nil {
 			return fmt.Errorf("could not convert from JSON to Table format: %w", err)
@@ -170,7 +170,7 @@ func listSecondaryRecords(c *core.CommandConfig) error {
 	}
 
 	recordsConverted := make([]map[string]interface{}, len(*items))
-	for i, item := range *items {
+	for i, item := range items {
 		temp, err := json2table.ConvertJSONToTable("", jsonpaths.DnsRecord, item)
 		if err != nil {
 			return fmt.Errorf("could not convert from JSON to Table format: %w", err)

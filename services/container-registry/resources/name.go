@@ -29,7 +29,7 @@ func NewNameService(client *client2.Client, ctx context.Context) NameService {
 	}
 }
 
-// Get returns a sdkgo.APIResponse.
+// Get returns a shared.APIResponse.
 func (svc *nameService) Head(name string) (*shared.APIResponse, error) {
 	req := svc.client.NamesApi.NamesCheckUsage(svc.context, name)
 	res, err := svc.client.NamesApi.NamesCheckUsageExecute(req)

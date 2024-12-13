@@ -44,7 +44,7 @@ func ConvertK8sClustersToTable(clusters ionoscloud.KubernetesClusters) ([]map[st
 	}
 
 	var clustersConverted []map[string]interface{}
-	for _, item := range *items {
+	for _, item := range items {
 		temp, err := ConvertK8sClusterToTable(item)
 		if err != nil {
 			return nil, err
@@ -92,7 +92,7 @@ func ConvertK8sNodepoolsToTable(nodepools ionoscloud.KubernetesNodePools) ([]map
 	}
 
 	var clustersConverted []map[string]interface{}
-	for _, item := range *items {
+	for _, item := range items {
 		temp, err := ConvertK8sNodepoolToTable(item)
 		if err != nil {
 			return nil, err
@@ -111,7 +111,7 @@ func ConvertRequestsToTable(requests ionoscloud.Requests) ([]map[string]interfac
 	}
 
 	res := make([]map[string]interface{}, 0)
-	for _, item := range *items {
+	for _, item := range items {
 		temp, err := ConvertRequestToTable(item)
 		if err != nil {
 			return nil, err

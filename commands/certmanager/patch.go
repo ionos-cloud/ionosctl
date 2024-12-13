@@ -60,7 +60,7 @@ func CmdPatch(c *core.CommandConfig) error {
 
 	editProperties.SetName(name)
 
-	input := sdkgo.NewCertificatePatchDto(editProperties)
+	input := sdkgo.NewCertificatePatch(editProperties)
 	cert, _, err := c.CertificateManagerServices.Certs().Patch(id, *input)
 	if err != nil {
 		return err

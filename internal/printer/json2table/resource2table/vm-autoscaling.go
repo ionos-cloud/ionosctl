@@ -39,7 +39,7 @@ func ConvertVmAutoscalingGroupsToTable(ls ionoscloud.GroupCollection) ([]map[str
 	}
 
 	var conv []map[string]interface{}
-	for _, item := range *items {
+	for _, item := range items {
 		temp, err := ConvertVmAutoscalingGroupToTable(item)
 		if err != nil {
 			return nil, err

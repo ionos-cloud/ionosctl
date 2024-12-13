@@ -19,9 +19,9 @@ import (
 var (
 	testLogs = resources.ClusterLogs{
 		ClusterLogs: sdkgo.ClusterLogs{
-			Instances: &[]sdkgo.ClusterLogsInstancesInner{{
+			Instances: &[]sdkgo.ClusterLogsInstances{{
 				Name: &testLogVar,
-				Messages: &[]sdkgo.ClusterLogsInstancesInnerMessagesInner{
+				Messages: &[]sdkgo.ClusterLogsInstancesInnerMessages{
 					{
 						Time:    &testIonosTime,
 						Message: &testLogVar,

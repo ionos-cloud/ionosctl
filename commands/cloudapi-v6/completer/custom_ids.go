@@ -19,7 +19,7 @@ func ServersIdsCustom(datacenterId string, params resources.ListQueryParams) []s
 	}
 	ssIds := make([]string, 0)
 	if items, ok := servers.Servers.GetItemsOk(); ok && items != nil {
-		for _, item := range *items {
+		for _, item := range items {
 			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
 				ssIds = append(ssIds, *itemId)
 			}

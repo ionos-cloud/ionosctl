@@ -36,7 +36,7 @@ func CertCmd() *core.Command {
 	return certCmd
 }
 
-func printProperties(value *ionoscloud.CertificateDto, flag bool) string {
+func printProperties(value *ionoscloud.Certificate, flag bool) string {
 	if !flag {
 		return *value.Properties.Certificate
 	}
@@ -47,7 +47,7 @@ func CertificatesIds() []string {
 	client, _ := client2.Get()
 	svc := resources.NewCertsService(client, context.Background())
 	certs, _, _ := svc.List()
-	return functional.Map(*certs.GetItems(), func(dto ionoscloud.CertificateDto) string {
+	return functional.Map(*certs.GetItems(), func(dto ionoscloud.Certificate) string {
 		return *dto.GetId()
 	})
 }

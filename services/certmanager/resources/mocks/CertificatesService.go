@@ -35,10 +35,10 @@ func (m *MockCertsService) EXPECT() *MockCertsServiceMockRecorder {
 }
 
 // Delete mocks base method.
-func (m *MockCertsService) Delete(certId string) (*ionoscloud.APIResponse, error) {
+func (m *MockCertsService) Delete(certId string) (*shared.APIResponse, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Delete", certId)
-	ret0, _ := ret[0].(*ionoscloud.APIResponse)
+	ret0, _ := ret[0].(*shared.APIResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -50,11 +50,11 @@ func (mr *MockCertsServiceMockRecorder) Delete(certId interface{}) *gomock.Call 
 }
 
 // Get mocks base method.
-func (m *MockCertsService) Get(certId string) (ionoscloud.CertificateDto, *ionoscloud.APIResponse, error) {
+func (m *MockCertsService) Get(certId string) (ionoscloud.Certificate, *shared.APIResponse, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Get", certId)
-	ret0, _ := ret[0].(ionoscloud.CertificateDto)
-	ret1, _ := ret[1].(*ionoscloud.APIResponse)
+	ret0, _ := ret[0].(ionoscloud.Certificate)
+	ret1, _ := ret[1].(*shared.APIResponse)
 	ret2, _ := ret[2].(error)
 	return ret0, ret1, ret2
 }
@@ -66,11 +66,11 @@ func (mr *MockCertsServiceMockRecorder) Get(certId interface{}) *gomock.Call {
 }
 
 // GetApiVersion mocks base method.
-func (m *MockCertsService) GetApiVersion() (ionoscloud.ApiInfoDto, *ionoscloud.APIResponse, error) {
+func (m *MockCertsService) GetApiVersion() (ionoscloud.ApiInfoDto, *shared.APIResponse, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetApiVersion")
 	ret0, _ := ret[0].(ionoscloud.ApiInfoDto)
-	ret1, _ := ret[1].(*ionoscloud.APIResponse)
+	ret1, _ := ret[1].(*shared.APIResponse)
 	ret2, _ := ret[2].(error)
 	return ret0, ret1, ret2
 }
@@ -82,11 +82,11 @@ func (mr *MockCertsServiceMockRecorder) GetApiVersion() *gomock.Call {
 }
 
 // List mocks base method.
-func (m *MockCertsService) List() (ionoscloud.CertificateCollectionDto, *ionoscloud.APIResponse, error) {
+func (m *MockCertsService) List() (ionoscloud.CertificateReadList, *shared.APIResponse, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "List")
-	ret0, _ := ret[0].(ionoscloud.CertificateCollectionDto)
-	ret1, _ := ret[1].(*ionoscloud.APIResponse)
+	ret0, _ := ret[0].(ionoscloud.CertificateReadList)
+	ret1, _ := ret[1].(*shared.APIResponse)
 	ret2, _ := ret[2].(error)
 	return ret0, ret1, ret2
 }
@@ -98,11 +98,11 @@ func (mr *MockCertsServiceMockRecorder) List() *gomock.Call {
 }
 
 // Patch mocks base method.
-func (m *MockCertsService) Patch(certId string, input ionoscloud.CertificatePatchDto) (ionoscloud.CertificateDto, *ionoscloud.APIResponse, error) {
+func (m *MockCertsService) Patch(certId string, input ionoscloud.CertificatePatch) (ionoscloud.Certificate, *shared.APIResponse, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Patch", certId, input)
-	ret0, _ := ret[0].(ionoscloud.CertificateDto)
-	ret1, _ := ret[1].(*ionoscloud.APIResponse)
+	ret0, _ := ret[0].(ionoscloud.Certificate)
+	ret1, _ := ret[1].(*shared.APIResponse)
 	ret2, _ := ret[2].(error)
 	return ret0, ret1, ret2
 }
@@ -114,11 +114,11 @@ func (mr *MockCertsServiceMockRecorder) Patch(certId, input interface{}) *gomock
 }
 
 // Post mocks base method.
-func (m *MockCertsService) Post(arg0 ionoscloud.CertificatePostDto) (ionoscloud.CertificateDto, *ionoscloud.APIResponse, error) {
+func (m *MockCertsService) Post(arg0 ionoscloud.CertificateCreate) (ionoscloud.Certificate, *shared.APIResponse, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Post", arg0)
-	ret0, _ := ret[0].(ionoscloud.CertificateDto)
-	ret1, _ := ret[1].(*ionoscloud.APIResponse)
+	ret0, _ := ret[0].(ionoscloud.Certificate)
+	ret1, _ := ret[1].(*shared.APIResponse)
 	ret2, _ := ret[2].(error)
 	return ret0, ret1, ret2
 }

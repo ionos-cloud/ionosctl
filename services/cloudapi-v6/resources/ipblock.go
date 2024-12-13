@@ -87,8 +87,8 @@ func (svc *ipBlocksService) Get(ipBlockId string, params QueryParams) (*IpBlock,
 func (svc *ipBlocksService) Create(name, location string, size int32, params QueryParams) (*IpBlock, *Response, error) {
 	i := ionoscloud.IpBlock{
 		Properties: ionoscloud.IpBlockProperties{
-			Location: &location,
-			Size:     &size,
+			Location: location,
+			Size:     size,
 		},
 	}
 	if name != "" {

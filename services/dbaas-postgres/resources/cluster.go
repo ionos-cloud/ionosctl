@@ -33,7 +33,7 @@ type PatchClusterProperties struct {
 }
 
 type Response struct {
-	sdkgo.APIResponse
+	shared.APIResponse
 }
 
 // ClustersService is a wrapper around ionoscloud.Cluster
