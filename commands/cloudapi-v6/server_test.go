@@ -24,7 +24,7 @@ var (
 	// Resources
 	serverCreate = resources.Server{
 		Server: ionoscloud.Server{
-			Properties: &ionoscloud.ServerProperties{
+			Properties: ionoscloud.ServerProperties{
 				Name:             &testServerVar,
 				Cores:            &cores,
 				Ram:              &ram,
@@ -36,7 +36,7 @@ var (
 	}
 	serverCubeCreate = resources.Server{
 		Server: ionoscloud.Server{
-			Properties: &ionoscloud.ServerProperties{
+			Properties: ionoscloud.ServerProperties{
 				Name:             &testServerVar,
 				Type:             &testServerCubeType,
 				TemplateUuid:     &testServerVar,
@@ -47,7 +47,7 @@ var (
 				Volumes: &ionoscloud.AttachedVolumes{
 					Items: &[]ionoscloud.Volume{
 						{
-							Properties: &ionoscloud.VolumeProperties{
+							Properties: ionoscloud.VolumeProperties{
 								Name:        &testServerVar,
 								Bus:         &testServerVar,
 								Type:        &testVolumeType,
@@ -61,7 +61,7 @@ var (
 	}
 	serverCubeCreateImg = resources.Server{
 		Server: ionoscloud.Server{
-			Properties: &ionoscloud.ServerProperties{
+			Properties: ionoscloud.ServerProperties{
 				Name:             &testServerVar,
 				Type:             &testServerCubeType,
 				TemplateUuid:     &testServerVar,
@@ -72,7 +72,7 @@ var (
 				Volumes: &ionoscloud.AttachedVolumes{
 					Items: &[]ionoscloud.Volume{
 						{
-							Properties: &ionoscloud.VolumeProperties{
+							Properties: ionoscloud.VolumeProperties{
 								Name:          &testServerVar,
 								Bus:           &testServerVar,
 								Type:          &testVolumeType,
@@ -90,7 +90,7 @@ var (
 		Metadata: &ionoscloud.DatacenterElementMetadata{
 			State: &state,
 		},
-		Properties: &ionoscloud.ServerProperties{
+		Properties: ionoscloud.ServerProperties{
 			Name:             &testServerVar,
 			Cores:            &cores,
 			Ram:              &ram,

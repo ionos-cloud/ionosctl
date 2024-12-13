@@ -55,7 +55,7 @@ func UserCreateCmd() *core.Command {
 			clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Creating users for cluster %s", clusterId))
 
-			userProperties.Roles = &roles
+			userProperties.Roles = roles
 			u, _, err := client.Must().MongoClient.UsersApi.ClustersUsersPost(context.Background(), clusterId).
 				User(sdkgo.User{Properties: &userProperties}).Execute()
 			if err != nil {

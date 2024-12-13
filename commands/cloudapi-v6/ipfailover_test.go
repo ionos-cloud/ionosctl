@@ -21,7 +21,7 @@ var (
 	testLanIpFailover = resources.Lan{
 		Lan: ionoscloud.Lan{
 			Id: &testIpFailoverVar,
-			Properties: &ionoscloud.LanProperties{
+			Properties: ionoscloud.LanProperties{
 				IpFailover: &[]ionoscloud.IPFailover{
 					{
 						Ip:      &testIpFailoverVar,
@@ -50,7 +50,7 @@ var (
 	testLanIpFailoverGet = resources.Lan{
 		Lan: ionoscloud.Lan{
 			Id: &testIpFailoverVar,
-			Properties: &ionoscloud.LanProperties{
+			Properties: ionoscloud.LanProperties{
 				Name: &testIpFailoverVar,
 			},
 		},

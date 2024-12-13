@@ -91,7 +91,7 @@ func Resolve(ipOrId string) (string, error) {
 		if len(*ls.Items) < 1 {
 			return "", fmt.Errorf("could not find record by IP %s: got %d records", ipOrId, len(*ls.Items))
 		}
-		rId = *(*ls.Items)[0].Id
+		rId = (ls.Items)[0].Id
 	}
 	return rId, nil
 }

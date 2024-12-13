@@ -336,7 +336,7 @@ func RunBackupUnitCreate(c *core.CommandConfig) error {
 
 	newBackupUnit := resources.BackupUnit{
 		BackupUnit: ionoscloud.BackupUnit{
-			Properties: &ionoscloud.BackupUnitProperties{
+			Properties: ionoscloud.BackupUnitProperties{
 				Name:     &name,
 				Email:    &email,
 				Password: &pwd,

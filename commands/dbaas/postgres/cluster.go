@@ -496,7 +496,7 @@ func RunClusterRestore(c *core.CommandConfig) error {
 
 	input := resources.CreateRestoreRequest{
 		CreateRestoreRequest: sdkgo.CreateRestoreRequest{
-			BackupId: &backupId,
+			BackupId: backupId,
 		},
 	}
 

@@ -63,7 +63,7 @@ func MongoTemplateIds() []string {
 	if err != nil {
 		return nil
 	}
-	return functional.Map(*ls.GetItems(), func(t sdkgo.TemplateResponse) string {
-		return *t.GetId()
+	return functional.Map(ls.GetItems(), func(t sdkgo.TemplateResponse) string {
+		return t.GetId()
 	})
 }

@@ -20,7 +20,7 @@ import (
 var (
 	resourceTest = resources.Resource{
 		Resource: ionoscloud.Resource{
-			Properties: &ionoscloud.ResourceProperties{
+			Properties: ionoscloud.ResourceProperties{
 				Name:              &testResourceVar,
 				SecAuthProtection: &testResourceBoolVar,
 			},
@@ -30,7 +30,7 @@ var (
 	resourceTestGet = resources.Resource{
 		Resource: ionoscloud.Resource{
 			Id: &testResourceVar,
-			Properties: &ionoscloud.ResourceProperties{
+			Properties: ionoscloud.ResourceProperties{
 				Name:              &testResourceVar,
 				SecAuthProtection: &testResourceBoolVar,
 			},

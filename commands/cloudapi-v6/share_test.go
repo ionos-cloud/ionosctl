@@ -20,7 +20,7 @@ import (
 var (
 	shareTest = resources.GroupShare{
 		GroupShare: ionoscloud.GroupShare{
-			Properties: &ionoscloud.GroupShareProperties{
+			Properties: ionoscloud.GroupShareProperties{
 				EditPrivilege:  &testShareBoolVar,
 				SharePrivilege: &testShareBoolVar,
 			},
@@ -29,7 +29,7 @@ var (
 	shareTestGet = resources.GroupShare{
 		GroupShare: ionoscloud.GroupShare{
 			Id: &testShareVar,
-			Properties: &ionoscloud.GroupShareProperties{
+			Properties: ionoscloud.GroupShareProperties{
 				EditPrivilege:  &testShareBoolVar,
 				SharePrivilege: &testShareBoolVar,
 			},
@@ -45,7 +45,7 @@ var (
 	shareTestId = resources.GroupShare{
 		GroupShare: ionoscloud.GroupShare{
 			Id: &testShareVar,
-			Properties: &ionoscloud.GroupShareProperties{
+			Properties: ionoscloud.GroupShareProperties{
 				EditPrivilege:  &testShareBoolVar,
 				SharePrivilege: &testShareBoolVar,
 			},

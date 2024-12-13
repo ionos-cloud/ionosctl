@@ -63,7 +63,7 @@ func runUpdateCmd(c *core.CommandConfig) error {
 		context.Background(),
 		clusterId,
 		username,
-	).UsersPatchRequest(ionoscloud.UsersPatchRequest{Properties: &ionoscloud.PatchUserProperties{Password: &password}}).Execute()
+	).UsersPatchRequest(ionoscloud.UsersPatchRequest{Properties: ionoscloud.PatchUserProperties{Password: &password}}).Execute()
 	if err != nil {
 		return err
 	}

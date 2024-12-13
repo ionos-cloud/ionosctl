@@ -21,7 +21,7 @@ import (
 var (
 	testInputForwardingRule = resources.NetworkLoadBalancerForwardingRule{
 		NetworkLoadBalancerForwardingRule: ionoscloud.NetworkLoadBalancerForwardingRule{
-			Properties: &ionoscloud.NetworkLoadBalancerForwardingRuleProperties{
+			Properties: ionoscloud.NetworkLoadBalancerForwardingRuleProperties{
 				Name:         &testNlbForwardingRuleVar,
 				Algorithm:    &testNlbForwardingRuleAlgorithm,
 				Protocol:     &testNlbForwardingRuleProtocol,

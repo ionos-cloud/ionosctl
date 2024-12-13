@@ -22,7 +22,7 @@ type LanProperties struct {
 }
 
 type LanPost struct {
-	ionoscloud.LanPost
+	ionoscloud.Lan
 }
 
 type Lans struct {
@@ -98,7 +98,7 @@ func (ls *lansService) Get(datacenterId, lanId string, params QueryParams) (*Lan
 }
 
 func (ls *lansService) Create(datacenterId string, input LanPost, params QueryParams) (*LanPost, *Response, error) {
-	req := ls.client.LANsApi.DatacentersLansPost(ls.context, datacenterId).Lan(input.LanPost)
+	req := ls.client.LANsApi.DatacentersLansPost(ls.context, datacenterId).Lan(input.Lan)
 	if !structs.IsZero(params) {
 		if params.Depth != nil {
 			req = req.Depth(*params.Depth)

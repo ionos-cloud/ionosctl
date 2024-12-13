@@ -36,7 +36,7 @@ var (
 	testImageCdRoms = resources.Image{
 		Image: ionoscloud.Image{
 			Id: &testCdromVar,
-			Properties: &ionoscloud.ImageProperties{
+			Properties: ionoscloud.ImageProperties{
 				Name:         &testImageVar,
 				Location:     &testImageVar,
 				Description:  &testImageVar,

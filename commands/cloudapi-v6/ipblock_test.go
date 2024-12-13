@@ -21,7 +21,7 @@ import (
 var (
 	testIpBlock = ionoscloud.IpBlock{
 		Id: &testIpBlockVar,
-		Properties: &ionoscloud.IpBlockProperties{
+		Properties: ionoscloud.IpBlockProperties{
 			Location: &testIpBlockLocation,
 			Size:     &testIpBlockSize,
 			Name:     &testIpBlockVar,

@@ -21,7 +21,7 @@ import (
 var (
 	groupTest = resources.Group{
 		Group: ionoscloud.Group{
-			Properties: &ionoscloud.GroupProperties{
+			Properties: ionoscloud.GroupProperties{
 				Name:                        &testGroupVar,
 				CreateDataCenter:            &testGroupBoolVar,
 				CreateSnapshot:              &testGroupBoolVar,
@@ -45,7 +45,7 @@ var (
 	groupTestId = resources.Group{
 		Group: ionoscloud.Group{
 			Id: &testGroupVar,
-			Properties: &ionoscloud.GroupProperties{
+			Properties: ionoscloud.GroupProperties{
 				Name:                 &testGroupVar,
 				CreateDataCenter:     &testGroupBoolVar,
 				CreateSnapshot:       &testGroupBoolVar,
@@ -70,7 +70,7 @@ var (
 	}
 	groupTestNew = resources.Group{
 		Group: ionoscloud.Group{
-			Properties: &ionoscloud.GroupProperties{
+			Properties: ionoscloud.GroupProperties{
 				Name:                        &testGroupNewVar,
 				CreateDataCenter:            &testGroupBoolNewVar,
 				CreateSnapshot:              &testGroupBoolNewVar,

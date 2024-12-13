@@ -21,7 +21,7 @@ import (
 var (
 	natgatewayRuleTest = resources.NatGatewayRule{
 		NatGatewayRule: ionoscloud.NatGatewayRule{
-			Properties: &ionoscloud.NatGatewayRuleProperties{
+			Properties: ionoscloud.NatGatewayRuleProperties{
 				Name:         &testNatGatewayRuleVar,
 				PublicIp:     &testNatGatewayRuleVar,
 				Protocol:     &testNatGatewayRuleProtocol,

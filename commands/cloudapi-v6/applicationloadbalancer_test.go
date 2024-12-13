@@ -21,7 +21,7 @@ import (
 var (
 	applicationloadbalancerTest = resources.ApplicationLoadBalancer{
 		ApplicationLoadBalancer: ionoscloud.ApplicationLoadBalancer{
-			Properties: &ionoscloud.ApplicationLoadBalancerProperties{
+			Properties: ionoscloud.ApplicationLoadBalancerProperties{
 				Name:         &testApplicationLoadBalancerVar,
 				Ips:          &[]string{testApplicationLoadBalancerVar},
 				TargetLan:    &testApplicationLoadBalancerIntVar,

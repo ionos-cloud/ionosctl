@@ -8,7 +8,7 @@ import (
 )
 
 type RepositoryService interface {
-	Delete(regId string, name string) (*sdkgo.APIResponse, error)
+	Delete(regId string, name string) (*shared.APIResponse, error)
 }
 
 type repositoryService struct {
@@ -25,7 +25,7 @@ func NewRepositoryService(client *client2.Client, ctx context.Context) Repositor
 	}
 }
 
-func (svc *repositoryService) Delete(regId string, name string) (*sdkgo.APIResponse, error) {
+func (svc *repositoryService) Delete(regId string, name string) (*shared.APIResponse, error) {
 	req := svc.client.RepositoriesApi.RegistriesRepositoriesDelete(svc.context, regId, name)
 	res, err := svc.client.RepositoriesApi.RegistriesRepositoriesDeleteExecute(req)
 	return res, err

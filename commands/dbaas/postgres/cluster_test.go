@@ -25,33 +25,33 @@ var (
 	testCreateClusterRequest = resources.CreateClusterRequest{
 		CreateClusterRequest: sdkgo.CreateClusterRequest{
 			Properties: &sdkgo.CreateClusterProperties{
-				DisplayName:         &testClusterVar,
-				PostgresVersion:     &testClusterVar,
-				Location:            &testClusterVar,
+				DisplayName:         testClusterVar,
+				PostgresVersion:     testClusterVar,
+				Location:            testClusterVar,
 				BackupLocation:      &testClusterBackupLocation,
-				Instances:           &testClusterIntVar,
-				Ram:                 &testClusterIntVar,
-				Cores:               &testClusterIntVar,
-				StorageSize:         &testClusterIntVar,
-				SynchronizationMode: &testSyncModeVar,
+				Instances:           testClusterIntVar,
+				Ram:                 testClusterIntVar,
+				Cores:               testClusterIntVar,
+				StorageSize:         testClusterIntVar,
+				SynchronizationMode: testSyncModeVar,
 				StorageType:         &testClusterStorageTypeVar,
-				Connections: &[]sdkgo.Connection{
+				Connections: []sdkgo.Connection{
 					{
-						DatacenterId: &testClusterVar,
-						LanId:        &testClusterVar,
-						Cidr:         &testClusterVar,
+						DatacenterId: testClusterVar,
+						LanId:        testClusterVar,
+						Cidr:         testClusterVar,
 					},
 				},
 				MaintenanceWindow: &sdkgo.MaintenanceWindow{
-					Time:         &testClusterVar,
-					DayOfTheWeek: (*sdkgo.DayOfTheWeek)(&testClusterVar),
+					Time:         testClusterVar,
+					DayOfTheWeek: (sdkgo.DayOfTheWeek)(testClusterVar),
 				},
-				Credentials: &sdkgo.DBUser{
-					Username: &testClusterVar,
-					Password: &testClusterVar,
+				Credentials: sdkgo.DBUser{
+					Username: testClusterVar,
+					Password: testClusterVar,
 				},
 				FromBackup: &sdkgo.CreateRestoreRequest{
-					BackupId:           &testClusterVar,
+					BackupId:           testClusterVar,
 					RecoveryTargetTime: &testIonosTime,
 				},
 			},
@@ -60,33 +60,33 @@ var (
 	testCreateClusterRequestSSDPremium = resources.CreateClusterRequest{
 		CreateClusterRequest: sdkgo.CreateClusterRequest{
 			Properties: &sdkgo.CreateClusterProperties{
-				DisplayName:         &testClusterVar,
-				PostgresVersion:     &testClusterVar,
-				Location:            &testClusterVar,
+				DisplayName:         testClusterVar,
+				PostgresVersion:     testClusterVar,
+				Location:            testClusterVar,
 				BackupLocation:      &testClusterBackupLocation,
-				Instances:           &testClusterIntVar,
-				Ram:                 &testClusterIntVar,
-				Cores:               &testClusterIntVar,
-				StorageSize:         &testClusterIntVar,
-				SynchronizationMode: &testSyncModeVar,
+				Instances:           testClusterIntVar,
+				Ram:                 testClusterIntVar,
+				Cores:               testClusterIntVar,
+				StorageSize:         testClusterIntVar,
+				SynchronizationMode: testSyncModeVar,
 				StorageType:         &testClusterStorageTypeSSDPremiumVar,
-				Connections: &[]sdkgo.Connection{
+				Connections: []sdkgo.Connection{
 					{
-						DatacenterId: &testClusterVar,
-						LanId:        &testClusterVar,
-						Cidr:         &testClusterVar,
+						DatacenterId: testClusterVar,
+						LanId:        testClusterVar,
+						Cidr:         testClusterVar,
 					},
 				},
 				MaintenanceWindow: &sdkgo.MaintenanceWindow{
-					Time:         &testClusterVar,
-					DayOfTheWeek: (*sdkgo.DayOfTheWeek)(&testClusterVar),
+					Time:         testClusterVar,
+					DayOfTheWeek: (sdkgo.DayOfTheWeek)(testClusterVar),
 				},
-				Credentials: &sdkgo.DBUser{
-					Username: &testClusterVar,
-					Password: &testClusterVar,
+				Credentials: sdkgo.DBUser{
+					Username: testClusterVar,
+					Password: testClusterVar,
 				},
 				FromBackup: &sdkgo.CreateRestoreRequest{
-					BackupId:           &testClusterVar,
+					BackupId:           testClusterVar,
 					RecoveryTargetTime: &testIonosTime,
 				},
 			},
@@ -95,33 +95,33 @@ var (
 	testCreateClusterRequestSSDStandard = resources.CreateClusterRequest{
 		CreateClusterRequest: sdkgo.CreateClusterRequest{
 			Properties: &sdkgo.CreateClusterProperties{
-				DisplayName:         &testClusterVar,
-				PostgresVersion:     &testClusterVar,
-				Location:            &testClusterVar,
+				DisplayName:         testClusterVar,
+				PostgresVersion:     testClusterVar,
+				Location:            testClusterVar,
 				BackupLocation:      &testClusterBackupLocation,
-				Instances:           &testClusterIntVar,
-				Ram:                 &testClusterIntVar,
-				Cores:               &testClusterIntVar,
-				StorageSize:         &testClusterIntVar,
-				SynchronizationMode: &testSyncModeVar,
+				Instances:           testClusterIntVar,
+				Ram:                 testClusterIntVar,
+				Cores:               testClusterIntVar,
+				StorageSize:         testClusterIntVar,
+				SynchronizationMode: testSyncModeVar,
 				StorageType:         &testClusterStorageTypeSSDStandardVar,
-				Connections: &[]sdkgo.Connection{
+				Connections: []sdkgo.Connection{
 					{
-						DatacenterId: &testClusterVar,
-						LanId:        &testClusterVar,
-						Cidr:         &testClusterVar,
+						DatacenterId: testClusterVar,
+						LanId:        testClusterVar,
+						Cidr:         testClusterVar,
 					},
 				},
 				MaintenanceWindow: &sdkgo.MaintenanceWindow{
-					Time:         &testClusterVar,
-					DayOfTheWeek: (*sdkgo.DayOfTheWeek)(&testClusterVar),
+					Time:         testClusterVar,
+					DayOfTheWeek: (sdkgo.DayOfTheWeek)(testClusterVar),
 				},
-				Credentials: &sdkgo.DBUser{
-					Username: &testClusterVar,
-					Password: &testClusterVar,
+				Credentials: sdkgo.DBUser{
+					Username: testClusterVar,
+					Password: testClusterVar,
 				},
 				FromBackup: &sdkgo.CreateRestoreRequest{
-					BackupId:           &testClusterVar,
+					BackupId:           testClusterVar,
 					RecoveryTargetTime: &testIonosTime,
 				},
 			},
@@ -136,15 +136,15 @@ var (
 				DisplayName: &testClusterNewVar,
 				Instances:   &testClusterIntNewVar,
 				MaintenanceWindow: &sdkgo.MaintenanceWindow{
-					Time:         &testClusterNewVar,
-					DayOfTheWeek: (*sdkgo.DayOfTheWeek)(&testClusterNewVar),
+					Time:         testClusterNewVar,
+					DayOfTheWeek: (sdkgo.DayOfTheWeek)(testClusterNewVar),
 				},
 				PostgresVersion: &testClusterNewVar,
-				Connections: &[]sdkgo.Connection{
+				Connections: []sdkgo.Connection{
 					{
-						DatacenterId: &testClusterNewVar,
-						LanId:        &testClusterNewVar,
-						Cidr:         &testClusterNewVar,
+						DatacenterId: testClusterNewVar,
+						LanId:        testClusterNewVar,
+						Cidr:         testClusterNewVar,
 					},
 				},
 			},
@@ -152,7 +152,7 @@ var (
 	}
 	testCreateRestoreRequest = resources.CreateRestoreRequest{
 		CreateRestoreRequest: sdkgo.CreateRestoreRequest{
-			BackupId:           &testClusterVar,
+			BackupId:           testClusterVar,
 			RecoveryTargetTime: &testIonosTime,
 		},
 	}
@@ -342,7 +342,7 @@ var (
 	testVdcGet = cloudapiv6resources.Datacenter{
 		Datacenter: ionoscloud.Datacenter{
 			Id: &testClusterVar,
-			Properties: &ionoscloud.DatacenterProperties{
+			Properties: ionoscloud.DatacenterProperties{
 				Location: &testClusterVar,
 			},
 		},

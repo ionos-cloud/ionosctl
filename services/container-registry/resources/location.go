@@ -8,7 +8,7 @@ import (
 )
 
 type LocationsService interface {
-	Get() (sdkgo.LocationsResponse, *sdkgo.APIResponse, error)
+	Get() (sdkgo.LocationsResponse, *shared.APIResponse, error)
 }
 
 type locationsService struct {
@@ -25,7 +25,7 @@ func NewLocationsService(client *client2.Client, ctx context.Context) LocationsS
 	}
 }
 
-func (svc *locationsService) Get() (sdkgo.LocationsResponse, *sdkgo.APIResponse, error) {
+func (svc *locationsService) Get() (sdkgo.LocationsResponse, *shared.APIResponse, error) {
 	req := svc.client.LocationsApi.LocationsGet(svc.context)
 	loc, res, err := svc.client.LocationsApi.LocationsGetExecute(req)
 	return loc, res, err

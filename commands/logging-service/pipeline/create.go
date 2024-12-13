@@ -109,7 +109,7 @@ func createFromFlags(c *core.CommandConfig) error {
 
 	pipeline, _, err := client.Must().LoggingServiceClient.PipelinesApi.PipelinesPost(context.Background()).Pipeline(
 		ionoscloud.PipelineCreate{
-			Properties: &ionoscloud.PipelineCreateProperties{
+			Properties: ionoscloud.PipelineCreateProperties{
 				Name: &name,
 				Logs: &[]ionoscloud.PipelineCreatePropertiesLogs{
 					{

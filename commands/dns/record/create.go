@@ -48,7 +48,7 @@ func ZonesRecordsPostCmd() *core.Command {
 
 			rec, _, err := client.Must().DnsClient.RecordsApi.ZonesRecordsPut(context.Background(), zoneId, uuidgen.Must()).
 				RecordEnsure(dns.RecordEnsure{
-					Properties: &input,
+					Properties: input,
 				}).Execute()
 			if err != nil {
 				return err

@@ -23,7 +23,7 @@ var (
 	testImage = resources.Image{
 		Image: ionoscloud.Image{
 			Id: &testImageVar,
-			Properties: &ionoscloud.ImageProperties{
+			Properties: ionoscloud.ImageProperties{
 				Name:         &testImageVar,
 				Location:     &testImageVar,
 				Description:  &testImageVar,

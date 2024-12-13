@@ -24,7 +24,7 @@ var (
 	testRule = resources.FirewallRule{
 		FirewallRule: ionoscloud.FirewallRule{
 			Id: &testFirewallRuleVar,
-			Properties: &ionoscloud.FirewallruleProperties{
+			Properties: ionoscloud.FirewallruleProperties{
 				Name:           &testFirewallRuleVar,
 				Protocol:       &testFirewallRuleProtocol,
 				SourceMac:      &testFirewallRuleVar,

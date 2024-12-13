@@ -82,7 +82,7 @@ var (
 	testAlbRuleHttpRuleGet = resources.ApplicationLoadBalancerForwardingRule{
 		ApplicationLoadBalancerForwardingRule: ionoscloud.ApplicationLoadBalancerForwardingRule{
 			Id:         &testAlbRuleHttpRuleVar,
-			Properties: &ionoscloud.ApplicationLoadBalancerForwardingRuleProperties{},
+			Properties: ionoscloud.ApplicationLoadBalancerForwardingRuleProperties{},
 		},
 	}
 	testAlbRuleHttpRuleForwardGetUpdated = resources.ApplicationLoadBalancerForwardingRule{

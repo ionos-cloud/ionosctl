@@ -22,7 +22,7 @@ var (
 	publicLan    = true
 	publicNewLan = false
 	lanPostTest  = ionoscloud.LanPost{
-		Properties: &ionoscloud.LanPropertiesPost{
+		Properties: ionoscloud.LanPropertiesPost{
 			Name:       &testLanVar,
 			IpFailover: nil,
 			Pcc:        &testLanVar,
@@ -36,7 +36,7 @@ var (
 	}
 	l = ionoscloud.Lan{
 		Id: &testLanVar,
-		Properties: &ionoscloud.LanProperties{
+		Properties: ionoscloud.LanProperties{
 			Name: &testLanVar,
 			Pcc:  &testLanVar,
 		},
@@ -51,7 +51,7 @@ var (
 	lanNew = resources.Lan{
 		Lan: ionoscloud.Lan{
 			Id: &testLanVar,
-			Properties: &ionoscloud.LanProperties{
+			Properties: ionoscloud.LanProperties{
 				Name:       lanProperties.LanProperties.Name,
 				Public:     lanProperties.LanProperties.Public,
 				IpFailover: nil,

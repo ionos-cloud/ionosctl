@@ -309,7 +309,7 @@ func RunUserS3KeyUpdate(c *core.CommandConfig) error {
 
 	newKey := resources.S3Key{
 		S3Key: ionoscloud.S3Key{
-			Properties: &ionoscloud.S3KeyProperties{
+			Properties: ionoscloud.S3KeyProperties{
 				Active: &active,
 			},
 		},

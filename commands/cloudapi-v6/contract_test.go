@@ -43,7 +43,7 @@ var (
 	}
 	testContract = resources.Contract{
 		Contract: ionoscloud.Contract{
-			Properties: &ionoscloud.ContractProperties{
+			Properties: ionoscloud.ContractProperties{
 				ContractNumber: &testContractInt64,
 				Owner:          &testContractVar,
 				Status:         &testContractVar,

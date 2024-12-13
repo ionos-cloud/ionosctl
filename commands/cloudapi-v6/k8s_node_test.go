@@ -21,7 +21,7 @@ import (
 var (
 	nodeTest = resources.K8sNode{
 		KubernetesNode: ionoscloud.KubernetesNode{
-			Properties: &ionoscloud.KubernetesNodeProperties{
+			Properties: ionoscloud.KubernetesNodeProperties{
 				Name:       &testNodeVar,
 				K8sVersion: &testNodeVar,
 				PublicIP:   &testNodeVar,
@@ -32,7 +32,7 @@ var (
 	nodeTestId = resources.K8sNode{
 		KubernetesNode: ionoscloud.KubernetesNode{
 			Id: &testNodeVar,
-			Properties: &ionoscloud.KubernetesNodeProperties{
+			Properties: ionoscloud.KubernetesNodeProperties{
 				Name:       &testNodeVar,
 				K8sVersion: &testNodeVar,
 				PublicIP:   &testNodeVar,

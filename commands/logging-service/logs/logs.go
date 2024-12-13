@@ -113,7 +113,7 @@ func convertResponsePipelineToPatchRequest(pipeline ionoscloud.Pipeline) (*ionos
 	}
 
 	patch := ionoscloud.PipelinePatch{
-		Properties: &ionoscloud.PipelinePatchProperties{
+		Properties: ionoscloud.PipelinePatchProperties{
 			Name: properties.Name,
 			Logs: &newLogs,
 		},

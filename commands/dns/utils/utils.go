@@ -37,10 +37,10 @@ func ZoneResolve(nameOrId string) (string, error) {
 		if errFindZoneByName != nil {
 			return "", fmt.Errorf("failed finding a zone by name: %w", errFindZoneByName)
 		}
-		if len(*ls.Items) < 1 {
-			return "", fmt.Errorf("could not find zone by name %s: got %d zones", nameOrId, len(*ls.Items))
+		if len(ls.Items) < 1 {
+			return "", fmt.Errorf("could not find zone by name %s: got %d zones", nameOrId, len(ls.Items))
 		}
-		zId = *(*ls.Items)[0].Id
+		zId = (ls.Items)[0].Id
 	}
 	return zId, nil
 }

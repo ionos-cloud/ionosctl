@@ -371,7 +371,7 @@ func RunShareCreate(c *core.CommandConfig) error {
 
 	input := resources.GroupShare{
 		GroupShare: ionoscloud.GroupShare{
-			Properties: &ionoscloud.GroupShareProperties{
+			Properties: ionoscloud.GroupShareProperties{
 				EditPrivilege:  &editPrivilege,
 				SharePrivilege: &sharePrivilege,
 			},

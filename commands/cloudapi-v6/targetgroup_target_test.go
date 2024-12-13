@@ -34,7 +34,7 @@ var (
 	testTargetGroupTargetGet = resources.TargetGroup{
 		TargetGroup: ionoscloud.TargetGroup{
 			Id:         &testTargetGroupTargetVar,
-			Properties: &ionoscloud.TargetGroupProperties{},
+			Properties: ionoscloud.TargetGroupProperties{},
 		},
 	}
 	testTargetGroupTargetGetUpdated = resources.TargetGroup{

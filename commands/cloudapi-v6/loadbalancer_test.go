@@ -23,7 +23,7 @@ var (
 	dhcpLoadbalancerNew = false
 	loadb               = ionoscloud.Loadbalancer{
 		Id: &testLoadbalancerVar,
-		Properties: &ionoscloud.LoadbalancerProperties{
+		Properties: ionoscloud.LoadbalancerProperties{
 			Name: &testLoadbalancerVar,
 			Dhcp: &dhcpLoadbalancer,
 			Ip:   &testLoadbalancerVar,

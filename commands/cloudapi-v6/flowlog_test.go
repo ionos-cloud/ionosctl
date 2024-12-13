@@ -23,7 +23,7 @@ var (
 	testFlowLog = resources.FlowLog{
 		FlowLog: ionoscloud.FlowLog{
 			Id: &testFlowLogVar,
-			Properties: &ionoscloud.FlowLogProperties{
+			Properties: ionoscloud.FlowLogProperties{
 				Name:      &testFlowLogVar,
 				Action:    &testFlowLogUpperVar,
 				Direction: &testFlowLogUpperVar,

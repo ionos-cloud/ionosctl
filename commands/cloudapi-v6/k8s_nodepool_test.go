@@ -21,7 +21,7 @@ import (
 var (
 	nodepoolTestPost = resources.K8sNodePoolForPost{
 		KubernetesNodePoolForPost: ionoscloud.KubernetesNodePoolForPost{
-			Properties: &ionoscloud.KubernetesNodePoolPropertiesForPost{
+			Properties: ionoscloud.KubernetesNodePoolPropertiesForPost{
 				Name:             &testNodepoolVar,
 				NodeCount:        &testNodepoolIntVar,
 				DatacenterId:     &testNodepoolVar,
@@ -45,7 +45,7 @@ var (
 	}
 	nodepoolTestPrivatePost = resources.K8sNodePoolForPost{
 		KubernetesNodePoolForPost: ionoscloud.KubernetesNodePoolForPost{
-			Properties: &ionoscloud.KubernetesNodePoolPropertiesForPost{
+			Properties: ionoscloud.KubernetesNodePoolPropertiesForPost{
 				Name:             &testNodepoolVar,
 				NodeCount:        &testNodepoolIntVar,
 				DatacenterId:     &testNodepoolVar,
@@ -61,7 +61,7 @@ var (
 	}
 	nodepoolTest = resources.K8sNodePool{
 		KubernetesNodePool: ionoscloud.KubernetesNodePool{
-			Properties: &ionoscloud.KubernetesNodePoolProperties{
+			Properties: ionoscloud.KubernetesNodePoolProperties{
 				Name:             &testNodepoolVar,
 				NodeCount:        &testNodepoolIntVar,
 				DatacenterId:     &testNodepoolVar,
@@ -85,7 +85,7 @@ var (
 	}
 	nodepoolTestPrivate = resources.K8sNodePool{
 		KubernetesNodePool: ionoscloud.KubernetesNodePool{
-			Properties: &ionoscloud.KubernetesNodePoolProperties{
+			Properties: ionoscloud.KubernetesNodePoolProperties{
 				Name:             &testNodepoolVar,
 				NodeCount:        &testNodepoolIntVar,
 				DatacenterId:     &testNodepoolVar,
@@ -111,7 +111,7 @@ var (
 	nodepoolTestId = resources.K8sNodePool{
 		KubernetesNodePool: ionoscloud.KubernetesNodePool{
 			Id: &testNodepoolVar,
-			Properties: &ionoscloud.KubernetesNodePoolProperties{
+			Properties: ionoscloud.KubernetesNodePoolProperties{
 				Name:             &testNodepoolVar,
 				NodeCount:        &testNodepoolIntVar,
 				DatacenterId:     &testNodepoolVar,
@@ -137,7 +137,7 @@ var (
 	nodepoolTestGet = resources.K8sNodePool{
 		KubernetesNodePool: ionoscloud.KubernetesNodePool{
 			Id: &testNodepoolVar,
-			Properties: &ionoscloud.KubernetesNodePoolProperties{
+			Properties: ionoscloud.KubernetesNodePoolProperties{
 				Name:                     &testNodepoolVar,
 				NodeCount:                &testNodepoolIntVar,
 				DatacenterId:             &testNodepoolVar,
@@ -173,7 +173,7 @@ var (
 	nodepoolTestGetNew = resources.K8sNodePool{
 		KubernetesNodePool: ionoscloud.KubernetesNodePool{
 			Id: &testNodepoolVar,
-			Properties: &ionoscloud.KubernetesNodePoolProperties{
+			Properties: ionoscloud.KubernetesNodePoolProperties{
 				Name:                     &testNodepoolVar,
 				NodeCount:                &testNodepoolIntVar,
 				DatacenterId:             &testNodepoolVar,
@@ -219,7 +219,7 @@ var (
 	nodepoolTestNew = resources.K8sNodePool{
 		KubernetesNodePool: ionoscloud.KubernetesNodePool{
 			Id: &testNodepoolVar,
-			Properties: &ionoscloud.KubernetesNodePoolProperties{
+			Properties: ionoscloud.KubernetesNodePoolProperties{
 				Name:       &testNodepoolVar,
 				K8sVersion: &testNodepoolNewVar,
 				NodeCount:  &testNodepoolIntNewVar,
@@ -249,7 +249,7 @@ var (
 	}
 	nodepoolTestUpdateNew = resources.K8sNodePoolForPut{
 		KubernetesNodePoolForPut: ionoscloud.KubernetesNodePoolForPut{
-			Properties: &ionoscloud.KubernetesNodePoolPropertiesForPut{
+			Properties: ionoscloud.KubernetesNodePoolPropertiesForPut{
 				K8sVersion: &testNodepoolNewVar,
 				NodeCount:  &testNodepoolIntNewVar,
 				AutoScaling: &ionoscloud.KubernetesAutoScaling{
@@ -279,7 +279,7 @@ var (
 	nodepoolTestOld = resources.K8sNodePool{
 		KubernetesNodePool: ionoscloud.KubernetesNodePool{
 			Id: &testNodepoolVar,
-			Properties: &ionoscloud.KubernetesNodePoolProperties{
+			Properties: ionoscloud.KubernetesNodePoolProperties{
 				Name:       &testNodepoolVar,
 				NodeCount:  &testNodepoolIntVar,
 				K8sVersion: &testNodepoolVar,
@@ -288,7 +288,7 @@ var (
 	}
 	nodepoolTestUpdateOld = resources.K8sNodePoolForPut{
 		KubernetesNodePoolForPut: ionoscloud.KubernetesNodePoolForPut{
-			Properties: &ionoscloud.KubernetesNodePoolPropertiesForPut{
+			Properties: ionoscloud.KubernetesNodePoolPropertiesForPut{
 				NodeCount:  &testNodepoolIntVar,
 				K8sVersion: &testNodepoolVar,
 			},

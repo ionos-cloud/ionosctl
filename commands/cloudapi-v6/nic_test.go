@@ -27,7 +27,7 @@ var (
 	ipsNic         = []string{"x.x.x.x"}
 	n              = ionoscloud.Nic{
 		Id: &testNicVar,
-		Properties: &ionoscloud.NicProperties{
+		Properties: ionoscloud.NicProperties{
 			Name:           &testNicVar,
 			Lan:            &lanNicId,
 			Dhcp:           &dhcpNic,
@@ -51,7 +51,7 @@ var (
 	}
 	nicLoadBalancer = ionoscloud.Nic{
 		Id: &testLoadbalancerVar,
-		Properties: &ionoscloud.NicProperties{
+		Properties: ionoscloud.NicProperties{
 			Name:           &testNicVar,
 			Lan:            &lanNicId,
 			Dhcp:           &dhcpNic,
@@ -77,7 +77,7 @@ var (
 	nicNew = resources.Nic{
 		Nic: ionoscloud.Nic{
 			Id: &testNicVar,
-			Properties: &ionoscloud.NicProperties{
+			Properties: ionoscloud.NicProperties{
 				Name:           nicProperties.NicProperties.Name,
 				Lan:            nicProperties.NicProperties.Lan,
 				Dhcp:           nicProperties.NicProperties.Dhcp,
@@ -88,7 +88,7 @@ var (
 	}
 	testNicCreate = resources.Nic{
 		Nic: ionoscloud.Nic{
-			Properties: &ionoscloud.NicProperties{
+			Properties: ionoscloud.NicProperties{
 				Name:           &testNicVar,
 				Lan:            &lanNicId,
 				Dhcp:           &dhcpNic,

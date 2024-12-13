@@ -37,7 +37,7 @@ var (
 	testNlbRuleTargetGet = resources.NetworkLoadBalancerForwardingRule{
 		NetworkLoadBalancerForwardingRule: ionoscloud.NetworkLoadBalancerForwardingRule{
 			Id:         &testNlbRuleTargetVar,
-			Properties: &ionoscloud.NetworkLoadBalancerForwardingRuleProperties{},
+			Properties: ionoscloud.NetworkLoadBalancerForwardingRuleProperties{},
 		},
 	}
 	testNlbRuleTargetGetUpdated = resources.NetworkLoadBalancerForwardingRule{
@@ -52,7 +52,7 @@ var (
 	}
 	testNlbRuleTarget = ionoscloud.NetworkLoadBalancerForwardingRule{
 		Id: &testNlbRuleTargetVar,
-		Properties: &ionoscloud.NetworkLoadBalancerForwardingRuleProperties{
+		Properties: ionoscloud.NetworkLoadBalancerForwardingRuleProperties{
 			Name:    &testNlbRuleTargetVar,
 			Targets: &[]ionoscloud.NetworkLoadBalancerForwardingRuleTarget{testTarget, testTarget},
 		},

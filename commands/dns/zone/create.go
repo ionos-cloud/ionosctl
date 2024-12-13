@@ -49,7 +49,7 @@ func ZonesPostCmd() *core.Command {
 			}
 
 			z, _, err := client.Must().DnsClient.ZonesApi.ZonesPut(context.Background(), uuidgen.Must()).
-				ZoneEnsure(dns.ZoneEnsure{Properties: &input}).Execute()
+				ZoneEnsure(dns.ZoneEnsure{Properties: input}).Execute()
 			if err != nil {
 				return err
 			}

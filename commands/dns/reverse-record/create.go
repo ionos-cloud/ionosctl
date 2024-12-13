@@ -35,9 +35,9 @@ func Create() *core.Command {
 		CmdRun: func(c *core.CommandConfig) error {
 			rec, _, err := client.Must().DnsClient.ReverseRecordsApi.ReverserecordsPut(context.Background(), uuidgen.Must()).
 				ReverseRecordEnsure(dns.ReverseRecordEnsure{
-					Properties: &dns.ReverseRecord{
-						Name:        pointer.From(viper.GetString(core.GetFlagName(c.NS, constants.FlagName))),
-						Ip:          pointer.From(viper.GetString(core.GetFlagName(c.NS, constants.FlagIp))),
+					Properties: dns.ReverseRecord{
+						Name:        viper.GetString(core.GetFlagName(c.NS, constants.FlagName)),
+						Ip:          viper.GetString(core.GetFlagName(c.NS, constants.FlagIp)),
 						Description: pointer.From(viper.GetString(core.GetFlagName(c.NS, constants.FlagDescription))),
 					},
 				}).Execute()

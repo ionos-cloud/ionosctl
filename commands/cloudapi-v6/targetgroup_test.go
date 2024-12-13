@@ -22,7 +22,7 @@ var (
 	targetGroupTestGet = resources.TargetGroup{
 		TargetGroup: ionoscloud.TargetGroup{
 			Id: &testTargetGroupVar,
-			Properties: &ionoscloud.TargetGroupProperties{
+			Properties: ionoscloud.TargetGroupProperties{
 				Name:      &testTargetGroupVar,
 				Algorithm: &testTargetGroupVar,
 				Protocol:  &testTargetGroupVar,
@@ -47,7 +47,7 @@ var (
 	}
 	targetGroupTest = resources.TargetGroup{
 		TargetGroup: ionoscloud.TargetGroup{
-			Properties: &ionoscloud.TargetGroupProperties{
+			Properties: ionoscloud.TargetGroupProperties{
 				Name:      &testTargetGroupVar,
 				Algorithm: &testTargetGroupVar,
 				Protocol:  &testTargetGroupVar,

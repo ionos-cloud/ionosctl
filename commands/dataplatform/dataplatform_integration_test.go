@@ -73,7 +73,7 @@ func testClusterOk(t *testing.T) {
 	items := *ls.Items
 	assert.Len(t, items, 1)
 	createdClusterId = *(items)[0].GetId()
-	assert.Equal(t, uniqueResourceName, *(*ls.Items)[0].Properties.Name)
+	assert.Equal(t, uniqueResourceName, (ls.Items)[0].Properties.Name)
 }
 
 func testNodepoolOk(t *testing.T) {

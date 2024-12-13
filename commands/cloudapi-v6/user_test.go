@@ -21,7 +21,7 @@ import (
 var (
 	userTest = resources.UserPost{
 		UserPost: ionoscloud.UserPost{
-			Properties: &ionoscloud.UserPropertiesPost{
+			Properties: ionoscloud.UserPropertiesPost{
 				Firstname:     &testUserVar,
 				Lastname:      &testUserVar,
 				Email:         &testUserVar,
@@ -43,7 +43,7 @@ var (
 	userTestGet = resources.User{
 		User: ionoscloud.User{
 			Id: &testUserVar,
-			Properties: &ionoscloud.UserProperties{
+			Properties: ionoscloud.UserProperties{
 				Firstname:         &testUserVar,
 				Lastname:          &testUserVar,
 				Email:             &testUserVar,
@@ -85,7 +85,7 @@ var (
 	}
 	userNewPut = resources.UserPut{
 		UserPut: ionoscloud.UserPut{
-			Properties: &ionoscloud.UserPropertiesPut{
+			Properties: ionoscloud.UserPropertiesPut{
 				Firstname:     &testUserNewVar,
 				Lastname:      &testUserNewVar,
 				Email:         &testUserNewVar,

@@ -22,7 +22,7 @@ var (
 	snapshotTest = resources.Snapshot{
 		Snapshot: ionoscloud.Snapshot{
 			Id: &testSnapshotVar,
-			Properties: &ionoscloud.SnapshotProperties{
+			Properties: ionoscloud.SnapshotProperties{
 				Name:        &testSnapshotVar,
 				Location:    &testSnapshotVar,
 				Description: &testSnapshotVar,

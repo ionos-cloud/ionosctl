@@ -285,7 +285,7 @@ func RunUserCreate(c *core.CommandConfig) error {
 
 	newUser := resources.UserPost{
 		UserPost: ionoscloud.UserPost{
-			Properties: &ionoscloud.UserPropertiesPost{
+			Properties: ionoscloud.UserPropertiesPost{
 				Firstname:     &firstname,
 				Lastname:      &lastname,
 				Email:         &email,

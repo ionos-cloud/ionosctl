@@ -21,7 +21,7 @@ import (
 var (
 	clusterTestPost = resources.K8sClusterForPost{
 		KubernetesClusterForPost: ionoscloud.KubernetesClusterForPost{
-			Properties: &ionoscloud.KubernetesClusterPropertiesForPost{
+			Properties: ionoscloud.KubernetesClusterPropertiesForPost{
 				Name:       &testClusterVar,
 				K8sVersion: &testClusterVar,
 				S3Buckets: &[]ionoscloud.S3Bucket{
@@ -35,7 +35,7 @@ var (
 	}
 	clusterTestPut = resources.K8sClusterForPut{
 		KubernetesClusterForPut: ionoscloud.KubernetesClusterForPut{
-			Properties: &ionoscloud.KubernetesClusterPropertiesForPut{
+			Properties: ionoscloud.KubernetesClusterPropertiesForPut{
 				Name:       &testClusterVar,
 				K8sVersion: &testClusterVar,
 				S3Buckets: &[]ionoscloud.S3Bucket{
@@ -49,7 +49,7 @@ var (
 	}
 	clusterNewTestPut = resources.K8sClusterForPut{
 		KubernetesClusterForPut: ionoscloud.KubernetesClusterForPut{
-			Properties: &ionoscloud.KubernetesClusterPropertiesForPut{
+			Properties: ionoscloud.KubernetesClusterPropertiesForPut{
 				Name:       &testClusterNewVar,
 				K8sVersion: &testClusterNewVar,
 				MaintenanceWindow: &ionoscloud.KubernetesMaintenanceWindow{
@@ -67,7 +67,7 @@ var (
 	}
 	clusterTest = resources.K8sCluster{
 		KubernetesCluster: ionoscloud.KubernetesCluster{
-			Properties: &ionoscloud.KubernetesClusterProperties{
+			Properties: ionoscloud.KubernetesClusterProperties{
 				Name:       &testClusterVar,
 				K8sVersion: &testClusterVar,
 				S3Buckets: &[]ionoscloud.S3Bucket{
@@ -91,7 +91,7 @@ var (
 	clusterTestId = resources.K8sCluster{
 		KubernetesCluster: ionoscloud.KubernetesCluster{
 			Id: &testClusterVar,
-			Properties: &ionoscloud.KubernetesClusterProperties{
+			Properties: ionoscloud.KubernetesClusterProperties{
 				Name:       &testClusterVar,
 				K8sVersion: &testClusterVar,
 				S3Buckets: &[]ionoscloud.S3Bucket{
@@ -106,7 +106,7 @@ var (
 	clusterTestGet = resources.K8sCluster{
 		KubernetesCluster: ionoscloud.KubernetesCluster{
 			Id: &testClusterVar,
-			Properties: &ionoscloud.KubernetesClusterProperties{
+			Properties: ionoscloud.KubernetesClusterProperties{
 				Name:                     &testClusterVar,
 				K8sVersion:               &testClusterVar,
 				AvailableUpgradeVersions: &testClusterSliceVar,
