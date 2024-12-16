@@ -3,11 +3,11 @@ package client
 import (
 	"fmt"
 
-	cdn "github.com/ionos-cloud/sdk-go-cdn"
-	kafka "github.com/ionos-cloud/sdk-go-kafka"
+	"github.com/ionos-cloud/sdk-go-bundle/shared"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	sdkgoauth "github.com/ionos-cloud/sdk-go-auth"
+	cdn "github.com/ionos-cloud/sdk-go-bundle/products/cdn/v2"
 	certmanager "github.com/ionos-cloud/sdk-go-cert-manager"
 	registry "github.com/ionos-cloud/sdk-go-container-registry"
 	dataplatform "github.com/ionos-cloud/sdk-go-dataplatform"
@@ -15,6 +15,7 @@ import (
 	mongo "github.com/ionos-cloud/sdk-go-dbaas-mongo"
 	postgres "github.com/ionos-cloud/sdk-go-dbaas-postgres"
 	dns "github.com/ionos-cloud/sdk-go-dns"
+	kafka "github.com/ionos-cloud/sdk-go-kafka"
 	logsvc "github.com/ionos-cloud/sdk-go-logging"
 	vmasc "github.com/ionos-cloud/sdk-go-vm-autoscaling"
 	vpn "github.com/ionos-cloud/sdk-go-vpn"
@@ -26,12 +27,14 @@ import (
 var ConfigurationPriorityRules = []Layer{
 	{constants.ArgToken, "", "", fmt.Sprintf("Global Flags (--%s)", constants.ArgToken)},
 	{
-		constants.EnvToken, constants.EnvUsername, constants.EnvPassword, fmt.Sprintf(
+		constants.EnvToken, constants.EnvUsername, constants.EnvPassword,
+		fmt.Sprintf(
 			"Environment Variables (%s, %s, %s)", constants.EnvToken, constants.EnvUsername, constants.EnvPassword,
 		),
 	},
 	{
-		constants.CfgToken, constants.CfgUsername, constants.CfgPassword, fmt.Sprintf(
+		constants.CfgToken, constants.CfgUsername, constants.CfgPassword,
+		fmt.Sprintf(
 			"Config file settings (%s, %s, %s)", constants.CfgToken, constants.CfgUsername, constants.CfgPassword,
 		),
 	}, // Note: Username & Password are no longer generated in cfg file by `ionosctl login`, however we will keep this for backward compatibility.
@@ -85,6 +88,9 @@ func appendUserAgent(userAgent string) string {
 }
 
 func newClient(name, pwd, token, hostUrl string, usedLayer *Layer) *Client {
+	// TODO: Replace all configurations with this one
+	sharedConfig := shared.NewConfiguration(name, pwd, token, hostUrl)
+
 	clientConfig := cloudv6.NewConfiguration(name, pwd, token, hostUrl)
 	clientConfig.UserAgent = appendUserAgent(clientConfig.UserAgent)
 	// Set Depth Query Parameter globally
@@ -132,6 +138,7 @@ func newClient(name, pwd, token, hostUrl string, usedLayer *Layer) *Client {
 	return &Client{
 		CloudClient:          cloudv6.NewAPIClient(clientConfig),
 		AuthClient:           sdkgoauth.NewAPIClient(authConfig),
+		CDNClient:            cdn.NewAPIClient(sharedConfig),
 		CertManagerClient:    certmanager.NewAPIClient(certManagerConfig),
 		DataplatformClient:   dataplatform.NewAPIClient(dpConfig),
 		RegistryClient:       registry.NewAPIClient(registryConfig),
@@ -143,7 +150,6 @@ func newClient(name, pwd, token, hostUrl string, usedLayer *Layer) *Client {
 		PostgresClient: postgres.NewAPIClient(postgresConfig),
 		MongoClient:    mongo.NewAPIClient(mongoConfig),
 		MariaClient:    maria.NewAPIClient(mariaConfig),
-		CDNClient:      cdn.NewAPIClient(cdnConfig),
 		Kafka:          kafka.NewAPIClient(kafkaConfig),
 
 		usedLayer: usedLayer,
