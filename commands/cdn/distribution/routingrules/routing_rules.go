@@ -12,7 +12,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
-	cdn "github.com/ionos-cloud/sdk-go-bundle/products/cdn/v2"
+	"github.com/ionos-cloud/sdk-go-bundle/products/cdn/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -63,13 +63,13 @@ func GetDistributionRoutingRules() *core.Command {
 				return nil
 			}
 
-			convertedItems, err := json2table.ConvertJSONToTable("", jsonpaths.CDNRoutingRule, *r.Properties.RoutingRules)
+			convertedItems, err := json2table.ConvertJSONToTable("", jsonpaths.CDNRoutingRule, r.Properties.RoutingRules)
 			if err != nil {
 				return fmt.Errorf("could not convert from JSON to Table format: %w", err)
 			}
 
 			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-			out, err := jsontabwriter.GenerateOutputPreconverted(*r.Properties.RoutingRules, convertedItems, tabheaders.GetHeaders(allRoutingRulesColumns, defaultRoutingRulesColumns, cols))
+			out, err := jsontabwriter.GenerateOutputPreconverted(r.Properties.RoutingRules, convertedItems, tabheaders.GetHeaders(allRoutingRulesColumns, defaultRoutingRulesColumns, cols))
 			if err != nil {
 				return err
 			}
@@ -83,7 +83,7 @@ func GetDistributionRoutingRules() *core.Command {
 		core.RequiredFlagOption(),
 		core.WithCompletion(func() []string {
 			return completer.DistributionsProperty(func(r cdn.Distribution) string {
-				return *r.Id
+				return r.Id
 			})
 		}, constants.CDNApiRegionalURL, constants.CDNLocations),
 	)

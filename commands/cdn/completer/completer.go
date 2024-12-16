@@ -14,7 +14,7 @@ func DistributionsProperty[V any](f func(cdn.Distribution) V, fs ...Filter) []V 
 	if err != nil {
 		return nil
 	}
-	return functional.Map(*recs.Items, f)
+	return functional.Map(recs.Items, f)
 }
 
 // Distributions returns all distributions matching the given filters

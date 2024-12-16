@@ -11,7 +11,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
-	cdn "github.com/ionos-cloud/sdk-go-bundle/products/cdn/v2"
+	"github.com/ionos-cloud/sdk-go-bundle/products/cdn/v2"
 	"github.com/spf13/viper"
 )
 
@@ -77,7 +77,7 @@ func listDistributions(c *core.CommandConfig) error {
 		return fmt.Errorf("could not retrieve distributions")
 	}
 
-	convertedItems, err := json2table.ConvertJSONToTable("", jsonpaths.CDNDistribution, *items)
+	convertedItems, err := json2table.ConvertJSONToTable("", jsonpaths.CDNDistribution, items)
 	if err != nil {
 		return fmt.Errorf("could not convert from JSON to Table format: %w", err)
 	}

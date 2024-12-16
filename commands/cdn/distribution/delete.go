@@ -9,7 +9,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
-	cdn "github.com/ionos-cloud/sdk-go-bundle/products/cdn/v2"
+	"github.com/ionos-cloud/sdk-go-bundle/products/cdn/v2"
 	"github.com/spf13/viper"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
@@ -45,7 +45,7 @@ func Delete() *core.Command {
 		core.RequiredFlagOption(),
 		core.WithCompletion(func() []string {
 			return completer.DistributionsProperty(func(r cdn.Distribution) string {
-				return *r.Id
+				return r.Id
 			})
 		}, constants.CDNApiRegionalURL, constants.CDNLocations),
 	)
@@ -63,8 +63,8 @@ func deleteAll(c *core.CommandConfig) error {
 		return fmt.Errorf("failed getting all distributions: %w", err)
 	}
 
-	return functional.ApplyAndAggregateErrors(*records.GetItems(), func(d cdn.Distribution) error {
-		return deleteSingle(c, *d.Id)
+	return functional.ApplyAndAggregateErrors(records.GetItems(), func(d cdn.Distribution) error {
+		return deleteSingle(c, d.Id)
 	})
 }
 
@@ -74,12 +74,12 @@ func deleteSingle(c *core.CommandConfig, id string) error {
 		return fmt.Errorf("distribution not found: %w", err)
 	}
 
-	yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Are you sure you want to delete distribution %s for domain %s", *d.Id, *d.Properties.Domain),
+	yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Are you sure you want to delete distribution %s for domain %s", d.Id, d.Properties.Domain),
 		viper.GetBool(constants.ArgForce))
 	if !yes {
 		return fmt.Errorf("user cancelled deletion")
 	}
 
-	_, err = client.Must().CDNClient.DistributionsApi.DistributionsDelete(context.Background(), *d.Id).Execute()
+	_, err = client.Must().CDNClient.DistributionsApi.DistributionsDelete(context.Background(), d.Id).Execute()
 	return err
 }

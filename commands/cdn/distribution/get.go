@@ -57,7 +57,7 @@ func FindByID() *core.Command {
 		core.RequiredFlagOption(),
 		core.WithCompletion(func() []string {
 			return completer.DistributionsProperty(func(r cdn.Distribution) string {
-				return *r.Id
+				return r.Id
 			})
 		}, constants.CDNApiRegionalURL, constants.CDNLocations),
 	)
