@@ -38,11 +38,7 @@ go get github.com/ionos-cloud/sdk-go-bundle/products/cdn@latest
 | `IONOS_LOG_LEVEL`    | Specify the Log Level used to log messages. Possible values: Off, Debug, Trace |
 | `IONOS_PINNED_CERT`  | Specify the SHA-256 public fingerprint here, enables certificate pinning                                                                                                                                                       |
 
-<<<<<<< HEAD
 ⚠️ **_Note: To overwrite the api endpoint - `api.ionos.com`, the environment variable `IONOS_API_URL` can be set, and used with `NewConfigurationFromEnv()` function._**
-=======
-⚠️ **_Note: To overwrite the api endpoint - `api.ionos.com`, the environment variable `$IONOS_API_URL` can be set, and used with `NewConfigurationFromEnv()` function._**
->>>>>>> 9bd8d946 (refactor: replace client model)
 
 ## Examples
 
@@ -50,7 +46,6 @@ Examples for creating resources using the Go SDK can be found [here](examples/)
 
 ## Authentication
 
-<<<<<<< HEAD
 All available server URLs are:
 
 - *https://cdn.de-fra.ionos.com* - Frankfurt
@@ -59,8 +54,6 @@ By default, *https://cdn.de-fra.ionos.com* is used, however this can be override
 by setting the `IONOS_API_URL` environment variable or by specifying the `hostUrl` parameter when
 initializing the sdk client.
 
-=======
->>>>>>> 9bd8d946 (refactor: replace client model)
 ### Basic Authentication
 
 - **Type**: HTTP basic authentication
@@ -77,11 +70,7 @@ import (
 )
 
 func basicAuthExample() error {
-<<<<<<< HEAD
 	cfg := shared.NewConfiguration("username_here", "pwd_here", "", "hostUrl_here")
-=======
-	cfg := shared.NewConfiguration("username_here", "pwd_here", "", "")
->>>>>>> 9bd8d946 (refactor: replace client model)
 	cfg.LogLevel = Trace
 	apiClient := cdn.NewAPIClient(cfg)
 	return nil
@@ -111,11 +100,7 @@ There are 2 ways to generate your token:
         if !jwt.HasToken() {
             return fmt.Errorf("could not generate token")
         }
-<<<<<<< HEAD
         cfg := shared.NewConfiguration("", "", *jwt.GetToken(), "hostUrl_here")
-=======
-        cfg := shared.NewConfiguration("", "", *jwt.GetToken(), "")
->>>>>>> 9bd8d946 (refactor: replace client model)
         cfg.LogLevel = Trace
         apiClient := cdn.NewAPIClient(cfg)
         return nil
@@ -255,8 +240,4 @@ All URIs are relative to *https://cdn.de-fra.ionos.com*
 
 [[Back to API list]](#documentation-for-api-endpoints) [[Back to Model list]](#documentation-for-models)
 
-<<<<<<< HEAD
 </details>
-=======
-</details>
->>>>>>> 9bd8d946 (refactor: replace client model)
