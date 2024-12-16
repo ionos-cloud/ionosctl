@@ -11,7 +11,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/pointer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/uuidgen"
-	cdn "github.com/ionos-cloud/sdk-go-bundle/products/cdn/v2"
+	"github.com/ionos-cloud/sdk-go-bundle/products/cdn/v2"
 	"github.com/spf13/viper"
 )
 
@@ -46,8 +46,8 @@ func Create() *core.Command {
 			id := uuidgen.Must()
 			res, _, err := client.Must().CDNClient.DistributionsApi.DistributionsPut(context.Background(), id).
 				DistributionUpdate(cdn.DistributionUpdate{
-					Id:         &id,
-					Properties: input,
+					Id:         id,
+					Properties: *input,
 				}).Execute()
 			if err != nil {
 				return err
@@ -73,7 +73,7 @@ func addDistributionCreateFlags(cmd *core.Command) *core.Command {
 
 func setPropertiesFromFlags(c *core.CommandConfig, p *cdn.DistributionProperties) error {
 	if fn := core.GetFlagName(c.NS, constants.FlagCDNDistributionDomain); viper.IsSet(fn) {
-		p.Domain = pointer.From(viper.GetString(fn))
+		p.Domain = viper.GetString(fn)
 	}
 
 	if fn := core.GetFlagName(c.NS, constants.FlagCDNDistributionCertificateID); viper.IsSet(fn) {
@@ -97,13 +97,10 @@ func setPropertiesFromFlags(c *core.CommandConfig, p *cdn.DistributionProperties
 	return nil
 }
 
-func getRoutingRulesFromJSON(data []byte) (*[]cdn.RoutingRule, error) {
+func getRoutingRulesFromJSON(data []byte) ([]cdn.RoutingRule, error) {
 	var rr []cdn.RoutingRule
 	err := json.Unmarshal(data, &rr)
-	if err != nil {
-		return nil, err
-	}
-	return &rr, nil
+	return rr, err
 }
 
 func getRoutingRulesData(input string) ([]byte, error) {
