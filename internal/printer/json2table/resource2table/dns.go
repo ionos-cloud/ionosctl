@@ -5,7 +5,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
-	dns "github.com/ionos-cloud/sdk-go-dns"
+	dns "github.com/ionos-cloud/sdk-go-bundle/products/dns/v2"
 )
 
 func ConvertDNSSECToTable(keys dns.DnssecKeyReadList) ([]map[string]interface{}, error) {
