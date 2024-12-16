@@ -250,6 +250,12 @@ github.com/ionos-cloud/sdk-go-bundle/products/cdn/v2 v2.1.1 h1:8O0c5GLVD6aM//iC3
 github.com/ionos-cloud/sdk-go-bundle/products/cdn/v2 v2.1.1/go.mod h1:BF6R+j1GdJEMImxkeh32qjIVWqsBfgi6VgyfsY5ezIA=
 github.com/ionos-cloud/sdk-go-bundle/shared v0.1.1 h1:NWobgIhmUJKG6ohFXefMj+KmpEEvLYEDUgGzpns6HQE=
 github.com/ionos-cloud/sdk-go-bundle/shared v0.1.1/go.mod h1:cLIl4zmB1yMdPSNgTzaRmXeuusEAY1O3Lp/iXSc/R6E=
+github.com/ionos-cloud/sdk-go-bundle/products/cdn/v2 v2.1.0 h1:8fRICa4i+GJHrCgnLe8t3uwfahkg7pcDDwoLkH3B2Xc=
+github.com/ionos-cloud/sdk-go-bundle/products/cdn/v2 v2.1.0/go.mod h1:BF6R+j1GdJEMImxkeh32qjIVWqsBfgi6VgyfsY5ezIA=
+github.com/ionos-cloud/sdk-go-bundle/shared v0.1.1 h1:NWobgIhmUJKG6ohFXefMj+KmpEEvLYEDUgGzpns6HQE=
+github.com/ionos-cloud/sdk-go-bundle/shared v0.1.1/go.mod h1:cLIl4zmB1yMdPSNgTzaRmXeuusEAY1O3Lp/iXSc/R6E=
+github.com/ionos-cloud/sdk-go-cdn v1.1.0 h1:bwtrey2m1mElQV9TlhzR39mC6IMeWF2P5ztd6cmRKfw=
+github.com/ionos-cloud/sdk-go-cdn v1.1.0/go.mod h1:W2XZ5CYhKROyvtLaz3VgTKe+nXI1+NZD1gE/YliHUeU=
 github.com/ionos-cloud/sdk-go-cert-manager v1.0.1 h1:QGnenRREavvU0ZrXvY4hmCMXRyvmKj5jaXsFX9Apfd0=
 github.com/ionos-cloud/sdk-go-cert-manager v1.0.1/go.mod h1:EYDegkY6fUSkx0BL0GpNMpKvp33AId2vTZL44YLPreA=
 github.com/ionos-cloud/sdk-go-container-registry v1.1.0 h1:H92gzx9oj0vvbozbXwn2RLNEw7++1Ns3Kl9PGrh5Waw=
