@@ -22,7 +22,10 @@ import (
 	"errors"
 	"fmt"
 	"io"
+<<<<<<< HEAD
 	"log"
+=======
+>>>>>>> 36859917 (refactor: replace client model)
 	"mime/multipart"
 	"net"
 	"net/http"
@@ -53,7 +56,11 @@ const (
 	RequestStatusFailed  = "FAILED"
 	RequestStatusDone    = "DONE"
 
+<<<<<<< HEAD
 	Version = "products/cdn/v2.1.1"
+=======
+	Version = "products/cdn/v2.1.0"
+>>>>>>> 36859917 (refactor: replace client model)
 )
 
 // APIClient manages communication with the IONOS Cloud - CDN Distribution API API v1.2.0
@@ -71,6 +78,7 @@ type service struct {
 	client *APIClient
 }
 
+<<<<<<< HEAD
 func DeepCopy(cfg *shared.Configuration) (*shared.Configuration, error) {
 	if cfg == nil {
 		return nil, nil
@@ -110,24 +118,47 @@ func NewAPIClient(cfg *shared.Configuration) *APIClient {
 
 	if len(cfgCopy.Servers) == 0 {
 		cfgCopy.Servers = shared.ServerConfigurations{
+=======
+// NewAPIClient creates a new API client. Requires a userAgent string describing your application.
+// optionally a custom http.Client to allow for advanced features such as caching.
+func NewAPIClient(cfg *shared.Configuration) *APIClient {
+	if cfg.HTTPClient == nil {
+		cfg.HTTPClient = http.DefaultClient
+	}
+
+	if len(cfg.Servers) == 0 {
+		cfg.Servers = shared.ServerConfigurations{
+>>>>>>> 36859917 (refactor: replace client model)
 			{
 				URL:         "https://cdn.de-fra.ionos.com",
 				Description: "Frankfurt",
 			},
 		}
 	}
+<<<<<<< HEAD
 
 	// Enable certificate pinning if the environment variable is set
+=======
+	//enable certificate pinning if the env variable is set
+>>>>>>> 36859917 (refactor: replace client model)
 	pkFingerprint := os.Getenv(shared.IonosPinnedCertEnvVar)
 	if pkFingerprint != "" {
 		httpTransport := &http.Transport{}
 		AddPinnedCert(httpTransport, pkFingerprint)
+<<<<<<< HEAD
 		cfgCopy.HTTPClient.Transport = httpTransport
 	}
 
 	// Create and initialize the API client
 	c := &APIClient{}
 	c.cfg = cfgCopy
+=======
+		cfg.HTTPClient.Transport = httpTransport
+	}
+
+	c := &APIClient{}
+	c.cfg = cfg
+>>>>>>> 36859917 (refactor: replace client model)
 	c.common.client = c
 
 	// API Services
