@@ -5,7 +5,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
-	dns "github.com/ionos-cloud/sdk-go-bundle/products/dns/v2"
+	"github.com/ionos-cloud/sdk-go-bundle/products/dns/v2"
 )
 
 func ConvertDNSSECToTable(keys dns.DnssecKeyReadList) ([]map[string]interface{}, error) {
@@ -14,11 +14,11 @@ func ConvertDNSSECToTable(keys dns.DnssecKeyReadList) ([]map[string]interface{},
 		return nil, fmt.Errorf("could not convert from JSON to Table format: %w", err)
 	}
 
-	if keys.Metadata == nil || keys.Metadata.Items == nil || len(*keys.Metadata.Items) == 0 {
+	if keys.Metadata == nil || keys.Metadata.Items == nil || len(keys.Metadata.Items) == 0 {
 		return table, nil
 	}
 
-	for i, item := range *keys.Metadata.Items {
+	for i, item := range keys.Metadata.Items {
 		table[i]["Id"] = *keys.Id
 		table[i]["KeyTag"] = *item.KeyTag
 		table[i]["DigestAlgorithmMnemonic"] = *item.DigestAlgorithmMnemonic

@@ -50,7 +50,7 @@ func RecordsProperty[V any](f func(dns.ReverseRecordRead) V, fs ...Filter) []V {
 	if err != nil {
 		return nil
 	}
-	return functional.Map(*recs.Items, f)
+	return functional.Map(recs.Items, f)
 }
 
 // Records returns all records matching the given filters
@@ -88,10 +88,10 @@ func Resolve(ipOrId string) (string, error) {
 		if err != nil {
 			return "", fmt.Errorf("failed finding a record by IP %s: %w", ipOrId, err)
 		}
-		if len(*ls.Items) < 1 {
-			return "", fmt.Errorf("could not find record by IP %s: got %d records", ipOrId, len(*ls.Items))
+		if len(ls.Items) < 1 {
+			return "", fmt.Errorf("could not find record by IP %s: got %d records", ipOrId, len(ls.Items))
 		}
-		rId = *(*ls.Items)[0].Id
+		rId = ls.Items[0].Id
 	}
 	return rId, nil
 }

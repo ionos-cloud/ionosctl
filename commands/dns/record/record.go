@@ -52,7 +52,7 @@ func RecordsProperty[V any](f func(dns.RecordRead) V, fs ...Filter) []V {
 	if err != nil {
 		return nil
 	}
-	return functional.Map(*recs.Items, f)
+	return functional.Map(recs.Items, f)
 }
 
 // Records returns all records matching the given filters
@@ -90,10 +90,10 @@ func Resolve(nameOrId string) (string, error) {
 		if err != nil {
 			return "", fmt.Errorf("failed finding a record by name %s: %w", nameOrId, err)
 		}
-		if len(*ls.Items) < 1 {
-			return "", fmt.Errorf("could not find record by name %s: got %d records", nameOrId, len(*ls.Items))
+		if len(ls.Items) < 1 {
+			return "", fmt.Errorf("could not find record by name %s: got %d records", nameOrId, len(ls.Items))
 		}
-		rId = *(*ls.Items)[0].Id
+		rId = ls.Items[0].Id
 	}
 	return rId, nil
 }

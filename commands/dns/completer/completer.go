@@ -65,7 +65,7 @@ func ZonesProperty[V any](f func(ionoscloud.ZoneRead) V, fs ...Filter) []V {
 	if err != nil {
 		return nil
 	}
-	return functional.Map(*recs.Items, f)
+	return functional.Map(recs.Items, f)
 }
 
 type Filter func(request ionoscloud.ApiZonesGetRequest) (ionoscloud.ApiZonesGetRequest, error)
