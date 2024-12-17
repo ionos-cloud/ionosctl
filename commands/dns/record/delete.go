@@ -148,14 +148,14 @@ func deleteSingleWithFilters(c *core.CommandConfig) (dns.RecordRead, error) {
 		return dns.RecordRead{}, fmt.Errorf("failed listing records: %w", err)
 	}
 
-	recsLen := len(*recs.Items)
+	recsLen := len(recs.Items)
 	if recsLen == 0 {
 		return dns.RecordRead{}, fmt.Errorf("found no records matching given filters (--%s and/or --%s). They"+
 			" must narrow down to a single result", constants.FlagRecord, constants.FlagZone)
 	}
 
 	if recsLen > 1 {
-		recsNames := functional.Fold(*recs.Items, func(acc []string, t dns.RecordRead) []string {
+		recsNames := functional.Fold(recs.Items, func(acc []string, t dns.RecordRead) []string {
 			return append(acc, *t.Properties.Name)
 		}, []string{})
 
@@ -164,5 +164,5 @@ func deleteSingleWithFilters(c *core.CommandConfig) (dns.RecordRead, error) {
 			recsLen, strings.Join(recsNames, ", "), constants.FlagRecord, constants.FlagZone, constants.ArgAll)
 	}
 
-	return (*recs.Items)[0], nil
+	return (recs.Items)[0], nil
 }
