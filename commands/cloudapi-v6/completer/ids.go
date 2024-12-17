@@ -52,7 +52,7 @@ func AttachedCdromsIds(datacenterId, serverId string) []string {
 	return attachedCdromsIds
 }
 
-func DataCentersIds() []string {
+func DataCentersIds(filters ...func(datacenter ionoscloud.Datacenter) bool) []string {
 	datacenterSvc := resources.NewDataCenterService(client.Must(), context.Background())
 	datacenters, _, err := datacenterSvc.List(resources.ListQueryParams{})
 	if err != nil {
@@ -65,6 +65,19 @@ func DataCentersIds() []string {
 			if item.Id == nil {
 				continue
 			}
+
+			skip := false
+			for _, filter := range filters {
+				if !filter(item) {
+					skip = true
+					break
+				}
+			}
+
+			if skip {
+				continue
+			}
+
 			completion = *item.Id
 			if props, ok := item.GetPropertiesOk(); ok {
 				if name, ok := props.GetNameOk(); ok {
