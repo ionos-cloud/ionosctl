@@ -204,7 +204,7 @@ func Cleanup() {
 		log.Printf("Failed deletion: %s", err.Error())
 	}
 
-	err = functional.ApplyAndAggregateErrors(*ls.Items,
+	err = functional.ApplyAndAggregateErrors(ls.Items,
 		func(z dns.ZoneRead) error {
 			_, _, err2 := cl.DnsClient.ZonesApi.ZonesDelete(context.Background(), *z.Id).Execute()
 			return err2
