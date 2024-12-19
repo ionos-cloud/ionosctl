@@ -77,7 +77,13 @@ snapcrafts:
     description: |
       The IONOS Cloud CLI (ionosctl) gives the ability to manage IONOS Cloud infrastructure directly from Command Line.
     grade: stable
+    channel_templates:
+      - candidate
     publish: true
+    apps:
+      ionosctl:
+        command: ionosctl
+        plugs: ["network"]
 
 checksum:
   name_template: '{{ .ProjectName }}-{{ .Version }}-SHA256SUMS'
