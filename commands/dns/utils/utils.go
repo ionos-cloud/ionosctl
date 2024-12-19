@@ -19,7 +19,7 @@ func SecondaryZoneResolve(nameOrID string) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("failed to retrieve zones by name %s: %w", nameOrID, err)
 	}
-	if secZones.Items == nil || len(*secZones.Items) < 1 {
+	if secZones.Items == nil || len(secZones.Items) < 1 {
 		return "", fmt.Errorf("no zones found with name %s", nameOrID)
 	}
 

@@ -63,7 +63,7 @@ func deleteAll(c *core.CommandConfig) error {
 	}
 
 	return functional.ApplyAndAggregateErrors(*records.GetItems(), func(r ionoscloud.ReverseRecordRead) error {
-		return deleteSingle(c, *r.Id)
+		return deleteSingle(c, r.Id)
 	})
 }
 
@@ -79,14 +79,14 @@ func deleteSingle(c *core.CommandConfig, ipOrIdOfRecord string) error {
 	}
 	yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf(
 		"Are you sure you want to delete record %s (IP: '%s'; description: '%s'; ID: '%s')",
-		*r.Properties.Name, *r.Properties.Ip, *r.Properties.Description, *r.Id),
+		r.Properties.Name, r.Properties.Ip, *r.Properties.Description, r.Id),
 		viper.GetBool(constants.ArgForce))
 	if !yes {
 		return fmt.Errorf("user cancelled deletion")
 	}
 
 	_, _, err = client.Must().DnsClient.ReverseRecordsApi.ReverserecordsDelete(context.Background(),
-		*r.Id,
+		r.Id,
 	).Execute()
 
 	return err

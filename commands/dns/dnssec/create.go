@@ -12,8 +12,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/pointer"
-	dns "github.com/ionos-cloud/sdk-go-bundle/products/dns/v2"
+	"github.com/ionos-cloud/sdk-go-bundle/products/dns/v2"
 	"github.com/spf13/viper"
 )
 
@@ -51,17 +50,17 @@ func Create() *core.Command {
 			key, _, err := client.Must().DnsClient.DNSSECApi.ZonesKeysPost(context.Background(), zoneId).
 				DnssecKeyCreate(
 					dns.DnssecKeyCreate{
-						Properties: &dns.DnssecKeyParameters{
-							Validity: pointer.From(viper.GetInt32(core.GetFlagName(c.NS, FlagValidity))),
-							KeyParameters: &dns.KeyParameters{
-								Algorithm: pointer.From(dns.Algorithm(viper.GetString(core.GetFlagName(c.NS, FlagAlgorithm)))),
-								KskBits:   pointer.From(dns.KskBits(viper.GetInt32(core.GetFlagName(c.NS, FlagKskBits)))),
-								ZskBits:   pointer.From(dns.ZskBits(viper.GetInt32(core.GetFlagName(c.NS, FlagZskBits)))),
+						Properties: dns.DnssecKeyParameters{
+							Validity: viper.GetInt32(core.GetFlagName(c.NS, FlagValidity)),
+							KeyParameters: dns.KeyParameters{
+								Algorithm: dns.Algorithm(viper.GetString(core.GetFlagName(c.NS, FlagAlgorithm))),
+								KskBits:   dns.KskBits(viper.GetInt32(core.GetFlagName(c.NS, FlagKskBits))),
+								ZskBits:   dns.ZskBits(viper.GetInt32(core.GetFlagName(c.NS, FlagZskBits))),
 							},
-							NsecParameters: &dns.NsecParameters{
-								NsecMode:        pointer.From(dns.NsecMode(viper.GetString(core.GetFlagName(c.NS, FlagNsecMode)))),
-								Nsec3Iterations: pointer.From(viper.GetInt32(core.GetFlagName(c.NS, FlagNsec3Iterations))),
-								Nsec3SaltBits:   pointer.From(viper.GetInt32(core.GetFlagName(c.NS, FlagNsec3SaltBits))),
+							NsecParameters: dns.NsecParameters{
+								NsecMode:        dns.NsecMode(viper.GetString(core.GetFlagName(c.NS, FlagNsecMode))),
+								Nsec3Iterations: viper.GetInt32(core.GetFlagName(c.NS, FlagNsec3Iterations)),
+								Nsec3SaltBits:   viper.GetInt32(core.GetFlagName(c.NS, FlagNsec3SaltBits)),
 							},
 						},
 					}).Execute()
@@ -85,7 +84,7 @@ func Create() *core.Command {
 	cmd.AddStringFlag(constants.FlagZone, constants.FlagZoneShort, "", constants.DescZone, core.RequiredFlagOption(),
 		core.WithCompletion(func() []string {
 			return completer.ZonesProperty(func(t dns.ZoneRead) string {
-				return *t.Properties.ZoneName
+				return t.Properties.ZoneName
 			})
 		}, constants.DNSApiRegionalURL, constants.DNSLocations),
 	)

@@ -79,15 +79,15 @@ ionosctl dns r delete --record PARTIAL_NAME --zone ZONE`,
 				}
 			}
 
-			yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Are you sure you want to delete record %s (type: '%s'; content: '%s')", *r.Metadata.Fqdn, *r.Properties.Type, *r.Properties.Content),
+			yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Are you sure you want to delete record %s (type: '%s'; content: '%s')", r.Metadata.Fqdn, r.Properties.Type, r.Properties.Content),
 				viper.GetBool(constants.ArgForce))
 			if !yes {
 				return fmt.Errorf("user cancelled deletion")
 			}
 
 			_, _, err = client.Must().DnsClient.RecordsApi.ZonesRecordsDelete(context.Background(),
-				*r.Metadata.ZoneId,
-				*r.Id,
+				r.Metadata.ZoneId,
+				r.Id,
 			).Execute()
 
 			return err
@@ -106,7 +106,7 @@ ionosctl dns r delete --record PARTIAL_NAME --zone ZONE`,
 	cmd.AddStringFlag(constants.FlagRecord, constants.FlagRecordShort, "", fmt.Sprintf("The ID, or full name of the DNS record. Required together with --%s. Can also provide partial names, but must narrow down to a single record result if not using --%s. If using it, will however delete all records that match.", constants.FlagZone, constants.ArgAll))
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagRecord, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return RecordsProperty(func(r dns.RecordRead) string {
-			return *r.Properties.Name
+			return r.Properties.Name
 		}, FilterRecordsByZoneAndRecordFlags(cmd.NS)), cobra.ShellCompDirectiveNoSpace
 	})
 
@@ -127,13 +127,13 @@ func deleteAll(c *core.CommandConfig) error {
 	}
 
 	err = functional.ApplyAndAggregateErrors(*xs.GetItems(), func(r dns.RecordRead) error {
-		yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Are you sure you want to delete record %s (type: '%s'; content: '%s')", *r.Properties.Name, *r.Properties.Type, *r.Properties.Content),
+		yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Are you sure you want to delete record %s (type: '%s'; content: '%s')", r.Properties.Name, r.Properties.Type, r.Properties.Content),
 			viper.GetBool(constants.ArgForce))
 
 		if yes {
-			_, _, delErr := client.Must().DnsClient.RecordsApi.ZonesRecordsDelete(c.Context, *r.Metadata.ZoneId, *r.Id).Execute()
+			_, _, delErr := client.Must().DnsClient.RecordsApi.ZonesRecordsDelete(c.Context, r.Metadata.ZoneId, r.Id).Execute()
 			if delErr != nil {
-				return fmt.Errorf("failed deleting %s (name: %s): %w", *r.Id, *r.Properties.Name, delErr)
+				return fmt.Errorf("failed deleting %s (name: %s): %w", r.Id, r.Properties.Name, delErr)
 			}
 		}
 		return nil

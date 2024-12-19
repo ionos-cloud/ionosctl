@@ -60,7 +60,7 @@ func ZonesRecordsPutCmd() *core.Command {
 	cmd.AddStringFlag(constants.FlagRecord, constants.FlagRecordShort, "", "The ID or name of the DNS record", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagRecord, func(cobraCmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return RecordsProperty(func(r dns.RecordRead) string {
-			return *r.Properties.Name
+			return r.Properties.Name
 		}, FilterRecordsByZoneAndRecordFlags(cmd.NS)), cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -74,7 +74,7 @@ func partiallyUpdateRecordAndPrint(c *core.CommandConfig, r dns.RecordRead) erro
 	input := r.Properties
 	modifyRecordPropertiesFromFlags(c, input)
 
-	rNew, _, err := client.Must().DnsClient.RecordsApi.ZonesRecordsPut(context.Background(), *r.Metadata.ZoneId, *r.Id).
+	rNew, _, err := client.Must().DnsClient.RecordsApi.ZonesRecordsPut(context.Background(), r.Metadata.ZoneId, r.Id).
 		RecordEnsure(dns.RecordEnsure{Properties: input}).Execute()
 	if err != nil {
 		return err
