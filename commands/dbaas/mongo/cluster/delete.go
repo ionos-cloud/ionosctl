@@ -106,7 +106,7 @@ func deleteAll(c *core.CommandConfig) error {
 		return err
 	}
 
-	return functional.ApplyAndAggregateErrors(*xs.GetItems(), func(x sdkgo.ClusterResponse) error {
+	return functional.ApplyAndAggregateErrors(xs.GetItems(), func(x sdkgo.ClusterResponse) error {
 		yes := confirm.FAsk(c.Command.Command.InOrStdin(), confirmStringForCluster(x), viper.GetBool(constants.ArgForce))
 		if yes {
 			_, _, delErr := client.Must().MongoClient.ClustersApi.ClustersDelete(c.Context, *x.Id).Execute()

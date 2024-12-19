@@ -9,7 +9,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
-	ionoscloud "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo/v2"
+	mongo "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo/v2"
 	"github.com/spf13/cobra"
 )
 
@@ -33,7 +33,7 @@ var (
 )
 
 // List retrieves a list of templates, optionally filtered by a given funcs
-func List(filters ...func(x ionoscloud.TemplateResponse) bool) ([]ionoscloud.TemplateResponse, error) {
+func List(filters ...func(x mongo.TemplateResponse) bool) ([]mongo.TemplateResponse, error) {
 	xs, _, err := client.Must().MongoClient.TemplatesApi.TemplatesGet(context.Background()).Execute()
 	if err != nil {
 		return nil, fmt.Errorf("failed getting templates: %w", err)
@@ -52,16 +52,16 @@ func List(filters ...func(x ionoscloud.TemplateResponse) bool) ([]ionoscloud.Tem
 }
 
 // Find returns the first template for which found() returns true
-func Find(found func(x ionoscloud.TemplateResponse) bool) (ionoscloud.TemplateResponse, error) {
+func Find(found func(x mongo.TemplateResponse) bool) (mongo.TemplateResponse, error) {
 	filteredTemplates, err := List(found)
 	if err != nil {
-		return ionoscloud.TemplateResponse{}, err
+		return mongo.TemplateResponse{}, err
 	}
 
 	if len(filteredTemplates) > 0 {
 		return filteredTemplates[0], nil
 	}
-	return ionoscloud.TemplateResponse{}, fmt.Errorf("no matching template found")
+	return mongo.TemplateResponse{}, fmt.Errorf("no matching template found")
 }
 
 // Resolve resolves nameOrId to the ID of the template.
@@ -83,7 +83,7 @@ func Resolve(nameOrId string) (string, error) {
 		// It's a name
 
 		// Why doesn't the API have a FindByID or something :(
-		templateMatchingWholeWordIgnoreCase, err := Find(func(x ionoscloud.TemplateResponse) bool {
+		templateMatchingWholeWordIgnoreCase, err := Find(func(x mongo.TemplateResponse) bool {
 			if x.Properties == nil || x.Properties.Name == nil {
 				return false
 			}

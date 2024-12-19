@@ -8,7 +8,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
-	ionoscloud "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo/v2"
+	mongo "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -58,7 +58,7 @@ var (
 	defaultCols = allCols[0:9]
 )
 
-func Clusters(fs ...Filter) (ionoscloud.ClusterList, error) {
+func Clusters(fs ...Filter) (mongo.ClusterList, error) {
 	req := client.Must().MongoClient.ClustersApi.ClustersGet(context.Background())
 
 	for _, f := range fs {
@@ -67,15 +67,15 @@ func Clusters(fs ...Filter) (ionoscloud.ClusterList, error) {
 
 	clusters, _, err := req.Execute()
 	if err != nil {
-		return ionoscloud.ClusterList{}, fmt.Errorf("failed getting clusters: %w", err)
+		return mongo.ClusterList{}, fmt.Errorf("failed getting clusters: %w", err)
 	}
 	return clusters, err
 }
 
-type Filter func(ionoscloud.ApiClustersGetRequest) ionoscloud.ApiClustersGetRequest
+type Filter func(mongo.ApiClustersGetRequest) mongo.ApiClustersGetRequest
 
 func FilterPaginationFlags(c *core.CommandConfig) Filter {
-	return func(req ionoscloud.ApiClustersGetRequest) ionoscloud.ApiClustersGetRequest {
+	return func(req mongo.ApiClustersGetRequest) mongo.ApiClustersGetRequest {
 		if f := core.GetFlagName(c.NS, constants.FlagMaxResults); viper.IsSet(f) {
 			req = req.Limit(viper.GetInt32(f))
 		}
@@ -87,7 +87,7 @@ func FilterPaginationFlags(c *core.CommandConfig) Filter {
 }
 
 func FilterNameFlags(c *core.CommandConfig) Filter {
-	return func(req ionoscloud.ApiClustersGetRequest) ionoscloud.ApiClustersGetRequest {
+	return func(req mongo.ApiClustersGetRequest) mongo.ApiClustersGetRequest {
 		if f := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(f) {
 			req = req.FilterName(viper.GetString(f))
 		}
