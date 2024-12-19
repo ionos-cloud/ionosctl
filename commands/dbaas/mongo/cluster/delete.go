@@ -12,7 +12,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
-	sdkgo "github.com/ionos-cloud/sdk-go-dbaas-mongo"
+	sdkgo "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -106,7 +106,7 @@ func deleteAll(c *core.CommandConfig) error {
 		return err
 	}
 
-	return functional.ApplyAndAggregateErrors(*xs.GetItems(), func(x sdkgo.ClusterResponse) error {
+	return functional.ApplyAndAggregateErrors(xs.GetItems(), func(x sdkgo.ClusterResponse) error {
 		yes := confirm.FAsk(c.Command.Command.InOrStdin(), confirmStringForCluster(x), viper.GetBool(constants.ArgForce))
 		if yes {
 			_, _, delErr := client.Must().MongoClient.ClustersApi.ClustersDelete(c.Context, *x.Id).Execute()

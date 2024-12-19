@@ -13,7 +13,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
-	sdkgo "github.com/ionos-cloud/sdk-go-dbaas-mongo"
+	sdkgo "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -86,12 +86,12 @@ func deleteAll(c *core.CommandConfig, clusterId string) error {
 		return err
 	}
 
-	return functional.ApplyAndAggregateErrors(*xs.GetItems(), func(x sdkgo.User) error {
-		yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("delete user %s", *x.Properties.Username), viper.GetBool(constants.ArgForce))
+	return functional.ApplyAndAggregateErrors(xs.GetItems(), func(x sdkgo.User) error {
+		yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("delete user %s", x.Properties.Username), viper.GetBool(constants.ArgForce))
 		if !yes {
-			return fmt.Errorf("user %s skipped by confirmation check", *x.Properties.Username)
+			return fmt.Errorf("user %s skipped by confirmation check", x.Properties.Username)
 		}
-		_, _, delErr := client.Must().MongoClient.UsersApi.ClustersUsersDelete(c.Context, clusterId, *x.Properties.Username).Execute()
+		_, _, delErr := client.Must().MongoClient.UsersApi.ClustersUsersDelete(c.Context, clusterId, x.Properties.Username).Execute()
 		if delErr != nil {
 			return fmt.Errorf("failed deleting one of the resources: %w", delErr)
 		}
