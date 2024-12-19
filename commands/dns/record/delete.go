@@ -13,7 +13,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
-	dns "github.com/ionos-cloud/sdk-go-bundle/products/dns/v2"
+	"github.com/ionos-cloud/sdk-go-bundle/products/dns/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
@@ -126,7 +126,7 @@ func deleteAll(c *core.CommandConfig) error {
 		return fmt.Errorf("found no records matching given filters")
 	}
 
-	err = functional.ApplyAndAggregateErrors(*xs.GetItems(), func(r dns.RecordRead) error {
+	err = functional.ApplyAndAggregateErrors(xs.GetItems(), func(r dns.RecordRead) error {
 		yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Are you sure you want to delete record %s (type: '%s'; content: '%s')", r.Properties.Name, r.Properties.Type, r.Properties.Content),
 			viper.GetBool(constants.ArgForce))
 

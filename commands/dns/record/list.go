@@ -13,7 +13,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
-	dns "github.com/ionos-cloud/sdk-go-bundle/products/dns/v2"
+	"github.com/ionos-cloud/sdk-go-bundle/products/dns/v2"
 	"github.com/spf13/cobra"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
@@ -138,8 +138,8 @@ func listRecordsCmd(c *core.CommandConfig) error {
 		}
 
 		if m, ok := item.GetMetadataOk(); ok && m != nil {
-			z, _, err := client.Must().DnsClient.ZonesApi.ZonesFindById(context.Background(), *m.ZoneId).Execute()
-			if err == nil && z.Properties != nil {
+			z, _, err := client.Must().DnsClient.ZonesApi.ZonesFindById(context.Background(), m.ZoneId).Execute()
+			if err == nil {
 				temp[0]["ZoneName"] = z.Properties.ZoneName
 			}
 		}
@@ -177,8 +177,8 @@ func listSecondaryRecords(c *core.CommandConfig) error {
 		}
 
 		if m, ok := item.GetMetadataOk(); ok && m != nil {
-			z, _, err := client.Must().DnsClient.ZonesApi.ZonesFindById(context.Background(), *m.ZoneId).Execute()
-			if err == nil && z.Properties != nil {
+			z, _, err := client.Must().DnsClient.ZonesApi.ZonesFindById(context.Background(), m.ZoneId).Execute()
+			if err == nil {
 				temp[0]["ZoneName"] = z.Properties.ZoneName
 			}
 		}

@@ -41,8 +41,8 @@ func Update() *core.Command {
 				return fmt.Errorf("failed querying for reverse record ID %s: %s", id, err)
 			}
 
-			r.Properties.Name = pointer.From(viper.GetString(core.GetFlagName(c.NS, constants.FlagName)))
-			r.Properties.Ip = pointer.From(viper.GetString(core.GetFlagName(c.NS, constants.FlagIp)))
+			r.Properties.Name = viper.GetString(core.GetFlagName(c.NS, constants.FlagName))
+			r.Properties.Ip = viper.GetString(core.GetFlagName(c.NS, constants.FlagIp))
 			r.Properties.Description = pointer.From(viper.GetString(core.GetFlagName(c.NS, constants.FlagDescription)))
 
 			rec, _, err := client.Must().DnsClient.ReverseRecordsApi.ReverserecordsPut(context.Background(), r.Id).

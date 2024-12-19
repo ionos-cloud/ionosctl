@@ -45,7 +45,7 @@ func ZonesPutCmd() *core.Command {
 			}
 
 			if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) {
-				z.Properties.ZoneName = pointer.From(viper.GetString(fn))
+				z.Properties.ZoneName = viper.GetString(fn)
 			}
 			if fn := core.GetFlagName(c.NS, constants.FlagDescription); viper.IsSet(fn) {
 				z.Properties.Description = pointer.From(viper.GetString(fn))

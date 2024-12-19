@@ -12,7 +12,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
-	dns "github.com/ionos-cloud/sdk-go-bundle/products/dns/v2"
+	"github.com/ionos-cloud/sdk-go-bundle/products/dns/v2"
 	"github.com/spf13/viper"
 )
 
@@ -68,7 +68,7 @@ func deleteAll(c *core.CommandConfig) error {
 
 	if err = functional.ApplyAndAggregateErrors(
 		secZones.Items, func(item dns.SecondaryZoneRead) error {
-			return deleteSingle(c, *item.Id)
+			return deleteSingle(c, item.Id)
 		},
 	); err != nil {
 		return err
