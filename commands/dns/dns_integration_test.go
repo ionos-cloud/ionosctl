@@ -103,14 +103,14 @@ func TestZone(t *testing.T) {
 	zoneByName, _, err := client.Must().DnsClient.ZonesApi.ZonesGet(context.Background()).FilterZoneName(randName).Limit(1).Execute()
 
 	assert.NoError(t, err)
-	assert.NotEmpty(t, *zoneByName.Items)
-	sharedZ = (*zoneByName.Items)[0]
+	assert.NotEmpty(t, zoneByName.Items)
+	sharedZ = (zoneByName.Items)[0]
 	assert.NotEmpty(t, sharedZ.Properties)
 	assert.Equal(t, randDesc, *sharedZ.Properties.Description)
 
 	resolvedId, err := utils.ZoneResolve(randName)
 	assert.NoError(t, err)
-	assert.Equal(t, *sharedZ.Id, resolvedId) // I added these 3 lines later - to test zone.ZoneResolve too
+	assert.Equal(t, sharedZ.Id, resolvedId) // I added these 3 lines later - to test zone.ZoneResolve too
 
 	// === `ionosctl dns z get`
 	c = zone.ZonesFindByIdCmd()
@@ -119,7 +119,7 @@ func TestZone(t *testing.T) {
 	// assert.ErrorContains(t, err, fmt.Sprintf("\"%s\" not set", constants.FlagZone))
 
 	// Try to see if ionosctl zone get finds newly created zone, using ID
-	c.Command.Flags().Set(constants.FlagZone, *sharedZ.Properties.ZoneName)
+	c.Command.Flags().Set(constants.FlagZone, sharedZ.Properties.ZoneName)
 	err = c.Command.Execute()
 	assert.NoError(t, err)
 	// TODO: I can't change command output to a buffer and check correctness, because output buffer is hardcoded in command runner
@@ -133,7 +133,7 @@ func TestZone(t *testing.T) {
 	// Try changing desc using `ionosctl dns z update`
 	randDesc = fake.AlphaNum(32)
 	c.Command.Flags().Set(constants.FlagDescription, randDesc)
-	c.Command.Flags().Set(constants.FlagZone, *sharedZ.Properties.ZoneName)
+	c.Command.Flags().Set(constants.FlagZone, sharedZ.Properties.ZoneName)
 	err = c.Command.Execute()
 	assert.NoError(t, err)
 
@@ -171,8 +171,8 @@ func TestRecord(t *testing.T) {
 	recByName, _, err := client.Must().DnsClient.RecordsApi.RecordsGet(context.Background()).FilterName(randName).
 		FilterZoneId(*sharedZ.Id).Limit(1).Execute()
 	assert.NoError(t, err)
-	assert.NotEmpty(t, *recByName.Items)
-	r := (*recByName.Items)[0]
+	assert.NotEmpty(t, recByName.Items)
+	r := (recByName.Items)[0]
 	assert.NotEmpty(t, r.Properties)
 	assert.Equal(t, randIp, r.Properties.Content)
 

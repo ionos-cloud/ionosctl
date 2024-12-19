@@ -45,7 +45,7 @@ func Delete() *core.Command {
 		core.RequiredFlagOption(),
 		core.WithCompletion(func() []string {
 			return RecordsProperty(func(read ionoscloud.ReverseRecordRead) string {
-				return *read.Properties.Ip
+				return read.Properties.Ip
 			})
 		}, constants.DNSApiRegionalURL, constants.DNSLocations),
 	)

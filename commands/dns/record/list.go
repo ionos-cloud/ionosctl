@@ -63,7 +63,7 @@ ionosctl dns r list --zone ZONE_ID`,
 		constants.FlagZone, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 			return completer.ZonesProperty(
 				func(t dns.ZoneRead) string {
-					return *t.Properties.ZoneName
+					return t.Properties.ZoneName
 				},
 			), cobra.ShellCompDirectiveNoFileComp
 		},
@@ -131,7 +131,7 @@ func listRecordsCmd(c *core.CommandConfig) error {
 	}
 
 	var lsConverted []map[string]interface{}
-	for _, item := range *items {
+	for _, item := range items {
 		temp, err := json2table.ConvertJSONToTable("", jsonpaths.DnsRecord, item)
 		if err != nil {
 			return fmt.Errorf("could not convert from JSON to Table format: %w", err)
@@ -140,7 +140,7 @@ func listRecordsCmd(c *core.CommandConfig) error {
 		if m, ok := item.GetMetadataOk(); ok && m != nil {
 			z, _, err := client.Must().DnsClient.ZonesApi.ZonesFindById(context.Background(), *m.ZoneId).Execute()
 			if err == nil && z.Properties != nil {
-				temp[0]["ZoneName"] = *z.Properties.ZoneName
+				temp[0]["ZoneName"] = z.Properties.ZoneName
 			}
 		}
 
@@ -169,8 +169,8 @@ func listSecondaryRecords(c *core.CommandConfig) error {
 		return fmt.Errorf("could not retrieve Secondary Zone Record items")
 	}
 
-	recordsConverted := make([]map[string]interface{}, len(*items))
-	for i, item := range *items {
+	recordsConverted := make([]map[string]interface{}, len(items))
+	for i, item := range items {
 		temp, err := json2table.ConvertJSONToTable("", jsonpaths.DnsRecord, item)
 		if err != nil {
 			return fmt.Errorf("could not convert from JSON to Table format: %w", err)
@@ -179,7 +179,7 @@ func listSecondaryRecords(c *core.CommandConfig) error {
 		if m, ok := item.GetMetadataOk(); ok && m != nil {
 			z, _, err := client.Must().DnsClient.ZonesApi.ZonesFindById(context.Background(), *m.ZoneId).Execute()
 			if err == nil && z.Properties != nil {
-				temp[0]["ZoneName"] = *z.Properties.ZoneName
+				temp[0]["ZoneName"] = z.Properties.ZoneName
 			}
 		}
 

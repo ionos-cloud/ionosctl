@@ -47,7 +47,7 @@ func List() *core.Command {
 	cmd.AddStringFlag(constants.FlagIps, "i", "", "Optional filter for the IP address of the reverse record",
 		core.WithCompletion(func() []string {
 			return RecordsProperty(func(t dns.ReverseRecordRead) string {
-				return *t.Properties.Ip
+				return t.Properties.Ip
 			})
 		}, constants.DNSApiRegionalURL, constants.DNSLocations),
 	)

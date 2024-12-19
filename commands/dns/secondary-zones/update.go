@@ -105,8 +105,8 @@ func setSecondaryZoneProperties(c *core.CommandConfig, zoneID string) (dns.Secon
 
 	if c.Command.Command.Flags().Changed(constants.FlagPrimaryIPs) {
 		primaryIPs, _ := c.Command.Command.Flags().GetStringSlice(constants.FlagPrimaryIPs)
-		currentZone.Properties.PrimaryIps = &primaryIPs
+		currentZone.Properties.PrimaryIps = primaryIPs
 	}
 
-	return *currentZone.Properties, nil
+	return currentZone.Properties, nil
 }
