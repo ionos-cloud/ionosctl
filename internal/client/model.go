@@ -8,13 +8,13 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	sdkgoauth "github.com/ionos-cloud/sdk-go-auth"
+	dns "github.com/ionos-cloud/sdk-go-bundle/products/dns/v2"
 	certmanager "github.com/ionos-cloud/sdk-go-cert-manager"
 	registry "github.com/ionos-cloud/sdk-go-container-registry"
 	dataplatform "github.com/ionos-cloud/sdk-go-dataplatform"
 	maria "github.com/ionos-cloud/sdk-go-dbaas-mariadb"
 	mongo "github.com/ionos-cloud/sdk-go-dbaas-mongo"
 	postgres "github.com/ionos-cloud/sdk-go-dbaas-postgres"
-	dns "github.com/ionos-cloud/sdk-go-dns"
 	logsvc "github.com/ionos-cloud/sdk-go-logging"
 	vmasc "github.com/ionos-cloud/sdk-go-vm-autoscaling"
 	cloudv6 "github.com/ionos-cloud/sdk-go/v6"
@@ -86,6 +86,7 @@ func appendUserAgent(userAgent string) string {
 func newClient(name, pwd, token, hostUrl string, usedLayer *Layer) *Client {
 	// TODO: Replace all configurations with this one
 	sharedConfig := shared.NewConfiguration(name, pwd, token, hostUrl)
+	sharedConfig.UserAgent = appendUserAgent(sharedConfig.UserAgent)
 
 	clientConfig := cloudv6.NewConfiguration(name, pwd, token, hostUrl)
 	clientConfig.UserAgent = appendUserAgent(clientConfig.UserAgent)
@@ -103,9 +104,6 @@ func newClient(name, pwd, token, hostUrl string, usedLayer *Layer) *Client {
 
 	registryConfig := registry.NewConfiguration(name, pwd, token, hostUrl)
 	registryConfig.UserAgent = appendUserAgent(registryConfig.UserAgent)
-
-	dnsConfig := dns.NewConfiguration(name, pwd, token, hostUrl)
-	dnsConfig.UserAgent = appendUserAgent(dnsConfig.UserAgent)
 
 	logsConfig := logsvc.NewConfiguration(name, pwd, token, hostUrl)
 	logsConfig.UserAgent = appendUserAgent(logsConfig.UserAgent)
@@ -129,7 +127,7 @@ func newClient(name, pwd, token, hostUrl string, usedLayer *Layer) *Client {
 		CertManagerClient:    certmanager.NewAPIClient(certManagerConfig),
 		DataplatformClient:   dataplatform.NewAPIClient(dpConfig),
 		RegistryClient:       registry.NewAPIClient(registryConfig),
-		DnsClient:            dns.NewAPIClient(dnsConfig),
+		DnsClient:            dns.NewAPIClient(sharedConfig),
 		LoggingServiceClient: logsvc.NewAPIClient(logsConfig),
 		VMAscClient:          vmasc.NewAPIClient(vmascConfig).AutoScalingGroupsApi,
 
