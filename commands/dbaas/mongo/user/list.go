@@ -113,7 +113,7 @@ func listAll(c *core.CommandConfig) error {
 	var lsConverted []map[string]interface{}
 	var multiErr error
 
-	for _, c := range *clusters.GetItems() {
+	for _, c := range clusters.GetItems() {
 		l, _, err := client.Must().MongoClient.UsersApi.ClustersUsersGet(context.Background(), *c.Id).Execute()
 		if err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf("failed listing users of cluster %s: %w", *c.Properties.DisplayName, err))
