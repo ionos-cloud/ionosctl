@@ -13,7 +13,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
-	sdkgo "github.com/ionos-cloud/sdk-go-dbaas-mongo"
+	sdkgo "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
