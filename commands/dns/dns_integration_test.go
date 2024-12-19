@@ -110,7 +110,7 @@ func TestZone(t *testing.T) {
 
 	resolvedId, err := utils.ZoneResolve(randName)
 	assert.NoError(t, err)
-	assert.Equal(t, sharedZ.Id, resolvedId) // I added these 3 lines later - to test zone.ZoneResolve too
+	assert.Equal(t, sharedZ.Id, resolvedId)
 
 	// === `ionosctl dns z get`
 	c = zone.ZonesFindByIdCmd()
