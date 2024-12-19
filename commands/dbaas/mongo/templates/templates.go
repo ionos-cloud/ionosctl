@@ -40,10 +40,10 @@ func List(filters ...func(x ionoscloud.TemplateResponse) bool) ([]ionoscloud.Tem
 	}
 
 	if len(filters) == 0 {
-		return *xs.GetItems(), nil
+		return xs.GetItems(), nil
 	}
 
-	filteredTemplates := *xs.GetItems()
+	filteredTemplates := xs.GetItems()
 	for _, f := range filters {
 		filteredTemplates = functional.Filter(filteredTemplates, f)
 	}

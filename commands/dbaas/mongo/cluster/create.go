@@ -110,16 +110,16 @@ func ClusterCreateCmd() *core.Command {
 			}
 
 			if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) {
-				cluster.DisplayName = pointer.From(viper.GetString(fn))
+				cluster.DisplayName = viper.GetString(fn)
 			}
 			if fn := core.GetFlagName(c.NS, constants.FlagVersion); viper.GetString(fn) != "" {
 				cluster.MongoDBVersion = pointer.From(viper.GetString(fn))
 			}
 			if fn := core.GetFlagName(c.NS, constants.FlagLocation); viper.IsSet(fn) {
-				cluster.Location = pointer.From(viper.GetString(fn))
+				cluster.Location = viper.GetString(fn)
 			}
 			if fn := core.GetFlagName(c.NS, constants.FlagInstances); viper.IsSet(fn) {
-				cluster.Instances = pointer.From(viper.GetInt32(fn))
+				cluster.Instances = viper.GetInt32(fn)
 			}
 			if fn := core.GetFlagName(c.NS, constants.FlagShards); viper.IsSet(fn) {
 				cluster.Shards = pointer.From(viper.GetInt32(fn))
@@ -127,26 +127,24 @@ func ClusterCreateCmd() *core.Command {
 
 			cluster.MaintenanceWindow = &ionoscloud.MaintenanceWindow{}
 			if fn := core.GetFlagName(c.NS, constants.FlagMaintenanceDay); viper.GetString(fn) != "" {
-				cluster.MaintenanceWindow.DayOfTheWeek = (*ionoscloud.DayOfTheWeek)(pointer.From(
-					viper.GetString(fn)))
+				cluster.MaintenanceWindow.DayOfTheWeek = mongo.DayOfTheWeek(viper.GetString(fn))
 			}
 			if fn := core.GetFlagName(c.NS, constants.FlagMaintenanceTime); viper.GetString(fn) != "" {
-				cluster.MaintenanceWindow.Time = pointer.From(
-					viper.GetString(fn))
+				cluster.MaintenanceWindow.Time = viper.GetString(fn)
 			}
 
-			cluster.Connections = pointer.From(make([]ionoscloud.Connection, 1))
+			cluster.Connections = make([]ionoscloud.Connection, 1)
 			if fn := core.GetFlagName(c.NS, constants.FlagCidr); viper.IsSet(fn) {
-				(*cluster.Connections)[0].CidrList = pointer.From(
-					viper.GetStringSlice(fn))
+				cluster.Connections[0].CidrList =
+					viper.GetStringSlice(fn)
 			}
 			if fn := core.GetFlagName(c.NS, constants.FlagDatacenterId); viper.IsSet(fn) {
-				(*cluster.Connections)[0].DatacenterId = pointer.From(
-					viper.GetString(fn))
+				cluster.Connections[0].DatacenterId =
+					viper.GetString(fn)
 			}
 			if fn := core.GetFlagName(c.NS, constants.FlagLanId); viper.IsSet(fn) {
-				(*cluster.Connections)[0].LanId = pointer.From(
-					viper.GetString(fn))
+				cluster.Connections[0].LanId =
+					viper.GetString(fn)
 			}
 
 			// backup flags
