@@ -62,7 +62,7 @@ func deleteAll(c *core.CommandConfig) error {
 		return fmt.Errorf("failed getting all records: %w", err)
 	}
 
-	return functional.ApplyAndAggregateErrors(*records.GetItems(), func(r ionoscloud.ReverseRecordRead) error {
+	return functional.ApplyAndAggregateErrors(records.Items, func(r ionoscloud.ReverseRecordRead) error {
 		return deleteSingle(c, r.Id)
 	})
 }

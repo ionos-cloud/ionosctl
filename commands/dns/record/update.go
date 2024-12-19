@@ -11,7 +11,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
-	dns "github.com/ionos-cloud/sdk-go-bundle/products/dns/v2"
+	"github.com/ionos-cloud/sdk-go-bundle/products/dns/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
@@ -72,7 +72,7 @@ func ZonesRecordsPutCmd() *core.Command {
 
 func partiallyUpdateRecordAndPrint(c *core.CommandConfig, r dns.RecordRead) error {
 	input := r.Properties
-	modifyRecordPropertiesFromFlags(c, input)
+	modifyRecordPropertiesFromFlags(c, &input)
 
 	rNew, _, err := client.Must().DnsClient.RecordsApi.ZonesRecordsPut(context.Background(), r.Metadata.ZoneId, r.Id).
 		RecordEnsure(dns.RecordEnsure{Properties: input}).Execute()
