@@ -103,7 +103,7 @@ func ConvertDbaasMongoClusterToTable(cluster sdkmongo.ClusterResponse) ([]map[st
 
 	connections, ok := properties.GetConnectionsOk()
 	if ok && connections != nil {
-		for _, con := range *connections {
+		for _, con := range connections {
 			dcId, ok := con.GetDatacenterIdOk()
 			if !ok || dcId == nil {
 				return nil, fmt.Errorf("could not retrieve Mongo Cluster datacenter ID")
@@ -121,7 +121,7 @@ func ConvertDbaasMongoClusterToTable(cluster sdkmongo.ClusterResponse) ([]map[st
 
 			temp[0]["DatacenterId"] = *dcId
 			temp[0]["LanId"] = *lanId
-			temp[0]["Cidr"] = *cidr
+			temp[0]["Cidr"] = cidr
 		}
 	}
 	return temp, nil
@@ -183,7 +183,7 @@ func ConvertDbaasMongoClustersToTable(clusters sdkmongo.ClusterList) ([]map[stri
 	}
 
 	var clustersConverted []map[string]interface{}
-	for _, item := range *items {
+	for _, item := range items {
 		temp, err := ConvertDbaasMongoClusterToTable(item)
 		if err != nil {
 			return nil, err
@@ -195,17 +195,17 @@ func ConvertDbaasMongoClustersToTable(clusters sdkmongo.ClusterList) ([]map[stri
 	return clustersConverted, nil
 }
 
-func ConvertMongoDbaasLogsToTable(logs *[]sdkmongo.ClusterLogsInstances) ([]map[string]interface{}, error) {
+func ConvertMongoDbaasLogsToTable(logs []sdkmongo.ClusterLogsInstances) ([]map[string]interface{}, error) {
 	if logs == nil {
 		return nil, fmt.Errorf("no logs to process")
 	}
 
-	out := make([]map[string]interface{}, 0, len(*logs))
-	for idx, instance := range *logs {
+	out := make([]map[string]interface{}, 0, len(logs))
+	for idx, instance := range logs {
 		if instance.GetMessages() == nil {
 			continue
 		}
-		for msgIdx, msg := range *instance.GetMessages() {
+		for msgIdx, msg := range instance.GetMessages() {
 			o, err := json2table.ConvertJSONToTable("", jsonpaths.DbaasLogsMessage, msg)
 			if err != nil {
 				return nil, fmt.Errorf("could not convert from JSON to Table format: %w", err)
@@ -213,9 +213,7 @@ func ConvertMongoDbaasLogsToTable(logs *[]sdkmongo.ClusterLogsInstances) ([]map[
 
 			o[0]["Instance"] = idx
 			o[0]["MessageNumber"] = msgIdx
-			if instance.GetName() != nil {
-				o[0]["Name"] = *instance.GetName()
-			}
+			o[0]["Name"] = instance.GetName()
 
 			out = append(out, o...)
 		}
@@ -258,7 +256,7 @@ func ConvertDbaasMongoTemplatesToTable(templates sdkmongo.TemplateList) ([]map[s
 	}
 
 	var templatesConverted []map[string]interface{}
-	for _, item := range *items {
+	for _, item := range items {
 		temp, err := ConvertDbaasMongoTemplateToTable(item)
 		if err != nil {
 			return nil, err
@@ -286,7 +284,7 @@ func ConvertDbaasMongoUserToTable(user sdkmongo.User) ([]map[string]interface{},
 		return nil, fmt.Errorf("could not convert from JSON to Table format: %w", err)
 	}
 
-	temp[0]["Roles"] = strings.Join(functional.Map(*properties.GetRoles(), func(role sdkmongo.UserRoles) string {
+	temp[0]["Roles"] = strings.Join(functional.Map(properties.GetRoles(), func(role sdkmongo.UserRoles) string {
 		val, ok := role.GetRoleOk()
 		if !ok {
 			return ""
@@ -308,7 +306,7 @@ func ConvertDbaasMongoUsersToTable(users sdkmongo.UsersList) ([]map[string]inter
 	}
 
 	var usersConverted []map[string]interface{}
-	for _, item := range *items {
+	for _, item := range items {
 		temp, err := ConvertDbaasMongoUserToTable(item)
 		if err != nil {
 			return nil, err
