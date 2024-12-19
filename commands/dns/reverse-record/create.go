@@ -12,7 +12,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/pointer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/uuidgen"
-	dns "github.com/ionos-cloud/sdk-go-bundle/products/dns/v2"
+	"github.com/ionos-cloud/sdk-go-bundle/products/dns/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -35,9 +35,9 @@ func Create() *core.Command {
 		CmdRun: func(c *core.CommandConfig) error {
 			rec, _, err := client.Must().DnsClient.ReverseRecordsApi.ReverserecordsPut(context.Background(), uuidgen.Must()).
 				ReverseRecordEnsure(dns.ReverseRecordEnsure{
-					Properties: &dns.ReverseRecord{
-						Name:        pointer.From(viper.GetString(core.GetFlagName(c.NS, constants.FlagName))),
-						Ip:          pointer.From(viper.GetString(core.GetFlagName(c.NS, constants.FlagIp))),
+					Properties: dns.ReverseRecord{
+						Name:        viper.GetString(core.GetFlagName(c.NS, constants.FlagName)),
+						Ip:          viper.GetString(core.GetFlagName(c.NS, constants.FlagIp)),
 						Description: pointer.From(viper.GetString(core.GetFlagName(c.NS, constants.FlagDescription))),
 					},
 				}).Execute()

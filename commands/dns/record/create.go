@@ -13,7 +13,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/pointer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/uuidgen"
 
-	dns "github.com/ionos-cloud/sdk-go-bundle/products/dns/v2"
+	"github.com/ionos-cloud/sdk-go-bundle/products/dns/v2"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/spf13/cobra"
@@ -48,7 +48,7 @@ func ZonesRecordsPostCmd() *core.Command {
 
 			rec, _, err := client.Must().DnsClient.RecordsApi.ZonesRecordsPut(context.Background(), zoneId, uuidgen.Must()).
 				RecordEnsure(dns.RecordEnsure{
-					Properties: &input,
+					Properties: input,
 				}).Execute()
 			if err != nil {
 				return err
@@ -74,7 +74,7 @@ func ZonesRecordsPostCmd() *core.Command {
 	cmd.AddStringFlag(constants.FlagZone, constants.FlagZoneShort, "", "The ID or name of the DNS zone", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagZone, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.ZonesProperty(func(t dns.ZoneRead) string {
-			return *t.Properties.ZoneName
+			return t.Properties.ZoneName
 		}), cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.Command.SilenceUsage = true
@@ -101,10 +101,10 @@ func modifyRecordPropertiesFromFlags(c *core.CommandConfig, input *dns.Record) {
 		input.Enabled = pointer.From(viper.GetBool(fn))
 	}
 	if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) {
-		input.Name = pointer.From(viper.GetString(fn))
+		input.Name = viper.GetString(fn)
 	}
 	if fn := core.GetFlagName(c.NS, constants.FlagContent); viper.IsSet(fn) {
-		input.Content = pointer.From(viper.GetString(fn))
+		input.Content = viper.GetString(fn)
 	}
 	if fn := core.GetFlagName(c.NS, constants.FlagTtl); true {
 		input.Ttl = pointer.From(viper.GetInt32(fn))
@@ -113,6 +113,6 @@ func modifyRecordPropertiesFromFlags(c *core.CommandConfig, input *dns.Record) {
 		input.Priority = pointer.From(viper.GetInt32(fn))
 	}
 	if fn := core.GetFlagName(c.NS, constants.FlagType); viper.IsSet(fn) {
-		input.Type = pointer.From(viper.GetString(fn))
+		input.Type = viper.GetString(fn)
 	}
 }
