@@ -99,7 +99,7 @@ ionosctl dns r delete --record PARTIAL_NAME --zone ZONE`,
 	cmd.AddStringFlag(constants.FlagZone, constants.FlagZoneShort, "", fmt.Sprintf("The full name or ID of the zone of the containing the target record. If --%s is set this is applied as a filter - limiting to records within this zone", constants.ArgAll))
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagZone, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.ZonesProperty(func(t dns.ZoneRead) string {
-			return *t.Properties.ZoneName
+			return t.Properties.ZoneName
 		}), cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -122,7 +122,7 @@ func deleteAll(c *core.CommandConfig) error {
 		return fmt.Errorf("failed listing records: %w", err)
 	}
 
-	if len(*xs.Items) == 0 {
+	if len(xs.Items) == 0 {
 		return fmt.Errorf("found no records matching given filters")
 	}
 
@@ -156,7 +156,7 @@ func deleteSingleWithFilters(c *core.CommandConfig) (dns.RecordRead, error) {
 
 	if recsLen > 1 {
 		recsNames := functional.Fold(recs.Items, func(acc []string, t dns.RecordRead) []string {
-			return append(acc, *t.Properties.Name)
+			return append(acc, t.Properties.Name)
 		}, []string{})
 
 		return dns.RecordRead{}, fmt.Errorf("got %d but expected 1: %+v. The given filters (--%s and/or --%s) "+
