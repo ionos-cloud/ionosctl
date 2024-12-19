@@ -20,7 +20,6 @@ require (
 	github.com/itchyny/gojq v0.12.13
 	github.com/kardianos/ftps v1.0.3
 	github.com/mitchellh/go-homedir v1.1.0
-	github.com/mmatczuk/anyflag v0.0.0-20230209112147-9567d4cab866
 	github.com/spf13/cobra v1.8.1
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.16.0
