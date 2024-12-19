@@ -20,7 +20,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/convbytes"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/pointer"
-	ionoscloud "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo/v2"
+	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"golang.org/x/exp/slices"
@@ -89,7 +89,7 @@ func ClusterCreateCmd() *core.Command {
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			cluster := ionoscloud.CreateClusterProperties{}
+			cluster := mongo.CreateClusterProperties{}
 			if fn := core.GetFlagName(c.NS, constants.FlagEdition); viper.IsSet(fn) {
 				cluster.Edition = pointer.From(viper.GetString(fn))
 			}
@@ -125,7 +125,7 @@ func ClusterCreateCmd() *core.Command {
 				cluster.Shards = pointer.From(viper.GetInt32(fn))
 			}
 
-			cluster.MaintenanceWindow = &ionoscloud.MaintenanceWindow{}
+			cluster.MaintenanceWindow = &mongo.MaintenanceWindow{}
 			if fn := core.GetFlagName(c.NS, constants.FlagMaintenanceDay); viper.GetString(fn) != "" {
 				cluster.MaintenanceWindow.DayOfTheWeek = mongo.DayOfTheWeek(viper.GetString(fn))
 			}
@@ -133,7 +133,7 @@ func ClusterCreateCmd() *core.Command {
 				cluster.MaintenanceWindow.Time = viper.GetString(fn)
 			}
 
-			cluster.Connections = make([]ionoscloud.Connection, 1)
+			cluster.Connections = make([]mongo.Connection, 1)
 			if fn := core.GetFlagName(c.NS, constants.FlagCidr); viper.IsSet(fn) {
 				cluster.Connections[0].CidrList =
 					viper.GetStringSlice(fn)
@@ -151,7 +151,7 @@ func ClusterCreateCmd() *core.Command {
 			cluster.Backup = nil
 			if fn := core.GetFlagName(c.NS, flagBackupLocation); viper.IsSet(fn) {
 				if cluster.Backup == nil {
-					cluster.Backup = &ionoscloud.BackupProperties{}
+					cluster.Backup = &mongo.BackupProperties{}
 				}
 				cluster.Backup.Location = pointer.From(viper.GetString(fn))
 			}
@@ -159,7 +159,7 @@ func ClusterCreateCmd() *core.Command {
 			cluster.BiConnector = nil
 			if fn := core.GetFlagName(c.NS, flagBiconnector); viper.IsSet(fn) {
 				if cluster.BiConnector == nil {
-					cluster.BiConnector = &ionoscloud.BiConnectorProperties{}
+					cluster.BiConnector = &mongo.BiConnectorProperties{}
 				}
 				hostAndPort := viper.GetString(fn)
 				host, port, err := net.SplitHostPort(hostAndPort)
@@ -179,7 +179,7 @@ func ClusterCreateCmd() *core.Command {
 				cluster.Cores = pointer.From(viper.GetInt32(fn))
 			}
 			if fn := core.GetFlagName(c.NS, constants.FlagStorageType); viper.IsSet(fn) && viper.GetString(fn) != "" {
-				cluster.StorageType = (*ionoscloud.StorageType)(pointer.From(viper.GetString(fn)))
+				cluster.StorageType = (*mongo.StorageType)(pointer.From(viper.GetString(fn)))
 			}
 			if fn := core.GetFlagName(c.NS, constants.FlagStorageSize); viper.IsSet(fn) && viper.GetString(fn) != "" {
 				sizeInt64 := convbytes.StrToUnit(viper.GetString(fn), convbytes.MB)
@@ -191,7 +191,7 @@ func ClusterCreateCmd() *core.Command {
 			}
 
 			createdCluster, _, err := client.Must().MongoClient.ClustersApi.ClustersPost(context.Background()).CreateClusterRequest(
-				ionoscloud.CreateClusterRequest{Properties: &cluster},
+				mongo.CreateClusterRequest{Properties: &cluster},
 			).Execute()
 			if err != nil {
 				return fmt.Errorf("failed creating cluster: %w", err)
@@ -230,7 +230,7 @@ func ClusterCreateCmd() *core.Command {
 		if err != nil {
 			return nil, cobra.ShellCompDirectiveError
 		}
-		names := functional.Fold(ts, func(acc []string, t ionoscloud.TemplateResponse) []string {
+		names := functional.Fold(ts, func(acc []string, t mongo.TemplateResponse) []string {
 			if t.Properties == nil || t.Properties.Name == nil {
 				return acc
 			}
@@ -378,7 +378,7 @@ func validateOrInferEditionByTemplate(c *core.PreCommandConfig) error {
 			// Intentionally don't wrap this error since the deeper error would kind of say the same thing
 			return err
 		}
-		template, err := templates.Find(func(x ionoscloud.TemplateResponse) bool {
+		template, err := templates.Find(func(x mongo.TemplateResponse) bool {
 			return *x.Id == tmplId
 		})
 		if err != nil {
