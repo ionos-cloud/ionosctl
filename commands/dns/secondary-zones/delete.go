@@ -67,7 +67,7 @@ func deleteAll(c *core.CommandConfig) error {
 	}
 
 	if err = functional.ApplyAndAggregateErrors(
-		*secZones.Items, func(item dns.SecondaryZoneRead) error {
+		secZones.Items, func(item dns.SecondaryZoneRead) error {
 			return deleteSingle(c, *item.Id)
 		},
 	); err != nil {

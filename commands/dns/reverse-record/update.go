@@ -45,7 +45,7 @@ func Update() *core.Command {
 			r.Properties.Ip = pointer.From(viper.GetString(core.GetFlagName(c.NS, constants.FlagIp)))
 			r.Properties.Description = pointer.From(viper.GetString(core.GetFlagName(c.NS, constants.FlagDescription)))
 
-			rec, _, err := client.Must().DnsClient.ReverseRecordsApi.ReverserecordsPut(context.Background(), *r.Id).
+			rec, _, err := client.Must().DnsClient.ReverseRecordsApi.ReverserecordsPut(context.Background(), r.Id).
 				ReverseRecordEnsure(
 					ionoscloud.ReverseRecordEnsure{
 						Properties: r.Properties,

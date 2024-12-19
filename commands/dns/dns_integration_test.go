@@ -174,12 +174,12 @@ func TestRecord(t *testing.T) {
 	assert.NotEmpty(t, *recByName.Items)
 	r := (*recByName.Items)[0]
 	assert.NotEmpty(t, r.Properties)
-	assert.Equal(t, randIp, *r.Properties.Content)
+	assert.Equal(t, randIp, r.Properties.Content)
 
 	// also test record.ZoneResolve
 	resolvedId, err := record.Resolve(randName)
 	assert.NoError(t, err)
-	assert.Equal(t, *r.Id, resolvedId)
+	assert.Equal(t, r.Id, resolvedId)
 
 	// `ionosctl dns r update`
 	c = record.ZonesRecordsPutCmd()
@@ -191,7 +191,7 @@ func TestRecord(t *testing.T) {
 	randIp = fake.IP(fake.WithIPv4())
 	c.Command.Flags().Set(constants.FlagContent, randIp)
 	c.Command.Flags().Set(constants.FlagZone, *sharedZ.Id)
-	c.Command.Flags().Set(constants.FlagRecord, *r.Properties.Name) // test that querying by name works too
+	c.Command.Flags().Set(constants.FlagRecord, r.Properties.Name) // test that querying by name works too
 	err = c.Command.Execute()
 	assert.NoError(t, err)
 }
