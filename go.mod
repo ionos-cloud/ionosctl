@@ -13,7 +13,6 @@ require (
 	github.com/ionos-cloud/sdk-go-auth v1.0.6
 	github.com/ionos-cloud/sdk-go-container-registry v1.1.0
 	github.com/ionos-cloud/sdk-go-dataplatform v1.0.2
-	github.com/ionos-cloud/sdk-go-dbaas-mongo v1.3.1
 	github.com/ionos-cloud/sdk-go-dbaas-postgres v1.1.2
 	github.com/ionos-cloud/sdk-go-dns v1.2.0
 	github.com/ionos-cloud/sdk-go-logging v1.0.1
@@ -41,6 +40,7 @@ require (
 require (
 	github.com/dustin/go-humanize v0.0.0-20171111073723-bb3d318650d4
 	github.com/ionos-cloud/sdk-go-bundle/products/cdn/v2 v2.1.1
+	github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo/v2 v2.0.1
 	github.com/ionos-cloud/sdk-go-bundle/shared v0.1.1
 	github.com/ionos-cloud/sdk-go-dbaas-mariadb v1.1.1
 	github.com/ionos-cloud/sdk-go-kafka v1.1.0
