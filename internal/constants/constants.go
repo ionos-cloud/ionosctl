@@ -53,6 +53,7 @@ Within each layer, a token takes precedence over a username and password combina
 	FlagAnnotations      = "annotations"
 	FlagAnnotationsShort = "A"
 	FlagVersion          = "version"
+	FlagSize             = "size"
 
 	FlagZone          = "zone"
 	FlagZoneShort     = "z"
@@ -85,6 +86,16 @@ Within each layer, a token takes precedence over a username and password combina
 	FlagCDNDistributionCertificateID       = "certificate-id"
 	FlagCDNDistributionRoutingRules        = "routing-rules"
 	FlagCDNDistributionRoutingRulesExample = "routing-rules-example"
+
+	FlagFilterName  = "name"
+	FlagFilterState = "state"
+
+	FlagKafkaBrokerAddresses   = "broker-addresses"
+	FlagKafkaPartitions        = "partitions"
+	FlagKafkaReplicationFactor = "replication-factor"
+	FlagKafkaRetentionTime     = "retention-time"
+	FlagKafkaSegmentBytes      = "segment-bytes"
+	FlagKafkaTopicId           = "topic-id"
 
 	FlagGroupId  = "group-id"
 	FlagServerId = "server-id"
@@ -151,6 +162,7 @@ const (
 	LoggingApiRegionalURL = "https://logging.%s.ionos.com"
 	CDNApiRegionalURL     = "https://cdn.%s.ionos.com"
 	MariaDBApiRegionalURL = "https://mariadb.%s.ionos.com"
+	KafkaApiRegionalURL   = "https://kafka.%s.ionos.com"
 )
 
 var (
@@ -158,6 +170,11 @@ var (
 	LoggingAPILocations = []string{"de/txl", "de/fra", "gb/lhr", "fr/par", "es/vit"}
 	CDNLocations        = []string{"de/fra"}
 	MariaDBLocations    = []string{"de/txl", "de/fra", "es/vit", "fr/par", "gb/lhr", "us/ewr", "us/las", "us/mci"}
+	KafkaLocations      = []string{
+		"de/fra", "de/txl",
+		// other locations not yet available. will be added in the future.
+		// "es/vit", "gb/lhr", "us/ewr", "us/las", "us/mci", "fr/par",
+	}
 )
 
 // enum values. TODO: ideally i'd like these handled by the SDK

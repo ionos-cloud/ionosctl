@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cdn"
+	"github.com/ionos-cloud/ionosctl/v6/commands/kafka"
 
 	certificates "github.com/ionos-cloud/ionosctl/v6/commands/certmanager"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cfg"
@@ -226,6 +227,9 @@ func addCommands() {
 
 	// CDN
 	rootCmd.AddCommand(cdn.Command())
+
+	// Kafka
+	rootCmd.AddCommand(kafka.Command())
 }
 
 const (
