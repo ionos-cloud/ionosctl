@@ -66,6 +66,7 @@ func testCreateToken(t *testing.T) {
 
 	tokFirstCreationTime = time.Now().In(time.UTC)
 	c := token.TokenPostCmd()
+	c.Command.Flags().Set(constants.FlagTtl, "1h")
 	err = c.Command.Execute()
 	assert.NoError(t, err)
 
@@ -109,6 +110,7 @@ func testCreateToken(t *testing.T) {
 	buff := bytes.NewBuffer([]byte{})
 	c = token.TokenPostCmd()
 	c.Command.SetOut(buff)
+	c.Command.Flags().Set(constants.FlagTtl, "1h")
 	err = c.Command.Execute()
 	assert.NoError(t, err)
 

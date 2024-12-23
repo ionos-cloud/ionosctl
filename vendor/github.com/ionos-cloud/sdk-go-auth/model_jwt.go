@@ -1,7 +1,7 @@
 /*
  * Auth API
  *
- * Use the Auth API to manage tokens for secure access to IONOS Cloud  APIs (Auth API, Cloud API, Reseller API, Activity Log API, and others).
+ * Use the Auth API to manage tokens for secure access to IONOS Cloud APIs (Auth API, Cloud API, Reseller API, Activity Log API, and others).
  *
  * API version: 1.0
  */
@@ -18,6 +18,24 @@ import (
 type Jwt struct {
 	// JSON Web Token (JWT) Base64url strings separated by dots
 	Token *string `json:"token,omitempty"`
+}
+
+// NewJwt instantiates a new Jwt object
+// This constructor will assign default values to properties that have it defined,
+// and makes sure properties required by API are set, but the set of arguments
+// will change when the set of required properties is changed
+func NewJwt() *Jwt {
+	this := Jwt{}
+
+	return &this
+}
+
+// NewJwtWithDefaults instantiates a new Jwt object
+// This constructor will only assign default values to properties that have it defined,
+// but it doesn't guarantee that properties required by API are set
+func NewJwtWithDefaults() *Jwt {
+	this := Jwt{}
+	return &this
 }
 
 // GetToken returns the Token field value
@@ -63,6 +81,7 @@ func (o Jwt) MarshalJSON() ([]byte, error) {
 	if o.Token != nil {
 		toSerialize["token"] = o.Token
 	}
+
 	return json.Marshal(toSerialize)
 }
 

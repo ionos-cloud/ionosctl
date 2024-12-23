@@ -60,8 +60,8 @@ github.com/hashicorp/hcl/json/token
 # github.com/inconshreveable/mousetrap v1.1.0
 ## explicit; go 1.18
 github.com/inconshreveable/mousetrap
-# github.com/ionos-cloud/sdk-go-auth v1.0.6
-## explicit; go 1.19
+# github.com/ionos-cloud/sdk-go-auth v1.0.10
+## explicit; go 1.18
 github.com/ionos-cloud/sdk-go-auth
 # github.com/ionos-cloud/sdk-go-cdn v1.1.0
 ## explicit; go 1.18

@@ -1,7 +1,7 @@
 /*
  * Auth API
  *
- * Use the Auth API to manage tokens for secure access to IONOS Cloud  APIs (Auth API, Cloud API, Reseller API, Activity Log API, and others).
+ * Use the Auth API to manage tokens for secure access to IONOS Cloud APIs (Auth API, Cloud API, Reseller API, Activity Log API, and others).
  *
  * API version: 1.0
  */
@@ -11,7 +11,9 @@
 package ionoscloud
 
 import (
+	"log"
 	"net/http"
+	"time"
 )
 
 // APIResponse stores the API response returned by the server.
@@ -23,6 +25,9 @@ type APIResponse struct {
 	// RequestURL is the request URL. This value is always available, even if the
 	// embedded *http.Response is nil.
 	RequestURL string `json:"url,omitempty"`
+	// RequestTime is the time duration from the moment the APIClient sends
+	// the HTTP request to the moment it receives an HTTP response.
+	RequestTime time.Duration `json:"duration,omitempty"`
 	// Method is the HTTP method used for the request.  This value is always
 	// available, even if the embedded *http.Response is nil.
 	Method string `json:"method,omitempty"`
@@ -32,7 +37,7 @@ type APIResponse struct {
 	Payload []byte `json:"-"`
 }
 
-// NewAPIResponse returns a new APIResonse object.
+// NewAPIResponse returns a new APIResponse object.
 func NewAPIResponse(r *http.Response) *APIResponse {
 
 	response := &APIResponse{Response: r}
@@ -44,4 +49,25 @@ func NewAPIResponseWithError(errorMessage string) *APIResponse {
 
 	response := &APIResponse{Message: errorMessage}
 	return response
+}
+
+// HttpNotFound - returns true if a 404 status code was returned
+// returns false for nil APIResponse values
+func (resp *APIResponse) HttpNotFound() bool {
+	if resp != nil && resp.Response != nil && resp.StatusCode == http.StatusNotFound {
+		return true
+	}
+	return false
+}
+
+// LogInfo - logs APIResponse values like RequestTime, Operation and StatusCode
+// does not print anything for nil APIResponse values
+func (resp *APIResponse) LogInfo() {
+	if resp != nil {
+		log.Printf("[DEBUG] Request time : %s for operation : %s",
+			resp.RequestTime, resp.Operation)
+		if resp.Response != nil {
+			log.Printf("[DEBUG] response status code : %d\n", resp.StatusCode)
+		}
+	}
 }

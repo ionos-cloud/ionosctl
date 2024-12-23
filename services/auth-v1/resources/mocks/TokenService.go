@@ -35,9 +35,9 @@ func (m *MockTokensService) EXPECT() *MockTokensServiceMockRecorder {
 }
 
 // Create mocks base method.
-func (m *MockTokensService) Create(contractNumber int32) (*resources.Jwt, *resources.Response, error) {
+func (m *MockTokensService) Create(contractNumber int32, ttl int32) (*resources.Jwt, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Create", contractNumber)
+	ret := m.ctrl.Call(m, "Create", contractNumber, ttl)
 	ret0, _ := ret[0].(*resources.Jwt)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)

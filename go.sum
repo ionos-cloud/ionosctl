@@ -244,8 +244,8 @@ github.com/inconshreveable/mousetrap v1.0.0/go.mod h1:PxqpIevigyE2G7u3NXJIT2ANyt
 github.com/inconshreveable/mousetrap v1.1.0 h1:wN+x4NVGpMsO7ErUn/mUI3vEoE6Jt13X2s0bqwp9tc8=
 github.com/inconshreveable/mousetrap v1.1.0/go.mod h1:vpF70FUmC8bwa3OWnCshd2FqLfsEA9PFc4w1p2J65bw=
 github.com/influxdata/influxdb1-client v0.0.0-20191209144304-8bf82d3c094d/go.mod h1:qj24IKcXYK6Iy9ceXlo3Tc+vtHo9lIhSX5JddghvEPo=
-github.com/ionos-cloud/sdk-go-auth v1.0.6 h1:N7XQ8JLKM9OS1DDlDCIN3Nk4RV4MuNvHFd50evuWgSM=
-github.com/ionos-cloud/sdk-go-auth v1.0.6/go.mod h1:4MuUIZbnQjgNalEB9LUzIuBTI1keqgA7EpJsjEvMAls=
+github.com/ionos-cloud/sdk-go-auth v1.0.10 h1:aHWstSqtmWZxvNVEye42MBK9WcbTQnbc3GBgPj6tmcE=
+github.com/ionos-cloud/sdk-go-auth v1.0.10/go.mod h1:yVHBsuAWLbcnlgfviCDZ5HE7k3KwkmK7GjgaAvnnKxI=
 github.com/ionos-cloud/sdk-go-cdn v1.1.0 h1:bwtrey2m1mElQV9TlhzR39mC6IMeWF2P5ztd6cmRKfw=
 github.com/ionos-cloud/sdk-go-cdn v1.1.0/go.mod h1:W2XZ5CYhKROyvtLaz3VgTKe+nXI1+NZD1gE/YliHUeU=
 github.com/ionos-cloud/sdk-go-cert-manager v1.0.1 h1:QGnenRREavvU0ZrXvY4hmCMXRyvmKj5jaXsFX9Apfd0=

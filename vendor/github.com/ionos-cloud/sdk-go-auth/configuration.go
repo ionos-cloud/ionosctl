@@ -1,7 +1,7 @@
 /*
  * Auth API
  *
- * Use the Auth API to manage tokens for secure access to IONOS Cloud  APIs (Auth API, Cloud API, Reseller API, Activity Log API, and others).
+ * Use the Auth API to manage tokens for secure access to IONOS Cloud APIs (Auth API, Cloud API, Reseller API, Activity Log API, and others).
  *
  * API version: 1.0
  */
@@ -25,12 +25,19 @@ const (
 	IonosPasswordEnvVar   = "IONOS_PASSWORD"
 	IonosTokenEnvVar      = "IONOS_TOKEN"
 	IonosApiUrlEnvVar     = "IONOS_API_URL"
+	IonosPinnedCertEnvVar = "IONOS_PINNED_CERT"
 	IonosLogLevelEnvVar   = "IONOS_LOG_LEVEL"
 	DefaultIonosServerUrl = "https://api.ionos.com/auth/v1"
 	DefaultIonosBasePath  = "/auth/v1"
 	defaultMaxRetries     = 3
 	defaultWaitTime       = time.Duration(100) * time.Millisecond
 	defaultMaxWaitTime    = time.Duration(2000) * time.Millisecond
+)
+
+var (
+	IonosServerUrls = []string{
+		"https://api.ionos.com/auth/v1",
+	}
 )
 
 // contextKeys are used to identify the type of value in the context.
@@ -112,14 +119,14 @@ type Configuration struct {
 	Servers            ServerConfigurations
 	OperationServers   map[string]ServerConfigurations
 	HTTPClient         *http.Client
+	LogLevel           LogLevel
+	Logger             Logger
 	Username           string        `json:"username,omitempty"`
 	Password           string        `json:"password,omitempty"`
 	Token              string        `json:"token,omitempty"`
 	MaxRetries         int           `json:"maxRetries,omitempty"`
 	WaitTime           time.Duration `json:"waitTime,omitempty"`
 	MaxWaitTime        time.Duration `json:"maxWaitTime,omitempty"`
-	LogLevel           LogLevel
-	Logger             Logger
 }
 
 // NewConfiguration returns a new Configuration object
@@ -127,7 +134,7 @@ func NewConfiguration(username, password, token, hostUrl string) *Configuration 
 	cfg := &Configuration{
 		DefaultHeader:      make(map[string]string),
 		DefaultQueryParams: url.Values{},
-		UserAgent:          "ionos-cloud-sdk-go-auth/v1.0.6",
+		UserAgent:          "ionos-cloud-sdk-go-auth/v1.0.10",
 		Debug:              false,
 		Username:           username,
 		Password:           password,
@@ -250,6 +257,7 @@ func getServerUrl(serverUrl string) string {
 	if serverUrl == "" {
 		return DefaultIonosServerUrl
 	}
+	// Support both HTTPS & HTTP schemas
 	if !strings.HasPrefix(serverUrl, "https://") && !strings.HasPrefix(serverUrl, "http://") {
 		serverUrl = fmt.Sprintf("https://%s", serverUrl)
 	}

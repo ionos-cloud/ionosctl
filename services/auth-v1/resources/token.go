@@ -32,7 +32,7 @@ type DeleteResponse struct {
 type TokensService interface {
 	List(contractNumber int32) (Tokens, *Response, error)
 	Get(tokenId string, contractNumber int32) (*Token, *Response, error)
-	Create(contractNumber int32) (*Jwt, *Response, error)
+	Create(contractNumber int32, ttl int32) (*Jwt, *Response, error)
 	DeleteByID(tokenId string, contractNumber int32) (*DeleteResponse, *Response, error)
 	DeleteByCriteria(criteria string, contractNumber int32) (*DeleteResponse, *Response, error)
 }
@@ -69,10 +69,13 @@ func (ts *tokensService) Get(tokenId string, contractNumber int32) (*Token, *Res
 	return &Token{token}, &Response{*res}, err
 }
 
-func (ts *tokensService) Create(contractNumber int32) (*Jwt, *Response, error) {
+func (ts *tokensService) Create(contractNumber int32, ttl int32) (*Jwt, *Response, error) {
 	req := ts.client.TokensApi.TokensGenerate(ts.context)
 	if contractNumber != 0 {
 		req = req.XContractNumber(contractNumber)
+	}
+	if ttl != 0 {
+		req = req.Ttl(ttl)
 	}
 	token, res, err := ts.client.TokensApi.TokensGenerateExecute(req)
 	return &Jwt{token}, &Response{*res}, err

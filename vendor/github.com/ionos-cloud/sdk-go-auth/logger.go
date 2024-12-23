@@ -1,7 +1,7 @@
 /*
  * Auth API
  *
- * Use the Auth API to manage tokens for secure access to IONOS Cloud  APIs (Auth API, Cloud API, Reseller API, Activity Log API, and others).
+ * Use the Auth API to manage tokens for secure access to IONOS Cloud APIs (Auth API, Cloud API, Reseller API, Activity Log API, and others).
  *
  * API version: 1.0
  */
@@ -46,7 +46,7 @@ var LogLevelMap = map[string]LogLevel{
 	"trace": Trace,
 }
 
-// getLogLevelFromEnv - gets LogLevel type from env variable IonosLogLevelEnvVar
+// getLogLevelFromEnv - gets LogLevel type from env variable IONOS_LOG_LEVEL
 // returns Off if an invalid log level is encountered
 func getLogLevelFromEnv() LogLevel {
 	strLogLevel := "off"

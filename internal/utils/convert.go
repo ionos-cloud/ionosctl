@@ -102,3 +102,302 @@ func convertToGB(size, unit string) (int, error) {
 		return 0, errors.New("error converting in GB, no suffix: MB, GB, TB, PB matched")
 	}
 }
+
+const (
+	Seconds = "s"
+	Minutes = "m"
+	Hours   = "h"
+	Days    = "D"
+	Months  = "M"
+	Years   = "Y"
+)
+
+func ConvertTime(timeToConvert, unitToConvertTo string) (int, error) {
+	for _, unit := range []string{Seconds, Minutes, Hours, Days, Months, Years} {
+		if !strings.HasSuffix(timeToConvert, unit) {
+			continue
+		}
+		timeToConvert = strings.ReplaceAll(timeToConvert, " ", "")
+		switch unitToConvertTo {
+		case Seconds:
+			return convertToSeconds(timeToConvert, unit)
+		case Minutes:
+			return convertToMinutes(timeToConvert, unit)
+		case Hours:
+			return convertToHours(timeToConvert, unit)
+		case Days:
+			return convertToDays(timeToConvert, unit)
+		case Months:
+			return convertToMonths(timeToConvert, unit)
+		case Years:
+			return convertToYears(timeToConvert, unit)
+		default:
+			return 0, errors.New("error converting to the specified unit")
+		}
+	}
+	return strconv.Atoi(timeToConvert)
+}
+
+func convertToSeconds(time, unit string) (int, error) {
+	switch unit {
+	case Seconds:
+		s := strings.ReplaceAll(time, unit, "")
+		return strconv.Atoi(s)
+	case Minutes:
+		s := strings.ReplaceAll(time, unit, "")
+		m, err := strconv.Atoi(s)
+		if err != nil {
+			return 0, err
+		}
+		return m * 60, nil
+	case Hours:
+		s := strings.ReplaceAll(time, unit, "")
+		h, err := strconv.Atoi(s)
+		if err != nil {
+			return 0, err
+		}
+		return h * 60 * 60, nil
+	case Days:
+		s := strings.ReplaceAll(time, unit, "")
+		d, err := strconv.Atoi(s)
+		if err != nil {
+			return 0, err
+		}
+		return d * 60 * 60 * 24, nil
+	case Months:
+		s := strings.ReplaceAll(time, unit, "")
+		m, err := strconv.Atoi(s)
+		if err != nil {
+			return 0, err
+		}
+		return m * 60 * 60 * 24 * 30, nil
+	case Years:
+		s := strings.ReplaceAll(time, unit, "")
+		y, err := strconv.Atoi(s)
+		if err != nil {
+			return 0, err
+		}
+		return y * 60 * 60 * 24 * 365, nil
+	}
+	return 0, errors.New("error converting to seconds, no suffix: s, m, h, D, M, Y matched")
+}
+
+func convertToMinutes(time, unit string) (int, error) {
+	switch unit {
+	case Seconds:
+		s := strings.ReplaceAll(time, unit, "")
+		sec, err := strconv.Atoi(s)
+		if err != nil {
+			return 0, err
+		}
+		return sec / 60, nil
+	case Minutes:
+		s := strings.ReplaceAll(time, unit, "")
+		return strconv.Atoi(s)
+	case Hours:
+		s := strings.ReplaceAll(time, unit, "")
+		h, err := strconv.Atoi(s)
+		if err != nil {
+			return 0, err
+		}
+		return h * 60, nil
+	case Days:
+		s := strings.ReplaceAll(time, unit, "")
+		d, err := strconv.Atoi(s)
+		if err != nil {
+			return 0, err
+		}
+		return d * 60 * 24, nil
+	case Months:
+		s := strings.ReplaceAll(time, unit, "")
+		m, err := strconv.Atoi(s)
+		if err != nil {
+			return 0, err
+		}
+		return m * 60 * 24 * 30, nil
+	case Years:
+		s := strings.ReplaceAll(time, unit, "")
+		y, err := strconv.Atoi(s)
+		if err != nil {
+			return 0, err
+		}
+		return y * 60 * 24 * 365, nil
+	}
+	return 0, errors.New("error converting to minutes, no suffix: s, m, h, D, M, Y matched")
+}
+
+func convertToHours(time, unit string) (int, error) {
+	switch unit {
+	case Seconds:
+		s := strings.ReplaceAll(time, unit, "")
+		sec, err := strconv.Atoi(s)
+		if err != nil {
+			return 0, err
+		}
+		return sec / (60 * 60), nil
+	case Minutes:
+		s := strings.ReplaceAll(time, unit, "")
+		m, err := strconv.Atoi(s)
+		if err != nil {
+			return 0, err
+		}
+		return m / 60, nil
+	case Hours:
+		s := strings.ReplaceAll(time, unit, "")
+		return strconv.Atoi(s)
+	case Days:
+		s := strings.ReplaceAll(time, unit, "")
+		d, err := strconv.Atoi(s)
+		if err != nil {
+			return 0, err
+		}
+		return d * 24, nil
+	case Months:
+		s := strings.ReplaceAll(time, unit, "")
+		m, err := strconv.Atoi(s)
+		if err != nil {
+			return 0, err
+		}
+		return m * 24 * 30, nil
+	case Years:
+		s := strings.ReplaceAll(time, unit, "")
+		y, err := strconv.Atoi(s)
+		if err != nil {
+			return 0, err
+		}
+		return y * 24 * 365, nil
+	}
+	return 0, errors.New("error converting to hours, no suffix: s, m, h, D, M, Y matched")
+}
+
+func convertToDays(time, unit string) (int, error) {
+	switch unit {
+	case Seconds:
+		s := strings.ReplaceAll(time, unit, "")
+		sec, err := strconv.Atoi(s)
+		if err != nil {
+			return 0, err
+		}
+		return sec / (60 * 60 * 24), nil
+	case Minutes:
+		s := strings.ReplaceAll(time, unit, "")
+		m, err := strconv.Atoi(s)
+		if err != nil {
+			return 0, err
+		}
+		return m / (60 * 24), nil
+	case Hours:
+		s := strings.ReplaceAll(time, unit, "")
+		h, err := strconv.Atoi(s)
+		if err != nil {
+			return 0, err
+		}
+		return h / 24, nil
+	case Days:
+		s := strings.ReplaceAll(time, unit, "")
+		return strconv.Atoi(s)
+	case Months:
+		s := strings.ReplaceAll(time, unit, "")
+		m, err := strconv.Atoi(s)
+		if err != nil {
+			return 0, err
+		}
+		return m * 30, nil
+	case Years:
+		s := strings.ReplaceAll(time, unit, "")
+		y, err := strconv.Atoi(s)
+		if err != nil {
+			return 0, err
+		}
+		return y * 365, nil
+	}
+	return 0, errors.New("error converting to days, no suffix: s, m, h, D, M, Y matched")
+}
+
+func convertToMonths(time, unit string) (int, error) {
+	switch unit {
+	case Seconds:
+		s := strings.ReplaceAll(time, unit, "")
+		sec, err := strconv.Atoi(s)
+		if err != nil {
+			return 0, err
+		}
+		return sec / (60 * 60 * 24 * 30), nil
+	case Minutes:
+		s := strings.ReplaceAll(time, unit, "")
+		m, err := strconv.Atoi(s)
+		if err != nil {
+			return 0, err
+		}
+		return m / (60 * 24 * 30), nil
+	case Hours:
+		s := strings.ReplaceAll(time, unit, "")
+		h, err := strconv.Atoi(s)
+		if err != nil {
+			return 0, err
+		}
+		return h / (24 * 30), nil
+	case Days:
+		s := strings.ReplaceAll(time, unit, "")
+		d, err := strconv.Atoi(s)
+		if err != nil {
+			return 0, err
+		}
+		return d / 30, nil
+	case Months:
+		s := strings.ReplaceAll(time, unit, "")
+		return strconv.Atoi(s)
+	case Years:
+		s := strings.ReplaceAll(time, unit, "")
+		y, err := strconv.Atoi(s)
+		if err != nil {
+			return 0, err
+		}
+		return y * 12, nil
+	}
+	return 0, errors.New("error converting to months, no suffix: s, m, h, D, M, Y matched")
+}
+
+func convertToYears(time, unit string) (int, error) {
+	switch unit {
+	case Seconds:
+		s := strings.ReplaceAll(time, unit, "")
+		sec, err := strconv.Atoi(s)
+		if err != nil {
+			return 0, err
+		}
+		return sec / (60 * 60 * 24 * 365), nil
+	case Minutes:
+		s := strings.ReplaceAll(time, unit, "")
+		m, err := strconv.Atoi(s)
+		if err != nil {
+			return 0, err
+		}
+		return m / (60 * 24 * 365), nil
+	case Hours:
+		s := strings.ReplaceAll(time, unit, "")
+		h, err := strconv.Atoi(s)
+		if err != nil {
+			return 0, err
+		}
+		return h / (24 * 365), nil
+	case Days:
+		s := strings.ReplaceAll(time, unit, "")
+		d, err := strconv.Atoi(s)
+		if err != nil {
+			return 0, err
+		}
+		return d / 365, nil
+	case Months:
+		s := strings.ReplaceAll(time, unit, "")
+		m, err := strconv.Atoi(s)
+		if err != nil {
+			return 0, err
+		}
+		return m / 12, nil
+	case Years:
+		s := strings.ReplaceAll(time, unit, "")
+		return strconv.Atoi(s)
+	}
+	return 0, errors.New("error converting to years, no suffix: s, m, h, D, M, Y matched")
+}
