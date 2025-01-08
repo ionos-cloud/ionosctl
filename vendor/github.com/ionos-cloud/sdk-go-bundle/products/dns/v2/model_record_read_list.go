@@ -226,37 +226,15 @@ func (o *RecordReadList) SetLinks(v Links) {
 	o.Links = v
 }
 
-func (o RecordReadList) MarshalJSON() ([]byte, error) {
-	toSerialize, err := o.ToMap()
-	if err != nil {
-		return []byte{}, err
-	}
-	return json.Marshal(toSerialize)
-}
-
 func (o RecordReadList) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !IsZero(o.Id) {
-		toSerialize["id"] = o.Id
-	}
-	if !IsZero(o.Type) {
-		toSerialize["type"] = o.Type
-	}
-	if !IsZero(o.Href) {
-		toSerialize["href"] = o.Href
-	}
-	if !IsZero(o.Items) {
-		toSerialize["items"] = o.Items
-	}
-	if !IsZero(o.Offset) {
-		toSerialize["offset"] = o.Offset
-	}
-	if !IsZero(o.Limit) {
-		toSerialize["limit"] = o.Limit
-	}
-	if !IsZero(o.Links) {
-		toSerialize["_links"] = o.Links
-	}
+	toSerialize["id"] = o.Id
+	toSerialize["type"] = o.Type
+	toSerialize["href"] = o.Href
+	toSerialize["items"] = o.Items
+	toSerialize["offset"] = o.Offset
+	toSerialize["limit"] = o.Limit
+	toSerialize["_links"] = o.Links
 	return toSerialize, nil
 }
 

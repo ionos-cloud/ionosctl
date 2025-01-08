@@ -121,25 +121,11 @@ func (o *NsecParameters) SetNsec3SaltBits(v int32) {
 	o.Nsec3SaltBits = v
 }
 
-func (o NsecParameters) MarshalJSON() ([]byte, error) {
-	toSerialize, err := o.ToMap()
-	if err != nil {
-		return []byte{}, err
-	}
-	return json.Marshal(toSerialize)
-}
-
 func (o NsecParameters) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !IsZero(o.NsecMode) {
-		toSerialize["nsecMode"] = o.NsecMode
-	}
-	if !IsZero(o.Nsec3Iterations) {
-		toSerialize["nsec3Iterations"] = o.Nsec3Iterations
-	}
-	if !IsZero(o.Nsec3SaltBits) {
-		toSerialize["nsec3SaltBits"] = o.Nsec3SaltBits
-	}
+	toSerialize["nsecMode"] = o.NsecMode
+	toSerialize["nsec3Iterations"] = o.Nsec3Iterations
+	toSerialize["nsec3SaltBits"] = o.Nsec3SaltBits
 	return toSerialize, nil
 }
 

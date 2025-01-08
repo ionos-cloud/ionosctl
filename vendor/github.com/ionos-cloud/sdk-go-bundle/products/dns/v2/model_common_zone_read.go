@@ -146,28 +146,12 @@ func (o *CommonZoneRead) SetMetadata(v MetadataWithStateNameservers) {
 	o.Metadata = v
 }
 
-func (o CommonZoneRead) MarshalJSON() ([]byte, error) {
-	toSerialize, err := o.ToMap()
-	if err != nil {
-		return []byte{}, err
-	}
-	return json.Marshal(toSerialize)
-}
-
 func (o CommonZoneRead) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !IsZero(o.Id) {
-		toSerialize["id"] = o.Id
-	}
-	if !IsZero(o.Type) {
-		toSerialize["type"] = o.Type
-	}
-	if !IsZero(o.Href) {
-		toSerialize["href"] = o.Href
-	}
-	if !IsZero(o.Metadata) {
-		toSerialize["metadata"] = o.Metadata
-	}
+	toSerialize["id"] = o.Id
+	toSerialize["type"] = o.Type
+	toSerialize["href"] = o.Href
+	toSerialize["metadata"] = o.Metadata
 	return toSerialize, nil
 }
 

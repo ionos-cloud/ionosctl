@@ -67,19 +67,9 @@ func (o *ReverseRecordEnsure) SetProperties(v ReverseRecord) {
 	o.Properties = v
 }
 
-func (o ReverseRecordEnsure) MarshalJSON() ([]byte, error) {
-	toSerialize, err := o.ToMap()
-	if err != nil {
-		return []byte{}, err
-	}
-	return json.Marshal(toSerialize)
-}
-
 func (o ReverseRecordEnsure) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !IsZero(o.Properties) {
-		toSerialize["properties"] = o.Properties
-	}
+	toSerialize["properties"] = o.Properties
 	return toSerialize, nil
 }
 

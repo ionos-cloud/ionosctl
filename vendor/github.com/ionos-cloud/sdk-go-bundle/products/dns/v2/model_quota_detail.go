@@ -157,28 +157,12 @@ func (o *QuotaDetail) SetReverseRecords(v int32) {
 	o.ReverseRecords = v
 }
 
-func (o QuotaDetail) MarshalJSON() ([]byte, error) {
-	toSerialize, err := o.ToMap()
-	if err != nil {
-		return []byte{}, err
-	}
-	return json.Marshal(toSerialize)
-}
-
 func (o QuotaDetail) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !IsZero(o.Zones) {
-		toSerialize["zones"] = o.Zones
-	}
-	if !IsZero(o.SecondaryZones) {
-		toSerialize["secondaryZones"] = o.SecondaryZones
-	}
-	if !IsZero(o.Records) {
-		toSerialize["records"] = o.Records
-	}
-	if !IsZero(o.ReverseRecords) {
-		toSerialize["reverseRecords"] = o.ReverseRecords
-	}
+	toSerialize["zones"] = o.Zones
+	toSerialize["secondaryZones"] = o.SecondaryZones
+	toSerialize["records"] = o.Records
+	toSerialize["reverseRecords"] = o.ReverseRecords
 	return toSerialize, nil
 }
 

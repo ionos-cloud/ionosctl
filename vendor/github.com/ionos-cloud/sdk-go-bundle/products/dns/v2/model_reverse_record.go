@@ -129,25 +129,13 @@ func (o *ReverseRecord) SetIp(v string) {
 	o.Ip = v
 }
 
-func (o ReverseRecord) MarshalJSON() ([]byte, error) {
-	toSerialize, err := o.ToMap()
-	if err != nil {
-		return []byte{}, err
-	}
-	return json.Marshal(toSerialize)
-}
-
 func (o ReverseRecord) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !IsZero(o.Name) {
-		toSerialize["name"] = o.Name
-	}
+	toSerialize["name"] = o.Name
 	if !IsNil(o.Description) {
 		toSerialize["description"] = o.Description
 	}
-	if !IsZero(o.Ip) {
-		toSerialize["ip"] = o.Ip
-	}
+	toSerialize["ip"] = o.Ip
 	return toSerialize, nil
 }
 

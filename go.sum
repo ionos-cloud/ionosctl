@@ -248,8 +248,8 @@ github.com/ionos-cloud/sdk-go-auth v1.0.10 h1:aHWstSqtmWZxvNVEye42MBK9WcbTQnbc3G
 github.com/ionos-cloud/sdk-go-auth v1.0.10/go.mod h1:yVHBsuAWLbcnlgfviCDZ5HE7k3KwkmK7GjgaAvnnKxI=
 github.com/ionos-cloud/sdk-go-bundle/products/cdn/v2 v2.1.1 h1:8O0c5GLVD6aM//iC3L3+0PaQgKux3tV/MqzOpLV4wEM=
 github.com/ionos-cloud/sdk-go-bundle/products/cdn/v2 v2.1.1/go.mod h1:BF6R+j1GdJEMImxkeh32qjIVWqsBfgi6VgyfsY5ezIA=
-github.com/ionos-cloud/sdk-go-bundle/products/dns/v2 v2.0.0 h1:6A/A4vsC6GBRS6rhyXUz8x28l8hclrYmC1FFbxWtBIE=
-github.com/ionos-cloud/sdk-go-bundle/products/dns/v2 v2.0.0/go.mod h1:zIgXHZZD8kNQk0dDYTW8F7FJHZLHeytCng3ckLc2z1I=
+github.com/ionos-cloud/sdk-go-bundle/products/dns/v2 v2.0.1 h1:EeDVljI3St112cgokBdvbr/L6D0HzfLr0d/u2R71KXU=
+github.com/ionos-cloud/sdk-go-bundle/products/dns/v2 v2.0.1/go.mod h1:S8SBfF2bJkW902JKSQ/O6zn3sXPgeLvaa8hUG/oycNg=
 github.com/ionos-cloud/sdk-go-bundle/shared v0.1.1 h1:NWobgIhmUJKG6ohFXefMj+KmpEEvLYEDUgGzpns6HQE=
 github.com/ionos-cloud/sdk-go-bundle/shared v0.1.1/go.mod h1:cLIl4zmB1yMdPSNgTzaRmXeuusEAY1O3Lp/iXSc/R6E=
 github.com/ionos-cloud/sdk-go-cert-manager v1.0.1 h1:QGnenRREavvU0ZrXvY4hmCMXRyvmKj5jaXsFX9Apfd0=
@@ -264,8 +264,6 @@ github.com/ionos-cloud/sdk-go-dbaas-mongo v1.3.1 h1:+tDoZ8IEPxYwJd6fDIpWksNJs9Zz
 github.com/ionos-cloud/sdk-go-dbaas-mongo v1.3.1/go.mod h1:rxOAeyAU6BTfghJibSRDdRNrKm2cIXMpSMe7JIWewJ8=
 github.com/ionos-cloud/sdk-go-dbaas-postgres v1.1.2 h1:AaKbci+kVS6/k43VwJwmXxCJ7pzj9jwuOPqO8Wd5560=
 github.com/ionos-cloud/sdk-go-dbaas-postgres v1.1.2/go.mod h1:nmJEwuRX65A5/PxwvdFW0XrV+N6WFYnMV1TiIafAwz4=
-github.com/ionos-cloud/sdk-go-dns v1.2.0 h1:1b/iFupP6ge+IzLeUyaoJwEssVgSwIjmFfwjUf1a4T8=
-github.com/ionos-cloud/sdk-go-dns v1.2.0/go.mod h1:l9gYdwtUshlBOiIi4nHn3RCX81XlV3VoNvLJrO2VfHg=
 github.com/ionos-cloud/sdk-go-kafka v1.1.0 h1:9vm2iyCJdo2VFconoNWMoYvQNsjzU2fFEusV2gkiV4g=
 github.com/ionos-cloud/sdk-go-kafka v1.1.0/go.mod h1:TfGSquLvfwlnc0Yt0t8OzUEmKHG+2TqoKsV+JZSnM6w=
 github.com/ionos-cloud/sdk-go-logging v1.0.1 h1:MB9jPoBUL3mZ+ois7kXYy67x0FopAw2aihMGdr2wu1k=

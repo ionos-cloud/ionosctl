@@ -207,14 +207,6 @@ func (o *DnssecKey) SetComposedKeyData(v string) {
 	o.ComposedKeyData = &v
 }
 
-func (o DnssecKey) MarshalJSON() ([]byte, error) {
-	toSerialize, err := o.ToMap()
-	if err != nil {
-		return []byte{}, err
-	}
-	return json.Marshal(toSerialize)
-}
-
 func (o DnssecKey) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.KeyTag) {
