@@ -60,21 +60,7 @@ github.com/hashicorp/hcl/json/token
 # github.com/inconshreveable/mousetrap v1.1.0
 ## explicit; go 1.18
 github.com/inconshreveable/mousetrap
-<<<<<<< HEAD
 # github.com/ionos-cloud/sdk-go-auth v1.0.10
-=======
-# github.com/ionos-cloud/sdk-go-auth v1.0.6
-## explicit; go 1.19
-github.com/ionos-cloud/sdk-go-auth
-# github.com/ionos-cloud/sdk-go-bundle/products/cdn/v2 v2.1.0
-## explicit; go 1.22
-github.com/ionos-cloud/sdk-go-bundle/products/cdn/v2
-# github.com/ionos-cloud/sdk-go-bundle/shared v0.1.1
-## explicit; go 1.20
-github.com/ionos-cloud/sdk-go-bundle/shared
-<<<<<<< HEAD
-# github.com/ionos-cloud/sdk-go-cdn v1.1.0
->>>>>>> 36859917 (refactor: replace client model)
 ## explicit; go 1.18
 github.com/ionos-cloud/sdk-go-auth
 # github.com/ionos-cloud/sdk-go-bundle/products/cdn/v2 v2.1.1
@@ -86,8 +72,6 @@ github.com/ionos-cloud/sdk-go-bundle/products/dns/v2
 # github.com/ionos-cloud/sdk-go-bundle/shared v0.1.1
 ## explicit; go 1.20
 github.com/ionos-cloud/sdk-go-bundle/shared
-=======
->>>>>>> c3fa8930 (refactor: replace imports)
 # github.com/ionos-cloud/sdk-go-cert-manager v1.0.1
 ## explicit; go 1.19
 github.com/ionos-cloud/sdk-go-cert-manager
