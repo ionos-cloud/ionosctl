@@ -9,7 +9,6 @@ import (
 	"log"
 	"os"
 	"strconv"
-	"strings"
 	"testing"
 	"time"
 
@@ -227,10 +226,8 @@ func cleanupTokensCreatedAfterDate(taym time.Time) {
 
 	// Delete tokens generated since setup
 	for _, t := range *toks.Tokens {
-		strDate, ok := strings.CutSuffix(*t.CreatedDate, "[UTC]")
-		if !ok {
-			panic("they changed the date format: no more [UTC] suffix")
-		}
+		strDate := *t.CreatedDate
+
 		date, err := time.Parse(time.RFC3339, strDate)
 		if err != nil {
 			panic(fmt.Errorf("they changed the date format: %w", err))

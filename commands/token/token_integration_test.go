@@ -8,7 +8,6 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"strings"
 	"testing"
 	"time"
 
@@ -82,10 +81,7 @@ func testCreateToken(t *testing.T) {
 	foundTokenViaSdk = nil
 
 	for _, tok := range *allTokens {
-		strDate, ok := strings.CutSuffix(*tok.CreatedDate, "[UTC]")
-		if !ok {
-			panic("they changed the time format: no more [UTC] suffix")
-		}
+		strDate := *tok.CreatedDate
 
 		date, err := time.Parse(time.RFC3339, strDate)
 		if err != nil {
