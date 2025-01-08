@@ -22,6 +22,10 @@ type IonosTime struct {
 	time.Time
 }
 
+type NullableIonosTime struct {
+	NullableTime
+}
+
 func (t *IonosTime) UnmarshalJSON(data []byte) error {
 	str := string(data)
 	if shared.Strlen(str) == 0 {

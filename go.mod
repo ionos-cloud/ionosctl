@@ -38,7 +38,7 @@ require (
 require (
 	github.com/dustin/go-humanize v0.0.0-20171111073723-bb3d318650d4
 	github.com/ionos-cloud/sdk-go-bundle/products/cdn/v2 v2.1.1
-	github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo/v2 v2.0.1
+	github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo/v2 v2.0.2
 	github.com/ionos-cloud/sdk-go-bundle/products/dns/v2 v2.0.1
 	github.com/ionos-cloud/sdk-go-bundle/shared v0.1.1
 	github.com/ionos-cloud/sdk-go-dbaas-mariadb v1.1.1
