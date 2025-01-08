@@ -122,25 +122,11 @@ func (o *MetadataForSecondaryZoneRecords) SetRootName(v string) {
 	o.RootName = v
 }
 
-func (o MetadataForSecondaryZoneRecords) MarshalJSON() ([]byte, error) {
-	toSerialize, err := o.ToMap()
-	if err != nil {
-		return []byte{}, err
-	}
-	return json.Marshal(toSerialize)
-}
-
 func (o MetadataForSecondaryZoneRecords) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !IsZero(o.Fqdn) {
-		toSerialize["fqdn"] = o.Fqdn
-	}
-	if !IsZero(o.ZoneId) {
-		toSerialize["zoneId"] = o.ZoneId
-	}
-	if !IsZero(o.RootName) {
-		toSerialize["rootName"] = o.RootName
-	}
+	toSerialize["fqdn"] = o.Fqdn
+	toSerialize["zoneId"] = o.ZoneId
+	toSerialize["rootName"] = o.RootName
 	return toSerialize, nil
 }
 

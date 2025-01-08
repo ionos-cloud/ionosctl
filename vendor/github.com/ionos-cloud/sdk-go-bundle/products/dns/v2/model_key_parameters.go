@@ -119,25 +119,11 @@ func (o *KeyParameters) SetZskBits(v ZskBits) {
 	o.ZskBits = v
 }
 
-func (o KeyParameters) MarshalJSON() ([]byte, error) {
-	toSerialize, err := o.ToMap()
-	if err != nil {
-		return []byte{}, err
-	}
-	return json.Marshal(toSerialize)
-}
-
 func (o KeyParameters) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !IsZero(o.Algorithm) {
-		toSerialize["algorithm"] = o.Algorithm
-	}
-	if !IsZero(o.KskBits) {
-		toSerialize["kskBits"] = o.KskBits
-	}
-	if !IsZero(o.ZskBits) {
-		toSerialize["zskBits"] = o.ZskBits
-	}
+	toSerialize["algorithm"] = o.Algorithm
+	toSerialize["kskBits"] = o.KskBits
+	toSerialize["zskBits"] = o.ZskBits
 	return toSerialize, nil
 }
 

@@ -230,25 +230,11 @@ func (o *Record) SetEnabled(v bool) {
 	o.Enabled = &v
 }
 
-func (o Record) MarshalJSON() ([]byte, error) {
-	toSerialize, err := o.ToMap()
-	if err != nil {
-		return []byte{}, err
-	}
-	return json.Marshal(toSerialize)
-}
-
 func (o Record) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !IsZero(o.Name) {
-		toSerialize["name"] = o.Name
-	}
-	if !IsZero(o.Type) {
-		toSerialize["type"] = o.Type
-	}
-	if !IsZero(o.Content) {
-		toSerialize["content"] = o.Content
-	}
+	toSerialize["name"] = o.Name
+	toSerialize["type"] = o.Type
+	toSerialize["content"] = o.Content
 	if !IsNil(o.Ttl) {
 		toSerialize["ttl"] = o.Ttl
 	}

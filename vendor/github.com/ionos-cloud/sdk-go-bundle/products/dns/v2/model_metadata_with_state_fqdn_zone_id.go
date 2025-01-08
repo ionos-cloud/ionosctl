@@ -327,14 +327,6 @@ func (o *MetadataWithStateFqdnZoneId) SetZoneId(v string) {
 	o.ZoneId = v
 }
 
-func (o MetadataWithStateFqdnZoneId) MarshalJSON() ([]byte, error) {
-	toSerialize, err := o.ToMap()
-	if err != nil {
-		return []byte{}, err
-	}
-	return json.Marshal(toSerialize)
-}
-
 func (o MetadataWithStateFqdnZoneId) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.CreatedDate) {
@@ -355,15 +347,9 @@ func (o MetadataWithStateFqdnZoneId) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.LastModifiedByUserId) {
 		toSerialize["lastModifiedByUserId"] = o.LastModifiedByUserId
 	}
-	if !IsZero(o.State) {
-		toSerialize["state"] = o.State
-	}
-	if !IsZero(o.Fqdn) {
-		toSerialize["fqdn"] = o.Fqdn
-	}
-	if !IsZero(o.ZoneId) {
-		toSerialize["zoneId"] = o.ZoneId
-	}
+	toSerialize["state"] = o.State
+	toSerialize["fqdn"] = o.Fqdn
+	toSerialize["zoneId"] = o.ZoneId
 	return toSerialize, nil
 }
 

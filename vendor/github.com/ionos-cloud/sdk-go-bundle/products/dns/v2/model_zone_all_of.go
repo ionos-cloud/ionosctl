@@ -79,14 +79,6 @@ func (o *ZoneAllOf) SetEnabled(v bool) {
 	o.Enabled = &v
 }
 
-func (o ZoneAllOf) MarshalJSON() ([]byte, error) {
-	toSerialize, err := o.ToMap()
-	if err != nil {
-		return []byte{}, err
-	}
-	return json.Marshal(toSerialize)
-}
-
 func (o ZoneAllOf) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.Enabled) {

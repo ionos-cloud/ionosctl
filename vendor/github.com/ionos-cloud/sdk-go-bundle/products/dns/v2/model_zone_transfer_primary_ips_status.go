@@ -93,22 +93,10 @@ func (o *ZoneTransferPrimaryIpsStatus) SetItems(v []ZoneTransferPrimaryIpStatus)
 	o.Items = v
 }
 
-func (o ZoneTransferPrimaryIpsStatus) MarshalJSON() ([]byte, error) {
-	toSerialize, err := o.ToMap()
-	if err != nil {
-		return []byte{}, err
-	}
-	return json.Marshal(toSerialize)
-}
-
 func (o ZoneTransferPrimaryIpsStatus) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !IsZero(o.Type) {
-		toSerialize["type"] = o.Type
-	}
-	if !IsZero(o.Items) {
-		toSerialize["items"] = o.Items
-	}
+	toSerialize["type"] = o.Type
+	toSerialize["items"] = o.Items
 	return toSerialize, nil
 }
 

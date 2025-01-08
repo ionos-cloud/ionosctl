@@ -300,14 +300,6 @@ func (o *MetadataWithStateNameservers) SetNameservers(v []string) {
 	o.Nameservers = v
 }
 
-func (o MetadataWithStateNameservers) MarshalJSON() ([]byte, error) {
-	toSerialize, err := o.ToMap()
-	if err != nil {
-		return []byte{}, err
-	}
-	return json.Marshal(toSerialize)
-}
-
 func (o MetadataWithStateNameservers) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.CreatedDate) {
@@ -328,12 +320,8 @@ func (o MetadataWithStateNameservers) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.LastModifiedByUserId) {
 		toSerialize["lastModifiedByUserId"] = o.LastModifiedByUserId
 	}
-	if !IsZero(o.State) {
-		toSerialize["state"] = o.State
-	}
-	if !IsZero(o.Nameservers) {
-		toSerialize["nameservers"] = o.Nameservers
-	}
+	toSerialize["state"] = o.State
+	toSerialize["nameservers"] = o.Nameservers
 	return toSerialize, nil
 }
 

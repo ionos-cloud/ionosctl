@@ -68,19 +68,9 @@ func (o *SecondaryZoneAllOf) SetPrimaryIps(v []string) {
 	o.PrimaryIps = v
 }
 
-func (o SecondaryZoneAllOf) MarshalJSON() ([]byte, error) {
-	toSerialize, err := o.ToMap()
-	if err != nil {
-		return []byte{}, err
-	}
-	return json.Marshal(toSerialize)
-}
-
 func (o SecondaryZoneAllOf) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !IsZero(o.PrimaryIps) {
-		toSerialize["primaryIps"] = o.PrimaryIps
-	}
+	toSerialize["primaryIps"] = o.PrimaryIps
 	return toSerialize, nil
 }
 

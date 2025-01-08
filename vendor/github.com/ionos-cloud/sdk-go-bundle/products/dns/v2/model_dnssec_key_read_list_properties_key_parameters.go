@@ -73,14 +73,6 @@ func (o *DnssecKeyReadListPropertiesKeyParameters) SetAlgorithm(v Algorithm) {
 	o.Algorithm = &v
 }
 
-func (o DnssecKeyReadListPropertiesKeyParameters) MarshalJSON() ([]byte, error) {
-	toSerialize, err := o.ToMap()
-	if err != nil {
-		return []byte{}, err
-	}
-	return json.Marshal(toSerialize)
-}
-
 func (o DnssecKeyReadListPropertiesKeyParameters) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.Algorithm) {

@@ -108,14 +108,6 @@ func (o *KeyData) SetPubKey(v string) {
 	o.PubKey = &v
 }
 
-func (o KeyData) MarshalJSON() ([]byte, error) {
-	toSerialize, err := o.ToMap()
-	if err != nil {
-		return []byte{}, err
-	}
-	return json.Marshal(toSerialize)
-}
-
 func (o KeyData) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.Flags) {

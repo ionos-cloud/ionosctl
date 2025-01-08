@@ -107,14 +107,6 @@ func (o *DnssecKeyReadListMetadata) SetItems(v []DnssecKey) {
 	o.Items = v
 }
 
-func (o DnssecKeyReadListMetadata) MarshalJSON() ([]byte, error) {
-	toSerialize, err := o.ToMap()
-	if err != nil {
-		return []byte{}, err
-	}
-	return json.Marshal(toSerialize)
-}
-
 func (o DnssecKeyReadListMetadata) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.ZoneId) {
