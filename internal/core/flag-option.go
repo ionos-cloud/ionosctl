@@ -48,7 +48,7 @@ func RequiredFlagOption() FlagOptionFunc {
 // If the baseURL contains a placeholder and a location is provided, the location will be used to construct the URL
 func WithCompletionComplex(
 	completionFunc func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective),
-	baseURL string,
+	baseURL string, locations []string,
 ) FlagOptionFunc {
 	return func(cmdToRegister *Command, flagName string) {
 		cmdToRegister.Command.RegisterFlagCompletionFunc(flagName,
@@ -93,14 +93,14 @@ func WithCompletionComplex(
 // - WithCompletionE(completionFuncE, "api.ionos.com") for an API with a single endpoint
 //
 // - WithCompletionE(completionFuncE, "") to let the SDK choose the API endpoint
-func WithCompletionE(completionFunc func() ([]string, error), baseURL string) FlagOptionFunc {
+func WithCompletionE(completionFunc func() ([]string, error), baseURL string, locations []string) FlagOptionFunc {
 	return WithCompletionComplex(func(_ *cobra.Command, _ []string, _ string) ([]string, cobra.ShellCompDirective) {
 		results, err := completionFunc()
 		if err != nil {
 			return nil, cobra.ShellCompDirectiveError
 		}
 		return results, cobra.ShellCompDirectiveNoFileComp
-	}, baseURL)
+	}, baseURL, locations)
 }
 
 // WithCompletion is a FlagOptionFunc that allows for a completion function that returns a list of strings.
@@ -112,8 +112,8 @@ func WithCompletionE(completionFunc func() ([]string, error), baseURL string) Fl
 // - WithCompletion(completionFunc, "api.ionos.com") for an API with a single endpoint
 //
 // - WithCompletion(completionFunc, "") to let the SDKs choose the API endpoint
-func WithCompletion(completionFunc func() []string, baseURL string) FlagOptionFunc {
+func WithCompletion(completionFunc func() []string, baseURL string, locations []string) FlagOptionFunc {
 	return WithCompletionComplex(func(_ *cobra.Command, _ []string, _ string) ([]string, cobra.ShellCompDirective) {
 		return completionFunc(), cobra.ShellCompDirectiveNoFileComp
-	}, baseURL)
+	}, baseURL, locations)
 }

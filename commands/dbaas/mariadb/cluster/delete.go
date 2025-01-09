@@ -82,7 +82,7 @@ ionosctl db mar c d --all --name <name>`,
 					}
 					return *c.Id
 				})
-			}, constants.MariaDBApiRegionalURL),
+			}, constants.MariaDBApiRegionalURL, constants.MariaDBLocations),
 	)
 	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Delete all mariadb clusters")
 	cmd.AddBoolFlag(constants.FlagName, "", false, "When deleting all clusters, filter the clusters by a name")

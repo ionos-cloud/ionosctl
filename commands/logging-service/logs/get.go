@@ -41,7 +41,7 @@ func LogsGetCmd() *core.Command {
 			return completer.LoggingServiceLogTags(
 				viper.GetString(core.GetFlagName(cmd.NS, constants.FlagLoggingPipelineId)),
 			)
-		}, constants.LoggingApiRegionalURL),
+		}, constants.LoggingApiRegionalURL, constants.LoggingLocations),
 	)
 
 	return cmd
