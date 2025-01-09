@@ -37,14 +37,14 @@ List WireGuard Peers
 ## Options
 
 ```text
-  -u, --api-url string      Override default host url (default "vpn.de-txl.ionos.com")
+  -u, --api-url string      Override default host URL (default "https://vpn.de-txl.ionos.com")
       --cols strings        Set of columns to be printed on output 
                             Available columns: [ID Name Description Host Port WhitelistIPs PublicKey Status]
   -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -f, --force               Force command to execute without user input
-  -i, --gateway-id string   The ID of the WireGuard Gateway (required)
+  -i, --gateway-id string   The ID of the Wireguard Gateway (required)
   -h, --help                Print usage
-      --location string     The location your resources are hosted in. Possible values: [de/fra de/txl] (default "de/txl")
+  -l, --location string     Location of the resource to operate on. Can be one of: de/txl, de/fra, es/vit, fr/par, gb/lhr, gb/bhx, us/ewr, us/las, us/mci
   -M, --max-results int32   The maximum number of elements to return
       --no-headers          Don't print table headers when table output is used
       --offset int32        Skip a certain number of results

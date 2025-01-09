@@ -54,7 +54,7 @@ func Delete() *core.Command {
 		},
 	})
 
-	cmd.AddStringFlag(constants.FlagGatewayID, constants.FlagIdShort, "", "The ID of the WireGuard Gateway",
+	cmd.AddStringFlag(constants.FlagGatewayID, "", "", "The ID of the WireGuard Gateway",
 		core.RequiredFlagOption(),
 		core.WithCompletion(completer.GatewayIDs, constants.VPNApiRegionalURL),
 	)

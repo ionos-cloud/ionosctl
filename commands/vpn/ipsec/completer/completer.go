@@ -4,11 +4,8 @@ import (
 	"context"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
-	"github.com/ionos-cloud/ionosctl/v6/internal/config"
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 	vpn "github.com/ionos-cloud/sdk-go-vpn"
-	"github.com/spf13/viper"
 )
 
 // -- GATEWAYS
@@ -24,10 +21,6 @@ func GatewaysProperty[V any](f func(gateway vpn.IPSecGatewayRead) V, fs ...Gatew
 
 // Gateways returns all distributions matching the given filters
 func Gateways(fs ...GatewayFilter) (vpn.IPSecGatewayReadList, error) {
-	if url := config.GetServerUrl(); url == constants.DefaultApiURL || url == "" {
-		viper.Set(constants.ArgServerUrl, constants.DefaultVPNApiURL)
-	}
-
 	req := client.Must().VPNClient.IPSecGatewaysApi.IpsecgatewaysGet(context.Background())
 	for _, f := range fs {
 		var err error
@@ -57,10 +50,6 @@ func TunnelsProperty[V any](gatewayID string, f func(tunnel vpn.IPSecTunnelRead)
 
 // Tunnels returns all distributions matching the given filters
 func Tunnels(gatewayID string, fs ...TunnelFilter) (vpn.IPSecTunnelReadList, error) {
-	if url := config.GetServerUrl(); url == constants.DefaultApiURL || url == "" {
-		viper.Set(constants.ArgServerUrl, constants.DefaultVPNApiURL)
-	}
-
 	req := client.Must().VPNClient.IPSecTunnelsApi.IpsecgatewaysTunnelsGet(context.Background(), gatewayID)
 	for _, f := range fs {
 		var err error

@@ -31,7 +31,7 @@ Update a IPSec Tunnel
 ## Options
 
 ```text
-  -u, --api-url string                    Override default host url (default "vpn.de-txl.ionos.com")
+  -u, --api-url string                    Override default host URL (default "https://vpn.de-txl.ionos.com")
       --auth-method string                The authentication method for the IPSec tunnel. Valid values are PSK or RSA (required)
       --cloud-network-cidrs strings       The network CIDRs on the "Left" side that are allowed to connect to the IPSec tunnel, i.e the CIDRs within your IONOS Cloud LAN. Specify "0.0.0.0/0" or "::/0" for all addresses.
       --cols strings                      Set of columns to be printed on output 
@@ -52,14 +52,14 @@ Update a IPSec Tunnel
       --ike-lifetime int32                The phase lifetime in seconds
       --json-properties string            Path to a JSON file containing the desired properties. Overrides any other properties set.
       --json-properties-example           If set, prints a complete JSON which could be used for --json-properties and exits. Hint: Pipe me to a .json file
-      --location string                   The location your resources are hosted in. Possible values: [de/fra de/txl] (default "de/txl")
+  -l, --location string                   Location of the resource to operate on. Can be one of: de/txl, de/fra, es/vit, fr/par, gb/lhr, gb/bhx, us/ewr, us/las, us/mci
       --name string                       Name of the IPSec Tunnel (required)
       --no-headers                        Don't print table headers when table output is used
   -o, --output string                     Desired output format [text|json|api-json] (default "text")
       --peer-network-cidrs strings        The network CIDRs on the "Right" side that are allowed to connect to the IPSec tunnel. Specify "0.0.0.0/0" or "::/0" for all addresses.
       --psk-key string                    The pre-shared key for the IPSec tunnel (required)
   -q, --quiet                             Quiet output
-  -i, --tunnel-id string                  The ID of the IPSec Tunnel you want to delete (required)
+  -i, --tunnel-id string                  The ID of the IPSec Tunnel (required)
   -v, --verbose                           Print step-by-step process when running command
 ```
 

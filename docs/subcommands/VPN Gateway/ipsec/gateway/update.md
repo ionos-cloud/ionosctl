@@ -31,7 +31,7 @@ Update a IPSec Gateway
 ## Options
 
 ```text
-  -u, --api-url string         Override default host url (default "vpn.de-txl.ionos.com")
+  -u, --api-url string         Override default host URL (default "https://vpn.de-txl.ionos.com")
       --cols strings           Set of columns to be printed on output 
                                Available columns: [ID Name Description GatewayIP DatacenterId LanId ConnectionIPv4 ConnectionIPv6 Version Status]
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
@@ -43,7 +43,7 @@ Update a IPSec Gateway
       --gateway-ip string      The IP of an IPBlock in the same location as the provided datacenter (required)
   -h, --help                   Print usage
       --lan-id string          The numeric LAN ID to connect your VPN Gateway to (required)
-      --location string        The location your resources are hosted in. Possible values: [de/fra de/txl] (default "de/txl")
+  -l, --location string        Location of the resource to operate on. Can be one of: de/txl, de/fra, es/vit, fr/par, gb/lhr, gb/bhx, us/ewr, us/las, us/mci
   -n, --name string            Name of the IPSec Gateway (required)
       --no-headers             Don't print table headers when table output is used
   -o, --output string          Desired output format [text|json|api-json] (default "text")

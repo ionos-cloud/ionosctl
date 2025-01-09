@@ -83,7 +83,7 @@ func DatacenterIdsFilterLocation(loc string) []string {
 	return dcIds
 }
 
-func DataCentersIds() []string {
+func DataCentersIds(filters ...func(datacenter ionoscloud.Datacenter) bool) []string {
 	datacenterSvc := resources.NewDataCenterService(client.Must(), context.Background())
 	datacenters, _, err := datacenterSvc.List(resources.ListQueryParams{})
 	if err != nil {

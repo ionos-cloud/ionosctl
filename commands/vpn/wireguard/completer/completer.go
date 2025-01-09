@@ -4,11 +4,8 @@ import (
 	"context"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
-	"github.com/ionos-cloud/ionosctl/v6/internal/config"
-	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 	vpn "github.com/ionos-cloud/sdk-go-vpn"
-	"github.com/spf13/viper"
 )
 
 // -- GATEWAYS
@@ -24,10 +21,6 @@ func GatewaysProperty[V any](f func(gateway vpn.WireguardGatewayRead) V, fs ...G
 
 // Gateways returns all distributions matching the given filters
 func Gateways(fs ...GatewayFilter) (vpn.WireguardGatewayReadList, error) {
-	if url := config.GetServerUrl(); url == constants.DefaultApiURL || url == "" {
-		viper.Set(constants.ArgServerUrl, constants.DefaultVPNApiURL)
-	}
-
 	req := client.Must().VPNClient.WireguardGatewaysApi.WireguardgatewaysGet(context.Background())
 	for _, f := range fs {
 		var err error
@@ -59,10 +52,6 @@ func PeersProperty[V any](gatewayID string, f func(peer vpn.WireguardPeerRead) V
 
 // Peers returns all distributions matching the given filters
 func Peers(gatewayID string, fs ...PeerFilter) (vpn.WireguardPeerReadList, error) {
-	if url := config.GetServerUrl(); url == constants.DefaultApiURL || url == "" {
-		viper.Set(constants.ArgServerUrl, constants.DefaultVPNApiURL)
-	}
-
 	req := client.Must().VPNClient.WireguardPeersApi.WireguardgatewaysPeersGet(context.Background(), gatewayID)
 	for _, f := range fs {
 		var err error

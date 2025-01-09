@@ -37,7 +37,7 @@ Update a WireGuard Peer
 ## Options
 
 ```text
-  -u, --api-url string       Override default host url (default "vpn.de-txl.ionos.com")
+  -u, --api-url string       Override default host URL (default "https://vpn.de-txl.ionos.com")
       --cols strings         Set of columns to be printed on output 
                              Available columns: [ID Name Description Host Port WhitelistIPs PublicKey Status]
   -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
@@ -47,11 +47,11 @@ Update a WireGuard Peer
   -h, --help                 Print usage
       --host string          Hostname or IPV4 address that the WireGuard Server will connect to (required)
       --ips strings          Comma separated subnets of CIDRs that are allowed to connect to the WireGuard Gateway. Specify "a.b.c.d/32" for an individual IP address. Specify "0.0.0.0/0" or "::/0" for all addresses (required)
-      --location string      The location your resources are hosted in. Possible values: [de/fra de/txl] (default "de/txl")
+  -l, --location string      Location of the resource to operate on. Can be one of: de/txl, de/fra, es/vit, fr/par, gb/lhr, gb/bhx, us/ewr, us/las, us/mci
       --name string          Name of the WireGuard Peer (required)
       --no-headers           Don't print table headers when table output is used
   -o, --output string        Desired output format [text|json|api-json] (default "text")
-  -i, --peer-id string       The ID of the WireGuard Peer you want to delete (required)
+  -i, --peer-id string       The ID of the WireGuard Peer (required)
       --port int             Port that the WireGuard Server will connect to (default 51820)
       --public-key string    Public key of the connecting peer (required)
   -q, --quiet                Quiet output
