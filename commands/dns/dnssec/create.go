@@ -94,14 +94,14 @@ func Create() *core.Command {
 		core.WithCompletion(
 			func() []string {
 				return []string{"1024", "2048", "4096"}
-			}, constants.DNSApiRegionalURL,
+			}, constants.DNSApiRegionalURL, constants.DNSLocations,
 		),
 	)
 	cmd.AddIntFlag(FlagZskBits, "", 1024, "Zone signing key length in bits. zskBits <= kskBits: [1024/2048/4096]",
 		core.WithCompletion(
 			func() []string {
 				return []string{"1024", "2048", "4096"}
-			}, constants.DNSApiRegionalURL,
+			}, constants.DNSApiRegionalURL, constants.DNSLocations,
 		),
 	)
 	cmd.AddSetFlag(FlagNsecMode, "", "NSEC", []string{"NSEC", "NSEC3"}, "NSEC mode.")
@@ -110,7 +110,7 @@ func Create() *core.Command {
 		core.WithCompletion(
 			func() []string {
 				return []string{"64", "72", "80", "88", "96", "104", "112", "120", "128"}
-			}, constants.DNSApiRegionalURL,
+			}, constants.DNSApiRegionalURL, constants.DNSLocations,
 		),
 	)
 	cmd.AddIntFlag(FlagValidity, "", 90, "Signature validity in days [90..365]")

@@ -67,7 +67,7 @@ func FindByID() *core.Command {
 						return *k.Id
 					},
 				)
-			}, constants.KafkaApiRegionalURL,
+			}, constants.KafkaApiRegionalURL, constants.KafkaLocations,
 		),
 	)
 

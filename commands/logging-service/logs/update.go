@@ -29,7 +29,7 @@ func LogsUpdateCmd() *core.Command {
 	cmd.AddStringFlag(
 		constants.FlagLoggingPipelineId, constants.FlagIdShort, "",
 		"The ID of the logging pipeline", core.RequiredFlagOption(),
-		core.WithCompletion(completer.LoggingServicePipelineIds, constants.LoggingApiRegionalURL),
+		core.WithCompletion(completer.LoggingServicePipelineIds, constants.LoggingApiRegionalURL, constants.LoggingLocations),
 	)
 	cmd.AddStringFlag(
 		constants.FlagLoggingPipelineLogTag, "", "", "The tag of the pipeline log that you want to update",
