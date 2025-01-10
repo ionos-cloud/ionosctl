@@ -2,7 +2,7 @@
 
 # tags: maria, mariadb
 
-BATS_LIBS_PATH="${LIBS_PATH:-../libs}" # fallback to relative path if not set
+BATS_LIBS_PATH="${LIBS_PATH:-../../libs}" # fallback to relative path if not set
 load "${BATS_LIBS_PATH}/bats-assert/load"
 load "${BATS_LIBS_PATH}/bats-support/load"
 load '../setup.bats'
@@ -26,9 +26,6 @@ setup_file() {
         run ionosctl db mariadb cluster delete --all -f
         sleep 30
     fi
-
-    echo "Waiting for clusters to be deleted..."
-    echo "[ -z \"\$(ionosctl db mariadb cluster list 2>/dev/null)\" ]" | retry_command bash
 }
 
 @test "Create MariaDB Cluster" {
@@ -58,20 +55,6 @@ setup_file() {
     echo "$cluster_id" > /tmp/bats_test/cluster_id
 }
 
-@test "Backup Listing is successful" {
-    cluster_id=$(cat /tmp/bats_test/cluster_id)
-
-    # Sadly cannot really assert backups output as this is a new cluster and no backups are available.
-    # This is a stateful operation and its output cannot really be tested...
-    # TODO: Improve me if possible
-
-    run ionosctl db mariadb backup list 2> /dev/null
-    assert_success
-
-    run ionosctl db mariadb backup list --cluster-id "${cluster_id}" 2> /dev/null
-    assert_success
-}
-
 @test "Find MariaDB Cluster and wait until it is available" {
     cluster_id=$(cat /tmp/bats_test/cluster_id)
     echo "Finding mariadb cluster $cluster_id"
@@ -90,6 +73,20 @@ setup_file() {
     # Use retry_until to check if the cluster is in "available" state
     retry_until "ionosctl db mariadb cluster get --cluster-id $cluster_id -o json 2> /dev/null | jq -r '.metadata.state'" \
         "[[ \$output == \"AVAILABLE\" ]]" 10 60
+}
+
+@test "Backup Listing is successful" {
+    cluster_id=$(cat /tmp/bats_test/cluster_id)
+
+    # Sadly cannot really assert backups output as this is a new cluster and no backups are available.
+    # This is a stateful operation and its output cannot really be tested...
+    # TODO: Improve me if possible
+
+    run ionosctl db mariadb backup list 2> /dev/null
+    assert_success
+
+    run ionosctl db mariadb backup list --cluster-id "${cluster_id}" 2> /dev/null
+    assert_success
 }
 
 @test "Assert DNS resolves to CIDR" {
@@ -113,9 +110,9 @@ teardown_file() {
     cluster_id=$(cat /tmp/bats_test/cluster_id)
 
     echo "cleaning up datacenter $datacenter_id and mariadb cluster $cluster_id"
-    retry_command run ionosctl dbaas mariadb cluster delete --cluster-id "$cluster_id" -f
-    sleep 120
-    retry_command run ionosctl datacenter delete --datacenter_id "$datacenter_id" -f -w -t 1200
+    run ionosctl dbaas mariadb cluster delete --cluster-id "$cluster_id" -f
+    sleep 600
+    run ionosctl datacenter delete --datacenter_id "$datacenter_id" -f -w -t 400
 
     run ionosctl token delete --token "$IONOS_TOKEN"
     unset IONOS_TOKEN

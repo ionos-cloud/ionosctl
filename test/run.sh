@@ -6,7 +6,7 @@ BASE_BRANCH=${BASE_BRANCH:-master}
 export LIBS_PATH="${SCRIPT_DIR}/bats/libs"
 
 # all .bats files excluding the 'libs' directory within 'bats'
-BATS_FILES=$(find "${SCRIPT_DIR}/bats" -path "${SCRIPT_DIR}/bats/libs" -prune -o -name '*.bats' -print)
+BATS_FILES=$(find "${SCRIPT_DIR}/bats/suites" -name '*.bats' -print)
 
 # modified files compared to the base
 MODIFIED_FILES=$(git diff --name-only $BASE_BRANCH | grep -v '^vendor/')

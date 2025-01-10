@@ -1,6 +1,6 @@
 #!/usr/bin/env bats
 
-BATS_LIBS_PATH="${LIBS_PATH:-../libs}" # fallback to relative path if not set
+BATS_LIBS_PATH="${LIBS_PATH:-../../libs}" # fallback to relative path if not set
 load "${BATS_LIBS_PATH}/bats-assert/load"
 load "${BATS_LIBS_PATH}/bats-support/load"
 
