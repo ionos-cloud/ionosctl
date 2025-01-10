@@ -310,8 +310,8 @@ func PreRunVolumeCreate(c *core.PreCommandConfig) error {
 	}
 	publicImageAsImageId := false
 
-	// image-id and image-alias create more flag requirements
 	if fn := core.GetFlagName(c.NS, cloudapiv6.ArgImageId); viper.IsSet(fn) {
+		// Define required flags for private images
 		setRequiredFlagsPrivateImage := [][]string{
 			{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgImageId},
 			{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgImageAlias},
@@ -320,21 +320,30 @@ func PreRunVolumeCreate(c *core.PreCommandConfig) error {
 		img, _, err := client.Must().CloudClient.ImagesApi.ImagesFindById(context.Background(),
 			viper.GetString(fn)).Execute()
 		if err != nil {
-			return fmt.Errorf("failed getting image %s: %w", viper.GetString(fn), err)
+			// try to fetch it as a snapshot if fails
+			_, _, snapshotErr := client.Must().CloudClient.SnapshotsApi.SnapshotsFindById(context.Background(),
+				viper.GetString(fn)).Execute()
+			if snapshotErr != nil {
+				return fmt.Errorf("failed getting image or snapshot %s: %w", viper.GetString(fn), err)
+			}
+
+			// If a snapshot is found, skip additional checks
+			return nil
 		}
 
 		if img.Properties == nil || img.Properties.Public == nil || !*img.Properties.Public {
 			return core.CheckRequiredFlagsSets(c.Command, c.NS, setRequiredFlagsPrivateImage...)
 		}
+
 		publicImageAsImageId = true
 	}
 
-	// Public image requirements. Private images cannot have aliases
+	// check public image alias requirements
 	if fn := core.GetFlagName(c.NS, cloudapiv6.ArgImageAlias); publicImageAsImageId || viper.IsSet(fn) {
 		return core.CheckRequiredFlagsSets(c.Command, c.NS, setRequiredFlagsPublicImage...)
 	}
-	return nil
 
+	return nil
 }
 
 func RunVolumeListAll(c *core.CommandConfig) error {
