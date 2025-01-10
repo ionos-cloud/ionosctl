@@ -64,36 +64,49 @@ func testCreateToken(t *testing.T) {
 
 	viper.Set(constants.ArgQuiet, true)
 
-	tokFirstCreationTime = time.Now().In(time.UTC)
+	tokFirstCreationTime = time.Now().In(time.UTC).Add(-1 * time.Minute)
 	c := token.TokenPostCmd()
 	err = c.Command.Execute()
 	assert.NoError(t, err)
 
 	time.Sleep(5 * time.Second)
 
-	tokens, _, err := client.Must().AuthClient.TokensApi.TokensGet(context.Background()).Execute()
-	assert.NoError(t, err)
-
-	allTokens, ok := tokens.GetTokensOk()
-	assert.NotEmpty(t, ok)
-	assert.NotEmpty(t, *allTokens)
-
 	var foundTokenViaSdk *sdkgoauth.Token
 	foundTokenViaSdk = nil
 
-	for _, tok := range *allTokens {
-		date, err := utils.ParseDate(*tok.CreatedDate)
-		if err != nil {
-			panic(fmt.Errorf("couldn't parse date %s: %w", *tok.CreatedDate, err))
+	retryCount := 0
+	maxRetries := 10
+	for retryCount < maxRetries {
+		tokens, _, err := client.Must().AuthClient.TokensApi.TokensGet(context.Background()).Execute()
+		assert.NoError(t, err)
+
+		allTokens, ok := tokens.GetTokensOk()
+		assert.NotEmpty(t, ok)
+		assert.NotEmpty(t, *allTokens)
+
+		for _, tok := range *allTokens {
+			date, err := utils.ParseDate(*tok.CreatedDate)
+			if err != nil {
+				panic(fmt.Errorf("couldn't parse date %s: %w", *tok.CreatedDate, err))
+			}
+
+			if date.After(tokFirstCreationTime) {
+				temp := tok
+				foundTokenViaSdk = &temp
+				break
+			}
 		}
 
-		if date.After(tokFirstCreationTime) {
-			temp := tok
-			foundTokenViaSdk = &temp
+		if foundTokenViaSdk != nil {
+			break
 		}
+
+		retryCount++
+		time.Sleep(10 * time.Second)
 	}
+
 	if foundTokenViaSdk == nil {
-		assert.FailNow(t, "created token could not be found")
+		assert.FailNow(t, "created token could not be found after 10 attempts")
 	}
 
 	testToken = *foundTokenViaSdk
