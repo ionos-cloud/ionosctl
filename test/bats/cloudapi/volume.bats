@@ -1,6 +1,6 @@
 #!/usr/bin/env bats
 
-# tags: server, template, volume, cdrom, image, console, nic, lan, ipblock, backupunit
+# tags: server, template, volume, cdrom, image, console, nic, lan, ipblock, backupunit, snapshot
 
 BATS_LIBS_PATH="${LIBS_PATH:-../libs}" # fallback to relative path if not set
 load "${BATS_LIBS_PATH}/bats-assert/load"
@@ -29,7 +29,8 @@ setup_file() {
     echo "$output" | jq -r '.id' > /tmp/bats_test/user_id
 
     run ionosctl group create --name "test-volumes-$(randStr 4)" \
-     --create-dc --create-nic --create-backup --reserve-ip -o json 2> /dev/null
+     --create-dc --create-nic --create-backup --create-snapshot --reserve-ip \
+     -o json 2> /dev/null
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/group_id
 
@@ -112,6 +113,28 @@ setup_file() {
 
     run ionosctl server volume attach --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
      --server-id "$(cat /tmp/bats_test/server_id)" --volume-id "$(cat /tmp/bats_test/volume_id)" -t 600 -w
+    assert_success
+}
+
+@test "Create a snapshot" {
+    export IONOS_USERNAME="$(cat /tmp/bats_test/email)"
+    export IONOS_PASSWORD="$(cat /tmp/bats_test/password)"
+
+    run ionosctl snapshot create --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
+     --volume-id "$(cat /tmp/bats_test/volume_id)" --name "bats-test-$(randStr 8)" -o json 2> /dev/null
+    assert_success
+    echo "$output" | jq -r '.id' > /tmp/bats_test/snapshot_id
+
+    sleep 600
+}
+
+@test "Create a volume from a snapshot" {
+    export IONOS_USERNAME="$(cat /tmp/bats_test/email)"
+    export IONOS_PASSWORD="$(cat /tmp/bats_test/password)"
+
+    run ionosctl volume create --type "SSD Premium" --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
+     --name "bats-test-$(randStr 8)" --size 50 --image-id "$(cat /tmp/bats_test/snapshot_id)" \
+     -t 300 -w -o json 2> /dev/null
     assert_success
 }
 
@@ -313,6 +336,7 @@ teardown_file() {
         ionosctl ipblock delete -af
         ionosctl datacenter delete -af
         ionosctl backupunit delete -af
+        ionosctl snapshot delete -af
     )
 
     # original IONOS_USERNAME IONOS_PASSWORD are restored
