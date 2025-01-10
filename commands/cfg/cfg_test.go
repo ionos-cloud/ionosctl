@@ -19,6 +19,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/config"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
+	"github.com/ionos-cloud/ionosctl/v6/internal/utils"
 	"github.com/spf13/viper"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
@@ -296,13 +297,9 @@ func teardown() {
 
 	// Delete tokens generated since setup
 	for _, t := range *toks.Tokens {
-		strDate, ok := strings.CutSuffix(*t.CreatedDate, "[UTC]")
-		if !ok {
-			panic("they changed the date format: no more [UTC] suffix")
-		}
-		date, err := time.Parse(time.RFC3339, strDate)
+		date, err := utils.ParseDate(*t.CreatedDate)
 		if err != nil {
-			panic(fmt.Errorf("they changed the date format: %w", err))
+			panic(fmt.Errorf("couldn't parse date %s: %w", *t.CreatedDate, err))
 		}
 
 		// Delete the token if it was created after setup

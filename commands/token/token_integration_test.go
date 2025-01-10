@@ -8,13 +8,13 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"strings"
 	"testing"
 	"time"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/token"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
+	"github.com/ionos-cloud/ionosctl/v6/internal/utils"
 	authservice "github.com/ionos-cloud/ionosctl/v6/services/auth-v1"
 	sdkgoauth "github.com/ionos-cloud/sdk-go-auth"
 	"github.com/spf13/viper"
@@ -82,14 +82,9 @@ func testCreateToken(t *testing.T) {
 	foundTokenViaSdk = nil
 
 	for _, tok := range *allTokens {
-		strDate, ok := strings.CutSuffix(*tok.CreatedDate, "[UTC]")
-		if !ok {
-			panic("they changed the time format: no more [UTC] suffix")
-		}
-
-		date, err := time.Parse(time.RFC3339, strDate)
+		date, err := utils.ParseDate(*tok.CreatedDate)
 		if err != nil {
-			panic(fmt.Errorf("they changed the date format: %w", err))
+			panic(fmt.Errorf("couldn't parse date %s: %w", *tok.CreatedDate, err))
 		}
 
 		if date.After(tokFirstCreationTime) {

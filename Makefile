@@ -29,11 +29,17 @@ utest:
 # `// +build integration` is still maintained for compatibility reasons
 # `go fmt` still maintains these lines, if one is removed. If it stops this behaviour, then we can remove them
 
+# run the go-based e2e tests
+.PHONY: itest
+itest:
+	@echo "--- Run unit tests and go-based integration tests ---"
+	@go test $(TEST_FLAGS) -tags=integration $(TEST_DIRS)
+
 .PHONY: test
 test:
-	@echo "--- Run bats-core, integration and unit tests ---"
+	@echo "--- Run bats-core tests ---"
 	@test/run.sh # bats-core tests and other
-	@go test $(TEST_FLAGS) -tags=integration $(TEST_DIRS)
+	@$(MAKE) itest # go-based tests (unit and integration)
 
 .PHONY: mocks
 mocks:
@@ -104,7 +110,8 @@ clean:
 help:
 	@echo "TARGETS: "
 	@echo " - utest:\tRun unit tests"
-	@echo " - test:\tRun integration and unit tests (CI Target)"
+	@echo " - itest:\tRun all go-based tests (unit, integration)"
+	@echo " - test:\tRuns bats-core tests, then runs all go-based tests (CI Target)"
 	@echo " - mocks:\tUpdate mocks. WARNING: Do not interrupt early!"
 	@echo " - gofmt:\tFormat code to adhere to gofmt [gofmt_check for checking only]"
 	@echo " - vendor:\tUpdate vendor dependencies. [vendor_check for checking only]"

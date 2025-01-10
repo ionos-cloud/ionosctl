@@ -9,13 +9,13 @@ import (
 	"log"
 	"os"
 	"strconv"
-	"strings"
 	"testing"
 	"time"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dns/record"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dns/utils"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
+	utils2 "github.com/ionos-cloud/ionosctl/v6/internal/utils"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 	dns "github.com/ionos-cloud/sdk-go-dns"
 
@@ -227,13 +227,9 @@ func cleanupTokensCreatedAfterDate(taym time.Time) {
 
 	// Delete tokens generated since setup
 	for _, t := range *toks.Tokens {
-		strDate, ok := strings.CutSuffix(*t.CreatedDate, "[UTC]")
-		if !ok {
-			panic("they changed the date format: no more [UTC] suffix")
-		}
-		date, err := time.Parse(time.RFC3339, strDate)
+		date, err := utils2.ParseDate(*t.CreatedDate)
 		if err != nil {
-			panic(fmt.Errorf("they changed the date format: %w", err))
+			panic(fmt.Errorf("couldn't parse date %s: %w", *t.CreatedDate, err))
 		}
 
 		// Delete the token if it was created after setup

@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net"
+	"strings"
+	"time"
 
 	"golang.org/x/crypto/ssh"
 )
@@ -49,4 +51,16 @@ func ValidateIPv6CidrBlockAgainstParentCidrBlock(cidr string, expectedMask int, 
 	}
 
 	return nil
+}
+
+// ParseDate parses a date string in RFC3339 format
+// and returns a time.Time object
+// It also removes the [UTC] suffix if present
+func ParseDate(strDate string) (time.Time, error) {
+	strDate = strings.TrimSuffix(strDate, "[UTC]")
+	date, err := time.Parse(time.RFC3339, strDate)
+	if err != nil {
+		return time.Time{}, fmt.Errorf("date is not a valid RFC3339: %w", err)
+	}
+	return date, nil
 }
