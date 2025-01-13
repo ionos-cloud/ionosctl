@@ -22,7 +22,6 @@ var FieldsWithSensitiveDataInConfigFile = []string{
 // GetServerUrl returns the server URL the SDK should use, with support for layered fallbacks.
 func GetServerUrl() string {
 	viper.AutomaticEnv()
-
 	if val := viper.GetString(constants.ArgServerUrl); viper.IsSet(constants.ArgServerUrl) && val != "" {
 		// 1. Above all, use global flag val
 		return val
@@ -38,10 +37,10 @@ func GetServerUrl() string {
 	}
 	val := cfgFields[constants.CfgServerUrl]
 
-	if val != "" {
-		// 3. Fallback to non-empty cfg field
+	if val != "" { // 3. Fallback to non-empty cfg field
 		return val
 	}
+
 	// 4. Return empty string. SDKs should handle it, per docs
 	return ""
 }

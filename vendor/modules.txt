@@ -96,6 +96,9 @@ github.com/ionos-cloud/sdk-go-logging
 # github.com/ionos-cloud/sdk-go-vm-autoscaling v1.0.1
 ## explicit; go 1.18
 github.com/ionos-cloud/sdk-go-vm-autoscaling
+# github.com/ionos-cloud/sdk-go-vpn v1.0.1
+## explicit; go 1.18
+github.com/ionos-cloud/sdk-go-vpn
 # github.com/ionos-cloud/sdk-go/v6 v6.1.11
 ## explicit; go 1.19
 github.com/ionos-cloud/sdk-go/v6

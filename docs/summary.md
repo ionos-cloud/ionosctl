@@ -501,6 +501,33 @@
     * server
         * [get](subcommands%2FVM%20Autoscaling%2Fserver%2Fget.md)
         * [list](subcommands%2FVM%20Autoscaling%2Fserver%2Flist.md)
+* VPN Gateway
+    * ipsec
+        * gateway
+            * [create](subcommands%2FVPN%20Gateway%2Fipsec%2Fgateway%2Fcreate.md)
+            * [delete](subcommands%2FVPN%20Gateway%2Fipsec%2Fgateway%2Fdelete.md)
+            * [get](subcommands%2FVPN%20Gateway%2Fipsec%2Fgateway%2Fget.md)
+            * [list](subcommands%2FVPN%20Gateway%2Fipsec%2Fgateway%2Flist.md)
+            * [update](subcommands%2FVPN%20Gateway%2Fipsec%2Fgateway%2Fupdate.md)
+        * tunnel
+            * [create](subcommands%2FVPN%20Gateway%2Fipsec%2Ftunnel%2Fcreate.md)
+            * [delete](subcommands%2FVPN%20Gateway%2Fipsec%2Ftunnel%2Fdelete.md)
+            * [get](subcommands%2FVPN%20Gateway%2Fipsec%2Ftunnel%2Fget.md)
+            * [list](subcommands%2FVPN%20Gateway%2Fipsec%2Ftunnel%2Flist.md)
+            * [update](subcommands%2FVPN%20Gateway%2Fipsec%2Ftunnel%2Fupdate.md)
+    * wireguard
+        * gateway
+            * [create](subcommands%2FVPN%20Gateway%2Fwireguard%2Fgateway%2Fcreate.md)
+            * [delete](subcommands%2FVPN%20Gateway%2Fwireguard%2Fgateway%2Fdelete.md)
+            * [get](subcommands%2FVPN%20Gateway%2Fwireguard%2Fgateway%2Fget.md)
+            * [list](subcommands%2FVPN%20Gateway%2Fwireguard%2Fgateway%2Flist.md)
+            * [update](subcommands%2FVPN%20Gateway%2Fwireguard%2Fgateway%2Fupdate.md)
+        * peer
+            * [create](subcommands%2FVPN%20Gateway%2Fwireguard%2Fpeer%2Fcreate.md)
+            * [delete](subcommands%2FVPN%20Gateway%2Fwireguard%2Fpeer%2Fdelete.md)
+            * [get](subcommands%2FVPN%20Gateway%2Fwireguard%2Fpeer%2Fget.md)
+            * [list](subcommands%2FVPN%20Gateway%2Fwireguard%2Fpeer%2Flist.md)
+            * [update](subcommands%2FVPN%20Gateway%2Fwireguard%2Fpeer%2Fupdate.md)
 
 
 ## Legal

@@ -52,6 +52,37 @@ func AttachedCdromsIds(datacenterId, serverId string) []string {
 	return attachedCdromsIds
 }
 
+func DatacenterIdsFilterLocation(loc string) []string {
+	req := client.Must().CloudClient.DataCentersApi.DatacentersGet(context.Background())
+	if loc != "" {
+		req = req.Filter("location", loc)
+	}
+	dcs, _, err := req.Execute()
+	if err != nil {
+		return nil
+	}
+
+	var dcIds []string
+	for _, item := range *dcs.Items {
+		var completion string
+		if item.Id == nil {
+			continue
+		}
+		completion = *item.Id
+		if props, ok := item.GetPropertiesOk(); ok {
+			if name, ok := props.GetNameOk(); ok {
+				completion = fmt.Sprintf("%s\t%s", completion, *name)
+			}
+			if location, ok := props.GetLocationOk(); ok {
+				completion = fmt.Sprintf("%s - %s", completion, *location)
+			}
+		}
+
+		dcIds = append(dcIds, completion)
+	}
+	return dcIds
+}
+
 func DataCentersIds(filters ...func(datacenter ionoscloud.Datacenter) bool) []string {
 	datacenterSvc := resources.NewDataCenterService(client.Must(), context.Background())
 	datacenters, _, err := datacenterSvc.List(resources.ListQueryParams{})

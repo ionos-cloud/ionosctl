@@ -40,6 +40,7 @@ var nonComputeNamespaces = map[string]string{
 	"kafka":                   "Kafka",
 	"config":                  "CLI Setup",
 	"vm-autoscaling":          "VM Autoscaling",
+	"vpn":                     "VPN Gateway",
 	"logging-service":         "Logging-Service",
 }
 

@@ -43,6 +43,7 @@ require (
 	github.com/ionos-cloud/sdk-go-cdn v1.1.0
 	github.com/ionos-cloud/sdk-go-dbaas-mariadb v1.1.1
 	github.com/ionos-cloud/sdk-go-kafka v1.1.0
+	github.com/ionos-cloud/sdk-go-vpn v1.0.1
 )
 
 require (
