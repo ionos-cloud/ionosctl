@@ -7,7 +7,7 @@ load "${BATS_LIBS_PATH}/bats-assert/load"
 load "${BATS_LIBS_PATH}/bats-support/load"
 load '../setup.bats'
 
-location="de/txl"
+location="es/vit"
 
 setup_file() {
     export IONOS_TOKEN=$(ionosctl token generate)
@@ -48,7 +48,7 @@ setup_file() {
     lan_id=$(cat /tmp/bats_test/lan_id)
     ipblock_ip=$(cat /tmp/bats_test/ipblock_ip)
 
-    run ionosctl vpn ipsec gateway create --name "cli-test-$(randStr 6)" \
+    run ionosctl vpn ipsec gateway create --location "${location}" --name "cli-test-$(randStr 6)" \
       --datacenter-id "$datacenter_id" --lan-id "$lan_id" --connection-ip "10.7.222.239/24" --gateway-ip "$ipblock_ip" \
       -o json 2> /dev/null
     assert_success
@@ -57,7 +57,7 @@ setup_file() {
     [ -n "$gateway_id" ] || fail "Failed to create IPSec Gateway"
     echo "$gateway_id" > /tmp/bats_test/ipsec_gateway_id
 
-    run ionosctl vpn ipsec gateway get --gateway-id "$gateway_id" -o json 2> /dev/null
+    run ionosctl vpn ipsec gateway get --location "${location}" --gateway-id "$gateway_id" -o json 2> /dev/null
     assert_success
     assert_equal "$gateway_id" "$(echo "$output" | jq -r '.id')"
 }
@@ -66,10 +66,10 @@ setup_file() {
     gateway_id=$(cat /tmp/bats_test/ipsec_gateway_id)
     new_name="cli-test-updated-$(randStr 6)"
 
-    run ionosctl vpn ipsec gateway update --gateway-id "$gateway_id" --name "$new_name" -o json 2> /dev/null
+    run ionosctl vpn ipsec gateway update --location "${location}" --gateway-id "$gateway_id" --name "$new_name" -o json 2> /dev/null
     assert_success
 
-    run ionosctl vpn ipsec gateway get --gateway-id "$gateway_id" -o json 2> /dev/null
+    run ionosctl vpn ipsec gateway get --location "${location}" --gateway-id "$gateway_id" -o json 2> /dev/null
     assert_success
     assert_equal "$new_name" "$(echo "$output" | jq -r '.properties.name')"
 }
@@ -77,7 +77,7 @@ setup_file() {
 @test "Create IPSec Tunnel" {
     gateway_id=$(cat /tmp/bats_test/ipsec_gateway_id)
 
-    run ionosctl vpn ipsec tunnel create --gateway-id "$gateway_id" --name "cli-test-tunnel" \
+    run ionosctl vpn ipsec tunnel create --location "${location}" --gateway-id "$gateway_id" --name "cli-test-tunnel" \
       --host "192.168.1.1" --auth-method "PSK" --psk-key "$(openssl rand -base64 32)" \
       --ike-diffie-hellman-group "19-ECP256" --ike-encryption-algorithm "AES256" --ike-integrity-algorithm "SHA256" --ike-lifetime 86400 \
       --esp-diffie-hellman-group "19-ECP256" --esp-encryption-algorithm "AES256" --esp-integrity-algorithm "SHA256" --esp-lifetime 3600 \
@@ -88,7 +88,7 @@ setup_file() {
     [ -n "$tunnel_id" ] || fail "Failed to create IPSec Tunnel"
     echo "$tunnel_id" > /tmp/bats_test/ipsec_tunnel_id
 
-    run ionosctl vpn ipsec tunnel get --gateway-id "$gateway_id" --tunnel-id "$tunnel_id" -o json 2> /dev/null
+    run ionosctl vpn ipsec tunnel get --location "${location}" --gateway-id "$gateway_id" --tunnel-id "$tunnel_id" -o json 2> /dev/null
     assert_success
     assert_equal "$tunnel_id" "$(echo "$output" | jq -r '.id')"
 }
@@ -99,17 +99,17 @@ setup_file() {
     new_name="cli-tunnel-updated-$(randStr 6)"
     new_psk="$(openssl rand -base64 32)"
 
-    run ionosctl vpn ipsec tunnel update --gateway-id "$gateway_id" --tunnel-id "$tunnel_id" \
-      --name "$new_name" --psk-key "$new_psk" -o json 2> /dev/null
+    run ionosctl vpn ipsec tunnel update --location "${location}" --gateway-id "$gateway_id" \
+      --tunnel-id "$tunnel_id" --name "$new_name" --psk-key "$new_psk" -o json 2> /dev/null
     assert_success
 
-    run ionosctl vpn ipsec tunnel get --gateway-id "$gateway_id" --tunnel-id "$tunnel_id" -o json 2> /dev/null
+    run ionosctl vpn ipsec tunnel get --location "${location}" --gateway-id "$gateway_id" --tunnel-id "$tunnel_id" -o json 2> /dev/null
     assert_success
     assert_equal "$new_name" "$(echo "$output" | jq -r '.properties.name')"
 }
 
 teardown_file() {
-    ionosctl vpn ipsec gateway delete -af
+    ionosctl vpn ipsec gateway delete -af --location "${location}"
 
     sleep 30
 
