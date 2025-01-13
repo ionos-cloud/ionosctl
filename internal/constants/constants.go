@@ -190,6 +190,7 @@ const (
 	CDNApiRegionalURL     = "https://cdn.%s.ionos.com"
 	MariaDBApiRegionalURL = "https://mariadb.%s.ionos.com"
 	VPNApiRegionalURL     = "https://vpn.%s.ionos.com"
+	KafkaApiRegionalURL   = "https://kafka.%s.ionos.com"
 )
 
 var (
@@ -198,6 +199,11 @@ var (
 	CDNLocations        = []string{"de/fra"}
 	MariaDBLocations    = []string{"de/txl", "de/fra", "es/vit", "fr/par", "gb/lhr", "us/ewr", "us/las", "us/mci"}
 	VPNLocations        = []string{"de/txl", "de/fra", "es/vit", "fr/par", "gb/lhr", "gb/bhx", "us/ewr", "us/las", "us/mci"}
+	KafkaLocations      = []string{
+		"de/fra", "de/txl",
+		// other locations not yet available. will be added in the future.
+		// "es/vit", "gb/lhr", "us/ewr", "us/las", "us/mci", "fr/par",
+	}
 )
 
 // enum values. TODO: ideally i'd like these handled by the SDK

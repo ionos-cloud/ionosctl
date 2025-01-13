@@ -39,7 +39,7 @@ setup_file() {
     assert_regex "$datacenter_id" "$uuid_v4_regex"
 
     lan_id=$(find_or_create_resource \
-        "ionosctl lan list -M 1 --datacenter-id ${datacenter_id} -F public=false -o json 2> /dev/null | jq -r '.items[] | .id'" \
+        "ionosctl lan list -M 1 --datacenter-id ${datacenter_id} -F public=false-o json 2> /dev/null | jq -r '.items[] | .id'" \
         "sleep 30 && ionosctl lan create --datacenter-id ${datacenter_id} --public=false -o json 2> /dev/null | jq -r '.id'")
     [ -n "$lan_id" ] || fail "lan_id is empty"
 
