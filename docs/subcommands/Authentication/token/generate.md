@@ -35,7 +35,8 @@ Use this command to generate a new Token. Only the JSON Web Token, associated wi
       --no-headers       Don't print table headers when table output is used
   -o, --output string    Desired output format [text|json|api-json] (default "text")
   -q, --quiet            Quiet output
-      --ttl string       Token Time to Live in seconds. Can be one of: 1h, 4h, 1D, 7D, 1M, 2M, 3M, 6M, 1Y (default "1Y")
+      --ttl string       Token Time to Live (TTL). Accepted formats: Y, M, D, h, m, s. Hybrids are also allowed (e.g. 1m30s). Min: 60s (1m) Max: 31536000s (1Y)
+                         NOTE: Any values that do not match the format will be ignored. (default "1Y")
   -v, --verbose          Print step-by-step process when running command
 ```
 

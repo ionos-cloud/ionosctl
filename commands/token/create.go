@@ -32,9 +32,10 @@ func TokenPostCmd() *core.Command {
 		authservice.ArgContractNo, "", 0,
 		"Users with multiple contracts can provide the contract number, for which the token is generated",
 	)
-	cmd.AddSetFlag(
-		constants.FlagTtl, "", "1Y", []string{"1h", "4h", "1D", "7D", "1M", "2M", "3M", "6M", "1Y"},
-		"Token Time to Live in seconds",
+	cmd.AddStringFlag(
+		constants.FlagTtl, "", "1Y",
+		"Token Time to Live (TTL). Accepted formats: Y, M, D, h, m, s. Hybrids are also allowed (e.g. 1m30s). "+
+			"Min: 60s (1m) Max: 31536000s (1Y)\nNOTE: Any values that do not match the format will be ignored.",
 	)
 
 	return cmd
@@ -68,6 +69,10 @@ func runTokenCreate(c *core.CommandConfig) error {
 		ttl, err = utils.ConvertTime(viper.GetString(core.GetFlagName(c.NS, constants.FlagTtl)), utils.Seconds)
 		if err != nil {
 			return err
+		}
+
+		if ttl < 60 || ttl > 31536000 {
+			return fmt.Errorf("invalid TTL, value out of bounds (60-31536000): %v", ttl)
 		}
 	}
 	newJwt, _, err := c.AuthV1Services.Tokens().Create(contractNumber, int32(ttl))

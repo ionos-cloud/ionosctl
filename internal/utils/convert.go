@@ -2,6 +2,8 @@ package utils
 
 import (
 	"errors"
+	"fmt"
+	"regexp"
 	"strconv"
 	"strings"
 )
@@ -113,29 +115,62 @@ const (
 )
 
 func ConvertTime(timeToConvert, unitToConvertTo string) (int, error) {
-	for _, unit := range []string{Seconds, Minutes, Hours, Days, Months, Years} {
-		if !strings.HasSuffix(timeToConvert, unit) {
-			continue
-		}
-		timeToConvert = strings.ReplaceAll(timeToConvert, " ", "")
-		switch unitToConvertTo {
-		case Seconds:
-			return convertToSeconds(timeToConvert, unit)
-		case Minutes:
-			return convertToMinutes(timeToConvert, unit)
-		case Hours:
-			return convertToHours(timeToConvert, unit)
-		case Days:
-			return convertToDays(timeToConvert, unit)
-		case Months:
-			return convertToMonths(timeToConvert, unit)
-		case Years:
-			return convertToYears(timeToConvert, unit)
-		default:
-			return 0, errors.New("error converting to the specified unit")
-		}
+	reg, err := regexp.Compile(`[0-9]+[smhDMY]`)
+	if err != nil {
+		return 0, fmt.Errorf("failed to compile time format regex: %v", err)
 	}
-	return strconv.Atoi(timeToConvert)
+
+	timeToConvert = strings.ReplaceAll(timeToConvert, " ", "")
+	splitTime := reg.FindAllString(timeToConvert, -1)
+	totalTime := 0
+	for _, t := range splitTime {
+		res := 0
+
+		for _, unit := range []string{Seconds, Minutes, Hours, Days, Months, Years} {
+			if !strings.HasSuffix(t, unit) {
+				continue
+			}
+
+			switch unitToConvertTo {
+			case Seconds:
+				res, err = convertToSeconds(t, unit)
+				if err != nil {
+					return 0, err
+				}
+			case Minutes:
+				res, err = convertToMinutes(t, unit)
+				if err != nil {
+					return 0, err
+				}
+			case Hours:
+				res, err = convertToHours(t, unit)
+				if err != nil {
+					return 0, err
+				}
+			case Days:
+				res, err = convertToDays(t, unit)
+				if err != nil {
+					return 0, err
+				}
+			case Months:
+				res, err = convertToMonths(t, unit)
+				if err != nil {
+					return 0, err
+				}
+			case Years:
+				res, err = convertToYears(t, unit)
+				if err != nil {
+					return 0, err
+				}
+			default:
+				return 0, errors.New("error converting to the specified unit")
+			}
+		}
+
+		totalTime += res
+	}
+
+	return totalTime, nil
 }
 
 func convertToSeconds(time, unit string) (int, error) {
