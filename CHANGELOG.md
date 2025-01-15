@@ -3,7 +3,10 @@
 ## [v6.8.0] (January 2025)
 
 ### Added
+- Added support for `vpn` commands
+- Added support for `kafka` commands
 - Added `--ttl` flag for creating tokens. You can specify the time-to-live for the token i.e. `--ttl 1h30m`
+- Added a default location for Regional APIs when tab-completing
 
 ## [v6.7.9] (December 2024)
 
