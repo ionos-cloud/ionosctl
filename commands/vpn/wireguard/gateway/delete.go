@@ -53,7 +53,7 @@ func Delete() *core.Command {
 
 	cmd.AddStringFlag(constants.FlagGatewayID, constants.FlagIdShort, "", "The ID of the WireGuard Gateway",
 		core.RequiredFlagOption(),
-		core.WithCompletion(completer.GatewayIDs, constants.VPNApiRegionalURL),
+		core.WithCompletion(completer.GatewayIDs, constants.VPNApiRegionalURL, constants.VPNLocations),
 	)
 
 	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, fmt.Sprintf("Delete all gateways. Required or --%s", constants.FlagGatewayID))

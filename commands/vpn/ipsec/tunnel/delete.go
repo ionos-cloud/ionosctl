@@ -56,14 +56,14 @@ func Delete() *core.Command {
 
 	cmd.AddStringFlag(constants.FlagGatewayID, "", "", "The ID of the IPSec Gateway",
 		core.RequiredFlagOption(),
-		core.WithCompletion(completer.GatewayIDs, constants.VPNApiRegionalURL),
+		core.WithCompletion(completer.GatewayIDs, constants.VPNApiRegionalURL, constants.VPNLocations),
 	)
 	cmd.AddStringFlag(constants.FlagTunnelID, constants.FlagIdShort, "", "The ID of the IPSec Tunnel you want to delete",
 		core.RequiredFlagOption(),
 		core.WithCompletion(func() []string {
 			gatewayID := viper.GetString(core.GetFlagName(cmd.NS, constants.FlagGatewayID))
 			return completer.TunnelIDs(gatewayID)
-		}, constants.VPNApiRegionalURL),
+		}, constants.VPNApiRegionalURL, constants.VPNLocations),
 	)
 
 	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, fmt.Sprintf("Delete all tunnels. Required or --%s", constants.FlagTunnelID))

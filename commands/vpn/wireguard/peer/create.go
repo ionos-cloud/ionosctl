@@ -82,7 +82,7 @@ func Create() *core.Command {
 
 	cmd.AddStringFlag(constants.FlagGatewayID, constants.FlagIdShort, "", "The ID of the WireGuard Gateway",
 		core.RequiredFlagOption(),
-		core.WithCompletion(completer.GatewayIDs, constants.VPNApiRegionalURL),
+		core.WithCompletion(completer.GatewayIDs, constants.VPNApiRegionalURL, constants.VPNLocations),
 	)
 
 	cmd.AddStringFlag(constants.FlagName, "", "", "Name of the WireGuard Peer", core.RequiredFlagOption())

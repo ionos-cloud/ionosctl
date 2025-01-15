@@ -56,13 +56,13 @@ func Delete() *core.Command {
 
 	cmd.AddStringFlag(constants.FlagGatewayID, "", "", "The ID of the WireGuard Gateway",
 		core.RequiredFlagOption(),
-		core.WithCompletion(completer.GatewayIDs, constants.VPNApiRegionalURL),
+		core.WithCompletion(completer.GatewayIDs, constants.VPNApiRegionalURL, constants.VPNLocations),
 	)
 	cmd.AddStringFlag(constants.FlagPeerID, constants.FlagIdShort, "", "The ID of the WireGuard Peer you want to delete",
 		core.RequiredFlagOption(),
 		core.WithCompletion(func() []string {
 			return completer.PeerIDs(viper.GetString(core.GetFlagName(cmd.NS, constants.FlagGatewayID)))
-		}, constants.VPNApiRegionalURL),
+		}, constants.VPNApiRegionalURL, constants.VPNLocations),
 	)
 
 	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, fmt.Sprintf("Delete all peers. Required or --%s", constants.FlagPeerID))

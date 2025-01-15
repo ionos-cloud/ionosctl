@@ -117,7 +117,7 @@ func Update() *core.Command {
 
 	cmd.AddStringFlag(constants.FlagGatewayID, constants.FlagIdShort, "", "The ID of the IPSec Gateway",
 		core.RequiredFlagOption(),
-		core.WithCompletion(completer.GatewayIDs, constants.VPNApiRegionalURL),
+		core.WithCompletion(completer.GatewayIDs, constants.VPNApiRegionalURL, constants.VPNLocations),
 	)
 
 	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Name of the IPSec Gateway", core.RequiredFlagOption())
