@@ -195,6 +195,7 @@ const (
 
 var (
 	DNSLocations     = []string{"de/fra"}
+	LoggingLocations = []string{"de/txl", "de/fra", "gb/lhr", "fr/par", "es/vit"}
 	CDNLocations     = []string{"de/fra"}
 	MariaDBLocations = []string{"de/txl", "de/fra", "es/vit", "fr/par", "gb/lhr", "us/ewr", "us/las", "us/mci"}
 	VPNLocations     = []string{"de/fra", "de/txl", "es/vit", "fr/par", "gb/lhr", "gb/bhx", "us/ewr", "us/las", "us/mci"}
