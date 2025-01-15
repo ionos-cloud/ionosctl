@@ -197,7 +197,7 @@ var (
 	DNSLocations     = []string{"de/fra"}
 	CDNLocations     = []string{"de/fra"}
 	MariaDBLocations = []string{"de/txl", "de/fra", "es/vit", "fr/par", "gb/lhr", "us/ewr", "us/las", "us/mci"}
-	VPNLocations     = []string{"de/txl", "de/fra", "es/vit", "fr/par", "gb/lhr", "gb/bhx", "us/ewr", "us/las", "us/mci"}
+	VPNLocations     = []string{"de/fra", "de/txl", "es/vit", "fr/par", "gb/lhr", "gb/bhx", "us/ewr", "us/las", "us/mci"}
 	KafkaLocations   = []string{
 		"de/fra", "de/txl",
 		// other locations not yet available. will be added in the future.
