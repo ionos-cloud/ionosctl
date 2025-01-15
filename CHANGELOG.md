@@ -1,5 +1,14 @@
 # Changelog
 
+## [v6.7.10] (January 2024)
+
+### Added
+
+### Fixed
+
+- Using snapshots for --image-id in volume create is now allowed
+
+
 ## [v6.7.9] (December 2024)
 
 ### Added
