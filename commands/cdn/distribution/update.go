@@ -54,7 +54,7 @@ func Update() *core.Command {
 			return completer.DistributionsProperty(func(r cdn.Distribution) string {
 				return *r.Id
 			})
-		}, constants.CDNApiRegionalURL),
+		}, constants.CDNApiRegionalURL, constants.CDNLocations),
 	)
 	cmd.Command.SilenceUsage = true
 	cmd.Command.Flags().SortFlags = false

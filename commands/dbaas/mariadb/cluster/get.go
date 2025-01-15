@@ -59,7 +59,7 @@ func Get() *core.Command {
 					}
 					return *c.Id
 				})
-			}, constants.MariaDBApiRegionalURL),
+			}, constants.MariaDBApiRegionalURL, constants.MariaDBLocations),
 	)
 
 	cmd.Command.SilenceUsage = true

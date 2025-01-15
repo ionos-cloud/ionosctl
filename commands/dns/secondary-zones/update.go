@@ -83,7 +83,7 @@ func updateCmd() *core.Command {
 	c.Command.Flags().StringSlice(constants.FlagPrimaryIPs, []string{}, "Primary DNS server IP addresses")
 
 	c.AddStringFlag(constants.FlagZone, constants.FlagZoneShort, "", constants.DescZone,
-		core.WithCompletion(completer.SecondaryZonesIDs, constants.DNSApiRegionalURL),
+		core.WithCompletion(completer.SecondaryZonesIDs, constants.DNSApiRegionalURL, constants.DNSLocations),
 	)
 
 	c.Command.SilenceUsage = true

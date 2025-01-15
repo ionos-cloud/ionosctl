@@ -58,7 +58,7 @@ func Get() *core.Command {
 					}
 					return *c.Id + "\t" + fmt.Sprintf("(%d MiB)", *c.Properties.Size)
 				})
-			}, constants.MariaDBApiRegionalURL),
+			}, constants.MariaDBApiRegionalURL, constants.MariaDBLocations),
 	)
 	return cmd
 }

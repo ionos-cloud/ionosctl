@@ -41,7 +41,7 @@ func getCmd() *core.Command {
 			return completer.ZonesProperty(func(t dns.ZoneRead) string {
 				return *t.Properties.ZoneName
 			})
-		}, constants.DNSApiRegionalURL),
+		}, constants.DNSApiRegionalURL, constants.DNSLocations),
 	)
 
 	c.Command.SilenceUsage = true

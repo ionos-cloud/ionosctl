@@ -67,7 +67,7 @@ func List() *core.Command {
 					}
 					return *c.Id
 				})
-			}, constants.MariaDBApiRegionalURL),
+			}, constants.MariaDBApiRegionalURL, constants.MariaDBLocations),
 	)
 	cmd.AddInt32Flag(constants.FlagMaxResults, constants.FlagMaxResultsShort, 0, constants.DescMaxResults)
 	cmd.AddInt32Flag(constants.FlagOffset, "", 0, "Skip a certain number of results")

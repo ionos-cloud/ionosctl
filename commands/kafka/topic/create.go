@@ -79,7 +79,7 @@ func createCmd() *core.Command {
 						return *read.Id
 					},
 				)
-			}, constants.KafkaApiRegionalURL,
+			}, constants.KafkaApiRegionalURL, constants.KafkaLocations,
 		),
 	)
 

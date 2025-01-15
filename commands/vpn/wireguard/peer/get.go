@@ -51,13 +51,13 @@ func Get() *core.Command {
 
 	cmd.AddStringFlag(constants.FlagGatewayID, "", "", "The ID of the WireGuard Gateway",
 		core.RequiredFlagOption(),
-		core.WithCompletion(completer.GatewayIDs, constants.VPNApiRegionalURL),
+		core.WithCompletion(completer.GatewayIDs, constants.VPNApiRegionalURL, constants.VPNLocations),
 	)
 	cmd.AddStringFlag(constants.FlagPeerID, constants.FlagIdShort, "", "The ID of the WireGuard Peer",
 		core.RequiredFlagOption(),
 		core.WithCompletion(func() []string {
 			return completer.PeerIDs(viper.GetString(core.GetFlagName(cmd.NS, constants.FlagGatewayID)))
-		}, constants.VPNApiRegionalURL),
+		}, constants.VPNApiRegionalURL, constants.VPNLocations),
 	)
 
 	cmd.Command.SilenceUsage = true

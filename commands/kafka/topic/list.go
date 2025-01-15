@@ -66,7 +66,7 @@ ionosctl kafka topic list --location LOCATION --cluster-id CLUSTER_ID`,
 						return *read.Id
 					},
 				)
-			}, constants.KafkaApiRegionalURL,
+			}, constants.KafkaApiRegionalURL, constants.KafkaLocations,
 		),
 	)
 

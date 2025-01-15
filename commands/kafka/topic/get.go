@@ -63,7 +63,7 @@ func getCmd() *core.Command {
 						return *read.Id
 					},
 				)
-			}, constants.KafkaApiRegionalURL,
+			}, constants.KafkaApiRegionalURL, constants.KafkaLocations,
 		),
 	)
 	cmd.AddStringFlag(
@@ -71,7 +71,7 @@ func getCmd() *core.Command {
 		core.WithCompletion(
 			func() []string {
 				return completer.Topics(cmd.Command.Flag(constants.FlagClusterId).Value.String())
-			}, constants.KafkaApiRegionalURL,
+			}, constants.KafkaApiRegionalURL, constants.KafkaLocations,
 		),
 	)
 

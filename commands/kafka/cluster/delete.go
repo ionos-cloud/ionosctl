@@ -56,7 +56,7 @@ func Delete() *core.Command {
 						return *k.Id
 					},
 				)
-			}, constants.KafkaApiRegionalURL,
+			}, constants.KafkaApiRegionalURL, constants.KafkaLocations,
 		),
 	)
 
