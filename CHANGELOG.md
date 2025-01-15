@@ -1,5 +1,10 @@
 # Changelog
 
+## [v6.8.0] (January 2025)
+
+### Added
+- Added `--ttl` flag for creating tokens. You can specify the time-to-live for the token i.e. `--ttl 1h30m`
+
 ## [v6.7.9] (December 2024)
 
 ### Added

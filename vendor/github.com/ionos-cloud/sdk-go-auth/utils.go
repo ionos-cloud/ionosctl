@@ -1,7 +1,7 @@
 /*
  * Auth API
  *
- * Use the Auth API to manage tokens for secure access to IONOS Cloud  APIs (Auth API, Cloud API, Reseller API, Activity Log API, and others).
+ * Use the Auth API to manage tokens for secure access to IONOS Cloud APIs (Auth API, Cloud API, Reseller API, Activity Log API, and others).
  *
  * API version: 1.0
  */
@@ -13,7 +13,6 @@ package ionoscloud
 import (
 	"encoding/json"
 	"reflect"
-	"strings"
 	"time"
 )
 
@@ -753,11 +752,6 @@ func (t *IonosTime) UnmarshalJSON(data []byte) error {
 	}
 	if str[len(str)-1] == '"' {
 		str = str[:len(str)-1]
-	}
-	if !strings.Contains(str, "Z") {
-		/* forcefully adding timezone suffix to be able to parse the
-		 * string using RFC3339 */
-		str += "Z"
 	}
 	tt, err := time.Parse(time.RFC3339, str)
 	if err != nil {

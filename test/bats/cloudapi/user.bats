@@ -49,12 +49,12 @@ setup_file() {
     user_id=$(cat /tmp/bats_test/user_id)
 
     group_name="group-$(randStr 8)"
-    run ionosctl group create --s3privilege --name "$group_name" --cols GroupId --no-headers
+    run ionosctl group create --s3privilege=true --name "$group_name" --cols GroupId --no-headers
     assert_success
     group_id=$output
     echo "$group_id" > /tmp/bats_test/group_id
 
-    run ionosctl group user add --group-id "$(cat /tmp/bats_test/group_id)" \
+    run ionosctl group user add --group-id "$group_id" \
         --user-id "$user_id" --cols UserId --no-headers 2> /dev/null
     assert_success
     assert_output "$user_id"
@@ -65,38 +65,39 @@ setup_file() {
 }
 
 @test "Create and verify S3Key" {
-    run ionosctl user s3key create --user-id "$(cat /tmp/bats_test/user_id)" -o json 2> /dev/null
+    user_id=$(cat /tmp/bats_test/user_id)
+    run ionosctl user s3key create --user-id "$user_id" -o json 2> /dev/null
     assert_success
     access_key=$(echo "$output" | jq -r '.id')
     secret_key=$(echo "$output" | jq -r '.properties.secretKey')
 
     # TODO: Make a request to the S3 server to test the credentials
 
-    run ionosctl user s3key list --user-id "$(cat /tmp/bats_test/user_id)" --cols S3KeyId --no-headers
+    run ionosctl user s3key list --user-id "$user_id" --cols S3KeyId --no-headers
     assert_output -p "$access_key"
     assert_success
 
-    run ionosctl user s3key get --user-id "$(cat /tmp/bats_test/user_id)" --s3key-id "$access_key" -o json 2> /dev/null
+    run ionosctl user s3key get --user-id "$user_id" --s3key-id "$access_key" -o json 2> /dev/null
     assert_success
     assert_equal "$access_key" "$(echo "$output" | jq -r '.id')"
     assert_equal "$secret_key" "$(echo "$output" | jq -r '.properties.secretKey')"
 
-    run ionosctl user s3key delete --user-id "$(cat /tmp/bats_test/user_id)" --s3key-id "$access_key" -f
+    run ionosctl user s3key delete --user-id "$user_id" --s3key-id "$access_key" -f
     assert_success
 }
 
 @test "Test 'ionosctl token' commands" {
-    unset IONOS_USERNAME IONOS_PASSWORD
+    unset IONOS_USERNAME IONOS_PASSWORD IONOS_TOKEN
 
     email="$(cat /tmp/bats_test/email)"
     password="$(cat /tmp/bats_test/password)"
     user_id=$(cat /tmp/bats_test/user_id)
 
-    run ionosctl login --user "$(cat /tmp/bats_test/email)" --password "$(cat /tmp/bats_test/password)" --force
+    run ionosctl login --user "$email" --password "$password" --force
     assert_success
 
     # Generate a token and ensure it belongs to this user
-    run ionosctl token generate
+    run ionosctl token generate --ttl 1h
     assert_success
     jwt="$output"
 
@@ -120,7 +121,7 @@ setup_file() {
 }
 
 @test "Test 'ionosctl cfg' commands" {
-    unset IONOS_USERNAME IONOS_PASSWORD
+    unset IONOS_USERNAME IONOS_PASSWORD IONOS_TOKEN
 
     email="$(cat /tmp/bats_test/email)"
     password="$(cat /tmp/bats_test/password)"
@@ -186,7 +187,12 @@ setup_file() {
 }
 
 @test "Config file should only work for permissions 600" {
-    run ionosctl login --user "$(cat /tmp/bats_test/email)" --password "$(cat /tmp/bats_test/password)" --force
+    unset IONOS_USERNAME IONOS_PASSWORD IONOS_TOKEN
+
+    email="$(cat /tmp/bats_test/email)"
+    password="$(cat /tmp/bats_test/password)"
+
+    run ionosctl login --user "$email" --password "$password" --force
     assert_success
 
     run ionosctl config location
@@ -217,9 +223,12 @@ setup_file() {
 }
 
 teardown_file() {
-    echo "cleaning up user $(cat /tmp/bats_test/user_id) and group $(cat /tmp/bats_test/group_id)"
-    run ionosctl user delete --user-id "$(cat /tmp/bats_test/user_id)" -f
-    run ionosctl group delete --group-id "$(cat /tmp/bats_test/group_id)" -f
+    user_id=$(cat /tmp/bats_test/user_id)
+    group_id=$(cat /tmp/bats_test/group_id)
+
+    echo "cleaning up user $user_id and group $group_id"
+    run ionosctl user delete --user-id "$user_id" -f
+    run ionosctl group delete --group-id "$group_id" -f
     run ionosctl token delete -af
 
     rm -rf /tmp/bats_test

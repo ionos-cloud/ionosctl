@@ -1,7 +1,7 @@
 /*
  * Auth API
  *
- * Use the Auth API to manage tokens for secure access to IONOS Cloud  APIs (Auth API, Cloud API, Reseller API, Activity Log API, and others).
+ * Use the Auth API to manage tokens for secure access to IONOS Cloud APIs (Auth API, Cloud API, Reseller API, Activity Log API, and others).
  *
  * API version: 1.0
  */
@@ -11,13 +11,12 @@
 package ionoscloud
 
 import (
-	"fmt"
-	"strings"
-
 	_context "context"
-	_ioutil "io/ioutil"
+	"fmt"
+	"io"
 	_nethttp "net/http"
 	_neturl "net/url"
+	"strings"
 )
 
 // Linger please
@@ -49,10 +48,11 @@ func (r ApiTokensDeleteByCriteriaRequest) Execute() (DeleteResponse, *APIRespons
 }
 
 /*
- * TokensDeleteByCriteria Delete tokens by criteria
- * Delete one or multiple tokens by the required `criteria` parameter values: `ALL`, `EXPIRED` and `CURRENT`. With parameter values `ALL` and `EXPIRED`, 'Basic Authentication' or 'Token Authentication' tokens with valid credentials must be encapsulated in the header. With value `CURRENT`, only the 'Token Authentication' with valid credentials is required. Users with multiple contracts must also provide a valid contract number in the `X-Contract-Number` header.
- * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @return ApiTokensDeleteByCriteriaRequest
+* TokensDeleteByCriteria Delete tokens by criteria
+* Delete one or multiple tokens by the required `criteria` parameter values: `ALL`, `EXPIRED` and `CURRENT`. With parameter values `ALL` and `EXPIRED`, 'Basic Authentication' or 'Token Authentication' tokens with valid credentials must be encapsulated in the header. <div style="padding: 15px; border: 1px solid #d1ecf1; background-color: #d1ecf1; color: #0c5460; margin-bottom: 15px;"> <strong>Note:</strong><br/><br/> From **March 15, 2024**, users with **2-Factor Authentication** must use **2FA-secured** tokens to delete existing  tokens. Token deletion can only be performed through DCD in the **Token Manager**. </div> With value `CURRENT`, only the 'Token Authentication' with valid credentials is required. Users with multiple contracts must also provide a valid contract number in the `X-Contract-Number` header.
+
+* @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+* @return ApiTokensDeleteByCriteriaRequest
  */
 func (a *TokensApiService) TokensDeleteByCriteria(ctx _context.Context) ApiTokensDeleteByCriteriaRequest {
 	return ApiTokensDeleteByCriteriaRequest{
@@ -90,7 +90,6 @@ func (a *TokensApiService) TokensDeleteByCriteriaExecute(r ApiTokensDeleteByCrit
 	}
 
 	localVarQueryParams.Add("criteria", parameterToString(*r.criteria, ""))
-
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
 
@@ -114,7 +113,7 @@ func (a *TokensApiService) TokensDeleteByCriteriaExecute(r ApiTokensDeleteByCrit
 	if r.ctx != nil {
 		// API Key Authentication
 		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
-			if apiKey, ok := auth["Token Authentication"]; ok {
+			if apiKey, ok := auth["TokenAuthentication"]; ok {
 				var key string
 				if apiKey.Prefix != "" {
 					key = apiKey.Prefix + " " + apiKey.Key
@@ -130,20 +129,21 @@ func (a *TokensApiService) TokensDeleteByCriteriaExecute(r ApiTokensDeleteByCrit
 		return localVarReturnValue, nil, err
 	}
 
-	localVarHTTPResponse, err := a.client.callAPI(req)
+	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
 	localVarAPIResponse := &APIResponse{
-		Response:   localVarHTTPResponse,
-		Method:     localVarHTTPMethod,
-		RequestURL: localVarPath,
-		Operation:  "TokensDeleteByCriteria",
+		Response:    localVarHTTPResponse,
+		Method:      localVarHTTPMethod,
+		RequestTime: httpRequestTime,
+		RequestURL:  localVarPath,
+		Operation:   "TokensDeleteByCriteria",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	localVarBody, err := _ioutil.ReadAll(localVarHTTPResponse.Body)
+	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
 	localVarHTTPResponse.Body.Close()
 	localVarAPIResponse.Payload = localVarBody
 	if err != nil {
@@ -154,13 +154,13 @@ func (a *TokensApiService) TokensDeleteByCriteriaExecute(r ApiTokensDeleteByCrit
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
 			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
-				newErr.error = fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, err.Error())
+				newErr.error = err.Error()
 				return localVarReturnValue, localVarAPIResponse, newErr
 			}
 			newErr.model = v
@@ -169,7 +169,7 @@ func (a *TokensApiService) TokensDeleteByCriteriaExecute(r ApiTokensDeleteByCrit
 			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
-				newErr.error = fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, err.Error())
+				newErr.error = err.Error()
 				return localVarReturnValue, localVarAPIResponse, newErr
 			}
 			newErr.model = v
@@ -178,7 +178,7 @@ func (a *TokensApiService) TokensDeleteByCriteriaExecute(r ApiTokensDeleteByCrit
 			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
-				newErr.error = fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, err.Error())
+				newErr.error = err.Error()
 				return localVarReturnValue, localVarAPIResponse, newErr
 			}
 			newErr.model = v
@@ -187,7 +187,7 @@ func (a *TokensApiService) TokensDeleteByCriteriaExecute(r ApiTokensDeleteByCrit
 			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
-				newErr.error = fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, err.Error())
+				newErr.error = err.Error()
 				return localVarReturnValue, localVarAPIResponse, newErr
 			}
 			newErr.model = v
@@ -225,12 +225,18 @@ func (r ApiTokensDeleteByIdRequest) Execute() (DeleteResponse, *APIResponse, err
 }
 
 /*
- * TokensDeleteById Delete tokens
- * Delete a token by Key ID (`tokenId`). To access the endpoint, 'Basic Authentication' or 'Token Authentication' tokens with valid credentials must be encapsulated in the header. Users with multiple contracts must also provide a valid contract number in the `X-Contract-Number` header.
- * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @param tokenId The Key ID of the token (can be retrieved from the header section of the token).
- * @return ApiTokensDeleteByIdRequest
- */
+  - TokensDeleteById Delete tokens
+  - Delete a token by Key ID (`tokenId`). To access the endpoint, 'Basic Authentication' or 'Token Authentication' tokens with valid credentials must be encapsulated in the header.  <div style="padding: 15px; border: 1px solid #d1ecf1; background-color: #d1ecf1; color: #0c5460; margin-bottom: 15px;">
+    <strong>Note:</strong><br/><br/>
+    From <b>March 15, 2024</b>, users with <b>2-Factor Authentication</b> must use <b>2FA-secured</b> tokens to delete existing
+    tokens. Token deletion can only be performed through DCD in the <b>Token Manager</b>.
+
+</div> Users with multiple contracts must also provide a valid contract number in the `X-Contract-Number` header.
+
+  - @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+  - @param tokenId The Key ID of the token (can be retrieved from the header section of the token).
+  - @return ApiTokensDeleteByIdRequest
+*/
 func (a *TokensApiService) TokensDeleteById(ctx _context.Context, tokenId string) ApiTokensDeleteByIdRequest {
 	return ApiTokensDeleteByIdRequest{
 		ApiService: a,
@@ -288,7 +294,7 @@ func (a *TokensApiService) TokensDeleteByIdExecute(r ApiTokensDeleteByIdRequest)
 	if r.ctx != nil {
 		// API Key Authentication
 		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
-			if apiKey, ok := auth["Token Authentication"]; ok {
+			if apiKey, ok := auth["TokenAuthentication"]; ok {
 				var key string
 				if apiKey.Prefix != "" {
 					key = apiKey.Prefix + " " + apiKey.Key
@@ -304,20 +310,21 @@ func (a *TokensApiService) TokensDeleteByIdExecute(r ApiTokensDeleteByIdRequest)
 		return localVarReturnValue, nil, err
 	}
 
-	localVarHTTPResponse, err := a.client.callAPI(req)
+	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
 	localVarAPIResponse := &APIResponse{
-		Response:   localVarHTTPResponse,
-		Method:     localVarHTTPMethod,
-		RequestURL: localVarPath,
-		Operation:  "TokensDeleteById",
+		Response:    localVarHTTPResponse,
+		Method:      localVarHTTPMethod,
+		RequestTime: httpRequestTime,
+		RequestURL:  localVarPath,
+		Operation:   "TokensDeleteById",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	localVarBody, err := _ioutil.ReadAll(localVarHTTPResponse.Body)
+	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
 	localVarHTTPResponse.Body.Close()
 	localVarAPIResponse.Payload = localVarBody
 	if err != nil {
@@ -328,13 +335,13 @@ func (a *TokensApiService) TokensDeleteByIdExecute(r ApiTokensDeleteByIdRequest)
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
 			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
-				newErr.error = fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, err.Error())
+				newErr.error = err.Error()
 				return localVarReturnValue, localVarAPIResponse, newErr
 			}
 			newErr.model = v
@@ -343,7 +350,7 @@ func (a *TokensApiService) TokensDeleteByIdExecute(r ApiTokensDeleteByIdRequest)
 			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
-				newErr.error = fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, err.Error())
+				newErr.error = err.Error()
 				return localVarReturnValue, localVarAPIResponse, newErr
 			}
 			newErr.model = v
@@ -352,7 +359,7 @@ func (a *TokensApiService) TokensDeleteByIdExecute(r ApiTokensDeleteByIdRequest)
 			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
-				newErr.error = fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, err.Error())
+				newErr.error = err.Error()
 				return localVarReturnValue, localVarAPIResponse, newErr
 			}
 			newErr.model = v
@@ -361,7 +368,7 @@ func (a *TokensApiService) TokensDeleteByIdExecute(r ApiTokensDeleteByIdRequest)
 			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
-				newErr.error = fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, err.Error())
+				newErr.error = err.Error()
 				return localVarReturnValue, localVarAPIResponse, newErr
 			}
 			newErr.model = v
@@ -462,7 +469,7 @@ func (a *TokensApiService) TokensFindByIdExecute(r ApiTokensFindByIdRequest) (To
 	if r.ctx != nil {
 		// API Key Authentication
 		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
-			if apiKey, ok := auth["Token Authentication"]; ok {
+			if apiKey, ok := auth["TokenAuthentication"]; ok {
 				var key string
 				if apiKey.Prefix != "" {
 					key = apiKey.Prefix + " " + apiKey.Key
@@ -478,20 +485,21 @@ func (a *TokensApiService) TokensFindByIdExecute(r ApiTokensFindByIdRequest) (To
 		return localVarReturnValue, nil, err
 	}
 
-	localVarHTTPResponse, err := a.client.callAPI(req)
+	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
 	localVarAPIResponse := &APIResponse{
-		Response:   localVarHTTPResponse,
-		Method:     localVarHTTPMethod,
-		RequestURL: localVarPath,
-		Operation:  "TokensFindById",
+		Response:    localVarHTTPResponse,
+		Method:      localVarHTTPMethod,
+		RequestTime: httpRequestTime,
+		RequestURL:  localVarPath,
+		Operation:   "TokensFindById",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	localVarBody, err := _ioutil.ReadAll(localVarHTTPResponse.Body)
+	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
 	localVarHTTPResponse.Body.Close()
 	localVarAPIResponse.Payload = localVarBody
 	if err != nil {
@@ -502,13 +510,13 @@ func (a *TokensApiService) TokensFindByIdExecute(r ApiTokensFindByIdRequest) (To
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
 			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
-				newErr.error = fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, err.Error())
+				newErr.error = err.Error()
 				return localVarReturnValue, localVarAPIResponse, newErr
 			}
 			newErr.model = v
@@ -517,7 +525,7 @@ func (a *TokensApiService) TokensFindByIdExecute(r ApiTokensFindByIdRequest) (To
 			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
-				newErr.error = fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, err.Error())
+				newErr.error = err.Error()
 				return localVarReturnValue, localVarAPIResponse, newErr
 			}
 			newErr.model = v
@@ -526,7 +534,7 @@ func (a *TokensApiService) TokensFindByIdExecute(r ApiTokensFindByIdRequest) (To
 			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
-				newErr.error = fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, err.Error())
+				newErr.error = err.Error()
 				return localVarReturnValue, localVarAPIResponse, newErr
 			}
 			newErr.model = v
@@ -535,7 +543,7 @@ func (a *TokensApiService) TokensFindByIdExecute(r ApiTokensFindByIdRequest) (To
 			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
-				newErr.error = fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, err.Error())
+				newErr.error = err.Error()
 				return localVarReturnValue, localVarAPIResponse, newErr
 			}
 			newErr.model = v
@@ -544,7 +552,7 @@ func (a *TokensApiService) TokensFindByIdExecute(r ApiTokensFindByIdRequest) (To
 			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
-				newErr.error = fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, err.Error())
+				newErr.error = err.Error()
 				return localVarReturnValue, localVarAPIResponse, newErr
 			}
 			newErr.model = v
@@ -569,10 +577,15 @@ type ApiTokensGenerateRequest struct {
 	ctx             _context.Context
 	ApiService      *TokensApiService
 	xContractNumber *int32
+	ttl             *int32
 }
 
 func (r ApiTokensGenerateRequest) XContractNumber(xContractNumber int32) ApiTokensGenerateRequest {
 	r.xContractNumber = &xContractNumber
+	return r
+}
+func (r ApiTokensGenerateRequest) Ttl(ttl int32) ApiTokensGenerateRequest {
+	r.ttl = &ttl
 	return r
 }
 
@@ -582,11 +595,14 @@ func (r ApiTokensGenerateRequest) Execute() (Jwt, *APIResponse, error) {
 
 /*
   - TokensGenerate Create new tokens
-  - Users can generate new tokens ([JWT](https://jwt.io/) or [JSON Web Token](https://tools.ietf.org/html/rfc7519)). By default, new tokens are linked to the user’s contract. Users with multiple contracts must provide the contract number, for which the token is generated, in the `X-Contract-Number` header; otherwise, an error response is returned.
+  - Users can generate new tokens ([JWT](https://jwt.io/) or [JSON Web Token](https://tools.ietf.org/html/rfc7519)). By default, new tokens are linked to the user’s contract. Users with multiple contracts must provide the contract number, for which the token is generated, in the `X-Contract-Number` header; otherwise, an error response is returned.<br><br> To access this endpoint, 'Basic Authentication' or 'Token Authentication' tokens with valid credentials must be encapsulated in the header, by users with one or with multiple contracts.  <div style="padding: 15px; border: 1px solid #d1ecf1; background-color: #d1ecf1; color: #0c5460; margin-bottom: 15px;">
+    <strong>Note:</strong><br/><br/>
+    From <b>March 15, 2024</b>, users with <b>2-Factor
+    Authentication</b> enabled must generate new tokens using 2FA-secured tokens through DCD in the <b>Token Manager</b>.
+    Tokens generated this way will not automatically inherit the <b>2FA-secured</b> property.
 
-To access this endpoint, 'Basic Authentication' or 'Token Authentication' tokens with valid credentials must be encapsulated in the header, by users with one or with multiple contracts.
+</div> The response will contain a newly-generated token for accessing any IONOS Cloud APIs (Auth API, Cloud API, Reseller API, Activity Log API, and others). The token can be used to access the APIs without providing the contract number in the `X-Contract-Number` header, by users with one or with multiple contracts. However, a valid contract number must be provided in the `X-Contract-Number` header to access the Auth API. By default, generated access tokens will expire after one year (subject to change).
 
-The response will contain a newly-generated token for accessing any IONOS Cloud APIs (Auth API, Cloud API, Reseller API, Activity Log API, and others). The token can be used to access the APIs without providing the contract number in the `X-Contract-Number` header, by users with one or with multiple contracts. However, a valid contract number must be provided in the `X-Contract-Number` header to access the Auth API. By default, generated access tokens will expire after one year (subject to change).
   - @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
   - @return ApiTokensGenerateRequest
 */
@@ -622,6 +638,9 @@ func (a *TokensApiService) TokensGenerateExecute(r ApiTokensGenerateRequest) (Jw
 	localVarQueryParams := _neturl.Values{}
 	localVarFormParams := _neturl.Values{}
 
+	if r.ttl != nil {
+		localVarQueryParams.Add("ttl", parameterToString(*r.ttl, ""))
+	}
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
 
@@ -645,7 +664,7 @@ func (a *TokensApiService) TokensGenerateExecute(r ApiTokensGenerateRequest) (Jw
 	if r.ctx != nil {
 		// API Key Authentication
 		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
-			if apiKey, ok := auth["Token Authentication"]; ok {
+			if apiKey, ok := auth["TokenAuthentication"]; ok {
 				var key string
 				if apiKey.Prefix != "" {
 					key = apiKey.Prefix + " " + apiKey.Key
@@ -661,20 +680,21 @@ func (a *TokensApiService) TokensGenerateExecute(r ApiTokensGenerateRequest) (Jw
 		return localVarReturnValue, nil, err
 	}
 
-	localVarHTTPResponse, err := a.client.callAPI(req)
+	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
 	localVarAPIResponse := &APIResponse{
-		Response:   localVarHTTPResponse,
-		Method:     localVarHTTPMethod,
-		RequestURL: localVarPath,
-		Operation:  "TokensGenerate",
+		Response:    localVarHTTPResponse,
+		Method:      localVarHTTPMethod,
+		RequestTime: httpRequestTime,
+		RequestURL:  localVarPath,
+		Operation:   "TokensGenerate",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	localVarBody, err := _ioutil.ReadAll(localVarHTTPResponse.Body)
+	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
 	localVarHTTPResponse.Body.Close()
 	localVarAPIResponse.Payload = localVarBody
 	if err != nil {
@@ -685,13 +705,13 @@ func (a *TokensApiService) TokensGenerateExecute(r ApiTokensGenerateRequest) (Jw
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
 			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
-				newErr.error = fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, err.Error())
+				newErr.error = err.Error()
 				return localVarReturnValue, localVarAPIResponse, newErr
 			}
 			newErr.model = v
@@ -700,7 +720,7 @@ func (a *TokensApiService) TokensGenerateExecute(r ApiTokensGenerateRequest) (Jw
 			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
-				newErr.error = fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, err.Error())
+				newErr.error = err.Error()
 				return localVarReturnValue, localVarAPIResponse, newErr
 			}
 			newErr.model = v
@@ -709,7 +729,7 @@ func (a *TokensApiService) TokensGenerateExecute(r ApiTokensGenerateRequest) (Jw
 			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
-				newErr.error = fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, err.Error())
+				newErr.error = err.Error()
 				return localVarReturnValue, localVarAPIResponse, newErr
 			}
 			newErr.model = v
@@ -806,7 +826,7 @@ func (a *TokensApiService) TokensGetExecute(r ApiTokensGetRequest) (Tokens, *API
 	if r.ctx != nil {
 		// API Key Authentication
 		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
-			if apiKey, ok := auth["Token Authentication"]; ok {
+			if apiKey, ok := auth["TokenAuthentication"]; ok {
 				var key string
 				if apiKey.Prefix != "" {
 					key = apiKey.Prefix + " " + apiKey.Key
@@ -822,20 +842,21 @@ func (a *TokensApiService) TokensGetExecute(r ApiTokensGetRequest) (Tokens, *API
 		return localVarReturnValue, nil, err
 	}
 
-	localVarHTTPResponse, err := a.client.callAPI(req)
+	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
 	localVarAPIResponse := &APIResponse{
-		Response:   localVarHTTPResponse,
-		Method:     localVarHTTPMethod,
-		RequestURL: localVarPath,
-		Operation:  "TokensGet",
+		Response:    localVarHTTPResponse,
+		Method:      localVarHTTPMethod,
+		RequestTime: httpRequestTime,
+		RequestURL:  localVarPath,
+		Operation:   "TokensGet",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	localVarBody, err := _ioutil.ReadAll(localVarHTTPResponse.Body)
+	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
 	localVarHTTPResponse.Body.Close()
 	localVarAPIResponse.Payload = localVarBody
 	if err != nil {
@@ -846,13 +867,13 @@ func (a *TokensApiService) TokensGetExecute(r ApiTokensGetRequest) (Tokens, *API
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
 			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
-				newErr.error = fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, err.Error())
+				newErr.error = err.Error()
 				return localVarReturnValue, localVarAPIResponse, newErr
 			}
 			newErr.model = v
@@ -861,7 +882,7 @@ func (a *TokensApiService) TokensGetExecute(r ApiTokensGetRequest) (Tokens, *API
 			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
-				newErr.error = fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, err.Error())
+				newErr.error = err.Error()
 				return localVarReturnValue, localVarAPIResponse, newErr
 			}
 			newErr.model = v
@@ -870,7 +891,7 @@ func (a *TokensApiService) TokensGetExecute(r ApiTokensGetRequest) (Tokens, *API
 			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
-				newErr.error = fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, err.Error())
+				newErr.error = err.Error()
 				return localVarReturnValue, localVarAPIResponse, newErr
 			}
 			newErr.model = v
@@ -879,7 +900,7 @@ func (a *TokensApiService) TokensGetExecute(r ApiTokensGetRequest) (Tokens, *API
 			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
-				newErr.error = fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, err.Error())
+				newErr.error = err.Error()
 				return localVarReturnValue, localVarAPIResponse, newErr
 			}
 			newErr.model = v
