@@ -72,11 +72,7 @@ func ConvertVmAutoscalingServerToTable(sv ionoscloud.Server, depth int32) ([]map
 	}
 
 	// Adding additional server info to each row
-	for i := range cloudApiServerAsTable {
-		cloudApiServerAsTable[i]["GroupServerId"] = *sv.Id
-		cloudApiServerAsTable[i]["DatacenterId"] = dcId
-	}
-
+	cloudApiServerAsTable[0]["GroupServerId"] = *sv.Id
 	return cloudApiServerAsTable, nil
 }
 
@@ -96,9 +92,7 @@ func ConvertVmAutoscalingServersToTable(serverCollection ionoscloud.ServerCollec
 		}
 
 		// Append each row of the server table to the main table
-		for _, row := range serverTable {
-			table = append(table, row)
-		}
+		table = append(table, serverTable...)
 	}
 
 	return table, nil

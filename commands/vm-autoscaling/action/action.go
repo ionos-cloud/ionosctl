@@ -44,6 +44,7 @@ var (
 
 	allCols = []string{
 		"ActionId",
+		"GroupId",
 	}
 
 	defaultCols = allCols
