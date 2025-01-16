@@ -11,7 +11,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
@@ -224,7 +223,6 @@ func RunShareListAll(c *core.CommandConfig) error {
 		return err
 	}
 
-	var allSharesConverted = make([]map[string]interface{}, 0)
 	var allShares = make([]ionoscloud.GroupShares, 0)
 
 	totalTime := time.Duration(0)
@@ -233,26 +231,6 @@ func RunShareListAll(c *core.CommandConfig) error {
 		shares, resp, err := c.CloudApiV6Services.Groups().ListShares(*group.GetId(), listQueryParams)
 		if err != nil {
 			return err
-		}
-
-		items, ok := shares.GetItemsOk()
-		if !ok || items == nil {
-			continue
-		}
-
-		for _, item := range *items {
-			temp, err := json2table.ConvertJSONToTable("", jsonpaths.Share, item)
-			if err != nil {
-				return fmt.Errorf("failed converting Share from JSON to Table format: %w", err)
-			}
-
-			gid, ok := group.GetIdOk()
-			if !ok || gid == nil {
-				return fmt.Errorf("could not retrieve Group Id")
-			}
-
-			temp[0]["GroupId"] = gid
-			allSharesConverted = append(allSharesConverted, temp[0])
 		}
 
 		allShares = append(allShares, shares.GroupShares)
@@ -265,8 +243,8 @@ func RunShareListAll(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutputPreconverted(allShares, allSharesConverted,
-		tabheaders.GetHeaders(allGroupShareCols, defaultGroupShareCols, cols))
+	out, err := jsontabwriter.GenerateOutput(
+		"*.items", jsonpaths.Share, allShares, tabheaders.GetHeaders(allGroupShareCols, defaultGroupShareCols, cols))
 	if err != nil {
 		return err
 	}

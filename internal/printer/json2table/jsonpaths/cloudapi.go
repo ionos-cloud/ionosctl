@@ -10,6 +10,7 @@ var (
 		"TargetLan":                 "properties.targetLan",
 		"PrivateIps":                "properties.lbPrivateIps",
 		"State":                     "metadata.state",
+		"DatacenterId":              "href",
 	}
 
 	ApplicationLoadBalancerForwardingRule = map[string]string{
@@ -230,6 +231,7 @@ var (
 		"AvailableUpgradeVersions": "properties.availableUpgradeVersions",
 		"Annotations":              "properties.annotations",
 		"Labels":                   "properties.labels",
+		"ClusterId":                "href",
 	}
 
 	K8sNodePoolLan = map[string]string{
@@ -246,6 +248,7 @@ var (
 		"PccId":         "properties.pcc",
 		"State":         "metadata.state",
 		"IPv6CidrBlock": "properties.ipv6CidrBlock",
+		"DatacenterId":  "href",
 	}
 
 	LoadBalancer = map[string]string{
@@ -254,6 +257,7 @@ var (
 		"Dhcp":           "properties.dhcp",
 		"Ip":             "properties.ip",
 		"State":          "metadata.state",
+		"DatacenterId":   "href",
 	}
 
 	Location = map[string]string{
@@ -269,6 +273,7 @@ var (
 		"Name":         "properties.name",
 		"PublicIps":    "properties.publicIps",
 		"State":        "metadata.state",
+		"DatacenterId": "href",
 	}
 
 	NatGatewayLan = map[string]string{
@@ -297,6 +302,7 @@ var (
 		"TargetLan":             "properties.targetLan",
 		"LbPrivateIps":          "properties.lbPrivateIps",
 		"State":                 "metadata.state",
+		"DatacenterId":          "href",
 	}
 
 	NetworkLoadBalancerRule = map[string]string{
@@ -377,6 +383,7 @@ var (
 		"BootCdromId":      "properties.bootCdrom.id",
 		"TemplateId":       "properties.templateUuid",
 		"Type":             "properties.type",
+		"DatacenterId":     "href",
 	}
 
 	Share = map[string]string{
@@ -384,6 +391,7 @@ var (
 		"EditPrivilege":  "properties.editPrivilege",
 		"SharePrivilege": "properties.sharePrivilege",
 		"Type":           "type",
+		"GroupId":   "href",
 	}
 
 	Snapshot = map[string]string{
@@ -457,6 +465,7 @@ var (
 		"BackupunitId":     "properties.backupunitId",
 		"UserData":         "properties.userData",
 		"BootServerId":     "properties.bootServer",
+		"DatacenterId":     "href",
 	}
 
 	Label = map[string]string{

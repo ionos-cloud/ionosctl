@@ -11,7 +11,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
@@ -256,7 +255,6 @@ func RunNetworkLoadBalancerListAll(c *core.CommandConfig) error {
 	}
 
 	var allNetworkLoadBalancers []ionoscloud.NetworkLoadBalancers
-	var allNetworkLoadBalancersConverted []map[string]interface{}
 	allDcs := getDataCenters(datacenters)
 	totalTime := time.Duration(0)
 
@@ -266,28 +264,12 @@ func RunNetworkLoadBalancerListAll(c *core.CommandConfig) error {
 			return fmt.Errorf("could not retrieve Datacenter Id")
 		}
 
-		NetworkLoadBalancers, resp, err := c.CloudApiV6Services.NetworkLoadBalancers().List(*dc.GetId(), listQueryParams)
+		NetworkLoadBalancers, resp, err := c.CloudApiV6Services.NetworkLoadBalancers().List(*id, listQueryParams)
 		if err != nil {
 			return err
 		}
 
 		allNetworkLoadBalancers = append(allNetworkLoadBalancers, NetworkLoadBalancers.NetworkLoadBalancers)
-
-		items, ok := NetworkLoadBalancers.GetItemsOk()
-		if !ok || items == nil {
-			continue
-		}
-
-		for _, item := range *items {
-			temp, err := json2table.ConvertJSONToTable("", jsonpaths.NetworkLoadBalancer, item)
-			if err != nil {
-				return fmt.Errorf("could not convert from JSON to Table format: %w", err)
-			}
-
-			temp[0]["DatacenterId"] = *id
-			allNetworkLoadBalancersConverted = append(allNetworkLoadBalancersConverted, temp[0])
-		}
-
 		totalTime += resp.RequestTime
 	}
 
@@ -297,8 +279,10 @@ func RunNetworkLoadBalancerListAll(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutputPreconverted(allNetworkLoadBalancers, allNetworkLoadBalancersConverted,
-		tabheaders.GetHeadersAllDefault(defaultNetworkLoadBalancerCols, cols))
+	out, err := jsontabwriter.GenerateOutput(
+		"*.items", jsonpaths.NetworkLoadBalancer, allNetworkLoadBalancers,
+		tabheaders.GetHeadersAllDefault(defaultNetworkLoadBalancerCols, cols),
+	)
 	if err != nil {
 		return err
 	}

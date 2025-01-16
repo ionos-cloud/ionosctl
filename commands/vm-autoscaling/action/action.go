@@ -39,6 +39,7 @@ func Root() *core.Command {
 var (
 	allJSONPaths = map[string]string{
 		"ActionId": "id",
+		"GroupId": "href",
 	}
 
 	allCols = []string{

@@ -15,7 +15,7 @@ var (
 	defaultCols = []string{"Id", "TotalVulnerabilities", "FixableVulnerabilities", "MediaType"}
 	allCols     = []string{
 		"Id", "Repository", "PushCount", "PullCount", "LastPushed", "TotalVulnerabilities",
-		"FixableVulnerabilities", "MediaType", "URN",
+		"FixableVulnerabilities", "MediaType", "URN", "RegistryId",
 	}
 )
 

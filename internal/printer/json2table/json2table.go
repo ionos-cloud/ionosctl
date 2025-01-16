@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"reflect"
+	"slices"
 	"strings"
 
 	"github.com/Jeffail/gabs/v2"
@@ -22,7 +23,9 @@ import (
 //
 // Returns a slice of maps. Each map represents a row in the table, with each key-value
 // pair in the map being equivalent to a column name and its value.
-func ConvertJSONToTable(columnPathMappingPrefix string, columnPathMapping map[string]string, sourceData interface{}) ([]map[string]interface{}, error) {
+func ConvertJSONToTable(
+	columnPathMappingPrefix string, columnPathMapping map[string]string, sourceData interface{},
+) ([]map[string]interface{}, error) {
 	if sourceData == nil {
 		return nil, fmt.Errorf("provided object cannot be nil")
 	}
@@ -43,7 +46,12 @@ func ConvertJSONToTable(columnPathMappingPrefix string, columnPathMapping map[st
 
 		for k, v := range columnPathMapping {
 			objData := obj.Path(v)
-			mappedObj[k] = objData.Data()
+
+			if strings.Contains(v, "href") && strings.ToLower(k) != "href" {
+				mappedObj[k] = asParentColumn(objData.Data())
+			} else {
+				mappedObj[k] = objData.Data()
+			}
 		}
 
 		res = append(res, mappedObj)
@@ -85,9 +93,11 @@ func traverseJSONRoot(columnPathMappingPrefix string, sourceData interface{}) ([
 	}
 
 	if !parsedObj.ExistsP(columnPathMappingPrefix) {
-		return nil, fmt.Errorf("'%s' does not exist in [%s]",
+		return nil, fmt.Errorf(
+			"'%s' does not exist in [%s]",
 			columnPathMappingPrefix,
-			strings.Join(functional.KeysOfMap(parsedObj.ChildrenMap()), ", "))
+			strings.Join(functional.KeysOfMap(parsedObj.ChildrenMap()), ", "),
+		)
 	}
 
 	parsedObj = parsedObj.Path(columnPathMappingPrefix)
@@ -108,4 +118,18 @@ func traverseJSONRoot(columnPathMappingPrefix string, sourceData interface{}) ([
 	}
 
 	return children, nil
+}
+
+// asParentColumn extracts the parent ID from the child's HREF.
+func asParentColumn(childHref interface{}) string {
+	if reflect.TypeOf(childHref).Kind() != reflect.String {
+		return ""
+	}
+
+	href := reflect.ValueOf(childHref).String()
+	splitHref := strings.Split(href, "/")
+	slices.Reverse(splitHref)
+
+	// parent id is always 2 tokens to the left of the child id
+	return splitHref[2]
 }

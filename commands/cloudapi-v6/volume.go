@@ -375,7 +375,7 @@ func RunVolumeListAll(c *core.CommandConfig) error {
 				fmt.Errorf("could not convert from JSON to Table format: %w", err)
 			}
 
-			temp[0]["DatacenterId"] = id
+			//temp[0]["DatacenterId"] = id
 			allVolumesConverted = append(allVolumesConverted, temp[0])
 		}
 

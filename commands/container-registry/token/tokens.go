@@ -19,7 +19,7 @@ import (
 
 var (
 	postHeaders  = []string{"CredentialsPassword"}
-	AllTokenCols = []string{"TokenId", "DisplayName", "ExpiryDate", "CredentialsUsername", "CredentialsPassword", "Status"}
+	AllTokenCols = []string{"TokenId", "DisplayName", "ExpiryDate", "CredentialsUsername", "CredentialsPassword", "Status", "RegistryId"}
 )
 
 func TokenCmd() *core.Command {

@@ -11,7 +11,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
@@ -256,36 +255,18 @@ func RunApplicationLoadBalancerListAll(c *core.CommandConfig) error {
 	}
 
 	allDcs := getDataCenters(datacenters)
-
-	var allApplicationLoadBalancersConverted = make([]map[string]interface{}, 0)
 	var allApplicationLoadBalancers = make([]ionoscloud.ApplicationLoadBalancers, 0)
-
 	totalTime := time.Duration(0)
 
 	for _, dc := range allDcs {
-		ApplicationLoadBalancers, resp, err := c.CloudApiV6Services.ApplicationLoadBalancers().List(*dc.GetId(), listQueryParams)
-		if err != nil {
-			return err
-		}
-
 		dcId, ok := dc.GetIdOk()
 		if !ok || dcId == nil {
 			return fmt.Errorf("could not retrieve Datacenter Id")
 		}
 
-		albs, ok := ApplicationLoadBalancers.GetItemsOk()
-		if !ok || albs == nil {
-			continue
-		}
-
-		for _, alb := range *albs {
-			converted, err := json2table.ConvertJSONToTable("", jsonpaths.ApplicationLoadBalancer, alb)
-			if err != nil {
-				return fmt.Errorf("could not convert from JSON to Table format: %w", err)
-			}
-
-			converted[0]["DatacenterId"] = *dcId
-			allApplicationLoadBalancersConverted = append(allApplicationLoadBalancersConverted, converted[0])
+		ApplicationLoadBalancers, resp, err := c.CloudApiV6Services.ApplicationLoadBalancers().List(*dcId, listQueryParams)
+		if err != nil {
+			return err
 		}
 
 		allApplicationLoadBalancers = append(allApplicationLoadBalancers, ApplicationLoadBalancers.ApplicationLoadBalancers)
@@ -298,8 +279,10 @@ func RunApplicationLoadBalancerListAll(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutputPreconverted(allApplicationLoadBalancers, allApplicationLoadBalancersConverted,
-		tabheaders.GetHeaders(allApplicationLoadBalancerCols, defaultApplicationLoadBalancerCols, cols))
+	out, err := jsontabwriter.GenerateOutput(
+		"*.items", jsonpaths.ApplicationLoadBalancer, allApplicationLoadBalancers,
+		tabheaders.GetHeaders(allApplicationLoadBalancerCols, defaultApplicationLoadBalancerCols, cols),
+	)
 	if err != nil {
 		return err
 	}

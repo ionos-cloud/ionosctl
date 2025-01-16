@@ -13,7 +13,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
@@ -259,7 +258,6 @@ func RunLanListAll(c *core.CommandConfig) error {
 	allDcs := getDataCenters(datacenters)
 
 	var allLans []ionoscloud.Lans
-	var allLansConverted []map[string]interface{}
 	totalTime := time.Duration(0)
 	for _, dc := range allDcs {
 		id, ok := dc.GetIdOk()
@@ -272,21 +270,6 @@ func RunLanListAll(c *core.CommandConfig) error {
 			return err
 		}
 
-		items, ok := lans.GetItemsOk()
-		if !ok || items == nil {
-			continue
-		}
-
-		for _, item := range *items {
-			temp, err := json2table.ConvertJSONToTable("", jsonpaths.Lan, item)
-			if err != nil {
-				return fmt.Errorf("failed to convert from JSON to Table format: %w", err)
-			}
-
-			temp[0]["DatacenterId"] = *id
-			allLansConverted = append(allLansConverted, temp[0])
-		}
-
 		allLans = append(allLans, lans.Lans)
 		totalTime += resp.RequestTime
 	}
@@ -297,8 +280,9 @@ func RunLanListAll(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutputPreconverted(allLans, allLansConverted,
-		tabheaders.GetHeaders(allLanCols, defaultLanCols, cols))
+	out, err := jsontabwriter.GenerateOutput(
+		"*.items", jsonpaths.Lan, allLans, tabheaders.GetHeaders(allLanCols, defaultLanCols, cols),
+	)
 	if err != nil {
 		return err
 	}
