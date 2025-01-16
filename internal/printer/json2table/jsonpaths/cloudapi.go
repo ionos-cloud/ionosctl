@@ -391,7 +391,7 @@ var (
 		"EditPrivilege":  "properties.editPrivilege",
 		"SharePrivilege": "properties.sharePrivilege",
 		"Type":           "type",
-		"GroupId":   "href",
+		"GroupId":        "href",
 	}
 
 	Snapshot = map[string]string{

@@ -39,7 +39,7 @@ func Root() *core.Command {
 var (
 	allJSONPaths = map[string]string{
 		"ActionId": "id",
-		"GroupId": "href",
+		"GroupId":  "href",
 	}
 
 	allCols = []string{
