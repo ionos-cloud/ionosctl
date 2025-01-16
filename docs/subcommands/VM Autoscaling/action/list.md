@@ -40,7 +40,7 @@ List VM Autoscaling Actions
   -a, --all               If set, list all actions of all groups
   -u, --api-url string    Override default host url (default "https://api.ionos.com")
       --cols strings      Set of columns to be printed on output 
-                          Available columns: [ActionId]
+                          Available columns: [ActionId GroupId]
   -c, --config string     Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -D, --depth int32       Controls the detail depth of the response objects (default 1)
   -f, --force             Force command to execute without user input
