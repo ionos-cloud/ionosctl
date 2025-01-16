@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"reflect"
-	"slices"
 	"strings"
 
 	"github.com/Jeffail/gabs/v2"
@@ -47,6 +46,7 @@ func ConvertJSONToTable(
 		for k, v := range columnPathMapping {
 			objData := obj.Path(v)
 
+			// Any combination of non-href columns and href path will be considered a parent column
 			if strings.Contains(v, "href") && strings.ToLower(k) != "href" {
 				mappedObj[k] = asParentColumn(objData.Data())
 			} else {
@@ -122,14 +122,14 @@ func traverseJSONRoot(columnPathMappingPrefix string, sourceData interface{}) ([
 
 // asParentColumn extracts the parent ID from the child's HREF.
 func asParentColumn(childHref interface{}) string {
-	if reflect.TypeOf(childHref).Kind() != reflect.String {
+	href, ok := childHref.(string)
+	if !ok {
 		return ""
 	}
 
-	href := reflect.ValueOf(childHref).String()
-	splitHref := strings.Split(href, "/")
-	slices.Reverse(splitHref)
+	tokens := strings.Split(href, "/")
+	// parent ID is always 2 tokens to the left of the child ID
+	parentID := tokens[len(tokens)-3]
 
-	// parent id is always 2 tokens to the left of the child id
-	return splitHref[2]
+	return parentID
 }
