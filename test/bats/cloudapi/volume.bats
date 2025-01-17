@@ -83,6 +83,9 @@ setup_file() {
 }
 
 @test "Creating a nic with a non-existent LAN ID will create a LAN" {
+    export IONOS_USERNAME="$(cat /tmp/bats_test/email)"
+    export IONOS_PASSWORD="$(cat /tmp/bats_test/password)"
+
     run ionosctl nic create --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" --server-id "$(cat /tmp/bats_test/server_id)" \
      --lan-id 123 -w -t 300 -o json 2> /dev/null
     assert_success
@@ -125,7 +128,7 @@ setup_file() {
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/snapshot_id
 
-    sleep 600
+    sleep 30
 }
 
 @test "Create a volume from a snapshot" {
@@ -154,6 +157,9 @@ setup_file() {
 }
 
 @test "Attach a volume with a backupunit public image" {
+    export IONOS_USERNAME="$(cat /tmp/bats_test/email)"
+    export IONOS_PASSWORD="$(cat /tmp/bats_test/password)"
+
     run ionosctl backupunit create --name "bats$(randStr 6)" --email "$(cat /tmp/bats_test/email)" \
      --password "$(cat /tmp/bats_test/password)" -o json 2> /dev/null
     assert_success
@@ -185,6 +191,9 @@ setup_file() {
 }
 
 @test "Server Console is accessible. Token is valid." {
+    export IONOS_USERNAME="$(cat /tmp/bats_test/email)"
+    export IONOS_PASSWORD="$(cat /tmp/bats_test/password)"
+
     # Get the token from ionosctl server token get command
     run ionosctl server token get --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
      --server-id "$(cat /tmp/bats_test/server_id)" --no-headers
@@ -245,7 +254,7 @@ setup_file() {
     assert_success
 }
 
-@test "Create Cube Server with Direct Attached Storage" {
+@test "Get and verify XS template" {
     export IONOS_USERNAME="$(cat /tmp/bats_test/email)"
     export IONOS_PASSWORD="$(cat /tmp/bats_test/password)"
 
@@ -261,6 +270,11 @@ setup_file() {
     run ionosctl template get --template-id "$(cat /tmp/bats_test/template_id)" --cols Cores --no-headers
     assert_success
     assert_output "$(echo "$xs_output" | jq -r '.items[0].properties.cores')"
+}
+
+@test "Create Cube Server with Direct Attached Storage" {
+    export IONOS_USERNAME="$(cat /tmp/bats_test/email)"
+    export IONOS_PASSWORD="$(cat /tmp/bats_test/password)"
 
     run ionosctl server create --name "bats-test-$(randStr 8)" --type "CUBE" \
      -k /tmp/bats_test/id_rsa.pub --template-id "$(cat /tmp/bats_test/template_id)" \
@@ -283,6 +297,25 @@ setup_file() {
     run ionosctl server delete --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" --server-id "$(cat /tmp/bats_test/cube_server_id)" -f -w -t 300
     assert_success
 }
+
+@test "Create Cube Server from snapshot" {
+    export IONOS_USERNAME="$(cat /tmp/bats_test/email)"
+    export IONOS_PASSWORD="$(cat /tmp/bats_test/password)"
+
+    run ionosctl server create --name "bats-test-$(randStr 8)" --type "CUBE" \
+     -k /tmp/bats_test/id_rsa.pub --template-id "$(cat /tmp/bats_test/template_id)" \
+     --image-id "$(cat /tmp/bats_test/snapshot_id)" --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
+     -w -t 400 -o json 2> /dev/null
+    assert_success
+    echo "$output" | jq -r '.id' > /tmp/bats_test/cube_server_id
+    assert_equal "$(echo "$output" | jq -r '.properties.type')" "CUBE"
+
+    run ionosctl server get --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
+     --server-id "$(cat /tmp/bats_test/cube_server_id)" --no-headers --cols Type
+    assert_success
+    assert_output -p "CUBE"
+}
+
 
 @test "Delete Volumes" {
     export IONOS_USERNAME="$(cat /tmp/bats_test/email)"
