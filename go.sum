@@ -246,8 +246,10 @@ github.com/inconshreveable/mousetrap v1.1.0/go.mod h1:vpF70FUmC8bwa3OWnCshd2FqLf
 github.com/influxdata/influxdb1-client v0.0.0-20191209144304-8bf82d3c094d/go.mod h1:qj24IKcXYK6Iy9ceXlo3Tc+vtHo9lIhSX5JddghvEPo=
 github.com/ionos-cloud/sdk-go-auth v1.0.10 h1:aHWstSqtmWZxvNVEye42MBK9WcbTQnbc3GBgPj6tmcE=
 github.com/ionos-cloud/sdk-go-auth v1.0.10/go.mod h1:yVHBsuAWLbcnlgfviCDZ5HE7k3KwkmK7GjgaAvnnKxI=
-github.com/ionos-cloud/sdk-go-cdn v1.1.0 h1:bwtrey2m1mElQV9TlhzR39mC6IMeWF2P5ztd6cmRKfw=
-github.com/ionos-cloud/sdk-go-cdn v1.1.0/go.mod h1:W2XZ5CYhKROyvtLaz3VgTKe+nXI1+NZD1gE/YliHUeU=
+github.com/ionos-cloud/sdk-go-bundle/products/cdn/v2 v2.1.1 h1:8O0c5GLVD6aM//iC3L3+0PaQgKux3tV/MqzOpLV4wEM=
+github.com/ionos-cloud/sdk-go-bundle/products/cdn/v2 v2.1.1/go.mod h1:BF6R+j1GdJEMImxkeh32qjIVWqsBfgi6VgyfsY5ezIA=
+github.com/ionos-cloud/sdk-go-bundle/shared v0.1.1 h1:NWobgIhmUJKG6ohFXefMj+KmpEEvLYEDUgGzpns6HQE=
+github.com/ionos-cloud/sdk-go-bundle/shared v0.1.1/go.mod h1:cLIl4zmB1yMdPSNgTzaRmXeuusEAY1O3Lp/iXSc/R6E=
 github.com/ionos-cloud/sdk-go-cert-manager v1.0.1 h1:QGnenRREavvU0ZrXvY4hmCMXRyvmKj5jaXsFX9Apfd0=
 github.com/ionos-cloud/sdk-go-cert-manager v1.0.1/go.mod h1:EYDegkY6fUSkx0BL0GpNMpKvp33AId2vTZL44YLPreA=
 github.com/ionos-cloud/sdk-go-container-registry v1.1.0 h1:H92gzx9oj0vvbozbXwn2RLNEw7++1Ns3Kl9PGrh5Waw=
@@ -584,8 +586,8 @@ golang.org/x/oauth2 v0.0.0-20200902213428-5d25da1a8d43/go.mod h1:KelEdhl1UZF7XfJ
 golang.org/x/oauth2 v0.0.0-20201109201403-9fd604954f58/go.mod h1:KelEdhl1UZF7XfJ4dDtk6s++YSgaE7mD/BuKKDLBl4A=
 golang.org/x/oauth2 v0.0.0-20201208152858-08078c50e5b5/go.mod h1:KelEdhl1UZF7XfJ4dDtk6s++YSgaE7mD/BuKKDLBl4A=
 golang.org/x/oauth2 v0.0.0-20210218202405-ba52d332ba99/go.mod h1:KelEdhl1UZF7XfJ4dDtk6s++YSgaE7mD/BuKKDLBl4A=
-golang.org/x/oauth2 v0.24.0 h1:KTBBxWqUa0ykRPLtV69rRto9TLXcqYkeswu48x/gvNE=
-golang.org/x/oauth2 v0.24.0/go.mod h1:XYTD2NtWslqkgxebSiOHnXEap4TF09sJSc7H1sXbhtI=
+golang.org/x/oauth2 v0.25.0 h1:CY4y7XT9v0cRI9oupztF8AgiIu99L/ksR/Xp/6jrZ70=
+golang.org/x/oauth2 v0.25.0/go.mod h1:XYTD2NtWslqkgxebSiOHnXEap4TF09sJSc7H1sXbhtI=
 golang.org/x/sync v0.0.0-20180314180146-1d60e4601c6f/go.mod h1:RxMgew5VJxzue5/jJTE5uejpjVlOe/izrB70Jof72aM=
 golang.org/x/sync v0.0.0-20181108010431-42b317875d0f/go.mod h1:RxMgew5VJxzue5/jJTE5uejpjVlOe/izrB70Jof72aM=
 golang.org/x/sync v0.0.0-20181221193216-37e7f081c4d4/go.mod h1:RxMgew5VJxzue5/jJTE5uejpjVlOe/izrB70Jof72aM=

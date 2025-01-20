@@ -12,7 +12,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
-	cdn "github.com/ionos-cloud/sdk-go-cdn"
+	cdn "github.com/ionos-cloud/sdk-go-bundle/products/cdn/v2"
 	"github.com/spf13/viper"
 )
 
@@ -57,7 +57,7 @@ func FindByID() *core.Command {
 		core.RequiredFlagOption(),
 		core.WithCompletion(func() []string {
 			return completer.DistributionsProperty(func(r cdn.Distribution) string {
-				return *r.Id
+				return r.Id
 			})
 		}, constants.CDNApiRegionalURL, constants.CDNLocations),
 	)
