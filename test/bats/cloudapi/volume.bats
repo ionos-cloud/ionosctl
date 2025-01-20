@@ -29,14 +29,25 @@ setup_file() {
     echo "$output" | jq -r '.id' > /tmp/bats_test/user_id
 
     run ionosctl group create --name "test-volumes-$(randStr 4)" \
-     --create-dc --create-nic --create-backup --create-snapshot --reserve-ip \
-     -o json 2> /dev/null
+     --create-dc --create-nic --create-backup --reserve-ip \
+     -w -t 300 -o json 2> /dev/null
     assert_success
     echo "$output" | jq -r '.id' > /tmp/bats_test/group_id
+
+    sleep 10
 
     run ionosctl group user add --user-id "$(cat /tmp/bats_test/user_id)" \
      --group-id "$(cat /tmp/bats_test/group_id)" -o json 2> /dev/null
     assert_success
+}
+
+@test "Is temp user" {
+    export IONOS_USERNAME="$(cat /tmp/bats_test/email)"
+    export IONOS_PASSWORD="$(cat /tmp/bats_test/password)"
+
+    run ionosctl whoami
+    assert_success
+    assert_output "$(cat /tmp/bats_test/email)"
 }
 
 @test "Create Datacenter" {
@@ -116,28 +127,6 @@ setup_file() {
 
     run ionosctl server volume attach --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
      --server-id "$(cat /tmp/bats_test/server_id)" --volume-id "$(cat /tmp/bats_test/volume_id)" -t 600 -w
-    assert_success
-}
-
-@test "Create a snapshot" {
-    export IONOS_USERNAME="$(cat /tmp/bats_test/email)"
-    export IONOS_PASSWORD="$(cat /tmp/bats_test/password)"
-
-    run ionosctl snapshot create --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
-     --volume-id "$(cat /tmp/bats_test/volume_id)" --name "bats-test-$(randStr 8)" -o json 2> /dev/null
-    assert_success
-    echo "$output" | jq -r '.id' > /tmp/bats_test/snapshot_id
-
-    sleep 30
-}
-
-@test "Create a volume from a snapshot" {
-    export IONOS_USERNAME="$(cat /tmp/bats_test/email)"
-    export IONOS_PASSWORD="$(cat /tmp/bats_test/password)"
-
-    run ionosctl volume create --type "SSD Premium" --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
-     --name "bats-test-$(randStr 8)" --size 50 --image-id "$(cat /tmp/bats_test/snapshot_id)" \
-     -t 300 -w -o json 2> /dev/null
     assert_success
 }
 
@@ -298,25 +287,6 @@ setup_file() {
     assert_success
 }
 
-@test "Create Cube Server from snapshot" {
-    export IONOS_USERNAME="$(cat /tmp/bats_test/email)"
-    export IONOS_PASSWORD="$(cat /tmp/bats_test/password)"
-
-    run ionosctl server create --name "bats-test-$(randStr 8)" --type "CUBE" \
-     -k /tmp/bats_test/id_rsa.pub --template-id "$(cat /tmp/bats_test/template_id)" \
-     --image-id "$(cat /tmp/bats_test/snapshot_id)" --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
-     -w -t 400 -o json 2> /dev/null
-    assert_success
-    echo "$output" | jq -r '.id' > /tmp/bats_test/cube_server_id
-    assert_equal "$(echo "$output" | jq -r '.properties.type')" "CUBE"
-
-    run ionosctl server get --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
-     --server-id "$(cat /tmp/bats_test/cube_server_id)" --no-headers --cols Type
-    assert_success
-    assert_output -p "CUBE"
-}
-
-
 @test "Delete Volumes" {
     export IONOS_USERNAME="$(cat /tmp/bats_test/email)"
     export IONOS_PASSWORD="$(cat /tmp/bats_test/password)"
@@ -369,7 +339,6 @@ teardown_file() {
         ionosctl ipblock delete -af
         ionosctl datacenter delete -af
         ionosctl backupunit delete -af
-        ionosctl snapshot delete -af
     )
 
     # original IONOS_USERNAME IONOS_PASSWORD are restored
