@@ -7,7 +7,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	sdkgoauth "github.com/ionos-cloud/sdk-go-auth"
-	cdn "github.com/ionos-cloud/sdk-go-bundle/products/cdn/v2"
+	"github.com/ionos-cloud/sdk-go-bundle/products/cdn/v2"
 	certmanager "github.com/ionos-cloud/sdk-go-cert-manager"
 	registry "github.com/ionos-cloud/sdk-go-container-registry"
 	dataplatform "github.com/ionos-cloud/sdk-go-dataplatform"
@@ -125,9 +125,6 @@ func newClient(name, pwd, token, hostUrl string, usedLayer *Layer) *Client {
 
 	mariaConfig := maria.NewConfiguration(name, pwd, token, hostUrl)
 	mariaConfig.UserAgent = appendUserAgent(mariaConfig.UserAgent)
-
-	cdnConfig := cdn.NewConfiguration(name, pwd, token, hostUrl)
-	cdnConfig.UserAgent = appendUserAgent(cdnConfig.UserAgent)
 
 	vpnConfig := vpn.NewConfiguration(name, pwd, token, hostUrl)
 	vpnConfig.UserAgent = appendUserAgent(vpnConfig.UserAgent)
