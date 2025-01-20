@@ -102,7 +102,7 @@ func UserCreateCmd() *core.Command {
 	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "The authentication username", core.RequiredFlagOption())
 	cmd.AddStringFlag(constants.ArgPassword, constants.ArgPasswordShort, "", "The authentication password", core.RequiredFlagOption())
 
-	cmd.AddStringFlag(FlagRoles, FlagRolesShort, "", "User's role for each db. DB1=Role1,DB2=Role2."+
+	cmd.AddStringFlag(FlagRoles, FlagRolesShort, "", "User's role for each db. DB1=Role1,DB2=Role2. "+
 		"Roles: read, readWrite, readAnyDatabase, readWriteAnyDatabase, dbAdmin, dbAdminAnyDatabase, clusterMonitor, enableSharding",
 		core.RequiredFlagOption(),
 		core.WithCompletionComplex(
@@ -120,7 +120,7 @@ func UserCreateCmd() *core.Command {
 					toComplete + "clusterMonitor",
 					toComplete + "enableSharding",
 				}, cobra.ShellCompDirectiveNoFileComp
-			}, "",
+			}, "", nil,
 		),
 	)
 
