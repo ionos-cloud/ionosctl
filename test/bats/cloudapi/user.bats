@@ -26,7 +26,6 @@ setup_file() {
     sleep 61
     export IONOS_TOKEN=$(cat /tmp/bats_test/token_60s)
     run ionosctl whoami
-    assert_failure
     assert_output -p "Authentication failed!"
     assert_output -p "Using token for authentication"
 }

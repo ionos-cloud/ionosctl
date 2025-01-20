@@ -8,8 +8,39 @@ load "${BATS_LIBS_PATH}/bats-support/load"
 load '../setup.bats'
 
 setup_file() {
-    export IONOS_TOKEN=$(ionosctl token generate)
+    rm -rf /tmp/bats_test
     mkdir -p /tmp/bats_test
+
+    uuid_v4_regex='^[0-9a-f]{8}-[0-9a-f]{4}-[4][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
+}
+
+setup() {
+    if [[ -f /tmp/bats_test/email ]] && [[ -f /tmp/bats_test/password ]]; then
+        export IONOS_USERNAME="$(cat /tmp/bats_test/email)"
+        export IONOS_PASSWORD="$(cat /tmp/bats_test/password)"
+    fi
+}
+
+@test "Create temporary sub-user with DNS permissions" {
+    echo "$(randStr 16)@$(randStr 8).ionosctl.test" | tr '[:upper:]' '[:lower:]' > /tmp/bats_test/email
+    echo "$(randStr 12)" > /tmp/bats_test/password
+
+    run ionosctl user create --first-name "test-user-$(randStr 4)" --last-name "test-last-$(randStr 4)" \
+        --email "$(cat /tmp/bats_test/email)" --password "$(cat /tmp/bats_test/password)" -o json 2> /dev/null
+    assert_success
+    echo "$output" | jq -r '.id' > /tmp/bats_test/user_id
+
+    run ionosctl group create --name "test-group-$(randStr 4)" --access-dns \
+        -w -t 300 -o json 2> /dev/null
+    assert_success
+    echo "$output" | jq -r '.id' > /tmp/bats_test/group_id
+
+    run ionosctl group user add --user-id "$(cat /tmp/bats_test/user_id)" \
+        --group-id "$(cat /tmp/bats_test/group_id)" -o json 2> /dev/null
+    assert_success
+
+    export IONOS_USERNAME="$(cat /tmp/bats_test/email)"
+    export IONOS_PASSWORD="$(cat /tmp/bats_test/password)"
 }
 
 @test "Create DNS Zone" {
@@ -21,7 +52,6 @@ setup_file() {
     zone_id=$(echo "$output" | jq -r '.id')
     assert_regex "$zone_id" "$uuid_v4_regex"
 
-    # Verify specific fields
     assert_output -p "\"zoneName\": \"$zone_name\""
     assert_output -p "\"state\": \"AVAILABLE\""
 
@@ -31,7 +61,6 @@ setup_file() {
 }
 
 @test "List DNS Zones" {
-    zone_id=$(cat /tmp/bats_test/zone_id)
     zone_name=$(cat /tmp/bats_test/zone_name)
 
     # List Zones (JSON output)
@@ -68,7 +97,6 @@ setup_file() {
 
 @test "List DNS Records" {
     zone_id=$(cat /tmp/bats_test/zone_id)
-    record_id=$(cat /tmp/bats_test/record_id)
     record_name=$(cat /tmp/bats_test/record_name)
 
     # List Records (JSON output)
@@ -77,7 +105,7 @@ setup_file() {
     assert_output -p "\"name\": \"$record_name\""
 
     # List Records (Column output)
-    run ionosctl dns record list --zone "$zone_id" --cols name --max-results 1 --no-headers
+    run ionosctl dns record list --zone "$zone_id" --cols name --no-headers
     assert_success
     assert_output "$record_name"
 }
@@ -111,15 +139,15 @@ setup_file() {
     assert_output -p "\"ttl\": 120"
 }
 
-@test "Delete DNS Record by ID" {
+@test "Delete DNS Record" {
     zone_id=$(cat /tmp/bats_test/zone_id)
-    record_id=$(cat /tmp/bats_test/record_id)
+    record_name=$(cat /tmp/bats_test/record_name)
 
-    run ionosctl dns record delete --zone "$zone_id" --record "$record_id" -f
+    run ionosctl dns record delete --zone "$zone_id" --record "$record_name" -f
     assert_success
 }
 
-@test "Delete DNS Zone by Name" {
+@test "Delete DNS Zone" {
     zone_name=$(cat /tmp/bats_test/zone_name)
 
     run ionosctl dns zone delete --zone "$zone_name" -f
@@ -133,19 +161,15 @@ setup_file() {
 }
 
 teardown_file() {
-    if [[ -f /tmp/bats_test/zone_id ]]; then
-        zone_id=$(cat /tmp/bats_test/zone_id)
-        run ionosctl dns zone delete --zone "$zone_id" -f
-    fi
+    (
+        export IONOS_USERNAME="$(cat /tmp/bats_test/email)"
+        export IONOS_PASSWORD="$(cat /tmp/bats_test/password)"
 
-    if [[ -f /tmp/bats_test/record_id ]]; then
-        zone_id=$(cat /tmp/bats_test/zone_id)
-        record_id=$(cat /tmp/bats_test/record_id)
-        run ionosctl dns record delete --zone "$zone_id" --record "$record_id" -f
-    fi
+        ionosctl dns zone delete -af
+    )
 
-    run ionosctl token delete --token "$IONOS_TOKEN" -f
-    unset IONOS_TOKEN
+    ionosctl user delete --user-id "$(cat /tmp/bats_test/user_id)" -f
+    ionosctl group delete --group-id "$(cat /tmp/bats_test/group_id)" -f
 
     rm -rf /tmp/bats_test
 }
