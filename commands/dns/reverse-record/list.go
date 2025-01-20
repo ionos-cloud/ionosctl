@@ -9,7 +9,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
-	dns "github.com/ionos-cloud/sdk-go-dns"
+	dns "github.com/ionos-cloud/sdk-go-bundle/products/dns/v2"
 )
 
 func List() *core.Command {
@@ -47,7 +47,7 @@ func List() *core.Command {
 	cmd.AddStringFlag(constants.FlagIps, "i", "", "Optional filter for the IP address of the reverse record",
 		core.WithCompletion(func() []string {
 			return RecordsProperty(func(t dns.ReverseRecordRead) string {
-				return *t.Properties.Ip
+				return t.Properties.Ip
 			})
 		}, constants.DNSApiRegionalURL, constants.DNSLocations),
 	)

@@ -66,6 +66,9 @@ github.com/ionos-cloud/sdk-go-auth
 # github.com/ionos-cloud/sdk-go-bundle/products/cdn/v2 v2.1.1
 ## explicit; go 1.22
 github.com/ionos-cloud/sdk-go-bundle/products/cdn/v2
+# github.com/ionos-cloud/sdk-go-bundle/products/dns/v2 v2.0.1
+## explicit; go 1.22
+github.com/ionos-cloud/sdk-go-bundle/products/dns/v2
 # github.com/ionos-cloud/sdk-go-bundle/shared v0.1.1
 ## explicit; go 1.20
 github.com/ionos-cloud/sdk-go-bundle/shared
@@ -87,9 +90,6 @@ github.com/ionos-cloud/sdk-go-dbaas-mongo
 # github.com/ionos-cloud/sdk-go-dbaas-postgres v1.1.2
 ## explicit; go 1.19
 github.com/ionos-cloud/sdk-go-dbaas-postgres
-# github.com/ionos-cloud/sdk-go-dns v1.2.0
-## explicit; go 1.18
-github.com/ionos-cloud/sdk-go-dns
 # github.com/ionos-cloud/sdk-go-kafka v1.1.0
 ## explicit; go 1.18
 github.com/ionos-cloud/sdk-go-kafka

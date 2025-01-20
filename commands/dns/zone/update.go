@@ -11,7 +11,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/pointer"
-	dns "github.com/ionos-cloud/sdk-go-dns"
+	dns "github.com/ionos-cloud/sdk-go-bundle/products/dns/v2"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
@@ -45,7 +45,7 @@ func ZonesPutCmd() *core.Command {
 			}
 
 			if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) {
-				z.Properties.ZoneName = pointer.From(viper.GetString(fn))
+				z.Properties.ZoneName = viper.GetString(fn)
 			}
 			if fn := core.GetFlagName(c.NS, constants.FlagDescription); viper.IsSet(fn) {
 				z.Properties.Description = pointer.From(viper.GetString(fn))
@@ -76,7 +76,7 @@ func ZonesPutCmd() *core.Command {
 	cmd.AddStringFlag(constants.FlagZone, constants.FlagZoneShort, "", constants.DescZone, core.RequiredFlagOption(),
 		core.WithCompletion(func() []string {
 			return completer.ZonesProperty(func(t dns.ZoneRead) string {
-				return *t.Properties.ZoneName
+				return t.Properties.ZoneName
 			})
 		}, constants.DNSApiRegionalURL, constants.DNSLocations),
 	)

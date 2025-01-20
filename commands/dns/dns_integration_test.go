@@ -17,7 +17,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	utils2 "github.com/ionos-cloud/ionosctl/v6/internal/utils"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
-	dns "github.com/ionos-cloud/sdk-go-dns"
+	"github.com/ionos-cloud/sdk-go-bundle/products/dns/v2"
 
 	"github.com/cilium/fake"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dns/zone"
@@ -103,14 +103,14 @@ func TestZone(t *testing.T) {
 	zoneByName, _, err := client.Must().DnsClient.ZonesApi.ZonesGet(context.Background()).FilterZoneName(randName).Limit(1).Execute()
 
 	assert.NoError(t, err)
-	assert.NotEmpty(t, *zoneByName.Items)
-	sharedZ = (*zoneByName.Items)[0]
+	assert.NotEmpty(t, zoneByName.Items)
+	sharedZ = (zoneByName.Items)[0]
 	assert.NotEmpty(t, sharedZ.Properties)
 	assert.Equal(t, randDesc, *sharedZ.Properties.Description)
 
 	resolvedId, err := utils.ZoneResolve(randName)
 	assert.NoError(t, err)
-	assert.Equal(t, *sharedZ.Id, resolvedId) // I added these 3 lines later - to test zone.ZoneResolve too
+	assert.Equal(t, sharedZ.Id, resolvedId)
 
 	// === `ionosctl dns z get`
 	c = zone.ZonesFindByIdCmd()
@@ -119,7 +119,7 @@ func TestZone(t *testing.T) {
 	// assert.ErrorContains(t, err, fmt.Sprintf("\"%s\" not set", constants.FlagZone))
 
 	// Try to see if ionosctl zone get finds newly created zone, using ID
-	c.Command.Flags().Set(constants.FlagZone, *sharedZ.Properties.ZoneName)
+	c.Command.Flags().Set(constants.FlagZone, sharedZ.Properties.ZoneName)
 	err = c.Command.Execute()
 	assert.NoError(t, err)
 	// TODO: I can't change command output to a buffer and check correctness, because output buffer is hardcoded in command runner
@@ -133,17 +133,17 @@ func TestZone(t *testing.T) {
 	// Try changing desc using `ionosctl dns z update`
 	randDesc = fake.AlphaNum(32)
 	c.Command.Flags().Set(constants.FlagDescription, randDesc)
-	c.Command.Flags().Set(constants.FlagZone, *sharedZ.Properties.ZoneName)
+	c.Command.Flags().Set(constants.FlagZone, sharedZ.Properties.ZoneName)
 	err = c.Command.Execute()
 	assert.NoError(t, err)
 
-	zoneThroughSdk, _, err := client.Must().DnsClient.ZonesApi.ZonesFindById(context.Background(), *sharedZ.Id).Execute()
+	zoneThroughSdk, _, err := client.Must().DnsClient.ZonesApi.ZonesFindById(context.Background(), sharedZ.Id).Execute()
 	assert.NoError(t, err)
 	assert.Equal(t, randDesc, *zoneThroughSdk.Properties.Description)
 
 	resolvedId, err = utils.ZoneResolve(randName)
 	assert.NoError(t, err)
-	assert.Equal(t, *sharedZ.Id, resolvedId)
+	assert.Equal(t, sharedZ.Id, resolvedId)
 }
 
 func TestRecord(t *testing.T) {
@@ -163,23 +163,23 @@ func TestRecord(t *testing.T) {
 	c.Command.Flags().Set(constants.FlagContent, randIp)
 	c.Command.Flags().Set(constants.FlagType, "A")
 	c.Command.Flags().Set(constants.FlagName, randName)
-	c.Command.Flags().Set(constants.FlagZone, *sharedZ.Id)
+	c.Command.Flags().Set(constants.FlagZone, sharedZ.Id)
 	err = c.Command.Execute()
 	assert.NoError(t, err)
 
 	// Try to find the record created by the command
 	recByName, _, err := client.Must().DnsClient.RecordsApi.RecordsGet(context.Background()).FilterName(randName).
-		FilterZoneId(*sharedZ.Id).Limit(1).Execute()
+		FilterZoneId(sharedZ.Id).Limit(1).Execute()
 	assert.NoError(t, err)
-	assert.NotEmpty(t, *recByName.Items)
-	r := (*recByName.Items)[0]
+	assert.NotEmpty(t, recByName.Items)
+	r := (recByName.Items)[0]
 	assert.NotEmpty(t, r.Properties)
-	assert.Equal(t, randIp, *r.Properties.Content)
+	assert.Equal(t, randIp, r.Properties.Content)
 
 	// also test record.ZoneResolve
 	resolvedId, err := record.Resolve(randName)
 	assert.NoError(t, err)
-	assert.Equal(t, *r.Id, resolvedId)
+	assert.Equal(t, r.Id, resolvedId)
 
 	// `ionosctl dns r update`
 	c = record.ZonesRecordsPutCmd()
@@ -190,8 +190,8 @@ func TestRecord(t *testing.T) {
 	// try changing content of prev record
 	randIp = fake.IP(fake.WithIPv4())
 	c.Command.Flags().Set(constants.FlagContent, randIp)
-	c.Command.Flags().Set(constants.FlagZone, *sharedZ.Id)
-	c.Command.Flags().Set(constants.FlagRecord, *r.Properties.Name) // test that querying by name works too
+	c.Command.Flags().Set(constants.FlagZone, sharedZ.Id)
+	c.Command.Flags().Set(constants.FlagRecord, r.Properties.Name) // test that querying by name works too
 	err = c.Command.Execute()
 	assert.NoError(t, err)
 }
@@ -204,9 +204,9 @@ func Cleanup() {
 		log.Printf("Failed deletion: %s", err.Error())
 	}
 
-	err = functional.ApplyAndAggregateErrors(*ls.Items,
+	err = functional.ApplyAndAggregateErrors(ls.Items,
 		func(z dns.ZoneRead) error {
-			_, _, err2 := cl.DnsClient.ZonesApi.ZonesDelete(context.Background(), *z.Id).Execute()
+			_, _, err2 := cl.DnsClient.ZonesApi.ZonesDelete(context.Background(), z.Id).Execute()
 			return err2
 		},
 	)

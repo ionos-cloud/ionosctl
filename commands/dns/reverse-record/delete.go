@@ -9,7 +9,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
-	ionoscloud "github.com/ionos-cloud/sdk-go-dns"
+	ionoscloud "github.com/ionos-cloud/sdk-go-bundle/products/dns/v2"
 	"github.com/spf13/viper"
 )
 
@@ -45,7 +45,7 @@ func Delete() *core.Command {
 		core.RequiredFlagOption(),
 		core.WithCompletion(func() []string {
 			return RecordsProperty(func(read ionoscloud.ReverseRecordRead) string {
-				return *read.Properties.Ip
+				return read.Properties.Ip
 			})
 		}, constants.DNSApiRegionalURL, constants.DNSLocations),
 	)
@@ -62,8 +62,8 @@ func deleteAll(c *core.CommandConfig) error {
 		return fmt.Errorf("failed getting all records: %w", err)
 	}
 
-	return functional.ApplyAndAggregateErrors(*records.GetItems(), func(r ionoscloud.ReverseRecordRead) error {
-		return deleteSingle(c, *r.Id)
+	return functional.ApplyAndAggregateErrors(records.Items, func(r ionoscloud.ReverseRecordRead) error {
+		return deleteSingle(c, r.Id)
 	})
 }
 
@@ -79,14 +79,14 @@ func deleteSingle(c *core.CommandConfig, ipOrIdOfRecord string) error {
 	}
 	yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf(
 		"Are you sure you want to delete record %s (IP: '%s'; description: '%s'; ID: '%s')",
-		*r.Properties.Name, *r.Properties.Ip, *r.Properties.Description, *r.Id),
+		r.Properties.Name, r.Properties.Ip, *r.Properties.Description, r.Id),
 		viper.GetBool(constants.ArgForce))
 	if !yes {
 		return fmt.Errorf("user cancelled deletion")
 	}
 
 	_, _, err = client.Must().DnsClient.ReverseRecordsApi.ReverserecordsDelete(context.Background(),
-		*r.Id,
+		r.Id,
 	).Execute()
 
 	return err

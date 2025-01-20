@@ -11,7 +11,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 
-	ionoscloud "github.com/ionos-cloud/sdk-go-dns"
+	ionoscloud "github.com/ionos-cloud/sdk-go-bundle/products/dns/v2"
 	"github.com/spf13/viper"
 )
 
@@ -65,7 +65,7 @@ func ZonesProperty[V any](f func(ionoscloud.ZoneRead) V, fs ...Filter) []V {
 	if err != nil {
 		return nil
 	}
-	return functional.Map(*recs.Items, f)
+	return functional.Map(recs.Items, f)
 }
 
 type Filter func(request ionoscloud.ApiZonesGetRequest) (ionoscloud.ApiZonesGetRequest, error)

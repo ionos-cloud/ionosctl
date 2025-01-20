@@ -11,7 +11,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/pointer"
-	ionoscloud "github.com/ionos-cloud/sdk-go-dns"
+	ionoscloud "github.com/ionos-cloud/sdk-go-bundle/products/dns/v2"
 	"github.com/spf13/viper"
 )
 
@@ -41,11 +41,11 @@ func Update() *core.Command {
 				return fmt.Errorf("failed querying for reverse record ID %s: %s", id, err)
 			}
 
-			r.Properties.Name = pointer.From(viper.GetString(core.GetFlagName(c.NS, constants.FlagName)))
-			r.Properties.Ip = pointer.From(viper.GetString(core.GetFlagName(c.NS, constants.FlagIp)))
+			r.Properties.Name = viper.GetString(core.GetFlagName(c.NS, constants.FlagName))
+			r.Properties.Ip = viper.GetString(core.GetFlagName(c.NS, constants.FlagIp))
 			r.Properties.Description = pointer.From(viper.GetString(core.GetFlagName(c.NS, constants.FlagDescription)))
 
-			rec, _, err := client.Must().DnsClient.ReverseRecordsApi.ReverserecordsPut(context.Background(), *r.Id).
+			rec, _, err := client.Must().DnsClient.ReverseRecordsApi.ReverserecordsPut(context.Background(), r.Id).
 				ReverseRecordEnsure(
 					ionoscloud.ReverseRecordEnsure{
 						Properties: r.Properties,
@@ -72,7 +72,7 @@ func Update() *core.Command {
 		core.RequiredFlagOption(),
 		core.WithCompletion(func() []string {
 			return RecordsProperty(func(read ionoscloud.ReverseRecordRead) string {
-				return *read.Properties.Ip
+				return read.Properties.Ip
 			})
 		}, constants.DNSApiRegionalURL, constants.DNSLocations),
 	)

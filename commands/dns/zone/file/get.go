@@ -9,7 +9,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	dns "github.com/ionos-cloud/sdk-go-dns"
+	"github.com/ionos-cloud/sdk-go-bundle/products/dns/v2"
 )
 
 func getCmd() *core.Command {
@@ -39,7 +39,7 @@ func getCmd() *core.Command {
 	c.AddStringFlag(constants.FlagZone, constants.FlagZoneShort, "", constants.DescZone, core.RequiredFlagOption(),
 		core.WithCompletion(func() []string {
 			return completer.ZonesProperty(func(t dns.ZoneRead) string {
-				return *t.Properties.ZoneName
+				return t.Properties.ZoneName
 			})
 		}, constants.DNSApiRegionalURL, constants.DNSLocations),
 	)

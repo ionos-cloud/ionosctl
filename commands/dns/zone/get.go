@@ -10,7 +10,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
-	dns "github.com/ionos-cloud/sdk-go-dns"
+	dns "github.com/ionos-cloud/sdk-go-bundle/products/dns/v2"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
@@ -60,7 +60,7 @@ func ZonesFindByIdCmd() *core.Command {
 	cmd.AddStringFlag(constants.FlagZone, constants.FlagZoneShort, "", constants.DescZone, core.RequiredFlagOption(),
 		core.WithCompletion(func() []string {
 			return completer.ZonesProperty(func(t dns.ZoneRead) string {
-				return *t.Properties.ZoneName
+				return t.Properties.ZoneName
 			})
 		}, constants.DNSApiRegionalURL, constants.DNSLocations),
 	)

@@ -11,7 +11,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
-	dns "github.com/ionos-cloud/sdk-go-dns"
+	"github.com/ionos-cloud/sdk-go-bundle/products/dns/v2"
 )
 
 func createCmd() *core.Command {
@@ -46,9 +46,9 @@ IPv6: 2001:8d8:fe:53::5cd:25`,
 				primaryIPs, _ := c.Command.Command.Flags().GetStringSlice(constants.FlagPrimaryIPs)
 
 				secZoneProps := dns.SecondaryZone{
-					ZoneName:    &name,
+					ZoneName:    name,
 					Description: &description,
-					PrimaryIps:  &primaryIPs,
+					PrimaryIps:  primaryIPs,
 				}
 
 				secZone, _, err := client.Must().DnsClient.SecondaryZonesApi.SecondaryzonesPost(context.Background()).SecondaryZoneCreate(

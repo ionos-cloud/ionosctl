@@ -10,7 +10,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
-	ionoscloud "github.com/ionos-cloud/sdk-go-dns"
+	ionoscloud "github.com/ionos-cloud/sdk-go-bundle/products/dns/v2"
 	"github.com/spf13/viper"
 )
 
@@ -59,7 +59,7 @@ func Get() *core.Command {
 		core.RequiredFlagOption(),
 		core.WithCompletion(func() []string {
 			return RecordsProperty(func(read ionoscloud.ReverseRecordRead) string {
-				return *read.Properties.Ip
+				return read.Properties.Ip
 			})
 		}, constants.DNSApiRegionalURL, constants.DNSLocations),
 	)

@@ -13,7 +13,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
-	dns "github.com/ionos-cloud/sdk-go-dns"
+	"github.com/ionos-cloud/sdk-go-bundle/products/dns/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
@@ -79,15 +79,15 @@ ionosctl dns r delete --record PARTIAL_NAME --zone ZONE`,
 				}
 			}
 
-			yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Are you sure you want to delete record %s (type: '%s'; content: '%s')", *r.Metadata.Fqdn, *r.Properties.Type, *r.Properties.Content),
+			yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Are you sure you want to delete record %s (type: '%s'; content: '%s')", r.Metadata.Fqdn, r.Properties.Type, r.Properties.Content),
 				viper.GetBool(constants.ArgForce))
 			if !yes {
 				return fmt.Errorf("user cancelled deletion")
 			}
 
 			_, _, err = client.Must().DnsClient.RecordsApi.ZonesRecordsDelete(context.Background(),
-				*r.Metadata.ZoneId,
-				*r.Id,
+				r.Metadata.ZoneId,
+				r.Id,
 			).Execute()
 
 			return err
@@ -99,14 +99,14 @@ ionosctl dns r delete --record PARTIAL_NAME --zone ZONE`,
 	cmd.AddStringFlag(constants.FlagZone, constants.FlagZoneShort, "", fmt.Sprintf("The full name or ID of the zone of the containing the target record. If --%s is set this is applied as a filter - limiting to records within this zone", constants.ArgAll))
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagZone, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.ZonesProperty(func(t dns.ZoneRead) string {
-			return *t.Properties.ZoneName
+			return t.Properties.ZoneName
 		}), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	cmd.AddStringFlag(constants.FlagRecord, constants.FlagRecordShort, "", fmt.Sprintf("The ID, or full name of the DNS record. Required together with --%s. Can also provide partial names, but must narrow down to a single record result if not using --%s. If using it, will however delete all records that match.", constants.FlagZone, constants.ArgAll))
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagRecord, func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return RecordsProperty(func(r dns.RecordRead) string {
-			return *r.Properties.Name
+			return r.Properties.Name
 		}, FilterRecordsByZoneAndRecordFlags(cmd.NS)), cobra.ShellCompDirectiveNoSpace
 	})
 
@@ -122,18 +122,18 @@ func deleteAll(c *core.CommandConfig) error {
 		return fmt.Errorf("failed listing records: %w", err)
 	}
 
-	if len(*xs.Items) == 0 {
+	if len(xs.Items) == 0 {
 		return fmt.Errorf("found no records matching given filters")
 	}
 
-	err = functional.ApplyAndAggregateErrors(*xs.GetItems(), func(r dns.RecordRead) error {
-		yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Are you sure you want to delete record %s (type: '%s'; content: '%s')", *r.Properties.Name, *r.Properties.Type, *r.Properties.Content),
+	err = functional.ApplyAndAggregateErrors(xs.GetItems(), func(r dns.RecordRead) error {
+		yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Are you sure you want to delete record %s (type: '%s'; content: '%s')", r.Properties.Name, r.Properties.Type, r.Properties.Content),
 			viper.GetBool(constants.ArgForce))
 
 		if yes {
-			_, _, delErr := client.Must().DnsClient.RecordsApi.ZonesRecordsDelete(c.Context, *r.Metadata.ZoneId, *r.Id).Execute()
+			_, _, delErr := client.Must().DnsClient.RecordsApi.ZonesRecordsDelete(c.Context, r.Metadata.ZoneId, r.Id).Execute()
 			if delErr != nil {
-				return fmt.Errorf("failed deleting %s (name: %s): %w", *r.Id, *r.Properties.Name, delErr)
+				return fmt.Errorf("failed deleting %s (name: %s): %w", r.Id, r.Properties.Name, delErr)
 			}
 		}
 		return nil
@@ -148,15 +148,15 @@ func deleteSingleWithFilters(c *core.CommandConfig) (dns.RecordRead, error) {
 		return dns.RecordRead{}, fmt.Errorf("failed listing records: %w", err)
 	}
 
-	recsLen := len(*recs.Items)
+	recsLen := len(recs.Items)
 	if recsLen == 0 {
 		return dns.RecordRead{}, fmt.Errorf("found no records matching given filters (--%s and/or --%s). They"+
 			" must narrow down to a single result", constants.FlagRecord, constants.FlagZone)
 	}
 
 	if recsLen > 1 {
-		recsNames := functional.Fold(*recs.Items, func(acc []string, t dns.RecordRead) []string {
-			return append(acc, *t.Properties.Name)
+		recsNames := functional.Fold(recs.Items, func(acc []string, t dns.RecordRead) []string {
+			return append(acc, t.Properties.Name)
 		}, []string{})
 
 		return dns.RecordRead{}, fmt.Errorf("got %d but expected 1: %+v. The given filters (--%s and/or --%s) "+
@@ -164,5 +164,5 @@ func deleteSingleWithFilters(c *core.CommandConfig) (dns.RecordRead, error) {
 			recsLen, strings.Join(recsNames, ", "), constants.FlagRecord, constants.FlagZone, constants.ArgAll)
 	}
 
-	return (*recs.Items)[0], nil
+	return (recs.Items)[0], nil
 }

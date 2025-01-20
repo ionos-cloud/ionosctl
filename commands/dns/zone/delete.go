@@ -10,7 +10,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
-	dns "github.com/ionos-cloud/sdk-go-dns"
+	"github.com/ionos-cloud/sdk-go-bundle/products/dns/v2"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/spf13/viper"
@@ -43,7 +43,7 @@ func ZonesDeleteCmd() *core.Command {
 			if err != nil {
 				return fmt.Errorf("failed getting zone by id %s: %w", zoneId, err)
 			}
-			yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Are you sure you want to delete zone %s (desc: '%s')", *z.Properties.ZoneName, *z.Properties.Description),
+			yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Are you sure you want to delete zone %s (desc: '%s')", z.Properties.ZoneName, *z.Properties.Description),
 				viper.GetBool(constants.ArgForce))
 			if !yes {
 				return fmt.Errorf(confirm.UserDenied)
@@ -59,7 +59,7 @@ func ZonesDeleteCmd() *core.Command {
 	cmd.AddStringFlag(constants.FlagZone, constants.FlagZoneShort, "", fmt.Sprintf("%s. Required or -%s", constants.DescZone, constants.ArgAllShort),
 		core.WithCompletion(func() []string {
 			return completer.ZonesProperty(func(t dns.ZoneRead) string {
-				return *t.Properties.ZoneName
+				return t.Properties.ZoneName
 			})
 		}, constants.DNSApiRegionalURL, constants.DNSLocations),
 	)
@@ -79,13 +79,13 @@ func deleteAll(c *core.CommandConfig) error {
 		return err
 	}
 
-	err = functional.ApplyAndAggregateErrors(*xs.GetItems(), func(z dns.ZoneRead) error {
-		yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Are you sure you want to delete zone %s (desc: '%s')", *z.Properties.ZoneName, *z.Properties.Description),
+	err = functional.ApplyAndAggregateErrors(xs.GetItems(), func(z dns.ZoneRead) error {
+		yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Are you sure you want to delete zone %s (desc: '%s')", z.Properties.ZoneName, *z.Properties.Description),
 			viper.GetBool(constants.ArgForce))
 		if yes {
-			_, _, delErr := client.Must().DnsClient.ZonesApi.ZonesDelete(c.Context, *z.Id).Execute()
+			_, _, delErr := client.Must().DnsClient.ZonesApi.ZonesDelete(c.Context, z.Id).Execute()
 			if delErr != nil {
-				return fmt.Errorf("failed deleting %s (name: %s): %w", *z.Id, *z.Properties.ZoneName, delErr)
+				return fmt.Errorf("failed deleting %s (name: %s): %w", z.Id, z.Properties.ZoneName, delErr)
 			}
 		}
 		return nil

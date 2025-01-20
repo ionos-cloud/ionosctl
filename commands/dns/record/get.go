@@ -10,7 +10,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
-	dns "github.com/ionos-cloud/sdk-go-dns"
+	"github.com/ionos-cloud/sdk-go-bundle/products/dns/v2"
 	"github.com/spf13/cobra"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
@@ -68,13 +68,13 @@ func ZonesRecordsFindByIdCmd() *core.Command {
 	cmd.AddStringFlag(constants.FlagZone, constants.FlagZoneShort, "", constants.DescZone)
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagZone, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.ZonesProperty(func(t dns.ZoneRead) string {
-			return *t.Properties.ZoneName
+			return t.Properties.ZoneName
 		}), cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddStringFlag(constants.FlagRecord, "", "", "The ID or name of the DNS record")
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagRecord, func(cobraCmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return RecordsProperty(func(r dns.RecordRead) string {
-			return *r.Properties.Name
+			return r.Properties.Name
 		}, FilterRecordsByZoneAndRecordFlags(cmd.NS)), cobra.ShellCompDirectiveNoFileComp
 	})
 
