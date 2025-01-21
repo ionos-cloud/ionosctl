@@ -15,9 +15,8 @@ setup_file() {
 }
 
 setup() {
-    if [[ -f /tmp/bats_test/email ]] && [[ -f /tmp/bats_test/password ]]; then
-        export IONOS_USERNAME="$(cat /tmp/bats_test/email)"
-        export IONOS_PASSWORD="$(cat /tmp/bats_test/password)"
+    if [[ -f /tmp/bats_test/token ]]; then
+        export IONOS_TOKEN="$(cat /tmp/bats_test/token)"
     fi
 }
 
@@ -39,12 +38,13 @@ setup() {
         --group-id "$(cat /tmp/bats_test/group_id)" -o json 2> /dev/null
     assert_success
 
-    export IONOS_USERNAME="$(cat /tmp/bats_test/email)"
-    export IONOS_PASSWORD="$(cat /tmp/bats_test/password)"
+    run ionosctl token generate --ttl 1h
+    assert_success
+    echo "$output" > /tmp/bats_test/token
 }
 
 @test "Create DNS Zone" {
-    zone_name="cli-test-$(randStr 6).com"
+    zone_name="cli-test-$(randStr 6).space"
     zone_name=$(echo "$zone_name" | tr '[:upper:]' '[:lower:]')
     run ionosctl dns zone create --name "$zone_name" --enabled false -o json 2> /dev/null
     assert_success
@@ -139,11 +139,98 @@ setup() {
     assert_output -p "\"ttl\": 120"
 }
 
+@test "Zone File Operations" {
+    zone_id=$(cat /tmp/bats_test/zone_id)
+
+    # Get Zone File
+    run ionosctl dns zone file get --zone "$zone_id" -o text 2> /dev/null
+    assert_success
+
+    echo "$output" > /tmp/bats_test/zone_file
+    echo "test$(randStr 6) 60 IN A 1.2.3.4" >> /tmp/bats_test/zone_file
+
+    # Update Zone File
+    run ionosctl dns zone file update --zone "$zone_id" --zone-file /tmp/bats_test/zone_file -o json 2> /dev/null
+    assert_success
+
+    # Verify Zone File Update
+    run ionosctl dns record list --zone "$zone_id" -o json 2> /dev/null
+    assert_success
+
+    record_count=$(echo "$output" | jq '.items' | jq length)
+    assert [ "$record_count" -gt 0 ]
+}
+
 @test "Delete DNS Record" {
     zone_id=$(cat /tmp/bats_test/zone_id)
     record_name=$(cat /tmp/bats_test/record_name)
 
     run ionosctl dns record delete --zone "$zone_id" --record "$record_name" -f
+    assert_success
+}
+
+@test "Get and update DNS Zone File" {
+    zone_id=$(cat /tmp/bats_test/zone_id)
+
+    # Get the zone file
+    run ionosctl dns zone file get --zone "$zone_id" -o text 2> /dev/null
+    assert_success
+    echo "$output" > /tmp/bats_test/zone_file
+    echo "retrieved DNS zone file for zone $zone_id"
+
+    # Update the zone file
+    echo "test$(randStr 6) 60 IN A 192.168.0.2" >> /tmp/bats_test/zone_file
+    run ionosctl dns zone file update --zone "$zone_id" --zone-file /tmp/bats_test/zone_file -o json 2> /dev/null
+    assert_success
+    echo "updated DNS zone file for zone $zone_id"
+
+    # Verify new record added via zone file update
+    run ionosctl dns record list --zone "$zone_id" -o json 2> /dev/null
+    assert_success
+    record_count=$(echo "$output" | jq '.items' | jq length)
+    echo "$record_count" > /tmp/bats_test/record_count
+    assert [ "$record_count" -gt 0 ]
+}
+
+@test "Create DNS Secondary Zone" {
+    # Create a secondary DNS zone
+    run ionosctl dns secondary-zone create --name "cli-test-$(randStr 6).space" --primary-ips 1.2.3.4,5.6.7.8 -o json 2> /dev/null
+    assert_success
+    zone_id=$(echo "$output" | jq -r '.id')
+    assert_regex "$zone_id" "$uuid_v4_regex"
+
+    echo "created secondary DNS zone $zone_id"
+    echo "$zone_id" > /tmp/bats_test/secondary_zone_id
+}
+
+@test "List and retrieve DNS Secondary Zone by ID" {
+    # List all secondary zones
+    run ionosctl dns secondary-zone list -o json 2> /dev/null
+    assert_success
+
+    # Retrieve specific secondary zone by ID
+    zone_id=$(cat /tmp/bats_test/secondary_zone_id)
+    run ionosctl dns secondary-zone get --zone "$zone_id" -o json 2> /dev/null
+    assert_success
+}
+
+@test "Update DNS Secondary Zone" {
+    zone_id=$(cat /tmp/bats_test/secondary_zone_id)
+
+    # Update secondary zone description
+    run ionosctl dns secondary-zone update --zone "$zone_id" --description "updated secondary zone description" -o json 2> /dev/null
+    assert_success
+}
+
+@test "Start and check Transfer for Secondary Zone" {
+    zone_id=$(cat /tmp/bats_test/secondary_zone_id)
+
+    # Start transfer
+    run ionosctl dns secondary-zone transfer start --zone "$zone_id" -o json 2> /dev/null
+    assert_success
+
+    # Check transfer status
+    run ionosctl dns secondary-zone transfer get --zone "$zone_id" -o json 2> /dev/null
     assert_success
 }
 
