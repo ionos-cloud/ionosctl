@@ -323,7 +323,7 @@ func PreRunVolumeCreate(c *core.PreCommandConfig) error {
 			return fmt.Errorf("failed getting image %s: %w", viper.GetString(fn), err)
 		}
 
-		if !*img.Properties.Public {
+		if img.Properties == nil || img.Properties.Public == nil || !*img.Properties.Public {
 			return core.CheckRequiredFlagsSets(c.Command, c.NS, setRequiredFlagsPrivateImage...)
 		}
 		publicImageAsImageId = true
