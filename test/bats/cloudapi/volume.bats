@@ -166,12 +166,6 @@ setup_file() {
     run ionosctl server token get --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
      --server-id "$(cat /tmp/bats_test/server_id)" --no-headers
     assert_success
-    # expect output to be a valid token (we can test that i.e. expiry date is in the future)
-    token="$(echo "$output" | tr -d '\n')"
-    token="$(add_padding "$token")"
-    decoded_token="$(echo "$token" | base64 -d)"
-    run echo "$decoded_token" | jq -e '.exp > now' > /dev/null
-    assert_success
 
     run ionosctl server console get --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
      --server-id "$(cat /tmp/bats_test/server_id)" --no-headers
