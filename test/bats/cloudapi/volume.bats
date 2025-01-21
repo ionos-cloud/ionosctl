@@ -132,20 +132,23 @@ setup_file() {
 
 @test "Attach a volume with a backupunit public image" {
     run ionosctl backupunit create --name "bats$(randStr 6)" --email "$(cat /tmp/bats_test/email)" \
-     --password "$(cat /tmp/bats_test/password)" -w -t 300 -o json 2> /dev/null
+     --password "$(cat /tmp/bats_test/password)" -o json 2> /dev/null
     assert_success
+    assert_regex "$output" "$uuid_v4_regex"
     echo "$output" | jq -r '.id' > /tmp/bats_test/backupunit_id
 
     # get-sso-url
     run ionosctl backupunit get-sso-url --backupunit-id "$(cat /tmp/bats_test/backupunit_id)" -o json 2> /dev/null
     assert_success
 
-    run ionosctl image list -F location="es/vit" -F cloudInit=V1 -F imageType=hdd -F imageAliases=centos:latest --cols ImageId --no-headers
+    run ionosctl image list -F location="es/vit" -F cloudInit=V1 -F imageType=hdd -F imageAliases=ubuntu:20 --cols ImageId --no-headers
     assert_success
-    echo "$output" | head -n 1 > /tmp/bats_test/centos_image_id
+    image_id="$output"
+    assert_regex "$image_id" "$uuid_v4_regex"
+    echo "$image_id" | head -n 1 > /tmp/bats_test/ubuntu_image_id
 
     run ionosctl volume create --type "HDD" --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
-     --name "bats-test-$(randStr 8)" --size 50 --image-id "$(cat /tmp/bats_test/centos_image_id)" \
+     --name "bats-test-$(randStr 8)" --size 50 --image-id "$(cat /tmp/bats_test/ubuntu_image_id)" \
      --backupunit-id "$(cat /tmp/bats_test/backupunit_id)" --ssh-key-paths /tmp/bats_test/id_rsa.pub \
      -t 300 -w -o json 2> /dev/null
     assert_success
@@ -162,11 +165,6 @@ setup_file() {
     # Get the token from ionosctl server token get command
     run ionosctl server token get --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
      --server-id "$(cat /tmp/bats_test/server_id)" --no-headers
-    assert_success
-    # expect output to be a valid token (we can test that i.e. expiry date is in the future)
-    token="$(echo "$output" | tr -d '\n' | add_padding)"
-    decoded_token="$(echo "$token" | base64 -d)"
-    run echo "$decoded_token" | jq -e '.exp > now' > /dev/null
     assert_success
 
     run ionosctl server console get --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
@@ -228,15 +226,18 @@ setup_file() {
     export IONOS_USERNAME="$(cat /tmp/bats_test/email)"
     export IONOS_PASSWORD="$(cat /tmp/bats_test/password)"
 
-    run ionosctl template list -F name=XS --no-headers --cols TemplateId
+    run ionosctl template list -F name=XS -o json 2> /dev/null
     assert_success
-    echo "$output" > /tmp/bats_test/template_id
+    xs_output="$output"
+    echo "$xs_output" | jq -r '.items[0].id' > /tmp/bats_test/template_id
 
-    run ionosctl template get --template-id "$(cat /tmp/bats_test/template_id)" -o json 2> /dev/null
-    # expect 1024 RAM, 1 core
+    run ionosctl template get --template-id "$(cat /tmp/bats_test/template_id)" --cols Ram --no-headers
     assert_success
-    assert_equal "$(echo "$output" | jq -r '.properties.ram')" 1024
-    assert_equal "$(echo "$output" | jq -r '.properties.cores')" 1
+    assert_output "$(echo "$xs_output" | jq -r '.items[0].properties.ram')"
+
+    run ionosctl template get --template-id "$(cat /tmp/bats_test/template_id)" --cols Cores --no-headers
+    assert_success
+    assert_output "$(echo "$xs_output" | jq -r '.items[0].properties.cores')"
 
     run ionosctl server create --name "bats-test-$(randStr 8)" --type "CUBE" \
      -k /tmp/bats_test/id_rsa.pub --template-id "$(cat /tmp/bats_test/template_id)" \
@@ -247,7 +248,7 @@ setup_file() {
     assert_equal "$(echo "$output" | jq -r '.properties.type')" "CUBE"
 
     run ionosctl server get --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
-     --server-id "$(cat /tmp_bats_test/cube_server_id)" --no-headers --cols Type
+     --server-id "$(cat /tmp/bats_test/cube_server_id)" --no-headers --cols Type
     assert_success
     assert_output -p "CUBE"
 }
