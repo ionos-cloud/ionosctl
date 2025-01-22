@@ -97,8 +97,8 @@ func runAddCmd(c *core.CommandConfig) error {
 		Tag:          &tag,
 		Source:       &source,
 		Protocol:     &protocol,
-		Labels:       &labels,
-		Destinations: &[]logging.Destination{dest},
+		Labels:       labels,
+		Destinations: []logging.Destination{dest},
 	}
 
 	patchPipeline, err := convertResponsePipelineToPatchRequest(pipeline)
@@ -106,7 +106,7 @@ func runAddCmd(c *core.CommandConfig) error {
 		return err
 	}
 
-	*patchPipeline.Properties.Logs = append(*patchPipeline.Properties.Logs, newLog)
+	patchPipeline.Properties.Logs = append(patchPipeline.Properties.Logs, newLog)
 
 	newPipeline, _, err := client.Must().LoggingServiceClient.PipelinesApi.PipelinesPatch(
 		context.Background(),

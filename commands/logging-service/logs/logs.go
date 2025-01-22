@@ -42,8 +42,8 @@ func handleLogsPrint(pipelines logging.PipelineListResponse, c *core.CommandConf
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	var logs []logging.PipelineResponse
-	for _, p := range *pipelines.Items {
-		logs = append(logs, *p.Properties.Logs...)
+	for _, p := range pipelines.Items {
+		logs = append(logs, p.Properties.Logs...)
 	}
 
 	logsConverted, err := resource2table.ConvertLoggingServicePipelinesLogsToTable(pipelines)
@@ -100,7 +100,7 @@ func convertResponsePipelineToPatchRequest(pipeline logging.Pipeline) (*logging.
 	}
 
 	var newLogs []logging.PipelineCreatePropertiesLogs
-	for _, log := range *logs {
+	for _, log := range logs {
 		l := logging.PipelineCreatePropertiesLogs{
 			Tag:          log.Tag,
 			Source:       log.Source,
@@ -113,9 +113,9 @@ func convertResponsePipelineToPatchRequest(pipeline logging.Pipeline) (*logging.
 	}
 
 	patch := logging.PipelinePatch{
-		Properties: &logging.PipelinePatchProperties{
+		Properties: logging.PipelinePatchProperties{
 			Name: properties.Name,
-			Logs: &newLogs,
+			Logs: newLogs,
 		},
 	}
 
@@ -151,7 +151,7 @@ func generatePatchObject(c *core.CommandConfig) (*logging.PipelineCreateProperti
 	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagLoggingPipelineLogLabels)) {
 		labels = viper.GetStringSlice(core.GetFlagName(c.NS, constants.FlagLoggingPipelineLogLabels))
 
-		newLog.Labels = &labels
+		newLog.Labels = labels
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagLoggingPipelineLogType)) {
@@ -173,7 +173,7 @@ func generatePatchObject(c *core.CommandConfig) (*logging.PipelineCreateProperti
 	}
 
 	if dest.Type != nil || dest.RetentionInDays != nil {
-		newLog.Destinations = &[]logging.Destination{dest}
+		newLog.Destinations = []logging.Destination{dest}
 	}
 
 	return &newLog, nil
@@ -199,12 +199,12 @@ func fillOutEmptyFields(oldLog, newLog *logging.PipelineCreatePropertiesLogs) *l
 	if newLog.Destinations == nil {
 		newLog.Destinations = oldLog.Destinations
 	} else {
-		if (*newLog.Destinations)[0].Type == nil {
-			(*newLog.Destinations)[0].Type = (*oldLog.Destinations)[0].Type
+		if newLog.Destinations[0].Type == nil {
+			newLog.Destinations[0].Type = oldLog.Destinations[0].Type
 		}
 
-		if (*newLog.Destinations)[0].RetentionInDays == nil {
-			(*newLog.Destinations)[0].RetentionInDays = (*oldLog.Destinations)[0].RetentionInDays
+		if newLog.Destinations[0].RetentionInDays == nil {
+			newLog.Destinations[0].RetentionInDays = oldLog.Destinations[0].RetentionInDays
 		}
 	}
 

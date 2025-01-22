@@ -109,15 +109,15 @@ func createFromFlags(c *core.CommandConfig) error {
 
 	pipeline, _, err := client.Must().LoggingServiceClient.PipelinesApi.PipelinesPost(context.Background()).Pipeline(
 		logging.PipelineCreate{
-			Properties: &logging.PipelineCreateProperties{
-				Name: &name,
-				Logs: &[]logging.PipelineCreatePropertiesLogs{
+			Properties: logging.PipelineCreateProperties{
+				Name: name,
+				Logs: []logging.PipelineCreatePropertiesLogs{
 					{
 						Tag:          &tag,
 						Source:       &source,
 						Protocol:     &protocol,
-						Labels:       &labels,
-						Destinations: &[]logging.Destination{dest},
+						Labels:       labels,
+						Destinations: []logging.Destination{dest},
 					},
 				},
 			},

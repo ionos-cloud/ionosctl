@@ -16,7 +16,7 @@ func ConvertLoggingServicePipelineLogToTable(log logging.PipelineResponse) ([]ma
 	}
 
 	destinationsStrings := functional.Map(
-		*dests, func(dest logging.Destination) interface{} {
+		dests, func(dest logging.Destination) interface{} {
 			return fmt.Sprintf("%v (%v days)", *dest.Type, *dest.RetentionInDays)
 		},
 	)
@@ -37,14 +37,14 @@ func ConvertLoggingServicePipelineLogsToTable(pipeline logging.Pipeline) ([]map[
 	}
 
 	var logsConverted []map[string]interface{}
-	for _, log := range *logs {
+	for _, log := range logs {
 		dests, ok := log.GetDestinationsOk()
 		if !ok || dests == nil {
 			return nil, fmt.Errorf("could not retrive Logging Service Pipeline Logs destination")
 		}
 
 		destinationsStrings := functional.Map(
-			*dests, func(dest logging.Destination) interface{} {
+			dests, func(dest logging.Destination) interface{} {
 				return fmt.Sprintf("%v (%v days)", *dest.Type, *dest.RetentionInDays)
 			},
 		)
@@ -72,14 +72,14 @@ func ConvertLoggingServicePipelinesLogsToTable(pipelines logging.PipelineListRes
 
 	var logsConverted []map[string]interface{}
 
-	for _, pipeline := range *items {
+	for _, pipeline := range items {
 		logs, err := ConvertLoggingServicePipelineLogsToTable(pipeline)
 		if err != nil {
 			return nil, err
 		}
 
 		for _, l := range logs {
-			l["PipelineId"] = *pipeline.GetId()
+			l["PipelineId"] = pipeline.GetId()
 		}
 
 		logsConverted = append(logsConverted, logs...)
