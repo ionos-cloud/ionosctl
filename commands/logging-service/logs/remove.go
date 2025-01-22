@@ -68,14 +68,14 @@ func runRemoveCmd(c *core.CommandConfig) error {
 	}
 
 	var newLogs []logging.PipelineCreatePropertiesLogs
-	for _, log := range *patchPipeline.Properties.Logs {
+	for _, log := range patchPipeline.Properties.Logs {
 		if *log.Tag == tag {
 			continue
 		}
 
 		newLogs = append(newLogs, log)
 	}
-	patchPipeline.Properties.Logs = &newLogs
+	patchPipeline.Properties.Logs = newLogs
 
 	_, _, err = client.Must().LoggingServiceClient.PipelinesApi.PipelinesPatch(
 		context.Background(),

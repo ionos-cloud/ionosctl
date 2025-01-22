@@ -60,7 +60,7 @@ func runGetCmd(c *core.CommandConfig) error {
 
 	var log logging.PipelineResponse
 
-	for _, l := range *pipeline.Properties.Logs {
+	for _, l := range pipeline.Properties.Logs {
 		if *l.Tag == tag {
 			log = l
 

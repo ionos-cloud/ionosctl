@@ -99,12 +99,12 @@ func deleteAll(c *core.CommandConfig) error {
 		return fmt.Errorf("could not retrieve Logging-Service Pipelines items")
 	}
 
-	if len(*items) <= 0 {
+	if len(items) <= 0 {
 		return fmt.Errorf("no Logging-Service Pipelines to delete")
 	}
 
 	err = functional.ApplyAndAggregateErrors(
-		*items, func(p logging.Pipeline) error {
+		items, func(p logging.Pipeline) error {
 			pipelineConverted, err := json2table.ConvertJSONToTable("", jsonpaths.LoggingServicePipeline, p)
 			if err != nil {
 				return err
