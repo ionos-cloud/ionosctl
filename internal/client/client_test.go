@@ -42,7 +42,6 @@ func TestClientPkg(t *testing.T) {
 	assert.NotEmpty(t, GoodToken)
 
 	viper.Reset()
-	os.Clearenv()
 
 	testGetClient(t)
 	testTestCreds(t)
@@ -108,7 +107,6 @@ func testGetClient(t *testing.T) {
 
 	t.Run("Client Get works, token", func(t *testing.T) {
 		viper.Reset()
-		os.Clearenv()
 
 		viper.Set("IONOS_TOKEN", GoodToken)
 
@@ -120,8 +118,6 @@ func testGetClient(t *testing.T) {
 
 	t.Run("Client Get fails 1", func(t *testing.T) {
 		viper.Reset()
-		os.Clearenv()
-
 		viper.Set("IONOS_TOKEN", "foobar")
 
 		cl, err := client.Get()
@@ -132,8 +128,6 @@ func testGetClient(t *testing.T) {
 
 	t.Run("Client Get fails 2", func(t *testing.T) {
 		viper.Reset()
-		os.Clearenv()
-
 		viper.Set("IONOS_USERNAME", "foo")
 		viper.Set("IONOS_PASSWORD", GoodPassword)
 

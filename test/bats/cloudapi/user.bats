@@ -17,6 +17,19 @@ setup_file() {
     mkdir -p /tmp/bats_test
 }
 
+@test "60 second token will expire" {
+    run ionosctl token generate --ttl 60s
+    assert_success
+    echo "$output" > /tmp/bats_test/token_60s
+
+    # Wait for token to expire
+    sleep 61
+    export IONOS_TOKEN=$(cat /tmp/bats_test/token_60s)
+    run ionosctl whoami
+    assert_output -p "Authentication failed!"
+    assert_output -p "Using token for authentication"
+}
+
 @test "Create User" {
     echo "$(randStr 16)@$(randStr 8).ionosctl.test" | tr '[:upper:]' '[:lower:]' > /tmp/bats_test/email
     echo "$(randStr 12)" > /tmp/bats_test/password
