@@ -18,7 +18,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/pointer"
 
 	// "github.com/ionos-cloud/ionosctl/v6/pkg/uuidgen"
-	vpn "github.com/ionos-cloud/sdk-go-vpn"
+	"github.com/ionos-cloud/sdk-go-bundle/products/vpn/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 

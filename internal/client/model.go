@@ -10,6 +10,7 @@ import (
 	"github.com/ionos-cloud/sdk-go-bundle/products/cdn/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dns/v2"
+	"github.com/ionos-cloud/sdk-go-bundle/products/vpn/v2"
 	certmanager "github.com/ionos-cloud/sdk-go-cert-manager"
 	registry "github.com/ionos-cloud/sdk-go-container-registry"
 	dataplatform "github.com/ionos-cloud/sdk-go-dataplatform"
@@ -18,7 +19,6 @@ import (
 	kafka "github.com/ionos-cloud/sdk-go-kafka"
 	logsvc "github.com/ionos-cloud/sdk-go-logging"
 	vmasc "github.com/ionos-cloud/sdk-go-vm-autoscaling"
-	vpn "github.com/ionos-cloud/sdk-go-vpn"
 	cloudv6 "github.com/ionos-cloud/sdk-go/v6"
 
 	"github.com/spf13/viper"
