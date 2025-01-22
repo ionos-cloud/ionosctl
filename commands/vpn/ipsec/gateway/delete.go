@@ -38,7 +38,8 @@ func Delete() *core.Command {
 			if err != nil {
 				return fmt.Errorf("failed getting gateway by id %s: %w", id, err)
 			}
-			yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Are you sure you want to delete gateway %s (desc: '%s')", *g.Properties.Name, *g.Properties.Description),
+			yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf(
+				"Are you sure you want to delete gateway %s (desc: '%s')", g.Properties.Name, *g.Properties.Description),
 				viper.GetBool(constants.ArgForce))
 			if !yes {
 				return fmt.Errorf(confirm.UserDenied)
@@ -71,13 +72,15 @@ func deleteAll(c *core.CommandConfig) error {
 		return err
 	}
 
-	err = functional.ApplyAndAggregateErrors(*xs.GetItems(), func(g vpn.IPSecGatewayRead) error {
-		yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Are you sure you want to delete gateway %s at %s", *g.Properties.Name, *g.Properties.GatewayIP),
+	err = functional.ApplyAndAggregateErrors(xs.GetItems(), func(g vpn.IPSecGatewayRead) error {
+		yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf(
+			"Are you sure you want to delete gateway %s at %s",
+			g.Properties.Name, g.Properties.GatewayIP),
 			viper.GetBool(constants.ArgForce))
 		if yes {
-			_, delErr := client.Must().VPNClient.IPSecGatewaysApi.IpsecgatewaysDelete(context.Background(), *g.Id).Execute()
+			_, delErr := client.Must().VPNClient.IPSecGatewaysApi.IpsecgatewaysDelete(context.Background(), g.Id).Execute()
 			if delErr != nil {
-				return fmt.Errorf("failed deleting %s (name: %s): %w", *g.Id, *g.Properties.Name, delErr)
+				return fmt.Errorf("failed deleting %s (name: %s): %w", g.Id, g.Properties.Name, delErr)
 			}
 		}
 		return nil
