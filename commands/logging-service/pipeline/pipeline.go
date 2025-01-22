@@ -50,3 +50,17 @@ func handlePipelinePrint(p logging.Pipeline, c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
 	return nil
 }
+
+func handleProvisioningPipelinePrint(p logging.ProvisioningPipeline, c *core.CommandConfig) error {
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+
+	out, err := jsontabwriter.GenerateOutput(
+		"", jsonpaths.LoggingServicePipeline, p, tabheaders.GetHeaders(allCols, defaultCols, cols),
+	)
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+	return nil
+}
