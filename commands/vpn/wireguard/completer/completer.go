@@ -16,7 +16,7 @@ func GatewaysProperty[V any](f func(gateway vpn.WireguardGatewayRead) V, fs ...G
 	if err != nil {
 		return nil
 	}
-	return functional.Map(*recs.Items, f)
+	return functional.Map(recs.Items, f)
 }
 
 // Gateways returns all distributions matching the given filters
@@ -47,7 +47,7 @@ func PeersProperty[V any](gatewayID string, f func(peer vpn.WireguardPeerRead) V
 	if err != nil {
 		return nil
 	}
-	return functional.Map(*recs.Items, f)
+	return functional.Map(recs.Items, f)
 }
 
 // Peers returns all distributions matching the given filters
@@ -72,12 +72,12 @@ type PeerFilter func(request vpn.ApiWireguardgatewaysPeersGetRequest) (vpn.ApiWi
 
 func GatewayIDs() []string {
 	return GatewaysProperty(func(gateway vpn.WireguardGatewayRead) string {
-		return *gateway.Id + "\t" + *gateway.Properties.Name + "(" + *gateway.Properties.GatewayIP + ")"
+		return gateway.Id + "\t" + gateway.Properties.Name + "(" + gateway.Properties.GatewayIP + ")"
 	})
 }
 
 func PeerIDs(gatewayID string) []string {
 	return PeersProperty(gatewayID, func(p vpn.WireguardPeerRead) string {
-		return *p.Id + "\t" + *p.Properties.Name + "(" + *p.Properties.Endpoint.Host + ")"
+		return p.Id + "\t" + p.Properties.Name + "(" + p.Properties.Endpoint.Host + ")"
 	})
 }

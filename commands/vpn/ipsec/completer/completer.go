@@ -16,7 +16,7 @@ func GatewaysProperty[V any](f func(gateway vpn.IPSecGatewayRead) V, fs ...Gatew
 	if err != nil {
 		return nil
 	}
-	return functional.Map(*recs.Items, f)
+	return functional.Map(recs.Items, f)
 }
 
 // Gateways returns all distributions matching the given filters
@@ -45,7 +45,7 @@ func TunnelsProperty[V any](gatewayID string, f func(tunnel vpn.IPSecTunnelRead)
 	if err != nil {
 		return nil
 	}
-	return functional.Map(*recs.Items, f)
+	return functional.Map(recs.Items, f)
 }
 
 // Tunnels returns all distributions matching the given filters
@@ -70,12 +70,12 @@ type TunnelFilter func(request vpn.ApiIpsecgatewaysTunnelsGetRequest) (vpn.ApiIp
 
 func GatewayIDs() []string {
 	return GatewaysProperty(func(gateway vpn.IPSecGatewayRead) string {
-		return *gateway.Id + "\t" + *gateway.Properties.Name + "(" + *gateway.Properties.GatewayIP + ")"
+		return gateway.Id + "\t" + gateway.Properties.Name + "(" + gateway.Properties.GatewayIP + ")"
 	})
 }
 
 func TunnelIDs(gatewayID string) []string {
 	return TunnelsProperty(gatewayID, func(p vpn.IPSecTunnelRead) string {
-		return *p.Id + "\t" + *p.Properties.Name + "(" + *p.Properties.RemoteHost + ")"
+		return p.Id + "\t" + p.Properties.Name + "(" + p.Properties.RemoteHost + ")"
 	})
 }

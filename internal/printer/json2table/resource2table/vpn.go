@@ -15,7 +15,7 @@ func ConvertVPNWireguardGatewaysToTable(gateways vpn.WireguardGatewayReadList) (
 	}
 
 	var usersConverted []map[string]interface{}
-	for _, item := range *items {
+	for _, item := range items {
 		temp, err := ConvertVPNWireguardGatewayToTable(item)
 		if err != nil {
 			return nil, err
@@ -33,12 +33,10 @@ func ConvertVPNWireguardGatewayToTable(gateway vpn.WireguardGatewayRead) ([]map[
 		return nil, fmt.Errorf("could not convert from JSON to Table format: %w", err)
 	}
 
-	for _, connection := range *gateway.Properties.Connections {
-		table[0]["DatacenterId"] = *connection.DatacenterId
-		table[0]["LanId"] = *connection.LanId
-		if connection.Ipv4CIDR != nil {
-			table[0]["ConnectionIPv4"] = *connection.Ipv4CIDR
-		}
+	for _, connection := range gateway.Properties.Connections {
+		table[0]["DatacenterId"] = connection.DatacenterId
+		table[0]["LanId"] = connection.LanId
+		table[0]["ConnectionIPv4"] = connection.Ipv4CIDR
 		if connection.Ipv6CIDR != nil {
 			table[0]["ConnectionIPv6"] = *connection.Ipv6CIDR
 		}
@@ -54,7 +52,7 @@ func ConvertVPNIPSecGatewaysToTable(gateways vpn.IPSecGatewayReadList) ([]map[st
 	}
 
 	var usersConverted []map[string]interface{}
-	for _, item := range *items {
+	for _, item := range items {
 		temp, err := ConvertVPNIPSecGatewayToTable(item)
 		if err != nil {
 			return nil, err
@@ -72,12 +70,10 @@ func ConvertVPNIPSecGatewayToTable(gateway vpn.IPSecGatewayRead) ([]map[string]i
 		return nil, fmt.Errorf("could not convert from JSON to Table format: %w", err)
 	}
 
-	for _, connection := range *gateway.Properties.Connections {
-		table[0]["DatacenterId"] = *connection.DatacenterId
-		table[0]["LanId"] = *connection.LanId
-		if connection.Ipv4CIDR != nil {
-			table[0]["ConnectionIPv4"] = *connection.Ipv4CIDR
-		}
+	for _, connection := range gateway.Properties.Connections {
+		table[0]["DatacenterId"] = connection.DatacenterId
+		table[0]["LanId"] = connection.LanId
+		table[0]["ConnectionIPv4"] = connection.Ipv4CIDR
 		if connection.Ipv6CIDR != nil {
 			table[0]["ConnectionIPv6"] = *connection.Ipv6CIDR
 		}

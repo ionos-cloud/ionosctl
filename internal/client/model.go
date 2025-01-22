@@ -121,9 +121,6 @@ func newClient(name, pwd, token, hostUrl string, usedLayer *Layer) *Client {
 	mariaConfig := maria.NewConfiguration(name, pwd, token, hostUrl)
 	mariaConfig.UserAgent = appendUserAgent(mariaConfig.UserAgent)
 
-	vpnConfig := vpn.NewConfiguration(name, pwd, token, hostUrl)
-	vpnConfig.UserAgent = appendUserAgent(vpnConfig.UserAgent)
-
 	kafkaConfig := kafka.NewConfiguration(name, pwd, token, hostUrl)
 	kafkaConfig.UserAgent = appendUserAgent(kafkaConfig.UserAgent)
 
@@ -137,7 +134,7 @@ func newClient(name, pwd, token, hostUrl string, usedLayer *Layer) *Client {
 		DnsClient:            dns.NewAPIClient(sharedConfig),
 		LoggingServiceClient: logsvc.NewAPIClient(logsConfig),
 		VMAscClient:          vmasc.NewAPIClient(vmascConfig).AutoScalingGroupsApi,
-		VPNClient:            vpn.NewAPIClient(vpnConfig),
+		VPNClient:            vpn.NewAPIClient(sharedConfig),
 
 		PostgresClient: postgres.NewAPIClient(postgresConfig),
 		MongoClient:    mongo.NewAPIClient(sharedConfig),
