@@ -80,7 +80,7 @@ func putFromJSON(c *core.CommandConfig, propertiesFromJson vpn.IPSecTunnel) erro
 	tunnel, _, err := client.Must().VPNClient.IPSecTunnelsApi.
 		IpsecgatewaysTunnelsPut(context.Background(),
 			viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayID)), viper.GetString(core.GetFlagName(c.NS, constants.FlagTunnelID))).
-		IPSecTunnelEnsure(vpn.IPSecTunnelEnsure{Properties: &propertiesFromJson}).Execute()
+		IPSecTunnelEnsure(vpn.IPSecTunnelEnsure{Properties: propertiesFromJson}).Execute()
 	if err != nil {
 		return err
 	}
@@ -98,7 +98,7 @@ func putFromProperties(c *core.CommandConfig) error {
 	input := original.Properties
 
 	if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) {
-		input.Name = pointer.From(viper.GetString(fn))
+		input.Name = viper.GetString(fn)
 	}
 
 	if fn := core.GetFlagName(c.NS, constants.FlagDescription); viper.IsSet(fn) {
@@ -106,80 +106,55 @@ func putFromProperties(c *core.CommandConfig) error {
 	}
 
 	if fn := core.GetFlagName(c.NS, constants.FlagHost); viper.IsSet(fn) {
-		input.RemoteHost = pointer.From(viper.GetString(fn))
+		input.RemoteHost = viper.GetString(fn)
 	}
 
 	if fn := core.GetFlagName(c.NS, constants.FlagAuthMethod); viper.IsSet(fn) {
-		input.Auth = &vpn.IPSecTunnelAuth{}
-		input.Auth.Method = pointer.From(viper.GetString(fn))
+		input.Auth.Method = viper.GetString(fn)
 	}
 
 	if fn := core.GetFlagName(c.NS, constants.FlagPSKKey); viper.IsSet(fn) {
 		input.Auth.Psk = &vpn.IPSecPSK{}
-		input.Auth.Psk.Key = pointer.From(viper.GetString(fn))
+		input.Auth.Psk.Key = viper.GetString(fn)
 	}
 
 	if fn := core.GetFlagName(c.NS, constants.FlagIKEDiffieHellmanGroup); viper.IsSet(fn) {
-		if input.Ike == nil {
-			input.Ike = &vpn.IKEEncryption{}
-		}
 		input.Ike.DiffieHellmanGroup = pointer.From(viper.GetString(fn))
 	}
 	if fn := core.GetFlagName(c.NS, constants.FlagIKEEncryptionAlgorithm); viper.IsSet(fn) {
-		if input.Ike == nil {
-			input.Ike = &vpn.IKEEncryption{}
-		}
 		input.Ike.EncryptionAlgorithm = pointer.From(viper.GetString(fn))
 	}
 	if fn := core.GetFlagName(c.NS, constants.FlagIKEIntegrityAlgorithm); viper.IsSet(fn) {
-		if input.Ike == nil {
-			input.Ike = &vpn.IKEEncryption{}
-		}
 		input.Ike.IntegrityAlgorithm = pointer.From(viper.GetString(fn))
 	}
 	if fn := core.GetFlagName(c.NS, constants.FlagIKELifetime); viper.IsSet(fn) {
-		if input.Ike == nil {
-			input.Ike = &vpn.IKEEncryption{}
-		}
 		input.Ike.Lifetime = pointer.From(int32(viper.GetInt(fn)))
 	}
 
 	if fn := core.GetFlagName(c.NS, constants.FlagESPDiffieHellmanGroup); viper.IsSet(fn) {
-		if input.Esp == nil {
-			input.Esp = &vpn.ESPEncryption{}
-		}
 		input.Esp.DiffieHellmanGroup = pointer.From(viper.GetString(fn))
 	}
 	if fn := core.GetFlagName(c.NS, constants.FlagESPEncryptionAlgorithm); viper.IsSet(fn) {
-		if input.Esp == nil {
-			input.Esp = &vpn.ESPEncryption{}
-		}
 		input.Esp.EncryptionAlgorithm = pointer.From(viper.GetString(fn))
 	}
 	if fn := core.GetFlagName(c.NS, constants.FlagESPIntegrityAlgorithm); viper.IsSet(fn) {
-		if input.Esp == nil {
-			input.Esp = &vpn.ESPEncryption{}
-		}
 		input.Esp.IntegrityAlgorithm = pointer.From(viper.GetString(fn))
 	}
 	if fn := core.GetFlagName(c.NS, constants.FlagESPLifetime); viper.IsSet(fn) {
-		if input.Esp == nil {
-			input.Esp = &vpn.ESPEncryption{}
-		}
 		input.Esp.Lifetime = pointer.From(int32(viper.GetInt(fn)))
 	}
 
 	if fn := core.GetFlagName(c.NS, constants.FlagCloudNetworkCIDRs); viper.IsSet(fn) {
-		input.CloudNetworkCIDRs = pointer.From(viper.GetStringSlice(fn))
+		input.CloudNetworkCIDRs = viper.GetStringSlice(fn)
 	}
 	if fn := core.GetFlagName(c.NS, constants.FlagPeerNetworkCIDRs); viper.IsSet(fn) {
-		input.PeerNetworkCIDRs = pointer.From(viper.GetStringSlice(fn))
+		input.PeerNetworkCIDRs = viper.GetStringSlice(fn)
 	}
 	tunnel, _, err := client.Must().VPNClient.IPSecTunnelsApi.
 		IpsecgatewaysTunnelsPut(context.Background(),
 			viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayID)), viper.GetString(core.GetFlagName(c.NS, constants.FlagTunnelID))).
 		IPSecTunnelEnsure(vpn.IPSecTunnelEnsure{
-			Id:         pointer.From(viper.GetString(core.GetFlagName(c.NS, constants.FlagTunnelID))),
+			Id:         viper.GetString(core.GetFlagName(c.NS, constants.FlagTunnelID)),
 			Properties: input,
 		}).Execute()
 	if err != nil {
