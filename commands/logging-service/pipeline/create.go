@@ -9,12 +9,12 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
-	ionoscloud "github.com/ionos-cloud/sdk-go-logging"
+	"github.com/ionos-cloud/sdk-go-bundle/products/logging/v2"
 	"github.com/spf13/viper"
 )
 
 var (
-	pipelineToCreate      ionoscloud.PipelineCreate
+	pipelineToCreate      logging.PipelineCreate
 	jsonPropertiesExample = "{\n  \"properties\": {\n    \"name\": \"examplePipe\",\n    \"logs\": [\n      {\n        \"source\": \"docker\",\n        \"tag\": \"tag1\",\n        \"protocol\": \"http\",\n        \"labels\": [\n          \"label1\"\n        ],\n        \"destinations\": [\n          {\n            \"type\": \"loki\",\n            \"retentionInDays\": 7\n          }\n        ]\n      },\n      {\n        \"source\": \"systemd\",\n        \"tag\": \"tag2\",\n        \"protocol\": \"http\",\n        \"labels\": [\n          \"label2\"\n        ],\n        \"destinations\": [\n          {\n            \"type\": \"loki\",\n            \"retentionInDays\": 14\n          }\n        ]\n      },\n      {\n        \"source\": \"kubernetes\",\n        \"tag\": \"tag3\",\n        \"protocol\": \"tcp\",\n        \"labels\": [\n          \"label3\"\n        ],\n        \"destinations\": [\n          {\n            \"type\": \"loki\",\n            \"retentionInDays\": 30\n          }\n        ]\n      },\n      {\n        \"source\": \"generic\",\n        \"tag\": \"tag4\",\n        \"protocol\": \"tcp\",\n        \"labels\": [\n          \"label4\"\n        ],\n        \"destinations\": [\n          {\n            \"type\": \"loki\",\n            \"retentionInDays\": 7\n          }\n        ]\n      }\n    ]\n  }\n}\n"
 )
 
@@ -102,22 +102,22 @@ func createFromFlags(c *core.CommandConfig) error {
 
 	retentionTimeInt32 := int32(retentionTimeInt)
 
-	dest := ionoscloud.Destination{
+	dest := logging.Destination{
 		Type:            &typ,
 		RetentionInDays: &retentionTimeInt32,
 	}
 
 	pipeline, _, err := client.Must().LoggingServiceClient.PipelinesApi.PipelinesPost(context.Background()).Pipeline(
-		ionoscloud.PipelineCreate{
-			Properties: &ionoscloud.PipelineCreateProperties{
+		logging.PipelineCreate{
+			Properties: &logging.PipelineCreateProperties{
 				Name: &name,
-				Logs: &[]ionoscloud.PipelineCreatePropertiesLogs{
+				Logs: &[]logging.PipelineCreatePropertiesLogs{
 					{
 						Tag:          &tag,
 						Source:       &source,
 						Protocol:     &protocol,
 						Labels:       &labels,
-						Destinations: &[]ionoscloud.Destination{dest},
+						Destinations: &[]logging.Destination{dest},
 					},
 				},
 			},

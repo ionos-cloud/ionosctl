@@ -11,7 +11,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
-	ionoscloud "github.com/ionos-cloud/sdk-go-logging"
+	"github.com/ionos-cloud/sdk-go-bundle/products/logging/v2"
 	"github.com/spf13/viper"
 )
 
@@ -67,7 +67,7 @@ func runRemoveCmd(c *core.CommandConfig) error {
 		return err
 	}
 
-	var newLogs []ionoscloud.PipelineCreatePropertiesLogs
+	var newLogs []logging.PipelineCreatePropertiesLogs
 	for _, log := range *patchPipeline.Properties.Logs {
 		if *log.Tag == tag {
 			continue

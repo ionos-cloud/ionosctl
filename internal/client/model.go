@@ -10,6 +10,7 @@ import (
 	"github.com/ionos-cloud/sdk-go-bundle/products/cdn/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dns/v2"
+	"github.com/ionos-cloud/sdk-go-bundle/products/logging/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/vpn/v2"
 	certmanager "github.com/ionos-cloud/sdk-go-cert-manager"
 	registry "github.com/ionos-cloud/sdk-go-container-registry"
@@ -17,7 +18,6 @@ import (
 	maria "github.com/ionos-cloud/sdk-go-dbaas-mariadb"
 	postgres "github.com/ionos-cloud/sdk-go-dbaas-postgres"
 	kafka "github.com/ionos-cloud/sdk-go-kafka"
-	logsvc "github.com/ionos-cloud/sdk-go-logging"
 	vmasc "github.com/ionos-cloud/sdk-go-vm-autoscaling"
 	cloudv6 "github.com/ionos-cloud/sdk-go/v6"
 
@@ -72,7 +72,7 @@ type Client struct {
 	DataplatformClient   *dataplatform.APIClient
 	RegistryClient       *registry.APIClient
 	DnsClient            *dns.APIClient
-	LoggingServiceClient *logsvc.APIClient
+	LoggingServiceClient *logging.APIClient
 	VMAscClient          *vmasc.AutoScalingGroupsApiService
 	VPNClient            *vpn.APIClient
 
@@ -109,9 +109,6 @@ func newClient(name, pwd, token, hostUrl string, usedLayer *Layer) *Client {
 	registryConfig := registry.NewConfiguration(name, pwd, token, hostUrl)
 	registryConfig.UserAgent = appendUserAgent(registryConfig.UserAgent)
 
-	logsConfig := logsvc.NewConfiguration(name, pwd, token, hostUrl)
-	logsConfig.UserAgent = appendUserAgent(logsConfig.UserAgent)
-
 	vmascConfig := vmasc.NewConfiguration(name, pwd, token, hostUrl)
 	vmascConfig.UserAgent = appendUserAgent(vmascConfig.UserAgent)
 	// DBAAS
@@ -132,7 +129,7 @@ func newClient(name, pwd, token, hostUrl string, usedLayer *Layer) *Client {
 		DataplatformClient:   dataplatform.NewAPIClient(dpConfig),
 		RegistryClient:       registry.NewAPIClient(registryConfig),
 		DnsClient:            dns.NewAPIClient(sharedConfig),
-		LoggingServiceClient: logsvc.NewAPIClient(logsConfig),
+		LoggingServiceClient: logging.NewAPIClient(sharedConfig),
 		VMAscClient:          vmasc.NewAPIClient(vmascConfig).AutoScalingGroupsApi,
 		VPNClient:            vpn.NewAPIClient(sharedConfig),
 

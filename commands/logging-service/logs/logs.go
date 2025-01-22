@@ -10,7 +10,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/resource2table"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
-	ionoscloud "github.com/ionos-cloud/sdk-go-logging"
+	"github.com/ionos-cloud/sdk-go-bundle/products/logging/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -38,10 +38,10 @@ func LogsCmd() *core.Command {
 	return cmd
 }
 
-func handleLogsPrint(pipelines ionoscloud.PipelineListResponse, c *core.CommandConfig) error {
+func handleLogsPrint(pipelines logging.PipelineListResponse, c *core.CommandConfig) error {
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-	var logs []ionoscloud.PipelineResponse
+	var logs []logging.PipelineResponse
 	for _, p := range *pipelines.Items {
 		logs = append(logs, *p.Properties.Logs...)
 	}
@@ -65,7 +65,7 @@ func handleLogsPrint(pipelines ionoscloud.PipelineListResponse, c *core.CommandC
 	return nil
 }
 
-func handleLogPrint(pipeline ionoscloud.Pipeline, c *core.CommandConfig) error {
+func handleLogPrint(pipeline logging.Pipeline, c *core.CommandConfig) error {
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	logsConverted, err := resource2table.ConvertLoggingServicePipelineLogsToTable(pipeline)
@@ -88,7 +88,7 @@ func handleLogPrint(pipeline ionoscloud.Pipeline, c *core.CommandConfig) error {
 	return nil
 }
 
-func convertResponsePipelineToPatchRequest(pipeline ionoscloud.Pipeline) (*ionoscloud.PipelinePatch, error) {
+func convertResponsePipelineToPatchRequest(pipeline logging.Pipeline) (*logging.PipelinePatch, error) {
 	properties, ok := pipeline.GetPropertiesOk()
 	if !ok || properties == nil {
 		return nil, fmt.Errorf("could not retrieve Logging Service Pipeline properties")
@@ -99,9 +99,9 @@ func convertResponsePipelineToPatchRequest(pipeline ionoscloud.Pipeline) (*ionos
 		return nil, fmt.Errorf("could not retrieve Logging Service Pipeline Logs")
 	}
 
-	var newLogs []ionoscloud.PipelineCreatePropertiesLogs
+	var newLogs []logging.PipelineCreatePropertiesLogs
 	for _, log := range *logs {
-		l := ionoscloud.PipelineCreatePropertiesLogs{
+		l := logging.PipelineCreatePropertiesLogs{
 			Tag:          log.Tag,
 			Source:       log.Source,
 			Protocol:     log.Protocol,
@@ -112,8 +112,8 @@ func convertResponsePipelineToPatchRequest(pipeline ionoscloud.Pipeline) (*ionos
 		newLogs = append(newLogs, l)
 	}
 
-	patch := ionoscloud.PipelinePatch{
-		Properties: &ionoscloud.PipelinePatchProperties{
+	patch := logging.PipelinePatch{
+		Properties: &logging.PipelinePatchProperties{
 			Name: properties.Name,
 			Logs: &newLogs,
 		},
@@ -122,13 +122,13 @@ func convertResponsePipelineToPatchRequest(pipeline ionoscloud.Pipeline) (*ionos
 	return &patch, nil
 }
 
-func generatePatchObject(c *core.CommandConfig) (*ionoscloud.PipelineCreatePropertiesLogs, error) {
+func generatePatchObject(c *core.CommandConfig) (*logging.PipelineCreatePropertiesLogs, error) {
 	var newTag, source, protocol, typ, retentionTime string
 	var labels []string
 	var retentionTimeInt32 int32
 
-	dest := ionoscloud.Destination{}
-	newLog := ionoscloud.PipelineCreatePropertiesLogs{}
+	dest := logging.Destination{}
+	newLog := logging.PipelineCreatePropertiesLogs{}
 
 	if viper.IsSet(core.GetFlagName(c.NS, "new-"+constants.FlagLoggingPipelineLogTag)) {
 		newTag = viper.GetString(core.GetFlagName(c.NS, "new-"+constants.FlagLoggingPipelineLogTag))
@@ -173,13 +173,13 @@ func generatePatchObject(c *core.CommandConfig) (*ionoscloud.PipelineCreatePrope
 	}
 
 	if dest.Type != nil || dest.RetentionInDays != nil {
-		newLog.Destinations = &[]ionoscloud.Destination{dest}
+		newLog.Destinations = &[]logging.Destination{dest}
 	}
 
 	return &newLog, nil
 }
 
-func fillOutEmptyFields(oldLog, newLog *ionoscloud.PipelineCreatePropertiesLogs) *ionoscloud.PipelineCreatePropertiesLogs {
+func fillOutEmptyFields(oldLog, newLog *logging.PipelineCreatePropertiesLogs) *logging.PipelineCreatePropertiesLogs {
 	if newLog.Tag == nil {
 		newLog.Tag = oldLog.Tag
 	}
