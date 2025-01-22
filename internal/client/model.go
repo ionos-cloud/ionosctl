@@ -8,12 +8,12 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	sdkgoauth "github.com/ionos-cloud/sdk-go-auth"
 	"github.com/ionos-cloud/sdk-go-bundle/products/cdn/v2"
+	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dns/v2"
 	certmanager "github.com/ionos-cloud/sdk-go-cert-manager"
 	registry "github.com/ionos-cloud/sdk-go-container-registry"
 	dataplatform "github.com/ionos-cloud/sdk-go-dataplatform"
 	maria "github.com/ionos-cloud/sdk-go-dbaas-mariadb"
-	mongo "github.com/ionos-cloud/sdk-go-dbaas-mongo"
 	postgres "github.com/ionos-cloud/sdk-go-dbaas-postgres"
 	kafka "github.com/ionos-cloud/sdk-go-kafka"
 	logsvc "github.com/ionos-cloud/sdk-go-logging"
@@ -118,9 +118,6 @@ func newClient(name, pwd, token, hostUrl string, usedLayer *Layer) *Client {
 	postgresConfig := postgres.NewConfiguration(name, pwd, token, hostUrl)
 	postgresConfig.UserAgent = appendUserAgent(postgresConfig.UserAgent)
 
-	mongoConfig := mongo.NewConfiguration(name, pwd, token, hostUrl)
-	mongoConfig.UserAgent = appendUserAgent(mongoConfig.UserAgent)
-
 	mariaConfig := maria.NewConfiguration(name, pwd, token, hostUrl)
 	mariaConfig.UserAgent = appendUserAgent(mariaConfig.UserAgent)
 
@@ -143,7 +140,7 @@ func newClient(name, pwd, token, hostUrl string, usedLayer *Layer) *Client {
 		VPNClient:            vpn.NewAPIClient(vpnConfig),
 
 		PostgresClient: postgres.NewAPIClient(postgresConfig),
-		MongoClient:    mongo.NewAPIClient(mongoConfig),
+		MongoClient:    mongo.NewAPIClient(sharedConfig),
 		MariaClient:    maria.NewAPIClient(mariaConfig),
 		Kafka:          kafka.NewAPIClient(kafkaConfig),
 

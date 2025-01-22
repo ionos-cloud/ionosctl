@@ -13,7 +13,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/resource2table"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
-	sdkgo "github.com/ionos-cloud/sdk-go-dbaas-mongo"
+	sdkgo "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -113,7 +113,7 @@ func listAll(c *core.CommandConfig) error {
 	var lsConverted []map[string]interface{}
 	var multiErr error
 
-	for _, c := range *clusters.GetItems() {
+	for _, c := range clusters.GetItems() {
 		l, _, err := client.Must().MongoClient.UsersApi.ClustersUsersGet(context.Background(), *c.Id).Execute()
 		if err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf("failed listing users of cluster %s: %w", *c.Properties.DisplayName, err))

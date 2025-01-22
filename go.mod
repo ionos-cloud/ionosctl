@@ -13,7 +13,6 @@ require (
 	github.com/ionos-cloud/sdk-go-auth v1.0.10
 	github.com/ionos-cloud/sdk-go-container-registry v1.1.0
 	github.com/ionos-cloud/sdk-go-dataplatform v1.0.2
-	github.com/ionos-cloud/sdk-go-dbaas-mongo v1.3.1
 	github.com/ionos-cloud/sdk-go-dbaas-postgres v1.1.2
 	github.com/ionos-cloud/sdk-go-logging v1.0.1
 	github.com/ionos-cloud/sdk-go-vm-autoscaling v1.0.1
@@ -21,7 +20,6 @@ require (
 	github.com/itchyny/gojq v0.12.13
 	github.com/kardianos/ftps v1.0.3
 	github.com/mitchellh/go-homedir v1.1.0
-	github.com/mmatczuk/anyflag v0.0.0-20230209112147-9567d4cab866
 	github.com/spf13/cobra v1.8.1
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.16.0
@@ -40,6 +38,7 @@ require (
 require (
 	github.com/dustin/go-humanize v0.0.0-20171111073723-bb3d318650d4
 	github.com/ionos-cloud/sdk-go-bundle/products/cdn/v2 v2.1.1
+	github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo/v2 v2.0.2
 	github.com/ionos-cloud/sdk-go-bundle/products/dns/v2 v2.0.1
 	github.com/ionos-cloud/sdk-go-bundle/shared v0.1.1
 	github.com/ionos-cloud/sdk-go-dbaas-mariadb v1.1.1

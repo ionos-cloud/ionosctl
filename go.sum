@@ -250,6 +250,8 @@ github.com/ionos-cloud/sdk-go-bundle/products/cdn/v2 v2.1.1 h1:8O0c5GLVD6aM//iC3
 github.com/ionos-cloud/sdk-go-bundle/products/cdn/v2 v2.1.1/go.mod h1:BF6R+j1GdJEMImxkeh32qjIVWqsBfgi6VgyfsY5ezIA=
 github.com/ionos-cloud/sdk-go-bundle/products/dns/v2 v2.0.1 h1:EeDVljI3St112cgokBdvbr/L6D0HzfLr0d/u2R71KXU=
 github.com/ionos-cloud/sdk-go-bundle/products/dns/v2 v2.0.1/go.mod h1:S8SBfF2bJkW902JKSQ/O6zn3sXPgeLvaa8hUG/oycNg=
+github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo/v2 v2.0.2 h1:42llVAj7pKbmGVT3Aj6v+77CVEqESK1WL1vI+wOH7Co=
+github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo/v2 v2.0.2/go.mod h1:mUnvrQawA+ydTK1vzguZKlSVtKLPcWeDjYGdU96KKG4=
 github.com/ionos-cloud/sdk-go-bundle/shared v0.1.1 h1:NWobgIhmUJKG6ohFXefMj+KmpEEvLYEDUgGzpns6HQE=
 github.com/ionos-cloud/sdk-go-bundle/shared v0.1.1/go.mod h1:cLIl4zmB1yMdPSNgTzaRmXeuusEAY1O3Lp/iXSc/R6E=
 github.com/ionos-cloud/sdk-go-cert-manager v1.0.1 h1:QGnenRREavvU0ZrXvY4hmCMXRyvmKj5jaXsFX9Apfd0=
@@ -260,8 +262,6 @@ github.com/ionos-cloud/sdk-go-dataplatform v1.0.2 h1:/KEm54/8WC8bXKAqUKLgoTvk1g9
 github.com/ionos-cloud/sdk-go-dataplatform v1.0.2/go.mod h1:LXJGnUwLLiJhKgApv7TIPGy7WOuGbYIzBPFxGpNfqN0=
 github.com/ionos-cloud/sdk-go-dbaas-mariadb v1.1.1 h1:dZLxaH2n0nxCOKMkt49TibOiY1hkaHThpXEgJL0oZng=
 github.com/ionos-cloud/sdk-go-dbaas-mariadb v1.1.1/go.mod h1:NuUqBA9DyP4PB3MtKy/R9XRHY1RZcwVP6E3tP4FwI7I=
-github.com/ionos-cloud/sdk-go-dbaas-mongo v1.3.1 h1:+tDoZ8IEPxYwJd6fDIpWksNJs9Zzw7Pu5A39jTew058=
-github.com/ionos-cloud/sdk-go-dbaas-mongo v1.3.1/go.mod h1:rxOAeyAU6BTfghJibSRDdRNrKm2cIXMpSMe7JIWewJ8=
 github.com/ionos-cloud/sdk-go-dbaas-postgres v1.1.2 h1:AaKbci+kVS6/k43VwJwmXxCJ7pzj9jwuOPqO8Wd5560=
 github.com/ionos-cloud/sdk-go-dbaas-postgres v1.1.2/go.mod h1:nmJEwuRX65A5/PxwvdFW0XrV+N6WFYnMV1TiIafAwz4=
 github.com/ionos-cloud/sdk-go-kafka v1.1.0 h1:9vm2iyCJdo2VFconoNWMoYvQNsjzU2fFEusV2gkiV4g=
@@ -340,8 +340,6 @@ github.com/mitchellh/mapstructure v0.0.0-20160808181253-ca63d7c062ee/go.mod h1:F
 github.com/mitchellh/mapstructure v1.1.2/go.mod h1:FVVH3fgwuzCH5S8UJGiWEs2h04kUh9fWfEaFds41c1Y=
 github.com/mitchellh/mapstructure v1.5.0 h1:jeMsZIYE/09sWLaz43PL7Gy6RuMjD2eJVyuac5Z2hdY=
 github.com/mitchellh/mapstructure v1.5.0/go.mod h1:bFUtVrKA4DC2yAKiSyO/QUcy7e+RRV2QTWOzhPopBRo=
-github.com/mmatczuk/anyflag v0.0.0-20230209112147-9567d4cab866 h1:uyqivbxMwBElUp4ZoTvC2gWRbSQNm/ZPSRm2rhp87eo=
-github.com/mmatczuk/anyflag v0.0.0-20230209112147-9567d4cab866/go.mod h1:PT22bA6vWBzPL8tAeK2XCMvWOQ4e19yY3MJIgnTZRaE=
 github.com/modern-go/concurrent v0.0.0-20180228061459-e0a39a4cb421/go.mod h1:6dJC0mAP4ikYIbvyc7fijjWJddQyLn8Ig3JB5CqoB9Q=
 github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd/go.mod h1:6dJC0mAP4ikYIbvyc7fijjWJddQyLn8Ig3JB5CqoB9Q=
 github.com/modern-go/reflect2 v0.0.0-20180701023420-4b7aa43c6742/go.mod h1:bx2lNnkwVCuqBIxFjflWJWanXIb3RllmbCylyMrvgv0=

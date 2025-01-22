@@ -18,7 +18,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mongo/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	ionoscloud "github.com/ionos-cloud/sdk-go-dbaas-mongo"
+	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo/v2"
 	"github.com/spf13/cobra"
 )
 
@@ -34,7 +34,7 @@ func ClusterUpdateCmd() *core.Command {
 			return c.Command.Command.MarkFlagRequired(constants.FlagClusterId)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			cluster := ionoscloud.PatchClusterProperties{}
+			cluster := mongo.PatchClusterProperties{}
 			if fn := core.GetFlagName(c.NS, constants.FlagEdition); viper.IsSet(fn) {
 				cluster.Edition = pointer.From(viper.GetString(fn))
 			}
@@ -64,35 +64,30 @@ func ClusterUpdateCmd() *core.Command {
 				cluster.Shards = pointer.From(viper.GetInt32(fn))
 			}
 
-			cluster.MaintenanceWindow = &ionoscloud.MaintenanceWindow{}
+			cluster.MaintenanceWindow = &mongo.MaintenanceWindow{}
 			if fn := core.GetFlagName(c.NS, constants.FlagMaintenanceDay); viper.IsSet(fn) {
-				cluster.MaintenanceWindow.DayOfTheWeek = (*ionoscloud.DayOfTheWeek)(pointer.From(
-					viper.GetString(fn)))
+				cluster.MaintenanceWindow.DayOfTheWeek = mongo.DayOfTheWeek(viper.GetString(fn))
 			}
 			if fn := core.GetFlagName(c.NS, constants.FlagMaintenanceTime); viper.IsSet(fn) {
-				cluster.MaintenanceWindow.Time = pointer.From(
-					viper.GetString(fn))
+				cluster.MaintenanceWindow.Time = viper.GetString(fn)
 			}
 
-			cluster.Connections = pointer.From(make([]ionoscloud.Connection, 1))
+			cluster.Connections = make([]mongo.Connection, 1)
 			if fn := core.GetFlagName(c.NS, constants.FlagCidr); viper.IsSet(fn) {
-				(*cluster.Connections)[0].CidrList = pointer.From(
-					viper.GetStringSlice(fn))
+				cluster.Connections[0].CidrList = viper.GetStringSlice(fn)
 			}
 			if fn := core.GetFlagName(c.NS, constants.FlagDatacenterId); viper.IsSet(fn) {
-				(*cluster.Connections)[0].DatacenterId = pointer.From(
-					viper.GetString(fn))
+				cluster.Connections[0].DatacenterId = viper.GetString(fn)
 			}
 			if fn := core.GetFlagName(c.NS, constants.FlagLanId); viper.IsSet(fn) {
-				(*cluster.Connections)[0].LanId = pointer.From(
-					viper.GetString(fn))
+				cluster.Connections[0].LanId = viper.GetString(fn)
 			}
 
 			// backup flags
 			cluster.Backup = nil
 			if fn := core.GetFlagName(c.NS, flagBackupLocation); viper.IsSet(fn) {
 				if cluster.Backup == nil {
-					cluster.Backup = &ionoscloud.BackupProperties{}
+					cluster.Backup = &mongo.BackupProperties{}
 				}
 				cluster.Backup.Location = pointer.From(viper.GetString(fn))
 			}
@@ -100,7 +95,7 @@ func ClusterUpdateCmd() *core.Command {
 			cluster.BiConnector = nil
 			if fn := core.GetFlagName(c.NS, flagBiconnector); viper.IsSet(fn) {
 				if cluster.BiConnector == nil {
-					cluster.BiConnector = &ionoscloud.BiConnectorProperties{}
+					cluster.BiConnector = &mongo.BiConnectorProperties{}
 				}
 				hostAndPort := viper.GetString(fn)
 				host, port, err := net.SplitHostPort(hostAndPort)
@@ -114,7 +109,7 @@ func ClusterUpdateCmd() *core.Command {
 
 			if fn := core.GetFlagName(c.NS, flagBiconnectorEnabled); viper.IsSet(fn) {
 				if cluster.BiConnector == nil {
-					cluster.BiConnector = &ionoscloud.BiConnectorProperties{}
+					cluster.BiConnector = &mongo.BiConnectorProperties{}
 				}
 				cluster.BiConnector.Enabled = pointer.From(viper.GetBool(fn))
 			}
@@ -124,7 +119,7 @@ func ClusterUpdateCmd() *core.Command {
 				cluster.Cores = pointer.From(viper.GetInt32(fn))
 			}
 			if fn := core.GetFlagName(c.NS, constants.FlagStorageType); viper.IsSet(fn) {
-				cluster.StorageType = (*ionoscloud.StorageType)(pointer.From(viper.GetString(fn)))
+				cluster.StorageType = (*mongo.StorageType)(pointer.From(viper.GetString(fn)))
 			}
 			if fn := core.GetFlagName(c.NS, constants.FlagStorageSize); viper.IsSet(fn) {
 				sizeInt64 := convbytes.StrToUnit(viper.GetString(fn), convbytes.MB)
@@ -137,7 +132,7 @@ func ClusterUpdateCmd() *core.Command {
 
 			clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
 			createdCluster, _, err := client.Must().MongoClient.ClustersApi.ClustersPatch(context.Background(),
-				clusterId).PatchClusterRequest(ionoscloud.PatchClusterRequest{Properties: &cluster}).Execute()
+				clusterId).PatchClusterRequest(mongo.PatchClusterRequest{Properties: &cluster}).Execute()
 			if err != nil {
 				return fmt.Errorf("failed creating cluster: %w", err)
 			}
