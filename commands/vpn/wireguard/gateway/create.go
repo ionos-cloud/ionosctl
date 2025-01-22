@@ -47,20 +47,20 @@ func Create() *core.Command {
 			)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			input := &vpn.WireguardGateway{}
+			input := vpn.WireguardGateway{}
 
 			if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) {
-				input.Name = pointer.From(viper.GetString(fn))
+				input.Name = viper.GetString(fn)
 			}
 			if fn := core.GetFlagName(c.NS, constants.FlagDescription); viper.IsSet(fn) {
 				input.Description = pointer.From(viper.GetString(fn))
 			}
 			if fn := core.GetFlagName(c.NS, constants.FlagIp); viper.IsSet(fn) {
-				input.GatewayIP = pointer.From(viper.GetString(fn))
+				input.GatewayIP = viper.GetString(fn)
 			}
 
 			if fn := core.GetFlagName(c.NS, constants.FlagPrivateKey); viper.IsSet(fn) {
-				input.PrivateKey = pointer.From(viper.GetString(fn))
+				input.PrivateKey = viper.GetString(fn)
 			}
 
 			if fn := core.GetFlagName(c.NS, constants.FlagPrivateKeyPath); viper.IsSet(fn) {
@@ -69,23 +69,23 @@ func Create() *core.Command {
 				if err != nil {
 					return fmt.Errorf("failed to read private key file: %w", err)
 				}
-				input.PrivateKey = pointer.From(string(keyBytes))
+				input.PrivateKey = string(keyBytes)
 			}
 
 			if fn := core.GetFlagName(c.NS, constants.FlagPort); viper.IsSet(fn) {
 				input.ListenPort = pointer.From(viper.GetInt32(fn))
 			}
 
-			input.Connections = pointer.From(make([]vpn.Connection, 1))
+			input.Connections = make([]vpn.Connection, 1)
 			if fn := core.GetFlagName(c.NS, constants.FlagDatacenterId); viper.IsSet(fn) {
-				(*input.Connections)[0].DatacenterId = pointer.From(viper.GetString(fn))
+				input.Connections[0].DatacenterId = viper.GetString(fn)
 			}
 			if fn := core.GetFlagName(c.NS, constants.FlagLanId); viper.IsSet(fn) {
-				(*input.Connections)[0].LanId = pointer.From(viper.GetString(fn))
+				input.Connections[0].LanId = viper.GetString(fn)
 			}
 
 			if fn := core.GetFlagName(c.NS, constants.FlagGatewayIP); viper.IsSet(fn) {
-				input.GatewayIP = pointer.From(viper.GetString(fn))
+				input.GatewayIP = viper.GetString(fn)
 			}
 
 			// Note: VPN Gateway handles IPv4 and IPv6 addresses separately for both InterfaceIP and Connections.IP
@@ -110,9 +110,9 @@ func Create() *core.Command {
 			if fn := core.GetFlagName(c.NS, constants.FlagConnectionIP); viper.IsSet(fn) {
 				ip := viper.GetString(fn)
 				if isIPv4(ip) {
-					(*input.Connections)[0].Ipv4CIDR = pointer.From(ip)
+					input.Connections[0].Ipv4CIDR = ip
 				} else {
-					(*input.Connections)[0].Ipv6CIDR = pointer.From(ip)
+					input.Connections[0].Ipv6CIDR = pointer.From(ip)
 				}
 			}
 

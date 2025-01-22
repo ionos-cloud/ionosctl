@@ -105,10 +105,10 @@ func createFromJSON(c *core.CommandConfig, propertiesFromJson vpn.IPSecTunnelCre
 }
 
 func createFromProperties(c *core.CommandConfig) error {
-	input := &vpn.IPSecTunnel{}
+	input := vpn.IPSecTunnel{}
 
 	if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) {
-		input.Name = pointer.From(viper.GetString(fn))
+		input.Name = viper.GetString(fn)
 	}
 
 	if fn := core.GetFlagName(c.NS, constants.FlagDescription); viper.IsSet(fn) {
@@ -116,20 +116,20 @@ func createFromProperties(c *core.CommandConfig) error {
 	}
 
 	if fn := core.GetFlagName(c.NS, constants.FlagHost); viper.IsSet(fn) {
-		input.RemoteHost = pointer.From(viper.GetString(fn))
+		input.RemoteHost = viper.GetString(fn)
 	}
 
 	if fn := core.GetFlagName(c.NS, constants.FlagAuthMethod); viper.IsSet(fn) {
-		input.Auth = &vpn.IPSecTunnelAuth{}
-		input.Auth.Method = pointer.From(viper.GetString(fn))
+		input.Auth = vpn.IPSecTunnelAuth{}
+		input.Auth.Method = viper.GetString(fn)
 	}
 
 	if fn := core.GetFlagName(c.NS, constants.FlagPSKKey); viper.IsSet(fn) {
 		input.Auth.Psk = &vpn.IPSecPSK{}
-		input.Auth.Psk.Key = pointer.From(viper.GetString(fn))
+		input.Auth.Psk.Key = viper.GetString(fn)
 	}
 
-	input.Ike = &vpn.IKEEncryption{}
+	input.Ike = vpn.IKEEncryption{}
 	if fn := core.GetFlagName(c.NS, constants.FlagIKEDiffieHellmanGroup); viper.IsSet(fn) {
 		input.Ike.DiffieHellmanGroup = pointer.From(viper.GetString(fn))
 	}
@@ -143,7 +143,7 @@ func createFromProperties(c *core.CommandConfig) error {
 		input.Ike.Lifetime = pointer.From(int32(viper.GetInt(fn)))
 	}
 
-	input.Esp = &vpn.ESPEncryption{}
+	input.Esp = vpn.ESPEncryption{}
 	if fn := core.GetFlagName(c.NS, constants.FlagESPDiffieHellmanGroup); viper.IsSet(fn) {
 		input.Esp.DiffieHellmanGroup = pointer.From(viper.GetString(fn))
 	}
@@ -158,10 +158,10 @@ func createFromProperties(c *core.CommandConfig) error {
 	}
 
 	if fn := core.GetFlagName(c.NS, constants.FlagCloudNetworkCIDRs); viper.IsSet(fn) {
-		input.CloudNetworkCIDRs = pointer.From(viper.GetStringSlice(fn))
+		input.CloudNetworkCIDRs = viper.GetStringSlice(fn)
 	}
 	if fn := core.GetFlagName(c.NS, constants.FlagPeerNetworkCIDRs); viper.IsSet(fn) {
-		input.PeerNetworkCIDRs = pointer.From(viper.GetStringSlice(fn))
+		input.PeerNetworkCIDRs = viper.GetStringSlice(fn)
 	}
 	tunnel, _, err := client.Must().VPNClient.IPSecTunnelsApi.
 		IpsecgatewaysTunnelsPost(context.Background(), viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayID))).
