@@ -105,10 +105,13 @@ teardown_file() {
         "[ -z \$output ]" 120 60
 
     echo "cleaning up datacenter $datacenter_id"
-    run ionosctl datacenter delete --datacenter_id "$datacenter_id" -f -w -t 1200
+    retry_until "ionosctl datacenter delete --datacenter-id $datacenter_id -f 2> /dev/null" \
+        "[ \$? -eq 0 ]" 10 60
 
-    run ionosctl token delete --token "$IONOS_TOKEN"
+    echo "cleaning up token"
+    run ionosctl token delete --token "$IONOS_TOKEN" -f
     unset IONOS_TOKEN
 
+    echo "cleaning up test directory"
     rm -rf /tmp/bats_test
 }
