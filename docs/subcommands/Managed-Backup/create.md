@@ -44,22 +44,21 @@ Required values to run a command:
 ## Options
 
 ```text
-  -u, --api-url string     Override default host url (default "https://api.ionos.com")
-      --cols strings       Set of columns to be printed on output 
-                           Available columns: [BackupUnitId Name Email State] (default [BackupUnitId,Name,Email,State])
-  -c, --config string      Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
-  -D, --depth int32        Controls the detail depth of the response objects. Max depth is 10.
-  -e, --email string       The e-mail address you want to assign to the BackupUnit (required)
-  -f, --force              Force command to execute without user input
-  -h, --help               Print usage
-  -n, --name string        Alphanumeric name you want to assign to the BackupUnit (required)
-      --no-headers         Don't print table headers when table output is used
-  -o, --output string      Desired output format [text|json|api-json] (default "text")
-  -p, --password string    Alphanumeric password you want to assign to the BackupUnit (required)
-  -q, --quiet              Quiet output
-  -t, --timeout int        Timeout option for Request for BackupUnit creation [seconds] (default 60)
-  -v, --verbose            Print step-by-step process when running command
-  -w, --wait-for-request   Wait for the Request for BackupUnit creation to be executed
+  -u, --api-url string    Override default host url (default "https://api.ionos.com")
+      --cols strings      Set of columns to be printed on output 
+                          Available columns: [BackupUnitId Name Email State] (default [BackupUnitId,Name,Email,State])
+  -c, --config string     Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+  -D, --depth int32       Controls the detail depth of the response objects. Max depth is 10.
+  -e, --email string      The e-mail address you want to assign to the BackupUnit (required)
+  -f, --force             Force command to execute without user input
+  -h, --help              Print usage
+  -n, --name string       Alphanumeric name you want to assign to the BackupUnit (required)
+      --no-headers        Don't print table headers when table output is used
+  -o, --output string     Desired output format [text|json|api-json] (default "text")
+  -p, --password string   Alphanumeric password you want to assign to the BackupUnit (required)
+  -q, --quiet             Quiet output
+  -t, --timeout int       Timeout option for Request for BackupUnit creation [seconds] (default 60)
+  -v, --verbose           Print step-by-step process when running command
 ```
 
 ## Examples
