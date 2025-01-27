@@ -17,19 +17,6 @@ setup_file() {
     mkdir -p /tmp/bats_test
 }
 
-#@test "Ensure no previous MongoDB Clusters" {
-#    run ionosctl db mongo cluster list 2> /dev/null
-#    [ "$status" -eq 0 ] || fail "Failed to list mongodb clusters"
-#
-#    if [ "$output" ]; then
-#        echo "Deleting clusters..."
-#        run ionosctl db mongo cluster delete --all -f
-#    fi
-#
-#    echo "Waiting for clusters to be deleted..."
-#    retry_command "[ -z \"\$(ionosctl db mongo cluster list 2>/dev/null)\" ]"
-#}
-
 @test "Create MongoDB Cluster" {
     datacenter_id=$(ionosctl datacenter create --name "CLI-Test-$(randStr 8)" --location ${location} -o json 2> /dev/null | jq -r '.id')
     [ -n "$datacenter_id" ] || fail "datacenter_id is empty"
