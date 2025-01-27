@@ -5,6 +5,7 @@
 ### Fixed
 
 - Fixed not being able to use snapshot IDs for --image-id
+- Fixed 404 when waiting for backupunits to be ready
 
 ## [v6.8.0] (January 2025)
 
