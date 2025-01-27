@@ -43,6 +43,10 @@ func SnapshotsListCmd() *core.Command {
 				return err
 			}
 
+			if len(snapshots.Items) == 0 {
+				return nil // SDK-Bundle changes the return type of Items from empty slice to nil
+			}
+
 			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 			out, err := jsontabwriter.GenerateOutput("items", jsonpaths.DbaasMongoSnapshot, snapshots,
