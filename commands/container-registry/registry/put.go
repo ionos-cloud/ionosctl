@@ -103,14 +103,14 @@ func CmdPut(c *core.CommandConfig) error {
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, FlagRegGCTime)) {
-		*v.Time = viper.GetString(core.GetFlagName(c.NS, FlagRegGCTime))
+		v.Time = viper.GetString(core.GetFlagName(c.NS, FlagRegGCTime))
 	} else {
 		v.SetTime("01:23:00+00:00")
 	}
 
 	feat := containerregistry.NewRegistryFeaturesWithDefaults()
 	featEnabled := viper.GetBool(core.GetFlagName(c.NS, constants.FlagRegistryVulnScan))
-	feat.SetVulnerabilityScanning(containerregistry.FeatureVulnerabilityScanning{Enabled: &featEnabled})
+	feat.SetVulnerabilityScanning(containerregistry.FeatureVulnerabilityScanning{Enabled: featEnabled})
 
 	regPutProperties.SetName(name)
 	regPutProperties.SetLocation(location)
@@ -126,7 +126,7 @@ func CmdPut(c *core.CommandConfig) error {
 	}
 
 	regPrint := containerregistry.NewRegistryResponseWithDefaults()
-	regPrint.SetProperties(*reg.GetProperties())
+	regPrint.SetProperties(reg.GetProperties())
 
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 

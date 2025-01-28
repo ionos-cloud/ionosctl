@@ -77,15 +77,9 @@ func CmdGetTokenScopesDelete(c *core.CommandConfig) error {
 	if viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)) {
 		updateToken := containerregistry.NewPutTokenInputWithDefaults()
 		updateProp := containerregistry.NewPostTokenPropertiesWithDefaults()
-
-		if token.Properties.GetExpiryDate() != nil {
-			updateProp.SetExpiryDate(*token.Properties.GetExpiryDate())
-		}
-
-		if token.Properties.GetStatus() != nil {
-			updateProp.SetStatus(*token.Properties.GetStatus())
-		}
-		updateProp.SetName(*token.Properties.GetName())
+		updateProp.SetExpiryDate(token.Properties.GetExpiryDate())
+		updateProp.SetStatus(token.Properties.GetStatus())
+		updateProp.SetName(token.Properties.GetName())
 		updateToken.SetProperties(*updateProp)
 
 		msg := fmt.Sprintf("delete all scopes from Token: %s", *token.Id)
@@ -116,12 +110,12 @@ func CmdGetTokenScopesDelete(c *core.CommandConfig) error {
 	updateToken := containerregistry.NewPutTokenInputWithDefaults()
 	updateProp := containerregistry.NewPostTokenPropertiesWithDefaults()
 
-	scopes := *token.Properties.GetScopes()
+	scopes := token.Properties.GetScopes()
 	scopes = append(scopes[:id], scopes[id+1:]...)
 
-	updateProp.SetExpiryDate(*token.Properties.GetExpiryDate())
-	updateProp.SetStatus(*token.Properties.GetStatus())
-	updateProp.SetName(*token.Properties.GetName())
+	updateProp.SetExpiryDate(token.Properties.GetExpiryDate())
+	updateProp.SetStatus(token.Properties.GetStatus())
+	updateProp.SetName(token.Properties.GetName())
 	updateProp.SetScopes(scopes)
 	updateToken.SetProperties(*updateProp)
 

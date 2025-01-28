@@ -75,8 +75,8 @@ func RepositoryNames(registryId string) []string {
 	}
 
 	return functional.Map(
-		*repos.Items, func(repo containerregistry.RepositoryRead) string {
-			return *repo.Properties.Name
+		repos.Items, func(repo containerregistry.RepositoryRead) string {
+			return repo.Properties.Name
 		},
 	)
 }

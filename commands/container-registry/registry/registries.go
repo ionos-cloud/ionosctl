@@ -47,8 +47,8 @@ func RegsIds() []string {
 	svc := resources.NewRegistriesService(client.Must(), context.Background())
 	regs, _, _ := svc.List("")
 	return functional.Map(
-		*regs.GetItems(), func(reg containerregistry.RegistryResponse) string {
-			return *reg.GetId()
+		regs.GetItems(), func(reg containerregistry.RegistryResponse) string {
+			return reg.GetId()
 		},
 	)
 }

@@ -54,27 +54,27 @@ func TokensIds(regId string) []string {
 
 		tokens, _, _ := svcToken.List(regId)
 
-		allTokens = append(allTokens, *tokens.GetItems()...)
+		allTokens = append(allTokens, tokens.GetItems()...)
 
 		return functional.Map(
 			allTokens, func(reg containerregistry.TokenResponse) string {
-				return *reg.GetId()
+				return reg.GetId()
 			},
 		)
 	}
 
 	regs, _, _ := resources.NewRegistriesService(client.Must(), context.Background()).List("")
-	regsIDs := *regs.GetItems()
+	regsIDs := regs.GetItems()
 
 	for _, regID := range regsIDs {
-		tokens, _, _ := svcToken.List(*regID.GetId())
+		tokens, _, _ := svcToken.List(regID.GetId())
 
-		allTokens = append(allTokens, *tokens.GetItems()...)
+		allTokens = append(allTokens, tokens.GetItems()...)
 	}
 
 	return functional.Map(
 		allTokens, func(reg containerregistry.TokenResponse) string {
-			return *reg.GetId()
+			return reg.GetId()
 		},
 	)
 }

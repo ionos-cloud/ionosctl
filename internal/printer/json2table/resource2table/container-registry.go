@@ -17,7 +17,7 @@ func ConvertContainerRegistryVulnerabilitiesToTable(vulnerabilities containerreg
 	}
 
 	var convertedVulnerabilities []map[string]interface{}
-	for _, vulnerability := range *items {
+	for _, vulnerability := range items {
 		convertedVulnerability, err := ConvertContainerRegistryVulnerabilityToTable(vulnerability)
 		if err != nil {
 			return nil, err
@@ -48,7 +48,7 @@ func ConvertContainerRegistryVulnerabilityToTable(vulnerability containerregistr
 	}
 
 	var affectsFormatted []interface{}
-	for _, affect := range *affects {
+	for _, affect := range affects {
 		name, ok := affect.GetNameOk()
 		if !ok || name == nil {
 			return nil, fmt.Errorf("could not retrieve Container Registry Vulnerability affects name")

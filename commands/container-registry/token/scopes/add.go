@@ -118,13 +118,9 @@ func CmdTokenScopesAdd(c *core.CommandConfig) error {
 	}
 
 	updateToken := containerregistry.NewPatchTokenInput()
-	if token.Properties.GetExpiryDate() != nil {
-		updateToken.SetExpiryDate(*token.Properties.GetExpiryDate())
-	}
-	if token.Properties.GetStatus() != nil {
-		updateToken.SetStatus(*token.Properties.GetStatus())
-	}
-	scopes := *token.Properties.GetScopes()
+	updateToken.SetExpiryDate(token.Properties.GetExpiryDate())
+	updateToken.SetStatus(token.Properties.GetStatus())
+	scopes := token.Properties.GetScopes()
 	scopes = append(scopes, scope)
 	updateToken.SetScopes(scopes)
 

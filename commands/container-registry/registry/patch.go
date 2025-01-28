@@ -82,7 +82,7 @@ func CmdUpdate(c *core.CommandConfig) error {
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, "garbage-collection-schedule-time")) {
-		*v.Time = viper.GetString(core.GetFlagName(c.NS, "garbage-collection-schedule-time"))
+		v.Time = viper.GetString(core.GetFlagName(c.NS, "garbage-collection-schedule-time"))
 	} else {
 		v.SetTime("01:23:00+00:00")
 	}

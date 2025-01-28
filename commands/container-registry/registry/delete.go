@@ -65,7 +65,7 @@ func CmdDelete(c *core.CommandConfig) error {
 			return err
 		}
 
-		for _, reg := range *regs.Items {
+		for _, reg := range regs.Items {
 			msg := fmt.Sprintf("delete Container Registry: %s", *reg.Id)
 
 			if !confirm.FAsk(c.Command.Command.InOrStdin(), msg, viper.GetBool(constants.ArgForce)) {

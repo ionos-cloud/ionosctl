@@ -160,7 +160,7 @@ func CmdPutToken(c *core.CommandConfig) error {
 	}
 
 	tokenPrint := containerregistry.NewTokenResponseWithDefaults()
-	tokenPrint.SetProperties(*token.GetProperties())
+	tokenPrint.SetProperties(token.GetProperties())
 
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
