@@ -75,8 +75,6 @@ github.com/chzyer/readline v0.0.0-20180603132655-2972be24d48e/go.mod h1:nSuG5e5P
 github.com/chzyer/test v0.0.0-20180213035817-a1ea475d72b1/go.mod h1:Q3SI9o4m/ZMnBNeIyt5eFwwo7qiLfzFZmjNmxjkiQlU=
 github.com/cilium/fake v0.4.0 h1:ATSUQaeKaBMJmSWQe+D0QYtiSA2WXOlisq4RbSkLdE8=
 github.com/cilium/fake v0.4.0/go.mod h1:21afzsL8AAyP1Mrz/qz5vCenHmtYxIJxnULri9ofXF8=
-github.com/cjrd/allocate v0.0.0-20220510215731-986f24f0fb18 h1:zcZS1zJnskmXLPfVITaw/mHtBGu3Mo2vp46gCBxA3V4=
-github.com/cjrd/allocate v0.0.0-20220510215731-986f24f0fb18/go.mod h1:xCdduY82QBtGJbFbch7ShY3ltvP4/a+1kBh3HzGTaEk=
 github.com/clbanning/x2j v0.0.0-20191024224557-825249438eec/go.mod h1:jMjuTZXRI4dUb/I5gc9Hdhagfvm9+RyrPryS/auMzxE=
 github.com/client9/misspell v0.3.4/go.mod h1:qj6jICC3Q7zFZvVWo7KLAzC3yx5G7kyvSDkc90ppPyw=
 github.com/cncf/udpa/go v0.0.0-20191209042840-269d4d468f6f/go.mod h1:M8M6+tZqaGXZJjfX53e64911xZQV5JYwmTeXPW+k8Sc=

@@ -55,7 +55,10 @@ func ClusterUpdateCmd() *core.Command {
 				updateProperties.SetMaintenanceWindow(maintenanceWindow)
 			}
 
-			cluster, _, err := client.Must().DataplatformClient.DataPlatformClusterApi.ClustersPatch(c.Context, clusterId).PatchClusterRequest(dataplatform.PatchClusterRequest{Properties: &updateProperties}).Execute()
+			cluster, _, err := client.Must().DataplatformClient.DataPlatformClusterApi.
+				ClustersPatch(c.Context, clusterId).PatchClusterRequest(
+				dataplatform.PatchClusterRequest{Properties: updateProperties},
+			).Execute()
 			if err != nil {
 				return err
 			}

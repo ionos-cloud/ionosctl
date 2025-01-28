@@ -11,9 +11,6 @@ github.com/cheggaaa/pb/v3/termutil
 # github.com/cilium/fake v0.4.0
 ## explicit; go 1.19
 github.com/cilium/fake
-# github.com/cjrd/allocate v0.0.0-20220510215731-986f24f0fb18
-## explicit
-github.com/cjrd/allocate
 # github.com/cpuguy83/go-md2man/v2 v2.0.4
 ## explicit; go 1.11
 github.com/cpuguy83/go-md2man/v2/md2man

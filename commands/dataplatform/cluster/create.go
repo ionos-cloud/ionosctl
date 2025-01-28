@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/cilium/fake"
-	"github.com/cjrd/allocate"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dataplatform/version"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
@@ -18,8 +17,6 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
-
-var createProperties = dataplatform.CreateClusterProperties{}
 
 func ClusterCreateCmd() *core.Command {
 	cmd := core.NewCommand(context.TODO(), nil, core.CommandBuilder{
@@ -48,25 +45,32 @@ func ClusterCreateCmd() *core.Command {
 		CmdRun: func(c *core.CommandConfig) error {
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Creating Cluster..."))
 
+			input := dataplatform.CreateClusterProperties{}
+
+			if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) {
+				input.Name = viper.GetString(fn)
+			}
+
+			if fn := core.GetFlagName(c.NS, constants.FlagDatacenterId); viper.IsSet(fn) {
+				input.DatacenterId = viper.GetString(fn)
+			}
+
 			day := viper.GetString(core.GetFlagName(c.NS, constants.FlagMaintenanceDay))
 			time := viper.GetString(core.GetFlagName(c.NS, constants.FlagMaintenanceTime))
 
 			maintenanceWindow := dataplatform.MaintenanceWindow{}
-
 			maintenanceWindow.SetDayOfTheWeek(day)
 			maintenanceWindow.SetTime(time)
-			createProperties.SetMaintenanceWindow(maintenanceWindow)
+			input.SetMaintenanceWindow(maintenanceWindow)
 
 			v := viper.GetString(core.GetFlagName(c.NS, constants.FlagVersion))
 			if v == "latest" {
 				v = version.Latest(version.Versions())
 			}
-			createProperties.SetDataPlatformVersion(v)
+			input.SetDataPlatformVersion(v)
 
-			input := dataplatform.CreateClusterRequest{}
-			input.SetProperties(createProperties)
-
-			cr, _, err := client.Must().DataplatformClient.DataPlatformClusterApi.ClustersPost(context.Background()).CreateClusterRequest(input).Execute()
+			cr, _, err := client.Must().DataplatformClient.DataPlatformClusterApi.ClustersPost(context.Background()).
+				CreateClusterRequest(dataplatform.CreateClusterRequest{input}).Execute()
 			if err != nil {
 				return err
 			}
@@ -90,24 +94,24 @@ func ClusterCreateCmd() *core.Command {
 		InitClient: true,
 	})
 
-	// Linked to properties struct
-	_ = allocate.Zero(&createProperties)
-	cmd.AddStringVarFlag(createProperties.Name, constants.FlagName, constants.FlagNameShort, "", "The name of your cluster")
+	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "The name of your cluster", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagName, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return fake.Names(10), cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddStringFlag(constants.FlagVersion, "", "latest", "The version of your dataplatform cluster")
-	cmd.AddStringVarFlag(createProperties.DatacenterId, constants.FlagDatacenterId, constants.FlagIdShort, "", "The ID of the connected datacenter")
+	cmd.AddStringFlag(constants.FlagDatacenterId, constants.FlagIdShort, "", "The ID of the connected datacenter", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagDatacenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.DataCentersIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	// Maintenance
-	cmd.AddStringFlag(constants.FlagMaintenanceTime, "", "", "Time for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur. e.g.: 16:30:59", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagMaintenanceTime, "", "",
+		"Time for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur. e.g.: 16:30:59", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagMaintenanceTime, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"00:00:00", "08:00:00", "10:00:00", "12:00:00", "16:00:00"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddStringFlag(constants.FlagMaintenanceDay, "", "", "Day Of the Week for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagMaintenanceDay, "", "",
+		"Day Of the Week for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur", core.RequiredFlagOption())
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagMaintenanceDay, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"}, cobra.ShellCompDirectiveNoFileComp
 	})
