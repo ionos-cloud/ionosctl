@@ -6,10 +6,10 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/convbytes"
-	ionoscloud "github.com/ionos-cloud/sdk-go-dataplatform"
+	dataplatform "github.com/ionos-cloud/sdk-go-dataplatform"
 )
 
-func ConvertDataplatformClusterToTable(cluster ionoscloud.ClusterResponseData) ([]map[string]interface{}, error) {
+func ConvertDataplatformClusterToTable(cluster dataplatform.ClusterResponseData) ([]map[string]interface{}, error) {
 	properties, ok := cluster.GetPropertiesOk()
 	if !ok || properties == nil {
 		return nil, fmt.Errorf("could not retrieve Dataplatform Cluster properties")
@@ -40,7 +40,7 @@ func ConvertDataplatformClusterToTable(cluster ionoscloud.ClusterResponseData) (
 	return temp, nil
 }
 
-func ConvertDataplatformClustersToTable(clusters ionoscloud.ClusterListResponseData) ([]map[string]interface{}, error) {
+func ConvertDataplatformClustersToTable(clusters dataplatform.ClusterListResponseData) ([]map[string]interface{}, error) {
 	items, ok := clusters.GetItemsOk()
 	if !ok || items == nil {
 		return nil, fmt.Errorf("could not retrieve Dataplatform Clusters items")
@@ -59,7 +59,7 @@ func ConvertDataplatformClustersToTable(clusters ionoscloud.ClusterListResponseD
 	return clustersConverted, nil
 }
 
-func ConvertDataplatformNodePoolToTable(np ionoscloud.NodePoolResponseData) ([]map[string]interface{}, error) {
+func ConvertDataplatformNodePoolToTable(np dataplatform.NodePoolResponseData) ([]map[string]interface{}, error) {
 	properties, ok := np.GetPropertiesOk()
 	if !ok || properties == nil {
 		return nil, fmt.Errorf("could not retrieve Node Pool properties")
@@ -115,7 +115,7 @@ func ConvertDataplatformNodePoolToTable(np ionoscloud.NodePoolResponseData) ([]m
 	return temp, nil
 }
 
-func ConvertDataplatformNodePoolsToTable(nps ionoscloud.NodePoolListResponseData) ([]map[string]interface{}, error) {
+func ConvertDataplatformNodePoolsToTable(nps dataplatform.NodePoolListResponseData) ([]map[string]interface{}, error) {
 	var npsConverted = make([]map[string]interface{}, 0)
 
 	items, ok := nps.GetItemsOk()

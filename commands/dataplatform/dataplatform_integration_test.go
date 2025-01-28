@@ -14,7 +14,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
-	ionoscloud "github.com/ionos-cloud/sdk-go-dataplatform"
+	dataplatform "github.com/ionos-cloud/sdk-go-dataplatform"
 
 	"github.com/cilium/fake"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dataplatform/cluster"
@@ -92,10 +92,10 @@ func testNodepoolOk(t *testing.T) {
 	ls, resp, err := client.Must().DataplatformClient.DataPlatformNodePoolApi.ClustersNodepoolsGet(context.Background(), createdClusterId).Execute()
 	assert.NoError(t, err)
 	assert.False(t, resp.HttpNotFound())
-	var foundNodepool ionoscloud.NodePoolResponseData
+	var foundNodepool dataplatform.NodePoolResponseData
 	// Filter by name, as API doesn't support this :(
 	assert.True(t,
-		functional.Fold(*ls.GetItems(), func(found bool, x ionoscloud.NodePoolResponseData) bool {
+		functional.Fold(*ls.GetItems(), func(found bool, x dataplatform.NodePoolResponseData) bool {
 			if *x.Properties.Name == uniqueResourceName {
 				foundNodepool = x
 				return true

@@ -11,14 +11,14 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/resource2table"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
-	sdkdataplatform "github.com/ionos-cloud/sdk-go-dataplatform"
+	dataplatform "github.com/ionos-cloud/sdk-go-dataplatform"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
 func NodepoolUpdateCmd() *core.Command {
 	var (
-		updateProperties = sdkdataplatform.PatchNodePoolProperties{}
+		updateProperties = dataplatform.PatchNodePoolProperties{}
 	)
 
 	cmd := core.NewCommand(context.TODO(), nil, core.CommandBuilder{
@@ -51,7 +51,7 @@ func NodepoolUpdateCmd() *core.Command {
 			fd := core.GetFlagName(c.NS, constants.FlagMaintenanceDay)
 			ft := core.GetFlagName(c.NS, constants.FlagMaintenanceTime)
 			if viper.IsSet(fd) && viper.IsSet(ft) {
-				maintenanceWindow := sdkdataplatform.MaintenanceWindow{}
+				maintenanceWindow := dataplatform.MaintenanceWindow{}
 				maintenanceWindow.SetDayOfTheWeek(viper.GetString(fd))
 				maintenanceWindow.SetTime(viper.GetString(ft))
 				updateProperties.SetMaintenanceWindow(maintenanceWindow)
@@ -66,7 +66,7 @@ func NodepoolUpdateCmd() *core.Command {
 				updateProperties.SetLabels(viper.GetStringMap(f))
 			}
 
-			input := sdkdataplatform.PatchNodePoolRequest{}
+			input := dataplatform.PatchNodePoolRequest{}
 			input.SetProperties(updateProperties)
 
 			cr, _, err := client.Must().DataplatformClient.DataPlatformNodePoolApi.ClustersNodepoolsPatch(context.Background(), clusterId, npId).PatchNodePoolRequest(input).Execute()

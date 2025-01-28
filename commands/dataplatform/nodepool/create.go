@@ -12,7 +12,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/resource2table"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
-	sdkdataplatform "github.com/ionos-cloud/sdk-go-dataplatform"
+	dataplatform "github.com/ionos-cloud/sdk-go-dataplatform"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -22,7 +22,7 @@ func NodepoolCreateCmd() *core.Command {
 		// forward declaring required opts is fine, as we don't mind bad defaults
 		name             string
 		nodeCount        int32
-		createProperties = sdkdataplatform.CreateNodePoolProperties{}
+		createProperties = dataplatform.CreateNodePoolProperties{}
 	)
 
 	cmd := core.NewCommand(context.TODO(), nil, core.CommandBuilder{
@@ -60,7 +60,7 @@ func NodepoolCreateCmd() *core.Command {
 			fd := core.GetFlagName(c.NS, constants.FlagMaintenanceDay)
 			ft := core.GetFlagName(c.NS, constants.FlagMaintenanceTime)
 			if viper.IsSet(fd) && viper.IsSet(ft) {
-				maintenanceWindow := sdkdataplatform.MaintenanceWindow{}
+				maintenanceWindow := dataplatform.MaintenanceWindow{}
 				maintenanceWindow.SetDayOfTheWeek(viper.GetString(fd))
 				maintenanceWindow.SetTime(viper.GetString(ft))
 				createProperties.SetMaintenanceWindow(maintenanceWindow)
@@ -84,13 +84,13 @@ func NodepoolCreateCmd() *core.Command {
 				createProperties.SetStorageSize(viper.GetInt32(f))
 			}
 			if f := core.GetFlagName(c.NS, constants.FlagStorageType); viper.IsSet(f) {
-				createProperties.SetStorageType(sdkdataplatform.StorageType(viper.GetString(f)))
+				createProperties.SetStorageType(dataplatform.StorageType(viper.GetString(f)))
 			}
 			if f := core.GetFlagName(c.NS, constants.FlagAvailabilityZone); viper.IsSet(f) {
-				createProperties.SetAvailabilityZone(sdkdataplatform.AvailabilityZone(f))
+				createProperties.SetAvailabilityZone(dataplatform.AvailabilityZone(f))
 			}
 
-			input := sdkdataplatform.CreateNodePoolRequest{}
+			input := dataplatform.CreateNodePoolRequest{}
 			input.SetProperties(createProperties)
 
 			cr, _, err := client.Must().DataplatformClient.DataPlatformNodePoolApi.ClustersNodepoolsPost(context.Background(), clusterId).CreateNodePoolRequest(input).Execute()

@@ -14,12 +14,12 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/resource2table"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
-	sdkdataplatform "github.com/ionos-cloud/sdk-go-dataplatform"
+	dataplatform "github.com/ionos-cloud/sdk-go-dataplatform"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
-var createProperties = sdkdataplatform.CreateClusterProperties{}
+var createProperties = dataplatform.CreateClusterProperties{}
 
 func ClusterCreateCmd() *core.Command {
 	cmd := core.NewCommand(context.TODO(), nil, core.CommandBuilder{
@@ -51,7 +51,7 @@ func ClusterCreateCmd() *core.Command {
 			day := viper.GetString(core.GetFlagName(c.NS, constants.FlagMaintenanceDay))
 			time := viper.GetString(core.GetFlagName(c.NS, constants.FlagMaintenanceTime))
 
-			maintenanceWindow := sdkdataplatform.MaintenanceWindow{}
+			maintenanceWindow := dataplatform.MaintenanceWindow{}
 
 			maintenanceWindow.SetDayOfTheWeek(day)
 			maintenanceWindow.SetTime(time)
@@ -63,7 +63,7 @@ func ClusterCreateCmd() *core.Command {
 			}
 			createProperties.SetDataPlatformVersion(v)
 
-			input := sdkdataplatform.CreateClusterRequest{}
+			input := dataplatform.CreateClusterRequest{}
 			input.SetProperties(createProperties)
 
 			cr, _, err := client.Must().DataplatformClient.DataPlatformClusterApi.ClustersPost(context.Background()).CreateClusterRequest(input).Execute()
