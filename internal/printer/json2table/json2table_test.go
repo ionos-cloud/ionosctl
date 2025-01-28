@@ -104,8 +104,8 @@ func TestConvertJSONToText(t *testing.T) {
 	t.Run("Convert JSON to TEXT with complex struct", testConvertJSONToTextWithComplexStruct)
 	t.Run("Convert JSON to TEXT with inner basic structs", testConvertJSONToTextWithInnerBasicStructs)
 	t.Run("Convert JSON to TEXT with wrong paths", testConvertJSONToTextWithWrongPaths)
+	t.Run("Convert JSON to TEXT with non existent root", testConvertJSONToTextWithWrongRoot)
 	t.Run("FAIL Convert JSON to TEXT with empty paths", testFailConvertJSONToTextWithEmptyPaths)
-	t.Run("FAIL Convert JSON to TEXT with wrong root", testFailConvertJSONToTextWithWrongRoot)
 	t.Run("FAIL Convert JSON to TEXT with wrong root destination", testFailConvertJSONToTextWithWrongRootDestination)
 	t.Run("FAIL Convert JSON to TEXT with unsupported JSON value", testFailConvertJSONToTextWithUnsupportedJSONValue)
 	t.Run("FAIL Convert JSON to TEXT with unsupported JSON type", testFailConvertJSONToTextWithUnsupportedJSONType)
@@ -130,11 +130,10 @@ func testConvertJSONToTextWithInnerBasicStructs(t *testing.T) {
 	assert.ElementsMatch(t, expectedResultInnerBasicStructs, res)
 }
 
-func testFailConvertJSONToTextWithWrongRoot(t *testing.T) {
-	_, err := json2table.ConvertJSONToTable("random.root.path", innerStructJsonPaths, testOuterStruct)
-	if assert.Error(t, err) {
-		fmt.Println(err)
-	}
+func testConvertJSONToTextWithWrongRoot(t *testing.T) {
+	res, err := json2table.ConvertJSONToTable("random.root.path", innerStructJsonPaths, testOuterStruct)
+	assert.NoError(t, err)
+	assert.Empty(t, res)
 }
 
 func testFailConvertJSONToTextWithWrongRootDestination(t *testing.T) {
