@@ -9,12 +9,12 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
-	sdkgo "github.com/ionos-cloud/sdk-go-container-registry"
+	containerregistry "github.com/ionos-cloud/sdk-go-container-registry"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
-var patchInput = sdkgo.PatchRegistryInput{}
+var patchInput = containerregistry.PatchRegistryInput{}
 
 func RegUpdateCmd() *core.Command {
 	cmd := core.NewCommand(
@@ -64,7 +64,7 @@ func RegUpdateCmd() *core.Command {
 }
 
 func CmdUpdate(c *core.CommandConfig) error {
-	v := sdkgo.NewWeeklyScheduleWithDefaults()
+	v := containerregistry.NewWeeklyScheduleWithDefaults()
 	id, err := c.Command.Command.Flags().GetString(constants.FlagRegistryId)
 	if err != nil {
 		return err
@@ -72,10 +72,10 @@ func CmdUpdate(c *core.CommandConfig) error {
 
 	if viper.IsSet(core.GetFlagName(c.NS, "garbage-collection-schedule-days")) {
 		days := viper.GetStringSlice(core.GetFlagName(c.NS, "garbage-collection-schedule-days"))
-		var daysSdk = []sdkgo.Day{}
+		var daysSdk = []containerregistry.Day{}
 
 		for _, day := range days {
-			daysSdk = append(daysSdk, sdkgo.Day(day))
+			daysSdk = append(daysSdk, containerregistry.Day(day))
 		}
 
 		v.SetDays(daysSdk)

@@ -13,7 +13,7 @@ import (
 	"github.com/ionos-cloud/sdk-go-bundle/products/logging/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/vpn/v2"
 	certmanager "github.com/ionos-cloud/sdk-go-cert-manager"
-	registry "github.com/ionos-cloud/sdk-go-container-registry"
+	containerregistry "github.com/ionos-cloud/sdk-go-container-registry"
 	dataplatform "github.com/ionos-cloud/sdk-go-dataplatform"
 	maria "github.com/ionos-cloud/sdk-go-dbaas-mariadb"
 	postgres "github.com/ionos-cloud/sdk-go-dbaas-postgres"
@@ -70,7 +70,7 @@ type Client struct {
 	AuthClient           *sdkgoauth.APIClient
 	CertManagerClient    *certmanager.APIClient
 	DataplatformClient   *dataplatform.APIClient
-	RegistryClient       *registry.APIClient
+	RegistryClient       *containerregistry.APIClient
 	DnsClient            *dns.APIClient
 	LoggingServiceClient *logging.APIClient
 	VMAscClient          *vmasc.AutoScalingGroupsApiService
@@ -106,7 +106,7 @@ func newClient(name, pwd, token, hostUrl string, usedLayer *Layer) *Client {
 	dpConfig := dataplatform.NewConfiguration(name, pwd, token, hostUrl)
 	dpConfig.UserAgent = appendUserAgent(dpConfig.UserAgent)
 
-	registryConfig := registry.NewConfiguration(name, pwd, token, hostUrl)
+	registryConfig := containerregistry.NewConfiguration(name, pwd, token, hostUrl)
 	registryConfig.UserAgent = appendUserAgent(registryConfig.UserAgent)
 
 	vmascConfig := vmasc.NewConfiguration(name, pwd, token, hostUrl)
@@ -127,7 +127,7 @@ func newClient(name, pwd, token, hostUrl string, usedLayer *Layer) *Client {
 		CDNClient:            cdn.NewAPIClient(sharedConfig),
 		CertManagerClient:    certmanager.NewAPIClient(certManagerConfig),
 		DataplatformClient:   dataplatform.NewAPIClient(dpConfig),
-		RegistryClient:       registry.NewAPIClient(registryConfig),
+		RegistryClient:       containerregistry.NewAPIClient(registryConfig),
 		DnsClient:            dns.NewAPIClient(sharedConfig),
 		LoggingServiceClient: logging.NewAPIClient(sharedConfig),
 		VMAscClient:          vmasc.NewAPIClient(vmascConfig).AutoScalingGroupsApi,

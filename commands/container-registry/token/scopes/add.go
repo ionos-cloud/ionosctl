@@ -7,7 +7,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
-	sdkgo "github.com/ionos-cloud/sdk-go-container-registry"
+	containerregistry "github.com/ionos-cloud/sdk-go-container-registry"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/registry"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
@@ -80,7 +80,7 @@ func PreCmdTokenScopesAdd(c *core.PreCommandConfig) error {
 }
 
 func CmdTokenScopesAdd(c *core.CommandConfig) error {
-	var scope sdkgo.Scope
+	var scope containerregistry.Scope
 	var err error
 
 	regId, err := c.Command.Command.Flags().GetString(constants.FlagRegistryId)
@@ -117,7 +117,7 @@ func CmdTokenScopesAdd(c *core.CommandConfig) error {
 		return err
 	}
 
-	updateToken := sdkgo.NewPatchTokenInput()
+	updateToken := containerregistry.NewPatchTokenInput()
 	if token.Properties.GetExpiryDate() != nil {
 		updateToken.SetExpiryDate(*token.Properties.GetExpiryDate())
 	}

@@ -11,12 +11,12 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
-	sdkgo "github.com/ionos-cloud/sdk-go-container-registry"
+	containerregistry "github.com/ionos-cloud/sdk-go-container-registry"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
-var tokenPostProperties = sdkgo.NewPostTokenPropertiesWithDefaults()
+var tokenPostProperties = containerregistry.NewPostTokenPropertiesWithDefaults()
 
 func TokenPostCmd() *core.Command {
 	cmd := core.NewCommand(
@@ -144,7 +144,7 @@ func CmdPostToken(c *core.CommandConfig) error {
 		tokenPostProperties.SetStatus(status)
 	}
 
-	tokenInput := sdkgo.NewPostTokenInputWithDefaults()
+	tokenInput := containerregistry.NewPostTokenInputWithDefaults()
 	tokenInput.SetProperties(*tokenPostProperties)
 
 	token, _, err := c.ContainerRegistryServices.Token().Post(*tokenInput, id)
@@ -152,7 +152,7 @@ func CmdPostToken(c *core.CommandConfig) error {
 		return err
 	}
 
-	tokenPrint := sdkgo.NewTokenResponseWithDefaults()
+	tokenPrint := containerregistry.NewTokenResponseWithDefaults()
 	tokenPrint.SetProperties(*token.GetProperties())
 
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)

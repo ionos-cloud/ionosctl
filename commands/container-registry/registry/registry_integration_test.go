@@ -14,7 +14,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
-	ionoscloud "github.com/ionos-cloud/sdk-go-container-registry"
+	containerregistry "github.com/ionos-cloud/sdk-go-container-registry"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
@@ -55,7 +55,7 @@ func TestRegistryService(t *testing.T) {
 			registries, _, err := client.Must().RegistryClient.RegistriesApi.RegistriesGet(context.Background()).Execute()
 			assert.NoError(t, err)
 
-			var newRegistry *ionoscloud.RegistryResponse
+			var newRegistry *containerregistry.RegistryResponse
 			for _, registry := range *registries.GetItems() {
 				if *registry.GetProperties().GetName() == name {
 					newRegistry = &registry
@@ -82,7 +82,7 @@ func TestRegistryService(t *testing.T) {
 			).Execute()
 			assert.NoError(t, err)
 			assert.Equal(
-				t, []ionoscloud.Day([]ionoscloud.Day{"Tuesday"}),
+				t, []containerregistry.Day([]containerregistry.Day{"Tuesday"}),
 				*checkRegistry.GetProperties().GetGarbageCollectionSchedule().GetDays(),
 			)
 

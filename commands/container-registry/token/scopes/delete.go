@@ -9,7 +9,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
-	sdkgo "github.com/ionos-cloud/sdk-go-container-registry"
+	containerregistry "github.com/ionos-cloud/sdk-go-container-registry"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -75,8 +75,8 @@ func CmdGetTokenScopesDelete(c *core.CommandConfig) error {
 	}
 
 	if viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)) {
-		updateToken := sdkgo.NewPutTokenInputWithDefaults()
-		updateProp := sdkgo.NewPostTokenPropertiesWithDefaults()
+		updateToken := containerregistry.NewPutTokenInputWithDefaults()
+		updateProp := containerregistry.NewPostTokenPropertiesWithDefaults()
 
 		if token.Properties.GetExpiryDate() != nil {
 			updateProp.SetExpiryDate(*token.Properties.GetExpiryDate())
@@ -113,8 +113,8 @@ func CmdGetTokenScopesDelete(c *core.CommandConfig) error {
 	}
 	id--
 
-	updateToken := sdkgo.NewPutTokenInputWithDefaults()
-	updateProp := sdkgo.NewPostTokenPropertiesWithDefaults()
+	updateToken := containerregistry.NewPutTokenInputWithDefaults()
+	updateProp := containerregistry.NewPostTokenPropertiesWithDefaults()
 
 	scopes := *token.Properties.GetScopes()
 	scopes = append(scopes[:id], scopes[id+1:]...)

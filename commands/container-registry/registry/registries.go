@@ -7,7 +7,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 	"github.com/ionos-cloud/ionosctl/v6/services/container-registry/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go-container-registry"
+	containerregistry "github.com/ionos-cloud/sdk-go-container-registry"
 	"github.com/spf13/cobra"
 )
 
@@ -47,7 +47,7 @@ func RegsIds() []string {
 	svc := resources.NewRegistriesService(client.Must(), context.Background())
 	regs, _, _ := svc.List("")
 	return functional.Map(
-		*regs.GetItems(), func(reg ionoscloud.RegistryResponse) string {
+		*regs.GetItems(), func(reg containerregistry.RegistryResponse) string {
 			return *reg.GetId()
 		},
 	)

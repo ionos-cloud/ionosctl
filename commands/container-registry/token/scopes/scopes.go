@@ -8,7 +8,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/services/container-registry/resources"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	sdkgo "github.com/ionos-cloud/sdk-go-container-registry"
+	containerregistry "github.com/ionos-cloud/sdk-go-container-registry"
 	"github.com/spf13/cobra"
 )
 
@@ -46,7 +46,7 @@ func TokenScopesCmd() *core.Command {
 
 func TokensIds(regId string) []string {
 	svcToken := resources.NewTokenService(client.Must(), context.Background())
-	var allTokens []sdkgo.TokenResponse
+	var allTokens []containerregistry.TokenResponse
 
 	if regId != "" {
 
@@ -55,7 +55,7 @@ func TokensIds(regId string) []string {
 		allTokens = append(allTokens, *tokens.GetItems()...)
 
 		return functional.Map(
-			allTokens, func(reg sdkgo.TokenResponse) string {
+			allTokens, func(reg containerregistry.TokenResponse) string {
 				return *reg.GetId()
 			},
 		)
@@ -72,7 +72,7 @@ func TokensIds(regId string) []string {
 	}
 
 	return functional.Map(
-		allTokens, func(reg sdkgo.TokenResponse) string {
+		allTokens, func(reg containerregistry.TokenResponse) string {
 			return *reg.GetId()
 		},
 	)

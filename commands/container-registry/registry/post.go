@@ -10,12 +10,12 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
-	sdkgo "github.com/ionos-cloud/sdk-go-container-registry"
+	containerregistry "github.com/ionos-cloud/sdk-go-container-registry"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
-var regPostProperties = sdkgo.PostRegistryProperties{}
+var regPostProperties = containerregistry.PostRegistryProperties{}
 
 func RegPostCmd() *core.Command {
 	cmd := core.NewCommand(
@@ -92,14 +92,14 @@ func CmdPost(c *core.CommandConfig) error {
 		return err
 	}
 
-	v := sdkgo.NewWeeklyScheduleWithDefaults()
+	v := containerregistry.NewWeeklyScheduleWithDefaults()
 
 	if viper.IsSet(core.GetFlagName(c.NS, FlagRegGCDays)) {
 		days := viper.GetStringSlice(core.GetFlagName(c.NS, FlagRegGCDays))
-		var daysSdk = []sdkgo.Day{}
+		var daysSdk = []containerregistry.Day{}
 
 		for _, day := range days {
-			daysSdk = append(daysSdk, sdkgo.Day(day))
+			daysSdk = append(daysSdk, containerregistry.Day(day))
 		}
 
 		v.SetDays(daysSdk)
@@ -111,16 +111,16 @@ func CmdPost(c *core.CommandConfig) error {
 		v.SetTime("01:23:00+00:00")
 	}
 
-	feat := sdkgo.NewRegistryFeaturesWithDefaults()
+	feat := containerregistry.NewRegistryFeaturesWithDefaults()
 	featEnabled := viper.GetBool(core.GetFlagName(c.NS, constants.FlagRegistryVulnScan))
-	feat.SetVulnerabilityScanning(sdkgo.FeatureVulnerabilityScanning{Enabled: &featEnabled})
+	feat.SetVulnerabilityScanning(containerregistry.FeatureVulnerabilityScanning{Enabled: &featEnabled})
 
 	regPostProperties.SetName(name)
 	regPostProperties.SetLocation(location)
 	regPostProperties.SetGarbageCollectionSchedule(*v)
 	regPostProperties.SetFeatures(*feat)
 
-	regPostInput := sdkgo.NewPostRegistryInputWithDefaults()
+	regPostInput := containerregistry.NewPostRegistryInputWithDefaults()
 	regPostInput.SetProperties(regPostProperties)
 
 	reg, _, err := c.ContainerRegistryServices.Registry().Post(*regPostInput)
@@ -128,7 +128,7 @@ func CmdPost(c *core.CommandConfig) error {
 		return err
 	}
 
-	regPrint := sdkgo.NewRegistryResponseWithDefaults()
+	regPrint := containerregistry.NewRegistryResponseWithDefaults()
 	regPrint.SetProperties(*reg.GetProperties())
 
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)

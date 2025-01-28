@@ -11,12 +11,12 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
-	sdkgo "github.com/ionos-cloud/sdk-go-container-registry"
+	containerregistry "github.com/ionos-cloud/sdk-go-container-registry"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
-var tokenInput = sdkgo.NewPatchTokenInput()
+var tokenInput = containerregistry.NewPatchTokenInput()
 
 func TokenUpdateCmd() *core.Command {
 	cmd := core.NewCommand(

@@ -10,7 +10,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
-	ionoscloud "github.com/ionos-cloud/sdk-go-container-registry"
+	containerregistry "github.com/ionos-cloud/sdk-go-container-registry"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -72,7 +72,7 @@ func CmdListToken(c *core.CommandConfig) error {
 		return nil
 	}
 
-	var list = make([]ionoscloud.TokensResponse, 0)
+	var list = make([]containerregistry.TokensResponse, 0)
 
 	regs, _, err := c.ContainerRegistryServices.Registry().List("")
 	if err != nil {

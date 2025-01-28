@@ -5,10 +5,10 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
-	ionoscloud "github.com/ionos-cloud/sdk-go-container-registry"
+	containerregistry "github.com/ionos-cloud/sdk-go-container-registry"
 )
 
-func ConvertContainerRegistryVulnerabilitiesToTable(vulnerabilities ionoscloud.ArtifactVulnerabilityReadList) (
+func ConvertContainerRegistryVulnerabilitiesToTable(vulnerabilities containerregistry.ArtifactVulnerabilityReadList) (
 	[]map[string]interface{}, error,
 ) {
 	items, ok := vulnerabilities.GetItemsOk()
@@ -29,7 +29,7 @@ func ConvertContainerRegistryVulnerabilitiesToTable(vulnerabilities ionoscloud.A
 	return convertedVulnerabilities, nil
 }
 
-func ConvertContainerRegistryVulnerabilityToTable(vulnerability ionoscloud.VulnerabilityRead) (
+func ConvertContainerRegistryVulnerabilityToTable(vulnerability containerregistry.VulnerabilityRead) (
 	[]map[string]interface{}, error,
 ) {
 	properties, ok := vulnerability.GetPropertiesOk()
