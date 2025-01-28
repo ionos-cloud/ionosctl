@@ -6,17 +6,17 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
-	ionoscloud "github.com/ionos-cloud/sdk-go-logging"
+	"github.com/ionos-cloud/sdk-go-bundle/products/logging/v2"
 )
 
-func ConvertLoggingServicePipelineLogToTable(log ionoscloud.PipelineResponse) ([]map[string]interface{}, error) {
+func ConvertLoggingServicePipelineLogToTable(log logging.PipelineResponse) ([]map[string]interface{}, error) {
 	dests, ok := log.GetDestinationsOk()
 	if !ok || dests == nil {
 		return nil, fmt.Errorf("could not retrive Logging Service Pipeline Logs destination")
 	}
 
 	destinationsStrings := functional.Map(
-		*dests, func(dest ionoscloud.Destination) interface{} {
+		dests, func(dest logging.Destination) interface{} {
 			return fmt.Sprintf("%v (%v days)", *dest.Type, *dest.RetentionInDays)
 		},
 	)
@@ -30,21 +30,21 @@ func ConvertLoggingServicePipelineLogToTable(log ionoscloud.PipelineResponse) ([
 	return logConverted, nil
 }
 
-func ConvertLoggingServicePipelineLogsToTable(pipeline ionoscloud.Pipeline) ([]map[string]interface{}, error) {
+func ConvertLoggingServicePipelineLogsToTable(pipeline logging.Pipeline) ([]map[string]interface{}, error) {
 	logs, ok := pipeline.Properties.GetLogsOk()
 	if !ok || logs == nil {
 		return nil, fmt.Errorf("could not retrieve Logging Service Pipeline Logs")
 	}
 
 	var logsConverted []map[string]interface{}
-	for _, log := range *logs {
+	for _, log := range logs {
 		dests, ok := log.GetDestinationsOk()
 		if !ok || dests == nil {
 			return nil, fmt.Errorf("could not retrive Logging Service Pipeline Logs destination")
 		}
 
 		destinationsStrings := functional.Map(
-			*dests, func(dest ionoscloud.Destination) interface{} {
+			dests, func(dest logging.Destination) interface{} {
 				return fmt.Sprintf("%v (%v days)", *dest.Type, *dest.RetentionInDays)
 			},
 		)
@@ -62,7 +62,7 @@ func ConvertLoggingServicePipelineLogsToTable(pipeline ionoscloud.Pipeline) ([]m
 	return logsConverted, nil
 }
 
-func ConvertLoggingServicePipelinesLogsToTable(pipelines ionoscloud.PipelineListResponse) (
+func ConvertLoggingServicePipelinesLogsToTable(pipelines logging.PipelineListResponse) (
 	[]map[string]interface{}, error,
 ) {
 	items, ok := pipelines.GetItemsOk()
@@ -72,14 +72,14 @@ func ConvertLoggingServicePipelinesLogsToTable(pipelines ionoscloud.PipelineList
 
 	var logsConverted []map[string]interface{}
 
-	for _, pipeline := range *items {
+	for _, pipeline := range items {
 		logs, err := ConvertLoggingServicePipelineLogsToTable(pipeline)
 		if err != nil {
 			return nil, err
 		}
 
 		for _, l := range logs {
-			l["PipelineId"] = *pipeline.GetId()
+			l["PipelineId"] = pipeline.GetId()
 		}
 
 		logsConverted = append(logsConverted, logs...)

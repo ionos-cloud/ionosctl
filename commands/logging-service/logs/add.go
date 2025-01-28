@@ -10,7 +10,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
-	ionoscloud "github.com/ionos-cloud/sdk-go-logging"
+	"github.com/ionos-cloud/sdk-go-bundle/products/logging/v2"
 	"github.com/spf13/viper"
 )
 
@@ -88,17 +88,17 @@ func runAddCmd(c *core.CommandConfig) error {
 		return err
 	}
 
-	dest := ionoscloud.Destination{
+	dest := logging.Destination{
 		Type:            &typ,
 		RetentionInDays: &retentionTimeInt32,
 	}
 
-	newLog := ionoscloud.PipelineCreatePropertiesLogs{
+	newLog := logging.PipelineCreatePropertiesLogs{
 		Tag:          &tag,
 		Source:       &source,
 		Protocol:     &protocol,
-		Labels:       &labels,
-		Destinations: &[]ionoscloud.Destination{dest},
+		Labels:       labels,
+		Destinations: []logging.Destination{dest},
 	}
 
 	patchPipeline, err := convertResponsePipelineToPatchRequest(pipeline)
@@ -106,7 +106,7 @@ func runAddCmd(c *core.CommandConfig) error {
 		return err
 	}
 
-	*patchPipeline.Properties.Logs = append(*patchPipeline.Properties.Logs, newLog)
+	patchPipeline.Properties.Logs = append(patchPipeline.Properties.Logs, newLog)
 
 	newPipeline, _, err := client.Must().LoggingServiceClient.PipelinesApi.PipelinesPatch(
 		context.Background(),

@@ -14,7 +14,6 @@ require (
 	github.com/ionos-cloud/sdk-go-container-registry v1.1.0
 	github.com/ionos-cloud/sdk-go-dataplatform v1.0.2
 	github.com/ionos-cloud/sdk-go-dbaas-postgres v1.1.2
-	github.com/ionos-cloud/sdk-go-logging v1.0.1
 	github.com/ionos-cloud/sdk-go-vm-autoscaling v1.0.1
 	github.com/ionos-cloud/sdk-go/v6 v6.1.11
 	github.com/itchyny/gojq v0.12.13
@@ -40,6 +39,7 @@ require (
 	github.com/ionos-cloud/sdk-go-bundle/products/cdn/v2 v2.1.1
 	github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo/v2 v2.0.2
 	github.com/ionos-cloud/sdk-go-bundle/products/dns/v2 v2.0.1
+	github.com/ionos-cloud/sdk-go-bundle/products/logging/v2 v2.1.2
 	github.com/ionos-cloud/sdk-go-bundle/products/vpn/v2 v2.0.3
 	github.com/ionos-cloud/sdk-go-bundle/shared v0.1.1
 	github.com/ionos-cloud/sdk-go-dbaas-mariadb v1.1.1
