@@ -11,7 +11,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/resource2table"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
-	dataplatform "github.com/ionos-cloud/sdk-go-dataplatform"
+	"github.com/ionos-cloud/sdk-go-bundle/products/dataplatform/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )

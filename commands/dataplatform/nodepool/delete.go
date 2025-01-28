@@ -12,7 +12,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dataplatform/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	dataplatform "github.com/ionos-cloud/sdk-go-dataplatform"
+	"github.com/ionos-cloud/sdk-go-bundle/products/dataplatform/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
