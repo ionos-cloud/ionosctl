@@ -423,7 +423,7 @@ func TestRunBackupUnitUpdateWaitErr(t *testing.T) {
 		rm.CloudApiV6Mocks.BackupUnit.EXPECT().Update(testBackupUnitVar, backupUnitProperties, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&backupUnitNew, &testResponse, nil)
 		// Note: in #487 we no longer expect a status check when using -w , as backupunits are not registered on /requests
 		err := RunBackupUnitUpdate(cfg)
-		assert.Error(t, err)
+		assert.NoError(t, err)
 	})
 }
 
