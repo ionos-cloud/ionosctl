@@ -95,7 +95,7 @@ func testNodepoolOk(t *testing.T) {
 	var foundNodepool dataplatform.NodePoolResponseData
 	// Filter by name, as API doesn't support this :(
 	assert.True(t,
-		functional.Fold(*ls.GetItems(), func(found bool, x dataplatform.NodePoolResponseData) bool {
+		functional.Fold(ls.GetItems(), func(found bool, x dataplatform.NodePoolResponseData) bool {
 			if *x.Properties.Name == uniqueResourceName {
 				foundNodepool = x
 				return true

@@ -81,8 +81,8 @@ func deleteAll(c *core.CommandConfig, clusterId string) error {
 	}
 
 	// accumulate the error. If it's not nil break out of the fold
-	return functional.ApplyAndAggregateErrors(*ls.GetItems(), func(x dataplatform.ClusterResponseData) error {
-		return deleteNodePools(c, *x.Id)
+	return functional.ApplyAndAggregateErrors(ls.GetItems(), func(x dataplatform.ClusterResponseData) error {
+		return deleteNodePools(c, x.Id)
 	})
 }
 
@@ -91,12 +91,12 @@ func deleteNodePools(c *core.CommandConfig, clusterId string) error {
 	if err != nil {
 		return err
 	}
-	return functional.ApplyAndAggregateErrors(*xs.GetItems(), func(x dataplatform.NodePoolResponseData) error {
-		ok := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("delete nodepool %s (%s)", *x.Id, *x.Properties.Name), viper.GetBool(constants.ArgForce))
+	return functional.ApplyAndAggregateErrors(xs.GetItems(), func(x dataplatform.NodePoolResponseData) error {
+		ok := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("delete nodepool %s (%s)", x.Id, *x.Properties.Name), viper.GetBool(constants.ArgForce))
 		if !ok {
-			return fmt.Errorf("canceled deletion for %s (%s): invalid input", *x.Id, *x.Properties.Name)
+			return fmt.Errorf("canceled deletion for %s (%s): invalid input", x.Id, *x.Properties.Name)
 		}
-		_, _, err := client.Must().DataplatformClient.DataPlatformNodePoolApi.ClustersNodepoolsDelete(context.Background(), clusterId, *x.Id).Execute()
+		_, _, err := client.Must().DataplatformClient.DataPlatformNodePoolApi.ClustersNodepoolsDelete(context.Background(), clusterId, x.Id).Execute()
 		return err
 	})
 }

@@ -14,8 +14,8 @@ func DataplatformClusterIds() []string {
 	if err != nil {
 		return nil
 	}
-	return functional.Map(*ls.GetItems(), func(t dataplatform.ClusterResponseData) string {
-		return *t.GetId()
+	return functional.Map(ls.GetItems(), func(t dataplatform.ClusterResponseData) string {
+		return t.GetId()
 	})
 }
 
@@ -24,7 +24,7 @@ func DataplatformNodepoolsIds(clusterId string) []string {
 	if err != nil {
 		return nil
 	}
-	return functional.Map(*ls.GetItems(), func(t dataplatform.NodePoolResponseData) string {
-		return *t.GetId()
+	return functional.Map(ls.GetItems(), func(t dataplatform.NodePoolResponseData) string {
+		return t.GetId()
 	})
 }

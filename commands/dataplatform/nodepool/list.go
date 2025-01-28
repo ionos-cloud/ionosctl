@@ -81,8 +81,8 @@ func listAll(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	clusterIds := functional.Map(*ls.GetItems(), func(t dataplatform.ClusterResponseData) string {
-		return *t.GetId()
+	clusterIds := functional.Map(ls.GetItems(), func(t dataplatform.ClusterResponseData) string {
+		return t.GetId()
 	})
 
 	nps := make([]dataplatform.NodePoolResponseData, 0)
@@ -99,7 +99,7 @@ func listAll(c *core.CommandConfig) error {
 		}
 
 		npsConverted = append(npsConverted, temp...)
-		nps = append(nps, *np.GetItems()...)
+		nps = append(nps, np.GetItems()...)
 	}
 
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)

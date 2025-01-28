@@ -47,7 +47,7 @@ func ConvertDataplatformClustersToTable(clusters dataplatform.ClusterListRespons
 	}
 
 	var clustersConverted []map[string]interface{}
-	for _, item := range *items {
+	for _, item := range items {
 		temp, err := ConvertDataplatformClusterToTable(item)
 		if err != nil {
 			return nil, err
@@ -123,7 +123,7 @@ func ConvertDataplatformNodePoolsToTable(nps dataplatform.NodePoolListResponseDa
 		return nil, fmt.Errorf("could not retrieve Node Pool Items")
 	}
 
-	for _, item := range *items {
+	for _, item := range items {
 		temp, err := ConvertDataplatformNodePoolToTable(item)
 		if err != nil {
 			return nil, err

@@ -106,6 +106,9 @@ func newClient(name, pwd, token, hostUrl string, usedLayer *Layer) *Client {
 	dpConfig := dataplatform.NewConfiguration(name, pwd, token, hostUrl)
 	dpConfig.UserAgent = appendUserAgent(dpConfig.UserAgent)
 
+	registryConfig := registry.NewConfiguration(name, pwd, token, hostUrl)
+	registryConfig.UserAgent = appendUserAgent(registryConfig.UserAgent)
+
 	vmascConfig := vmasc.NewConfiguration(name, pwd, token, hostUrl)
 	vmascConfig.UserAgent = appendUserAgent(vmascConfig.UserAgent)
 	// DBAAS
@@ -123,8 +126,8 @@ func newClient(name, pwd, token, hostUrl string, usedLayer *Layer) *Client {
 		AuthClient:           sdkgoauth.NewAPIClient(authConfig),
 		CDNClient:            cdn.NewAPIClient(sharedConfig),
 		CertManagerClient:    certmanager.NewAPIClient(certManagerConfig),
-		DataplatformClient:   dataplatform.NewAPIClient(dpConfig),
 		RegistryClient:       containerregistry.NewAPIClient(sharedConfig),
+		DataplatformClient:   dataplatform.NewAPIClient(sharedConfig),
 		DnsClient:            dns.NewAPIClient(sharedConfig),
 		LoggingServiceClient: logging.NewAPIClient(sharedConfig),
 		VMAscClient:          vmasc.NewAPIClient(vmascConfig).AutoScalingGroupsApi,
