@@ -7,7 +7,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
-	containerregistry "github.com/ionos-cloud/sdk-go-bundle/products/containerregistry/v2"
+	"github.com/ionos-cloud/sdk-go-bundle/products/containerregistry/v2"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/registry"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"

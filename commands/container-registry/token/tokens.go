@@ -13,7 +13,7 @@ import (
 	scope "github.com/ionos-cloud/ionosctl/v6/commands/container-registry/token/scopes"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/services/container-registry/resources"
-	containerregistry "github.com/ionos-cloud/sdk-go-bundle/products/containerregistry/v2"
+	"github.com/ionos-cloud/sdk-go-bundle/products/containerregistry/v2"
 	"github.com/spf13/cobra"
 )
 

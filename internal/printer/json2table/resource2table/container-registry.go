@@ -5,7 +5,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
-	containerregistry "github.com/ionos-cloud/sdk-go-bundle/products/containerregistry/v2"
+	"github.com/ionos-cloud/sdk-go-bundle/products/containerregistry/v2"
 )
 
 func ConvertContainerRegistryVulnerabilitiesToTable(vulnerabilities containerregistry.ArtifactVulnerabilityReadList) (
