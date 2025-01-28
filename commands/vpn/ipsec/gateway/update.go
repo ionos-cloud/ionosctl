@@ -16,7 +16,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/pointer"
 
 	// "github.com/ionos-cloud/ionosctl/v6/pkg/uuidgen"
-	vpn "github.com/ionos-cloud/sdk-go-vpn"
+	"github.com/ionos-cloud/sdk-go-bundle/products/vpn/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
@@ -42,31 +42,31 @@ func Update() *core.Command {
 			input := original.Properties
 
 			if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) {
-				input.Name = pointer.From(viper.GetString(fn))
+				input.Name = viper.GetString(fn)
 			}
 			if fn := core.GetFlagName(c.NS, constants.FlagDescription); viper.IsSet(fn) {
 				input.Description = pointer.From(viper.GetString(fn))
 			}
 			if fn := core.GetFlagName(c.NS, constants.FlagIp); viper.IsSet(fn) {
-				input.GatewayIP = pointer.From(viper.GetString(fn))
+				input.GatewayIP = viper.GetString(fn)
 			}
 
 			if fn := core.GetFlagName(c.NS, constants.FlagDatacenterId); viper.IsSet(fn) {
 				// initialize connections if not already set
 				if input.Connections == nil {
-					input.Connections = pointer.From(make([]vpn.Connection, 1))
+					input.Connections = make([]vpn.Connection, 1)
 				}
-				(*input.Connections)[0].DatacenterId = pointer.From(viper.GetString(fn))
+				input.Connections[0].DatacenterId = viper.GetString(fn)
 			}
 			if fn := core.GetFlagName(c.NS, constants.FlagLanId); viper.IsSet(fn) {
 				if input.Connections == nil {
-					input.Connections = pointer.From(make([]vpn.Connection, 1))
+					input.Connections = make([]vpn.Connection, 1)
 				}
-				(*input.Connections)[0].LanId = pointer.From(viper.GetString(fn))
+				input.Connections[0].LanId = viper.GetString(fn)
 			}
 
 			if fn := core.GetFlagName(c.NS, constants.FlagGatewayIP); viper.IsSet(fn) {
-				input.GatewayIP = pointer.From(viper.GetString(fn))
+				input.GatewayIP = viper.GetString(fn)
 			}
 
 			// Note: VPN Gateway handles IPv4 and IPv6 addresses separately for both InterfaceIP and Connections.IP
@@ -81,19 +81,19 @@ func Update() *core.Command {
 
 			if fn := core.GetFlagName(c.NS, constants.FlagConnectionIP); viper.IsSet(fn) {
 				if input.Connections == nil {
-					input.Connections = pointer.From(make([]vpn.Connection, 1))
+					input.Connections = make([]vpn.Connection, 1)
 				}
 				ip := viper.GetString(fn)
 				if isIPv4(ip) {
-					(*input.Connections)[0].Ipv4CIDR = pointer.From(ip)
+					input.Connections[0].Ipv4CIDR = ip
 				} else {
-					(*input.Connections)[0].Ipv6CIDR = pointer.From(ip)
+					input.Connections[0].Ipv6CIDR = pointer.From(ip)
 				}
 			}
 
 			createdGateway, _, err := client.Must().VPNClient.IPSecGatewaysApi.
 				IpsecgatewaysPut(context.Background(), id).
-				IPSecGatewayEnsure(vpn.IPSecGatewayEnsure{Id: &id, Properties: input}).Execute()
+				IPSecGatewayEnsure(vpn.IPSecGatewayEnsure{Id: id, Properties: input}).Execute()
 			if err != nil {
 				return fmt.Errorf("failed updating gateway: %w", err)
 			}

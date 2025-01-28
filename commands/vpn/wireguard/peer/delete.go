@@ -12,7 +12,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
-	vpn "github.com/ionos-cloud/sdk-go-vpn"
+	"github.com/ionos-cloud/sdk-go-bundle/products/vpn/v2"
 	"github.com/spf13/viper"
 )
 
@@ -41,8 +41,9 @@ func Delete() *core.Command {
 			if err != nil {
 				return fmt.Errorf("failed getting peer by id %s: %w", id, err)
 			}
-			yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Are you sure you want to delete peer %s"+
-				" (host: '%s')", *p.Properties.Name, *p.Properties.Endpoint.Host),
+			yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf(
+				"Are you sure you want to delete peer %s (host: '%s')",
+				p.Properties.Name, p.Properties.Endpoint.Host),
 				viper.GetBool(constants.ArgForce))
 			if !yes {
 				return fmt.Errorf(confirm.UserDenied)
@@ -82,13 +83,14 @@ func deleteAll(c *core.CommandConfig) error {
 		return err
 	}
 
-	err = functional.ApplyAndAggregateErrors(*xs.GetItems(), func(p vpn.WireguardPeerRead) error {
-		yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Are you sure you want to delete peer %s at %s", *p.Properties.Name, *p.Properties.Endpoint.Host),
+	err = functional.ApplyAndAggregateErrors(xs.GetItems(), func(p vpn.WireguardPeerRead) error {
+		yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf(
+			"Are you sure you want to delete peer %s at %s", p.Properties.Name, p.Properties.Endpoint.Host),
 			viper.GetBool(constants.ArgForce))
 		if yes {
-			_, delErr := client.Must().VPNClient.WireguardGatewaysApi.WireguardgatewaysDelete(context.Background(), *p.Id).Execute()
+			_, delErr := client.Must().VPNClient.WireguardGatewaysApi.WireguardgatewaysDelete(context.Background(), p.Id).Execute()
 			if delErr != nil {
-				return fmt.Errorf("failed deleting %s (name: %s): %w", *p.Id, *p.Properties.Name, delErr)
+				return fmt.Errorf("failed deleting %s (name: %s): %w", p.Id, p.Properties.Name, delErr)
 			}
 		}
 		return nil

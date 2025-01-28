@@ -13,7 +13,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/pointer"
-	vpn "github.com/ionos-cloud/sdk-go-vpn"
+	"github.com/ionos-cloud/sdk-go-bundle/products/vpn/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -35,7 +35,7 @@ func Update() *core.Command {
 			p, _, err := client.Must().VPNClient.WireguardPeersApi.WireguardgatewaysPeersFindById(context.Background(), gatewayId, id).Execute()
 
 			if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) {
-				p.Properties.Name = pointer.From(viper.GetString(fn))
+				p.Properties.Name = viper.GetString(fn)
 			}
 
 			if fn := core.GetFlagName(c.NS, constants.FlagDescription); viper.IsSet(fn) {
@@ -43,18 +43,18 @@ func Update() *core.Command {
 			}
 
 			if fn := core.GetFlagName(c.NS, constants.FlagIps); viper.IsSet(fn) {
-				p.Properties.AllowedIPs = pointer.From(viper.GetStringSlice(fn))
+				p.Properties.AllowedIPs = viper.GetStringSlice(fn)
 			}
 
 			if fn := core.GetFlagName(c.NS, constants.FlagPublicKey); viper.IsSet(fn) {
-				p.Properties.PublicKey = pointer.From(viper.GetString(fn))
+				p.Properties.PublicKey = viper.GetString(fn)
 			}
 
 			if fn := core.GetFlagName(c.NS, constants.FlagHost); viper.IsSet(fn) {
 				if p.Properties.Endpoint == nil {
 					p.Properties.Endpoint = &vpn.WireguardEndpoint{}
 				}
-				p.Properties.Endpoint.Host = pointer.From(viper.GetString(fn))
+				p.Properties.Endpoint.Host = viper.GetString(fn)
 			}
 
 			if fn := core.GetFlagName(c.NS, constants.FlagPort); viper.IsSet(fn) {
@@ -66,7 +66,7 @@ func Update() *core.Command {
 
 			peer, _, err := client.Must().VPNClient.WireguardPeersApi.
 				WireguardgatewaysPeersPut(context.Background(), gatewayId, id).
-				WireguardPeerEnsure(vpn.WireguardPeerEnsure{Id: &id, Properties: p.Properties}).Execute()
+				WireguardPeerEnsure(vpn.WireguardPeerEnsure{Id: id, Properties: p.Properties}).Execute()
 			if err != nil {
 				return err
 			}

@@ -14,7 +14,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/pointer"
 
-	vpn "github.com/ionos-cloud/sdk-go-vpn"
+	"github.com/ionos-cloud/sdk-go-bundle/products/vpn/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
@@ -39,28 +39,28 @@ func Create() *core.Command {
 			)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			input := &vpn.IPSecGateway{}
+			input := vpn.IPSecGateway{}
 
 			if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) {
-				input.Name = pointer.From(viper.GetString(fn))
+				input.Name = viper.GetString(fn)
 			}
 			if fn := core.GetFlagName(c.NS, constants.FlagDescription); viper.IsSet(fn) {
 				input.Description = pointer.From(viper.GetString(fn))
 			}
 			if fn := core.GetFlagName(c.NS, constants.FlagIp); viper.IsSet(fn) {
-				input.GatewayIP = pointer.From(viper.GetString(fn))
+				input.GatewayIP = viper.GetString(fn)
 			}
 
-			input.Connections = pointer.From(make([]vpn.Connection, 1))
+			input.Connections = make([]vpn.Connection, 1)
 			if fn := core.GetFlagName(c.NS, constants.FlagDatacenterId); viper.IsSet(fn) {
-				(*input.Connections)[0].DatacenterId = pointer.From(viper.GetString(fn))
+				input.Connections[0].DatacenterId = viper.GetString(fn)
 			}
 			if fn := core.GetFlagName(c.NS, constants.FlagLanId); viper.IsSet(fn) {
-				(*input.Connections)[0].LanId = pointer.From(viper.GetString(fn))
+				input.Connections[0].LanId = viper.GetString(fn)
 			}
 
 			if fn := core.GetFlagName(c.NS, constants.FlagGatewayIP); viper.IsSet(fn) {
-				input.GatewayIP = pointer.From(viper.GetString(fn))
+				input.GatewayIP = viper.GetString(fn)
 			}
 
 			// Note: VPN Gateway handles IPv4 and IPv6 addresses separately for both InterfaceIP and Connections.IP
@@ -76,9 +76,9 @@ func Create() *core.Command {
 			if fn := core.GetFlagName(c.NS, constants.FlagConnectionIP); viper.IsSet(fn) {
 				ip := viper.GetString(fn)
 				if isIPv4(ip) {
-					(*input.Connections)[0].Ipv4CIDR = pointer.From(ip)
+					input.Connections[0].Ipv4CIDR = ip
 				} else {
-					(*input.Connections)[0].Ipv6CIDR = pointer.From(ip)
+					input.Connections[0].Ipv6CIDR = pointer.From(ip)
 				}
 			}
 

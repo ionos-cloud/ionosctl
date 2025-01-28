@@ -10,6 +10,7 @@ import (
 	"github.com/ionos-cloud/sdk-go-bundle/products/cdn/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dns/v2"
+	"github.com/ionos-cloud/sdk-go-bundle/products/vpn/v2"
 	certmanager "github.com/ionos-cloud/sdk-go-cert-manager"
 	registry "github.com/ionos-cloud/sdk-go-container-registry"
 	dataplatform "github.com/ionos-cloud/sdk-go-dataplatform"
@@ -18,7 +19,6 @@ import (
 	kafka "github.com/ionos-cloud/sdk-go-kafka"
 	logsvc "github.com/ionos-cloud/sdk-go-logging"
 	vmasc "github.com/ionos-cloud/sdk-go-vm-autoscaling"
-	vpn "github.com/ionos-cloud/sdk-go-vpn"
 	cloudv6 "github.com/ionos-cloud/sdk-go/v6"
 
 	"github.com/spf13/viper"
@@ -121,9 +121,6 @@ func newClient(name, pwd, token, hostUrl string, usedLayer *Layer) *Client {
 	mariaConfig := maria.NewConfiguration(name, pwd, token, hostUrl)
 	mariaConfig.UserAgent = appendUserAgent(mariaConfig.UserAgent)
 
-	vpnConfig := vpn.NewConfiguration(name, pwd, token, hostUrl)
-	vpnConfig.UserAgent = appendUserAgent(vpnConfig.UserAgent)
-
 	kafkaConfig := kafka.NewConfiguration(name, pwd, token, hostUrl)
 	kafkaConfig.UserAgent = appendUserAgent(kafkaConfig.UserAgent)
 
@@ -137,7 +134,7 @@ func newClient(name, pwd, token, hostUrl string, usedLayer *Layer) *Client {
 		DnsClient:            dns.NewAPIClient(sharedConfig),
 		LoggingServiceClient: logsvc.NewAPIClient(logsConfig),
 		VMAscClient:          vmasc.NewAPIClient(vmascConfig).AutoScalingGroupsApi,
-		VPNClient:            vpn.NewAPIClient(vpnConfig),
+		VPNClient:            vpn.NewAPIClient(sharedConfig),
 
 		PostgresClient: postgres.NewAPIClient(postgresConfig),
 		MongoClient:    mongo.NewAPIClient(sharedConfig),

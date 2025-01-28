@@ -13,7 +13,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/pointer"
-	vpn "github.com/ionos-cloud/sdk-go-vpn"
+	"github.com/ionos-cloud/sdk-go-bundle/products/vpn/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -33,10 +33,10 @@ func Create() *core.Command {
 			)
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			input := &vpn.WireguardPeer{}
+			input := vpn.WireguardPeer{}
 
 			if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) {
-				input.Name = pointer.From(viper.GetString(fn))
+				input.Name = viper.GetString(fn)
 			}
 
 			if fn := core.GetFlagName(c.NS, constants.FlagDescription); viper.IsSet(fn) {
@@ -44,16 +44,16 @@ func Create() *core.Command {
 			}
 
 			if fn := core.GetFlagName(c.NS, constants.FlagIps); viper.IsSet(fn) {
-				input.AllowedIPs = pointer.From(viper.GetStringSlice(fn))
+				input.AllowedIPs = viper.GetStringSlice(fn)
 			}
 
 			if fn := core.GetFlagName(c.NS, constants.FlagPublicKey); viper.IsSet(fn) {
-				input.PublicKey = pointer.From(viper.GetString(fn))
+				input.PublicKey = viper.GetString(fn)
 			}
 
 			input.Endpoint = &vpn.WireguardEndpoint{}
 			if fn := core.GetFlagName(c.NS, constants.FlagHost); viper.IsSet(fn) {
-				input.Endpoint.Host = pointer.From(viper.GetString(fn))
+				input.Endpoint.Host = viper.GetString(fn)
 			}
 
 			if fn := core.GetFlagName(c.NS, constants.FlagPort); viper.IsSet(fn) {
