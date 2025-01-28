@@ -8,7 +8,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
-	ionoscloud "github.com/ionos-cloud/sdk-go-logging"
+	"github.com/ionos-cloud/sdk-go-bundle/products/logging/v2"
 	"github.com/spf13/cobra"
 )
 
@@ -37,7 +37,21 @@ func PipelineCmd() *core.Command {
 	return cmd
 }
 
-func handlePipelinePrint(p ionoscloud.Pipeline, c *core.CommandConfig) error {
+func handlePipelinePrint(p logging.Pipeline, c *core.CommandConfig) error {
+	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+
+	out, err := jsontabwriter.GenerateOutput(
+		"", jsonpaths.LoggingServicePipeline, p, tabheaders.GetHeaders(allCols, defaultCols, cols),
+	)
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+	return nil
+}
+
+func handleProvisioningPipelinePrint(p logging.ProvisioningPipeline, c *core.CommandConfig) error {
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput(

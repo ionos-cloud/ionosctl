@@ -11,7 +11,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/resource2table"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
-	ionoscloud "github.com/ionos-cloud/sdk-go-logging"
+	"github.com/ionos-cloud/sdk-go-bundle/products/logging/v2"
 	"github.com/spf13/viper"
 )
 
@@ -58,9 +58,9 @@ func runGetCmd(c *core.CommandConfig) error {
 		return err
 	}
 
-	var log ionoscloud.PipelineResponse
+	var log logging.PipelineResponse
 
-	for _, l := range *pipeline.Properties.Logs {
+	for _, l := range pipeline.Properties.Logs {
 		if *l.Tag == tag {
 			log = l
 

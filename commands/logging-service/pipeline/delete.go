@@ -16,7 +16,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
-	ionoscloud "github.com/ionos-cloud/sdk-go-logging"
+	"github.com/ionos-cloud/sdk-go-bundle/products/logging/v2"
 	"github.com/spf13/viper"
 )
 
@@ -99,12 +99,12 @@ func deleteAll(c *core.CommandConfig) error {
 		return fmt.Errorf("could not retrieve Logging-Service Pipelines items")
 	}
 
-	if len(*items) <= 0 {
+	if len(items) <= 0 {
 		return fmt.Errorf("no Logging-Service Pipelines to delete")
 	}
 
 	err = functional.ApplyAndAggregateErrors(
-		*items, func(p ionoscloud.Pipeline) error {
+		items, func(p logging.Pipeline) error {
 			pipelineConverted, err := json2table.ConvertJSONToTable("", jsonpaths.LoggingServicePipeline, p)
 			if err != nil {
 				return err
