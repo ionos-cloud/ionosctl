@@ -8,7 +8,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/services/container-registry/resources"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	containerregistry "github.com/ionos-cloud/sdk-go-container-registry"
+	containerregistry "github.com/ionos-cloud/sdk-go-bundle/products/containerregistry/v2"
 	"github.com/spf13/cobra"
 )
 

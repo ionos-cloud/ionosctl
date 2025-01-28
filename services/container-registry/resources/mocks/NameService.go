@@ -8,7 +8,7 @@ import (
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
-	ionoscloud "github.com/ionos-cloud/sdk-go-container-registry"
+	ionoscloud "github.com/ionos-cloud/sdk-go-bundle/products/containerregistry/v2"
 )
 
 // MockNameService is a mock of NameService interface.

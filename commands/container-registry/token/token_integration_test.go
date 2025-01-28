@@ -17,7 +17,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/registry"
 	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/token/scopes"
-	containerregistry "github.com/ionos-cloud/sdk-go-container-registry"
+	containerregistry "github.com/ionos-cloud/sdk-go-bundle/products/containerregistry/v2"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
