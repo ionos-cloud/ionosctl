@@ -5,7 +5,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
-	auth "github.com/ionos-cloud/sdk-go-auth"
+	"github.com/ionos-cloud/sdk-go-bundle/products/auth/v2"
 )
 
 type Token struct {

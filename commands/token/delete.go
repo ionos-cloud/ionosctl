@@ -12,7 +12,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	authservice "github.com/ionos-cloud/ionosctl/v6/services/auth-v1"
-	auth "github.com/ionos-cloud/sdk-go-auth"
+	"github.com/ionos-cloud/sdk-go-bundle/products/auth/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )

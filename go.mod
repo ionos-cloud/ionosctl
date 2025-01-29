@@ -9,7 +9,6 @@ require (
 	github.com/fatih/structs v1.1.0
 	github.com/gofrs/uuid/v5 v5.0.0
 	github.com/golang/mock v1.6.0
-	github.com/ionos-cloud/sdk-go-auth v1.0.10
 	github.com/ionos-cloud/sdk-go-dbaas-postgres v1.1.2
 	github.com/ionos-cloud/sdk-go-vm-autoscaling v1.0.1
 	github.com/ionos-cloud/sdk-go/v6 v6.1.11
@@ -33,6 +32,7 @@ require (
 
 require (
 	github.com/dustin/go-humanize v0.0.0-20171111073723-bb3d318650d4
+	github.com/ionos-cloud/sdk-go-bundle/products/auth/v2 v2.0.1
 	github.com/ionos-cloud/sdk-go-bundle/products/cdn/v2 v2.1.1
 	github.com/ionos-cloud/sdk-go-bundle/products/containerregistry/v2 v2.0.2
 	github.com/ionos-cloud/sdk-go-bundle/products/dataplatform/v2 v2.0.2
