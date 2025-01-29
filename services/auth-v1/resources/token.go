@@ -5,27 +5,27 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
-	sdkgoauth "github.com/ionos-cloud/sdk-go-auth"
+	auth "github.com/ionos-cloud/sdk-go-auth"
 )
 
 type Token struct {
-	sdkgoauth.Token
+	auth.Token
 }
 
 type Jwt struct {
-	sdkgoauth.Jwt
+	auth.Jwt
 }
 
 type Tokens struct {
-	sdkgoauth.Tokens
+	auth.Tokens
 }
 
 type Response struct {
-	sdkgoauth.APIResponse
+	auth.APIResponse
 }
 
 type DeleteResponse struct {
-	sdkgoauth.DeleteResponse
+	auth.DeleteResponse
 }
 
 // TokensService is a wrapper around ionoscloud.Token
@@ -38,7 +38,7 @@ type TokensService interface {
 }
 
 type tokensService struct {
-	client  *sdkgoauth.APIClient
+	client  *auth.APIClient
 	context context.Context
 }
 

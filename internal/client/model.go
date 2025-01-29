@@ -6,7 +6,7 @@ import (
 	"github.com/ionos-cloud/sdk-go-bundle/shared"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
-	sdkgoauth "github.com/ionos-cloud/sdk-go-auth"
+	auth "github.com/ionos-cloud/sdk-go-auth"
 	"github.com/ionos-cloud/sdk-go-bundle/products/cdn/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/containerregistry/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dataplatform/v2"
@@ -67,7 +67,7 @@ type Client struct {
 	usedLayer *Layer // i.e. which auth layer are we using. Flags / Env Vars / Config File
 
 	CloudClient          *cloudv6.APIClient
-	AuthClient           *sdkgoauth.APIClient
+	AuthClient           *auth.APIClient
 	CertManagerClient    *certmanager.APIClient
 	DataplatformClient   *dataplatform.APIClient
 	RegistryClient       *containerregistry.APIClient
@@ -97,7 +97,7 @@ func newClient(name, pwd, token, hostUrl string, usedLayer *Layer) *Client {
 	// Set Depth Query Parameter globally
 	clientConfig.SetDepth(1)
 
-	authConfig := sdkgoauth.NewConfiguration(name, pwd, token, hostUrl)
+	authConfig := auth.NewConfiguration(name, pwd, token, hostUrl)
 	authConfig.UserAgent = appendUserAgent(authConfig.UserAgent)
 
 	certManagerConfig := certmanager.NewConfiguration(name, pwd, token, hostUrl)
@@ -117,7 +117,7 @@ func newClient(name, pwd, token, hostUrl string, usedLayer *Layer) *Client {
 
 	return &Client{
 		CloudClient:          cloudv6.NewAPIClient(clientConfig),
-		AuthClient:           sdkgoauth.NewAPIClient(authConfig),
+		AuthClient:           auth.NewAPIClient(authConfig),
 		CDNClient:            cdn.NewAPIClient(sharedConfig),
 		CertManagerClient:    certmanager.NewAPIClient(certManagerConfig),
 		RegistryClient:       containerregistry.NewAPIClient(sharedConfig),
