@@ -12,7 +12,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	authservice "github.com/ionos-cloud/ionosctl/v6/services/auth-v1"
-	"github.com/ionos-cloud/sdk-go-bundle/products/auth/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -127,8 +126,10 @@ func runTokenDeleteCurrent(c *core.CommandConfig) error {
 		"Note: This operation is based on Authorization Header for Bearer Token"))
 
 	if viper.GetString(constants.CfgToken) == "" {
-		return errors.New(fmt.Sprintf("no token found. Please make sure you have exported the %s environment variable or you have token set in the config file",
-			auth.IonosTokenEnvVar))
+		return errors.New(fmt.Sprintf(
+			"no token found. Please make sure you have exported the %s environment variable or you have token set in the config file",
+			constants.EnvToken),
+		)
 	}
 
 	if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("delete CURRENT token"), viper.GetBool(constants.ArgForce)) {

@@ -15,7 +15,7 @@ func TokensIds() []string {
 	}
 	tokenIds := make([]string, 0)
 	if items, ok := tokens.Tokens.GetTokensOk(); ok && items != nil {
-		for _, item := range *items {
+		for _, item := range items {
 			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
 				tokenIds = append(tokenIds, *itemId)
 			}
