@@ -8,7 +8,7 @@ import (
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
-	ionoscloud "github.com/ionos-cloud/sdk-go-bundle/products/containerregistry/v2"
+	shared "github.com/ionos-cloud/sdk-go-bundle/shared"
 )
 
 // MockRepositoryService is a mock of RepositoryService interface.
@@ -35,10 +35,10 @@ func (m *MockRepositoryService) EXPECT() *MockRepositoryServiceMockRecorder {
 }
 
 // Delete mocks base method.
-func (m *MockRepositoryService) Delete(regId, name string) (*ionoscloud.APIResponse, error) {
+func (m *MockRepositoryService) Delete(regId, name string) (*shared.APIResponse, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Delete", regId, name)
-	ret0, _ := ret[0].(*ionoscloud.APIResponse)
+	ret0, _ := ret[0].(*shared.APIResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

@@ -8,7 +8,8 @@ import (
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
-	ionoscloud "github.com/ionos-cloud/sdk-go-bundle/products/containerregistry/v2"
+	containerregistry "github.com/ionos-cloud/sdk-go-bundle/products/containerregistry/v2"
+	shared "github.com/ionos-cloud/sdk-go-bundle/shared"
 )
 
 // MockTokenService is a mock of TokenService interface.
@@ -35,10 +36,10 @@ func (m *MockTokenService) EXPECT() *MockTokenServiceMockRecorder {
 }
 
 // Delete mocks base method.
-func (m *MockTokenService) Delete(id, registryId string) (*ionoscloud.APIResponse, error) {
+func (m *MockTokenService) Delete(id, registryId string) (*shared.APIResponse, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Delete", id, registryId)
-	ret0, _ := ret[0].(*ionoscloud.APIResponse)
+	ret0, _ := ret[0].(*shared.APIResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -50,11 +51,11 @@ func (mr *MockTokenServiceMockRecorder) Delete(id, registryId interface{}) *gomo
 }
 
 // Get mocks base method.
-func (m *MockTokenService) Get(id, registryId string) (ionoscloud.TokenResponse, *ionoscloud.APIResponse, error) {
+func (m *MockTokenService) Get(id, registryId string) (containerregistry.TokenResponse, *shared.APIResponse, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Get", id, registryId)
-	ret0, _ := ret[0].(ionoscloud.TokenResponse)
-	ret1, _ := ret[1].(*ionoscloud.APIResponse)
+	ret0, _ := ret[0].(containerregistry.TokenResponse)
+	ret1, _ := ret[1].(*shared.APIResponse)
 	ret2, _ := ret[2].(error)
 	return ret0, ret1, ret2
 }
@@ -66,11 +67,11 @@ func (mr *MockTokenServiceMockRecorder) Get(id, registryId interface{}) *gomock.
 }
 
 // List mocks base method.
-func (m *MockTokenService) List(registryId string) (ionoscloud.TokensResponse, *ionoscloud.APIResponse, error) {
+func (m *MockTokenService) List(registryId string) (containerregistry.TokensResponse, *shared.APIResponse, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "List", registryId)
-	ret0, _ := ret[0].(ionoscloud.TokensResponse)
-	ret1, _ := ret[1].(*ionoscloud.APIResponse)
+	ret0, _ := ret[0].(containerregistry.TokensResponse)
+	ret1, _ := ret[1].(*shared.APIResponse)
 	ret2, _ := ret[2].(error)
 	return ret0, ret1, ret2
 }
@@ -82,11 +83,11 @@ func (mr *MockTokenServiceMockRecorder) List(registryId interface{}) *gomock.Cal
 }
 
 // Patch mocks base method.
-func (m *MockTokenService) Patch(id string, input ionoscloud.PatchTokenInput, registryId string) (ionoscloud.TokenResponse, *ionoscloud.APIResponse, error) {
+func (m *MockTokenService) Patch(id string, input containerregistry.PatchTokenInput, registryId string) (containerregistry.TokenResponse, *shared.APIResponse, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Patch", id, input, registryId)
-	ret0, _ := ret[0].(ionoscloud.TokenResponse)
-	ret1, _ := ret[1].(*ionoscloud.APIResponse)
+	ret0, _ := ret[0].(containerregistry.TokenResponse)
+	ret1, _ := ret[1].(*shared.APIResponse)
 	ret2, _ := ret[2].(error)
 	return ret0, ret1, ret2
 }
@@ -98,11 +99,11 @@ func (mr *MockTokenServiceMockRecorder) Patch(id, input, registryId interface{})
 }
 
 // Post mocks base method.
-func (m *MockTokenService) Post(input ionoscloud.PostTokenInput, registryId string) (ionoscloud.PostTokenOutput, *ionoscloud.APIResponse, error) {
+func (m *MockTokenService) Post(input containerregistry.PostTokenInput, registryId string) (containerregistry.PostTokenOutput, *shared.APIResponse, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Post", input, registryId)
-	ret0, _ := ret[0].(ionoscloud.PostTokenOutput)
-	ret1, _ := ret[1].(*ionoscloud.APIResponse)
+	ret0, _ := ret[0].(containerregistry.PostTokenOutput)
+	ret1, _ := ret[1].(*shared.APIResponse)
 	ret2, _ := ret[2].(error)
 	return ret0, ret1, ret2
 }
@@ -114,11 +115,11 @@ func (mr *MockTokenServiceMockRecorder) Post(input, registryId interface{}) *gom
 }
 
 // Put mocks base method.
-func (m *MockTokenService) Put(id string, input ionoscloud.PutTokenInput, registryId string) (ionoscloud.PutTokenOutput, *ionoscloud.APIResponse, error) {
+func (m *MockTokenService) Put(id string, input containerregistry.PutTokenInput, registryId string) (containerregistry.PutTokenOutput, *shared.APIResponse, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Put", id, input, registryId)
-	ret0, _ := ret[0].(ionoscloud.PutTokenOutput)
-	ret1, _ := ret[1].(*ionoscloud.APIResponse)
+	ret0, _ := ret[0].(containerregistry.PutTokenOutput)
+	ret1, _ := ret[1].(*shared.APIResponse)
 	ret2, _ := ret[2].(error)
 	return ret0, ret1, ret2
 }

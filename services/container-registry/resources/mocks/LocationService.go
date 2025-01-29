@@ -8,7 +8,8 @@ import (
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
-	ionoscloud "github.com/ionos-cloud/sdk-go-bundle/products/containerregistry/v2"
+	containerregistry "github.com/ionos-cloud/sdk-go-bundle/products/containerregistry/v2"
+	shared "github.com/ionos-cloud/sdk-go-bundle/shared"
 )
 
 // MockLocationsService is a mock of LocationsService interface.
@@ -35,11 +36,11 @@ func (m *MockLocationsService) EXPECT() *MockLocationsServiceMockRecorder {
 }
 
 // Get mocks base method.
-func (m *MockLocationsService) Get() (ionoscloud.LocationsResponse, *ionoscloud.APIResponse, error) {
+func (m *MockLocationsService) Get() (containerregistry.LocationsResponse, *shared.APIResponse, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Get")
-	ret0, _ := ret[0].(ionoscloud.LocationsResponse)
-	ret1, _ := ret[1].(*ionoscloud.APIResponse)
+	ret0, _ := ret[0].(containerregistry.LocationsResponse)
+	ret1, _ := ret[1].(*shared.APIResponse)
 	ret2, _ := ret[2].(error)
 	return ret0, ret1, ret2
 }
