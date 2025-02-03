@@ -41,12 +41,12 @@ The cluster will be provisioned in the datacenter matching the provided datacent
       --cols strings              Set of columns to be printed on output 
                                   Available columns: [Id Name Version MaintenanceWindow DatacenterId State]
   -c, --config string             Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
-  -i, --datacenter-id string      The ID of the connected datacenter
+  -i, --datacenter-id string      The ID of the connected datacenter (required)
   -f, --force                     Force command to execute without user input
   -h, --help                      Print usage
       --maintenance-day string    Day Of the Week for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur (required)
       --maintenance-time string   Time for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur. e.g.: 16:30:59 (required)
-  -n, --name string               The name of your cluster
+  -n, --name string               The name of your cluster (required)
       --no-headers                Don't print table headers when table output is used
   -o, --output string             Desired output format [text|json|api-json] (default "text")
   -q, --quiet                     Quiet output

@@ -15,7 +15,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dataplatform/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	sdkdataplatform "github.com/ionos-cloud/sdk-go-dataplatform"
+	"github.com/ionos-cloud/sdk-go-bundle/products/dataplatform/v2"
 	"github.com/spf13/cobra"
 )
 
@@ -38,7 +38,7 @@ func ClusterUpdateCmd() *core.Command {
 
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting Cluster by id: %s", clusterId))
 
-			updateProperties := sdkdataplatform.PatchClusterProperties{}
+			updateProperties := dataplatform.PatchClusterProperties{}
 			if viper.IsSet(core.GetFlagName(c.NS, constants.FlagName)) {
 				updateProperties.SetName(viper.GetString(core.GetFlagName(c.NS, constants.FlagName)))
 			}
@@ -49,13 +49,16 @@ func ClusterUpdateCmd() *core.Command {
 
 			if viper.IsSet(core.GetFlagName(c.NS, constants.FlagMaintenanceDay)) &&
 				viper.IsSet(core.GetFlagName(c.NS, constants.FlagMaintenanceTime)) {
-				maintenanceWindow := sdkdataplatform.MaintenanceWindow{}
+				maintenanceWindow := dataplatform.MaintenanceWindow{}
 				maintenanceWindow.SetTime(viper.GetString(core.GetFlagName(c.NS, constants.FlagMaintenanceTime)))
 				maintenanceWindow.SetDayOfTheWeek(viper.GetString(core.GetFlagName(c.NS, constants.FlagMaintenanceDay)))
 				updateProperties.SetMaintenanceWindow(maintenanceWindow)
 			}
 
-			cluster, _, err := client.Must().DataplatformClient.DataPlatformClusterApi.ClustersPatch(c.Context, clusterId).PatchClusterRequest(sdkdataplatform.PatchClusterRequest{Properties: &updateProperties}).Execute()
+			cluster, _, err := client.Must().DataplatformClient.DataPlatformClusterApi.
+				ClustersPatch(c.Context, clusterId).PatchClusterRequest(
+				dataplatform.PatchClusterRequest{Properties: updateProperties},
+			).Execute()
 			if err != nil {
 				return err
 			}

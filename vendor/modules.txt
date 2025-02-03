@@ -11,9 +11,6 @@ github.com/cheggaaa/pb/v3/termutil
 # github.com/cilium/fake v0.4.0
 ## explicit; go 1.19
 github.com/cilium/fake
-# github.com/cjrd/allocate v0.0.0-20220510215731-986f24f0fb18
-## explicit
-github.com/cjrd/allocate
 # github.com/cpuguy83/go-md2man/v2 v2.0.4
 ## explicit; go 1.11
 github.com/cpuguy83/go-md2man/v2/md2man
@@ -69,6 +66,9 @@ github.com/ionos-cloud/sdk-go-bundle/products/cdn/v2
 # github.com/ionos-cloud/sdk-go-bundle/products/containerregistry/v2 v2.0.2
 ## explicit; go 1.22
 github.com/ionos-cloud/sdk-go-bundle/products/containerregistry/v2
+# github.com/ionos-cloud/sdk-go-bundle/products/dataplatform/v2 v2.0.2
+## explicit; go 1.22
+github.com/ionos-cloud/sdk-go-bundle/products/dataplatform/v2
 # github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo/v2 v2.0.2
 ## explicit; go 1.22
 github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo/v2
@@ -87,9 +87,6 @@ github.com/ionos-cloud/sdk-go-bundle/shared
 # github.com/ionos-cloud/sdk-go-cert-manager v1.0.1
 ## explicit; go 1.19
 github.com/ionos-cloud/sdk-go-cert-manager
-# github.com/ionos-cloud/sdk-go-dataplatform v1.0.2
-## explicit; go 1.18
-github.com/ionos-cloud/sdk-go-dataplatform
 # github.com/ionos-cloud/sdk-go-dbaas-mariadb v1.1.1
 ## explicit; go 1.18
 github.com/ionos-cloud/sdk-go-dbaas-mariadb

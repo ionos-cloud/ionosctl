@@ -10,7 +10,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
-	ionoscloud "github.com/ionos-cloud/sdk-go-dataplatform"
+	"github.com/ionos-cloud/sdk-go-bundle/products/dataplatform/v2"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dataplatform/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
@@ -81,11 +81,11 @@ func listAll(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	clusterIds := functional.Map(*ls.GetItems(), func(t ionoscloud.ClusterResponseData) string {
-		return *t.GetId()
+	clusterIds := functional.Map(ls.GetItems(), func(t dataplatform.ClusterResponseData) string {
+		return t.GetId()
 	})
 
-	nps := make([]ionoscloud.NodePoolResponseData, 0)
+	nps := make([]dataplatform.NodePoolResponseData, 0)
 	npsConverted := make([]map[string]interface{}, 0)
 	for _, cID := range clusterIds {
 		np, _, err := client.Must().DataplatformClient.DataPlatformNodePoolApi.ClustersNodepoolsGet(c.Context, cID).Execute()
@@ -99,7 +99,7 @@ func listAll(c *core.CommandConfig) error {
 		}
 
 		npsConverted = append(npsConverted, temp...)
-		nps = append(nps, *np.GetItems()...)
+		nps = append(nps, np.GetItems()...)
 	}
 
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
