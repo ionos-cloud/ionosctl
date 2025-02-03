@@ -9,12 +9,12 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
-	sdkgo "github.com/ionos-cloud/sdk-go-container-registry"
+	"github.com/ionos-cloud/sdk-go-bundle/products/containerregistry/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
-var regPutProperties = sdkgo.PostRegistryProperties{}
+var regPutProperties = containerregistry.PostRegistryProperties{}
 
 func RegReplaceCmd() *core.Command {
 	cmd := core.NewCommand(
@@ -89,35 +89,35 @@ func CmdPut(c *core.CommandConfig) error {
 		return err
 	}
 
-	v := sdkgo.NewWeeklyScheduleWithDefaults()
+	v := containerregistry.NewWeeklyScheduleWithDefaults()
 
 	if viper.IsSet(core.GetFlagName(c.NS, FlagRegGCDays)) {
 		days := viper.GetStringSlice(core.GetFlagName(c.NS, FlagRegGCDays))
-		var daysSdk = []sdkgo.Day{}
+		var daysSdk = []containerregistry.Day{}
 
 		for _, day := range days {
-			daysSdk = append(daysSdk, sdkgo.Day(day))
+			daysSdk = append(daysSdk, containerregistry.Day(day))
 		}
 
 		v.SetDays(daysSdk)
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, FlagRegGCTime)) {
-		*v.Time = viper.GetString(core.GetFlagName(c.NS, FlagRegGCTime))
+		v.Time = viper.GetString(core.GetFlagName(c.NS, FlagRegGCTime))
 	} else {
 		v.SetTime("01:23:00+00:00")
 	}
 
-	feat := sdkgo.NewRegistryFeaturesWithDefaults()
+	feat := containerregistry.NewRegistryFeaturesWithDefaults()
 	featEnabled := viper.GetBool(core.GetFlagName(c.NS, constants.FlagRegistryVulnScan))
-	feat.SetVulnerabilityScanning(sdkgo.FeatureVulnerabilityScanning{Enabled: &featEnabled})
+	feat.SetVulnerabilityScanning(containerregistry.FeatureVulnerabilityScanning{Enabled: featEnabled})
 
 	regPutProperties.SetName(name)
 	regPutProperties.SetLocation(location)
 	regPutProperties.SetGarbageCollectionSchedule(*v)
 	regPostProperties.SetFeatures(*feat)
 
-	var putInput = sdkgo.PutRegistryInput{}
+	var putInput = containerregistry.PutRegistryInput{}
 	putInput.SetProperties(regPutProperties)
 
 	reg, _, err := c.ContainerRegistryServices.Registry().Put(id, putInput)
@@ -125,8 +125,8 @@ func CmdPut(c *core.CommandConfig) error {
 		return err
 	}
 
-	regPrint := sdkgo.NewRegistryResponseWithDefaults()
-	regPrint.SetProperties(*reg.GetProperties())
+	regPrint := containerregistry.NewRegistryResponseWithDefaults()
+	regPrint.SetProperties(reg.GetProperties())
 
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 

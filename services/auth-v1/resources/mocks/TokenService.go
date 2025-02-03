@@ -35,7 +35,7 @@ func (m *MockTokensService) EXPECT() *MockTokensServiceMockRecorder {
 }
 
 // Create mocks base method.
-func (m *MockTokensService) Create(contractNumber int32, ttl int32) (*resources.Jwt, *resources.Response, error) {
+func (m *MockTokensService) Create(contractNumber, ttl int32) (*resources.Jwt, *resources.Response, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Create", contractNumber, ttl)
 	ret0, _ := ret[0].(*resources.Jwt)
@@ -45,9 +45,9 @@ func (m *MockTokensService) Create(contractNumber int32, ttl int32) (*resources.
 }
 
 // Create indicates an expected call of Create.
-func (mr *MockTokensServiceMockRecorder) Create(contractNumber interface{}) *gomock.Call {
+func (mr *MockTokensServiceMockRecorder) Create(contractNumber, ttl interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockTokensService)(nil).Create), contractNumber)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockTokensService)(nil).Create), contractNumber, ttl)
 }
 
 // DeleteByCriteria mocks base method.

@@ -91,7 +91,7 @@ func CmdDeleteToken(c *core.CommandConfig) error {
 			return err
 		}
 
-		for _, token := range *tokens.GetItems() {
+		for _, token := range tokens.GetItems() {
 			msg := fmt.Sprintf("delete Token: %s", *token.Id)
 
 			if !confirm.FAsk(c.Command.Command.InOrStdin(), msg, viper.GetBool(constants.ArgForce)) {
@@ -112,13 +112,13 @@ func CmdDeleteToken(c *core.CommandConfig) error {
 		return err
 	}
 
-	for _, reg := range *regs.GetItems() {
+	for _, reg := range regs.GetItems() {
 		tokens, _, err := c.ContainerRegistryServices.Token().List(*reg.Id)
 		if err != nil {
 			return err
 		}
 
-		for _, token := range *tokens.GetItems() {
+		for _, token := range tokens.GetItems() {
 			msg := fmt.Sprintf("delete Token: %s", *token.Id)
 
 			if !confirm.FAsk(c.Command.Command.InOrStdin(), msg, viper.GetBool(constants.ArgForce)) {

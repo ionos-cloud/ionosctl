@@ -5,10 +5,10 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
-	ionoscloud "github.com/ionos-cloud/sdk-go-container-registry"
+	"github.com/ionos-cloud/sdk-go-bundle/products/containerregistry/v2"
 )
 
-func ConvertContainerRegistryVulnerabilitiesToTable(vulnerabilities ionoscloud.ArtifactVulnerabilityReadList) (
+func ConvertContainerRegistryVulnerabilitiesToTable(vulnerabilities containerregistry.ArtifactVulnerabilityReadList) (
 	[]map[string]interface{}, error,
 ) {
 	items, ok := vulnerabilities.GetItemsOk()
@@ -17,7 +17,7 @@ func ConvertContainerRegistryVulnerabilitiesToTable(vulnerabilities ionoscloud.A
 	}
 
 	var convertedVulnerabilities []map[string]interface{}
-	for _, vulnerability := range *items {
+	for _, vulnerability := range items {
 		convertedVulnerability, err := ConvertContainerRegistryVulnerabilityToTable(vulnerability)
 		if err != nil {
 			return nil, err
@@ -29,7 +29,7 @@ func ConvertContainerRegistryVulnerabilitiesToTable(vulnerabilities ionoscloud.A
 	return convertedVulnerabilities, nil
 }
 
-func ConvertContainerRegistryVulnerabilityToTable(vulnerability ionoscloud.VulnerabilityRead) (
+func ConvertContainerRegistryVulnerabilityToTable(vulnerability containerregistry.VulnerabilityRead) (
 	[]map[string]interface{}, error,
 ) {
 	properties, ok := vulnerability.GetPropertiesOk()
@@ -48,7 +48,7 @@ func ConvertContainerRegistryVulnerabilityToTable(vulnerability ionoscloud.Vulne
 	}
 
 	var affectsFormatted []interface{}
-	for _, affect := range *affects {
+	for _, affect := range affects {
 		name, ok := affect.GetNameOk()
 		if !ok || name == nil {
 			return nil, fmt.Errorf("could not retrieve Container Registry Vulnerability affects name")

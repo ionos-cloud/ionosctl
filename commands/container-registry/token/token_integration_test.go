@@ -17,7 +17,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/registry"
 	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/token/scopes"
-	ionoscloud "github.com/ionos-cloud/sdk-go-container-registry"
+	"github.com/ionos-cloud/sdk-go-bundle/products/containerregistry/v2"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
@@ -62,7 +62,7 @@ func TestTokenService(t *testing.T) {
 			registries, _, err := client.Must().RegistryClient.RegistriesApi.RegistriesGet(context.Background()).Execute()
 			assert.NoError(t, err)
 
-			var newReg *ionoscloud.RegistryResponse
+			var newReg *containerregistry.RegistryResponse
 			for _, reg := range *registries.GetItems() {
 				if *reg.GetProperties().GetName() == name {
 					newReg = &reg
@@ -87,7 +87,7 @@ func TestTokenService(t *testing.T) {
 			).Execute()
 			assert.NoError(t, err)
 
-			var newToken *ionoscloud.TokenResponse
+			var newToken *containerregistry.TokenResponse
 			for _, token := range *tokens.GetItems() {
 				if *token.GetProperties().GetName() == tokenName {
 					newToken = &token

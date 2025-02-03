@@ -9,7 +9,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
-	ionoscloud "github.com/ionos-cloud/sdk-go-container-registry"
+	"github.com/ionos-cloud/sdk-go-bundle/products/containerregistry/v2"
 	"github.com/spf13/cobra"
 )
 
@@ -75,8 +75,8 @@ func RepositoryNames(registryId string) []string {
 	}
 
 	return functional.Map(
-		*repos.Items, func(repo ionoscloud.RepositoryRead) string {
-			return *repo.Properties.Name
+		repos.Items, func(repo containerregistry.RepositoryRead) string {
+			return repo.Properties.Name
 		},
 	)
 }
