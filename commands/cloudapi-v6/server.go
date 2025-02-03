@@ -215,7 +215,7 @@ You can wait for the Request to be executed using ` + "`" + `--wait-for-request`
 	create.AddStringFlag(cloudapiv6.ArgImageAlias, cloudapiv6.ArgImageAliasShort, "", "[CUBE Server] The Image Alias to use instead of Image Id for the Direct Attached Storage")
 	create.AddUUIDFlag(cloudapiv6.ArgImageId, "", "", "[CUBE Server] The Image Id or snapshot Id to be used as for the Direct Attached Storage")
 	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgImageId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.ImageIds(func(r ionoscloud.ApiImagesGetRequest) ionoscloud.ApiImagesGetRequest {
+		imageIds := completer.ImageIds(func(r ionoscloud.ApiImagesGetRequest) ionoscloud.ApiImagesGetRequest {
 			// Completer for HDD images that are in the same location as the datacenter
 			chosenDc, _, err := client.Must().CloudClient.DataCentersApi.DatacentersFindById(context.Background(),
 				viper.GetString(core.GetFlagName(create.NS, cloudapiv6.ArgDataCenterId))).Execute()
@@ -224,7 +224,11 @@ You can wait for the Request to be executed using ` + "`" + `--wait-for-request`
 			}
 
 			return r.Filter("location", *chosenDc.Properties.Location).Filter("imageType", "HDD")
-		}), cobra.ShellCompDirectiveNoFileComp
+		})
+
+		snapshotIds := completer.SnapshotIds()
+
+		return append(imageIds, snapshotIds...), cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddStringFlag(constants.ArgPassword, constants.ArgPasswordShort, "", "[CUBE Server] Initial image password to be set for installed OS. Works with public Images only. Not modifiable. Password rules allows all characters from a-z, A-Z, 0-9")
 	create.AddStringSliceFlag(cloudapiv6.ArgSshKeyPaths, cloudapiv6.ArgSshKeyPathsShort, []string{""}, "[CUBE Server] Absolute paths for the SSH Keys of the Direct Attached Storage")
@@ -558,36 +562,47 @@ func PreRunServerCreate(c *core.PreCommandConfig) error {
 		return err
 	}
 
-	// If either image ID or alias is set, we'll need to modify the required flags.
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgImageId)) || viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgImageAlias)) {
+	imageIdFlag := core.GetFlagName(c.NS, cloudapiv6.ArgImageId)
+	imageAliasFlag := core.GetFlagName(c.NS, cloudapiv6.ArgImageAlias)
+
+	// Check if image ID or alias is set
+	if viper.IsSet(imageIdFlag) || viper.IsSet(imageAliasFlag) {
 		imageRequiredFlags := make([][]string, 0)
 
-		// If image-alias is set, it's a public image. Otherwise, we need to check.
-		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgImageAlias)) {
-			// Directly append public image flags.
+		if viper.IsSet(imageAliasFlag) {
+			// Handle public image alias
 			for _, baseFlagSet := range baseRequiredFlags {
 				imageRequiredFlags = append(imageRequiredFlags,
 					append(baseFlagSet, cloudapiv6.ArgImageAlias, cloudapiv6.ArgPassword),
 					append(baseFlagSet, cloudapiv6.ArgImageAlias, cloudapiv6.ArgSshKeyPaths),
 				)
 			}
-		} else if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgImageId)) {
-			// is image public or private?
-			img, _, err := client.Must().CloudClient.ImagesApi.ImagesFindById(context.Background(),
-				viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgImageId))).Execute()
-			if err != nil {
-				return fmt.Errorf("failed getting image %s: %w", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgImageId)), err)
+		} else if viper.IsSet(imageIdFlag) {
+			// Check if the image ID corresponds to an image or snapshot
+			img, _, imgErr := client.Must().CloudClient.ImagesApi.ImagesFindById(context.Background(),
+				viper.GetString(imageIdFlag)).Execute()
+			if imgErr != nil {
+				// Try to fetch as a snapshot if image fetch fails
+				_, _, snapshotErr := client.Must().CloudClient.SnapshotsApi.SnapshotsFindById(context.Background(),
+					viper.GetString(imageIdFlag)).Execute()
+				if snapshotErr != nil {
+					return fmt.Errorf("failed getting image or snapshot %s: %w", viper.GetString(imageIdFlag), imgErr)
+				}
+
+				// If it's a snapshot, no additional checks are required
+				return nil
 			}
 
+			// If it's an image, determine if it is public or private
 			for _, baseFlagSet := range baseRequiredFlags {
-				if *img.Properties.Public {
-					// For public images, password or SSH key is required.
+				if img.Properties != nil && img.Properties.Public != nil && *img.Properties.Public {
+					// For public images, require password or SSH key
 					imageRequiredFlags = append(imageRequiredFlags,
 						append(baseFlagSet, cloudapiv6.ArgImageId, cloudapiv6.ArgPassword),
 						append(baseFlagSet, cloudapiv6.ArgImageId, cloudapiv6.ArgSshKeyPaths),
 					)
 				} else {
-					// For private images, no additional flags beyond image ID are required.
+					// For private images, only the image ID is required
 					imageRequiredFlags = append(imageRequiredFlags,
 						append(baseFlagSet, cloudapiv6.ArgImageId),
 					)

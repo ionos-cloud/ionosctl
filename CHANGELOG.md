@@ -1,5 +1,11 @@
 # Changelog
 
+## [v6.8.1] (???)
+
+### Fixed
+
+- Fixed not being able to use snapshot IDs for --image-id
+
 ## [v6.8.0] (January 2025)
 
 ### Added
