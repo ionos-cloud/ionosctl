@@ -10,8 +10,6 @@ require (
 	github.com/gofrs/uuid/v5 v5.0.0
 	github.com/golang/mock v1.6.0
 	github.com/ionos-cloud/sdk-go-auth v1.0.10
-	github.com/ionos-cloud/sdk-go-dataplatform v1.0.2
-	github.com/ionos-cloud/sdk-go-container-registry v1.1.0
 	github.com/ionos-cloud/sdk-go-dbaas-postgres v1.1.2
 	github.com/ionos-cloud/sdk-go-vm-autoscaling v1.0.1
 	github.com/ionos-cloud/sdk-go/v6 v6.1.11

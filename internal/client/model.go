@@ -103,12 +103,6 @@ func newClient(name, pwd, token, hostUrl string, usedLayer *Layer) *Client {
 	certManagerConfig := certmanager.NewConfiguration(name, pwd, token, hostUrl)
 	certManagerConfig.UserAgent = appendUserAgent(certManagerConfig.UserAgent)
 
-	dpConfig := dataplatform.NewConfiguration(name, pwd, token, hostUrl)
-	dpConfig.UserAgent = appendUserAgent(dpConfig.UserAgent)
-
-	registryConfig := registry.NewConfiguration(name, pwd, token, hostUrl)
-	registryConfig.UserAgent = appendUserAgent(registryConfig.UserAgent)
-
 	vmascConfig := vmasc.NewConfiguration(name, pwd, token, hostUrl)
 	vmascConfig.UserAgent = appendUserAgent(vmascConfig.UserAgent)
 	// DBAAS

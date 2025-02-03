@@ -262,10 +262,6 @@ github.com/ionos-cloud/sdk-go-bundle/shared v0.1.1 h1:NWobgIhmUJKG6ohFXefMj+KmpE
 github.com/ionos-cloud/sdk-go-bundle/shared v0.1.1/go.mod h1:cLIl4zmB1yMdPSNgTzaRmXeuusEAY1O3Lp/iXSc/R6E=
 github.com/ionos-cloud/sdk-go-cert-manager v1.0.1 h1:QGnenRREavvU0ZrXvY4hmCMXRyvmKj5jaXsFX9Apfd0=
 github.com/ionos-cloud/sdk-go-cert-manager v1.0.1/go.mod h1:EYDegkY6fUSkx0BL0GpNMpKvp33AId2vTZL44YLPreA=
-github.com/ionos-cloud/sdk-go-dataplatform v1.0.2 h1:/KEm54/8WC8bXKAqUKLgoTvk1g9x/EOUYOUnRkf4un0=
-github.com/ionos-cloud/sdk-go-dataplatform v1.0.2/go.mod h1:LXJGnUwLLiJhKgApv7TIPGy7WOuGbYIzBPFxGpNfqN0=
-github.com/ionos-cloud/sdk-go-container-registry v1.1.0 h1:H92gzx9oj0vvbozbXwn2RLNEw7++1Ns3Kl9PGrh5Waw=
-github.com/ionos-cloud/sdk-go-container-registry v1.1.0/go.mod h1:woBP1+A4N0KXiRj9jG4y/hEXgrVjJv0CUlAvc24mCeo=
 github.com/ionos-cloud/sdk-go-dbaas-mariadb v1.1.1 h1:dZLxaH2n0nxCOKMkt49TibOiY1hkaHThpXEgJL0oZng=
 github.com/ionos-cloud/sdk-go-dbaas-mariadb v1.1.1/go.mod h1:NuUqBA9DyP4PB3MtKy/R9XRHY1RZcwVP6E3tP4FwI7I=
 github.com/ionos-cloud/sdk-go-dbaas-postgres v1.1.2 h1:AaKbci+kVS6/k43VwJwmXxCJ7pzj9jwuOPqO8Wd5560=
