@@ -9,7 +9,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
-	ionoscloud "github.com/ionos-cloud/sdk-go-dataplatform"
+	"github.com/ionos-cloud/sdk-go-bundle/products/dataplatform/v2"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dataplatform/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
@@ -68,12 +68,12 @@ func deleteAll(c *core.CommandConfig) error {
 		return err
 	}
 
-	err = functional.ApplyAndAggregateErrors(*xs.GetItems(), func(x ionoscloud.ClusterResponseData) error {
-		yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("delete cluster %s (%s)", *x.Id, *x.Properties.Name), viper.GetBool(constants.ArgForce))
+	err = functional.ApplyAndAggregateErrors(xs.GetItems(), func(x dataplatform.ClusterResponseData) error {
+		yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("delete cluster %s (%s)", x.Id, *x.Properties.Name), viper.GetBool(constants.ArgForce))
 		if yes {
-			_, _, delErr := client.Must().DataplatformClient.DataPlatformClusterApi.ClustersDelete(c.Context, *x.Id).Execute()
+			_, _, delErr := client.Must().DataplatformClient.DataPlatformClusterApi.ClustersDelete(c.Context, x.Id).Execute()
 			if delErr != nil {
-				return fmt.Errorf("failed deleting %s: %w", *x.Id, delErr)
+				return fmt.Errorf("failed deleting %s: %w", x.Id, delErr)
 			}
 		}
 		return nil

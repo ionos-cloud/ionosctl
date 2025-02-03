@@ -9,12 +9,12 @@ import (
 	sdkgoauth "github.com/ionos-cloud/sdk-go-auth"
 	"github.com/ionos-cloud/sdk-go-bundle/products/cdn/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/containerregistry/v2"
+	"github.com/ionos-cloud/sdk-go-bundle/products/dataplatform/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dns/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/logging/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/vpn/v2"
 	certmanager "github.com/ionos-cloud/sdk-go-cert-manager"
-	dataplatform "github.com/ionos-cloud/sdk-go-dataplatform"
 	maria "github.com/ionos-cloud/sdk-go-dbaas-mariadb"
 	postgres "github.com/ionos-cloud/sdk-go-dbaas-postgres"
 	kafka "github.com/ionos-cloud/sdk-go-kafka"
@@ -103,9 +103,6 @@ func newClient(name, pwd, token, hostUrl string, usedLayer *Layer) *Client {
 	certManagerConfig := certmanager.NewConfiguration(name, pwd, token, hostUrl)
 	certManagerConfig.UserAgent = appendUserAgent(certManagerConfig.UserAgent)
 
-	dpConfig := dataplatform.NewConfiguration(name, pwd, token, hostUrl)
-	dpConfig.UserAgent = appendUserAgent(dpConfig.UserAgent)
-
 	vmascConfig := vmasc.NewConfiguration(name, pwd, token, hostUrl)
 	vmascConfig.UserAgent = appendUserAgent(vmascConfig.UserAgent)
 	// DBAAS
@@ -123,8 +120,8 @@ func newClient(name, pwd, token, hostUrl string, usedLayer *Layer) *Client {
 		AuthClient:           sdkgoauth.NewAPIClient(authConfig),
 		CDNClient:            cdn.NewAPIClient(sharedConfig),
 		CertManagerClient:    certmanager.NewAPIClient(certManagerConfig),
-		DataplatformClient:   dataplatform.NewAPIClient(dpConfig),
 		RegistryClient:       containerregistry.NewAPIClient(sharedConfig),
+		DataplatformClient:   dataplatform.NewAPIClient(sharedConfig),
 		DnsClient:            dns.NewAPIClient(sharedConfig),
 		LoggingServiceClient: logging.NewAPIClient(sharedConfig),
 		VMAscClient:          vmasc.NewAPIClient(vmascConfig).AutoScalingGroupsApi,
