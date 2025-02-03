@@ -16,7 +16,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go-container-registry"
+	"github.com/ionos-cloud/sdk-go-bundle/products/containerregistry/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -139,7 +139,7 @@ func CmdList(c *core.CommandConfig) error {
 
 func buildListAllRequest(
 	regId string, queryParams resources.ListQueryParams,
-) ionoscloud.ApiRegistriesArtifactsGetRequest {
+) containerregistry.ApiRegistriesArtifactsGetRequest {
 	if structs.IsZero(queryParams) {
 		return client.Must().RegistryClient.ArtifactsApi.RegistriesArtifactsGet(
 			context.Background(), regId,
@@ -168,7 +168,7 @@ func buildListAllRequest(
 
 func buildListRequest(
 	regId string, repo string, queryParams resources.ListQueryParams,
-) ionoscloud.ApiRegistriesRepositoriesArtifactsGetRequest {
+) containerregistry.ApiRegistriesRepositoriesArtifactsGetRequest {
 	if structs.IsZero(queryParams) {
 		return client.Must().RegistryClient.ArtifactsApi.RegistriesRepositoriesArtifactsGet(
 			context.Background(), regId, repo,

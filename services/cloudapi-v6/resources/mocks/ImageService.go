@@ -5,7 +5,6 @@
 package mock_resources
 
 import (
-	context "context"
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
@@ -96,18 +95,4 @@ func (m *MockImagesService) Update(imageId string, imgProp resources.ImageProper
 func (mr *MockImagesServiceMockRecorder) Update(imageId, imgProp, params interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockImagesService)(nil).Update), imageId, imgProp, params)
-}
-
-// Upload mocks base method.
-func (m *MockImagesService) Upload(ctx context.Context, properties resources.UploadProperties) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Upload", ctx, properties)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// Upload indicates an expected call of Upload.
-func (mr *MockImagesServiceMockRecorder) Upload(ctx, properties interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upload", reflect.TypeOf((*MockImagesService)(nil).Upload), ctx, properties)
 }

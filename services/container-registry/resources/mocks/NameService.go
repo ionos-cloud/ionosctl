@@ -8,7 +8,7 @@ import (
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
-	ionoscloud "github.com/ionos-cloud/sdk-go-container-registry"
+	shared "github.com/ionos-cloud/sdk-go-bundle/shared"
 )
 
 // MockNameService is a mock of NameService interface.
@@ -35,10 +35,10 @@ func (m *MockNameService) EXPECT() *MockNameServiceMockRecorder {
 }
 
 // Head mocks base method.
-func (m *MockNameService) Head(name string) (*ionoscloud.APIResponse, error) {
+func (m *MockNameService) Head(name string) (*shared.APIResponse, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Head", name)
-	ret0, _ := ret[0].(*ionoscloud.APIResponse)
+	ret0, _ := ret[0].(*shared.APIResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
