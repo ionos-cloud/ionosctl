@@ -160,7 +160,7 @@ Required values to run command:
 	})
 	create.AddUUIDFlag(cloudapiv6.ArgImageId, "", "", "The Image Id or Snapshot Id to be used as template for the new Volume. A password or SSH Key need to be set")
 	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgImageId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.ImageIds(func(r ionoscloud.ApiImagesGetRequest) ionoscloud.ApiImagesGetRequest {
+		imageIds := completer.ImageIds(func(r ionoscloud.ApiImagesGetRequest) ionoscloud.ApiImagesGetRequest {
 			// Completer for HDD images that are in the same location as the datacenter
 			chosenDc, _, err := client.Must().CloudClient.DataCentersApi.DatacentersFindById(context.Background(),
 				viper.GetString(core.GetFlagName(create.NS, cloudapiv6.ArgDataCenterId))).Execute()
@@ -169,7 +169,11 @@ Required values to run command:
 			}
 
 			return r.Filter("location", *chosenDc.Properties.Location).Filter("imageType", "HDD")
-		}), cobra.ShellCompDirectiveNoFileComp
+		})
+
+		snapshotIds := completer.SnapshotIds()
+
+		return append(imageIds, snapshotIds...), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	create.AddStringFlag(cloudapiv6.ArgImageAlias, cloudapiv6.ArgImageAliasShort, "", "The Image Alias to set instead of Image Id. A password or SSH Key need to be set")
@@ -310,8 +314,8 @@ func PreRunVolumeCreate(c *core.PreCommandConfig) error {
 	}
 	publicImageAsImageId := false
 
-	// image-id and image-alias create more flag requirements
 	if fn := core.GetFlagName(c.NS, cloudapiv6.ArgImageId); viper.IsSet(fn) {
+		// Define required flags for private images
 		setRequiredFlagsPrivateImage := [][]string{
 			{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgImageId},
 			{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgImageAlias},
@@ -320,21 +324,30 @@ func PreRunVolumeCreate(c *core.PreCommandConfig) error {
 		img, _, err := client.Must().CloudClient.ImagesApi.ImagesFindById(context.Background(),
 			viper.GetString(fn)).Execute()
 		if err != nil {
-			return fmt.Errorf("failed getting image %s: %w", viper.GetString(fn), err)
+			// try to fetch it as a snapshot if fails
+			_, _, snapshotErr := client.Must().CloudClient.SnapshotsApi.SnapshotsFindById(context.Background(),
+				viper.GetString(fn)).Execute()
+			if snapshotErr != nil {
+				return fmt.Errorf("failed getting image or snapshot %s: %w", viper.GetString(fn), err)
+			}
+
+			// If a snapshot is found, skip additional checks
+			return nil
 		}
 
 		if img.Properties == nil || img.Properties.Public == nil || !*img.Properties.Public {
 			return core.CheckRequiredFlagsSets(c.Command, c.NS, setRequiredFlagsPrivateImage...)
 		}
+
 		publicImageAsImageId = true
 	}
 
-	// Public image requirements. Private images cannot have aliases
+	// check public image alias requirements
 	if fn := core.GetFlagName(c.NS, cloudapiv6.ArgImageAlias); publicImageAsImageId || viper.IsSet(fn) {
 		return core.CheckRequiredFlagsSets(c.Command, c.NS, setRequiredFlagsPublicImage...)
 	}
-	return nil
 
+	return nil
 }
 
 func RunVolumeListAll(c *core.CommandConfig) error {
