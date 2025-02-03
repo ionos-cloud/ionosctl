@@ -430,8 +430,11 @@ func validateEdition(c *core.PreCommandConfig) error {
 	}
 
 	// Business edition: infer template as XS
+	// Playground edition: infer template as Playground
 	if fn := core.GetFlagName(c.NS, constants.FlagTemplate); edition == "business" && !viper.IsSet(fn) {
 		viper.Set(fn, "XS")
+	} else if edition == "playground" && !viper.IsSet(fn) {
+		viper.Set(fn, "Playground")
 	}
 
 	// Special case for playground: infer that instances is 1
