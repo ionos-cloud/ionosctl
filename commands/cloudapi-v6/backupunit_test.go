@@ -370,7 +370,7 @@ func TestRunBackupUnitCreateWaitErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgEmail), testBackupUnitVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPassword), testBackupUnitVar)
 		rm.CloudApiV6Mocks.BackupUnit.EXPECT().Create(backupUnitTest, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&backupUnitTest, &testResponse, nil)
-		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testRequestIdVar).Return(&testRequestStatus, nil, nil)
+		// Note: in #487 we no longer expect a status check when using -w , as backupunits are not registered on /requests
 		err := RunBackupUnitCreate(cfg)
 		assert.NoError(t, err)
 	})
@@ -421,9 +421,9 @@ func TestRunBackupUnitUpdateWaitErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPassword), testBackupUnitNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgEmail), testBackupUnitNewVar)
 		rm.CloudApiV6Mocks.BackupUnit.EXPECT().Update(testBackupUnitVar, backupUnitProperties, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&backupUnitNew, &testResponse, nil)
-		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testRequestIdVar).Return(&testRequestStatus, nil, testRequestErr)
+		// Note: in #487 we no longer expect a status check when using -w , as backupunits are not registered on /requests
 		err := RunBackupUnitUpdate(cfg)
-		assert.Error(t, err)
+		assert.NoError(t, err)
 	})
 }
 
@@ -564,7 +564,7 @@ func TestRunBackupUnitDeleteWaitErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgBackupUnitId), testBackupUnitVar)
 		viper.Set(core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), true)
 		rm.CloudApiV6Mocks.BackupUnit.EXPECT().Delete(testBackupUnitVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&testResponse, nil)
-		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testRequestIdVar).Return(&testRequestStatus, nil, nil)
+		// Note: in #487 we no longer expect a status check when using -w , as backupunits are not registered on /requests
 		err := RunBackupUnitDelete(cfg)
 		assert.NoError(t, err)
 	})
