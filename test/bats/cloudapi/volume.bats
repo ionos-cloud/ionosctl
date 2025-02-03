@@ -150,7 +150,7 @@ setup_file() {
     export IONOS_PASSWORD="$(cat /tmp/bats_test/password)"
 
     run ionosctl backupunit create --name "bats$(randStr 6)" --email "$(cat /tmp/bats_test/email)" \
-     --password "$(cat /tmp/bats_test/password)" -o json 2> /dev/null
+     --password "$(cat /tmp/bats_test/password)" -w -t 300 -o json 2> /dev/null
     assert_success
     assert_regex "$output" "$uuid_v4_regex"
     echo "$output" | jq -r '.id' > /tmp/bats_test/backupunit_id
