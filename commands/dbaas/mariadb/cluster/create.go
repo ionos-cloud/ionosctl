@@ -17,7 +17,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/convbytes"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/pointer"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
-	ionoscloud "github.com/ionos-cloud/sdk-go-dbaas-mariadb"
+	mariadb "github.com/ionos-cloud/sdk-go-dbaas-mariadb"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -43,7 +43,7 @@ func Create() *core.Command {
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			cluster := ionoscloud.CreateClusterProperties{}
+			cluster := mariadb.CreateClusterProperties{}
 			if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) {
 				cluster.DisplayName = pointer.From(viper.GetString(fn))
 			}
@@ -51,7 +51,7 @@ func Create() *core.Command {
 				cluster.Instances = pointer.From(viper.GetInt32(fn))
 			}
 			if fn := core.GetFlagName(c.NS, constants.FlagVersion); viper.IsSet(fn) {
-				cluster.MariadbVersion = (*ionoscloud.MariadbVersion)(pointer.From(viper.GetString(fn)))
+				cluster.MariadbVersion = (*mariadb.MariadbVersion)(pointer.From(viper.GetString(fn)))
 			}
 
 			if fn := core.GetFlagName(c.NS, constants.FlagCores); viper.GetString(fn) != "" {
@@ -66,9 +66,9 @@ func Create() *core.Command {
 				cluster.Ram = pointer.From(int32(sizeInt64))
 			}
 
-			cluster.MaintenanceWindow = &ionoscloud.MaintenanceWindow{}
+			cluster.MaintenanceWindow = &mariadb.MaintenanceWindow{}
 			if fn := core.GetFlagName(c.NS, constants.FlagMaintenanceDay); viper.GetString(fn) != "" {
-				cluster.MaintenanceWindow.DayOfTheWeek = (*ionoscloud.DayOfTheWeek)(pointer.From(
+				cluster.MaintenanceWindow.DayOfTheWeek = (*mariadb.DayOfTheWeek)(pointer.From(
 					viper.GetString(fn)))
 			}
 			if fn := core.GetFlagName(c.NS, constants.FlagMaintenanceTime); viper.GetString(fn) != "" {
@@ -76,7 +76,7 @@ func Create() *core.Command {
 					viper.GetString(fn))
 			}
 
-			cluster.Connections = pointer.From(make([]ionoscloud.Connection, 1))
+			cluster.Connections = pointer.From(make([]mariadb.Connection, 1))
 			if fn := core.GetFlagName(c.NS, constants.FlagCidr); viper.IsSet(fn) {
 				(*cluster.Connections)[0].Cidr = pointer.From(
 					viper.GetString(fn))
@@ -90,7 +90,7 @@ func Create() *core.Command {
 					viper.GetString(fn))
 			}
 
-			cluster.Credentials = &ionoscloud.DBUser{}
+			cluster.Credentials = &mariadb.DBUser{}
 			if fn := core.GetFlagName(c.NS, constants.ArgUser); viper.IsSet(fn) {
 				(*cluster.Credentials).Username = pointer.From(
 					viper.GetString(fn))
@@ -101,7 +101,7 @@ func Create() *core.Command {
 			}
 
 			createdCluster, _, err := client.Must().MariaClient.ClustersApi.ClustersPost(context.Background()).CreateClusterRequest(
-				ionoscloud.CreateClusterRequest{Properties: &cluster},
+				mariadb.CreateClusterRequest{Properties: &cluster},
 			).Execute()
 			if err != nil {
 				return fmt.Errorf("failed creating cluster: %w", err)

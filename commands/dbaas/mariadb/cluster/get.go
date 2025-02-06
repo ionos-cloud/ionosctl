@@ -10,7 +10,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
-	ionoscloud "github.com/ionos-cloud/sdk-go-dbaas-mariadb"
+	mariadb "github.com/ionos-cloud/sdk-go-dbaas-mariadb"
 	"github.com/spf13/viper"
 )
 
@@ -53,7 +53,7 @@ func Get() *core.Command {
 		core.RequiredFlagOption(),
 		core.WithCompletion(
 			func() []string {
-				return ClustersProperty(func(c ionoscloud.ClusterResponse) string {
+				return ClustersProperty(func(c mariadb.ClusterResponse) string {
 					if c.Id == nil {
 						return ""
 					}

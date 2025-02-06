@@ -11,12 +11,12 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
-	sdkgo "github.com/ionos-cloud/sdk-go-dbaas-mariadb"
+	mariadb "github.com/ionos-cloud/sdk-go-dbaas-mariadb"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
-func confirmStringForCluster(c sdkgo.ClusterResponse) string {
+func confirmStringForCluster(c mariadb.ClusterResponse) string {
 	askString := ""
 	if p := c.Properties; p != nil {
 		if c.Id != nil {
@@ -76,7 +76,7 @@ ionosctl db mar c d --all --name <name>`,
 		core.RequiredFlagOption(),
 		core.WithCompletion(
 			func() []string {
-				return ClustersProperty(func(c sdkgo.ClusterResponse) string {
+				return ClustersProperty(func(c mariadb.ClusterResponse) string {
 					if c.Id == nil {
 						return ""
 					}
@@ -104,7 +104,7 @@ func deleteAll(c *core.CommandConfig) error {
 		return err
 	}
 
-	return functional.ApplyAndAggregateErrors(*xs.GetItems(), func(x sdkgo.ClusterResponse) error {
+	return functional.ApplyAndAggregateErrors(*xs.GetItems(), func(x mariadb.ClusterResponse) error {
 		yes := confirm.FAsk(c.Command.Command.InOrStdin(), confirmStringForCluster(x), viper.GetBool(constants.ArgForce))
 		if yes {
 			_, _, delErr := client.Must().MariaClient.ClustersApi.ClustersDelete(c.Context, *x.Id).Execute()

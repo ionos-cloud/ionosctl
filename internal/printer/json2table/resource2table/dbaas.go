@@ -9,13 +9,13 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/convbytes"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 	sdkmongo "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo/v2"
-	sdkmariadb "github.com/ionos-cloud/sdk-go-dbaas-mariadb"
+	mariadb "github.com/ionos-cloud/sdk-go-dbaas-mariadb"
 	sdkpsql "github.com/ionos-cloud/sdk-go-dbaas-postgres"
 
 	"github.com/dustin/go-humanize"
 )
 
-func ConvertDbaasMariadbBackupToTable(backup sdkmariadb.BackupResponse) ([]map[string]interface{}, error) {
+func ConvertDbaasMariadbBackupToTable(backup mariadb.BackupResponse) ([]map[string]interface{}, error) {
 	properties, ok := backup.GetPropertiesOk()
 	if !ok || properties == nil {
 		return nil, fmt.Errorf("could not retrieve MariaDB Backup properties")
@@ -127,7 +127,7 @@ func ConvertDbaasMongoClusterToTable(cluster sdkmongo.ClusterResponse) ([]map[st
 	return temp, nil
 }
 
-func ConvertDbaasMariadbBackupsToTable(backups sdkmariadb.BackupList) ([]map[string]interface{}, error) {
+func ConvertDbaasMariadbBackupsToTable(backups mariadb.BackupList) ([]map[string]interface{}, error) {
 	items, ok := backups.GetItemsOk()
 	if !ok || items == nil || len(*items) == 0 {
 		return nil, nil
@@ -146,7 +146,7 @@ func ConvertDbaasMariadbBackupsToTable(backups sdkmariadb.BackupList) ([]map[str
 	return clustersConverted, nil
 }
 
-func ConvertDbaasMariaDBClusterToTable(cluster sdkmariadb.ClusterResponse) ([]map[string]interface{}, error) {
+func ConvertDbaasMariaDBClusterToTable(cluster mariadb.ClusterResponse) ([]map[string]interface{}, error) {
 	table, err := json2table.ConvertJSONToTable("", jsonpaths.DbaasMariadbCluster, cluster)
 	if err != nil {
 		return nil, fmt.Errorf("failed getting table representation of cluster: %w", err)
@@ -157,7 +157,7 @@ func ConvertDbaasMariaDBClusterToTable(cluster sdkmariadb.ClusterResponse) ([]ma
 	return table, nil
 }
 
-func ConvertDbaasMariaDBClustersToTable(clusters sdkmariadb.ClusterList) ([]map[string]interface{}, error) {
+func ConvertDbaasMariaDBClustersToTable(clusters mariadb.ClusterList) ([]map[string]interface{}, error) {
 	items, ok := clusters.GetItemsOk()
 	if !ok || items == nil || len(*items) == 0 {
 		return nil, nil

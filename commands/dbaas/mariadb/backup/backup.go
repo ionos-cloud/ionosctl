@@ -6,7 +6,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/mariadb/cluster"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
-	ionoscloud "github.com/ionos-cloud/sdk-go-dbaas-mariadb"
+	mariadb "github.com/ionos-cloud/sdk-go-dbaas-mariadb"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
@@ -44,11 +44,11 @@ var (
 	defaultCols = allCols
 )
 
-func Backups(fs ...Filter) (ionoscloud.BackupList, error) {
+func Backups(fs ...Filter) (mariadb.BackupList, error) {
 	cs, err := cluster.Clusters()
 
 	if cs.Items == nil || len(*cs.Items) == 0 {
-		return ionoscloud.BackupList{}, nil // no clusters -> empty response with no error
+		return mariadb.BackupList{}, nil // no clusters -> empty response with no error
 	}
 
 	req := client.Must().MariaClient.BackupsApi.BackupsGet(context.Background())
@@ -61,10 +61,10 @@ func Backups(fs ...Filter) (ionoscloud.BackupList, error) {
 	return bs, err
 }
 
-type Filter func(request ionoscloud.ApiBackupsGetRequest) ionoscloud.ApiBackupsGetRequest
+type Filter func(request mariadb.ApiBackupsGetRequest) mariadb.ApiBackupsGetRequest
 
 func FilterPaginationFlags(c *core.CommandConfig) Filter {
-	return func(req ionoscloud.ApiBackupsGetRequest) ionoscloud.ApiBackupsGetRequest {
+	return func(req mariadb.ApiBackupsGetRequest) mariadb.ApiBackupsGetRequest {
 		if f := core.GetFlagName(c.NS, constants.FlagMaxResults); viper.IsSet(f) {
 			req = req.Limit(viper.GetInt32(f))
 		}
@@ -75,7 +75,7 @@ func FilterPaginationFlags(c *core.CommandConfig) Filter {
 	}
 }
 
-func BackupsProperty[V any](f func(c ionoscloud.BackupResponse) V, fs ...Filter) []V {
+func BackupsProperty[V any](f func(c mariadb.BackupResponse) V, fs ...Filter) []V {
 	recs, err := Backups(fs...)
 	if err != nil {
 		return nil
