@@ -12,12 +12,12 @@ import (
 	"github.com/ionos-cloud/sdk-go-bundle/products/dataplatform/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dns/v2"
+	"github.com/ionos-cloud/sdk-go-bundle/products/kafka/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/logging/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/vpn/v2"
 	certmanager "github.com/ionos-cloud/sdk-go-cert-manager"
 	maria "github.com/ionos-cloud/sdk-go-dbaas-mariadb"
 	postgres "github.com/ionos-cloud/sdk-go-dbaas-postgres"
-	kafka "github.com/ionos-cloud/sdk-go-kafka"
 	vmasc "github.com/ionos-cloud/sdk-go-vm-autoscaling"
 	cloudv6 "github.com/ionos-cloud/sdk-go/v6"
 
@@ -112,9 +112,6 @@ func newClient(name, pwd, token, hostUrl string, usedLayer *Layer) *Client {
 	mariaConfig := maria.NewConfiguration(name, pwd, token, hostUrl)
 	mariaConfig.UserAgent = appendUserAgent(mariaConfig.UserAgent)
 
-	kafkaConfig := kafka.NewConfiguration(name, pwd, token, hostUrl)
-	kafkaConfig.UserAgent = appendUserAgent(kafkaConfig.UserAgent)
-
 	return &Client{
 		CloudClient:          cloudv6.NewAPIClient(clientConfig),
 		AuthClient:           sdkgoauth.NewAPIClient(authConfig),
@@ -130,7 +127,7 @@ func newClient(name, pwd, token, hostUrl string, usedLayer *Layer) *Client {
 		PostgresClient: postgres.NewAPIClient(postgresConfig),
 		MongoClient:    mongo.NewAPIClient(sharedConfig),
 		MariaClient:    maria.NewAPIClient(mariaConfig),
-		Kafka:          kafka.NewAPIClient(kafkaConfig),
+		Kafka:          kafka.NewAPIClient(sharedConfig),
 
 		usedLayer: usedLayer,
 	}

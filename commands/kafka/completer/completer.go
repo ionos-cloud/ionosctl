@@ -8,7 +8,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
-	kafka "github.com/ionos-cloud/sdk-go-kafka"
+	"github.com/ionos-cloud/sdk-go-bundle/products/kafka/v2"
 )
 
 // ClustersProperty returns a list of properties of all clusters matching the given filters

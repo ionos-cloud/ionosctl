@@ -13,7 +13,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
-	kafka "github.com/ionos-cloud/sdk-go-kafka"
+	"github.com/ionos-cloud/sdk-go-bundle/products/kafka/v2"
 )
 
 func listCmd() *core.Command {
