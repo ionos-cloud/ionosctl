@@ -47,7 +47,7 @@ var (
 func Backups(fs ...Filter) (mariadb.BackupList, error) {
 	cs, err := cluster.Clusters()
 
-	if cs.Items == nil || len(*cs.Items) == 0 {
+	if len(cs.Items) == 0 {
 		return mariadb.BackupList{}, nil // no clusters -> empty response with no error
 	}
 
@@ -80,5 +80,5 @@ func BackupsProperty[V any](f func(c mariadb.BackupResponse) V, fs ...Filter) []
 	if err != nil {
 		return nil
 	}
-	return functional.Map(*recs.Items, f)
+	return functional.Map(recs.Items, f)
 }
