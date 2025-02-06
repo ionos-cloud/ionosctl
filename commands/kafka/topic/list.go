@@ -63,7 +63,7 @@ ionosctl kafka topic list --location LOCATION --cluster-id CLUSTER_ID`,
 			func() []string {
 				return completer.ClustersProperty(
 					func(read kafka.ClusterRead) string {
-						return *read.Id
+						return read.Id
 					},
 				)
 			}, constants.KafkaApiRegionalURL, constants.KafkaLocations,
@@ -81,7 +81,7 @@ func listAll(c *core.CommandConfig) error {
 
 	var allTopicsConverted []map[string]interface{}
 	var allTopics []kafka.TopicReadList
-	for _, cluster := range *clusters.Items {
+	for _, cluster := range clusters.Items {
 		topics, _, err := client.Must().Kafka.TopicsApi.ClustersTopicsGet(context.Background(), *cluster.Id).Execute()
 		if err != nil {
 			return err
@@ -95,7 +95,7 @@ func listAll(c *core.CommandConfig) error {
 		allTopicsConverted = append(
 			allTopicsConverted, functional.Map(
 				topicsConverted, func(topic map[string]interface{}) map[string]interface{} {
-					topic["ClusterId"] = *cluster.Id
+					topic["ClusterId"] = cluster.Id
 					return topic
 				},
 			)...,

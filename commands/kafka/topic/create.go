@@ -76,7 +76,7 @@ func createCmd() *core.Command {
 			func() []string {
 				return completer.ClustersProperty(
 					func(read kafka.ClusterRead) string {
-						return *read.Id
+						return read.Id
 					},
 				)
 			}, constants.KafkaApiRegionalURL, constants.KafkaLocations,
