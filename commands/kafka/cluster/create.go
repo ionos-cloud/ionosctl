@@ -38,10 +38,7 @@ func Create() *core.Command {
 				return nil
 			},
 			CmdRun: func(c *core.CommandConfig) error {
-				input := kafka.Cluster{}
-				if err := setPropertiesFromFlags(c, input); err != nil {
-					return err
-				}
+				input := setPropertiesFromFlags(c)
 
 				res, _, err := client.Must().Kafka.ClustersApi.ClustersPost(context.Background()).
 					ClusterCreate(
@@ -101,7 +98,9 @@ func addClusterCreateFlags(cmd *core.Command) *core.Command {
 	return cmd
 }
 
-func setPropertiesFromFlags(c *core.CommandConfig, p kafka.Cluster) error {
+func setPropertiesFromFlags(c *core.CommandConfig) kafka.Cluster {
+	p := kafka.Cluster{}
+
 	p.Name = viper.GetString(core.GetFlagName(c.NS, constants.FlagName))
 	p.Version = viper.GetString(core.GetFlagName(c.NS, constants.FlagVersion))
 	p.Size = viper.GetString(core.GetFlagName(c.NS, constants.FlagSize))
@@ -116,7 +115,7 @@ func setPropertiesFromFlags(c *core.CommandConfig, p kafka.Cluster) error {
 		},
 	}
 
-	return nil
+	return p
 }
 
 func printCluster(c *core.CommandConfig, d kafka.ClusterRead) error {
