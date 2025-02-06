@@ -64,7 +64,7 @@ func FindByID() *core.Command {
 			func() []string {
 				return completer.ClustersProperty(
 					func(k kafka.ClusterRead) string {
-						return *k.Id
+						return k.Id
 					},
 				)
 			}, constants.KafkaApiRegionalURL, constants.KafkaLocations,

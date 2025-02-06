@@ -82,7 +82,7 @@ func listAll(c *core.CommandConfig) error {
 	var allTopicsConverted []map[string]interface{}
 	var allTopics []kafka.TopicReadList
 	for _, cluster := range clusters.Items {
-		topics, _, err := client.Must().Kafka.TopicsApi.ClustersTopicsGet(context.Background(), *cluster.Id).Execute()
+		topics, _, err := client.Must().Kafka.TopicsApi.ClustersTopicsGet(context.Background(), cluster.Id).Execute()
 		if err != nil {
 			return err
 		}

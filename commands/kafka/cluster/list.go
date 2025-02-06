@@ -76,7 +76,7 @@ func listClusters(c *core.CommandConfig) error {
 		return fmt.Errorf("could not retrieve clusters")
 	}
 
-	convertedItems, err := json2table.ConvertJSONToTable("", jsonpaths.KafkaCluster, *items)
+	convertedItems, err := json2table.ConvertJSONToTable("", jsonpaths.KafkaCluster, items)
 	if err != nil {
 		return fmt.Errorf("could not convert from JSON to Table format: %w", err)
 	}

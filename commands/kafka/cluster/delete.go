@@ -91,13 +91,13 @@ func deleteSingle(c *core.CommandConfig, id string) error {
 
 	yes := confirm.FAsk(
 		c.Command.Command.InOrStdin(),
-		fmt.Sprintf("Are you sure you want to delete cluster %s with name %s", *d.Id, *d.Properties.Name),
+		fmt.Sprintf("Are you sure you want to delete cluster %s with name %s", d.Id, d.Properties.Name),
 		viper.GetBool(constants.ArgForce),
 	)
 	if !yes {
 		return fmt.Errorf("user cancelled deletion")
 	}
 
-	_, err = client.Must().Kafka.ClustersApi.ClustersDelete(context.Background(), *d.Id).Execute()
+	_, err = client.Must().Kafka.ClustersApi.ClustersDelete(context.Background(), d.Id).Execute()
 	return err
 }
