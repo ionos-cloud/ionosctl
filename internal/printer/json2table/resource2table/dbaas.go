@@ -8,8 +8,8 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/convbytes"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
+	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mariadb/v2"
 	sdkmongo "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo/v2"
-	mariadb "github.com/ionos-cloud/sdk-go-dbaas-mariadb"
 	sdkpsql "github.com/ionos-cloud/sdk-go-dbaas-postgres"
 
 	"github.com/dustin/go-humanize"

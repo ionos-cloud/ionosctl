@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	mariadb "github.com/ionos-cloud/sdk-go-dbaas-mariadb"
+	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mariadb/v2"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
