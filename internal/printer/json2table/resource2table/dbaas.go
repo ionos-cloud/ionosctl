@@ -34,11 +34,11 @@ func ConvertDbaasMariadbBackupToTable(backup mariadb.BackupResponse) ([]map[stri
 	out[0]["Size"] = fmt.Sprintf("%d MiB", *size)
 
 	items, ok := properties.GetBaseBackupsOk()
-	if !ok || items == nil || len(*items) == 0 {
+	if !ok || items == nil || len(items) == 0 {
 		return out, nil // can be empty if no backups
 	}
 
-	for _, i := range *items {
+	for _, i := range items {
 		created, ok := i.GetCreatedOk()
 		if !ok || created == nil {
 			continue
@@ -129,12 +129,12 @@ func ConvertDbaasMongoClusterToTable(cluster sdkmongo.ClusterResponse) ([]map[st
 
 func ConvertDbaasMariadbBackupsToTable(backups mariadb.BackupList) ([]map[string]interface{}, error) {
 	items, ok := backups.GetItemsOk()
-	if !ok || items == nil || len(*items) == 0 {
+	if !ok || items == nil || len(items) == 0 {
 		return nil, nil
 	}
 
 	var clustersConverted []map[string]interface{}
-	for _, item := range *items {
+	for _, item := range items {
 		temp, err := ConvertDbaasMariadbBackupToTable(item)
 		if err != nil {
 			return nil, err
@@ -159,12 +159,12 @@ func ConvertDbaasMariaDBClusterToTable(cluster mariadb.ClusterResponse) ([]map[s
 
 func ConvertDbaasMariaDBClustersToTable(clusters mariadb.ClusterList) ([]map[string]interface{}, error) {
 	items, ok := clusters.GetItemsOk()
-	if !ok || items == nil || len(*items) == 0 {
+	if !ok || items == nil || len(items) == 0 {
 		return nil, nil
 	}
 
 	var clustersConverted []map[string]interface{}
-	for _, item := range *items {
+	for _, item := range items {
 		temp, err := ConvertDbaasMariaDBClusterToTable(item)
 		if err != nil {
 			return nil, err

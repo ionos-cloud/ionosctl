@@ -104,7 +104,7 @@ func deleteAll(c *core.CommandConfig) error {
 		return err
 	}
 
-	return functional.ApplyAndAggregateErrors(*xs.GetItems(), func(x mariadb.ClusterResponse) error {
+	return functional.ApplyAndAggregateErrors(xs.GetItems(), func(x mariadb.ClusterResponse) error {
 		yes := confirm.FAsk(c.Command.Command.InOrStdin(), confirmStringForCluster(x), viper.GetBool(constants.ArgForce))
 		if yes {
 			_, _, delErr := client.Must().MariaClient.ClustersApi.ClustersDelete(c.Context, *x.Id).Execute()

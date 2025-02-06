@@ -64,7 +64,7 @@ func ClustersProperty[V any](f func(c mariadb.ClusterResponse) V, fs ...Filter) 
 	if err != nil {
 		return nil
 	}
-	return functional.Map(*recs.Items, f)
+	return functional.Map(recs.Items, f)
 }
 
 type Filter func(mariadb.ApiClustersGetRequest) mariadb.ApiClustersGetRequest

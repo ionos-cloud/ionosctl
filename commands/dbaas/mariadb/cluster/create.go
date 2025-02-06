@@ -15,7 +15,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/resource2table"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/convbytes"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/pointer"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mariadb/v2"
 	"github.com/spf13/cobra"
@@ -45,59 +44,52 @@ func Create() *core.Command {
 		CmdRun: func(c *core.CommandConfig) error {
 			cluster := mariadb.CreateClusterProperties{}
 			if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) {
-				cluster.DisplayName = pointer.From(viper.GetString(fn))
+				cluster.DisplayName = viper.GetString(fn)
 			}
 			if fn := core.GetFlagName(c.NS, constants.FlagInstances); viper.GetString(fn) != "" {
-				cluster.Instances = pointer.From(viper.GetInt32(fn))
+				cluster.Instances = viper.GetInt32(fn)
 			}
 			if fn := core.GetFlagName(c.NS, constants.FlagVersion); viper.IsSet(fn) {
-				cluster.MariadbVersion = (*mariadb.MariadbVersion)(pointer.From(viper.GetString(fn)))
+				cluster.MariadbVersion = mariadb.MariadbVersion(viper.GetString(fn))
 			}
 
 			if fn := core.GetFlagName(c.NS, constants.FlagCores); viper.GetString(fn) != "" {
-				cluster.Cores = pointer.From(viper.GetInt32(fn))
+				cluster.Cores = viper.GetInt32(fn)
 			}
 			if fn := core.GetFlagName(c.NS, constants.FlagStorageSize); viper.GetString(fn) != "" {
 				sizeInt64 := convbytes.StrToUnit(viper.GetString(fn), convbytes.MB)
-				cluster.StorageSize = pointer.From(int32(sizeInt64))
+				cluster.StorageSize = int32(sizeInt64)
 			}
 			if fn := core.GetFlagName(c.NS, constants.FlagRam); viper.GetString(fn) != "" {
 				sizeInt64 := convbytes.StrToUnit(viper.GetString(fn), convbytes.GB)
-				cluster.Ram = pointer.From(int32(sizeInt64))
+				cluster.Ram = int32(sizeInt64)
 			}
 
 			cluster.MaintenanceWindow = &mariadb.MaintenanceWindow{}
 			if fn := core.GetFlagName(c.NS, constants.FlagMaintenanceDay); viper.GetString(fn) != "" {
-				cluster.MaintenanceWindow.DayOfTheWeek = (*mariadb.DayOfTheWeek)(pointer.From(
-					viper.GetString(fn)))
+				cluster.MaintenanceWindow.DayOfTheWeek = mariadb.DayOfTheWeek(viper.GetString(fn))
 			}
 			if fn := core.GetFlagName(c.NS, constants.FlagMaintenanceTime); viper.GetString(fn) != "" {
-				cluster.MaintenanceWindow.Time = pointer.From(
-					viper.GetString(fn))
+				cluster.MaintenanceWindow.Time = viper.GetString(fn)
 			}
 
-			cluster.Connections = pointer.From(make([]mariadb.Connection, 1))
+			cluster.Connections = make([]mariadb.Connection, 1)
 			if fn := core.GetFlagName(c.NS, constants.FlagCidr); viper.IsSet(fn) {
-				(*cluster.Connections)[0].Cidr = pointer.From(
-					viper.GetString(fn))
+				cluster.Connections[0].Cidr = viper.GetString(fn)
 			}
 			if fn := core.GetFlagName(c.NS, constants.FlagDatacenterId); viper.IsSet(fn) {
-				(*cluster.Connections)[0].DatacenterId = pointer.From(
-					viper.GetString(fn))
+				cluster.Connections[0].DatacenterId = viper.GetString(fn)
 			}
 			if fn := core.GetFlagName(c.NS, constants.FlagLanId); viper.IsSet(fn) {
-				(*cluster.Connections)[0].LanId = pointer.From(
-					viper.GetString(fn))
+				cluster.Connections[0].LanId = viper.GetString(fn)
 			}
 
-			cluster.Credentials = &mariadb.DBUser{}
+			cluster.Credentials = mariadb.DBUser{}
 			if fn := core.GetFlagName(c.NS, constants.ArgUser); viper.IsSet(fn) {
-				(*cluster.Credentials).Username = pointer.From(
-					viper.GetString(fn))
+				cluster.Credentials.Username = viper.GetString(fn)
 			}
 			if fn := core.GetFlagName(c.NS, constants.ArgPassword); viper.IsSet(fn) {
-				(*cluster.Credentials).Password = pointer.From(
-					viper.GetString(fn))
+				cluster.Credentials.Password = viper.GetString(fn)
 			}
 
 			createdCluster, _, err := client.Must().MariaClient.ClustersApi.ClustersPost(context.Background()).CreateClusterRequest(
