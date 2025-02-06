@@ -38,7 +38,7 @@ func createCmd() *core.Command {
 
 				topic := kafka.NewTopicCreate(
 					kafka.Topic{
-						Name:               &name,
+						Name:               name,
 						NumberOfPartitions: &partitions,
 						ReplicationFactor:  &replicationFactor,
 						LogRetention: &kafka.TopicLogRetention{

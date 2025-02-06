@@ -53,7 +53,7 @@ func Delete() *core.Command {
 			func() []string {
 				return completer.ClustersProperty(
 					func(k kafka.ClusterRead) string {
-						return *k.Id
+						return k.Id
 					},
 				)
 			}, constants.KafkaApiRegionalURL, constants.KafkaLocations,
@@ -77,8 +77,8 @@ func deleteAll(c *core.CommandConfig) error {
 	}
 
 	return functional.ApplyAndAggregateErrors(
-		*records.GetItems(), func(d kafka.ClusterRead) error {
-			return deleteSingle(c, *d.Id)
+		records.GetItems(), func(d kafka.ClusterRead) error {
+			return deleteSingle(c, d.Id)
 		},
 	)
 }

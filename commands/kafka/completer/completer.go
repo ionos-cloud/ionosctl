@@ -17,7 +17,7 @@ func ClustersProperty[V any](f func(read kafka.ClusterRead) V, fs ...Filter) []V
 	if err != nil {
 		return nil
 	}
-	return functional.Map(*recs.Items, f)
+	return functional.Map(recs.Items, f)
 }
 
 // Clusters returns all clusters matching the given filters
