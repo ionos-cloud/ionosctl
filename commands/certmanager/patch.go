@@ -12,7 +12,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 
-	cert "github.com/ionos-cloud/sdk-go-cert-manager"
+	"github.com/ionos-cloud/sdk-go-bundle/products/cert/v2"
 )
 
 var editProperties = cert.CertificatePatchPropertiesDto{}

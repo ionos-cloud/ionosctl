@@ -8,7 +8,7 @@ import (
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
-	cert "github.com/ionos-cloud/sdk-go-cert-manager"
+	"github.com/ionos-cloud/sdk-go-bundle/products/cert/v2"
 )
 
 // MockCertsService is a mock of CertsService interface.

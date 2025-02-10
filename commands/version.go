@@ -12,7 +12,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	sdkauth "github.com/ionos-cloud/sdk-go-auth"
-	cert "github.com/ionos-cloud/sdk-go-cert-manager"
+	"github.com/ionos-cloud/sdk-go-bundle/products/cert/v2"
 	sdkpostgres "github.com/ionos-cloud/sdk-go-dbaas-postgres"
 	sdkcompute "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"

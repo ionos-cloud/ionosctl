@@ -8,7 +8,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/services/certmanager/resources"
-	cert "github.com/ionos-cloud/sdk-go-cert-manager"
+	"github.com/ionos-cloud/sdk-go-bundle/products/cert/v2"
 	"github.com/spf13/cobra"
 )
 
