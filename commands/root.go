@@ -6,9 +6,9 @@ import (
 	"strings"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cdn"
+	"github.com/ionos-cloud/ionosctl/v6/commands/certmanager"
 	"github.com/ionos-cloud/ionosctl/v6/commands/kafka"
 
-	certificates "github.com/ionos-cloud/ionosctl/v6/commands/certmanager"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cfg"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
 	container_registry "github.com/ionos-cloud/ionosctl/v6/commands/container-registry"
@@ -215,7 +215,7 @@ func addCommands() {
 	// Add DBaaS Commands
 	rootCmd.AddCommand(dbaas.DataBaseServiceCmd())
 	// Add Certificate Manager Commands
-	rootCmd.AddCommand(certificates.CertCmd())
+	rootCmd.AddCommand(certmanager.Root())
 	// Dataplatform commands
 	rootCmd.AddCommand(dataplatform.DataplatformCmd())
 	// Add Container Registry Commands

@@ -27,7 +27,7 @@ const rootCmdName = "ionosctl"
 var nonComputeNamespaces = map[string]string{
 	"applicationloadbalancer": "Application-Load-Balancer",
 	"backupunit":              "Managed-Backup",
-	"certificate-manager":     "Certificate-Manager",
+	"certmanager":             "Certificate-Manager",
 	"container-registry":      "Container-Registry",
 	"dataplatform":            "Managed-Stackable-Data-Platform",
 	"dbaas":                   "Database-as-a-Service",

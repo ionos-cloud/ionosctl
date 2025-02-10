@@ -51,13 +51,12 @@
     * [version](subcommands%2FCLI%20Setup%2Fversion.md)
     * [whoami](subcommands%2FCLI%20Setup%2Fwhoami.md)
 * Certificate Manager
-    * [add](subcommands%2FCertificate-Manager%2Fadd.md)
-    * api
-        * [version](subcommands%2FCertificate-Manager%2Fapi%2Fversion.md)
-    * [delete](subcommands%2FCertificate-Manager%2Fdelete.md)
-    * [get](subcommands%2FCertificate-Manager%2Fget.md)
-    * [list](subcommands%2FCertificate-Manager%2Flist.md)
-    * [update](subcommands%2FCertificate-Manager%2Fupdate.md)
+    * certificate
+        * [create](subcommands%2FCertificate-Manager%2Fcertificate%2Fcreate.md)
+        * [delete](subcommands%2FCertificate-Manager%2Fcertificate%2Fdelete.md)
+        * [get](subcommands%2FCertificate-Manager%2Fcertificate%2Fget.md)
+        * [list](subcommands%2FCertificate-Manager%2Fcertificate%2Flist.md)
+        * [update](subcommands%2FCertificate-Manager%2Fcertificate%2Fupdate.md)
 * Compute Engine
     * contract
         * [get](subcommands%2FCompute%20Engine%2Fcontract%2Fget.md)

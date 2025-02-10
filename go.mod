@@ -34,6 +34,7 @@ require (
 require (
 	github.com/dustin/go-humanize v0.0.0-20171111073723-bb3d318650d4
 	github.com/ionos-cloud/sdk-go-bundle/products/cdn/v2 v2.1.1
+	github.com/ionos-cloud/sdk-go-bundle/products/cert/v2 v2.1.0
 	github.com/ionos-cloud/sdk-go-bundle/products/containerregistry/v2 v2.0.2
 	github.com/ionos-cloud/sdk-go-bundle/products/dataplatform/v2 v2.0.2
 	github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo/v2 v2.0.2
@@ -64,7 +65,6 @@ require (
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
-	github.com/ionos-cloud/sdk-go-cert-manager v1.0.1
 	github.com/magiconair/properties v1.8.7 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect

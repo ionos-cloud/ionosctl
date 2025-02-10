@@ -17,6 +17,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/ionos-cloud/ionosctl/v6/commands/certmanager/certificate"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 
@@ -57,7 +58,7 @@ func TestCertificateManagerServiceCmd(t *testing.T) {
 			viper.Set(constants.ArgQuiet, true)
 			viper.Set(constants.ArgVerbose, false)
 
-			err = CertListCmd().Command.Execute()
+			err = certificate.CertListCmd().Command.Execute()
 			assert.NoError(t, err)
 		},
 	)
@@ -90,36 +91,36 @@ func TestCertificateManagerServiceCmd(t *testing.T) {
 			viper.Set(constants.ArgVerbose, false)
 			viper.Set(constants.ArgForce, true)
 
-			c := CertCreateCmd()
-			c.Command.Flags().Set(FlagCertName, "___test___certificate___test___")
-			c.Command.Flags().Set(FlagCert, caPEM.String())
-			c.Command.Flags().Set(FlagCertChain, caPEM.String())
-			c.Command.Flags().Set(FlagPrivateKey, caPrivKeyPEM.String())
+			c := certificate.CertCreateCmd()
+			c.Command.Flags().Set(constants.FlagCertName, "___test___certificate___test___")
+			c.Command.Flags().Set(constants.FlagCert, caPEM.String())
+			c.Command.Flags().Set(constants.FlagCertChain, caPEM.String())
+			c.Command.Flags().Set(constants.FlagPrivateKey, caPrivKeyPEM.String())
 
 			err = c.Command.Execute()
 			assert.NoError(t, err)
 
 			// var id string
 			svc, err := client.Get()
-			certs, _, err := svc.CertManagerClient.CertificatesApi.CertificatesGet(context.Background()).Execute()
+			certs, _, err := svc.CertManagerClient.CertificateApi.CertificatesGet(context.Background()).Execute()
 			assert.NoError(t, err)
 
 			var id string
-			for _, dto := range *certs.GetItems() {
-				if *dto.GetProperties().GetName() == "___test___certificate___test___" {
-					id = *dto.GetId()
+			for _, dto := range certs.GetItems() {
+				if dto.GetProperties().Name == "___test___certificate___test___" {
+					id = dto.GetId()
 				}
 			}
 
-			g := CertGetCmd()
-			g.Command.Flags().Set(FlagCertId, id)
+			g := certificate.CertGetCmd()
+			g.Command.Flags().Set(constants.FlagCertId, id)
 			assert.NoError(t, err)
 
 			err = g.Command.Execute()
 			assert.NoError(t, err)
 
-			d := CertDeleteCmd()
-			d.Command.Flags().Set(FlagCertId, id)
+			d := certificate.CertDeleteCmd()
+			d.Command.Flags().Set(constants.FlagCertId, id)
 			err = d.Command.Execute()
 			assert.NoError(t, err)
 		},
@@ -129,7 +130,7 @@ func TestCertificateManagerServiceCmd(t *testing.T) {
 		"cert create from files", func(t *testing.T) {
 			viper.Reset()
 
-			//os.Mkdir("./testPaths", 0777)
+			// os.Mkdir("./testPaths", 0777)
 			caPrivKey, err := rsa.GenerateKey(rand.Reader, 4096)
 			assert.NoError(t, err)
 
@@ -148,12 +149,12 @@ func TestCertificateManagerServiceCmd(t *testing.T) {
 				Bytes: x509.MarshalPKCS1PrivateKey(caPrivKey),
 			})
 			certPath := filepath.Join(".", "cert.pem")
-			//os.Create(certPath)
+			// os.Create(certPath)
 			err = os.WriteFile(certPath, caPEM.Bytes(), 0777)
 			assert.NoError(t, err)
 
 			keyPath := filepath.Join(".", "key.pem")
-			//os.Create(keyPath)
+			// os.Create(keyPath)
 			os.WriteFile(keyPath, caPrivKeyPEM.Bytes(), 0777)
 			assert.NoError(t, err)
 
@@ -162,39 +163,39 @@ func TestCertificateManagerServiceCmd(t *testing.T) {
 			viper.Set(constants.ArgVerbose, false)
 			viper.Set(constants.ArgForce, true)
 
-			c := CertCreateCmd()
-			c.Command.Flags().Set(FlagCertName, "test_certificate-files_test")
-			c.Command.Flags().Set(FlagCertPath, certPath)
-			c.Command.Flags().Set(FlagCertChainPath, certPath)
-			c.Command.Flags().Set(FlagPrivateKeyPath, keyPath)
+			c := certificate.CertCreateCmd()
+			c.Command.Flags().Set(constants.FlagCertName, "test_certificate-files_test")
+			c.Command.Flags().Set(constants.FlagCertPath, certPath)
+			c.Command.Flags().Set(constants.FlagCertChainPath, certPath)
+			c.Command.Flags().Set(constants.FlagPrivateKeyPath, keyPath)
 
 			err = c.Command.Execute()
 			assert.NoError(t, err)
 
 			// var id string
 			svc, err := client.Get()
-			certs, _, err := svc.CertManagerClient.CertificatesApi.CertificatesGet(context.Background()).
+			certs, _, err := svc.CertManagerClient.CertificateApi.CertificatesGet(context.Background()).
 				Execute()
 			assert.NoError(t, err)
 
 			var id string
-			for _, dto := range *certs.GetItems() {
-				if *dto.GetProperties().GetName() == "test_certificate-files_test" {
-					id = *dto.GetId()
+			for _, dto := range certs.GetItems() {
+				if dto.GetProperties().Name == "test_certificate-files_test" {
+					id = dto.GetId()
 				}
 			}
 
-			p := CertUpdateCmd()
-			p.Command.Flags().Set(FlagCertId, id)
-			p.Command.Flags().Set(FlagCertName, "test_certificate-files-updated_test")
+			p := certificate.CertUpdateCmd()
+			p.Command.Flags().Set(constants.FlagCertId, id)
+			p.Command.Flags().Set(constants.FlagCertName, "test_certificate-files-updated_test")
 			err = p.Command.Execute()
 
-			cert, _, err := svc.CertManagerClient.CertificatesApi.CertificatesGetById(context.Background(), id).Execute()
+			cert, _, err := svc.CertManagerClient.CertificateApi.CertificatesFindById(context.Background(), id).Execute()
 			assert.NoError(t, err)
-			assert.Equal(t, "test_certificate-files-updated_test", *cert.GetProperties().GetName())
+			assert.Equal(t, "test_certificate-files-updated_test", cert.GetProperties().Name)
 
-			d := CertDeleteCmd()
-			d.Command.Flags().Set(FlagCertId, id)
+			d := certificate.CertDeleteCmd()
+			d.Command.Flags().Set(constants.FlagCertId, id)
 			err = d.Command.Execute()
 			assert.NoError(t, err)
 

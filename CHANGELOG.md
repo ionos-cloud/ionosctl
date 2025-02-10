@@ -7,6 +7,12 @@
 - Fixed not being able to use snapshot IDs for --image-id
 - Fixed 404 when waiting for backupunits to be ready
 
+### Changed
+- Changed Certificate Manager API to /v2
+- Certificate Manager commands are now nested under `certificate` resource, but the old commands are still available (though hidden in the helptext) for backwards compatibility
+- Certificate Manager command `api-version` is now no longer available, has been hidden and deprecated, and using it will print a warning as well as a dummy value `v2.0`
+- Added a few friendly certificate manager aliases
+
 ## [v6.8.0] (January 2025)
 
 ### Added
