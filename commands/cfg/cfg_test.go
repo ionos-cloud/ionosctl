@@ -296,15 +296,15 @@ func teardown() {
 	}
 
 	// Delete tokens generated since setup
-	for _, t := range *toks.Tokens {
-		date, err := utils.ParseDate(*t.CreatedDate)
+	for _, t := range toks.Tokens {
+		date, err := utils.ParseDate(t.CreatedDate)
 		if err != nil {
-			panic(fmt.Errorf("couldn't parse date %s: %w", *t.CreatedDate, err))
+			panic(fmt.Errorf("couldn't parse date %s: %w", t.CreatedDate, err))
 		}
 
 		// Delete the token if it was created after setup
 		if date.After(tokCreationTime) {
-			_, _, err := cl.AuthClient.TokensApi.TokensDeleteById(context.Background(), *t.Id).Execute()
+			_, _, err := cl.AuthClient.TokensApi.TokensDeleteById(context.Background(), t.Id).Execute()
 
 			if err != nil {
 				panic(err)
