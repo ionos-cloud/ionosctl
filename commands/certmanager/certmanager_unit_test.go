@@ -7,6 +7,7 @@ import (
 	"errors"
 	"testing"
 
+	"github.com/ionos-cloud/ionosctl/v6/commands/certmanager/certificate"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/stretchr/testify/assert"
 )
@@ -17,28 +18,28 @@ var (
 
 func TestCertificateManagerServiceCmdUnit(t *testing.T) {
 	var err error
-	core.RootCmdTest.AddCommand(CertCmd())
-	if ok := CertCmd().IsAvailableCommand(); !ok {
+	core.RootCmdTest.AddCommand(certificate.CertCmd())
+	if ok := certificate.CertCmd().IsAvailableCommand(); !ok {
 		err = nonAvailableCmdErr
 	}
 	assert.NoError(t, err)
 
-	if ok := CertCreateCmd().IsAvailableCommand(); !ok {
+	if ok := certificate.CertCreateCmd().IsAvailableCommand(); !ok {
 		err = nonAvailableCmdErr
 	}
 	assert.NoError(t, err)
 
-	if ok := CertDeleteCmd().IsAvailableCommand(); !ok {
+	if ok := certificate.CertDeleteCmd().IsAvailableCommand(); !ok {
 		err = nonAvailableCmdErr
 	}
 	assert.NoError(t, err)
 
-	if ok := CertGetCmd().IsAvailableCommand(); !ok {
+	if ok := certificate.CertGetCmd().IsAvailableCommand(); !ok {
 		err = nonAvailableCmdErr
 	}
 	assert.NoError(t, err)
 
-	if ok := CertListCmd().IsAvailableCommand(); !ok {
+	if ok := certificate.CertListCmd().IsAvailableCommand(); !ok {
 		err = nonAvailableCmdErr
 	}
 	assert.NoError(t, err)

@@ -1,9 +1,10 @@
-package certmanager
+package certificate
 
 import (
 	"context"
 	"fmt"
 
+	"github.com/ionos-cloud/ionosctl/v6/commands/certmanager"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
@@ -26,12 +27,12 @@ func CertGetCmd() *core.Command {
 		InitClient: true,
 	})
 
-	cmd.AddStringFlag(FlagCertId, "i", "", "Response get a single certificate", core.RequiredFlagOption())
-	_ = cmd.Command.RegisterFlagCompletionFunc(FlagCertId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	cmd.AddStringFlag(certmanager.FlagCertId, "i", "", "Response get a single certificate", core.RequiredFlagOption())
+	_ = cmd.Command.RegisterFlagCompletionFunc(certmanager.FlagCertId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return CertificatesIds(), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddBoolFlag(FlagCert, "", false, "Print the certificate")
-	cmd.AddBoolFlag(FlagCertChain, "", false, "Print the certificate chain")
+	cmd.AddBoolFlag(certmanager.FlagCert, "", false, "Print the certificate")
+	cmd.AddBoolFlag(certmanager.FlagCertChain, "", false, "Print the certificate chain")
 
 	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, tabheaders.ColsMessage(defaultCertificateCols))
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -44,12 +45,12 @@ func CertGetCmd() *core.Command {
 func CmdGet(c *core.CommandConfig) error {
 	var certFlag, certChainFlag, getCertOrChain bool
 
-	certFlag, err := c.Command.Command.Flags().GetBool(FlagCert)
+	certFlag, err := c.Command.Command.Flags().GetBool(certmanager.FlagCert)
 	if err != nil {
 		return err
 	}
 
-	certChainFlag, err = c.Command.Command.Flags().GetBool(FlagCertChain)
+	certChainFlag, err = c.Command.Command.Flags().GetBool(certmanager.FlagCertChain)
 	if err != nil {
 		return err
 	}
@@ -60,7 +61,7 @@ func CmdGet(c *core.CommandConfig) error {
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting Certificates..."))
 
-	id, err := c.Command.Command.Flags().GetString(FlagCertId)
+	id, err := c.Command.Command.Flags().GetString(certmanager.FlagCertId)
 	if err != nil {
 		return err
 	}
@@ -90,11 +91,11 @@ func CmdGet(c *core.CommandConfig) error {
 }
 
 func PreCmdGet(c *core.PreCommandConfig) error {
-	err := c.Command.Command.MarkFlagRequired(FlagCertId)
+	err := c.Command.Command.MarkFlagRequired(certmanager.FlagCertId)
 	if err != nil {
 		return err
 	}
 
-	c.Command.Command.MarkFlagsMutuallyExclusive(FlagCert, FlagCertChain)
+	c.Command.Command.MarkFlagsMutuallyExclusive(certmanager.FlagCert, certmanager.FlagCertChain)
 	return nil
 }

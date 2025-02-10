@@ -1,13 +1,13 @@
-package certmanager
+package certificate
 
 import (
 	"context"
 
+	"github.com/ionos-cloud/ionosctl/v6/commands/certmanager"
 	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/services/certmanager/resources"
 	"github.com/ionos-cloud/sdk-go-bundle/products/cert/v2"
 	"github.com/spf13/cobra"
 )
@@ -30,7 +30,7 @@ func CertCmd() *core.Command {
 	certCmd.AddCommand(CertCreateCmd())
 	certCmd.AddCommand(CertListCmd())
 	certCmd.AddCommand(CertDeleteCmd())
-	certCmd.AddCommand(CertGetApiVersionCmd())
+	certCmd.AddCommand(certmanager.CertGetApiVersionCmd())
 	certCmd.AddCommand(CertUpdateCmd())
 
 	return certCmd

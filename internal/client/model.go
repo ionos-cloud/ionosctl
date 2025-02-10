@@ -100,9 +100,6 @@ func newClient(name, pwd, token, hostUrl string, usedLayer *Layer) *Client {
 	authConfig := sdkgoauth.NewConfiguration(name, pwd, token, hostUrl)
 	authConfig.UserAgent = appendUserAgent(authConfig.UserAgent)
 
-	certManagerConfig := cert.NewConfiguration(name, pwd, token, hostUrl)
-	certManagerConfig.UserAgent = appendUserAgent(certManagerConfig.UserAgent)
-
 	vmascConfig := vmasc.NewConfiguration(name, pwd, token, hostUrl)
 	vmascConfig.UserAgent = appendUserAgent(vmascConfig.UserAgent)
 	// DBAAS
@@ -119,7 +116,7 @@ func newClient(name, pwd, token, hostUrl string, usedLayer *Layer) *Client {
 		CloudClient:          cloudv6.NewAPIClient(clientConfig),
 		AuthClient:           sdkgoauth.NewAPIClient(authConfig),
 		CDNClient:            cdn.NewAPIClient(sharedConfig),
-		CertManagerClient:    cert.NewAPIClient(certManagerConfig),
+		CertManagerClient:    cert.NewAPIClient(sharedConfig),
 		RegistryClient:       containerregistry.NewAPIClient(sharedConfig),
 		DataplatformClient:   dataplatform.NewAPIClient(sharedConfig),
 		DnsClient:            dns.NewAPIClient(sharedConfig),

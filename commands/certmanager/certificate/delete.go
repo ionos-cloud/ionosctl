@@ -1,9 +1,10 @@
-package certmanager
+package certificate
 
 import (
 	"context"
 	"fmt"
 
+	"github.com/ionos-cloud/ionosctl/v6/commands/certmanager"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
@@ -29,8 +30,8 @@ func CertDeleteCmd() *core.Command {
 		},
 	)
 
-	cmd.AddStringFlag(FlagCertId, constants.FlagIdShort, "", "Response delete a single certificate (required)")
-	_ = cmd.Command.RegisterFlagCompletionFunc(FlagCertId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	cmd.AddStringFlag(certmanager.FlagCertId, constants.FlagIdShort, "", "Response delete a single certificate (required)")
+	_ = cmd.Command.RegisterFlagCompletionFunc(certmanager.FlagCertId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return CertificatesIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 	cmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Response delete all certificates")
@@ -74,7 +75,7 @@ func CmdDelete(c *core.CommandConfig) error {
 			}
 		}
 	} else {
-		id, err := c.Command.Command.Flags().GetString(FlagCertId)
+		id, err := c.Command.Command.Flags().GetString(certmanager.FlagCertId)
 		if err != nil {
 			return err
 		}
@@ -94,7 +95,7 @@ func CmdDelete(c *core.CommandConfig) error {
 func PreCmdDelete(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlagsSets(
 		c.Command, c.NS,
-		[]string{FlagCertId},
+		[]string{certmanager.FlagCertId},
 		[]string{constants.ArgAll},
 	)
 }

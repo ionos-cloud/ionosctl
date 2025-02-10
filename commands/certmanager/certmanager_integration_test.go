@@ -17,6 +17,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/ionos-cloud/ionosctl/v6/commands/certmanager/certificate"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 
@@ -57,7 +58,7 @@ func TestCertificateManagerServiceCmd(t *testing.T) {
 			viper.Set(constants.ArgQuiet, true)
 			viper.Set(constants.ArgVerbose, false)
 
-			err = CertListCmd().Command.Execute()
+			err = certificate.CertListCmd().Command.Execute()
 			assert.NoError(t, err)
 		},
 	)
@@ -90,7 +91,7 @@ func TestCertificateManagerServiceCmd(t *testing.T) {
 			viper.Set(constants.ArgVerbose, false)
 			viper.Set(constants.ArgForce, true)
 
-			c := CertCreateCmd()
+			c := certificate.CertCreateCmd()
 			c.Command.Flags().Set(FlagCertName, "___test___certificate___test___")
 			c.Command.Flags().Set(FlagCert, caPEM.String())
 			c.Command.Flags().Set(FlagCertChain, caPEM.String())
@@ -111,14 +112,14 @@ func TestCertificateManagerServiceCmd(t *testing.T) {
 				}
 			}
 
-			g := CertGetCmd()
+			g := certificate.CertGetCmd()
 			g.Command.Flags().Set(FlagCertId, id)
 			assert.NoError(t, err)
 
 			err = g.Command.Execute()
 			assert.NoError(t, err)
 
-			d := CertDeleteCmd()
+			d := certificate.CertDeleteCmd()
 			d.Command.Flags().Set(FlagCertId, id)
 			err = d.Command.Execute()
 			assert.NoError(t, err)
@@ -129,7 +130,7 @@ func TestCertificateManagerServiceCmd(t *testing.T) {
 		"cert create from files", func(t *testing.T) {
 			viper.Reset()
 
-			//os.Mkdir("./testPaths", 0777)
+			// os.Mkdir("./testPaths", 0777)
 			caPrivKey, err := rsa.GenerateKey(rand.Reader, 4096)
 			assert.NoError(t, err)
 
@@ -148,12 +149,12 @@ func TestCertificateManagerServiceCmd(t *testing.T) {
 				Bytes: x509.MarshalPKCS1PrivateKey(caPrivKey),
 			})
 			certPath := filepath.Join(".", "cert.pem")
-			//os.Create(certPath)
+			// os.Create(certPath)
 			err = os.WriteFile(certPath, caPEM.Bytes(), 0777)
 			assert.NoError(t, err)
 
 			keyPath := filepath.Join(".", "key.pem")
-			//os.Create(keyPath)
+			// os.Create(keyPath)
 			os.WriteFile(keyPath, caPrivKeyPEM.Bytes(), 0777)
 			assert.NoError(t, err)
 
@@ -162,7 +163,7 @@ func TestCertificateManagerServiceCmd(t *testing.T) {
 			viper.Set(constants.ArgVerbose, false)
 			viper.Set(constants.ArgForce, true)
 
-			c := CertCreateCmd()
+			c := certificate.CertCreateCmd()
 			c.Command.Flags().Set(FlagCertName, "test_certificate-files_test")
 			c.Command.Flags().Set(FlagCertPath, certPath)
 			c.Command.Flags().Set(FlagCertChainPath, certPath)
@@ -184,7 +185,7 @@ func TestCertificateManagerServiceCmd(t *testing.T) {
 				}
 			}
 
-			p := CertUpdateCmd()
+			p := certificate.CertUpdateCmd()
 			p.Command.Flags().Set(FlagCertId, id)
 			p.Command.Flags().Set(FlagCertName, "test_certificate-files-updated_test")
 			err = p.Command.Execute()
@@ -193,7 +194,7 @@ func TestCertificateManagerServiceCmd(t *testing.T) {
 			assert.NoError(t, err)
 			assert.Equal(t, "test_certificate-files-updated_test", *cert.GetProperties().GetName())
 
-			d := CertDeleteCmd()
+			d := certificate.CertDeleteCmd()
 			d.Command.Flags().Set(FlagCertId, id)
 			err = d.Command.Execute()
 			assert.NoError(t, err)
