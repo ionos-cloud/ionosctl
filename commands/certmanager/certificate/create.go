@@ -17,14 +17,15 @@ import (
 )
 
 func CertCreateCmd() *core.Command {
-	cmd := core.NewCommand(context.TODO(), nil, core.CommandBuilder{
+	cmd := core.NewCommand(context.Background(), nil, core.CommandBuilder{
 		Namespace: "certmanager",
 		Resource:  "certificate",
 		Verb:      "create",
 		Aliases:   []string{"add", "a", "c", "post"},
 		ShortDesc: "Add a new Certificate",
 		LongDesc:  "Use this command to add a Certificate.",
-		Example:   "TODO",
+		Example: "ionosctl certmanager certificate create " + core.FlagsUsage(constants.FlagCertName,
+			constants.FlagCertChainPath, constants.FlagCertPath, constants.FlagPrivateKeyPath),
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			err := c.Command.Command.MarkFlagRequired(constants.FlagCertName)
 			if err != nil {
@@ -66,7 +67,7 @@ func CertCreateCmd() *core.Command {
 func CmdPost(c *core.CommandConfig) error {
 	input := cert.Certificate{}
 
-	if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) {
+	if fn := core.GetFlagName(c.NS, constants.FlagCertName); viper.IsSet(fn) {
 		input.Name = viper.GetString(fn)
 	}
 	if fn := core.GetFlagName(c.NS, constants.FlagCert); viper.IsSet(fn) {

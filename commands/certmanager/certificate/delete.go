@@ -16,7 +16,7 @@ import (
 
 func CertDeleteCmd() *core.Command {
 	cmd := core.NewCommand(
-		context.TODO(), nil, core.CommandBuilder{
+		context.Background(), nil, core.CommandBuilder{
 			Namespace: "certmanager",
 			Resource:  "certificates",
 			Verb:      "delete",

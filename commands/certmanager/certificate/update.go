@@ -17,7 +17,7 @@ import (
 )
 
 func CertUpdateCmd() *core.Command {
-	cmd := core.NewCommand(context.TODO(), nil, core.CommandBuilder{
+	cmd := core.NewCommand(context.Background(), nil, core.CommandBuilder{
 		Namespace:  "certmanager",
 		Resource:   "certificates",
 		Verb:       "update",

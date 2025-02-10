@@ -60,6 +60,6 @@ Use this command to add a Certificate.
 ## Examples
 
 ```text
-TODO
+ionosctl certmanager certificate create --certificate-name CERTIFICATE_NAME --certificate-chain-path CERTIFICATE_CHAIN_PATH --certificate-path CERTIFICATE_PATH --private-key-path PRIVATE_KEY_PATH 
 ```
 
