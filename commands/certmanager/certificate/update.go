@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/ionos-cloud/ionosctl/v6/commands/certmanager"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
@@ -32,11 +31,11 @@ func CertUpdateCmd() *core.Command {
 		InitClient: true,
 	})
 
-	cmd.AddStringFlag(certmanager.FlagCertId, "i", "", "Provide certificate ID", core.RequiredFlagOption())
-	_ = cmd.Command.RegisterFlagCompletionFunc(certmanager.FlagCertId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	cmd.AddStringFlag(constants.FlagCertId, "i", "", "Provide certificate ID", core.RequiredFlagOption())
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagCertId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return CertificatesIds(), cobra.ShellCompDirectiveNoFileComp
 	})
-	cmd.AddStringFlag(certmanager.FlagCertName, "n", "", "Provide new certificate name", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagCertName, "n", "", "Provide new certificate name", core.RequiredFlagOption())
 
 	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, tabheaders.ColsMessage(defaultCertificateCols))
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -49,12 +48,12 @@ func CertUpdateCmd() *core.Command {
 func CmdPatch(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Patching Certificate..."))
 
-	id, err := c.Command.Command.Flags().GetString(certmanager.FlagCertId)
+	id, err := c.Command.Command.Flags().GetString(constants.FlagCertId)
 	if err != nil {
 		return err
 	}
 
-	name, err := c.Command.Command.Flags().GetString(certmanager.FlagCertName)
+	name, err := c.Command.Command.Flags().GetString(constants.FlagCertName)
 	if err != nil {
 		return err
 	}
@@ -81,12 +80,12 @@ func CmdPatch(c *core.CommandConfig) error {
 }
 
 func PreCmdPatch(c *core.PreCommandConfig) error {
-	err := c.Command.Command.MarkFlagRequired(certmanager.FlagCertId)
+	err := c.Command.Command.MarkFlagRequired(constants.FlagCertId)
 	if err != nil {
 		return err
 	}
 
-	err = c.Command.Command.MarkFlagRequired(certmanager.FlagCertName)
+	err = c.Command.Command.MarkFlagRequired(constants.FlagCertName)
 	if err != nil {
 		return err
 	}

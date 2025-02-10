@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/ionos-cloud/ionosctl/v6/commands/certmanager"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
@@ -27,19 +26,19 @@ func CertCreateCmd() *core.Command {
 		LongDesc:  "Use this command to add a Certificate.",
 		Example:   "TODO",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			err := c.Command.Command.MarkFlagRequired(certmanager.FlagCertName)
+			err := c.Command.Command.MarkFlagRequired(constants.FlagCertName)
 			if err != nil {
-				panic("unable to mark flag " + certmanager.FlagCertName + " as required. " +
+				panic("unable to mark flag " + constants.FlagCertName + " as required. " +
 					"Please open an issue at https://github.com/ionos-cloud/ionosctl/issues/new")
 			}
 
-			c.Command.Command.MarkFlagsMutuallyExclusive(certmanager.FlagCert, certmanager.FlagCertPath)
-			c.Command.Command.MarkFlagsMutuallyExclusive(certmanager.FlagCertChain, certmanager.FlagCertChainPath)
-			c.Command.Command.MarkFlagsMutuallyExclusive(certmanager.FlagPrivateKey, certmanager.FlagPrivateKeyPath)
+			c.Command.Command.MarkFlagsMutuallyExclusive(constants.FlagCert, constants.FlagCertPath)
+			c.Command.Command.MarkFlagsMutuallyExclusive(constants.FlagCertChain, constants.FlagCertChainPath)
+			c.Command.Command.MarkFlagsMutuallyExclusive(constants.FlagPrivateKey, constants.FlagPrivateKeyPath)
 
-			c.Command.Command.MarkFlagsOneRequired(certmanager.FlagCert, certmanager.FlagCertPath)
-			c.Command.Command.MarkFlagsOneRequired(certmanager.FlagCertChain, certmanager.FlagCertChainPath)
-			c.Command.Command.MarkFlagsOneRequired(certmanager.FlagPrivateKey, certmanager.FlagPrivateKeyPath)
+			c.Command.Command.MarkFlagsOneRequired(constants.FlagCert, constants.FlagCertPath)
+			c.Command.Command.MarkFlagsOneRequired(constants.FlagCertChain, constants.FlagCertChainPath)
+			c.Command.Command.MarkFlagsOneRequired(constants.FlagPrivateKey, constants.FlagPrivateKeyPath)
 
 			return nil
 		},
@@ -47,14 +46,14 @@ func CertCreateCmd() *core.Command {
 		InitClient: true,
 	})
 
-	cmd.AddStringFlag(certmanager.FlagCertName, "n", "", "Specify name of the certificate", core.RequiredFlagOption())
-	cmd.AddStringFlag(certmanager.FlagCert, "", "", "Specify the certificate itself (required either this or --certificate-path)")
-	cmd.AddStringFlag(certmanager.FlagCertChain, "", "", "Specify the certificate chain (required either this or --certificate-chain-path)")
-	cmd.AddStringFlag(certmanager.FlagPrivateKey, "", "", "Specify the private key (required either this or --private-key-path)")
+	cmd.AddStringFlag(constants.FlagCertName, "n", "", "Specify name of the certificate", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagCert, "", "", "Specify the certificate itself (required either this or --certificate-path)")
+	cmd.AddStringFlag(constants.FlagCertChain, "", "", "Specify the certificate chain (required either this or --certificate-chain-path)")
+	cmd.AddStringFlag(constants.FlagPrivateKey, "", "", "Specify the private key (required either this or --private-key-path)")
 
-	cmd.AddStringFlag(certmanager.FlagCertPath, "", "", "Specify the certificate itself from a file (required either this or --certificate)")
-	cmd.AddStringFlag(certmanager.FlagCertChainPath, "", "", "Specify the certificate chain from a file (required either this or --certificate-chain)")
-	cmd.AddStringFlag(certmanager.FlagPrivateKeyPath, "", "", "Specify the private key from a file (required either this or --private-key)")
+	cmd.AddStringFlag(constants.FlagCertPath, "", "", "Specify the certificate itself from a file (required either this or --certificate)")
+	cmd.AddStringFlag(constants.FlagCertChainPath, "", "", "Specify the certificate chain from a file (required either this or --certificate-chain)")
+	cmd.AddStringFlag(constants.FlagPrivateKeyPath, "", "", "Specify the private key from a file (required either this or --private-key)")
 
 	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, tabheaders.ColsMessage(defaultCertificateCols))
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -70,31 +69,31 @@ func CmdPost(c *core.CommandConfig) error {
 	if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) {
 		input.Name = viper.GetString(fn)
 	}
-	if fn := core.GetFlagName(c.NS, certmanager.FlagCert); viper.IsSet(fn) {
+	if fn := core.GetFlagName(c.NS, constants.FlagCert); viper.IsSet(fn) {
 		input.Certificate = viper.GetString(fn)
 	}
-	if fn := core.GetFlagName(c.NS, certmanager.FlagCertChain); viper.IsSet(fn) {
+	if fn := core.GetFlagName(c.NS, constants.FlagCertChain); viper.IsSet(fn) {
 		input.CertificateChain = viper.GetString(fn)
 	}
-	if fn := core.GetFlagName(c.NS, certmanager.FlagPrivateKey); viper.IsSet(fn) {
+	if fn := core.GetFlagName(c.NS, constants.FlagPrivateKey); viper.IsSet(fn) {
 		input.PrivateKey = viper.GetString(fn)
 	}
 
-	if fn := core.GetFlagName(c.NS, certmanager.FlagCertPath); viper.IsSet(fn) {
+	if fn := core.GetFlagName(c.NS, constants.FlagCertPath); viper.IsSet(fn) {
 		bytes, err := os.ReadFile(viper.GetString(fn))
 		if err != nil {
 			return fmt.Errorf("error reading certificate file: %w", err)
 		}
 		input.Certificate = string(bytes)
 	}
-	if fn := core.GetFlagName(c.NS, certmanager.FlagCertChainPath); viper.IsSet(fn) {
+	if fn := core.GetFlagName(c.NS, constants.FlagCertChainPath); viper.IsSet(fn) {
 		bytes, err := os.ReadFile(viper.GetString(fn))
 		if err != nil {
 			return fmt.Errorf("error reading certificate chain file: %w", err)
 		}
 		input.CertificateChain = string(bytes)
 	}
-	if fn := core.GetFlagName(c.NS, certmanager.FlagPrivateKeyPath); viper.IsSet(fn) {
+	if fn := core.GetFlagName(c.NS, constants.FlagPrivateKeyPath); viper.IsSet(fn) {
 		bytes, err := os.ReadFile(viper.GetString(fn))
 		if err != nil {
 			return fmt.Errorf("error reading private key file: %w", err)

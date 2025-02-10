@@ -217,10 +217,6 @@ func NewCommandCfg(ctx context.Context, info CommandBuilder) (*CommandConfig, er
 				return err
 			}
 
-			if err = c.CertificateManagerServices.InitServices(client); err != nil {
-				return err
-			}
-
 			if err = c.ContainerRegistryServices.InitServices(client); err != nil {
 				return err
 			}
@@ -260,7 +256,6 @@ type CommandConfig struct {
 	CloudApiV6Services         cloudapiv6.Services
 	AuthV1Services             authservice.Services
 	CloudApiDbaasPgsqlServices cloudapidbaaspgsql.Services
-	CertificateManagerServices certmanager.Services
 	ContainerRegistryServices  container_registry.Services
 
 	// Context

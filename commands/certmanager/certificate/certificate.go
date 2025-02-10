@@ -3,7 +3,6 @@ package certificate
 import (
 	"context"
 
-	"github.com/ionos-cloud/ionosctl/v6/commands/certmanager"
 	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 
@@ -30,7 +29,6 @@ func CertCmd() *core.Command {
 	certCmd.AddCommand(CertCreateCmd())
 	certCmd.AddCommand(CertListCmd())
 	certCmd.AddCommand(CertDeleteCmd())
-	certCmd.AddCommand(certmanager.CertGetApiVersionCmd())
 	certCmd.AddCommand(CertUpdateCmd())
 
 	return certCmd
