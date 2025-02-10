@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
@@ -65,13 +66,13 @@ func CmdGet(c *core.CommandConfig) error {
 		return err
 	}
 
-	cert, _, err := c.CertificateManagerServices.Certs().Get(id)
+	cert, _, err := client.Must().CertManagerClient.CertificateApi.CertificatesFindById(context.Background(), id).Execute()
 	if err != nil {
 		return err
 	}
 
 	if certFlag || certChainFlag {
-		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(printProperties(&cert, getCertOrChain)))
+		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(printProperties(cert.Properties, getCertOrChain)))
 
 		return nil
 	}

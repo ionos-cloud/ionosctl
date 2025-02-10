@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
@@ -43,7 +44,7 @@ func CmdGetApiVersion(c *core.CommandConfig) error {
 
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-	APIVersion, _, err := c.CertificateManagerServices.Certs().GetApiVersion()
+	APIVersion, _, err := client.Must().CertManagerClient.ProviderApi.ApiVersionGet(context.Background()).Execute()
 	if err != nil {
 		return err
 	}

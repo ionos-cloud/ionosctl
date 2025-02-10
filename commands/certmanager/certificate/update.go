@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
@@ -14,8 +15,6 @@ import (
 
 	"github.com/ionos-cloud/sdk-go-bundle/products/cert/v2"
 )
-
-var editProperties = cert.CertificatePatchPropertiesDto{}
 
 func CertUpdateCmd() *core.Command {
 	cmd := core.NewCommand(context.TODO(), nil, core.CommandBuilder{
@@ -46,8 +45,6 @@ func CertUpdateCmd() *core.Command {
 }
 
 func CmdPatch(c *core.CommandConfig) error {
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Patching Certificate..."))
-
 	id, err := c.Command.Command.Flags().GetString(constants.FlagCertId)
 	if err != nil {
 		return err
@@ -58,10 +55,8 @@ func CmdPatch(c *core.CommandConfig) error {
 		return err
 	}
 
-	editProperties.SetName(name)
-
-	input := cert.NewCertificatePatchDto(editProperties)
-	cert, _, err := c.CertificateManagerServices.Certs().Patch(id, *input)
+	cert, _, err := client.Must().CertManagerClient.CertificateApi.CertificatesPatch(context.Background(), id).
+		CertificatePatch(cert.CertificatePatch{Properties: cert.PatchName{Name: name}}).Execute()
 	if err != nil {
 		return err
 	}
