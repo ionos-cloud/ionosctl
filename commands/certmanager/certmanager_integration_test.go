@@ -92,35 +92,35 @@ func TestCertificateManagerServiceCmd(t *testing.T) {
 			viper.Set(constants.ArgForce, true)
 
 			c := certificate.CertCreateCmd()
-			c.Command.Flags().Set(FlagCertName, "___test___certificate___test___")
-			c.Command.Flags().Set(FlagCert, caPEM.String())
-			c.Command.Flags().Set(FlagCertChain, caPEM.String())
-			c.Command.Flags().Set(FlagPrivateKey, caPrivKeyPEM.String())
+			c.Command.Flags().Set(constants.FlagCertName, "___test___certificate___test___")
+			c.Command.Flags().Set(constants.FlagCert, caPEM.String())
+			c.Command.Flags().Set(constants.FlagCertChain, caPEM.String())
+			c.Command.Flags().Set(constants.FlagPrivateKey, caPrivKeyPEM.String())
 
 			err = c.Command.Execute()
 			assert.NoError(t, err)
 
 			// var id string
 			svc, err := client.Get()
-			certs, _, err := svc.CertManagerClient.CertificatesApi.CertificatesGet(context.Background()).Execute()
+			certs, _, err := svc.CertManagerClient.CertificateApi.CertificatesGet(context.Background()).Execute()
 			assert.NoError(t, err)
 
 			var id string
-			for _, dto := range *certs.GetItems() {
-				if *dto.GetProperties().GetName() == "___test___certificate___test___" {
-					id = *dto.GetId()
+			for _, dto := range certs.GetItems() {
+				if dto.GetProperties().Name == "___test___certificate___test___" {
+					id = dto.GetId()
 				}
 			}
 
 			g := certificate.CertGetCmd()
-			g.Command.Flags().Set(FlagCertId, id)
+			g.Command.Flags().Set(constants.FlagCertId, id)
 			assert.NoError(t, err)
 
 			err = g.Command.Execute()
 			assert.NoError(t, err)
 
 			d := certificate.CertDeleteCmd()
-			d.Command.Flags().Set(FlagCertId, id)
+			d.Command.Flags().Set(constants.FlagCertId, id)
 			err = d.Command.Execute()
 			assert.NoError(t, err)
 		},
@@ -164,38 +164,38 @@ func TestCertificateManagerServiceCmd(t *testing.T) {
 			viper.Set(constants.ArgForce, true)
 
 			c := certificate.CertCreateCmd()
-			c.Command.Flags().Set(FlagCertName, "test_certificate-files_test")
-			c.Command.Flags().Set(FlagCertPath, certPath)
-			c.Command.Flags().Set(FlagCertChainPath, certPath)
-			c.Command.Flags().Set(FlagPrivateKeyPath, keyPath)
+			c.Command.Flags().Set(constants.FlagCertName, "test_certificate-files_test")
+			c.Command.Flags().Set(constants.FlagCertPath, certPath)
+			c.Command.Flags().Set(constants.FlagCertChainPath, certPath)
+			c.Command.Flags().Set(constants.FlagPrivateKeyPath, keyPath)
 
 			err = c.Command.Execute()
 			assert.NoError(t, err)
 
 			// var id string
 			svc, err := client.Get()
-			certs, _, err := svc.CertManagerClient.CertificatesApi.CertificatesGet(context.Background()).
+			certs, _, err := svc.CertManagerClient.CertificateApi.CertificatesGet(context.Background()).
 				Execute()
 			assert.NoError(t, err)
 
 			var id string
-			for _, dto := range *certs.GetItems() {
-				if *dto.GetProperties().GetName() == "test_certificate-files_test" {
-					id = *dto.GetId()
+			for _, dto := range certs.GetItems() {
+				if dto.GetProperties().Name == "test_certificate-files_test" {
+					id = dto.GetId()
 				}
 			}
 
 			p := certificate.CertUpdateCmd()
-			p.Command.Flags().Set(FlagCertId, id)
-			p.Command.Flags().Set(FlagCertName, "test_certificate-files-updated_test")
+			p.Command.Flags().Set(constants.FlagCertId, id)
+			p.Command.Flags().Set(constants.FlagCertName, "test_certificate-files-updated_test")
 			err = p.Command.Execute()
 
-			cert, _, err := svc.CertManagerClient.CertificatesApi.CertificatesGetById(context.Background(), id).Execute()
+			cert, _, err := svc.CertManagerClient.CertificateApi.CertificatesFindById(context.Background(), id).Execute()
 			assert.NoError(t, err)
-			assert.Equal(t, "test_certificate-files-updated_test", *cert.GetProperties().GetName())
+			assert.Equal(t, "test_certificate-files-updated_test", cert.GetProperties().Name)
 
 			d := certificate.CertDeleteCmd()
-			d.Command.Flags().Set(FlagCertId, id)
+			d.Command.Flags().Set(constants.FlagCertId, id)
 			err = d.Command.Execute()
 			assert.NoError(t, err)
 
