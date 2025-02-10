@@ -8,7 +8,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/services/certmanager/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go-cert-manager"
+	cert "github.com/ionos-cloud/sdk-go-cert-manager"
 	"github.com/spf13/cobra"
 )
 
@@ -36,7 +36,7 @@ func CertCmd() *core.Command {
 	return certCmd
 }
 
-func printProperties(value *ionoscloud.CertificateDto, flag bool) string {
+func printProperties(value *cert.CertificateDto, flag bool) string {
 	if !flag {
 		return *value.Properties.Certificate
 	}
@@ -47,7 +47,7 @@ func CertificatesIds() []string {
 	client, _ := client2.Get()
 	svc := resources.NewCertsService(client, context.Background())
 	certs, _, _ := svc.List()
-	return functional.Map(*certs.GetItems(), func(dto ionoscloud.CertificateDto) string {
+	return functional.Map(*certs.GetItems(), func(dto cert.CertificateDto) string {
 		return *dto.GetId()
 	})
 }

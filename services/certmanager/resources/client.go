@@ -5,16 +5,16 @@ import (
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
-	sdkgo "github.com/ionos-cloud/sdk-go-cert-manager"
+	cert "github.com/ionos-cloud/sdk-go-cert-manager"
 	"github.com/spf13/viper"
 )
 
 type Client struct {
-	sdkgo.APIClient
+	cert.APIClient
 }
 
 type ClientConfig struct {
-	sdkgo.Configuration
+	cert.Configuration
 }
 
 // ClientService is a wrapper around ionoscloud.APIClient
@@ -24,7 +24,7 @@ type ClientService interface {
 }
 
 type clientService struct {
-	client *sdkgo.APIClient
+	client *cert.APIClient
 }
 
 var _ ClientService = &clientService{}
@@ -33,10 +33,10 @@ func NewClientService(name, pwd, token, hostUrl string) (ClientService, error) {
 	if token == "" && (name == "" || pwd == "") {
 		return nil, errors.New("username, password or token incorrect")
 	}
-	clientConfig := sdkgo.NewConfiguration(name, pwd, token, hostUrl)
+	clientConfig := cert.NewConfiguration(name, pwd, token, hostUrl)
 	clientConfig.UserAgent = fmt.Sprintf("%v_%v", viper.GetString(constants.CLIHttpUserAgent), clientConfig.UserAgent)
 	return &clientService{
-		client: sdkgo.NewAPIClient(clientConfig),
+		client: cert.NewAPIClient(clientConfig),
 	}, nil
 }
 

@@ -12,10 +12,10 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 
-	sdkgo "github.com/ionos-cloud/sdk-go-cert-manager"
+	cert "github.com/ionos-cloud/sdk-go-cert-manager"
 )
 
-var editProperties = sdkgo.CertificatePatchPropertiesDto{}
+var editProperties = cert.CertificatePatchPropertiesDto{}
 
 func CertUpdateCmd() *core.Command {
 	cmd := core.NewCommand(context.TODO(), nil, core.CommandBuilder{
@@ -60,7 +60,7 @@ func CmdPatch(c *core.CommandConfig) error {
 
 	editProperties.SetName(name)
 
-	input := sdkgo.NewCertificatePatchDto(editProperties)
+	input := cert.NewCertificatePatchDto(editProperties)
 	cert, _, err := c.CertificateManagerServices.Certs().Patch(id, *input)
 	if err != nil {
 		return err

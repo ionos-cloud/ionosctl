@@ -10,12 +10,12 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
-	sdkgo "github.com/ionos-cloud/sdk-go-cert-manager"
+	cert "github.com/ionos-cloud/sdk-go-cert-manager"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
-var createProperties = sdkgo.CertificatePostPropertiesDto{}
+var createProperties = cert.CertificatePostPropertiesDto{}
 
 func CertCreateCmd() *core.Command {
 	cmd := core.NewCommand(context.TODO(), nil, core.CommandBuilder{
@@ -106,7 +106,7 @@ func CmdPost(c *core.CommandConfig) error {
 	createProperties.SetCertificateChain(certificateChain)
 	createProperties.SetPrivateKey(privateKey)
 
-	Dto := sdkgo.NewCertificatePostDtoWithDefaults()
+	Dto := cert.NewCertificatePostDtoWithDefaults()
 
 	Dto.SetProperties(createProperties)
 
