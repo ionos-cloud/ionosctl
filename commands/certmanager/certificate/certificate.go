@@ -3,7 +3,7 @@ package certificate
 import (
 	"context"
 
-	client2 "github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
@@ -34,18 +34,20 @@ func CertCmd() *core.Command {
 	return certCmd
 }
 
-func printProperties(value *cert.CertificateDto, flag bool) string {
+func printProperties(value cert.Certificate, flag bool) string {
 	if !flag {
-		return *value.Properties.Certificate
+		return value.Certificate
 	}
-	return *value.Properties.CertificateChain
+	return value.CertificateChain
 }
 
 func CertificatesIds() []string {
-	client, _ := client2.Get()
-	svc := resources.NewCertsService(client, context.Background())
-	certs, _, _ := svc.List()
-	return functional.Map(*certs.GetItems(), func(dto cert.CertificateDto) string {
-		return *dto.GetId()
+	ls, _, err := client.Must().CertManagerClient.CertificateApi.CertificatesGet(context.Background()).Execute()
+	if err != nil {
+		return nil
+	}
+
+	return functional.Map(ls.Items, func(dto cert.CertificateRead) string {
+		return dto.GetId()
 	})
 }

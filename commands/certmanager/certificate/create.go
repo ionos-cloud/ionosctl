@@ -108,7 +108,6 @@ func CmdPost(c *core.CommandConfig) error {
 	}
 
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-
 	out, err := jsontabwriter.GenerateOutput("", jsonpaths.CertManagerCertificate, cert,
 		tabheaders.GetHeadersAllDefault(defaultCertificateCols, cols))
 	if err != nil {
