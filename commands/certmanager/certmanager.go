@@ -11,6 +11,7 @@ func Root() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "certmanager",
+			Aliases:          []string{"cert", "certs", "certificate-manager", "certificates", "certificate"},
 			Short:            "The sub-commands of the 'certmanager' resource help you manage SSL certificates.",
 			TraverseChildren: true,
 		},

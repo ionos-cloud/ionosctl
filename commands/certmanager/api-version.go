@@ -12,7 +12,7 @@ import (
 func CertGetApiVersionCmd() *core.Command {
 	cmd := core.NewCommand(context.TODO(), nil, core.CommandBuilder{
 		Namespace: "certmanager",
-		Resource:  "certificates",
+		Resource:  "certmanager",
 		Verb:      "api-version",
 		Aliases:   []string{"api", "info"},
 		ShortDesc: "[DEPRECATED] Get Certificate Manager API Version",

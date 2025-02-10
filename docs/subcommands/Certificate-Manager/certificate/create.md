@@ -2,20 +2,32 @@
 description: "Add a new Certificate"
 ---
 
-# CertificateManagerAdd
+# CertmanagerCertificateCreate
 
 ## Usage
 
 ```text
-ionosctl certificate-manager add [flags]
+ionosctl certmanager certificate create [flags]
 ```
 
 ## Aliases
 
-For `add` command:
+For `certmanager` command:
 
 ```text
-[a]
+[cert certs certificate-manager certificates certificate]
+```
+
+For `certificate` command:
+
+```text
+[cert certificates certs]
+```
+
+For `create` command:
+
+```text
+[add a c post]
 ```
 
 ## Description
@@ -25,7 +37,7 @@ Use this command to add a Certificate.
 ## Options
 
 ```text
-  -u, --api-url string                  Override default host url (default "https://api.ionos.com")
+  -u, --api-url string                  Override default host URL (default "https://dns.de-fra.ionos.com")
       --certificate string              Specify the certificate itself (required either this or --certificate-path)
       --certificate-chain string        Specify the certificate chain (required either this or --certificate-chain-path)
       --certificate-chain-path string   Specify the certificate chain from a file (required either this or --certificate-chain)
@@ -36,6 +48,7 @@ Use this command to add a Certificate.
   -c, --config string                   Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -f, --force                           Force command to execute without user input
   -h, --help                            Print usage
+  -l, --location string                 Location of the resource to operate on. Can be one of: de/fra
       --no-headers                      Don't print table headers when table output is used
   -o, --output string                   Desired output format [text|json|api-json] (default "text")
       --private-key string              Specify the private key (required either this or --private-key-path)
@@ -47,7 +60,6 @@ Use this command to add a Certificate.
 ## Examples
 
 ```text
-ionosctl certificate-manager add --certificate-name my-cert --certificate-path /path/to/cert --certificate-chain-path /path/to/cert-chain --private-key-path /path/to/private-key
-ionosctl certificate-manager add --certificate-name my-cert --certificate <certificate> --certificate-chain <certificate chain> --private-key <private key>
+TODO
 ```
 

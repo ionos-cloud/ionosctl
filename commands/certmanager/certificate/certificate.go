@@ -18,7 +18,8 @@ var (
 func CertCmd() *core.Command {
 	certCmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "certificate-manager",
+			Use:              "certificate",
+			Aliases:          []string{"cert", "certificates", "certs"},
 			Short:            "Certificate Manager Operations",
 			Long:             "The sub-commands of `ionosctl certificate-manager` allows you to manage the SSL Certificates under your account.",
 			TraverseChildren: true,
