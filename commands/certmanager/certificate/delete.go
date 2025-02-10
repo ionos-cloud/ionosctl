@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/certmanager"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
@@ -17,13 +18,15 @@ import (
 func CertDeleteCmd() *core.Command {
 	cmd := core.NewCommand(
 		context.TODO(), nil, core.CommandBuilder{
-			Namespace:  "certmanager",
-			Resource:   "certificates",
-			Verb:       "delete",
-			Aliases:    []string{"d"},
-			ShortDesc:  "Delete Certificate by ID or all Certificates",
-			LongDesc:   "Use this command to delete a Certificate by ID.",
-			Example:    "ionsoctl certificate-manager delete --certificate-id 47c5d9cc-b613-4b76-b0cc-dc531787a422",
+			Namespace: "certmanager",
+			Resource:  "certificates",
+			Verb:      "delete",
+			Aliases:   []string{"d"},
+			ShortDesc: "Delete Certificate by ID or all Certificates",
+			LongDesc:  "Use this command to delete a Certificate by ID.",
+			Example: "ionosctl certificate-manager delete " +
+				core.FlagsUsage(constants.FlagCDNDistributionCertificateID) + "\n" +
+				"ionosctl certificate-manager delete --all",
 			PreCmdRun:  PreCmdDelete,
 			CmdRun:     CmdDelete,
 			InitClient: true,
@@ -58,18 +61,18 @@ func CmdDelete(c *core.CommandConfig) error {
 	if allFlag {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all Certificates..."))
 
-		certs, _, err := c.CertificateManagerServices.Certs().List()
+		certs, _, err := client.Must().CertManagerClient.CertificateApi.CertificatesGet(context.Background()).Execute()
 		if err != nil {
 			return err
 		}
 
-		for _, cert := range *certs.Items {
-			msg := fmt.Sprintf("delete Certificate ID: %s", *cert.Id)
+		for _, cert := range certs.Items {
+			msg := fmt.Sprintf("delete Certificate ID: %s", cert.Id)
 			if !confirm.FAsk(c.Command.Command.InOrStdin(), msg, viper.GetBool(constants.ArgForce)) {
 				return fmt.Errorf(confirm.UserDenied)
 			}
 
-			_, err = c.CertificateManagerServices.Certs().Delete(*cert.Id)
+			_, err = client.Must().CertManagerClient.CertificateApi.CertificatesDelete(context.Background(), cert.Id).Execute()
 			if err != nil {
 				return err
 			}
@@ -85,7 +88,7 @@ func CmdDelete(c *core.CommandConfig) error {
 			return fmt.Errorf(confirm.UserDenied)
 		}
 
-		_, err = c.CertificateManagerServices.Certs().Delete(id)
+		_, err = client.Must().CertManagerClient.CertificateApi.CertificatesDelete(context.Background(), id).Execute()
 
 		return err
 	}
