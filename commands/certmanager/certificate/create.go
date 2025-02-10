@@ -3,6 +3,7 @@ package certificate
 import (
 	"context"
 	"fmt"
+	"os"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/certmanager"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
@@ -26,19 +27,21 @@ func CertCreateCmd() *core.Command {
 		LongDesc:  "Use this command to add a Certificate.",
 		Example:   "TODO",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			var err error
-			if !viper.IsSet(core.GetFlagName(c.NS, certmanager.FlagCert)) && !viper.IsSet(core.GetFlagName(c.NS, certmanager.FlagCertPath)) {
-				err = fmt.Errorf("%veither --%s or --%s must be set", err, certmanager.FlagCert, certmanager.FlagCertPath)
+			err := c.Command.Command.MarkFlagRequired(certmanager.FlagCertName)
+			if err != nil {
+				panic("unable to mark flag " + certmanager.FlagCertName + " as required. " +
+					"Please open an issue at https://github.com/ionos-cloud/ionosctl/issues/new")
 			}
-			if !viper.IsSet(core.GetFlagName(c.NS, certmanager.FlagCertChain)) && !viper.IsSet(core.GetFlagName(c.NS, certmanager.FlagCertChainPath)) {
-				err = fmt.Errorf("%veither --%s or --%s must be set", err, certmanager.FlagCertChain, certmanager.FlagCertChainPath)
-			}
-			if !viper.IsSet(core.GetFlagName(c.NS, certmanager.FlagPrivateKey)) && !viper.IsSet(core.GetFlagName(c.NS, certmanager.FlagPrivateKeyPath)) {
-				err = fmt.Errorf("%veither --%s or --%s must be set", err, certmanager.FlagPrivateKey, certmanager.FlagPrivateKeyPath)
-			}
-			err = c.Command.Command.MarkFlagRequired(certmanager.FlagCertName)
 
-			return err
+			c.Command.Command.MarkFlagsMutuallyExclusive(certmanager.FlagCert, certmanager.FlagCertPath)
+			c.Command.Command.MarkFlagsMutuallyExclusive(certmanager.FlagCertChain, certmanager.FlagCertChainPath)
+			c.Command.Command.MarkFlagsMutuallyExclusive(certmanager.FlagPrivateKey, certmanager.FlagPrivateKeyPath)
+
+			c.Command.Command.MarkFlagsOneRequired(certmanager.FlagCert, certmanager.FlagCertPath)
+			c.Command.Command.MarkFlagsOneRequired(certmanager.FlagCertChain, certmanager.FlagCertChainPath)
+			c.Command.Command.MarkFlagsOneRequired(certmanager.FlagPrivateKey, certmanager.FlagPrivateKeyPath)
+
+			return nil
 		},
 		CmdRun:     CmdPost,
 		InitClient: true,
@@ -66,6 +69,37 @@ func CmdPost(c *core.CommandConfig) error {
 
 	if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) {
 		input.Name = viper.GetString(fn)
+	}
+	if fn := core.GetFlagName(c.NS, certmanager.FlagCert); viper.IsSet(fn) {
+		input.Certificate = viper.GetString(fn)
+	}
+	if fn := core.GetFlagName(c.NS, certmanager.FlagCertChain); viper.IsSet(fn) {
+		input.CertificateChain = viper.GetString(fn)
+	}
+	if fn := core.GetFlagName(c.NS, certmanager.FlagPrivateKey); viper.IsSet(fn) {
+		input.PrivateKey = viper.GetString(fn)
+	}
+
+	if fn := core.GetFlagName(c.NS, certmanager.FlagCertPath); viper.IsSet(fn) {
+		bytes, err := os.ReadFile(viper.GetString(fn))
+		if err != nil {
+			return fmt.Errorf("error reading certificate file: %w", err)
+		}
+		input.Certificate = string(bytes)
+	}
+	if fn := core.GetFlagName(c.NS, certmanager.FlagCertChainPath); viper.IsSet(fn) {
+		bytes, err := os.ReadFile(viper.GetString(fn))
+		if err != nil {
+			return fmt.Errorf("error reading certificate chain file: %w", err)
+		}
+		input.CertificateChain = string(bytes)
+	}
+	if fn := core.GetFlagName(c.NS, certmanager.FlagPrivateKeyPath); viper.IsSet(fn) {
+		bytes, err := os.ReadFile(viper.GetString(fn))
+		if err != nil {
+			return fmt.Errorf("error reading private key file: %w", err)
+		}
+		input.PrivateKey = string(bytes)
 	}
 
 	cert, _, err := client.Must().CertManagerClient.CertificateApi.CertificatesPost(context.Background()).
