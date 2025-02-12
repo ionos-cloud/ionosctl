@@ -496,7 +496,7 @@ func RunClusterRestore(c *core.CommandConfig) error {
 
 	input := resources.CreateRestoreRequest{
 		CreateRestoreRequest: psql.CreateRestoreRequest{
-			BackupId: &backupId,
+			BackupId: backupId,
 		},
 	}
 
@@ -574,12 +574,12 @@ func ClusterDeleteAll(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get items of Clusters")
 	}
 
-	if len(*dataOk) <= 0 {
+	if len(dataOk) <= 0 {
 		return fmt.Errorf("no Clusters found")
 	}
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Clusters to be deleted:"))
-	for _, cluster := range *dataOk {
+	for _, cluster := range dataOk {
 		var log string
 		if propertiesOk, ok := cluster.GetPropertiesOk(); ok && propertiesOk != nil {
 			if nameOk, ok := propertiesOk.GetDisplayNameOk(); ok && nameOk != nil {
@@ -601,7 +601,7 @@ func ClusterDeleteAll(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the Clusters..."))
 
 	var multiErr error
-	for _, cluster := range *dataOk {
+	for _, cluster := range dataOk {
 		idOk, ok := cluster.GetIdOk()
 		if !ok || idOk == nil {
 			continue
@@ -667,11 +667,12 @@ func getCreateClusterRequest(c *core.CommandConfig) (*resources.CreateClusterReq
 	input.SetStorageSize(int32(storageSize))
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("StorageSize: %v[MB]", int32(storageSize)))
 	storageType := strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgStorageType)))
+	// "HDD" "SSD" "SSD Standard" "SSD Premium". "SSD" is deprecated and equivalent to "SSD Premium"
 	if storageType == "SSD_PREMIUM" || storageType == "SSD PREMIUM" {
-		storageType = string(psql.SSD_PREMIUM)
+		storageType = "SSD Premium"
 	}
 	if storageType == "SSD_STANDARD" || storageType == "SSD STANDARD" {
-		storageType = string(psql.SSD_STANDARD)
+		storageType = "SSD Standard"
 	}
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("StorageType: %v", storageType))
 	input.SetStorageType(psql.StorageType(storageType))
@@ -902,7 +903,7 @@ func getConnectionFromCluster(c *core.CommandConfig, clusterId string) (psql.Con
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting connection.."))
 
 			if connectionsOk, ok := propertiesOk.GetConnectionsOk(); ok && connectionsOk != nil {
-				for _, connectionOk := range *connectionsOk {
+				for _, connectionOk := range connectionsOk {
 					return connectionOk, nil
 				}
 			} else {
