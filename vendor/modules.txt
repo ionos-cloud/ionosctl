@@ -75,6 +75,9 @@ github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mariadb/v2
 # github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo/v2 v2.0.2
 ## explicit; go 1.22
 github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo/v2
+# github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v2 v2.0.3
+## explicit; go 1.22
+github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v2
 # github.com/ionos-cloud/sdk-go-bundle/products/dns/v2 v2.0.1
 ## explicit; go 1.22
 github.com/ionos-cloud/sdk-go-bundle/products/dns/v2
@@ -93,9 +96,6 @@ github.com/ionos-cloud/sdk-go-bundle/shared
 # github.com/ionos-cloud/sdk-go-cert-manager v1.0.1
 ## explicit; go 1.19
 github.com/ionos-cloud/sdk-go-cert-manager
-# github.com/ionos-cloud/sdk-go-dbaas-postgres v1.1.2
-## explicit; go 1.19
-github.com/ionos-cloud/sdk-go-dbaas-postgres
 # github.com/ionos-cloud/sdk-go-vm-autoscaling v1.0.1
 ## explicit; go 1.18
 github.com/ionos-cloud/sdk-go-vm-autoscaling
@@ -204,7 +204,7 @@ golang.org/x/crypto/ssh/internal/bcrypt_pbkdf
 golang.org/x/exp/constraints
 golang.org/x/exp/slices
 golang.org/x/exp/utf8string
-# golang.org/x/oauth2 v0.25.0
+# golang.org/x/oauth2 v0.26.0
 ## explicit; go 1.18
 golang.org/x/oauth2
 golang.org/x/oauth2/internal
