@@ -11,6 +11,7 @@ import (
 	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mariadb/v2"
 	sdkmongo "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v2"
+	"github.com/ionos-cloud/sdk-go-bundle/shared"
 
 	"github.com/dustin/go-humanize"
 )
@@ -327,8 +328,8 @@ func ConvertDbaasPostgresAPIVersionToTable(apiVersion psql.APIVersion) ([]map[st
 	if strings.HasPrefix(*swaggerUrlOk, "appserver:8181/postgresql") {
 		*swaggerUrlOk = strings.TrimPrefix(*swaggerUrlOk, "appserver:8181/postgresql")
 	}
-	if !strings.HasPrefix(*swaggerUrlOk, psql.DefaultIonosServerUrl) {
-		*swaggerUrlOk = fmt.Sprintf("%s%s", psql.DefaultIonosServerUrl, *swaggerUrlOk)
+	if !strings.HasPrefix(*swaggerUrlOk, shared.DefaultIonosServerUrl) {
+		*swaggerUrlOk = fmt.Sprintf("%s%s", shared.DefaultIonosServerUrl, *swaggerUrlOk)
 	}
 
 	temp, err := json2table.ConvertJSONToTable("", jsonpaths.DbaasPostgresApiVersion, apiVersion)
