@@ -39,7 +39,7 @@ If any such fields are found, their values will be replaced with an empty string
 
 			msg := "De-authentication successful."
 			if printNumberOfTokens {
-				msg += fmt.Sprintf(" Note: Your account has %d active tokens.", len(*ls.Tokens))
+				msg += fmt.Sprintf(" Note: Your account has %d active tokens.", len(ls.Tokens))
 			}
 			msg += " Affected fields:\n"
 
