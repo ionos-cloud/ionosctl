@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	ionoscloud "github.com/ionos-cloud/sdk-go-dbaas-mariadb"
+	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mariadb/v2"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
@@ -52,7 +52,7 @@ func Get() *core.Command {
 		core.RequiredFlagOption(),
 		core.WithCompletion(
 			func() []string {
-				return BackupsProperty(func(c ionoscloud.BackupResponse) string {
+				return BackupsProperty(func(c mariadb.BackupResponse) string {
 					if c.Id == nil {
 						return ""
 					}

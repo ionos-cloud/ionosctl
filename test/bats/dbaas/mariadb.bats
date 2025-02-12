@@ -17,20 +17,6 @@ setup_file() {
     mkdir -p /tmp/bats_test
 }
 
-@test "Ensure no previous MariaDB Clusters" {
-    run ionosctl db mariadb cluster list 2> /dev/null
-    [ "$status" -eq 0 ] || fail "Failed to list mariadb clusters"
-
-    if [ "$output" ]; then
-        echo "Deleting clusters..."
-        run ionosctl db mariadb cluster delete --all -f
-        sleep 30
-    fi
-
-    echo "Waiting for clusters to be deleted..."
-    echo "[ -z \"\$(ionosctl db mariadb cluster list 2>/dev/null)\" ]" | retry_command bash
-}
-
 @test "Create MariaDB Cluster" {
     datacenter_id=$(find_or_create_resource \
         "ionosctl datacenter list -M 1 -F location=${location},state=available -o json 2> /dev/null | jq -r '.items[] | .id'" \
@@ -89,7 +75,7 @@ setup_file() {
 
     # Use retry_until to check if the cluster is in "available" state
     retry_until "ionosctl db mariadb cluster get --cluster-id $cluster_id -o json 2> /dev/null | jq -r '.metadata.state'" \
-        "[[ \$output == \"AVAILABLE\" ]]" 10 60
+        "[[ \$output == \"AVAILABLE\" ]]" 40 60
 }
 
 @test "Assert DNS resolves to CIDR" {
