@@ -19,9 +19,9 @@ import (
 var (
 	testLogs = resources.ClusterLogs{
 		ClusterLogs: psql.ClusterLogs{
-			Instances: &[]psql.ClusterLogsInstancesInner{{
+			Instances: []psql.ClusterLogsInstances{{
 				Name: &testLogVar,
-				Messages: &[]psql.ClusterLogsInstancesInnerMessagesInner{
+				Messages: []psql.ClusterLogsInstancesMessages{
 					{
 						Time:    &testIonosTime,
 						Message: &testLogVar,
