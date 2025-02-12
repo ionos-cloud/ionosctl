@@ -11,7 +11,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
-	kafka "github.com/ionos-cloud/sdk-go-kafka"
+	"github.com/ionos-cloud/sdk-go-bundle/products/kafka/v2"
 )
 
 func getCmd() *core.Command {
@@ -60,7 +60,7 @@ func getCmd() *core.Command {
 			func() []string {
 				return completer.ClustersProperty(
 					func(read kafka.ClusterRead) string {
-						return *read.Id
+						return read.Id
 					},
 				)
 			}, constants.KafkaApiRegionalURL, constants.KafkaLocations,

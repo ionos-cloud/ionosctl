@@ -38,11 +38,11 @@ require (
 	github.com/ionos-cloud/sdk-go-bundle/products/dataplatform/v2 v2.0.2
 	github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo/v2 v2.0.2
 	github.com/ionos-cloud/sdk-go-bundle/products/dns/v2 v2.0.1
+	github.com/ionos-cloud/sdk-go-bundle/products/kafka/v2 v2.0.0
 	github.com/ionos-cloud/sdk-go-bundle/products/logging/v2 v2.1.2
 	github.com/ionos-cloud/sdk-go-bundle/products/vpn/v2 v2.0.3
 	github.com/ionos-cloud/sdk-go-bundle/shared v0.1.1
 	github.com/ionos-cloud/sdk-go-dbaas-mariadb v1.1.1
-	github.com/ionos-cloud/sdk-go-kafka v1.1.0
 )
 
 require (

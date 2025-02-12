@@ -10,7 +10,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
-	kafka "github.com/ionos-cloud/sdk-go-kafka"
+	"github.com/ionos-cloud/sdk-go-bundle/products/kafka/v2"
 	"github.com/spf13/viper"
 )
 
@@ -71,7 +71,7 @@ func deleteCmd() *core.Command {
 			func() []string {
 				return completer.ClustersProperty(
 					func(read kafka.ClusterRead) string {
-						return *read.Id
+						return read.Id
 					},
 				)
 			}, constants.KafkaApiRegionalURL, constants.KafkaLocations,
@@ -101,19 +101,19 @@ func deleteAll(cmd *core.CommandConfig) error {
 	}
 
 	return functional.ApplyAndAggregateErrors(
-		*topics.Items, func(topic kafka.TopicRead) error {
+		topics.Items, func(topic kafka.TopicRead) error {
 			if !confirm.FAsk(
-				cmd.Command.Command.InOrStdin(), fmt.Sprintf("delete topic %v (%v)", *topic.Id, *topic.Properties.Name),
+				cmd.Command.Command.InOrStdin(), fmt.Sprintf("delete topic %v (%v)", topic.Id, topic.Properties.Name),
 				viper.GetBool(constants.ArgForce),
 			) {
 				return fmt.Errorf(confirm.UserDenied)
 			}
 
 			_, err := client.Must().Kafka.TopicsApi.ClustersTopicsDelete(
-				context.Background(), clusterID, *topic.Id,
+				context.Background(), clusterID, topic.Id,
 			).Execute()
 			if err != nil {
-				return fmt.Errorf("failed deleting topic %v: %w", *topic.Id, err)
+				return fmt.Errorf("failed deleting topic %v: %w", topic.Id, err)
 			}
 
 			return nil

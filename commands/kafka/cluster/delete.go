@@ -9,7 +9,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
-	kafka "github.com/ionos-cloud/sdk-go-kafka"
+	"github.com/ionos-cloud/sdk-go-bundle/products/kafka/v2"
 	"github.com/spf13/viper"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
@@ -53,7 +53,7 @@ func Delete() *core.Command {
 			func() []string {
 				return completer.ClustersProperty(
 					func(k kafka.ClusterRead) string {
-						return *k.Id
+						return k.Id
 					},
 				)
 			}, constants.KafkaApiRegionalURL, constants.KafkaLocations,
@@ -77,8 +77,8 @@ func deleteAll(c *core.CommandConfig) error {
 	}
 
 	return functional.ApplyAndAggregateErrors(
-		*records.GetItems(), func(d kafka.ClusterRead) error {
-			return deleteSingle(c, *d.Id)
+		records.GetItems(), func(d kafka.ClusterRead) error {
+			return deleteSingle(c, d.Id)
 		},
 	)
 }
@@ -91,13 +91,13 @@ func deleteSingle(c *core.CommandConfig, id string) error {
 
 	yes := confirm.FAsk(
 		c.Command.Command.InOrStdin(),
-		fmt.Sprintf("Are you sure you want to delete cluster %s with name %s", *d.Id, *d.Properties.Name),
+		fmt.Sprintf("Are you sure you want to delete cluster %s with name %s", d.Id, d.Properties.Name),
 		viper.GetBool(constants.ArgForce),
 	)
 	if !yes {
 		return fmt.Errorf("user cancelled deletion")
 	}
 
-	_, err = client.Must().Kafka.ClustersApi.ClustersDelete(context.Background(), *d.Id).Execute()
+	_, err = client.Must().Kafka.ClustersApi.ClustersDelete(context.Background(), d.Id).Execute()
 	return err
 }
