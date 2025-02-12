@@ -52,11 +52,17 @@ func runCreateCmd(c *core.CommandConfig) error {
 	username := viper.GetString(core.GetFlagName(c.NS, constants.ArgUser))
 	password := viper.GetString(core.GetFlagName(c.NS, constants.ArgPassword))
 
-	userProps := psql.UserProperties{Username: &username, Password: &password}
 	user, _, err := client.Must().PostgresClient.UsersApi.UsersPost(
 		context.Background(),
 		clusterId,
-	).User(psql.User{Properties: &userProps}).Execute()
+	).User(
+		psql.User{
+			Properties: psql.UserProperties{
+				Username: username,
+				Password: &password,
+			},
+		},
+	).Execute()
 	if err != nil {
 		return err
 	}

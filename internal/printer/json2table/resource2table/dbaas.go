@@ -384,7 +384,7 @@ func ConvertDbaasPostgresClusterToTable(cluster psql.ClusterResponse) ([]map[str
 
 	connections, ok := properties.GetConnectionsOk()
 	if ok && connections != nil {
-		for _, con := range *connections {
+		for _, con := range connections {
 			dcId, ok := con.GetDatacenterIdOk()
 			if !ok || dcId == nil {
 				return nil, fmt.Errorf("could not retrieve PostgreSQL Cluster datacenter ID")
@@ -416,7 +416,7 @@ func ConvertDbaasPostgresClustersToTable(clusters psql.ClusterList) ([]map[strin
 	}
 
 	var clustersConverted []map[string]interface{}
-	for _, item := range *items {
+	for _, item := range items {
 		temp, err := ConvertDbaasPostgresClusterToTable(item)
 		if err != nil {
 			return nil, err
@@ -428,20 +428,20 @@ func ConvertDbaasPostgresClustersToTable(clusters psql.ClusterList) ([]map[strin
 	return clustersConverted, nil
 }
 
-func ConvertDbaasPostgresLogsToTable(logs *[]psql.ClusterLogsInstancesInner) ([]map[string]interface{}, error) {
+func ConvertDbaasPostgresLogsToTable(logs []psql.ClusterLogsInstances) ([]map[string]interface{}, error) {
 	if logs == nil {
 		return nil, fmt.Errorf("no logs to process")
 	}
 
-	out := make([]map[string]interface{}, 0, len(*logs))
-	for _, instance := range *logs {
+	out := make([]map[string]interface{}, 0, len(logs))
+	for _, instance := range logs {
 		if instance.GetMessages() == nil {
 			continue
 		}
 
 		var ls, messages, times string
 		var temp = make(map[string]interface{})
-		for _, msg := range *instance.GetMessages() {
+		for _, msg := range instance.GetMessages() {
 			o, err := json2table.ConvertJSONToTable("", jsonpaths.DbaasLogsMessage, msg)
 			if err != nil {
 				return nil, fmt.Errorf("could not convert from JSON to Table format: %w", err)

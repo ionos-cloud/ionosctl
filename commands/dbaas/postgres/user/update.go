@@ -63,7 +63,7 @@ func runUpdateCmd(c *core.CommandConfig) error {
 		context.Background(),
 		clusterId,
 		username,
-	).UsersPatchRequest(psql.UsersPatchRequest{Properties: &psql.PatchUserProperties{Password: &password}}).Execute()
+	).UsersPatchRequest(psql.UsersPatchRequest{Properties: psql.PatchUserProperties{Password: &password}}).Execute()
 	if err != nil {
 		return err
 	}

@@ -60,10 +60,10 @@ func runCreateCmd(c *core.CommandConfig) error {
 	databaseName := viper.GetString(core.GetFlagName(c.NS, constants.FlagDatabase))
 	owner := viper.GetString(core.GetFlagName(c.NS, constants.FlagOwner))
 
-	databaseProps := psql.DatabaseProperties{Name: &databaseName, Owner: &owner}
+	databaseProps := psql.DatabaseProperties{Name: databaseName, Owner: owner}
 	database, _, err := client.Must().PostgresClient.DatabasesApi.DatabasesPost(
 		context.Background(), clusterId,
-	).Database(psql.Database{Properties: &databaseProps}).Execute()
+	).Database(psql.Database{Properties: databaseProps}).Execute()
 	if err != nil {
 		return err
 	}

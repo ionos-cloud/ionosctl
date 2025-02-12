@@ -98,7 +98,7 @@ func listAll(c *core.CommandConfig) error {
 
 	var usersRaw []psql.UserList
 	var usersConverted []map[string]interface{}
-	for _, cluster := range *clusters {
+	for _, cluster := range clusters {
 		tempUsers, tempConverted, err := getUsersFromCluster(cluster, getSystemUsers)
 		if err != nil {
 			return err
@@ -141,7 +141,7 @@ func getUsersFromCluster(cluster psql.ClusterResponse, getSystemUsers bool) (
 	}
 
 	convertedUserList := functional.Map(
-		*users, func(u psql.UserResource) map[string]interface{} {
+		users, func(u psql.UserResource) map[string]interface{} {
 			uConv, err := json2table.ConvertJSONToTable("", jsonpaths.DbaasPostgresUser, u)
 			if err != nil {
 				return nil
