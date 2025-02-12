@@ -35,7 +35,7 @@ var (
 	testBackups = resources.ClusterBackupList{
 		ClusterBackupList: psql.ClusterBackupList{
 			Id:    &testBackupVar,
-			Items: &[]psql.BackupResponse{testBackup.BackupResponse},
+			Items: []psql.BackupResponse{testBackup.BackupResponse},
 		},
 	}
 	testStateVar      = psql.State("AVAILABLE")
