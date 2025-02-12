@@ -15,7 +15,7 @@ import (
 	cloudapiv6resources "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
 	dbaaspg "github.com/ionos-cloud/ionosctl/v6/services/dbaas-postgres"
 	"github.com/ionos-cloud/ionosctl/v6/services/dbaas-postgres/resources"
-	sdkgo "github.com/ionos-cloud/sdk-go-dbaas-postgres"
+	psql "github.com/ionos-cloud/sdk-go-dbaas-postgres"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
@@ -23,8 +23,8 @@ import (
 
 var (
 	testCreateClusterRequest = resources.CreateClusterRequest{
-		CreateClusterRequest: sdkgo.CreateClusterRequest{
-			Properties: &sdkgo.CreateClusterProperties{
+		CreateClusterRequest: psql.CreateClusterRequest{
+			Properties: &psql.CreateClusterProperties{
 				DisplayName:         &testClusterVar,
 				PostgresVersion:     &testClusterVar,
 				Location:            &testClusterVar,
@@ -35,22 +35,22 @@ var (
 				StorageSize:         &testClusterIntVar,
 				SynchronizationMode: &testSyncModeVar,
 				StorageType:         &testClusterStorageTypeVar,
-				Connections: &[]sdkgo.Connection{
+				Connections: &[]psql.Connection{
 					{
 						DatacenterId: &testClusterVar,
 						LanId:        &testClusterVar,
 						Cidr:         &testClusterVar,
 					},
 				},
-				MaintenanceWindow: &sdkgo.MaintenanceWindow{
+				MaintenanceWindow: &psql.MaintenanceWindow{
 					Time:         &testClusterVar,
-					DayOfTheWeek: (*sdkgo.DayOfTheWeek)(&testClusterVar),
+					DayOfTheWeek: (*psql.DayOfTheWeek)(&testClusterVar),
 				},
-				Credentials: &sdkgo.DBUser{
+				Credentials: &psql.DBUser{
 					Username: &testClusterVar,
 					Password: &testClusterVar,
 				},
-				FromBackup: &sdkgo.CreateRestoreRequest{
+				FromBackup: &psql.CreateRestoreRequest{
 					BackupId:           &testClusterVar,
 					RecoveryTargetTime: &testIonosTime,
 				},
@@ -58,8 +58,8 @@ var (
 		},
 	}
 	testCreateClusterRequestSSDPremium = resources.CreateClusterRequest{
-		CreateClusterRequest: sdkgo.CreateClusterRequest{
-			Properties: &sdkgo.CreateClusterProperties{
+		CreateClusterRequest: psql.CreateClusterRequest{
+			Properties: &psql.CreateClusterProperties{
 				DisplayName:         &testClusterVar,
 				PostgresVersion:     &testClusterVar,
 				Location:            &testClusterVar,
@@ -70,22 +70,22 @@ var (
 				StorageSize:         &testClusterIntVar,
 				SynchronizationMode: &testSyncModeVar,
 				StorageType:         &testClusterStorageTypeSSDPremiumVar,
-				Connections: &[]sdkgo.Connection{
+				Connections: &[]psql.Connection{
 					{
 						DatacenterId: &testClusterVar,
 						LanId:        &testClusterVar,
 						Cidr:         &testClusterVar,
 					},
 				},
-				MaintenanceWindow: &sdkgo.MaintenanceWindow{
+				MaintenanceWindow: &psql.MaintenanceWindow{
 					Time:         &testClusterVar,
-					DayOfTheWeek: (*sdkgo.DayOfTheWeek)(&testClusterVar),
+					DayOfTheWeek: (*psql.DayOfTheWeek)(&testClusterVar),
 				},
-				Credentials: &sdkgo.DBUser{
+				Credentials: &psql.DBUser{
 					Username: &testClusterVar,
 					Password: &testClusterVar,
 				},
-				FromBackup: &sdkgo.CreateRestoreRequest{
+				FromBackup: &psql.CreateRestoreRequest{
 					BackupId:           &testClusterVar,
 					RecoveryTargetTime: &testIonosTime,
 				},
@@ -93,8 +93,8 @@ var (
 		},
 	}
 	testCreateClusterRequestSSDStandard = resources.CreateClusterRequest{
-		CreateClusterRequest: sdkgo.CreateClusterRequest{
-			Properties: &sdkgo.CreateClusterProperties{
+		CreateClusterRequest: psql.CreateClusterRequest{
+			Properties: &psql.CreateClusterProperties{
 				DisplayName:         &testClusterVar,
 				PostgresVersion:     &testClusterVar,
 				Location:            &testClusterVar,
@@ -105,22 +105,22 @@ var (
 				StorageSize:         &testClusterIntVar,
 				SynchronizationMode: &testSyncModeVar,
 				StorageType:         &testClusterStorageTypeSSDStandardVar,
-				Connections: &[]sdkgo.Connection{
+				Connections: &[]psql.Connection{
 					{
 						DatacenterId: &testClusterVar,
 						LanId:        &testClusterVar,
 						Cidr:         &testClusterVar,
 					},
 				},
-				MaintenanceWindow: &sdkgo.MaintenanceWindow{
+				MaintenanceWindow: &psql.MaintenanceWindow{
 					Time:         &testClusterVar,
-					DayOfTheWeek: (*sdkgo.DayOfTheWeek)(&testClusterVar),
+					DayOfTheWeek: (*psql.DayOfTheWeek)(&testClusterVar),
 				},
-				Credentials: &sdkgo.DBUser{
+				Credentials: &psql.DBUser{
 					Username: &testClusterVar,
 					Password: &testClusterVar,
 				},
-				FromBackup: &sdkgo.CreateRestoreRequest{
+				FromBackup: &psql.CreateRestoreRequest{
 					BackupId:           &testClusterVar,
 					RecoveryTargetTime: &testIonosTime,
 				},
@@ -128,19 +128,19 @@ var (
 		},
 	}
 	testPatchClusterRequest = resources.PatchClusterRequest{
-		PatchClusterRequest: sdkgo.PatchClusterRequest{
-			Properties: &sdkgo.PatchClusterProperties{
+		PatchClusterRequest: psql.PatchClusterRequest{
+			Properties: &psql.PatchClusterProperties{
 				Cores:       &testClusterIntNewVar,
 				Ram:         &testClusterIntNewVar,
 				StorageSize: &testClusterIntNewVar,
 				DisplayName: &testClusterNewVar,
 				Instances:   &testClusterIntNewVar,
-				MaintenanceWindow: &sdkgo.MaintenanceWindow{
+				MaintenanceWindow: &psql.MaintenanceWindow{
 					Time:         &testClusterNewVar,
-					DayOfTheWeek: (*sdkgo.DayOfTheWeek)(&testClusterNewVar),
+					DayOfTheWeek: (*psql.DayOfTheWeek)(&testClusterNewVar),
 				},
 				PostgresVersion: &testClusterNewVar,
-				Connections: &[]sdkgo.Connection{
+				Connections: &[]psql.Connection{
 					{
 						DatacenterId: &testClusterNewVar,
 						LanId:        &testClusterNewVar,
@@ -151,15 +151,15 @@ var (
 		},
 	}
 	testCreateRestoreRequest = resources.CreateRestoreRequest{
-		CreateRestoreRequest: sdkgo.CreateRestoreRequest{
+		CreateRestoreRequest: psql.CreateRestoreRequest{
 			BackupId:           &testClusterVar,
 			RecoveryTargetTime: &testIonosTime,
 		},
 	}
 	testClusterGetNew = resources.ClusterResponse{
-		ClusterResponse: sdkgo.ClusterResponse{
+		ClusterResponse: psql.ClusterResponse{
 			Id: &testClusterVar,
-			Properties: &sdkgo.ClusterProperties{
+			Properties: &psql.ClusterProperties{
 				DisplayName:         &testClusterNewVar,
 				PostgresVersion:     &testClusterNewVar,
 				SynchronizationMode: &testSyncModeVar,
@@ -170,27 +170,27 @@ var (
 				Cores:               &testClusterIntVar,
 				StorageSize:         &testClusterIntNewVar,
 				StorageType:         &testClusterStorageTypeVar,
-				Connections: &[]sdkgo.Connection{
+				Connections: &[]psql.Connection{
 					{
 						DatacenterId: &testClusterNewVar,
 						LanId:        &testClusterNewVar,
 						Cidr:         &testClusterNewVar,
 					},
 				},
-				MaintenanceWindow: &sdkgo.MaintenanceWindow{
+				MaintenanceWindow: &psql.MaintenanceWindow{
 					Time:         &testClusterNewVar,
-					DayOfTheWeek: (*sdkgo.DayOfTheWeek)(&testClusterNewVar),
+					DayOfTheWeek: (*psql.DayOfTheWeek)(&testClusterNewVar),
 				},
 			},
-			Metadata: &sdkgo.ClusterMetadata{
-				State: (*sdkgo.State)(&testClusterStateVar),
+			Metadata: &psql.ClusterMetadata{
+				State: (*psql.State)(&testClusterStateVar),
 			},
 		},
 	}
 	testClusterGet = resources.ClusterResponse{
-		ClusterResponse: sdkgo.ClusterResponse{
+		ClusterResponse: psql.ClusterResponse{
 			Id: &testClusterVar,
-			Properties: &sdkgo.ClusterProperties{
+			Properties: &psql.ClusterProperties{
 				DisplayName:         &testClusterVar,
 				PostgresVersion:     &testClusterVar,
 				Location:            &testClusterVar,
@@ -201,27 +201,27 @@ var (
 				Cores:               &testClusterIntVar,
 				StorageSize:         &testClusterIntVar,
 				StorageType:         &testClusterStorageTypeVar,
-				Connections: &[]sdkgo.Connection{
+				Connections: &[]psql.Connection{
 					{
 						DatacenterId: &testClusterVar,
 						LanId:        &testClusterVar,
 						Cidr:         &testClusterVar,
 					},
 				},
-				MaintenanceWindow: &sdkgo.MaintenanceWindow{
+				MaintenanceWindow: &psql.MaintenanceWindow{
 					Time:         &testClusterVar,
-					DayOfTheWeek: (*sdkgo.DayOfTheWeek)(&testClusterVar),
+					DayOfTheWeek: (*psql.DayOfTheWeek)(&testClusterVar),
 				},
 			},
-			Metadata: &sdkgo.ClusterMetadata{
-				State: (*sdkgo.State)(&testClusterStateVar),
+			Metadata: &psql.ClusterMetadata{
+				State: (*psql.State)(&testClusterStateVar),
 			},
 		},
 	}
 	testClusterGetSSDPremium = resources.ClusterResponse{
-		ClusterResponse: sdkgo.ClusterResponse{
+		ClusterResponse: psql.ClusterResponse{
 			Id: &testClusterVar,
-			Properties: &sdkgo.ClusterProperties{
+			Properties: &psql.ClusterProperties{
 				DisplayName:         &testClusterVar,
 				PostgresVersion:     &testClusterVar,
 				Location:            &testClusterVar,
@@ -232,27 +232,27 @@ var (
 				Cores:               &testClusterIntVar,
 				StorageSize:         &testClusterIntVar,
 				StorageType:         &testClusterStorageTypeSSDPremiumVar,
-				Connections: &[]sdkgo.Connection{
+				Connections: &[]psql.Connection{
 					{
 						DatacenterId: &testClusterVar,
 						LanId:        &testClusterVar,
 						Cidr:         &testClusterVar,
 					},
 				},
-				MaintenanceWindow: &sdkgo.MaintenanceWindow{
+				MaintenanceWindow: &psql.MaintenanceWindow{
 					Time:         &testClusterVar,
-					DayOfTheWeek: (*sdkgo.DayOfTheWeek)(&testClusterVar),
+					DayOfTheWeek: (*psql.DayOfTheWeek)(&testClusterVar),
 				},
 			},
-			Metadata: &sdkgo.ClusterMetadata{
-				State: (*sdkgo.State)(&testClusterStateVar),
+			Metadata: &psql.ClusterMetadata{
+				State: (*psql.State)(&testClusterStateVar),
 			},
 		},
 	}
 	testClusterGetSSDStandard = resources.ClusterResponse{
-		ClusterResponse: sdkgo.ClusterResponse{
+		ClusterResponse: psql.ClusterResponse{
 			Id: &testClusterVar,
-			Properties: &sdkgo.ClusterProperties{
+			Properties: &psql.ClusterProperties{
 				DisplayName:         &testClusterVar,
 				PostgresVersion:     &testClusterVar,
 				Location:            &testClusterVar,
@@ -263,27 +263,27 @@ var (
 				Cores:               &testClusterIntVar,
 				StorageSize:         &testClusterIntVar,
 				StorageType:         &testClusterStorageTypeSSDStandardVar,
-				Connections: &[]sdkgo.Connection{
+				Connections: &[]psql.Connection{
 					{
 						DatacenterId: &testClusterVar,
 						LanId:        &testClusterVar,
 						Cidr:         &testClusterVar,
 					},
 				},
-				MaintenanceWindow: &sdkgo.MaintenanceWindow{
+				MaintenanceWindow: &psql.MaintenanceWindow{
 					Time:         &testClusterVar,
-					DayOfTheWeek: (*sdkgo.DayOfTheWeek)(&testClusterVar),
+					DayOfTheWeek: (*psql.DayOfTheWeek)(&testClusterVar),
 				},
 			},
-			Metadata: &sdkgo.ClusterMetadata{
-				State: (*sdkgo.State)(&testClusterStateVar),
+			Metadata: &psql.ClusterMetadata{
+				State: (*psql.State)(&testClusterStateVar),
 			},
 		},
 	}
 	testClusterGetNoConnection = resources.ClusterResponse{
-		ClusterResponse: sdkgo.ClusterResponse{
+		ClusterResponse: psql.ClusterResponse{
 			Id: &testClusterVar,
-			Properties: &sdkgo.ClusterProperties{
+			Properties: &psql.ClusterProperties{
 				DisplayName:         &testClusterVar,
 				PostgresVersion:     &testClusterVar,
 				Location:            &testClusterVar,
@@ -293,20 +293,20 @@ var (
 				Cores:               &testClusterIntVar,
 				StorageSize:         &testClusterIntVar,
 				StorageType:         &testClusterStorageTypeVar,
-				MaintenanceWindow: &sdkgo.MaintenanceWindow{
+				MaintenanceWindow: &psql.MaintenanceWindow{
 					Time:         &testClusterVar,
-					DayOfTheWeek: (*sdkgo.DayOfTheWeek)(&testClusterVar),
+					DayOfTheWeek: (*psql.DayOfTheWeek)(&testClusterVar),
 				},
 			},
-			Metadata: &sdkgo.ClusterMetadata{
-				State: (*sdkgo.State)(&testClusterStateVar),
+			Metadata: &psql.ClusterMetadata{
+				State: (*psql.State)(&testClusterStateVar),
 			},
 		},
 	}
 	testClusterGetFailed = resources.ClusterResponse{
-		ClusterResponse: sdkgo.ClusterResponse{
+		ClusterResponse: psql.ClusterResponse{
 			Id: &testClusterVar,
-			Properties: &sdkgo.ClusterProperties{
+			Properties: &psql.ClusterProperties{
 				DisplayName:         &testClusterVar,
 				SynchronizationMode: &testSyncModeVar,
 				PostgresVersion:     &testClusterVar,
@@ -317,26 +317,26 @@ var (
 				Cores:               &testClusterIntVar,
 				StorageSize:         &testClusterIntVar,
 				StorageType:         &testClusterStorageTypeVar,
-				Connections: &[]sdkgo.Connection{
+				Connections: &[]psql.Connection{
 					{
 						DatacenterId: &testClusterVar,
 						LanId:        &testClusterVar,
 						Cidr:         &testClusterVar,
 					},
 				},
-				MaintenanceWindow: &sdkgo.MaintenanceWindow{
+				MaintenanceWindow: &psql.MaintenanceWindow{
 					Time:         &testClusterVar,
-					DayOfTheWeek: (*sdkgo.DayOfTheWeek)(&testClusterVar),
+					DayOfTheWeek: (*psql.DayOfTheWeek)(&testClusterVar),
 				},
 			},
-			Metadata: &sdkgo.ClusterMetadata{
-				State: (*sdkgo.State)(&testClusterStateFailedVar),
+			Metadata: &psql.ClusterMetadata{
+				State: (*psql.State)(&testClusterStateFailedVar),
 			},
 		},
 	}
 	testClusters = resources.ClusterList{
-		ClusterList: sdkgo.ClusterList{
-			Items: &[]sdkgo.ClusterResponse{testClusterGet.ClusterResponse},
+		ClusterList: psql.ClusterList{
+			Items: &[]psql.ClusterResponse{testClusterGet.ClusterResponse},
 		},
 	}
 	testVdcGet = cloudapiv6resources.Datacenter{
@@ -347,10 +347,10 @@ var (
 			},
 		},
 	}
-	testIonosTime = sdkgo.IonosTime{
+	testIonosTime = psql.IonosTime{
 		Time: time.Date(2021, 1, 1, 0, 0, 0, 0, time.UTC),
 	}
-	testSyncModeVar                      = sdkgo.SynchronizationMode(strings.ToUpper(testClusterVar))
+	testSyncModeVar                      = psql.SynchronizationMode(strings.ToUpper(testClusterVar))
 	testTimeArgVar                       = "2021-01-01T00:00:00Z"
 	testClusterBoolVar                   = true
 	testClusterStateFailedVar            = "FAILED"
@@ -359,9 +359,9 @@ var (
 	testClusterBackupLocation            = "de"
 	testClusterIntVar                    = int32(1)
 	testClusterIntNewVar                 = int32(2)
-	testClusterStorageTypeVar            = sdkgo.HDD
-	testClusterStorageTypeSSDPremiumVar  = sdkgo.SSD_PREMIUM
-	testClusterStorageTypeSSDStandardVar = sdkgo.SSD_STANDARD
+	testClusterStorageTypeVar            = psql.HDD
+	testClusterStorageTypeSSDPremiumVar  = psql.SSD_PREMIUM
+	testClusterStorageTypeSSDStandardVar = psql.SSD_STANDARD
 	testClusterVar                       = "test-cluster"
 	testClusterNewVar                    = "test-cluster-new"
 	testClusterErr                       = errors.New("test cluster error")
@@ -681,7 +681,7 @@ func TestRunClusterCreate(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgSyncMode), strings.ToUpper(testClusterVar))
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgCores), testClusterIntVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgStorageSize), testClusterMbVar)
-		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgStorageType), string(sdkgo.HDD))
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgStorageType), string(psql.HDD))
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgMaintenanceDay), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgMaintenanceTime), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgName), testClusterVar)
@@ -783,7 +783,7 @@ func TestRunClusterCreateErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgSyncMode), strings.ToUpper(testClusterVar))
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgCores), testClusterIntVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgStorageSize), testClusterMbVar)
-		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgStorageType), string(sdkgo.HDD))
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgStorageType), string(psql.HDD))
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgMaintenanceDay), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgMaintenanceTime), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgName), testClusterVar)
@@ -817,7 +817,7 @@ func TestRunClusterCreateConvertErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgSyncMode), strings.ToUpper(testClusterVar))
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgCores), testClusterIntVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgStorageSize), testClusterMbVar)
-		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgStorageType), string(sdkgo.HDD))
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgStorageType), string(psql.HDD))
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgMaintenanceDay), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgMaintenanceTime), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgName), testClusterVar)
@@ -849,7 +849,7 @@ func TestRunClusterCreateLocation(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgRam), testClusterMbVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgCores), testClusterIntVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgStorageSize), testClusterMbVar)
-		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgStorageType), string(sdkgo.HDD))
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgStorageType), string(psql.HDD))
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgMaintenanceDay), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgMaintenanceTime), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgName), testClusterVar)
@@ -883,7 +883,7 @@ func TestRunClusterCreateLocationErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgSyncMode), strings.ToUpper(testClusterVar))
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgCores), testClusterIntVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgStorageSize), testClusterMbVar)
-		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgStorageType), string(sdkgo.HDD))
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgStorageType), string(psql.HDD))
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgMaintenanceDay), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgMaintenanceTime), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgName), testClusterVar)
@@ -918,7 +918,7 @@ func TestRunClusterCreateWaitForState(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgSyncMode), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgCores), testClusterIntVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgStorageSize), testClusterMbVar)
-		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgStorageType), string(sdkgo.HDD))
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgStorageType), string(psql.HDD))
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgMaintenanceDay), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgMaintenanceTime), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgName), testClusterVar)
@@ -954,7 +954,7 @@ func TestRunClusterCreateWaitForStateResponse(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgSyncMode), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgCores), testClusterIntVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgStorageSize), testClusterMbVar)
-		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgStorageType), string(sdkgo.HDD))
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgStorageType), string(psql.HDD))
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgMaintenanceDay), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgMaintenanceTime), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgName), testClusterVar)
@@ -990,7 +990,7 @@ func TestRunClusterCreateWaitForStateIdErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgSyncMode), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgCores), testClusterIntVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgStorageSize), testClusterMbVar)
-		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgStorageType), string(sdkgo.HDD))
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgStorageType), string(psql.HDD))
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgMaintenanceDay), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgMaintenanceTime), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgName), testClusterVar)
@@ -1025,7 +1025,7 @@ func TestRunClusterCreateWaitForStateErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgRam), testClusterMbVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgCores), testClusterIntVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgStorageSize), testClusterMbVar)
-		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgStorageType), string(sdkgo.HDD))
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgStorageType), string(psql.HDD))
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgMaintenanceDay), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgMaintenanceTime), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgName), testClusterVar)
@@ -1061,7 +1061,7 @@ func TestRunClusterCreateWaitForStateNewClusterErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgRam), testClusterMbVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgCores), testClusterIntVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgStorageSize), testClusterMbVar)
-		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgStorageType), string(sdkgo.HDD))
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgStorageType), string(psql.HDD))
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgMaintenanceDay), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgMaintenanceTime), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgName), testClusterVar)
@@ -1119,9 +1119,9 @@ func TestRunClusterUpdateRemoveConnection(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, constants.FlagClusterId), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgRemoveConnection), true)
 		rm.CloudApiDbaasPgsqlMocks.Cluster.EXPECT().Get(testClusterVar).Return(&testClusterGet, nil, nil)
-		rm.CloudApiDbaasPgsqlMocks.Cluster.EXPECT().Update(testClusterVar, resources.PatchClusterRequest{PatchClusterRequest: sdkgo.PatchClusterRequest{
-			Properties: &sdkgo.PatchClusterProperties{
-				Connections: &[]sdkgo.Connection{},
+		rm.CloudApiDbaasPgsqlMocks.Cluster.EXPECT().Update(testClusterVar, resources.PatchClusterRequest{PatchClusterRequest: psql.PatchClusterRequest{
+			Properties: &psql.PatchClusterProperties{
+				Connections: &[]psql.Connection{},
 			},
 		}}).Return(&testClusterGetNoConnection, nil, nil)
 		err := RunClusterUpdate(cfg)
@@ -1159,9 +1159,9 @@ func TestRunClusterUpdateRemoveConnectionAskForConfirm(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, constants.FlagClusterId), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgRemoveConnection), true)
 		rm.CloudApiDbaasPgsqlMocks.Cluster.EXPECT().Get(testClusterVar).Return(&testClusterGet, nil, nil)
-		rm.CloudApiDbaasPgsqlMocks.Cluster.EXPECT().Update(testClusterVar, resources.PatchClusterRequest{PatchClusterRequest: sdkgo.PatchClusterRequest{
-			Properties: &sdkgo.PatchClusterProperties{
-				Connections: &[]sdkgo.Connection{},
+		rm.CloudApiDbaasPgsqlMocks.Cluster.EXPECT().Update(testClusterVar, resources.PatchClusterRequest{PatchClusterRequest: psql.PatchClusterRequest{
+			Properties: &psql.PatchClusterProperties{
+				Connections: &[]psql.Connection{},
 			},
 		}}).Return(&testClusterGetNoConnection, nil, nil)
 		err := RunClusterUpdate(cfg)
@@ -1181,9 +1181,9 @@ func TestRunClusterUpdateRemoveConnectionAskForConfirmErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, constants.FlagClusterId), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgRemoveConnection), true)
 		rm.CloudApiDbaasPgsqlMocks.Cluster.EXPECT().Get(testClusterVar).Return(&testClusterGet, nil, nil)
-		rm.CloudApiDbaasPgsqlMocks.Cluster.EXPECT().Update(testClusterVar, resources.PatchClusterRequest{PatchClusterRequest: sdkgo.PatchClusterRequest{
-			Properties: &sdkgo.PatchClusterProperties{
-				Connections: &[]sdkgo.Connection{},
+		rm.CloudApiDbaasPgsqlMocks.Cluster.EXPECT().Update(testClusterVar, resources.PatchClusterRequest{PatchClusterRequest: psql.PatchClusterRequest{
+			Properties: &psql.PatchClusterProperties{
+				Connections: &[]psql.Connection{},
 			},
 		}}).Return(&testClusterGetNoConnection, nil, nil)
 		err := RunClusterUpdate(cfg)
@@ -1332,7 +1332,7 @@ func TestRunClusterDeleteAllLenErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, constants.ArgAll), true)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgName), testClusterVar)
 		rm.CloudApiDbaasPgsqlMocks.Cluster.EXPECT().List(testClusterVar).Return(
-			resources.ClusterList{ClusterList: sdkgo.ClusterList{Items: &[]sdkgo.ClusterResponse{}}}, nil, nil)
+			resources.ClusterList{ClusterList: psql.ClusterList{Items: &[]psql.ClusterResponse{}}}, nil, nil)
 		err := RunClusterDelete(cfg)
 		assert.Error(t, err)
 	})

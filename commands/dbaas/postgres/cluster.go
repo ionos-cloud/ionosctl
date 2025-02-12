@@ -21,7 +21,7 @@ import (
 	cloudapiv6resources "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
 	dbaaspg "github.com/ionos-cloud/ionosctl/v6/services/dbaas-postgres"
 	"github.com/ionos-cloud/ionosctl/v6/services/dbaas-postgres/resources"
-	sdkgo "github.com/ionos-cloud/sdk-go-dbaas-postgres"
+	psql "github.com/ionos-cloud/sdk-go-dbaas-postgres"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -495,7 +495,7 @@ func RunClusterRestore(c *core.CommandConfig) error {
 	}
 
 	input := resources.CreateRestoreRequest{
-		CreateRestoreRequest: sdkgo.CreateRestoreRequest{
+		CreateRestoreRequest: psql.CreateRestoreRequest{
 			BackupId: &backupId,
 		},
 	}
@@ -632,7 +632,7 @@ func ClusterDeleteAll(c *core.CommandConfig) error {
 
 func getCreateClusterRequest(c *core.CommandConfig) (*resources.CreateClusterRequest, error) {
 	inputCluster := resources.CreateClusterRequest{}
-	input := sdkgo.CreateClusterProperties{}
+	input := psql.CreateClusterProperties{}
 
 	// Setting Attributes
 	pgsqlVersion := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgVersion))
@@ -641,7 +641,7 @@ func getCreateClusterRequest(c *core.CommandConfig) (*resources.CreateClusterReq
 
 	syncMode := strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgSyncMode)))
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("SynchronizationMode: %v", syncMode))
-	input.SetSynchronizationMode(sdkgo.SynchronizationMode(syncMode))
+	input.SetSynchronizationMode(psql.SynchronizationMode(syncMode))
 
 	replicas := viper.GetInt32(core.GetFlagName(c.NS, dbaaspg.ArgInstances))
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Instances: %v", replicas))
@@ -668,13 +668,13 @@ func getCreateClusterRequest(c *core.CommandConfig) (*resources.CreateClusterReq
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("StorageSize: %v[MB]", int32(storageSize)))
 	storageType := strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgStorageType)))
 	if storageType == "SSD_PREMIUM" || storageType == "SSD PREMIUM" {
-		storageType = string(sdkgo.SSD_PREMIUM)
+		storageType = string(psql.SSD_PREMIUM)
 	}
 	if storageType == "SSD_STANDARD" || storageType == "SSD STANDARD" {
-		storageType = string(sdkgo.SSD_STANDARD)
+		storageType = string(psql.SSD_STANDARD)
 	}
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("StorageType: %v", storageType))
-	input.SetStorageType(sdkgo.StorageType(storageType))
+	input.SetStorageType(psql.StorageType(storageType))
 
 	if viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgBackupLocation)) != "" {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Backup Location: %v", viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgBackupLocation))))
@@ -704,7 +704,7 @@ func getCreateClusterRequest(c *core.CommandConfig) (*resources.CreateClusterReq
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("DisplayName: %v", displayName))
 	input.SetDisplayName(displayName)
 
-	dbuser := sdkgo.DBUser{}
+	dbuser := psql.DBUser{}
 	username := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgDbUsername))
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("DBUser - Username: %v", username))
 	dbuser.SetUsername(username)
@@ -715,7 +715,7 @@ func getCreateClusterRequest(c *core.CommandConfig) (*resources.CreateClusterReq
 
 	input.SetCredentials(dbuser)
 
-	vdcConnection := sdkgo.Connection{}
+	vdcConnection := psql.Connection{}
 	vdcId := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgDatacenterId))
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Connection - DatacenterId: %v", vdcId))
 	vdcConnection.SetDatacenterId(vdcId)
@@ -730,11 +730,11 @@ func getCreateClusterRequest(c *core.CommandConfig) (*resources.CreateClusterReq
 		vdcConnection.SetCidr(ip)
 	}
 
-	input.SetConnections([]sdkgo.Connection{vdcConnection})
+	input.SetConnections([]psql.Connection{vdcConnection})
 
 	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgMaintenanceTime)) ||
 		viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgMaintenanceDay)) {
-		maintenanceWindow := sdkgo.MaintenanceWindow{}
+		maintenanceWindow := psql.MaintenanceWindow{}
 
 		if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgMaintenanceTime)) {
 			maintenanceTime := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgMaintenanceTime))
@@ -745,7 +745,7 @@ func getCreateClusterRequest(c *core.CommandConfig) (*resources.CreateClusterReq
 		if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgMaintenanceDay)) {
 			maintenanceDay := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgMaintenanceDay))
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("MaintenanceWindow - DayOfTheWeek: %v", maintenanceDay))
-			maintenanceWindow.SetDayOfTheWeek(sdkgo.DayOfTheWeek(maintenanceDay))
+			maintenanceWindow.SetDayOfTheWeek(psql.DayOfTheWeek(maintenanceDay))
 		}
 
 		input.SetMaintenanceWindow(maintenanceWindow)
@@ -753,7 +753,7 @@ func getCreateClusterRequest(c *core.CommandConfig) (*resources.CreateClusterReq
 
 	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgBackupId)) ||
 		viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgRecoveryTime)) {
-		createRestoreRequest := sdkgo.CreateRestoreRequest{}
+		createRestoreRequest := psql.CreateRestoreRequest{}
 
 		if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgRecoveryTime)) {
 			recoveryTargetTime, err := time.Parse(time.RFC3339, viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgRecoveryTime)))
@@ -780,7 +780,7 @@ func getCreateClusterRequest(c *core.CommandConfig) (*resources.CreateClusterReq
 
 func getPatchClusterRequest(c *core.CommandConfig) (*resources.PatchClusterRequest, error) {
 	inputCluster := resources.PatchClusterRequest{}
-	input := sdkgo.PatchClusterProperties{}
+	input := psql.PatchClusterProperties{}
 
 	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgCores)) {
 		cpuCoreCount := viper.GetInt32(core.GetFlagName(c.NS, dbaaspg.ArgCores))
@@ -829,7 +829,7 @@ func getPatchClusterRequest(c *core.CommandConfig) (*resources.PatchClusterReque
 	}
 
 	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgMaintenanceTime)) || viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgMaintenanceDay)) {
-		maintenanceWindow := sdkgo.MaintenanceWindow{}
+		maintenanceWindow := psql.MaintenanceWindow{}
 		if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgMaintenanceTime)) {
 			maintenanceTime := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgMaintenanceTime))
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("MaintenanceTime: %v", maintenanceTime))
@@ -839,7 +839,7 @@ func getPatchClusterRequest(c *core.CommandConfig) (*resources.PatchClusterReque
 		if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgMaintenanceDay)) {
 			maintenanceDay := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgMaintenanceDay))
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("MaintenanceDayOfWeek: %v", maintenanceDay))
-			maintenanceWindow.SetDayOfTheWeek(sdkgo.DayOfTheWeek(maintenanceDay))
+			maintenanceWindow.SetDayOfTheWeek(psql.DayOfTheWeek(maintenanceDay))
 		}
 
 		input.SetMaintenanceWindow(maintenanceWindow)
@@ -871,7 +871,7 @@ func getPatchClusterRequest(c *core.CommandConfig) (*resources.PatchClusterReque
 			connection.SetCidr(cidrId)
 		}
 
-		input.SetConnections([]sdkgo.Connection{connection})
+		input.SetConnections([]psql.Connection{connection})
 	}
 
 	if viper.GetBool(core.GetFlagName(c.NS, dbaaspg.ArgRemoveConnection)) {
@@ -882,7 +882,7 @@ func getPatchClusterRequest(c *core.CommandConfig) (*resources.PatchClusterReque
 
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
 			"Removing Connection with: %v...", getConnectionMessage(connection)))
-		input.SetConnections([]sdkgo.Connection{})
+		input.SetConnections([]psql.Connection{})
 
 	}
 
@@ -890,11 +890,11 @@ func getPatchClusterRequest(c *core.CommandConfig) (*resources.PatchClusterReque
 	return &inputCluster, nil
 }
 
-func getConnectionFromCluster(c *core.CommandConfig, clusterId string) (sdkgo.Connection, error) {
+func getConnectionFromCluster(c *core.CommandConfig, clusterId string) (psql.Connection, error) {
 	if c != nil {
 		oldCluster, _, err := c.CloudApiDbaasPgsqlServices.Clusters().Get(clusterId)
 		if err != nil {
-			return sdkgo.Connection{}, err
+			return psql.Connection{}, err
 		}
 
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting properties from cluster with Id: %v", clusterId))
@@ -906,15 +906,15 @@ func getConnectionFromCluster(c *core.CommandConfig, clusterId string) (sdkgo.Co
 					return connectionOk, nil
 				}
 			} else {
-				return sdkgo.Connection{}, errors.New("no connections found")
+				return psql.Connection{}, errors.New("no connections found")
 			}
 		}
 	}
 
-	return sdkgo.Connection{}, nil
+	return psql.Connection{}, nil
 }
 
-func getConnectionMessage(connection sdkgo.Connection) string {
+func getConnectionMessage(connection psql.Connection) string {
 	var msg string
 
 	if datacenterOk, ok := connection.GetDatacenterIdOk(); ok && datacenterOk != nil {

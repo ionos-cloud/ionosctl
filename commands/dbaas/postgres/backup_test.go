@@ -10,35 +10,35 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	dbaaspg "github.com/ionos-cloud/ionosctl/v6/services/dbaas-postgres"
 	"github.com/ionos-cloud/ionosctl/v6/services/dbaas-postgres/resources"
-	sdkgo "github.com/ionos-cloud/sdk-go-dbaas-postgres"
+	psql "github.com/ionos-cloud/sdk-go-dbaas-postgres"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
 
 var (
 	testBackup = resources.BackupResponse{
-		BackupResponse: sdkgo.BackupResponse{
+		BackupResponse: psql.BackupResponse{
 			Id: &testBackupVar,
-			Properties: &sdkgo.ClusterBackup{
+			Properties: &psql.ClusterBackup{
 				Id:                         &testBackupVar,
 				ClusterId:                  &testBackupVar,
 				EarliestRecoveryTargetTime: &testIonosTime,
 				Version:                    &testBackupVar,
 				IsActive:                   &testBackupBoolVar,
 			},
-			Metadata: &sdkgo.BackupMetadata{
+			Metadata: &psql.BackupMetadata{
 				State:       &testStateVar,
 				CreatedDate: &testIonosTime,
 			},
 		},
 	}
 	testBackups = resources.ClusterBackupList{
-		ClusterBackupList: sdkgo.ClusterBackupList{
+		ClusterBackupList: psql.ClusterBackupList{
 			Id:    &testBackupVar,
-			Items: &[]sdkgo.BackupResponse{testBackup.BackupResponse},
+			Items: &[]psql.BackupResponse{testBackup.BackupResponse},
 		},
 	}
-	testStateVar      = sdkgo.State("AVAILABLE")
+	testStateVar      = psql.State("AVAILABLE")
 	testBackupVar     = "test-backup"
 	testBackupBoolVar = true
 	testBackupErr     = errors.New("test backup error")

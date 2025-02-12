@@ -11,17 +11,17 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	dbaaspg "github.com/ionos-cloud/ionosctl/v6/services/dbaas-postgres"
 	"github.com/ionos-cloud/ionosctl/v6/services/dbaas-postgres/resources"
-	sdkgo "github.com/ionos-cloud/sdk-go-dbaas-postgres"
+	psql "github.com/ionos-cloud/sdk-go-dbaas-postgres"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
 
 var (
 	testLogs = resources.ClusterLogs{
-		ClusterLogs: sdkgo.ClusterLogs{
-			Instances: &[]sdkgo.ClusterLogsInstancesInner{{
+		ClusterLogs: psql.ClusterLogs{
+			Instances: &[]psql.ClusterLogsInstancesInner{{
 				Name: &testLogVar,
-				Messages: &[]sdkgo.ClusterLogsInstancesInnerMessagesInner{
+				Messages: &[]psql.ClusterLogsInstancesInnerMessagesInner{
 					{
 						Time:    &testIonosTime,
 						Message: &testLogVar,

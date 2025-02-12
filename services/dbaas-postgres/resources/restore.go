@@ -5,11 +5,11 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
-	sdkgo "github.com/ionos-cloud/sdk-go-dbaas-postgres"
+	psql "github.com/ionos-cloud/sdk-go-dbaas-postgres"
 )
 
 type CreateRestoreRequest struct {
-	sdkgo.CreateRestoreRequest
+	psql.CreateRestoreRequest
 }
 
 // RestoresService is a wrapper around ionoscloud.CreateRestoreRequest
@@ -18,7 +18,7 @@ type RestoresService interface {
 }
 
 type restoresService struct {
-	client  *sdkgo.APIClient
+	client  *psql.APIClient
 	context context.Context
 }
 

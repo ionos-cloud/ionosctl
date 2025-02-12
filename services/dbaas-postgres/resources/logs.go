@@ -6,11 +6,11 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
-	sdkgo "github.com/ionos-cloud/sdk-go-dbaas-postgres"
+	psql "github.com/ionos-cloud/sdk-go-dbaas-postgres"
 )
 
 type ClusterLogs struct {
-	sdkgo.ClusterLogs
+	psql.ClusterLogs
 }
 
 type LogsQueryParams struct {
@@ -25,7 +25,7 @@ type LogsService interface {
 }
 
 type logsService struct {
-	client  *sdkgo.APIClient
+	client  *psql.APIClient
 	context context.Context
 }
 

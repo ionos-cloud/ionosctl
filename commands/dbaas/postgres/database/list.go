@@ -13,7 +13,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
-	ionoscloud "github.com/ionos-cloud/sdk-go-dbaas-postgres"
+	psql "github.com/ionos-cloud/sdk-go-dbaas-postgres"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -93,7 +93,7 @@ func listAll(c *core.CommandConfig) error {
 		return fmt.Errorf("failed to retrieve Postgres Clusters")
 	}
 
-	var databasesRaw []ionoscloud.DatabaseList
+	var databasesRaw []psql.DatabaseList
 	var usersConverted []map[string]interface{}
 	for _, cluster := range *clusters {
 		tempDatabases, tempConverted, err := getDatabasesFromCluster(cluster)
@@ -117,28 +117,28 @@ func listAll(c *core.CommandConfig) error {
 	return nil
 }
 
-func getDatabasesFromCluster(cluster ionoscloud.ClusterResponse) (
-	ionoscloud.DatabaseList, []map[string]interface{}, error,
+func getDatabasesFromCluster(cluster psql.ClusterResponse) (
+	psql.DatabaseList, []map[string]interface{}, error,
 ) {
 	clusterId, ok := cluster.GetIdOk()
 	if !ok || clusterId == nil {
-		return ionoscloud.DatabaseList{}, nil, fmt.Errorf("failed to retrieve Postgres Cluster ID")
+		return psql.DatabaseList{}, nil, fmt.Errorf("failed to retrieve Postgres Cluster ID")
 	}
 
 	databaseList, _, err := client.Must().PostgresClient.DatabasesApi.DatabasesList(
 		context.Background(), *clusterId,
 	).Execute()
 	if err != nil {
-		return ionoscloud.DatabaseList{}, nil, err
+		return psql.DatabaseList{}, nil, err
 	}
 
 	databases, ok := databaseList.GetItemsOk()
 	if !ok || databases == nil {
-		return ionoscloud.DatabaseList{}, nil, fmt.Errorf("failed to retrieve Postgres Databases")
+		return psql.DatabaseList{}, nil, fmt.Errorf("failed to retrieve Postgres Databases")
 	}
 
 	convertedDatabaseList := functional.Map(
-		*databases, func(db ionoscloud.DatabaseResource) map[string]interface{} {
+		*databases, func(db psql.DatabaseResource) map[string]interface{} {
 			dbConv, err := json2table.ConvertJSONToTable("", jsonpaths.DbaasPostgresDatabase, db)
 			if err != nil {
 				return nil
