@@ -120,8 +120,8 @@ func newClient(name, pwd, token, hostUrl string, usedLayer *Layer) *Client {
 
 		PostgresClient: postgres.NewAPIClient(postgresConfig),
 		MongoClient:    mongo.NewAPIClient(sharedConfig),
-		Kafka:          kafka.NewAPIClient(sharedConfig),
 		MariaClient:    mariadb.NewAPIClient(sharedConfig),
+		Kafka:          kafka.NewAPIClient(sharedConfig),
 
 		usedLayer: usedLayer,
 	}
