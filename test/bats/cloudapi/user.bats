@@ -230,7 +230,7 @@ setup_file() {
     unset IONOS_USERNAME IONOS_PASSWORD
     run ionosctl datacenter list
     assert_failure
-    assert_output -p "failed selecting an auth layer"
+    assert_output -p "failed reading auth config file"
 
     rm "$(ionosctl cfg location)"
 }

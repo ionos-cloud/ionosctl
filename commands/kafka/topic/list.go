@@ -11,7 +11,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
-	kafka "github.com/ionos-cloud/sdk-go-kafka"
+	"github.com/ionos-cloud/sdk-go-bundle/products/kafka/v2"
 )
 
 func listCmd() *core.Command {
@@ -61,7 +61,7 @@ ionosctl kafka topic list --location LOCATION --cluster-id CLUSTER_ID`,
 			func() []string {
 				return completer.ClustersProperty(
 					func(read kafka.ClusterRead) string {
-						return *read.Id
+						return read.Id
 					},
 				)
 			}, constants.KafkaApiRegionalURL, constants.KafkaLocations,
@@ -78,8 +78,8 @@ func listAll(c *core.CommandConfig) error {
 	}
 
 	var allTopics []kafka.TopicReadList
-	for _, cluster := range *clusters.Items {
-		topics, _, err := client.Must().Kafka.TopicsApi.ClustersTopicsGet(context.Background(), *cluster.Id).Execute()
+	for _, cluster := range clusters.Items {
+		topics, _, err := client.Must().Kafka.TopicsApi.ClustersTopicsGet(context.Background(), cluster.Id).Execute()
 		if err != nil {
 			return err
 		}

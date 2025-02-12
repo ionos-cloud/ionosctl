@@ -57,9 +57,9 @@ github.com/hashicorp/hcl/json/token
 # github.com/inconshreveable/mousetrap v1.1.0
 ## explicit; go 1.18
 github.com/inconshreveable/mousetrap
-# github.com/ionos-cloud/sdk-go-auth v1.0.10
-## explicit; go 1.18
-github.com/ionos-cloud/sdk-go-auth
+# github.com/ionos-cloud/sdk-go-bundle/products/auth/v2 v2.0.1
+## explicit; go 1.22
+github.com/ionos-cloud/sdk-go-bundle/products/auth/v2
 # github.com/ionos-cloud/sdk-go-bundle/products/cdn/v2 v2.1.1
 ## explicit; go 1.22
 github.com/ionos-cloud/sdk-go-bundle/products/cdn/v2
@@ -75,6 +75,9 @@ github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo/v2
 # github.com/ionos-cloud/sdk-go-bundle/products/dns/v2 v2.0.1
 ## explicit; go 1.22
 github.com/ionos-cloud/sdk-go-bundle/products/dns/v2
+# github.com/ionos-cloud/sdk-go-bundle/products/kafka/v2 v2.0.0
+## explicit; go 1.22
+github.com/ionos-cloud/sdk-go-bundle/products/kafka/v2
 # github.com/ionos-cloud/sdk-go-bundle/products/logging/v2 v2.1.2
 ## explicit; go 1.22
 github.com/ionos-cloud/sdk-go-bundle/products/logging/v2
@@ -93,9 +96,6 @@ github.com/ionos-cloud/sdk-go-dbaas-mariadb
 # github.com/ionos-cloud/sdk-go-dbaas-postgres v1.1.2
 ## explicit; go 1.19
 github.com/ionos-cloud/sdk-go-dbaas-postgres
-# github.com/ionos-cloud/sdk-go-kafka v1.1.0
-## explicit; go 1.18
-github.com/ionos-cloud/sdk-go-kafka
 # github.com/ionos-cloud/sdk-go-vm-autoscaling v1.0.1
 ## explicit; go 1.18
 github.com/ionos-cloud/sdk-go-vm-autoscaling
