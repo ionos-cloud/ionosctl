@@ -14,7 +14,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
@@ -363,7 +362,6 @@ func RunVolumeListAll(c *core.CommandConfig) error {
 
 	allDcs := getDataCenters(datacenters)
 	var allVolumes []ionoscloud.Volumes
-	var allVolumesConverted []map[string]interface{}
 	totalTime := time.Duration(0)
 
 	for _, dc := range allDcs {
@@ -377,21 +375,6 @@ func RunVolumeListAll(c *core.CommandConfig) error {
 			return err
 		}
 
-		items, ok := volumes.GetItemsOk()
-		if !ok || items == nil {
-			continue
-		}
-
-		for _, item := range *items {
-			temp, err := json2table.ConvertJSONToTable("", jsonpaths.Volume, item)
-			if err != nil {
-				fmt.Errorf("could not convert from JSON to Table format: %w", err)
-			}
-
-			//temp[0]["DatacenterId"] = id
-			allVolumesConverted = append(allVolumesConverted, temp[0])
-		}
-
 		allVolumes = append(allVolumes, volumes.Volumes)
 		totalTime += resp.RequestTime
 	}
@@ -402,8 +385,9 @@ func RunVolumeListAll(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutputPreconverted(allVolumes, allVolumesConverted,
-		tabheaders.GetHeaders(allVolumeCols, defaultVolumeCols, cols))
+	out, err := jsontabwriter.GenerateOutput(
+		"*.items", jsonpaths.Volume, allVolumes, tabheaders.GetHeaders(allVolumeCols, defaultVolumeCols, cols),
+	)
 	if err != nil {
 		return err
 	}
