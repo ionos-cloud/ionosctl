@@ -10,7 +10,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mariadb/v2"
 	sdkmongo "github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo/v2"
-	sdkpsql "github.com/ionos-cloud/sdk-go-dbaas-postgres"
+	psql "github.com/ionos-cloud/sdk-go-dbaas-postgres"
 
 	"github.com/dustin/go-humanize"
 )
@@ -318,7 +318,7 @@ func ConvertDbaasMongoUsersToTable(users sdkmongo.UsersList) ([]map[string]inter
 	return usersConverted, nil
 }
 
-func ConvertDbaasPostgresAPIVersionToTable(apiVersion sdkpsql.APIVersion) ([]map[string]interface{}, error) {
+func ConvertDbaasPostgresAPIVersionToTable(apiVersion psql.APIVersion) ([]map[string]interface{}, error) {
 	swaggerUrlOk, ok := apiVersion.GetSwaggerUrlOk()
 	if !ok || swaggerUrlOk == nil {
 		return nil, fmt.Errorf("could not retrieve PostgreSQL API Version swagger URL")
@@ -327,8 +327,8 @@ func ConvertDbaasPostgresAPIVersionToTable(apiVersion sdkpsql.APIVersion) ([]map
 	if strings.HasPrefix(*swaggerUrlOk, "appserver:8181/postgresql") {
 		*swaggerUrlOk = strings.TrimPrefix(*swaggerUrlOk, "appserver:8181/postgresql")
 	}
-	if !strings.HasPrefix(*swaggerUrlOk, sdkpsql.DefaultIonosServerUrl) {
-		*swaggerUrlOk = fmt.Sprintf("%s%s", sdkpsql.DefaultIonosServerUrl, *swaggerUrlOk)
+	if !strings.HasPrefix(*swaggerUrlOk, psql.DefaultIonosServerUrl) {
+		*swaggerUrlOk = fmt.Sprintf("%s%s", psql.DefaultIonosServerUrl, *swaggerUrlOk)
 	}
 
 	temp, err := json2table.ConvertJSONToTable("", jsonpaths.DbaasPostgresApiVersion, apiVersion)
@@ -341,7 +341,7 @@ func ConvertDbaasPostgresAPIVersionToTable(apiVersion sdkpsql.APIVersion) ([]map
 	return temp, nil
 }
 
-func ConvertDbaasPostgresClusterToTable(cluster sdkpsql.ClusterResponse) ([]map[string]interface{}, error) {
+func ConvertDbaasPostgresClusterToTable(cluster psql.ClusterResponse) ([]map[string]interface{}, error) {
 	properties, ok := cluster.GetPropertiesOk()
 	if !ok || properties == nil {
 		return nil, fmt.Errorf("could not retrieve PostgreSQL Cluster properties")
@@ -408,7 +408,7 @@ func ConvertDbaasPostgresClusterToTable(cluster sdkpsql.ClusterResponse) ([]map[
 	return temp, nil
 }
 
-func ConvertDbaasPostgresClustersToTable(clusters sdkpsql.ClusterList) ([]map[string]interface{}, error) {
+func ConvertDbaasPostgresClustersToTable(clusters psql.ClusterList) ([]map[string]interface{}, error) {
 	items, ok := clusters.GetItemsOk()
 	if !ok || items == nil {
 		return nil, fmt.Errorf("could not retrieve PostgreSQL Clusters items")
@@ -427,7 +427,7 @@ func ConvertDbaasPostgresClustersToTable(clusters sdkpsql.ClusterList) ([]map[st
 	return clustersConverted, nil
 }
 
-func ConvertDbaasPostgresLogsToTable(logs *[]sdkpsql.ClusterLogsInstancesInner) ([]map[string]interface{}, error) {
+func ConvertDbaasPostgresLogsToTable(logs *[]psql.ClusterLogsInstancesInner) ([]map[string]interface{}, error) {
 	if logs == nil {
 		return nil, fmt.Errorf("no logs to process")
 	}

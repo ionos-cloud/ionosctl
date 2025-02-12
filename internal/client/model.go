@@ -20,7 +20,7 @@ import (
 	"github.com/ionos-cloud/sdk-go-bundle/products/kafka/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/logging/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/vpn/v2"
-	postgres "github.com/ionos-cloud/sdk-go-dbaas-postgres"
+	psql "github.com/ionos-cloud/sdk-go-dbaas-postgres"
 	vmasc "github.com/ionos-cloud/sdk-go-vm-autoscaling"
 	cloudv6 "github.com/ionos-cloud/sdk-go/v6"
 
@@ -88,7 +88,7 @@ func newClient(name, pwd, token, hostUrl string) *Client {
 	vmascConfig := vmasc.NewConfiguration(name, pwd, token, hostUrl)
 	vmascConfig.UserAgent = appendUserAgent(vmascConfig.UserAgent)
 	// DBAAS
-	postgresConfig := postgres.NewConfiguration(name, pwd, token, hostUrl)
+	postgresConfig := psql.NewConfiguration(name, pwd, token, hostUrl)
 	postgresConfig.UserAgent = appendUserAgent(postgresConfig.UserAgent)
 
 	return &Client{
