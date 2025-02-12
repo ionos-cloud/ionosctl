@@ -44,11 +44,9 @@ func Get() (*Client, error) {
 
 	once.Do(
 		func() {
-			var err error
-
 			// Read config file, if available
-			data, err := config.Read()
-			if err == nil {
+			data, configErr := config.Read()
+			if configErr == nil {
 				for k, v := range data {
 					if !viper.IsSet(k) {
 						viper.Set(k, v)
@@ -58,9 +56,13 @@ func Get() (*Client, error) {
 
 			viper.AutomaticEnv()
 
-			values, usedLayer, err := selectAuthLayer(ConfigurationPriorityRules)
-			if err != nil {
-				getClientErr = errors.Join(getClientErr, fmt.Errorf("failed selecting an auth layer: %w", err))
+			values, usedLayer, layerErr := selectAuthLayer(ConfigurationPriorityRules)
+			if layerErr != nil {
+				if configErr != nil {
+					getClientErr = errors.Join(getClientErr, fmt.Errorf("failed reading auth config file: %w", configErr))
+				} else {
+					getClientErr = errors.Join(getClientErr, fmt.Errorf("failed selecting an auth layer: %w", layerErr))
+				}
 				return
 			}
 
