@@ -95,7 +95,7 @@ func listAll(c *core.CommandConfig) error {
 
 	var databasesRaw []psql.DatabaseList
 	var usersConverted []map[string]interface{}
-	for _, cluster := range *clusters {
+	for _, cluster := range clusters {
 		tempDatabases, tempConverted, err := getDatabasesFromCluster(cluster)
 		if err != nil {
 			return err
@@ -138,7 +138,7 @@ func getDatabasesFromCluster(cluster psql.ClusterResponse) (
 	}
 
 	convertedDatabaseList := functional.Map(
-		*databases, func(db psql.DatabaseResource) map[string]interface{} {
+		databases, func(db psql.DatabaseResource) map[string]interface{} {
 			dbConv, err := json2table.ConvertJSONToTable("", jsonpaths.DbaasPostgresDatabase, db)
 			if err != nil {
 				return nil
