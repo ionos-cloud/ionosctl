@@ -5,7 +5,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
-	psql "github.com/ionos-cloud/sdk-go-dbaas-postgres"
+	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v2"
 )
 
 type APIVersionList struct {
