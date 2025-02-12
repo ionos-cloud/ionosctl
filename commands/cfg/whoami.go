@@ -65,7 +65,15 @@ func handleProvenance(c *core.CommandConfig, cl *client.Client, authErr error) e
 	if authErr != nil {
 		builder.WriteString("Note: Authentication failed!")
 		if cl.UsedLayer() == nil {
-			builder.WriteString(" None of the authentication layers had a token, or both username & password set.")
+			if strings.Contains(authErr.Error(), "config file") {
+				builder.WriteString(
+					fmt.Sprintf(
+						" Config file detected. Found error: %s", authErr.Error(),
+					),
+				)
+			} else {
+				builder.WriteString(" None of the authentication layers had a token, or both username & password set.")
+			}
 		}
 		builder.WriteString("\n")
 	}
