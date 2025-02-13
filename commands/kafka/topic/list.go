@@ -8,11 +8,9 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 	kafka "github.com/ionos-cloud/sdk-go-kafka"
 )
 
@@ -79,7 +77,6 @@ func listAll(c *core.CommandConfig) error {
 		return err
 	}
 
-	var allTopicsConverted []map[string]interface{}
 	var allTopics []kafka.TopicReadList
 	for _, cluster := range *clusters.Items {
 		topics, _, err := client.Must().Kafka.TopicsApi.ClustersTopicsGet(context.Background(), *cluster.Id).Execute()
@@ -87,25 +84,12 @@ func listAll(c *core.CommandConfig) error {
 			return err
 		}
 
-		topicsConverted, err := json2table.ConvertJSONToTable("items", jsonpaths.KafkaTopic, topics)
-		if err != nil {
-			return fmt.Errorf("error converting topics to table format: %w", err)
-		}
-
-		allTopicsConverted = append(
-			allTopicsConverted, functional.Map(
-				topicsConverted, func(topic map[string]interface{}) map[string]interface{} {
-					topic["ClusterId"] = *cluster.Id
-					return topic
-				},
-			)...,
-		)
 		allTopics = append(allTopics, topics)
 	}
 
 	cols, _ := c.Command.Command.Flags().GetStringSlice("cols")
-	out, err := jsontabwriter.GenerateOutputPreconverted(
-		allTopics, allTopicsConverted, tabheaders.GetHeaders(allCols, defaultCols, cols),
+	out, err := jsontabwriter.GenerateOutput(
+		"*.items", jsonpaths.KafkaTopic, allTopics, tabheaders.GetHeaders(allCols, defaultCols, cols),
 	)
 	if err != nil {
 		return err

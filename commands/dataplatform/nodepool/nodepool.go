@@ -34,6 +34,6 @@ func NodepoolCmd() *core.Command {
 
 var (
 	allCols = []string{"Id", "Name", "Nodes", "Cores", "CpuFamily", "Ram", "Storage", "MaintenanceWindow", "State",
-		"AvailabilityZone", "Labels", "Annotations"}
+		"AvailabilityZone", "Labels", "Annotations", "ClusterId"}
 	defaultCols = []string{"Id", "Name", "Nodes", "Cores", "CpuFamily", "Ram", "Storage", "MaintenanceWindow", "State"}
 )

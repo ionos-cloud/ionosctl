@@ -13,7 +13,12 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/pointer"
 	vmasc "github.com/ionos-cloud/sdk-go-vm-autoscaling"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
+)
+
+var (
+	allCols = append([]string{"GroupServerId"}, commands.AllServerCols...)
+
+	defaultCols = allCols
 )
 
 func Root() *core.Command {
@@ -30,22 +35,16 @@ func Root() *core.Command {
 	cmd.AddCommand(List())
 	cmd.AddCommand(Get())
 
-	globalFlags := cmd.GlobalFlags()
-	globalFlags.StringSliceP(constants.ArgCols, "", defaultCols, tabheaders.ColsMessage(defaultCols))
-	// TODO: This is a hacky workaround for #415. Remove "autoscaling" when --cols behaviour is refactored.
-	_ = viper.BindPFlag(core.GetFlagName("autoscaling"+cmd.Command.Name(), constants.ArgCols), globalFlags.Lookup(constants.ArgCols))
-	_ = cmd.Command.RegisterFlagCompletionFunc(constants.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return allCols, cobra.ShellCompDirectiveNoFileComp
-	})
+	cmd.Command.PersistentFlags().StringSlice(constants.ArgCols, nil, tabheaders.ColsMessage(defaultCols))
+	_ = cmd.Command.RegisterFlagCompletionFunc(
+		constants.ArgCols,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return allCols, cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 
 	return cmd
 }
-
-var (
-	allCols = append([]string{"GroupServerId"}, commands.AllServerCols...)
-
-	defaultCols = allCols
-)
 
 func Servers(fs ...Filter) (vmasc.ServerCollection, error) {
 	groupIds := group.GroupsProperty(func(r vmasc.Group) string {

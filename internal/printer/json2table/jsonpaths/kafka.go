@@ -20,5 +20,6 @@ var (
 		"RetentionTime":      "properties.logRetention.retentionTime",
 		"SegmentByes":        "properties.logRetention.segmentBytes",
 		"State":              "metadata.state",
+		"ClusterId":          "href",
 	}
 )

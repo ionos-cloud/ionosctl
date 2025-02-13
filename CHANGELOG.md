@@ -2,6 +2,11 @@
 
 ## [v6.8.1] (???)
 
+### Added
+
+- Added parent resource ID to `list --all` command for: `container-registry artifacts`, `container-registry tokens`,
+`dataplatform nodepool`, `kafka topic`
+
 ### Fixed
 
 - Fixed not being able to use snapshot IDs for --image-id

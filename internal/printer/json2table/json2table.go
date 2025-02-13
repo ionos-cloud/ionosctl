@@ -22,7 +22,9 @@ import (
 //
 // Returns a slice of maps. Each map represents a row in the table, with each key-value
 // pair in the map being equivalent to a column name and its value.
-func ConvertJSONToTable(columnPathMappingPrefix string, columnPathMapping map[string]string, sourceData interface{}) ([]map[string]interface{}, error) {
+func ConvertJSONToTable(
+	columnPathMappingPrefix string, columnPathMapping map[string]string, sourceData interface{},
+) ([]map[string]interface{}, error) {
 	if sourceData == nil {
 		return nil, fmt.Errorf("provided object cannot be nil")
 	}
@@ -43,7 +45,13 @@ func ConvertJSONToTable(columnPathMappingPrefix string, columnPathMapping map[st
 
 		for k, v := range columnPathMapping {
 			objData := obj.Path(v)
-			mappedObj[k] = objData.Data()
+
+			// Any combination of non-href columns and href path will be considered a parent column
+			if strings.Contains(v, "href") && strings.ToLower(k) != "href" {
+				mappedObj[k] = asParentColumn(objData.Data())
+			} else {
+				mappedObj[k] = objData.Data()
+			}
 		}
 
 		res = append(res, mappedObj)
@@ -108,4 +116,18 @@ func traverseJSONRoot(columnPathMappingPrefix string, sourceData interface{}) ([
 	}
 
 	return children, nil
+}
+
+// asParentColumn extracts the parent ID from the child's HREF.
+func asParentColumn(childHref interface{}) string {
+	href, ok := childHref.(string)
+	if !ok {
+		return ""
+	}
+
+	tokens := strings.Split(href, "/")
+	// parent ID is always 2 tokens to the left of the child ID
+	parentID := tokens[len(tokens)-3]
+
+	return parentID
 }

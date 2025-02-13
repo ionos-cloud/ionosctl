@@ -14,7 +14,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
@@ -661,7 +660,6 @@ func RunServerListAll(c *core.CommandConfig) error {
 
 	allDcs := getDataCenters(datacenters)
 	var allServers []ionoscloud.Servers
-	var allServersConverted []map[string]interface{}
 	totalTime := time.Duration(0)
 
 	for _, dc := range allDcs {
@@ -670,24 +668,9 @@ func RunServerListAll(c *core.CommandConfig) error {
 			return fmt.Errorf("could not retrieve Datacenter Id")
 		}
 
-		servers, resp, err := c.CloudApiV6Services.Servers().List(*dc.GetId(), listQueryParams)
+		servers, resp, err := c.CloudApiV6Services.Servers().List(*id, listQueryParams)
 		if err != nil {
 			return err
-		}
-
-		items, ok := servers.GetItemsOk()
-		if !ok || items == nil {
-			continue
-		}
-
-		for _, item := range *items {
-			temp, err := json2table.ConvertJSONToTable("", jsonpaths.Server, item)
-			if err != nil {
-				return fmt.Errorf("could not convert from JSON to Table format: %w", err)
-			}
-
-			temp[0]["DatacenterId"] = *id
-			allServersConverted = append(allServersConverted, temp[0])
 		}
 
 		allServers = append(allServers, servers.Servers)
@@ -700,8 +683,9 @@ func RunServerListAll(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutputPreconverted(allServers, allServersConverted,
-		tabheaders.GetHeaders(AllServerCols, DefaultServerCols, cols))
+	out, err := jsontabwriter.GenerateOutput(
+		"*.items", jsonpaths.Server, allServers, tabheaders.GetHeaders(AllServerCols, DefaultServerCols, cols),
+	)
 	if err != nil {
 		return err
 	}
