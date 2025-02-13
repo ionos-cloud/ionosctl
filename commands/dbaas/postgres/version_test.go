@@ -9,15 +9,15 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/services/dbaas-postgres/resources"
-	sdkgo "github.com/ionos-cloud/sdk-go-dbaas-postgres"
+	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/psql/v2"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
 
 var (
 	testVersions = resources.PostgresVersionList{
-		PostgresVersionList: sdkgo.PostgresVersionList{
-			Data: &[]sdkgo.PostgresVersionListDataInner{{
+		PostgresVersionList: psql.PostgresVersionList{
+			Data: []psql.PostgresVersionListData{{
 				Name: &testVersionVar,
 			}},
 		},
