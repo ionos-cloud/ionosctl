@@ -23,6 +23,7 @@ var (
 		"CredentialsUsername": "properties.credentials.username",
 		"CredentialsPassword": "properties.credentials.password",
 		"Status":              "properties.status",
+		"RegistryId":          "href",
 	}
 
 	ContainerRegistryArtifact = map[string]string{

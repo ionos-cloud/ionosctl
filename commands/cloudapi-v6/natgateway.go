@@ -11,7 +11,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
@@ -257,33 +256,17 @@ func RunNatGatewayListAll(c *core.CommandConfig) error {
 
 	allDcs := getDataCenters(datacenters)
 	var allNatGateways []ionoscloud.NatGateways
-	var allNatGatewaysConverted []map[string]interface{}
 	totalTime := time.Duration(0)
 
 	for _, dc := range allDcs {
-		natGateways, resp, err := c.CloudApiV6Services.NatGateways().List(*dc.GetId(), listQueryParams)
-		if err != nil {
-			return err
-		}
-
 		id, ok := dc.GetIdOk()
 		if !ok || id == nil {
 			return fmt.Errorf("could not retrieve Datacenter ID")
 		}
 
-		items, ok := natGateways.GetItemsOk()
-		if !ok || items == nil {
-			continue
-		}
-
-		for _, item := range *items {
-			temp, err := json2table.ConvertJSONToTable("", jsonpaths.NatGateway, item)
-			if err != nil {
-				return fmt.Errorf("could not convert from JSON to Table format: %w", err)
-			}
-
-			temp[0]["DatacenterId"] = *id
-			allNatGatewaysConverted = append(allNatGatewaysConverted, temp[0])
+		natGateways, resp, err := c.CloudApiV6Services.NatGateways().List(*id, listQueryParams)
+		if err != nil {
+			return err
 		}
 
 		allNatGateways = append(allNatGateways, natGateways.NatGateways)
@@ -296,8 +279,10 @@ func RunNatGatewayListAll(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutputPreconverted(allNatGateways, allNatGatewaysConverted,
-		tabheaders.GetHeaders(allNatGatewayCols, defaultNatGatewayCols, cols))
+	out, err := jsontabwriter.GenerateOutput(
+		"*.items", jsonpaths.NatGateway, allNatGateways,
+		tabheaders.GetHeaders(allNatGatewayCols, defaultNatGatewayCols, cols),
+	)
 	if err != nil {
 		return err
 	}

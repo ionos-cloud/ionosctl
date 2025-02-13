@@ -432,7 +432,6 @@ func RunK8sNodePoolListAll(c *core.CommandConfig) error {
 				return fmt.Errorf("failed to convert from JSON to Table format: %w", err)
 			}
 
-			temp[0]["ClusterId"] = clusterId
 			allNodePoolsConverted = append(allNodePoolsConverted, temp[0])
 		}
 

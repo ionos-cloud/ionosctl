@@ -98,7 +98,7 @@ func listAll(c *core.CommandConfig) error {
 		return err
 	}
 
-	colsDesired := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+	colsDesired, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 	out, err := jsontabwriter.GenerateOutputPreconverted(ls, table,
 		tabheaders.GetHeaders(allCols, defaultCols, colsDesired))
 	if err != nil {

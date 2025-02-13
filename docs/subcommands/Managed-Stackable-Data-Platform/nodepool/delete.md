@@ -41,7 +41,7 @@ Delete a Dataplatform Cluster by ID
   -u, --api-url string       Override default host url (default "https://api.ionos.com")
       --cluster-id string    The unique ID of the cluster (required)
       --cols strings         Set of columns to be printed on output 
-                             Available columns: [Id Name Nodes Cores CpuFamily Ram Storage MaintenanceWindow State AvailabilityZone Labels Annotations]
+                             Available columns: [Id Name Nodes Cores CpuFamily Ram Storage MaintenanceWindow State AvailabilityZone Labels Annotations ClusterId]
   -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -f, --force                Force command to execute without user input
   -h, --help                 Print usage

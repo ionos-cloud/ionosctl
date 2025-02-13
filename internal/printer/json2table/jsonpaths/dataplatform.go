@@ -20,5 +20,6 @@ var (
 		"AvailabilityZone": "properties.availabilityZone",
 		"Labels":           "properties.labels",
 		"Annotations":      "properties.annotations",
+		"ClusterId":        "href",
 	}
 )

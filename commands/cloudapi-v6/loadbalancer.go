@@ -11,7 +11,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
@@ -250,7 +249,6 @@ func RunLoadBalancerListAll(c *core.CommandConfig) error {
 	allDcs := getDataCenters(datacenters)
 
 	var allLoadbalancers []ionoscloud.Loadbalancers
-	var allLoadbalancersConverted []map[string]interface{}
 	totalTime := time.Duration(0)
 
 	for _, dc := range allDcs {
@@ -259,24 +257,9 @@ func RunLoadBalancerListAll(c *core.CommandConfig) error {
 			return fmt.Errorf("could not retrieve Datacenter Id")
 		}
 
-		loadBalancers, resp, err := c.CloudApiV6Services.Loadbalancers().List(*dc.GetId(), listQueryParams)
+		loadBalancers, resp, err := c.CloudApiV6Services.Loadbalancers().List(*id, listQueryParams)
 		if err != nil {
 			return err
-		}
-
-		items, ok := loadBalancers.GetItemsOk()
-		if !ok || items == nil {
-			continue
-		}
-
-		for _, item := range *items {
-			temp, err := json2table.ConvertJSONToTable("", jsonpaths.LoadBalancer, item)
-			if err != nil {
-				return fmt.Errorf("could not convert from JSON to Table format: %w", err)
-			}
-
-			temp[0]["DatacenterId"] = *id
-			allLoadbalancersConverted = append(allLoadbalancersConverted, temp[0])
 		}
 
 		allLoadbalancers = append(allLoadbalancers, loadBalancers.Loadbalancers)
@@ -289,8 +272,10 @@ func RunLoadBalancerListAll(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutputPreconverted(allLoadbalancers, allLoadbalancersConverted,
-		tabheaders.GetHeaders(allLoadbalancerCols, defaultLoadbalancerCols, cols))
+	out, err := jsontabwriter.GenerateOutput(
+		"*.items", jsonpaths.LoadBalancer, allLoadbalancers,
+		tabheaders.GetHeaders(allLoadbalancerCols, defaultLoadbalancerCols, cols),
+	)
 	if err != nil {
 		return err
 	}
