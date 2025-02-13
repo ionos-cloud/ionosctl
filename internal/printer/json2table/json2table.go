@@ -121,11 +121,15 @@ func traverseJSONRoot(columnPathMappingPrefix string, sourceData interface{}) ([
 // asParentColumn extracts the parent ID from the child's HREF.
 func asParentColumn(childHref interface{}) string {
 	href, ok := childHref.(string)
-	if !ok {
+	if !ok || href == "" {
 		return ""
 	}
 
 	tokens := strings.Split(href, "/")
+	if len(tokens) < 3 {
+		return ""
+	}
+
 	// parent ID is always 2 tokens to the left of the child ID
 	parentID := tokens[len(tokens)-3]
 
