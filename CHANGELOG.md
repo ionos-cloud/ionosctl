@@ -1,6 +1,6 @@
 # Changelog
 
-## [v6.8.1] (???)
+## [v6.8.1] (February 2025)
 
 ### Added
 
@@ -11,6 +11,7 @@
 
 - Fixed not being able to use snapshot IDs for --image-id
 - Fixed 404 when waiting for backupunits to be ready
+- Fixed mongo cluster create command '--edition playground' resulting in 400 Bad Request
 
 ### Changed
 
