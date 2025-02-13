@@ -9,7 +9,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
-	ionoscloud "github.com/ionos-cloud/sdk-go-dbaas-mariadb"
+	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mariadb/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -45,7 +45,7 @@ var (
 	defaultCols = allCols[0:6]
 )
 
-func Clusters(fs ...Filter) (ionoscloud.ClusterList, error) {
+func Clusters(fs ...Filter) (mariadb.ClusterList, error) {
 	req := client.Must().MariaClient.ClustersApi.ClustersGet(context.Background())
 
 	for _, f := range fs {
@@ -54,23 +54,23 @@ func Clusters(fs ...Filter) (ionoscloud.ClusterList, error) {
 
 	clusters, _, err := req.Execute()
 	if err != nil {
-		return ionoscloud.ClusterList{}, fmt.Errorf("failed getting clusters: %w", err)
+		return mariadb.ClusterList{}, fmt.Errorf("failed getting clusters: %w", err)
 	}
 	return clusters, err
 }
 
-func ClustersProperty[V any](f func(c ionoscloud.ClusterResponse) V, fs ...Filter) []V {
+func ClustersProperty[V any](f func(c mariadb.ClusterResponse) V, fs ...Filter) []V {
 	recs, err := Clusters(fs...)
 	if err != nil {
 		return nil
 	}
-	return functional.Map(*recs.Items, f)
+	return functional.Map(recs.Items, f)
 }
 
-type Filter func(ionoscloud.ApiClustersGetRequest) ionoscloud.ApiClustersGetRequest
+type Filter func(mariadb.ApiClustersGetRequest) mariadb.ApiClustersGetRequest
 
 func FilterPaginationFlags(c *core.CommandConfig) Filter {
-	return func(req ionoscloud.ApiClustersGetRequest) ionoscloud.ApiClustersGetRequest {
+	return func(req mariadb.ApiClustersGetRequest) mariadb.ApiClustersGetRequest {
 		if f := core.GetFlagName(c.NS, constants.FlagMaxResults); viper.IsSet(f) {
 			req = req.Limit(viper.GetInt32(f))
 		}
@@ -82,7 +82,7 @@ func FilterPaginationFlags(c *core.CommandConfig) Filter {
 }
 
 func FilterNameFlags(c *core.CommandConfig) Filter {
-	return func(req ionoscloud.ApiClustersGetRequest) ionoscloud.ApiClustersGetRequest {
+	return func(req mariadb.ApiClustersGetRequest) mariadb.ApiClustersGetRequest {
 		if f := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(f) {
 			req = req.FilterName(viper.GetString(f))
 		}

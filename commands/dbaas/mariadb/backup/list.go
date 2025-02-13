@@ -11,7 +11,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/resource2table"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
-	ionoscloud "github.com/ionos-cloud/sdk-go-dbaas-mariadb"
+	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mariadb/v2"
 	"github.com/spf13/viper"
 )
 
@@ -26,7 +26,7 @@ func List() *core.Command {
 		Example:   "ionosctl dbaas mariadb backup list",
 		PreCmdRun: core.NoPreRun,
 		CmdRun: func(c *core.CommandConfig) error {
-			var backups ionoscloud.BackupList
+			var backups mariadb.BackupList
 			var err error
 
 			if clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)); clusterId != "" {
@@ -61,7 +61,7 @@ func List() *core.Command {
 		core.RequiredFlagOption(),
 		core.WithCompletion(
 			func() []string {
-				return cluster.ClustersProperty(func(c ionoscloud.ClusterResponse) string {
+				return cluster.ClustersProperty(func(c mariadb.ClusterResponse) string {
 					if c.Id == nil {
 						return ""
 					}
