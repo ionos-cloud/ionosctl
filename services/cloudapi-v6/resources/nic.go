@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	compute "github.com/ionos-cloud/sdk-go/v6"
 
 	"github.com/fatih/structs"
 )
