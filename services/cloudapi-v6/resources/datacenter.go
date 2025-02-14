@@ -9,22 +9,22 @@ import (
 )
 
 type Datacenter struct {
-	ionoscloud.Datacenter
+	compute.Datacenter
 }
 
 type DatacenterProperties struct {
-	ionoscloud.DatacenterProperties
+	compute.DatacenterProperties
 }
 
 type Datacenters struct {
-	ionoscloud.Datacenters
+	compute.Datacenters
 }
 
 type Response struct {
-	ionoscloud.APIResponse
+	compute.APIResponse
 }
 
-// DatacentersService is a wrapper around ionoscloud.Datacenter
+// DatacentersService is a wrapper around compute.Datacenter
 type DatacentersService interface {
 	List(params ListQueryParams) (Datacenters, *Response, error)
 	Get(datacenterId string, queryParams QueryParams) (*Datacenter, *Response, error)
@@ -34,7 +34,7 @@ type DatacentersService interface {
 }
 
 type dataCentersService struct {
-	client  *ionoscloud.APIClient
+	client  *compute.APIClient
 	context context.Context
 }
 
@@ -109,8 +109,8 @@ func (ds *dataCentersService) Get(datacenterId string, params QueryParams) (*Dat
 }
 
 func (ds *dataCentersService) Create(name, description, region string, params QueryParams) (*Datacenter, *Response, error) {
-	dc := ionoscloud.Datacenter{
-		Properties: &ionoscloud.DatacenterProperties{
+	dc := compute.Datacenter{
+		Properties: &compute.DatacenterProperties{
 			Name:        &name,
 			Description: &description,
 			Location:    &region,

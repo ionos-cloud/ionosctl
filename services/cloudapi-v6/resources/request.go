@@ -9,18 +9,18 @@ import (
 )
 
 type Request struct {
-	ionoscloud.Request
+	compute.Request
 }
 
 type RequestStatus struct {
-	ionoscloud.RequestStatus
+	compute.RequestStatus
 }
 
 type Requests struct {
-	ionoscloud.Requests
+	compute.Requests
 }
 
-// RequestsService is a wrapper around ionoscloud.Request
+// RequestsService is a wrapper around compute.Request
 type RequestsService interface {
 	List(params ListQueryParams) (Requests, *Response, error)
 	Get(requestId string, params QueryParams) (*Request, *Response, error)
@@ -29,7 +29,7 @@ type RequestsService interface {
 }
 
 type requestsService struct {
-	client  *ionoscloud.APIClient
+	client  *compute.APIClient
 	context context.Context
 }
 

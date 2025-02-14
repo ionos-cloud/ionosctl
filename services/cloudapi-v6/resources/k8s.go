@@ -9,82 +9,82 @@ import (
 )
 
 type K8sCluster struct {
-	ionoscloud.KubernetesCluster
+	compute.KubernetesCluster
 }
 
 type K8sClusterForPost struct {
-	ionoscloud.KubernetesClusterForPost
+	compute.KubernetesClusterForPost
 }
 
 type K8sClusterForPut struct {
-	ionoscloud.KubernetesClusterForPut
+	compute.KubernetesClusterForPut
 }
 
 type K8sClusterProperties struct {
-	ionoscloud.KubernetesClusterProperties
+	compute.KubernetesClusterProperties
 }
 
 type K8sClusterPropertiesForPut struct {
-	ionoscloud.KubernetesClusterPropertiesForPut
+	compute.KubernetesClusterPropertiesForPut
 }
 
 type K8sClusterPropertiesForPost struct {
-	ionoscloud.KubernetesClusterPropertiesForPost
+	compute.KubernetesClusterPropertiesForPost
 }
 
 type K8sClusters struct {
-	ionoscloud.KubernetesClusters
+	compute.KubernetesClusters
 }
 
 type K8sNodePool struct {
-	ionoscloud.KubernetesNodePool
+	compute.KubernetesNodePool
 }
 
 type K8sNodePoolLan struct {
-	ionoscloud.KubernetesNodePoolLan
+	compute.KubernetesNodePoolLan
 }
 
 type K8sNodePoolProperties struct {
-	ionoscloud.KubernetesNodePoolProperties
+	compute.KubernetesNodePoolProperties
 }
 
 type K8sNodePoolPropertiesForPut struct {
-	ionoscloud.KubernetesNodePoolPropertiesForPut
+	compute.KubernetesNodePoolPropertiesForPut
 }
 
 type K8sNodePoolPropertiesForPost struct {
-	ionoscloud.KubernetesNodePoolPropertiesForPost
+	compute.KubernetesNodePoolPropertiesForPost
 }
 
 type K8sNodePoolForPost struct {
-	ionoscloud.KubernetesNodePoolForPost
+	compute.KubernetesNodePoolForPost
 }
 
 type K8sNodePoolForPut struct {
-	ionoscloud.KubernetesNodePoolForPut
+	compute.KubernetesNodePoolForPut
 }
 
 type K8sNodePools struct {
-	ionoscloud.KubernetesNodePools
+	compute.KubernetesNodePools
 }
 
 type K8sNode struct {
-	ionoscloud.KubernetesNode
+	compute.KubernetesNode
 }
 
 type K8sNodeProperties struct {
-	ionoscloud.KubernetesNodeProperties
+	compute.KubernetesNodeProperties
 }
 
 type K8sNodes struct {
-	ionoscloud.KubernetesNodes
+	compute.KubernetesNodes
 }
 
 type K8sMaintenanceWindow struct {
-	ionoscloud.KubernetesMaintenanceWindow
+	compute.KubernetesMaintenanceWindow
 }
 
-// K8sService is a wrapper around ionoscloud.K8s
+// K8sService is a wrapper around compute.K8s
 type K8sService interface {
 	ListClusters(params ListQueryParams) (K8sClusters, *Response, error)
 	GetCluster(clusterId string, params QueryParams) (*K8sCluster, *Response, error)
@@ -107,7 +107,7 @@ type K8sService interface {
 }
 
 type k8sService struct {
-	client  *ionoscloud.APIClient
+	client  *compute.APIClient
 	context context.Context
 }
 

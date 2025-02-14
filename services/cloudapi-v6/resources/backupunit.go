@@ -9,22 +9,22 @@ import (
 )
 
 type BackupUnit struct {
-	ionoscloud.BackupUnit
+	compute.BackupUnit
 }
 
 type BackupUnitSSO struct {
-	ionoscloud.BackupUnitSSO
+	compute.BackupUnitSSO
 }
 
 type BackupUnitProperties struct {
-	ionoscloud.BackupUnitProperties
+	compute.BackupUnitProperties
 }
 
 type BackupUnits struct {
-	ionoscloud.BackupUnits
+	compute.BackupUnits
 }
 
-// BackupUnitsService is a wrapper around ionoscloud.BackupUnit
+// BackupUnitsService is a wrapper around compute.BackupUnit
 type BackupUnitsService interface {
 	List(params ListQueryParams) (BackupUnits, *Response, error)
 	Get(backupUnitId string, params QueryParams) (*BackupUnit, *Response, error)
@@ -35,7 +35,7 @@ type BackupUnitsService interface {
 }
 
 type backupUnitsService struct {
-	client  *ionoscloud.APIClient
+	client  *compute.APIClient
 	context context.Context
 }
 

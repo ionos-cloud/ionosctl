@@ -9,30 +9,30 @@ import (
 )
 
 type TargetGroup struct {
-	ionoscloud.TargetGroup
+	compute.TargetGroup
 }
 
 type TargetGroupTarget struct {
-	ionoscloud.TargetGroupTarget
+	compute.TargetGroupTarget
 }
 
 type TargetGroupProperties struct {
-	ionoscloud.TargetGroupProperties
+	compute.TargetGroupProperties
 }
 
 type TargetGroupHealthCheck struct {
-	ionoscloud.TargetGroupHealthCheck
+	compute.TargetGroupHealthCheck
 }
 
 type TargetGroupHttpHealthCheck struct {
-	ionoscloud.TargetGroupHttpHealthCheck
+	compute.TargetGroupHttpHealthCheck
 }
 
 type TargetGroups struct {
-	ionoscloud.TargetGroups
+	compute.TargetGroups
 }
 
-// TargetGroupsService is a wrapper around ionoscloud.TargetGroup
+// TargetGroupsService is a wrapper around compute.TargetGroup
 type TargetGroupsService interface {
 	List(params ListQueryParams) (TargetGroups, *Response, error)
 	Get(targetGroupId string, params QueryParams) (*TargetGroup, *Response, error)
@@ -42,7 +42,7 @@ type TargetGroupsService interface {
 }
 
 type targetGroupsService struct {
-	client  *ionoscloud.APIClient
+	client  *compute.APIClient
 	context context.Context
 }
 

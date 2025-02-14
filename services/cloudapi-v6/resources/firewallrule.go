@@ -9,18 +9,18 @@ import (
 )
 
 type FirewallRule struct {
-	ionoscloud.FirewallRule
+	compute.FirewallRule
 }
 
 type FirewallRuleProperties struct {
-	ionoscloud.FirewallruleProperties
+	compute.FirewallruleProperties
 }
 
 type FirewallRules struct {
-	ionoscloud.FirewallRules
+	compute.FirewallRules
 }
 
-// FirewallRulesService is a wrapper around ionoscloud.FirewallRule
+// FirewallRulesService is a wrapper around compute.FirewallRule
 type FirewallRulesService interface {
 	List(datacenterId, serverId, nicId string, params ListQueryParams) (FirewallRules, *Response, error)
 	Get(datacenterId, serverId, nicId, firewallRuleId string, params QueryParams) (*FirewallRule, *Response, error)
@@ -30,7 +30,7 @@ type FirewallRulesService interface {
 }
 
 type firewallRulesService struct {
-	client  *ionoscloud.APIClient
+	client  *compute.APIClient
 	context context.Context
 }
 

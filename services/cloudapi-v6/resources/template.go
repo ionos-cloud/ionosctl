@@ -9,25 +9,25 @@ import (
 )
 
 type Template struct {
-	ionoscloud.Template
+	compute.Template
 }
 
 type TemplateProperties struct {
-	ionoscloud.TemplateProperties
+	compute.TemplateProperties
 }
 
 type Templates struct {
-	ionoscloud.Templates
+	compute.Templates
 }
 
-// TemplatesService is a wrapper around ionoscloud.Template
+// TemplatesService is a wrapper around compute.Template
 type TemplatesService interface {
 	List(params ListQueryParams) (Templates, *Response, error)
 	Get(templateId string, params QueryParams) (*Template, *Response, error)
 }
 
 type templatesService struct {
-	client  *ionoscloud.APIClient
+	client  *compute.APIClient
 	context context.Context
 }
 

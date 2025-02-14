@@ -9,26 +9,26 @@ import (
 )
 
 type Nic struct {
-	ionoscloud.Nic
+	compute.Nic
 }
 
 type NicProperties struct {
-	ionoscloud.NicProperties
+	compute.NicProperties
 }
 
 type Nics struct {
-	ionoscloud.Nics
+	compute.Nics
 }
 
 type LanNics struct {
-	ionoscloud.LanNics
+	compute.LanNics
 }
 
 type BalancedNics struct {
-	ionoscloud.BalancedNics
+	compute.BalancedNics
 }
 
-// NicsService is a wrapper around ionoscloud.Nic
+// NicsService is a wrapper around compute.Nic
 type NicsService interface {
 	List(datacenterId, serverId string, params ListQueryParams) (Nics, *Response, error)
 	Get(datacenterId, serverId, nicId string, params QueryParams) (*Nic, *Response, error)
@@ -38,7 +38,7 @@ type NicsService interface {
 }
 
 type nicsService struct {
-	client  *ionoscloud.APIClient
+	client  *compute.APIClient
 	context context.Context
 }
 

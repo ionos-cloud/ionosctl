@@ -9,18 +9,18 @@ import (
 )
 
 type Snapshot struct {
-	ionoscloud.Snapshot
+	compute.Snapshot
 }
 
 type Snapshots struct {
-	ionoscloud.Snapshots
+	compute.Snapshots
 }
 
 type SnapshotProperties struct {
-	ionoscloud.SnapshotProperties
+	compute.SnapshotProperties
 }
 
-// SnapshotsService is a wrapper around ionoscloud.Snapshot
+// SnapshotsService is a wrapper around compute.Snapshot
 type SnapshotsService interface {
 	List(params ListQueryParams) (Snapshots, *Response, error)
 	Get(snapshotId string, params QueryParams) (*Snapshot, *Response, error)
@@ -31,7 +31,7 @@ type SnapshotsService interface {
 }
 
 type snapshotsService struct {
-	client  *ionoscloud.APIClient
+	client  *compute.APIClient
 	context context.Context
 }
 

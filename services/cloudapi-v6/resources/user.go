@@ -9,42 +9,42 @@ import (
 )
 
 type UserPost struct {
-	ionoscloud.UserPost
+	compute.UserPost
 }
 
 type UserPut struct {
-	ionoscloud.UserPut
+	compute.UserPut
 }
 
 type User struct {
-	ionoscloud.User
+	compute.User
 }
 
 type UserProperties struct {
-	ionoscloud.UserProperties
+	compute.UserProperties
 }
 
 type UserPropertiesPut struct {
-	ionoscloud.UserPropertiesPut
+	compute.UserPropertiesPut
 }
 
 type UserPropertiesPost struct {
-	ionoscloud.UserPropertiesPost
+	compute.UserPropertiesPost
 }
 
 type Users struct {
-	ionoscloud.Users
+	compute.Users
 }
 
 type Resource struct {
-	ionoscloud.Resource
+	compute.Resource
 }
 
 type Resources struct {
-	ionoscloud.Resources
+	compute.Resources
 }
 
-// UsersService is a wrapper around ionoscloud.User
+// UsersService is a wrapper around compute.User
 type UsersService interface {
 	List(params ListQueryParams) (Users, *Response, error)
 	Get(userId string, params QueryParams) (*User, *Response, error)
@@ -57,7 +57,7 @@ type UsersService interface {
 }
 
 type usersService struct {
-	client  *ionoscloud.APIClient
+	client  *compute.APIClient
 	context context.Context
 }
 

@@ -9,19 +9,19 @@ import (
 )
 
 type Volume struct {
-	ionoscloud.Volume
+	compute.Volume
 }
 
 type VolumeProperties struct {
-	ionoscloud.VolumeProperties
+	compute.VolumeProperties
 }
 
 type Volumes struct {
-	ionoscloud.Volumes
+	compute.Volumes
 }
 
 type AttachedVolumes struct {
-	ionoscloud.AttachedVolumes
+	compute.AttachedVolumes
 }
 
 type VolumesService interface {
@@ -33,7 +33,7 @@ type VolumesService interface {
 }
 
 type volumesService struct {
-	client  *ionoscloud.APIClient
+	client  *compute.APIClient
 	context context.Context
 }
 

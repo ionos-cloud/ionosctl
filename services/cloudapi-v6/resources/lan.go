@@ -9,26 +9,26 @@ import (
 )
 
 type Lan struct {
-	ionoscloud.Lan
+	compute.Lan
 }
 
 type IpFailover struct {
-	ionoscloud.IPFailover
+	compute.IPFailover
 }
 
 type LanProperties struct {
-	ionoscloud.LanProperties
+	compute.LanProperties
 }
 
 type LanPost struct {
-	ionoscloud.LanPost
+	compute.LanPost
 }
 
 type Lans struct {
-	ionoscloud.Lans
+	compute.Lans
 }
 
-// LansService is a wrapper around ionoscloud.Lan
+// LansService is a wrapper around compute.Lan
 type LansService interface {
 	List(datacenterId string, params ListQueryParams) (Lans, *Response, error)
 	Get(datacenterId, lanId string, params QueryParams) (*Lan, *Response, error)
@@ -38,7 +38,7 @@ type LansService interface {
 }
 
 type lansService struct {
-	client  *ionoscloud.APIClient
+	client  *compute.APIClient
 	context context.Context
 }
 
