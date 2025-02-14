@@ -18,7 +18,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	compute "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -284,8 +284,8 @@ func RunUserCreate(c *core.CommandConfig) error {
 	admin := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAdmin))
 
 	newUser := resources.UserPost{
-		UserPost: ionoscloud.UserPost{
-			Properties: &ionoscloud.UserPropertiesPost{
+		UserPost: compute.UserPost{
+			Properties: &compute.UserPropertiesPost{
 				Firstname:     &firstname,
 				Lastname:      &lastname,
 				Email:         &email,
@@ -396,7 +396,7 @@ func RunUserDelete(c *core.CommandConfig) error {
 }
 
 func getUserInfo(oldUser *resources.User, c *core.CommandConfig) *resources.UserPut {
-	userPropertiesPut := ionoscloud.UserPropertiesPut{}
+	userPropertiesPut := compute.UserPropertiesPut{}
 
 	if properties, ok := oldUser.GetPropertiesOk(); ok && properties != nil {
 		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFirstName)) {
@@ -469,7 +469,7 @@ func getUserInfo(oldUser *resources.User, c *core.CommandConfig) *resources.User
 	}
 
 	return &resources.UserPut{
-		UserPut: ionoscloud.UserPut{
+		UserPut: compute.UserPut{
 			Properties: &userPropertiesPut,
 		},
 	}
@@ -711,7 +711,7 @@ func RunGroupUserAdd(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("User with id: %v is adding to group with id: %v...", id, groupId))
 
 	u := resources.User{
-		User: ionoscloud.User{
+		User: compute.User{
 			Id: &id,
 		},
 	}

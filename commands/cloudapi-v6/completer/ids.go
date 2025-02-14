@@ -11,7 +11,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	compute "github.com/ionos-cloud/sdk-go/v6"
 )
 
 func BackupUnitsIds() []string {
@@ -83,7 +83,7 @@ func DatacenterIdsFilterLocation(loc string) []string {
 	return dcIds
 }
 
-func DataCentersIds(filters ...func(datacenter ionoscloud.Datacenter) bool) []string {
+func DataCentersIds(filters ...func(datacenter compute.Datacenter) bool) []string {
 	datacenterSvc := resources.NewDataCenterService(client.Must(), context.Background())
 	datacenters, _, err := datacenterSvc.List(resources.ListQueryParams{})
 	if err != nil {
@@ -185,7 +185,7 @@ func GroupsIds() []string {
 	return groupsIds
 }
 
-func ImageIds(customFilters ...func(ionoscloud.ApiImagesGetRequest) ionoscloud.ApiImagesGetRequest) []string {
+func ImageIds(customFilters ...func(compute.ApiImagesGetRequest) compute.ApiImagesGetRequest) []string {
 	req := client.Must().CloudClient.ImagesApi.ImagesGet(context.Background()).
 		Depth(1).
 		OrderBy("public")

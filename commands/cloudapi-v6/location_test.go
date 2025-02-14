@@ -14,20 +14,20 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	compute "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
 
 var (
 	loc = resources.Location{
-		Location: ionoscloud.Location{
+		Location: compute.Location{
 			Id: &testLocationVar,
-			Properties: &ionoscloud.LocationProperties{
+			Properties: &compute.LocationProperties{
 				Name:         &testLocationVar,
 				Features:     &[]string{testLocationVar},
 				ImageAliases: &[]string{testLocationVar},
-				CpuArchitecture: &[]ionoscloud.CpuArchitectureProperties{
+				CpuArchitecture: &[]compute.CpuArchitectureProperties{
 					{
 						CpuFamily: &testLocationVar,
 						MaxRam:    &testLocationIntVar,
@@ -39,9 +39,9 @@ var (
 		},
 	}
 	locations = resources.Locations{
-		Locations: ionoscloud.Locations{
+		Locations: compute.Locations{
 			Id:    &testLocationVar,
-			Items: &[]ionoscloud.Location{loc.Location},
+			Items: &[]compute.Location{loc.Location},
 		},
 	}
 	testLocationIntVar = int32(1)

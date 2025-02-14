@@ -13,7 +13,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	compute "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
@@ -25,9 +25,9 @@ var (
 	dhcpNic        = false
 	dhcpNewNic     = true
 	ipsNic         = []string{"x.x.x.x"}
-	n              = ionoscloud.Nic{
+	n              = compute.Nic{
 		Id: &testNicVar,
-		Properties: &ionoscloud.NicProperties{
+		Properties: &compute.NicProperties{
 			Name:           &testNicVar,
 			Lan:            &lanNicId,
 			Dhcp:           &dhcpNic,
@@ -38,20 +38,20 @@ var (
 			PciSlot:        &lanNicId,
 			Mac:            &testNicVar,
 		},
-		Metadata: &ionoscloud.DatacenterElementMetadata{State: &testStateVar},
+		Metadata: &compute.DatacenterElementMetadata{State: &testStateVar},
 	}
 	nicsList = resources.Nics{
-		Nics: ionoscloud.Nics{
+		Nics: compute.Nics{
 			Id: &testNicVar,
-			Items: &[]ionoscloud.Nic{
+			Items: &[]compute.Nic{
 				n,
 				n,
 			},
 		},
 	}
-	nicLoadBalancer = ionoscloud.Nic{
+	nicLoadBalancer = compute.Nic{
 		Id: &testLoadbalancerVar,
-		Properties: &ionoscloud.NicProperties{
+		Properties: &compute.NicProperties{
 			Name:           &testNicVar,
 			Lan:            &lanNicId,
 			Dhcp:           &dhcpNic,
@@ -59,25 +59,25 @@ var (
 			FirewallActive: &dhcpNic,
 			Mac:            &testNicVar,
 		},
-		Metadata: &ionoscloud.DatacenterElementMetadata{State: &testStateVar},
+		Metadata: &compute.DatacenterElementMetadata{State: &testStateVar},
 	}
 	balancedNicsList = resources.BalancedNics{
-		BalancedNics: ionoscloud.BalancedNics{
+		BalancedNics: compute.BalancedNics{
 			Id:    &testNicVar,
-			Items: &[]ionoscloud.Nic{nicLoadBalancer, nicLoadBalancer},
+			Items: &[]compute.Nic{nicLoadBalancer, nicLoadBalancer},
 		},
 	}
 	nicProperties = resources.NicProperties{
-		NicProperties: ionoscloud.NicProperties{
+		NicProperties: compute.NicProperties{
 			Name: &testNicNewVar,
 			Dhcp: &dhcpNewNic,
 			Lan:  &lanNewNicId,
 		},
 	}
 	nicNew = resources.Nic{
-		Nic: ionoscloud.Nic{
+		Nic: compute.Nic{
 			Id: &testNicVar,
-			Properties: &ionoscloud.NicProperties{
+			Properties: &compute.NicProperties{
 				Name:           nicProperties.NicProperties.Name,
 				Lan:            nicProperties.NicProperties.Lan,
 				Dhcp:           nicProperties.NicProperties.Dhcp,
@@ -87,8 +87,8 @@ var (
 		},
 	}
 	testNicCreate = resources.Nic{
-		Nic: ionoscloud.Nic{
-			Properties: &ionoscloud.NicProperties{
+		Nic: compute.Nic{
+			Properties: &compute.NicProperties{
 				Name:           &testNicVar,
 				Lan:            &lanNicId,
 				Dhcp:           &dhcpNic,
@@ -99,19 +99,19 @@ var (
 		},
 	}
 	ns = resources.Nics{
-		Nics: ionoscloud.Nics{
+		Nics: compute.Nics{
 			Id:    &testNicVar,
-			Items: &[]ionoscloud.Nic{n},
+			Items: &[]compute.Nic{n},
 		},
 	}
 	balancedns = resources.BalancedNics{
-		BalancedNics: ionoscloud.BalancedNics{
+		BalancedNics: compute.BalancedNics{
 			Id:    &testNicVar,
-			Items: &[]ionoscloud.Nic{n},
+			Items: &[]compute.Nic{n},
 		},
 	}
 	lanNic = resources.Lan{
-		Lan: ionoscloud.Lan{
+		Lan: compute.Lan{
 			Id:         &lanNicIdString,
 			Properties: l.Properties,
 		},
@@ -486,7 +486,7 @@ func TestRunNicDeleteAllLenErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
 		rm.CloudApiV6Mocks.Nic.EXPECT().List(testNicVar, testNicVar, gomock.AssignableToTypeOf(testListQueryParam)).Return(
-			resources.Nics{Nics: ionoscloud.Nics{Items: &[]ionoscloud.Nic{}}}, &testResponse, nil)
+			resources.Nics{Nics: compute.Nics{Items: &[]compute.Nic{}}}, &testResponse, nil)
 		err := RunNicDelete(cfg)
 		assert.Error(t, err)
 	})
@@ -865,7 +865,7 @@ func TestRunLoadBalancerNicDetachAllLenErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
 		viper.Set(core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), false)
 		rm.CloudApiV6Mocks.Loadbalancer.EXPECT().ListNics(testLoadbalancerVar, testLoadbalancerVar, gomock.AssignableToTypeOf(testListQueryParam)).Return(
-			resources.BalancedNics{BalancedNics: ionoscloud.BalancedNics{Items: &[]ionoscloud.Nic{}}}, nil, nil)
+			resources.BalancedNics{BalancedNics: compute.BalancedNics{Items: &[]compute.Nic{}}}, nil, nil)
 		err := RunLoadBalancerNicDetach(cfg)
 		assert.Error(t, err)
 	})

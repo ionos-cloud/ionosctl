@@ -19,7 +19,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	compute "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -223,7 +223,7 @@ func RunShareListAll(c *core.CommandConfig) error {
 		return err
 	}
 
-	var allShares = make([]ionoscloud.GroupShares, 0)
+	var allShares = make([]compute.GroupShares, 0)
 
 	totalTime := time.Duration(0)
 
@@ -348,8 +348,8 @@ func RunShareCreate(c *core.CommandConfig) error {
 	sharePrivilege := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgSharePrivilege))
 
 	input := resources.GroupShare{
-		GroupShare: ionoscloud.GroupShare{
-			Properties: &ionoscloud.GroupShareProperties{
+		GroupShare: compute.GroupShare{
+			Properties: &compute.GroupShareProperties{
 				EditPrivilege:  &editPrivilege,
 				SharePrivilege: &sharePrivilege,
 			},
@@ -407,7 +407,7 @@ func RunShareUpdate(c *core.CommandConfig) error {
 
 	properties := getShareUpdateInfo(s, c)
 	newShare := resources.GroupShare{
-		GroupShare: ionoscloud.GroupShare{
+		GroupShare: compute.GroupShare{
 			Properties: &properties.GroupShareProperties,
 		},
 	}
@@ -513,7 +513,7 @@ func getShareUpdateInfo(oldShare *resources.GroupShare, c *core.CommandConfig) *
 	}
 
 	return &resources.GroupShareProperties{
-		GroupShareProperties: ionoscloud.GroupShareProperties{
+		GroupShareProperties: compute.GroupShareProperties{
 			EditPrivilege:  &editPrivilege,
 			SharePrivilege: &sharePrivilege,
 		},

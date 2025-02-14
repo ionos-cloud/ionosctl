@@ -21,7 +21,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	compute "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -418,7 +418,7 @@ func RunNicCreate(c *core.CommandConfig) error {
 	}
 
 	input := resources.Nic{
-		Nic: ionoscloud.Nic{
+		Nic: compute.Nic{
 			Properties: &inputProper.NicProperties,
 		},
 	}
@@ -1068,7 +1068,7 @@ func validateIPv6IPs(cidr string, ips ...string) error {
 	return nil
 }
 
-func checkIPv6EnableForLAN(lan ionoscloud.Lan) (bool, error) {
+func checkIPv6EnableForLAN(lan compute.Lan) (bool, error) {
 	cidr, err := GetIPv6CidrBlockFromLAN(lan)
 	if err != nil {
 		return false, err
@@ -1080,7 +1080,7 @@ func checkIPv6EnableForLAN(lan ionoscloud.Lan) (bool, error) {
 	return true, nil
 }
 
-func setIPv6Properties(c *core.CommandConfig, inputProper *ionoscloud.NicProperties, lan ionoscloud.Lan) error {
+func setIPv6Properties(c *core.CommandConfig, inputProper *compute.NicProperties, lan compute.Lan) error {
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.FlagIPv6CidrBlock)) {
 		cidr := strings.ToLower(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.FlagIPv6CidrBlock)))
 		lanIPv6CidrBlock, err := GetIPv6CidrBlockFromLAN(lan)

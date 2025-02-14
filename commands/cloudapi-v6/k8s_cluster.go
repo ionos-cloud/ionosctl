@@ -18,7 +18,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	compute "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -495,9 +495,9 @@ func getNewK8sCluster(c *core.CommandConfig) (*resources.K8sClusterForPost, erro
 	proper.SetK8sVersion(k8sversion)
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgS3Bucket)) {
-		s3buckets := make([]ionoscloud.S3Bucket, 0)
+		s3buckets := make([]compute.S3Bucket, 0)
 		name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgS3Bucket))
-		s3buckets = append(s3buckets, ionoscloud.S3Bucket{
+		s3buckets = append(s3buckets, compute.S3Bucket{
 			Name: &name,
 		})
 		proper.SetS3Buckets(s3buckets)
@@ -529,7 +529,7 @@ func getNewK8sCluster(c *core.CommandConfig) (*resources.K8sClusterForPost, erro
 	}
 
 	return &resources.K8sClusterForPost{
-		KubernetesClusterForPost: ionoscloud.KubernetesClusterForPost{
+		KubernetesClusterForPost: compute.KubernetesClusterForPost{
 			Properties: &proper.KubernetesClusterPropertiesForPost,
 		},
 	}, nil
@@ -562,9 +562,9 @@ func getK8sClusterInfo(oldUser *resources.K8sCluster, c *core.CommandConfig) res
 		}
 
 		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgS3Bucket)) {
-			s3buckets := make([]ionoscloud.S3Bucket, 0)
+			s3buckets := make([]compute.S3Bucket, 0)
 			for _, name := range viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgS3Bucket)) {
-				s3buckets = append(s3buckets, ionoscloud.S3Bucket{
+				s3buckets = append(s3buckets, compute.S3Bucket{
 					Name: &name,
 				})
 			}
@@ -600,7 +600,7 @@ func getK8sClusterInfo(oldUser *resources.K8sCluster, c *core.CommandConfig) res
 	}
 
 	return resources.K8sClusterForPut{
-		KubernetesClusterForPut: ionoscloud.KubernetesClusterForPut{
+		KubernetesClusterForPut: compute.KubernetesClusterForPut{
 			Properties: &propertiesUpdated.KubernetesClusterPropertiesForPut,
 		},
 	}
@@ -723,7 +723,7 @@ func getMaintenanceInfo(c *core.CommandConfig, maintenance *resources.K8sMainten
 	}
 
 	return resources.K8sMaintenanceWindow{
-		KubernetesMaintenanceWindow: ionoscloud.KubernetesMaintenanceWindow{
+		KubernetesMaintenanceWindow: compute.KubernetesMaintenanceWindow{
 			DayOfTheWeek: &day,
 			Time:         &time,
 		},

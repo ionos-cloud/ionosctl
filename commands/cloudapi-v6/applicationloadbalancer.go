@@ -19,7 +19,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	compute "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -255,7 +255,7 @@ func RunApplicationLoadBalancerListAll(c *core.CommandConfig) error {
 	}
 
 	allDcs := getDataCenters(datacenters)
-	var allApplicationLoadBalancers = make([]ionoscloud.ApplicationLoadBalancers, 0)
+	var allApplicationLoadBalancers = make([]compute.ApplicationLoadBalancers, 0)
 	totalTime := time.Duration(0)
 
 	for _, dc := range allDcs {
@@ -399,7 +399,7 @@ func RunApplicationLoadBalancerCreate(c *core.CommandConfig) error {
 	ng, resp, err := c.CloudApiV6Services.ApplicationLoadBalancers().Create(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		resources.ApplicationLoadBalancer{
-			ApplicationLoadBalancer: ionoscloud.ApplicationLoadBalancer{
+			ApplicationLoadBalancer: compute.ApplicationLoadBalancer{
 				Properties: &proper.ApplicationLoadBalancerProperties,
 			},
 		},
@@ -603,7 +603,7 @@ func DeleteAllApplicationLoadBalancer(c *core.CommandConfig) error {
 }
 
 func getNewApplicationLoadBalancerInfo(c *core.CommandConfig) *resources.ApplicationLoadBalancerProperties {
-	input := ionoscloud.ApplicationLoadBalancerProperties{}
+	input := compute.ApplicationLoadBalancerProperties{}
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgName)) {
 		input.SetName(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName)))
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property Name set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))))

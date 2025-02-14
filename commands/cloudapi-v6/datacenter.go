@@ -18,7 +18,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud2 "github.com/ionos-cloud/sdk-go/v6"
+	compute "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -481,7 +481,7 @@ func getDataCenters(datacenters resources.Datacenters) []resources.Datacenter {
 	return dc
 }
 
-func GetIPv6CidrBlockFromDatacenter(dc ionoscloud2.Datacenter) (string, error) {
+func GetIPv6CidrBlockFromDatacenter(dc compute.Datacenter) (string, error) {
 	if properties, ok := dc.GetPropertiesOk(); ok && properties != nil {
 		if ipv6CidrBlock, ok := properties.GetIpv6CidrBlockOk(); ok && ipv6CidrBlock != nil {
 			return *ipv6CidrBlock, nil

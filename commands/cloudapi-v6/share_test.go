@@ -12,24 +12,24 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	compute "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
 
 var (
 	shareTest = resources.GroupShare{
-		GroupShare: ionoscloud.GroupShare{
-			Properties: &ionoscloud.GroupShareProperties{
+		GroupShare: compute.GroupShare{
+			Properties: &compute.GroupShareProperties{
 				EditPrivilege:  &testShareBoolVar,
 				SharePrivilege: &testShareBoolVar,
 			},
 		},
 	}
 	shareTestGet = resources.GroupShare{
-		GroupShare: ionoscloud.GroupShare{
+		GroupShare: compute.GroupShare{
 			Id: &testShareVar,
-			Properties: &ionoscloud.GroupShareProperties{
+			Properties: &compute.GroupShareProperties{
 				EditPrivilege:  &testShareBoolVar,
 				SharePrivilege: &testShareBoolVar,
 			},
@@ -37,15 +37,15 @@ var (
 		},
 	}
 	shares = resources.GroupShares{
-		GroupShares: ionoscloud.GroupShares{
+		GroupShares: compute.GroupShares{
 			Id:    &testShareVar,
-			Items: &[]ionoscloud.GroupShare{shareTest.GroupShare},
+			Items: &[]compute.GroupShare{shareTest.GroupShare},
 		},
 	}
 	shareTestId = resources.GroupShare{
-		GroupShare: ionoscloud.GroupShare{
+		GroupShare: compute.GroupShare{
 			Id: &testShareVar,
-			Properties: &ionoscloud.GroupShareProperties{
+			Properties: &compute.GroupShareProperties{
 				EditPrivilege:  &testShareBoolVar,
 				SharePrivilege: &testShareBoolVar,
 			},
@@ -53,22 +53,22 @@ var (
 	}
 
 	sharesList = resources.GroupShares{
-		GroupShares: ionoscloud.GroupShares{
+		GroupShares: compute.GroupShares{
 			Id: &testShareVar,
-			Items: &[]ionoscloud.GroupShare{
+			Items: &[]compute.GroupShare{
 				shareTestId.GroupShare,
 				shareTestId.GroupShare,
 			},
 		},
 	}
 	shareProperties = resources.GroupShareProperties{
-		GroupShareProperties: ionoscloud.GroupShareProperties{
+		GroupShareProperties: compute.GroupShareProperties{
 			EditPrivilege:  &testShareBoolNewVar,
 			SharePrivilege: &testShareBoolNewVar,
 		},
 	}
 	shareNew = resources.GroupShare{
-		GroupShare: ionoscloud.GroupShare{
+		GroupShare: compute.GroupShare{
 			Properties: &shareProperties.GroupShareProperties,
 		},
 	}
@@ -427,7 +427,7 @@ func TestRunShareDeleteAllLenErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgGroupId), testShareVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
 		rm.CloudApiV6Mocks.Group.EXPECT().ListShares(testShareVar, gomock.AssignableToTypeOf(testListQueryParam)).Return(
-			resources.GroupShares{GroupShares: ionoscloud.GroupShares{Items: &[]ionoscloud.GroupShare{}}}, &testResponse, nil)
+			resources.GroupShares{GroupShares: compute.GroupShares{Items: &[]compute.GroupShare{}}}, &testResponse, nil)
 		err := RunShareDelete(cfg)
 		assert.Error(t, err)
 	})

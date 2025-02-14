@@ -6,7 +6,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
 	"github.com/fatih/structs"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
 
 type Template struct {
@@ -61,10 +60,10 @@ func (ss *templatesService) List(params ListQueryParams) (Templates, *Response, 
 			if params.QueryParams.Depth != nil {
 				req = req.Depth(*params.QueryParams.Depth)
 			}
-			//if params.QueryParams.Pretty != nil {
+			// if params.QueryParams.Pretty != nil {
 			//	// Currently not implemented
 			//	req = req.Pretty(*params.QueryParams.Pretty)
-			//}
+			// }
 		}
 	}
 	s, res, err := ss.client.TemplatesApi.TemplatesGetExecute(req)

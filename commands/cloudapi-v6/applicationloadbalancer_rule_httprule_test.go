@@ -12,20 +12,20 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	compute "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
 
 var (
 	testAlbRuleHttpRuleForwardProperties = resources.ApplicationLoadBalancerForwardingRuleProperties{
-		ApplicationLoadBalancerForwardingRuleProperties: ionoscloud.ApplicationLoadBalancerForwardingRuleProperties{
-			HttpRules: &[]ionoscloud.ApplicationLoadBalancerHttpRule{
+		ApplicationLoadBalancerForwardingRuleProperties: compute.ApplicationLoadBalancerForwardingRuleProperties{
+			HttpRules: &[]compute.ApplicationLoadBalancerHttpRule{
 				{
 					Name:        &testAlbRuleHttpRuleVar,
 					Type:        &testAlbRuleHttpRuleForwardTypeVar,
 					TargetGroup: &testAlbRuleHttpRuleVar,
-					Conditions: &[]ionoscloud.ApplicationLoadBalancerHttpRuleCondition{
+					Conditions: &[]compute.ApplicationLoadBalancerHttpRuleCondition{
 						{
 							Type:      &testAlbRuleHttpRuleVar,
 							Condition: &testAlbRuleHttpRuleVar,
@@ -38,15 +38,15 @@ var (
 		},
 	}
 	testAlbRuleHttpRuleStaticProperties = resources.ApplicationLoadBalancerForwardingRuleProperties{
-		ApplicationLoadBalancerForwardingRuleProperties: ionoscloud.ApplicationLoadBalancerForwardingRuleProperties{
-			HttpRules: &[]ionoscloud.ApplicationLoadBalancerHttpRule{
+		ApplicationLoadBalancerForwardingRuleProperties: compute.ApplicationLoadBalancerForwardingRuleProperties{
+			HttpRules: &[]compute.ApplicationLoadBalancerHttpRule{
 				{
 					Name:            &testAlbRuleHttpRuleVar,
 					Type:            &testAlbRuleHttpRuleStaticTypeVar,
 					StatusCode:      &testAlbRuleHttpRuleIntVar,
 					ResponseMessage: &testAlbRuleHttpRuleVar,
 					ContentType:     &testAlbRuleHttpRuleVar,
-					Conditions: &[]ionoscloud.ApplicationLoadBalancerHttpRuleCondition{
+					Conditions: &[]compute.ApplicationLoadBalancerHttpRuleCondition{
 						{
 							Type:      &testAlbRuleHttpRuleVar,
 							Condition: &testAlbRuleHttpRuleVar,
@@ -59,15 +59,15 @@ var (
 		},
 	}
 	testAlbRuleHttpRuleRedirectProperties = resources.ApplicationLoadBalancerForwardingRuleProperties{
-		ApplicationLoadBalancerForwardingRuleProperties: ionoscloud.ApplicationLoadBalancerForwardingRuleProperties{
-			HttpRules: &[]ionoscloud.ApplicationLoadBalancerHttpRule{
+		ApplicationLoadBalancerForwardingRuleProperties: compute.ApplicationLoadBalancerForwardingRuleProperties{
+			HttpRules: &[]compute.ApplicationLoadBalancerHttpRule{
 				{
 					Name:       &testAlbRuleHttpRuleVar,
 					Type:       &testAlbRuleHttpRuleRedirectTypeVar,
 					StatusCode: &testAlbRuleHttpRuleIntVar,
 					Location:   &testAlbRuleHttpRuleVar,
 					DropQuery:  &testAlbRuleHttpRuleBoolVar,
-					Conditions: &[]ionoscloud.ApplicationLoadBalancerHttpRuleCondition{
+					Conditions: &[]compute.ApplicationLoadBalancerHttpRuleCondition{
 						{
 							Type:      &testAlbRuleHttpRuleVar,
 							Condition: &testAlbRuleHttpRuleVar,
@@ -80,25 +80,25 @@ var (
 		},
 	}
 	testAlbRuleHttpRuleGet = resources.ApplicationLoadBalancerForwardingRule{
-		ApplicationLoadBalancerForwardingRule: ionoscloud.ApplicationLoadBalancerForwardingRule{
+		ApplicationLoadBalancerForwardingRule: compute.ApplicationLoadBalancerForwardingRule{
 			Id:         &testAlbRuleHttpRuleVar,
-			Properties: &ionoscloud.ApplicationLoadBalancerForwardingRuleProperties{},
+			Properties: &compute.ApplicationLoadBalancerForwardingRuleProperties{},
 		},
 	}
 	testAlbRuleHttpRuleForwardGetUpdated = resources.ApplicationLoadBalancerForwardingRule{
-		ApplicationLoadBalancerForwardingRule: ionoscloud.ApplicationLoadBalancerForwardingRule{
+		ApplicationLoadBalancerForwardingRule: compute.ApplicationLoadBalancerForwardingRule{
 			Id:         &testAlbRuleHttpRuleVar,
 			Properties: &testAlbRuleHttpRuleForwardProperties.ApplicationLoadBalancerForwardingRuleProperties,
 		},
 	}
 	testAlbRuleHttpRuleStaticGetUpdated = resources.ApplicationLoadBalancerForwardingRule{
-		ApplicationLoadBalancerForwardingRule: ionoscloud.ApplicationLoadBalancerForwardingRule{
+		ApplicationLoadBalancerForwardingRule: compute.ApplicationLoadBalancerForwardingRule{
 			Id:         &testAlbRuleHttpRuleVar,
 			Properties: &testAlbRuleHttpRuleStaticProperties.ApplicationLoadBalancerForwardingRuleProperties,
 		},
 	}
 	testAlbRuleHttpRuleRedirectGetUpdated = resources.ApplicationLoadBalancerForwardingRule{
-		ApplicationLoadBalancerForwardingRule: ionoscloud.ApplicationLoadBalancerForwardingRule{
+		ApplicationLoadBalancerForwardingRule: compute.ApplicationLoadBalancerForwardingRule{
 			Id:         &testAlbRuleHttpRuleVar,
 			Properties: &testAlbRuleHttpRuleRedirectProperties.ApplicationLoadBalancerForwardingRuleProperties,
 		},
@@ -466,8 +466,8 @@ func TestRunAlbRuleHttpRuleRemove(t *testing.T) {
 		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().GetForwardingRule(testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&testAlbRuleHttpRuleForwardGetUpdated, nil, nil)
 		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().UpdateForwardingRule(testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar,
 			&resources.ApplicationLoadBalancerForwardingRuleProperties{
-				ApplicationLoadBalancerForwardingRuleProperties: ionoscloud.ApplicationLoadBalancerForwardingRuleProperties{
-					HttpRules: &[]ionoscloud.ApplicationLoadBalancerHttpRule{},
+				ApplicationLoadBalancerForwardingRuleProperties: compute.ApplicationLoadBalancerForwardingRuleProperties{
+					HttpRules: &[]compute.ApplicationLoadBalancerHttpRule{},
 				},
 			}, testQueryParamOther).Return(&testAlbRuleHttpRuleGet, nil, nil)
 		err := RunAlbRuleHttpRuleRemove(cfg)
@@ -490,8 +490,8 @@ func TestRunAlbRuleHttpRuleRemoveAll(t *testing.T) {
 		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().GetForwardingRule(testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&testAlbRuleHttpRuleForwardGetUpdated, nil, nil)
 		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().UpdateForwardingRule(testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar,
 			&resources.ApplicationLoadBalancerForwardingRuleProperties{
-				ApplicationLoadBalancerForwardingRuleProperties: ionoscloud.ApplicationLoadBalancerForwardingRuleProperties{
-					HttpRules: &[]ionoscloud.ApplicationLoadBalancerHttpRule{},
+				ApplicationLoadBalancerForwardingRuleProperties: compute.ApplicationLoadBalancerForwardingRuleProperties{
+					HttpRules: &[]compute.ApplicationLoadBalancerHttpRule{},
 				},
 			}, testQueryParamOther).Return(&testAlbRuleHttpRuleGet, nil, nil)
 		err := RunAlbRuleHttpRuleRemove(cfg)
@@ -532,8 +532,8 @@ func TestRunAlbRuleHttpRuleRemoveErr(t *testing.T) {
 		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().GetForwardingRule(testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&testAlbRuleHttpRuleForwardGetUpdated, nil, nil)
 		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().UpdateForwardingRule(testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar,
 			&resources.ApplicationLoadBalancerForwardingRuleProperties{
-				ApplicationLoadBalancerForwardingRuleProperties: ionoscloud.ApplicationLoadBalancerForwardingRuleProperties{
-					HttpRules: &[]ionoscloud.ApplicationLoadBalancerHttpRule{},
+				ApplicationLoadBalancerForwardingRuleProperties: compute.ApplicationLoadBalancerForwardingRuleProperties{
+					HttpRules: &[]compute.ApplicationLoadBalancerHttpRule{},
 				},
 			}, testQueryParamOther).Return(&testAlbRuleHttpRuleGet, nil, testAlbRuleHttpRuleErr)
 		err := RunAlbRuleHttpRuleRemove(cfg)
@@ -575,8 +575,8 @@ func TestRunAlbRuleHttpRuleRemoveWaitErr(t *testing.T) {
 		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().GetForwardingRule(testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&testAlbRuleHttpRuleForwardGetUpdated, nil, nil)
 		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().UpdateForwardingRule(testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar,
 			&resources.ApplicationLoadBalancerForwardingRuleProperties{
-				ApplicationLoadBalancerForwardingRuleProperties: ionoscloud.ApplicationLoadBalancerForwardingRuleProperties{
-					HttpRules: &[]ionoscloud.ApplicationLoadBalancerHttpRule{},
+				ApplicationLoadBalancerForwardingRuleProperties: compute.ApplicationLoadBalancerForwardingRuleProperties{
+					HttpRules: &[]compute.ApplicationLoadBalancerHttpRule{},
 				},
 			}, testQueryParamOther).Return(&testAlbRuleHttpRuleGet, &testResponse, nil)
 		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testRequestIdVar).Return(&testRequestStatus, nil, testRequestErr)
@@ -601,8 +601,8 @@ func TestRunAlbRuleHttpRuleRemoveAskForConfirm(t *testing.T) {
 		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().GetForwardingRule(testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&testAlbRuleHttpRuleForwardGetUpdated, nil, nil)
 		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().UpdateForwardingRule(testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar,
 			&resources.ApplicationLoadBalancerForwardingRuleProperties{
-				ApplicationLoadBalancerForwardingRuleProperties: ionoscloud.ApplicationLoadBalancerForwardingRuleProperties{
-					HttpRules: &[]ionoscloud.ApplicationLoadBalancerHttpRule{},
+				ApplicationLoadBalancerForwardingRuleProperties: compute.ApplicationLoadBalancerForwardingRuleProperties{
+					HttpRules: &[]compute.ApplicationLoadBalancerHttpRule{},
 				},
 			}, testQueryParamOther).Return(&testAlbRuleHttpRuleGet, nil, nil)
 		err := RunAlbRuleHttpRuleRemove(cfg)

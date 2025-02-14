@@ -32,7 +32,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	compute "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
@@ -149,7 +149,7 @@ func ImageCmd() *core.Command {
 	})
 	update.AddUUIDFlag(cloudapiv6.ArgImageId, cloudapiv6.ArgIdShort, "", cloudapiv6.ImageId, core.RequiredFlagOption())
 	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgImageId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.ImageIds(func(request ionoscloud.ApiImagesGetRequest) ionoscloud.ApiImagesGetRequest {
+		return completer.ImageIds(func(request compute.ApiImagesGetRequest) compute.ApiImagesGetRequest {
 			return request.Filter("public", "false")
 		}), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -196,7 +196,7 @@ func ImageCmd() *core.Command {
 	})
 	deleteCmd.AddUUIDFlag(cloudapiv6.ArgImageId, cloudapiv6.ArgIdShort, "", cloudapiv6.ImageId, core.RequiredFlagOption())
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgImageId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.ImageIds(func(request ionoscloud.ApiImagesGetRequest) ionoscloud.ApiImagesGetRequest {
+		return completer.ImageIds(func(request compute.ApiImagesGetRequest) compute.ApiImagesGetRequest {
 			return request.Filter("public", "false")
 		}), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -219,7 +219,7 @@ func ImageCmd() *core.Command {
 		Verb:      "upload",
 		Aliases:   []string{"ftp-upload", "ftp", "upl"},
 		ShortDesc: "Upload an image to FTP server using FTP over TLS (FTPS)",
-		LongDesc: fmt.Sprintf(`WARNING: 
+		LongDesc: fmt.Sprintf(`WARNING:
 This command can only be used if 2-Factor Authentication is disabled on your account and you're logged in using IONOS_USERNAME and IONOS_PASSWORD environment variables (see "Authenticating with Ionos Cloud" at https://docs.ionos.com/cli-ionosctl).
 
 OVERVIEW:
@@ -382,9 +382,9 @@ func getCertificate(path string) (*x509.CertPool, error) {
 	return caCertPool, nil
 }
 
-func updateImagesAfterUpload(c *core.CommandConfig, diffImgs []ionoscloud.Image, properties resources.ImageProperties) ([]ionoscloud.Image, error) {
+func updateImagesAfterUpload(c *core.CommandConfig, diffImgs []compute.Image, properties resources.ImageProperties) ([]compute.Image, error) {
 	// do a patch on the uploaded images
-	var imgs []ionoscloud.Image
+	var imgs []compute.Image
 	for _, diffImg := range diffImgs {
 		img, _, err := client.Must().CloudClient.ImagesApi.ImagesPatch(c.Context, *diffImg.GetId()).Image(properties.ImageProperties).Execute()
 		imgs = append(imgs, img)
@@ -520,8 +520,8 @@ func RunImageUpload(c *core.CommandConfig) error {
 }
 
 // getDiffUploadedImages will keep querying /images endpoint until the images with the given names and locations show up.
-func getDiffUploadedImages(c *core.CommandConfig, names, locations []string) ([]ionoscloud.Image, error) {
-	var diffImgs []ionoscloud.Image
+func getDiffUploadedImages(c *core.CommandConfig, names, locations []string) ([]compute.Image, error) {
+	var diffImgs []compute.Image
 
 	for {
 		select {
@@ -635,8 +635,8 @@ func DeleteAllNonPublicImages(c *core.CommandConfig) error {
 
 // Util func - Given a slice of public & non-public images, return only those images that are non-public.
 // If any image in the slice has null properties, or "Properties.Public" field is nil, the image is skipped (and a verbose message is shown)
-func getNonPublicImages(imgs []ionoscloud.Image, verboseOut io.Writer) ([]ionoscloud.Image, error) {
-	var nonPublicImgs []ionoscloud.Image
+func getNonPublicImages(imgs []compute.Image, verboseOut io.Writer) ([]compute.Image, error) {
+	var nonPublicImgs []compute.Image
 	for _, i := range imgs {
 		properties, ok := i.GetPropertiesOk()
 		if !ok {
@@ -860,7 +860,7 @@ func RunImageGet(c *core.CommandConfig) error {
 // Output Columns Sorting
 
 func sortImagesByLocation(images resources.Images, location string) resources.Images {
-	imgLocationItems := make([]ionoscloud.Image, 0)
+	imgLocationItems := make([]compute.Image, 0)
 	if items, ok := images.GetItemsOk(); ok && items != nil {
 		for _, img := range *items {
 			properties := img.GetProperties()
@@ -876,7 +876,7 @@ func sortImagesByLocation(images resources.Images, location string) resources.Im
 }
 
 func sortImagesByLicenceType(images resources.Images, licenceType string) resources.Images {
-	imgLicenceTypeItems := make([]ionoscloud.Image, 0)
+	imgLicenceTypeItems := make([]compute.Image, 0)
 	if items, ok := images.GetItemsOk(); ok && items != nil {
 		for _, img := range *items {
 			properties := img.GetProperties()
@@ -892,7 +892,7 @@ func sortImagesByLicenceType(images resources.Images, licenceType string) resour
 }
 
 func sortImagesByType(images resources.Images, imgType string) resources.Images {
-	imgTypeItems := make([]ionoscloud.Image, 0)
+	imgTypeItems := make([]compute.Image, 0)
 	if items, ok := images.GetItemsOk(); ok && items != nil {
 		for _, img := range *items {
 			properties := img.GetProperties()
@@ -908,7 +908,7 @@ func sortImagesByType(images resources.Images, imgType string) resources.Images 
 }
 
 func sortImagesByAlias(images resources.Images, alias string) resources.Images {
-	imgTypeItems := make([]ionoscloud.Image, 0)
+	imgTypeItems := make([]compute.Image, 0)
 	if items, ok := images.GetItemsOk(); ok && items != nil {
 		for _, img := range *items {
 			properties := img.GetProperties()

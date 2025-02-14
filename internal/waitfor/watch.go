@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	ionoscloud "github.com/ionos-cloud/sdk-go-cert-manager"
 )
 
 // State Status

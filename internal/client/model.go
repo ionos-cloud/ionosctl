@@ -19,7 +19,7 @@ import (
 	certmanager "github.com/ionos-cloud/sdk-go-cert-manager"
 	postgres "github.com/ionos-cloud/sdk-go-dbaas-postgres"
 	vmasc "github.com/ionos-cloud/sdk-go-vm-autoscaling"
-	cloudv6 "github.com/ionos-cloud/sdk-go/v6"
+	compute "github.com/ionos-cloud/sdk-go/v6"
 
 	"github.com/spf13/viper"
 )
@@ -66,7 +66,7 @@ func (c *Client) UsedLayer() *Layer {
 type Client struct {
 	usedLayer *Layer // i.e. which auth layer are we using. Flags / Env Vars / Config File
 
-	CloudClient          *cloudv6.APIClient
+	CloudClient          *compute.APIClient
 	AuthClient           *auth.APIClient
 	CertManagerClient    *certmanager.APIClient
 	DataplatformClient   *dataplatform.APIClient
@@ -92,7 +92,7 @@ func newClient(name, pwd, token, hostUrl string, usedLayer *Layer) *Client {
 	sharedConfig := shared.NewConfiguration(name, pwd, token, hostUrl)
 	sharedConfig.UserAgent = appendUserAgent(sharedConfig.UserAgent)
 
-	clientConfig := cloudv6.NewConfiguration(name, pwd, token, hostUrl)
+	clientConfig := compute.NewConfiguration(name, pwd, token, hostUrl)
 	clientConfig.UserAgent = appendUserAgent(clientConfig.UserAgent)
 	// Set Depth Query Parameter globally
 	clientConfig.SetDepth(1)
@@ -107,7 +107,7 @@ func newClient(name, pwd, token, hostUrl string, usedLayer *Layer) *Client {
 	postgresConfig.UserAgent = appendUserAgent(postgresConfig.UserAgent)
 
 	return &Client{
-		CloudClient:          cloudv6.NewAPIClient(clientConfig),
+		CloudClient:          compute.NewAPIClient(clientConfig),
 		AuthClient:           auth.NewAPIClient(sharedConfig),
 		CDNClient:            cdn.NewAPIClient(sharedConfig),
 		CertManagerClient:    certmanager.NewAPIClient(certManagerConfig),

@@ -13,21 +13,21 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	compute "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
 
 var (
 	natgatewayRuleTest = resources.NatGatewayRule{
-		NatGatewayRule: ionoscloud.NatGatewayRule{
-			Properties: &ionoscloud.NatGatewayRuleProperties{
+		NatGatewayRule: compute.NatGatewayRule{
+			Properties: &compute.NatGatewayRuleProperties{
 				Name:         &testNatGatewayRuleVar,
 				PublicIp:     &testNatGatewayRuleVar,
 				Protocol:     &testNatGatewayRuleProtocol,
 				SourceSubnet: &testNatGatewayRuleVar,
 				TargetSubnet: &testNatGatewayRuleVar,
-				TargetPortRange: &ionoscloud.TargetPortRange{
+				TargetPortRange: &compute.TargetPortRange{
 					Start: &testNatGatewayRuleIntVar,
 					End:   &testNatGatewayRuleIntVar,
 				},
@@ -35,50 +35,50 @@ var (
 		},
 	}
 	natgatewayRuleTestGet = resources.NatGatewayRule{
-		NatGatewayRule: ionoscloud.NatGatewayRule{
+		NatGatewayRule: compute.NatGatewayRule{
 			Id:         &testNatGatewayRuleVar,
 			Properties: natgatewayRuleTest.Properties,
-			Metadata:   &ionoscloud.DatacenterElementMetadata{State: &testStateVar},
+			Metadata:   &compute.DatacenterElementMetadata{State: &testStateVar},
 		},
 	}
 	natgatewayRules = resources.NatGatewayRules{
-		NatGatewayRules: ionoscloud.NatGatewayRules{
+		NatGatewayRules: compute.NatGatewayRules{
 			Id:    &testNatGatewayRuleVar,
-			Items: &[]ionoscloud.NatGatewayRule{natgatewayRuleTestGet.NatGatewayRule},
+			Items: &[]compute.NatGatewayRule{natgatewayRuleTestGet.NatGatewayRule},
 		},
 	}
 	natgatewayRulesList = resources.NatGatewayRules{
-		NatGatewayRules: ionoscloud.NatGatewayRules{
+		NatGatewayRules: compute.NatGatewayRules{
 			Id: &testNatGatewayRuleVar,
-			Items: &[]ionoscloud.NatGatewayRule{
+			Items: &[]compute.NatGatewayRule{
 				natgatewayRuleTestGet.NatGatewayRule,
 				natgatewayRuleTestGet.NatGatewayRule,
 			},
 		},
 	}
 	natgatewayRuleProperties = resources.NatGatewayRuleProperties{
-		NatGatewayRuleProperties: ionoscloud.NatGatewayRuleProperties{
+		NatGatewayRuleProperties: compute.NatGatewayRuleProperties{
 			Name:         &testNatGatewayRuleNewVar,
 			PublicIp:     &testNatGatewayRuleNewVar,
 			Protocol:     &testNatGatewayRuleNewProtocol,
 			SourceSubnet: &testNatGatewayRuleNewVar,
 			TargetSubnet: &testNatGatewayRuleNewVar,
-			TargetPortRange: &ionoscloud.TargetPortRange{
+			TargetPortRange: &compute.TargetPortRange{
 				Start: &testNatGatewayRuleNewIntVar,
 				End:   &testNatGatewayRuleNewIntVar,
 			},
 		},
 	}
 	natgatewayRuleNew = resources.NatGatewayRule{
-		NatGatewayRule: ionoscloud.NatGatewayRule{
+		NatGatewayRule: compute.NatGatewayRule{
 			Id:         &testNatGatewayRuleVar,
 			Properties: &natgatewayRuleProperties.NatGatewayRuleProperties,
 		},
 	}
 	testNatGatewayRuleIntVar      = int32(10000)
 	testNatGatewayRuleNewIntVar   = int32(20000)
-	testNatGatewayRuleProtocol    = ionoscloud.NatGatewayRuleProtocol("ALL")
-	testNatGatewayRuleNewProtocol = ionoscloud.NatGatewayRuleProtocol("TCP")
+	testNatGatewayRuleProtocol    = compute.NatGatewayRuleProtocol("ALL")
+	testNatGatewayRuleNewProtocol = compute.NatGatewayRuleProtocol("TCP")
 	testNatGatewayRuleVar         = "test-natgateway-rule"
 	testNatGatewayRuleNewVar      = "test-new-natgateway-rule"
 	testNatGatewayRuleErr         = errors.New("natgateway-rule test error")
@@ -518,7 +518,7 @@ func TestRunNatGatewayRuleDeleteAllLenErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNatGatewayId), testNatGatewayRuleVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
 		rm.CloudApiV6Mocks.NatGateway.EXPECT().ListRules(testNatGatewayRuleVar, testNatGatewayRuleVar, gomock.AssignableToTypeOf(testListQueryParam)).Return(
-			resources.NatGatewayRules{NatGatewayRules: ionoscloud.NatGatewayRules{Items: &[]ionoscloud.NatGatewayRule{}}}, &testResponse, nil)
+			resources.NatGatewayRules{NatGatewayRules: compute.NatGatewayRules{Items: &[]compute.NatGatewayRule{}}}, &testResponse, nil)
 		err := RunNatGatewayRuleDelete(cfg)
 		assert.Error(t, err)
 	})

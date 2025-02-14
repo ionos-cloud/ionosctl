@@ -6,8 +6,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
 	"github.com/fatih/structs"
-
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
 
 type S3Key struct {

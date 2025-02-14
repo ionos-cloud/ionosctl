@@ -26,7 +26,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	compute "github.com/ionos-cloud/sdk-go/v6"
 )
 
 var (
@@ -118,7 +118,7 @@ func K8sNodePoolCmd() *core.Command {
 		Create Command
 	*/
 	jsonPropertiesExample := "{\n  \"metadata\": {},\n  \"properties\": {\n    \"name\": \"K8s-node-pool\",\n    \"datacenterId\": \"12345678-90ab-cdef-1234-567890abcdef\",\n    \"nodeCount\": 2,\n    \"cpuFamily\": \"INTEL_SKYLAKE\",\n    \"coresCount\": 4,\n    \"ramSize\": 2048,\n    \"availabilityZone\": \"AUTO\",\n    \"storageType\": \"HDD\",\n    \"storageSize\": 100,\n    \"k8sVersion\": \"1.27.6\",\n    \"maintenanceWindow\": {\n      \"dayOfTheWeek\": \"Monday\",\n      \"time\": \"13:00:00\"\n    },\n    \"autoScaling\": {\n      \"minNodeCount\": \"1\",\n      \"maxNodeCount\": \"2\"\n    },\n    \"lans\": [\n      {\n        \"id\": 1,\n        \"dhcp\": true,\n        \"routes\": [\n          {\n            \"network\": \"1.2.3.4/24\",\n            \"gatewayIp\": \"10.1.5.16\"\n          }\n        ]\n      }\n    ],\n    \"labels\": {\n      \"property1\": \"string\",\n      \"property2\": \"string\"\n    },\n    \"annotations\": {\n      \"property1\": \"string\",\n      \"property2\": \"string\"\n    },\n    \"publicIps\": [\n      \"203.0.113.1\",\n      \"203.0.113.2\",\n      \"203.0.113.3\"\n    ]\n  }\n}"
-	nodepoolViaJsonPropertiesFlag := ionoscloud.KubernetesNodePoolForPost{}
+	nodepoolViaJsonPropertiesFlag := compute.KubernetesNodePoolForPost{}
 	create := core.NewCommandWithJsonProperties(ctx, k8sCmd, jsonPropertiesExample, &nodepoolViaJsonPropertiesFlag, core.CommandBuilder{
 		Namespace: "k8s",
 		Resource:  "nodepool",
@@ -300,7 +300,7 @@ Required values to run command:
 	return k8sCmd
 }
 
-func RunK8sNodePoolCreateFromJSON(c *core.CommandConfig, propertiesFromJson ionoscloud.KubernetesNodePoolForPost) error {
+func RunK8sNodePoolCreateFromJSON(c *core.CommandConfig, propertiesFromJson compute.KubernetesNodePoolForPost) error {
 	np, _, err := client.Must().CloudClient.KubernetesApi.K8sNodepoolsPost(context.Background(),
 		viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))).KubernetesNodePool(propertiesFromJson).Execute()
 	if err != nil {
@@ -336,7 +336,7 @@ func RunK8sNodePoolCreate(c *core.CommandConfig) error {
 	return handleApiResponseK8sNodepoolCreate(c, u.KubernetesNodePool)
 }
 
-func handleApiResponseK8sNodepoolCreate(c *core.CommandConfig, pool ionoscloud.KubernetesNodePool) error {
+func handleApiResponseK8sNodepoolCreate(c *core.CommandConfig, pool compute.KubernetesNodePool) error {
 	uConverted, err := resource2table.ConvertK8sNodepoolToTable(pool)
 	if err != nil {
 		return err
@@ -406,7 +406,7 @@ func RunK8sNodePoolListAll(c *core.CommandConfig) error {
 		return err
 	}
 
-	var allNodePools []ionoscloud.KubernetesNodePools
+	var allNodePools []compute.KubernetesNodePools
 	var allNodePoolsConverted []map[string]interface{}
 	totalTime := time.Duration(0)
 
@@ -670,7 +670,7 @@ func getNewK8sNodePool(c *core.CommandConfig) (*resources.K8sNodePoolForPost, er
 	storageType := viper.GetString(core.GetFlagName(c.NS, constants.FlagStorageType))
 
 	// Set Properties
-	nodePoolProperties := ionoscloud.KubernetesNodePoolPropertiesForPost{}
+	nodePoolProperties := compute.KubernetesNodePoolPropertiesForPost{}
 	nodePoolProperties.SetName(name)
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property Name set: %v", name))
 
@@ -727,7 +727,7 @@ func getNewK8sNodePool(c *core.CommandConfig) (*resources.K8sNodePoolForPost, er
 
 	// Add LANs
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgLanIds)) {
-		newLans := make([]ionoscloud.KubernetesNodePoolLan, 0)
+		newLans := make([]compute.KubernetesNodePoolLan, 0)
 		lanIds := viper.GetIntSlice(core.GetFlagName(c.NS, cloudapiv6.ArgLanIds))
 		dhcp := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgDhcp))
 
@@ -737,7 +737,7 @@ func getNewK8sNodePool(c *core.CommandConfig) (*resources.K8sNodePoolForPost, er
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property Lan ID set: %v", id))
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property Dhcp set: %v", dhcp))
 
-			newLans = append(newLans, ionoscloud.KubernetesNodePoolLan{
+			newLans = append(newLans, compute.KubernetesNodePoolLan{
 				Id:   &id,
 				Dhcp: &dhcp,
 			})
@@ -747,7 +747,7 @@ func getNewK8sNodePool(c *core.CommandConfig) (*resources.K8sNodePoolForPost, er
 	}
 
 	return &resources.K8sNodePoolForPost{
-		KubernetesNodePoolForPost: ionoscloud.KubernetesNodePoolForPost{
+		KubernetesNodePoolForPost: compute.KubernetesNodePoolForPost{
 			Properties: &nodePoolProperties,
 		},
 	}, nil
@@ -805,9 +805,9 @@ func getNewK8sNodePoolUpdated(oldNodePool *resources.K8sNodePool, c *core.Comman
 			}
 
 			if minCount == 0 && maxCount == 0 {
-				propertiesUpdated.SetAutoScaling(ionoscloud.KubernetesAutoScaling{})
+				propertiesUpdated.SetAutoScaling(compute.KubernetesAutoScaling{})
 			} else {
-				propertiesUpdated.SetAutoScaling(ionoscloud.KubernetesAutoScaling{
+				propertiesUpdated.SetAutoScaling(compute.KubernetesAutoScaling{
 					MinNodeCount: &minCount,
 					MaxNodeCount: &maxCount,
 				})
@@ -861,7 +861,7 @@ func getNewK8sNodePoolUpdated(oldNodePool *resources.K8sNodePool, c *core.Comman
 		}
 
 		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgLanIds)) {
-			newLans := make([]ionoscloud.KubernetesNodePoolLan, 0)
+			newLans := make([]compute.KubernetesNodePoolLan, 0)
 
 			// Append existing LANs
 			if existingLans, ok := properties.GetLansOk(); ok && existingLans != nil {
@@ -875,7 +875,7 @@ func getNewK8sNodePoolUpdated(oldNodePool *resources.K8sNodePool, c *core.Comman
 			dhcp := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgDhcp))
 			for _, lanId := range lanIds {
 				id := int32(lanId)
-				newLans = append(newLans, ionoscloud.KubernetesNodePoolLan{
+				newLans = append(newLans, compute.KubernetesNodePoolLan{
 					Id:   &id,
 					Dhcp: &dhcp,
 				})
@@ -895,7 +895,7 @@ func getNewK8sNodePoolUpdated(oldNodePool *resources.K8sNodePool, c *core.Comman
 	}
 
 	return resources.K8sNodePoolForPut{
-		KubernetesNodePoolForPut: ionoscloud.KubernetesNodePoolForPut{
+		KubernetesNodePoolForPut: compute.KubernetesNodePoolForPut{
 			Properties: &propertiesUpdated.KubernetesNodePoolPropertiesForPut,
 		},
 	}

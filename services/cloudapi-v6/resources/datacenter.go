@@ -6,7 +6,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
 	"github.com/fatih/structs"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
 
 type Datacenter struct {
@@ -48,12 +47,12 @@ func NewDataCenterService(client *client.Client, ctx context.Context) Datacenter
 	}
 }
 
-//func NewDataCenterServices(client *client2.Client, ctx context.Context) DatacentersService {
+// func NewDataCenterServices(client *client2.Client, ctx context.Context) DatacentersService {
 //	return &dataCentersService{
 //		client:  client,
 //		context: ctx,
 //	}
-//}
+// }
 
 func (ds *dataCentersService) List(params ListQueryParams) (Datacenters, *Response, error) {
 	req := ds.client.DataCentersApi.DatacentersGet(ds.context)

@@ -12,20 +12,20 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	compute "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
 
 var (
 	testRuleTargetProperties = resources.NetworkLoadBalancerForwardingRuleProperties{
-		NetworkLoadBalancerForwardingRuleProperties: ionoscloud.NetworkLoadBalancerForwardingRuleProperties{
-			Targets: &[]ionoscloud.NetworkLoadBalancerForwardingRuleTarget{
+		NetworkLoadBalancerForwardingRuleProperties: compute.NetworkLoadBalancerForwardingRuleProperties{
+			Targets: &[]compute.NetworkLoadBalancerForwardingRuleTarget{
 				{
 					Ip:     &testNlbRuleTargetVar,
 					Port:   &testNlbRuleTargetIntVar,
 					Weight: &testNlbRuleTargetIntVar,
-					HealthCheck: &ionoscloud.NetworkLoadBalancerForwardingRuleTargetHealthCheck{
+					HealthCheck: &compute.NetworkLoadBalancerForwardingRuleTargetHealthCheck{
 						Check:         &testNlbRuleTargetBoolVar,
 						CheckInterval: &testNlbRuleTargetIntVar,
 						Maintenance:   &testNlbRuleTargetBoolVar,
@@ -35,32 +35,32 @@ var (
 		},
 	}
 	testNlbRuleTargetGet = resources.NetworkLoadBalancerForwardingRule{
-		NetworkLoadBalancerForwardingRule: ionoscloud.NetworkLoadBalancerForwardingRule{
+		NetworkLoadBalancerForwardingRule: compute.NetworkLoadBalancerForwardingRule{
 			Id:         &testNlbRuleTargetVar,
-			Properties: &ionoscloud.NetworkLoadBalancerForwardingRuleProperties{},
+			Properties: &compute.NetworkLoadBalancerForwardingRuleProperties{},
 		},
 	}
 	testNlbRuleTargetGetUpdated = resources.NetworkLoadBalancerForwardingRule{
-		NetworkLoadBalancerForwardingRule: ionoscloud.NetworkLoadBalancerForwardingRule{
+		NetworkLoadBalancerForwardingRule: compute.NetworkLoadBalancerForwardingRule{
 			Id:         &testNlbRuleTargetVar,
 			Properties: &testRuleTargetProperties.NetworkLoadBalancerForwardingRuleProperties,
 		},
 	}
-	testTarget = ionoscloud.NetworkLoadBalancerForwardingRuleTarget{
+	testTarget = compute.NetworkLoadBalancerForwardingRuleTarget{
 		Ip:   &testNlbRuleTargetVar,
 		Port: &testNlbRuleTargetIntVar,
 	}
-	testNlbRuleTarget = ionoscloud.NetworkLoadBalancerForwardingRule{
+	testNlbRuleTarget = compute.NetworkLoadBalancerForwardingRule{
 		Id: &testNlbRuleTargetVar,
-		Properties: &ionoscloud.NetworkLoadBalancerForwardingRuleProperties{
+		Properties: &compute.NetworkLoadBalancerForwardingRuleProperties{
 			Name:    &testNlbRuleTargetVar,
-			Targets: &[]ionoscloud.NetworkLoadBalancerForwardingRuleTarget{testTarget, testTarget},
+			Targets: &[]compute.NetworkLoadBalancerForwardingRuleTarget{testTarget, testTarget},
 		},
 	}
 	testNlbRuleTargetList = resources.NetworkLoadBalancerForwardingRules{
-		NetworkLoadBalancerForwardingRules: ionoscloud.NetworkLoadBalancerForwardingRules{
+		NetworkLoadBalancerForwardingRules: compute.NetworkLoadBalancerForwardingRules{
 			Id: &testNlbRuleTargetVar,
-			Items: &[]ionoscloud.NetworkLoadBalancerForwardingRule{
+			Items: &[]compute.NetworkLoadBalancerForwardingRule{
 				testNlbRuleTarget,
 				testNlbRuleTarget,
 			},
@@ -302,8 +302,8 @@ func TestRunNlbRuleTargetRemove(t *testing.T) {
 		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().GetForwardingRule(testNlbRuleTargetVar, testNlbRuleTargetVar, testNlbRuleTargetVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&testNlbRuleTargetGetUpdated, nil, nil)
 		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().UpdateForwardingRule(testNlbRuleTargetVar, testNlbRuleTargetVar, testNlbRuleTargetVar,
 			&resources.NetworkLoadBalancerForwardingRuleProperties{
-				NetworkLoadBalancerForwardingRuleProperties: ionoscloud.NetworkLoadBalancerForwardingRuleProperties{
-					Targets: &[]ionoscloud.NetworkLoadBalancerForwardingRuleTarget{},
+				NetworkLoadBalancerForwardingRuleProperties: compute.NetworkLoadBalancerForwardingRuleProperties{
+					Targets: &[]compute.NetworkLoadBalancerForwardingRuleTarget{},
 				},
 			},
 			testQueryParamOther,
@@ -330,8 +330,8 @@ func TestRunNlbRuleTargetRemoveAll(t *testing.T) {
 			Return(&testNlbRuleTargetGetUpdated, &testResponse, nil)
 		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().UpdateForwardingRule(testNlbRuleTargetVar, testNlbRuleTargetVar, testNlbRuleTargetVar,
 			&resources.NetworkLoadBalancerForwardingRuleProperties{
-				NetworkLoadBalancerForwardingRuleProperties: ionoscloud.NetworkLoadBalancerForwardingRuleProperties{
-					Targets: &[]ionoscloud.NetworkLoadBalancerForwardingRuleTarget{},
+				NetworkLoadBalancerForwardingRuleProperties: compute.NetworkLoadBalancerForwardingRuleProperties{
+					Targets: &[]compute.NetworkLoadBalancerForwardingRuleTarget{},
 				},
 			},
 			testQueryParamOther,
@@ -357,8 +357,8 @@ func TestRunNlbRuleTargetRemoveErr(t *testing.T) {
 		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().GetForwardingRule(testNlbRuleTargetVar, testNlbRuleTargetVar, testNlbRuleTargetVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&testNlbRuleTargetGetUpdated, nil, nil)
 		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().UpdateForwardingRule(testNlbRuleTargetVar, testNlbRuleTargetVar, testNlbRuleTargetVar,
 			&resources.NetworkLoadBalancerForwardingRuleProperties{
-				NetworkLoadBalancerForwardingRuleProperties: ionoscloud.NetworkLoadBalancerForwardingRuleProperties{
-					Targets: &[]ionoscloud.NetworkLoadBalancerForwardingRuleTarget{},
+				NetworkLoadBalancerForwardingRuleProperties: compute.NetworkLoadBalancerForwardingRuleProperties{
+					Targets: &[]compute.NetworkLoadBalancerForwardingRuleTarget{},
 				},
 			},
 			testQueryParamOther,
@@ -442,8 +442,8 @@ func TestRunNlbRuleTargetRemoveWaitErr(t *testing.T) {
 		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().GetForwardingRule(testNlbRuleTargetVar, testNlbRuleTargetVar, testNlbRuleTargetVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&testNlbRuleTargetGetUpdated, nil, nil)
 		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().UpdateForwardingRule(testNlbRuleTargetVar, testNlbRuleTargetVar, testNlbRuleTargetVar,
 			&resources.NetworkLoadBalancerForwardingRuleProperties{
-				NetworkLoadBalancerForwardingRuleProperties: ionoscloud.NetworkLoadBalancerForwardingRuleProperties{
-					Targets: &[]ionoscloud.NetworkLoadBalancerForwardingRuleTarget{},
+				NetworkLoadBalancerForwardingRuleProperties: compute.NetworkLoadBalancerForwardingRuleProperties{
+					Targets: &[]compute.NetworkLoadBalancerForwardingRuleTarget{},
 				},
 			},
 			testQueryParamOther,
@@ -471,8 +471,8 @@ func TestRunNlbRuleTargetRemoveAskForConfirm(t *testing.T) {
 		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().GetForwardingRule(testNlbRuleTargetVar, testNlbRuleTargetVar, testNlbRuleTargetVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&testNlbRuleTargetGetUpdated, nil, nil)
 		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().UpdateForwardingRule(testNlbRuleTargetVar, testNlbRuleTargetVar, testNlbRuleTargetVar,
 			&resources.NetworkLoadBalancerForwardingRuleProperties{
-				NetworkLoadBalancerForwardingRuleProperties: ionoscloud.NetworkLoadBalancerForwardingRuleProperties{
-					Targets: &[]ionoscloud.NetworkLoadBalancerForwardingRuleTarget{},
+				NetworkLoadBalancerForwardingRuleProperties: compute.NetworkLoadBalancerForwardingRuleProperties{
+					Targets: &[]compute.NetworkLoadBalancerForwardingRuleTarget{},
 				},
 			},
 			testQueryParamOther,

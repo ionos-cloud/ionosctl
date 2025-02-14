@@ -19,7 +19,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	compute "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -274,7 +274,7 @@ func RunAlbRuleHttpRuleAdd(c *core.CommandConfig) error {
 	}
 
 	queryParams := listQueryParams.QueryParams
-	var httpRuleItems []ionoscloud.ApplicationLoadBalancerHttpRule
+	var httpRuleItems []compute.ApplicationLoadBalancerHttpRule
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
 		constants.DatacenterId, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))))
@@ -312,7 +312,7 @@ func RunAlbRuleHttpRuleAdd(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)),
 		&resources.ApplicationLoadBalancerForwardingRuleProperties{
-			ApplicationLoadBalancerForwardingRuleProperties: ionoscloud.ApplicationLoadBalancerForwardingRuleProperties{
+			ApplicationLoadBalancerForwardingRuleProperties: compute.ApplicationLoadBalancerForwardingRuleProperties{
 				HttpRules: &httpRuleItems,
 			},
 		},
@@ -475,7 +475,7 @@ func RemoveAllHTTPRules(c *core.CommandConfig) (*resources.Response, error) {
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the Forwarding Rule HTTP Rules..."))
 
-	propertiesOk.SetHttpRules([]ionoscloud.ApplicationLoadBalancerHttpRule{})
+	propertiesOk.SetHttpRules([]compute.ApplicationLoadBalancerHttpRule{})
 	_, resp, err = c.CloudApiV6Services.ApplicationLoadBalancers().UpdateForwardingRule(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
@@ -554,7 +554,7 @@ func getRuleHttpRuleInfo(c *core.CommandConfig) resources.ApplicationLoadBalance
 	}
 
 	httpRuleCondition := getRuleHttpRuleConditionInfo(c)
-	httprule.SetConditions([]ionoscloud.ApplicationLoadBalancerHttpRuleCondition{
+	httprule.SetConditions([]compute.ApplicationLoadBalancerHttpRuleCondition{
 		httpRuleCondition.ApplicationLoadBalancerHttpRuleCondition,
 	})
 
@@ -600,7 +600,7 @@ func getRuleHttpRuleConditionInfo(c *core.CommandConfig) resources.ApplicationLo
 }
 
 func getRuleHttpRulesRemove(c *core.CommandConfig, frOld *resources.ApplicationLoadBalancerForwardingRule) (*resources.ApplicationLoadBalancerForwardingRuleProperties, error) {
-	httpRuleItems := make([]ionoscloud.ApplicationLoadBalancerHttpRule, 0)
+	httpRuleItems := make([]compute.ApplicationLoadBalancerHttpRule, 0)
 
 	properties, ok := frOld.GetPropertiesOk()
 	if !ok || properties == nil {
@@ -636,7 +636,7 @@ func getRuleHttpRulesRemove(c *core.CommandConfig, frOld *resources.ApplicationL
 	}
 
 	return &resources.ApplicationLoadBalancerForwardingRuleProperties{
-		ApplicationLoadBalancerForwardingRuleProperties: ionoscloud.ApplicationLoadBalancerForwardingRuleProperties{
+		ApplicationLoadBalancerForwardingRuleProperties: compute.ApplicationLoadBalancerForwardingRuleProperties{
 			HttpRules: &httpRuleItems,
 		},
 	}, nil

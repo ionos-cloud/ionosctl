@@ -19,7 +19,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	compute "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -254,7 +254,7 @@ func RunNetworkLoadBalancerListAll(c *core.CommandConfig) error {
 		return err
 	}
 
-	var allNetworkLoadBalancers []ionoscloud.NetworkLoadBalancers
+	var allNetworkLoadBalancers []compute.NetworkLoadBalancers
 	allDcs := getDataCenters(datacenters)
 	totalTime := time.Duration(0)
 
@@ -390,7 +390,7 @@ func RunNetworkLoadBalancerCreate(c *core.CommandConfig) error {
 	ng, resp, err := c.CloudApiV6Services.NetworkLoadBalancers().Create(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		resources.NetworkLoadBalancer{
-			NetworkLoadBalancer: ionoscloud.NetworkLoadBalancer{
+			NetworkLoadBalancer: compute.NetworkLoadBalancer{
 				Properties: &proper.NetworkLoadBalancerProperties,
 			},
 		},
@@ -500,7 +500,7 @@ func RunNetworkLoadBalancerDelete(c *core.CommandConfig) error {
 }
 
 func getNewNetworkLoadBalancerInfo(c *core.CommandConfig) *resources.NetworkLoadBalancerProperties {
-	input := ionoscloud.NetworkLoadBalancerProperties{}
+	input := compute.NetworkLoadBalancerProperties{}
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgName)) {
 		name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))

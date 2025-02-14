@@ -19,7 +19,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	compute "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -255,7 +255,7 @@ func RunNatGatewayListAll(c *core.CommandConfig) error {
 	}
 
 	allDcs := getDataCenters(datacenters)
-	var allNatGateways []ionoscloud.NatGateways
+	var allNatGateways []compute.NatGateways
 	totalTime := time.Duration(0)
 
 	for _, dc := range allDcs {
@@ -378,7 +378,7 @@ func RunNatGatewayCreate(c *core.CommandConfig) error {
 	ng, resp, err := c.CloudApiV6Services.NatGateways().Create(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		resources.NatGateway{
-			NatGateway: ionoscloud.NatGateway{
+			NatGateway: compute.NatGateway{
 				Properties: &proper.NatGatewayProperties,
 			},
 		},
@@ -489,7 +489,7 @@ func RunNatGatewayDelete(c *core.CommandConfig) error {
 }
 
 func getNewNatGatewayInfo(c *core.CommandConfig) *resources.NatGatewayProperties {
-	input := ionoscloud.NatGatewayProperties{}
+	input := compute.NatGatewayProperties{}
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgName)) {
 		name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))

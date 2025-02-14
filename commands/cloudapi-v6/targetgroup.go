@@ -18,7 +18,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	compute "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -550,7 +550,7 @@ func getTargetGroupNew(c *core.CommandConfig) resources.TargetGroup {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Setting HttpHealthCheck"))
 
 	return resources.TargetGroup{
-		TargetGroup: ionoscloud.TargetGroup{
+		TargetGroup: compute.TargetGroup{
 			Properties: &input.TargetGroupProperties,
 		},
 	}

@@ -5,7 +5,6 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
 
 func ConvertK8sClusterToTable(cluster ionoscloud.KubernetesCluster) ([]map[string]interface{}, error) {
