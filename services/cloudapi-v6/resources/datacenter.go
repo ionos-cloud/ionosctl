@@ -5,6 +5,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
+	"github.com/ionos-cloud/sdk-go-bundle/shared"
 
 	"github.com/fatih/structs"
 )
@@ -22,7 +23,7 @@ type Datacenters struct {
 }
 
 type Response struct {
-	compute.APIResponse
+	shared.APIResponse
 }
 
 // DatacentersService is a wrapper around compute.Datacenter
@@ -30,7 +31,7 @@ type DatacentersService interface {
 	List(params ListQueryParams) (Datacenters, *Response, error)
 	Get(datacenterId string, queryParams QueryParams) (*Datacenter, *Response, error)
 	Create(name, description, region string, queryParams QueryParams) (*Datacenter, *Response, error)
-	Update(datacenterId string, input DatacenterProperties, queryParams QueryParams) (*Datacenter, *Response, error)
+	Update(datacenterId string, input compute.DatacenterPropertiesPut, queryParams QueryParams) (*Datacenter, *Response, error)
 	Delete(datacenterId string, queryParams QueryParams) (*Response, error)
 }
 
@@ -110,11 +111,11 @@ func (ds *dataCentersService) Get(datacenterId string, params QueryParams) (*Dat
 }
 
 func (ds *dataCentersService) Create(name, description, region string, params QueryParams) (*Datacenter, *Response, error) {
-	dc := compute.Datacenter{
-		Properties: &compute.DatacenterProperties{
+	dc := compute.DatacenterPost{
+		Properties: compute.DatacenterPropertiesPost{
 			Name:        &name,
 			Description: &description,
-			Location:    &region,
+			Location:    region,
 		},
 	}
 	req := ds.client.DataCentersApi.DatacentersPost(ds.context).Datacenter(dc)
@@ -131,8 +132,8 @@ func (ds *dataCentersService) Create(name, description, region string, params Qu
 	return &Datacenter{datacenter}, &Response{*res}, err
 }
 
-func (ds *dataCentersService) Update(datacenterId string, input DatacenterProperties, params QueryParams) (*Datacenter, *Response, error) {
-	req := ds.client.DataCentersApi.DatacentersPatch(ds.context, datacenterId).Datacenter(input.DatacenterProperties)
+func (ds *dataCentersService) Update(datacenterId string, input compute.DatacenterPropertiesPut, params QueryParams) (*Datacenter, *Response, error) {
+	req := ds.client.DataCentersApi.DatacentersPatch(ds.context, datacenterId).Datacenter(input)
 	if !structs.IsZero(params) {
 		if params.Depth != nil {
 			req = req.Depth(*params.Depth)
