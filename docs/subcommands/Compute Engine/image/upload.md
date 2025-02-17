@@ -26,7 +26,7 @@ For `upload` command:
 
 ## Description
 
-WARNING: 
+WARNING:
 This command can only be used if 2-Factor Authentication is disabled on your account and you're logged in using IONOS_USERNAME and IONOS_PASSWORD environment variables (see "Authenticating with Ionos Cloud" at https://docs.ionos.com/cli-ionosctl).
 
 OVERVIEW:
