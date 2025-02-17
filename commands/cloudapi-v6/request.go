@@ -287,7 +287,7 @@ func RunRequestWait(c *core.CommandConfig) error {
 func getRequests(requests resources.Requests) []resources.Request {
 	requestObjs := make([]resources.Request, 0)
 	if items, ok := requests.GetItemsOk(); ok && items != nil {
-		for _, request := range *items {
+		for _, request := range items {
 			requestObjs = append(requestObjs, resources.Request{Request: request})
 		}
 	}
@@ -298,7 +298,7 @@ func sortRequestsByMethod(requests resources.Requests, method string) resources.
 	var sortedRequests resources.Requests
 	if items, ok := requests.GetItemsOk(); ok && items != nil {
 		requestsItems := make([]compute.Request, 0)
-		for _, item := range *items {
+		for _, item := range items {
 			properties := item.GetProperties()
 			if methodOk, ok := properties.GetMethodOk(); ok && methodOk != nil {
 				if *methodOk == method {

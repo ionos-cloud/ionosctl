@@ -609,7 +609,7 @@ func DeleteAllLans(c *core.CommandConfig) error {
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Lans to be deleted:"))
 
-	for _, lan := range *lansItems {
+	for _, lan := range lansItems {
 		delIdAndName := ""
 		if id, ok := lan.GetIdOk(); ok && id != nil {
 			delIdAndName += "Lan Id: " + *id
@@ -631,7 +631,7 @@ func DeleteAllLans(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the Lans..."))
 
 	var multiErr error
-	for _, lan := range *lansItems {
+	for _, lan := range lansItems {
 		id, ok := lan.GetIdOk()
 		if !ok || id == nil {
 			continue

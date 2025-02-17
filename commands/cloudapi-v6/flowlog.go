@@ -495,7 +495,7 @@ func DeleteAllFlowlogs(c *core.CommandConfig) error {
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Flowlogs to be deleted:"))
 
-	for _, backupUnit := range *flowlogsItems {
+	for _, backupUnit := range flowlogsItems {
 		delIdAndName := ""
 
 		if id, ok := backupUnit.GetIdOk(); ok && id != nil {
@@ -518,7 +518,7 @@ func DeleteAllFlowlogs(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the Flowlogs..."))
 
 	var multiErr error
-	for _, flowlog := range *flowlogsItems {
+	for _, flowlog := range flowlogsItems {
 		id, ok := flowlog.GetIdOk()
 		if !ok || id == nil {
 			continue

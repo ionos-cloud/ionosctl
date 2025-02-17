@@ -841,7 +841,7 @@ func DeleteAllVolumes(c *core.CommandConfig) error {
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Volumes to be deleted:"))
 
-	for _, volume := range *volumesItems {
+	for _, volume := range volumesItems {
 		if id, ok := volume.GetIdOk(); ok && id != nil {
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Volume Id: %v", *id))
 		}
@@ -860,7 +860,7 @@ func DeleteAllVolumes(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the Volumes..."))
 
 	var multiErr error
-	for _, volume := range *volumesItems {
+	for _, volume := range volumesItems {
 		id, ok := volume.GetIdOk()
 		if !ok || id == nil {
 			continue
@@ -1284,7 +1284,7 @@ func DetachAllServerVolumes(c *core.CommandConfig) error {
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Volumes to be detached:"))
 
-	for _, volume := range *volumesItems {
+	for _, volume := range volumesItems {
 		delIdAndName := ""
 		if id, ok := volume.GetIdOk(); ok && id != nil {
 			delIdAndName += "Volume Id: " + *id
@@ -1306,7 +1306,7 @@ func DetachAllServerVolumes(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Detaching all the Volumes..."))
 
 	var multiErr error
-	for _, volume := range *volumesItems {
+	for _, volume := range volumesItems {
 		id, ok := volume.GetIdOk()
 		if !ok || id == nil {
 			continue

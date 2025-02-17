@@ -694,7 +694,7 @@ func DeleteAllGroups(c *core.CommandConfig) error {
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Groups to be deleted:"))
 
-	for _, group := range *groupsItems {
+	for _, group := range groupsItems {
 		delIdAndName := ""
 		if id, ok := group.GetIdOk(); ok && id != nil {
 			delIdAndName += "Group Id: " + *id
@@ -716,7 +716,7 @@ func DeleteAllGroups(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the Groups..."))
 
 	var multiErr error
-	for _, group := range *groupsItems {
+	for _, group := range groupsItems {
 		id, ok := group.GetIdOk()
 		if !ok || id == nil {
 			continue
@@ -753,7 +753,7 @@ func DeleteAllGroups(c *core.CommandConfig) error {
 func getGroups(groups resources.Groups) []resources.Group {
 	u := make([]resources.Group, 0)
 	if items, ok := groups.GetItemsOk(); ok && items != nil {
-		for _, item := range *items {
+		for _, item := range items {
 			u = append(u, resources.Group{Group: item})
 		}
 	}

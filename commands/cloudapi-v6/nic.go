@@ -582,7 +582,7 @@ func DeleteAllNics(c *core.CommandConfig) error {
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("NICs to be deleted:"))
 
-	for _, nic := range *nicsItems {
+	for _, nic := range nicsItems {
 		delIdAndName := ""
 
 		if id, ok := nic.GetIdOk(); ok && id != nil {
@@ -605,7 +605,7 @@ func DeleteAllNics(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the Nics..."))
 
 	var multiErr error
-	for _, nic := range *nicsItems {
+	for _, nic := range nicsItems {
 		id, ok := nic.GetIdOk()
 		if !ok || id == nil {
 			continue
@@ -993,7 +993,7 @@ func DetachAllNics(c *core.CommandConfig) error {
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("NICs to be detached:"))
 
-	for _, nic := range *nicsItems {
+	for _, nic := range nicsItems {
 		delIdAndName := ""
 
 		if id, ok := nic.GetIdOk(); ok && id != nil {
@@ -1016,7 +1016,7 @@ func DetachAllNics(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Detaching all the Nics..."))
 
 	var multiErr error
-	for _, nic := range *nicsItems {
+	for _, nic := range nicsItems {
 		id, ok := nic.GetIdOk()
 		if !ok || id == nil {
 			continue

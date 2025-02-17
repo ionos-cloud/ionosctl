@@ -400,7 +400,7 @@ func DetachAllCdRoms(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("CD-ROMS to be detached:"))
 	delIdAndName := ""
 
-	for _, cdRom := range *cdRomsItems {
+	for _, cdRom := range cdRomsItems {
 		if id, ok := cdRom.GetIdOk(); ok && id != nil {
 			delIdAndName += "CD-ROM Id: " + *id
 		}
@@ -421,7 +421,7 @@ func DetachAllCdRoms(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Detaching all the CD-ROM..."))
 
 	var multiErr error
-	for _, cdRom := range *cdRomsItems {
+	for _, cdRom := range cdRomsItems {
 		id, ok := cdRom.GetIdOk()
 		if !ok || id == nil {
 			continue

@@ -416,7 +416,7 @@ func DeleteAllDatacenters(c *core.CommandConfig) error {
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Datacenters to be deleted:"))
 
-	for _, dc := range *datacentersItems {
+	for _, dc := range datacentersItems {
 		delIdAndName := ""
 		if id, ok := dc.GetIdOk(); ok && id != nil {
 			delIdAndName += "Datacenter Id: " + *id

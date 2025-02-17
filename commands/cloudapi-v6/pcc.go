@@ -449,7 +449,7 @@ func DeleteAllPccs(c *core.CommandConfig) error {
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("PrivateCrossConnects to be deleted:"))
 
-	for _, pcc := range *pccsItems {
+	for _, pcc := range pccsItems {
 		delIdAndName := ""
 
 		if id, ok := pcc.GetIdOk(); ok && id != nil {
@@ -472,7 +472,7 @@ func DeleteAllPccs(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the PrivateCrossConnects..."))
 
 	var multiErr error
-	for _, pcc := range *pccsItems {
+	for _, pcc := range pccsItems {
 		id, ok := pcc.GetIdOk()
 		if !ok || id == nil {
 			continue
@@ -561,7 +561,7 @@ func RunPccPeersList(c *core.CommandConfig) error {
 	peers := make([]compute.Peer, 0)
 
 	if u != nil {
-		for _, p := range *u {
+		for _, p := range u {
 			peers = append(peers, p.Peer)
 		}
 	}

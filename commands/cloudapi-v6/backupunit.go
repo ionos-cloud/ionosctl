@@ -499,7 +499,7 @@ func DeleteAllBackupUnits(c *core.CommandConfig) error {
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Backup Units to be deleted:"))
 
-	for _, backupUnit := range *backupUnitsItems {
+	for _, backupUnit := range backupUnitsItems {
 		delIdAndName := ""
 		if id, ok := backupUnit.GetIdOk(); ok && id != nil {
 			delIdAndName += "BackupUnit Id: " + *id

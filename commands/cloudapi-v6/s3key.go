@@ -413,7 +413,7 @@ func DeleteAllS3keys(c *core.CommandConfig) error {
 	}
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("S3 keys to be deleted:"))
-	for _, s3Key := range *s3KeysItems {
+	for _, s3Key := range s3KeysItems {
 		if id, ok := s3Key.GetIdOk(); ok && id != nil {
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("S3 key Id: %v", *id))
 		}
@@ -426,7 +426,7 @@ func DeleteAllS3keys(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the S3Keys..."))
 
 	var multiErr error
-	for _, s3Key := range *s3KeysItems {
+	for _, s3Key := range s3KeysItems {
 		id, ok := s3Key.GetIdOk()
 		if !ok || id == nil {
 			continue

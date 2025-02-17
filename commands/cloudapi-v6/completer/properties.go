@@ -27,7 +27,7 @@ func DatacenterCPUFamilies(ctx context.Context, datacenterId string) []string {
 		return nil
 	}
 	result := make([]string, len(*dc.Properties.CpuArchitecture))
-	for i, arch := range *dc.Properties.CpuArchitecture {
+	for i, arch := range dc.Properties.CpuArchitecture {
 		result[i] = *arch.CpuFamily
 	}
 	return result

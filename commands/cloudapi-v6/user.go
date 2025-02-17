@@ -501,7 +501,7 @@ func DeleteAllUsers(c *core.CommandConfig) error {
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Users to be deleted:"))
 
-	for _, user := range *usersItems {
+	for _, user := range usersItems {
 		delIdAndName := ""
 
 		if id, ok := user.GetIdOk(); ok && id != nil {
@@ -527,7 +527,7 @@ func DeleteAllUsers(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the Users..."))
 
 	var multiErr error
-	for _, user := range *usersItems {
+	for _, user := range usersItems {
 		id, ok := user.GetIdOk()
 		if !ok || id == nil {
 			continue
@@ -803,7 +803,7 @@ func RemoveAllUsers(c *core.CommandConfig) error {
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Users to be removed:"))
 
-	for _, user := range *usersItems {
+	for _, user := range usersItems {
 		delIdAndName := ""
 		if id, ok := user.GetIdOk(); ok && id != nil {
 			delIdAndName += "User Id: " + *id
@@ -829,7 +829,7 @@ func RemoveAllUsers(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Removing all the Users..."))
 
 	var multiErr error
-	for _, user := range *usersItems {
+	for _, user := range usersItems {
 		id, ok := user.GetIdOk()
 		if !ok || id == nil {
 			continue

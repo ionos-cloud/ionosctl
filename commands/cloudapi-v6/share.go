@@ -548,7 +548,7 @@ func DeleteAllShares(c *core.CommandConfig) error {
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("GroupShares to be deleted:"))
 
-	for _, share := range *groupSharesItems {
+	for _, share := range groupSharesItems {
 		if id, ok := share.GetIdOk(); ok && id != nil {
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("GroupShare Id: %v", *id))
 		}
@@ -561,7 +561,7 @@ func DeleteAllShares(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the GroupShares..."))
 
 	var multiErr error
-	for _, share := range *groupSharesItems {
+	for _, share := range groupSharesItems {
 		id, ok := share.GetIdOk()
 		if !ok || id == nil {
 			continue

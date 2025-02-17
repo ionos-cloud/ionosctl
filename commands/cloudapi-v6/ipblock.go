@@ -402,7 +402,7 @@ func DeleteAllIpBlocks(c *core.CommandConfig) error {
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("IpBlocks to be deleted:"))
 
-	for _, dc := range *ipBlocksItems {
+	for _, dc := range ipBlocksItems {
 		delIdAndName := ""
 		if id, ok := dc.GetIdOk(); ok && id != nil {
 			delIdAndName += "IpBlock Id: " + *id
@@ -424,7 +424,7 @@ func DeleteAllIpBlocks(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the IpBlocks..."))
 
 	var multiErr error
-	for _, dc := range *ipBlocksItems {
+	for _, dc := range ipBlocksItems {
 		id, ok := dc.GetIdOk()
 		if !ok || id == nil {
 			continue

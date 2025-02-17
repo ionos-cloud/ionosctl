@@ -591,7 +591,7 @@ func DeleteAllSnapshots(c *core.CommandConfig) error {
 	}
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Snapshots to be deleted:"))
-	for _, snapshot := range *snapshotsItems {
+	for _, snapshot := range snapshotsItems {
 		delIdAndName := ""
 
 		if id, ok := snapshot.GetIdOk(); ok && id != nil {

@@ -1373,7 +1373,7 @@ func DeleteAllServers(c *core.CommandConfig) error {
 	}
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Servers to be deleted:"))
-	for _, server := range *serversItems {
+	for _, server := range serversItems {
 		delIdAndName := ""
 
 		if id, ok := server.GetIdOk(); ok && id != nil {
@@ -1396,7 +1396,7 @@ func DeleteAllServers(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the Servers..."))
 
 	var multiErr error
-	for _, server := range *serversItems {
+	for _, server := range serversItems {
 		id, ok := server.GetIdOk()
 		if !ok || id == nil {
 			continue
