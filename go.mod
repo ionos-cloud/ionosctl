@@ -11,7 +11,6 @@ require (
 	github.com/golang/mock v1.6.0
 	github.com/ionos-cloud/sdk-go-dbaas-postgres v1.1.2
 	github.com/ionos-cloud/sdk-go-vm-autoscaling v1.0.1
-	github.com/ionos-cloud/sdk-go/v6 v6.1.11
 	github.com/itchyny/gojq v0.12.13
 	github.com/kardianos/ftps v1.0.3
 	github.com/mitchellh/go-homedir v1.1.0
@@ -34,6 +33,7 @@ require (
 	github.com/dustin/go-humanize v0.0.0-20171111073723-bb3d318650d4
 	github.com/ionos-cloud/sdk-go-bundle/products/auth/v2 v2.0.1
 	github.com/ionos-cloud/sdk-go-bundle/products/cdn/v2 v2.1.1
+	github.com/ionos-cloud/sdk-go-bundle/products/compute/v2 v2.0.2
 	github.com/ionos-cloud/sdk-go-bundle/products/containerregistry/v2 v2.0.2
 	github.com/ionos-cloud/sdk-go-bundle/products/dataplatform/v2 v2.0.2
 	github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mariadb/v2 v2.0.0
@@ -77,9 +77,9 @@ require (
 	github.com/spf13/cast v1.5.1 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/subosito/gotenv v1.4.2 // indirect
-	golang.org/x/oauth2 v0.25.0 // indirect
 	golang.org/x/sys v0.30.0 // indirect
 	golang.org/x/text v0.22.0 // indirect
+	golang.org/x/oauth2 v0.26.0 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

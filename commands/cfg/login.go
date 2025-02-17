@@ -12,7 +12,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
-	compute "github.com/ionos-cloud/sdk-go/v6"
+	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
 	"golang.org/x/term"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"

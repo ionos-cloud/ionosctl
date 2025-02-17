@@ -8,6 +8,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/sdk-go-bundle/products/auth/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/cdn/v2"
+	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/containerregistry/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dataplatform/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mariadb/v2"
@@ -19,7 +20,6 @@ import (
 	certmanager "github.com/ionos-cloud/sdk-go-cert-manager"
 	postgres "github.com/ionos-cloud/sdk-go-dbaas-postgres"
 	vmasc "github.com/ionos-cloud/sdk-go-vm-autoscaling"
-	compute "github.com/ionos-cloud/sdk-go/v6"
 
 	"github.com/spf13/viper"
 )
