@@ -410,7 +410,7 @@ func DeleteAllDatacenters(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get items of Datacenters")
 	}
 
-	if len(*datacentersItems) <= 0 {
+	if len(datacentersItems) <= 0 {
 		return fmt.Errorf("no Datacenters found")
 	}
 
@@ -438,7 +438,7 @@ func DeleteAllDatacenters(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the Datacenters..."))
 
 	var multiErr error
-	for _, dc := range *datacentersItems {
+	for _, dc := range datacentersItems {
 		id, ok := dc.GetIdOk()
 		if !ok || id == nil {
 			continue
@@ -474,7 +474,7 @@ func DeleteAllDatacenters(c *core.CommandConfig) error {
 func getDataCenters(datacenters resources.Datacenters) []resources.Datacenter {
 	dc := make([]resources.Datacenter, 0)
 	if items, ok := datacenters.GetItemsOk(); ok && items != nil {
-		for _, datacenter := range *items {
+		for _, datacenter := range items {
 			dc = append(dc, resources.Datacenter{Datacenter: datacenter})
 		}
 	}

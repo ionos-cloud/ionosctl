@@ -426,7 +426,7 @@ func RunK8sNodePoolListAll(c *core.CommandConfig) error {
 			continue
 		}
 
-		for _, node := range *items {
+		for _, node := range items {
 			temp, err := resource2table.ConvertK8sNodepoolToTable(node)
 			if err != nil {
 				return fmt.Errorf("failed to convert from JSON to Table format: %w", err)
@@ -865,7 +865,7 @@ func getNewK8sNodePoolUpdated(oldNodePool *resources.K8sNodePool, c *core.Comman
 
 			// Append existing LANs
 			if existingLans, ok := properties.GetLansOk(); ok && existingLans != nil {
-				for _, existingLan := range *existingLans {
+				for _, existingLan := range existingLans {
 					newLans = append(newLans, existingLan)
 				}
 			}
@@ -923,13 +923,13 @@ func DeleteAllK8sNodepools(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get items of Kubernetes Nodepools")
 	}
 
-	if len(*k8sNodePoolsItems) <= 0 {
+	if len(k8sNodePoolsItems) <= 0 {
 		return fmt.Errorf("no Kubernetes Nodepools found")
 	}
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("K8sNodePools to be deleted:"))
 
-	for _, dc := range *k8sNodePoolsItems {
+	for _, dc := range k8sNodePoolsItems {
 		delIdAndName := ""
 
 		if id, ok := dc.GetIdOk(); ok && id != nil {
@@ -952,7 +952,7 @@ func DeleteAllK8sNodepools(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the K8sNodePools"))
 
 	var multiErr error
-	for _, dc := range *k8sNodePoolsItems {
+	for _, dc := range k8sNodePoolsItems {
 		id, ok := dc.GetIdOk()
 		if !ok || id == nil {
 			continue

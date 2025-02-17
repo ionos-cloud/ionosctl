@@ -564,13 +564,13 @@ func DeleteAllNetworkLoadBalancers(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get items of Network Load Balancers")
 	}
 
-	if len(*nlbItems) <= 0 {
+	if len(nlbItems) <= 0 {
 		return fmt.Errorf("no Network Load Balancers found")
 	}
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Network Load Balancers to be deleted:"))
 
-	for _, networkLoadBalancer := range *nlbItems {
+	for _, networkLoadBalancer := range nlbItems {
 		delIdAndName := ""
 
 		if id, ok := networkLoadBalancer.GetIdOk(); ok && id != nil {
@@ -593,7 +593,7 @@ func DeleteAllNetworkLoadBalancers(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the Network Load Balancers..."))
 
 	var multiErr error
-	for _, networkLoadBalancer := range *nlbItems {
+	for _, networkLoadBalancer := range nlbItems {
 		id, ok := networkLoadBalancer.GetIdOk()
 		if !ok || id == nil {
 			continue

@@ -540,11 +540,11 @@ func DeleteAllApplicationLoadBalancer(c *core.CommandConfig) error {
 		return errors.New("could not get items of Application Load Balancers")
 	}
 
-	if len(*albItems) <= 0 {
+	if len(albItems) <= 0 {
 		return errors.New("no Application Load Balancers found")
 	}
 
-	for _, alb := range *albItems {
+	for _, alb := range albItems {
 		delIdAndName := ""
 
 		if id, ok := alb.GetIdOk(); ok && id != nil {
@@ -567,7 +567,7 @@ func DeleteAllApplicationLoadBalancer(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the Application Load Balancers..."))
 
 	var multiErr error
-	for _, alb := range *albItems {
+	for _, alb := range albItems {
 		id, ok := alb.GetIdOk()
 		if !ok || id == nil {
 			continue

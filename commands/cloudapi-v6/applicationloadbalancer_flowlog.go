@@ -550,11 +550,11 @@ func DeleteAllApplicationLoadBalancerFlowLog(c *core.CommandConfig) error {
 		return errors.New("could not get items of Application Load Balancer Flow Logs")
 	}
 
-	if len(*albFlowLogItems) <= 0 {
+	if len(albFlowLogItems) <= 0 {
 		return errors.New("no Application Load Balancer Flow Logs found")
 	}
 
-	for _, fl := range *albFlowLogItems {
+	for _, fl := range albFlowLogItems {
 		delIdAndName := ""
 
 		if id, ok := fl.GetIdOk(); ok && id != nil {
@@ -577,7 +577,7 @@ func DeleteAllApplicationLoadBalancerFlowLog(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the Application Load Balancer FlowLogs..."))
 
 	var multiErr error
-	for _, fl := range *albFlowLogItems {
+	for _, fl := range albFlowLogItems {
 		id, ok := fl.GetIdOk()
 		if !ok || id == nil {
 			continue

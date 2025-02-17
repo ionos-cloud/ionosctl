@@ -568,7 +568,7 @@ func DeleteAllNatgatewayRules(c *core.CommandConfig) error {
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("NatGatewayRules to be deleted:"))
 
-	for _, natGateway := range *natGatewayRuleItems {
+	for _, natGateway := range natGatewayRuleItems {
 		delIdAndName := ""
 
 		if id, ok := natGateway.GetIdOk(); ok && id != nil {
@@ -591,7 +591,7 @@ func DeleteAllNatgatewayRules(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the NatGatewayRules..."))
 
 	var multiErr error
-	for _, natGateway := range *natGatewayRuleItems {
+	for _, natGateway := range natGatewayRuleItems {
 		id, ok := natGateway.GetIdOk()
 		if !ok || id == nil {
 			continue

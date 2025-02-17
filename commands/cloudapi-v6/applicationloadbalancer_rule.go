@@ -547,11 +547,11 @@ func DeleteAllApplicationLoadBalancerForwardingRule(c *core.CommandConfig) error
 		return errors.New("could not get items of Target Groups")
 	}
 
-	if len(*albRuleItems) <= 0 {
+	if len(albRuleItems) <= 0 {
 		return errors.New("no Target Groups found")
 	}
 
-	for _, fr := range *albRuleItems {
+	for _, fr := range albRuleItems {
 		delIdAndName := ""
 
 		if id, ok := fr.GetIdOk(); ok && id != nil {
@@ -575,7 +575,7 @@ func DeleteAllApplicationLoadBalancerForwardingRule(c *core.CommandConfig) error
 		"Deleting all the Application Load Balancer Forwarding Rules..."))
 
 	var multiErr error
-	for _, fr := range *albRuleItems {
+	for _, fr := range albRuleItems {
 		id, ok := fr.GetIdOk()
 		if !ok || id == nil {
 			continue

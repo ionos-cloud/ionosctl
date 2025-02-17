@@ -666,7 +666,7 @@ func DeleteAllFirewallRules(c *core.CommandConfig) error {
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Firewall Rules to be deleted:"))
 
-	for _, firewall := range *firewallRulesItems {
+	for _, firewall := range firewallRulesItems {
 		delIdAndName := ""
 
 		if id, ok := firewall.GetIdOk(); ok && id != nil {
@@ -689,7 +689,7 @@ func DeleteAllFirewallRules(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the Firewall Rules..."))
 
 	var multiErr error
-	for _, firewall := range *firewallRulesItems {
+	for _, firewall := range firewallRulesItems {
 		id, ok := firewall.GetIdOk()
 		if !ok || id == nil {
 			continue

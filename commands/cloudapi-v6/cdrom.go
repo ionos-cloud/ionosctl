@@ -393,7 +393,7 @@ func DetachAllCdRoms(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get CD-ROM items")
 	}
 
-	if len(*cdRomsItems) <= 0 {
+	if len(cdRomsItems) <= 0 {
 		return fmt.Errorf("no CD-ROMs found")
 	}
 

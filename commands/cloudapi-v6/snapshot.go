@@ -614,7 +614,7 @@ func DeleteAllSnapshots(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the Snapshots..."))
 
 	var multiErr error
-	for _, snapshot := range *snapshotsItems {
+	for _, snapshot := range snapshotsItems {
 		id, ok := snapshot.GetIdOk()
 		if !ok || id == nil {
 			continue

@@ -500,13 +500,13 @@ func DeleteAllNetworkLoadBalancerFlowLogs(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get items of Network Load Balancer FlowLogs")
 	}
 
-	if len(*flowLogsItems) <= 0 {
+	if len(flowLogsItems) <= 0 {
 		return fmt.Errorf("no Network Load Balancer FlowLogs found")
 	}
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Network Load BalancerFlowLogs to be deleted:"))
 
-	for _, flowLog := range *flowLogsItems {
+	for _, flowLog := range flowLogsItems {
 		delIdAndName := ""
 
 		if id, ok := flowLog.GetIdOk(); ok && id != nil {
@@ -529,7 +529,7 @@ func DeleteAllNetworkLoadBalancerFlowLogs(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the Network Load Balancer FlowLogs..."))
 
 	var multiErr error
-	for _, flowLog := range *flowLogsItems {
+	for _, flowLog := range flowLogsItems {
 		id, ok := flowLog.GetIdOk()
 		if !ok || id == nil {
 			continue

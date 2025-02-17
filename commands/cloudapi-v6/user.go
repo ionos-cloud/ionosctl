@@ -495,7 +495,7 @@ func DeleteAllUsers(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get items of Users")
 	}
 
-	if len(*usersItems) <= 0 {
+	if len(usersItems) <= 0 {
 		return fmt.Errorf("no Users found")
 	}
 
@@ -797,7 +797,7 @@ func RemoveAllUsers(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get items of Users")
 	}
 
-	if len(*usersItems) <= 0 {
+	if len(usersItems) <= 0 {
 		return fmt.Errorf("no Users found")
 	}
 

@@ -500,13 +500,13 @@ func DeleteAllNatGatewayFlowLogs(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get items of NAT Gateway FlowLogs")
 	}
 
-	if len(*natgatewaysItems) <= 0 {
+	if len(natgatewaysItems) <= 0 {
 		return fmt.Errorf("no Nat Gateway FlowLogs found")
 	}
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("NAT Gateway FlowLog to be deleted:"))
 
-	for _, natgateway := range *natgatewaysItems {
+	for _, natgateway := range natgatewaysItems {
 		delIdAndName := ""
 
 		if id, ok := natgateway.GetIdOk(); ok && id != nil {
@@ -529,7 +529,7 @@ func DeleteAllNatGatewayFlowLogs(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the NatGatewayFlowLogs..."))
 
 	var multiErr error
-	for _, natgateway := range *natgatewaysItems {
+	for _, natgateway := range natgatewaysItems {
 		id, ok := natgateway.GetIdOk()
 		if !ok || id == nil {
 			continue

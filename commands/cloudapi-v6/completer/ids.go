@@ -223,7 +223,7 @@ func ImageIds(customFilters ...func(compute.ApiImagesGetRequest) compute.ApiImag
 			}
 		}
 
-		if aliases := image.Properties.ImageAliases; aliases != nil && len(*aliases) > 0 && (*aliases)[0] != "" {
+		if aliases := image.Properties.ImageAliases; aliases != nil && len(aliases) > 0 && (*aliases)[0] != "" {
 			completion = fmt.Sprintf("%s [%s]", completion, strings.Join(*aliases, ","))
 		}
 
@@ -768,7 +768,7 @@ func AttachedVolumesIds(datacenterId, serverId string) []string {
 	}
 	attachedVolumesIds := make([]string, 0)
 	if items, ok := volumes.AttachedVolumes.GetItemsOk(); ok && items != nil {
-		for _, item := range *items {
+		for _, item := range items {
 			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
 				attachedVolumesIds = append(attachedVolumesIds, *itemId)
 			}
@@ -787,7 +787,7 @@ func ApplicationLoadBalancersIds(datacenterId string) []string {
 	}
 	albIds := make([]string, 0)
 	if items, ok := applicationloadbalancers.ApplicationLoadBalancers.GetItemsOk(); ok && items != nil {
-		for _, item := range *items {
+		for _, item := range items {
 			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
 				albIds = append(albIds, *itemId)
 			}
@@ -806,7 +806,7 @@ func ApplicationLoadBalancerFlowLogsIds(datacenterId, applicationloadbalancerId 
 	}
 	ssIds := make([]string, 0)
 	if items, ok := natFlowLogs.FlowLogs.GetItemsOk(); ok && items != nil {
-		for _, item := range *items {
+		for _, item := range items {
 			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
 				ssIds = append(ssIds, *itemId)
 			}
@@ -825,7 +825,7 @@ func AlbForwardingRulesIds(datacenterId, albId string) []string {
 	}
 	ssIds := make([]string, 0)
 	if items, ok := natForwardingRules.ApplicationLoadBalancerForwardingRules.GetItemsOk(); ok && items != nil {
-		for _, item := range *items {
+		for _, item := range items {
 			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
 				ssIds = append(ssIds, *itemId)
 			}
@@ -844,7 +844,7 @@ func TargetGroupIds() []string {
 	}
 	ssIds := make([]string, 0)
 	if items, ok := targetGroups.TargetGroups.GetItemsOk(); ok && items != nil {
-		for _, item := range *items {
+		for _, item := range items {
 			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
 				ssIds = append(ssIds, *itemId)
 			}

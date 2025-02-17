@@ -493,7 +493,7 @@ func DeleteAllBackupUnits(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get Backup Unit items")
 	}
 
-	if len(*backupUnitsItems) <= 0 {
+	if len(backupUnitsItems) <= 0 {
 		return fmt.Errorf("no Backup Units found")
 	}
 
@@ -521,7 +521,7 @@ func DeleteAllBackupUnits(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the BackupUnits..."))
 
 	var multiErr error
-	for _, backupUnit := range *backupUnitsItems {
+	for _, backupUnit := range backupUnitsItems {
 		id, ok := backupUnit.GetIdOk()
 		if !ok || id == nil {
 			continue

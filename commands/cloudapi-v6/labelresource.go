@@ -144,13 +144,13 @@ func RemoveAllDatacenterLabels(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get items of Datacenter Labels")
 	}
 
-	if len(*labelsItems) <= 0 {
+	if len(labelsItems) <= 0 {
 		return fmt.Errorf("no Datacenter Labels found")
 	}
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Labels to be removed from Datacenter with ID: %v", dcId))
 
-	for _, label := range *labelsItems {
+	for _, label := range labelsItems {
 		delIdAndName := ""
 
 		if properties, ok := label.GetPropertiesOk(); ok && properties != nil {
@@ -173,7 +173,7 @@ func RemoveAllDatacenterLabels(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the Labels from Datacenter with Id: %v...", dcId))
 
 	var multiErr error
-	for _, label := range *labelsItems {
+	for _, label := range labelsItems {
 		properties, ok := label.GetPropertiesOk()
 		if !ok || properties == nil {
 			continue
@@ -356,7 +356,7 @@ func RemoveAllServerLabels(c *core.CommandConfig) error {
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Labels to be removed from Server with Id: %v", serverId))
 
-	for _, label := range *labelsItems {
+	for _, label := range labelsItems {
 		delIdAndName := ""
 
 		if properties, ok := label.GetPropertiesOk(); ok && properties != nil {
@@ -379,7 +379,7 @@ func RemoveAllServerLabels(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the Labels from Server with Id: %v...", serverId))
 
 	var multiErr error
-	for _, label := range *labelsItems {
+	for _, label := range labelsItems {
 		properties, ok := label.GetPropertiesOk()
 		if !ok || properties == nil {
 			continue
@@ -556,7 +556,7 @@ func RemoveAllVolumeLabels(c *core.CommandConfig) error {
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Labels to be removed from Volume with Id: %v", volumeId))
 
-	for _, label := range *labelsItems {
+	for _, label := range labelsItems {
 		delIdAndName := ""
 
 		if properties, ok := label.GetPropertiesOk(); ok && properties != nil {
@@ -579,7 +579,7 @@ func RemoveAllVolumeLabels(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the Labels from Volume with Id: %v...", volumeId))
 
 	var multiErr error
-	for _, label := range *labelsItems {
+	for _, label := range labelsItems {
 		properties, ok := label.GetPropertiesOk()
 		if !ok || properties == nil {
 			continue
@@ -748,7 +748,7 @@ func RemoveAllIpBlockLabels(c *core.CommandConfig) error {
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Labels to be removed from IpBlock with Id: %v", ipBlockId))
 
-	for _, label := range *labelsItems {
+	for _, label := range labelsItems {
 		delIdAndName := ""
 
 		if properties, ok := label.GetPropertiesOk(); ok && properties != nil {
@@ -771,7 +771,7 @@ func RemoveAllIpBlockLabels(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the Labels from IpBlock with Id: %v...", ipBlockId))
 
 	var multiErr error
-	for _, label := range *labelsItems {
+	for _, label := range labelsItems {
 		properties, ok := label.GetPropertiesOk()
 		if !ok || properties == nil {
 			continue
@@ -940,7 +940,7 @@ func RemoveAllSnapshotLabels(c *core.CommandConfig) error {
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Labels to be removed from Snapshot with Id: %v", snapshotId))
 
-	for _, label := range *labelsItems {
+	for _, label := range labelsItems {
 		delIdAndName := ""
 
 		if properties, ok := label.GetPropertiesOk(); ok && properties != nil {
@@ -963,7 +963,7 @@ func RemoveAllSnapshotLabels(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the Labels from Snapshot with Id: %v...", snapshotId))
 
 	var multiErr error
-	for _, label := range *labelsItems {
+	for _, label := range labelsItems {
 		properties, ok := label.GetPropertiesOk()
 		if !ok || properties == nil {
 			continue

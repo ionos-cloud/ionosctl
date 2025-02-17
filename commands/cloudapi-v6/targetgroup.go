@@ -430,7 +430,7 @@ func DeleteAllTargetGroup(c *core.CommandConfig) error {
 		return fmt.Errorf("no Target Groups found")
 	}
 
-	for _, tg := range *targetGroupItems {
+	for _, tg := range targetGroupItems {
 		delIdAndName := ""
 
 		if id, ok := tg.GetIdOk(); ok && id != nil {
@@ -453,7 +453,7 @@ func DeleteAllTargetGroup(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the Target Groups..."))
 
 	var multiErr error
-	for _, tg := range *targetGroupItems {
+	for _, tg := range targetGroupItems {
 		id, ok := tg.GetIdOk()
 		if !ok || id == nil {
 			continue

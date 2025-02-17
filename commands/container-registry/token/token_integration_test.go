@@ -28,7 +28,7 @@ func teardown() {
 	if err != nil {
 		log.Print(fmt.Errorf("failed deleting all registries: %w", err))
 	}
-	for _, reg := range *regs.Items {
+	for _, reg := range regs.Items {
 		_, err := client.Must().RegistryClient.RegistriesApi.RegistriesDelete(context.Background(), *reg.Id).Execute()
 		if err != nil {
 			log.Print(fmt.Errorf("failed deleting registry: %w", err))
@@ -63,7 +63,7 @@ func TestTokenService(t *testing.T) {
 			assert.NoError(t, err)
 
 			var newReg *containerregistry.RegistryResponse
-			for _, reg := range *registries.GetItems() {
+			for _, reg := range registries.GetItems() {
 				if *reg.GetProperties().GetName() == name {
 					newReg = &reg
 				}
@@ -88,7 +88,7 @@ func TestTokenService(t *testing.T) {
 			assert.NoError(t, err)
 
 			var newToken *containerregistry.TokenResponse
-			for _, token := range *tokens.GetItems() {
+			for _, token := range tokens.GetItems() {
 				if *token.GetProperties().GetName() == tokenName {
 					newToken = &token
 				}

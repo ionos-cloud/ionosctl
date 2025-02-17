@@ -603,7 +603,7 @@ func DeleteAllLans(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get items of Lans")
 	}
 
-	if len(*lansItems) <= 0 {
+	if len(lansItems) <= 0 {
 		return fmt.Errorf("no Lans found")
 	}
 

@@ -523,7 +523,7 @@ func DeleteAllLoadBalancers(c *core.CommandConfig) error {
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Load Balancers to be deleted:"))
 
-	for _, lb := range *loadBalancersItems {
+	for _, lb := range loadBalancersItems {
 		delIdAndName := ""
 
 		if id, ok := lb.GetIdOk(); ok && id != nil {
@@ -546,7 +546,7 @@ func DeleteAllLoadBalancers(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the LoadBalancers..."))
 
 	var multiErr error
-	for _, lb := range *loadBalancersItems {
+	for _, lb := range loadBalancersItems {
 		id, ok := lb.GetIdOk()
 		if !ok || id == nil {
 			continue

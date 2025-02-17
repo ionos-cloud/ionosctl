@@ -25,7 +25,7 @@ func teardown() {
 	if err != nil {
 		log.Print(fmt.Errorf("failed deleting all registries: %w", err))
 	}
-	for _, reg := range *regs.Items {
+	for _, reg := range regs.Items {
 		_, err := client.Must().RegistryClient.RegistriesApi.RegistriesDelete(context.Background(), *reg.Id).Execute()
 		if err != nil {
 			log.Print(fmt.Errorf("failed deleting registry: %w", err))
@@ -56,7 +56,7 @@ func TestRegistryService(t *testing.T) {
 			assert.NoError(t, err)
 
 			var newRegistry *containerregistry.RegistryResponse
-			for _, registry := range *registries.GetItems() {
+			for _, registry := range registries.GetItems() {
 				if *registry.GetProperties().GetName() == name {
 					newRegistry = &registry
 				}

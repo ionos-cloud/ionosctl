@@ -304,12 +304,12 @@ func RemoveAllK8sNodePoolsLans(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get Lans items")
 	}
 
-	if len(*lans) <= 0 {
+	if len(lans) <= 0 {
 		return fmt.Errorf("no Lans found")
 	}
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("K8s NodePool Lans to be removed:"))
-	for _, lan := range *lans {
+	for _, lan := range lans {
 		if id, ok := lan.GetIdOk(); ok && id != nil {
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("K8s NodePool Lan Id: "+string(*id)))
 		}
@@ -382,7 +382,7 @@ func getNewK8sNodePoolLanInfo(c *core.CommandConfig, oldNg *resources.K8sNodePoo
 			newLans := make([]compute.KubernetesNodePoolLan, 0)
 			// Append existing LANs
 			if existingLans, ok := properties.GetLansOk(); ok && existingLans != nil {
-				for _, existingLan := range *existingLans {
+				for _, existingLan := range existingLans {
 					newLans = append(newLans, existingLan)
 				}
 			}
@@ -460,7 +460,7 @@ func removeK8sNodePoolLanInfo(c *core.CommandConfig, oldNg *resources.K8sNodePoo
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Removing a Kubernetes NodePool LAN with id: %v", lanId))
 
 			if existingLans, ok := properties.GetLansOk(); ok && existingLans != nil {
-				for _, existingLan := range *existingLans {
+				for _, existingLan := range existingLans {
 					if id, ok := existingLan.GetIdOk(); ok && id != nil {
 						if *id != lanId {
 							newLans = append(newLans, existingLan)
@@ -486,7 +486,7 @@ func getK8sNodePoolLansForPut(ng *resources.K8sNodePool) []compute.KubernetesNod
 	if ng != nil {
 		if properties, ok := ng.GetPropertiesOk(); ok && properties != nil {
 			if lans, ok := properties.GetLansOk(); ok && lans != nil {
-				for _, lanItem := range *lans {
+				for _, lanItem := range lans {
 					ss = append(ss, lanItem)
 				}
 			}

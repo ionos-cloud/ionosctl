@@ -568,13 +568,13 @@ func DeleteAllNetworkLoadBalancerForwardingRules(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get items of Network Load Balancer Forwarding Rules")
 	}
 
-	if len(*nlbForwardingRulesItems) <= 0 {
+	if len(nlbForwardingRulesItems) <= 0 {
 		return fmt.Errorf("no Network Load Balancer Forwarding Rules found")
 	}
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Network Load Balancer Forwarding Rules to be deleted:"))
 
-	for _, nlbForwardingRule := range *nlbForwardingRulesItems {
+	for _, nlbForwardingRule := range nlbForwardingRulesItems {
 		delIdAndName := ""
 
 		if id, ok := nlbForwardingRule.GetIdOk(); ok && id != nil {
@@ -597,7 +597,7 @@ func DeleteAllNetworkLoadBalancerForwardingRules(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the Network Load Balancer Forwarding Rules..."))
 
 	var multiErr error
-	for _, nlbForwardingRule := range *nlbForwardingRulesItems {
+	for _, nlbForwardingRule := range nlbForwardingRulesItems {
 		id, ok := nlbForwardingRule.GetIdOk()
 		if !ok || id == nil {
 			continue

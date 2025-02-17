@@ -626,13 +626,13 @@ func DeleteAllK8sClusters(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get items of K8sClusters")
 	}
 
-	if len(*k8sClustersItems) <= 0 {
+	if len(k8sClustersItems) <= 0 {
 		return fmt.Errorf("no K8sClusters found")
 	}
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("K8sClusters to be deleted:"))
 
-	for _, k8sCluster := range *k8sClustersItems {
+	for _, k8sCluster := range k8sClustersItems {
 		delIdAndName := ""
 
 		if id, ok := k8sCluster.GetIdOk(); ok && id != nil {
@@ -655,7 +655,7 @@ func DeleteAllK8sClusters(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the K8sClusters..."))
 
 	var multiErr error
-	for _, k8sCluster := range *k8sClustersItems {
+	for _, k8sCluster := range k8sClustersItems {
 		id, ok := k8sCluster.GetIdOk()
 		if !ok || id == nil {
 			continue
@@ -692,7 +692,7 @@ func getK8sClusters(k8ss resources.K8sClusters) []resources.K8sCluster {
 	u := make([]resources.K8sCluster, 0)
 
 	if items, ok := k8ss.GetItemsOk(); ok && items != nil {
-		for _, item := range *items {
+		for _, item := range items {
 			u = append(u, resources.K8sCluster{KubernetesCluster: item})
 		}
 	}

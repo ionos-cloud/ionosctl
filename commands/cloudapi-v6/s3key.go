@@ -408,7 +408,7 @@ func DeleteAllS3keys(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get items of S3 Keys")
 	}
 
-	if len(*s3KeysItems) <= 0 {
+	if len(s3KeysItems) <= 0 {
 		return fmt.Errorf("no S3 Keys found")
 	}
 

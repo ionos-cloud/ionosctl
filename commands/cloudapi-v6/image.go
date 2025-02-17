@@ -569,7 +569,7 @@ func DeleteAllNonPublicImages(c *core.CommandConfig) error {
 		return err
 	}
 	allItems, ok := images.GetItemsOk()
-	if !(ok && len(*allItems) > 0 && allItems != nil) {
+	if !(ok && len(allItems) > 0 && allItems != nil) {
 		return errors.New("could not retrieve images")
 	}
 

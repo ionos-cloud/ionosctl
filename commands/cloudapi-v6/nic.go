@@ -576,7 +576,7 @@ func DeleteAllNics(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get items of NICs")
 	}
 
-	if len(*nicsItems) <= 0 {
+	if len(nicsItems) <= 0 {
 		return fmt.Errorf("no NICs found")
 	}
 

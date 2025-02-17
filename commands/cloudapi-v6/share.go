@@ -542,7 +542,7 @@ func DeleteAllShares(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get items of Group Shares")
 	}
 
-	if len(*groupSharesItems) <= 0 {
+	if len(groupSharesItems) <= 0 {
 		return fmt.Errorf("no Group Shares found")
 	}
 
