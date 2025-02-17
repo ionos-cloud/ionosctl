@@ -94,7 +94,7 @@ func (s *pccsService) GetPeers(pccId string) (*[]Peer, *Response, error) {
 	}
 	if properties, ok := pcc.GetPropertiesOk(); ok && properties != nil {
 		if ps, ok := properties.GetPeersOk(); ok && ps != nil {
-			for _, p := range *ps {
+			for _, p := range ps {
 				peers = append(peers, Peer{p})
 			}
 		}

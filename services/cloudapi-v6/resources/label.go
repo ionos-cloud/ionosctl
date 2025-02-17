@@ -139,7 +139,7 @@ func (svc *labelResourcesService) DatacenterGet(datacenterId, key string) (*Labe
 
 func (svc *labelResourcesService) DatacenterCreate(datacenterId, key, value string) (*LabelResource, *Response, error) {
 	input := compute.LabelResource{
-		Properties: &compute.LabelResourceProperties{
+		Properties: compute.LabelResourceProperties{
 			Key:   &key,
 			Value: &value,
 		},
@@ -193,7 +193,7 @@ func (svc *labelResourcesService) ServerGet(datacenterId, serverId, key string) 
 
 func (svc *labelResourcesService) ServerCreate(datacenterId, serverId, key, value string) (*LabelResource, *Response, error) {
 	input := compute.LabelResource{
-		Properties: &compute.LabelResourceProperties{
+		Properties: compute.LabelResourceProperties{
 			Key:   &key,
 			Value: &value,
 		},
@@ -247,7 +247,7 @@ func (svc *labelResourcesService) VolumeGet(datacenterId, volumeId, key string) 
 
 func (svc *labelResourcesService) VolumeCreate(datacenterId, volumeId, key, value string) (*LabelResource, *Response, error) {
 	input := compute.LabelResource{
-		Properties: &compute.LabelResourceProperties{
+		Properties: compute.LabelResourceProperties{
 			Key:   &key,
 			Value: &value,
 		},
@@ -301,7 +301,7 @@ func (svc *labelResourcesService) IpBlockGet(ipblockId, key string) (*LabelResou
 
 func (svc *labelResourcesService) IpBlockCreate(ipblockId, key, value string) (*LabelResource, *Response, error) {
 	input := compute.LabelResource{
-		Properties: &compute.LabelResourceProperties{
+		Properties: compute.LabelResourceProperties{
 			Key:   &key,
 			Value: &value,
 		},
@@ -355,7 +355,7 @@ func (svc *labelResourcesService) SnapshotGet(snapshotId, key string) (*LabelRes
 
 func (svc *labelResourcesService) SnapshotCreate(snapshotId, key, value string) (*LabelResource, *Response, error) {
 	input := compute.LabelResource{
-		Properties: &compute.LabelResourceProperties{
+		Properties: compute.LabelResourceProperties{
 			Key:   &key,
 			Value: &value,
 		},

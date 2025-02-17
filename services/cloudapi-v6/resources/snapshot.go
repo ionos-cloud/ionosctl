@@ -91,7 +91,14 @@ func (s *snapshotsService) Get(snapshotId string, params QueryParams) (*Snapshot
 }
 
 func (s *snapshotsService) Create(datacenterId, volumeId, name, description, licenceType string, secAuthProtection bool, params QueryParams) (*Snapshot, *Response, error) {
-	req := s.client.VolumesApi.DatacentersVolumesCreateSnapshotPost(s.context, datacenterId, volumeId).Name(name).Description(description).LicenceType(licenceType).SecAuthProtection(secAuthProtection)
+	req := s.client.VolumesApi.DatacentersVolumesCreateSnapshotPost(s.context, datacenterId, volumeId).Snapshot(compute.CreateSnapshot{
+		Properties: &compute.CreateSnapshotProperties{
+			Name:              &name,
+			Description:       &description,
+			LicenceType:       &licenceType,
+			SecAuthProtection: &secAuthProtection,
+		},
+	})
 	if !structs.IsZero(params) {
 		if params.Depth != nil {
 			req = req.Depth(*params.Depth)
@@ -121,7 +128,12 @@ func (s *snapshotsService) Update(snapshotId string, snapshotProp SnapshotProper
 }
 
 func (s *snapshotsService) Restore(datacenterId, volumeId, snapshotId string, params QueryParams) (*Response, error) {
-	req := s.client.VolumesApi.DatacentersVolumesRestoreSnapshotPost(s.context, datacenterId, volumeId).SnapshotId(snapshotId)
+	req := s.client.VolumesApi.DatacentersVolumesRestoreSnapshotPost(s.context, datacenterId, volumeId).RestoreSnapshot(
+		compute.RestoreSnapshot{
+			Properties: &compute.RestoreSnapshotProperties{
+				SnapshotId: &snapshotId,
+			},
+		})
 	resp, err := s.client.VolumesApi.DatacentersVolumesRestoreSnapshotPostExecute(req)
 	return &Response{*resp}, err
 }
