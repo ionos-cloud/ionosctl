@@ -20,7 +20,7 @@ import (
 var (
 	k8sNodepoolLanTest = resources.K8sNodePool{
 		KubernetesNodePool: compute.KubernetesNodePool{
-			Properties: &compute.KubernetesNodePoolProperties{
+			Properties: compute.KubernetesNodePoolProperties{
 				NodeCount:  &testK8sNodePoolLanIntVar,
 				K8sVersion: &testK8sNodePoolLanVar,
 				MaintenanceWindow: &compute.KubernetesMaintenanceWindow{
@@ -46,7 +46,7 @@ var (
 	}
 	test = compute.KubernetesNodePool{
 		Id: &testK8sNodePoolLanVar,
-		Properties: &compute.KubernetesNodePoolProperties{
+		Properties: compute.KubernetesNodePoolProperties{
 			Name: &testK8sNodePoolLanVar,
 			Lans: &[]compute.KubernetesNodePoolLan{testLan, testLan},
 		},
@@ -62,7 +62,7 @@ var (
 	}
 	inputK8sNodepoolLanTestRemoveAll = resources.K8sNodePoolForPut{
 		KubernetesNodePoolForPut: compute.KubernetesNodePoolForPut{
-			Properties: &compute.KubernetesNodePoolPropertiesForPut{
+			Properties: compute.KubernetesNodePoolPropertiesForPut{
 				NodeCount:  &testK8sNodePoolLanIntVar,
 				K8sVersion: &testK8sNodePoolLanVar,
 				MaintenanceWindow: &compute.KubernetesMaintenanceWindow{
@@ -79,7 +79,7 @@ var (
 	}
 	inputK8sNodepoolLanTest = resources.K8sNodePoolForPut{
 		KubernetesNodePoolForPut: compute.KubernetesNodePoolForPut{
-			Properties: &compute.KubernetesNodePoolPropertiesForPut{
+			Properties: compute.KubernetesNodePoolPropertiesForPut{
 				NodeCount:  &testK8sNodePoolLanIntVar,
 				K8sVersion: &testK8sNodePoolLanVar,
 				MaintenanceWindow: &compute.KubernetesMaintenanceWindow{
@@ -111,7 +111,7 @@ var (
 	}
 	inputK8sNodepoolLanTestRemove = resources.K8sNodePoolForPut{
 		KubernetesNodePoolForPut: compute.KubernetesNodePoolForPut{
-			Properties: &compute.KubernetesNodePoolPropertiesForPut{
+			Properties: compute.KubernetesNodePoolPropertiesForPut{
 				NodeCount:  &testK8sNodePoolLanIntVar,
 				K8sVersion: &testK8sNodePoolLanVar,
 				MaintenanceWindow: &compute.KubernetesMaintenanceWindow{
@@ -129,7 +129,7 @@ var (
 	k8sNodepoolLanTestUpdatedRemove = resources.K8sNodePool{
 		KubernetesNodePool: compute.KubernetesNodePool{
 			Id: &testK8sNodePoolLanVar,
-			Properties: &compute.KubernetesNodePoolProperties{
+			Properties: compute.KubernetesNodePoolProperties{
 				NodeCount:  &testK8sNodePoolLanIntVar,
 				K8sVersion: &testK8sNodePoolLanVar,
 				MaintenanceWindow: &compute.KubernetesMaintenanceWindow{
@@ -147,7 +147,7 @@ var (
 	k8sNodepoolLanTestUpdated = resources.K8sNodePool{
 		KubernetesNodePool: compute.KubernetesNodePool{
 			Id: &testK8sNodePoolLanVar,
-			Properties: &compute.KubernetesNodePoolProperties{
+			Properties: compute.KubernetesNodePoolProperties{
 				NodeCount:  &testK8sNodePoolLanIntVar,
 				K8sVersion: &testK8sNodePoolLanVar,
 				MaintenanceWindow: &compute.KubernetesMaintenanceWindow{
@@ -256,7 +256,7 @@ func TestRunK8sNodePoolLanListLansErr(t *testing.T) {
 		rm.CloudApiV6Mocks.K8s.EXPECT().GetNodePool(testK8sNodePoolLanVar, testK8sNodePoolLanVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&resources.K8sNodePool{
 			KubernetesNodePool: compute.KubernetesNodePool{
 				Id:         &testK8sNodePoolLanVar,
-				Properties: &compute.KubernetesNodePoolProperties{},
+				Properties: compute.KubernetesNodePoolProperties{},
 			},
 		}, nil, nil)
 		err := RunK8sNodePoolLanList(cfg)

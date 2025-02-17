@@ -349,7 +349,7 @@ func RunShareCreate(c *core.CommandConfig) error {
 
 	input := resources.GroupShare{
 		GroupShare: compute.GroupShare{
-			Properties: &compute.GroupShareProperties{
+			Properties: compute.GroupShareProperties{
 				EditPrivilege:  &editPrivilege,
 				SharePrivilege: &sharePrivilege,
 			},
@@ -408,7 +408,7 @@ func RunShareUpdate(c *core.CommandConfig) error {
 	properties := getShareUpdateInfo(s, c)
 	newShare := resources.GroupShare{
 		GroupShare: compute.GroupShare{
-			Properties: &properties.GroupShareProperties,
+			Properties: properties.GroupShareProperties,
 		},
 	}
 

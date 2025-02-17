@@ -41,14 +41,14 @@ var (
 			CreatedBy:   &testRequestVar,
 		},
 		Href: &testRequestPathVar,
-		Properties: &compute.RequestProperties{
+		Properties: compute.RequestProperties{
 			Url:    &testRequestVar,
 			Body:   &testRequestVar,
 			Method: &testRequestVar,
 		},
 	}
 	testRequestUpdated = compute.Request{
-		Properties: &compute.RequestProperties{
+		Properties: compute.RequestProperties{
 			Method: &testRequestMethodPut,
 		},
 		Metadata: &compute.RequestMetadata{
@@ -57,7 +57,7 @@ var (
 		},
 	}
 	testRequestUpdatedPatch = compute.Request{
-		Properties: &compute.RequestProperties{
+		Properties: compute.RequestProperties{
 			Method: &testRequestMethodPatch,
 		},
 		Metadata: &compute.RequestMetadata{
@@ -66,7 +66,7 @@ var (
 		},
 	}
 	testRequestDeleted = compute.Request{
-		Properties: &compute.RequestProperties{
+		Properties: compute.RequestProperties{
 			Method: &testRequestMethodDelete,
 		},
 		Metadata: &compute.RequestMetadata{
@@ -75,7 +75,7 @@ var (
 		},
 	}
 	testRequestCreated = compute.Request{
-		Properties: &compute.RequestProperties{
+		Properties: compute.RequestProperties{
 			Method: &testRequestMethodPost,
 		},
 		Metadata: &compute.RequestMetadata{

@@ -530,7 +530,7 @@ func getNewK8sCluster(c *core.CommandConfig) (*resources.K8sClusterForPost, erro
 
 	return &resources.K8sClusterForPost{
 		KubernetesClusterForPost: compute.KubernetesClusterForPost{
-			Properties: &proper.KubernetesClusterPropertiesForPost,
+			Properties: proper.KubernetesClusterPropertiesForPost,
 		},
 	}, nil
 }
@@ -601,7 +601,7 @@ func getK8sClusterInfo(oldUser *resources.K8sCluster, c *core.CommandConfig) res
 
 	return resources.K8sClusterForPut{
 		KubernetesClusterForPut: compute.KubernetesClusterForPut{
-			Properties: &propertiesUpdated.KubernetesClusterPropertiesForPut,
+			Properties: propertiesUpdated.KubernetesClusterPropertiesForPut,
 		},
 	}
 }

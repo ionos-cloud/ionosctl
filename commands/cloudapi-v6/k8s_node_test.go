@@ -21,7 +21,7 @@ import (
 var (
 	nodeTest = resources.K8sNode{
 		KubernetesNode: compute.KubernetesNode{
-			Properties: &compute.KubernetesNodeProperties{
+			Properties: compute.KubernetesNodeProperties{
 				Name:       &testNodeVar,
 				K8sVersion: &testNodeVar,
 				PublicIP:   &testNodeVar,
@@ -32,7 +32,7 @@ var (
 	nodeTestId = resources.K8sNode{
 		KubernetesNode: compute.KubernetesNode{
 			Id: &testNodeVar,
-			Properties: &compute.KubernetesNodeProperties{
+			Properties: compute.KubernetesNodeProperties{
 				Name:       &testNodeVar,
 				K8sVersion: &testNodeVar,
 				PublicIP:   &testNodeVar,

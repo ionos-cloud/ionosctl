@@ -21,7 +21,7 @@ import (
 var (
 	userTest = resources.UserPost{
 		UserPost: compute.UserPost{
-			Properties: &compute.UserPropertiesPost{
+			Properties: compute.UserPropertiesPost{
 				Firstname:     &testUserVar,
 				Lastname:      &testUserVar,
 				Email:         &testUserVar,
@@ -43,7 +43,7 @@ var (
 	userTestGet = resources.User{
 		User: compute.User{
 			Id: &testUserVar,
-			Properties: &compute.UserProperties{
+			Properties: compute.UserProperties{
 				Firstname:         &testUserVar,
 				Lastname:          &testUserVar,
 				Email:             &testUserVar,
@@ -80,12 +80,12 @@ var (
 	}
 	userNew = resources.User{
 		User: compute.User{
-			Properties: &userProperties.UserProperties,
+			Properties: userProperties.UserProperties,
 		},
 	}
 	userNewPut = resources.UserPut{
 		UserPut: compute.UserPut{
-			Properties: &compute.UserPropertiesPut{
+			Properties: compute.UserPropertiesPut{
 				Firstname:     &testUserNewVar,
 				Lastname:      &testUserNewVar,
 				Email:         &testUserNewVar,

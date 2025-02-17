@@ -21,7 +21,7 @@ import (
 var (
 	clusterTestPost = resources.K8sClusterForPost{
 		KubernetesClusterForPost: compute.KubernetesClusterForPost{
-			Properties: &compute.KubernetesClusterPropertiesForPost{
+			Properties: compute.KubernetesClusterPropertiesForPost{
 				Name:       &testClusterVar,
 				K8sVersion: &testClusterVar,
 				S3Buckets: &[]compute.S3Bucket{
@@ -35,7 +35,7 @@ var (
 	}
 	clusterTestPut = resources.K8sClusterForPut{
 		KubernetesClusterForPut: compute.KubernetesClusterForPut{
-			Properties: &compute.KubernetesClusterPropertiesForPut{
+			Properties: compute.KubernetesClusterPropertiesForPut{
 				Name:       &testClusterVar,
 				K8sVersion: &testClusterVar,
 				S3Buckets: &[]compute.S3Bucket{
@@ -49,7 +49,7 @@ var (
 	}
 	clusterNewTestPut = resources.K8sClusterForPut{
 		KubernetesClusterForPut: compute.KubernetesClusterForPut{
-			Properties: &compute.KubernetesClusterPropertiesForPut{
+			Properties: compute.KubernetesClusterPropertiesForPut{
 				Name:       &testClusterNewVar,
 				K8sVersion: &testClusterNewVar,
 				MaintenanceWindow: &compute.KubernetesMaintenanceWindow{
@@ -67,7 +67,7 @@ var (
 	}
 	clusterTest = resources.K8sCluster{
 		KubernetesCluster: compute.KubernetesCluster{
-			Properties: &compute.KubernetesClusterProperties{
+			Properties: compute.KubernetesClusterProperties{
 				Name:       &testClusterVar,
 				K8sVersion: &testClusterVar,
 				S3Buckets: &[]compute.S3Bucket{
@@ -91,7 +91,7 @@ var (
 	clusterTestId = resources.K8sCluster{
 		KubernetesCluster: compute.KubernetesCluster{
 			Id: &testClusterVar,
-			Properties: &compute.KubernetesClusterProperties{
+			Properties: compute.KubernetesClusterProperties{
 				Name:       &testClusterVar,
 				K8sVersion: &testClusterVar,
 				S3Buckets: &[]compute.S3Bucket{
@@ -106,7 +106,7 @@ var (
 	clusterTestGet = resources.K8sCluster{
 		KubernetesCluster: compute.KubernetesCluster{
 			Id: &testClusterVar,
-			Properties: &compute.KubernetesClusterProperties{
+			Properties: compute.KubernetesClusterProperties{
 				Name:                     &testClusterVar,
 				K8sVersion:               &testClusterVar,
 				AvailableUpgradeVersions: &testClusterSliceVar,
@@ -151,7 +151,7 @@ var (
 	}
 	clusterNew = resources.K8sCluster{
 		KubernetesCluster: compute.KubernetesCluster{
-			Properties: &clusterProperties.KubernetesClusterProperties,
+			Properties: clusterProperties.KubernetesClusterProperties,
 		},
 	}
 	testClusterVar      = "test-cluster"

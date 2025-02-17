@@ -21,7 +21,7 @@ import (
 var (
 	testInputAlbForwardingRule = resources.ApplicationLoadBalancerForwardingRule{
 		ApplicationLoadBalancerForwardingRule: compute.ApplicationLoadBalancerForwardingRule{
-			Properties: &compute.ApplicationLoadBalancerForwardingRuleProperties{
+			Properties: compute.ApplicationLoadBalancerForwardingRuleProperties{
 				Name:               &testAlbForwardingRuleVar,
 				Protocol:           &testAlbForwardingRuleProtocol,
 				ListenerIp:         &testAlbForwardingRuleVar,
@@ -51,7 +51,7 @@ var (
 	testAlbForwardingRuleUpdated = resources.ApplicationLoadBalancerForwardingRule{
 		ApplicationLoadBalancerForwardingRule: compute.ApplicationLoadBalancerForwardingRule{
 			Id:         &testAlbForwardingRuleVar,
-			Properties: &testAlbForwardingRulePropertiesNew.ApplicationLoadBalancerForwardingRuleProperties,
+			Properties: testAlbForwardingRulePropertiesNew.ApplicationLoadBalancerForwardingRuleProperties,
 		},
 	}
 	testAlbForwardingRules = resources.ApplicationLoadBalancerForwardingRules{

@@ -21,7 +21,7 @@ import (
 var (
 	groupTest = resources.Group{
 		Group: compute.Group{
-			Properties: &compute.GroupProperties{
+			Properties: compute.GroupProperties{
 				Name:                        &testGroupVar,
 				CreateDataCenter:            &testGroupBoolVar,
 				CreateSnapshot:              &testGroupBoolVar,
@@ -45,7 +45,7 @@ var (
 	groupTestId = resources.Group{
 		Group: compute.Group{
 			Id: &testGroupVar,
-			Properties: &compute.GroupProperties{
+			Properties: compute.GroupProperties{
 				Name:                 &testGroupVar,
 				CreateDataCenter:     &testGroupBoolVar,
 				CreateSnapshot:       &testGroupBoolVar,
@@ -70,7 +70,7 @@ var (
 	}
 	groupTestNew = resources.Group{
 		Group: compute.Group{
-			Properties: &compute.GroupProperties{
+			Properties: compute.GroupProperties{
 				Name:                        &testGroupNewVar,
 				CreateDataCenter:            &testGroupBoolNewVar,
 				CreateSnapshot:              &testGroupBoolNewVar,

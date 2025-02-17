@@ -375,7 +375,7 @@ func RunNetworkLoadBalancerForwardingRuleCreate(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNetworkLoadBalancerId)),
 		resources.NetworkLoadBalancerForwardingRule{
 			NetworkLoadBalancerForwardingRule: compute.NetworkLoadBalancerForwardingRule{
-				Properties: &proper.NetworkLoadBalancerForwardingRuleProperties,
+				Properties: proper.NetworkLoadBalancerForwardingRuleProperties,
 			},
 		},
 		queryParams,

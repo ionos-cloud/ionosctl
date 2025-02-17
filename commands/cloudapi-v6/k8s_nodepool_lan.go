@@ -342,7 +342,7 @@ func RemoveAllK8sNodePoolsLans(c *core.CommandConfig) error {
 	propertiesUpdated.SetLans(newLans)
 	k8sNodePoolUpdated := resources.K8sNodePoolForPut{
 		KubernetesNodePoolForPut: compute.KubernetesNodePoolForPut{
-			Properties: &propertiesUpdated.KubernetesNodePoolPropertiesForPut,
+			Properties: propertiesUpdated.KubernetesNodePoolPropertiesForPut,
 		},
 	}
 
@@ -428,7 +428,7 @@ func getNewK8sNodePoolLanInfo(c *core.CommandConfig, oldNg *resources.K8sNodePoo
 
 	return resources.K8sNodePoolForPut{
 		KubernetesNodePoolForPut: compute.KubernetesNodePoolForPut{
-			Properties: &propertiesUpdated.KubernetesNodePoolPropertiesForPut,
+			Properties: propertiesUpdated.KubernetesNodePoolPropertiesForPut,
 		},
 	}
 }
@@ -475,7 +475,7 @@ func removeK8sNodePoolLanInfo(c *core.CommandConfig, oldNg *resources.K8sNodePoo
 
 	return resources.K8sNodePoolForPut{
 		KubernetesNodePoolForPut: compute.KubernetesNodePoolForPut{
-			Properties: &propertiesUpdated.KubernetesNodePoolPropertiesForPut,
+			Properties: propertiesUpdated.KubernetesNodePoolPropertiesForPut,
 		},
 	}
 }

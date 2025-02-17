@@ -371,7 +371,7 @@ func RunNatGatewayRuleCreate(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNatGatewayId)),
 		resources.NatGatewayRule{
 			NatGatewayRule: compute.NatGatewayRule{
-				Properties: &proper.NatGatewayRuleProperties,
+				Properties: proper.NatGatewayRuleProperties,
 			},
 		},
 		queryParams,

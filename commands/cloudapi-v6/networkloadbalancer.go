@@ -391,7 +391,7 @@ func RunNetworkLoadBalancerCreate(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		resources.NetworkLoadBalancer{
 			NetworkLoadBalancer: compute.NetworkLoadBalancer{
-				Properties: &proper.NetworkLoadBalancerProperties,
+				Properties: proper.NetworkLoadBalancerProperties,
 			},
 		},
 		queryParams,

@@ -330,7 +330,7 @@ func RunFlowLogCreate(c *core.CommandConfig) error {
 	properties := getFlowLogPropertiesSet(c)
 	input := resources.FlowLog{
 		FlowLog: compute.FlowLog{
-			Properties: &properties.FlowLogProperties,
+			Properties: properties.FlowLogProperties,
 		},
 	}
 

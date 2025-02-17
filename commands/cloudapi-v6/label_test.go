@@ -20,7 +20,7 @@ import (
 var (
 	testLabel = compute.Label{
 		Id: &testLabelVar,
-		Properties: &compute.LabelProperties{
+		Properties: compute.LabelProperties{
 			Key:          &testLabelVar,
 			Value:        &testLabelVar,
 			ResourceId:   &testLabelVar,

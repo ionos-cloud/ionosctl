@@ -43,7 +43,7 @@ var (
 	}
 	testContract = resources.Contract{
 		Contract: compute.Contract{
-			Properties: &compute.ContractProperties{
+			Properties: compute.ContractProperties{
 				ContractNumber: &testContractInt64,
 				Owner:          &testContractVar,
 				Status:         &testContractVar,

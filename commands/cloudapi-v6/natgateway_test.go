@@ -21,7 +21,7 @@ import (
 var (
 	natgatewayTest = resources.NatGateway{
 		NatGateway: compute.NatGateway{
-			Properties: &compute.NatGatewayProperties{
+			Properties: compute.NatGatewayProperties{
 				Name:      &testNatGatewayVar,
 				PublicIps: &[]string{testNatGatewayVar},
 			},
@@ -30,7 +30,7 @@ var (
 	natgatewayTestId = resources.NatGateway{
 		NatGateway: compute.NatGateway{
 			Id: &testNatGatewayVar,
-			Properties: &compute.NatGatewayProperties{
+			Properties: compute.NatGatewayProperties{
 				Name:      &testNatGatewayVar,
 				PublicIps: &[]string{testNatGatewayVar},
 			},
@@ -66,7 +66,7 @@ var (
 	}
 	natgatewayNew = resources.NatGateway{
 		NatGateway: compute.NatGateway{
-			Properties: &natgatewayProperties.NatGatewayProperties,
+			Properties: natgatewayProperties.NatGatewayProperties,
 		},
 	}
 	testNatGatewayVar    = "test-natgateway"

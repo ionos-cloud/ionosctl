@@ -23,7 +23,7 @@ var (
 	testImage = resources.Image{
 		Image: compute.Image{
 			Id: &testImageVar,
-			Properties: &compute.ImageProperties{
+			Properties: compute.ImageProperties{
 				Name:         &testImageVar,
 				Location:     &testImageVar,
 				Description:  &testImageVar,

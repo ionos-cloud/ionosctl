@@ -24,7 +24,7 @@ var (
 	zoneVolume    = "ZONE_1"
 	v             = compute.Volume{
 		Id: &testVolumeVar,
-		Properties: &compute.VolumeProperties{
+		Properties: compute.VolumeProperties{
 			Name:                &testVolumeVar,
 			Size:                &sizeVolume,
 			LicenceType:         &testVolumeVar,
@@ -51,7 +51,7 @@ var (
 	}
 	serverVolume = compute.Volume{
 		Id: &testServerVar,
-		Properties: &compute.VolumeProperties{
+		Properties: compute.VolumeProperties{
 			Name:                &testVolumeVar,
 			Size:                &sizeVolume,
 			LicenceType:         &testVolumeVar,
@@ -76,7 +76,7 @@ var (
 	}
 	testVolume = resources.Volume{
 		Volume: compute.Volume{
-			Properties: &compute.VolumeProperties{
+			Properties: compute.VolumeProperties{
 				Name:                &testVolumeVar,
 				Size:                &sizeVolume,
 				LicenceType:         &testVolumeVar,
@@ -96,7 +96,7 @@ var (
 	}
 	testVolumeImg = resources.Volume{
 		Volume: compute.Volume{
-			Properties: &compute.VolumeProperties{
+			Properties: compute.VolumeProperties{
 				Name:                &testVolumeVar,
 				Size:                &sizeVolume,
 				Image:               &testVolumeVar,
@@ -153,7 +153,7 @@ var (
 	volumeNew = resources.Volume{
 		Volume: compute.Volume{
 			Id: &testVolumeVar,
-			Properties: &compute.VolumeProperties{
+			Properties: compute.VolumeProperties{
 				Name:                volumeProperties.VolumeProperties.Name,
 				Size:                volumeProperties.VolumeProperties.Size,
 				LicenceType:         &testVolumeVar,

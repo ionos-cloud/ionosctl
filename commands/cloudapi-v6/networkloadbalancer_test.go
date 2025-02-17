@@ -21,7 +21,7 @@ import (
 var (
 	networkloadbalancerTest = resources.NetworkLoadBalancer{
 		NetworkLoadBalancer: compute.NetworkLoadBalancer{
-			Properties: &compute.NetworkLoadBalancerProperties{
+			Properties: compute.NetworkLoadBalancerProperties{
 				Name:         &testNetworkLoadBalancerVar,
 				Ips:          &[]string{testNetworkLoadBalancerVar},
 				TargetLan:    &testNetworkLoadBalancerIntVar,
@@ -33,7 +33,7 @@ var (
 	networkloadbalancerTestId = resources.NetworkLoadBalancer{
 		NetworkLoadBalancer: compute.NetworkLoadBalancer{
 			Id: &testNetworkLoadBalancerVar,
-			Properties: &compute.NetworkLoadBalancerProperties{
+			Properties: compute.NetworkLoadBalancerProperties{
 				Name:         &testNetworkLoadBalancerVar,
 				Ips:          &[]string{testNetworkLoadBalancerVar},
 				TargetLan:    &testNetworkLoadBalancerIntVar,
@@ -75,7 +75,7 @@ var (
 	}
 	networkloadbalancerNew = resources.NetworkLoadBalancer{
 		NetworkLoadBalancer: compute.NetworkLoadBalancer{
-			Properties: &networkloadbalancerProperties.NetworkLoadBalancerProperties,
+			Properties: networkloadbalancerProperties.NetworkLoadBalancerProperties,
 		},
 	}
 	testNetworkLoadBalancerIntVar    = int32(1)

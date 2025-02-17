@@ -21,7 +21,7 @@ import (
 var (
 	pccTest = resources.PrivateCrossConnect{
 		PrivateCrossConnect: compute.PrivateCrossConnect{
-			Properties: &compute.PrivateCrossConnectProperties{
+			Properties: compute.PrivateCrossConnectProperties{
 				Name:        &testPccVar,
 				Description: &testPccVar,
 			},
@@ -30,7 +30,7 @@ var (
 	pccTestId = resources.PrivateCrossConnect{
 		PrivateCrossConnect: compute.PrivateCrossConnect{
 			Id: &testPccVar,
-			Properties: &compute.PrivateCrossConnectProperties{
+			Properties: compute.PrivateCrossConnectProperties{
 				Name:        &testPccVar,
 				Description: &testPccVar,
 			},
@@ -75,7 +75,7 @@ var (
 	}
 	pccNew = resources.PrivateCrossConnect{
 		PrivateCrossConnect: compute.PrivateCrossConnect{
-			Properties: &pccProperties.PrivateCrossConnectProperties,
+			Properties: pccProperties.PrivateCrossConnectProperties,
 		},
 	}
 	testPccVar    = "test-pcc"

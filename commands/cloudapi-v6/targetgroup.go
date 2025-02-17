@@ -551,7 +551,7 @@ func getTargetGroupNew(c *core.CommandConfig) resources.TargetGroup {
 
 	return resources.TargetGroup{
 		TargetGroup: compute.TargetGroup{
-			Properties: &input.TargetGroupProperties,
+			Properties: input.TargetGroupProperties,
 		},
 	}
 }

@@ -21,7 +21,7 @@ import (
 var (
 	testIpBlock = compute.IpBlock{
 		Id: &testIpBlockVar,
-		Properties: &compute.IpBlockProperties{
+		Properties: compute.IpBlockProperties{
 			Location: &testIpBlockLocation,
 			Size:     &testIpBlockSize,
 			Name:     &testIpBlockVar,
@@ -67,7 +67,7 @@ var (
 	newTestIpBlock = resources.IpBlock{
 		IpBlock: compute.IpBlock{
 			Id:         &testIpBlockVar,
-			Properties: &newTestIpBlockProperties.IpBlockProperties,
+			Properties: newTestIpBlockProperties.IpBlockProperties,
 		},
 	}
 	resTestIpBlock      = resources.IpBlock{IpBlock: testIpBlock}

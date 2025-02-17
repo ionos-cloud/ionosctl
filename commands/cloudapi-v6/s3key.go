@@ -309,7 +309,7 @@ func RunUserS3KeyUpdate(c *core.CommandConfig) error {
 
 	newKey := resources.S3Key{
 		S3Key: compute.S3Key{
-			Properties: &compute.S3KeyProperties{
+			Properties: compute.S3KeyProperties{
 				Active: &active,
 			},
 		},

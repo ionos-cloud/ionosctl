@@ -20,7 +20,7 @@ import (
 var (
 	shareTest = resources.GroupShare{
 		GroupShare: compute.GroupShare{
-			Properties: &compute.GroupShareProperties{
+			Properties: compute.GroupShareProperties{
 				EditPrivilege:  &testShareBoolVar,
 				SharePrivilege: &testShareBoolVar,
 			},
@@ -29,7 +29,7 @@ var (
 	shareTestGet = resources.GroupShare{
 		GroupShare: compute.GroupShare{
 			Id: &testShareVar,
-			Properties: &compute.GroupShareProperties{
+			Properties: compute.GroupShareProperties{
 				EditPrivilege:  &testShareBoolVar,
 				SharePrivilege: &testShareBoolVar,
 			},
@@ -45,7 +45,7 @@ var (
 	shareTestId = resources.GroupShare{
 		GroupShare: compute.GroupShare{
 			Id: &testShareVar,
-			Properties: &compute.GroupShareProperties{
+			Properties: compute.GroupShareProperties{
 				EditPrivilege:  &testShareBoolVar,
 				SharePrivilege: &testShareBoolVar,
 			},
@@ -69,7 +69,7 @@ var (
 	}
 	shareNew = resources.GroupShare{
 		GroupShare: compute.GroupShare{
-			Properties: &shareProperties.GroupShareProperties,
+			Properties: shareProperties.GroupShareProperties,
 		},
 	}
 	testShareBoolVar    = false

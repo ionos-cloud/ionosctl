@@ -748,7 +748,7 @@ func getNewK8sNodePool(c *core.CommandConfig) (*resources.K8sNodePoolForPost, er
 
 	return &resources.K8sNodePoolForPost{
 		KubernetesNodePoolForPost: compute.KubernetesNodePoolForPost{
-			Properties: &nodePoolProperties,
+			Properties: nodePoolProperties,
 		},
 	}, nil
 }
@@ -896,7 +896,7 @@ func getNewK8sNodePoolUpdated(oldNodePool *resources.K8sNodePool, c *core.Comman
 
 	return resources.K8sNodePoolForPut{
 		KubernetesNodePoolForPut: compute.KubernetesNodePoolForPut{
-			Properties: &propertiesUpdated.KubernetesNodePoolPropertiesForPut,
+			Properties: propertiesUpdated.KubernetesNodePoolPropertiesForPut,
 		},
 	}
 }

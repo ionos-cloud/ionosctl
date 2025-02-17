@@ -20,7 +20,7 @@ import (
 var (
 	testIpConsumer = compute.IpBlock{
 		Id: &testIpConsumerVar,
-		Properties: &compute.IpBlockProperties{
+		Properties: compute.IpBlockProperties{
 			IpConsumers: &[]compute.IpConsumer{
 				{
 					Ip:              &testIpConsumerVar,
@@ -41,7 +41,7 @@ var (
 	}
 	testIpConsumerGet = compute.IpBlock{
 		Id: &testIpConsumerVar,
-		Properties: &compute.IpBlockProperties{
+		Properties: compute.IpBlockProperties{
 			Name: &testIpConsumerVar,
 		},
 	}

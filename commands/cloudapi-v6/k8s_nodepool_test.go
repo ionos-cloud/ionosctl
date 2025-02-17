@@ -21,7 +21,7 @@ import (
 var (
 	nodepoolTestPost = resources.K8sNodePoolForPost{
 		KubernetesNodePoolForPost: compute.KubernetesNodePoolForPost{
-			Properties: &compute.KubernetesNodePoolPropertiesForPost{
+			Properties: compute.KubernetesNodePoolPropertiesForPost{
 				Name:             &testNodepoolVar,
 				NodeCount:        &testNodepoolIntVar,
 				DatacenterId:     &testNodepoolVar,
@@ -45,7 +45,7 @@ var (
 	}
 	nodepoolTestPrivatePost = resources.K8sNodePoolForPost{
 		KubernetesNodePoolForPost: compute.KubernetesNodePoolForPost{
-			Properties: &compute.KubernetesNodePoolPropertiesForPost{
+			Properties: compute.KubernetesNodePoolPropertiesForPost{
 				Name:             &testNodepoolVar,
 				NodeCount:        &testNodepoolIntVar,
 				DatacenterId:     &testNodepoolVar,
@@ -61,7 +61,7 @@ var (
 	}
 	nodepoolTest = resources.K8sNodePool{
 		KubernetesNodePool: compute.KubernetesNodePool{
-			Properties: &compute.KubernetesNodePoolProperties{
+			Properties: compute.KubernetesNodePoolProperties{
 				Name:             &testNodepoolVar,
 				NodeCount:        &testNodepoolIntVar,
 				DatacenterId:     &testNodepoolVar,
@@ -85,7 +85,7 @@ var (
 	}
 	nodepoolTestPrivate = resources.K8sNodePool{
 		KubernetesNodePool: compute.KubernetesNodePool{
-			Properties: &compute.KubernetesNodePoolProperties{
+			Properties: compute.KubernetesNodePoolProperties{
 				Name:             &testNodepoolVar,
 				NodeCount:        &testNodepoolIntVar,
 				DatacenterId:     &testNodepoolVar,
@@ -111,7 +111,7 @@ var (
 	nodepoolTestId = resources.K8sNodePool{
 		KubernetesNodePool: compute.KubernetesNodePool{
 			Id: &testNodepoolVar,
-			Properties: &compute.KubernetesNodePoolProperties{
+			Properties: compute.KubernetesNodePoolProperties{
 				Name:             &testNodepoolVar,
 				NodeCount:        &testNodepoolIntVar,
 				DatacenterId:     &testNodepoolVar,
@@ -137,7 +137,7 @@ var (
 	nodepoolTestGet = resources.K8sNodePool{
 		KubernetesNodePool: compute.KubernetesNodePool{
 			Id: &testNodepoolVar,
-			Properties: &compute.KubernetesNodePoolProperties{
+			Properties: compute.KubernetesNodePoolProperties{
 				Name:                     &testNodepoolVar,
 				NodeCount:                &testNodepoolIntVar,
 				DatacenterId:             &testNodepoolVar,
@@ -173,7 +173,7 @@ var (
 	nodepoolTestGetNew = resources.K8sNodePool{
 		KubernetesNodePool: compute.KubernetesNodePool{
 			Id: &testNodepoolVar,
-			Properties: &compute.KubernetesNodePoolProperties{
+			Properties: compute.KubernetesNodePoolProperties{
 				Name:                     &testNodepoolVar,
 				NodeCount:                &testNodepoolIntVar,
 				DatacenterId:             &testNodepoolVar,
@@ -219,7 +219,7 @@ var (
 	nodepoolTestNew = resources.K8sNodePool{
 		KubernetesNodePool: compute.KubernetesNodePool{
 			Id: &testNodepoolVar,
-			Properties: &compute.KubernetesNodePoolProperties{
+			Properties: compute.KubernetesNodePoolProperties{
 				Name:       &testNodepoolVar,
 				K8sVersion: &testNodepoolNewVar,
 				NodeCount:  &testNodepoolIntNewVar,
@@ -249,7 +249,7 @@ var (
 	}
 	nodepoolTestUpdateNew = resources.K8sNodePoolForPut{
 		KubernetesNodePoolForPut: compute.KubernetesNodePoolForPut{
-			Properties: &compute.KubernetesNodePoolPropertiesForPut{
+			Properties: compute.KubernetesNodePoolPropertiesForPut{
 				K8sVersion: &testNodepoolNewVar,
 				NodeCount:  &testNodepoolIntNewVar,
 				AutoScaling: &compute.KubernetesAutoScaling{
@@ -279,7 +279,7 @@ var (
 	nodepoolTestOld = resources.K8sNodePool{
 		KubernetesNodePool: compute.KubernetesNodePool{
 			Id: &testNodepoolVar,
-			Properties: &compute.KubernetesNodePoolProperties{
+			Properties: compute.KubernetesNodePoolProperties{
 				Name:       &testNodepoolVar,
 				NodeCount:  &testNodepoolIntVar,
 				K8sVersion: &testNodepoolVar,
@@ -288,7 +288,7 @@ var (
 	}
 	nodepoolTestUpdateOld = resources.K8sNodePoolForPut{
 		KubernetesNodePoolForPut: compute.KubernetesNodePoolForPut{
-			Properties: &compute.KubernetesNodePoolPropertiesForPut{
+			Properties: compute.KubernetesNodePoolPropertiesForPut{
 				NodeCount:  &testNodepoolIntVar,
 				K8sVersion: &testNodepoolVar,
 			},

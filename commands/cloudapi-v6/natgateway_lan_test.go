@@ -20,7 +20,7 @@ import (
 var (
 	natgatewayLanTest = resources.NatGateway{
 		NatGateway: compute.NatGateway{
-			Properties: &compute.NatGatewayProperties{
+			Properties: compute.NatGatewayProperties{
 				Name:      &testNatGatewayLanVar,
 				PublicIps: &[]string{testNatGatewayLanVar},
 				Lans:      &[]compute.NatGatewayLanProperties{natgatewayLanProperties.NatGatewayLanProperties},
@@ -36,7 +36,7 @@ var (
 	natgatewayLanTestUpdated = resources.NatGateway{
 		NatGateway: compute.NatGateway{
 			Id: &testNatGatewayLanVar,
-			Properties: &compute.NatGatewayProperties{
+			Properties: compute.NatGatewayProperties{
 				Name:      &testNatGatewayLanVar,
 				PublicIps: &[]string{testNatGatewayLanVar},
 				Lans:      &[]compute.NatGatewayLanProperties{natgatewayLanProperties.NatGatewayLanProperties},

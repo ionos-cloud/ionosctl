@@ -21,7 +21,7 @@ import (
 var (
 	backupUnitTest = resources.BackupUnit{
 		BackupUnit: compute.BackupUnit{
-			Properties: &compute.BackupUnitProperties{
+			Properties: compute.BackupUnitProperties{
 				Email:    &testBackupUnitVar,
 				Name:     &testBackupUnitVar,
 				Password: &testBackupUnitVar,
@@ -31,7 +31,7 @@ var (
 	backupUnitTestId = resources.BackupUnit{
 		BackupUnit: compute.BackupUnit{
 			Id: &testBackUnitId,
-			Properties: &compute.BackupUnitProperties{
+			Properties: compute.BackupUnitProperties{
 				Email:    &testBackupUnitVar,
 				Name:     &testBackupUnitVar,
 				Password: &testBackupUnitVar,
@@ -73,7 +73,7 @@ var (
 	}
 	backupUnitNew = resources.BackupUnit{
 		BackupUnit: compute.BackupUnit{
-			Properties: &compute.BackupUnitProperties{
+			Properties: compute.BackupUnitProperties{
 				Name:     &testBackupUnitVar,
 				Email:    &testBackupUnitNewVar,
 				Password: &testBackupUnitNewVar,

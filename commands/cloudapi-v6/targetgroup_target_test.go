@@ -34,13 +34,13 @@ var (
 	testTargetGroupTargetGet = resources.TargetGroup{
 		TargetGroup: compute.TargetGroup{
 			Id:         &testTargetGroupTargetVar,
-			Properties: &compute.TargetGroupProperties{},
+			Properties: compute.TargetGroupProperties{},
 		},
 	}
 	testTargetGroupTargetGetUpdated = resources.TargetGroup{
 		TargetGroup: compute.TargetGroup{
 			Id:         &testTargetGroupTargetVar,
-			Properties: &testTargetGroupTargetProperties.TargetGroupProperties,
+			Properties: testTargetGroupTargetProperties.TargetGroupProperties,
 		},
 	}
 	testTargetGroupTargetIntVar  = int32(1)

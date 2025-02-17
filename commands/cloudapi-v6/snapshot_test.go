@@ -22,7 +22,7 @@ var (
 	snapshotTest = resources.Snapshot{
 		Snapshot: compute.Snapshot{
 			Id: &testSnapshotVar,
-			Properties: &compute.SnapshotProperties{
+			Properties: compute.SnapshotProperties{
 				Name:        &testSnapshotVar,
 				Location:    &testSnapshotVar,
 				Description: &testSnapshotVar,
@@ -71,7 +71,7 @@ var (
 	snapshotNew = resources.Snapshot{
 		Snapshot: compute.Snapshot{
 			Id:         &testSnapshotVar,
-			Properties: &snapshotProperties.SnapshotProperties,
+			Properties: snapshotProperties.SnapshotProperties,
 		},
 	}
 	testSnapshotBoolVar = false

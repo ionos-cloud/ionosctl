@@ -22,7 +22,7 @@ var (
 	publicLan    = true
 	publicNewLan = false
 	lanPostTest  = compute.LanPost{
-		Properties: &compute.LanPropertiesPost{
+		Properties: compute.LanPropertiesPost{
 			Name:       &testLanVar,
 			IpFailover: nil,
 			Pcc:        &testLanVar,
@@ -36,7 +36,7 @@ var (
 	}
 	l = compute.Lan{
 		Id: &testLanVar,
-		Properties: &compute.LanProperties{
+		Properties: compute.LanProperties{
 			Name: &testLanVar,
 			Pcc:  &testLanVar,
 		},
@@ -51,7 +51,7 @@ var (
 	lanNew = resources.Lan{
 		Lan: compute.Lan{
 			Id: &testLanVar,
-			Properties: &compute.LanProperties{
+			Properties: compute.LanProperties{
 				Name:       lanProperties.LanProperties.Name,
 				Public:     lanProperties.LanProperties.Public,
 				IpFailover: nil,

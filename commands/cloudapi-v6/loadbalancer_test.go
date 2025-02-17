@@ -23,7 +23,7 @@ var (
 	dhcpLoadbalancerNew = false
 	loadb               = compute.Loadbalancer{
 		Id: &testLoadbalancerVar,
-		Properties: &compute.LoadbalancerProperties{
+		Properties: compute.LoadbalancerProperties{
 			Name: &testLoadbalancerVar,
 			Dhcp: &dhcpLoadbalancer,
 			Ip:   &testLoadbalancerVar,
@@ -54,7 +54,7 @@ var (
 	loadbalancerNew = resources.Loadbalancer{
 		Loadbalancer: compute.Loadbalancer{
 			Id:         &testLoadbalancerVar,
-			Properties: &loadbalancerProperties.LoadbalancerProperties,
+			Properties: loadbalancerProperties.LoadbalancerProperties,
 			Metadata:   &compute.DatacenterElementMetadata{State: &testStateVar},
 		},
 	}

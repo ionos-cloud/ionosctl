@@ -23,7 +23,7 @@ var (
 	testFlowLog = resources.FlowLog{
 		FlowLog: compute.FlowLog{
 			Id: &testFlowLogVar,
-			Properties: &compute.FlowLogProperties{
+			Properties: compute.FlowLogProperties{
 				Name:      &testFlowLogVar,
 				Action:    &testFlowLogUpperVar,
 				Direction: &testFlowLogUpperVar,
@@ -50,7 +50,7 @@ var (
 	}
 	testFlowLogUpdated = resources.FlowLog{
 		FlowLog: compute.FlowLog{
-			Properties: &testFlowLogProperties.FlowLogProperties,
+			Properties: testFlowLogProperties.FlowLogProperties,
 		},
 	}
 	testFlowLogProperties = resources.FlowLogProperties{

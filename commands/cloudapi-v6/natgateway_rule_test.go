@@ -21,7 +21,7 @@ import (
 var (
 	natgatewayRuleTest = resources.NatGatewayRule{
 		NatGatewayRule: compute.NatGatewayRule{
-			Properties: &compute.NatGatewayRuleProperties{
+			Properties: compute.NatGatewayRuleProperties{
 				Name:         &testNatGatewayRuleVar,
 				PublicIp:     &testNatGatewayRuleVar,
 				Protocol:     &testNatGatewayRuleProtocol,
@@ -72,7 +72,7 @@ var (
 	natgatewayRuleNew = resources.NatGatewayRule{
 		NatGatewayRule: compute.NatGatewayRule{
 			Id:         &testNatGatewayRuleVar,
-			Properties: &natgatewayRuleProperties.NatGatewayRuleProperties,
+			Properties: natgatewayRuleProperties.NatGatewayRuleProperties,
 		},
 	}
 	testNatGatewayRuleIntVar      = int32(10000)

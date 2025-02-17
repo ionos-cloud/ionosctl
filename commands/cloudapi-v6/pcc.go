@@ -279,7 +279,7 @@ func RunPccCreate(c *core.CommandConfig) error {
 
 	newUser := resources.PrivateCrossConnect{
 		PrivateCrossConnect: compute.PrivateCrossConnect{
-			Properties: &compute.PrivateCrossConnectProperties{
+			Properties: compute.PrivateCrossConnectProperties{
 				Name:        &name,
 				Description: &description,
 			},

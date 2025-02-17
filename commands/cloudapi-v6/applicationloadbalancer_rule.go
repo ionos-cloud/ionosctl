@@ -385,7 +385,7 @@ func RunApplicationLoadBalancerForwardingRuleCreate(c *core.CommandConfig) error
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
 		resources.ApplicationLoadBalancerForwardingRule{
 			ApplicationLoadBalancerForwardingRule: compute.ApplicationLoadBalancerForwardingRule{
-				Properties: &proper.ApplicationLoadBalancerForwardingRuleProperties,
+				Properties: proper.ApplicationLoadBalancerForwardingRuleProperties,
 			},
 		},
 		queryParams,

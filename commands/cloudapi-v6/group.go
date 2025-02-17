@@ -305,7 +305,7 @@ func RunGroupCreate(c *core.CommandConfig) error {
 
 	newGroup := resources.Group{
 		Group: compute.Group{
-			Properties: &properties.GroupProperties,
+			Properties: properties.GroupProperties,
 		},
 	}
 	u, resp, err := c.CloudApiV6Services.Groups().Create(newGroup, queryParams)
@@ -347,7 +347,7 @@ func RunGroupUpdate(c *core.CommandConfig) error {
 	properties := getGroupUpdateInfo(u, c)
 	newGroup := resources.Group{
 		Group: compute.Group{
-			Properties: &properties.GroupProperties,
+			Properties: properties.GroupProperties,
 		},
 	}
 	groupUpd, resp, err := c.CloudApiV6Services.Groups().Update(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)), newGroup, queryParams)

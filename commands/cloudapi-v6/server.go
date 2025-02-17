@@ -1294,7 +1294,7 @@ func getNewServer(c *core.CommandConfig) (*resources.Server, error) {
 
 	return &resources.Server{
 		Server: compute.Server{
-			Properties: &input.ServerProperties,
+			Properties: input.ServerProperties,
 		},
 	}, nil
 }
@@ -1341,7 +1341,7 @@ func getNewDAS(c *core.CommandConfig) (*resources.Volume, error) {
 
 	return &resources.Volume{
 		Volume: compute.Volume{
-			Properties: &volumeProper.VolumeProperties,
+			Properties: volumeProper.VolumeProperties,
 		},
 	}, nil
 }

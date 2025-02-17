@@ -285,7 +285,7 @@ func RunUserCreate(c *core.CommandConfig) error {
 
 	newUser := resources.UserPost{
 		UserPost: compute.UserPost{
-			Properties: &compute.UserPropertiesPost{
+			Properties: compute.UserPropertiesPost{
 				Firstname:     &firstname,
 				Lastname:      &lastname,
 				Email:         &email,
@@ -470,7 +470,7 @@ func getUserInfo(oldUser *resources.User, c *core.CommandConfig) *resources.User
 
 	return &resources.UserPut{
 		UserPut: compute.UserPut{
-			Properties: &userPropertiesPut,
+			Properties: userPropertiesPut,
 		},
 	}
 }

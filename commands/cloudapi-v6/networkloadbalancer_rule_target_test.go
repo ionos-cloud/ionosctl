@@ -37,13 +37,13 @@ var (
 	testNlbRuleTargetGet = resources.NetworkLoadBalancerForwardingRule{
 		NetworkLoadBalancerForwardingRule: compute.NetworkLoadBalancerForwardingRule{
 			Id:         &testNlbRuleTargetVar,
-			Properties: &compute.NetworkLoadBalancerForwardingRuleProperties{},
+			Properties: compute.NetworkLoadBalancerForwardingRuleProperties{},
 		},
 	}
 	testNlbRuleTargetGetUpdated = resources.NetworkLoadBalancerForwardingRule{
 		NetworkLoadBalancerForwardingRule: compute.NetworkLoadBalancerForwardingRule{
 			Id:         &testNlbRuleTargetVar,
-			Properties: &testRuleTargetProperties.NetworkLoadBalancerForwardingRuleProperties,
+			Properties: testRuleTargetProperties.NetworkLoadBalancerForwardingRuleProperties,
 		},
 	}
 	testTarget = compute.NetworkLoadBalancerForwardingRuleTarget{
@@ -52,7 +52,7 @@ var (
 	}
 	testNlbRuleTarget = compute.NetworkLoadBalancerForwardingRule{
 		Id: &testNlbRuleTargetVar,
-		Properties: &compute.NetworkLoadBalancerForwardingRuleProperties{
+		Properties: compute.NetworkLoadBalancerForwardingRuleProperties{
 			Name:    &testNlbRuleTargetVar,
 			Targets: &[]compute.NetworkLoadBalancerForwardingRuleTarget{testTarget, testTarget},
 		},

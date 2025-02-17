@@ -82,25 +82,25 @@ var (
 	testAlbRuleHttpRuleGet = resources.ApplicationLoadBalancerForwardingRule{
 		ApplicationLoadBalancerForwardingRule: compute.ApplicationLoadBalancerForwardingRule{
 			Id:         &testAlbRuleHttpRuleVar,
-			Properties: &compute.ApplicationLoadBalancerForwardingRuleProperties{},
+			Properties: compute.ApplicationLoadBalancerForwardingRuleProperties{},
 		},
 	}
 	testAlbRuleHttpRuleForwardGetUpdated = resources.ApplicationLoadBalancerForwardingRule{
 		ApplicationLoadBalancerForwardingRule: compute.ApplicationLoadBalancerForwardingRule{
 			Id:         &testAlbRuleHttpRuleVar,
-			Properties: &testAlbRuleHttpRuleForwardProperties.ApplicationLoadBalancerForwardingRuleProperties,
+			Properties: testAlbRuleHttpRuleForwardProperties.ApplicationLoadBalancerForwardingRuleProperties,
 		},
 	}
 	testAlbRuleHttpRuleStaticGetUpdated = resources.ApplicationLoadBalancerForwardingRule{
 		ApplicationLoadBalancerForwardingRule: compute.ApplicationLoadBalancerForwardingRule{
 			Id:         &testAlbRuleHttpRuleVar,
-			Properties: &testAlbRuleHttpRuleStaticProperties.ApplicationLoadBalancerForwardingRuleProperties,
+			Properties: testAlbRuleHttpRuleStaticProperties.ApplicationLoadBalancerForwardingRuleProperties,
 		},
 	}
 	testAlbRuleHttpRuleRedirectGetUpdated = resources.ApplicationLoadBalancerForwardingRule{
 		ApplicationLoadBalancerForwardingRule: compute.ApplicationLoadBalancerForwardingRule{
 			Id:         &testAlbRuleHttpRuleVar,
-			Properties: &testAlbRuleHttpRuleRedirectProperties.ApplicationLoadBalancerForwardingRuleProperties,
+			Properties: testAlbRuleHttpRuleRedirectProperties.ApplicationLoadBalancerForwardingRuleProperties,
 		},
 	}
 	testAlbRuleHttpRuleIntVar          = int32(1)

@@ -21,7 +21,7 @@ import (
 var (
 	testInputForwardingRule = resources.NetworkLoadBalancerForwardingRule{
 		NetworkLoadBalancerForwardingRule: compute.NetworkLoadBalancerForwardingRule{
-			Properties: &compute.NetworkLoadBalancerForwardingRuleProperties{
+			Properties: compute.NetworkLoadBalancerForwardingRuleProperties{
 				Name:         &testNlbForwardingRuleVar,
 				Algorithm:    &testNlbForwardingRuleAlgorithm,
 				Protocol:     &testNlbForwardingRuleProtocol,
@@ -60,7 +60,7 @@ var (
 	testNlbForwardingRuleUpdated = resources.NetworkLoadBalancerForwardingRule{
 		NetworkLoadBalancerForwardingRule: compute.NetworkLoadBalancerForwardingRule{
 			Id:         &testNlbForwardingRuleVar,
-			Properties: &testNlbForwardingRulePropertiesNew.NetworkLoadBalancerForwardingRuleProperties,
+			Properties: testNlbForwardingRulePropertiesNew.NetworkLoadBalancerForwardingRuleProperties,
 		},
 	}
 	testNlbForwardingRules = resources.NetworkLoadBalancerForwardingRules{

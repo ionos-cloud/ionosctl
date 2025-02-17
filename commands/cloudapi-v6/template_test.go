@@ -22,7 +22,7 @@ var (
 	tpl = resources.Template{
 		Template: compute.Template{
 			Id: &testTemplateVar,
-			Properties: &compute.TemplateProperties{
+			Properties: compute.TemplateProperties{
 				Name:        &testTemplateVar,
 				Cores:       &testTemplateSize,
 				Ram:         &testTemplateSize,

@@ -27,7 +27,7 @@ var (
 	ipsNic         = []string{"x.x.x.x"}
 	n              = compute.Nic{
 		Id: &testNicVar,
-		Properties: &compute.NicProperties{
+		Properties: compute.NicProperties{
 			Name:           &testNicVar,
 			Lan:            &lanNicId,
 			Dhcp:           &dhcpNic,
@@ -51,7 +51,7 @@ var (
 	}
 	nicLoadBalancer = compute.Nic{
 		Id: &testLoadbalancerVar,
-		Properties: &compute.NicProperties{
+		Properties: compute.NicProperties{
 			Name:           &testNicVar,
 			Lan:            &lanNicId,
 			Dhcp:           &dhcpNic,
@@ -77,7 +77,7 @@ var (
 	nicNew = resources.Nic{
 		Nic: compute.Nic{
 			Id: &testNicVar,
-			Properties: &compute.NicProperties{
+			Properties: compute.NicProperties{
 				Name:           nicProperties.NicProperties.Name,
 				Lan:            nicProperties.NicProperties.Lan,
 				Dhcp:           nicProperties.NicProperties.Dhcp,
@@ -88,7 +88,7 @@ var (
 	}
 	testNicCreate = resources.Nic{
 		Nic: compute.Nic{
-			Properties: &compute.NicProperties{
+			Properties: compute.NicProperties{
 				Name:           &testNicVar,
 				Lan:            &lanNicId,
 				Dhcp:           &dhcpNic,

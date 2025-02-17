@@ -21,7 +21,7 @@ import (
 var (
 	applicationloadbalancerTest = resources.ApplicationLoadBalancer{
 		ApplicationLoadBalancer: compute.ApplicationLoadBalancer{
-			Properties: &compute.ApplicationLoadBalancerProperties{
+			Properties: compute.ApplicationLoadBalancerProperties{
 				Name:         &testApplicationLoadBalancerVar,
 				Ips:          &[]string{testApplicationLoadBalancerVar},
 				TargetLan:    &testApplicationLoadBalancerIntVar,
@@ -54,7 +54,7 @@ var (
 	}
 	applicationloadbalancerNew = resources.ApplicationLoadBalancer{
 		ApplicationLoadBalancer: compute.ApplicationLoadBalancer{
-			Properties: &applicationloadbalancerProperties.ApplicationLoadBalancerProperties,
+			Properties: applicationloadbalancerProperties.ApplicationLoadBalancerProperties,
 		},
 	}
 	testApplicationLoadBalancerIntVar    = int32(1)

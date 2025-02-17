@@ -24,7 +24,7 @@ var (
 	// Resources
 	serverCreate = resources.Server{
 		Server: compute.Server{
-			Properties: &compute.ServerProperties{
+			Properties: compute.ServerProperties{
 				Name:             &testServerVar,
 				Cores:            &cores,
 				Ram:              &ram,
@@ -36,7 +36,7 @@ var (
 	}
 	serverCubeCreate = resources.Server{
 		Server: compute.Server{
-			Properties: &compute.ServerProperties{
+			Properties: compute.ServerProperties{
 				Name:             &testServerVar,
 				Type:             &testServerCubeType,
 				TemplateUuid:     &testServerVar,
@@ -47,7 +47,7 @@ var (
 				Volumes: &compute.AttachedVolumes{
 					Items: &[]compute.Volume{
 						{
-							Properties: &compute.VolumeProperties{
+							Properties: compute.VolumeProperties{
 								Name:        &testServerVar,
 								Bus:         &testServerVar,
 								Type:        &testVolumeType,
@@ -61,7 +61,7 @@ var (
 	}
 	serverCubeCreateImg = resources.Server{
 		Server: compute.Server{
-			Properties: &compute.ServerProperties{
+			Properties: compute.ServerProperties{
 				Name:             &testServerVar,
 				Type:             &testServerCubeType,
 				TemplateUuid:     &testServerVar,
@@ -72,7 +72,7 @@ var (
 				Volumes: &compute.AttachedVolumes{
 					Items: &[]compute.Volume{
 						{
-							Properties: &compute.VolumeProperties{
+							Properties: compute.VolumeProperties{
 								Name:          &testServerVar,
 								Bus:           &testServerVar,
 								Type:          &testVolumeType,
@@ -90,7 +90,7 @@ var (
 		Metadata: &compute.DatacenterElementMetadata{
 			State: &state,
 		},
-		Properties: &compute.ServerProperties{
+		Properties: compute.ServerProperties{
 			Name:             &testServerVar,
 			Cores:            &cores,
 			Ram:              &ram,
@@ -135,7 +135,7 @@ var (
 				State: &state,
 			},
 			Id:         &testServerVar,
-			Properties: &serverProperties.ServerProperties,
+			Properties: serverProperties.ServerProperties,
 		},
 	}
 	// Resources Attributes

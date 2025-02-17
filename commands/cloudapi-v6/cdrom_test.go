@@ -36,7 +36,7 @@ var (
 	testImageCdRoms = resources.Image{
 		Image: compute.Image{
 			Id: &testCdromVar,
-			Properties: &compute.ImageProperties{
+			Properties: compute.ImageProperties{
 				Name:         &testImageVar,
 				Location:     &testImageVar,
 				Description:  &testImageVar,

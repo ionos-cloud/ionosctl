@@ -419,7 +419,7 @@ func RunNicCreate(c *core.CommandConfig) error {
 
 	input := resources.Nic{
 		Nic: compute.Nic{
-			Properties: &inputProper.NicProperties,
+			Properties: inputProper.NicProperties,
 		},
 	}
 

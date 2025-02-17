@@ -24,7 +24,7 @@ var (
 	testRule = resources.FirewallRule{
 		FirewallRule: compute.FirewallRule{
 			Id: &testFirewallRuleVar,
-			Properties: &compute.FirewallruleProperties{
+			Properties: compute.FirewallruleProperties{
 				Name:           &testFirewallRuleVar,
 				Protocol:       &testFirewallRuleProtocol,
 				SourceMac:      &testFirewallRuleVar,
@@ -66,7 +66,7 @@ var (
 	}
 	testInputFirewallRule = resources.FirewallRule{
 		FirewallRule: compute.FirewallRule{
-			Properties: &testInputFirewallRuleProperties.FirewallruleProperties,
+			Properties: testInputFirewallRuleProperties.FirewallruleProperties,
 		},
 	}
 	testFirewallRules = resources.FirewallRules{

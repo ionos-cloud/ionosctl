@@ -400,7 +400,7 @@ func RunApplicationLoadBalancerCreate(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		resources.ApplicationLoadBalancer{
 			ApplicationLoadBalancer: compute.ApplicationLoadBalancer{
-				Properties: &proper.ApplicationLoadBalancerProperties,
+				Properties: proper.ApplicationLoadBalancerProperties,
 			},
 		},
 		queryParams,

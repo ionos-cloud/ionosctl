@@ -20,7 +20,7 @@ import (
 var (
 	s3keyTest = resources.S3Key{
 		S3Key: compute.S3Key{
-			Properties: &compute.S3KeyProperties{
+			Properties: compute.S3KeyProperties{
 				Active: &testS3keyBoolVar,
 			},
 		},
@@ -28,7 +28,7 @@ var (
 	s3keyTestId = resources.S3Key{
 		S3Key: compute.S3Key{
 			Id: &testS3keyVar,
-			Properties: &compute.S3KeyProperties{
+			Properties: compute.S3KeyProperties{
 				Active: &testS3keyBoolVar,
 			},
 		},
@@ -45,7 +45,7 @@ var (
 	s3keyTestGet = resources.S3Key{
 		S3Key: compute.S3Key{
 			Id: &testS3keyVar,
-			Properties: &compute.S3KeyProperties{
+			Properties: compute.S3KeyProperties{
 				SecretKey: &testS3keyVar,
 				Active:    &testS3keyBoolVar,
 			},
@@ -62,7 +62,7 @@ var (
 	}
 	s3keyNew = resources.S3Key{
 		S3Key: compute.S3Key{
-			Properties: &s3keyProperties,
+			Properties: s3keyProperties,
 		},
 	}
 	testS3keyBoolVar    = false

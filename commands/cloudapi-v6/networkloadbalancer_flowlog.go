@@ -366,7 +366,7 @@ func RunNetworkLoadBalancerFlowLogCreate(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNetworkLoadBalancerId)),
 		resources.FlowLog{
 			FlowLog: compute.FlowLog{
-				Properties: &proper.FlowLogProperties,
+				Properties: proper.FlowLogProperties,
 			},
 		},
 		queryParams,

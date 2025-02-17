@@ -22,7 +22,7 @@ var (
 	dcVersion = int32(1)
 	dc        = compute.Datacenter{
 		Id: &testDatacenterVar,
-		Properties: &compute.DatacenterProperties{
+		Properties: compute.DatacenterProperties{
 			Name:        &testDatacenterVar,
 			Description: &testDatacenterVar,
 			Location:    &testDatacenterVar,
@@ -47,7 +47,7 @@ var (
 	dcNew = resources.Datacenter{
 		Datacenter: compute.Datacenter{
 			Id: &testDatacenterVar,
-			Properties: &compute.DatacenterProperties{
+			Properties: compute.DatacenterProperties{
 				Name:        dcProperties.DatacenterProperties.Name,
 				Description: dcProperties.DatacenterProperties.Description,
 				Location:    &testDatacenterVar,

@@ -426,7 +426,7 @@ func RunFirewallRuleCreate(c *core.CommandConfig) error {
 
 	input := resources.FirewallRule{
 		FirewallRule: compute.FirewallRule{
-			Properties: &properties.FirewallruleProperties,
+			Properties: properties.FirewallruleProperties,
 		},
 	}
 	firewallRule, resp, err := c.CloudApiV6Services.FirewallRules().Create(

@@ -22,7 +22,7 @@ var (
 	targetGroupTestGet = resources.TargetGroup{
 		TargetGroup: compute.TargetGroup{
 			Id: &testTargetGroupVar,
-			Properties: &compute.TargetGroupProperties{
+			Properties: compute.TargetGroupProperties{
 				Name:      &testTargetGroupVar,
 				Algorithm: &testTargetGroupVar,
 				Protocol:  &testTargetGroupVar,
@@ -47,7 +47,7 @@ var (
 	}
 	targetGroupTest = resources.TargetGroup{
 		TargetGroup: compute.TargetGroup{
-			Properties: &compute.TargetGroupProperties{
+			Properties: compute.TargetGroupProperties{
 				Name:      &testTargetGroupVar,
 				Algorithm: &testTargetGroupVar,
 				Protocol:  &testTargetGroupVar,
@@ -96,7 +96,7 @@ var (
 	targetGroupNew = resources.TargetGroup{
 		TargetGroup: compute.TargetGroup{
 			Id:         &testTargetGroupVar,
-			Properties: &targetGroupNewProperties.TargetGroupProperties,
+			Properties: targetGroupNewProperties.TargetGroupProperties,
 		},
 	}
 	targetGroupState          = "BUSY"

@@ -366,7 +366,7 @@ func RunNatGatewayFlowLogCreate(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNatGatewayId)),
 		resources.FlowLog{
 			FlowLog: compute.FlowLog{
-				Properties: &proper.FlowLogProperties,
+				Properties: proper.FlowLogProperties,
 			},
 		},
 		queryParams,

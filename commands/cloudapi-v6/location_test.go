@@ -23,7 +23,7 @@ var (
 	loc = resources.Location{
 		Location: compute.Location{
 			Id: &testLocationVar,
-			Properties: &compute.LocationProperties{
+			Properties: compute.LocationProperties{
 				Name:         &testLocationVar,
 				Features:     &[]string{testLocationVar},
 				ImageAliases: &[]string{testLocationVar},

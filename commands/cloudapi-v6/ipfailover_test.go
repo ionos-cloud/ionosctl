@@ -21,7 +21,7 @@ var (
 	testLanIpFailover = resources.Lan{
 		Lan: compute.Lan{
 			Id: &testIpFailoverVar,
-			Properties: &compute.LanProperties{
+			Properties: compute.LanProperties{
 				IpFailover: &[]compute.IPFailover{
 					{
 						Ip:      &testIpFailoverVar,
@@ -50,7 +50,7 @@ var (
 	testLanIpFailoverGet = resources.Lan{
 		Lan: compute.Lan{
 			Id: &testIpFailoverVar,
-			Properties: &compute.LanProperties{
+			Properties: compute.LanProperties{
 				Name: &testIpFailoverVar,
 			},
 		},

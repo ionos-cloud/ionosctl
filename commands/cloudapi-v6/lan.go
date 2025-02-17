@@ -416,7 +416,7 @@ func RunLanCreate(c *core.CommandConfig) error {
 
 	input := resources.LanPost{
 		LanPost: compute.LanPost{
-			Properties: &properties,
+			Properties: properties,
 		},
 	}
 

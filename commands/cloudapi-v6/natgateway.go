@@ -379,7 +379,7 @@ func RunNatGatewayCreate(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		resources.NatGateway{
 			NatGateway: compute.NatGateway{
-				Properties: &proper.NatGatewayProperties,
+				Properties: proper.NatGatewayProperties,
 			},
 		},
 		queryParams,
