@@ -314,7 +314,7 @@ func RunDataCenterUpdate(c *core.CommandConfig) error {
 	}
 
 	queryParams := listQueryParams.QueryParams
-	input := resources.DatacenterProperties{}
+	input := compute.DatacenterPropertiesPut{}
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgName)) {
 		name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
