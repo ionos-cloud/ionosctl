@@ -91,11 +91,7 @@ func newClient(name, pwd, token, hostUrl string, usedLayer *Layer) *Client {
 	// TODO: Replace all configurations with this one
 	sharedConfig := shared.NewConfiguration(name, pwd, token, hostUrl)
 	sharedConfig.UserAgent = appendUserAgent(sharedConfig.UserAgent)
-
-	clientConfig := compute.NewConfiguration(name, pwd, token, hostUrl)
-	clientConfig.UserAgent = appendUserAgent(clientConfig.UserAgent)
-	// Set Depth Query Parameter globally
-	clientConfig.SetDepth(1)
+	sharedConfig.AddDefaultQueryParam("depth", "1")
 
 	certManagerConfig := certmanager.NewConfiguration(name, pwd, token, hostUrl)
 	certManagerConfig.UserAgent = appendUserAgent(certManagerConfig.UserAgent)
@@ -107,7 +103,7 @@ func newClient(name, pwd, token, hostUrl string, usedLayer *Layer) *Client {
 	postgresConfig.UserAgent = appendUserAgent(postgresConfig.UserAgent)
 
 	return &Client{
-		CloudClient:          compute.NewAPIClient(clientConfig),
+		CloudClient:          compute.NewAPIClient(sharedConfig),
 		AuthClient:           auth.NewAPIClient(sharedConfig),
 		CDNClient:            cdn.NewAPIClient(sharedConfig),
 		CertManagerClient:    certmanager.NewAPIClient(certManagerConfig),
