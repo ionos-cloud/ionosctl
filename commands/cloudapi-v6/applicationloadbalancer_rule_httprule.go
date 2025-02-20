@@ -313,7 +313,7 @@ func RunAlbRuleHttpRuleAdd(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)),
 		&resources.ApplicationLoadBalancerForwardingRuleProperties{
 			ApplicationLoadBalancerForwardingRuleProperties: compute.ApplicationLoadBalancerForwardingRuleProperties{
-				HttpRules: &httpRuleItems,
+				HttpRules: httpRuleItems,
 			},
 		},
 		queryParams,
@@ -637,7 +637,7 @@ func getRuleHttpRulesRemove(c *core.CommandConfig, frOld *resources.ApplicationL
 
 	return &resources.ApplicationLoadBalancerForwardingRuleProperties{
 		ApplicationLoadBalancerForwardingRuleProperties: compute.ApplicationLoadBalancerForwardingRuleProperties{
-			HttpRules: &httpRuleItems,
+			HttpRules: httpRuleItems,
 		},
 	}, nil
 }

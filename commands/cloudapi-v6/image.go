@@ -903,7 +903,7 @@ func sortImagesByType(images resources.Images, imgType string) resources.Images 
 			}
 		}
 	}
-	images.Items = &imgTypeItems
+	images.Items = imgTypeItems
 	return images
 }
 
@@ -921,23 +921,22 @@ func sortImagesByAlias(images resources.Images, alias string) resources.Images {
 			}
 		}
 	}
-	images.Items = &imgTypeItems
+	images.Items = imgTypeItems
 	return images
 }
 
 func sortImagesByTime(images resources.Images, n int) resources.Images {
 	if items, ok := images.GetItemsOk(); ok && items != nil {
-		imageItems := *items
-		if len(imageItems) > 0 {
+		if len(items) > 0 {
 			// Sort Requests using time.Time, in descending order
-			sort.SliceStable(imageItems, func(i, j int) bool {
-				return imageItems[i].Metadata.CreatedDate.Time.After(imageItems[j].Metadata.CreatedDate.Time)
+			sort.SliceStable(items, func(i, j int) bool {
+				return items[i].Metadata.CreatedDate.Time.After(items[j].Metadata.CreatedDate.Time)
 			})
 		}
-		if len(imageItems) >= n {
-			imageItems = imageItems[:n]
+		if len(items) >= n {
+			items = items[:n]
 		}
-		images.Items = &imageItems
+		images.Items = items
 	}
 	return images
 }

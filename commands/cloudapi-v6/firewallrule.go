@@ -660,7 +660,7 @@ func DeleteAllFirewallRules(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get items of Firewall Rules")
 	}
 
-	if len(*firewallRulesItems) <= 0 {
+	if len(firewallRulesItems) <= 0 {
 		return fmt.Errorf("no Firewall Rule found")
 	}
 
