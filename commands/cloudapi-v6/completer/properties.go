@@ -23,10 +23,10 @@ func DatacenterCPUFamilies(ctx context.Context, datacenterId string) []string {
 	if err != nil {
 		return nil
 	}
-	if dc.Properties == nil || dc.Properties.CpuArchitecture == nil {
+	if dc.Properties.CpuArchitecture == nil {
 		return nil
 	}
-	result := make([]string, len(*dc.Properties.CpuArchitecture))
+	result := make([]string, len(dc.Properties.CpuArchitecture))
 	for i, arch := range dc.Properties.CpuArchitecture {
 		result[i] = *arch.CpuFamily
 	}

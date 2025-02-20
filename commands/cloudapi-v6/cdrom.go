@@ -76,7 +76,7 @@ Required values to run command:
 			// Completer for CDROM images that are in the same location as the datacenter
 			chosenDc, _, err := client.Must().CloudClient.DataCentersApi.DatacentersFindById(context.Background(),
 				viper.GetString(core.GetFlagName(attachCdrom.NS, cloudapiv6.ArgDataCenterId))).Execute()
-			if err != nil || chosenDc.Properties == nil || chosenDc.Properties.Location == nil {
+			if err != nil || chosenDc.Properties.Location == nil {
 				return compute.ApiImagesGetRequest{}
 			}
 

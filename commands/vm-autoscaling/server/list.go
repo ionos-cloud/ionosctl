@@ -71,7 +71,7 @@ ionosctl vm-autoscaling server list %s`,
 		// get ID of all groups
 		return group.GroupsProperty(func(r vmasc.Group) string {
 			completion := *r.Id
-			if r.Properties == nil || r.Properties.Name == nil {
+			if r.Properties.Name == nil {
 				return completion
 			}
 			completion += "\t" + *r.Properties.Name

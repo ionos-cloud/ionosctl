@@ -57,7 +57,7 @@ func Put() *core.Command {
 		// get ID of all groups
 		return GroupsProperty(func(r vmasc.Group) string {
 			completion := *r.Id
-			if r.Properties == nil || r.Properties.Name == nil {
+			if r.Properties.Name == nil {
 				return completion
 			}
 			completion += "\t" + *r.Properties.Name

@@ -231,7 +231,7 @@ func ClusterCreateCmd() *core.Command {
 			return nil, cobra.ShellCompDirectiveError
 		}
 		names := functional.Fold(ts, func(acc []string, t mongo.TemplateResponse) []string {
-			if t.Properties == nil || t.Properties.Name == nil {
+			if t.Properties.Name == nil {
 				return acc
 			}
 			wordsInTemplateName := strings.Split(*t.Properties.Name, " ")
@@ -385,7 +385,7 @@ func validateOrInferEditionByTemplate(c *core.PreCommandConfig) error {
 			return fmt.Errorf("failed finding template with ID %s: %w", tmplId, err)
 		}
 
-		if template.Properties == nil || template.Id == nil ||
+		if template.Id == nil ||
 			template.Properties.Edition == nil || template.Properties.Name == nil {
 			return fmt.Errorf("found a template with some unset fields: %#v.\n Please use IONOS_LOG_LEVEL=trace and file a Github Issue", template)
 		}
@@ -478,7 +478,7 @@ func inferLocationByDatacenter(c *core.PreCommandConfig) error {
 		if err != nil {
 			return fmt.Errorf("failed inferring location via datacenter's ID: failed getting datacenter with ID %s: %w", dcId, err)
 		}
-		if dc.Properties == nil || dc.Properties.Location == nil {
+		if dc.Properties.Location == nil {
 			return fmt.Errorf("failed inferring location via datacenter's ID: datacenter %s location is nil: %w", dcId, err)
 		}
 		viper.Set(fn, *dc.Properties.Location)

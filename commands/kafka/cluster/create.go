@@ -78,7 +78,7 @@ func addClusterCreateFlags(cmd *core.Command) *core.Command {
 			return cloudapiv6completer.DataCentersIds(
 				func(datacenter compute.Datacenter) bool {
 					location, _ := cmd.Command.Flags().GetString(constants.FlagLocation)
-					return *datacenter.Properties.Location == location
+					return datacenter.Properties.Location == location
 				},
 			), cobra.ShellCompDirectiveNoFileComp
 		},
