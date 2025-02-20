@@ -96,8 +96,8 @@ func testMongoClusterCreate(t *testing.T, dcId, lanId string) {
 	createdCluster, _, err := client.MongoClient.ClustersApi.ClustersGet(context.Background()).FilterName(uniqueResourceName).Execute()
 	createdClusterId = *(*createdCluster.GetItems())[0].GetId()
 	assert.NoError(t, err)
-	assert.Equal(t, uniqueResourceName, *(*createdCluster.Items)[0].Properties.DisplayName)
-	assert.Equal(t, "de/fra", *(*createdCluster.Items)[0].Properties.Location)
+	assert.Equal(t, uniqueResourceName, *(createdCluster.Items)[0].Properties.DisplayName)
+	assert.Equal(t, "de/fra", *(createdCluster.Items)[0].Properties.Location)
 }
 
 func testMongoEeTemplateInference(t *testing.T) {
@@ -138,7 +138,7 @@ func testMongoClusterCreateIdentifyRequiredNotSet(t *testing.T) {
 func setupTestMongoCommands() (string, string, error) {
 	// make sure datacenter exists
 	dcs, resp, err := client.CloudClient.DataCentersApi.DatacentersGet(context.Background()).Filter("name", uniqueResourceName).Depth(1).Execute()
-	if resp.HttpNotFound() || len(*dcs.Items) < 1 {
+	if resp.HttpNotFound() || len(dcs.Items) < 1 {
 		dc, _, err := client.CloudClient.DataCentersApi.DatacentersPost(context.Background()).Datacenter(sdkcompute.Datacenter{Properties: &sdkcompute.DatacenterProperties{Name: sdkcompute.PtrString(uniqueResourceName), Location: sdkcompute.PtrString("de/fra")}}).Execute()
 		if err != nil {
 			return createdDcId, "", fmt.Errorf("failed creating dc %w", err)
@@ -155,7 +155,7 @@ func setupTestMongoCommands() (string, string, error) {
 	// make sure lan exists
 	var lanId string
 	lans, resp, err := client.CloudClient.LANsApi.DatacentersLansGet(context.Background(), createdDcId).Filter("name", uniqueResourceName).Depth(1).Execute()
-	if resp.HttpNotFound() || len(*lans.Items) < 1 {
+	if resp.HttpNotFound() || len(lans.Items) < 1 {
 		lan, _, err := client.CloudClient.LANsApi.DatacentersLansPost(context.Background(), createdDcId).Lan(sdkcompute.LanPost{Properties: &sdkcompute.LanPropertiesPost{Name: sdkcompute.PtrString(uniqueResourceName), Public: sdkcompute.PtrBool(false)}}).Execute()
 		if err != nil {
 			return createdDcId, lanId, fmt.Errorf("failed creating lan: %w", err)
@@ -199,7 +199,7 @@ func getPlaygroundTemplateUuid() string {
 	if err != nil {
 		return fallbackUuid
 	}
-	for _, t := range *ls.Items {
+	for _, t := range ls.Items {
 		if *t.Properties.Edition == "playground" {
 			return *t.Id
 		}

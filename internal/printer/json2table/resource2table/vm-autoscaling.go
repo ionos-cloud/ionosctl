@@ -85,7 +85,7 @@ func ConvertVmAutoscalingServersToTable(serverCollection ionoscloud.ServerCollec
 	s := serverCollection.Items
 	var table []map[string]interface{}
 
-	for _, server := range s {
+	for _, server := range *s {
 		serverTable, err := ConvertVmAutoscalingServerToTable(server, depth)
 		if err != nil {
 			return nil, err

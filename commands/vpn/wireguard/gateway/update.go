@@ -168,9 +168,9 @@ func Update() *core.Command {
 			return nil, cobra.ShellCompDirectiveError
 		}
 		var ips []string
-		for _, ipblock := range *ipblocks.Items {
+		for _, ipblock := range ipblocks.Items {
 			if ipblock.Properties.Ips != nil {
-				ips = append(ips, *ipblock.Properties.Ips...)
+				ips = append(ips, ipblock.Properties.Ips...)
 			}
 		}
 		return ips, cobra.ShellCompDirectiveNoFileComp

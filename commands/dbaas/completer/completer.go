@@ -32,7 +32,7 @@ func getNicIp(cmd *core.Command) (string, error) {
 		return "", fmt.Errorf("failed getting servers %w", err)
 	}
 
-	for _, server := range *ls.Items {
+	for _, server := range ls.Items {
 		if server.Id == nil {
 			return "", fmt.Errorf("failed getting ID")
 		}
@@ -43,9 +43,9 @@ func getNicIp(cmd *core.Command) (string, error) {
 			return "", fmt.Errorf("failed getting nics %w", err)
 		}
 		// Find the first nic with IPs not empty and return it
-		for _, nic := range *nics.Items {
-			if nic.Properties != nil && nic.Properties.Ips != nil && len(*nic.Properties.Ips) > 0 {
-				return (*nic.Properties.Ips)[0], nil
+		for _, nic := range nics.Items {
+			if nic.Properties != nil && nic.Properties.Ips != nil && len(nic.Properties.Ips) > 0 {
+				return (nic.Properties.Ips)[0], nil
 			}
 		}
 	}

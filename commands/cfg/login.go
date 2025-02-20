@@ -12,7 +12,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
-	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
+	"github.com/ionos-cloud/sdk-go-bundle/shared"
 	"golang.org/x/term"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
@@ -88,7 +88,8 @@ func RunLoginUser(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
 		"Note: The login command will save the credentials in a configuration file after the authentication is successful!"))
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
-		"Note: As an alternative to this, ionosctl offers support for environment variables: $%s, $%s or $%s.", compute.IonosUsernameEnvVar, compute.IonosPasswordEnvVar, compute.IonosTokenEnvVar))
+		"Note: As an alternative to this, ionosctl offers support for environment variables: $%s, $%s or $%s.",
+		shared.IonosUsernameEnvVar, shared.IonosPasswordEnvVar, shared.IonosTokenEnvVar))
 
 	validCredentials := true
 	data, err := buildConfigData(c)
