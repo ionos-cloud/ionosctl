@@ -835,7 +835,7 @@ func DeleteAllVolumes(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get items of Volumes")
 	}
 
-	if len(*volumesItems) <= 0 {
+	if len(volumesItems) <= 0 {
 		return fmt.Errorf("no Volumes found")
 	}
 
@@ -1278,7 +1278,7 @@ func DetachAllServerVolumes(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get items of Volumes")
 	}
 
-	if len(*volumesItems) <= 0 {
+	if len(volumesItems) <= 0 {
 		return fmt.Errorf("no Volumes found")
 	}
 

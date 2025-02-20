@@ -456,7 +456,9 @@ func getRuleTargetInfo(c *core.CommandConfig) resources.NetworkLoadBalancerForwa
 	return target
 }
 
-func getRuleTargetsRemove(c *core.CommandConfig, frOld *resources.NetworkLoadBalancerForwardingRule) (*resources.NetworkLoadBalancerForwardingRuleProperties, error) {
+func getRuleTargetsRemove(
+	c *core.CommandConfig, frOld *resources.NetworkLoadBalancerForwardingRule,
+) (*resources.NetworkLoadBalancerForwardingRuleProperties, error) {
 	var (
 		foundIp   = false
 		foundPort = false
@@ -510,7 +512,7 @@ func getRuleTargetsRemove(c *core.CommandConfig, frOld *resources.NetworkLoadBal
 
 	return &resources.NetworkLoadBalancerForwardingRuleProperties{
 		NetworkLoadBalancerForwardingRuleProperties: compute.NetworkLoadBalancerForwardingRuleProperties{
-			Targets: &targetItems,
+			Targets: targetItems,
 		},
 	}, nil
 }

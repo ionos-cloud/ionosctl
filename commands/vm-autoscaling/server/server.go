@@ -61,7 +61,7 @@ func Servers(fs ...Filter) (vmasc.ServerCollection, error) {
 		if err != nil {
 			return vmasc.ServerCollection{}, err
 		}
-		ls.Items = pointer.From(append(ls.Items, actions.Items...))
+		ls.Items = pointer.From(append(*ls.Items, *actions.Items...))
 	}
 
 	return ls, nil
@@ -90,7 +90,7 @@ func ServersProperty[V any](f func(resource vmasc.Server) V, fs ...Filter) []V {
 	if err != nil {
 		return nil
 	}
-	return functional.Map(recs.Items, f)
+	return functional.Map(*recs.Items, f)
 }
 
 type Filter func(request vmasc.ApiGroupsServersGetRequest) (vmasc.ApiGroupsServersGetRequest, error)

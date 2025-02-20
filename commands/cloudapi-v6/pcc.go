@@ -561,7 +561,7 @@ func RunPccPeersList(c *core.CommandConfig) error {
 	peers := make([]compute.Peer, 0)
 
 	if u != nil {
-		for _, p := range u {
+		for _, p := range *u {
 			peers = append(peers, p.Peer)
 		}
 	}

@@ -586,7 +586,7 @@ func DeleteAllSnapshots(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get items of Snapshots")
 	}
 
-	if len(*snapshotsItems) <= 0 {
+	if len(snapshotsItems) <= 0 {
 		return fmt.Errorf("no Snapshots found")
 	}
 

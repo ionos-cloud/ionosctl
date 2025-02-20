@@ -165,7 +165,7 @@ func RunTargetGroupTargetList(c *core.CommandConfig) error {
 		if targets, ok := properties.GetTargetsOk(); ok && targets != nil {
 			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-			out, err := jsontabwriter.GenerateOutput("", jsonpaths.TargetGroupTarget, *targets,
+			out, err := jsontabwriter.GenerateOutput("", jsonpaths.TargetGroupTarget, targets,
 				tabheaders.GetHeadersAllDefault(defaultTargetGroupTargetCols, cols))
 			if err != nil {
 				return err
@@ -204,7 +204,7 @@ func RunTargetGroupTargetAdd(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting Targets from TargetGroup"))
 
 		if targets, ok := properties.GetTargetsOk(); ok && targets != nil {
-			targetItems = *targets
+			targetItems = targets
 		}
 	}
 
@@ -221,7 +221,7 @@ func RunTargetGroupTargetAdd(c *core.CommandConfig) error {
 	_, resp, err = c.CloudApiV6Services.TargetGroups().Update(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)),
 		&resources.TargetGroupProperties{
 			TargetGroupProperties: compute.TargetGroupProperties{
-				Targets: &targetItems,
+				Targets: targetItems,
 			},
 		},
 		queryParams,
@@ -405,7 +405,7 @@ func getTargetGroupTargetInfo(c *core.CommandConfig) resources.TargetGroupTarget
 	return target
 }
 
-func getTargetGroupTargetsRemove(c *core.CommandConfig, targetsOld *[]compute.TargetGroupTarget) (*[]compute.TargetGroupTarget, error) {
+func getTargetGroupTargetsRemove(c *core.CommandConfig, targetsOld []compute.TargetGroupTarget) (*[]compute.TargetGroupTarget, error) {
 	var (
 		foundIp   = false
 		foundPort = false

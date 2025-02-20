@@ -708,15 +708,14 @@ func RunGroupUserAdd(c *core.CommandConfig) error {
 	id := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserId))
 	groupId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId))
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("User with id: %v is adding to group with id: %v...", id, groupId))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("User with id: %v is being added to group with id: %v...", id, groupId))
 
-	u := resources.User{
-		User: compute.User{
-			Id: &id,
+	userAdded, resp, err := c.CloudApiV6Services.Groups().AddUser(
+		groupId,
+		compute.UserGroupPost{
+			Id: id,
 		},
-	}
-
-	userAdded, resp, err := c.CloudApiV6Services.Groups().AddUser(groupId, u, queryParams)
+		queryParams)
 	if resp != nil && request.GetId(resp) != "" {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
 	}

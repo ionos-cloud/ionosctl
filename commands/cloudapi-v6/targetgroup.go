@@ -426,7 +426,7 @@ func DeleteAllTargetGroup(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get items of Target Groups")
 	}
 
-	if len(*targetGroupItems) <= 0 {
+	if len(targetGroupItems) <= 0 {
 		return fmt.Errorf("no Target Groups found")
 	}
 

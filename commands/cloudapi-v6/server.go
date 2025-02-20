@@ -801,7 +801,7 @@ func RunServerCreate(c *core.CommandConfig) error {
 		// Attach Storage
 		input.SetEntities(compute.ServerEntities{
 			Volumes: &compute.AttachedVolumes{
-				Items: &[]compute.Volume{volumeDAS.Volume},
+				Items: []compute.Volume{volumeDAS.Volume},
 			},
 		})
 	}
@@ -1146,7 +1146,7 @@ func getUpdateServerInfo(c *core.CommandConfig) (*resources.ServerProperties, er
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeId)) {
 		volumeId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeId))
 		input.SetBootVolume(compute.ResourceReference{
-			Id: &volumeId,
+			Id: volumeId,
 		})
 
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property BootVolume set: %v ", volumeId))
@@ -1155,7 +1155,7 @@ func getUpdateServerInfo(c *core.CommandConfig) (*resources.ServerProperties, er
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgCdromId)) {
 		cdromId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgCdromId))
 		input.SetBootCdrom(compute.ResourceReference{
-			Id: &cdromId,
+			Id: cdromId,
 		})
 
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property BootCdrom set: %v ", cdromId))
@@ -1368,7 +1368,7 @@ func DeleteAllServers(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get items of Servers")
 	}
 
-	if len(*serversItems) <= 0 {
+	if len(serversItems) <= 0 {
 		return fmt.Errorf("no Servers found")
 	}
 
@@ -1437,15 +1437,11 @@ func DefaultCpuFamily(c *core.CommandConfig) (string, error) {
 		return "", err
 	}
 
-	if dc.Properties == nil {
-		return "", fmt.Errorf("could not retrieve Datacenter Properties")
-	}
-
 	if dc.Properties.CpuArchitecture == nil {
 		return "", errors.New("could not retrieve CpuArchitecture")
 	}
 
-	cpuArch := (*dc.Properties.CpuArchitecture)[0]
+	cpuArch := (dc.Properties.CpuArchitecture)[0]
 
 	if cpuArch.CpuFamily == nil {
 		return "", errors.New("could not retrieve CpuFamily")

@@ -172,7 +172,7 @@ func RunRequestList(c *core.CommandConfig) error {
 					sortReqsUpdated = append(sortReqsUpdated, requestPut.Request)
 				}
 			}
-			requests.Items = &sortReqsUpdated
+			requests.Items = sortReqsUpdated
 		default:
 			requests = sortRequestsByMethod(requests, strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgMethod))))
 		}
@@ -262,7 +262,7 @@ func RunRequestWait(c *core.CommandConfig) error {
 	defer cancel()
 
 	c.Context = ctxTimeout
-	if _, err = c.CloudApiV6Services.Requests().Wait(fmt.Sprintf("%s/status", *req.GetHref())); err != nil {
+	if _, err = c.CloudApiV6Services.Requests().Wait(fmt.Sprintf("%s/status", req.GetHref())); err != nil {
 		return err
 	}
 
@@ -306,7 +306,7 @@ func sortRequestsByMethod(requests resources.Requests, method string) resources.
 				}
 			}
 		}
-		sortedRequests.Items = &requestsItems
+		sortedRequests.Items = requestsItems
 	}
 	return sortedRequests
 }
@@ -314,7 +314,7 @@ func sortRequestsByMethod(requests resources.Requests, method string) resources.
 func sortRequestsByTime(requests resources.Requests, n int) resources.Requests {
 	var sortedRequests resources.Requests
 	if items, ok := requests.GetItemsOk(); ok && items != nil {
-		reqItems := *items
+		reqItems := items
 		if len(reqItems) > 0 {
 			// Sort requests using time.Time, starting from now in descending order
 			sort.SliceStable(reqItems, func(i, j int) bool {
@@ -325,7 +325,7 @@ func sortRequestsByTime(requests resources.Requests, n int) resources.Requests {
 			// Take the first N requests
 			reqItems = reqItems[:n]
 		}
-		sortedRequests.Items = &reqItems
+		sortedRequests.Items = reqItems
 	}
 	return sortedRequests
 }
