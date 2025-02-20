@@ -22,7 +22,7 @@ type LanProperties struct {
 }
 
 type LanPost struct {
-	compute.LanPost
+	compute.LanProperties
 }
 
 type Lans struct {
@@ -33,7 +33,7 @@ type Lans struct {
 type LansService interface {
 	List(datacenterId string, params ListQueryParams) (Lans, *Response, error)
 	Get(datacenterId, lanId string, params QueryParams) (*Lan, *Response, error)
-	Create(datacenterId string, input LanPost, params QueryParams) (*LanPost, *Response, error)
+	Create(datacenterId string, input compute.Lan, params QueryParams) (compute.Lan, *Response, error)
 	Update(datacenterId, lanId string, input LanProperties, params QueryParams) (*Lan, *Response, error)
 	Delete(datacenterId, lanId string, params QueryParams) (*Response, error)
 }
@@ -97,8 +97,8 @@ func (ls *lansService) Get(datacenterId, lanId string, params QueryParams) (*Lan
 	return &Lan{lan}, &Response{*resp}, err
 }
 
-func (ls *lansService) Create(datacenterId string, input LanPost, params QueryParams) (*LanPost, *Response, error) {
-	req := ls.client.LANsApi.DatacentersLansPost(ls.context, datacenterId).Lan(input.LanPost)
+func (ls *lansService) Create(datacenterId string, input compute.Lan, params QueryParams) (compute.Lan, *Response, error) {
+	req := ls.client.LANsApi.DatacentersLansPost(ls.context, datacenterId).Lan(input)
 	if !structs.IsZero(params) {
 		if params.Depth != nil {
 			req = req.Depth(*params.Depth)
@@ -108,8 +108,8 @@ func (ls *lansService) Create(datacenterId string, input LanPost, params QueryPa
 			req = req.Pretty(*params.Pretty)
 		}
 	}
-	lan, resp, err := ls.client.LANsApi.DatacentersLansPostExecute(req)
-	return &LanPost{lan}, &Response{*resp}, err
+	lan, resp, err := req.Execute()
+	return lan, &Response{*resp}, err
 }
 
 func (ls *lansService) Update(datacenterId, lanId string, input LanProperties, params QueryParams) (*Lan, *Response, error) {

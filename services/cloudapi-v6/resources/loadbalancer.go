@@ -86,7 +86,7 @@ func (ls *loadbalancersService) Get(datacenterId, loadbalancerId string, params 
 
 func (ls *loadbalancersService) Create(datacenterId, name string, dhcp bool, params QueryParams) (*Loadbalancer, *Response, error) {
 	s := compute.Loadbalancer{
-		Properties: &compute.LoadbalancerProperties{
+		Properties: compute.LoadbalancerProperties{
 			Name: &name,
 			Dhcp: &dhcp,
 		},

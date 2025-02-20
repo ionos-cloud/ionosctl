@@ -9,6 +9,7 @@ import (
 
 	gomock "github.com/golang/mock/gomock"
 	resources "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
+	compute "github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
 )
 
 // MockDatacentersService is a mock of DatacentersService interface.
@@ -98,7 +99,7 @@ func (mr *MockDatacentersServiceMockRecorder) List(params interface{}) *gomock.C
 }
 
 // Update mocks base method.
-func (m *MockDatacentersService) Update(datacenterId string, input resources.DatacenterProperties, queryParams resources.QueryParams) (*resources.Datacenter, *resources.Response, error) {
+func (m *MockDatacentersService) Update(datacenterId string, input compute.DatacenterPropertiesPut, queryParams resources.QueryParams) (*resources.Datacenter, *resources.Response, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Update", datacenterId, input, queryParams)
 	ret0, _ := ret[0].(*resources.Datacenter)

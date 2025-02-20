@@ -203,13 +203,7 @@ func ImageIds(customFilters ...func(compute.ApiImagesGetRequest) compute.ApiImag
 	for _, image := range ls.Items {
 		completion := *image.Id + "\t"
 
-		if props := image.Properties; props == nil {
-			continue
-		}
-
-		if license := image.Properties.LicenceType; license != nil {
-			completion = fmt.Sprintf("%s %s", completion, *license)
-		}
+		completion = fmt.Sprintf("%s %s", completion, image.Properties.LicenceType)
 
 		if imgType := image.Properties.ImageType; imgType != nil {
 			completion = fmt.Sprintf("%s %s", completion, *imgType)
@@ -223,8 +217,8 @@ func ImageIds(customFilters ...func(compute.ApiImagesGetRequest) compute.ApiImag
 			}
 		}
 
-		if aliases := image.Properties.ImageAliases; aliases != nil && len(aliases) > 0 && (*aliases)[0] != "" {
-			completion = fmt.Sprintf("%s [%s]", completion, strings.Join(*aliases, ","))
+		if aliases := image.Properties.ImageAliases; aliases != nil && len(aliases) > 0 {
+			completion = fmt.Sprintf("%s [%s]", completion, strings.Join(aliases, ","))
 		}
 
 		if name := image.Properties.Name; name != nil {
