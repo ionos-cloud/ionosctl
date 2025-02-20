@@ -368,7 +368,7 @@ func RunLanCreate(c *core.CommandConfig) error {
 	queryParams := listQueryParams.QueryParams
 	name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
 	public := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgPublic))
-	properties := compute.LanPropertiesPost{
+	properties := compute.LanProperties{
 		Name:   &name,
 		Public: &public,
 	}
@@ -414,16 +414,15 @@ func RunLanCreate(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property IPv6 Cidr Block set: %v", cidr))
 	}
 
-	input := resources.LanPost{
-		LanPost: compute.LanPost{
-			Properties: properties,
-		},
-	}
-
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
 		"Creating LAN in Datacenter with ID: %v...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))))
 
-	l, resp, err := c.CloudApiV6Services.Lans().Create(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)), input, queryParams)
+	l, resp, err := c.CloudApiV6Services.Lans().Create(
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
+		compute.Lan{
+			Properties: properties,
+		},
+		queryParams)
 	if resp != nil && request.GetId(resp) != "" {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
 	}
@@ -437,7 +436,7 @@ func RunLanCreate(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Lan, l.LanPost,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Lan, l,
 		tabheaders.GetHeadersAllDefault(defaultLanCols, cols))
 	if err != nil {
 		return err
