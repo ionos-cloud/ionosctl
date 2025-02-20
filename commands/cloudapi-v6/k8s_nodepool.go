@@ -738,7 +738,7 @@ func getNewK8sNodePool(c *core.CommandConfig) (*resources.K8sNodePoolForPost, er
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property Dhcp set: %v", dhcp))
 
 			newLans = append(newLans, compute.KubernetesNodePoolLan{
-				Id:   &id,
+				Id:   id,
 				Dhcp: &dhcp,
 			})
 		}
@@ -808,8 +808,8 @@ func getNewK8sNodePoolUpdated(oldNodePool *resources.K8sNodePool, c *core.Comman
 				propertiesUpdated.SetAutoScaling(compute.KubernetesAutoScaling{})
 			} else {
 				propertiesUpdated.SetAutoScaling(compute.KubernetesAutoScaling{
-					MinNodeCount: &minCount,
-					MaxNodeCount: &maxCount,
+					MinNodeCount: minCount,
+					MaxNodeCount: maxCount,
 				})
 			}
 		}
@@ -876,7 +876,7 @@ func getNewK8sNodePoolUpdated(oldNodePool *resources.K8sNodePool, c *core.Comman
 			for _, lanId := range lanIds {
 				id := int32(lanId)
 				newLans = append(newLans, compute.KubernetesNodePoolLan{
-					Id:   &id,
+					Id:   id,
 					Dhcp: &dhcp,
 				})
 

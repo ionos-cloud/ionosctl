@@ -341,7 +341,7 @@ func RunBackupUnitCreate(c *core.CommandConfig) error {
 	newBackupUnit := resources.BackupUnit{
 		BackupUnit: compute.BackupUnit{
 			Properties: compute.BackupUnitProperties{
-				Name:     &name,
+				Name:     name,
 				Email:    &email,
 				Password: &pwd,
 			},

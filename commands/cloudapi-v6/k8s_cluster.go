@@ -498,7 +498,7 @@ func getNewK8sCluster(c *core.CommandConfig) (*resources.K8sClusterForPost, erro
 		s3buckets := make([]compute.S3Bucket, 0)
 		name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgS3Bucket))
 		s3buckets = append(s3buckets, compute.S3Bucket{
-			Name: &name,
+			Name: name,
 		})
 		proper.SetS3Buckets(s3buckets)
 
@@ -573,7 +573,7 @@ func getK8sClusterInfo(oldUser *resources.K8sCluster, c *core.CommandConfig) res
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property S3Buckets set: %v", s3buckets))
 		} else {
 			if bucketsOk, ok := properties.GetS3BucketsOk(); ok && bucketsOk != nil {
-				propertiesUpdated.SetS3Buckets(*bucketsOk)
+				propertiesUpdated.SetS3Buckets(bucketsOk)
 			}
 		}
 
@@ -584,7 +584,7 @@ func getK8sClusterInfo(oldUser *resources.K8sCluster, c *core.CommandConfig) res
 				"Property ApiSubnetAllowList set: %v", viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgApiSubnets))))
 		} else {
 			if subnetAllowListOk, ok := properties.GetApiSubnetAllowListOk(); ok && subnetAllowListOk != nil {
-				propertiesUpdated.SetApiSubnetAllowList(*subnetAllowListOk)
+				propertiesUpdated.SetApiSubnetAllowList(subnetAllowListOk)
 			}
 		}
 
@@ -724,8 +724,8 @@ func getMaintenanceInfo(c *core.CommandConfig, maintenance *resources.K8sMainten
 
 	return resources.K8sMaintenanceWindow{
 		KubernetesMaintenanceWindow: compute.KubernetesMaintenanceWindow{
-			DayOfTheWeek: &day,
-			Time:         &time,
+			DayOfTheWeek: day,
+			Time:         time,
 		},
 	}
 }

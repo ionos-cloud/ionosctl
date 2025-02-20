@@ -384,7 +384,7 @@ func DeleteAllK8sNodes(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get items of Kubernetes Nodes")
 	}
 
-	if len(*k8sNodesItems) <= 0 {
+	if len(k8sNodesItems) <= 0 {
 		return fmt.Errorf("no Kubernetes Nodes found")
 	}
 

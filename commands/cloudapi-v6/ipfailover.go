@@ -348,7 +348,7 @@ func RemoveAllIpFailovers(c *core.CommandConfig) error {
 	newIpFailover := make([]compute.IPFailover, 0)
 	lanProperties := resources.LanProperties{
 		LanProperties: compute.LanProperties{
-			IpFailover: &newIpFailover,
+			IpFailover: newIpFailover,
 		},
 	}
 
@@ -366,7 +366,7 @@ func RemoveAllIpFailovers(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get items of IP Failovers")
 	}
 
-	if len(*ipFailoversItems) <= 0 {
+	if len(ipFailoversItems) <= 0 {
 		return fmt.Errorf("no IP Failovers found")
 	}
 
@@ -427,7 +427,7 @@ func getIpFailoverInfo(c *core.CommandConfig) resources.LanProperties {
 
 	return resources.LanProperties{
 		LanProperties: compute.LanProperties{
-			IpFailover: &[]compute.IPFailover{
+			IpFailover: []compute.IPFailover{
 				{
 					Ip:      &ip,
 					NicUuid: &nicId,
@@ -437,7 +437,7 @@ func getIpFailoverInfo(c *core.CommandConfig) resources.LanProperties {
 	}
 }
 
-func removeIpFailoverInfo(c *core.CommandConfig, failovers *[]compute.IPFailover) resources.LanProperties {
+func removeIpFailoverInfo(c *core.CommandConfig, failovers []compute.IPFailover) resources.LanProperties {
 	removeIp := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgIp))
 	removeNicId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId))
 
@@ -454,7 +454,7 @@ func removeIpFailoverInfo(c *core.CommandConfig, failovers *[]compute.IPFailover
 
 	return resources.LanProperties{
 		LanProperties: compute.LanProperties{
-			IpFailover: &newIpFailover,
+			IpFailover: newIpFailover,
 		},
 	}
 }

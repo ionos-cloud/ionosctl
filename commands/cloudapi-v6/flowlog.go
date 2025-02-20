@@ -489,7 +489,7 @@ func DeleteAllFlowlogs(c *core.CommandConfig) error {
 		return errors.New("could not get items of Flowlogs")
 	}
 
-	if len(*flowlogsItems) <= 0 {
+	if len(flowlogsItems) <= 0 {
 		return errors.New("no Flowlogs found")
 	}
 

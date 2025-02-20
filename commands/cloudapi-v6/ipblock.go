@@ -396,7 +396,7 @@ func DeleteAllIpBlocks(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get items of Ip Blocks")
 	}
 
-	if len(*ipBlocksItems) <= 0 {
+	if len(ipBlocksItems) <= 0 {
 		return fmt.Errorf("no Ip Blocks found")
 	}
 
