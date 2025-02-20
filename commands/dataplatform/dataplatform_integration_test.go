@@ -69,10 +69,10 @@ func testClusterOk(t *testing.T) {
 	ls, resp, err := client.Must().DataplatformClient.DataPlatformClusterApi.ClustersGet(context.Background()).Name(uniqueResourceName).Execute()
 	assert.NoError(t, err, fmt.Errorf("failed verifying created cluster via SDK: %w", err).Error())
 	assert.False(t, resp.HttpNotFound())
-	items := *ls.Items
+	items := ls.Items
 	assert.Len(t, items, 1)
 	createdClusterId = *(items)[0].GetId()
-	assert.Equal(t, uniqueResourceName, *(*ls.Items)[0].Properties.Name)
+	assert.Equal(t, uniqueResourceName, *(ls.Items)[0].Properties.Name)
 }
 
 func testNodepoolOk(t *testing.T) {
@@ -125,7 +125,7 @@ func testClusterIdentifyRequiredNotSet(t *testing.T) {
 func setup() error {
 	// make sure datacenter exists
 	dcs, resp, err := client.Must().CloudClient.DataCentersApi.DatacentersGet(context.Background()).Filter("name", uniqueResourceName).Depth(1).Execute()
-	if resp.HttpNotFound() || len(*dcs.Items) < 1 {
+	if resp.HttpNotFound() || len(dcs.Items) < 1 {
 		dc, _, err := client.Must().CloudClient.DataCentersApi.DatacentersPost(context.Background()).Datacenter(sdkcompute.Datacenter{Properties: &sdkcompute.DatacenterProperties{Name: sdkcompute.PtrString(uniqueResourceName), Location: sdkcompute.PtrString("fr/par")}}).Execute()
 		if err != nil {
 			return fmt.Errorf("failed creating dc %w", err)

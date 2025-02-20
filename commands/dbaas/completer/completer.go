@@ -28,7 +28,7 @@ func GetCidrCompletionFunc(cmd *core.Command) func(c *cobra.Command, args []stri
 func getNicIp(cmd *core.Command) (string, error) {
 	ls, _, err := client.Must().CloudClient.ServersApi.DatacentersServersGet(context.Background(),
 		viper.GetString(core.GetFlagName(cmd.NS, constants.FlagDatacenterId))).Execute()
-	if err != nil || ls.Items == nil || len(*ls.Items) == 0 {
+	if err != nil || ls.Items == nil || len(ls.Items) == 0 {
 		return "", fmt.Errorf("failed getting servers %w", err)
 	}
 
@@ -39,7 +39,7 @@ func getNicIp(cmd *core.Command) (string, error) {
 
 		nics, _, err := client.Must().CloudClient.NetworkInterfacesApi.DatacentersServersNicsGet(context.Background(),
 			viper.GetString(core.GetFlagName(cmd.NS, constants.FlagDatacenterId)), *server.Id).Execute()
-		if err != nil || nics.Items == nil || len(*nics.Items) == 0 {
+		if err != nil || nics.Items == nil || len(nics.Items) == 0 {
 			return "", fmt.Errorf("failed getting nics %w", err)
 		}
 		// Find the first nic with IPs not empty and return it

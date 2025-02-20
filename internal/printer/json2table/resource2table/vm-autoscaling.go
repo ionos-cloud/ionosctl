@@ -82,7 +82,7 @@ func ConvertVmAutoscalingServersToTable(serverCollection ionoscloud.ServerCollec
 		return nil, fmt.Errorf("could not retrieve items")
 	}
 
-	s := *serverCollection.Items
+	s := serverCollection.Items
 	var table []map[string]interface{}
 
 	for _, server := range s {

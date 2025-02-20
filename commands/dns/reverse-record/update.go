@@ -80,13 +80,13 @@ func Update() *core.Command {
 	cmd.AddStringFlag(constants.FlagIp, "", "", "The new IP", core.WithCompletionE(
 		func() ([]string, error) {
 			ipblocks, _, err := client.Must().CloudClient.IPBlocksApi.IpblocksGet(context.Background()).Execute()
-			if err != nil || ipblocks.Items == nil || len(*ipblocks.Items) == 0 {
+			if err != nil || ipblocks.Items == nil || len(ipblocks.Items) == 0 {
 				return nil, fmt.Errorf("failed to get IP blocks: %s", err)
 			}
 			var ips []string
-			for _, ipblock := range *ipblocks.Items {
+			for _, ipblock := range ipblocks.Items {
 				if ipblock.Properties.Ips != nil {
-					ips = append(ips, *ipblock.Properties.Ips...)
+					ips = append(ips, ipblock.Properties.Ips...)
 				}
 			}
 			return ips, nil

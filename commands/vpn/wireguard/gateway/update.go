@@ -164,7 +164,7 @@ func Update() *core.Command {
 			IpblocksGet(context.Background()).
 			Filter("location", *dc.Properties.Location).
 			Execute()
-		if err != nil || ipblocks.Items == nil || len(*ipblocks.Items) == 0 {
+		if err != nil || ipblocks.Items == nil || len(ipblocks.Items) == 0 {
 			return nil, cobra.ShellCompDirectiveError
 		}
 		var ips []string

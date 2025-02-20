@@ -256,7 +256,7 @@ func RunAlbRuleHttpRuleList(c *core.CommandConfig) error {
 		return errors.New("error getting rule http rules")
 	}
 
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.ApplicationLoadBalancerHTTPRule, *httpRules,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.ApplicationLoadBalancerHTTPRule, httpRules,
 		tabheaders.GetHeaders(allAlbRuleHttpRuleCols, defaultAlbRuleHttpRuleCols, cols))
 	if err != nil {
 		return err
@@ -297,7 +297,7 @@ func RunAlbRuleHttpRuleAdd(c *core.CommandConfig) error {
 
 	if properties, ok := ngOld.GetPropertiesOk(); ok && properties != nil {
 		if httpRulesOk, ok := properties.GetHttpRulesOk(); ok && httpRulesOk != nil {
-			httpRuleItems = *httpRulesOk
+			httpRuleItems = httpRulesOk
 		}
 	}
 
