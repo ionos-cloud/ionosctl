@@ -214,7 +214,7 @@ func RunNlbRuleTargetList(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.NetworkLoadBalancerRuleTarget, *targets,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.NetworkLoadBalancerRuleTarget, targets,
 		tabheaders.GetHeadersAllDefault(defaultRuleTargetCols, cols))
 	if err != nil {
 		return err
@@ -249,7 +249,7 @@ func RunNlbRuleTargetAdd(c *core.CommandConfig) error {
 
 	if properties, ok := ngOld.GetPropertiesOk(); ok && properties != nil {
 		if targets, ok := properties.GetTargetsOk(); ok && targets != nil {
-			targetItems = *targets
+			targetItems = targets
 		}
 	}
 
@@ -261,7 +261,7 @@ func RunNlbRuleTargetAdd(c *core.CommandConfig) error {
 
 	nlbForwardingRule := &resources.NetworkLoadBalancerForwardingRuleProperties{
 		NetworkLoadBalancerForwardingRuleProperties: compute.NetworkLoadBalancerForwardingRuleProperties{
-			Targets: &targetItems,
+			Targets: targetItems,
 		},
 	}
 
@@ -409,7 +409,7 @@ func RemoveAllNlbRuleTarget(c *core.CommandConfig) error {
 	targetItems := make([]compute.NetworkLoadBalancerForwardingRuleTarget, 0)
 	nlbFwRuleProp := &resources.NetworkLoadBalancerForwardingRuleProperties{
 		NetworkLoadBalancerForwardingRuleProperties: compute.NetworkLoadBalancerForwardingRuleProperties{
-			Targets: &targetItems,
+			Targets: targetItems,
 		},
 	}
 

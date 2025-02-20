@@ -343,7 +343,7 @@ func RemoveAllNatGatewayLans(c *core.CommandConfig) error {
 		if properties, ok := natGateway.GetPropertiesOk(); ok && properties != nil {
 			natGatewaysProps := &resources.NatGatewayProperties{
 				NatGatewayProperties: compute.NatGatewayProperties{
-					Lans: &proper,
+					Lans: proper,
 				},
 			}
 
@@ -371,7 +371,7 @@ func getNewNatGatewayLanInfo(c *core.CommandConfig, oldNg *resources.NatGateway)
 	if oldNg != nil {
 		if properties, ok := oldNg.GetPropertiesOk(); ok && properties != nil {
 			if lans, ok := properties.GetLansOk(); ok && lans != nil {
-				proper = *lans
+				proper = lans
 			}
 		}
 	}
@@ -395,7 +395,7 @@ func getNewNatGatewayLanInfo(c *core.CommandConfig, oldNg *resources.NatGateway)
 
 	return &resources.NatGatewayProperties{
 		NatGatewayProperties: compute.NatGatewayProperties{
-			Lans: &proper,
+			Lans: proper,
 		},
 	}
 }
@@ -419,7 +419,7 @@ func removeNatGatewayLanInfo(c *core.CommandConfig, oldNg *resources.NatGateway)
 
 	return &resources.NatGatewayProperties{
 		NatGatewayProperties: compute.NatGatewayProperties{
-			Lans: &proper,
+			Lans: proper,
 		},
 	}
 }

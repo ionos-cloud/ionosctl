@@ -181,7 +181,7 @@ func RunK8sNodePoolLanList(c *core.CommandConfig) error {
 
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.K8sNodePoolLan, *lans,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.K8sNodePoolLan, lans,
 		tabheaders.GetHeadersAllDefault(defaultK8sNodePoolLanCols, cols))
 	if err != nil {
 		return err
@@ -391,7 +391,7 @@ func getNewK8sNodePoolLanInfo(c *core.CommandConfig, oldNg *resources.K8sNodePoo
 			lanId := viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgLanId))
 			dhcp := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgDhcp))
 			newLan := compute.KubernetesNodePoolLan{
-				Id:   &lanId,
+				Id:   lanId,
 				Dhcp: &dhcp,
 			}
 

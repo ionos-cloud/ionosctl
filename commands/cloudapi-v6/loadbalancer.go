@@ -517,7 +517,7 @@ func DeleteAllLoadBalancers(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get items of Load Balancers")
 	}
 
-	if len(*loadBalancersItems) <= 0 {
+	if len(loadBalancersItems) <= 0 {
 		return fmt.Errorf("no Load Balancers found")
 	}
 

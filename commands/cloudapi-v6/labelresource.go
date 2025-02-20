@@ -350,7 +350,7 @@ func RemoveAllServerLabels(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get items of Server Labels")
 	}
 
-	if len(*labelsItems) <= 0 {
+	if len(labelsItems) <= 0 {
 		return fmt.Errorf("no Server Labels found")
 	}
 
@@ -550,7 +550,7 @@ func RemoveAllVolumeLabels(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get items of Volume Labels")
 	}
 
-	if len(*labelsItems) <= 0 {
+	if len(labelsItems) <= 0 {
 		return fmt.Errorf("no Volume Labels found")
 	}
 
@@ -742,7 +742,7 @@ func RemoveAllIpBlockLabels(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get items of IP Block Labels")
 	}
 
-	if len(*labelsItems) <= 0 {
+	if len(labelsItems) <= 0 {
 		return fmt.Errorf("no IP Block Labels found")
 	}
 
@@ -934,7 +934,7 @@ func RemoveAllSnapshotLabels(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get items of Snapshot Labels")
 	}
 
-	if len(*labelsItems) <= 0 {
+	if len(labelsItems) <= 0 {
 		return fmt.Errorf("no Snapshot Labels found")
 	}
 

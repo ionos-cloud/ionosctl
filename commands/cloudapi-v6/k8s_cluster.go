@@ -565,7 +565,7 @@ func getK8sClusterInfo(oldUser *resources.K8sCluster, c *core.CommandConfig) res
 			s3buckets := make([]compute.S3Bucket, 0)
 			for _, name := range viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgS3Bucket)) {
 				s3buckets = append(s3buckets, compute.S3Bucket{
-					Name: &name,
+					Name: name,
 				})
 			}
 

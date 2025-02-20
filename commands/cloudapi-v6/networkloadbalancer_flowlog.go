@@ -357,9 +357,7 @@ func RunNetworkLoadBalancerFlowLogCreate(c *core.CommandConfig) error {
 	queryParams := listQueryParams.QueryParams
 	proper := getFlowLogPropertiesSet(c)
 
-	if !proper.HasAction() {
-		proper.SetAction(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgAction)))
-	}
+	proper.SetAction(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgAction)))
 
 	ng, resp, err := c.CloudApiV6Services.NetworkLoadBalancers().CreateFlowLog(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),

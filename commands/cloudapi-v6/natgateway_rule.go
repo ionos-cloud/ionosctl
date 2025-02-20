@@ -354,11 +354,9 @@ func RunNatGatewayRuleCreate(c *core.CommandConfig) error {
 	queryParams := listQueryParams.QueryParams
 	proper := getNewNatGatewayRuleInfo(c)
 
-	if !proper.HasName() {
-		proper.SetName(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName)))
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
-			"Property Name set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))))
-	}
+	proper.SetName(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName)))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
+		"Property Name set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))))
 
 	if !proper.HasProtocol() {
 		proper.SetProtocol(compute.NatGatewayRuleProtocol(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgProtocol))))
@@ -562,7 +560,7 @@ func DeleteAllNatgatewayRules(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get items of NAT Gateway Rules")
 	}
 
-	if len(*natGatewayRuleItems) <= 0 {
+	if len(natGatewayRuleItems) <= 0 {
 		return fmt.Errorf("no NAT Gateway Rules found")
 	}
 

@@ -371,9 +371,7 @@ func RunNatGatewayCreate(c *core.CommandConfig) error {
 	queryParams := listQueryParams.QueryParams
 	proper := getNewNatGatewayInfo(c)
 
-	if !proper.HasName() {
-		proper.SetName(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName)))
-	}
+	proper.SetName(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName)))
 
 	ng, resp, err := c.CloudApiV6Services.NatGateways().Create(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),

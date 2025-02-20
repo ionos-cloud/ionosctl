@@ -353,17 +353,9 @@ func RunNetworkLoadBalancerForwardingRuleCreate(c *core.CommandConfig) error {
 	queryParams := listQueryParams.QueryParams
 	proper := getForwardingRulePropertiesSet(c)
 
-	if !proper.HasProtocol() {
-		proper.SetProtocol(string(compute.TCP))
-	}
-
-	if !proper.HasAlgorithm() {
-		proper.SetAlgorithm(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgAlgorithm)))
-	}
-
-	if !proper.HasName() {
-		proper.SetName(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName)))
-	}
+	proper.SetProtocol(string(compute.TCP))
+	proper.SetAlgorithm(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgAlgorithm)))
+	proper.SetName(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName)))
 
 	health := getForwardingRuleHealthCheckPropertiesSet(c)
 	if health != nil {
