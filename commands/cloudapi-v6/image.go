@@ -640,13 +640,13 @@ func getNonPublicImages(imgs []compute.Image, verboseOut io.Writer) ([]compute.I
 	for _, i := range imgs {
 		properties, ok := i.GetPropertiesOk()
 		if !ok {
-			fmt.Fprintf(verboseOut, jsontabwriter.GenerateVerboseOutput("skipping %s: properties are nil\n", *i.GetId()))
+			fmt.Fprintf(verboseOut, jsontabwriter.GenerateVerboseOutput("skipping %s: properties are nil\n", i.GetId()))
 			continue
 		}
 
 		isPublic, ok := properties.GetPublicOk()
 		if !ok {
-			fmt.Fprintf(verboseOut, jsontabwriter.GenerateVerboseOutput("skipping %s: field `public` is nil\n", *i.GetId()))
+			fmt.Fprintf(verboseOut, jsontabwriter.GenerateVerboseOutput("skipping %s: field `public` is nil\n", i.GetId()))
 			continue
 		}
 
@@ -871,7 +871,7 @@ func sortImagesByLocation(images resources.Images, location string) resources.Im
 			}
 		}
 	}
-	images.Items = &imgLocationItems
+	images.Items = imgLocationItems
 	return images
 }
 
@@ -887,7 +887,7 @@ func sortImagesByLicenceType(images resources.Images, licenceType string) resour
 			}
 		}
 	}
-	images.Items = &imgLicenceTypeItems
+	images.Items = imgLicenceTypeItems
 	return images
 }
 

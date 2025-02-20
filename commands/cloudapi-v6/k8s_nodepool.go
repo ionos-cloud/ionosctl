@@ -411,7 +411,7 @@ func RunK8sNodePoolListAll(c *core.CommandConfig) error {
 	totalTime := time.Duration(0)
 
 	for _, cluster := range getK8sClusters(clusters) {
-		nodePools, resp, err := c.CloudApiV6Services.K8s().ListNodePools(*cluster.GetId(), listQueryParams)
+		nodePools, resp, err := c.CloudApiV6Services.K8s().ListNodePools(cluster.GetId(), listQueryParams)
 		if err != nil {
 			return err
 		}

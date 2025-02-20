@@ -370,7 +370,7 @@ func RunVolumeListAll(c *core.CommandConfig) error {
 			return fmt.Errorf("could not retrieve Datacenter Id")
 		}
 
-		volumes, resp, err := c.CloudApiV6Services.Volumes().List(*dc.GetId(), listQueryParams)
+		volumes, resp, err := c.CloudApiV6Services.Volumes().List(dc.GetId(), listQueryParams)
 		if err != nil {
 			return err
 		}

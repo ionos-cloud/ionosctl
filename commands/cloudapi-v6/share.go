@@ -228,7 +228,7 @@ func RunShareListAll(c *core.CommandConfig) error {
 	totalTime := time.Duration(0)
 
 	for _, group := range getGroups(groups) {
-		shares, resp, err := c.CloudApiV6Services.Groups().ListShares(*group.GetId(), listQueryParams)
+		shares, resp, err := c.CloudApiV6Services.Groups().ListShares(group.GetId(), listQueryParams)
 		if err != nil {
 			return err
 		}

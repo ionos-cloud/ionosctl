@@ -265,7 +265,7 @@ func RunLanListAll(c *core.CommandConfig) error {
 			return fmt.Errorf("failed to retrieve Datacenter ID")
 		}
 
-		lans, resp, err := c.CloudApiV6Services.Lans().List(*dc.GetId(), listQueryParams)
+		lans, resp, err := c.CloudApiV6Services.Lans().List(dc.GetId(), listQueryParams)
 		if err != nil {
 			return err
 		}
