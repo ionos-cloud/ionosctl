@@ -66,7 +66,7 @@ func Actions(fs ...Filter) (vmasc.ActionCollection, error) {
 		if err != nil {
 			return vmasc.ActionCollection{}, err
 		}
-		allActions.Items = pointer.From(append(allActions.Items, actions.Items...))
+		allActions.Items = pointer.From(append(*allActions.Items, *actions.Items...))
 	}
 
 	return allActions, nil
@@ -96,7 +96,7 @@ func ActionsProperty[V any](f func(resource vmasc.Action) V, fs ...Filter) []V {
 	if err != nil {
 		return nil
 	}
-	return functional.Map(recs.Items, f)
+	return functional.Map(*recs.Items, f)
 }
 
 type Filter func(request vmasc.ApiGroupsActionsGetRequest) (vmasc.ApiGroupsActionsGetRequest, error)

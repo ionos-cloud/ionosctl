@@ -386,7 +386,7 @@ func updateImagesAfterUpload(c *core.CommandConfig, diffImgs []compute.Image, pr
 	// do a patch on the uploaded images
 	var imgs []compute.Image
 	for _, diffImg := range diffImgs {
-		img, _, err := client.Must().CloudClient.ImagesApi.ImagesPatch(c.Context, *diffImg.GetId()).Image(properties.ImageProperties).Execute()
+		img, _, err := client.Must().CloudClient.ImagesApi.ImagesPatch(c.Context, diffImg.GetId()).Image(properties.ImageProperties).Execute()
 		imgs = append(imgs, img)
 		if err != nil {
 			return nil, err
@@ -573,7 +573,7 @@ func DeleteAllNonPublicImages(c *core.CommandConfig) error {
 		return errors.New("could not retrieve images")
 	}
 
-	items, err := getNonPublicImages(*allItems, c.Command.Command.ErrOrStderr())
+	items, err := getNonPublicImages(allItems, c.Command.Command.ErrOrStderr())
 	if err != nil {
 		return err
 	}

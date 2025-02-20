@@ -219,11 +219,11 @@ You can wait for the Request to be executed using ` + "`" + `--wait-for-request`
 			// Completer for HDD images that are in the same location as the datacenter
 			chosenDc, _, err := client.Must().CloudClient.DataCentersApi.DatacentersFindById(context.Background(),
 				viper.GetString(core.GetFlagName(create.NS, cloudapiv6.ArgDataCenterId))).Execute()
-			if err != nil || chosenDc.Properties.Location == nil {
+			if err != nil {
 				return compute.ApiImagesGetRequest{}
 			}
 
-			return r.Filter("location", *chosenDc.Properties.Location).Filter("imageType", "HDD")
+			return r.Filter("location", chosenDc.Properties.Location).Filter("imageType", "HDD")
 		})
 
 		snapshotIds := completer.SnapshotIds()
@@ -286,11 +286,11 @@ Required values to run command:
 			// Completer for CDROM images that are in the same location as the datacenter
 			chosenDc, _, err := client.Must().CloudClient.DataCentersApi.DatacentersFindById(context.Background(),
 				viper.GetString(core.GetFlagName(update.NS, cloudapiv6.ArgDataCenterId))).Execute()
-			if err != nil || chosenDc.Properties.Location == nil {
+			if err != nil {
 				return compute.ApiImagesGetRequest{}
 			}
 
-			return r.Filter("location", *chosenDc.Properties.Location).Filter("imageType", "CDROM")
+			return r.Filter("location", chosenDc.Properties.Location).Filter("imageType", "CDROM")
 		}), cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "", "Name of the Server")
@@ -595,7 +595,7 @@ func PreRunServerCreate(c *core.PreCommandConfig) error {
 
 			// If it's an image, determine if it is public or private
 			for _, baseFlagSet := range baseRequiredFlags {
-				if img.Properties != nil && img.Properties.Public != nil && *img.Properties.Public {
+				if img.Properties.Public != nil && *img.Properties.Public {
 					// For public images, require password or SSH key
 					imageRequiredFlags = append(imageRequiredFlags,
 						append(baseFlagSet, cloudapiv6.ArgImageId, cloudapiv6.ArgPassword),

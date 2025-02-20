@@ -74,7 +74,7 @@ func GroupsProperty[V any](f func(vmasc.Group) V, fs ...Filter) []V {
 	if err != nil {
 		return nil
 	}
-	return functional.Map(recs.Items, f)
+	return functional.Map(*recs.Items, f)
 }
 
 type Filter func(request vmasc.ApiGroupsGetRequest) (vmasc.ApiGroupsGetRequest, error)
