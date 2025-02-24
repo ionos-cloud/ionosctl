@@ -21,9 +21,9 @@ var (
 	natgatewayLanTest = resources.NatGateway{
 		NatGateway: compute.NatGateway{
 			Properties: compute.NatGatewayProperties{
-				Name:      &testNatGatewayLanVar,
-				PublicIps: &[]string{testNatGatewayLanVar},
-				Lans:      &[]compute.NatGatewayLanProperties{natgatewayLanProperties.NatGatewayLanProperties},
+				Name:      testNatGatewayLanVar,
+				PublicIps: []string{testNatGatewayLanVar},
+				Lans:      []compute.NatGatewayLanProperties{natgatewayLanProperties.NatGatewayLanProperties},
 			},
 		},
 	}
@@ -37,9 +37,9 @@ var (
 		NatGateway: compute.NatGateway{
 			Id: &testNatGatewayLanVar,
 			Properties: compute.NatGatewayProperties{
-				Name:      &testNatGatewayLanVar,
-				PublicIps: &[]string{testNatGatewayLanVar},
-				Lans:      &[]compute.NatGatewayLanProperties{natgatewayLanProperties.NatGatewayLanProperties},
+				Name:      testNatGatewayLanVar,
+				PublicIps: []string{testNatGatewayLanVar},
+				Lans:      []compute.NatGatewayLanProperties{natgatewayLanProperties.NatGatewayLanProperties},
 			},
 			Metadata: &compute.DatacenterElementMetadata{State: &testStateVar},
 		},
@@ -67,14 +67,14 @@ var (
 	}
 	natgatewayLanProperties = resources.NatGatewayLanProperties{
 		NatGatewayLanProperties: compute.NatGatewayLanProperties{
-			Id:         &testNatGatewayLanIntVar,
-			GatewayIps: &[]string{testNatGatewayLanVar},
+			Id:         testNatGatewayLanIntVar,
+			GatewayIps: []string{testNatGatewayLanVar},
 		},
 	}
 	natgatewayLanNewProperties = resources.NatGatewayLanProperties{
 		NatGatewayLanProperties: compute.NatGatewayLanProperties{
-			Id:         &testNatGatewayLanNewIntVar,
-			GatewayIps: &[]string{testNatGatewayLanNewVar},
+			Id:         testNatGatewayLanNewIntVar,
+			GatewayIps: []string{testNatGatewayLanNewVar},
 		},
 	}
 	testNatGatewayLanIntVar    = int32(1)

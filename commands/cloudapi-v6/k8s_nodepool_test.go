@@ -272,7 +272,7 @@ var (
 						Dhcp: &testK8sNodePoolLanBoolVar,
 					},
 				},
-				PublicIps: &[]string{testNodepoolNewVar, testNodepoolNewVar},
+				PublicIps: []string{testNodepoolNewVar, testNodepoolNewVar},
 			},
 		},
 	}
@@ -289,7 +289,7 @@ var (
 	nodepoolTestUpdateOld = resources.K8sNodePoolForPut{
 		KubernetesNodePoolForPut: compute.KubernetesNodePoolForPut{
 			Properties: compute.KubernetesNodePoolPropertiesForPut{
-				NodeCount:  &testNodepoolIntVar,
+				NodeCount:  testNodepoolIntVar,
 				K8sVersion: &testNodepoolVar,
 			},
 		},

@@ -23,7 +23,7 @@ var (
 		Properties: compute.LabelProperties{
 			Key:          &testLabelVar,
 			Value:        &testLabelVar,
-			ResourceId:   testLabelVar,
+			ResourceId:   &testLabelVar,
 			ResourceType: &testLabelVar,
 		},
 	}

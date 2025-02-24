@@ -26,7 +26,7 @@ var (
 		Properties: compute.LoadbalancerProperties{
 			Name: &testLoadbalancerVar,
 			Dhcp: &dhcpLoadbalancer,
-			Ip:   &testLoadbalancerVar,
+			Ip:   *compute.NewNullableString(&testLoadbalancerVar),
 		},
 	}
 	loadbs = resources.Loadbalancers{
@@ -48,7 +48,7 @@ var (
 		LoadbalancerProperties: compute.LoadbalancerProperties{
 			Name: &testLoadbalancerNewVar,
 			Dhcp: &dhcpLoadbalancerNew,
-			Ip:   &testLoadbalancerNewVar,
+			Ip:   *compute.NewNullableString(&testLoadbalancerNewVar),
 		},
 	}
 	loadbalancerNew = resources.Loadbalancer{
