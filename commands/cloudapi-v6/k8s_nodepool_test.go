@@ -22,16 +22,16 @@ var (
 	nodepoolTestPost = resources.K8sNodePoolForPost{
 		KubernetesNodePoolForPost: compute.KubernetesNodePoolForPost{
 			Properties: compute.KubernetesNodePoolPropertiesForPost{
-				Name:             &testNodepoolVar,
-				NodeCount:        &testNodepoolIntVar,
-				DatacenterId:     &testNodepoolVar,
-				CpuFamily:        &testNodepoolVar,
-				AvailabilityZone: &testNodepoolVar,
-				RamSize:          &testNodepoolIntVar,
-				StorageSize:      &testNodepoolIntVar,
-				StorageType:      &testNodepoolVar,
+				Name:             testNodepoolVar,
+				NodeCount:        testNodepoolIntVar,
+				DatacenterId:     testNodepoolVar,
+				CpuFamily:        testNodepoolVar,
+				AvailabilityZone: testNodepoolVar,
+				RamSize:          testNodepoolIntVar,
+				StorageSize:      testNodepoolIntVar,
+				StorageType:      testNodepoolVar,
 				K8sVersion:       &testNodepoolVar,
-				CoresCount:       &testNodepoolIntVar,
+				CoresCount:       testNodepoolIntVar,
 				Annotations:      &testNodepoolKVMap,
 				Labels:           &testNodepoolKVMap,
 				Lans: []compute.KubernetesNodePoolLan{
@@ -46,15 +46,15 @@ var (
 	nodepoolTestPrivatePost = resources.K8sNodePoolForPost{
 		KubernetesNodePoolForPost: compute.KubernetesNodePoolForPost{
 			Properties: compute.KubernetesNodePoolPropertiesForPost{
-				Name:             &testNodepoolVar,
-				NodeCount:        &testNodepoolIntVar,
-				DatacenterId:     &testNodepoolVar,
-				CpuFamily:        &testNodepoolVar,
-				AvailabilityZone: &testNodepoolVar,
-				RamSize:          &testNodepoolIntVar,
-				StorageSize:      &testNodepoolIntVar,
-				StorageType:      &testNodepoolVar,
-				CoresCount:       &testNodepoolIntVar,
+				Name:             testNodepoolVar,
+				NodeCount:        testNodepoolIntVar,
+				DatacenterId:     testNodepoolVar,
+				CpuFamily:        testNodepoolVar,
+				AvailabilityZone: testNodepoolVar,
+				RamSize:          testNodepoolIntVar,
+				StorageSize:      testNodepoolIntVar,
+				StorageType:      testNodepoolVar,
+				CoresCount:       testNodepoolIntVar,
 				K8sVersion:       &testNodepoolVar,
 			},
 		},
@@ -62,16 +62,16 @@ var (
 	nodepoolTest = resources.K8sNodePool{
 		KubernetesNodePool: compute.KubernetesNodePool{
 			Properties: compute.KubernetesNodePoolProperties{
-				Name:             &testNodepoolVar,
-				NodeCount:        &testNodepoolIntVar,
-				DatacenterId:     &testNodepoolVar,
-				CpuFamily:        &testNodepoolVar,
-				AvailabilityZone: &testNodepoolVar,
-				RamSize:          &testNodepoolIntVar,
-				StorageSize:      &testNodepoolIntVar,
-				StorageType:      &testNodepoolVar,
+				Name:             testNodepoolVar,
+				NodeCount:        testNodepoolIntVar,
+				DatacenterId:     testNodepoolVar,
+				CpuFamily:        testNodepoolVar,
+				AvailabilityZone: testNodepoolVar,
+				RamSize:          testNodepoolIntVar,
+				StorageSize:      testNodepoolIntVar,
+				StorageType:      testNodepoolVar,
 				K8sVersion:       &testNodepoolVar,
-				CoresCount:       &testNodepoolIntVar,
+				CoresCount:       testNodepoolIntVar,
 				Annotations:      &testNodepoolKVMap,
 				Labels:           &testNodepoolKVMap,
 				Lans: []compute.KubernetesNodePoolLan{
@@ -86,16 +86,16 @@ var (
 	nodepoolTestPrivate = resources.K8sNodePool{
 		KubernetesNodePool: compute.KubernetesNodePool{
 			Properties: compute.KubernetesNodePoolProperties{
-				Name:             &testNodepoolVar,
-				NodeCount:        &testNodepoolIntVar,
-				DatacenterId:     &testNodepoolVar,
-				CpuFamily:        &testNodepoolVar,
-				AvailabilityZone: &testNodepoolVar,
-				RamSize:          &testNodepoolIntVar,
-				StorageSize:      &testNodepoolIntVar,
-				StorageType:      &testNodepoolVar,
+				Name:             testNodepoolVar,
+				NodeCount:        testNodepoolIntVar,
+				DatacenterId:     testNodepoolVar,
+				CpuFamily:        testNodepoolVar,
+				AvailabilityZone: testNodepoolVar,
+				RamSize:          testNodepoolIntVar,
+				StorageSize:      testNodepoolIntVar,
+				StorageType:      testNodepoolVar,
 				K8sVersion:       &testNodepoolVar,
-				CoresCount:       &testNodepoolIntVar,
+				CoresCount:       testNodepoolIntVar,
 			},
 		},
 	}
@@ -112,16 +112,16 @@ var (
 		KubernetesNodePool: compute.KubernetesNodePool{
 			Id: &testNodepoolVar,
 			Properties: compute.KubernetesNodePoolProperties{
-				Name:             &testNodepoolVar,
-				NodeCount:        &testNodepoolIntVar,
-				DatacenterId:     &testNodepoolVar,
-				CpuFamily:        &testNodepoolVar,
-				AvailabilityZone: &testNodepoolVar,
-				RamSize:          &testNodepoolIntVar,
-				StorageSize:      &testNodepoolIntVar,
-				StorageType:      &testNodepoolVar,
+				Name:             testNodepoolVar,
+				NodeCount:        testNodepoolIntVar,
+				DatacenterId:     testNodepoolVar,
+				CpuFamily:        testNodepoolVar,
+				AvailabilityZone: testNodepoolVar,
+				RamSize:          testNodepoolIntVar,
+				StorageSize:      testNodepoolIntVar,
+				StorageType:      testNodepoolVar,
 				K8sVersion:       &testNodepoolVar,
-				CoresCount:       &testNodepoolIntVar,
+				CoresCount:       testNodepoolIntVar,
 				Lans: []compute.KubernetesNodePoolLan{
 					{
 						Id:   testNodepoolIntVar,
@@ -138,25 +138,25 @@ var (
 		KubernetesNodePool: compute.KubernetesNodePool{
 			Id: &testNodepoolVar,
 			Properties: compute.KubernetesNodePoolProperties{
-				Name:                     &testNodepoolVar,
-				NodeCount:                &testNodepoolIntVar,
-				DatacenterId:             &testNodepoolVar,
-				CpuFamily:                &testNodepoolVar,
-				AvailabilityZone:         &testNodepoolVar,
-				RamSize:                  &testNodepoolIntVar,
-				StorageSize:              &testNodepoolIntVar,
-				StorageType:              &testNodepoolVar,
+				Name:                     testNodepoolVar,
+				NodeCount:                testNodepoolIntVar,
+				DatacenterId:             testNodepoolVar,
+				CpuFamily:                testNodepoolVar,
+				AvailabilityZone:         testNodepoolVar,
+				RamSize:                  testNodepoolIntVar,
+				StorageSize:              testNodepoolIntVar,
+				StorageType:              testNodepoolVar,
 				K8sVersion:               &testNodepoolVar,
-				CoresCount:               &testNodepoolIntVar,
-				PublicIps:                &testNodepoolSliceVar,
-				AvailableUpgradeVersions: &testNodepoolSliceVar,
+				CoresCount:               testNodepoolIntVar,
+				PublicIps:                testNodepoolSliceVar,
+				AvailableUpgradeVersions: testNodepoolSliceVar,
 				MaintenanceWindow: &compute.KubernetesMaintenanceWindow{
 					DayOfTheWeek: testNodepoolVar,
 					Time:         testNodepoolVar,
 				},
 				AutoScaling: &compute.KubernetesAutoScaling{
-					MinNodeCount: &testNodepoolIntVar,
-					MaxNodeCount: &testNodepoolIntVar,
+					MinNodeCount: testNodepoolIntVar,
+					MaxNodeCount: testNodepoolIntVar,
 				},
 				Lans: []compute.KubernetesNodePoolLan{
 					{
@@ -174,25 +174,25 @@ var (
 		KubernetesNodePool: compute.KubernetesNodePool{
 			Id: &testNodepoolVar,
 			Properties: compute.KubernetesNodePoolProperties{
-				Name:                     &testNodepoolVar,
-				NodeCount:                &testNodepoolIntVar,
-				DatacenterId:             &testNodepoolVar,
-				CpuFamily:                &testNodepoolVar,
-				AvailabilityZone:         &testNodepoolVar,
-				RamSize:                  &testNodepoolIntVar,
-				StorageSize:              &testNodepoolIntVar,
-				StorageType:              &testNodepoolVar,
+				Name:                     testNodepoolVar,
+				NodeCount:                testNodepoolIntVar,
+				DatacenterId:             testNodepoolVar,
+				CpuFamily:                testNodepoolVar,
+				AvailabilityZone:         testNodepoolVar,
+				RamSize:                  testNodepoolIntVar,
+				StorageSize:              testNodepoolIntVar,
+				StorageType:              testNodepoolVar,
 				K8sVersion:               &testNodepoolVar,
-				CoresCount:               &testNodepoolIntVar,
-				PublicIps:                &testNodepoolSliceVar,
-				AvailableUpgradeVersions: &testNodepoolSliceVar,
+				CoresCount:               testNodepoolIntVar,
+				PublicIps:                testNodepoolSliceVar,
+				AvailableUpgradeVersions: testNodepoolSliceVar,
 				MaintenanceWindow: &compute.KubernetesMaintenanceWindow{
 					DayOfTheWeek: testNodepoolVar,
 					Time:         testNodepoolVar,
 				},
 				AutoScaling: &compute.KubernetesAutoScaling{
-					MinNodeCount: &testNodepoolIntVar,
-					MaxNodeCount: &testNodepoolIntVar,
+					MinNodeCount: testNodepoolIntVar,
+					MaxNodeCount: testNodepoolIntVar,
 				},
 				Lans: []compute.KubernetesNodePoolLan{
 					{
@@ -220,12 +220,12 @@ var (
 		KubernetesNodePool: compute.KubernetesNodePool{
 			Id: &testNodepoolVar,
 			Properties: compute.KubernetesNodePoolProperties{
-				Name:       &testNodepoolVar,
+				Name:       testNodepoolVar,
 				K8sVersion: &testNodepoolNewVar,
-				NodeCount:  &testNodepoolIntNewVar,
+				NodeCount:  testNodepoolIntNewVar,
 				AutoScaling: &compute.KubernetesAutoScaling{
-					MinNodeCount: &testNodepoolIntNewVar,
-					MaxNodeCount: &testNodepoolIntNewVar,
+					MinNodeCount: testNodepoolIntNewVar,
+					MaxNodeCount: testNodepoolIntNewVar,
 				},
 				Annotations: &testNodepoolKVNewMap,
 				Labels:      &testNodepoolKVNewMap,
@@ -243,7 +243,7 @@ var (
 						Dhcp: &testK8sNodePoolLanBoolVar,
 					},
 				},
-				PublicIps: &[]string{testNodepoolNewVar, testNodepoolNewVar},
+				PublicIps: []string{testNodepoolNewVar, testNodepoolNewVar},
 			},
 		},
 	}
@@ -251,10 +251,10 @@ var (
 		KubernetesNodePoolForPut: compute.KubernetesNodePoolForPut{
 			Properties: compute.KubernetesNodePoolPropertiesForPut{
 				K8sVersion: &testNodepoolNewVar,
-				NodeCount:  &testNodepoolIntNewVar,
+				NodeCount:  testNodepoolIntNewVar,
 				AutoScaling: &compute.KubernetesAutoScaling{
-					MinNodeCount: &testNodepoolIntNewVar,
-					MaxNodeCount: &testNodepoolIntNewVar,
+					MinNodeCount: testNodepoolIntNewVar,
+					MaxNodeCount: testNodepoolIntNewVar,
 				},
 				MaintenanceWindow: &compute.KubernetesMaintenanceWindow{
 					DayOfTheWeek: testNodepoolNewVar,
@@ -280,8 +280,8 @@ var (
 		KubernetesNodePool: compute.KubernetesNodePool{
 			Id: &testNodepoolVar,
 			Properties: compute.KubernetesNodePoolProperties{
-				Name:       &testNodepoolVar,
-				NodeCount:  &testNodepoolIntVar,
+				Name:       testNodepoolVar,
+				NodeCount:  testNodepoolIntVar,
 				K8sVersion: &testNodepoolVar,
 			},
 		},

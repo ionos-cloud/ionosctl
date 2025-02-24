@@ -22,8 +22,8 @@ var (
 	nodeTest = resources.K8sNode{
 		KubernetesNode: compute.KubernetesNode{
 			Properties: compute.KubernetesNodeProperties{
-				Name:       &testNodeVar,
-				K8sVersion: &testNodeVar,
+				Name:       testNodeVar,
+				K8sVersion: testNodeVar,
 				PublicIP:   &testNodeVar,
 				PrivateIP:  &testNodeVar,
 			},
@@ -33,8 +33,8 @@ var (
 		KubernetesNode: compute.KubernetesNode{
 			Id: &testNodeVar,
 			Properties: compute.KubernetesNodeProperties{
-				Name:       &testNodeVar,
-				K8sVersion: &testNodeVar,
+				Name:       testNodeVar,
+				K8sVersion: testNodeVar,
 				PublicIP:   &testNodeVar,
 				PrivateIP:  &testNodeVar,
 			},

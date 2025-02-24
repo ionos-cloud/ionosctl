@@ -35,7 +35,7 @@ var (
 	testBackups = resources.ClusterBackupList{
 		ClusterBackupList: sdkgo.ClusterBackupList{
 			Id:    &testBackupVar,
-			Items: []sdkgo.BackupResponse{testBackup.BackupResponse},
+			Items: &[]sdkgo.BackupResponse{testBackup.BackupResponse},
 		},
 	}
 	testStateVar      = sdkgo.State("AVAILABLE")

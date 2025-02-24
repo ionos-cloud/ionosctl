@@ -21,15 +21,15 @@ import (
 var (
 	publicLan    = true
 	publicNewLan = false
-	lanPostTest  = compute.LanPost{
-		Properties: compute.LanPropertiesPost{
+	lanPostTest  = compute.Lan{
+		Properties: compute.LanProperties{
 			Name:       &testLanVar,
 			IpFailover: nil,
 			Pcc:        &testLanVar,
 			Public:     &publicLan,
 		},
 	}
-	lp = compute.LanPost{
+	lp = compute.Lan{
 		Id:         &testLanVar,
 		Properties: lanPostTest.Properties,
 		Metadata:   &compute.DatacenterElementMetadata{State: &testStateVar},
@@ -275,7 +275,9 @@ func TestRunLanCreateWaitErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgName), testLanVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPublic), publicLan)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPccId), testLanVar)
-		rm.CloudApiV6Mocks.Lan.EXPECT().Create(testLanVar, resources.LanPost{LanPost: lanPostTest}, testQueryParamOther).Return(&resources.LanPost{LanPost: lp}, &testResponse, nil)
+		rm.CloudApiV6Mocks.Lan.EXPECT().
+			Create(testLanVar, resources.LanPost{LanProperties: lanPostTest}, testQueryParamOther).
+			Return(&resources.LanPost{LanPost: lp}, &testResponse, nil)
 		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testRequestIdVar).Return(&testRequestStatus, nil, testRequestErr)
 		err := RunLanCreate(cfg)
 		assert.Error(t, err)
