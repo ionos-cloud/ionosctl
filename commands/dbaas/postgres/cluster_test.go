@@ -342,8 +342,8 @@ var (
 	testVdcGet = cloudapiv6resources.Datacenter{
 		Datacenter: compute.Datacenter{
 			Id: &testClusterVar,
-			Properties: &compute.DatacenterProperties{
-				Location: &testClusterVar,
+			Properties: compute.DatacenterProperties{
+				Location: testClusterVar,
 			},
 		},
 	}

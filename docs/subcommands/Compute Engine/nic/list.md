@@ -30,8 +30,8 @@ Use this command to get a list of NICs on your account.
 
 You can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.
 Available Filters:
-* filter by property: [deviceNumber dhcp dhcpv6 firewallActive firewallType ips ipv6CidrBlock ipv6Ips lan mac name pciSlot vnet]
-* filter by metadata: [createdBy createdByUserId createdDate etag lastModifiedBy lastModifiedByUserId lastModifiedDate state]
+* filter by property: [name mac dhcp firewallActive firewallType deviceNumber pciSlot vnet]
+* filter by metadata: [etag createdDate createdBy createdByUserId lastModifiedDate lastModifiedBy lastModifiedByUserId state]
 
 Required values to run command:
 

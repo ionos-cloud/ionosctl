@@ -22,21 +22,21 @@ var (
 	testInputAlbForwardingRule = resources.ApplicationLoadBalancerForwardingRule{
 		ApplicationLoadBalancerForwardingRule: compute.ApplicationLoadBalancerForwardingRule{
 			Properties: compute.ApplicationLoadBalancerForwardingRuleProperties{
-				Name:               &testAlbForwardingRuleVar,
-				Protocol:           &testAlbForwardingRuleProtocol,
-				ListenerIp:         &testAlbForwardingRuleVar,
-				ListenerPort:       &testAlbForwardingRuleIntVar,
+				Name:               testAlbForwardingRuleVar,
+				Protocol:           testAlbForwardingRuleProtocol,
+				ListenerIp:         testAlbForwardingRuleVar,
+				ListenerPort:       testAlbForwardingRuleIntVar,
 				ClientTimeout:      &testAlbForwardingRuleIntVar,
-				ServerCertificates: &testAlbForwardingRuleServerCerts,
+				ServerCertificates: testAlbForwardingRuleServerCerts,
 			}},
 	}
 	testAlbForwardingRulePropertiesNew = resources.ApplicationLoadBalancerForwardingRuleProperties{
 		ApplicationLoadBalancerForwardingRuleProperties: compute.ApplicationLoadBalancerForwardingRuleProperties{
-			Name:               &testAlbForwardingRuleNewVar,
-			ListenerIp:         &testAlbForwardingRuleNewVar,
-			ListenerPort:       &testAlbForwardingRuleNewIntVar,
+			Name:               testAlbForwardingRuleNewVar,
+			ListenerIp:         testAlbForwardingRuleNewVar,
+			ListenerPort:       testAlbForwardingRuleNewIntVar,
 			ClientTimeout:      &testAlbForwardingRuleNewIntVar,
-			ServerCertificates: &testAlbForwardingRuleServerNewCerts,
+			ServerCertificates: testAlbForwardingRuleServerNewCerts,
 		},
 	}
 	testAlbForwardingRuleGet = resources.ApplicationLoadBalancerForwardingRule{
@@ -56,7 +56,7 @@ var (
 	}
 	testAlbForwardingRules = resources.ApplicationLoadBalancerForwardingRules{
 		ApplicationLoadBalancerForwardingRules: compute.ApplicationLoadBalancerForwardingRules{
-			Items: &[]compute.ApplicationLoadBalancerForwardingRule{testAlbForwardingRuleGet.ApplicationLoadBalancerForwardingRule},
+			Items: []compute.ApplicationLoadBalancerForwardingRule{testAlbForwardingRuleGet.ApplicationLoadBalancerForwardingRule},
 		},
 	}
 	testAlbForwardingRuleIntVar                  = int32(1)

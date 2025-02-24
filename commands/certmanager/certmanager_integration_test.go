@@ -107,7 +107,7 @@ func TestCertificateManagerServiceCmd(t *testing.T) {
 			var id string
 			for _, dto := range *certs.GetItems() {
 				if *dto.GetProperties().GetName() == "___test___certificate___test___" {
-					id = dto.GetId()
+					id = *dto.GetId()
 				}
 			}
 

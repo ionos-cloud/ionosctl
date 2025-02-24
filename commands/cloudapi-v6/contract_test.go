@@ -18,28 +18,28 @@ import (
 
 var (
 	testContractResourceLimits = compute.ResourceLimits{
-		CoresPerServer:         &testContractInt32,
-		CoresPerContract:       &testContractInt32,
-		CoresProvisioned:       &testContractInt32,
-		RamPerServer:           &testContractInt32,
-		RamPerContract:         &testContractInt32,
-		RamProvisioned:         &testContractInt32,
-		HddLimitPerVolume:      &testContractInt64,
-		HddLimitPerContract:    &testContractInt64,
-		HddVolumeProvisioned:   &testContractInt64,
-		SsdLimitPerVolume:      &testContractInt64,
-		SsdLimitPerContract:    &testContractInt64,
-		SsdVolumeProvisioned:   &testContractInt64,
-		DasVolumeProvisioned:   &testContractInt64,
-		ReservableIps:          &testContractInt32,
-		ReservedIpsOnContract:  &testContractInt32,
-		ReservedIpsInUse:       &testContractInt32,
-		K8sClusterLimitTotal:   &testContractInt32,
-		K8sClustersProvisioned: &testContractInt32,
-		NatGatewayProvisioned:  &testContractInt32,
-		NatGatewayLimitTotal:   &testContractInt32,
-		NlbProvisioned:         &testContractInt32,
-		NlbLimitTotal:          &testContractInt32,
+		CoresPerServer:         testContractInt32,
+		CoresPerContract:       testContractInt32,
+		CoresProvisioned:       testContractInt32,
+		RamPerServer:           testContractInt32,
+		RamPerContract:         testContractInt32,
+		RamProvisioned:         testContractInt32,
+		HddLimitPerVolume:      testContractInt64,
+		HddLimitPerContract:    testContractInt64,
+		HddVolumeProvisioned:   testContractInt64,
+		SsdLimitPerVolume:      testContractInt64,
+		SsdLimitPerContract:    testContractInt64,
+		SsdVolumeProvisioned:   testContractInt64,
+		DasVolumeProvisioned:   testContractInt64,
+		ReservableIps:          testContractInt32,
+		ReservedIpsOnContract:  testContractInt32,
+		ReservedIpsInUse:       testContractInt32,
+		K8sClusterLimitTotal:   testContractInt32,
+		K8sClustersProvisioned: testContractInt32,
+		NatGatewayProvisioned:  testContractInt32,
+		NatGatewayLimitTotal:   testContractInt32,
+		NlbProvisioned:         testContractInt32,
+		NlbLimitTotal:          testContractInt32,
 	}
 	testContract = resources.Contract{
 		Contract: compute.Contract{
@@ -54,7 +54,7 @@ var (
 	}
 	testContracts = resources.Contracts{
 		Contracts: compute.Contracts{
-			Items: &[]compute.Contract{testContract.Contract},
+			Items: []compute.Contract{testContract.Contract},
 		},
 	}
 	testContractInt64 = int64(2)

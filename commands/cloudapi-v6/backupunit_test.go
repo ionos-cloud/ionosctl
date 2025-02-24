@@ -23,7 +23,7 @@ var (
 		BackupUnit: compute.BackupUnit{
 			Properties: compute.BackupUnitProperties{
 				Email:    &testBackupUnitVar,
-				Name:     &testBackupUnitVar,
+				Name:     testBackupUnitVar,
 				Password: &testBackupUnitVar,
 			},
 		},
@@ -33,7 +33,7 @@ var (
 			Id: &testBackUnitId,
 			Properties: compute.BackupUnitProperties{
 				Email:    &testBackupUnitVar,
-				Name:     &testBackupUnitVar,
+				Name:     testBackupUnitVar,
 				Password: &testBackupUnitVar,
 			},
 		},
@@ -41,7 +41,7 @@ var (
 	backupUnitsList = resources.BackupUnits{
 		BackupUnits: compute.BackupUnits{
 			Id: &testBackUnitId,
-			Items: &[]compute.BackupUnit{
+			Items: []compute.BackupUnit{
 				backupUnitTestId.BackupUnit,
 				backupUnitTestId.BackupUnit,
 			},
@@ -62,7 +62,7 @@ var (
 	backupUnits = resources.BackupUnits{
 		BackupUnits: compute.BackupUnits{
 			Id:    &testBackupUnitVar,
-			Items: &[]compute.BackupUnit{backupUnitTest.BackupUnit},
+			Items: []compute.BackupUnit{backupUnitTest.BackupUnit},
 		},
 	}
 	backupUnitProperties = resources.BackupUnitProperties{
@@ -74,7 +74,7 @@ var (
 	backupUnitNew = resources.BackupUnit{
 		BackupUnit: compute.BackupUnit{
 			Properties: compute.BackupUnitProperties{
-				Name:     &testBackupUnitVar,
+				Name:     testBackupUnitVar,
 				Email:    &testBackupUnitNewVar,
 				Password: &testBackupUnitNewVar,
 			},

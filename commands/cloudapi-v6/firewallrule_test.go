@@ -11,6 +11,7 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
+	"github.com/ionos-cloud/sdk-go-bundle/shared"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
@@ -26,12 +27,12 @@ var (
 			Id: &testFirewallRuleVar,
 			Properties: compute.FirewallruleProperties{
 				Name:           &testFirewallRuleVar,
-				Protocol:       &testFirewallRuleProtocol,
-				SourceMac:      &testFirewallRuleVar,
-				SourceIp:       &testFirewallRuleVar,
-				TargetIp:       &testFirewallRuleVar,
-				IcmpCode:       &testFirewallRuleIntVar,
-				IcmpType:       &testFirewallRuleIntVar,
+				Protocol:       testFirewallRuleProtocol,
+				SourceMac:      *compute.NewNullableString(&testFirewallRuleVar),
+				SourceIp:       *compute.NewNullableString(&testFirewallRuleVar),
+				TargetIp:       *compute.NewNullableString(&testFirewallRuleVar),
+				IcmpCode:       *compute.NewNullableInt32(&testFirewallRuleIntVar),
+				IcmpType:       *compute.NewNullableInt32(&testFirewallRuleIntVar),
 				PortRangeStart: &testFirewallRulePortRangeStart,
 				PortRangeEnd:   &testFirewallRulePortRangeEnd,
 				Type:           &testFirewallRuleType,
@@ -44,7 +45,7 @@ var (
 	testFirewallRulesList = resources.FirewallRules{
 		FirewallRules: compute.FirewallRules{
 			Id: &testFirewallRuleVar,
-			Items: &[]compute.FirewallRule{
+			Items: []compute.FirewallRule{
 				testRule.FirewallRule,
 				testRule.FirewallRule,
 			},
@@ -53,14 +54,14 @@ var (
 	testInputFirewallRuleProperties = resources.FirewallRuleProperties{
 		FirewallruleProperties: compute.FirewallruleProperties{
 			Name:           &testFirewallRuleVar,
-			Protocol:       &testFirewallRuleProtocol,
+			Protocol:       testFirewallRuleProtocol,
 			PortRangeStart: &testFirewallRulePortRangeStart,
 			PortRangeEnd:   &testFirewallRulePortRangeEnd,
-			SourceMac:      &testFirewallRuleVar,
-			IcmpCode:       &testFirewallRuleIntVar,
-			IcmpType:       &testFirewallRuleIntVar,
-			SourceIp:       &testFirewallRuleVar,
-			TargetIp:       &testFirewallRuleVar,
+			SourceMac:      *compute.NewNullableString(&testFirewallRuleVar),
+			IcmpCode:       *compute.NewNullableInt32(&testFirewallRuleIntVar),
+			IcmpType:       *compute.NewNullableInt32(&testFirewallRuleIntVar),
+			SourceIp:       *compute.NewNullableString(&testFirewallRuleVar),
+			TargetIp:       *compute.NewNullableString(&testFirewallRuleVar),
 			Type:           &testFirewallRuleType,
 		},
 	}
@@ -72,12 +73,12 @@ var (
 	testFirewallRules = resources.FirewallRules{
 		FirewallRules: compute.FirewallRules{
 			Id:    &testFirewallRuleVar,
-			Items: &[]compute.FirewallRule{testRule.FirewallRule},
+			Items: []compute.FirewallRule{testRule.FirewallRule},
 		},
 	}
 	testRequestIdVar = "f2354da4-83e3-4e92-9d23-f3cb1ffecc31"
 	testResponse     = resources.Response{
-		APIResponse: compute.APIResponse{
+		APIResponse: shared.APIResponse{
 			Response: &http.Response{
 				Header: map[string][]string{
 					"Location": {"https://api.ionos.com/cloudapi/v6/requests/f2354da4-83e3-4e92-9d23-f3cb1ffecc31/status"},
@@ -87,7 +88,7 @@ var (
 		},
 	}
 	testResponseErr = resources.Response{
-		APIResponse: compute.APIResponse{
+		APIResponse: shared.APIResponse{
 			Response: &http.Response{
 				Header: map[string][]string{
 					"Location": {""},

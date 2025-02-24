@@ -21,7 +21,7 @@ var (
 	testIpConsumer = compute.IpBlock{
 		Id: &testIpConsumerVar,
 		Properties: compute.IpBlockProperties{
-			IpConsumers: &[]compute.IpConsumer{
+			IpConsumers: []compute.IpConsumer{
 				{
 					Ip:              &testIpConsumerVar,
 					Mac:             &testIpConsumerVar,

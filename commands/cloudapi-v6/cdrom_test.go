@@ -21,13 +21,13 @@ import (
 var (
 	testCdroms = resources.Cdroms{
 		Cdroms: compute.Cdroms{
-			Items: &[]compute.Image{testImage.Image},
+			Items: []compute.Image{testImage.Image},
 		},
 	}
 	testCdromsList = resources.Cdroms{
 		Cdroms: compute.Cdroms{
 			Id: &testCdromVar,
-			Items: &[]compute.Image{
+			Items: []compute.Image{
 				testImageCdRoms.Image,
 				testImageCdRoms.Image,
 			},
@@ -41,10 +41,10 @@ var (
 				Location:     &testImageVar,
 				Description:  &testImageVar,
 				Size:         &testImageSize,
-				LicenceType:  &testImageUpperVar,
+				LicenceType:  testImageUpperVar,
 				ImageType:    &testImageUpperVar,
 				Public:       &testImagePublic,
-				ImageAliases: &[]string{testImageVar},
+				ImageAliases: []string{testImageVar},
 				CloudInit:    &testImageVar,
 			},
 			Metadata: &compute.DatacenterElementMetadata{

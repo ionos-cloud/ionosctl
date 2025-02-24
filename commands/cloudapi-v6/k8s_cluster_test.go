@@ -22,67 +22,67 @@ var (
 	clusterTestPost = resources.K8sClusterForPost{
 		KubernetesClusterForPost: compute.KubernetesClusterForPost{
 			Properties: compute.KubernetesClusterPropertiesForPost{
-				Name:       &testClusterVar,
+				Name:       testClusterVar,
 				K8sVersion: &testClusterVar,
-				S3Buckets: &[]compute.S3Bucket{
+				S3Buckets: []compute.S3Bucket{
 					{
-						Name: &testClusterVar,
+						Name: testClusterVar,
 					},
 				},
-				ApiSubnetAllowList: &[]string{testClusterVar},
+				ApiSubnetAllowList: []string{testClusterVar},
 			},
 		},
 	}
 	clusterTestPut = resources.K8sClusterForPut{
 		KubernetesClusterForPut: compute.KubernetesClusterForPut{
 			Properties: compute.KubernetesClusterPropertiesForPut{
-				Name:       &testClusterVar,
+				Name:       testClusterVar,
 				K8sVersion: &testClusterVar,
-				S3Buckets: &[]compute.S3Bucket{
+				S3Buckets: []compute.S3Bucket{
 					{
-						Name: &testClusterVar,
+						Name: testClusterVar,
 					},
 				},
-				ApiSubnetAllowList: &[]string{testClusterVar},
+				ApiSubnetAllowList: []string{testClusterVar},
 			},
 		},
 	}
 	clusterNewTestPut = resources.K8sClusterForPut{
 		KubernetesClusterForPut: compute.KubernetesClusterForPut{
 			Properties: compute.KubernetesClusterPropertiesForPut{
-				Name:       &testClusterNewVar,
+				Name:       testClusterNewVar,
 				K8sVersion: &testClusterNewVar,
 				MaintenanceWindow: &compute.KubernetesMaintenanceWindow{
-					DayOfTheWeek: &testClusterNewVar,
-					Time:         &testClusterNewVar,
+					DayOfTheWeek: testClusterNewVar,
+					Time:         testClusterNewVar,
 				},
-				S3Buckets: &[]compute.S3Bucket{
+				S3Buckets: []compute.S3Bucket{
 					{
-						Name: &testClusterNewVar,
+						Name: testClusterNewVar,
 					},
 				},
-				ApiSubnetAllowList: &[]string{testClusterNewVar},
+				ApiSubnetAllowList: []string{testClusterNewVar},
 			},
 		},
 	}
 	clusterTest = resources.K8sCluster{
 		KubernetesCluster: compute.KubernetesCluster{
 			Properties: compute.KubernetesClusterProperties{
-				Name:       &testClusterVar,
+				Name:       testClusterVar,
 				K8sVersion: &testClusterVar,
-				S3Buckets: &[]compute.S3Bucket{
+				S3Buckets: []compute.S3Bucket{
 					{
-						Name: &testClusterVar,
+						Name: testClusterVar,
 					},
 				},
-				ApiSubnetAllowList: &[]string{testClusterVar},
+				ApiSubnetAllowList: []string{testClusterVar},
 			},
 		},
 	}
 	clustersList = resources.K8sClusters{
 		KubernetesClusters: compute.KubernetesClusters{
 			Id: &testClusterVar,
-			Items: &[]compute.KubernetesCluster{
+			Items: []compute.KubernetesCluster{
 				clusterTestId.KubernetesCluster,
 				clusterTestId.KubernetesCluster,
 			},
@@ -92,14 +92,14 @@ var (
 		KubernetesCluster: compute.KubernetesCluster{
 			Id: &testClusterVar,
 			Properties: compute.KubernetesClusterProperties{
-				Name:       &testClusterVar,
+				Name:       testClusterVar,
 				K8sVersion: &testClusterVar,
-				S3Buckets: &[]compute.S3Bucket{
+				S3Buckets: []compute.S3Bucket{
 					{
-						Name: &testClusterVar,
+						Name: testClusterVar,
 					},
 				},
-				ApiSubnetAllowList: &[]string{testClusterVar},
+				ApiSubnetAllowList: []string{testClusterVar},
 			},
 		},
 	}
@@ -107,20 +107,20 @@ var (
 		KubernetesCluster: compute.KubernetesCluster{
 			Id: &testClusterVar,
 			Properties: compute.KubernetesClusterProperties{
-				Name:                     &testClusterVar,
+				Name:                     testClusterVar,
 				K8sVersion:               &testClusterVar,
-				AvailableUpgradeVersions: &testClusterSliceVar,
-				ViableNodePoolVersions:   &testClusterSliceVar,
+				AvailableUpgradeVersions: testClusterSliceVar,
+				ViableNodePoolVersions:   testClusterSliceVar,
 				MaintenanceWindow: &compute.KubernetesMaintenanceWindow{
-					DayOfTheWeek: &testClusterVar,
-					Time:         &testClusterVar,
+					DayOfTheWeek: testClusterVar,
+					Time:         testClusterVar,
 				},
-				S3Buckets: &[]compute.S3Bucket{
+				S3Buckets: []compute.S3Bucket{
 					{
-						Name: &testClusterVar,
+						Name: testClusterVar,
 					},
 				},
-				ApiSubnetAllowList: &[]string{testClusterVar},
+				ApiSubnetAllowList: []string{testClusterVar},
 			},
 			Metadata: &compute.DatacenterElementMetadata{
 				State: &testStateVar,
@@ -130,23 +130,23 @@ var (
 	clusters = resources.K8sClusters{
 		KubernetesClusters: compute.KubernetesClusters{
 			Id:    &testClusterVar,
-			Items: &[]compute.KubernetesCluster{clusterTest.KubernetesCluster},
+			Items: []compute.KubernetesCluster{clusterTest.KubernetesCluster},
 		},
 	}
 	clusterProperties = resources.K8sClusterProperties{
 		KubernetesClusterProperties: compute.KubernetesClusterProperties{
-			Name:       &testClusterNewVar,
+			Name:       testClusterNewVar,
 			K8sVersion: &testClusterNewVar,
 			MaintenanceWindow: &compute.KubernetesMaintenanceWindow{
-				DayOfTheWeek: &testClusterNewVar,
-				Time:         &testClusterNewVar,
+				DayOfTheWeek: testClusterNewVar,
+				Time:         testClusterNewVar,
 			},
-			S3Buckets: &[]compute.S3Bucket{
+			S3Buckets: []compute.S3Bucket{
 				{
-					Name: &testClusterNewVar,
+					Name: testClusterNewVar,
 				},
 			},
-			ApiSubnetAllowList: &[]string{testClusterNewVar},
+			ApiSubnetAllowList: []string{testClusterNewVar},
 		},
 	}
 	clusterNew = resources.K8sCluster{

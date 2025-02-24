@@ -28,10 +28,10 @@ var (
 				Location:     &testImageVar,
 				Description:  &testImageVar,
 				Size:         &testImageSize,
-				LicenceType:  &testImageUpperVar,
+				LicenceType:  testImageUpperVar,
 				ImageType:    &testImageUpperVar,
 				Public:       &testImagePublic,
-				ImageAliases: &[]string{testImageVar},
+				ImageAliases: []string{testImageVar},
 				CloudInit:    &testImageVar,
 			},
 			Metadata: &compute.DatacenterElementMetadata{
@@ -44,7 +44,7 @@ var (
 	testImages = resources.Images{
 		Images: compute.Images{
 			Id:    &testImageVar,
-			Items: &[]compute.Image{testImage.Image, testImage.Image},
+			Items: []compute.Image{testImage.Image, testImage.Image},
 		},
 	}
 	testImageSize     = float32(2)

@@ -25,10 +25,10 @@ var (
 		Properties: compute.DatacenterProperties{
 			Name:        &testDatacenterVar,
 			Description: &testDatacenterVar,
-			Location:    &testDatacenterVar,
+			Location:    testDatacenterVar,
 			Version:     &dcVersion,
-			Features:    &[]string{testDatacenterVar},
-			CpuArchitecture: &[]compute.CpuArchitectureProperties{
+			Features:    []string{testDatacenterVar},
+			CpuArchitecture: []compute.CpuArchitectureProperties{
 				{
 					CpuFamily: &testDatacenterVar,
 				}},
@@ -50,14 +50,14 @@ var (
 			Properties: compute.DatacenterProperties{
 				Name:        dcProperties.DatacenterProperties.Name,
 				Description: dcProperties.DatacenterProperties.Description,
-				Location:    &testDatacenterVar,
+				Location:    testDatacenterVar,
 			},
 		},
 	}
 	dcs = resources.Datacenters{
 		Datacenters: compute.Datacenters{
 			Id:    &testDatacenterVar,
-			Items: &[]compute.Datacenter{dc, dc},
+			Items: []compute.Datacenter{dc, dc},
 		},
 	}
 	testDatacenterVar     = "test-datacenter"

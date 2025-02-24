@@ -24,10 +24,10 @@ var (
 		FlowLog: compute.FlowLog{
 			Id: &testFlowLogVar,
 			Properties: compute.FlowLogProperties{
-				Name:      &testFlowLogVar,
-				Action:    &testFlowLogUpperVar,
-				Direction: &testFlowLogUpperVar,
-				Bucket:    &testFlowLogVar,
+				Name:      testFlowLogVar,
+				Action:    testFlowLogUpperVar,
+				Direction: testFlowLogUpperVar,
+				Bucket:    testFlowLogVar,
 			},
 			Metadata: &compute.DatacenterElementMetadata{
 				State: &testFlowLogState,
@@ -37,7 +37,7 @@ var (
 	testFlowLogsList = resources.FlowLogs{
 		FlowLogs: compute.FlowLogs{
 			Id: &testFlowLogVar,
-			Items: &[]compute.FlowLog{
+			Items: []compute.FlowLog{
 				testFlowLog.FlowLog,
 				testFlowLog.FlowLog,
 			},
@@ -55,16 +55,16 @@ var (
 	}
 	testFlowLogProperties = resources.FlowLogProperties{
 		FlowLogProperties: compute.FlowLogProperties{
-			Name:      &testFlowLogNewVar,
-			Action:    &testFlowLogNewUpperVar,
-			Direction: &testFlowLogNewUpperVar,
-			Bucket:    &testFlowLogNewVar,
+			Name:      testFlowLogNewVar,
+			Action:    testFlowLogNewUpperVar,
+			Direction: testFlowLogNewUpperVar,
+			Bucket:    testFlowLogNewVar,
 		},
 	}
 	testFlowLogs = resources.FlowLogs{
 		FlowLogs: compute.FlowLogs{
 			Id:    &testFlowLogVar,
-			Items: &[]compute.FlowLog{testFlowLog.FlowLog},
+			Items: []compute.FlowLog{testFlowLog.FlowLog},
 		},
 	}
 	testFlowLogState       = "AVAILABLE"

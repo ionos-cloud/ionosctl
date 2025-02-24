@@ -22,11 +22,11 @@ var (
 	testIpBlock = compute.IpBlock{
 		Id: &testIpBlockVar,
 		Properties: compute.IpBlockProperties{
-			Location: &testIpBlockLocation,
-			Size:     &testIpBlockSize,
+			Location: testIpBlockLocation,
+			Size:     testIpBlockSize,
 			Name:     &testIpBlockVar,
-			Ips:      &testIpBlockIpsVar,
-			IpConsumers: &[]compute.IpConsumer{
+			Ips:      testIpBlockIpsVar,
+			IpConsumers: []compute.IpConsumer{
 				{
 					Ip:              &testIpBlockVar,
 					Mac:             &testIpBlockVar,
@@ -47,13 +47,13 @@ var (
 	testIpBlocks = resources.IpBlocks{
 		IpBlocks: compute.IpBlocks{
 			Id:    &testIpBlockVar,
-			Items: &[]compute.IpBlock{testIpBlock},
+			Items: []compute.IpBlock{testIpBlock},
 		},
 	}
 	testIpBlocksList = resources.IpBlocks{
 		IpBlocks: compute.IpBlocks{
 			Id: &testIpBlockVar,
-			Items: &[]compute.IpBlock{
+			Items: []compute.IpBlock{
 				testIpBlock,
 				testIpBlock,
 			},

@@ -62,7 +62,7 @@ var (
 	groupsList = resources.Groups{
 		Groups: compute.Groups{
 			Id: &testGroupVar,
-			Items: &[]compute.Group{
+			Items: []compute.Group{
 				groupTestId.Group,
 				groupTestId.Group,
 			},
@@ -107,7 +107,7 @@ var (
 	groups = resources.Groups{
 		Groups: compute.Groups{
 			Id:    &testGroupVar,
-			Items: &[]compute.Group{groupTest.Group},
+			Items: []compute.Group{groupTest.Group},
 		},
 	}
 	testGroupType       = compute.Type(testGroupVar)

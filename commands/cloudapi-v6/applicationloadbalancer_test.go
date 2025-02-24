@@ -22,11 +22,11 @@ var (
 	applicationloadbalancerTest = resources.ApplicationLoadBalancer{
 		ApplicationLoadBalancer: compute.ApplicationLoadBalancer{
 			Properties: compute.ApplicationLoadBalancerProperties{
-				Name:         &testApplicationLoadBalancerVar,
-				Ips:          &[]string{testApplicationLoadBalancerVar},
-				TargetLan:    &testApplicationLoadBalancerIntVar,
-				ListenerLan:  &testApplicationLoadBalancerIntVar,
-				LbPrivateIps: &[]string{testApplicationLoadBalancerVar},
+				Name:         testApplicationLoadBalancerVar,
+				Ips:          []string{testApplicationLoadBalancerVar},
+				TargetLan:    testApplicationLoadBalancerIntVar,
+				ListenerLan:  testApplicationLoadBalancerIntVar,
+				LbPrivateIps: []string{testApplicationLoadBalancerVar},
 			},
 		},
 	}
@@ -40,16 +40,16 @@ var (
 	applicationloadbalancers = resources.ApplicationLoadBalancers{
 		ApplicationLoadBalancers: compute.ApplicationLoadBalancers{
 			Id:    &testApplicationLoadBalancerVar,
-			Items: &[]compute.ApplicationLoadBalancer{applicationloadbalancerTestGet.ApplicationLoadBalancer},
+			Items: []compute.ApplicationLoadBalancer{applicationloadbalancerTestGet.ApplicationLoadBalancer},
 		},
 	}
 	applicationloadbalancerProperties = resources.ApplicationLoadBalancerProperties{
 		ApplicationLoadBalancerProperties: compute.ApplicationLoadBalancerProperties{
-			Name:         &testApplicationLoadBalancerNewVar,
-			Ips:          &[]string{testApplicationLoadBalancerNewVar},
-			TargetLan:    &testApplicationLoadBalancerNewIntVar,
-			ListenerLan:  &testApplicationLoadBalancerNewIntVar,
-			LbPrivateIps: &[]string{testApplicationLoadBalancerNewVar},
+			Name:         testApplicationLoadBalancerNewVar,
+			Ips:          []string{testApplicationLoadBalancerNewVar},
+			TargetLan:    testApplicationLoadBalancerNewIntVar,
+			ListenerLan:  testApplicationLoadBalancerNewIntVar,
+			LbPrivateIps: []string{testApplicationLoadBalancerNewVar},
 		},
 	}
 	applicationloadbalancerNew = resources.ApplicationLoadBalancer{

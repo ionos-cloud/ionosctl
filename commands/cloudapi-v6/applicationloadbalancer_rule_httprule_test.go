@@ -20,15 +20,15 @@ import (
 var (
 	testAlbRuleHttpRuleForwardProperties = resources.ApplicationLoadBalancerForwardingRuleProperties{
 		ApplicationLoadBalancerForwardingRuleProperties: compute.ApplicationLoadBalancerForwardingRuleProperties{
-			HttpRules: &[]compute.ApplicationLoadBalancerHttpRule{
+			HttpRules: []compute.ApplicationLoadBalancerHttpRule{
 				{
-					Name:        &testAlbRuleHttpRuleVar,
-					Type:        &testAlbRuleHttpRuleForwardTypeVar,
+					Name:        testAlbRuleHttpRuleVar,
+					Type:        testAlbRuleHttpRuleForwardTypeVar,
 					TargetGroup: &testAlbRuleHttpRuleVar,
-					Conditions: &[]compute.ApplicationLoadBalancerHttpRuleCondition{
+					Conditions: []compute.ApplicationLoadBalancerHttpRuleCondition{
 						{
-							Type:      &testAlbRuleHttpRuleVar,
-							Condition: &testAlbRuleHttpRuleVar,
+							Type:      testAlbRuleHttpRuleVar,
+							Condition: testAlbRuleHttpRuleVar,
 							Value:     &testAlbRuleHttpRuleVar,
 							Negate:    &testAlbRuleHttpRuleBoolVar,
 						},
@@ -39,17 +39,17 @@ var (
 	}
 	testAlbRuleHttpRuleStaticProperties = resources.ApplicationLoadBalancerForwardingRuleProperties{
 		ApplicationLoadBalancerForwardingRuleProperties: compute.ApplicationLoadBalancerForwardingRuleProperties{
-			HttpRules: &[]compute.ApplicationLoadBalancerHttpRule{
+			HttpRules: []compute.ApplicationLoadBalancerHttpRule{
 				{
-					Name:            &testAlbRuleHttpRuleVar,
-					Type:            &testAlbRuleHttpRuleStaticTypeVar,
+					Name:            testAlbRuleHttpRuleVar,
+					Type:            testAlbRuleHttpRuleStaticTypeVar,
 					StatusCode:      &testAlbRuleHttpRuleIntVar,
 					ResponseMessage: &testAlbRuleHttpRuleVar,
 					ContentType:     &testAlbRuleHttpRuleVar,
-					Conditions: &[]compute.ApplicationLoadBalancerHttpRuleCondition{
+					Conditions: []compute.ApplicationLoadBalancerHttpRuleCondition{
 						{
-							Type:      &testAlbRuleHttpRuleVar,
-							Condition: &testAlbRuleHttpRuleVar,
+							Type:      testAlbRuleHttpRuleVar,
+							Condition: testAlbRuleHttpRuleVar,
 							Value:     &testAlbRuleHttpRuleVar,
 							Negate:    &testAlbRuleHttpRuleBoolVar,
 						},
@@ -60,17 +60,17 @@ var (
 	}
 	testAlbRuleHttpRuleRedirectProperties = resources.ApplicationLoadBalancerForwardingRuleProperties{
 		ApplicationLoadBalancerForwardingRuleProperties: compute.ApplicationLoadBalancerForwardingRuleProperties{
-			HttpRules: &[]compute.ApplicationLoadBalancerHttpRule{
+			HttpRules: []compute.ApplicationLoadBalancerHttpRule{
 				{
-					Name:       &testAlbRuleHttpRuleVar,
-					Type:       &testAlbRuleHttpRuleRedirectTypeVar,
+					Name:       testAlbRuleHttpRuleVar,
+					Type:       testAlbRuleHttpRuleRedirectTypeVar,
 					StatusCode: &testAlbRuleHttpRuleIntVar,
 					Location:   &testAlbRuleHttpRuleVar,
 					DropQuery:  &testAlbRuleHttpRuleBoolVar,
-					Conditions: &[]compute.ApplicationLoadBalancerHttpRuleCondition{
+					Conditions: []compute.ApplicationLoadBalancerHttpRuleCondition{
 						{
-							Type:      &testAlbRuleHttpRuleVar,
-							Condition: &testAlbRuleHttpRuleVar,
+							Type:      testAlbRuleHttpRuleVar,
+							Condition: testAlbRuleHttpRuleVar,
 							Value:     &testAlbRuleHttpRuleVar,
 							Negate:    &testAlbRuleHttpRuleBoolVar,
 						},
