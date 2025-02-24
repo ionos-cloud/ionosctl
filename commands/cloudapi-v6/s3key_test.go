@@ -36,7 +36,7 @@ var (
 	s3keysList = resources.S3Keys{
 		S3Keys: compute.S3Keys{
 			Id: &testS3keyVar,
-			Items: &[]compute.S3Key{
+			Items: []compute.S3Key{
 				s3keyTestId.S3Key,
 				s3keyTestId.S3Key,
 			},
@@ -54,7 +54,7 @@ var (
 	s3keys = resources.S3Keys{
 		S3Keys: compute.S3Keys{
 			Id:    &testS3keyVar,
-			Items: &[]compute.S3Key{s3keyTest.S3Key},
+			Items: []compute.S3Key{s3keyTest.S3Key},
 		},
 	}
 	s3keyProperties = compute.S3KeyProperties{
@@ -368,7 +368,7 @@ func TestRunUserS3KeyDeleteAllLenErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgUserId), testS3keyVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
 		rm.CloudApiV6Mocks.S3Key.EXPECT().List(testS3keyVar, gomock.AssignableToTypeOf(testListQueryParam)).Return(
-			resources.S3Keys{S3Keys: compute.S3Keys{Items: &[]compute.S3Key{}}}, &testResponse, nil)
+			resources.S3Keys{S3Keys: compute.S3Keys{Items: []compute.S3Key{}}}, &testResponse, nil)
 		err := RunUserS3KeyDelete(cfg)
 		assert.Error(t, err)
 	})

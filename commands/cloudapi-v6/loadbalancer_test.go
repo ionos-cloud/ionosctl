@@ -32,13 +32,13 @@ var (
 	loadbs = resources.Loadbalancers{
 		Loadbalancers: compute.Loadbalancers{
 			Id:    &testLoadbalancerVar,
-			Items: &[]compute.Loadbalancer{loadb},
+			Items: []compute.Loadbalancer{loadb},
 		},
 	}
 	lbList = resources.Loadbalancers{
 		Loadbalancers: compute.Loadbalancers{
 			Id: &testLoadbalancerVar,
-			Items: &[]compute.Loadbalancer{
+			Items: []compute.Loadbalancer{
 				loadb,
 				loadb,
 			},
@@ -453,7 +453,7 @@ func TestRunLoadBalancerDeleteAllLenErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
 		rm.CloudApiV6Mocks.Loadbalancer.EXPECT().List(testLoadbalancerVar, gomock.AssignableToTypeOf(testListQueryParam)).Return(
-			resources.Loadbalancers{Loadbalancers: compute.Loadbalancers{Items: &[]compute.Loadbalancer{}}}, &testResponse, nil)
+			resources.Loadbalancers{Loadbalancers: compute.Loadbalancers{Items: []compute.Loadbalancer{}}}, &testResponse, nil)
 		err := RunLoadBalancerDelete(cfg)
 		assert.Error(t, err)
 	})

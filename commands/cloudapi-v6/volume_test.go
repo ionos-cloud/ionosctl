@@ -119,13 +119,13 @@ var (
 	vs = resources.Volumes{
 		Volumes: compute.Volumes{
 			Id:    &testVolumeVar,
-			Items: &[]compute.Volume{v},
+			Items: []compute.Volume{v},
 		},
 	}
 	vsList = resources.Volumes{
 		Volumes: compute.Volumes{
 			Id: &testVolumeVar,
-			Items: &[]compute.Volume{
+			Items: []compute.Volume{
 				v,
 				v,
 			},
@@ -134,7 +134,7 @@ var (
 	vsAttachedList = resources.AttachedVolumes{
 		AttachedVolumes: compute.AttachedVolumes{
 			Id:    &testVolumeVar,
-			Items: &[]compute.Volume{serverVolume, serverVolume},
+			Items: []compute.Volume{serverVolume, serverVolume},
 		},
 	}
 	volumeProperties = resources.VolumeProperties{
@@ -172,7 +172,7 @@ var (
 	vsAttached = resources.AttachedVolumes{
 		AttachedVolumes: compute.AttachedVolumes{
 			Id:    &testVolumeVar,
-			Items: &[]compute.Volume{v},
+			Items: []compute.Volume{v},
 		},
 	}
 	testDeviceNumberVolumeVar = int64(1)
@@ -692,7 +692,7 @@ func TestRunVolumeDeleteAllLenErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
 		rm.CloudApiV6Mocks.Volume.EXPECT().List(testVolumeVar, gomock.AssignableToTypeOf(testListQueryParam)).Return(
-			resources.Volumes{Volumes: compute.Volumes{Items: &[]compute.Volume{}}}, &testResponse, nil)
+			resources.Volumes{Volumes: compute.Volumes{Items: []compute.Volume{}}}, &testResponse, nil)
 		err := RunVolumeDelete(cfg)
 		assert.Error(t, err)
 	})
@@ -1138,7 +1138,7 @@ func TestServerVolumeDetach(t *testing.T) {
 							testServerVar,
 							cloudapiv6.ParentResourceListQueryParams,
 						).Return(
-							resources.AttachedVolumes{AttachedVolumes: compute.AttachedVolumes{Items: &[]compute.Volume{}}},
+							resources.AttachedVolumes{AttachedVolumes: compute.AttachedVolumes{Items: []compute.Volume{}}},
 							nil,
 							nil,
 						),

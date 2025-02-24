@@ -27,10 +27,10 @@ var (
 				Metadata: &compute.RequestStatusMetadata{
 					Status:  &testRequestVar,
 					Message: &testRequestVar,
-					Targets: &[]compute.RequestTarget{
+					Targets: []compute.RequestTarget{
 						{
 							Target: &compute.ResourceReference{
-								Id:   &testRequestVar,
+								Id:   testRequestVar,
 								Type: &testTypeRequestVar,
 							},
 						},
@@ -96,13 +96,13 @@ var (
 	testRequests = resources.Requests{
 		Requests: compute.Requests{
 			Id:    &testRequestVar,
-			Items: &[]compute.Request{rq, testRequestUpdated, testRequestUpdatedPatch, testRequestDeleted, testRequestCreated},
+			Items: []compute.Request{rq, testRequestUpdated, testRequestUpdatedPatch, testRequestDeleted, testRequestCreated},
 		},
 	}
 	testRequestTargetsVar = []compute.RequestTarget{
 		{
 			Target: &compute.ResourceReference{
-				Id:   &testRequestVar,
+				Id:   testRequestVar,
 				Type: &testTypeRequestVar,
 			},
 		},

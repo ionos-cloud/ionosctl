@@ -38,13 +38,13 @@ var (
 	snapshots     = resources.Snapshots{
 		Snapshots: compute.Snapshots{
 			Id:    &testSnapshotVar,
-			Items: &[]compute.Snapshot{snapshotTest.Snapshot},
+			Items: []compute.Snapshot{snapshotTest.Snapshot},
 		},
 	}
 	snapshotsList = resources.Snapshots{
 		Snapshots: compute.Snapshots{
 			Id: &testSnapshotVar,
-			Items: &[]compute.Snapshot{
+			Items: []compute.Snapshot{
 				snapshotTest.Snapshot,
 				snapshotTest.Snapshot,
 			},
@@ -502,7 +502,7 @@ func TestRunSnapshotDeleteAllLenErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
 		rm.CloudApiV6Mocks.Snapshot.EXPECT().List(gomock.AssignableToTypeOf(testListQueryParam)).Return(
-			resources.Snapshots{Snapshots: compute.Snapshots{Items: &[]compute.Snapshot{}}}, &testResponse, nil)
+			resources.Snapshots{Snapshots: compute.Snapshots{Items: []compute.Snapshot{}}}, &testResponse, nil)
 		err := RunSnapshotDelete(cfg)
 		assert.Error(t, err)
 	})

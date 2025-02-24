@@ -39,7 +39,7 @@ var (
 	shares = resources.GroupShares{
 		GroupShares: compute.GroupShares{
 			Id:    &testShareVar,
-			Items: &[]compute.GroupShare{shareTest.GroupShare},
+			Items: []compute.GroupShare{shareTest.GroupShare},
 		},
 	}
 	shareTestId = resources.GroupShare{
@@ -55,7 +55,7 @@ var (
 	sharesList = resources.GroupShares{
 		GroupShares: compute.GroupShares{
 			Id: &testShareVar,
-			Items: &[]compute.GroupShare{
+			Items: []compute.GroupShare{
 				shareTestId.GroupShare,
 				shareTestId.GroupShare,
 			},
@@ -427,7 +427,7 @@ func TestRunShareDeleteAllLenErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgGroupId), testShareVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
 		rm.CloudApiV6Mocks.Group.EXPECT().ListShares(testShareVar, gomock.AssignableToTypeOf(testListQueryParam)).Return(
-			resources.GroupShares{GroupShares: compute.GroupShares{Items: &[]compute.GroupShare{}}}, &testResponse, nil)
+			resources.GroupShares{GroupShares: compute.GroupShares{Items: []compute.GroupShare{}}}, &testResponse, nil)
 		err := RunShareDelete(cfg)
 		assert.Error(t, err)
 	})

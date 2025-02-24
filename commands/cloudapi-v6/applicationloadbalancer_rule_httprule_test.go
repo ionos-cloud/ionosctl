@@ -467,7 +467,7 @@ func TestRunAlbRuleHttpRuleRemove(t *testing.T) {
 		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().UpdateForwardingRule(testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar,
 			&resources.ApplicationLoadBalancerForwardingRuleProperties{
 				ApplicationLoadBalancerForwardingRuleProperties: compute.ApplicationLoadBalancerForwardingRuleProperties{
-					HttpRules: &[]compute.ApplicationLoadBalancerHttpRule{},
+					HttpRules: []compute.ApplicationLoadBalancerHttpRule{},
 				},
 			}, testQueryParamOther).Return(&testAlbRuleHttpRuleGet, nil, nil)
 		err := RunAlbRuleHttpRuleRemove(cfg)
@@ -491,7 +491,7 @@ func TestRunAlbRuleHttpRuleRemoveAll(t *testing.T) {
 		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().UpdateForwardingRule(testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar,
 			&resources.ApplicationLoadBalancerForwardingRuleProperties{
 				ApplicationLoadBalancerForwardingRuleProperties: compute.ApplicationLoadBalancerForwardingRuleProperties{
-					HttpRules: &[]compute.ApplicationLoadBalancerHttpRule{},
+					HttpRules: []compute.ApplicationLoadBalancerHttpRule{},
 				},
 			}, testQueryParamOther).Return(&testAlbRuleHttpRuleGet, nil, nil)
 		err := RunAlbRuleHttpRuleRemove(cfg)
@@ -533,7 +533,7 @@ func TestRunAlbRuleHttpRuleRemoveErr(t *testing.T) {
 		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().UpdateForwardingRule(testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar,
 			&resources.ApplicationLoadBalancerForwardingRuleProperties{
 				ApplicationLoadBalancerForwardingRuleProperties: compute.ApplicationLoadBalancerForwardingRuleProperties{
-					HttpRules: &[]compute.ApplicationLoadBalancerHttpRule{},
+					HttpRules: []compute.ApplicationLoadBalancerHttpRule{},
 				},
 			}, testQueryParamOther).Return(&testAlbRuleHttpRuleGet, nil, testAlbRuleHttpRuleErr)
 		err := RunAlbRuleHttpRuleRemove(cfg)
@@ -576,7 +576,7 @@ func TestRunAlbRuleHttpRuleRemoveWaitErr(t *testing.T) {
 		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().UpdateForwardingRule(testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar,
 			&resources.ApplicationLoadBalancerForwardingRuleProperties{
 				ApplicationLoadBalancerForwardingRuleProperties: compute.ApplicationLoadBalancerForwardingRuleProperties{
-					HttpRules: &[]compute.ApplicationLoadBalancerHttpRule{},
+					HttpRules: []compute.ApplicationLoadBalancerHttpRule{},
 				},
 			}, testQueryParamOther).Return(&testAlbRuleHttpRuleGet, &testResponse, nil)
 		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testRequestIdVar).Return(&testRequestStatus, nil, testRequestErr)
@@ -602,7 +602,7 @@ func TestRunAlbRuleHttpRuleRemoveAskForConfirm(t *testing.T) {
 		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().UpdateForwardingRule(testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar,
 			&resources.ApplicationLoadBalancerForwardingRuleProperties{
 				ApplicationLoadBalancerForwardingRuleProperties: compute.ApplicationLoadBalancerForwardingRuleProperties{
-					HttpRules: &[]compute.ApplicationLoadBalancerHttpRule{},
+					HttpRules: []compute.ApplicationLoadBalancerHttpRule{},
 				},
 			}, testQueryParamOther).Return(&testAlbRuleHttpRuleGet, nil, nil)
 		err := RunAlbRuleHttpRuleRemove(cfg)

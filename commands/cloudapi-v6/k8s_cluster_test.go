@@ -263,7 +263,7 @@ func TestRunK8sClusterListQueryParams(t *testing.T) {
 		rm.CloudApiV6Mocks.K8s.EXPECT().ListClusters(gomock.AssignableToTypeOf(testListQueryParam)).Return(
 			resources.K8sClusters{
 				KubernetesClusters: compute.KubernetesClusters{
-					Items: &[]compute.KubernetesCluster{},
+					Items: []compute.KubernetesCluster{},
 				},
 			}, &testResponse, nil)
 		err := RunK8sClusterList(cfg)
@@ -732,7 +732,7 @@ func TestRunK8sClusterDeleteAllLenErr(t *testing.T) {
 		viper.Set(constants.ArgForce, true)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
 		rm.CloudApiV6Mocks.K8s.EXPECT().ListClusters(gomock.AssignableToTypeOf(testListQueryParam)).Return(
-			resources.K8sClusters{KubernetesClusters: compute.KubernetesClusters{Items: &[]compute.KubernetesCluster{}}}, &testResponse, nil)
+			resources.K8sClusters{KubernetesClusters: compute.KubernetesClusters{Items: []compute.KubernetesCluster{}}}, &testResponse, nil)
 		err := RunK8sClusterDelete(cfg)
 		assert.Error(t, err)
 	})

@@ -432,7 +432,7 @@ func TestRunNatGatewayFlowLogDeleteAllLenErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNatGatewayId), testFlowLogVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
 		rm.CloudApiV6Mocks.NatGateway.EXPECT().ListFlowLogs(testFlowLogVar, testFlowLogVar, gomock.AssignableToTypeOf(testListQueryParam)).Return(
-			resources.FlowLogs{FlowLogs: compute.FlowLogs{Items: &[]compute.FlowLog{}}}, &testResponse, nil)
+			resources.FlowLogs{FlowLogs: compute.FlowLogs{Items: []compute.FlowLog{}}}, &testResponse, nil)
 		err := RunNatGatewayFlowLogDelete(cfg)
 		assert.Error(t, err)
 	})

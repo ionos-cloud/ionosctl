@@ -515,7 +515,7 @@ func TestRunBackupUnitDeleteAllLenErr(t *testing.T) {
 		viper.Set(constants.ArgForce, true)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
 		rm.CloudApiV6Mocks.BackupUnit.EXPECT().List(gomock.AssignableToTypeOf(testListQueryParam)).Return(
-			resources.BackupUnits{BackupUnits: compute.BackupUnits{Items: &[]compute.BackupUnit{}}}, &testResponse, nil)
+			resources.BackupUnits{BackupUnits: compute.BackupUnits{Items: []compute.BackupUnit{}}}, &testResponse, nil)
 		err := RunBackupUnitDelete(cfg)
 		assert.Error(t, err)
 	})

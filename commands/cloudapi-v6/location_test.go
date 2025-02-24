@@ -27,7 +27,7 @@ var (
 				Name:         &testLocationVar,
 				Features:     &[]string{testLocationVar},
 				ImageAliases: &[]string{testLocationVar},
-				CpuArchitecture: &[]compute.CpuArchitectureProperties{
+				CpuArchitecture: []compute.CpuArchitectureProperties{
 					{
 						CpuFamily: &testLocationVar,
 						MaxRam:    &testLocationIntVar,
@@ -41,7 +41,7 @@ var (
 	locations = resources.Locations{
 		Locations: compute.Locations{
 			Id:    &testLocationVar,
-			Items: &[]compute.Location{loc.Location},
+			Items: []compute.Location{loc.Location},
 		},
 	}
 	testLocationIntVar = int32(1)

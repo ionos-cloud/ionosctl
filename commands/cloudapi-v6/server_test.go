@@ -45,7 +45,7 @@ var (
 			},
 			Entities: &compute.ServerEntities{
 				Volumes: &compute.AttachedVolumes{
-					Items: &[]compute.Volume{
+					Items: []compute.Volume{
 						{
 							Properties: compute.VolumeProperties{
 								Name:        &testServerVar,
@@ -70,7 +70,7 @@ var (
 			},
 			Entities: &compute.ServerEntities{
 				Volumes: &compute.AttachedVolumes{
-					Items: &[]compute.Volume{
+					Items: []compute.Volume{
 						{
 							Properties: compute.VolumeProperties{
 								Name:          &testServerVar,
@@ -102,13 +102,13 @@ var (
 	ss = resources.Servers{
 		Servers: compute.Servers{
 			Id:    &testServerVar,
-			Items: &[]compute.Server{s},
+			Items: []compute.Server{s},
 		},
 	}
 	ssList = resources.Servers{
 		Servers: compute.Servers{
 			Id: &testServerVar,
-			Items: &[]compute.Server{
+			Items: []compute.Server{
 				s,
 				s,
 			},

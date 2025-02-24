@@ -336,7 +336,7 @@ var (
 	}
 	testClusters = resources.ClusterList{
 		ClusterList: sdkgo.ClusterList{
-			Items: &[]sdkgo.ClusterResponse{testClusterGet.ClusterResponse},
+			Items: []sdkgo.ClusterResponse{testClusterGet.ClusterResponse},
 		},
 	}
 	testVdcGet = cloudapiv6resources.Datacenter{
@@ -1332,7 +1332,7 @@ func TestRunClusterDeleteAllLenErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, constants.ArgAll), true)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgName), testClusterVar)
 		rm.CloudApiDbaasPgsqlMocks.Cluster.EXPECT().List(testClusterVar).Return(
-			resources.ClusterList{ClusterList: sdkgo.ClusterList{Items: &[]sdkgo.ClusterResponse{}}}, nil, nil)
+			resources.ClusterList{ClusterList: sdkgo.ClusterList{Items: []sdkgo.ClusterResponse{}}}, nil, nil)
 		err := RunClusterDelete(cfg)
 		assert.Error(t, err)
 	})

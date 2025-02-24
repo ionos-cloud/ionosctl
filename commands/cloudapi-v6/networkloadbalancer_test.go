@@ -52,13 +52,13 @@ var (
 	networkloadbalancers = resources.NetworkLoadBalancers{
 		NetworkLoadBalancers: compute.NetworkLoadBalancers{
 			Id:    &testNetworkLoadBalancerVar,
-			Items: &[]compute.NetworkLoadBalancer{networkloadbalancerTest.NetworkLoadBalancer},
+			Items: []compute.NetworkLoadBalancer{networkloadbalancerTest.NetworkLoadBalancer},
 		},
 	}
 	networkloadbalancersList = resources.NetworkLoadBalancers{
 		NetworkLoadBalancers: compute.NetworkLoadBalancers{
 			Id: &testNetworkLoadBalancerVar,
-			Items: &[]compute.NetworkLoadBalancer{
+			Items: []compute.NetworkLoadBalancer{
 				networkloadbalancerTestId.NetworkLoadBalancer,
 				networkloadbalancerTestId.NetworkLoadBalancer,
 			},
@@ -513,7 +513,7 @@ func TestRunNetworkLoadBalancerDeleteAllLenErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNetworkLoadBalancerVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
 		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().List(testNetworkLoadBalancerVar, gomock.AssignableToTypeOf(testListQueryParam)).Return(
-			resources.NetworkLoadBalancers{NetworkLoadBalancers: compute.NetworkLoadBalancers{Items: &[]compute.NetworkLoadBalancer{}}}, &testResponse, nil)
+			resources.NetworkLoadBalancers{NetworkLoadBalancers: compute.NetworkLoadBalancers{Items: []compute.NetworkLoadBalancer{}}}, &testResponse, nil)
 		err := RunNetworkLoadBalancerDelete(cfg)
 		assert.Error(t, err)
 	})

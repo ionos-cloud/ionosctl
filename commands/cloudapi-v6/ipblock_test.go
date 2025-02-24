@@ -380,7 +380,7 @@ func TestRunIpBlockDeleteAllLenErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIpBlockId), testIpBlockVar)
 		viper.Set(core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), false)
 		rm.CloudApiV6Mocks.IpBlocks.EXPECT().List(gomock.AssignableToTypeOf(testListQueryParam)).Return(
-			resources.IpBlocks{IpBlocks: compute.IpBlocks{Items: &[]compute.IpBlock{}}}, &testResponse, nil)
+			resources.IpBlocks{IpBlocks: compute.IpBlocks{Items: []compute.IpBlock{}}}, &testResponse, nil)
 		err := RunIpBlockDelete(cfg)
 		assert.Error(t, err)
 	})

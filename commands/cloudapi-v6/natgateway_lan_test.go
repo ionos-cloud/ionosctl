@@ -30,7 +30,7 @@ var (
 	natgatewaysLanListTest = resources.NatGateways{
 		NatGateways: compute.NatGateways{
 			Id:    &testNatGatewayLanVar,
-			Items: &[]compute.NatGateway{natgatewayLanTest.NatGateway, natgatewayLanTest.NatGateway},
+			Items: []compute.NatGateway{natgatewayLanTest.NatGateway, natgatewayLanTest.NatGateway},
 		},
 	}
 	natgatewayLanTestUpdated = resources.NatGateway{
@@ -46,7 +46,7 @@ var (
 	}
 	natgatewayLanTestProper = resources.NatGatewayProperties{
 		NatGatewayProperties: compute.NatGatewayProperties{
-			Lans: &[]compute.NatGatewayLanProperties{
+			Lans: []compute.NatGatewayLanProperties{
 				natgatewayLanProperties.NatGatewayLanProperties,
 				natgatewayLanNewProperties.NatGatewayLanProperties,
 			},
@@ -55,14 +55,14 @@ var (
 	// Send empty struct to overwrite the existing one
 	natgatewayLanTestRemove = resources.NatGatewayProperties{
 		NatGatewayProperties: compute.NatGatewayProperties{
-			Lans: &[]compute.NatGatewayLanProperties{
+			Lans: []compute.NatGatewayLanProperties{
 				natgatewayLanProperties.NatGatewayLanProperties,
 			},
 		},
 	}
 	natgatewayLanTestRemoveAll = resources.NatGatewayProperties{
 		NatGatewayProperties: compute.NatGatewayProperties{
-			Lans: &[]compute.NatGatewayLanProperties{},
+			Lans: []compute.NatGatewayLanProperties{},
 		},
 	}
 	natgatewayLanProperties = resources.NatGatewayLanProperties{

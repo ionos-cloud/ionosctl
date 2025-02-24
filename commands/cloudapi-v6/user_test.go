@@ -34,7 +34,7 @@ var (
 	usersList = resources.Users{
 		Users: compute.Users{
 			Id: &testUserVar,
-			Items: &[]compute.User{
+			Items: []compute.User{
 				userTestGet.User,
 				userTestGet.User,
 			},
@@ -58,12 +58,12 @@ var (
 	users = resources.Users{
 		Users: compute.Users{
 			Id:    &testUserVar,
-			Items: &[]compute.User{userTestGet.User},
+			Items: []compute.User{userTestGet.User},
 		},
 	}
 	groupUsersTestList = resources.GroupMembers{
 		GroupMembers: compute.GroupMembers{
-			Items: &[]compute.User{
+			Items: []compute.User{
 				userTestGet.User,
 				userTestGet.User,
 			},
@@ -482,7 +482,7 @@ func TestRunUserDeleteAllLenErr(t *testing.T) {
 		viper.Set(constants.ArgVerbose, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
 		rm.CloudApiV6Mocks.User.EXPECT().List(gomock.AssignableToTypeOf(testListQueryParam)).Return(
-			resources.Users{Users: compute.Users{Items: &[]compute.User{}}}, &testResponse, nil)
+			resources.Users{Users: compute.Users{Items: []compute.User{}}}, &testResponse, nil)
 		err := RunUserDelete(cfg)
 		assert.Error(t, err)
 	})
@@ -558,7 +558,7 @@ func TestRunUserDeleteAskForConfirmErr(t *testing.T) {
 var (
 	groupUsersTest = resources.GroupMembers{
 		GroupMembers: compute.GroupMembers{
-			Items: &[]compute.User{userTestGet.User},
+			Items: []compute.User{userTestGet.User},
 		},
 	}
 	groupUserTest = resources.User{
@@ -728,7 +728,7 @@ func TestRunGroupUserRemoveAllLenErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgGroupId), testGroupVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
 		rm.CloudApiV6Mocks.Group.EXPECT().ListUsers(testGroupVar, gomock.AssignableToTypeOf(testListQueryParam)).Return(
-			resources.GroupMembers{GroupMembers: compute.GroupMembers{Items: &[]compute.User{}}}, &testResponse, nil)
+			resources.GroupMembers{GroupMembers: compute.GroupMembers{Items: []compute.User{}}}, &testResponse, nil)
 		err := RunGroupUserRemove(cfg)
 		assert.Error(t, err)
 	})

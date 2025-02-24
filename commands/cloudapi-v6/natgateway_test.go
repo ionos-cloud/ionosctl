@@ -46,13 +46,13 @@ var (
 	natgateways = resources.NatGateways{
 		NatGateways: compute.NatGateways{
 			Id:    &testNatGatewayVar,
-			Items: &[]compute.NatGateway{natgatewayTest.NatGateway},
+			Items: []compute.NatGateway{natgatewayTest.NatGateway},
 		},
 	}
 	natgatewaysList = resources.NatGateways{
 		NatGateways: compute.NatGateways{
 			Id: &testNatGatewayVar,
-			Items: &[]compute.NatGateway{
+			Items: []compute.NatGateway{
 				natgatewayTestId.NatGateway,
 				natgatewayTestId.NatGateway,
 			},
@@ -508,7 +508,7 @@ func TestRunNatGatewayDeleteAllLenErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNatGatewayVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
 		rm.CloudApiV6Mocks.NatGateway.EXPECT().List(testNatGatewayVar, gomock.AssignableToTypeOf(testListQueryParam)).Return(
-			resources.NatGateways{NatGateways: compute.NatGateways{Items: &[]compute.NatGateway{}}}, &testResponse, nil)
+			resources.NatGateways{NatGateways: compute.NatGateways{Items: []compute.NatGateway{}}}, &testResponse, nil)
 		err := RunNatGatewayDelete(cfg)
 		assert.Error(t, err)
 	})

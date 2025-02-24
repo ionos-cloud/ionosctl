@@ -353,7 +353,7 @@ func TestRunServerCdromDetachAllLenErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
 		rm.CloudApiV6Mocks.Server.EXPECT().ListCdroms(testCdromVar, testCdromVar, gomock.AssignableToTypeOf(testListQueryParam)).Return(
-			resources.Cdroms{Cdroms: compute.Cdroms{Items: &[]compute.Image{}}}, &testResponse, nil)
+			resources.Cdroms{Cdroms: compute.Cdroms{Items: []compute.Image{}}}, &testResponse, nil)
 		err := RunServerCdromDetach(cfg)
 		assert.Error(t, err)
 	})

@@ -20,7 +20,7 @@ import (
 var (
 	testRuleTargetProperties = resources.NetworkLoadBalancerForwardingRuleProperties{
 		NetworkLoadBalancerForwardingRuleProperties: compute.NetworkLoadBalancerForwardingRuleProperties{
-			Targets: &[]compute.NetworkLoadBalancerForwardingRuleTarget{
+			Targets: []compute.NetworkLoadBalancerForwardingRuleTarget{
 				{
 					Ip:     &testNlbRuleTargetVar,
 					Port:   &testNlbRuleTargetIntVar,
@@ -54,13 +54,13 @@ var (
 		Id: &testNlbRuleTargetVar,
 		Properties: compute.NetworkLoadBalancerForwardingRuleProperties{
 			Name:    &testNlbRuleTargetVar,
-			Targets: &[]compute.NetworkLoadBalancerForwardingRuleTarget{testTarget, testTarget},
+			Targets: []compute.NetworkLoadBalancerForwardingRuleTarget{testTarget, testTarget},
 		},
 	}
 	testNlbRuleTargetList = resources.NetworkLoadBalancerForwardingRules{
 		NetworkLoadBalancerForwardingRules: compute.NetworkLoadBalancerForwardingRules{
 			Id: &testNlbRuleTargetVar,
-			Items: &[]compute.NetworkLoadBalancerForwardingRule{
+			Items: []compute.NetworkLoadBalancerForwardingRule{
 				testNlbRuleTarget,
 				testNlbRuleTarget,
 			},
@@ -303,7 +303,7 @@ func TestRunNlbRuleTargetRemove(t *testing.T) {
 		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().UpdateForwardingRule(testNlbRuleTargetVar, testNlbRuleTargetVar, testNlbRuleTargetVar,
 			&resources.NetworkLoadBalancerForwardingRuleProperties{
 				NetworkLoadBalancerForwardingRuleProperties: compute.NetworkLoadBalancerForwardingRuleProperties{
-					Targets: &[]compute.NetworkLoadBalancerForwardingRuleTarget{},
+					Targets: []compute.NetworkLoadBalancerForwardingRuleTarget{},
 				},
 			},
 			testQueryParamOther,
@@ -331,7 +331,7 @@ func TestRunNlbRuleTargetRemoveAll(t *testing.T) {
 		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().UpdateForwardingRule(testNlbRuleTargetVar, testNlbRuleTargetVar, testNlbRuleTargetVar,
 			&resources.NetworkLoadBalancerForwardingRuleProperties{
 				NetworkLoadBalancerForwardingRuleProperties: compute.NetworkLoadBalancerForwardingRuleProperties{
-					Targets: &[]compute.NetworkLoadBalancerForwardingRuleTarget{},
+					Targets: []compute.NetworkLoadBalancerForwardingRuleTarget{},
 				},
 			},
 			testQueryParamOther,
@@ -358,7 +358,7 @@ func TestRunNlbRuleTargetRemoveErr(t *testing.T) {
 		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().UpdateForwardingRule(testNlbRuleTargetVar, testNlbRuleTargetVar, testNlbRuleTargetVar,
 			&resources.NetworkLoadBalancerForwardingRuleProperties{
 				NetworkLoadBalancerForwardingRuleProperties: compute.NetworkLoadBalancerForwardingRuleProperties{
-					Targets: &[]compute.NetworkLoadBalancerForwardingRuleTarget{},
+					Targets: []compute.NetworkLoadBalancerForwardingRuleTarget{},
 				},
 			},
 			testQueryParamOther,
@@ -443,7 +443,7 @@ func TestRunNlbRuleTargetRemoveWaitErr(t *testing.T) {
 		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().UpdateForwardingRule(testNlbRuleTargetVar, testNlbRuleTargetVar, testNlbRuleTargetVar,
 			&resources.NetworkLoadBalancerForwardingRuleProperties{
 				NetworkLoadBalancerForwardingRuleProperties: compute.NetworkLoadBalancerForwardingRuleProperties{
-					Targets: &[]compute.NetworkLoadBalancerForwardingRuleTarget{},
+					Targets: []compute.NetworkLoadBalancerForwardingRuleTarget{},
 				},
 			},
 			testQueryParamOther,
@@ -472,7 +472,7 @@ func TestRunNlbRuleTargetRemoveAskForConfirm(t *testing.T) {
 		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().UpdateForwardingRule(testNlbRuleTargetVar, testNlbRuleTargetVar, testNlbRuleTargetVar,
 			&resources.NetworkLoadBalancerForwardingRuleProperties{
 				NetworkLoadBalancerForwardingRuleProperties: compute.NetworkLoadBalancerForwardingRuleProperties{
-					Targets: &[]compute.NetworkLoadBalancerForwardingRuleTarget{},
+					Targets: []compute.NetworkLoadBalancerForwardingRuleTarget{},
 				},
 			},
 			testQueryParamOther,

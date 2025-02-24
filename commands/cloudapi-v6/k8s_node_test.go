@@ -43,7 +43,7 @@ var (
 	nodesTestList = resources.K8sNodes{
 		KubernetesNodes: compute.KubernetesNodes{
 			Id: &testNodeVar,
-			Items: &[]compute.KubernetesNode{
+			Items: []compute.KubernetesNode{
 				nodeTestId.KubernetesNode,
 				nodeTestId.KubernetesNode,
 			},
@@ -61,7 +61,7 @@ var (
 	nodesTest = resources.K8sNodes{
 		KubernetesNodes: compute.KubernetesNodes{
 			Id:    &testNodeVar,
-			Items: &[]compute.KubernetesNode{nodeTest.KubernetesNode},
+			Items: []compute.KubernetesNode{nodeTest.KubernetesNode},
 		},
 	}
 	testNodeVar  = "test-node"
@@ -413,7 +413,7 @@ func TestRunK8sNodeDeleteAllLenErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, constants.FlagClusterId), testNodeVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
 		rm.CloudApiV6Mocks.K8s.EXPECT().ListNodes(testNodeVar, testNodeVar, gomock.AssignableToTypeOf(testListQueryParam)).Return(
-			resources.K8sNodes{KubernetesNodes: compute.KubernetesNodes{Items: &[]compute.KubernetesNode{}}}, &testResponse, nil)
+			resources.K8sNodes{KubernetesNodes: compute.KubernetesNodes{Items: []compute.KubernetesNode{}}}, &testResponse, nil)
 		err := RunK8sNodeDelete(cfg)
 		assert.Error(t, err)
 	})

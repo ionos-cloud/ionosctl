@@ -34,9 +34,9 @@ var (
 				CoresCount:       &testNodepoolIntVar,
 				Annotations:      &testNodepoolKVMap,
 				Labels:           &testNodepoolKVMap,
-				Lans: &[]compute.KubernetesNodePoolLan{
+				Lans: []compute.KubernetesNodePoolLan{
 					{
-						Id:   &testNodepoolIntVar,
+						Id:   testNodepoolIntVar,
 						Dhcp: &testK8sNodePoolLanBoolVar,
 					},
 				},
@@ -74,9 +74,9 @@ var (
 				CoresCount:       &testNodepoolIntVar,
 				Annotations:      &testNodepoolKVMap,
 				Labels:           &testNodepoolKVMap,
-				Lans: &[]compute.KubernetesNodePoolLan{
+				Lans: []compute.KubernetesNodePoolLan{
 					{
-						Id:   &testNodepoolIntVar,
+						Id:   testNodepoolIntVar,
 						Dhcp: &testK8sNodePoolLanBoolVar,
 					},
 				},
@@ -102,7 +102,7 @@ var (
 	nodepoolsList = resources.K8sNodePools{
 		KubernetesNodePools: compute.KubernetesNodePools{
 			Id: &testNodepoolVar,
-			Items: &[]compute.KubernetesNodePool{
+			Items: []compute.KubernetesNodePool{
 				nodepoolTestId.KubernetesNodePool,
 				nodepoolTestId.KubernetesNodePool,
 			},
@@ -122,9 +122,9 @@ var (
 				StorageType:      &testNodepoolVar,
 				K8sVersion:       &testNodepoolVar,
 				CoresCount:       &testNodepoolIntVar,
-				Lans: &[]compute.KubernetesNodePoolLan{
+				Lans: []compute.KubernetesNodePoolLan{
 					{
-						Id:   &testNodepoolIntVar,
+						Id:   testNodepoolIntVar,
 						Dhcp: &testK8sNodePoolLanBoolVar,
 					},
 				},
@@ -151,16 +151,16 @@ var (
 				PublicIps:                &testNodepoolSliceVar,
 				AvailableUpgradeVersions: &testNodepoolSliceVar,
 				MaintenanceWindow: &compute.KubernetesMaintenanceWindow{
-					DayOfTheWeek: &testNodepoolVar,
-					Time:         &testNodepoolVar,
+					DayOfTheWeek: testNodepoolVar,
+					Time:         testNodepoolVar,
 				},
 				AutoScaling: &compute.KubernetesAutoScaling{
 					MinNodeCount: &testNodepoolIntVar,
 					MaxNodeCount: &testNodepoolIntVar,
 				},
-				Lans: &[]compute.KubernetesNodePoolLan{
+				Lans: []compute.KubernetesNodePoolLan{
 					{
-						Id:   &testNodepoolIntVar,
+						Id:   testNodepoolIntVar,
 						Dhcp: &testK8sNodePoolLanBoolVar,
 					},
 				},
@@ -187,20 +187,20 @@ var (
 				PublicIps:                &testNodepoolSliceVar,
 				AvailableUpgradeVersions: &testNodepoolSliceVar,
 				MaintenanceWindow: &compute.KubernetesMaintenanceWindow{
-					DayOfTheWeek: &testNodepoolVar,
-					Time:         &testNodepoolVar,
+					DayOfTheWeek: testNodepoolVar,
+					Time:         testNodepoolVar,
 				},
 				AutoScaling: &compute.KubernetesAutoScaling{
 					MinNodeCount: &testNodepoolIntVar,
 					MaxNodeCount: &testNodepoolIntVar,
 				},
-				Lans: &[]compute.KubernetesNodePoolLan{
+				Lans: []compute.KubernetesNodePoolLan{
 					{
-						Id:   &testNodepoolIntVar,
+						Id:   testNodepoolIntVar,
 						Dhcp: &testK8sNodePoolLanBoolVar,
 					},
 					{
-						Id:   &testNodepoolIntNewVar,
+						Id:   testNodepoolIntNewVar,
 						Dhcp: &testK8sNodePoolLanBoolVar,
 					},
 				},
@@ -213,7 +213,7 @@ var (
 	nodepools = resources.K8sNodePools{
 		KubernetesNodePools: compute.KubernetesNodePools{
 			Id:    &testNodepoolVar,
-			Items: &[]compute.KubernetesNodePool{nodepoolTest.KubernetesNodePool},
+			Items: []compute.KubernetesNodePool{nodepoolTest.KubernetesNodePool},
 		},
 	}
 	nodepoolTestNew = resources.K8sNodePool{
@@ -230,16 +230,16 @@ var (
 				Annotations: &testNodepoolKVNewMap,
 				Labels:      &testNodepoolKVNewMap,
 				MaintenanceWindow: &compute.KubernetesMaintenanceWindow{
-					DayOfTheWeek: &testNodepoolNewVar,
-					Time:         &testNodepoolNewVar,
+					DayOfTheWeek: testNodepoolNewVar,
+					Time:         testNodepoolNewVar,
 				},
-				Lans: &[]compute.KubernetesNodePoolLan{
+				Lans: []compute.KubernetesNodePoolLan{
 					{
-						Id:   &testNodepoolIntVar,
+						Id:   testNodepoolIntVar,
 						Dhcp: &testK8sNodePoolLanBoolVar,
 					},
 					{
-						Id:   &testNodepoolIntNewVar,
+						Id:   testNodepoolIntNewVar,
 						Dhcp: &testK8sNodePoolLanBoolVar,
 					},
 				},
@@ -257,18 +257,18 @@ var (
 					MaxNodeCount: &testNodepoolIntNewVar,
 				},
 				MaintenanceWindow: &compute.KubernetesMaintenanceWindow{
-					DayOfTheWeek: &testNodepoolNewVar,
-					Time:         &testNodepoolNewVar,
+					DayOfTheWeek: testNodepoolNewVar,
+					Time:         testNodepoolNewVar,
 				},
 				Annotations: &testNodepoolKVNewMap,
 				Labels:      &testNodepoolKVNewMap,
-				Lans: &[]compute.KubernetesNodePoolLan{
+				Lans: []compute.KubernetesNodePoolLan{
 					{
-						Id:   &testNodepoolIntVar,
+						Id:   testNodepoolIntVar,
 						Dhcp: &testK8sNodePoolLanBoolVar,
 					},
 					{
-						Id:   &testNodepoolIntNewVar,
+						Id:   testNodepoolIntNewVar,
 						Dhcp: &testK8sNodePoolLanBoolVar,
 					},
 				},
@@ -457,7 +457,7 @@ func TestRunK8sNodePoolListQueryParams(t *testing.T) {
 		rm.CloudApiV6Mocks.K8s.EXPECT().ListNodePools(testNodepoolVar, gomock.AssignableToTypeOf(testListQueryParam)).Return(
 			resources.K8sNodePools{
 				KubernetesNodePools: compute.KubernetesNodePools{
-					Items: &[]compute.KubernetesNodePool{}},
+					Items: []compute.KubernetesNodePool{}},
 			},
 			&testResponse, nil)
 		err := RunK8sNodePoolList(cfg)
@@ -925,7 +925,7 @@ func TestRunK8sNodePoolDeleteAllLenErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
 		viper.Set(core.GetFlagName(cfg.NS, constants.FlagClusterId), testNodepoolVar)
 		rm.CloudApiV6Mocks.K8s.EXPECT().ListNodePools(testNodepoolVar, gomock.AssignableToTypeOf(testListQueryParam)).Return(
-			resources.K8sNodePools{KubernetesNodePools: compute.KubernetesNodePools{Items: &[]compute.KubernetesNodePool{}}}, &testResponse, nil)
+			resources.K8sNodePools{KubernetesNodePools: compute.KubernetesNodePools{Items: []compute.KubernetesNodePool{}}}, &testResponse, nil)
 		err := RunK8sNodePoolDelete(cfg)
 		assert.Error(t, err)
 	})

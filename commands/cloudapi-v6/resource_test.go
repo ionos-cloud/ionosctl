@@ -40,13 +40,13 @@ var (
 	rs = resources.Resources{
 		Resources: compute.Resources{
 			Id:    &testResourceVar,
-			Items: &[]compute.Resource{resourceTest.Resource},
+			Items: []compute.Resource{resourceTest.Resource},
 		},
 	}
 	resourceGroupTest = resources.ResourceGroups{
 		ResourceGroups: compute.ResourceGroups{
 			Id:    &testResourceVar,
-			Items: &[]compute.Resource{resourceTest.Resource},
+			Items: []compute.Resource{resourceTest.Resource},
 		},
 	}
 	testResourceType    = compute.Type(testResourceVar)

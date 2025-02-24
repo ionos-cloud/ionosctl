@@ -418,7 +418,7 @@ func TestRunDataCenterDeleteAllLenErr(t *testing.T) {
 		viper.Set(constants.ArgServerUrl, constants.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
 		rm.CloudApiV6Mocks.Datacenter.EXPECT().List(gomock.AssignableToTypeOf(testListQueryParam)).Return(
-			resources.Datacenters{Datacenters: compute.Datacenters{Items: &[]compute.Datacenter{}}}, &testResponse, nil)
+			resources.Datacenters{Datacenters: compute.Datacenters{Items: []compute.Datacenter{}}}, &testResponse, nil)
 		err := RunDataCenterDelete(cfg)
 		assert.Error(t, err)
 	})

@@ -419,7 +419,7 @@ func TestRunFlowLogDeleteAllLenErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
 		rm.CloudApiV6Mocks.FlowLog.EXPECT().List(testFlowLogVar, testFlowLogVar, testFlowLogVar, gomock.AssignableToTypeOf(testListQueryParam)).Return(
-			resources.FlowLogs{FlowLogs: compute.FlowLogs{Items: &[]compute.FlowLog{}}}, &testResponse, nil)
+			resources.FlowLogs{FlowLogs: compute.FlowLogs{Items: []compute.FlowLog{}}}, &testResponse, nil)
 		err := RunFlowLogDelete(cfg)
 		assert.Error(t, err)
 	})

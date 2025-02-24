@@ -70,7 +70,7 @@ var (
 	targetGroups = resources.TargetGroups{
 		TargetGroups: compute.TargetGroups{
 			Id:    &testTargetGroupVar,
-			Items: &[]compute.TargetGroup{targetGroupTestGet.TargetGroup},
+			Items: []compute.TargetGroup{targetGroupTestGet.TargetGroup},
 		},
 	}
 	targetGroupNewProperties = resources.TargetGroupProperties{

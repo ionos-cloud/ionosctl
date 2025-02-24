@@ -62,13 +62,13 @@ var (
 	ls = resources.Lans{
 		Lans: compute.Lans{
 			Id:    &testLanVar,
-			Items: &[]compute.Lan{l},
+			Items: []compute.Lan{l},
 		},
 	}
 	lansList = resources.Lans{
 		Lans: compute.Lans{
 			Id: &testLanVar,
-			Items: &[]compute.Lan{
+			Items: []compute.Lan{
 				l,
 				l,
 			},
@@ -446,7 +446,7 @@ func TestRunLanDeleteAllLenErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
 		rm.CloudApiV6Mocks.Lan.EXPECT().List(testLanVar, gomock.AssignableToTypeOf(testListQueryParam)).Return(
-			resources.Lans{Lans: compute.Lans{Items: &[]compute.Lan{}}}, &testResponse, nil)
+			resources.Lans{Lans: compute.Lans{Items: []compute.Lan{}}}, &testResponse, nil)
 		err := RunLanDelete(cfg)
 		assert.Error(t, err)
 	})

@@ -23,14 +23,14 @@ var (
 		Properties: compute.LabelProperties{
 			Key:          &testLabelVar,
 			Value:        &testLabelVar,
-			ResourceId:   &testLabelVar,
+			ResourceId:   testLabelVar,
 			ResourceType: &testLabelVar,
 		},
 	}
 	testLabels = resources.Labels{
 		Labels: compute.Labels{
 			Id:    &testLabelVar,
-			Items: &[]compute.Label{testLabel},
+			Items: []compute.Label{testLabel},
 		},
 	}
 	testLabelVar = "test-label"

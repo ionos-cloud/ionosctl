@@ -43,7 +43,7 @@ var (
 	nicsList = resources.Nics{
 		Nics: compute.Nics{
 			Id: &testNicVar,
-			Items: &[]compute.Nic{
+			Items: []compute.Nic{
 				n,
 				n,
 			},
@@ -64,7 +64,7 @@ var (
 	balancedNicsList = resources.BalancedNics{
 		BalancedNics: compute.BalancedNics{
 			Id:    &testNicVar,
-			Items: &[]compute.Nic{nicLoadBalancer, nicLoadBalancer},
+			Items: []compute.Nic{nicLoadBalancer, nicLoadBalancer},
 		},
 	}
 	nicProperties = resources.NicProperties{
@@ -101,13 +101,13 @@ var (
 	ns = resources.Nics{
 		Nics: compute.Nics{
 			Id:    &testNicVar,
-			Items: &[]compute.Nic{n},
+			Items: []compute.Nic{n},
 		},
 	}
 	balancedns = resources.BalancedNics{
 		BalancedNics: compute.BalancedNics{
 			Id:    &testNicVar,
-			Items: &[]compute.Nic{n},
+			Items: []compute.Nic{n},
 		},
 	}
 	lanNic = resources.Lan{
@@ -486,7 +486,7 @@ func TestRunNicDeleteAllLenErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
 		rm.CloudApiV6Mocks.Nic.EXPECT().List(testNicVar, testNicVar, gomock.AssignableToTypeOf(testListQueryParam)).Return(
-			resources.Nics{Nics: compute.Nics{Items: &[]compute.Nic{}}}, &testResponse, nil)
+			resources.Nics{Nics: compute.Nics{Items: []compute.Nic{}}}, &testResponse, nil)
 		err := RunNicDelete(cfg)
 		assert.Error(t, err)
 	})
@@ -865,7 +865,7 @@ func TestRunLoadBalancerNicDetachAllLenErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
 		viper.Set(core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), false)
 		rm.CloudApiV6Mocks.Loadbalancer.EXPECT().ListNics(testLoadbalancerVar, testLoadbalancerVar, gomock.AssignableToTypeOf(testListQueryParam)).Return(
-			resources.BalancedNics{BalancedNics: compute.BalancedNics{Items: &[]compute.Nic{}}}, nil, nil)
+			resources.BalancedNics{BalancedNics: compute.BalancedNics{Items: []compute.Nic{}}}, nil, nil)
 		err := RunLoadBalancerNicDetach(cfg)
 		assert.Error(t, err)
 	})

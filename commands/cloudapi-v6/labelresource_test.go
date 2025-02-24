@@ -28,13 +28,13 @@ var (
 	testLabelResources = resources.LabelResources{
 		LabelResources: compute.LabelResources{
 			Id:    &testLabelVar,
-			Items: &[]compute.LabelResource{testLabelResource},
+			Items: []compute.LabelResource{testLabelResource},
 		},
 	}
 	testLabelResourcesList = resources.LabelResources{
 		LabelResources: compute.LabelResources{
 			Id: &testLabelVar,
-			Items: &[]compute.LabelResource{
+			Items: []compute.LabelResource{
 				testLabelResource,
 				testLabelResource,
 			},
@@ -219,7 +219,7 @@ func TestRunDatacenterLabelRemoveAllLenErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testLabelResourceVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
 		rm.CloudApiV6Mocks.Label.EXPECT().DatacenterList(gomock.AssignableToTypeOf(testListQueryParam), testLabelResourceVar).Return(
-			resources.LabelResources{LabelResources: compute.LabelResources{Items: &[]compute.LabelResource{}}}, &testResponse, nil)
+			resources.LabelResources{LabelResources: compute.LabelResources{Items: []compute.LabelResource{}}}, &testResponse, nil)
 		err := RunDataCenterLabelRemove(cfg)
 		assert.Error(t, err)
 	})
@@ -433,7 +433,7 @@ func TestRunIpBlockLabelRemoveAllLenErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIpBlockId), testLabelResourceVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
 		rm.CloudApiV6Mocks.Label.EXPECT().IpBlockList(gomock.AssignableToTypeOf(testListQueryParam), testLabelResourceVar).Return(
-			resources.LabelResources{LabelResources: compute.LabelResources{Items: &[]compute.LabelResource{}}}, &testResponse, nil)
+			resources.LabelResources{LabelResources: compute.LabelResources{Items: []compute.LabelResource{}}}, &testResponse, nil)
 		err := RunIpBlockLabelRemove(cfg)
 		assert.Error(t, err)
 	})
@@ -647,7 +647,7 @@ func TestRunSnapshotLabelRemoveAllLenErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgSnapshotId), testLabelResourceVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
 		rm.CloudApiV6Mocks.Label.EXPECT().SnapshotList(gomock.AssignableToTypeOf(testListQueryParam), testLabelResourceVar).Return(
-			resources.LabelResources{LabelResources: compute.LabelResources{Items: &[]compute.LabelResource{}}}, &testResponse, nil)
+			resources.LabelResources{LabelResources: compute.LabelResources{Items: []compute.LabelResource{}}}, &testResponse, nil)
 		err := RunSnapshotLabelRemove(cfg)
 		assert.Error(t, err)
 	})
@@ -874,7 +874,7 @@ func TestRunServerLabelRemoveAllLenErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testLabelResourceVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
 		rm.CloudApiV6Mocks.Label.EXPECT().ServerList(gomock.AssignableToTypeOf(testListQueryParam), testLabelResourceVar, testLabelResourceVar).Return(
-			resources.LabelResources{LabelResources: compute.LabelResources{Items: &[]compute.LabelResource{}}}, &testResponse, nil)
+			resources.LabelResources{LabelResources: compute.LabelResources{Items: []compute.LabelResource{}}}, &testResponse, nil)
 		err := RunServerLabelRemove(cfg)
 		assert.Error(t, err)
 	})
@@ -1102,7 +1102,7 @@ func TestRunVolumeLabelRemoveAllLenErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgVolumeId), testLabelResourceVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
 		rm.CloudApiV6Mocks.Label.EXPECT().VolumeList(gomock.AssignableToTypeOf(testListQueryParam), testLabelResourceVar, testLabelResourceVar).Return(
-			resources.LabelResources{LabelResources: compute.LabelResources{Items: &[]compute.LabelResource{}}}, &testResponse, nil)
+			resources.LabelResources{LabelResources: compute.LabelResources{Items: []compute.LabelResource{}}}, &testResponse, nil)
 		err := RunVolumeLabelRemove(cfg)
 		assert.Error(t, err)
 	})

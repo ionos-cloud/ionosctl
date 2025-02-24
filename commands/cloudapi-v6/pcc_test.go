@@ -39,7 +39,7 @@ var (
 	pccsList = resources.PrivateCrossConnects{
 		PrivateCrossConnects: compute.PrivateCrossConnects{
 			Id: &testPccVar,
-			Items: &[]compute.PrivateCrossConnect{
+			Items: []compute.PrivateCrossConnect{
 				pccTestId.PrivateCrossConnect,
 				pccTestId.PrivateCrossConnect,
 			},
@@ -56,7 +56,7 @@ var (
 		Peer: compute.Peer{
 			Id:             &testPccVar,
 			Name:           &testPccVar,
-			DatacenterId:   &testPccVar,
+			DatacenterId:   testPccVar,
 			DatacenterName: &testPccVar,
 			Location:       &testPccVar,
 		},
@@ -64,7 +64,7 @@ var (
 	pccs = resources.PrivateCrossConnects{
 		PrivateCrossConnects: compute.PrivateCrossConnects{
 			Id:    &testPccVar,
-			Items: &[]compute.PrivateCrossConnect{pccTest.PrivateCrossConnect},
+			Items: []compute.PrivateCrossConnect{pccTest.PrivateCrossConnect},
 		},
 	}
 	pccProperties = resources.PrivateCrossConnectProperties{
@@ -485,7 +485,7 @@ func TestRunPccDeleteAllLenErr(t *testing.T) {
 		viper.Set(constants.ArgForce, true)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
 		rm.CloudApiV6Mocks.Pcc.EXPECT().List(gomock.AssignableToTypeOf(testListQueryParam)).Return(
-			resources.PrivateCrossConnects{PrivateCrossConnects: compute.PrivateCrossConnects{Items: &[]compute.PrivateCrossConnect{}}}, &testResponse, nil)
+			resources.PrivateCrossConnects{PrivateCrossConnects: compute.PrivateCrossConnects{Items: []compute.PrivateCrossConnect{}}}, &testResponse, nil)
 		err := RunPccDelete(cfg)
 		assert.Error(t, err)
 	})

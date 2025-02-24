@@ -44,13 +44,13 @@ var (
 	natgatewayRules = resources.NatGatewayRules{
 		NatGatewayRules: compute.NatGatewayRules{
 			Id:    &testNatGatewayRuleVar,
-			Items: &[]compute.NatGatewayRule{natgatewayRuleTestGet.NatGatewayRule},
+			Items: []compute.NatGatewayRule{natgatewayRuleTestGet.NatGatewayRule},
 		},
 	}
 	natgatewayRulesList = resources.NatGatewayRules{
 		NatGatewayRules: compute.NatGatewayRules{
 			Id: &testNatGatewayRuleVar,
-			Items: &[]compute.NatGatewayRule{
+			Items: []compute.NatGatewayRule{
 				natgatewayRuleTestGet.NatGatewayRule,
 				natgatewayRuleTestGet.NatGatewayRule,
 			},
@@ -518,7 +518,7 @@ func TestRunNatGatewayRuleDeleteAllLenErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNatGatewayId), testNatGatewayRuleVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
 		rm.CloudApiV6Mocks.NatGateway.EXPECT().ListRules(testNatGatewayRuleVar, testNatGatewayRuleVar, gomock.AssignableToTypeOf(testListQueryParam)).Return(
-			resources.NatGatewayRules{NatGatewayRules: compute.NatGatewayRules{Items: &[]compute.NatGatewayRule{}}}, &testResponse, nil)
+			resources.NatGatewayRules{NatGatewayRules: compute.NatGatewayRules{Items: []compute.NatGatewayRule{}}}, &testResponse, nil)
 		err := RunNatGatewayRuleDelete(cfg)
 		assert.Error(t, err)
 	})

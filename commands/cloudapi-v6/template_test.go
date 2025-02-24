@@ -32,7 +32,7 @@ var (
 	}
 	templates = resources.Templates{
 		Templates: compute.Templates{
-			Items: &[]compute.Template{tpl.Template},
+			Items: []compute.Template{tpl.Template},
 		},
 	}
 	testTemplateSize = float32(2)

@@ -20,7 +20,7 @@ import (
 var (
 	testTargetGroupTargetProperties = resources.TargetGroupProperties{
 		TargetGroupProperties: compute.TargetGroupProperties{
-			Targets: &[]compute.TargetGroupTarget{
+			Targets: []compute.TargetGroupTarget{
 				{
 					Ip:                 &testTargetGroupTargetVar,
 					Port:               &testTargetGroupTargetIntVar,
@@ -314,7 +314,7 @@ func TestRunTargetGroupTargetRemove(t *testing.T) {
 		rm.CloudApiV6Mocks.TargetGroup.EXPECT().Update(testTargetGroupTargetVar,
 			&resources.TargetGroupProperties{
 				TargetGroupProperties: compute.TargetGroupProperties{
-					Targets: &[]compute.TargetGroupTarget{},
+					Targets: []compute.TargetGroupTarget{},
 				},
 			},
 			testQueryParamOther,
@@ -355,7 +355,7 @@ func TestRunTargetGroupTargetRemoveErr(t *testing.T) {
 		rm.CloudApiV6Mocks.TargetGroup.EXPECT().Update(testTargetGroupTargetVar,
 			&resources.TargetGroupProperties{
 				TargetGroupProperties: compute.TargetGroupProperties{
-					Targets: &[]compute.TargetGroupTarget{},
+					Targets: []compute.TargetGroupTarget{},
 				},
 			},
 			testQueryParamOther,
@@ -432,7 +432,7 @@ func TestRunTargetGroupTargetRemoveWaitErr(t *testing.T) {
 		rm.CloudApiV6Mocks.TargetGroup.EXPECT().Update(testTargetGroupTargetVar,
 			&resources.TargetGroupProperties{
 				TargetGroupProperties: compute.TargetGroupProperties{
-					Targets: &[]compute.TargetGroupTarget{},
+					Targets: []compute.TargetGroupTarget{},
 				},
 			},
 			testQueryParamOther,
@@ -459,7 +459,7 @@ func TestRunTargetGroupTargetRemoveAskForConfirm(t *testing.T) {
 		rm.CloudApiV6Mocks.TargetGroup.EXPECT().Update(testTargetGroupTargetVar,
 			&resources.TargetGroupProperties{
 				TargetGroupProperties: compute.TargetGroupProperties{
-					Targets: &[]compute.TargetGroupTarget{},
+					Targets: []compute.TargetGroupTarget{},
 				},
 			},
 			testQueryParamOther,

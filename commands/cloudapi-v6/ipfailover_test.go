@@ -57,7 +57,7 @@ var (
 	}
 	testLanPropertiesIpFailover = resources.LanProperties{
 		LanProperties: compute.LanProperties{
-			IpFailover: &[]compute.IPFailover{
+			IpFailover: []compute.IPFailover{
 				{
 					Ip:      &testIpFailoverVar,
 					NicUuid: &testIpFailoverVar,
@@ -305,7 +305,7 @@ func TestRunIpFailoverRemove(t *testing.T) {
 		rm.CloudApiV6Mocks.Lan.EXPECT().Get(testIpFailoverVar, testIpFailoverVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&testLanIpFailover, &testResponse, nil)
 		rm.CloudApiV6Mocks.Lan.EXPECT().Update(testIpFailoverVar, testIpFailoverVar, resources.LanProperties{
 			LanProperties: compute.LanProperties{
-				IpFailover: &[]compute.IPFailover{},
+				IpFailover: []compute.IPFailover{},
 			},
 		},
 			testQueryParamOther,
@@ -335,7 +335,7 @@ func TestRunIpFailoverRemoveAll(t *testing.T) {
 		rm.CloudApiV6Mocks.Lan.EXPECT().Get(testIpFailoverVar, testIpFailoverVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&testLanIpFailover, &testResponse, nil)
 		rm.CloudApiV6Mocks.Lan.EXPECT().Update(testIpFailoverVar, testIpFailoverVar, resources.LanProperties{
 			LanProperties: compute.LanProperties{
-				IpFailover: &[]compute.IPFailover{},
+				IpFailover: []compute.IPFailover{},
 			},
 		},
 			testQueryParamOther,
@@ -362,7 +362,7 @@ func TestRunIpFailoverRemoveResponseErr(t *testing.T) {
 		rm.CloudApiV6Mocks.Lan.EXPECT().Get(testIpFailoverVar, testIpFailoverVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&testLanIpFailover, nil, nil)
 		rm.CloudApiV6Mocks.Lan.EXPECT().Update(testIpFailoverVar, testIpFailoverVar, resources.LanProperties{
 			LanProperties: compute.LanProperties{
-				IpFailover: &[]compute.IPFailover{},
+				IpFailover: []compute.IPFailover{},
 			},
 		},
 			testQueryParamOther,
@@ -429,7 +429,7 @@ func TestRunIpFailoverRemoveWaitReqErr(t *testing.T) {
 		rm.CloudApiV6Mocks.Lan.EXPECT().Get(testIpFailoverVar, testIpFailoverVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&testLanIpFailover, nil, nil)
 		rm.CloudApiV6Mocks.Lan.EXPECT().Update(testIpFailoverVar, testIpFailoverVar, resources.LanProperties{
 			LanProperties: compute.LanProperties{
-				IpFailover: &[]compute.IPFailover{},
+				IpFailover: []compute.IPFailover{},
 			},
 		},
 			testQueryParamOther,
@@ -477,7 +477,7 @@ func TestRunIpFailoverRemoveUpdateErr(t *testing.T) {
 		rm.CloudApiV6Mocks.Lan.EXPECT().Get(testIpFailoverVar, testIpFailoverVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&testLanIpFailover, nil, nil)
 		rm.CloudApiV6Mocks.Lan.EXPECT().Update(testIpFailoverVar, testIpFailoverVar, resources.LanProperties{
 			LanProperties: compute.LanProperties{
-				IpFailover: &[]compute.IPFailover{},
+				IpFailover: []compute.IPFailover{},
 			},
 		},
 			testQueryParamOther,
@@ -505,7 +505,7 @@ func TestRunIpFailoverRemoveAskForConfirm(t *testing.T) {
 		rm.CloudApiV6Mocks.Lan.EXPECT().Get(testIpFailoverVar, testIpFailoverVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&testLanIpFailover, nil, nil)
 		rm.CloudApiV6Mocks.Lan.EXPECT().Update(testIpFailoverVar, testIpFailoverVar, resources.LanProperties{
 			LanProperties: compute.LanProperties{
-				IpFailover: &[]compute.IPFailover{},
+				IpFailover: []compute.IPFailover{},
 			},
 		},
 			testQueryParamOther,

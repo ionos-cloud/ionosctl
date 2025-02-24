@@ -636,7 +636,7 @@ func TestRunFirewallRuleDeleteAllLenErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
 		viper.Set(core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), false)
 		rm.CloudApiV6Mocks.FirewallRule.EXPECT().List(testFirewallRuleVar, testFirewallRuleVar, testFirewallRuleVar, gomock.AssignableToTypeOf(testListQueryParam)).Return(
-			resources.FirewallRules{FirewallRules: compute.FirewallRules{Items: &[]compute.FirewallRule{}}}, nil, nil)
+			resources.FirewallRules{FirewallRules: compute.FirewallRules{Items: []compute.FirewallRule{}}}, nil, nil)
 		err := RunFirewallRuleDelete(cfg)
 		assert.Error(t, err)
 	})

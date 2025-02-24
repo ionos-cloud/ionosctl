@@ -21,19 +21,19 @@ var (
 	k8sNodepoolLanTest = resources.K8sNodePool{
 		KubernetesNodePool: compute.KubernetesNodePool{
 			Properties: compute.KubernetesNodePoolProperties{
-				NodeCount:  &testK8sNodePoolLanIntVar,
+				NodeCount:  testK8sNodePoolLanIntVar,
 				K8sVersion: &testK8sNodePoolLanVar,
 				MaintenanceWindow: &compute.KubernetesMaintenanceWindow{
-					DayOfTheWeek: &testK8sNodePoolLanVar,
-					Time:         &testK8sNodePoolLanVar,
+					DayOfTheWeek: testK8sNodePoolLanVar,
+					Time:         testK8sNodePoolLanVar,
 				},
 				AutoScaling: &compute.KubernetesAutoScaling{
-					MinNodeCount: &testK8sNodePoolLanIntVar,
-					MaxNodeCount: &testK8sNodePoolLanIntVar,
+					MinNodeCount: testK8sNodePoolLanIntVar,
+					MaxNodeCount: testK8sNodePoolLanIntVar,
 				},
-				Lans: &[]compute.KubernetesNodePoolLan{
+				Lans: []compute.KubernetesNodePoolLan{
 					{
-						Id:   &testK8sNodePoolLanIntVar,
+						Id:   testK8sNodePoolLanIntVar,
 						Dhcp: &testK8sNodePoolLanBoolVar,
 					},
 				},
@@ -41,20 +41,20 @@ var (
 		},
 	}
 	testLan = compute.KubernetesNodePoolLan{
-		Id:   &testK8sNodePoolLanIntVar,
+		Id:   testK8sNodePoolLanIntVar,
 		Dhcp: &testK8sNodePoolLanBoolVar,
 	}
 	test = compute.KubernetesNodePool{
 		Id: &testK8sNodePoolLanVar,
 		Properties: compute.KubernetesNodePoolProperties{
-			Name: &testK8sNodePoolLanVar,
-			Lans: &[]compute.KubernetesNodePoolLan{testLan, testLan},
+			Name: testK8sNodePoolLanVar,
+			Lans: []compute.KubernetesNodePoolLan{testLan, testLan},
 		},
 	}
 	k8sNodepoolLanListTest = resources.K8sNodePools{
 		KubernetesNodePools: compute.KubernetesNodePools{
 			Id: &testK8sNodePoolLanVar,
-			Items: &[]compute.KubernetesNodePool{
+			Items: []compute.KubernetesNodePool{
 				k8sNodepoolLanTest.KubernetesNodePool,
 				k8sNodepoolLanTest.KubernetesNodePool,
 			},
@@ -63,42 +63,42 @@ var (
 	inputK8sNodepoolLanTestRemoveAll = resources.K8sNodePoolForPut{
 		KubernetesNodePoolForPut: compute.KubernetesNodePoolForPut{
 			Properties: compute.KubernetesNodePoolPropertiesForPut{
-				NodeCount:  &testK8sNodePoolLanIntVar,
+				NodeCount:  testK8sNodePoolLanIntVar,
 				K8sVersion: &testK8sNodePoolLanVar,
 				MaintenanceWindow: &compute.KubernetesMaintenanceWindow{
-					DayOfTheWeek: &testK8sNodePoolLanVar,
-					Time:         &testK8sNodePoolLanVar,
+					DayOfTheWeek: testK8sNodePoolLanVar,
+					Time:         testK8sNodePoolLanVar,
 				},
 				AutoScaling: &compute.KubernetesAutoScaling{
-					MinNodeCount: &testK8sNodePoolLanIntVar,
-					MaxNodeCount: &testK8sNodePoolLanIntVar,
+					MinNodeCount: testK8sNodePoolLanIntVar,
+					MaxNodeCount: testK8sNodePoolLanIntVar,
 				},
-				Lans: &[]compute.KubernetesNodePoolLan{},
+				Lans: []compute.KubernetesNodePoolLan{},
 			},
 		},
 	}
 	inputK8sNodepoolLanTest = resources.K8sNodePoolForPut{
 		KubernetesNodePoolForPut: compute.KubernetesNodePoolForPut{
 			Properties: compute.KubernetesNodePoolPropertiesForPut{
-				NodeCount:  &testK8sNodePoolLanIntVar,
+				NodeCount:  testK8sNodePoolLanIntVar,
 				K8sVersion: &testK8sNodePoolLanVar,
 				MaintenanceWindow: &compute.KubernetesMaintenanceWindow{
-					DayOfTheWeek: &testK8sNodePoolLanVar,
-					Time:         &testK8sNodePoolLanVar,
+					DayOfTheWeek: testK8sNodePoolLanVar,
+					Time:         testK8sNodePoolLanVar,
 				},
 				AutoScaling: &compute.KubernetesAutoScaling{
-					MinNodeCount: &testK8sNodePoolLanIntVar,
-					MaxNodeCount: &testK8sNodePoolLanIntVar,
+					MinNodeCount: testK8sNodePoolLanIntVar,
+					MaxNodeCount: testK8sNodePoolLanIntVar,
 				},
-				Lans: &[]compute.KubernetesNodePoolLan{
+				Lans: []compute.KubernetesNodePoolLan{
 					{
-						Id:   &testK8sNodePoolLanIntVar,
+						Id:   testK8sNodePoolLanIntVar,
 						Dhcp: &testK8sNodePoolLanBoolVar,
 					},
 					{
-						Id:   &testK8sNodePoolLanNewIntVar,
+						Id:   testK8sNodePoolLanNewIntVar,
 						Dhcp: &testK8sNodePoolLanBoolVar,
-						Routes: &[]compute.KubernetesNodePoolLanRoutes{
+						Routes: []compute.KubernetesNodePoolLanRoutes{
 							{
 								Network:   &testK8sNodePoolLanVar,
 								GatewayIp: &testK8sNodePoolLanVar,
@@ -112,17 +112,17 @@ var (
 	inputK8sNodepoolLanTestRemove = resources.K8sNodePoolForPut{
 		KubernetesNodePoolForPut: compute.KubernetesNodePoolForPut{
 			Properties: compute.KubernetesNodePoolPropertiesForPut{
-				NodeCount:  &testK8sNodePoolLanIntVar,
+				NodeCount:  testK8sNodePoolLanIntVar,
 				K8sVersion: &testK8sNodePoolLanVar,
 				MaintenanceWindow: &compute.KubernetesMaintenanceWindow{
-					DayOfTheWeek: &testK8sNodePoolLanVar,
-					Time:         &testK8sNodePoolLanVar,
+					DayOfTheWeek: testK8sNodePoolLanVar,
+					Time:         testK8sNodePoolLanVar,
 				},
 				AutoScaling: &compute.KubernetesAutoScaling{
-					MinNodeCount: &testK8sNodePoolLanIntVar,
-					MaxNodeCount: &testK8sNodePoolLanIntVar,
+					MinNodeCount: testK8sNodePoolLanIntVar,
+					MaxNodeCount: testK8sNodePoolLanIntVar,
 				},
-				Lans: &[]compute.KubernetesNodePoolLan{},
+				Lans: []compute.KubernetesNodePoolLan{},
 			},
 		},
 	}
@@ -130,15 +130,15 @@ var (
 		KubernetesNodePool: compute.KubernetesNodePool{
 			Id: &testK8sNodePoolLanVar,
 			Properties: compute.KubernetesNodePoolProperties{
-				NodeCount:  &testK8sNodePoolLanIntVar,
+				NodeCount:  testK8sNodePoolLanIntVar,
 				K8sVersion: &testK8sNodePoolLanVar,
 				MaintenanceWindow: &compute.KubernetesMaintenanceWindow{
-					DayOfTheWeek: &testK8sNodePoolLanVar,
-					Time:         &testK8sNodePoolLanVar,
+					DayOfTheWeek: testK8sNodePoolLanVar,
+					Time:         testK8sNodePoolLanVar,
 				},
 				AutoScaling: &compute.KubernetesAutoScaling{
-					MinNodeCount: &testK8sNodePoolLanIntVar,
-					MaxNodeCount: &testK8sNodePoolLanIntVar,
+					MinNodeCount: testK8sNodePoolLanIntVar,
+					MaxNodeCount: testK8sNodePoolLanIntVar,
 				},
 			},
 			Metadata: &compute.DatacenterElementMetadata{State: &testStateVar},
@@ -148,25 +148,25 @@ var (
 		KubernetesNodePool: compute.KubernetesNodePool{
 			Id: &testK8sNodePoolLanVar,
 			Properties: compute.KubernetesNodePoolProperties{
-				NodeCount:  &testK8sNodePoolLanIntVar,
+				NodeCount:  testK8sNodePoolLanIntVar,
 				K8sVersion: &testK8sNodePoolLanVar,
 				MaintenanceWindow: &compute.KubernetesMaintenanceWindow{
-					DayOfTheWeek: &testK8sNodePoolLanVar,
-					Time:         &testK8sNodePoolLanVar,
+					DayOfTheWeek: testK8sNodePoolLanVar,
+					Time:         testK8sNodePoolLanVar,
 				},
 				AutoScaling: &compute.KubernetesAutoScaling{
-					MinNodeCount: &testK8sNodePoolLanIntVar,
-					MaxNodeCount: &testK8sNodePoolLanIntVar,
+					MinNodeCount: testK8sNodePoolLanIntVar,
+					MaxNodeCount: testK8sNodePoolLanIntVar,
 				},
-				Lans: &[]compute.KubernetesNodePoolLan{
+				Lans: []compute.KubernetesNodePoolLan{
 					{
-						Id:   &testK8sNodePoolLanIntVar,
+						Id:   testK8sNodePoolLanIntVar,
 						Dhcp: &testK8sNodePoolLanBoolVar,
 					},
 					{
-						Id:   &testK8sNodePoolLanNewIntVar,
+						Id:   testK8sNodePoolLanNewIntVar,
 						Dhcp: &testK8sNodePoolLanBoolVar,
-						Routes: &[]compute.KubernetesNodePoolLanRoutes{
+						Routes: []compute.KubernetesNodePoolLanRoutes{
 							{
 								Network:   &testK8sNodePoolLanVar,
 								GatewayIp: &testK8sNodePoolLanVar,

@@ -577,7 +577,7 @@ func TestRunGroupDeleteAllLenErr(t *testing.T) {
 		viper.Set(constants.ArgForce, true)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
 		rm.CloudApiV6Mocks.Group.EXPECT().List(gomock.AssignableToTypeOf(testListQueryParam)).Return(
-			resources.Groups{Groups: compute.Groups{Items: &[]compute.Group{}}}, &testResponse, nil)
+			resources.Groups{Groups: compute.Groups{Items: []compute.Group{}}}, &testResponse, nil)
 		err := RunGroupDelete(cfg)
 		assert.Error(t, err)
 	})
