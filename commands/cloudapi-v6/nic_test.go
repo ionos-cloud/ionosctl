@@ -29,9 +29,9 @@ var (
 		Id: &testNicVar,
 		Properties: compute.NicProperties{
 			Name:           &testNicVar,
-			Lan:            &lanNicId,
+			Lan:            lanNicId,
 			Dhcp:           &dhcpNic,
-			Ips:            &ipsNic,
+			Ips:            ipsNic,
 			FirewallActive: &dhcpNic,
 			FirewallType:   &testNicVar,
 			DeviceNumber:   &lanNicId,
@@ -53,9 +53,9 @@ var (
 		Id: &testLoadbalancerVar,
 		Properties: compute.NicProperties{
 			Name:           &testNicVar,
-			Lan:            &lanNicId,
+			Lan:            lanNicId,
 			Dhcp:           &dhcpNic,
-			Ips:            &ipsNic,
+			Ips:            ipsNic,
 			FirewallActive: &dhcpNic,
 			Mac:            &testNicVar,
 		},
@@ -71,7 +71,7 @@ var (
 		NicProperties: compute.NicProperties{
 			Name: &testNicNewVar,
 			Dhcp: &dhcpNewNic,
-			Lan:  &lanNewNicId,
+			Lan:  lanNewNicId,
 		},
 	}
 	nicNew = resources.Nic{
@@ -81,7 +81,7 @@ var (
 				Name:           nicProperties.NicProperties.Name,
 				Lan:            nicProperties.NicProperties.Lan,
 				Dhcp:           nicProperties.NicProperties.Dhcp,
-				Ips:            &ipsNic,
+				Ips:            ipsNic,
 				FirewallActive: &dhcpNic,
 			},
 		},
@@ -90,9 +90,9 @@ var (
 		Nic: compute.Nic{
 			Properties: compute.NicProperties{
 				Name:           &testNicVar,
-				Lan:            &lanNicId,
+				Lan:            lanNicId,
 				Dhcp:           &dhcpNic,
-				Ips:            &ipsNic,
+				Ips:            ipsNic,
 				FirewallActive: &dhcpNic,
 				FirewallType:   &testNicVar,
 			},

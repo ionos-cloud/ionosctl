@@ -56,7 +56,7 @@ var (
 		Peer: compute.Peer{
 			Id:             &testPccVar,
 			Name:           &testPccVar,
-			DatacenterId:   testPccVar,
+			DatacenterId:   &testPccVar,
 			DatacenterName: &testPccVar,
 			Location:       &testPccVar,
 		},

@@ -22,11 +22,11 @@ var (
 	testInputForwardingRule = resources.NetworkLoadBalancerForwardingRule{
 		NetworkLoadBalancerForwardingRule: compute.NetworkLoadBalancerForwardingRule{
 			Properties: compute.NetworkLoadBalancerForwardingRuleProperties{
-				Name:         &testNlbForwardingRuleVar,
-				Algorithm:    &testNlbForwardingRuleAlgorithm,
-				Protocol:     &testNlbForwardingRuleProtocol,
-				ListenerIp:   &testNlbForwardingRuleVar,
-				ListenerPort: &testNlbForwardingRuleIntVar,
+				Name:         testNlbForwardingRuleVar,
+				Algorithm:    testNlbForwardingRuleAlgorithm,
+				Protocol:     testNlbForwardingRuleProtocol,
+				ListenerIp:   testNlbForwardingRuleVar,
+				ListenerPort: testNlbForwardingRuleIntVar,
 				HealthCheck: &compute.NetworkLoadBalancerForwardingRuleHealthCheck{
 					ClientTimeout:  &testNlbForwardingRuleIntVar,
 					ConnectTimeout: &testNlbForwardingRuleIntVar,
@@ -37,9 +37,9 @@ var (
 	}
 	testNlbForwardingRulePropertiesNew = resources.NetworkLoadBalancerForwardingRuleProperties{
 		NetworkLoadBalancerForwardingRuleProperties: compute.NetworkLoadBalancerForwardingRuleProperties{
-			Name:         &testNlbForwardingRuleNewVar,
-			ListenerIp:   &testNlbForwardingRuleNewVar,
-			ListenerPort: &testNlbForwardingRuleNewIntVar,
+			Name:         testNlbForwardingRuleNewVar,
+			ListenerIp:   testNlbForwardingRuleNewVar,
+			ListenerPort: testNlbForwardingRuleNewIntVar,
 			HealthCheck: &compute.NetworkLoadBalancerForwardingRuleHealthCheck{
 				ClientTimeout:  &testNlbForwardingRuleNewIntVar,
 				ConnectTimeout: &testNlbForwardingRuleNewIntVar,

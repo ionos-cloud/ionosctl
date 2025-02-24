@@ -20,7 +20,7 @@ import (
 var (
 	resourceTest = resources.Resource{
 		Resource: compute.Resource{
-			Properties: compute.ResourceProperties{
+			Properties: &compute.ResourceProperties{
 				Name:              &testResourceVar,
 				SecAuthProtection: &testResourceBoolVar,
 			},
@@ -30,7 +30,7 @@ var (
 	resourceTestGet = resources.Resource{
 		Resource: compute.Resource{
 			Id: &testResourceVar,
-			Properties: compute.ResourceProperties{
+			Properties: &compute.ResourceProperties{
 				Name:              &testResourceVar,
 				SecAuthProtection: &testResourceBoolVar,
 			},

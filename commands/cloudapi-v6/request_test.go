@@ -89,7 +89,7 @@ var (
 			Metadata: &compute.RequestStatusMetadata{
 				Status:  &testRequestStatusVar,
 				Message: &testRequestVar,
-				Targets: &testRequestTargetsVar,
+				Targets: testRequestTargetsVar,
 			},
 		},
 	}

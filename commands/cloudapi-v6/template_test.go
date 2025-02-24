@@ -23,10 +23,10 @@ var (
 		Template: compute.Template{
 			Id: &testTemplateVar,
 			Properties: compute.TemplateProperties{
-				Name:        &testTemplateVar,
-				Cores:       &testTemplateSize,
-				Ram:         &testTemplateSize,
-				StorageSize: &testTemplateSize,
+				Name:        testTemplateVar,
+				Cores:       testTemplateSize,
+				Ram:         testTemplateSize,
+				StorageSize: testTemplateSize,
 			},
 		},
 	}

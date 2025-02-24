@@ -23,9 +23,9 @@ var (
 		TargetGroup: compute.TargetGroup{
 			Id: &testTargetGroupVar,
 			Properties: compute.TargetGroupProperties{
-				Name:      &testTargetGroupVar,
-				Algorithm: &testTargetGroupVar,
-				Protocol:  &testTargetGroupVar,
+				Name:      testTargetGroupVar,
+				Algorithm: testTargetGroupVar,
+				Protocol:  testTargetGroupVar,
 				HealthCheck: &compute.TargetGroupHealthCheck{
 					CheckTimeout:  &testTargetGroupTimeout,
 					CheckInterval: &testTargetGroupTimeout,
@@ -34,8 +34,8 @@ var (
 				HttpHealthCheck: &compute.TargetGroupHttpHealthCheck{
 					Path:      &testTargetGroupVar,
 					Method:    &testTargetGroupVar,
-					MatchType: &testTargetGroupVar,
-					Response:  &testTargetGroupVar,
+					MatchType: testTargetGroupVar,
+					Response:  testTargetGroupVar,
 					Regex:     &testTargetGroupBoolVar,
 					Negate:    &testTargetGroupBoolVar,
 				},
@@ -48,9 +48,9 @@ var (
 	targetGroupTest = resources.TargetGroup{
 		TargetGroup: compute.TargetGroup{
 			Properties: compute.TargetGroupProperties{
-				Name:      &testTargetGroupVar,
-				Algorithm: &testTargetGroupVar,
-				Protocol:  &testTargetGroupVar,
+				Name:      testTargetGroupVar,
+				Algorithm: testTargetGroupVar,
+				Protocol:  testTargetGroupVar,
 				HealthCheck: &compute.TargetGroupHealthCheck{
 					CheckTimeout:  &testTargetGroupTimeout,
 					CheckInterval: &testTargetGroupTimeout,
@@ -59,8 +59,8 @@ var (
 				HttpHealthCheck: &compute.TargetGroupHttpHealthCheck{
 					Path:      &testTargetGroupVar,
 					Method:    &testTargetGroupVar,
-					MatchType: &testTargetGroupVar,
-					Response:  &testTargetGroupVar,
+					MatchType: testTargetGroupVar,
+					Response:  testTargetGroupVar,
 					Regex:     &testTargetGroupBoolVar,
 					Negate:    &testTargetGroupBoolVar,
 				},
@@ -75,9 +75,9 @@ var (
 	}
 	targetGroupNewProperties = resources.TargetGroupProperties{
 		TargetGroupProperties: compute.TargetGroupProperties{
-			Name:      &testTargetGroupNewVar,
-			Algorithm: &testTargetGroupNewVar,
-			Protocol:  &testTargetGroupNewVar,
+			Name:      testTargetGroupNewVar,
+			Algorithm: testTargetGroupNewVar,
+			Protocol:  testTargetGroupNewVar,
 			HealthCheck: &compute.TargetGroupHealthCheck{
 				CheckTimeout:  &testTargetGroupNewTimeout,
 				CheckInterval: &testTargetGroupNewTimeout,
@@ -86,8 +86,8 @@ var (
 			HttpHealthCheck: &compute.TargetGroupHttpHealthCheck{
 				Path:      &testTargetGroupNewVar,
 				Method:    &testTargetGroupNewVar,
-				MatchType: &testTargetGroupNewVar,
-				Response:  &testTargetGroupNewVar,
+				MatchType: testTargetGroupNewVar,
+				Response:  testTargetGroupNewVar,
 				Regex:     &testTargetGroupBoolNewVar,
 				Negate:    &testTargetGroupBoolNewVar,
 			},

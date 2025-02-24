@@ -22,9 +22,9 @@ var (
 		NetworkLoadBalancerForwardingRuleProperties: compute.NetworkLoadBalancerForwardingRuleProperties{
 			Targets: []compute.NetworkLoadBalancerForwardingRuleTarget{
 				{
-					Ip:     &testNlbRuleTargetVar,
-					Port:   &testNlbRuleTargetIntVar,
-					Weight: &testNlbRuleTargetIntVar,
+					Ip:     testNlbRuleTargetVar,
+					Port:   testNlbRuleTargetIntVar,
+					Weight: testNlbRuleTargetIntVar,
 					HealthCheck: &compute.NetworkLoadBalancerForwardingRuleTargetHealthCheck{
 						Check:         &testNlbRuleTargetBoolVar,
 						CheckInterval: &testNlbRuleTargetIntVar,
@@ -47,13 +47,13 @@ var (
 		},
 	}
 	testTarget = compute.NetworkLoadBalancerForwardingRuleTarget{
-		Ip:   &testNlbRuleTargetVar,
-		Port: &testNlbRuleTargetIntVar,
+		Ip:   testNlbRuleTargetVar,
+		Port: testNlbRuleTargetIntVar,
 	}
 	testNlbRuleTarget = compute.NetworkLoadBalancerForwardingRule{
 		Id: &testNlbRuleTargetVar,
 		Properties: compute.NetworkLoadBalancerForwardingRuleProperties{
-			Name:    &testNlbRuleTargetVar,
+			Name:    testNlbRuleTargetVar,
 			Targets: []compute.NetworkLoadBalancerForwardingRuleTarget{testTarget, testTarget},
 		},
 	}

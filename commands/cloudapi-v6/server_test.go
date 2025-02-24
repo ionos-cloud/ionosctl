@@ -122,10 +122,10 @@ var (
 			CpuFamily:        &testServerNewVar,
 			AvailabilityZone: &testServerNewVar,
 			BootVolume: &compute.ResourceReference{
-				Id: &testServerVar,
+				Id: testServerVar,
 			},
 			BootCdrom: &compute.ResourceReference{
-				Id: &testServerVar,
+				Id: testServerVar,
 			},
 		},
 	}

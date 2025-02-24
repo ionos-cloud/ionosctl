@@ -26,14 +26,14 @@ var (
 		Id: &testVolumeVar,
 		Properties: compute.VolumeProperties{
 			Name:                &testVolumeVar,
-			Size:                &sizeVolume,
+			Size:                sizeVolume,
 			LicenceType:         &testVolumeVar,
 			Type:                &testVolumeVar,
 			Bus:                 &testVolumeVar,
 			Image:               &testVolumeVar,
 			ImageAlias:          &testVolumeVar,
 			AvailabilityZone:    &zoneVolume,
-			SshKeys:             &testVolumeSliceVar,
+			SshKeys:             testVolumeSliceVar,
 			BackupunitId:        &testVolumeVar,
 			UserData:            &testVolumeVar,
 			CpuHotPlug:          &testVolumeBoolVar,
@@ -53,7 +53,7 @@ var (
 		Id: &testServerVar,
 		Properties: compute.VolumeProperties{
 			Name:                &testVolumeVar,
-			Size:                &sizeVolume,
+			Size:                sizeVolume,
 			LicenceType:         &testVolumeVar,
 			Type:                &testVolumeVar,
 			Bus:                 &testVolumeVar,
@@ -78,7 +78,7 @@ var (
 		Volume: compute.Volume{
 			Properties: compute.VolumeProperties{
 				Name:                &testVolumeVar,
-				Size:                &sizeVolume,
+				Size:                sizeVolume,
 				LicenceType:         &testVolumeVar,
 				Type:                &testVolumeVar,
 				Bus:                 &testVolumeVar,
@@ -98,7 +98,7 @@ var (
 		Volume: compute.Volume{
 			Properties: compute.VolumeProperties{
 				Name:                &testVolumeVar,
-				Size:                &sizeVolume,
+				Size:                sizeVolume,
 				Image:               &testVolumeVar,
 				ImageAlias:          &testVolumeVar,
 				ImagePassword:       &testVolumeVar,
@@ -141,7 +141,7 @@ var (
 		VolumeProperties: compute.VolumeProperties{
 			Name:                &testVolumeNewVar,
 			Bus:                 &testVolumeNewVar,
-			Size:                &sizeVolumeNew,
+			Size:                sizeVolumeNew,
 			CpuHotPlug:          &testVolumeBoolVar,
 			RamHotPlug:          &testVolumeBoolVar,
 			NicHotPlug:          &testVolumeBoolVar,

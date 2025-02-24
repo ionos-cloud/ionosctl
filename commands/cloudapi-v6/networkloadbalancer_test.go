@@ -22,11 +22,11 @@ var (
 	networkloadbalancerTest = resources.NetworkLoadBalancer{
 		NetworkLoadBalancer: compute.NetworkLoadBalancer{
 			Properties: compute.NetworkLoadBalancerProperties{
-				Name:         &testNetworkLoadBalancerVar,
-				Ips:          &[]string{testNetworkLoadBalancerVar},
-				TargetLan:    &testNetworkLoadBalancerIntVar,
-				ListenerLan:  &testNetworkLoadBalancerIntVar,
-				LbPrivateIps: &[]string{testNetworkLoadBalancerVar},
+				Name:         testNetworkLoadBalancerVar,
+				Ips:          []string{testNetworkLoadBalancerVar},
+				TargetLan:    testNetworkLoadBalancerIntVar,
+				ListenerLan:  testNetworkLoadBalancerIntVar,
+				LbPrivateIps: []string{testNetworkLoadBalancerVar},
 			},
 		},
 	}
@@ -34,11 +34,11 @@ var (
 		NetworkLoadBalancer: compute.NetworkLoadBalancer{
 			Id: &testNetworkLoadBalancerVar,
 			Properties: compute.NetworkLoadBalancerProperties{
-				Name:         &testNetworkLoadBalancerVar,
-				Ips:          &[]string{testNetworkLoadBalancerVar},
-				TargetLan:    &testNetworkLoadBalancerIntVar,
-				ListenerLan:  &testNetworkLoadBalancerIntVar,
-				LbPrivateIps: &[]string{testNetworkLoadBalancerVar},
+				Name:         testNetworkLoadBalancerVar,
+				Ips:          []string{testNetworkLoadBalancerVar},
+				TargetLan:    testNetworkLoadBalancerIntVar,
+				ListenerLan:  testNetworkLoadBalancerIntVar,
+				LbPrivateIps: []string{testNetworkLoadBalancerVar},
 			},
 		},
 	}
@@ -66,11 +66,11 @@ var (
 	}
 	networkloadbalancerProperties = resources.NetworkLoadBalancerProperties{
 		NetworkLoadBalancerProperties: compute.NetworkLoadBalancerProperties{
-			Name:         &testNetworkLoadBalancerNewVar,
-			Ips:          &[]string{testNetworkLoadBalancerNewVar},
-			TargetLan:    &testNetworkLoadBalancerNewIntVar,
-			ListenerLan:  &testNetworkLoadBalancerNewIntVar,
-			LbPrivateIps: &[]string{testNetworkLoadBalancerNewVar},
+			Name:         testNetworkLoadBalancerNewVar,
+			Ips:          []string{testNetworkLoadBalancerNewVar},
+			TargetLan:    testNetworkLoadBalancerNewIntVar,
+			ListenerLan:  testNetworkLoadBalancerNewIntVar,
+			LbPrivateIps: []string{testNetworkLoadBalancerNewVar},
 		},
 	}
 	networkloadbalancerNew = resources.NetworkLoadBalancer{

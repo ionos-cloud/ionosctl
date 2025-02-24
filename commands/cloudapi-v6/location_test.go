@@ -25,8 +25,8 @@ var (
 			Id: &testLocationVar,
 			Properties: compute.LocationProperties{
 				Name:         &testLocationVar,
-				Features:     &[]string{testLocationVar},
-				ImageAliases: &[]string{testLocationVar},
+				Features:     []string{testLocationVar},
+				ImageAliases: []string{testLocationVar},
 				CpuArchitecture: []compute.CpuArchitectureProperties{
 					{
 						CpuFamily: &testLocationVar,

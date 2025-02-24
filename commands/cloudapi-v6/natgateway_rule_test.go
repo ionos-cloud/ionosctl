@@ -22,10 +22,10 @@ var (
 	natgatewayRuleTest = resources.NatGatewayRule{
 		NatGatewayRule: compute.NatGatewayRule{
 			Properties: compute.NatGatewayRuleProperties{
-				Name:         &testNatGatewayRuleVar,
-				PublicIp:     &testNatGatewayRuleVar,
+				Name:         testNatGatewayRuleVar,
+				PublicIp:     testNatGatewayRuleVar,
 				Protocol:     &testNatGatewayRuleProtocol,
-				SourceSubnet: &testNatGatewayRuleVar,
+				SourceSubnet: testNatGatewayRuleVar,
 				TargetSubnet: &testNatGatewayRuleVar,
 				TargetPortRange: &compute.TargetPortRange{
 					Start: &testNatGatewayRuleIntVar,
@@ -58,10 +58,10 @@ var (
 	}
 	natgatewayRuleProperties = resources.NatGatewayRuleProperties{
 		NatGatewayRuleProperties: compute.NatGatewayRuleProperties{
-			Name:         &testNatGatewayRuleNewVar,
-			PublicIp:     &testNatGatewayRuleNewVar,
+			Name:         testNatGatewayRuleNewVar,
+			PublicIp:     testNatGatewayRuleNewVar,
 			Protocol:     &testNatGatewayRuleNewProtocol,
-			SourceSubnet: &testNatGatewayRuleNewVar,
+			SourceSubnet: testNatGatewayRuleNewVar,
 			TargetSubnet: &testNatGatewayRuleNewVar,
 			TargetPortRange: &compute.TargetPortRange{
 				Start: &testNatGatewayRuleNewIntVar,

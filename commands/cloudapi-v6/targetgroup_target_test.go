@@ -22,9 +22,9 @@ var (
 		TargetGroupProperties: compute.TargetGroupProperties{
 			Targets: []compute.TargetGroupTarget{
 				{
-					Ip:                 &testTargetGroupTargetVar,
-					Port:               &testTargetGroupTargetIntVar,
-					Weight:             &testTargetGroupTargetIntVar,
+					Ip:                 testTargetGroupTargetVar,
+					Port:               testTargetGroupTargetIntVar,
+					Weight:             testTargetGroupTargetIntVar,
 					HealthCheckEnabled: &testTargetGroupTargetBoolVar,
 					MaintenanceEnabled: &testTargetGroupTargetBoolVar,
 				},

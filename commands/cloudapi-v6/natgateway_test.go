@@ -22,8 +22,8 @@ var (
 	natgatewayTest = resources.NatGateway{
 		NatGateway: compute.NatGateway{
 			Properties: compute.NatGatewayProperties{
-				Name:      &testNatGatewayVar,
-				PublicIps: &[]string{testNatGatewayVar},
+				Name:      testNatGatewayVar,
+				PublicIps: []string{testNatGatewayVar},
 			},
 		},
 	}
@@ -31,8 +31,8 @@ var (
 		NatGateway: compute.NatGateway{
 			Id: &testNatGatewayVar,
 			Properties: compute.NatGatewayProperties{
-				Name:      &testNatGatewayVar,
-				PublicIps: &[]string{testNatGatewayVar},
+				Name:      testNatGatewayVar,
+				PublicIps: []string{testNatGatewayVar},
 			},
 		},
 	}
@@ -60,8 +60,8 @@ var (
 	}
 	natgatewayProperties = resources.NatGatewayProperties{
 		NatGatewayProperties: compute.NatGatewayProperties{
-			Name:      &testNatGatewayNewVar,
-			PublicIps: &[]string{testNatGatewayNewVar},
+			Name:      testNatGatewayNewVar,
+			PublicIps: []string{testNatGatewayNewVar},
 		},
 	}
 	natgatewayNew = resources.NatGateway{
