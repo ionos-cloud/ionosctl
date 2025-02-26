@@ -84,7 +84,7 @@ func Resolve(nameOrId string) (string, error) {
 
 		// Why doesn't the API have a FindByID or something :(
 		templateMatchingWholeWordIgnoreCase, err := Find(func(x mongo.TemplateResponse) bool {
-			if x.Properties == nil || x.Properties.Name == nil {
+			if x.Properties.Name == nil {
 				return false
 			}
 

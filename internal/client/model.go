@@ -8,6 +8,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/sdk-go-bundle/products/auth/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/cdn/v2"
+	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/containerregistry/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dataplatform/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mariadb/v2"
@@ -19,7 +20,6 @@ import (
 	certmanager "github.com/ionos-cloud/sdk-go-cert-manager"
 	postgres "github.com/ionos-cloud/sdk-go-dbaas-postgres"
 	vmasc "github.com/ionos-cloud/sdk-go-vm-autoscaling"
-	cloudv6 "github.com/ionos-cloud/sdk-go/v6"
 
 	"github.com/spf13/viper"
 )
@@ -66,7 +66,7 @@ func (c *Client) UsedLayer() *Layer {
 type Client struct {
 	usedLayer *Layer // i.e. which auth layer are we using. Flags / Env Vars / Config File
 
-	CloudClient          *cloudv6.APIClient
+	CloudClient          *compute.APIClient
 	AuthClient           *auth.APIClient
 	CertManagerClient    *certmanager.APIClient
 	DataplatformClient   *dataplatform.APIClient
@@ -91,11 +91,17 @@ func newClient(name, pwd, token, hostUrl string, usedLayer *Layer) *Client {
 	// TODO: Replace all configurations with this one
 	sharedConfig := shared.NewConfiguration(name, pwd, token, hostUrl)
 	sharedConfig.UserAgent = appendUserAgent(sharedConfig.UserAgent)
+	sharedConfig.AddDefaultQueryParam("depth", "1")
 
-	clientConfig := cloudv6.NewConfiguration(name, pwd, token, hostUrl)
-	clientConfig.UserAgent = appendUserAgent(clientConfig.UserAgent)
-	// Set Depth Query Parameter globally
-	clientConfig.SetDepth(1)
+	cloudApiUrl := hostUrl
+	if cloudApiUrl != "" {
+		if cloudApiUrl[len(cloudApiUrl)-1] != '/' {
+			cloudApiUrl += "/"
+		}
+		cloudApiUrl += "cloudapi/v6"
+	}
+	computeConfig := shared.NewConfiguration(name, pwd, token, cloudApiUrl)
+	computeConfig.UserAgent = appendUserAgent(computeConfig.UserAgent)
 
 	certManagerConfig := certmanager.NewConfiguration(name, pwd, token, hostUrl)
 	certManagerConfig.UserAgent = appendUserAgent(certManagerConfig.UserAgent)
@@ -107,7 +113,7 @@ func newClient(name, pwd, token, hostUrl string, usedLayer *Layer) *Client {
 	postgresConfig.UserAgent = appendUserAgent(postgresConfig.UserAgent)
 
 	return &Client{
-		CloudClient:          cloudv6.NewAPIClient(clientConfig),
+		CloudClient:          compute.NewAPIClient(computeConfig),
 		AuthClient:           auth.NewAPIClient(sharedConfig),
 		CDNClient:            cdn.NewAPIClient(sharedConfig),
 		CertManagerClient:    certmanager.NewAPIClient(certManagerConfig),

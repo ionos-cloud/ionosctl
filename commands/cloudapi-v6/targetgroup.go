@@ -18,7 +18,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -426,11 +426,11 @@ func DeleteAllTargetGroup(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get items of Target Groups")
 	}
 
-	if len(*targetGroupItems) <= 0 {
+	if len(targetGroupItems) <= 0 {
 		return fmt.Errorf("no Target Groups found")
 	}
 
-	for _, tg := range *targetGroupItems {
+	for _, tg := range targetGroupItems {
 		delIdAndName := ""
 
 		if id, ok := tg.GetIdOk(); ok && id != nil {
@@ -453,7 +453,7 @@ func DeleteAllTargetGroup(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the Target Groups..."))
 
 	var multiErr error
-	for _, tg := range *targetGroupItems {
+	for _, tg := range targetGroupItems {
 		id, ok := tg.GetIdOk()
 		if !ok || id == nil {
 			continue
@@ -550,8 +550,8 @@ func getTargetGroupNew(c *core.CommandConfig) resources.TargetGroup {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Setting HttpHealthCheck"))
 
 	return resources.TargetGroup{
-		TargetGroup: ionoscloud.TargetGroup{
-			Properties: &input.TargetGroupProperties,
+		TargetGroup: compute.TargetGroup{
+			Properties: input.TargetGroupProperties,
 		},
 	}
 }

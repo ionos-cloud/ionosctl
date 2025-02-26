@@ -4,49 +4,48 @@ import (
 	"context"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
 
 	"github.com/fatih/structs"
-
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
 
 type ApplicationLoadBalancer struct {
-	ionoscloud.ApplicationLoadBalancer
+	compute.ApplicationLoadBalancer
 }
 
 type ApplicationLoadBalancerPut struct {
-	ionoscloud.ApplicationLoadBalancerPut
+	compute.ApplicationLoadBalancerPut
 }
 
 type ApplicationLoadBalancerProperties struct {
-	ionoscloud.ApplicationLoadBalancerProperties
+	compute.ApplicationLoadBalancerProperties
 }
 
 type ApplicationLoadBalancers struct {
-	ionoscloud.ApplicationLoadBalancers
+	compute.ApplicationLoadBalancers
 }
 
 type ApplicationLoadBalancerForwardingRule struct {
-	ionoscloud.ApplicationLoadBalancerForwardingRule
+	compute.ApplicationLoadBalancerForwardingRule
 }
 
 type ApplicationLoadBalancerHttpRule struct {
-	ionoscloud.ApplicationLoadBalancerHttpRule
+	compute.ApplicationLoadBalancerHttpRule
 }
 
 type ApplicationLoadBalancerHttpRuleCondition struct {
-	ionoscloud.ApplicationLoadBalancerHttpRuleCondition
+	compute.ApplicationLoadBalancerHttpRuleCondition
 }
 
 type ApplicationLoadBalancerForwardingRuleProperties struct {
-	ionoscloud.ApplicationLoadBalancerForwardingRuleProperties
+	compute.ApplicationLoadBalancerForwardingRuleProperties
 }
 
 type ApplicationLoadBalancerForwardingRules struct {
-	ionoscloud.ApplicationLoadBalancerForwardingRules
+	compute.ApplicationLoadBalancerForwardingRules
 }
 
-// ApplicationLoadBalancersService is a wrapper around ionoscloud.ApplicationLoadBalancer
+// ApplicationLoadBalancersService is a wrapper around compute.ApplicationLoadBalancer
 type ApplicationLoadBalancersService interface {
 	List(datacenterId string, params ListQueryParams) (ApplicationLoadBalancers, *Response, error)
 	Get(datacenterId, applicationLoadBalancerId string, params QueryParams) (*ApplicationLoadBalancer, *Response, error)
@@ -66,7 +65,7 @@ type ApplicationLoadBalancersService interface {
 }
 
 type applicationLoadBalancersService struct {
-	client  *ionoscloud.APIClient
+	client  *compute.APIClient
 	context context.Context
 }
 

@@ -17,10 +17,10 @@ func K8sClusterUpgradeVersions(clusterId string) []string {
 	if err != nil {
 		return nil
 	}
-	if cluster.Properties == nil || cluster.Properties.AvailableUpgradeVersions == nil {
+	if cluster.Properties.AvailableUpgradeVersions == nil {
 		return nil
 	}
-	return *cluster.Properties.AvailableUpgradeVersions
+	return cluster.Properties.AvailableUpgradeVersions
 }
 
 func K8sNodePoolUpgradeVersions(clusterId, nodepoolId string) []string {
@@ -33,8 +33,8 @@ func K8sNodePoolUpgradeVersions(clusterId, nodepoolId string) []string {
 	if err != nil {
 		return nil
 	}
-	if nodepool.Properties == nil || nodepool.Properties.AvailableUpgradeVersions == nil {
+	if nodepool.Properties.AvailableUpgradeVersions == nil {
 		return nil
 	}
-	return *nodepool.Properties.AvailableUpgradeVersions
+	return nodepool.Properties.AvailableUpgradeVersions
 }

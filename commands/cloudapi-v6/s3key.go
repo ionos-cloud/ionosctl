@@ -18,7 +18,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -308,8 +308,8 @@ func RunUserS3KeyUpdate(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property Active set: %v", active))
 
 	newKey := resources.S3Key{
-		S3Key: ionoscloud.S3Key{
-			Properties: &ionoscloud.S3KeyProperties{
+		S3Key: compute.S3Key{
+			Properties: compute.S3KeyProperties{
 				Active: &active,
 			},
 		},
@@ -408,12 +408,12 @@ func DeleteAllS3keys(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get items of S3 Keys")
 	}
 
-	if len(*s3KeysItems) <= 0 {
+	if len(s3KeysItems) <= 0 {
 		return fmt.Errorf("no S3 Keys found")
 	}
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("S3 keys to be deleted:"))
-	for _, s3Key := range *s3KeysItems {
+	for _, s3Key := range s3KeysItems {
 		if id, ok := s3Key.GetIdOk(); ok && id != nil {
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("S3 key Id: %v", *id))
 		}
@@ -426,7 +426,7 @@ func DeleteAllS3keys(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the S3Keys..."))
 
 	var multiErr error
-	for _, s3Key := range *s3KeysItems {
+	for _, s3Key := range s3KeysItems {
 		id, ok := s3Key.GetIdOk()
 		if !ok || id == nil {
 			continue

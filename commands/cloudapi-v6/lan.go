@@ -22,7 +22,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -257,7 +257,7 @@ func RunLanListAll(c *core.CommandConfig) error {
 
 	allDcs := getDataCenters(datacenters)
 
-	var allLans []ionoscloud.Lans
+	var allLans []compute.Lans
 	totalTime := time.Duration(0)
 	for _, dc := range allDcs {
 		id, ok := dc.GetIdOk()
@@ -265,7 +265,7 @@ func RunLanListAll(c *core.CommandConfig) error {
 			return fmt.Errorf("failed to retrieve Datacenter ID")
 		}
 
-		lans, resp, err := c.CloudApiV6Services.Lans().List(*dc.GetId(), listQueryParams)
+		lans, resp, err := c.CloudApiV6Services.Lans().List(dc.GetId(), listQueryParams)
 		if err != nil {
 			return err
 		}
@@ -368,7 +368,7 @@ func RunLanCreate(c *core.CommandConfig) error {
 	queryParams := listQueryParams.QueryParams
 	name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
 	public := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgPublic))
-	properties := ionoscloud.LanPropertiesPost{
+	properties := compute.LanProperties{
 		Name:   &name,
 		Public: &public,
 	}
@@ -414,16 +414,15 @@ func RunLanCreate(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property IPv6 Cidr Block set: %v", cidr))
 	}
 
-	input := resources.LanPost{
-		LanPost: ionoscloud.LanPost{
-			Properties: &properties,
-		},
-	}
-
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
 		"Creating LAN in Datacenter with ID: %v...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))))
 
-	l, resp, err := c.CloudApiV6Services.Lans().Create(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)), input, queryParams)
+	l, resp, err := c.CloudApiV6Services.Lans().Create(
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
+		compute.Lan{
+			Properties: properties,
+		},
+		queryParams)
 	if resp != nil && request.GetId(resp) != "" {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
 	}
@@ -437,7 +436,7 @@ func RunLanCreate(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Lan, l.LanPost,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Lan, l,
 		tabheaders.GetHeadersAllDefault(defaultLanCols, cols))
 	if err != nil {
 		return err
@@ -603,13 +602,13 @@ func DeleteAllLans(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get items of Lans")
 	}
 
-	if len(*lansItems) <= 0 {
+	if len(lansItems) <= 0 {
 		return fmt.Errorf("no Lans found")
 	}
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Lans to be deleted:"))
 
-	for _, lan := range *lansItems {
+	for _, lan := range lansItems {
 		delIdAndName := ""
 		if id, ok := lan.GetIdOk(); ok && id != nil {
 			delIdAndName += "Lan Id: " + *id
@@ -631,7 +630,7 @@ func DeleteAllLans(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the Lans..."))
 
 	var multiErr error
-	for _, lan := range *lansItems {
+	for _, lan := range lansItems {
 		id, ok := lan.GetIdOk()
 		if !ok || id == nil {
 			continue
@@ -663,7 +662,7 @@ func DeleteAllLans(c *core.CommandConfig) error {
 	return nil
 }
 
-func GetIPv6CidrBlockFromLAN(lan ionoscloud.Lan) (string, error) {
+func GetIPv6CidrBlockFromLAN(lan compute.Lan) (string, error) {
 	if properties, ok := lan.GetPropertiesOk(); ok && properties != nil {
 		if ipv6CidrBlock, ok := properties.GetIpv6CidrBlockOk(); ok && ipv6CidrBlock != nil {
 			return *ipv6CidrBlock, nil

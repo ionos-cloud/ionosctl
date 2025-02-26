@@ -13,7 +13,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
@@ -236,7 +236,9 @@ func TestRunNetworkLoadBalancerFlowLogCreateResponseErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAction), testFlowLogVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDirection), testFlowLogVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgS3Bucket), testFlowLogVar)
-		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().CreateFlowLog(testFlowLogVar, testFlowLogVar, testInputFlowLog, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&testFlowLog, &testResponse, testFlowLogErr)
+		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().CreateFlowLog(testFlowLogVar, testFlowLogVar, testInputFlowLog,
+			gomock.AssignableToTypeOf(testQueryParamOther)).
+			Return(&testFlowLog, &testResponse, testFlowLogErr)
 		err := RunNetworkLoadBalancerFlowLogCreate(cfg)
 		assert.Error(t, err)
 	})
@@ -433,7 +435,7 @@ func TestRunNetworkLoadBalancerFlowLogDeleteAllLenErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNetworkLoadBalancerId), testFlowLogVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
 		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().ListFlowLogs(testFlowLogVar, testFlowLogVar, gomock.AssignableToTypeOf(testListQueryParam)).Return(
-			resources.FlowLogs{FlowLogs: ionoscloud.FlowLogs{Items: &[]ionoscloud.FlowLog{}}}, &testResponse, nil)
+			resources.FlowLogs{FlowLogs: compute.FlowLogs{Items: []compute.FlowLog{}}}, &testResponse, nil)
 		err := RunNetworkLoadBalancerFlowLogDelete(cfg)
 		assert.Error(t, err)
 	})

@@ -16,7 +16,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -339,9 +339,9 @@ func RunBackupUnitCreate(c *core.CommandConfig) error {
 	pwd := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgPassword))
 
 	newBackupUnit := resources.BackupUnit{
-		BackupUnit: ionoscloud.BackupUnit{
-			Properties: &ionoscloud.BackupUnitProperties{
-				Name:     &name,
+		BackupUnit: compute.BackupUnit{
+			Properties: compute.BackupUnitProperties{
+				Name:     name,
 				Email:    &email,
 				Password: &pwd,
 			},
@@ -493,13 +493,13 @@ func DeleteAllBackupUnits(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get Backup Unit items")
 	}
 
-	if len(*backupUnitsItems) <= 0 {
+	if len(backupUnitsItems) <= 0 {
 		return fmt.Errorf("no Backup Units found")
 	}
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Backup Units to be deleted:"))
 
-	for _, backupUnit := range *backupUnitsItems {
+	for _, backupUnit := range backupUnitsItems {
 		delIdAndName := ""
 		if id, ok := backupUnit.GetIdOk(); ok && id != nil {
 			delIdAndName += "BackupUnit Id: " + *id
@@ -521,7 +521,7 @@ func DeleteAllBackupUnits(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the BackupUnits..."))
 
 	var multiErr error
-	for _, backupUnit := range *backupUnitsItems {
+	for _, backupUnit := range backupUnitsItems {
 		id, ok := backupUnit.GetIdOk()
 		if !ok || id == nil {
 			continue

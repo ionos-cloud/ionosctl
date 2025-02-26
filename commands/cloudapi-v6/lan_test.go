@@ -13,7 +13,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
@@ -21,37 +21,37 @@ import (
 var (
 	publicLan    = true
 	publicNewLan = false
-	lanPostTest  = ionoscloud.LanPost{
-		Properties: &ionoscloud.LanPropertiesPost{
+	lanPostTest  = compute.Lan{
+		Properties: compute.LanProperties{
 			Name:       &testLanVar,
 			IpFailover: nil,
 			Pcc:        &testLanVar,
 			Public:     &publicLan,
 		},
 	}
-	lp = ionoscloud.LanPost{
+	lp = compute.Lan{
 		Id:         &testLanVar,
 		Properties: lanPostTest.Properties,
-		Metadata:   &ionoscloud.DatacenterElementMetadata{State: &testStateVar},
+		Metadata:   &compute.DatacenterElementMetadata{State: &testStateVar},
 	}
-	l = ionoscloud.Lan{
+	l = compute.Lan{
 		Id: &testLanVar,
-		Properties: &ionoscloud.LanProperties{
+		Properties: compute.LanProperties{
 			Name: &testLanVar,
 			Pcc:  &testLanVar,
 		},
 	}
 	lanProperties = resources.LanProperties{
-		LanProperties: ionoscloud.LanProperties{
+		LanProperties: compute.LanProperties{
 			Name:   &testLanNewVar,
 			Pcc:    &testLanNewVar,
 			Public: &publicNewLan,
 		},
 	}
 	lanNew = resources.Lan{
-		Lan: ionoscloud.Lan{
+		Lan: compute.Lan{
 			Id: &testLanVar,
-			Properties: &ionoscloud.LanProperties{
+			Properties: compute.LanProperties{
 				Name:       lanProperties.LanProperties.Name,
 				Public:     lanProperties.LanProperties.Public,
 				IpFailover: nil,
@@ -60,15 +60,15 @@ var (
 		},
 	}
 	ls = resources.Lans{
-		Lans: ionoscloud.Lans{
+		Lans: compute.Lans{
 			Id:    &testLanVar,
-			Items: &[]ionoscloud.Lan{l},
+			Items: []compute.Lan{l},
 		},
 	}
 	lansList = resources.Lans{
-		Lans: ionoscloud.Lans{
+		Lans: compute.Lans{
 			Id: &testLanVar,
-			Items: &[]ionoscloud.Lan{
+			Items: []compute.Lan{
 				l,
 				l,
 			},
@@ -238,7 +238,9 @@ func TestRunLanCreate(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgName), testLanVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPccId), testLanVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPublic), publicLan)
-		rm.CloudApiV6Mocks.Lan.EXPECT().Create(testLanVar, resources.LanPost{LanPost: lanPostTest}, testQueryParamOther).Return(&resources.LanPost{LanPost: lp}, &testResponse, nil)
+		rm.CloudApiV6Mocks.Lan.EXPECT().
+			Create(testLanVar, lanPostTest, testQueryParamOther).
+			Return(lanPostTest, &testResponse, nil)
 		err := RunLanCreate(cfg)
 		assert.NoError(t, err)
 	})
@@ -256,7 +258,9 @@ func TestRunLanCreateErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgName), testLanVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPublic), publicLan)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPccId), testLanVar)
-		rm.CloudApiV6Mocks.Lan.EXPECT().Create(testLanVar, resources.LanPost{LanPost: lanPostTest}, testQueryParamOther).Return(&resources.LanPost{LanPost: lp}, nil, testLanErr)
+		rm.CloudApiV6Mocks.Lan.EXPECT().
+			Create(testLanVar, compute.Lan{Properties: lp.Properties}, testQueryParamOther).
+			Return(compute.Lan{Properties: lp.Properties}, &testResponse, nil)
 		err := RunLanCreate(cfg)
 		assert.Error(t, err)
 	})
@@ -275,7 +279,9 @@ func TestRunLanCreateWaitErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgName), testLanVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPublic), publicLan)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPccId), testLanVar)
-		rm.CloudApiV6Mocks.Lan.EXPECT().Create(testLanVar, resources.LanPost{LanPost: lanPostTest}, testQueryParamOther).Return(&resources.LanPost{LanPost: lp}, &testResponse, nil)
+		rm.CloudApiV6Mocks.Lan.EXPECT().
+			Create(testLanVar, compute.Lan{Properties: lp.Properties}, testQueryParamOther).
+			Return(compute.Lan{Properties: lp.Properties}, &testResponse, nil)
 		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testRequestIdVar).Return(&testRequestStatus, nil, testRequestErr)
 		err := RunLanCreate(cfg)
 		assert.Error(t, err)
@@ -446,7 +452,7 @@ func TestRunLanDeleteAllLenErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
 		rm.CloudApiV6Mocks.Lan.EXPECT().List(testLanVar, gomock.AssignableToTypeOf(testListQueryParam)).Return(
-			resources.Lans{Lans: ionoscloud.Lans{Items: &[]ionoscloud.Lan{}}}, &testResponse, nil)
+			resources.Lans{Lans: compute.Lans{Items: []compute.Lan{}}}, &testResponse, nil)
 		err := RunLanDelete(cfg)
 		assert.Error(t, err)
 	})

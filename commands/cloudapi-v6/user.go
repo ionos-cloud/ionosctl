@@ -18,7 +18,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -284,8 +284,8 @@ func RunUserCreate(c *core.CommandConfig) error {
 	admin := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAdmin))
 
 	newUser := resources.UserPost{
-		UserPost: ionoscloud.UserPost{
-			Properties: &ionoscloud.UserPropertiesPost{
+		UserPost: compute.UserPost{
+			Properties: compute.UserPropertiesPost{
 				Firstname:     &firstname,
 				Lastname:      &lastname,
 				Email:         &email,
@@ -396,7 +396,7 @@ func RunUserDelete(c *core.CommandConfig) error {
 }
 
 func getUserInfo(oldUser *resources.User, c *core.CommandConfig) *resources.UserPut {
-	userPropertiesPut := ionoscloud.UserPropertiesPut{}
+	userPropertiesPut := compute.UserPropertiesPut{}
 
 	if properties, ok := oldUser.GetPropertiesOk(); ok && properties != nil {
 		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFirstName)) {
@@ -469,8 +469,8 @@ func getUserInfo(oldUser *resources.User, c *core.CommandConfig) *resources.User
 	}
 
 	return &resources.UserPut{
-		UserPut: ionoscloud.UserPut{
-			Properties: &userPropertiesPut,
+		UserPut: compute.UserPut{
+			Properties: userPropertiesPut,
 		},
 	}
 }
@@ -495,13 +495,13 @@ func DeleteAllUsers(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get items of Users")
 	}
 
-	if len(*usersItems) <= 0 {
+	if len(usersItems) <= 0 {
 		return fmt.Errorf("no Users found")
 	}
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Users to be deleted:"))
 
-	for _, user := range *usersItems {
+	for _, user := range usersItems {
 		delIdAndName := ""
 
 		if id, ok := user.GetIdOk(); ok && id != nil {
@@ -527,7 +527,7 @@ func DeleteAllUsers(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the Users..."))
 
 	var multiErr error
-	for _, user := range *usersItems {
+	for _, user := range usersItems {
 		id, ok := user.GetIdOk()
 		if !ok || id == nil {
 			continue
@@ -708,15 +708,14 @@ func RunGroupUserAdd(c *core.CommandConfig) error {
 	id := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserId))
 	groupId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId))
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("User with id: %v is adding to group with id: %v...", id, groupId))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("User with id: %v is being added to group with id: %v...", id, groupId))
 
-	u := resources.User{
-		User: ionoscloud.User{
-			Id: &id,
+	userAdded, resp, err := c.CloudApiV6Services.Groups().AddUser(
+		groupId,
+		compute.UserGroupPost{
+			Id: id,
 		},
-	}
-
-	userAdded, resp, err := c.CloudApiV6Services.Groups().AddUser(groupId, u, queryParams)
+		queryParams)
 	if resp != nil && request.GetId(resp) != "" {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
 	}
@@ -797,13 +796,13 @@ func RemoveAllUsers(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get items of Users")
 	}
 
-	if len(*usersItems) <= 0 {
+	if len(usersItems) <= 0 {
 		return fmt.Errorf("no Users found")
 	}
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Users to be removed:"))
 
-	for _, user := range *usersItems {
+	for _, user := range usersItems {
 		delIdAndName := ""
 		if id, ok := user.GetIdOk(); ok && id != nil {
 			delIdAndName += "User Id: " + *id
@@ -829,7 +828,7 @@ func RemoveAllUsers(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Removing all the Users..."))
 
 	var multiErr error
-	for _, user := range *usersItems {
+	for _, user := range usersItems {
 		id, ok := user.GetIdOk()
 		if !ok || id == nil {
 			continue

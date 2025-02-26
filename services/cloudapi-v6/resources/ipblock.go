@@ -4,28 +4,28 @@ import (
 	"context"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
 
 	"github.com/fatih/structs"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
 
 type IpBlock struct {
-	ionoscloud.IpBlock
+	compute.IpBlock
 }
 
 type IpBlockProperties struct {
-	ionoscloud.IpBlockProperties
+	compute.IpBlockProperties
 }
 
 type IpBlocks struct {
-	ionoscloud.IpBlocks
+	compute.IpBlocks
 }
 
 type IpConsumer struct {
-	ionoscloud.IpConsumer
+	compute.IpConsumer
 }
 
-// IpBlocksService is a wrapper around ionoscloud.IpBlock
+// IpBlocksService is a wrapper around compute.IpBlock
 type IpBlocksService interface {
 	List(params ListQueryParams) (IpBlocks, *Response, error)
 	Get(IpBlockId string, params QueryParams) (*IpBlock, *Response, error)
@@ -35,7 +35,7 @@ type IpBlocksService interface {
 }
 
 type ipBlocksService struct {
-	client  *ionoscloud.APIClient
+	client  *compute.APIClient
 	context context.Context
 }
 
@@ -85,10 +85,10 @@ func (svc *ipBlocksService) Get(ipBlockId string, params QueryParams) (*IpBlock,
 }
 
 func (svc *ipBlocksService) Create(name, location string, size int32, params QueryParams) (*IpBlock, *Response, error) {
-	i := ionoscloud.IpBlock{
-		Properties: &ionoscloud.IpBlockProperties{
-			Location: &location,
-			Size:     &size,
+	i := compute.IpBlock{
+		Properties: compute.IpBlockProperties{
+			Location: location,
+			Size:     size,
 		},
 	}
 	if name != "" {

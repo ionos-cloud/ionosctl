@@ -20,7 +20,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -425,8 +425,8 @@ func RunFirewallRuleCreate(c *core.CommandConfig) error {
 	}
 
 	input := resources.FirewallRule{
-		FirewallRule: ionoscloud.FirewallRule{
-			Properties: &properties.FirewallruleProperties,
+		FirewallRule: compute.FirewallRule{
+			Properties: properties.FirewallruleProperties,
 		},
 	}
 	firewallRule, resp, err := c.CloudApiV6Services.FirewallRules().Create(
@@ -660,13 +660,13 @@ func DeleteAllFirewallRules(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get items of Firewall Rules")
 	}
 
-	if len(*firewallRulesItems) <= 0 {
+	if len(firewallRulesItems) <= 0 {
 		return fmt.Errorf("no Firewall Rule found")
 	}
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Firewall Rules to be deleted:"))
 
-	for _, firewall := range *firewallRulesItems {
+	for _, firewall := range firewallRulesItems {
 		delIdAndName := ""
 
 		if id, ok := firewall.GetIdOk(); ok && id != nil {
@@ -689,7 +689,7 @@ func DeleteAllFirewallRules(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the Firewall Rules..."))
 
 	var multiErr error
-	for _, firewall := range *firewallRulesItems {
+	for _, firewall := range firewallRulesItems {
 		id, ok := firewall.GetIdOk()
 		if !ok || id == nil {
 			continue

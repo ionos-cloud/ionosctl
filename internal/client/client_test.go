@@ -56,6 +56,7 @@ func testTestCreds(t *testing.T) {
 	})
 
 	t.Run("good user & pass", func(t *testing.T) {
+		os.Setenv("IONOS_LOG_LEVEL", "trace")
 		err := client.TestCreds(GoodUsername, GoodPassword, "")
 		assert.NoError(t, err)
 	})

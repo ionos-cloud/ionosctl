@@ -19,7 +19,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -254,7 +254,7 @@ func RunNetworkLoadBalancerListAll(c *core.CommandConfig) error {
 		return err
 	}
 
-	var allNetworkLoadBalancers []ionoscloud.NetworkLoadBalancers
+	var allNetworkLoadBalancers []compute.NetworkLoadBalancers
 	allDcs := getDataCenters(datacenters)
 	totalTime := time.Duration(0)
 
@@ -375,23 +375,15 @@ func RunNetworkLoadBalancerCreate(c *core.CommandConfig) error {
 	queryParams := listQueryParams.QueryParams
 	proper := getNewNetworkLoadBalancerInfo(c)
 
-	if !proper.HasName() {
-		proper.SetName(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName)))
-	}
-
-	if !proper.HasTargetLan() {
-		proper.SetTargetLan(viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgTargetLan)))
-	}
-
-	if !proper.HasListenerLan() {
-		proper.SetListenerLan(viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgListenerLan)))
-	}
+	proper.SetName(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName)))
+	proper.SetTargetLan(viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgTargetLan)))
+	proper.SetListenerLan(viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgListenerLan)))
 
 	ng, resp, err := c.CloudApiV6Services.NetworkLoadBalancers().Create(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		resources.NetworkLoadBalancer{
-			NetworkLoadBalancer: ionoscloud.NetworkLoadBalancer{
-				Properties: &proper.NetworkLoadBalancerProperties,
+			NetworkLoadBalancer: compute.NetworkLoadBalancer{
+				Properties: proper.NetworkLoadBalancerProperties,
 			},
 		},
 		queryParams,
@@ -500,7 +492,7 @@ func RunNetworkLoadBalancerDelete(c *core.CommandConfig) error {
 }
 
 func getNewNetworkLoadBalancerInfo(c *core.CommandConfig) *resources.NetworkLoadBalancerProperties {
-	input := ionoscloud.NetworkLoadBalancerProperties{}
+	input := compute.NetworkLoadBalancerProperties{}
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgName)) {
 		name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
@@ -564,13 +556,13 @@ func DeleteAllNetworkLoadBalancers(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get items of Network Load Balancers")
 	}
 
-	if len(*nlbItems) <= 0 {
+	if len(nlbItems) <= 0 {
 		return fmt.Errorf("no Network Load Balancers found")
 	}
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Network Load Balancers to be deleted:"))
 
-	for _, networkLoadBalancer := range *nlbItems {
+	for _, networkLoadBalancer := range nlbItems {
 		delIdAndName := ""
 
 		if id, ok := networkLoadBalancer.GetIdOk(); ok && id != nil {
@@ -593,7 +585,7 @@ func DeleteAllNetworkLoadBalancers(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the Network Load Balancers..."))
 
 	var multiErr error
-	for _, networkLoadBalancer := range *nlbItems {
+	for _, networkLoadBalancer := range nlbItems {
 		id, ok := networkLoadBalancer.GetIdOk()
 		if !ok || id == nil {
 			continue

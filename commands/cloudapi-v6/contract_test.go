@@ -11,39 +11,39 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
 
 var (
-	testContractResourceLimits = ionoscloud.ResourceLimits{
-		CoresPerServer:         &testContractInt32,
-		CoresPerContract:       &testContractInt32,
-		CoresProvisioned:       &testContractInt32,
-		RamPerServer:           &testContractInt32,
-		RamPerContract:         &testContractInt32,
-		RamProvisioned:         &testContractInt32,
-		HddLimitPerVolume:      &testContractInt64,
-		HddLimitPerContract:    &testContractInt64,
-		HddVolumeProvisioned:   &testContractInt64,
-		SsdLimitPerVolume:      &testContractInt64,
-		SsdLimitPerContract:    &testContractInt64,
-		SsdVolumeProvisioned:   &testContractInt64,
-		DasVolumeProvisioned:   &testContractInt64,
-		ReservableIps:          &testContractInt32,
-		ReservedIpsOnContract:  &testContractInt32,
-		ReservedIpsInUse:       &testContractInt32,
-		K8sClusterLimitTotal:   &testContractInt32,
-		K8sClustersProvisioned: &testContractInt32,
-		NatGatewayProvisioned:  &testContractInt32,
-		NatGatewayLimitTotal:   &testContractInt32,
-		NlbProvisioned:         &testContractInt32,
-		NlbLimitTotal:          &testContractInt32,
+	testContractResourceLimits = compute.ResourceLimits{
+		CoresPerServer:         testContractInt32,
+		CoresPerContract:       testContractInt32,
+		CoresProvisioned:       testContractInt32,
+		RamPerServer:           testContractInt32,
+		RamPerContract:         testContractInt32,
+		RamProvisioned:         testContractInt32,
+		HddLimitPerVolume:      testContractInt64,
+		HddLimitPerContract:    testContractInt64,
+		HddVolumeProvisioned:   testContractInt64,
+		SsdLimitPerVolume:      testContractInt64,
+		SsdLimitPerContract:    testContractInt64,
+		SsdVolumeProvisioned:   testContractInt64,
+		DasVolumeProvisioned:   testContractInt64,
+		ReservableIps:          testContractInt32,
+		ReservedIpsOnContract:  testContractInt32,
+		ReservedIpsInUse:       testContractInt32,
+		K8sClusterLimitTotal:   testContractInt32,
+		K8sClustersProvisioned: testContractInt32,
+		NatGatewayProvisioned:  testContractInt32,
+		NatGatewayLimitTotal:   testContractInt32,
+		NlbProvisioned:         testContractInt32,
+		NlbLimitTotal:          testContractInt32,
 	}
 	testContract = resources.Contract{
-		Contract: ionoscloud.Contract{
-			Properties: &ionoscloud.ContractProperties{
+		Contract: compute.Contract{
+			Properties: compute.ContractProperties{
 				ContractNumber: &testContractInt64,
 				Owner:          &testContractVar,
 				Status:         &testContractVar,
@@ -53,8 +53,8 @@ var (
 		},
 	}
 	testContracts = resources.Contracts{
-		Contracts: ionoscloud.Contracts{
-			Items: &[]ionoscloud.Contract{testContract.Contract},
+		Contracts: compute.Contracts{
+			Items: []compute.Contract{testContract.Contract},
 		},
 	}
 	testContractInt64 = int64(2)

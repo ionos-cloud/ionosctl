@@ -17,7 +17,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -278,8 +278,8 @@ func RunPccCreate(c *core.CommandConfig) error {
 	description := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDescription))
 
 	newUser := resources.PrivateCrossConnect{
-		PrivateCrossConnect: ionoscloud.PrivateCrossConnect{
-			Properties: &ionoscloud.PrivateCrossConnectProperties{
+		PrivateCrossConnect: compute.PrivateCrossConnect{
+			Properties: compute.PrivateCrossConnectProperties{
 				Name:        &name,
 				Description: &description,
 			},
@@ -416,7 +416,7 @@ func getPccInfo(oldUser *resources.PrivateCrossConnect, c *core.CommandConfig) *
 	}
 
 	return &resources.PrivateCrossConnectProperties{
-		PrivateCrossConnectProperties: ionoscloud.PrivateCrossConnectProperties{
+		PrivateCrossConnectProperties: compute.PrivateCrossConnectProperties{
 			Name:        &namePcc,
 			Description: &description,
 		},
@@ -443,13 +443,13 @@ func DeleteAllPccs(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get items of PrivateCrossConnects")
 	}
 
-	if len(*pccsItems) <= 0 {
+	if len(pccsItems) <= 0 {
 		return fmt.Errorf("no PrivateCrossConnects found")
 	}
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("PrivateCrossConnects to be deleted:"))
 
-	for _, pcc := range *pccsItems {
+	for _, pcc := range pccsItems {
 		delIdAndName := ""
 
 		if id, ok := pcc.GetIdOk(); ok && id != nil {
@@ -472,7 +472,7 @@ func DeleteAllPccs(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the PrivateCrossConnects..."))
 
 	var multiErr error
-	for _, pcc := range *pccsItems {
+	for _, pcc := range pccsItems {
 		id, ok := pcc.GetIdOk()
 		if !ok || id == nil {
 			continue
@@ -558,7 +558,7 @@ func RunPccPeersList(c *core.CommandConfig) error {
 		return err
 	}
 
-	peers := make([]ionoscloud.Peer, 0)
+	peers := make([]compute.Peer, 0)
 
 	if u != nil {
 		for _, p := range *u {

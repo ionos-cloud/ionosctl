@@ -4,29 +4,28 @@ import (
 	"context"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
 
 	"github.com/fatih/structs"
-
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
 
 type Label struct {
-	ionoscloud.Label
+	compute.Label
 }
 
 type Labels struct {
-	ionoscloud.Labels
+	compute.Labels
 }
 
 type LabelResource struct {
-	ionoscloud.LabelResource
+	compute.LabelResource
 }
 
 type LabelResources struct {
-	ionoscloud.LabelResources
+	compute.LabelResources
 }
 
-// LabelResourcesService is a wrapper around ionoscloud.LabelResource
+// LabelResourcesService is a wrapper around compute.LabelResource
 type LabelResourcesService interface {
 	GetByUrn(labelurn string) (*Label, *Response, error)
 	List(params ListQueryParams) (Labels, *Response, error)
@@ -53,7 +52,7 @@ type LabelResourcesService interface {
 }
 
 type labelResourcesService struct {
-	client  *ionoscloud.APIClient
+	client  *compute.APIClient
 	context context.Context
 }
 
@@ -139,8 +138,8 @@ func (svc *labelResourcesService) DatacenterGet(datacenterId, key string) (*Labe
 }
 
 func (svc *labelResourcesService) DatacenterCreate(datacenterId, key, value string) (*LabelResource, *Response, error) {
-	input := ionoscloud.LabelResource{
-		Properties: &ionoscloud.LabelResourceProperties{
+	input := compute.LabelResource{
+		Properties: compute.LabelResourceProperties{
 			Key:   &key,
 			Value: &value,
 		},
@@ -193,8 +192,8 @@ func (svc *labelResourcesService) ServerGet(datacenterId, serverId, key string) 
 }
 
 func (svc *labelResourcesService) ServerCreate(datacenterId, serverId, key, value string) (*LabelResource, *Response, error) {
-	input := ionoscloud.LabelResource{
-		Properties: &ionoscloud.LabelResourceProperties{
+	input := compute.LabelResource{
+		Properties: compute.LabelResourceProperties{
 			Key:   &key,
 			Value: &value,
 		},
@@ -247,8 +246,8 @@ func (svc *labelResourcesService) VolumeGet(datacenterId, volumeId, key string) 
 }
 
 func (svc *labelResourcesService) VolumeCreate(datacenterId, volumeId, key, value string) (*LabelResource, *Response, error) {
-	input := ionoscloud.LabelResource{
-		Properties: &ionoscloud.LabelResourceProperties{
+	input := compute.LabelResource{
+		Properties: compute.LabelResourceProperties{
 			Key:   &key,
 			Value: &value,
 		},
@@ -301,8 +300,8 @@ func (svc *labelResourcesService) IpBlockGet(ipblockId, key string) (*LabelResou
 }
 
 func (svc *labelResourcesService) IpBlockCreate(ipblockId, key, value string) (*LabelResource, *Response, error) {
-	input := ionoscloud.LabelResource{
-		Properties: &ionoscloud.LabelResourceProperties{
+	input := compute.LabelResource{
+		Properties: compute.LabelResourceProperties{
 			Key:   &key,
 			Value: &value,
 		},
@@ -355,8 +354,8 @@ func (svc *labelResourcesService) SnapshotGet(snapshotId, key string) (*LabelRes
 }
 
 func (svc *labelResourcesService) SnapshotCreate(snapshotId, key, value string) (*LabelResource, *Response, error) {
-	input := ionoscloud.LabelResource{
-		Properties: &ionoscloud.LabelResourceProperties{
+	input := compute.LabelResource{
+		Properties: compute.LabelResourceProperties{
 			Key:   &key,
 			Value: &value,
 		},

@@ -384,13 +384,13 @@ func DeleteAllK8sNodes(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get items of Kubernetes Nodes")
 	}
 
-	if len(*k8sNodesItems) <= 0 {
+	if len(k8sNodesItems) <= 0 {
 		return fmt.Errorf("no Kubernetes Nodes found")
 	}
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Kubernetes Nodes to be deleted:"))
 
-	for _, dc := range *k8sNodesItems {
+	for _, dc := range k8sNodesItems {
 		delIdAndName := ""
 
 		if id, ok := dc.GetIdOk(); ok && id != nil {
@@ -413,7 +413,7 @@ func DeleteAllK8sNodes(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the K8sNodes..."))
 
 	var multiErr error
-	for _, dc := range *k8sNodesItems {
+	for _, dc := range k8sNodesItems {
 		id, ok := dc.GetIdOk()
 		if !ok || id == nil {
 			continue

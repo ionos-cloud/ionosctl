@@ -11,20 +11,20 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 
 	"github.com/fatih/structs"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
 	"github.com/kardianos/ftps"
 )
 
 type Image struct {
-	ionoscloud.Image
+	compute.Image
 }
 
 type Images struct {
-	ionoscloud.Images
+	compute.Images
 }
 
 type ImageProperties struct {
-	ionoscloud.ImageProperties
+	compute.ImageProperties
 }
 
 // UploadProperties contains info needed to initialize an FTP connection to IONOS server and upload an image.
@@ -46,7 +46,7 @@ type FTPServerProperties struct {
 	Password          string
 }
 
-// ImagesService is a wrapper around ionoscloud.Image
+// ImagesService is a wrapper around compute.Image
 type ImagesService interface {
 	List(params ListQueryParams) (Images, *Response, error)
 	Get(imageId string, params QueryParams) (*Image, *Response, error)
@@ -55,7 +55,7 @@ type ImagesService interface {
 }
 
 type imagesService struct {
-	client  *ionoscloud.APIClient
+	client  *compute.APIClient
 	context context.Context
 }
 

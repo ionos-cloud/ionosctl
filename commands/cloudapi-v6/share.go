@@ -19,7 +19,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -223,12 +223,12 @@ func RunShareListAll(c *core.CommandConfig) error {
 		return err
 	}
 
-	var allShares = make([]ionoscloud.GroupShares, 0)
+	var allShares = make([]compute.GroupShares, 0)
 
 	totalTime := time.Duration(0)
 
 	for _, group := range getGroups(groups) {
-		shares, resp, err := c.CloudApiV6Services.Groups().ListShares(*group.GetId(), listQueryParams)
+		shares, resp, err := c.CloudApiV6Services.Groups().ListShares(group.GetId(), listQueryParams)
 		if err != nil {
 			return err
 		}
@@ -348,8 +348,8 @@ func RunShareCreate(c *core.CommandConfig) error {
 	sharePrivilege := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgSharePrivilege))
 
 	input := resources.GroupShare{
-		GroupShare: ionoscloud.GroupShare{
-			Properties: &ionoscloud.GroupShareProperties{
+		GroupShare: compute.GroupShare{
+			Properties: compute.GroupShareProperties{
 				EditPrivilege:  &editPrivilege,
 				SharePrivilege: &sharePrivilege,
 			},
@@ -407,8 +407,8 @@ func RunShareUpdate(c *core.CommandConfig) error {
 
 	properties := getShareUpdateInfo(s, c)
 	newShare := resources.GroupShare{
-		GroupShare: ionoscloud.GroupShare{
-			Properties: &properties.GroupShareProperties,
+		GroupShare: compute.GroupShare{
+			Properties: properties.GroupShareProperties,
 		},
 	}
 
@@ -513,7 +513,7 @@ func getShareUpdateInfo(oldShare *resources.GroupShare, c *core.CommandConfig) *
 	}
 
 	return &resources.GroupShareProperties{
-		GroupShareProperties: ionoscloud.GroupShareProperties{
+		GroupShareProperties: compute.GroupShareProperties{
 			EditPrivilege:  &editPrivilege,
 			SharePrivilege: &sharePrivilege,
 		},
@@ -542,13 +542,13 @@ func DeleteAllShares(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get items of Group Shares")
 	}
 
-	if len(*groupSharesItems) <= 0 {
+	if len(groupSharesItems) <= 0 {
 		return fmt.Errorf("no Group Shares found")
 	}
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("GroupShares to be deleted:"))
 
-	for _, share := range *groupSharesItems {
+	for _, share := range groupSharesItems {
 		if id, ok := share.GetIdOk(); ok && id != nil {
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("GroupShare Id: %v", *id))
 		}
@@ -561,7 +561,7 @@ func DeleteAllShares(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the GroupShares..."))
 
 	var multiErr error
-	for _, share := range *groupSharesItems {
+	for _, share := range groupSharesItems {
 		id, ok := share.GetIdOk()
 		if !ok || id == nil {
 			continue
