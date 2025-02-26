@@ -236,7 +236,9 @@ func TestRunNetworkLoadBalancerFlowLogCreateResponseErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAction), testFlowLogVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDirection), testFlowLogVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgS3Bucket), testFlowLogVar)
-		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().CreateFlowLog(testFlowLogVar, testFlowLogVar, testInputFlowLog, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&testFlowLog, &testResponse, testFlowLogErr)
+		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().CreateFlowLog(testFlowLogVar, testFlowLogVar, testInputFlowLog,
+			gomock.AssignableToTypeOf(testQueryParamOther)).
+			Return(&testFlowLog, &testResponse, testFlowLogErr)
 		err := RunNetworkLoadBalancerFlowLogCreate(cfg)
 		assert.Error(t, err)
 	})

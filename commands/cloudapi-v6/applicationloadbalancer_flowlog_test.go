@@ -233,7 +233,10 @@ func TestRunApplicationLoadBalancerFlowLogCreate(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAction), testFlowLogVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDirection), testFlowLogVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgS3Bucket), testFlowLogVar)
-		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().CreateFlowLog(testFlowLogVar, testFlowLogVar, testInputFlowLog, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&testFlowLog, nil, nil)
+		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().
+			CreateFlowLog(testFlowLogVar, testFlowLogVar, testInputFlowLog,
+				gomock.AssignableToTypeOf(testQueryParamOther)).
+			Return(&testFlowLog, nil, nil)
 		err := RunApplicationLoadBalancerFlowLogCreate(cfg)
 		assert.NoError(t, err)
 	})

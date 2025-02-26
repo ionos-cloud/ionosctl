@@ -25,7 +25,7 @@ var (
 			Id: &testFlowLogVar,
 			Properties: compute.FlowLogProperties{
 				Name:      testFlowLogVar,
-				Action:    testFlowLogUpperVar,
+				Action:    testFlowLogVar,
 				Direction: testFlowLogUpperVar,
 				Bucket:    testFlowLogVar,
 			},

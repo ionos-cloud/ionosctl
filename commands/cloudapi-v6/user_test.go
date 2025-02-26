@@ -607,7 +607,9 @@ func TestRunGroupUserAdd(t *testing.T) {
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgGroupId), testGroupVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgUserId), testUserVar)
-		rm.CloudApiV6Mocks.Group.EXPECT().AddUser(testGroupVar, groupUserTest, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&userTestGet, &testResponse, nil)
+		rm.CloudApiV6Mocks.Group.EXPECT().
+			AddUser(testGroupVar, groupUserTest, gomock.AssignableToTypeOf(testQueryParamOther)).
+			Return(&userTestGet.User, &testResponse, nil)
 		err := RunGroupUserAdd(cfg)
 		assert.NoError(t, err)
 	})
@@ -622,7 +624,9 @@ func TestRunGroupUserAddErr(t *testing.T) {
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgGroupId), testGroupVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgUserId), testUserVar)
-		rm.CloudApiV6Mocks.Group.EXPECT().AddUser(testGroupVar, groupUserTest, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&userTestGet, nil, testUserErr)
+		rm.CloudApiV6Mocks.Group.EXPECT().
+			AddUser(testGroupVar, groupUserTest, gomock.AssignableToTypeOf(testQueryParamOther)).
+			Return(&userTestGet.User, nil, testUserErr)
 		err := RunGroupUserAdd(cfg)
 		assert.Error(t, err)
 	})
@@ -637,7 +641,10 @@ func TestRunGroupUserAddResponse(t *testing.T) {
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgGroupId), testGroupVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgUserId), testUserVar)
-		rm.CloudApiV6Mocks.Group.EXPECT().AddUser(testGroupVar, groupUserTest, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&userTestGet, &testResponse, testUserErr)
+		rm.CloudApiV6Mocks.Group.EXPECT().
+			AddUser(testGroupVar, groupUserTest,
+				gomock.AssignableToTypeOf(testQueryParamOther)).
+			Return(&userTestGet.User, &testResponse, testUserErr)
 		err := RunGroupUserAdd(cfg)
 		assert.Error(t, err)
 	})
