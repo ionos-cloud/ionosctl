@@ -93,6 +93,16 @@ func newClient(name, pwd, token, hostUrl string, usedLayer *Layer) *Client {
 	sharedConfig.UserAgent = appendUserAgent(sharedConfig.UserAgent)
 	sharedConfig.AddDefaultQueryParam("depth", "1")
 
+	cloudApiUrl := hostUrl
+	if cloudApiUrl != "" {
+		if cloudApiUrl[len(cloudApiUrl)-1] != '/' {
+			cloudApiUrl += "/"
+		}
+		cloudApiUrl += "cloudapi/v6"
+	}
+	computeConfig := shared.NewConfiguration(name, pwd, token, cloudApiUrl)
+	computeConfig.UserAgent = appendUserAgent(computeConfig.UserAgent)
+
 	certManagerConfig := certmanager.NewConfiguration(name, pwd, token, hostUrl)
 	certManagerConfig.UserAgent = appendUserAgent(certManagerConfig.UserAgent)
 
@@ -103,7 +113,7 @@ func newClient(name, pwd, token, hostUrl string, usedLayer *Layer) *Client {
 	postgresConfig.UserAgent = appendUserAgent(postgresConfig.UserAgent)
 
 	return &Client{
-		CloudClient:          compute.NewAPIClient(sharedConfig),
+		CloudClient:          compute.NewAPIClient(computeConfig),
 		AuthClient:           auth.NewAPIClient(sharedConfig),
 		CDNClient:            cdn.NewAPIClient(sharedConfig),
 		CertManagerClient:    certmanager.NewAPIClient(certManagerConfig),
