@@ -55,7 +55,7 @@ Update a WireGuard Peer
       --port int             Port that the WireGuard Server will connect to (default 51820)
       --public-key string    Public key of the connecting peer (required)
   -q, --quiet                Quiet output
-  -v, --verbose              Print step-by-step process when running command
+  -v, --verbose count        Print step-by-step process when running command
 ```
 
 ## Examples
