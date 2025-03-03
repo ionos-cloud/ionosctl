@@ -46,7 +46,7 @@ Required values to run command:
   -o, --output string    Desired output format [text|json|api-json] (default "text")
   -i, --pcc-id string    The unique Cross-Connect Id (required)
   -q, --quiet            Quiet output
-  -v, --verbose          Print step-by-step process when running command
+  -v, --verbose count    Print step-by-step process when running command
 ```
 
 ## Examples

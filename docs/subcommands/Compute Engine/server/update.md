@@ -66,7 +66,7 @@ Required values to run command:
       --ram string                 The amount of memory for the Server. Size must be specified in multiples of 256. e.g. --ram 256 or --ram 256MB
   -i, --server-id string           The unique Server Id (required)
   -t, --timeout int                Timeout option for Request for Server update/for Server to be in AVAILABLE state [seconds] (default 60)
-  -v, --verbose                    Print step-by-step process when running command
+  -v, --verbose count              Print step-by-step process when running command
       --volume-id string           The unique Volume Id for the BootVolume. The Volume needs to be already attached to the Server
   -w, --wait-for-request           Wait for the Request for Server update to be executed
   -W, --wait-for-state             Wait for the updated Server to be in AVAILABLE state

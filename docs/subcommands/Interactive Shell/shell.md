@@ -40,7 +40,7 @@ Ctrl + L\tClear the screen
   -o, --output string         Desired output format [text|json|api-json] (default "text")
   -p, --persist-flag-values   Persist flag values between commands
   -q, --quiet                 Quiet output
-  -v, --verbose               Print step-by-step process when running command
+  -v, --verbose count         Print step-by-step process when running command
 ```
 
 ## Examples

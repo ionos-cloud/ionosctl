@@ -43,7 +43,7 @@ Retrieve all clusters using pagination and optional filters
   -o, --output string     Desired output format [text|json|api-json] (default "text")
   -q, --quiet             Quiet output
       --state string      Filter used to fetch only the records that contain specified state.. Can be one of: AVAILABLE, BUSY, DEPLOYING, UPDATING, FAILED_UPDATING, FAILED, DESTROYING
-  -v, --verbose           Print step-by-step process when running command
+  -v, --verbose count     Print step-by-step process when running command
 ```
 
 ## Examples

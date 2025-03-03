@@ -56,7 +56,7 @@ Required values to run command:
   -o, --output string                   Desired output format [text|json|api-json] (default "text")
   -q, --quiet                           Quiet output
   -i, --rule-id string                  The unique ForwardingRule Id (required)
-  -v, --verbose                         Print step-by-step process when running command
+  -v, --verbose count                   Print step-by-step process when running command
 ```
 
 ## Examples

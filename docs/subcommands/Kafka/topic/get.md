@@ -43,7 +43,7 @@ Get a kafka topic
   -o, --output string       Desired output format [text|json|api-json] (default "text")
   -q, --quiet               Quiet output
       --topic-id string     The ID of the topic (required)
-  -v, --verbose             Print step-by-step process when running command
+  -v, --verbose count       Print step-by-step process when running command
 ```
 
 ## Examples

@@ -47,7 +47,7 @@ Required values to run command:
       --resource-type string   Type of resource to get labels from. Can be one of: datacenter, volume, server, snapshot, ipblock (required)
       --server-id string       The unique Server Id
       --snapshot-id string     The unique Snapshot Id
-  -v, --verbose                Print step-by-step process when running command
+  -v, --verbose count          Print step-by-step process when running command
       --volume-id string       The unique Volume Id
 ```
 

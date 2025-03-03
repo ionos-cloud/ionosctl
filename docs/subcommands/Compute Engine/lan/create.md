@@ -55,7 +55,7 @@ Required values to run command:
   -p, --public                 Indicates if the LAN faces the public Internet (true) or not (false). E.g.: --public=true, --public=false
   -q, --quiet                  Quiet output
   -t, --timeout int            Timeout option for Request for LAN creation [seconds] (default 60)
-  -v, --verbose                Print step-by-step process when running command
+  -v, --verbose count          Print step-by-step process when running command
   -w, --wait-for-request       Wait for the Request for LAN creation to be executed
 ```
 

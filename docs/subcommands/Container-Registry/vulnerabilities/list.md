@@ -46,7 +46,7 @@ Retrieve all vulnerabilities from an artifact
   -q, --quiet                Quiet output
   -r, --registry-id string   Registry ID
       --repository string    Name of the repository to retrieve artifact from
-  -v, --verbose              Print step-by-step process when running command
+  -v, --verbose count        Print step-by-step process when running command
 ```
 
 ## Examples

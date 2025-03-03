@@ -51,7 +51,7 @@ The cluster will be provisioned in the datacenter matching the provided datacent
   -o, --output string             Desired output format [text|json|api-json] (default "text")
   -q, --quiet                     Quiet output
   -t, --timeout int               Timeout option for Request [seconds] (default 60)
-  -v, --verbose                   Print step-by-step process when running command
+  -v, --verbose count             Print step-by-step process when running command
       --version string            The version of your dataplatform cluster (default "same as 'dataplatform version active'")
   -w, --wait-for-request          Wait for the Request to be executed
 ```

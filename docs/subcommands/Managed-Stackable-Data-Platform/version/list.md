@@ -44,6 +44,6 @@ List all Dataplatform Cluster versions, including deprecated ones. To view the l
       --no-headers       Don't print table headers when table output is used
   -o, --output string    Desired output format [text|json|api-json] (default "text")
   -q, --quiet            Quiet output
-  -v, --verbose          Print step-by-step process when running command
+  -v, --verbose count    Print step-by-step process when running command
 ```
 

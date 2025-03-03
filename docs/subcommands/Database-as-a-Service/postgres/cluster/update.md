@@ -63,7 +63,7 @@ Required values to run command:
       --remove-connection         Remove the connection completely
       --storage-size string       The amount of storage per instance. The default unit is MB. e.g.: --size 20480 or --size 20480MB or --size 20GB
   -t, --timeout int               Timeout option for Cluster to be in AVAILABLE state[seconds] (default 1200)
-  -v, --verbose                   Print step-by-step process when running command
+  -v, --verbose count             Print step-by-step process when running command
   -V, --version string            The PostgreSQL version of your cluster
   -W, --wait-for-state            Wait for Cluster to be in AVAILABLE state
 ```

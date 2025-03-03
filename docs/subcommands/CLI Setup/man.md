@@ -42,7 +42,7 @@ After following these steps, you should be able to use 'man ionosctl' to access 
   -q, --quiet               Quiet output
       --skip-compression    Skip compressing manpages with gzip, just generate them
       --target-dir string   Target directory where manpages will be generated. Must be an absolute path (default "/tmp/ionosctl-man")
-  -v, --verbose             Print step-by-step process when running command
+  -v, --verbose count       Print step-by-step process when running command
 ```
 
 ## Examples

@@ -54,7 +54,7 @@ Available Filters:
   -o, --output string         Desired output format [text|json|api-json] (default "text")
   -q, --quiet                 Quiet output
       --type string           The type of the Image (DEPRECATED: incompatible with --max-results. Use --filters --order-by --max-results options instead!)
-  -v, --verbose               Print step-by-step process when running command
+  -v, --verbose count         Print step-by-step process when running command
 ```
 
 ## Examples

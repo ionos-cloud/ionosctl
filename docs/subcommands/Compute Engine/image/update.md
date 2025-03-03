@@ -61,7 +61,7 @@ Required values to run command:
       --ram-hot-plug             'Hot-Plug' RAM (default true)
       --ram-hot-unplug           'Hot-Unplug' RAM
   -t, --timeout int              Timeout option for Request for Image update [seconds] (default 60)
-  -v, --verbose                  Print step-by-step process when running command
+  -v, --verbose count            Print step-by-step process when running command
   -w, --wait-for-request         Wait for the Request for Image update to be executed
 ```
 

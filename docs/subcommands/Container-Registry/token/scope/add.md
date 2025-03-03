@@ -51,7 +51,7 @@ Use this command to add scopes to a token of a container registry.
   -r, --registry-id string   Registry ID (required)
   -t, --token-id string      Token ID
   -y, --type string          Scope type (required)
-  -v, --verbose              Print step-by-step process when running command
+  -v, --verbose count        Print step-by-step process when running command
 ```
 
 ## Examples

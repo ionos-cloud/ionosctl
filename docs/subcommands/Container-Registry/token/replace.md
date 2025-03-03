@@ -52,7 +52,7 @@ Create or replace a token used to access a container registry
   -r, --registry-id string   Registry ID
       --status string        Status of the Token
   -t, --token-id string      Token ID
-  -v, --verbose              Print step-by-step process when running command
+  -v, --verbose count        Print step-by-step process when running command
 ```
 
 ## Examples

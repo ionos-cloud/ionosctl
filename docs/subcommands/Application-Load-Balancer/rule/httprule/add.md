@@ -74,7 +74,7 @@ Required values to run command:
       --targetgroup-id string               he ID of the target group; mandatory and only valid for FORWARD actions.
   -t, --timeout int                         Timeout option for Request for Forwarding Rule Http Rule creation [seconds] (default 300)
       --type string                         Type of the HTTP rule. (required)
-  -v, --verbose                             Print step-by-step process when running command
+  -v, --verbose count                       Print step-by-step process when running command
   -w, --wait-for-request                    Wait for the Request for Forwarding Rule Http Rule creation to be executed
 ```
 

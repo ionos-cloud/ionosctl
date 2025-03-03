@@ -37,7 +37,7 @@ Use this command to generate a new Token. Only the JSON Web Token, associated wi
   -q, --quiet            Quiet output
       --ttl string       Token Time to Live (TTL). Accepted formats: Y, M, D, h, m, s. Hybrids are also allowed (e.g. 1m30s). Min: 60s (1m) Max: 31536000s (1Y)
                          NOTE: Any values that do not match the format will be ignored. (default "1Y")
-  -v, --verbose          Print step-by-step process when running command
+  -v, --verbose count    Print step-by-step process when running command
 ```
 
 ## Examples

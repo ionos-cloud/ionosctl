@@ -51,7 +51,7 @@ Create/replace a registry to hold container images or OCI compliant artifacts
   -o, --output string                              Desired output format [text|json|api-json] (default "text")
   -q, --quiet                                      Quiet output
   -i, --registry-id string                         Specify the Registry ID (required)
-  -v, --verbose                                    Print step-by-step process when running command
+  -v, --verbose count                              Print step-by-step process when running command
       --vulnerability-scanning                     Enable/disable (?) vulnerability scanning (this is a paid add-on) (default true)
 ```
 

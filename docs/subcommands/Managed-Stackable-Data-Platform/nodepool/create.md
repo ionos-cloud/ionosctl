@@ -62,7 +62,7 @@ The following requests allows to alter the existing resources, add or remove new
       --storage-size int32           The size of the volume in GB. The size must be greater than 10GB
       --storage-type string          The type of hardware for the volume
   -t, --timeout int                  Timeout option for Request [seconds] (default 60)
-  -v, --verbose                      Print step-by-step process when running command
+  -v, --verbose count                Print step-by-step process when running command
   -w, --wait-for-request             Wait for the Request to be executed
 ```
 

@@ -49,7 +49,7 @@ Required values to run command:
   -o, --output string        Desired output format [text|json|api-json] (default "text")
   -q, --quiet                Quiet output
   -t, --timeout int          Timeout option for waiting for NodePool to be in ACTIVE state [seconds] (default 600)
-  -v, --verbose              Print step-by-step process when running command
+  -v, --verbose count        Print step-by-step process when running command
   -W, --wait-for-state       Wait for specified NodePool to be in ACTIVE state
 ```
 

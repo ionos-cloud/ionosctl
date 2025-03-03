@@ -45,7 +45,7 @@ Required values to run a command:
   -i, --resource-id string   The unique Resource Id (required)
       --share-privilege      Set the group's permission to share resource
   -t, --timeout int          Timeout option for Request for Resource to be shared through a Group [seconds] (default 60)
-  -v, --verbose              Print step-by-step process when running command
+  -v, --verbose count        Print step-by-step process when running command
   -w, --wait-for-request     Wait for the Request for Resource share to executed
 ```
 
