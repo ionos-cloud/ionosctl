@@ -23,7 +23,6 @@ func TestRunK8sKubeconfigGet(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
 		viper.Reset()
 		viper.Set(constants.ArgQuiet, false)
-		viper.Set(constants.ArgVerbose, false)
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, constants.FlagClusterId), testKubeconfigVar)
 		rm.CloudApiV6Mocks.K8s.EXPECT().ReadKubeConfig(testKubeconfigVar).Return(testKubeconfigVar, &testResponse, nil)

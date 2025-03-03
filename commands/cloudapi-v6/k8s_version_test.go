@@ -24,7 +24,6 @@ func TestRunK8sVersionList(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
 		viper.Reset()
 		viper.Set(constants.ArgQuiet, false)
-		viper.Set(constants.ArgVerbose, false)
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		rm.CloudApiV6Mocks.K8s.EXPECT().ListVersions().Return(testK8sVersionsVar, &testResponse, nil)
 		err := RunK8sVersionList(cfg)
@@ -51,7 +50,6 @@ func TestRunK8sVersionGet(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
 		viper.Reset()
 		viper.Set(constants.ArgQuiet, false)
-		viper.Set(constants.ArgVerbose, false)
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		rm.CloudApiV6Mocks.K8s.EXPECT().GetVersion().Return(testK8sVersionVar, &testResponse, nil)
 		err := RunK8sVersionGet(cfg)
