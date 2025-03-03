@@ -106,6 +106,16 @@ func newClient(name, pwd, token, hostUrl string, usedLayer *Layer) *Client {
 	postgresConfig := postgres.NewConfiguration(name, pwd, token, hostUrl)
 	postgresConfig.UserAgent = appendUserAgent(postgresConfig.UserAgent)
 
+	switch v := viper.GetInt(constants.ArgVerbose); {
+	case v >= 3:
+		shared.SdkLogLevel = shared.Trace
+	case v == 2:
+		shared.SdkLogLevel = shared.Debug
+	default:
+		// use CLI verbose prints only
+		shared.SdkLogLevel = shared.Off
+	}
+
 	return &Client{
 		CloudClient:          cloudv6.NewAPIClient(clientConfig),
 		AuthClient:           auth.NewAPIClient(sharedConfig),
