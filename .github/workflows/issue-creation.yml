@@ -9,21 +9,33 @@ jobs:
 
     steps:
       - name: Git Issue Details
+        env:
+          ISSUE_CREATOR: ${{ github.event.issue.user.login }}
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          ISSUE_URL: ${{ github.event.issue.html_url }}
         run: |
-          echo "Issue creator: ${{ github.event.issue.user.login }}"
-          echo "Issue title: ${{ github.event.issue.title }}"
-          echo "Issue number: ${{ github.event.issue.number }}"
-          echo "Issue url: ${{ github.event.issue.html_url }}"
+          echo "Issue creator: $ISSUE_CREATOR"
+          echo "Issue title: $ISSUE_TITLE"
+          echo "Issue number: $ISSUE_NUMBER"
+          echo "Issue url: $ISSUE_URL"
       - name: Google Chat Notification
+        env:
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          REPOSITORY: ${{ github.repository }}
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+          ISSUE_LABELS: ${{ join(github.event.issue.labels.*.name) }}
+          ISSUE_URL: ${{ github.event.issue.html_url }}
+          ISSUE_TRACKER_WEBHOOK: ${{ secrets.ISSUE_TRACKER_WEBHOOK }}
         run: |
-          curl --location --request POST '${{ secrets.ISSUE_TRACKER_WEBHOOK }}' \
+          curl --location --request POST "$ISSUE_TRACKER_WEBHOOK" \
           --header 'Content-Type: application/json' \
           --data-raw '{
               "cards": [
                   {
                       "header": {
                           "title": "New Issue 🔨",
-                          "subtitle": "Issue No: #${{ github.event.issue.number }}"
+                          "subtitle": "Issue No: #$ISSUE_NUMBER"
                       },
                       "sections": [
                           {
@@ -31,19 +43,19 @@ jobs:
                                   {
                                      "keyValue": {
                                           "topLabel": "Repository",
-                                          "content": "${{ github.repository }}"
+                                          "content": "$REPOSITORY"
                                       },
                                    },
                                    {
                                      "keyValue": {
                                           "topLabel": "Title",
-                                          "content": "${{ github.event.issue.title }}"
+                                          "content": "$ISSUE_TITLE"
                                       }
                                    },
                                    {
                                      "keyValue": {
                                           "topLabel": "Assigned Labels",
-                                          "content": "- ${{ join(github.event.issue.labels.*.name) }}"
+                                          "content": "- $ISSUE_LABELS"
                                       }
                                    },
                                    {
@@ -53,7 +65,7 @@ jobs:
                                                   "text": "OPEN ISSUE",
                                                   "onClick": {
                                                       "openLink": {
-                                                          "url": "${{ github.event.issue.html_url }}"
+                                                          "url": "$ISSUE_URL"
                                                       }
                                                   }
                                               }
