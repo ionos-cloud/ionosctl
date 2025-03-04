@@ -9,7 +9,7 @@ export LIBS_PATH="${SCRIPT_DIR}/bats/libs"
 BATS_FILES=$(find "${SCRIPT_DIR}/bats" -path "${SCRIPT_DIR}/bats/libs" -prune -o -name '*.bats' -print)
 
 # modified files compared to the base
-MODIFIED_FILES=$(git diff --name-only $BASE_BRANCH | grep -v '^vendor/')
+MODIFIED_FILES=$(git diff --name-only $BASE_BRANCH | grep -vE 'vendor|docs')
 
 contains_tag() {
     tag=$1
