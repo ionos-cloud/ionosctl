@@ -122,9 +122,11 @@ func RunLoginUser(c *core.CommandConfig) error {
 		if errTokens == nil {
 			msg.WriteString(fmt.Sprintf(" • Your account has %d active tokens.\n", len(ls.Tokens)))
 		}
+		if errLoggedInAs == nil || errTokens == nil {
+			msg.WriteString("\n")
+		}
 	}
-
-	msg.WriteString(fmt.Sprintf("\nConfig file updated successfully. Created the following fields in your config file:\n"))
+	msg.WriteString(fmt.Sprintf("Config file updated successfully. Created the following fields in your config file:\n"))
 	for k := range data {
 		msg.WriteString(fmt.Sprintf(" • %s\n", strings.TrimPrefix(k, "userdata.")))
 	}
