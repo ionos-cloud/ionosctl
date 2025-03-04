@@ -1,6 +1,12 @@
 # Changelog
 
-## [v6.8.1] (???)
+## [v6.8.2] (March 2025)
+
+### Changed
+- Changed login message to include the username you have logged in as, if possible.
+
+
+## [v6.8.1] (February 2025)
 
 ### Added
 
