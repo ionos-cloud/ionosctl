@@ -8,6 +8,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cdn"
 	"github.com/ionos-cloud/ionosctl/v6/commands/kafka"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/lastresponse"
 
 	certificates "github.com/ionos-cloud/ionosctl/v6/commands/certmanager"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cfg"
@@ -67,7 +68,7 @@ func Execute() {
 	}
 
 	// Wait for the user to press enter before exiting
-	// fmt.Println(jsontabwriter.LastSrcData["href"])
+	fmt.Println(lastresponse.Get())
 	fmt.Println("Press Enter to print")
 	_, _ = fmt.Scanln()
 	capturedOutput := buf.String()

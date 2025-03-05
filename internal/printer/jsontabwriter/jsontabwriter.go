@@ -10,6 +10,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/lastresponse"
 	"github.com/itchyny/gojq"
 	"github.com/spf13/viper"
 )
@@ -24,6 +25,10 @@ const (
 	TextFormat = "text"
 	// APIFormat defines the API matching JSON format. This will be removed once its behavior will be moved to JSONFormat
 	APIFormat = "api-json"
+)
+
+var (
+	LastSrcData = map[interface{}]interface{}(nil)
 )
 
 // GenerateOutput converts and formats source data into printable output.
@@ -44,6 +49,11 @@ const (
 func GenerateOutput(
 	columnPathMappingPrefix string, columnPathMapping map[string]string, sourceData interface{}, cols []string,
 ) (string, error) {
+	err := lastresponse.SetE(sourceData)
+	if err != nil {
+		return "", err
+	}
+
 	if viper.IsSet(constants.ArgQuiet) {
 		return "", nil
 	}
