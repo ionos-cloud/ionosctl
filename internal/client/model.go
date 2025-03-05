@@ -2,6 +2,7 @@ package client
 
 import (
 	"fmt"
+	"net/http"
 
 	"github.com/ionos-cloud/sdk-go-bundle/shared"
 
@@ -81,6 +82,8 @@ type Client struct {
 	MariaClient    *mariadb.APIClient
 	CDNClient      *cdn.APIClient
 	Kafka          *kafka.APIClient
+
+	HttpClient *http.Client
 }
 
 func appendUserAgent(userAgent string) string {
@@ -88,7 +91,6 @@ func appendUserAgent(userAgent string) string {
 }
 
 func newClient(name, pwd, token, hostUrl string, usedLayer *Layer) *Client {
-	// TODO: Replace all configurations with this one
 	sharedConfig := shared.NewConfiguration(name, pwd, token, hostUrl)
 	sharedConfig.UserAgent = appendUserAgent(sharedConfig.UserAgent)
 
@@ -102,7 +104,7 @@ func newClient(name, pwd, token, hostUrl string, usedLayer *Layer) *Client {
 
 	vmascConfig := vmasc.NewConfiguration(name, pwd, token, hostUrl)
 	vmascConfig.UserAgent = appendUserAgent(vmascConfig.UserAgent)
-	// DBAAS
+
 	postgresConfig := postgres.NewConfiguration(name, pwd, token, hostUrl)
 	postgresConfig.UserAgent = appendUserAgent(postgresConfig.UserAgent)
 
@@ -123,6 +125,10 @@ func newClient(name, pwd, token, hostUrl string, usedLayer *Layer) *Client {
 		Kafka:          kafka.NewAPIClient(sharedConfig),
 		MariaClient:    mariadb.NewAPIClient(sharedConfig),
 
-		usedLayer: usedLayer,
+		HttpClient: NewHttpClient(name, pwd, token),
+		usedLayer:  usedLayer,
 	}
 }
+
+
+func NewHttpClient

@@ -159,6 +159,7 @@ const (
 	ArgAllShort            = "a"
 	ArgForce               = "force"
 	ArgForceShort          = "f"
+	ArgWait                = "wait"
 	ArgWaitForRequest      = "wait-for-request"
 	ArgWaitForRequestShort = "w"
 	ArgWaitForState        = "wait-for-state"
