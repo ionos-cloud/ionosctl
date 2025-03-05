@@ -7,9 +7,6 @@ import (
 	"strings"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cdn"
-	"github.com/ionos-cloud/ionosctl/v6/commands/kafka"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/lastresponse"
-
 	certificates "github.com/ionos-cloud/ionosctl/v6/commands/certmanager"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cfg"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
@@ -17,6 +14,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/dataplatform"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dns"
+	"github.com/ionos-cloud/ionosctl/v6/commands/kafka"
 	logging_service "github.com/ionos-cloud/ionosctl/v6/commands/logging-service"
 	"github.com/ionos-cloud/ionosctl/v6/commands/token"
 	vm_autoscaling "github.com/ionos-cloud/ionosctl/v6/commands/vm-autoscaling"
@@ -25,7 +23,9 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/lastresponse"
 	"github.com/ionos-cloud/ionosctl/v6/internal/version"
+	"github.com/ionos-cloud/ionosctl/v6/internal/wait"
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -51,29 +51,38 @@ var (
 	cfgFile string
 )
 
-// Execute adds all child commands to the root command and sets flags appropriately.
-// This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
 	var buf bytes.Buffer
 	rootCmd.Command.SetOut(&buf)
+
+	var executedCommand string
+	// find what the command has been called as
+	existingPostRun := rootCmd.Command.PersistentPostRun
+	rootCmd.Command.PersistentPostRun = func(cmd *cobra.Command, args []string) {
+		if existingPostRun != nil {
+			existingPostRun(cmd, args)
+		}
+
+		executedCommand = cmd.Name()
+	}
 
 	if err := rootCmd.Command.Execute(); err != nil {
 		os.Exit(1)
 	}
 
-	if !Wait {
-		capturedOutput := buf.String()
-		fmt.Println(capturedOutput)
-		return
+	if Wait {
+		href, err := lastresponse.GetJQ(".href")
+		if err != nil {
+			return
+		}
+
+		err = wait.For(executedCommand, href)
+		if err != nil {
+			panic(err)
+		}
 	}
 
-	// Wait for the user to press enter before exiting
-	fmt.Println(lastresponse.Get())
-	fmt.Println("Press Enter to print")
-	_, _ = fmt.Scanln()
-	capturedOutput := buf.String()
-	fmt.Println(capturedOutput)
-
+	fmt.Println(buf.String())
 }
 
 func GetRootCmd() *core.Command {
@@ -147,11 +156,11 @@ func init() {
 	rootPFlagSet.Bool(constants.ArgNoHeaders, false, "Don't print table headers when table output is used")
 	_ = viper.BindPFlag(constants.ArgNoHeaders, rootPFlagSet.Lookup(constants.ArgNoHeaders))
 
-	rootPFlagSet.BoolVarP(&Wait, constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait,
+	rootPFlagSet.BoolVarP(&Wait, constants.ArgWait, constants.ArgWaitForRequestShort, constants.DefaultWait,
 		"Polls the request continuously until the operation is completed ")
 	rootPFlagSet.IntP(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds,
 		"Timeout in seconds for polling the request")
-	_ = viper.BindPFlag(constants.ArgWaitForRequest, rootPFlagSet.Lookup(constants.ArgWaitForRequest))
+	_ = viper.BindPFlag(constants.ArgWait, rootPFlagSet.Lookup(constants.ArgWait))
 	_ = viper.BindPFlag(constants.ArgTimeout, rootPFlagSet.Lookup(constants.ArgTimeout))
 
 	// Add SubCommands to RootCmd
