@@ -7,9 +7,6 @@ import (
 	"strings"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cdn"
-	"github.com/ionos-cloud/ionosctl/v6/commands/kafka"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/lastresponse"
-
 	certificates "github.com/ionos-cloud/ionosctl/v6/commands/certmanager"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cfg"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
@@ -17,6 +14,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/dataplatform"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dns"
+	"github.com/ionos-cloud/ionosctl/v6/commands/kafka"
 	logging_service "github.com/ionos-cloud/ionosctl/v6/commands/logging-service"
 	"github.com/ionos-cloud/ionosctl/v6/commands/token"
 	vm_autoscaling "github.com/ionos-cloud/ionosctl/v6/commands/vm-autoscaling"
@@ -25,6 +23,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/lastresponse"
 	"github.com/ionos-cloud/ionosctl/v6/internal/version"
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
@@ -67,8 +66,19 @@ func Execute() {
 		return
 	}
 
-	// Wait for the user to press enter before exiting
-	fmt.Println(lastresponse.Get())
+	// print lastresponse.href and lastresponse.metadata.state
+	href, jqErr := lastresponse.GetJQ(".href")
+	if jqErr != nil {
+		fmt.Println("Error getting href from last response")
+		return
+	}
+	state, jqErr := lastresponse.GetJQ(".metadata.state")
+	if jqErr != nil {
+		fmt.Println("Error getting href from last response")
+		return
+	}
+	fmt.Printf("Last URL: %s\n", href)
+	fmt.Printf("Last State: %s\n", state)
 	fmt.Println("Press Enter to print")
 	_, _ = fmt.Scanln()
 	capturedOutput := buf.String()
