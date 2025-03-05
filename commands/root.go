@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"bytes"
 	"fmt"
 	"os"
 	"strings"
@@ -44,6 +45,7 @@ var (
 	Force     bool
 	Verbose   bool
 	NoHeaders bool
+	Wait      bool
 
 	cfgFile string
 )
@@ -51,9 +53,26 @@ var (
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
+	var buf bytes.Buffer
+	rootCmd.Command.SetOut(&buf)
+
 	if err := rootCmd.Command.Execute(); err != nil {
 		os.Exit(1)
 	}
+
+	if !Wait {
+		capturedOutput := buf.String()
+		fmt.Println(capturedOutput)
+		return
+	}
+
+	// Wait for the user to press enter before exiting
+	// fmt.Println(jsontabwriter.LastSrcData["href"])
+	fmt.Println("Press Enter to print")
+	_, _ = fmt.Scanln()
+	capturedOutput := buf.String()
+	fmt.Println(capturedOutput)
+
 }
 
 func GetRootCmd() *core.Command {
@@ -126,6 +145,13 @@ func init() {
 
 	rootPFlagSet.Bool(constants.ArgNoHeaders, false, "Don't print table headers when table output is used")
 	_ = viper.BindPFlag(constants.ArgNoHeaders, rootPFlagSet.Lookup(constants.ArgNoHeaders))
+
+	rootPFlagSet.BoolVarP(&Wait, constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait,
+		"Polls the request continuously until the operation is completed ")
+	rootPFlagSet.IntP(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds,
+		"Timeout in seconds for polling the request")
+	_ = viper.BindPFlag(constants.ArgWaitForRequest, rootPFlagSet.Lookup(constants.ArgWaitForRequest))
+	_ = viper.BindPFlag(constants.ArgTimeout, rootPFlagSet.Lookup(constants.ArgTimeout))
 
 	// Add SubCommands to RootCmd
 	addCommands()
@@ -224,6 +250,7 @@ func addCommands() {
 	rootCmd.AddCommand(vm_autoscaling.Root())
 
 	rootCmd.AddCommand(dns.Root())
+
 	rootCmd.AddCommand(logging_service.Root())
 
 	rootCmd.AddCommand(cdn.Command())
