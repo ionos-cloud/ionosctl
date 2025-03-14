@@ -125,10 +125,46 @@ func newClient(name, pwd, token, hostUrl string, usedLayer *Layer) *Client {
 		Kafka:          kafka.NewAPIClient(sharedConfig),
 		MariaClient:    mariadb.NewAPIClient(sharedConfig),
 
-		HttpClient: NewHttpClient(name, pwd, token),
+		HttpClient: newHttpClient(name, pwd, token),
 		usedLayer:  usedLayer,
 	}
 }
 
+// newHttpClient creates a new http client with the given credentials.
+// it is supposed to be used for generic API calls i.e. waiting on state changes, etc.
+func newHttpClient(name, password, token string) *http.Client {
+	baseTransport := http.DefaultTransport
 
-func NewHttpClient
+	return &http.Client{
+		Transport: &CustomTransport{
+			Base:     baseTransport,
+			Name:     name,
+			Password: password,
+			Token:    token,
+		},
+	}
+}
+
+type CustomTransport struct {
+	Base     http.RoundTripper
+	Name     string
+	Password string
+	Token    string
+}
+
+// RoundTrip intercepts requests to add headers before sending.
+func (t *CustomTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+	newReq := req.Clone(req.Context())
+
+	if t.Token != "" {
+		newReq.Header.Set("Authorization", "Bearer "+t.Token)
+	} else if t.Name != "" && t.Password != "" {
+		newReq.SetBasicAuth(t.Name, t.Password)
+	}
+
+	if newReq.Header.Get("Content-Type") == "" {
+		newReq.Header.Set("Content-Type", "application/json")
+	}
+
+	return t.Base.RoundTrip(newReq)
+}
