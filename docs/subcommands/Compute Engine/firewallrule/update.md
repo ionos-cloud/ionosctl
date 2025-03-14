@@ -66,7 +66,7 @@ Required values to run command:
       --source-mac string        Only traffic originating from the respective MAC address is allowed. Valid format: aa:bb:cc:dd:ee:ff. Not setting option allows all source MAC addresses
   -t, --timeout int              Timeout option for Request for Firewall Rule update [seconds] (default 60)
   -v, --verbose                  Print step-by-step process when running command
-  -w, --wait-for-request         Wait for Request for Firewall Rule update to be executed
+  -w, --wait                     Polls the request continuously until the operation is completed 
 ```
 
 ## Examples

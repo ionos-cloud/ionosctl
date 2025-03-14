@@ -102,8 +102,7 @@ You can wait for the Request to be executed using `--wait-for-request` option. Y
       --type string                Type usages for the Server. Can be one of: ENTERPRISE, CUBE, VCPU (default "ENTERPRISE")
   -v, --verbose                    Print step-by-step process when running command
   -N, --volume-name string         [CUBE Server] Name of the Direct Attached Storage (default "Unnamed Direct Attached Storage")
-  -w, --wait-for-request           Wait for the Request for Server creation to be executed
-  -W, --wait-for-state             Wait for new Server to be in AVAILABLE state
+  -w, --wait                       Polls the request continuously until the operation is completed 
 ```
 
 ## Examples

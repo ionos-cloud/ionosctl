@@ -39,7 +39,9 @@ List all secondary zones. Default limit is the first 100 items. Use pagination q
   -o, --output string       Desired output format [text|json|api-json] (default "text")
   -q, --quiet               Quiet output
       --state string        Filter used to fetch all zones in a particular state (AVAILABLE, FAILED, PROVISIONING, DESTROYING)
+  -t, --timeout int         Timeout in seconds for polling the request (default 60)
   -v, --verbose             Print step-by-step process when running command
+  -w, --wait                Polls the request continuously until the operation is completed 
 ```
 
 ## Examples

@@ -70,7 +70,7 @@ Required values to run command:
       --type string                Type of the Volume (default "HDD")
       --user-data string           The cloud-init configuration for the Volume as base64 encoded string. It is mandatory to provide either 'public image' or 'imageAlias' that has cloud-init compatibility in conjunction with this property
   -v, --verbose                    Print step-by-step process when running command
-  -w, --wait-for-request           Wait for the Request for Volume creation to be executed
+  -w, --wait                       Polls the request continuously until the operation is completed 
 ```
 
 ## Examples

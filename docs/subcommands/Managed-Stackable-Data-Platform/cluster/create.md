@@ -53,6 +53,6 @@ The cluster will be provisioned in the datacenter matching the provided datacent
   -t, --timeout int               Timeout option for Request [seconds] (default 60)
   -v, --verbose                   Print step-by-step process when running command
       --version string            The version of your dataplatform cluster (default "same as 'dataplatform version active'")
-  -w, --wait-for-request          Wait for the Request to be executed
+  -w, --wait                      Polls the request continuously until the operation is completed 
 ```
 

@@ -50,8 +50,10 @@ Required values to run command:
   -q, --quiet               Quiet output
   -S, --since string        The start time for the query using a time delta since the current moment: 2h - 2 hours ago, 20m - 20 minutes ago. Only hours and minutes are supported, and not at the same time. If both start-time and since are set, start-time will be used.
   -s, --start-time string   The start time for the query in RFC3339 format. Example: 2021-10-05T11:30:17.45Z
+  -t, --timeout int         Timeout in seconds for polling the request (default 60)
   -U, --until string        The end time for the query using a time delta since the current moment: 2h - 2 hours ago, 20m - 20 minutes ago. Only hours and minutes are supported, and not at the same time. If both end-time and until are set, end-time will be used.
   -v, --verbose             Print step-by-step process when running command
+  -w, --wait                Polls the request continuously until the operation is completed 
 ```
 
 ## Examples

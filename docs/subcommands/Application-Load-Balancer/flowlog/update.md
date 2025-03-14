@@ -64,7 +64,7 @@ Required values to run command:
   -b, --s3bucket string                     S3 bucket name of an existing IONOS Cloud S3 bucket.
   -t, --timeout int                         Timeout option for Request for Application Load Balancer FlowLog update [seconds] (default 300)
   -v, --verbose                             Print step-by-step process when running command
-  -w, --wait-for-request                    Wait for the Request for Application Load Balancer FlowLog update to be executed
+  -w, --wait                                Polls the request continuously until the operation is completed 
 ```
 
 ## Examples

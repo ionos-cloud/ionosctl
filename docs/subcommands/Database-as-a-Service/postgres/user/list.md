@@ -48,7 +48,9 @@ List all users in the given cluster
   -o, --output string       Desired output format [text|json|api-json] (default "text")
   -q, --quiet               Quiet output
       --system              List system users along with regular users
+  -t, --timeout int         Timeout in seconds for polling the request (default 60)
   -v, --verbose             Print step-by-step process when running command
+  -w, --wait                Polls the request continuously until the operation is completed 
 ```
 
 ## Examples

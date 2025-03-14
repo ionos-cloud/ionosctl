@@ -57,6 +57,6 @@ The following requests allows to alter the existing resources of the cluster
   -q, --quiet                        Quiet output
   -t, --timeout int                  Timeout option for Request [seconds] (default 60)
   -v, --verbose                      Print step-by-step process when running command
-  -w, --wait-for-request             Wait for the Request to be executed
+  -w, --wait                         Polls the request continuously until the operation is completed 
 ```
 

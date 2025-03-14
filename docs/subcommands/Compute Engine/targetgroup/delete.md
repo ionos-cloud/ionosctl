@@ -49,7 +49,7 @@ Required values to run command:
   -i, --targetgroup-id string   The unique Target Group Id (required)
   -t, --timeout int             Timeout option for Request for Target Group deletion [seconds] (default 60)
   -v, --verbose                 Print step-by-step process when running command
-  -w, --wait-for-request        Wait for the Request for Target Group deletion to be executed
+  -w, --wait                    Polls the request continuously until the operation is completed 
 ```
 
 ## Examples

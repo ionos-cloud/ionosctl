@@ -50,6 +50,7 @@ Required values to run command:
   -i, --request-id string   The unique Request Id (required)
   -t, --timeout int         Timeout option waiting for Request [seconds] (default 60)
   -v, --verbose             Print step-by-step process when running command
+  -w, --wait                Polls the request continuously until the operation is completed 
 ```
 
 ## Examples

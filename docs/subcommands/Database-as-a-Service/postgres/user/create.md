@@ -40,8 +40,10 @@ Create a new user in the given cluster
   -o, --output string       Desired output format [text|json|api-json] (default "text")
   -p, --password string     The password for the user
   -q, --quiet               Quiet output
+  -t, --timeout int         Timeout in seconds for polling the request (default 60)
       --user string         The name of the user
   -v, --verbose             Print step-by-step process when running command
+  -w, --wait                Polls the request continuously until the operation is completed 
 ```
 
 ## Examples

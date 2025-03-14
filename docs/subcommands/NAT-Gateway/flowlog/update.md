@@ -64,7 +64,7 @@ Required values to run command:
   -b, --s3bucket string        S3 Bucket name of an existing IONOS Cloud S3 Bucket
   -t, --timeout int            Timeout option for Request for NAT Gateway FlowLog update [seconds] (default 60)
   -v, --verbose                Print step-by-step process when running command
-  -w, --wait-for-request       Wait for the Request for NAT Gateway FlowLog update to be executed
+  -w, --wait                   Polls the request continuously until the operation is completed 
 ```
 
 ## Examples

@@ -67,7 +67,7 @@ Required values to run command:
       --s3privilege           The group will be allowed to manage S3. E.g.: --s3privilege=true, --s3privilege=false
   -t, --timeout int           Timeout option for Request for Group update [seconds] (default 60)
   -v, --verbose               Print step-by-step process when running command
-  -w, --wait-for-request      Wait for Request for Group update to be executed
+  -w, --wait                  Polls the request continuously until the operation is completed 
 ```
 
 ## Examples

@@ -43,7 +43,9 @@ Within each layer, a token takes precedence over a username and password combina
   -o, --output string    Desired output format [text|json|api-json] (default "text")
   -p, --provenance       If set, the command prints the layers of authentication sources, their order of priority, and which one was used. It also tells you if a token or username and password are being used for authentication.
   -q, --quiet            Quiet output
+  -t, --timeout int      Timeout in seconds for polling the request (default 60)
   -v, --verbose          Print step-by-step process when running command
+  -w, --wait             Polls the request continuously until the operation is completed 
 ```
 
 ## Examples

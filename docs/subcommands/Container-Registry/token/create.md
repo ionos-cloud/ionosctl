@@ -51,7 +51,9 @@ Create a new token used to access a container registry
   -q, --quiet                Quiet output
   -r, --registry-id string   Registry ID (required)
       --status string        Status of the Token
+  -t, --timeout int          Timeout in seconds for polling the request (default 60)
   -v, --verbose              Print step-by-step process when running command
+  -w, --wait                 Polls the request continuously until the operation is completed 
 ```
 
 ## Examples

@@ -48,7 +48,9 @@ Delete a Registry.
   -o, --output string        Desired output format [text|json|api-json] (default "text")
   -q, --quiet                Quiet output
   -i, --registry-id string   Specify the Registry ID (required)
+  -t, --timeout int          Timeout in seconds for polling the request (default 60)
   -v, --verbose              Print step-by-step process when running command
+  -w, --wait                 Polls the request continuously until the operation is completed 
 ```
 
 ## Examples

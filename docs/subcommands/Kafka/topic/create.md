@@ -47,7 +47,9 @@ Create a kafka topic
       --replication-factor int32   The replication factor (default 3)
       --retention-time int32       The retention time in milliseconds (default 604800000)
       --segment-bytes int32        The segment bytes (default 1073741824)
+  -t, --timeout int                Timeout in seconds for polling the request (default 60)
   -v, --verbose                    Print step-by-step process when running command
+  -w, --wait                       Polls the request continuously until the operation is completed 
 ```
 
 ## Examples
