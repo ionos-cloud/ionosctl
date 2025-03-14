@@ -61,7 +61,7 @@ Required values to run command:
   -q, --quiet                  Quiet output
   -t, --timeout int            Timeout option for Request for NAT Gateway FlowLog deletion [seconds] (default 60)
   -v, --verbose                Print step-by-step process when running command
-  -w, --wait-for-request       Wait for the Request for NAT Gateway FlowLog deletion to be executed
+  -w, --wait                   Polls the request continuously until the operation is completed 
 ```
 
 ## Examples

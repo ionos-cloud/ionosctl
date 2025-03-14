@@ -58,7 +58,9 @@ Update a WireGuard Gateway. Note: The private key MUST be provided again (or cha
   -K, --private-key string        Specify the private key (required or --private-key-path)
   -k, --private-key-path string   Specify the private key from a file (required or --private-key)
   -q, --quiet                     Quiet output
+  -t, --timeout int               Timeout in seconds for polling the request (default 60)
   -v, --verbose                   Print step-by-step process when running command
+  -w, --wait                      Polls the request continuously until the operation is completed 
 ```
 
 ## Examples

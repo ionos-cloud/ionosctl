@@ -48,8 +48,10 @@ Update a IPSec Gateway
       --no-headers             Don't print table headers when table output is used
   -o, --output string          Desired output format [text|json|api-json] (default "text")
   -q, --quiet                  Quiet output
+  -t, --timeout int            Timeout in seconds for polling the request (default 60)
   -v, --verbose                Print step-by-step process when running command
       --version string         The IKE version that is permitted for the VPN tunnels (default "IKEv2")
+  -w, --wait                   Polls the request continuously until the operation is completed 
 ```
 
 ## Examples

@@ -51,8 +51,10 @@ Required values to run command:
   -o, --output string       Desired output format [text|json|api-json] (default "text")
   -p, --password string     The password for the User (must be at least 5 characters long)
   -q, --quiet               Quiet output
+  -t, --timeout int         Timeout in seconds for polling the request (default 60)
   -i, --user-id string      The unique User Id (required)
   -v, --verbose             Print step-by-step process when running command
+  -w, --wait                Polls the request continuously until the operation is completed 
 ```
 
 ## Examples

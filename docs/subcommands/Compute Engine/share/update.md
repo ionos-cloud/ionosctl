@@ -48,7 +48,7 @@ Required values to run command:
       --share-privilege      Update the group's permission to share resource
   -t, --timeout int          Timeout option for Request for Resource Share update [seconds] (default 60)
   -v, --verbose              Print step-by-step process when running command
-  -w, --wait-for-request     Wait for the Request for Resource Share update to be executed
+  -w, --wait                 Polls the request continuously until the operation is completed 
 ```
 
 ## Examples

@@ -52,7 +52,7 @@ Required values to run command:
   -q, --quiet                Quiet output
   -t, --timeout int          Timeout option for waiting for Node to be in ACTIVE state [seconds] (default 600)
   -v, --verbose              Print step-by-step process when running command
-  -W, --wait-for-state       Wait for specified Node to be in ACTIVE state
+  -w, --wait                 Polls the request continuously until the operation is completed 
 ```
 
 ## Examples

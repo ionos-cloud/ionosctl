@@ -75,7 +75,7 @@ Required values to run command:
   -t, --timeout int                         Timeout option for Request for Forwarding Rule Http Rule creation [seconds] (default 300)
       --type string                         Type of the HTTP rule. (required)
   -v, --verbose                             Print step-by-step process when running command
-  -w, --wait-for-request                    Wait for the Request for Forwarding Rule Http Rule creation to be executed
+  -w, --wait                                Polls the request continuously until the operation is completed 
 ```
 
 ## Examples

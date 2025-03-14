@@ -63,7 +63,7 @@ Required values to run command:
   -t, --timeout int              Timeout option for Request for Volume update [seconds] (default 60)
   -v, --verbose                  Print step-by-step process when running command
   -i, --volume-id string         The unique Volume Id (required)
-  -w, --wait-for-request         Wait for the Request for Volume update to be executed
+  -w, --wait                     Polls the request continuously until the operation is completed 
 ```
 
 ## Examples

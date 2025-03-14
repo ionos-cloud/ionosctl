@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ---
 description: "Delete a token scope"
 ---
@@ -59,3 +60,5 @@ Use this command to delete a token scope of a container registry. If a name is p
 ionosctl container-registry token scope delete --registry-id [REGISTRY-ID], --token-id [TOKEN-ID] --name [SCOPE-NAME]
 ```
 
+=======
+>>>>>>> c6629594 (doc: regen docs)

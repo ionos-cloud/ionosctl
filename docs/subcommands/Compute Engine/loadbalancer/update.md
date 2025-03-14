@@ -55,7 +55,7 @@ Required values to run command:
   -q, --quiet                    Quiet output
   -t, --timeout int              Timeout option for Request for Load Balancer update [seconds] (default 60)
   -v, --verbose                  Print step-by-step process when running command
-  -w, --wait-for-request         Wait for Request for Load Balancer update to be executed
+  -w, --wait                     Polls the request continuously until the operation is completed 
 ```
 
 ## Examples

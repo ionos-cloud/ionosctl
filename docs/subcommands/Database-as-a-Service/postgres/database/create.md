@@ -41,7 +41,9 @@ Create a new database in the specified cluster
   -o, --output string       Desired output format [text|json|api-json] (default "text")
       --owner string        The owner of the database
   -q, --quiet               Quiet output
+  -t, --timeout int         Timeout in seconds for polling the request (default 60)
   -v, --verbose             Print step-by-step process when running command
+  -w, --wait                Polls the request continuously until the operation is completed 
 ```
 
 ## Examples

@@ -50,7 +50,7 @@ Required values to run command:
   -q, --quiet                           Quiet output
   -t, --timeout int                     Timeout option for waiting for Network Load Balancer to be in AVAILABLE state [seconds] (default 300)
   -v, --verbose                         Print step-by-step process when running command
-  -W, --wait-for-state                  Wait for specified Network Load Balancer to be in AVAILABLE state
+  -w, --wait                            Polls the request continuously until the operation is completed 
 ```
 
 ## Examples

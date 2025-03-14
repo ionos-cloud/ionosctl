@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ---
 description: "Add scopes to a token"
 ---
@@ -60,3 +61,5 @@ Use this command to add scopes to a token of a container registry.
 ionosctl container-registry token scope list --registry-id [REGISTRY-ID], --token-id [TOKEN-ID] --name [SCOPE-NAME] --actions [SCOPE-ACTIONS], --type [SCOPE-TYPE]
 ```
 
+=======
+>>>>>>> c6629594 (doc: regen docs)

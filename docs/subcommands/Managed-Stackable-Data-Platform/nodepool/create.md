@@ -63,6 +63,6 @@ The following requests allows to alter the existing resources, add or remove new
       --storage-type string          The type of hardware for the volume
   -t, --timeout int                  Timeout option for Request [seconds] (default 60)
   -v, --verbose                      Print step-by-step process when running command
-  -w, --wait-for-request             Wait for the Request to be executed
+  -w, --wait                         Polls the request continuously until the operation is completed 
 ```
 

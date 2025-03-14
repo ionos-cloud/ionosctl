@@ -63,7 +63,7 @@ Required values to run command:
   -i, --targetgroup-id string   The unique Target Group Id (required)
   -t, --timeout int             Timeout option for Request for Target Group Target addition [seconds] (default 60)
   -v, --verbose                 Print step-by-step process when running command
-  -w, --wait-for-request        Wait for the Request for Target Group Target addition to be executed
+  -w, --wait                    Polls the request continuously until the operation is completed 
   -W, --weight int              Traffic is distributed in proportion to target weight, relative to the combined weight of all targets. A target with higher weight receives a greater share of traffic. Valid range is 0 to 256 and default is 1; targets with weight of 0 do not participate in load balancing but still accept persistent connections. It is best use values in the middle of the range to leave room for later adjustments. (default 1)
 ```
 

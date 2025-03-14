@@ -55,7 +55,7 @@ Required values to run command:
   -q, --quiet               Quiet output
   -t, --timeout int         Timeout option for Cluster to be completely removed[seconds] (default 1200)
   -v, --verbose             Print step-by-step process when running command
-  -W, --wait-for-deletion   Wait for Cluster to be completely removed
+  -w, --wait                Polls the request continuously until the operation is completed 
 ```
 
 ## Examples

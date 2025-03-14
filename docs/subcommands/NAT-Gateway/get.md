@@ -50,7 +50,7 @@ Required values to run command:
   -q, --quiet                  Quiet output
   -t, --timeout int            Timeout option for waiting for NAT Gateway to be in AVAILABLE state [seconds] (default 60)
   -v, --verbose                Print step-by-step process when running command
-  -W, --wait-for-state         Wait for specified NAT Gateway to be in AVAILABLE state
+  -w, --wait                   Polls the request continuously until the operation is completed 
 ```
 
 ## Examples

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ---
 description: "Get a token scopes"
 ---
@@ -57,3 +58,5 @@ Use this command to list all scopes of a token of a container registry.
 ionosctl container-registry token scope list --registry-id [REGISTRY-ID], --token-id [TOKEN-ID]
 ```
 
+=======
+>>>>>>> c6629594 (doc: regen docs)

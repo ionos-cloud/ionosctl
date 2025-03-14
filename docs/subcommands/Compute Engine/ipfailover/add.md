@@ -62,7 +62,7 @@ Required values to run command:
       --server-id string       The unique Server Id (required)
   -t, --timeout int            Timeout option for Request for IP Failover creation [seconds] (default 60)
   -v, --verbose                Print step-by-step process when running command
-  -w, --wait-for-request       Wait for the Request for IP Failover creation to be executed
+  -w, --wait                   Polls the request continuously until the operation is completed 
 ```
 
 ## Examples

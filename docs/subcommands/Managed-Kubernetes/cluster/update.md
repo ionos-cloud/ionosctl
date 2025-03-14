@@ -57,7 +57,7 @@ Required values to run command:
       --s3bucket string           S3 Bucket name configured for K8s usage. It will overwrite the previous value
   -t, --timeout int               Timeout option for waiting for Cluster to be in ACTIVE state after updating [seconds] (default 600)
   -v, --verbose                   Print step-by-step process when running command
-  -W, --wait-for-state            Wait for specified Cluster to be in ACTIVE state after updating
+  -w, --wait                      Polls the request continuously until the operation is completed 
 ```
 
 ## Examples

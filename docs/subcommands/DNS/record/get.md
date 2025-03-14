@@ -42,7 +42,9 @@ Retrieve a record
   -o, --output string     Desired output format [text|json|api-json] (default "text")
   -q, --quiet             Quiet output
       --record string     The ID or name of the DNS record
+  -t, --timeout int       Timeout in seconds for polling the request (default 60)
   -v, --verbose           Print step-by-step process when running command
+  -w, --wait              Polls the request continuously until the operation is completed 
   -z, --zone string       The name or ID of the DNS zone
 ```
 

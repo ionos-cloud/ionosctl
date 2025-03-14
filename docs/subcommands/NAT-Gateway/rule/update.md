@@ -67,7 +67,7 @@ Required values to run command:
       --target-subnet string   Target subnet or destination subnet of the NAT Gateway Rule
   -t, --timeout int            Timeout option for Request for NAT Gateway Rule update [seconds] (default 60)
   -v, --verbose                Print step-by-step process when running command
-  -w, --wait-for-request       Wait for the Request for NAT Gateway Rule update to be executed
+  -w, --wait                   Polls the request continuously until the operation is completed 
 ```
 
 ## Examples

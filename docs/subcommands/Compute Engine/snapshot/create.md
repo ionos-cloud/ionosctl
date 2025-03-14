@@ -56,7 +56,7 @@ Required values to run command:
   -t, --timeout int            Timeout option for Request for Snapshot creation [seconds] (default 60)
   -v, --verbose                Print step-by-step process when running command
       --volume-id string       The unique Volume Id (required)
-  -w, --wait-for-request       Wait for the Request for Snapshot creation to be executed
+  -w, --wait                   Polls the request continuously until the operation is completed 
 ```
 
 ## Examples
