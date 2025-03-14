@@ -52,7 +52,7 @@ func For(executedCommand, href string, options ...WaitOption) error {
 	}
 
 	fmt.Println("waiting for", href)
-	c := client.Must().CloudClient.GetConfig().HTTPClient
+	c := client.Must().HttpClient
 
 	for {
 		// Check if the context is done.
@@ -97,11 +97,22 @@ func isConditionMet(executedCommand string, resp *http.Response) (bool, error) {
 		return resp.StatusCode == http.StatusNotFound, nil
 	}
 
+	// Resource might not be available yet.
+	if resp.StatusCode == 404 {
+		return false, nil
+	}
+
+	// Error out if a 400 code.
+	if resp.StatusCode >= 400 {
+		return false, fmt.Errorf("failed to call %s: %s", resp.Request.URL, resp.Status)
+	}
+
 	defer resp.Body.Close()
 	var result map[string]interface{}
 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
 		return false, fmt.Errorf("failed to decode JSON: %w", err)
 	}
+
 	meta, ok := result["metadata"].(map[string]interface{})
 	if !ok {
 		return false, fmt.Errorf("failed to parse metadata from response")
@@ -110,5 +121,6 @@ func isConditionMet(executedCommand string, resp *http.Response) (bool, error) {
 	if !ok {
 		return false, fmt.Errorf("failed to parse state from metadata")
 	}
+	fmt.Println("state:", state)
 	return state == "AVAILABLE", nil
 }
