@@ -156,7 +156,6 @@ func ImageCmd() *core.Command {
 
 	update.Command.Flags().SortFlags = false // Hot Plugs generate a lot of flags to scroll through, put them at the end
 
-	update.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait, "Wait for the Request for Image update to be executed")
 	update.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for Image update [seconds]")
 	update.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultGetDepth, cloudapiv6.ArgDepthDescription)
 
@@ -202,7 +201,6 @@ func ImageCmd() *core.Command {
 	})
 	deleteCmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Delete all non-public images")
 
-	deleteCmd.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait, "Wait for the Request for Image update to be executed")
 	deleteCmd.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for Image update [seconds]")
 	deleteCmd.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultGetDepth, cloudapiv6.ArgDepthDescription)
 
@@ -219,7 +217,7 @@ func ImageCmd() *core.Command {
 		Verb:      "upload",
 		Aliases:   []string{"ftp-upload", "ftp", "upl"},
 		ShortDesc: "Upload an image to FTP server using FTP over TLS (FTPS)",
-		LongDesc: fmt.Sprintf(`WARNING: 
+		LongDesc: fmt.Sprintf(`WARNING:
 This command can only be used if 2-Factor Authentication is disabled on your account and you're logged in using IONOS_USERNAME and IONOS_PASSWORD environment variables (see "Authenticating with Ionos Cloud" at https://docs.ionos.com/cli-ionosctl).
 
 OVERVIEW:
