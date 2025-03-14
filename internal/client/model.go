@@ -130,21 +130,7 @@ func newClient(name, pwd, token, hostUrl string, usedLayer *Layer) *Client {
 	}
 }
 
-// newHttpClient creates a new http client with the given credentials.
-// it is supposed to be used for generic API calls i.e. waiting on state changes, etc.
-func newHttpClient(name, password, token string) *http.Client {
-	baseTransport := http.DefaultTransport
-
-	return &http.Client{
-		Transport: &CustomTransport{
-			Base:     baseTransport,
-			Name:     name,
-			Password: password,
-			Token:    token,
-		},
-	}
-}
-
+// CustomTransport wraps an underlying RoundTripper to inject headers.
 type CustomTransport struct {
 	Base     http.RoundTripper
 	Name     string
@@ -154,17 +140,57 @@ type CustomTransport struct {
 
 // RoundTrip intercepts requests to add headers before sending.
 func (t *CustomTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+	// Clone the request to avoid modifying the original.
 	newReq := req.Clone(req.Context())
 
+	// Set auth header:
+	// If a token is provided, use Bearer auth, else use Basic auth.
 	if t.Token != "" {
 		newReq.Header.Set("Authorization", "Bearer "+t.Token)
 	} else if t.Name != "" && t.Password != "" {
 		newReq.SetBasicAuth(t.Name, t.Password)
 	}
 
+	// Set Content-Type to JSON if not already set.
 	if newReq.Header.Get("Content-Type") == "" {
 		newReq.Header.Set("Content-Type", "application/json")
 	}
 
+	// Use the underlying transport to execute the request.
 	return t.Base.RoundTrip(newReq)
+}
+
+// newHttpClient creates a new http client with the given credentials.
+// it is supposed to be used for generic API calls i.e. waiting on state changes, etc.
+func newHttpClient(name, password, token string) *http.Client {
+	baseTransport := http.DefaultTransport
+
+	customTransport := &CustomTransport{
+		Base:     baseTransport,
+		Name:     name,
+		Password: password,
+		Token:    token,
+	}
+
+	client := &http.Client{
+		Transport: customTransport,
+		// CheckRedirect is invoked for redirect requests.
+		CheckRedirect: func(req *http.Request, via []*http.Request) error {
+			// Copy the Authorization and Content-Type headers from the first request.
+			if len(via) > 0 {
+				origAuth := via[0].Header.Get("Authorization")
+				if origAuth != "" {
+					req.Header.Set("Authorization", origAuth)
+				}
+				// Optionally, preserve Content-Type (or other headers) if needed.
+				origCT := via[0].Header.Get("Content-Type")
+				if origCT != "" {
+					req.Header.Set("Content-Type", origCT)
+				}
+			}
+			return nil
+		},
+	}
+
+	return client
 }
