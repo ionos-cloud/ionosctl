@@ -82,7 +82,7 @@ func Execute() {
 		}
 	}
 
-	fmt.Println(buf.String())
+	fmt.Print(buf.String())
 }
 
 func GetRootCmd() *core.Command {
