@@ -36,9 +36,6 @@ func WithContext(ctx context.Context) WaitOption {
 // For polls the provided href until the resource reaches the desired state.
 // It uses early returns and a helper to reduce complexity.
 func For(executedCommand, href string, options ...WaitOption) error {
-	if executedCommand != "create" && executedCommand != "update" && executedCommand != "delete" {
-		return nil
-	}
 	if href == "" {
 		return nil
 	}
@@ -51,9 +48,7 @@ func For(executedCommand, href string, options ...WaitOption) error {
 		opt(waitOpts)
 	}
 
-	fmt.Println("waiting for", href)
 	c := client.Must().HttpClient
-
 	for {
 		// Check if the context is done.
 		select {
