@@ -2,9 +2,11 @@ package commands
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cdn"
 	certificates "github.com/ionos-cloud/ionosctl/v6/commands/certmanager"
@@ -41,12 +43,13 @@ var (
 			TraverseChildren: true,
 		},
 	}
-	Output    string
-	Quiet     bool
-	Force     bool
-	Verbose   bool
-	NoHeaders bool
-	Wait      bool
+	Output      string
+	Quiet       bool
+	Force       bool
+	Verbose     bool
+	NoHeaders   bool
+	Wait        bool
+	WaitTimeout int
 
 	cfgFile string
 )
@@ -76,7 +79,10 @@ func Execute() {
 			return
 		}
 
-		err = wait.For(executedCommand, href)
+		ctx, cancel := context.WithTimeout(context.Background(), WaitTimeout*time.Second)
+		defer cancel()
+
+		err = wait.For(executedCommand, href, wait.WithContext(ctx))
 		if err != nil {
 			panic(err)
 		}
@@ -158,7 +164,7 @@ func init() {
 
 	rootPFlagSet.BoolVarP(&Wait, constants.ArgWait, constants.ArgWaitForRequestShort, constants.DefaultWait,
 		"Polls the request continuously until the operation is completed ")
-	rootPFlagSet.IntP(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds,
+	rootPFlagSet.IntVarP(&WaitTimeout, constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds,
 		"Timeout in seconds for polling the request")
 	_ = viper.BindPFlag(constants.ArgWait, rootPFlagSet.Lookup(constants.ArgWait))
 	_ = viper.BindPFlag(constants.ArgTimeout, rootPFlagSet.Lookup(constants.ArgTimeout))
