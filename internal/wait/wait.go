@@ -37,10 +37,7 @@ func WithContext(ctx context.Context) WaitOption {
 
 // For polls the provided href until the resource reaches the desired state.
 // It uses early returns and a helper to reduce complexity.
-func For(executedCommand, href string, options ...WaitOption) {
-	if href == "" {
-		return
-	}
+func For(commandName, href string, options ...WaitOption) {
 	fmt.Fprint(os.Stderr, jsontabwriter.GenerateVerboseOutput("Waiting for "+href+" to reach desired state...\n"))
 
 	waitOpts := &WaitOptions{
@@ -62,7 +59,7 @@ func For(executedCommand, href string, options ...WaitOption) {
 
 		resp, err := c.Get(href)
 		if err != nil {
-			// if executedCommand == "delete" && resp != nil && resp.StatusCode == http.StatusNotFound {
+			// if commandName == "delete" && resp != nil && resp.StatusCode == http.StatusNotFound {
 			// 	fmt.Fprintln(os.Stderr, jsontabwriter.GenerateVerboseOutput("Resource successfully deleted"))
 			// 	return
 			// }
@@ -70,7 +67,7 @@ func For(executedCommand, href string, options ...WaitOption) {
 			return // currently simply stop waiting if an error occurs
 		}
 
-		met, err := isConditionMet(executedCommand, resp)
+		met, err := isConditionMet(commandName, resp)
 		if err != nil {
 			fmt.Fprint(os.Stderr, jsontabwriter.GenerateVerboseOutput("Failed waiting for condition to be met: "+err.Error()+"\n"))
 			return // currently simply stop waiting if an error occurs

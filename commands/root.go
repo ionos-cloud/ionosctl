@@ -25,11 +25,11 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/lastresponse"
 	"github.com/ionos-cloud/ionosctl/v6/internal/version"
 	"github.com/ionos-cloud/ionosctl/v6/internal/wait"
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 )
 
@@ -58,15 +58,26 @@ func Execute() {
 	var buf bytes.Buffer
 	rootCmd.Command.SetOut(&buf)
 
-	var executedCommand string
-	// find what the command has been called as
+	var commandPathWithFlags string
+	var commandName string
+
+	// find what the command has been called as, as well as --<resource>-id flags used and their values
 	existingPostRun := rootCmd.Command.PersistentPostRun
 	rootCmd.Command.PersistentPostRun = func(cmd *cobra.Command, args []string) {
 		if existingPostRun != nil {
 			existingPostRun(cmd, args)
 		}
 
-		executedCommand = cmd.Name()
+		commandPathWithFlags = cmd.CommandPath()
+		commandName = cmd.Name()
+
+		cmd.Flags().VisitAll(func(f *pflag.Flag) {
+			if f.Changed && strings.Contains(f.Name, "-id") {
+				commandPathWithFlags = fmt.Sprintf("%s --%s=%s", commandPathWithFlags, f.Name, f.Value)
+			}
+		})
+
+		fmt.Println(commandPathWithFlags)
 	}
 
 	if err := rootCmd.Command.Execute(); err != nil {
@@ -74,15 +85,11 @@ func Execute() {
 	}
 
 	if Wait {
-		href, err := lastresponse.GetJQ(".href")
-		if err != nil {
-			fmt.Fprintf(os.Stderr, jsontabwriter.GenerateVerboseOutput("Failed waiting: %s\n", err.Error()))
-		}
-
 		ctx, cancel := context.WithTimeout(context.Background(), time.Duration(WaitTimeout)*time.Second)
 		defer cancel()
 
-		wait.For(executedCommand, href, wait.WithContext(ctx))
+		href := ""
+		wait.For(commandName, href, wait.WithContext(ctx))
 	}
 
 	fmt.Print(buf.String())
