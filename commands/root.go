@@ -64,7 +64,7 @@ func Execute() {
 	var commandParts []string
 	var setFlags []string
 
-	// find what the command has been called as, as well as --<resource>-id flags used and their values
+	// find what the command has been called as, as well as flags used and their values
 	existingPostRun := rootCmd.Command.PersistentPostRun
 	rootCmd.Command.PersistentPostRun = func(cmd *cobra.Command, args []string) {
 		if existingPostRun != nil {
