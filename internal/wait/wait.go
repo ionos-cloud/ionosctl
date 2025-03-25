@@ -116,6 +116,5 @@ func isConditionMet(executedCommand string, resp *http.Response) (bool, error) {
 	if !ok {
 		return false, fmt.Errorf("failed to parse state from metadata")
 	}
-	fmt.Println("state:", state)
 	return state == "AVAILABLE", nil
 }
