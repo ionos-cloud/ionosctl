@@ -62,7 +62,7 @@ func Execute() {
 	// Extract info about current executed command from the command execution
 	var commandName string
 	var commandParts []string
-	var idFlagsWithValues []string
+	var setFlags []string
 
 	// find what the command has been called as, as well as --<resource>-id flags used and their values
 	existingPostRun := rootCmd.Command.PersistentPostRun
@@ -75,11 +75,8 @@ func Execute() {
 		commandParts = strings.Split(cmd.CommandPath(), " ")
 
 		cmd.Flags().Visit(func(f *pflag.Flag) {
-			idFlagsWithValues = append(idFlagsWithValues, fmt.Sprintf("--%s=%s", f.Name, f.Value))
+			setFlags = append(setFlags, fmt.Sprintf("--%s=%s", f.Name, f.Value))
 		})
-
-		fmt.Println(commandParts)
-		fmt.Println(idFlagsWithValues)
 	}
 
 	if err := rootCmd.Command.Execute(); err != nil {
@@ -93,7 +90,7 @@ func Execute() {
 		// In the case of commands without table output (e.g. delete)
 		// we need to find and execute the corresponding get command to find what href to wait for
 		if waitinfo.HrefIsEmpty() {
-			err := waitinfo.FindAndExecuteGetCommand(rootCmd.Command, commandParts, idFlagsWithValues)
+			err := waitinfo.FindAndExecuteGetCommand(rootCmd.Command, commandParts, setFlags)
 			if err != nil || waitinfo.HrefIsEmpty() {
 				fmt.Fprintf(os.Stderr, jsontabwriter.GenerateVerboseOutput("failed to wait: %s\n", err.Error()))
 			}
