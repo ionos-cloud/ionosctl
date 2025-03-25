@@ -76,7 +76,7 @@ func Execute() {
 	if Wait {
 		href, err := lastresponse.GetJQ(".href")
 		if err != nil {
-			return
+			fmt.Fprintf(os.Stderr, jsontabwriter.GenerateVerboseOutput("Failed waiting: %s\n", err.Error()))
 		}
 
 		ctx, cancel := context.WithTimeout(context.Background(), time.Duration(WaitTimeout)*time.Second)

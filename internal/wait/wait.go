@@ -5,9 +5,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 )
 
 // WaitOption is a function that configures WaitOptions.
@@ -39,6 +41,7 @@ func For(executedCommand, href string, options ...WaitOption) {
 	if href == "" {
 		return
 	}
+	fmt.Fprint(os.Stderr, jsontabwriter.GenerateVerboseOutput("Waiting for "+href+" to reach desired state...\n"))
 
 	waitOpts := &WaitOptions{
 		PollInterval: 3 * time.Second,
@@ -50,36 +53,31 @@ func For(executedCommand, href string, options ...WaitOption) {
 
 	c := client.Must().HttpClient
 	for {
-		// Check if the context is done.
 		select {
 		case <-waitOpts.Ctx.Done():
+			fmt.Fprint(os.Stderr, jsontabwriter.GenerateVerboseOutput("Stopped waiting: context timeout\n"))
 			return
 		default:
 		}
 
 		resp, err := c.Get(href)
 		if err != nil {
-			// For delete, an error is considered a success (resource not found).
-			if executedCommand == "delete" {
-				return
-			}
+			// if executedCommand == "delete" && resp != nil && resp.StatusCode == http.StatusNotFound {
+			// 	fmt.Fprintln(os.Stderr, jsontabwriter.GenerateVerboseOutput("Resource successfully deleted"))
+			// 	return
+			// }
+			fmt.Fprint(os.Stderr, jsontabwriter.GenerateVerboseOutput("Failed to call "+href+": "+err.Error()+"\n"))
 			return // currently simply stop waiting if an error occurs
-			// return fmt.Errorf("failed to call %s: %w", href, err)
 		}
 
 		met, err := isConditionMet(executedCommand, resp)
 		if err != nil {
+			fmt.Fprint(os.Stderr, jsontabwriter.GenerateVerboseOutput("Failed waiting for condition to be met: "+err.Error()+"\n"))
 			return // currently simply stop waiting if an error occurs
 		}
 		if met {
+			fmt.Fprint(os.Stderr, jsontabwriter.GenerateVerboseOutput("Successfully waited for condition to be met\n"))
 			return
-		}
-
-		// Wait for the poll interval, checking context cancellation.
-		select {
-		case <-waitOpts.Ctx.Done():
-			return
-		case <-time.After(waitOpts.PollInterval):
 		}
 	}
 }
