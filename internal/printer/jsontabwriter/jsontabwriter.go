@@ -10,7 +10,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/lastresponse"
+	"github.com/ionos-cloud/ionosctl/v6/internal/waitinfo"
 	"github.com/itchyny/gojq"
 	"github.com/spf13/viper"
 )
@@ -49,7 +49,7 @@ var (
 func GenerateOutput(
 	columnPathMappingPrefix string, columnPathMapping map[string]string, sourceData interface{}, cols []string,
 ) (string, error) {
-	err := lastresponse.SetE(sourceData)
+	err := waitinfo.Set(sourceData)
 	if err != nil {
 		return "", err
 	}

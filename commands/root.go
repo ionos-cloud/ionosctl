@@ -27,6 +27,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/version"
 	"github.com/ionos-cloud/ionosctl/v6/internal/wait"
+	"github.com/ionos-cloud/ionosctl/v6/internal/waitinfo"
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
@@ -87,17 +88,11 @@ func Execute() {
 	}
 
 	if Wait {
-		getCommand := append(commandParts[1:len(commandParts)-1], "get")
-		foundCmd, _, err := rootCmd.Command.Find(getCommand)
-		if err != nil {
-			panic(err)
-		}
-		fmt.Println("found command: ", foundCmd.Name())
-
-		foundCmd.SetArgs(idFlagsWithValues)
-		err = foundCmd.Execute()
-		if err != nil {
-			panic(err)
+		// In the case of commands without output
+		// we need to find and execute the corresponding get command
+		// to get the href to wait for
+		if waitinfo.HrefIsEmpty() {
+			waitinfo.FindAndExecuteGetCommand(rootCmd.Command, commandParts, idFlagsWithValues)
 		}
 
 		ctx, cancel := context.WithTimeout(context.Background(), time.Duration(WaitTimeout)*time.Second)
