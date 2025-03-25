@@ -35,9 +35,9 @@ func WithContext(ctx context.Context) WaitOption {
 
 // For polls the provided href until the resource reaches the desired state.
 // It uses early returns and a helper to reduce complexity.
-func For(executedCommand, href string, options ...WaitOption) error {
+func For(executedCommand, href string, options ...WaitOption) {
 	if href == "" {
-		return nil
+		return
 	}
 
 	waitOpts := &WaitOptions{
@@ -53,7 +53,7 @@ func For(executedCommand, href string, options ...WaitOption) error {
 		// Check if the context is done.
 		select {
 		case <-waitOpts.Ctx.Done():
-			return fmt.Errorf("timeout reached waiting for %s: %w", href, waitOpts.Ctx.Err())
+			return
 		default:
 		}
 
@@ -61,23 +61,24 @@ func For(executedCommand, href string, options ...WaitOption) error {
 		if err != nil {
 			// For delete, an error is considered a success (resource not found).
 			if executedCommand == "delete" {
-				return nil
+				return
 			}
-			return fmt.Errorf("failed to call %s: %w", href, err)
+			return // currently simply stop waiting if an error occurs
+			// return fmt.Errorf("failed to call %s: %w", href, err)
 		}
 
 		met, err := isConditionMet(executedCommand, resp)
 		if err != nil {
-			return err
+			return // currently simply stop waiting if an error occurs
 		}
 		if met {
-			return nil
+			return
 		}
 
 		// Wait for the poll interval, checking context cancellation.
 		select {
 		case <-waitOpts.Ctx.Done():
-			return fmt.Errorf("timeout reached waiting for %s: %w", href, waitOpts.Ctx.Err())
+			return
 		case <-time.After(waitOpts.PollInterval):
 		}
 	}
