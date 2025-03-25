@@ -38,7 +38,7 @@ func WithContext(ctx context.Context) WaitOption {
 // For polls the provided href until the resource reaches the desired state.
 // It uses early returns and a helper to reduce complexity.
 func For(commandName, href string, options ...WaitOption) {
-	fmt.Fprint(os.Stderr, jsontabwriter.GenerateVerboseOutput("Waiting for "+href+" to reach desired state...\n"))
+	fmt.Fprint(os.Stderr, jsontabwriter.GenerateVerboseOutput("Waiting for "+href+" to reach desired state..."))
 
 	waitOpts := &WaitOptions{
 		PollInterval: 3 * time.Second,
@@ -52,7 +52,7 @@ func For(commandName, href string, options ...WaitOption) {
 	for {
 		select {
 		case <-waitOpts.Ctx.Done():
-			fmt.Fprint(os.Stderr, jsontabwriter.GenerateVerboseOutput("Stopped waiting: context timeout\n"))
+			fmt.Fprint(os.Stderr, jsontabwriter.GenerateVerboseOutput("Stopped waiting: context timeout"))
 			return
 		default:
 		}
@@ -63,17 +63,17 @@ func For(commandName, href string, options ...WaitOption) {
 			// 	fmt.Fprintln(os.Stderr, jsontabwriter.GenerateVerboseOutput("Resource successfully deleted"))
 			// 	return
 			// }
-			fmt.Fprint(os.Stderr, jsontabwriter.GenerateVerboseOutput("Failed to call "+href+": "+err.Error()+"\n"))
+			fmt.Fprint(os.Stderr, jsontabwriter.GenerateVerboseOutput("Failed to call "+href+": "+err.Error()))
 			return // currently simply stop waiting if an error occurs
 		}
 
 		met, err := isConditionMet(commandName, resp)
 		if err != nil {
-			fmt.Fprint(os.Stderr, jsontabwriter.GenerateVerboseOutput("Failed waiting for condition to be met: "+err.Error()+"\n"))
+			fmt.Fprint(os.Stderr, jsontabwriter.GenerateVerboseOutput("Failed waiting for condition to be met: "+err.Error()))
 			return // currently simply stop waiting if an error occurs
 		}
 		if met {
-			fmt.Fprint(os.Stderr, jsontabwriter.GenerateVerboseOutput("Successfully waited for condition to be met\n"))
+			fmt.Fprint(os.Stderr, jsontabwriter.GenerateVerboseOutput("Successfully waited for condition to be met"))
 			return
 		}
 	}
