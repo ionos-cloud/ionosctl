@@ -58,8 +58,9 @@ func Execute() {
 	var buf bytes.Buffer
 	rootCmd.Command.SetOut(&buf)
 
-	var commandPathWithFlags string
 	var commandName string
+	var commandParts []string
+	var idFlagsWithValues []string
 
 	// find what the command has been called as, as well as --<resource>-id flags used and their values
 	existingPostRun := rootCmd.Command.PersistentPostRun
@@ -68,16 +69,17 @@ func Execute() {
 			existingPostRun(cmd, args)
 		}
 
-		commandPathWithFlags = cmd.CommandPath()
 		commandName = cmd.Name()
+		commandParts = strings.Split(cmd.CommandPath(), " ")
 
-		cmd.Flags().VisitAll(func(f *pflag.Flag) {
-			if f.Changed && strings.Contains(f.Name, "-id") {
-				commandPathWithFlags = fmt.Sprintf("%s --%s=%s", commandPathWithFlags, f.Name, f.Value)
+		cmd.Flags().Visit(func(f *pflag.Flag) {
+			if strings.Contains(f.Name, "-id") {
+				idFlagsWithValues = append(idFlagsWithValues, fmt.Sprintf("--%s=%s", f.Name, f.Value))
 			}
 		})
 
-		fmt.Println(commandPathWithFlags)
+		fmt.Println(commandParts)
+		fmt.Println(idFlagsWithValues)
 	}
 
 	if err := rootCmd.Command.Execute(); err != nil {
@@ -85,6 +87,19 @@ func Execute() {
 	}
 
 	if Wait {
+		getCommand := append(commandParts[1:len(commandParts)-1], "get")
+		foundCmd, _, err := rootCmd.Command.Find(getCommand)
+		if err != nil {
+			panic(err)
+		}
+		fmt.Println("found command: ", foundCmd.Name())
+
+		foundCmd.SetArgs(idFlagsWithValues)
+		err = foundCmd.Execute()
+		if err != nil {
+			panic(err)
+		}
+
 		ctx, cancel := context.WithTimeout(context.Background(), time.Duration(WaitTimeout)*time.Second)
 		defer cancel()
 
