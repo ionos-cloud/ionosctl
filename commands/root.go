@@ -79,13 +79,10 @@ func Execute() {
 			return
 		}
 
-		ctx, cancel := context.WithTimeout(context.Background(), WaitTimeout*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), time.Duration(WaitTimeout)*time.Second)
 		defer cancel()
 
-		err = wait.For(executedCommand, href, wait.WithContext(ctx))
-		if err != nil {
-			panic(err)
-		}
+		wait.For(executedCommand, href, wait.WithContext(ctx))
 	}
 
 	fmt.Print(buf.String())
