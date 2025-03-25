@@ -92,7 +92,7 @@ func Execute() {
 		if waitinfo.HrefIsEmpty() {
 			err := waitinfo.FindAndExecuteGetCommand(rootCmd.Command, commandParts, setFlags)
 			if err != nil || waitinfo.HrefIsEmpty() {
-				fmt.Fprintf(os.Stderr, jsontabwriter.GenerateVerboseOutput("failed to wait: %s\n", err.Error()))
+				fmt.Fprintf(os.Stderr, jsontabwriter.GenerateVerboseOutput("failed to wait: %s", err.Error()))
 			}
 		}
 

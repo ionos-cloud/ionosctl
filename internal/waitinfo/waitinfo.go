@@ -56,8 +56,8 @@ func GetHref() string {
 // and then executes it, in the hopes that doing so we will set the waitinfo.lastHref field.
 func FindAndExecuteGetCommand(root *cobra.Command, commandParts, setFlagsWithValues []string) error {
 	if len(commandParts) < 2 {
-		return fmt.Errorf("failed to retrieve equivalent get command for %s: "+
-			"commandParts must have at least 2 elements", strings.Join(commandParts, " "))
+		return fmt.Errorf("failed to retrieve equivalent get command for command '%s': "+
+			"command being waited on must have at least 2 parts", strings.Join(commandParts, " "))
 	}
 
 	getCommand := append(commandParts[1:len(commandParts)-1], "get")
@@ -81,14 +81,11 @@ func FindAndExecuteGetCommand(root *cobra.Command, commandParts, setFlagsWithVal
 			parts := strings.SplitN(trimmed, "=", 2)
 			flagName := parts[0]
 			// If the 'get' command defines this flag, keep it.
-			fmt.Println("looking for flag: ", flagName)
 			if foundCmd.Flags().Lookup(flagName) != nil {
 				commonFlagsWithValues = append(commonFlagsWithValues, flagKV)
 			}
 		}
 	}
-
-	fmt.Println("commonFlagsWithValues: ", commonFlagsWithValues)
 
 	// Build new args: binary name + getCommand slice + common flags.
 	newArgs := append(getCommand, commonFlagsWithValues...)
