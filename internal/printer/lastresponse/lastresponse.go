@@ -49,6 +49,10 @@ func GetJQ(query string) (string, error) {
 	data := lastDataAsJson
 	mu.RUnlock()
 
+	if data == "" {
+		return "", fmt.Errorf("no data available")
+	}
+
 	q, err := gojq.Parse(query)
 	if err != nil {
 		return "", fmt.Errorf("failed parsing query: %w", err)
@@ -56,7 +60,7 @@ func GetJQ(query string) (string, error) {
 
 	var input interface{}
 	if err := json.Unmarshal([]byte(data), &input); err != nil {
-		return "", fmt.Errorf("failed unmarshalling last data: %w", err)
+		return "", fmt.Errorf("failed executing query %s on %s: %w", query, data, err)
 	}
 
 	iter := q.Run(input)
