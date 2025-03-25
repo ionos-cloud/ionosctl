@@ -59,6 +59,7 @@ func Execute() {
 	var buf bytes.Buffer
 	rootCmd.Command.SetOut(&buf)
 
+	// Extract info about current executed command from the command execution
 	var commandName string
 	var commandParts []string
 	var idFlagsWithValues []string
@@ -74,9 +75,7 @@ func Execute() {
 		commandParts = strings.Split(cmd.CommandPath(), " ")
 
 		cmd.Flags().Visit(func(f *pflag.Flag) {
-			if strings.Contains(f.Name, "-id") {
-				idFlagsWithValues = append(idFlagsWithValues, fmt.Sprintf("--%s=%s", f.Name, f.Value))
-			}
+			idFlagsWithValues = append(idFlagsWithValues, fmt.Sprintf("--%s=%s", f.Name, f.Value))
 		})
 
 		fmt.Println(commandParts)
@@ -95,11 +94,12 @@ func Execute() {
 		// we need to find and execute the corresponding get command to find what href to wait for
 		if waitinfo.HrefIsEmpty() {
 			err := waitinfo.FindAndExecuteGetCommand(rootCmd.Command, commandParts, idFlagsWithValues)
-			if err != nil {
+			if err != nil || waitinfo.HrefIsEmpty() {
 				fmt.Fprintf(os.Stderr, jsontabwriter.GenerateVerboseOutput("failed to wait: %s\n", err.Error()))
 			}
 		}
-		wait.For(commandName, href, wait.WithContext(ctx))
+
+		wait.For(commandName, waitinfo.GetHref(), wait.WithContext(ctx))
 	}
 
 	fmt.Print(buf.String())

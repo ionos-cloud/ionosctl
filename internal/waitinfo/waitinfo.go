@@ -42,8 +42,8 @@ func Set(dataStruct interface{}) error {
 	return nil
 }
 
-// Get returns the last stored href value.
-func Get() string {
+// GetHref returns the last stored href value.
+func GetHref() string {
 	mu.RLock()
 	defer mu.RUnlock()
 	return lastHref
@@ -51,7 +51,7 @@ func Get() string {
 
 // FindAndExecuteGetCommand tries to find the equivalent 'get' command to the given commandParts
 //
-// e.g. equivalent command for "ionosctl datacenter delete --datacenter-id ID" is "ionosctl datacenter get --datacenter-id ID"
+// e.g. equivalent get command for "ionosctl datacenter delete --datacenter-id ID" is "ionosctl datacenter get --datacenter-id ID"
 //
 // and then executes it, in the hopes that doing so we will set the waitinfo.lastHref field.
 func FindAndExecuteGetCommand(root *cobra.Command, commandParts, idFlagsWithValues []string) error {
