@@ -88,17 +88,17 @@ func Execute() {
 	}
 
 	if Wait {
-		// In the case of commands without output
-		// we need to find and execute the corresponding get command
-		// to get the href to wait for
-		if waitinfo.HrefIsEmpty() {
-			waitinfo.FindAndExecuteGetCommand(rootCmd.Command, commandParts, idFlagsWithValues)
-		}
-
 		ctx, cancel := context.WithTimeout(context.Background(), time.Duration(WaitTimeout)*time.Second)
 		defer cancel()
 
-		href := ""
+		// In the case of commands without table output (e.g. delete)
+		// we need to find and execute the corresponding get command to find what href to wait for
+		if waitinfo.HrefIsEmpty() {
+			err := waitinfo.FindAndExecuteGetCommand(rootCmd.Command, commandParts, idFlagsWithValues)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, jsontabwriter.GenerateVerboseOutput("failed to wait: %s\n", err.Error()))
+			}
+		}
 		wait.For(commandName, href, wait.WithContext(ctx))
 	}
 
