@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"os"
 	"reflect"
 	"strings"
 	"text/tabwriter"
@@ -49,9 +50,12 @@ var (
 func GenerateOutput(
 	columnPathMappingPrefix string, columnPathMapping map[string]string, sourceData interface{}, cols []string,
 ) (string, error) {
-	err := waitinfo.Set(sourceData)
-	if err != nil {
-		return "", err
+
+	if viper.GetBool(constants.ArgWait) {
+		err := waitinfo.Set(sourceData)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, GenerateVerboseOutput("failed to find href to wait on: %s", err.Error()))
+		}
 	}
 
 	if viper.IsSet(constants.ArgQuiet) {
