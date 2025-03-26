@@ -19,6 +19,7 @@ jobs:
           echo "Issue title: $ISSUE_TITLE"
           echo "Issue number: $ISSUE_NUMBER"
           echo "Issue url: $ISSUE_URL"
+
       - name: Google Chat Notification
         env:
           ISSUE_NUMBER: ${{ github.event.issue.number }}
@@ -30,51 +31,51 @@ jobs:
         run: |
           curl --location --request POST "$ISSUE_TRACKER_WEBHOOK" \
           --header 'Content-Type: application/json' \
-          --data-raw '{
-              "cards": [
+          --data-raw "{
+            \"cards\": [
+              {
+                \"header\": {
+                  \"title\": \"New Issue 🔨\",
+                  \"subtitle\": \"Issue No: #$ISSUE_NUMBER\"
+                },
+                \"sections\": [
                   {
-                      "header": {
-                          "title": "New Issue 🔨",
-                          "subtitle": "Issue No: #$ISSUE_NUMBER"
+                    \"widgets\": [
+                      {
+                        \"keyValue\": {
+                          \"topLabel\": \"Repository\",
+                          \"content\": \"$REPOSITORY\"
+                        }
                       },
-                      "sections": [
+                      {
+                        \"keyValue\": {
+                          \"topLabel\": \"Title\",
+                          \"content\": \"$ISSUE_TITLE\"
+                        }
+                      },
+                      {
+                        \"keyValue\": {
+                          \"topLabel\": \"Assigned Labels\",
+                          \"content\": \"$ISSUE_LABELS\"
+                        }
+                      },
+                      {
+                        \"buttons\": [
                           {
-                              "widgets": [
-                                  {
-                                     "keyValue": {
-                                          "topLabel": "Repository",
-                                          "content": "$REPOSITORY"
-                                      },
-                                   },
-                                   {
-                                     "keyValue": {
-                                          "topLabel": "Title",
-                                          "content": "$ISSUE_TITLE"
-                                      }
-                                   },
-                                   {
-                                     "keyValue": {
-                                          "topLabel": "Assigned Labels",
-                                          "content": "- $ISSUE_LABELS"
-                                      }
-                                   },
-                                   {
-                                      "buttons": [
-                                          {
-                                              "textButton": {
-                                                  "text": "OPEN ISSUE",
-                                                  "onClick": {
-                                                      "openLink": {
-                                                          "url": "$ISSUE_URL"
-                                                      }
-                                                  }
-                                              }
-                                          }
-                                      ]
-                                  }
-                              ]
+                            \"textButton\": {
+                              \"text\": \"OPEN ISSUE\",
+                              \"onClick\": {
+                                \"openLink\": {
+                                  \"url\": \"$ISSUE_URL\"
+                                }
+                              }
+                            }
                           }
-                      ]
+                        ]
+                      }
+                    ]
                   }
-              ]
-          }'
+                ]
+              }
+            ]
+          }"
