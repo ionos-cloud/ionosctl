@@ -79,6 +79,19 @@ func Execute() {
 		})
 	}
 
+	// add -t shorthand for timeout only if there is not another flag with the same shorthand
+	existingPreRun := rootCmd.Command.PersistentPreRun
+	rootCmd.Command.PersistentPreRun = func(cmd *cobra.Command, args []string) {
+		if existingPreRun != nil {
+			existingPreRun(cmd, args)
+		}
+
+		if cmd.Flag(constants.ArgTimeoutShort) == nil {
+			cmd.PersistentFlags().IntVarP(&WaitTimeout, constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds,
+				"Timeout in seconds for polling the request")
+		}
+	}
+
 	if err := rootCmd.Command.Execute(); err != nil {
 		os.Exit(1)
 	}
