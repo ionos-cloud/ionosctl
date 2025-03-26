@@ -56,7 +56,7 @@ Available Filters:
   -t, --timeout int           Timeout in seconds for polling the request (default 60)
       --type string           The type of the Image (DEPRECATED: incompatible with --max-results. Use --filters --order-by --max-results options instead!)
   -v, --verbose               Print step-by-step process when running command
-  -w, --wait                  Polls the request continuously until the operation is completed 
+  -w, --wait                  Polls the request continuously until the operation is completed
 ```
 
 ## Examples

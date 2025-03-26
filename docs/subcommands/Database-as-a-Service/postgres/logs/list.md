@@ -53,7 +53,7 @@ Required values to run command:
   -t, --timeout int         Timeout in seconds for polling the request (default 60)
   -U, --until string        The end time for the query using a time delta since the current moment: 2h - 2 hours ago, 20m - 20 minutes ago. Only hours and minutes are supported, and not at the same time. If both end-time and until are set, end-time will be used.
   -v, --verbose             Print step-by-step process when running command
-  -w, --wait                Polls the request continuously until the operation is completed 
+  -w, --wait                Polls the request continuously until the operation is completed
 ```
 
 ## Examples

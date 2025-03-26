@@ -54,7 +54,7 @@ Create/replace a registry to hold container images or OCI compliant artifacts
   -t, --timeout int                                Timeout in seconds for polling the request (default 60)
   -v, --verbose                                    Print step-by-step process when running command
       --vulnerability-scanning                     Enable/disable (?) vulnerability scanning (this is a paid add-on) (default true)
-  -w, --wait                                       Polls the request continuously until the operation is completed 
+  -w, --wait                                       Polls the request continuously until the operation is completed
 ```
 
 ## Examples

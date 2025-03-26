@@ -47,9 +47,9 @@ Required values to run command:
   -o, --output string           Desired output format [text|json|api-json] (default "text")
   -q, --quiet                   Quiet output
   -i, --targetgroup-id string   The unique Target Group Id (required)
-  -t, --timeout int             Timeout option for Request for Target Group deletion [seconds] (default 60)
+  -t, --timeout int             Timeout in seconds for polling the request (default 60)
   -v, --verbose                 Print step-by-step process when running command
-  -w, --wait                    Polls the request continuously until the operation is completed 
+  -w, --wait                    Polls the request continuously until the operation is completed
 ```
 
 ## Examples

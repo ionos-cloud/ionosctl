@@ -61,7 +61,7 @@ Required values to run command:
   -q, --quiet                           Quiet output
   -t, --timeout int                     Timeout option for Request for Network Load Balancer FlowLog deletion [seconds] (default 300)
   -v, --verbose                         Print step-by-step process when running command
-  -w, --wait                            Polls the request continuously until the operation is completed 
+  -w, --wait                            Polls the request continuously until the operation is completed
 ```
 
 ## Examples

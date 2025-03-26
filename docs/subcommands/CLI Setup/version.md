@@ -27,7 +27,7 @@ The `ionosctl version` command displays the current version of the ionosctl soft
   -t, --timeout int      Timeout in seconds for polling the request (default 60)
       --updates          Check for latest updates for CLI
   -v, --verbose          Print step-by-step process when running command
-  -w, --wait             Polls the request continuously until the operation is completed 
+  -w, --wait             Polls the request continuously until the operation is completed
 ```
 
 ## Examples

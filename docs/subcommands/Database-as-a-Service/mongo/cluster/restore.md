@@ -55,7 +55,7 @@ Snapshots are stored in an IONOS S3 Object Storage bucket in the same region as 
       --snapshot-id string   The unique ID of the snapshot you want to restore. (required)
   -t, --timeout int          Timeout in seconds for polling the request (default 60)
   -v, --verbose              Print step-by-step process when running command
-  -w, --wait                 Polls the request continuously until the operation is completed 
+  -w, --wait                 Polls the request continuously until the operation is completed
 ```
 
 ## Examples

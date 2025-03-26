@@ -47,7 +47,7 @@ Retrieve zones
       --state string        Filter used to fetch all zones in a particular state (AVAILABLE, FAILED, PROVISIONING, DESTROYING)
   -t, --timeout int         Timeout in seconds for polling the request (default 60)
   -v, --verbose             Print step-by-step process when running command
-  -w, --wait                Polls the request continuously until the operation is completed 
+  -w, --wait                Polls the request continuously until the operation is completed
 ```
 
 ## Examples

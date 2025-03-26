@@ -59,9 +59,9 @@ Required values to run a command:
   -o, --output string          Desired output format [text|json|api-json] (default "text")
   -q, --quiet                  Quiet output
       --server-id string       The unique Server Id (required)
-  -t, --timeout int            Timeout option for Request for NIC creation [seconds] (default 60)
+  -t, --timeout int            Timeout in seconds for polling the request (default 60)
   -v, --verbose                Print step-by-step process when running command
-  -w, --wait                   Polls the request continuously until the operation is completed 
+  -w, --wait                   Polls the request continuously until the operation is completed
 ```
 
 ## Examples

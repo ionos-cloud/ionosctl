@@ -52,7 +52,7 @@ Create MongoDB users.
   -r, --roles string        User's role for each db. DB1=Role1,DB2=Role2. Roles: read, readWrite, readAnyDatabase, readWriteAnyDatabase, dbAdmin, dbAdminAnyDatabase, clusterMonitor, enableSharding (required)
   -t, --timeout int         Timeout in seconds for polling the request (default 60)
   -v, --verbose             Print step-by-step process when running command
-  -w, --wait                Polls the request continuously until the operation is completed 
+  -w, --wait                Polls the request continuously until the operation is completed
 ```
 
 ## Examples

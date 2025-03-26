@@ -44,7 +44,7 @@ Find a record by IP or ID
       --record string     The record ID or IP which you want to get (required)
   -t, --timeout int       Timeout in seconds for polling the request (default 60)
   -v, --verbose           Print step-by-step process when running command
-  -w, --wait              Polls the request continuously until the operation is completed 
+  -w, --wait              Polls the request continuously until the operation is completed
 ```
 
 ## Examples

@@ -75,7 +75,7 @@ Required values to run a command (for Private Kubernetes Cluster):
       --storage-type string          Storage Type (default "HDD")
   -t, --timeout int                  Timeout option for waiting for NodePool to be in ACTIVE state[seconds] (default 600)
   -v, --verbose                      Print step-by-step process when running command
-  -w, --wait                         Polls the request continuously until the operation is completed 
+  -w, --wait                         Polls the request continuously until the operation is completed
 ```
 
 ## Examples

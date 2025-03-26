@@ -43,7 +43,7 @@ Use this command to add a Certificate.
   -q, --quiet                           Quiet output
   -t, --timeout int                     Timeout in seconds for polling the request (default 60)
   -v, --verbose                         Print step-by-step process when running command
-  -w, --wait                            Polls the request continuously until the operation is completed 
+  -w, --wait                            Polls the request continuously until the operation is completed
 ```
 
 ## Examples

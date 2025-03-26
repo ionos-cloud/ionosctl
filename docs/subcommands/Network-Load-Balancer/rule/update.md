@@ -68,7 +68,7 @@ Required values to run command:
       --target-timeout int              [Health Check] TargetTimeout specifies the maximum inactivity time (in milliseconds) on the target VM side (default 5000)
   -t, --timeout int                     Timeout option for Request for Forwarding Rule update [seconds] (default 300)
   -v, --verbose                         Print step-by-step process when running command
-  -w, --wait                            Polls the request continuously until the operation is completed 
+  -w, --wait                            Polls the request continuously until the operation is completed
 ```
 
 ## Examples

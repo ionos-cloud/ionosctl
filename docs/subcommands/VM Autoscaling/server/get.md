@@ -51,7 +51,7 @@ Get a VM Autoscaling Server
   -i, --server-id string   ID of the autoscaling server
   -t, --timeout int        Timeout in seconds for polling the request (default 60)
   -v, --verbose            Print step-by-step process when running command
-  -w, --wait               Polls the request continuously until the operation is completed 
+  -w, --wait               Polls the request continuously until the operation is completed
 ```
 
 ## Examples

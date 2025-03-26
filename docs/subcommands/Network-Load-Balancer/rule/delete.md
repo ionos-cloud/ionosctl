@@ -61,7 +61,7 @@ Required values to run command:
   -i, --rule-id string                  The unique ForwardingRule Id (required)
   -t, --timeout int                     Timeout option for Request for Forwarding Rule deletion [seconds] (default 300)
   -v, --verbose                         Print step-by-step process when running command
-  -w, --wait                            Polls the request continuously until the operation is completed 
+  -w, --wait                            Polls the request continuously until the operation is completed
 ```
 
 ## Examples

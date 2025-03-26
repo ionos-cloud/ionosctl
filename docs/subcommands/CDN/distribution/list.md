@@ -47,7 +47,7 @@ Retrieve all distributions using pagination and optional filters
       --state string        Filter used to fetch only the records that contain specified state.. Can be one of: AVAILABLE, BUSY, FAILED, UNKNOWN
   -t, --timeout int         Timeout in seconds for polling the request (default 60)
   -v, --verbose             Print step-by-step process when running command
-  -w, --wait                Polls the request continuously until the operation is completed 
+  -w, --wait                Polls the request continuously until the operation is completed
 ```
 
 ## Examples
