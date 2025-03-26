@@ -68,7 +68,7 @@ Required values to run command:
   -t, --timeout int                Timeout option for Request for Server update/for Server to be in AVAILABLE state [seconds] (default 60)
   -v, --verbose                    Print step-by-step process when running command
       --volume-id string           The unique Volume Id for the BootVolume. The Volume needs to be already attached to the Server
-  -w, --wait                       Polls the request continuously until the operation is completed 
+  -w, --wait                       Polls the request continuously until the operation is completed
 ```
 
 ## Examples

@@ -48,7 +48,7 @@ Required values to run command:
   -t, --timeout int          Timeout in seconds for polling the request (default 60)
       --type string          The specific Type of Resources to retrieve information about (required)
   -v, --verbose              Print step-by-step process when running command
-  -w, --wait                 Polls the request continuously until the operation is completed 
+  -w, --wait                 Polls the request continuously until the operation is completed
 ```
 
 ## Examples

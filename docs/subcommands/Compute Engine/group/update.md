@@ -65,9 +65,9 @@ Required values to run command:
   -q, --quiet                 Quiet output
       --reserve-ip            The group will be allowed to reserve IP addresses. E.g.: --reserve-ip=true, --reserve-ip=false
       --s3privilege           The group will be allowed to manage S3. E.g.: --s3privilege=true, --s3privilege=false
-  -t, --timeout int           Timeout option for Request for Group update [seconds] (default 60)
+  -t, --timeout int           Timeout in seconds for polling the request (default 60)
   -v, --verbose               Print step-by-step process when running command
-  -w, --wait                  Polls the request continuously until the operation is completed 
+  -w, --wait                  Polls the request continuously until the operation is completed
 ```
 
 ## Examples

@@ -45,7 +45,7 @@ Retrieve an artifact from a repository
       --repository string    Name of the repository to retrieve artifact from
   -t, --timeout int          Timeout in seconds for polling the request (default 60)
   -v, --verbose              Print step-by-step process when running command
-  -w, --wait                 Polls the request continuously until the operation is completed 
+  -w, --wait                 Polls the request continuously until the operation is completed
 ```
 
 ## Examples

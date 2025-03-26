@@ -48,7 +48,7 @@ Required values to run command:
   -q, --quiet               Quiet output
   -t, --timeout int         Timeout option for waiting for Cluster to be in ACTIVE state [seconds] (default 600)
   -v, --verbose             Print step-by-step process when running command
-  -w, --wait                Polls the request continuously until the operation is completed 
+  -w, --wait                Polls the request continuously until the operation is completed
 ```
 
 ## Examples

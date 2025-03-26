@@ -49,7 +49,7 @@ Get the exported zone file in BIND format (RFC 1035)
   -q, --quiet             Quiet output
   -t, --timeout int       Timeout in seconds for polling the request (default 60)
   -v, --verbose           Print step-by-step process when running command
-  -w, --wait              Polls the request continuously until the operation is completed 
+  -w, --wait              Polls the request continuously until the operation is completed
   -z, --zone string       The name or ID of the DNS zone (required)
 ```
 

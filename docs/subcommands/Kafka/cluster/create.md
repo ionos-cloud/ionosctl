@@ -49,7 +49,7 @@ Create a kafka cluster. Wiki: https://docs.ionos.com/cloud/data-analytics/kafka/
   -t, --timeout int                Timeout in seconds for polling the request (default 60)
   -v, --verbose                    Print step-by-step process when running command
       --version string             The version of the kafka cluster (required)
-  -w, --wait                       Polls the request continuously until the operation is completed 
+  -w, --wait                       Polls the request continuously until the operation is completed
 ```
 
 ## Examples

@@ -37,7 +37,7 @@ Retrieve a secondary zone by its ID or name
   -q, --quiet             Quiet output
   -t, --timeout int       Timeout in seconds for polling the request (default 60)
   -v, --verbose           Print step-by-step process when running command
-  -w, --wait              Polls the request continuously until the operation is completed 
+  -w, --wait              Polls the request continuously until the operation is completed
   -z, --zone string       The name or ID of the DNS zone
 ```
 

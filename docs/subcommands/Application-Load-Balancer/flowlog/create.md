@@ -61,9 +61,9 @@ Required values to run command:
   -o, --output string                       Desired output format [text|json|api-json] (default "text")
   -q, --quiet                               Quiet output
   -b, --s3bucket string                     S3 bucket name of an existing IONOS Cloud S3 bucket. (required)
-  -t, --timeout int                         Timeout option for Request for Application Load Balancer FlowLog creation [seconds] (default 300)
+  -t, --timeout int                         Timeout in seconds for polling the request (default 60)
   -v, --verbose                             Print step-by-step process when running command
-  -w, --wait                                Polls the request continuously until the operation is completed 
+  -w, --wait                                Polls the request continuously until the operation is completed
 ```
 
 ## Examples

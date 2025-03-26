@@ -62,7 +62,7 @@ Create DBaaS MariaDB clusters
       --user string               The initial username (required)
   -v, --verbose                   Print step-by-step process when running command
       --version string            The MariaDB version of your cluster (required) (default "10.6")
-  -w, --wait                      Polls the request continuously until the operation is completed 
+  -w, --wait                      Polls the request continuously until the operation is completed
 ```
 
 ## Examples

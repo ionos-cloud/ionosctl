@@ -56,7 +56,7 @@ Modifies the specified DataPlatformCluster by its distinct cluster ID. The field
   -t, --timeout int               Timeout in seconds for polling the request (default 60)
   -v, --verbose                   Print step-by-step process when running command
       --version string            The version of the cluster
-  -w, --wait                      Polls the request continuously until the operation is completed 
+  -w, --wait                      Polls the request continuously until the operation is completed
 ```
 
 ## Examples

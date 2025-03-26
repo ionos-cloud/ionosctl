@@ -81,7 +81,7 @@ CUSTOM URLs:
       --skip-verify              Skip verification of server certificate, useful if using a custom ftp-url. WARNING: You can be the target of a man-in-the-middle attack!
   -t, --timeout int              (seconds) Context Deadline. FTP connection will time out after this many seconds (default 300)
   -v, --verbose                  Print step-by-step process when running command
-  -w, --wait                     Polls the request continuously until the operation is completed 
+  -w, --wait                     Polls the request continuously until the operation is completed
 ```
 
 ## Examples

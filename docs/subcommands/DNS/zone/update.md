@@ -46,7 +46,7 @@ Partially modify a zone's properties. This command uses a combination of GET and
   -q, --quiet                Quiet output
   -t, --timeout int          Timeout in seconds for polling the request (default 60)
   -v, --verbose              Print step-by-step process when running command
-  -w, --wait                 Polls the request continuously until the operation is completed 
+  -w, --wait                 Polls the request continuously until the operation is completed
   -z, --zone string          The name or ID of the DNS zone (required)
 ```
 

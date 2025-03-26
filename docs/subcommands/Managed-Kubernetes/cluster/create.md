@@ -53,7 +53,7 @@ You can wait for the Cluster to be in "ACTIVE" state using `--wait-for-state` fl
       --s3bucket string         S3 Bucket name configured for K8s usage
   -t, --timeout int             Timeout option for waiting for Cluster/Request [seconds] (default 600)
   -v, --verbose                 Print step-by-step process when running command
-  -w, --wait                    Polls the request continuously until the operation is completed 
+  -w, --wait                    Polls the request continuously until the operation is completed
 ```
 
 ## Examples

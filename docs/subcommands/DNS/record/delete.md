@@ -55,7 +55,7 @@ Here, PARTIAL_NAME is a part of the name of the DNS record you want to delete. I
   -r, --record string     The ID, or full name of the DNS record. Required together with --zone. Can also provide partial names, but must narrow down to a single record result if not using --all. If using it, will however delete all records that match.
   -t, --timeout int       Timeout in seconds for polling the request (default 60)
   -v, --verbose           Print step-by-step process when running command
-  -w, --wait              Polls the request continuously until the operation is completed 
+  -w, --wait              Polls the request continuously until the operation is completed
   -z, --zone string       The full name or ID of the zone of the containing the target record. If --all is set this is applied as a filter - limiting to records within this zone
 ```
 

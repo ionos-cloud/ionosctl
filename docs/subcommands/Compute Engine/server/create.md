@@ -102,7 +102,7 @@ You can wait for the Request to be executed using `--wait-for-request` option. Y
       --type string                Type usages for the Server. Can be one of: ENTERPRISE, CUBE, VCPU (default "ENTERPRISE")
   -v, --verbose                    Print step-by-step process when running command
   -N, --volume-name string         [CUBE Server] Name of the Direct Attached Storage (default "Unnamed Direct Attached Storage")
-  -w, --wait                       Polls the request continuously until the operation is completed 
+  -w, --wait                       Polls the request continuously until the operation is completed
 ```
 
 ## Examples

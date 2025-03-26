@@ -69,7 +69,7 @@ Required values to run command:
       --rule-id string                  The unique ForwardingRule Id (required)
   -t, --timeout int                     Timeout option for Request for Forwarding Rule Target creation [seconds] (default 300)
   -v, --verbose                         Print step-by-step process when running command
-  -w, --wait                            Polls the request continuously until the operation is completed 
+  -w, --wait                            Polls the request continuously until the operation is completed
   -W, --weight int                      Weight parameter is used to adjust the target VM's weight relative to other target VMs. Maximum: 256 (default 1)
 ```
 

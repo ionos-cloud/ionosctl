@@ -65,7 +65,7 @@ Required values to run command:
   -t, --timeout int               Timeout option for Cluster to be in AVAILABLE state[seconds] (default 1200)
   -v, --verbose                   Print step-by-step process when running command
   -V, --version string            The PostgreSQL version of your cluster
-  -w, --wait                      Polls the request continuously until the operation is completed 
+  -w, --wait                      Polls the request continuously until the operation is completed
 ```
 
 ## Examples
