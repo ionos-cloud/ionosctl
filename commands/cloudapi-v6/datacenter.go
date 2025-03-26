@@ -124,7 +124,6 @@ You can wait for the Request to be executed using ` + "`" + `--wait-for-request`
 		return completer.LocationIds(), cobra.ShellCompDirectiveNoFileComp
 	})
 
-	create.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for Data Center creation [seconds]")
 	create.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultCreateDepth, cloudapiv6.ArgDepthDescription)
 
 	/*

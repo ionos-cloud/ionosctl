@@ -187,7 +187,7 @@ func init() {
 	_ = viper.BindPFlag(constants.ArgNoHeaders, rootPFlagSet.Lookup(constants.ArgNoHeaders))
 
 	rootPFlagSet.BoolVarP(&Wait, constants.ArgWait, constants.ArgWaitForRequestShort, constants.DefaultWait,
-		"Polls the request continuously until the operation is completed ")
+		"Polls the request continuously until the operation is completed")
 	rootPFlagSet.IntVarP(&WaitTimeout, constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds,
 		"Timeout in seconds for polling the request")
 	_ = viper.BindPFlag(constants.ArgWait, rootPFlagSet.Lookup(constants.ArgWait))

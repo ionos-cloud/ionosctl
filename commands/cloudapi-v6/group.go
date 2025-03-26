@@ -131,7 +131,6 @@ func GroupCmd() *core.Command {
 	create.AddBoolFlag(cloudapiv6.ArgManageDataplatform, "", false, "Privilege for a group to access and manage the Data Platform")
 	create.AddBoolFlag(cloudapiv6.ArgManageRegistry, "", false, "Privilege for group accessing container registry related functionality")
 
-	create.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for Group creation [seconds]")
 	create.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultCreateDepth, cloudapiv6.ArgDepthDescription)
 
 	/*
