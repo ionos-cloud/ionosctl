@@ -115,7 +115,7 @@ func NodepoolUpdateCmd() *core.Command {
 	})
 
 	// Misc
-	cmd.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait, "Wait for the Request to be executed")
+
 	cmd.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request [seconds]")
 
 	cmd.Command.SilenceUsage = true

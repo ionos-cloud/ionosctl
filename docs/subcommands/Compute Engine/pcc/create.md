@@ -45,7 +45,7 @@ Use this command to create a Cross-Connect. You can specify the name and the des
   -q, --quiet                Quiet output
   -t, --timeout int          Timeout option for Request for Cross-Connect creation [seconds] (default 60)
   -v, --verbose              Print step-by-step process when running command
-  -w, --wait-for-request     Wait for the Request for Cross-Connect creation to be executed
+  -w, --wait                 Polls the request continuously until the operation is completed
 ```
 
 ## Examples

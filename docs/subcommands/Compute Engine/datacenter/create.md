@@ -48,9 +48,9 @@ You can wait for the Request to be executed using `--wait-for-request` option.
       --no-headers           Don't print table headers when table output is used
   -o, --output string        Desired output format [text|json|api-json] (default "text")
   -q, --quiet                Quiet output
-  -t, --timeout int          Timeout option for Request for Data Center creation [seconds] (default 60)
+  -t, --timeout int          Timeout in seconds for polling the request (default 60)
   -v, --verbose              Print step-by-step process when running command
-  -w, --wait-for-request     Wait for the Request for Data Center creation to be executed
+  -w, --wait                 Polls the request continuously until the operation is completed
 ```
 
 ## Examples

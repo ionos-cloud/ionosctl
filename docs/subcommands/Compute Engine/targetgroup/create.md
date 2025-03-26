@@ -57,7 +57,7 @@ You can wait for the Request to be executed using `--wait-for-request` or `-w` o
       --retries int          [Health Check] The maximum number of attempts to reconnect to a target after a connection failure. Valid range is 0 to 65535, and default is three reconnection attempts. (default 3)
   -t, --timeout int          Timeout option for Request for Target Group creation [seconds]. (default 60)
   -v, --verbose              Print step-by-step process when running command
-  -w, --wait-for-request     Wait for the Request for Target Group creation to be executed.
+  -w, --wait                 Polls the request continuously until the operation is completed
 ```
 
 ## Examples
