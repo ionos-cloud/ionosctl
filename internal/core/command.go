@@ -27,7 +27,23 @@ func (c *Command) AddCommand(commands ...*Command) {
 	for _, cmd := range commands {
 		if cmd != nil && c.Command != nil {
 			c.Command.AddCommand(cmd.Command)
+			cmd.addShorthandIfNotExists(constants.ArgTimeoutShort, constants.ArgTimeout)
 		}
+	}
+}
+
+func (c *Command) addShorthandIfNotExists(shorthand, targetFlagLong string) {
+	existingFlag := c.Command.Flags().ShorthandLookup(shorthand)
+	if existingFlag == nil {
+		lookup := c.Command.Root().PersistentFlags().Lookup(targetFlagLong)
+
+		if lookup != nil {
+			fmt.Println("YAY! Found", targetFlagLong, "without shorthand on:", c.Command.CommandPath())
+		} else {
+			fmt.Println("WTF! no", shorthand, "and no", targetFlagLong, "on:", c.Command.CommandPath())
+		}
+	} else {
+		fmt.Println("IGNORING! found -t on:", c.Command.CommandPath())
 	}
 }
 

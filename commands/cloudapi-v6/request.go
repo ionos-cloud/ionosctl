@@ -121,7 +121,6 @@ Required values to run command:
 	_ = wait.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgRequestId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.RequestsIds(), cobra.ShellCompDirectiveNoFileComp
 	})
-	wait.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option waiting for Request [seconds]")
 	wait.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultMiscDepth, cloudapiv6.ArgDepthDescription)
 
 	return reqCmd
@@ -254,6 +253,7 @@ func RunRequestWait(c *core.CommandConfig) error {
 	}
 
 	// Default timeout: 60s
+	// TODO why is this handled separately from other timeouts?
 	timeout := viper.GetInt(core.GetFlagName(c.NS, constants.ArgTimeout))
 	ctxTimeout, cancel := context.WithTimeout(
 		c.Context,
