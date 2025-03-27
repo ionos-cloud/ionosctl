@@ -145,10 +145,6 @@ func NodepoolCreateCmd() *core.Command {
 		return []string{"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"}, cobra.ShellCompDirectiveNoFileComp
 	})
 
-	// Misc
-
-	cmd.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request [seconds]")
-
 	cmd.Command.SilenceUsage = true
 
 	return cmd

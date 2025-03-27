@@ -79,19 +79,6 @@ func Execute() {
 		})
 	}
 
-	// add -t shorthand for timeout only if there is not another flag with the same shorthand
-	existingPreRun := rootCmd.Command.PersistentPreRun
-	rootCmd.Command.PersistentPreRun = func(cmd *cobra.Command, args []string) {
-		if existingPreRun != nil {
-			existingPreRun(cmd, args)
-		}
-
-		if cmd.Flag(constants.ArgTimeoutShort) == nil {
-			cmd.PersistentFlags().IntVarP(&WaitTimeout, constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds,
-				"Timeout in seconds for polling the request")
-		}
-	}
-
 	if err := rootCmd.Command.Execute(); err != nil {
 		os.Exit(1)
 	}
@@ -188,7 +175,7 @@ func init() {
 
 	rootPFlagSet.BoolVarP(&Wait, constants.ArgWait, constants.ArgWaitForRequestShort, constants.DefaultWait,
 		"Polls the request continuously until the operation is completed")
-	rootPFlagSet.IntVarP(&WaitTimeout, constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds,
+	rootPFlagSet.IntVarP(&WaitTimeout, constants.ArgTimeout, "", constants.DefaultTimeoutSeconds,
 		"Timeout in seconds for polling the request")
 	_ = viper.BindPFlag(constants.ArgWait, rootPFlagSet.Lookup(constants.ArgWait))
 	_ = viper.BindPFlag(constants.ArgTimeout, rootPFlagSet.Lookup(constants.ArgTimeout))
