@@ -1,6 +1,6 @@
 module github.com/ionos-cloud/ionosctl/v6
 
-go 1.23
+go 1.23.0
 
 require (
 	github.com/Jeffail/gabs/v2 v2.7.0
@@ -11,7 +11,7 @@ require (
 	github.com/golang/mock v1.6.0
 	github.com/ionos-cloud/sdk-go-dbaas-postgres v1.1.2
 	github.com/ionos-cloud/sdk-go-vm-autoscaling v1.0.1
-	github.com/ionos-cloud/sdk-go/v6 v6.1.11
+	github.com/ionos-cloud/sdk-go/v6 v6.3.2
 	github.com/itchyny/gojq v0.12.13
 	github.com/kardianos/ftps v1.0.3
 	github.com/mitchellh/go-homedir v1.1.0
@@ -77,7 +77,7 @@ require (
 	github.com/spf13/cast v1.5.1 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/subosito/gotenv v1.4.2 // indirect
-	golang.org/x/oauth2 v0.25.0 // indirect
+	golang.org/x/oauth2 v0.28.0 // indirect
 	golang.org/x/sys v0.30.0 // indirect
 	golang.org/x/text v0.22.0 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
