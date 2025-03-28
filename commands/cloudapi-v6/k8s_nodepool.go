@@ -187,9 +187,13 @@ Required values to run a command (for Private Kubernetes Cluster):
 		return completer.DatacenterCPUFamilies(create.Command.Context(), datacenterId), cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddStringFlag(constants.FlagAvailabilityZone, constants.FlagAvailabilityZoneShort, "AUTO", "The compute Availability Zone in which the Node should exist")
-	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagCpuFamily, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagAvailabilityZone, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"AUTO", "ZONE_1", "ZONE_2"}, cobra.ShellCompDirectiveNoFileComp
 	})
+	create.AddSetFlag(constants.FlagServerType, "", "", []string{"DedicatedCore", "VCPU"},
+		"The type of server for the Kubernetes node pool can be either"+
+			"'DedicatedCore' (nodes with dedicated CPU cores) or 'VCPU' (nodes with shared CPU cores)."+
+			"This selection corresponds to the server type for the compute engine.")
 	create.AddStringFlag(constants.FlagStorageType, "", "HDD", "Storage Type")
 	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagStorageType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"HDD", "SSD"}, cobra.ShellCompDirectiveNoFileComp
@@ -248,6 +252,10 @@ Required values to run command:
 	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgK8sMaintenanceDay, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"}, cobra.ShellCompDirectiveNoFileComp
 	})
+	update.AddSetFlag(constants.FlagServerType, "", "", []string{"DedicatedCore", "VCPU"},
+		"The type of server for the Kubernetes node pool can be either"+
+			"'DedicatedCore' (nodes with dedicated CPU cores) or 'VCPU' (nodes with shared CPU cores)."+
+			"This selection corresponds to the server type for the compute engine.")
 	update.AddStringFlag(cloudapiv6.ArgK8sMaintenanceTime, "", "", "The time for Maintenance Window has the HH:mm:ss format as following: 08:00:00")
 	update.AddStringSliceFlag(cloudapiv6.ArgPublicIps, "", []string{}, "Reserved public IP address to be used by the Nodes. IPs must be from same location as the Data Center used for the Node Pool. Usage: --public-ips IP1,IP2")
 	update.AddIntSliceFlag(cloudapiv6.ArgLanIds, "", []int{}, "Collection of LAN Ids of existing LANs to be attached to worker Nodes. It will be added to the existing LANs attached")
@@ -668,6 +676,7 @@ func getNewK8sNodePool(c *core.CommandConfig) (*resources.K8sNodePoolForPost, er
 	cores := viper.GetInt32(core.GetFlagName(c.NS, constants.FlagCores))
 	availabilityZone := viper.GetString(core.GetFlagName(c.NS, constants.FlagAvailabilityZone))
 	storageType := viper.GetString(core.GetFlagName(c.NS, constants.FlagStorageType))
+	serverType := viper.GetString(core.GetFlagName(c.NS, constants.FlagServerType))
 
 	// Set Properties
 	nodePoolProperties := ionoscloud.KubernetesNodePoolPropertiesForPost{}
@@ -683,11 +692,14 @@ func getNewK8sNodePool(c *core.CommandConfig) (*resources.K8sNodePoolForPost, er
 	nodePoolProperties.SetDatacenterId(dcId)
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property DatacenterId set: %v", dcId))
 
+	nodePoolProperties.SetServerType(serverType)
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property serverType set: %v", serverType))
+
 	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagCpuFamily)) &&
 		cpuFamily != cloudapiv6.DefaultServerCPUFamily {
 		nodePoolProperties.SetCpuFamily(viper.GetString(core.GetFlagName(c.NS, constants.FlagCpuFamily)))
 	} else {
-		cpuFamily, err = DefaultCpuFamily(c)
+		cpuFamily, err = DefaultCpuFamily(c) // TODO: verify if any changes needed with the new SDK version
 		if err != nil {
 			return nil, err
 		}
@@ -891,6 +903,14 @@ func getNewK8sNodePoolUpdated(oldNodePool *resources.K8sNodePool, c *core.Comman
 			propertiesUpdated.SetPublicIps(publicIps)
 
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property PublicIps set: %v", publicIps))
+		}
+
+		// serverType
+		if viper.IsSet(core.GetFlagName(c.NS, constants.FlagServerType)) {
+			serverType := viper.GetString(core.GetFlagName(c.NS, constants.FlagServerType))
+			propertiesUpdated.SetServerType(serverType)
+
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property ServerType set: %v", serverType))
 		}
 	}
 

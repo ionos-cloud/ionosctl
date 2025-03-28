@@ -69,6 +69,7 @@ Within each layer, a token takes precedence over a username and password combina
 	FlagCpuFamily             = "cpu-family"
 	FlagStorageType           = "storage-type"
 	FlagStorageSize           = "storage-size"
+	FlagServerType            = "server-type"
 
 	FlagClusterId        = "cluster-id"
 	FlagNodepoolId       = "nodepool-id"
