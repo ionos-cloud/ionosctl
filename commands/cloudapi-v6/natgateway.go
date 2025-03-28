@@ -19,7 +19,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -255,7 +255,7 @@ func RunNatGatewayListAll(c *core.CommandConfig) error {
 	}
 
 	allDcs := getDataCenters(datacenters)
-	var allNatGateways []ionoscloud.NatGateways
+	var allNatGateways []compute.NatGateways
 	totalTime := time.Duration(0)
 
 	for _, dc := range allDcs {
@@ -371,15 +371,13 @@ func RunNatGatewayCreate(c *core.CommandConfig) error {
 	queryParams := listQueryParams.QueryParams
 	proper := getNewNatGatewayInfo(c)
 
-	if !proper.HasName() {
-		proper.SetName(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName)))
-	}
+	proper.SetName(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName)))
 
 	ng, resp, err := c.CloudApiV6Services.NatGateways().Create(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		resources.NatGateway{
-			NatGateway: ionoscloud.NatGateway{
-				Properties: &proper.NatGatewayProperties,
+			NatGateway: compute.NatGateway{
+				Properties: proper.NatGatewayProperties,
 			},
 		},
 		queryParams,
@@ -489,7 +487,7 @@ func RunNatGatewayDelete(c *core.CommandConfig) error {
 }
 
 func getNewNatGatewayInfo(c *core.CommandConfig) *resources.NatGatewayProperties {
-	input := ionoscloud.NatGatewayProperties{}
+	input := compute.NatGatewayProperties{}
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgName)) {
 		name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
@@ -532,13 +530,13 @@ func DeleteAllNatgateways(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get items of NAT Gateway")
 	}
 
-	if len(*natGatewayItems) <= 0 {
+	if len(natGatewayItems) <= 0 {
 		return fmt.Errorf("no NAT Gateways found")
 	}
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("NAT Gateway to be deleted:"))
 
-	for _, natGateway := range *natGatewayItems {
+	for _, natGateway := range natGatewayItems {
 		delIdAndName := ""
 
 		if id, ok := natGateway.GetIdOk(); ok && id != nil {
@@ -561,7 +559,7 @@ func DeleteAllNatgateways(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the NAT Gateways..."))
 
 	var multiErr error
-	for _, natGateway := range *natGatewayItems {
+	for _, natGateway := range natGatewayItems {
 		id, ok := natGateway.GetIdOk()
 		if !ok || id == nil {
 			continue

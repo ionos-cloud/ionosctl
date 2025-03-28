@@ -18,7 +18,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -369,14 +369,10 @@ func RunApplicationLoadBalancerForwardingRuleCreate(c *core.CommandConfig) error
 		constants.ApplicationLoadBalancerId, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId))))
 
 	proper := getAlbForwardingRulePropertiesSet(c)
-	if !proper.HasProtocol() {
-		proper.SetProtocol(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgProtocol)))
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property Protocol set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgProtocol))))
-	}
-	if !proper.HasName() {
-		proper.SetName(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName)))
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property Name set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))))
-	}
+	proper.SetProtocol(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgProtocol)))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property Protocol set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgProtocol))))
+	proper.SetName(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName)))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property Name set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))))
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Creating ForwardingRule"))
 
@@ -384,8 +380,8 @@ func RunApplicationLoadBalancerForwardingRuleCreate(c *core.CommandConfig) error
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
 		resources.ApplicationLoadBalancerForwardingRule{
-			ApplicationLoadBalancerForwardingRule: ionoscloud.ApplicationLoadBalancerForwardingRule{
-				Properties: &proper.ApplicationLoadBalancerForwardingRuleProperties,
+			ApplicationLoadBalancerForwardingRule: compute.ApplicationLoadBalancerForwardingRule{
+				Properties: proper.ApplicationLoadBalancerForwardingRuleProperties,
 			},
 		},
 		queryParams,
@@ -547,11 +543,11 @@ func DeleteAllApplicationLoadBalancerForwardingRule(c *core.CommandConfig) error
 		return errors.New("could not get items of Target Groups")
 	}
 
-	if len(*albRuleItems) <= 0 {
+	if len(albRuleItems) <= 0 {
 		return errors.New("no Target Groups found")
 	}
 
-	for _, fr := range *albRuleItems {
+	for _, fr := range albRuleItems {
 		delIdAndName := ""
 
 		if id, ok := fr.GetIdOk(); ok && id != nil {
@@ -575,7 +571,7 @@ func DeleteAllApplicationLoadBalancerForwardingRule(c *core.CommandConfig) error
 		"Deleting all the Application Load Balancer Forwarding Rules..."))
 
 	var multiErr error
-	for _, fr := range *albRuleItems {
+	for _, fr := range albRuleItems {
 		id, ok := fr.GetIdOk()
 		if !ok || id == nil {
 			continue
@@ -615,7 +611,7 @@ func DeleteAllApplicationLoadBalancerForwardingRule(c *core.CommandConfig) error
 }
 
 func getAlbForwardingRulePropertiesSet(c *core.CommandConfig) *resources.ApplicationLoadBalancerForwardingRuleProperties {
-	input := ionoscloud.ApplicationLoadBalancerForwardingRuleProperties{}
+	input := compute.ApplicationLoadBalancerForwardingRuleProperties{}
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgName)) {
 		input.SetName(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName)))

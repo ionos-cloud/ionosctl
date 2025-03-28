@@ -11,8 +11,8 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/kafka/v2"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -76,9 +76,9 @@ func addClusterCreateFlags(cmd *core.Command) *core.Command {
 		constants.FlagDatacenterId,
 		func(c *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 			return cloudapiv6completer.DataCentersIds(
-				func(datacenter ionoscloud.Datacenter) bool {
+				func(datacenter compute.Datacenter) bool {
 					location, _ := cmd.Command.Flags().GetString(constants.FlagLocation)
-					return *datacenter.Properties.Location == location
+					return datacenter.Properties.Location == location
 				},
 			), cobra.ShellCompDirectiveNoFileComp
 		},

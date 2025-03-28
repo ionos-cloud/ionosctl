@@ -9,6 +9,7 @@ import (
 
 	gomock "github.com/golang/mock/gomock"
 	resources "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
+	compute "github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
 )
 
 // MockLansService is a mock of LansService interface.
@@ -35,10 +36,10 @@ func (m *MockLansService) EXPECT() *MockLansServiceMockRecorder {
 }
 
 // Create mocks base method.
-func (m *MockLansService) Create(datacenterId string, input resources.LanPost, params resources.QueryParams) (*resources.LanPost, *resources.Response, error) {
+func (m *MockLansService) Create(datacenterId string, input compute.Lan, params resources.QueryParams) (compute.Lan, *resources.Response, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Create", datacenterId, input, params)
-	ret0, _ := ret[0].(*resources.LanPost)
+	ret0, _ := ret[0].(compute.Lan)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
 	return ret0, ret1, ret2

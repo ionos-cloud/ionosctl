@@ -52,7 +52,7 @@ func ConvertVmAutoscalingGroupsToTable(ls ionoscloud.GroupCollection) ([]map[str
 }
 
 func ConvertVmAutoscalingServerToTable(sv ionoscloud.Server, depth int32) ([]map[string]interface{}, error) {
-	if sv.Properties == nil || sv.Properties.DatacenterServer == nil ||
+	if sv.Properties.DatacenterServer == nil ||
 		sv.Properties.DatacenterServer.Id == nil || sv.Properties.DatacenterServer.Href == nil {
 		return nil, fmt.Errorf("server properties are incomplete: %+v", sv)
 	}
@@ -82,10 +82,10 @@ func ConvertVmAutoscalingServersToTable(serverCollection ionoscloud.ServerCollec
 		return nil, fmt.Errorf("could not retrieve items")
 	}
 
-	s := *serverCollection.Items
+	s := serverCollection.Items
 	var table []map[string]interface{}
 
-	for _, server := range s {
+	for _, server := range *s {
 		serverTable, err := ConvertVmAutoscalingServerToTable(server, depth)
 		if err != nil {
 			return nil, err

@@ -25,7 +25,7 @@ func teardown() {
 	if err != nil {
 		log.Print(fmt.Errorf("failed deleting all registries: %w", err))
 	}
-	for _, reg := range *regs.Items {
+	for _, reg := range regs.Items {
 		_, err := client.Must().RegistryClient.RegistriesApi.RegistriesDelete(context.Background(), *reg.Id).Execute()
 		if err != nil {
 			log.Print(fmt.Errorf("failed deleting registry: %w", err))
@@ -56,21 +56,21 @@ func TestRegistryService(t *testing.T) {
 			assert.NoError(t, err)
 
 			var newRegistry *containerregistry.RegistryResponse
-			for _, registry := range *registries.GetItems() {
+			for _, registry := range registries.GetItems() {
 				if *registry.GetProperties().GetName() == name {
 					newRegistry = &registry
 				}
 			}
 
 			g := RegGetCmd()
-			g.Command.Flags().Set(constants.FlagRegistryId, *newRegistry.GetId())
+			g.Command.Flags().Set(constants.FlagRegistryId, newRegistry.GetId())
 			assert.NoError(t, err)
 
 			err = g.Command.Execute()
 			assert.NoError(t, err)
 
 			patch := RegUpdateCmd()
-			patch.Command.Flags().Set(constants.FlagRegistryId, *newRegistry.GetId())
+			patch.Command.Flags().Set(constants.FlagRegistryId, newRegistry.GetId())
 			patch.Command.Flags().Set(FlagRegGCDays, "Tuesday")
 			assert.NoError(t, err)
 
@@ -78,7 +78,7 @@ func TestRegistryService(t *testing.T) {
 			assert.NoError(t, err)
 
 			checkRegistry, _, err := client.Must().RegistryClient.RegistriesApi.RegistriesFindById(
-				context.Background(), *newRegistry.GetId(),
+				context.Background(), newRegistry.GetId(),
 			).Execute()
 			assert.NoError(t, err)
 			assert.Equal(
@@ -87,7 +87,7 @@ func TestRegistryService(t *testing.T) {
 			)
 
 			d := RegDeleteCmd()
-			d.Command.Flags().Set(constants.FlagRegistryId, *newRegistry.GetId())
+			d.Command.Flags().Set(constants.FlagRegistryId, newRegistry.GetId())
 			assert.NoError(t, err)
 
 			err = d.Command.Execute()
@@ -95,7 +95,7 @@ func TestRegistryService(t *testing.T) {
 
 			replace := RegReplaceCmd()
 			name = "ionosctl-crreg-test-" + fake.AlphaNum(8)
-			replace.Command.Flags().Set(constants.FlagRegistryId, *newRegistry.GetId())
+			replace.Command.Flags().Set(constants.FlagRegistryId, newRegistry.GetId())
 			replace.Command.Flags().Set(constants.FlagName, name)
 			replace.Command.Flags().Set(constants.FlagLocation, "de/fra")
 			replace.Command.Flags().Set(FlagRegGCDays, "Tuesday")
@@ -103,7 +103,7 @@ func TestRegistryService(t *testing.T) {
 			err = replace.Command.Execute()
 			assert.NoError(t, err)
 
-			d.Command.Flags().Set(constants.FlagRegistryId, *newRegistry.GetId())
+			d.Command.Flags().Set(constants.FlagRegistryId, newRegistry.GetId())
 
 			err = d.Command.Execute()
 			assert.NoError(t, err)

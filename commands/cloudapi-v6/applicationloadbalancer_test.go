@@ -13,48 +13,48 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
 
 var (
 	applicationloadbalancerTest = resources.ApplicationLoadBalancer{
-		ApplicationLoadBalancer: ionoscloud.ApplicationLoadBalancer{
-			Properties: &ionoscloud.ApplicationLoadBalancerProperties{
-				Name:         &testApplicationLoadBalancerVar,
-				Ips:          &[]string{testApplicationLoadBalancerVar},
-				TargetLan:    &testApplicationLoadBalancerIntVar,
-				ListenerLan:  &testApplicationLoadBalancerIntVar,
-				LbPrivateIps: &[]string{testApplicationLoadBalancerVar},
+		ApplicationLoadBalancer: compute.ApplicationLoadBalancer{
+			Properties: compute.ApplicationLoadBalancerProperties{
+				Name:         testApplicationLoadBalancerVar,
+				Ips:          []string{testApplicationLoadBalancerVar},
+				TargetLan:    testApplicationLoadBalancerIntVar,
+				ListenerLan:  testApplicationLoadBalancerIntVar,
+				LbPrivateIps: []string{testApplicationLoadBalancerVar},
 			},
 		},
 	}
 	applicationloadbalancerTestGet = resources.ApplicationLoadBalancer{
-		ApplicationLoadBalancer: ionoscloud.ApplicationLoadBalancer{
+		ApplicationLoadBalancer: compute.ApplicationLoadBalancer{
 			Id:         &testApplicationLoadBalancerVar,
 			Properties: applicationloadbalancerTest.Properties,
-			Metadata:   &ionoscloud.DatacenterElementMetadata{State: &testStateVar},
+			Metadata:   &compute.DatacenterElementMetadata{State: &testStateVar},
 		},
 	}
 	applicationloadbalancers = resources.ApplicationLoadBalancers{
-		ApplicationLoadBalancers: ionoscloud.ApplicationLoadBalancers{
+		ApplicationLoadBalancers: compute.ApplicationLoadBalancers{
 			Id:    &testApplicationLoadBalancerVar,
-			Items: &[]ionoscloud.ApplicationLoadBalancer{applicationloadbalancerTestGet.ApplicationLoadBalancer},
+			Items: []compute.ApplicationLoadBalancer{applicationloadbalancerTestGet.ApplicationLoadBalancer},
 		},
 	}
 	applicationloadbalancerProperties = resources.ApplicationLoadBalancerProperties{
-		ApplicationLoadBalancerProperties: ionoscloud.ApplicationLoadBalancerProperties{
-			Name:         &testApplicationLoadBalancerNewVar,
-			Ips:          &[]string{testApplicationLoadBalancerNewVar},
-			TargetLan:    &testApplicationLoadBalancerNewIntVar,
-			ListenerLan:  &testApplicationLoadBalancerNewIntVar,
-			LbPrivateIps: &[]string{testApplicationLoadBalancerNewVar},
+		ApplicationLoadBalancerProperties: compute.ApplicationLoadBalancerProperties{
+			Name:         testApplicationLoadBalancerNewVar,
+			Ips:          []string{testApplicationLoadBalancerNewVar},
+			TargetLan:    testApplicationLoadBalancerNewIntVar,
+			ListenerLan:  testApplicationLoadBalancerNewIntVar,
+			LbPrivateIps: []string{testApplicationLoadBalancerNewVar},
 		},
 	}
 	applicationloadbalancerNew = resources.ApplicationLoadBalancer{
-		ApplicationLoadBalancer: ionoscloud.ApplicationLoadBalancer{
-			Properties: &applicationloadbalancerProperties.ApplicationLoadBalancerProperties,
+		ApplicationLoadBalancer: compute.ApplicationLoadBalancer{
+			Properties: applicationloadbalancerProperties.ApplicationLoadBalancerProperties,
 		},
 	}
 	testApplicationLoadBalancerIntVar    = int32(1)

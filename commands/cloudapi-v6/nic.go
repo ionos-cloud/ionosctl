@@ -21,7 +21,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -418,8 +418,8 @@ func RunNicCreate(c *core.CommandConfig) error {
 	}
 
 	input := resources.Nic{
-		Nic: ionoscloud.Nic{
-			Properties: &inputProper.NicProperties,
+		Nic: compute.Nic{
+			Properties: inputProper.NicProperties,
 		},
 	}
 
@@ -464,7 +464,7 @@ func RunNicUpdate(c *core.CommandConfig) error {
 		return err
 	}
 
-	lan, _, err := c.CloudApiV6Services.Lans().Get(dcId, fmt.Sprintf("%d", *oldNIc.Properties.Lan), queryParams)
+	lan, _, err := c.CloudApiV6Services.Lans().Get(dcId, fmt.Sprintf("%d", oldNIc.Properties.Lan), queryParams)
 	if err != nil {
 		return err
 	}
@@ -475,7 +475,7 @@ func RunNicUpdate(c *core.CommandConfig) error {
 	}
 
 	if isIPv6 {
-		input.NicProperties.SetIpv6CidrBlock(*oldNIc.Properties.Ipv6CidrBlock)
+		input.NicProperties.SetIpv6CidrBlock(*oldNIc.Properties.Ipv6CidrBlock.Get())
 		if err = setIPv6Properties(c, &input.NicProperties, lan.Lan); err != nil {
 			return err
 		}
@@ -576,13 +576,13 @@ func DeleteAllNics(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get items of NICs")
 	}
 
-	if len(*nicsItems) <= 0 {
+	if len(nicsItems) <= 0 {
 		return fmt.Errorf("no NICs found")
 	}
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("NICs to be deleted:"))
 
-	for _, nic := range *nicsItems {
+	for _, nic := range nicsItems {
 		delIdAndName := ""
 
 		if id, ok := nic.GetIdOk(); ok && id != nil {
@@ -605,7 +605,7 @@ func DeleteAllNics(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the Nics..."))
 
 	var multiErr error
-	for _, nic := range *nicsItems {
+	for _, nic := range nicsItems {
 		id, ok := nic.GetIdOk()
 		if !ok || id == nil {
 			continue
@@ -987,13 +987,13 @@ func DetachAllNics(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get items of NICs")
 	}
 
-	if len(*nicsItems) <= 0 {
+	if len(nicsItems) <= 0 {
 		return fmt.Errorf("no NICs found")
 	}
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("NICs to be detached:"))
 
-	for _, nic := range *nicsItems {
+	for _, nic := range nicsItems {
 		delIdAndName := ""
 
 		if id, ok := nic.GetIdOk(); ok && id != nil {
@@ -1016,7 +1016,7 @@ func DetachAllNics(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Detaching all the Nics..."))
 
 	var multiErr error
-	for _, nic := range *nicsItems {
+	for _, nic := range nicsItems {
 		id, ok := nic.GetIdOk()
 		if !ok || id == nil {
 			continue
@@ -1068,7 +1068,7 @@ func validateIPv6IPs(cidr string, ips ...string) error {
 	return nil
 }
 
-func checkIPv6EnableForLAN(lan ionoscloud.Lan) (bool, error) {
+func checkIPv6EnableForLAN(lan compute.Lan) (bool, error) {
 	cidr, err := GetIPv6CidrBlockFromLAN(lan)
 	if err != nil {
 		return false, err
@@ -1080,7 +1080,7 @@ func checkIPv6EnableForLAN(lan ionoscloud.Lan) (bool, error) {
 	return true, nil
 }
 
-func setIPv6Properties(c *core.CommandConfig, inputProper *ionoscloud.NicProperties, lan ionoscloud.Lan) error {
+func setIPv6Properties(c *core.CommandConfig, inputProper *compute.NicProperties, lan compute.Lan) error {
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.FlagIPv6CidrBlock)) {
 		cidr := strings.ToLower(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.FlagIPv6CidrBlock)))
 		lanIPv6CidrBlock, err := GetIPv6CidrBlockFromLAN(lan)
@@ -1095,10 +1095,10 @@ func setIPv6Properties(c *core.CommandConfig, inputProper *ionoscloud.NicPropert
 		inputProper.SetIpv6CidrBlock(cidr)
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.FlagIPv6IPs)) && inputProper.Ipv6CidrBlock != nil {
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.FlagIPv6IPs)) {
 		ipv6Ips, _ := c.Command.Command.Flags().GetStringSlice(cloudapiv6.FlagIPv6IPs)
-		cidr := *inputProper.Ipv6CidrBlock
-		if err := validateIPv6IPs(cidr, ipv6Ips...); err != nil {
+		cidr := inputProper.Ipv6CidrBlock
+		if err := validateIPv6IPs(*cidr.Get(), ipv6Ips...); err != nil {
 			return err
 		}
 

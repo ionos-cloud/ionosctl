@@ -15,8 +15,8 @@ import (
 	cloudapiv6resources "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
 	dbaaspg "github.com/ionos-cloud/ionosctl/v6/services/dbaas-postgres"
 	"github.com/ionos-cloud/ionosctl/v6/services/dbaas-postgres/resources"
+	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
 	sdkgo "github.com/ionos-cloud/sdk-go-dbaas-postgres"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
@@ -340,10 +340,10 @@ var (
 		},
 	}
 	testVdcGet = cloudapiv6resources.Datacenter{
-		Datacenter: ionoscloud.Datacenter{
+		Datacenter: compute.Datacenter{
 			Id: &testClusterVar,
-			Properties: &ionoscloud.DatacenterProperties{
-				Location: &testClusterVar,
+			Properties: compute.DatacenterProperties{
+				Location: testClusterVar,
 			},
 		},
 	}

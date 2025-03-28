@@ -30,8 +30,8 @@ Use this command to list all Volumes from a Data Center on your account.
 
 You can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.
 Available Filters:
-* filter by property: [availabilityZone backupunitId bootOrder bootServer bus cpuHotPlug deviceNumber discVirtioHotPlug discVirtioHotUnplug image imageAlias imagePassword licenceType name nicHotPlug nicHotUnplug pciSlot ramHotPlug size sshKeys type userData]
-* filter by metadata: [createdBy createdByUserId createdDate etag lastModifiedBy lastModifiedByUserId lastModifiedDate state]
+* filter by property: [name type availabilityZone image imagePassword imageAlias bus licenceType cpuHotPlug ramHotPlug nicHotPlug nicHotUnplug discVirtioHotPlug discVirtioHotUnplug exposeSerial deviceNumber pciSlot backupunitId userData bootServer]
+* filter by metadata: [etag createdDate createdBy createdByUserId lastModifiedDate lastModifiedBy lastModifiedByUserId state]
 
 Required values to run command:
 

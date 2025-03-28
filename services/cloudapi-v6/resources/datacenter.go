@@ -4,38 +4,39 @@ import (
 	"context"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
+	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
+	"github.com/ionos-cloud/sdk-go-bundle/shared"
 
 	"github.com/fatih/structs"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
 
 type Datacenter struct {
-	ionoscloud.Datacenter
+	compute.Datacenter
 }
 
 type DatacenterProperties struct {
-	ionoscloud.DatacenterProperties
+	compute.DatacenterProperties
 }
 
 type Datacenters struct {
-	ionoscloud.Datacenters
+	compute.Datacenters
 }
 
 type Response struct {
-	ionoscloud.APIResponse
+	shared.APIResponse
 }
 
-// DatacentersService is a wrapper around ionoscloud.Datacenter
+// DatacentersService is a wrapper around compute.Datacenter
 type DatacentersService interface {
 	List(params ListQueryParams) (Datacenters, *Response, error)
 	Get(datacenterId string, queryParams QueryParams) (*Datacenter, *Response, error)
 	Create(name, description, region string, queryParams QueryParams) (*Datacenter, *Response, error)
-	Update(datacenterId string, input DatacenterProperties, queryParams QueryParams) (*Datacenter, *Response, error)
+	Update(datacenterId string, input compute.DatacenterPropertiesPut, queryParams QueryParams) (*Datacenter, *Response, error)
 	Delete(datacenterId string, queryParams QueryParams) (*Response, error)
 }
 
 type dataCentersService struct {
-	client  *ionoscloud.APIClient
+	client  *compute.APIClient
 	context context.Context
 }
 
@@ -48,12 +49,12 @@ func NewDataCenterService(client *client.Client, ctx context.Context) Datacenter
 	}
 }
 
-//func NewDataCenterServices(client *client2.Client, ctx context.Context) DatacentersService {
+// func NewDataCenterServices(client *client2.Client, ctx context.Context) DatacentersService {
 //	return &dataCentersService{
 //		client:  client,
 //		context: ctx,
 //	}
-//}
+// }
 
 func (ds *dataCentersService) List(params ListQueryParams) (Datacenters, *Response, error) {
 	req := ds.client.DataCentersApi.DatacentersGet(ds.context)
@@ -110,11 +111,11 @@ func (ds *dataCentersService) Get(datacenterId string, params QueryParams) (*Dat
 }
 
 func (ds *dataCentersService) Create(name, description, region string, params QueryParams) (*Datacenter, *Response, error) {
-	dc := ionoscloud.Datacenter{
-		Properties: &ionoscloud.DatacenterProperties{
+	dc := compute.DatacenterPost{
+		Properties: compute.DatacenterPropertiesPost{
 			Name:        &name,
 			Description: &description,
-			Location:    &region,
+			Location:    region,
 		},
 	}
 	req := ds.client.DataCentersApi.DatacentersPost(ds.context).Datacenter(dc)
@@ -131,8 +132,8 @@ func (ds *dataCentersService) Create(name, description, region string, params Qu
 	return &Datacenter{datacenter}, &Response{*res}, err
 }
 
-func (ds *dataCentersService) Update(datacenterId string, input DatacenterProperties, params QueryParams) (*Datacenter, *Response, error) {
-	req := ds.client.DataCentersApi.DatacentersPatch(ds.context, datacenterId).Datacenter(input.DatacenterProperties)
+func (ds *dataCentersService) Update(datacenterId string, input compute.DatacenterPropertiesPut, params QueryParams) (*Datacenter, *Response, error) {
+	req := ds.client.DataCentersApi.DatacentersPatch(ds.context, datacenterId).Datacenter(input)
 	if !structs.IsZero(params) {
 		if params.Depth != nil {
 			req = req.Depth(*params.Depth)

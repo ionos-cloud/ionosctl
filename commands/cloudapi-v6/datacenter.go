@@ -18,7 +18,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud2 "github.com/ionos-cloud/sdk-go/v6"
+	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -314,7 +314,7 @@ func RunDataCenterUpdate(c *core.CommandConfig) error {
 	}
 
 	queryParams := listQueryParams.QueryParams
-	input := resources.DatacenterProperties{}
+	input := compute.DatacenterPropertiesPut{}
 
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgName)) {
 		name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
@@ -410,13 +410,13 @@ func DeleteAllDatacenters(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get items of Datacenters")
 	}
 
-	if len(*datacentersItems) <= 0 {
+	if len(datacentersItems) <= 0 {
 		return fmt.Errorf("no Datacenters found")
 	}
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Datacenters to be deleted:"))
 
-	for _, dc := range *datacentersItems {
+	for _, dc := range datacentersItems {
 		delIdAndName := ""
 		if id, ok := dc.GetIdOk(); ok && id != nil {
 			delIdAndName += "Datacenter Id: " + *id
@@ -438,7 +438,7 @@ func DeleteAllDatacenters(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the Datacenters..."))
 
 	var multiErr error
-	for _, dc := range *datacentersItems {
+	for _, dc := range datacentersItems {
 		id, ok := dc.GetIdOk()
 		if !ok || id == nil {
 			continue
@@ -474,14 +474,14 @@ func DeleteAllDatacenters(c *core.CommandConfig) error {
 func getDataCenters(datacenters resources.Datacenters) []resources.Datacenter {
 	dc := make([]resources.Datacenter, 0)
 	if items, ok := datacenters.GetItemsOk(); ok && items != nil {
-		for _, datacenter := range *items {
+		for _, datacenter := range items {
 			dc = append(dc, resources.Datacenter{Datacenter: datacenter})
 		}
 	}
 	return dc
 }
 
-func GetIPv6CidrBlockFromDatacenter(dc ionoscloud2.Datacenter) (string, error) {
+func GetIPv6CidrBlockFromDatacenter(dc compute.Datacenter) (string, error) {
 	if properties, ok := dc.GetPropertiesOk(); ok && properties != nil {
 		if ipv6CidrBlock, ok := properties.GetIpv6CidrBlockOk(); ok && ipv6CidrBlock != nil {
 			return *ipv6CidrBlock, nil

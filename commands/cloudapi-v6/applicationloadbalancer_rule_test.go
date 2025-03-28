@@ -13,50 +13,50 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
 
 var (
 	testInputAlbForwardingRule = resources.ApplicationLoadBalancerForwardingRule{
-		ApplicationLoadBalancerForwardingRule: ionoscloud.ApplicationLoadBalancerForwardingRule{
-			Properties: &ionoscloud.ApplicationLoadBalancerForwardingRuleProperties{
-				Name:               &testAlbForwardingRuleVar,
-				Protocol:           &testAlbForwardingRuleProtocol,
-				ListenerIp:         &testAlbForwardingRuleVar,
-				ListenerPort:       &testAlbForwardingRuleIntVar,
+		ApplicationLoadBalancerForwardingRule: compute.ApplicationLoadBalancerForwardingRule{
+			Properties: compute.ApplicationLoadBalancerForwardingRuleProperties{
+				Name:               testAlbForwardingRuleVar,
+				Protocol:           testAlbForwardingRuleProtocol,
+				ListenerIp:         testAlbForwardingRuleVar,
+				ListenerPort:       testAlbForwardingRuleIntVar,
 				ClientTimeout:      &testAlbForwardingRuleIntVar,
-				ServerCertificates: &testAlbForwardingRuleServerCerts,
+				ServerCertificates: testAlbForwardingRuleServerCerts,
 			}},
 	}
 	testAlbForwardingRulePropertiesNew = resources.ApplicationLoadBalancerForwardingRuleProperties{
-		ApplicationLoadBalancerForwardingRuleProperties: ionoscloud.ApplicationLoadBalancerForwardingRuleProperties{
-			Name:               &testAlbForwardingRuleNewVar,
-			ListenerIp:         &testAlbForwardingRuleNewVar,
-			ListenerPort:       &testAlbForwardingRuleNewIntVar,
+		ApplicationLoadBalancerForwardingRuleProperties: compute.ApplicationLoadBalancerForwardingRuleProperties{
+			Name:               testAlbForwardingRuleNewVar,
+			ListenerIp:         testAlbForwardingRuleNewVar,
+			ListenerPort:       testAlbForwardingRuleNewIntVar,
 			ClientTimeout:      &testAlbForwardingRuleNewIntVar,
-			ServerCertificates: &testAlbForwardingRuleServerNewCerts,
+			ServerCertificates: testAlbForwardingRuleServerNewCerts,
 		},
 	}
 	testAlbForwardingRuleGet = resources.ApplicationLoadBalancerForwardingRule{
-		ApplicationLoadBalancerForwardingRule: ionoscloud.ApplicationLoadBalancerForwardingRule{
+		ApplicationLoadBalancerForwardingRule: compute.ApplicationLoadBalancerForwardingRule{
 			Id:         &testAlbForwardingRuleVar,
 			Properties: testInputAlbForwardingRule.Properties,
-			Metadata: &ionoscloud.DatacenterElementMetadata{
+			Metadata: &compute.DatacenterElementMetadata{
 				State: &testStateVar,
 			},
 		},
 	}
 	testAlbForwardingRuleUpdated = resources.ApplicationLoadBalancerForwardingRule{
-		ApplicationLoadBalancerForwardingRule: ionoscloud.ApplicationLoadBalancerForwardingRule{
+		ApplicationLoadBalancerForwardingRule: compute.ApplicationLoadBalancerForwardingRule{
 			Id:         &testAlbForwardingRuleVar,
-			Properties: &testAlbForwardingRulePropertiesNew.ApplicationLoadBalancerForwardingRuleProperties,
+			Properties: testAlbForwardingRulePropertiesNew.ApplicationLoadBalancerForwardingRuleProperties,
 		},
 	}
 	testAlbForwardingRules = resources.ApplicationLoadBalancerForwardingRules{
-		ApplicationLoadBalancerForwardingRules: ionoscloud.ApplicationLoadBalancerForwardingRules{
-			Items: &[]ionoscloud.ApplicationLoadBalancerForwardingRule{testAlbForwardingRuleGet.ApplicationLoadBalancerForwardingRule},
+		ApplicationLoadBalancerForwardingRules: compute.ApplicationLoadBalancerForwardingRules{
+			Items: []compute.ApplicationLoadBalancerForwardingRule{testAlbForwardingRuleGet.ApplicationLoadBalancerForwardingRule},
 		},
 	}
 	testAlbForwardingRuleIntVar                  = int32(1)

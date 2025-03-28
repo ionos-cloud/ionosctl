@@ -129,7 +129,7 @@ func TestCertificateManagerServiceCmd(t *testing.T) {
 		"cert create from files", func(t *testing.T) {
 			viper.Reset()
 
-			//os.Mkdir("./testPaths", 0777)
+			// os.Mkdir("./testPaths", 0777)
 			caPrivKey, err := rsa.GenerateKey(rand.Reader, 4096)
 			assert.NoError(t, err)
 
@@ -148,12 +148,12 @@ func TestCertificateManagerServiceCmd(t *testing.T) {
 				Bytes: x509.MarshalPKCS1PrivateKey(caPrivKey),
 			})
 			certPath := filepath.Join(".", "cert.pem")
-			//os.Create(certPath)
+			// os.Create(certPath)
 			err = os.WriteFile(certPath, caPEM.Bytes(), 0777)
 			assert.NoError(t, err)
 
 			keyPath := filepath.Join(".", "key.pem")
-			//os.Create(keyPath)
+			// os.Create(keyPath)
 			os.WriteFile(keyPath, caPrivKeyPEM.Bytes(), 0777)
 			assert.NoError(t, err)
 

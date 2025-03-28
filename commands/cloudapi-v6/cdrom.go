@@ -18,7 +18,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/waitfor"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -72,15 +72,15 @@ Required values to run command:
 	})
 	attachCdrom.AddUUIDFlag(cloudapiv6.ArgCdromId, cloudapiv6.ArgIdShort, "", cloudapiv6.CdromId, core.RequiredFlagOption())
 	_ = attachCdrom.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgCdromId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.ImageIds(func(r ionoscloud.ApiImagesGetRequest) ionoscloud.ApiImagesGetRequest {
+		return completer.ImageIds(func(r compute.ApiImagesGetRequest) compute.ApiImagesGetRequest {
 			// Completer for CDROM images that are in the same location as the datacenter
 			chosenDc, _, err := client.Must().CloudClient.DataCentersApi.DatacentersFindById(context.Background(),
 				viper.GetString(core.GetFlagName(attachCdrom.NS, cloudapiv6.ArgDataCenterId))).Execute()
-			if err != nil || chosenDc.Properties == nil || chosenDc.Properties.Location == nil {
-				return ionoscloud.ApiImagesGetRequest{}
+			if err != nil {
+				return compute.ApiImagesGetRequest{}
 			}
 
-			return r.Filter("location", *chosenDc.Properties.Location).Filter("imageType", "CDROM")
+			return r.Filter("location", chosenDc.Properties.Location).Filter("imageType", "CDROM")
 		}), cobra.ShellCompDirectiveNoFileComp
 	})
 	attachCdrom.AddUUIDFlag(cloudapiv6.ArgServerId, "", "", cloudapiv6.ServerId, core.RequiredFlagOption())
@@ -393,14 +393,14 @@ func DetachAllCdRoms(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get CD-ROM items")
 	}
 
-	if len(*cdRomsItems) <= 0 {
+	if len(cdRomsItems) <= 0 {
 		return fmt.Errorf("no CD-ROMs found")
 	}
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("CD-ROMS to be detached:"))
 	delIdAndName := ""
 
-	for _, cdRom := range *cdRomsItems {
+	for _, cdRom := range cdRomsItems {
 		if id, ok := cdRom.GetIdOk(); ok && id != nil {
 			delIdAndName += "CD-ROM Id: " + *id
 		}
@@ -421,7 +421,7 @@ func DetachAllCdRoms(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Detaching all the CD-ROM..."))
 
 	var multiErr error
-	for _, cdRom := range *cdRomsItems {
+	for _, cdRom := range cdRomsItems {
 		id, ok := cdRom.GetIdOk()
 		if !ok || id == nil {
 			continue

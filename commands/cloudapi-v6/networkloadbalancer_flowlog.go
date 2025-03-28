@@ -18,7 +18,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -357,16 +357,14 @@ func RunNetworkLoadBalancerFlowLogCreate(c *core.CommandConfig) error {
 	queryParams := listQueryParams.QueryParams
 	proper := getFlowLogPropertiesSet(c)
 
-	if !proper.HasAction() {
-		proper.SetAction(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgAction)))
-	}
+	proper.SetAction(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgAction)))
 
 	ng, resp, err := c.CloudApiV6Services.NetworkLoadBalancers().CreateFlowLog(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNetworkLoadBalancerId)),
 		resources.FlowLog{
-			FlowLog: ionoscloud.FlowLog{
-				Properties: &proper.FlowLogProperties,
+			FlowLog: compute.FlowLog{
+				Properties: proper.FlowLogProperties,
 			},
 		},
 		queryParams,
@@ -500,13 +498,13 @@ func DeleteAllNetworkLoadBalancerFlowLogs(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get items of Network Load Balancer FlowLogs")
 	}
 
-	if len(*flowLogsItems) <= 0 {
+	if len(flowLogsItems) <= 0 {
 		return fmt.Errorf("no Network Load Balancer FlowLogs found")
 	}
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Network Load BalancerFlowLogs to be deleted:"))
 
-	for _, flowLog := range *flowLogsItems {
+	for _, flowLog := range flowLogsItems {
 		delIdAndName := ""
 
 		if id, ok := flowLog.GetIdOk(); ok && id != nil {
@@ -529,7 +527,7 @@ func DeleteAllNetworkLoadBalancerFlowLogs(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the Network Load Balancer FlowLogs..."))
 
 	var multiErr error
-	for _, flowLog := range *flowLogsItems {
+	for _, flowLog := range flowLogsItems {
 		id, ok := flowLog.GetIdOk()
 		if !ok || id == nil {
 			continue

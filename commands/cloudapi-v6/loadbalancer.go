@@ -19,7 +19,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -248,7 +248,7 @@ func RunLoadBalancerListAll(c *core.CommandConfig) error {
 
 	allDcs := getDataCenters(datacenters)
 
-	var allLoadbalancers []ionoscloud.Loadbalancers
+	var allLoadbalancers []compute.Loadbalancers
 	totalTime := time.Duration(0)
 
 	for _, dc := range allDcs {
@@ -517,13 +517,13 @@ func DeleteAllLoadBalancers(c *core.CommandConfig) error {
 		return fmt.Errorf("could not get items of Load Balancers")
 	}
 
-	if len(*loadBalancersItems) <= 0 {
+	if len(loadBalancersItems) <= 0 {
 		return fmt.Errorf("no Load Balancers found")
 	}
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Load Balancers to be deleted:"))
 
-	for _, lb := range *loadBalancersItems {
+	for _, lb := range loadBalancersItems {
 		delIdAndName := ""
 
 		if id, ok := lb.GetIdOk(); ok && id != nil {
@@ -546,7 +546,7 @@ func DeleteAllLoadBalancers(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the LoadBalancers..."))
 
 	var multiErr error
-	for _, lb := range *loadBalancersItems {
+	for _, lb := range loadBalancersItems {
 		id, ok := lb.GetIdOk()
 		if !ok || id == nil {
 			continue

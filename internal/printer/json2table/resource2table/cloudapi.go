@@ -5,10 +5,10 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
 )
 
-func ConvertK8sClusterToTable(cluster ionoscloud.KubernetesCluster) ([]map[string]interface{}, error) {
+func ConvertK8sClusterToTable(cluster compute.KubernetesCluster) ([]map[string]interface{}, error) {
 	properties, ok := cluster.GetPropertiesOk()
 	if !ok || properties == nil {
 		return nil, fmt.Errorf("could not retrieve K8s Cluster properties")
@@ -37,14 +37,14 @@ func ConvertK8sClusterToTable(cluster ionoscloud.KubernetesCluster) ([]map[strin
 	return temp, nil
 }
 
-func ConvertK8sClustersToTable(clusters ionoscloud.KubernetesClusters) ([]map[string]interface{}, error) {
+func ConvertK8sClustersToTable(clusters compute.KubernetesClusters) ([]map[string]interface{}, error) {
 	items, ok := clusters.GetItemsOk()
 	if !ok || items == nil {
 		return nil, fmt.Errorf("could not retrieve K8s Clusters items")
 	}
 
 	var clustersConverted []map[string]interface{}
-	for _, item := range *items {
+	for _, item := range items {
 		temp, err := ConvertK8sClusterToTable(item)
 		if err != nil {
 			return nil, err
@@ -56,7 +56,7 @@ func ConvertK8sClustersToTable(clusters ionoscloud.KubernetesClusters) ([]map[st
 	return clustersConverted, nil
 }
 
-func ConvertK8sNodepoolToTable(nodepool ionoscloud.KubernetesNodePool) ([]map[string]interface{}, error) {
+func ConvertK8sNodepoolToTable(nodepool compute.KubernetesNodePool) ([]map[string]interface{}, error) {
 	properties, ok := nodepool.GetPropertiesOk()
 	if !ok || properties == nil {
 		return nil, fmt.Errorf("could not retrieve K8s Nodepool properties")
@@ -85,14 +85,14 @@ func ConvertK8sNodepoolToTable(nodepool ionoscloud.KubernetesNodePool) ([]map[st
 	return temp, nil
 }
 
-func ConvertK8sNodepoolsToTable(nodepools ionoscloud.KubernetesNodePools) ([]map[string]interface{}, error) {
+func ConvertK8sNodepoolsToTable(nodepools compute.KubernetesNodePools) ([]map[string]interface{}, error) {
 	items, ok := nodepools.GetItemsOk()
 	if !ok || items == nil {
 		return nil, fmt.Errorf("could not retrieve K8s Nodepools items")
 	}
 
 	var clustersConverted []map[string]interface{}
-	for _, item := range *items {
+	for _, item := range items {
 		temp, err := ConvertK8sNodepoolToTable(item)
 		if err != nil {
 			return nil, err
@@ -104,14 +104,14 @@ func ConvertK8sNodepoolsToTable(nodepools ionoscloud.KubernetesNodePools) ([]map
 	return clustersConverted, nil
 }
 
-func ConvertRequestsToTable(requests ionoscloud.Requests) ([]map[string]interface{}, error) {
+func ConvertRequestsToTable(requests compute.Requests) ([]map[string]interface{}, error) {
 	items, ok := requests.GetItemsOk()
 	if !ok || items == nil {
 		return nil, fmt.Errorf("failed to retrieve Requests items")
 	}
 
 	res := make([]map[string]interface{}, 0)
-	for _, item := range *items {
+	for _, item := range items {
 		temp, err := ConvertRequestToTable(item)
 		if err != nil {
 			return nil, err
@@ -123,7 +123,7 @@ func ConvertRequestsToTable(requests ionoscloud.Requests) ([]map[string]interfac
 	return res, nil
 }
 
-func ConvertRequestToTable(request ionoscloud.Request) ([]map[string]interface{}, error) {
+func ConvertRequestToTable(request compute.Request) ([]map[string]interface{}, error) {
 	metadata, ok := request.GetMetadataOk()
 	if !ok || metadata == nil {
 		return nil, fmt.Errorf("failed to retrieve Request metadata")
@@ -145,7 +145,7 @@ func ConvertRequestToTable(request ionoscloud.Request) ([]map[string]interface{}
 	}
 
 	targetsInfo := make([]interface{}, 0)
-	for _, target := range *targets {
+	for _, target := range targets {
 		targetOk, ok := target.GetTargetOk()
 		if !ok || targetOk == nil {
 			continue

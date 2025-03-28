@@ -19,7 +19,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
+	"github.com/ionos-cloud/sdk-go-bundle/products/compute/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -329,8 +329,8 @@ func RunFlowLogCreate(c *core.CommandConfig) error {
 	queryParams := listQueryParams.QueryParams
 	properties := getFlowLogPropertiesSet(c)
 	input := resources.FlowLog{
-		FlowLog: ionoscloud.FlowLog{
-			Properties: &properties.FlowLogProperties,
+		FlowLog: compute.FlowLog{
+			Properties: properties.FlowLogProperties,
 		},
 	}
 
@@ -489,13 +489,13 @@ func DeleteAllFlowlogs(c *core.CommandConfig) error {
 		return errors.New("could not get items of Flowlogs")
 	}
 
-	if len(*flowlogsItems) <= 0 {
+	if len(flowlogsItems) <= 0 {
 		return errors.New("no Flowlogs found")
 	}
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Flowlogs to be deleted:"))
 
-	for _, backupUnit := range *flowlogsItems {
+	for _, backupUnit := range flowlogsItems {
 		delIdAndName := ""
 
 		if id, ok := backupUnit.GetIdOk(); ok && id != nil {
@@ -518,7 +518,7 @@ func DeleteAllFlowlogs(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the Flowlogs..."))
 
 	var multiErr error
-	for _, flowlog := range *flowlogsItems {
+	for _, flowlog := range flowlogsItems {
 		id, ok := flowlog.GetIdOk()
 		if !ok || id == nil {
 			continue
