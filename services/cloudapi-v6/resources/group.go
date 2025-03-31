@@ -49,7 +49,7 @@ type GroupsService interface {
 	Update(groupId string, input Group, params QueryParams) (*Group, *Response, error)
 	Delete(groupId string, params QueryParams) (*Response, error)
 	ListUsers(groupId string, params ListQueryParams) (GroupMembers, *Response, error)
-	AddUser(groupId string, input User, params QueryParams) (*User, *Response, error)
+	AddUser(groupId string, input ionoscloud.UserGroupPost, params QueryParams) (*User, *Response, error)
 	RemoveUser(groupId, userId string, params QueryParams) (*Response, error)
 	ListShares(groupId string, params ListQueryParams) (GroupShares, *Response, error)
 	GetShare(groupId, resourceId string, params QueryParams) (*GroupShare, *Response, error)
@@ -195,8 +195,8 @@ func (s *groupsService) ListUsers(groupId string, params ListQueryParams) (Group
 	return GroupMembers{groupMembers}, &Response{*res}, err
 }
 
-func (s *groupsService) AddUser(groupId string, input User, params QueryParams) (*User, *Response, error) {
-	req := s.client.UserManagementApi.UmGroupsUsersPost(s.context, groupId).User(input.User)
+func (s *groupsService) AddUser(groupId string, input ionoscloud.UserGroupPost, params QueryParams) (*User, *Response, error) {
+	req := s.client.UserManagementApi.UmGroupsUsersPost(s.context, groupId).User(input)
 	if !structs.IsZero(params) {
 		if params.Depth != nil {
 			req = req.Depth(*params.Depth)
