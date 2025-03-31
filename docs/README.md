@@ -101,6 +101,7 @@ You can set the environment variables for HTTP basic authentication:
 export IONOS_USERNAME="username"
 export IONOS_PASSWORD="password"
 ```
+Make sure to escape any special characters in your username or password by using a backslash (`\`).
 
 Or you can use token authentication:
 
