@@ -21,15 +21,15 @@ import (
 var (
 	publicLan    = true
 	publicNewLan = false
-	lanPostTest  = ionoscloud.LanPost{
-		Properties: &ionoscloud.LanPropertiesPost{
+	lanPostTest  = ionoscloud.Lan{
+		Properties: &ionoscloud.LanProperties{
 			Name:       &testLanVar,
 			IpFailover: nil,
 			Pcc:        &testLanVar,
 			Public:     &publicLan,
 		},
 	}
-	lp = ionoscloud.LanPost{
+	lp = ionoscloud.Lan{
 		Id:         &testLanVar,
 		Properties: lanPostTest.Properties,
 		Metadata:   &ionoscloud.DatacenterElementMetadata{State: &testStateVar},
@@ -238,7 +238,7 @@ func TestRunLanCreate(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgName), testLanVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPccId), testLanVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPublic), publicLan)
-		rm.CloudApiV6Mocks.Lan.EXPECT().Create(testLanVar, resources.LanPost{LanPost: lanPostTest}, testQueryParamOther).Return(&resources.LanPost{LanPost: lp}, &testResponse, nil)
+		rm.CloudApiV6Mocks.Lan.EXPECT().Create(testLanVar, resources.LanPost{Lan: lanPostTest}, testQueryParamOther).Return(&resources.LanPost{Lan: lp}, &testResponse, nil)
 		err := RunLanCreate(cfg)
 		assert.NoError(t, err)
 	})
@@ -256,7 +256,7 @@ func TestRunLanCreateErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgName), testLanVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPublic), publicLan)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPccId), testLanVar)
-		rm.CloudApiV6Mocks.Lan.EXPECT().Create(testLanVar, resources.LanPost{LanPost: lanPostTest}, testQueryParamOther).Return(&resources.LanPost{LanPost: lp}, nil, testLanErr)
+		rm.CloudApiV6Mocks.Lan.EXPECT().Create(testLanVar, resources.LanPost{Lan: lanPostTest}, testQueryParamOther).Return(&resources.LanPost{Lan: lp}, nil, testLanErr)
 		err := RunLanCreate(cfg)
 		assert.Error(t, err)
 	})
@@ -275,7 +275,7 @@ func TestRunLanCreateWaitErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgName), testLanVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPublic), publicLan)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPccId), testLanVar)
-		rm.CloudApiV6Mocks.Lan.EXPECT().Create(testLanVar, resources.LanPost{LanPost: lanPostTest}, testQueryParamOther).Return(&resources.LanPost{LanPost: lp}, &testResponse, nil)
+		rm.CloudApiV6Mocks.Lan.EXPECT().Create(testLanVar, resources.LanPost{Lan: lanPostTest}, testQueryParamOther).Return(&resources.LanPost{Lan: lp}, &testResponse, nil)
 		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testRequestIdVar).Return(&testRequestStatus, nil, testRequestErr)
 		err := RunLanCreate(cfg)
 		assert.Error(t, err)
