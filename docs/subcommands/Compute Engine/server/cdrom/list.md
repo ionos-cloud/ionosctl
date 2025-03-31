@@ -36,8 +36,8 @@ Use this command to retrieve a list of CD-ROMs attached to the Server.
 
 You can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.
 Available Filters:
-* filter by property: [cloudInit cpuHotPlug cpuHotUnplug description discScsiHotPlug discScsiHotUnplug discVirtioHotPlug discVirtioHotUnplug imageAliases imageType licenceType location name nicHotPlug nicHotUnplug public ramHotPlug ramHotUnplug size]
-* filter by metadata: [createdBy createdByUserId createdDate etag lastModifiedBy lastModifiedByUserId lastModifiedDate state]
+* filter by property: [name description location size cpuHotPlug cpuHotUnplug ramHotPlug ramHotUnplug nicHotPlug nicHotUnplug discVirtioHotPlug discVirtioHotUnplug discScsiHotPlug discScsiHotUnplug exposeSerial licenceType imageType public imageAliases cloudInit]
+* filter by metadata: [etag createdDate createdBy createdByUserId lastModifiedDate lastModifiedBy lastModifiedByUserId state]
 
 Required values to run command:
 

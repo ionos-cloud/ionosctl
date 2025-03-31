@@ -30,8 +30,8 @@ Use this command to list Servers from a specified Virtual Data Center.
 
 You can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.
 Available Filters:
-* filter by property: [availabilityZone bootCdrom bootVolume cores cpuFamily name placementGroupId ram templateUuid type vmState]
-* filter by metadata: [createdBy createdByUserId createdDate etag lastModifiedBy lastModifiedByUserId lastModifiedDate state]
+* filter by property: [templateUuid name hostname cores ram availabilityZone vmState bootCdrom bootVolume cpuFamily type placementGroupId]
+* filter by metadata: [etag createdDate createdBy createdByUserId lastModifiedDate lastModifiedBy lastModifiedByUserId state]
 
 Required values to run command:
 
