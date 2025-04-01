@@ -676,7 +676,6 @@ func getNewK8sNodePool(c *core.CommandConfig) (*resources.K8sNodePoolForPost, er
 	cores := viper.GetInt32(core.GetFlagName(c.NS, constants.FlagCores))
 	availabilityZone := viper.GetString(core.GetFlagName(c.NS, constants.FlagAvailabilityZone))
 	storageType := viper.GetString(core.GetFlagName(c.NS, constants.FlagStorageType))
-	serverType := viper.GetString(core.GetFlagName(c.NS, constants.FlagServerType))
 
 	// Set Properties
 	nodePoolProperties := ionoscloud.KubernetesNodePoolPropertiesForPost{}
@@ -692,9 +691,6 @@ func getNewK8sNodePool(c *core.CommandConfig) (*resources.K8sNodePoolForPost, er
 	nodePoolProperties.SetDatacenterId(dcId)
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property DatacenterId set: %v", dcId))
 
-	nodePoolProperties.SetServerType(ionoscloud.KubernetesNodePoolServerType(serverType))
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property serverType set: %v", serverType))
-
 	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagCpuFamily)) &&
 		cpuFamily != cloudapiv6.DefaultServerCPUFamily {
 		nodePoolProperties.SetCpuFamily(viper.GetString(core.GetFlagName(c.NS, constants.FlagCpuFamily)))
@@ -706,6 +702,11 @@ func getNewK8sNodePool(c *core.CommandConfig) (*resources.K8sNodePoolForPost, er
 
 		nodePoolProperties.SetCpuFamily(cpuFamily)
 	}
+
+	if fn := core.GetFlagName(c.NS, constants.FlagServerType); viper.IsSet(fn) {
+		nodePoolProperties.SetServerType(ionoscloud.KubernetesNodePoolServerType(viper.GetString(fn)))
+	}
+
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property CPU Family set: %v", cpuFamily))
 
 	nodePoolProperties.SetCoresCount(cores)

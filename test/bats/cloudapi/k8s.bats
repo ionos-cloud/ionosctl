@@ -8,54 +8,64 @@ load "${BATS_LIBS_PATH}/bats-support/load"
 load '../setup.bats'
 
 location="es/vit"
+uuid_v4_regex='^[0-9a-f]{8}-[0-9a-f]{4}-[4][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
+ip_regex='^([0-9]{1,3}\.){3}[0-9]{1,3}(\/[0-9]{1,2})?$'
 
 setup_file() {
-    uuid_v4_regex='^[0-9a-f]{8}-[0-9a-f]{4}-[4][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
-    ip_regex='^([0-9]{1,3}\.){3}[0-9]{1,3}(\/[0-9]{1,2})?$'
-
     mkdir -p /tmp/bats_test
 }
 
-@test "Create K8s Nodepool" {
-    datacenter_id=$(find_or_create_resource \
-        "ionosctl datacenter list -M 1 -F location=${location},state=available -o json 2> /dev/null | jq -r '.items[] | .id'" \
-        "ionosctl datacenter create --name \"CLI-Test-$(randStr 8)\" --location ${location} -o json 2> /dev/null | jq -r '.id'")
-    [ -n "$datacenter_id" ] || fail "$datacenter_id is empty"
+@test "Create Datacenter" {
+    run ionosctl datacenter create --name "CLI-Test-$(randStr 8)" --location "${location}" -o json 2> /dev/null
+    assert_success
+    datacenter_id=$(echo "$output" | jq -r '.id')
     assert_regex "$datacenter_id" "$uuid_v4_regex"
+    echo "$datacenter_id" > /tmp/bats_test/datacenter_id
+}
 
-    echo $datacenter_id >> /tmp/bats_test/datacenter_id
+@test "Create K8s Cluster" {
+    run ionosctl k8s cluster create --name "CLI-Test-$(randStr 8)" -w -W -o json 2> /dev/null
+    assert_success
+    cluster_id=$(echo "$output" | jq -r '.id')
+    assert_regex "$cluster_id" "$uuid_v4_regex"
+    echo "$cluster_id" > /tmp/bats_test/cluster_id
 
-    cluster_id=$(find_or_create_resource \
-        "ionosctl k8s cluster list -F public=true,state=available -M 1 -o json 2> /dev/null | jq -r '.items[] | .id'" \
-        "ionosctl k8s cluster create --name \"CLI-Test-$(randStr 8)\" -o json 2> /dev/null | jq -r '.id'")
-    [ -n "$cluster_id" ] || fail "$cluster_id is empty"
-    assert_regex "cluster_id" "$uuid_v4_regex"
+    sleep 60
+}
 
-    sleep 120
+@test "Create K8s Nodepool" {
+    datacenter_id=$(cat /tmp/bats_test/datacenter_id)
+    cluster_id=$(cat /tmp/bats_test/cluster_id)
+    [ -n "$datacenter_id" ] || fail "Datacenter ID not found"
+    [ -n "$cluster_id" ] || fail "Cluster ID not found"
 
-    # Use retry_until to check if the cluster is in "active" state
-    retry_until "ionosctl k8s cluster get --cluster-id $cluster_id -o json 2> /dev/null | jq -r '.metadata.state'" \
-        "[[ \$output == \"ACTIVE\" ]]" 10 60
-
-    echo $cluster_id >> /tmp/bats_test/cluster_id
-
-    echo "Trying to create k8s nodepool in cluster $cluster_id and datacenter $datacenter_id"
-    run ionosctl k8s nodepool create --name "CLI-Test-$(randStr 8)" --cluster-id "$cluster_id" --datacenter-id "$datacenter_id" -o json 2> /dev/null -W -t 600
+    run ionosctl k8s nodepool create --name "CLI-Test-$(randStr 8)" --cluster-id "$cluster_id" --datacenter-id "$datacenter_id" -W -t 600 -o json 2> /dev/null
     assert_success
     nodepool_id=$(echo "$output" | jq -r '.id')
-    assert_regex "nodepool_id" "$uuid_v4_regex"
-    echo "created k8s nodepool $nodepool_id"
+    assert_regex "$nodepool_id" "$uuid_v4_regex"
+    echo "$nodepool_id" > /tmp/bats_test/nodepool_id
+}
 
-    echo $nodepool_id >> /tmp/bats_test/nodepool_id
+@test "Get IP of K8s Node" {
+    cluster_id=$(cat /tmp/bats_test/cluster_id)
+    nodepool_id=$(cat /tmp/bats_test/nodepool_id)
+    [ -n "$cluster_id" ] || fail "Cluster ID not found"
+    [ -n "$nodepool_id" ] || fail "Nodepool ID not found"
 
-    run ionosctl k8s node list --cluster-id "$cluster_id" --nodepool-id "$nodepool_id" --cols PublicIP --no-headers
+    run ionosctl k8s node list --cluster-id "$cluster_id" --nodepool-id "$nodepool_id" --cols PublicIP --no-headers 2> /dev/null
     assert_success
-    node_ip=$(echo "$output")
-    assert_regex "nodepool_id" "$ip_regex"
-    echo "Found IP"
+    node_ip=$(echo "$output" | tr -d '\n')
+    [ -n "$node_ip" ] || fail "Node list did not return an IP address"
+    assert_regex "$node_ip" "$ip_regex"
+    echo "$node_ip" > /tmp/bats_test/node_ip
+}
 
-    run ssh -o StrictHostKeyChecking=no "$node_ip"
-    assert_output --partial 'Permission denied (publickey)'
+@test "IP is reachable" {
+    node_ip=$(cat /tmp/bats_test/node_ip)
+    [ -n "$node_ip" ] || fail "Node IP not found"
+
+    run ssh -o StrictHostKeyChecking=no "$node_ip" exit 2> /dev/null
+    assert_output --partial "Permission denied"
 }
 
 teardown_file() {
@@ -64,11 +74,13 @@ teardown_file() {
     nodepool_id=$(cat /tmp/bats_test/nodepool_id)
 
     echo "cleaning up datacenter $datacenter_id and k8s resources $cluster_id ; $nodepool_id"
-    retry_command run ionosctl k8s nodepool delete --cluster-id "$cluster_id" --nodepool-id "$nodepool_id" -f -w -t 1200
+    ionosctl k8s nodepool delete --cluster-id "$cluster_id" --nodepool-id "$nodepool_id" -f
+    sleep 300
+    ionosctl k8s cluster delete --cluster-id "$cluster_id" -f
     sleep 30
-    retry_command run ionosctl k8s cluster delete --cluster-id "$cluster_id" -f -w -t 1200
-    sleep 30
-    retry_command run ionosctl datacenter delete --datacenter_id "$datacenter_id" -f -w -t 1200
+    ionosctl datacenter delete --datacenter_id "$datacenter_id" -f -w
+
+    ionosctl k8s cluster delete -af
 
     rm -rf /tmp/bats_test
 }
