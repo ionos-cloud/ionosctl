@@ -9,6 +9,7 @@ import (
 
 	gomock "github.com/golang/mock/gomock"
 	resources "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
+	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
 
 // MockGroupsService is a mock of GroupsService interface.
@@ -51,7 +52,7 @@ func (mr *MockGroupsServiceMockRecorder) AddShare(groupId, resourceId, input, pa
 }
 
 // AddUser mocks base method.
-func (m *MockGroupsService) AddUser(groupId string, input resources.User, params resources.QueryParams) (*resources.User, *resources.Response, error) {
+func (m *MockGroupsService) AddUser(groupId string, input ionoscloud.UserGroupPost, params resources.QueryParams) (*resources.User, *resources.Response, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "AddUser", groupId, input, params)
 	ret0, _ := ret[0].(*resources.User)

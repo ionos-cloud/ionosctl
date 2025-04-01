@@ -368,7 +368,7 @@ func RunLanCreate(c *core.CommandConfig) error {
 	queryParams := listQueryParams.QueryParams
 	name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
 	public := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgPublic))
-	properties := ionoscloud.LanPropertiesPost{
+	properties := ionoscloud.LanProperties{
 		Name:   &name,
 		Public: &public,
 	}
@@ -415,7 +415,7 @@ func RunLanCreate(c *core.CommandConfig) error {
 	}
 
 	input := resources.LanPost{
-		LanPost: ionoscloud.LanPost{
+		Lan: ionoscloud.Lan{
 			Properties: &properties,
 		},
 	}
@@ -437,7 +437,7 @@ func RunLanCreate(c *core.CommandConfig) error {
 
 	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
 
-	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Lan, l.LanPost,
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Lan, l.Lan,
 		tabheaders.GetHeadersAllDefault(defaultLanCols, cols))
 	if err != nil {
 		return err

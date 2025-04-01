@@ -55,6 +55,9 @@ var (
 			},
 		},
 	}
+	userGroupAdd = ionoscloud.UserGroupPost{
+		Id: &testUserVar,
+	}
 	users = resources.Users{
 		Users: ionoscloud.Users{
 			Id:    &testUserVar,
@@ -607,7 +610,7 @@ func TestRunGroupUserAdd(t *testing.T) {
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgGroupId), testGroupVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgUserId), testUserVar)
-		rm.CloudApiV6Mocks.Group.EXPECT().AddUser(testGroupVar, groupUserTest, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&userTestGet, &testResponse, nil)
+		rm.CloudApiV6Mocks.Group.EXPECT().AddUser(testGroupVar, userGroupAdd, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&userTestGet, &testResponse, nil)
 		err := RunGroupUserAdd(cfg)
 		assert.NoError(t, err)
 	})
@@ -622,7 +625,7 @@ func TestRunGroupUserAddErr(t *testing.T) {
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgGroupId), testGroupVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgUserId), testUserVar)
-		rm.CloudApiV6Mocks.Group.EXPECT().AddUser(testGroupVar, groupUserTest, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&userTestGet, nil, testUserErr)
+		rm.CloudApiV6Mocks.Group.EXPECT().AddUser(testGroupVar, userGroupAdd, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&userTestGet, nil, testUserErr)
 		err := RunGroupUserAdd(cfg)
 		assert.Error(t, err)
 	})
@@ -637,7 +640,7 @@ func TestRunGroupUserAddResponse(t *testing.T) {
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgGroupId), testGroupVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgUserId), testUserVar)
-		rm.CloudApiV6Mocks.Group.EXPECT().AddUser(testGroupVar, groupUserTest, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&userTestGet, &testResponse, testUserErr)
+		rm.CloudApiV6Mocks.Group.EXPECT().AddUser(testGroupVar, userGroupAdd, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&userTestGet, &testResponse, testUserErr)
 		err := RunGroupUserAdd(cfg)
 		assert.Error(t, err)
 	})

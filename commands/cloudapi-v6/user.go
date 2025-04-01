@@ -710,10 +710,8 @@ func RunGroupUserAdd(c *core.CommandConfig) error {
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("User with id: %v is adding to group with id: %v...", id, groupId))
 
-	u := resources.User{
-		User: ionoscloud.User{
-			Id: &id,
-		},
+	u := ionoscloud.UserGroupPost{
+		Id: &id,
 	}
 
 	userAdded, resp, err := c.CloudApiV6Services.Groups().AddUser(groupId, u, queryParams)

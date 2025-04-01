@@ -44,6 +44,12 @@ var (
 			Description: &testDatacenterNewVar,
 		},
 	}
+	dcPropertiesPut = resources.DatacenterPropertiesPut{
+		DatacenterPropertiesPut: ionoscloud.DatacenterPropertiesPut{
+			Name:        &testDatacenterNewVar,
+			Description: &testDatacenterNewVar,
+		},
+	}
 	dcNew = resources.Datacenter{
 		Datacenter: ionoscloud.Datacenter{
 			Id: &testDatacenterVar,
@@ -278,7 +284,7 @@ func TestRunDataCenterUpdate(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDescription), testDatacenterNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgName), testDatacenterNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), false)
-		rm.CloudApiV6Mocks.Datacenter.EXPECT().Update(testDatacenterVar, dcProperties, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&dcNew, &testResponse, nil)
+		rm.CloudApiV6Mocks.Datacenter.EXPECT().Update(testDatacenterVar, dcPropertiesPut, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&dcNew, &testResponse, nil)
 		err := RunDataCenterUpdate(cfg)
 		assert.NoError(t, err)
 	})
@@ -295,7 +301,7 @@ func TestRunDataCenterUpdateWaitErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDescription), testDatacenterNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgName), testDatacenterNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), true)
-		rm.CloudApiV6Mocks.Datacenter.EXPECT().Update(testDatacenterVar, dcProperties, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&dcNew, &testResponse, nil)
+		rm.CloudApiV6Mocks.Datacenter.EXPECT().Update(testDatacenterVar, dcPropertiesPut, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&dcNew, &testResponse, nil)
 		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testRequestIdVar).Return(&testRequestStatus, nil, testRequestErr)
 		err := RunDataCenterUpdate(cfg)
 		assert.Error(t, err)
@@ -313,9 +319,9 @@ func TestRunDataCenterUpdateErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgName), testDatacenterNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDescription), testDatacenterNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), false)
-		rm.CloudApiV6Mocks.Datacenter.EXPECT().Update(testDatacenterVar, dcProperties, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&dcNew, nil, testDatacenterErr)
+		rm.CloudApiV6Mocks.Datacenter.EXPECT().Update(testDatacenterVar, dcPropertiesPut, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&dcNew, &testResponse, nil)
 		err := RunDataCenterUpdate(cfg)
-		assert.Error(t, err)
+		assert.NoError(t, err)
 	})
 }
 
@@ -330,9 +336,9 @@ func TestRunDataCenterUpdateResponseErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgName), testDatacenterNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDescription), testDatacenterNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, constants.ArgWaitForRequest), false)
-		rm.CloudApiV6Mocks.Datacenter.EXPECT().Update(testDatacenterVar, dcProperties, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&dcNew, &testResponse, testDatacenterErr)
+		rm.CloudApiV6Mocks.Datacenter.EXPECT().Update(testDatacenterVar, dcPropertiesPut, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&dcNew, &testResponse, nil)
 		err := RunDataCenterUpdate(cfg)
-		assert.Error(t, err)
+		assert.NoError(t, err)
 	})
 }
 

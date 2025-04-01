@@ -98,7 +98,7 @@ func (mr *MockDatacentersServiceMockRecorder) List(params interface{}) *gomock.C
 }
 
 // Update mocks base method.
-func (m *MockDatacentersService) Update(datacenterId string, input resources.DatacenterProperties, queryParams resources.QueryParams) (*resources.Datacenter, *resources.Response, error) {
+func (m *MockDatacentersService) Update(datacenterId string, input resources.DatacenterPropertiesPut, queryParams resources.QueryParams) (*resources.Datacenter, *resources.Response, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Update", datacenterId, input, queryParams)
 	ret0, _ := ret[0].(*resources.Datacenter)
