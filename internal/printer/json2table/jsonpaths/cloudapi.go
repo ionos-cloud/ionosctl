@@ -219,6 +219,7 @@ var (
 		"DatacenterId":             "properties.datacenterId",
 		"NodeCount":                "properties.nodeCount",
 		"CpuFamily":                "properties.cpuFamily",
+		"ServerType":               "properties.serverType",
 		"StorageType":              "properties.storageType",
 		"State":                    "metadata.state",
 		"LanIds":                   "properties.lan.*.id",

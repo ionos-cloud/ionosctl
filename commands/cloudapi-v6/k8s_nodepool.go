@@ -32,7 +32,7 @@ import (
 var (
 	defaultK8sNodePoolCols = []string{"NodePoolId", "Name", "K8sVersion", "NodeCount", "DatacenterId", "State"}
 	allK8sNodePoolCols     = []string{
-		"NodePoolId", "Name", "K8sVersion", "DatacenterId", "NodeCount", "CpuFamily", "StorageType", "State", "LanIds",
+		"NodePoolId", "Name", "K8sVersion", "DatacenterId", "NodeCount", "CpuFamily", "ServerType", "StorageType", "State", "LanIds",
 		"CoresCount", "RamSize", "AvailabilityZone", "StorageSize", "MaintenanceWindow", "AutoScaling", "PublicIps", "AvailableUpgradeVersions",
 		"Annotations", "Labels", "ClusterId",
 	}
