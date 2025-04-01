@@ -692,7 +692,7 @@ func getNewK8sNodePool(c *core.CommandConfig) (*resources.K8sNodePoolForPost, er
 	nodePoolProperties.SetDatacenterId(dcId)
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property DatacenterId set: %v", dcId))
 
-	nodePoolProperties.SetServerType(serverType)
+	nodePoolProperties.SetServerType(ionoscloud.KubernetesNodePoolServerType(serverType))
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property serverType set: %v", serverType))
 
 	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagCpuFamily)) &&
@@ -908,7 +908,7 @@ func getNewK8sNodePoolUpdated(oldNodePool *resources.K8sNodePool, c *core.Comman
 		// serverType
 		if viper.IsSet(core.GetFlagName(c.NS, constants.FlagServerType)) {
 			serverType := viper.GetString(core.GetFlagName(c.NS, constants.FlagServerType))
-			propertiesUpdated.SetServerType(serverType)
+			propertiesUpdated.SetServerType(ionoscloud.KubernetesNodePoolServerType(serverType))
 
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property ServerType set: %v", serverType))
 		}
