@@ -45,7 +45,7 @@ Create a CDN distribution. Wiki: https://docs.ionos.com/cloud/network-services/c
   -q, --quiet                   Quiet output
       --routing-rules string    The routing rules of the distribution. JSON string or file path of routing rules
       --routing-rules-example   Print an example of routing rules
-  -v, --verbose                 Print step-by-step process when running command
+  -v, --verbose count           Print step-by-step process when running command
 ```
 
 ## Examples

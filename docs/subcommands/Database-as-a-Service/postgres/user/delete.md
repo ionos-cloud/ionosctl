@@ -46,7 +46,7 @@ Delete the specified user from the given cluster
   -o, --output string       Desired output format [text|json|api-json] (default "text")
   -q, --quiet               Quiet output
       --user string         The name of the user
-  -v, --verbose             Print step-by-step process when running command
+  -v, --verbose count       Print step-by-step process when running command
 ```
 
 ## Examples

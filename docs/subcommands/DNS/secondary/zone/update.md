@@ -37,7 +37,7 @@ Update or create a secondary zone
   -o, --output string         Desired output format [text|json|api-json] (default "text")
       --primary-ips strings   Primary DNS server IP addresses
   -q, --quiet                 Quiet output
-  -v, --verbose               Print step-by-step process when running command
+  -v, --verbose count         Print step-by-step process when running command
   -z, --zone string           The name or ID of the DNS zone
 ```
 

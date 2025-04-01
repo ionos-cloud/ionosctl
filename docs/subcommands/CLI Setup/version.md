@@ -25,7 +25,7 @@ The `ionosctl version` command displays the current version of the ionosctl soft
   -o, --output string    Desired output format [text|json|api-json] (default "text")
   -q, --quiet            Quiet output
       --updates          Check for latest updates for CLI
-  -v, --verbose          Print step-by-step process when running command
+  -v, --verbose count    Print step-by-step process when running command
 ```
 
 ## Examples

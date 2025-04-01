@@ -39,11 +39,11 @@ var (
 			TraverseChildren: true,
 		},
 	}
-	Output    string
-	Quiet     bool
-	Force     bool
-	Verbose   bool
-	NoHeaders bool
+	Output       string
+	VerboseLevel int
+	Quiet        bool
+	Force        bool
+	NoHeaders    bool
 
 	cfgFile string
 )
@@ -118,8 +118,8 @@ func init() {
 		&Force, constants.ArgForce, constants.ArgForceShort, false, "Force command to execute without user input",
 	)
 	_ = viper.BindPFlag(constants.ArgForce, rootPFlagSet.Lookup(constants.ArgForce))
-	rootPFlagSet.BoolVarP(
-		&Verbose, constants.ArgVerbose, constants.ArgVerboseShort, false,
+	rootPFlagSet.CountVarP(
+		&VerboseLevel, constants.ArgVerbose, constants.ArgVerboseShort,
 		"Print step-by-step process when running command",
 	)
 	_ = viper.BindPFlag(constants.ArgVerbose, rootPFlagSet.Lookup(constants.ArgVerbose))
