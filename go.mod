@@ -11,7 +11,7 @@ require (
 	github.com/golang/mock v1.6.0
 	github.com/ionos-cloud/sdk-go-dbaas-postgres v1.1.2
 	github.com/ionos-cloud/sdk-go-vm-autoscaling v1.0.1
-	github.com/ionos-cloud/sdk-go/v6 v6.3.2
+	github.com/ionos-cloud/sdk-go/v6 v6.3.3
 	github.com/itchyny/gojq v0.12.13
 	github.com/kardianos/ftps v1.0.3
 	github.com/mitchellh/go-homedir v1.1.0
