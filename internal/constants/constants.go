@@ -20,6 +20,8 @@ const (
 	FlagLocation        = "location"
 	FlagLocationShort   = "l"
 	FlagOffset          = "offset"
+	FlagLogs            = "logs"
+	FlagMetrics         = "metrics"
 	// DescAuthenticationOrder explains auth order. Embed this in any auth-related commands
 	DescAuthenticationOrder = `AUTHENTICATION ORDER
 ionosctl uses a layered approach for authentication, prioritizing sources in this order:
