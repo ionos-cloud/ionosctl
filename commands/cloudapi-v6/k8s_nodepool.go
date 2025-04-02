@@ -179,7 +179,7 @@ Required values to run a command (for Private Kubernetes Cluster):
 	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagRam, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"2048MB", "3GB", "4GB", "5GB", "10GB", "50GB", "100GB"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(constants.FlagCpuFamily, "", cloudapiv6.DefaultServerCPUFamily,
+	create.AddStringFlag(constants.FlagCpuFamily, "", "",
 		"CPU Type. If the flag is not set, the CPU Family will be chosen based on the location of the Datacenter. "+
 			"It will always be the first CPU Family available, as returned by the API")
 	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagCpuFamily, func(*cobra.Command, []string, string) ([]string, cobra.ShellCompDirective) {
@@ -691,23 +691,14 @@ func getNewK8sNodePool(c *core.CommandConfig) (*resources.K8sNodePoolForPost, er
 	nodePoolProperties.SetDatacenterId(dcId)
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property DatacenterId set: %v", dcId))
 
-	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagCpuFamily)) &&
-		cpuFamily != cloudapiv6.DefaultServerCPUFamily {
-		nodePoolProperties.SetCpuFamily(viper.GetString(core.GetFlagName(c.NS, constants.FlagCpuFamily)))
-	} else {
-		cpuFamily, err = DefaultCpuFamily(c) // TODO: verify if any changes needed with the new SDK version
-		if err != nil {
-			return nil, err
-		}
-
-		nodePoolProperties.SetCpuFamily(cpuFamily)
+	if fn := core.GetFlagName(c.NS, constants.FlagCpuFamily); viper.IsSet(fn) {
+		nodePoolProperties.SetCpuFamily(viper.GetString(fn))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property CPU Family set: %v", cpuFamily))
 	}
 
 	if fn := core.GetFlagName(c.NS, constants.FlagServerType); viper.IsSet(fn) {
 		nodePoolProperties.SetServerType(ionoscloud.KubernetesNodePoolServerType(viper.GetString(fn)))
 	}
-
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property CPU Family set: %v", cpuFamily))
 
 	nodePoolProperties.SetCoresCount(cores)
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property CoresCount set: %v", cores))

@@ -1,6 +1,6 @@
 # Changelog
 
-## [v6.8.2] (March 2025)
+## [v6.8.2] (April 2025)
 
 ### Added
 - Added --server-type for managed kubernetes nodepools
