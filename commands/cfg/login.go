@@ -10,6 +10,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/config"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
+	"github.com/ionos-cloud/ionosctl/v6/internal/jwt"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	sdk "github.com/ionos-cloud/sdk-go/v6"
@@ -108,14 +109,23 @@ func RunLoginUser(c *core.CommandConfig) error {
 
 	var msg strings.Builder
 	if validCredentials && !viper.GetBool(core.GetFlagName(c.NS, constants.FlagSkipVerify)) {
+		currentUser, errLoggedInAs := jwt.Username(data[constants.CfgToken])
 		ls, _, errTokens := client.NewClientFromCfgData(data).AuthClient.TokensApi.TokensGet(context.Background()).Execute()
-		if errTokens != nil {
-			return fmt.Errorf("failed retrieving current tokens: %w", errTokens)
-		}
-		msgActiveTokens := fmt.Sprintf("Note: Your account has %d active tokens. ", len(ls.Tokens))
-		msg.WriteString(msgActiveTokens)
-	}
 
+		if errLoggedInAs == nil || errTokens == nil {
+			// If at least something important to note
+			msg.WriteString("Note:\n")
+		}
+		if errLoggedInAs == nil {
+			msg.WriteString(fmt.Sprintf(" • Logged in as %s.\n", currentUser))
+		}
+		if errTokens == nil {
+			msg.WriteString(fmt.Sprintf(" • Your account has %d active tokens.\n", len(ls.Tokens)))
+		}
+		if errLoggedInAs == nil || errTokens == nil {
+			msg.WriteString("\n")
+		}
+	}
 	msg.WriteString(fmt.Sprintf("Config file updated successfully. Created the following fields in your config file:\n"))
 	for k := range data {
 		msg.WriteString(fmt.Sprintf(" • %s\n", strings.TrimPrefix(k, "userdata.")))
