@@ -270,8 +270,8 @@ github.com/ionos-cloud/sdk-go-dbaas-postgres v1.1.2 h1:AaKbci+kVS6/k43VwJwmXxCJ7
 github.com/ionos-cloud/sdk-go-dbaas-postgres v1.1.2/go.mod h1:nmJEwuRX65A5/PxwvdFW0XrV+N6WFYnMV1TiIafAwz4=
 github.com/ionos-cloud/sdk-go-vm-autoscaling v1.0.1 h1:KABL25MC7DrIHn9lQzKSPkwXhqvRkPYtFd+1HEogmAE=
 github.com/ionos-cloud/sdk-go-vm-autoscaling v1.0.1/go.mod h1:Q5d1R6silarsX5jWLPBHd/1PSC5zZNf2ONvXB+fygC0=
-github.com/ionos-cloud/sdk-go/v6 v6.3.2 h1:2mUmrZZz6cPyT9IRX0T8fBLc/7XU/eTxP2Y5tS7/09k=
-github.com/ionos-cloud/sdk-go/v6 v6.3.2/go.mod h1:SXrO9OGyWjd2rZhAhEpdYN6VUAODzzqRdqA9BCviQtI=
+github.com/ionos-cloud/sdk-go/v6 v6.3.3 h1:q33Sw1ZqsvqDkFaKG53dGk7BCOvPCPbGZpYqsF6tdjw=
+github.com/ionos-cloud/sdk-go/v6 v6.3.3/go.mod h1:wCVwNJ/21W29FWFUv+fNawOTMlFoP1dS3L+ZuztFW48=
 github.com/ionoscloudsdk/comptplus v1.0.4 h1:1kq+lY17BZCiKLuR1gTJPVBYd1ro9Dqi0C24YKdE74M=
 github.com/ionoscloudsdk/comptplus v1.0.4/go.mod h1:ewCQmBfNTnYBFoQ/2+gTrxRlDNFOMreojByy/LDuyj4=
 github.com/itchyny/gojq v0.12.13 h1:IxyYlHYIlspQHHTE0f3cJF0NKDMfajxViuhBLnHd/QU=

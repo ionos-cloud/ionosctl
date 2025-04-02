@@ -32,7 +32,7 @@ import (
 var (
 	defaultK8sNodePoolCols = []string{"NodePoolId", "Name", "K8sVersion", "NodeCount", "DatacenterId", "State"}
 	allK8sNodePoolCols     = []string{
-		"NodePoolId", "Name", "K8sVersion", "DatacenterId", "NodeCount", "CpuFamily", "StorageType", "State", "LanIds",
+		"NodePoolId", "Name", "K8sVersion", "DatacenterId", "NodeCount", "CpuFamily", "ServerType", "StorageType", "State", "LanIds",
 		"CoresCount", "RamSize", "AvailabilityZone", "StorageSize", "MaintenanceWindow", "AutoScaling", "PublicIps", "AvailableUpgradeVersions",
 		"Annotations", "Labels", "ClusterId",
 	}
@@ -179,7 +179,7 @@ Required values to run a command (for Private Kubernetes Cluster):
 	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagRam, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"2048MB", "3GB", "4GB", "5GB", "10GB", "50GB", "100GB"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(constants.FlagCpuFamily, "", cloudapiv6.DefaultServerCPUFamily,
+	create.AddStringFlag(constants.FlagCpuFamily, "", "",
 		"CPU Type. If the flag is not set, the CPU Family will be chosen based on the location of the Datacenter. "+
 			"It will always be the first CPU Family available, as returned by the API")
 	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagCpuFamily, func(*cobra.Command, []string, string) ([]string, cobra.ShellCompDirective) {
@@ -187,9 +187,13 @@ Required values to run a command (for Private Kubernetes Cluster):
 		return completer.DatacenterCPUFamilies(create.Command.Context(), datacenterId), cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddStringFlag(constants.FlagAvailabilityZone, constants.FlagAvailabilityZoneShort, "AUTO", "The compute Availability Zone in which the Node should exist")
-	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagCpuFamily, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagAvailabilityZone, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"AUTO", "ZONE_1", "ZONE_2"}, cobra.ShellCompDirectiveNoFileComp
 	})
+	create.AddSetFlag(constants.FlagServerType, "", "", []string{"DedicatedCore", "VCPU"},
+		"The type of server for the Kubernetes node pool can be either"+
+			"'DedicatedCore' (nodes with dedicated CPU cores) or 'VCPU' (nodes with shared CPU cores)."+
+			"This selection corresponds to the server type for the compute engine.")
 	create.AddStringFlag(constants.FlagStorageType, "", "HDD", "Storage Type")
 	_ = create.Command.RegisterFlagCompletionFunc(constants.FlagStorageType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"HDD", "SSD"}, cobra.ShellCompDirectiveNoFileComp
@@ -248,6 +252,10 @@ Required values to run command:
 	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgK8sMaintenanceDay, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"}, cobra.ShellCompDirectiveNoFileComp
 	})
+	update.AddSetFlag(constants.FlagServerType, "", "", []string{"DedicatedCore", "VCPU"},
+		"The type of server for the Kubernetes node pool can be either"+
+			"'DedicatedCore' (nodes with dedicated CPU cores) or 'VCPU' (nodes with shared CPU cores)."+
+			"This selection corresponds to the server type for the compute engine.")
 	update.AddStringFlag(cloudapiv6.ArgK8sMaintenanceTime, "", "", "The time for Maintenance Window has the HH:mm:ss format as following: 08:00:00")
 	update.AddStringSliceFlag(cloudapiv6.ArgPublicIps, "", []string{}, "Reserved public IP address to be used by the Nodes. IPs must be from same location as the Data Center used for the Node Pool. Usage: --public-ips IP1,IP2")
 	update.AddIntSliceFlag(cloudapiv6.ArgLanIds, "", []int{}, "Collection of LAN Ids of existing LANs to be attached to worker Nodes. It will be added to the existing LANs attached")
@@ -683,18 +691,14 @@ func getNewK8sNodePool(c *core.CommandConfig) (*resources.K8sNodePoolForPost, er
 	nodePoolProperties.SetDatacenterId(dcId)
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property DatacenterId set: %v", dcId))
 
-	if viper.IsSet(core.GetFlagName(c.NS, constants.FlagCpuFamily)) &&
-		cpuFamily != cloudapiv6.DefaultServerCPUFamily {
-		nodePoolProperties.SetCpuFamily(viper.GetString(core.GetFlagName(c.NS, constants.FlagCpuFamily)))
-	} else {
-		cpuFamily, err = DefaultCpuFamily(c)
-		if err != nil {
-			return nil, err
-		}
-
-		nodePoolProperties.SetCpuFamily(cpuFamily)
+	if fn := core.GetFlagName(c.NS, constants.FlagCpuFamily); viper.IsSet(fn) {
+		nodePoolProperties.SetCpuFamily(viper.GetString(fn))
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property CPU Family set: %v", cpuFamily))
 	}
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property CPU Family set: %v", cpuFamily))
+
+	if fn := core.GetFlagName(c.NS, constants.FlagServerType); viper.IsSet(fn) {
+		nodePoolProperties.SetServerType(ionoscloud.KubernetesNodePoolServerType(viper.GetString(fn)))
+	}
 
 	nodePoolProperties.SetCoresCount(cores)
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property CoresCount set: %v", cores))
@@ -891,6 +895,14 @@ func getNewK8sNodePoolUpdated(oldNodePool *resources.K8sNodePool, c *core.Comman
 			propertiesUpdated.SetPublicIps(publicIps)
 
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property PublicIps set: %v", publicIps))
+		}
+
+		// serverType
+		if viper.IsSet(core.GetFlagName(c.NS, constants.FlagServerType)) {
+			serverType := viper.GetString(core.GetFlagName(c.NS, constants.FlagServerType))
+			propertiesUpdated.SetServerType(ionoscloud.KubernetesNodePoolServerType(serverType))
+
+			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Property ServerType set: %v", serverType))
 		}
 	}
 
