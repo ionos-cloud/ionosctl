@@ -7,6 +7,7 @@
 
 ### Changed
 - Changed login message to include the username you have logged in as, if possible.
+- Added missing container-registry columns
 
 ## [v6.8.1] (February 2025)
 

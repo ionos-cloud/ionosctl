@@ -134,7 +134,7 @@ func CmdPost(c *core.CommandConfig) error {
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput(
-		"", jsonpaths.ContainerRegistryRegistry, reg, tabheaders.GetHeaders(allCols, postCols, cols),
+		"", jsonpaths.ContainerRegistryRegistry, reg, tabheaders.GetHeadersAllDefault(allCols, cols),
 	)
 	if err != nil {
 		return err

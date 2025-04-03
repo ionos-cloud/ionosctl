@@ -14,6 +14,7 @@ var (
 		"GarbageCollectionDays": "properties.garbageCollectionSchedule.days",
 		"GarbageCollectionTime": "properties.garbageCollectionSchedule.time",
 		"VulnerabilityScanning": "properties.features.vulnerabilityScanning.enabled",
+		"State":                 "metadata.state",
 	}
 
 	ContainerRegistryToken = map[string]string{
