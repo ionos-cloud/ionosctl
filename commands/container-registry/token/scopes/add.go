@@ -57,8 +57,19 @@ func TokenScopesAddCmd() *core.Command {
 
 	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Scope name", core.RequiredFlagOption())
 	cmd.AddStringFlag(FlagType, "y", "", "Scope type", core.RequiredFlagOption())
+	_ = cmd.Command.RegisterFlagCompletionFunc(
+		constants.FlagType,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return []string{"repository", "namespace", "registry"}, cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 	cmd.AddStringSliceFlag(FlagActions, "a", []string{}, "Scope actions", core.RequiredFlagOption())
-
+	_ = cmd.Command.RegisterFlagCompletionFunc(
+		FlagActions,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return []string{"*", "push", "pull", "delete", "read", "write", "list"}, cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, tabheaders.ColsMessage(allScopeCols))
 	_ = cmd.Command.RegisterFlagCompletionFunc(
 		constants.ArgCols,
