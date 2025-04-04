@@ -12,6 +12,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
+	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -38,7 +39,8 @@ func LabelCmd() *core.Command {
 	})
 
 	var (
-		allowedValues = []string{cloudapiv6.DatacenterResource, cloudapiv6.VolumeResource, cloudapiv6.ServerResource, cloudapiv6.SnapshotResource, cloudapiv6.IpBlockResource}
+		allowedValues = []string{cloudapiv6.DatacenterResource, cloudapiv6.VolumeResource, cloudapiv6.ServerResource,
+			cloudapiv6.SnapshotResource, cloudapiv6.IpBlockResource, cloudapiv6.ImageResource}
 	)
 
 	/*
@@ -75,6 +77,14 @@ func LabelCmd() *core.Command {
 	list.AddUUIDFlag(cloudapiv6.ArgSnapshotId, "", "", cloudapiv6.SnapshotId)
 	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgSnapshotId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.SnapshotIds(), cobra.ShellCompDirectiveNoFileComp
+	})
+	list.AddUUIDFlag(cloudapiv6.ArgImageId, "", "", cloudapiv6.ImageId+"(note: only private images supported)")
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgImageId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		// complete with private images only (cnanot add labels to public images)
+		return completer.ImageIds(
+			func(request ionoscloud.ApiImagesGetRequest) ionoscloud.ApiImagesGetRequest {
+				return request.Filter("public", "false")
+			}), cobra.ShellCompDirectiveNoFileComp
 	})
 	list.AddSetFlag(cloudapiv6.ArgResourceType, "", "", allowedValues, "Type of resource to list labels from", core.RequiredFlagOption())
 	list.AddInt32Flag(constants.FlagMaxResults, constants.FlagMaxResultsShort, cloudapiv6.DefaultMaxResults, constants.DescMaxResults)
@@ -122,6 +132,14 @@ func LabelCmd() *core.Command {
 	get.AddUUIDFlag(cloudapiv6.ArgSnapshotId, "", "", cloudapiv6.SnapshotId)
 	_ = get.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgSnapshotId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.SnapshotIds(), cobra.ShellCompDirectiveNoFileComp
+	})
+	get.AddUUIDFlag(cloudapiv6.ArgImageId, "", "", cloudapiv6.ImageId+"(note: only private images supported)")
+	_ = get.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgImageId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		// complete with private images only (cnanot add labels to public images)
+		return completer.ImageIds(
+			func(request ionoscloud.ApiImagesGetRequest) ionoscloud.ApiImagesGetRequest {
+				return request.Filter("public", "false")
+			}), cobra.ShellCompDirectiveNoFileComp
 	})
 	get.AddSetFlag(cloudapiv6.ArgResourceType, "", "", allowedValues, "Type of resource to get labels from", core.RequiredFlagOption())
 	get.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultGetDepth, cloudapiv6.ArgDepthDescription)
@@ -180,6 +198,14 @@ func LabelCmd() *core.Command {
 	_ = addLabel.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgSnapshotId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.SnapshotIds(), cobra.ShellCompDirectiveNoFileComp
 	})
+	addLabel.AddUUIDFlag(cloudapiv6.ArgImageId, "", "", cloudapiv6.ImageId+"(note: only private images supported)")
+	_ = addLabel.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgImageId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		// complete with private images only (cnanot add labels to public images)
+		return completer.ImageIds(
+			func(request ionoscloud.ApiImagesGetRequest) ionoscloud.ApiImagesGetRequest {
+				return request.Filter("public", "false")
+			}), cobra.ShellCompDirectiveNoFileComp
+	})
 	addLabel.AddSetFlag(cloudapiv6.ArgResourceType, "", "", allowedValues, "Type of resource to add labels to", core.RequiredFlagOption())
 	addLabel.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultMiscDepth, cloudapiv6.ArgDepthDescription)
 
@@ -219,6 +245,14 @@ func LabelCmd() *core.Command {
 	_ = removeLabel.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgSnapshotId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.SnapshotIds(), cobra.ShellCompDirectiveNoFileComp
 	})
+	removeLabel.AddUUIDFlag(cloudapiv6.ArgImageId, "", "", cloudapiv6.ImageId+"(note: only private images supported)")
+	_ = removeLabel.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgImageId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		// complete with private images only (cnanot add labels to public images)
+		return completer.ImageIds(
+			func(request ionoscloud.ApiImagesGetRequest) ionoscloud.ApiImagesGetRequest {
+				return request.Filter("public", "false")
+			}), cobra.ShellCompDirectiveNoFileComp
+	})
 	removeLabel.AddSetFlag(cloudapiv6.ArgResourceType, "", "", allowedValues, "Type of resource to remove labels from", core.RequiredFlagOption())
 	removeLabel.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Remove all Labels")
 	removeLabel.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultMiscDepth, cloudapiv6.ArgDepthDescription)
@@ -256,6 +290,10 @@ func generateFlagSets(c *core.PreCommandConfig, extraFlags ...string) []core.Fla
 			FlagNameSet:    append([]string{cloudapiv6.ArgResourceType, cloudapiv6.ArgIpBlockId}, extraFlags...),
 			Predicate:      funcResourceTypeSetAndMatches,
 			PredicateParam: cloudapiv6.IpBlockResource,
+		}, {
+			FlagNameSet:    append([]string{cloudapiv6.ArgResourceType, cloudapiv6.ArgImageId}, extraFlags...),
+			Predicate:      funcResourceTypeSetAndMatches,
+			PredicateParam: cloudapiv6.ImageResource,
 		},
 	}
 }
@@ -312,6 +350,8 @@ func RunLabelList(c *core.CommandConfig) error {
 		return RunIpBlockLabelsList(c)
 	case cloudapiv6.SnapshotResource:
 		return RunSnapshotLabelsList(c)
+	case cloudapiv6.ImageResource:
+		return RunImageLabelsList(c)
 	default:
 		labelDcs, _, err := c.CloudApiV6Services.Labels().List(listQueryParams)
 		if err != nil {
@@ -353,6 +393,8 @@ func RunLabelGet(c *core.CommandConfig) error {
 		return RunIpBlockLabelGet(c)
 	case cloudapiv6.SnapshotResource:
 		return RunSnapshotLabelGet(c)
+	case cloudapiv6.ImageResource:
+		return RunImageLabelGet(c)
 	default:
 		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(labelResourceWarning))
 
@@ -395,6 +437,8 @@ func RunLabelAdd(c *core.CommandConfig) error {
 		return RunIpBlockLabelAdd(c)
 	case cloudapiv6.SnapshotResource:
 		return RunSnapshotLabelAdd(c)
+	case cloudapiv6.ImageResource:
+		return RunImageLabelAdd(c)
 	default:
 		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(labelResourceWarning))
 
@@ -418,6 +462,8 @@ func RunLabelRemove(c *core.CommandConfig) error {
 		return RunIpBlockLabelRemove(c)
 	case cloudapiv6.SnapshotResource:
 		return RunSnapshotLabelRemove(c)
+	case cloudapiv6.ImageResource:
+		return RunImageLabelRemove(c)
 	default:
 		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(labelResourceWarning))
 
