@@ -4,11 +4,12 @@ import (
 	"strings"
 )
 
-// FlagDefaultHandler is a Strategy for handling pflag default values while generating docs
-type FlagDefaultHandler func(flagDescription, defaultValue string) string
+// FlagDefaultDocumentationHandler is a Strategy for handling pflag default values while generating docs
+type FlagDefaultDocumentationHandler func(flagDescription, defaultValue string) string
 
-// MaintenanceHandler is a concrete strategy for --maintenance-day
-func MaintenanceHandler(flagDescription, defaultValue string) string {
+// RandomDayDescriptionHandler is a concrete strategy which changes the default value
+// to "Random (Mon-Fri 10:00-16:00)" instead of an actual random day i.e. Thursday
+func RandomDayDescriptionHandler(flagDescription, defaultValue string) string {
 	if strings.Contains(flagDescription, "Defaults to a random day") {
 		return "Random (Mon-Fri 10:00-16:00)"
 	}
@@ -22,10 +23,12 @@ func DataplatformUsesLatestVersion(flagDescription, defaultValue string) string 
 	return defaultValue
 }
 
-func getStrategyForFlag(flagName string) FlagDefaultHandler {
+func getStrategyForFlag(flagName string) FlagDefaultDocumentationHandler {
 	switch flagName {
 	case "maintenance-day", "maintenance-time":
-		return MaintenanceHandler
+		return RandomDayDescriptionHandler
+	case "garbage-collection-schedule-days", "garbage-collection-schedule-time":
+		return RandomDayDescriptionHandler
 	case "version":
 		return DataplatformUsesLatestVersion
 	default:

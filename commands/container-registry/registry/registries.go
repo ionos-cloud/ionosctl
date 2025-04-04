@@ -12,10 +12,9 @@ import (
 )
 
 var (
-	postCols = []string{"DisplayName", "Location"}
-	allCols  = []string{
+	allCols = []string{
 		"RegistryId", "DisplayName", "Location", "Hostname", "VulnerabilityScanning",
-		"GarbageCollectionDays", "GarbageCollectionTime",
+		"GarbageCollectionDays", "GarbageCollectionTime", "State",
 	}
 )
 
