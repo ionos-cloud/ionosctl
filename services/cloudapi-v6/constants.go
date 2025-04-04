@@ -13,6 +13,7 @@ const (
 	VolumeResource     = "volume"
 	IpBlockResource    = "ipblock"
 	SnapshotResource   = "snapshot"
+	ImageResource      = "image"
 )
 
 // Flags
