@@ -11,6 +11,9 @@
 ### Fixed
 - Various fixes for 'container-registry' commands:
   - Added missing container-registry columns
+  - The garbage collection days and time are now randomly generated to be a random working day during hours 10:00 - 16:00
+  - Fixed listing container-registry token scopes
+  - Fixed various panics related to nil ExpiryDate on container-registry tokens including #505
 
 ## [v6.8.1] (February 2025)
 

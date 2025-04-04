@@ -78,7 +78,9 @@ func CmdGetTokenScopesDelete(c *core.CommandConfig) error {
 	if viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)) {
 		updateToken := containerregistry.NewPutTokenInputWithDefaults()
 		updateProp := containerregistry.NewPostTokenPropertiesWithDefaults()
-		updateProp.SetExpiryDate(token.Properties.GetExpiryDate())
+		if token.Properties.ExpiryDate != nil {
+			updateProp.SetExpiryDate(token.Properties.GetExpiryDate())
+		}
 		updateProp.SetStatus(token.Properties.GetStatus())
 		updateProp.SetName(token.Properties.GetName())
 		updateToken.SetProperties(*updateProp)
