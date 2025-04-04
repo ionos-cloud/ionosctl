@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/resource2table"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/sdk-go-bundle/products/containerregistry/v2"
@@ -147,11 +148,15 @@ func CmdTokenScopesAdd(c *core.CommandConfig) error {
 		return err
 	}
 
+	scopesConverted, err := resource2table.ConvertContainerRegistryTokenScopesToTable(tokenUp.Properties.Scopes)
+	if err != nil {
+		return err
+	}
+
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-	out, err := jsontabwriter.GenerateOutput(
-		"properties.scopes", allScopeJSONPaths, tokenUp,
-		tabheaders.GetHeaders(allScopeCols, defaultScopeCols, cols),
+	out, err := jsontabwriter.GenerateOutputPreconverted(
+		token.Properties.Scopes, scopesConverted, tabheaders.GetHeadersAllDefault(allScopeCols, cols),
 	)
 	if err != nil {
 		return err

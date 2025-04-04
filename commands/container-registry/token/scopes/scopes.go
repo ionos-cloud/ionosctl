@@ -13,16 +13,7 @@ import (
 )
 
 var (
-	allScopeJSONPaths = map[string]string{
-		"ScopeId":     "",
-		"DisplayName": "",
-		"TokenId":     "",
-		"Type":        "",
-		"Actions":     "",
-	}
-
-	defaultScopeCols = []string{"ScopeId", "DisplayName", "Type", "Actions"}
-	allScopeCols     = []string{"ScopeId", "TokenId", "DisplayName", "Type", "Actions"}
+	allScopeCols = []string{"ScopeId", "DisplayName", "Type", "Actions"}
 )
 
 func TokenScopesCmd() *core.Command {
@@ -49,7 +40,6 @@ func TokensIds(regId string) []string {
 	var allTokens []containerregistry.TokenResponse
 
 	if regId != "" {
-
 		tokens, _, _ := svcToken.List(regId)
 
 		allTokens = append(allTokens, tokens.GetItems()...)
