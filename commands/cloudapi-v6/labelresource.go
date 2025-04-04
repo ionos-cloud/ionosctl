@@ -221,12 +221,25 @@ func RunImageLabelsList(c *core.CommandConfig) error {
 
 	req := client.Must().CloudClient.LabelsApi.ImagesLabelsGet(
 		context.Background(),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgImageId))).
-		Depth(*listQueryParams.QueryParams.Depth).MaxResults(*listQueryParams.MaxResults).OrderBy(*listQueryParams.OrderBy)
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgImageId)))
 
-	for key, values := range *listQueryParams.Filters {
-		for _, value := range values {
-			req = req.Filter(key, value)
+	if listQueryParams.QueryParams.Depth != nil {
+		req = req.Depth(*listQueryParams.QueryParams.Depth)
+	}
+
+	if listQueryParams.MaxResults != nil {
+		req = req.MaxResults(*listQueryParams.MaxResults)
+	}
+
+	if listQueryParams.OrderBy != nil {
+		req = req.OrderBy(*listQueryParams.OrderBy)
+	}
+
+	if listQueryParams.Filters != nil {
+		for key, values := range *listQueryParams.Filters {
+			for _, value := range values {
+				req = req.Filter(key, value)
+			}
 		}
 	}
 
