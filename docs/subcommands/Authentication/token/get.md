@@ -41,7 +41,7 @@ Required values to run command:
   -q, --quiet             Quiet output
   -t, --token string      The contents of a Token (required)
   -i, --token-id string   The unique Key ID of a Token (required)
-  -v, --verbose           Print step-by-step process when running command
+  -v, --verbose count     Print step-by-step process when running command
 ```
 
 ## Examples

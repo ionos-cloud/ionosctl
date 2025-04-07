@@ -65,7 +65,6 @@ func TestRunIpConsumersList(t *testing.T) {
 		viper.Reset()
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(constants.ArgQuiet, false)
-		viper.Set(constants.ArgVerbose, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIpBlockId), testIpConsumerVar)
 		rm.CloudApiV6Mocks.IpBlocks.EXPECT().Get(testIpConsumerVar, gomock.AssignableToTypeOf(testQueryParamOther)).Return(&resources.IpBlock{IpBlock: testIpConsumer}, &testResponse, nil)
 		err := RunIpConsumersList(cfg)

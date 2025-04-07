@@ -52,7 +52,7 @@ Required values to run command:
   -p, --password string     The password for the User (must be at least 5 characters long)
   -q, --quiet               Quiet output
   -i, --user-id string      The unique User Id (required)
-  -v, --verbose             Print step-by-step process when running command
+  -v, --verbose count       Print step-by-step process when running command
 ```
 
 ## Examples

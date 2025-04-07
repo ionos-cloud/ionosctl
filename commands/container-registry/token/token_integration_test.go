@@ -44,7 +44,6 @@ func TestTokenService(t *testing.T) {
 			viper.Reset()
 			viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 			viper.Set(constants.ArgQuiet, false)
-			viper.Set(constants.ArgVerbose, false)
 			viper.Set(constants.ArgForce, true)
 
 			// create registry

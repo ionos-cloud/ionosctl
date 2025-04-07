@@ -56,7 +56,7 @@ The following requests allows to alter the existing resources of the cluster
   -o, --output string                Desired output format [text|json|api-json] (default "text")
   -q, --quiet                        Quiet output
   -t, --timeout int                  Timeout option for Request [seconds] (default 60)
-  -v, --verbose                      Print step-by-step process when running command
+  -v, --verbose count                Print step-by-step process when running command
   -w, --wait-for-request             Wait for the Request to be executed
 ```
 

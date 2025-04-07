@@ -50,7 +50,7 @@ Delete a token from a registry
   -q, --quiet                Quiet output
   -r, --registry-id string   Registry ID
   -t, --token-id string      Token ID
-  -v, --verbose              Print step-by-step process when running command
+  -v, --verbose count        Print step-by-step process when running command
 ```
 
 ## Examples
