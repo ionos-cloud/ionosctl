@@ -377,8 +377,6 @@ func RemoveAllImageLabels(c *core.CommandConfig) error {
 				delIdAndName += " Label Value: " + *value
 			}
 		}
-
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput(delIdAndName))
 	}
 
 	if !confirm.FAsk(c.Command.Command.InOrStdin(),
@@ -406,15 +404,11 @@ func RemoveAllImageLabels(c *core.CommandConfig) error {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *key, err))
 			continue
 		}
-
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput(constants.MessageDeletingAll, c.Resource, *key))
 	}
 
 	if multiErr != nil {
 		return multiErr
 	}
-
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Server Labels successfully deleted"))
 	return nil
 }
 
