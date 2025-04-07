@@ -449,7 +449,7 @@ func RunLabelAdd(c *core.CommandConfig) error {
 func RunLabelRemove(c *core.CommandConfig) error {
 	resourceType := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceType))
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Label is removing from %v...", resourceType))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("removing label from %v...", resourceType))
 
 	switch resourceType {
 	case cloudapiv6.DatacenterResource:
