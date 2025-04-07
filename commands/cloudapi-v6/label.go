@@ -80,7 +80,7 @@ func LabelCmd() *core.Command {
 	})
 	list.AddUUIDFlag(cloudapiv6.ArgImageId, "", "", cloudapiv6.ImageId+"(note: only private images supported)")
 	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgImageId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		// complete with private images only (cnanot add labels to public images)
+		// complete with private images only (cannot add labels to public images)
 		return completer.ImageIds(
 			func(request ionoscloud.ApiImagesGetRequest) ionoscloud.ApiImagesGetRequest {
 				return request.Filter("public", "false")
@@ -135,7 +135,7 @@ func LabelCmd() *core.Command {
 	})
 	get.AddUUIDFlag(cloudapiv6.ArgImageId, "", "", cloudapiv6.ImageId+"(note: only private images supported)")
 	_ = get.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgImageId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		// complete with private images only (cnanot add labels to public images)
+		// complete with private images only (cannot add labels to public images)
 		return completer.ImageIds(
 			func(request ionoscloud.ApiImagesGetRequest) ionoscloud.ApiImagesGetRequest {
 				return request.Filter("public", "false")
@@ -200,7 +200,7 @@ func LabelCmd() *core.Command {
 	})
 	addLabel.AddUUIDFlag(cloudapiv6.ArgImageId, "", "", cloudapiv6.ImageId+"(note: only private images supported)")
 	_ = addLabel.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgImageId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		// complete with private images only (cnanot add labels to public images)
+		// complete with private images only (cannot add labels to public images)
 		return completer.ImageIds(
 			func(request ionoscloud.ApiImagesGetRequest) ionoscloud.ApiImagesGetRequest {
 				return request.Filter("public", "false")
@@ -247,7 +247,7 @@ func LabelCmd() *core.Command {
 	})
 	removeLabel.AddUUIDFlag(cloudapiv6.ArgImageId, "", "", cloudapiv6.ImageId+"(note: only private images supported)")
 	_ = removeLabel.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgImageId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		// complete with private images only (cnanot add labels to public images)
+		// complete with private images only (cannot add labels to public images)
 		return completer.ImageIds(
 			func(request ionoscloud.ApiImagesGetRequest) ionoscloud.ApiImagesGetRequest {
 				return request.Filter("public", "false")

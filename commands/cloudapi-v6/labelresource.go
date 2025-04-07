@@ -365,20 +365,6 @@ func RemoveAllImageLabels(c *core.CommandConfig) error {
 		return fmt.Errorf("no Image Labels found")
 	}
 
-	for _, label := range *labelsItems {
-		delIdAndName := ""
-
-		if properties, ok := label.GetPropertiesOk(); ok && properties != nil {
-			if key, ok := properties.GetKeyOk(); ok && key != nil {
-				delIdAndName += "Label Key: " + *key
-			}
-
-			if value, ok := properties.GetValueOk(); ok && value != nil {
-				delIdAndName += " Label Value: " + *value
-			}
-		}
-	}
-
 	if !confirm.FAsk(c.Command.Command.InOrStdin(),
 		fmt.Sprintf("delete all the image labels on image %s? ", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgImageId))),
 		viper.GetBool(constants.ArgForce)) {
@@ -387,21 +373,16 @@ func RemoveAllImageLabels(c *core.CommandConfig) error {
 
 	var multiErr error
 	for _, label := range *labelsItems {
-		properties, ok := label.GetPropertiesOk()
-		if !ok || properties == nil {
+		id, ok := label.GetIdOk()
+		if !ok || id == nil {
 			continue
 		}
 
-		key, ok := properties.GetKeyOk()
-		if !ok || key == nil {
-			continue
-		}
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Starting deleting Label with id: %v...", *id))
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Starting deleting Label with id: %v...", *key))
-
-		_, err := client.Must().CloudClient.LabelsApi.ImagesLabelsDelete(c.Context, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgImageId)), *key).Execute()
+		_, err := client.Must().CloudClient.LabelsApi.ImagesLabelsDelete(c.Context, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgImageId)), *id).Execute()
 		if err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *key, err))
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
 			continue
 		}
 	}
