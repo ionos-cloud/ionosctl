@@ -1,4 +1,4 @@
-package gateway
+package route
 
 import (
 	"context"
@@ -12,19 +12,19 @@ import (
 	"github.com/spf13/viper"
 )
 
-func ApigatewayListCmd() *core.Command {
+func RouteListCmd() *core.Command {
 	cmd := core.NewCommand(context.Background(), nil, core.CommandBuilder{
-		Namespace: "apigateway",
-		Resource:  "gateway",
+		Namespace: "apigatewayroute",
+		Resource:  "route",
 		Verb:      "list",
 		Aliases:   []string{"ls"},
-		ShortDesc: "Retrieve gateways",
-		Example:   "ionosctl apigateway gateway list",
+		ShortDesc: "Retrieve routes",
+		Example:   "ionosctl apigateway route list",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			req := client.Must().Apigateway.APIGatewaysApi.ApigatewaysGet(context.Background())
+			req := client.Must().Apigateway.RoutesApi.ApigatewaysRoutesGet(context.Background(), c.NS)
 
 			if fn := core.GetFlagName(c.NS, constants.FlagOrderBy); viper.IsSet(fn) {
 				req = req.OrderBy(viper.GetString(fn))
@@ -33,7 +33,7 @@ func ApigatewayListCmd() *core.Command {
 			if fn := core.GetFlagName(c.NS, constants.FlagOffset); viper.IsSet(fn) {
 				req = req.Offset(viper.GetInt32(fn))
 			}
-			if fn := core.GetFlagName(c.NS, constants.FlagMaxResults); viper.IsSet(fn) {
+			if fn := core.GetFlagName(c.NS, constants.FlagLimit); viper.IsSet(fn) {
 				req = req.Limit(viper.GetInt32(fn))
 			}
 
@@ -44,7 +44,7 @@ func ApigatewayListCmd() *core.Command {
 
 			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-			out, err := jsontabwriter.GenerateOutput("items", jsonpaths.ApiGatewayGateway, ls,
+			out, err := jsontabwriter.GenerateOutput("items", jsonpaths.ApiGatewayRoute, ls,
 				tabheaders.GetHeadersAllDefault(allCols, cols))
 			if err != nil {
 				return err
@@ -57,7 +57,7 @@ func ApigatewayListCmd() *core.Command {
 	})
 
 	cmd.AddStringFlag(constants.FlagOrderBy, "", "", "The field to order the results by. If not provided, the results will be ordered by the default field.")
-	cmd.AddInt32Flag(constants.FlagMaxResults, "", 0, "Pagination limit")
+	cmd.AddInt32Flag(constants.FlagLimit, "", 0, "Pagination limit")
 	cmd.AddInt32Flag(constants.FlagOffset, "", 0, "Pagination offset")
 
 	cmd.Command.SilenceUsage = true

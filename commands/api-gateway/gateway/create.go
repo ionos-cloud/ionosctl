@@ -35,24 +35,6 @@ func ApigatewayPostCmd() *core.Command {
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 
-			//request_smth := client.Must().Apigateway.APIGatewaysApi.ApigatewaysPost(context.Background()).GatewayCreate(
-			//	apigateway.GatewayCreate{
-			//		Properties: apigateway.Gateway{
-			//			Name:          "Example",
-			//			Logs:          nil,
-			//			Metrics:       nil,
-			//			CustomDomains: nil,
-			//		},
-			//	},
-			//)
-
-			//execute, _, err := request_smth.Execute()
-			//if err != nil {
-			//	return err
-			//}
-			//j, _ := json.MarshalIndent(execute, "", "  ")
-			//fmt.Println(string(j))
-
 			input := apigateway.Gateway{}
 
 			if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) {

@@ -31,8 +31,9 @@ func GatewayCommand() *core.Command {
 	//cmd.AddCommand(ZonesGetCmd())
 	//cmd.AddCommand(ZonesDeleteCmd())
 	cmd.AddCommand(ApigatewayPostCmd())
-	//cmd.AddCommand(ZonesPutCmd())
-	//cmd.AddCommand(ZonesFindByIdCmd())
+	cmd.AddCommand(ApigatewayListCmd())
+	cmd.AddCommand(ApiGatewayDeleteCmd())
+	cmd.AddCommand(GatewaysFindByIdCmd())
 
 	return cmd
 }

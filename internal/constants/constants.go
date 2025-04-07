@@ -10,6 +10,11 @@ const (
 	FlagSnapshotId      = "snapshot-id"
 	FlagIdShort         = "i"
 	FlagName            = "name"
+	FlagPaths           = "paths"
+	FlagMethods         = "methods"
+	FlagWebSocket       = "websocket"
+	FlagLoadBalancer    = "loadbalancer"
+	FlagScheme          = "scheme"
 	FlagNameShort       = "n"
 	FlagTemplate        = "template"
 	FlagTemplateId      = "template-id"
@@ -20,6 +25,8 @@ const (
 	FlagLocation        = "location"
 	FlagLocationShort   = "l"
 	FlagOffset          = "offset"
+	FlagLimit           = "limit"
+	FlagOrderBy         = "order-by"
 	FlagLogs            = "logs"
 	FlagMetrics         = "metrics"
 	// DescAuthenticationOrder explains auth order. Embed this in any auth-related commands
@@ -38,9 +45,11 @@ Within each layer, a token takes precedence over a username and password combina
 	FlagEdition         = "edition"
 
 	FlagGatewayID      = "gateway-id"
+	FlagGatewayRouteID = "route-id"
 	FlagTunnelID       = "tunnel-id"
 	FlagPeerID         = "peer-id"
 	FlagGatewayIP      = "gateway-ip"
+	FlagGatewayShort   = "g"
 	FlagInterfaceIP    = "interface-ip"
 	FlagConnectionIP   = "connection-ip"
 	FlagPrivateKey     = "private-key"
@@ -48,6 +57,7 @@ Within each layer, a token takes precedence over a username and password combina
 	FlagPublicKey      = "public-key"
 	FlagHost           = "host"
 	FlagPort           = "port"
+	FlagWeight         = "weight"
 	FlagAuthMethod     = "auth-method"
 	FlagPSKKey         = "psk-key"
 
@@ -145,6 +155,8 @@ Within each layer, a token takes precedence over a username and password combina
 const (
 	DescMaxResults = "The maximum number of elements to return"
 	DescZone       = "The name or ID of the DNS zone"
+	DescGateway    = "The ID of the gateway"
+	DescRoute      = "The ID of the route"
 )
 
 // legacy flags. TODO: Arg should be renamed to Flag.
@@ -187,16 +199,19 @@ const (
 )
 
 const (
-	DefaultApiURL         = "https://api.ionos.com"
-	DNSApiRegionalURL     = "https://dns.%s.ionos.com"
-	LoggingApiRegionalURL = "https://logging.%s.ionos.com"
-	CDNApiRegionalURL     = "https://cdn.%s.ionos.com"
-	MariaDBApiRegionalURL = "https://mariadb.%s.ionos.com"
-	VPNApiRegionalURL     = "https://vpn.%s.ionos.com"
-	KafkaApiRegionalURL   = "https://kafka.%s.ionos.com"
+	DefaultApiURL              = "https://api.ionos.com"
+	DNSApiRegionalURL          = "https://dns.%s.ionos.com"
+	LoggingApiRegionalURL      = "https://logging.%s.ionos.com"
+	CDNApiRegionalURL          = "https://cdn.%s.ionos.com"
+	MariaDBApiRegionalURL      = "https://mariadb.%s.ionos.com"
+	VPNApiRegionalURL          = "https://vpn.%s.ionos.com"
+	KafkaApiRegionalURL        = "https://kafka.%s.ionos.com"
+	ApiGatewayRegionalURL      = "https://apigateway.%s.ionos.com"
+	RouteApiGatewayRegionalURL = "https://apigateway.%s.ionos.com/gateways/%s/routes"
 )
 
 var (
+	GatewayLocations = []string{"de/txl", "gb/lhr", "fr/par", "es/vit"}
 	DNSLocations     = []string{"de/fra"}
 	LoggingLocations = []string{"de/txl", "de/fra", "gb/lhr", "fr/par", "es/vit"}
 	CDNLocations     = []string{"de/fra"}
