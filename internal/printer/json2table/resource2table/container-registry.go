@@ -83,8 +83,8 @@ func ConvertContainerRegistryVulnerabilityToTable(vulnerability containerregistr
 }
 
 func ConvertContainerRegistryTokenScopesToTable(scopes []containerregistry.Scope) ([]map[string]interface{}, error) {
-	if scopes == nil {
-		return nil, fmt.Errorf("could not retrieve Container Registry Token Scopes")
+	if scopes == nil || len(scopes) == 0 {
+		return nil, nil // empty output
 	}
 
 	var convertedScopes = make([]map[string]interface{}, len(scopes))
