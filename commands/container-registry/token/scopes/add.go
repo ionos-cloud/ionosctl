@@ -148,10 +148,7 @@ func CmdTokenScopesAdd(c *core.CommandConfig) error {
 		return err
 	}
 
-	scopesConverted, err := resource2table.ConvertContainerRegistryTokenScopesToTable(tokenUp.Properties.Scopes)
-	if err != nil {
-		return err
-	}
+	scopesConverted := resource2table.ConvertContainerRegistryTokenScopesToTable(tokenUp.Properties.Scopes)
 
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 

@@ -80,10 +80,7 @@ func CmdGetTokenScopesList(c *core.CommandConfig) error {
 		return fmt.Errorf("could not retrieve Container Registry Token Scopes")
 	}
 
-	scopesConverted, err := resource2table.ConvertContainerRegistryTokenScopesToTable(token.Properties.Scopes)
-	if err != nil {
-		return err
-	}
+	scopesConverted := resource2table.ConvertContainerRegistryTokenScopesToTable(token.Properties.Scopes)
 
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 

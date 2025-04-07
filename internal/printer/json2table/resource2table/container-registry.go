@@ -82,9 +82,9 @@ func ConvertContainerRegistryVulnerabilityToTable(vulnerability containerregistr
 	return convertedVulnerability, nil
 }
 
-func ConvertContainerRegistryTokenScopesToTable(scopes []containerregistry.Scope) ([]map[string]interface{}, error) {
-	if scopes == nil || len(scopes) == 0 {
-		return nil, nil // empty output
+func ConvertContainerRegistryTokenScopesToTable(scopes []containerregistry.Scope) []map[string]interface{} {
+	if len(scopes) == 0 {
+		return nil // empty output
 	}
 
 	var convertedScopes = make([]map[string]interface{}, len(scopes))
@@ -97,5 +97,5 @@ func ConvertContainerRegistryTokenScopesToTable(scopes []containerregistry.Scope
 		convertedScopes[idx]["Actions"] = strings.Join(scope.GetActions(), ", ")
 	}
 
-	return convertedScopes, nil
+	return convertedScopes
 }
