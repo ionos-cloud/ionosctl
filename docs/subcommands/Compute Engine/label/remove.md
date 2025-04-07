@@ -15,7 +15,7 @@ ionosctl label remove [flags]
 For `remove` command:
 
 ```text
-[r]
+[delete del r rm]
 ```
 
 ## Description
