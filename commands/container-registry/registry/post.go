@@ -3,6 +3,8 @@ package registry
 import (
 	"context"
 	"fmt"
+	"math/rand"
+	"time"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
@@ -51,18 +53,22 @@ func RegPostCmd() *core.Command {
 		},
 	)
 
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	hour := 10 + r.Intn(7) // Random hour 10-16
+	workingDaysOfWeek := []string{"Monday", "Tuesday", "Wednesday", "Thursday", "Friday"}
+
 	cmd.AddStringSliceFlag(
-		FlagRegGCDays, "", []string{}, "Specify the garbage collection schedule days",
+		FlagRegGCDays, "", []string{workingDaysOfWeek[rand.Intn(len(workingDaysOfWeek))]}, "Specify the garbage collection schedule days. "+
+			"Defaults to a random day during Mon-Fri, during the hours 10:00-16:00",
 	)
 	_ = cmd.Command.RegisterFlagCompletionFunc(
 		FlagRegGCDays,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-			return []string{
-				"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday",
-			}, cobra.ShellCompDirectiveNoFileComp
+			return append(workingDaysOfWeek, "Saturday", "Sunday"), cobra.ShellCompDirectiveNoFileComp
 		},
 	)
-	cmd.AddStringFlag(FlagRegGCTime, "", "", "Specify the garbage collection schedule time of day using RFC3339 format")
+	cmd.AddStringFlag(FlagRegGCTime, "", fmt.Sprintf("%02d:00:00Z", hour), "Specify the garbage collection schedule time of day using RFC3339 format. "+
+		"i.e. \"16:00:00Z\". Defaults to a random day during Mon-Fri, during the hours 10:00-16:00")
 	cmd.AddBoolFlag(
 		constants.FlagRegistryVulnScan, "", true, "Enable/disable vulnerability scanning (this is a paid add-on)",
 	)
@@ -94,22 +100,15 @@ func CmdPost(c *core.CommandConfig) error {
 
 	v := containerregistry.NewWeeklyScheduleWithDefaults()
 
-	if viper.IsSet(core.GetFlagName(c.NS, FlagRegGCDays)) {
-		days := viper.GetStringSlice(core.GetFlagName(c.NS, FlagRegGCDays))
-		var daysSdk = []containerregistry.Day{}
+	days := viper.GetStringSlice(core.GetFlagName(c.NS, FlagRegGCDays))
+	var daysSdk = []containerregistry.Day{}
 
-		for _, day := range days {
-			daysSdk = append(daysSdk, containerregistry.Day(day))
-		}
-
-		v.SetDays(daysSdk)
+	for _, day := range days {
+		daysSdk = append(daysSdk, containerregistry.Day(day))
 	}
 
-	if viper.IsSet(core.GetFlagName(c.NS, FlagRegGCTime)) {
-		v.Time = viper.GetString(core.GetFlagName(c.NS, FlagRegGCTime))
-	} else {
-		v.SetTime("01:23:00+00:00")
-	}
+	v.SetDays(daysSdk)
+	v.Time = viper.GetString(core.GetFlagName(c.NS, FlagRegGCTime))
 
 	feat := containerregistry.NewRegistryFeaturesWithDefaults()
 	featEnabled := viper.GetBool(core.GetFlagName(c.NS, constants.FlagRegistryVulnScan))
@@ -134,7 +133,7 @@ func CmdPost(c *core.CommandConfig) error {
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 	out, err := jsontabwriter.GenerateOutput(
-		"", jsonpaths.ContainerRegistryRegistry, reg, tabheaders.GetHeaders(allCols, postCols, cols),
+		"", jsonpaths.ContainerRegistryRegistry, reg, tabheaders.GetHeadersAllDefault(allCols, cols),
 	)
 	if err != nil {
 		return err

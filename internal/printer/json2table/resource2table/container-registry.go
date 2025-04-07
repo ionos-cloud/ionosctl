@@ -2,6 +2,7 @@ package resource2table
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
@@ -79,4 +80,22 @@ func ConvertContainerRegistryVulnerabilityToTable(vulnerability containerregistr
 	convertedVulnerability[0]["Affects"] = affectsFormatted
 
 	return convertedVulnerability, nil
+}
+
+func ConvertContainerRegistryTokenScopesToTable(scopes []containerregistry.Scope) []map[string]interface{} {
+	if len(scopes) == 0 {
+		return nil // empty output
+	}
+
+	var convertedScopes = make([]map[string]interface{}, len(scopes))
+	for idx, scope := range scopes {
+		convertedScopes[idx] = make(map[string]interface{})
+
+		convertedScopes[idx]["ScopeId"] = fmt.Sprintf("%v", idx)
+		convertedScopes[idx]["Type"] = scope.GetType()
+		convertedScopes[idx]["DisplayName"] = scope.GetName()
+		convertedScopes[idx]["Actions"] = strings.Join(scope.GetActions(), ", ")
+	}
+
+	return convertedScopes
 }

@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/resource2table"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/sdk-go-bundle/products/containerregistry/v2"
@@ -57,8 +58,19 @@ func TokenScopesAddCmd() *core.Command {
 
 	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "Scope name", core.RequiredFlagOption())
 	cmd.AddStringFlag(FlagType, "y", "", "Scope type", core.RequiredFlagOption())
+	_ = cmd.Command.RegisterFlagCompletionFunc(
+		constants.FlagType,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return []string{"repository", "namespace", "registry"}, cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 	cmd.AddStringSliceFlag(FlagActions, "a", []string{}, "Scope actions", core.RequiredFlagOption())
-
+	_ = cmd.Command.RegisterFlagCompletionFunc(
+		FlagActions,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return []string{"*", "push", "pull", "delete", "read", "write", "list"}, cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 	cmd.Command.Flags().StringSlice(constants.ArgCols, nil, tabheaders.ColsMessage(allScopeCols))
 	_ = cmd.Command.RegisterFlagCompletionFunc(
 		constants.ArgCols,
@@ -118,10 +130,17 @@ func CmdTokenScopesAdd(c *core.CommandConfig) error {
 	}
 
 	updateToken := containerregistry.NewPatchTokenInput()
-	updateToken.SetExpiryDate(token.Properties.GetExpiryDate())
-	updateToken.SetStatus(token.Properties.GetStatus())
+	if token.Properties.ExpiryDate != nil {
+		updateToken.SetExpiryDate(token.Properties.GetExpiryDate())
+	}
+
+	if token.Properties.Status != nil {
+		updateToken.SetStatus(token.Properties.GetStatus())
+	}
+
 	scopes := token.Properties.GetScopes()
 	scopes = append(scopes, scope)
+
 	updateToken.SetScopes(scopes)
 
 	tokenUp, _, err := c.ContainerRegistryServices.Token().Patch(tokenId, *updateToken, regId)
@@ -129,11 +148,12 @@ func CmdTokenScopesAdd(c *core.CommandConfig) error {
 		return err
 	}
 
+	scopesConverted := resource2table.ConvertContainerRegistryTokenScopesToTable(tokenUp.Properties.Scopes)
+
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-	out, err := jsontabwriter.GenerateOutput(
-		"properties.scopes", allScopeJSONPaths, tokenUp,
-		tabheaders.GetHeaders(allScopeCols, defaultScopeCols, cols),
+	out, err := jsontabwriter.GenerateOutputPreconverted(
+		token.Properties.Scopes, scopesConverted, tabheaders.GetHeadersAllDefault(allScopeCols, cols),
 	)
 	if err != nil {
 		return err

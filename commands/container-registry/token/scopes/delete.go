@@ -3,6 +3,7 @@ package scopes
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/registry"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
@@ -77,7 +78,9 @@ func CmdGetTokenScopesDelete(c *core.CommandConfig) error {
 	if viper.GetBool(core.GetFlagName(c.NS, constants.ArgAll)) {
 		updateToken := containerregistry.NewPutTokenInputWithDefaults()
 		updateProp := containerregistry.NewPostTokenPropertiesWithDefaults()
-		updateProp.SetExpiryDate(token.Properties.GetExpiryDate())
+		if token.Properties.ExpiryDate != nil {
+			updateProp.SetExpiryDate(token.Properties.GetExpiryDate())
+		}
 		updateProp.SetStatus(token.Properties.GetStatus())
 		updateProp.SetName(token.Properties.GetName())
 		updateToken.SetProperties(*updateProp)
@@ -105,23 +108,30 @@ func CmdGetTokenScopesDelete(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	id--
+
+	scopes := token.Properties.Scopes
+	if id < 0 || id >= len(scopes) {
+		return fmt.Errorf("invalid scope ID %d: out of range", id)
+	}
 
 	updateToken := containerregistry.NewPutTokenInputWithDefaults()
 	updateProp := containerregistry.NewPostTokenPropertiesWithDefaults()
 
-	scopes := token.Properties.GetScopes()
 	scopes = append(scopes[:id], scopes[id+1:]...)
 
-	updateProp.SetExpiryDate(token.Properties.GetExpiryDate())
+	if token.Properties.ExpiryDate != nil {
+		updateProp.SetExpiryDate(token.Properties.GetExpiryDate())
+	}
 	updateProp.SetStatus(token.Properties.GetStatus())
 	updateProp.SetName(token.Properties.GetName())
 	updateProp.SetScopes(scopes)
 	updateToken.SetProperties(*updateProp)
 
-	msg := fmt.Sprintf("delete scope %d from Token: %s", id+1, *token.Id)
+	targetScope := token.Properties.Scopes[id]
+	ask := fmt.Sprintf("delete scope %d (name '%s', type '%s' with actions [%s]) from Token: %s", id,
+		targetScope.Name, targetScope.Type, strings.Join(targetScope.Actions, ", "), token.Properties.Name)
 
-	if !confirm.FAsk(c.Command.Command.InOrStdin(), msg, viper.GetBool(constants.ArgForce)) {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), ask, viper.GetBool(constants.ArgForce)) {
 		return fmt.Errorf(confirm.UserDenied)
 	}
 
@@ -136,6 +146,7 @@ func CmdGetTokenScopesDelete(c *core.CommandConfig) error {
 	}
 
 	return nil
+
 }
 
 func PreCmdTokenScopesDelete(c *core.PreCommandConfig) error {

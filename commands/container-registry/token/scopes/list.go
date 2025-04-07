@@ -7,6 +7,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/container-registry/registry"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/resource2table"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/spf13/cobra"
@@ -79,11 +80,12 @@ func CmdGetTokenScopesList(c *core.CommandConfig) error {
 		return fmt.Errorf("could not retrieve Container Registry Token Scopes")
 	}
 
+	scopesConverted := resource2table.ConvertContainerRegistryTokenScopesToTable(token.Properties.Scopes)
+
 	cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-	out, err := jsontabwriter.GenerateOutput(
-		"", allScopeJSONPaths, scopes,
-		tabheaders.GetHeaders(allScopeCols, defaultScopeCols, cols),
+	out, err := jsontabwriter.GenerateOutputPreconverted(
+		token.Properties.Scopes, scopesConverted, tabheaders.GetHeadersAllDefault(allScopeCols, cols),
 	)
 	if err != nil {
 		return err
