@@ -12,6 +12,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
+	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -38,7 +39,8 @@ func LabelCmd() *core.Command {
 	})
 
 	var (
-		allowedValues = []string{cloudapiv6.DatacenterResource, cloudapiv6.VolumeResource, cloudapiv6.ServerResource, cloudapiv6.SnapshotResource, cloudapiv6.IpBlockResource}
+		allowedValues = []string{cloudapiv6.DatacenterResource, cloudapiv6.VolumeResource, cloudapiv6.ServerResource,
+			cloudapiv6.SnapshotResource, cloudapiv6.IpBlockResource, cloudapiv6.ImageResource}
 	)
 
 	/*
@@ -76,6 +78,14 @@ func LabelCmd() *core.Command {
 	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgSnapshotId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.SnapshotIds(), cobra.ShellCompDirectiveNoFileComp
 	})
+	list.AddUUIDFlag(cloudapiv6.ArgImageId, "", "", cloudapiv6.ImageId+"(note: only private images supported)")
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgImageId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		// complete with private images only (cannot add labels to public images)
+		return completer.ImageIds(
+			func(request ionoscloud.ApiImagesGetRequest) ionoscloud.ApiImagesGetRequest {
+				return request.Filter("public", "false")
+			}), cobra.ShellCompDirectiveNoFileComp
+	})
 	list.AddSetFlag(cloudapiv6.ArgResourceType, "", "", allowedValues, "Type of resource to list labels from", core.RequiredFlagOption())
 	list.AddInt32Flag(constants.FlagMaxResults, constants.FlagMaxResultsShort, cloudapiv6.DefaultMaxResults, constants.DescMaxResults)
 	list.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultListDepth, cloudapiv6.ArgDepthDescription)
@@ -96,7 +106,7 @@ func LabelCmd() *core.Command {
 		Verb:       "get",
 		Aliases:    []string{"g"},
 		ShortDesc:  "Get a Label",
-		LongDesc:   "Use this command to get information about a specified Label from a specified Resource.\n\nRequired values to run command:\n\n* Resource Type\n* Resource Id: Datacenter Id, Server Id, Volume Id, IpBlock Id or Snapshot Id\n* Label Key",
+		LongDesc:   "Use this command to get information about a specified Label from a specified Resource.\n\nRequired values to run command:\n\n* Resource Type\n* Resource Id: Datacenter Id, Server Id, Volume Id, IpBlock Id, Image ID, or Snapshot Id\n* Label Key",
 		Example:    getLabelExample,
 		PreCmdRun:  PreRunResourceTypeLabelKey,
 		CmdRun:     RunLabelGet,
@@ -122,6 +132,14 @@ func LabelCmd() *core.Command {
 	get.AddUUIDFlag(cloudapiv6.ArgSnapshotId, "", "", cloudapiv6.SnapshotId)
 	_ = get.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgSnapshotId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.SnapshotIds(), cobra.ShellCompDirectiveNoFileComp
+	})
+	get.AddUUIDFlag(cloudapiv6.ArgImageId, "", "", cloudapiv6.ImageId+"(note: only private images supported)")
+	_ = get.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgImageId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		// complete with private images only (cannot add labels to public images)
+		return completer.ImageIds(
+			func(request ionoscloud.ApiImagesGetRequest) ionoscloud.ApiImagesGetRequest {
+				return request.Filter("public", "false")
+			}), cobra.ShellCompDirectiveNoFileComp
 	})
 	get.AddSetFlag(cloudapiv6.ArgResourceType, "", "", allowedValues, "Type of resource to get labels from", core.RequiredFlagOption())
 	get.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultGetDepth, cloudapiv6.ArgDepthDescription)
@@ -152,7 +170,7 @@ func LabelCmd() *core.Command {
 		Verb:       "add",
 		Aliases:    []string{"a"},
 		ShortDesc:  "Add a Label to a Resource",
-		LongDesc:   "Use this command to add a Label to a specific Resource.\n\nRequired values to run command:\n\n* Resource Type\n* Resource Id: Datacenter Id, Server Id, Volume Id, IpBlock Id or Snapshot Id\n* Label Key\n* Label Value",
+		LongDesc:   "Use this command to add a Label to a specific Resource.\n\nRequired values to run command:\n\n* Resource Type\n* Resource Id: Datacenter Id, Server Id, Volume Id, IpBlock Id, Image ID, or Snapshot Id\n* Label Key\n* Label Value",
 		Example:    addLabelExample,
 		PreCmdRun:  PreRunResourceTypeLabelKeyValue,
 		CmdRun:     RunLabelAdd,
@@ -180,6 +198,14 @@ func LabelCmd() *core.Command {
 	_ = addLabel.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgSnapshotId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.SnapshotIds(), cobra.ShellCompDirectiveNoFileComp
 	})
+	addLabel.AddUUIDFlag(cloudapiv6.ArgImageId, "", "", cloudapiv6.ImageId+"(note: only private images supported)")
+	_ = addLabel.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgImageId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		// complete with private images only (cannot add labels to public images)
+		return completer.ImageIds(
+			func(request ionoscloud.ApiImagesGetRequest) ionoscloud.ApiImagesGetRequest {
+				return request.Filter("public", "false")
+			}), cobra.ShellCompDirectiveNoFileComp
+	})
 	addLabel.AddSetFlag(cloudapiv6.ArgResourceType, "", "", allowedValues, "Type of resource to add labels to", core.RequiredFlagOption())
 	addLabel.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultMiscDepth, cloudapiv6.ArgDepthDescription)
 
@@ -190,9 +216,9 @@ func LabelCmd() *core.Command {
 		Namespace:  "label",
 		Resource:   "label",
 		Verb:       "remove",
-		Aliases:    []string{"r"},
+		Aliases:    []string{"delete", "del", "r", "rm"},
 		ShortDesc:  "Remove a Label from a Resource",
-		LongDesc:   "Use this command to remove a Label from a Resource.\n\nRequired values to run command:\n\n* Resource Type\n* Resource Id: Datacenter Id, Server Id, Volume Id, IpBlock Id or Snapshot Id\n* Label Key",
+		LongDesc:   "Use this command to remove a Label from a Resource.\n\nRequired values to run command:\n\n* Resource Type\n* Resource Id: Datacenter Id, Server Id, Volume Id, IpBlock Id, Image ID, or Snapshot Id\n* Label Key",
 		Example:    removeLabelExample,
 		PreCmdRun:  PreRunResourceTypeLabelKeyRemove,
 		CmdRun:     RunLabelRemove,
@@ -218,6 +244,14 @@ func LabelCmd() *core.Command {
 	removeLabel.AddUUIDFlag(cloudapiv6.ArgSnapshotId, "", "", cloudapiv6.SnapshotId)
 	_ = removeLabel.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgSnapshotId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.SnapshotIds(), cobra.ShellCompDirectiveNoFileComp
+	})
+	removeLabel.AddUUIDFlag(cloudapiv6.ArgImageId, "", "", cloudapiv6.ImageId+"(note: only private images supported)")
+	_ = removeLabel.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgImageId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		// complete with private images only (cannot add labels to public images)
+		return completer.ImageIds(
+			func(request ionoscloud.ApiImagesGetRequest) ionoscloud.ApiImagesGetRequest {
+				return request.Filter("public", "false")
+			}), cobra.ShellCompDirectiveNoFileComp
 	})
 	removeLabel.AddSetFlag(cloudapiv6.ArgResourceType, "", "", allowedValues, "Type of resource to remove labels from", core.RequiredFlagOption())
 	removeLabel.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Remove all Labels")
@@ -256,6 +290,10 @@ func generateFlagSets(c *core.PreCommandConfig, extraFlags ...string) []core.Fla
 			FlagNameSet:    append([]string{cloudapiv6.ArgResourceType, cloudapiv6.ArgIpBlockId}, extraFlags...),
 			Predicate:      funcResourceTypeSetAndMatches,
 			PredicateParam: cloudapiv6.IpBlockResource,
+		}, {
+			FlagNameSet:    append([]string{cloudapiv6.ArgResourceType, cloudapiv6.ArgImageId}, extraFlags...),
+			Predicate:      funcResourceTypeSetAndMatches,
+			PredicateParam: cloudapiv6.ImageResource,
 		},
 	}
 }
@@ -312,6 +350,8 @@ func RunLabelList(c *core.CommandConfig) error {
 		return RunIpBlockLabelsList(c)
 	case cloudapiv6.SnapshotResource:
 		return RunSnapshotLabelsList(c)
+	case cloudapiv6.ImageResource:
+		return RunImageLabelsList(c)
 	default:
 		labelDcs, _, err := c.CloudApiV6Services.Labels().List(listQueryParams)
 		if err != nil {
@@ -353,6 +393,8 @@ func RunLabelGet(c *core.CommandConfig) error {
 		return RunIpBlockLabelGet(c)
 	case cloudapiv6.SnapshotResource:
 		return RunSnapshotLabelGet(c)
+	case cloudapiv6.ImageResource:
+		return RunImageLabelGet(c)
 	default:
 		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(labelResourceWarning))
 
@@ -395,6 +437,8 @@ func RunLabelAdd(c *core.CommandConfig) error {
 		return RunIpBlockLabelAdd(c)
 	case cloudapiv6.SnapshotResource:
 		return RunSnapshotLabelAdd(c)
+	case cloudapiv6.ImageResource:
+		return RunImageLabelAdd(c)
 	default:
 		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(labelResourceWarning))
 
@@ -405,7 +449,7 @@ func RunLabelAdd(c *core.CommandConfig) error {
 func RunLabelRemove(c *core.CommandConfig) error {
 	resourceType := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceType))
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Label is removing from %v...", resourceType))
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("removing label from %v...", resourceType))
 
 	switch resourceType {
 	case cloudapiv6.DatacenterResource:
@@ -418,6 +462,8 @@ func RunLabelRemove(c *core.CommandConfig) error {
 		return RunIpBlockLabelRemove(c)
 	case cloudapiv6.SnapshotResource:
 		return RunSnapshotLabelRemove(c)
+	case cloudapiv6.ImageResource:
+		return RunImageLabelRemove(c)
 	default:
 		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput(labelResourceWarning))
 

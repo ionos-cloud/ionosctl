@@ -4,6 +4,7 @@
 
 ### Added
 - Added --server-type for managed kubernetes nodepools
+- Added support for labeling images
 
 ### Changed
 - Changed login message to include the username you have logged in as, if possible.

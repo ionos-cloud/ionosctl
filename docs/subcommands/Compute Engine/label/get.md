@@ -25,7 +25,7 @@ Use this command to get information about a specified Label from a specified Res
 Required values to run command:
 
 * Resource Type
-* Resource Id: Datacenter Id, Server Id, Volume Id, IpBlock Id or Snapshot Id
+* Resource Id: Datacenter Id, Server Id, Volume Id, IpBlock Id, Image ID, or Snapshot Id
 * Label Key
 
 ## Options
@@ -39,12 +39,13 @@ Required values to run command:
   -D, --depth int32            Controls the detail depth of the response objects. Max depth is 10.
   -f, --force                  Force command to execute without user input
   -h, --help                   Print usage
+      --image-id string        The unique Image Id(note: only private images supported)
       --ipblock-id string      The unique IpBlock Id
       --label-key string       The unique Label Key (required)
       --no-headers             Don't print table headers when table output is used
   -o, --output string          Desired output format [text|json|api-json] (default "text")
   -q, --quiet                  Quiet output
-      --resource-type string   Type of resource to get labels from. Can be one of: datacenter, volume, server, snapshot, ipblock (required)
+      --resource-type string   Type of resource to get labels from. Can be one of: datacenter, volume, server, snapshot, ipblock, image (required)
       --server-id string       The unique Server Id
       --snapshot-id string     The unique Snapshot Id
   -v, --verbose                Print step-by-step process when running command

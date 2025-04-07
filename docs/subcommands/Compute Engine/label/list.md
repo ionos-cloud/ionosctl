@@ -39,13 +39,14 @@ Available Filters:
   -F, --filters strings        Limits results to those containing a matching value for a specific property. Use the following format to set filters: --filters KEY1=VALUE1,KEY2=VALUE2
   -f, --force                  Force command to execute without user input
   -h, --help                   Print usage
+      --image-id string        The unique Image Id(note: only private images supported)
       --ipblock-id string      The unique IpBlock Id
   -M, --max-results int32      The maximum number of elements to return
       --no-headers             Don't print table headers when table output is used
       --order-by string        Limits results to those containing a matching value for a specific property
   -o, --output string          Desired output format [text|json|api-json] (default "text")
   -q, --quiet                  Quiet output
-      --resource-type string   Type of resource to list labels from. Can be one of: datacenter, volume, server, snapshot, ipblock (required)
+      --resource-type string   Type of resource to list labels from. Can be one of: datacenter, volume, server, snapshot, ipblock, image (required)
       --server-id string       The unique Server Id
       --snapshot-id string     The unique Snapshot Id
   -v, --verbose                Print step-by-step process when running command

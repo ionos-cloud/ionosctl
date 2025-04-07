@@ -1,11 +1,13 @@
 package commands
 
 import (
+	"context"
 	"errors"
 	"fmt"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
@@ -16,6 +18,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
+	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
 )
 
@@ -207,6 +210,186 @@ func RemoveAllDatacenterLabels(c *core.CommandConfig) error {
 	}
 
 	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Datacenter Labels successfully deleted"))
+	return nil
+}
+
+func listImageLabels(c *core.CommandConfig) (ionoscloud.LabelResources, error) {
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return ionoscloud.LabelResources{}, err
+	}
+
+	req := client.Must().CloudClient.LabelsApi.ImagesLabelsGet(
+		context.Background(),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgImageId)))
+
+	if listQueryParams.QueryParams.Depth != nil {
+		req = req.Depth(*listQueryParams.QueryParams.Depth)
+	}
+
+	if listQueryParams.MaxResults != nil {
+		req = req.MaxResults(*listQueryParams.MaxResults)
+	}
+
+	if listQueryParams.OrderBy != nil {
+		req = req.OrderBy(*listQueryParams.OrderBy)
+	}
+
+	if listQueryParams.Filters != nil {
+		for key, values := range *listQueryParams.Filters {
+			for _, value := range values {
+				req = req.Filter(key, value)
+			}
+		}
+	}
+
+	labels, _, err := req.Execute()
+	if err != nil {
+		return ionoscloud.LabelResources{}, err
+	}
+	return labels, nil
+}
+
+func RunImageLabelsList(c *core.CommandConfig) error {
+	labels, err := listImageLabels(c)
+	if err != nil {
+		return fmt.Errorf("could not get items of Image Labels: %w", err)
+	}
+
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+
+	out, err := jsontabwriter.GenerateOutput("items", jsonpaths.Label, labels,
+		tabheaders.GetHeadersAllDefault(defaultLabelCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+
+	return nil
+}
+
+func RunImageLabelGet(c *core.CommandConfig) error {
+	imageId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgImageId))
+	labelKey := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelKey))
+
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
+		"Getting label with key: %v of Image with id: %v...", labelKey, imageId))
+
+	labelDc, _, err := client.Must().CloudClient.LabelsApi.ImagesLabelsFindByKey(context.Background(), imageId, labelKey).Execute()
+	if err != nil {
+		return err
+	}
+
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Label, labelDc,
+		tabheaders.GetHeadersAllDefault(defaultLabelCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+
+	return nil
+}
+
+func RunImageLabelAdd(c *core.CommandConfig) error {
+	imageId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgImageId))
+	labelKey := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelKey))
+	labelValue := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelValue))
+
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
+		"Adding label with key: %v and value: %v to Image with id: %v...", labelKey, labelValue, imageId))
+
+	labelDc, _, err := client.Must().CloudClient.LabelsApi.ImagesLabelsPost(context.Background(), imageId).Label(
+		ionoscloud.LabelResource{
+			Properties: &ionoscloud.LabelResourceProperties{
+				Key:   &labelKey,
+				Value: &labelValue,
+			},
+		}).Execute()
+	if err != nil {
+		return err
+	}
+
+	cols := viper.GetStringSlice(core.GetFlagName(c.Resource, constants.ArgCols))
+
+	out, err := jsontabwriter.GenerateOutput("", jsonpaths.Label, labelDc,
+		tabheaders.GetHeadersAllDefault(defaultLabelCols, cols))
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+
+	return nil
+}
+
+func RunImageLabelRemove(c *core.CommandConfig) error {
+	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
+		if err := RemoveAllImageLabels(c); err != nil {
+			return err
+		}
+
+		return nil
+	}
+
+	imageId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgImageId))
+	labelKey := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelKey))
+
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
+		"Removing label with key: %v for Image with id: %v...", labelKey, imageId))
+
+	_, err := client.Must().CloudClient.LabelsApi.ImagesLabelsDelete(context.Background(), imageId, labelKey).Execute()
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Image Label successfully deleted"))
+	return nil
+}
+
+func RemoveAllImageLabels(c *core.CommandConfig) error {
+	labels, err := listImageLabels(c)
+	if err != nil {
+		return fmt.Errorf("failed getting labels: %w", err)
+	}
+	labelsItems, ok := labels.GetItemsOk()
+
+	if !ok || labelsItems == nil {
+		return fmt.Errorf("could not get items of Image Labels")
+	}
+
+	if len(*labelsItems) <= 0 {
+		return fmt.Errorf("no Image Labels found")
+	}
+
+	if !confirm.FAsk(c.Command.Command.InOrStdin(),
+		fmt.Sprintf("delete all the image labels on image %s? ", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgImageId))),
+		viper.GetBool(constants.ArgForce)) {
+		return fmt.Errorf(confirm.UserDenied)
+	}
+
+	var multiErr error
+	for _, label := range *labelsItems {
+		id, ok := label.GetIdOk()
+		if !ok || id == nil {
+			continue
+		}
+
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Starting deleting Label with id: %v...", *id))
+
+		_, err := client.Must().CloudClient.LabelsApi.ImagesLabelsDelete(c.Context, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgImageId)), *id).Execute()
+		if err != nil {
+			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
+			continue
+		}
+	}
+
+	if multiErr != nil {
+		return multiErr
+	}
 	return nil
 }
 
