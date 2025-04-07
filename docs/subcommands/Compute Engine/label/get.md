@@ -25,7 +25,7 @@ Use this command to get information about a specified Label from a specified Res
 Required values to run command:
 
 * Resource Type
-* Resource Id: Datacenter Id, Server Id, Volume Id, IpBlock Id or Snapshot Id
+* Resource Id: Datacenter Id, Server Id, Volume Id, IpBlock Id, Image ID, or Snapshot Id
 * Label Key
 
 ## Options

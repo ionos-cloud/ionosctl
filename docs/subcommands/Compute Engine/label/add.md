@@ -25,7 +25,7 @@ Use this command to add a Label to a specific Resource.
 Required values to run command:
 
 * Resource Type
-* Resource Id: Datacenter Id, Server Id, Volume Id, IpBlock Id or Snapshot Id
+* Resource Id: Datacenter Id, Server Id, Volume Id, IpBlock Id, Image ID, or Snapshot Id
 * Label Key
 * Label Value
 
