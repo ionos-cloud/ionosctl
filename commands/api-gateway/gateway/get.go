@@ -3,11 +3,11 @@ package gateway
 import (
 	"context"
 	"fmt"
-	"github.com/ionos-cloud/ionosctl/v6/commands/dns/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/api-gateway/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
-	"github.com/ionos-cloud/sdk-go-bundle/products/dns/v2"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/spf13/cobra"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
@@ -39,7 +39,7 @@ func GatewaysFindByIdCmd() *core.Command {
 
 			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-			out, err := jsontabwriter.GenerateOutput("", jsonpaths.ApiGatewayGateway, r, cols)
+			out, err := jsontabwriter.GenerateOutput("", jsonpaths.ApiGatewayGateway, r, tabheaders.GetHeadersAllDefault(allCols, cols))
 			if err != nil {
 				return err
 			}
@@ -50,11 +50,9 @@ func GatewaysFindByIdCmd() *core.Command {
 		InitClient: true,
 	})
 
-	cmd.AddStringFlag(constants.FlagZone, constants.FlagZoneShort, "", constants.DescZone)
-	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagZone, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.ZonesProperty(func(t dns.ZoneRead) string {
-			return t.Properties.ZoneName
-		}), cobra.ShellCompDirectiveNoFileComp
+	cmd.AddStringFlag(constants.FlagGatewayID, constants.FlagGatewayShort, "", constants.DescGateway)
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagGatewayID, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.GatewaysIDs(), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	cmd.Command.SilenceUsage = true

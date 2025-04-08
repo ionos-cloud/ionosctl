@@ -30,8 +30,7 @@ import (
 //"status":"PROVISIONING","statusMessage":"components are being provisioned."
 
 var (
-	allCols     = []string{"Id", "Name", "Type", "Paths", "Methods", "Host", "Port", "Weight", "Status", "StatusMessage"}
-	defaultCols = []string{"Id", "Name", "Type", "Paths", "Methods", "Host", "Port", "Weight"}
+	allCols = []string{"Id", "Name", "Type", "Paths", "Methods", "Host", "Port", "Weight", "Status", "StatusMessage"}
 )
 
 func RecordCommand() *core.Command {
@@ -50,6 +49,7 @@ func RecordCommand() *core.Command {
 	cmd.AddCommand(RouteListCmd())
 	cmd.AddCommand(ApiGatewayRouteDeleteCmd())
 	cmd.AddCommand(ApiGatewayRoutesPostCmd())
+	cmd.AddCommand(RouteFindByIdCmd())
 	//cmd.AddCommand(ZonesRecordsPostCmd())
 	//cmd.AddCommand(ZonesRecordsFindByIdCmd())
 	//cmd.AddCommand(ZonesRecordsPutCmd())

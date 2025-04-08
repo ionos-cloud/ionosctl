@@ -32,15 +32,11 @@ func GatewaysIDs() []string {
 	return Ids
 }
 
-func Routes(gatewayID []string) []string {
-	allRoutes := []string{}
-	for _, gatewayID := range gatewayID {
-		routesList, _, _ := client.Must().Apigateway.RoutesApi.ApigatewaysRoutesGet(context.Background(), gatewayID).Execute()
-		routesConverted, err := json2table.ConvertJSONToTable("items", jsonpaths.ApiGatewayRoute, routesList)
-		if err != nil {
-			continue
-		}
-		allRoutes = append(allRoutes, completions.NewCompleter(routesConverted, "Id").AddInfo("Name").ToString()...)
+func Routes(gatewayID string) []string {
+	routesList, _, _ := client.Must().Apigateway.RoutesApi.ApigatewaysRoutesGet(context.Background(), gatewayID).Execute()
+	routesConverted, err := json2table.ConvertJSONToTable("items", jsonpaths.ApiGatewayRoute, routesList)
+	if err != nil {
+		return nil
 	}
-	return allRoutes
+	return completions.NewCompleter(routesConverted, "Id").AddInfo("Name").AddInfo("Paths").ToString()
 }

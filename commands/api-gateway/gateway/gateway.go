@@ -8,7 +8,7 @@ import (
 )
 
 var (
-	allCols = []string{"Id", "Name", "Logs", "Metrics", "Enable", "DomainName", "CertificateId", "HttpMethods", "HttpCodes", "Override", "Status", "PublicEndpoint"}
+	allCols = []string{"Id", "Name", "Logs", "Metrics", "Enable", "DomainName", "CertificateId", "HttpMethods", "HttpCodes", "Override", "PublicEndpoint", "Status"}
 )
 
 func GatewayCommand() *core.Command {

@@ -50,7 +50,7 @@ func ApiGatewayRoutesPostCmd() *core.Command {
 			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
 			out, err := jsontabwriter.GenerateOutput("", jsonpaths.ApiGatewayRoute, rec,
-				tabheaders.GetHeadersAllDefault(defaultCols, cols))
+				tabheaders.GetHeadersAllDefault(allCols, cols))
 			if err != nil {
 				return err
 			}
@@ -76,9 +76,12 @@ func ApiGatewayRouteCreateFlags(cmd *core.Command) *core.Command {
 	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "The name of the route.", core.RequiredFlagOption())
 	cmd.AddStringFlag(constants.FlagType, "", "http", " Default: http. This field specifies the protocol used by the ingress to route traffic to the backend service.")
 	cmd.AddStringFlag(constants.FlagPaths, "", "", fmt.Sprintf("The paths that the route should match."), core.RequiredFlagOption())
-	cmd.AddSetFlag(constants.FlagMethods, "m", "",
-		[]string{"GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD", "CONNECT", "TRACE"},
-		"The HTTP methods that the route should match.", core.RequiredFlagOption())
+	cmd.AddStringSliceFlag(constants.FlagMethods, "m", []string{},
+		"The HTTP methods that the route should match.", core.RequiredFlagOption(), core.WithCompletion(
+			func() []string {
+				return []string{"GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD", "CONNECT", "TRACE"}
+			}, constants.ApiGatewayRegionalURL, constants.GatewayLocations),
+	)
 	cmd.AddBoolFlag(constants.FlagWebSocket, "", false, "To enable websocket support.")
 	cmd.AddSetFlag(constants.FlagScheme, "s", "http",
 		[]string{"http", "https", "grpc", "grpcs"},

@@ -3,6 +3,7 @@ package route
 import (
 	"context"
 	"fmt"
+	"github.com/ionos-cloud/ionosctl/v6/commands/api-gateway/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
@@ -21,10 +22,14 @@ func RouteListCmd() *core.Command {
 		ShortDesc: "Retrieve routes",
 		Example:   "ionosctl apigateway route list",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
+			if err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagGatewayID); err != nil {
+				return err
+			}
 			return nil
 		},
+
 		CmdRun: func(c *core.CommandConfig) error {
-			req := client.Must().Apigateway.RoutesApi.ApigatewaysRoutesGet(context.Background(), c.NS)
+			req := client.Must().Apigateway.RoutesApi.ApigatewaysRoutesGet(context.Background(), viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayID)))
 
 			if fn := core.GetFlagName(c.NS, constants.FlagOrderBy); viper.IsSet(fn) {
 				req = req.OrderBy(viper.GetString(fn))
@@ -55,7 +60,11 @@ func RouteListCmd() *core.Command {
 		},
 		InitClient: true,
 	})
-
+	cmd.AddStringFlag(constants.FlagGatewayID, constants.FlagGatewayShort, "", constants.DescGateway, core.RequiredFlagOption(),
+		core.WithCompletion(func() []string {
+			return completer.GatewaysIDs()
+		}, constants.ApiGatewayRegionalURL, constants.GatewayLocations),
+	)
 	cmd.AddStringFlag(constants.FlagOrderBy, "", "", "The field to order the results by. If not provided, the results will be ordered by the default field.")
 	cmd.AddInt32Flag(constants.FlagLimit, "", 0, "Pagination limit")
 	cmd.AddInt32Flag(constants.FlagOffset, "", 0, "Pagination offset")
