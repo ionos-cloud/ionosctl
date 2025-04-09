@@ -136,7 +136,6 @@ func runTokenDeleteCurrent(c *core.CommandConfig) error {
 		return errors.New(fmt.Sprintf("no token found in environment variable %s or config file", constants.EnvToken))
 	}
 
-	username, errUsername := jwt.Username(tokenToDelete)
 	ask := strings.Builder{}
 	ask.WriteString("delete currently used token in")
 	if usedEnv {
@@ -144,6 +143,7 @@ func runTokenDeleteCurrent(c *core.CommandConfig) error {
 	} else {
 		ask.WriteString(" config file")
 	}
+	username, errUsername := jwt.Username(tokenToDelete)
 	if errUsername == nil {
 		ask.WriteString(fmt.Sprintf(" of user '%s'", username))
 	}
@@ -159,18 +159,19 @@ func runTokenDeleteCurrent(c *core.CommandConfig) error {
 		}
 	}
 
-	if !confirm.FAsk(c.Command.Command.InOrStdin(), ask.String(), viper.GetBool(constants.ArgForce)) {
-		return fmt.Errorf(confirm.UserDenied)
-	}
-
 	headers, err := jwt.Headers(tokenToDelete)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to get headers from token: %w", err)
 	}
 
 	tokenId, err := jwt.Kid(headers)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to get token ID from token: %w", err)
+	}
+	ask.WriteString(fmt.Sprintf(" token id '%s'", tokenId))
+
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), ask.String(), viper.GetBool(constants.ArgForce)) {
+		return fmt.Errorf(confirm.UserDenied)
 	}
 
 	tokenResponse, _, err := c.AuthV1Services.Tokens().DeleteByID(fmt.Sprintf("%v", tokenId), viper.GetInt32(core.GetFlagName(c.NS, authservice.ArgContractNo)))
