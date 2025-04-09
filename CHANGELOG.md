@@ -1,5 +1,10 @@
 # Changelog
 
+## upcoming
+
+### Fixed
+- Fixed 'ionosctl token delete --current' command (#513)
+
 ## [v6.8.2] (April 2025)
 
 ### Added
