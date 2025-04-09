@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/token/completer"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
@@ -125,20 +126,54 @@ func runTokenDeleteCurrent(c *core.CommandConfig) error {
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
 		"Note: This operation is based on Authorization Header for Bearer Token"))
 
-	if viper.GetString(constants.CfgToken) == "" {
-		return errors.New(fmt.Sprintf(
-			"no token found. Please make sure you have exported the %s environment variable or you have token set in the config file",
-			constants.EnvToken),
-		)
+	tokenToDelete := viper.GetString(constants.EnvToken)
+	usedEnv := true // simply used for asking the user for confirmation
+	if tokenToDelete == "" {
+		usedEnv = false
+		tokenToDelete = viper.GetString(constants.CfgToken)
+	}
+	if tokenToDelete == "" {
+		return errors.New(fmt.Sprintf("no token found in environment variable %s or config file", constants.EnvToken))
 	}
 
-	if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("delete CURRENT token"), viper.GetBool(constants.ArgForce)) {
+	username, errUsername := jwt.Username(tokenToDelete)
+	ask := strings.Builder{}
+	ask.WriteString("delete currently used token in")
+	if usedEnv {
+		ask.WriteString(" IONOS_TOKEN")
+	} else {
+		ask.WriteString(" config file")
+	}
+	if errUsername == nil {
+		ask.WriteString(fmt.Sprintf(" of user '%s'", username))
+	}
+	claims, errExtraInfo := jwt.Claims(tokenToDelete)
+	if errExtraInfo == nil {
+		role, errRole := jwt.Role(claims)
+		if errRole == nil {
+			ask.WriteString(fmt.Sprintf(" with role '%s'", role))
+		}
+		number, errContractNumber := jwt.ContractNumber(claims)
+		if errContractNumber == nil {
+			ask.WriteString(fmt.Sprintf(" contract '%d'", number))
+		}
+	}
+
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), ask.String(), viper.GetBool(constants.ArgForce)) {
 		return fmt.Errorf(confirm.UserDenied)
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting current token..."))
+	headers, err := jwt.Headers(tokenToDelete)
+	if err != nil {
+		return err
+	}
 
-	tokenResponse, _, err := c.AuthV1Services.Tokens().DeleteByCriteria("CURRENT", viper.GetInt32(core.GetFlagName(c.NS, authservice.ArgContractNo)))
+	tokenId, err := jwt.Kid(headers)
+	if err != nil {
+		return err
+	}
+
+	tokenResponse, _, err := c.AuthV1Services.Tokens().DeleteByID(fmt.Sprintf("%v", tokenId), viper.GetInt32(core.GetFlagName(c.NS, authservice.ArgContractNo)))
 	if err != nil {
 		return err
 	}
@@ -146,12 +181,13 @@ func runTokenDeleteCurrent(c *core.CommandConfig) error {
 	if tokenResponse != nil {
 		if success, ok := tokenResponse.GetSuccessOk(); ok && success != nil {
 			if *success {
-				fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Status: current token have been successfully deleted"))
+				fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Status: token has been successfully deleted"))
 				return nil
 			}
 		}
 	}
-	return errors.New("error deleting current token")
+
+	return errors.New("error deleting token")
 }
 
 func runTokenDeleteById(c *core.CommandConfig) error {

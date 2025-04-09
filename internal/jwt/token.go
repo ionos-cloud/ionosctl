@@ -154,7 +154,7 @@ func ContractNumber(claims map[string]interface{}) (int64, error) {
 	return int64(contractNumberFloat), nil
 }
 
-// Role extracts role from JWT token claims
+// Role extracts role from JWT token claims (i.e. owner)
 func Role(claims map[string]interface{}) (string, error) {
 	identityInterface, ok := claims["identity"]
 	if !ok {
