@@ -67,10 +67,14 @@ setup_file() {
     group_id=$output
     echo "$group_id" > /tmp/bats_test/group_id
 
+    sleep 5
+
     run ionosctl group user add --group-id "$group_id" \
         --user-id "$user_id" --cols UserId --no-headers 2> /dev/null
     assert_success
     assert_output "$user_id"
+
+    sleep 5
 
     run ionosctl group user list --group-id "$group_id" --cols UserId --no-headers
     assert_success
