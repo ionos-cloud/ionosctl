@@ -27,10 +27,10 @@ var (
 	}
 
 	RouteUpstreams = map[string]string{
-		"scheme":       "properties.upstreams.*.scheme",
-		"loadbalancer": "properties.upstreams.*.loadbalancers",
-		"host":         "properties.upstreams.*.host",
-		"port":         "properties.upstreams.*.port",
-		"weight":       "properties.upstreams.*.weight",
+		"scheme":       "properties.upstreams.0.scheme",
+		"loadbalancer": "properties.upstreams.0.loadbalancers",
+		"host":         "properties.upstreams.0.host",
+		"port":         "properties.upstreams.0.port",
+		"weight":       "properties.upstreams.0.weight",
 	}
 )

@@ -6,7 +6,7 @@ import (
 )
 
 var (
-	allCols = []string{"Id", "Name", "Type", "Paths", "Methods", "WebSocket", "Scheme", "LoadBalancer", "Host", "Port", "Weight"}
+	allCols = []string{"Scheme", "LoadBalancer", "Host", "Port", "Weight"}
 )
 
 func UpstreamsCmd() *core.Command {
