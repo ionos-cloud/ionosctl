@@ -19,8 +19,8 @@ import (
 
 func ApiGatewayRoutesPostCmd() *core.Command {
 	cmd := core.NewCommand(context.Background(), nil, core.CommandBuilder{
-		Namespace: "route",
-		Resource:  "apigateway route",
+		Namespace: "apigateway",
+		Resource:  "route",
 		Verb:      "create",
 		Aliases:   []string{"c", "post"},
 		ShortDesc: "Once you have created an API instance in the API Gateway, the next step is adding and editing routes to define how your API handles incoming requests",
@@ -33,7 +33,7 @@ func ApiGatewayRoutesPostCmd() *core.Command {
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			input := apigateway.Route{} //dns.Record{}
+			input := apigateway.Route{}
 
 			modifyRoutePropertiesFromFlags(c, &input)
 

@@ -49,6 +49,14 @@ func ApigatewayPostCmd() *core.Command {
 				input.Metrics = pointer.From(viper.GetBool(fn))
 			}
 
+			if fn := core.GetFlagName(c.NS, constants.FlagNameCustomDomainsName); viper.IsSet(fn) {
+				input.CustomDomains[0].Name = pointer.From(viper.GetString(fn))
+			}
+
+			if fn := core.GetFlagName(c.NS, constants.FlagNameCustomCertificateId); viper.IsSet(fn) {
+				input.CustomDomains[0].Name = pointer.From(viper.GetString(fn))
+			}
+
 			z, _, err := client.Must().Apigateway.APIGatewaysApi.ApigatewaysPost(context.Background()).
 				GatewayCreate(apigateway.GatewayCreate{Properties: input}).Execute()
 
@@ -72,6 +80,8 @@ func ApigatewayPostCmd() *core.Command {
 	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "The name of the ApiGateway gateway")
 	cmd.AddBoolFlag(constants.FlagLogs, "", false, "The logs parameter of the ApiGateway gateway")
 	cmd.AddBoolFlag(constants.FlagMetrics, "", false, "Activate or deactivate the ApiGateway gateway metrics parameter")
+	cmd.AddStringFlag(constants.FlagNameCustomDomainsName, "", "", "The domain name of the distribution. Field is validated as FQDN")
+	cmd.AddStringFlag(constants.FlagNameCustomCertificateId, "", "", "The ID of the certificate to use for the distribution.")
 
 	cmd.Command.SilenceUsage = true
 	cmd.Command.Flags().SortFlags = false

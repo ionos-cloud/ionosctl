@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/gofrs/uuid/v5"
+	"github.com/ionos-cloud/ionosctl/v6/commands/api-gateway/route/upstreams"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dns/utils"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/config"
@@ -15,19 +16,6 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
-
-//"Id":           "id",
-//"Name":         "properties.name",
-//"Type":         "properties.type",
-//"Paths":        "properties.paths",
-//"Methods":      "properties.methods",
-//"WebSocket":    "properties.webSocket",
-//"Scheme":       "properties.upstreams.0.scheme",
-//"LoadBalancer": "properties.upstreams.0.loadbalancers",
-//"Host":         "properties.upstreams.0.host",
-//"Port":         "properties.upstreams.0.port",
-//"Weight":       "properties.upstreams.0.weight",
-//"status":"PROVISIONING","statusMessage":"components are being provisioned."
 
 var (
 	allCols = []string{"Id", "Name", "Type", "Paths", "Methods", "Host", "Port", "Weight", "Status", "StatusMessage"}
@@ -50,9 +38,8 @@ func RecordCommand() *core.Command {
 	cmd.AddCommand(ApiGatewayRouteDeleteCmd())
 	cmd.AddCommand(ApiGatewayRoutesPostCmd())
 	cmd.AddCommand(RouteFindByIdCmd())
-	//cmd.AddCommand(ZonesRecordsPostCmd())
-	//cmd.AddCommand(ZonesRecordsFindByIdCmd())
-	//cmd.AddCommand(ZonesRecordsPutCmd())
+	cmd.AddCommand(RoutesPutCmd())
+	cmd.AddCommand(upstreams.UpstreamsCmd())
 	return cmd
 }
 

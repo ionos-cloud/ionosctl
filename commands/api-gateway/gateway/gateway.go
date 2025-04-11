@@ -27,9 +27,7 @@ func GatewayCommand() *core.Command {
 			return allCols, cobra.ShellCompDirectiveNoFileComp
 		},
 	)
-	//
-	//cmd.AddCommand(ZonesGetCmd())
-	//cmd.AddCommand(ZonesDeleteCmd())
+	cmd.AddCommand(GatewayPutCmd())
 	cmd.AddCommand(ApigatewayPostCmd())
 	cmd.AddCommand(ApigatewayListCmd())
 	cmd.AddCommand(ApiGatewayDeleteCmd())

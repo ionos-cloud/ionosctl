@@ -25,4 +25,12 @@ var (
 		"Status":        "metadata.status",
 		"StatusMessage": "metadata.statusMessage",
 	}
+
+	RouteUpstreams = map[string]string{
+		"scheme":       "properties.upstreams.*.scheme",
+		"loadbalancer": "properties.upstreams.*.loadbalancers",
+		"host":         "properties.upstreams.*.host",
+		"port":         "properties.upstreams.*.port",
+		"weight":       "properties.upstreams.*.weight",
+	}
 )
