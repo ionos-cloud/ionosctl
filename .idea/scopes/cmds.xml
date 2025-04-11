@@ -1,3 +1,0 @@
-<component name="DependencyValidationManager">
-  <scope name="cmds" pattern="file[ionosctl]:commands//*&amp;&amp;!file:commands/login.go&amp;&amp;!file:commands/login_test.go&amp;&amp;!file:commands/root.go&amp;&amp;!file:commands/version.go&amp;&amp;!file:commands/version_test.go&amp;&amp;!file[ionosctl]:*/||file[ionosctl]:commands/dbaas/mongo//*" />
-</component>
