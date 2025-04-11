@@ -285,6 +285,8 @@ func addCommands() {
 	rootCmd.AddCommand(vpn.Root())
 
 	rootCmd.AddCommand(kafka.Command())
+
+	wait.AddTimeoutFlag(rootCmd.Command)
 }
 
 const (
