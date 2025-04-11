@@ -55,7 +55,7 @@ Required values to run command:
       --public                    The indicator whether the cluster is public or private (default true)
   -q, --quiet                     Quiet output
       --s3bucket string           S3 Bucket name configured for K8s usage. It will overwrite the previous value
-  -t, --timeout int               Timeout option for waiting for Cluster to be in ACTIVE state after updating [seconds] (default 600)
+  -t, --timeout duration          Timeout for waiting for resource to reach desired state (default 1m0s)
   -v, --verbose                   Print step-by-step process when running command
   -w, --wait                      Polls the request continuously until the operation is completed
 ```

@@ -46,7 +46,7 @@ Retrieve all vulnerabilities from an artifact
   -q, --quiet                Quiet output
   -r, --registry-id string   Registry ID
       --repository string    Name of the repository to retrieve artifact from
-  -t, --timeout int          Timeout in seconds for polling the request (default 60)
+  -t, --timeout duration     Timeout for waiting for resource to reach desired state (default 1m0s)
   -v, --verbose              Print step-by-step process when running command
   -w, --wait                 Polls the request continuously until the operation is completed
 ```

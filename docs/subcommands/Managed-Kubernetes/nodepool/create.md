@@ -72,7 +72,7 @@ Required values to run a command (for Private Kubernetes Cluster):
       --ram string                   RAM size for node, minimum size is 2048MB. Ram size must be set to multiple of 1024MB. e.g. --ram 2048 or --ram 2048MB (default "2048")
       --storage-size string          The size of the Storage in GB. e.g.: --size 10 or --size 10GB. The maximum Volume size is determined by your contract limit (default "10")
       --storage-type string          Storage Type (default "HDD")
-  -t, --timeout int                  Timeout option for waiting for NodePool to be in ACTIVE state[seconds] (default 600)
+  -t, --timeout duration             Timeout for waiting for resource to reach desired state (default 1m0s)
   -v, --verbose                      Print step-by-step process when running command
   -w, --wait                         Polls the request continuously until the operation is completed
 ```

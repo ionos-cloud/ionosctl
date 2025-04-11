@@ -54,7 +54,7 @@ Create WireGuard Peers. There is a limit to the total number of peers. Please re
       --port int             Port that the WireGuard Server will connect to (default 51820)
       --public-key string    Public key of the connecting peer (required)
   -q, --quiet                Quiet output
-  -t, --timeout int          Timeout in seconds for polling the request (default 60)
+  -t, --timeout duration     Timeout for waiting for resource to reach desired state (default 1m0s)
   -v, --verbose              Print step-by-step process when running command
   -w, --wait                 Polls the request continuously until the operation is completed
 ```

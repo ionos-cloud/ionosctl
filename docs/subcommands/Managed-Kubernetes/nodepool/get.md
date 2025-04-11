@@ -48,7 +48,7 @@ Required values to run command:
   -i, --nodepool-id string   The unique K8s Node Pool Id (required)
   -o, --output string        Desired output format [text|json|api-json] (default "text")
   -q, --quiet                Quiet output
-  -t, --timeout int          Timeout option for waiting for NodePool to be in ACTIVE state [seconds] (default 600)
+  -t, --timeout duration     Timeout for waiting for resource to reach desired state (default 1m0s)
   -v, --verbose              Print step-by-step process when running command
   -w, --wait                 Polls the request continuously until the operation is completed
 ```

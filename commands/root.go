@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"os"
 	"strings"
-	"time"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cdn"
 	certificates "github.com/ionos-cloud/ionosctl/v6/commands/certmanager"
@@ -44,13 +43,12 @@ var (
 			TraverseChildren: true,
 		},
 	}
-	Output      string
-	Quiet       bool
-	Force       bool
-	Verbose     bool
-	NoHeaders   bool
-	Wait        bool
-	WaitTimeout int
+	Output    string
+	Quiet     bool
+	Force     bool
+	Verbose   bool
+	NoHeaders bool
+	Wait      bool
 
 	cfgFile string
 )
@@ -84,7 +82,7 @@ func Execute() {
 	}
 
 	if Wait {
-		ctx, cancel := context.WithTimeout(context.Background(), time.Duration(WaitTimeout)*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), viper.GetDuration(constants.ArgTimeout))
 		defer cancel()
 
 		// In the case of commands without table output (e.g. delete)
@@ -175,10 +173,10 @@ func init() {
 
 	rootPFlagSet.BoolVarP(&Wait, constants.ArgWait, constants.ArgWaitForRequestShort, constants.DefaultWait,
 		"Polls the request continuously until the operation is completed")
-	rootPFlagSet.IntVarP(&WaitTimeout, constants.ArgTimeout, "", constants.DefaultTimeoutSeconds,
-		"Timeout in seconds for polling the request")
+	// rootPFlagSet.IntVarP(&WaitTimeout, constants.ArgTimeout, "", constants.DefaultTimeoutSeconds,
+	// 	"Timeout in seconds for polling the request")
 	_ = viper.BindPFlag(constants.ArgWait, rootPFlagSet.Lookup(constants.ArgWait))
-	_ = viper.BindPFlag(constants.ArgTimeout, rootPFlagSet.Lookup(constants.ArgTimeout))
+	// _ = viper.BindPFlag(constants.ArgTimeout, rootPFlagSet.Lookup(constants.ArgTimeout))
 
 	// Add SubCommands to RootCmd
 	addCommands()

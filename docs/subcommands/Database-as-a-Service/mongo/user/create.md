@@ -50,7 +50,7 @@ Create MongoDB users.
   -p, --password string     The authentication password (required)
   -q, --quiet               Quiet output
   -r, --roles string        User's role for each db. DB1=Role1,DB2=Role2. Roles: read, readWrite, readAnyDatabase, readWriteAnyDatabase, dbAdmin, dbAdminAnyDatabase, clusterMonitor, enableSharding (required)
-  -t, --timeout int         Timeout in seconds for polling the request (default 60)
+  -t, --timeout duration    Timeout for waiting for resource to reach desired state (default 1m0s)
   -v, --verbose             Print step-by-step process when running command
   -w, --wait                Polls the request continuously until the operation is completed
 ```

@@ -67,7 +67,7 @@ Required values to run command:
   -o, --output string                Desired output format [text|json|api-json] (default "text")
       --public-ips strings           Reserved public IP address to be used by the Nodes. IPs must be from same location as the Data Center used for the Node Pool. Usage: --public-ips IP1,IP2
   -q, --quiet                        Quiet output
-  -t, --timeout int                  Timeout option for waiting for NodePool to be in ACTIVE state [seconds] (default 600)
+  -t, --timeout duration             Timeout for waiting for resource to reach desired state (default 1m0s)
   -v, --verbose                      Print step-by-step process when running command
   -w, --wait                         Polls the request continuously until the operation is completed
 ```

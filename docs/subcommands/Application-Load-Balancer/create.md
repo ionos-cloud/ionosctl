@@ -53,7 +53,7 @@ Required values to run command:
       --private-ips strings    Collection of private IP addresses with the subnet mask of the Application Load Balancer. IPs must contain valid a subnet mask. If no IP is provided, the system will generate an IP with /24 subnet.
   -q, --quiet                  Quiet output
       --target-lan int         ID of the balanced private target LAN (outbound). (default 1)
-  -t, --timeout int            Timeout option for Request for Application Load Balancer creation [seconds] (default 10000)
+  -t, --timeout duration       Timeout for waiting for resource to reach desired state (default 1m0s)
   -v, --verbose                Print step-by-step process when running command
   -w, --wait                   Polls the request continuously until the operation is completed
 ```

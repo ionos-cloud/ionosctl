@@ -67,7 +67,7 @@ Required values to run command:
   -P, --port string                     Port of the balanced target service. Range: 1 to 65535 (required)
   -q, --quiet                           Quiet output
       --rule-id string                  The unique ForwardingRule Id (required)
-  -t, --timeout int                     Timeout option for Request for Forwarding Rule Target creation [seconds] (default 300)
+  -t, --timeout duration                Timeout for waiting for resource to reach desired state (default 1m0s)
   -v, --verbose                         Print step-by-step process when running command
   -w, --wait                            Polls the request continuously until the operation is completed
   -W, --weight int                      Weight parameter is used to adjust the target VM's weight relative to other target VMs. Maximum: 256 (default 1)

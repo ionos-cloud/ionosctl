@@ -65,7 +65,7 @@ Required values to run command:
   -i, --rule-id string         The unique Rule Id (required)
       --source-subnet string   Source subnet of the NAT Gateway Rule
       --target-subnet string   Target subnet or destination subnet of the NAT Gateway Rule
-  -t, --timeout int            Timeout in seconds for polling the request (default 60)
+  -t, --timeout duration       Timeout for waiting for resource to reach desired state (default 1m0s)
   -v, --verbose                Print step-by-step process when running command
   -w, --wait                   Polls the request continuously until the operation is completed
 ```
