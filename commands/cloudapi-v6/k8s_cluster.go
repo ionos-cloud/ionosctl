@@ -7,14 +7,12 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/resource2table"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/internal/request"
-	"github.com/ionos-cloud/ionosctl/v6/internal/waitfor"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
@@ -278,10 +276,6 @@ func RunK8sClusterGet(c *core.CommandConfig) error {
 	}
 
 	queryParams := listQueryParams.QueryParams
-	if err := waitfor.WaitForState(c, waiter.K8sClusterStateInterrogator, viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))); err != nil {
-		return err
-	}
-
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
 		"K8s cluster with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))))
 
@@ -339,10 +333,6 @@ func RunK8sClusterCreate(c *core.CommandConfig) error {
 			return fmt.Errorf("error getting new K8s Cluster id")
 		}
 
-		if err = waitfor.WaitForState(c, waiter.K8sClusterStateInterrogator, *id); err != nil {
-			return err
-		}
-
 		if u, _, err = c.CloudApiV6Services.K8s().GetCluster(*id, queryParams); err != nil {
 			return err
 		}
@@ -393,9 +383,6 @@ func RunK8sClusterUpdate(c *core.CommandConfig) error {
 	}
 
 	if viper.GetBool(core.GetFlagName(c.NS, constants.ArgWaitForState)) {
-		if err = waitfor.WaitForState(c, waiter.K8sClusterStateInterrogator, viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))); err != nil {
-			return err
-		}
 		if k8sUpd, _, err = c.CloudApiV6Services.K8s().GetCluster(viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)), queryParams); err != nil {
 			return err
 		}
