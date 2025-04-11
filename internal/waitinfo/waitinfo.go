@@ -49,6 +49,10 @@ func GetHref() string {
 	return lastHref
 }
 
+func HrefIsEmpty() bool {
+	return lastHref == ""
+}
+
 // FindAndExecuteGetCommand tries to find the equivalent 'get' command to the given commandParts
 //
 // e.g. equivalent get command for "ionosctl datacenter delete --datacenter-id ID" is "ionosctl datacenter get --datacenter-id ID"
@@ -71,21 +75,7 @@ func FindAndExecuteGetCommand(root *cobra.Command, commandParts, setFlagsWithVal
 	originalArgs := os.Args
 	defer func() { os.Args = originalArgs }() // Restore after execution
 
-	// From 'setFlagsWithValues' keep only the flags (with their values)
-	// that are also defined on the 'get' command.
-	var commonFlagsWithValues []string
-	for _, flagKV := range setFlagsWithValues {
-		// flagKV is in the form "--flag=value"
-		if strings.HasPrefix(flagKV, "--") {
-			trimmed := flagKV[2:]
-			parts := strings.SplitN(trimmed, "=", 2)
-			flagName := parts[0]
-			// If the 'get' command defines this flag, keep it.
-			if foundCmd.Flags().Lookup(flagName) != nil {
-				commonFlagsWithValues = append(commonFlagsWithValues, flagKV)
-			}
-		}
-	}
+	commonFlagsWithValues := extractCommonFlags(setFlagsWithValues, foundCmd)
 
 	// Build new args: binary name + getCommand slice + common flags.
 	newArgs := append(getCommand, commonFlagsWithValues...)
@@ -105,6 +95,23 @@ func FindAndExecuteGetCommand(root *cobra.Command, commandParts, setFlagsWithVal
 	return nil
 }
 
-func HrefIsEmpty() bool {
-	return lastHref == ""
+// extractCommonFlags filters the setFlagsWithValues to keep only those that are also defined
+// in the 'get' command equivalent to foundCmd.
+func extractCommonFlags(setFlagsWithValues []string, foundCmd *cobra.Command) []string {
+	// From 'setFlagsWithValues' keep only the flags (with their values)
+	// that are also defined on the 'get' command.
+	var commonFlagsWithValues []string
+	for _, flagKV := range setFlagsWithValues {
+		// flagKV is in the form "--flag=value"
+		if strings.HasPrefix(flagKV, "--") {
+			trimmed := flagKV[2:]
+			parts := strings.SplitN(trimmed, "=", 2)
+			flagName := parts[0]
+			// If the 'get' command defines this flag, keep it.
+			if foundCmd.Flags().Lookup(flagName) != nil {
+				commonFlagsWithValues = append(commonFlagsWithValues, flagKV)
+			}
+		}
+	}
+	return commonFlagsWithValues
 }
