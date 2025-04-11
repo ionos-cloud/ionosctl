@@ -8,14 +8,12 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/internal/request"
-	"github.com/ionos-cloud/ionosctl/v6/internal/waitfor"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
@@ -333,10 +331,6 @@ func RunApplicationLoadBalancerGet(c *core.CommandConfig) error {
 			constants.DatacenterId, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))))
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
 		"Getting ApplicationLoadBalancer with ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId))))
-
-	if err := waitfor.WaitForState(c, waiter.ApplicationLoadBalancerStateInterrogator, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId))); err != nil {
-		return err
-	}
 
 	ng, resp, err := c.CloudApiV6Services.ApplicationLoadBalancers().Get(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),

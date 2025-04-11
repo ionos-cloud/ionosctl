@@ -818,7 +818,7 @@ func RunLoadBalancerNicAttach(c *core.CommandConfig) error {
 	}
 
 	queryParams := listQueryParams.QueryParams
-	attachedNic, resp, err := c.CloudApiV6Services.Loadbalancers().AttachNic(
+	attachedNic, _, err := c.CloudApiV6Services.Loadbalancers().AttachNic(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLoadBalancerId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId)),
@@ -917,7 +917,7 @@ func RunLoadBalancerNicDetach(c *core.CommandConfig) error {
 		return fmt.Errorf(confirm.UserDenied)
 	}
 
-	resp, err := c.CloudApiV6Services.Loadbalancers().DetachNic(
+	_, err = c.CloudApiV6Services.Loadbalancers().DetachNic(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLoadBalancerId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId)),
