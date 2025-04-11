@@ -64,7 +64,7 @@ Required values to run command:
   -p, --protocol string                     Balancing protocol. (default "HTTP")
   -q, --quiet                               Quiet output
       --server-certificates strings         Server Certificates
-  -t, --timeout int                         Timeout in seconds for polling the request (default 60)
+  -t, --timeout duration                    Timeout for waiting for resource to reach desired state (default 1m0s)
   -v, --verbose                             Print step-by-step process when running command
   -w, --wait                                Polls the request continuously until the operation is completed
 ```

@@ -46,7 +46,7 @@ Retrieve all records from either a primary or secondary zone
   -o, --output string           Desired output format [text|json|api-json] (default "text")
   -q, --quiet                   Quiet output
       --secondary-zone string   The name or ID of the secondary zone to fetch records from
-  -t, --timeout int             Timeout in seconds for polling the request (default 60)
+  -t, --timeout duration        Timeout for waiting for resource to reach desired state (default 1m0s)
   -v, --verbose                 Print step-by-step process when running command
   -w, --wait                    Polls the request continuously until the operation is completed
   -z, --zone string             (UUID or Zone Name) Filter used to fetch only the records that contain specified zone.

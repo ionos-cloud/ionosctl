@@ -62,6 +62,7 @@ Update a Mongo Cluster by ID
       --shards int32              The total number of shards in the sharded_cluster cluster. Setting this flag is only possible for enterprise clusters and infers a sharded_cluster type. Possible values: 2 - 32. (required for sharded_cluster enterprise clusters) (default 1)
       --storage-size string       Custom Storage: Greater performance for values greater than 100 GB. (required and only settable for enterprise edition)
       --storage-type string       Custom Storage Type. (only settable for enterprise edition) (default "\"SSD Standard\"")
+  -t, --timeout duration          Timeout for waiting for resource to reach desired state (default 1m0s)
   -v, --verbose                   Print step-by-step process when running command
   -w, --wait                      Polls the request continuously until the operation is completed
 ```

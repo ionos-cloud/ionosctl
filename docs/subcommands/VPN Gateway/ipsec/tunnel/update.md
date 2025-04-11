@@ -59,7 +59,7 @@ Update a IPSec Tunnel
       --peer-network-cidrs strings        The network CIDRs on the "Right" side that are allowed to connect to the IPSec tunnel. Specify "0.0.0.0/0" or "::/0" for all addresses.
       --psk-key string                    The pre-shared key for the IPSec tunnel (required)
   -q, --quiet                             Quiet output
-  -t, --timeout int                       Timeout in seconds for polling the request (default 60)
+  -t, --timeout duration                  Timeout for waiting for resource to reach desired state (default 1m0s)
   -i, --tunnel-id string                  The ID of the IPSec Tunnel (required)
   -v, --verbose                           Print step-by-step process when running command
   -w, --wait                              Polls the request continuously until the operation is completed

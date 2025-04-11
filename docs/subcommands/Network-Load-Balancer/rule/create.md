@@ -66,7 +66,7 @@ Required values to run command:
   -q, --quiet                           Quiet output
       --retries int                     [Health Check] Retries specifies the number of retries to perform on a target VM after a connection failure. Range: 0 to 65535 (default 3)
       --target-timeout int              [Health Check] TargetTimeout specifies the maximum inactivity time (in milliseconds) on the target VM side (default 5000)
-  -t, --timeout int                     Timeout option for Request for Forwarding Rule creation [seconds] (default 300)
+  -t, --timeout duration                Timeout for waiting for resource to reach desired state (default 1m0s)
   -v, --verbose                         Print step-by-step process when running command
   -w, --wait                            Polls the request continuously until the operation is completed
 ```

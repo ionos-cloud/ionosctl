@@ -51,7 +51,7 @@ You can wait for the Cluster to be in "ACTIVE" state using `--wait-for-state` fl
       --public                  The indicator whether the cluster is public or private (default true)
   -q, --quiet                   Quiet output
       --s3bucket string         S3 Bucket name configured for K8s usage
-  -t, --timeout int             Timeout option for waiting for Cluster/Request [seconds] (default 600)
+  -t, --timeout duration        Timeout for waiting for resource to reach desired state (default 1m0s)
   -v, --verbose                 Print step-by-step process when running command
   -w, --wait                    Polls the request continuously until the operation is completed
 ```

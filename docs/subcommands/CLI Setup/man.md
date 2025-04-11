@@ -42,7 +42,7 @@ After following these steps, you should be able to use 'man ionosctl' to access 
   -q, --quiet               Quiet output
       --skip-compression    Skip compressing manpages with gzip, just generate them
       --target-dir string   Target directory where manpages will be generated. Must be an absolute path (default "/tmp/ionosctl-man")
-  -t, --timeout int         Timeout in seconds for polling the request (default 60)
+  -t, --timeout duration    Timeout for waiting for resource to reach desired state (default 1m0s)
   -v, --verbose             Print step-by-step process when running command
   -w, --wait                Polls the request continuously until the operation is completed
 ```

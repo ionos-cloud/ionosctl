@@ -48,7 +48,7 @@ Retrieves a list of valid templates. These templates can be used to create Mongo
       --offset int32        Skip a certain number of results
   -o, --output string       Desired output format [text|json|api-json] (default "text")
   -q, --quiet               Quiet output
-  -t, --timeout int         Timeout in seconds for polling the request (default 60)
+  -t, --timeout duration    Timeout for waiting for resource to reach desired state (default 1m0s)
   -v, --verbose             Print step-by-step process when running command
   -w, --wait                Polls the request continuously until the operation is completed
 ```

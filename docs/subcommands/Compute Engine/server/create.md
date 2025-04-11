@@ -98,7 +98,7 @@ You can wait for the Request to be executed using `--wait-for-request` option. Y
       --ram string                 The amount of memory for the Server. Size must be specified in multiples of 256. e.g. --ram 256 or --ram 256MB (required)
   -k, --ssh-key-paths strings      [CUBE Server] Absolute paths for the SSH Keys of the Direct Attached Storage
       --template-id string         [CUBE Server] The unique Template Id (required)
-  -t, --timeout int                Timeout option for Request for Server creation/for Server to be in AVAILABLE state [seconds] (default 60)
+  -t, --timeout duration           Timeout for waiting for resource to reach desired state (default 1m0s)
       --type string                Type usages for the Server. Can be one of: ENTERPRISE, CUBE, VCPU (default "ENTERPRISE")
   -v, --verbose                    Print step-by-step process when running command
   -N, --volume-name string         [CUBE Server] Name of the Direct Attached Storage (default "Unnamed Direct Attached Storage")

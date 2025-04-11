@@ -47,7 +47,7 @@ Get Properties of a single Registry
   -o, --output string        Desired output format [text|json|api-json] (default "text")
   -q, --quiet                Quiet output
   -i, --registry-id string   Registry ID (required)
-  -t, --timeout int          Timeout in seconds for polling the request (default 60)
+  -t, --timeout duration     Timeout for waiting for resource to reach desired state (default 1m0s)
   -v, --verbose              Print step-by-step process when running command
   -w, --wait                 Polls the request continuously until the operation is completed
 ```

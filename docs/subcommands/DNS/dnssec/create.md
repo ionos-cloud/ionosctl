@@ -46,7 +46,7 @@ Enable DNSSEC keys and create associated DNSKEY records for your DNS zone
       --nsec3-salt-bits int    Salt length in bits for NSEC3. [64..128], multiples of 8 (default 64)
   -o, --output string          Desired output format [text|json|api-json] (default "text")
   -q, --quiet                  Quiet output
-  -t, --timeout int            Timeout in seconds for polling the request (default 60)
+  -t, --timeout duration       Timeout for waiting for resource to reach desired state (default 1m0s)
       --validity int           Signature validity in days [90..365] (default 90)
   -v, --verbose                Print step-by-step process when running command
   -w, --wait                   Polls the request continuously until the operation is completed

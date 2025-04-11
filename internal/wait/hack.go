@@ -5,6 +5,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 // this file contains various 'hacks' for integrating global 'wait' flag
@@ -17,16 +18,18 @@ func AddTimeoutFlag(root *cobra.Command) {
 	for _, cmd := range root.Commands() {
 		AddTimeoutFlag(cmd)
 
-		if cmd.Flags().Lookup("timeout") != nil {
+		if cmd.Flags().Lookup(constants.ArgTimeout) != nil {
 			continue
 		}
 
-		if cmd.Flags().ShorthandLookup("t") == nil {
-			cmd.Flags().DurationP("timeout", "t", time.Duration(constants.DefaultTimeoutSeconds),
+		if cmd.Flags().ShorthandLookup(constants.ArgTimeoutShort) == nil {
+			cmd.Flags().DurationP(constants.ArgTimeout, constants.ArgTimeoutShort, time.Duration(constants.DefaultTimeoutSeconds)*time.Second,
 				"Timeout for waiting for resource to reach desired state")
 		} else {
-			cmd.Flags().Duration("timeout", time.Duration(constants.DefaultTimeoutSeconds),
+			cmd.Flags().Duration(constants.ArgTimeout, time.Duration(constants.DefaultTimeoutSeconds)*time.Second,
 				"Timeout for waiting for resource to reach desired state")
 		}
+
+		viper.BindPFlag(constants.ArgTimeout, cmd.Flags().Lookup(constants.ArgTimeout))
 	}
 }
