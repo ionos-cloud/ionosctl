@@ -7,6 +7,9 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/resource2table"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
+	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/spf13/viper"
 )
 
@@ -27,17 +30,20 @@ func ListCmd() *core.Command {
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			apiGatewayId := viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayID))
-			g, _, err := client.Must().Apigateway.RoutesApi.ApigatewaysRoutesGet(context.Background(), apiGatewayId).Execute()
+			routeId := viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayRouteID))
+			rec, _, err := client.Must().Apigateway.RoutesApi.ApigatewaysRoutesFindById(context.Background(), apiGatewayId, routeId).Execute()
+			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
+
+			upstreamsConverted := resource2table.ConverApiGatewayUpstreamsToTable(rec.Properties.Upstreams)
+
+			out, err := jsontabwriter.GenerateOutputPreconverted(rec.Properties.Upstreams, upstreamsConverted,
+				tabheaders.GetHeadersAllDefault(allCols, cols))
 			if err != nil {
 				return err
 			}
-			g.GetItems()
-			//apigatewayId := viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayID))
-			//g, _, err := client.Must().Apigateway.APIGatewaysApi.ApigatewaysFindById(context.Background(), apigatewayId).Execute()
-			//if err != nil {
-			//	return err
-			//}
-			return nil //partiallyUpdateGatewayPrint(c, g)
+
+			fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+			return nil
 		},
 		InitClient: true,
 	})
@@ -54,9 +60,6 @@ func ListCmd() *core.Command {
 			return completer.Routes(apigatewayId)
 		}, constants.ApiGatewayRegionalURL, constants.GatewayLocations),
 	)
-
-	cmd.Command.SilenceUsage = true
-	cmd.Command.Flags().SortFlags = false
 
 	return cmd
 }

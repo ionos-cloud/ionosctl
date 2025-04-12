@@ -48,6 +48,7 @@ Within each layer, a token takes precedence over a username and password combina
 
 	FlagGatewayID      = "gateway-id"
 	FlagGatewayRouteID = "route-id"
+	FlagUpstreamId     = "upstream-id"
 	FlagTunnelID       = "tunnel-id"
 	FlagPeerID         = "peer-id"
 	FlagGatewayIP      = "gateway-ip"
@@ -129,8 +130,9 @@ Within each layer, a token takes precedence over a username and password combina
 	FlagCDNDistributionRoutingRules        = "routing-rules"
 	FlagCDNDistributionRoutingRulesExample = "routing-rules-example"
 
-	FlagFilterName  = "name"
-	FlagFilterState = "state"
+	FlagFilterName    = "name"
+	FlagFilterState   = "state"
+	FlagCertificateId = "certificate-id"
 
 	FlagKafkaBrokerAddresses   = "broker-addresses"
 	FlagKafkaPartitions        = "partitions"
@@ -159,6 +161,7 @@ const (
 	DescZone       = "The name or ID of the DNS zone"
 	DescGateway    = "The ID of the gateway"
 	DescRoute      = "The ID of the route"
+	DescUpstream   = "The ID of the upstream"
 )
 
 // legacy flags. TODO: Arg should be renamed to Flag.

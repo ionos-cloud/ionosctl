@@ -4,8 +4,10 @@ import (
 	"context"
 	"fmt"
 	"github.com/ionos-cloud/ionosctl/v6/commands/api-gateway/completer"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
+	"github.com/ionos-cloud/sdk-go-bundle/products/apigateway/v2"
 	"github.com/spf13/viper"
 )
 
@@ -16,21 +18,35 @@ func RemovetCmd() *core.Command {
 		Verb:      "remove",
 		Aliases:   []string{"r"},
 		ShortDesc: "Upstreams consist of schme, loadbalancer, host, port and weight",
-		Example:   "ionosctl apigateway route upstreams remove --gateway-id ID --route-id ID_ROUTE --host HOST --port PORT",
+		Example:   "ionosctl apigateway route upstreams remove --gateway-id ID --route-id ID_ROUTE --upstreamId UPSTREAMID",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			if err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagGatewayID, constants.FlagGatewayRouteID); err != nil {
+			if err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagGatewayID, constants.FlagGatewayRouteID, constants.FlagUpstreamId); err != nil {
 				return err
 			}
 
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			//apigatewayId := viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayID))
-			//g, _, err := client.Must().Apigateway.APIGatewaysApi.ApigatewaysFindById(context.Background(), apigatewayId).Execute()
-			//if err != nil {
-			//	return err
-			//}
-			//return partiallyUpdateGatewayPrint(c, g)
+			apigatewayId := viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayID))
+			routeId := viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayRouteID))
+			upstreamId := viper.GetInt(core.GetFlagName(c.NS, constants.FlagUpstreamId))
+			usedRoutes, _, _ := client.Must().Apigateway.RoutesApi.ApigatewaysRoutesFindById(context.Background(), apigatewayId, routeId).Execute()
+			input := usedRoutes.Properties
+			if input.Upstreams == nil {
+				fmt.Errorf("There are no upstreams defined in this route!")
+			} else if upstreamId == 0 {
+				input.Upstreams = input.Upstreams[1:]
+			} else if upstreamId == 1 {
+				input.Upstreams = append(input.Upstreams[:upstreamId], input.Upstreams[upstreamId+1:]...)
+			} else if upstreamId == 2 {
+				input.Upstreams = input.Upstreams[:len(input.Upstreams)-1]
+			}
+			_, _, _ = client.Must().Apigateway.RoutesApi.ApigatewaysRoutesPut(context.Background(), apigatewayId, routeId).
+				RouteEnsure(apigateway.RouteEnsure{
+					Id:         routeId,
+					Properties: input,
+				}).Execute()
+			// the maximum number of upstreams is 3 (allowed by API)
 			return nil
 		},
 		InitClient: true,
@@ -41,15 +57,19 @@ func RemovetCmd() *core.Command {
 		}, constants.ApiGatewayRegionalURL, constants.GatewayLocations),
 	)
 
-	cmd.AddStringFlag(constants.FlagGatewayRouteID, "", "", fmt.Sprintf("%s. Required or -%s", constants.DescRoute, constants.ArgAllShort),
+	cmd.AddStringFlag(constants.FlagGatewayRouteID, "", "", fmt.Sprintf("%s. Required or -%s", constants.DescRoute, constants.ArgAllShort, core.RequiredFlagOption()),
 		core.WithCompletion(func() []string {
 			apigatewayId := viper.GetString(core.GetFlagName(cmd.NS, constants.FlagGatewayID))
 			return completer.Routes(apigatewayId)
 		}, constants.ApiGatewayRegionalURL, constants.GatewayLocations),
 	)
 
-	cmd.Command.SilenceUsage = true
-	cmd.Command.Flags().SortFlags = false
+	//TODO
+	cmd.AddStringFlag(constants.FlagUpstreamId, "", "", fmt.Sprintf("%s. Required or -%s", constants.DescUpstream, constants.ArgAllShort, core.RequiredFlagOption()),
+		core.WithCompletion(func() []string {
+			upstreamId := viper.GetStringSlice(core.GetFlagName(cmd.NS, constants.FlagUpstreamId))
+			return upstreamId
+		}, constants.ApiGatewayRegionalURL, constants.GatewayLocations))
 
 	return cmd
 }

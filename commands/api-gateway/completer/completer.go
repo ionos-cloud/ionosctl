@@ -2,14 +2,13 @@ package completer
 
 import (
 	"context"
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/completions"
 	"github.com/ionos-cloud/ionosctl/v6/internal/config"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/spf13/viper"
-
-	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 )
 
 func GatewaysIDs() []string {
@@ -40,3 +39,13 @@ func Routes(gatewayID string) []string {
 	}
 	return completions.NewCompleter(routesConverted, "Id").AddInfo("Name").AddInfo("Paths").ToString()
 }
+
+//func UpstreamsIDs(upstreamId int) []string {
+//	apigatewayId := viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayID))
+//	routeId := viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayRouteID))
+//	ids := []string{}
+//	for i := 0; i <= upstreamId; i++ {
+//		ids = append(ids, strconv.Itoa(i))
+//	}
+//	return ids
+//}

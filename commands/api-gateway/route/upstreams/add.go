@@ -65,41 +65,21 @@ func AddCmd() *core.Command {
 			input.Type = usedRoute.Properties.Type
 			input.Methods = usedRoute.Properties.Methods
 
-			//rec, _, err := client.Must().Apigateway.RoutesApi.ApigatewaysRoutesPut(context.Background(), apigatewayId, routeId).
-			//	RouteEnsure(apigateway.RouteEnsure{
-			//		Id:         routeId,
-			//		Properties: input,
-			//	}).Execute()
+			rec, _, err := client.Must().Apigateway.RoutesApi.ApigatewaysRoutesPut(context.Background(), apigatewayId, routeId).
+				RouteEnsure(apigateway.RouteEnsure{
+					Id:         routeId,
+					Properties: input,
+				}).Execute()
 
 			if err != nil {
 				return err
 			}
 
 			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
-			//vulnId := viper.GetString(core.GetFlagName(c.NS, constants.FlagVulnerabilityId))
-			//
-			//vulnerability, _, err := client.Must().RegistryClient.VulnerabilitiesApi.VulnerabilitiesFindByID(
-			//	context.
-			//		Background(), vulnId,
-			//).Execute()
-			//if err != nil {
-			//	return err
-			//}
-			//
-			//vulnerabilityConverted, err := resource2table.ConvertContainerRegistryVulnerabilityToTable(vulnerability)
 
-			//out, err := jsontabwriter.GenerateOutputPreconverted(
-			//	vulnerability, vulnerabilityConverted, tabheaders.GetHeaders(allCols, defaultCols, cols),
-			//)
-			//if err != nil {
-			//	return err
-			//}
-			//
-			//fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
+			upstreamsConverted := resource2table.ConverApiGatewayUpstreamsToTable(rec.Properties.Upstreams)
 
-			upstreamsConverted, err := resource2table.ConvertApiGatewayUpstreamToTable(usedRoute)
-
-			out, err := jsontabwriter.GenerateOutputPreconverted(usedRoute, upstreamsConverted,
+			out, err := jsontabwriter.GenerateOutputPreconverted(rec.Properties.Upstreams, upstreamsConverted,
 				tabheaders.GetHeadersAllDefault(allCols, cols))
 			if err != nil {
 				return err

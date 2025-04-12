@@ -6,7 +6,7 @@ import (
 )
 
 var (
-	allCols = []string{"Scheme", "LoadBalancer", "Host", "Port", "Weight"}
+	allCols = []string{"UpstreamId", "Scheme", "Loadbalancer", "Host", "Port", "Weight"}
 )
 
 func UpstreamsCmd() *core.Command {
@@ -20,6 +20,6 @@ func UpstreamsCmd() *core.Command {
 	}
 	cmd.AddCommand(AddCmd())
 	cmd.AddCommand(ListCmd())
-	//cmd.AddCommand(RemovetCmd())
+	cmd.AddCommand(RemovetCmd())
 	return cmd
 }
