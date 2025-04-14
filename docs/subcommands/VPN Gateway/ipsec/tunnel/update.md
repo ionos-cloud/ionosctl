@@ -60,7 +60,7 @@ Update a IPSec Tunnel
       --psk-key string                    The pre-shared key for the IPSec tunnel (required)
   -q, --quiet                             Quiet output
   -i, --tunnel-id string                  The ID of the IPSec Tunnel (required)
-  -v, --verbose                           Print step-by-step process when running command
+  -v, --verbose count                     Print step-by-step process when running command
 ```
 
 ## Examples

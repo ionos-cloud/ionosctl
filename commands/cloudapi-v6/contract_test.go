@@ -79,7 +79,6 @@ func TestRunContractGet(t *testing.T) {
 		viper.Reset()
 		viper.Set(constants.ArgOutput, constants.DefaultOutputFormat)
 		viper.Set(constants.ArgQuiet, false)
-		viper.Set(constants.ArgVerbose, false)
 		rm.CloudApiV6Mocks.Contract.EXPECT().Get(gomock.AssignableToTypeOf(testQueryParamOther)).Return(testContracts, &testResponse, nil)
 		err := RunContractGet(cfg)
 		assert.NoError(t, err)

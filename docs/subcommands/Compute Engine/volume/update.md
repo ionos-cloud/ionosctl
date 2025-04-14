@@ -61,7 +61,7 @@ Required values to run command:
       --ram-hot-plug             It is capable of memory hot plug (no reboot required). E.g.: --ram-hot-plug=true, --ram-hot-plug=false
       --size string              The size of the Volume in GB. e.g. 10 or 10GB. The maximum volume size is determined by your contract limit
   -t, --timeout int              Timeout option for Request for Volume update [seconds] (default 60)
-  -v, --verbose                  Print step-by-step process when running command
+  -v, --verbose count            Print step-by-step process when running command
   -i, --volume-id string         The unique Volume Id (required)
   -w, --wait-for-request         Wait for the Request for Volume update to be executed
 ```

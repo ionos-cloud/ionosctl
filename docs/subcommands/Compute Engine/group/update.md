@@ -66,7 +66,7 @@ Required values to run command:
       --reserve-ip            The group will be allowed to reserve IP addresses. E.g.: --reserve-ip=true, --reserve-ip=false
       --s3privilege           The group will be allowed to manage S3. E.g.: --s3privilege=true, --s3privilege=false
   -t, --timeout int           Timeout option for Request for Group update [seconds] (default 60)
-  -v, --verbose               Print step-by-step process when running command
+  -v, --verbose count         Print step-by-step process when running command
   -w, --wait-for-request      Wait for Request for Group update to be executed
 ```
 

@@ -56,7 +56,7 @@ Required values to run command:
   -q, --quiet                           Quiet output
       --target-lan int                  Id of the balanced private target LAN (default 1)
   -t, --timeout int                     Timeout option for Request for Network Load Balancer update [seconds] (default 300)
-  -v, --verbose                         Print step-by-step process when running command
+  -v, --verbose count                   Print step-by-step process when running command
   -w, --wait-for-request                Wait for the Request for Network Load Balancer update to be executed
 ```
 

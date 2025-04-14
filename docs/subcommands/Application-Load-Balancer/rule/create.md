@@ -65,7 +65,7 @@ Required values to run command:
   -q, --quiet                               Quiet output
       --server-certificates strings         Server Certificates
   -t, --timeout int                         Timeout option for Request for Forwarding Rule creation [seconds] (default 300)
-  -v, --verbose                             Print step-by-step process when running command
+  -v, --verbose count                       Print step-by-step process when running command
   -w, --wait-for-request                    Wait for the Request for Forwarding Rule creation to be executed
 ```
 
