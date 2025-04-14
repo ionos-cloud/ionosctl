@@ -2,7 +2,7 @@
 
 # tags: dns
 
-BATS_LIBS_PATH="${LIBS_PATH:-../libs}"
+BATS_LIBS_PATH="${LIBS_PATH:-../libs}" # fallback to relative path if not set
 load "${BATS_LIBS_PATH}/bats-assert/load"
 load "${BATS_LIBS_PATH}/bats-support/load"
 load '../setup.bats'
@@ -75,28 +75,24 @@ setup() {
 }
 
 @test "Create DNS Record" {
-    zone_id=$(cat /tmp/bats_test/zone_id) # from earlier test
-    record_name="record-$(randStr 6)"     # generate a name
+    zone_id=$(cat /tmp/bats_test/zone_id)
+    record_name="record-$(randStr 6)"
     record_name=$(echo "$record_name" | tr '[:upper:]' '[:lower:]')
-    run ionosctl dns record create --zone "$zone_id" --name "$record_name" \
-     --type A --content 192.168.0.1 -o json 2> /dev/null
-    assert_success # assert that the command exited with 0
+    run ionosctl dns record create --zone "$zone_id" --name "$record_name" --type A --content 192.168.0.1 -o json 2> /dev/null
+    assert_success
 
-    record_id=$(echo "$output" | jq -r '.id')   # parse the ID
-    assert_regex "$record_id" "$uuid_v4_regex"  # assert that it is a UUIDv4
-    assert_output --partial "\"name\": \"$record_name\""
+    record_id=$(echo "$output" | jq -r '.id')
+    assert_regex "$record_id" "$uuid_v4_regex"
+
+    # Verify specific fields
+    assert_output -p "\"name\": \"$record_name\""
+    assert_output -p "\"type\": \"A\""
     assert_output -p "\"content\": \"192.168.0.1\""
     assert_output -p "\"state\": \"AVAILABLE\""
-    refute_line --partial "error:"               # assert that there are no errors
 
     echo "created dns record $record_id ($record_name)"
     echo "$record_id" > /tmp/bats_test/record_id
     echo "$record_name" > /tmp/bats_test/record_name
-}
-
-@test "addition using bc" {
-  result=$(echo "2+2" | bc)
-  [ "$result" -eq 4 ]
 }
 
 @test "List DNS Records" {
@@ -259,10 +255,8 @@ teardown_file() {
         ionosctl dns zone delete -af
     )
 
-    ionosctl user delete \
-     --user-id "$(cat /tmp/bats_test/user_id)" -f
-    ionosctl group delete \
-     --group-id "$(cat /tmp/bats_test/group_id)" -f
+    ionosctl user delete --user-id "$(cat /tmp/bats_test/user_id)" -f
+    ionosctl group delete --group-id "$(cat /tmp/bats_test/group_id)" -f
 
     rm -rf /tmp/bats_test
 }
