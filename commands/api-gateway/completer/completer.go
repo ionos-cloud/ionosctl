@@ -9,6 +9,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/spf13/viper"
+	"strconv"
 )
 
 func GatewaysIDs() []string {
@@ -40,12 +41,11 @@ func Routes(gatewayID string) []string {
 	return completions.NewCompleter(routesConverted, "Id").AddInfo("Name").AddInfo("Paths").ToString()
 }
 
-//func UpstreamsIDs(upstreamId int) []string {
-//	apigatewayId := viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayID))
-//	routeId := viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayRouteID))
-//	ids := []string{}
-//	for i := 0; i <= upstreamId; i++ {
-//		ids = append(ids, strconv.Itoa(i))
-//	}
-//	return ids
-//}
+func UpstreamsIDs(apigatewayId string, routeId string) []string {
+	usedRoute, _, _ := client.Must().Apigateway.RoutesApi.ApigatewaysRoutesFindById(context.Background(), apigatewayId, routeId).Execute()
+	ids := []string{}
+	for i := 0; i < len(usedRoute.Properties.Upstreams); i++ {
+		ids = append(ids, strconv.Itoa(i))
+	}
+	return ids
+}

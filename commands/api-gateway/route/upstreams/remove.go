@@ -64,11 +64,11 @@ func RemovetCmd() *core.Command {
 		}, constants.ApiGatewayRegionalURL, constants.GatewayLocations),
 	)
 
-	//TODO
 	cmd.AddStringFlag(constants.FlagUpstreamId, "", "", fmt.Sprintf("%s. Required or -%s", constants.DescUpstream, constants.ArgAllShort, core.RequiredFlagOption()),
 		core.WithCompletion(func() []string {
-			upstreamId := viper.GetStringSlice(core.GetFlagName(cmd.NS, constants.FlagUpstreamId))
-			return upstreamId
+			apigatewayId := viper.GetString(core.GetFlagName(cmd.NS, constants.FlagGatewayID))
+			routeId := viper.GetString(core.GetFlagName(cmd.NS, constants.FlagGatewayRouteID))
+			return completer.UpstreamsIDs(apigatewayId, routeId)
 		}, constants.ApiGatewayRegionalURL, constants.GatewayLocations))
 
 	return cmd

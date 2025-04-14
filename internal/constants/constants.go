@@ -29,8 +29,8 @@ const (
 	FlagOrderBy                 = "order-by"
 	FlagLogs                    = "logs"
 	FlagMetrics                 = "metrics"
-	FlagNameCustomDomainsName   = "name-custom-domains"
-	FlagNameCustomCertificateId = "name-custom-certificate-id"
+	FlagNameCustomDomainsName   = "custom-domains-name"
+	FlagNameCustomCertificateId = "custom-domains-certificate-id"
 	// DescAuthenticationOrder explains auth order. Embed this in any auth-related commands
 	DescAuthenticationOrder = `AUTHENTICATION ORDER
 ionosctl uses a layered approach for authentication, prioritizing sources in this order:

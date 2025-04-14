@@ -51,11 +51,11 @@ func GatewayPutCmd() *core.Command {
 	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "The new name of the ApiGateway", core.RequiredFlagOption())
 	cmd.AddBoolFlag(constants.FlagLogs, "", false, "This field enables or disables the collection and reporting of logs for observability of this instance.")
 	cmd.AddBoolFlag(constants.FlagMetrics, "", false, "This field enables or disables the collection and reporting of metrics for observability of this instance.")
-	cmd.AddStringFlag(constants.FlagFilterName, "", "", "The domain name of the distribution. Field is validated as FQDN according to RFC1123.")
-	cmd.AddStringFlag(constants.FlagCertificateId, "", "", "The ID of the certificate to use for the distribution.")
+	cmd.AddStringFlag(constants.FlagNameCustomDomainsName, "", "", "The domain name of the distribution. Field is validated as FQDN according to RFC1123.")
+	cmd.AddStringFlag(constants.FlagNameCustomCertificateId, "", "", "The ID of the certificate to use for the distribution.")
 
-	//cmd.Command.SilenceUsage = true
-	//cmd.Command.Flags().SortFlags = false
+	cmd.Command.SilenceUsage = true
+	cmd.Command.Flags().SortFlags = false
 
 	return cmd
 }
@@ -71,10 +71,10 @@ func partiallyUpdateGatewayPrint(c *core.CommandConfig, r apigateway.GatewayRead
 	if fn := core.GetFlagName(c.NS, constants.FlagMetrics); true {
 		input.Metrics = pointer.From(viper.GetBool(fn))
 	}
-	if fn := core.GetFlagName(c.NS, constants.FlagFilterName); viper.IsSet(fn) {
+	if fn := core.GetFlagName(c.NS, constants.FlagNameCustomDomainsName); viper.IsSet(fn) {
 		input.CustomDomains[0].Name = pointer.From(viper.GetString(fn))
 	}
-	if fn := core.GetFlagName(c.NS, constants.FlagCertificateId); viper.IsSet(fn) {
+	if fn := core.GetFlagName(c.NS, constants.FlagNameCustomCertificateId); viper.IsSet(fn) {
 		input.CustomDomains[0].CertificateId = pointer.From(viper.GetString(fn))
 	}
 	apigatewayid := viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayID))
