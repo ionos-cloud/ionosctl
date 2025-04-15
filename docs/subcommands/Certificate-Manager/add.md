@@ -41,7 +41,9 @@ Use this command to add a Certificate.
       --private-key string              Specify the private key (required either this or --private-key-path)
       --private-key-path string         Specify the private key from a file (required either this or --private-key)
   -q, --quiet                           Quiet output
+  -t, --timeout duration                Timeout for waiting for resource to reach desired state (default 1m0s)
   -v, --verbose                         Print step-by-step process when running command
+  -w, --wait                            Polls the request continuously until the operation is completed
 ```
 
 ## Examples

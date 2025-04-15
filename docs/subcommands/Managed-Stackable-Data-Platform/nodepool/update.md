@@ -55,8 +55,8 @@ The following requests allows to alter the existing resources of the cluster
   -i, --nodepool-id string           The UUID of the cluster the nodepool belongs to
   -o, --output string                Desired output format [text|json|api-json] (default "text")
   -q, --quiet                        Quiet output
-  -t, --timeout int                  Timeout option for Request [seconds] (default 60)
+  -t, --timeout duration             Timeout for waiting for resource to reach desired state (default 1m0s)
   -v, --verbose                      Print step-by-step process when running command
-  -w, --wait-for-request             Wait for the Request to be executed
+  -w, --wait                         Polls the request continuously until the operation is completed
 ```
 

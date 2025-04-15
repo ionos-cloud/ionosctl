@@ -47,7 +47,9 @@ Use this command to get a list of Target Groups Targets.
   -o, --output string           Desired output format [text|json|api-json] (default "text")
   -q, --quiet                   Quiet output
   -i, --targetgroup-id string   The unique Target Group Id (required)
+  -t, --timeout duration        Timeout for waiting for resource to reach desired state (default 1m0s)
   -v, --verbose                 Print step-by-step process when running command
+  -w, --wait                    Polls the request continuously until the operation is completed
 ```
 
 ## Examples

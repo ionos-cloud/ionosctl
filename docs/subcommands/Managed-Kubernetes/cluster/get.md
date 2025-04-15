@@ -46,9 +46,9 @@ Required values to run command:
       --no-headers          Don't print table headers when table output is used
   -o, --output string       Desired output format [text|json|api-json] (default "text")
   -q, --quiet               Quiet output
-  -t, --timeout int         Timeout option for waiting for Cluster to be in ACTIVE state [seconds] (default 600)
+  -t, --timeout duration    Timeout for waiting for resource to reach desired state (default 1m0s)
   -v, --verbose             Print step-by-step process when running command
-  -W, --wait-for-state      Wait for specified Cluster to be in ACTIVE state
+  -w, --wait                Polls the request continuously until the operation is completed
 ```
 
 ## Examples

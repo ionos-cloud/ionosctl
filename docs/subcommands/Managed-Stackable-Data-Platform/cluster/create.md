@@ -50,9 +50,9 @@ The cluster will be provisioned in the datacenter matching the provided datacent
       --no-headers                Don't print table headers when table output is used
   -o, --output string             Desired output format [text|json|api-json] (default "text")
   -q, --quiet                     Quiet output
-  -t, --timeout int               Timeout option for Request [seconds] (default 60)
+  -t, --timeout duration          Timeout for waiting for resource to reach desired state (default 1m0s)
   -v, --verbose                   Print step-by-step process when running command
       --version string            The version of your dataplatform cluster (default "same as 'dataplatform version active'")
-  -w, --wait-for-request          Wait for the Request to be executed
+  -w, --wait                      Polls the request continuously until the operation is completed
 ```
 

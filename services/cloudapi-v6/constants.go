@@ -99,7 +99,6 @@ const (
 	ArgPort                = "port"
 	ArgPortShort           = "P"
 	ArgWeight              = "weight"
-	ArgWeightShort         = "W"
 	ArgIcmpCode            = "icmp-code"
 	ArgIcmpType            = "icmp-type"
 	ArgPortRangeStart      = "port-range-start"

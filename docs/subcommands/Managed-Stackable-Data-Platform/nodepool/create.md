@@ -61,8 +61,8 @@ The following requests allows to alter the existing resources, add or remove new
       --ram int32                    The RAM size for one node in MB. Must be set in multiples of 1024 MB, with a minimum size is of 2048 MB
       --storage-size int32           The size of the volume in GB. The size must be greater than 10GB
       --storage-type string          The type of hardware for the volume
-  -t, --timeout int                  Timeout option for Request [seconds] (default 60)
+  -t, --timeout duration             Timeout for waiting for resource to reach desired state (default 1m0s)
   -v, --verbose                      Print step-by-step process when running command
-  -w, --wait-for-request             Wait for the Request to be executed
+  -w, --wait                         Polls the request continuously until the operation is completed
 ```
 

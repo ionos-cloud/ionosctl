@@ -211,15 +211,6 @@ func ClusterUpdateCmd() *core.Command {
 	cmd.AddStringFlag(flagBiconnector, "", "", "The host and port where this new BI Connector is installed. The MongoDB Connector for Business Intelligence allows you to query a MongoDB database using SQL commands. Example: r1.m-abcdefgh1234.mongodb.de-fra.ionos.com:27015")
 	cmd.AddBoolFlag(flagBiconnectorEnabled, "", false, fmt.Sprintf("Enable or disable the biconnector. If left unset, no change will be made to the biconnector's status. To explicitly disable it, use --%s=false", flagBiconnectorEnabled))
 
-	// Misc
-	cmd.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait, "Wait for the Request to be executed")
-	cmd.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request [seconds]")
-
-	// They do nothing... but we can't outright remove them in case some user already uses them in their scripts
-	// would cause ('unknown flag: -w')
-	cmd.Command.Flags().MarkHidden(constants.ArgWaitForRequest)
-	cmd.Command.Flags().MarkHidden(constants.ArgTimeout)
-
 	cmd.Command.SilenceUsage = true
 
 	return cmd

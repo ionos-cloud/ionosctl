@@ -4,12 +4,14 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"os"
 	"reflect"
 	"strings"
 	"text/tabwriter"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table"
+	"github.com/ionos-cloud/ionosctl/v6/internal/waitinfo"
 	"github.com/itchyny/gojq"
 	"github.com/spf13/viper"
 )
@@ -24,6 +26,10 @@ const (
 	TextFormat = "text"
 	// APIFormat defines the API matching JSON format. This will be removed once its behavior will be moved to JSONFormat
 	APIFormat = "api-json"
+)
+
+var (
+	LastSrcData = map[interface{}]interface{}(nil)
 )
 
 // GenerateOutput converts and formats source data into printable output.
@@ -44,6 +50,14 @@ const (
 func GenerateOutput(
 	columnPathMappingPrefix string, columnPathMapping map[string]string, sourceData interface{}, cols []string,
 ) (string, error) {
+
+	if viper.GetBool(constants.ArgWait) {
+		err := waitinfo.Set(sourceData)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, GenerateVerboseOutput("failed to find href to wait on: %s", err.Error()))
+		}
+	}
+
 	if viper.IsSet(constants.ArgQuiet) {
 		return "", nil
 	}
@@ -75,6 +89,14 @@ func GenerateOutput(
 func GenerateOutputPreconverted(
 	rawSourceData interface{}, convertedSourceData []map[string]interface{}, cols []string,
 ) (string, error) {
+
+	if viper.GetBool(constants.ArgWait) {
+		err := waitinfo.Set(rawSourceData)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, GenerateVerboseOutput("failed to find href to wait on: %s", err.Error()))
+		}
+	}
+
 	if viper.IsSet(constants.ArgQuiet) {
 		return "", nil
 	}

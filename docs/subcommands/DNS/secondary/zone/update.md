@@ -37,7 +37,9 @@ Update or create a secondary zone
   -o, --output string         Desired output format [text|json|api-json] (default "text")
       --primary-ips strings   Primary DNS server IP addresses
   -q, --quiet                 Quiet output
+  -t, --timeout duration      Timeout for waiting for resource to reach desired state (default 1m0s)
   -v, --verbose               Print step-by-step process when running command
+  -w, --wait                  Polls the request continuously until the operation is completed
   -z, --zone string           The name or ID of the DNS zone
 ```
 

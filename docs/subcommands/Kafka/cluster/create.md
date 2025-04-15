@@ -46,8 +46,10 @@ Create a kafka cluster. Wiki: https://docs.ionos.com/cloud/data-analytics/kafka/
   -o, --output string              Desired output format [text|json|api-json] (default "text")
   -q, --quiet                      Quiet output
       --size string                The size of the kafka cluster. Can be one of: XS, S, M, L, XL (required)
+  -t, --timeout duration           Timeout for waiting for resource to reach desired state (default 1m0s)
   -v, --verbose                    Print step-by-step process when running command
       --version string             The version of the kafka cluster (required)
+  -w, --wait                       Polls the request continuously until the operation is completed
 ```
 
 ## Examples

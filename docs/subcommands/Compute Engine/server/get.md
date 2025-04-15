@@ -48,9 +48,9 @@ Required values to run command:
   -o, --output string          Desired output format [text|json|api-json] (default "text")
   -q, --quiet                  Quiet output
   -i, --server-id string       The unique Server Id (required)
-  -t, --timeout int            Timeout option for waiting for Server to be in AVAILABLE state [seconds] (default 60)
+  -t, --timeout duration       Timeout for waiting for resource to reach desired state (default 1m0s)
   -v, --verbose                Print step-by-step process when running command
-  -W, --wait-for-state         Wait for specified Server to be in AVAILABLE state
+  -w, --wait                   Polls the request continuously until the operation is completed
 ```
 
 ## Examples

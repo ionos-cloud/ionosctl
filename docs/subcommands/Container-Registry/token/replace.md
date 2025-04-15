@@ -51,8 +51,10 @@ Create or replace a token used to access a container registry
   -q, --quiet                Quiet output
   -r, --registry-id string   Registry ID
       --status string        Status of the Token
+      --timeout duration     Timeout for waiting for resource to reach desired state (default 1m0s)
   -t, --token-id string      Token ID
   -v, --verbose              Print step-by-step process when running command
+  -w, --wait                 Polls the request continuously until the operation is completed
 ```
 
 ## Examples
