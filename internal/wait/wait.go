@@ -83,8 +83,9 @@ func For(commandName, href string, options ...WaitOption) {
 // For "delete": returns true if the HTTP status is 404.
 // For "create" and "update": returns true if JSON's metadata.state is "AVAILABLE".
 func isConditionMet(executedCommand string, resp *http.Response) (bool, error) {
+	defer resp.Body.Close()
+
 	if executedCommand == "delete" {
-		resp.Body.Close()
 		return resp.StatusCode == http.StatusNotFound, nil
 	}
 
@@ -98,7 +99,6 @@ func isConditionMet(executedCommand string, resp *http.Response) (bool, error) {
 		return false, fmt.Errorf("failed to call %s: %s", resp.Request.URL, resp.Status)
 	}
 
-	defer resp.Body.Close()
 	var result map[string]interface{}
 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
 		return false, fmt.Errorf("failed to decode JSON: %w", err)

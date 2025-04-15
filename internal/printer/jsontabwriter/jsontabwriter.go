@@ -89,6 +89,14 @@ func GenerateOutput(
 func GenerateOutputPreconverted(
 	rawSourceData interface{}, convertedSourceData []map[string]interface{}, cols []string,
 ) (string, error) {
+
+	if viper.GetBool(constants.ArgWait) {
+		err := waitinfo.Set(rawSourceData)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, GenerateVerboseOutput("failed to find href to wait on: %s", err.Error()))
+		}
+	}
+
 	if viper.IsSet(constants.ArgQuiet) {
 		return "", nil
 	}
