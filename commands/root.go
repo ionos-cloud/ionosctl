@@ -78,6 +78,7 @@ func Execute() {
 	}
 
 	if err := rootCmd.Command.Execute(); err != nil {
+		fmt.Print(buf.String())
 		os.Exit(1)
 	}
 
@@ -91,6 +92,8 @@ func Execute() {
 			err := waitinfo.FindAndExecuteGetCommand(rootCmd.Command, commandParts, setFlags)
 			if err != nil || waitinfo.HrefIsEmpty() {
 				fmt.Fprintf(os.Stderr, jsontabwriter.GenerateVerboseOutput("failed to wait: %s", err.Error()))
+				fmt.Println(buf.String())
+				os.Exit(0)
 			}
 		}
 
