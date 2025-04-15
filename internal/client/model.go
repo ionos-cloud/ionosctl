@@ -143,7 +143,6 @@ func (t *CustomTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 	// Clone the request to avoid modifying the original.
 	newReq := req.Clone(req.Context())
 
-	// Set auth header:
 	// If a token is provided, use Bearer auth, else use Basic auth.
 	if t.Token != "" {
 		newReq.Header.Set("Authorization", "Bearer "+t.Token)
@@ -151,12 +150,9 @@ func (t *CustomTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 		newReq.SetBasicAuth(t.Name, t.Password)
 	}
 
-	// Set Content-Type to JSON if not already set.
 	if newReq.Header.Get("Content-Type") == "" {
 		newReq.Header.Set("Content-Type", "application/json")
 	}
-
-	// Use the underlying transport to execute the request.
 	return t.Base.RoundTrip(newReq)
 }
 
@@ -182,7 +178,6 @@ func newHttpClient(name, password, token string) *http.Client {
 				if origAuth != "" {
 					req.Header.Set("Authorization", origAuth)
 				}
-				// Optionally, preserve Content-Type (or other headers) if needed.
 				origCT := via[0].Header.Get("Content-Type")
 				if origCT != "" {
 					req.Header.Set("Content-Type", origCT)
