@@ -50,10 +50,19 @@ var (
 	NoHeaders bool
 	Wait      bool
 
+	DeprecatedWaitForState   bool
+	DeprecatedWaitForDelete  bool
+	DeprecatedWaitForRequest bool
+
 	cfgFile string
 )
 
 func Execute() {
+	if DeprecatedWaitForDelete || DeprecatedWaitForState || DeprecatedWaitForRequest {
+		// DEPRECATED flags that only set the wait flag to true
+		Wait = true
+	}
+
 	var buf bytes.Buffer
 	rootCmd.Command.SetOut(&buf)
 
@@ -174,12 +183,29 @@ func init() {
 	rootPFlagSet.Bool(constants.ArgNoHeaders, false, "Don't print table headers when table output is used")
 	_ = viper.BindPFlag(constants.ArgNoHeaders, rootPFlagSet.Lookup(constants.ArgNoHeaders))
 
-	rootPFlagSet.BoolVarP(&Wait, constants.ArgWait, constants.ArgWaitForRequestShort, constants.DefaultWait,
+	rootPFlagSet.BoolVarP(&Wait, constants.ArgWait, constants.ArgWaitShort, constants.DefaultWait,
 		"Polls the request continuously until the operation is completed")
 	// rootPFlagSet.IntVarP(&WaitTimeout, constants.ArgTimeout, "", constants.DefaultTimeoutSeconds,
 	// 	"Timeout in seconds for polling the request")
 	_ = viper.BindPFlag(constants.ArgWait, rootPFlagSet.Lookup(constants.ArgWait))
 	// _ = viper.BindPFlag(constants.ArgTimeout, rootPFlagSet.Lookup(constants.ArgTimeout))
+
+	rootPFlagSet.BoolVarP(&DeprecatedWaitForState, constants.ArgWaitForState, constants.ArgWaitForStateShort, constants.DefaultWait,
+		"DEPRECATED flag that only sets the wait flag to true")
+	_ = viper.BindPFlag(constants.ArgWaitForState, rootPFlagSet.Lookup(constants.ArgWaitForState))
+	rootPFlagSet.BoolVarP(&DeprecatedWaitForDelete, constants.ArgWaitForDelete, "", constants.DefaultWait,
+		"DEPRECATED flag that only sets the wait flag to true")
+	_ = viper.BindPFlag(constants.ArgWaitForDelete, rootPFlagSet.Lookup(constants.ArgWaitForDelete))
+	rootPFlagSet.BoolVarP(&DeprecatedWaitForRequest, constants.ArgWaitForRequest, "", constants.DefaultWait,
+		"DEPRECATED flag that only sets the wait flag to true")
+	_ = viper.BindPFlag(constants.ArgWaitForRequest, rootPFlagSet.Lookup(constants.ArgWaitForRequest))
+
+	rootPFlagSet.MarkHidden(constants.ArgWaitForRequest)
+	rootPFlagSet.MarkHidden(constants.ArgWaitForDelete)
+	rootPFlagSet.MarkHidden(constants.ArgWaitForState)
+	rootPFlagSet.MarkDeprecated(constants.ArgWaitForRequest, "use --wait instead")
+	rootPFlagSet.MarkDeprecated(constants.ArgWaitForDelete, "use --wait instead")
+	rootPFlagSet.MarkDeprecated(constants.ArgWaitForState, "use --wait instead")
 
 	// Add SubCommands to RootCmd
 	addCommands()
