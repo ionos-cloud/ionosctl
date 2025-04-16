@@ -19,12 +19,12 @@ import (
 
 func RoutesPutCmd() *core.Command {
 	cmd := core.NewCommand(context.Background(), nil, core.CommandBuilder{
-		Namespace: "api-gateway",
+		Namespace: "apigatewayroute",
 		Resource:  "route",
 		Verb:      "update",
 		Aliases:   []string{"u"},
 		ShortDesc: "Partially modify a route's properties. This command uses a combination of GET and PUT to simulate a PATCH operation",
-		Example:   "ionosctl apigateway route update --gateway-id GATEWAYID --route ROUTE",
+		Example:   "ionosctl apigateway route update --gateway-id GATEWAYID --route-id ROUTEID",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			if err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagGatewayID, constants.FlagGatewayRouteID); err != nil {
 				return err

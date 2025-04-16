@@ -18,7 +18,7 @@ import (
 
 func GatewayPutCmd() *core.Command {
 	cmd := core.NewCommand(context.Background(), nil, core.CommandBuilder{
-		Namespace: "api-gateway",
+		Namespace: "apigateway",
 		Resource:  "gateway",
 		Verb:      "update",
 		Aliases:   []string{"u"},
@@ -72,9 +72,15 @@ func partiallyUpdateGatewayPrint(c *core.CommandConfig, r apigateway.GatewayRead
 		input.Metrics = pointer.From(viper.GetBool(fn))
 	}
 	if fn := core.GetFlagName(c.NS, constants.FlagNameCustomDomainsName); viper.IsSet(fn) {
+		if len(input.CustomDomains) == 0 {
+			input.CustomDomains = make([]apigateway.GatewayCustomDomains, 1)
+		}
 		input.CustomDomains[0].Name = pointer.From(viper.GetString(fn))
 	}
 	if fn := core.GetFlagName(c.NS, constants.FlagNameCustomCertificateId); viper.IsSet(fn) {
+		if len(input.CustomDomains) == 0 {
+			input.CustomDomains = make([]apigateway.GatewayCustomDomains, 1)
+		}
 		input.CustomDomains[0].CertificateId = pointer.From(viper.GetString(fn))
 	}
 	apigatewayid := viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayID))

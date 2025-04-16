@@ -24,3 +24,19 @@ func ConverApiGatewayUpstreamsToTable(upstream []apigateway.RouteUpstreams) []ma
 
 	return convertedUpstreams
 }
+
+func ConvertApiGatewayCustomDomainsToTable(customDomains []apigateway.GatewayCustomDomains) []map[string]interface{} {
+	if len(customDomains) == 0 {
+		return nil
+	}
+
+	var convertedCustomDomains = make([]map[string]interface{}, len(customDomains))
+	for idx, customDomain := range customDomains {
+		convertedCustomDomains[idx] = make(map[string]interface{})
+
+		convertedCustomDomains[idx]["CustomDomainsId"] = fmt.Sprintf("%v", idx)
+		convertedCustomDomains[idx]["Name"] = customDomain.GetName()
+		convertedCustomDomains[idx]["CertificateId"] = customDomain.GetCertificateId()
+	}
+	return convertedCustomDomains
+}

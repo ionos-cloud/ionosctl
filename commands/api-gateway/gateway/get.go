@@ -17,7 +17,7 @@ import (
 
 func GatewaysFindByIdCmd() *core.Command {
 	cmd := core.NewCommand(context.Background(), nil, core.CommandBuilder{
-		Namespace: "api-gateway",
+		Namespace: "apigateway",
 		Resource:  "gateway",
 		Verb:      "get",
 		Aliases:   []string{"g"},
@@ -50,7 +50,7 @@ func GatewaysFindByIdCmd() *core.Command {
 		InitClient: true,
 	})
 
-	cmd.AddStringFlag(constants.FlagGatewayID, constants.FlagGatewayShort, "", constants.DescGateway)
+	cmd.AddStringFlag(constants.FlagGatewayID, constants.FlagIdShort, "", constants.DescGateway)
 	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagGatewayID, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.GatewaysIDs(), cobra.ShellCompDirectiveNoFileComp
 	})

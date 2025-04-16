@@ -20,12 +20,12 @@ import (
 
 func ApigatewayPostCmd() *core.Command {
 	cmd := core.NewCommand(context.Background(), nil, core.CommandBuilder{
-		Namespace: "api-gateway",
+		Namespace: "apigateway",
 		Resource:  "apigateway",
 		Verb:      "create",
 		Aliases:   []string{"post", "c"},
 		ShortDesc: "Create an apigateway",
-		Example:   "ionosctl apigateway create --name name.com",
+		Example:   "ionosctl apigateway gateway create --name name",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			if err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagName); err != nil {
 				return err

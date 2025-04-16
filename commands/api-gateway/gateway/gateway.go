@@ -1,6 +1,7 @@
 package gateway
 
 import (
+	"github.com/ionos-cloud/ionosctl/v6/commands/api-gateway/gateway/customDomains"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
@@ -32,6 +33,7 @@ func GatewayCommand() *core.Command {
 	cmd.AddCommand(ApigatewayListCmd())
 	cmd.AddCommand(ApiGatewayDeleteCmd())
 	cmd.AddCommand(GatewaysFindByIdCmd())
+	cmd.AddCommand(customDomains.CustomDomainsCmd())
 
 	return cmd
 }

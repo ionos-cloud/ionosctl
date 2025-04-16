@@ -20,7 +20,7 @@ func RouteListCmd() *core.Command {
 		Verb:      "list",
 		Aliases:   []string{"ls"},
 		ShortDesc: "Retrieve routes",
-		Example:   "ionosctl apigateway route list",
+		Example:   "ionosctl apigateway route list --gateway-id ID",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			if err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagGatewayID); err != nil {
 				return err

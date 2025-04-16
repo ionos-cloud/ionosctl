@@ -49,3 +49,12 @@ func UpstreamsIDs(apigatewayId string, routeId string) []string {
 	}
 	return ids
 }
+
+func CustomDomainsIDs(apigatewayId string) []string {
+	usedcustomDomain, _, _ := client.Must().Apigateway.APIGatewaysApi.ApigatewaysFindById(context.Background(), apigatewayId).Execute()
+	ids := []string{}
+	for i := 0; i < len(usedcustomDomain.Properties.CustomDomains); i++ {
+		ids = append(ids, strconv.Itoa(i))
+	}
+	return ids
+}

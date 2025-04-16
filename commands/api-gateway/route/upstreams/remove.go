@@ -18,7 +18,7 @@ func RemovetCmd() *core.Command {
 		Verb:      "remove",
 		Aliases:   []string{"r"},
 		ShortDesc: "Upstreams consist of schme, loadbalancer, host, port and weight",
-		Example:   "ionosctl apigateway route upstreams remove --gateway-id ID --route-id ID_ROUTE --upstreamId UPSTREAMID",
+		Example:   "ionosctl apigateway route upstreams remove --gateway-id ID --route-id ID_ROUTE --upstream-id UPSTREAMID",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			if err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagGatewayID, constants.FlagGatewayRouteID, constants.FlagUpstreamId); err != nil {
 				return err
