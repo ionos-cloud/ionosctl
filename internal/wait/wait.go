@@ -38,6 +38,7 @@ func WithContext(ctx context.Context) WaitOption {
 // For polls the provided href until the resource reaches the desired state.
 // It uses early returns and a helper to reduce complexity.
 func For(commandName, href string, options ...WaitOption) {
+	fmt.Printf("Waiting for command %s...\n", commandName)
 	fmt.Fprint(os.Stderr, jsontabwriter.GenerateVerboseOutput("Waiting for "+href+" to reach desired state..."))
 
 	waitOpts := &WaitOptions{
@@ -55,6 +56,7 @@ func For(commandName, href string, options ...WaitOption) {
 			fmt.Fprint(os.Stderr, jsontabwriter.GenerateVerboseOutput("Stopped waiting: context timeout"))
 			return
 		default:
+			time.Sleep(waitOpts.PollInterval)
 		}
 
 		resp, err := c.Get(href)
@@ -84,6 +86,8 @@ func For(commandName, href string, options ...WaitOption) {
 // For "create" and "update": returns true if JSON's metadata.state is "AVAILABLE".
 func isConditionMet(executedCommand string, resp *http.Response) (bool, error) {
 	defer resp.Body.Close()
+
+	fmt.Println("executed command", executedCommand)
 
 	if executedCommand == "delete" {
 		return resp.StatusCode == http.StatusNotFound, nil

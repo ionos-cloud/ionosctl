@@ -1,8 +1,6 @@
 package wait
 
 import (
-	"time"
-
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -23,10 +21,10 @@ func AddTimeoutFlag(root *cobra.Command) {
 		}
 
 		if cmd.Flags().ShorthandLookup(constants.ArgTimeoutShort) == nil {
-			cmd.Flags().DurationP(constants.ArgTimeout, constants.ArgTimeoutShort, time.Duration(constants.DefaultTimeoutSeconds)*time.Second,
+			cmd.Flags().IntP(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds,
 				"Timeout for waiting for resource to reach desired state")
 		} else {
-			cmd.Flags().Duration(constants.ArgTimeout, time.Duration(constants.DefaultTimeoutSeconds)*time.Second,
+			cmd.Flags().Int(constants.ArgTimeout, constants.DefaultTimeoutSeconds,
 				"Timeout for waiting for resource to reach desired state")
 		}
 
