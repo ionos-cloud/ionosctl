@@ -6,20 +6,31 @@ package constants
 
 // flags
 const (
-	FlagDatacenterId    = "datacenter-id"
-	FlagSnapshotId      = "snapshot-id"
-	FlagIdShort         = "i"
-	FlagName            = "name"
-	FlagNameShort       = "n"
-	FlagTemplate        = "template"
-	FlagTemplateId      = "template-id"
-	FlagInstances       = "instances"
-	FlagShards          = "shards"
-	FlagMaintenanceTime = "maintenance-time"
-	FlagMaintenanceDay  = "maintenance-day"
-	FlagLocation        = "location"
-	FlagLocationShort   = "l"
-	FlagOffset          = "offset"
+	FlagDatacenterId            = "datacenter-id"
+	FlagSnapshotId              = "snapshot-id"
+	FlagIdShort                 = "i"
+	FlagName                    = "name"
+	FlagPaths                   = "paths"
+	FlagMethods                 = "methods"
+	FlagWebSocket               = "websocket"
+	FlagLoadBalancer            = "loadbalancer"
+	FlagScheme                  = "scheme"
+	FlagNameShort               = "n"
+	FlagTemplate                = "template"
+	FlagTemplateId              = "template-id"
+	FlagInstances               = "instances"
+	FlagShards                  = "shards"
+	FlagMaintenanceTime         = "maintenance-time"
+	FlagMaintenanceDay          = "maintenance-day"
+	FlagLocation                = "location"
+	FlagLocationShort           = "l"
+	FlagOffset                  = "offset"
+	FlagLimit                   = "limit"
+	FlagOrderBy                 = "order-by"
+	FlagLogs                    = "logs"
+	FlagMetrics                 = "metrics"
+	FlagNameCustomDomainsName   = "custom-domains-name"
+	FlagNameCustomCertificateId = "custom-domains-certificate-id"
 	// DescAuthenticationOrder explains auth order. Embed this in any auth-related commands
 	DescAuthenticationOrder = `AUTHENTICATION ORDER
 ionosctl uses a layered approach for authentication, prioritizing sources in this order:
@@ -35,19 +46,24 @@ Within each layer, a token takes precedence over a username and password combina
 	FlagLanId           = "lan-id"
 	FlagEdition         = "edition"
 
-	FlagGatewayID      = "gateway-id"
-	FlagTunnelID       = "tunnel-id"
-	FlagPeerID         = "peer-id"
-	FlagGatewayIP      = "gateway-ip"
-	FlagInterfaceIP    = "interface-ip"
-	FlagConnectionIP   = "connection-ip"
-	FlagPrivateKey     = "private-key"
-	FlagPrivateKeyPath = "private-key-path"
-	FlagPublicKey      = "public-key"
-	FlagHost           = "host"
-	FlagPort           = "port"
-	FlagAuthMethod     = "auth-method"
-	FlagPSKKey         = "psk-key"
+	FlagGatewayID       = "gateway-id"
+	FlagGatewayRouteID  = "route-id"
+	FlagCustomDomainsId = "custom-domains-id"
+	FlagUpstreamId      = "upstream-id"
+	FlagTunnelID        = "tunnel-id"
+	FlagPeerID          = "peer-id"
+	FlagGatewayIP       = "gateway-ip"
+	FlagGatewayShort    = "g"
+	FlagInterfaceIP     = "interface-ip"
+	FlagConnectionIP    = "connection-ip"
+	FlagPrivateKey      = "private-key"
+	FlagPrivateKeyPath  = "private-key-path"
+	FlagPublicKey       = "public-key"
+	FlagHost            = "host"
+	FlagPort            = "port"
+	FlagWeight          = "weight"
+	FlagAuthMethod      = "auth-method"
+	FlagPSKKey          = "psk-key"
 
 	FlagIKEDiffieHellmanGroup  = "ike-diffie-hellman-group"
 	FlagIKEEncryptionAlgorithm = "ike-encryption-algorithm"
@@ -115,8 +131,9 @@ Within each layer, a token takes precedence over a username and password combina
 	FlagCDNDistributionRoutingRules        = "routing-rules"
 	FlagCDNDistributionRoutingRulesExample = "routing-rules-example"
 
-	FlagFilterName  = "name"
-	FlagFilterState = "state"
+	FlagFilterName    = "name"
+	FlagFilterState   = "state"
+	FlagCertificateId = "certificate-id"
 
 	FlagKafkaBrokerAddresses   = "broker-addresses"
 	FlagKafkaPartitions        = "partitions"
@@ -143,6 +160,9 @@ Within each layer, a token takes precedence over a username and password combina
 const (
 	DescMaxResults = "The maximum number of elements to return"
 	DescZone       = "The name or ID of the DNS zone"
+	DescGateway    = "The ID of the gateway"
+	DescRoute      = "The ID of the route"
+	DescUpstream   = "The ID of the upstream"
 )
 
 // legacy flags. TODO: Arg should be renamed to Flag.
@@ -192,9 +212,11 @@ const (
 	MariaDBApiRegionalURL = "https://mariadb.%s.ionos.com"
 	VPNApiRegionalURL     = "https://vpn.%s.ionos.com"
 	KafkaApiRegionalURL   = "https://kafka.%s.ionos.com"
+	ApiGatewayRegionalURL = "https://apigateway.%s.ionos.com"
 )
 
 var (
+	GatewayLocations = []string{"de/txl", "gb/lhr", "fr/par", "es/vit"}
 	DNSLocations     = []string{"de/fra"}
 	LoggingLocations = []string{"de/txl", "de/fra", "gb/lhr", "fr/par", "es/vit"}
 	CDNLocations     = []string{"de/fra"}

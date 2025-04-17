@@ -2,7 +2,7 @@ package client
 
 import (
 	"fmt"
-
+	"github.com/ionos-cloud/sdk-go-bundle/products/apigateway/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/shared"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
@@ -66,6 +66,7 @@ func (c *Client) UsedLayer() *Layer {
 type Client struct {
 	usedLayer *Layer // i.e. which auth layer are we using. Flags / Env Vars / Config File
 
+	Apigateway           *apigateway.APIClient
 	CloudClient          *cloudv6.APIClient
 	AuthClient           *auth.APIClient
 	CertManagerClient    *certmanager.APIClient
@@ -107,6 +108,7 @@ func newClient(name, pwd, token, hostUrl string, usedLayer *Layer) *Client {
 	postgresConfig.UserAgent = appendUserAgent(postgresConfig.UserAgent)
 
 	return &Client{
+		Apigateway:           apigateway.NewAPIClient(sharedConfig),
 		CloudClient:          cloudv6.NewAPIClient(clientConfig),
 		AuthClient:           auth.NewAPIClient(sharedConfig),
 		CDNClient:            cdn.NewAPIClient(sharedConfig),

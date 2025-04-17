@@ -25,6 +25,7 @@ const rootCmdName = "ionosctl"
 // Products establishes non-compute namespaces, and deduces that the rest of the root-level commands MUST be part of compute. If you add support for a new API, add your command here
 // TODO: Change me, when compute namespace is added!
 var nonComputeNamespaces = map[string]string{
+	"apigateway":              "API Gateway",
 	"applicationloadbalancer": "Application-Load-Balancer",
 	"backupunit":              "Managed-Backup",
 	"certificate-manager":     "Certificate-Manager",

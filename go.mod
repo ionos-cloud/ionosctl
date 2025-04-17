@@ -32,6 +32,7 @@ require (
 
 require (
 	github.com/dustin/go-humanize v0.0.0-20171111073723-bb3d318650d4
+	github.com/ionos-cloud/sdk-go-bundle/products/apigateway/v2 v2.0.1
 	github.com/ionos-cloud/sdk-go-bundle/products/auth/v2 v2.0.1
 	github.com/ionos-cloud/sdk-go-bundle/products/cdn/v2 v2.1.1
 	github.com/ionos-cloud/sdk-go-bundle/products/containerregistry/v2 v2.0.2

@@ -60,7 +60,7 @@ func (c Completer) AddInfo(targetInfoKey string, additionalFormatting ...string)
 			return Completer{}
 		}
 
-		info := fmt.Sprintf("%v", infoRaw)
+		info := fmt.Sprintf("%v ", infoRaw)
 		for _, format := range additionalFormatting {
 			info = fmt.Sprintf(format, info)
 		}
