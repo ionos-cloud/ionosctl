@@ -18,10 +18,6 @@ func Root() *core.Command {
 	}
 	cmd.AddCommand(gateway.GatewayCommand())
 	cmd.AddCommand(route.RecordCommand())
-	//cmd.AddCommand(reverse_record.Root())
-	//cmd.AddCommand(quota.Root())
-	//cmd.AddCommand(dnssec.Root())
-	//cmd.AddCommand(secondary_zones.Root())
 
 	return core.WithRegionalFlags(cmd, constants.ApiGatewayRegionalURL, constants.GatewayLocations)
 }

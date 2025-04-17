@@ -8,6 +8,7 @@ var (
 		"Metrics":        "properties.metrics",
 		"Status":         "metadata.status",
 		"PublicEndpoint": "metadata.publicEndpoint",
+		"StatusMessage":  "metadata.statusMessage",
 	}
 
 	ApiGatewayRoute = map[string]string{
@@ -24,13 +25,5 @@ var (
 		"Weight":        "properties.upstreams.0.weight",
 		"Status":        "metadata.status",
 		"StatusMessage": "metadata.statusMessage",
-	}
-
-	RouteUpstreams = map[string]string{
-		"scheme":       "properties.upstreams.0.scheme",
-		"loadbalancer": "properties.upstreams.0.loadbalancers",
-		"host":         "properties.upstreams.0.host",
-		"port":         "properties.upstreams.0.port",
-		"weight":       "properties.upstreams.0.weight",
 	}
 )

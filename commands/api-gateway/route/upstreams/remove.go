@@ -30,22 +30,30 @@ func RemovetCmd() *core.Command {
 			apigatewayId := viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayID))
 			routeId := viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayRouteID))
 			upstreamId := viper.GetInt(core.GetFlagName(c.NS, constants.FlagUpstreamId))
-			usedRoutes, _, _ := client.Must().Apigateway.RoutesApi.ApigatewaysRoutesFindById(context.Background(), apigatewayId, routeId).Execute()
+			usedRoutes, _, err := client.Must().Apigateway.RoutesApi.ApigatewaysRoutesFindById(context.Background(), apigatewayId, routeId).Execute()
+			if err != nil {
+				return err
+			}
 			input := usedRoutes.Properties
 			if input.Upstreams == nil {
 				fmt.Errorf("There are no upstreams defined in this route!")
 			} else if upstreamId == 0 {
 				input.Upstreams = input.Upstreams[1:]
-			} else if upstreamId == 1 {
+			} else if upstreamId > 0 {
 				input.Upstreams = append(input.Upstreams[:upstreamId], input.Upstreams[upstreamId+1:]...)
-			} else if upstreamId == 2 {
+			} else if upstreamId == len(input.Upstreams)-1 {
 				input.Upstreams = input.Upstreams[:len(input.Upstreams)-1]
+			} else if upstreamId < 0 || upstreamId >= len(input.Upstreams) {
+				return fmt.Errorf("Invalid Upstreams index")
 			}
-			_, _, _ = client.Must().Apigateway.RoutesApi.ApigatewaysRoutesPut(context.Background(), apigatewayId, routeId).
+			_, _, err = client.Must().Apigateway.RoutesApi.ApigatewaysRoutesPut(context.Background(), apigatewayId, routeId).
 				RouteEnsure(apigateway.RouteEnsure{
 					Id:         routeId,
 					Properties: input,
 				}).Execute()
+			if err != nil {
+				return err
+			}
 			// the maximum number of upstreams is 3 (allowed by API)
 			return nil
 		},

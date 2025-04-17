@@ -22,14 +22,11 @@ func GatewaysIDs() []string {
 	if err != nil {
 		return nil
 	}
-
-	Ids := []string{}
-	for _, gateway := range gateways.GetItems() {
-		gatewayId := gateway.Id
-		Ids = append(Ids, gatewayId)
+	gatewaysConverted, err := json2table.ConvertJSONToTable("items", jsonpaths.ApiGatewayGateway, gateways)
+	if err != nil {
+		return nil
 	}
-
-	return Ids
+	return completions.NewCompleter(gatewaysConverted, "Id").AddInfo("Name").AddInfo("PublicEndpoint").AddInfo("Status").ToString()
 }
 
 func Routes(gatewayID string) []string {

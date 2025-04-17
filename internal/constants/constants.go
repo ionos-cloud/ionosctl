@@ -205,15 +205,14 @@ const (
 )
 
 const (
-	DefaultApiURL              = "https://api.ionos.com"
-	DNSApiRegionalURL          = "https://dns.%s.ionos.com"
-	LoggingApiRegionalURL      = "https://logging.%s.ionos.com"
-	CDNApiRegionalURL          = "https://cdn.%s.ionos.com"
-	MariaDBApiRegionalURL      = "https://mariadb.%s.ionos.com"
-	VPNApiRegionalURL          = "https://vpn.%s.ionos.com"
-	KafkaApiRegionalURL        = "https://kafka.%s.ionos.com"
-	ApiGatewayRegionalURL      = "https://apigateway.%s.ionos.com"
-	RouteApiGatewayRegionalURL = "https://apigateway.%s.ionos.com/gateways/%s/routes"
+	DefaultApiURL         = "https://api.ionos.com"
+	DNSApiRegionalURL     = "https://dns.%s.ionos.com"
+	LoggingApiRegionalURL = "https://logging.%s.ionos.com"
+	CDNApiRegionalURL     = "https://cdn.%s.ionos.com"
+	MariaDBApiRegionalURL = "https://mariadb.%s.ionos.com"
+	VPNApiRegionalURL     = "https://vpn.%s.ionos.com"
+	KafkaApiRegionalURL   = "https://kafka.%s.ionos.com"
+	ApiGatewayRegionalURL = "https://apigateway.%s.ionos.com"
 )
 
 var (

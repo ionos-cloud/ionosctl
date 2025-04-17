@@ -37,13 +37,12 @@ func AddCmd() *core.Command {
 			input := usedRoute.Properties
 			elem := len(input.Upstreams)
 
-			if input.Upstreams == nil || elem == 0 {
+			if input.Upstreams == nil {
 				input.Upstreams = make([]apigateway.RouteUpstreams, 1)
-				elem = 0
-			} else {
-				input.Upstreams = append(input.Upstreams, apigateway.RouteUpstreams{})
-				elem = len(input.Upstreams) - 1
 			}
+			input.Upstreams = append(input.Upstreams, apigateway.RouteUpstreams{})
+			elem = len(input.Upstreams) - 1
+			
 			if fn := core.GetFlagName(c.NS, constants.FlagScheme); true {
 				input.Upstreams[elem].Scheme = viper.GetString(fn)
 			}

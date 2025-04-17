@@ -23,7 +23,7 @@ func GatewayPutCmd() *core.Command {
 		Verb:      "update",
 		Aliases:   []string{"u"},
 		ShortDesc: "Partially modify a gateway's properties. This command uses a combination of GET and PUT to simulate a PATCH operation",
-		Example:   "ionosctl apigateway gateway update --gateway-id GATEWAYID --name NAME",
+		Example:   "ionosctl apigateway gateway update --gateway-id GATEWAYID --logs true",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			if err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagGatewayID); err != nil {
 				return err

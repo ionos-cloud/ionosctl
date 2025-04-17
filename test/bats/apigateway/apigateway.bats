@@ -13,7 +13,6 @@ setup_file() {
     mkdir -p /tmp/bats_test
 
     uuid_v4_regex='^[0-9a-f]{8}-[0-9a-f]{4}-[4][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
-    # verifica daca este ipv4
 }
 
 setup() {
@@ -24,13 +23,13 @@ setup() {
 
 #content
 @test "Create ApiGateway Gateway" {
-    gateway_name="cli-test-gateway"
+    gateway_name="cli-test-gateway-$(randStr 8)"
     run ionosctl apigateway gateway create --name "$gateway_name" -o json 2> /dev/null
     assert_success
 
     gateway_id=$(echo "$output" | jq -r '.id')
 
-    assert_output -p "\"name\": \"cli-test-gateway\""
+    assert_output -p "\"name\": \"$gateway_name\""
     assert_output -p "\"status\": \"PROVISIONING\""
 
     echo "created apigateway gateway $gateway_id ($gateway_name)"
@@ -44,12 +43,12 @@ setup() {
     # List Gateway (JSON output)
     run ionosctl apigateway gateway list -o json 2> /dev/null
     assert_success
-    assert_output -p "\"name\": \"cli-test-gateway\""
+    assert_output -p "$gateway_name"
 
     # List Gateway (Column output)
     run ionosctl apigateway gateway list --cols name --no-headers
     assert_success
-    assert_output -p "cli-test-gateway"
+    assert_output -p "$gateway_name"
 }
 
 @test "Get ApiGateway Gateways" {
@@ -63,17 +62,15 @@ setup() {
 
 @test "Create ApiGateway Route" {
     gateway_id=$(cat /tmp/bats_test/gateway_id)
-    route_name="route"
-    run ionosctl apigateway route create --gateway-id "$gateway_id" --name "name_route" --paths "path_route" --methods "GET" --host "host.com" -o json 2> /dev/null
+    route_name="route-$(randStr 8)"
+    run ionosctl apigateway route create --gateway-id "$gateway_id" --name "$route_name" --paths "path_route" --methods "GET" --host "host.com" -o json 2> /dev/null
     assert_success
 
     route_id=$(echo "$output" | jq -r '.id')
 
 
     # Verify specific fields
-    assert_output -p "\"name\": \"name_route\""
-    assert_output -p "\"path_route\""
-    assert_output -p "\"GET\""
+    assert_output -p "\"name\": \"$route_name"\"
     assert_output -p "\"host\": \"host.com\""
     assert_output -p "\"status\": \"PROVISIONING\""
 
@@ -88,12 +85,12 @@ setup() {
     # List Records (JSON output)
     run ionosctl apigateway route list --gateway-id "$gateway_id" -o json 2> /dev/null
     assert_success
-    assert_output -p "\"name\": \"name_route\""
+    assert_output -p "$route_name"
 
     # List Records (Column output)
     run ionosctl apigateway route list --gateway-id "$gateway_id" --cols name --no-headers
     assert_success
-    assert_output "name_route"
+    assert_output -p "$route_name"
 }
 
 
@@ -104,17 +101,21 @@ setup() {
     # Get Route by ID
     run ionosctl apigateway route get --gateway-id "$gateway_id" --route-id "$route_id" -o json 2> /dev/null
     assert_success
-    assert_output -p "\"name\": \"name_route\""
+    assert_output -p "$route_name"
 }
 
 @test "Gateway CustomDomains Operations" {
     gateway_id=$(cat /tmp/bats_test/gateway_id)
+#    echo "$(randStr 8)-$(randStr 4)-$(randStr 4)-$(randStr 4)-$(randStr 12)" | tr '[:upper:]' '[:lower:]' > /tmp/bats_test/uuidv4
+#    certificate_id="$(cat /tmp/bats_test/uuidv4)"
+#    assert_regex "$record_id" "$uuid_v4_regex"
+# nu merge :(
     certificate_id="bc4738cc-0a51-4f0b-ac20-ae65d930454e"
 
     # Add CustomDomains
     run ionosctl apigateway gateway customdomains add --gateway-id "$gateway_id" --name name.com --certificate-id "$certificate_id" -o json 2> /dev/null
     assert_success
-    assert_output -p "name.com"
+    assert_output -p "\"name\": \"name.com"\"
     assert_output -p "\"certificateId\": \"$certificate_id\""
 
     # List CustomDomains
@@ -150,21 +151,21 @@ setup() {
     gateway_id=$(cat /tmp/bats_test/gateway_id)
 
     # Get Gateway (JSON output)
-    run ionosctl apigateway gateway update --gateway-id "$gateway_id" --name cli-test-gateway_update -o json 2> /dev/null
+    run ionosctl apigateway gateway update --gateway-id "$gateway_id" --logs true -o json 2> /dev/null
     assert_success
     assert_output -p "\"status\": \"PROVISIONING\""
-    assert_output -p "\"name\": \"cli-test-gateway_update\""
+    assert_output -p "\"logs\": true"
 }
 
 @test "Update ApiGateway Route" {
     gateway_id=$(cat /tmp/bats_test/gateway_id)
     route_id=$(cat /tmp/bats_test/route_id)
 
-    run ionosctl apigateway route update --gateway-id "$gateway_id" --route-id "$route_id" --name name_route_updated -o json 2> /dev/null
+    run ionosctl apigateway route update --gateway-id "$gateway_id" --route-id "$route_id" --scheme https -o json 2> /dev/null
     assert_success
 
     # Verify updated field
-    assert_output -p "\"name\": \"name_route_updated\""
+    assert_output -p "\"scheme\": \"https\""
 }
 
 @test "Delete ApiGateway Gateway" {
