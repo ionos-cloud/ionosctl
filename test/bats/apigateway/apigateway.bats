@@ -38,12 +38,11 @@ setup() {
 }
 
 @test "List ApiGateway Gateways" {
-    gateway_id=$(cat /tmp/bats_test/gateway_id)
-
+    gateway_name=$(cat /tmp/bats_test/gateway_name)
     # List Gateway (JSON output)
     run ionosctl apigateway gateway list -o json 2> /dev/null
     assert_success
-    assert_output -p "$gateway_name"
+    assert_output -p "\"name\": \"$gateway_name\""
 
     # List Gateway (Column output)
     run ionosctl apigateway gateway list --cols name --no-headers
@@ -53,10 +52,12 @@ setup() {
 
 @test "Get ApiGateway Gateways" {
     gateway_id=$(cat /tmp/bats_test/gateway_id)
+    gateway_name=$(cat /tmp/bats_test/gateway_name)
 
     # Get Gateway (JSON output)
     run ionosctl apigateway gateway get --gateway-id "$gateway_id" -o json 2> /dev/null
     assert_success
+    assert_output -p "\"name\": \"$gateway_name\""
     assert_output -p "\"status\": \"AVAILABLE\""
 }
 
@@ -81,7 +82,7 @@ setup() {
 
 @test "List ApiGateway Routes" {
     gateway_id=$(cat /tmp/bats_test/gateway_id)
-
+    route_name=$(cat /tmp/bats_test/route_name)
     # List Records (JSON output)
     run ionosctl apigateway route list --gateway-id "$gateway_id" -o json 2> /dev/null
     assert_success
@@ -97,6 +98,7 @@ setup() {
 @test "Get ApiGateway Route" {
     gateway_id=$(cat /tmp/bats_test/gateway_id)
     route_id=$(cat /tmp/bats_test/route_id)
+    route_name=$(cat /tmp/bats_test/route_name)
 
     # Get Route by ID
     run ionosctl apigateway route get --gateway-id "$gateway_id" --route-id "$route_id" -o json 2> /dev/null
@@ -106,11 +108,9 @@ setup() {
 
 @test "Gateway CustomDomains Operations" {
     gateway_id=$(cat /tmp/bats_test/gateway_id)
-#    echo "$(randStr 8)-$(randStr 4)-$(randStr 4)-$(randStr 4)-$(randStr 12)" | tr '[:upper:]' '[:lower:]' > /tmp/bats_test/uuidv4
-#    certificate_id="$(cat /tmp/bats_test/uuidv4)"
-#    assert_regex "$record_id" "$uuid_v4_regex"
-# nu merge :(
-    certificate_id="bc4738cc-0a51-4f0b-ac20-ae65d930454e"
+    echo "$(uuidgen)"> /tmp/bats_test/uuidv4
+    certificate_id="$(cat /tmp/bats_test/uuidv4)"
+    assert_regex "$certificate_id" "$uuid_v4_regex"
 
     # Add CustomDomains
     run ionosctl apigateway gateway customdomains add --gateway-id "$gateway_id" --name name.com --certificate-id "$certificate_id" -o json 2> /dev/null
