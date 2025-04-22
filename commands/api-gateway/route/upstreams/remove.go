@@ -65,14 +65,14 @@ func RemovetCmd() *core.Command {
 		}, constants.ApiGatewayRegionalURL, constants.GatewayLocations),
 	)
 
-	cmd.AddStringFlag(constants.FlagGatewayRouteID, "", "", fmt.Sprintf("%s. Required or -%s", constants.DescRoute, constants.ArgAllShort, core.RequiredFlagOption()),
+	cmd.AddStringFlag(constants.FlagGatewayRouteID, "", "", fmt.Sprintf("%s. Required or -%s", constants.DescRoute, constants.ArgAllShort), core.RequiredFlagOption(),
 		core.WithCompletion(func() []string {
 			apigatewayId := viper.GetString(core.GetFlagName(cmd.NS, constants.FlagGatewayID))
 			return completer.Routes(apigatewayId)
 		}, constants.ApiGatewayRegionalURL, constants.GatewayLocations),
 	)
 
-	cmd.AddStringFlag(constants.FlagUpstreamId, "", "", fmt.Sprintf("%s. Required or -%s", constants.DescUpstream, constants.ArgAllShort, core.RequiredFlagOption()),
+	cmd.AddStringFlag(constants.FlagUpstreamId, "", "", fmt.Sprintf("%s. Required or -%s", constants.DescUpstream, constants.ArgAllShort), core.RequiredFlagOption(),
 		core.WithCompletion(func() []string {
 			apigatewayId := viper.GetString(core.GetFlagName(cmd.NS, constants.FlagGatewayID))
 			routeId := viper.GetString(core.GetFlagName(cmd.NS, constants.FlagGatewayRouteID))

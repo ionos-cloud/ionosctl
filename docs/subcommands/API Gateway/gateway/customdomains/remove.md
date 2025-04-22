@@ -33,7 +33,7 @@ For `customdomains` command:
       --cols strings               Set of columns to be printed on output 
                                    Available columns: [Id Name Logs Metrics Enable DomainName CertificateId HttpMethods HttpCodes Override PublicEndpoint Status]
   -c, --config string              Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
-      --custom-domains-id string   The ID of the custom domain%!(EXTRA core.FlagOptionFunc=0xe57f20)
+      --custom-domains-id string   The ID of the custom domain (required)
   -f, --force                      Force command to execute without user input
   -g, --gateway-id string          The ID of the gateway (required)
   -h, --help                       Print usage

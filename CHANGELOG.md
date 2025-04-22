@@ -1,5 +1,8 @@
 # Changelog
 
+## upcoming
+- Added API Gateway support
+
 ## [v6.8.2] (April 2025)
 
 ### Added

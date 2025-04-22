@@ -58,7 +58,7 @@ func RemovetCmd() *core.Command {
 			return completer.GatewaysIDs()
 		}, constants.ApiGatewayRegionalURL, constants.GatewayLocations),
 	)
-	cmd.AddStringFlag(constants.FlagCustomDomainsId, "", "", fmt.Sprintf("The ID of the custom domain", core.RequiredFlagOption()),
+	cmd.AddStringFlag(constants.FlagCustomDomainsId, "", "", "The ID of the custom domain", core.RequiredFlagOption(),
 		core.WithCompletion(func() []string {
 			apigateway := viper.GetString(core.GetFlagName(cmd.NS, constants.FlagGatewayID))
 			return completer.CustomDomainsIDs(apigateway)

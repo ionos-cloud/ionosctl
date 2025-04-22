@@ -37,7 +37,7 @@ Delete a gateway
                             Available columns: [Id Name Logs Metrics Enable DomainName CertificateId HttpMethods HttpCodes Override PublicEndpoint Status]
   -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -f, --force               Force command to execute without user input
-  -g, --gateway-id string   The ID of the gateway. Required or -a
+  -i, --gateway-id string   The ID of the gateway. Required or -a
   -h, --help                Print usage
   -l, --location string     Location of the resource to operate on. Can be one of: de/txl, gb/lhr, fr/par, es/vit
       --no-headers          Don't print table headers when table output is used

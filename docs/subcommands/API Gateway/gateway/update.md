@@ -53,6 +53,6 @@ Partially modify a gateway's properties. This command uses a combination of GET 
 ## Examples
 
 ```text
-ionosctl apigateway gateway update --gateway-id GATEWAYID --name NAME
+ionosctl apigateway gateway update --gateway-id GATEWAYID --logs true
 ```
 
