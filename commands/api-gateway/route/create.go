@@ -68,7 +68,7 @@ func ApiGatewayRoutesPostCmd() *core.Command {
 }
 
 func ApiGatewayRouteCreateFlags(cmd *core.Command) *core.Command {
-	cmd.AddStringFlag(constants.FlagGatewayID, constants.FlagGatewayShort, "", constants.DescGateway, core.RequiredFlagOption(),
+	cmd.AddStringFlag(constants.FlagGatewayID, constants.FlagIdShort, "", constants.DescGateway, core.RequiredFlagOption(),
 		core.WithCompletion(func() []string {
 			return completer.GatewaysIDs()
 		}, constants.ApiGatewayRegionalURL, constants.GatewayLocations),

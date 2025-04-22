@@ -43,6 +43,7 @@ func ApiGatewayDeleteCmd() *core.Command {
 
 			_, err = client.Must().Apigateway.APIGatewaysApi.ApigatewaysDelete(context.Background(), apigatewayId).Execute()
 			if err != nil {
+				return err
 			}
 
 			return err
@@ -50,7 +51,7 @@ func ApiGatewayDeleteCmd() *core.Command {
 		InitClient: true,
 	})
 
-	cmd.AddStringFlag(constants.FlagGatewayID, constants.FlagGatewayShort, "", fmt.Sprintf("%s. Required or -%s", constants.DescGateway, constants.ArgAllShort),
+	cmd.AddStringFlag(constants.FlagGatewayID, constants.FlagIdShort, "", fmt.Sprintf("%s. Required or -%s", constants.DescGateway, constants.ArgAllShort),
 		core.WithCompletion(func() []string {
 			return completer.GatewaysIDs()
 		}, constants.ApiGatewayRegionalURL, constants.GatewayLocations),

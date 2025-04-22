@@ -105,5 +105,4 @@ func partiallyUpdateGatewayPrint(c *core.CommandConfig, r apigateway.GatewayRead
 	fmt.Fprintf(c.Command.Command.OutOrStdout(), out)
 
 	return nil
-	// TODO
 }

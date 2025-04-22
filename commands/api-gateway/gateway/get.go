@@ -34,6 +34,7 @@ func GatewaysFindByIdCmd() *core.Command {
 			apigatewayId := viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayID))
 			r, _, err := client.Must().Apigateway.APIGatewaysApi.ApigatewaysFindById(context.Background(), apigatewayId).Execute()
 			if err != nil {
+
 				return err
 			}
 
