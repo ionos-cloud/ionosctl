@@ -32,17 +32,15 @@ func RemovetCmd() *core.Command {
 				return err
 			}
 			input := usedApiGateway.Properties
-			if input.CustomDomains == nil {
-				fmt.Errorf("There are no custom domains defined in this apigateway!")
-			} else if customDomainsId == 0 {
-				input.CustomDomains = input.CustomDomains[1:]
-			} else if customDomainsId < len(input.CustomDomains) {
-				input.CustomDomains = input.CustomDomains[:len(input.CustomDomains)-1]
-			} else if customDomainsId < 0 || customDomainsId >= len(input.CustomDomains) {
-				return fmt.Errorf("Invalid custom domain index")
-			} else {
-				input.CustomDomains = append(input.CustomDomains[:customDomainsId], input.CustomDomains[customDomainsId+1:]...)
-			}
+if input.CustomDomains == nil || len(input.CustomDomains) == 0 {
+	return fmt.Errorf("there are no custom domains defined in this API Gateway")
+}
+
+if customDomainsId < 0 || customDomainsId >= len(input.CustomDomains) {
+	return fmt.Errorf("invalid custom domain index")
+}
+
+input.CustomDomains = append(input.CustomDomains[:customDomainsId], input.CustomDomains[customDomainsId+1:]...)
 			_, _, _ = client.Must().Apigateway.APIGatewaysApi.ApigatewaysPut(context.Background(), apigatewayId).
 				GatewayEnsure(apigateway.GatewayEnsure{
 					Id:         apigatewayId,
