@@ -35,17 +35,14 @@ func RemovetCmd() *core.Command {
 				return err
 			}
 			input := usedRoutes.Properties
-			if input.Upstreams == nil {
-				fmt.Errorf("There are no upstreams defined in this route!")
-			} else if upstreamId == 0 {
-				input.Upstreams = input.Upstreams[1:]
-			} else if upstreamId > 0 {
-				input.Upstreams = append(input.Upstreams[:upstreamId], input.Upstreams[upstreamId+1:]...)
-			} else if upstreamId == len(input.Upstreams)-1 {
-				input.Upstreams = input.Upstreams[:len(input.Upstreams)-1]
-			} else if upstreamId < 0 || upstreamId >= len(input.Upstreams) {
+			if input.Upstreams == nil || len(input.Upstreams) == 0 {
+				return fmt.Errorf("There are no upstreams defined in this route!")
+			}
+			if upstreamId < 0 || upstreamId >= len(input.Upstreams) {
 				return fmt.Errorf("Invalid Upstreams index")
 			}
+			input.Upstreams = append(input.Upstreams[:upstreamId], input.Upstreams[upstreamId+1:]...)
+
 			_, _, err = client.Must().Apigateway.RoutesApi.ApigatewaysRoutesPut(context.Background(), apigatewayId, routeId).
 				RouteEnsure(apigateway.RouteEnsure{
 					Id:         routeId,
@@ -54,12 +51,11 @@ func RemovetCmd() *core.Command {
 			if err != nil {
 				return err
 			}
-			// the maximum number of upstreams is 3 (allowed by API)
 			return nil
 		},
 		InitClient: true,
 	})
-	cmd.AddStringFlag(constants.FlagGatewayID, constants.FlagGatewayShort, "", constants.DescGateway, core.RequiredFlagOption(),
+	cmd.AddStringFlag(constants.FlagGatewayID, constants.FlagIdShort, "", constants.DescGateway, core.RequiredFlagOption(),
 		core.WithCompletion(func() []string {
 			return completer.GatewaysIDs()
 		}, constants.ApiGatewayRegionalURL, constants.GatewayLocations),

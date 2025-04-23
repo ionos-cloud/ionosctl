@@ -32,20 +32,23 @@ func RemovetCmd() *core.Command {
 				return err
 			}
 			input := usedApiGateway.Properties
-if input.CustomDomains == nil || len(input.CustomDomains) == 0 {
-	return fmt.Errorf("there are no custom domains defined in this API Gateway")
-}
+			if input.CustomDomains == nil || len(input.CustomDomains) == 0 {
+				return fmt.Errorf("there are no custom domains defined in this API Gateway")
+			}
 
-if customDomainsId < 0 || customDomainsId >= len(input.CustomDomains) {
-	return fmt.Errorf("invalid custom domain index")
-}
+			if customDomainsId < 0 || customDomainsId >= len(input.CustomDomains) {
+				return fmt.Errorf("invalid custom domain index")
+			}
 
-input.CustomDomains = append(input.CustomDomains[:customDomainsId], input.CustomDomains[customDomainsId+1:]...)
-			_, _, _ = client.Must().Apigateway.APIGatewaysApi.ApigatewaysPut(context.Background(), apigatewayId).
+			input.CustomDomains = append(input.CustomDomains[:customDomainsId], input.CustomDomains[customDomainsId+1:]...)
+			_, _, err = client.Must().Apigateway.APIGatewaysApi.ApigatewaysPut(context.Background(), apigatewayId).
 				GatewayEnsure(apigateway.GatewayEnsure{
 					Id:         apigatewayId,
 					Properties: input,
 				}).Execute()
+			if err != nil {
+				return err
+			}
 			// the maximum number of custom domains is 5 (allowed by API)
 			return nil
 		},

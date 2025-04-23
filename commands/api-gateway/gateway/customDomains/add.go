@@ -32,12 +32,11 @@ func AddCmd() *core.Command {
 			apigatewayId := viper.GetString(core.GetFlagName(c.NS, constants.FlagGatewayID))
 			usedGateway, _, err := client.Must().Apigateway.APIGatewaysApi.ApigatewaysFindById(context.Background(), apigatewayId).Execute()
 			input := usedGateway.Properties
-			elem := len(input.CustomDomains)
 			if input.CustomDomains == nil {
 				input.CustomDomains = make([]apigateway.GatewayCustomDomains, 1)
 			}
 			input.CustomDomains = append(input.CustomDomains, apigateway.GatewayCustomDomains{})
-			elem = len(input.CustomDomains) - 1
+			elem := len(input.CustomDomains) - 1
 
 			// max 5 elements
 			if fn := core.GetFlagName(c.NS, constants.FlagName); viper.IsSet(fn) {
