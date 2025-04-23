@@ -42,7 +42,7 @@ Upstreams consist of schme, loadbalancer, host, port and weight
                               Available columns: [Id Name Type Paths Methods Host Port Weight Status StatusMessage]
   -c, --config string         Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -f, --force                 Force command to execute without user input
-  -g, --gateway-id string     The ID of the gateway (required)
+  -i, --gateway-id string     The ID of the gateway (required)
   -h, --help                  Print usage
       --host string           The host of the upstream. Field is validated as hostname according to RFC1123. (required)
       --loadbalancer string   The load balancer algorithm. (default "roundrobin")
