@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cdn"
 	certificates "github.com/ionos-cloud/ionosctl/v6/commands/certmanager"
@@ -92,7 +93,7 @@ func Execute() {
 	}
 
 	if Wait {
-		ctx, cancel := context.WithTimeout(context.Background(), viper.GetDuration(constants.ArgTimeout))
+		ctx, cancel := context.WithTimeout(context.Background(), time.Duration(viper.GetInt(constants.ArgTimeout))*time.Second)
 		defer cancel()
 
 		// In the case of commands without table output (e.g. delete)
@@ -246,6 +247,7 @@ func addCommands() {
 	rootCmd.AddCommand(Shell())
 	rootCmd.AddCommand(VersionCmd())
 	rootCmd.AddCommand(Man())
+	rootCmd.AddCommand(GenCfgCmd())
 
 	// cfg
 	rootCmd.AddCommand(cfg.ConfigCmd())
