@@ -29,7 +29,9 @@ Remove a log from a logging pipeline. NOTE:There needs to be at least one log in
   -o, --output string        Desired output format [text|json|api-json] (default "text")
   -i, --pipeline-id string   The ID of the logging pipeline (required)
   -q, --quiet                Quiet output
+  -t, --timeout duration     Timeout for waiting for resource to reach desired state (default 1m0s)
   -v, --verbose              Print step-by-step process when running command
+  -w, --wait                 Polls the request continuously until the operation is completed
 ```
 
 ## Examples

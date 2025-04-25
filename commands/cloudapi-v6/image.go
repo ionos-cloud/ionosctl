@@ -21,14 +21,12 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/internal/request"
-	"github.com/ionos-cloud/ionosctl/v6/internal/waitfor"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/functional"
 	"golang.org/x/exp/slices"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
@@ -156,8 +154,6 @@ func ImageCmd() *core.Command {
 
 	update.Command.Flags().SortFlags = false // Hot Plugs generate a lot of flags to scroll through, put them at the end
 
-	update.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait, "Wait for the Request for Image update to be executed")
-	update.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for Image update [seconds]")
 	update.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultGetDepth, cloudapiv6.ArgDepthDescription)
 
 	addPropertiesFlags := func(command *core.Command) {
@@ -201,9 +197,6 @@ func ImageCmd() *core.Command {
 		}), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(constants.ArgAll, constants.ArgAllShort, false, "Delete all non-public images")
-
-	deleteCmd.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait, "Wait for the Request for Image update to be executed")
-	deleteCmd.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for Image update [seconds]")
 	deleteCmd.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultGetDepth, cloudapiv6.ArgDepthDescription)
 
 	/*
@@ -219,7 +212,7 @@ func ImageCmd() *core.Command {
 		Verb:      "upload",
 		Aliases:   []string{"ftp-upload", "ftp", "upl"},
 		ShortDesc: "Upload an image to FTP server using FTP over TLS (FTPS)",
-		LongDesc: fmt.Sprintf(`WARNING: 
+		LongDesc: fmt.Sprintf(`WARNING:
 This command can only be used if 2-Factor Authentication is disabled on your account and you're logged in using IONOS_USERNAME and IONOS_PASSWORD environment variables (see "Authenticating with Ionos Cloud" at https://docs.ionos.com/cli-ionosctl).
 
 OVERVIEW:
@@ -300,10 +293,6 @@ func RunImageDelete(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
 	}
 	if err != nil {
-		return err
-	}
-
-	if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
 		return err
 	}
 
@@ -620,11 +609,6 @@ func DeleteAllNonPublicImages(c *core.CommandConfig) error {
 			}
 
 			fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput(constants.MessageDeletingAll, c.Resource, *id))
-
-			if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
-				multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
-				continue
-			}
 		}
 	}
 	if multiErr != nil {
@@ -744,10 +728,6 @@ func RunImageUpdate(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
 	}
 	if err != nil {
-		return err
-	}
-
-	if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
 		return err
 	}
 

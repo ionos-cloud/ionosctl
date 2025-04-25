@@ -63,9 +63,9 @@ Required values to run command:
   -P, --port string                     Port of the balanced target service. Range: 1 to 65535 (required)
   -q, --quiet                           Quiet output
       --rule-id string                  The unique ForwardingRule Id (required)
-  -t, --timeout int                     Timeout option for Request for Forwarding Rule Target deletion [seconds] (default 300)
+  -t, --timeout duration                Timeout for waiting for resource to reach desired state (default 1m0s)
   -v, --verbose                         Print step-by-step process when running command
-  -w, --wait-for-request                Wait for the Request for Forwarding Rule Target deletion to be executed
+  -w, --wait                            Polls the request continuously until the operation is completed
 ```
 
 ## Examples

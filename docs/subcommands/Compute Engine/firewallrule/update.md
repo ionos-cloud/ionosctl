@@ -64,9 +64,9 @@ Required values to run command:
       --server-id string         The unique Server Id (required)
       --source-ip ip             Only traffic originating from the respective IPv4 address is allowed. Not setting option allows all source IPs
       --source-mac string        Only traffic originating from the respective MAC address is allowed. Valid format: aa:bb:cc:dd:ee:ff. Not setting option allows all source MAC addresses
-  -t, --timeout int              Timeout option for Request for Firewall Rule update [seconds] (default 60)
+  -t, --timeout duration         Timeout for waiting for resource to reach desired state (default 1m0s)
   -v, --verbose                  Print step-by-step process when running command
-  -w, --wait-for-request         Wait for Request for Firewall Rule update to be executed
+  -w, --wait                     Polls the request continuously until the operation is completed
 ```
 
 ## Examples

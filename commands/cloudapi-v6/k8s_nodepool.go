@@ -15,14 +15,12 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
 	"github.com/ionos-cloud/ionosctl/v6/internal/request"
 	utils2 "github.com/ionos-cloud/ionosctl/v6/internal/utils"
-	"github.com/ionos-cloud/ionosctl/v6/internal/waitfor"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/query"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/v6/services/cloudapi-v6/resources"
@@ -110,8 +108,6 @@ func K8sNodePoolCmd() *core.Command {
 	_ = get.Command.RegisterFlagCompletionFunc(constants.FlagNodepoolId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.K8sNodePoolsIds(viper.GetString(core.GetFlagName(get.NS, constants.FlagClusterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	get.AddBoolFlag(constants.ArgWaitForState, constants.ArgWaitForStateShort, constants.DefaultWait, "Wait for specified NodePool to be in ACTIVE state")
-	get.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, cloudapiv6.K8sTimeoutSeconds, "Timeout option for waiting for NodePool to be in ACTIVE state [seconds]")
 	get.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultGetDepth, cloudapiv6.ArgDepthDescription)
 
 	/*
@@ -204,8 +200,6 @@ Required values to run a command (for Private Kubernetes Cluster):
 	})
 	create.AddStringToStringFlag(constants.FlagLabels, constants.FlagLabelsShort, map[string]string{}, "Labels to set on a NodePool. It will overwrite the existing labels, if there are any. Use the following format: --labels KEY=VALUE,KEY=VALUE")
 	create.AddStringToStringFlag(constants.FlagAnnotations, constants.FlagAnnotationsShort, map[string]string{}, "Annotations to set on a NodePool. It will overwrite the existing annotations, if there are any. Use the following format: --annotations KEY=VALUE,KEY=VALUE")
-	create.AddBoolFlag(constants.ArgWaitForState, constants.ArgWaitForStateShort, constants.DefaultWait, "Wait for the new NodePool to be in ACTIVE state")
-	create.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, cloudapiv6.K8sTimeoutSeconds, "Timeout option for waiting for NodePool to be in ACTIVE state[seconds]")
 	create.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultCreateDepth, cloudapiv6.ArgDepthDescription)
 
 	/*
@@ -268,8 +262,6 @@ Required values to run command:
 	_ = update.Command.RegisterFlagCompletionFunc(constants.FlagNodepoolId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.K8sNodePoolsIds(viper.GetString(core.GetFlagName(update.NS, constants.FlagClusterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddBoolFlag(constants.ArgWaitForState, constants.ArgWaitForStateShort, constants.DefaultWait, "Wait for the new NodePool to be in ACTIVE state")
-	update.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, cloudapiv6.K8sTimeoutSeconds, "Timeout option for waiting for NodePool to be in ACTIVE state [seconds]")
 	update.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultUpdateDepth, cloudapiv6.ArgDepthDescription)
 
 	/*
@@ -352,9 +344,6 @@ func handleApiResponseK8sNodepoolCreate(c *core.CommandConfig, pool ionoscloud.K
 
 	if viper.GetBool(core.GetFlagName(c.NS, constants.ArgWaitForState)) {
 		if id, ok := pool.GetIdOk(); ok && id != nil {
-			if err = waitfor.WaitForState(c, waiter.K8sNodePoolStateInterrogator, *id); err != nil {
-				return err
-			}
 			if pool, _, err = client.Must().CloudClient.KubernetesApi.K8sNodepoolsFindById(context.Background(),
 				viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId)), *id).
 				Depth(viper.GetInt32(core.GetFlagName(c.NS, constants.ArgDepth))).
@@ -527,10 +516,6 @@ func RunK8sNodePoolGet(c *core.CommandConfig) error {
 	k8sNodePoolId := viper.GetString(core.GetFlagName(c.NS, constants.FlagNodepoolId))
 	k8sClusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
 
-	if err := waitfor.WaitForState(c, waiter.K8sNodePoolStateInterrogator, k8sNodePoolId); err != nil {
-		return err
-	}
-
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
 		"K8s node pool with id: %v from K8s Cluster with id: %v is getting...", k8sNodePoolId, k8sClusterId))
 
@@ -580,10 +565,6 @@ func RunK8sNodePoolUpdate(c *core.CommandConfig) error {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.MessageRequestInfo, request.GetId(resp), resp.RequestTime))
 	}
 	if err != nil {
-		return err
-	}
-
-	if err = waitfor.WaitForState(c, waiter.K8sNodePoolStateInterrogator, viper.GetString(core.GetFlagName(c.NS, constants.FlagNodepoolId))); err != nil {
 		return err
 	}
 
@@ -984,10 +965,6 @@ func DeleteAllK8sNodepools(c *core.CommandConfig) error {
 
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput(constants.MessageDeletingAll, c.Resource, *id))
 
-		if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
-			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *id, err))
-			continue
-		}
 	}
 
 	if multiErr != nil {

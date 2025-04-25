@@ -56,7 +56,9 @@ Required values to run command:
   -o, --output string                   Desired output format [text|json|api-json] (default "text")
   -q, --quiet                           Quiet output
   -i, --rule-id string                  The unique ForwardingRule Id (required)
+  -t, --timeout duration                Timeout for waiting for resource to reach desired state (default 1m0s)
   -v, --verbose                         Print step-by-step process when running command
+  -w, --wait                            Polls the request continuously until the operation is completed
 ```
 
 ## Examples

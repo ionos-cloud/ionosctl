@@ -54,9 +54,9 @@ Required values to run command:
       --pcc-id string          The unique Id of the Cross-Connect the LAN will connect to
       --public                 Public option for LAN. E.g.: --public=true, --public=false
   -q, --quiet                  Quiet output
-  -t, --timeout int            Timeout option for Request for LAN update [seconds] (default 60)
+  -t, --timeout duration       Timeout for waiting for resource to reach desired state (default 1m0s)
   -v, --verbose                Print step-by-step process when running command
-  -w, --wait-for-request       Wait for the Request for LAN update to be executed
+  -w, --wait                   Polls the request continuously until the operation is completed
 ```
 
 ## Examples

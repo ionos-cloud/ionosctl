@@ -2,6 +2,7 @@ package client
 
 import (
 	"fmt"
+	"net/http"
 
 	"github.com/ionos-cloud/sdk-go-bundle/shared"
 
@@ -81,6 +82,8 @@ type Client struct {
 	MariaClient    *mariadb.APIClient
 	CDNClient      *cdn.APIClient
 	Kafka          *kafka.APIClient
+
+	HttpClient *http.Client
 }
 
 func appendUserAgent(userAgent string) string {
@@ -88,7 +91,6 @@ func appendUserAgent(userAgent string) string {
 }
 
 func newClient(name, pwd, token, hostUrl string, usedLayer *Layer) *Client {
-	// TODO: Replace all configurations with this one
 	sharedConfig := shared.NewConfiguration(name, pwd, token, hostUrl)
 	sharedConfig.UserAgent = appendUserAgent(sharedConfig.UserAgent)
 
@@ -102,7 +104,7 @@ func newClient(name, pwd, token, hostUrl string, usedLayer *Layer) *Client {
 
 	vmascConfig := vmasc.NewConfiguration(name, pwd, token, hostUrl)
 	vmascConfig.UserAgent = appendUserAgent(vmascConfig.UserAgent)
-	// DBAAS
+
 	postgresConfig := postgres.NewConfiguration(name, pwd, token, hostUrl)
 	postgresConfig.UserAgent = appendUserAgent(postgresConfig.UserAgent)
 
@@ -123,6 +125,67 @@ func newClient(name, pwd, token, hostUrl string, usedLayer *Layer) *Client {
 		Kafka:          kafka.NewAPIClient(sharedConfig),
 		MariaClient:    mariadb.NewAPIClient(sharedConfig),
 
-		usedLayer: usedLayer,
+		HttpClient: newHttpClient(name, pwd, token),
+		usedLayer:  usedLayer,
 	}
+}
+
+// CustomTransport wraps an underlying RoundTripper to inject headers.
+type CustomTransport struct {
+	Base     http.RoundTripper
+	Name     string
+	Password string
+	Token    string
+}
+
+// RoundTrip intercepts requests to add headers before sending.
+func (t *CustomTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+	// Clone the request to avoid modifying the original.
+	newReq := req.Clone(req.Context())
+
+	// If a token is provided, use Bearer auth, else use Basic auth.
+	if t.Token != "" {
+		newReq.Header.Set("Authorization", "Bearer "+t.Token)
+	} else if t.Name != "" && t.Password != "" {
+		newReq.SetBasicAuth(t.Name, t.Password)
+	}
+
+	if newReq.Header.Get("Content-Type") == "" {
+		newReq.Header.Set("Content-Type", "application/json")
+	}
+	return t.Base.RoundTrip(newReq)
+}
+
+// newHttpClient creates a new http client with the given credentials.
+// it is supposed to be used for generic API calls i.e. waiting on state changes, etc.
+func newHttpClient(name, password, token string) *http.Client {
+	baseTransport := http.DefaultTransport
+
+	customTransport := &CustomTransport{
+		Base:     baseTransport,
+		Name:     name,
+		Password: password,
+		Token:    token,
+	}
+
+	client := &http.Client{
+		Transport: customTransport,
+		// CheckRedirect is invoked for redirect requests.
+		CheckRedirect: func(req *http.Request, via []*http.Request) error {
+			// Copy the Authorization and Content-Type headers from the first request.
+			if len(via) > 0 {
+				origAuth := via[0].Header.Get("Authorization")
+				if origAuth != "" {
+					req.Header.Set("Authorization", origAuth)
+				}
+				origCT := via[0].Header.Get("Content-Type")
+				if origCT != "" {
+					req.Header.Set("Content-Type", origCT)
+				}
+			}
+			return nil
+		},
+	}
+
+	return client
 }

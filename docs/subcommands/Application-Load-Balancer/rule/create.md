@@ -64,9 +64,9 @@ Required values to run command:
   -p, --protocol string                     Balancing protocol. (default "HTTP")
   -q, --quiet                               Quiet output
       --server-certificates strings         Server Certificates
-  -t, --timeout int                         Timeout option for Request for Forwarding Rule creation [seconds] (default 300)
+  -t, --timeout duration                    Timeout for waiting for resource to reach desired state (default 1m0s)
   -v, --verbose                             Print step-by-step process when running command
-  -w, --wait-for-request                    Wait for the Request for Forwarding Rule creation to be executed
+  -w, --wait                                Polls the request continuously until the operation is completed
 ```
 
 ## Examples

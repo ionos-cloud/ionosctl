@@ -140,13 +140,10 @@ Required values to run a command:
 		CmdRun:     RunBackupUnitCreate,
 		InitClient: true,
 	})
+
 	create.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "", "Alphanumeric name you want to assign to the BackupUnit", core.RequiredFlagOption())
 	create.AddStringFlag(cloudapiv6.ArgEmail, cloudapiv6.ArgEmailShort, "", "The e-mail address you want to assign to the BackupUnit", core.RequiredFlagOption())
 	create.AddStringFlag(cloudapiv6.ArgPassword, cloudapiv6.ArgPasswordShort, "", "Alphanumeric password you want to assign to the BackupUnit", core.RequiredFlagOption())
-	create.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait,
-		"Wait for the Request for BackupUnit creation to be executed")
-	create.Command.Flags().MarkHidden(constants.ArgWaitForRequest) // Backupunit resources are not tracked by /requests endpoint yet - but keep the flag for backward compatibility
-	create.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for BackupUnit creation [seconds]")
 	create.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultCreateDepth, cloudapiv6.ArgDepthDescription)
 
 	/*
@@ -174,10 +171,8 @@ Required values to run command:
 	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgBackupUnitId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.BackupUnitsIds(), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait,
-		"Wait for the Request for BackupUnit update to be executed")
+
 	update.Command.Flags().MarkHidden(constants.ArgWaitForRequest) // Backupunit resources are not tracked by /requests endpoint yet - but keep the flag for backward compatibility
-	update.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for BackupUnit update [seconds]")
 	update.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultUpdateDepth, cloudapiv6.ArgDepthDescription)
 
 	/*
@@ -203,11 +198,9 @@ Required values to run command:
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgBackupUnitId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.BackupUnitsIds(), cobra.ShellCompDirectiveNoFileComp
 	})
-	deleteCmd.AddBoolFlag(constants.ArgWaitForRequest, constants.ArgWaitForRequestShort, constants.DefaultWait,
-		"Wait for the Request for BackupUnit deletion to be executed")
+
 	deleteCmd.Command.Flags().MarkHidden(constants.ArgWaitForRequest) // Backupunit resources are not tracked by /requests endpoint yet - but keep the flag for backward compatibility
 	deleteCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete all BackupUnits.")
-	deleteCmd.AddIntFlag(constants.ArgTimeout, constants.ArgTimeoutShort, constants.DefaultTimeoutSeconds, "Timeout option for Request for BackupUnit deletion [seconds]")
 	deleteCmd.AddInt32Flag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, cloudapiv6.DefaultDeleteDepth, cloudapiv6.ArgDepthDescription)
 
 	return backupUnitCmd

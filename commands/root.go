@@ -1,13 +1,13 @@
 package commands
 
 import (
+	"bytes"
+	"context"
 	"fmt"
 	"os"
 	"strings"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cdn"
-	"github.com/ionos-cloud/ionosctl/v6/commands/kafka"
-
 	certificates "github.com/ionos-cloud/ionosctl/v6/commands/certmanager"
 	"github.com/ionos-cloud/ionosctl/v6/commands/cfg"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
@@ -15,6 +15,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/dataplatform"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dns"
+	"github.com/ionos-cloud/ionosctl/v6/commands/kafka"
 	logging_service "github.com/ionos-cloud/ionosctl/v6/commands/logging-service"
 	"github.com/ionos-cloud/ionosctl/v6/commands/token"
 	vm_autoscaling "github.com/ionos-cloud/ionosctl/v6/commands/vm-autoscaling"
@@ -24,8 +25,11 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/version"
+	"github.com/ionos-cloud/ionosctl/v6/internal/wait"
+	"github.com/ionos-cloud/ionosctl/v6/internal/waitinfo"
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 )
 
@@ -44,16 +48,68 @@ var (
 	Force     bool
 	Verbose   bool
 	NoHeaders bool
+	Wait      bool
+
+	DeprecatedWaitForState   bool
+	DeprecatedWaitForDelete  bool
+	DeprecatedWaitForRequest bool
 
 	cfgFile string
 )
 
-// Execute adds all child commands to the root command and sets flags appropriately.
-// This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
+	if DeprecatedWaitForDelete || DeprecatedWaitForState || DeprecatedWaitForRequest {
+		// DEPRECATED flags that only set the wait flag to true
+		Wait = true
+	}
+
+	var buf bytes.Buffer
+	rootCmd.Command.SetOut(&buf)
+
+	// Extract info about current executed command from the command execution
+	var commandName string
+	var commandParts []string
+	var setFlags []string
+
+	// find what the command has been called as, as well as flags used and their values
+	existingPostRun := rootCmd.Command.PersistentPostRun
+	rootCmd.Command.PersistentPostRun = func(cmd *cobra.Command, args []string) {
+		if existingPostRun != nil {
+			existingPostRun(cmd, args)
+		}
+
+		commandName = cmd.Name()
+		commandParts = strings.Split(cmd.CommandPath(), " ")
+
+		cmd.Flags().Visit(func(f *pflag.Flag) {
+			setFlags = append(setFlags, fmt.Sprintf("--%s=%s", f.Name, f.Value))
+		})
+	}
+
 	if err := rootCmd.Command.Execute(); err != nil {
+		fmt.Print(buf.String())
 		os.Exit(1)
 	}
+
+	if Wait {
+		ctx, cancel := context.WithTimeout(context.Background(), viper.GetDuration(constants.ArgTimeout))
+		defer cancel()
+
+		// In the case of commands without table output (e.g. delete)
+		// we need to find and execute the corresponding get command to find what href to wait for
+		if waitinfo.HrefIsEmpty() {
+			err := waitinfo.FindAndExecuteGetCommand(rootCmd.Command, commandParts, setFlags)
+			if err != nil || waitinfo.HrefIsEmpty() {
+				fmt.Fprintf(os.Stderr, jsontabwriter.GenerateVerboseOutput("failed to wait: %s", err.Error()))
+				fmt.Println(buf.String())
+				os.Exit(0)
+			}
+		}
+
+		wait.For(commandName, waitinfo.GetHref(), wait.WithContext(ctx))
+	}
+
+	fmt.Print(buf.String())
 }
 
 func GetRootCmd() *core.Command {
@@ -126,6 +182,30 @@ func init() {
 
 	rootPFlagSet.Bool(constants.ArgNoHeaders, false, "Don't print table headers when table output is used")
 	_ = viper.BindPFlag(constants.ArgNoHeaders, rootPFlagSet.Lookup(constants.ArgNoHeaders))
+
+	rootPFlagSet.BoolVarP(&Wait, constants.ArgWait, constants.ArgWaitShort, constants.DefaultWait,
+		"Polls the request continuously until the operation is completed")
+	// rootPFlagSet.IntVarP(&WaitTimeout, constants.ArgTimeout, "", constants.DefaultTimeoutSeconds,
+	// 	"Timeout in seconds for polling the request")
+	_ = viper.BindPFlag(constants.ArgWait, rootPFlagSet.Lookup(constants.ArgWait))
+	// _ = viper.BindPFlag(constants.ArgTimeout, rootPFlagSet.Lookup(constants.ArgTimeout))
+
+	rootPFlagSet.BoolVarP(&DeprecatedWaitForState, constants.ArgWaitForState, constants.ArgWaitForStateShort, constants.DefaultWait,
+		"DEPRECATED flag that only sets the wait flag to true")
+	_ = viper.BindPFlag(constants.ArgWaitForState, rootPFlagSet.Lookup(constants.ArgWaitForState))
+	rootPFlagSet.BoolVarP(&DeprecatedWaitForDelete, constants.ArgWaitForDelete, "", constants.DefaultWait,
+		"DEPRECATED flag that only sets the wait flag to true")
+	_ = viper.BindPFlag(constants.ArgWaitForDelete, rootPFlagSet.Lookup(constants.ArgWaitForDelete))
+	rootPFlagSet.BoolVarP(&DeprecatedWaitForRequest, constants.ArgWaitForRequest, "", constants.DefaultWait,
+		"DEPRECATED flag that only sets the wait flag to true")
+	_ = viper.BindPFlag(constants.ArgWaitForRequest, rootPFlagSet.Lookup(constants.ArgWaitForRequest))
+
+	rootPFlagSet.MarkHidden(constants.ArgWaitForRequest)
+	rootPFlagSet.MarkHidden(constants.ArgWaitForDelete)
+	rootPFlagSet.MarkHidden(constants.ArgWaitForState)
+	rootPFlagSet.MarkDeprecated(constants.ArgWaitForRequest, "use --wait instead")
+	rootPFlagSet.MarkDeprecated(constants.ArgWaitForDelete, "use --wait instead")
+	rootPFlagSet.MarkDeprecated(constants.ArgWaitForState, "use --wait instead")
 
 	// Add SubCommands to RootCmd
 	addCommands()
@@ -224,6 +304,7 @@ func addCommands() {
 	rootCmd.AddCommand(vm_autoscaling.Root())
 
 	rootCmd.AddCommand(dns.Root())
+
 	rootCmd.AddCommand(logging_service.Root())
 
 	rootCmd.AddCommand(cdn.Command())
@@ -231,6 +312,8 @@ func addCommands() {
 	rootCmd.AddCommand(vpn.Root())
 
 	rootCmd.AddCommand(kafka.Command())
+
+	wait.AddTimeoutFlag(rootCmd.Command)
 }
 
 const (

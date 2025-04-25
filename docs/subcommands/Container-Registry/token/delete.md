@@ -49,8 +49,10 @@ Delete a token from a registry
   -o, --output string        Desired output format [text|json|api-json] (default "text")
   -q, --quiet                Quiet output
   -r, --registry-id string   Registry ID
+      --timeout duration     Timeout for waiting for resource to reach desired state (default 1m0s)
   -t, --token-id string      Token ID
   -v, --verbose              Print step-by-step process when running command
+  -w, --wait                 Polls the request continuously until the operation is completed
 ```
 
 ## Examples

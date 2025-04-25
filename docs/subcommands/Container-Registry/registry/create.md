@@ -50,8 +50,10 @@ Create a registry to hold container images or OCI compliant artifacts
       --no-headers                                 Don't print table headers when table output is used
   -o, --output string                              Desired output format [text|json|api-json] (default "text")
   -q, --quiet                                      Quiet output
+  -t, --timeout duration                           Timeout for waiting for resource to reach desired state (default 1m0s)
   -v, --verbose                                    Print step-by-step process when running command
       --vulnerability-scanning                     Enable/disable vulnerability scanning (this is a paid add-on) (default true)
+  -w, --wait                                       Polls the request continuously until the operation is completed
 ```
 
 ## Examples

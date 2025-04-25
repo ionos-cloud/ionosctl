@@ -45,7 +45,9 @@ Update a record
   -o, --output string        Desired output format [text|json|api-json] (default "text")
   -q, --quiet                Quiet output
       --record string        The record ID or IP which you want to update (required)
+  -t, --timeout duration     Timeout for waiting for resource to reach desired state (default 1m0s)
   -v, --verbose              Print step-by-step process when running command
+  -w, --wait                 Polls the request continuously until the operation is completed
 ```
 
 ## Examples

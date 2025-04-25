@@ -50,18 +50,20 @@ Within each layer, a token takes precedence over a username and password combina
 ## Options
 
 ```text
-  -u, --api-url string    Override default host url (default "https://api.ionos.com")
-  -c, --config string     Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
-  -f, --force             Force command to execute without user input
-  -h, --help              Print usage
-      --no-headers        Don't print table headers when table output is used
-  -o, --output string     Desired output format [text|json|api-json] (default "text")
-  -p, --password string   Password to authenticate. Will be used to generate a token
-  -q, --quiet             Quiet output
-      --skip-verify       Forcefully write the provided token to the config file without verifying if it is valid. Note: --token is required
-  -t, --token string      Token to authenticate. If used, will be saved to the config file without generating a new token. Note: mutually exclusive with --user and --password
-      --user string       Username to authenticate. Will be used to generate a token
-  -v, --verbose           Print step-by-step process when running command
+  -u, --api-url string     Override default host url (default "https://api.ionos.com")
+  -c, --config string      Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+  -f, --force              Force command to execute without user input
+  -h, --help               Print usage
+      --no-headers         Don't print table headers when table output is used
+  -o, --output string      Desired output format [text|json|api-json] (default "text")
+  -p, --password string    Password to authenticate. Will be used to generate a token
+  -q, --quiet              Quiet output
+      --skip-verify        Forcefully write the provided token to the config file without verifying if it is valid. Note: --token is required
+      --timeout duration   Timeout for waiting for resource to reach desired state (default 1m0s)
+  -t, --token string       Token to authenticate. If used, will be saved to the config file without generating a new token. Note: mutually exclusive with --user and --password
+      --user string        Username to authenticate. Will be used to generate a token
+  -v, --verbose            Print step-by-step process when running command
+  -w, --wait               Polls the request continuously until the operation is completed
 ```
 
 ## Examples
