@@ -82,8 +82,6 @@ func GenerateConfig(opts FilterOptions) ([]byte, error) {
 		return nil, fmt.Errorf("no APIs match given filters")
 	}
 
-	fmt.Println("got", len(pages), "pages from index")
-
 	// build environment
 	env := Environment{Name: "prod"}
 	for _, page := range pages {
@@ -91,15 +89,11 @@ func GenerateConfig(opts FilterOptions) ([]byte, error) {
 		base := strings.TrimSuffix(indexURL, "/rest-api/private-index.json")
 		specURL := base + page.Spec
 
-		fmt.Println("loading spec", specURL)
-
 		// Load servers from spec
 		servers, err := loadSpecServers(specURL)
 		if err != nil {
 			return nil, err
 		}
-
-		fmt.Println("loading servers", servers)
 
 		// Convert servers into endpoints
 		prod := Product{Name: page.Name}
