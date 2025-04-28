@@ -85,5 +85,8 @@ ionosctl endpoints generate --version=v1 \
 	_ = f.MarkHidden("visibility")
 	_ = f.MarkHidden("gate")
 
+	cmd.SilenceUsage = true
+	cmd.Flags().SortFlags = false
+
 	return &core.Command{Command: cmd}
 }
