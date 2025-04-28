@@ -17,7 +17,7 @@ func GatewayCommand() *core.Command {
 		Command: &cobra.Command{
 			Use:              "gateway",
 			Aliases:          []string{"a", "api"},
-			Short:            "API Gateway is a service that allows you to monitor API usage, track performance metrics, and generate logs for analysis and troubleshooting.",
+			Short:            "An API gateway consists of generic rules and configurations",
 			TraverseChildren: true,
 		},
 	}

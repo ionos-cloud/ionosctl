@@ -1,5 +1,5 @@
 ---
-description: "Once you have created an API instance in the API Gateway, the next step is adding and editing routes to define how your API handles incoming requests"
+description: "Create a new route"
 ---
 
 # ApigatewayRouteCreate
@@ -26,7 +26,7 @@ For `create` command:
 
 ## Description
 
-Once you have created an API instance in the API Gateway, the next step is adding and editing routes to define how your API handles incoming requests
+Create a new route
 
 ## Options
 

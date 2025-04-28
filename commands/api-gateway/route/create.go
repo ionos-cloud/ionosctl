@@ -23,7 +23,7 @@ func ApiGatewayRoutesPostCmd() *core.Command {
 		Resource:  "route",
 		Verb:      "create",
 		Aliases:   []string{"c", "post"},
-		ShortDesc: "Once you have created an API instance in the API Gateway, the next step is adding and editing routes to define how your API handles incoming requests",
+		ShortDesc: "Create a new route",
 		Example:   "ionosctl apigateway route create --gateway-id ID --name NAME --paths PATHS --methods METHODS --host HOST",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			if err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagGatewayID, constants.FlagName, constants.FlagPaths, constants.FlagMethods, constants.FlagHost); err != nil {

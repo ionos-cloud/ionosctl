@@ -12,7 +12,7 @@ func Root() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "apigateway",
-			Short:            "An API gateway consists of generic rules and configurations",
+			Short:            "API Gateway is a service that allows you to monitor API usage, track performance metrics, and generate logs for analysis and troubleshooting.",
 			TraverseChildren: true,
 		},
 	}

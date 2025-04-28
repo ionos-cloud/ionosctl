@@ -19,7 +19,7 @@ func RouteFindByIdCmd() *core.Command {
 		Resource:  "route",
 		Verb:      "get",
 		Aliases:   []string{"g"},
-		ShortDesc: "Retrieve routes",
+		ShortDesc: "Retrieve a route",
 		Example:   "ionosctl apigateway route get --gateway-id GATEWAYID --route-id ROUTEID",
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			if err := core.CheckRequiredFlags(c.Command, c.NS, constants.FlagGatewayID, constants.FlagGatewayRouteID); err != nil {

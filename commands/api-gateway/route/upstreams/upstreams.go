@@ -13,7 +13,7 @@ func UpstreamsCmd() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "upstreams",
-			Short:            "Once you have created an API instance in the API Gateway, the next step is adding and editing routes to define how your API handles incoming requests",
+			Short:            "Manage route upstreams",
 			Aliases:          []string{"streams"},
 			TraverseChildren: true,
 		},

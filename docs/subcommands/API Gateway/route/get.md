@@ -1,5 +1,5 @@
 ---
-description: "Retrieve routes"
+description: "Retrieve a route"
 ---
 
 # ApigatewayRouteGet
@@ -26,7 +26,7 @@ For `get` command:
 
 ## Description
 
-Retrieve routes
+Retrieve a route
 
 ## Options
 

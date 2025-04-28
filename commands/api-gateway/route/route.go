@@ -16,7 +16,7 @@ func RecordCommand() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "route",
-			Short:            "A route is a rule that maps an incoming request to a specific backend service.",
+			Short:            "Once you have created an API instance in the API Gateway, the next step is adding and editing routes to define how your API handles incoming requests",
 			Aliases:          []string{"r"},
 			TraverseChildren: true,
 		},
