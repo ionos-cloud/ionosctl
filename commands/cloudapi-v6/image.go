@@ -175,6 +175,9 @@ func ImageCmd() *core.Command {
 		command.AddBoolFlag(cloudapiv6.ArgNicHotUnplug, "", false, "'Hot-Unplug' NIC")
 		command.AddBoolFlag(cloudapiv6.ArgDiscVirtioHotUnplug, "", false, "'Hot-Unplug' Virt-IO drive")
 		command.AddBoolFlag(cloudapiv6.ArgDiscScsiHotUnplug, "", false, "'Hot-Unplug' SCSI drive")
+		command.AddBoolFlag(cloudapiv6.ArgExposeSerial, "", false, "If set to `true` will expose the serial id of the disk attached to the server")
+		command.AddBoolFlag(cloudapiv6.ArgRequireLegacyBios, "", true, "Indicates if the image requires the legacy BIOS for compatibility or specific needs.")
+		command.AddSetFlag(cloudapiv6.ArgApplicationType, "", "UNKNOWN", constants.EnumApplicationType, "The type of application that is hosted on this resource")
 	}
 
 	addPropertiesFlags(update)
@@ -716,6 +719,9 @@ func getDesiredImageAfterPatch(c *core.CommandConfig, useUnsetFlags bool) resour
 			break
 		case cloudapiv6.ArgDiscScsiHotUnplug:
 			input.SetDiscScsiHotUnplug(boolval)
+			break
+		case cloudapiv6.ArgExposeSerial:
+			input.SetExposeSerial(boolval)
 			break
 		default:
 			// --image-id, verbose, filters, depth, etc
