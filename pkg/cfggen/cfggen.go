@@ -88,7 +88,7 @@ func GenerateConfig(opts FilterOptions) ([]byte, error) {
 	env := Environment{Name: "prod"}
 	for _, page := range pages {
 		// Construct full spec URL (indexURL base + page.Spec)
-		base := strings.TrimSuffix(indexURL, "/private-index.json")
+		base := strings.TrimSuffix(indexURL, "/rest-api/private-index.json")
 		specURL := base + page.Spec
 
 		fmt.Println("loading spec", specURL)
