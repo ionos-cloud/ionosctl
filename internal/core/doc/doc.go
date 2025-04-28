@@ -22,7 +22,9 @@ import (
 
 const rootCmdName = "ionosctl"
 
-// Products establishes non-compute namespaces, and deduces that the rest of the root-level commands MUST be part of compute. If you add support for a new API, add your command here
+// Products establishes non-compute namespaces, and deduces that the rest of the root-level commands MUST be part of compute.
+// If you add support for a new API, add your command here
+// Want to add a command under "CLI Setup"? Add it in the 'determineSubdir' func!
 // TODO: Change me, when compute namespace is added!
 var nonComputeNamespaces = map[string]string{
 	"apigateway":              "API Gateway",
@@ -158,7 +160,7 @@ func determineSubdir(name string, nonComputeNamespaces map[string]string) string
 	segments := strings.Split(name, "-")
 
 	// Custom names depending on first level names
-	if segments[0] == "version" || segments[0] == "completion" || segments[0] == "man" {
+	if segments[0] == "version" || segments[0] == "completion" || segments[0] == "man" || segments[0] == "cfggen" {
 		return filepath.Join("CLI Setup", filepath.Join(segments...))
 	}
 
