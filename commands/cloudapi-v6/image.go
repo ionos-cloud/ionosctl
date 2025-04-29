@@ -723,6 +723,12 @@ func getDesiredImageAfterPatch(c *core.CommandConfig, useUnsetFlags bool) resour
 		case cloudapiv6.ArgExposeSerial:
 			input.SetExposeSerial(boolval)
 			break
+		case cloudapiv6.ArgRequireLegacyBios:
+			input.SetRequireLegacyBios(boolval)
+			break
+		case cloudapiv6.ArgApplicationType:
+			input.SetApplicationType(val)
+			break
 		default:
 			// --image-id, verbose, filters, depth, etc
 			break
