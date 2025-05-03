@@ -48,7 +48,7 @@ Partially modify a record's properties. This command uses a combination of GET a
   -r, --record string     The ID or name of the DNS record (required)
       --ttl int32         Time to live. The amount of time the record can be cached by a resolver or server before it needs to be refreshed from the authoritative DNS server (default 3600)
   -t, --type string       Type of DNS Record. Can be one of: A, AAAA, CNAME, ALIAS, MX, NS, SRV, TXT, CAA, SSHFP, TLSA, SMIMEA, DS, HTTPS, SVCB, OPENPGPKEY, CERT, URI, RP, LOC (required) (default "AAAA")
-  -v, --verbose           Print step-by-step process when running command
+  -v, --verbose count     Print step-by-step process when running command
   -z, --zone string       The name or ID of the DNS zone (required)
 ```
 

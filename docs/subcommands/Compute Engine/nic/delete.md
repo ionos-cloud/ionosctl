@@ -54,7 +54,7 @@ Required values to run command:
   -q, --quiet                  Quiet output
       --server-id string       The unique Server Id (required)
   -t, --timeout int            Timeout option for Request for NIC deletion [seconds] (default 60)
-  -v, --verbose                Print step-by-step process when running command
+  -v, --verbose count          Print step-by-step process when running command
   -w, --wait-for-request       Wait for the Request for NIC deletion to be executed
 ```
 

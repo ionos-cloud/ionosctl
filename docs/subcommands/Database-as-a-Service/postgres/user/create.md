@@ -41,7 +41,7 @@ Create a new user in the given cluster
   -p, --password string     The password for the user
   -q, --quiet               Quiet output
       --user string         The name of the user
-  -v, --verbose             Print step-by-step process when running command
+  -v, --verbose count       Print step-by-step process when running command
 ```
 
 ## Examples

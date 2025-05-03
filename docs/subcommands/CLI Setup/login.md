@@ -61,7 +61,7 @@ Within each layer, a token takes precedence over a username and password combina
       --skip-verify       Forcefully write the provided token to the config file without verifying if it is valid. Note: --token is required
   -t, --token string      Token to authenticate. If used, will be saved to the config file without generating a new token. Note: mutually exclusive with --user and --password
       --user string       Username to authenticate. Will be used to generate a token
-  -v, --verbose           Print step-by-step process when running command
+  -v, --verbose count     Print step-by-step process when running command
 ```
 
 ## Examples

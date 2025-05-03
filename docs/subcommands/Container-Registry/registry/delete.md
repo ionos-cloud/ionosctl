@@ -48,7 +48,7 @@ Delete a Registry.
   -o, --output string        Desired output format [text|json|api-json] (default "text")
   -q, --quiet                Quiet output
   -i, --registry-id string   Specify the Registry ID (required)
-  -v, --verbose              Print step-by-step process when running command
+  -v, --verbose count        Print step-by-step process when running command
 ```
 
 ## Examples

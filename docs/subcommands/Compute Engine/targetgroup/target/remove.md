@@ -57,7 +57,7 @@ Required values to run command:
   -q, --quiet                   Quiet output
   -i, --targetgroup-id string   The unique Target Group Id (required)
   -t, --timeout int             Timeout option for Request for Target Group Target deletion [seconds] (default 60)
-  -v, --verbose                 Print step-by-step process when running command
+  -v, --verbose count           Print step-by-step process when running command
   -w, --wait-for-request        Wait for the Request for Target Group Target deletion to be executed
 ```
 

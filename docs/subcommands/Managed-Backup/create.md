@@ -58,7 +58,7 @@ Required values to run a command:
   -p, --password string   Alphanumeric password you want to assign to the BackupUnit (required)
   -q, --quiet             Quiet output
   -t, --timeout int       Timeout option for Request for BackupUnit creation [seconds] (default 60)
-  -v, --verbose           Print step-by-step process when running command
+  -v, --verbose count     Print step-by-step process when running command
 ```
 
 ## Examples

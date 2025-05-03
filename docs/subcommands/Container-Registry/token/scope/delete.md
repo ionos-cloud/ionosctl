@@ -50,7 +50,7 @@ Use this command to delete a token scope of a container registry. If a name is p
   -r, --registry-id string   Registry ID
   -n, --scope-id int         Scope id (default -1)
   -t, --token-id string      Token ID
-  -v, --verbose              Print step-by-step process when running command
+  -v, --verbose count        Print step-by-step process when running command
 ```
 
 ## Examples

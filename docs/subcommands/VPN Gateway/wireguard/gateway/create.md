@@ -57,7 +57,7 @@ Create a WireGuard Gateway
   -K, --private-key string        Specify the private key (required or --private-key-path)
   -k, --private-key-path string   Specify the private key from a file (required or --private-key)
   -q, --quiet                     Quiet output
-  -v, --verbose                   Print step-by-step process when running command
+  -v, --verbose count             Print step-by-step process when running command
 ```
 
 ## Examples
