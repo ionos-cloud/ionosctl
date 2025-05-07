@@ -1,7 +1,12 @@
 # Changelog
 
-## upcoming
+## [v6.8.3] (May 2025)
+
+### Added
 - Added API Gateway support
+
+### Fixed
+- Fixed DBaaS Mongo basepath when using a custom API URL
 
 ## [v6.8.2] (April 2025)
 
