@@ -82,6 +82,8 @@ setup_file() {
 }
 
 @test "Create and verify S3Key" {
+    skip "Test disabled as S3Key creation is flaky with error: \"The user needs to be part of a group that has ACCESS_S3_OBJECT_STORAGE privilege\""
+
     user_id=$(cat /tmp/bats_test/user_id)
     run ionosctl user s3key create --user-id "$user_id" -o json 2> /dev/null
     assert_success
