@@ -113,7 +113,7 @@ func ClusterCreateCmd() *core.Command {
 				cluster.DisplayName = viper.GetString(fn)
 			}
 			if fn := core.GetFlagName(c.NS, constants.FlagVersion); viper.GetString(fn) != "" {
-				cluster.MongoDBVersion = pointer.From(viper.GetString(fn))
+				cluster.MongoDBVersion = viper.GetString(fn)
 			}
 			if fn := core.GetFlagName(c.NS, constants.FlagLocation); viper.IsSet(fn) {
 				cluster.Location = viper.GetString(fn)

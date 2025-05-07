@@ -18,7 +18,7 @@ require (
 	github.com/spf13/cobra v1.8.1
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.16.0
-	github.com/stretchr/testify v1.8.4
+	github.com/stretchr/testify v1.10.0
 	golang.org/x/crypto v0.33.0
 	golang.org/x/exp v0.0.0-20230713183714-613f0c0eb8a1
 	golang.org/x/sync v0.11.0
@@ -38,16 +38,18 @@ require (
 	github.com/ionos-cloud/sdk-go-bundle/products/containerregistry/v2 v2.0.2
 	github.com/ionos-cloud/sdk-go-bundle/products/dataplatform/v2 v2.0.2
 	github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mariadb/v2 v2.0.0
-	github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo/v2 v2.0.2
+	github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo/v2 v2.1.1
 	github.com/ionos-cloud/sdk-go-bundle/products/dns/v2 v2.0.1
 	github.com/ionos-cloud/sdk-go-bundle/products/kafka/v2 v2.0.0
 	github.com/ionos-cloud/sdk-go-bundle/products/logging/v2 v2.1.2
 	github.com/ionos-cloud/sdk-go-bundle/products/vpn/v2 v2.0.3
-	github.com/ionos-cloud/sdk-go-bundle/shared v0.1.1
+	github.com/ionos-cloud/sdk-go-bundle/shared v0.1.4
 )
 
 require (
+	github.com/aws/aws-sdk-go v1.55.7 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.4 // indirect
+	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/pkg/term v1.2.0-beta.2 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 )
@@ -78,7 +80,7 @@ require (
 	github.com/spf13/cast v1.5.1 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/subosito/gotenv v1.4.2 // indirect
-	golang.org/x/oauth2 v0.28.0 // indirect
+	golang.org/x/oauth2 v0.30.0 // indirect
 	golang.org/x/sys v0.30.0 // indirect
 	golang.org/x/text v0.22.0 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
