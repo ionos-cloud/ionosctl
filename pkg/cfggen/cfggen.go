@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"strconv"
 	"strings"
 
 	"gopkg.in/yaml.v3"
@@ -124,11 +125,9 @@ func GenerateConfig(opts FilterOptions) ([]byte, error) {
 
 // filterPages applies the filtering options to the list of pages
 func filterPages(pages []indexPage, opts FilterOptions) []indexPage {
-	var result []indexPage
+	latest := make(map[string]indexPage)
+
 	for _, p := range pages {
-		if opts.Version != nil && p.Version != *opts.Version {
-			continue
-		}
 		if opts.Visibility != nil && p.Visibility != *opts.Visibility {
 			continue
 		}
@@ -141,9 +140,43 @@ func filterPages(pages []indexPage, opts FilterOptions) []indexPage {
 		if opts.Blacklist != nil && opts.Blacklist[p.Name] {
 			continue
 		}
+
+		if opts.Version != nil && p.Version != *opts.Version {
+			continue
+		}
+
+		prev, exists := latest[p.Name]
+		if !exists || !compareVersions(p.Version, prev.Version) {
+			latest[p.Name] = p
+		}
+	}
+
+	var result []indexPage
+	for _, p := range latest {
 		result = append(result, p)
 	}
 	return result
+}
+
+func compareVersions(v1, v2 string) bool {
+	parts1 := strings.Split(v1, ".")
+	parts2 := strings.Split(v2, ".")
+	for i := 0; i < len(parts1) && i < len(parts2); i++ {
+		num1, err1 := strconv.Atoi(parts1[i])
+		num2, err2 := strconv.Atoi(parts2[i])
+
+		// fall back to string comparison
+		if err1 != nil || err2 != nil {
+			return parts1[i] < parts2[i]
+		}
+
+		if num1 != num2 {
+			return num1 < num2
+		}
+	}
+
+	// if all parts equal, the version with fewer parts is considered older
+	return len(parts1) < len(parts2)
 }
 
 func loadIndex() (*indexFile, error) {
@@ -191,23 +224,24 @@ func loadSpecServers(urlStr string) ([]serverRaw, error) {
 func toEndpoint(s serverRaw) Endpoint {
 	ep := Endpoint{SkipTLSVerify: false}
 
-	// parse URL; relative means default API
 	u, err := url.Parse(s.URL)
-	if err != nil || !u.IsAbs() {
-		ep.Name = "api.ionos.com"
+	if err != nil {
+		// If malformed, just return the raw URL as the name
+		ep.Name = s.URL
 		return ep
 	}
 
-	ep.Name = u.Host
+	if !u.IsAbs() {
+		// Relative URL (e.g., "/reseller/v2")
+		ep.Name = "https://api.ionos.com" + s.URL
+		return ep
+	}
 
-	// try extracting region: host like "nfs.de-fra.ionos.com"
+	ep.Name = u.String()
 	parts := strings.Split(u.Hostname(), ".")
-	if len(parts) >= 3 {
-		region := parts[1] // e.g. "de-fra"
-		sub := strings.Split(region, "-")
-		if len(sub) == 2 {
-			ep.Location = sub[0] + "/" + sub[1]
-		}
+	if len(parts) > 2 {
+		ep.Location = strings.Join(parts[1:len(parts)-2], "/")
+		ep.Location = strings.ReplaceAll(ep.Location, "-", "/")
 	}
 
 	return ep
