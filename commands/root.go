@@ -167,6 +167,7 @@ func addCommands() {
 	rootCmd.AddCommand(Shell())
 	rootCmd.AddCommand(VersionCmd())
 	rootCmd.AddCommand(Man())
+	rootCmd.AddCommand(GenCfgCmd())
 
 	// cfg
 	rootCmd.AddCommand(cfg.ConfigCmd())
