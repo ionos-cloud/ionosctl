@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"reflect"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func ptr(s string) *string { return &s }
@@ -92,10 +94,10 @@ func TestGenerateConfigE2E(t *testing.T) {
 
 	// minimal OpenAPI spec YAML with servers list
 	specYaml := []byte(`servers:
-  - url: https://foo.ab-cde.ionos.com
-    description: AB/CDE location
-  - url: https://bar.vw-xyz.ionos.com
-	description: VW/XYZ endpoint
+- url: https://foo.ab-cde.ionos.com
+  description: AB/CDE location
+- url: https://bar.vw-xyz.ionos.com
+  description: VW/XYZ endpoint
 `)
 
 	specJson := []byte(`{"servers":[{"url":"/local"}]}`)
@@ -133,7 +135,6 @@ func TestGenerateConfigE2E(t *testing.T) {
 	})
 	defer func() { http.DefaultTransport = origTransport }()
 
-	// call GenerateConfig with no whitelist (includes both), but we whitelist only vpn
 	opts := FilterOptions{Whitelist: map[string]bool{"vpn": true}, Visibility: ptr("public"), Gate: ptr("General-Availability"), Version: ptr("v1")}
 	out, err := GenerateConfig(opts)
 	if err != nil {
@@ -150,14 +151,41 @@ environments:
     products:
       - name: vpn
         endpoints:
-          - location: de/fra
-            name: nfs.de-fra.ionos.com
+          - location: ab/cde
+            name: https://foo.ab-cde.ionos.com
             skipTlsVerify: false
-          - name: api.ionos.com
+          - location: vw/xyz
+            name: https://bar.vw-xyz.ionos.com
             skipTlsVerify: false
 `
+	assert.Equal(t, expected, string(out))
 
-	if string(out) != expected {
-		t.Errorf("unexpected YAML output:\nGot:\n%s\nWant:\n%s", out, expected)
+	out, err = GenerateConfig(FilterOptions{})
+	if err != nil {
+		t.Fatalf("GenerateConfig failed: %v", err)
 	}
+
+	t.Logf("Generated YAML:\n%s", string(out))
+
+	expected = `version: "1.0"
+currentProfile: ""
+profiles: []
+environments:
+  - name: prod
+    products:
+      - name: vpn
+        endpoints:
+          - location: ab/cde
+            name: https://foo.ab-cde.ionos.com
+            skipTlsVerify: false
+          - location: vw/xyz
+            name: https://bar.vw-xyz.ionos.com
+            skipTlsVerify: false
+      - name: db
+        endpoints:
+          - name: https://api.ionos.com/local
+            skipTlsVerify: false
+`
+	assert.Equal(t, expected, string(out))
+
 }
