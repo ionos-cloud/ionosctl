@@ -76,6 +76,9 @@ teardown_file() {
     echo "cleaning up mongodb cluster $cluster_id"
     run ionosctl db mongo user delete --cluster-id "$cluster_id" --name "$user_name" -f
 
+    echo "cleaning up datacenter $datacenter_id"
+    run ionosctl datacenter delete --datacenter-id "$datacenter_id" -f 2> /dev/null
+
     echo "cleaning up token"
     run ionosctl token delete --token "$IONOS_TOKEN" -f
     unset IONOS_TOKEN
