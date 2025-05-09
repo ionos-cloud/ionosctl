@@ -9,7 +9,6 @@
 - Fixed DBaaS Mongo basepath when using a custom API URL
 - Fixed 'ionosctl token delete --current' command (#513)
 - Fixed mongodb bats, by removing retry_until
-- 
 
 ## [v6.8.2] (April 2025)
 
