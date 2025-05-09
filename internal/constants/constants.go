@@ -231,7 +231,8 @@ var (
 
 // enum values. TODO: ideally i'd like these handled by the SDK
 var (
-	EnumLicenceType      = []string{"LINUX", "RHEL", "WINDOWS", "WINDOWS2016", "UNKNOWN", "OTHER"}
+	EnumLicenceType      = []string{"LINUX", "RHEL", "WINDOWS", "WINDOWS2016", "WINDOWS2019", "WINDOWS2022", "WINDOWS2025", "UNKNOWN", "OTHER"}
+	EnumApplicationType  = []string{"MSSQL-2019-Web", "MSSQL-2019-Standard", "MSSQL-2019-Enterprise", "MSSQL-2022-Web", "MSSQL-2022-Standard", "MSSQL-2022-Enterprise", "UNKNOWN"}
 	EnumLogProtocols     = []string{"http", "tcp"}
 	EnumLogSources       = []string{"docker", "systemd", "generic", "kubernetes"}
 	EnumLogRetentionTime = []string{"7", "14", "30"}

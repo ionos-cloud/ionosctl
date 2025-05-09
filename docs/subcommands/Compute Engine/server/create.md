@@ -89,7 +89,7 @@ You can wait for the Request to be executed using `--wait-for-request` option. Y
   -h, --help                       Print usage
   -a, --image-alias string         [CUBE Server] The Image Alias to use instead of Image Id for the Direct Attached Storage
       --image-id string            [CUBE Server] The Image Id or snapshot Id to be used as for the Direct Attached Storage
-  -l, --licence-type string        [CUBE Server] Licence Type of the Direct Attached Storage. Can be one of: LINUX, RHEL, WINDOWS, WINDOWS2016, UNKNOWN, OTHER (default "LINUX")
+  -l, --licence-type string        [CUBE Server] Licence Type of the Direct Attached Storage. Can be one of: LINUX, RHEL, WINDOWS, WINDOWS2016, WINDOWS2019, WINDOWS2022, WINDOWS2025, UNKNOWN, OTHER (default "LINUX")
   -n, --name string                Name of the Server (default "Unnamed Server")
       --no-headers                 Don't print table headers when table output is used
   -o, --output string              Desired output format [text|json|api-json] (default "text")

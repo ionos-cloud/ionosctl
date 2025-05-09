@@ -147,19 +147,22 @@ var (
 	}
 
 	Image = map[string]string{
-		"ImageId":         "id",
-		"Name":            "properties.name",
-		"Description":     "properties.description",
-		"Location":        "properties.location",
-		"Size":            "properties.size",
-		"LicenceType":     "properties.licenceType",
-		"ImageType":       "properties.imageType",
-		"Public":          "properties.public",
-		"ImageAliases":    "properties.imageAliases",
-		"CloudInit":       "properties.cloudInit",
-		"CreatedBy":       "metadata.createdBy",
-		"CreatedByUserId": "metadata.createdByUserId",
-		"CreatedDate":     "metadata.createdDate",
+		"ImageId":           "id",
+		"Name":              "properties.name",
+		"Description":       "properties.description",
+		"Location":          "properties.location",
+		"Size":              "properties.size",
+		"LicenceType":       "properties.licenceType",
+		"ImageType":         "properties.imageType",
+		"Public":            "properties.public",
+		"ImageAliases":      "properties.imageAliases",
+		"CloudInit":         "properties.cloudInit",
+		"CreatedBy":         "metadata.createdBy",
+		"CreatedByUserId":   "metadata.createdByUserId",
+		"CreatedDate":       "metadata.createdDate",
+		"ExposeSerial":      "properties.exposeSerial",
+		"RequireLegacyBios": "properties.requireLegacyBios",
+		"ApplicationType":   "properties.applicationType",
 	}
 
 	IpBlock = map[string]string{

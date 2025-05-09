@@ -36,7 +36,7 @@ Use this command to retrieve a list of Volumes attached to the Server.
 
 You can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.
 Available Filters:
-* filter by property: [name type size availabilityZone image imagePassword imageAlias sshKeys bus licenceType cpuHotPlug ramHotPlug nicHotPlug nicHotUnplug discVirtioHotPlug discVirtioHotUnplug exposeSerial deviceNumber pciSlot backupunitId userData bootServer bootOrder]
+* filter by property: [name type size availabilityZone image imagePassword imageAlias sshKeys bus licenceType applicationType cpuHotPlug ramHotPlug nicHotPlug nicHotUnplug discVirtioHotPlug discVirtioHotUnplug exposeSerial requireLegacyBios deviceNumber pciSlot backupunitId userData bootServer bootOrder]
 * filter by metadata: [etag createdDate createdBy createdByUserId lastModifiedDate lastModifiedBy lastModifiedByUserId state]
 
 Required values to run command:
