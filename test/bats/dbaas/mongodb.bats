@@ -25,11 +25,8 @@ setup_file() {
     retry_until "ionosctl datacenter get --datacenter-id $datacenter_id -o json 2> /dev/null | jq -r '.metadata.state'" \
         "[[ \$output == \"AVAILABLE\" ]]" 10 60
 
-    lan_id=$(ionosctl lan create --datacenter-id "${datacenter_id}" --public=false -o json 2> /dev/null | jq -r '.id')
+    lan_id=$(ionosctl lan create -w --datacenter-id "${datacenter_id}" --public=false -o json 2> /dev/null | jq -r '.id')
     [ -n "$lan_id" ] || fail "lan_id is empty"
-
-    retry_until "ionosctl lan get --datacenter-id $datacenter_id --lan-id $lan_id -o json 2> /dev/null | jq -r '.metadata.state'" \
-        "[[ \$output == \"AVAILABLE\" ]]" 10 60
 
     echo "Trying to create MongoDB cluster in datacenter $datacenter_id"
     run ionosctl db mongo cluster create --name "CLI-Test-$(randStr 6)" --edition playground \
@@ -51,9 +48,6 @@ setup_file() {
     run ionosctl db mongo cluster get --cluster-id "$cluster_id" -o json 2> /dev/null
     assert_success
 
-    # Use retry_until to check if the cluster is in "available" state
-    retry_until "ionosctl db mongo cluster get --cluster-id $cluster_id -o json 2> /dev/null | jq -r '.metadata.state'" \
-        "[[ \$output == \"AVAILABLE\" ]]" 120 60
 }
 
 @test "Create MongoDB User" {
