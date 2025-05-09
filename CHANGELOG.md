@@ -14,6 +14,7 @@
 ### Added
 - Added --server-type for managed kubernetes nodepools
 - Added support for labeling images
+- Added support for ExposeSerial, RequireLegacyBios, ApplicationType properties to image commands
 
 ### Changed
 - Changed login message to include the username you have logged in as, if possible.
