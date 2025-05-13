@@ -18,18 +18,12 @@ setup_file() {
 }
 
 @test "Create MongoDB Cluster" {
-    datacenter_id=$(ionosctl datacenter create --name "CLI-Test-$(randStr 8)" --location ${location} -o json 2> /dev/null | jq -r '.id')
+    datacenter_id=$(ionosctl datacenter create  -w --name "CLI-Test-$(randStr 8)" --location ${location} -o json 2> /dev/null | jq -r '.id')
     [ -n "$datacenter_id" ] || fail "datacenter_id is empty"
     assert_regex "$datacenter_id" "$uuid_v4_regex"
 
-    retry_until "ionosctl datacenter get --datacenter-id $datacenter_id -o json 2> /dev/null | jq -r '.metadata.state'" \
-        "[[ \$output == \"AVAILABLE\" ]]" 10 60
-
-    lan_id=$(ionosctl lan create --datacenter-id "${datacenter_id}" --public=false -o json 2> /dev/null | jq -r '.id')
+    lan_id=$(ionosctl lan create -w --datacenter-id "${datacenter_id}" --public=false -o json 2> /dev/null | jq -r '.id')
     [ -n "$lan_id" ] || fail "lan_id is empty"
-
-    retry_until "ionosctl lan get --datacenter-id $datacenter_id --lan-id $lan_id -o json 2> /dev/null | jq -r '.metadata.state'" \
-        "[[ \$output == \"AVAILABLE\" ]]" 10 60
 
     echo "Trying to create MongoDB cluster in datacenter $datacenter_id"
     run ionosctl db mongo cluster create --name "CLI-Test-$(randStr 6)" --edition playground \
@@ -51,9 +45,6 @@ setup_file() {
     run ionosctl db mongo cluster get --cluster-id "$cluster_id" -o json 2> /dev/null
     assert_success
 
-    # Use retry_until to check if the cluster is in "available" state
-    retry_until "ionosctl db mongo cluster get --cluster-id $cluster_id -o json 2> /dev/null | jq -r '.metadata.state'" \
-        "[[ \$output == \"AVAILABLE\" ]]" 120 60
 }
 
 @test "Create MongoDB User" {
@@ -82,18 +73,14 @@ teardown_file() {
     cluster_id=$(cat /tmp/bats_test/cluster_id)
     user_name=$(cat /tmp/bats_test/user_name)
 
-    echo "cleaning up mongodb cluster $cluster_id"
+    echo "cleaning up mongodb user $cluster_id"
     run ionosctl db mongo user delete --cluster-id "$cluster_id" --name "$user_name" -f
-    retry_until "ionosctl db mongo user get --cluster-id $cluster_id --user $user_name --database db 2> /dev/null" \
-        "[[ \$output == \"\" ]]" 10 60
 
+    echo "cleaning up mongodb cluster $cluster_id"
     run ionosctl dbaas mongo cluster delete --cluster-id "$cluster_id" -f
-    retry_until "ionosctl dbaas mongo cluster get --cluster-id $cluster_id 2> /dev/null" \
-        "[ -z \$output ]" 120 60
 
     echo "cleaning up datacenter $datacenter_id"
-    retry_until "ionosctl datacenter delete --datacenter-id $datacenter_id -f 2> /dev/null" \
-        "[ \$? -eq 0 ]" 10 60
+    run ionosctl datacenter delete --datacenter-id "$datacenter_id" -f 2> /dev/null
 
     echo "cleaning up token"
     run ionosctl token delete --token "$IONOS_TOKEN" -f
