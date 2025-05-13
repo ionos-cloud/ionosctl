@@ -62,7 +62,7 @@ Required values to run command:
   -q, --quiet                     Quiet output
       --ram-hot-plug              'Hot-Plug' RAM (default true)
       --ram-hot-unplug            'Hot-Unplug' RAM
-      --require-legacy-bios       Indicates if the image requires the legacy BIOS for compatibility or specific needs.
+      --require-legacy-bios       Indicates if the image requires the legacy BIOS for compatibility or specific needs. (default true)
   -t, --timeout int               Timeout option for Request for Image update [seconds] (default 60)
   -v, --verbose                   Print step-by-step process when running command
   -w, --wait-for-request          Wait for the Request for Image update to be executed
