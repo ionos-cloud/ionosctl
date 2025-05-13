@@ -1,5 +1,9 @@
 # Changelog
 
+
+## Upcoming
+- Added support for ExposeSerial, RequireLegacyBios, ApplicationType properties to image commands
+
 ## [v6.8.3] (May 2025)
 
 ### Added
