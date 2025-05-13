@@ -176,7 +176,7 @@ func ImageCmd() *core.Command {
 		command.AddBoolFlag(cloudapiv6.ArgDiscVirtioHotUnplug, "", false, "'Hot-Unplug' Virt-IO drive")
 		command.AddBoolFlag(cloudapiv6.ArgDiscScsiHotUnplug, "", false, "'Hot-Unplug' SCSI drive")
 		command.AddBoolFlag(cloudapiv6.ArgExposeSerial, "", false, "If set to `true` will expose the serial id of the disk attached to the server")
-		command.AddBoolFlag(cloudapiv6.ArgRequireLegacyBios, "", false, "Indicates if the image requires the legacy BIOS for compatibility or specific needs.")
+		command.AddBoolFlag(cloudapiv6.ArgRequireLegacyBios, "", true, "Indicates if the image requires the legacy BIOS for compatibility or specific needs.")
 		command.AddSetFlag(cloudapiv6.ArgApplicationType, "", "UNKNOWN", constants.EnumApplicationType, "The type of application that is hosted on this resource")
 	}
 
