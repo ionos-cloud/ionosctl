@@ -87,11 +87,6 @@ func GenerateConfig(opts FilterOptions) ([]byte, error) {
 	// build environment
 	env := Environment{Name: "prod"}
 	for _, page := range pages {
-		productName := page.Name
-		if custom, ok := opts.CustomNames[page.Name]; ok {
-			productName = custom
-		}
-
 		// Construct full spec URL (indexURL base + page.Spec)
 		base := strings.TrimSuffix(indexURL, "/rest-api/private-index.json")
 		specURL := base + page.Spec
@@ -103,7 +98,7 @@ func GenerateConfig(opts FilterOptions) ([]byte, error) {
 		}
 
 		// Convert servers into endpoints
-		prod := Product{Name: productName}
+		prod := Product{Name: page.Name}
 		for _, srv := range servers {
 			ep := toEndpoint(srv)
 			prod.Endpoints = append(prod.Endpoints, ep)
@@ -159,6 +154,11 @@ func filterPages(pages []indexPage, opts FilterOptions) []indexPage {
 
 	var result []indexPage
 	for _, p := range latest {
+		if opts.CustomNames != nil {
+			if custom, ok := opts.CustomNames[p.Name]; ok {
+				p.Name = custom
+			}
+		}
 		result = append(result, p)
 	}
 	return result

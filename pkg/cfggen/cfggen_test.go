@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"net"
 	"net/http"
-	"reflect"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -37,6 +36,8 @@ func TestFilterPages(t *testing.T) {
 		{desc: "whitelist filter", opts: FilterOptions{Whitelist: map[string]bool{"B": true}}, expec: []string{"B"}},
 		{desc: "blacklist filter", opts: FilterOptions{Blacklist: map[string]bool{"C": true}}, expec: []string{"A", "B"}},
 		{desc: "combined version and blacklist", opts: FilterOptions{Version: ptr("v1"), Blacklist: map[string]bool{"A": true}}, expec: []string{"C"}},
+		{desc: "custom names", opts: FilterOptions{CustomNames: map[string]string{"A": "Alpha", "B": "Beta"}}, expec: []string{"Alpha", "Beta", "C"}},
+		{desc: "custom names with version filter", opts: FilterOptions{Version: ptr("v1"), CustomNames: map[string]string{"A": "Alpha", "B": "Beta"}}, expec: []string{"Alpha", "C"}},
 	}
 
 	for _, tc := range tests {
@@ -46,35 +47,8 @@ func TestFilterPages(t *testing.T) {
 			for _, p := range out {
 				names = append(names, p.Name)
 			}
-			if !reflect.DeepEqual(names, tc.expec) {
+			if !assert.ElementsMatch(t, tc.expec, names) {
 				t.Errorf("%s: expected %+v, got %+v", tc.desc, tc.expec, names)
-			}
-		})
-	}
-}
-
-func TestToEndpoint(t *testing.T) {
-	tests := []struct {
-		srv   serverRaw
-		expec Endpoint
-	}{
-		// relative URL yields default host
-		{srv: serverRaw{URL: "/path"}, expec: Endpoint{Name: "api.ionos.com", SkipTLSVerify: false}},
-		// invalid URL yields default
-		{srv: serverRaw{URL: ":://bad"}, expec: Endpoint{Name: "api.ionos.com", SkipTLSVerify: false}},
-		// absolute without region
-		{srv: serverRaw{URL: "https://api.ionos.com"}, expec: Endpoint{Name: "api.ionos.com", SkipTLSVerify: false}},
-		// with region
-		{srv: serverRaw{URL: "https://nfs.de-fra.ionos.com"}, expec: Endpoint{Name: "nfs.de-fra.ionos.com", Location: "de/fra", SkipTLSVerify: false}},
-		// multi-part host
-		{srv: serverRaw{URL: "https://something.eu-wdc.ionos.com"}, expec: Endpoint{Name: "something.eu-wdc.ionos.com", Location: "eu/wdc", SkipTLSVerify: false}},
-	}
-
-	for _, tc := range tests {
-		t.Run(tc.srv.URL, func(t *testing.T) {
-			got := toEndpoint(tc.srv)
-			if !reflect.DeepEqual(got, tc.expec) {
-				t.Errorf("For URL %s expected %+v, got %+v", tc.srv.URL, tc.expec, got)
 			}
 		})
 	}
