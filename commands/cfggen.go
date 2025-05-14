@@ -37,7 +37,9 @@ ionosctl endpoints generate --version=v1 \
 `,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			// build filter options
-			opts := configgen.FilterOptions{}
+			opts := configgen.FilterOptions{
+				CustomNames: mapCustomNames,
+			}
 
 			// apply version filter if provided
 			if version != "" {
@@ -77,6 +79,35 @@ ionosctl endpoints generate --version=v1 \
 
 	// public flags
 	f := cmd.Flags()
+
+	// override default spec names with our product names on sdk-go-bundle
+	f.StringToStringVar(&mapCustomNames, "custom-names",
+		map[string]string{
+			"apigateway":                "apigateway",
+			"authentication":            "auth",
+			"certificatemanager":        "cert",
+			"cloud":                     "compute",
+			"object‑storage":            "objectstorage",
+			"object‑storage‑management": "objectstoragemanagement",
+			"mongodb":                   "mongo",
+			"postgresql":                "psql",
+			"mariadb":                   "mariadb",
+			//
+			// These are currently the same as the spec name
+			// but we can override them here if needed
+			// "cdn":                       "cdn",
+			// "containerregistry":         "containerregistry",
+			// "dataplatform":              "dataplatform",
+			// "dns":                       "dns",
+			// "kafka":                     "kafka",
+			// "logging":                   "logging",
+			// "monitoring":                "monitoring",
+			// "nfs":                       "nfs",
+			// "vmautoscaling":             "vmautoscaling",
+			// "vpn":                       "vpn",
+		},
+		"Define custom names for each spec")
+
 	f.StringVar(&version, "version", "", "Filter by spec version (e.g. v1)")
 	f.StringSliceVar(&whitelist, "whitelist", nil, "Comma-separated list of API names to include")
 	f.StringSliceVar(&blacklist, "blacklist", nil, "Comma-separated list of API names to exclude")
@@ -84,31 +115,6 @@ ionosctl endpoints generate --version=v1 \
 	// hidden flags with defaults
 	f.StringVar(&visibility, "visibility", "public", "(hidden) Filter by index visibility")
 	f.StringVar(&gate, "gate", "General-Availability", "(hidden) Filter by release gate")
-
-	// override default spec names with our product names on sdk-go-bundle
-	f.StringToStringVar(&mapCustomNames, "custom-names",
-		map[string]string{
-			"apigateway":                "apigateway",
-			"authentication":            "auth",
-			"cdn":                       "cdn",
-			"certificatemanager":        "cert",
-			"cloud":                     "compute",
-			"containerregistry":         "containerregistry",
-			"dataplatform":              "dataplatform",
-			"dns":                       "dns",
-			"kafka":                     "kafka",
-			"logging":                   "logging",
-			"monitoring":                "monitoring",
-			"nfs":                       "nfs",
-			"object‑storage":            "objectstorage",
-			"object‑storage‑management": "objectstoragemanagement",
-			"vmautoscaling":             "vmautoscaling",
-			"vpn":                       "vpn",
-			"mongodb":                   "mongo",
-			"postgresql":                "psql",
-			"mariadb":                   "mariadb",
-		},
-		"Define custom names for each spec")
 
 	_ = f.MarkHidden("visibility")
 	_ = f.MarkHidden("gate")
