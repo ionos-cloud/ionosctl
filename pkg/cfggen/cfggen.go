@@ -128,12 +128,13 @@ func filterPages(pages []indexPage, opts FilterOptions) []indexPage {
 	latest := make(map[string]indexPage)
 
 	for _, p := range pages {
-		name := p.Name
+		origName := p.Name
 		if opts.CustomNames != nil {
-			if custom, ok := opts.CustomNames[p.Name]; ok {
-				name = custom
+			if custom, ok := opts.CustomNames[origName]; ok {
+				p.Name = custom
 			}
 		}
+		name := p.Name
 
 		if opts.Visibility != nil && p.Visibility != *opts.Visibility {
 			continue
@@ -153,10 +154,8 @@ func filterPages(pages []indexPage, opts FilterOptions) []indexPage {
 			continue
 		}
 
-		// collapse into latest[name]
 		prev, exists := latest[name]
 		if !exists || !compareVersions(p.Version, prev.Version) {
-			p.Name = name
 			latest[name] = p
 		}
 	}
