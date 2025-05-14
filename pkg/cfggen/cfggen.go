@@ -17,11 +17,12 @@ const indexURL = "https://ionos-cloud.github.io/rest-api/private-index.json"
 
 // FilterOptions controls which APIs to include. Nil means "no filter".
 type FilterOptions struct {
-	Version    *string         // e.g. "v1"
-	Visibility *string         // e.g. "public"
-	Gate       *string         // e.g. "General-Availability"
-	Whitelist  map[string]bool // API names to explicitly include
-	Blacklist  map[string]bool // API names to explicitly exclude
+	Version     *string           // e.g. "v1"
+	Visibility  *string           // e.g. "public"
+	Gate        *string           // e.g. "General-Availability"
+	Whitelist   map[string]bool   // API names to explicitly include
+	Blacklist   map[string]bool   // API names to explicitly exclude
+	CustomNames map[string]string // map spec-name -> desired name
 }
 
 // indexPage represents one entry in private-index.json
@@ -86,6 +87,11 @@ func GenerateConfig(opts FilterOptions) ([]byte, error) {
 	// build environment
 	env := Environment{Name: "prod"}
 	for _, page := range pages {
+		productName := page.Name
+		if custom, ok := opts.CustomNames[page.Name]; ok {
+			productName = custom
+		}
+
 		// Construct full spec URL (indexURL base + page.Spec)
 		base := strings.TrimSuffix(indexURL, "/rest-api/private-index.json")
 		specURL := base + page.Spec
@@ -97,7 +103,7 @@ func GenerateConfig(opts FilterOptions) ([]byte, error) {
 		}
 
 		// Convert servers into endpoints
-		prod := Product{Name: page.Name}
+		prod := Product{Name: productName}
 		for _, srv := range servers {
 			ep := toEndpoint(srv)
 			prod.Endpoints = append(prod.Endpoints, ep)
