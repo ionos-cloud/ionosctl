@@ -15,6 +15,8 @@ func GenCfgCmd() *core.Command {
 		blacklist  []string
 		visibility string
 		gate       string
+
+		mapCustomNames map[string]string
 	)
 
 	cmd := &cobra.Command{
@@ -82,6 +84,32 @@ ionosctl endpoints generate --version=v1 \
 	// hidden flags with defaults
 	f.StringVar(&visibility, "visibility", "public", "(hidden) Filter by index visibility")
 	f.StringVar(&gate, "gate", "General-Availability", "(hidden) Filter by release gate")
+
+	// override default spec names with our product names on sdk-go-bundle
+	f.StringToStringVar(&mapCustomNames, "custom-names",
+		map[string]string{
+			"apigateway":                "apigateway",
+			"authentication":            "auth",
+			"cdn":                       "cdn",
+			"certificatemanager":        "cert",
+			"cloud":                     "compute",
+			"containerregistry":         "containerregistry",
+			"dataplatform":              "dataplatform",
+			"dns":                       "dns",
+			"kafka":                     "kafka",
+			"logging":                   "logging",
+			"monitoring":                "monitoring",
+			"nfs":                       "nfs",
+			"object‑storage":            "objectstorage",
+			"object‑storage‑management": "objectstoragemanagement",
+			"vmautoscaling":             "vmautoscaling",
+			"vpn":                       "vpn",
+			"mongodb":                   "mongo",
+			"postgresql":                "psql",
+			"mariadb":                   "mariadb",
+		},
+		"Define custom names for each spec")
+
 	_ = f.MarkHidden("visibility")
 	_ = f.MarkHidden("gate")
 
