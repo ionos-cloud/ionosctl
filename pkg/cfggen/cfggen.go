@@ -49,8 +49,20 @@ type serverRaw struct {
 type Config struct {
 	Version        string        `yaml:"version"`
 	CurrentProfile string        `yaml:"currentProfile"`
-	Profiles       []interface{} `yaml:"profiles"`
+	Profiles       []Profile     `yaml:"profiles"`
 	Environments   []Environment `yaml:"environments"`
+}
+
+type Profile struct {
+	Name        string      `yaml:"name"`
+	Environment string      `yaml:"environment"`
+	Credentials Credentials `yaml:"credentials"`
+}
+
+type Credentials struct {
+	// Username string `yaml:"username"`
+	// Password string `yaml:"password"`
+	Token string `yaml:"token"`
 }
 
 type Environment struct {
@@ -110,8 +122,10 @@ func GenerateConfig(opts FilterOptions) ([]byte, error) {
 	cfg := Config{
 		Version:        "1.0",
 		CurrentProfile: "",
-		Profiles:       []interface{}{},
-		Environments:   []Environment{env},
+		Profiles: []Profile{
+			{Name: "user1", Environment: "prod", Credentials: Credentials{Token: "<token>"}},
+		},
+		Environments: []Environment{env},
 	}
 
 	var out strings.Builder
