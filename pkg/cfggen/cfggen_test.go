@@ -38,6 +38,7 @@ func TestFilterPages(t *testing.T) {
 		{desc: "combined version and blacklist", opts: FilterOptions{Version: ptr("v1"), Blacklist: map[string]bool{"A": true}}, expec: []string{"C"}},
 		{desc: "custom names", opts: FilterOptions{CustomNames: map[string]string{"A": "Alpha", "B": "Beta"}}, expec: []string{"Alpha", "Beta", "C"}},
 		{desc: "custom names with version filter", opts: FilterOptions{Version: ptr("v1"), CustomNames: map[string]string{"A": "Alpha", "B": "Beta"}}, expec: []string{"Alpha", "C"}},
+		{desc: "whitelist the custom names, not original name", opts: FilterOptions{Version: ptr("v1"), Whitelist: map[string]bool{"NewName": true}, CustomNames: map[string]string{"A": "NewName"}}, expec: []string{"NewName"}},
 	}
 
 	for _, tc := range tests {
