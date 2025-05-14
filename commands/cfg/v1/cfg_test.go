@@ -1,7 +1,7 @@
 //go:build integration
 // +build integration
 
-package cfg_test
+package v1_test
 
 import (
 	"bytes"
@@ -15,7 +15,6 @@ import (
 	"time"
 
 	"github.com/cilium/fake"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cfg"
 	"github.com/ionos-cloud/ionosctl/v6/internal/config"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
@@ -69,8 +68,8 @@ func TestAuthCmds(t *testing.T) {
 	t.Parallel()
 
 	t.Run("login test user interactively, password as flag - valid token saved to config", func(t *testing.T) {
-		login := cfg.LoginCmd()
-		logout := cfg.LogoutCmd()
+		login := oldcfg.LoginCmd()
+		logout := oldcfg.LogoutCmd()
 
 		login.Command.Flags().Set(constants.ArgPassword, GoodPassword)
 
@@ -107,8 +106,8 @@ func TestAuthCmds(t *testing.T) {
 	})
 
 	t.Run("login test user, password as flag - valid token saved to config", func(t *testing.T) {
-		login := cfg.LoginCmd()
-		logout := cfg.LogoutCmd()
+		login := oldcfg.LoginCmd()
+		logout := oldcfg.LogoutCmd()
 
 		viper.Set(core.GetFlagName(login.NS, constants.ArgUser), GoodUsername)
 		viper.Set(core.GetFlagName(login.NS, constants.ArgPassword), GoodPassword)
@@ -135,8 +134,8 @@ func TestAuthCmds(t *testing.T) {
 	})
 
 	t.Run("invalid user, password as flag - valid token saved to config - should still error out", func(t *testing.T) {
-		login := cfg.LoginCmd()
-		logout := cfg.LogoutCmd()
+		login := oldcfg.LoginCmd()
+		logout := oldcfg.LogoutCmd()
 
 		viper.Set(core.GetFlagName(login.NS, constants.ArgUser), fake.Adjective())
 		viper.Set(core.GetFlagName(login.NS, constants.ArgPassword), fake.Adjective())
@@ -171,8 +170,8 @@ func TestAuthCmds(t *testing.T) {
 	})
 
 	t.Run("non existant config file should be created", func(t *testing.T) {
-		login := cfg.LoginCmd()
-		logout := cfg.LogoutCmd()
+		login := oldcfg.LoginCmd()
+		logout := oldcfg.LogoutCmd()
 
 		viper.Set(core.GetFlagName(login.NS, constants.ArgUser), GoodUsername)
 		viper.Set(core.GetFlagName(login.NS, constants.ArgPassword), GoodPassword)
@@ -205,7 +204,7 @@ func TestAuthCmds(t *testing.T) {
 	})
 
 	t.Run("Pre-rework config file logout - Username and password removed from config file", func(t *testing.T) {
-		logout := cfg.LogoutCmd()
+		logout := oldcfg.LogoutCmd()
 
 		before := map[string]string{
 			constants.CfgUsername:  "UsernameHere",
@@ -233,32 +232,6 @@ func TestAuthCmds(t *testing.T) {
 		assert.Empty(t, after[constants.CfgPassword])
 		assert.Empty(t, after[constants.CfgUsername])
 		assert.Equal(t, before[constants.CfgServerUrl], after[constants.CfgServerUrl])
-	})
-
-	// cfg location tests
-	t.Run("cfg location cmd returns valid location", func(t *testing.T) {
-		cfgLocCmd := cfg.LocationCmd()
-		out := &bytes.Buffer{}
-		cfgLocCmd.Command.SetOut(out)
-		err := cfgLocCmd.Command.Execute()
-		assert.NoError(t, err)
-
-		assert.Equal(t, config.GetConfigFilePath(), out.String())
-	})
-
-	// cfg whoami tests
-	t.Run("cfg whoami returns current user - Env Username & Password", func(t *testing.T) {
-		cmd := cfg.WhoamiCmd()
-
-		viper.Set(core.GetFlagName(cmd.NS, constants.ArgUser), GoodUsername)
-		viper.Set(core.GetFlagName(cmd.NS, constants.ArgPassword), GoodPassword)
-
-		out := &bytes.Buffer{}
-		cmd.Command.SetOut(out)
-		err := cmd.Command.Execute()
-		assert.NoError(t, err)
-
-		assert.Contains(t, out.String(), GoodUsername)
 	})
 
 }

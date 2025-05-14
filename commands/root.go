@@ -2,15 +2,17 @@ package commands
 
 import (
 	"fmt"
-	api_gateway "github.com/ionos-cloud/ionosctl/v6/commands/api-gateway"
 	"os"
 	"strings"
+
+	api_gateway "github.com/ionos-cloud/ionosctl/v6/commands/api-gateway"
+	cfg_v1 "github.com/ionos-cloud/ionosctl/v6/commands/cfg/v1"
+	cfg_v2 "github.com/ionos-cloud/ionosctl/v6/commands/cfg/v2"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cdn"
 	"github.com/ionos-cloud/ionosctl/v6/commands/kafka"
 
 	certificates "github.com/ionos-cloud/ionosctl/v6/commands/certmanager"
-	"github.com/ionos-cloud/ionosctl/v6/commands/cfg"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6"
 	container_registry "github.com/ionos-cloud/ionosctl/v6/commands/container-registry"
 	"github.com/ionos-cloud/ionosctl/v6/commands/dataplatform"
@@ -169,9 +171,10 @@ func addCommands() {
 	rootCmd.AddCommand(Man())
 
 	// cfg
-	rootCmd.AddCommand(cfg.ConfigCmd())
+	rootCmd.AddCommand(cfg_v1.Root()) // add this, although hidden and deprecated, for backwards compatibility
+	rootCmd.AddCommand(cfg_v2.Root())
 	// Config namespace commands are also available via the root command, but are hidden
-	for _, cmd := range cfg.ConfigCmd().SubCommands() {
+	for _, cmd := range cfg_v2.Root().SubCommands() {
 		if cmd.Name() == "location" {
 			// This one is confusing without `cfg` namespace;
 			// It also would override CPU Architecture locations command, so skip it.

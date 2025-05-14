@@ -1,11 +1,11 @@
-package cfg
+package v2
 
 import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/spf13/cobra"
 )
 
-func ConfigCmd() *core.Command {
+func Root() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "config",
@@ -15,8 +15,8 @@ func ConfigCmd() *core.Command {
 		},
 	}
 	cmd.AddCommand(LocationCmd())
-	cmd.AddCommand(LoginCmd())
-	cmd.AddCommand(LogoutCmd())
+	// cmd.AddCommand(LoginCmd())
+	// cmd.AddCommand(LogoutCmd())
 	cmd.AddCommand(WhoamiCmd())
 	return cmd
 }

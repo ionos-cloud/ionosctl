@@ -1,4 +1,4 @@
-package cfg
+package v1
 
 import (
 	"context"
