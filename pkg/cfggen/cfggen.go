@@ -124,21 +124,28 @@ func GenerateConfig(opts FilterOptions) ([]byte, error) {
 	return []byte(out.String()), nil
 }
 
-// filterPages applies the filtering options to the list of pages
 func filterPages(pages []indexPage, opts FilterOptions) []indexPage {
 	latest := make(map[string]indexPage)
 
 	for _, p := range pages {
+		name := p.Name
+		if opts.CustomNames != nil {
+			if custom, ok := opts.CustomNames[p.Name]; ok {
+				name = custom
+			}
+		}
+
 		if opts.Visibility != nil && p.Visibility != *opts.Visibility {
 			continue
 		}
 		if opts.Gate != nil && p.Gate != *opts.Gate {
 			continue
 		}
-		if opts.Whitelist != nil && !opts.Whitelist[p.Name] {
+
+		if opts.Whitelist != nil && !opts.Whitelist[name] {
 			continue
 		}
-		if opts.Blacklist != nil && opts.Blacklist[p.Name] {
+		if opts.Blacklist != nil && opts.Blacklist[name] {
 			continue
 		}
 
@@ -146,19 +153,17 @@ func filterPages(pages []indexPage, opts FilterOptions) []indexPage {
 			continue
 		}
 
-		prev, exists := latest[p.Name]
+		// collapse into latest[name]
+		prev, exists := latest[name]
 		if !exists || !compareVersions(p.Version, prev.Version) {
-			latest[p.Name] = p
+			p.Name = name
+			latest[name] = p
 		}
 	}
 
-	var result []indexPage
+	// collect results in a slice
+	result := make([]indexPage, 0, len(latest))
 	for _, p := range latest {
-		if opts.CustomNames != nil {
-			if custom, ok := opts.CustomNames[p.Name]; ok {
-				p.Name = custom
-			}
-		}
 		result = append(result, p)
 	}
 	return result
