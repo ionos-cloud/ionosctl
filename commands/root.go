@@ -2,7 +2,6 @@ package commands
 
 import (
 	"fmt"
-	"github.com/ionos-cloud/ionosctl/v6/commands/monitoring"
 	"os"
 	"strings"
 
@@ -169,7 +168,7 @@ func addCommands() {
 	rootCmd.AddCommand(Shell())
 	rootCmd.AddCommand(VersionCmd())
 	rootCmd.AddCommand(Man())
-	rootCmd.AddCommand(GenCfgCmd())
+	rootCmd.AddCommand(cfg.GenCfgCmd())
 
 	// cfg
 	rootCmd.AddCommand(cfg.ConfigCmd())

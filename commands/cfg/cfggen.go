@@ -1,0 +1,126 @@
+package cfg
+
+import (
+	"fmt"
+
+	"github.com/ionos-cloud/ionosctl/v6/internal/core"
+	configgen "github.com/ionos-cloud/ionosctl/v6/pkg/cfggen"
+	"github.com/spf13/cobra"
+)
+
+func GenCfgCmd() *core.Command {
+	var (
+		printExample bool
+
+		filterVersion    string
+		filterWhitelist  []string
+		filterBlacklist  []string
+		filterVisibility string
+		filterGate       string
+
+		mapCustomNames map[string]string
+	)
+
+	cmd := &cobra.Command{
+		Use:   "login",
+		Short: "Use credentials to generate a config file in `ionosctl cfg location`, or use '--example' to generate a sample endpoints YAML config",
+		Long: `Generate a YAML file aggregating all product endpoint information at 'ionosctl cfg location'
+using the public OpenAPI index.
+
+If using '--example', this command prints the config to stdout.
+
+You can filter by version or specific API names.
+
+There are three ways you can authenticate with the IONOS Cloud APIs:
+  1. Interactive mode: Just type 'ionosctl login' and you'll be prompted to enter your username and password.
+  2. Use the '--user' and '--password' flags: Enter your credentials in the command.
+  3. Use the '--token' flag: Provide an authentication token.
+Notes:
+  - If using '--token', you can skip verifying the used token with '--skip-verify'
+  - If using '--example', the authentication step is skipped
+`,
+		Example: `
+# Print an example YAML configuration file to stdout
+ionosctl config login --example
+
+# Login interactively, and generate a YAML config file with filters, to 'ionosctl config location'
+ionosctl endpoints generate --version=v1 \
+  --whitelist=vpn,psql --blacklist=billing
+`,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			token := "<token>"
+			if !printExample {
+				token = login(cmd)
+			}
+			_ = token
+
+			// build filter options
+			opts := configgen.Filters{
+				CustomNames: mapCustomNames,
+			}
+
+			settings := configgen.ProfileSettings{}
+
+			// apply version filter if provided
+			if filterVersion != "" {
+				opts.Version = &filterVersion
+			}
+
+			// always apply hidden filters (defaults set above)
+			opts.Visibility = &filterVisibility
+			opts.Gate = &filterGate
+
+			// apply whitelist only if flag passed
+			if len(filterWhitelist) > 0 {
+				opts.Whitelist = make(map[string]bool)
+				for _, name := range filterWhitelist {
+					opts.Whitelist[name] = true
+				}
+			}
+			// apply blacklist only if flag passed
+			if len(filterBlacklist) > 0 {
+				opts.Blacklist = make(map[string]bool)
+				for _, name := range filterBlacklist {
+					opts.Blacklist[name] = true
+				}
+			}
+
+			// generate config
+			out, err := configgen.GenerateConfig(settings, opts)
+			if err != nil {
+				return fmt.Errorf("could not generate config: %w", err)
+			}
+
+			// _, err = cmd.OutOrStdout().Write(out)
+			// return err
+			if printExample {
+				_, err = cmd.OutOrStdout().Write(out)
+				if err != nil {
+					return fmt.Errorf("could not write config to stdout: %w", err)
+				}
+			}
+
+			// else,write to config file
+			return nil
+		},
+	}
+
+	f := cmd.Flags()
+	f.StringVar(&version, "version", "", "Filter by spec version (e.g. v1)")
+	f.StringSliceVar(&whitelist, "whitelist", nil, "Comma-separated list of API names to include")
+	f.StringSliceVar(&blacklist, "blacklist", nil, "Comma-separated list of API names to exclude")
+
+	f.BoolVar(&printExample, "example", false, "Print an example YAML config file to stdout and skip authentication step")
+
+	// hidden flags with defaults
+	f.StringVar(&visibility, "visibility", "public", "(hidden) Filter by index visibility")
+	f.StringVar(&gate, "gate", "General-Availability", "(hidden) Filter by release gate")
+	_ = f.MarkHidden("visibility")
+	_ = f.MarkHidden("gate")
+
+	return &core.Command{Command: cmd}
+}
+
+func login() string {
+	return ""
+}
