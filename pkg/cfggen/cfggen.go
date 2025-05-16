@@ -15,14 +15,22 @@ import (
 // indexURL is the source for the JSON index of OpenAPI specs
 const indexURL = "https://ionos-cloud.github.io/rest-api/private-index.json"
 
-// FilterOptions controls which APIs to include. Nil means "no filter".
-type FilterOptions struct {
-	Version     *string           // e.g. "v1"
-	Visibility  *string           // e.g. "public"
-	Gate        *string           // e.g. "General-Availability"
-	Whitelist   map[string]bool   // API names to explicitly include
-	Blacklist   map[string]bool   // API names to explicitly exclude
+// Filters controls which APIs to include
+type Filters struct {
+	Version    *string         // e.g. "v1"
+	Visibility *string         // e.g. "public"
+	Gate       *string         // e.g. "General-Availability"
+	Whitelist  map[string]bool // API names to explicitly include
+	Blacklist  map[string]bool // API names to explicitly exclude
+
 	CustomNames map[string]string // map spec-name -> desired name
+}
+
+type ProfileSettings struct {
+	Version     string // default: "1.0"
+	ProfileName string // default: "user"
+	Token       string // default: "<token>"
+	Environment string // default: 'prod'
 }
 
 // indexPage represents one entry in private-index.json
@@ -83,7 +91,21 @@ type Endpoint struct {
 }
 
 // GenerateConfig builds the endpoints.yaml content based on the index and OpenAPI specs.
-func GenerateConfig(opts FilterOptions) ([]byte, error) {
+func GenerateConfig(settings ProfileSettings, opts Filters) ([]byte, error) {
+	// check settings
+	if settings.Version == "" {
+		settings.Version = "1.0"
+	}
+	if settings.Token == "" {
+		settings.Token = "<token>"
+	}
+	if settings.ProfileName == "" {
+		settings.ProfileName = "user"
+	}
+	if settings.Environment == "" {
+		settings.Environment = "prod"
+	}
+
 	// 1. Load and parse the index JSON
 	idx, err := loadIndex()
 	if err != nil {
@@ -97,7 +119,7 @@ func GenerateConfig(opts FilterOptions) ([]byte, error) {
 	}
 
 	// build environment
-	env := Environment{Name: "prod"}
+	env := Environment{Name: settings.Environment}
 	for _, page := range pages {
 		// Construct full spec URL (indexURL base + page.Spec)
 		base := strings.TrimSuffix(indexURL, "/rest-api/private-index.json")
@@ -120,10 +142,10 @@ func GenerateConfig(opts FilterOptions) ([]byte, error) {
 
 	// assemble config
 	cfg := Config{
-		Version:        "1.0",
-		CurrentProfile: "",
+		Version:        settings.Version,
+		CurrentProfile: settings.ProfileName,
 		Profiles: []Profile{
-			{Name: "user1", Environment: "prod", Credentials: Credentials{Token: "<token>"}},
+			{Name: settings.ProfileName, Environment: settings.Environment, Credentials: Credentials{Token: settings.Token}},
 		},
 		Environments: []Environment{env},
 	}
@@ -138,7 +160,7 @@ func GenerateConfig(opts FilterOptions) ([]byte, error) {
 	return []byte(out.String()), nil
 }
 
-func filterPages(pages []indexPage, opts FilterOptions) []indexPage {
+func filterPages(pages []indexPage, opts Filters) []indexPage {
 	latest := make(map[string]indexPage)
 
 	for _, p := range pages {

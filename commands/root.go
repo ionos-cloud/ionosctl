@@ -3,7 +3,6 @@ package commands
 import (
 	"fmt"
 	api_gateway "github.com/ionos-cloud/ionosctl/v6/commands/api-gateway"
-	"github.com/ionos-cloud/ionosctl/v6/commands/monitoring"
 	"os"
 	"strings"
 
@@ -230,8 +229,6 @@ func addCommands() {
 	rootCmd.AddCommand(logging_service.Root())
 
 	rootCmd.AddCommand(api_gateway.Root())
-
-	rootCmd.AddCommand(monitoring.Root())
 
 	rootCmd.AddCommand(cdn.Command())
 
