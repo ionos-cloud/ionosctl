@@ -26,19 +26,19 @@ func TestFilterPages(t *testing.T) {
 
 	tests := []struct {
 		desc  string
-		opts  FilterOptions
+		opts  Filters
 		expec []string
 	}{
-		{desc: "no filters returns all", opts: FilterOptions{}, expec: []string{"A", "B", "C"}},
-		{desc: "version filter", opts: FilterOptions{Version: ptr("v1")}, expec: []string{"A", "C"}},
-		{desc: "visibility filter", opts: FilterOptions{Visibility: ptr("public")}, expec: []string{"A", "C"}},
-		{desc: "gate filter", opts: FilterOptions{Gate: ptr("Beta")}, expec: []string{"B"}},
-		{desc: "whitelist filter", opts: FilterOptions{Whitelist: map[string]bool{"B": true}}, expec: []string{"B"}},
-		{desc: "blacklist filter", opts: FilterOptions{Blacklist: map[string]bool{"C": true}}, expec: []string{"A", "B"}},
-		{desc: "combined version and blacklist", opts: FilterOptions{Version: ptr("v1"), Blacklist: map[string]bool{"A": true}}, expec: []string{"C"}},
-		{desc: "custom names", opts: FilterOptions{CustomNames: map[string]string{"A": "Alpha", "B": "Beta"}}, expec: []string{"Alpha", "Beta", "C"}},
-		{desc: "custom names with version filter", opts: FilterOptions{Version: ptr("v1"), CustomNames: map[string]string{"A": "Alpha", "B": "Beta"}}, expec: []string{"Alpha", "C"}},
-		{desc: "whitelist the custom names, not original name", opts: FilterOptions{Version: ptr("v1"), Whitelist: map[string]bool{"NewName": true}, CustomNames: map[string]string{"A": "NewName"}}, expec: []string{"NewName"}},
+		{desc: "no filters returns all", opts: Filters{}, expec: []string{"A", "B", "C"}},
+		{desc: "version filter", opts: Filters{Version: ptr("v1")}, expec: []string{"A", "C"}},
+		{desc: "visibility filter", opts: Filters{Visibility: ptr("public")}, expec: []string{"A", "C"}},
+		{desc: "gate filter", opts: Filters{Gate: ptr("Beta")}, expec: []string{"B"}},
+		{desc: "whitelist filter", opts: Filters{Whitelist: map[string]bool{"B": true}}, expec: []string{"B"}},
+		{desc: "blacklist filter", opts: Filters{Blacklist: map[string]bool{"C": true}}, expec: []string{"A", "B"}},
+		{desc: "combined version and blacklist", opts: Filters{Version: ptr("v1"), Blacklist: map[string]bool{"A": true}}, expec: []string{"C"}},
+		{desc: "custom names", opts: Filters{CustomNames: map[string]string{"A": "Alpha", "B": "Beta"}}, expec: []string{"Alpha", "Beta", "C"}},
+		{desc: "custom names with version filter", opts: Filters{Version: ptr("v1"), CustomNames: map[string]string{"A": "Alpha", "B": "Beta"}}, expec: []string{"Alpha", "C"}},
+		{desc: "whitelist the custom names, not original name", opts: Filters{Version: ptr("v1"), Whitelist: map[string]bool{"NewName": true}, CustomNames: map[string]string{"A": "NewName"}}, expec: []string{"NewName"}},
 	}
 
 	for _, tc := range tests {
@@ -110,7 +110,7 @@ func TestGenerateConfigE2E(t *testing.T) {
 	})
 	defer func() { http.DefaultTransport = origTransport }()
 
-	opts := FilterOptions{Whitelist: map[string]bool{"vpn": true}, Visibility: ptr("public"), Gate: ptr("General-Availability"), Version: ptr("v1")}
+	opts := Filters{Whitelist: map[string]bool{"vpn": true}, Visibility: ptr("public"), Gate: ptr("General-Availability"), Version: ptr("v1")}
 	out, err := GenerateConfig(opts)
 	if err != nil {
 		t.Fatalf("GenerateConfig failed: %v", err)
@@ -135,7 +135,7 @@ environments:
 `
 	assert.Equal(t, expected, string(out))
 
-	out, err = GenerateConfig(FilterOptions{})
+	out, err = GenerateConfig(Filters{})
 	if err != nil {
 		t.Fatalf("GenerateConfig failed: %v", err)
 	}
