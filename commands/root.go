@@ -2,9 +2,10 @@ package commands
 
 import (
 	"fmt"
-	api_gateway "github.com/ionos-cloud/ionosctl/v6/commands/api-gateway"
 	"os"
 	"strings"
+
+	api_gateway "github.com/ionos-cloud/ionosctl/v6/commands/api-gateway"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cdn"
 	"github.com/ionos-cloud/ionosctl/v6/commands/kafka"
@@ -167,7 +168,7 @@ func addCommands() {
 	rootCmd.AddCommand(Shell())
 	rootCmd.AddCommand(VersionCmd())
 	rootCmd.AddCommand(Man())
-	rootCmd.AddCommand(GenCfgCmd())
+	rootCmd.AddCommand(cfg.GenCfgCmd())
 
 	// cfg
 	rootCmd.AddCommand(cfg.ConfigCmd())
