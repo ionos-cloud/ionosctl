@@ -34,7 +34,7 @@ Partially modify a zone's properties. This command uses a combination of GET and
   -u, --api-url string       Override default host URL (default "https://dns.de-fra.ionos.com")
       --cols strings         Set of columns to be printed on output 
                              Available columns: [Id Name Description NameServers Enabled State]
-  -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+  -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
       --description string   The new description of the DNS zone
       --enabled              Activate or deactivate the DNS zone (default true)
   -f, --force                Force command to execute without user input

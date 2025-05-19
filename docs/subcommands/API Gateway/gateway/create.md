@@ -34,7 +34,7 @@ Create an apigateway
   -u, --api-url string                         Override default host URL (default "https://apigateway.de-txl.ionos.com")
       --cols strings                           Set of columns to be printed on output 
                                                Available columns: [Id Name Logs Metrics Enable DomainName CertificateId HttpMethods HttpCodes Override PublicEndpoint Status]
-  -c, --config string                          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+  -c, --config string                          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
       --custom-domains-certificate-id string   The ID of the certificate to use for the distribution.
       --custom-domains-name string             The domain name of the distribution. Field is validated as FQDN
   -f, --force                                  Force command to execute without user input

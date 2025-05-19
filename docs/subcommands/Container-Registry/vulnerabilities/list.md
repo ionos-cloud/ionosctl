@@ -35,7 +35,7 @@ Retrieve all vulnerabilities from an artifact
       --artifact-id string   ID/digest of the artifact
       --cols strings         Set of columns to be printed on output 
                              Available columns: [Id DataSource Score Severity Fixable PublishedAt UpdatedAt Affects Description Recommendations References Href]
-  -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+  -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -F, --filters strings      Limits results to those containing a matching value for a specific property. Use the following format to set filters: --filters KEY1=VALUE1,KEY2=VALUE2
   -f, --force                Force command to execute without user input
   -h, --help                 Print usage

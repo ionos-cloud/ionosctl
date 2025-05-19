@@ -49,7 +49,7 @@ Required values to run command:
   -i, --cdrom-id string        The unique Cdrom Id (required)
       --cols strings           Set of columns to be printed on output 
                                Available columns: [ImageId Name ImageAliases Location Size LicenceType ImageType Description Public CloudInit CreatedDate CreatedBy CreatedByUserId ExposeSerial RequireLegacyBios ApplicationType] (default [ImageId,Name,ImageAliases,Location,LicenceType,ImageType,CloudInit,CreatedDate])
-  -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+  -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
       --datacenter-id string   The unique Data Center Id (required)
   -D, --depth int32            Controls the detail depth of the response objects. Max depth is 10.
   -f, --force                  Force command to execute without user input

@@ -55,7 +55,7 @@ Required values to run command:
   -K, --condition-key string                selects which entry in the selected HTTP element is used for the rule. For example, "Accept" for condition-type=HEADER. Not applicable for HOST, PATH or SOURCE_IP (default "Accept")
   -T, --condition-type string               selects which element in the incoming HTTP request is used for the rule. Possible values HEADER, PATH, QUERY, METHOD, HOST, COOKIE, SOURCE _IP (default "HEADER")
   -V, --condition-value string              value compared with the selected HTTP element. For example "application/json" in combination with condition=EQUALS, condition-type=HEADER, condition-key=Accept would be valid. Not applicable for condition EXISTS. Mandatory for conditions CONTAINS, EQUALS, MATCHES, STARTS_WITH, ENDS_WITH; must be null when condition is EXISTS (default "application/json")
-  -c, --config string                       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+  -c, --config string                       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
       --content-type string                 Valid only for STATIC actions. (default "application/json")
       --datacenter-id string                The unique Data Center Id (required)
   -D, --depth int32                         Controls the detail depth of the response objects. Max depth is 10.

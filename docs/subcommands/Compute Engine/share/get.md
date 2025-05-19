@@ -33,7 +33,7 @@ Required values to run command:
   -u, --api-url string       Override default host url (default "https://api.ionos.com")
       --cols strings         Set of columns to be printed on output 
                              Available columns: [ShareId EditPrivilege SharePrivilege Type GroupId] (default [ShareId,EditPrivilege,SharePrivilege,Type])
-  -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+  -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -D, --depth int32          Controls the detail depth of the response objects. Max depth is 10.
   -f, --force                Force command to execute without user input
       --group-id string      The unique Group Id (required)

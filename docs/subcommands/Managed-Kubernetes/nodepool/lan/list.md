@@ -40,7 +40,7 @@ Required values to run command:
       --cluster-id string    The unique K8s Cluster Id (required)
       --cols strings         Set of columns to be printed on output 
                              Available columns: [LanId Dhcp RoutesNetwork RoutesGatewayIp] (default [LanId,Dhcp,RoutesNetwork,RoutesGatewayIp])
-  -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+  -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -D, --depth int32          Controls the detail depth of the response objects. Max depth is 10. (default 1)
   -f, --force                Force command to execute without user input
   -h, --help                 Print usage

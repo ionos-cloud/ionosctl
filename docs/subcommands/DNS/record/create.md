@@ -34,7 +34,7 @@ Create a record. Wiki: https://docs.ionos.com/cloud/network-services/cloud-dns/a
   -u, --api-url string    Override default host URL (default "https://dns.de-fra.ionos.com")
       --cols strings      Set of columns to be printed on output 
                           Available columns: [Id Name Content Type Enabled FQDN ZoneId ZoneName State]
-  -c, --config string     Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+  -c, --config string     Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
       --content string    The content (Record Data) for your chosen record type. For example, if --type A, --content should be an IPv4 IP. (required)
       --enabled           When true - the record is visible for lookup (default true)
   -f, --force             Force command to execute without user input

@@ -34,7 +34,7 @@ Removes ALL associated DNSKEY records for your DNS zone and disables DNSSEC keys
   -u, --api-url string    Override default host URL (default "https://dns.de-fra.ionos.com")
       --cols strings      Set of columns to be printed on output 
                           Available columns: [Id KeyTag DigestAlgorithmMnemonic Digest Validity Flags PubKey ComposedKeyData Algorithm KskBits ZskBits NsecMode Nsec3Iterations Nsec3SaltBits] (default [Id,KeyTag,DigestAlgorithmMnemonic,Digest,Validity])
-  -c, --config string     Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+  -c, --config string     Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -f, --force             Force command to execute without user input
   -h, --help              Print usage
   -l, --location string   Location of the resource to operate on. Can be one of: de/fra

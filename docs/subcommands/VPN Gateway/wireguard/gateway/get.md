@@ -40,7 +40,7 @@ Find a gateway by ID
   -u, --api-url string      Override default host URL (default "https://vpn.de-fra.ionos.com")
       --cols strings        Set of columns to be printed on output 
                             Available columns: [ID Name PublicKey Description GatewayIP InterfaceIPv4 InterfaceIPv6 DatacenterId LanId ConnectionIPv4 ConnectionIPv6 InterfaceIP ListenPort Status]
-  -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+  -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -f, --force               Force command to execute without user input
   -i, --gateway-id string   The ID of the WireGuard Gateway (required)
   -h, --help                Print usage
