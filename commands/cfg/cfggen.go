@@ -104,11 +104,18 @@ ionosctl config login --token $IONOS_TOKEN \
 				if err != nil {
 					return fmt.Errorf("could not write config to stdout: %w", err)
 				}
+
+				return nil // stop here
 			}
 
 			// write config to file
-			path := viper.GetString(core.GetFlagName(c.NS, constants.ArgConfig))
+			err = cfg.WriteYAML()
+			if err != nil {
+				return fmt.Errorf("could not write config to file: %w", err)
+			}
 
+			fmt.Fprintf(c.Command.Command.OutOrStdout(), "Config file generated at %s\n", configgen.Location())
+			return nil
 		},
 	})
 
@@ -187,6 +194,6 @@ func addFilterFlags(cmd *core.Command) {
 	cmd.AddStringFlag(FlagVisibility, "", "public", "(hidden) Filter by index visibility")
 	cmd.AddStringFlag(FlagGate, "", "General-Availability", "(hidden) Filter by release gate")
 
-	_ = cmd.Command.Flags().MarkHidden("visibility")
-	_ = cmd.Command.Flags().MarkHidden("gate")
+	_ = cmd.Command.Flags().MarkHidden(FlagVisibility)
+	_ = cmd.Command.Flags().MarkHidden(FlagGate)
 }
