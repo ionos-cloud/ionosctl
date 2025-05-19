@@ -4,23 +4,14 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	configgen "github.com/ionos-cloud/ionosctl/v6/pkg/cfggen"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/pointer"
+	"github.com/spf13/viper"
 )
 
 func GenCfgCmd() *core.Command {
-	var (
-		printExample bool
-
-		filterVersion    string
-		filterWhitelist  []string
-		filterBlacklist  []string
-		filterVisibility string
-		filterGate       string
-
-		mapCustomNames map[string]string
-	)
-
 	cmd := core.NewCommand(context.Background(), nil, core.CommandBuilder{
 		Namespace: "config",
 		Resource:  "config",
@@ -58,46 +49,43 @@ ionosctl config login --token $IONOS_TOKEN \
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			token := "<token>"
-			if !printExample {
+			if !viper.GetBool(core.GetFlagName(c.NS, FlagExample)) {
 				token = getToken()
 			}
 			_ = token
 
 			// build filter options
 			opts := configgen.Filters{
-				CustomNames: mapCustomNames,
+				CustomNames: viper.GetStringMapString(core.GetFlagName(c.NS, FlagCustomNames)),
 			}
 
-			name, _ := cmd.Flags().GetString("profile")
-			env, _ := cmd.Flags().GetString("environment")
-			version, _ := cmd.Flags().GetString("version")
 			settings := configgen.ProfileSettings{
 				Token:       token,
-				ProfileName: name,
-				Environment: env,
-				Version:     version,
+				ProfileName: viper.GetString(core.GetFlagName(c.NS, FlagSettingsProfile)),
+				Environment: viper.GetString(core.GetFlagName(c.NS, FlagSettingsEnv)),
+				Version:     viper.GetString(core.GetFlagName(c.NS, FlagSettingsVersion)),
 			}
 
 			// apply version filter if provided
-			if filterVersion != "" {
-				opts.Version = &filterVersion
+			if viper.GetString(core.GetFlagName(c.NS, FlagFilterVersion)) != "" {
+				opts.Version = pointer.From(viper.GetString(core.GetFlagName(c.NS, FlagFilterVersion)))
 			}
 
 			// always apply hidden filters (defaults set above)
-			opts.Visibility = &filterVisibility
-			opts.Gate = &filterGate
+			opts.Visibility = pointer.From(viper.GetString(core.GetFlagName(c.NS, FlagVisibility)))
+			opts.Gate = pointer.From(viper.GetString(core.GetFlagName(c.NS, FlagGate)))
 
 			// apply whitelist only if flag passed
-			if len(filterWhitelist) > 0 {
+			if len(viper.GetStringSlice(core.GetFlagName(c.NS, FlagWhitelist))) > 0 {
 				opts.Whitelist = make(map[string]bool)
-				for _, name := range filterWhitelist {
+				for _, name := range viper.GetStringSlice(core.GetFlagName(c.NS, FlagWhitelist)) {
 					opts.Whitelist[name] = true
 				}
 			}
 			// apply blacklist only if flag passed
-			if len(filterBlacklist) > 0 {
+			if len(viper.GetStringSlice(core.GetFlagName(c.NS, FlagBlacklist))) > 0 {
 				opts.Blacklist = make(map[string]bool)
-				for _, name := range filterBlacklist {
+				for _, name := range viper.GetStringSlice(core.GetFlagName(c.NS, FlagBlacklist)) {
 					opts.Blacklist[name] = true
 				}
 			}
@@ -108,7 +96,7 @@ ionosctl config login --token $IONOS_TOKEN \
 				return fmt.Errorf("could not generate config: %w", err)
 			}
 
-			if printExample {
+			if viper.GetBool(core.GetFlagName(c.NS, FlagExample)) {
 				bytes, err := cfg.ToBytesYAML()
 				if err != nil {
 					return fmt.Errorf("could not convert config to bytes: %w", err)
@@ -134,45 +122,67 @@ func getToken() string {
 	return ""
 }
 
-func addFilterFlags() {
-	// override default spec names with our product names on sdk-go-bundle
-	f.StringToString("custom-names",
-		map[string]string{
-			"apigateway":                "apigateway",
-			"authentication":            "auth",
-			"certificatemanager":        "cert",
-			"cloud":                     "compute",
-			"object‑storage":            "objectstorage",
-			"object‑storage‑management": "objectstoragemanagement",
-			"mongodb":                   "mongo",
-			"postgresql":                "psql",
-			"mariadb":                   "mariadb",
-			//
-			// These are currently the same as the spec name
-			// but we can override them here if needed
-			// "cdn":                       "cdn",
-			// "containerregistry":         "containerregistry",
-			// "dataplatform":              "dataplatform",
-			// "dns":                       "dns",
-			// "kafka":                     "kafka",
-			// "logging":                   "logging",
-			// "monitoring":                "monitoring",
-			// "nfs":                       "nfs",
-			// "vmautoscaling":             "vmautoscaling",
-			// "vpn":                       "vpn",
-		},
+var (
+	FlagCustomNames   = "custom-names"
+	FlagFilterVersion = "filter-version"
+	FlagWhitelist     = "whitelist"
+	FlagBlacklist     = "blacklist"
+	FlagExample       = "example"
+	FlagVisibility    = "filter-visibility"
+	FlagGate          = "filter-gate"
+
+	FlagSettingsVersion = "config-version"
+	FlagSettingsProfile = "profile-name"
+	FlagSettingsEnv     = "environment"
+)
+
+func addLoginFlags(cmd *core.Command) {
+	cmd.AddBoolFlag(FlagExample, "", false, "Print an example YAML config file to stdout and skip authentication step")
+
+	cmd.AddStringFlag(constants.ArgUser, "", "", "Username to authenticate with. Will be used to generate a token")
+	cmd.AddStringFlag(constants.ArgPassword, constants.ArgPasswordShort, "", "Password to authenticate with. Will be used to generate a token")
+	cmd.AddStringFlag(constants.ArgToken, constants.ArgTokenShort, "", "Token to authenticate with. If used, will be saved to the config file without generating a new token. Note: mutually exclusive with --user and --password")
+	cmd.AddBoolFlag(constants.FlagSkipVerify, "", false, "Forcefully write the provided token to the config file without verifying if it is valid. Note: --token is required")
+}
+
+func addProfileFlags(cmd *core.Command) {
+	cmd.AddStringFlag(FlagSettingsProfile, "", "user", "Name of the profile to use")
+	cmd.AddStringFlag(FlagSettingsEnv, "", "prod", "Environment to use")
+	cmd.AddStringFlag(FlagSettingsVersion, "", "1.0", "Version of the config file to use")
+}
+
+func addFilterFlags(cmd *core.Command) {
+	cmd.AddStringToStringFlag(FlagCustomNames, "", map[string]string{
+		"apigateway":                "apigateway",
+		"authentication":            "auth",
+		"certificatemanager":        "cert",
+		"cloud":                     "compute",
+		"object‑storage":            "objectstorage",
+		"object‑storage‑management": "objectstoragemanagement",
+		"mongodb":                   "mongo",
+		"postgresql":                "psql",
+		"mariadb":                   "mariadb",
+		//
+		// These are currently the same as the spec name
+		// but we can override them here if needed
+		// "cdn":                       "cdn",
+		// "containerregistry":         "containerregistry",
+		// "dataplatform":              "dataplatform",
+		// "dns":                       "dns",
+		// "kafka":                     "kafka",
+		// "logging":                   "logging",
+		// "monitoring":                "monitoring",
+		// "nfs":                       "nfs",
+		// "vmautoscaling":             "vmautoscaling",
+		// "vpn":                       "vpn",
+	},
 		"Define custom names for each spec")
+	cmd.AddStringFlag(FlagFilterVersion, "", "", "Filter by spec version (e.g. v1)")
+	cmd.AddStringSliceFlag(FlagWhitelist, "", []string{}, "Comma-separated list of API names to include")
+	cmd.AddStringSliceFlag(FlagBlacklist, "", []string{}, "Comma-separated list of API names to exclude")
+	cmd.AddStringFlag(FlagVisibility, "", "public", "(hidden) Filter by index visibility")
+	cmd.AddStringFlag(FlagGate, "", "General-Availability", "(hidden) Filter by release gate")
 
-	f.String("filter-version", "", "Filter by spec version (e.g. v1)")
-	f.StringSlice("whitelist", nil, "Comma-separated list of API names to include")
-	f.StringSlice("blacklist", nil, "Comma-separated list of API names to exclude")
-
-	f.Bool("example", false, "Print an example YAML config file to stdout and skip authentication step")
-
-	// hidden flags with defaults
-	f.String("visibility", "public", "(hidden) Filter by index visibility")
-	f.String("gate", "General-Availability", "(hidden) Filter by release gate")
-
-	_ = f.MarkHidden("visibility")
-	_ = f.MarkHidden("gate")
+	_ = cmd.Command.Flags().MarkHidden("visibility")
+	_ = cmd.Command.Flags().MarkHidden("gate")
 }
