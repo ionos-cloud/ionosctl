@@ -98,9 +98,17 @@ ionosctl endpoints generate --version=v1 \
 				if err != nil {
 					return fmt.Errorf("could not write config to stdout: %w", err)
 				}
+
+				return nil // stop here
 			}
 
-			// else,write to config file
+			// write config to file
+			err = cfg.WriteYAML()
+			if err != nil {
+				return fmt.Errorf("could not write config to file: %w", err)
+			}
+
+			fmt.Fprintf(c.Command.Command.OutOrStdout(), "Config file generated at %s\n", configgen.Location())
 			return nil
 		},
 	}
@@ -123,4 +131,69 @@ ionosctl endpoints generate --version=v1 \
 
 func login() string {
 	return ""
+}
+
+var (
+	FlagCustomNames   = "custom-names"
+	FlagFilterVersion = "filter-version"
+	FlagWhitelist     = "whitelist"
+	FlagBlacklist     = "blacklist"
+	FlagExample       = "example"
+	FlagVisibility    = "filter-visibility"
+	FlagGate          = "filter-gate"
+
+	FlagSettingsVersion = "version"
+	FlagSettingsProfile = "profile-name"
+	FlagSettingsEnv     = "environment"
+)
+
+func addLoginFlags(cmd *core.Command) {
+	cmd.AddBoolFlag(FlagExample, "", false, "Print an example YAML config file to stdout and skip authentication step")
+
+	cmd.AddStringFlag(constants.ArgUser, "", "", "Username to authenticate with. Will be used to generate a token")
+	cmd.AddStringFlag(constants.ArgPassword, constants.ArgPasswordShort, "", "Password to authenticate with. Will be used to generate a token")
+	cmd.AddStringFlag(constants.ArgToken, constants.ArgTokenShort, "", "Token to authenticate with. If used, will be saved to the config file without generating a new token. Note: mutually exclusive with --user and --password")
+	cmd.AddBoolFlag(constants.FlagSkipVerify, "", false, "Forcefully write the provided token to the config file without verifying if it is valid. Note: --token is required")
+}
+
+func addProfileFlags(cmd *core.Command) {
+	cmd.AddStringFlag(FlagSettingsProfile, "", "user", "Name of the profile to use")
+	cmd.AddStringFlag(FlagSettingsEnv, "", "prod", "Environment to use")
+	cmd.AddStringFlag(FlagSettingsVersion, "", "1.0", "Version of the config file to use")
+}
+
+func addFilterFlags(cmd *core.Command) {
+	cmd.AddStringToStringFlag(FlagCustomNames, "", map[string]string{
+		"apigateway":                "apigateway",
+		"authentication":            "auth",
+		"certificatemanager":        "cert",
+		"cloud":                     "compute",
+		"object‑storage":            "objectstorage",
+		"object‑storage‑management": "objectstoragemanagement",
+		"mongodb":                   "mongo",
+		"postgresql":                "psql",
+		"mariadb":                   "mariadb",
+		//
+		// These are currently the same as the spec name
+		// but we can override them here if needed
+		// "cdn":                       "cdn",
+		// "containerregistry":         "containerregistry",
+		// "dataplatform":              "dataplatform",
+		// "dns":                       "dns",
+		// "kafka":                     "kafka",
+		// "logging":                   "logging",
+		// "monitoring":                "monitoring",
+		// "nfs":                       "nfs",
+		// "vmautoscaling":             "vmautoscaling",
+		// "vpn":                       "vpn",
+	},
+		"Define custom names for each spec")
+	cmd.AddStringFlag(FlagFilterVersion, "", "", "Filter by spec version (e.g. v1)")
+	cmd.AddStringSliceFlag(FlagWhitelist, "", []string{}, "Comma-separated list of API names to include")
+	cmd.AddStringSliceFlag(FlagBlacklist, "", []string{}, "Comma-separated list of API names to exclude")
+	cmd.AddStringFlag(FlagVisibility, "", "public", "(hidden) Filter by index visibility")
+	cmd.AddStringFlag(FlagGate, "", "General-Availability", "(hidden) Filter by release gate")
+
+	_ = cmd.Command.Flags().MarkHidden(FlagVisibility)
+	_ = cmd.Command.Flags().MarkHidden(FlagGate)
 }

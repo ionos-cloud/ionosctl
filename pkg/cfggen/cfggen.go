@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"strconv"
 	"strings"
 
 	"gopkg.in/yaml.v3"
@@ -150,7 +151,23 @@ func GenerateConfig(settings ProfileSettings, opts Filters) ([]byte, error) {
 		return nil, fmt.Errorf("could not encode YAML: %w", err)
 	}
 
-	return []byte(out.String()), nil
+func (c *Config) WriteYAML() error {
+	data, err := c.ToBytesYAML()
+	if err != nil {
+		return fmt.Errorf("could not convert config to bytes: %w", err)
+	}
+
+	f, err := configFileWriter()
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+	_, err = f.Write(data)
+	if err != nil {
+		return fmt.Errorf("could not write config to file: %w", err)
+	}
+
+	return nil
 }
 
 func filterPages(pages []indexPage, opts Filters) []indexPage {
