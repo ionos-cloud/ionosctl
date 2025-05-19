@@ -11,14 +11,12 @@ import (
 	"time"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
-	configgen "github.com/ionos-cloud/ionosctl/v6/internal/config"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
-	"github.com/ionos-cloud/ionosctl/v6/pkg/confirm"
+	configgen "github.com/ionos-cloud/ionosctl/v6/pkg/cfggen"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/pointer"
 	"github.com/spf13/viper"
 	"golang.org/x/term"
-	"gopkg.in/yaml.v3"
 )
 
 func Login() *core.Command {
@@ -35,8 +33,8 @@ You can filter by version (--filter-version), whitelist (--whitelist) or blackli
 and customize the names of the APIs in the config file using --custom-names.
 
 There are three ways you can authenticate with the IONOS Cloud APIs:
-  1. Interactive mode: Prompts for username and password, and generates a token that will be saved in the config file.
-  2. Use the '--user' and '--password' flags: Used to generate a token that will be saved in the config file.
+  1. Interactive mode: Just type 'ionosctl login' and you'll be prompted to enter your username and password.
+  2. Use the '--user' and '--password' flags: Enter your credentials in the command.
   3. Use the '--token' flag: Provide an authentication token.
 Notes:
   - If using '--example', the authentication step is skipped
@@ -51,31 +49,15 @@ ionosctl endpoints generate --filter-version=v1 \
 
 # Specify a token, a config version, a custom profile name, and a custom environment
 ionosctl config login --token $IONOS_TOKEN \
-  --version=1.1 --profile-name=my-custom-profile --environment=dev
+  --version=v1 --profile=my-custom-profile --environment=dev
 `,
 		PreCmdRun: func(c *core.PreCommandConfig) error {
-			c.Command.Command.MarkFlagsMutuallyExclusive(constants.ArgToken, constants.ArgPassword)
-
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
-			printExample, err := c.Command.Command.Flags().GetBool(FlagExample)
-			if err != nil {
-				return fmt.Errorf("could not get flag %s: %w", FlagExample, err)
-			}
-
-			configPath := viper.GetString(constants.ArgConfig)
-
-			// if exists, prompt to overwrite with --force override
-			if _, err := os.Stat(configPath); !printExample && err == nil {
-				yes := confirm.FAsk(os.Stdin, fmt.Sprintf("Config file already exists at %s. Do you want to replace it", configPath), viper.GetBool(constants.ArgForce))
-				if !yes {
-					return fmt.Errorf(confirm.UserDenied)
-				}
-			}
-
 			token := "<token>"
-			if !printExample {
+			if !viper.GetBool(core.GetFlagName(c.NS, FlagExample)) {
+				fmt.Println("No example")
 				var err error
 				token, err = getToken(c)
 				if err != nil {
@@ -84,103 +66,67 @@ ionosctl config login --token $IONOS_TOKEN \
 			}
 
 			// build filter options
-			customNames, err := c.Command.Command.Flags().GetStringToString(FlagCustomNames)
-			if err != nil {
-				return fmt.Errorf("could not get flag %s: %w", FlagCustomNames, err)
-			}
 			opts := configgen.Filters{
-				CustomNames: customNames,
+				CustomNames: viper.GetStringMapString(core.GetFlagName(c.NS, FlagCustomNames)),
 			}
 
-			profileName, err := c.Command.Command.Flags().GetString(FlagSettingsProfile)
-			if err != nil {
-				return fmt.Errorf("could not get flag %s: %w", FlagSettingsProfile, err)
-			}
-			env, err := c.Command.Command.Flags().GetString(FlagSettingsEnv)
-			if err != nil {
-				return fmt.Errorf("could not get flag %s: %w", FlagSettingsEnv, err)
-			}
-			version, err := c.Command.Command.Flags().GetFloat64(FlagSettingsVersion)
-			if err != nil {
-				return fmt.Errorf("could not get flag %s: %w", FlagSettingsVersion, err)
-			}
 			settings := configgen.ProfileSettings{
 				Token:       token,
-				ProfileName: profileName,
-				Environment: env,
-				Version:     version,
+				ProfileName: viper.GetString(core.GetFlagName(c.NS, FlagSettingsProfile)),
+				Environment: viper.GetString(core.GetFlagName(c.NS, FlagSettingsEnv)),
+				Version:     viper.GetString(core.GetFlagName(c.NS, FlagSettingsVersion)),
 			}
 
 			// apply version filter if provided
-			filterVersion, err := c.Command.Command.Flags().GetString(FlagFilterVersion)
-			if err != nil && filterVersion != "" {
-				opts.Version = pointer.From(filterVersion)
+			if viper.GetString(core.GetFlagName(c.NS, FlagFilterVersion)) != "" {
+				opts.Version = pointer.From(viper.GetString(core.GetFlagName(c.NS, FlagFilterVersion)))
 			}
 
 			// always apply hidden filters (defaults set above)
-			filterVisibility, _ := c.Command.Command.Flags().GetString(FlagVisibility)
-			filterGate, _ := c.Command.Command.Flags().GetString(FlagGate)
-			if filterVisibility != "" {
-				opts.Visibility = pointer.From(filterVisibility)
-			}
-			if filterGate != "" {
-				opts.Gate = pointer.From(filterGate)
-			}
+			opts.Visibility = pointer.From(viper.GetString(core.GetFlagName(c.NS, FlagVisibility)))
+			opts.Gate = pointer.From(viper.GetString(core.GetFlagName(c.NS, FlagGate)))
 
 			// apply whitelist only if flag passed
-			filterWhitelist, _ := c.Command.Command.Flags().GetStringSlice(FlagWhitelist)
-			if len(filterWhitelist) > 0 {
+			if len(viper.GetStringSlice(core.GetFlagName(c.NS, FlagWhitelist))) > 0 {
 				opts.Whitelist = make(map[string]bool)
-				for _, name := range filterWhitelist {
+				for _, name := range viper.GetStringSlice(core.GetFlagName(c.NS, FlagWhitelist)) {
 					opts.Whitelist[name] = true
 				}
 			}
 			// apply blacklist only if flag passed
-			filterBlacklist, _ := c.Command.Command.Flags().GetStringSlice(FlagBlacklist)
-			if len(filterBlacklist) > 0 {
+			if len(viper.GetStringSlice(core.GetFlagName(c.NS, FlagBlacklist))) > 0 {
 				opts.Blacklist = make(map[string]bool)
-				for _, name := range filterBlacklist {
+				for _, name := range viper.GetStringSlice(core.GetFlagName(c.NS, FlagBlacklist)) {
 					opts.Blacklist[name] = true
 				}
 			}
 
-			done := make(chan struct{})
-			if !printExample {
-				go spinner(c.Command.Command.ErrOrStderr(), done)
-			}
-
 			// generate config
-			cfg, err := configgen.NewFromIndex(settings, opts)
+			cfg, err := configgen.GenerateConfig(settings, opts)
 			if err != nil {
-				close(done)
 				return fmt.Errorf("could not generate config: %w", err)
 			}
-			close(done)
 
-			// marshal to YAML
-			outBytes, err := yaml.Marshal(cfg)
-			if err != nil {
-				return fmt.Errorf("could not marshal config to YAML: %w", err)
-			}
-
-			if printExample {
-				// just print the YAML to stdout
-				if _, err := c.Command.Command.OutOrStdout().Write(outBytes); err != nil {
+			if viper.GetBool(core.GetFlagName(c.NS, FlagExample)) {
+				bytes, err := cfg.ToBytesYAML()
+				if err != nil {
+					return fmt.Errorf("could not convert config to bytes: %w", err)
+				}
+				_, err = c.Command.Command.OutOrStdout().Write(bytes)
+				if err != nil {
 					return fmt.Errorf("could not write config to stdout: %w", err)
 				}
-				return nil
+
+				return nil // stop here
 			}
 
-			if err := os.MkdirAll(filepath.Dir(configPath), 0o700); err != nil {
-				return fmt.Errorf("could not create config directory: %w", err)
+			// write config to file
+			err = cfg.WriteYAML()
+			if err != nil {
+				return fmt.Errorf("could not write config to file: %w", err)
 			}
 
-			// write the file with owner‑only permissions
-			if err := os.WriteFile(configPath, outBytes, 0o600); err != nil {
-				return fmt.Errorf("could not write config to file %s: %w", configPath, err)
-			}
-
-			fmt.Fprintf(c.Command.Command.OutOrStdout(), "Config file generated at %s\n", configPath)
+			fmt.Fprintf(c.Command.Command.OutOrStdout(), "Config file generated at %s\n", configgen.Location())
 			return nil
 		},
 	})
@@ -196,17 +142,14 @@ ionosctl config login --token $IONOS_TOKEN \
 }
 
 func getToken(c *core.CommandConfig) (string, error) {
-	token, err := c.Command.Command.Flags().GetString(constants.ArgToken)
-	if err != nil {
-		return "", fmt.Errorf("could not get flag %s: %w", constants.ArgToken, err)
-	}
-	if token != "" {
-		return token, nil
+	if viper.IsSet(core.GetFlagName(c.NS, constants.ArgToken)) {
+		return viper.GetString(core.GetFlagName(c.NS, constants.ArgToken)), nil
 	}
 
+	// can't user viper to get here, because it would also look at USER env var value
 	username, _ := c.Command.Command.Flags().GetString(constants.ArgUser)
 	if username == "" {
-		_, _ = fmt.Fprintln(c.Command.Command.OutOrStdout(), "Enter your username: ")
+		fmt.Fprintln(c.Command.Command.OutOrStdout(), "Enter your username: ")
 		reader := bufio.NewReader(c.Command.Command.InOrStdin())
 		var err error
 		username, err = reader.ReadString('\n')
@@ -216,9 +159,9 @@ func getToken(c *core.CommandConfig) (string, error) {
 		username = strings.TrimSpace(username) // remove trailing newline
 	}
 
-	password, _ := c.Command.Command.Flags().GetString(constants.ArgPassword)
+	password := viper.GetString(core.GetFlagName(c.NS, constants.ArgPassword))
 	if password == "" {
-		_, _ = fmt.Fprintln(c.Command.Command.OutOrStdout(), "Enter your password: ")
+		fmt.Fprintln(c.Command.Command.OutOrStdout(), "Enter your password: ")
 		if file, ok := c.Command.Command.InOrStdin().(*os.File); ok {
 			bytePassword, err := term.ReadPassword(int(file.Fd()))
 			if err != nil {
@@ -266,7 +209,7 @@ func addLoginFlags(cmd *core.Command) {
 func addProfileFlags(cmd *core.Command) {
 	cmd.AddStringFlag(FlagSettingsProfile, "", "user", "Name of the profile to use")
 	cmd.AddStringFlag(FlagSettingsEnv, "", "prod", "Environment to use")
-	cmd.AddFloat64Flag(FlagSettingsVersion, "", 1.0, "Version of the config file to use")
+	cmd.AddStringFlag(FlagSettingsVersion, "", "1.0", "Version of the config file to use")
 }
 
 func addFilterFlags(cmd *core.Command) {
@@ -297,40 +240,12 @@ func addFilterFlags(cmd *core.Command) {
 		// "vpn":                       "vpn",
 	},
 		"Define custom names for each spec")
-	cmd.AddStringFlag(FlagFilterVersion, "", "", "Filter by major spec version (e.g. v1)")
+	cmd.AddStringFlag(FlagFilterVersion, "", "", "Filter by spec version (e.g. v1)")
 	cmd.AddStringSliceFlag(FlagWhitelist, "", []string{}, "Comma-separated list of API names to include")
 	cmd.AddStringSliceFlag(FlagBlacklist, "", []string{}, "Comma-separated list of API names to exclude")
 	cmd.AddStringFlag(FlagVisibility, "", "public", "(hidden) Filter by index visibility")
-	cmd.AddStringFlag(FlagGate, "", "", "(hidden) Filter by release gate")
+	cmd.AddStringFlag(FlagGate, "", "General-Availability", "(hidden) Filter by release gate")
 
 	_ = cmd.Command.Flags().MarkHidden(FlagVisibility)
 	_ = cmd.Command.Flags().MarkHidden(FlagGate)
-}
-
-// spinner displays a loading spinner until the done channel is closed.
-func spinner(out io.Writer, done <-chan struct{}) {
-	spinChars := []rune{'|', '/', '-', '\\'}
-	i := 0
-
-	// In some cases, the generation takes a short amount of time, in which case don't pollute the output with a spinner right away
-	time.Sleep(250 * time.Millisecond)
-	// if done already closed, don't start the spinner
-	select {
-	case <-done:
-		return
-	default:
-		// continue with spinner
-	}
-
-	for {
-		select {
-		case <-done:
-			_, _ = fmt.Fprint(out, "\u001B[2K\r")
-			return
-		default:
-			_, _ = fmt.Fprintf(out, "\u001B[2K%c\r", spinChars[i%len(spinChars)])
-			time.Sleep(100 * time.Millisecond)
-			i++
-		}
-	}
 }

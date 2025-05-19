@@ -37,7 +37,7 @@ List all Dataplatform Cluster versions, including deprecated ones. To view the l
 ## Options
 
 ```text
-  -u, --api-url string   Override default host URL. Preferred over the config file override 'dataplatform' and env var 'IONOS_API_URL' (default "https://api.ionos.com")
+  -u, --api-url string   Override default host url (default "https://api.ionos.com")
   -c, --config string    Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -f, --force            Force command to execute without user input
   -h, --help             Print usage
