@@ -33,6 +33,14 @@ type ProfileSettings struct {
 	Environment string // default: 'prod'
 }
 
+// Config structure for YAML output
+type Config struct {
+	Version        string        `yaml:"version"`
+	CurrentProfile string        `yaml:"currentProfile"`
+	Profiles       []Profile     `yaml:"profiles"`
+	Environments   []Environment `yaml:"environments"`
+}
+
 // indexPage represents one entry in private-index.json
 type indexPage struct {
 	Name       string `json:"name"`
@@ -51,14 +59,6 @@ type indexFile struct {
 type serverRaw struct {
 	URL         string `yaml:"url"`
 	Description string `yaml:"description,omitempty"`
-}
-
-// Config structure for YAML output
-type Config struct {
-	Version        string        `yaml:"version"`
-	CurrentProfile string        `yaml:"currentProfile"`
-	Profiles       []Profile     `yaml:"profiles"`
-	Environments   []Environment `yaml:"environments"`
 }
 
 type Profile struct {
