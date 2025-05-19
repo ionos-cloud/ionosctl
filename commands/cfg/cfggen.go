@@ -15,7 +15,7 @@ func GenCfgCmd() *core.Command {
 	cmd := core.NewCommand(context.Background(), nil, core.CommandBuilder{
 		Namespace: "config",
 		Resource:  "config",
-		Verb:      "login",
+		Verb:      "cfggen",
 		ShortDesc: "Use credentials to generate a config file in `ionosctl cfg location`, or use '--example' to generate a sample endpoints YAML config",
 		LongDesc: `Generate a YAML file aggregating all product endpoint information at 'ionosctl cfg location'
 using the public OpenAPI index.
@@ -52,7 +52,6 @@ ionosctl config login --token $IONOS_TOKEN \
 			if !viper.GetBool(core.GetFlagName(c.NS, FlagExample)) {
 				token = getToken()
 			}
-			_ = token
 
 			// build filter options
 			opts := configgen.Filters{
@@ -107,10 +106,15 @@ ionosctl config login --token $IONOS_TOKEN \
 				}
 			}
 
-			// else,write to config file
-			return nil
+			// write config to file
+			path := viper.GetString(core.GetFlagName(c.NS, constants.ArgConfig))
+
 		},
 	})
+
+	addProfileFlags(cmd)
+	addLoginFlags(cmd)
+	addFilterFlags(cmd)
 
 	cmd.Command.SilenceUsage = true
 	cmd.Command.Flags().SortFlags = false
@@ -131,7 +135,7 @@ var (
 	FlagVisibility    = "filter-visibility"
 	FlagGate          = "filter-gate"
 
-	FlagSettingsVersion = "config-version"
+	FlagSettingsVersion = "version"
 	FlagSettingsProfile = "profile-name"
 	FlagSettingsEnv     = "environment"
 )
