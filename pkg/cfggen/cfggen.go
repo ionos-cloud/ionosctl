@@ -241,18 +241,18 @@ func compareVersions(v1, v2 string) bool {
 func loadIndex() (*indexFile, error) {
 	resp, err := http.Get(indexURL)
 	if err != nil {
-		return nil, fmt.Errorf("fetch index: %w", err)
+		return nil, fmt.Errorf("could not fetch index: %w", err)
 	}
 	defer resp.Body.Close()
 
 	data, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, fmt.Errorf("read index body: %w", err)
+		return nil, fmt.Errorf("could not read index body: %w", err)
 	}
 
 	var idx indexFile
 	if err := json.Unmarshal(data, &idx); err != nil {
-		return nil, fmt.Errorf("parse index JSON: %w", err)
+		return nil, fmt.Errorf("could not parse index JSON: %w", err)
 	}
 	return &idx, nil
 }
@@ -261,20 +261,20 @@ func loadIndex() (*indexFile, error) {
 func loadSpecServers(urlStr string) ([]serverRaw, error) {
 	resp, err := http.Get(urlStr)
 	if err != nil {
-		return nil, fmt.Errorf("fetch spec: %w", err)
+		return nil, fmt.Errorf("could not fetch spec: %w", err)
 	}
 	defer resp.Body.Close()
 
 	data, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, fmt.Errorf("read spec body: %w", err)
+		return nil, fmt.Errorf("could not read spec body: %w", err)
 	}
 
 	var wrapper struct {
 		Servers []serverRaw `yaml:"servers"`
 	}
 	if err := yaml.Unmarshal(data, &wrapper); err != nil {
-		return nil, fmt.Errorf("parse spec YAML: %w", err)
+		return nil, fmt.Errorf("could not parse spec YAML: %w", err)
 	}
 	return wrapper.Servers, nil
 }
