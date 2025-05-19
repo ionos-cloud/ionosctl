@@ -1,5 +1,5 @@
 ---
-description: "Generate sample endpoints YAML config"
+description: "Use credentials to generate a config file in `ionosctl cfg location`, or use '--example' to generate a sample endpoints YAML config"
 ---
 
 # Cfggen
@@ -12,38 +12,60 @@ ionosctl cfggen [flags]
 
 ## Description
 
-Generate a YAML file aggregating all product endpoint information
-from the public OpenAPI index. This command prints the config to stdout.
+Generate a YAML file aggregating all product endpoint information at 'ionosctl cfg location' using the public OpenAPI index.
 
-You can filter by version or specific API names.
+If using '--example', this command prints the config to stdout without any authentication step.
+
+You can filter by version (--filter-version), whitelist (--whitelist) or blacklist (--blacklist) specific APIs, 
+and customize the names of the APIs in the config file using --custom-names.
+
+There are three ways you can authenticate with the IONOS Cloud APIs:
+  1. Interactive mode: Just type 'ionosctl login' and you'll be prompted to enter your username and password.
+  2. Use the '--user' and '--password' flags: Enter your credentials in the command.
+  3. Use the '--token' flag: Provide an authentication token.
+Notes:
+  - If using '--example', the authentication step is skipped
 
 
 ## Options
 
 ```text
-  -u, --api-url string      Override default host url (default "https://api.ionos.com")
-      --blacklist strings   Comma-separated list of API names to exclude
-  -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
-  -f, --force               Force command to execute without user input
-  -h, --help                Print usage
-      --no-headers          Don't print table headers when table output is used
-  -o, --output string       Desired output format [text|json|api-json] (default "text")
-  -q, --quiet               Quiet output
-  -v, --verbose             Print step-by-step process when running command
-      --version string      Filter by spec version (e.g. v1)
-      --whitelist strings   Comma-separated list of API names to include
+  -u, --api-url string                Override default host url (default "https://api.ionos.com")
+      --blacklist strings             Comma-separated list of API names to exclude
+  -c, --config string                 Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
+      --custom-names stringToString   Define custom names for each spec (default [object‑storage‑management=objectstoragemanagement,mongodb=mongo,postgresql=psql,authentication=auth,certificatemanager=cert,cloud=compute,object‑storage=objectstorage])
+      --environment string            Environment to use (default "prod")
+      --example                       Print an example YAML config file to stdout and skip authentication step
+      --filter-version string         Filter by spec version (e.g. v1)
+  -f, --force                         Force command to execute without user input
+  -h, --help                          Print usage
+      --no-headers                    Don't print table headers when table output is used
+  -o, --output string                 Desired output format [text|json|api-json] (default "text")
+  -p, --password string               Password to authenticate with. Will be used to generate a token
+      --profile-name string           Name of the profile to use (default "user")
+  -q, --quiet                         Quiet output
+      --skip-verify                   Forcefully write the provided token to the config file without verifying if it is valid. Note: --token is required
+  -t, --token string                  Token to authenticate with. If used, will be saved directly to the config file. Note: mutually exclusive with --user and --password
+      --user string                   Username to authenticate with. Will be used to generate a token
+  -v, --verbose                       Print step-by-step process when running command
+      --version string                Version of the config file to use (default "1.0")
+      --whitelist strings             Comma-separated list of API names to include
 ```
 
 ## Examples
 
 ```text
 
-# Generate all v1 public GA endpoints
-ionosctl endpoints generate --version=v1
+# Print an example YAML configuration file to stdout
+ionosctl config login --example
 
-# Include only vpn and psql APIs, exclude billing
-ionosctl endpoints generate --version=v1 \
+# Login interactively, and generate a YAML config file with filters, to 'ionosctl config location'
+ionosctl endpoints generate --filter-version=v1 \
   --whitelist=vpn,psql --blacklist=billing
+
+# Specify a token, a config version, a custom profile name, and a custom environment
+ionosctl config login --token $IONOS_TOKEN \
+  --version=v1 --profile=my-custom-profile --environment=dev
 
 ```
 

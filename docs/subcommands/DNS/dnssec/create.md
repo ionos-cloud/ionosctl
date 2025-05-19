@@ -35,7 +35,7 @@ Enable DNSSEC keys and create associated DNSKEY records for your DNS zone
   -u, --api-url string         Override default host URL (default "https://dns.de-fra.ionos.com")
       --cols strings           Set of columns to be printed on output 
                                Available columns: [Id KeyTag DigestAlgorithmMnemonic Digest Validity Flags PubKey ComposedKeyData Algorithm KskBits ZskBits NsecMode Nsec3Iterations Nsec3SaltBits] (default [Id,KeyTag,DigestAlgorithmMnemonic,Digest,Validity])
-  -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+  -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -f, --force                  Force command to execute without user input
   -h, --help                   Print usage
       --ksk-bits int           Key signing key length in bits. kskBits >= zskBits: [1024/2048/4096] (default 1024)

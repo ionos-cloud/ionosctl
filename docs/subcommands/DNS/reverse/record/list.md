@@ -34,7 +34,7 @@ Retrieve all reverse records
   -u, --api-url string      Override default host URL (default "https://dns.de-fra.ionos.com")
       --cols strings        Set of columns to be printed on output 
                             Available columns: [Id Name IP Description] (default [Id,Name,IP,Description])
-  -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+  -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -f, --force               Force command to execute without user input
   -h, --help                Print usage
   -i, --ips string          Optional filter for the IP address of the reverse record

@@ -41,7 +41,7 @@ List all MariaDB Backups, or optionally provide a Cluster ID to list those of a 
   -i, --cluster-id string   Optionally limit shown backups to those of a certain cluster (required)
       --cols strings        Set of columns to be printed on output 
                             Available columns: [BackupId ClusterId Size Items] (default [BackupId,ClusterId,Size,Items])
-  -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+  -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -f, --force               Force command to execute without user input
   -h, --help                Print usage
   -l, --location string     Location of the resource to operate on. Can be one of: de/txl, de/fra, es/vit, fr/par, gb/lhr, us/ewr, us/las, us/mci

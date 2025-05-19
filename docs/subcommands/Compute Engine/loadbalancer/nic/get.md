@@ -46,7 +46,7 @@ Required values to run the command:
   -u, --api-url string           Override default host url (default "https://api.ionos.com")
       --cols strings             Set of columns to be printed on output 
                                  Available columns: [NicId Name Dhcp LanId Ips IPv6Ips State FirewallActive FirewallType DeviceNumber PciSlot Mac DHCPv6 IPv6CidrBlock] (default [NicId,Name,Dhcp,LanId,Ips,IPv6Ips,State])
-  -c, --config string            Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+  -c, --config string            Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
       --datacenter-id string     The unique Data Center Id (required)
   -f, --force                    Force command to execute without user input
   -h, --help                     Print usage

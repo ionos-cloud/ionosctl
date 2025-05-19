@@ -34,7 +34,7 @@ Retrieve all distributions using pagination and optional filters
   -u, --api-url string      Override default host URL (default "https://cdn.de-fra.ionos.com")
       --cols strings        Set of columns to be printed on output 
                             Available columns: [Id Domain CertificateId State]
-  -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+  -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
       --domain string       Filter used to fetch only the records that contain specified domain.
   -f, --force               Force command to execute without user input
   -h, --help                Print usage

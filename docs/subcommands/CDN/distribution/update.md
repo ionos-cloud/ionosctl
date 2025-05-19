@@ -35,7 +35,7 @@ Partially modify a distribution's properties. This command uses a combination of
       --certificate-id string    The ID of the certificate
       --cols strings             Set of columns to be printed on output 
                                  Available columns: [Id Domain CertificateId State]
-  -c, --config string            Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+  -c, --config string            Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -i, --distribution-id string   The ID of the distribution you want to update (required)
       --domain string            The domain of the distribution
   -f, --force                    Force command to execute without user input

@@ -39,7 +39,7 @@ You can wait for the Request to be executed using `--wait-for-request` or `-w` o
       --check-timeout int    [Health Check] The maximum time in milliseconds to wait for a target to respond to a check. For target VMs with 'Check Interval' set, the lesser of the two  values is used once the TCP connection is established. (default 2000)
       --cols strings         Set of columns to be printed on output 
                              Available columns: [TargetGroupId Name Algorithm Protocol CheckTimeout CheckInterval Retries Path Method MatchType Response Regex Negate State] (default [TargetGroupId,Name,Algorithm,Protocol,CheckTimeout,CheckInterval,State])
-  -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+  -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -D, --depth int32          Controls the detail depth of the response objects. Max depth is 10.
   -f, --force                Force command to execute without user input
   -h, --help                 Print usage

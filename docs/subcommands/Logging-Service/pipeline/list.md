@@ -40,7 +40,7 @@ Retrieve logging pipelines
   -u, --api-url string    Override default host URL (default "https://logging.de-txl.ionos.com")
       --cols strings      Set of columns to be printed on output 
                           Available columns: [Id Name GrafanaAddress CreatedDate State] (default [Id,Name,GrafanaAddress,CreatedDate,State])
-  -c, --config string     Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+  -c, --config string     Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -f, --force             Force command to execute without user input
   -h, --help              Print usage
   -l, --location string   Location of the resource to operate on. Can be one of: de/txl, de/fra, gb/lhr, fr/par, es/vit

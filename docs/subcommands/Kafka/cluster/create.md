@@ -35,7 +35,7 @@ Create a kafka cluster. Wiki: https://docs.ionos.com/cloud/data-analytics/kafka/
       --broker-addresses strings   The list of broker addresses (required)
       --cols strings               Set of columns to be printed on output 
                                    Available columns: [Id Name Version Size DatacenterId LanId BrokerAddresses State]
-  -c, --config string              Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+  -c, --config string              Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
       --datacenter-id string       The ID of the datacenter (required)
   -f, --force                      Force command to execute without user input
   -h, --help                       Print usage

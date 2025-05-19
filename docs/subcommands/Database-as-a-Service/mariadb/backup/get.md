@@ -41,7 +41,7 @@ Get a MariaDB Backup
       --backup-id string   The ID of the Backup to be retrieved (required)
       --cols strings       Set of columns to be printed on output 
                            Available columns: [BackupId ClusterId Size Items] (default [BackupId,ClusterId,Size,Items])
-  -c, --config string      Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+  -c, --config string      Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -f, --force              Force command to execute without user input
   -h, --help               Print usage
   -l, --location string    Location of the resource to operate on. Can be one of: de/txl, de/fra, es/vit, fr/par, gb/lhr, us/ewr, us/las, us/mci

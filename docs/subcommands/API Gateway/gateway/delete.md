@@ -35,7 +35,7 @@ Delete a gateway
   -u, --api-url string      Override default host URL (default "https://apigateway.de-txl.ionos.com")
       --cols strings        Set of columns to be printed on output 
                             Available columns: [Id Name Logs Metrics Enable DomainName CertificateId HttpMethods HttpCodes Override PublicEndpoint Status]
-  -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+  -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -f, --force               Force command to execute without user input
   -i, --gateway-id string   The ID of the gateway. Required or -a
   -h, --help                Print usage
