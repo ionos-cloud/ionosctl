@@ -40,7 +40,7 @@ Create a WireGuard Gateway
   -u, --api-url string            Override default host URL (default "https://vpn.de-fra.ionos.com")
       --cols strings              Set of columns to be printed on output 
                                   Available columns: [ID Name PublicKey Description GatewayIP InterfaceIPv4 InterfaceIPv6 DatacenterId LanId ConnectionIPv4 ConnectionIPv6 InterfaceIP ListenPort Status]
-  -c, --config string             Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+  -c, --config string             Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
       --connection-ip string      A LAN IPv4 or IPv6 address in CIDR notation that will be assigned to the VPN Gateway (required)
       --datacenter-id string      The datacenter to connect your VPN Gateway to (required)
       --description string        Description of the WireGuard Gateway

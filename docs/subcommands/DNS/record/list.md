@@ -35,7 +35,7 @@ Retrieve all records from either a primary or secondary zone
       --cols strings            Set of columns to be printed on output 
                                 Available columns for primary zones: [Id Name Content Type Enabled FQDN ZoneId ZoneName State]
                                 Available columns for secondary zones: [Id Name Content Type Enabled FQDN ZoneId ZoneName RootName]
-  -c, --config string           Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+  -c, --config string           Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -f, --force                   Force command to execute without user input
   -h, --help                    Print usage
   -l, --location string         Location of the resource to operate on. Can be one of: de/fra

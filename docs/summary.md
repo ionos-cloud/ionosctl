@@ -65,7 +65,6 @@
             * [get](subcommands%2FCDN%2Fdistribution%2Froutingrules%2Fget.md)
         * [update](subcommands%2FCDN%2Fdistribution%2Fupdate.md)
 * CLI Setup
-    * [cfggen](subcommands%2FCLI%20Setup%2Fcfggen.md)
     * [location](subcommands%2FCLI%20Setup%2Flocation.md)
     * [login](subcommands%2FCLI%20Setup%2Flogin.md)
     * [logout](subcommands%2FCLI%20Setup%2Flogout.md)
@@ -160,6 +159,7 @@
             * [list](subcommands%2FCompute%20Engine%2Flocation%2Fcpu%2Flist.md)
         * [get](subcommands%2FCompute%20Engine%2Flocation%2Fget.md)
         * [list](subcommands%2FCompute%20Engine%2Flocation%2Flist.md)
+    * [login](subcommands%2FCompute%20Engine%2Flogin.md)
     * nic
         * [create](subcommands%2FCompute%20Engine%2Fnic%2Fcreate.md)
         * [delete](subcommands%2FCompute%20Engine%2Fnic%2Fdelete.md)

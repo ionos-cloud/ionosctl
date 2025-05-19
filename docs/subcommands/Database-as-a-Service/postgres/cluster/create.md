@@ -50,7 +50,7 @@ Required values to run command:
   -C, --cidr string               The IP and subnet for the cluster. Note the following unavailable IP ranges: 10.233.64.0/18, 10.233.0.0/18, 10.233.114.0/24. e.g.: 192.168.1.100/24 (required)
       --cols strings              Set of columns to be printed on output 
                                   Available columns: [ClusterId DisplayName Location State PostgresVersion Instances Ram Cores StorageSize StorageType DatacenterId LanId Cidr MaintenanceWindow SynchronizationMode BackupLocation] (default [ClusterId,DisplayName,Location,DatacenterId,LanId,Cidr,Instances,State])
-  -c, --config string             Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+  -c, --config string             Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
       --cores int                 The number of CPU cores per instance. Minimum: 1 (default 2)
   -D, --datacenter-id string      The unique ID of the Datacenter to connect to your cluster (required)
   -P, --db-password string        Password for the initial postgres user (required)

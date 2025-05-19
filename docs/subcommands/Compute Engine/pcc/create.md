@@ -34,7 +34,7 @@ Use this command to create a Cross-Connect. You can specify the name and the des
   -u, --api-url string       Override default host url (default "https://api.ionos.com")
       --cols strings         Set of columns to be printed on output 
                              Available columns: [PccId Name Description State] (default [PccId,Name,Description,State])
-  -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+  -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -D, --depth int32          Controls the detail depth of the response objects. Max depth is 10.
   -d, --description string   The description for the Cross-Connect
   -f, --force                Force command to execute without user input

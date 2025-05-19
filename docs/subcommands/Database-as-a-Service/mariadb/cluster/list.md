@@ -40,7 +40,7 @@ Use this command to retrieve a list of MariaDB Clusters provisioned under your a
   -u, --api-url string      Override default host URL (default "https://mariadb.de-txl.ionos.com")
       --cols strings        Set of columns to be printed on output 
                             Available columns: [ClusterId Name DNS Instances Version State Cores RAM StorageSize MaintenanceDay MaintenanceTime] (default [ClusterId,Name,DNS,Instances,Version,State])
-  -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+  -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -f, --force               Force command to execute without user input
   -h, --help                Print usage
   -l, --location string     Location of the resource to operate on. Can be one of: de/txl, de/fra, es/vit, fr/par, gb/lhr, us/ewr, us/las, us/mci

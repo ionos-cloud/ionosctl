@@ -52,7 +52,7 @@ Required values to run command:
       --cdrom-id string            The unique Cdrom Id for the BootCdrom. The Cdrom needs to be already attached to the Server
       --cols strings               Set of columns to be printed on output 
                                    Available columns: [ServerId DatacenterId Name AvailabilityZone Cores Ram CpuFamily VmState State TemplateId Type BootCdromId BootVolumeId] (default [ServerId,Name,Type,AvailabilityZone,Cores,Ram,CpuFamily,VmState,State])
-  -c, --config string              Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+  -c, --config string              Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
       --cores int                  The total number of cores for the Server, e.g. 4. Maximum: depends on contract resource limits (default 2)
       --cpu-family string          CPU Family of the Server
       --datacenter-id string       The unique Data Center Id (required)

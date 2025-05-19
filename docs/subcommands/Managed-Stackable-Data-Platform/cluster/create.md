@@ -40,7 +40,7 @@ The cluster will be provisioned in the datacenter matching the provided datacent
   -u, --api-url string            Override default host url (default "https://api.ionos.com")
       --cols strings              Set of columns to be printed on output 
                                   Available columns: [Id Name Version MaintenanceWindow DatacenterId State]
-  -c, --config string             Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+  -c, --config string             Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -i, --datacenter-id string      The ID of the connected datacenter (required)
   -f, --force                     Force command to execute without user input
   -h, --help                      Print usage

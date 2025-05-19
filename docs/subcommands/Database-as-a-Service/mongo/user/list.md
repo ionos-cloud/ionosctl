@@ -42,7 +42,7 @@ Retrieves a list of MongoDB users. You can either list users of a certain cluste
       --cluster-name string   When listing all users, you can optionally filter by partial-match cluster name
       --cols strings          Set of columns to be printed on output 
                               Available columns: [Username CreatedBy Roles]
-  -c, --config string         Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+  -c, --config string         Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -f, --force                 Force command to execute without user input
   -h, --help                  Print usage
   -M, --max-results int32     The maximum number of elements to return

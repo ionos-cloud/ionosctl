@@ -33,7 +33,7 @@ For `customdomains` command:
       --certificate-id string   The ID of the certificate to use for the distribution. (required)
       --cols strings            Set of columns to be printed on output 
                                 Available columns: [Id Name Logs Metrics Enable DomainName CertificateId HttpMethods HttpCodes Override PublicEndpoint Status]
-  -c, --config string           Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+  -c, --config string           Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -f, --force                   Force command to execute without user input
   -g, --gateway-id string       The ID of the gateway (required)
   -h, --help                    Print usage

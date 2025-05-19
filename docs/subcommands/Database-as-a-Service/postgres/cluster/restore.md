@@ -47,7 +47,7 @@ Required values to run command:
   -i, --cluster-id string      The unique ID of the Cluster (required)
       --cols strings           Set of columns to be printed on output 
                                Available columns: [ClusterId DisplayName Location State PostgresVersion Instances Ram Cores StorageSize StorageType DatacenterId LanId Cidr MaintenanceWindow SynchronizationMode BackupLocation] (default [ClusterId,DisplayName,Location,DatacenterId,LanId,Cidr,Instances,State])
-  -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+  -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -f, --force                  Force command to execute without user input
   -h, --help                   Print usage
       --no-headers             Don't print table headers when table output is used

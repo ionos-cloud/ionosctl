@@ -44,7 +44,7 @@ The following requests allows to alter the existing resources of the cluster
       --cluster-id string            The UUID of the cluster the nodepool belongs to
       --cols strings                 Set of columns to be printed on output 
                                      Available columns: [Id Name Nodes Cores CpuFamily Ram Storage MaintenanceWindow State AvailabilityZone Labels Annotations ClusterId]
-  -c, --config string                Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+  -c, --config string                Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -f, --force                        Force command to execute without user input
   -h, --help                         Print usage
   -L, --labels stringToString        Labels to set on a NodePool. It will overwrite the existing labels, if there are any. Use the following format: --labels KEY=VALUE,KEY=VALUE (default [])

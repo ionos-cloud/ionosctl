@@ -51,7 +51,7 @@ Required values to run command:
   -u, --api-url string                  Override default host url (default "https://api.ionos.com")
       --cols strings                    Set of columns to be printed on output 
                                         Available columns: [TargetIp TargetPort Weight Check CheckInterval Maintenance] (default [TargetIp,TargetPort,Weight,Check,CheckInterval,Maintenance])
-  -c, --config string                   Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+  -c, --config string                   Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
       --datacenter-id string            The unique Data Center Id (required)
   -D, --depth int32                     Controls the detail depth of the response objects. Max depth is 10.
   -f, --force                           Force command to execute without user input

@@ -41,7 +41,7 @@ Get a Mongo Cluster by ID
   -i, --cluster-id string   The unique ID of the cluster (required)
       --cols strings        Set of columns to be printed on output 
                             Available columns: [ClusterId Name Edition Type URL Instances Shards Health State MongoVersion MaintenanceWindow Location DatacenterId LanId Cidr TemplateId Cores RAM StorageSize StorageType]
-  -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+  -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -f, --force               Force command to execute without user input
   -h, --help                Print usage
       --no-headers          Don't print table headers when table output is used

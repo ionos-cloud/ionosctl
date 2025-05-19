@@ -45,7 +45,7 @@ The following requests allows to alter the existing resources, add or remove new
   -i, --cluster-id string            The UUID of the cluster the nodepool belongs to
       --cols strings                 Set of columns to be printed on output 
                                      Available columns: [Id Name Nodes Cores CpuFamily Ram Storage MaintenanceWindow State AvailabilityZone Labels Annotations ClusterId]
-  -c, --config string                Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+  -c, --config string                Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
       --cores int32                  The number of CPU cores per node
       --cpu-family string            A valid CPU family name or AUTO if the platform shall choose the best fitting option. Available CPU architectures can be retrieved from the datacenter resource
   -f, --force                        Force command to execute without user input

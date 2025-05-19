@@ -36,7 +36,7 @@ You can wait for the Request to be executed using `--wait-for-request` option.
   -u, --api-url string     Override default host url (default "https://api.ionos.com")
       --cols strings       Set of columns to be printed on output 
                            Available columns: [IpBlockId Name Location Size Ips State] (default [IpBlockId,Name,Location,Size,Ips,State])
-  -c, --config string      Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+  -c, --config string      Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -D, --depth int32        Controls the detail depth of the response objects. Max depth is 10.
   -f, --force              Force command to execute without user input
   -h, --help               Print usage

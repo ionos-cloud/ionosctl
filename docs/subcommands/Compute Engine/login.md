@@ -2,20 +2,12 @@
 description: "Use credentials to generate a config file in `ionosctl cfg location`, or use '--example' to generate a sample endpoints YAML config"
 ---
 
-# ConfigLogin
+# Login
 
 ## Usage
 
 ```text
-ionosctl config login [flags]
-```
-
-## Aliases
-
-For `config` command:
-
-```text
-[cfg]
+ionosctl login [flags]
 ```
 
 ## Description
@@ -41,7 +33,7 @@ Notes:
   -u, --api-url string                Override default host url (default "https://api.ionos.com")
       --blacklist strings             Comma-separated list of API names to exclude
   -c, --config string                 Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
-      --custom-names stringToString   Define custom names for each spec (default [object‑storage=objectstorage,object‑storage‑management=objectstoragemanagement,mongodb=mongo,postgresql=psql,authentication=auth,certificatemanager=cert,cloud=compute])
+      --custom-names stringToString   Define custom names for each spec (default [object‑storage‑management=objectstoragemanagement,mongodb=mongo,postgresql=psql,authentication=auth,certificatemanager=cert,cloud=compute,object‑storage=objectstorage])
       --environment string            Environment to use (default "prod")
       --example                       Print an example YAML config file to stdout and skip authentication step
       --filter-version string         Filter by spec version (e.g. v1)

@@ -42,7 +42,7 @@ Modifies the specified DataPlatformCluster by its distinct cluster ID. The field
   -i, --cluster-id string         The unique ID of the cluster (required)
       --cols strings              Set of columns to be printed on output 
                                   Available columns: [Id Name Version MaintenanceWindow DatacenterId State]
-  -c, --config string             Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+  -c, --config string             Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
       --datacenter-id string      The datacenter to which your cluster will be connected. Must be in the same location as the cluster (required)
   -f, --force                     Force command to execute without user input
   -h, --help                      Print usage
