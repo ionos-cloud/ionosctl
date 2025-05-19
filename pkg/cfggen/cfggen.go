@@ -6,7 +6,6 @@ import (
 	"io"
 	"net/http"
 	"net/url"
-	"os"
 	"strconv"
 	"strings"
 
@@ -162,14 +161,22 @@ func (c *Config) ToBytesYAML() ([]byte, error) {
 	return []byte(out.String()), nil
 }
 
-func (c *Config) ToFileYAML(path string) error {
+func (c *Config) WriteYAML() error {
 	data, err := c.ToBytesYAML()
 	if err != nil {
 		return fmt.Errorf("could not convert config to bytes: %w", err)
 	}
-	if err := os.WriteFile(path, data, 0644); err != nil {
+
+	f, err := configFileWriter()
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+	_, err = f.Write(data)
+	if err != nil {
 		return fmt.Errorf("could not write config to file: %w", err)
 	}
+
 	return nil
 }
 

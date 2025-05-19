@@ -197,7 +197,7 @@ const (
 
 // Defaults
 const (
-	DefaultConfigFileName = "/config.json"
+	DefaultConfigFileName = "config.yaml"
 	DefaultOutputFormat   = "text"
 	DefaultWait           = false
 	DefaultTimeoutSeconds = int(60)
