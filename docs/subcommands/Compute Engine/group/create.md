@@ -38,7 +38,7 @@ Use this command to create a new Group and set Group privileges. You can specify
   -u, --api-url string        Override default host url (default "https://api.ionos.com")
       --cols strings          Set of columns to be printed on output 
                               Available columns: [GroupId Name CreateDataCenter CreateSnapshot ReserveIp AccessActivityLog CreatePcc S3Privilege CreateBackupUnit CreateInternetAccess CreateK8s CreateFlowLog AccessAndManageMonitoring AccessAndManageCertificates AccessAndManageDns ManageDBaaS ManageRegistry ManageDataplatform] (default [GroupId,Name,CreateDataCenter,CreateSnapshot,CreatePcc,CreateBackupUnit,CreateInternetAccess,CreateK8s,ReserveIp])
-  -c, --config string         Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+  -c, --config string         Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
       --create-backup         The group will be able to manage Backup Units. E.g.: --create-backup=true, --create-backup=false
       --create-dc             The group will be allowed to create Data Centers. E.g.: --create-dc=true, --create-dc=false
       --create-flowlog        The group will be allowed to create Flow Logs. E.g.: --create-flowlog=true, --create-flowlog=false

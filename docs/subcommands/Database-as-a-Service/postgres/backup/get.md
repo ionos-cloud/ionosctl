@@ -45,7 +45,7 @@ Required values to run command:
   -i, --backup-id string   The unique ID of the Backup (required)
       --cols strings       Set of columns to be printed on output 
                            Available columns: [BackupId ClusterId Active CreatedDate EarliestRecoveryTargetTime Version State] (default [BackupId,ClusterId,CreatedDate,EarliestRecoveryTargetTime,Active,State])
-  -c, --config string      Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+  -c, --config string      Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -f, --force              Force command to execute without user input
   -h, --help               Print usage
       --no-headers         Don't print table headers when table output is used

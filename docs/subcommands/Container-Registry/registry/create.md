@@ -40,7 +40,7 @@ Create a registry to hold container images or OCI compliant artifacts
   -u, --api-url string                             Override default host url (default "https://api.ionos.com")
       --cols strings                               Set of columns to be printed on output 
                                                    Available columns: [RegistryId DisplayName Location Hostname VulnerabilityScanning GarbageCollectionDays GarbageCollectionTime State]
-  -c, --config string                              Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+  -c, --config string                              Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
   -f, --force                                      Force command to execute without user input
       --garbage-collection-schedule-days strings   Specify the garbage collection schedule days. Defaults to a random day during Mon-Fri, during the hours 10:00-16:00 (default Random (Mon-Fri 10:00-16:00))
       --garbage-collection-schedule-time string    Specify the garbage collection schedule time of day using RFC3339 format. i.e. "16:00:00Z". Defaults to a random day during Mon-Fri, during the hours 10:00-16:00 (default "Random (Mon-Fri 10:00-16:00)")
