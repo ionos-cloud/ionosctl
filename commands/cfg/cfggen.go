@@ -1,14 +1,19 @@
 package cfg
 
 import (
+	"bufio"
 	"context"
 	"fmt"
+	"os"
+	"strings"
 
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	configgen "github.com/ionos-cloud/ionosctl/v6/pkg/cfggen"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/pointer"
 	"github.com/spf13/viper"
+	"golang.org/x/term"
 )
 
 func GenCfgCmd() *core.Command {
@@ -50,7 +55,11 @@ ionosctl config login --token $IONOS_TOKEN \
 		CmdRun: func(c *core.CommandConfig) error {
 			token := "<token>"
 			if !viper.GetBool(core.GetFlagName(c.NS, FlagExample)) {
-				token = getToken()
+				var err error
+				token, err = getToken(c)
+				if err != nil {
+					return fmt.Errorf("could not retrieve token: %w", err)
+				}
 			}
 
 			// build filter options
@@ -129,8 +138,43 @@ ionosctl config login --token $IONOS_TOKEN \
 	return cmd
 }
 
-func getToken() string {
-	return ""
+func getToken(c *core.CommandConfig) (string, error) {
+	if viper.IsSet(core.GetFlagName(c.NS, constants.ArgToken)) {
+		return viper.GetString(core.GetFlagName(c.NS, constants.ArgToken)), nil
+	}
+
+	username := viper.GetString(core.GetFlagName(c.NS, constants.ArgUser))
+	if viper.IsSet(core.GetFlagName(c.NS, constants.ArgUser)) && username == "" {
+		fmt.Fprintln(c.Command.Command.OutOrStdout(), "Enter your username: ")
+		reader := bufio.NewReader(c.Command.Command.InOrStdin())
+		var err error
+		username, err = reader.ReadString('\n')
+		if err != nil {
+			return "", fmt.Errorf("failed reading username from set reader")
+		}
+		username = strings.TrimSpace(username) // remove trailing newline
+	}
+
+	password := viper.GetString(core.GetFlagName(c.NS, constants.ArgPassword))
+	if password == "" {
+		fmt.Fprintln(c.Command.Command.OutOrStdout(), "Enter your password: ")
+		if file, ok := c.Command.Command.InOrStdin().(*os.File); ok {
+			bytePassword, err := term.ReadPassword(int(file.Fd()))
+			if err != nil {
+				return "", fmt.Errorf("failed securely reading password from set file descriptor")
+			}
+			password = string(bytePassword)
+		} else {
+			return "", fmt.Errorf("the set input does not have a file descriptor (is it set to a terminal?)")
+		}
+	}
+
+	apiToken, _, err := client.Must().AuthClient.TokensApi.TokensGenerate(context.Background()).Execute()
+	if err != nil {
+		return "", fmt.Errorf("failed using username and password to generate a token: %w", err)
+	}
+
+	return *apiToken.Token, nil
 }
 
 var (
