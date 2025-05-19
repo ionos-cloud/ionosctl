@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"os"
 	"strconv"
 	"strings"
 
@@ -91,7 +92,7 @@ type Endpoint struct {
 }
 
 // GenerateConfig builds the endpoints.yaml content based on the index and OpenAPI specs.
-func GenerateConfig(settings ProfileSettings, opts Filters) ([]byte, error) {
+func GenerateConfig(settings ProfileSettings, opts Filters) (*Config, error) {
 	// check settings
 	if settings.Version == "" {
 		settings.Version = "1.0"
@@ -141,23 +142,35 @@ func GenerateConfig(settings ProfileSettings, opts Filters) ([]byte, error) {
 	}
 
 	// assemble config
-	cfg := Config{
+	return &Config{
 		Version:        settings.Version,
 		CurrentProfile: settings.ProfileName,
 		Profiles: []Profile{
 			{Name: settings.ProfileName, Environment: settings.Environment, Credentials: Credentials{Token: settings.Token}},
 		},
 		Environments: []Environment{env},
-	}
+	}, nil
+}
 
+func (c *Config) ToBytesYAML() ([]byte, error) {
 	var out strings.Builder
 	encoder := yaml.NewEncoder(&out)
 	encoder.SetIndent(2)
-	if err := encoder.Encode(cfg); err != nil {
+	if err := encoder.Encode(c); err != nil {
 		return nil, fmt.Errorf("could not encode YAML: %w", err)
 	}
-
 	return []byte(out.String()), nil
+}
+
+func (c *Config) ToFileYAML(path string) error {
+	data, err := c.ToBytesYAML()
+	if err != nil {
+		return fmt.Errorf("could not convert config to bytes: %w", err)
+	}
+	if err := os.WriteFile(path, data, 0644); err != nil {
+		return fmt.Errorf("could not write config to file: %w", err)
+	}
+	return nil
 }
 
 func filterPages(pages []indexPage, opts Filters) []indexPage {
