@@ -50,7 +50,7 @@ ionosctl endpoints generate --version=v1 \
 		RunE: func(cmd *cobra.Command, args []string) error {
 			token := "<token>"
 			if !printExample {
-				token = login(cmd)
+				token = getToken(cmd)
 			}
 			_ = token
 
@@ -135,15 +135,15 @@ ionosctl endpoints generate --version=v1 \
 		},
 		"Define custom names for each spec")
 
-	f.StringVar(&version, "version", "", "Filter by spec version (e.g. v1)")
-	f.StringSliceVar(&whitelist, "whitelist", nil, "Comma-separated list of API names to include")
-	f.StringSliceVar(&blacklist, "blacklist", nil, "Comma-separated list of API names to exclude")
+	f.StringVar(&filterVersion, "version", "", "Filter by spec version (e.g. v1)")
+	f.StringSliceVar(&filterWhitelist, "whitelist", nil, "Comma-separated list of API names to include")
+	f.StringSliceVar(&filterBlacklist, "blacklist", nil, "Comma-separated list of API names to exclude")
 
 	f.BoolVar(&printExample, "example", false, "Print an example YAML config file to stdout and skip authentication step")
 
 	// hidden flags with defaults
-	f.StringVar(&visibility, "visibility", "public", "(hidden) Filter by index visibility")
-	f.StringVar(&gate, "gate", "General-Availability", "(hidden) Filter by release gate")
+	f.StringVar(&filterVisibility, "visibility", "public", "(hidden) Filter by index visibility")
+	f.StringVar(&filterGate, "gate", "General-Availability", "(hidden) Filter by release gate")
 
 	_ = f.MarkHidden("visibility")
 	_ = f.MarkHidden("gate")
@@ -154,6 +154,6 @@ ionosctl endpoints generate --version=v1 \
 	return &core.Command{Command: cmd}
 }
 
-func login() string {
+func getToken() string {
 	return ""
 }
