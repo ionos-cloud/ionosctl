@@ -2,6 +2,7 @@ package inmemorydb
 
 import (
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/inmemorydb/replicaset"
+	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/spf13/cobra"
 
@@ -23,5 +24,5 @@ func Root() *core.Command {
 
 	cmd.AddCommand(replicaset.Root())
 
-	return cmd
+	return core.WithRegionalFlags(cmd, constants.InMemoryDBApiRegionalURL, constants.InMemoryDBLocations)
 }
