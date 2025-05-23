@@ -62,7 +62,8 @@ volatile-ttl: The key with the nearest time to live will be removed first, but o
 				input.DisplayName = viper.GetString(fn)
 			}
 
-			replica, _, err := client.Must().InMemoryDBClient.ReplicaSetApi.ReplicasetsPut(context.Background(), uuidgen.Must()).
+			replica, _, err := client.Must().InMemoryDBClient.ReplicaSetApi.
+				ReplicasetsPut(context.Background(), uuidgen.Must()).
 				ReplicaSetEnsure(inmemorydb.ReplicaSetEnsure{Properties: input}).Execute()
 			if err != nil {
 				return err
@@ -82,117 +83,6 @@ volatile-ttl: The key with the nearest time to live will be removed first, but o
 		InitClient: true,
 	})
 
-	/*
-		properties
-		required
-		object (ReplicaSet)
-		Properties with all data needed to create a new In-Memory DB replication.
-
-		displayName
-		required
-		string
-		The human readable name of your replica set.
-
-		version
-		required
-		string (Version)
-		The In-Memory DB version of your replica set.
-
-		replicas
-		required
-		integer (Replicas) [ 1 .. 5 ]
-		The total number of replicas in the replica set (one active and n-1 passive). In case of a standalone instance, the value is 1. In all other cases, the value is >1. The replicas will not be available as read replicas, they are only standby for a failure of the active instance.
-
-		resources
-		required
-		object (Resources)
-		The resources of the individual replicas.
-
-		cores
-		required
-		integer (Cores) [ 1 .. 31 ]
-		The number of CPU cores per instance.
-
-		ram
-		required
-		integer (Ram) [ 4 .. 256 ]
-		The amount of memory per instance in gigabytes (GB).
-
-		persistenceMode
-		required
-		string (PersistenceMode)
-		Default: "None"
-		Enum: "None" "AOF" "RDB" "RDB_AOF"
-		Specifies How and If data is persisted.
-
-		Mode	Description
-		None	Data is inMemory only and will not be persisted. Useful for cache only applications.
-		AOF (Append Only File)	AOF persistence logs every write operation received by the server. These operations can then be replayed again at server startup, reconstructing the original dataset. Commands are logged using the same format as the In-Memory DB protocol itself.
-		RDB	RDB persistence performs snapshots of the current in memory state.
-		RDB_AOF	Booth, RDB and AOF persistence are enabled.
-		evictionPolicy
-		required
-		string (EvictionPolicy)
-		Default: "allkeys-lru"
-		Enum: "noeviction" "allkeys-lru" "allkeys-lfu" "allkeys-random" "volatile-lru" "volatile-lfu" "volatile-random" "volatile-ttl"
-		The eviction policy for the replica set. The default value is allkeys-lru.
-
-		Policy	Description
-		noeviction	No eviction policy is used. In-Memory DB will never remove any data. If the memory limit is reached, an error will be returned on write operations.
-		allkeys-lru	The least recently used keys will be removed first.
-		allkeys-lfu	The least frequently used keys will be removed first.
-		allkeys-random	Random keys will be removed.
-		volatile-lru	The least recently used keys will be removed first, but only among keys with the expire field set to true.
-		volatile-lfu	The least frequently used keys will be removed first, but only among keys with the expire field set to true.
-		volatile-random	Random keys will be removed, but only among keys with the expire field set to true.
-		volatile-ttl	The key with the nearest time to live will be removed first, but only among keys with the expire field set to true.
-		connections
-		required
-		Array of objects (Connection) = 1 items
-		The network connection for your replica set. Only one connection is allowed.
-
-		Array (= 1 items)
-		datacenterId
-		required
-		string
-		The datacenter to connect your instance to.
-
-		lanId
-		required
-		string
-		The numeric LAN ID to connect your instance to.
-
-		cidr
-		required
-		string
-		The IP and subnet for your instance. Note the following unavailable IP ranges: 10.210.0.0/16 10.212.0.0/14
-
-		maintenanceWindow
-		object (MaintenanceWindow)
-		A weekly 4 hour-long window, during which maintenance might occur.
-
-		backup
-		object (BackupProperties)
-		Properties configuring the backup of the replicaset.
-
-		credentials
-		required
-		object (User)
-		Credentials for the In-Memory DB replicaset.
-
-		username
-		required
-		string (Username) [ 1 .. 16 ] characters ^[a-zA-Z0-9_]{1,16}$
-		The username for the initial In-Memory DB user. Some system usernames are restricted (e.g. "admin", "standby").
-
-		password
-		required
-		PlaintextPassword (string) or HashedPassword (object)
-		initialSnapshotId
-		string <uuid>
-		The ID of a snapshot to restore the replica set from. If set, the replica set will be created from the snapshot.
-	*/
-
 	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "The name of the Replica Set", core.RequiredFlagOption())
 	cmd.AddStringFlag(constants.FlagVersion, "", "", "The In-Memory DB version of your Replica Set", core.RequiredFlagOption())
 	cmd.AddIntFlag(constants.FlagReplicas, "", 1,
@@ -210,17 +100,17 @@ volatile-ttl: The key with the nearest time to live will be removed first, but o
 		core.RequiredFlagOption(),
 		core.WithCompletion(func() []string {
 			return completer.DataCentersIds()
-		}, "url-todo", []string{"locations-todo"}), // TODO
+		}, constants.InMemoryDBApiRegionalURL, constants.InMemoryDBLocations),
 	)
 	cmd.AddStringFlag(constants.FlagLanId, "", "", "The numeric Private LAN ID to connect your instance to",
 		core.RequiredFlagOption(),
 		core.WithCompletion(func() []string {
 			return completer.LansIds(viper.GetString(core.GetFlagName(cmd.NS, constants.FlagDatacenterId)))
-		}, "url-todo", []string{"locations-todo"}), // TODO
+		}, constants.InMemoryDBApiRegionalURL, constants.InMemoryDBLocations),
 	)
 	cmd.AddStringFlag(constants.FlagCidr, "", "", "The IP and subnet for your instance."+
 		" Note the following unavailable IP ranges: 10.210.0.0/16 10.212.0.0/14", core.RequiredFlagOption(),
-		core.WithCompletionComplex(completer2.GetCidrCompletionFunc(cmd), "url-todo", []string{"locations-todo"}), // TODO
+		core.WithCompletionComplex(completer2.GetCidrCompletionFunc(cmd), constants.InMemoryDBApiRegionalURL, constants.InMemoryDBLocations),
 	)
 
 	// Maintenance
@@ -243,7 +133,7 @@ volatile-ttl: The key with the nearest time to live will be removed first, but o
 
 	// credentials
 	cmd.AddStringFlag(constants.ArgUser, "", "", "The initial username", core.RequiredFlagOption())
-	cmd.AddStringFlag(constants.ArgPassword, "", "", "The password. If --hash-password=false, it will be sent as plaintext. Can be a SHA-256 value", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.ArgPassword, "", "", "Your password. Can be plaintext or a SHA-256 value. If plaintext and --hash-password=false, it will be sent as plaintext. If plaintext and --hash-password, it will be hashed and sent to the API. If SHA-256 will be sent-as-is.", core.RequiredFlagOption())
 	cmd.AddBoolFlag(constants.ArgHashPassword, "", true, "If set to true, the password will be sent as a SHA-256 hash. If set to false, the password will be sent as plaintext")
 
 	cmd.AddStringFlag(constants.FlagBackupLocation, "", "", "The S3 location where the backups will be stored")
