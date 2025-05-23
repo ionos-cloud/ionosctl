@@ -8,7 +8,8 @@ import (
 )
 
 var (
-	allCols = []string{"Id", "Name", "State"}
+	allCols     = []string{"Id", "Name", "Version", "DNSName", "Replicas", "Cores", "RAM", "StorageSize", "State", "BackupLocation", "PersistenceMode", "EvictionPolicy", "MaintenanceDay", "MaintenanceTime", "DatacenterId", "LanId", "Username"}
+	defaultCols = []string{"Id", "Name", "Version", "DNSName", "Replicas", "Cores", "RAM", "StorageSize", "State"}
 )
 
 func Root() *core.Command {

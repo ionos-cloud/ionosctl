@@ -155,7 +155,7 @@ volatile-ttl: The key with the nearest time to live will be removed first, but o
 
 			cols, _ := c.Command.Command.Flags().GetStringSlice(constants.ArgCols)
 
-			out, err := jsontabwriter.GenerateOutput("", jsonpaths.Server, replica,
+			out, err := jsontabwriter.GenerateOutput("", jsonpaths.InMemoryDBReplicaSet, replica,
 				tabheaders.GetHeadersAllDefault(allCols, cols))
 			if err != nil {
 				return err
