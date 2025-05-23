@@ -2,8 +2,11 @@ package replicaset
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
 	"math/rand"
+	"regexp"
 	"time"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
@@ -14,6 +17,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/pointer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/uuidgen"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/inmemorydb/v2"
 	"github.com/spf13/cobra"
@@ -47,7 +51,7 @@ volatile-ttl: The key with the nearest time to live will be removed first, but o
 		Example: "ionosctl dbaas inmemorydb replicaset create ", // TODO
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			if err := core.CheckRequiredFlags(c.Command, c.NS,
-				constants.FlagName, constants.FlagVersion, constants.FlagReplicas,
+				constants.FlagName, constants.FlagReplicas,
 				constants.FlagCores, constants.FlagRam,
 				constants.ArgUser, constants.ArgPassword,
 				constants.FlagDatacenterId, constants.FlagLanId, constants.FlagCidr); err != nil {
@@ -62,9 +66,89 @@ volatile-ttl: The key with the nearest time to live will be removed first, but o
 				input.DisplayName = viper.GetString(fn)
 			}
 
+			if fn := core.GetFlagName(c.NS, constants.FlagVersion); true {
+				input.Version = viper.GetString(fn)
+			}
+
+			if fn := core.GetFlagName(c.NS, constants.FlagReplicas); viper.IsSet(fn) {
+				input.Replicas = int32(viper.GetInt(fn))
+			}
+			if fn := core.GetFlagName(c.NS, constants.FlagCores); viper.IsSet(fn) {
+				input.Resources.Cores = int32(viper.GetInt(fn))
+			}
+			if fn := core.GetFlagName(c.NS, constants.FlagRam); viper.IsSet(fn) {
+				input.Resources.Ram = int32(viper.GetInt(fn))
+			}
+
+			if fn := core.GetFlagName(c.NS, constants.FlagPersistenceMode); true {
+				input.PersistenceMode = inmemorydb.PersistenceMode(viper.GetString(fn))
+			}
+			if fn := core.GetFlagName(c.NS, constants.FlagEvictionPolicy); true {
+				input.EvictionPolicy = inmemorydb.EvictionPolicy(viper.GetString(fn))
+			}
+
+			if fn := core.GetFlagName(c.NS, constants.FlagBackupLocation); viper.IsSet(fn) {
+				input.Backup = &inmemorydb.BackupProperties{}
+				input.Backup.Location = pointer.From(viper.GetString(fn))
+			}
+
+			input.Connections = make([]inmemorydb.Connection, 1)
+			if fn := core.GetFlagName(c.NS, constants.FlagDatacenterId); viper.IsSet(fn) {
+				input.Connections[0].DatacenterId = viper.GetString(fn)
+			}
+			if fn := core.GetFlagName(c.NS, constants.FlagLanId); viper.IsSet(fn) {
+				input.Connections[0].LanId = viper.GetString(fn)
+			}
+			if fn := core.GetFlagName(c.NS, constants.FlagCidr); viper.IsSet(fn) {
+				input.Connections[0].Cidr = viper.GetString(fn)
+			}
+
+			if fn := core.GetFlagName(c.NS, constants.FlagMaintenanceTime); true {
+				if input.MaintenanceWindow == nil {
+					input.MaintenanceWindow = &inmemorydb.MaintenanceWindow{}
+				}
+				input.MaintenanceWindow.Time = viper.GetString(fn)
+			}
+			if fn := core.GetFlagName(c.NS, constants.FlagMaintenanceDay); true {
+				if input.MaintenanceWindow == nil {
+					input.MaintenanceWindow = &inmemorydb.MaintenanceWindow{}
+				}
+				input.MaintenanceWindow.DayOfTheWeek = inmemorydb.DayOfTheWeek(viper.GetString(fn))
+			}
+
+			input.Credentials = inmemorydb.User{Password: &inmemorydb.UserPassword{}}
+			if fn := core.GetFlagName(c.NS, constants.ArgUser); viper.IsSet(fn) {
+				input.Credentials.Username = viper.GetString(fn)
+			}
+			if fn := core.GetFlagName(c.NS, constants.ArgPassword); viper.IsSet(fn) {
+				password := viper.GetString(fn)
+				hashFlag := viper.GetBool(core.GetFlagName(c.NS, constants.ArgHashPassword))
+
+				isSHA256 := func(s string) bool {
+					// Check if it's a 64-character hex string
+					matched, _ := regexp.MatchString("^[a-fA-F0-9]{64}$", s)
+					return matched
+				}
+
+				switch {
+				case isSHA256(password):
+					input.Credentials.Password.
+						HashedPassword = &inmemorydb.HashedPassword{Hash: password, Algorithm: "SHA-256"}
+				case !hashFlag:
+					input.Credentials.Password = &inmemorydb.UserPassword{PlainTextPassword: pointer.From(password)}
+				case hashFlag:
+					hash := sha256.Sum256([]byte(password))
+					input.Credentials.Password.HashedPassword = &inmemorydb.HashedPassword{
+						Hash:      hex.EncodeToString(hash[:]),
+						Algorithm: "SHA-256",
+					}
+				}
+			}
+
+			id := uuidgen.Must()
 			replica, _, err := client.Must().InMemoryDBClient.ReplicaSetApi.
-				ReplicasetsPut(context.Background(), uuidgen.Must()).
-				ReplicaSetEnsure(inmemorydb.ReplicaSetEnsure{Properties: input}).Execute()
+				ReplicasetsPut(context.Background(), id).
+				ReplicaSetEnsure(inmemorydb.ReplicaSetEnsure{Id: id, Properties: input}).Execute()
 			if err != nil {
 				return err
 			}
@@ -84,7 +168,7 @@ volatile-ttl: The key with the nearest time to live will be removed first, but o
 	})
 
 	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "The name of the Replica Set", core.RequiredFlagOption())
-	cmd.AddStringFlag(constants.FlagVersion, "", "", "The In-Memory DB version of your Replica Set", core.RequiredFlagOption())
+	cmd.AddStringFlag(constants.FlagVersion, "", "7.2", "The In-Memory DB version of your Replica Set", core.RequiredFlagOption())
 	cmd.AddIntFlag(constants.FlagReplicas, "", 1,
 		"The total number of replicas in the Replica Set (one active and n-1 passive)."+
 			" In case of a standalone instance, the value is 1. In all other cases, the value is >1. "+

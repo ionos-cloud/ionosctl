@@ -20,7 +20,7 @@ import (
 // UserPassword - struct for UserPassword
 type UserPassword struct {
 	HashedPassword *HashedPassword
-	string         *string
+	PlainTextPassword         *string
 }
 
 // HashedPasswordAsUserPassword is a convenience function that returns HashedPassword wrapped in UserPassword
@@ -28,9 +28,9 @@ func HashedPasswordAsUserPassword(v *HashedPassword) UserPassword {
 	return UserPassword{HashedPassword: v}
 }
 
-// stringAsUserPassword is a convenience function that returns string wrapped in UserPassword
-func stringAsUserPassword(v *string) UserPassword {
-	return UserPassword{string: v}
+// PlainTextPasswordAsUserPassword is a convenience function that returns PlainTextPassword wrapped in UserPassword
+func PlainTextPasswordAsUserPassword(v *string) UserPassword {
+	return UserPassword{PlainTextPassword: v}
 }
 
 // Unmarshal JSON data into one of the pointers in the struct
@@ -50,23 +50,23 @@ func (dst *UserPassword) UnmarshalJSON(data []byte) error {
 		dst.HashedPassword = nil
 	}
 
-	// try to unmarshal data into string
-	err = json.Unmarshal(data, &dst.string)
+	// try to unmarshal data into PlainTextPassword
+	err = json.Unmarshal(data, &dst.PlainTextPassword)
 	if err == nil {
-		jsonstring, _ := json.Marshal(dst.string)
-		if string(jsonstring) == "{}" { // empty struct
-			dst.string = nil
+		jsonPlainTextPassword, _ := json.Marshal(dst.PlainTextPassword)
+		if string(jsonPlainTextPassword) == "{}" { // empty struct
+			dst.PlainTextPassword = nil
 		} else {
 			match++
 		}
 	} else {
-		dst.string = nil
+		dst.PlainTextPassword = nil
 	}
 
 	if match > 1 { // more than 1 match
 		// reset to nil
 		dst.HashedPassword = nil
-		dst.string = nil
+		dst.PlainTextPassword = nil
 
 		return fmt.Errorf("Data matches more than one schema in oneOf(UserPassword)")
 	} else if match == 1 {
@@ -82,8 +82,8 @@ func (src UserPassword) MarshalJSON() ([]byte, error) {
 		return json.Marshal(&src.HashedPassword)
 	}
 
-	if src.string != nil {
-		return json.Marshal(&src.string)
+	if src.PlainTextPassword != nil {
+		return json.Marshal(&src.PlainTextPassword)
 	}
 
 	return nil, nil // no data in oneOf schemas
@@ -95,8 +95,8 @@ func (obj *UserPassword) GetActualInstance() interface{} {
 		return obj.HashedPassword
 	}
 
-	if obj.string != nil {
-		return obj.string
+	if obj.PlainTextPassword != nil {
+		return obj.PlainTextPassword
 	}
 
 	// all schemas are nil
