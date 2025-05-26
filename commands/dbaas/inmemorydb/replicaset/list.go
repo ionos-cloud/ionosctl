@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/inmemorydb/utils"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
@@ -50,7 +51,7 @@ func List() *core.Command {
 		core.WithCompletion(
 			func() []string {
 				// for each replica set
-				return ReplicasetProperty(func(replica inmemorydb.ReplicaSetRead) string {
+				return utils.ReplicasetProperty(func(replica inmemorydb.ReplicaSetRead) string {
 					// return its name
 					return replica.Properties.DisplayName
 				})

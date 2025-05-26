@@ -167,6 +167,15 @@ volatile-ttl: The key with the nearest time to live will be removed first, but o
 		InitClient: true,
 	})
 
+	cmd.Command.SilenceUsage = true
+	cmd.Command.Flags().SortFlags = false
+
+	addPropertiesFlags(cmd)
+
+	return cmd
+}
+
+func addPropertiesFlags(cmd *core.Command) {
 	cmd.AddStringFlag(constants.FlagName, constants.FlagNameShort, "", "The name of the Replica Set", core.RequiredFlagOption())
 	cmd.AddStringFlag(constants.FlagVersion, "", "7.2", "The In-Memory DB version of your Replica Set", core.RequiredFlagOption())
 	cmd.AddIntFlag(constants.FlagReplicas, "", 1,
@@ -221,9 +230,4 @@ volatile-ttl: The key with the nearest time to live will be removed first, but o
 	cmd.AddBoolFlag(constants.ArgHashPassword, "", true, "If set to true, the password will be sent as a SHA-256 hash. If set to false, the password will be sent as plaintext")
 
 	cmd.AddStringFlag(constants.FlagBackupLocation, "", "", "The S3 location where the backups will be stored")
-
-	cmd.Command.SilenceUsage = true
-	cmd.Command.Flags().SortFlags = false
-
-	return cmd
 }
