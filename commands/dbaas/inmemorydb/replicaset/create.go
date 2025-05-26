@@ -230,8 +230,8 @@ func addPropertiesFlags(cmd *core.Command) {
 
 	// credentials
 	cmd.AddStringFlag(constants.ArgUser, "", "", "The initial username", core.RequiredFlagOption())
-	cmd.AddStringFlag(constants.ArgPassword, "", "", "Your password. Can be plaintext or a SHA-256 value. If plaintext and --hash-password=false, it will be sent as plaintext. If plaintext and --hash-password, it will be hashed and sent to the API. If SHA-256 will be sent-as-is.", core.RequiredFlagOption())
-	cmd.AddBoolFlag(constants.ArgHashPassword, "", true, "If set to true, the password will be sent as a SHA-256 hash. If set to false, the password will be sent as plaintext")
+	cmd.AddStringFlag(constants.ArgPassword, "", "", "Password (plaintext or SHA-256). If plaintext, it’s hashed when --hash-password is true; otherwise sent as-is", core.RequiredFlagOption())
+	cmd.AddBoolFlag(constants.ArgHashPassword, "", true, "Hash plaintext passwords before sending. Use '--hash-password=false' to send plaintext passwords as-is")
 
 	cmd.AddStringFlag(constants.FlagBackupLocation, "", "", "The S3 location where the backups will be stored")
 	cmd.AddStringFlag(constants.FlagSnapshotId, "", "",

@@ -309,6 +309,16 @@
         * [list](subcommands%2FDNS%2Fzone%2Flist.md)
         * [update](subcommands%2FDNS%2Fzone%2Fupdate.md)
 * Database as a Service
+    * In Memory DB
+        * replicaset
+            * [create](subcommands%2FDatabase-as-a-Service%2FIn-Memory-DB%2Freplicaset%2Fcreate.md)
+            * [delete](subcommands%2FDatabase-as-a-Service%2FIn-Memory-DB%2Freplicaset%2Fdelete.md)
+            * [list](subcommands%2FDatabase-as-a-Service%2FIn-Memory-DB%2Freplicaset%2Flist.md)
+            * [update](subcommands%2FDatabase-as-a-Service%2FIn-Memory-DB%2Freplicaset%2Fupdate.md)
+        * snapshot
+            * [list](subcommands%2FDatabase-as-a-Service%2FIn-Memory-DB%2Fsnapshot%2Flist.md)
+            * restore
+                * [list](subcommands%2FDatabase-as-a-Service%2FIn-Memory-DB%2Fsnapshot%2Frestore%2Flist.md)
     * mariadb
         * backup
             * [get](subcommands%2FDatabase-as-a-Service%2Fmariadb%2Fbackup%2Fget.md)

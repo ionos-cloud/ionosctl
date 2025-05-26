@@ -25,12 +25,17 @@ func Update() *core.Command {
 		Resource:  "replicaset",
 		Verb:      "update",
 		Aliases:   []string{"u"},
-		ShortDesc: "Partially modify a replicaset's properties. NOTE: Password is required to be specified (or changed), as we cannot fetch the existing user password. This command uses a combination of GET and PUT to simulate a PATCH operation",
+		ShortDesc: "Partially modify a replicaset's properties. NOTE: Passwords cannot be modified! This command uses a combination of GET and PUT to simulate a PATCH operation",
 		Example:   fmt.Sprintf("ionosctl dbaas inmemorydb replicaset update %s", core.FlagsUsage(constants.FlagReplicasetID, constants.ArgPassword, constants.FlagName, constants.FlagReplicas, constants.FlagMaintenanceDay, constants.FlagMaintenanceTime)), PreCmdRun: func(c *core.PreCommandConfig) error {
 			if err := core.CheckRequiredFlags(c.Command, c.NS,
-				constants.FlagReplicasetID, constants.ArgPassword); err != nil {
+				constants.FlagReplicasetID); err != nil {
 				return err
 			}
+
+			if viper.IsSet(core.GetFlagName(c.NS, constants.ArgPassword)) {
+				return fmt.Errorf("changing passwords is not yet supported")
+			}
+
 			return nil
 		},
 		CmdRun: func(c *core.CommandConfig) error {
