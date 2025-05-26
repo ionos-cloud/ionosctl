@@ -11,6 +11,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/cloudapi-v6/completer"
 	completer2 "github.com/ionos-cloud/ionosctl/v6/commands/dbaas/completer"
+	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/inmemorydb/utils"
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
@@ -26,7 +27,7 @@ import (
 
 func Create() *core.Command {
 	cmd := core.NewCommand(context.Background(), nil, core.CommandBuilder{
-		Namespace: "inmemorydb",
+		Namespace: "dbaas inmemorydb",
 		Resource:  "replicaset",
 		Verb:      "create",
 		Aliases:   []string{"post", "c"},
@@ -90,6 +91,9 @@ volatile-ttl: The key with the nearest time to live will be removed first, but o
 			if fn := core.GetFlagName(c.NS, constants.FlagBackupLocation); viper.IsSet(fn) {
 				input.Backup = &inmemorydb.BackupProperties{}
 				input.Backup.Location = pointer.From(viper.GetString(fn))
+			}
+			if fn := core.GetFlagName(c.NS, constants.FlagSnapshotId); viper.IsSet(fn) {
+				input.InitialSnapshotId = pointer.From(viper.GetString(fn))
 			}
 
 			input.Connections = make([]inmemorydb.Connection, 1)
@@ -230,4 +234,16 @@ func addPropertiesFlags(cmd *core.Command) {
 	cmd.AddBoolFlag(constants.ArgHashPassword, "", true, "If set to true, the password will be sent as a SHA-256 hash. If set to false, the password will be sent as plaintext")
 
 	cmd.AddStringFlag(constants.FlagBackupLocation, "", "", "The S3 location where the backups will be stored")
+	cmd.AddStringFlag(constants.FlagSnapshotId, "", "",
+		"If set, will create the replicaset from the specified snapshot",
+		core.WithCompletion(
+			func() []string {
+				// for each snapshot
+				return utils.SnapshotProperty(func(snapshot inmemorydb.SnapshotRead) string {
+					// return its ID
+					return snapshot.Id + "\t" + snapshot.Metadata.SnapshotTime.Format("2006-01-02 15:04:05")
+				})
+			}, constants.InMemoryDBApiRegionalURL, constants.InMemoryDBLocations,
+		),
+	)
 }

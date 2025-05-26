@@ -21,7 +21,7 @@ import (
 
 func Update() *core.Command {
 	cmd := core.NewCommand(context.Background(), nil, core.CommandBuilder{
-		Namespace: "inmemorydb",
+		Namespace: "dbaas inmemorydb",
 		Resource:  "replicaset",
 		Verb:      "update",
 		Aliases:   []string{"u"},

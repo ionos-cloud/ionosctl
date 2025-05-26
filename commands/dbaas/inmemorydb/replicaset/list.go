@@ -16,7 +16,7 @@ import (
 
 func List() *core.Command {
 	cmd := core.NewCommand(context.Background(), nil, core.CommandBuilder{
-		Namespace: "inmemorydb",
+		Namespace: "dbaas inmemorydb",
 		Resource:  "replicaset",
 		Verb:      "list",
 		Aliases:   []string{"l", "ls"},
