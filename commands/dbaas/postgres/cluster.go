@@ -602,10 +602,10 @@ func ClusterDeleteAll(c *core.CommandConfig) error {
 		if err = waitfor.WaitForDelete(c, waiter.ClusterDeleteInterrogator, *idOk); err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *idOk, err))
 		}
+	}
 
-		if multiErr != nil {
-			return multiErr
-		}
+	if multiErr != nil {
+		return multiErr
 	}
 
 	return nil
