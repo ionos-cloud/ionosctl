@@ -534,11 +534,10 @@ func RunClusterDelete(c *core.CommandConfig) error {
 	}
 
 	clusterId := viper.GetString(core.GetFlagName(c.NS, constants.FlagClusterId))
-	clusters, _, _ := c.CloudApiDbaasPgsqlServices.Clusters().Get(clusterId)
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(constants.ClusterId, clusterId))
 
-	if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("delete cluster with id: %v, name: %v", clusterId, *clusters.Properties.DisplayName), viper.GetBool(constants.ArgForce)) {
+	if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("delete cluster with id: %v", clusterId), viper.GetBool(constants.ArgForce)) {
 		return fmt.Errorf(confirm.UserDenied)
 	}
 
