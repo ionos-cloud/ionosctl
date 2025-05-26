@@ -1,7 +1,6 @@
-package snapshot
+package restore
 
 import (
-	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/inmemorydb/snapshot/restore"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
@@ -15,9 +14,9 @@ var (
 func Root() *core.Command {
 	cmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "snapshot",
-			Aliases:          []string{"snaps", "snap", "backup", "backups", "snapshots"},
-			Short:            "The sub-commands of 'ionosctl dbaas inmemorydb snapshots' allow you to manage In-Memory DB Replica Set Snapshots.",
+			Use:              "restore",
+			Aliases:          []string{"restores", "backup", "backups"},
+			Short:            "The sub-commands of 'ionosctl dbaas inmemorydb restore' allow you to manage In-Memory DB Replica Set Restores.",
 			TraverseChildren: true,
 		},
 	}
@@ -30,7 +29,6 @@ func Root() *core.Command {
 	)
 
 	cmd.AddCommand(List())
-	cmd.AddCommand(restore.Root())
 
 	return cmd
 }

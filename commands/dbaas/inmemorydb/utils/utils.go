@@ -49,3 +49,36 @@ func ReplicasetIDs() []string {
 		return fmt.Sprintf("%s\t%s (dns name '%s', '%d' replicas)", r.Id, r.Properties.DisplayName, r.Metadata.DnsName, r.Properties.Replicas)
 	})
 }
+
+// snapshots
+func SnapshotProperty[V any](f func(inmemorydb.SnapshotRead) V, fs ...FilterSnapshot) []V {
+	snapshots, err := Snapshots(fs...)
+	if err != nil {
+		return nil
+	}
+	return functional.Map(snapshots.Items, f)
+}
+
+func Snapshots(fs ...FilterSnapshot) (inmemorydb.SnapshotReadList, error) {
+	if url := config.GetServerUrl(); url == constants.DefaultApiURL {
+		viper.Set(constants.ArgServerUrl, "")
+	}
+
+	req := client.Must().InMemoryDBClient.SnapshotApi.SnapshotsGet(context.Background())
+
+	for _, f := range fs {
+		var err error
+		req, err = f(req)
+		if err != nil {
+			return inmemorydb.SnapshotReadList{}, err
+		}
+	}
+
+	ls, _, err := req.Execute()
+	if err != nil {
+		return inmemorydb.SnapshotReadList{}, err
+	}
+	return ls, nil
+}
+
+type FilterSnapshot func(inmemorydb.ApiSnapshotsGetRequest) (inmemorydb.ApiSnapshotsGetRequest, error)
