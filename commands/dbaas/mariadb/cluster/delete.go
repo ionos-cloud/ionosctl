@@ -16,22 +16,6 @@ import (
 	"github.com/spf13/viper"
 )
 
-func confirmStringForCluster(c mariadb.ClusterResponse) string {
-	askString := ""
-	if p := c.Properties; p != nil {
-		if c.Id != nil {
-			askString = fmt.Sprintf("%s cluster %s", askString, *c.Id)
-		}
-		if n := p.DisplayName; n != nil {
-			askString = fmt.Sprintf("%s (%s)", askString, *n)
-		}
-		if v := p.MariadbVersion; v != nil {
-			askString = fmt.Sprintf("%s version v%s", askString, *v)
-		}
-	}
-	return fmt.Sprintf("delete%s and its snapshots", askString)
-}
-
 func Delete() *core.Command {
 	cmd := core.NewCommand(context.TODO(), nil, core.CommandBuilder{
 		Namespace: "dbaas-mariadb",
@@ -60,7 +44,8 @@ ionosctl db mar c d --all --name <name>`,
 				}
 			}
 
-			ok := confirm.FAsk(c.Command.Command.InOrStdin(), confirmStringForCluster(chosenCluster), viper.GetBool(constants.ArgForce))
+			p := chosenCluster.Properties
+			ok := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("delete cluster with id: %v, name: %v", *chosenCluster.Id, *p.DisplayName), viper.GetBool(constants.ArgForce))
 			if !ok {
 				return fmt.Errorf(confirm.UserDenied)
 			}
@@ -105,7 +90,8 @@ func deleteAll(c *core.CommandConfig) error {
 	}
 
 	return functional.ApplyAndAggregateErrors(xs.GetItems(), func(x mariadb.ClusterResponse) error {
-		yes := confirm.FAsk(c.Command.Command.InOrStdin(), confirmStringForCluster(x), viper.GetBool(constants.ArgForce))
+		p := x.Properties
+		yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("delete cluster with id: %v, name: %v", *x.Id, *p.DisplayName), viper.GetBool(constants.ArgForce))
 		if yes {
 			_, _, delErr := client.Must().MariaClient.ClustersApi.ClustersDelete(c.Context, *x.Id).Execute()
 			if delErr != nil {
