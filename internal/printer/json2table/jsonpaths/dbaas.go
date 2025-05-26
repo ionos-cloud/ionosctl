@@ -107,6 +107,14 @@ var (
 		"Owner": "properties.owner",
 	}
 
+	DbaasInMemoryDBSnapshot = map[string]string{
+		"Id":           "id",
+		"ReplicasetId": "metadata.replicasetId",
+		"DatacenterId": "metadata.datacenterId",
+		"Time":         "metadata.snapshotTime",
+		"State":        "metadata.state",
+	}
+
 	DbaasInMemoryDBReplicaSet = map[string]string{
 		"Id":              "id",
 		"Name":            "properties.displayName",
