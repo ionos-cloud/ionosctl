@@ -20,6 +20,7 @@ const (
 	FlagTemplateId              = "template-id"
 	FlagInstances               = "instances"
 	FlagReplicas                = "replicas"
+	FlagReplicasetID            = "replica-set-id"
 	FlagShards                  = "shards"
 	FlagPersistenceMode         = "persistence-mode"
 	FlagEvictionPolicy          = "eviction-policy"
