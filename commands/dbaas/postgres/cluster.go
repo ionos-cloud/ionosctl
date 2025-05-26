@@ -531,7 +531,7 @@ func RunClusterDelete(c *core.CommandConfig) error {
 			return err
 		}
 
-		fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("PostgreSQL Clusters successfully deleted"))
+		//fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("PostgreSQL Clusters successfully deleted"))
 		return nil
 	}
 
@@ -558,7 +558,6 @@ func RunClusterDelete(c *core.CommandConfig) error {
 }
 
 func ClusterDeleteAll(c *core.CommandConfig) error {
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Getting all Clusters..."))
 
 	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgName)) {
 		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Filtering based on Cluster Name: %v", viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgName))))
@@ -578,8 +577,6 @@ func ClusterDeleteAll(c *core.CommandConfig) error {
 		return fmt.Errorf("no Clusters found")
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Clusters to be deleted:"))
-
 	var multiErr error
 	for _, cluster := range *dataOk {
 		idOk, ok := cluster.GetIdOk()
@@ -587,21 +584,11 @@ func ClusterDeleteAll(c *core.CommandConfig) error {
 			continue
 		}
 
-		var log string
+		clusterId := *idOk
+		propertiesOk, ok := cluster.GetPropertiesOk()
+		clusterName, ok := propertiesOk.GetDisplayNameOk()
 
-		if propertiesOk, ok := cluster.GetPropertiesOk(); ok && propertiesOk != nil {
-			if nameOk, ok := propertiesOk.GetDisplayNameOk(); ok && nameOk != nil {
-				log = fmt.Sprintf("Cluster Name: %s", *nameOk)
-			}
-		}
-
-		if idOk, ok := cluster.GetIdOk(); ok && idOk != nil {
-			log = fmt.Sprintf("%s; Cluster ID: %s", log, *idOk)
-		}
-
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput(log))
-
-		if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete current cluster", viper.GetBool(constants.ArgForce)) {
+		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("delete cluster with id: %v, name: %v", clusterId, *clusterName), viper.GetBool(constants.ArgForce)) {
 			multiErr = errors.Join(multiErr, fmt.Errorf(confirm.UserDenied))
 			continue
 		}
@@ -611,8 +598,6 @@ func ClusterDeleteAll(c *core.CommandConfig) error {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *idOk, err))
 			continue
 		}
-
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput(constants.MessageDeletingAll, c.Resource, *idOk))
 
 		if err = waitfor.WaitForDelete(c, waiter.ClusterDeleteInterrogator, *idOk); err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrWaitDeleteAll, c.Resource, *idOk, err))
