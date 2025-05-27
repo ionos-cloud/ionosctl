@@ -1,6 +1,6 @@
 module github.com/ionos-cloud/ionosctl/v6
 
-go 1.23.0
+go 1.23.8
 
 require (
 	github.com/Jeffail/gabs/v2 v2.7.0
@@ -31,7 +31,7 @@ require (
 )
 
 require (
-	github.com/dustin/go-humanize v0.0.0-20171111073723-bb3d318650d4
+	github.com/dustin/go-humanize v1.0.0
 	github.com/ionos-cloud/sdk-go-bundle/products/apigateway/v2 v2.0.1
 	github.com/ionos-cloud/sdk-go-bundle/products/auth/v2 v2.0.1
 	github.com/ionos-cloud/sdk-go-bundle/products/cdn/v2 v2.1.1
@@ -49,9 +49,12 @@ require (
 require (
 	github.com/aws/aws-sdk-go v1.55.7 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.4 // indirect
+	github.com/google/go-cmp v0.6.0 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/pkg/term v1.2.0-beta.2 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
+	golang.org/x/net v0.25.0 // indirect
+	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
 
 // `ionosctl shell` requirements
