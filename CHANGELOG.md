@@ -1,8 +1,12 @@
 # Changelog
 
+## [v6.8.4] (May 2025)
 
-## Upcoming
+### Added
 - Added support for ExposeSerial, RequireLegacyBios, ApplicationType properties to image commands
+
+### Dependencies
+- a minimum go version of 1.23.8 is now required to build ionosctl
 
 ## [v6.8.3] (May 2025)
 
