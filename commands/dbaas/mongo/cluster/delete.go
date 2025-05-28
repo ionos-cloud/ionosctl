@@ -17,6 +17,31 @@ import (
 	"github.com/spf13/viper"
 )
 
+func confirmStringForCluster(c sdkgo.ClusterResponse) string {
+	askString := ""
+	if p := c.Properties; p != nil {
+		if edition := p.Edition; edition != nil {
+			askString = fmt.Sprintf("%s %s", askString, *edition)
+		}
+		if ctype := p.Type; ctype != nil {
+			askString = fmt.Sprintf("%s %s", askString, *ctype)
+		}
+		if c.Id != nil {
+			askString = fmt.Sprintf("%s cluster %s", askString, *c.Id)
+		}
+		if n := p.DisplayName; n != nil {
+			askString = fmt.Sprintf("%s (%s)", askString, *n)
+		}
+		if v := p.MongoDBVersion; v != nil {
+			askString = fmt.Sprintf("%s version v%s", askString, *v)
+		}
+		if l := p.Location; l != nil {
+			askString = fmt.Sprintf("%s located in %s", askString, *l)
+		}
+	}
+	return fmt.Sprintf("delete%s and its snapshots", askString)
+}
+
 func ClusterDeleteCmd() *core.Command {
 	cmd := core.NewCommand(context.TODO(), nil, core.CommandBuilder{
 		Namespace: "dbaas-mongo",
@@ -45,8 +70,7 @@ ionosctl db m c d --all --name <name>`,
 				}
 			}
 
-			p := chosenCluster.Properties
-			ok := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("delete cluster with id: %v, name: %v", *chosenCluster.Id, *p.DisplayName), viper.GetBool(constants.ArgForce))
+			ok := confirm.FAsk(c.Command.Command.InOrStdin(), confirmStringForCluster(chosenCluster), viper.GetBool(constants.ArgForce))
 			if !ok {
 				return fmt.Errorf(confirm.UserDenied)
 			}
@@ -76,14 +100,14 @@ ionosctl db m c d --all --name <name>`,
 }
 
 func deleteAll(c *core.CommandConfig) error {
+	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting All Clusters!"))
 	xs, err := Clusters(FilterNameFlags(c))
 	if err != nil {
 		return err
 	}
 
 	return functional.ApplyAndAggregateErrors(xs.GetItems(), func(x sdkgo.ClusterResponse) error {
-		p := x.Properties
-		yes := confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("delete cluster with id: %v, name: %v", *x.Id, *p.DisplayName), viper.GetBool(constants.ArgForce))
+		yes := confirm.FAsk(c.Command.Command.InOrStdin(), confirmStringForCluster(x), viper.GetBool(constants.ArgForce))
 		if yes {
 			_, _, delErr := client.Must().MongoClient.ClustersApi.ClustersDelete(c.Context, *x.Id).Execute()
 			if delErr != nil {
