@@ -254,8 +254,8 @@ github.com/ionos-cloud/sdk-go-bundle/products/containerregistry/v2 v2.0.2 h1:+f8
 github.com/ionos-cloud/sdk-go-bundle/products/containerregistry/v2 v2.0.2/go.mod h1:MqxTZ40QJv2yq2qlNAzIABRwCKV4oDf7tRSbtwQIk0g=
 github.com/ionos-cloud/sdk-go-bundle/products/dataplatform/v2 v2.0.2 h1:lz/PlNNqMnEc16sexugvamTdCRUtm9giWGVla+kIXjA=
 github.com/ionos-cloud/sdk-go-bundle/products/dataplatform/v2 v2.0.2/go.mod h1:9eEgLJhWqqIiqnzYd+CH3i/LXE54V+d3Wc3g6Afugxw=
-github.com/ionos-cloud/sdk-go-bundle/products/dbaas/inmemorydb/v2 v2.0.0 h1:4uV0HeuNFHh2JLVakDX4l8970nT6r0B0mQ36LDx4AWI=
-github.com/ionos-cloud/sdk-go-bundle/products/dbaas/inmemorydb/v2 v2.0.0/go.mod h1:F0vXwRGhJ8ZDjjin9+zkQK4K4bI5v78iZDuucLrdnC8=
+github.com/ionos-cloud/sdk-go-bundle/products/dbaas/inmemorydb/v2 v2.0.1 h1:HCVZfcu9l7S8dBHKSe9PIv0KzK66WAAa+6mSOcoYv3w=
+github.com/ionos-cloud/sdk-go-bundle/products/dbaas/inmemorydb/v2 v2.0.1/go.mod h1:F0vXwRGhJ8ZDjjin9+zkQK4K4bI5v78iZDuucLrdnC8=
 github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mariadb/v2 v2.0.0 h1:HZiy10ADUUheZJFyMzN7a8ILt/2tp9SxasJh1AQ03QU=
 github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mariadb/v2 v2.0.0/go.mod h1:viTYczukRYE3C94NUyKrSc2yEZvOq6mCbFwzVnjJnM4=
 github.com/ionos-cloud/sdk-go-bundle/products/dbaas/mongo/v2 v2.1.1 h1:eH4AZ7YCXKNwuwvUNtlBnrzt/BnU19AkENrWNHmKcsM=
