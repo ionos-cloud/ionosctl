@@ -23,7 +23,7 @@ setup_file() {
     echo "$datacenter_id" > /tmp/bats_test/datacenter_id
 
     # wait for datacenter to be AVAILABLE
-    sleep 30
+    sleep 60
 
     run ionosctl lan create --datacenter-id "$datacenter_id" --public=false -o json
     assert_success
@@ -91,8 +91,8 @@ setup_file() {
 @test "Create In-Memory DB ReplicaSet from snapshot" {
     snapshot_id=$(cat /tmp/bats_test/snapshot_id)
     run ionosctl db in-memory-db replicaset create \
-      --snapshot-id "$snapshot_id" \
       --location "${location}" \
+      --snapshot-id "$snapshot_id" \
       --name "cli-imdb-snapshot-$(randStr 6 | tr '[:upper:]' '[:lower:]')" \
       --replicas 1 \
       --cores 1 \
@@ -138,11 +138,11 @@ setup_file() {
 }
 
 teardown_file() {
-    # delete datacenter (and its LAN)
     ionosctl datacenter delete --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" -f
 
-    # revoke token
-    ionosctl token delete --token "$IONOS_TOKEN"
+    ionosctl token delete --token "$IONOS_TOKEN" --force
+
+    ionosctl db in-memory-db replicaset delete --location "${location}" -af
 
     rm -rf /tmp/bats_test
 }

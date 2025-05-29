@@ -18,6 +18,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/convbytes"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/pointer"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/uuidgen"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/inmemorydb/v2"
@@ -77,8 +78,9 @@ volatile-ttl: The key with the nearest time to live will be removed first, but o
 			if fn := core.GetFlagName(c.NS, constants.FlagCores); viper.IsSet(fn) {
 				input.Resources.Cores = int32(viper.GetInt(fn))
 			}
-			if fn := core.GetFlagName(c.NS, constants.FlagRam); viper.IsSet(fn) {
-				input.Resources.Ram = int32(viper.GetInt(fn))
+			if fn := core.GetFlagName(c.NS, constants.FlagRam); viper.IsSet(fn) && viper.GetString(fn) != "" {
+				sizeInt64 := convbytes.StrToUnit(viper.GetString(fn), convbytes.MB)
+				input.Resources.Ram = int32(sizeInt64)
 			}
 
 			if fn := core.GetFlagName(c.NS, constants.FlagPersistenceMode); true {
@@ -187,7 +189,13 @@ func addPropertiesFlags(cmd *core.Command) {
 			" In case of a standalone instance, the value is 1. In all other cases, the value is >1. "+
 			"The replicas will not be available as read replicas, they are only standby for a failure of the active instance", core.RequiredFlagOption())
 	cmd.AddIntFlag(constants.FlagCores, "", 1, "The number of CPU cores per instance", core.RequiredFlagOption())
-	cmd.AddIntFlag(constants.FlagRam, "", 4, "The amount of memory per instance in gigabytes (GB)", core.RequiredFlagOption())
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagCores, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return []string{"1", "2", "4", "8", "12", "16", "24", "31"}, cobra.ShellCompDirectiveNoFileComp
+	})
+	cmd.AddStringFlag(constants.FlagRam, "", "4GB", "The amount of memory per instance in gigabytes (GB)", core.RequiredFlagOption())
+	_ = cmd.Command.RegisterFlagCompletionFunc(constants.FlagRam, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return []string{"4GB", "8GB", "16GB", "32GB", "64GB", "128GB", "256GB"}, cobra.ShellCompDirectiveNoFileComp
+	})
 	cmd.AddSetFlag(constants.FlagPersistenceMode, "", "RDB",
 		[]string{"None", "AOF", "RDB", "RDB_AOF"}, "Specifies how and if data is persisted (refer to the long description for more details)")
 	cmd.AddSetFlag(constants.FlagEvictionPolicy, "", "allkeys-lru",
