@@ -19,7 +19,12 @@ const (
 	FlagTemplate                = "template"
 	FlagTemplateId              = "template-id"
 	FlagInstances               = "instances"
+	FlagReplicas                = "replicas"
+	FlagReplicasetID            = "replica-set-id"
 	FlagShards                  = "shards"
+	FlagPersistenceMode         = "persistence-mode"
+	FlagEvictionPolicy          = "eviction-policy"
+	FlagBackupLocation          = "backup-location"
 	FlagMaintenanceTime         = "maintenance-time"
 	FlagMaintenanceDay          = "maintenance-day"
 	FlagLocation                = "location"
@@ -191,6 +196,7 @@ const (
 	ArgUpdates             = "updates"
 	ArgUser                = "user"
 	ArgPassword            = "password"
+	ArgHashPassword        = "hash-password"
 	ArgPasswordShort       = "p"
 	ArgNoHeaders           = "no-headers"
 )
@@ -205,24 +211,26 @@ const (
 )
 
 const (
-	DefaultApiURL         = "https://api.ionos.com"
-	DNSApiRegionalURL     = "https://dns.%s.ionos.com"
-	LoggingApiRegionalURL = "https://logging.%s.ionos.com"
-	CDNApiRegionalURL     = "https://cdn.%s.ionos.com"
-	MariaDBApiRegionalURL = "https://mariadb.%s.ionos.com"
-	VPNApiRegionalURL     = "https://vpn.%s.ionos.com"
-	KafkaApiRegionalURL   = "https://kafka.%s.ionos.com"
-	ApiGatewayRegionalURL = "https://apigateway.%s.ionos.com"
+	DefaultApiURL            = "https://api.ionos.com"
+	DNSApiRegionalURL        = "https://dns.%s.ionos.com"
+	LoggingApiRegionalURL    = "https://logging.%s.ionos.com"
+	CDNApiRegionalURL        = "https://cdn.%s.ionos.com"
+	MariaDBApiRegionalURL    = "https://mariadb.%s.ionos.com"
+	InMemoryDBApiRegionalURL = "https://in-memory-db.%s.ionos.com"
+	VPNApiRegionalURL        = "https://vpn.%s.ionos.com"
+	KafkaApiRegionalURL      = "https://kafka.%s.ionos.com"
+	ApiGatewayRegionalURL    = "https://apigateway.%s.ionos.com"
 )
 
 var (
-	GatewayLocations = []string{"de/txl", "gb/lhr", "fr/par", "es/vit"}
-	DNSLocations     = []string{"de/fra"}
-	LoggingLocations = []string{"de/txl", "de/fra", "gb/lhr", "fr/par", "es/vit"}
-	CDNLocations     = []string{"de/fra"}
-	MariaDBLocations = []string{"de/txl", "de/fra", "es/vit", "fr/par", "gb/lhr", "us/ewr", "us/las", "us/mci"}
-	VPNLocations     = []string{"de/fra", "de/txl", "es/vit", "fr/par", "gb/lhr", "gb/bhx", "us/ewr", "us/las", "us/mci"}
-	KafkaLocations   = []string{
+	GatewayLocations    = []string{"de/txl", "gb/lhr", "fr/par", "es/vit"}
+	DNSLocations        = []string{"de/fra"}
+	LoggingLocations    = []string{"de/txl", "de/fra", "gb/lhr", "fr/par", "es/vit"}
+	CDNLocations        = []string{"de/fra"}
+	MariaDBLocations    = []string{"de/txl", "de/fra", "es/vit", "fr/par", "gb/lhr", "us/ewr", "us/las", "us/mci"}
+	InMemoryDBLocations = []string{"de/fra", "de/txl", "es/vit", "gb/txl", "gb/lhr", "us/ewr", "us/las", "us/mci", "fr/par"}
+	VPNLocations        = []string{"de/fra", "de/txl", "es/vit", "fr/par", "gb/lhr", "gb/bhx", "us/ewr", "us/las", "us/mci"}
+	KafkaLocations      = []string{
 		"de/fra", "de/txl",
 		// other locations not yet available. will be added in the future.
 		// "es/vit", "gb/lhr", "us/ewr", "us/las", "us/mci", "fr/par",

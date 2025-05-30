@@ -2,7 +2,9 @@ package client
 
 import (
 	"fmt"
+
 	"github.com/ionos-cloud/sdk-go-bundle/products/apigateway/v2"
+	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/inmemorydb/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/shared"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
@@ -76,12 +78,13 @@ type Client struct {
 	LoggingServiceClient *logging.APIClient
 	VMAscClient          *vmasc.AutoScalingGroupsApiService
 	VPNClient            *vpn.APIClient
+	CDNClient            *cdn.APIClient
+	Kafka                *kafka.APIClient
 
-	PostgresClient *postgres.APIClient
-	MongoClient    *mongo.APIClient
-	MariaClient    *mariadb.APIClient
-	CDNClient      *cdn.APIClient
-	Kafka          *kafka.APIClient
+	PostgresClient   *postgres.APIClient
+	MongoClient      *mongo.APIClient
+	MariaClient      *mariadb.APIClient
+	InMemoryDBClient *inmemorydb.APIClient
 }
 
 func appendUserAgent(userAgent string) string {
@@ -119,11 +122,12 @@ func newClient(name, pwd, token, hostUrl string, usedLayer *Layer) *Client {
 		LoggingServiceClient: logging.NewAPIClient(sharedConfig),
 		VMAscClient:          vmasc.NewAPIClient(vmascConfig).AutoScalingGroupsApi,
 		VPNClient:            vpn.NewAPIClient(sharedConfig),
+		Kafka:                kafka.NewAPIClient(sharedConfig),
 
-		PostgresClient: postgres.NewAPIClient(postgresConfig),
-		MongoClient:    mongo.NewAPIClient(sharedConfig),
-		Kafka:          kafka.NewAPIClient(sharedConfig),
-		MariaClient:    mariadb.NewAPIClient(sharedConfig),
+		PostgresClient:   postgres.NewAPIClient(postgresConfig),
+		MongoClient:      mongo.NewAPIClient(sharedConfig),
+		MariaClient:      mariadb.NewAPIClient(sharedConfig),
+		InMemoryDBClient: inmemorydb.NewAPIClient(sharedConfig),
 
 		usedLayer: usedLayer,
 	}
