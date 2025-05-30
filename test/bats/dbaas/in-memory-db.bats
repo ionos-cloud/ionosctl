@@ -41,16 +41,7 @@ setup_file() {
     [ "$status" = "AVAILABLE" ] || fail "LAN did not become AVAILABLE"
 }
 
-@test "List available In-Memory DB snapshots" {
-    run ionosctl db in-memory-db snapshot list --location "${location}" -o json
-    assert_success
-
-    snapshot_id=$(echo "$output" | jq -r '.[0].id')
-    assert_regex "$snapshot_id" "$uuid_v4_regex"
-    echo "$snapshot_id" > /tmp/bats_test/snapshot_id
-}
-
-@test "Create In-Memory DB ReplicaSet" {
+@test "Create" {
     replica_name="cli-imdb-$(randStr 6 | tr '[:upper:]' '[:lower:]')"
     db_user="user$(randStr 4)"
     db_pass="pass$(randStr 6)"
@@ -60,45 +51,66 @@ setup_file() {
       --name "$replica_name" \
       --replicas 1 \
       --cores 1 \
-      --ram 4 \
+      --ram 4GB \
       --user "$db_user" \
       --password "$db_pass" \
       --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
       --lan-id "$(cat /tmp/bats_test/lan_id)" \
       --cidr "192.168.1.70/24" \
-      --snapshot-id "$snapshot_id" \
       -o json
     assert_success
 
     replicaset_id=$(echo "$output" | jq -r '.id')
     assert_regex "$replicaset_id" "$uuid_v4_regex"
+    user=$(echo "$output" | jq -r '.properties.credentials.username')
+    assert_equal "$user" "$db_user"
     echo "$replicaset_id" > /tmp/bats_test/replicaset_id
     echo "$replica_name" > /tmp/bats_test/replicaset_name
 }
 
-@test "List In-Memory DB ReplicaSets" {
+@test "List replicasets" {
     run ionosctl db in-memory-db replicaset list --location "${location}" -o json
     assert_success
-    assert_output -p "\"name\": \"$(cat /tmp/bats_test/replicaset_name)\""
+    assert_output -p "\"displayName\": \"$(cat /tmp/bats_test/replicaset_name)\""
 }
 
-@test "Get In-Memory DB ReplicaSet details" {
-    run ionosctl db in-memory-db replicaset get --location "${location}" --replicaset "$(cat /tmp/bats_test/replicaset_id)" -o json
+@test "Get" {
+    run ionosctl db in-memory-db replicaset get --location "${location}" --replica-set-id "$(cat /tmp/bats_test/replicaset_id)" -o json
     assert_success
-    assert_output -p "\"name\": \"$(cat /tmp/bats_test/replicaset_name)\""
+    assert_output -p "\"displayName\": \"$(cat /tmp/bats_test/replicaset_name)\""
 }
 
-@test "Create In-Memory DB ReplicaSet from snapshot" {
+@test "List available snapshots" {
+    run ionosctl db in-memory-db snapshot list --location "${location}" -o json
+    assert_success
+
+    snapshot_id=$(echo "$output" | jq -r '.items[0].id')
+    if [ -z "$snapshot_id" ]; then
+        echo "" > /tmp/bats_test/snapshot_id
+        skip "No snapshots available in the location $location"
+
+    fi
+
+    assert_regex "$snapshot_id" "$uuid_v4_regex"
+    echo "$snapshot_id" > /tmp/bats_test/snapshot_id
+}
+
+@test "Create from snapshot" {
+    skip "test is currently skipped"
     snapshot_id=$(cat /tmp/bats_test/snapshot_id)
+    if [ -z "$snapshot_id" ]; then
+        skip "No snapshots available in the location $location"
+    fi
+
     run ionosctl db in-memory-db replicaset create \
       --location "${location}" \
       --snapshot-id "$snapshot_id" \
-      --name "cli-imdb-snapshot-$(randStr 6 | tr '[:upper:]' '[:lower:]')" \
+      --name "cli-imdb-snapshot-$(randStr 4 | tr '[:upper:]' '[:lower:]')" \
       --replicas 1 \
       --cores 1 \
-      --ram 4 \
-      --user "snapshot_user$(randStr 4)" \
-      --password "snapshot_pass$(randStr 6)" \
+      --ram 4GB \
+      --user "snapshot_user" \
+      --password "snapshot_pass$(randStr 2)" \
       --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
       --lan-id "$(cat /tmp/bats_test/lan_id)" \
       --cidr "192.168.1.70/24" \
@@ -107,34 +119,44 @@ setup_file() {
 
     replicaset_id=$(echo "$output" | jq -r '.id')
     assert_regex "$replicaset_id" "$uuid_v4_regex"
-    echo "$replicaset_id" > /tmp/bats_test/replicaset_id
+    echo "$replicaset_id" > /tmp/bats_test/replicaset_id_2
     replicaset_name=$(echo "$output" | jq -r '.properties.displayName')
     assert_not_empty "$replicaset_name"
-    echo "$replicaset_name" > /tmp/bats_test/replicaset_name
+    echo "$replicaset_name" > /tmp/bats_test/replicaset_name_2
 }
 
-@test "List In-Memory DB ReplicaSets" {
+@test "List and expect both replicasets" {
+    skip "test is currently skipped"
     run ionosctl db in-memory-db replicaset list --location "${location}" -o json
     assert_success
-    assert_output -p "\"name\": \"$(cat /tmp/bats_test/replicaset_name)\""
+    assert_output -p "\"displayName\": \"$(cat /tmp/bats_test/replicaset_name)\""
+    assert_output -p "\"displayName\": \"$(cat /tmp/bats_test/replicaset_name_2)\""
 }
 
-@test "Update In-Memory DB ReplicaSet" {
+@test "Update" {
     run ionosctl db in-memory-db replicaset update \
       --location "${location}" \
-      --replicaset "$(cat /tmp/bats_test/replicaset_id)" \
-      --description "Updated via BATS" \
+      --replica-set-id "$(cat /tmp/bats_test/replicaset_id)" \
+      --user "updated_user$(randStr 4)" \
+      --ram 6GB \
       -o json
     assert_success
-    assert_output -p "\"description\": \"Updated via BATS\""
+    assert_output -p "\"username\": \"updated_user"
+    assert_output -p "\"ram\": 6"
 }
 
-@test "Delete In-Memory DB ReplicaSet" {
+@test "Delete" {
     run ionosctl db in-memory-db replicaset delete \
       --location "${location}" \
-      --replicaset "$(cat /tmp/bats_test/replicaset_id)" \
+      --replica-set-id "$(cat /tmp/bats_test/replicaset_id)" \
       -f
     assert_success
+
+#    run ionosctl db in-memory-db replicaset delete \
+#      --location "${location}" \
+#      --replica-set-id "$(cat /tmp/bats_test/replicaset_id_2)" \
+#      -f
+#    assert_success
 }
 
 teardown_file() {

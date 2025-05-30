@@ -79,7 +79,7 @@ volatile-ttl: The key with the nearest time to live will be removed first, but o
 				input.Resources.Cores = int32(viper.GetInt(fn))
 			}
 			if fn := core.GetFlagName(c.NS, constants.FlagRam); viper.IsSet(fn) && viper.GetString(fn) != "" {
-				sizeInt64 := convbytes.StrToUnit(viper.GetString(fn), convbytes.MB)
+				sizeInt64 := convbytes.StrToUnit(viper.GetString(fn), convbytes.GB)
 				input.Resources.Ram = int32(sizeInt64)
 			}
 
