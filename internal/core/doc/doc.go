@@ -14,6 +14,8 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"regexp"
+	"strconv"
 	"strings"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
@@ -22,27 +24,104 @@ import (
 
 const rootCmdName = "ionosctl"
 
-// Products establishes non-compute namespaces, and deduces that the rest of the root-level commands MUST be part of compute. If you add support for a new API, add your command here
-// TODO: Change me, when compute namespace is added!
-var nonComputeNamespaces = map[string]string{
-	"apigateway":              "API Gateway",
-	"applicationloadbalancer": "Application-Load-Balancer",
-	"backupunit":              "Managed-Backup",
-	"certificate-manager":     "Certificate-Manager",
-	"container-registry":      "Container-Registry",
-	"dataplatform":            "Managed-Stackable-Data-Platform",
-	"dbaas":                   "Database-as-a-Service",
-	"natgateway":              "NAT-Gateway",
-	"networkloadbalancer":     "Network-Load-Balancer",
-	"k8s":                     "Managed-Kubernetes",
-	"user":                    "User-Management",
-	"dns":                     "DNS",
-	"cdn":                     "CDN",
-	"kafka":                   "Kafka",
-	"config":                  "CLI Setup",
-	"vm-autoscaling":          "VM Autoscaling",
-	"vpn":                     "VPN Gateway",
-	"logging-service":         "Logging-Service",
+type SubdirRule struct {
+	// Either a static prefix (e.g. []string{"dbaas","in-memory-db"})
+	// or a glob/regex.
+	Prefix []string
+
+	// How to build the target path.
+	// Use “{1}”, “{2+}” etc to refer to prefix and tail segments.
+	// e.g. "Database-as-a-Service/{1}/replicas/{2+}"
+	//  - {i}   → the i’th segment
+	//  - {i+}  → segments[i]…end, joined by filepath.Separator
+	Template string
+}
+
+var subdirRules = []SubdirRule{
+	// CLI Setup
+	{Prefix: []string{"version"}, Template: "CLI Setup/{0+}"},
+	{Prefix: []string{"completion"}, Template: "CLI Setup/{0+}"},
+	{Prefix: []string{"man"}, Template: "CLI Setup/{0+}"},
+
+	// Authentication
+	{Prefix: []string{"token"}, Template: "Authentication/{0+}"},
+
+	// Interactive Shell
+	{Prefix: []string{"shell"}, Template: "Interactive Shell/{0+}"},
+
+	// Database-as-a-Service / In-Memory-DB
+	// cmdPathHyphens: "dbaas-in-memory-db-…"
+	// segs:          ["dbaas","in","memory","db",…]
+	{Prefix: []string{"dbaas", "in", "memory", "db"},
+		Template: "Database-as-a-Service/In-Memory-DB/{4+}"},
+
+	// All other DBaaS
+	{Prefix: []string{"dbaas"}, Template: "Database-as-a-Service/{1+}"},
+
+	// Non-compute APIs
+	{Prefix: []string{"apigateway"}, Template: "API Gateway/{1+}"},
+	{Prefix: []string{"applicationloadbalancer"}, Template: "Application-Load-Balancer/{1+}"},
+	{Prefix: []string{"backupunit"}, Template: "Managed-Backup/{1+}"},
+	// certificate-manager → ["certificate","manager"]
+	{Prefix: []string{"certificate", "manager"}, Template: "Certificate-Manager/{2+}"},
+	// container-registry → ["container","registry"]
+	{Prefix: []string{"container", "registry"}, Template: "Container-Registry/{2+}"},
+	{Prefix: []string{"dataplatform"}, Template: "Managed-Stackable-Data-Platform/{1+}"},
+	{Prefix: []string{"natgateway"}, Template: "NAT-Gateway/{1+}"},
+	{Prefix: []string{"networkloadbalancer"}, Template: "Network-Load-Balancer/{1+}"},
+	{Prefix: []string{"k8s"}, Template: "Managed-Kubernetes/{1+}"},
+	{Prefix: []string{"user"}, Template: "User-Management/{1+}"},
+	{Prefix: []string{"dns"}, Template: "DNS/{1+}"},
+	{Prefix: []string{"cdn"}, Template: "CDN/{1+}"},
+	{Prefix: []string{"kafka"}, Template: "Kafka/{1+}"},
+	{Prefix: []string{"config"}, Template: "CLI Setup/{1+}"},
+	{Prefix: []string{"vm", "autoscaling"}, Template: "VM Autoscaling/{2+}"},
+	{Prefix: []string{"vpn"}, Template: "VPN Gateway/{1+}"},
+	{Prefix: []string{"logging", "service"}, Template: "Logging-Service/{2+}"},
+
+	// fallback → Compute Engine
+	{Prefix: []string{}, Template: "Compute Engine/{0+}"},
+}
+
+// determineSubdir is a hack to support the old tree structure...
+func determineSubdir(cmdPathHyphens string) string {
+	segs := strings.Split(cmdPathHyphens, "-")
+
+	// 2) Try each rule in order
+	for _, rule := range subdirRules {
+		if len(segs) < len(rule.Prefix) {
+			continue
+		}
+		// Does segs[0:len(rule.Prefix)] == rule.Prefix?
+		match := true
+		for i, p := range rule.Prefix {
+			if segs[i] != p {
+				match = false
+				break
+			}
+		}
+		if !match {
+			continue
+		}
+
+		return fillTemplate(rule.Template, segs)
+	}
+
+	return filepath.Join("Compute Engine", filepath.Join(segs...))
+}
+
+func fillTemplate(tmpl string, segs []string) string {
+	tmpl = regexp.MustCompile(`\{(\d+)\+\}`).
+		ReplaceAllStringFunc(tmpl, func(m string) string {
+			idx, _ := strconv.Atoi(m[1 : len(m)-2])
+			return strings.Join(segs[idx:], string(filepath.Separator))
+		})
+	tmpl = regexp.MustCompile(`\{(\d+)\}`).
+		ReplaceAllStringFunc(tmpl, func(m string) string {
+			idx, _ := strconv.Atoi(m[1 : len(m)-1])
+			return segs[idx]
+		})
+	return tmpl
 }
 
 func GenerateSummary(dir string) error {
@@ -129,8 +208,8 @@ func createStructure(cmd *core.Command, dir string) error {
 	if cmd != nil {
 		if cmd.Command.HasParent() && cmd.Command.Runnable() {
 			name := strings.ReplaceAll(cmd.Command.CommandPath(), rootCmdName+" ", "")
-			name = strings.ReplaceAll(name, " ", "-")
-			subdir := determineSubdir(name, nonComputeNamespaces)
+			cmdNameWithHyphens := strings.ReplaceAll(name, " ", "-")
+			subdir := determineSubdir(cmdNameWithHyphens)
 			dir = filepath.Join(dir, subdir)
 		} else {
 			return nil
@@ -151,39 +230,6 @@ func createStructure(cmd *core.Command, dir string) error {
 		}
 	}
 	return nil
-}
-
-// determineSubdir is a hack to support the old tree structure...
-func determineSubdir(name string, nonComputeNamespaces map[string]string) string {
-	segments := strings.Split(name, "-")
-
-	// Custom names depending on first level names
-	if segments[0] == "version" || segments[0] == "completion" || segments[0] == "man" {
-		return filepath.Join("CLI Setup", filepath.Join(segments...))
-	}
-
-	if segments[0] == "token" {
-		return filepath.Join("Authentication", filepath.Join(segments...))
-	}
-
-	if segments[0] == "shell" {
-		return filepath.Join("Interactive Shell", filepath.Join(segments...))
-	}
-
-	// Names for single names, eg certmanager in nonComputeNamespaces map
-	namespaceKey := segments[0]
-	if apiName, ok := nonComputeNamespaces[namespaceKey]; ok {
-		return filepath.Join(apiName, filepath.Join(segments[1:]...))
-	}
-
-	// Names for multi word names, eg container-registry in nonComputeNamespaces map
-	namespaceKey = segments[0] + "-" + segments[1]
-	if apiName, ok := nonComputeNamespaces[namespaceKey]; ok {
-		return filepath.Join(apiName, filepath.Join(segments[2:]...))
-	}
-
-	// Default for first level resources which didnt meet any of the above criteria
-	return filepath.Join("Compute Engine", filepath.Join(segments...))
 }
 
 func writeDoc(cmd *core.Command, w io.Writer) error {
