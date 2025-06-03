@@ -33,9 +33,9 @@ func Update() *core.Command {
 				return err
 			}
 
-			if viper.IsSet(core.GetFlagName(c.NS, constants.ArgPassword)) {
-				return fmt.Errorf("changing passwords is not yet supported")
-			}
+			// if viper.IsSet(core.GetFlagName(c.NS, constants.ArgPassword)) {
+			// 	return fmt.Errorf("changing passwords is not yet supported")
+			// }
 
 			return nil
 		},
@@ -103,6 +103,7 @@ func Update() *core.Command {
 			if fn := core.GetFlagName(c.NS, constants.ArgUser); viper.IsSet(fn) {
 				input.Credentials.Username = viper.GetString(fn)
 			}
+
 			if fn := core.GetFlagName(c.NS, constants.ArgPassword); viper.IsSet(fn) {
 				input.Credentials.Password = &inmemorydb.UserPassword{}
 				password := viper.GetString(fn)

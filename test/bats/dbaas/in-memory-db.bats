@@ -134,6 +134,8 @@ setup_file() {
 }
 
 @test "Update" {
+    skip "replicasets cannot be updated at the moment due to an API bug"
+
     run ionosctl db in-memory-db replicaset update \
       --location "${location}" \
       --replica-set-id "$(cat /tmp/bats_test/replicaset_id)" \
