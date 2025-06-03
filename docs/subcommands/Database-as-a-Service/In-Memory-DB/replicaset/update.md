@@ -59,7 +59,7 @@ Partially modify a replicaset's properties. NOTE: Passwords cannot be modified! 
       --password string           Password (plaintext or SHA-256). If plaintext, it’s hashed when --hash-password is true; otherwise sent as-is (required)
       --persistence-mode string   Specifies how and if data is persisted (refer to the long description for more details). Can be one of: None, AOF, RDB, RDB_AOF (default "RDB")
   -q, --quiet                     Quiet output
-      --ram int                   The amount of memory per instance in gigabytes (GB) (required) (default 4)
+      --ram string                The amount of memory per instance in gigabytes (GB) (required) (default "4GB")
   -i, --replica-set-id string     The ID of the Replica Set you want to delete
       --replicas int              The total number of replicas in the Replica Set (one active and n-1 passive). In case of a standalone instance, the value is 1. In all other cases, the value is >1. The replicas will not be available as read replicas, they are only standby for a failure of the active instance (required) (default 1)
       --snapshot-id string        If set, will create the replicaset from the specified snapshot

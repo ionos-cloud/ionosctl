@@ -313,6 +313,7 @@
         * replicaset
             * [create](subcommands%2FDatabase-as-a-Service%2FIn-Memory-DB%2Freplicaset%2Fcreate.md)
             * [delete](subcommands%2FDatabase-as-a-Service%2FIn-Memory-DB%2Freplicaset%2Fdelete.md)
+            * [get](subcommands%2FDatabase-as-a-Service%2FIn-Memory-DB%2Freplicaset%2Fget.md)
             * [list](subcommands%2FDatabase-as-a-Service%2FIn-Memory-DB%2Freplicaset%2Flist.md)
             * [update](subcommands%2FDatabase-as-a-Service%2FIn-Memory-DB%2Freplicaset%2Fupdate.md)
         * snapshot

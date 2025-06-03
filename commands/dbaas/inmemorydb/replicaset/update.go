@@ -14,6 +14,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/json2table/jsonpaths"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/ionos-cloud/ionosctl/v6/internal/printer/tabheaders"
+	"github.com/ionos-cloud/ionosctl/v6/pkg/convbytes"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/pointer"
 	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/inmemorydb/v2"
 	"github.com/spf13/viper"
@@ -65,8 +66,9 @@ func Update() *core.Command {
 			if fn := core.GetFlagName(c.NS, constants.FlagCores); viper.IsSet(fn) {
 				input.Resources.Cores = int32(viper.GetInt(fn))
 			}
-			if fn := core.GetFlagName(c.NS, constants.FlagRam); viper.IsSet(fn) {
-				input.Resources.Ram = int32(viper.GetInt(fn))
+			if fn := core.GetFlagName(c.NS, constants.FlagRam); viper.IsSet(fn) && viper.GetString(fn) != "" {
+				sizeInt64 := convbytes.StrToUnit(viper.GetString(fn), convbytes.GB)
+				input.Resources.Ram = int32(sizeInt64)
 			}
 
 			if fn := core.GetFlagName(c.NS, constants.FlagPersistenceMode); viper.IsSet(fn) {
