@@ -267,8 +267,8 @@ github.com/ionos-cloud/sdk-go-bundle/products/logging/v2 v2.1.2 h1:rOJaY+qtnYLni
 github.com/ionos-cloud/sdk-go-bundle/products/logging/v2 v2.1.2/go.mod h1:pRI6/E+b7YzCeFW8ilj/09KQHX2bf/KDAboALRyyaLU=
 github.com/ionos-cloud/sdk-go-bundle/products/vpn/v2 v2.0.3 h1:Hp3nBL6VAhfsKWPte28bDJ2ZUvKcSHOgA5VZoCJIuJE=
 github.com/ionos-cloud/sdk-go-bundle/products/vpn/v2 v2.0.3/go.mod h1:V6WHbWsQDlZsLtHqgsXO81Z9eJBsczE3Q6VY8J+rutc=
-github.com/ionos-cloud/sdk-go-bundle/shared v0.1.6-0.20250620142855-cbf7df19d60a h1:hzyMIg6iCD0zZ78SCoNkY8bKPVhFpREDdmAnksFLZws=
-github.com/ionos-cloud/sdk-go-bundle/shared v0.1.6-0.20250620142855-cbf7df19d60a/go.mod h1:pegcRdbZYXLhkMy+mbzDzkLHQpGSPyDsmTa1nIbKAOE=
+github.com/ionos-cloud/sdk-go-bundle/shared v0.1.5 h1:1A1rTL5hjVAbW6mbmDcnO99CHM3N4U1mOBpv0IwcXqs=
+github.com/ionos-cloud/sdk-go-bundle/shared v0.1.5/go.mod h1:pegcRdbZYXLhkMy+mbzDzkLHQpGSPyDsmTa1nIbKAOE=
 github.com/ionos-cloud/sdk-go-cert-manager v1.0.1 h1:QGnenRREavvU0ZrXvY4hmCMXRyvmKj5jaXsFX9Apfd0=
 github.com/ionos-cloud/sdk-go-cert-manager v1.0.1/go.mod h1:EYDegkY6fUSkx0BL0GpNMpKvp33AId2vTZL44YLPreA=
 github.com/ionos-cloud/sdk-go-dbaas-postgres v1.1.2 h1:AaKbci+kVS6/k43VwJwmXxCJ7pzj9jwuOPqO8Wd5560=
