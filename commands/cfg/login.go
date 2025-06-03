@@ -4,8 +4,10 @@ import (
 	"bufio"
 	"context"
 	"fmt"
+	"io"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
@@ -52,8 +54,6 @@ ionosctl config login --token $IONOS_TOKEN \
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			token := "<token>"
-			fmt.Println("Getting from ", core.GetFlagName(c.NS, FlagExample))
-
 			printExample, err := c.Command.Command.Flags().GetBool(FlagExample)
 			if err != nil {
 				return fmt.Errorf("could not get flag %s: %w", FlagExample, err)
@@ -124,11 +124,18 @@ ionosctl config login --token $IONOS_TOKEN \
 				}
 			}
 
-			// generate config
+			done := make(chan struct{})
+			if !printExample {
+				go spinner(c.Command.Command.ErrOrStderr(), done)
+			}
+
+			// generate config and use a loading screen while it is generating
 			cfg, err := configgen.GenerateConfig(settings, opts)
 			if err != nil {
 				return fmt.Errorf("could not generate config: %w", err)
 			}
+
+			close(done)
 
 			if printExample {
 				bytes, err := cfg.ToBytesYAML()
@@ -149,7 +156,7 @@ ionosctl config login --token $IONOS_TOKEN \
 				return fmt.Errorf("could not write config to file: %w", err)
 			}
 
-			fmt.Fprintf(c.Command.Command.OutOrStdout(), "Config file generated at %s\n", configgen.Location())
+			_, _ = fmt.Fprintf(c.Command.Command.OutOrStdout(), "Config file generated at %s\n", configgen.Location())
 			return nil
 		},
 	})
@@ -175,7 +182,7 @@ func getToken(c *core.CommandConfig) (string, error) {
 
 	username, _ := c.Command.Command.Flags().GetString(constants.ArgUser)
 	if username == "" {
-		fmt.Fprintln(c.Command.Command.OutOrStdout(), "Enter your username: ")
+		_, _ = fmt.Fprintln(c.Command.Command.OutOrStdout(), "Enter your username: ")
 		reader := bufio.NewReader(c.Command.Command.InOrStdin())
 		var err error
 		username, err = reader.ReadString('\n')
@@ -187,7 +194,7 @@ func getToken(c *core.CommandConfig) (string, error) {
 
 	password, _ := c.Command.Command.Flags().GetString(constants.ArgPassword)
 	if password == "" {
-		fmt.Fprintln(c.Command.Command.OutOrStdout(), "Enter your password: ")
+		_, _ = fmt.Fprintln(c.Command.Command.OutOrStdout(), "Enter your password: ")
 		if file, ok := c.Command.Command.InOrStdin().(*os.File); ok {
 			bytePassword, err := term.ReadPassword(int(file.Fd()))
 			if err != nil {
@@ -274,4 +281,21 @@ func addFilterFlags(cmd *core.Command) {
 
 	_ = cmd.Command.Flags().MarkHidden(FlagVisibility)
 	_ = cmd.Command.Flags().MarkHidden(FlagGate)
+}
+
+// spinner displays a loading spinner until the done channel is closed.
+func spinner(out io.Writer, done <-chan struct{}) {
+	spinChars := []rune{'|', '/', '-', '\\'}
+	i := 0
+	for {
+		select {
+		case <-done:
+			_, _ = fmt.Fprint(out, "\r") // Clear spinner
+			return
+		default:
+			_, _ = fmt.Fprintf(out, "\rGenerating config... %c", spinChars[i%len(spinChars)])
+			time.Sleep(100 * time.Millisecond)
+			i++
+		}
+	}
 }
