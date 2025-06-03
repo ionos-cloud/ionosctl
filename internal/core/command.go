@@ -75,9 +75,24 @@ func (c *Command) Name() string {
 //     'WARN: <location> is an invalid location. Valid locations are: <allowedLocations>'
 //   - This also marks '--api-url' and '--location' flags as mutually exclusive.
 //   - The first location in 'allowedLocations' is used as the default URL if no location is provided.
-func WithRegionalConfigOverride(c *Command, productNameInConfigFile, templateFallbackURL string, allowedLocations []string) *Command {
+func WithRegionalFlags(c *Command, productNameInConfigFile, baseURL string, allowedLocations []string) *Command {
+	// Generate the default URL using the first provided location, if available
+	var defaultUrl string
+
 	if len(allowedLocations) == 0 {
 		panic(fmt.Errorf("no allowedLocations provided for %s", c.Command.Name()))
+	}
+
+	// First try config
+	endpointFromConfig := ""
+	if endpointFromConfig != "" {
+		defaultUrl = endpointFromConfig
+	} else {
+		if !strings.Contains(baseURL, "%s") {
+			panic(fmt.Errorf("baseURL %s does not contain a placeholder for location", baseURL))
+		}
+		defaultLocation := allowedLocations[0]
+		defaultUrl = fmt.Sprintf(baseURL, strings.ReplaceAll(defaultLocation, "/", "-"))
 	}
 
 	// Add the server URL flag

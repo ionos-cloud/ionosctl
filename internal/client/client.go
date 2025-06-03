@@ -4,14 +4,12 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"path/filepath"
 	"strings"
 	"sync"
 
 	cfg "github.com/ionos-cloud/ionosctl/v6/internal/config"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/die"
-	"github.com/ionos-cloud/sdk-go-bundle/shared"
 	"github.com/ionos-cloud/sdk-go-bundle/shared/fileconfiguration"
 	"github.com/spf13/viper"
 	"gopkg.in/yaml.v3"
@@ -20,30 +18,51 @@ import (
 var once sync.Once
 var instance *Client
 
-func retrieveConfigFile() (*fileconfiguration.FileConfig, string, error) {
-	// 1) --config flag
-	if cfg, path, err := loadFromFlag(); cfg != nil || err != nil {
-		return cfg, path, err
+// retrieveConfigFile tries to retrieve the configuration file, in this order:
+// 1. From the --config flag (default value or set by the user)
+// 2. From the fileconfiguration.NewFromEnv result, if not nil
+// 3. From the fileconfiguration.New("") default, if not nil
+// NOTE: If the config file is not found in either location, it will simply return nil without an error.
+func retrieveConfigFile() (*fileconfiguration.FileConfig, error) {
+	var config *fileconfiguration.FileConfig
+
+	// --- try the --config flag first
+	if viper.GetString(constants.ArgConfig) != "" {
+		config, err := fileconfiguration.New(viper.GetString(constants.ArgConfig))
+		if err != nil && !strings.Contains(err.Error(), "does not exist") {
+			// only return an error if the config file exists but is invalid
+			return nil, fmt.Errorf("failed to create config from --config flag: %w", err)
+		}
+		if config != nil {
+			return config, nil
+		}
 	}
 
-	// 2) SDK env var
-	if cfg, path, err := loadFromEnvVar(); cfg != nil || err != nil {
-		return cfg, path, err
+	// --- try the config file from the sdk env var
+
+	config, err := fileconfiguration.NewFromEnv()
+	if err != nil && !strings.Contains(err.Error(), "does not exist") {
+		// only return an error if the config file exists but is invalid
+		return nil, fmt.Errorf("failed to create config from env: %w", err)
+	}
+	if config != nil {
+		return config, nil
 	}
 
-	// 3) migrate old JSON if applicable
-	if cfg, path, err := loadFromJSONMigration(); cfg != nil || err != nil {
-		return cfg, path, err
+	// --- try the default sdk path
+
+	defaultSdkConfigPath, err := fileconfiguration.DefaultConfigFileName()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get default config file path: %w", err)
+	}
+	config, err = fileconfiguration.New(defaultSdkConfigPath)
+	if err != nil && !strings.Contains(err.Error(), "does not exist") {
+		// only return an error if the config file exists but is invalid
+		return nil, fmt.Errorf("failed to create default config from %s: %w",
+			defaultSdkConfigPath, err)
 	}
 
-	// 4) default SDK path
-	if cfg, path, err := loadFromSDKDefault(); cfg != nil || err != nil {
-		return cfg, path, err
-	}
-
-	// note: if we reach this point, no config file was found
-	// though old CLI behaviour was to return the default config path
-	return nil, viper.GetString(constants.ArgConfig), nil
+	return config, nil
 }
 
 func Get() (*Client, error) {
@@ -54,15 +73,19 @@ func Get() (*Client, error) {
 
 	once.Do(
 		func() {
-			config, path, err := retrieveConfigFile()
+			config, err := retrieveConfigFile()
+
 			if err != nil {
-				getClientErr = fmt.Errorf("failed to retrieve config file: %w", err)
-				return
+				getClientErr = errors.Join(getClientErr, fmt.Errorf("failed to retrieve config file: %w", err))
 			}
 
-			if instance == nil && os.Getenv(constants.EnvToken) != "" {
-				instance = newClient("", "", os.Getenv(constants.EnvToken), desiredURL)
-				instance.AuthSource = AuthSourceEnvBearer
+			var token string
+			if os.Getenv(constants.EnvToken) != "" {
+				token = os.Getenv(constants.EnvToken)
+			}
+
+			if err := instance.TestCreds(); err != nil {
+				getClientErr = errors.Join(getClientErr, fmt.Errorf("provided token is invalid: %w", err))
 			}
 
 			if instance == nil && os.Getenv(constants.EnvUsername) != "" && os.Getenv(constants.EnvPassword) != "" {
@@ -137,9 +160,6 @@ func Must(ehs ...func(error)) *Client {
 	return client
 }
 
-// NewClient creates a new client with the given credentials.
-// It is used for testing purposes or when you want to create a client with specific credentials.
-// It is highly recommended to use the Get() or Must() functions instead, as they handle the configuration file and environment variables automatically.
 func NewClient(name, pwd, token, hostUrl string) *Client {
 	return newClient(name, pwd, token, hostUrl)
 }
@@ -165,72 +185,4 @@ func (c *Client) TestCreds() error {
 // use only for testing/special cases)
 func EnforceClient(user, pass, token, hostUrl string) {
 	instance = newClient(user, pass, token, hostUrl)
-}
-
-func loadFromFlag() (*fileconfiguration.FileConfig, string, error) {
-	path := viper.GetString(constants.ArgConfig)
-	if path == "" {
-		return nil, "", nil
-	}
-	cfg, err := fileconfiguration.New(path)
-	if err != nil && !strings.Contains(err.Error(), "does not exist") {
-		return nil, path, fmt.Errorf("failed to load config from --config '%s': %w", path, err)
-	}
-	return cfg, path, nil
-}
-
-func loadFromEnvVar() (*fileconfiguration.FileConfig, string, error) {
-	path := os.Getenv(shared.IonosFilePathEnvVar)
-	if path == "" {
-		return nil, "", nil
-	}
-	cfg, err := fileconfiguration.New(path)
-	if err != nil && !strings.Contains(err.Error(), "does not exist") {
-		return nil, path, fmt.Errorf(
-			"failed to load config from env var %s='%s': %w",
-			shared.IonosFilePathEnvVar, path, err,
-		)
-	}
-	return cfg, path, nil
-}
-
-func loadFromJSONMigration() (*fileconfiguration.FileConfig, string, error) {
-	yamlPath := viper.GetString(constants.ArgConfig)
-	if yamlPath == "" {
-		return nil, "", nil
-	}
-
-	jsonPath := filepath.Join(filepath.Dir(yamlPath), "config.json")
-	if _, err := os.Stat(jsonPath); err != nil {
-		return nil, "", nil // no JSON to migrate
-	}
-
-	migrated, err := cfg.MigrateFromJSON(jsonPath)
-	if err != nil {
-		return nil, "", fmt.Errorf("failed migrating %s → YAML: %w", jsonPath, err)
-	}
-	if migrated == nil {
-		return nil, "", nil
-	}
-
-	out, _ := yaml.Marshal(migrated)
-	if err := os.WriteFile(yamlPath, out, 0o600); err != nil {
-		fmt.Fprintf(os.Stderr,
-			"Warning: could not write migrated config to %s: %v\n",
-			yamlPath, err,
-		)
-	}
-	return migrated, yamlPath, nil
-}
-
-func loadFromSDKDefault() (*fileconfiguration.FileConfig, string, error) {
-	defaultPath, err := fileconfiguration.DefaultConfigFileName()
-	if err != nil {
-		return nil, defaultPath, fmt.Errorf("failed to get default config path: %w", err)
-	}
-	cfg, err := fileconfiguration.New(defaultPath)
-	if err != nil && !strings.Contains(err.Error(), "does not exist") {
-		return nil, defaultPath, fmt.Errorf("failed to load default config '%s': %w", defaultPath, err)
-	}
-	return cfg, defaultPath, nil
 }
