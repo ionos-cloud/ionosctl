@@ -41,7 +41,7 @@ Notes:
   -u, --api-url string                Override default host url (default "https://api.ionos.com")
       --blacklist strings             Comma-separated list of API names to exclude
   -c, --config string                 Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.yaml")
-      --custom-names stringToString   Define custom names for each spec (default <Overriden with sdk-go-bundle produt names: [authentication=auth, certificatemanager=cert, cloud=compute, object‑storage=objectstorage, object‑storage‑management=objectstoragemanagement, mongodb=mongo, postgresql=psql]>)
+      --custom-names stringToString   Define custom names for each spec (default <Overriden with sdk-go-bundle product names: [authentication=auth, certificatemanager=cert, cloud=compute, object‑storage=objectstorage, object‑storage‑management=objectstoragemanagement, mongodb=mongo, postgresql=psql]>)
       --environment string            Environment to use (default "prod")
       --example                       Print an example YAML config file to stdout and skip authentication step
       --filter-version string         Filter by spec version (e.g. v1)
