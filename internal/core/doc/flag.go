@@ -23,6 +23,13 @@ func DataplatformUsesLatestVersion(flagDescription, defaultValue string) string 
 	return defaultValue
 }
 
+func CustomNamesHandler(flagDescription, defaultValue string) string {
+	if strings.Contains(flagDescription, "custom names for each spec") {
+		return "<Overriden with sdk-go-bundle product names: [authentication=auth, certificatemanager=cert, cloud=compute, object‑storage=objectstorage, object‑storage‑management=objectstoragemanagement, mongodb=mongo, postgresql=psql]>"
+	}
+	return defaultValue
+}
+
 func getStrategyForFlag(flagName string) FlagDefaultDocumentationHandler {
 	switch flagName {
 	case "maintenance-day", "maintenance-time":
@@ -31,6 +38,8 @@ func getStrategyForFlag(flagName string) FlagDefaultDocumentationHandler {
 		return RandomDayDescriptionHandler
 	case "version":
 		return DataplatformUsesLatestVersion
+	case "custom-names":
+		return CustomNamesHandler
 	default:
 		return nil
 	}
