@@ -27,48 +27,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-var ConfigurationPriorityRules = []Layer{
-	{constants.ArgToken, "", "", fmt.Sprintf("Global Flags (--%s)", constants.ArgToken)},
-	{
-		constants.EnvToken, constants.EnvUsername, constants.EnvPassword,
-		fmt.Sprintf(
-			"Environment Variables (%s, %s, %s)", constants.EnvToken, constants.EnvUsername, constants.EnvPassword,
-		),
-	},
-	{
-		constants.CfgToken, constants.CfgUsername, constants.CfgPassword,
-		fmt.Sprintf(
-			"Config file settings (%s, %s, %s)", constants.CfgToken, constants.CfgUsername, constants.CfgPassword,
-		),
-	}, // Note: Username & Password are no longer generated in cfg file by `ionosctl login`, however we will keep this for backward compatibility.
-}
-
-// Layer represents an authentication layer. E.g., flags, env vars, config file.
-// A client can use one of these layers to authenticate against CloudAPI,
-// each layer has priority over layers that are defined after it.
-// the Token has priority over username & password pairs of the same authentication layer.
-type Layer struct {
-	TokenKey    string
-	UsernameKey string
-	PasswordKey string
-	Description string // You can optionally pass a string to describe to the user what this layer is and how to set its values
-}
-
-// IsTokenAuth returns true if a token is being used for authentication. Otherwise, username & password were used.
-func (c *Client) IsTokenAuth() bool {
-	return c.CloudClient.GetConfig().Token != ""
-}
-
-func (c *Client) UsedLayer() *Layer {
-	if c == nil || c.usedLayer == nil {
-		return nil
-	}
-	return c.usedLayer
-}
-
 type Client struct {
-	usedLayer *Layer // i.e. which auth layer are we using. Flags / Env Vars / Config File
-
 	Apigateway           *apigateway.APIClient
 	CloudClient          *cloudv6.APIClient
 	AuthClient           *auth.APIClient
@@ -93,7 +52,7 @@ func appendUserAgent(userAgent string) string {
 	return fmt.Sprintf("%v_%v", viper.GetString(constants.CLIHttpUserAgent), userAgent)
 }
 
-func newClient(name, pwd, token, hostUrl string, usedLayer *Layer) *Client {
+func newClient(name, pwd, token, hostUrl string) *Client {
 	// TODO: Replace all configurations with this one
 	sharedConfig := shared.NewConfiguration(name, pwd, token, hostUrl)
 	sharedConfig.UserAgent = appendUserAgent(sharedConfig.UserAgent)
@@ -131,7 +90,5 @@ func newClient(name, pwd, token, hostUrl string, usedLayer *Layer) *Client {
 		MongoClient:      mongo.NewAPIClient(sharedConfig),
 		MariaClient:      mariadb.NewAPIClient(sharedConfig),
 		InMemoryDBClient: inmemorydb.NewAPIClient(sharedConfig),
-
-		usedLayer: usedLayer,
 	}
 }

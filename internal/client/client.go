@@ -4,74 +4,85 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"os"
+	"strings"
 	"sync"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/config"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/die"
+	"github.com/ionos-cloud/sdk-go-bundle/shared/fileconfiguration"
 	"github.com/spf13/viper"
 )
 
 var once sync.Once
 var instance *Client
 
-func selectAuthLayer(layers []Layer) (values map[string]string, usedLayer Layer, err error) {
-	for _, layer := range layers {
-		token := viper.GetString(layer.TokenKey)
-		username := viper.GetString(layer.UsernameKey)
-		password := viper.GetString(layer.PasswordKey)
+// retrieveConfigFile tries to retrieve the configuration file, in this order:
+// 1. From the --config flag (default value or set by the user)
+// 2. From the fileconfiguration.NewFromEnv result, if not nil
+// 3. From the fileconfiguration.New("") default, if not nil
+// NOTE: If the config file is not found in either location, it will simply return nil without an error.
+func retrieveConfigFile() (*fileconfiguration.FileConfig, error) {
+	var config *fileconfiguration.FileConfig
 
-		if token != "" || (username != "" && password != "") {
-			return map[string]string{
-				"token":     token,
-				"username":  username,
-				"password":  password,
-				"serverUrl": config.GetServerUrl(),
-			}, layer, nil
+	// --- try the --config flag first
+	if viper.GetString(constants.ArgConfig) != "" {
+		config, err := fileconfiguration.New(viper.GetString(constants.ArgConfig))
+		if err != nil && !strings.Contains(err.Error(), "does not exist") {
+			// only return an error if the config file exists but is invalid
+			return nil, fmt.Errorf("failed to create config from --config flag: %w", err)
+		}
+		if config != nil {
+			return config, nil
 		}
 	}
-	return nil, Layer{}, fmt.Errorf("none of the layers provided a value for either token or username & password. use `ionosctl whoami --provenance` for help")
+
+	// --- try the config file from the sdk env var
+
+	config, err := fileconfiguration.NewFromEnv()
+	if err != nil && !strings.Contains(err.Error(), "does not exist") {
+		// only return an error if the config file exists but is invalid
+		return nil, fmt.Errorf("failed to create config from env: %w", err)
+	}
+	if config != nil {
+		return config, nil
+	}
+
+	// --- try the default sdk path
+
+	defaultSdkConfigPath, err := fileconfiguration.DefaultConfigFileName()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get default config file path: %w", err)
+	}
+	config, err = fileconfiguration.New(defaultSdkConfigPath)
+	if err != nil && !strings.Contains(err.Error(), "does not exist") {
+		// only return an error if the config file exists but is invalid
+		return nil, fmt.Errorf("failed to create default config from %s: %w",
+			defaultSdkConfigPath, err)
+	}
+
+	return config, nil
 }
 
-// Get a client and possibly fail. Uses viper to get the credentials and API URL.
-// The returned client is guaranteed to have working credentials
-// Order:
-// Explicit flags ( e.g. --token )
-// Environment Variables ( e.g. IONOS_TOKEN )
-// Config File ( e.g. userdata.token )
 func Get() (*Client, error) {
 	var getClientErr error
 
 	once.Do(
 		func() {
-			// Read config file, if available
-			data, configErr := config.Read()
-			if configErr == nil {
-				for k, v := range data {
-					if !viper.IsSet(k) {
-						viper.Set(k, v)
-					}
-				}
+			config, err := retrieveConfigFile()
+
+			if err != nil {
+				getClientErr = errors.Join(getClientErr, fmt.Errorf("failed to retrieve config file: %w", err))
 			}
 
-			viper.AutomaticEnv()
-
-			values, usedLayer, layerErr := selectAuthLayer(ConfigurationPriorityRules)
-			if layerErr != nil {
-				if configErr != nil {
-					getClientErr = errors.Join(getClientErr, fmt.Errorf("failed reading auth config file: %w", configErr))
-				} else {
-					getClientErr = errors.Join(getClientErr, fmt.Errorf("failed selecting an auth layer: %w", layerErr))
-				}
-				return
+			var token string
+			if os.Getenv(constants.EnvToken) != "" {
+				token = os.Getenv(constants.EnvToken)
 			}
-
-			instance = newClient(
-				values["username"], values["password"], values["token"], values["serverUrl"], &usedLayer,
-			)
 
 			if err := instance.TestCreds(); err != nil {
-				getClientErr = errors.Join(getClientErr, fmt.Errorf("failed creating client: %w", err))
+				getClientErr = errors.Join(getClientErr, fmt.Errorf("provided token is invalid: %w", err))
 			}
 		},
 	)
@@ -102,23 +113,12 @@ func Must(ehs ...func(error)) *Client {
 	return client
 }
 
-// NewClient bypasses the singleton check, not recommended for normal use.
 func NewClient(name, pwd, token, hostUrl string) *Client {
-	return newClient(name, pwd, token, hostUrl, nil)
-}
-
-func NewClientFromCfgData(values map[string]string) *Client {
-	return newClient(
-		values[constants.CfgUsername],
-		values[constants.CfgPassword],
-		values[constants.CfgToken],
-		values[constants.CfgServerUrl],
-		nil,
-	)
+	return newClient(name, pwd, token, hostUrl)
 }
 
 func TestCreds(user, pass, token string) error {
-	cl := newClient(user, pass, token, constants.DefaultApiURL, nil)
+	cl := newClient(user, pass, token, constants.DefaultApiURL)
 	return cl.TestCreds()
 }
 
@@ -143,5 +143,5 @@ func (c *Client) TestCreds() error {
 // EnforceClient sets the global client instance to a new client with the given credentials (
 // use only for testing/special cases)
 func EnforceClient(user, pass, token, hostUrl string) {
-	instance = newClient(user, pass, token, hostUrl, nil)
+	instance = newClient(user, pass, token, hostUrl)
 }
