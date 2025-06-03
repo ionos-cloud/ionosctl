@@ -15,7 +15,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/v6/internal/core"
 	configgen "github.com/ionos-cloud/ionosctl/v6/pkg/cfggen"
 	"github.com/ionos-cloud/ionosctl/v6/pkg/pointer"
-	"github.com/spf13/viper"
 	"golang.org/x/term"
 )
 
@@ -56,8 +55,14 @@ ionosctl config login --token $IONOS_TOKEN \
 		},
 		CmdRun: func(c *core.CommandConfig) error {
 			token := "<token>"
-			if !viper.GetBool(core.GetFlagName(c.NS, FlagExample)) {
-				fmt.Println("No example")
+			fmt.Println("Getting from ", core.GetFlagName(c.NS, FlagExample))
+
+			printExample, err := c.Command.Command.Flags().GetBool(FlagExample)
+			if err != nil {
+				return fmt.Errorf("could not get flag %s: %w", FlagExample, err)
+			}
+
+			if !printExample {
 				var err error
 				token, err = getToken(c)
 				if err != nil {
@@ -66,37 +71,58 @@ ionosctl config login --token $IONOS_TOKEN \
 			}
 
 			// build filter options
+			customNames, err := c.Command.Command.Flags().GetStringToString(FlagCustomNames)
+			if err != nil {
+				return fmt.Errorf("could not get flag %s: %w", FlagCustomNames, err)
+			}
 			opts := configgen.Filters{
-				CustomNames: viper.GetStringMapString(core.GetFlagName(c.NS, FlagCustomNames)),
+				CustomNames: customNames,
 			}
 
+			profileName, err := c.Command.Command.Flags().GetString(FlagSettingsProfile)
+			if err != nil {
+				return fmt.Errorf("could not get flag %s: %w", FlagSettingsProfile, err)
+			}
+			env, err := c.Command.Command.Flags().GetString(FlagSettingsEnv)
+			if err != nil {
+				return fmt.Errorf("could not get flag %s: %w", FlagSettingsEnv, err)
+			}
+			version, err := c.Command.Command.Flags().GetString(FlagSettingsVersion)
+			if err != nil {
+				return fmt.Errorf("could not get flag %s: %w", FlagSettingsVersion, err)
+			}
 			settings := configgen.ProfileSettings{
 				Token:       token,
-				ProfileName: viper.GetString(core.GetFlagName(c.NS, FlagSettingsProfile)),
-				Environment: viper.GetString(core.GetFlagName(c.NS, FlagSettingsEnv)),
-				Version:     viper.GetString(core.GetFlagName(c.NS, FlagSettingsVersion)),
+				ProfileName: profileName,
+				Environment: env,
+				Version:     version,
 			}
 
 			// apply version filter if provided
-			if viper.GetString(core.GetFlagName(c.NS, FlagFilterVersion)) != "" {
-				opts.Version = pointer.From(viper.GetString(core.GetFlagName(c.NS, FlagFilterVersion)))
+			filterVersion, err := c.Command.Command.Flags().GetString(FlagFilterVersion)
+			if err != nil && filterVersion != "" {
+				opts.Version = pointer.From(filterVersion)
 			}
 
 			// always apply hidden filters (defaults set above)
-			opts.Visibility = pointer.From(viper.GetString(core.GetFlagName(c.NS, FlagVisibility)))
-			opts.Gate = pointer.From(viper.GetString(core.GetFlagName(c.NS, FlagGate)))
+			filterVisibility, _ := c.Command.Command.Flags().GetString(FlagVisibility)
+			filterGate, _ := c.Command.Command.Flags().GetString(FlagGate)
+			opts.Visibility = pointer.From(filterVisibility)
+			opts.Gate = pointer.From(filterGate)
 
 			// apply whitelist only if flag passed
-			if len(viper.GetStringSlice(core.GetFlagName(c.NS, FlagWhitelist))) > 0 {
+			filterWhitelist, _ := c.Command.Command.Flags().GetStringSlice(FlagWhitelist)
+			if len(filterWhitelist) > 0 {
 				opts.Whitelist = make(map[string]bool)
-				for _, name := range viper.GetStringSlice(core.GetFlagName(c.NS, FlagWhitelist)) {
+				for _, name := range filterWhitelist {
 					opts.Whitelist[name] = true
 				}
 			}
 			// apply blacklist only if flag passed
-			if len(viper.GetStringSlice(core.GetFlagName(c.NS, FlagBlacklist))) > 0 {
+			filterBlacklist, _ := c.Command.Command.Flags().GetStringSlice(FlagBlacklist)
+			if len(filterBlacklist) > 0 {
 				opts.Blacklist = make(map[string]bool)
-				for _, name := range viper.GetStringSlice(core.GetFlagName(c.NS, FlagBlacklist)) {
+				for _, name := range filterBlacklist {
 					opts.Blacklist[name] = true
 				}
 			}
@@ -107,7 +133,7 @@ ionosctl config login --token $IONOS_TOKEN \
 				return fmt.Errorf("could not generate config: %w", err)
 			}
 
-			if viper.GetBool(core.GetFlagName(c.NS, FlagExample)) {
+			if printExample {
 				bytes, err := cfg.ToBytesYAML()
 				if err != nil {
 					return fmt.Errorf("could not convert config to bytes: %w", err)
@@ -142,11 +168,14 @@ ionosctl config login --token $IONOS_TOKEN \
 }
 
 func getToken(c *core.CommandConfig) (string, error) {
-	if viper.IsSet(core.GetFlagName(c.NS, constants.ArgToken)) {
-		return viper.GetString(core.GetFlagName(c.NS, constants.ArgToken)), nil
+	token, err := c.Command.Command.Flags().GetString(constants.ArgToken)
+	if err != nil {
+		return "", fmt.Errorf("could not get flag %s: %w", constants.ArgToken, err)
+	}
+	if token != "" {
+		return token, nil
 	}
 
-	// can't user viper to get here, because it would also look at USER env var value
 	username, _ := c.Command.Command.Flags().GetString(constants.ArgUser)
 	if username == "" {
 		fmt.Fprintln(c.Command.Command.OutOrStdout(), "Enter your username: ")
@@ -159,7 +188,7 @@ func getToken(c *core.CommandConfig) (string, error) {
 		username = strings.TrimSpace(username) // remove trailing newline
 	}
 
-	password := viper.GetString(core.GetFlagName(c.NS, constants.ArgPassword))
+	password, _ := c.Command.Command.Flags().GetString(constants.ArgPassword)
 	if password == "" {
 		fmt.Fprintln(c.Command.Command.OutOrStdout(), "Enter your password: ")
 		if file, ok := c.Command.Command.InOrStdin().(*os.File); ok {
