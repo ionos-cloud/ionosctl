@@ -164,8 +164,8 @@ type ClientOptions struct {
 
 // Credentials are the credentials that will be used for authentication
 type Credentials struct {
-	Username string `yaml:"username,omitempty"`
-	Password string `yaml:"password,omitempty"`
+	Username string `yaml:"username"`
+	Password string `yaml:"password"`
 	Token    string `yaml:"token"`
 }
 

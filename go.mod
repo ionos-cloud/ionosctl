@@ -45,7 +45,7 @@ require (
 	github.com/ionos-cloud/sdk-go-bundle/products/logging/v2 v2.1.2
 	github.com/ionos-cloud/sdk-go-bundle/products/monitoring/v2 v2.0.1
 	github.com/ionos-cloud/sdk-go-bundle/products/vpn/v2 v2.0.3
-	github.com/ionos-cloud/sdk-go-bundle/shared v0.1.6-0.20250620142855-cbf7df19d60a
+	github.com/ionos-cloud/sdk-go-bundle/shared v0.1.5
 )
 
 require (
