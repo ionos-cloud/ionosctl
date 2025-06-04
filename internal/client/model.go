@@ -7,6 +7,7 @@ import (
 	"github.com/ionos-cloud/sdk-go-bundle/products/dbaas/inmemorydb/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/products/monitoring/v2"
 	"github.com/ionos-cloud/sdk-go-bundle/shared"
+	"github.com/ionos-cloud/sdk-go-bundle/shared/fileconfiguration"
 
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
 	"github.com/ionos-cloud/sdk-go-bundle/products/auth/v2"
@@ -27,7 +28,20 @@ import (
 	"github.com/spf13/viper"
 )
 
+// AuthSource represents a human-readable description of where the client's authentication credentials were sourced from.
+type AuthSource string
+
+const (
+	AuthSourceEnvBearer AuthSource = "environment variable: IONOS_TOKEN"
+	AuthSourceEnvBasic  AuthSource = "environment variables: IONOS_USERNAME, IONOS_PASSWORD"
+	AuthSourceCfgBearer AuthSource = "token from config file: ."
+	AuthSourceNone      AuthSource = "no authentication provided"
+)
+
 type Client struct {
+	Config     *fileconfiguration.FileConfig
+	AuthSource AuthSource
+
 	Apigateway           *apigateway.APIClient
 	CloudClient          *cloudv6.APIClient
 	AuthClient           *auth.APIClient
