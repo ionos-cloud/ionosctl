@@ -204,6 +204,20 @@ func (f *FileConfig) GetProfileNames() []string {
 	return names
 }
 
+func (f *FileConfig) GetToken() string {
+	if f == nil {
+		return ""
+	}
+	currentProfile := f.GetCurrentProfile()
+	if currentProfile == nil {
+		return ""
+	}
+	if currentProfile.Credentials.Token != "" {
+		return currentProfile.Credentials.Token
+	}
+	return ""
+}
+
 // GetEnvironmentNames returns a list of environment names from the loaded configuration
 func (f *FileConfig) GetEnvironmentNames() []string {
 	names := make([]string, len(f.Environments))

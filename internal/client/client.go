@@ -2,7 +2,6 @@ package client
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"os"
 	"strings"
@@ -71,18 +70,29 @@ func Get() (*Client, error) {
 	once.Do(
 		func() {
 			config, err := retrieveConfigFile()
-
 			if err != nil {
-				getClientErr = errors.Join(getClientErr, fmt.Errorf("failed to retrieve config file: %w", err))
+				getClientErr = fmt.Errorf("failed to retrieve config file: %w", err)
+				return
 			}
 
-			var token string
 			if os.Getenv(constants.EnvToken) != "" {
-				token = os.Getenv(constants.EnvToken)
+				instance = newClient("", "", os.Getenv(constants.EnvToken), "")
+				instance.AuthSource = AuthSourceEnvBearer
+				return
 			}
 
-			if err := instance.TestCreds(); err != nil {
-				getClientErr = errors.Join(getClientErr, fmt.Errorf("provided token is invalid: %w", err))
+			if os.Getenv(constants.EnvUsername) != "" && os.Getenv(constants.EnvPassword) != "" {
+				instance = newClient(os.Getenv(constants.EnvUsername), os.Getenv(constants.EnvPassword), "", "")
+				instance.AuthSource = AuthSourceEnvBasic
+			}
+
+			instance.Config = config
+			instance.AuthSource = AuthSourceCfgBearer
+			if instance.Config == nil {
+				getClientErr = fmt.Errorf("no configuration file found, please use 'ionosctl login' "+
+					"or set the environment variable %s or %s and %s",
+					constants.EnvToken, constants.EnvUsername, constants.EnvPassword)
+				return
 			}
 		},
 	)
@@ -113,6 +123,9 @@ func Must(ehs ...func(error)) *Client {
 	return client
 }
 
+// NewClient creates a new client with the given credentials.
+// It is used for testing purposes or when you want to create a client with specific credentials.
+// It is highly recommended to use the Get() or Must() functions instead, as they handle the configuration file and environment variables automatically.
 func NewClient(name, pwd, token, hostUrl string) *Client {
 	return newClient(name, pwd, token, hostUrl)
 }
