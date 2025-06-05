@@ -287,13 +287,24 @@ func addFilterFlags(cmd *core.Command) {
 func spinner(out io.Writer, done <-chan struct{}) {
 	spinChars := []rune{'|', '/', '-', '\\'}
 	i := 0
+
+	// In some cases, the generation takes a short amount of time, in which case don't pollute the output with a spinner right away
+	time.Sleep(250 * time.Millisecond)
+	// if done already closed, don't start the spinner
+	select {
+	case <-done:
+		return
+	default:
+		// continue with spinner
+	}
+
 	for {
 		select {
 		case <-done:
 			_, _ = fmt.Fprint(out, "\r") // Clear spinner
 			return
 		default:
-			_, _ = fmt.Fprintf(out, "\rGenerating config... %c", spinChars[i%len(spinChars)])
+			_, _ = fmt.Fprintf(out, "\r%c", spinChars[i%len(spinChars)])
 			time.Sleep(100 * time.Millisecond)
 			i++
 		}
