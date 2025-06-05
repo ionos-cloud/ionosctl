@@ -7,8 +7,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/ionos-cloud/ionosctl/v6/internal/client"
 	"github.com/ionos-cloud/ionosctl/v6/internal/constants"
-	"github.com/ionos-cloud/ionosctl/v6/internal/printer/jsontabwriter"
 	"github.com/spf13/cobra"
 	flag "github.com/spf13/pflag"
 	"github.com/spf13/viper"
@@ -75,30 +75,14 @@ func (c *Command) Name() string {
 //     'WARN: <location> is an invalid location. Valid locations are: <allowedLocations>'
 //   - This also marks '--api-url' and '--location' flags as mutually exclusive.
 //   - The first location in 'allowedLocations' is used as the default URL if no location is provided.
-func WithRegionalFlags(c *Command, productNameInConfigFile, baseURL string, allowedLocations []string) *Command {
-	// Generate the default URL using the first provided location, if available
-	var defaultUrl string
-
+func WithRegionalFlags(c *Command, productNameInConfigFile, fallbackURL string, allowedLocations []string) *Command {
 	if len(allowedLocations) == 0 {
 		panic(fmt.Errorf("no allowedLocations provided for %s", c.Command.Name()))
 	}
 
-	// First try config
-	endpointFromConfig := ""
-	if endpointFromConfig != "" {
-		defaultUrl = endpointFromConfig
-	} else {
-		if !strings.Contains(baseURL, "%s") {
-			panic(fmt.Errorf("baseURL %s does not contain a placeholder for location", baseURL))
-		}
-		defaultLocation := allowedLocations[0]
-		defaultUrl = fmt.Sprintf(baseURL, strings.ReplaceAll(defaultLocation, "/", "-"))
-	}
-
 	// Add the server URL flag
 	c.Command.PersistentFlags().StringP(
-		constants.ArgServerUrl, constants.ArgServerUrlShort, defaultUrl, "Override default host URL",
-	)
+		constants.ArgServerUrl, constants.ArgServerUrlShort, fallbackURL, "Override default host URL. This will be preferred over the location flag as well as the config file override")
 
 	// Add the location flag
 	c.Command.PersistentFlags().StringP(
@@ -123,17 +107,12 @@ func WithRegionalFlags(c *Command, productNameInConfigFile, baseURL string, allo
 		// Mark the flags as mutually exclusive
 		c.Command.MarkFlagsMutuallyExclusive(constants.ArgServerUrl, constants.FlagLocation)
 
-		// Handle the location flag
-		if location, _ := cmd.Flags().GetString(constants.FlagLocation); location != "" {
-			normalizedLoc := strings.ReplaceAll(location, "/", "-")
-			if strings.Contains(baseURL, "%s") {
-				viper.Set(constants.ArgServerUrl, fmt.Sprintf(baseURL, normalizedLoc))
-			} else {
-				// Log a warning if trying to use location with a non-placeholder URL
-				fmt.Fprintf(c.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput(
-					"WARN: Ignoring location %s because this API does not support region-based URLs", location))
-			}
-		}
+		// parse location flag
+		location, _ := cmd.Flags().GetString(constants.FlagLocation)
+
+		url := findOverridenURL(cmd, productNameInConfigFile, fallbackURL, location)
+
+		viper.Set(constants.ArgServerUrl, url)
 
 		// Because Viper has issues with binding to the same flag multiple times, we need to manually set the value
 		if c.Command.PersistentFlags().Changed(constants.ArgServerUrl) {
@@ -150,6 +129,27 @@ func WithRegionalFlags(c *Command, productNameInConfigFile, baseURL string, allo
 	}
 
 	return c
+}
+
+func findOverridenURL(cmd *cobra.Command, fallbackURL, productNameInConfigFile, location string) string {
+	// Check if the --server-url flag is set
+	if cmd.Flags().Changed(constants.ArgServerUrl) {
+		serverURL, _ := cmd.Flags().GetString(constants.ArgServerUrl)
+		return serverURL
+	}
+
+	// return override from config file if available
+	override := client.Must().Config.GetOverride(productNameInConfigFile, location)
+	if override != nil {
+		return override.Name
+	}
+
+	// otherwise, format the fallback URL with the location
+	if location != "" {
+		return fmt.Sprintf(fallbackURL, strings.ReplaceAll(location, "/", "-"))
+	}
+
+	return constants.DefaultApiURL
 }
 
 func (c *Command) CommandPath() string {
