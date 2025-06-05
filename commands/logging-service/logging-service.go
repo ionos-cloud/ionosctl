@@ -22,5 +22,5 @@ func Root() *core.Command {
 	cmd.AddCommand(pipeline.PipelineCmd())
 	cmd.AddCommand(logs.LogsCmd())
 
-	return core.WithRegionalConfigOverride(cmd, "logging", constants.LoggingApiRegionalURL, constants.LoggingLocations)
+	return core.WithRegionalFlags(cmd, "logging", constants.LoggingApiRegionalURL, constants.LoggingLocations)
 }
