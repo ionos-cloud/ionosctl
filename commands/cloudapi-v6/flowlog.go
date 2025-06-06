@@ -493,38 +493,14 @@ func DeleteAllFlowlogs(c *core.CommandConfig) error {
 		return errors.New("no Flowlogs found")
 	}
 
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput("Flowlogs to be deleted:"))
-
-	for _, backupUnit := range *flowlogsItems {
-		delIdAndName := ""
-
-		if id, ok := backupUnit.GetIdOk(); ok && id != nil {
-			delIdAndName += "Flowlog Id: " + *id
-		}
-
-		if properties, ok := backupUnit.GetPropertiesOk(); ok && properties != nil {
-			if name, ok := properties.GetNameOk(); ok && name != nil {
-				delIdAndName += " Flowlog Name: " + *name
-			}
-		}
-
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput(delIdAndName))
-	}
-
-	if !confirm.FAsk(c.Command.Command.InOrStdin(), "delete all the flow logs", viper.GetBool(constants.ArgForce)) {
-		return fmt.Errorf(confirm.UserDenied)
-	}
-
-	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting all the Flowlogs..."))
-
 	var multiErr error
-	for _, flowlog := range *flowlogsItems {
-		id, ok := flowlog.GetIdOk()
-		if !ok || id == nil {
-			continue
-		}
+	for _, backupUnit := range *flowlogsItems {
+		id := backupUnit.GetId()
+		name := backupUnit.GetProperties().Name
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Starting deleting Flowlog with id: %v...", *id))
+		if !confirm.FAsk(c.Command.Command.InOrStdin(), fmt.Sprintf("Delete flow log with Id: %s , Name: %s", *id, *name), viper.GetBool(constants.ArgForce)) {
+			return fmt.Errorf(confirm.UserDenied)
+		}
 
 		resp, err = c.CloudApiV6Services.FlowLogs().Delete(dcId, serverId, nicId, *id, queryParams)
 		if resp != nil && request.GetId(resp) != "" {
@@ -535,19 +511,15 @@ func DeleteAllFlowlogs(c *core.CommandConfig) error {
 			continue
 		}
 
-		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateLogOutput(constants.MessageDeletingAll, c.Resource, *id))
-
 		if err = waitfor.WaitForRequest(c, waiter.RequestInterrogator, request.GetId(resp)); err != nil {
 			multiErr = errors.Join(multiErr, fmt.Errorf(constants.ErrDeleteAll, c.Resource, *id, err))
 			continue
 		}
-
 	}
 
 	if multiErr != nil {
 		return multiErr
 	}
 
-	fmt.Fprintf(c.Command.Command.OutOrStdout(), jsontabwriter.GenerateLogOutput("Flowlogs successfully deleted"))
 	return nil
 }
