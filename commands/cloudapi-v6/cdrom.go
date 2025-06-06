@@ -347,7 +347,7 @@ func RunServerCdromDetach(c *core.CommandConfig) error {
 	}
 
 	fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput(
-		"CD-ROM with id: %v is detaching... ", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgCdromId))))
+		"CD-ROM with id: %v and name: %v is detaching... ", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgCdromId)), viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))))
 
 	resp, err := c.CloudApiV6Services.Servers().DetachCdrom(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),

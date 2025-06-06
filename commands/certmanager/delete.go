@@ -63,7 +63,7 @@ func CmdDelete(c *core.CommandConfig) error {
 		}
 
 		for _, cert := range *certs.Items {
-			msg := fmt.Sprintf("delete Certificate ID: %s", *cert.Id)
+			msg := fmt.Sprintf("delete Certificate Name: %s, Id: %s ", *cert.Properties.Name, *cert.Id)
 			if !confirm.FAsk(c.Command.Command.InOrStdin(), msg, viper.GetBool(constants.ArgForce)) {
 				return fmt.Errorf(confirm.UserDenied)
 			}
@@ -74,12 +74,18 @@ func CmdDelete(c *core.CommandConfig) error {
 			}
 		}
 	} else {
+		fmt.Fprintf(c.Command.Command.ErrOrStderr(), jsontabwriter.GenerateVerboseOutput("Deleting Certificate..."))
+
 		id, err := c.Command.Command.Flags().GetString(FlagCertId)
 		if err != nil {
 			return err
 		}
+		name, error := c.Command.Command.Flags().GetString(FlagCertName)
+		if error != nil {
+			return error
+		}
 
-		msg := fmt.Sprintf("delete Certificate ID: %s", id)
+		msg := fmt.Sprintf("delete Certificate Name: %s, Id: %s ", name, id)
 		if !confirm.FAsk(c.Command.Command.InOrStdin(), msg, viper.GetBool(constants.ArgForce)) {
 			return fmt.Errorf(confirm.UserDenied)
 		}
