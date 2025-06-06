@@ -526,7 +526,7 @@ func RemoveAllServerLabels(c *core.CommandConfig) error {
 			return fmt.Errorf(confirm.UserDenied)
 		}
 	}
-	
+
 	var multiErr error
 	for _, label := range *labelsItems {
 		properties, ok := label.GetPropertiesOk()
