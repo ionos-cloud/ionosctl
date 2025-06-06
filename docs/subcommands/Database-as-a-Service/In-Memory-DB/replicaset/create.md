@@ -86,6 +86,6 @@ volatile-ttl: The key with the nearest time to live will be removed first, but o
 ## Examples
 
 ```text
-ionosctl dbaas inmemorydb replicaset create 
+ionosctl dbaas inmemorydb replicaset create --location LOCATION --name NAME --replicas REPLICAS --cores CORES --ram RAM --user USER --password PASSWORD --datacenter-id DATACENTER_ID --lan-id LAN_ID --cidr CIDR 
 ```
 

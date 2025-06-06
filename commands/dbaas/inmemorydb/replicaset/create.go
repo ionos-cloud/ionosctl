@@ -50,7 +50,10 @@ volatile-lru: The least recently used keys will be removed first, but only among
 volatile-lfu: The least frequently used keys will be removed first, but only among keys with the expire field set to true.
 volatile-random: Random keys will be removed, but only among keys with the expire field set to true.
 volatile-ttl: The key with the nearest time to live will be removed first, but only among keys with the expire field set to true.`,
-		Example: "ionosctl dbaas inmemorydb replicaset create ", // TODO
+		//  replicaset create --location de/fra --name from-snapshot --replicas 1 --cores 1 --ram 4 --user alex --password PASSWORD --datacenter-id 43c97678-4bae-4bd9-9905-35706e5fcdbb --lan-id 1 --cidr 192.168.1.70/24 --hash-password=false
+		Example: "ionosctl dbaas inmemorydb replicaset create " + core.FlagsUsage(constants.FlagLocation, constants.FlagName,
+			constants.FlagReplicas, constants.FlagCores, constants.FlagRam, constants.ArgUser, constants.ArgPassword,
+			constants.FlagDatacenterId, constants.FlagLanId, constants.FlagCidr),
 		PreCmdRun: func(c *core.PreCommandConfig) error {
 			if err := core.CheckRequiredFlags(c.Command, c.NS,
 				constants.FlagName, constants.FlagReplicas,

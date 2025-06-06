@@ -71,6 +71,6 @@ Partially modify a replicaset's properties. NOTE: Passwords cannot be modified! 
 ## Examples
 
 ```text
-ionosctl dbaas inmemorydb replicaset update --replica-set-id REPLICA_SET_ID --password PASSWORD --name NAME --replicas REPLICAS --maintenance-day MAINTENANCE_DAY --maintenance-time MAINTENANCE_TIME 
+ionosctl dbaas inmemorydb replicaset update --replica-set-id REPLICA_SET_ID --name NAME --replicas REPLICAS --maintenance-day MAINTENANCE_DAY --maintenance-time MAINTENANCE_TIME 
 ```
 
