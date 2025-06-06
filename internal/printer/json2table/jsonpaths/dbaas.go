@@ -108,11 +108,12 @@ var (
 	}
 
 	DbaasInMemoryDBSnapshot = map[string]string{
-		"Id":           "id",
-		"ReplicasetId": "metadata.replicasetId",
-		"DatacenterId": "metadata.datacenterId",
-		"Time":         "metadata.snapshotTime",
-		"State":        "metadata.state",
+		"Id":                 "id",
+		"ReplicasetId":       "metadata.replicasetId",
+		"DatacenterId":       "metadata.datacenterId",
+		"Time":               "metadata.snapshotTime",
+		"State":              "metadata.state",
+		"RestoredSnapshotId": "metadata.restoredSnapshotId",
 	}
 
 	DbaasInMemoryDBReplicaSet = map[string]string{

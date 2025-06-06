@@ -39,7 +39,7 @@ List In-Memory DB Restores
 ```text
   -u, --api-url string       Override default host URL (default "https://in-memory-db.de-fra.ionos.com")
       --cols strings         Set of columns to be printed on output 
-                             Available columns: [Id ReplicasetId DatacenterId Time State]
+                             Available columns: [Id ReplicasetId DatacenterId Time State RestoredSnapshotId]
   -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -f, --force                Force command to execute without user input
   -h, --help                 Print usage

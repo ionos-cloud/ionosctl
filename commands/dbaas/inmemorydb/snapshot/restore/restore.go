@@ -8,7 +8,7 @@ import (
 )
 
 var (
-	allCols = []string{"Id", "ReplicasetId", "DatacenterId", "Time", "State"}
+	allCols = []string{"Id", "ReplicasetId", "DatacenterId", "Time", "State", "RestoredSnapshotId"}
 )
 
 func Root() *core.Command {
@@ -28,6 +28,7 @@ func Root() *core.Command {
 		},
 	)
 
+	cmd.AddCommand(Create())
 	cmd.AddCommand(List())
 
 	return cmd

@@ -319,6 +319,7 @@
         * snapshot
             * [list](subcommands%2FDatabase-as-a-Service%2FIn-Memory-DB%2Fsnapshot%2Flist.md)
             * restore
+                * [create](subcommands%2FDatabase-as-a-Service%2FIn-Memory-DB%2Fsnapshot%2Frestore%2Fcreate.md)
                 * [list](subcommands%2FDatabase-as-a-Service%2FIn-Memory-DB%2Fsnapshot%2Frestore%2Flist.md)
     * mariadb
         * backup
