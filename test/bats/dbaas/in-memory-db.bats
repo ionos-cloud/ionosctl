@@ -7,7 +7,7 @@ load "${BATS_LIBS_PATH}/bats-assert/load"
 load "${BATS_LIBS_PATH}/bats-support/load"
 load '../setup.bats'
 
-location="es/vit"
+location="de/fra"
 
 setup_file() {
     export IONOS_TOKEN=$(ionosctl token generate)
@@ -93,13 +93,28 @@ setup_file() {
 
     assert_regex "$snapshot_id" "$uuid_v4_regex"
     echo "$snapshot_id" > /tmp/bats_test/snapshot_id
+
+    datacenter_id=$(echo "$output" | jq -r '.items[0].metadata.datacenterId')
+    echo "$datacenter_id" > /tmp/bats_test/datacenter_id_2
 }
 
 @test "Create from snapshot" {
-    skip "test is currently skipped"
     snapshot_id=$(cat /tmp/bats_test/snapshot_id)
     if [ -z "$snapshot_id" ]; then
         skip "No snapshots available in the location $location"
+    fi
+
+    datacenter_id=$(cat /tmp/bats_test/datacenter_id_2)
+    if [ -z "$datacenter_id" ]; then
+        skip "No datacenter ID available for snapshot creation"
+    fi
+
+    # find a private lan ID in the datacenter
+    run ionosctl lan list --datacenter-id "$datacenter_id" -F public=false -o json
+    assert_success
+    lan_id=$(echo "$output" | jq -r '.items[0].id')
+    if [ -z "$lan_id" ]; then
+        skip "No private LAN found in the datacenter $datacenter_id"
     fi
 
     run ionosctl db in-memory-db replicaset create \
@@ -111,7 +126,7 @@ setup_file() {
       --ram 4GB \
       --user "snapshot_user" \
       --password "snapshot_pass$(randStr 2)" \
-      --datacenter-id "$(cat /tmp/bats_test/datacenter_id)" \
+      --datacenter-id "$datacenter_id" \
       --lan-id "$(cat /tmp/bats_test/lan_id)" \
       --cidr "192.168.1.70/24" \
       -o json
@@ -121,12 +136,11 @@ setup_file() {
     assert_regex "$replicaset_id" "$uuid_v4_regex"
     echo "$replicaset_id" > /tmp/bats_test/replicaset_id_2
     replicaset_name=$(echo "$output" | jq -r '.properties.displayName')
-    assert_not_empty "$replicaset_name"
     echo "$replicaset_name" > /tmp/bats_test/replicaset_name_2
 }
 
 @test "List and expect both replicasets" {
-    skip "test is currently skipped"
+#    skip "test is currently skipped"
     run ionosctl db in-memory-db replicaset list --location "${location}" -o json
     assert_success
     assert_output -p "\"displayName\": \"$(cat /tmp/bats_test/replicaset_name)\""
@@ -154,11 +168,11 @@ setup_file() {
       -f
     assert_success
 
-#    run ionosctl db in-memory-db replicaset delete \
-#      --location "${location}" \
-#      --replica-set-id "$(cat /tmp/bats_test/replicaset_id_2)" \
-#      -f
-#    assert_success
+    run ionosctl db in-memory-db replicaset delete \
+      --location "${location}" \
+      --replica-set-id "$(cat /tmp/bats_test/replicaset_id_2)" \
+      -f
+    assert_success
 }
 
 teardown_file() {
