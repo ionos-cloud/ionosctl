@@ -1,5 +1,13 @@
 # Changelog
 
+## [v6.8.5] (June 2025)
+
+### Added
+- Added support for 'dbaas in-memory-db' commands
+
+### Others
+- Removed mentions of deprecated flag in 'image upload' command help text (#529)
+
 ## [v6.8.4] (May 2025)
 
 ### Added
