@@ -222,12 +222,12 @@ func ImageCmd() *core.Command {
 		Verb:      "upload",
 		Aliases:   []string{"ftp-upload", "ftp", "upl"},
 		ShortDesc: "Upload an image to FTP server using FTP over TLS (FTPS)",
-		LongDesc: fmt.Sprintf(`WARNING: 
+		LongDesc: fmt.Sprintf(`WARNING:
 This command can only be used if 2-Factor Authentication is disabled on your account and you're logged in using IONOS_USERNAME and IONOS_PASSWORD environment variables (see "Authenticating with Ionos Cloud" at https://docs.ionos.com/cli-ionosctl).
 
 OVERVIEW:
   Use this command to securely upload one or more HDD or ISO images to the specified FTP server using FTP over TLS (FTPS). This command supports a variety of options to provide flexibility during the upload process:
-  - The command supports renaming the uploaded images with the '--%s' flag. If uploading multiple images, you must provide an alias for each image.
+  - The command supports renaming the uploaded images with the '--%s' flag. If uploading multiple images, you must provide a new name for each image.
   - Specify the context deadline for the FTP connection using the '--%s' flag. The operation as a whole will terminate after the specified number of seconds, i.e. if the FTP upload had finished but your PATCH operation did not, only the PATCH operation will be intrerrupted.
 POST-UPLOAD OPERATIONS:
   By default, this command will query 'GET /images' endpoint for your uploaded images, then try to use 'PATCH /images/<UUID>' to update the uploaded images with the given property fields.
@@ -240,7 +240,7 @@ CUSTOM URLs:
   - Use the '--%s' flag to skip the verification of the server certificate. This can be useful when using a custom ftp-url,
   but be warned that this could expose you to a man-in-the-middle attack.
   - If you're using a self-signed FTP server, you can provide the path to the server certificate file in base64 PEM format using the '--%s' flag.
-`, cloudapiv6.ArgImageAlias, constants.ArgTimeout, FlagSkipUpdate, cloudapiv6.ArgLocation, FlagFtpUrl, FlagSkipVerify, FlagCertificatePath),
+`, FlagRenameImages, constants.ArgTimeout, FlagSkipUpdate, cloudapiv6.ArgLocation, FlagFtpUrl, FlagSkipVerify, FlagCertificatePath),
 		Example: `- 'ionosctl img upload -i kolibri.iso -l fkb,fra,vit --skip-update': Simply upload the image 'kolibri.iso' from the current directory to IONOS FTP servers 'ftp://ftp-fkb.ionos.com/iso-images', 'ftp://ftp-fra.ionos.com/iso-images', 'ftp://ftp-vit.ionos.com/iso-images'.
 - 'ionosctl img upload -i kolibri.iso -l fra': Upload the image 'kolibri.iso' from the current directory to IONOS FTP server 'ftp://ftp-fra.ionos.com/iso-images'. Once the upload has finished, start querying 'GET /images' with a filter for 'kolibri', to get the UUID of the image as seen by the Images API. When UUID is found, perform a 'PATCH /images/<UUID>' to set the default flag values.
 - 'ionosctl img upload -i kolibri.iso --skip-update --skip-verify --ftp-url ftp://12.34.56.78': Use your own custom server. Use skip verify to skip checking server's identity

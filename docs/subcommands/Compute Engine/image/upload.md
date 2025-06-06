@@ -26,12 +26,12 @@ For `upload` command:
 
 ## Description
 
-WARNING: 
+WARNING:
 This command can only be used if 2-Factor Authentication is disabled on your account and you're logged in using IONOS_USERNAME and IONOS_PASSWORD environment variables (see "Authenticating with Ionos Cloud" at https://docs.ionos.com/cli-ionosctl).
 
 OVERVIEW:
   Use this command to securely upload one or more HDD or ISO images to the specified FTP server using FTP over TLS (FTPS). This command supports a variety of options to provide flexibility during the upload process:
-  - The command supports renaming the uploaded images with the '--image-alias' flag. If uploading multiple images, you must provide an alias for each image.
+  - The command supports renaming the uploaded images with the '--rename' flag. If uploading multiple images, you must provide a new name for each image.
   - Specify the context deadline for the FTP connection using the '--timeout' flag. The operation as a whole will terminate after the specified number of seconds, i.e. if the FTP upload had finished but your PATCH operation did not, only the PATCH operation will be intrerrupted.
 POST-UPLOAD OPERATIONS:
   By default, this command will query 'GET /images' endpoint for your uploaded images, then try to use 'PATCH /images/<UUID>' to update the uploaded images with the given property fields.
