@@ -106,4 +106,33 @@ var (
 		"Name":  "properties.name",
 		"Owner": "properties.owner",
 	}
+
+	DbaasInMemoryDBSnapshot = map[string]string{
+		"Id":                 "id",
+		"ReplicasetId":       "metadata.replicasetId",
+		"DatacenterId":       "metadata.datacenterId",
+		"Time":               "metadata.snapshotTime",
+		"State":              "metadata.state",
+		"RestoredSnapshotId": "metadata.restoredSnapshotId",
+	}
+
+	DbaasInMemoryDBReplicaSet = map[string]string{
+		"Id":              "id",
+		"Name":            "properties.displayName",
+		"Version":         "properties.version",
+		"DNSName":         "metadata.dnsName",
+		"Replicas":        "properties.replicas",
+		"Cores":           "properties.resources.cores",
+		"RAM":             "properties.resources.ram",
+		"StorageSize":     "properties.resources.storage",
+		"State":           "metadata.state",
+		"BackupLocation":  "properties.backupLocation",
+		"PersistenceMode": "properties.persistenceMode",
+		"EvictionPolicy":  "properties.evictionPolicy",
+		"MaintenanceDay":  "properties.maintenanceWindow.dayOfTheWeek",
+		"MaintenanceTime": "properties.maintenanceWindow.time",
+		"DatacenterId":    "properties.connections[0].datacenterId",
+		"LanId":           "properties.connections[0].lanId",
+		"Username":        "properties.credentials.username",
+	}
 )

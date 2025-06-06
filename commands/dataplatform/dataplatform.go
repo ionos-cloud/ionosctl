@@ -14,7 +14,7 @@ func DataplatformCmd() *core.Command {
 			Use:              "dataplatform",
 			Short:            "Managed Stackable Data Platform by IONOS Cloud provides a preconfigured Kubernetes cluster with pre-installed and managed Stackable operators. After the provision of these Stackable operators, the customer can interact with them directly and build his desired application on top of the Stackable Platform.",
 			Aliases:          []string{"mdp", "dp", "stackable", "managed-dataplatform"},
-			Long:             "The sub-commands of `ionosctl dataplatform` allow you to perform operations on DBaaS resources.",
+			Long:             "The sub-commands of `ionosctl dataplatform` allow you to perform operations on Dataplatform resources.",
 			TraverseChildren: true,
 		},
 	}

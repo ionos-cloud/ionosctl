@@ -94,7 +94,7 @@ build: vendor
 	@echo "DONE"
 
 .PHONY: install
-install: vendor
+install:
 	@echo "--- Install ionosctl via go install ---"
 	@GOOS=$(GOOS) GOARCH=$(GOARCH) tools/build.sh install
 	@echo "DONE"
