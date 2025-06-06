@@ -5,6 +5,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
+	"math"
 	"regexp"
 
 	"github.com/ionos-cloud/ionosctl/v6/commands/dbaas/inmemorydb/utils"
@@ -68,6 +69,9 @@ func Update() *core.Command {
 			}
 			if fn := core.GetFlagName(c.NS, constants.FlagRam); viper.IsSet(fn) && viper.GetString(fn) != "" {
 				sizeInt64 := convbytes.StrToUnit(viper.GetString(fn), convbytes.GB)
+				if sizeInt64 < math.MinInt32 || sizeInt64 > math.MaxInt32 {
+					return fmt.Errorf("RAM size %d exceeds the range of int32", sizeInt64)
+				}
 				input.Resources.Ram = int32(sizeInt64)
 			}
 

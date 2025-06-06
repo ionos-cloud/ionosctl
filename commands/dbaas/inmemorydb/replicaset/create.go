@@ -5,6 +5,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
+	"math"
 	"math/rand"
 	"regexp"
 	"time"
@@ -83,6 +84,9 @@ volatile-ttl: The key with the nearest time to live will be removed first, but o
 			}
 			if fn := core.GetFlagName(c.NS, constants.FlagRam); viper.IsSet(fn) && viper.GetString(fn) != "" {
 				sizeInt64 := convbytes.StrToUnit(viper.GetString(fn), convbytes.GB)
+				if sizeInt64 < math.MinInt32 || sizeInt64 > math.MaxInt32 {
+					return fmt.Errorf("RAM size %d exceeds the range of int32", sizeInt64)
+				}
 				input.Resources.Ram = int32(sizeInt64)
 			}
 
